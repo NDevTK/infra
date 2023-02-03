@@ -57,7 +57,7 @@ func unmarshalTextproto(path string, m protov2.Message) error {
 		return err
 	}
 
-	return prototext.Unmarshal(protoBytes, m)
+	return prototext.UnmarshalOptions{DiscardUnknown: true}.Unmarshal(protoBytes, m)
 }
 
 // baseTestPlanRun embeds subcommands.CommandRunBase and implements flags shared
@@ -365,7 +365,9 @@ func cmdMigrationStatus(authOpts auth.Options) *subcommands.Command {
 			generated Buildbucket config found in this checkout will be used.
 			`))
 			r.Flags.Var(luciflag.StringSlice(&r.projects), "project", text.Doc(`
-			Projects to check the specific migration status of.
+			Optional, projects to check the specific migration status of. If one
+			of these projects does not exist in the manifest, an error is
+			returned.
 			`))
 			return r
 		},
@@ -380,10 +382,14 @@ type migrationStatusRun struct {
 
 func (r *migrationStatusRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	ctx := cli.GetContext(a, r, env)
-	return errToCode(a, r.run(ctx))
+	return errToCode(a, r.run(ctx, args))
 }
 
-func (r *migrationStatusRun) validateFlagsAndSetDefaults() error {
+func (r *migrationStatusRun) validateFlags(args []string) error {
+	if len(args) > 0 {
+		return fmt.Errorf("unexpected positional arguments: %q", args)
+	}
+
 	if r.crosSrcRoot == "" {
 		return fmt.Errorf("-crossrcroot must be set")
 	}
@@ -391,8 +397,8 @@ func (r *migrationStatusRun) validateFlagsAndSetDefaults() error {
 	return nil
 }
 
-func (r *migrationStatusRun) run(ctx context.Context) error {
-	if err := r.validateFlagsAndSetDefaults(); err != nil {
+func (r *migrationStatusRun) run(ctx context.Context, args []string) error {
+	if err := r.validateFlags(args); err != nil {
 		return err
 	}
 
@@ -420,7 +426,12 @@ func (r *migrationStatusRun) run(ctx context.Context) error {
 		return err
 	}
 
-	textSummary, err := migrationstatus.TextSummary(ctx, manifest, bbCfg, cvConfig, r.projects)
+	statuses, err := migrationstatus.Compute(ctx, manifest, bbCfg, cvConfig)
+	if err != nil {
+		return err
+	}
+
+	textSummary, err := migrationstatus.TextSummary(ctx, statuses, r.projects)
 	if err != nil {
 		return err
 	}

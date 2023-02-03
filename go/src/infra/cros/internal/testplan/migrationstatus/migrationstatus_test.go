@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"infra/cros/internal/assert"
 	"infra/cros/internal/repo"
 	"infra/cros/internal/testplan/migrationstatus"
 
@@ -44,12 +43,6 @@ var bbCfg *bbpb.BuildbucketCfg = &bbpb.BuildbucketCfg{
 							"migration_configs": [
 								{
 									"project": "chromeos/testprojects/.*"
-								},
-								{
-									"project": "chromeos/a/b"
-								},
-								{
-									"project": "chromeos/c/d"
 								}
 							]
 						}
@@ -73,12 +66,6 @@ var cvConfig = &cvpb.Config{
 						},
 						{
 							Name: "chromeos/a/b",
-						},
-						{
-							Name: "chromeos/c/d",
-						},
-						{
-							Name: "chromemos/e/f",
 						},
 						{
 							Name: "chromeos/excludedbyorch1",
@@ -114,12 +101,6 @@ var manifest *repo.Manifest = &repo.Manifest{
 			Name: "chromeos/a/b",
 		},
 		{
-			Name: "chromeos/c/d",
-		},
-		{
-			Name: "chromemos/e/f",
-		},
-		{
 			Name: "chromeos/projectnotincvconfig",
 		},
 		{
@@ -128,55 +109,156 @@ var manifest *repo.Manifest = &repo.Manifest{
 	},
 }
 
+func TestCompute(t *testing.T) {
+	ctx := context.Background()
+
+	statuses, err := migrationstatus.Compute(ctx, manifest, bbCfg, cvConfig)
+	if err != nil {
+		t.Fatalf("TextSummary returned error: %s", err)
+	}
+
+	expected := []*migrationstatus.MigrationStatus{
+		// testproject1 is included by regex match.
+		{
+			BuilderName:            "cq-orchestrator",
+			ProjectName:            "chromeos/testprojects/testproject1",
+			MatchesMigrationConfig: true,
+			IncludedByToT:          true,
+			IncludedByBuilder:      true,
+		},
+		{
+			BuilderName:            "cq-orchestrator",
+			ProjectName:            "chromeos/a/b",
+			MatchesMigrationConfig: true,
+			IncludedByToT:          true,
+			IncludedByBuilder:      true,
+		},
+		{
+			BuilderName:            "cq-orchestrator",
+			ProjectName:            "chromeos/projectnotincvconfig",
+			MatchesMigrationConfig: false,
+			IncludedByToT:          false,
+			IncludedByBuilder:      true,
+		},
+		{
+			BuilderName:            "cq-orchestrator",
+			ProjectName:            "chromeos/excludedbyorch1",
+			MatchesMigrationConfig: false,
+			IncludedByToT:          true,
+			IncludedByBuilder:      false,
+		},
+		{
+			BuilderName:            "staging-cq-orchestrator",
+			ProjectName:            "chromeos/testprojects/testproject1",
+			MatchesMigrationConfig: true,
+			IncludedByToT:          true,
+			IncludedByBuilder:      true,
+		},
+		{
+			BuilderName:            "staging-cq-orchestrator",
+			ProjectName:            "chromeos/a/b",
+			MatchesMigrationConfig: false,
+			IncludedByToT:          true,
+			IncludedByBuilder:      true,
+		},
+		{
+			BuilderName:            "staging-cq-orchestrator",
+			ProjectName:            "chromeos/projectnotincvconfig",
+			MatchesMigrationConfig: false,
+			IncludedByToT:          false,
+			IncludedByBuilder:      true,
+		},
+		{
+			BuilderName:            "staging-cq-orchestrator",
+			ProjectName:            "chromeos/excludedbyorch1",
+			MatchesMigrationConfig: false,
+			IncludedByToT:          true,
+			IncludedByBuilder:      false,
+		},
+	}
+
+	if diff := cmp.Diff(expected, statuses); diff != "" {
+		t.Errorf("Compute returned unexpected statuses (-want +got):\n%s", diff)
+	}
+}
+
 func TestTextSummary(t *testing.T) {
 	ctx := context.Background()
 
-	t.Run("no projectsToCheck", func(t *testing.T) {
-		summary, err := migrationstatus.TextSummary(ctx, manifest, bbCfg, cvConfig, []string{})
-		if err != nil {
-			t.Fatalf("TextSummary returned error: %s", err)
-		}
+	statuses := []*migrationstatus.MigrationStatus{
+		{
+			BuilderName:            "cq-orchestrator",
+			ProjectName:            "projectA",
+			MatchesMigrationConfig: false,
+			IncludedByToT:          true,
+			IncludedByBuilder:      true,
+		},
+		{
+			BuilderName:            "staging-cq-orchestrator",
+			ProjectName:            "projectA",
+			MatchesMigrationConfig: true,
+			IncludedByToT:          true,
+			IncludedByBuilder:      true,
+		},
+		{
+			BuilderName:            "cq-orchestrator",
+			ProjectName:            "projectB",
+			MatchesMigrationConfig: true,
+			IncludedByToT:          true,
+			IncludedByBuilder:      true,
+		},
+		{
+			BuilderName:            "staging-cq-orchestrator",
+			ProjectName:            "projectB",
+			MatchesMigrationConfig: true,
+			IncludedByToT:          true,
+			IncludedByBuilder:      true,
+		},
+		{
+			BuilderName:            "cq-orchestrator",
+			ProjectName:            "projectC",
+			MatchesMigrationConfig: false,
+			IncludedByToT:          false,
+			IncludedByBuilder:      false,
+		},
+		{
+			BuilderName:            "staging-cq-orchestrator",
+			ProjectName:            "projectC",
+			MatchesMigrationConfig: false,
+			IncludedByToT:          false,
+			IncludedByBuilder:      false,
+		},
+		{
+			BuilderName:            "cq-orchestrator",
+			ProjectName:            "projectD",
+			MatchesMigrationConfig: false,
+			IncludedByToT:          true,
+			IncludedByBuilder:      false,
+		},
+		{
+			BuilderName:            "staging-cq-orchestrator",
+			ProjectName:            "projectD",
+			MatchesMigrationConfig: false,
+			IncludedByToT:          true,
+			IncludedByBuilder:      false,
+		},
+	}
 
-		expectedSummary := `cq-orchestrator: 2 / 4 projects migrated
-staging-cq-orchestrator: 3 / 4 projects migrated
+	summary, err := migrationstatus.TextSummary(ctx, statuses, []string{"projectA", "projectC", "projectD"})
+	if err != nil {
+		t.Fatalf("TextSummary returned error: %s", err)
+	}
+
+	expectedSummary := `cq-orchestrator: project projectA not migrated
+cq-orchestrator: project projectC not included in "ToT" ConfigGroup
+cq-orchestrator: project projectD not included by builder
+cq-orchestrator: 1 / 2 projects migrated
+staging-cq-orchestrator: project projectA migrated
+staging-cq-orchestrator: project projectC not included in "ToT" ConfigGroup
+staging-cq-orchestrator: project projectD not included by builder
+staging-cq-orchestrator: 2 / 2 projects migrated
 `
-		if diff := cmp.Diff(expectedSummary, summary); diff != "" {
-			t.Errorf("TextSummary returned unexpected summary (-want +got):\n%s", diff)
-		}
-	})
-
-	t.Run("projectsToCheck", func(t *testing.T) {
-		summary, err := migrationstatus.TextSummary(ctx, manifest, bbCfg, cvConfig, []string{"chromeos/c/d"})
-		if err != nil {
-			t.Fatalf("TextSummary returned error: %s", err)
-		}
-
-		expectedSummary := `cq-orchestrator: project chromeos/c/d not migrated
-cq-orchestrator: 2 / 4 projects migrated
-staging-cq-orchestrator: project chromeos/c/d migrated
-staging-cq-orchestrator: 3 / 4 projects migrated
-`
-		if diff := cmp.Diff(expectedSummary, summary); diff != "" {
-			t.Errorf("TextSummary returned unexpected summary (-want +got):\n%s", diff)
-		}
-	})
-}
-
-func TestTextSummaryErrors(t *testing.T) {
-	ctx := context.Background()
-
-	t.Run("projectToCheck missing from manifest", func(t *testing.T) {
-		_, err := migrationstatus.TextSummary(ctx, manifest, bbCfg, cvConfig, []string{"missingproject"})
-		assert.ErrorContains(t, err, `project "missingproject" not found in manifest`)
-	})
-
-	t.Run("projectToCheck missing from CqGroup", func(t *testing.T) {
-		_, err := migrationstatus.TextSummary(ctx, manifest, bbCfg, cvConfig, []string{"chromeos/projectnotincvconfig"})
-		assert.ErrorContains(t, err, `project "chromeos/projectnotincvconfig" not found in "ToT" ConfigGroup`)
-	})
-
-	t.Run("projectToCheck excluded by cq orch", func(t *testing.T) {
-		_, err := migrationstatus.TextSummary(ctx, manifest, bbCfg, cvConfig, []string{"chromeos/excludedbyorch1"})
-		assert.ErrorContains(t, err, `project "chromeos/excludedbyorch1" not included by builder "chromeos/cq/cq-orchestrator"`)
-	})
+	if diff := cmp.Diff(expectedSummary, summary); diff != "" {
+		t.Errorf("TextSummary returned unexpected summary (-want +got):\n%s", diff)
+	}
 }

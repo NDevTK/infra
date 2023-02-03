@@ -12,7 +12,6 @@ import (
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/data/stringset"
-	"go.chromium.org/luci/common/logging"
 	cvpb "go.chromium.org/luci/cv/api/config/v2"
 )
 
@@ -34,53 +33,6 @@ type cqOrchProperties struct {
 			Project string
 		} `json:"migration_configs"`
 	} `json:"$chromeos/cros_test_plan_v2"`
-}
-
-// validateProjectsToCheckInManifest returns an error if any of projectsToCheck
-// are not in manifest.
-func validateProjectsToCheckInManifest(manifest *repo.Manifest, projectsToCheck []string) error {
-	manifestProjectsSet := stringset.New(0)
-	for _, project := range manifest.Projects {
-		manifestProjectsSet.Add(project.Name)
-	}
-
-	for _, projectToCheck := range projectsToCheck {
-		if !manifestProjectsSet.Has(projectToCheck) {
-			return fmt.Errorf("project %q not found in manifest", projectToCheck)
-		}
-	}
-
-	return nil
-}
-
-// validateProjectsToCheckInConfigGroup returns an error if any of projectsToCheck
-// are not in configGroup.
-func validateProjectsToCheckInConfigGroup(configGroup *cvpb.ConfigGroup, projectsToCheck []string) error {
-	projectsInConfigGroup := getProjectsFromConfigGroup(configGroup)
-	for _, projectToCheck := range projectsToCheck {
-		if !projectsInConfigGroup.Has(projectToCheck) {
-			return fmt.Errorf("project %q not found in %q ConfigGroup", projectToCheck, configGroup.GetName())
-		}
-	}
-
-	return nil
-}
-
-// validateProjectsToCheckIncludedByBuilder returns an error if any of projectsToCheck
-// are not included by builder.
-func validateProjectsToCheckIncludedByBuilder(builder *cvpb.Verifiers_Tryjob_Builder, projectsToCheck []string) error {
-	for _, projectToCheck := range projectsToCheck {
-		included, err := projectIncludedForBuilder(builder, projectToCheck)
-		if err != nil {
-			return err
-		}
-
-		if !included {
-			return fmt.Errorf("project %q not included by builder %q", projectToCheck, builder.GetName())
-		}
-	}
-
-	return nil
 }
 
 // getBuilderFromBuildbucketConfig finds builderName in bbCfg, returning an
@@ -162,116 +114,157 @@ func projectIncludedForBuilder(builder *cvpb.Verifiers_Tryjob_Builder, projectNa
 	return true, nil
 }
 
-// TextSummary returns a string summarizing how many projects in manifest match
-// with a ProjectMigrationConfig in bbCfg. If projectsToCheck is non-empty, the
-// summary contains whether each of specific project is migrated. Projects that
-// are not in the "ToT" ConfigGroup of cvConfig or are excluded from the CQ
-// orchestrator by a LocationFilter are skipped.
-func TextSummary(
+// MigrationStatus describes the distributed test planning status of a project.
+type MigrationStatus struct {
+	// The name of the builder that has a migration configured, usually an
+	// orchestrator builder.
+	BuilderName string
+
+	// The name of the project.
+	ProjectName string
+
+	// Whether the project matches a MigrationConfig in the builder.
+	MatchesMigrationConfig bool
+
+	// Whether the project is included in the "ToT" CQ group.
+	IncludedByToT bool
+
+	// Whether the project is included by the builder's location filters.
+	IncludedByBuilder bool
+}
+
+// Compute returns a MigrationStatus for each project in manifest and builder in
+// orchestratorNames.
+func Compute(
 	ctx context.Context,
 	manifest *repo.Manifest,
 	bbCfg *bbpb.BuildbucketCfg,
 	cvConfig *cvpb.Config,
-	projectsToCheck []string,
-) (string, error) {
-	// Create a set version of projectsToCheck, so each project can be checked
-	// for membership quickly.
-	projectsToCheckSet := stringset.NewFromSlice(projectsToCheck...)
-	var summaryBuilder strings.Builder
-
+) ([]*MigrationStatus, error) {
 	totConfigGroup, err := getConfigGroup(cvConfig, totConfigGroupName)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	cqOrchCvConfig, err := getBuilderFromConfigGroup(totConfigGroup, cqOrchestratorCvBuilderName)
 	if err != nil {
-		return "", err
-	}
-
-	if err := validateProjectsToCheckInManifest(manifest, projectsToCheck); err != nil {
-		return "", err
-	}
-
-	if err := validateProjectsToCheckInConfigGroup(totConfigGroup, projectsToCheck); err != nil {
-		return "", err
-	}
-
-	if err := validateProjectsToCheckIncludedByBuilder(cqOrchCvConfig, projectsToCheck); err != nil {
-		return "", err
+		return nil, err
 	}
 
 	totCvProjects := getProjectsFromConfigGroup(totConfigGroup)
 
+	migrationStatuses := make([]*MigrationStatus, 0)
+
 	for _, builderName := range orchestratorNames {
 		builderConfig, err := getBuilderFromBuildbucketConfig(bbCfg, builderName)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 
 		builderProps := &cqOrchProperties{}
 		if err := json.Unmarshal([]byte(builderConfig.GetProperties()), builderProps); err != nil {
-			return "", fmt.Errorf("error parsing properties for builder %q: %w", builderName, err)
+			return nil, fmt.Errorf("error parsing properties for builder %q: %w", builderName, err)
 		}
 
-		totalProjects := 0
-		projectsMigrated := 0
-		projectsToCheckMatchedSet := stringset.New(0)
 		for _, project := range manifest.Projects {
-			if !totCvProjects.Has(project.Name) {
-				logging.Debugf(ctx, "project %q not in ToT ConfigGroup, skipping", project.Name)
-				continue
-			}
-
 			includedByCqOrch, err := projectIncludedForBuilder(cqOrchCvConfig, project.Name)
 			if err != nil {
-				return "", err
+				return nil, err
 			}
 
-			if !includedByCqOrch {
-				logging.Debugf(ctx, "project %q excluded by CQ orchestrator, skipping", project.Name)
-				continue
-			}
+			matchesMigrationConfig := false
 
-			totalProjects += 1
 			for _, migrationConfig := range builderProps.CrosTestPlanV2.MigrationConfigs {
 				// Empty project name in the MigrationConfig will regexp match
 				// all strings, and is unexpected.
 				if migrationConfig.Project == "" {
-					return "", fmt.Errorf("unexpected MigrationConfig with empty project: %q", migrationConfig)
+					return nil, fmt.Errorf("unexpected MigrationConfig with empty project: %q", migrationConfig)
 				}
 
 				matched, err := regexp.Match(migrationConfig.Project, []byte(project.Name))
 				if err != nil {
-					return "", err
+					return nil, err
 				}
-
-				// If project matches any MigrationConfig, add it to the count
-				// of projects migrated. Also see if it is in the set of
-				// projects to specifically check the status of.
 				if matched {
-					logging.Debugf(ctx, "matched project %q with migration config %q", project, migrationConfig)
-					projectsMigrated += 1
-
-					if projectsToCheckSet.Has(project.Name) {
-						projectsToCheckMatchedSet.Add(project.Name)
-					}
-
+					matchesMigrationConfig = true
 					break
 				}
 			}
+
+			migrationStatuses = append(migrationStatuses, &MigrationStatus{
+				BuilderName:            builderName,
+				ProjectName:            project.Name,
+				MatchesMigrationConfig: matchesMigrationConfig,
+				IncludedByToT:          totCvProjects.Has(project.Name),
+				IncludedByBuilder:      includedByCqOrch,
+			})
+		}
+	}
+
+	return migrationStatuses, nil
+}
+
+// TextSummary returns a string summarizing migrationStatuses. If
+// projectsToCheck is non-empty, the summary contains whether each specific
+// project is migrated.
+func TextSummary(
+	ctx context.Context,
+	migrationStatuses []*MigrationStatus,
+	projectsToCheck []string,
+) (string, error) {
+	var summaryBuilder strings.Builder
+
+	for _, builderName := range orchestratorNames {
+		// Total # of projects for the builder, excluding projects not in the
+		// ToT CQ group or project excluded by the builder.
+		totalProjects := 0
+		projectsMigrated := 0
+		// Map from project name to MigrationStatus, to check each of
+		// projectsToCheck later. Includes projects even if they are not in the
+		// ToT CQ group or are excluded by the builder.
+		projectToMigrationStatus := make(map[string]*MigrationStatus)
+
+		for _, status := range migrationStatuses {
+			// If the migration status isn't for builderName, skip.
+			if status.BuilderName != builderName {
+				continue
+			}
+
+			projectToMigrationStatus[status.ProjectName] = status
+
+			if !status.IncludedByToT || !status.IncludedByBuilder {
+				continue
+			}
+
+			totalProjects += 1
+			if status.MatchesMigrationConfig {
+				projectsMigrated += 1
+			}
 		}
 
-		// Add the status of projectsToCheck to the summary.
-		for _, project := range projectsToCheckSet.ToSortedSlice() {
-			if projectsToCheckMatchedSet.Has(project) {
+		for _, project := range projectsToCheck {
+			status, found := projectToMigrationStatus[project]
+			if !found {
+				return "", fmt.Errorf("no status found for project %q", project)
+			}
+
+			if !status.IncludedByToT {
+				summaryBuilder.WriteString(fmt.Sprintf("%s: project %s not included in \"ToT\" ConfigGroup\n", builderName, project))
+				continue
+			}
+
+			if !status.IncludedByBuilder {
+				summaryBuilder.WriteString(fmt.Sprintf("%s: project %s not included by builder\n", builderName, project))
+				continue
+			}
+
+			if status.MatchesMigrationConfig {
 				summaryBuilder.WriteString(fmt.Sprintf("%s: project %s migrated\n", builderName, project))
 			} else {
 				summaryBuilder.WriteString(fmt.Sprintf("%s: project %s not migrated\n", builderName, project))
 			}
 		}
 
-		// Write the summary of projects migrated for the builder.
 		if _, err := summaryBuilder.WriteString(
 			fmt.Sprintf(
 				"%s: %d / %d projects migrated\n",
