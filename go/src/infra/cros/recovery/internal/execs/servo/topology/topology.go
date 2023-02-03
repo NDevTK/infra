@@ -247,18 +247,17 @@ func USBDrives(ctx context.Context, runner execs.Runner, servoSerial string) ([]
 			log.Debugf(ctx, "Fail to read USB device manufacturer name: %q", err)
 			continue
 		}
-		product, err := readServoFs(ctx, runner, devicePath, productFileName)
-		if err != nil {
-			log.Debugf(ctx, "Fail to read USB device product name: %q", err)
-		}
+		// Read product just for logs.
+		readServoFs(ctx, runner, devicePath, productFileName)
 		// To detect usb is complicated so we check if any of them will mention it.
-		// TODO(otabek): Find better logic to distinguish USB drive from other components.
 		// Corsair is new USB drive supported smart data check.
-		if strings.Contains(strings.ToLower(manufacturer), "usb") || manufacturer == "Corsair" || strings.Contains(strings.ToLower(product), "usb") {
-			log.Debugf(ctx, "The device found is usb drive!")
-		} else {
-			log.Debugf(ctx, "The device found is usb drive!")
+		if manufacturer == "Corsair" {
+			log.Debugf(ctx, "USB key with SMART data detected!")
+		} else if strings.Contains(strings.ToLower(manufacturer), "google") {
+			log.Debugf(ctx, "Google device found, probably a servo!")
 			continue
+		} else {
+			log.Debugf(ctx, "Device manufacturer:%q found let's believe that is USB key!", manufacturer)
 		}
 		serial, err := readServoFs(ctx, runner, devicePath, serialNumberFileName)
 		if err != nil {
