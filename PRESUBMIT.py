@@ -383,8 +383,6 @@ def PylintChecks(input_api, output_api, only_changed):  # pragma: no cover
       r'^go/src/infra/tools/cloudtail/.*\.py$',
   ]
   tests = []
-  tests.extend(PylintChecksForPython2(
-        input_api, output_api, only_changed, include=py2_files))
   tests.extend(PylintChecksForPython3(
         input_api, output_api, exclude=py2_files))
   return tests
@@ -412,59 +410,6 @@ def PylintChecksForPython3(input_api, output_api, exclude):  # pragma: no cover
       disabled_warnings=DISABLED_PYLINT_WARNINGS,
       version='2.7',
   )
-
-
-def PylintChecksForPython2(
-    input_api, output_api, only_changed, include):  # pragma: no cover
-  infra_root = input_api.PresubmitLocalPath()
-  # DEPS specifies depot_tools, as sibling of infra.
-  venv_path = input_api.os_path.join(infra_root, 'ENV', 'lib', 'python2.7')
-
-  # Cause all pylint commands to execute in the virtualenv
-  input_api.python_executable = (
-    input_api.os_path.join(infra_root, 'ENV', 'bin', 'python'))
-
-  files_to_check = include
-  files_to_skip = list(input_api.DEFAULT_FILES_TO_SKIP)
-  # FIXME: files_to_skip are regexes, but DISABLED_PROJECTS aren't.
-  files_to_skip += DISABLED_PROJECTS
-  files_to_skip += [
-    '.*_pb2\.py',
-  ]
-  files_to_skip += IgnoredPaths(input_api)
-
-  extra_syspaths = [venv_path]
-
-  source_filter = lambda path: input_api.FilterSourceFile(
-      path, files_to_check=files_to_check, files_to_skip=files_to_skip)
-  changed_py_files = [f.LocalPath()
-      for f in input_api.AffectedSourceFiles(source_filter)]
-
-  if only_changed:
-    if changed_py_files:
-      input_api.logging.info('Running pylint on %d files',
-                             len(changed_py_files))
-      return [PylintFiles(input_api, output_api, changed_py_files, None,
-                          DISABLED_PYLINT_WARNINGS, extra_syspaths)]
-
-    return []
-
-  all_python_files = FetchAllFiles(input_api, files_to_check, files_to_skip)
-  root_to_paths = GroupPythonFilesByRoot(input_api, all_python_files)
-  dirty_roots = DirtyRootsFromAffectedFiles(changed_py_files, root_to_paths)
-
-  tests = []
-  for root_path in sorted(dirty_roots):
-    python_files = root_to_paths[root_path]
-    if python_files:
-      if root_path == '':
-        root_path = input_api.PresubmitLocalPath()
-      input_api.logging.info('Running pylint on %d files under %s',
-          len(python_files), root_path)
-      syspaths = extra_syspaths + [root_path]
-      tests.append(PylintFiles(input_api, output_api, python_files, root_path,
-        DISABLED_PYLINT_WARNINGS, syspaths))
-  return tests
 
 
 def GetAffectedJsFiles(input_api, include_deletes=False):
