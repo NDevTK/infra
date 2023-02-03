@@ -18,7 +18,7 @@ luci.builder(
         "cores": "8",
         "pool": "luci.infra.cron",
     },
-    execution_timeout = 2 * time.hour,
+    execution_timeout = 4 * time.hour,
     schedule = "with 3000s interval",
 )
 
