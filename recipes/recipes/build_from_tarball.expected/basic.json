@@ -121,8 +121,7 @@
       "libdrm",
       "libjpeg",
       "libwebp",
-      "opus",
-      "snappy"
+      "opus"
     ],
     "cwd": "[START_DIR]/build_dir/chromium-80.0.3987.76",
     "env_suffixes": {

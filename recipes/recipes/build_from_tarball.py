@@ -67,7 +67,6 @@ def RunSteps(api):
           'libjpeg',
           'libwebp',
           'opus',
-          'snappy',
 
           # https://crbug.com/731766
           # 'ffmpeg',
@@ -98,6 +97,10 @@ def RunSteps(api):
           # libc++ (std::__1::string) differs from the one re2 expects
           # (std::__cxx11::string), causing link failures.
           # 're2',
+
+          # TODO(https://crbug.com/1412844): Fix snappy unbundle and reenable
+          # when the fix rolls out to all channels.
+          # 'snappy',
 
           # Use the yasm in third_party to prevent having to install yasm on the
           # bot.
