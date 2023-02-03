@@ -23,6 +23,7 @@ import (
 	monorailv3 "infra/monorailv2/api/v3/api_proto"
 
 	"go.chromium.org/luci/common/clock"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/sync/parallel"
 	"go.chromium.org/luci/gae/service/datastore"
@@ -384,8 +385,15 @@ func (ah *AnnotationHandler) refreshAnnotations(ctx *router.Context, a *model.An
 		}
 	})
 
+	// If there is an error (for a particular call), we don't want to
+	// abort everything, but still want to proceed if we received something
+	// from Monorail
 	if err != nil {
-		return nil, err
+		err = errors.Annotate(err, "getting Monorail bugs").Err()
+		logging.Errorf(c, err.Error())
+		if len(m) == 0 {
+			return nil, err
+		}
 	}
 
 	bytes, err := json.Marshal(m)
