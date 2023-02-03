@@ -16,13 +16,22 @@ import (
 )
 
 const (
-	detectCmd   = "mmcli -m a -J"
-	expectedCmd = "cros_config /modem firmware-variant"
+	mmcliCliPresent = "which mmcli"
+	detectCmd       = "mmcli -m a -J"
+	expectedCmd     = "cros_config /modem firmware-variant"
 )
 
 // IsExpected returns true if cellular modem is expected to exist on the DUT.
 func IsExpected(ctx context.Context, runner components.Runner) bool {
 	if _, err := runner(ctx, 5*time.Second, expectedCmd); err != nil {
+		return false
+	}
+	return true
+}
+
+// HasModemManagerCLI returns true if mmcli is present on the DUT.
+func HasModemManagerCLI(ctx context.Context, runner components.Runner) bool {
+	if _, err := runner(ctx, time.Minute, mmcliCliPresent); err != nil {
 		return false
 	}
 	return true

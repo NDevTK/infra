@@ -13,22 +13,42 @@ import (
 
 	"infra/cros/recovery/internal/components/cros/cellular"
 	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/tlw"
 )
 
 func init() {
 	execs.Register("cros_audit_cellular", auditCellularExec)
+	execs.Register("cros_has_mmcli", hasModemManagerCLIExec)
+	execs.Register("has_cellular_info", hasModemManagerCLIExec)
+}
+
+// hasModemManagerCLIExec validates that mmcli is present on the DUT
+func hasModemManagerCLIExec(ctx context.Context, info *execs.ExecInfo) error {
+	if !cellular.HasModemManagerCLI(ctx, info.DefaultRunner()) {
+		return errors.Reason("has modem manager cli: mmcli is not found on device").Err()
+	}
+	return nil
+}
+
+// hasCellularInfoExec validates that cellular data is populated in the dut info.
+func hasCellularInfoExec(ctx context.Context, info *execs.ExecInfo) error {
+	if c := info.GetChromeos().GetCellular(); c == nil {
+		return errors.Reason("has cellular info: cellular data is not present in dut info").Err()
+	}
+	return nil
 }
 
 // auditCellularExec will validate cellular modem and connectivity state.
 func auditCellularExec(ctx context.Context, info *execs.ExecInfo) error {
-	cellularState := info.GetChromeos().GetCellular()
-	if cellularState == nil {
+	c := info.GetChromeos().GetCellular()
+	if c == nil {
 		return errors.Reason("audit cellular: cellular data is not present in dut info").Err()
 	}
 
 	expected := cellular.IsExpected(ctx, info.DefaultRunner())
+
 	// if no cellular is expected then set total timeout to be much lower otherwise we will add
 	// ~2 minutes to every repair even ones that don't require a modem.
 	argsMap := info.GetActionArgs(ctx)
@@ -47,19 +67,25 @@ func auditCellularExec(ctx context.Context, info *execs.ExecInfo) error {
 
 		// only report connection state for devices where modem was found.
 		info.AddObservation(metrics.NewStringObservation("cellularConnectionState", connectionState))
-		cellularState.ModemState = tlw.HardwareState_HARDWARE_NORMAL
+		c.ModemState = tlw.HardwareState_HARDWARE_NORMAL
 		return nil
 	}
 
-	if execs.SSHErrorInternal.In(err) || execs.SSHErrorCLINotFound.In(err) {
-		cellularState.ModemState = tlw.HardwareState_HARDWARE_UNSPECIFIED
-	} else if expected {
-		// no modem detected but was expected by setup info
-		// then we set needs_replacement as it is probably a hardware issue.
-		cellularState.ModemState = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
-	} else {
-		cellularState.ModemState = tlw.HardwareState_HARDWARE_NOT_DETECTED
+	err = errors.Annotate(err, "audit cellular").Err()
+	if execs.SSHErrorInternal.In(err) {
+		c.ModemState = tlw.HardwareState_HARDWARE_UNSPECIFIED
+		return err
 	}
 
-	return errors.Annotate(err, "audit cellular").Err()
+	if expected {
+		// no modem detected but was expected by setup info
+		// then we set needs_replacement as it is probably a hardware issue.
+		c.ModemState = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
+		return err
+	}
+
+	// not found and not expected, don't report an error, instead just log it
+	log.Errorf(ctx, err.Error())
+	c.ModemState = tlw.HardwareState_HARDWARE_NOT_DETECTED
+	return nil
 }

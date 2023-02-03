@@ -1091,6 +1091,10 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Check cellular modem on the DUT is normal and update cellular modem state accordingly.",
 			},
+			Conditions: []string{
+				"cros_has_mmcli",
+				"has_cellular_info",
+			},
 			Dependencies: []string{
 				"Device is SSHable",
 			},
