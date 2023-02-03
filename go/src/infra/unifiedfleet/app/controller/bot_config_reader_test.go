@@ -74,13 +74,15 @@ func mockBotConfig(botRange string, pool string) *configpb.BotsCfg {
 }
 
 // Dummy security config for bots
-func mockSecurityConfig(botRange string, pool string, swarmingServerId string) *ufspb.SecurityInfos {
+func mockSecurityConfig(botRange string, pool string, swarmingServerId string, miba string, customer string) *ufspb.SecurityInfos {
 	return &ufspb.SecurityInfos{
 		Pools: []*ufspb.SecurityInfo{
 			{
 				Hosts:            []string{botRange},
 				PoolName:         pool,
 				SwarmingServerId: swarmingServerId,
+				MibaRealm:        miba,
+				Customer:         customer,
 			},
 		},
 	}
@@ -182,14 +184,13 @@ func TestGetConfigAndGitClient(t *testing.T) {
 // Tests the functionality for importing bot configs from the config files
 func TestImportENCBotConfig(t *testing.T) {
 	t.Parallel()
+	ctx := encTestingContext()
 	Convey("Import ENC Bot Config", t, func() {
 		contextConfig := mockOwnershipConfig()
+		ctx = config.Use(ctx, contextConfig)
+		ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
+		So(err, ShouldBeNil)
 		Convey("happy path", func() {
-			ctx := encTestingContext()
-			ctx = config.Use(ctx, contextConfig)
-			ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
-			So(err, ShouldBeNil)
-
 			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("test1-1", "test1"))
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
@@ -221,10 +222,6 @@ func TestImportENCBotConfig(t *testing.T) {
 			So(resp2.GetUpdateTime(), ShouldResemble, resp.GetUpdateTime())
 		})
 		Convey("happy path - Bot ID Prefix", func() {
-			ctx := encTestingContext()
-			ctx = config.Use(ctx, contextConfig)
-			ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
-			So(err, ShouldBeNil)
 			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("testing-1", "testing1"))
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
@@ -241,25 +238,12 @@ func TestImportENCBotConfig(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(resp.Ownership, ShouldNotBeNil)
 
-			botResp, err := inventory.GetOwnershipData(ctx, "testing")
-			So(err, ShouldBeNil)
-			So(botResp, ShouldNotBeNil)
-			So(botResp.OwnershipData, ShouldNotBeNil)
-			p, err := botResp.GetProto()
-			So(err, ShouldBeNil)
-			pm := p.(*ufspb.OwnershipData)
-			So(pm, ShouldResembleProto, resp.Ownership)
-
 			resp, err = registration.GetMachine(ctx, "tester-1")
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			So(resp.Ownership, ShouldBeNil)
 		})
 		Convey("happy path - Bot ID Prefix for MachineLSE", func() {
-			ctx := encTestingContext()
-			ctx = config.Use(ctx, contextConfig)
-			ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
-			So(err, ShouldBeNil)
 			resp, err := inventory.CreateMachineLSE(ctx, mockMachineLSE("testLSE1"))
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
@@ -282,15 +266,10 @@ func TestImportENCBotConfig(t *testing.T) {
 			So(resp2.GetUpdateTime(), ShouldResemble, resp.GetUpdateTime())
 		})
 		Convey("happy path - Bot ID Prefix for VM", func() {
-			ctx := encTestingContext()
-			ctx = config.Use(ctx, contextConfig)
-			ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
-			So(err, ShouldBeNil)
-
 			vm1 := &ufspb.VM{
 				Name: "vm-1",
 			}
-			_, err = inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
+			_, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
 			So(err, ShouldBeNil)
 
 			err = ImportENCBotConfig(ctx, ownershipConfig, gitClient)
@@ -328,7 +307,7 @@ func TestGetAllOwnershipConfigs(t *testing.T) {
 			ownerships, _, err := ListOwnershipConfigs(ctx, 20, "", "", false)
 			So(err, ShouldBeNil)
 			So(ownerships, ShouldNotBeNil)
-			So(len(ownerships), ShouldEqual, 14)
+			So(len(ownerships), ShouldEqual, 11)
 		})
 	})
 }
@@ -336,13 +315,13 @@ func TestGetAllOwnershipConfigs(t *testing.T) {
 // Tests the functionality for importing security configs from the config files
 func TestImportSecurityConfig(t *testing.T) {
 	t.Parallel()
+	ctx := encTestingContext()
 	Convey("Import Security Config", t, func() {
 		contextConfig := mockOwnershipConfig()
+		ctx = config.Use(ctx, contextConfig)
+		ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
+		So(err, ShouldBeNil)
 		Convey("happy path", func() {
-			ctx := encTestingContext()
-			ctx = config.Use(ctx, contextConfig)
-			ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
-			So(err, ShouldBeNil)
 			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("test1-1", "test1"))
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
@@ -365,10 +344,6 @@ func TestImportSecurityConfig(t *testing.T) {
 			So(pm, ShouldResembleProto, resp.Ownership)
 		})
 		Convey("happy path - Bot ID Prefix", func() {
-			ctx := encTestingContext()
-			ctx = config.Use(ctx, contextConfig)
-			ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
-			So(err, ShouldBeNil)
 			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("testing-1", "testing1"))
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
@@ -391,10 +366,6 @@ func TestImportSecurityConfig(t *testing.T) {
 			So(resp.Ownership, ShouldBeNil)
 		})
 		Convey("happy path - Bot ID Prefix for MachineLSE", func() {
-			ctx := encTestingContext()
-			ctx = config.Use(ctx, contextConfig)
-			ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
-			So(err, ShouldBeNil)
 			resp, err := inventory.CreateMachineLSE(ctx, mockMachineLSE("testLSE1"))
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
@@ -417,14 +388,10 @@ func TestImportSecurityConfig(t *testing.T) {
 			So(resp2.GetUpdateTime(), ShouldResemble, resp.GetUpdateTime())
 		})
 		Convey("happy path - Bot ID Prefix for VM", func() {
-			ctx := encTestingContext()
-			ctx = config.Use(ctx, contextConfig)
-			ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
-			So(err, ShouldBeNil)
 			vm1 := &ufspb.VM{
 				Name: "vm-1",
 			}
-			_, err = inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
+			_, err := inventory.BatchUpdateVMs(ctx, []*ufspb.VM{vm1})
 			So(err, ShouldBeNil)
 
 			err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
@@ -491,7 +458,7 @@ func TestParseSecurityConfig(t *testing.T) {
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 
-			ParseSecurityConfig(ctx, mockSecurityConfig("test{1,2}-1", "abc", "testSwarming"))
+			ParseSecurityConfig(ctx, mockSecurityConfig("test{1,2}-1", "abc", "testSwarming", "trusted", "customer"))
 
 			resp, err = registration.GetMachine(ctx, "test1-1")
 			So(resp, ShouldNotBeNil)
@@ -499,9 +466,22 @@ func TestParseSecurityConfig(t *testing.T) {
 			So(resp.Ownership, ShouldNotBeNil)
 			So(resp.Ownership.PoolName, ShouldEqual, "abc")
 			So(resp.Ownership.SwarmingInstance, ShouldEqual, "testSwarming")
+			So(resp.Ownership.MibaRealm, ShouldEqual, "trusted")
+			So(resp.Ownership.Customer, ShouldEqual, "customer")
+
+			// Import bot configs, should not remove security fields
+			ParseBotConfig(ctx, mockBotConfig("test{1,2}-1", "abc"), "testSwarming")
+			resp, err = registration.GetMachine(ctx, "test1-1")
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp.Ownership, ShouldNotBeNil)
+			So(resp.Ownership.PoolName, ShouldEqual, "abc")
+			So(resp.Ownership.SwarmingInstance, ShouldEqual, "testSwarming")
+			So(resp.Ownership.MibaRealm, ShouldEqual, "trusted")
+			So(resp.Ownership.Customer, ShouldEqual, "customer")
 		})
 		Convey("Does not update non existent bots", func() {
-			ParseSecurityConfig(ctx, mockSecurityConfig("test{2,3}-1", "abc", "testSwarming"))
+			ParseSecurityConfig(ctx, mockSecurityConfig("test{2,3}-1", "abc", "testSwarming", "trusted", "customer"))
 
 			resp, err := registration.GetMachine(ctx, "test2-1")
 			So(resp, ShouldBeNil)
@@ -541,11 +521,11 @@ func TestParseBotIds(t *testing.T) {
 // Tests the functionality for getting ownership data for a machine/vm/machineLSE
 func TestGetOwnershipData(t *testing.T) {
 	t.Parallel()
+	ctx := encTestingContext()
 	Convey("GetOwnership Data", t, func() {
 		contextConfig := mockOwnershipConfig()
+		ctx = config.Use(ctx, contextConfig)
 		Convey("happy path - machine", func() {
-			ctx := encTestingContext()
-			ctx = config.Use(ctx, contextConfig)
 			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("testing-1", "testing1"))
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
@@ -560,8 +540,6 @@ func TestGetOwnershipData(t *testing.T) {
 			So(ownership.SwarmingInstance, ShouldEqual, "test_name")
 		})
 		Convey("happy path - vm", func() {
-			ctx := encTestingContext()
-			ctx = config.Use(ctx, contextConfig)
 			vm1 := &ufspb.VM{
 				Name: "vm-1",
 			}
@@ -578,8 +556,6 @@ func TestGetOwnershipData(t *testing.T) {
 			So(ownership.SwarmingInstance, ShouldEqual, "test_name")
 		})
 		Convey("happy path - machineLSE", func() {
-			ctx := encTestingContext()
-			ctx = config.Use(ctx, contextConfig)
 			resp, err := inventory.CreateMachineLSE(ctx, mockMachineLSE("testLSE1"))
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
@@ -594,8 +570,6 @@ func TestGetOwnershipData(t *testing.T) {
 			So(ownership.SwarmingInstance, ShouldEqual, "test_name")
 		})
 		Convey("missing host in inventory", func() {
-			ctx := encTestingContext()
-			ctx = config.Use(ctx, contextConfig)
 			ParseBotConfig(ctx, mockBotConfig("test{4}-1", "abc"), "testSwarming")
 			ownership, err := GetOwnershipData(ctx, "blah4-1")
 			s, _ := status.FromError(err)

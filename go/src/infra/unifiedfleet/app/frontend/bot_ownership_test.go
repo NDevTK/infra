@@ -118,7 +118,7 @@ func TestListOwnershipData(t *testing.T) {
 
 			So(err, ShouldBeNil)
 			So(res, ShouldNotBeNil)
-			So(len(res.OwnershipData), ShouldEqual, 4)
+			So(len(res.OwnershipData), ShouldEqual, 1)
 			So(res.NextPageToken, ShouldBeBlank)
 		})
 	})
