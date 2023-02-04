@@ -6,6 +6,7 @@ package util
 
 import (
 	"context"
+	"strings"
 
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/auth"
@@ -26,6 +27,9 @@ const BrowserLabAdminRealm = "@internal:ufs/browser"
 
 // AtlLabAdminRealm is the admin realm for atl lab.
 const AtlLabAdminRealm = "@internal:ufs/os-atl"
+
+// AtlLabChromiumAdminRealm is the admin realm for chromium DUTs in atl lab.
+const AtlLabChromiumAdminRealm = "@internal:ufs/os-atl-chromium"
 
 // AcsLabAdminRealm is the admin realm for acs lab.
 const AcsLabAdminRealm = "@internal:ufs/os-acs"
@@ -148,4 +152,12 @@ func GetValidRealmName(realm string) string {
 		return BrowserLabAdminRealm
 	}
 	return realm
+}
+
+// ToChromiumRealm returns a realm after detecting if the asset/host is a chromium DUT in skylab
+func ToChromiumRealm(name, defaultRealm string) string {
+	if strings.HasPrefix(name, "chromium-") {
+		return AtlLabChromiumAdminRealm
+	}
+	return defaultRealm
 }

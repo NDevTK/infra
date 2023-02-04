@@ -379,6 +379,7 @@ func (c *addAsset) addAssetToUFS(ctx context.Context, ic ufsAPI.FleetClient, req
 	if req.Asset.Location.Zone == ufspb.Zone_ZONE_UNSPECIFIED {
 		return nil, cmdlib.NewQuietUsageError(c.Flags, "Invalid zone")
 	}
+	req.Asset.Realm = ufsUtil.ToChromiumRealm(req.Asset.Name, req.Asset.Realm)
 	ufsAsset, err := ic.CreateAsset(ctx, req)
 	if ufsAsset != nil {
 		// Remove the prefix from the asset returned by UFS
