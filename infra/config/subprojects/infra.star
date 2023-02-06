@@ -141,6 +141,17 @@ try_builder(
     in_cq = False,
 )
 
+try_builder(
+    name = "infra-go-lint",
+    os = "Ubuntu-18.04",
+    properties = {
+        "run_lint": True,
+    },
+    # This is False due to restriction of tricium, see
+    # https://crbug.com/1410717#c6 for more details.
+    in_cq = False,
+)
+
 # Experimental trybot for building docker images out of infra.git CLs.
 try_builder(
     name = "infra-try-images",
