@@ -2,18 +2,14 @@ summary: "Requesting a change"
 
 description: <<END
 
+Need to create/delete CrIA (chrome-infra-auth.appspot.com) groups?
+Please file a bug at go/chopssec-crbug. NOT HERE.
+
+----------------------------------------
 This is http://go/luci-bug-admin.
 
 Please fill out the relevant section and **delete the others** and also adjust
 the summary to match your request.
-
-
-=== Create a new chrome-infra-auth group ===
-Name:
-Owning group:
-Short description:
-
-Note: these requests are now handled by Chrome Ops Security team. So please update the component to "Infra>Security".
 
 === Create a root CIPD prefix ===
 Prefix:
