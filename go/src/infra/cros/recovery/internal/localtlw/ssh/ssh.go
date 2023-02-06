@@ -56,13 +56,16 @@ func Run(ctx context.Context, pool *sshpool.Pool, addr string, cmd string) (resu
 		result.Stderr = fmt.Sprintf("run SSH %q: fail to get client from pool; %s", addr, err)
 		return
 	}
-	defer func() { pool.Put(addr, sc) }()
+	defer func() {
+		pool.Put(addr, sc)
+		log.Debugf(ctx, "Finished update SSH pool for %q!", addr)
+	}()
 	result = createSessionAndExecute(ctx, cmd, sc)
 	log.Debugf(ctx, "Run SSH %q: Cmd: %q", addr, result.Command)
 	log.Debugf(ctx, "Run SSH %q: ExitCode: %d", addr, result.ExitCode)
 	log.Debugf(ctx, "Run SSH %q: Stdout: %s", addr, result.Stdout)
 	log.Debugf(ctx, "Run SSH %q: Stderr: %s", addr, result.Stderr)
-	return
+	return result
 }
 
 // createSessionAndExecute creates ssh session and perform execution by ssh.
