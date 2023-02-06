@@ -90,8 +90,7 @@ luci.notifier(
         "thomasanderson@chromium.org",
     ],
     notified_by = [
-        # https://crbug.com/1346047
-        # "Build From Tarball",
+        "Build From Tarball",
         "publish_tarball",
     ],
 )
