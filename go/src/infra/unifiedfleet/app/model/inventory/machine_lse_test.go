@@ -15,6 +15,7 @@ import (
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	. "infra/unifiedfleet/app/model/datastore"
+	"infra/unifiedfleet/app/util"
 )
 
 func mockMachineLSE(id string) *ufspb.MachineLSE {
@@ -417,6 +418,7 @@ func TestListAllMachineLSEs(t *testing.T) {
 		resp, _ := CreateMachineLSE(ctx, machineLSE1)
 		machineLSEs = append(machineLSEs, resp)
 	}
+	util.SetupDatastoreNamespace(ctx, "fake")
 	Convey("ListAllMachineLSEs", t, func() {
 		Convey("List all machineLSEs - keysOnly", func() {
 			resp, _ := ListAllMachineLSEs(ctx, true)
