@@ -112,7 +112,7 @@ def GetEquivalentPatchsets(host, project, change, patchset):
   assert isinstance(change, int), 'Change is expected to be an integer'
   assert isinstance(patchset, int), 'Patchset is expected to be an integer'
 
-  change_details = _FetchChangeDetails(host, project, change)
+  change_details = FetchChangeDetails(host, project, change)
   revisions = change_details['revisions'].values()
   revisions.sort(key=lambda r: r['_number'], reverse=True)
   patchsets = []
@@ -144,7 +144,7 @@ def GetEquivalentPatchsets(host, project, change, patchset):
   return patchsets
 
 
-def _FetchChangeDetails(host, project, change):
+def FetchChangeDetails(host, project, change, detailed_accounts=False):
   """Fetches change detail for a given change.
 
   Args:
@@ -160,6 +160,8 @@ def _FetchChangeDetails(host, project, change):
   # https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-change.
   template_to_get_change = (
       'https://%s/changes/%s?o=ALL_REVISIONS&o=SKIP_MERGEABLE')
+  if detailed_accounts:
+    template_to_get_change += '&o=DETAILED_ACCOUNTS'
   url = template_to_get_change % (host, _GetChangeId(project, change))
   status_code, response, _ = FinditHttpClient().Get(url)
   _CheckChangeDetailsResponseCode(status_code, response)
@@ -366,7 +368,7 @@ def RebasePresubmitCoverageDataBetweenPatchsets(
   Returns:
     A list of File in coverage proto.
   """
-  change_details = _FetchChangeDetails(host, project, change)
+  change_details = FetchChangeDetails(host, project, change)
 
   # Cannot directly use the list of files of |patchset_src| as the files to
   # rebase because two patchsets could have different list of changed files even
@@ -512,7 +514,7 @@ def CalculateIncrementalPercentages(host, project, change, patchset,
   Returns:
     A list of CoveragePercentage model entities.
   """
-  change_details = _FetchChangeDetails(host, project, change)
+  change_details = FetchChangeDetails(host, project, change)
   diff = _FetchDiffForPatchset(host, project, change,
                                _GetPatchsetRevision(patchset, change_details))
   added_lines = diff_util.parse_added_line_num_from_unified_diff(

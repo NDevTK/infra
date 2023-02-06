@@ -16,6 +16,9 @@ _SOURCE_FILE_GS_BUCKET = 'source-files-for-coverage'
 # Regex to identify all test related files
 TEST_FILE_REGEX = r'(^|.+\/)test(s|ing)?\/.+|.+(T|t)ests?\..*'
 
+# Regex to identify main files
+MAIN_FILE_REGEX = r'.*(m|M)ain\..*'
+
 
 def GetPostsubmitPlatformInfoMap(luci_project):
   """Returns a map of postsubmit platform information.

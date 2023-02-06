@@ -35,6 +35,10 @@ from waterfall import waterfall_config
 
 # The regex to extract the build id from the url path.
 _BUILD_ID_REGEX = re.compile(r'.*/build/(\d+)$')
+_CHROMIUM_TO_GOOGLER_MAPPING_PATH = '/cr2goog/cr2goog.txt'
+_DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING = 50
+_DEFAULT_RELAX_ABS_COV_THRESHOLD_FOR_BLOCKING = 80
+_DEFAULT_MINIMUM_LINES_OF_CHANGE_FOR_BLOCKING = 10
 
 
 def _AddDependencyToManifest(path, url, revision,
@@ -73,6 +77,47 @@ def _GetDisallowedDeps():  # pragma: no cover.
   the root of the checkout).
   """
   return waterfall_config.GetCodeCoverageSettings().get('blacklisted_deps', {})
+
+
+def _IsBlockingChangesAllowed(project):
+  return project in waterfall_config.GetCodeCoverageSettings().get(
+      'block_low_coverage_changes_projects', [])
+
+
+def _IsAuthorInAllowlistForBlocking(author_email):
+  assert author_email.endswith("@google.com")
+  author = author_email[:author_email.find("@")]
+  return author in waterfall_config.GetCodeCoverageSettings().get(
+      'block_low_coverage_changes_authors', [])
+
+
+def _IsFileInAllowlistForBlocking(file_path):
+  assert file_path.startswith('//')
+  for allowed_dir in waterfall_config.GetCodeCoverageSettings().get(
+      'block_low_coverage_changes_directories', []):
+    if file_path.startswith(allowed_dir):
+      return True
+  return False
+
+
+def _HaveEnoughLinesChangedForBlocking(inc_coverage):
+  return inc_coverage.total_lines >= waterfall_config.GetCodeCoverageSettings(
+  ).get('block_low_coverage_changes_minimum_loc',
+        _DEFAULT_MINIMUM_LINES_OF_CHANGE_FOR_BLOCKING)
+
+
+def _CanBeExemptFromBlocking(abs_coverage):
+  coverage = (abs_coverage.covered_lines * 100.0) / abs_coverage.total_lines
+  return coverage >= waterfall_config.GetCodeCoverageSettings().get(
+      'block_low_coverage_changes_relax_threshold',
+      _DEFAULT_RELAX_ABS_COV_THRESHOLD_FOR_BLOCKING)
+
+
+def _HasLowCoverageForBlocking(inc_coverage):
+  coverage = (inc_coverage.covered_lines * 100.0) / inc_coverage.total_lines
+  return coverage < waterfall_config.GetCodeCoverageSettings().get(
+      'block_low_coverage_changes_trigger_threshold',
+      _DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING)
 
 
 def _RetrieveChromeManifest(repo_url, revision,
@@ -508,12 +553,61 @@ class ProcessCodeCoverageData(BaseHandler):
                 entity.data_unit))
         return entity
 
+      def _ChangeShouldBeBlocked(entity, author_email):
+        if not _IsAuthorInAllowlistForBlocking(author_email):
+          return False
+        for inc_metrics in entity.incremental_percentages_unit:
+          if not inc_metrics.path.endswith(".java"):
+            continue
+          if not _IsFileInAllowlistForBlocking(inc_metrics.path):
+            continue
+          # Do not block because of test/main files
+          if re.match(utils.TEST_FILE_REGEX, inc_metrics.path) or re.match(
+              utils.MAIN_FILE_REGEX, inc_metrics.path):
+            continue
+          if not _HaveEnoughLinesChangedForBlocking(inc_metrics):
+            continue
+          if _HasLowCoverageForBlocking(inc_metrics):
+            for abs_metrics in entity.absolute_percentages_unit:
+              if (abs_metrics.path == inc_metrics.path and
+                  not _CanBeExemptFromBlocking(abs_metrics)):
+                return True
+        return False
+
+      # TODO(crbug/1412897): Cache this
+      def _GetChromiumToGooglerMapping():
+        content = utils.GetFileContentFromGs(_CHROMIUM_TO_GOOGLER_MAPPING_PATH)
+        assert content, ('Failed to fetch account mappings data from %s' %
+                         _CHROMIUM_TO_GOOGLER_MAPPING_PATH)
+        return json.loads(content)
+
       entity = yield PresubmitCoverageData.GetAsync(
           server_host=patch.host, change=patch.change, patchset=patch.patchset)
       # Update/Create entity with unit test coverage fields populated
       # if mimic_builder represents a unit tests only builder.
       if mimic_builder.endswith('_unit'):
         entity = _GetEntityForUnit(entity)
+        if _IsBlockingChangesAllowed(patch.project):
+          change_details = code_coverage_util.FetchChangeDetails(
+              patch.host, patch.project, patch.change, detailed_accounts=True)
+          author = change_details['owner']['email']
+          author = _GetChromiumToGooglerMapping().get(author, author)
+          url = 'https://%s/changes/%d/revisions/%d/review' % (
+              patch.host, patch.change, patch.patchset)
+          headers = {'Content-Type': 'application/json; charset=UTF-8'}
+          # Block CL only if it qualifies and is not a revert CL
+          if _ChangeShouldBeBlocked(
+              entity, author) and 'revert_of' not in change_details:
+            data = {'labels': {'Code-Coverage': -1}}
+            logging.info(('Adding CodeCoverage-1 label for '
+                          'project %s, change %d,  patchset %d'), patch.project,
+                         patch.change, patch.patchset)
+          else:
+            data = {'labels': {'Code-Coverage': +1}}
+            logging.info(('Adding CodeCoverage+1 label for '
+                          'project %s, change %d,  patchset %d'), patch.project,
+                         patch.change, patch.patchset)
+          FinditHttpClient().Post(url, json.dumps(data), headers=headers)
       else:
         entity = _GetEntity(entity)
       yield entity.put_async()

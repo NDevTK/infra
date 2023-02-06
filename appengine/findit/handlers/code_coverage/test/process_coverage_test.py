@@ -502,6 +502,758 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                      fetched_entities[0].incremental_percentages)
     self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
 
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(utils, 'GetFileContentFromGs')
+  @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
+  @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  def testProcessCLPatchDataLowCoverageBlocking_block(
+      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
+      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
+      *_):
+    self.UpdateUnitTestConfigSettings(
+        'code_coverage_settings', {
+            'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
+            'block_low_coverage_changes_projects': ['chromium/src'],
+            'block_low_coverage_changes_authors': ['john'],
+            'block_low_coverage_changes_directories': ['//dir']
+        })
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'android-nougat-x86-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_is_presubmit', True),
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'presubmit/chromium-review.googlesource.com/138000/4/try/'
+            'android-nougat-x86-rel_unit/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel_unit'])
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+    # Mock get validated data from cloud storage.
+    coverage_data = {
+        'dirs': None,
+        'files': [{
+            'path':
+                '//dir/myfile.java',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 10,
+            }, {
+                'count': 0,
+                'first': 11,
+                'last': 100,
+            }],
+        }],
+        'summaries': None,
+        'components': None,
+    }
+    mocked_get_validated_data.return_value = coverage_data
+    inc_percentages = [
+        CoveragePercentage(
+            path='//dir/myfile.java', total_lines=90, covered_lines=9)
+    ]
+    mocked_inc_percentages.return_value = inc_percentages
+    mocked_fetch_change_details.return_value = {
+        'owner': {
+            'email': 'john@chromium.org'
+        }
+    }
+    mocked_get_file_content.return_value = json.dumps(
+        {'john@chromium.org': 'john@google.com'})
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    self.test_app.post(request_url)
+
+    self.assertEqual(len(mock_http_client.call_args_list), 1)
+    args, _ = mock_http_client.call_args_list[0]
+    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
+                               '/changes/138000/revisions/4/review'))
+    data = json.loads(args[1])
+    self.assertDictEqual({'labels': {'Code-Coverage': -1}}, data)
+
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(utils, 'GetFileContentFromGs')
+  @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
+  @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  def testProcessCLPatchDataLowCoverageBlocking_revertCL_allow(
+      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
+      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
+      *_):
+    self.UpdateUnitTestConfigSettings(
+        'code_coverage_settings', {
+            'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
+            'block_low_coverage_changes_projects': ['chromium/src'],
+            'block_low_coverage_changes_authors': ['john'],
+            'block_low_coverage_changes_directories': ['//dir']
+        })
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'android-nougat-x86-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_is_presubmit', True),
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'presubmit/chromium-review.googlesource.com/138000/4/try/'
+            'android-nougat-x86-rel_unit/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel_unit'])
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+    # Mock get validated data from cloud storage.
+    coverage_data = {
+        'dirs': None,
+        'files': [{
+            'path':
+                '//dir/myfile.cc',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 10,
+            }, {
+                'count': 0,
+                'first': 11,
+                'last': 100,
+            }],
+        }],
+        'summaries': None,
+        'components': None,
+    }
+    mocked_get_validated_data.return_value = coverage_data
+    inc_percentages = [
+        CoveragePercentage(
+            path='//dir/myfile.cc', total_lines=90, covered_lines=9)
+    ]
+    mocked_inc_percentages.return_value = inc_percentages
+    mocked_fetch_change_details.return_value = {
+        'owner': {
+            'email': 'john@google.com'
+        },
+        'revert_of': 123456
+    }
+    mocked_get_file_content.return_value = json.dumps(
+        {'john@chromium.org': 'john@google.com'})
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    self.test_app.post(request_url)
+
+    self.assertEqual(len(mock_http_client.call_args_list), 1)
+    args, _ = mock_http_client.call_args_list[0]
+    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
+                               '/changes/138000/revisions/4/review'))
+    data = json.loads(args[1])
+    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(utils, 'GetFileContentFromGs')
+  @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
+  @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  def testProcessCLPatchDataLowCoverageBlocking_testAndMainFile_allow(
+      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
+      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
+      *_):
+    self.UpdateUnitTestConfigSettings(
+        'code_coverage_settings', {
+            'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
+            'block_low_coverage_changes_projects': ['chromium/src'],
+            'block_low_coverage_changes_authors': ['john'],
+            'block_low_coverage_changes_directories': ['//dir']
+        })
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'android-nougat-x86-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_is_presubmit', True),
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'presubmit/chromium-review.googlesource.com/138000/4/try/'
+            'android-nougat-x86-rel_unit/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel_unit'])
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+    # Mock get validated data from cloud storage.
+    coverage_data = {
+        'dirs': None,
+        'files': [
+            {
+                'path':
+                    '//dir/myfileMain.java',
+                'lines': [{
+                    'count': 100,
+                    'first': 1,
+                    'last': 10,
+                }, {
+                    'count': 0,
+                    'first': 11,
+                    'last': 100,
+                }],
+            },
+            {
+                'path':
+                    '//dir/myfileTests.java',
+                'lines': [{
+                    'count': 100,
+                    'first': 1,
+                    'last': 10,
+                }, {
+                    'count': 0,
+                    'first': 11,
+                    'last': 100,
+                }],
+            },
+        ],
+        'summaries': None,
+        'components': None,
+    }
+    mocked_get_validated_data.return_value = coverage_data
+    inc_percentages = [
+        CoveragePercentage(
+            path='//dir/myfileMain.java', total_lines=90, covered_lines=9),
+        CoveragePercentage(
+            path='//dir/myfileTests.java', total_lines=90, covered_lines=9)
+    ]
+    mocked_inc_percentages.return_value = inc_percentages
+    mocked_fetch_change_details.return_value = {
+        'owner': {
+            'email': 'john@chromium.org'
+        }
+    }
+    mocked_get_file_content.return_value = json.dumps(
+        {'john@chromium.org': 'john@google.com'})
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    self.test_app.post(request_url)
+
+    self.assertEqual(len(mock_http_client.call_args_list), 1)
+    args, _ = mock_http_client.call_args_list[0]
+    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
+                               '/changes/138000/revisions/4/review'))
+    data = json.loads(args[1])
+    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(utils, 'GetFileContentFromGs')
+  @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
+  @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  def testProcessCLPatchDataLowCoverageBlocking_highAbsoluteCoverage_allow(
+      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
+      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
+      *_):
+    self.UpdateUnitTestConfigSettings(
+        'code_coverage_settings', {
+            'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
+            'block_low_coverage_changes_projects': ['chromium/src'],
+            'block_low_coverage_changes_authors': ['john'],
+            'block_low_coverage_changes_directories': ['//dir']
+        })
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'android-nougat-x86-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_is_presubmit', True),
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'presubmit/chromium-review.googlesource.com/138000/4/try/'
+            'android-nougat-x86-rel_unit/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel_unit'])
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+    # Mock get validated data from cloud storage.
+    coverage_data = {
+        'dirs': None,
+        'files': [{
+            'path':
+                '//dir/myfile.java',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 10,
+            }, {
+                'count': 10,
+                'first': 11,
+                'last': 100,
+            }],
+        }],
+        'summaries': None,
+        'components': None,
+    }
+    mocked_get_validated_data.return_value = coverage_data
+    inc_percentages = [
+        CoveragePercentage(
+            path='//dir/myfile.java', total_lines=90, covered_lines=9)
+    ]
+    mocked_inc_percentages.return_value = inc_percentages
+    mocked_fetch_change_details.return_value = {
+        'owner': {
+            'email': 'john@google.com'
+        }
+    }
+    mocked_get_file_content.return_value = json.dumps(
+        {'john@chromium.org': 'john@google.com'})
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    self.test_app.post(request_url)
+
+    self.assertEqual(len(mock_http_client.call_args_list), 1)
+    args, _ = mock_http_client.call_args_list[0]
+    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
+                               '/changes/138000/revisions/4/review'))
+    data = json.loads(args[1])
+    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(utils, 'GetFileContentFromGs')
+  @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
+  @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  def testProcessCLPatchDataLowCoverageBlocking_authorNotOptIn_allow(
+      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
+      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
+      *_):
+    self.UpdateUnitTestConfigSettings(
+        'code_coverage_settings', {
+            'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
+            'block_low_coverage_changes_projects': ['chromium/src'],
+            'block_low_coverage_changes_authors': [],
+            'block_low_coverage_changes_directories': ['//dir']
+        })
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'android-nougat-x86-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_is_presubmit', True),
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'presubmit/chromium-review.googlesource.com/138000/4/try/'
+            'android-nougat-x86-rel_unit/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel_unit'])
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+    # Mock get validated data from cloud storage.
+    coverage_data = {
+        'dirs': None,
+        'files': [{
+            'path':
+                '//dir/myfile.cc',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 10,
+            }, {
+                'count': 0,
+                'first': 11,
+                'last': 100,
+            }],
+        }],
+        'summaries': None,
+        'components': None,
+    }
+    mocked_get_validated_data.return_value = coverage_data
+    inc_percentages = [
+        CoveragePercentage(
+            path='//dir/myfile.cc', total_lines=90, covered_lines=9)
+    ]
+    mocked_inc_percentages.return_value = inc_percentages
+    mocked_fetch_change_details.return_value = {
+        'owner': {
+            'email': 'john@google.com'
+        }
+    }
+    mocked_get_file_content.return_value = json.dumps(
+        {'john@chromium.org': 'john@google.com'})
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    self.test_app.post(request_url)
+
+    self.assertEqual(len(mock_http_client.call_args_list), 1)
+    args, _ = mock_http_client.call_args_list[0]
+    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
+                               '/changes/138000/revisions/4/review'))
+    data = json.loads(args[1])
+    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(utils, 'GetFileContentFromGs')
+  @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
+  @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  def testProcessCLPatchDataLowCoverageBlocking_DirNotOptIn_allow(
+      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
+      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
+      *_):
+    self.UpdateUnitTestConfigSettings(
+        'code_coverage_settings', {
+            'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
+            'block_low_coverage_changes_projects': ['chromium/src'],
+            'block_low_coverage_changes_authors': ['john'],
+            'block_low_coverage_changes_directories': []
+        })
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'android-nougat-x86-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_is_presubmit', True),
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'presubmit/chromium-review.googlesource.com/138000/4/try/'
+            'android-nougat-x86-rel_unit/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel_unit'])
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+    # Mock get validated data from cloud storage.
+    coverage_data = {
+        'dirs': None,
+        'files': [{
+            'path':
+                '//dir/myfile.cc',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 10,
+            }, {
+                'count': 0,
+                'first': 11,
+                'last': 100,
+            }],
+        }],
+        'summaries': None,
+        'components': None,
+    }
+    mocked_get_validated_data.return_value = coverage_data
+    inc_percentages = [
+        CoveragePercentage(
+            path='//dir/myfile.cc', total_lines=90, covered_lines=9)
+    ]
+    mocked_inc_percentages.return_value = inc_percentages
+    mocked_fetch_change_details.return_value = {
+        'owner': {
+            'email': 'john@google.com'
+        }
+    }
+    mocked_get_file_content.return_value = json.dumps(
+        {'john@chromium.org': 'john@google.com'})
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    self.test_app.post(request_url)
+
+    self.assertEqual(len(mock_http_client.call_args_list), 1)
+    args, _ = mock_http_client.call_args_list[0]
+    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
+                               '/changes/138000/revisions/4/review'))
+    data = json.loads(args[1])
+    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(utils, 'GetFileContentFromGs')
+  @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
+  @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  def testProcessCLPatchDataLowCoverageBlocking_notEnoughLines_allow(
+      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
+      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
+      *_):
+    self.UpdateUnitTestConfigSettings(
+        'code_coverage_settings', {
+            'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
+            'block_low_coverage_changes_projects': ['chromium/src'],
+            'block_low_coverage_changes_authors': ['john'],
+            'block_low_coverage_changes_directories': ['//dir']
+        })
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'android-nougat-x86-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_is_presubmit', True),
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'presubmit/chromium-review.googlesource.com/138000/4/try/'
+            'android-nougat-x86-rel_unit/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel_unit'])
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+
+    # Mock get validated data from cloud storage.
+    coverage_data = {
+        'dirs': None,
+        'files': [{
+            'path':
+                '//dir/myfile.cc',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 10,
+            }, {
+                'count': 0,
+                'first': 11,
+                'last': 100,
+            }],
+        }],
+        'summaries': None,
+        'components': None,
+    }
+    mocked_get_validated_data.return_value = coverage_data
+    inc_percentages = [
+        CoveragePercentage(
+            path='//dir/myfile.cc', total_lines=9, covered_lines=1)
+    ]
+    mocked_inc_percentages.return_value = inc_percentages
+    mocked_fetch_change_details.return_value = {
+        'owner': {
+            'email': 'john@google.com'
+        }
+    }
+    mocked_get_file_content.return_value = json.dumps(
+        {'john@chromium.org': 'john@google.com'})
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    self.test_app.post(request_url)
+
+    self.assertEqual(len(mock_http_client.call_args_list), 1)
+    args, _ = mock_http_client.call_args_list[0]
+    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
+                               '/changes/138000/revisions/4/review'))
+    data = json.loads(args[1])
+    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(utils, 'GetFileContentFromGs')
+  @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
+  @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  def testProcessCLPatchDataLowCoverageBlocking_nonJavaFile_allow(
+      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
+      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
+      *_):
+    self.UpdateUnitTestConfigSettings(
+        'code_coverage_settings', {
+            'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
+            'block_low_coverage_changes_projects': ['chromium/src'],
+            'block_low_coverage_changes_authors': ['john'],
+            'block_low_coverage_changes_directories': ['//dir']
+        })
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'android-nougat-x86-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_is_presubmit', True),
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'presubmit/chromium-review.googlesource.com/138000/4/try/'
+            'android-nougat-x86-rel_unit/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel_unit'])
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+    # Mock get validated data from cloud storage.
+    coverage_data = {
+        'dirs': None,
+        'files': [{
+            'path':
+                '//dir/myfile.cc',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 10,
+            }, {
+                'count': 0,
+                'first': 11,
+                'last': 100,
+            }],
+        }],
+        'summaries': None,
+        'components': None,
+    }
+    mocked_get_validated_data.return_value = coverage_data
+    inc_percentages = [
+        CoveragePercentage(
+            path='//dir/myfile.cc', total_lines=90, covered_lines=9)
+    ]
+    mocked_inc_percentages.return_value = inc_percentages
+    mocked_fetch_change_details.return_value = {
+        'owner': {
+            'email': 'john@google.com'
+        }
+    }
+    mocked_get_file_content.return_value = json.dumps(
+        {'john@chromium.org': 'john@google.com'})
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    self.test_app.post(request_url)
+
+    self.assertEqual(len(mock_http_client.call_args_list), 1)
+    args, _ = mock_http_client.call_args_list[0]
+    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
+                               '/changes/138000/revisions/4/review'))
+    data = json.loads(args[1])
+    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(utils, 'GetFileContentFromGs')
+  @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
+  @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  def testProcessCLPatchDataLowCoverageBlocking_ProjectNotAllowed_noop(
+      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
+      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
+      *_):
+    self.UpdateUnitTestConfigSettings(
+        'code_coverage_settings', {
+            'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
+            'block_low_coverage_changes_projects': [],
+            'block_low_coverage_changes_authors': ['john'],
+            'block_low_coverage_changes_directories': ['//dir']
+        })
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'android-nougat-x86-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_is_presubmit', True),
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'presubmit/chromium-review.googlesource.com/138000/4/try/'
+            'android-nougat-x86-rel_unit/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel_unit'])
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+    # Mock get validated data from cloud storage.
+    coverage_data = {
+        'dirs': None,
+        'files': [{
+            'path':
+                '//dir/myfile.java',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 10,
+            }, {
+                'count': 0,
+                'first': 11,
+                'last': 100,
+            }],
+        }],
+        'summaries': None,
+        'components': None,
+    }
+    mocked_get_validated_data.return_value = coverage_data
+    inc_percentages = [
+        CoveragePercentage(
+            path='//dir/myfile.java', total_lines=90, covered_lines=9)
+    ]
+    mocked_inc_percentages.return_value = inc_percentages
+    mocked_fetch_change_details.return_value = {
+        'owner': {
+            'email': 'john@google.com'
+        }
+    }
+    mocked_get_file_content.return_value = json.dumps(
+        {'john@chromium.org': 'john@google.com'})
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    self.test_app.post(request_url)
+
+    self.assertEqual(len(mock_http_client.call_args_list), 0)
+
   @mock.patch.object(process_coverage.ProcessCodeCoverageData,
                      '_FetchAndSaveFileIfNecessary')
   @mock.patch.object(process_coverage, '_RetrieveChromeManifest')
