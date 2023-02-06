@@ -20,54 +20,70 @@ import (
 	"infra/unifiedfleet/app/util"
 )
 
+type DroneQueenClientGenerator func(context.Context) (dronequeenapi.InventoryProviderClient, error)
+
+var (
+	// nsToPush contains all namespaces that should be pushed to drone queen.
+	// Drone queen only cares about MachineLSEs for chromeOS-like applications
+	// including both internal (`os`) and external (`os-partner`) devices.
+	nsToPush = []string{util.OSNamespace, util.OSPartnerNamespace}
+
+	droneQueenGenerator DroneQueenClientGenerator = getDroneQueenClient
+)
+
 // pushToDroneQueen push the ufs duts to drone queen
 func pushToDroneQueen(ctx context.Context) (err error) {
 	defer func() {
 		dumpPushToDroneQueenTick.Add(ctx, 1, err == nil)
 	}()
 	logging.Infof(ctx, "pushToDroneQueen")
-	client, err := getDroneQueenClient(ctx)
-	if err != nil {
-		return err
-	}
-	// Set namespace to OS to get only MachineLSEs for chromeOS.
-	ctx, err = util.SetupDatastoreNamespace(ctx, util.OSNamespace)
-	if err != nil {
-		return err
-	}
-	// Get all the MachineLSEs
-	// Set keysOnly to true to get only keys. This is faster and consumes less data.
-	lses, err := inventory.ListAllMachineLSEs(ctx, true)
-	if err != nil {
-		err = errors.Annotate(err, "failed to list all MachineLSEs for chrome OS namespace").Err()
-		logging.Errorf(ctx, err.Error())
-		return err
-	}
-	sUnits, err := getAllSchedulingUnits(ctx, false)
+	client, err := droneQueenGenerator(ctx)
 	if err != nil {
 		return err
 	}
 	var availableDuts []*dronequeenapi.DeclareDutsRequest_Dut
-	// Map for MachineLSEs associated with SchedulingUnit for easy search.
-	lseInSUnitMap := make(map[string]bool)
-	for _, su := range sUnits {
-		if len(su.GetMachineLSEs()) > 0 {
-			availableDuts = append(availableDuts, &dronequeenapi.DeclareDutsRequest_Dut{
-				Name: su.GetName(),
-			})
-			for _, lseName := range su.GetMachineLSEs() {
-				lseInSUnitMap[lseName] = true
+
+	// loop through all namespaces, build a collection of DUTs, and then push
+	for _, ns := range nsToPush {
+		ctx, err = util.SetupDatastoreNamespace(ctx, ns)
+		if err != nil {
+			return err
+		}
+		// Get all the MachineLSEs
+		// Set keysOnly to true to get only keys. This is faster and consumes less data.
+		lses, err := inventory.ListAllMachineLSEs(ctx, true)
+		if err != nil {
+			err = errors.Annotate(err, "failed to list all MachineLSEs for chrome %s namespace", ns).Err()
+			logging.Errorf(ctx, err.Error())
+			return err
+		}
+		sUnits, err := getAllSchedulingUnits(ctx, false)
+		if err != nil {
+			return err
+		}
+
+		// Map for MachineLSEs associated with SchedulingUnit for easy search.
+		lseInSUnitMap := make(map[string]bool)
+		for _, su := range sUnits {
+			if len(su.GetMachineLSEs()) > 0 {
+				availableDuts = append(availableDuts, &dronequeenapi.DeclareDutsRequest_Dut{
+					Name: su.GetName(),
+				})
+				for _, lseName := range su.GetMachineLSEs() {
+					lseInSUnitMap[lseName] = true
+				}
+			}
+		}
+		for _, lse := range lses {
+			if !lseInSUnitMap[lse.GetName()] {
+				availableDuts = append(availableDuts, &dronequeenapi.DeclareDutsRequest_Dut{
+					Name: lse.GetName(),
+					Hive: util.GetHiveForDut(lse.GetName()),
+				})
 			}
 		}
 	}
-	for _, lse := range lses {
-		if !lseInSUnitMap[lse.GetName()] {
-			availableDuts = append(availableDuts, &dronequeenapi.DeclareDutsRequest_Dut{
-				Name: lse.GetName(),
-				Hive: util.GetHiveForDut(lse.GetName()),
-			})
-		}
-	}
+
 	logging.Debugf(ctx, "DUTs to declare(%d): %+v", len(availableDuts), availableDuts)
 	_, err = client.DeclareDuts(ctx, &dronequeenapi.DeclareDutsRequest{AvailableDuts: availableDuts})
 	return err
