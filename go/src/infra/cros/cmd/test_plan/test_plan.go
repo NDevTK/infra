@@ -369,6 +369,10 @@ func cmdMigrationStatus(authOpts auth.Options) *subcommands.Command {
 			of these projects does not exist in the manifest, an error is
 			returned.
 			`))
+			r.Flags.StringVar(&r.csvOut, "csvout", "", text.Doc(`
+			Optional, a path to output a CSV with the migration statuses for all
+			projects.
+			`))
 			return r
 		},
 	}
@@ -378,6 +382,7 @@ type migrationStatusRun struct {
 	baseTestPlanRun
 	crosSrcRoot string
 	projects    []string
+	csvOut      string
 }
 
 func (r *migrationStatusRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -437,6 +442,20 @@ func (r *migrationStatusRun) run(ctx context.Context, args []string) error {
 	}
 
 	fmt.Print(textSummary)
+
+	if r.csvOut != "" {
+		logging.Debugf(ctx, "writing CSV to %q", r.csvOut)
+
+		f, err := os.Create(r.csvOut)
+		defer f.Close()
+		if err != nil {
+			return err
+		}
+
+		if err := migrationstatus.CSV(ctx, statuses, f); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

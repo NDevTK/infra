@@ -2,6 +2,7 @@ package migrationstatus_test
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"infra/cros/internal/repo"
@@ -260,5 +261,50 @@ staging-cq-orchestrator: 2 / 2 projects migrated
 `
 	if diff := cmp.Diff(expectedSummary, summary); diff != "" {
 		t.Errorf("TextSummary returned unexpected summary (-want +got):\n%s", diff)
+	}
+}
+
+func TestCSV(t *testing.T) {
+	ctx := context.Background()
+
+	statuses := []*migrationstatus.MigrationStatus{
+		{
+			BuilderName:            "cq-orchestrator",
+			ProjectName:            "projectB",
+			ProjectPath:            "src/B",
+			MatchesMigrationConfig: false,
+			IncludedByToT:          true,
+			IncludedByBuilder:      true,
+		},
+		{
+			BuilderName:            "staging-cq-orchestrator",
+			ProjectName:            "projectA",
+			ProjectPath:            "other/A",
+			MatchesMigrationConfig: true,
+			IncludedByToT:          true,
+			IncludedByBuilder:      true,
+		},
+		{
+			BuilderName:            "cq-orchestrator",
+			ProjectName:            "projectA",
+			ProjectPath:            "other/A",
+			MatchesMigrationConfig: false,
+			IncludedByToT:          true,
+			IncludedByBuilder:      true,
+		},
+	}
+
+	outputCSV := &strings.Builder{}
+	if err := migrationstatus.CSV(ctx, statuses, outputCSV); err != nil {
+		t.Fatalf("CSV returned error: %s", err)
+	}
+
+	expectedCSV := `builder,project,path,matches migration config,included by ToT,included by builder
+cq-orchestrator,projectA,other/A,false,true,true
+cq-orchestrator,projectB,src/B,false,true,true
+staging-cq-orchestrator,projectA,other/A,true,true,true
+`
+	if diff := cmp.Diff(expectedCSV, outputCSV.String()); diff != "" {
+		t.Errorf("CSV returned unexpected summary (-want +got):\n%s", diff)
 	}
 }

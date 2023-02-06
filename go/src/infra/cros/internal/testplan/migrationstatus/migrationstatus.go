@@ -4,10 +4,14 @@ package migrationstatus
 
 import (
 	"context"
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"infra/cros/internal/repo"
+	"io"
 	"regexp"
+	"sort"
+	"strconv"
 	"strings"
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
@@ -123,6 +127,9 @@ type MigrationStatus struct {
 	// The name of the project.
 	ProjectName string
 
+	// The path the project is checked out to.
+	ProjectPath string
+
 	// Whether the project matches a MigrationConfig in the builder.
 	MatchesMigrationConfig bool
 
@@ -194,6 +201,7 @@ func Compute(
 			migrationStatuses = append(migrationStatuses, &MigrationStatus{
 				BuilderName:            builderName,
 				ProjectName:            project.Name,
+				ProjectPath:            project.Path,
 				MatchesMigrationConfig: matchesMigrationConfig,
 				IncludedByToT:          totCvProjects.Has(project.Name),
 				IncludedByBuilder:      includedByCqOrch,
@@ -276,4 +284,52 @@ func TextSummary(
 	}
 
 	return summaryBuilder.String(), nil
+}
+
+// CSV writes a CSV containing each of migrationstatuses to out.
+// migrationstatuses are sorted by builder and project.
+func CSV(
+	ctx context.Context,
+	migrationstatuses []*MigrationStatus,
+	out io.Writer,
+) error {
+	writer := csv.NewWriter(out)
+	defer writer.Flush()
+
+	if err := writer.Write([]string{
+		"builder",
+		"project",
+		"path",
+		"matches migration config",
+		"included by ToT",
+		"included by builder",
+	}); err != nil {
+		return err
+	}
+
+	sort.SliceStable(migrationstatuses, func(i, j int) bool {
+		si := migrationstatuses[i]
+		sj := migrationstatuses[j]
+
+		if si.BuilderName != sj.BuilderName {
+			return si.BuilderName < sj.BuilderName
+		}
+
+		return si.ProjectName < sj.ProjectName
+	})
+
+	for _, status := range migrationstatuses {
+		if err := writer.Write([]string{
+			status.BuilderName,
+			status.ProjectName,
+			status.ProjectPath,
+			strconv.FormatBool(status.MatchesMigrationConfig),
+			strconv.FormatBool(status.IncludedByToT),
+			strconv.FormatBool(status.IncludedByBuilder),
+		}); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
