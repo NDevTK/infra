@@ -9,10 +9,9 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/maruel/subcommands"
-	"google.golang.org/grpc/metadata"
-
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -21,6 +20,7 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/lucictx"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
+	"google.golang.org/grpc/metadata"
 )
 
 // ExitCodeCommandFailure indicates that a given command failed due to internal errors
@@ -32,9 +32,10 @@ type baseRun struct {
 	subcommands.CommandRunBase
 
 	// Flags.
-	artifactDir        string
-	resultFile         string
-	trimArtifactPrefix string
+	artifactDir            string
+	resultFile             string
+	trimArtifactPrefix     string
+	invocationLinkArtifact string
 
 	sinkCtx       *lucictx.ResultSink
 	sinkC         sinkpb.SinkClient
@@ -53,6 +54,10 @@ func (r *baseRun) RegisterGlobalFlags() {
 	r.Flags.StringVar(&r.trimArtifactPrefix, "trim-artifact-prefix", "", text.Doc(`
 				Artifact Path to be trimmed, e.g. absolute path inside a container. Optional.
 			`))
+	r.Flags.StringVar(&r.invocationLinkArtifact, "invocation-link-artifacts", "", text.Doc(`
+				Name and URL pairs to insert as invocation level artifacts, e.g. stainless_logs=https://stainless/logs/1234,testhaus_logs=https://testhaus/logs/1234
+				URLs must be url encoded, so '=', ',' and ' ' are not valid characters.
+	`))
 }
 
 // validate validates the command has required flags.
@@ -145,6 +150,25 @@ func (r *baseRun) run(ctx context.Context, args []string, f converter) (ret int)
 	}
 
 	ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", "ResultSink "+r.sinkCtx.AuthToken)
+
+	// Try to upload invocation link artifacts.
+	// Upload before test results so that the links are present even if something goes wrong in the test result upload.
+	// We do not abort on error here, as we still want to upload the test results even if we can't upload the links.
+	linkArtifacts := map[string]*sinkpb.Artifact{}
+	for _, pair := range strings.Split(r.invocationLinkArtifact, ",") {
+		name, url, found := strings.Cut(pair, "=")
+		if !found {
+			logging.Warningf(ctx, "Warning: no '=' in invocation-link-artifacts pair: %q, ignoring", pair)
+		}
+		linkArtifacts[name] = &sinkpb.Artifact{
+			Body:        &sinkpb.Artifact_Contents{Contents: []byte(url)},
+			ContentType: "text/x-uri",
+		}
+	}
+	if _, err := r.sinkC.ReportInvocationLevelArtifacts(ctx, &sinkpb.ReportInvocationLevelArtifactsRequest{Artifacts: linkArtifacts}); err != nil {
+		logging.Warningf(ctx, "Warning: failed to upload invocation level link artifacts: %q, err: %v", r.invocationLinkArtifact, err)
+	}
+
 	if _, err := r.sinkC.ReportTestResults(ctx, &sinkpb.ReportTestResultsRequest{TestResults: trs}); err != nil {
 		return r.done(err)
 	}
