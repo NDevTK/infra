@@ -104,13 +104,15 @@ func createSessionAndExecute(ctx context.Context, cmd string, client *ssh.Client
 	}
 	// Chain to run ssh in separate thread and wait for single response from it.
 	// If context will be closed before it will abort the session.
-	sw := make(chan error, 1)
+	sw := make(chan bool, 1)
+	var runErr error
 	go func() {
-		sw <- session.Run(cmd)
+		runErr = session.Run(cmd)
+		sw <- true
 	}()
 	select {
-	case err := <-sw:
-		return exit(err)
+	case <-sw:
+		return exit(runErr)
 	case <-ctx.Done():
 		// At the end abort session.
 		// Session will be closed in defer.
