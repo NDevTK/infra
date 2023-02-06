@@ -211,14 +211,18 @@ func (c *tlwClient) Run(ctx context.Context, req *tlw.RunRequest) *tlw.RunResult
 	} else {
 		ctx, cancel := context.WithTimeout(ctx, timeout)
 		defer cancel()
-		cr := make(chan *tlw.RunResult, 1)
+		cr := make(chan bool, 1)
+		var runResult *tlw.RunResult
 		go func() {
-			cr <- ssh.Run(ctx, c.sshPool, localproxy.BuildAddr(req.GetResource()), fullCmd)
+			runResult = ssh.Run(ctx, c.sshPool, localproxy.BuildAddr(req.GetResource()), fullCmd)
+			cr <- true
 		}()
 		select {
-		case r := <-cr:
-			return r
+		case <-cr:
+			log.Debugf(ctx, "Finished SSH command %q on host %q finished in time!", fullCmd, req.GetResource())
+			return runResult
 		case <-ctx.Done():
+			log.Debugf(ctx, "Finished SSH command %q on host %q timed out!", fullCmd, req.GetResource())
 			// If we reached timeout first.
 			return &tlw.RunResult{
 				Command:  fullCmd,
