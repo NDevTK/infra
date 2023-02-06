@@ -303,7 +303,10 @@ func InstallFirmwareImage(ctx context.Context, req *InstallFirmwareImageRequest,
 	tarballPath := filepath.Join(req.DownloadDir, downloadFilename)
 	if !req.UseCacheToExtractor {
 		// No need to download the file if we use cache extractor.
-		if err := cache.CurlFile(ctx, run, req.DownloadImagePath, tarballPath, req.DownloadImageTimeout); err != nil {
+		if httpResponseCode, err := cache.CurlFile(ctx, run, req.DownloadImagePath, tarballPath, req.DownloadImageTimeout); err != nil {
+			// TODO (http://b/267359775): If the HTTP Response Code is
+			// 500, retry the download.
+			log.Debugf("Install Firmware Image: HTTP Response Code is :%d", httpResponseCode)
 			return errors.Annotate(err, "install firmware image").Err()
 		}
 	}

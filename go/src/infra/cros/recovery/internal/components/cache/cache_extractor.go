@@ -35,20 +35,22 @@ func Extract(ctx context.Context, req *ExtractRequest, run components.Runner) er
 	// Example: `http://Addr:8082/extract/chromeos-image-archive/board-release/R99-XXXXX.XX.0/chromiumos_test_image.tar.xz?file=chromiumos_test_image.bin`
 	extractPath := strings.Replace(req.CacheFileURL, "/download/", "/extract/", 1)
 	sourcePath := fmt.Sprintf("%s?file=%s", extractPath, req.ExtractFileName)
-	if err := CurlFile(ctx, run, sourcePath, req.DestintionFilePath, req.Timeout); err != nil {
+	if _, err := CurlFile(ctx, run, sourcePath, req.DestintionFilePath, req.Timeout); err != nil {
 		return errors.Annotate(err, "extract from cache").Err()
 	}
 	return nil
 }
 
 // CurlFile downloads file by using curl util.
-func CurlFile(ctx context.Context, run components.Runner, sourcePath, destinationPath string, timeout time.Duration) error {
+func CurlFile(ctx context.Context, run components.Runner, sourcePath, destinationPath string, timeout time.Duration) (int, error) {
 	out, err := run(ctx, timeout, "curl", sourcePath, "--output", destinationPath, "--fail")
 	if err == nil {
 		log.Debugf(ctx, "Successfully download %q from %q", destinationPath, sourcePath)
-		return nil
+		return 0, nil
 	}
+	httpResponseCode := ExtractHttpResponseCode(err)
 	log.Debugf(ctx, "Fail to download %q from %q", destinationPath, sourcePath)
 	log.Debugf(ctx, "Fail to download %q: output %s", destinationPath, out)
-	return errors.Annotate(err, "install firmware image").Err()
+	log.Debugf(ctx, "Fail to download %q: httpResponseCode %d", destinationPath, httpResponseCode)
+	return httpResponseCode, errors.Annotate(err, "install firmware image").Err()
 }
