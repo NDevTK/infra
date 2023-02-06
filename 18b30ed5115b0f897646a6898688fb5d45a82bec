@@ -34,6 +34,24 @@
       "parentUuid": "187de139_d92f27ea",
       "revId": "18b30ed5115b0f897646a6898688fb5d45a82bec",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9bee85ef_1707c256",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1540363
+      },
+      "writtenOn": "2023-02-06T18:39:43Z",
+      "side": 1,
+      "message": "Please use --port 0 for your use case. Example:\n`./cros-tool-runner serve --port 0`\n\nI think this makes the contract clearer and won\u0027t break existing documentations, which may be useful for other engineers to learn the tool.",
+      "parentUuid": "b61f3ab7_8175bf0f",
+      "revId": "18b30ed5115b0f897646a6898688fb5d45a82bec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
