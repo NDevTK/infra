@@ -741,6 +741,12 @@ func adaptV2DevboardToV1DutSpec(data *ufspb.ChromeOSDeviceData) (*inventory.Devi
 			devboardType = inventory.SchedulableLabels_DEVBOARD_TYPE_ICETOWER
 			b = "icetower"
 		}
+		if dragonclaw := machine.GetDevboard().GetDragonclaw(); dragonclaw != nil {
+			attrs.append("devboard_type", "dragonclaw")
+			attrs.append("fingerprint_id", dragonclaw.GetFingerprintId())
+			devboardType = inventory.SchedulableLabels_DEVBOARD_TYPE_DRAGONCLAW
+			b = "dragonclaw"
+		}
 	}
 	labels := &inventory.SchedulableLabels{
 		DevboardType: &devboardType,
