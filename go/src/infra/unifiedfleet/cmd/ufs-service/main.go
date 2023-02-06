@@ -57,7 +57,10 @@ func main() {
 		var err error
 		srv.Context, err = external.UsePubSub(srv.Context, srv.Options.CloudProject)
 		if err != nil {
-			return err
+			// If we fail to set up PubSub then UFS will not work properly anyway.
+			// The exact error message is very important. If we panic here, that will guarantee that the user sees the whole thing.
+			// See b:267829708 for details.
+			panic(err)
 		}
 
 		srv.RegisterUnaryServerInterceptor(versionInterceptor)

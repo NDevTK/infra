@@ -28,8 +28,9 @@ func UsePubSub(c context.Context, projectID string) (context.Context, error) {
 	// Create client for Pub/Sub publishing.
 	client, err := pubsub.NewClient(c, projectID)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to create Pub/Sub client for project %s", projectID)
+		// The precise value of the error that we got back from the pubsub client is important for local debugging.
+		// See b:267829708 for details.
+		return nil, fmt.Errorf("Failed to create Pub/Sub client for project %q: %w", projectID, err)
 	}
-
 	return context.WithValue(c, &pubsubKey, client), nil
 }
