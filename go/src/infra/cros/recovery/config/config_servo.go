@@ -194,37 +194,6 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "servo_servod_port_present",
 			},
-			"Simple reboot and wait": {
-				Docs: []string{
-					"Reboot host and wait for it to be up.",
-				},
-				Dependencies: []string{
-					"Simple reboot",
-					"Wait to be SSHable (normal boot)",
-				},
-				ExecName:   "sample_pass",
-				RunControl: RunControl_ALWAYS_RUN,
-			},
-			"Wait to be SSHable (normal boot)": {
-				// No recovery actions as that is help action.
-				Docs: []string{
-					"Try to wait device to be sshable after the device being rebooted.",
-					"Waiting time 150 seconds.",
-				},
-				ExecName:    "cros_ssh",
-				ExecTimeout: &durationpb.Duration{Seconds: 150},
-				RunControl:  RunControl_ALWAYS_RUN,
-			},
-			"Simple reboot": {
-				Docs: []string{
-					"Simple un-blocker reboot.",
-				},
-				ExecName: "cros_run_shell_command",
-				ExecExtraArgs: []string{
-					"reboot && exit",
-				},
-				RunControl: RunControl_ALWAYS_RUN,
-			},
 			"is_labstation": {
 				Docs: []string{
 					"Condition to check if the servohost is a labstation.",

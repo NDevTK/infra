@@ -219,6 +219,7 @@ func LabstationRepairConfig() *Configuration {
 							"The action will not run if the labstation's filesystem I/O is blocked because /sbin/reboot may not work if the filesystem is hosed.",
 						},
 						Conditions: []string{
+							"Device is SSHable",
 							"cros_filesystem_io_not_blocked",
 						},
 						ExecName: "cros_run_shell_command",

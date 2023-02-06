@@ -2215,6 +2215,9 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Simple un-blocker reboot.",
 			},
+			Conditions: []string{
+				"Device is SSHable",
+			},
 			ExecName: "cros_run_shell_command",
 			ExecExtraArgs: []string{
 				"reboot && exit",
