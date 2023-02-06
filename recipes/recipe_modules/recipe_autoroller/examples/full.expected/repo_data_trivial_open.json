@@ -447,7 +447,7 @@
   },
   {
     "cmd": [
-      "vpython",
+      "vpython3",
       "[CACHE]/builder/recipe_engine/recipes.py",
       "--package",
       "[CACHE]/builder/recipe_autoroller/build/infra/config/recipes.cfg",
@@ -598,7 +598,7 @@
   },
   {
     "cmd": [
-      "vpython",
+      "vpython3",
       "[CACHE]/builder/recipe_engine/recipes.py",
       "--package",
       "[CACHE]/builder/recipe_autoroller/build/infra/config/recipes.cfg",

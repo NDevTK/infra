@@ -334,13 +334,12 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
       # situation we're done with this repo, for now.
       return _Status(status)
 
-    roll_step = self.m.python(
-        'roll',
-        recipes_dir.join('recipes.py'), [
-            '--package', recipes_cfg_path, '-vv', 'autoroll', '--output-json',
-            self.m.json.output()
-        ],
-        venv=True)
+    roll_step = self.m.step('roll', [
+        'vpython3',
+        recipes_dir.join('recipes.py'), '--package', recipes_cfg_path, '-vv',
+        'autoroll', '--output-json',
+        self.m.json.output()
+    ])
     roll_result = roll_step.json.output
 
     if roll_result['success'] and roll_result['picked_roll_details']:
@@ -419,9 +418,11 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
 
     dep_specs = None
     try:
-      dep_specs = self.m.python(
+      dep_specs = self.m.step(
           'get deps',
-          recipes_dir.join('recipes.py'), [
+          [
+              'vpython3',
+              recipes_dir.join('recipes.py'),
               '--package',
               recipes_cfg_path,
               'dump_specs',
@@ -429,7 +430,7 @@ class RecipeAutorollerApi(recipe_api.RecipeApi):
           stdout=self.m.proto.output(DepRepoSpecs, codec='JSONPB'),
           step_test_data=lambda: self.m.proto.test_api.output_stream(
               DepRepoSpecs(repo_specs={'recipe_engine': RepoSpec()})),
-          venv=True).stdout
+      ).stdout
     except self.m.step.StepFailure:
       # TODO(fxbug.dev/54380): delete this `except` after crrev.com/c/2252547
       # has rolled into all downstream repos that are rolled by an autoroller.
