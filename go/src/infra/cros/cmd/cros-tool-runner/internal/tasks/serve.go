@@ -5,10 +5,11 @@
 package tasks
 
 import (
+	"infra/cros/cmd/cros-tool-runner/internal/v2/server"
+
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
-	"infra/cros/cmd/cros-tool-runner/internal/v2/server"
 )
 
 type runServeCmd struct {
@@ -37,7 +38,7 @@ cros-tool-runner serve --port 0 --export-metadata=/tmp
 		LongDesc:  serveDesc,
 		CommandRun: func() subcommands.CommandRun {
 			c.authFlags.Register(&c.Flags, authOpts)
-			c.Flags.IntVar(&c.port, "port", 8082, "port number server listens to")
+			c.Flags.IntVar(&c.port, "port", 0, "port number server listens to")
 			c.Flags.StringVar(&c.exportTo, "export-metadata", "", "folder path to export CTRv2 server metadata into")
 			return c
 		},
