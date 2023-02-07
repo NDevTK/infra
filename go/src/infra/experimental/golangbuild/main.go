@@ -460,8 +460,7 @@ func untar(ctx context.Context, r io.Reader, dir string) (err error) {
 		f, err := tr.Next()
 		if err == io.EOF {
 			break
-		}
-		if err != nil {
+		} else if err != nil {
 			return err
 		}
 		if f.Typeflag == tar.TypeXGlobalHeader {
