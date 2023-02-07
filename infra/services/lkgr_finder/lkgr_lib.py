@@ -79,7 +79,7 @@ class GitWrapper(object):
   _GIT_POS_RE = re.compile('(\S+)@{#(\d+)}')
 
   def __init__(self, url, path):  # pragma: no cover
-    self._git = git.NewGit(url, path)
+    self._git = git.NewGit(url, path, history_only=True)
     self._position_cache = {}
     LOGGER.debug('Local git repository located at %s', self._git.path)
 
@@ -124,7 +124,7 @@ class GitWrapper(object):
     return sorted(revisions, key=lambda x: self.keyfunc(keyfunc(x)))
 
   def get_lag(self, r):  # pragma: no cover
-    ts = self._git.show(r, '', '--format=format:%ct').split('\n', 1)[0].strip()
+    ts = self._git('log', '-1', '--format=format:%ct', r).strip()
     dt = datetime.datetime.utcfromtimestamp(float(ts))
     return datetime.datetime.utcnow() - dt
 
@@ -382,7 +382,7 @@ def CollateRevisionHistory(builds, repo):
   """
   # Fetch the repo again to ensure we have all relevant revisions locally
   # available
-  repo._git('fetch', 'origin')
+  repo._git('fetch', 'origin', '--filter=tree:0')
 
   build_history = {}
   revisions = set()
@@ -539,27 +539,6 @@ def SendMail(recipients, subject, message, dry):  # pragma: no cover
     print ('\n--------- Exception in %s -----------\n' %
            os.path.basename(__file__))
     raise e
-
-
-def UpdateTag(new_lkgr, repo, dry):  # pragma: no cover
-  """Update the lkgr tag in the repository. Git only.
-
-  Args:
-    new_lkgr: the new commit hash for the lkgr tag to point to.
-    repo: instance of GitWrapper
-    dry: if True, don't actually update the tag.
-  """
-  LOGGER.info('Updating lkgr tag')
-  push_cmd = ['push', 'origin', '%s:refs/tags/lkgr' % new_lkgr]
-
-  try:
-    if dry:
-      LOGGER.debug('Dry-run: Not pushing lkgr: %s', ' '.join(push_cmd))
-    else:
-      LOGGER.debug('Pushing lkgr: %s', ' '.join(push_cmd))
-      repo._git(push_cmd)  # pylint: disable=W0212
-  except subprocess.CalledProcessError:
-    LOGGER.error('Failed to push new lkgr tag.')
 
 
 def WriteLKGR(lkgr, filename, dry):  # pragma: no cover

@@ -82,7 +82,7 @@ class Git(object):
     """
     positions = []
     for ref in refs:
-      cmd = ['show', '-s', '--format=%B', ref]
+      cmd = ['log', '-1', '--format=%B', ref]
       out = self(*cmd)
       found = False
       for line in reversed(out.splitlines()):
@@ -95,7 +95,7 @@ class Git(object):
     return positions
 
 
-def NewGit(url, path, bare=False):  # pragma: no cover
+def NewGit(url, path, bare=False, history_only=False):  # pragma: no cover
   """Factory function to create a Git object against a remote url.
 
   Ensures the given path exists. If a git repository is already present
@@ -106,6 +106,7 @@ def NewGit(url, path, bare=False):  # pragma: no cover
     url (str): The url of the remote repository.
     path (str): The path to the local version of the repository.
     bare (str, optional): Whether or not the local repo should be a bare clone.
+    history_only (str, optional): Whether or not to clone only the history.
 
   Returns:
     repo (:class:`Git`): object representing the local git repository.
@@ -119,10 +120,17 @@ def NewGit(url, path, bare=False):  # pragma: no cover
 
   git = Git(path)
 
+  # Option for 'clone' or 'fetch' to filter trees.
+  additional_clone_args = []
+  additional_fetch_args = []
+  if history_only:
+    additional_clone_args = ['--filter=tree:0', '--no-checkout']
+    additional_fetch_args = ['--filter=tree:0']
+
   # If the directory has nothing in it, clone into it.
   if not os.listdir(path):
     b = ['--bare'] if bare else []
-    clone_cmd = ['clone'] + b + [url, '.']
+    clone_cmd = ['clone'] + b + additional_clone_args + [url, '.']
     git(*clone_cmd)
     return git
 
@@ -145,7 +153,7 @@ def NewGit(url, path, bare=False):  # pragma: no cover
     raise GitException(msg)
 
   try:
-    git('fetch', 'origin')
+    git('fetch', 'origin', *additional_fetch_args)
   except subprocess.CalledProcessError:
     LOGGER.error('Failed to fetch origin.')
   return git

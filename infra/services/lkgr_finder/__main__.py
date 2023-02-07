@@ -91,8 +91,6 @@ def ParseArgs(argv):
   output_group = parser.add_argument_group('Output data formats')
   output_group.add_argument('--dry-run', '-n', action='store_true',
                             help='Don\'t actually do any real output actions.')
-  output_group.add_argument('--tag', action='store_true',
-                            help='Update the lkgr tag (Git repos only)')
   output_group.add_argument('--read-from-file', metavar='FILE',
                             help='Read the LKGR from the specified file.')
   output_group.add_argument('--write-to-file', metavar='FILE',
@@ -269,11 +267,6 @@ def main(argv):
 
     if args.write_to_file:
       lkgr_lib.WriteLKGR(candidate, args.write_to_file, args.dry_run)
-
-    if args.tag:
-      # TODO(machenbach): Currently the wrapping recipe udpates the refs. We
-      # should instead use this method here.
-      lkgr_lib.UpdateTag(candidate, config['source_url'], args.dry_run)
 
   else:
     # No new LKGR found.
