@@ -7440,6 +7440,20 @@ wheel: <
 
 * *universal*
 
+## **tox**
+
+### 4.4.4
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/tox-py2_py3"
+  version: "version:4.4.4"
+>
+```
+
+
+* *universal*
+
 ## **trio-py3**
 
 ### 0.20.0
