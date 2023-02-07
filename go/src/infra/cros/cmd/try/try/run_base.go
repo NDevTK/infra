@@ -45,6 +45,7 @@ type tryRunBase struct {
 	dryrun     bool
 	branch     string
 	production bool
+	publish    bool
 	// Patches of the form of "crrev.com/c/1234567", "crrev.com/i/1234567".
 	patches      list
 	buildTargets list
@@ -74,6 +75,11 @@ func (t *tryRunBase) addBuildTargetsFlag() {
 // addDryrunFlag creates a `-dryrun` command-line flag for a try command.
 func (t *tryRunBase) addDryrunFlag() {
 	t.Flags.BoolVar(&t.dryrun, "dryrun", false, "Dry run (i.e. don't actually run `bb add`).")
+}
+
+// addPublishFlag creates a `-publish-artifacts` command-line flag to specify that artifacts should be published.
+func (t *tryRunBase) addPublishFlag() {
+	t.Flags.BoolVar(&t.publish, "publish-artifacts", false, "Publish artifacts to canonical location in addition to uploading to GS.")
 }
 
 // validate validates base args for the command.

@@ -10,6 +10,7 @@ import (
 	"os"
 	"strings"
 
+	bb "infra/cros/internal/buildbucket"
 	"infra/cros/internal/cmd"
 
 	"github.com/maruel/subcommands"
@@ -27,6 +28,7 @@ func GetCmdFirmware() *subcommands.Command {
 			c.addBranchFlag("")
 			c.addProductionFlag()
 			c.addPatchesFlag()
+			c.addPublishFlag()
 			return c
 		},
 	}
@@ -35,6 +37,7 @@ func GetCmdFirmware() *subcommands.Command {
 // firmwareRun tracks relevant info for a given `try firmware` run.
 type firmwareRun struct {
 	tryRunBase
+	propsFile *os.File
 }
 
 // Run provides the logic for a `try firmware` command run.
@@ -52,6 +55,37 @@ func (f *firmwareRun) Run(_ subcommands.Application, _ []string, _ subcommands.E
 		f.LogErr(err.Error())
 		return CmdError
 	}
+
+	propsStruct, err := f.bbClient.GetBuilderInputProps(ctx, getFWBuilderFullName(f.branch, !f.production))
+	if err != nil {
+		f.LogErr(err.Error())
+		return CmdError
+	}
+
+	skipPublish := !f.publish
+	if err := bb.SetProperty(propsStruct, "$chromeos/cros_artifacts.skip_publish", skipPublish); err != nil {
+		f.LogErr(err.Error())
+		return CmdError
+	}
+
+	var propsFile *os.File
+	if f.propsFile != nil {
+		propsFile = f.propsFile
+	} else {
+		propsFile, err = os.CreateTemp("", "input_props")
+		if err != nil {
+			f.LogErr(err.Error())
+			return CmdError
+		}
+	}
+	if err := bb.WriteStructToFile(propsStruct, propsFile); err != nil {
+		f.LogErr(errors.Annotate(err, "writing input properties to tempfile").Err().Error())
+		return UnspecifiedError
+	}
+	if f.propsFile == nil {
+		defer os.Remove(propsFile.Name())
+	}
+	f.bbAddArgs = append(f.bbAddArgs, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 
 	if len(f.patches) > 0 {
 		f.bbAddArgs = patchListToBBAddArgs(f.patches)

@@ -6,6 +6,7 @@ package try
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 	"testing"
 
@@ -125,11 +126,16 @@ type firmwareTestConfig struct {
 	expectedBuilder string
 	production      bool
 	dryrun          bool
+	publish         bool
+	expectedPublish bool
 	branch          string
 }
 
 func doFirmwareTest(t *testing.T, tc *firmwareTestConfig) {
 	t.Helper()
+	propsFile, err := os.CreateTemp("", "input_props")
+	defer os.Remove(propsFile.Name())
+	assert.NilError(t, err)
 
 	var expectedBucket string
 	expectedBuilder := tc.expectedBuilder
@@ -138,6 +144,7 @@ func doFirmwareTest(t *testing.T, tc *firmwareTestConfig) {
 	} else {
 		expectedBucket = "chromeos/staging"
 	}
+	expectedPublish := tc.expectedPublish
 
 	f := &cmd.FakeCommandRunnerMulti{
 		CommandRunners: []cmd.FakeCommandRunner{
@@ -157,11 +164,21 @@ func doFirmwareTest(t *testing.T, tc *firmwareTestConfig) {
 			},
 		},
 	}
+	f.CommandRunners = append(f.CommandRunners,
+		cmd.FakeCommandRunner{
+			ExpectedCmd: []string{
+				"led",
+				"get-builder",
+				fmt.Sprintf("%s:%s", expectedBucket, expectedBuilder),
+			},
+			Stdout: validJSON,
+		})
 	expectedAddCmd := []string{"bb", "add", fmt.Sprintf("%s/%s", expectedBucket, expectedBuilder)}
 	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
 	for _, patch := range tc.patches {
 		expectedAddCmd = append(expectedAddCmd, "-cl", patch)
 	}
+	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 	if !tc.dryrun {
 		f.CommandRunners = append(f.CommandRunners,
 			cmd.FakeCommandRunner{
@@ -177,11 +194,23 @@ func doFirmwareTest(t *testing.T, tc *firmwareTestConfig) {
 			branch:               tc.branch,
 			production:           tc.production,
 			patches:              tc.patches,
+			publish:              tc.publish,
 			skipProductionPrompt: true,
 		},
+		propsFile: propsFile,
 	}
 	ret := r.Run(nil, nil, nil)
 	assert.IntsEqual(t, ret, Success)
+
+	properties, err := bb.ReadStructFromFile(propsFile.Name())
+	assert.NilError(t, err)
+
+	skipPublish, exists := properties.GetFields()["$chromeos/cros_artifacts"].GetStructValue().GetFields()["skip_publish"]
+	if !expectedPublish {
+		assert.Assert(t, exists && skipPublish.GetBoolValue())
+	} else {
+		assert.Assert(t, !exists || !skipPublish.GetBoolValue())
+	}
 }
 
 func TestFirmware_production(t *testing.T) {
@@ -198,5 +227,16 @@ func TestFirmware_staging(t *testing.T) {
 		branch:          "firmware-nissa-15217.B",
 		expectedBuilder: "staging-firmware-nissa-15217.B-branch",
 		production:      false,
+	})
+}
+
+func TestFirmware_publish(t *testing.T) {
+	t.Parallel()
+	doFirmwareTest(t, &firmwareTestConfig{
+		branch:          "firmware-nissa-15217.B",
+		expectedBuilder: "staging-firmware-nissa-15217.B-branch",
+		production:      false,
+		publish:         true,
+		expectedPublish: true,
 	})
 }
