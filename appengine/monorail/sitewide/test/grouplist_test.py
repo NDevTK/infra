@@ -24,7 +24,7 @@ class GroupListTest(unittest.TestCase):
   def setUp(self):
     self.services = service_manager.Services(
         usergroup=fake.UserGroupService())
-    self.servlet = grouplist.GroupList('req', 'res', services=self.services)
+    self.servlet = grouplist.GroupList(services=self.services)
     self.mr = testing_helpers.MakeMonorailRequest()
     self.testbed = testbed.Testbed()
     self.testbed.activate()

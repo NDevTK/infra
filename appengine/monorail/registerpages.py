@@ -139,7 +139,7 @@ class ServletRegistry(object):
   def _RegisterGroupUrls(self, services):
     _GROUP_URL = [
         (
-            '/', grouplist.FlaskGroupList(services=services).GetGroupList,
+            '/', grouplist.GroupList(services=services).GetGroupList,
             ['GET']),
         (
             '/<string:viewed_username>/',
@@ -211,10 +211,10 @@ class ServletRegistry(object):
                                                                        ]),
         (
             '/deleteGroup',
-            grouplist.FlaskGroupList(services=service).GetGroupDelete, ['GET']),
+            grouplist.GroupList(services=service).GetGroupDelete, ['GET']),
         (
             '/deleteGroup.do',
-            grouplist.FlaskGroupList(services=service).PostGroupDelete,
+            grouplist.GroupList(services=service).PostGroupDelete,
             ['POST']),
     ]
 
