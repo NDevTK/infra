@@ -8,7 +8,7 @@ package unifiedfleet.api.v1.models;
 
 option go_package = "infra/unifiedfleet/api/v1/models;ufspb";
 
-// Next ID:7
+// Next ID: 8
 message OwnershipData {
    // resource group to which this bot belongs to - deprecated
    repeated string resource_group = 1 [deprecated=true];
@@ -23,4 +23,6 @@ message OwnershipData {
    string miba_realm = 5;
    // Customer who uses this bot.
    string customer = 6;
+   // builders for this bot, if any
+   repeated string builders = 7;
 }
