@@ -17,6 +17,7 @@ import (
 	"infra/cros/recovery/internal/localtlw/ssh"
 	"infra/cros/recovery/internal/localtlw/xmlrpc"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/tlw"
 	"infra/libs/sshpool"
 )
@@ -61,9 +62,14 @@ func startServod(ctx context.Context, servodHost string, servoPort int32, params
 	}
 	// Use servodtool to check whether the servod is started.
 	log.Debugf(ctx, "Start servod: use servodtool to check and wait the servod on labstation device to be fully started.")
-	if r := ssh.Run(ctx, pool, servodHost, fmt.Sprintf("servodtool instance wait-for-active -p %d --timeout 60", servoPort)); r.ExitCode != 0 {
-		return errors.Reason("start servod: servodtool check: %s", r.Stderr).Err()
+	startTime := time.Now()
+	execResult := ssh.Run(ctx, pool, servodHost, fmt.Sprintf("servodtool instance wait-for-active -p %d --timeout 60", servoPort))
+	servodStartDuration := time.Now().Sub(startTime)
+	if execResult.ExitCode != 0 {
+		metrics.DefaultActionAddObservations(ctx, metrics.NewFloat64Observation(observationKindStartServodTimeoutFail, servodStartDuration.Seconds()))
+		return errors.Reason("start servod: servodtool check: %s", execResult.Stderr).Err()
 	}
+	metrics.DefaultActionAddObservations(ctx, metrics.NewFloat64Observation(observationKindStartServodTimeoutSuccess, servodStartDuration.Seconds()))
 	return nil
 }
 
