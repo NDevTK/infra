@@ -236,6 +236,13 @@ func getExecStep(recipe string, buildData buildInfo) (pb.RetryStep, error) {
 		}
 	}
 
+	// Refuse to retry builds with failed EBUILD_TESTS.
+	if ebuildTestRetrySummary, ok := buildData.retrySummary[pb.RetryStep_EBUILD_TESTS]; ok {
+		if recipe == "build_release" && ebuildTestRetrySummary == "FAILED" {
+			return pb.RetryStep_UNDEFINED, fmt.Errorf("ebuild tests failed. Can't retry.")
+		}
+	}
+
 	// If there are signing failures, start at PUSH_IMAGES to rekick signing.
 	// The suffix constraint steps above will prevent us from skipping earlier
 	// steps that didn't pass in the previous build, and we know that if

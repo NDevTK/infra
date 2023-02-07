@@ -76,6 +76,7 @@ const (
 				"retry_summary": {
 					"COLLECT_SIGNING": "SUCCESS",
 					"DEBUG_SYMBOLS": "SUCCESS",
+					"EBUILD_TESTS": "SUCCESS",
 					"PAYGEN": "SUCCESS",
 					"PUSH_IMAGES": "SUCCESS",
 					"STAGE_ARTIFACTS": "SUCCESS"
@@ -405,6 +406,47 @@ func TestRetry_childBuilder_paygen_fail_hasSummary(t *testing.T) {
 		builderJSON: stripNewlines(failedChildJSON),
 		expectError: true,
 		paygenRetry: true,
+	})
+}
+
+const (
+	failedEbuildTestJSON = `{
+		"id": "8794230068334833051",
+		"builder": {
+			"project": "chromeos",
+			"bucket": "staging",
+			"builder": "staging-eve-release-main"
+		},
+		"status": "FAILURE",
+		"input": {
+			"properties": {
+				"recipe": "build_release",
+				"input_prop": 102
+			}
+		},
+		"output": {
+			"properties": {
+				"retry_summary": {
+					"COLLECT_SIGNING": "FAILURE",
+					"DEBUG_SYMBOLS": "FAILURE",
+					"EBUILD_TESTS": "FAILED",
+					"PAYGEN": "FAILED",
+					"PUSH_IMAGES": "SUCCESS",
+					"STAGE_ARTIFACTS": "SUCCESS"
+				}
+			}
+		}
+	}`
+)
+
+func TestRetry_childBuilder_ebuildTestsFailNoRetry(t *testing.T) {
+	doChildRetryTestRun(t, &childRetryTestConfig{
+		dryrun:      false,
+		bbid:        "8794230068334833051",
+		builderName: "staging-eve-release-main",
+		builderJSON: stripNewlines(failedEbuildTestJSON),
+		expectError: true,
+		testNoRun:   true,
 	})
 }
 
