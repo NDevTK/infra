@@ -24,6 +24,8 @@ message SecurityInfo {
    repeated string hosts = 6;
    // prefixes of the names of the hosts that belong to this group ex:luci-dart-try-focal
    repeated string host_prefixes = 7;
+   // builders for these bots, if any
+   repeated string builders = 8;
 }
 
 message SecurityInfos {
