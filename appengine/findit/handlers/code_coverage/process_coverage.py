@@ -85,7 +85,12 @@ def _IsBlockingChangesAllowed(project):
 
 
 def _IsAuthorInAllowlistForBlocking(author_email):
-  assert author_email.endswith("@google.com")
+  """Returns True if an author is in allowlist for blocking changes.
+
+  Returns False if the author doesn't belong to google.
+  """
+  if not author_email.endswith("@google.com"):
+    return False
   author = author_email[:author_email.find("@")]
   return author in waterfall_config.GetCodeCoverageSettings().get(
       'block_low_coverage_changes_authors', [])
@@ -555,22 +560,31 @@ class ProcessCodeCoverageData(BaseHandler):
 
       def _ChangeShouldBeBlocked(entity, author_email):
         if not _IsAuthorInAllowlistForBlocking(author_email):
+          logging.info("%s is not in allowlist", author_email)
           return False
-        for inc_metrics in entity.incremental_percentages_unit:
+        for inc_metrics in entity.incremental_percentages:
           if not inc_metrics.path.endswith(".java"):
+            logging.info("%s is not a java file", inc_metrics.path)
             continue
           if not _IsFileInAllowlistForBlocking(inc_metrics.path):
+            logging.info("%s is not in allowed dirs", inc_metrics.path)
             continue
           # Do not block because of test/main files
           if re.match(utils.TEST_FILE_REGEX, inc_metrics.path) or re.match(
               utils.MAIN_FILE_REGEX, inc_metrics.path):
+            logging.info("%s is a test/main file", inc_metrics.path)
             continue
           if not _HaveEnoughLinesChangedForBlocking(inc_metrics):
+            logging.info("%s doesn't have enough lines changed",
+                         inc_metrics.path)
             continue
           if _HasLowCoverageForBlocking(inc_metrics):
-            for abs_metrics in entity.absolute_percentages_unit:
+            logging.info("%s has low incremental coverage", inc_metrics.path)
+            for abs_metrics in entity.absolute_percentages:
               if (abs_metrics.path == inc_metrics.path and
                   not _CanBeExemptFromBlocking(abs_metrics)):
+                logging.info("%s has low absolute coverate too",
+                             inc_metrics.path)
                 return True
         return False
 
@@ -587,6 +601,9 @@ class ProcessCodeCoverageData(BaseHandler):
       # if mimic_builder represents a unit tests only builder.
       if mimic_builder.endswith('_unit'):
         entity = _GetEntityForUnit(entity)
+      else:
+        entity = _GetEntity(entity)
+        # We block some CLs based on overall coverage metrics.
         if _IsBlockingChangesAllowed(patch.project):
           change_details = code_coverage_util.FetchChangeDetails(
               patch.host, patch.project, patch.change, detailed_accounts=True)
@@ -598,18 +615,33 @@ class ProcessCodeCoverageData(BaseHandler):
           # Block CL only if it qualifies and is not a revert CL
           if _ChangeShouldBeBlocked(
               entity, author) and 'revert_of' not in change_details:
-            data = {'labels': {'Code-Coverage': -1}}
+            data = {
+                'labels': {
+                    'Code-Coverage': -1
+                },
+                'message':
+                    ('This change will be blocked from submission as there are '
+                     'files with incremental coverage(all tests) < %d%%. '
+                     'Please add tests for uncovered lines, '
+                     'or add Low-Coverage-Reason:<reason> in '
+                     'the change description. If you think coverage is '
+                     'underreported, file a bug to Infra>Test>CodeCoverage' %
+                     _DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING)
+            }
             logging.info(('Adding CodeCoverage-1 label for '
                           'project %s, change %d,  patchset %d'), patch.project,
                          patch.change, patch.patchset)
           else:
-            data = {'labels': {'Code-Coverage': +1}}
+            data = {
+                'labels': {
+                    'Code-Coverage': +1
+                },
+                'message': 'This change meets the code coverage requirements.'
+            }
             logging.info(('Adding CodeCoverage+1 label for '
                           'project %s, change %d,  patchset %d'), patch.project,
                          patch.change, patch.patchset)
           FinditHttpClient().Post(url, json.dumps(data), headers=headers)
-      else:
-        entity = _GetEntity(entity)
       yield entity.put_async()
 
     update_future = _UpdateCoverageDataAsync()

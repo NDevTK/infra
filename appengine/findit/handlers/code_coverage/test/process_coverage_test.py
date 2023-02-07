@@ -530,8 +530,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
-            'android-nougat-x86-rel_unit/123456789/metadata'
-        ]), ('mimic_builder_names', ['android-nougat-x86-rel_unit'])
+            'android-nougat-x86-rel/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel'])
     ]
     build.input.gerrit_changes = [
         mock.Mock(
@@ -582,7 +582,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
                                '/changes/138000/revisions/4/review'))
     data = json.loads(args[1])
-    self.assertDictEqual({'labels': {'Code-Coverage': -1}}, data)
+    self.assertDictEqual({'Code-Coverage': -1}, data['labels'])
+    self.assertTrue('50%' in data['message'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
@@ -612,8 +613,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
-            'android-nougat-x86-rel_unit/123456789/metadata'
-        ]), ('mimic_builder_names', ['android-nougat-x86-rel_unit'])
+            'android-nougat-x86-rel/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel'])
     ]
     build.input.gerrit_changes = [
         mock.Mock(
@@ -628,7 +629,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         'dirs': None,
         'files': [{
             'path':
-                '//dir/myfile.cc',
+                '//dir/myfile.java',
             'lines': [{
                 'count': 100,
                 'first': 1,
@@ -645,7 +646,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     mocked_get_validated_data.return_value = coverage_data
     inc_percentages = [
         CoveragePercentage(
-            path='//dir/myfile.cc', total_lines=90, covered_lines=9)
+            path='//dir/myfile.java', total_lines=90, covered_lines=9)
     ]
     mocked_inc_percentages.return_value = inc_percentages
     mocked_fetch_change_details.return_value = {
@@ -665,7 +666,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
                                '/changes/138000/revisions/4/review'))
     data = json.loads(args[1])
-    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
@@ -695,8 +696,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
-            'android-nougat-x86-rel_unit/123456789/metadata'
-        ]), ('mimic_builder_names', ['android-nougat-x86-rel_unit'])
+            'android-nougat-x86-rel/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel'])
     ]
     build.input.gerrit_changes = [
         mock.Mock(
@@ -764,7 +765,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
                                '/changes/138000/revisions/4/review'))
     data = json.loads(args[1])
-    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
@@ -794,8 +795,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
-            'android-nougat-x86-rel_unit/123456789/metadata'
-        ]), ('mimic_builder_names', ['android-nougat-x86-rel_unit'])
+            'android-nougat-x86-rel/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel'])
     ]
     build.input.gerrit_changes = [
         mock.Mock(
@@ -846,7 +847,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
                                '/changes/138000/revisions/4/review'))
     data = json.loads(args[1])
-    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
@@ -876,8 +877,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
-            'android-nougat-x86-rel_unit/123456789/metadata'
-        ]), ('mimic_builder_names', ['android-nougat-x86-rel_unit'])
+            'android-nougat-x86-rel/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel'])
     ]
     build.input.gerrit_changes = [
         mock.Mock(
@@ -892,7 +893,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         'dirs': None,
         'files': [{
             'path':
-                '//dir/myfile.cc',
+                '//dir/myfile.java',
             'lines': [{
                 'count': 100,
                 'first': 1,
@@ -909,7 +910,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     mocked_get_validated_data.return_value = coverage_data
     inc_percentages = [
         CoveragePercentage(
-            path='//dir/myfile.cc', total_lines=90, covered_lines=9)
+            path='//dir/myfile.java', total_lines=90, covered_lines=9)
     ]
     mocked_inc_percentages.return_value = inc_percentages
     mocked_fetch_change_details.return_value = {
@@ -928,7 +929,90 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
                                '/changes/138000/revisions/4/review'))
     data = json.loads(args[1])
-    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
+
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(utils, 'GetFileContentFromGs')
+  @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
+  @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  def testProcessCLPatchDataLowCoverageBlocking_externalAuthor_allow(
+      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
+      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
+      *_):
+    self.UpdateUnitTestConfigSettings(
+        'code_coverage_settings', {
+            'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
+            'block_low_coverage_changes_projects': ['chromium/src'],
+            'block_low_coverage_changes_authors': ['john'],
+            'block_low_coverage_changes_directories': ['//dir']
+        })
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'android-nougat-x86-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_is_presubmit', True),
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'presubmit/chromium-review.googlesource.com/138000/4/try/'
+            'android-nougat-x86-rel/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel'])
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+    # Mock get validated data from cloud storage.
+    coverage_data = {
+        'dirs': None,
+        'files': [{
+            'path':
+                '//dir/myfile.java',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 10,
+            }, {
+                'count': 0,
+                'first': 11,
+                'last': 100,
+            }],
+        }],
+        'summaries': None,
+        'components': None,
+    }
+    mocked_get_validated_data.return_value = coverage_data
+    inc_percentages = [
+        CoveragePercentage(
+            path='//dir/myfile.java', total_lines=90, covered_lines=9)
+    ]
+    mocked_inc_percentages.return_value = inc_percentages
+    mocked_fetch_change_details.return_value = {
+        'owner': {
+            # some other john from outside google created the change.
+            'email': 'john@external.com'
+        }
+    }
+    mocked_get_file_content.return_value = json.dumps(
+        {'john@chromium.org': 'john@google.com'})
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    self.test_app.post(request_url)
+
+    self.assertEqual(len(mock_http_client.call_args_list), 1)
+    args, _ = mock_http_client.call_args_list[0]
+    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
+                               '/changes/138000/revisions/4/review'))
+    data = json.loads(args[1])
+    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
@@ -958,8 +1042,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
-            'android-nougat-x86-rel_unit/123456789/metadata'
-        ]), ('mimic_builder_names', ['android-nougat-x86-rel_unit'])
+            'android-nougat-x86-rel/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel'])
     ]
     build.input.gerrit_changes = [
         mock.Mock(
@@ -974,7 +1058,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         'dirs': None,
         'files': [{
             'path':
-                '//dir/myfile.cc',
+                '//dir/myfile.java',
             'lines': [{
                 'count': 100,
                 'first': 1,
@@ -991,7 +1075,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     mocked_get_validated_data.return_value = coverage_data
     inc_percentages = [
         CoveragePercentage(
-            path='//dir/myfile.cc', total_lines=90, covered_lines=9)
+            path='//dir/myfile.java', total_lines=90, covered_lines=9)
     ]
     mocked_inc_percentages.return_value = inc_percentages
     mocked_fetch_change_details.return_value = {
@@ -1010,7 +1094,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
                                '/changes/138000/revisions/4/review'))
     data = json.loads(args[1])
-    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
@@ -1040,8 +1124,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
-            'android-nougat-x86-rel_unit/123456789/metadata'
-        ]), ('mimic_builder_names', ['android-nougat-x86-rel_unit'])
+            'android-nougat-x86-rel/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel'])
     ]
     build.input.gerrit_changes = [
         mock.Mock(
@@ -1057,7 +1141,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         'dirs': None,
         'files': [{
             'path':
-                '//dir/myfile.cc',
+                '//dir/myfile.java',
             'lines': [{
                 'count': 100,
                 'first': 1,
@@ -1074,7 +1158,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     mocked_get_validated_data.return_value = coverage_data
     inc_percentages = [
         CoveragePercentage(
-            path='//dir/myfile.cc', total_lines=9, covered_lines=1)
+            path='//dir/myfile.java', total_lines=9, covered_lines=1)
     ]
     mocked_inc_percentages.return_value = inc_percentages
     mocked_fetch_change_details.return_value = {
@@ -1093,7 +1177,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
                                '/changes/138000/revisions/4/review'))
     data = json.loads(args[1])
-    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
@@ -1123,8 +1207,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
-            'android-nougat-x86-rel_unit/123456789/metadata'
-        ]), ('mimic_builder_names', ['android-nougat-x86-rel_unit'])
+            'android-nougat-x86-rel/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel'])
     ]
     build.input.gerrit_changes = [
         mock.Mock(
@@ -1175,7 +1259,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
                                '/changes/138000/revisions/4/review'))
     data = json.loads(args[1])
-    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
@@ -1205,8 +1289,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
-            'android-nougat-x86-rel_unit/123456789/metadata'
-        ]), ('mimic_builder_names', ['android-nougat-x86-rel_unit'])
+            'android-nougat-x86-rel/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel'])
     ]
     build.input.gerrit_changes = [
         mock.Mock(
