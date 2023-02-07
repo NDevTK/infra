@@ -133,7 +133,7 @@ ProjectInfo = collections.namedtuple(
     'phase_map, approvals_to_labels, labels_re')
 
 
-class FLTConvertTask(jsonfeed.FlaskInternalTask):
+class FLTConvertTask(jsonfeed.InternalTask):
   """FLTConvert converts current Type=Launch issues into Type=FLT-Launch."""
 
   def AssertBasePermission(self, mr):

@@ -14,7 +14,7 @@ from framework import jsonfeed
 from tracker import tracker_constants
 
 
-class RecomputeDerivedFieldsTask(jsonfeed.FlaskInternalTask):
+class RecomputeDerivedFieldsTask(jsonfeed.InternalTask):
   """JSON servlet that recomputes derived fields on a batch of issues."""
 
   def HandleRequest(self, mr):
@@ -38,7 +38,7 @@ class RecomputeDerivedFieldsTask(jsonfeed.FlaskInternalTask):
     return self.handler(**kwargs)
 
 
-class ReindexQueueCron(jsonfeed.FlaskInternalTask):
+class ReindexQueueCron(jsonfeed.InternalTask):
   """JSON servlet that reindexes some issues each minute, as needed."""
 
   def HandleRequest(self, mr):

@@ -41,7 +41,7 @@ class ProjectExport(flaskservlet.FlaskServlet):
     return self.handler(**kwargs)
 
 
-class ProjectExportJSON(jsonfeed.FlaskJsonFeed):
+class ProjectExportJSON(jsonfeed.JsonFeed):
   """ProjectExportJSON shows all configuration for a Project in JSON form."""
 
   # Pretty-print the JSON output.

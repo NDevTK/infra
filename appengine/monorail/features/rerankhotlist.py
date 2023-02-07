@@ -18,7 +18,7 @@ from services import features_svc
 from tracker import rerank_helpers
 
 
-class RerankHotlistIssue(jsonfeed.FlaskJsonFeed):
+class RerankHotlistIssue(jsonfeed.JsonFeed):
   """Rerank an issue in a hotlist."""
 
   def AssertBasePermission(self, mr):

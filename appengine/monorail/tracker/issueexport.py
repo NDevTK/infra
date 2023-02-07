@@ -69,7 +69,7 @@ class IssueExport(flaskservlet.FlaskServlet):
     return self.handler(**kwargs)
 
 
-class IssueExportJSON(jsonfeed.FlaskJsonFeed):
+class IssueExportJSON(jsonfeed.JsonFeed):
   """IssueExport shows a range of issues in JSON format."""
 
   # Pretty-print the JSON output.

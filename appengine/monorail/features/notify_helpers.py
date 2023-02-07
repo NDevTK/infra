@@ -122,7 +122,7 @@ def AddAllEmailTasks(tasks):
   return notified
 
 
-class NotifyTaskBase(jsonfeed.FlaskInternalTask):
+class NotifyTaskBase(jsonfeed.InternalTask):
   """Abstract base class for notification task handler."""
 
   _EMAIL_TEMPLATE = None  # Subclasses must override this.

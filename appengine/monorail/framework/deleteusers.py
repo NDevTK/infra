@@ -32,7 +32,7 @@ def authorize():
   return credentials.authorize(httplib2.Http(timeout=60))
 
 
-class WipeoutSyncCron(jsonfeed.FlaskInternalTask):
+class WipeoutSyncCron(jsonfeed.InternalTask):
   """Enqueue tasks for sending user lists to wipeout-lite and deleting deleted
      users fetched from wipeout-lite."""
 
@@ -65,7 +65,7 @@ class WipeoutSyncCron(jsonfeed.FlaskInternalTask):
     return self.handler(**kwargs)
 
 
-class SendWipeoutUserListsTask(jsonfeed.FlaskInternalTask):
+class SendWipeoutUserListsTask(jsonfeed.InternalTask):
   """Sends a batch of monorail users to wipeout-lite."""
 
   def HandleRequest(self, mr):
@@ -94,7 +94,7 @@ class SendWipeoutUserListsTask(jsonfeed.FlaskInternalTask):
     return self.handler(**kwargs)
 
 
-class DeleteWipeoutUsersTask(jsonfeed.FlaskInternalTask):
+class DeleteWipeoutUsersTask(jsonfeed.InternalTask):
   """Fetches deleted users from wipeout-lite and enqueues tasks to delete
      those users from Monorail's DB."""
 
@@ -132,7 +132,7 @@ class DeleteWipeoutUsersTask(jsonfeed.FlaskInternalTask):
     return self.handler(**kwargs)
 
 
-class DeleteUsersTask(jsonfeed.FlaskInternalTask):
+class DeleteUsersTask(jsonfeed.InternalTask):
   """Deletes users from Monorail's DB."""
 
   def HandleRequest(self, mr):

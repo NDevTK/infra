@@ -173,7 +173,7 @@ class FlipperList(flaskservlet.FlaskServlet):
     return self.handler(**kwargs)
 
 
-class FlipperIndex(jsonfeed.FlaskJsonFeed):
+class FlipperIndex(jsonfeed.JsonFeed):
   """Return a JSON object of an issue's index in search.
 
   This is a distinct JSON endpoint because it can be expensive to compute.

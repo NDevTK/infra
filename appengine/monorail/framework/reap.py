@@ -15,7 +15,7 @@ from framework import jsonfeed
 RUN_DURATION_LIMIT = 50 * 60  # 50 minutes
 
 
-class Reap(jsonfeed.FlaskInternalTask):
+class Reap(jsonfeed.InternalTask):
   """Look for doomed and deletable projects and delete them."""
 
   def HandleRequest(self, mr):

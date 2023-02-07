@@ -59,7 +59,7 @@ class BanSpammer(flaskservlet.FlaskServlet):
     return self.handler(**kwargs)
 
 
-class BanSpammerTask(jsonfeed.FlaskInternalTask):
+class BanSpammerTask(jsonfeed.InternalTask):
   """This task will update all of the comments and issues created by the
      target user with is_spam=True, and also add a manual verdict attached
      to the user who originated the ban request. This is a potentially long

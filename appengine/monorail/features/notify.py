@@ -982,7 +982,7 @@ class NotifyRulesDeletedTask(notify_helpers.NotifyTaskBase):
     return self.handler(**kwargs)
 
 
-class OutboundEmailTask(jsonfeed.FlaskInternalTask):
+class OutboundEmailTask(jsonfeed.InternalTask):
   """JSON servlet that sends one email.
 
   Handles tasks enqueued from notify_helpers._EnqueueOutboundEmail.

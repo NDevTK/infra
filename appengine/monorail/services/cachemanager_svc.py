@@ -138,7 +138,7 @@ class CacheManager(object):
         cnxn, kind=kind, where=[('timestep < %s', [last_timestep])])
 
 
-class RamCacheConsolidate(jsonfeed.FlaskInternalTask):
+class RamCacheConsolidate(jsonfeed.InternalTask):
   """Drop old Invalidate rows when there are too many of them."""
 
   def HandleRequest(self, mr):

@@ -30,7 +30,7 @@ from search import backendsearchpipeline
 from tracker import tracker_constants
 
 
-class BackendSearch(jsonfeed.FlaskInternalTask):
+class BackendSearch(jsonfeed.InternalTask):
   """JSON servlet for issue search in a GAE backend."""
 
   CHECK_SAME_APP = True

@@ -18,7 +18,7 @@ from framework import jsonfeed
 from infra_libs import ts_mon
 
 
-class ClientMonitor(jsonfeed.FlaskJsonFeed):
+class ClientMonitor(jsonfeed.JsonFeed):
   """JSON feed to track client side js errors in ts_mon."""
 
   js_errors = ts_mon.CounterMetric('frontend/js_errors',

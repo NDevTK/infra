@@ -39,7 +39,7 @@ from tracker import tracker_views
 TEMPLATE_PATH = framework_constants.TEMPLATE_PATH
 
 
-class DateActionCron(jsonfeed.FlaskInternalTask):
+class DateActionCron(jsonfeed.InternalTask):
   """Find and process issues with date-type values that arrived today."""
 
   def HandleRequest(self, mr):

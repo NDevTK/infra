@@ -36,7 +36,7 @@ from search import search_helpers
 NONVIEWABLE_MEMCACHE_EXPIRATION = 15 * framework_constants.SECS_PER_MINUTE
 
 
-class BackendNonviewable(jsonfeed.FlaskInternalTask):
+class BackendNonviewable(jsonfeed.InternalTask):
   """JSON servlet for getting issue IDs that the specified user cannot view."""
 
   CHECK_SAME_APP = True

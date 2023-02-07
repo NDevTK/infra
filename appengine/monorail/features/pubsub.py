@@ -25,7 +25,7 @@ from framework import exceptions
 from framework import jsonfeed
 
 
-class PublishPubsubIssueChangeTask(jsonfeed.FlaskInternalTask):
+class PublishPubsubIssueChangeTask(jsonfeed.InternalTask):
   """JSON servlet that pushes issue update messages onto a pub/sub topic."""
 
   def HandleRequest(self, mr):
