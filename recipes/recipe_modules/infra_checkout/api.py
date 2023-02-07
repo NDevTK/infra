@@ -216,11 +216,11 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
     """
     go_files = sorted(
         set([
-            (self.m.path.dirname(f) or '.') + '/...'
+            (self.m.path.dirname(f[len(path_to_go_modules):]) or '.') + '/...'
             # Set --diff-filter to exclude deleted/renamed files.
             # https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203
             for f in co.get_changed_files(diff_filter='ACMTR')
-            if f.endswith('.go')
+            if f.endswith('.go') and f.startswith(path_to_go_modules)
         ]))
 
     if not go_files:

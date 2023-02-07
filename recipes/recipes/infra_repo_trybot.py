@@ -57,7 +57,7 @@ def RunSteps(api, go_version_variant, run_lint):
   if run_lint:
     with api.context(
         cwd=co.path.join('infra', 'go', 'src', 'infra')), co.go_env():
-      api.infra_checkout.apply_golangci_lint(co, 'go/src/infra')
+      api.infra_checkout.apply_golangci_lint(co, 'go/src/infra/')
     return
 
   # Analyze the CL to skip unnecessary tests.
@@ -212,5 +212,5 @@ def GenTests(api):
       'get change list',
       stdout=api.raw_io.output_text(
           textwrap.dedent("""\
-      tools.go
+      go/src/infra/cmd/tools.go
       """))))

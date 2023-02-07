@@ -50,5 +50,5 @@ def GenTests(api):
       builder='presubmit',
       git_repo='https://chromium.googlesource.com/infra/infra',
   ) + api.step_data('get change list (3)',
-                    api.raw_io.stream_output_text('main.go')) +
+                    api.raw_io.stream_output_text('go/src/infra/main.go')) +
          api.post_process(DropExpectation))

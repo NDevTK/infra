@@ -318,7 +318,7 @@
     },
     "name": "get change list",
     "~followup_annotations": [
-      "@@@STEP_LOG_LINE@change list@tools.go@@@",
+      "@@@STEP_LOG_LINE@change list@go/src/infra/cmd/tools.go@@@",
       "@@@STEP_LOG_END@change list@@@"
     ]
   },
@@ -437,7 +437,7 @@
       "--out-format=json",
       "--issues-exit-code=0",
       "--timeout=5m",
-      "./..."
+      "cmd/..."
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
