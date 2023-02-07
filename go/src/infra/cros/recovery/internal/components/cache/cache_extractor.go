@@ -14,6 +14,7 @@ import (
 
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/logger/metrics"
 )
 
 // ExtractRequest holds all data required to extract file from file on cache service.
@@ -52,5 +53,15 @@ func CurlFile(ctx context.Context, run components.Runner, sourcePath, destinatio
 	log.Debugf(ctx, "Fail to download %q from %q", destinationPath, sourcePath)
 	log.Debugf(ctx, "Fail to download %q: output %s", destinationPath, out)
 	log.Debugf(ctx, "Fail to download %q: httpResponseCode %d", destinationPath, httpResponseCode)
+	if httpResponseCode >= 500 {
+		// non-500 errors are recorded by caching service.
+		// We are only interested in 500 errors coming from the caching service at the moment..
+		if execMetric := metrics.GetDefaultAction(ctx); execMetric != nil {
+			execMetric.Observations = append(execMetric.Observations,
+				metrics.NewInt64Observation("cache_failed_response_code", int64(httpResponseCode)),
+				metrics.NewStringObservation("cache_failed_source_path", sourcePath),
+			)
+		}
+	}
 	return httpResponseCode, errors.Annotate(err, "install firmware image").Err()
 }
