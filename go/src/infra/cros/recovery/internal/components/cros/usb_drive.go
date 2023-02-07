@@ -17,6 +17,7 @@ import (
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/retry"
 	"infra/cros/recovery/logger"
+	"infra/cros/recovery/logger/metrics"
 )
 
 // DeviceMainStoragePath returns the path of the main storage device
@@ -99,9 +100,21 @@ func BootFromServoUSBDriveInDevMode(ctx context.Context, waitBootTimeout, waitBo
 
 // RunInstallOSCommand run chromeos-install command on the host.
 func RunInstallOSCommand(ctx context.Context, timeout time.Duration, run components.Runner) error {
+	startTime := time.Now()
 	out, err := run(ctx, timeout, "chromeos-install", "--yes")
+	execTime := time.Now().Sub(startTime)
+	log.Debugf(ctx, "Executuiion time: %s", execTime.Seconds())
 	log.Debugf(ctx, "Install OS:\n%s", out)
-	return errors.Annotate(err, "install OS").Err()
+	if err != nil {
+		metrics.DefaultActionAddObservations(ctx,
+			metrics.NewFloat64Observation("fail_chromeos_install_exec_time_sec", execTime.Seconds()),
+		)
+		return errors.Annotate(err, "install OS").Err()
+	}
+	metrics.DefaultActionAddObservations(ctx,
+		metrics.NewFloat64Observation("success_chromeos_install_exec_time_sec", execTime.Seconds()),
+	)
+	return nil
 }
 
 // storageErrors are all the possible key parts of error messages that can be
