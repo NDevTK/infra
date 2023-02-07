@@ -122,6 +122,10 @@ def led_recipes_tester(name, cq_group, repo_name):
         },
         service_account = "infra-try-recipes-tester@chops-service-accounts.iam.gserviceaccount.com",
         execution_timeout = 3 * time.hour,
+        experiments = {
+            # TODO(crbug.com/1393420): remove this.
+            "luci.buildbucket.omit_python2": 0,
+        },
     )
     luci.cq_tryjob_verifier(
         builder = name,
