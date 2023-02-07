@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4ff460ec_c9918bed",
+        "filename": "go/src/infra/unifiedfleet/api/v1/models/ownership.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1552404
+      },
+      "writtenOn": "2023-02-07T21:52:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aec660ed_26313089",
+      "revId": "303a10dbc7a2e607fbca4d031e34672393858470",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "39b4cb95_f5ab42da",
@@ -35,6 +53,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "92ba7577_2074e7f6",
+        "filename": "go/src/infra/unifiedfleet/api/v1/models/ownership.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1552404
+      },
+      "writtenOn": "2023-02-07T21:52:46Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "39b4cb95_f5ab42da",
+      "revId": "303a10dbc7a2e607fbca4d031e34672393858470",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d3c519ee_c34cac04",
@@ -48,6 +84,24 @@
       "writtenOn": "2023-02-07T20:41:08Z",
       "side": 1,
       "message": "Nit: Please add a next id comment.",
+      "revId": "303a10dbc7a2e607fbca4d031e34672393858470",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4f8e66a3_00a2ca52",
+        "filename": "go/src/infra/unifiedfleet/api/v1/models/security.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1552404
+      },
+      "writtenOn": "2023-02-07T21:52:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d3c519ee_c34cac04",
       "revId": "303a10dbc7a2e607fbca4d031e34672393858470",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
