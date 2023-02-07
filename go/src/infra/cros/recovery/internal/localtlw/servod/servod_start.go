@@ -17,6 +17,7 @@ import (
 	"infra/cros/recovery/docker"
 	"infra/cros/recovery/internal/localtlw/localproxy"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/tlw"
 	"infra/libs/sshpool"
 )
@@ -30,6 +31,11 @@ type StartServodRequest struct {
 	ContainerName    string
 	ContainerNetwork string
 }
+
+const (
+	observationKindStartServodTimeoutFail    = "start_servod_timeout_fail"
+	observationKindStartServodTimeoutSuccess = "start_servod_timeout_success"
+)
 
 // StartServod starts servod daemon on servo-host.
 // Method detect and working with all type of hosts.
@@ -169,15 +175,20 @@ func dockerVerifyServodDaemonIsUp(ctx context.Context, dc docker.Client, contain
 			fmt.Sprintf("%d", waitTime),
 		},
 	}
+	startTime := time.Now()
 	res, err := dc.Exec(ctx, containerName, eReq)
+	servodStartDuration := time.Now().Sub(startTime)
 	if err != nil {
+		metrics.DefaultActionAddObservations(ctx, metrics.NewFloat64Observation(observationKindStartServodTimeoutFail, servodStartDuration.Seconds()))
 		return errors.Annotate(err, "docker verify servod daemon is up").Err()
 	} else if res != nil && res.ExitCode != 0 {
 		// When the wait time is less request timeout, the cmd can finish with nil error
 		// exitcode can be 1 if the wait time is exceeded.
 		log.Debugf(ctx, "servodtool did not response before %s", waitTime)
+		metrics.DefaultActionAddObservations(ctx, metrics.NewFloat64Observation(observationKindStartServodTimeoutFail, servodStartDuration.Seconds()))
 		return errors.Reason("docker verify servod daemon is up: %s", res.Stderr).Err()
 	}
 	// Servod process is up.
+	metrics.DefaultActionAddObservations(ctx, metrics.NewFloat64Observation(observationKindStartServodTimeoutSuccess, servodStartDuration.Seconds()))
 	return nil
 }
