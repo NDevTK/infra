@@ -18,6 +18,41 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a89b9a09_8c194722",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-02-07T00:57:16Z",
+      "side": 1,
+      "message": "resolved offline as only print hostname.",
+      "revId": "9f2d67304389014dabeac092d395511bfd3fef45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d72586a1_ec1e39a8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-02-07T00:57:16Z",
+      "side": 1,
+      "message": "that is part of the other logs in the same run. and they will be printed just before this line.",
+      "parentUuid": "b130ceaf_1be085e4",
+      "revId": "9f2d67304389014dabeac092d395511bfd3fef45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f56faf7c_b12a2a05",
@@ -35,6 +70,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b02975e2_84eb37ff",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/client.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-02-07T00:57:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f56faf7c_b12a2a05",
+      "revId": "9f2d67304389014dabeac092d395511bfd3fef45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0be1b1d8_3bda5492",
@@ -48,6 +101,30 @@
       "writtenOn": "2023-02-06T19:00:11Z",
       "side": 1,
       "message": "Consider `remote command %q on host %q timed out`",
+      "range": {
+        "startLine": 225,
+        "startChar": 21,
+        "endLine": 225,
+        "endChar": 57
+      },
+      "revId": "9f2d67304389014dabeac092d395511bfd3fef45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c06cb8f7_6768da8e",
+        "filename": "go/src/infra/cros/recovery/internal/localtlw/client.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-02-07T00:57:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0be1b1d8_3bda5492",
       "range": {
         "startLine": 225,
         "startChar": 21,
