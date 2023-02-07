@@ -582,7 +582,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
                                '/changes/138000/revisions/4/review'))
     data = json.loads(args[1])
-    self.assertDictEqual({'labels': {'Code-Coverage': -1}}, data)
+    self.assertDictEqual({'Code-Coverage': -1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
@@ -665,7 +665,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
                                '/changes/138000/revisions/4/review'))
     data = json.loads(args[1])
-    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
@@ -764,7 +764,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
                                '/changes/138000/revisions/4/review'))
     data = json.loads(args[1])
-    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
@@ -846,7 +846,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
                                '/changes/138000/revisions/4/review'))
     data = json.loads(args[1])
-    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
@@ -928,7 +928,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
                                '/changes/138000/revisions/4/review'))
     data = json.loads(args[1])
-    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
@@ -1011,7 +1011,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
                                '/changes/138000/revisions/4/review'))
     data = json.loads(args[1])
-    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
@@ -1093,7 +1093,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
                                '/changes/138000/revisions/4/review'))
     data = json.loads(args[1])
-    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
@@ -1176,7 +1176,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
                                '/changes/138000/revisions/4/review'))
     data = json.loads(args[1])
-    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
@@ -1258,7 +1258,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
                                '/changes/138000/revisions/4/review'))
     data = json.loads(args[1])
-    self.assertDictEqual({'labels': {'Code-Coverage': +1}}, data)
+    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')

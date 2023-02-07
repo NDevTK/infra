@@ -608,12 +608,26 @@ class ProcessCodeCoverageData(BaseHandler):
           # Block CL only if it qualifies and is not a revert CL
           if _ChangeShouldBeBlocked(
               entity, author) and 'revert_of' not in change_details:
-            data = {'labels': {'Code-Coverage': -1}}
+            data = {
+                'labels': {
+                    'Code-Coverage': -1
+                },
+                'message':
+                    ('This change will be blocked from submission as there are '
+                     'files with incremental coverage(all tests) < %d%%.'
+                     'Please add tests for uncovered lines.' %
+                     _DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING)
+            }
             logging.info(('Adding CodeCoverage-1 label for '
                           'project %s, change %d,  patchset %d'), patch.project,
                          patch.change, patch.patchset)
           else:
-            data = {'labels': {'Code-Coverage': +1}}
+            data = {
+                'labels': {
+                    'Code-Coverage': +1
+                },
+                'message': 'This change meets the code coverage requirements.'
+            }
             logging.info(('Adding CodeCoverage+1 label for '
                           'project %s, change %d,  patchset %d'), patch.project,
                          patch.change, patch.patchset)
