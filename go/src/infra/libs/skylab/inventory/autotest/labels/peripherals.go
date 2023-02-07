@@ -91,6 +91,13 @@ func otherPeripheralsConverter(ls *inventory.SchedulableLabels) []string {
 		}
 	}
 
+	if invCState := p.GetChameleonState(); invCState != inventory.PeripheralState_UNKNOWN {
+		if labCState, ok := lab.PeripheralState_name[int32(invCState)]; ok {
+			lv := "chameleon_state:" + labCState
+			labels = append(labels, lv)
+		}
+	}
+
 	if servoType := p.GetServoType(); servoType != "" {
 		labels = append(labels, fmt.Sprintf("servo_type:%s", servoType))
 	}
@@ -245,6 +252,14 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, labels []string) 
 			if labSStateVal, ok := lab.PeripheralState_value[strings.ToUpper(v)]; ok {
 				servoState := inventory.PeripheralState(labSStateVal)
 				p.ServoState = &servoState
+			}
+		case "chameleon_state":
+			if v == "" {
+				continue
+			}
+			if labCStateVal, ok := lab.PeripheralState_value[strings.ToUpper(v)]; ok {
+				cState := inventory.PeripheralState(labCStateVal)
+				p.ChameleonState = &cState
 			}
 		case "rpm_state":
 			if labRpmState, ok := lab.PeripheralState_value[strings.ToUpper(v)]; ok {

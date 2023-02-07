@@ -80,6 +80,7 @@ peripherals: {
   chameleon_type: 2
   chameleon_type: 5
   chameleon: true
+  chameleon_state: 1
   camerabox: true
   camerabox_facing: 1
   camerabox_light: 1
@@ -202,6 +203,7 @@ var fullLabels = []string{
 	"chameleon",
 	"chameleon:dp",
 	"chameleon:hdmi",
+	"chameleon_state:WORKING",
 	"chaos_dut",
 	"chaos_nightly",
 	"chromesign",
@@ -674,6 +676,7 @@ peripherals: {
   chameleon_type: 2
   chameleon_type: 5
   chameleon: true
+  chameleon_state: 1
   camerabox: true
   camerabox_facing: 1
   camerabox_light: 1
@@ -797,6 +800,7 @@ var fullLabelsSpecial = []string{
 	"chameleon",
 	"chameleon:dp",
 	"chameleon:hdmi",
+	"chameleon_state:WORKING",
 	"chaos_dut",
 	"chaos_nightly",
 	"chromesign",

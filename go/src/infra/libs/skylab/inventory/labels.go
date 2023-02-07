@@ -51,6 +51,7 @@ func NewSchedulableLabels() *SchedulableLabels {
 			CameraboxFacing:        new(Peripherals_CameraboxFacing),
 			CameraboxLight:         new(Peripherals_CameraboxLight),
 			Chameleon:              new(bool),
+			ChameleonState:         new(PeripheralState),
 			Conductive:             new(bool),
 			Huddly:                 new(bool),
 			Mimo:                   new(bool),
