@@ -159,6 +159,7 @@ func (r *baseRun) run(ctx context.Context, args []string, f converter) (ret int)
 		name, url, found := strings.Cut(pair, "=")
 		if !found {
 			logging.Warningf(ctx, "Warning: no '=' in invocation-link-artifacts pair: %q, ignoring", pair)
+			continue
 		}
 		linkArtifacts[name] = &sinkpb.Artifact{
 			Body:        &sinkpb.Artifact_Contents{Contents: []byte(url)},
