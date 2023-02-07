@@ -20,6 +20,7 @@ require (
 	github.com/VividCortex/godaemon v1.0.0
 	github.com/aclements/go-moremath v0.0.0-20210112150236-f10218a38794
 	github.com/andygrunwald/go-gerrit v0.0.0-20210726065827-cc4e14e40b5b
+	github.com/bazelbuild/remote-apis v0.0.0-20220510175640-3b4b64021035
 	github.com/bazelbuild/remote-apis-sdks v0.0.0-20230123164355-3533698631dd
 	github.com/bmatcuk/doublestar v1.3.4
 	github.com/containerd/cgroups v1.0.4
@@ -112,7 +113,6 @@ require (
 	github.com/PaesslerAG/gval v1.0.0 // indirect
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20210907221601-4f80a5e09cd0 // indirect
 	github.com/aws/aws-sdk-go v1.44.20 // indirect
-	github.com/bazelbuild/remote-apis v0.0.0-20220510175640-3b4b64021035 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/census-instrumentation/opencensus-proto v0.3.0 // indirect
