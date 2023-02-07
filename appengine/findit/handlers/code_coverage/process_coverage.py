@@ -85,7 +85,8 @@ def _IsBlockingChangesAllowed(project):
 
 
 def _IsAuthorInAllowlistForBlocking(author_email):
-  assert author_email.endswith("@google.com")
+  if not author_email.endswith("@google.com"):
+    return False
   author = author_email[:author_email.find("@")]
   return author in waterfall_config.GetCodeCoverageSettings().get(
       'block_low_coverage_changes_authors', [])
@@ -554,21 +555,28 @@ class ProcessCodeCoverageData(BaseHandler):
         return entity
 
       def _ChangeShouldBeBlocked(entity, author_email):
+        logging.info("checking if %s is in allowlist", author_email)
         if not _IsAuthorInAllowlistForBlocking(author_email):
           return False
-        for inc_metrics in entity.incremental_percentages_unit:
+        for inc_metrics in entity.incremental_percentages:
+          logging.info("checking if %s is a java file", inc_metrics.path)
           if not inc_metrics.path.endswith(".java"):
             continue
+          logging.info("checking if %s is in allowed dirs", inc_metrics.path)
           if not _IsFileInAllowlistForBlocking(inc_metrics.path):
             continue
+          logging.info("checking for %s is a test/main file", inc_metrics.path)
           # Do not block because of test/main files
           if re.match(utils.TEST_FILE_REGEX, inc_metrics.path) or re.match(
               utils.MAIN_FILE_REGEX, inc_metrics.path):
             continue
+          logging.info("checking if %s has enough lines changed",
+                       inc_metrics.path)
           if not _HaveEnoughLinesChangedForBlocking(inc_metrics):
             continue
+          logging.info("checking coverage for %s", inc_metrics.path)
           if _HasLowCoverageForBlocking(inc_metrics):
-            for abs_metrics in entity.absolute_percentages_unit:
+            for abs_metrics in entity.absolute_percentages:
               if (abs_metrics.path == inc_metrics.path and
                   not _CanBeExemptFromBlocking(abs_metrics)):
                 return True
@@ -587,6 +595,8 @@ class ProcessCodeCoverageData(BaseHandler):
       # if mimic_builder represents a unit tests only builder.
       if mimic_builder.endswith('_unit'):
         entity = _GetEntityForUnit(entity)
+      else:
+        entity = _GetEntity(entity)
         if _IsBlockingChangesAllowed(patch.project):
           change_details = code_coverage_util.FetchChangeDetails(
               patch.host, patch.project, patch.change, detailed_accounts=True)
@@ -608,8 +618,6 @@ class ProcessCodeCoverageData(BaseHandler):
                           'project %s, change %d,  patchset %d'), patch.project,
                          patch.change, patch.patchset)
           FinditHttpClient().Post(url, json.dumps(data), headers=headers)
-      else:
-        entity = _GetEntity(entity)
       yield entity.put_async()
 
     update_future = _UpdateCoverageDataAsync()
