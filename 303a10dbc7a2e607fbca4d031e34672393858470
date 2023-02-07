@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aec660ed_26313089",
+        "filename": "go/src/infra/unifiedfleet/api/v1/models/ownership.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2023-02-07T20:41:08Z",
+      "side": 1,
+      "message": "This needs to be updated.",
+      "revId": "303a10dbc7a2e607fbca4d031e34672393858470",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "39b4cb95_f5ab42da",
+        "filename": "go/src/infra/unifiedfleet/api/v1/models/ownership.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2023-02-07T20:41:08Z",
+      "side": 1,
+      "message": "Why not id 7?",
+      "revId": "303a10dbc7a2e607fbca4d031e34672393858470",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d3c519ee_c34cac04",
+        "filename": "go/src/infra/unifiedfleet/api/v1/models/security.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2023-02-07T20:41:08Z",
+      "side": 1,
+      "message": "Nit: Please add a next id comment.",
+      "revId": "303a10dbc7a2e607fbca4d031e34672393858470",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
