@@ -558,10 +558,7 @@ class ProcessCodeCoverageData(BaseHandler):
                 entity.data_unit))
         return entity
 
-      def _ChangeShouldBeBlocked(entity, author_email):
-        if not _IsAuthorInAllowlistForBlocking(author_email):
-          logging.info("%s is not in allowlist", author_email)
-          return False
+      def _ChangeShouldBeBlocked(entity):
         for inc_metrics in entity.incremental_percentages:
           if not inc_metrics.path.endswith(".java"):
             logging.info("%s is not a java file", inc_metrics.path)
@@ -607,14 +604,18 @@ class ProcessCodeCoverageData(BaseHandler):
         if _IsBlockingChangesAllowed(patch.project):
           change_details = code_coverage_util.FetchChangeDetails(
               patch.host, patch.project, patch.change, detailed_accounts=True)
-          author = change_details['owner']['email']
-          author = _GetChromiumToGooglerMapping().get(author, author)
+          author_email = change_details['owner']['email']
+          author_email = _GetChromiumToGooglerMapping().get(
+              author_email, author_email)
+          if not _IsAuthorInAllowlistForBlocking(author_email):
+            logging.info("%s is not in allowlist", author_email)
+            return
           url = 'https://%s/changes/%d/revisions/%d/review' % (
               patch.host, patch.change, patch.patchset)
           headers = {'Content-Type': 'application/json; charset=UTF-8'}
           # Block CL only if it qualifies and is not a revert CL
           if _ChangeShouldBeBlocked(
-              entity, author) and 'revert_of' not in change_details:
+              entity) and 'revert_of' not in change_details:
             data = {
                 'labels': {
                     'Code-Coverage': -1

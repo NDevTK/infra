@@ -856,7 +856,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testProcessCLPatchDataLowCoverageBlocking_authorNotOptIn_allow(
+  def testProcessCLPatchDataLowCoverageBlocking_authorNotOptIn_noop(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
       *_):
@@ -924,12 +924,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)
 
-    self.assertEqual(len(mock_http_client.call_args_list), 1)
-    args, _ = mock_http_client.call_args_list[0]
-    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
-                               '/changes/138000/revisions/4/review'))
-    data = json.loads(args[1])
-    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
+    self.assertEqual(len(mock_http_client.call_args_list), 0)
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
@@ -938,7 +933,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testProcessCLPatchDataLowCoverageBlocking_externalAuthor_allow(
+  def testProcessCLPatchDataLowCoverageBlocking_externalAuthor_noop(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
       *_):
@@ -1007,12 +1002,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)
 
-    self.assertEqual(len(mock_http_client.call_args_list), 1)
-    args, _ = mock_http_client.call_args_list[0]
-    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
-                               '/changes/138000/revisions/4/review'))
-    data = json.loads(args[1])
-    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
+    self.assertEqual(len(mock_http_client.call_args_list), 0)
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
