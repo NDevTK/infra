@@ -1,0 +1,49 @@
+unit: {
+  v_name: {
+    signature: "#8a8c023a2c3840a9ef48a8486141fa09f71a2ab3b5b1128fd9a7aaae91fafbd1"
+    corpus: "chromium.googlesource.com/chromium/src"
+    language: "java"
+  }
+  required_input: {
+    v_name: {
+      corpus: "chromium.googlesource.com/chromium/src"
+      path: "/java.base/java/lang/AbstractMethodError.class"
+    }
+    info: {
+      path: "/java.base/java/lang/AbstractMethodError.class"
+      digest: "fa029ed4b04ac4ba041ce046e5dc97f87c083cd27f4933c051db230529417186"
+    }
+  }
+  required_input: {
+    v_name: {
+      corpus: "chromium.googlesource.com/chromium/src"
+      path: "build/android/gyp/test/java/org/chromium/helloworld/HelloWorldPrinter.java"
+    }
+    info: {
+      path: "build/android/gyp/test/java/org/chromium/helloworld/HelloWorldPrinter.java"
+      digest: "cbe9532ee6820e42414fe28ad4b7eeff7c4a03d09486f3b2a6acbb193327e454"
+    }
+  }
+  argument: "--release"
+  argument: "11"
+  argument: "-g"
+  argument: "-Xlint:-dep-ann"
+  argument: "-proc:none"
+  argument: "-encoding"
+  argument: "UTF-8"
+  source_file: "build/android/gyp/test/java/org/chromium/helloworld/HelloWorldPrinter.java"
+  output_key: "out/Debug/obj/build/android/gyp/test/hello_world_java.javac.jar.javac_extractor.staging/classes"
+  working_directory: "/root"
+  details: {
+    [kythe.io/proto/kythe.proto.JavaDetails]: {
+      sourcepath: "build/android/gyp/test/java"
+      bootclasspath: "/java.base/"
+    }
+  }
+  details: {
+    [kythe.io/proto/kythe.proto.BuildDetails]: {
+      build_target: "#8a8c023a2c3840a9ef48a8486141fa09f71a2ab3b5b1128fd9a7aaae91fafbd1"
+      build_config: "win"
+    }
+  }
+}

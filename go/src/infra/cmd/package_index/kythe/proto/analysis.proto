@@ -18,15 +18,15 @@ syntax = "proto3";
 
 package kythe.proto;
 
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+import "kythe/proto/storage.proto";
+
 // go_package has been edited so all files in this directory have the same
 // go package.
 option go_package = "infra/cmd/package_index/kythe/proto";
 option java_package = "com.google.devtools.kythe.proto";
 option cc_enable_arenas = true;
-
-import "google/protobuf/any.proto";
-import "google/protobuf/timestamp.proto";
-import "kythe/proto/storage.proto";
 
 // An AnalysisRequest instructs an analyzer to perform an analysis on a single
 // CompilationUnit.
@@ -50,10 +50,9 @@ message AnalysisRequest {
 // place.  A given analysis may not produce any outputs.  It is okay for an
 // indexer to send an empty AnalysisOutput message if needed to keep the RPC
 // channel alive; the driver must correctly handle this.
-//
-// The format of value is determined by the analyzer. Kythe language indexers
-// emit wire-format kythe.proto.Entry messages.
 message AnalysisOutput {
+  // The format of `value` is determined by the analyzer. Kythe language
+  // indexers emit wire-format kythe.proto.Entry messages.
   bytes value = 1;
 
   // An analyzer may optionally report the final result of analysis by
@@ -82,6 +81,9 @@ message AnalysisResult {
 
   Status status = 1;   // the status code describing the result
   string summary = 2;  // a human-readable error message for use in diagnostics
+
+  // Freeform details from the analyzer
+  repeated google.protobuf.Any details = 3;
 }
 
 // Describes a single unit of compilation.
@@ -208,6 +210,11 @@ message KzipInfo {
   map<string, CorpusInfo> corpora = 1;
   // Size in bytes of all the kzips that contributed to this KzipInfo.
   int64 size = 4;
+
+  // The vname paths of required inputs should be relative to the root of the
+  // repo. This field contains paths that erroneously contain a leading '/'.
+  repeated string absolute_paths = 6;
+
   // Error messages detected when computing KzipInfo. For example, source files
   // with no corresponding required_input. If there are any items in this field,
   // it indicates that this kzip has serious problems and should not be used.

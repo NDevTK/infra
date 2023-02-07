@@ -18,8 +18,6 @@ syntax = "proto3";
 
 package kythe.proto;
 
-// go_package has been edited so all files in this directory have the same
-// go package.
 option go_package = "infra/cmd/package_index/kythe/proto";
 option java_package = "com.google.devtools.kythe.proto";
 
@@ -49,7 +47,7 @@ message VName {
 
   // A corpus-specific root label, designating a subordinate collection within
   // the corpus.  If a corpus stores files in unrelated directory structures,
-  // for example, the root can be used to distinguish them.  Or, of a corpus
+  // for example, the root can be used to distinguish them.  Or, if a corpus
   // incorporates subprojects, the root can be a project ID that it governs.
   // This may also be used to distinguish virtual subgroups of a corpus such as
   // generated files.
@@ -151,8 +149,7 @@ message WriteRequest {
 }
 
 // Response to a WriteRequest
-message WriteReply {
-}
+message WriteReply {}
 
 // Request for a stream of Entry objects resulting from a full scan of a
 // GraphStore.

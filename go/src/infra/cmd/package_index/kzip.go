@@ -9,7 +9,6 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -35,9 +34,6 @@ type kzipEntry struct {
 	path    string
 	content []byte
 }
-
-// errorNoUnit indicates that no unit was found in the kzip archive.
-var errorNoUnit = errors.New("kzip with no unit found")
 
 // mergeExistingKzips iterates through files inside existingJavaKzipsPath
 // and sends existing kzip files to kzipChannel to be processed.
@@ -110,6 +106,7 @@ func (ip *indexPack) processExistingKzips(ctx context.Context, existingKzipChann
 func (ip *indexPack) processExistingKzip(ctx context.Context, kzip string, kzipEntryChannel chan<- kzipEntry,
 	outputSet *ConcurrentSet) error {
 	var unit *zip.File
+	var protoUnmarshalFunc func(b []byte, m proto.Message) error
 	files := make(map[string]*zip.File)
 
 	r, err := zip.OpenReader(kzip)
@@ -132,6 +129,13 @@ func (ip *indexPack) processExistingKzip(ctx context.Context, kzip string, kzipE
 				return nil
 			}
 			unit = zipInfo
+			switch segments[1] {
+			case "pbunits":
+				protoUnmarshalFunc = proto.Unmarshal
+				break
+			default:
+				protoUnmarshalFunc = protojson.Unmarshal
+			}
 		} else if segments[1] == "files" {
 			files[segments[2]] = zipInfo
 		} else {
@@ -141,7 +145,7 @@ func (ip *indexPack) processExistingKzip(ctx context.Context, kzip string, kzipE
 
 	if unit == nil {
 		logging.Warningf(ctx, "Ignoring kzip file %s as unit file is not found.", kzip)
-		return errorNoUnit
+		return nil
 	}
 
 	// Add unit file.
@@ -162,10 +166,10 @@ func (ip *indexPack) processExistingKzip(ctx context.Context, kzip string, kzipE
 	// Units in Java zip archive are json encoded.
 	// Convert JSON to protobuf.
 	indexedCompilationProto := &kpb.IndexedCompilation{}
-	err = protojson.Unmarshal(content, indexedCompilationProto)
+	err = protoUnmarshalFunc(content, indexedCompilationProto)
 	if err != nil {
-		logging.Warningf(ctx, "Error parsing JSON")
-		return err
+		logging.Warningf(ctx, "Error unmarshaling proto text")
+		return fmt.Errorf("error unmarshaling proto text in %s %w", kzip, err)
 	}
 	protoUnit := indexedCompilationProto.GetUnit()
 	outputKey := protoUnit.GetOutputKey()
