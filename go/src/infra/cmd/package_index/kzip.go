@@ -9,6 +9,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -34,6 +35,9 @@ type kzipEntry struct {
 	path    string
 	content []byte
 }
+
+// errorNoUnit indicates that no unit was found in the kzip archive.
+var errorNoUnit = errors.New("kzip with no unit found")
 
 // mergeExistingKzips iterates through files inside existingJavaKzipsPath
 // and sends existing kzip files to kzipChannel to be processed.
@@ -122,7 +126,7 @@ func (ip *indexPack) processExistingKzip(ctx context.Context, kzip string, kzipE
 			continue
 		}
 
-		if segments[1] == "units" {
+		if strings.HasSuffix(segments[1], "units") {
 			if unit != nil {
 				logging.Warningf(ctx, "Ignoring kzip file as more than one unit in kzip file %s.", fName)
 				return nil
@@ -137,6 +141,7 @@ func (ip *indexPack) processExistingKzip(ctx context.Context, kzip string, kzipE
 
 	if unit == nil {
 		logging.Warningf(ctx, "Ignoring kzip file %s as unit file is not found.", kzip)
+		return errorNoUnit
 	}
 
 	// Add unit file.
