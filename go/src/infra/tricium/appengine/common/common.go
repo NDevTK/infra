@@ -68,7 +68,7 @@ func MiddlewareForInternal() router.MiddlewareChain {
 // TODO(qyearsley): Extract this to an appropriate place in luci-go so it might be re-used.
 type anonymousMethod struct{}
 
-func (m anonymousMethod) Authenticate(ctx context.Context, r *http.Request) (*auth.User, auth.Session, error) {
+func (m anonymousMethod) Authenticate(ctx context.Context, r auth.RequestMetadata) (*auth.User, auth.Session, error) {
 	return &auth.User{Identity: identity.AnonymousIdentity}, nil, nil
 }
 

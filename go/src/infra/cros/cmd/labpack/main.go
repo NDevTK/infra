@@ -180,7 +180,7 @@ func uploadLogs(ctx context.Context, state *build.State, lg logger.Logger) (rErr
 
 	lg.Infof("Persist the swarming logs")
 	// Actually persist the logs.
-	swarmingTaskID := state.Infra().GetSwarming().GetTaskId()
+	swarmingTaskID := state.Build().GetInfra().GetSwarming().GetTaskId()
 	gsURL, err := parallelUpload(ctx, lg, client, swarmingTaskID)
 	if err != nil {
 		return errors.Annotate(err, "upload logs").Err()
@@ -291,6 +291,8 @@ func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State
 		}
 	}
 
+	infraPb := state.Build().GetInfra()
+
 	runArgs := &recovery.RunArgs{
 		UnitName:              in.GetUnitName(),
 		TaskName:              task,
@@ -300,8 +302,8 @@ func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State
 		Metrics:               metrics,
 		EnableRecovery:        in.GetEnableRecovery(),
 		EnableUpdateInventory: in.GetUpdateInventory(),
-		SwarmingTaskID:        state.Infra().GetSwarming().GetTaskId(),
-		BuildbucketID:         state.Infra().GetBackend().GetTask().GetId().GetId(),
+		SwarmingTaskID:        infraPb.GetSwarming().GetTaskId(),
+		BuildbucketID:         infraPb.GetBackend().GetTask().GetId().GetId(),
 		LogRoot:               logRoot,
 	}
 	if uErr := runArgs.UseConfigBase64(in.GetConfiguration()); uErr != nil {

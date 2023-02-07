@@ -138,8 +138,10 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	env.Set("GOROOT_BOOTSTRAP", gorootBootstrap)
 	env.Set("GOBIN", "")
 	env.Set("GOCACHE", gocacheDir)
-	env.Set("GO_BUILDER_NAME", st.Builder().Builder) // TODO(mknyszek): This is underspecified. We may need Project and Bucket.
+	env.Set("GO_BUILDER_NAME", st.Build().GetBuilder().GetBuilder()) // TODO(mknyszek): This is underspecified. We may need Project and Bucket.
 	ctx = env.SetInCtx(ctx)
+
+	inputPb := st.Build().GetInput()
 
 	// Fetch the repository into workdir.
 	isDryRun := false
@@ -148,7 +150,7 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	} else if err != cv.ErrNotActive {
 		return err
 	}
-	if err := fetchRepo(ctx, httpClient, inputs.Project, workdir, st.GitilesCommit(), st.GerritChanges(), isDryRun); err != nil {
+	if err := fetchRepo(ctx, httpClient, inputs.Project, workdir, inputPb.GetGitilesCommit(), inputPb.GetGerritChanges(), isDryRun); err != nil {
 		return err
 	}
 
