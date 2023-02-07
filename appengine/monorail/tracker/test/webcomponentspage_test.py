@@ -31,8 +31,7 @@ class WebComponentsPageTest(unittest.TestCase):
     self.hotlist = self.services.features.TestAddHotlist(
         'HotlistName', summary='summary', owner_ids=[111], hotlist_id=1236)
 
-    self.servlet = webcomponentspage.WebComponentsPage(
-        'req', 'res', services=self.services)
+    self.servlet = webcomponentspage.WebComponentsPage(services=self.services)
 
   def testHotlistPage_OldUiUrl(self):
     mr = testing_helpers.MakeMonorailRequest(

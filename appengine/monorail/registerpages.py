@@ -356,7 +356,7 @@ class ServletRegistry(object):
                 services=service).PostIssueAdvSearchPage, ['POST']),
         (
             '/<string:project_name>/issues/detail',
-            webcomponentspage.FlaskWebComponentsPage(
+            webcomponentspage.WebComponentsPage(
                 services=service).GetWebComponentsIssueDetail, ['GET']),
         (
             '/<string:project_name>/issues/export',
@@ -388,11 +388,11 @@ class ServletRegistry(object):
             issueentry.IssueEntry(services=service).PostIssueEntry, ['POST']),
         (
             '/<string:project_name>/issues/entry_new',
-            webcomponentspage.FlaskWebComponentsPage(
+            webcomponentspage.WebComponentsPage(
                 services=service).GetWebComponentsIssueNewEntry, ['GET']),
         (
             '/<string:project_name>/issues/list',
-            webcomponentspage.FlaskWebComponentsPage(
+            webcomponentspage.WebComponentsPage(
                 services=service).GetWebComponentsIssueList, ['GET']),
         (
             '/<string:project_name>/issues/reindex',
@@ -416,7 +416,7 @@ class ServletRegistry(object):
             ['POST']),
         (
             '/<string:project_name>/issues/wizard',
-            webcomponentspage.FlaskWebComponentsPage(
+            webcomponentspage.WebComponentsPage(
                 services=service).GetWebComponentsIssueWizard, ['GET']),
         (
             '/<string:project_name>/templates/create',
@@ -810,12 +810,12 @@ class ServletRegistry(object):
     self.routes.append(
         [
             '/hotlists<string:unused>',
-            webcomponentspage.FlaskWebComponentsPage(
+            webcomponentspage.WebComponentsPage(
                 services=service).GetWebComponentsHotlist, ['GET']
         ])
     self.routes.append(
         [
             '/users<string:unused>',
-            webcomponentspage.FlaskWebComponentsPage(
+            webcomponentspage.WebComponentsPage(
                 services=service).GetWebComponentsUser, ['GET']
         ])
