@@ -23,4 +23,6 @@ message OwnershipData {
    string miba_realm = 5;
    // Customer who uses this bot.
    string customer = 6;
+   // builders for this bot, if any
+   repeated string builders = 8;
 }
