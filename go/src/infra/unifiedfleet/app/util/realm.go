@@ -161,3 +161,11 @@ func ToChromiumRealm(name, defaultRealm string) string {
 	}
 	return defaultRealm
 }
+
+// IsBrowserLegacyAsset returns if an asset is a legacy asset migrated from browser lab which doesn't have an assetTag
+func IsBrowserLegacyAsset(name string) bool {
+	if name == "chrome-asset" || name == "chromium-asset" {
+		return true
+	}
+	return false
+}

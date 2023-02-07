@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
@@ -378,6 +379,13 @@ func (c *addAsset) addAssetToUFS(ctx context.Context, ic ufsAPI.FleetClient, req
 	}
 	if req.Asset.Location.Zone == ufspb.Zone_ZONE_UNSPECIFIED {
 		return nil, cmdlib.NewQuietUsageError(c.Flags, "Invalid zone")
+	}
+	if ufsUtil.IsBrowserLegacyAsset(req.Asset.Name) {
+		if strings.HasPrefix(req.Asset.Name, "chromium") {
+			req.Asset.Name = fmt.Sprintf("chromium-%s", uuid.New().String())
+		} else {
+			req.Asset.Name = fmt.Sprintf("chrome-%s", uuid.New().String())
+		}
 	}
 	req.Asset.Realm = ufsUtil.ToChromiumRealm(req.Asset.Name, req.Asset.Realm)
 	ufsAsset, err := ic.CreateAsset(ctx, req)
