@@ -59,6 +59,7 @@ var getBuildFields = []string{
 	"id",
 	// Build details are parsed from the build's properties.
 	"output.properties",
+	"output.gitiles_commit",
 	// Build status is used to determine whether the build is complete.
 	"status",
 	"steps",

@@ -66,6 +66,8 @@ func luciEXEMain(ctx context.Context, input *buildbucket_pb.Build, userArgs []st
 		return err
 	}
 
+	input.Output.GitilesCommit = compBuild.GetOutput().GetGitilesCommit()
+
 	if parsedArgs.phase == swarmingPhase && swarmingPropsInCompBuildOutput(compBuild) {
 		input.Status = buildbucket_pb.Status_SUCCESS
 	} else {

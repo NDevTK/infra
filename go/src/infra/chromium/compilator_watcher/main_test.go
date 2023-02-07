@@ -36,6 +36,14 @@ func getSteps(stepPairs []stepNameStatusPair) []*buildbucket_pb.Step {
 	return steps
 }
 
+var genericGitilesCommit = &buildbucket_pb.GitilesCommit{
+	Host:     "chromium.googlesource.com",
+	Project:  "chromium/src",
+	Id:       "ad975cfcd476867068e8c613ac26c64b8cab2567",
+	Ref:      "refs/heads/main",
+	Position: 1100487,
+}
+
 func getBuildsWithSteps(
 	stepPairs []stepNameStatusPair,
 	outputFields map[string]*structpb.Value,
@@ -50,6 +58,7 @@ func getBuildsWithSteps(
 			Properties: &structpb.Struct{
 				Fields: outputFields,
 			},
+			GitilesCommit: genericGitilesCommit,
 		},
 	}
 }
@@ -205,7 +214,8 @@ func TestLuciEXEMain(t *testing.T) {
 					SummaryMarkdown: "",
 					Steps:           genericCompleteSteps,
 					Output: &buildbucket_pb.Build_Output{
-						Properties: genericCompBuildOutputPropsWSwarming,
+						Properties:    genericCompBuildOutputPropsWSwarming,
+						GitilesCommit: genericGitilesCommit,
 					},
 				}
 
@@ -217,7 +227,8 @@ func TestLuciEXEMain(t *testing.T) {
 
 				So(err, ShouldBeNil)
 				So(input.GetOutput(), ShouldResembleProto, &buildbucket_pb.Build_Output{
-					Properties: expectedSubBuildOutputProps,
+					Properties:    expectedSubBuildOutputProps,
+					GitilesCommit: genericGitilesCommit,
 				})
 			})
 			Convey("during localTestPhase", func() {
@@ -230,7 +241,8 @@ func TestLuciEXEMain(t *testing.T) {
 					SummaryMarkdown: "",
 					Steps:           genericCompleteSteps,
 					Output: &buildbucket_pb.Build_Output{
-						Properties: genericCompBuildOutputPropsNoSwarming,
+						Properties:    genericCompBuildOutputPropsNoSwarming,
+						GitilesCommit: genericGitilesCommit,
 					},
 				}
 
@@ -242,7 +254,8 @@ func TestLuciEXEMain(t *testing.T) {
 
 				So(err, ShouldBeNil)
 				So(input.GetOutput(), ShouldResembleProto, &buildbucket_pb.Build_Output{
-					Properties: expectedSubBuildOutputProps,
+					Properties:    expectedSubBuildOutputProps,
+					GitilesCommit: genericGitilesCommit,
 				})
 			})
 		})
@@ -284,7 +297,10 @@ func TestLuciEXEMain(t *testing.T) {
 				Id:              12345,
 				SummaryMarkdown: "",
 				Steps:           genericCompleteSteps,
-				Output:          &buildbucket_pb.Build_Output{Properties: genericCompBuildOutputPropsWSwarming},
+				Output: &buildbucket_pb.Build_Output{
+					Properties:    genericCompBuildOutputPropsWSwarming,
+					GitilesCommit: genericGitilesCommit,
+				},
 			}
 			ctx = context.WithValue(
 				ctx,
@@ -295,7 +311,9 @@ func TestLuciEXEMain(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(input.Status, ShouldResemble, buildbucket_pb.Status_SUCCESS)
 			So(input.GetOutput(), ShouldResembleProto, &buildbucket_pb.Build_Output{
-				Properties: expectedSubBuildOutputProps})
+				Properties:    expectedSubBuildOutputProps,
+				GitilesCommit: genericGitilesCommit,
+			})
 		})
 
 		Convey("exits after compilator build successfully ends with no swarming trigger properties", func() {
@@ -306,7 +324,8 @@ func TestLuciEXEMain(t *testing.T) {
 				Id:              12345,
 				SummaryMarkdown: "",
 				Output: &buildbucket_pb.Build_Output{
-					Properties: genericCompBuildOutputPropsNoSwarming,
+					Properties:    genericCompBuildOutputPropsNoSwarming,
+					GitilesCommit: genericGitilesCommit,
 				},
 			}
 			ctx = context.WithValue(
@@ -319,7 +338,8 @@ func TestLuciEXEMain(t *testing.T) {
 			So(input.Status, ShouldResemble, buildbucket_pb.Status_SUCCESS)
 
 			So(input.GetOutput(), ShouldResembleProto, &buildbucket_pb.Build_Output{
-				Properties: expectedSubBuildOutputProps,
+				Properties:    expectedSubBuildOutputProps,
+				GitilesCommit: genericGitilesCommit,
 			})
 		})
 
