@@ -31,3 +31,14 @@ func GetDefaultAction(ctx context.Context) *Action {
 	}
 	return nil
 }
+
+// DefaultActionAddObservations adds observation to default action in context.
+func DefaultActionAddObservations(ctx context.Context, observations ...*Observation) {
+	if len(observations) == 0 {
+		// Do nothing. Observation is not provided.
+		return
+	}
+	if execMetric := GetDefaultAction(ctx); execMetric != nil {
+		execMetric.Observations = append(execMetric.Observations, observations...)
+	}
+}
