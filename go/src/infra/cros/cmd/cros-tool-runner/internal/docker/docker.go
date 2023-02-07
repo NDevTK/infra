@@ -8,11 +8,11 @@ package docker
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -74,8 +74,8 @@ type Docker struct {
 	// LogFileDir used for the logfile for the service in the container.
 	LogFileDir string
 
-	Stdoutbuf    io.ReadCloser
-	Stdouterrbuf io.ReadCloser
+	Stdoutbuf bytes.Buffer
+	Stderrbuf bytes.Buffer
 }
 
 // HostPort returns the port which the given docker port maps to.
@@ -233,18 +233,14 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 	} else {
 		log.Println("Runing Non-Blocking Docker Run")
 
-		stderr, err := cmd.StderrPipe()
-		if err != nil {
-			return "", errors.Annotate(err, "StderrPipe failed to create").Err()
-		}
-		stdout, err := cmd.StdoutPipe()
-		if err != nil {
-			return "", errors.Annotate(err, "StdoutPipe failed to create").Err()
-		}
+		var stdoutbuf, stderrbuf bytes.Buffer
+		cmd.Stdout = &stdoutbuf
+		cmd.Stderr = &stderrbuf
+
 		log.Printf("Running cmd %s", cmd)
 		cmd.Start()
-		d.Stdoutbuf = stdout
-		d.Stdouterrbuf = stderr
+		d.Stdoutbuf = stdoutbuf
+		d.Stderrbuf = stderrbuf
 		return "", errors.Annotate(err, "run docker image %q: %s", d.Name, "").Err()
 
 	}
