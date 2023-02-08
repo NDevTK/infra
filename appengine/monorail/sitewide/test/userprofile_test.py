@@ -10,7 +10,6 @@ from __future__ import absolute_import
 import mock
 import unittest
 import logging
-import webapp2
 import ezt
 
 from framework import framework_helpers
@@ -47,8 +46,7 @@ def MakeReqInfo(
   mr.viewed_user_auth.effective_ids = {viewed_user_id}
   mr.viewed_user_auth.user_view = framework_views.UserView(viewed_user_pb)
   mr.viewed_user_name = viewed_user_name
-  mr.request = webapp2.Request.blank("/")
-  mr.request_path = mr.request.path
+  mr.request_path = '/'
   return mr
 
 
