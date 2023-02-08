@@ -17,6 +17,7 @@ try:
 except ImportError:
   import mox
 import six
+import werkzeug
 
 from google.appengine.api import oauth
 from google.appengine.api import users
@@ -281,7 +282,7 @@ class MonorailRequestUnitTest(unittest.TestCase):
         mr.viewed_user_auth.user_pb)
 
   def testViewedUser_NoSuchEmail(self):
-    with self.assertRaises(webapp2.HTTPException) as cm:
+    with self.assertRaises(werkzeug.exceptions.HTTPException) as cm:
       self._MRWithMockRequest('/u/unknownuser@example.com/')
     self.assertEqual(404, cm.exception.code)
 

@@ -18,12 +18,11 @@ import re
 from six.moves import urllib
 
 import ezt
+import flask
 import six
 
 from google.appengine.api import app_identity
 from google.appengine.api import oauth
-
-import webapp2
 
 import settings
 from businesslogic import work_env
@@ -233,7 +232,7 @@ class MonorailRequest(MonorailRequestBase):
     """Parse tons of useful info from the given request object.
 
     Args:
-      request: webapp2 Request object w/ path and query params.
+      request: Flask Request object w/ path and query params.
       services: connections to backend servers including DB.
       do_user_lookups: Set to False to disable lookups during testing.
     """
@@ -501,10 +500,10 @@ class MonorailRequest(MonorailRequestBase):
             self.cnxn, self.viewed_username, services, autocreate=False)
     except exceptions.NoSuchUserException:
       logging.info('could not find user %r', self.viewed_username)
-      webapp2.abort(404, 'user not found')
+      flask.abort(404, 'user not found')
 
     if not self.viewed_user_auth.user_id:
-      webapp2.abort(404, 'user not found')
+      flask.abort(404, 'user not found')
 
   def _LookupProject(self, services):
     """Get information about the current project (if any) from the request.
@@ -529,7 +528,7 @@ class MonorailRequest(MonorailRequestBase):
           self.hotlist_id = hotlist_id_dict[(
               self.hotlist_name, self.viewed_user_auth.user_id)]
         except KeyError:
-          webapp2.abort(404, 'invalid hotlist')
+          flask.abort(404, 'invalid hotlist')
 
       if not self.hotlist_id:
         logging.info('no hotlist_id or bad hotlist_name, so no hotlist')
@@ -539,7 +538,7 @@ class MonorailRequest(MonorailRequestBase):
         if not self.hotlist or (
             self.viewed_user_auth.user_id and
             self.viewed_user_auth.user_id not in self.hotlist.owner_ids):
-          webapp2.abort(404, 'invalid hotlist')
+          flask.abort(404, 'invalid hotlist')
 
   def _LookupLoggedInUser(self, services):
     """Get information about the signed-in user (if any) from the request."""
@@ -741,7 +740,7 @@ def _GetViewedEmail(viewed_user_val, cnxn, services):
     viewed_email = services.user.LookupUserEmail(cnxn, viewed_userid)
     if not viewed_email:
       logging.info('userID %s not found', viewed_userid)
-      webapp2.abort(404, 'user not found')
+      flask.abort(404, 'user not found')
   except ValueError:
     viewed_email = viewed_user_val
 
