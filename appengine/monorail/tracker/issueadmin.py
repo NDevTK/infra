@@ -19,12 +19,12 @@ import time
 from features import filterrules_helpers
 from features import filterrules_views
 from features import savedqueries_helpers
-from framework import flaskservlet, servlet
 from framework import framework_constants
 from framework import framework_helpers
 from framework import framework_views
 from framework import monorailrequest
 from framework import permissions
+from framework import servlet
 from framework import urls
 from proto import tracker_pb2
 from tracker import tracker_bizobj
@@ -33,10 +33,10 @@ from tracker import tracker_helpers
 from tracker import tracker_views
 
 
-class IssueAdminBase(flaskservlet.FlaskServlet):
+class IssueAdminBase(servlet.Servlet):
   """Base class for servlets allowing project owners to configure tracker."""
 
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PROCESS
+  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_PROCESS
   _PROCESS_SUBTAB = None  # specified in subclasses
 
   def GatherPageData(self, mr):
@@ -83,7 +83,7 @@ class AdminStatuses(IssueAdminBase):
   """Servlet allowing project owners to configure well-known statuses."""
 
   _PAGE_TEMPLATE = 'tracker/admin-statuses-page.ezt'
-  _PROCESS_SUBTAB = flaskservlet.FlaskServlet.PROCESS_TAB_STATUSES
+  _PROCESS_SUBTAB = servlet.Servlet.PROCESS_TAB_STATUSES
 
   def ProcessSubtabForm(self, post_data, mr):
     """Process the status definition section of the admin page.
@@ -145,7 +145,7 @@ class AdminLabels(IssueAdminBase):
   """Servlet allowing project owners to labels and fields."""
 
   _PAGE_TEMPLATE = 'tracker/admin-labels-page.ezt'
-  _PROCESS_SUBTAB = flaskservlet.FlaskServlet.PROCESS_TAB_LABELS
+  _PROCESS_SUBTAB = servlet.Servlet.PROCESS_TAB_LABELS
 
   def GatherPageData(self, mr):
     """Build up a dictionary of data values to use when rendering the page.
@@ -234,7 +234,7 @@ class AdminTemplates(IssueAdminBase):
   """Servlet allowing project owners to configure templates."""
 
   _PAGE_TEMPLATE = 'tracker/admin-templates-page.ezt'
-  _PROCESS_SUBTAB = flaskservlet.FlaskServlet.PROCESS_TAB_TEMPLATES
+  _PROCESS_SUBTAB = servlet.Servlet.PROCESS_TAB_TEMPLATES
 
   def GatherPageData(self, mr):
     """Build up a dictionary of data values to use when rendering the page.
@@ -304,7 +304,7 @@ class AdminComponents(IssueAdminBase):
   """Servlet allowing project owners to view the list of components."""
 
   _PAGE_TEMPLATE = 'tracker/admin-components-page.ezt'
-  _PROCESS_SUBTAB = flaskservlet.FlaskServlet.PROCESS_TAB_COMPONENTS
+  _PROCESS_SUBTAB = servlet.Servlet.PROCESS_TAB_COMPONENTS
 
   def GatherPageData(self, mr):
     """Build up a dictionary of data values to use when rendering the page.
@@ -420,7 +420,7 @@ class AdminViews(IssueAdminBase):
   """Servlet for project owners to set default columns, axes, and sorting."""
 
   _PAGE_TEMPLATE = 'tracker/admin-views-page.ezt'
-  _PROCESS_SUBTAB = flaskservlet.FlaskServlet.PROCESS_TAB_VIEWS
+  _PROCESS_SUBTAB = servlet.Servlet.PROCESS_TAB_VIEWS
 
   def GatherPageData(self, mr):
     """Build up a dictionary of data values to use when rendering the page.
@@ -532,7 +532,7 @@ class AdminRules(IssueAdminBase):
   """Servlet allowing project owners to configure filter rules."""
 
   _PAGE_TEMPLATE = 'tracker/admin-rules-page.ezt'
-  _PROCESS_SUBTAB = flaskservlet.FlaskServlet.PROCESS_TAB_RULES
+  _PROCESS_SUBTAB = servlet.Servlet.PROCESS_TAB_RULES
 
   def AssertBasePermission(self, mr):
     """Check whether the user has any permission to visit this page.

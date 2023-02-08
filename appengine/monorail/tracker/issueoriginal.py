@@ -15,12 +15,12 @@ from __future__ import absolute_import
 import ezt
 
 from businesslogic import work_env
-from framework import flaskservlet
 from framework import filecontent
 from framework import permissions
+from framework import servlet
 
 
-class IssueOriginal(flaskservlet.FlaskServlet):
+class IssueOriginal(servlet.Servlet):
   """IssueOriginal shows an inbound email that caused an issue comment."""
 
   _PAGE_TEMPLATE = 'tracker/issue-original-page.ezt'

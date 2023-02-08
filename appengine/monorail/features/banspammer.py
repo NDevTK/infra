@@ -11,14 +11,14 @@ import json
 import time
 
 from framework import cloud_tasks_helpers
-from framework import flaskservlet
 from framework import framework_helpers
 from framework import permissions
 from framework import jsonfeed
+from framework import servlet
 from framework import urls
 
 
-class BanSpammer(flaskservlet.FlaskServlet):
+class BanSpammer(servlet.Servlet):
   """Ban a user and mark their content as spam"""
 
   def AssertBasePermission(self, mr):

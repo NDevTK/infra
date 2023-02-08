@@ -92,7 +92,7 @@ class AdminStatusesTest(TestBase):
     super(AdminStatusesTest, self).setUpServlet(issueadmin.AdminStatuses)
     self.servlet.mr = self.mr
 
-  @patch('framework.flaskservlet.FlaskServlet.PleaseCorrect')
+  @patch('framework.servlet.Servlet.PleaseCorrect')
   def testProcessSubtabForm_MissingInput(self, mock_pc):
     post_data = fake.PostData()
     next_url = self.servlet.ProcessSubtabForm(post_data, self.mr)
@@ -103,7 +103,7 @@ class AdminStatusesTest(TestBase):
     self.assertEqual(tracker_constants.DEFAULT_STATUSES_OFFER_MERGE,
                      self.config.statuses_offer_merge)
 
-  @patch('framework.flaskservlet.FlaskServlet.PleaseCorrect')
+  @patch('framework.servlet.Servlet.PleaseCorrect')
   def testProcessSubtabForm_EmptyInput(self, mock_pc):
     post_data = fake.PostData(
         predefinedopen=[''], predefinedclosed=[''], statuses_offer_merge=[''])
@@ -151,7 +151,7 @@ class AdminLabelsTest(TestBase):
     self.assertEqual(789, config_view.project_id)
     self.assertEqual([], page_data['field_defs'])
 
-  @patch('framework.flaskservlet.FlaskServlet.PleaseCorrect')
+  @patch('framework.servlet.Servlet.PleaseCorrect')
   def testProcessSubtabForm_MissingInput(self, mock_pc):
     post_data = fake.PostData()
     next_url = self.servlet.ProcessSubtabForm(post_data, self.mr)
@@ -162,7 +162,7 @@ class AdminLabelsTest(TestBase):
     self.assertEqual(tracker_constants.DEFAULT_EXCL_LABEL_PREFIXES,
                      self.config.exclusive_label_prefixes)
 
-  @patch('framework.flaskservlet.FlaskServlet.PleaseCorrect')
+  @patch('framework.servlet.Servlet.PleaseCorrect')
   def testProcessSubtabForm_EmptyInput(self, mock_pc):
     post_data = fake.PostData(
         predefinedlabels=[''], excl_prefixes=[''])
@@ -185,7 +185,7 @@ class AdminLabelsTest(TestBase):
     self.assertEqual('Pri-4', self.config.well_known_labels[1].label)
     self.assertEqual(['pri'], self.config.exclusive_label_prefixes)
 
-  @patch('framework.flaskservlet.FlaskServlet.PleaseCorrect')
+  @patch('framework.servlet.Servlet.PleaseCorrect')
   def testProcessSubtabForm_Duplicates(self, mock_pc):
     post_data = fake.PostData(
         predefinedlabels=['Pri-0\nPri-4\npri-0'],
@@ -197,7 +197,7 @@ class AdminLabelsTest(TestBase):
         'Duplicate label: pri-0',
         self.mr.errors.label_defs)
 
-  @patch('framework.flaskservlet.FlaskServlet.PleaseCorrect')
+  @patch('framework.servlet.Servlet.PleaseCorrect')
   def testProcessSubtabForm_Conflict(self, mock_pc):
     post_data = fake.PostData(
         predefinedlabels=['Multi-Part-One\nPri-4\npri-0'],

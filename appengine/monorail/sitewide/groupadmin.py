@@ -12,7 +12,6 @@ import time
 
 import ezt
 
-from framework import flaskservlet
 from framework import framework_helpers
 from framework import permissions
 from framework import servlet
@@ -22,7 +21,7 @@ from services import usergroup_svc
 from sitewide import group_helpers
 
 
-class GroupAdmin(flaskservlet.FlaskServlet):
+class GroupAdmin(servlet.Servlet):
   """The group admin page."""
 
   _PAGE_TEMPLATE = 'sitewide/group-admin-page.ezt'

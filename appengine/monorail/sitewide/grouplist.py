@@ -12,14 +12,15 @@ import time
 
 import ezt
 
-from framework import flaskservlet, framework_helpers
+from framework import framework_helpers
 from framework import permissions
+from framework import servlet
 from framework import urls
 from framework import xsrf
 from sitewide import sitewide_views
 
 
-class GroupList(flaskservlet.FlaskServlet):
+class GroupList(servlet.Servlet):
   """Shows a page with a simple form to create a user group."""
 
   _PAGE_TEMPLATE = 'sitewide/group-list-page.ezt'

@@ -16,7 +16,6 @@ import time
 import os
 import settings
 from framework import sql
-from framework import servlet
 
 if not settings.unit_test_mode:
   import MySQLdb as mdb

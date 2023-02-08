@@ -13,7 +13,6 @@ import time
 import ezt
 
 from framework import exceptions
-from framework import flaskservlet
 from framework import framework_helpers
 from framework import framework_views
 from framework import paginate
@@ -27,7 +26,7 @@ from sitewide import sitewide_views
 MEMBERS_PER_PAGE = 50
 
 
-class GroupDetail(flaskservlet.FlaskServlet):
+class GroupDetail(servlet.Servlet):
   """The group detail page presents information about one user group."""
 
   _PAGE_TEMPLATE = 'sitewide/group-detail-page.ezt'

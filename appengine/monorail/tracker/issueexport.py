@@ -12,17 +12,17 @@ import time
 
 from businesslogic import work_env
 from features import savedqueries_helpers
-from framework import flaskservlet
-from framework import permissions
 from framework import jsonfeed
+from framework import permissions
+from framework import servlet
 from tracker import tracker_bizobj
 
 
-class IssueExport(flaskservlet.FlaskServlet):
+class IssueExport(servlet.Servlet):
   """IssueExportControls let's an admin choose how to export issues."""
 
   _PAGE_TEMPLATE = 'tracker/issue-export-page.ezt'
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_ISSUES
+  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_ISSUES
 
   def AssertBasePermission(self, mr):
     """Make sure that the logged in user has permission to view this page."""

@@ -12,10 +12,10 @@ import ezt
 from features import features_bizobj
 from features import hotlist_views
 from framework import framework_views
-from framework import flaskservlet
+from framework import servlet
 
 
-class UserHotlists(flaskservlet.FlaskServlet):
+class UserHotlists(servlet.Servlet):
   """Servlet to display all of a user's hotlists."""
 
   _PAGE_TEMPLATE = 'features/user-hotlists.ezt'

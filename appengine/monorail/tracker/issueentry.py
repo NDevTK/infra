@@ -15,12 +15,12 @@ import time
 from businesslogic import work_env
 from features import hotlist_helpers
 from framework import exceptions
-from framework import flaskservlet
 from framework import framework_bizobj
 from framework import framework_constants
 from framework import framework_helpers
 from framework import framework_views
 from framework import permissions
+from framework import servlet
 from framework import template_helpers
 from framework import urls
 import ezt
@@ -38,11 +38,11 @@ CORP_RESTRICTION_LABEL = 'Restrict-View-Google'
 RESTRICTED_FLT_FIELDS = ['notice', 'whitepaper', 'm-approved']
 
 
-class IssueEntry(flaskservlet.FlaskServlet):
+class IssueEntry(servlet.Servlet):
   """IssueEntry shows a page with a simple form to enter a new issue."""
 
   _PAGE_TEMPLATE = 'tracker/issue-entry-page.ezt'
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_ISSUES
+  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_ISSUES
 
   # The issue filing wizard is a separate app that posted back to Monorail's
   # issue entry page. To make this possible for the wizard, we need to allow

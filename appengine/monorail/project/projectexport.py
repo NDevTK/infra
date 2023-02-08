@@ -10,17 +10,17 @@ from __future__ import absolute_import
 
 import time
 
-from framework import flaskservlet
 from framework import permissions
 from framework import jsonfeed
+from framework import servlet
 from project import project_helpers
 
 
-class ProjectExport(flaskservlet.FlaskServlet):
+class ProjectExport(servlet.Servlet):
   """Only site admins can export a project"""
 
   _PAGE_TEMPLATE = 'project/project-export-page.ezt'
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_ADMIN
+  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_ADMIN
 
   def AssertBasePermission(self, mr):
     """Make sure that the logged in user has permission to view this page."""

@@ -23,10 +23,10 @@ import ezt
 from features import filterrules_helpers
 from features import send_notifications
 from framework import exceptions
-from framework import flaskservlet
 from framework import framework_constants
 from framework import framework_views
 from framework import permissions
+from framework import servlet
 from framework import template_helpers
 from services import tracker_fulltext
 from tracker import field_helpers
@@ -36,11 +36,11 @@ from tracker import tracker_helpers
 from tracker import tracker_views
 
 
-class IssueBulkEdit(flaskservlet.FlaskServlet):
+class IssueBulkEdit(servlet.Servlet):
   """IssueBulkEdit lists multiple issues and allows an edit to all of them."""
 
   _PAGE_TEMPLATE = 'tracker/issue-bulk-edit-page.ezt'
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_ISSUES
+  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_ISSUES
   _SECONDS_OVERHEAD = 4
   _SECONDS_PER_UPDATE = 0.12
   _SLOWNESS_THRESHOLD = 10

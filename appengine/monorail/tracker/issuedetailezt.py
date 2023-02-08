@@ -18,10 +18,10 @@ from businesslogic import work_env
 from features import features_bizobj
 from features import hotlist_helpers
 from framework import exceptions
-from framework import flaskservlet
 from framework import framework_helpers
 from framework import jsonfeed
 from framework import permissions
+from framework import servlet
 from framework import servlet_helpers
 from framework import urls
 from services import features_svc
@@ -98,7 +98,7 @@ def _ComputeBackToListURL(mr, issue, config, hotlist, services):
   return back_to_list_url
 
 
-class FlipperRedirectBase(flaskservlet.FlaskServlet):
+class FlipperRedirectBase(servlet.Servlet):
 
   def get(self):
     with work_env.WorkEnv(self.mr, self.services) as we:
@@ -144,7 +144,7 @@ class FlipperPrev(FlipperRedirectBase):
     return self.handler(**kwargs)
 
 
-class FlipperList(flaskservlet.FlaskServlet):
+class FlipperList(servlet.Servlet):
 
   def get(self):
     with work_env.WorkEnv(self.mr, self.services) as we:

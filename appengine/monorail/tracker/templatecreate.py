@@ -11,22 +11,22 @@ import time
 
 import ezt
 
-from framework import flaskservlet
 from framework import framework_helpers
-from framework import urls
 from framework import permissions
+from framework import servlet
+from framework import urls
 from tracker import field_helpers
 from tracker import template_helpers
 from tracker import tracker_views
 from proto import tracker_pb2
 
 
-class TemplateCreate(flaskservlet.FlaskServlet):
+class TemplateCreate(servlet.Servlet):
   """Servlet allowing project owners to create an issue template."""
 
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PROCESS
+  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_PROCESS
   _PAGE_TEMPLATE = 'tracker/template-detail-page.ezt'
-  _PROCESS_SUBTAB = flaskservlet.FlaskServlet.PROCESS_TAB_TEMPLATES
+  _PROCESS_SUBTAB = servlet.Servlet.PROCESS_TAB_TEMPLATES
 
   def AssertBasePermission(self, mr):
     """Check whether the user has any permission to visit this page.

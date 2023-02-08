@@ -15,15 +15,15 @@ import ezt
 import settings
 from businesslogic import work_env
 from framework import framework_helpers
-from framework import flaskservlet
 from framework import framework_views
 from framework import permissions
+from framework import servlet
 from framework import timestr
 from framework import xsrf
 from project import project_views
 
 
-class UserProfile(flaskservlet.FlaskServlet):
+class UserProfile(servlet.Servlet):
   """Shows a page of information about a user."""
 
   _PAGE_TEMPLATE = 'sitewide/user-profile-page.ezt'
@@ -249,7 +249,7 @@ def _ComputePossibleParentAccounts(
   return found_emails
 
 
-class BanUser(flaskservlet.FlaskServlet):
+class BanUser(servlet.Servlet):
   """Bans or un-bans a user."""
 
   def ProcessFormData(self, mr, post_data):

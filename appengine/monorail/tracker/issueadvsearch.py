@@ -15,9 +15,9 @@ from __future__ import absolute_import
 import re
 
 from features import savedqueries_helpers
-from framework import flaskservlet
 from framework import framework_helpers
 from framework import permissions
+from framework import servlet
 from framework import urls
 
 # Patterns for search values that can be words, labels,
@@ -25,11 +25,11 @@ from framework import urls
 VALUE_RE = re.compile(r'[-a-zA-Z0-9._>@]+')
 
 
-class IssueAdvancedSearch(flaskservlet.FlaskServlet):
+class IssueAdvancedSearch(servlet.Servlet):
   """IssueAdvancedSearch shows a form to enter an advanced search."""
 
   _PAGE_TEMPLATE = 'tracker/issue-advsearch-page.ezt'
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_ISSUES
+  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_ISSUES
 
   # This form *only* redirects to a GET request, and permissions are checked
   # in that handler.

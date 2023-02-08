@@ -11,17 +11,17 @@ import logging
 from six.moves import urllib
 
 import settings
-from framework import flaskservlet
 from framework import permissions
+from framework import servlet
 from framework import urls
 from services import tracker_fulltext
 
 
-class IssueReindex(flaskservlet.FlaskServlet):
+class IssueReindex(servlet.Servlet):
   """IssueReindex shows a form to request that issues be indexed."""
 
   _PAGE_TEMPLATE = 'tracker/issue-reindex-page.ezt'
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_ISSUES
+  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_ISSUES
 
   def AssertBasePermission(self, mr):
     """Check whether the user has any permission to visit this page.

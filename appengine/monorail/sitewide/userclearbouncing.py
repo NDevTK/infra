@@ -10,12 +10,12 @@ from __future__ import absolute_import
 import time
 
 from framework import framework_helpers
-from framework import flaskservlet
 from framework import permissions
+from framework import servlet
 from framework import timestr
 
 
-class UserClearBouncing(flaskservlet.FlaskServlet):
+class UserClearBouncing(servlet.Servlet):
   """Shows a page that can clear a user's bouncing email timestamp."""
 
   _PAGE_TEMPLATE = 'sitewide/user-clear-bouncing-page.ezt'

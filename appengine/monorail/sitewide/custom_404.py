@@ -16,10 +16,10 @@ from __future__ import absolute_import
 
 from six.moves import http_client
 from framework import exceptions
-from framework import flaskservlet
+from framework import servlet
 
 
-class ErrorPage(flaskservlet.FlaskServlet):
+class ErrorPage(servlet.Servlet):
   """Page class for generating somewhat informative project-page 404s.
 
   This page class produces a mostly-empty project subpage, which helps

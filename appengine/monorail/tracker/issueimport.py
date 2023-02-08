@@ -12,10 +12,10 @@ import collections
 import json
 
 from features import filterrules_helpers
-from framework import flaskservlet
 from framework import framework_helpers
 from framework import jsonfeed
 from framework import permissions
+from framework import servlet
 from proto import tracker_pb2
 from tracker import tracker_bizobj
 
@@ -25,11 +25,11 @@ ParserState = collections.namedtuple(
     'relations_dict')
 
 
-class IssueImport(flaskservlet.FlaskServlet):
+class IssueImport(servlet.Servlet):
   """IssueImport loads a file of issues in JSON format."""
 
   _PAGE_TEMPLATE = 'tracker/issue-import-page.ezt'
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_ISSUES
+  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_ISSUES
 
   def AssertBasePermission(self, mr):
     """Make sure that the logged in user has permission to view this page."""

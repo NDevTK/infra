@@ -13,7 +13,6 @@ import re
 
 from features import hotlist_helpers
 from framework import exceptions
-from framework import flaskservlet
 from framework import framework_bizobj
 from framework import framework_helpers
 from framework import permissions
@@ -29,7 +28,7 @@ _MSG_INVALID_ISSUES_INPUT = 'Issues input is invalid'
 _MSG_INVALID_MEMBERS_INPUT = 'One or more editor emails is not valid.'
 
 
-class HotlistCreate(flaskservlet.FlaskServlet):
+class HotlistCreate(servlet.Servlet):
   """HotlistCreate shows a simple page with a form to create a hotlist."""
 
   _PAGE_TEMPLATE = 'features/hotlist-create-page.ezt'

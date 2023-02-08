@@ -11,10 +11,10 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-from framework import flaskservlet
+from framework import servlet
 
 
-class ExcessiveActivity(flaskservlet.FlaskServlet):
+class ExcessiveActivity(servlet.Servlet):
   """ExcessiveActivity page shows an error message."""
 
   _PAGE_TEMPLATE = 'framework/excessive-activity-page.ezt'

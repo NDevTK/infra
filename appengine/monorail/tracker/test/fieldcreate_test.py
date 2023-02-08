@@ -165,7 +165,7 @@ class FieldCreateTest(unittest.TestCase):
     self.assertRaises(
         AssertionError, self.servlet.ProcessFormData, self.mr, post_data)
 
-  @mock.patch('framework.flaskservlet.FlaskServlet.PleaseCorrect')
+  @mock.patch('framework.servlet.Servlet.PleaseCorrect')
   def testProcessFormData_RejectAssertions(self, fake_servlet_pc):
     #This method tests when errors are found using when the
     #field_helpers.ParsedFieldDefAssertions is triggered.

@@ -14,7 +14,7 @@ import ezt
 
 import settings
 from businesslogic import work_env
-from framework import exceptions, flaskservlet
+from framework import exceptions
 from framework import filecontent
 from framework import framework_helpers
 from framework import gcs_helpers
@@ -36,7 +36,7 @@ _MSG_INVALID_PROJECT_NAME = 'Invalid project name'
 _MSG_MISSING_PROJECT_SUMMARY = 'Missing project summary'
 
 
-class ProjectCreate(flaskservlet.FlaskServlet):
+class ProjectCreate(servlet.Servlet):
   """Shows a page with a simple form to create a project."""
 
   _PAGE_TEMPLATE = 'sitewide/project-create-page.ezt'

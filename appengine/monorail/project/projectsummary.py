@@ -8,17 +8,17 @@ from __future__ import division
 from __future__ import absolute_import
 
 from businesslogic import work_env
-from framework import flaskservlet
 from framework import permissions
+from framework import servlet
 from project import project_helpers
 from project import project_views
 
 
-class ProjectSummary(flaskservlet.FlaskServlet):
+class ProjectSummary(servlet.Servlet):
   """Page to show brief project description and process documentation."""
 
   _PAGE_TEMPLATE = 'project/project-summary-page.ezt'
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PROCESS
+  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_PROCESS
 
   def GatherPageData(self, mr):
     """Build up a dictionary of data values to use when rendering the page."""

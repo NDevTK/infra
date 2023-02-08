@@ -20,9 +20,9 @@ from google.appengine.api import app_identity
 import settings
 
 from framework import framework_constants
-from framework import flaskservlet
-from framework import servlet_helpers
 from framework import permissions
+from framework import servlet
+from framework import servlet_helpers
 from framework import xsrf
 from search import query2ast
 
@@ -30,7 +30,7 @@ from search import query2ast
 XSSI_PREFIX = ")]}'\n"
 
 
-class JsonFeed(flaskservlet.FlaskServlet):
+class JsonFeed(servlet.Servlet):
   """A convenient base class for JSON feeds."""
 
   # By default, JSON output is compact.  Subclasses can set this to

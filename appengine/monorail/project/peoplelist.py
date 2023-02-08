@@ -18,13 +18,13 @@ import time
 import ezt
 
 from businesslogic import work_env
-from framework import flaskservlet
 from framework import framework_bizobj
 from framework import framework_constants
 from framework import framework_helpers
 from framework import framework_views
 from framework import paginate
 from framework import permissions
+from framework import servlet
 from framework import urls
 from project import project_helpers
 from project import project_views
@@ -32,11 +32,11 @@ from project import project_views
 MEMBERS_PER_PAGE = 50
 
 
-class PeopleList(flaskservlet.FlaskServlet):
+class PeopleList(servlet.Servlet):
   """People list page shows a paginatied list of project members."""
 
   _PAGE_TEMPLATE = 'project/people-list-page.ezt'
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PEOPLE
+  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_PEOPLE
 
   def AssertBasePermission(self, mr):
     super(PeopleList, self).AssertBasePermission(mr)

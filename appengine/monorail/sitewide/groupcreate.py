@@ -10,14 +10,15 @@ from __future__ import absolute_import
 import logging
 import re
 
-from framework import exceptions, flaskservlet
+from framework import exceptions
 from framework import framework_helpers
 from framework import permissions
+from framework import servlet
 from proto import usergroup_pb2
 from sitewide import group_helpers
 
 
-class GroupCreate(flaskservlet.FlaskServlet):
+class GroupCreate(servlet.Servlet):
   """Shows a page with a simple form to create a user group."""
 
   _PAGE_TEMPLATE = 'sitewide/group-create-page.ezt'

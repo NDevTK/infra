@@ -13,9 +13,9 @@ import ezt
 
 from features import hotlist_helpers
 from framework import framework_bizobj
-from framework import flaskservlet
 from framework import framework_helpers
 from framework import permissions
+from framework import servlet
 from framework import urls
 
 _MSG_DESCRIPTION_MISSING = 'Description is missing.'
@@ -27,11 +27,11 @@ _MSG_HOTLIST_NAME_NOT_AVAIL = 'You already have a hotlist with that name.'
 _MSG_INVALID_HOTLIST_NAME = "Invalid hotlist name. Please make sure your hotlist name begins with a letter followed by any number of letters, numbers, -'s, and .'s"
 
 
-class HotlistDetails(flaskservlet.FlaskServlet):
+class HotlistDetails(servlet.Servlet):
   """A page with hotlist details and editing options."""
 
   _PAGE_TEMPLATE = 'features/hotlist-details-page.ezt'
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.HOTLIST_TAB_DETAILS
+  _MAIN_TAB_MODE = servlet.Servlet.HOTLIST_TAB_DETAILS
 
   def AssertBasePermission(self, mr):
     super(HotlistDetails, self).AssertBasePermission(mr)

@@ -17,11 +17,11 @@ import logging
 
 import ezt
 
-from framework import flaskservlet, permissions
+from framework import permissions
 from framework import servlet
 
 
-class Banned(flaskservlet.FlaskServlet):
+class Banned(servlet.Servlet):
   """The Banned page shows a message explaining that the user is banned."""
 
   _PAGE_TEMPLATE = 'framework/banned-page.ezt'

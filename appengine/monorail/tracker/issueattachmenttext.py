@@ -19,20 +19,20 @@ from google.cloud import storage
 
 from features import prettify
 from framework import exceptions
-from framework import flaskservlet
 from framework import filecontent
 from framework import permissions
+from framework import servlet
 from framework import template_helpers
 from tracker import attachment_helpers
 from tracker import tracker_bizobj
 from tracker import tracker_helpers
 
 
-class AttachmentText(flaskservlet.FlaskServlet):
+class AttachmentText(servlet.Servlet):
   """AttachmentText displays textual attachments much like source browsing."""
 
   _PAGE_TEMPLATE = 'tracker/issue-attachment-text.ezt'
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_ISSUES
+  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_ISSUES
 
   def GatherPageData(self, mr):
     """Parse the attachment ID from the request and serve its content.

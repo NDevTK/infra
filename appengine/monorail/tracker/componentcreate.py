@@ -9,10 +9,10 @@ from __future__ import absolute_import
 
 import time
 
-from framework import flaskservlet
 from framework import framework_helpers
 from framework import framework_views
 from framework import permissions
+from framework import servlet
 from framework import urls
 from tracker import component_helpers
 from tracker import tracker_bizobj
@@ -22,10 +22,10 @@ from tracker import tracker_views
 import ezt
 
 
-class ComponentCreate(flaskservlet.FlaskServlet):
+class ComponentCreate(servlet.Servlet):
   """Servlet allowing project owners to create a component."""
 
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PROCESS
+  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_PROCESS
   _PAGE_TEMPLATE = 'tracker/component-create-page.ezt'
 
   def AssertBasePermission(self, mr):
@@ -65,7 +65,7 @@ class ComponentCreate(flaskservlet.FlaskServlet):
 
     return {
         'parent_path': mr.component_path,
-        'admin_tab_mode': flaskservlet.FlaskServlet.PROCESS_TAB_COMPONENTS,
+        'admin_tab_mode': servlet.Servlet.PROCESS_TAB_COMPONENTS,
         'component_defs': component_def_views,
         'initial_leaf_name': '',
         'initial_docstring': '',

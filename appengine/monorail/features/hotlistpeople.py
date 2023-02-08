@@ -15,21 +15,21 @@ import ezt
 from features import hotlist_helpers
 from features import hotlist_views
 from framework import framework_helpers
-from framework import flaskservlet
 from framework import framework_views
 from framework import paginate
 from framework import permissions
+from framework import servlet
 from framework import urls
 from project import project_helpers
 
 MEMBERS_PER_PAGE = 50
 
 
-class HotlistPeopleList(flaskservlet.FlaskServlet):
+class HotlistPeopleList(servlet.Servlet):
   _PAGE_TEMPLATE = 'project/people-list-page.ezt'
   # Note: using the project's peoplelist page template. minor edits were
   # to make it compatible with HotlistPeopleList
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.HOTLIST_TAB_PEOPLE
+  _MAIN_TAB_MODE = servlet.Servlet.HOTLIST_TAB_PEOPLE
 
   def AssertBasePermission(self, mr):
     super(HotlistPeopleList, self).AssertBasePermission(mr)

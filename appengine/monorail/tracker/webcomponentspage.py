@@ -16,11 +16,11 @@ import logging
 
 import settings
 from framework import exceptions
-from framework import flaskservlet
 from framework import permissions
+from framework import servlet
 
 
-class WebComponentsPage(flaskservlet.FlaskServlet):
+class WebComponentsPage(servlet.Servlet):
 
   _PAGE_TEMPLATE = 'tracker/web-components-page.ezt'
 

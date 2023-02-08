@@ -18,9 +18,9 @@ import logging
 from google.appengine.api import app_identity
 
 from framework import exceptions
-from framework import flaskservlet
 from framework import framework_constants
 from framework import gcs_helpers
+from framework import servlet
 from tracker import attachment_helpers
 from tracker import tracker_helpers
 
@@ -30,7 +30,7 @@ NO_PREVIEW_ICON = ''
 NO_PREVIEW_MIME_TYPE = 'image/png'
 
 
-class AttachmentPage(flaskservlet.FlaskServlet):
+class AttachmentPage(servlet.Servlet):
   """AttachmentPage serves issue attachments."""
 
   def GatherPageData(self, mr):

@@ -12,9 +12,9 @@ import time
 
 import ezt
 
-from framework import flaskservlet
 from framework import framework_helpers
 from framework import permissions
+from framework import servlet
 from framework import urls
 from proto import tracker_pb2
 from tracker import field_helpers
@@ -23,10 +23,10 @@ from tracker import tracker_constants
 from tracker import tracker_helpers
 
 
-class FieldCreate(flaskservlet.FlaskServlet):
+class FieldCreate(servlet.Servlet):
   """Servlet allowing project owners to create a custom field."""
 
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PROCESS
+  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_PROCESS
   _PAGE_TEMPLATE = 'tracker/field-create-page.ezt'
 
   def AssertBasePermission(self, mr):
@@ -56,7 +56,7 @@ class FieldCreate(flaskservlet.FlaskServlet):
                       not fd.is_deleted]
 
     return {
-        'admin_tab_mode': flaskservlet.FlaskServlet.PROCESS_TAB_LABELS,
+        'admin_tab_mode': servlet.Servlet.PROCESS_TAB_LABELS,
         'initial_field_name': '',
         'initial_field_docstring': '',
         'initial_importance': 'normal',

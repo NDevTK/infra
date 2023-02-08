@@ -13,7 +13,7 @@ import time
 import ezt
 
 from features import filterrules_helpers
-from framework import flaskservlet, framework_helpers
+from framework import framework_helpers
 from framework import framework_views
 from framework import permissions
 from framework import servlet
@@ -26,10 +26,10 @@ from tracker import tracker_constants
 from tracker import tracker_views
 
 
-class ComponentDetail(flaskservlet.FlaskServlet):
+class ComponentDetail(servlet.Servlet):
   """Servlets allowing project owners to view and edit a component."""
 
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PROCESS
+  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_PROCESS
   _PAGE_TEMPLATE = 'tracker/component-detail-page.ezt'
 
   def _GetComponentDef(self, mr):
@@ -95,7 +95,7 @@ class ComponentDetail(flaskservlet.FlaskServlet):
     allow_delete = allow_edit and not subcomponents and not templates
 
     return {
-        'admin_tab_mode': flaskservlet.FlaskServlet.PROCESS_TAB_COMPONENTS,
+        'admin_tab_mode': servlet.Servlet.PROCESS_TAB_COMPONENTS,
         'component_def': component_def_view,
         'initial_leaf_name': component_def_view.leaf_name,
         'initial_docstring': component_def.docstring,

@@ -14,12 +14,12 @@ from __future__ import absolute_import
 
 from six.moves import http_client
 
-from framework import flaskservlet
 from framework import framework_helpers
+from framework import servlet
 from framework import urls
 
 
-class WikiRedirect(flaskservlet.FlaskServlet):
+class WikiRedirect(servlet.Servlet):
   """Redirect to the wiki documentation, if provided."""
 
   def get(self):
@@ -41,7 +41,7 @@ class WikiRedirect(flaskservlet.FlaskServlet):
     return self.handler(**kwargs)
 
 
-class SourceRedirect(flaskservlet.FlaskServlet):
+class SourceRedirect(servlet.Servlet):
   """Redirect to the source browser, if provided."""
 
   def get(self):

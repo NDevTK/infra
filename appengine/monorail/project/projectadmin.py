@@ -15,10 +15,10 @@ import ezt
 
 from businesslogic import work_env
 from framework import emailfmt
-from framework import flaskservlet
 from framework import framework_helpers
 from framework import gcs_helpers
 from framework import permissions
+from framework import servlet
 from framework import urls
 from framework import validate
 from project import project_helpers
@@ -31,11 +31,11 @@ _MSG_DESCRIPTION_MISSING = 'Description is missing'
 _MSG_SUMMARY_MISSING = 'Summary is missing'
 
 
-class ProjectAdmin(flaskservlet.FlaskServlet):
+class ProjectAdmin(servlet.Servlet):
   """A page with project configuration options for the Project Owner(s)."""
 
   _PAGE_TEMPLATE = 'project/project-admin-page.ezt'
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_ADMIN
+  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_ADMIN
 
   def AssertBasePermission(self, mr):
     super(ProjectAdmin, self).AssertBasePermission(mr)

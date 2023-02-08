@@ -10,11 +10,12 @@ from __future__ import absolute_import
 
 import logging
 
-from framework import exceptions, flaskservlet
+from framework import exceptions
+from framework import servlet
 from framework import servlet_helpers
 
 
-class IssueEntryAfterLogin(flaskservlet.FlaskServlet):
+class IssueEntryAfterLogin(servlet.Servlet):
   """Redirect after clicking "New issue" and logging in."""
 
   # Note: This servlet does not use an HTML template.

@@ -12,10 +12,10 @@ import re
 
 import ezt
 
-from framework import flaskservlet
 from framework import framework_helpers
 from framework import framework_views
 from framework import permissions
+from framework import servlet
 from framework import urls
 from proto import tracker_pb2
 from tracker import field_helpers
@@ -24,10 +24,10 @@ from tracker import tracker_helpers
 from tracker import tracker_views
 
 
-class FieldDetail(flaskservlet.FlaskServlet):
+class FieldDetail(servlet.Servlet):
   """Servlet allowing project owners to view and edit a custom field."""
 
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_PROCESS
+  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_PROCESS
   _PAGE_TEMPLATE = 'tracker/field-detail-page.ezt'
 
   def _GetFieldDef(self, mr):
@@ -105,7 +105,7 @@ class FieldDetail(flaskservlet.FlaskServlet):
         sorted([uv.email for uv in field_def_view.editors]))
 
     return {
-        'admin_tab_mode': flaskservlet.FlaskServlet.PROCESS_TAB_LABELS,
+        'admin_tab_mode': servlet.Servlet.PROCESS_TAB_LABELS,
         'field_def': field_def_view,
         'allow_edit': ezt.boolean(allow_edit),
         # TODO(jojwang): update when name changes are actually saved

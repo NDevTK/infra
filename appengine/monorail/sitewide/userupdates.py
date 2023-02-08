@@ -20,11 +20,11 @@ import ezt
 
 from businesslogic import work_env
 from features import activities
-from framework import flaskservlet
+from framework import servlet
 from framework import urls
 
 
-class AbstractUserUpdatesPage(flaskservlet.FlaskServlet):
+class AbstractUserUpdatesPage(servlet.Servlet):
   """Base class for user updates pages."""
 
   _PAGE_TEMPLATE = 'sitewide/user-updates-page.ezt'

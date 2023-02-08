@@ -12,14 +12,14 @@ from __future__ import absolute_import
 
 import logging
 
-from framework import exceptions, flaskservlet
+from framework import exceptions
 from framework import framework_helpers
 from framework import servlet
 from framework import urls
 from project import project_constants
 
 
-class ProjectMoved(flaskservlet.FlaskServlet):
+class ProjectMoved(servlet.Servlet):
   """The ProjectMoved page explains that the project has moved."""
 
   _PAGE_TEMPLATE = 'sitewide/moved-page.ezt'

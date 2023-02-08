@@ -14,12 +14,12 @@ import ezt
 
 from features import savedqueries_helpers
 from framework import framework_helpers
-from framework import flaskservlet
 from framework import permissions
+from framework import servlet
 from framework import urls
 
 
-class SavedQueries(flaskservlet.FlaskServlet):
+class SavedQueries(servlet.Servlet):
   """A page class that shows the user's saved queries."""
 
   _PAGE_TEMPLATE = 'features/saved-queries-page.ezt'

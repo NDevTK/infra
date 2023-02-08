@@ -10,15 +10,15 @@ from __future__ import absolute_import
 import logging
 
 from features import activities
-from framework import flaskservlet
+from framework import servlet
 from framework import urls
 
 
-class ProjectUpdates(flaskservlet.FlaskServlet):
+class ProjectUpdates(servlet.Servlet):
   """ProjectUpdates page shows a list of past activities."""
 
   _PAGE_TEMPLATE = 'project/project-updates-page.ezt'
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.MAIN_TAB_UPDATES
+  _MAIN_TAB_MODE = servlet.Servlet.MAIN_TAB_UPDATES
 
   def GatherPageData(self, mr):
     """Build up a dictionary of data values to use when rendering the page."""

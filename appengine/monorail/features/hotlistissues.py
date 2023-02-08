@@ -18,13 +18,13 @@ from features import features_bizobj
 from features import features_constants
 from features import hotlist_helpers
 from framework import exceptions
-from framework import flaskservlet
-from framework import sorting
-from framework import permissions
 from framework import framework_helpers
-from framework import paginate
 from framework import framework_views
 from framework import grid_view_helpers
+from framework import paginate
+from framework import permissions
+from framework import servlet
+from framework import sorting
 from framework import template_helpers
 from framework import timestr
 from framework import urls
@@ -39,11 +39,11 @@ _MSG_ISSUES_NOT_FOUND = 'One or more of your issues were not found.'
 _MSG_ISSUES_NOT_VIEWABLE = 'You lack permission to view one or more issues.'
 
 
-class HotlistIssues(flaskservlet.FlaskServlet):
+class HotlistIssues(servlet.Servlet):
   """HotlistIssues is a page that shows the issues of one hotlist."""
 
   _PAGE_TEMPLATE = 'features/hotlist-issues-page.ezt'
-  _MAIN_TAB_MODE = flaskservlet.FlaskServlet.HOTLIST_TAB_ISSUES
+  _MAIN_TAB_MODE = servlet.Servlet.HOTLIST_TAB_ISSUES
 
   def AssertBasePermission(self, mr):
     """Check that the user has permission to even visit this page."""
