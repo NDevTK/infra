@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Provide interfaces to work with external communications.
+// To generate mocks use:
+// `mockgen -source=internal/components/components.go -destination internal/components/mocks/components.go -package mocks`
 package components
 
 import (
@@ -19,10 +22,17 @@ type Runner func(context.Context, time.Duration, string, ...string) (string, err
 // on a host, and returns error if something went wrong.
 type Pinger func(ctx context.Context, count int) error
 
+const (
+	// Default timeout recomended to use when call servod.
+	// Some usbkey actions can take 10+ seconds.
+	// TODO(b/240605067): Reduce default to 10 seconds by add specific timeout for special commands.
+	ServodDefaultTimeout = 20 * time.Second
+)
+
 // Servod defines the interface to communicate with servod daemon.
 type Servod interface {
 	// Call calls servod method with params.
-	Call(ctx context.Context, method string, args ...interface{}) (*xmlrpc.Value, error)
+	Call(ctx context.Context, method string, timeout time.Duration, args ...interface{}) (*xmlrpc.Value, error)
 	// Get read value by requested command.
 	Get(ctx context.Context, cmd string) (*xmlrpc.Value, error)
 	// Set sets value to provided command.

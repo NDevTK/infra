@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"time"
 
 	"go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 	"go.chromium.org/luci/common/errors"
@@ -20,28 +21,26 @@ import (
 
 // Local implementation of components.Servod.
 type iServod struct {
-	dut     *tlw.Dut
-	a       tlw.Access
-	timeout *durationpb.Duration
+	dut *tlw.Dut
+	a   tlw.Access
 }
 
 // NewServod returns a struct of type components.Servod that allowes communication with servod service.
 func (ei *ExecInfo) NewServod() components.Servod {
 	return &iServod{
-		dut:     ei.GetDut(),
-		a:       ei.GetAccess(),
-		timeout: durationpb.New(ei.GetExecTimeout()),
+		dut: ei.GetDut(),
+		a:   ei.GetAccess(),
 	}
 }
 
 // Call calls servod method with params.
-func (s *iServod) Call(ctx context.Context, method string, args ...interface{}) (*xmlrpc.Value, error) {
+func (s *iServod) Call(ctx context.Context, method string, timeout time.Duration, args ...interface{}) (*xmlrpc.Value, error) {
 	log.Debugf(ctx, "Servod call %q with %v: starting...", method, args)
 	res := s.a.CallServod(ctx, &tlw.CallServodRequest{
 		Resource: s.dut.Name,
 		Method:   method,
 		Args:     packToXMLRPCValues(args...),
-		Timeout:  s.timeout,
+		Timeout:  durationpb.New(timeout),
 	})
 	if res.Fault {
 		return nil, errors.Reason("call %q", method).Err()
@@ -55,7 +54,7 @@ func (s *iServod) Get(ctx context.Context, command string) (*xmlrpc.Value, error
 	if command == "" {
 		return nil, errors.Reason("get: command is empty").Err()
 	}
-	v, err := s.Call(ctx, "get", command)
+	v, err := s.Call(ctx, "get", components.ServodDefaultTimeout, command)
 	return v, errors.Annotate(err, "get %q", command).Err()
 }
 
@@ -67,7 +66,7 @@ func (s *iServod) Set(ctx context.Context, command string, val interface{}) erro
 	if val == nil {
 		return errors.Reason("set %q: value is empty", command).Err()
 	}
-	_, err := s.Call(ctx, "set", command, val)
+	_, err := s.Call(ctx, "set", components.ServodDefaultTimeout, command, val)
 	return errors.Annotate(err, "set %q with %v", command, val).Err()
 }
 
@@ -77,7 +76,7 @@ func (s *iServod) Has(ctx context.Context, command string) error {
 	if command == "" {
 		return errors.Reason("has: command not specified").Err()
 	}
-	_, err := s.Call(ctx, "doc", command)
+	_, err := s.Call(ctx, "doc", components.ServodDefaultTimeout, command)
 	return errors.Annotate(err, "has: %q is not know", command).Err()
 }
 

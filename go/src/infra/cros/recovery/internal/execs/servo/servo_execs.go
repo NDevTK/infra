@@ -16,6 +16,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components"
 	components_cros "infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/components/servo"
 	components_topology "infra/cros/recovery/internal/components/servo/topology"
@@ -669,7 +670,7 @@ func servoValidateBatteryChargingExec(ctx context.Context, info *execs.ExecInfo)
 func initDutForServoExec(ctx context.Context, info *execs.ExecInfo) error {
 	verbose := true
 	s := info.NewServod()
-	if _, err := s.Call(ctx, "hwinit", verbose); err != nil {
+	if _, err := s.Call(ctx, "hwinit", components.ServodDefaultTimeout, verbose); err != nil {
 		return errors.Annotate(err, "init dut for servo exec").Err()
 	}
 	usbMuxControl := "usb_mux_oe1"

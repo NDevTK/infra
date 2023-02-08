@@ -85,6 +85,7 @@ func Call(ctx context.Context, c *xmlrpc.XMLRpc, timeout time.Duration, method s
 	for _, ra := range args {
 		iArgs = append(iArgs, ra)
 	}
+	log.Debugf(ctx, "Calling servod with timeout %s", timeout)
 	call := xmlrpc.NewCallTimeout(timeout, method, iArgs...)
 	val := &xmlrpc_value.Value{}
 	if err := c.Run(ctx, call, val); err != nil {

@@ -83,7 +83,8 @@ func downloadImageToUSBExec(ctx context.Context, info *execs.ExecInfo) error {
 	extractPath := strings.Replace(downloadPath, "/download/", "/extract/", 1)
 	image := fmt.Sprintf("%s/chromiumos_test_image.tar.xz?file=chromiumos_test_image.bin", extractPath)
 	log.Debugf(ctx, "Download image for USB-drive: %s", image)
-	err = info.NewServod().Set(ctx, "download_image_to_usb_dev", image)
+	val, err := info.NewServod().Call(ctx, "set", info.GetExecTimeout(), "download_image_to_usb_dev", image)
+	log.Debugf(ctx, "Received reponse: %v", val)
 	return errors.Annotate(err, "download image to usb-drive").Err()
 }
 
