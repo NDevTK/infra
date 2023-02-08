@@ -37,7 +37,8 @@ def RunSteps(api, config):
   custs = api.windows_scripts_executor.process_customizations(custs, {})
   custs = api.windows_scripts_executor.filter_executable_customizations(custs)
   api.windows_scripts_executor.download_all_packages(custs)
-  api.path.mock_add_paths('[CLEANUP]/gen_iso/workdir/gen_iso.iso', 'FILE')
+  api.path.mock_add_paths('[CLEANUP]/gen_iso/workdir/staging/gen_iso.iso',
+                          'FILE')
   api.path.mock_add_paths(
       '[CACHE]/Pkgs/CIPDPkgs/resolved-instance_id-of-latest----------'
       '/infra/chrome/windows/wallpapers/windows-amd64', 'DIRECTORY')
@@ -62,8 +63,10 @@ def GenTests(api):
              t.WIN_ISO(image=image, arch=arch, name=cust, uploads=uploads)) +
          t.MOCK_CUST_OUTPUT(
              api, "gs://chrome-gce-images/WIB-ISO/{}.iso".format(key), False) +
-         t.MOUNT_DISK_ISO(api, image, cust) +
-         t.MOUNT_DISK_ISO(api, image, cust, suffix=' (2)') +
+         t.MOUNT_DISK_ISO(api, image, cust,
+                          'gs://chrome-gce-images/WIN-ISO/win10_vanilla.iso') +
+         t.MOUNT_DISK_ISO(api, image, cust,
+                          'gs://chrome-gce-images/WIB-ONLINE-CACHE/st.zip') +
          api.post_process(StatusSuccess) + api.post_process(DropExpectation))
 
   yield (api.test('Happy path with default bootloader') +
@@ -76,6 +79,8 @@ def GenTests(api):
                  boot_image=None)) +
          t.MOCK_CUST_OUTPUT(
              api, "gs://chrome-gce-images/WIB-ISO/{}.iso".format(key), False) +
-         t.MOUNT_DISK_ISO(api, image, cust) +
-         t.MOUNT_DISK_ISO(api, image, cust, suffix=' (2)') +
+         t.MOUNT_DISK_ISO(api, image, cust,
+                          'gs://chrome-gce-images/WIN-ISO/win10_vanilla.iso') +
+         t.MOUNT_DISK_ISO(api, image, cust,
+                          'gs://chrome-gce-images/WIB-ONLINE-CACHE/st.zip') +
          api.post_process(StatusSuccess) + api.post_process(DropExpectation))

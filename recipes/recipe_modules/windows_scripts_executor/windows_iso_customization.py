@@ -127,6 +127,8 @@ class WinISOCustomization(customization.Customization):
     """ context returns a dict containing the local_src id mapping to output
     src.
     """
+    if not self.outputs:
+      return {}  #pragma: nocover
     return {
         '{}-output'.format(self.id): self._source.dest_to_src(self.outputs[0])
     }
@@ -136,25 +138,35 @@ class WinISOCustomization(customization.Customization):
     """
     output = self.customization().windows_iso_customization
     with self.m.step.nest('Windows iso customization {}'.format(output.name)):
-      iso_dir = self._workdir
-      boot = None
-      if output.base_image:
-        self.copy_base_image(output.base_image, iso_dir)
-      for cf in output.copy_files:
-        self.copy_files_to_image(cf, iso_dir)
-      if output.boot_image.WhichOneof('src'):
-        src = self._source.download(output.boot_image)
-        # Copy the boot_image to /boot dir
-        self.m.file.copy('Add {}'.format(src), src, iso_dir.join('boot'))
-        boot = iso_dir.join('boot', self.m.path.basename(src))
-      output_image = iso_dir.join(output.name + '.iso')
-      # package everything into an iso
-      self.generate_iso_image(
-          output.name, boot=boot, directory=iso_dir, output=output_image)
-      self._source.upload_package(self.outputs[0], output_image)
-      for package in output.uploads:
-        package.tags['orig'] = self.outputs[0].tags['orig']
-        self._source.upload_package(package, output_image)
+      try:
+        # Use staging to unpack the iso for modification
+        iso_dir = self._workdir.join('staging')
+        boot = None
+        # Copy base image
+        if output.base_image:
+          self.copy_base_image(output.base_image, iso_dir)
+        # Copy all the modifications
+        for cf in output.copy_files:
+          self.copy_files_to_image(cf, iso_dir)
+        if output.boot_image.WhichOneof('src'):
+          src = self._source.download(output.boot_image)
+          # Copy the boot_image to /boot dir
+          self.m.file.copy('Add {}'.format(src), src, iso_dir.join('boot'))
+          boot = iso_dir.join('boot', self.m.path.basename(src))
+        output_image = iso_dir.join(output.name + '.iso')
+        # package everything into an iso
+        self.generate_iso_image(
+            output.name, boot=boot, directory=iso_dir, output=output_image)
+        # Upload the image
+        self._source.upload_package(self.outputs[0], output_image)
+        for package in output.uploads:
+          package.tags['orig'] = self.outputs[0].tags['orig']
+          self._source.upload_package(package, output_image)
+      finally:
+        # cleanup everything
+        with self.m.step.nest('Cleanup customization') as n:
+          self.m.file.rmcontents('clean workdir', self._workdir)
+          self.m.file.rmcontents('clean scratchpad', self._scratchpad)
 
   def copy_base_image(self, base_image, iso_staging):
     """ copy_base_image mounts the given iso image and copies the contents to
@@ -164,48 +176,79 @@ class WinISOCustomization(customization.Customization):
       * base_image: sources.Src proto object representing the iso image
       * iso_staging: dir path where we stage the iso to be packaged
     """
-    loop, mount_loc = self.m.qemu.mount_disk_image(
-        self._source.get_local_src(base_image), partitions=None)
-    # Copy the base image to the staging dir (iso_dir)
-    self.m.file.copytree('Copy base image', mount_loc[0], iso_staging)
-    self.m.qemu.unmount_disk_image(loop, partitions=None)
+    url = self._source.get_url(base_image)
+    with self.m.step.nest('Copy {} to staging'.format(url)) as n:
+      base_image_path = self._source.get_local_src(base_image)
+      loop, mount_loc = self.m.qemu.mount_disk_image(
+          self._source.get_local_src(base_image), partitions=None)
+      try:
+        n.presentation.logs['mount_path'] = mount_loc[0]
+        n.presentation.logs['loop'] = loop
+        # Copy the base image to the staging dir (iso_dir)
+        self.m.file.copytree('Copy base image', mount_loc[0], iso_staging)
+        # default permissions are 0555
+        self.m.step(
+            'Set permissions for base image',
+            cmd=['chmod', '0755', '-Rv', iso_staging])
+      finally:
+        self.m.qemu.unmount_disk_image(loop, partitions=None)
 
   def copy_files_to_image(self, cf, iso_staging):
     """ copy_files_to_image copies the given file to the image.
 
-    This handles files inside archive formats like zip tar or iso too. If mount
-    flag is set in copy file object the file is extracted from the
-    image/archive.
+    If the given file is an archive, extracts the archive contents. If mount
+    is set and there is only one file in the archive or input is just one file
+    (that is the image to mount), Mounts the image and then copies the file
+    at given source. Otherwise just copies the given file to the destination.
 
     Args:
       * cf: windows_iso.CopyFile proto object representing the file
       * iso_staging: location to copy the file to
     """
     src = self._source.get_local_src(cf.artifact)
+    src_url = self._source.get_url(cf.artifact)
     partitions = None
+    dest = iso_staging.join(cf.dest)
     loop = ''
-    if cf.mount:
+    with self.m.step.nest('Copy {} to staging'.format(src_url)) as n:
       if str(src).endswith('.zip') or str(src).endswith('.tar'):
-        # If this is a archive. Extract the required file to the destination
+        # If this is a archive. Extract the required file to scratchpad
         self.m.archive.extract(
-            'Unpack {} to {}'.format(cf.source, cf.dest),
+            'Unpack {} to {}'.format(src, self._scratchpad),
             archive_file=src,
-            output=iso_staging.join(cf.dest),
-            include_files=[cf.source])
-      else:
+            output=self._scratchpad)
+        # In the situation that this archive contains an image to extract. Let's
+        # figure out the path for the image
+        if cf.mount:
+          contents = self.m.file.listdir(
+              name='Checking the contents of {}'.format(src),
+              source=self._scratchpad,
+              recursive=False,
+              test_data=['image.file'])
+          if (len(contents) == 0):  #pragma: nocover
+            raise self.m.step.StepFailure('Nothing was extracted to mount')
+          elif (len(contents) > 1):  #pragma: nocover
+            raise self.m.step.StepFailure('Cannot determine what to mount')
+          else:
+            src = contents[0]
+        else:
+          src = self._scratchpad.join(cf.source)
+      if cf.mount:
         # If we are copying from an iso. There are no partitions
         partitions = None if str(src).endswith('iso') else [1]
         loop, mount_loc = self.m.qemu.mount_disk_image(
             src, partitions=partitions)
-        # Copy the file from mounted location
-        src = mount_loc[0] + cf.source
-        dest = iso_staging.join(cf.dest)
+        n.presentation.logs['mount_path'] = mount_loc[0]
+        n.presentation.logs['loop'] = loop
+        try:
+          # Copy the file from mounted location
+          src = mount_loc[0] + '/' + cf.source
+          self.copy(src, dest)
+        finally:
+          self.m.qemu.unmount_disk_image(loop, partitions=partitions)
+      else:
+        # Copy the given file as is to the target location
         self.copy(src, dest)
-        self.m.qemu.unmount_disk_image(loop, partitions=partitions)
-    else:
-      dest = iso_staging.join(cf.dest)
-      # Copy the given file as is to the target location
-      self.copy(src, dest)
 
   def copy(self, src, dest):
     """ copy is a helper function that unifies the action of copying dir or file
@@ -253,7 +296,7 @@ class WinISOCustomization(customization.Customization):
         '-allow-limited-size',  # support files larger than 2 GB
         '-relaxed-filenames',  # allow filenames to include all 7-bit ASCII
         '-V',
-        '"{}"'.format(name),  # name for the iso being generated
+        '{}'.format(name),  # name for the iso being generated
         '-o',
         output,  # write to this file
         directory  # directory to be used for this image

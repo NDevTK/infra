@@ -493,12 +493,12 @@ def MOUNT_DISK(api, image, customization, vm_name, disk, success=True):
       retcode=0 if success else 1)
 
 
-def MOUNT_DISK_ISO(api, image, customization, success=True, suffix=''):
+def MOUNT_DISK_ISO(api, image, customization, disk, success=True):
   return api.step_data(
       NEST(
           NEST_CONFIG_STEP(image),
           NEST_WINDOWS_ISO_CUSTOMIZATION_STEP(customization),
-          'Mount loop' + suffix),
+          'Copy {} to staging'.format(disk), 'Mount loop'),
       api.raw_io.stream_output('Mounted /dev/loop6 at /media/chrome-bot/test'),
       retcode=0 if success else 1)
 
@@ -739,7 +739,7 @@ def WIN_ISO(
     copy_files=(winiso.CopyArtifact(
         artifact=sources.Src(
             gcs_src=sources.GCSSrc(
-                bucket='chrome-gce-images', source='WIN-ISO/win10_gce.iso')),
+                bucket='chrome-gce-images', source='WIB-ONLINE-CACHE/st.zip')),
         mount=True,
         source='sources/install.wim'),
                 winiso.CopyArtifact(
@@ -747,7 +747,6 @@ def WIN_ISO(
                         gcs_src=sources.GCSSrc(
                             bucket='chrome-gce-images',
                             source='WIN-WIM/win10_bootstrap_wim.zip')),
-                    mount=True,
                     source='sources/boot.wim',
                     dest='sources'),
                 winiso.CopyArtifact(

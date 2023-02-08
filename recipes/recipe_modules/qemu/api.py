@@ -199,7 +199,7 @@ class QEMUAPI(recipe_api.RecipeApi):
                   loop_file + 'p{}'.format(partition)
               ],
               stdout=self.m.raw_io.output())
-          mount_loc.append(res.stdout.split()[-1].decode('UTF-8').strip('.'))
+          mount_loc.append(res.stdout.split()[-1].decode('UTF-8').rstrip('.'))
           mounted_partitions.append(partition)
       else:
         # Might be a iso image. Mount the loop itself
