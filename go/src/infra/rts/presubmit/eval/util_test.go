@@ -37,7 +37,7 @@ func TestPrintResults(t *testing.T) {
 		r := &evalpb.Results{
 			TotalRejections:   100,
 			TotalTestFailures: 100,
-			TotalDuration:     durationpb.New(time.Hour),
+			TotalDuration:     durationpb.New(time.Hour * 24 * 365),
 			Thresholds: []*evalpb.Threshold{
 				{
 					Savings: 1,
@@ -66,7 +66,7 @@ ChangeRecall | Savings | TestRecall | Distance
  99.00%      |  25.00% |  99.00%    | 10.000
 100.00%      |  50.00% | 100.00%    | 40.000
 
-based on 100 rejections, 100 test failures, 1h0m0s testing time
+based on 100 rejections, 100 test failures, 1 years 0 days 0 hours 0 minutes 0 seconds testing time
 `[1:])
 	})
 
@@ -116,7 +116,7 @@ ChangeRecall | Savings | TestRecall | Distance
  90.00%      |  50.00% |  90.00%    | 40.000
 100.00%      |  50.00% |  90.00%    | 41.000
 
-based on 100 rejections, 100 test failures, 1h0m0s testing time
+based on 100 rejections, 100 test failures, 1 hours 0 minutes 0 seconds testing time
 `[1:])
 	})
 }
@@ -157,7 +157,7 @@ ChangeRecall | Savings | TestRecall | Distance
  99.00%      |  25.00% |  99.00%    | 10.000
 100.00%      |  50.00% | 100.00%    | 40.000
 
-based on 100 rejections, 100 test failures, 1h0m0s testing time
+based on 100 rejections, 100 test failures, 1 hours 0 minutes 0 seconds testing time
 `[1:])
 
 		buf = &bytes.Buffer{}
@@ -169,7 +169,7 @@ ChangeRecall | Savings | TestRecall
  99.00%      |  25.00% |  99.00%    
 100.00%      |  50.00% | 100.00%    
 
-based on 100 rejections, 100 test failures, 1h0m0s testing time
+based on 100 rejections, 100 test failures, 1 hours 0 minutes 0 seconds testing time
 `[1:])
 
 		buf = &bytes.Buffer{}
@@ -181,7 +181,7 @@ ChangeRecall | Savings | Distance
  99.00%      |  25.00% | 10.000
 100.00%      |  50.00% | 40.000
 
-based on 100 rejections, 100 test failures, 1h0m0s testing time
+based on 100 rejections, 100 test failures, 1 hours 0 minutes 0 seconds testing time
 `[1:])
 
 		buf = &bytes.Buffer{}
@@ -193,7 +193,7 @@ ChangeRecall | Savings
  99.00%      |  25.00% 
 100.00%      |  50.00% 
 
-based on 100 rejections, 100 test failures, 1h0m0s testing time
+based on 100 rejections, 100 test failures, 1 hours 0 minutes 0 seconds testing time
 `[1:])
 	})
 }

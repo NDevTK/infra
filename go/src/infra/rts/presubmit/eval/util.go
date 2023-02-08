@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"time"
 
 	"go.chromium.org/luci/common/data/text/indented"
 
@@ -91,8 +92,33 @@ func PrintSpecificResults(res *evalpb.Results, w io.Writer, minChangeRecall floa
 		}
 		p.printf("\n")
 	}
-	p.printf("\nbased on %d rejections, %d test failures, %s testing time\n", res.TotalRejections, res.TotalTestFailures, res.TotalDuration.AsDuration())
+	p.printf("\nbased on %d rejections, %d test failures, %s testing time\n", res.TotalRejections, res.TotalTestFailures, durationString(res.TotalDuration.AsDuration()))
 	return p.err
+}
+
+func durationString(duration time.Duration) string {
+	seconds := int64(duration.Seconds())
+	minutes := seconds / 60
+	if minutes == 0 {
+		return fmt.Sprintf("%d seconds", seconds)
+	}
+	seconds = seconds % 60
+	hours := minutes / 60
+	if hours == 0 {
+		return fmt.Sprintf("%d minutes %d seconds", minutes, seconds)
+	}
+	minutes = minutes % 60
+	days := hours / 24
+	if days == 0 {
+		return fmt.Sprintf("%d hours %d minutes %d seconds", hours, minutes, seconds)
+	}
+	hours = hours % 24
+	years := days / 365
+	if years == 0 {
+		return fmt.Sprintf("%d days %d hours %d minutes %d seconds", days, hours, minutes, seconds)
+	}
+	days = days % 365
+	return fmt.Sprintf("%d years %d days %d hours %d minutes %d seconds", years, days, hours, minutes, seconds)
 }
 
 func scoreString(score float32) string {
