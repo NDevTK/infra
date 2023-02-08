@@ -116,7 +116,7 @@ def RunSteps(api, go_version_variant, run_lint):
       api.step(
           'go tests',
           api.resultdb.wrap(
-              ['vpython', '-u',
+              ['vpython3', '-u',
                co.path.join(patch_root, 'go', 'test.py')]))
 
 
