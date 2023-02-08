@@ -9,7 +9,8 @@ import (
 	"context"
 	"fmt"
 	"os/exec"
-	"strconv"
+	"path/filepath"
+	"reflect"
 	"strings"
 
 	"infra/libs/cipkg"
@@ -65,20 +66,22 @@ func (c *CIPDExport) Generate(ctx *cipkg.BuildContext) (cipkg.Derivation, cipkg.
 	// Use cipd related host environment as default value.
 	var env []string
 	hostEnv := environ.FromCtx(ctx.Context)
-	addEnv := func(k, v string) {
-		if v == "" {
-			v = hostEnv.Get(k)
+	addEnv := func(k string, v any) {
+		if vv := reflect.ValueOf(v); !vv.IsValid() || vv.IsZero() {
+			if hostV, ok := hostEnv.Lookup(k); !ok {
+				return
+			} else {
+				v = hostV
+			}
 		}
-		if v != "" {
-			env = append(env, fmt.Sprintf("%s=%s", k, v))
-		}
+		env = append(env, fmt.Sprintf("%s=%v", k, v))
 	}
 
 	addEnv(cipd.EnvConfigFile, c.ConfigFile)
 	addEnv(cipd.EnvCacheDir, c.CacheDir)
 	addEnv(cipd.EnvHTTPUserAgentPrefix, c.HTTPUserAgentPrefix)
-	addEnv(cipd.EnvMaxThreads, strconv.Itoa(c.MaxThreads))
-	addEnv(cipd.EnvParallelDownloads, strconv.Itoa(c.ParallelDownloads))
+	addEnv(cipd.EnvMaxThreads, c.MaxThreads)
+	addEnv(cipd.EnvParallelDownloads, c.ParallelDownloads)
 	addEnv(cipd.EnvAdmissionPlugin, c.AdmissionPlugin)
 	addEnv(cipd.EnvCIPDServiceURL, c.ServiceURL)
 
@@ -97,7 +100,7 @@ func cipdExport(ctx context.Context, cmd *exec.Cmd) error {
 	}
 	out := GetEnv("out", cmd.Env)
 
-	export := exec.Command("cipd", "export", "--root", out, "--ensure-file", "-")
+	export := CIPDCommand("export", "--root", out, "--ensure-file", "-")
 	export.Env = cmd.Env
 	export.Dir = cmd.Dir
 	export.Stdin = strings.NewReader(cmd.Args[1])
@@ -156,4 +159,21 @@ func cipdArch(arch string) string {
 		return "armv6l"
 	}
 	return arch
+}
+
+// Create a exec.Cmd for cipd which lookup and expands 'cipd' to it's path.
+// exec.Command already did that and store the path in Cmd.Path, but doesn't
+// work properly for .bat script.
+func CIPDCommand(arg ...string) *exec.Cmd {
+	cipd := "cipd"
+	if path, err := exec.LookPath("cipd"); err == nil {
+		cipd = path
+	}
+
+	// Use cmd to execute batch file on windows.
+	if filepath.Ext(cipd) == ".bat" {
+		return exec.Command("cmd.exe", append([]string{"/C", cipd}, arg...)...)
+	}
+
+	return exec.Command(cipd, arg...)
 }

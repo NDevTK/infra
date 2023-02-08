@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"net/url"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"infra/libs/cipkg"
+	"infra/libs/cipkg/builtins"
 
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/filesystem"
@@ -78,11 +78,6 @@ func cipdExport(serviceURL string, pkg cipkg.Package) error {
 		return fmt.Errorf("no cache key available")
 	}
 
-	cipd := findCIPD()
-	if cipd == "" {
-		return fmt.Errorf("cipd binary not available")
-	}
-
 	key, err := url.Parse(m.CacheKey)
 	if err != nil {
 		return fmt.Errorf("failed to parse cache key")
@@ -98,7 +93,7 @@ func cipdExport(serviceURL string, pkg cipkg.Package) error {
 		tag = t
 	}
 
-	cmd := exec.Command(cipd, "export", "-service-url", serviceURL, "-root", rootDir, "-ensure-file", "-")
+	cmd := builtins.CIPDCommand("export", "-service-url", serviceURL, "-root", rootDir, "-ensure-file", "-")
 	cmd.Stdin = strings.NewReader(fmt.Sprintf("%s version:%s", key.Path, tag))
 	if err := cmd.Run(); err != nil {
 		if err := filesystem.RemoveAll(pkg.Directory()); err != nil {
@@ -111,13 +106,4 @@ func cipdExport(serviceURL string, pkg cipkg.Package) error {
 	}
 
 	return nil
-}
-
-func findCIPD() string {
-	for _, s := range []string{"cipd", "cipd.exe", "cipd.bat"} {
-		if path, err := exec.LookPath(s); err == nil {
-			return path
-		}
-	}
-	return ""
 }

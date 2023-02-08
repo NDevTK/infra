@@ -10,7 +10,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strings"
 
 	"infra/libs/cipkg"
@@ -107,7 +106,7 @@ func ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
 	}
 
 	// Construct CIPD command and execute
-	export := exec.Command("cipd", "export", "--root", builtins.GetEnv("out", cmd.Env), "--ensure-file", "-")
+	export := builtins.CIPDCommand("export", "--root", builtins.GetEnv("out", cmd.Env), "--ensure-file", "-")
 	export.Env = cmd.Env
 	export.Dir = cmd.Dir
 	export.Stdin = strings.NewReader(efs.String())
@@ -176,12 +175,7 @@ func Verify(spec *vpython.Spec) error {
 			return err
 		}
 
-		bin := "cipd"
-		if runtime.GOOS == "windows" {
-			bin = "cipd.bat"
-		}
-
-		cmd := exec.Command(bin, "ensure-file-verify", "-ensure-file", "-")
+		cmd := builtins.CIPDCommand("ensure-file-verify", "-ensure-file", "-")
 		cmd.Stdin = strings.NewReader(efs.String())
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
