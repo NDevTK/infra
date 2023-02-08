@@ -91,7 +91,7 @@ func DisableWriteProtect(ctx context.Context, run components.Runner, log logger.
 	default:
 		return errors.Reason("disable write-protect %q: unsupported", fprom).Err()
 	}
-	out, err := run(ctx, timeout, "flashrom", "-p", fprom, "--wp-disable")
+	out, err := run(ctx, timeout, "flashrom", "-p", fprom, "--wp-disable", "--wp-range=0,0")
 	log.Debugf("Disable writeProtection stdout:\n%s", out)
 	return errors.Annotate(err, "disable write-protect %q", fprom).Err()
 }
