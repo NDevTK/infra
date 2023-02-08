@@ -9,3 +9,9 @@ go/tryjobs-2
 
 We created a stabilize branch, "stabilize-15185.B" for testing. Feel free to
 run production tryjobs on this branch.
+
+## Deployment
+
+For instruction on how to deploy try, see
+go/chromeos-ci-releases#infrainfra-go-binaries. For more details on how try is
+deployed, see go/cros-try#how-is-cros-try-deployed.
