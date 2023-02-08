@@ -84,6 +84,13 @@ def build_resolved_spec(api, spec_lookup, cache, force_build_packages,
           env.pop('CCC_OVERRIDE_OPTIONS', None)
       else:
         env['MACOSX_DEPLOYMENT_TARGET'] = '10.10'
+
+      # We also need to tell the go compiler about our deployment target.
+      min_os_version_flag = '-mmacosx-version-min=%s' % (
+          env['MACOSX_DEPLOYMENT_TARGET'])
+      env['CGO_CFLAGS'] = min_os_version_flag
+      env['CGO_LDFLAGS'] = min_os_version_flag
+
     if spec.create_pb.source.patch_version:
       env['_3PP_PATCH_VERSION'] = spec.create_pb.source.patch_version
 

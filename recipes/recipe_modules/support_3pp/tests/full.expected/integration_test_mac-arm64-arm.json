@@ -1404,6 +1404,8 @@
     ],
     "cwd": "None",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -1442,6 +1444,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -1486,6 +1490,8 @@
       "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -1531,6 +1537,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -1575,6 +1583,8 @@
       "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -1613,6 +1623,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -1656,6 +1668,8 @@
       "https://chromium.googlesource.com/external/go.repo/dep"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -1693,6 +1707,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -1730,6 +1746,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -1765,6 +1783,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -1803,6 +1823,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -1838,6 +1860,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -1875,6 +1899,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -1916,6 +1942,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -1962,6 +1990,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/dep/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2001,6 +2031,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/dep/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2046,6 +2078,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2093,6 +2127,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2139,6 +2175,8 @@
       "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout/.3pp/deps/bottom_dep_git"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2186,6 +2224,8 @@
       "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/out"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2228,6 +2268,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2285,6 +2327,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2327,6 +2371,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2369,6 +2415,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2410,6 +2458,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2455,6 +2505,8 @@
       "--recursive"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2497,6 +2549,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2543,6 +2597,8 @@
       "[CACHE]/3pp_cipd/3pp/deps/bottom_dep_git/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2582,6 +2638,8 @@
       "[CACHE]/3pp_cipd/3pp/deps/bottom_dep_git/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2628,6 +2686,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2677,6 +2737,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2722,6 +2784,8 @@
       "[CACHE]/3pp_cipd/3pp/deps/bottom_dep_git/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2764,6 +2828,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2813,6 +2879,8 @@
       "40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2854,6 +2922,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2898,6 +2968,8 @@
       "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-arm64/1.2.3"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2945,6 +3017,8 @@
       "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-arm64/1.2.3/checkout"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -2983,6 +3057,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3028,6 +3104,8 @@
       "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-arm64/1.2.3/checkout/raw_source_0.tar.gz"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3068,6 +3146,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3114,6 +3194,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/url/deps/bottom_dep_url/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3153,6 +3235,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/url/deps/bottom_dep_url/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3198,6 +3282,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3243,6 +3329,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3289,6 +3377,8 @@
       "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-arm64/1.2.3/checkout/.3pp/deps/bottom_dep_url"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3336,6 +3426,8 @@
       "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-arm64/1.2.3/out"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3378,6 +3470,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-arm64/1.2.3/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3435,6 +3529,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-arm64/1.2.3/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3477,6 +3573,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-arm64/1.2.3/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3519,6 +3617,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-arm64/1.2.3/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3560,6 +3660,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-arm64/1.2.3/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3605,6 +3707,8 @@
       "--recursive"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3647,6 +3751,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3693,6 +3799,8 @@
       "[CACHE]/3pp_cipd/3pp/deps/bottom_dep_url/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3732,6 +3840,8 @@
       "[CACHE]/3pp_cipd/3pp/deps/bottom_dep_url/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3778,6 +3888,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3827,6 +3939,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3872,6 +3986,8 @@
       "[CACHE]/3pp_cipd/3pp/deps/bottom_dep_url/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3912,6 +4028,8 @@
       "40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -3953,6 +4071,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4016,6 +4136,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4061,6 +4183,8 @@
       "[START_DIR]/3pp/wd/deps/deep_dep/mac-arm64/1.2.3"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4109,6 +4233,8 @@
       "[START_DIR]/3pp/wd/deps/deep_dep/mac-arm64/1.2.3/checkout"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4150,6 +4276,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4198,6 +4326,8 @@
       "[CACHE]/3pp_cipd/source/deep_dep"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4238,6 +4368,8 @@
       "[CACHE]/3pp_cipd/source/deep_dep/resolved-instance_id-of-version:1.2.3---"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4277,6 +4409,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4323,6 +4457,8 @@
       "--recursive"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4366,6 +4502,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4413,6 +4551,8 @@
       "[CACHE]/3pp_cipd/3pp/deps/deep_dep/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4453,6 +4593,8 @@
       "[CACHE]/3pp_cipd/3pp/deps/deep_dep/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4500,6 +4642,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4550,6 +4694,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4596,6 +4742,8 @@
       "[CACHE]/3pp_cipd/3pp/deps/deep_dep/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4637,6 +4785,8 @@
       "40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4679,6 +4829,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4746,6 +4898,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4790,6 +4944,8 @@
       "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/mac-arm64/1.1.2"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4837,6 +4993,8 @@
       "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/mac-arm64/1.1.2/checkout"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4875,6 +5033,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4920,6 +5080,8 @@
       "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/mac-arm64/1.1.2/checkout/raw_source_0.tar.gz"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -4960,6 +5122,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5006,6 +5170,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/url/tools/pkg/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5045,6 +5211,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/url/tools/pkg/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5090,6 +5258,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5135,6 +5305,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5181,6 +5353,8 @@
       "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/mac-arm64/1.1.2/checkout/.3pp/tools/pkg_override_and_no_latest"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5228,6 +5402,8 @@
       "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/mac-arm64/1.1.2/out"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5270,6 +5446,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/mac-arm64/1.1.2/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5327,6 +5505,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/mac-arm64/1.1.2/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5369,6 +5549,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/mac-arm64/1.1.2/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5411,6 +5593,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/mac-arm64/1.1.2/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5452,6 +5636,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/mac-arm64/1.1.2/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5497,6 +5683,8 @@
       "--recursive"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5539,6 +5727,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5585,6 +5775,8 @@
       "[CACHE]/3pp_cipd/3pp/tools/pkg/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5624,6 +5816,8 @@
       "[CACHE]/3pp_cipd/3pp/tools/pkg/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5670,6 +5864,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5717,6 +5913,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5762,6 +5960,8 @@
       "[CACHE]/3pp_cipd/3pp/tools/pkg/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5802,6 +6002,8 @@
       "40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5843,6 +6045,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5887,6 +6091,8 @@
       "[START_DIR]/3pp/wd/tools/posix_tool/mac-arm64/1.2.0"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5934,6 +6140,8 @@
       "[START_DIR]/3pp/wd/tools/posix_tool/mac-arm64/1.2.0/checkout"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -5974,6 +6182,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6021,6 +6231,8 @@
       "[CACHE]/3pp_cipd/source/posix_tool"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6060,6 +6272,8 @@
       "[CACHE]/3pp_cipd/source/posix_tool/resolved-instance_id-of-version:1.2.0---"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6098,6 +6312,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6150,6 +6366,8 @@
       "*.*"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6192,6 +6410,8 @@
       "[CLEANUP]/tmp_tmp_11/archive.tgz"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6230,6 +6450,8 @@
       "[START_DIR]/3pp/wd/tools/posix_tool/mac-arm64/1.2.0/checkout"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6268,6 +6490,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6313,6 +6537,8 @@
       "[START_DIR]/3pp/wd/tools/posix_tool/mac-arm64/1.2.0/checkout"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6352,6 +6578,8 @@
       "[START_DIR]/3pp/wd/tools/posix_tool/mac-arm64/1.2.0/checkout/.3pp/tools/posix_tool"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6399,6 +6627,8 @@
       "[START_DIR]/3pp/wd/tools/posix_tool/mac-arm64/1.2.0/out"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6441,6 +6671,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/posix_tool/mac-arm64/1.2.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6498,6 +6730,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/posix_tool/mac-arm64/1.2.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6540,6 +6774,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/posix_tool/mac-arm64/1.2.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6582,6 +6818,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/posix_tool/mac-arm64/1.2.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6623,6 +6861,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/posix_tool/mac-arm64/1.2.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6668,6 +6908,8 @@
       "--recursive"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6710,6 +6952,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6756,6 +7000,8 @@
       "[CACHE]/3pp_cipd/3pp/tools/posix_tool/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6795,6 +7041,8 @@
       "[CACHE]/3pp_cipd/3pp/tools/posix_tool/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6841,6 +7089,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6890,6 +7140,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6935,6 +7187,8 @@
       "[CACHE]/3pp_cipd/3pp/tools/posix_tool/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -6975,6 +7229,8 @@
       "40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7013,6 +7269,8 @@
       "latest"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7050,6 +7308,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7094,6 +7354,8 @@
       "[START_DIR]/3pp/wd/tools/windows_experiment/mac-arm64/2.0.0"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7141,6 +7403,8 @@
       "[START_DIR]/3pp/wd/tools/windows_experiment/mac-arm64/2.0.0/checkout"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7179,6 +7443,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7219,6 +7485,8 @@
       "get_url"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7268,6 +7536,8 @@
       "[START_DIR]/3pp/wd/tools/windows_experiment/mac-arm64/2.0.0/checkout/test_source"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7308,6 +7578,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7354,6 +7626,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/windows_experiment/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7393,6 +7667,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/windows_experiment/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7438,6 +7714,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7483,6 +7761,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7529,6 +7809,8 @@
       "[START_DIR]/3pp/wd/tools/windows_experiment/mac-arm64/2.0.0/checkout/.3pp/tools/windows_experiment"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7576,6 +7858,8 @@
       "[START_DIR]/3pp/wd/tools/windows_experiment/mac-arm64/2.0.0/out"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7618,6 +7902,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/windows_experiment/mac-arm64/2.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7675,6 +7961,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/windows_experiment/mac-arm64/2.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7717,6 +8005,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/windows_experiment/mac-arm64/2.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7759,6 +8049,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/windows_experiment/mac-arm64/2.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7800,6 +8092,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/windows_experiment/mac-arm64/2.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7845,6 +8139,8 @@
       "--recursive"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7887,6 +8183,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7933,6 +8231,8 @@
       "[CACHE]/3pp_cipd/3pp/tools/windows_experiment/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -7972,6 +8272,8 @@
       "[CACHE]/3pp_cipd/3pp/tools/windows_experiment/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8018,6 +8320,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8067,6 +8371,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8112,6 +8418,8 @@
       "[CACHE]/3pp_cipd/3pp/tools/windows_experiment/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8152,6 +8460,8 @@
       "40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8191,6 +8501,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8230,6 +8542,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8275,6 +8589,8 @@
       "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8330,6 +8646,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8378,6 +8696,8 @@
       "[CACHE]/3pp_cipd/3pp/build_tools/tool/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8418,6 +8738,8 @@
       "[CACHE]/3pp_cipd/3pp/build_tools/tool/mac-arm64/resolved-instance_id-of-version:2@0.9.0."
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8457,6 +8779,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8509,6 +8833,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8554,6 +8880,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8599,6 +8927,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8644,6 +8974,8 @@
       "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8683,6 +9015,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8727,6 +9061,8 @@
       "https://chromium.googlesource.com/external/go.repo/git_tool"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8765,6 +9101,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8803,6 +9141,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8839,6 +9179,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8878,6 +9220,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8914,6 +9258,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8952,6 +9298,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -8994,6 +9342,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9041,6 +9391,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/git_tool/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9081,6 +9433,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/git_tool/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9127,6 +9481,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9175,6 +9531,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9222,6 +9580,8 @@
       "*"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9259,6 +9619,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9299,6 +9661,8 @@
       "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout/.3pp/deps/bottom_dep_git"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9339,6 +9703,8 @@
       "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout/.3pp/deps/bottom_dep_url"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9379,6 +9745,8 @@
       "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout/.3pp/build_tools/git_tool"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9427,6 +9795,8 @@
       "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/out"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9470,6 +9840,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9528,6 +9900,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9571,6 +9945,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9614,6 +9990,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9656,6 +10034,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9702,6 +10082,8 @@
       "--recursive"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9745,6 +10127,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9792,6 +10176,8 @@
       "[CACHE]/3pp_cipd/3pp/build_tools/git_tool/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9832,6 +10218,8 @@
       "[CACHE]/3pp_cipd/3pp/build_tools/git_tool/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9880,6 +10268,8 @@
       "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/verify"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9920,6 +10310,8 @@
       "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/verify/cipd.pkg"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -9963,6 +10355,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10015,6 +10409,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10052,6 +10448,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10090,6 +10488,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10125,6 +10525,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10172,6 +10574,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10222,6 +10626,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10268,6 +10674,8 @@
       "[CACHE]/3pp_cipd/3pp/build_tools/git_tool/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10309,6 +10717,8 @@
       "40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10351,6 +10761,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10396,6 +10808,8 @@
       "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10449,6 +10863,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10501,6 +10917,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10546,6 +10964,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10593,6 +11013,8 @@
       "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10632,6 +11054,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10676,6 +11100,8 @@
       "https://go.repo/tool"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10714,6 +11140,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10752,6 +11180,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10788,6 +11218,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10827,6 +11259,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10863,6 +11297,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10901,6 +11337,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10943,6 +11381,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -10990,6 +11430,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/tool/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11030,6 +11472,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/tool/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11076,6 +11520,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11122,6 +11568,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11169,6 +11617,8 @@
       "*"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11206,6 +11656,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11246,6 +11698,8 @@
       "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout/.3pp/deps/bottom_dep_git"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11286,6 +11740,8 @@
       "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout/.3pp/deps/bottom_dep_url"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11326,6 +11782,8 @@
       "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout/.3pp/build_tools/tool"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11374,6 +11832,8 @@
       "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/out"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11417,6 +11877,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11475,6 +11937,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11518,6 +11982,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11561,6 +12027,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11603,6 +12071,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11649,6 +12119,8 @@
       "--recursive"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11692,6 +12164,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11739,6 +12213,8 @@
       "[CACHE]/3pp_cipd/3pp/build_tools/tool/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11779,6 +12255,8 @@
       "[CACHE]/3pp_cipd/3pp/build_tools/tool/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11827,6 +12305,8 @@
       "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/verify"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11867,6 +12347,8 @@
       "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/verify/cipd.pkg"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11910,6 +12392,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11962,6 +12446,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -11999,6 +12485,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12037,6 +12525,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12072,6 +12562,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12119,6 +12611,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12167,6 +12661,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12213,6 +12709,8 @@
       "[CACHE]/3pp_cipd/3pp/build_tools/tool/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12254,6 +12752,8 @@
       "40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12294,6 +12794,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12337,6 +12839,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12381,6 +12885,8 @@
       "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12433,6 +12939,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12484,6 +12992,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12530,6 +13040,8 @@
       "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0/checkout"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12570,6 +13082,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12617,6 +13131,8 @@
       "[CACHE]/3pp_cipd/source/dep"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12656,6 +13172,8 @@
       "[CACHE]/3pp_cipd/source/dep/resolved-instance_id-of-version:1.0.0---"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12694,6 +13212,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12739,6 +13259,8 @@
       "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0/checkout/.3pp/deps/bottom_dep_git"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12778,6 +13300,8 @@
       "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0/checkout/.3pp/deps/bottom_dep_url"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12817,6 +13341,8 @@
       "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0/checkout/.3pp/deps/deep_dep"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12856,6 +13382,8 @@
       "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0/checkout/.3pp/build_tools/tool"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12895,6 +13423,8 @@
       "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0/checkout/.3pp/deps/dep"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12942,6 +13472,8 @@
       "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0/out"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -12984,6 +13516,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13041,6 +13575,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13083,6 +13619,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13125,6 +13663,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13166,6 +13706,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13211,6 +13753,8 @@
       "--recursive"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13253,6 +13797,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13299,6 +13845,8 @@
       "[CACHE]/3pp_cipd/3pp/deps/dep/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13338,6 +13886,8 @@
       "[CACHE]/3pp_cipd/3pp/deps/dep/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13384,6 +13934,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13433,6 +13985,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13478,6 +14032,8 @@
       "[CACHE]/3pp_cipd/3pp/deps/dep/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13518,6 +14074,8 @@
       "40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13556,6 +14114,8 @@
       "latest"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13593,6 +14153,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13637,6 +14199,8 @@
       "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13689,6 +14253,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13740,6 +14306,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13784,6 +14352,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13830,6 +14400,8 @@
       "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/checkout"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13868,6 +14440,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13908,6 +14482,8 @@
       "get_url"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13957,6 +14533,8 @@
       "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/checkout/test_source"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -13997,6 +14575,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14043,6 +14623,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/pkg/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14082,6 +14664,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/pkg/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14127,6 +14711,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14172,6 +14758,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14218,6 +14806,8 @@
       "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/checkout/.3pp/deps/bottom_dep_git"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14257,6 +14847,8 @@
       "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/checkout/.3pp/deps/bottom_dep_url"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14296,6 +14888,8 @@
       "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/checkout/.3pp/deps/deep_dep"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14335,6 +14929,8 @@
       "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/checkout/.3pp/build_tools/tool"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14374,6 +14970,8 @@
       "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/checkout/.3pp/deps/dep"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14413,6 +15011,8 @@
       "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/checkout/.3pp/tools/pkg"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14460,6 +15060,8 @@
       "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/out"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14502,6 +15104,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14559,6 +15163,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14601,6 +15207,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14643,6 +15251,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14684,6 +15294,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14729,6 +15341,8 @@
       "--recursive"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14771,6 +15385,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14817,6 +15433,8 @@
       "[CACHE]/3pp_cipd/3pp/tools/pkg/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14856,6 +15474,8 @@
       "[CACHE]/3pp_cipd/3pp/tools/pkg/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14902,6 +15522,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14951,6 +15573,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -14996,6 +15620,8 @@
       "[CACHE]/3pp_cipd/3pp/tools/pkg/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15036,6 +15662,8 @@
       "40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15074,6 +15702,8 @@
       "latest"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15111,6 +15741,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15155,6 +15787,8 @@
       "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15207,6 +15841,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15258,6 +15894,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15302,6 +15940,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15348,6 +15988,8 @@
       "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/checkout"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15386,6 +16028,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15427,6 +16071,8 @@
       "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/checkout"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15467,6 +16113,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15513,6 +16161,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/pkg_checkout/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15552,6 +16202,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/pkg_checkout/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15597,6 +16249,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15642,6 +16296,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15688,6 +16344,8 @@
       "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/checkout/.3pp/deps/bottom_dep_git"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15727,6 +16385,8 @@
       "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/checkout/.3pp/deps/bottom_dep_url"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15766,6 +16426,8 @@
       "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/checkout/.3pp/deps/deep_dep"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15805,6 +16467,8 @@
       "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/checkout/.3pp/build_tools/tool"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15844,6 +16508,8 @@
       "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/checkout/.3pp/deps/dep"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15883,6 +16549,8 @@
       "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/checkout/.3pp/tools/pkg_checkout"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15930,6 +16598,8 @@
       "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/out"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -15972,6 +16642,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -16029,6 +16701,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -16071,6 +16745,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -16113,6 +16789,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -16154,6 +16832,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -16199,6 +16879,8 @@
       "--recursive"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -16241,6 +16923,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -16287,6 +16971,8 @@
       "[CACHE]/3pp_cipd/3pp/tools/pkg_checkout/mac-arm64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -16326,6 +17012,8 @@
       "[CACHE]/3pp_cipd/3pp/tools/pkg_checkout/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -16372,6 +17060,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -16421,6 +17111,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -16466,6 +17158,8 @@
       "[CACHE]/3pp_cipd/3pp/tools/pkg_checkout/mac-arm64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",
@@ -16506,6 +17200,8 @@
       "40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "arm64",
       "GOOS": "darwin",

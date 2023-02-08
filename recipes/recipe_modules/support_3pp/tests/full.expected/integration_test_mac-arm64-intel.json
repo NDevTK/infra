@@ -1404,6 +1404,8 @@
     ],
     "cwd": "None",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -1442,6 +1444,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -1486,6 +1490,8 @@
       "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -1531,6 +1537,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -1575,6 +1583,8 @@
       "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/checkout"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -1613,6 +1623,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -1656,6 +1668,8 @@
       "https://chromium.googlesource.com/external/go.repo/dep"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -1693,6 +1707,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -1730,6 +1746,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -1765,6 +1783,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -1803,6 +1823,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -1838,6 +1860,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -1875,6 +1899,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -1916,6 +1942,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -1962,6 +1990,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/dep/mac-amd64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -2001,6 +2031,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/dep/mac-amd64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -2040,6 +2072,8 @@
       "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/checkout/.3pp/deps/bottom_dep_git"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -2087,6 +2121,8 @@
       "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/out"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -2129,6 +2165,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -2186,6 +2224,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -2228,6 +2268,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -2270,6 +2312,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -2311,6 +2355,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -2356,6 +2402,8 @@
       "--recursive"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -2398,6 +2446,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -2444,6 +2494,8 @@
       "[CACHE]/3pp_cipd/3pp/deps/bottom_dep_git/mac-amd64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -2483,6 +2535,8 @@
       "[CACHE]/3pp_cipd/3pp/deps/bottom_dep_git/mac-amd64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -2524,6 +2578,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -2564,6 +2620,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -2610,6 +2668,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -2657,6 +2717,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -2703,6 +2765,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -2743,6 +2807,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -2788,6 +2854,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -2827,6 +2895,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -2866,6 +2936,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -2903,6 +2975,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -2943,6 +3017,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -2980,6 +3056,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3019,6 +3097,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3062,6 +3142,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3110,6 +3192,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3151,6 +3235,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3198,6 +3284,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3247,6 +3335,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3295,6 +3385,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3344,6 +3436,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3388,6 +3482,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3447,6 +3543,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3491,6 +3589,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3535,6 +3635,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3578,6 +3680,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3625,6 +3729,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3669,6 +3775,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3717,6 +3825,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3758,6 +3868,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3806,6 +3918,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3857,6 +3971,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3904,6 +4020,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3948,6 +4066,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -3999,6 +4119,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -4041,6 +4163,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -4085,6 +4209,8 @@
       "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-amd64/1.2.3"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -4132,6 +4258,8 @@
       "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-amd64/1.2.3/checkout"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -4170,6 +4298,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -4215,6 +4345,8 @@
       "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-amd64/1.2.3/checkout/raw_source_0.tar.gz"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -4255,6 +4387,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -4301,6 +4435,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/url/deps/bottom_dep_url/mac-amd64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -4340,6 +4476,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/url/deps/bottom_dep_url/mac-amd64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -4379,6 +4517,8 @@
       "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-amd64/1.2.3/checkout/.3pp/deps/bottom_dep_url"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -4426,6 +4566,8 @@
       "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-amd64/1.2.3/out"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -4468,6 +4610,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-amd64/1.2.3/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -4525,6 +4669,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-amd64/1.2.3/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -4567,6 +4713,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-amd64/1.2.3/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -4609,6 +4757,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-amd64/1.2.3/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -4650,6 +4800,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-amd64/1.2.3/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -4695,6 +4847,8 @@
       "--recursive"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -4737,6 +4891,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -4783,6 +4939,8 @@
       "[CACHE]/3pp_cipd/3pp/deps/bottom_dep_url/mac-amd64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -4822,6 +4980,8 @@
       "[CACHE]/3pp_cipd/3pp/deps/bottom_dep_url/mac-amd64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -4865,6 +5025,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -4911,6 +5073,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -4960,6 +5124,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5000,6 +5166,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5047,6 +5215,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5089,6 +5259,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5137,6 +5309,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5178,6 +5352,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5225,6 +5401,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5272,6 +5450,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5320,6 +5500,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5369,6 +5551,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5413,6 +5597,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-arm64/1.2.3/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5472,6 +5658,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-arm64/1.2.3/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5516,6 +5704,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-arm64/1.2.3/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5560,6 +5750,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-arm64/1.2.3/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5603,6 +5795,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_url/mac-arm64/1.2.3/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5650,6 +5844,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5694,6 +5890,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5742,6 +5940,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5783,6 +5983,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5831,6 +6033,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5882,6 +6086,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5929,6 +6135,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -5971,6 +6179,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6014,6 +6224,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6079,6 +6291,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6126,6 +6340,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6176,6 +6392,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6219,6 +6437,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6269,6 +6489,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6311,6 +6533,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6352,6 +6576,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6400,6 +6626,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6445,6 +6673,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6494,6 +6724,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6536,6 +6768,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6585,6 +6819,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6637,6 +6873,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6685,6 +6923,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6728,6 +6968,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6772,6 +7014,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6841,6 +7085,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6887,6 +7133,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6936,6 +7184,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -6976,6 +7226,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7023,6 +7275,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7065,6 +7319,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7113,6 +7369,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7154,6 +7412,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7201,6 +7461,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7248,6 +7510,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7296,6 +7560,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7345,6 +7611,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7389,6 +7657,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/mac-arm64/1.1.2/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7448,6 +7718,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/mac-arm64/1.1.2/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7492,6 +7764,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/mac-arm64/1.1.2/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7536,6 +7810,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/mac-arm64/1.1.2/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7579,6 +7855,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_override_and_no_latest/mac-arm64/1.1.2/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7626,6 +7904,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7670,6 +7950,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7718,6 +8000,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7759,6 +8043,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7807,6 +8093,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7856,6 +8144,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7903,6 +8193,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7945,6 +8237,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -7988,6 +8282,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8034,6 +8330,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8083,6 +8381,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8125,6 +8425,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8174,6 +8476,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8215,6 +8519,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8255,6 +8561,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8309,6 +8617,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8353,6 +8663,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8393,6 +8705,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8433,6 +8747,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8480,6 +8796,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8521,6 +8839,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8570,6 +8890,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8614,6 +8936,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/posix_tool/mac-arm64/1.2.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8673,6 +8997,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/posix_tool/mac-arm64/1.2.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8717,6 +9043,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/posix_tool/mac-arm64/1.2.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8761,6 +9089,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/posix_tool/mac-arm64/1.2.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8804,6 +9134,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/posix_tool/mac-arm64/1.2.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8851,6 +9183,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8895,6 +9229,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8943,6 +9279,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -8984,6 +9322,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9032,6 +9372,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9083,6 +9425,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9130,6 +9474,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9172,6 +9518,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9212,6 +9560,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9251,6 +9601,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9297,6 +9649,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9346,6 +9700,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9386,6 +9742,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9428,6 +9786,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9479,6 +9839,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9521,6 +9883,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9569,6 +9933,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9610,6 +9976,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9657,6 +10025,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9704,6 +10074,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9752,6 +10124,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9801,6 +10175,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9845,6 +10221,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/windows_experiment/mac-arm64/2.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9904,6 +10282,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/windows_experiment/mac-arm64/2.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9948,6 +10328,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/windows_experiment/mac-arm64/2.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -9992,6 +10374,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/windows_experiment/mac-arm64/2.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10035,6 +10419,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/windows_experiment/mac-arm64/2.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10082,6 +10468,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10126,6 +10514,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10174,6 +10564,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10215,6 +10607,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10263,6 +10657,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10314,6 +10710,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10361,6 +10759,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10403,6 +10803,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10444,6 +10846,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10485,6 +10889,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10532,6 +10938,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10589,6 +10997,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10639,6 +11049,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10681,6 +11093,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10722,6 +11136,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10776,6 +11192,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10823,6 +11241,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10870,6 +11290,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10917,6 +11339,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -10958,6 +11382,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11004,6 +11430,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11044,6 +11472,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11084,6 +11514,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11122,6 +11554,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11163,6 +11597,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11201,6 +11637,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11241,6 +11679,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11285,6 +11725,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11334,6 +11776,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11376,6 +11820,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11424,6 +11870,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11474,6 +11922,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11523,6 +11973,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11562,6 +12014,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11604,6 +12058,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11646,6 +12102,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11688,6 +12146,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11738,6 +12198,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11783,6 +12245,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11843,6 +12307,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11888,6 +12354,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11933,6 +12401,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -11977,6 +12447,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -12025,6 +12497,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -12070,6 +12544,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -12119,6 +12595,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -12161,6 +12639,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -12211,6 +12691,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -12253,6 +12735,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -12298,6 +12782,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -12352,6 +12838,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -12391,6 +12879,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -12431,6 +12921,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -12468,6 +12960,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/git_tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -12517,6 +13011,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -12569,6 +13065,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -12617,6 +13115,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -12660,6 +13160,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -12701,6 +13203,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -12740,6 +13244,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -12785,6 +13291,8 @@
       "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -12838,6 +13346,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -12890,6 +13400,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -12935,6 +13447,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -12980,6 +13494,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13025,6 +13541,8 @@
       "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/checkout/src/go.repo/tool"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13064,6 +13582,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13108,6 +13628,8 @@
       "https://go.repo/tool"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13146,6 +13668,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13184,6 +13708,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13220,6 +13746,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13259,6 +13787,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13295,6 +13825,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13333,6 +13865,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13375,6 +13909,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13422,6 +13958,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/tool/mac-amd64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13462,6 +14000,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/tool/mac-amd64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13502,6 +14042,8 @@
       "*"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13539,6 +14081,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13579,6 +14123,8 @@
       "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/checkout/.3pp/deps/bottom_dep_git"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13619,6 +14165,8 @@
       "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/checkout/.3pp/deps/bottom_dep_url"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13659,6 +14207,8 @@
       "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/checkout/.3pp/build_tools/tool"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13707,6 +14257,8 @@
       "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/out"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13750,6 +14302,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13808,6 +14362,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13851,6 +14407,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13894,6 +14452,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13936,6 +14496,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/checkout",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -13982,6 +14544,8 @@
       "--recursive"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -14025,6 +14589,8 @@
       "/path/to/tmp/json"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -14072,6 +14638,8 @@
       "[CACHE]/3pp_cipd/3pp/build_tools/tool/mac-amd64"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -14112,6 +14680,8 @@
       "[CACHE]/3pp_cipd/3pp/build_tools/tool/mac-amd64/40-chars-fake-of-the-package-instance_id"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -14160,6 +14730,8 @@
       "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/verify"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -14200,6 +14772,8 @@
       "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/verify/cipd.pkg"
     ],
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -14243,6 +14817,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/verify",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -14295,6 +14871,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/verify",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -14332,6 +14910,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/verify",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -14370,6 +14950,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/verify",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -14405,6 +14987,8 @@
     ],
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-amd64/1.5.0-rc1/verify",
     "env": {
+      "CGO_CFLAGS": "-mmacosx-version-min=10.10",
+      "CGO_LDFLAGS": "-mmacosx-version-min=10.10",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "GOARCH": "amd64",
       "GOOS": "darwin",
@@ -14449,6 +15033,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -14496,6 +15082,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -14551,6 +15139,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -14605,6 +15195,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -14652,6 +15244,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -14701,6 +15295,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -14742,6 +15338,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -14788,6 +15386,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -14828,6 +15428,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -14868,6 +15470,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -14906,6 +15510,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -14947,6 +15553,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -14985,6 +15593,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15025,6 +15635,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15069,6 +15681,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15118,6 +15732,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15160,6 +15776,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15208,6 +15826,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15256,6 +15876,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15305,6 +15927,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15344,6 +15968,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout/src/go.repo/tool",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15386,6 +16012,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15428,6 +16056,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15470,6 +16100,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15520,6 +16152,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15565,6 +16199,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15625,6 +16261,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15670,6 +16308,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15715,6 +16355,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15759,6 +16401,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15807,6 +16451,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15852,6 +16498,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15901,6 +16549,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15943,6 +16593,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -15993,6 +16645,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16035,6 +16689,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16080,6 +16736,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16134,6 +16792,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16173,6 +16833,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16213,6 +16875,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16250,6 +16914,8 @@
     "cwd": "[START_DIR]/3pp/wd/build_tools/tool/mac-arm64/1.5.0-rc1/verify",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16299,6 +16965,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16349,6 +17017,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16397,6 +17067,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16440,6 +17112,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16482,6 +17156,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/bottom_dep_git/mac-amd64/1.5.0-rc1/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16527,6 +17203,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16573,6 +17251,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16627,6 +17307,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16680,6 +17362,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16728,6 +17412,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16770,6 +17456,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16819,6 +17507,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16860,6 +17550,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16900,6 +17592,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16947,6 +17641,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -16988,6 +17684,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17029,6 +17727,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17070,6 +17770,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17111,6 +17813,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17160,6 +17864,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17204,6 +17910,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17263,6 +17971,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17307,6 +18017,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17351,6 +18063,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17394,6 +18108,8 @@
     "cwd": "[START_DIR]/3pp/wd/deps/dep/mac-arm64/1.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17441,6 +18157,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17485,6 +18203,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17533,6 +18253,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17574,6 +18296,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17622,6 +18346,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17673,6 +18399,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17720,6 +18448,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17762,6 +18492,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17802,6 +18534,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17841,6 +18575,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17887,6 +18623,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17941,6 +18679,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -17994,6 +18734,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18040,6 +18782,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18088,6 +18832,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18128,6 +18874,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18170,6 +18918,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18221,6 +18971,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18263,6 +19015,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18311,6 +19065,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18352,6 +19108,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18399,6 +19157,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18446,6 +19206,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18494,6 +19256,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18535,6 +19299,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18576,6 +19342,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18617,6 +19385,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18658,6 +19428,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18699,6 +19471,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18748,6 +19522,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18792,6 +19568,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18851,6 +19629,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18895,6 +19675,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18939,6 +19721,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -18982,6 +19766,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/pkg/mac-arm64/2.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19029,6 +19815,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19073,6 +19861,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19121,6 +19911,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19162,6 +19954,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19210,6 +20004,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19261,6 +20057,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19308,6 +20106,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19350,6 +20150,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19390,6 +20192,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19429,6 +20233,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19475,6 +20281,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19529,6 +20337,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19582,6 +20392,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19628,6 +20440,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19676,6 +20490,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19716,6 +20532,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19759,6 +20577,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19801,6 +20621,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19849,6 +20671,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19890,6 +20714,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19937,6 +20763,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -19984,6 +20812,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20032,6 +20862,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20073,6 +20905,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20114,6 +20948,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20155,6 +20991,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20196,6 +21034,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20237,6 +21077,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20286,6 +21128,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20330,6 +21174,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20389,6 +21235,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20433,6 +21281,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20477,6 +21327,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20520,6 +21372,8 @@
     "cwd": "[START_DIR]/3pp/wd/tools/pkg_checkout/mac-arm64/2.0.0/checkout",
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20567,6 +21421,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20611,6 +21467,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20659,6 +21517,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20700,6 +21560,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20748,6 +21610,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20799,6 +21663,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20846,6 +21712,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
@@ -20888,6 +21756,8 @@
     ],
     "env": {
       "CCC_OVERRIDE_OPTIONS": "^--target=arm64-apple-macos",
+      "CGO_CFLAGS": "-mmacosx-version-min=11.0",
+      "CGO_LDFLAGS": "-mmacosx-version-min=11.0",
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
       "CROSS_TRIPLE": "aarch64-apple-darwin",
       "GOARCH": "arm64",
