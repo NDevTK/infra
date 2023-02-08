@@ -10,8 +10,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/grpcutil"
-	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/cron"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -104,7 +104,7 @@ func (k *karteFrontend) PersistToBigquery(ctx context.Context, req *kartepb.Pers
 }
 
 // InstallServices takes a Karte frontend and exposes it to a LUCI prpc.Server.
-func InstallServices(k KarteFrontend, srv *prpc.Server) {
+func InstallServices(k KarteFrontend, srv grpc.ServiceRegistrar) {
 	kartepb.RegisterKarteServer(srv, k)
 	kartepb.RegisterKarteCronServer(srv, k)
 	cron.RegisterHandler(

@@ -145,22 +145,15 @@ func main() {
 		srv.Routes.Static("/static/", mw, http.Dir("./static"))
 
 		// Register pPRC servers.
-		srv.PRPC.AccessControl = prpc.AllowOriginAll
-		srv.PRPC.Authenticator = &auth.Authenticator{
-			Methods: []auth.Method{
-				&auth.GoogleOAuth2Method{
-					Scopes: []string{"https://www.googleapis.com/auth/userinfo.email"},
-				},
-			},
-		}
-
-		// TODO(crbug/1082369): Remove this workaround once field masks can be decoded.
-		srv.PRPC.HackFixFieldMasksForJSON = true
-
-		proto.RegisterAssetServer(srv.PRPC, &service.AssetHandler{})
-		proto.RegisterResourceServer(srv.PRPC, &service.ResourceHandler{})
-		proto.RegisterAssetResourceServer(srv.PRPC, &service.AssetResourceHandler{})
-		proto.RegisterAssetInstanceServer(srv.PRPC, &service.AssetInstanceHandler{})
+		srv.ConfigurePRPC(func(p *prpc.Server) {
+			p.AccessControl = prpc.AllowOriginAll
+			// TODO(crbug/1082369): Remove this workaround once field masks can be decoded.
+			p.HackFixFieldMasksForJSON = true
+		})
+		proto.RegisterAssetServer(srv, &service.AssetHandler{})
+		proto.RegisterResourceServer(srv, &service.ResourceHandler{})
+		proto.RegisterAssetResourceServer(srv, &service.AssetResourceHandler{})
+		proto.RegisterAssetInstanceServer(srv, &service.AssetInstanceHandler{})
 
 		return nil
 	})

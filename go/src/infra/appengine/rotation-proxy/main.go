@@ -9,6 +9,8 @@ package main
 import (
 	"context"
 
+	rpb "infra/appengine/rotation-proxy/proto"
+
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
@@ -17,7 +19,6 @@ import (
 	"go.chromium.org/luci/server/router"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	rpb "infra/appengine/rotation-proxy/proto"
 )
 
 var (
@@ -55,7 +56,7 @@ func main() {
 		})
 
 		// Install PRPC service
-		rpb.RegisterRotationProxyServiceServer(srv.PRPC, &rpb.DecoratedRotationProxyService{
+		rpb.RegisterRotationProxyServiceServer(srv, &rpb.DecoratedRotationProxyService{
 			Service: &RotationProxyServer{},
 			Prelude: checkAPIAccess,
 		})

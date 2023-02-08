@@ -7,9 +7,10 @@
 package main
 
 import (
+	"google.golang.org/grpc"
+
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/config/server/cfgmodule"
-	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
@@ -27,14 +28,14 @@ func main() {
 
 	server.Main(nil, modules, func(srv *server.Server) error {
 		logging.Infof(srv.Context, "Installing services.")
-		installServices(srv.PRPC)
+		installServices(srv)
 		logging.Infof(srv.Context, "Finished installing services.")
 		return nil
 	})
 }
 
 // Install the CrOSSkylabAdminServices into a prpc registrar.
-func installServices(r prpc.Registrar) {
+func installServices(r grpc.ServiceRegistrar) {
 	fleet.RegisterTrackerServer(r, &fleet.DecoratedTracker{
 		Service: &frontend.TrackerServerImpl{
 			SwarmingFactory: nil,

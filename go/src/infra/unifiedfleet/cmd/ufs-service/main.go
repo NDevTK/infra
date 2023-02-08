@@ -63,9 +63,8 @@ func main() {
 			panic(err)
 		}
 
-		srv.RegisterUnaryServerInterceptor(versionInterceptor)
-		srv.RegisterUnaryServerInterceptor(namespaceInterceptor)
-		frontend.InstallServices(srv.PRPC)
+		srv.RegisterUnaryServerInterceptors(versionInterceptor, namespaceInterceptor)
+		frontend.InstallServices(srv)
 
 		// Add authenticator for handling JWT tokens. This is required to
 		// authenticate PubSub push responses sent as HTTP POST requests. See

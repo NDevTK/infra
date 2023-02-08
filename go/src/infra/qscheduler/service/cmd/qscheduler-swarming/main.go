@@ -69,7 +69,7 @@ func main() {
 		srv.Context = eventlog.Use(srv.Context, bi)
 
 		// Install main API services.
-		frontend.InstallServices(srv.PRPC)
+		frontend.InstallServices(srv)
 		return nil
 	})
 }

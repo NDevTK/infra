@@ -18,12 +18,12 @@ package frontend
 import (
 	"context"
 
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"github.com/golang/protobuf/proto"
 
-	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
 	swarming "go.chromium.org/luci/swarming/proto/api"
 
@@ -43,7 +43,7 @@ const (
 )
 
 // InstallServices installs the services implemented by the frontend package.
-func InstallServices(apiServer *prpc.Server) {
+func InstallServices(apiServer grpc.ServiceRegistrar) {
 	swarming.RegisterExternalSchedulerServer(apiServer, &swarming.DecoratedExternalScheduler{
 		Service: NewBatchedServer(),
 		Prelude: accessChecker(roleSwarming),

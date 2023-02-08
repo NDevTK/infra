@@ -10,6 +10,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
+	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,9 +20,9 @@ import (
 )
 
 // InstallServices install the prpc handlers in the server
-func InstallServices(srv *prpc.Server) {
-	srv.UnaryServerInterceptor = config.Interceptor
-	srv.AccessControl = prpc.AllowOriginAll
+func InstallServices(srv *server.Server) {
+	srv.RegisterUnaryServerInterceptors(config.Interceptor)
+	srv.ConfigurePRPC(func(p *prpc.Server) { p.AccessControl = prpc.AllowOriginAll })
 	api.RegisterInventoryServer(srv, &api.DecoratedInventory{
 		Service: &InventoryServerImpl{},
 		Prelude: checkAccess,

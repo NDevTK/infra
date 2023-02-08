@@ -100,28 +100,28 @@ func main() {
 		}
 
 		// Register prpc API servers.
-		dashpb.RegisterChopsServiceStatusServer(srv.PRPC, &dashboardService{})
-		dashpb.RegisterChopsAnnouncementsServer(srv.PRPC, &dashpb.DecoratedChopsAnnouncements{
+		dashpb.RegisterChopsServiceStatusServer(srv, &dashboardService{})
+		dashpb.RegisterChopsAnnouncementsServer(srv, &dashpb.DecoratedChopsAnnouncements{
 			Service: &announcementsServiceImpl{},
 			Prelude: announcementsPrelude,
 		})
-		srv.PRPC.AccessControl = func(c context.Context, origin string) prpc.AccessControlDecision {
-			// Allow other sites (like Gerrit) to query for announcements using
-			// anonymous requests or requests authenticated using OAuth, but forbid
-			// them using cookies set by dashboard's own frontend.
-			return prpc.AccessControlDecision{
-				AllowCrossOriginRequests: true,
-				AllowCredentials:         false,
+		srv.ConfigurePRPC(func(p *prpc.Server) {
+			p.AccessControl = func(c context.Context, origin string) prpc.AccessControlDecision {
+				// Allow other sites (like Gerrit) to query for announcements using
+				// anonymous requests or requests authenticated using OAuth, but forbid
+				// them using cookies set by dashboard's own frontend.
+				return prpc.AccessControlDecision{
+					AllowCrossOriginRequests: true,
+					AllowCredentials:         false,
+				}
 			}
-		}
-		srv.PRPC.Authenticator = &auth.Authenticator{
-			Methods: []auth.Method{
-				&auth.GoogleOAuth2Method{
-					Scopes: []string{"https://www.googleapis.com/auth/userinfo.email"},
-				},
-				srv.CookieAuth,
+		})
+		srv.SetRPCAuthMethods([]auth.Method{
+			&auth.GoogleOAuth2Method{
+				Scopes: []string{"https://www.googleapis.com/auth/userinfo.email"},
 			},
-		}
+			srv.CookieAuth,
+		})
 
 		srv.Routes.GET("/", pageBase(srv), dashboard)
 

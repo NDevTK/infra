@@ -9,7 +9,6 @@ import (
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
-	"go.chromium.org/luci/server/router"
 
 	"infra/appengine/cros/lab_inventory/app/cron"
 	"infra/appengine/cros/lab_inventory/app/frontend"
@@ -22,8 +21,8 @@ func main() {
 		cfgmodule.NewModuleFromFlags(),
 	}
 	server.Main(nil, modules, func(srv *server.Server) error {
-		frontend.InstallServices(srv.PRPC)
-		cron.InstallHandlers(srv.Routes, router.MiddlewareChain{})
+		frontend.InstallServices(srv)
+		cron.InstallHandlers(srv.Routes, nil)
 		return nil
 	})
 }

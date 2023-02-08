@@ -34,7 +34,7 @@ func main() {
 		stats := &statsServer{
 			DataSources: dsClient,
 		}
-		api.RegisterStatsServer(srv.PRPC, stats)
+		api.RegisterStatsServer(srv, stats)
 		return nil
 	})
 }

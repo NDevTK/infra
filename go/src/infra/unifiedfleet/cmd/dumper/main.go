@@ -46,7 +46,7 @@ func main() {
 		}
 		srv.Context = dumper.Use(srv.Context, client)
 		srv.Context = dumper.UseProject(srv.Context, srv.Options.CloudProject)
-		dumper.InstallCronServices(srv.PRPC)
+		dumper.InstallCronServices(srv)
 		dumper.InitServer(srv)
 		return nil
 	})

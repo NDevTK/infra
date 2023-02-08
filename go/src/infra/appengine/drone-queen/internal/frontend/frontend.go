@@ -19,8 +19,8 @@ import (
 	"context"
 
 	"github.com/golang/protobuf/proto"
-	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -29,17 +29,17 @@ import (
 )
 
 // RegisterServers registers RPC servers.
-func RegisterServers(srv *server.Server) {
+func RegisterServers(srv grpc.ServiceRegistrar) {
 	var q DroneQueenImpl
-	api.RegisterDroneServer(srv.PRPC, &api.DecoratedDrone{
+	api.RegisterDroneServer(srv, &api.DecoratedDrone{
 		Service: &q,
 		Prelude: checkDroneAccess,
 	})
-	api.RegisterInventoryProviderServer(srv.PRPC, &api.DecoratedInventoryProvider{
+	api.RegisterInventoryProviderServer(srv, &api.DecoratedInventoryProvider{
 		Service: &q,
 		Prelude: checkInventoryProviderAccess,
 	})
-	api.RegisterInspectServer(srv.PRPC, &api.DecoratedInspect{
+	api.RegisterInspectServer(srv, &api.DecoratedInspect{
 		Service: &q,
 		Prelude: checkInspectAccess,
 	})

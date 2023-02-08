@@ -52,7 +52,7 @@ func main() {
 		logging.Infof(srv.Context, "Starting server.")
 		logging.Infof(srv.Context, "Installing Services.")
 		k := frontend.NewKarteFrontend()
-		frontend.InstallServices(k, srv.PRPC)
+		frontend.InstallServices(k, srv)
 		logging.Infof(srv.Context, "Initialization finished.")
 		return nil
 	})

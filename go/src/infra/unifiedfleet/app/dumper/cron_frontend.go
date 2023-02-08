@@ -6,6 +6,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
+	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -14,8 +15,8 @@ import (
 )
 
 // InstallCronServices installs ...
-func InstallCronServices(apiServer *prpc.Server) {
-	apiServer.AccessControl = prpc.AllowOriginAll
+func InstallCronServices(apiServer *server.Server) {
+	apiServer.ConfigurePRPC(func(p *prpc.Server) { p.AccessControl = prpc.AllowOriginAll })
 	api.RegisterCronServer(apiServer, &api.DecoratedCron{
 		Service: &CronServerImpl{},
 		Prelude: checkCronAccess,

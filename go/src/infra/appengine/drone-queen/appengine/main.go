@@ -63,8 +63,7 @@ func main() {
 		}
 
 		icron.InstallHandlers()
-		srv.RegisterUnaryServerInterceptor(middleware.UnaryTrace)
-		srv.RegisterUnaryServerInterceptor(config.UnaryConfig)
+		srv.RegisterUnaryServerInterceptors(middleware.UnaryTrace, config.UnaryConfig)
 		frontend.RegisterServers(srv)
 		return nil
 	})

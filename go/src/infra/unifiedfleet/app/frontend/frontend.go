@@ -10,6 +10,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
+	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
 	"google.golang.org/grpc/codes"
@@ -20,8 +21,8 @@ import (
 )
 
 // InstallServices installs ...
-func InstallServices(apiServer *prpc.Server) {
-	apiServer.AccessControl = prpc.AllowOriginAll
+func InstallServices(apiServer *server.Server) {
+	apiServer.ConfigurePRPC(func(p *prpc.Server) { p.AccessControl = prpc.AllowOriginAll })
 	api.RegisterFleetServer(apiServer, &api.DecoratedFleet{
 		Service: &FleetServerImpl{},
 		Prelude: checkAccess,
