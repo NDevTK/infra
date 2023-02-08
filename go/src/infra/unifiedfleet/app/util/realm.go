@@ -6,6 +6,7 @@ package util
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"go.chromium.org/luci/common/logging"
@@ -39,6 +40,12 @@ const SatLabInternalUserRealm = "@internal:ufs/satlab-internal-users"
 
 // SkipRealmsCheck flag to skip realms check
 var SkipRealmsCheck = false
+
+// Browser-related consts
+const (
+	ChromiumNamePrefix = "chromium-"
+	ChromeNamePrefix   = "chrome-"
+)
 
 // UFS registered permissions in process registry
 var (
@@ -164,7 +171,23 @@ func ToChromiumRealm(name, defaultRealm string) string {
 
 // IsBrowserLegacyAsset returns if an asset is a legacy asset migrated from browser lab which doesn't have an assetTag
 func IsBrowserLegacyAsset(name string) bool {
-	if name == "chrome-asset" || name == "chromium-asset" {
+	if name == fmt.Sprintf("%sasset", ChromeNamePrefix) || name == fmt.Sprintf("%sasset", ChromiumNamePrefix) {
+		return true
+	}
+	return false
+}
+
+// IsChromeLegacyHost returns if a host is a legacy browser host used internally
+func IsChromeLegacyHost(name string) bool {
+	if strings.HasPrefix(name, ChromeNamePrefix) {
+		return true
+	}
+	return false
+}
+
+// IsChromeLegacyHost returns if a host is a legacy browser host used externally
+func IsChromiumLegacyHost(name string) bool {
+	if strings.HasPrefix(name, ChromiumNamePrefix) {
 		return true
 	}
 	return false

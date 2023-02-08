@@ -380,14 +380,16 @@ func (c *addAsset) addAssetToUFS(ctx context.Context, ic ufsAPI.FleetClient, req
 	if req.Asset.Location.Zone == ufspb.Zone_ZONE_UNSPECIFIED {
 		return nil, cmdlib.NewQuietUsageError(c.Flags, "Invalid zone")
 	}
-	if ufsUtil.IsBrowserLegacyAsset(req.Asset.Name) {
-		if strings.HasPrefix(req.Asset.Name, "chromium") {
-			req.Asset.Name = fmt.Sprintf("chromium-%s", uuid.New().String())
+	assetName := ufsUtil.RemovePrefix(req.Asset.Name)
+	if ufsUtil.IsBrowserLegacyAsset(assetName) {
+		if ufsUtil.IsChromiumLegacyHost(assetName) {
+			assetName = fmt.Sprintf("%s%s", ufsUtil.ChromiumNamePrefix, uuid.New().String())
 		} else {
-			req.Asset.Name = fmt.Sprintf("chrome-%s", uuid.New().String())
+			assetName = fmt.Sprintf("%s%s", ufsUtil.ChromeNamePrefix, uuid.New().String())
 		}
 	}
-	req.Asset.Realm = ufsUtil.ToChromiumRealm(req.Asset.Name, req.Asset.Realm)
+	req.Asset.Realm = ufsUtil.ToChromiumRealm(assetName, req.Asset.Realm)
+	req.Asset.Name = ufsUtil.AddPrefix(ufsUtil.AssetCollection, assetName)
 	ufsAsset, err := ic.CreateAsset(ctx, req)
 	if ufsAsset != nil {
 		// Remove the prefix from the asset returned by UFS
