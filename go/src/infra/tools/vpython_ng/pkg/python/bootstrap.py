@@ -9,7 +9,7 @@ import sys
 
 # Create virtual environment in ${out} directory
 virtualenv = glob.glob(
-    os.path.join(r'{{.virtualenv}}', '*', 'virtualenv.py'))[0]
+    os.path.join(r'{{.virtualenv}}', '*', 'virtualenv.py*'))[0]
 subprocess.check_call([
     sys.executable, virtualenv, '--no-download', '--always-copy',
     os.environ['out']
