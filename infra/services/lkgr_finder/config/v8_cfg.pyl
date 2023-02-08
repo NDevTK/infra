@@ -83,7 +83,6 @@
         'V8 Blink Linux',
         # TODO(machenbach): Add back when builder is stable again.
         # 'V8 Blink Linux Debug',
-        'V8 Blink Linux Future',
         'V8 Linux GN',
       ],
     },
