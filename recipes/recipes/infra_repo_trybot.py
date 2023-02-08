@@ -76,7 +76,7 @@ def RunSteps(api, go_version_variant, run_lint):
     with api.step.defer_results():
       if api.platform.arch != 'arm':
         with api.context(cwd=co.path.join(patch_root)):
-          api.python('python tests', 'test.py', ['test', '--verbose'])
+          api.step('python tests', ['python3', 'test.py', 'test', '--verbose'])
         if internal and (api.platform.is_linux or api.platform.is_mac) and any(
             f.startswith('appengine/chromiumdash') for f in files):
           cwd = api.path['checkout'].join('appengine', 'chromiumdash')

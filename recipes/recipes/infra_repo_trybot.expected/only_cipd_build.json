@@ -261,7 +261,7 @@
   },
   {
     "cmd": [
-      "python",
+      "python3",
       "test.py",
       "test",
       "--verbose"
