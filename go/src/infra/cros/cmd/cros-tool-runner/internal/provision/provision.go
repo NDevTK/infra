@@ -125,7 +125,7 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 			res.Err = errors.Annotate(err, "run provision").Err()
 			res.Out.Outcome = &api.CrosProvisionResponse_Failure{
 				Failure: &api.InstallFailure{
-					Reason: api.InstallFailure_REASON_DOCKER_UNABLE_TO_START,
+					Reason: api.InstallFailure_REASON_SERVICE_CONTAINER_UNABLE_TO_PULL,
 				},
 			}
 			return res
