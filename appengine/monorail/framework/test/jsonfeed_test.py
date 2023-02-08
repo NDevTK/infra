@@ -10,6 +10,7 @@ from __future__ import absolute_import
 from six.moves import http_client
 import unittest
 
+import flask
 from google.appengine.api import app_identity
 
 from framework import jsonfeed
@@ -91,6 +92,32 @@ class JsonFeedTest(unittest.TestCase):
     feed.mr.request.headers['X-Appengine-Inbound-Appid'] = app_id
     feed.get()
     feed.post()
+
+  def testSameAppOnly_InternalOnlyCalledExternally(self):
+    feed = TestableJsonFeed()
+    feed.CHECK_SAME_APP = True
+    feed.mr = testing_helpers.MakeMonorailRequest()
+    # Note that request has no X-Appengine-Inbound-Appid set.
+    feed.response = flask.Response()
+    self.assertIsNone(feed.get())
+    self.assertFalse(feed.handle_request_called)
+    self.assertEqual(http_client.FORBIDDEN, feed.response.status_code)
+    self.assertIsNone(feed.post())
+    self.assertFalse(feed.handle_request_called)
+    self.assertEqual(http_client.FORBIDDEN, feed.response.status_code)
+
+  def testSameAppOnly_InternalOnlyCalledFromWrongApp(self):
+    feed = TestableJsonFeed()
+    feed.CHECK_SAME_APP = True
+    feed.mr = testing_helpers.MakeMonorailRequest()
+    feed.mr.request.headers['X-Appengine-Inbound-Appid'] = 'wrong'
+    feed.response = flask.Response()
+    self.assertIsNone(feed.get())
+    self.assertFalse(feed.handle_request_called)
+    self.assertEqual(http_client.FORBIDDEN, feed.response.status_code)
+    self.assertIsNone(feed.post())
+    self.assertFalse(feed.handle_request_called)
+    self.assertEqual(http_client.FORBIDDEN, feed.response.status_code)
 
 
 class TestableJsonFeed(jsonfeed.JsonFeed):
