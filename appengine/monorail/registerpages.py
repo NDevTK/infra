@@ -770,7 +770,7 @@ class ServletRegistry(object):
             ['POST']),
         (
             '/jstsmon.do',
-            ts_mon_js.FlaskMonorailTSMonJSHandler(
+            ts_mon_js.MonorailTSMonJSHandler(
                 services=service).PostMonorailTSMonJSHandler,
             ['POST'],
         )

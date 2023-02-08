@@ -11,7 +11,6 @@ from framework import authdata
 from framework import sql
 from framework import xsrf
 
-from gae_ts_mon.handlers import TSMonJSHandler
 from gae_ts_mon.flask_handlers import TSMonJSFlaskHandler
 
 from google.appengine.api import users
@@ -80,41 +79,10 @@ ISSUE_LIST_LOAD_LATENCY_METRIC = ts_mon.CumulativeDistributionMetric(
   units=ts_mon.MetricsDataUnits.MILLISECONDS)
 
 
-class MonorailTSMonJSHandler(TSMonJSHandler):
-
-  def __init__(self, request=None, response=None):
-    super(MonorailTSMonJSHandler, self).__init__(request, response)
-    self.register_metrics([
-        ISSUE_CREATE_LATENCY_METRIC,
-        ISSUE_UPDATE_LATENCY_METRIC,
-        AUTOCOMPLETE_POPULATE_LATENCY_METRIC,
-        CHARTS_SWITCH_DATE_RANGE_METRIC,
-        ISSUE_COMMENTS_LOAD_LATENCY_METRIC,
-        DOM_CONTENT_LOADED_METRIC,
-        ISSUE_LIST_LOAD_LATENCY_METRIC])
-
-  def xsrf_is_valid(self, body):
-    """This method expects the body dictionary to include two fields:
-    `token` and `user_id`.
-    """
-    cnxn = sql.MonorailConnection()
-    token = body.get('token')
-    user = users.get_current_user()
-    email = user.email() if user else None
-
-    services = self.app.config.get('services')
-    auth = authdata.AuthData.FromEmail(cnxn, email, services, autocreate=False)
-    try:
-      xsrf.ValidateToken(token, auth.user_id, xsrf.XHR_SERVLET_PATH)
-      return True
-    except xsrf.TokenIncorrect:
-      return False
-
-
-class FlaskMonorailTSMonJSHandler(TSMonJSFlaskHandler):
+class MonorailTSMonJSHandler(TSMonJSFlaskHandler):
 
   def __init__(self, services=None):
-    super(FlaskMonorailTSMonJSHandler, self).__init__(
+    super(MonorailTSMonJSHandler, self).__init__(
         flask=flask, services=services)
     self.register_metrics(
         [
