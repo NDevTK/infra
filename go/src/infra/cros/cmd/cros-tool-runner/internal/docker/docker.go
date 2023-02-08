@@ -74,8 +74,9 @@ type Docker struct {
 	// LogFileDir used for the logfile for the service in the container.
 	LogFileDir string
 
-	Stdoutbuf bytes.Buffer
-	Stderrbuf bytes.Buffer
+	Stdoutbuf    *bytes.Buffer
+	Stderrbuf    *bytes.Buffer
+	PullExitCode int
 }
 
 // HostPort returns the port which the given docker port maps to.
@@ -164,24 +165,33 @@ func (d *Docker) Run(ctx context.Context, block bool, netbind bool, service stri
 	return nil
 }
 
-func pullImage(ctx context.Context, image string, service string) error {
+func pullImage(ctx context.Context, image string, service string) (error, int) {
 	startTime := time.Now()
 	cmd := exec.Command("docker", "pull", image)
 	stdout, stderr, err := common.RunWithTimeout(ctx, cmd, 3*time.Minute, true)
 	common.PrintToLog(fmt.Sprintf("Pull image %q", image), stdout, stderr)
 	if err != nil {
 		log.Printf("pull image %q: failed with error: %s", image, err)
-		return errors.Annotate(err, "Pull image").Err()
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			exitCode := exitErr.ExitCode()
+
+			return errors.Annotate(err, "Pull image").Err(), exitCode
+		}
+		return errors.Annotate(err, "Pull image").Err(), 0
 	}
 	log.Printf("pull image %q: successful pulled.", image)
 	logPullTime(ctx, startTime, service)
-	return nil
+	return nil, 0
 }
 
 func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, service string) (string, error) {
-	err := pullImage(ctx, d.RequestedImageName, service)
+	err, exitCode := pullImage(ctx, d.RequestedImageName, service)
+	d.PullExitCode = exitCode
 	if err != nil {
-		log.Printf("Failed to pull image; image might local so will try to run anyways.")
+		if common.IsCriticalPullCrash(exitCode) {
+			return "", errors.Annotate(err, "pull docker image failed with a critical ExitCode %d", exitCode).Err()
+		}
+		log.Printf("Failed to pull image with non-critical failure, so will try to run anyways.")
 	}
 
 	args := []string{"run"}
@@ -239,8 +249,8 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 
 		log.Printf("Running cmd %s", cmd)
 		cmd.Start()
-		d.Stdoutbuf = stdoutbuf
-		d.Stderrbuf = stderrbuf
+		d.Stdoutbuf = &stdoutbuf
+		d.Stderrbuf = &stderrbuf
 		return "", errors.Annotate(err, "run docker image %q: %s", d.Name, "").Err()
 
 	}

@@ -22,6 +22,12 @@ import (
 	"go.chromium.org/luci/common/errors"
 )
 
+func IsCriticalPullCrash(code int) bool {
+	criticalCodes := map[int]bool{125: true} // Critical crash codes which should stop forward progress. Expand as needed.
+	_, ok := criticalCodes[code]
+	return ok
+}
+
 // RunWithTimeout runs command with timeout limit.
 func RunWithTimeout(ctx context.Context, cmd *exec.Cmd, timeout time.Duration, block bool) (stdout string, stderr string, err error) {
 	log.Printf("Run cmd: %q", cmd)

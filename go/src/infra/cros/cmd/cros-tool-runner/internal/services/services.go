@@ -125,7 +125,6 @@ func startDutService(ctx context.Context, imagePath, registerName, dutName, netw
 	log.Println("cros-dut stdout follows:")
 	log.Println(stdout)
 	log.Println("cros-dut stderr follows:")
-
 	log.Println(stderr)
 
 	if err != nil {
