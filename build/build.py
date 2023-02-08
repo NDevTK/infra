@@ -638,14 +638,25 @@ def workspace_env(go_environ):
   # Change os.environ and cwd.
   go_environ.apply_to_environ()
 
+  plat = get_package_vars()['platform']
+
   # Make sure we build ARMv6 code even if the host is ARMv7. See the comment in
   # get_host_package_vars for reasons why. Also explicitly set GOARM to 6 when
   # cross-compiling (it should be '6' in this case by default anyway).
-  plat = platform.machine().lower()
-  if plat.startswith('arm') or os.environ.get('GOARCH') == 'arm':
+  if plat.endswith('-armv6l'):
     os.environ['GOARM'] = '6'
   else:
     os.environ.pop('GOARM', None)
+
+  # Make sure we target our minimum supported macOS version.
+  if plat.startswith('mac-'):
+    if plat.endswith('amd64'):
+      min_os_version = '10.13'
+    else:
+      min_os_version = '11.0'
+    min_os_version_flag = '-mmacosx-version-min=%s' % min_os_version
+    os.environ['CGO_CFLAGS'] = min_os_version_flag
+    os.environ['CGO_LDFLAGS'] = min_os_version_flag
 
   try:
     yield
