@@ -32,6 +32,8 @@ type recoveryEngine struct {
 	// Caches
 	actionResultsCache map[string]error
 	recoveryUsageCache map[recoveryUsageKey]error
+	// Tracker the plan iterations.
+	planRunTally int32
 }
 
 // Run runs the recovery plan.
@@ -82,17 +84,14 @@ func (r *recoveryEngine) runPlan(ctx context.Context) (rErr error) {
 		i.Indent()
 		defer func() { i.Dedent() }()
 	}
-	var restartTally int64
-	var forgivenFailureTally int64
 	if r.args != nil && r.metricSaver != nil {
 		metric := r.args.NewMetricsAction(fmt.Sprintf("plan:%s", r.planName))
 		defer func() {
 			metric.Observations = append(
 				metric.Observations,
-				metrics.NewInt64Observation("restarts", restartTally),
-				metrics.NewInt64Observation("forgiven_failures", forgivenFailureTally),
+				metrics.NewInt64Observation("restarts", int64(r.planRunTally)),
 			)
-			metric.Restarts = int32(restartTally)
+			metric.Restarts = r.planRunTally
 			metric.UpdateStatus(rErr)
 			if err := r.metricSaver(metric); err != nil {
 				log.Debugf(ctx, "Fail to save plan %q metrics with error: %s", r.planName, err)
@@ -100,11 +99,11 @@ func (r *recoveryEngine) runPlan(ctx context.Context) (rErr error) {
 		}()
 	}
 	for {
-		if err := r.runCriticalActionsAttempt(ctx, restartTally); err != nil {
+		if err := r.runCriticalActionsAttempt(ctx); err != nil {
 			if execs.PlanStartOverTag.In(err) {
 				log.Infof(ctx, "Plan %q for %s: received the request to start over!", r.planName, r.args.ResourceName)
 				r.resetCacheAfterSuccessfulRecoveryAction()
-				restartTally++
+				r.planRunTally++
 				continue
 			}
 			if execs.PlanAbortTag.In(err) {
@@ -114,7 +113,6 @@ func (r *recoveryEngine) runPlan(ctx context.Context) (rErr error) {
 			if r.plan.GetAllowFail() {
 				log.Debugf(ctx, "Plan %q for %s: failed with error: %s.", r.planName, r.args.ResourceName, err)
 				log.Infof(ctx, "Plan %q for %s: is allowed to fail, continue.", r.planName, r.args.ResourceName)
-				forgivenFailureTally++
 				forgiveError = true
 			}
 			log.Infof(ctx, "Plan %q: fail", r.planName)
@@ -123,18 +121,18 @@ func (r *recoveryEngine) runPlan(ctx context.Context) (rErr error) {
 		break
 	}
 	log.Infof(ctx, "Plan %q: finished successfully.", r.planName)
-	log.Debugf(ctx, "Plan %q: recorded %d restarts during execution.", r.planName, restartTally)
-	log.Debugf(ctx, "Plan %q: recorded %d forgiven failures during execution.", r.planName, forgivenFailureTally)
+	log.Debugf(ctx, "Plan %q: recorded %d restarts during execution.", r.planName, r.planRunTally)
+	log.Debugf(ctx, "Plan %q: is forgiven:%v failures during execution.", r.planName, forgiveError)
 	return nil
 }
 
 // runCriticalActionsAttempt runs critical action of the plan with wrapper step to show plan restart attempts.
-func (r *recoveryEngine) runCriticalActionsAttempt(ctx context.Context, attempt int64) (err error) {
+func (r *recoveryEngine) runCriticalActionsAttempt(ctx context.Context) (err error) {
 	if r.args.ShowSteps {
 		var step *build.Step
 		stepName := fmt.Sprintf("First run of critical actions for %s", r.planName)
-		if attempt > 0 {
-			stepName = fmt.Sprintf("Attempt %d to run critical actions for %s", attempt, r.planName)
+		if r.planRunTally > 0 {
+			stepName = fmt.Sprintf("Attempt %d to run critical actions for %q", r.planRunTally, r.planName)
 		}
 		step, ctx = build.StartStep(ctx, stepName)
 		defer func() { step.End(err) }()
@@ -314,7 +312,12 @@ func (r *recoveryEngine) runActionExec(ctx context.Context, actionName string, m
 	durationExec := time.Since(startExec)
 	log.Debugf(ctx, "Action %q exec execution time: %v", actionName, durationExec)
 	if metric != nil {
-		metric.Observations = append(metric.Observations, metrics.NewInt64Observation("exec_execution", int64(durationExec)))
+		metric.Observations = append(metric.Observations,
+			// TODO: remove after Mar 2023 as replaced with exec_execution_sec.
+			metrics.NewInt64Observation("exec_execution", int64(durationExec)),
+			metrics.NewInt64Observation("exec_execution_sec", int64(durationExec.Seconds())),
+			metrics.NewInt64Observation("plan_run_tally", int64(r.planRunTally)),
+		)
 	}
 	if err != nil {
 		a := r.getAction(actionName)
@@ -363,6 +366,9 @@ func (r *recoveryEngine) runActionExecWithTimeout(ctx context.Context, actionNam
 		// Try to save additional metrics if an exec could not finished in time.
 		defer func() {
 			for _, additionalMetric := range execInfo.GetAdditionalMetrics() {
+				additionalMetric.Observations = append(additionalMetric.Observations,
+					metrics.NewInt64Observation("plan_run_tally", int64(r.planRunTally)),
+				)
 				if err := r.metricSaver(additionalMetric); err != nil {
 					log.Debugf(ctx, "Fail to save %q additional metrics error: %s", r, r.planName, err)
 				}

@@ -720,7 +720,6 @@ func TestRecoveryCachePersistence(t *testing.T) {
 func TestCallMetricsInSimplePlan(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	_ = ctx
 	m := newFakeMetrics()
 	r := &recoveryEngine{
 		planName: "2e9aa66a-5fa1-4eaa-933c-eee8e4337823",
@@ -728,24 +727,18 @@ func TestCallMetricsInSimplePlan(t *testing.T) {
 			return m.Create(ctx, metric)
 		},
 	}
-	// NOTE: There should be ONLY ONE record here. Historically, Karte had both Update and Create methods
-	// for actions, but the Update method is being removed.
+	var zero time.Time
 	expected := []*metrics.Action{
 		{
 			ActionKind: "plan:2e9aa66a-5fa1-4eaa-933c-eee8e4337823",
 			Status:     "success",
 			Observations: []*metrics.Observation{
 				{MetricKind: "restarts", ValueType: "number", Value: "0"},
-				{MetricKind: "forgiven_failures", ValueType: "number", Value: "0"},
 			},
 		},
 	}
 	r.plan = &config.Plan{
-		Actions: map[string]*config.Action{
-			"a": {},
-			"b": {},
-			"r": {},
-		},
+		Actions: map[string]*config.Action{},
 	}
 	r.args = &execs.RunArgs{
 		Metrics: m,
@@ -754,8 +747,156 @@ func TestCallMetricsInSimplePlan(t *testing.T) {
 	// TODO(gregorynisbet): Mock the time.Now() function everywhere instead of removing times
 	// from test cases.
 	for i := range m.actions {
-		var zero time.Time
 		m.actions[i].StartTime = zero
+	}
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+	if diff := cmp.Diff(expected, m.actions); diff != "" {
+		t.Errorf("unexpected diff (-want +got): %s", diff)
+	}
+}
+
+// TestCallMetricsWithNonexistentAction tests that calling a simple plan with nonexistent action and a fake implementation of a metrics interface calls the metrics implementation.
+func TestCallMetricsWithNonexistentAction(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	m := newFakeMetrics()
+	r := &recoveryEngine{
+		planName: "2e9aa66a-5fa1-4eaa-933c-eee8e4337823",
+		metricSaver: func(metric *metrics.Action) error {
+			return m.Create(ctx, metric)
+		},
+	}
+	var zero time.Time
+	expected := []*metrics.Action{
+		{
+			Name:       "unsaved:a",
+			ActionKind: "action:a",
+			Status:     "fail",
+			StartTime:  zero,
+			StopTime:   zero,
+			Observations: []*metrics.Observation{
+				{MetricKind: "action_type", ValueType: "string", Value: "verifier"},
+				{MetricKind: "action_level", ValueType: "number", Value: "0"},
+				{MetricKind: "exec_execution", ValueType: "number", Value: "2"},
+				{MetricKind: "exec_execution_sec", ValueType: "number", Value: "1"},
+				{MetricKind: "plan_run_tally", ValueType: "number", Value: "0"},
+			},
+			AllowFail:  "no-allow-fail",
+			Type:       "verifier",
+			FailReason: `run action "a": run action "a" exec: run exec "a" with timeout 1m0s: exec "a": not found`,
+		},
+		{
+			ActionKind: "plan:2e9aa66a-5fa1-4eaa-933c-eee8e4337823",
+			Status:     "fail",
+			Observations: []*metrics.Observation{
+				{MetricKind: "restarts", ValueType: "number", Value: "0"},
+			},
+			FailReason: `run plan "2e9aa66a-5fa1-4eaa-933c-eee8e4337823": run actions: run action "a": run action "a" exec: run exec "a" with timeout 1m0s: exec "a": not found`,
+		},
+	}
+	r.plan = &config.Plan{
+		CriticalActions: []string{
+			"a",
+		},
+		Actions: map[string]*config.Action{
+			"a": {ExecName: "a"},
+		},
+	}
+	r.args = &execs.RunArgs{
+		Metrics: m,
+	}
+	r.initCache()
+	err := r.runPlan(ctx)
+	// TODO(gregorynisbet): Mock the time.Now() function everywhere instead of removing times
+	// from test cases.
+	for i := range m.actions {
+		m.actions[i].StartTime = zero
+		for _, o := range m.actions[i].Observations {
+			// Set time observation if present as they can be flaky.
+			switch o.MetricKind {
+			case "exec_execution_sec":
+				o.Value = "1"
+			case "exec_execution":
+				o.Value = "2"
+			}
+		}
+	}
+	expectedErrorMessage := "run plan \"2e9aa66a-5fa1-4eaa-933c-eee8e4337823\": run actions: run action \"a\": run action \"a\" exec: run exec \"a\" with timeout 1m0s: exec \"a\": not found"
+	if err == nil {
+		t.Errorf("expected error but not received: %s", err)
+	} else if err.Error() != expectedErrorMessage {
+		t.Errorf("error message does not match: %s", cmp.Diff(expectedErrorMessage, err.Error()))
+	}
+	if diff := cmp.Diff(expected, m.actions); diff != "" {
+		t.Errorf("unexpected diff (-want +got): %s", diff)
+	}
+}
+
+// TestCallMetricsWithExistentAction tests that calling a simple plan with action and a fake implementation of a metrics interface calls the metrics implementation.
+func TestCallMetricsWithExistentAction(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	m := newFakeMetrics()
+	r := &recoveryEngine{
+		planName: "2e9aa66a-5fa1-4eaa-933c-eee8e4337823",
+		metricSaver: func(metric *metrics.Action) error {
+			return m.Create(ctx, metric)
+		},
+	}
+	var zero time.Time
+	expected := []*metrics.Action{
+		{
+			Name:       "unsaved:a",
+			ActionKind: "action:a",
+			Status:     "success",
+			StartTime:  zero,
+			StopTime:   zero,
+			Observations: []*metrics.Observation{
+				{MetricKind: "action_type", ValueType: "string", Value: "verifier"},
+				{MetricKind: "action_level", ValueType: "number", Value: "0"},
+				{MetricKind: "exec_execution", ValueType: "number", Value: "2"},
+				{MetricKind: "exec_execution_sec", ValueType: "number", Value: "1"},
+				{MetricKind: "plan_run_tally", ValueType: "number", Value: "0"},
+			},
+			AllowFail: "no-allow-fail",
+			Type:      "verifier",
+		},
+		{
+			ActionKind: "plan:2e9aa66a-5fa1-4eaa-933c-eee8e4337823",
+			Status:     "success",
+			Observations: []*metrics.Observation{
+				{MetricKind: "restarts", ValueType: "number", Value: "0"},
+			},
+		},
+	}
+	r.plan = &config.Plan{
+		CriticalActions: []string{
+			"a",
+		},
+		Actions: map[string]*config.Action{
+			"a": {ExecName: exec_pass},
+		},
+	}
+	r.args = &execs.RunArgs{
+		Metrics: m,
+	}
+	r.initCache()
+	err := r.runPlan(ctx)
+	// TODO(gregorynisbet): Mock the time.Now() function everywhere instead of removing times
+	// from test cases.
+	for i := range m.actions {
+		m.actions[i].StartTime = zero
+		for _, o := range m.actions[i].Observations {
+			// Set time observation if present as they can be flaky.
+			switch o.MetricKind {
+			case "exec_execution_sec":
+				o.Value = "1"
+			case "exec_execution":
+				o.Value = "2"
+			}
+		}
 	}
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
