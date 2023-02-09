@@ -592,6 +592,7 @@ class ProcessCodeCoverageData(BaseHandler):
                          _CHROMIUM_TO_GOOGLER_MAPPING_PATH)
         return json.loads(content)
 
+      logging.info("mimic_builder = %s", mimic_builder)
       entity = yield PresubmitCoverageData.GetAsync(
           server_host=patch.host, change=patch.change, patchset=patch.patchset)
       # Update/Create entity with unit test coverage fields populated
@@ -601,7 +602,9 @@ class ProcessCodeCoverageData(BaseHandler):
       else:
         entity = _GetEntity(entity)
         # We block some CLs based on overall coverage metrics.
-        if _IsBlockingChangesAllowed(patch.project):
+        # TODO(crbug/1412897): Wait on all coverage builders
+        if _IsBlockingChangesAllowed(
+            patch.project) and mimic_builder == 'android-nougat-x86-rel':
           change_details = code_coverage_util.FetchChangeDetails(
               patch.host, patch.project, patch.change, detailed_accounts=True)
           author_email = change_details['owner']['email']
