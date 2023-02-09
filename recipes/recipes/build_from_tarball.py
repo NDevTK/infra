@@ -121,10 +121,18 @@ def RunSteps(api):
       ])
 
       with api.context(env=gn_bootstrap_env):
-        api.step('Bootstrap gn.', [
-            api.path.join(src_dir, 'tools', 'gn', 'bootstrap', 'bootstrap.py'),
-            '--gn-gen-args=%s' % ' '.join(gn_args), '--use-custom-libcxx'
-        ])
+        api.step(
+            'Bootstrap gn.',
+            [
+                # Explicitly using python3 is not required as of
+                # https://crrev.com/c/4231332, but there are old versions going a
+                # few milestones back that still need to work.
+                'python3',
+                api.path.join(src_dir, 'tools', 'gn', 'bootstrap',
+                              'bootstrap.py'),
+                '--gn-gen-args=%s' % ' '.join(gn_args),
+                '--use-custom-libcxx'
+            ])
 
       api.step('Download nodejs.', [
           api.path.join(src_dir, 'third_party', 'node', 'update_node_binaries')
