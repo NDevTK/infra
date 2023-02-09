@@ -40,7 +40,7 @@ func main() {
 			ctrCipdInfo := ctrCipdInfoReader(ctx)
 			logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
 			logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
-			err := executeHwTests(ctx, input.CftTestRequest, ctrCipdInfo.GetVersion().GetCipdLabel())
+			err := executeHwTests(ctx, input.CftTestRequest, ctrCipdInfo.GetVersion().GetCipdLabel(), st)
 			if err != nil {
 				logging.Infof(ctx, "error found: %s", err)
 			}
@@ -52,7 +52,12 @@ func main() {
 }
 
 // executeHwTests executes hw tests
-func executeHwTests(ctx context.Context, req *skylab_test_runner.CFTTestRequest, ctrCipdVersion string) error {
+func executeHwTests(
+	ctx context.Context,
+	req *skylab_test_runner.CFTTestRequest,
+	ctrCipdVersion string,
+	buildState *build.State) error {
+
 	// Validation
 	if ctrCipdVersion == "" {
 		return fmt.Errorf("Cros-tool-runner cipd version cannot be empty for hw test execution.")
@@ -83,7 +88,7 @@ func executeHwTests(ctx context.Context, req *skylab_test_runner.CFTTestRequest,
 
 	// Create state keeper
 	gcsurl := configs.GetHwConfigsGcsUrl()
-	sk := &data.HwTestStateKeeper{CftTestRequest: req, Ctr: ctr, DockerKeyFileLocation: common.LabDockerKeyFileLocation, GcsPublishSrcDir: os.Getenv("TEMPDIR"), GcsUrl: gcsurl, StainlessUrl: configs.GetHwConfigsStainlessUrl(gcsurl)}
+	sk := &data.HwTestStateKeeper{BuildState: buildState, CftTestRequest: req, Ctr: ctr, DockerKeyFileLocation: common.LabDockerKeyFileLocation, GcsPublishSrcDir: os.Getenv("TEMPDIR"), GcsUrl: gcsurl, StainlessUrl: configs.GetHwConfigsStainlessUrl(gcsurl)}
 
 	// Generate config
 	hwTestConfig := configs.NewTestExecutionConfig(configs.HwTestExecutionConfigType, cmdCfg, sk)
