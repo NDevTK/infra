@@ -22,23 +22,36 @@ type PythonRuntime struct {
 	Executable  string
 	CIPDName    string
 	SpecPattern string
+	Virtualenv  string
 }
 
 func GetPythonRuntime(ver string) *PythonRuntime {
-	return map[string]*PythonRuntime{
-		"2.7": {
+	switch ver {
+	case "2.7":
+		return &PythonRuntime{
 			Version:     "2.7",
 			Executable:  "python",
 			CIPDName:    "cpython",
 			SpecPattern: ".vpython",
-		},
-		"3.8": {
+			Virtualenv:  "version:2@16.7.12.chromium.7",
+		}
+	case "3.8":
+		return &PythonRuntime{
 			Version:     "3.8",
 			Executable:  "python3",
 			CIPDName:    "cpython3",
 			SpecPattern: ".vpython3",
-		},
-	}[ver]
+			Virtualenv:  "version:2@16.7.12.chromium.7",
+		}
+	default:
+		return &PythonRuntime{
+			Version:     ver,
+			Executable:  "python3",
+			CIPDName:    "cpython3",
+			SpecPattern: ".vpython3",
+			Virtualenv:  "version:2@20.17.1.chromium.8",
+		}
+	}
 }
 
 func DefaultPythonVersion() string {
@@ -95,7 +108,7 @@ func main() {
 	env := python.Environment{
 		Executable: rt.Executable,
 		CPython:    cpython,
-		Virtualenv: python.VirtualenvFromCIPD("version:2@16.7.12.chromium.7"),
+		Virtualenv: python.VirtualenvFromCIPD(rt.Virtualenv),
 	}
 	wheel, err := wheels.FromSpec(app.VpythonSpec, env.Pep425Tags())
 	if err != nil {

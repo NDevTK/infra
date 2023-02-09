@@ -6,6 +6,7 @@ package wheels
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"os"
 	"os/exec"
@@ -22,11 +23,11 @@ import (
 	"go.chromium.org/luci/vpython/api/vpython"
 	"go.chromium.org/luci/vpython/spec"
 	"go.chromium.org/luci/vpython/wheel"
-	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 func FromSpec(spec *vpython.Spec, tags cipkg.Generator) (cipkg.Generator, error) {
-	raw, err := protojson.Marshal(spec)
+	raw, err := proto.Marshal(spec)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to marshal vpython spec").Err()
 	}
@@ -47,7 +48,7 @@ func FromSpec(spec *vpython.Spec, tags cipkg.Generator) (cipkg.Generator, error)
 	return &utilities.BaseGenerator{
 		Name:    "wheels",
 		Builder: "builtin:udf:ensureWheels",
-		Args:    []string{"v1", string(raw)},
+		Args:    []string{"v1", base64.RawStdEncoding.EncodeToString(raw)},
 		Dependencies: []utilities.BaseDependency{
 			{Type: cipkg.DepsHostTarget, Generator: tags},
 		},
@@ -64,7 +65,11 @@ func ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
 
 	// Parse spec file
 	var s vpython.Spec
-	if err := protojson.Unmarshal([]byte(cmd.Args[2]), &s); err != nil {
+	rawSpec, err := base64.RawStdEncoding.DecodeString(cmd.Args[2])
+	if err != nil {
+		return err
+	}
+	if err := proto.Unmarshal(rawSpec, &s); err != nil {
 		return err
 	}
 
