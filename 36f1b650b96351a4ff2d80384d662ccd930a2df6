@@ -39,6 +39,29 @@
       },
       "revId": "36f1b650b96351a4ff2d80384d662ccd930a2df6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d1201585_253d9013",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 589,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2023-02-09T22:59:22Z",
+      "side": 1,
+      "message": "nit: I think `tags.Value !\u003d \"\"` would be a more conventional way of checking a string is non-empty.",
+      "range": {
+        "startLine": 589,
+        "startChar": 5,
+        "endLine": 589,
+        "endChar": 25
+      },
+      "revId": "36f1b650b96351a4ff2d80384d662ccd930a2df6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
