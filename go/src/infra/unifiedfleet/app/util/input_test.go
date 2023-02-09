@@ -116,6 +116,10 @@ func TestGetIncomingCtxNamespace(t *testing.T) {
 		md := metadata.Pairs(Namespace, OSNamespace)
 		So(GetIncomingCtxNamespace(metadata.NewIncomingContext(ctx, md)), ShouldEqual, OSNamespace)
 	})
+	Convey("Test PartnerNamespace is set up", t, func() {
+		md := metadata.Pairs(Namespace, OSPartnerNamespace)
+		So(GetIncomingCtxNamespace(metadata.NewIncomingContext(ctx, md)), ShouldEqual, OSPartnerNamespace)
+	})
 }
 
 func TestDevicePhaseCoverage(t *testing.T) {

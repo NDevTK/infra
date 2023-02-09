@@ -144,14 +144,18 @@ var (
 	OSNamespace = "os"
 	// BrowserNamespace browser namespace to be set in client context metadata. Browser data is stored in default namespace in the datastore.
 	BrowserNamespace = "browser"
-	//Namespace key in the incoming context metadata
+	// OSPartnerNamespace partner namespace to be set in client context metadata. Partner data is stored in partner namespace in the datastore.
+	// This is expected to hold and be accessible to non-Google entities (subject to RPC and zone ACLs) working on ChromeOS.
+	OSPartnerNamespace = "os-partner"
+	// Namespace key in the incoming context metadata
 	Namespace = "namespace"
 )
 
 // ClientToDatastoreNamespace refers a map between client namespace(set in context metadata) to actual datastore namespace
 var ClientToDatastoreNamespace = map[string]string{
-	BrowserNamespace: "",          // browser data is stored in default namespace
-	OSNamespace:      OSNamespace, // os data in os namespace
+	BrowserNamespace:   "",                 // browser data is stored in default namespace
+	OSNamespace:        OSNamespace,        // os data in os namespace
+	OSPartnerNamespace: OSPartnerNamespace, // os partner data is in os partner namespace
 }
 
 // ValidClientNamespaceStr returns a valid str list for client namespace(set in incoming context metadata) strings.
