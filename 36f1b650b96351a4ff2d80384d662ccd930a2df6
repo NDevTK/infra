@@ -16,6 +16,29 @@
       "message": "thanks!",
       "revId": "36f1b650b96351a4ff2d80384d662ccd930a2df6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "35b4d62d_725f98db",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1508900
+      },
+      "writtenOn": "2023-02-09T20:42:25Z",
+      "side": 1,
+      "message": "nit: golang requires a full stop (a period) at the end of a comment.",
+      "range": {
+        "startLine": 208,
+        "startChar": 4,
+        "endLine": 208,
+        "endChar": 14
+      },
+      "revId": "36f1b650b96351a4ff2d80384d662ccd930a2df6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
