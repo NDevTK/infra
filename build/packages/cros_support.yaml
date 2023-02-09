@@ -1,0 +1,23 @@
+package: chromiumos/infra/support/${platform}
+description: Support tools for chromiumos recipes.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/support/bq-insert
+  - infra/cros/support/gerrit-fetch-changes
+  - infra/cros/support/git-test-submit
+  - infra/cros/support/gitiles-fetch-file
+  - infra/cros/support/oauth2-get-token
+  - infra/cros/support/publish-message
+  - infra/cros/support/repo-log-trace
+  - infra/cros/support/repo-manifest-diff-projects
+root: ../../go/bin
+data:
+  - file: bq-insert${exe_suffix}
+  - file: gerrit-fetch-changes${exe_suffix}
+  - file: git-test-submit${exe_suffix}
+  - file: gitiles-fetch-file${exe_suffix}
+  - file: oauth2-get-token${exe_suffix}
+  - file: publish-message${exe_suffix}
+  - file: repo-log-trace${exe_suffix}
+  - file: repo-manifest-diff-projects${exe_suffix}

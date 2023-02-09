@@ -90,6 +90,7 @@ require (
 	gopkg.in/fsnotify.v1 v1.4.7
 	gopkg.in/src-d/go-git.v4 v4.13.1
 	gopkg.in/yaml.v2 v2.4.0
+	gotest.tools v2.2.0+incompatible
 	howett.net/plist v1.0.0
 	k8s.io/api v0.22.12
 	k8s.io/apimachinery v0.22.12
