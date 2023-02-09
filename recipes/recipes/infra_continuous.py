@@ -130,7 +130,11 @@ CIPD_PACKAGE_BUILDERS = {
         # NOTE: Mac packages need to be codesigned and so can ONLY be packaged
         # on Mac.
         'native:legacy',  # ~150 sec
-        'darwin-arm64',  # ~60 sec
+    ],
+    'infra-packager-mac-arm64': [
+        # NOTE: Mac packages need to be codesigned and so can ONLY be packaged
+        # on Mac.
+        'native',  # ~150 sec
     ],
     'infra-packager-win-64': [
         'native',  # ~60 sec
@@ -146,7 +150,11 @@ CIPD_PACKAGE_BUILDERS = {
         # NOTE: Mac packages need to be codesigned and so can ONLY be packaged
         # on Mac.
         'native:legacy',  # ~40 sec
-        'darwin-arm64',  # ~30 sec
+    ],
+    'infra-internal-packager-mac-arm64': [
+        # NOTE: Mac packages need to be codesigned and so can ONLY be packaged
+        # on Mac.
+        'native',  # ~40 sec
     ],
     'infra-internal-packager-win-64': [
         'native',  # ~60 sec
@@ -319,11 +327,18 @@ def GenTests(api):
   yield test('public-packager-mac_codesign', 'infra-packager-mac-64',
              PUBLIC_REPO, 'infra', 'prod', 'mac') + api.properties(
                  signing_identity='AAAAAAAAAAAAABBBBBBBBBBBBBXXXXXXXXXXXXXX')
+  yield test('public-packager-mac-arm64_codesign', 'infra-packager-mac-arm64',
+             PUBLIC_REPO, 'infra', 'prod', 'mac') + api.properties(
+                 signing_identity='AAAAAAAAAAAAABBBBBBBBBBBBBXXXXXXXXXXXXXX')
   yield test('public-packager-win', 'infra-packager-win-64', PUBLIC_REPO,
              'infra', 'prod', 'win')
 
   yield test('internal-packager-linux', 'infra-internal-packager-linux-64',
              INTERNAL_REPO, 'infra-internal', 'prod', 'linux')
+  yield test('internal-packager-mac-arm64_codesign',
+             'infra-internal-packager-mac-arm64', PUBLIC_REPO, 'infra', 'prod',
+             'mac') + api.properties(
+                 signing_identity='AAAAAAAAAAAAABBBBBBBBBBBBBXXXXXXXXXXXXXX')
 
   yield (
       test('packager-cipd-fail', 'infra-packager-linux-xc1',

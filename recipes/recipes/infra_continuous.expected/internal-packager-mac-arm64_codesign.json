@@ -1,0 +1,35 @@
+[
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/builder"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:prod"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure builder dir"
+  },
+  {
+    "failure": {
+      "humanReason": "invalid (host, project) pair in buildbucket.build.input.gitiles_commit: (chromium.googlesource.com, infra/infra) does not match any of configured gclient solutions and not present in gclient_config.repo_path_map"
+    },
+    "name": "$result"
+  }
+]
