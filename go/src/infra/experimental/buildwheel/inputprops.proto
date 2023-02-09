@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package main;
+
+// The `;main` defines the package specified in the generated `pb.go`
+option go_package = "infra/experimental/buildwheel;main";
+
+// Proto message which reflects the input properties of the build_wheels recipe.
+// See more detailed description for each field there.
+message InputProps {
+    repeated string platforms = 1;
+    bool dryrun = 2;
+    bool rebuild = 3;
+    bool experimental = 4;
+    // This field is accessed to determine if we mock the executor of dockerbuild 
+    // command - useful to dryrun dockerbuild in testing. 
+    bool experimental_dryrun = 5;
+}
