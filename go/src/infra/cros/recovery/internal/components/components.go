@@ -23,7 +23,7 @@ type Runner func(context.Context, time.Duration, string, ...string) (string, err
 type Pinger func(ctx context.Context, count int) error
 
 const (
-	// Default timeout recomended to use when call servod.
+	// Default timeout recommended to use when call servod.
 	// Some usbkey actions can take 10+ seconds.
 	// TODO(b/240605067): Reduce default to 10 seconds by add specific timeout for special commands.
 	ServodDefaultTimeout = 20 * time.Second

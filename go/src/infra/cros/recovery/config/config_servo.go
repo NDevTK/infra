@@ -24,7 +24,9 @@ func servoRepairPlan() *Plan {
 			"Cache latest servod start time",
 			"Servo_v4(p1) main present",
 			"All servo's fw updated",
+			"Save UART capture",
 			"Start servod daemon",
+			"Start UART capture",
 			"Servod is responsive to dut-control",
 			"Read servo serial by servod harness",
 			"Verify servo connected to the DUT",
@@ -45,6 +47,24 @@ func servoRepairPlan() *Plan {
 			"Set state:WORKING",
 		},
 		Actions: map[string]*Action{
+			"Start UART capture": {
+				ExecName:               "servod_start_uart_capture",
+				AllowFailAfterRecovery: true,
+				MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			},
+			"Save UART capture": {
+				Dependencies: []string{
+					"Stop UART capture",
+				},
+				ExecName:               "servod_save_uart_capture",
+				AllowFailAfterRecovery: true,
+				MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			},
+			"Stop UART capture": {
+				ExecName:               "servod_stop_uart_capture",
+				AllowFailAfterRecovery: true,
+				MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			},
 			"Servo is know in the setup": {
 				Docs: []string{
 					"Verify if setup data has any data related to servo-host which mean servo is present in setup.",
@@ -147,6 +167,9 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Stop the servod daemon.",
 					"Allowed to fail as can be run when servod is not running.",
+				},
+				Dependencies: []string{
+					"Save UART capture",
 				},
 				ExecName:               "servo_host_servod_stop",
 				RunControl:             RunControl_ALWAYS_RUN,

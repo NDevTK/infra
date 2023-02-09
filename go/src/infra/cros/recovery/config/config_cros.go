@@ -320,6 +320,9 @@ func crosClosePlan() *Plan {
 					"Stop the servod daemon.",
 					"Allowed to fail as can be run when servod is not running.",
 				},
+				Dependencies: []string{
+					"Save UART capture",
+				},
 				ExecName:               "servo_host_servod_stop",
 				RunControl:             RunControl_ALWAYS_RUN,
 				AllowFailAfterRecovery: true,
@@ -337,6 +340,19 @@ func crosClosePlan() *Plan {
 					Seconds: 15,
 				},
 				RunControl: RunControl_ALWAYS_RUN,
+			},
+			"Save UART capture": {
+				Dependencies: []string{
+					"Stop UART capture",
+				},
+				ExecName:               "servod_save_uart_capture",
+				AllowFailAfterRecovery: true,
+				MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			},
+			"Stop UART capture": {
+				ExecName:               "servod_stop_uart_capture",
+				AllowFailAfterRecovery: true,
+				MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 		},
 	}
