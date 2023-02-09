@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4d032b63_2d725e86",
+        "filename": "go/src/infra/unifiedfleet/app/dumper/queen.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2023-02-09T21:43:12Z",
+      "side": 1,
+      "message": "chrome \u003c--\u003e namespace?, why not just namespace",
+      "range": {
+        "startLine": 56,
+        "startChar": 66,
+        "endLine": 56,
+        "endChar": 72
+      },
+      "revId": "bea03272070772cd567e72c867cc28139570f413",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
