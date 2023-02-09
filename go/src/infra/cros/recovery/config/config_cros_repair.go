@@ -2905,5 +2905,48 @@ func crosRepairActions() map[string]*Action {
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			RunControl:    RunControl_ALWAYS_RUN,
 		},
+		// This action is intended to be served as an temporary solution for b/255617349,
+		// and it should not to be added as part of formal auto-repair task.
+		// TODO(xianuowang@) remove this action once a permanent solution is in place.
+		"Disable software write protection via servo": {
+			Docs: []string{
+				"Disable software write protection(for flash firmware) via servo.",
+			},
+			Dependencies: []string{
+				"Setup has servo info",
+				"Verify servod is responsive",
+			},
+			ExecName:               "cros_disable_software_write_protection",
+			ExecTimeout:            &durationpb.Duration{Seconds: 180},
+			AllowFailAfterRecovery: true,
+		},
+		// This action is intended to be served as an temporary solution for b/255617349,
+		// and it should not to be added as part of formal auto-repair task.
+		// TODO(xianuowang@) remove this action once a permanent solution is in place.
+		"Enable SPI mode via servo": {
+			Docs: []string{
+				"Enable SPI mode for flashing CPU firmware over servo.",
+			},
+			Dependencies: []string{
+				"Setup has servo info",
+				"Verify servod is responsive",
+			},
+			ExecName:               "cros_enable_cpu_fw_spi",
+			AllowFailAfterRecovery: true,
+		},
+		// This action is intended to be served as an temporary solution for b/255617349,
+		// and it should not to be added as part of formal auto-repair task.
+		// TODO(xianuowang@) remove this action once a permanent solution is in place.
+		"Disable SPI mode via servo": {
+			Docs: []string{
+				"Disable SPI mode via servo",
+			},
+			Dependencies: []string{
+				"Setup has servo info",
+				"Verify servod is responsive",
+			},
+			ExecName:               "cros_disable_cpu_fw_spi",
+			AllowFailAfterRecovery: true,
+		},
 	}
 }

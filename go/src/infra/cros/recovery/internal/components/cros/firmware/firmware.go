@@ -276,6 +276,17 @@ func EraseMRCCache(ctx context.Context, run components.Runner, serial string) er
 	return nil
 }
 
+// DisableSoftwareWriteProtection disable software write protection through a provided flash device.
+func DisableSoftwareWriteProtection(ctx context.Context, run components.Runner, serial string, runTimeout time.Duration) error {
+	const (
+		disableWPCmd = "flashrom -p raiden_debug_spi:target=AP,custom_rst=true,serial=%s --wp-disable --wp-range=0,0"
+	)
+	if _, err := run(ctx, runTimeout, fmt.Sprintf(disableWPCmd, serial)); err != nil {
+		return errors.Annotate(err, "disable software write protection").Err()
+	}
+	return nil
+}
+
 // InstallFirmwareImage updates a specific AP or/and EC firmware image on the DUT.
 func InstallFirmwareImage(ctx context.Context, req *InstallFirmwareImageRequest, log logger.Logger) error {
 	log.Debugf("Received request:\n%+v\n", req)
