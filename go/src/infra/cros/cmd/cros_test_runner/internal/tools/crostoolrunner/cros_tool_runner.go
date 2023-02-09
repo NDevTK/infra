@@ -65,7 +65,7 @@ func (ctr *CrosToolRunner) StartCTRServer(ctx context.Context) error {
 			strings.Join(ctr.EnvVarsToPreserve, ","),
 		))
 	}
-	cmdArgs = append(cmdArgs, ctr.CtrPath, "server", "--export-metadata", ctr.CtrTempDirLoc)
+	cmdArgs = append(cmdArgs, ctr.CtrPath, "server", "--port", "0", "--export-metadata", ctr.CtrTempDirLoc)
 	logging.Infof(ctx, "Starting CTR server...")
 
 	cmd := exec.CommandContext(ctx, "sudo", cmdArgs...)
