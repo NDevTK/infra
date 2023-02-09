@@ -83,6 +83,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"time"
 
@@ -157,14 +158,21 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	if inputs.Project == "go" {
 		// Build Go.
 		//
-		// TODO(mknyszek): Support Windows and plan9 by changing the extension.
 		// TODO(mknyszek): Support cross-compile-only modes, perhaps by having CompileGOOS
 		// and CompileGOARCH repeated fields in the input proto to identify what to build.
 		// TODO(mknyszek): Support split make/run and sharding.
-		scriptExt := ".bash"
 		allScript := "all"
 		if inputs.RaceMode {
 			allScript = "race"
+		}
+		var scriptExt string
+		switch runtime.GOOS {
+		case "windows":
+			scriptExt = ".bat"
+		case "plan9":
+			scriptExt = ".rc"
+		default:
+			scriptExt = ".bash"
 		}
 		if err := runGoScript(ctx, workdir, allScript+scriptExt); err != nil {
 			return err
