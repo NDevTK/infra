@@ -8,6 +8,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import email
+from six.moves import urllib
 
 from framework import emailfmt
 from framework import framework_bizobj
@@ -16,7 +17,6 @@ from services import service_manager
 from services import template_svc
 from testing import fake
 from tracker import tracker_constants
-import webapp2
 
 DEFAULT_HOST = '127.0.0.1'
 
@@ -70,7 +70,7 @@ def MakeMonorailRequest(*args, **kwargs):
 
 
 def GetRequestObjects(
-    headers=None, path='/', params=None, payload=None, user_info=None,
+    headers=None, path='/', params=None, user_info=None,
     project=None, method='GET', perms=None, services=None, hotlist=None):
   """Make fake request and MonorailRequest objects for testing.
 
@@ -97,9 +97,7 @@ def GetRequestObjects(
 
   headers.setdefault('Host', DEFAULT_HOST)
   post_items=None
-  if method == 'POST' and payload:
-    post_items = payload
-  elif method == 'POST' and params:
+  if method == 'POST' and params:
     post_items = params
 
   if not services:
@@ -111,14 +109,41 @@ def GetRequestObjects(
     services.project.TestAddProject('proj')
     services.features.TestAddHotlist('hotlist')
 
-  request = webapp2.Request.blank(path, headers=headers, POST=post_items)
+  request = RequestStub(path, headers=headers, values=post_items)
   mr = fake.MonorailRequest(
       services, user_info=user_info, project=project, perms=perms,
       params=params, hotlist=hotlist)
-  mr.ParseRequest(
+  mr.ParseFlaskRequest(
       request, services, do_user_lookups=False)
   mr.auth.user_pb = user_pb2.MakeUser(0)
   return request, mr
+
+
+class RequestStub(object):
+  """flask.Request stub object.
+
+  This stub is a drop-in replacement for flask.Request that implements all
+  fields used in MonorailRequest.ParseFlaskRequest(). Its constructor API is
+  designed to mimic webapp2.Request.blank() for backwards compatibility with
+  existing unit tests previously written for webapp2.
+  """
+
+  def __init__(self, path, headers=None, values=None):
+    self.scheme = 'http'
+    self.path = path
+    self.headers = headers or {}
+    # webapp2.Request.blank() overrides the host from the request headers.
+    self.host = self.headers.get('Host', 'localhost:80')
+    self.host_url = self.scheme + '://' + self.host + '/'
+    self.url = self.scheme + '://' + self.host + path
+
+    parsed_url = urllib.parse.urlsplit(self.url)
+    self.base_url = self.host_url + parsed_url.path  # No query string.
+
+    self.values = values or {}
+    # webapp2.Request.blank() parses the query string from the path.
+    query = urllib.parse.parse_qs(parsed_url.query, True)
+    self.values.update({key: value[0] for key, value in query.items()})
 
 
 class Blank(object):

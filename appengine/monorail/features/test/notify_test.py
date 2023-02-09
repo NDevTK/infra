@@ -130,7 +130,7 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
     task = notify.NotifyBlockingChangeTask(services=self.services)
     params = {
         'send_email': 1, 'issue_id': issue2.issue_id, 'seq': 0,
-        'delta_blocker_iids': self.issue1.issue_id, 'commenter_id': 1,
+        'delta_blocker_iids': str(self.issue1.issue_id), 'commenter_id': 1,
         'hostport': 'bugs.chromium.org'}
     mr = testing_helpers.MakeMonorailRequest(
         user_info={'user_id': 1},
@@ -148,7 +148,7 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
     task = notify.NotifyBlockingChangeTask(services=self.services)
     params = {
         'send_email': 1, 'issue_id': issue2.issue_id, 'seq': 0,
-        'delta_blocker_iids': self.issue1.issue_id, 'commenter_id': 1}
+        'delta_blocker_iids': str(self.issue1.issue_id), 'commenter_id': 1}
     mr = testing_helpers.MakeMonorailRequest(
         user_info={'user_id': 1},
         params=params,

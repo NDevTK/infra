@@ -599,7 +599,7 @@ class MonorailRequest(MonorailRequestBase):
       value = self.request.params.get(query_param_name)
     else:
       value = self.request.values.get(query_param_name)
-    assert value is None or isinstance(value, six.text_type)
+    assert value is None or isinstance(value, six.string_types)
     using_default = value is None
     if using_default:
       value = default_value

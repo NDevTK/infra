@@ -22,8 +22,6 @@ import werkzeug
 from google.appengine.api import oauth
 from google.appengine.api import users
 
-import webapp2
-
 from framework import exceptions
 from framework import monorailrequest
 from framework import permissions
@@ -170,22 +168,23 @@ class MonorailRequestUnitTest(unittest.TestCase):
 
   def testGetIntListParam_NoParam(self):
     mr = monorailrequest.MonorailRequest(self.services)
-    mr.ParseRequest(webapp2.Request.blank('servlet'), self.services)
+    mr.ParseFlaskRequest(testing_helpers.RequestStub('servlet'), self.services)
     self.assertEqual(mr.GetIntListParam('ids'), None)
     self.assertEqual(mr.GetIntListParam('ids', default_value=['test']),
                       ['test'])
 
   def testGetIntListParam_OneValue(self):
     mr = monorailrequest.MonorailRequest(self.services)
-    mr.ParseRequest(webapp2.Request.blank('servlet?ids=11'), self.services)
+    request = testing_helpers.RequestStub('servlet?ids=11')
+    mr.ParseFlaskRequest(request, self.services)
     self.assertEqual(mr.GetIntListParam('ids'), [11])
     self.assertEqual(mr.GetIntListParam('ids', default_value=['test']),
                       [11])
 
   def testGetIntListParam_MultiValue(self):
     mr = monorailrequest.MonorailRequest(self.services)
-    mr.ParseRequest(
-        webapp2.Request.blank('servlet?ids=21,22,23'), self.services)
+    mr.ParseFlaskRequest(
+        testing_helpers.RequestStub('servlet?ids=21,22,23'), self.services)
     self.assertEqual(mr.GetIntListParam('ids'), [21, 22, 23])
     self.assertEqual(mr.GetIntListParam('ids', default_value=['test']),
                       [21, 22, 23])
@@ -193,19 +192,19 @@ class MonorailRequestUnitTest(unittest.TestCase):
   def testGetIntListParam_BogusValue(self):
     mr = monorailrequest.MonorailRequest(self.services)
     with self.assertRaises(exceptions.InputException):
-      mr.ParseRequest(
-          webapp2.Request.blank('servlet?ids=not_an_int'), self.services)
+      mr.ParseFlaskRequest(
+          testing_helpers.RequestStub('servlet?ids=not_an_int'), self.services)
 
   def testGetIntListParam_Malformed(self):
     mr = monorailrequest.MonorailRequest(self.services)
     with self.assertRaises(exceptions.InputException):
-      mr.ParseRequest(
-          webapp2.Request.blank('servlet?ids=31,32,,'), self.services)
+      mr.ParseFlaskRequest(
+          testing_helpers.RequestStub('servlet?ids=31,32,,'), self.services)
 
   def testDefaultValuesNoUrl(self):
     """If request has no param, default param values should be used."""
     mr = monorailrequest.MonorailRequest(self.services)
-    mr.ParseRequest(webapp2.Request.blank('servlet'), self.services)
+    mr.ParseFlaskRequest(testing_helpers.RequestStub('servlet'), self.services)
     self.assertEqual(mr.GetParam('r', 3), 3)
     self.assertEqual(mr.GetIntParam('r', 3), 3)
     self.assertEqual(mr.GetPositiveIntParam('r', 3), 3)
@@ -213,9 +212,9 @@ class MonorailRequestUnitTest(unittest.TestCase):
 
   def _MRWithMockRequest(
       self, path, headers=None, *mr_args, **mr_kwargs):
-    request = webapp2.Request.blank(path, headers=headers)
+    request = testing_helpers.RequestStub(path, headers=headers)
     mr = monorailrequest.MonorailRequest(self.services, *mr_args, **mr_kwargs)
-    mr.ParseRequest(request, self.services)
+    mr.ParseFlaskRequest(request, self.services)
     return mr
 
   def testParseQueryParameters(self):
@@ -353,13 +352,13 @@ class MonorailRequestUnitTest(unittest.TestCase):
 
     # project colspec contains hotlist columns
     mr = testing_helpers.MakeMonorailRequest(
-        path='p/proj/issues/detail?id=123&colspec=Rank Adder Adder Owner')
+        path='/p/proj/issues/detail?id=123&colspec=Rank Adder Adder Owner')
     mr.ComputeColSpec(None)
     self.assertEqual(tracker_constants.DEFAULT_COL_SPEC, mr.col_spec)
 
     # hotlist columns are not deleted when page is a hotlist page
     mr = testing_helpers.MakeMonorailRequest(
-        path='u/jrobbins@example.com/hotlists/TestHotlist?colspec=Rank Adder',
+        path='/u/jrobbins@example.com/hotlists/TestHotlist?colspec=Rank Adder',
         hotlist=self.hotlist)
     mr.ComputeColSpec(None)
     self.assertEqual('Rank Adder', mr.col_spec)
@@ -584,10 +583,10 @@ class TestPermissionLookup(unittest.TestCase):
         email=lambda: email))
     self.mox.ReplayAll()
 
-    request = webapp2.Request.blank('/p/' + project_name)
+    request = testing_helpers.RequestStub('/p/' + project_name)
     mr = monorailrequest.MonorailRequest(self.services)
     with mr.profiler.Phase('parse user info'):
-      mr.ParseRequest(request, self.services)
+      mr.ParseFlaskRequest(request, self.services)
       print('mr.auth is %r' % mr.auth)
     return mr
 
