@@ -39,6 +39,30 @@
       },
       "revId": "eeeb2b5644a57707142485a93d1b670a8bd9c94c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8684665a_ebcc86bb",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 1549252
+      },
+      "writtenOn": "2023-02-09T19:02:58Z",
+      "side": 1,
+      "message": "Updated with backward-compatible with unittests.",
+      "parentUuid": "a25b9468_1ed3735f",
+      "range": {
+        "startLine": 206,
+        "startChar": 1,
+        "endLine": 206,
+        "endChar": 32
+      },
+      "revId": "eeeb2b5644a57707142485a93d1b670a8bd9c94c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
