@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c3de0b5d_28e8d341",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-02-09T08:59:23Z",
+      "side": 1,
+      "message": "Allen, Please review this function and verify if all the TRv1 data points are here. The missing ones should be marked as missing.",
+      "range": {
+        "startLine": 85,
+        "startChar": 32,
+        "endLine": 85,
+        "endChar": 66
+      },
+      "revId": "554a6460a80ca9a18ed578359de7c759d562206d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
