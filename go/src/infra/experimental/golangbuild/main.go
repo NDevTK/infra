@@ -354,7 +354,7 @@ func runGit(ctx context.Context, stepName string, args ...string) (err error) {
 
 func runGoScript(ctx context.Context, goroot, script string) (err error) {
 	dir := filepath.Join(goroot, "src")
-	cmd := exec.CommandContext(ctx, "./"+script)
+	cmd := exec.CommandContext(ctx, filepath.FromSlash("./"+script))
 	cmd.Dir = dir
 	return runCommandAsStep(ctx, script, cmd, false)
 }
