@@ -203,6 +203,9 @@ type Link struct {
 
 // Tag represents a tag value.
 type Tag struct {
+	Values []string `json:"values"`
+
+	// Deprecated
 	Value string `json:"value"`
 }
 
@@ -577,8 +580,15 @@ func (r *GTestResults) convertTestResult(ctx context.Context, buf *bytes.Buffer,
 
 	// Add tags to result.
 	if len(result.Tags) > 0 {
-		for tagName, tag := range result.Tags {
-			tr.Tags = append(tr.Tags, pbutil.StringPair(tagName, tag.Value))
+		for tagName, tags := range result.Tags {
+			for _, tagValue := range tags.Values {
+				tr.Tags = append(tr.Tags, pbutil.StringPair(tagName, tagValue))
+			}
+
+			// Deprecated
+			if len(tags.Value) > 0 {
+				tr.Tags = append(tr.Tags, pbutil.StringPair(tagName, tags.Value))
+			}
 		}
 	}
 

@@ -87,10 +87,13 @@ func TestGTestConversions(t *testing.T) {
 							},
 							"tags": {
 								"tag_name_1": {
-                  "value": "tag_value_1"
+                  "values": ["tag_value_1"]
                 },
 								"tag_name_2": {
-                  "value": "tag_value_2"
+                  "values": ["tag_value_2", "tag_value_3"]
+                },
+                "tag_name_3": {
+                  "value": "tag_value_4"
                 }
 							},
 							"result_parts":[{}]
@@ -162,10 +165,13 @@ func TestGTestConversions(t *testing.T) {
 						},
 						Tags: map[string]*Tag{
 							"tag_name_1": {
-								Value: "tag_value_1",
+								Values: []string{"tag_value_1"},
 							},
 							"tag_name_2": {
-								Value: "tag_value_2",
+								Values: []string{"tag_value_2", "tag_value_3"},
+							},
+							"tag_name_3": {
+								Value: "tag_value_4",
 							},
 						},
 						ResultParts: []*GTestRunResultPart{{}},
@@ -327,15 +333,20 @@ func TestGTestConversions(t *testing.T) {
 				OutputSnippetBase64: "invalid base64",
 				Tags: map[string]*Tag{
 					"tag_name_1": {
-						Value: "tag_value_1",
+						Values: []string{"tag_value_1"},
 					},
 					"tag_name_2": {
-						Value: "tag_value_2",
+						Values: []string{"tag_value_2", "tag_value_3"},
+					},
+					"tag_name_3": {
+						Value: "tag_value_4",
 					},
 				},
 			})
 			So(pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name_1", "tag_value_1")), ShouldBeTrue)
 			So(pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name_2", "tag_value_2")), ShouldBeTrue)
+			So(pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name_2", "tag_value_3")), ShouldBeTrue)
+			So(pbutil.StringPairsContain(tr.Tags, pbutil.StringPair("tag_name_3", "tag_value_4")), ShouldBeTrue)
 		})
 
 		Convey("failure reason", func() {
