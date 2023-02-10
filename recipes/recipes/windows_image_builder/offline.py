@@ -11,6 +11,7 @@ from PB.recipes.infra.windows_image_builder import input as input_pb
 from PB.recipes.infra.windows_image_builder import actions
 from PB.recipes.infra.windows_image_builder import vm
 from PB.recipes.infra.windows_image_builder import drive
+from PB.recipes.infra.windows_image_builder import dest
 from PB.recipes.infra.windows_image_builder import sources
 from PB.recipes.infra.windows_image_builder import windows_vm
 from PB.recipes.infra.windows_image_builder import windows_iso
@@ -126,6 +127,13 @@ TEST_IMAGE = wib.Image(
                                         readonly=True),
                                     drive.Drive(
                                         name='system.img',
+                                        output_dests=[
+                                            dest.Dest(
+                                                gcs_src=sources.GCSSrc(
+                                                    bucket='chrome-gce-images',
+                                                    source='tests/sys.img',
+                                                ))
+                                        ],
                                         interface='none',
                                         media='drive',
                                         size=1234546,
@@ -248,8 +256,16 @@ def RunSteps(api, inputs):
   for config in configs:
     custs.extend(api.windows_scripts_executor.init_customizations(config))
 
+  # Get all the inputs required. This will be used to determine if we have
+  # to cache any images in online customization
+  inputs = []
+  for cust in custs:
+    for ip in cust.inputs:
+      if ip.WhichOneof('src') == 'local_src':
+        inputs.append(ip.local_src)
+
   # process all the customizations (pin artifacts, generate hash)
-  api.windows_scripts_executor.process_customizations(custs, {})
+  api.windows_scripts_executor.process_customizations(custs, {}, inputs)
 
   # Dict mapping the customization object key to list of customizations
   # corresponding to a customization. This ensures that we don't miss
@@ -342,6 +358,7 @@ def GenTests(api):
   key_wim = '0ba325f4cf5356b9864719365a807f2c9d48bf882d333149cebd9d1ec0b64e7b'
   key_win = '0f796362b84871b7a0d65e9c3f3d00685614441a3490f64fb4b2a391b4fb9fc4'
   key_iso = '2cb3344a7ae9c8e2772563ad8244a1bd99062f629d7c50ecc48e3d0e32974d7d'
+  system = 'boot(test_boot1)-drive(system.img)-output.zip'
   image = 'test'
   cust = 'test_cust'
 
@@ -404,7 +421,7 @@ def GenTests(api):
       # Mock the check for output existence. Twice for wim (as output of
       # test_cust and input for bimage), twice for iso and once for system.img
       MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip'.format(key_wim), False) +
-      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-system.img'.format(key_win),
+      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-{}'.format(key_win, system),
                        False) +
       MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso'.format(key_iso), False) +
       MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (2)'.format(key_iso), False) +
@@ -423,8 +440,8 @@ def GenTests(api):
       # mock wim output check to show it exists. (wim build was successful)
       MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip (3)'.format(key_wim), True) +
       # mock check for iso and img. Show it doesn't exist.
-      MOCK_CUST_OUTPUT(
-          api, 'WIB-ONLINE-CACHE/{}-system.img (2)'.format(key_win), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-{} (2)'.format(
+          key_win, system), False) +
       MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (3)'.format(key_iso), False) +
       # mock the windows customization schedule
       api.buildbucket.simulated_schedule_output(
@@ -448,7 +465,7 @@ def GenTests(api):
       # Mock the check for output existence. Twice for wim (as output of
       # test_cust and input for bimage), twice for iso and once for system.img
       MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip'.format(key_wim), False) +
-      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-system.img'.format(key_win),
+      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-{}'.format(key_win, system),
                        False) +
       MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso'.format(key_iso), False) +
       MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (2)'.format(key_iso), False) +
@@ -467,8 +484,8 @@ def GenTests(api):
       # mock wim output check to show it exists. (wim build was successful)
       MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip (3)'.format(key_wim), True) +
       # mock check for iso and img. Show it doesn't exist.
-      MOCK_CUST_OUTPUT(
-          api, 'WIB-ONLINE-CACHE/{}-system.img (2)'.format(key_win), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-{} (2)'.format(
+          key_win, system), False) +
       MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (3)'.format(key_iso), False) +
       # mock the windows customization schedule
       api.buildbucket.simulated_schedule_output(
@@ -481,8 +498,8 @@ def GenTests(api):
           ],
           step_name='Execute customizations.waiting for builds to complete (2)')
       # img file doesn't exist as it failed to build
-      + MOCK_CUST_OUTPUT(
-          api, 'WIB-ONLINE-CACHE/{}-system.img (3)'.format(key_win), False) +
+      + MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-{} (3)'.format(
+          key_win, system), False) +
       MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (4)'.format(key_iso), True) +
       api.post_process(post_process.StatusFailure) +
       api.post_process(post_process.DropExpectation))
@@ -496,7 +513,7 @@ def GenTests(api):
       t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/startnet.cmd', 'HEAD') +
       # mock all three outputs as exists
       MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip'.format(key_wim), True) +
-      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-system.img'.format(key_win),
+      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-{}'.format(key_win, system),
                        True) +
       MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso'.format(key_iso), True) +
       api.post_process(post_process.StatusSuccess) +
@@ -521,7 +538,7 @@ def GenTests(api):
       t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/PSOverCom.ps1', 'HEAD') +
       t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/startnet.cmd', 'HEAD') +
       MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip'.format(key_wim), False) +
-      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-system.img'.format(key_win),
+      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-{}'.format(key_win, system),
                        False) +
       MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso'.format(key_iso), False) +
       MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (2)'.format(key_iso), False) +
@@ -538,8 +555,8 @@ def GenTests(api):
           ],
           step_name='Execute customizations.waiting for builds to complete') +
       MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip (3)'.format(key_wim), False) +
-      MOCK_CUST_OUTPUT(
-          api, 'WIB-ONLINE-CACHE/{}-system.img (2)'.format(key_win), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-{} (2)'.format(
+          key_win, system), False) +
       MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (4)'.format(key_iso), False) +
       api.post_process(post_process.StatusSuccess) +
       api.post_process(post_process.DropExpectation))
@@ -551,7 +568,7 @@ def GenTests(api):
       t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/PSOverCom.ps1', 'HEAD') +
       t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/startnet.cmd', 'HEAD') +
       MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip'.format(key_wim), False) +
-      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-system.img'.format(key_win),
+      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-{}'.format(key_win, system),
                        False) +
       MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso'.format(key_iso), False) +
       MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (2)'.format(key_iso), False) +
@@ -567,8 +584,8 @@ def GenTests(api):
           ],
           step_name='Execute customizations.waiting for builds to complete') +
       MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip (3)'.format(key_wim), False) +
-      MOCK_CUST_OUTPUT(
-          api, 'WIB-ONLINE-CACHE/{}-system.img (2)'.format(key_win), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-{} (2)'.format(
+          key_win, system), False) +
       MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (3)'.format(key_iso), False) +
       MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (4)'.format(key_iso), False) +
       api.post_process(post_process.StatusSuccess) +

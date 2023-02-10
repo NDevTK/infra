@@ -46,12 +46,15 @@ def GenTests(api):
   boot_time = 360
 
   SYSTEM = t.VM_DRIVE(
-      name='system.img',
-      ip=None,
+      name='system',
+      ip=sources.Src(
+          gcs_src=sources.GCSSrc(
+              bucket='chrome-windows-images',
+              source='windows_images/system.zip')),
       op=[
           dest.Dest(
               gcs_src=sources.GCSSrc(
-                  bucket='chrome-windows-images', source='WIN-OUT/system.img'))
+                  bucket='chrome-windows-images', source='WIN-OUT/system'))
       ],
       size=10240,
       media='disk',
@@ -71,7 +74,7 @@ def GenTests(api):
   WIN_VM = t.VM_CONFIG(
       name=vm_name,
       drives=[SYSTEM, INSTALL],
-      device=['-device ide-hd,drive=system.img'],
+      device=['-device ide-hd,drive=system'],
   )
 
   ACTION_ADD_FILE = actions_pb.Action(
@@ -82,7 +85,7 @@ def GenTests(api):
                   package='infra/tools/example',
                   refs='stable',
                   platform='windows-amd64')),
-          dst='$system_img',
+          dst='$system',
       ))
 
   def IMAGE(arch, mode=wib.CustomizationMode.CUST_NORMAL):
@@ -95,66 +98,66 @@ def GenTests(api):
         win_config=windows_pb.WindowsVMConfig(
             boot_time=boot_time,
             context={
-                '$system_img': 'C:',
-                '$deps_img': 'D:'
+                '$system': 'C:',
+                '$DEPS': 'D:',
             },
             shutdown_time=300),
         mode=mode,
     )
 
   key_win = '58d14c6fc3a92d22be294beda85d0a471c70af02dad2cfddfa80626ac1604d12'
+  system = 'boot(windows_cust)-drive(system)-output.zip'
 
   yield (api.test('execute_customization_happy_path[AARCH64_KVM]') +
          api.platform('linux', 64, 'arm') +
          api.properties(IMAGE(wib.ARCH_AARCH64)) +
-         t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
-         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
-         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
+         t.DISK_SPACE(api, image, cust, vm_name, 'DEPS') +
+         t.MOUNT_DISK(api, image, cust, vm_name, 'DEPS') +
          t.STARTUP_VM(api, image, cust, vm_name, True) +
          t.ADD_FILE_VM(api, image, cust, 'Bootstrap example.py', 1) +
          t.SHUTDOWN_VM(api, image, cust, vm_name, 1) +
          t.STATUS_VM(api, image, cust, vm_name) + t.MOCK_CUST_OUTPUT(
-             api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-system.img'
-             .format(key_win), False) + api.post_process(DropExpectation))
+             api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-{}'.format(
+                 key_win, system), False) + api.post_process(StatusSuccess) +
+         api.post_process(DropExpectation))
 
   yield (api.test('execute_customization_happy_path[AMD64_KVM]') +
          api.platform('linux', 64, 'intel') +
          api.properties(IMAGE(wib.ARCH_AMD64)) +
-         t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
-         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
-         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
+         t.DISK_SPACE(api, image, cust, vm_name, 'DEPS') +
+         t.MOUNT_DISK(api, image, cust, vm_name, 'DEPS') +
          t.STARTUP_VM(api, image, cust, vm_name, True) +
          t.ADD_FILE_VM(api, image, cust, 'Bootstrap example.py', 1) +
          t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
          t.STATUS_VM(api, image, cust, vm_name) + t.MOCK_CUST_OUTPUT(
-             api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-system.img'
-             .format(key_win), False) + api.post_process(DropExpectation))
+             api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-{}'.format(
+                 key_win, system), False) + api.post_process(StatusSuccess) +
+         api.post_process(DropExpectation))
 
   yield (api.test('execute_customization_happy_path[X86_KVM]') +
          api.platform('linux', 32, 'intel') +
          api.properties(IMAGE(wib.ARCH_X86)) +
-         t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
-         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
-         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
+         t.DISK_SPACE(api, image, cust, vm_name, 'DEPS') +
+         t.MOUNT_DISK(api, image, cust, vm_name, 'DEPS') +
          t.STARTUP_VM(api, image, cust, vm_name, True) +
          t.ADD_FILE_VM(api, image, cust, 'Bootstrap example.py', 1) +
          t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
          t.STATUS_VM(api, image, cust, vm_name) + t.MOCK_CUST_OUTPUT(
-             api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-system.img'
-             .format(key_win), False) + api.post_process(DropExpectation))
+             api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-{}'.format(
+                 key_win, system), False) + api.post_process(StatusSuccess) +
+         api.post_process(DropExpectation))
 
   yield (api.test('execute_customization_fail_add_file') +
          api.platform('linux', 64, 'intel') +
          api.properties(IMAGE(wib.ARCH_AMD64)) +
-         t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
-         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
-         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') + t.ADD_FILE_VM(
+         t.DISK_SPACE(api, image, cust, vm_name, 'DEPS') +
+         t.MOUNT_DISK(api, image, cust, vm_name, 'DEPS') + t.ADD_FILE_VM(
              api, image, cust, 'Bootstrap example.py', 8, success=False) +
          t.STARTUP_VM(api, image, cust, vm_name, True) +
          t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
          t.STATUS_VM(api, image, cust, vm_name) + t.MOCK_CUST_OUTPUT(
-             api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-system.img'
-             .format(key_win), False) + api.post_process(StatusFailure) +
+             api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-{}'.format(
+                 key_win, system), False) + api.post_process(StatusFailure) +
          api.post_process(DropExpectation))
 
   yield (api.test('execute_customization_fail_add_file_debug') +
@@ -162,30 +165,28 @@ def GenTests(api):
          # enable debug mode
          api.properties(
              IMAGE(wib.ARCH_AMD64, mode=wib.CustomizationMode.CUST_DEBUG)) +
-         t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
-         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
-         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') + t.ADD_FILE_VM(
+         t.DISK_SPACE(api, image, cust, vm_name, 'DEPS') +
+         t.MOUNT_DISK(api, image, cust, vm_name, 'DEPS') + t.ADD_FILE_VM(
              api, image, cust, 'Bootstrap example.py', 8, success=False) +
          t.STARTUP_VM(api, image, cust, vm_name, True) +
          t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
          t.CHECK_DEBUG_SLEEP(api, image, cust, time=boot_time) +
          t.STATUS_VM(api, image, cust, vm_name) + t.MOCK_CUST_OUTPUT(
-             api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-system.img'
-             .format(key_win), False) + api.post_process(StatusFailure) +
+             api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-{}'.format(
+                 key_win, system), False) + api.post_process(StatusFailure) +
          api.post_process(DropExpectation))
 
   yield (api.test('execute_customization_fail_safe_shutdown') +
          api.platform('linux', 64, 'intel') +
          api.properties(IMAGE(wib.ARCH_AMD64)) +
-         t.DISK_SPACE(api, image, cust, vm_name, 'system.img') +
-         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
-         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') + t.ADD_FILE_VM(
+         t.DISK_SPACE(api, image, cust, vm_name, 'DEPS') +
+         t.MOUNT_DISK(api, image, cust, vm_name, 'DEPS') + t.ADD_FILE_VM(
              api, image, cust, 'Bootstrap example.py', 8, success=False) +
          t.STARTUP_VM(api, image, cust, vm_name, True) +
          t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
          t.STATUS_VM(api, image, cust, vm_name, running=True) +
          t.QUIT_VM(api, image, cust, vm_name, success=True) +
          t.MOCK_CUST_OUTPUT(
-             api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-system.img'
-             .format(key_win), False) + api.post_process(StatusFailure) +
+             api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-{}'.format(
+                 key_win, system), False) + api.post_process(StatusFailure) +
          api.post_process(DropExpectation))

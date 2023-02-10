@@ -66,8 +66,8 @@ def GenTests(api):
           'Cascadelake-Server', '-machine', 'pc-q35-2.10', '-smp', 'cpus=4',
           '-device', 'ide-cd,drive=win10.iso', '-drive',
           'file=\[CLEANUP\]\/qemu\/workdir/disks/win10.iso,'
-          'id=win10.iso,if=none,media=cdrom,format=raw,readonly,', '-display',
-          'none'
+          'id=win10.iso,if=none,media=cdrom,format=raw,readonly=on,',
+          '-display', 'none'
       ]) +
       # Verify that vm was run with emulation (no --enable-kvm)
       api.post_process(StepCommandRE, 'Start vm test_vm', [
@@ -76,8 +76,8 @@ def GenTests(api):
           'test_vm', '-m', '8192M', '-cpu', 'Cascadelake-Server', '-machine',
           'pc-q35-2.10', '-smp', 'cpus=4', '-device', 'ide-cd,drive=win10.iso',
           '-drive', 'file=\[CLEANUP\]\/qemu\/workdir/disks/win10.iso,'
-          'id=win10.iso,if=none,media=cdrom,format=raw,readonly,', '-display',
-          'none'
+          'id=win10.iso,if=none,media=cdrom,format=raw,readonly=on,',
+          '-display', 'none'
       ]) + api.post_process(DropExpectation))
 
   yield (
@@ -93,8 +93,8 @@ def GenTests(api):
           'test_vm', '-m', '8192M', '-cpu', 'Cascadelake-Server', '-machine',
           'pc-q35-2.10', '-smp', 'cpus=4', '-device', 'ide-cd,drive=win10.iso',
           '-drive', 'file=\[CLEANUP\]\/qemu\/workdir/disks/win10.iso,'
-          'id=win10.iso,if=none,media=cdrom,format=raw,readonly,', '-display',
-          'none'
+          'id=win10.iso,if=none,media=cdrom,format=raw,readonly=on,',
+          '-display', 'none'
       ]) + api.post_process(DropExpectation))
 
   yield (api.test('Test start vm fail') + api.post_process(StatusFailure) +

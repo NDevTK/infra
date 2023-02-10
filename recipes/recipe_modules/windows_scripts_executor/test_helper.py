@@ -63,6 +63,11 @@ def NEST_ONLINE_CUSTOMIZATION_STEP(on_cust):
   return 'Execute online customization {}'.format(on_cust)
 
 
+def NEST_ONLINE_CUSTOMIZATION_DEINIT_STEP(on_cust):
+  """ NEST_ONLINE_CUSTOMIZATION_DEINIT_STEP returns step name for the same."""
+  return 'Deinit online customization {}'.format(on_cust)
+
+
 def NEST_ONLINE_ACTION_STEP(oa):
   """ NEST_ONLINE_ACTION_STEP returns step name for the same."""
   return 'Execute online action {}'.format(oa)
@@ -390,6 +395,7 @@ def SHUTDOWN_VM(api, image, customization, vm_name, retcode=0):
           NEST_CONFIG_STEP(image),
           NEST_ONLINE_WINDOWS_CUSTOMIZATION_STEP(customization),
           NEST_ONLINE_CUSTOMIZATION_STEP('windows_cust'),
+          NEST_ONLINE_CUSTOMIZATION_DEINIT_STEP('windows_cust'),
           'Shutting down {}'.format(vm_name),
           'Powershell> Shutdown {}'.format(vm_name)),
       stdout=pwsh_json_res(
@@ -423,6 +429,7 @@ def STATUS_VM(api, image, customization, vm_name, running=False):
           NEST_CONFIG_STEP(image),
           NEST_ONLINE_WINDOWS_CUSTOMIZATION_STEP(customization),
           NEST_ONLINE_CUSTOMIZATION_STEP('windows_cust'),
+          NEST_ONLINE_CUSTOMIZATION_DEINIT_STEP('windows_cust'),
           'Shutting down {}'.format(vm_name), 'Status {}'.format(vm_name)),
       stdout=api.json.output({
           'return': {
@@ -442,6 +449,7 @@ def POWERDOWN_VM(api, image, customization, vm_name, success=False):
           NEST_CONFIG_STEP(image),
           NEST_ONLINE_WINDOWS_CUSTOMIZATION_STEP(customization),
           NEST_ONLINE_CUSTOMIZATION_STEP('windows_cust'),
+          NEST_ONLINE_CUSTOMIZATION_DEINIT_STEP('windows_cust'),
           'Shutting down {}'.format(vm_name), 'Powerdown {}'.format(vm_name)),
       stdout=api.json.output({'return': {}})
       if success else api.json.output({'return': {
@@ -455,6 +463,7 @@ def QUIT_VM(api, image, customization, vm_name, success=True):
           NEST_CONFIG_STEP(image),
           NEST_ONLINE_WINDOWS_CUSTOMIZATION_STEP(customization),
           NEST_ONLINE_CUSTOMIZATION_STEP('windows_cust'),
+          NEST_ONLINE_CUSTOMIZATION_DEINIT_STEP('windows_cust'),
           'Shutting down {}'.format(vm_name), 'Quit {}'.format(vm_name)),
       stdout=api.json.output({'return': {}})
       if success else api.json.output({'return': {

@@ -98,26 +98,34 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
 
     return custs
 
-  def process_customizations(self, custs, ctx):
+  def process_customizations(self, custs, ctx, inputs=()):
     """ process_customizations pins all the volatile srcs and generates
     canonnical configs.
 
     Args:
       * custs: List of customizations from customization.py
       * ctx: dict containing the context for the customization
+      * inputs: List of inputs that are required
 
     Returns list of customizations in order that they were processed
     """
     with self.m.step.nest('Process the customizations'):
       resolved_cust = []
       while len(custs) != len(resolved_cust):
-        pinnable_cust = [
-            cust for cust in custs
-            if cust.pinnable(ctx) and cust not in resolved_cust
-        ]
+        pinnable_cust = []
+        for cust in custs:
+          if cust not in resolved_cust:
+            if cust.pinnable(ctx):
+              pinnable_cust.append(cust)
         if pinnable_cust:
           self.pin_customizations(pinnable_cust, ctx)
           self.gen_canonical_configs(pinnable_cust)
+          # If the cust is online, inject cache upload
+          # request for drives
+          for cust in pinnable_cust:
+            cust_type = cust.customization().WhichOneof('customization')
+            if cust_type == 'online_windows_customization':
+              cust.inject_cache_upload(inputs)
           ctx = self.update_context(pinnable_cust, ctx)
           resolved_cust.extend(pinnable_cust)
         else:

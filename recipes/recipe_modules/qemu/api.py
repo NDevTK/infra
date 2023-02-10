@@ -23,7 +23,7 @@ class QEMUError(Exception):
 
 
 class QEMUAPI(recipe_api.RecipeApi):
-  """ API to manage qemu VMs """
+  """API to manage qemu VMs"""
 
   def __init__(self, *args, **kwargs):
     super(QEMUAPI, self).__init__(*args, **kwargs)
@@ -61,6 +61,13 @@ class QEMUAPI(recipe_api.RecipeApi):
     e.add_package(QEMU_PKG, version if version else 'latest')
     e.add_package(PARTED, 'latest')
     self.m.cipd.ensure(self._install_dir, e, name="Download qemu")
+
+  def cleanup_disks(self):  # pragma: nocover
+    """ cleanup_disks deletes all the disks in the disks dir. This is meant to
+    be used for cleanup after using the VM"""
+    d_list = self.m.file.listdir('List all the disks', source=self.disks)
+    for d in d_list:
+      self.m.file.remove('Delete {}'.format(d), source=d)
 
   def create_disk(self, disk_name, fs_format='fat', min_size=0, include=None):
     """ create_disk creates a virtual disk with the given name, format and size.
@@ -107,11 +114,11 @@ class QEMUAPI(recipe_api.RecipeApi):
         try:
           for src, dest in include.items():
             dest = mount_loc[0] + '/' + dest
+            src = src if self.m.path.isdir(src) else self.m.path.dirname(src)
+            dest = dest if self.m.path.isdir(dest) else self.m.path.dirname(
+                dest)
             self.m.file.copytree(
-                name='Copy {}'.format(src),
-                source=src
-                if self.m.path.isdir(src) else self.m.path.dirname(src),
-                dest=dest)
+                name='Copy {}'.format(src), source=src, dest=dest)
         finally:
           self.unmount_disk_image(loop_file)
 
@@ -301,7 +308,7 @@ class QEMUAPI(recipe_api.RecipeApi):
         drive_opts += 'format={},'.format(drive.fmt)
       if drive.readonly:
         # Add readonly if set
-        drive_opts += 'readonly,'
+        drive_opts += 'readonly=on,'
       # Add drive to the cmd
       cmd += ['-drive', drive_opts]
     for extra_arg in qemu_vm.extra_args:

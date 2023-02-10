@@ -17,6 +17,7 @@ from PB.recipes.infra.windows_image_builder import dest as dest_pb
 from PB.recipes.infra.windows_image_builder import drive as drive_pb
 from PB.recipes.infra.windows_image_builder import vm as vm_pb
 from PB.recipes.infra.windows_image_builder import actions as act_pb
+from PB.go.chromium.org.luci.buildbucket.proto import common
 
 
 class OnlineWindowsCustomization(customization.Customization):
@@ -49,6 +50,7 @@ class OnlineWindowsCustomization(customization.Customization):
       for online_action in boot.online_actions:
         for action in online_action.actions:
           helper.pin_src_from_action(action, self._source, ctx)
+    return ctx
 
   def download_sources(self):
     """ download_sources downloads the sources in the given config to disk"""
@@ -229,28 +231,19 @@ class OnlineWindowsCustomization(customization.Customization):
   @property
   def outputs(self):
     """ return the output of executing this config. Doesn't guarantee that the
-    output exists"""
+    output exists. The outputs are recorded only for those drives that have
+    a dest. All other drives are discarded after execution"""
     outputs = []
     if self.get_key():
       owc = self.customization().online_windows_customization
       for boot in owc.online_customizations:
         for drive in boot.vm_config.qemu_vm.drives:
-          if not drive.readonly:
-            file = 'WIB-ONLINE-CACHE/{}-{}'.format(self.get_key(), drive.name)
-            # Check if this drive is already accounted for
-            existing = [
-                output for output in outputs if output.gcs_src.source == file
-            ]
-            if not existing:
-              # add to the list if it wasn't already included
-              output = src_pb.GCSSrc(bucket='chrome-gce-images', source=file)
-              outputs.append(
-                  dest_pb.Dest(
-                      gcs_src=output,
-                      tags={
-                          'orig':
-                              self._source.get_url(src_pb.Src(gcs_src=output))
-                      }))
+          if drive.output_dests:
+            # If there is a user defined upload for this, ensure cache upload
+            ctx = self.update_drive_context(boot.name, drive, {})
+            for key, op in ctx.items():
+              self.ensure_cache_upload(drive, op)
+            outputs.extend(drive.output_dests)
     return outputs
 
   @property
@@ -278,13 +271,65 @@ class OnlineWindowsCustomization(customization.Customization):
       for boot in owc.online_customizations:
         for drive in boot.vm_config.qemu_vm.drives:
           if not drive.readonly:
-            key = '{}-drive({})-output'.format(self.id, drive.name)
-            outputs[key] = src_pb.Src(
-                gcs_src=src_pb.GCSSrc(
-                    bucket='chrome-gce-images',
-                    source='WIB-ONLINE-CACHE/{}-{}'.format(
-                        self.get_key(), drive.name)))
+            outputs = self.update_drive_context(boot.name, drive, outputs)
     return outputs
+
+  def update_drive_context(self, oc_name, drive, ctx):
+    """ update_drive_context updates the context with the output ref
+
+    Args:
+      * oc_name: online customization (boot) name
+      * drive: drives proto object representing a drive
+      * ctx: context dictionary that needs to be updated
+    Returns updated context
+    """
+    f_name = 'boot({})-drive({})-output'.format(oc_name, drive.name)
+    key = '{}-{}'.format(self.id, f_name)
+    ctx[key] = src_pb.Src(
+        gcs_src=src_pb.GCSSrc(
+            bucket='chrome-gce-images',
+            source='WIB-ONLINE-CACHE/{}-{}.zip'.format(self.get_key(), f_name)))
+    return ctx
+
+  def inject_cache_upload(self, inputs):
+    """ inject_cache_upload injects the outputs that we need to upload.
+
+    Ensures that there is at lease one cache upload if the output is referenced
+    in any of the inputs given.
+
+    Args:
+      * inputs: List of local_src inputs that can ref drives
+    """
+    if self.get_key():
+      owc = self.customization().online_windows_customization
+      for boot in owc.online_customizations:
+        for drive in boot.vm_config.qemu_vm.drives:
+          ctx = self.update_drive_context(boot.name, drive, {})
+          # unpack the ctx. It should only contain one entry
+          for key, op in ctx.items():
+            # Refs to this drive will be the key string, if it was referenced
+            # somewhere. If this ref exists then upload to cache
+            if key in inputs:
+              self.ensure_cache_upload(drive, op)
+
+  def ensure_cache_upload(self, drive, cache):
+    """ ensure_cache_upload ensures that at least one upload is scheduled for
+    uploading the results to GCS cache
+
+    Args:
+      * drive: drive_pb.Drive proto object that points to a virtual disk/cdrom
+      * cache: upload path to upload the said drive to in GCS cache
+    """
+    cache_url = self._source.get_url(cache)
+    tags = {'orig': cache_url}
+    # We only need one copy to upload the drive.
+    for dest in drive.output_dests:
+      if self._source.get_url(dest) == cache_url:
+        # Looks like we already scheduled one. Return
+        return  # pragma: nocover
+    # Add a cache upload to the config
+    drive.output_dests.append(dest_pb.Dest(gcs_src=cache.gcs_src, tags=tags))
+    return
 
   def process_disks(self, drive, include=None):
     ''' process_disks processes the disk and prepares them to be used on a VM.
@@ -296,21 +341,28 @@ class OnlineWindowsCustomization(customization.Customization):
       * drive: Drive proto object
       * include: dict containing the files to be copied
     '''
-    if not drive.input_src.WhichOneof('src'):
-      # create a new drive and copy the files to it.
-      self.m.qemu.create_disk(
-          disk_name=drive.name,
-          fs_format=drive.filesystem,
-          min_size=drive.size,
-          include=include)
-    else:
-      disk_image = self._source.get_local_src(drive.input_src)
-      self.m.archive.extract(
-          'Unpack {} to staging dir'.format(drive.name),
-          disk_image,
-          self.m.qemu.disks,
-          include_files=[drive.name],
-          archive_type='zip')
+    if not self.m.path.exists(self.m.qemu.disks.join(drive.name)):
+      if not drive.input_src.WhichOneof('src'):
+        # create a new drive and copy the files to it.
+        self.m.qemu.create_disk(
+            disk_name=drive.name,
+            fs_format=drive.filesystem,
+            min_size=drive.size,
+            include=include)
+      else:
+        disk_image = self._source.get_local_src(drive.input_src)
+        disk_folder = self.m.qemu.disks
+        if str(disk_image).endswith('zip') or str(disk_image).endswith('tar'):
+          self.m.archive.extract(
+              'Unpack {} to staging dir'.format(drive.name),
+              disk_image,
+              disk_folder,
+              include_files=[drive.name],
+              archive_type='zip')
+        else:
+          # Everything else, just link them to disk dir (isos, flash image,...)
+          self.m.file.symlink('Link {} to {}'.format(disk_image, disk_folder),
+                              disk_image, disk_folder.join(drive.name))
 
   def start_qemu(self, oc):
     ''' start_qemu starts a qemu vm with given config and drives.
@@ -343,7 +395,7 @@ class OnlineWindowsCustomization(customization.Customization):
               deps[local_src] = self._source.get_rel_src(src)
       if len(deps) > 0:
         deps_disk = drive_pb.Drive(
-            name='deps.img',
+            name='DEPS',
             interface='none',
             media='disk',
             filesystem='fat',
@@ -449,31 +501,45 @@ class OnlineWindowsCustomization(customization.Customization):
       raise self.m.step.StepFailure(
           'Unable to shutdown vm {}. Force killed'.format(vm_name))
 
-  def upload_disks(self):
+  def upload_disks(self, oc):
     """ upload_disks compresses and then uploads the disk image.
 
     Ideally this should be used minimally to avoid network traffic. But in
     situations where this is unavoidable. We can upload the disk for use in
     another build. Unlike offline builder. This only uploads the disk if
     specified by the config. The disk images are compressed before upload.
+
+    Args:
+      oc: onlinewc.OnlineCustomization, this should have already executed and
+      the VM terminated when this is called.
     """
-    owc = self.customization().online_windows_customization
-    if owc and len(owc.online_customizations) > 0:
-      for oc in owc.online_customizations:
-        drives = oc.vm_config.qemu_vm.drives
-        for drive in drives:
-          if drive.output_dests:
-            pkg = self.m.qemu.disks.join(drive.name)
-            # compress disk images as they are pretty big
-            compressed_pkg = self.m.qemu.disks.join('{}.zip'.format(drive.name))
-            self.m.archive.package(pkg).archive(
-                'Archive {} for upload'.format(drive.name), compressed_pkg)
-            for dest in drive.output_dests:
-              self._source.upload_package(dest, compressed_pkg)
-            # delete the compressed disk image
-            self.m.file.remove(
-                'Delete compressed {} after upload'.format(drive.name),
-                compressed_pkg)
+    for drive in oc.vm_config.qemu_vm.drives:
+      if drive.output_dests:
+        pkg = self.m.qemu.disks.join(drive.name)
+        # compress disk images as they are pretty big
+        compressed_pkg = self.m.qemu.disks.join('{}.zip'.format(drive.name))
+        (self.m.archive.package(self.m.qemu.disks).with_file(pkg).archive(
+            'Archive {} for upload'.format(drive.name), compressed_pkg))
+        # Upload a cached copy first
+        ctx = self.update_drive_context(oc.name, drive, {})
+        url = ''
+        # there is only one value here
+        for src in ctx.values():
+          url = self._source.get_url(src)
+          self._source.upload_package(
+              dest_pb.Dest(gcs_src=src.gcs_src, tags={'orig': url}),
+              compressed_pkg)
+        for dest in drive.output_dests:
+          # Avoid reuploading cached copy
+          if self._source.get_url(dest) != url:
+            if url:
+              # update the tags
+              dest.tags['orig'] = url
+            self._source.upload_package(dest, compressed_pkg)
+        # delete the compressed disk image
+        self.m.file.remove(
+            'Delete compressed {} after upload'.format(drive.name),
+            compressed_pkg)
 
   def execute_customization(self):
     ''' execute_customization runs all the online customizations included in
@@ -485,8 +551,11 @@ class OnlineWindowsCustomization(customization.Customization):
           owc.name)):
         for oc in owc.online_customizations:
           self.execute_online_customization(oc)
-    # upload the results of the customization
-    self.upload_disks()
+        # Clear out the disks, free up space
+        with self.m.step.nest('Cleanup after {}'.format(owc.name)):
+          self.m.qemu.cleanup_disks()
+          self.m.file.rmcontents('clean workdir', self._workdir)
+          self.m.file.rmcontents('clean scratchpad', self._scratchpad)
 
   def execute_online_customization(self, oc):
     ''' execute_online_customization performs all the required initialization,
@@ -498,6 +567,8 @@ class OnlineWindowsCustomization(customization.Customization):
     '''
     with self.m.step.nest('Execute online customization {}'.format(
         oc.name)) as s:
+      # If set, attempt to upload the disks
+      attempt_upload = True
       # Boot up the vm
       self.start_qemu(oc)
       try:
@@ -508,6 +579,8 @@ class OnlineWindowsCustomization(customization.Customization):
               self.execute_action(action, oc.win_vm_config.context)
       except Exception as e:
         s.presentation.logs['Error'] = str(e)
+        # Don't upload these disks.
+        attempt_upload = False
         if self.mode == wib.CustomizationMode.CUST_DEBUG:
           # If its debug mode then we just sleep for boot_time. This will let
           # you debug by forwarding port 5900 and using a vnc viewer like
@@ -521,7 +594,16 @@ class OnlineWindowsCustomization(customization.Customization):
               cmd=['sleep', debug_time])
         raise e
       finally:
-        self.safely_shutdown_vm(oc)
+        with self.m.step.nest('Deinit online customization {}'.format(oc.name)):
+          self.safely_shutdown_vm(oc)
+          if attempt_upload:
+            # upload the disk(s) if required
+            self.upload_disks(oc)
+          # Delete the dependency disk. We don't need it anymore
+          if self.m.path.exists(
+              self.m.qemu.disks.join("DEPS")):  #pragma: nocover
+            self.m.file.remove("Delete deps disk",
+                               self.m.qemu.disks.join("DEPS"))
 
   def execute_action(self, action, ctx):
     ''' execute_action runs the given action in the given context
@@ -556,7 +638,7 @@ class OnlineWindowsCustomization(customization.Customization):
       src_file = self.m.path.basename(rel_src)
       rel_src = self.m.path.dirname(rel_src)
     # powershell expression to copy the artifacts. Using robocopy
-    expr = 'robocopy $deps_img\\{} {} {} /e'.format(
+    expr = 'robocopy ${DRIVE_DEPS}\\' + '{} {} {} /e'.format(
         helper.conv_to_win_path(rel_src), add_file.dst, src_file)
     self.execute_powershell(
         'Add File: {}'.format(add_file.name),
@@ -585,7 +667,7 @@ class OnlineWindowsCustomization(customization.Customization):
     if pwsh_expr.srcs:
       for var, src in pwsh_expr.srcs.items():
         win_src = helper.conv_to_win_path(self._source.get_rel_src(src))
-        ps_ctx[var] = '$deps_img\\{}'.format(win_src)
+        ps_ctx[var] = '${DRIVE_DEPS}:\\' + win_src
 
     r_codes = pwsh_expr.return_codes
     # Default successful return code is 0
@@ -666,7 +748,7 @@ class OnlineWindowsCustomization(customization.Customization):
       for log_file, log in ret['Logs'].items():
         res.presentation.logs[log_file] = log
     if 'Output' in ret and ret['Output']:
-      res.presentation.logs['stdout'] = ret['Output']
+      res.presentation.logs['STDOUT'] = ret['Output']
     if 'Error' in ret and ret['Error']:
       res.presentation.logs['Error'] = ret['Error']
       if 'Timeout' in ret['Error'] and not ret['Success']:
@@ -674,6 +756,10 @@ class OnlineWindowsCustomization(customization.Customization):
           raise self.m.step.StepFailure('Timeout')
         # This was expected. Just return
         return res
+    # Throw error if the expression failed to execute
+    if 'Success' in ret and not ret['Success']:
+      raise self.m.step.StepFailure('Error in execution. Check stdout, stderr')
     # Throw error if return code is not what we expect. Ignore success
     if 'RetCode' in ret and int(ret['RetCode']) not in retcode:
-      raise self.m.step.StepFailure('Error in execution. Check stdout, stderr')
+      err = 'Expression returned {} Expecting {}. Check stdout, stderr'
+      raise self.m.step.StepFailure(err.format(ret['RetCode'], retcode))

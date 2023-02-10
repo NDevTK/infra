@@ -218,8 +218,17 @@ def RunSteps(api, config):
   # Initialize all the images
   for image in images:
     custs.extend(api.windows_scripts_executor.init_customizations(image))
+
+  # Get all the inputs required. This will be used to determine if we have
+  # to cache any images in online customization
+  inputs = []
+  for cust in custs:
+    for ip in cust.inputs:
+      if ip.WhichOneof('src') == 'local_src':
+        inputs.append(ip.local_src)
+
   # Process all the customizations
-  custs = api.windows_scripts_executor.process_customizations(custs, {})
+  custs = api.windows_scripts_executor.process_customizations(custs, {}, inputs)
 
   configs = api.windows_scripts_executor.get_executable_configs(custs)
   executed_custs = set()
@@ -246,6 +255,8 @@ def GenTests(api):
   key_wim_6 = 'd7ba1e059a49f980e58e704411b7134976336a16e03bf916697483b14af5d356'
   key_boot = 'bbcff59ef2de5ccb05c8b9679ef78b371d35cc5d58dec639422e34b16bd25219'
   key_img = 'e4eb670abbd2e02a9abe006c36aa439c7e931740b6ca1cd4ee48ec4ca5eab363'
+
+  system = 'boot(test_boot1)-drive(system.img)-output.zip'
 
   def mock_gsutil(api, url, index):
     """ mock_wim mocks the existence of output given by the url
@@ -283,10 +294,7 @@ def GenTests(api):
       mock_gsutil(
           api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key_wim_6), 1) +
       mock_gsutil(api, 'gs://chrome-gce-images/WIB-ISO/{}.iso'.format(key_boot),
-                  1) +
-      mock_gsutil(
-          api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-system.img'.format(
-              key_img), 1) + api.post_process(StatusSuccess) +
+                  1) + api.post_process(StatusSuccess) +
       api.post_process(DropExpectation))
 
   yield (
@@ -307,10 +315,7 @@ def GenTests(api):
       mock_gsutil(
           api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key_wim_6), 1) +
       mock_gsutil(api, 'gs://chrome-gce-images/WIB-ISO/{}.iso'.format(key_boot),
-                  1) +
-      mock_gsutil(
-          api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-system.img'.format(
-              key_img), 2) + api.post_process(StatusSuccess) +
+                  1) + api.post_process(StatusSuccess) +
       api.post_process(DropExpectation))
 
   yield (
@@ -329,10 +334,7 @@ def GenTests(api):
       mock_gsutil(
           api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key_wim_6), 1) +
       mock_gsutil(api, 'gs://chrome-gce-images/WIB-ISO/{}.iso'.format(key_boot),
-                  2) +
-      mock_gsutil(
-          api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-system.img'.format(
-              key_img), 1) + api.post_process(StatusSuccess) +
+                  2) + api.post_process(StatusSuccess) +
       api.post_process(DropExpectation))
 
   yield (
@@ -351,10 +353,7 @@ def GenTests(api):
       mock_gsutil(
           api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key_wim_6), 3) +
       mock_gsutil(api, 'gs://chrome-gce-images/WIB-ISO/{}.iso'.format(key_boot),
-                  1) +
-      mock_gsutil(
-          api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-system.img'.format(
-              key_img), 1) + api.post_process(StatusSuccess) +
+                  1) + api.post_process(StatusSuccess) +
       api.post_process(DropExpectation))
 
   yield (
@@ -373,8 +372,5 @@ def GenTests(api):
       mock_gsutil(
           api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key_wim_6), 5) +
       mock_gsutil(api, 'gs://chrome-gce-images/WIB-ISO/{}.iso'.format(key_boot),
-                  6) +
-      mock_gsutil(
-          api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-system.img'.format(
-              key_img), 4) + api.post_process(StatusSuccess) +
+                  3) + api.post_process(StatusSuccess) +
       api.post_process(DropExpectation))

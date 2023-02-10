@@ -70,7 +70,7 @@ def GenTests(api):
                           refs='stable',
                           platform='windows-arm64'))
           },
-      ),)
+          return_codes=(0, 1, 2, 3, 4)),)
 
   def IMAGE(arch):
     return t.WIN_IMAGE(
@@ -82,16 +82,16 @@ def GenTests(api):
         win_config=windows_pb.WindowsVMConfig(
             boot_time=300, context={
                 '$system_img': 'C:',
-                '$deps_img': 'D:'
+                '$DEPS': 'D:'
             }))
 
   yield (api.test('powershell_expr test happy path') +
          api.platform('linux', 64, 'arm') +
          api.properties(IMAGE(wib.ARCH_AARCH64)) +
-         # Mock deps.img disk space check
-         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
-         # Mock disk mount for deps.img
-         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
+         # Mock DEPS disk space check
+         t.DISK_SPACE(api, image, cust, vm_name, 'DEPS') +
+         # Mock disk mount for DEPS
+         t.MOUNT_DISK(api, image, cust, vm_name, 'DEPS') +
          # Mock the VM startup check
          t.STARTUP_VM(api, image, cust, vm_name, True) +
          # Mock successful execution of powershell expression
@@ -107,10 +107,10 @@ def GenTests(api):
   yield (api.test('powershell_expr test fail') +
          api.platform('linux', 64, 'intel') +
          api.properties(IMAGE(wib.ARCH_AARCH64)) +
-         # Mock deps.img disk space check
-         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
-         # Mock disk mount for deps.img
-         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
+         # Mock DEPS disk space check
+         t.DISK_SPACE(api, image, cust, vm_name, 'DEPS') +
+         # Mock disk mount for DEPS
+         t.MOUNT_DISK(api, image, cust, vm_name, 'DEPS') +
          # Mock the VM startup check
          t.STARTUP_VM(api, image, cust, vm_name, True) +
          # Mock failed execution of powershell expression
@@ -129,13 +129,31 @@ def GenTests(api):
          t.STATUS_VM(api, image, cust, vm_name) +
          api.post_process(StatusFailure) + api.post_process(DropExpectation))
 
+  yield (api.test('powershell_expr retcode fail') +
+         api.platform('linux', 64, 'intel') +
+         api.properties(IMAGE(wib.ARCH_AARCH64)) +
+         # Mock DEPS disk space check
+         t.DISK_SPACE(api, image, cust, vm_name, 'DEPS') +
+         # Mock disk mount for DEPS
+         t.MOUNT_DISK(api, image, cust, vm_name, 'DEPS') +
+         # Mock the VM startup check
+         t.STARTUP_VM(api, image, cust, vm_name, True) +
+         # Mock failed execution of powershell expression
+         t.POWERSHELL_EXPR_VM(
+             api, image, cust, 'Install HL3', 'No directx found', retcode=8) +
+         # Mock shutdown vm. successfully shut down vm
+         t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
+         # Mock stats vm check. VM offline
+         t.STATUS_VM(api, image, cust, vm_name) +
+         api.post_process(StatusFailure) + api.post_process(DropExpectation))
+
   yield (api.test('powershell_expr timeout fail') +
          api.platform('linux', 64, 'intel') +
          api.properties(IMAGE(wib.ARCH_AARCH64)) +
-         # Mock deps.img disk space check
-         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
-         # Mock disk mount for deps.img
-         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
+         # Mock DEPS disk space check
+         t.DISK_SPACE(api, image, cust, vm_name, 'DEPS') +
+         # Mock disk mount for DEPS
+         t.MOUNT_DISK(api, image, cust, vm_name, 'DEPS') +
          # Mock the VM startup check
          t.STARTUP_VM(api, image, cust, vm_name, True) +
          # Mock failed execution of powershell expression
@@ -151,10 +169,10 @@ def GenTests(api):
   yield (api.test('powershell_expr timeout ignore') +
          api.platform('linux', 64, 'intel') +
          api.properties(IMAGE(wib.ARCH_AARCH64)) +
-         # Mock deps.img disk space check
-         t.DISK_SPACE(api, image, cust, vm_name, 'deps.img') +
-         # Mock disk mount for deps.img
-         t.MOUNT_DISK(api, image, cust, vm_name, 'deps.img') +
+         # Mock DEPS disk space check
+         t.DISK_SPACE(api, image, cust, vm_name, 'DEPS') +
+         # Mock disk mount for DEPS
+         t.MOUNT_DISK(api, image, cust, vm_name, 'DEPS') +
          # Mock the VM startup check
          t.STARTUP_VM(api, image, cust, vm_name, True) +
          # Mock failed execution of powershell expression
