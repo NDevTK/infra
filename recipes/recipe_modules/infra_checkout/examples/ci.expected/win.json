@@ -289,7 +289,7 @@
   },
   {
     "cmd": [
-      "python",
+      "python3",
       "test.py",
       "test",
       "infra"
@@ -311,8 +311,8 @@
   },
   {
     "cmd": [
-      "python",
-      "\n        import sys, os\n        print '\n'.join(os.listdir('./'))\n    "
+      "python3",
+      "RECIPE[infra::infra_checkout:examples/ci].resources\\dirs.py"
     ],
     "cwd": "[CACHE]\\builder",
     "luci_context": {

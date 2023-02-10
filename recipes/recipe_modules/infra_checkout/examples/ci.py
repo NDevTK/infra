@@ -8,7 +8,6 @@ DEPS = [
     'recipe_engine/buildbucket',
     'recipe_engine/context',
     'recipe_engine/platform',
-    'recipe_engine/python',
     'recipe_engine/step',
     'recipe_engine/properties',
 
@@ -29,12 +28,9 @@ def RunSteps(api):
   with co.go_env():  # for coverage
     api.step('go test', ['go', 'test', 'infra/...'])
   with api.context(cwd=co.patch_root_path):
-    api.python('python tests', 'test.py', ['test', 'infra'])
+    api.step('python tests', ['python3', 'test.py', 'test', 'infra'])
   with api.context(cwd=co.path):
-    api.python('dirs', script='''
-        import sys, os
-        print '\n'.join(os.listdir('./'))
-    ''')
+    api.step('dirs', ['python3', api.resource('dirs.py')])
 
 
 def GenTests(api):
