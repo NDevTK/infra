@@ -120,7 +120,7 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	}
 
 	// Install some tools we'll need, including a bootstrap toolchain.
-	gorootBootstrap, err := installTools(ctx)
+	toolsRoot, err := installTools(ctx)
 	if err != nil {
 		return err
 	}
@@ -136,10 +136,14 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	// Set up environment.
 	env := environ.FromCtx(ctx)
 	env.Load(inputs.Env)
-	env.Set("GOROOT_BOOTSTRAP", gorootBootstrap)
+	env.Set("GOROOT_BOOTSTRAP", filepath.Join(toolsRoot, "goroot_bootstrap"))
 	env.Set("GOBIN", "")
 	env.Set("GOCACHE", gocacheDir)
 	env.Set("GO_BUILDER_NAME", st.Build().GetBuilder().GetBuilder()) // TODO(mknyszek): This is underspecified. We may need Project and Bucket.
+	if runtime.GOOS == "windows" {
+		// TODO(heschi): select gcc32 for GOARCH=i386
+		env.Set("PATH", fmt.Sprintf("%v%v%v", env.Get("PATH"), os.PathListSeparator, filepath.Join(toolsRoot, "cc/windows/gcc64")))
+	}
 	ctx = env.SetInCtx(ctx)
 
 	inputPb := st.Build().GetInput()
@@ -190,16 +194,18 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 // N.B. We assume a few tools are already available on the machine we're
 // running on. Namely:
 // - git
-// - C/C++ toolchain
+// - For non-Windows, a C/C++ toolchain
 //
 // TODO(mknyszek): Make sure Go 1.17 still works as the bootstrap toolchain since
 // it's our published minimum.
 var cipdDeps = `
 @Subdir go_bootstrap
 infra/3pp/tools/go/${platform} version:2@1.19.3
+@Subdir cc/${os=windows}
+golang/third_party/llvm-mingw-msvcrt/${platform} latest
 `
 
-func installTools(ctx context.Context) (gorootBootstrap string, err error) {
+func installTools(ctx context.Context) (toolsRoot string, err error) {
 	step, ctx := build.StartStep(ctx, "install tools")
 	defer func() {
 		// Any failure in this function is an infrastructure failure.
@@ -208,7 +214,7 @@ func installTools(ctx context.Context) (gorootBootstrap string, err error) {
 
 	io.WriteString(step.Log("ensure file"), cipdDeps)
 
-	toolsRoot, err := os.Getwd()
+	toolsRoot, err = os.Getwd()
 	if err != nil {
 		return "", err
 	}
@@ -217,12 +223,12 @@ func installTools(ctx context.Context) (gorootBootstrap string, err error) {
 	// Install packages.
 	cmd := exec.CommandContext(ctx, "cipd",
 		"ensure", "-root", toolsRoot, "-ensure-file", "-",
-		"-json-output", filepath.Join(os.TempDir(), "go_bootstrap_ensure_results.json"))
+		"-json-output", filepath.Join(os.TempDir(), "ensure_results.json"))
 	cmd.Stdin = strings.NewReader(cipdDeps)
 	if err := runCommandAsStep(ctx, "cipd ensure", cmd, true); err != nil {
 		return "", err
 	}
-	return filepath.Join(toolsRoot, "go_bootstrap"), nil
+	return toolsRoot, nil
 }
 
 const (
