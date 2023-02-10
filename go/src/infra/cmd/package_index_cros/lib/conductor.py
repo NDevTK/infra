@@ -1,3 +1,7 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 from typing import List
 import os
 
@@ -14,7 +18,7 @@ from .setup import Setup
 
 
 class Conductor:
-  """Ochestrates whole process."""
+  """Orchestrates whole process."""
 
   def __init__(self, setup: Setup, cache_provider: CacheProvider):
     self.setup = setup

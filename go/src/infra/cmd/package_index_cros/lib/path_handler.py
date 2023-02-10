@@ -1,3 +1,7 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 import os
 import re
 from typing import Callable, List, NamedTuple, Tuple
@@ -271,8 +275,8 @@ class PathHandler:
                        package.name, path)
         can_ignore = True
       elif ignorable_extensions and any(
-          path.endswith(ignoreable_ext)
-          for ignoreable_ext in ignorable_extensions):
+          path.endswith(ignorable_ext)
+          for ignorable_ext in ignorable_extensions):
         g_logger.debug('%s: Failed to fix path with ignorable extension: %s',
                        package.name, path)
         can_ignore = True
@@ -280,8 +284,8 @@ class PathHandler:
       if can_ignore:
         # Try to find matching ignorable dir containing path.
         ignorable_parent_dirs = [
-            ignoreable_dir for ignoreable_dir in ignorable_dirs
-            if path.startswith(ignoreable_dir)
+            ignorable_dir for ignorable_dir in ignorable_dirs
+            if path.startswith(ignorable_dir)
         ]
         assert len(ignorable_parent_dirs) <= 1, "Expecting one match at most"
         ignorable_parent_dir = ignorable_parent_dirs[

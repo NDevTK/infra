@@ -1,3 +1,7 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 import filecmp
 import json
 import os
@@ -192,7 +196,7 @@ class GnTargetsMerger:
         'lib_dirs': GnTargetsMerger._MergeLists,
         'libs': GnTargetsMerger._MergeLists,
         'outputs': GnTargetsMerger._MergeLists,
-        # Everthing else shall be either unique or equal.
+        # Everything else shall be either unique or equal.
     }
 
   @staticmethod
@@ -256,7 +260,7 @@ class GnTargetsGenerator:
       * result_build_dir: path to result build dir simulating single result
         package.
       * file_conflicts: maps original build artifacts in chroot dir that
-        conflict between packages to corresponding artfacts in
+        conflict between packages to corresponding artifacts in
         |result_build_dir|.
     """
     self.setup = setup

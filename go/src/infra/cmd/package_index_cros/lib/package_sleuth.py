@@ -1,3 +1,7 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 import json
 from typing import Dict, List, NamedTuple, Set
 
@@ -98,8 +102,8 @@ class PackageSleuth:
       if not new_ebuilds:
         break
 
-      # TODO: Some packages need specifc USE flag for emerge (e.g. arc-base
-      # needs USE=arcpp or USE=arcvm). Without them emerge fals and cros_sdk
+      # TODO: Some packages need specific USE flag for emerge (e.g. arc-base
+      # needs USE=arcpp or USE=arcvm). Without them emerge fails and cros_sdk
       # raises an exception.
       new_dependencies = self._GetPackagesDependencies(
           [e.package for e in new_ebuilds])
@@ -227,5 +231,5 @@ class PackageSleuth:
       assert package_name[last_dash_pos + 1].isdigit()
       return package_name[:last_dash_pos]
 
-    # Resping after dash. Trimming it as well.
+    # Re-spin after dash. Trimming it as well.
     return PackageSleuth._TrimPackageVersion(package_name[:last_dash_pos])

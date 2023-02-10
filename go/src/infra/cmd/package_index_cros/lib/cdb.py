@@ -1,3 +1,7 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 import filecmp
 import json
 import os
@@ -23,8 +27,10 @@ class Cdb:
   class FileFieldException(CdbException, PackagePathException):
     """Exception to indicate failure while resolving file field"""
 
-  class ArgumentsFieldExcpetion(CdbException, PackagePathException):
-    """Exception to indicate a failure while resolving command or arguments field"""
+  class ArgumentsFieldException(CdbException, PackagePathException):
+    """
+    Exception to indicate a failure while resolving command or arguments field
+    """
 
   class OutputFieldException(CdbException, PackagePathException):
     """Exception to indicate failure while resolving output field"""

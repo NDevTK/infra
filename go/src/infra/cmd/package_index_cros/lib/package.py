@@ -1,3 +1,7 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 import json
 import os
 from enum import IntEnum
@@ -81,7 +85,7 @@ def IsPackageSupported(ebuild: portage_util.EBuild,
     # Project is CROS_WORKON_PROJECT in ebuild file.
     # Srcdir is CROS_WORKON_LOCALNAME in ebuild file.
     # If package does not have project and srcdir - it's downloaded.
-    # If package has project or srcdir being empty-project - it's downloaed.
+    # If package has project or srcdir being empty-project - it's downloaded.
     if not ebuild_source_info.srcdirs or not ebuild_source_info.projects:
       return False
     if ebuild_source_info.projects and len(
@@ -100,7 +104,7 @@ def IsPackageSupported(ebuild: portage_util.EBuild,
     # * chromeos-base/quipper: platform2 with non-existing PLATFORM_SUBDIR.
     # * dev-libs/marisa-aosp: platform2 with non-existing PLATFORM_SUBDIR.
     # With local source:
-    # * dev-libs/libtextclassifier: not pltform2 with non-existing
+    # * dev-libs/libtextclassifier: not platform2 with non-existing
     #   PLATFORM_SUBDIR.
     platform_subdir = _CheckEbuildVar(ebuild_file, 'PLATFORM_SUBDIR')
     if platform_subdir and not os.path.isdir(
@@ -139,7 +143,8 @@ def IsPackageSupported(ebuild: portage_util.EBuild,
   if ebuild.package in constants.TEMPORARY_UNSUPPORTED_PACKAGES:
     return PackageSupport.TEMP_NO_SUPPORT
 
-  if setup.with_tests and ebuild.package in constants.TEMPORARY_UNSUPPORTED_PACKAGES_WITH_TESTS:
+  if (setup.with_tests and
+      ebuild.package in constants.TEMPORARY_UNSUPPORTED_PACKAGES_WITH_TESTS):
     return PackageSupport.TEMP_NO_SUPPORT
 
   if ebuild.package in setup.skip_packages:
@@ -160,7 +165,7 @@ class Package:
       actual sources.
     * temp_dir: base path to a dir with all temporary sources.
     * build_dir: path to a dir with build. Is expected to contain args.gn.
-    * src_dir_matches: list of tuples (temp, actual). Represents a possbile
+    * src_dir_matches: list of tuples (temp, actual). Represents a possible
       match between temporary and actual source dirs/files. The list is sorted
       by depth: match is better when closer to desired path.
     * additional_include_paths: list of actual paths to be added to include
@@ -239,7 +244,7 @@ class Package:
     elif isinstance(other, Package):
       return self.name == other.name
 
-    raise NotImplementedError('Can comparte only with Package or string')
+    raise NotImplementedError('Can compare only with Package or string')
 
   def Initialize(self) -> None:
     """

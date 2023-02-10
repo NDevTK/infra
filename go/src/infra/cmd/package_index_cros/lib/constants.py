@@ -1,3 +1,7 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 import os
 
 PACKAGE_ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -12,7 +16,8 @@ CACHE_PACKAGES_PATH_TEMPALATE = os.path.join('/', 'tmp',
 # Set of packages that should be fine to work with but are not handled properly
 # yet.
 TEMPORARY_UNSUPPORTED_PACKAGES = {
-    # Reason: There are no ebuilds to satisfy ">=dev-lang/python-2.7.5-r2:2.7[threads(+)]".
+    # Reason: There are no ebuilds to satisfy
+    # ">=dev-lang/python-2.7.5-r2:2.7[threads(+)]".
     # Probably perfectly fine packages otherwise.
     'app-benchmarks/glmark2',
     'chromeos-base/autotest-deps-glmark2',
@@ -73,7 +78,8 @@ TEMPORARY_UNSUPPORTED_PACKAGES = {
     'chromeos-base/cdm-oemcrypto',
     'chromeos-base/cdm-oemcrypto-hw-test',
 
-    # Reason: REQUIRED_USE=any-of: test factory_netboot_ramfs factory_shim_ramfs hypervisor_ramfs recovery_ramfs minios_ramfs
+    # Reason: REQUIRED_USE=any-of: test factory_netboot_ramfs factory_shim_ramfs
+    # hypervisor_ramfs recovery_ramfs minios_ramfs.
     # Probably a perfectly fine package otherwise.
     'chromeos-base/chromeos-initramfs',
 
@@ -90,7 +96,8 @@ TEMPORARY_UNSUPPORTED_PACKAGES = {
     # Probably a perfectly fine package otherwise.
     'chromeos-base/demo_mode_resources',
 
-    # Reason: Missing dependency //diagnostics/mojom/public:cros_healthd_mojo_connectivity_bindings
+    # Reason: Missing dependency
+    # //diagnostics/mojom/public:cros_healthd_mojo_connectivity_bindings
     'chromeos-base/diagnostics-test',
 
     # Reason: Several missing headers referenced and typos in types.
@@ -125,11 +132,13 @@ TEMPORARY_UNSUPPORTED_PACKAGES = {
     # merge complicated.
     'chromeos-base/ml-cmdline',
 
-    # Reason: Mismatched proto versions in generated files and referenced library.
+    # Reason: Mismatched proto versions in generated files and referenced
+    # library.
     # Probably a perfectly fine package otherwise.
     'chromeos-base/modemfwd',
 
-    # Reason: media_perception_impl.cc:86:13: error: no member named 'AdaptCallbackForRepeating' in namespace 'base'
+    # Reason: media_perception_impl.cc:86:13: error: no member named
+    # 'AdaptCallbackForRepeating' in namespace 'base'
     'chromeos-base/mri_package',
 
     # Reason: /etc/init/ocr_service.conf: missing 'oom score' line
@@ -149,11 +158,13 @@ TEMPORARY_UNSUPPORTED_PACKAGES = {
     # another seccomp.
     'chromeos-base/touch_firmware_calibration',
 
-    # Reason: Dependency chromeos-base/vm_guest_tools can't be built due to missing REQUIRED_USE.
+    # Reason: Dependency chromeos-base/vm_guest_tools can't be built due to
+    # missing REQUIRED_USE.
     # Probably a perfectly fine package otherwise.
     'chromeos-base/tremplin',
 
-    # Reason: Given path does not exist: /build/hatch/usr/include/u2f/client vs /build/hatch/usr/include/u2f/client
+    # Reason: Given path does not exist: /build/hatch/usr/include/u2f/client vs
+    # /build/hatch/usr/include/u2f/client
     # Perfectly fine package otherwise.
     'chromeos-base/u2fd',
 
@@ -184,11 +195,13 @@ TEMPORARY_UNSUPPORTED_PACKAGES = {
     # properly ignored.
     'dev-go/perfetto-protos',
 
-    # Reason: There are no ebuilds built with USE flags to satisfy "dev-libs/gmp[static-libs]" has to USE: +static-libs
+    # Reason: There are no ebuilds built with USE flags to satisfy
+    # "dev-libs/gmp[static-libs]" has to USE: +static-libs
     # Probably a perfectly fine package otherwise.
     'dev-util/shellcheck',
 
-    # Reason: Masked packages for dependency ebuild x11-libs/arc-libdrm are missing keywords
+    # Reason: Masked packages for dependency ebuild x11-libs/arc-libdrm are
+    # missing keywords
     # Probably a perfectly fine package otherwise.
     'media-libs/arc-mesa-freedreno',
     'media-libs/arc-mesa-virgl',
@@ -222,7 +235,8 @@ TEMPORARY_UNSUPPORTED_PACKAGES = {
     # Perfectly fine package otherwise.
     'net-print/brother_mlaser',
 
-    # Reason: Multiple package instances within a single package slot have been pulled in
+    # Reason: Multiple package instances within a single package slot have been
+    # pulled in
     # Perfectly fine package otherwise.
     'sci-libs/tensorflow',
 }
