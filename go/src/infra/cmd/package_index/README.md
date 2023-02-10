@@ -94,7 +94,8 @@ Finally, we specify where the output should be written.
 
 # Uploading to CIPD
 
-The linux and windows binaries are located on to CIPD under
+Release is handled automatically but if you'd like to manually upload to CIPD,
+the linux and windows binaries are located under
 [infra/tools/package_index](https://chrome-infra-packages.appspot.com/p/infra/tools/package_index/).
 To upload an updated version to CIPD, first navigate to
 [infra/infra/build/packages](https://source.chromium.org/chromium/infra/infra/+/master:build/packages/).
