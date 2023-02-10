@@ -195,24 +195,6 @@ class Package:
     temp: str
     actual: str
 
-  @staticmethod
-  def Serialize(package: 'Package') -> str:
-    package_as_dict = {
-        'ebuild': package.ebuild_file,
-        'deps': [dep._asdict() for dep in package.dependencies]
-    }
-    return json.dumps(package_as_dict)
-
-  @staticmethod
-  def Deserialize(data: bytes, setup: Setup) -> 'Package':
-    package_as_dict = json.loads(data)
-    assert 'ebuild' in package_as_dict
-    assert 'deps' in package_as_dict
-
-    ebuild = portage_util.EBuild(package_as_dict['ebuild'])
-    deps = [PackageDependency(**dep) for dep in package_as_dict['deps']]
-    return Package(setup, ebuild, deps)
-
   g_highly_volatile_packages = [
       # Libchrome has a number of patches applied on top of checkout.
       'chromeos-base/libchrome'

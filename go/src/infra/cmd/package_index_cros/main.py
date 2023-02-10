@@ -100,13 +100,6 @@ def _BuildParser():
                       dest='board',
                       help='Board to setup and build packages')
 
-  parser.add_argument('--force',
-                      '-f',
-                      action='store_true',
-                      default=False,
-                      dest='force',
-                      help='If set, clear cache')
-
   parser.add_argument('--keep-going',
                       '--keep_going',
                       action='store_true',
@@ -213,8 +206,6 @@ def main():
   g_logger.debug('Chromite dir: %s', chromite_dir)
   sys.path.append(os.path.dirname(chromite_dir))
 
-  from lib.cache import CacheProvider
-  from lib.cache import PackageCache
   from lib.conductor import Conductor
   from lib.setup import Setup
 
@@ -222,13 +213,8 @@ def main():
                 skip_packages=args.skip_packages.split(' '),
                 with_tests=args.with_tests,
                 chroot_dir=args.chroot_dir)
-  cache_provider = CacheProvider(package_cache=PackageCache(setup))
 
-  if args.force:
-    cache_provider.Clear()
-
-  cache_provider.package_cache = None
-  conductor = Conductor(setup=setup, cache_provider=cache_provider)
+  conductor = Conductor(setup=setup)
   conductor.Prepare(package_names=args.packages,
                     with_build=args.with_build,
                     ignore_unsupported=args.ignore_unsupported)

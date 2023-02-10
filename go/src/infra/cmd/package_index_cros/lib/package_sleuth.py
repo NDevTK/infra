@@ -9,7 +9,6 @@ from chromite.lib import portage_util
 
 import lib.package as pkg
 from .cros_sdk import CrosSdk
-from .cache import PackageCache
 from .logger import g_logger
 from .setup import Setup
 
@@ -21,9 +20,8 @@ class PackageSleuth:
     supported: List[pkg.Package]
     unsupported: List[str]
 
-  def __init__(self, setup: Setup, *, cache: PackageCache = None):
+  def __init__(self, setup: Setup):
     self.setup = setup
-    self.cache = cache
     self.overlays = portage_util.FindOverlays(
         overlay_type=portage_util.constants.BOTH_OVERLAYS,
         board=self.setup.board,
@@ -37,39 +35,12 @@ class PackageSleuth:
     Returns list of packages for given |packages_names| or all available
     packages if |packages_names| is none or empty.
 
-    Returns cached packages if any and |packages_names| is empty.
-
     Returns list of found unsupported packages as well.
     """
     packages_names = packages_names if packages_names is not None else []
 
-    packages = self._ListPackagesWithCache(packages_names)
-    PackageSleuth._FilterPackagesDependencies(packages.supported)
-
-    return packages
-
-  def _ListPackagesWithCache(
-      self, packages_names: List[str]) -> SupportedUnsupportedPackages:
-    """
-    Returns fetched packages if there is no cache or |packages_names| not empty.
-
-    Returns cached packages only if there are any and |packages_names| is empty.
-    """
-
-    if self.cache and self.cache.HasCachedPackages():
-      g_logger.debug('Restoring packages from cache')
-      cached_packages = self.cache.Restore()
-      g_logger.debug('Number of packages restored from cache: %s',
-                     len(cached_packages))
-    else:
-      cached_packages = []
-
-    if not packages_names and cached_packages:
-      return PackageSleuth.SupportedUnsupportedPackages(cached_packages, [])
-
-    # Skip any other usage of cache altogether. No idea how to apply it yet.
-
     packages = self._ListPackagesWithDeps(packages_names)
+    PackageSleuth._FilterPackagesDependencies(packages.supported)
 
     return packages
 

@@ -10,9 +10,6 @@ PACKAGE_SCRIPTS_DIR = os.path.join(PACKAGE_ROOT_DIR, 'scripts')
 
 PRINT_DEPS_SCRIPT_PATH = os.path.join(PACKAGE_SCRIPTS_DIR, 'print_deps.py')
 
-CACHE_PACKAGES_PATH_TEMPALATE = os.path.join('/', 'tmp',
-                                             'package_index_{}.cache')
-
 # Set of packages that should be fine to work with but are not handled properly
 # yet.
 TEMPORARY_UNSUPPORTED_PACKAGES = {

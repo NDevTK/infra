@@ -7,7 +7,6 @@ import os
 
 import lib.constants as constants
 from .build_dir import BuildDirGenerator
-from .cache import CacheProvider
 from .cdb import CdbGenerator
 from .cros_sdk import CrosSdk
 from .gn_targets import GnTargetsGenerator
@@ -20,10 +19,9 @@ from .setup import Setup
 class Conductor:
   """Orchestrates whole process."""
 
-  def __init__(self, setup: Setup, cache_provider: CacheProvider):
+  def __init__(self, setup: Setup):
     self.setup = setup
     self.cros_sdk = CrosSdk(self.setup)
-    self.cache_provider = cache_provider
 
   def Prepare(self,
               package_names: List[str],
@@ -45,8 +43,7 @@ class Conductor:
     assert os.path.isdir(
         self.setup.board_dir), f"Board is not set up: {self.setup.board}"
 
-    package_sleuth = PackageSleuth(self.setup,
-                                   cache=self.cache_provider.package_cache)
+    package_sleuth = PackageSleuth(self.setup)
 
     if ignore_unsupported:
       supported_packages = [
@@ -69,9 +66,6 @@ class Conductor:
     if ignored_packages_list:
       g_logger.warning('Following packages are not supported and ignored: %s',
                        ignored_packages_list)
-
-    if self.cache_provider.package_cache:
-      self.cache_provider.package_cache.Store(packages_list)
 
     # Sort packages so that dependencies go first.
     self.packages = Conductor._GetSortedPackages(packages_list)
