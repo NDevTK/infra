@@ -136,7 +136,7 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	// Set up environment.
 	env := environ.FromCtx(ctx)
 	env.Load(inputs.Env)
-	env.Set("GOROOT_BOOTSTRAP", filepath.Join(toolsRoot, "goroot_bootstrap"))
+	env.Set("GOROOT_BOOTSTRAP", filepath.Join(toolsRoot, "go_bootstrap"))
 	env.Set("GOBIN", "")
 	env.Set("GOCACHE", gocacheDir)
 	env.Set("GO_BUILDER_NAME", st.Build().GetBuilder().GetBuilder()) // TODO(mknyszek): This is underspecified. We may need Project and Bucket.
