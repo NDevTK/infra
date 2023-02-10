@@ -22,6 +22,30 @@
       },
       "revId": "554a6460a80ca9a18ed578359de7c759d562206d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "697a75ae_70d30884",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2023-02-10T07:48:14Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "c3de0b5d_28e8d341",
+      "range": {
+        "startLine": 85,
+        "startChar": 32,
+        "endLine": 85,
+        "endChar": 66
+      },
+      "revId": "554a6460a80ca9a18ed578359de7c759d562206d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

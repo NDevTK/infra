@@ -1,0 +1,199 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f7f01ede_74b6d0fa",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2023-02-10T07:48:14Z",
+      "side": 1,
+      "message": "Overall looks good. It\u0027s my first time to review cros_test_runner code, so I am still digesting it.\n\nSince there are many population logics in `constructTestResultFromStateKeeper()`, can you try to refactor it and make it more modular, similar to the new adapter `result_adapter/cros_test_result.go`? I think it\u0027s easier to maintain in this way.",
+      "revId": "abf1295991cb8ce5e65d7e8296634fedbcc3779b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "331f449e_b7d517b3",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2023-02-10T07:48:14Z",
+      "side": 1,
+      "message": "Just curious and for learning purpose. Do we have any other cases here in the future? VM tests?",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 41,
+        "endChar": 23
+      },
+      "revId": "abf1295991cb8ce5e65d7e8296634fedbcc3779b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4eb99266_c3cba73d",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2023-02-10T07:48:14Z",
+      "side": 1,
+      "message": "nit: remove extra line?",
+      "revId": "abf1295991cb8ce5e65d7e8296634fedbcc3779b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bdd5e0a4_5f01f75c",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2023-02-10T07:48:14Z",
+      "side": 1,
+      "message": "Is this needed? As we discussed, StainlessUrl will be uploaded to artifact. If StainlessUrl is needed here, should we support the TesthausUrl here as well? \n\nJust want to make sure if we need to align with crrev.com/c/4224601",
+      "range": {
+        "startLine": 78,
+        "startChar": 5,
+        "endLine": 78,
+        "endChar": 18
+      },
+      "revId": "abf1295991cb8ce5e65d7e8296634fedbcc3779b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a55020c1_2df47034",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2023-02-10T07:48:14Z",
+      "side": 1,
+      "message": "Looks like you\u0027re using dashes to represent the layers of the proto, but it seems not that straightforward to check. Perhaps extract the population logic into modular functions?",
+      "range": {
+        "startLine": 102,
+        "startChar": 4,
+        "endLine": 102,
+        "endChar": 5
+      },
+      "revId": "abf1295991cb8ce5e65d7e8296634fedbcc3779b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8f2a9c7e_7edad21c",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2023-02-10T07:48:14Z",
+      "side": 1,
+      "message": "Is it possible to extract different blocks of population logic into different methods? In this way, it will make the code more modular and easier to maintain.\n\nLike the Build metadata proto, I think it\u0027s possible to move all kinds of sub info proto into a separate method.",
+      "range": {
+        "startLine": 124,
+        "startChar": 1,
+        "endLine": 126,
+        "endChar": 47
+      },
+      "revId": "abf1295991cb8ce5e65d7e8296634fedbcc3779b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "59aba312_aac90dcc",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2023-02-10T07:48:14Z",
+      "side": 1,
+      "message": "nit: As discussed, it\u0027s more maintainable to add a TODO comment and attach a tracking bug.\n\nDitto below.",
+      "range": {
+        "startLine": 132,
+        "startChar": 2,
+        "endLine": 133,
+        "endChar": 59
+      },
+      "revId": "abf1295991cb8ce5e65d7e8296634fedbcc3779b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "443d4dd3_def2b437",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 349,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2023-02-10T07:48:14Z",
+      "side": 1,
+      "message": "nit: provide more details why we need this change? You can refer to my comments in test_runner recipe.",
+      "range": {
+        "startLine": 349,
+        "startChar": 19,
+        "endLine": 349,
+        "endChar": 69
+      },
+      "revId": "abf1295991cb8ce5e65d7e8296634fedbcc3779b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "18092e48_e4750213",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 355,
+      "author": {
+        "id": 1392253
+      },
+      "writtenOn": "2023-02-10T07:48:14Z",
+      "side": 1,
+      "message": "nit: just `taskId[:len(taskId)-1] + \u00270\u0027`? \n\n`fmt.Sprintf` is using regex so it\u0027s kind of expensive and we\u0027d better avoid it for simple string manipulations.",
+      "range": {
+        "startLine": 355,
+        "startChar": 1,
+        "endLine": 355,
+        "endChar": 50
+      },
+      "revId": "abf1295991cb8ce5e65d7e8296634fedbcc3779b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
