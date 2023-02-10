@@ -29,6 +29,12 @@ var rootDir = "root/"
 var filesDir = rootDir + "files/"
 var unitsDir = rootDir + "pbunits/"
 
+// Known corrupted kzip outputs
+var corruptedCUSuffixes = []string{
+	"module_interface_processor.javac.jar.javac_extractor.staging/classes",
+	"jni_processor.javac.jar.javac_extractor.staging/classes",
+}
+
 // kzipEntry stores the path to a file to be written in the kzip and its contents.
 type kzipEntry struct {
 	path    string
@@ -173,6 +179,13 @@ func (ip *indexPack) processExistingKzip(ctx context.Context, kzip string, kzipE
 	}
 	protoUnit := indexedCompilationProto.GetUnit()
 	outputKey := protoUnit.GetOutputKey()
+
+	for _, suffix := range corruptedCUSuffixes {
+		if strings.HasSuffix(outputKey, suffix) {
+			logging.Infof(ctx, "Ignorring known bad CU \"%s\" (filename: %s)", outputKey, kzip)
+			return nil
+		}
+	}
 
 	// Check if outputKey has already been processed and add if not.
 	if !outputSet.Add(outputKey) {
