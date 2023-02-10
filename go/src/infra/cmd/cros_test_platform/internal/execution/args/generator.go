@@ -686,5 +686,7 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 		TestSuites:                   testSuites,
 		DefaultTestExecutionBehavior: g.Params.GetTestExecutionBehavior(),
 		AutotestKeyvals:              kv,
+		RunViaTrv2:                   g.Params.GetRunViaTrv2(),
+		StepsConfig:                  g.Params.GetTrv2StepsConfig(),
 	}, nil
 }
