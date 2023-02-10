@@ -56,7 +56,7 @@ func (c *deleteRackLSEPrototype) innerRun(a subcommands.Application, args []stri
 		return err
 	}
 	ctx := cli.GetContext(a, c, env)
-	ns, err := c.envFlags.Namespace()
+	ns, err := c.envFlags.Namespace(nil, "")
 	if err != nil {
 		return err
 	}

@@ -102,7 +102,7 @@ func (c *addAsset) innerRun(ctx context.Context, a subcommands.Application, args
 	if err := c.validateArgs(); err != nil {
 		return err
 	}
-	if ns, _ := c.envFlags.Namespace(); ns != "" && ns != ufsUtil.OSNamespace {
+	if ns, _ := c.envFlags.Namespace(nil, ""); ns != "" && ns != ufsUtil.OSNamespace {
 		return fmt.Errorf("refusing to override explicitly set non-OS namespace %q", ns)
 	}
 	ctx = utils.SetupContext(ctx, ufsUtil.OSNamespace)

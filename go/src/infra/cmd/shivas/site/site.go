@@ -130,19 +130,55 @@ func (f EnvFlags) Env() Environment {
 	return Prod
 }
 
-// Namespace returns the namespace
-func (f EnvFlags) Namespace() (string, error) {
+// Namespace returns the namespace and validates the namespace is:
+// 1) nonempty
+// 2) a namespace that UFS expects
+// 3) a namespace the command expects
+//
+// Supports default namespaces if defaultNS != "". These will be returned if
+// no value is passed via flag or env var
+func (f EnvFlags) Namespace(validNSList []string, defaultNS string) (string, error) {
 	ns := strings.ToLower(f.namespace)
 	if ns == "" {
 		ns = strings.ToLower(os.Getenv("SHIVAS_NAMESPACE"))
 	}
-	if ns != "" && ufsUtil.IsClientNamespace(ns) {
-		return ns, nil
-	}
+	// If ns is empty, user did not pass in namespace via flag or env var.
 	if ns == "" {
-		return ns, errors.New(fmt.Sprintf("namespace is a required field. Users can also set os env SHIVAS_NAMESPACE. Valid namespaces: [%s]", strings.Join(ufsUtil.ValidClientNamespaceStr(), ", ")))
+		// no default + no input = error
+		if defaultNS == "" {
+			return ns, errors.New(fmt.Sprintf("namespace is a required field. Users can also set os env SHIVAS_NAMESPACE. Valid namespaces: [%s]", strings.Join(ufsUtil.ValidClientNamespaceStr(), ", ")))
+		}
+		ns = defaultNS
 	}
-	return ns, errors.New(fmt.Sprintf("namespace %s is invalid. Users can also set os env SHIVAS_NAMESPACE. Valid namespaces: [%s]", ns, strings.Join(ufsUtil.ValidClientNamespaceStr(), ", ")))
+	// This is a separate check from `IsClientNamespace` to ensure that
+	// we catch if `validNSList` contains strings UFS does not expect.
+	// If validNSList is empty, we ignore it
+	if validNSList != nil && !contains(validNSList, ns) {
+		return ns, errors.New(fmt.Sprintf("namespace %s is invalid. Users can also set os env SHIVAS_NAMESPACE. Valid namespaces for this command: [%s]", ns, strings.Join(validNSList, ", ")))
+	}
+	// This catches a namespace which the local command thinks is valid, but
+	// will be rejected by UFS.
+	if !ufsUtil.IsClientNamespace(ns) {
+		return ns, errors.New(fmt.Sprintf("namespace %s is invalid. Users can also set os env SHIVAS_NAMESPACE. Valid namespaces: [%s]", ns, strings.Join(ufsUtil.ValidClientNamespaceStr(), ", ")))
+	}
+	return ns, nil
+}
+
+var (
+	// OSLikeNamespaces are namespaces that store primarily chromeos data.
+	// This includes a separate partner namespace which stores chromeos data.
+	OSLikeNamespaces = []string{ufsUtil.OSNamespace, ufsUtil.OSPartnerNamespace}
+	// AllNamespaces contain all namespaces UFS considers valid.
+	AllNamespaces = ufsUtil.ValidClientNamespaceStr()
+)
+
+func contains(arr []string, str string) bool {
+	for _, s := range arr {
+		if s == str {
+			return true
+		}
+	}
+	return false
 }
 
 // DefaultAuthOptions is an auth.Options struct prefilled with chrome-infra
