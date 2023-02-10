@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "55a47471_ec0f9e0a",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1549252
+      },
+      "writtenOn": "2023-02-10T22:03:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "35b4d62d_725f98db",
+      "range": {
+        "startLine": 208,
+        "startChar": 4,
+        "endLine": 208,
+        "endChar": 14
+      },
+      "revId": "36f1b650b96351a4ff2d80384d662ccd930a2df6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d1201585_253d9013",
@@ -54,6 +78,30 @@
       "writtenOn": "2023-02-09T22:59:22Z",
       "side": 1,
       "message": "nit: I think `tags.Value !\u003d \"\"` would be a more conventional way of checking a string is non-empty.",
+      "range": {
+        "startLine": 589,
+        "startChar": 5,
+        "endLine": 589,
+        "endChar": 25
+      },
+      "revId": "36f1b650b96351a4ff2d80384d662ccd930a2df6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2e933fe1_de2a7564",
+        "filename": "go/src/infra/tools/result_adapter/gtest.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 589,
+      "author": {
+        "id": 1549252
+      },
+      "writtenOn": "2023-02-10T22:03:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d1201585_253d9013",
       "range": {
         "startLine": 589,
         "startChar": 5,
