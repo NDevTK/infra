@@ -70,7 +70,7 @@ class Cdb:
       * result_build_dir: path to result build dir simulating single result
         package.
       * file_conflicts: maps original build artifacts in chroot dir that
-        conflict between packages to corresponding artfacts in
+        conflict between packages to corresponding artifacts in
         |result_build_dir|.
     """
     self.data = cdb_data
@@ -144,12 +144,12 @@ class Cdb:
        'Arguments and command field are missing'
 
     if 'arguments' in entry:
-      arguments = entry['arguments']
+      compiler, *arguments = entry['arguments']
     else:
-      arguments = entry['command'].split(' ')
+      compiler, *arguments = entry['command'].split(' ')
 
     # First argument is always a compiler.
-    actual_arguments = [self._FixArgumentsCompiler(arguments[0])]
+    actual_arguments = [self._FixArgumentsCompiler(compiler)]
     actual_include_args = Cdb._IncludePathOrder(set(), set(), set())
 
     for arg in arguments:
@@ -281,7 +281,7 @@ class CdbGenerator:
       * result_build_dir: path to result build dir simulating single result
         package.
       * file_conflicts: maps original build artifacts in chroot dir that
-        conflict between packages to corresponding artfacts in
+        conflict between packages to corresponding artifacts in
         |result_build_dir|.
     """
     self.setup = setup
