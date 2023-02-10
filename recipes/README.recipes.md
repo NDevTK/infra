@@ -6,7 +6,6 @@
   * [cloudbuildhelper](#recipe_modules-cloudbuildhelper) (Python3 ✅) &mdash; API for calling 'cloudbuildhelper' tool.
   * [cloudkms](#recipe_modules-cloudkms) (Python3 ✅)
   * [codesearch](#recipe_modules-codesearch)
-  * [conda](#recipe_modules-conda) (Python3 ✅) &mdash; Functions to work with Miniconda python environment.
   * [docker](#recipe_modules-docker) (Python3 ✅)
   * [infra_checkout](#recipe_modules-infra_checkout) (Python3 ✅)
   * [infra_cipd](#recipe_modules-infra_cipd) (Python3 ✅)
@@ -23,7 +22,6 @@
 
 **[Recipes](#Recipes)**
   * [3pp](#recipes-3pp) (Python3 ✅) &mdash; This recipe builds and packages third party software, such as Git.
-  * [build_conda_cipd_pkg](#recipes-build_conda_cipd_pkg) (Python3 ✅) &mdash; Recipe to build CIPD package with sealed Conda environment.
   * [build_from_tarball](#recipes-build_from_tarball) (Python3 ✅)
   * [build_wheels](#recipes-build_wheels) (Python3 ✅)
   * [chromium_bootstrap/test](#recipes-chromium_bootstrap_test) (Python3 ✅) &mdash; This recipe verifies importing of chromium bootstrap protos.
@@ -406,29 +404,6 @@ Returns:
 &mdash; **def [run\_clang\_tool](/recipes/recipe_modules/codesearch/api.py#79)(self, clang_dir=None, run_dirs=None):**
 
 Download and run the clang tool.
-### *recipe_modules* / [conda](/recipes/recipe_modules/conda)
-
-[DEPS](/recipes/recipe_modules/conda/__init__.py#3): [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/python][recipe_engine/recipe_modules/python], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/url][recipe_engine/recipe_modules/url]
-
-PYTHON_VERSION_COMPATIBILITY: PY2+3
-
-Functions to work with Miniconda python environment.
-
-See http://conda.pydata.org/miniconda.html
-
-#### **class [CondaApi](/recipes/recipe_modules/conda/api.py#72)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
-
-&mdash; **def [install](/recipes/recipe_modules/conda/api.py#73)(self, version, path):**
-
-Downloads Miniconda installer for given version and executes it.
-
-Args:
-  version: version of Miniconda to install, e.g. 'Miniconda2-3.18.3'.
-  path: prefix to install Miniconda into.
-
-Returns:
-  Instance of CondaEnv, that also optionally acts as context manager that
-  deletes the environment on exit.
 ### *recipe_modules* / [docker](/recipes/recipe_modules/docker)
 
 [DEPS](/recipes/recipe_modules/docker/__init__.py#7): [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/python][recipe_engine/recipe_modules/python], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/service\_account][recipe_engine/recipe_modules/service_account], [recipe\_engine/step][recipe_engine/recipe_modules/step]
@@ -1502,25 +1477,6 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 This recipe builds and packages third party software, such as Git.
 
 &mdash; **def [RunSteps](/recipes/recipes/3pp.py#88)(api, package_locations, to_build, platform, force_build, package_prefix, source_cache_prefix):**
-### *recipes* / [build\_conda\_cipd\_pkg](/recipes/recipes/build_conda_cipd_pkg.py)
-
-[DEPS](/recipes/recipes/build_conda_cipd_pkg.py#22): [conda](#recipe_modules-conda), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties]
-
-PYTHON_VERSION_COMPATIBILITY: PY2+3
-
-Recipe to build CIPD package with sealed Conda environment.
-
-Supposed to be used from manually triggered Buildbot builders. We aren't
-expecting rebuilding this environment often, so setting up and periodic schedule
-is a waste of resources.
-
-To build a new package for all platforms:
-1. Manually trigger all builders by clicking buttons in Buildbot.
-2. Once they all complete, tag the with some release identifier by running:
-    ./cipd set-tag infra/conda_python/scientific/         -tag=release:<name>         -version=latest
-3. Update Puppet configs to use 'release:<name>' as a version.
-
-&mdash; **def [RunSteps](/recipes/recipes/build_conda_cipd_pkg.py#45)(api):**
 ### *recipes* / [build\_from\_tarball](/recipes/recipes/build_from_tarball.py)
 
 [DEPS](/recipes/recipes/build_from_tarball.py#9): [depot\_tools/gsutil][depot_tools/recipe_modules/gsutil], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/python][recipe_engine/recipe_modules/python], [recipe\_engine/step][recipe_engine/recipe_modules/step]
