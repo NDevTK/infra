@@ -74,7 +74,7 @@ func mockBotConfig(botRange string, pool string) *configpb.BotsCfg {
 }
 
 // Dummy security config for bots
-func mockSecurityConfig(botRange string, pool string, swarmingServerId string, miba string, customer string) *ufspb.SecurityInfos {
+func mockSecurityConfig(botRange string, pool string, swarmingServerId string, miba string, customer string, builders string) *ufspb.SecurityInfos {
 	return &ufspb.SecurityInfos{
 		Pools: []*ufspb.SecurityInfo{
 			{
@@ -83,6 +83,7 @@ func mockSecurityConfig(botRange string, pool string, swarmingServerId string, m
 				SwarmingServerId: swarmingServerId,
 				MibaRealm:        miba,
 				Customer:         customer,
+				Builders:         []string{builders},
 			},
 		},
 	}
@@ -493,7 +494,7 @@ func TestParseSecurityConfig(t *testing.T) {
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 
-			ParseSecurityConfig(ctx, mockSecurityConfig("test{1,2}-1", "abc", "testSwarming", "trusted", "customer"))
+			ParseSecurityConfig(ctx, mockSecurityConfig("test{1,2}-1", "abc", "testSwarming", "trusted", "customer", "builder"))
 
 			resp, err = registration.GetMachine(ctx, "test1-1")
 			So(resp, ShouldNotBeNil)
@@ -503,6 +504,7 @@ func TestParseSecurityConfig(t *testing.T) {
 			So(resp.Ownership.SwarmingInstance, ShouldEqual, "testSwarming")
 			So(resp.Ownership.MibaRealm, ShouldEqual, "trusted")
 			So(resp.Ownership.Customer, ShouldEqual, "customer")
+			So(resp.Ownership.Builders, ShouldResemble, []string{"builder"})
 
 			// Import bot configs, should not remove security fields
 			ParseBotConfig(ctx, mockBotConfig("test{1,2}-1", "abc"), "testSwarming")
@@ -514,9 +516,10 @@ func TestParseSecurityConfig(t *testing.T) {
 			So(resp.Ownership.SwarmingInstance, ShouldEqual, "testSwarming")
 			So(resp.Ownership.MibaRealm, ShouldEqual, "trusted")
 			So(resp.Ownership.Customer, ShouldEqual, "customer")
+			So(resp.Ownership.Builders, ShouldResemble, []string{"builder"})
 		})
 		Convey("Does not update non existent bots", func() {
-			ParseSecurityConfig(ctx, mockSecurityConfig("test{2,3}-1", "abc", "testSwarming", "trusted", "customer"))
+			ParseSecurityConfig(ctx, mockSecurityConfig("test{2,3}-1", "abc", "testSwarming", "trusted", "customer", "builder"))
 
 			resp, err := registration.GetMachine(ctx, "test2-1")
 			So(resp, ShouldBeNil)

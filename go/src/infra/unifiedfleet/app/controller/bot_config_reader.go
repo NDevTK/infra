@@ -203,6 +203,7 @@ func ParseSecurityConfig(ctx context.Context, config *ufspb.SecurityInfos) {
 			SwarmingInstance: pool.SwarmingServerId,
 			MibaRealm:        pool.MibaRealm,
 			Customer:         pool.Customer,
+			Builders:         pool.Builders,
 		}
 
 		// Update the ownership for the botIdPrefixes (ie. HostPrefixes)
@@ -292,7 +293,8 @@ func isBotOwnershipUpdated(ctx context.Context, botId string, newOwnership *ufsp
 		isOwnershipFieldUpdated(pm.GetMibaRealm(), newOwnership.GetMibaRealm()) ||
 		isOwnershipFieldUpdated(pm.GetSecurityLevel(), newOwnership.GetSecurityLevel()) ||
 		isOwnershipFieldUpdated(pm.GetPoolName(), newOwnership.GetPoolName()) ||
-		isOwnershipFieldUpdated(pm.GetSwarmingInstance(), newOwnership.GetSwarmingInstance()) {
+		isOwnershipFieldUpdated(pm.GetSwarmingInstance(), newOwnership.GetSwarmingInstance()) ||
+		isOwnershipBuildersFieldUpdated(pm.GetBuilders(), newOwnership.GetBuilders()) {
 		diff := cmp.Diff(pm, newOwnership, protocmp.Transform())
 		logging.Debugf(ctx, "Found ownership diff for bot  %s - %s", botId, diff)
 		return true, entity.AssetType, nil
@@ -300,7 +302,21 @@ func isBotOwnershipUpdated(ctx context.Context, botId string, newOwnership *ufsp
 	return false, "", nil
 }
 
-func isOwnershipFieldUpdated(oldVal, newVal string) bool {
+// Checks if the Ownership.Builder field was updated, ignoring an empty slice
+func isOwnershipBuildersFieldUpdated(oldVal []string, newVal []string) bool {
+	if len(newVal) != 0 && len(oldVal) != len(newVal) {
+		return true
+	}
+	for i := range newVal {
+		if isOwnershipFieldUpdated(oldVal[i], newVal[i]) {
+			return true
+		}
+	}
+	return false
+}
+
+// Checks if the ownership field was updated, ignoring empty values
+func isOwnershipFieldUpdated(oldVal string, newVal string) bool {
 	if (oldVal == "" && newVal != "") || (oldVal != "" && newVal != "" && oldVal != newVal) {
 		return true
 	}
