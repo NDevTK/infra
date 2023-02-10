@@ -9,6 +9,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
+	"infra/cmd/shivas/site"
 	"infra/cmd/shivas/utils"
 	"infra/cmd/shivas/utils/rename"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -16,12 +17,10 @@ import (
 )
 
 // RenameAssetCmd rename asset by given name.
-var RenameAssetCmd = rename.GenGenericRenameCmd("asset", renameAsset, printAsset)
+var RenameAssetCmd = rename.GenGenericRenameCmd("asset", renameAsset, printAsset, site.OSLikeNamespaces, ufsUtil.OSNamespace)
 
 // renameAsset calls the RPC that renames the given asset
 func renameAsset(ctx context.Context, ic ufsAPI.FleetClient, name, newName string) (interface{}, error) {
-	// Set os namespace
-	ctx = utils.SetupContext(ctx, ufsUtil.OSNamespace)
 	// Change  this  API if you want to reuse the command somewhere else.
 	return ic.RenameAsset(ctx, &ufsAPI.RenameAssetRequest{
 		Name:    ufsUtil.AddPrefix(ufsUtil.AssetCollection, name),

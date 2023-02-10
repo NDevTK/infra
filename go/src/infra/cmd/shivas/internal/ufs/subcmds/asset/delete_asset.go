@@ -69,7 +69,11 @@ func (c *deleteAsset) innerRun(a subcommands.Application, args []string, env sub
 		return err
 	}
 	ctx := cli.GetContext(a, c, env)
-	ctx = utils.SetupContext(ctx, ufsUtil.OSNamespace)
+	ns, err := c.getNamespace()
+	if err != nil {
+		return err
+	}
+	ctx = utils.SetupContext(ctx, ns)
 	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
 	if err != nil {
 		return err
@@ -99,6 +103,13 @@ func (c *deleteAsset) innerRun(a subcommands.Application, args []string, env sub
 	fmt.Fprintln(a.GetOut(), "\nFailed to delete Asset(s):")
 	fmt.Fprintln(a.GetOut(), fail)
 	return nil
+}
+
+// getNamespace returns the namespace used to call UFS with appropriate
+// validation and default behavior. It is primarily separated from the main
+// function for testing purposes
+func (c *deleteAsset) getNamespace() (string, error) {
+	return c.envFlags.Namespace(site.OSLikeNamespaces, ufsUtil.OSNamespace)
 }
 
 func (c *deleteAsset) getSingle(ctx context.Context, ic ufsAPI.FleetClient, name string) (proto.Message, error) {
