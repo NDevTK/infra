@@ -49,6 +49,7 @@ def RunSteps(api):
           'AR': llvm_bin_dir.join('llvm-ar'),
           'LDFLAGS': '-fuse-ld=lld',
       }
+
       gn_args = [
           'is_debug=false',
           'enable_nacl=false',
@@ -60,6 +61,14 @@ def RunSteps(api):
           'use_system_libjpeg=true',
           'use_v8_context_snapshot=false',
       ]
+
+      # Until the release above (https://crrev.com/c/4108258), this defaulted
+      # to true on Linux but requires the checked-out Java binary in
+      # third_party/jdk/current/bin/java to be present, which is not the case
+      # here.
+      if [int(x) for x in version.split('.')] < [111, 0, 5483, 0]:
+        gn_args.append('enable_js_type_check=false')
+
       unbundle_libs = [
           'fontconfig',
           'freetype',
@@ -150,5 +159,8 @@ def RunSteps(api):
 
 
 def GenTests(api):
-  yield (api.test('basic') + api.properties.generic(version='80.0.3987.76') +
+  yield (api.test('basic') + api.properties.generic(version='111.0.5483.0') +
+         api.platform('linux', 64))
+  yield (api.test('basic-with-js_type_check-gn-arg') +
+         api.properties.generic(version='80.0.3987.76') +
          api.platform('linux', 64))
