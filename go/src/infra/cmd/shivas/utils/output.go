@@ -75,7 +75,7 @@ var (
 	VMFreeSlotFullTitle        = []string{"Host", "OS Version", "Manufacturer", "Machine", "Zone", "Virtual Datacenter", "Rack", "Nic", "IP", "Vlan", "MAC Address", "State", "Free slots", "Description", "UpdateTime"}
 	ZoneTitle                  = []string{"Name", "EnumName", "Department"}
 	StateTitle                 = []string{"Name", "EnumName", "Description"}
-	AssetTitle                 = []string{"Asset Name", "Zone", "Rack", "Barcode", "Serial Number", "Hardware ID", "Model", "AssetType", "MacAddress", "SKU", "Phase", "Build Target", "Realm", "UpdateTime"}
+	AssetTitle                 = []string{"Asset Name", "Zone", "Rack", "Barcode", "Serial Number", "Hardware ID", "Model", "AssetType", "MacAddress", "SKU", "Phase", "Build Target", "Realm", "Tags", "UpdateTime"}
 	CachingServiceTitle        = []string{"CachingService Name", "Port", "Zones", "Subnets", "Primary", "Secondary", "State", "Description", "UpdateTime"}
 	SchedulingUnitTitle        = []string{"SchedulingUnit Name", "DUTs", "Pools", "Type", "Description", "UpdateTime"}
 	OwnershipDataTitle         = []string{"Pool", "Security Level", "Swarming Instance", "MIBA Realm", "Customer"}
@@ -880,6 +880,7 @@ func assetOutputStrs(pm proto.Message) []string {
 		m.GetInfo().GetPhase(),
 		m.GetInfo().GetBuildTarget(),
 		m.GetRealm(),
+		strings.Join(m.GetTags(), ","),
 		ts,
 	}
 }
