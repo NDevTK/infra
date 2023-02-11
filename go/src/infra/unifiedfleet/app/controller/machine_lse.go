@@ -1095,6 +1095,21 @@ func removeServoEntryFromLabstation(ctx context.Context, servo *chromeosLab.Serv
 
 // validateCreateMachineLSE validates if a machinelse can be created in the datastore.
 func validateCreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *ufsAPI.NetworkOption, machine *ufspb.Machine) error {
+	// Validate browser DUTs
+	if util.IsChromiumLegacyHost(machinelse.GetName()) || util.IsChromeLegacyHost(machinelse.GetName()) {
+		pools := machinelse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools()
+		if util.IsInChromiumPool(pools) != util.IsChromiumLegacyHost(machinelse.GetName()) {
+			return status.Errorf(codes.FailedPrecondition, "chromium DUTs has to have prefix of 'chromium-' and in pool 'chromium'")
+		}
+		if util.IsInChromePool(pools) != util.IsChromeLegacyHost(machinelse.GetName()) {
+			return status.Errorf(codes.FailedPrecondition, "chrome DUTs has to have prefix of 'chrome-' and in pool 'chrome'")
+		}
+		if util.IsInChromiumPool(pools) && machine.GetRealm() != util.AtlLabChromiumAdminRealm {
+			return status.Errorf(codes.FailedPrecondition, "DUTs in pool:%s has to be in realm %s, please modify asset %s's realm.",
+				util.ChromiumPool, util.AtlLabChromiumAdminRealm, machine.GetName())
+		}
+	}
+
 	// Check permission
 	if err := util.CheckPermission(ctx, util.InventoriesCreate, machine.GetRealm()); err != nil {
 		return err

@@ -43,6 +43,8 @@ var SkipRealmsCheck = false
 
 // Browser-related consts
 const (
+	ChromiumPool       = "chromium"
+	ChromePool         = "chrome"
 	ChromiumNamePrefix = "chromium-"
 	ChromeNamePrefix   = "chrome-"
 )
@@ -179,16 +181,30 @@ func IsBrowserLegacyAsset(name string) bool {
 
 // IsChromeLegacyHost returns if a host is a legacy browser host used internally
 func IsChromeLegacyHost(name string) bool {
-	if strings.HasPrefix(name, ChromeNamePrefix) {
-		return true
-	}
-	return false
+	return strings.HasPrefix(name, ChromeNamePrefix)
 }
 
 // IsChromeLegacyHost returns if a host is a legacy browser host used externally
 func IsChromiumLegacyHost(name string) bool {
-	if strings.HasPrefix(name, ChromiumNamePrefix) {
-		return true
+	return strings.HasPrefix(name, ChromiumNamePrefix)
+}
+
+// IsInChromiumPool checks if any chromium pool exist in the given pool labels.
+func IsInChromiumPool(pools []string) bool {
+	for _, p := range pools {
+		if p == ChromiumPool {
+			return true
+		}
+	}
+	return false
+}
+
+// IsInChromePool checks if any chrome pool exist in the given pool labels.
+func IsInChromePool(pools []string) bool {
+	for _, p := range pools {
+		if p == ChromePool {
+			return true
+		}
 	}
 	return false
 }

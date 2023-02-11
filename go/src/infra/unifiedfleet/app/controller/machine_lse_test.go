@@ -143,6 +143,54 @@ func TestCreateMachineLSE(t *testing.T) {
 			So(changes, ShouldHaveLength, 0)
 		})
 
+		Convey("Create new machineLSE Chromium DUT with wrong realm", func() {
+			machine1 := &ufspb.Machine{
+				Name: "chromium-asset",
+			}
+			_, merr := registration.CreateMachine(ctx, machine1)
+			So(merr, ShouldBeNil)
+
+			dut := mockDutMachineLSE("chromium-dut")
+			dut.Machines = []string{"chromium-asset"}
+			dut.GetChromeosMachineLse().GetDeviceLse().GetDut().Pools = []string{"chromium"}
+			resp, err := CreateMachineLSE(ctx, dut, nil)
+			So(resp, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "has to be in realm")
+		})
+
+		Convey("Create new machineLSE Chromium DUT with mismatched pools", func() {
+			machine1 := &ufspb.Machine{
+				Name: "chromium-asset2",
+			}
+			_, merr := registration.CreateMachine(ctx, machine1)
+			So(merr, ShouldBeNil)
+
+			dut := mockDutMachineLSE("chromium-dut2")
+			dut.Machines = []string{"chromium-asset2"}
+			dut.GetChromeosMachineLse().GetDeviceLse().GetDut().Pools = []string{"chrome"}
+			resp, err := CreateMachineLSE(ctx, dut, nil)
+			So(resp, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "chromium DUTs has to have prefix")
+		})
+
+		Convey("Create new machineLSE chrome DUT with mismatched pools", func() {
+			machine1 := &ufspb.Machine{
+				Name: "chrome-asset",
+			}
+			_, merr := registration.CreateMachine(ctx, machine1)
+			So(merr, ShouldBeNil)
+
+			dut := mockDutMachineLSE("chrome-dut")
+			dut.Machines = []string{"chrome-asset"}
+			dut.GetChromeosMachineLse().GetDeviceLse().GetDut().Pools = []string{"other_pool"}
+			resp, err := CreateMachineLSE(ctx, dut, nil)
+			So(resp, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "chrome DUTs has to have prefix")
+		})
+
 		Convey("Create new machineLSE with existing machines, specify ip with wrong vlan name", func() {
 			_, err := registration.CreateNic(ctx, &ufspb.Nic{
 				Name:    "eth1",
