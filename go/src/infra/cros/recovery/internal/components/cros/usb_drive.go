@@ -43,6 +43,8 @@ func IsBootedFromExternalStorage(ctx context.Context, run components.Runner) err
 	if err != nil {
 		return errors.Annotate(err, "booted from external storage").Err()
 	}
+	metrics.DefaultActionAddObservations(ctx, metrics.NewStringObservation("booted_drive", bootStorage))
+	metrics.DefaultActionAddObservations(ctx, metrics.NewStringObservation("internal_drive", mainStorage))
 	// If main device is not detected then probably it can be dead or broken
 	// but as we gt the boot device then it is external one.
 	if mainStorage == "" || bootStorage != mainStorage {
