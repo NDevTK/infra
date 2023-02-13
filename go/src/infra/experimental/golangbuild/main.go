@@ -143,7 +143,7 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	env.Set("GO_BUILDER_NAME", st.Build().GetBuilder().GetBuilder()) // TODO(mknyszek): This is underspecified. We may need Project and Bucket.
 	if runtime.GOOS == "windows" {
 		// TODO(heschi): select gcc32 for GOARCH=i386
-		env.Set("PATH", fmt.Sprintf("%v%v%v", env.Get("PATH"), os.PathListSeparator, filepath.Join(toolsRoot, "cc/windows/gcc64")))
+		env.Set("PATH", fmt.Sprintf("%v%v%v", env.Get("PATH"), os.PathListSeparator, filepath.Join(toolsRoot, "cc/windows/gcc64/bin")))
 	}
 	ctx = env.SetInCtx(ctx)
 
