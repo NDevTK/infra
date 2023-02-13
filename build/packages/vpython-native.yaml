@@ -28,10 +28,10 @@ go_build_environ:
     linux:   0  # to avoid linking to system dynamic libraries
     windows: 0  # we have no cgo toolchain on Windows
 go_packages:
-  - infra/tools/vpython/cmd/vpython
+  - infra/tools/vpython/legacy/vpython2.7/cmd/vpython2.7
 root: ../../go/bin
 copies:
-  - src: vpython${exe_suffix}
+  - src: vpython2.7${exe_suffix}
     dst: python${exe_suffix}
     generate_bat_shim: true
 posix_symlinks:
