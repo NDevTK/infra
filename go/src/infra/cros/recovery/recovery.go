@@ -241,6 +241,7 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 			return nil, errors.Reason("Setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
 	case buildbucket.DeepRecovery:
+		// No need to keep the configurations for deep recovery as the same as normal recovery.
 		switch ds {
 		case tlw.DUTSetupTypeCros:
 			return config.CrosRepairWithDeepRepairConfig(), nil
