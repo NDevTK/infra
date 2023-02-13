@@ -395,16 +395,22 @@ func runSubrepoTests(ctx context.Context, goroot string) error {
 		return err
 	}
 
-	infra := true
-	runGo := func(args ...string) error {
+	type ann struct {
+		Name  string // Name is the step name to be displayed.
+		Infra bool   // Infra is whether this step failing is an infrastructure failure.
+	}
+	runGo := func(a ann, args ...string) error {
 		cmd := exec.CommandContext(ctx, filepath.Join(goroot, "bin", "go"), args...)
 		cmd.Dir = "subrepo"
-		return runCommandAsStep(ctx, "step name", cmd, infra)
+		return runCommandAsStep(ctx, a.Name, cmd, a.Infra)
 	}
-	if err := runGo("mod", "init", "test"); err != nil {
+
+	// TODO(dmitshur): Think about the optimal general test strategy.
+
+	// Create a local module with golang.org/x modules in its build list.
+	if err := runGo(ann{Name: "go mod init test", Infra: true}, "mod", "init", "test"); err != nil {
 		return err
 	}
-	// TODO(dmitshur): Think about the optimal general test strategy.
 	if err := writeFile(ctx, filepath.Join("subrepo", "test.go"), `//go:build test
 
 package p
@@ -416,15 +422,12 @@ import (
 `); err != nil {
 		return err
 	}
-	if err := runGo("mod", "tidy"); err != nil {
-		return err
-	}
-	if err := runGo("get", "-t", "golang.org/x/mod/zip"); err != nil {
+	if err := runGo(ann{Name: "go mod tidy", Infra: true}, "mod", "tidy"); err != nil {
 		return err
 	}
 
-	infra = false
-	if err := runGo("test", "-json", "golang.org/x/mod/...", "golang.org/x/term/..."); err != nil {
+	// Run the tests.
+	if err := runGo(ann{Name: "go test -json golang.org/x/{mod,term}/..."}, "test", "-json", "golang.org/x/mod/...", "golang.org/x/term/..."); err != nil {
 		return err
 	}
 
