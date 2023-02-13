@@ -14,6 +14,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/bmatcuk/doublestar"
+	"go.chromium.org/chromiumos/infra/proto/go/testplans"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/data/stringset"
 	cvpb "go.chromium.org/luci/cv/api/config/v2"
@@ -118,6 +120,23 @@ func projectIncludedForBuilder(builder *cvpb.Verifiers_Tryjob_Builder, projectNa
 	return true, nil
 }
 
+func pathHasPrefix(p, prefix string) bool {
+	pathComponents := strings.Split(p, "/")
+	prefixComponents := strings.Split(prefix, "/")
+
+	if len(pathComponents) < len(prefixComponents) {
+		return false
+	}
+
+	for i := range prefixComponents {
+		if pathComponents[i] != prefixComponents[i] {
+			return false
+		}
+	}
+
+	return true
+}
+
 // MigrationStatus describes the distributed test planning status of a project.
 type MigrationStatus struct {
 	// The name of the builder that has a migration configured, usually an
@@ -138,6 +157,10 @@ type MigrationStatus struct {
 
 	// Whether the project is included by the builder's location filters.
 	IncludedByBuilder bool
+
+	// Whether the project has a non-default rule in the centralized config
+	// (https://chrome-internal.googlesource.com/chromeos/config-internal/+/HEAD/board_config/source_tree_test_config_main.star).
+	HasNonDefaultCentralizedRule bool
 }
 
 // Compute returns a MigrationStatus for each project in manifest and builder in
@@ -147,6 +170,7 @@ func Compute(
 	manifest *repo.Manifest,
 	bbCfg *bbpb.BuildbucketCfg,
 	cvConfig *cvpb.Config,
+	centralizedSourceTreeTestCfg *testplans.SourceTreeTestCfg,
 ) ([]*MigrationStatus, error) {
 	totConfigGroup, err := getConfigGroup(cvConfig, totConfigGroupName)
 	if err != nil {
@@ -198,13 +222,33 @@ func Compute(
 				}
 			}
 
+			hasNonDefaultCentralizedRule := false
+			for _, rule := range centralizedSourceTreeTestCfg.GetSourceTestRules() {
+				// First check, if the repo's path matches pattern, which would
+				// happen if pattern covers multiple repos. For example, pattern
+				// is "src/a/**" and the repo's path is "src/a/b".
+				pattern := rule.GetFilePattern().GetPattern()
+				doublestarMatch, err := doublestar.Match(pattern, project.Path)
+				if err != nil {
+					return nil, err
+				}
+
+				// Also check if the repo's path is the prefix of a pattern. For
+				// example, pattern is "src/a/b/**/test.py" and the repo's path
+				// is "src/a/b".
+				if pathHasPrefix(pattern, project.Path) || doublestarMatch {
+					hasNonDefaultCentralizedRule = true
+				}
+			}
+
 			migrationStatuses = append(migrationStatuses, &MigrationStatus{
-				BuilderName:            builderName,
-				ProjectName:            project.Name,
-				ProjectPath:            project.Path,
-				MatchesMigrationConfig: matchesMigrationConfig,
-				IncludedByToT:          totCvProjects.Has(project.Name),
-				IncludedByBuilder:      includedByCqOrch,
+				BuilderName:                  builderName,
+				ProjectName:                  project.Name,
+				ProjectPath:                  project.Path,
+				MatchesMigrationConfig:       matchesMigrationConfig,
+				IncludedByToT:                totCvProjects.Has(project.Name),
+				IncludedByBuilder:            includedByCqOrch,
+				HasNonDefaultCentralizedRule: hasNonDefaultCentralizedRule,
 			})
 		}
 	}
@@ -303,6 +347,7 @@ func CSV(
 		"matches migration config",
 		"included by ToT",
 		"included by builder",
+		"has non-default centralized rule",
 	}); err != nil {
 		return err
 	}
@@ -326,6 +371,7 @@ func CSV(
 			strconv.FormatBool(status.MatchesMigrationConfig),
 			strconv.FormatBool(status.IncludedByToT),
 			strconv.FormatBool(status.IncludedByBuilder),
+			strconv.FormatBool(status.HasNonDefaultCentralizedRule),
 		}); err != nil {
 			return err
 		}

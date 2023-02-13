@@ -9,6 +9,7 @@ import (
 	"infra/cros/internal/testplan/migrationstatus"
 
 	"github.com/google/go-cmp/cmp"
+	"go.chromium.org/chromiumos/infra/proto/go/testplans"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	cvpb "go.chromium.org/luci/cv/api/config/v2"
 )
@@ -97,15 +98,34 @@ var manifest *repo.Manifest = &repo.Manifest{
 	Projects: []repo.Project{
 		{
 			Name: "chromeos/testprojects/testproject1",
+			Path: "src/testprojects/testproject1",
 		},
 		{
 			Name: "chromeos/a/b",
+			Path: "src/a/b",
 		},
 		{
 			Name: "chromeos/projectnotincvconfig",
+			Path: "src/projectnotincvconfig",
 		},
 		{
 			Name: "chromeos/excludedbyorch1",
+			Path: "excludedbyorch1",
+		},
+	},
+}
+
+var centralizedSourceTreeTestCfg *testplans.SourceTreeTestCfg = &testplans.SourceTreeTestCfg{
+	SourceTestRules: []*testplans.SourceTestRules{
+		{
+			FilePattern: &testplans.FilePattern{
+				Pattern: "src/testprojects/**",
+			},
+		},
+		{
+			FilePattern: &testplans.FilePattern{
+				Pattern: "src/a/b/c/test.py",
+			},
 		},
 	},
 }
@@ -113,7 +133,7 @@ var manifest *repo.Manifest = &repo.Manifest{
 func TestCompute(t *testing.T) {
 	ctx := context.Background()
 
-	statuses, err := migrationstatus.Compute(ctx, manifest, bbCfg, cvConfig)
+	statuses, err := migrationstatus.Compute(ctx, manifest, bbCfg, cvConfig, centralizedSourceTreeTestCfg)
 	if err != nil {
 		t.Fatalf("TextSummary returned error: %s", err)
 	}
@@ -121,60 +141,75 @@ func TestCompute(t *testing.T) {
 	expected := []*migrationstatus.MigrationStatus{
 		// testproject1 is included by regex match.
 		{
-			BuilderName:            "cq-orchestrator",
-			ProjectName:            "chromeos/testprojects/testproject1",
-			MatchesMigrationConfig: true,
-			IncludedByToT:          true,
-			IncludedByBuilder:      true,
+			BuilderName:                  "cq-orchestrator",
+			ProjectName:                  "chromeos/testprojects/testproject1",
+			ProjectPath:                  "src/testprojects/testproject1",
+			MatchesMigrationConfig:       true,
+			IncludedByToT:                true,
+			IncludedByBuilder:            true,
+			HasNonDefaultCentralizedRule: true,
 		},
 		{
-			BuilderName:            "cq-orchestrator",
-			ProjectName:            "chromeos/a/b",
-			MatchesMigrationConfig: true,
-			IncludedByToT:          true,
-			IncludedByBuilder:      true,
+			BuilderName:                  "cq-orchestrator",
+			ProjectName:                  "chromeos/a/b",
+			ProjectPath:                  "src/a/b",
+			MatchesMigrationConfig:       true,
+			IncludedByToT:                true,
+			IncludedByBuilder:            true,
+			HasNonDefaultCentralizedRule: true,
 		},
 		{
-			BuilderName:            "cq-orchestrator",
-			ProjectName:            "chromeos/projectnotincvconfig",
-			MatchesMigrationConfig: false,
-			IncludedByToT:          false,
-			IncludedByBuilder:      true,
+			BuilderName:                  "cq-orchestrator",
+			ProjectName:                  "chromeos/projectnotincvconfig",
+			ProjectPath:                  "src/projectnotincvconfig",
+			MatchesMigrationConfig:       false,
+			IncludedByToT:                false,
+			IncludedByBuilder:            true,
+			HasNonDefaultCentralizedRule: false,
 		},
 		{
 			BuilderName:            "cq-orchestrator",
 			ProjectName:            "chromeos/excludedbyorch1",
+			ProjectPath:            "excludedbyorch1",
 			MatchesMigrationConfig: false,
 			IncludedByToT:          true,
 			IncludedByBuilder:      false,
 		},
 		{
-			BuilderName:            "staging-cq-orchestrator",
-			ProjectName:            "chromeos/testprojects/testproject1",
-			MatchesMigrationConfig: true,
-			IncludedByToT:          true,
-			IncludedByBuilder:      true,
+			BuilderName:                  "staging-cq-orchestrator",
+			ProjectName:                  "chromeos/testprojects/testproject1",
+			ProjectPath:                  "src/testprojects/testproject1",
+			MatchesMigrationConfig:       true,
+			IncludedByToT:                true,
+			IncludedByBuilder:            true,
+			HasNonDefaultCentralizedRule: true,
 		},
 		{
-			BuilderName:            "staging-cq-orchestrator",
-			ProjectName:            "chromeos/a/b",
-			MatchesMigrationConfig: false,
-			IncludedByToT:          true,
-			IncludedByBuilder:      true,
+			BuilderName:                  "staging-cq-orchestrator",
+			ProjectName:                  "chromeos/a/b",
+			ProjectPath:                  "src/a/b",
+			MatchesMigrationConfig:       false,
+			IncludedByToT:                true,
+			IncludedByBuilder:            true,
+			HasNonDefaultCentralizedRule: true,
 		},
 		{
-			BuilderName:            "staging-cq-orchestrator",
-			ProjectName:            "chromeos/projectnotincvconfig",
-			MatchesMigrationConfig: false,
-			IncludedByToT:          false,
-			IncludedByBuilder:      true,
+			BuilderName:                  "staging-cq-orchestrator",
+			ProjectName:                  "chromeos/projectnotincvconfig",
+			ProjectPath:                  "src/projectnotincvconfig",
+			MatchesMigrationConfig:       false,
+			IncludedByToT:                false,
+			IncludedByBuilder:            true,
+			HasNonDefaultCentralizedRule: false,
 		},
 		{
-			BuilderName:            "staging-cq-orchestrator",
-			ProjectName:            "chromeos/excludedbyorch1",
-			MatchesMigrationConfig: false,
-			IncludedByToT:          true,
-			IncludedByBuilder:      false,
+			BuilderName:                  "staging-cq-orchestrator",
+			ProjectName:                  "chromeos/excludedbyorch1",
+			ProjectPath:                  "excludedbyorch1",
+			MatchesMigrationConfig:       false,
+			IncludedByToT:                true,
+			IncludedByBuilder:            false,
+			HasNonDefaultCentralizedRule: false,
 		},
 	}
 
@@ -269,28 +304,31 @@ func TestCSV(t *testing.T) {
 
 	statuses := []*migrationstatus.MigrationStatus{
 		{
-			BuilderName:            "cq-orchestrator",
-			ProjectName:            "projectB",
-			ProjectPath:            "src/B",
-			MatchesMigrationConfig: false,
-			IncludedByToT:          true,
-			IncludedByBuilder:      true,
+			BuilderName:                  "cq-orchestrator",
+			ProjectName:                  "projectB",
+			ProjectPath:                  "src/B",
+			MatchesMigrationConfig:       false,
+			IncludedByToT:                true,
+			IncludedByBuilder:            true,
+			HasNonDefaultCentralizedRule: true,
 		},
 		{
-			BuilderName:            "staging-cq-orchestrator",
-			ProjectName:            "projectA",
-			ProjectPath:            "other/A",
-			MatchesMigrationConfig: true,
-			IncludedByToT:          true,
-			IncludedByBuilder:      true,
+			BuilderName:                  "staging-cq-orchestrator",
+			ProjectName:                  "projectA",
+			ProjectPath:                  "other/A",
+			MatchesMigrationConfig:       true,
+			IncludedByToT:                true,
+			IncludedByBuilder:            true,
+			HasNonDefaultCentralizedRule: false,
 		},
 		{
-			BuilderName:            "cq-orchestrator",
-			ProjectName:            "projectA",
-			ProjectPath:            "other/A",
-			MatchesMigrationConfig: false,
-			IncludedByToT:          true,
-			IncludedByBuilder:      true,
+			BuilderName:                  "cq-orchestrator",
+			ProjectName:                  "projectA",
+			ProjectPath:                  "other/A",
+			MatchesMigrationConfig:       false,
+			IncludedByToT:                true,
+			IncludedByBuilder:            true,
+			HasNonDefaultCentralizedRule: false,
 		},
 	}
 
@@ -299,10 +337,10 @@ func TestCSV(t *testing.T) {
 		t.Fatalf("CSV returned error: %s", err)
 	}
 
-	expectedCSV := `builder,project,path,matches migration config,included by ToT,included by builder
-cq-orchestrator,projectA,other/A,false,true,true
-cq-orchestrator,projectB,src/B,false,true,true
-staging-cq-orchestrator,projectA,other/A,true,true,true
+	expectedCSV := `builder,project,path,matches migration config,included by ToT,included by builder,has non-default centralized rule
+cq-orchestrator,projectA,other/A,false,true,true,false
+cq-orchestrator,projectB,src/B,false,true,true,true
+staging-cq-orchestrator,projectA,other/A,true,true,true,false
 `
 	if diff := cmp.Diff(expectedCSV, outputCSV.String()); diff != "" {
 		t.Errorf("CSV returned unexpected summary (-want +got):\n%s", diff)

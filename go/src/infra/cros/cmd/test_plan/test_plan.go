@@ -13,6 +13,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/maruel/subcommands"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/encoding/prototext"
 	protov2 "google.golang.org/protobuf/proto"
 
@@ -25,6 +26,7 @@ import (
 	dirmdpb "infra/tools/dirmd/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/plan"
+	"go.chromium.org/chromiumos/infra/proto/go/testplans"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
@@ -58,6 +60,15 @@ func unmarshalTextproto(path string, m protov2.Message) error {
 	}
 
 	return prototext.UnmarshalOptions{DiscardUnknown: true}.Unmarshal(protoBytes, m)
+}
+
+func unmarshalJsonproto(path string, m protov2.Message) error {
+	protoBytes, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+
+	return protojson.UnmarshalOptions{DiscardUnknown: true}.Unmarshal(protoBytes, m)
 }
 
 // baseTestPlanRun embeds subcommands.CommandRunBase and implements flags shared
@@ -431,7 +442,14 @@ func (r *migrationStatusRun) run(ctx context.Context, args []string) error {
 		return err
 	}
 
-	statuses, err := migrationstatus.Compute(ctx, manifest, bbCfg, cvConfig)
+	centralizedSourceTreeTestCfgPath := filepath.Join(r.crosSrcRoot, "src", "config-internal", "board_config", "generated", "source_tree_test_config.cfg")
+	centralizedSourceTreeTestCfg := &testplans.SourceTreeTestCfg{}
+	logging.Debugf(ctx, "reading centralized SourceTreeTestCfg from %q", centralizedSourceTreeTestCfgPath)
+	if err := unmarshalJsonproto(centralizedSourceTreeTestCfgPath, centralizedSourceTreeTestCfg); err != nil {
+		return err
+	}
+
+	statuses, err := migrationstatus.Compute(ctx, manifest, bbCfg, cvConfig, centralizedSourceTreeTestCfg)
 	if err != nil {
 		return err
 	}
