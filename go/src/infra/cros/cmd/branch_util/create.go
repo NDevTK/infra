@@ -7,6 +7,7 @@ import (
 	"context"
 	"net/http"
 	"os"
+	"strings"
 
 	"infra/cros/internal/branch"
 	mv "infra/cros/internal/chromeosversion"
@@ -304,6 +305,17 @@ func (c *createBranch) innerRun(ctx context.Context, bc *branch.Client, authedCl
 
 	// Create git branches for new branch. Exclude the ManifestProjects, which we just updated.
 	if err = bc.CreateRemoteBranchesAPI(authedClient, branch.GetNonManifestBranches(projectBranches), !c.Push, c.gerritWriteQPS, c.skipRetries, c.isTest); err != nil {
+		if err, ok := err.(errors.MultiError); ok {
+			errorMessage := "project state READ_ONLY does not permit write"
+			for _, branchError := range err {
+				if !strings.Contains(branchError.Error(), errorMessage) {
+					bc.LogErr(err.Error())
+					return 1
+				}
+			}
+			bc.LogErr("WARNING: %d branches failed with '%s' error.", len(err), errorMessage)
+			return 0
+		}
 		bc.LogErr(err.Error())
 		return 1
 	}

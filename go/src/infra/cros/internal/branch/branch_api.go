@@ -44,13 +44,15 @@ func qpsToPeriod(qps float64) time.Duration {
 	return time.Duration(int64(periodSec))
 }
 
-func (c *Client) createRemoteBranch(authedClient *http.Client, b GerritProjectBranch, dryRun bool) error {
+func (c *Client) createRemoteBranch(authedClient *http.Client, b GerritProjectBranch, dryRun bool, errs chan error) error {
 	if dryRun {
 		return nil
 	}
 	agClient, err := gerritapi.NewClient(b.GerritURL, authedClient)
 	if err != nil {
-		return fmt.Errorf("failed to create Gerrit client: %v", err)
+		clientError := fmt.Errorf("failed to create Gerrit client: %v", err)
+		errs <- clientError
+		return clientError
 	}
 	bi, resp, err := agClient.Projects.CreateBranch(b.Project, b.Branch, &gerritapi.BranchInput{Revision: b.SrcRef})
 	defer resp.Body.Close()
@@ -58,6 +60,7 @@ func (c *Client) createRemoteBranch(authedClient *http.Client, b GerritProjectBr
 		body, err2 := ioutil.ReadAll(resp.Body)
 		if err2 != nil {
 			// shouldn't happen
+			errs <- err2
 			return err2
 		}
 		if resp.StatusCode == http.StatusConflict && strings.Contains(string(body), "already exists") {
@@ -65,7 +68,9 @@ func (c *Client) createRemoteBranch(authedClient *http.Client, b GerritProjectBr
 			c.LogOut("branch %s already exists for %s/%s, nothing to do here", b.Branch, b.GerritURL, b.Project)
 			return nil
 		}
-		return errors.Annotate(err, "failed to create branch. Got response %v and branch info %v", string(body), bi).Err()
+		err = errors.Annotate(err, "failed to create branch. Got response %v and branch info %v", string(body), bi).Err()
+		errs <- err
+		return err
 	}
 	return nil
 }
@@ -90,13 +95,14 @@ func (c *Client) CreateRemoteBranchesAPI(authedClient *http.Client, branches []G
 		logPrefix = "(Dry run) "
 	}
 
+	errs := make(chan error, len(branches))
 	var createCount int64
 	for _, b := range branches {
 		<-throttle
 		b := b
 		g.Go(func() error {
 			if skipRetries {
-				err := c.createRemoteBranch(authedClient, b, dryRun)
+				err := c.createRemoteBranch(authedClient, b, dryRun, errs)
 				if err != nil {
 					return err
 				}
@@ -109,7 +115,7 @@ func (c *Client) CreateRemoteBranchesAPI(authedClient *http.Client, branches []G
 					opts.BaseDelay = testBaseDelay
 				}
 				err := shared.DoWithRetry(ctx, opts, func() error {
-					err := c.createRemoteBranch(authedClient, b, dryRun)
+					err := c.createRemoteBranch(authedClient, b, dryRun, errs)
 					return err
 				})
 				if err != nil {
@@ -123,9 +129,17 @@ func (c *Client) CreateRemoteBranchesAPI(authedClient *http.Client, branches []G
 			return nil
 		})
 	}
-	err := g.Wait()
+	_ = g.Wait()
+	close(errs)
 	c.LogOut("%sSuccessfully created %v of %v remote branches", logPrefix, atomic.LoadInt64(&createCount), len(branches))
-	return err
+	errorsArray := errors.NewMultiError()
+	for err := range errs {
+		errorsArray.MaybeAdd(err)
+	}
+	if len(errorsArray) == 0 {
+		return nil
+	}
+	return errorsArray
 }
 
 // CheckSelfGroupMembership checks if the authenticated user is in the given
