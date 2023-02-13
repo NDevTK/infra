@@ -593,7 +593,7 @@ APIs for interacting with omahaproxy.
 &emsp; **@staticmethod**<br>&mdash; **def [split\_version](/recipes/recipe_modules/omahaproxy/api.py#14)(text):**
 ### *recipe_modules* / [powershell](/recipes/recipe_modules/powershell)
 
-[DEPS](/recipes/recipe_modules/powershell/__init__.py#5): [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/python][recipe_engine/recipe_modules/python], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+[DEPS](/recipes/recipe_modules/powershell/__init__.py#5): [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 PYTHON_VERSION_COMPATIBILITY: PY2+3
 

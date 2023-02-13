@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 DEPS = [
-    'recipe_engine/python',
     'recipe_engine/json',
     'recipe_engine/step',
 ]
