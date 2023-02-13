@@ -259,7 +259,7 @@
   },
   {
     "cmd": [
-      "vpython",
+      "python3",
       "[CACHE]/builder/infra/go/bootstrap.py",
       "/path/to/tmp/json"
     ],
@@ -305,7 +305,7 @@
   },
   {
     "cmd": [
-      "vpython",
+      "vpython3",
       "RECIPE_REPO[depot_tools]/presubmit_support.py",
       "--root",
       "[CACHE]/builder/infra",

@@ -163,11 +163,9 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
         with self.m.context(cwd=self.path, env=env_with_override):
           where = 'infra_internal' if internal else 'infra'
           bootstrap = 'bootstrap_internal.py' if internal else 'bootstrap.py'
-          step = self.m.python(
+          step = self.m.step(
               'init infra go env',
-              path.join(where, 'go', bootstrap),
-              [self.m.json.output()],
-              venv=True,
+              ['python3', path.join(where, 'go', bootstrap), self.m.json.output()],
               infra_step=True,
               step_test_data=lambda: self.m.json.test_api.output({
                   'go_version': '1.66.6',
@@ -195,9 +193,9 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
         upstream = bot_update_step.json.output['properties'].get(revs[0])
         gerrit_change = self.m.buildbucket.build.input.gerrit_changes[0]
         with self.m.context(env={'PRESUBMIT_BUILDER': '1'}):
-          return self.m.python(
+          return self.m.step(
               'presubmit',
-              self.m.presubmit.presubmit_support_path, [
+              ['vpython3', self.m.presubmit.presubmit_support_path,
                   '--root', path.join(patch_root),
                   '--commit',
                   '--verbose', '--verbose',
@@ -207,7 +205,7 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
                   '--gerrit_fetch',
                   '--upstream', upstream,
                   '--skip_canned', 'CheckTreeIsOpen',
-              ], venv=True)
+              ])
 
     return Checkout(self.m)
 

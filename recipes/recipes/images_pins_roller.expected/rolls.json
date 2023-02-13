@@ -171,7 +171,7 @@
   },
   {
     "cmd": [
-      "vpython",
+      "python3",
       "[CACHE]/builder/infra/go/bootstrap.py",
       "/path/to/tmp/json"
     ],
