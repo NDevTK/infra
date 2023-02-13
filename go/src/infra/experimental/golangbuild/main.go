@@ -130,13 +130,14 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	if err != nil {
 		return errors.Annotate(err, "Get CWD").Err()
 	}
-	workdir := filepath.Join(cwd, inputs.Project)
+	goroot := filepath.Join(cwd, "goroot")
 	gocacheDir := filepath.Join(cwd, "gocache")
 
 	// Set up environment.
 	env := environ.FromCtx(ctx)
 	env.Load(inputs.Env)
 	env.Set("GOROOT_BOOTSTRAP", filepath.Join(toolsRoot, "go_bootstrap"))
+	env.Set("GOPATH", filepath.Join(cwd, "gopath")) // Explicitly set to an empty per-build directory, to avoid reusing the implicit default one.
 	env.Set("GOBIN", "")
 	env.Set("GOCACHE", gocacheDir)
 	env.Set("GO_BUILDER_NAME", st.Build().GetBuilder().GetBuilder()) // TODO(mknyszek): This is underspecified. We may need Project and Bucket.
@@ -148,19 +149,19 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 
 	inputPb := st.Build().GetInput()
 
-	// Fetch the repository into workdir.
+	// Fetch the main Go repository into goroot.
 	isDryRun := false
 	if mode, err := cv.RunMode(ctx); err == nil {
 		isDryRun = strings.HasSuffix(mode, "DRY_RUN")
 	} else if err != cv.ErrNotActive {
 		return err
 	}
-	if err := fetchRepo(ctx, httpClient, inputs.Project, workdir, inputPb.GetGitilesCommit(), inputPb.GetGerritChanges(), isDryRun); err != nil {
+	if err := fetchRepo(ctx, httpClient, inputs.Project, goroot, inputPb.GetGitilesCommit(), inputPb.GetGerritChanges(), isDryRun); err != nil {
 		return err
 	}
 
 	if inputs.Project == "go" {
-		// Build Go.
+		// Build and test Go.
 		//
 		// TODO(mknyszek): Support cross-compile-only modes, perhaps by having CompileGOOS
 		// and CompileGOARCH repeated fields in the input proto to identify what to build.
@@ -169,24 +170,33 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		if inputs.RaceMode {
 			allScript = "race"
 		}
-		var scriptExt string
-		switch runtime.GOOS {
-		case "windows":
-			scriptExt = ".bat"
-		case "plan9":
-			scriptExt = ".rc"
-		default:
-			scriptExt = ".bash"
+		if err := runGoScript(ctx, goroot, allScript+scriptExt()); err != nil {
+			return err
 		}
-		if err := runGoScript(ctx, workdir, allScript+scriptExt); err != nil {
+
+		// Test the latest version of some subrepos.
+		if err := runSubrepoTests(ctx, goroot); err != nil {
 			return err
 		}
 	} else {
-		// TODO(mknyszek): Add support for running subrepository tests. This needs to
-		// somehow obtain a Go toolchain to test against.
+		// TODO(dmitshur): Build (only) the Go toolchain to use.
+		// TODO(dmitshur): Test this specific subrepo.
 		return fmt.Errorf("subrepository build/test is unimplemented")
 	}
 	return nil
+}
+
+// scriptExt returns the extension to use for
+// GOROOT/src/{make,all} scripts on this GOOS.
+func scriptExt() string {
+	switch runtime.GOOS {
+	case "windows":
+		return ".bat"
+	case "plan9":
+		return ".rc"
+	default:
+		return ".bash"
+	}
 }
 
 // cipdDeps is an ensure file that describes all our CIPD dependencies.
@@ -330,15 +340,19 @@ func fetchRepoForCI(ctx context.Context, hc *http.Client, project, dst string, c
 	return writeVersionFile(ctx, dst, commit.Id)
 }
 
-func writeVersionFile(ctx context.Context, dst, version string) (err error) {
-	step, ctx := build.StartStep(ctx, fmt.Sprintf("write VERSION (%s)", version))
+func writeVersionFile(ctx context.Context, dst, version string) error {
+	return writeFile(ctx, filepath.Join(dst, "VERSION"), "devel "+version)
+}
+
+func writeFile(ctx context.Context, path, data string) (err error) {
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("write %s", filepath.Base(path)))
 	defer func() {
 		// Any failure in this function is an infrastructure failure.
 		step.End(build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil))
 	}()
 	contentsLog := step.Log("contents")
 
-	f, err := os.Create(filepath.Join(dst, "VERSION"))
+	f, err := os.Create(path)
 	if err != nil {
 		return err
 	}
@@ -350,7 +364,7 @@ func writeVersionFile(ctx context.Context, dst, version string) (err error) {
 			io.WriteString(step.Log("close error"), r.Error())
 		}
 	}()
-	_, err = io.WriteString(io.MultiWriter(contentsLog, f), "devel "+version)
+	_, err = io.WriteString(io.MultiWriter(contentsLog, f), data)
 	return err
 }
 
@@ -363,6 +377,49 @@ func runGoScript(ctx context.Context, goroot, script string) (err error) {
 	cmd := exec.CommandContext(ctx, filepath.FromSlash("./"+script))
 	cmd.Dir = dir
 	return runCommandAsStep(ctx, script, cmd, false)
+}
+
+// runSubrepoTests tests the latest version of some subrepos
+// using the Go toolchain at goroot.
+func runSubrepoTests(ctx context.Context, goroot string) error {
+	if err := os.Mkdir("subrepo", 0755); err != nil {
+		return err
+	}
+
+	infra := true
+	runGo := func(args ...string) error {
+		cmd := exec.CommandContext(ctx, filepath.Join(goroot, "bin", "go"), args...)
+		cmd.Dir = "subrepo"
+		return runCommandAsStep(ctx, "step name", cmd, infra)
+	}
+	if err := runGo("mod", "init", "test"); err != nil {
+		return err
+	}
+	// TODO(dmitshur): Think about the optimal general test strategy.
+	if err := writeFile(ctx, filepath.Join("subrepo", "test.go"), `//go:build test
+
+package p
+
+import (
+	_ "golang.org/x/mod/zip"
+	_ "golang.org/x/term"
+)
+`); err != nil {
+		return err
+	}
+	if err := runGo("mod", "tidy"); err != nil {
+		return err
+	}
+	if err := runGo("get", "-t", "golang.org/x/mod/zip"); err != nil {
+		return err
+	}
+
+	infra = false
+	if err := runGo("test", "-json", "golang.org/x/mod/...", "golang.org/x/term/..."); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // runCommandAsStep runs the provided command as a build step.
