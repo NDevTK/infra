@@ -38,6 +38,7 @@ const (
 	baseDockerConfig = "~/.docker/config.json"
 	dockerRegistry   = "us-docker.pkg.dev"
 	lockFile         = "/var/lock/go-lock.lock"
+	RETRYNUM         = 2
 )
 
 // Docker holds data to perform the docker manipulations.
@@ -184,8 +185,22 @@ func pullImage(ctx context.Context, image string, service string) (error, int) {
 	return nil, 0
 }
 
+func pullWithRetry(ctx context.Context, image string, service string) (error, int) {
+	var exitCode int
+	var err error
+	for range [RETRYNUM]int{} {
+		err, exitCode = pullImage(ctx, image, service)
+		// do not retry if no err, or a non-critical failure.
+		if err == nil || !common.IsCriticalPullCrash(exitCode) {
+			break
+		}
+		log.Printf("Failed to pull with critical failure, retry .")
+	}
+	return err, exitCode
+
+}
 func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, service string) (string, error) {
-	err, exitCode := pullImage(ctx, d.RequestedImageName, service)
+	err, exitCode := pullWithRetry(ctx, d.RequestedImageName, service)
 	d.PullExitCode = exitCode
 	if err != nil {
 		if common.IsCriticalPullCrash(exitCode) {
