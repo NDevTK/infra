@@ -32,7 +32,7 @@ func newRecipes(repoRoot string) (recipes, error) {
 
 func (r recipes) run(ctx context.Context, args ...string) error {
 	args = append([]string{"recipes.py", "--verbose"}, args...)
-	run := newRunner(ctx, "recipes.run", "python", args)
+	run := newRunner(ctx, "recipes.run", "python3", args)
 	run.cwd = string(r)
 	return run.do()
 }
