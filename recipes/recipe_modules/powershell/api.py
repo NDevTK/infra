@@ -24,18 +24,17 @@ class PowershellAPI(recipe_api.RecipeApi):
     Raises:
       StepFailure if the failure is detected. See resources/psinvoke.py
     """
-    psinvoke = self.resource('psinvoke.py')
-    cmd_args = ['--command', command]
+    cmd_args = [
+      'python3', self.resource('psinvoke.py'), '--command', command]
     if logs:
       cmd_args += ['--logs'] + logs
     if ret_codes:
       cmd_args += ['--ret_codes'] + [str(i) for i in ret_codes]
     if args:
       cmd_args += ['--'] + args
-    results = self.m.python(
+    results = self.m.step(
         'PowerShell> {}'.format(name),
-        psinvoke,
-        args=cmd_args,
+        cmd_args,
         stdout=self.m.json.output(),
         ok_ret='any')
     step_results = results.stdout
