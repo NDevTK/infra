@@ -216,7 +216,8 @@ func installTools(ctx context.Context) (toolsRoot string, err error) {
 	step, ctx := build.StartStep(ctx, "install tools")
 	defer func() {
 		// Any failure in this function is an infrastructure failure.
-		step.End(build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil))
+		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
+		step.End(err)
 	}()
 
 	io.WriteString(step.Log("ensure file"), cipdDeps)
@@ -249,7 +250,8 @@ func fetchRepo(ctx context.Context, hc *http.Client, project, dst string, commit
 	step, ctx := build.StartStep(ctx, "fetch repo")
 	defer func() {
 		// Any failure in this function is an infrastructure failure.
-		step.End(build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil))
+		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
+		step.End(err)
 	}()
 
 	// Get the GerritChange.
@@ -357,7 +359,8 @@ func writeFile(ctx context.Context, path, data string) (err error) {
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("write %s", filepath.Base(path)))
 	defer func() {
 		// Any failure in this function is an infrastructure failure.
-		step.End(build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil))
+		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
+		step.End(err)
 	}()
 	contentsLog := step.Log("contents")
 
