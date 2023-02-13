@@ -177,6 +177,11 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 	}
 	if req.Callback != nil {
 		log.Infof("Boot in recovery mode: passing control to call back.")
+		// List information about block devices.
+		// This informcation helps to understand which devices present and visible on the DUT.
+		if _, err := dutRun(ctx, 10*time.Second, "lsblk"); err != nil {
+			log.Infof("Fail to list device of the DUT: %s", err)
+		}
 		if err := req.Callback(ctx); err != nil {
 			return errors.Annotate(err, "boot in recovery mode: callback").Err()
 		}

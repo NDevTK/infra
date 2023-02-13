@@ -87,6 +87,11 @@ func BootFromServoUSBDriveInDevMode(ctx context.Context, waitBootTimeout, waitBo
 	if err := WaitUntilSSHable(ctx, time.Minute, SSHRetryInterval, dutRun, log); err != nil {
 		return errors.Annotate(err, "wait for device boot").Err()
 	}
+	// List information about block devices.
+	// This informcation helps to understand which devices present and visible on the DUT.
+	if _, err := dutRun(ctx, 10*time.Second, "lsblk"); err != nil {
+		log.Infof("Fail to list device of the DUT: %s", err)
+	}
 	// In some cases the device can boot from internal storage by multiple reasons.
 	// Most prevident issues:
 	// 1) Image on USB-drive is bad.
