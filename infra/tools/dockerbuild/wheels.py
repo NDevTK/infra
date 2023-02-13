@@ -1116,6 +1116,7 @@ SPECS.update({
         UniversalSource('future', '0.18.2'),
         UniversalSource('gin', '0.1.006', pyversions=['py3']),
         UniversalSource('glob2', '0.7'),
+        UniversalSource('google-cloud-monitoring', '2.9.1'),
         UniversalSource('google-cloud-trace', '0.16.0'),
         UniversalSource(
             'google_compute_engine', '2.6.2',

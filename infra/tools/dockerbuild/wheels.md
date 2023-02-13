@@ -2631,6 +2631,18 @@ wheel: <
 
 * *universal*
 
+### 2.9.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-cloud-monitoring-py2_py3"
+  version: "version:2.9.1"
+>
+```
+
+
+* *universal*
+
 ## **google-cloud-pubsub**
 
 ### 0.29.0
