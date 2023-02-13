@@ -87,11 +87,16 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 	dutService, err := services.CreateDutService(ctx, crosDutContainer, dutName, networkName, cacheServerInfo, dutSshInfo, crosDutResultsDir, tokenFile)
 	if err != nil {
 		res.Err = errors.Annotate(err, "run provision").Err()
+		var reason = api.InstallFailure_REASON_DOCKER_UNABLE_TO_START
+		if common.IsCriticalPullCrash(dutService.PullExitCode) {
+			reason = api.InstallFailure_REASON_SERVICE_CONTAINER_UNABLE_TO_PULL
+		}
 		res.Out.Outcome = &api.CrosProvisionResponse_Failure{
 			Failure: &api.InstallFailure{
-				Reason: api.InstallFailure_REASON_DOCKER_UNABLE_TO_START,
+				Reason: reason,
 			},
 		}
+
 		return res
 	}
 	defer func() {
@@ -120,7 +125,6 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 	provisionService, err := services.RunProvisionCLI(ctx, crosProvisionContainer, networkName, provisionReq, crosProvisionResultsDir, tokenFile)
 	if err != nil {
 		res.Err = errors.Annotate(err, "run provision").Err()
-		// This will change to a docker_pull crash when the proto lands.
 		if common.IsCriticalPullCrash(provisionService.PullExitCode) {
 			res.Err = errors.Annotate(err, "run provision").Err()
 			res.Out.Outcome = &api.CrosProvisionResponse_Failure{
