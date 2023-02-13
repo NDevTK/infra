@@ -73,9 +73,7 @@
 package main
 
 import (
-	"archive/tar"
 	"bytes"
-	"compress/gzip"
 	"context"
 	"fmt"
 	"io"
@@ -85,7 +83,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
-	"time"
 
 	"go.chromium.org/luci/auth"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
@@ -298,9 +295,17 @@ func fetchRepo(ctx context.Context, hc *http.Client, project, dst string, commit
 }
 
 func fetchRepoForTry(ctx context.Context, hc *http.Client, project, dst string, change *bbpb.GerritChange) (err error) {
-	// TODO(mknyszek): We probably shouldn't use the /+archive endpoint if we can help it (i.e. if we have git).
-	tarURL := fmt.Sprintf("https://%s/%s/+archive/refs/changes/%d/%d/%d.tar.gz", goHost, change.Project, change.Change%100, change.Change, change.Patchset)
-	if err := fetchRepoTar(ctx, hc, project, dst, tarURL); err != nil {
+	// TODO(mknyszek): We're cloning tip here then fetching what we actually want because git doesn't
+	// provide a good way to clone at a specific ref or commit. Is there a way to speed this up?
+	// Maybe caching is sufficient?
+	if err := runGit(ctx, "git clone", "-C", ".", "clone", "--depth", "1", "https://"+change.Host+"/"+change.Project, dst); err != nil {
+		return err
+	}
+	ref := fmt.Sprintf("refs/changes/%d/%d/%d", change.Change%100, change.Change, change.Patchset)
+	if err := runGit(ctx, "git fetch", "-C", dst, "fetch", "https://"+change.Host+"/"+change.Project, ref); err != nil {
+		return err
+	}
+	if err := runGit(ctx, "git checkout", "-C", dst, "checkout", "FETCH_HEAD"); err != nil {
 		return err
 	}
 	return writeVersionFile(ctx, dst, fmt.Sprintf("%d/%d", change.Change, change.Patchset))
@@ -308,7 +313,6 @@ func fetchRepoForTry(ctx context.Context, hc *http.Client, project, dst string, 
 
 func fetchRepoForSubmit(ctx context.Context, hc *http.Client, dst string, change *bbpb.GerritChange) (err error) {
 	// For submit, fetch HEAD for the branch this change is for, fetch the CL, and cherry-pick it.
-	// TODO(mknyszek): We do a full git checkout. Consider caching.
 	gc, err := gerrit.NewRESTClient(hc, change.Host, true)
 	if err != nil {
 		return err
@@ -328,13 +332,18 @@ func fetchRepoForSubmit(ctx context.Context, hc *http.Client, dst string, change
 	if err := runGit(ctx, "git fetch", "-C", dst, "fetch", "https://"+change.Host+"/"+change.Project, ref); err != nil {
 		return err
 	}
-	return runGit(ctx, "git cherry-pick", "-C", dst, "cherry-pick", "FETCH_HEAD")
+	if err := runGit(ctx, "git cherry-pick", "-C", dst, "cherry-pick", "FETCH_HEAD"); err != nil {
+		return err
+	}
+	return writeVersionFile(ctx, dst, fmt.Sprintf("%d/%d", change.Change, change.Patchset))
 }
 
 func fetchRepoForCI(ctx context.Context, hc *http.Client, project, dst string, commit *bbpb.GitilesCommit) (err error) {
-	// TODO(mknyszek): We probably shouldn't use the /+archive endpoint if we can help it (i.e. if we have git).
-	tarURL := "https://" + commit.Host + "/" + commit.Project + "/+archive/" + commit.Id + ".tar.gz"
-	if err := fetchRepoTar(ctx, hc, project, dst, tarURL); err != nil {
+	// TODO(mknyszek): This is a full git checkout, which is wasteful. Consider caching.
+	if err := runGit(ctx, "git clone", "-C", ".", "clone", "https://"+commit.Host+"/"+commit.Project, dst); err != nil {
+		return err
+	}
+	if err := runGit(ctx, "git checkout", "-C", dst, "checkout", commit.Id); err != nil {
 		return err
 	}
 	return writeVersionFile(ctx, dst, commit.Id)
@@ -462,179 +471,6 @@ func runCommandAsStep(ctx context.Context, stepName string, cmd *exec.Cmd, infra
 		return errors.Annotate(err, "Failed to run %q", stepName).Err()
 	}
 	return nil
-}
-
-func fetchRepoTar(ctx context.Context, hc *http.Client, project, dst, tarURL string) (err error) {
-	step, ctx := build.StartStep(ctx, "fetch repo tar")
-	defer func() {
-		// Any failure in this function is an infrastructure failure.
-		step.End(build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil))
-	}()
-	if _, err := step.Log("url").Write([]byte(tarURL)); err != nil {
-		return err
-	}
-
-	// Bump the timeout for downloading the tar.
-	oldTimeout := hc.Timeout
-	defer func() {
-		hc.Timeout = oldTimeout
-	}()
-	hc.Timeout = 30 * time.Second
-
-	res, err := hc.Get(tarURL)
-	if err != nil {
-		return errors.Annotate(err, "Fetching repo from %s", tarURL).Err()
-	}
-	defer res.Body.Close()
-	if res.StatusCode != 200 {
-		slurp, _ := io.ReadAll(io.LimitReader(res.Body, 4<<10))
-		return errors.Annotate(errors.New(string(slurp)), "Fetching Go from %s", tarURL).Err()
-	}
-	// See golang.org/issue/11224 for a discussion on tree filtering.
-	b, err := io.ReadAll(io.LimitReader(res.Body, maxSize(project)+1))
-	if int64(len(b)) > maxSize(project) && err == nil {
-		return errors.Annotate(errors.New("too big"), "Fetching Go from %s", tarURL).Err()
-	}
-	if err != nil {
-		return errors.Annotate(err, "Fetching Go from %s", tarURL).Err()
-	}
-	if err := os.Mkdir(dst, os.ModePerm); err != nil {
-		return errors.Annotate(err, "Mkdir %s", dst).Err()
-	}
-	if err := untar(ctx, bytes.NewReader(b), dst); err != nil {
-		return errors.Annotate(err, "Extracting %s", dst).Err()
-	}
-	return nil
-}
-
-// untar reads the gzip-compressed tar file from r and writes it into dir.
-//
-// Copied from https://go.googlesource.com/build/+/refs/heads/master/internal/untar/untar.go
-func untar(ctx context.Context, r io.Reader, dir string) (err error) {
-	step, ctx := build.StartStep(ctx, "untar")
-	defer step.End(err)
-
-	log := step.Log("log")
-	t0 := time.Now()
-	nFiles := 0
-	madeDir := map[string]bool{}
-	defer func() {
-		fmt.Fprintf(log, "extracted tarball into %s: %d files, %d dirs\n", dir, nFiles, len(madeDir))
-	}()
-	zr, err := gzip.NewReader(r)
-	if err != nil {
-		return errors.Annotate(err, "requires gzip-compressed body").Err()
-	}
-	tr := tar.NewReader(zr)
-	loggedChtimesError := false
-	for {
-		f, err := tr.Next()
-		if err == io.EOF {
-			break
-		} else if err != nil {
-			return err
-		}
-		if f.Typeflag == tar.TypeXGlobalHeader {
-			// golang.org/issue/22748: git archive exports
-			// a global header ('g') which after Go 1.9
-			// (for a bit?) contained an empty filename.
-			// Ignore it.
-			continue
-		}
-		if !validRelPath(f.Name) {
-			return errors.Reason("tar file contained invalid name %q", f.Name).Err()
-		}
-		rel := filepath.FromSlash(f.Name)
-		abs := filepath.Join(dir, rel)
-
-		fi := f.FileInfo()
-		mode := fi.Mode()
-		switch {
-		case mode.IsRegular():
-			// Make the directory. This is redundant because it should
-			// already be made by a directory entry in the tar
-			// beforehand. Thus, don't check for errors; the next
-			// write will fail with the same error.
-			dir := filepath.Dir(abs)
-			if !madeDir[dir] {
-				if err := os.MkdirAll(filepath.Dir(abs), 0755); err != nil {
-					return err
-				}
-				madeDir[dir] = true
-			}
-			wf, err := os.OpenFile(abs, os.O_RDWR|os.O_CREATE|os.O_TRUNC, mode.Perm())
-			if err != nil {
-				return err
-			}
-			n, err := io.Copy(wf, tr)
-			if closeErr := wf.Close(); closeErr != nil && err == nil {
-				err = closeErr
-			}
-			if err != nil {
-				return fmt.Errorf("error writing to %s: %v", abs, err)
-			}
-			if n != f.Size {
-				return fmt.Errorf("only wrote %d bytes to %s; expected %d", n, abs, f.Size)
-			}
-			modTime := f.ModTime
-			if modTime.After(t0) {
-				// Clamp modtimes at system time. See
-				// golang.org/issue/19062 when clock on
-				// buildlet was behind the gitmirror server
-				// doing the git-archive.
-				modTime = t0
-			}
-			if !modTime.IsZero() {
-				if err := os.Chtimes(abs, modTime, modTime); err != nil && !loggedChtimesError {
-					// benign error. Gerrit doesn't even set the
-					// modtime in these, and we don't end up relying
-					// on it anywhere (the gomote push command relies
-					// on digests only), so this is a little pointless
-					// for now.
-					fmt.Fprintf(log, "error changing modtime: %v (further Chtimes errors suppressed)\n", err)
-					loggedChtimesError = true // once is enough
-				}
-			}
-			nFiles++
-		case mode.IsDir():
-			if err := os.MkdirAll(abs, 0755); err != nil {
-				return err
-			}
-			madeDir[abs] = true
-		case mode&os.ModeSymlink != 0:
-			// TODO: ignore these for now. They were breaking x/build tests.
-			// Implement these if/when we ever have a test that needs them.
-			// But maybe we'd have to skip creating them on Windows for some builders
-			// without permissions.
-		default:
-			return errors.Reason("tar file entry %s contained unsupported file type %v", f.Name, mode).Err()
-		}
-	}
-	return nil
-}
-
-// maxSize controls artificial limits on how big of a compressed source tarball
-// this package is willing to accept. It's expected humans may need to manage
-// these limits every couple of years for the evolving needs of the Go project,
-// and ideally not much more often.
-//
-// repo is a go.googlesource.com repo ("go", "net", and so on).
-//
-// Copied from go.googlesource.com/build/internal/sourcecache/source.go
-func maxSize(repo string) int64 {
-	switch repo {
-	default:
-		// As of 2021-11-22, a compressed tarball of Go source is 23 MB,
-		// x/net is 1.2 MB,
-		// x/build is 1.1 MB,
-		// x/tools is 2.9 MB.
-		return 100 << 20
-	case "website":
-		// In 2021, all content in x/blog (52 MB) and x/talks (74 MB) moved
-		// to x/website. This makes x/website an outlier, with a compressed
-		// tarball size of 135 MB. Give it some room to grow from there.
-		return 200 << 20
-	}
 }
 
 // Copied from go.googlesource.com/build/internal/untar/untar.go
