@@ -162,7 +162,7 @@ class PackageSleuth:
 
   @staticmethod
   def _FilterPackagesDependencies(packages: List[pkg.Package]) -> None:
-    supported_packages_names = set([p.name for p in packages])
+    supported_packages_names = set([p.full_name for p in packages])
     for package in packages:
       package.dependencies = PackageSleuth._GetFilterDependencies(
           package, supported_packages_names)
@@ -174,7 +174,7 @@ class PackageSleuth:
 
     def IsSupportedDependency(dep: pkg.PackageDependency) -> bool:
       # Filter package itself.
-      if dep.name == package.name:
+      if dep.name == package.full_name:
         return False
 
       # Filter unsupported or not queried dependencies.

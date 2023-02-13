@@ -35,13 +35,14 @@ class PackagePathException(Exception):
                first_dir: str = None,
                second_dir: str = None):
     if not first_dir:
-      super(PackagePathException, self).__init__(f"{package.name}: {message}")
+      super(PackagePathException,
+            self).__init__(f"{package.full_name}: {message}")
     elif not second_dir:
       super(PackagePathException,
-            self).__init__(f"{package.name}: {message}: '{first_dir}'")
+            self).__init__(f"{package.full_name}: {message}: '{first_dir}'")
     else:
       super(PackagePathException, self).__init__(
-          f"{package.name}: {message}: {first_dir} vs {second_dir}")
+          f"{package.full_name}: {message}: {first_dir} vs {second_dir}")
 
 
 class PackageDependency(NamedTuple):
@@ -68,12 +69,8 @@ def IsPackageSupported(ebuild: portage_util.EBuild,
                        setup: Setup) -> PackageSupport:
   """
   Performs checks that the package can be processed:
-    * package has *-9999.ebuild file
-    * package has local sources:
-      * CROS_WORKON_LOCALNAME is set
-      * CROS_WORKON_REPO is not set
-      * EGIT_REPO_URI is not set
-    * package is built with gn (CROS_WORKON_SUBTREE contains '.gn')
+    * Package has local sources.
+    * Package is built with gn.
 
   Returns corresponding PackageSupport enum value.
   """
@@ -158,8 +155,9 @@ class Package:
   Represents portage package. Gives an access to paths associated with the
   package. Fields:
     * setup.
-    * name: package's full name, e.g. chromeos-base/cryptohome.
-    * simple_name: last part of the name, e.g. cryptohome.
+    * full_name: package's full name, e.g. chromeos-base/cryptohome.
+    * package_info: various package info extracted from ebuild, like category
+      and version, see |PackageInfo|.
     * is_highly_volatile: bool indicating if package's sources are patched on
       build. If true, one should not expect exact match between temp and
       actual sources.
@@ -195,6 +193,17 @@ class Package:
     temp: str
     actual: str
 
+  class PackageInfo:
+
+    def __init__(self, ebuild: portage_util.EBuild):
+      self.ebuild_file = ebuild._unstable_ebuild_path
+      self.category = ebuild.category
+      self.name = ebuild.pkgname
+      self.version = ebuild.version_no_rev
+      # Extract revision from |version| formatted like
+      # "|version_no_rev|-|revision|"
+      self.revision = ebuild.version[len(ebuild.version_no_rev) + 1:]
+
   g_highly_volatile_packages = [
       # Libchrome has a number of patches applied on top of checkout.
       'chromeos-base/libchrome'
@@ -210,21 +219,20 @@ class Package:
       raise Package.UnsupportedPackageException(ebuild.package, is_supported)
 
     self.setup = setup
-    self.name = ebuild.package
-    self.simple_name = ebuild.pkgname
-    self.ebuild_file = ebuild._unstable_ebuild_path
+    self.full_name = ebuild.package
+    self.package_info = Package.PackageInfo(ebuild)
 
     self.is_highly_volatile = os.path.isdir(
         os.path.join(
-            os.path.dirname(self.ebuild_file),
-            'files')) or self.name in Package.g_highly_volatile_packages
+            os.path.dirname(self.package_info.ebuild_file),
+            'files')) or self.full_name in Package.g_highly_volatile_packages
     self.dependencies = deps if deps else []
 
   def __eq__(self, other) -> bool:
     if isinstance(other, str):
-      return self.name == other
+      return self.full_name == other
     elif isinstance(other, Package):
-      return self.name == other.name
+      return self.full_name == other.full_name
 
     raise NotImplementedError('Can compare only with Package or string')
 
@@ -238,13 +246,13 @@ class Package:
     Raises:
       * DirsException if build, source or temp source dir(s) is not found.
     """
-    g_logger.debug('%s: Initializing', self.name)
+    g_logger.debug('%s: Initializing', self.full_name)
 
     self.temp_dir = self._GetTempDir()
-    g_logger.debug('%s: Temp dir: %s', self.name, self.temp_dir)
+    g_logger.debug('%s: Temp dir: %s', self.full_name, self.temp_dir)
 
     self.build_dir = self._GetBuildDir()
-    g_logger.debug('%s: Build dir: %s', self.name, self.build_dir)
+    g_logger.debug('%s: Build dir: %s', self.full_name, self.build_dir)
 
     src_dirs, temp_src_dirs = self._GetSourceDirs()
 
@@ -271,8 +279,8 @@ class Package:
     for src_dir, temp_src_dir in zip(src_dirs, temp_src_dirs):
       self.src_dir_matches.append(
           Package.TempActualDichotomy(temp=temp_src_dir, actual=src_dir))
-      g_logger.debug('%s: Match between temp and actual: %s and %s', self.name,
-                     temp_src_dir, src_dir)
+      g_logger.debug('%s: Match between temp and actual: %s and %s',
+                     self.full_name, temp_src_dir, src_dir)
 
     self.additional_include_paths = self.GetAdditionalIncludePaths()
     if self.additional_include_paths:
@@ -288,7 +296,7 @@ class Package:
     # Special case for chromeos-base/update_engine which pretends to be in
     # platform2 and uses platform2 as include path. While the actual include
     # path is {src_dir}/aosp/system with update_engine inside.
-    if self.name == 'chromeos-base/update_engine':
+    if self.full_name == 'chromeos-base/update_engine':
       return [os.path.dirname(self.src_dir_matches[0].actual)]
 
     return None
@@ -300,20 +308,40 @@ class Package:
     If true, then package is built from local sources and has nothing in
     temp source dir (which does not exist).
     """
-    out_of_tree_build = _CheckEbuildVar(self.ebuild_file,
+    out_of_tree_build = _CheckEbuildVar(self.package_info.ebuild_file,
                                         'CROS_WORKON_OUTOFTREE_BUILD')
     return out_of_tree_build and out_of_tree_build == '1'
 
+  def _GetOrderedVersionSuffixes(self) -> List[str]:
+    """
+    Returns a list of versions of the current package ordered from highest to
+    lowest.
+    """
+
+    return [
+        '9999', f"{self.package_info.version}-{self.package_info.revision}",
+        self.package_info.version
+    ]
+
   def _GetTempDir(self) -> str:
-    """Returns path to base temp dir."""
+    """
+    Returns path to the base temp dir.
 
-    dir = os.path.join(self.setup.board_dir, 'tmp', 'portage',
-                       self.name + '-9999', 'work')
+    Chooses the dir with the highest ebuild version.
+    """
 
-    if not os.path.isdir(dir):
-      raise Package.DirsException(self, 'Cannot find temp dir', dir)
+    base_dir = os.path.join(self.setup.board_dir, 'tmp', 'portage')
 
-    return dir
+    for version_suffix in self._GetOrderedVersionSuffixes():
+      temp_dir = os.path.join(base_dir, self.package_info.category,
+                              f"{self.package_info.name}-{version_suffix}",
+                              'work')
+
+      if os.path.isdir(temp_dir):
+        return temp_dir
+
+    raise Package.DirsException(self, 'Cannot find temp dir',
+                                os.path.join(base_dir))
 
   def _GetBuildDir(self) -> str:
     """
@@ -324,32 +352,45 @@ class Package:
       * DirsException if 'args.gn' file not found in supposed build dir.
     """
     build_dirs = [
-        os.path.join(self.setup.board_dir, 'var', 'cache', 'portage', self.name,
-                     'out', 'Default'),
+        os.path.join(self.setup.board_dir, 'var', 'cache', 'portage',
+                     self.package_info.category, self.package_info.name, 'out',
+                     'Default'),
         os.path.join(self.temp_dir, 'build', 'out', 'Default')
     ]
 
-    build_dir = None
     for dir in build_dirs:
+      if not os.path.isdir(dir):
+        continue
+
+      if not os.path.isfile(os.path.join(dir, 'args.gn')):
+        continue
+
+      return dir
+
+    raise Package.DirsException(self, 'Cannot find build dir')
+
+  def _GetTempSourceBaseDir(self) -> str:
+    """
+    Returns path to the base source dir inside temp dir.
+
+    The base source dir contains copied source files.
+    """
+
+    for version in self._GetOrderedVersionSuffixes():
+      dir = os.path.join(self.temp_dir, f"{self.package_info.name}-{version}")
+
       if os.path.isdir(dir):
-        build_dir = dir
-        break
+        return dir
 
-    if not build_dir:
-      raise Package.DirsException(self, 'Cannot find build dir')
-
-    if not os.path.isfile(os.path.join(build_dir, 'args.gn')):
-      raise Package.DirsException(self, 'Build dir does not contain args.gn',
-                                  build_dir)
-
-    return build_dir
+    raise Package.DirsException(self, 'Cannot find temp source dir',
+                                os.path.join(self.temp_dir))
 
   def _GetSourceDirs(self) -> Tuple[str, str]:
     """
     Returns list of matches between actual src dirs and temp src dirs. Matches
     listed from deepest to the most common.
     """
-    ebuild = portage_util.EBuild(self.ebuild_file)
+    ebuild = portage_util.EBuild(self.package_info.ebuild_file)
     ebuild_src_dirs = ebuild.GetSourceInfo(self.setup.src_dir,
                                            self.setup.manifest).srcdirs
 
@@ -359,11 +400,11 @@ class Package:
     else:
       src_dirs = ebuild_src_dirs
 
-      temp_src_basedir = os.path.join(self.temp_dir, self.simple_name + '-9999')
+      temp_src_basedir = self._GetTempSourceBaseDir()
       temp_src_dirs = []
 
-      dest_dirs = _CheckEbuildVar(self.ebuild_file, 'CROS_WORKON_DESTDIR',
-                                  temp_src_basedir)
+      dest_dirs = _CheckEbuildVar(self.package_info.ebuild_file,
+                                  'CROS_WORKON_DESTDIR', temp_src_basedir)
       if dest_dirs:
         dest_dirs = dest_dirs.split(',')
         temp_src_dirs.extend(dest_dirs)
