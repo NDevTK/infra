@@ -298,10 +298,10 @@ func mapChameleonPeripherals(p *lab.Peripherals, c *lab.Chameleon) []labapi.Cham
 	var res []labapi.Chameleon_Peripheral
 forLoop:
 	for _, cp := range c.GetChameleonPeripherals() {
-		m := labapi.Chameleon_PREIPHERAL_UNSPECIFIED
+		m := labapi.Chameleon_PERIPHERAL_UNSPECIFIED
 		switch cp {
 		case lab.ChameleonType_CHAMELEON_TYPE_INVALID:
-			m = labapi.Chameleon_PREIPHERAL_UNSPECIFIED
+			m = labapi.Chameleon_PERIPHERAL_UNSPECIFIED
 		case lab.ChameleonType_CHAMELEON_TYPE_DP:
 			m = labapi.Chameleon_DP
 		case lab.ChameleonType_CHAMELEON_TYPE_HDMI:

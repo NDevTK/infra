@@ -112,7 +112,7 @@ func TestConvertAttachedDeviceDutTopologyToHostInfoForChromeOS(t *testing.T) {
 							},
 							Chameleon: &labapi.Chameleon{
 								Peripherals: []labapi.Chameleon_Peripheral{
-									labapi.Chameleon_PREIPHERAL_UNSPECIFIED,
+									labapi.Chameleon_PERIPHERAL_UNSPECIFIED,
 								},
 								AudioBoard: true,
 							},
@@ -149,7 +149,7 @@ func TestConvertAttachedDeviceDutTopologyToHostInfoForChromeOS(t *testing.T) {
 				"board:" + board,
 				"model:" + model,
 				"chameleon",
-				"chameleon:" + strings.ToLower(labapi.Chameleon_Peripheral_name[int32(labapi.Chameleon_PREIPHERAL_UNSPECIFIED)]),
+				"chameleon:" + strings.ToLower(labapi.Chameleon_Peripheral_name[int32(labapi.Chameleon_PERIPHERAL_UNSPECIFIED)]),
 				"audio_board",
 				"atrus",
 				"mimo",
