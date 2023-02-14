@@ -33,6 +33,24 @@
       "message": "Just want to make sure you want to store a single string in this field? Since the name mentioned mapping.",
       "revId": "e93d329d16475882045dc3e7fa041bb097c30a0b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "abbdd8c1_f74933b1",
+        "filename": "go/src/infra/libs/skylab/inventory/device.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 348,
+      "author": {
+        "id": 1487102
+      },
+      "writtenOn": "2023-02-14T20:07:55Z",
+      "side": 1,
+      "message": "The mapping will be encoded into the string itself as comma separated values.",
+      "parentUuid": "4fe7215a_65532696",
+      "revId": "e93d329d16475882045dc3e7fa041bb097c30a0b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
