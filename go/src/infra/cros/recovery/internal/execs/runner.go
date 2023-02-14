@@ -58,13 +58,13 @@ type Runner = components.Runner
 // placeholder. This will eventually be replaced with an
 // implementation that will submit a command for background execution,
 // and will return without waiting for it to complete.
-func (ei *ExecInfo) NewBackgroundRunner(resource string) components.Runner {
-	return ei.NewRunner(resource)
+func (ei *ExecInfo) NewBackgroundRunner(host string) components.Runner {
+	return ei.newRunner(host, true)
 }
 
 // DefaultRunner returns runner for current resource name specified per plan.
 func (ei *ExecInfo) DefaultRunner() components.Runner {
-	return ei.NewRunner(ei.GetActiveResource())
+	return ei.newRunner(ei.GetActiveResource(), false)
 }
 
 // NewRunner returns a function of type Runner that executes a command
@@ -73,6 +73,9 @@ func (ei *ExecInfo) DefaultRunner() components.Runner {
 // executed. Examples of such specific hosts can be the DUT, or the
 // servo-host etc.
 func (ei *ExecInfo) NewRunner(host string) components.Runner {
+	return ei.newRunner(host, false)
+}
+func (ei *ExecInfo) newRunner(host string, inBackground bool) components.Runner {
 	runner := func(ctx context.Context, timeout time.Duration, cmd string, args ...string) (string, error) {
 		fullCmd := cmd
 		if len(args) > 0 {
@@ -81,10 +84,11 @@ func (ei *ExecInfo) NewRunner(host string) components.Runner {
 		log := ei.NewLogger()
 		log.Debugf("Prepare to run command: %q", fullCmd)
 		r := ei.GetAccess().Run(ctx, &tlw.RunRequest{
-			Resource: host,
-			Timeout:  durationpb.New(timeout),
-			Command:  cmd,
-			Args:     args,
+			Resource:     host,
+			Timeout:      durationpb.New(timeout),
+			Command:      cmd,
+			Args:         args,
+			InBackground: inBackground,
 		})
 		log.Debugf("Run %q completed with exit code %d", r.Command, r.ExitCode)
 		exitCode := r.ExitCode

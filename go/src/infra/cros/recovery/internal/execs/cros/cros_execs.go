@@ -185,29 +185,32 @@ func isBootedInSecureModeExec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 // runnerByHost return runner per specified host.
-func runnerByHost(ctx context.Context, info *execs.ExecInfo) (components.Runner, error) {
-	argsMap := info.GetActionArgs(ctx)
-	host := argsMap.AsString(ctx, "host", "")
-	switch host {
+func runnerByHost(ctx context.Context, deviceType string, info *execs.ExecInfo, inBackground bool) (components.Runner, error) {
+	resource := info.GetActiveResource()
+	switch deviceType {
 	case "dut":
 		dut := info.GetDut()
 		if dut == nil || dut.Name == "" {
 			return nil, errors.Reason("runner by device_type: DUT does not exist or not specified").Err()
 		}
-		return info.NewRunner(dut.Name), nil
-	default:
-		return info.DefaultRunner(), nil
+		resource = dut.Name
 	}
+	if inBackground {
+		return info.NewBackgroundRunner(resource), nil
+	}
+	return info.NewRunner(resource), nil
 }
 
 // runCommandExec runs a given action exec arguments in shell.
 func runCommandExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	command := argsMap.AsString(ctx, "command", "")
+	deviceType := argsMap.AsString(ctx, "host", "")
+	inBackground := argsMap.AsBool(ctx, "background", false)
 	if command == "" {
 		return errors.Reason("run command: command not specified").Err()
 	}
-	run, err := runnerByHost(ctx, info)
+	run, err := runnerByHost(ctx, deviceType, info, inBackground)
 	if err != nil {
 		return errors.Annotate(err, "run shell command").Err()
 	}

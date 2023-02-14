@@ -145,6 +145,10 @@ func (c *tlwClient) Run(ctx context.Context, req *tlw.RunRequest) *tlw.RunResult
 	// Servod-container does not have ssh access so to execute any commands
 	// we need to use the docker client.
 	if c.isServoHost(req.GetResource()) && isServodContainer(dut) {
+		if req.GetInBackground() {
+			log.Infof(ctx, "Container execution is not supported in background!")
+			log.Infof(ctx, "Please file a bug if your require to run in background.")
+		}
 		d, err := c.dockerClient(ctx)
 		if err != nil {
 			return &tlw.RunResult{
@@ -214,7 +218,12 @@ func (c *tlwClient) Run(ctx context.Context, req *tlw.RunRequest) *tlw.RunResult
 		cr := make(chan bool, 1)
 		var runResult *tlw.RunResult
 		go func() {
-			runResult = ssh.Run(ctx, c.sshPool, localproxy.BuildAddr(req.GetResource()), fullCmd)
+			addr := localproxy.BuildAddr(req.GetResource())
+			if req.GetInBackground() {
+				runResult = ssh.RunBackground(ctx, c.sshPool, addr, fullCmd)
+			} else {
+				runResult = ssh.Run(ctx, c.sshPool, addr, fullCmd)
+			}
 			cr <- true
 		}()
 		select {
