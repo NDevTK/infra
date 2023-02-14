@@ -165,7 +165,7 @@ class Servlet(object):
       self.ratelimiter.CheckStart(self.request)
 
       with self.mr.profiler.Phase('parsing request and doing lookups'):
-        self.mr.ParseFlaskRequest(self.request, self.services)
+        self.mr.ParseRequest(self.request, self.services)
 
       self.response.headers['X-Frame-Options'] = 'SAMEORIGIN'
 

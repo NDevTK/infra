@@ -168,7 +168,7 @@ class MonorailRequestUnitTest(unittest.TestCase):
 
   def testGetIntListParam_NoParam(self):
     mr = monorailrequest.MonorailRequest(self.services)
-    mr.ParseFlaskRequest(testing_helpers.RequestStub('servlet'), self.services)
+    mr.ParseRequest(testing_helpers.RequestStub('servlet'), self.services)
     self.assertEqual(mr.GetIntListParam('ids'), None)
     self.assertEqual(mr.GetIntListParam('ids', default_value=['test']),
                       ['test'])
@@ -176,14 +176,14 @@ class MonorailRequestUnitTest(unittest.TestCase):
   def testGetIntListParam_OneValue(self):
     mr = monorailrequest.MonorailRequest(self.services)
     request = testing_helpers.RequestStub('servlet?ids=11')
-    mr.ParseFlaskRequest(request, self.services)
+    mr.ParseRequest(request, self.services)
     self.assertEqual(mr.GetIntListParam('ids'), [11])
     self.assertEqual(mr.GetIntListParam('ids', default_value=['test']),
                       [11])
 
   def testGetIntListParam_MultiValue(self):
     mr = monorailrequest.MonorailRequest(self.services)
-    mr.ParseFlaskRequest(
+    mr.ParseRequest(
         testing_helpers.RequestStub('servlet?ids=21,22,23'), self.services)
     self.assertEqual(mr.GetIntListParam('ids'), [21, 22, 23])
     self.assertEqual(mr.GetIntListParam('ids', default_value=['test']),
@@ -192,19 +192,19 @@ class MonorailRequestUnitTest(unittest.TestCase):
   def testGetIntListParam_BogusValue(self):
     mr = monorailrequest.MonorailRequest(self.services)
     with self.assertRaises(exceptions.InputException):
-      mr.ParseFlaskRequest(
+      mr.ParseRequest(
           testing_helpers.RequestStub('servlet?ids=not_an_int'), self.services)
 
   def testGetIntListParam_Malformed(self):
     mr = monorailrequest.MonorailRequest(self.services)
     with self.assertRaises(exceptions.InputException):
-      mr.ParseFlaskRequest(
+      mr.ParseRequest(
           testing_helpers.RequestStub('servlet?ids=31,32,,'), self.services)
 
   def testDefaultValuesNoUrl(self):
     """If request has no param, default param values should be used."""
     mr = monorailrequest.MonorailRequest(self.services)
-    mr.ParseFlaskRequest(testing_helpers.RequestStub('servlet'), self.services)
+    mr.ParseRequest(testing_helpers.RequestStub('servlet'), self.services)
     self.assertEqual(mr.GetParam('r', 3), 3)
     self.assertEqual(mr.GetIntParam('r', 3), 3)
     self.assertEqual(mr.GetPositiveIntParam('r', 3), 3)
@@ -214,7 +214,7 @@ class MonorailRequestUnitTest(unittest.TestCase):
       self, path, headers=None, *mr_args, **mr_kwargs):
     request = testing_helpers.RequestStub(path, headers=headers)
     mr = monorailrequest.MonorailRequest(self.services, *mr_args, **mr_kwargs)
-    mr.ParseFlaskRequest(request, self.services)
+    mr.ParseRequest(request, self.services)
     return mr
 
   def testParseQueryParameters(self):
@@ -586,7 +586,7 @@ class TestPermissionLookup(unittest.TestCase):
     request = testing_helpers.RequestStub('/p/' + project_name)
     mr = monorailrequest.MonorailRequest(self.services)
     with mr.profiler.Phase('parse user info'):
-      mr.ParseFlaskRequest(request, self.services)
+      mr.ParseRequest(request, self.services)
       print('mr.auth is %r' % mr.auth)
     return mr
 

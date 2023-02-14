@@ -113,7 +113,7 @@ def GetRequestObjects(
   mr = fake.MonorailRequest(
       services, user_info=user_info, project=project, perms=perms,
       params=params, hotlist=hotlist)
-  mr.ParseFlaskRequest(
+  mr.ParseRequest(
       request, services, do_user_lookups=False)
   mr.auth.user_pb = user_pb2.MakeUser(0)
   return request, mr
@@ -123,7 +123,7 @@ class RequestStub(object):
   """flask.Request stub object.
 
   This stub is a drop-in replacement for flask.Request that implements all
-  fields used in MonorailRequest.ParseFlaskRequest(). Its constructor API is
+  fields used in MonorailRequest.ParseRequest(). Its constructor API is
   designed to mimic webapp2.Request.blank() for backwards compatibility with
   existing unit tests previously written for webapp2.
   """

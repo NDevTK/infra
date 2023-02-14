@@ -229,63 +229,6 @@ class MonorailRequest(MonorailRequestBase):
     self.viewed_user_auth = authdata.AuthData()
 
   def ParseRequest(self, request, services, do_user_lookups=True):
-    """Parse tons of useful info from the given request object.
-
-    Args:
-      request: Flask Request object w/ path and query params.
-      services: connections to backend servers including DB.
-      do_user_lookups: Set to False to disable lookups during testing.
-    """
-    with self.profiler.Phase('basic parsing'):
-      self.request = request
-      self.request_path = request.path
-      self.current_page_url = request.url
-      self.current_page_url_encoded = urllib.parse.quote_plus(
-          self.current_page_url)
-
-      # Only accept a hostport from the request that looks valid.
-      if not _HOSTPORT_RE.match(request.host):
-        raise exceptions.InputException(
-            'request.host looks funny: %r', request.host)
-
-      logging.info('Request: %s', self.current_page_url)
-
-    with self.profiler.Phase('path parsing'):
-      (viewed_user_val, self.project_name, self.hotlist_id,
-       self.hotlist_name) = _ParsePathIdentifiers(self.request_path)
-      self.viewed_username = _GetViewedEmail(
-          viewed_user_val, self.cnxn, services)
-    with self.profiler.Phase('qs parsing'):
-      self._ParseQueryParameters()
-    with self.profiler.Phase('overrides parsing'):
-      self._ParseFormOverrides()
-
-    if not self.project:  # It can be already set in unit tests.
-      self._LookupProject(services)
-    if self.project_id and services.config:
-      self.config = services.config.GetProjectConfig(self.cnxn, self.project_id)
-
-    if do_user_lookups:
-      if self.viewed_username:
-        self._LookupViewedUser(services)
-      self._LookupLoggedInUser(services)
-
-    if not self.hotlist:
-      self._LookupHotlist(services)
-
-    if self.query is None:
-      self.query = self._CalcDefaultQuery()
-
-    prod_debug_allowed = self.perms.HasPerm(
-        permissions.VIEW_DEBUG, self.auth.user_id, None)
-    self.debug_enabled = (request.params.get('debug') and
-                          (settings.local_mode or prod_debug_allowed))
-    # temporary option for perf testing on staging instance.
-    if request.params.get('disable_cache'):
-      if settings.local_mode or 'staging' in request.host:
-        self.use_cached_searches = False
-
-  def ParseFlaskRequest(self, request, services, do_user_lookups=True):
     """Parse tons of useful info from the given flask request object.
 
     Args:
