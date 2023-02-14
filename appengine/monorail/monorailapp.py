@@ -23,7 +23,7 @@ from services import api_svc_v1
 from services import service_manager
 
 
-search_helpers.InitializeAppEngineSearchAPI()
+search_helpers.InitializeAppEngineSearchApi()
 
 services = service_manager.set_up_services()
 sorting.InitializeArtValues(services)
