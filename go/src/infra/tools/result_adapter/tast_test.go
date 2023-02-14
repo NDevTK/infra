@@ -101,8 +101,9 @@ func TestTastConversions(t *testing.T) {
 			r := &TastResults{
 				BaseDir: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test",
 			}
-			r.ConvertFromJSON(strings.NewReader(jsonLine))
-			got, err := r.ToProtos(ctx, mockCollect)
+			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
+			So(err, ShouldBeNil)
+			got, err := r.ToProtos(ctx, "", mockCollect)
 			So(err, ShouldBeNil)
 			So(got[0], ShouldResembleProto, &sinkpb.TestResult{
 				TestId:   "tast.lacros.Basic",
@@ -113,8 +114,40 @@ func TestTastConversions(t *testing.T) {
 						Body: &sinkpb.Artifact_FilePath{FilePath: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test/tast/results/tests/lacros.Basic/foo"},
 					},
 				},
-				Tags: []*pb.StringPair{pbutil.StringPair("contacts", "user1@google.com,user2@google.com"),
-					pbutil.StringPair("testKey", "testValue")},
+				Tags: []*pb.StringPair{
+					pbutil.StringPair("contacts", "user1@google.com,user2@google.com"),
+					pbutil.StringPair("testKey", "testValue"),
+				},
+				TestMetadata: &pb.TestMetadata{
+					Name: "tast.lacros.Basic",
+				},
+				StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
+				Duration:  &duration.Duration{Seconds: 1},
+			})
+		})
+		Convey(`With metadata`, func() {
+			jsonLine := genJSONLine(nil)
+			r := &TastResults{
+				BaseDir: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test",
+			}
+			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
+			So(err, ShouldBeNil)
+			got, err := r.ToProtos(ctx, "./test_data/tast/test_metadata.json", mockCollect)
+			So(err, ShouldBeNil)
+			So(got[0], ShouldResembleProto, &sinkpb.TestResult{
+				TestId:   "tast.lacros.Basic",
+				Expected: true,
+				Status:   pb.TestStatus_PASS,
+				Artifacts: map[string]*sinkpb.Artifact{
+					"foo": {
+						Body: &sinkpb.Artifact_FilePath{FilePath: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test/tast/results/tests/lacros.Basic/foo"},
+					},
+				},
+				Tags: []*pb.StringPair{
+					pbutil.StringPair("contacts", "user1@google.com,user2@google.com"),
+					pbutil.StringPair("owners", "owner1@test.com,owner2@test.com"),
+					pbutil.StringPair("bug_component", "b/0"),
+				},
 				TestMetadata: &pb.TestMetadata{
 					Name: "tast.lacros.Basic",
 				},
@@ -130,8 +163,9 @@ func TestTastConversions(t *testing.T) {
 			r := &TastResults{
 				BaseDir: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test",
 			}
-			r.ConvertFromJSON(strings.NewReader(jsonLine))
-			got, err := r.ToProtos(ctx, mockCollect)
+			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
+			So(err, ShouldBeNil)
+			got, err := r.ToProtos(ctx, "", mockCollect)
 			So(err, ShouldBeNil)
 			So(got[0], ShouldResembleProto, &sinkpb.TestResult{
 				TestId:      "tast.lacros.Basic",
@@ -161,8 +195,9 @@ func TestTastConversions(t *testing.T) {
 			r := &TastResults{
 				BaseDir: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test",
 			}
-			r.ConvertFromJSON(strings.NewReader(jsonLine))
-			got, err := r.ToProtos(ctx, mockCollect)
+			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
+			So(err, ShouldBeNil)
+			got, err := r.ToProtos(ctx, "", mockCollect)
 			So(err, ShouldBeNil)
 			So(got[0].Duration, ShouldResemble, &duration.Duration{Seconds: 1})
 			So(got[0], ShouldResembleProto, &sinkpb.TestResult{

@@ -1,0 +1,102 @@
+{
+    "values": [
+        {
+            "testCase": {
+                "id": {
+                    "value": "tauto.test1"
+                },
+                "name": "test1"
+            },
+            "testCaseExec": {
+                "testHarness": {
+                    "tauto": {}
+                }
+            },
+            "testCaseInfo": {
+                "owners": [
+                    {
+                        "email": "owner1@test.com"
+                    }
+                ],
+                "requirements": [
+                    {
+                        "value": "requirement 1"
+                    }
+                ],
+                "bugComponent": {
+                    "value": "b/0"
+                },
+                "criteria": {
+                    "value": "criteria 1"
+                },
+                "hwAgnostic": {
+                    "value": true
+                }
+            }
+        },
+        {
+            "testCase": {
+                "id": {
+                    "value": "tauto.test2"
+                },
+                "name": "test2"
+            },
+            "testCaseExec": {
+                "testHarness": {
+                    "tauto": {}
+                }
+            },
+            "testCaseInfo": {
+                "owners": [
+                    {
+                        "email": "owner1@test.com"
+                    },
+                    {
+                        "email": "owner2@test.com"
+                    }
+                ]
+            }
+        },
+        {
+            "testCase": {
+                "id": {
+                    "value": "tauto.test3"
+                },
+                "name": "test3"
+            },
+            "testCaseExec": {
+                "testHarness": {
+                    "tauto": {}
+                }
+            },
+            "testCaseInfo": {
+                "requirements": [
+                    {
+                        "value": "requirement a"
+                    },
+                    {
+                        "value": "requirement b"
+                    }
+                ]
+            }
+        },
+        {
+            "testCase": {
+                "id": {
+                    "value": "tauto.test4"
+                },
+                "name": "test4"
+            },
+            "testCaseExec": {
+                "testHarness": {
+                    "tauto": {}
+                }
+            },
+            "testCaseInfo": {
+                "bugComponent": {
+                    "value": "b/0"
+                }
+            }
+        }
+    ]
+}

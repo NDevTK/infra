@@ -34,6 +34,7 @@ type baseRun struct {
 	// Flags.
 	artifactDir            string
 	resultFile             string
+	testMetadataFile       string
 	trimArtifactPrefix     string
 	invocationLinkArtifact string
 
@@ -51,12 +52,15 @@ func (r *baseRun) RegisterGlobalFlags() {
 	r.Flags.StringVar(&r.resultFile, "result-file", "", text.Doc(`
 				Path to the result output file. Required.
 			`))
+	r.Flags.StringVar(&r.testMetadataFile, "test-metadata-file", "", text.Doc(`
+				Path to the CFT test metadata output file. Optional.
+			`))
 	r.Flags.StringVar(&r.trimArtifactPrefix, "trim-artifact-prefix", "", text.Doc(`
 				Artifact Path to be trimmed, e.g. absolute path inside a container. Optional.
 			`))
 	r.Flags.StringVar(&r.invocationLinkArtifact, "invocation-link-artifacts", "", text.Doc(`
 				Name and URL pairs to insert as invocation level artifacts, e.g. stainless_logs=https://stainless/logs/1234,testhaus_logs=https://testhaus/logs/1234
-				URLs must be url encoded, so '=', ',' and ' ' are not valid characters.
+				URLs must be url encoded, so '=', ',' and ' ' are not valid characters. Optional.
 	`))
 }
 

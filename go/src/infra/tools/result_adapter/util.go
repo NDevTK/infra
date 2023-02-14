@@ -8,14 +8,18 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"text/template"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/duration"
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 const (
@@ -136,4 +140,75 @@ func ReadJSONFileToString(file string) string {
 	}
 
 	return string(data)
+}
+
+// parseMetadata reads the CFT test metadata file and parses into a map keyed by the test name.
+func parseMetadata(filePath string) (map[string]*api.TestCaseMetadata, error) {
+	f, err := os.ReadFile(filePath)
+	if err != nil {
+		return nil, errors.Annotate(err, "read test metadata file").Err()
+	}
+
+	metadata := api.TestCaseMetadataList{}
+	if err := protojson.Unmarshal(f, &metadata); err != nil {
+		return nil, errors.Annotate(err, "parsing test metadata file contents").Err()
+	}
+
+	mp := make(map[string]*api.TestCaseMetadata, 0)
+	for _, v := range metadata.Values {
+		if v.TestCase != nil {
+			mp[v.TestCase.Name] = v
+		}
+	}
+	return mp, nil
+}
+
+// metadataToTags converts the following TestCaseMetadata to a list of key value
+// string pairs. Repeated fields are joined with a "," and boolean fields are
+// converted to "true" or "false" strings:
+//   - owners (repeated), e.g. ["chromeos-platform-power@google.com"]
+//   - requirements (repeated), e.g. ["boot-perf-0001-v01"]
+//   - bug_component, e.g. "b:167191"
+//   - criteria, e.g. "This test is a benchmark"
+//   - hw_agnostic (boolean), e.g. true, false
+func metadataToTags(metadata *api.TestCaseMetadata) []*pb.StringPair {
+	if metadata == nil {
+		return []*pb.StringPair{}
+	}
+
+	tags := make([]*pb.StringPair, 0)
+	info := metadata.TestCaseInfo
+	if info == nil {
+		return []*pb.StringPair{}
+	}
+
+	if info.Owners != nil {
+		owners := make([]string, 0)
+		for _, o := range info.Owners {
+			owners = append(owners, o.Email)
+		}
+		tags = AppendTags(tags, "owners", strings.Join(owners, ","))
+	}
+
+	if info.Requirements != nil {
+		requirements := make([]string, 0)
+		for _, r := range info.Requirements {
+			requirements = append(requirements, r.Value)
+		}
+		tags = AppendTags(tags, "requirements", strings.Join(requirements, ","))
+	}
+
+	if info.BugComponent != nil {
+		tags = AppendTags(tags, "bug_component", info.BugComponent.Value)
+	}
+
+	if info.Criteria != nil {
+		tags = AppendTags(tags, "criteria", info.Criteria.Value)
+	}
+
+	if info.HwAgnostic != nil {
+		tags = AppendTags(tags, "hw_agnostic", strconv.FormatBool(info.HwAgnostic.Value))
+	}
+
+	return tags
 }

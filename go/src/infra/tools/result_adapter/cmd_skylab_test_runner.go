@@ -23,6 +23,7 @@ func cmdSkylabTestRunner() *subcommands.Command {
 			Runs the test command and waits for it to finish, then converts the skylab_test_runner
 			results to ResultSink native format and uploads them to ResultDB via ResultSink.
 			A JSON line file is expected for -result-file.
+			An optional -test-metadata-file is expected for CFT runs.
 		`),
 		CommandRun: func() subcommands.CommandRun {
 			r := &skylabTestRunnerRun{}
@@ -62,7 +63,7 @@ func (r *skylabTestRunnerRun) generateTestResults(ctx context.Context, _ []byte)
 	if err = skylabTestRunnerFormat.ConvertFromJSON(f); err != nil {
 		return nil, errors.Annotate(err, "did not recognize as skylab_test_runner Result").Err()
 	}
-	trs, err := skylabTestRunnerFormat.ToProtos(ctx)
+	trs, err := skylabTestRunnerFormat.ToProtos(ctx, r.testMetadataFile)
 	if err != nil {
 		return nil, errors.Annotate(err, "converting as skylab_test_runner Results").Err()
 	}

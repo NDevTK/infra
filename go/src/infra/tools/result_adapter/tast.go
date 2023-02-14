@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
@@ -73,7 +74,16 @@ func (r *TastResults) ConvertFromJSON(reader io.Reader) error {
 }
 
 // ToProtos converts test results in r to []*sinkpb.TestResult.
-func (r *TastResults) ToProtos(ctx context.Context, processArtifacts func(string) (map[string]string, error)) ([]*sinkpb.TestResult, error) {
+func (r *TastResults) ToProtos(ctx context.Context, testMetadataFile string, processArtifacts func(string) (map[string]string, error)) ([]*sinkpb.TestResult, error) {
+	metadata := map[string]*api.TestCaseMetadata{}
+	var err error
+	if testMetadataFile != "" {
+		metadata, err = parseMetadata(testMetadataFile)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	// Convert all tast cases to TestResult.
 	var ret []*sinkpb.TestResult
 	for _, c := range r.Cases {
@@ -98,6 +108,11 @@ func (r *TastResults) ToProtos(ctx context.Context, processArtifacts func(string
 		contacts := strings.Join(c.Contacts[:], ",")
 		tr.Tags = append(tr.Tags, pbutil.StringPair("contacts", contacts))
 		tr.Tags = append(tr.Tags, c.SearchFlags...)
+
+		testMetadata, ok := metadata[c.Name]
+		if ok {
+			tr.Tags = append(tr.Tags, metadataToTags(testMetadata)...)
+		}
 
 		if status == pb.TestStatus_SKIP {
 			tr.SummaryHtml = "<text-artifact artifact-id=\"Skip Reason\" />"

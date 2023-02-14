@@ -24,6 +24,7 @@ func cmdTast() *subcommands.Command {
 			Runs the test command and waits for it to finish, then converts the tast
 			test results to ResultSink native format and uploads them to ResultDB via ResultSink.
 			A JSON line file e.g. tast/results/streamed_results.jsonl is expected for -result-file.
+			An optional -test-metadata-file is expected for CFT runs.
 			The absolute path for tast result folder should be specified by -artifact-directory.
 		`),
 		CommandRun: func() subcommands.CommandRun {
@@ -70,7 +71,7 @@ func (r *tastRun) generateTestResults(ctx context.Context, _ []byte) ([]*sinkpb.
 	if err = tastFormat.ConvertFromJSON(f); err != nil {
 		return nil, errors.Annotate(err, "did not recognize as Tast").Err()
 	}
-	trs, err := tastFormat.ToProtos(ctx, processArtifacts)
+	trs, err := tastFormat.ToProtos(ctx, r.testMetadataFile, processArtifacts)
 	if err != nil {
 		return nil, errors.Annotate(err, "converting as Tast results format").Err()
 	}

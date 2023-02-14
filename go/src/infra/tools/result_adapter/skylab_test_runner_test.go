@@ -11,6 +11,7 @@ import (
 	"strings"
 	"testing"
 
+	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -109,7 +110,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 	Convey(`ToProtos`, t, func() {
 		Convey("test passes", func() {
 
-			testResults, err := results.ToProtos(ctx)
+			testResults, err := results.ToProtos(ctx, "")
 			So(err, ShouldBeNil)
 
 			expected := []*sinkpb.TestResult{
@@ -162,6 +163,81 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 			So(testResults, ShouldResemble, expected)
 		})
 
+		Convey("test passes with metadata", func() {
+			testCases := make([]TestRunnerTestCase, len(tc))
+			copy(testCases, tc)
+			results := TestRunnerResult{Autotest: TestRunnerAutotest{
+				TestCases: testCases,
+			}}
+			testResults, err := results.ToProtos(ctx, "./test_data/skylab_test_runner/test_metadata.json")
+			So(err, ShouldBeNil)
+
+			expected := []*sinkpb.TestResult{
+				{
+					TestId:    "test1",
+					Expected:  true,
+					Status:    pb.TestStatus_PASS,
+					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
+					Duration:  &duration.Duration{Seconds: 4},
+					Tags: []*pb.StringPair{
+						pbutil.StringPair("owners", "owner1@test.com"),
+						pbutil.StringPair("requirements", "requirement 1"),
+						pbutil.StringPair("bug_component", "b/0"),
+						pbutil.StringPair("criteria", "criteria 1"),
+						pbutil.StringPair("hw_agnostic", "true"),
+					},
+				},
+				{
+					TestId:    "test2",
+					Expected:  true,
+					Status:    pb.TestStatus_SKIP,
+					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
+					Tags: []*pb.StringPair{
+						pbutil.StringPair("owners", "owner1@test.com,owner2@test.com"),
+					},
+				},
+				{
+					TestId:      "test3",
+					Expected:    false,
+					Status:      pb.TestStatus_FAIL,
+					SummaryHtml: "<pre>test failure</pre>",
+					FailureReason: &pb.FailureReason{
+						PrimaryErrorMessage: "test failure",
+					},
+					Tags: []*pb.StringPair{
+						pbutil.StringPair("requirements", "requirement a,requirement b"),
+					},
+				},
+				{
+					TestId:      "test4",
+					Expected:    false,
+					Status:      pb.TestStatus_CRASH,
+					SummaryHtml: "<pre>test error</pre>",
+					FailureReason: &pb.FailureReason{
+						PrimaryErrorMessage: "test error",
+					},
+					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
+					Duration:  &duration.Duration{Seconds: 4},
+					Tags: []*pb.StringPair{
+						pbutil.StringPair("bug_component", "b/0"),
+					},
+				},
+				{
+					TestId:      "test5",
+					Expected:    false,
+					Status:      pb.TestStatus_ABORT,
+					SummaryHtml: "<pre>test abort</pre>",
+					FailureReason: &pb.FailureReason{
+						PrimaryErrorMessage: "test abort",
+					},
+					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
+					Duration:  &duration.Duration{Seconds: 4},
+				},
+			}
+			So(testResults, ShouldHaveLength, 5)
+			So(testResults, ShouldResemble, expected)
+		})
+
 		Convey(`check the oversize failure reason`, func() {
 			// Creates an oversize random failure reason.
 			letterBytes := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -184,7 +260,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 			resultString := fmt.Sprintf(str, failureReason)
 			results := &TestRunnerResult{}
 			results.ConvertFromJSON(strings.NewReader(resultString))
-			testResults, err := results.ToProtos(ctx)
+			testResults, err := results.ToProtos(ctx, "")
 
 			// Checks if the test result conversion succeeded and size limitation was set properly.
 			So(err, ShouldBeNil)
@@ -209,7 +285,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 
 			results := &TestRunnerResult{}
 			results.ConvertFromJSON(strings.NewReader(str))
-			testResults, err := results.ToProtos(ctx)
+			testResults, err := results.ToProtos(ctx, "")
 
 			So(err, ShouldBeNil)
 			So(testResults, ShouldHaveLength, 1)
@@ -234,7 +310,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 
 			results := &TestRunnerResult{}
 			results.ConvertFromJSON(strings.NewReader(str))
-			testResults, err := results.ToProtos(ctx)
+			testResults, err := results.ToProtos(ctx, "")
 
 			So(err, ShouldBeNil)
 			So(testResults, ShouldHaveLength, 1)

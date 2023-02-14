@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -55,7 +56,16 @@ func (r *TestRunnerResult) ConvertFromJSON(reader io.Reader) error {
 }
 
 // ToProtos converts test results in r to []*sinkpb.TestResult.
-func (r *TestRunnerResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, error) {
+func (r *TestRunnerResult) ToProtos(ctx context.Context, testMetadataFile string) ([]*sinkpb.TestResult, error) {
+	metadata := map[string]*api.TestCaseMetadata{}
+	var err error
+	if testMetadataFile != "" {
+		metadata, err = parseMetadata(testMetadataFile)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	var ret []*sinkpb.TestResult
 	for _, c := range r.Autotest.TestCases {
 		status := genTestCaseStatus(c)
@@ -79,6 +89,11 @@ func (r *TestRunnerResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, 
 			if !c.EndTime.IsZero() {
 				tr.Duration = msToDuration(float64(c.EndTime.Sub(c.StartTime).Milliseconds()))
 			}
+		}
+
+		testMetadata, ok := metadata[c.Name]
+		if ok {
+			tr.Tags = metadataToTags(testMetadata)
 		}
 
 		ret = append(ret, tr)

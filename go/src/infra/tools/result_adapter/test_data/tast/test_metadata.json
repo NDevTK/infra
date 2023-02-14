@@ -1,0 +1,33 @@
+{
+    "values": [
+        {
+            "testCase": {
+                "id": {
+                    "value": "tast.lacros.Basic"
+                },
+                "name": "lacros.Basic"
+            },
+            "testCaseExec": {
+                "testHarness": {
+                    "tast": {}
+                }
+            },
+            "testCaseInfo": {
+                "owners": [
+                    {
+                        "email": "owner1@test.com"
+                    },
+                    {
+                        "email": "owner2@test.com"
+                    }
+                ],
+                "bugComponent": {
+                    "value": "b/0"
+                },
+                "criteria": {
+                    "value": ""
+                }
+            }
+        }
+    ]
+}
