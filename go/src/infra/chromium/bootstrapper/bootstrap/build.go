@@ -186,20 +186,7 @@ func (b *BuildBootstrapper) getDependencyConfig(ctx context.Context, input *Inpu
 		return nil, err
 	}
 	if commit != nil {
-		// This breaks the property that a builder can be run against any branch: if the
-		// builder is run against a CL for some branch other than the one that the
-		// configured top-level ref pins, then the configured top-level would be wrong for
-		// that CL. TO address this, we would need to provide some configuration to allow
-		// mapping the dependency ref to the top-level ref.
-		inputCommit := &gitilesCommit{
-			GitilesCommit: &buildbucketpb.GitilesCommit{
-				Host:    dependency.TopLevelRepo.Host,
-				Project: dependency.TopLevelRepo.Project,
-				Ref:     dependency.TopLevelRef,
-			},
-		}
 		return &BootstrapConfig{
-			inputCommit:  inputCommit,
 			configCommit: commit,
 			change:       change,
 		}, nil
