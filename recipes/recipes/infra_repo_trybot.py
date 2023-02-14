@@ -19,7 +19,6 @@ DEPS = [
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
-    'recipe_engine/python',
     'recipe_engine/raw_io',
     'recipe_engine/resultdb',
     'recipe_engine/runtime',
@@ -91,14 +90,14 @@ def RunSteps(api, go_version_variant, run_lint):
             ])
 
       if not internal and api.platform.is_linux and api.platform.bits == 64:
-        api.python(
-            'recipe test',
-            co.path.join('infra', 'recipes', 'recipes.py'),
-            ['test', 'run'])
-        api.python(
+        api.step('recipe test', [
+            'python3',
+            co.path.join('infra', 'recipes', 'recipes.py'), 'test', 'run'
+        ])
+        api.step(
             'recipe lint',
-            co.path.join('infra', 'recipes', 'recipes.py'),
-            ['lint'])
+            ['python3',
+             co.path.join('infra', 'recipes', 'recipes.py'), 'lint'])
   else:
     api.step('skipping Python tests for pure Go change', cmd=None)
 
@@ -124,20 +123,18 @@ def RunSteps(api, go_version_variant, run_lint):
     # will build all registered packages (without uploading them), and run
     # package tests from build/tests/.
     if is_build_change or is_deps_roll:
-      api.python(
+      api.step(
           'cipd - build packages',
-          co.path.join(patch_root, 'build', 'build.py'),
-          venv=True)
-      api.python(
+          ['vpython', co.path.join(patch_root, 'build', 'build.py')])
+      api.step(
           'cipd - test packages integrity',
-          co.path.join(patch_root, 'build', 'test_packages.py'),
-          venv=True)
+          ['vpython',
+           co.path.join(patch_root, 'build', 'test_packages.py')])
       if api.platform.is_win:
         with api.context(env={'GOOS': 'windows', 'GOARCH': 'arm64'}):
-          api.python(
-              'cipd - build packages (ARM64)',
-              co.path.join(patch_root, 'build', 'build.py'),
-              venv=True)
+          api.step('cipd - build packages (ARM64)',
+                   ['vpython',
+                    co.path.join(patch_root, 'build', 'build.py')])
           # Cross-compiling, so no tests.
     else:
       api.step('skipping slow CIPD packaging tests', cmd=None)

@@ -283,7 +283,7 @@
   },
   {
     "cmd": [
-      "python",
+      "python3",
       "[CACHE]/builder/infra/recipes/recipes.py",
       "test",
       "run"
@@ -304,7 +304,7 @@
   },
   {
     "cmd": [
-      "python",
+      "python3",
       "[CACHE]/builder/infra/recipes/recipes.py",
       "lint"
     ],
