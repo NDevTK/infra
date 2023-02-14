@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"strings"
 	"testing"
+	"time"
 	"unicode/utf8"
 
 	"github.com/google/go-cmp/cmp"
@@ -90,6 +91,85 @@ func TestEncodedReturnsValidUTF8(t *testing.T) {
 				// Do nothing. Test successful.
 			} else {
 				t.Errorf("idinfo does not serialize to a utf-8 string: %q --> %q", hex.EncodeToString(bytes), hex.EncodeToString([]byte(str)))
+			}
+		})
+	}
+}
+
+// TestEndToEnd tests the exact encoding of an IDInfo.
+// We are upstreaming lex64 from Karte to LUCI, so we need to make sure that IDs
+// have the same interpretation before and after this change.
+func TestEndToEnd(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		name   string
+		idInfo idInfo
+		out    string
+		ok     bool
+	}{
+		{
+			name: "karte record at the beginning of time",
+			idInfo: idInfo{
+				Version:        "zzzz",
+				CoarseTime:     0,
+				FineTime:       0,
+				Disambiguation: 0,
+			},
+			out: "zzzz0000000000000000000000",
+			ok:  true,
+		},
+		{
+			name: "karte record at the beginning of 2022",
+			idInfo: idInfo{
+				Version: "zzzz",
+				// Date(year int, month Month, day, hour, min, sec, nsec int, loc *Location)
+				CoarseTime:     uint64(time.Date(2022, 1, 1, 0, 0, 0, 0, time.UTC).Unix()),
+				FineTime:       0,
+				Disambiguation: 0,
+			},
+			out: "zzzz0000067EaN000000000000",
+			ok:  true,
+		},
+		{
+			name: "karte record with many non-default values",
+			idInfo: idInfo{
+				Version: "zzzz",
+				// Date(year int, month Month, day, hour, min, sec, nsec int, loc *Location)
+				CoarseTime:     uint64(time.Date(2022, 1, 1, 7, 3, 1, 5, time.UTC).Unix()),
+				FineTime:       2,
+				Disambiguation: 9,
+			},
+			out: "zzzz0000067Ez=J0000200002F",
+			ok:  true,
+		},
+		{
+			name: "karte record with many non-default values",
+			idInfo: idInfo{
+				Version: "zzzz",
+				// Date(year int, month Month, day, hour, min, sec, nsec int, loc *Location)
+				CoarseTime:     uint64(time.Date(2022, 9, 7, 7, 1, 0, 5, time.UTC).Unix()),
+				FineTime:       274,
+				Disambiguation: 633,
+			},
+			out: "zzzz000006BNFPk0004H0002TF",
+			ok:  true,
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			actual, err := tt.idInfo.Encoded()
+			switch {
+			case tt.ok && err != nil:
+				t.Errorf("unexpected error %s", err)
+			case !tt.ok && err == nil:
+				t.Error("error is unexpectedly nil")
+			}
+			if diff := cmp.Diff(tt.out, actual); diff != "" {
+				t.Errorf("unexpcted diff (-want +got): %s", diff)
 			}
 		})
 	}
