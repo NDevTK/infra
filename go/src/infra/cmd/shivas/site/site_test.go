@@ -11,9 +11,9 @@ import (
 	"strings"
 	"testing"
 
-	ufsUtil "infra/unifiedfleet/app/util"
-
 	"go.chromium.org/luci/common/errors"
+
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 // TestEnvFlags_Namespace tests the Namespace() function on env flags accept
@@ -198,5 +198,41 @@ func TestDefaultNamespaceFunctions(t *testing.T) {
 		if (oldErr != nil) != (newErr != nil) {
 			t.Errorf("diff in error with env: %s and flag: %s. old ns: %s, new ns: %s", tt.namespaceEnvVar, tt.namespaceFlag, oldErr, newErr)
 		}
+	}
+}
+
+// TestContains tests the Contain method for positive and negative cases
+func TestContains(t *testing.T) {
+	type args struct {
+		arr []string
+		str string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "contains",
+			args: args{[]string{"a", "b"}, "b"},
+			want: true,
+		},
+		{
+			name: "doesn't contain",
+			args: args{[]string{"a", "b"}, "c"},
+			want: false,
+		},
+		{
+			name: "nil arr",
+			args: args{nil, "c"},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Contains(tt.args.arr, tt.args.str); got != tt.want {
+				t.Errorf("Contains() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

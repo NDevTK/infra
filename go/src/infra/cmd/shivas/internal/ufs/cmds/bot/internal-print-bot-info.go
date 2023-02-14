@@ -74,14 +74,13 @@ func (c *printBotInfoRun) innerRun(a subcommands.Application, args []string, env
 		return err
 	}
 	e := c.envFlags.Env()
-	ns, err := c.envFlags.Namespace(nil, "")
-	if err != nil {
-		// Set namespace to OS namespace for whatever errors.
-		ns = ufsUtil.OSNamespace
-	}
+
+	ns := c.getNamespace()
 	if c.commonFlags.Verbose() {
 		fmt.Printf("Using UnifiedFleet service %s (namespace %s)\n", e.UnifiedFleetService, ns)
 	}
+	ctx = utils.SetupContext(ctx, ns)
+
 	ufsClient := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
@@ -92,12 +91,10 @@ func (c *printBotInfoRun) innerRun(a subcommands.Application, args []string, env
 	var bi *botInfo
 
 	if ns == ufsUtil.BrowserNamespace {
-		ctx = utils.SetupContext(ctx, ufsUtil.BrowserNamespace)
 		if bi, err = getBrowserBotInfo(ctx, ufsClient, args[0]); err != nil {
 			return err
 		}
 	} else {
-		ctx = utils.SetupContext(ctx, ufsUtil.OSNamespace)
 		if bi, err = getOSBotInfo(ctx, ufsClient, args[0], c.byHostname, r); err != nil {
 			return err
 		}
@@ -118,6 +115,19 @@ type botInfo struct {
 }
 
 type botState map[string][]string
+
+// getNamespace returns the namespace we will be using to query UFS given user
+// input. It is guaranteed to be a valid namespace (so we can make assumptions
+// downstream using that fact).
+// Note that this function specifically swallows invalid input and sets as `os`
+func (c *printBotInfoRun) getNamespace() string {
+	ns, err := c.envFlags.Namespace(nil, "")
+	if err != nil {
+		// Set namespace to OS namespace for whatever errors.
+		ns = ufsUtil.OSNamespace
+	}
+	return ns
+}
 
 func getBrowserBotInfo(ctx context.Context, client ufsAPI.FleetClient, id string) (*botInfo, error) {
 	// id is the hostname by default for browser bots

@@ -153,7 +153,7 @@ func (f EnvFlags) Namespace(validNSList []string, defaultNS string) (string, err
 	// This is a separate check from `IsClientNamespace` to ensure that
 	// we catch if `validNSList` contains strings UFS does not expect.
 	// If validNSList is empty, we ignore it
-	if validNSList != nil && !contains(validNSList, ns) {
+	if validNSList != nil && !Contains(validNSList, ns) {
 		return ns, errors.New(fmt.Sprintf("namespace %s is invalid. Users can also set os env SHIVAS_NAMESPACE. Valid namespaces for this command: [%s]", ns, strings.Join(validNSList, ", ")))
 	}
 	// This catches a namespace which the local command thinks is valid, but
@@ -172,7 +172,8 @@ var (
 	AllNamespaces = ufsUtil.ValidClientNamespaceStr()
 )
 
-func contains(arr []string, str string) bool {
+// Contains determines if `arr` has the element `str` as one of it's elements
+func Contains(arr []string, str string) bool {
 	for _, s := range arr {
 		if s == str {
 			return true
