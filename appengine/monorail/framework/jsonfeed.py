@@ -93,11 +93,11 @@ class JsonFeed(servlet.Servlet):
     """Collect page-specific and generic info, then render the page.
 
     Args:
-      project_name: string project name parsed from the URL by webapp2,
+      project_name: string project name parsed from the URL by Flask,
         but we also parse it out in our code.
-      viewed_username: string user email parsed from the URL by webapp2,
+      viewed_username: string user email parsed from the URL by Flask,
         but we also parse it out in our code.
-      hotlist_id: string hotlist id parsed from the URL by webapp2,
+      hotlist_id: string hotlist id parsed from the URL by Flask,
         but we also parse it out in our code.
     """
     self._DoRequestHandling(self.mr.request, self.mr)

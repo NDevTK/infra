@@ -25,16 +25,16 @@ from testing import fake
 from testing import testing_helpers
 
 
-class TestableFlaskServlet(servlet.Servlet):
+class TestableServlet(servlet.Servlet):
   """A tiny concrete subclass of abstract class Servlet."""
 
   def __init__(self, services=None, do_post_redirect=True):
-    super(TestableFlaskServlet, self).__init__(services=services)
+    super(TestableServlet, self).__init__(services=services)
     self.do_post_redirect = do_post_redirect
     self.seen_post_data = None
 
 
-class FlaskServletTest(unittest.TestCase):
+class ServletTest(unittest.TestCase):
 
   def setUp(self):
     services = service_manager.Services(

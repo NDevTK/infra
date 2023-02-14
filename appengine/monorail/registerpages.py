@@ -116,9 +116,9 @@ class ServletRegistry(object):
     self._RegisterAHUrl(services)
     self._RegisterPrpcUrl(services)
     self._RegisterWebComponentsUrl(services)
-    self._RegisteFlaskUrlRules(flask_instance, self.routes)
+    self._RegisterFlaskUrlRules(flask_instance, self.routes)
 
-  def _RegisteFlaskUrlRules(
+  def _RegisterFlaskUrlRules(
       self, flask_instance, rule_tuple, removed_prefix=''):
     """Add url rules to a given Flask instance.
 

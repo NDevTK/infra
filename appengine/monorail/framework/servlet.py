@@ -157,7 +157,7 @@ class Servlet(object):
         self.template = template_helpers.GetTemplate(
             'templates/framework/database-maintenance.ezt',
             eliminate_blank_lines=self._ELIMINATE_BLANK_LINES)
-        self.template.WriteFlaskResponse(
+        self.template.WriteResponse(
             self.response, page_data, content_type='text/html')
         return self.response
 
@@ -325,7 +325,7 @@ class Servlet(object):
         with self.mr.profiler.Phase('gather base data'):
           page_data.update(self.GatherBaseData(self.mr, nonce))
         self._AddHelpDebugPageData(page_data)
-        self._missing_permissions_template.WriteFlaskResponse(
+        self._missing_permissions_template.WriteResponse(
             self.response, page_data, content_type=self.content_type)
 
   def post(self):
@@ -340,7 +340,7 @@ class Servlet(object):
 
   def _RenderResponse(self, page_data):
     logging.info('rendering response len(page_data) is %r', len(page_data))
-    self.template.WriteFlaskResponse(
+    self.template.WriteResponse(
         self.response, page_data, content_type=self.content_type)
 
   def _GatherFlagData(self, mr):

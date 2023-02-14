@@ -156,20 +156,6 @@ class MonorailTemplate(object):
     if content_type:
       response.content_type = content_type
 
-    response.status = data.get('http_response_code', http_client.OK)
-    whole_page = self.GetResponse(data)
-    if data.get('prevent_sniffing'):
-      for sniff_pattern, sniff_replacement in SNIFFABLE_PATTERNS.items():
-        whole_page = whole_page.replace(sniff_pattern, sniff_replacement)
-    start = time.time()
-    response.write(whole_page)
-    logging.info('wrote response in %dms', int((time.time() - start) * 1000))
-
-  def WriteFlaskResponse(self, response, data, content_type=None):
-    """Write the parsed and filled in template to http server."""
-    if content_type:
-      response.content_type = content_type
-
     response.status_code = data.get('http_response_code', http_client.OK)
     whole_page = self.GetResponse(data)
     if data.get('prevent_sniffing'):
