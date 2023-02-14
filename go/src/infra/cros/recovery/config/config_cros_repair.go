@@ -2218,9 +2218,11 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Device is SSHable",
 			},
-			ExecName: "cros_run_shell_command",
+			ExecName: "cros_run_command",
 			ExecExtraArgs: []string{
-				"reboot && exit",
+				"host:dut",
+				"command:reboot",
+				"background:true",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},

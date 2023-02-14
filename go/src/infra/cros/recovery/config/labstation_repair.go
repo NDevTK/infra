@@ -221,9 +221,10 @@ func LabstationRepairConfig() *Configuration {
 						Conditions: []string{
 							"cros_filesystem_io_not_blocked",
 						},
-						ExecName: "cros_run_shell_command",
+						ExecName: "cros_run_command",
 						ExecExtraArgs: []string{
-							"reboot && exit",
+							"command:reboot",
+							"background:true",
 						},
 						RunControl: RunControl_ALWAYS_RUN,
 					},
