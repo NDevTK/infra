@@ -487,6 +487,10 @@ func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 	candidatesFiles := getFirmwareImageCandidates(ctx, req, []string{"image-%s.bin", "./image-%s.bin"}, log)
 	// Some old boards has only one image with vanilla naming in their firmware artifacts.
 	candidatesFiles = append(candidatesFiles, "image.bin", "./image.bin")
+	// TODO(b/269342655) Remove this temporary fix for brya model once the bug closed.
+	if req.Model == "brya" {
+		candidatesFiles = []string{"image-brya0.bin", "./image-brya0.bin"}
+	}
 
 	var imagePath string
 	if req.UseCacheToExtractor {
