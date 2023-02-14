@@ -61,7 +61,7 @@ require (
 	github.com/waigani/diffparser v0.0.0-20190828052634-7391f219313d
 	go.chromium.org/chromiumos/config/go v0.0.0-20230102123018-be9aaedc3af8
 	go.chromium.org/chromiumos/infra/proto/go v0.0.0-20230102123923-ce62ad0b0523
-	go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp v0.0.0-20230117234259-e491613f9977
+	go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp v0.0.0-20230213173618-997bc2cbec84
 	go.chromium.org/luci v0.0.0-20230103053340-8a57daa72e32
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/contrib/detectors/gcp v1.10.0
