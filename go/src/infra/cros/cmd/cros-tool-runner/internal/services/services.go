@@ -30,10 +30,10 @@ import (
 
 const (
 	// Dut service container name template for .
-	crosDutContainerNameTemplate = "cros-dut-%s"
+	crosDutContainerNameTemplate = "cros-dut-%s_%d_%d"
 
 	// Provision service running port, docker info.
-	crosProvisionContainerNameTemplate = "cros-provision-%s"
+	crosProvisionContainerNameTemplate = "cros-provision-%s_%d_%d"
 
 	// Cros Test container name template.
 	crosTestContainerNameTemplate = "cros-test-%d_%d"
@@ -73,7 +73,7 @@ func CreateDutService(ctx context.Context, image *build_api.ContainerImageInfo, 
 func startDutService(ctx context.Context, imagePath, registerName, dutName, networkName string, cacheServer *lab_api.CacheServer, dutSshInfo *lab_api.IpEndpoint, port int, dir string, tokenFile string) (*docker.Docker, error) {
 	crosDutResultDirName := "/tmp/cros-dut"
 	d := &docker.Docker{
-		Name:               fmt.Sprintf(crosDutContainerNameTemplate, dutName),
+		Name:               fmt.Sprintf(crosDutContainerNameTemplate, dutName, os.Getpid(), time.Now().Unix()),
 		RequestedImageName: imagePath,
 		Registry:           registerName,
 		TokenFile:          tokenFile,
@@ -202,7 +202,7 @@ func RunProvisionCLI(ctx context.Context, image *build_api.ContainerImageInfo, n
 	}
 	dutName := req.Dut.Id.GetValue()
 	d := &docker.Docker{
-		Name:               fmt.Sprintf(crosProvisionContainerNameTemplate, dutName),
+		Name:               fmt.Sprintf(crosProvisionContainerNameTemplate, dutName, os.Getpid(), time.Now().Unix()),
 		RequestedImageName: p,
 		Registry:           r,
 		TokenFile:          tokenFile,
