@@ -526,7 +526,7 @@ Returns:
   a Checkout object with commands for common actions on infra checkout.
 ### *recipe_modules* / [infra\_cipd](/recipes/recipe_modules/infra_cipd)
 
-[DEPS](/recipes/recipe_modules/infra_cipd/__init__.py#7): [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/python][recipe_engine/recipe_modules/python], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+[DEPS](/recipes/recipe_modules/infra_cipd/__init__.py#7): [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 PYTHON_VERSION_COMPATIBILITY: PY2+3
 
@@ -556,15 +556,15 @@ Arguments:
 
 Doesn't support nesting.
 
-&mdash; **def [tags](/recipes/recipe_modules/infra_cipd/api.py#116)(self, git_repo_url, revision):**
+&mdash; **def [tags](/recipes/recipe_modules/infra_cipd/api.py#118)(self, git_repo_url, revision):**
 
 Returns tags to be attached to uploaded CIPD packages.
 
-&mdash; **def [test](/recipes/recipe_modules/infra_cipd/api.py#82)(self):**
+&mdash; **def [test](/recipes/recipe_modules/infra_cipd/api.py#83)(self):**
 
 Tests previously built packages integrity.
 
-&mdash; **def [upload](/recipes/recipe_modules/infra_cipd/api.py#89)(self, tags, step_test_data=None):**
+&mdash; **def [upload](/recipes/recipe_modules/infra_cipd/api.py#90)(self, tags, step_test_data=None):**
 
 Uploads previously built packages.
 ### *recipe_modules* / [infra\_system](/recipes/recipe_modules/infra_system)

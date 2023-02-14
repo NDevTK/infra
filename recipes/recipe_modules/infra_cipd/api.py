@@ -66,6 +66,8 @@ class InfraCIPDApi(recipe_api.RecipeApi):
     Prevents build.py from refreshing the python ENV.
     """
     args = [
+        'vpython',
+        self._ctx_path_to_repo.join('build', 'build.py'),
         '--no-freshen-python-env',
         '--builder',
         self.m.buildbucket.builder_name,
@@ -73,22 +75,23 @@ class InfraCIPDApi(recipe_api.RecipeApi):
     if sign_id:
       args.extend(['--signing-identity', sign_id])
 
-    return self.m.python(
+    return self.m.step(
         self._ctx_name_prefix + 'cipd - build packages',
-        self._ctx_path_to_repo.join('build', 'build.py'),
         args,
-        venv=True)
+    )
 
   def test(self):
     """Tests previously built packages integrity."""
-    return self.m.python(
+    return self.m.step(
         self._ctx_name_prefix+'cipd - test packages integrity',
-        self._ctx_path_to_repo.join('build', 'test_packages.py'),
-        venv=True)
+        ['vpython', self._ctx_path_to_repo.join('build', 'test_packages.py')],
+    )
 
   def upload(self, tags, step_test_data=None):
     """Uploads previously built packages."""
     args = [
+      'vpython',
+      self._ctx_path_to_repo.join('build', 'build.py'),
       '--no-rebuild',
       '--upload',
       '--json-output', self.m.json.output(),
@@ -97,12 +100,11 @@ class InfraCIPDApi(recipe_api.RecipeApi):
     ]
     args.extend(tags)
     try:
-      return self.m.python(
+      return self.m.step(
           self._ctx_name_prefix+'cipd - upload packages',
-          self._ctx_path_to_repo.join('build', 'build.py'),
           args,
           step_test_data=step_test_data or self.test_api.example_upload,
-          venv=True)
+      )
     finally:
       step_result = self.m.step.active_result
       output = step_result.json.output or {}
