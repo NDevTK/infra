@@ -306,6 +306,8 @@ forLoop:
 			m = labapi.Chameleon_DP
 		case lab.ChameleonType_CHAMELEON_TYPE_HDMI:
 			m = labapi.Chameleon_HDMI
+		case lab.ChameleonType_CHAMELEON_TYPE_RPI:
+			m = labapi.Chameleon_RPI
 		// Skip V2, V3 which are not physical peripherals but chameleon types
 		case lab.ChameleonType_CHAMELEON_TYPE_V2, lab.ChameleonType_CHAMELEON_TYPE_V3:
 			continue forLoop
