@@ -37,30 +37,51 @@ func SSHConfig(sshKeyPaths []string) *ssh.ClientConfig {
 
 // Run executes command on the target address by SSH.
 func Run(ctx context.Context, pool *sshpool.Pool, addr string, cmd string) (result *tlw.RunResult) {
+	return run(ctx, pool, addr, cmd, false)
+}
+
+// RunBackground executes command on the target address by SSH in background.
+func RunBackground(ctx context.Context, pool *sshpool.Pool, addr string, cmd string) (result *tlw.RunResult) {
+	return run(ctx, pool, addr, cmd, true)
+}
+
+// run executes commands on a remote host by SSH.
+func run(ctx context.Context, pool *sshpool.Pool, addr string, cmd string, background bool) (result *tlw.RunResult) {
+
 	result = &tlw.RunResult{
 		Command:  cmd,
 		ExitCode: -1,
 	}
+	errorMessage := "run SSH"
+	if background {
+		errorMessage = "run SSH background"
+	}
 	if pool == nil {
-		result.Stderr = "run SSH: pool is not initialized"
+		result.Stderr = fmt.Sprintf("%s: pool is not initialized", errorMessage)
 		return
 	} else if addr == "" {
-		result.Stderr = "run SSH: addr is empty"
+		result.Stderr = fmt.Sprintf("%s: addr is empty", errorMessage)
 		return
-	} else if cmd == "" {
-		result.Stderr = fmt.Sprintf("run SSH %q: cmd is empty", addr)
+	}
+	// Update message to print running host.
+	errorMessage = fmt.Sprintf("run SSH %q", addr)
+	if background {
+		errorMessage = fmt.Sprintf("run SSH %q in background", addr)
+	}
+	if cmd == "" {
+		result.Stderr = fmt.Sprintf("%s: cmd is empty", errorMessage)
 		return
 	}
 	sc, err := pool.GetContext(ctx, addr)
 	if err != nil {
-		result.Stderr = fmt.Sprintf("run SSH %q: fail to get client from pool; %s", addr, err)
+		result.Stderr = fmt.Sprintf("%s: fail to get client from pool; %s", errorMessage, err)
 		return
 	}
 	defer func() {
 		pool.Put(addr, sc)
 		log.Debugf(ctx, "Finished update SSH pool for %q!", addr)
 	}()
-	result = createSessionAndExecute(ctx, cmd, sc)
+	result = createSessionAndExecute(ctx, cmd, sc, true)
 	log.Debugf(ctx, "Run SSH %q: Cmd: %q", addr, result.Command)
 	log.Debugf(ctx, "Run SSH %q: ExitCode: %d", addr, result.ExitCode)
 	log.Debugf(ctx, "Run SSH %q: Stdout: %s", addr, result.Stdout)
@@ -71,7 +92,7 @@ func Run(ctx context.Context, pool *sshpool.Pool, addr string, cmd string) (resu
 // createSessionAndExecute creates ssh session and perform execution by ssh.
 //
 // The function also aborted execution if context canceled.
-func createSessionAndExecute(ctx context.Context, cmd string, client *ssh.Client) (result *tlw.RunResult) {
+func createSessionAndExecute(ctx context.Context, cmd string, client *ssh.Client, background bool) (result *tlw.RunResult) {
 	result = &tlw.RunResult{
 		Command:  cmd,
 		ExitCode: -1,
@@ -105,21 +126,29 @@ func createSessionAndExecute(ctx context.Context, cmd string, client *ssh.Client
 		}
 		return result
 	}
-	// Chain to run ssh in separate thread and wait for single response from it.
-	// If context will be closed before it will abort the session.
-	sw := make(chan bool, 1)
-	var runErr error
-	go func() {
-		runErr = session.Run(cmd)
-		sw <- true
-	}()
-	select {
-	case <-sw:
+	if background {
+		// No need to run SSH in separate thread and wait for response.
+		runErr := session.Start(cmd)
 		return exit(runErr)
-	case <-ctx.Done():
-		// At the end abort session.
-		// Session will be closed in defer.
-		session.Signal(ssh.SIGABRT)
-		return exit(ctx.Err())
+	} else {
+		// Chain to run ssh in separate thread and wait for single response from it.
+		// If context will be closed before it will abort the session.
+		sw := make(chan bool, 1)
+		var runErr error
+		go func() {
+			runErr = session.Run(cmd)
+			sw <- true
+		}()
+		select {
+		case <-sw:
+			return exit(runErr)
+		case <-ctx.Done():
+			// At the end abort session.
+			// Session will be closed in defer.
+			if err := session.Signal(ssh.SIGABRT); err != nil {
+				log.Errorf(ctx, "Fail to abort context by ABORT signal: %s", err)
+			}
+			return exit(ctx.Err())
+		}
 	}
 }
