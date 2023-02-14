@@ -12,7 +12,7 @@ DEPS = [
   'recipe_engine/file',
   'recipe_engine/path',
   'recipe_engine/platform',
-  'recipe_engine/python',
+  'recipe_engine/step',
   'recipe_engine/time',
 ]
 
@@ -24,10 +24,10 @@ def RunSteps(api):
   api.file.write_text('write %s' % name, root_dir.join(name),
                       str(api.time.time()))
   api.gsutil.upload(root_dir.join(name), 'luci-playground', name)
-  api.python(
+  api.step(
       'upload_to_google_storage',
-      api.depot_tools.upload_to_google_storage_path,
-      ['-b', 'luci-playground', root_dir.join(name)])
+      ['python3', api.depot_tools.upload_to_google_storage_path,
+       '-b', 'luci-playground', root_dir.join(name)])
 
 
 def GenTests(api):

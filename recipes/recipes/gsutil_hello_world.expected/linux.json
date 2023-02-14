@@ -37,7 +37,7 @@
   },
   {
     "cmd": [
-      "python",
+      "python3",
       "RECIPE_REPO[depot_tools]/upload_to_google_storage.py",
       "-b",
       "luci-playground",
