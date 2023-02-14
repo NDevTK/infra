@@ -16,7 +16,6 @@ DEPS = [
     'recipe_engine/json',
     'recipe_engine/path',
     'recipe_engine/proto',
-    'recipe_engine/python',
     'recipe_engine/random',
     'recipe_engine/raw_io',
     'recipe_engine/step',
