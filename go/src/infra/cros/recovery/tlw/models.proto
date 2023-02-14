@@ -23,6 +23,8 @@ message RunRequest {
   repeated string args = 3;
   // Command execution timeout.
   google.protobuf.Duration timeout = 4;
+  // Run command in background.
+  bool in_background = 5;
 }
 
 // RunResult represents result of executed command.
