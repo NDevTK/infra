@@ -10,6 +10,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"infra/libs/cipkg"
 	"infra/libs/cipkg/builtins"
@@ -101,6 +102,11 @@ func CPythonFromPath(dir, cipdName string) (cipkg.Generator, error) {
 		path, err := os.Executable()
 		if err != nil {
 			return nil, errors.Annotate(err, "failed to get executable").Err()
+		}
+		if runtime.GOOS != "windows" {
+			if path, err = filepath.EvalSymlinks(path); err != nil {
+				return nil, errors.Annotate(err, "failed to eval symlink to executable").Err()
+			}
 		}
 		cpythonDir = filepath.Join(filepath.Dir(path), dir)
 	}

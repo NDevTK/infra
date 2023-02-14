@@ -22,3 +22,13 @@ func PythonVENV(path, py string) string {
 	}
 	return filepath.Join(path, "bin", py)
 }
+
+// On Darwin, because vpython is an app bundle, cpython is located at
+// vpython.app/Contents/Resources. On other platforms cpython is next to the
+// vpython binary.
+func DefaultBundleDir(version string) string {
+	if runtime.GOOS == "darwin" {
+		return filepath.Join("..", "Resources", version)
+	}
+	return version
+}

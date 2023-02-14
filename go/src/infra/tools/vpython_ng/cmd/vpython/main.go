@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"infra/tools/vpython_ng/pkg/application"
+	"infra/tools/vpython_ng/pkg/common"
 	"infra/tools/vpython_ng/pkg/python"
 	"infra/tools/vpython_ng/pkg/wheels"
 
@@ -95,7 +96,7 @@ func main() {
 		rt = GetPythonRuntime(v)
 	}
 
-	bundle := rt.Version
+	bundle := common.DefaultBundleDir(rt.Version)
 	if app.InterpreterPath != "" {
 		bundle = app.InterpreterPath
 	}

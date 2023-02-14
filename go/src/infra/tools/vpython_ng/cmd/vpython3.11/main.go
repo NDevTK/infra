@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"infra/tools/vpython_ng/pkg/application"
+	"infra/tools/vpython_ng/pkg/common"
 	"infra/tools/vpython_ng/pkg/python"
 	"infra/tools/vpython_ng/pkg/wheels"
 
@@ -42,7 +43,7 @@ func main() {
 
 	app.Must(app.LoadSpec())
 
-	bundle := "3.11"
+	bundle := common.DefaultBundleDir("3.11")
 	if app.InterpreterPath != "" {
 		bundle = app.InterpreterPath
 	}
