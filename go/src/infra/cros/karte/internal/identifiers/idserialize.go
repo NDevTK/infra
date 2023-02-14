@@ -10,9 +10,8 @@ import (
 	"fmt"
 	"time"
 
+	"go.chromium.org/luci/common/data/lex64"
 	"go.chromium.org/luci/common/errors"
-
-	"infra/cros/karte/internal/lex64"
 )
 
 // Further fields may be added after Disambiguation without breaking backward-compatibility.
@@ -51,7 +50,11 @@ func (i *idInfo) Encoded() (string, error) {
 	if err != nil {
 		return "", errors.Annotate(err, "encoded").Err()
 	}
-	encoded, err := lex64.Encode(bytes, false)
+	encoding, err := lex64.GetEncoding(lex64.V1)
+	if err != nil {
+		return "", errors.Annotate(err, "encode").Err()
+	}
+	encoded, err := lex64.Encode(encoding, bytes)
 	if err != nil {
 		return "", errors.Annotate(err, "encoded").Err()
 	}
