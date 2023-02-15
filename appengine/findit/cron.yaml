@@ -12,7 +12,7 @@ cron:
 
 - description: Query and export incremental coverage metrics to bigquery.
   url: /coverage/cron/incremental-coverage
-  schedule: every wednesday 3:00
+  schedule: every day 3:00
   timezone: America/Los_Angeles
   retry_parameters:
     job_retry_limit: 0
