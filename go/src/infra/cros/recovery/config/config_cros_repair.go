@@ -13,10 +13,7 @@ func crosRepairPlan() *Plan {
 		CriticalActions: []string{
 			"Collect logs and crashinfo",
 			"Set state: repair_failed",
-			"dut_has_board_name",
-			"dut_has_model_name",
 			"Device is pingable",
-			// Critical actions above this line are linearized. See b:255051938 for details.
 			"Device is SSHable",
 			"Collect logs and crashinfo",
 			"Verify internal storage",
@@ -31,7 +28,12 @@ func crosRepairPlan() *Plan {
 			"Verify tmp_fwver is updated correctly",
 			"Verify tpm_kernver is updated correctly",
 			"Verify present of gsctool",
-			"Audit",
+			"Audit battery",
+			"Audit storage (SMART only)",
+			"Audit wifi",
+			"Audit bluetooth",
+			"Audit cellular",
+			"Stop if DUT needs replacement",
 			"Firmware validations",
 			"Login UI is up",
 			"Can list RW VPD Keys",
@@ -176,9 +178,9 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
-		"Check DUT state and fail if needs replacement": {
+		"Stop if DUT needs replacement": {
 			Docs: []string{
-				"Verify DUT internal storage",
+				"Plan stopper if the DUT has state 'needs_replacement'.",
 			},
 			ExecName: "dut_state_match",
 			ExecExtraArgs: []string{
@@ -1023,21 +1025,6 @@ func crosRepairActions() map[string]*Action {
 				"Battery is present on device",
 			},
 			ExecName: "sample_fail",
-		},
-		"Audit": {
-			Docs: []string{
-				"Perform audit testing on the host.",
-			},
-			Dependencies: []string{
-				"Read OS version",
-				"Audit battery",
-				"Audit storage (SMART only)",
-				"Audit wifi",
-				"Audit bluetooth",
-				"Audit cellular",
-				"Check DUT state and fail if needs replacement",
-			},
-			ExecName: "sample_pass",
 		},
 		"Audit USB-drive from DUT": {
 			Docs: []string{
