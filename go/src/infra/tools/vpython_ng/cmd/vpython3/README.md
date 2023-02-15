@@ -1,4 +1,4 @@
-# vpython3.8
+# vpython3
 
 This is a reimplementation of vpython targeting drop-in replacement. We
 tried to keep most of the features same, with some exceptions:

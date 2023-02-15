@@ -83,10 +83,14 @@ func copyFiles(ctx context.Context, cmd *exec.Cmd) error {
 		if err != nil {
 			return fmt.Errorf("create dst file failed: %s: %w", dst, err)
 		}
+		defer dstFile.Close()
+
 		srcFile, err := cf.Files.Open(path)
 		if err != nil {
 			return fmt.Errorf("open src file failed: %s: %w", dst, err)
 		}
+		defer srcFile.Close()
+
 		if _, err := io.Copy(dstFile, srcFile); err != nil {
 			return fmt.Errorf("copy file failed: %s: %w", dst, err)
 		}
@@ -151,6 +155,7 @@ func WalkDir(src fs.FS, root string, h hash.Hash, fn fs.WalkDirFunc) error {
 			if err != nil {
 				return fmt.Errorf("failed to open file: %s: %w", name, err)
 			}
+			defer f.Close()
 			if _, err := io.Copy(tw, f); err != nil {
 				return fmt.Errorf("failed to write file: %s: %w", name, err)
 			}
@@ -190,6 +195,7 @@ func (ef *FSWithMode) Stat(name string) (fs.FileInfo, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer f.Close()
 	info, err := f.Stat()
 	if err != nil {
 		return nil, err

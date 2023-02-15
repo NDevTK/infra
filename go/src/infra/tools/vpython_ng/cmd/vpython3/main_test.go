@@ -36,12 +36,23 @@ func testData(filename string) string {
 
 var testStorageDir string
 
-func cmd(app *application.Application) *exec.Cmd {
+func getPythonEnvironment(ver string) *python.Environment {
+	rt := GetPythonRuntime(ver)
+	return &python.Environment{
+		Executable: rt.Executable,
+		CPython: python.CPython3FromCIPD(map[string]string{
+			"3.8":  "version:2@3.8.10.chromium.24",
+			"3.11": "version:2@3.11.1.chromium.25",
+		}[ver]),
+		Virtualenv: python.VirtualenvFromCIPD(rt.Virtualenv),
+	}
+}
+
+func setupApp(app *application.Application) {
 	app.Arguments = append([]string{
 		"-vpython-root",
 		testStorageDir,
 	}, app.Arguments...)
-	app.PythonExecutable = "python3"
 
 	app.Initialize()
 
@@ -49,12 +60,16 @@ func cmd(app *application.Application) *exec.Cmd {
 	So(app.ParseArgs(), ShouldBeNil)
 
 	So(app.LoadSpec(), ShouldBeNil)
+}
 
-	env := python.Environment{
-		Executable: app.PythonExecutable,
-		CPython:    python.CPython3FromCIPD("version:2@3.8.10.chromium.24"),
-		Virtualenv: python.VirtualenvFromCIPD("version:2@16.7.12.chromium.7"),
+func cmd(app *application.Application, env *python.Environment) *exec.Cmd {
+	if env == nil {
+		env = getPythonEnvironment(DefaultPythonVersion)
 	}
+	app.PythonExecutable = env.Executable
+
+	setupApp(app)
+
 	wheels, err := wheels.FromSpec(app.VpythonSpec, env.Pep425Tags())
 	So(err, ShouldBeNil)
 	venv := env.WithWheels(wheels)
@@ -94,37 +109,103 @@ func TestMain(m *testing.M) {
 	os.Exit(rc)
 }
 
-func TestBadCWD(t *testing.T) {
-	Convey("Test bad cwd", t, func() {
-		cwd, err := os.Getwd()
-		So(err, ShouldBeNil)
-		err = os.Chdir(testData("test_bad_cwd"))
-		So(err, ShouldBeNil)
+func TestPythonBasic(t *testing.T) {
+	Convey("Test python basic", t, func() {
+		var env *python.Environment
+		for _, ver := range []string{"3.8", "3.11"} {
+			env = getPythonEnvironment(ver)
+		}
 
-		c := cmd(&application.Application{
-			Arguments: []string{
-				"bisect.py",
-			},
+		Convey("test bad cwd", func() {
+			cwd, err := os.Getwd()
+			So(err, ShouldBeNil)
+			err = os.Chdir(testData("test_bad_cwd"))
+			So(err, ShouldBeNil)
+
+			c := cmd(&application.Application{
+				Arguments: []string{
+					"bisect.py",
+				},
+			}, env)
+			So(output(c), ShouldEqual, "SUCCESS")
+
+			err = os.Chdir(cwd)
+			So(err, ShouldBeNil)
 		})
-		So(output(c), ShouldEqual, "SUCCESS")
 
-		err = os.Chdir(cwd)
+		Convey("Test exit code", func() {
+			c := cmd(&application.Application{
+				Arguments: []string{
+					"-vpython-spec",
+					testData("default.vpython3"),
+					testData("test_exit_code.py"),
+				},
+			}, env)
+
+			err := output(c).(error)
+			rc, has := exitcode.Get(err)
+			So(has, ShouldBeTrue)
+			So(rc, ShouldEqual, 42)
+		})
+	})
+}
+
+func TestParseArguments(t *testing.T) {
+	parseArgs := func(args ...string) error {
+		app := &application.Application{
+			Arguments: args,
+		}
+		app.Initialize()
+		return app.ParseArgs()
+	}
+
+	Convey("Test unknown argument", t, func() {
+		err := parseArgs(
+			"-vpython-spec",
+			testData("default.vpython3"),
+			"-vpython-test",
+		)
+		So(err.Error(), ShouldContainSubstring, "-vpython-test")
+
+		err = parseArgs(
+			"-vpython-spec",
+			testData("default.vpython3"),
+			"--",
+			"-vpython-test",
+		)
 		So(err, ShouldBeNil)
 	})
 }
 
-func TestExitCode(t *testing.T) {
-	Convey("Test exit code", t, func() {
-		c := cmd(&application.Application{
+func TestPythonFromPath(t *testing.T) {
+	Convey("Test python from path", t, func() {
+		env := getPythonEnvironment(DefaultPythonVersion)
+
+		app := &application.Application{
 			Arguments: []string{
 				"-vpython-spec",
 				testData("default.vpython3"),
 				testData("test_exit_code.py"),
 			},
-		})
+			PythonExecutable: env.Executable,
+		}
+		setupApp(app)
 
-		err := output(c)
-		rc, has := exitcode.Get(err.(error))
+		// We are not actually building venv, but this should also work for python
+		// package.
+		err := app.BuildVENV(env.CPython)
+		So(err, ShouldBeNil)
+
+		// Python located at ${CPython}/bin/python3
+		dir := filepath.Dir(filepath.Dir(app.PythonExecutable))
+		py, err := python.CPythonFromPath(dir, "cpython3")
+		So(err, ShouldBeNil)
+		env.CPython = py
+
+		// Run actual command
+		c := cmd(app, env)
+		err = output(c).(error)
+		rc, has := exitcode.Get(err)
 		So(has, ShouldBeTrue)
 		So(rc, ShouldEqual, 42)
 	})
@@ -139,7 +220,7 @@ func TestLegacyCache(t *testing.T) {
 				testData("default.vpython3"),
 				testData("something.py"),
 			},
-		})
+		}, nil)
 
 		// Run old vpython's venv creation and trigger prune
 		cfg := venv.Config{
@@ -181,37 +262,10 @@ func TestLegacyCache(t *testing.T) {
 				testData("default.vpython3"),
 				testData("something.py"),
 			},
-		})
+		}, nil)
 
 		// Check old vpython cache exist
 		_, err = os.Stat(root)
-		So(err, ShouldBeNil)
-	})
-}
-
-func TestParseArguments(t *testing.T) {
-	parseArgs := func(args ...string) error {
-		app := &application.Application{
-			Arguments: args,
-		}
-		app.Initialize()
-		return app.ParseArgs()
-	}
-
-	Convey("Test unknown argument", t, func() {
-		err := parseArgs(
-			"-vpython-spec",
-			testData("default.vpython3"),
-			"-vpython-test",
-		)
-		So(err.Error(), ShouldContainSubstring, "-vpython-test")
-
-		err = parseArgs(
-			"-vpython-spec",
-			testData("default.vpython3"),
-			"--",
-			"-vpython-test",
-		)
 		So(err, ShouldBeNil)
 	})
 }
@@ -226,7 +280,7 @@ func BenchmarkStartup(b *testing.B) {
 					"-c",
 					"print(1)",
 				},
-			})
+			}, nil)
 		}
 		So(output(c()), ShouldEqual, "1")
 		b.ResetTimer()

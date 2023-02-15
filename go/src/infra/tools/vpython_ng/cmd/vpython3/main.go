@@ -17,6 +17,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 )
 
+const DefaultPythonVersion = "3.8"
+
 type PythonRuntime struct {
 	Version     string
 	Executable  string
@@ -47,7 +49,7 @@ func GetPythonRuntime(ver string) *PythonRuntime {
 }
 
 func main() {
-	rt := GetPythonRuntime("3.8")
+	rt := GetPythonRuntime(DefaultPythonVersion)
 
 	app := application.Application{
 		PruneThreshold:    7 * 24 * time.Hour, // One week.

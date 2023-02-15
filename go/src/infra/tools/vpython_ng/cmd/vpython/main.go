@@ -57,7 +57,7 @@ func GetPythonRuntime(ver string) *PythonRuntime {
 
 func DefaultPythonVersion() string {
 	switch filepath.Base(os.Args[0]) {
-	case "vpython":
+	case "vpython", "vpython.exe":
 		return "2.7"
 	default:
 		return "3.8"
