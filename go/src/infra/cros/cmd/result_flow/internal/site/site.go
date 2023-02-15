@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 
 	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
 
 // DefaultDeadlineSeconds is the default command deadline in seconds.
@@ -38,10 +39,11 @@ var DefaultAuthOptions = auth.Options{
 	// URI is configured to be 'localhost'. If someone decides to reuse such
 	// ClientSecret they have to run something on user's local machine anyway
 	// to get the refresh_token.
-	ClientID:     "446450136466-2hr92jrq8e6i4tnsa56b52vacp7t3936.apps.googleusercontent.com",
-	ClientSecret: "uBfbay2KCy9t4QveJ-dOqHtp",
-	SecretsDir:   SecretsDir(),
-	Scopes:       []string{auth.OAuthScopeEmail, authScopeBigquery, authScopePubsub},
+	ClientID:          "446450136466-mj75ourhccki9fffaq8bc1e50di315po.apps.googleusercontent.com",
+	ClientSecret:      "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",
+	LoginSessionsHost: chromeinfra.LoginSessionsHost,
+	SecretsDir:        SecretsDir(),
+	Scopes:            []string{auth.OAuthScopeEmail, authScopeBigquery, authScopePubsub},
 }
 
 // SecretsDir returns an absolute path to a directory (in $HOME) to keep secret

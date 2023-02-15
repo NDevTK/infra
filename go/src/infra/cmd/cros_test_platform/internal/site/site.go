@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/gcloud/gs"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
 
 // DefaultAuthOptions is an auth.Options struct prefilled with command-wide
@@ -25,10 +26,11 @@ var DefaultAuthOptions = auth.Options{
 	// Note that ClientSecret is not really a secret since it's hardcoded into
 	// the source code (and binaries). It's totally fine, as long as it's callback
 	// URI is configured to be 'localhost'.
-	ClientID:     "446450136466-2hr92jrq8e6i4tnsa56b52vacp7t3936.apps.googleusercontent.com",
-	ClientSecret: "uBfbay2KCy9t4QveJ-dOqHtp",
-	SecretsDir:   secretsDir(),
-	Scopes:       append(gs.ReadOnlyScopes, gitiles.OAuthScope, auth.OAuthScopeEmail),
+	ClientID:          "446450136466-mj75ourhccki9fffaq8bc1e50di315po.apps.googleusercontent.com",
+	ClientSecret:      "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",
+	LoginSessionsHost: chromeinfra.LoginSessionsHost,
+	SecretsDir:        secretsDir(),
+	Scopes:            append(gs.ReadOnlyScopes, gitiles.OAuthScope, auth.OAuthScopeEmail),
 }
 
 // SecretsDir returns an absolute path to a directory (in $HOME) to keep secret

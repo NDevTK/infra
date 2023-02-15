@@ -1,5 +1,10 @@
 # setup-project has its own OAuth id in code, but ChOps security confirmed that
 # this is a public secret -- see crbug/1232478 and crrev.com/c/3056152.
 300815340602-o77gh6n19i8796dqc9dsu99vcj23jf3o.apps.googleusercontent.com
+
+# TODO(crbug/1406354): Remove this client ID when deprecation of OOB is done.
 # this is a public secret -- it is the ID for skylab, crosfleet, mallet, stableversion2, and others.
 446450136466-2hr92jrq8e6i4tnsa56b52vacp7t3936.apps.googleusercontent.com
+
+# this is a public secret -- it is the ID for skylab, crosfleet, mallet, stableversion2, and others
+446450136466-mj75ourhccki9fffaq8bc1e50di315po.apps.googleusercontent.com
