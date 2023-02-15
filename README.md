@@ -44,7 +44,7 @@ If you've added a new module, run your tests with test.py:
 
 1. Create a .coveragerc file in the root directory of the module you want to
    test. Take a look at another .coveragerc to see what to include in that.
-1. Create a "test" directory in the root directory of the module you want to
+2. Create a "test" directory in the root directory of the module you want to
    test. Move your `*_test.py` files to this directory.
 
 Double-check that your tests are getting picked up when you want them to be:
