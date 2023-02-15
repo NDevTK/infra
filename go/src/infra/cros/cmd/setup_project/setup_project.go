@@ -30,7 +30,6 @@ const (
 	chromeInternalReviewHost = "https://chrome-internal-review.googlesource.com"
 	googlePrivacyPolicy      = "https://policies.google.com/privacy"
 	googleTermsOfService     = "https://policies.google.com/terms"
-	manifestInternalProject  = "chromeos/manifest-internal"
 )
 
 var (
@@ -195,13 +194,8 @@ type localManifest struct {
 	downloadTo string
 }
 
-func projectsInProgram(ctx context.Context, gitilesClient gitiles.APIClient, program, branch string) ([]string, error) {
+func projectsInProgram(ctx context.Context, gitilesClient gitiles.APIClient, program string) ([]string, error) {
 	projects, err := gitilesClient.Projects()
-	if err != nil {
-		return nil, err
-	}
-
-	internalManifest, err := gitilesClient.DownloadFileFromGitiles(manifestInternalProject, branch, "internal_full.xml")
 	if err != nil {
 		return nil, err
 	}
@@ -209,11 +203,9 @@ func projectsInProgram(ctx context.Context, gitilesClient gitiles.APIClient, pro
 	programProjects := []string{}
 	for _, project := range projects {
 		prefix := fmt.Sprintf("chromeos/project/%s/", program)
-		// Only include projects that are in the manifest.
-		if strings.HasPrefix(project, prefix) && strings.Contains(internalManifest, fmt.Sprintf("\"%s\"", project)) {
+		if strings.HasPrefix(project, prefix) {
 			programProjects = append(programProjects, strings.TrimPrefix(project, prefix))
 		}
-
 	}
 	return programProjects, nil
 }
@@ -265,7 +257,7 @@ func (b *setupProject) setupProject(ctx context.Context, gsClient gs.Client, git
 	var projects []string
 	if b.allProjects {
 		var err error
-		projects, err = projectsInProgram(ctx, gitilesClient, b.program, b.localManifestBranch)
+		projects, err = projectsInProgram(ctx, gitilesClient, b.program)
 		if err != nil {
 			return errors.Annotate(err, "error getting all projects for program %s", b.program).Err()
 		}

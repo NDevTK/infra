@@ -19,17 +19,6 @@ import (
 	"infra/cros/internal/gs"
 )
 
-const internalManifest = `<manifest>
-	<project path="src/project/foo/bar1"
-	remote="cros-internal"
-	name="chromeos/project/foo/bar1"
-	groups="partner-config" />
-	<project path="src/project/foo/bar2"
-	remote="cros-internal"
-	name="chromeos/project/foo/bar2"
-	groups="partner-config" />
-</manifest>`
-
 func checkFiles(t *testing.T, path string, expected map[string]string) {
 	for filename, expectedContents := range expected {
 		data, err := ioutil.ReadFile(filepath.Join(path, filename))
@@ -147,12 +136,6 @@ func TestSetupProject_allProjects(t *testing.T) {
 			},
 		}
 	}
-	expectedDownloads["chromeos/manifest-internal"] = map[string]map[string]string{
-		branch: {
-			"internal_full.xml": internalManifest,
-		},
-	}
-
 	gc := &gerrit.FakeAPIClient{
 		T:                 t,
 		ExpectedDownloads: expectedDownloads,
@@ -191,13 +174,6 @@ func TestSetupProject_buildspecs(t *testing.T) {
 			"chromeos/project/foo/bar1",
 			"chromeos/project/foo/bar2",
 		},
-		ExpectedDownloads: map[string]map[string]map[string]string{
-			"chromeos/manifest-internal": {
-				"main": {
-					"internal_full.xml": internalManifest,
-				},
-			},
-		},
 	}
 
 	gsSuffix := "/buildspecs/" + buildspec
@@ -224,7 +200,6 @@ func TestSetupProject_buildspecs(t *testing.T) {
 	b := setupProject{
 		chromeosCheckoutPath: dir,
 		program:              "foo",
-		localManifestBranch:  "main", // Default value.
 		allProjects:          true,
 		project:              "bar",
 		chipset:              "baz",
