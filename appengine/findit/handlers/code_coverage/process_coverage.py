@@ -558,7 +558,8 @@ class ProcessCodeCoverageData(BaseHandler):
                 entity.data_unit))
         return entity
 
-      def _ChangeShouldBeBlocked(entity):
+      def _GetLowCoverageCulpritFiles(entity):
+        low_coverage_files = []
         for inc_metrics in entity.incremental_percentages:
           if not inc_metrics.path.endswith(".java"):
             logging.info("%s is not a java file", inc_metrics.path)
@@ -582,8 +583,8 @@ class ProcessCodeCoverageData(BaseHandler):
                   not _CanBeExemptFromBlocking(abs_metrics)):
                 logging.info("%s has low absolute coverate too",
                              inc_metrics.path)
-                return True
-        return False
+                low_coverage_files.append(inc_metrics.path)
+        return low_coverage_files
 
       # TODO(crbug/1412897): Cache this
       def _GetChromiumToGooglerMapping():
@@ -617,8 +618,8 @@ class ProcessCodeCoverageData(BaseHandler):
               patch.host, patch.change, patch.patchset)
           headers = {'Content-Type': 'application/json; charset=UTF-8'}
           # Block CL only if it qualifies and is not a revert CL
-          if _ChangeShouldBeBlocked(
-              entity) and 'revert_of' not in change_details:
+          low_coverage_culprit_files = _GetLowCoverageCulpritFiles(entity)
+          if low_coverage_culprit_files and 'revert_of' not in change_details:
             data = {
                 'labels': {
                     'Code-Coverage': -1
@@ -635,6 +636,8 @@ class ProcessCodeCoverageData(BaseHandler):
             logging.info(('Adding CodeCoverage-1 label for '
                           'project %s, change %d,  patchset %d'), patch.project,
                          patch.change, patch.patchset)
+            logging.info("low_coverage_culprit_files = %r",
+                         low_coverage_culprit_files)
           else:
             data = {
                 'labels': {
