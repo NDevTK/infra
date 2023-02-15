@@ -209,6 +209,9 @@ class Package:
       'chromeos-base/libchrome'
   ]
 
+  # Packages categories which sources are in src dir and not in src/third_party.
+  g_src_categories = ["chromeos-base", "brillo-base"]
+
   def __init__(self,
                setup: Setup,
                ebuild: portage_util.EBuild,
@@ -254,33 +257,7 @@ class Package:
     self.build_dir = self._GetBuildDir()
     g_logger.debug('%s: Build dir: %s', self.full_name, self.build_dir)
 
-    src_dirs, temp_src_dirs = self._GetSourceDirs()
-
-    if not src_dirs:
-      raise Package.DirsException(self, 'Cannot find any src dirs')
-
-    for src_dir in src_dirs:
-      if not os.path.isdir(src_dir):
-        raise Package.DirsException(self, 'Cannot find src dir', src_dir)
-
-    if not temp_src_dirs:
-      raise Package.DirsException(self, 'Cannot find any temps src dirs')
-
-    for temp_src_dir in temp_src_dirs:
-      if not os.path.isdir(temp_src_dir):
-        raise Package.DirsException(self, 'Cannot find temp src dir',
-                                    temp_src_dir)
-
-    if len(src_dirs) != len(temp_src_dirs):
-      raise Package.DirsException(self,
-                                  'Different number of src and temp src dirs')
-
-    self.src_dir_matches: List[Package.TempActualDichotomy] = []
-    for src_dir, temp_src_dir in zip(src_dirs, temp_src_dirs):
-      self.src_dir_matches.append(
-          Package.TempActualDichotomy(temp=temp_src_dir, actual=src_dir))
-      g_logger.debug('%s: Match between temp and actual: %s and %s',
-                     self.full_name, temp_src_dir, src_dir)
+    self.src_dir_matches = self._GetSourceDirsToTempSourceDirsMap()
 
     self.additional_include_paths = self.GetAdditionalIncludePaths()
     if self.additional_include_paths:
@@ -297,7 +274,7 @@ class Package:
     # platform2 and uses platform2 as include path. While the actual include
     # path is {src_dir}/aosp/system with update_engine inside.
     if self.full_name == 'chromeos-base/update_engine':
-      return [os.path.dirname(self.src_dir_matches[0].actual)]
+      return [os.path.join(self.setup.src_dir, 'aosp', 'system')]
 
     return None
 
@@ -325,7 +302,10 @@ class Package:
 
   def _GetTempDir(self) -> str:
     """
-    Returns path to the base temp dir.
+    Returns path to the base temp dir (${WORKDIR} in portage).
+
+    See WORKDIR entry on
+    https://devmanual.gentoo.org/ebuild-writing/variables/index.html.
 
     Chooses the dir with the highest ebuild version.
     """
@@ -371,7 +351,9 @@ class Package:
 
   def _GetTempSourceBaseDir(self) -> str:
     """
-    Returns path to the base source dir inside temp dir.
+    Returns path to the base source dir inside temp dir (${S} in portage).
+
+    See S on https://devmanual.gentoo.org/ebuild-writing/variables/index.html.
 
     The base source dir contains copied source files.
     """
@@ -382,34 +364,118 @@ class Package:
       if os.path.isdir(dir):
         return dir
 
-    raise Package.DirsException(self, 'Cannot find temp source dir',
-                                os.path.join(self.temp_dir))
+    return None
 
-  def _GetSourceDirs(self) -> Tuple[str, str]:
+  def _GetEbuildSourceDirs(self) -> List[str]:
     """
-    Returns list of matches between actual src dirs and temp src dirs. Matches
-    listed from deepest to the most common.
-    """
-    ebuild = portage_util.EBuild(self.package_info.ebuild_file)
-    ebuild_src_dirs = ebuild.GetSourceInfo(self.setup.src_dir,
-                                           self.setup.manifest).srcdirs
+    Returns actual source dirs.
 
-    if self._IsOutOfTreeBuild():
-      src_dirs = ebuild_src_dirs
-      temp_src_dirs = ebuild_src_dirs
+    Based on:
+    https://crsrc.org/o/src/third_party/chromiumos-overlay/eclass/cros-workon.eclass;drc=236057acc44bead024a78b50362ec2c82205c286;l=383
+    """
+
+    # Base dir is either src or src/third_party depending on package's category.
+    source_base_dir = self.setup.src_dir
+    if not self.package_info.category in Package.g_src_categories:
+      source_base_dir = os.path.join(source_base_dir, 'third_party')
+
+    # CROS_WORKON_SRCPATH and CROS_WORKON_LOCALNAME declare paths relative
+    # to base source dir.
+    source_dirs = _CheckEbuildVar(self.package_info.ebuild_file,
+                                  'CROS_WORKON_SRCPATH', '')
+    if not source_dirs:
+      source_dirs = _CheckEbuildVar(self.package_info.ebuild_file,
+                                    'CROS_WORKON_LOCALNAME', '')
+
+    if not source_dirs:
+      raise Package.DirsException(
+          self, "Cannot extract source dir(s) from ebuild file")
+
+    # |source_dirs| is a comma separated list of directories relative to the
+    # source base dir.
+    return [
+        os.path.join(source_base_dir, dir) for dir in source_dirs.split(',')
+    ]
+
+  def _GetEbuildDestDirs(self, temp_source_basedir: str) -> List[str]:
+    """
+    Returns dest source dirs.
+
+    Dest dirs contain temp copy of source dirs.
+
+    Based on _cros-workon_emit_src_to_buid_dest_map():
+    https://crsrc.org/o/src/third_party/chromiumos-overlay/eclass/cros-workon.eclass;drc=236057acc44bead024a78b50362ec2c82205c286;l=474
+    """
+
+    # CROS_WORKON_DESTDIR declares abs paths in |temp_source_basedir|.
+    dest_dirs = _CheckEbuildVar(self.package_info.ebuild_file,
+                                'CROS_WORKON_DESTDIR', temp_source_basedir)
+
+    if not dest_dirs:
+      # Defaults to ${S}:
+      # https://crsrc.org/o/src/third_party/chromiumos-overlay/eclass/cros-workon.eclass;drc=236057acc44bead024a78b50362ec2c82205c286;l=583
+      return [temp_source_basedir]
     else:
-      src_dirs = ebuild_src_dirs
+      # |dest_dirs| is a comma separated list of directories with absolute path.
+      return dest_dirs.split(',')
 
-      temp_src_basedir = self._GetTempSourceBaseDir()
-      temp_src_dirs = []
+  def _GetSourceDirsToTempSourceDirsMap(self) -> List[TempActualDichotomy]:
+    """
+    Returns list of matches between actual src dirs and temp src dirs.
 
-      dest_dirs = _CheckEbuildVar(self.package_info.ebuild_file,
-                                  'CROS_WORKON_DESTDIR', temp_src_basedir)
-      if dest_dirs:
-        dest_dirs = dest_dirs.split(',')
-        temp_src_dirs.extend(dest_dirs)
+    See cros-workon_src_unpack() on
+    https://crsrc.org/o/src/third_party/chromiumos-overlay/eclass/cros-workon.eclass;drc=236057acc44bead024a78b50362ec2c82205c286;l=564
 
-    src_dirs.sort(key=len, reverse=True)
-    temp_src_dirs.sort(key=len, reverse=True)
+    Raises:
+      * DirsException if cannot find temp source dir for not workon not
+        out-of-tree package.
+      * DirsException if cannot actual source dirs.
+      * DirsException if cannot find temp source dirs.
+      * DirsException if cannot map actual source dirs on temp source dirs.
+    """
+    temp_source_basedir = self._GetTempSourceBaseDir()
 
-    return src_dirs, temp_src_dirs
+    if not temp_source_basedir:
+      ebuild = portage_util.EBuild(self.package_info.ebuild_file)
+      if not self._IsOutOfTreeBuild() and not ebuild.is_workon:
+        raise Package.DirsException(
+            self,
+            "Only workon and out-of-tree packages may not have temp source copy"
+        )
+      # Out-of-tree packages are not copied but are built from the actual
+      # sources.
+      source_dirs = self._GetEbuildSourceDirs()
+      return [
+          Package.TempActualDichotomy(temp=source_dir, actual=source_dir)
+          for source_dir in source_dirs
+      ]
+
+    # cros-workon.eclass maps source dirs to dest dirs extracted from ebuild in
+    # order as they are declared.
+    source_dirs = self._GetEbuildSourceDirs()
+    dest_dirs = self._GetEbuildDestDirs(temp_source_basedir)
+
+    if len(source_dirs) != len(dest_dirs):
+      raise Package.DirsException(self,
+                                  'Different number of src and temp src dirs')
+
+    matches = [
+        Package.TempActualDichotomy(temp=dest, actual=source)
+        for source, dest in zip(source_dirs, dest_dirs)
+    ]
+
+    for match in matches:
+      if not os.path.isdir(match.actual):
+        raise Package.DirsException(self, 'Cannot find src dir', match.actual)
+
+      if not os.path.isdir(match.temp):
+        raise Package.DirsException(self, 'Cannot find temp src dir',
+                                    match.temp)
+      g_logger.debug('%s: Match between temp and actual: %s and %s',
+                     self.full_name, match.temp, match.actual)
+
+    # Sort by actual source dir length so the deepest and most accurate match
+    # appears first.
+    matches.sort(key=lambda match: len(match.actual), reverse=True)
+
+    return matches
