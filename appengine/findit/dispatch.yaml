@@ -8,9 +8,6 @@ dispatch:
   - url: "*/coverage/task/gerrit-filter-coverage*"
     module: code-coverage-experimental-coverage-worker
 
-  - url: "*/coverage/task/referenced-coverage*"
-    module: code-coverage-referenced-coverage-worker
-
   - url: "*/coverage/task/incremental-coverage*"
     module: code-coverage-referenced-coverage-worker
 
