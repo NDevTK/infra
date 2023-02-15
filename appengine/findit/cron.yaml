@@ -24,13 +24,6 @@ cron:
   retry_parameters:
     job_retry_limit: 2
 
-- description: Create referenced coverage metrics.
-  url: /coverage/cron/referenced-coverage
-  schedule: every friday 00:00
-  timezone: America/Los_Angeles
-  retry_parameters:
-    job_retry_limit: 0
-
 - description: Create author coverage metrics.
   url: /coverage/cron/author-coverage
   schedule: every sunday 00:00
