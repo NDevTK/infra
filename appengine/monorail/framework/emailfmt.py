@@ -15,9 +15,13 @@ from __future__ import absolute_import
 import hmac
 import logging
 import re
-import rfc822
 
 import six
+
+if six.PY2:
+  import rfc822
+else:
+  import email.utils
 
 from google.appengine.api import app_identity
 
@@ -115,7 +119,10 @@ def ParseEmailMessage(msg):
 
 def _ExtractAddrs(header_value):
   """Given a message header value, return email address found there."""
-  friendly_addr_pairs = list(rfc822.AddressList(header_value))
+  if six.PY2:
+    friendly_addr_pairs = list(rfc822.AddressList(header_value))
+  else:
+    friendly_addr_pairs = email.utils.getaddresses([header_value])
   return [addr for _friendly, addr in friendly_addr_pairs]
 
 
