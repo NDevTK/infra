@@ -13,7 +13,8 @@ import re
 import sys
 import time
 
-from six import string_types
+import six
+from six.moves import queue
 
 import settings
 
@@ -25,8 +26,6 @@ from framework import framework_helpers
 from framework import logger
 
 from infra_libs import ts_mon
-
-from Queue import Queue
 
 
 class ConnectionPool(object):
@@ -44,15 +43,15 @@ class ConnectionPool(object):
     key = instance + '/' + database
 
     if not key in self.queues:
-      queue = Queue(self.poolsize)
-      self.queues[key] = queue
+      q = queue.Queue(self.poolsize)
+      self.queues[key] = q
 
-    queue = self.queues[key]
+    q = self.queues[key]
 
-    if queue.empty():
+    if q.empty():
       cnxn = cnxn_ctor(instance, database)
     else:
-      cnxn = queue.get()
+      cnxn = q.get()
       # Make sure the connection is still good.
       cnxn.ping()
       cnxn.commit()
@@ -669,7 +668,7 @@ class Statement(object):
     elif self.limit:
       clauses.append('LIMIT %d' % self.limit)
     elif self.offset:
-      clauses.append('LIMIT %d OFFSET %d' % (sys.maxint, self.offset))
+      clauses.append('LIMIT %d OFFSET %d' % (sys.maxsize, self.offset))
 
     if self.insert_args:
       clauses.append('VALUES (' + PlaceHolders(self.insert_args[0]) + ')')
@@ -965,7 +964,7 @@ STMT_STR_RE = re.compile(
 
 
 def _IsValidDBValue(val):
-  if isinstance(val, string_types):
+  if isinstance(val, six.string_types):
     return '\x00' not in val
   return True
 

@@ -16,7 +16,7 @@ import sys
 
 from framework import exceptions
 
-MAX_RANKING = sys.maxint
+MAX_RANKING = sys.maxsize
 MIN_RANKING = 0
 
 def GetHotlistRerankChanges(hotlist_items, moved_issue_ids, target_position):

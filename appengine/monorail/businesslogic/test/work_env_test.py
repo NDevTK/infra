@@ -9,9 +9,9 @@ from __future__ import absolute_import
 
 import copy
 import logging
-import sys
 import unittest
 import mock
+import sys
 
 from google.appengine.api import memcache
 from google.appengine.ext import testbed
@@ -4280,7 +4280,7 @@ class WorkEnvTest(unittest.TestCase):
           789, idx, 'sum', 'New', 111, project_name='proj', issue_id=1000+idx))
       self.services.issue.TestAddIssue(issues[-1])
       parent_issue.blocked_on_iids.append(issues[-1].issue_id)
-      next_rank = sys.maxint
+      next_rank = sys.maxsize
       if parent_issue.blocked_on_ranks:
         next_rank = parent_issue.blocked_on_ranks[-1] - 1
       parent_issue.blocked_on_ranks.append(next_rank)
@@ -4303,7 +4303,7 @@ class WorkEnvTest(unittest.TestCase):
           789, idx, 'sum', 'New', 111, project_name='proj', issue_id=1000+idx))
       self.services.issue.TestAddIssue(issues[-1])
       parent_issue.blocked_on_iids.append(issues[-1].issue_id)
-      next_rank = sys.maxint
+      next_rank = sys.maxsize
       if parent_issue.blocked_on_ranks:
         next_rank = parent_issue.blocked_on_ranks[-1] - 1
       parent_issue.blocked_on_ranks.append(next_rank)

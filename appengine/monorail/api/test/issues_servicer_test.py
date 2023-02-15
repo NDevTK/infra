@@ -67,7 +67,7 @@ class IssuesServicerTest(unittest.TestCase):
     self.issue_2 = fake.MakeTestIssue(
         789, 2, 'sum', 'New', 111, project_name='proj', issue_id=1002)
     self.issue_1.blocked_on_iids.append(self.issue_2.issue_id)
-    self.issue_1.blocked_on_ranks.append(sys.maxint)
+    self.issue_1.blocked_on_ranks.append(sys.maxsize)
     self.services.issue.TestAddIssue(self.issue_1)
     self.services.issue.TestAddIssue(self.issue_2)
     self.issues_svcr = issues_servicer.IssuesServicer(

@@ -9,8 +9,8 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 import cgi
-import cStringIO
 from six.moves import http_client
+from six.moves import StringIO
 import logging
 import time
 import types
@@ -118,11 +118,11 @@ def GetTemplate(
   return template
 
 
-class cStringIOUnicodeWrapper(object):
-  """Wrapper on cStringIO.StringIO that encodes unicode as UTF-8 as it goes."""
+class StringIOUnicodeWrapper(object):
+  """Wrapper on io.StringIO that encodes unicode as UTF-8 as it goes."""
 
   def __init__(self):
-    self.buffer = cStringIO.StringIO()
+    self.buffer = StringIO()
 
   def write(self, s):
     if isinstance(s, six.text_type):
@@ -169,7 +169,7 @@ class MonorailTemplate(object):
     """Generate the text from the template and return it as a string."""
     template = self.GetTemplate()
     start = time.time()
-    buf = cStringIOUnicodeWrapper()
+    buf = StringIOUnicodeWrapper()
     template.generate(buf, data)
     whole_page = buf.getvalue()
     logging.info('rendering took %dms', int((time.time() - start) * 1000))

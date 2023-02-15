@@ -95,7 +95,7 @@ def StoreObjectInGCS(
       # Don't log the whole exception because we don't need to see
       # this on the Cloud Error Reporting page.
       logging.info('Got LargeImageError on image with %d bytes', len(content))
-    except Exception, e:
+    except Exception as e:
       # Do not raise exception for incorrectly formed images.
       # See https://bugs.chromium.org/p/monorail/issues/detail?id=597 for more
       # detail.

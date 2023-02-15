@@ -462,7 +462,7 @@ api_ratelimiting_enabled = True
 # domain name.  E.g., 'monorail@bugs.chromium.org'.
 date_action_ping_author = 'monorail'
 
-# Hard-coding this so that we don't rely on sys.maxint, which could
+# Hard-coding this so that we don't rely on sys.maxsize, which could
 # potentially differ. It is equal to the maximum unsigned 32 bit integer,
 # because the `int(10) unsigned` column type in MySQL is 32 bits.
 maximum_snapshot_period_end = 4294967295

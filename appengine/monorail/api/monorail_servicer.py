@@ -8,8 +8,8 @@ from __future__ import absolute_import
 
 import cgi
 import functools
-import httplib
 import logging
+from six.moves import http_client
 import sys
 import time
 from google.appengine.api import oauth
@@ -43,20 +43,20 @@ REQUEST_ID_HEADER = 'x-request-id'
 
 # TODO(https://crbug.com/1346473)
 _PRPC_TO_HTTP_STATUS = {
-  codes.StatusCode.OK: httplib.OK,
-  codes.StatusCode.CANCELLED: httplib.NO_CONTENT,
-  codes.StatusCode.INVALID_ARGUMENT: httplib.BAD_REQUEST,
-  codes.StatusCode.DEADLINE_EXCEEDED: httplib.SERVICE_UNAVAILABLE,
-  codes.StatusCode.NOT_FOUND: httplib.NOT_FOUND,
-  codes.StatusCode.ALREADY_EXISTS: httplib.CONFLICT,
-  codes.StatusCode.PERMISSION_DENIED: httplib.FORBIDDEN,
-  codes.StatusCode.RESOURCE_EXHAUSTED: httplib.SERVICE_UNAVAILABLE,
-  codes.StatusCode.FAILED_PRECONDITION: httplib.PRECONDITION_FAILED,
-  codes.StatusCode.OUT_OF_RANGE: httplib.BAD_REQUEST,
-  codes.StatusCode.UNIMPLEMENTED: httplib.NOT_IMPLEMENTED,
-  codes.StatusCode.INTERNAL: httplib.INTERNAL_SERVER_ERROR,
-  codes.StatusCode.UNAVAILABLE: httplib.SERVICE_UNAVAILABLE,
-  codes.StatusCode.UNAUTHENTICATED: httplib.UNAUTHORIZED,
+  codes.StatusCode.OK: http_client.OK,
+  codes.StatusCode.CANCELLED: http_client.NO_CONTENT,
+  codes.StatusCode.INVALID_ARGUMENT: http_client.BAD_REQUEST,
+  codes.StatusCode.DEADLINE_EXCEEDED: http_client.SERVICE_UNAVAILABLE,
+  codes.StatusCode.NOT_FOUND: http_client.NOT_FOUND,
+  codes.StatusCode.ALREADY_EXISTS: http_client.CONFLICT,
+  codes.StatusCode.PERMISSION_DENIED: http_client.FORBIDDEN,
+  codes.StatusCode.RESOURCE_EXHAUSTED: http_client.SERVICE_UNAVAILABLE,
+  codes.StatusCode.FAILED_PRECONDITION: http_client.PRECONDITION_FAILED,
+  codes.StatusCode.OUT_OF_RANGE: http_client.BAD_REQUEST,
+  codes.StatusCode.UNIMPLEMENTED: http_client.NOT_IMPLEMENTED,
+  codes.StatusCode.INTERNAL: http_client.INTERNAL_SERVER_ERROR,
+  codes.StatusCode.UNAVAILABLE: http_client.SERVICE_UNAVAILABLE,
+  codes.StatusCode.UNAUTHENTICATED: http_client.UNAUTHORIZED,
 }
 
 def ConvertPRPCStatusToHTTPStatus(context):

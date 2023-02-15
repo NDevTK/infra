@@ -16,8 +16,8 @@ Summary of page classes:
 
 import gc
 import os
-import httplib
 import logging
+from six.moves import http_client
 import time
 from businesslogic import work_env
 
@@ -151,7 +151,7 @@ class Servlet(object):
       except MySQLdb.OperationalError as e:
         logging.exception(e)
         page_data = {
-            'http_response_code': httplib.SERVICE_UNAVAILABLE,
+            'http_response_code': http_client.SERVICE_UNAVAILABLE,
             'requested_url': self.request.url,
         }
         self.template = template_helpers.GetTemplate(
@@ -187,15 +187,15 @@ class Servlet(object):
 
     except exceptions.InputException as e:
       logging.info('Rejecting invalid input: %r', e)
-      self.response.status_code = httplib.BAD_REQUEST
+      self.response.status_code = http_client.BAD_REQUEST
 
     except exceptions.NoSuchProjectException as e:
       logging.info('Rejecting invalid request: %r', e)
-      self.response.status_code = httplib.NOT_FOUND
+      self.response.status_code = http_client.NOT_FOUND
 
     except xsrf.TokenIncorrect as e:
       logging.info('Bad XSRF token: %r', e.message)
-      self.response.status_code = httplib.BAD_REQUEST
+      self.response.status_code = http_client.BAD_REQUEST
 
     except permissions.BannedUserException as e:
       logging.warning('The user has been banned')
@@ -205,7 +205,7 @@ class Servlet(object):
 
     except ratelimiter.RateLimitExceeded as e:
       logging.info('RateLimitExceeded Exception %s', e)
-      self.response.status_code = httplib.BAD_REQUEST
+      self.response.status_code = http_client.BAD_REQUEST
       self.response.set_data('Slow your roll.')
 
     finally:
@@ -320,7 +320,7 @@ class Servlet(object):
         # Display the missing permissions template.
         page_data = {
             'reason': e.message,
-            'http_response_code': httplib.FORBIDDEN,
+            'http_response_code': http_client.FORBIDDEN,
         }
         with self.mr.profiler.Phase('gather base data'):
           page_data.update(self.GatherBaseData(self.mr, nonce))
@@ -336,7 +336,7 @@ class Servlet(object):
 
     except permissions.PermissionException as e:
       logging.warning('Trapped permission-related exception "%s".', e)
-      self.response.status_code = httplib.BAD_REQUEST
+      self.response.status_code = http_client.BAD_REQUEST
 
   def _RenderResponse(self, page_data):
     logging.info('rendering response len(page_data) is %r', len(page_data))
