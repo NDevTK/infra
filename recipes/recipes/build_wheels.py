@@ -187,7 +187,8 @@ def RunSteps(api, platforms, dry_run, rebuild, experimental,
         go_path = solution_path.join('infra', 'go', 'src', 'infra')
         build_path = go_path.join("experimental", "buildwheel")
 
-        luciexe_binary_path = api.path.mkdtemp('.goexe').join('buildwheel')
+        go_exe = 'buildwheel.exe' if api.platform.is_win else 'buildwheel'
+        luciexe_binary_path = api.path.mkdtemp('.goexe').join(go_exe)
 
         with api.context(cwd=go_path):
           api.step('build go build_wheel binary',
@@ -258,10 +259,16 @@ def GenTests(api):
                   common_pb2.Log(name="stderr", url="step/0/log/2"),
               ])
       ])
-  yield (api.test('experimental-luciexe',
-                  api.properties(dry_run=True, experimental=True)) +
+  yield (api.test('luciexe', api.properties(dry_run=True, experimental=True)) +
          api.step_data('launch luciexe binary for dockerbuild',
                        api.step.sub_build(luciexe_success)))
+
+  yield (api.test(
+      'luciexe-win',
+      api.platform('win', 64) + api.properties(
+          platforms=['windows-x64'], dry_run=True, experimental=True) +
+      api.step_data('launch luciexe binary for dockerbuild',
+                    api.step.sub_build(luciexe_success))))
 
   # Can't build 32-bit and 64-bit Windows wheels on the same invocation.
   yield api.test(
