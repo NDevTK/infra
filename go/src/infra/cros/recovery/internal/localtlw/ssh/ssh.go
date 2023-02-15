@@ -81,7 +81,7 @@ func run(ctx context.Context, pool *sshpool.Pool, addr string, cmd string, backg
 		pool.Put(addr, sc)
 		log.Debugf(ctx, "Finished update SSH pool for %q!", addr)
 	}()
-	result = createSessionAndExecute(ctx, cmd, sc, true)
+	result = createSessionAndExecute(ctx, cmd, sc, background)
 	log.Debugf(ctx, "Run SSH %q: Cmd: %q", addr, result.Command)
 	log.Debugf(ctx, "Run SSH %q: ExitCode: %d", addr, result.ExitCode)
 	log.Debugf(ctx, "Run SSH %q: Stdout: %s", addr, result.Stdout)
