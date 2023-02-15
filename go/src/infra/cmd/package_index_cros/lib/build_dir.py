@@ -74,7 +74,7 @@ class _BuildDirMerger:
           CopyFile(source_item, dest_item)
         else:
           g_logger.debug('%s: ignoring: %s (not valid file nor dir)',
-                         package.name, source_item)
+                         package.full_name, source_item)
 
     CopyDir(package.build_dir, self.result_build_dir)
     return source_dest_conflicts
