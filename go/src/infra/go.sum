@@ -1294,8 +1294,8 @@ go.opentelemetry.io/otel/sdk v1.10.0/go.mod h1:vO06iKzD5baltJz1zarxMCNHFpUlUiOy4
 go.opentelemetry.io/otel/trace v1.10.0 h1:npQMbR8o7mum8uF95yFbOEJffhs1sbCOfDh8zAJiH5E=
 go.opentelemetry.io/otel/trace v1.10.0/go.mod h1:Sij3YYczqAdz+EhmGhE6TpTxUO5/F/AzrK+kxfGqySM=
 go.opentelemetry.io/proto/otlp v0.7.0/go.mod h1:PqfVotwruBrMGOCsRd/89rSnXhoiJIqeYNgFYFoEGnI=
-go.skia.org/infra v0.0.0-20230202193527-b06ed9786676 h1:cJ94bvrhlxz6I6HqQUUOwlIcu3kPjY0UA1lv4mTvAVc=
-go.skia.org/infra v0.0.0-20230202193527-b06ed9786676/go.mod h1:nupNrLpgt2pYv+nhfdenV6eU/eEwH4Qbjwk1WfsQQNA=
+go.skia.org/infra v0.0.0-20230215183041-5caedad97c5e h1:L+GcNLGlKyQMid9g51mf/9CqQ6WJSvRmOXf+hR+2pNY=
+go.skia.org/infra v0.0.0-20230215183041-5caedad97c5e/go.mod h1:0/IV6APto0gJsHH/NoFNSX/rpCYNyEU0qhVTPB3Nuq4=
 go.uber.org/atomic v1.3.2/go.mod h1:gD2HeocX3+yG+ygLZcrzQJaqmWj9AIm7n08wl/qW/PE=
 go.uber.org/atomic v1.4.0/go.mod h1:gD2HeocX3+yG+ygLZcrzQJaqmWj9AIm7n08wl/qW/PE=
 go.uber.org/atomic v1.5.0/go.mod h1:sABNBOSYdrvTF6hTgEIbc7YasKWGhgEQZyfxyTvoXHQ=
