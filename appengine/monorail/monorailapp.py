@@ -16,14 +16,14 @@ import flask
 from components import endpoints_flask
 import gae_ts_mon
 
+import import_utils
 import registerpages
 from framework import sorting
-from search import search_helpers
 from services import api_svc_v1
 from services import service_manager
 
 
-search_helpers.InitializeAppEngineSearchApi()
+import_utils.FixImports()
 
 services = service_manager.set_up_services()
 sorting.InitializeArtValues(services)

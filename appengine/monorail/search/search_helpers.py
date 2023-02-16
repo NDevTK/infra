@@ -38,33 +38,3 @@ def GetPersonalAtRiskLabelIDs(
       at_risk_label_ids.append(label_id)
 
   return at_risk_label_ids
-
-
-def InitializeAppEngineSearchApi():
-  import os
-  import sys
-
-  monorail_dir = os.path.dirname(os.path.dirname(__file__))
-  third_party_dir = os.path.join(monorail_dir, 'third_party')
-
-  # Add third_party/ to sys.path to find antlr3.
-  sys.path.append(third_party_dir)
-
-  # Add third_party/google/ to the google namespace.
-  # This makes Python look in this additional location for google.net.proto.
-  import google
-  package_path = os.path.join(third_party_dir, 'google')
-  google.__path__.append(package_path)
-
-  # Add third_party/google/ to the google.appengine.api namespace. This makes
-  # Python look in this additional location for google.appengine.api.search.
-  import google.appengine.api
-  package_path = os.path.join(third_party_dir, 'google', 'appengine', 'api')
-  google.appengine.api.__path__.append(package_path)
-
-  # Add third_party/google/ to the google.appengine.datastore namespace.
-  # This makes Python look in this additional location for document_pb.py.
-  import google.appengine.datastore
-  package_path = os.path.join(
-      third_party_dir, 'google', 'appengine', 'datastore')
-  google.appengine.datastore.__path__.append(package_path)
