@@ -58,6 +58,9 @@ message Config {
     string zone = 2;
     string machine_type = 3;
     string instance_prefix = 4;
+    // A boolean flag whether to request a public IPv4 address.
+    // If requested, ssh target will be the public IPv4 address, otherwise it
+    // will be the GCE internal IP address.
     bool public_ip = 5;
     GceImage image = 6;
   }

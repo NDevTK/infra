@@ -19,12 +19,6 @@ import (
 // to be public.
 type gcloudInstanceApi struct{}
 
-func randHex(l int) string {
-	b := make([]byte, l/2+1)
-	rand.Read(b)
-	return fmt.Sprintf("%x", b)[:l]
-}
-
 type gcloudResponseInstance struct {
 	NetworkInterfaces []gcloudNetworkInterface
 }
@@ -49,7 +43,24 @@ func (c realCommander) GetCommandOutput(command string, args ...string) ([]byte,
 	return exec.Command(command, args...).Output()
 }
 
+// An interface that wraps some function of crypto/rand to allow unittest mock.
+type randomGenerator interface {
+	GetRandHex(l int) (string, error)
+}
+
+type realRandomGenerator struct{}
+
+func (c realRandomGenerator) GetRandHex(l int) (string, error) {
+	b := make([]byte, l/2+1)
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%x", b)[:l], nil
+}
+
 var execCommand commander = realCommander{}
+var random randomGenerator = realRandomGenerator{}
 
 // New constructs a new api.InstanceApi with gcloud backend.
 func New() (api.InstanceApi, error) {
@@ -87,21 +98,28 @@ func (g *gcloudInstanceApi) Create(req *api.CreateVmInstanceRequest) (*api.VmIns
 		return nil, fmt.Errorf("invalid config argument: %w", err)
 	}
 
-	// TODO(fqj): support internal IP address
-	if !gcloudConfig.GetPublicIp() {
-		return nil, errors.New("only public IP address is supported.")
-	}
+	gcloudArgs := []string{}
 
 	// Instance name is a str that prefixes with instance_prefix, followed by a few alphabet or numeric characters.
-	name := fmt.Sprintf("%s%s", gcloudConfig.GetInstancePrefix(), randHex(25))
+	randName, err := random.GetRandHex(25)
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate instance name: %w", err)
+	}
+	name := fmt.Sprintf("%s%s", gcloudConfig.GetInstancePrefix(), randName)
+	gcloudArgs = append(gcloudArgs, "compute", "instance", "create", name)
 
-	// TODO(fqj): implement tags
-	out, err := execCommand.GetCommandOutput(
-		"gcloud", "compute", "instance", "create", name,
+	gcloudArgs = append(gcloudArgs,
 		"--project="+gcloudConfig.GetProject(),
 		"--image="+gcloudConfig.GetImage().GetName(), "--image-project="+gcloudConfig.GetImage().GetProject(),
 		"--machine-type="+gcloudConfig.GetMachineType(), "--no-scopes",
 		"--zone="+gcloudConfig.GetZone(), "--format=json", "--network=default", "--subnet=default")
+
+	if !gcloudConfig.GetPublicIp() {
+		gcloudArgs = append(gcloudArgs, "--no-address")
+	}
+
+	// TODO(fqj): implement tags
+	out, err := execCommand.GetCommandOutput("gcloud", gcloudArgs...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to launch instance: %w", err)
 	}
@@ -110,12 +128,15 @@ func (g *gcloudInstanceApi) Create(req *api.CreateVmInstanceRequest) (*api.VmIns
 		return nil, fmt.Errorf("unable to parse gcloud result: %w", err)
 	}
 
-	publicIpAddress := gcloudResult[0].NetworkInterfaces[0].AccessConfigs[0].NatIP
+	ipAddress := gcloudResult[0].NetworkInterfaces[0].NetworkIP
+	if gcloudConfig.GetPublicIp() {
+		ipAddress = gcloudResult[0].NetworkInterfaces[0].AccessConfigs[0].NatIP
+	}
 
 	return &api.VmInstance{
 		Name: name,
 		Ssh: &api.AddressPort{
-			Address: publicIpAddress,
+			Address: ipAddress,
 			Port:    22,
 		},
 	}, nil

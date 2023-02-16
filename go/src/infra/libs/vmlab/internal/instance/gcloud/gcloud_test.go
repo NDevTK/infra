@@ -14,10 +14,24 @@ import (
 	"infra/libs/vmlab/api"
 )
 
-type instanceCreateSuccessCommander struct{}
+type fakeRandomGenerator struct{}
+
+func (c fakeRandomGenerator) GetRandHex(l int) (string, error) {
+	return "aaaaaa", nil
+}
+
+type instanceCreateSuccessCommander struct {
+	Commands *[][]string
+}
 
 func (c instanceCreateSuccessCommander) GetCommandOutput(command string, args ...string) ([]byte, error) {
 	// Unused field are deleted.
+	if c.Commands != nil {
+		thisCommand := []string{}
+		thisCommand = append(thisCommand, command)
+		thisCommand = append(thisCommand, args...)
+		*c.Commands = append(*c.Commands, thisCommand)
+	}
 	return []byte(`
 [
   {
@@ -38,7 +52,11 @@ func (c instanceCreateSuccessCommander) GetCommandOutput(command string, args ..
 
 func TestCreateWithPublicIpAddress(t *testing.T) {
 	gcloud, _ := New()
-	execCommand = instanceCreateSuccessCommander{}
+	mockExecCommand := instanceCreateSuccessCommander{
+		Commands: &[][]string{},
+	}
+	execCommand = mockExecCommand
+	random = fakeRandomGenerator{}
 	instance, err := gcloud.Create(
 		&api.CreateVmInstanceRequest{
 			Config: &api.Config{
@@ -57,6 +75,14 @@ func TestCreateWithPublicIpAddress(t *testing.T) {
 				},
 			},
 		})
+	expectedCommand := []string{
+		"gcloud", "compute", "instance", "create", "vmlab-aaaaaa",
+		"--project=vmlab-project", "--image=betty-arc-r-release-r110-111111111111",
+		"--image-project=imagestorage-project", "--machine-type=n2-standard-4", "--no-scopes",
+		"--zone=us-west-2", "--format=json", "--network=default", "--subnet=default"}
+	if diff := cmp.Diff(*mockExecCommand.Commands, [][]string{expectedCommand}); diff != "" {
+		t.Errorf("Executed wrong command: %v", diff)
+	}
 	if err != nil {
 		t.Errorf("Error: %v", err)
 	}
@@ -64,6 +90,52 @@ func TestCreateWithPublicIpAddress(t *testing.T) {
 		t.Errorf("Instance name incorrect: %v", instance)
 	}
 	expectedSshTarget := &api.AddressPort{Address: "8.8.8.8", Port: 22}
+	if diff := cmp.Diff(instance.GetSsh(), expectedSshTarget, protocmp.Transform()); diff != "" {
+		t.Errorf("Got wrong ssh target: %v Diff is:\n%v", instance.GetSsh(), diff)
+	}
+}
+
+func TestCreateWithInternalIpAddress(t *testing.T) {
+	gcloud, _ := New()
+	mockExecCommand := instanceCreateSuccessCommander{
+		Commands: &[][]string{},
+	}
+	execCommand = mockExecCommand
+	random = fakeRandomGenerator{}
+	instance, err := gcloud.Create(
+		&api.CreateVmInstanceRequest{
+			Config: &api.Config{
+				Backend: &api.Config_GcloudBackend{
+					GcloudBackend: &api.Config_GCloudBackend{
+						Project:        "vmlab-project",
+						Zone:           "us-west-2",
+						MachineType:    "n2-standard-4",
+						InstancePrefix: "vmlab-",
+						PublicIp:       false,
+						Image: &api.GceImage{
+							Project: "imagestorage-project",
+							Name:    "betty-arc-r-release-r110-111111111111",
+						},
+					},
+				},
+			},
+		})
+	if err != nil {
+		t.Errorf("Error: %v", err)
+	}
+	expectedCommand := []string{
+		"gcloud", "compute", "instance", "create", "vmlab-aaaaaa",
+		"--project=vmlab-project", "--image=betty-arc-r-release-r110-111111111111",
+		"--image-project=imagestorage-project", "--machine-type=n2-standard-4", "--no-scopes",
+		"--zone=us-west-2", "--format=json", "--network=default", "--subnet=default",
+		"--no-address"}
+	if diff := cmp.Diff(*mockExecCommand.Commands, [][]string{expectedCommand}); diff != "" {
+		t.Errorf("Executed wrong command: %v", diff)
+	}
+	if !strings.HasPrefix(instance.GetName(), "vmlab-") {
+		t.Errorf("Instance name incorrect: %v", instance)
+	}
+	expectedSshTarget := &api.AddressPort{Address: "192.168.0.1", Port: 22}
 	if diff := cmp.Diff(instance.GetSsh(), expectedSshTarget, protocmp.Transform()); diff != "" {
 		t.Errorf("Got wrong ssh target: %v Diff is:\n%v", instance.GetSsh(), diff)
 	}
