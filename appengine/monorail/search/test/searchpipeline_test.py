@@ -9,8 +9,8 @@ from __future__ import absolute_import
 
 import unittest
 
-from proto import ast_pb2
-from proto import tracker_pb2
+from mrproto import ast_pb2
+from mrproto import tracker_pb2
 from search import searchpipeline
 from services import service_manager
 from testing import fake

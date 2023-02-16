@@ -17,7 +17,7 @@ from mock import Mock, patch
 
 from framework import permissions
 from framework import urls
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from services import service_manager
 from services import template_svc
 from testing import fake

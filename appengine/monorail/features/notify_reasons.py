@@ -19,7 +19,7 @@ from framework import framework_constants
 from framework import framework_helpers
 from framework import framework_views
 from framework import permissions
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from search import query2ast
 from search import searchpipeline
 from tracker import component_helpers

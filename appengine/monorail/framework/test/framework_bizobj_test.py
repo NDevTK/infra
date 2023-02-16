@@ -14,9 +14,9 @@ import settings
 from framework import authdata
 from framework import framework_bizobj
 from framework import framework_constants
-from proto import project_pb2
-from proto import tracker_pb2
-from proto import user_pb2
+from mrproto import project_pb2
+from mrproto import tracker_pb2
+from mrproto import user_pb2
 from services import service_manager
 from services import client_config_svc
 from testing import fake

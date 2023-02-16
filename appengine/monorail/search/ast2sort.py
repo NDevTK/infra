@@ -27,7 +27,7 @@ from __future__ import absolute_import
 import logging
 
 from framework import sql
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from tracker import tracker_constants
 
 

@@ -24,7 +24,7 @@ from framework import exceptions
 from framework import framework_bizobj
 from framework import framework_constants
 from framework import sql
-from proto import features_pb2
+from mrproto import features_pb2
 from services import caches
 from services import config_svc
 from tracker import tracker_bizobj

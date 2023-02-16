@@ -11,7 +11,7 @@ import unittest
 
 
 from framework import exceptions
-from proto import project_pb2
+from mrproto import project_pb2
 from services import service_manager
 from tracker import webcomponentspage
 from testing import fake

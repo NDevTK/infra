@@ -26,8 +26,8 @@ from framework import framework_constants
 from framework import framework_helpers
 from framework import sorting
 from framework import sql
-from proto import ast_pb2
-from proto import tracker_pb2
+from mrproto import ast_pb2
+from mrproto import tracker_pb2
 from search import ast2ast
 from search import ast2select
 from search import ast2sort

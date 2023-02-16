@@ -18,7 +18,7 @@ from framework import urls
 from tracker import field_helpers
 from tracker import template_helpers
 from tracker import tracker_views
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 
 
 class TemplateCreate(servlet.Servlet):

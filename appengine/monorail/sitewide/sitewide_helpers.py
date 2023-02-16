@@ -10,7 +10,7 @@ from __future__ import absolute_import
 import logging
 
 from framework import permissions
-from proto import project_pb2
+from mrproto import project_pb2
 
 
 def GetViewableStarredProjects(

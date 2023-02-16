@@ -11,8 +11,8 @@ import unittest
 
 from framework import permissions
 from project import projectsummary
-from proto import project_pb2
-from proto import user_pb2
+from mrproto import project_pb2
+from mrproto import user_pb2
 from services import service_manager
 from testing import fake
 from testing import testing_helpers

@@ -26,9 +26,9 @@ from framework import framework_constants
 from framework import permissions
 from framework import profiler
 from framework import template_helpers
-from proto import api_pb2_v1
-from proto import project_pb2
-from proto import tracker_pb2
+from mrproto import api_pb2_v1
+from mrproto import project_pb2
+from mrproto import tracker_pb2
 from search import frontendsearchpipeline
 from services import api_svc_v1
 from services import service_manager

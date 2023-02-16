@@ -62,8 +62,8 @@ class FeaturesServicer(monorail_servicer.MonorailServicer):
 
   @monorail_servicer.PRPCMethod
   def ListHotlistsByIssue(self, mc, request):
-    # type: (MonorailConnection, proto.features.ListHotlistsByIssueRequest) ->
-    #     proto.features.ListHotlistsByIssueResponse
+    # type: (MonorailConnection, mrproto.features.ListHotlistsByIssueRequest) ->
+    #     mrproto.features.ListHotlistsByIssueResponse
     """Return the hotlists the given issue is part of."""
     issue_id = converters.IngestIssueRefs(
         mc.cnxn, [request.issue], self.services)[0]

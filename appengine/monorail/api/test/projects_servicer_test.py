@@ -21,8 +21,8 @@ from api.api_proto import projects_pb2
 from framework import exceptions
 from framework import monorailcontext
 from framework import permissions
-from proto import tracker_pb2
-from proto import project_pb2
+from mrproto import tracker_pb2
+from mrproto import project_pb2
 from tracker import tracker_bizobj
 from tracker import tracker_constants
 from testing import fake

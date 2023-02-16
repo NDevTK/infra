@@ -13,7 +13,7 @@ from mock import Mock, patch
 
 from framework import permissions
 from project import projectexport
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from services import service_manager
 from services.template_svc import TemplateService
 from testing import fake

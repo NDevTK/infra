@@ -18,7 +18,7 @@ import settings
 from framework import exceptions
 from framework import framework_helpers
 from services import secrets_svc
-from proto import secrets_pb2
+from mrproto import secrets_pb2
 
 
 def GeneratePageToken(request_contents, start):

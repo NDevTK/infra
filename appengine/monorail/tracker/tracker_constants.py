@@ -9,7 +9,7 @@ from __future__ import absolute_import
 
 import re
 
-from proto import user_pb2
+from mrproto import user_pb2
 
 
 # Default columns shown on issue list page, and other built-in cols.

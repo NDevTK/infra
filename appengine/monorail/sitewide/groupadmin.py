@@ -16,7 +16,7 @@ from framework import framework_helpers
 from framework import permissions
 from framework import servlet
 from framework import urls
-from proto import usergroup_pb2
+from mrproto import usergroup_pb2
 from services import usergroup_svc
 from sitewide import group_helpers
 

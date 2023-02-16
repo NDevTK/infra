@@ -22,9 +22,9 @@ import settings
 from framework import framework_helpers
 from framework import sorting
 from framework import urls
-from proto import ast_pb2
-from proto import project_pb2
-from proto import tracker_pb2
+from mrproto import ast_pb2
+from mrproto import project_pb2
+from mrproto import tracker_pb2
 from search import frontendsearchpipeline
 from search import searchpipeline
 from search import query2ast

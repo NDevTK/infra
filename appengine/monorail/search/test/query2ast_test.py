@@ -12,8 +12,8 @@ import time
 import unittest
 import mock
 
-from proto import ast_pb2
-from proto import tracker_pb2
+from mrproto import ast_pb2
+from mrproto import tracker_pb2
 from search import query2ast
 from tracker import tracker_bizobj
 

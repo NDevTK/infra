@@ -9,7 +9,7 @@ from __future__ import absolute_import
 
 import unittest
 
-from proto import project_pb2
+from mrproto import project_pb2
 from services import service_manager
 from sitewide import sitewide_helpers
 from testing import fake

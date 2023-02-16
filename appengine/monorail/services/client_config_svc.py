@@ -22,7 +22,7 @@ from infra_libs import ts_mon
 
 import settings
 from framework import framework_constants
-from proto import api_clients_config_pb2
+from mrproto import api_clients_config_pb2
 
 
 CONFIG_FILE_PATH = os.path.join(

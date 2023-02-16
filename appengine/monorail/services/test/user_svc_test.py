@@ -21,7 +21,7 @@ from google.appengine.ext import testbed
 from framework import exceptions
 from framework import framework_constants
 from framework import sql
-from proto import user_pb2
+from mrproto import user_pb2
 from services import user_svc
 from testing import fake
 

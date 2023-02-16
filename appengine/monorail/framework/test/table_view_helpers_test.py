@@ -13,7 +13,7 @@ import logging
 
 from framework import framework_views
 from framework import table_view_helpers
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from testing import fake
 from testing import testing_helpers
 from tracker import tracker_bizobj

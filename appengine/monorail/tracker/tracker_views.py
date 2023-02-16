@@ -28,7 +28,7 @@ from framework import permissions
 from framework import template_helpers
 from framework import timestr
 from framework import urls
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from tracker import attachment_helpers
 from tracker import tracker_bizobj
 from tracker import tracker_constants
@@ -526,10 +526,10 @@ def _MakeFieldValueItems(field_values, users_by_id):
 
 def MakeBounceFieldValueViews(
     field_vals, phase_field_vals, config, applicable_fields=None):
-  # type: (Sequence[proto.tracker_pb2.FieldValue],
-  #     Sequence[proto.tracker_pb2.FieldValue],
-  #     proto.tracker_pb2.ProjectIssueConfig
-  #     Sequence[proto.tracker_pb2.FieldDef]) -> Sequence[FieldValueView]
+  # type: (Sequence[mrproto.tracker_pb2.FieldValue],
+  #     Sequence[mrproto.tracker_pb2.FieldValue],
+  #     mrproto.tracker_pb2.ProjectIssueConfig
+  #     Sequence[mrproto.tracker_pb2.FieldDef]) -> Sequence[FieldValueView]
   """Return a list of field values to display on a validation bounce page."""
   applicable_set = set()
   # Handle required fields

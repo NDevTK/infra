@@ -13,8 +13,8 @@ import logging
 from google.appengine.api import search
 
 import settings
-from proto import ast_pb2
-from proto import tracker_pb2
+from mrproto import ast_pb2
+from mrproto import tracker_pb2
 from search import query2ast
 
 # GAE search API can only respond with 500 results per call.

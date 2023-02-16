@@ -16,8 +16,8 @@ except ImportError:
 
 from google.appengine.api import search
 
-from proto import ast_pb2
-from proto import tracker_pb2
+from mrproto import ast_pb2
+from mrproto import tracker_pb2
 from search import query2ast
 from services import fulltext_helpers
 

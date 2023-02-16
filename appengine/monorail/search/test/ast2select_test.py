@@ -12,8 +12,8 @@ import time
 import unittest
 
 from framework import sql
-from proto import ast_pb2
-from proto import tracker_pb2
+from mrproto import ast_pb2
+from mrproto import tracker_pb2
 from search import ast2select
 from search import query2ast
 from tracker import tracker_bizobj

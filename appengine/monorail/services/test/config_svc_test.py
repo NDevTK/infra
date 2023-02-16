@@ -23,7 +23,7 @@ from google.appengine.ext import testbed
 from framework import exceptions
 from framework import framework_constants
 from framework import sql
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from services import config_svc
 from services import template_svc
 from testing import fake

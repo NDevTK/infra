@@ -18,7 +18,7 @@ except ImportError:
 
 from framework import sorting
 from framework import framework_views
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from testing import fake
 from testing import testing_helpers
 from tracker import tracker_bizobj

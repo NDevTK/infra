@@ -10,7 +10,7 @@ from __future__ import absolute_import
 
 import unittest
 
-from proto import features_pb2
+from mrproto import features_pb2
 
 
 class FeaturesPb2Test(unittest.TestCase):

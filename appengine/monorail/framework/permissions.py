@@ -31,10 +31,10 @@ import ezt
 import settings
 from framework import framework_bizobj
 from framework import framework_constants
-from proto import project_pb2
-from proto import site_pb2
-from proto import tracker_pb2
-from proto import usergroup_pb2
+from mrproto import project_pb2
+from mrproto import site_pb2
+from mrproto import tracker_pb2
+from mrproto import usergroup_pb2
 from tracker import tracker_bizobj
 
 # Constants that define permissions.

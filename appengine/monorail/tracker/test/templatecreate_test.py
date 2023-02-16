@@ -26,7 +26,7 @@ from testing import testing_helpers
 from tracker import templatecreate
 from tracker import tracker_bizobj
 from tracker import tracker_views
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 
 
 class TemplateCreateTest(unittest.TestCase):

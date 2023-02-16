@@ -19,7 +19,7 @@ from framework import gcs_helpers
 from framework import permissions
 from project import project_constants
 from project import project_views
-from proto import project_pb2
+from mrproto import project_pb2
 
 
 _RE_EMAIL_SEPARATORS = re.compile(r'\s|,|;')
@@ -230,6 +230,6 @@ def IsValidProjectName(s):
 
 
 def AllProjectMembers(project):
-  # type: (proto.project_pb2.Project) -> Sequence[int]
+  # type: (mrproto.project_pb2.Project) -> Sequence[int]
   """Return a list of user IDs of all members in the given project."""
   return project.owner_ids + project.committer_ids + project.contributor_ids

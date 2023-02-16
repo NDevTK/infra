@@ -19,9 +19,9 @@ import time
 from businesslogic import work_env
 from framework import framework_helpers
 from framework import framework_views
-from proto import features_pb2
-from proto import project_pb2
-from proto import user_pb2
+from mrproto import features_pb2
+from mrproto import project_pb2
+from mrproto import user_pb2
 from services import service_manager
 from testing import fake
 from testing import testing_helpers

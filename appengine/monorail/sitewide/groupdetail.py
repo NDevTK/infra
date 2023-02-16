@@ -19,7 +19,7 @@ from framework import paginate
 from framework import permissions
 from framework import servlet
 from project import project_helpers
-from proto import usergroup_pb2
+from mrproto import usergroup_pb2
 from sitewide import group_helpers
 from sitewide import sitewide_views
 

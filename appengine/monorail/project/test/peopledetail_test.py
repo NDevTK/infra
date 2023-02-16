@@ -15,7 +15,7 @@ from framework import authdata
 from framework import exceptions
 from framework import permissions
 from project import peopledetail
-from proto import project_pb2
+from mrproto import project_pb2
 from services import service_manager
 from testing import fake
 from testing import testing_helpers

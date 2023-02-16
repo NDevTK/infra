@@ -20,7 +20,7 @@ from google.appengine.ext import testbed
 import settings
 from mock import Mock
 from framework import sql
-from proto import user_pb2
+from mrproto import user_pb2
 from services import star_svc
 from testing import fake
 

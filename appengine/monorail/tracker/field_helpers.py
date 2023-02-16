@@ -20,7 +20,7 @@ from framework import framework_constants
 from framework import permissions
 from framework import timestr
 from framework import validate
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from services import config_svc
 from tracker import tracker_bizobj
 
@@ -38,9 +38,9 @@ ParsedFieldDef = collections.namedtuple(
 
 
 def ListApplicableFieldDefs(issues, config):
-  # type: (Sequence[proto.tracker_pb2.Issue],
-  #     proto.tracker_pb2.ProjectIssueConfig) ->
-  #     Sequence[proto.tracker_pb2.FieldDef]
+  # type: (Sequence[mrproto.tracker_pb2.Issue],
+  #     mrproto.tracker_pb2.ProjectIssueConfig) ->
+  #     Sequence[mrproto.tracker_pb2.FieldDef]
   """Return the applicable FieldDefs for the given issues. """
   issue_labels = []
   issue_approval_ids = []
@@ -280,8 +280,8 @@ def ParseFieldValues(cnxn, user_service, field_val_strs, phase_field_val_strs,
 
 
 def ValidateCustomFieldValue(cnxn, project, services, field_def, field_val):
-  # type: (MonorailConnection, proto.tracker_pb2.Project, Services,
-  #     proto.tracker_pb2.FieldDef, proto.tracker_pb2.FieldValue) -> str
+  # type: (MonorailConnection, mrproto.tracker_pb2.Project, Services,
+  #     mrproto.tracker_pb2.FieldDef, mrproto.tracker_pb2.FieldValue) -> str
   """Validate one custom field value and return an error string or None.
 
   Args:
@@ -352,9 +352,9 @@ def ValidateCustomFieldValue(cnxn, project, services, field_def, field_val):
 def ValidateCustomFields(
     cnxn, services, field_values, config, project, ezt_errors=None, issue=None):
   # type: (MonorailConnection, Services,
-  #     Collection[proto.tracker_pb2.FieldValue],
-  #     proto.tracker_pb2.ProjectConfig, proto.tracker_pb2.Project,
-  #     Optional[EZTError], Optional[proto.tracker_pb2.Issue]) ->
+  #     Collection[mrproto.tracker_pb2.FieldValue],
+  #     mrproto.tracker_pb2.ProjectConfig, mrproto.tracker_pb2.Project,
+  #     Optional[EZTError], Optional[mrproto.tracker_pb2.Issue]) ->
   #     Sequence[str]
   """Validate given fields and report problems in error messages."""
   fds_by_id = {fd.field_id: fd for fd in config.field_defs}

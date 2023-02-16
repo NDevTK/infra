@@ -12,7 +12,7 @@ from endpoints import ResourceContainer
 from protorpc import messages
 from protorpc import message_types
 
-from proto import usergroup_pb2
+from mrproto import usergroup_pb2
 
 
 ########################## Helper Message ##########################

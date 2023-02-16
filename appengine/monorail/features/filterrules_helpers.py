@@ -21,8 +21,8 @@ from framework import framework_bizobj
 from framework import framework_constants
 from framework import urls
 from framework import validate
-from proto import ast_pb2
-from proto import tracker_pb2
+from mrproto import ast_pb2
+from mrproto import tracker_pb2
 from search import query2ast
 from search import searchpipeline
 from tracker import component_helpers

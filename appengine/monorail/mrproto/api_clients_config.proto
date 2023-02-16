@@ -4,7 +4,7 @@
 
 // Schemas for monorail api client configs.
 // Command to generate api_clients_config_pb2.py: in monorail/ directory:
-// protoc ./proto/api_clients_config.proto --proto_path=./proto/ --python_out=./proto
+// protoc ./mrproto/api_clients_config.proto --proto_path=./mrproto/ --python_out=./mrproto
 
 
 syntax = "proto2";

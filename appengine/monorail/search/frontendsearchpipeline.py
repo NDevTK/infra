@@ -550,7 +550,7 @@ def _StartBackendSearch(
     error_responses, services, me_user_ids, logged_in_user_id, new_url_num,
     subqueries, can, group_by_spec, sort_spec, warnings, use_cached_searches):
   # type: (MonorailConnection, Sequence[str], Sequence[int],
-  #     proto.tracker_pb2.ProjectIssueConfig,
+  #     mrproto.tracker_pb2.ProjectIssueConfig,
   #     Mapping[Tuple(int, str), Sequence[int]],
   #     Mapping[Tuple(int, str), Sequence[bool]],
   #     Mapping[Tuple(int, str), Collection[int]], Sequence[Tuple(int, str)],

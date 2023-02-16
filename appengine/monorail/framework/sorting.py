@@ -25,7 +25,7 @@ from __future__ import absolute_import
 from functools import total_ordering
 
 import settings
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from services import caches
 from tracker import tracker_bizobj
 from tracker import tracker_constants

@@ -20,8 +20,8 @@ from google.appengine.ext import testbed
 
 from framework import framework_constants
 from framework import sql
-from proto import project_pb2
-from proto import user_pb2
+from mrproto import project_pb2
+from mrproto import user_pb2
 from services import config_svc
 from services import project_svc
 from testing import fake

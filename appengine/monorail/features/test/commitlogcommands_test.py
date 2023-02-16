@@ -13,7 +13,7 @@ import unittest
 from features import commitlogcommands
 from features import send_notifications
 from framework import monorailcontext
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from services import service_manager
 from testing import fake
 from testing import testing_helpers

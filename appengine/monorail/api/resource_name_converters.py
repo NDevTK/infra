@@ -22,7 +22,7 @@ from framework import exceptions
 from framework import validate
 from project import project_constants
 from tracker import tracker_constants
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 
 # Constants that hold regex patterns for resource names.
 PROJECT_NAME_PATTERN = (

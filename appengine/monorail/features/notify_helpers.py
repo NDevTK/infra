@@ -30,7 +30,7 @@ from framework import monorailrequest
 from framework import permissions
 from framework import template_helpers
 from framework import urls
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from search import query2ast
 from search import searchpipeline
 from tracker import tracker_bizobj

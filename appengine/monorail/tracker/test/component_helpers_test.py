@@ -9,7 +9,7 @@ from __future__ import absolute_import
 
 import unittest
 
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from services import service_manager
 from testing import fake
 from tracker import component_helpers

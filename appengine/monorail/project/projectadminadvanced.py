@@ -27,7 +27,7 @@ from framework import permissions
 from framework import servlet
 from framework import template_helpers
 from framework import urls
-from proto import project_pb2
+from mrproto import project_pb2
 from tracker import tracker_constants
 
 

@@ -30,7 +30,7 @@ from framework import jsonfeed
 from framework import permissions
 from framework import timestr
 from framework import urls
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from tracker import tracker_bizobj
 from tracker import tracker_helpers
 from tracker import tracker_views

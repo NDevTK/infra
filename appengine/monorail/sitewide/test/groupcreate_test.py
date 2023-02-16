@@ -11,8 +11,8 @@ import unittest
 
 import settings
 from framework import permissions
-from proto import site_pb2
-from proto import usergroup_pb2
+from mrproto import site_pb2
+from mrproto import usergroup_pb2
 from services import service_manager
 from sitewide import groupcreate
 from testing import fake

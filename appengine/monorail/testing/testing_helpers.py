@@ -12,7 +12,7 @@ from six.moves import urllib
 
 from framework import emailfmt
 from framework import framework_bizobj
-from proto import user_pb2
+from mrproto import user_pb2
 from services import service_manager
 from services import template_svc
 from testing import fake

@@ -23,7 +23,7 @@ from framework import sorting
 from framework import table_view_helpers
 from framework import template_helpers
 from framework import urls
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from tracker import tracker_bizobj
 from tracker import tracker_constants
 from tracker import tracker_helpers

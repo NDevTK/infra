@@ -12,7 +12,7 @@ import unittest
 from framework import framework_constants
 from framework import framework_views
 from framework import grid_view_helpers
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from testing import fake
 from tracker import tracker_bizobj
 

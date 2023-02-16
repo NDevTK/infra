@@ -11,7 +11,7 @@ import collections
 import logging
 import re
 
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from tracker import tracker_bizobj
 
 

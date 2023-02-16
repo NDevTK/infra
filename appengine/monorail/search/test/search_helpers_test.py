@@ -18,7 +18,7 @@ from search import search_helpers
 from google.appengine.ext import testbed
 from framework import permissions
 from framework import sql
-from proto import user_pb2
+from mrproto import user_pb2
 from services import chart_svc
 from services import service_manager
 from testing import fake

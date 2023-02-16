@@ -37,7 +37,7 @@ from framework import monorailcontext
 from framework import permissions
 from framework import sql
 from framework import template_helpers
-from proto import project_pb2
+from mrproto import project_pb2
 
 
 TEMPLATE_PATH_BASE = framework_constants.TEMPLATE_PATH

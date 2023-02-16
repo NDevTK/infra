@@ -23,7 +23,7 @@ import ezt
 from framework import framework_constants
 from framework import template_helpers
 from framework import timestr
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from tracker import tracker_bizobj
 from tracker import tracker_constants
 

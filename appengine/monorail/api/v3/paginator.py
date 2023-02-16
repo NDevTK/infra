@@ -8,7 +8,7 @@ from __future__ import absolute_import
 
 from framework import exceptions
 from framework import paginate
-from proto import secrets_pb2
+from mrproto import secrets_pb2
 
 
 def CoercePageSize(page_size, max_size, default_size=None):

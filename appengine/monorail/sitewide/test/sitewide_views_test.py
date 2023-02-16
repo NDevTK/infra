@@ -9,7 +9,7 @@ from __future__ import absolute_import
 
 import unittest
 
-from proto import usergroup_pb2
+from mrproto import usergroup_pb2
 from sitewide import sitewide_views
 
 

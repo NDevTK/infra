@@ -11,7 +11,7 @@ import unittest
 
 from framework import framework_views
 from project import project_views
-from proto import project_pb2
+from mrproto import project_pb2
 from services import service_manager
 from testing import fake
 

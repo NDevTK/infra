@@ -78,10 +78,10 @@ from tracker import tracker_bizobj
 from tracker import tracker_constants
 from tracker import tracker_helpers
 from project import project_helpers
-from proto import features_pb2
-from proto import project_pb2
-from proto import tracker_pb2
-from proto import user_pb2
+from mrproto import features_pb2
+from mrproto import project_pb2
+from mrproto import tracker_pb2
+from mrproto import user_pb2
 
 
 # TODO(jrobbins): break this file into one facade plus ~5
@@ -1030,14 +1030,14 @@ class WorkEnv(object):
       owner_id,  # type: int
       cc_ids,  # type: Sequence[int]
       labels,  # type: Sequence[str]
-      field_values,  # type: Sequence[proto.tracker_pb2.FieldValue]
+      field_values,  # type: Sequence[mrproto.tracker_pb2.FieldValue]
       component_ids,  # type: Sequence[int]
       marked_description,  # type: str
       blocked_on=None,  # type: Sequence[int]
       blocking=None,  # type: Sequence[int]
       attachments=None,  # type: Sequence[Tuple[str, str, str]]
-      phases=None,  # type: Sequence[proto.tracker_pb2.Phase]
-      approval_values=None,  # type: Sequence[proto.tracker_pb2.ApprovalValue]
+      phases=None,  # type: Sequence[mrproto.tracker_pb2.Phase]
+      approval_values=None,  # type: Sequence[mrproto.tracker_pb2.ApprovalValue]
       send_email=True,  # type: bool
       reporter_id=None,  # type: int
       timestamp=None,  # type: int
@@ -1045,7 +1045,8 @@ class WorkEnv(object):
       dangling_blocking=None,  # type: Sequence[DanglingIssueRef]
       raise_filter_errors=True,  # type: bool
   ):
-    # type: (...) -> (proto.tracker_pb2.Issue, proto.tracker_pb2.IssueComment)
+    # type: (...) ->
+    #   (mrproto.tracker_pb2.Issue, mrproto.tracker_pb2.IssueComment)
     """Create and store a new issue with all the given information.
 
     Args:
@@ -1397,7 +1398,7 @@ class WorkEnv(object):
       group_by_spec,  # type: str
       sort_spec,  # type: str
       use_cached_searches,  # type: bool
-      project=None  # type: proto.Project
+      project=None  # type: mrproto.Project
   ):
     # type: (...) -> search.frontendsearchpipeline.FrontendSearchPipeline
     """Do an issue search w/ mc + passed in args to return a pipeline object.
@@ -1646,7 +1647,7 @@ class WorkEnv(object):
   def BulkUpdateIssueApprovalsV3(
       self, delta_specifications, comment_content, send_email):
     # type: (Sequence[Tuple[int, int, tracker_pb2.ApprovalDelta]]], str,
-    #     Boolean -> Sequence[proto.tracker_pb2.ApprovalValue]
+    #     Boolean -> Sequence[mrproto.tracker_pb2.ApprovalValue]
     """Executes the ApprovalDeltas.
 
     Args:
@@ -1690,10 +1691,10 @@ class WorkEnv(object):
       send_email=True,
       kept_attachments=None,
       update_perms=False):
-    # type: (int, int, proto.tracker_pb2.ApprovalDelta, str, Boolean,
-    #     Optional[Sequence[proto.tracker_pb2.Attachment]], Optional[Boolean],
+    # type: (int, int, mrproto.tracker_pb2.ApprovalDelta, str, Boolean,
+    #     Optional[Sequence[mrproto.tracker_pb2.Attachment]], Optional[Boolean],
     #     Optional[Sequence[int]], Optional[Boolean]) ->
-    #     (proto.tracker_pb2.ApprovalValue, proto.tracker_pb2.IssueComment)
+    #     (mrproto.tracker_pb2.ApprovalValue, mrproto.tracker_pb2.IssueComment)
     """Update an issue's approval.
 
     Raises:
@@ -1768,7 +1769,7 @@ class WorkEnv(object):
 
   def ConvertIssueApprovalsTemplate(
       self, config, issue, template_name, comment_content, send_email=True):
-    # type: (proto.tracker_pb2.ProjectIssueConfig, proto.tracker_pb2.Issue,
+    # type: (mrproto.tracker_pb2.ProjectIssueConfig, mrproto.tracker_pb2.Issue,
     #     str, str, Optional[Boolean] )
     """Convert an issue's existing approvals structure to match the one of
        the given template.

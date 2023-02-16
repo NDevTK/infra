@@ -19,7 +19,7 @@ from mock import Mock
 
 from framework import reap
 from framework import sql
-from proto import project_pb2
+from mrproto import project_pb2
 from services import service_manager
 from services import template_svc
 from testing import fake

@@ -17,8 +17,8 @@ except ImportError:
 from features import activities
 from framework import framework_views
 from framework import profiler
-from proto import tracker_pb2
-from proto import user_pb2
+from mrproto import tracker_pb2
+from mrproto import user_pb2
 from services import service_manager
 from testing import fake
 from testing import testing_helpers

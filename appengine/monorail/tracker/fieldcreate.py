@@ -16,7 +16,7 @@ from framework import framework_helpers
 from framework import permissions
 from framework import servlet
 from framework import urls
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from tracker import field_helpers
 from tracker import tracker_bizobj
 from tracker import tracker_constants

@@ -16,10 +16,10 @@ from framework import permissions
 from framework import profiler
 from services import api_pb2_v1_helpers
 from services import service_manager
-from proto import api_pb2_v1
-from proto import project_pb2
-from proto import tracker_pb2
-from proto import usergroup_pb2
+from mrproto import api_pb2_v1
+from mrproto import project_pb2
+from mrproto import tracker_pb2
+from mrproto import usergroup_pb2
 from testing import fake
 from tracker import tracker_bizobj
 

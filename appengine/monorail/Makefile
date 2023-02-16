@@ -21,7 +21,7 @@ BACKEND_MODULES?= besearch latency-insensitive api
 
 BRANCH_NAME := $(shell git rev-parse --abbrev-ref HEAD)
 
-PY_DIRS = api,businesslogic,features,framework,project,proto,search,services,sitewide,testing,tracker
+PY_DIRS = api,businesslogic,features,framework,project,mrproto,search,services,sitewide,testing,tracker
 
 _VERSION ?= $(shell ../../../infra/luci/appengine/components/tools/calculate_version.py)
 
@@ -66,7 +66,7 @@ prpc_proto_v3:
 business_proto:
 	PATH=../../luci/appengine/components/tools:$(PATH) \
 	../../cipd/protoc \
-	--python_out=. --prpc-python_out=. proto/*.proto
+	--python_out=. --prpc-python_out=. mrproto/*.proto
 
 pytest:
 	GAE_RUNTIME=python3 GAE_APPLICATION=testbed-test SERVER_SOFTWARE=test pytest

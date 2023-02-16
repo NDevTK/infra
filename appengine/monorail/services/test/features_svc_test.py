@@ -26,8 +26,8 @@ from features import features_constants
 from framework import exceptions
 from framework import framework_constants
 from framework import sql
-from proto import tracker_pb2
-from proto import features_pb2
+from mrproto import tracker_pb2
+from mrproto import features_pb2
 from services import chart_svc
 from services import features_svc
 from services import star_svc

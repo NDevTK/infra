@@ -21,9 +21,9 @@ from framework import framework_helpers
 from framework import framework_views
 from framework import permissions
 from framework import timestr
-from proto import api_pb2_v1
-from proto import project_pb2
-from proto import tracker_pb2
+from mrproto import api_pb2_v1
+from mrproto import project_pb2
+from mrproto import tracker_pb2
 from services import project_svc
 from tracker import field_helpers
 from tracker import tracker_bizobj

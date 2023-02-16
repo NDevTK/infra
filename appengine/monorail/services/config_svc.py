@@ -23,7 +23,7 @@ import settings
 from framework import exceptions
 from framework import framework_constants
 from framework import sql
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from services import caches
 from services import project_svc
 from tracker import tracker_bizobj

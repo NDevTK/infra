@@ -12,7 +12,7 @@ import unittest
 from mock import Mock, patch
 
 from framework import permissions
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from services import service_manager
 from testing import testing_helpers
 from testing import fake

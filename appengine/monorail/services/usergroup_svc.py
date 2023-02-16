@@ -23,7 +23,7 @@ import re
 from framework import exceptions
 from framework import permissions
 from framework import sql
-from proto import usergroup_pb2
+from mrproto import usergroup_pb2
 from services import caches
 
 

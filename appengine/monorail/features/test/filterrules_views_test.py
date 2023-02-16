@@ -10,7 +10,7 @@ from __future__ import absolute_import
 import unittest
 
 from features import filterrules_views
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from testing import testing_helpers
 
 

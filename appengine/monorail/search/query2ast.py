@@ -15,8 +15,8 @@ import time
 
 from google.appengine.api import search
 
-from proto import ast_pb2
-from proto import tracker_pb2
+from mrproto import ast_pb2
+from mrproto import tracker_pb2
 
 
 # TODO(jrobbins): Consider re-implementing this whole file by using a
@@ -190,9 +190,9 @@ NON_OP_PREFIXES = (
 def ParseUserQuery(
     query, scope, builtin_fields, harmonized_config, warnings=None,
     now=None):
-  # type: (str, str, Mapping[str, proto.tracker_pb2.FieldDef],
-  #   proto.tracker_pb2.ProjectIssueConfig, Sequence[str], int) ->
-  #     proto.ast_pb2.QueryAST
+  # type: (str, str, Mapping[str, mrproto.tracker_pb2.FieldDef],
+  #   mrproto.tracker_pb2.ProjectIssueConfig, Sequence[str], int) ->
+  #     mrproto.ast_pb2.QueryAST
   """Parse a user query and return a set of structure terms.
 
   Args:
@@ -250,8 +250,8 @@ def ParseUserQuery(
 
 
 def _ParseConjunction(subquery, scope, fields, warnings, now=None):
-  # type: (str, str, Mapping[str, proto.tracker_pb2.FieldDef], Sequence[str],
-  #     int) -> proto.ast_pb2.Condition
+  # type: (str, str, Mapping[str, mrproto.tracker_pb2.FieldDef], Sequence[str],
+  #     int) -> mrproto.ast_pb2.Condition
   """Parse part of a user query into a Conjunction PB."""
   scoped_query = ('%s %s' % (scope, subquery)).lower()
   cond_strs = _ExtractConds(scoped_query, warnings)
@@ -262,8 +262,8 @@ def _ParseConjunction(subquery, scope, fields, warnings, now=None):
 
 
 def _ParseCond(cond_str, fields, warnings, now=None):
-  # type: (str, Mapping[str, proto.tracker_pb2.FieldDef], Sequence[str],
-  #     int) -> proto.ast_pb2.Condition
+  # type: (str, Mapping[str, mrproto.tracker_pb2.FieldDef], Sequence[str],
+  #     int) -> mrproto.ast_pb2.Condition
   """Parse one user query condition string into a Condition PB."""
   op_match = OP_RE.match(cond_str)
   # Do not treat as key:value search terms if any of the special prefixes match.
@@ -307,8 +307,8 @@ def _ParseCond(cond_str, fields, warnings, now=None):
 
 
 def _ParseStructuredTerm(prefix, op_str, value, fields, now=None):
-  # type: (str, str, str, Mapping[str, proto.tracker_pb2.FieldDef]) ->
-  #     proto.ast_pb2.Condition
+  # type: (str, str, str, Mapping[str, mrproto.tracker_pb2.FieldDef]) ->
+  #     mrproto.ast_pb2.Condition
   """Parse one user structured query term into an internal representation.
 
   Args:
@@ -570,7 +570,7 @@ def QueryToSubqueries(query):
 
 
 def _ParseQuery(token_iterator):
-  # type (Sequence[proto.ast_pb2.QueryToken]) -> Sequence[str]
+  # type (Sequence[mrproto.ast_pb2.QueryToken]) -> Sequence[str]
   """Recursive helper to convert query tokens into a list of subqueries.
 
   Parses a Query based on the following grammar (EBNF):
@@ -632,7 +632,7 @@ def _ParseQuery(token_iterator):
 
 
 def _ParseOrGroup(token_iterator):
-  # type (Sequence[proto.ast_pb2.QueryToken]) -> Sequence[str]
+  # type (Sequence[mrproto.ast_pb2.QueryToken]) -> Sequence[str]
   """Recursive helper to convert a single "OrGroup" into subqueries.
 
   An OrGroup here is based on the following grammar:
@@ -674,7 +674,7 @@ def _ParseOrGroup(token_iterator):
 
 
 def _ParseAndGroup(token_iterator):
-  # type (Sequence[proto.ast_pb2.QueryToken]) -> Sequence[str]
+  # type (Sequence[mrproto.ast_pb2.QueryToken]) -> Sequence[str]
   """Recursive helper to convert a single "AndGroup" into subqueries.
 
   An OrGroup here is based on the following grammar:
@@ -723,7 +723,7 @@ def _ParseAndGroup(token_iterator):
 
 
 def _ValidateAndTokenizeQuery(query):
-  # type: (str) -> Sequence[proto.ast_pb2.QueryToken]
+  # type: (str) -> Sequence[mrproto.ast_pb2.QueryToken]
   """Converts the input query into a set of tokens for easier parsing.
 
   Tokenizing the query string before parsing allows us to not have to as many
@@ -776,7 +776,7 @@ def _ValidateAndTokenizeQuery(query):
 
 
 def _TokenizeSubqueryOnOr(subquery):
-  # type: (str) -> Sequence[proto.ast_pb2.QueryToken]
+  # type: (str) -> Sequence[mrproto.ast_pb2.QueryToken]
   """Helper to split a subquery by OR and convert the result into tokens.
 
   Args:

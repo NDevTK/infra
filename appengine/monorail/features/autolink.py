@@ -39,7 +39,7 @@ import settings
 from features import autolink_constants
 from framework import template_helpers
 from framework import validate
-from proto import project_pb2
+from mrproto import project_pb2
 from tracker import tracker_helpers
 
 

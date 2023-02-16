@@ -21,7 +21,7 @@ from google.appengine.ext import testbed
 from framework import exceptions
 from framework import permissions
 from framework import sql
-from proto import usergroup_pb2
+from mrproto import usergroup_pb2
 from services import service_manager
 from services import usergroup_svc
 from testing import fake

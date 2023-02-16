@@ -13,7 +13,7 @@ import unittest
 from framework import framework_constants
 from framework import table_view_helpers
 from framework import template_helpers
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from testing import fake
 from testing import testing_helpers
 from tracker import tablecell

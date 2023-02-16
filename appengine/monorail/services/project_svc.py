@@ -26,7 +26,7 @@ from framework import permissions
 from framework import sql
 from services import caches
 from project import project_helpers
-from proto import project_pb2
+from mrproto import project_pb2
 
 
 PROJECT_TABLE_NAME = 'Project'

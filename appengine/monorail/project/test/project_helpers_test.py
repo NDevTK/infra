@@ -15,7 +15,7 @@ from framework import framework_views
 from framework import permissions
 from project import project_constants
 from project import project_helpers
-from proto import project_pb2
+from mrproto import project_pb2
 from services import service_manager
 from testing import fake
 

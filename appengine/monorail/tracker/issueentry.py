@@ -30,7 +30,7 @@ from tracker import tracker_bizobj
 from tracker import tracker_constants
 from tracker import tracker_helpers
 from tracker import tracker_views
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 
 PLACEHOLDER_SUMMARY = 'Enter one-line summary'
 PHASES_WITH_MILESTONES = ['Beta', 'Stable', 'Stable-Exp', 'Stable-Full']

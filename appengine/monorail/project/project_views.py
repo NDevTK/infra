@@ -18,7 +18,7 @@ from framework import permissions
 from framework import template_helpers
 from framework import timestr
 from framework import urls
-from proto import project_pb2
+from mrproto import project_pb2
 
 
 class ProjectAccessView(object):

@@ -16,7 +16,7 @@ import unittest
 import settings
 from framework import permissions
 from features import hotlistcreate
-from proto import site_pb2
+from mrproto import site_pb2
 from services import service_manager
 from testing import fake
 from testing import testing_helpers

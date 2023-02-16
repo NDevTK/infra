@@ -25,7 +25,7 @@ from framework import filecontent
 from framework import framework_bizobj
 from framework import framework_constants
 from framework import framework_helpers
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from project import project_helpers
 from tracker import attachment_helpers
 from tracker import field_helpers
@@ -72,7 +72,7 @@ class Converter(object):
   # Hotlists
 
   def ConvertHotlist(self, hotlist):
-    # type: (proto.feature_objects_pb2.Hotlist)
+    # type: (mrproto.feature_objects_pb2.Hotlist)
     #    -> api_proto.feature_objects_pb2.Hotlist
     """Convert a protorpc Hotlist into a protoc Hotlist."""
 
@@ -100,13 +100,13 @@ class Converter(object):
         hotlist_privacy=hotlist_privacy)
 
   def ConvertHotlists(self, hotlists):
-    # type: (Sequence[proto.feature_objects_pb2.Hotlist])
+    # type: (Sequence[mrproto.feature_objects_pb2.Hotlist])
     #    -> Sequence[api_proto.feature_objects_pb2.Hotlist]
     """Convert protorpc Hotlists into protoc Hotlists."""
     return [self.ConvertHotlist(hotlist) for hotlist in hotlists]
 
   def ConvertHotlistItems(self, hotlist_id, items):
-    # type: (int, Sequence[proto.features_pb2.HotlistItem]) ->
+    # type: (int, Sequence[mrproto.features_pb2.HotlistItem]) ->
     #     Sequence[api_proto.feature_objects_pb2.Hotlist]
     """Convert a Sequence of protorpc HotlistItems into a Sequence of protoc
        HotlistItems.
@@ -165,7 +165,7 @@ class Converter(object):
   # Issues
 
   def _ConvertComponentValues(self, issue):
-    # proto.tracker_pb2.Issue ->
+    # mrproto.tracker_pb2.Issue ->
     #     Sequence[api_proto.issue_objects_pb2.Issue.ComponentValue]
     """Convert the status string on issue into a ComponentValue."""
     component_values = []
@@ -191,7 +191,7 @@ class Converter(object):
     return component_values
 
   def _ConvertStatusValue(self, issue):
-    # proto.tracker_pb2.Issue -> api_proto.issue_objects_pb2.Issue.StatusValue
+    # mrproto.tracker_pb2.Issue -> api_proto.issue_objects_pb2.Issue.StatusValue
     """Convert the status string on issue into a StatusValue."""
     derivation = issue_objects_pb2.Derivation.Value(
         'DERIVATION_UNSPECIFIED')
@@ -203,7 +203,7 @@ class Converter(object):
         status=issue.status or issue.derived_status, derivation=derivation)
 
   def _ConvertAmendments(self, amendments, user_display_names):
-    # type: (Sequence[proto.tracker_pb2.Amendment], Mapping[int, str]) ->
+    # type: (Sequence[mrproto.tracker_pb2.Amendment], Mapping[int, str]) ->
     #     Sequence[api_proto.issue_objects_pb2.Comment.Amendment]
     """Convert protorpc Amendments to protoc Amendments.
 
@@ -227,7 +227,7 @@ class Converter(object):
     return results
 
   def _ConvertAttachments(self, attachments, project_name):
-    # type: (Sequence[proto.tracker_pb2.Attachment], str) ->
+    # type: (Sequence[mrproto.tracker_pb2.Attachment], str) ->
     #     Sequence[api_proto.issue_objects_pb2.Comment.Attachment]
     """Convert protorpc Attachments to protoc Attachments."""
     results = []
@@ -254,7 +254,7 @@ class Converter(object):
     return results
 
   def ConvertComments(self, issue_id, comments):
-    # type: (int, Sequence[proto.tracker_pb2.IssueComment])
+    # type: (int, Sequence[mrproto.tracker_pb2.IssueComment])
     #     -> Sequence[api_proto.issue_objects_pb2.Comment]
     """Convert protorpc IssueComments from issue into protoc Comments."""
     issue = self.services.issue.GetIssue(self.cnxn, issue_id)
@@ -308,7 +308,7 @@ class Converter(object):
     return converted_comments
 
   def ConvertIssue(self, issue):
-    # type: (proto.tracker_pb2.Issue) -> api_proto.issue_objects_pb2.Issue
+    # type: (mrproto.tracker_pb2.Issue) -> api_proto.issue_objects_pb2.Issue
     """Convert a protorpc Issue into a protoc Issue."""
     issues = self.ConvertIssues([issue])
     if len(issues) < 1:
@@ -318,7 +318,7 @@ class Converter(object):
     return issues[0]
 
   def ConvertIssues(self, issues):
-    # type: (Sequence[proto.tracker_pb2.Issue]) ->
+    # type: (Sequence[mrproto.tracker_pb2.Issue]) ->
     #     Sequence[api_proto.issue_objects_pb2.Issue]
     """Convert protorpc Issues into protoc Issues."""
     issue_ids = [issue.issue_id for issue in issues]
@@ -462,7 +462,7 @@ class Converter(object):
 
   def IngestIssueDeltas(self, issue_deltas):
     # type: (Sequence[api_proto.issues_pb2.IssueDelta]) ->
-    #     Sequence[Tuple[int, proto.tracker_pb2.IssueDelta]]
+    #     Sequence[Tuple[int, mrproto.tracker_pb2.IssueDelta]]
     """Ingests protoc IssueDeltas, into protorpc IssueDeltas.
 
     Args:
@@ -624,7 +624,7 @@ class Converter(object):
 
   def IngestApprovalDeltas(self, approval_deltas, setter_id):
     # type: (Sequence[api_proto.issues_pb2.ApprovalDelta], int) ->
-    #     Sequence[Tuple[int, int, proto.tracker_pb2.ApprovalDelta]]
+    #     Sequence[Tuple[int, int, mrproto.tracker_pb2.ApprovalDelta]]
     """Ingests protoc ApprovalDeltas into protorpc ApprovalDeltas.
 
     Args:
@@ -717,7 +717,8 @@ class Converter(object):
     return delta_specifications
 
   def IngestIssue(self, issue, project_id):
-    # type: (api_proto.issue_objects_pb2.Issue, int) -> proto.tracker_pb2.Issue
+    # type: (api_proto.issue_objects_pb2.Issue, int) ->
+    #   mrproto.tracker_pb2.Issue
     """Ingest a protoc Issue into a protorpc Issue.
 
     Args:
@@ -782,8 +783,8 @@ class Converter(object):
 
   def _IngestFieldValues(self, field_values, config, approval_id_filter=None):
     # type: (Sequence[api_proto.issue_objects.FieldValue],
-    #     proto.tracker_pb2.ProjectIssueConfig, Optional[int]) ->
-    #     Tuple[Sequence[proto.tracker_pb2.FieldValue],
+    #     mrproto.tracker_pb2.ProjectIssueConfig, Optional[int]) ->
+    #     Tuple[Sequence[mrproto.tracker_pb2.FieldValue],
     #         Mapping[int, Sequence[str]]]
     """Returns protorpc FieldValues for the given protoc FieldValues.
 
@@ -843,8 +844,8 @@ class Converter(object):
     return ingestedFieldValues, enums
 
   def _IngestFieldValue(self, field_value, field_def):
-    # type: (api_proto.issue_objects.FieldValue, proto.tracker_pb2.FieldDef) ->
-    #     proto.tracker_pb2.FieldValue
+    # type: (api_proto.issue_objects.FieldValue,
+    #   mrproto.tracker_pb2.FieldDef) -> mrproto.tracker_pb2.FieldValue
     """Ingest a protoc FieldValue into a protorpc FieldValue.
 
     Args:
@@ -874,7 +875,7 @@ class Converter(object):
     return fv
 
   def _ParseOneUserFieldValue(self, value, field_id):
-    # type: (str, int) -> proto.tracker_pb2.FieldValue
+    # type: (str, int) -> mrproto.tracker_pb2.FieldValue
     """Replacement for the obsolete user parsing in ParseOneFieldValue."""
     user_id = rnc.IngestUserName(self.cnxn, value, self.services)
     return tbo.MakeFieldValue(field_id, None, None, user_id, None, None, False)
@@ -965,7 +966,7 @@ class Converter(object):
         'IssueRefs MUST have one of `issue` and `ext_identifier`')
 
   def IngestIssuesListColumns(self, issues_list_columns):
-    # type: (Sequence[proto.issue_objects_pb2.IssuesListColumn] -> str
+    # type: (Sequence[mrproto.issue_objects_pb2.IssuesListColumn] -> str
     """Ingest a list of protoc IssueListColumns and returns a string."""
     return ' '.join([col.column for col in issues_list_columns])
 
@@ -1062,7 +1063,7 @@ class Converter(object):
   # Field Defs
 
   def ConvertFieldDefs(self, field_defs, project_id):
-    # type: (Sequence[proto.tracker_pb2.FieldDef], int) ->
+    # type: (Sequence[mrproto.tracker_pb2.FieldDef], int) ->
     #     Sequence[api_proto.project_objects_pb2.FieldDef]
     """Convert sequence of protorpc FieldDefs to protoc FieldDefs.
 
@@ -1150,7 +1151,7 @@ class Converter(object):
     return api_fds
 
   def _ConvertDateAction(self, date_action):
-    # type: (proto.tracker_pb2.DateAction) ->
+    # type: (mrproto.tracker_pb2.DateAction) ->
     #     api_proto.project_objects_pb2.FieldDef.DateTypeSettings.DateAction
     """Convert protorpc DateAction to protoc
        FieldDef.DateTypeSettings.DateAction"""
@@ -1180,7 +1181,7 @@ class Converter(object):
       return proto_user_settings.RoleRequirements.Value('NO_ROLE_REQUIREMENT')
 
   def _ConvertNotifyTriggers(self, notify_trigger):
-    # type: (proto.tracker_pb2.NotifyTriggers) ->
+    # type: (mrproto.tracker_pb2.NotifyTriggers) ->
     #     api_proto.project_objects_pb2.FieldDef.UserTypeSettings.NotifyTriggers
     """Convert protorpc NotifyTriggers to protoc
        FieldDef.UserTypeSettings.NotifyTriggers"""
@@ -1194,7 +1195,7 @@ class Converter(object):
       raise ValueError('Unsupported NotifyTriggers Value')
 
   def _ConvertFieldDefType(self, field_type):
-    # type: (proto.tracker_pb2.FieldTypes) ->
+    # type: (mrproto.tracker_pb2.FieldTypes) ->
     #     api_proto.project_objects_pb2.FieldDef.Type
     """Convert protorpc FieldType to protoc FieldDef.Type
 
@@ -1226,7 +1227,7 @@ class Converter(object):
           'are unsupported and approval types are found in ApprovalDefs')
 
   def _ComputeFieldDefTraits(self, field_def):
-    # type: (proto.tracker_pb2.FieldDef) ->
+    # type: (mrproto.tracker_pb2.FieldDef) ->
     #     Sequence[api_proto.project_objects_pb2.FieldDef.Traits]
     """Compute sequence of FieldDef.Traits for a given protorpc FieldDef."""
     trait_protos = []
@@ -1246,7 +1247,7 @@ class Converter(object):
     return trait_protos
 
   def _GetEnumFieldChoices(self, field_def):
-    # type: (proto.tracker_pb2.FieldDef) ->
+    # type: (mrproto.tracker_pb2.FieldDef) ->
     #     Sequence[Choice]
     """Get sequence of choices for an enum field
 
@@ -1275,8 +1276,8 @@ class Converter(object):
   # Field Values
 
   def _GetNonApprovalFieldValues(self, field_values, project_id):
-    # type: (Sequence[proto.tracker_pb2.FieldValue], int) ->
-    #     Sequence[proto.tracker_pb2.FieldValue]
+    # type: (Sequence[mrproto.tracker_pb2.FieldValue], int) ->
+    #     Sequence[mrproto.tracker_pb2.FieldValue]
     """Filter out field values that belong to an approval field."""
     config = self.services.config.GetProjectConfig(self.cnxn, project_id)
     approval_fd_ids = set(
@@ -1285,8 +1286,8 @@ class Converter(object):
     return [fv for fv in field_values if fv.field_id not in approval_fd_ids]
 
   def ConvertFieldValues(self, field_values, project_id, phases):
-    # type: (Sequence[proto.tracker_pb2.FieldValue], int,
-    #     Sequence[proto.tracker_pb2.Phase]) ->
+    # type: (Sequence[mrproto.tracker_pb2.FieldValue], int,
+    #     Sequence[mrproto.tracker_pb2.Phase]) ->
     #     Sequence[api_proto.issue_objects_pb2.FieldValue]
     """Convert sequence of field_values to protoc FieldValues.
 
@@ -1324,7 +1325,7 @@ class Converter(object):
     return api_fvs
 
   def _ComputeFieldValueString(self, field_value):
-    # type: (proto.tracker_pb2.FieldValue) -> str
+    # type: (mrproto.tracker_pb2.FieldValue) -> str
     """Convert a FieldValue's value to a string."""
     if field_value is None:
       raise exceptions.InputException('No FieldValue specified')
@@ -1343,7 +1344,7 @@ class Converter(object):
       raise exceptions.InputException('FieldValue must have at least one value')
 
   def _ComputeFieldValueDerivation(self, field_value):
-    # type: (proto.tracker_pb2.FieldValue) ->
+    # type: (mrproto.tracker_pb2.FieldValue) ->
     #     api_proto.issue_objects_pb2.Issue.Derivation
     """Convert a FieldValue's 'derived' to a protoc Issue.Derivation.
 
@@ -1361,7 +1362,7 @@ class Converter(object):
   # Approval Def
 
   def ConvertApprovalDefs(self, approval_defs, project_id):
-    # type: (Sequence[proto.tracker_pb2.ApprovalDef], int) ->
+    # type: (Sequence[mrproto.tracker_pb2.ApprovalDef], int) ->
     #     Sequence[api_proto.project_objects_pb2.ApprovalDef]
     """Convert sequence of protorpc ApprovalDefs to protoc ApprovalDefs.
 
@@ -1421,9 +1422,9 @@ class Converter(object):
 
   def ConvertApprovalValues(self, approval_values, field_values, phases,
                             issue_id=None, project_id=None):
-    # type: (Sequence[proto.tracker_pb2.ApprovalValue],
-    #     Sequence[proto.tracker_pb2.FieldValue],
-    #     Sequence[proto.tracker_pb2.Phase], Optional[int], Optional[int]) ->
+    # type: (Sequence[mrproto.tracker_pb2.ApprovalValue],
+    #     Sequence[mrproto.tracker_pb2.FieldValue],
+    #     Sequence[mrproto.tracker_pb2.Phase], Optional[int], Optional[int]) ->
     #     Sequence[api_proto.issue_objects_pb2.ApprovalValue]
     """Convert sequence of approval_values to protoc ApprovalValues.
 
@@ -1508,7 +1509,7 @@ class Converter(object):
     return api_avs
 
   def _ComputeApprovalValueStatus(self, status):
-    # type: (proto.tracker_pb2.ApprovalStatus) ->
+    # type: (mrproto.tracker_pb2.ApprovalStatus) ->
     #     api_proto.issue_objects_pb2.Issue.ApprovalStatus
     """Convert a protorpc ApprovalStatus to a protoc Issue.ApprovalStatus."""
     try:
@@ -1519,7 +1520,7 @@ class Converter(object):
   # Projects
 
   def ConvertIssueTemplates(self, project_id, templates):
-    # type: (int, Sequence[proto.tracker_pb2.TemplateDef]) ->
+    # type: (int, Sequence[mrproto.tracker_pb2.TemplateDef]) ->
     #     Sequence[api_proto.project_objects_pb2.IssueTemplate]
     """Convert a Sequence of TemplateDefs to protoc IssueTemplates.
 
@@ -1566,7 +1567,7 @@ class Converter(object):
     return api_templates
 
   def _FillIssueFromTemplate(self, template, project_id):
-    # type: (proto.tracker_pb2.TemplateDef, int) ->
+    # type: (mrproto.tracker_pb2.TemplateDef, int) ->
     #     api_proto.issue_objects_pb2.Issue
     """Convert a TemplateDef to its embedded protoc Issue.
 
@@ -1630,7 +1631,7 @@ class Converter(object):
     return filled_issue
 
   def _ComputeTemplatePrivacy(self, template):
-    # type: (proto.tracker_pb2.TemplateDef) ->
+    # type: (mrproto.tracker_pb2.TemplateDef) ->
     #     api_proto.project_objects_pb2.IssueTemplate.TemplatePrivacy
     """Convert a protorpc TemplateDef to its protoc TemplatePrivacy."""
     if template.members_only:
@@ -1640,7 +1641,7 @@ class Converter(object):
       return project_objects_pb2.IssueTemplate.TemplatePrivacy.Value('PUBLIC')
 
   def _ComputeTemplateDefaultOwner(self, template):
-    # type: (proto.tracker_pb2.TemplateDef) ->
+    # type: (mrproto.tracker_pb2.TemplateDef) ->
     #     api_proto.project_objects_pb2.IssueTemplate.DefaultOwner
     """Convert a protorpc TemplateDef to its protoc DefaultOwner."""
     if template.owner_defaults_to_member:
@@ -1651,7 +1652,7 @@ class Converter(object):
           'DEFAULT_OWNER_UNSPECIFIED')
 
   def _ComputePhases(self, phases):
-    # type: (proto.tracker_pb2.TemplateDef) -> Sequence[str]
+    # type: (mrproto.tracker_pb2.TemplateDef) -> Sequence[str]
     """Convert a protorpc TemplateDef to its sorted string phases."""
     sorted_phases = sorted(phases, key=lambda phase: phase.rank)
     return [phase.name for phase in sorted_phases]
@@ -1744,7 +1745,7 @@ class Converter(object):
     return api_fvs
 
   def ConvertProject(self, project):
-    # type: (proto.project_pb2.Project) ->
+    # type: (mrproto.project_pb2.Project) ->
     #     api_proto.project_objects_pb2.Project
     """Convert a protorpc Project to its protoc Project."""
 
@@ -1756,13 +1757,13 @@ class Converter(object):
         thumbnail_url=project_helpers.GetThumbnailUrl(project.logo_gcs_id))
 
   def ConvertProjects(self, projects):
-    # type: (Sequence[proto.project_pb2.Project]) ->
+    # type: (Sequence[mrproto.project_pb2.Project]) ->
     #     Sequence[api_proto.project_objects_pb2.Project]
     """Convert a Sequence of protorpc Projects to protoc Projects."""
     return [self.ConvertProject(proj) for proj in projects]
 
   def ConvertProjectConfig(self, project_config):
-    # type: (proto.tracker_pb2.ProjectIssueConfig) ->
+    # type: (mrproto.tracker_pb2.ProjectIssueConfig) ->
     #     api_proto.project_objects_pb2.ProjectConfig
     """Convert protorpc ProjectIssueConfig to protoc ProjectConfig."""
     project = self.services.project.GetProject(
@@ -1812,7 +1813,7 @@ class Converter(object):
         role=project_objects_pb2.ProjectMember.ProjectRole.Value(role))
 
   def ConvertLabelDefs(self, label_defs, project_id):
-    # type: (Sequence[proto.tracker_pb2.LabelDef], int) ->
+    # type: (Sequence[mrproto.tracker_pb2.LabelDef], int) ->
     #     Sequence[api_proto.project_objects_pb2.LabelDef]
     """Convert protorpc LabelDefs to protoc LabelDefs"""
     resource_names_dict = rnc.ConvertLabelDefNames(
@@ -1832,7 +1833,7 @@ class Converter(object):
     return api_lds
 
   def ConvertStatusDefs(self, status_defs, project_id):
-    # type: (Sequence[proto.tracker_pb2.StatusDef], int) ->
+    # type: (Sequence[mrproto.tracker_pb2.StatusDef], int) ->
     #     Sequence[api_proto.project_objects_pb2.StatusDef]
     """Convert protorpc StatusDefs to protoc StatusDefs
 
@@ -1882,14 +1883,14 @@ class Converter(object):
     return api_sds
 
   def ConvertComponentDef(self, component_def):
-    # type: (proto.tracker_pb2.ComponentDef) ->
+    # type: (mrproto.tracker_pb2.ComponentDef) ->
     #     api_proto.project_objects.ComponentDef
     """Convert a protorpc ComponentDef to a protoc ComponentDef."""
     return self.ConvertComponentDefs([component_def],
                                      component_def.project_id)[0]
 
   def ConvertComponentDefs(self, component_defs, project_id):
-    # type: (Sequence[proto.tracker_pb2.ComponentDef], int) ->
+    # type: (Sequence[mrproto.tracker_pb2.ComponentDef], int) ->
     #     Sequence[api_proto.project_objects.ComponentDef]
     """Convert sequence of protorpc ComponentDefs to protoc ComponentDefs
 
@@ -1944,7 +1945,7 @@ class Converter(object):
     return api_cds
 
   def ConvertProjectSavedQueries(self, saved_queries, project_id):
-    # type: (Sequence[proto.tracker_pb2.SavedQuery], int) ->
+    # type: (Sequence[mrproto.tracker_pb2.SavedQuery], int) ->
     #     Sequence(api_proto.project_objects.ProjectSavedQuery)
     """Convert sequence of protorpc SavedQueries to protoc ProjectSavedQueries
 

@@ -13,7 +13,7 @@ from framework import permissions
 from services import service_manager
 from testing import testing_helpers
 from tracker import issueimport
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 
 
 class IssueExportTest(unittest.TestCase):

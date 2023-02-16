@@ -20,7 +20,7 @@ from framework import framework_constants
 from framework import framework_helpers
 from framework import sql
 from framework import validate
-from proto import user_pb2
+from mrproto import user_pb2
 from services import caches
 
 

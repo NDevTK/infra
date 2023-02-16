@@ -36,8 +36,8 @@ from framework import gcs_helpers
 from framework import permissions
 from framework import sql
 from infra_libs import ts_mon
-from proto import project_pb2
-from proto import tracker_pb2
+from mrproto import project_pb2
+from mrproto import tracker_pb2
 from services import caches
 from services import tracker_fulltext
 from tracker import tracker_bizobj

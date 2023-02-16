@@ -20,8 +20,8 @@ import settings
 from framework import framework_helpers
 from framework import sorting
 from framework import sql
-from proto import ast_pb2
-from proto import tracker_pb2
+from mrproto import ast_pb2
+from mrproto import tracker_pb2
 from search import backendsearchpipeline
 from search import ast2ast
 from search import query2ast

@@ -204,5 +204,5 @@ Asset layer
 
 *  `framework/framework_constants.py`: Implementation-oriented constants.
 
-*  `proto/*.proto`: ProtoRPC definitions for internal representation of
+*  `mrproto/*.proto`: ProtoRPC definitions for internal representation of
    business objects.

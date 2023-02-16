@@ -25,7 +25,7 @@ from framework import framework_constants
 from framework import framework_helpers
 from framework import timestr
 from framework import urls
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from tracker import tracker_constants
 
 
@@ -853,8 +853,8 @@ def UsersInvolvedInComponents(component_defs):
 
 
 def UsersInvolvedInApprovalDefs(approval_defs, matching_fds):
-  # type: (Sequence[proto.tracker_pb2.ApprovalDef],
-  #     Sequence[proto.tracker_pb2.FieldDef]) -> Collection[int]
+  # type: (Sequence[mrproto.tracker_pb2.ApprovalDef],
+  #     Sequence[mrproto.tracker_pb2.FieldDef]) -> Collection[int]
   """Return a set of user IDs referenced in the approval_defs and field defs"""
   result = set()
   for ad in approval_defs:

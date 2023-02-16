@@ -21,7 +21,7 @@ from framework import permissions
 from features import features_constants
 from services import service_manager
 from features import hotlistdetails
-from proto import features_pb2
+from mrproto import features_pb2
 from testing import fake
 from testing import testing_helpers
 

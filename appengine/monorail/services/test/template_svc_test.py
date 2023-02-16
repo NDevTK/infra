@@ -12,7 +12,7 @@ import unittest
 
 from mock import Mock, patch
 
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from services import template_svc
 from testing import fake
 from testing import testing_helpers

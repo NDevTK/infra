@@ -37,7 +37,7 @@ from framework import sorting
 from framework import template_helpers
 from framework import urls
 from project import project_helpers
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from services import client_config_svc
 from tracker import field_helpers
 from tracker import tracker_bizobj
@@ -1237,8 +1237,8 @@ def FilterKeptAttachments(
 
 
 def _GetEnumFieldValuesAndDocstrings(field_def, config):
-  # type: (proto.tracker_pb2.LabelDef, proto.tracker_pb2.ProjectIssueConfig) ->
-  #     Sequence[tuple(string, string)]
+  # type: (mrproto.tracker_pb2.LabelDef,
+  #   mrproto.tracker_pb2.ProjectIssueConfig) -> Sequence[tuple(string, string)]
   """Get sequence of value, docstring tuples for an enum field"""
   label_defs = config.well_known_labels
   lower_field_name = field_def.field_name.lower()
@@ -1348,8 +1348,8 @@ def ApplyAllIssueChanges(cnxn, issue_delta_pairs, services):
 
 
 def UpdateClosedTimestamp(config, issue, old_effective_status):
-  # type: (proto.tracker_pb2.ProjectIssueConfig, proto.tracker_pb2.Issue, str)
-  #     -> None
+  # type: (mrproto.tracker_pb2.ProjectIssueConfig,
+  #   mrproto.tracker_pb2.Issue, str) -> None
   """Sets or unsets the closed_timestamp based based on status changes.
 
   If the status is changing from open to closed, the closed_timestamp is set to

@@ -10,7 +10,7 @@ from __future__ import absolute_import
 from mock import Mock, patch
 import unittest
 
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from tracker import attachment_helpers
 
 

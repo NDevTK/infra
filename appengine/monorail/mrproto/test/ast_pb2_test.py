@@ -10,8 +10,8 @@ from __future__ import absolute_import
 
 import unittest
 
-from proto import ast_pb2
-from proto import tracker_pb2
+from mrproto import ast_pb2
+from mrproto import tracker_pb2
 
 
 class ASTPb2Test(unittest.TestCase):

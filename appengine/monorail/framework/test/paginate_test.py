@@ -14,7 +14,7 @@ from google.appengine.ext import testbed
 from framework import exceptions
 from framework import paginate
 from testing import testing_helpers
-from proto import secrets_pb2
+from mrproto import secrets_pb2
 
 
 class PageTokenTest(unittest.TestCase):

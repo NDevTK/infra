@@ -15,7 +15,7 @@ from framework import framework_views
 from framework import permissions
 from services import service_manager
 from testing import fake
-from proto import user_pb2
+from mrproto import user_pb2
 
 
 class MemberViewTest(unittest.TestCase):

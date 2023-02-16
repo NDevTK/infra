@@ -18,8 +18,8 @@ from google.appengine.api import search
 
 import settings
 from framework import framework_views
-from proto import ast_pb2
-from proto import tracker_pb2
+from mrproto import ast_pb2
+from mrproto import tracker_pb2
 from services import fulltext_helpers
 from services import tracker_fulltext
 from testing import fake

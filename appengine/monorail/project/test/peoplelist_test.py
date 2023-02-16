@@ -12,7 +12,7 @@ import unittest
 from framework import authdata
 from framework import permissions
 from project import peoplelist
-from proto import user_pb2
+from mrproto import user_pb2
 from services import service_manager
 from testing import fake
 from testing import testing_helpers

@@ -26,7 +26,7 @@ from framework import exceptions
 from framework import framework_bizobj
 from framework import framework_helpers
 from framework import permissions
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 
 
 # Actions have separate 'Parse' and 'Run' implementations to allow better

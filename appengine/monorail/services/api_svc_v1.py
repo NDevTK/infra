@@ -44,9 +44,9 @@ from framework import permissions
 from framework import ratelimiter
 from framework import sql
 from project import project_helpers
-from proto import api_pb2_v1
-from proto import project_pb2
-from proto import tracker_pb2
+from mrproto import api_pb2_v1
+from mrproto import project_pb2
+from mrproto import tracker_pb2
 from search import frontendsearchpipeline
 from services import api_pb2_v1_helpers
 from services import client_config_svc
@@ -413,7 +413,7 @@ class MonorailApi(remote.Service):
       http_method='POST',
       name='issues.comments.insert')
   def issues_comments_insert(self, mar, request):
-    # type (...) -> proto.api_pb2_v1.IssuesCommentsInsertResponse
+    # type (...) -> mrproto.api_pb2_v1.IssuesCommentsInsertResponse
     """Add a comment."""
     # Because we will modify issues, load from DB rather than cache.
     issue = self._services.issue.GetIssueByLocalID(
@@ -729,7 +729,7 @@ class MonorailApi(remote.Service):
       http_method='POST',
       name='approvals.comments.insert')
   def approvals_comments_insert(self, mar, request):
-    # type (...) -> proto.api_pb2_v1.ApprovalsCommentsInsertResponse
+    # type (...) -> mrproto.api_pb2_v1.ApprovalsCommentsInsertResponse
     """Add an approval comment."""
     approval_fd = tracker_bizobj.FindFieldDef(
         request.approvalName, mar.config)

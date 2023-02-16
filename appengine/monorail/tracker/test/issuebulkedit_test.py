@@ -17,7 +17,7 @@ from google.appengine.ext import testbed
 
 from framework import exceptions
 from framework import permissions
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from services import service_manager
 from services import tracker_fulltext
 from testing import fake

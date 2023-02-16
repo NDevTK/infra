@@ -10,7 +10,7 @@ from __future__ import absolute_import
 
 from google.appengine.api import users
 
-from proto import user_pb2
+from mrproto import user_pb2
 from framework import framework_bizobj
 from framework import framework_views
 

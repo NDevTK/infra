@@ -21,7 +21,7 @@ import six
 import settings
 from framework import exceptions
 from framework import framework_constants
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from services import client_config_svc
 
 

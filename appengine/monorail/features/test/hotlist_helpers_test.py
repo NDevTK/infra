@@ -19,8 +19,8 @@ from testing import testing_helpers
 from testing import fake
 from tracker import tablecell
 from tracker import tracker_bizobj
-from proto import features_pb2
-from proto import tracker_pb2
+from mrproto import features_pb2
+from mrproto import tracker_pb2
 
 
 class HotlistTableDataTest(unittest.TestCase):

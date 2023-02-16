@@ -15,7 +15,7 @@ import logging
 
 from framework import framework_bizobj
 from framework import urls
-from proto import features_pb2
+from mrproto import features_pb2
 
 
 def GetOwnerIds(hotlist):

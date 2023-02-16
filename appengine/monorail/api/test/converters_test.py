@@ -21,8 +21,8 @@ from api.api_proto import project_objects_pb2
 from api.api_proto import user_objects_pb2
 from framework import exceptions
 from framework import permissions
-from proto import tracker_pb2
-from proto import user_pb2
+from mrproto import tracker_pb2
+from mrproto import user_pb2
 from testing import fake
 from testing import testing_helpers
 from tracker import tracker_bizobj

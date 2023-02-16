@@ -32,12 +32,12 @@ from framework import framework_views
 from framework import monorailcontext
 from framework import permissions
 from search import frontendsearchpipeline
-from proto import tracker_pb2
-from proto import project_pb2
+from mrproto import tracker_pb2
+from mrproto import project_pb2
 from testing import fake
 from tracker import tracker_bizobj
 from services import service_manager
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 
 
 class IssuesServicerTest(unittest.TestCase):

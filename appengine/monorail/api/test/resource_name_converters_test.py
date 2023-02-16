@@ -15,7 +15,7 @@ from api import resource_name_converters as rnc
 from framework import exceptions
 from testing import fake
 from services import service_manager
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 
 class ResourceNameConverterTest(unittest.TestCase):
 

@@ -21,7 +21,7 @@ from framework import permissions
 from framework import template_helpers
 from framework import urls
 from framework import xsrf
-from proto import project_pb2
+from mrproto import project_pb2
 
 from google.appengine.api import app_identity
 from google.appengine.api import modules

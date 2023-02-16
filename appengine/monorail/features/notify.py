@@ -43,7 +43,7 @@ from framework import urls
 from tracker import tracker_bizobj
 from tracker import tracker_helpers
 from tracker import tracker_views
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 
 
 class NotifyIssueChangeTask(notify_helpers.NotifyTaskBase):

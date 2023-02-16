@@ -24,7 +24,7 @@ from framework import exceptions
 from framework import framework_constants
 from framework import framework_views
 from framework import permissions
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from search import searchpipeline
 from tracker import field_helpers
 from tracker import tracker_bizobj

@@ -42,7 +42,7 @@ from __future__ import absolute_import
 
 from protorpc import messages
 
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 
 
 # This is a special field_name for a FieldDef that means to do a fulltext

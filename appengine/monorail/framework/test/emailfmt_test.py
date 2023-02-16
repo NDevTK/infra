@@ -15,7 +15,7 @@ from google.appengine.ext import testbed
 import settings
 from framework import emailfmt
 from framework import framework_views
-from proto import project_pb2
+from mrproto import project_pb2
 from testing import testing_helpers
 
 from google.appengine.api import apiproxy_stub_map

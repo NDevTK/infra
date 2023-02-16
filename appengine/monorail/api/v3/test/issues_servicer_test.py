@@ -19,7 +19,7 @@ from framework import exceptions
 from framework import framework_helpers
 from framework import monorailcontext
 from framework import permissions
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from testing import fake
 from services import service_manager
 

@@ -37,7 +37,7 @@ from framework import permissions
 from framework import profiler
 from framework import sql
 from framework import template_helpers
-from proto import api_pb2_v1
+from mrproto import api_pb2_v1
 from tracker import tracker_bizobj
 from tracker import tracker_constants
 

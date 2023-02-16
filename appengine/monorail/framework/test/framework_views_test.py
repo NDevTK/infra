@@ -13,9 +13,9 @@ import unittest
 from framework import framework_constants
 from framework import framework_views
 from framework import monorailrequest
-from proto import project_pb2
-from proto import tracker_pb2
-from proto import user_pb2
+from mrproto import project_pb2
+from mrproto import tracker_pb2
+from mrproto import user_pb2
 import settings
 from services import service_manager
 from testing import fake

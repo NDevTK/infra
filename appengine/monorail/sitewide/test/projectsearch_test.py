@@ -11,7 +11,7 @@ import mock
 import unittest
 
 from framework import profiler
-from proto import project_pb2
+from mrproto import project_pb2
 from services import service_manager
 from sitewide import projectsearch
 from testing import fake

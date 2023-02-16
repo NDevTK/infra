@@ -20,8 +20,8 @@ from google.appengine.ext import testbed
 import settings
 from framework import sql
 from framework import framework_constants
-from proto import user_pb2
-from proto import tracker_pb2
+from mrproto import user_pb2
+from mrproto import tracker_pb2
 from services import spam_svc
 from testing import fake
 from mock import Mock

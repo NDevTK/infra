@@ -10,7 +10,7 @@ from __future__ import absolute_import
 import unittest
 
 from framework import permissions
-from proto import usergroup_pb2
+from mrproto import usergroup_pb2
 from services import service_manager
 from sitewide import groupadmin
 from testing import fake

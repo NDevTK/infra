@@ -19,7 +19,7 @@ from features import notify_reasons
 from framework import emailfmt
 from framework import framework_views
 from framework import urls
-from proto import user_pb2
+from mrproto import user_pb2
 from services import service_manager
 from testing import fake
 

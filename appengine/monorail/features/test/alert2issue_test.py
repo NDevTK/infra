@@ -19,7 +19,7 @@ from parameterized import parameterized
 from features import alert2issue
 from framework import authdata
 from framework import emailfmt
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from services import service_manager
 from testing import fake
 from testing import testing_helpers

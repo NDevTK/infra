@@ -18,7 +18,7 @@ from tracker import field_helpers
 from tracker import tracker_bizobj
 from tracker import tracker_constants
 from tracker import tracker_helpers
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 
 MAX_NUM_PHASES = 6
 
@@ -227,8 +227,8 @@ def GetCheckedApprovalsFromParsed(approvals_to_phase_idx):
 
 
 def GetIssueFromTemplate(template, project_id, reporter_id):
-  # type: (proto.tracker_pb2.TemplateDef, int, int) ->
-  #     proto.tracker_pb2.Issue
+  # type: (mrproto.tracker_pb2.TemplateDef, int, int) ->
+  #     mrproto.tracker_pb2.Issue
   """Build a templated issue from TemplateDef.
 
   Args:

@@ -8,7 +8,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 from framework import framework_views
-from proto import usergroup_pb2
+from mrproto import usergroup_pb2
 
 
 class GroupVisibilityView(object):

@@ -18,8 +18,8 @@ from framework import cloud_tasks_helpers
 from framework import framework_constants
 from framework import template_helpers
 from framework import urls
-from proto import ast_pb2
-from proto import tracker_pb2
+from mrproto import ast_pb2
+from mrproto import tracker_pb2
 from search import query2ast
 from services import service_manager
 from testing import fake

@@ -27,10 +27,10 @@ from framework import framework_views
 from framework import permissions
 from framework import sorting
 from features import send_notifications
-from proto import features_pb2
-from proto import project_pb2
-from proto import tracker_pb2
-from proto import user_pb2
+from mrproto import features_pb2
+from mrproto import project_pb2
+from mrproto import tracker_pb2
+from mrproto import user_pb2
 from services import config_svc
 from services import features_svc
 from services import issue_svc

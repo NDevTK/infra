@@ -36,8 +36,8 @@ from tracker import attachment_helpers
 from tracker import field_helpers
 from tracker import tracker_bizobj
 from tracker import tracker_helpers
-from proto import tracker_pb2
-from proto import user_pb2
+from mrproto import tracker_pb2
+from mrproto import user_pb2
 
 
 # Convert and ingest objects in issue_objects.proto.

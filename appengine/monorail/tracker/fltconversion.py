@@ -17,7 +17,7 @@ from businesslogic import work_env
 from framework import permissions
 from framework import exceptions
 from framework import jsonfeed
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from tracker import template_helpers
 from tracker import tracker_bizobj
 

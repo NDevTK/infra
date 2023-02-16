@@ -26,7 +26,7 @@ from features import features_bizobj, hotlist_views
 import flask
 import httpagentparser
 from project import project_constants
-from proto import project_pb2
+from mrproto import project_pb2
 from search import query2ast
 
 import settings

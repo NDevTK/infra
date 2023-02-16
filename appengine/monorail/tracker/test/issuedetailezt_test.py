@@ -18,7 +18,7 @@ import unittest
 
 import settings
 from businesslogic import work_env
-from proto import features_pb2
+from mrproto import features_pb2
 from features import hotlist_views
 from features import send_notifications
 from framework import authdata
@@ -30,9 +30,9 @@ from framework import permissions
 from framework import profiler
 from framework import sorting
 from framework import template_helpers
-from proto import project_pb2
-from proto import tracker_pb2
-from proto import user_pb2
+from mrproto import project_pb2
+from mrproto import tracker_pb2
+from mrproto import user_pb2
 from services import service_manager
 from services import issue_svc
 from services import tracker_fulltext

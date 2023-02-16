@@ -18,7 +18,7 @@ except ImportError:
 
 from features import filterrules_helpers
 from framework import permissions
-from proto import project_pb2
+from mrproto import project_pb2
 from services import service_manager
 from services import template_svc
 from testing import fake

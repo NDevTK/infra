@@ -32,7 +32,7 @@ from testing import fake
 from testing import testing_helpers
 from tracker import field_helpers
 from services import service_manager
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from tracker import tracker_bizobj as tbo
 
 EXPLICIT_DERIVATION = issue_objects_pb2.Derivation.Value('EXPLICIT')

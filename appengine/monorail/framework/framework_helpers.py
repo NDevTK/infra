@@ -29,7 +29,7 @@ from framework import framework_constants
 from framework import template_helpers
 from framework import timestr
 from framework import urls
-from proto import user_pb2
+from mrproto import user_pb2
 from services import client_config_svc
 
 # AttachmentUpload holds the information of an incoming uploaded

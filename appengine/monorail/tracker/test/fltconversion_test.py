@@ -20,7 +20,7 @@ from tracker import fltconversion
 from tracker import tracker_bizobj
 from testing import fake
 from testing import testing_helpers
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 
 class FLTConvertTask(unittest.TestCase):
 

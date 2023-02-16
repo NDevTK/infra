@@ -26,7 +26,7 @@ from testing import fake
 from testing import testing_helpers
 from tracker import templatedetail
 from tracker import tracker_bizobj
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 
 
 class TemplateDetailTest(unittest.TestCase):

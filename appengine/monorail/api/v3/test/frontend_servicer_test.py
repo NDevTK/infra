@@ -18,7 +18,7 @@ from api.v3.api_proto import frontend_pb2
 from api.v3.api_proto import project_objects_pb2
 from framework import exceptions
 from framework import monorailcontext
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from services import service_manager
 from testing import fake
 from tracker import tracker_constants

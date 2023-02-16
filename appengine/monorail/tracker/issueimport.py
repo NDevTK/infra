@@ -16,7 +16,7 @@ from framework import framework_helpers
 from framework import jsonfeed
 from framework import permissions
 from framework import servlet
-from proto import tracker_pb2
+from mrproto import tracker_pb2
 from tracker import tracker_bizobj
 
 ParserState = collections.namedtuple(
