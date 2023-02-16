@@ -139,7 +139,7 @@ class MonorailServicer(object):
 
     except Exception as e:
       if not self.ProcessException(e, prpc_context, mc):
-        raise e.__class__, e, sys.exc_info()[2]
+        raise
     finally:
       if mc:
         mc.CleanUp()

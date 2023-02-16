@@ -114,7 +114,7 @@ class ProjectCreate(servlet.Servlet):
       try:
         gcs_helpers.CheckMimeTypeResizable(
             filecontent.GuessContentTypeFromFilename(item.filename))
-      except gcs_helpers.UnsupportedMimeType, e:
+      except gcs_helpers.UnsupportedMimeType as e:
         mr.errors.logo = e.message
 
     # 2. Call services layer to save changes.
