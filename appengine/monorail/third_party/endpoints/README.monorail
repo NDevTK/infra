@@ -1,0 +1,11 @@
+Name: Google Cloud Endpoints
+Short Name: endpoints
+URL: https://github.com/cloudendpoints/endpoints-python
+Version: 4.8.0
+License: Apache 2.0
+License File: LICENSE.txt
+Security Critical: no
+Description:
+Google Cloud Endpoints is a solution for creating RESTful web APIs.
+Local Modifications:
+1. Retain only the endpoints/ directory and LICENSE.txt file.
