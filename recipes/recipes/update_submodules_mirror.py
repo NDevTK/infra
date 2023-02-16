@@ -213,14 +213,14 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, overlays,
         commit_hash = api.git(
             'rev-parse',
             '--short',
-            'HEAD^',
+            'HEAD',
             name='last commit hash',
             stdout=api.raw_io.output_text()).stdout.strip()
         date = api.git(
             'log',
             '-1',
             '--format=%cs',
-            'HEAD^',
+            'HEAD',
             name='last commit date',
             stdout=api.raw_io.output_text()).stdout.strip()
         api.git(
