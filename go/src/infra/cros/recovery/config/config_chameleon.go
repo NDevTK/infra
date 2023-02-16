@@ -31,8 +31,10 @@ func chameleonPlan() *Plan {
 					"Power cycle chameleon if rpm exists",
 					"Ensure chameleon is SSHable on after power cycle",
 				},
-				Dependencies: []string{
+				Conditions: []string{
 					"Has chameleon rpm info",
+				},
+				Dependencies: []string{
 					"Power cycle chameleon by RPM",
 					"Wait for SSHable (after rpm cycle)",
 				},

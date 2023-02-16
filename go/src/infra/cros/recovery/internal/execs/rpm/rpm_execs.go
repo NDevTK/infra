@@ -132,11 +132,17 @@ func deviceHostnameAndRPMOutlet(info *execs.ExecInfo, deviceType string) (string
 	case "":
 		return "", nil, errors.Reason("device hostname and rpmoutlet: device type not specified").Err()
 	case "dut":
+		if info.GetChromeos().GetRpmOutlet() == nil {
+			return "", nil, errors.Reason("device hostname and rpmoutlet for %q: not specified", deviceType).Err()
+		}
 		return info.GetDut().Name, info.GetChromeos().GetRpmOutlet(), nil
 	case "chameleon":
 		c, err := activeChameleon(info)
 		if err != nil {
 			return "", nil, errors.Annotate(err, "device hostname and rpmoutlet for %q:", deviceType).Err()
+		}
+		if c.GetRPMOutlet() == nil {
+			return "", nil, errors.Reason("device hostname and rpmoutlet for %q: not specified", deviceType).Err()
 		}
 		return c.GetName(), c.GetRPMOutlet(), nil
 	default:
