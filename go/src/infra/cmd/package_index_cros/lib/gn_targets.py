@@ -5,7 +5,7 @@
 import filecmp
 import json
 import os
-from typing import Dict, List
+from typing import Any, Dict, List
 
 from .cros_sdk import CrosSdk
 from .logger import g_logger
@@ -32,7 +32,7 @@ class GnTargets:
                result_build_dir: str = None,
                file_conflicts: Dict = {}):
     """
-    Cdb constructor.
+    Gn targets constructor.
 
     Arguments:
       * data: loaded of gn_targets.json for |package|.
@@ -82,7 +82,7 @@ class GnTargets:
 
   def _FixScriptField(self, script_file: str) -> str:
     """
-    Fix script file path. Ensure it exist and is the same as |scrip_file|.
+    Fix script file path. Ensure it exist and is the same as |script_file|.
 
     Raises:
       * TargetPathException if actual script file not found.
@@ -188,21 +188,39 @@ class GnTargetsMerger:
     self.data = {}
     self.fields_to_resolve = {
         'all_dependent_configs': GnTargetsMerger._MergeLists,
+        'args': GnTargetsMerger._IgnoreNewData,
         'defines': GnTargetsMerger._MergeLists,
         'deps': GnTargetsMerger._MergeLists,
+        'cflags': GnTargetsMerger._MergeLists,
         'cflags_c': GnTargetsMerger._MergeLists,
         'cflags_cc': GnTargetsMerger._MergeLists,
+        'configs': GnTargetsMerger._MergeLists,
         'include_dirs': GnTargetsMerger._MergeLists,
         'inputs': GnTargetsMerger._MergeLists,
+        # Metadata structure varies between targets but not much between
+        # packages with the same target. It should be safe to keep the first
+        # metadata and ignore the rest.
+        'metadata': GnTargetsMerger._IgnoreNewData,
+        'ldflags': GnTargetsMerger._MergeLists,
         'lib_dirs': GnTargetsMerger._MergeLists,
         'libs': GnTargetsMerger._MergeLists,
         'outputs': GnTargetsMerger._MergeLists,
+        'sources': GnTargetsMerger._MergeLists,
+        # Scripts from different packages differ only in path but use the same
+        # file. It should be safe to keep the first script and ignore the rest.
+        'script': GnTargetsMerger._IgnoreNewData,
         # Everything else shall be either unique or equal.
     }
 
   @staticmethod
-  def _MergeLists(first: List, second: List, field_name: str) -> List:
-    return first + [element for element in second if element not in first]
+  def _MergeLists(existing_list: List, new_list: List, field_name: str) -> List:
+    return existing_list + [
+        element for element in new_list if element not in existing_list
+    ]
+
+  @staticmethod
+  def _IgnoreNewData(existing_data: Any, new_data: Any, field_name: str) -> Any:
+    return existing_data
 
   def Append(self, new_targets: GnTargets) -> None:
     """Add targets from |new_targets| to existing ones."""
