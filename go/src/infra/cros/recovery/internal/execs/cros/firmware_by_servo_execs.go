@@ -90,8 +90,10 @@ func setGbbFlagsByServoExec(ctx context.Context, info *execs.ExecInfo) error {
 	req := &firmware.SetApInfoByServoRequest{
 		FilePath: defaultAPFilePath(info.GetDut()),
 		// Set gbb flags to 0x18 to force dev boot and enable boot from USB.
-		GBBFlags:       am.AsString(ctx, "gbb_flags", ""),
-		UpdateGBBFlags: true,
+		GBBFlags:            am.AsString(ctx, "gbb_flags", ""),
+		ForceExtractAPFile:  am.AsBool(ctx, "force_extract_ap", false),
+		ForceUpdate:         am.AsBool(ctx, "force_update", false),
+		UseExternalFlashrom: am.AsBool(ctx, "use_external_flashrom", false),
 	}
 	servod := info.NewServod()
 	run := info.NewRunner(info.GetChromeos().GetServo().GetName())
@@ -152,6 +154,7 @@ func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error
 		Servod:               servod,
 		ServoHostRunner:      info.NewRunner(info.GetChromeos().GetServo().GetName()),
 		UseCacheToExtractor:  am.AsBool(ctx, "use_cache_extractor", false),
+		UseExternalFlashrom:  am.AsBool(ctx, "use_external_flashrom", false),
 	}
 	err = firmware.InstallFirmwareImage(ctx, req, info.NewLogger())
 	return errors.Annotate(err, mn).Err()

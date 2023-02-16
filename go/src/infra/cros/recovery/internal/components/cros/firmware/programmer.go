@@ -21,7 +21,7 @@ type Programmer interface {
 	// ProgramEC programs EC firmware to devices by servo.
 	ProgramEC(ctx context.Context, imagePath string) error
 	// ProgramAP programs AP firmware to devices by servo.
-	ProgramAP(ctx context.Context, imagePath, gbbHex string, force bool, externalFlashrom bool) error
+	ProgramAP(ctx context.Context, imagePath, gbbHex string, force, useExternalFlashrom bool) error
 	// ExtractAP extracts AP firmware from device.
 	ExtractAP(ctx context.Context, imagePath string, force bool) error
 	// Close closes programming resources.

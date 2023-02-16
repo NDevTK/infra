@@ -86,16 +86,16 @@ func (p *v3Programmer) programEC(ctx context.Context, imagePath string) error {
 // E.g. 0x18 to set force boot in DEV-mode and allow to boot from USB-drive in DEV-mode.
 // When force enabled, programmer will do force update (skip checking contents).
 // When externalFlashrom enabled, programmer will use external flashrom instead of libflashrom.
-func (p *v3Programmer) ProgramAP(ctx context.Context, imagePath, gbbHex string, force bool, externalFlashrom bool) error {
+func (p *v3Programmer) ProgramAP(ctx context.Context, imagePath, gbbHex string, force bool, useExternalFlashrom bool) error {
 	if err := isFileExist(ctx, imagePath, p.run); err != nil {
 		return errors.Annotate(err, "program ap").Err()
 	}
-	return p.programAP(ctx, imagePath, gbbHex, force, externalFlashrom)
+	return p.programAP(ctx, imagePath, gbbHex, force, useExternalFlashrom)
 }
 
 // programAP programs AP firmware to devices by servo.
 // Extracted for test purpose to avoid file present check.
-func (p *v3Programmer) programAP(ctx context.Context, imagePath, gbbHex string, force bool, externalFlashrom bool) error {
+func (p *v3Programmer) programAP(ctx context.Context, imagePath, gbbHex string, force bool, useExternalFlashrom bool) error {
 	if err := isToolPresent(ctx, apProgrammerToolName, p.run); err != nil {
 		return errors.Annotate(err, "program ap").Err()
 	}
@@ -108,7 +108,7 @@ func (p *v3Programmer) programAP(ctx context.Context, imagePath, gbbHex string, 
 	if force {
 		cmd = append(cmd, apProgrammerWithForce)
 	}
-	if externalFlashrom {
+	if useExternalFlashrom {
 		cmd = append(cmd, apProgrammerWithExternalFlashrom)
 	}
 	out, err := p.run(ctx, firmwareProgramTimeout, strings.Join(cmd, " "))

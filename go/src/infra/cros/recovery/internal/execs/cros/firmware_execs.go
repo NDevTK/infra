@@ -190,6 +190,7 @@ func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) 
 		UpdaterMode:          actionArgs.AsString(ctx, "mode", defaultFirmwareImageUpdateMode),
 		UpdaterTimeout:       actionArgs.AsDuration(ctx, "updater_timeout", 600, time.Second),
 		UseCacheToExtractor:  actionArgs.AsBool(ctx, "use_cache_extractor", false),
+		UseExternalFlashrom:  actionArgs.AsBool(ctx, "use_external_flashrom", false),
 	}
 	logger := info.NewLogger()
 	if err := firmware.InstallFirmwareImage(ctx, req, logger); err != nil {
