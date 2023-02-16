@@ -58,6 +58,13 @@ PROPERTIES = {
             help='A list of refs which match a ref_patterns but should be '
             'excluded from the mirroring. This can be used to remove branches '
             'with invalid git hashes.'),
+    'push_to_refs_cs':
+        Property(
+            default=False,
+            help='A boolean if each created synthetic commit should be pushed '
+            'to refs/cs/ namespace. There is no refs/ cleanup, so this should '
+            'be used only on codesearch projects with relatively infrequent '
+            'updates.'),
 }
 
 COMMIT_USERNAME = 'Submodules bot'
@@ -68,7 +75,7 @@ SHA1_RE = re.compile(r'[0-9a-fA-F]{40}')
 
 
 def RunSteps(api, source_repo, target_repo, extra_submodules, overlays,
-             internal, with_tags, ref_patterns, refs_to_skip):
+             internal, with_tags, ref_patterns, refs_to_skip, push_to_refs_cs):
   _, source_project = api.gitiles.parse_repo_url(source_repo)
 
   # NOTE: This name must match the definition in cr-buildbucket.cfg. Do not
@@ -202,6 +209,30 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, overlays,
           # force push.
           '--force',
           name='git push ' + ref)
+      if push_to_refs_cs:
+        commit_hash = api.git(
+            'rev-parse',
+            '--short',
+            'HEAD^',
+            name='last commit hash',
+            stdout=api.raw_io.output_text()).stdout.strip()
+        date = api.git(
+            'log',
+            '-1',
+            '--format=%cs',
+            'FETCH_HEAD^',
+            name='last commit date',
+            stdout=api.raw_io.output_text()).stdout.strip()
+        api.git(
+            'push',
+            '-o',
+            'nokeycheck',
+            target_repo,
+            f'HEAD:refs/cs/{date}-{commit_hash}',
+            # skip-validation is necessary as without it we cannot push >=10k
+            # commits at once.
+            '--push-option=skip-validation',
+            name='git push ' + ref)
 
   api.git('push', '-o', 'nokeycheck', target_repo,
           'refs/remotes/origin/main:refs/heads/main-original')
@@ -362,20 +393,29 @@ def GenTests(api):
                  'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
                  stream='stdout')) + api.step_data('git fetch', retcode=128))
 
-  yield (api.test('existing_checkout_new_commits') + api.properties(
-      source_repo='https://chromium.googlesource.com/chromium/src',
-      target_repo='https://chromium.googlesource.com/codesearch/src_mirror') +
-         api.step_data('Check for existing source checkout dir',
-                       api.raw_io.stream_output_text('src', stream='stdout')) +
-         api.step_data(
-             'git ls-remote',
-             api.raw_io.stream_output_text(
-                 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
-                 stream='stdout')) +
-         api.step_data(
-             'Process refs/heads/main.'
-             'gclient evaluate DEPS',
-             api.raw_io.stream_output_text(fake_src_deps, stream='stdout')))
+  yield (
+      api.test('existing_checkout_new_commits') + api.properties(
+          source_repo='https://chromium.googlesource.com/chromium/src',
+          target_repo='https://chromium.googlesource.com/codesearch/src_mirror',
+          push_to_refs_cs=True) +
+      api.step_data('Check for existing source checkout dir',
+                    api.raw_io.stream_output_text('src', stream='stdout')) +
+      api.step_data(
+          'git ls-remote',
+          api.raw_io.stream_output_text(
+              'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
+              stream='stdout')) +
+      api.step_data(
+          'Process refs/heads/main.'
+          'gclient evaluate DEPS',
+          api.raw_io.stream_output_text(fake_src_deps, stream='stdout')) +
+      api.step_data('Process refs/heads/main.'
+                    'last commit hash',
+                    api.raw_io.stream_output_text('012345', stream='stdout')) +
+      api.step_data(
+          'Process refs/heads/main.'
+          'last commit date',
+          api.raw_io.stream_output_text('2023-02-15', stream='stdout')))
 
   yield (
       api.test('existing_checkout_latest_commit_not_by_bot') + api.properties(

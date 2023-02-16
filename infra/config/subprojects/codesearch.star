@@ -163,6 +163,7 @@ def update_submodules_mirror(
         extra_submodules = None,
         triggered_by = None,
         ref_patterns = None,
+        push_to_refs_cs = False,
         execution_timeout = time.hour):
     properties = {
         "source_repo": source_repo,
@@ -172,6 +173,7 @@ def update_submodules_mirror(
         properties["extra_submodules"] = extra_submodules
     if ref_patterns:
         properties["ref_patterns"] = ref_patterns
+    properties["push_to_refs_cs"] = push_to_refs_cs
     builder(
         name = name,
         execution_timeout = execution_timeout,
@@ -382,6 +384,7 @@ update_submodules_mirror(
     short_name = "infra",
     source_repo = "https://chromium.googlesource.com/infra/infra",
     target_repo = "https://chromium.googlesource.com/codesearch/infra/infra",
+    push_to_refs_cs = True,
     triggered_by = infra.poller(),
 )
 update_submodules_mirror(
@@ -389,5 +392,6 @@ update_submodules_mirror(
     short_name = "build",
     source_repo = "https://chromium.googlesource.com/chromium/tools/build",
     target_repo = "https://chromium.googlesource.com/codesearch/chromium/tools/build",
+    push_to_refs_cs = True,
     triggered_by = build.poller(),
 )
