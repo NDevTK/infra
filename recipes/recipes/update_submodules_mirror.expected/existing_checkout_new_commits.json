@@ -205,7 +205,7 @@
       "log",
       "-1",
       "--format=%cs",
-      "FETCH_HEAD^"
+      "HEAD^"
     ],
     "cwd": "[CACHE]/codesearch_update_submodules_mirror/src/",
     "infra_step": true,

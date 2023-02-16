@@ -220,7 +220,7 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, overlays,
             'log',
             '-1',
             '--format=%cs',
-            'FETCH_HEAD^',
+            'HEAD^',
             name='last commit date',
             stdout=api.raw_io.output_text()).stdout.strip()
         api.git(
