@@ -110,8 +110,25 @@ func mainRunInternal(ctx context.Context, input *steps.LabpackInput, state *buil
 		// Write result as last step.
 		writeOutputProps(res)
 	}()
+	lg.Infof("Prepare print input params...")
+	if err = printInputs(ctx, input); err != nil {
+		lg.Debugf("main run internal: failed to marshal proto. Error: %s", err)
+		return err
+	}
+	var metrics metrics.Metrics
+	if !input.GetNoMetrics() {
+		lg.Infof("Prepare create Karte client...")
+		var err error
+		metrics, err = karte.NewMetrics(ctx, kclient.ProdConfig(luciauth.Options{}))
+		if err == nil {
+			lg.Infof("Karte client successfully created.")
+		} else {
+			lg.Errorf("Failed to instantiate Karte client: %s", err)
+			resultErrors = append(resultErrors, err)
+		}
+	}
 	lg.Infof("Starting task execution...")
-	if err := internalRun(ctx, input, state, lg, logRoot); err != nil {
+	if err := internalRun(ctx, input, state, metrics, lg, logRoot); err != nil {
 		res.Success = false
 		res.FailReason = err.Error()
 		resultErrors = append(resultErrors, err)
@@ -251,7 +268,7 @@ func parallelUpload(ctx context.Context, lg logger.Logger, client lucigs.Client,
 }
 
 // internalRun main entry point to execution received request.
-func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State, lg logger.Logger, logRoot string) (err error) {
+func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State, metrics metrics.Metrics, lg logger.Logger, logRoot string) (err error) {
 	defer func() {
 		// Catching the panic here as luciexe just set a step as fail and but not exit execution.
 		lg.Debugf("Checking if there is a panic!")
@@ -260,10 +277,6 @@ func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State
 			err = errors.Reason("panic: %v", r).Err()
 		}
 	}()
-	if err = printInputs(ctx, in); err != nil {
-		lg.Debugf("Internal run: failed to marshal proto. Error: %s", err)
-		return err
-	}
 	ctx = setupContextNamespace(ctx, ufsUtil.OSNamespace)
 	access, err := tlw.NewAccess(ctx, in)
 	if err != nil {
@@ -281,20 +294,6 @@ func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State
 	if !ok {
 		return errors.Reason("task name %q is invalid", in.TaskName).Err()
 	}
-
-	var metrics metrics.Metrics
-	if !in.GetNoMetrics() {
-		var err error
-		metrics, err = karte.NewMetrics(ctx, kclient.ProdConfig(luciauth.Options{}))
-		if err == nil {
-			lg.Infof("internal run: metrics client successfully created.")
-		} else {
-			// TODO(gregorynisbet): Make this error end the current function.
-			lg.Errorf("internal run: failed to instantiate karte client: %s", err)
-			return errors.Annotate(err, "set up karte client").Err()
-		}
-	}
-
 	infraPb := state.Build().GetInfra()
 
 	runArgs := &recovery.RunArgs{
