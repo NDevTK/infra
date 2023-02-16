@@ -143,6 +143,10 @@ func uploadLogs(ctx context.Context, state *build.State, lg logger.Logger) (rErr
 	step, ctx := build.StartStep(ctx, "Upload logs")
 	lg.Infof("Beginning to upload logs")
 	defer func() {
+		if r := recover(); r != nil {
+			lg.Debugf("Received panic: %v\n", r)
+			rErr = errors.Reason("panic: %v", r).Err()
+		}
 		lg.Infof("Finished uploading logs: ok=%t.", rErr == nil)
 		step.End(rErr)
 	}()
