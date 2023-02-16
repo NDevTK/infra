@@ -239,6 +239,17 @@ class Package:
 
     raise NotImplementedError('Can compare only with Package or string')
 
+  @property
+  def is_built_from_actual_sources(self) -> bool:
+    assert self.temp_dir
+    out_of_tree_build = (_CheckEbuildVar(self.package_info.ebuild_file,
+                                         'CROS_WORKON_OUTOFTREE_BUILD') or
+                         '0') == '1'
+    # Instead of calling 'cros-workon list', just check if workon version is
+    # present.
+    is_not_stable = '9999' in self.temp_dir
+    return out_of_tree_build and is_not_stable
+
   def Initialize(self) -> None:
     """
     Find directories associated with the package and check they exist.
@@ -277,17 +288,6 @@ class Package:
       return [os.path.join(self.setup.src_dir, 'aosp', 'system')]
 
     return None
-
-  def _IsOutOfTreeBuild(self) -> bool:
-    """
-    True if package has CROS_WORKON_OUTOFTREE_BUILD.
-
-    If true, then package is built from local sources and has nothing in
-    temp source dir (which does not exist).
-    """
-    out_of_tree_build = _CheckEbuildVar(self.package_info.ebuild_file,
-                                        'CROS_WORKON_OUTOFTREE_BUILD')
-    return out_of_tree_build and out_of_tree_build == '1'
 
   def _GetOrderedVersionSuffixes(self) -> List[str]:
     """
@@ -436,8 +436,7 @@ class Package:
     temp_source_basedir = self._GetTempSourceBaseDir()
 
     if not temp_source_basedir:
-      ebuild = portage_util.EBuild(self.package_info.ebuild_file)
-      if not self._IsOutOfTreeBuild() and not ebuild.is_workon:
+      if not self.is_built_from_actual_sources:
         raise Package.DirsException(
             self,
             "Only workon and out-of-tree packages may not have temp source copy"

@@ -154,16 +154,19 @@ class Cdb:
 
     for arg in arguments:
 
-      def Fixer(chroot_path):
-        return self._FixPath(chroot_path,
-                             ignore_generated=True,
-                             ignore_highly_volatile=True,
-                             ignorable_dirs=self.setup.ignorable_dirs).actual
+      def Fixer(chroot_path: str) -> str:
+        return self._FixPath(
+            chroot_path,
+            ignore_highly_volatile=True,
+            ignore_generated=True,
+            ignore_stable=True,
+            ignorable_dirs=self.setup.ignorable_dirs).actual
 
-      if arg[0:2] == '-I':
-        # Include path arg is more strict to fix.
-        actual_path = self._FixPath(arg[2:], ignore_generated=True).actual
-        actual_arg = '-I' + actual_path
+      arg_prefix, actual_path = PathHandler.FixPathInArgument(arg, Fixer)
+      actual_arg = arg_prefix + actual_path
+
+      if arg_prefix == '-I':
+        # Put include path into corresponding ordered location.
         if actual_path.startswith(self.build_dir):
           # If actual_include_path.startswith(self.build_dir):
           # Build dir can be inside {src_dir}. So it comes before local.
@@ -175,9 +178,8 @@ class Cdb:
         else:
           raise NotImplementedError(f"Unexpected include path: {actual_path}")
       else:
-        arg_prefix, actual_path = PathHandler.FixPathInArgument(arg, Fixer)
-        actual_arg = arg_prefix + actual_path
         actual_arguments.append(actual_arg)
+
 
     # Args are fixed.
 
