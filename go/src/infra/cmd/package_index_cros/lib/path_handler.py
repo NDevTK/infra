@@ -35,6 +35,13 @@ class PathHandler:
     self.setup = setup
 
   @staticmethod
+  def SanitizePath(path: str) -> str:
+    # Remove any trailing slashes
+    path = path.rstrip(os.path.sep)
+
+    return path
+
+  @staticmethod
   def MovePath(path: str, from_dir: str, to_dir: str) -> str:
     """
     Replaces path's base dir |from_dir| with |to_dir|.
@@ -54,11 +61,11 @@ class PathHandler:
   def ToChroot(self, path: str):
     return path_util.ToChrootPath(path, chroot_path=self.setup.chroot_dir)
 
-  def NormalizePath(self,
-                    chroot_path: str,
-                    *,
-                    chroot_base_dir: str = None,
-                    base_dir: str = None) -> str:
+  def _NormalizePath(self,
+                     chroot_path: str,
+                     *,
+                     chroot_base_dir: str = None,
+                     base_dir: str = None) -> str:
     """
     Returns path outside of chroot for given |chroot_path| inside chroot.
 
@@ -72,10 +79,12 @@ class PathHandler:
     assert chroot_base_dir or base_dir, \
       'Either chroot_base_dir or base_dir must be set'
 
+    chroot_path = PathHandler.SanitizePath(chroot_path)
+
     if chroot_base_dir is None:
       chroot_base_dir = self.ToChroot(base_dir)
 
-    if not chroot_path.startswith('/'):
+    if not chroot_path.startswith(os.sep):
       chroot_path = os.path.join(chroot_base_dir, chroot_path)
       chroot_path = os.path.realpath(chroot_path)
 
@@ -106,6 +115,8 @@ class PathHandler:
       * PathNotFixedException if cannot resolve |path| to actual path.
       * PathNotFixedException if actual path does not exist.
       """
+    chroot_path = PathHandler.SanitizePath(chroot_path)
+
     path = None
     if chroot_path.startswith('//'):
       # Special case. '//' indicates source dir.
@@ -115,7 +126,7 @@ class PathHandler:
           path = path_attempt
           break
     else:
-      path = self.NormalizePath(chroot_path, base_dir=package.build_dir)
+      path = self._NormalizePath(chroot_path, base_dir=package.build_dir)
 
     if not path or not os.path.exists(path):
       raise PathHandler.PathNotFixedException(package,
@@ -179,10 +190,15 @@ class PathHandler:
       * PathNotFixedException if actual path's most possible parent dir does not
         exist.
     """
+    chroot_path = PathHandler.SanitizePath(chroot_path)
+    if ignorable_dir:
+      ignorable_dir = PathHandler.SanitizePath(ignorable_dir)
+
     # Ignorable dir is the upper most possible parent which may not exist. If it
     # is not given, chroot_path is ignorable dir and it's parent must exist.
     chroot_ignorable_dir = self.ToChroot(
         ignorable_dir) if ignorable_dir else chroot_path
+
     chroot_path_base_dir = os.path.dirname(chroot_path)
     chroot_path_basename = os.path.basename(chroot_path)
 
@@ -219,6 +235,7 @@ class PathHandler:
       conflicting_paths={},
       ignore_highly_volatile: bool = False,
       ignore_generated: bool = False,
+      ignore_stable: bool = False,
       ignorable_dirs: List[str] = [],
       ignorable_extensions: List[str] = []) -> 'PathHandler.FixedPath':
     """
@@ -239,6 +256,8 @@ class PathHandler:
     * |ignore_generated|: do not fail if |chroot_path| in |package.build_dir|,
       return as is. Unlike |ignorable_dirs|, we ignore anything that happens
       inside |package.build_dir|, not just path's parent dir.
+    * |ignore_stable|: do not fail if |chroot_path| belongs to a stably built
+      package.
     * |ignore_highly_volatile|: do not fail if |package| is considered as
       highly volatile (may contain patches which create/delete files).
     * |ignorable_dirs|: do not fail if path is inside one of given dirs
@@ -250,6 +269,8 @@ class PathHandler:
       * PathNotFixedException if cannot resolve |path| to actual path.
       * PathNotFixedException if actual path does not exist.
     """
+    chroot_path = PathHandler.SanitizePath(chroot_path)
+
     try:
       return self.FixPath(chroot_path,
                           package,
@@ -257,7 +278,7 @@ class PathHandler:
     except PathHandler.PathNotFixedException as e:
       # Failed to fix as is. Check if error can be ignored and try to fix from
       # parent dir.
-      path = self.NormalizePath(chroot_path, base_dir=package.build_dir)
+      path = self._NormalizePath(chroot_path, base_dir=package.build_dir)
 
       if ignore_generated and path.startswith(package.build_dir):
         # Path inside build dir and ignorable, return as is.
@@ -268,6 +289,10 @@ class PathHandler:
       can_ignore = False
       if ignore_highly_volatile and package.is_highly_volatile:
         g_logger.debug('%s: Failed to fix path for highly volatile package: %s',
+                       package.full_name, path)
+        can_ignore = True
+      if ignore_stable and not package.is_built_from_actual_sources:
+        g_logger.debug('%s: Failed to fix path for stable package: %s',
                        package.full_name, path)
         can_ignore = True
       elif ignorable_dirs:
@@ -418,16 +443,25 @@ class PathHandler:
       * PathNotFixedException if cannot resolve |path| to actual path.
       * PathNotFixedException if actual path does not exist.
     """
+    # Do not sanitize the arg as it can have trailing separators required for
+    # regex match.
+
+    # Include argument may not have a path with a separator in it which is
+    # required for regex. Handle it separately.
+    if arg[0:2] == '-I':
+      chroot_path = arg[2:]
+      return ('-I', fixer_callback(chroot_path))
+
     match = re.match(PathHandler.g_argument_regexes, arg)
     if not match:
       if not re.match(PathHandler.g_gn_target_regex, arg):
-        assert '/' not in arg, f"Unknown arg with possible path: {arg}"
+        assert os.sep not in arg, f"Unknown arg with possible path: {arg}"
 
       # Argument is a gn target. Nothing to fix.
 
       return (arg, '')
 
-    assert '/' in arg, f"Unknown arg: {arg}"
+    assert os.sep in arg, f"Unknown arg: {arg}"
     prefix = match.group(1)
     chroot_path = match.group(2)
 
