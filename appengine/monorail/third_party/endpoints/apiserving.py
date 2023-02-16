@@ -68,10 +68,6 @@ import os
 
 from google.appengine.api import app_identity
 
-from endpoints_management.control import client as control_client
-from endpoints_management.control import wsgi as control_wsgi
-from protorpc.wsgi import service as wsgi_service
-
 from . import api_config
 from . import api_exceptions
 from . import endpoints_dispatcher
@@ -348,6 +344,7 @@ class _ApiServer(object):
     # so it doesn't result in an unexpected keyword argument downstream.
     kwargs.pop('restricted', None)
 
+    from protorpc.wsgi import service as wsgi_service
     self.service_app = wsgi_service.service_mappings(protorpc_services,
                                                      **kwargs)
 
@@ -580,6 +577,9 @@ def api_server(api_services, **kwargs):
                  ' the name of service in ENDPOINTS_SERVICE_NAME to enable'
                  ' it.')
     return dispatcher
+
+  from endpoints_management.control import client as control_client
+  from endpoints_management.control import wsgi as control_wsgi
 
   # If we're using a local server, just return the dispatcher now to bypass
   # control client.

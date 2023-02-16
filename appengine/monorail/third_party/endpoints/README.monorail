@@ -9,3 +9,5 @@ Description:
 Google Cloud Endpoints is a solution for creating RESTful web APIs.
 Local Modifications:
 1. Retain only the endpoints/ directory and LICENSE.txt file.
+2. Remove dependency on semver and move endpoints_management and
+   protorpc.wsgi imports into the functions where they're being used.

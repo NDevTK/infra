@@ -42,7 +42,6 @@ import re
 from google.appengine.api import app_identity
 
 import attr
-import semver
 from protorpc import util
 
 from . import api_exceptions
@@ -633,12 +632,7 @@ class _ApiDecorator(object):
 
       self.__name = name
       self.__api_version = version
-      try:
-        parsed_version = semver.parse(version)
-      except ValueError:
-        self.__path_version = version
-      else:
-        self.__path_version = 'v{0}'.format(parsed_version['major'])
+      self.__path_version = version
       self.__description = description
       self.__hostname = hostname
       self.__audiences = audiences
