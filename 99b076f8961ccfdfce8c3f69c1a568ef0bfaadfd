@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3e528652_e23bff5b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2023-02-16T15:52:41Z",
+      "side": 1,
+      "message": "we should add a test for this too, we can talk about that when we next meet",
+      "revId": "99b076f8961ccfdfce8c3f69c1a568ef0bfaadfd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9fb1d8e8_af811c34",
+        "filename": "go/src/infra/cros/cmd/branch_util/create.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 316,
+      "author": {
+        "id": 1350839
+      },
+      "writtenOn": "2023-02-16T15:52:41Z",
+      "side": 1,
+      "message": "could you add an additional message to stderr along the lines of \"This was the only type of error, continuing with best-effort branch creation\"?",
+      "range": {
+        "startLine": 316,
+        "startChar": 3,
+        "endLine": 316,
+        "endChar": 84
+      },
+      "revId": "99b076f8961ccfdfce8c3f69c1a568ef0bfaadfd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
