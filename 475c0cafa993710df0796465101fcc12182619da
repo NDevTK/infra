@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8ce0b37d_6d2539bd",
+        "filename": "go/src/infra/cmd/drone-agent/internal/agent/agent.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2023-02-17T11:32:38Z",
+      "side": 1,
+      "message": "This is the revert of the original CL. You could see what I changed by diff this with the later patch set.",
+      "revId": "475c0cafa993710df0796465101fcc12182619da",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
