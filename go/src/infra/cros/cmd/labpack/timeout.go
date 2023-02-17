@@ -6,8 +6,9 @@ package main
 
 import (
 	"context"
-	"errors"
 	"time"
+
+	"go.chromium.org/luci/common/errors"
 )
 
 // ctxFunc is a function that takes no arguments and returns an error indicating
@@ -26,16 +27,16 @@ const (
 // if the deadline was exceeded.
 // The status unambiguously indicates whether the function ran to completion or not.
 func callFuncWithTimeout(ctx context.Context, timeout time.Duration, cb ctxFunc) (status string, err error) {
-	ctx, cancelHandle := context.WithCancel(ctx)
+	ctxTimeout, cancelHandle := context.WithTimeout(ctx, timeout)
 	defer cancelHandle()
 	ch := make(chan error, 1)
 	go func() {
-		ch <- cb(ctx)
+		ch <- cb(ctxTimeout)
 	}()
 	select {
+	case <-ctxTimeout.Done():
+		return interrupted, errors.Annotate(ctxTimeout.Err(), "deadline exceeded").Err()
 	case e := <-ch:
 		return completed, e
-	case <-time.After(timeout):
-		return interrupted, errors.New("deadline exceeded")
 	}
 }
