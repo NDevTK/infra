@@ -157,7 +157,7 @@ func ToUFSRealm(zone string) string {
 
 // GetValidRealmName replaces the older Browser realm with newer realm
 func GetValidRealmName(realm string) string {
-	if realm != "" && realm == OldBrowserLabAdminRealm {
+	if realm == OldBrowserLabAdminRealm {
 		return BrowserLabAdminRealm
 	}
 	return realm
@@ -184,7 +184,7 @@ func IsChromeLegacyHost(name string) bool {
 	return strings.HasPrefix(name, ChromeNamePrefix)
 }
 
-// IsChromeLegacyHost returns if a host is a legacy browser host used externally
+// IsChromiumLegacyHost returns if a host is a legacy browser host used externally
 func IsChromiumLegacyHost(name string) bool {
 	return strings.HasPrefix(name, ChromiumNamePrefix)
 }
