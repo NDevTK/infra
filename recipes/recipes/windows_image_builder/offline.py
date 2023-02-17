@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -281,8 +281,16 @@ def RunSteps(api, inputs):
 
   # triggered_custs contains the list of cust keys that have been triggered
   triggered_custs = set()
-  # list of custs that were not built
-  unbuilt_custs = set()
+  # list of cust keys that failed to build
+  failed_custs = set()
+  # list of cust keys that had infra failure
+  infra_failed_custs = set()
+  # list of cust keys that were cancelled
+  cancelled_custs = set()
+  # list of cust keys that were built
+  built_custs = set()
+  # mapping from build_id to keys
+  build_id_keys = {}
   with api.step.nest('Execute customizations') as e:
     # Get all the images that can be executed at this time
     executions = api.windows_scripts_executor.get_executable_configs(custs)
@@ -309,6 +317,8 @@ def RunSteps(api, inputs):
           # schedule all the builds
           builds = api.buildbucket.schedule([req], url_title_fn=url_title)
           blds.append(builds[0].id)
+          # Record all the keys associated with the build id
+          build_id_keys[builds[0].id] = key_list
           for key in key_list:
             cust = key_cust_map[key]
             # Add a link to the cust build
@@ -321,36 +331,58 @@ def RunSteps(api, inputs):
           step_name='waiting for builds to complete',
           timeout=7200)
       for build_id, build in build_map.items():
+        # Collect all 4 terminal build status
         if build.status == common_pb2.Status.FAILURE:
-          e.step_summary_text += 'Failure: {}'.format(build_id)
+          failed_custs = failed_custs.union(build_id_keys[build_id])
+        if build.status == common_pb2.Status.CANCELED:
+          cancelled_custs = cancelled_custs.union(build_id_keys[build_id])
         if build.status == common_pb2.Status.INFRA_FAILURE:
-          e.step_summary_text += 'Infra Failure: {}'.format(build_id)
+          infra_failed_custs = infra_failed_custs.union(build_id_keys[build_id])
+        if build.status == common_pb2.Status.SUCCESS:
+          built_custs = built_custs.union(build_id_keys[build_id])
+
       # Avoid triggering the builds again. (In case they failed)
       rcusts = [cust for cust in custs if cust.get_key() not in triggered_custs]
       # generate the new set of images that can be built
       executions = api.windows_scripts_executor.get_executable_configs(rcusts)
 
-    e.step_summary_text += 'Failed to build: '
-    for cust in custs:
-      if cust.needs_build:
-        unbuilt_custs.add(cust.get_key())
-        e.step_summary_text += '{}/{}'.format(cust.id, cust.get_key())
 
-  summary = 'Summary:\n'
-  summary += 'Built:\n'
+  summary = 'Summary:<br>'
+  if failed_custs:
+    summary += 'Failed:<br>'
+    for cust in custs:
+      if cust.get_key() in failed_custs:
+        summary += '{}/{}<br>'.format(cust.id, cust.get_key())
+  if infra_failed_custs:
+    summary += 'InfraFailure:<br>'
+    for cust in custs:
+      if cust.get_key() in infra_failed_custs:
+        summary += '{}/{}<br>'.format(cust.id, cust.get_key())
+  if cancelled_custs:
+    summary += 'Canceled:<br>'
+    for cust in custs:
+      if cust.get_key() in cancelled_custs:
+        summary += '{}/{}<br>'.format(cust.id, cust.get_key())
+  if built_custs:
+    summary += 'Built:<br>'
+    for cust in custs:
+      if cust.get_key() in built_custs:
+        summary += '{}/{}<br>'.format(cust.id, cust.get_key())
+  not_built = set()
   for cust in custs:
-    if cust.get_key() not in unbuilt_custs:
-      summary += '{}/{}\n'.format(cust.id, cust.get_key())
-  summary += 'Failed:\n'
-  for cust in custs:
-    if cust.get_key() in unbuilt_custs:
-      summary += '{}/{}\n'.format(cust.id, cust.get_key())
-  if not unbuilt_custs:
-    # looks like everything executed properly, return result
-    return RawResult(status=common_pb2.SUCCESS, summary_markdown=summary)
-  else:
+    if cust.get_key() not in triggered_custs:
+      not_built.add(cust.get_key())
+  if not_built:
+    summary += 'Did not build:<br>'
+    for cust in custs:
+      if cust.get_key() in not_built:
+        summary += '{}/{}<br>'.format(cust.id, cust.get_key())
+  if failed_custs or infra_failed_custs or cancelled_custs:
     # looks like we failed a few builds
     return RawResult(status=common_pb2.FAILURE, summary_markdown=summary)
+  else:
+    # looks like everything executed properly, return result
+    return RawResult(status=common_pb2.SUCCESS, summary_markdown=summary)
 
 
 def GenTests(api):
@@ -386,15 +418,18 @@ def GenTests(api):
   BATCH_RESPONSE_WIM = bs_pb2.BatchResponse(responses=[
       dict(
           schedule_build=dict(
-              builder=dict(
-                  builder='Wim Customization Builder'), input=prop_wim)),
+              builder=dict(builder='Wim Customization Builder'),
+              input=prop_wim,
+              id=1234567890123456789)),
   ])
 
   BATCH_RESPONSE_WIN = bs_pb2.BatchResponse(responses=[
       dict(
           schedule_build=dict(
               builder=dict(builder='Windows Customization Builder'),
-              input=prop_win)),
+              input=prop_win,
+              id=9016911228971028736,
+          )),
   ])
 
   def MOCK_CUST_OUTPUT(api, file, success=True):
@@ -498,10 +533,7 @@ def GenTests(api):
           ],
           step_name='Execute customizations.waiting for builds to complete (2)')
       # img file doesn't exist as it failed to build
-      + MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-{} (3)'.format(
-          key_win, system), False) +
-      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (4)'.format(key_iso), True) +
-      api.post_process(post_process.StatusFailure) +
+      + api.post_process(post_process.StatusFailure) +
       api.post_process(post_process.DropExpectation))
 
   # Test builds not scheduled. If all the outputs exist, we don't need to
@@ -558,7 +590,37 @@ def GenTests(api):
       MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-{} (2)'.format(
           key_win, system), False) +
       MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (4)'.format(key_iso), False) +
-      api.post_process(post_process.StatusSuccess) +
+      api.post_process(post_process.StatusFailure) +
+      api.post_process(post_process.DropExpectation))
+
+  # Test cancellation of a build that was scheduled.
+  yield (
+      api.test('basic_scheduled_cancellation', api.platform('win', 64)) +
+      api.properties(input_pb.Inputs(config_path="tests/basic")) +
+      t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/PSOverCom.ps1', 'HEAD') +
+      t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/startnet.cmd', 'HEAD') +
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip'.format(key_wim), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-{}'.format(key_win, system),
+                       False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso'.format(key_iso), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (2)'.format(key_iso), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (3)'.format(key_iso), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip (2)'.format(key_wim), False) +
+      # mock schedule output to test builds scheduled state
+      api.buildbucket.simulated_schedule_output(
+          BATCH_RESPONSE_WIM,
+          step_name='Execute customizations.buildbucket.schedule') +
+      api.buildbucket.simulated_collect_output(
+          [
+              api.buildbucket.ci_build_message(
+                  build_id=1234567890123456789, status='CANCELED'),
+          ],
+          step_name='Execute customizations.waiting for builds to complete') +
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip (3)'.format(key_wim), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ONLINE-CACHE/{}-{} (2)'.format(
+          key_win, system), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (4)'.format(key_iso), False) +
+      api.post_process(post_process.StatusFailure) +
       api.post_process(post_process.DropExpectation))
 
   # Test failure of a build that was scheduled.
@@ -588,7 +650,7 @@ def GenTests(api):
           key_win, system), False) +
       MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (3)'.format(key_iso), False) +
       MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (4)'.format(key_iso), False) +
-      api.post_process(post_process.StatusSuccess) +
+      api.post_process(post_process.StatusFailure) +
       api.post_process(post_process.DropExpectation))
 
   # test failure when run without a config file path.
