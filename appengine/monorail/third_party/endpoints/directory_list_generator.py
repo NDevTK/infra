@@ -19,7 +19,7 @@ from __future__ import absolute_import
 import collections
 import json
 import re
-import urlparse
+from six.moves import urllib
 
 from . import util
 
@@ -86,7 +86,7 @@ class DirectoryListGenerator(object):
     descriptor['version'] = version
     descriptor['discoveryLink'] = '.{0}'.format(relative_path)
 
-    root_url_port = urlparse.urlparse(root_url).port
+    root_url_port = urllib.parse.urlparse(root_url).port
 
     original_path = self.__request.reconstruct_full_url(
         port_override=root_url_port)

@@ -20,8 +20,7 @@ from __future__ import absolute_import
 import copy
 import json
 import logging
-import urllib
-import urlparse
+from six.moves import urllib
 import zlib
 
 from . import util
@@ -91,7 +90,7 @@ class ApiRequest(object):
       raise ValueError('Invalid request path: %s' % self.path)
 
     if self.query:
-      self.parameters = urlparse.parse_qs(self.query, keep_blank_values=True)
+      self.parameters = urllib.parse.parse_qs(self.query, keep_blank_values=True)
     else:
       self.parameters = {}
     self.body_json = self._process_req_body(self.body) if self.body else {}
@@ -127,7 +126,7 @@ class ApiRequest(object):
     try:
       return json.loads(body)
     except ValueError:
-      return urlparse.parse_qs(body, keep_blank_values=True)
+      return urllib.parse.parse_qs(body, keep_blank_values=True)
 
   def _reconstruct_relative_url(self, environ):
     """Reconstruct the relative URL of this request.
@@ -142,8 +141,8 @@ class ApiRequest(object):
     Returns:
       The portion of the URL from the request after the server and port.
     """
-    url = urllib.quote(environ.get('SCRIPT_NAME', ''))
-    url += urllib.quote(environ.get('PATH_INFO', ''))
+    url = urllib.parse.quote(environ.get('SCRIPT_NAME', ''))
+    url += urllib.parse.quote(environ.get('PATH_INFO', ''))
     if environ.get('QUERY_STRING'):
       url += '?' + environ['QUERY_STRING']
     return url

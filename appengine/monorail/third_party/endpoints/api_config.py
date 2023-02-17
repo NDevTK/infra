@@ -38,6 +38,7 @@ from __future__ import absolute_import
 import json
 import logging
 import re
+import six
 
 from google.appengine.api import app_identity
 
@@ -109,7 +110,7 @@ def _Enum(docstring, *names):
     A class that contains enum names as attributes.
   """
   enums = dict(zip(names, range(len(names))))
-  reverse = dict((value, key) for key, value in enums.iteritems())
+  reverse = dict((value, key) for key, value in enums.items())
   enums['reverse_mapping'] = reverse
   enums['__doc__'] = docstring
   return type('Enum', (object,), enums)
@@ -221,9 +222,9 @@ def _CheckNamespace(namespace):
       raise api_exceptions.InvalidNamespaceException(
           _INVALID_NAMESPACE_ERROR_TEMPLATE % 'owner_name')
 
-    _CheckType(namespace.owner_domain, basestring, 'namespace.owner_domain')
-    _CheckType(namespace.owner_name, basestring, 'namespace.owner_name')
-    _CheckType(namespace.package_path, basestring, 'namespace.package_path')
+    _CheckType(namespace.owner_domain, six.string_types, 'namespace.owner_domain')
+    _CheckType(namespace.owner_name, six.string_types, 'namespace.owner_name')
+    _CheckType(namespace.package_path, six.string_types, 'namespace.package_path')
 
 
 def _CheckAudiences(audiences):
@@ -232,7 +233,7 @@ def _CheckAudiences(audiences):
   if audiences is None or isinstance(audiences, dict):
     return
   else:
-    endpoints_util.check_list_type(audiences, basestring, 'audiences')
+    endpoints_util.check_list_type(audiences, six.string_types, 'audiences')
 
 
 def _CheckLimitDefinitions(limit_definitions):
@@ -246,8 +247,8 @@ def _CheckLimitDefinitions(limit_definitions):
         raise api_exceptions.InvalidLimitDefinitionException(
           "Display name must be set in all limit definitions.")
 
-      _CheckType(ld.metric_name, basestring, 'limit_definition.metric_name')
-      _CheckType(ld.display_name, basestring, 'limit_definition.display_name')
+      _CheckType(ld.metric_name, six.string_types, 'limit_definition.metric_name')
+      _CheckType(ld.display_name, six.string_types, 'limit_definition.display_name')
       _CheckType(ld.default_limit, int, 'limit_definition.default_limit')
 
 
@@ -285,11 +286,11 @@ class _ApiInfo(object):
         (Default: None)
       api_key_required: bool, whether a key is required to call this API.
     """
-    _CheckType(resource_name, basestring, 'resource_name')
-    _CheckType(path, basestring, 'path')
-    endpoints_util.check_list_type(audiences, basestring, 'audiences')
-    endpoints_util.check_list_type(scopes, basestring, 'scopes')
-    endpoints_util.check_list_type(allowed_client_ids, basestring,
+    _CheckType(resource_name, six.string_types, 'resource_name')
+    _CheckType(path, six.string_types, 'path')
+    endpoints_util.check_list_type(audiences, six.string_types, 'audiences')
+    endpoints_util.check_list_type(scopes, six.string_types, 'scopes')
+    endpoints_util.check_list_type(allowed_client_ids, six.string_types,
                                    'allowed_client_ids')
     _CheckEnum(auth_level, AUTH_LEVEL, 'auth_level')
     _CheckType(api_key_required, bool, 'api_key_required')
@@ -581,29 +582,29 @@ class _ApiDecorator(object):
         limit_definitions: list of LimitDefinition tuples used in this API.
         use_request_uri: if true, match requests against REQUEST_URI instead of PATH_INFO
       """
-      _CheckType(name, basestring, 'name', allow_none=False)
-      _CheckType(version, basestring, 'version', allow_none=False)
-      _CheckType(description, basestring, 'description')
-      _CheckType(hostname, basestring, 'hostname')
-      endpoints_util.check_list_type(scopes, (basestring, endpoints_types.OAuth2Scope), 'scopes')
-      endpoints_util.check_list_type(allowed_client_ids, basestring,
+      _CheckType(name, six.string_types, 'name', allow_none=False)
+      _CheckType(version, six.string_types, 'version', allow_none=False)
+      _CheckType(description, six.string_types, 'description')
+      _CheckType(hostname, six.string_types, 'hostname')
+      endpoints_util.check_list_type(scopes, (six.string_types, endpoints_types.OAuth2Scope), 'scopes')
+      endpoints_util.check_list_type(allowed_client_ids, six.string_types,
                                      'allowed_client_ids')
-      _CheckType(canonical_name, basestring, 'canonical_name')
+      _CheckType(canonical_name, six.string_types, 'canonical_name')
       _CheckType(auth, ApiAuth, 'auth')
-      _CheckType(owner_domain, basestring, 'owner_domain')
-      _CheckType(owner_name, basestring, 'owner_name')
-      _CheckType(package_path, basestring, 'package_path')
+      _CheckType(owner_domain, six.string_types, 'owner_domain')
+      _CheckType(owner_name, six.string_types, 'owner_name')
+      _CheckType(package_path, six.string_types, 'package_path')
       _CheckType(frontend_limits, ApiFrontEndLimits, 'frontend_limits')
-      _CheckType(title, basestring, 'title')
-      _CheckType(documentation, basestring, 'documentation')
+      _CheckType(title, six.string_types, 'title')
+      _CheckType(documentation, six.string_types, 'documentation')
       _CheckEnum(auth_level, AUTH_LEVEL, 'auth_level')
       _CheckType(api_key_required, bool, 'api_key_required')
-      _CheckType(base_path, basestring, 'base_path')
+      _CheckType(base_path, six.string_types, 'base_path')
 
       _CheckType(issuers, dict, 'issuers')
       if issuers:
         for issuer_name, issuer_value in issuers.items():
-          _CheckType(issuer_name, basestring, 'issuer %s' % issuer_name)
+          _CheckType(issuer_name, six.string_types, 'issuer %s' % issuer_name)
           _CheckType(issuer_value, Issuer, 'issuer value for %s' % issuer_name)
 
       _CheckNamespace(namespace)
@@ -858,7 +859,7 @@ class ApiAuth(object):
         to block.
     """
     _CheckType(allow_cookie_auth, bool, 'allow_cookie_auth')
-    endpoints_util.check_list_type(blocked_regions, basestring,
+    endpoints_util.check_list_type(blocked_regions, six.string_types,
                                    'blocked_regions')
 
     self.__allow_cookie_auth = allow_cookie_auth
@@ -890,11 +891,11 @@ class ApiFrontEndLimitRule(object):
       analytics_id: string, the project ID under which traffic for this segment
         will be logged.
     """
-    _CheckType(match, basestring, 'match')
+    _CheckType(match, six.string_types, 'match')
     _CheckType(qps, int, 'qps')
     _CheckType(user_qps, int, 'user_qps')
     _CheckType(daily, int, 'daily')
-    _CheckType(analytics_id, basestring, 'analytics_id')
+    _CheckType(analytics_id, six.string_types, 'analytics_id')
 
     self.__match = match
     self.__qps = qps
@@ -1361,8 +1362,8 @@ def method(request_message=message_types.VoidMessage,
     invoke_remote.__name__ = invoke_remote.method_info.name
     return invoke_remote
 
-  endpoints_util.check_list_type(scopes, (basestring, endpoints_types.OAuth2Scope), 'scopes')
-  endpoints_util.check_list_type(allowed_client_ids, basestring,
+  endpoints_util.check_list_type(scopes, (six.string_types, endpoints_types.OAuth2Scope), 'scopes')
+  endpoints_util.check_list_type(allowed_client_ids, six.string_types,
                                  'allowed_client_ids')
   _CheckEnum(auth_level, AUTH_LEVEL, 'auth_level')
 
@@ -1810,7 +1811,7 @@ class ApiConfigGenerator(object):
     param_order = []
 
     # Make sure all path parameters are covered.
-    for field_name, matched_path_parameters in path_parameter_dict.iteritems():
+    for field_name, matched_path_parameters in path_parameter_dict.items():
       field = message_type.field_by_name(field_name)
       self.__validate_path_parameters(field, matched_path_parameters)
 
@@ -1965,7 +1966,7 @@ class ApiConfigGenerator(object):
 
     for service in services:
       protorpc_methods = service.all_remote_methods()
-      for protorpc_method_name in protorpc_methods.iterkeys():
+      for protorpc_method_name in protorpc_methods.keys():
         rosy_method = '%s.%s' % (service.__name__, protorpc_method_name)
         method_id = self.__id_from_name[rosy_method]
 
@@ -2134,7 +2135,7 @@ class ApiConfigGenerator(object):
 
     for service in services:
       remote_methods = service.all_remote_methods()
-      for protorpc_meth_name, protorpc_meth_info in remote_methods.iteritems():
+      for protorpc_meth_name, protorpc_meth_info in remote_methods.items():
         method_info = getattr(protorpc_meth_info, 'method_info', None)
         # Skip methods that are not decorated with @method
         if method_info is None:

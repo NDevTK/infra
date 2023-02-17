@@ -21,7 +21,7 @@ import base64
 import logging
 import re
 import threading
-import urllib
+from six.moves import urllib
 
 from . import discovery_service
 
@@ -66,7 +66,7 @@ class ApiConfigManager(object):
         lookup_key = config.get('name', ''), config.get('version', '')
         self._configs[lookup_key] = config
 
-      for config in self._configs.itervalues():
+      for config in self._configs.values():
         name = config.get('name', '')
         api_version = config.get('api_version', '')
         path_version = config.get('path_version', '')
@@ -160,9 +160,9 @@ class ApiConfigManager(object):
       A dictionary containing the variable names converted from base64.
     """
     result = {}
-    for var_name, value in match.groupdict().iteritems():
+    for var_name, value in match.groupdict().items():
       actual_var_name = ApiConfigManager._from_safe_path_param_name(var_name)
-      result[actual_var_name] = urllib.unquote_plus(value)
+      result[actual_var_name] = urllib.parse.unquote_plus(value)
     return result
 
   def lookup_rest_method(self, path, request_uri, http_method):

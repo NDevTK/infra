@@ -48,7 +48,7 @@ import logging
 import os
 import re
 import sys
-import urllib
+from six.moves import urllib
 import urllib2
 
 import yaml
@@ -204,7 +204,7 @@ def GenApiConfig(service_class_names, config_string_generator=None,
   service_map = collections.OrderedDict()
   config_string_generator = (
       config_string_generator or api_config.ApiConfigGenerator())
-  for api_info, services in api_service_map.iteritems():
+  for api_info, services in api_service_map.items():
     assert services, 'An API must have at least one ProtoRPC service'
     # Only override hostname if None.  Hostname will be the same for all
     # services within an API, since it's stored in common info.
@@ -278,7 +278,7 @@ def _GenDiscoveryDoc(service_class_names,
       service_class_names, hostname=hostname,
       config_string_generator=discovery_generator.DiscoveryGenerator(),
       application_path=application_path)
-  for api_name_version, config in service_configs.iteritems():
+  for api_name_version, config in service_configs.items():
     discovery_name = api_name_version + '.discovery'
     output_files.append(_WriteFile(output_path, discovery_name, config))
 
@@ -306,7 +306,7 @@ def _GenOpenApiSpec(service_class_names, output_path, hostname=None,
       config_string_generator=openapi_generator.OpenApiGenerator(),
       application_path=application_path,
       x_google_api_name=x_google_api_name)
-  for api_name_version, config in service_configs.iteritems():
+  for api_name_version, config in service_configs.items():
     openapi_name = api_name_version.replace('-', '') + 'openapi.json'
     output_files.append(_WriteFile(output_path, openapi_name, config))
 
@@ -360,14 +360,14 @@ def _GenClientLibFromContents(discovery_doc, language, output_path,
     The path to the zipped client library.
   """
 
-  body = urllib.urlencode({'lang': language, 'content': discovery_doc,
+  body = urllib.parse.urlencode({'lang': language, 'content': discovery_doc,
                            'layout': build_system})
   request = urllib2.Request(CLIENT_LIBRARY_BASE, body)
   try:
     with contextlib.closing(urllib2.urlopen(request)) as response:
       content = response.read()
       return _WriteFile(output_path, client_name, content)
-  except urllib2.HTTPError, error:
+  except urllib2.HTTPError as error:
     raise ServerRequestException(error)
 
 
@@ -393,7 +393,7 @@ def _GetClientLib(service_class_names, language, output_path, build_system,
       service_class_names, hostname=hostname,
       config_string_generator=discovery_generator.DiscoveryGenerator(),
       application_path=application_path)
-  for api_name_version, config in service_configs.iteritems():
+  for api_name_version, config in service_configs.items():
     client_name = api_name_version + '.zip'
     client_libs.append(
         _GenClientLibFromContents(config, language, output_path,
@@ -413,7 +413,7 @@ def _GenApiConfigCallback(args, api_func=GenApiConfig):
                              hostname=args.hostname,
                              application_path=args.application)
 
-  for api_name_version, config in service_configs.iteritems():
+  for api_name_version, config in service_configs.items():
     _WriteFile(args.output, api_name_version + '.api', config)
 
 
@@ -590,7 +590,7 @@ def _SetupStubs():
   tb = testbed.Testbed()
   tb.setup_env(CURRENT_VERSION_ID='1.0')
   tb.activate()
-  for k, v in testbed.INIT_STUB_METHOD_NAMES.iteritems():
+  for k, v in testbed.INIT_STUB_METHOD_NAMES.items():
     # The old stub initialization code didn't support the image service at all
     # so we just ignore it here.
     if k != 'images':

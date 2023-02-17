@@ -104,7 +104,7 @@ class OpenApiGenerator(object):
     Side Effects:
       Alters prop_dict in-place.
     """
-    for prop_key, prop_value in prop_dict.iteritems():
+    for prop_key, prop_value in prop_dict.items():
       if prop_key == '$ref' and not 'prop_value'.startswith('#'):
         prop_dict[prop_key] = '#/definitions/' + prop_dict[prop_key]
       elif isinstance(prop_value, dict):
@@ -561,7 +561,7 @@ class OpenApiGenerator(object):
     params_message_type = message_type.parameters_message_class()
 
     # Make sure all path parameters are covered.
-    for field_name, matched_path_parameters in path_parameter_dict.iteritems():
+    for field_name, matched_path_parameters in path_parameter_dict.items():
       field = params_message_type.field_by_name(field_name)
       self.__validate_path_parameters(field, matched_path_parameters)
 
@@ -618,7 +618,7 @@ class OpenApiGenerator(object):
     """
     # Filter out any keys that aren't 'properties' or 'type'
     result = {}
-    for def_key, def_value in self.__parser.schemas().iteritems():
+    for def_key, def_value in self.__parser.schemas().items():
       if 'properties' in def_value or 'type' in def_value:
         key_result = {}
         required_keys = set()
@@ -637,8 +637,8 @@ class OpenApiGenerator(object):
 
     # Add 'type': 'object' to all object properties
     # Also, recursively add relative path to all $ref values
-    for def_value in result.itervalues():
-      for prop_value in def_value.itervalues():
+    for def_value in result.values():
+      for prop_value in def_value.values():
         if isinstance(prop_value, dict):
           if '$ref' in prop_value:
             prop_value['type'] = 'object'
@@ -920,7 +920,7 @@ class OpenApiGenerator(object):
     for service in services:
       remote_methods = service.all_remote_methods()
 
-      for protorpc_meth_name in sorted(remote_methods.iterkeys()):
+      for protorpc_meth_name in sorted(remote_methods.keys()):
         protorpc_meth_info = remote_methods[protorpc_meth_name]
         method_info = getattr(protorpc_meth_info, 'method_info', None)
         # Skip methods that are not decorated with @method

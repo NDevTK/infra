@@ -22,13 +22,15 @@ will be provided elsewhere in the future.
 from __future__ import absolute_import
 
 import base64
+import binascii
 import hmac
 import json
 import logging
 import os
 import re
+import six
 import time
-import urllib
+from six.moves import urllib
 from collections import Container as _Container
 from collections import Iterable as _Iterable
 from collections import Mapping as _Mapping
@@ -228,7 +230,7 @@ def _maybe_set_current_user_vars(method, api_info=None, request=None):
       issuers = _DEFAULT_GOOGLE_ISSUER
     elif 'google_id_token' not in issuers:
       issuers.update(_DEFAULT_GOOGLE_ISSUER)
-    time_now = long(time.time())
+    time_now = int(time.time())
     user = _get_id_token_user(token, issuers, audiences, allowed_client_ids,
                               time_now, memcache)
     if user:
@@ -293,7 +295,7 @@ def _get_id_token_user(token, issuers, audiences, allowed_client_ids, time_now, 
     issuers: dict of Issuers
     audiences: List of audiences that are acceptable.
     allowed_client_ids: List of client IDs that are acceptable.
-    time_now: The current time as a long (eg. long(time.time())).
+    time_now: The current time as an int (eg. int(time.time())).
     cache: Cache to use (eg. the memcache module).
 
   Returns:
@@ -425,7 +427,7 @@ def _set_bearer_user_vars_local(token, allowed_client_ids, scopes):
   """
   # Get token info from the tokeninfo endpoint.
   result = urlfetch.fetch(
-      '%s?%s' % (_TOKENINFO_URL, urllib.urlencode({'access_token': token})))
+      '%s?%s' % (_TOKENINFO_URL, urllib.parse.urlencode({'access_token': token})))
   if result.status_code != 200:
     try:
       error_description = json.loads(result.content)['error_description']
@@ -516,7 +518,7 @@ def _verify_parsed_token(parsed_token, issuers, audiences, allowed_client_ids, i
 
 def _urlsafe_b64decode(b64string):
   # Guard against unicode strings, which base64 can't handle.
-  b64string = b64string.encode('ascii')
+  b64string = six.ensure_binary(b64string, 'ascii')
   padded = b64string + '=' * ((4 - len(b64string)) % 4)
   return base64.urlsafe_b64decode(padded)
 
@@ -593,11 +595,11 @@ def _get_cached_certs(cert_uri, cache):
   return certs
 
 
-def _b64_to_long(b):
-  b = b.encode('ascii')
-  b += '=' * ((4 - len(b)) % 4)
+def _b64_to_int(b):
+  b = six.ensure_binary(b, 'ascii')
+  b += b'=' * ((4 - len(b)) % 4)
   b = base64.b64decode(b)
-  return long(b.encode('hex'), 16)
+  return int(binascii.hexlify(b), 16)
 
 
 def _verify_signed_jwt_with_certs(
@@ -619,7 +621,7 @@ def _verify_signed_jwt_with_certs(
 
   Args:
     jwt: string, A JWT.
-    time_now: The current time, as a long (eg. long(time.time())).
+    time_now: The current time, as an int (eg. int(time.time())).
     cache: Cache to use (eg. the memcache module).
     cert_uri: string, URI to get cert modulus and exponent in JSON format.
 
@@ -642,8 +644,8 @@ def _verify_signed_jwt_with_certs(
   signature = _urlsafe_b64decode(segments[2])
 
   # pycrypto only deals in integers, so we have to convert the string of bytes
-  # into a long.
-  lsignature = long(signature.encode('hex'), 16)
+  # into an int.
+  lsignature = int(binascii.hexlify(signature), 16)
 
   # Verify expected header.
   header_body = _urlsafe_b64decode(segments[0])
@@ -678,8 +680,8 @@ def _verify_signed_jwt_with_certs(
   verified = False
   for keyvalue in certs['keyvalues']:
     try:
-      modulus = _b64_to_long(keyvalue['modulus'])
-      exponent = _b64_to_long(keyvalue['exponent'])
+      modulus = _b64_to_int(keyvalue['modulus'])
+      exponent = _b64_to_int(keyvalue['exponent'])
       key = RSA.construct((modulus, exponent))
 
       # Encrypt, and convert to a hex string.
@@ -693,7 +695,7 @@ def _verify_signed_jwt_with_certs(
       verified = hmac.compare_digest(hexsig, local_hash)
       if verified:
         break
-    except Exception, e:  # pylint: disable=broad-except
+    except Exception as e:  # pylint: disable=broad-except
       # Log the exception for debugging purpose.
       _logger.debug(
           'Signature verification error: %s; continuing with the next cert.', e)
@@ -785,7 +787,7 @@ def get_verified_jwt(
       request=request, allowed_auth_schemes=schemes, allowed_query_keys=keys)
   if token is None:
     return None
-  time_now = long(time.time())
+  time_now = int(time.time())
   for provider in providers:
     parsed_token = _parse_and_verify_jwt(
         token, time_now, (provider['issuer'],), audiences, provider['cert_uri'], cache)
@@ -836,7 +838,7 @@ def _listlike_guard(obj, name, iterable_only=False, log_warning=True):
   if not isinstance(obj, required_type):
     raise ValueError('{} must be of type {}'.format(name, required_type_name))
   # at this point it is definitely the right type, but might be a string
-  if isinstance(obj, basestring):
+  if isinstance(obj, six.string_types):
     if log_warning:
       _logger.warning('{} passed as a string; should be list-like'.format(name))
     return (obj,)
