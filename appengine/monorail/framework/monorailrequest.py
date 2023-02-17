@@ -576,8 +576,10 @@ class MonorailRequest(MonorailRequestBase):
 
   def GetPositiveIntParam(self, query_param_name, default_value=None):
     """Returns 0 if the user-provided value is less than 0."""
-    return max(self.GetIntParam(query_param_name, default_value=default_value),
-               0)
+    value = self.GetIntParam(query_param_name, default_value=default_value)
+    if value is None:
+      return 0
+    return max(value, 0)
 
   def GetListParam(self, query_param_name, default_value=None):
     """Get a list of strings from the URL or default."""
