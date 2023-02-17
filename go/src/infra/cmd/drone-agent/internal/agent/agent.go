@@ -13,6 +13,7 @@ import (
 	"log"
 	"math"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"sync"
@@ -332,12 +333,40 @@ func (h hook) StartBot(dutID string) (bot.Bot, error) {
 	if err != nil {
 		return nil, errors.Annotate(err, "start bot %v", dutID).Err()
 	}
+	if err := h.shareCIPDCacheWithBot(dir); err != nil {
+		// The bot can run without problem with its own CIPD cache, though it
+		// may cause higher I/O.
+		h.a.log("Bot %v will use its own CIPD cache: %s", dutID, err)
+	}
 	b, err := h.a.StartBotFunc(h.botConfig(dutID, dir))
 	if err != nil {
 		_ = os.RemoveAll(dir)
 		return nil, errors.Annotate(err, "start bot %v", dutID).Err()
 	}
 	return b, nil
+}
+
+// shareCIPDCacheWithBot try to setup a common CIPD cache directory on the
+// agent level and share with all bots for better caching.
+// We create a common cache dir and symlink to each bot's CIPD cache dir.
+// We cannot use the common dir to replace the whole {BotDir}/cipd_cache dir
+// since Swarming bots may remove/recreate files in subdirectories like
+// {BotDir}/cipd_cache/bin. Thus we can only symlink the common cache dir to
+// {BotDir}/cipd_cache/cache.
+func (h hook) shareCIPDCacheWithBot(botDir string) error {
+	agentCIPDCache := filepath.Join(h.a.WorkingDir, "cipd_cache")
+	botCIPDCache := filepath.Join(botDir, "cipd_cache")
+	if err := os.MkdirAll(agentCIPDCache, 0777); err != nil && !os.IsExist(err) {
+		return fmt.Errorf("setup bot CIPD cache: cannot create common CIPD cache dir %q: %s", agentCIPDCache, err)
+	}
+	if err := os.MkdirAll(botCIPDCache, 0777); err != nil && !os.IsExist(err) {
+		return fmt.Errorf("setup bot CIPD cache: cannot create bot CIPD cache dir %q: %s", botCIPDCache, err)
+	}
+	cacheDir := filepath.Join(botCIPDCache, "cache")
+	if err := os.Symlink(agentCIPDCache, cacheDir); err != nil {
+		return fmt.Errorf("setup bot CIPD cache %q: %s", cacheDir, err)
+	}
+	return nil
 }
 
 // botConfig returns a bot config for starting a Swarming bot.
