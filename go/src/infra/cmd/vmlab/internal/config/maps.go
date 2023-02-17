@@ -8,7 +8,7 @@ import (
 	"infra/libs/vmlab/api"
 )
 
-var ConfigMapping = map[string]*BuildtinConfig{
+var ConfigMapping = map[string]*BuiltinConfig{
 	"cts-prototype": {
 		ProviderId: api.ProviderId_GCLOUD,
 		GcloudConfig: api.Config_GCloudBackend{

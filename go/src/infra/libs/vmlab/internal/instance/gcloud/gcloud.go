@@ -106,7 +106,7 @@ func (g *gcloudInstanceApi) Create(req *api.CreateVmInstanceRequest) (*api.VmIns
 		return nil, fmt.Errorf("failed to generate instance name: %w", err)
 	}
 	name := fmt.Sprintf("%s%s", gcloudConfig.GetInstancePrefix(), randName)
-	gcloudArgs = append(gcloudArgs, "compute", "instance", "create", name)
+	gcloudArgs = append(gcloudArgs, "compute", "instances", "create", name)
 
 	gcloudArgs = append(gcloudArgs,
 		"--project="+gcloudConfig.GetProject(),
@@ -125,7 +125,7 @@ func (g *gcloudInstanceApi) Create(req *api.CreateVmInstanceRequest) (*api.VmIns
 	}
 	var gcloudResult []gcloudResponseInstance
 	if err := json.Unmarshal(out, &gcloudResult); err != nil {
-		return nil, fmt.Errorf("unable to parse gcloud result: %w", err)
+		return nil, fmt.Errorf("unable to parse gcloud result: %w\n output is: %v\n", err, string(out))
 	}
 
 	ipAddress := gcloudResult[0].NetworkInterfaces[0].NetworkIP

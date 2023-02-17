@@ -8,7 +8,7 @@ import (
 	"infra/libs/vmlab/api"
 )
 
-type BuildtinConfig struct {
+type BuiltinConfig struct {
 	ProviderId api.ProviderId
 	// TODO(fqj): replace to a different type outside of api.
 	GcloudConfig api.Config_GCloudBackend

@@ -76,7 +76,7 @@ func TestCreateWithPublicIpAddress(t *testing.T) {
 			},
 		})
 	expectedCommand := []string{
-		"gcloud", "compute", "instance", "create", "vmlab-aaaaaa",
+		"gcloud", "compute", "instances", "create", "vmlab-aaaaaa",
 		"--project=vmlab-project", "--image=betty-arc-r-release-r110-111111111111",
 		"--image-project=imagestorage-project", "--machine-type=n2-standard-4", "--no-scopes",
 		"--zone=us-west-2", "--format=json", "--network=default", "--subnet=default"}
@@ -124,7 +124,7 @@ func TestCreateWithInternalIpAddress(t *testing.T) {
 		t.Errorf("Error: %v", err)
 	}
 	expectedCommand := []string{
-		"gcloud", "compute", "instance", "create", "vmlab-aaaaaa",
+		"gcloud", "compute", "instances", "create", "vmlab-aaaaaa",
 		"--project=vmlab-project", "--image=betty-arc-r-release-r110-111111111111",
 		"--image-project=imagestorage-project", "--machine-type=n2-standard-4", "--no-scopes",
 		"--zone=us-west-2", "--format=json", "--network=default", "--subnet=default",
