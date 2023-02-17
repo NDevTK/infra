@@ -40,7 +40,7 @@ func (s *ContainerServerImpl) CreateNetwork(ctx context.Context, request *api.Cr
 	}
 	cmd := commands.NetworkCreate{Name: request.Name}
 	_, stderr, err := s.executor.Execute(ctx, &cmd)
-	if stderr != "" {
+	if err != nil && stderr != "" {
 		return nil, utils.toStatusError(stderr)
 	}
 	if err != nil {
@@ -73,7 +73,7 @@ func (s *ContainerServerImpl) getNetworkId(ctx context.Context, name string) (st
 	if id == "" {
 		return "", utils.notFound(fmt.Sprintf("Cannot retrieve network ID with name %s", name))
 	}
-	if stderr != "" {
+	if err != nil && stderr != "" {
 		return "", utils.toStatusError(stderr)
 	}
 	if err != nil {
@@ -115,7 +115,7 @@ func (s *ContainerServerImpl) LoginRegistry(ctx context.Context, request *api.Lo
 	cmd := commands.DockerLogin{LoginRegistryRequest: request}
 	stdout, stderr, err := s.executor.Execute(ctx, &cmd)
 	// docker always has stderr warning
-	if stdout == "" && stderr != "" {
+	if err != nil && stdout == "" && stderr != "" {
 		return nil, utils.toStatusErrorWithMapper(stderr, func(s string) codes.Code {
 			switch {
 			// docker error
@@ -182,7 +182,7 @@ func (s *ContainerServerImpl) StartContainer(ctx context.Context, request *api.S
 
 	cmd := commands.DockerRun{StartContainerRequest: request}
 	id, stderr, err := s.executor.Execute(ctx, &cmd)
-	if stderr != "" {
+	if err != nil && stderr != "" {
 		return nil, utils.toStatusErrorWithMapper(stderr, func(s string) codes.Code {
 			switch {
 			// docker error
@@ -207,9 +207,9 @@ func (s *ContainerServerImpl) StartContainer(ctx context.Context, request *api.S
 // pullImage pulls docker image and handles error mapping specifically
 func (s *ContainerServerImpl) pullImage(ctx context.Context, image string) error {
 	pullCmd := commands.DockerPull{ContainerImage: image}
-	stdout, stderr, _ := s.executor.Execute(ctx, &pullCmd)
+	stdout, stderr, err := s.executor.Execute(ctx, &pullCmd)
 	// podman has stderr even when success
-	if stdout == "" && stderr != "" {
+	if err != nil && stdout == "" && stderr != "" {
 		return utils.toStatusErrorWithMapper(stderr, func(s string) codes.Code {
 			switch {
 			// docker error
@@ -225,6 +225,9 @@ func (s *ContainerServerImpl) pullImage(ctx context.Context, image string) error
 				return codes.Unknown
 			}
 		})
+	}
+	if err != nil {
+		return err
 	}
 	log.Println("success: pulled image", image)
 	return nil
@@ -312,7 +315,7 @@ func (s *ContainerServerImpl) getContainerId(ctx context.Context, name string) (
 	if id == "" {
 		return "", utils.notFound(fmt.Sprintf("Cannot retrieve container ID with name %s", name))
 	}
-	if stderr != "" {
+	if err != nil && stderr != "" {
 		return "", utils.toStatusError(stderr)
 	}
 	if err != nil {
