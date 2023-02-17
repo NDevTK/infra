@@ -83,8 +83,18 @@ wheel: <
 >
 
 wheel: <
+  name: "infra/python/wheels/parameterized-py2_py3"
+  version: "version:0.8.1"
+>
+
+wheel: <
   name: "infra/python/wheels/pytest-py3"
   version: "version:6.2.2"
+>
+
+wheel: <
+  name: "infra/python/wheels/webtest-py2_py3"
+  version: "version:2.0.35"
 >
 
 # Required by appengine-python-standard==0.3.1
@@ -127,6 +137,12 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/ruamel_yaml-py3"
   version: "version:0.17.16"
+>
+
+# Required by beautifulsoup4==4.9.0
+wheel: <
+  name: "infra/python/wheels/soupsieve-py2_py3"
+  version: "version:1.9.5"
 >
 
 # Required by Flask==1.0.2
@@ -343,4 +359,22 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/ruamel_yaml_clib/${vpython_platform}"
   version: "version:0.2.6"
+>
+
+# Required by webtest==2.0.35
+wheel: <
+  name: "infra/python/wheels/beautifulsoup4-py3"
+  version: "version:4.9.0"
+>
+
+# Required by webtest==2.0.35
+wheel: <
+  name: "infra/python/wheels/waitress-py2_py3"
+  version: "version:1.4.3"
+>
+
+# Required by webtest==2.0.35
+wheel: <
+  name: "infra/python/wheels/webob-py2_py3"
+  version: "version:1.8.6"
 >
