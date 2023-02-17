@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import six
 import unittest
 
 try:
@@ -242,7 +243,7 @@ class TrackerFulltextTest(unittest.TestCase):
     issue_ids, capped = tracker_fulltext.SearchIssueFullText(
         [789], query_ast_conj, 1)
     self.mox.VerifyAll()
-    self.assertItemsEqual([123, 234], issue_ids)
+    six.assertCountEqual(self, [123, 234], issue_ids)
     self.assertFalse(capped)
 
   def testSearchIssueFullText_CrossProject(self):
@@ -261,7 +262,7 @@ class TrackerFulltextTest(unittest.TestCase):
     issue_ids, capped = tracker_fulltext.SearchIssueFullText(
         [789, 678], query_ast_conj, 1)
     self.mox.VerifyAll()
-    self.assertItemsEqual([123, 234], issue_ids)
+    six.assertCountEqual(self, [123, 234], issue_ids)
     self.assertFalse(capped)
 
   def testSearchIssueFullText_Capped(self):
@@ -279,7 +280,7 @@ class TrackerFulltextTest(unittest.TestCase):
       issue_ids, capped = tracker_fulltext.SearchIssueFullText(
           [789], query_ast_conj, 1)
       self.mox.VerifyAll()
-      self.assertItemsEqual([123, 234], issue_ids)
+      six.assertCountEqual(self, [123, 234], issue_ids)
       self.assertTrue(capped)
     finally:
       settings.fulltext_limit_per_shard = orig

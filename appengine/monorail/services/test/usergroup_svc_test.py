@@ -9,6 +9,7 @@ from __future__ import absolute_import
 
 import collections
 import mock
+import six
 import unittest
 
 try:
@@ -48,9 +49,9 @@ class MembershipTwoLevelCacheTest(unittest.TestCase):
     memberships_rows = [(111, 777), (111, 888), (222, 888)]
     actual = self.usergroup_service.memberships_2lc._DeserializeMemberships(
         memberships_rows)
-    self.assertItemsEqual([111, 222], list(actual.keys()))
-    self.assertItemsEqual([777, 888], actual[111])
-    self.assertItemsEqual([888], actual[222])
+    six.assertCountEqual(self, [111, 222], list(actual.keys()))
+    six.assertCountEqual(self, [777, 888], actual[111])
+    six.assertCountEqual(self, [888], actual[222])
 
 
 class UserGroupServiceTest(unittest.TestCase):
@@ -235,8 +236,8 @@ class UserGroupServiceTest(unittest.TestCase):
     members_dict, owners_dict = self.usergroup_service.LookupAllMembers(
         self.cnxn, [777])
     self.mox.VerifyAll()
-    self.assertItemsEqual([111, 222, 888, 999], members_dict[777])
-    self.assertItemsEqual([], owners_dict[777])
+    six.assertCountEqual(self, [111, 222, 888, 999], members_dict[777])
+    six.assertCountEqual(self, [], owners_dict[777])
 
   def testExpandAnyGroupEmailRecipients(self):
     self.usergroup_service.group_dag.initialized = True
@@ -256,8 +257,8 @@ class UserGroupServiceTest(unittest.TestCase):
     direct, indirect = self.usergroup_service.ExpandAnyGroupEmailRecipients(
         self.cnxn, [111, 777, 888, 999])
     self.mox.VerifyAll()
-    self.assertItemsEqual([111, 888, 999], direct)
-    self.assertItemsEqual([222, 444], indirect)
+    six.assertCountEqual(self, [111, 888, 999], direct)
+    six.assertCountEqual(self, [222, 444], indirect)
 
   def SetUpLookupMembers(self, group_member_dict):
     mock_membership_rows = []
@@ -274,7 +275,7 @@ class UserGroupServiceTest(unittest.TestCase):
     self.mox.ReplayAll()
     member_ids, _ = self.usergroup_service.LookupMembers(self.cnxn, [])
     self.mox.VerifyAll()
-    self.assertItemsEqual({}, member_ids)
+    six.assertCountEqual(self, {}, member_ids)
 
   def testLookupMembers_Nonexistent(self):
     """If some requested groups don't exist, they are ignored."""
@@ -282,7 +283,7 @@ class UserGroupServiceTest(unittest.TestCase):
     self.mox.ReplayAll()
     member_ids, _ = self.usergroup_service.LookupMembers(self.cnxn, [777])
     self.mox.VerifyAll()
-    self.assertItemsEqual([], member_ids[777])
+    six.assertCountEqual(self, [], member_ids[777])
 
   def testLookupMembers_AllEmpty(self):
     """Requesting all empty groups results in no members."""
@@ -290,14 +291,14 @@ class UserGroupServiceTest(unittest.TestCase):
     self.mox.ReplayAll()
     member_ids, _ = self.usergroup_service.LookupMembers(self.cnxn, [888, 999])
     self.mox.VerifyAll()
-    self.assertItemsEqual([], member_ids[888])
+    six.assertCountEqual(self, [], member_ids[888])
 
   def testLookupMembers_OneGroup(self):
     self.SetUpLookupMembers({888: [111, 222]})
     self.mox.ReplayAll()
     member_ids, _ = self.usergroup_service.LookupMembers(self.cnxn, [888])
     self.mox.VerifyAll()
-    self.assertItemsEqual([111, 222], member_ids[888])
+    six.assertCountEqual(self, [111, 222], member_ids[888])
 
   def testLookupMembers_GroupsAndNonGroups(self):
     """We ignore any non-groups passed in."""
@@ -306,7 +307,7 @@ class UserGroupServiceTest(unittest.TestCase):
     member_ids, _ = self.usergroup_service.LookupMembers(
         self.cnxn, [111, 333, 888])
     self.mox.VerifyAll()
-    self.assertItemsEqual([111, 222], member_ids[888])
+    six.assertCountEqual(self, [111, 222], member_ids[888])
 
   def testLookupMembers_OverlappingGroups(self):
     """We get the union of IDs.  Imagine 888 = {111} and 999 = {111, 222}."""
@@ -314,8 +315,8 @@ class UserGroupServiceTest(unittest.TestCase):
     self.mox.ReplayAll()
     member_ids, _ = self.usergroup_service.LookupMembers(self.cnxn, [888, 999])
     self.mox.VerifyAll()
-    self.assertItemsEqual([111, 222], member_ids[999])
-    self.assertItemsEqual([111], member_ids[888])
+    six.assertCountEqual(self, [111, 222], member_ids[999])
+    six.assertCountEqual(self, [111], member_ids[888])
 
   def testLookupVisibleMembers_LimitedVisiblity(self):
     """We get only the member IDs in groups that the user is allowed to see."""
@@ -331,7 +332,7 @@ class UserGroupServiceTest(unittest.TestCase):
         self.cnxn, [888, 999], permissions.USER_PERMISSIONSET, set(),
         self.services)
     self.mox.VerifyAll()
-    self.assertItemsEqual([111], member_ids[888])
+    six.assertCountEqual(self, [111], member_ids[888])
     self.assertNotIn(999, member_ids)
 
   def SetUpGetAllUserGroupsInfo(self, mock_settings_rows, mock_count_rows,

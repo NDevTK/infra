@@ -9,6 +9,7 @@ from __future__ import absolute_import
 
 import unittest
 import logging
+import six
 
 from framework import framework_constants
 from framework import framework_views
@@ -76,8 +77,8 @@ class BizobjTest(unittest.TestCase):
     av_2 = tracker_pb2.ApprovalValue()
     av_3 = tracker_pb2.ApprovalValue(approver_ids=[222, 333])
     issue.approval_values = [av_1, av_2, av_3]
-    self.assertItemsEqual(
-        tracker_bizobj.GetApproverIds(issue), [111, 222, 333])
+    six.assertCountEqual(
+        self, tracker_bizobj.GetApproverIds(issue), [111, 222, 333])
 
   def testGetLabels(self):
     issue = tracker_pb2.Issue()
@@ -178,9 +179,9 @@ class BizobjTest(unittest.TestCase):
     config.field_defs = [subfd_1, subfd_2, subfd_3, subfd_4]
 
     subfields_dict = tracker_bizobj.FindApprovalsSubfields([1, 2], config)
-    self.assertItemsEqual(subfields_dict[1], [subfd_1, subfd_3])
-    self.assertItemsEqual(subfields_dict[2], [subfd_2])
-    self.assertItemsEqual(subfields_dict[3], [])
+    six.assertCountEqual(self, subfields_dict[1], [subfd_1, subfd_3])
+    six.assertCountEqual(self, subfields_dict[2], [subfd_2])
+    six.assertCountEqual(self, subfields_dict[3], [])
 
   def testFindPhaseByID_Normal(self):
     canary_phase = tracker_pb2.Phase(phase_id=2, name='Canary')
@@ -838,10 +839,10 @@ class BizobjTest(unittest.TestCase):
          'Pri-4'],
         result_labels[:result_labels.index('OpSys-All')])
     self.assertEqual('Pri -status', harmonized.default_sort_spec.strip())
-    self.assertItemsEqual(c1.field_defs + c2.field_defs,
-                          harmonized.field_defs)
-    self.assertItemsEqual(c1.approval_defs + c2.approval_defs,
-                          harmonized.approval_defs)
+    six.assertCountEqual(
+        self, c1.field_defs + c2.field_defs, harmonized.field_defs)
+    six.assertCountEqual(
+        self, c1.approval_defs + c2.approval_defs, harmonized.approval_defs)
 
   def testHarmonizeConfigsMeansOpen(self):
     c1 = tracker_bizobj.MakeDefaultProjectIssueConfig(789)
@@ -1777,8 +1778,8 @@ class BizobjTest(unittest.TestCase):
             default_project_name=issue.project_name)
     ]
     self.assertEqual(actual_amendments, expected_amendments)
-    self.assertItemsEqual(
-        actual_impacted_iids, [
+    six.assertCountEqual(
+        self, actual_impacted_iids, [
             blocked_on_add.issue_id, blocking_add.issue_id, blocked_on.issue_id,
             blocking.issue_id
         ])
@@ -1867,46 +1868,46 @@ class BizobjTest(unittest.TestCase):
 
   def testDiffValueLists(self):
     added, removed = tracker_bizobj.DiffValueLists([], [])
-    self.assertItemsEqual([], added)
-    self.assertItemsEqual([], removed)
+    six.assertCountEqual(self, [], added)
+    six.assertCountEqual(self, [], removed)
 
     added, removed = tracker_bizobj.DiffValueLists([], None)
-    self.assertItemsEqual([], added)
-    self.assertItemsEqual([], removed)
+    six.assertCountEqual(self, [], added)
+    six.assertCountEqual(self, [], removed)
 
     added, removed = tracker_bizobj.DiffValueLists([1, 2], [])
-    self.assertItemsEqual([1, 2], added)
-    self.assertItemsEqual([], removed)
+    six.assertCountEqual(self, [1, 2], added)
+    six.assertCountEqual(self, [], removed)
 
     added, removed = tracker_bizobj.DiffValueLists([], [8, 9])
-    self.assertItemsEqual([], added)
-    self.assertItemsEqual([8, 9], removed)
+    six.assertCountEqual(self, [], added)
+    six.assertCountEqual(self, [8, 9], removed)
 
     added, removed = tracker_bizobj.DiffValueLists([1, 2], [8, 9])
-    self.assertItemsEqual([1, 2], added)
-    self.assertItemsEqual([8, 9], removed)
+    six.assertCountEqual(self, [1, 2], added)
+    six.assertCountEqual(self, [8, 9], removed)
 
     added, removed = tracker_bizobj.DiffValueLists([1, 2, 5, 6], [5, 6, 8, 9])
-    self.assertItemsEqual([1, 2], added)
-    self.assertItemsEqual([8, 9], removed)
+    six.assertCountEqual(self, [1, 2], added)
+    six.assertCountEqual(self, [8, 9], removed)
 
     added, removed = tracker_bizobj.DiffValueLists([5, 6], [5, 6, 8, 9])
-    self.assertItemsEqual([], added)
-    self.assertItemsEqual([8, 9], removed)
+    six.assertCountEqual(self, [], added)
+    six.assertCountEqual(self, [8, 9], removed)
 
     added, removed = tracker_bizobj.DiffValueLists([1, 2, 5, 6], [5, 6])
-    self.assertItemsEqual([1, 2], added)
-    self.assertItemsEqual([], removed)
+    six.assertCountEqual(self, [1, 2], added)
+    six.assertCountEqual(self, [], removed)
 
     added, removed = tracker_bizobj.DiffValueLists(
         [1, 2, 2, 5, 6], [5, 6, 8, 9])
-    self.assertItemsEqual([1, 2, 2], added)
-    self.assertItemsEqual([8, 9], removed)
+    six.assertCountEqual(self, [1, 2, 2], added)
+    six.assertCountEqual(self, [8, 9], removed)
 
     added, removed = tracker_bizobj.DiffValueLists(
         [1, 2, 5, 6], [5, 6, 8, 8, 9])
-    self.assertItemsEqual([1, 2], added)
-    self.assertItemsEqual([8, 8, 9], removed)
+    six.assertCountEqual(self, [1, 2], added)
+    six.assertCountEqual(self, [8, 8, 9], removed)
 
   def testMakeFieldAmendment_NoSuchFieldDef(self):
     config = tracker_bizobj.MakeDefaultProjectIssueConfig(789)

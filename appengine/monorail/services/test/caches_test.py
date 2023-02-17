@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import six
 import unittest
 
 from google.appengine.api import memcache
@@ -238,8 +239,9 @@ class AbstractTwoLevelCacheTest_Memcache(unittest.TestCase):
     self.assertEqual({123: 12300, 124: 12400, 333: 333, 444: 444}, hits)
     self.assertEqual([], misses)
     # The RAM cache now has items found in memcache and DB.
-    self.assertItemsEqual(
-        [123, 124, 125, 333, 444], list(self.testable_2lc.cache.cache.keys()))
+    six.assertCountEqual(
+        self, [123, 124, 125, 333, 444],
+        list(self.testable_2lc.cache.cache.keys()))
 
   def testGetAll_FetchGetsItFromDB(self):
     self.testable_2lc.CacheItem(123, 12300)

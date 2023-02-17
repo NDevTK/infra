@@ -11,6 +11,7 @@ import copy
 import logging
 import unittest
 import mock
+import six
 import sys
 
 from google.appengine.api import memcache
@@ -808,11 +809,9 @@ class WorkEnvTest(unittest.TestCase):
       self.SignIn()
       we.StarProject(project1.project_id, True)
       we.StarProject(project2.project_id, True)
-      self.assertItemsEqual(
-        [project1, project2], we.ListStarredProjects())
+      six.assertCountEqual(self, [project1, project2], we.ListStarredProjects())
       project2.access = project_pb2.ProjectAccess.MEMBERS_ONLY
-      self.assertItemsEqual(
-        [project1], we.ListStarredProjects())
+      six.assertCountEqual(self, [project1], we.ListStarredProjects())
 
   def testListStarredProjects_ViewingOther(self):
     """A user can view their own starred projects, if they still have access."""
@@ -824,11 +823,12 @@ class WorkEnvTest(unittest.TestCase):
       we.StarProject(project2.project_id, True)
       self.SignIn(user_id=111)
       self.assertEqual([], we.ListStarredProjects())
-      self.assertItemsEqual(
-        [project1, project2], we.ListStarredProjects(viewed_user_id=222))
+      six.assertCountEqual(
+          self, [project1, project2],
+          we.ListStarredProjects(viewed_user_id=222))
       project2.access = project_pb2.ProjectAccess.MEMBERS_ONLY
-      self.assertItemsEqual(
-        [project1], we.ListStarredProjects(viewed_user_id=222))
+      six.assertCountEqual(
+          self, [project1], we.ListStarredProjects(viewed_user_id=222))
 
   def testGetProjectConfig_Normal(self):
     """We can get an existing config by project_id."""
@@ -2885,10 +2885,10 @@ class WorkEnvTest(unittest.TestCase):
         merged_into_issue_comment.content)
     source_starrers = self.services.issue_star.LookupItemStarrers(
         'cnxn', merged_issue.issue_id)
-    self.assertItemsEqual([111, 222, 333], source_starrers)
+    six.assertCountEqual(self, [111, 222, 333], source_starrers)
     target_starrers = self.services.issue_star.LookupItemStarrers(
         'cnxn', merged_into_issue.issue_id)
-    self.assertItemsEqual([111, 222, 333, 555], target_starrers)
+    six.assertCountEqual(self, [111, 222, 333, 555], target_starrers)
     # Notifications should be sent for both
     # the merged issue and the merged_into issue.
     merged_issue_comments = self.services.issue.GetCommentsForIssue(
@@ -4940,9 +4940,8 @@ class WorkEnvTest(unittest.TestCase):
       # Now, star a couple of issues.
       we.StarIssue(issue1, True)
       we.StarIssue(issue2, True)
-      self.assertItemsEqual(
-          [issue1.issue_id, issue2.issue_id],
-          we.ListStarredIssueIDs())
+      six.assertCountEqual(
+          self, [issue1.issue_id, issue2.issue_id], we.ListStarredIssueIDs())
 
     # Check that there is no cross-talk between users.
     self.SignIn(user_id=222)
@@ -5002,22 +5001,21 @@ class WorkEnvTest(unittest.TestCase):
     public_group_id, private_group_id = self.setUpUserGroups()
     self.SignIn(user_id=555)
     with self.work_env as we:
-      self.assertItemsEqual(
-          we.GetMemberships(111), [public_group_id, private_group_id])
+      six.assertCountEqual(
+          self, we.GetMemberships(111), [public_group_id, private_group_id])
 
   def testGetMemeberships_UserHasNoPerm(self):
     public_group_id, _ = self.setUpUserGroups()
     self.SignIn(user_id=666)
     with self.work_env as we:
-      self.assertItemsEqual(
-          we.GetMemberships(111), [public_group_id])
+      six.assertCountEqual(self, we.GetMemberships(111), [public_group_id])
 
   def testGetMemeberships_GetOwnMembership(self):
     public_group_id, private_group_id = self.setUpUserGroups()
     self.SignIn(user_id=111)
     with self.work_env as we:
-      self.assertItemsEqual(
-          we.GetMemberships(111), [public_group_id, private_group_id])
+      six.assertCountEqual(
+          self, we.GetMemberships(111), [public_group_id, private_group_id])
 
   def testListReferencedUsers(self):
     """We return the list of User PBs for the given existing user emails."""
@@ -5027,7 +5025,7 @@ class WorkEnvTest(unittest.TestCase):
       # We ignore emails that are empty or belong to non-existent users.
       users, linked_user_ids = we.ListReferencedUsers(
           ['test4@example.com', 'test5@example.com', 'test6@example.com', ''])
-      self.assertItemsEqual(users, [user5, user6])
+      six.assertCountEqual(self, users, [user5, user6])
       self.assertEqual(linked_user_ids, [])
 
   def testListReferencedUsers_Linked(self):
@@ -5040,8 +5038,8 @@ class WorkEnvTest(unittest.TestCase):
       # We ignore emails that are empty or belong to non-existent users.
       users, linked_user_ids = we.ListReferencedUsers(
           ['test4@example.com', 'test5@example.com', 'test6@example.com', ''])
-      self.assertItemsEqual(users, [user5, user6])
-      self.assertItemsEqual(linked_user_ids, [555, 666, 777])
+      six.assertCountEqual(self, users, [user5, user6])
+      six.assertCountEqual(self, linked_user_ids, [555, 666, 777])
 
   def testStarUser_Normal(self):
     """We can star and unstar a user."""
@@ -5598,36 +5596,36 @@ class WorkEnvTest(unittest.TestCase):
         self.mr.cnxn, user_2.user_id))
 
     # Assert users expunged in quick edits and saved queries
-    self.assertItemsEqual(
-        self.services.features.expunged_users_in_quick_edits, user_ids)
-    self.assertItemsEqual(
-        self.services.features.expunged_users_in_saved_queries, user_ids)
+    six.assertCountEqual(
+        self, self.services.features.expunged_users_in_quick_edits, user_ids)
+    six.assertCountEqual(
+        self, self.services.features.expunged_users_in_saved_queries, user_ids)
 
     # Assert users expunged in templates and configs
     self.assertIsNone(template.owner_id)
-    self.assertItemsEqual(
-        self.services.config.expunged_users_in_configs, user_ids)
+    six.assertCountEqual(
+        self, self.services.config.expunged_users_in_configs, user_ids)
 
     # Assert users expunged in projects
     self.assertEqual(project1.owner_ids, [])
     self.assertEqual(project2.contributor_ids, [])
 
     # Assert users expunged in issues
-    self.assertItemsEqual(
-        self.services.issue.expunged_users_in_issues, user_ids)
+    six.assertCountEqual(
+        self, self.services.issue.expunged_users_in_issues, user_ids)
     self.assertTrue(self.services.issue.enqueue_issues_called)
 
     # Assert users expunged in spam
-    self.assertItemsEqual(
-        self.services.spam.expunged_users_in_spam, user_ids)
+    six.assertCountEqual(
+        self, self.services.spam.expunged_users_in_spam, user_ids)
 
     # Assert users expunged in hotlists
-    self.assertItemsEqual(
-        self.services.features.expunged_users_in_hotlists, user_ids)
+    six.assertCountEqual(
+        self, self.services.features.expunged_users_in_hotlists, user_ids)
 
     # Assert users expunged in groups
-    self.assertItemsEqual(
-        self.services.usergroup.expunged_users_in_groups, user_ids)
+    six.assertCountEqual(
+        self, self.services.usergroup.expunged_users_in_groups, user_ids)
 
     # Assert filter rules expunged
     self.assertEqual(
@@ -5681,22 +5679,22 @@ class WorkEnvTest(unittest.TestCase):
     self.services.user.TestAddUser('4@test.com', 444)
 
 
-    self.assertItemsEqual(
-        [user_1.email, user_2.email, user_3.email],
+    six.assertCountEqual(
+        self, [user_1.email, user_2.email, user_3.email],
         self.services.user.GetAllUserEmailsBatch(self.mr.cnxn, limit=3))
-    self.assertItemsEqual(
-        [user_5.email, user_6.email],
+    six.assertCountEqual(
+        self, [user_5.email, user_6.email],
         self.services.user.GetAllUserEmailsBatch(
             self.mr.cnxn, limit=3, offset=4))
 
     # Test existence of deleted user does not change results.
     self.services.user.TestAddUser(
         '', framework_constants.DELETED_USER_ID)
-    self.assertItemsEqual(
-        [user_1.email, user_2.email, user_3.email],
+    six.assertCountEqual(
+        self, [user_1.email, user_2.email, user_3.email],
         self.services.user.GetAllUserEmailsBatch(self.mr.cnxn, limit=3))
-    self.assertItemsEqual(
-        [user_5.email, user_6.email],
+    six.assertCountEqual(
+        self, [user_5.email, user_6.email],
         self.services.user.GetAllUserEmailsBatch(
             self.mr.cnxn, limit=3, offset=4))
 

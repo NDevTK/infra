@@ -8,6 +8,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import mock
+import six
 import unittest
 
 try:
@@ -83,7 +84,7 @@ class SpamServiceTest(unittest.TestCase):
     issue_reporters, comment_reporters = (
         self.spam_service.LookupIssueFlaggers(self.cnxn, 234))
     self.mox.VerifyAll()
-    self.assertItemsEqual([111], issue_reporters)
+    six.assertCountEqual(self, [111], issue_reporters)
     self.assertEqual({1: [222]}, comment_reporters)
 
   def testFlagIssues_overThresh(self):

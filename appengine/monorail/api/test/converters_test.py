@@ -8,6 +8,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 from mock import Mock, patch
+import six
 import unittest
 
 from google.protobuf import wrappers_pb2
@@ -283,28 +284,27 @@ class ConverterFunctionsTest(unittest.TestCase):
 
     actual = converters.ConvertUsers(
         [user1, user2, user3, user4], users_by_id)
-    self.assertItemsEqual(
-        actual,
-        [user_objects_pb2.User(
-            user_id=1,
-            display_name='user1@example.com'),
-         user_objects_pb2.User(
-            user_id=2,
-            display_name='user2@example.com',
-            is_site_admin=True),
-         user_objects_pb2.User(
-            user_id=3,
-            display_name='user3@example.com',
-            availability='User never visited',
-            linked_child_refs=[common_pb2.UserRef(
-              user_id=4, display_name='user4@example.com')]),
-         user_objects_pb2.User(
-            user_id=4,
-            display_name='user4@example.com',
-            availability='Last visit > 30 days ago',
-            linked_parent_ref=common_pb2.UserRef(
-              user_id=3, display_name='user3@example.com')),
-         ])
+    six.assertCountEqual(
+        self, actual, [
+            user_objects_pb2.User(user_id=1, display_name='user1@example.com'),
+            user_objects_pb2.User(
+                user_id=2, display_name='user2@example.com',
+                is_site_admin=True),
+            user_objects_pb2.User(
+                user_id=3,
+                display_name='user3@example.com',
+                availability='User never visited',
+                linked_child_refs=[
+                    common_pb2.UserRef(
+                        user_id=4, display_name='user4@example.com')
+                ]),
+            user_objects_pb2.User(
+                user_id=4,
+                display_name='user4@example.com',
+                availability='Last visit > 30 days ago',
+                linked_parent_ref=common_pb2.UserRef(
+                    user_id=3, display_name='user3@example.com')),
+        ])
 
   def testConvetPrefValues(self):
     """We can convert a list of UserPrefValues from protorpc to protoc."""
@@ -505,7 +505,7 @@ class ConverterFunctionsTest(unittest.TestCase):
               field_id=5, field_name='Pre', type=common_pb2.ENUM_TYPE),
           value='label2', is_derived=True),
       ]
-    self.assertItemsEqual(expected, actual)
+    six.assertCountEqual(self, expected, actual)
 
   def testConvertIssue(self):
     """We can convert a protorpc Issue to a protoc Issue."""

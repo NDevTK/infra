@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import six
 import unittest
 
 import mock
@@ -586,8 +587,8 @@ class UserServiceTest(unittest.TestCase):
         self.cnxn, cols=['email'], limit=1000, offset=0,
         where=[('user_id != %s', [framework_constants.DELETED_USER_ID])],
         order_by=[('user_id ASC', [])])
-    self.assertItemsEqual(
-        emails, ['cow@test.com', 'pig@test.com', 'fox@test.com'])
+    six.assertCountEqual(
+        self, emails, ['cow@test.com', 'pig@test.com', 'fox@test.com'])
 
   def testGetAllUserEmailsBatch_CustomLimit(self):
     rows = [('cow@test.com',), ('pig@test.com',), ('fox@test.com',)]
@@ -598,5 +599,5 @@ class UserServiceTest(unittest.TestCase):
         self.cnxn, cols=['email'], limit=30, offset=60,
         where=[('user_id != %s', [framework_constants.DELETED_USER_ID])],
         order_by=[('user_id ASC', [])])
-    self.assertItemsEqual(
-        emails, ['cow@test.com', 'pig@test.com', 'fox@test.com'])
+    six.assertCountEqual(
+        self, emails, ['cow@test.com', 'pig@test.com', 'fox@test.com'])

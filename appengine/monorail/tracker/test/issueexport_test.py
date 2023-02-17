@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import six
 import unittest
 
 from mock import Mock, patch
@@ -59,8 +60,8 @@ class IssueExportTest(unittest.TestCase):
                      {'version': 1, 'who': None, 'when': 1234,
                       'project': 'proj', 'start': 0, 'num': 100})
     self.assertEqual(json_data['issues'], [])
-    self.assertItemsEqual(
-        json_data['emails'], ['user1@test.com', 'user2@test.com'])
+    six.assertCountEqual(
+        self, json_data['emails'], ['user1@test.com', 'user2@test.com'])
 
   # TODO(jojwang): test attachments, amendments, comment details
   def testMakeIssueJSON(self):

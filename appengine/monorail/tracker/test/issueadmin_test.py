@@ -11,6 +11,7 @@ try:
   from mox3 import mox
 except ImportError:
   import mox
+import six
 import unittest
 
 from mock import Mock, patch
@@ -79,7 +80,8 @@ class IssueAdminBaseTest(TestBase):
     page_data = self.servlet.GatherPageData(self.mr)
     self.mox.VerifyAll()
 
-    self.assertItemsEqual(
+    six.assertCountEqual(
+        self,
         ['admin_tab_mode', 'config', 'open_text', 'closed_text', 'labels_text'],
         list(page_data.keys()))
     config_view = page_data['config']
@@ -143,10 +145,11 @@ class AdminLabelsTest(TestBase):
     page_data = self.servlet.GatherPageData(self.mr)
     self.mox.VerifyAll()
 
-    self.assertItemsEqual(
-        ['admin_tab_mode', 'config', 'field_defs',
-         'open_text', 'closed_text', 'labels_text'],
-        list(page_data.keys()))
+    six.assertCountEqual(
+        self, [
+            'admin_tab_mode', 'config', 'field_defs', 'open_text',
+            'closed_text', 'labels_text'
+        ], list(page_data.keys()))
     config_view = page_data['config']
     self.assertEqual(789, config_view.project_id)
     self.assertEqual([], page_data['field_defs'])
@@ -300,11 +303,12 @@ class AdminComponentsTest(TestBase):
     self.mox.ReplayAll()
     page_data = self.servlet.GatherPageData(self.mr)
     self.mox.VerifyAll()
-    self.assertItemsEqual(
-        ['admin_tab_mode', 'failed_templ', 'component_defs', 'failed_perm',
-         'config', 'failed_subcomp',
-         'open_text', 'closed_text', 'labels_text'],
-        list(page_data.keys()))
+    six.assertCountEqual(
+        self, [
+            'admin_tab_mode', 'failed_templ', 'component_defs', 'failed_perm',
+            'config', 'failed_subcomp', 'open_text', 'closed_text',
+            'labels_text'
+        ], list(page_data.keys()))
     config_view = page_data['config']
     self.assertEqual(789, config_view.project_id)
     self.assertEqual([], page_data['component_defs'])
@@ -367,11 +371,12 @@ class AdminViewsTest(TestBase):
     page_data = self.servlet.GatherPageData(self.mr)
     self.mox.VerifyAll()
 
-    self.assertItemsEqual(
-        ['canned_queries', 'admin_tab_mode', 'config', 'issue_notify',
-         'new_query_indexes', 'max_queries',
-         'open_text', 'closed_text', 'labels_text'],
-        list(page_data.keys()))
+    six.assertCountEqual(
+        self, [
+            'canned_queries', 'admin_tab_mode', 'config', 'issue_notify',
+            'new_query_indexes', 'max_queries', 'open_text', 'closed_text',
+            'labels_text'
+        ], list(page_data.keys()))
     config_view = page_data['config']
     self.assertEqual(789, config_view.project_id)
 
@@ -455,10 +460,11 @@ class AdminRulesTest(TestBase):
     page_data = self.servlet.GatherPageData(self.mr)
     self.mox.VerifyAll()
 
-    self.assertItemsEqual(
-        ['admin_tab_mode', 'config', 'rules', 'new_rule_indexes',
-         'max_rules', 'open_text', 'closed_text', 'labels_text'],
-        list(page_data.keys()))
+    six.assertCountEqual(
+        self, [
+            'admin_tab_mode', 'config', 'rules', 'new_rule_indexes',
+            'max_rules', 'open_text', 'closed_text', 'labels_text'
+        ], list(page_data.keys()))
     config_view = page_data['config']
     self.assertEqual(789, config_view.project_id)
     self.assertEqual([], page_data['rules'])

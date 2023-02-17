@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import six
 import unittest
 
 from mrproto import project_pb2
@@ -92,7 +93,7 @@ class HelperFunctionsTest(unittest.TestCase):
     # Check names rather than Project objects so that output is easier to read.
     actual_names = [p.project_name for p in actual_projects]
     expected_names = [p.project_name for p in expected_projects]
-    self.assertItemsEqual(expected_names, actual_names)
+    six.assertCountEqual(self, expected_names, actual_names)
 
   def testFilterViewableProjects_CantViewArchived(self):
     projects = list(sitewide_helpers.FilterViewableProjects(

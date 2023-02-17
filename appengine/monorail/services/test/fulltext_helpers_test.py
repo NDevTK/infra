@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import six
 import unittest
 
 try:
@@ -246,4 +247,4 @@ class FulltextHelpersTest(unittest.TestCase):
     project_ids = fulltext_helpers.ComprehensiveSearch(
         'browser', 'search index name')
     self.mox.VerifyAll()
-    self.assertItemsEqual([123, 234, 345], project_ids)
+    six.assertCountEqual(self, [123, 234, 345], project_ids)

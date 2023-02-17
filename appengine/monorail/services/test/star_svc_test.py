@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import six
 import unittest
 
 try:
@@ -77,13 +78,13 @@ class AbstractStarServiceTest(unittest.TestCase):
     starrer_list_dict = self.star_service.LookupItemsStarrers(
         self.cnxn, [123, 234])
     self.mox.VerifyAll()
-    self.assertItemsEqual([123, 234], list(starrer_list_dict.keys()))
-    self.assertItemsEqual([111, 333], starrer_list_dict[123])
-    self.assertItemsEqual([111, 222], starrer_list_dict[234])
-    self.assertItemsEqual([111, 333],
-                          self.star_service.starrer_cache.GetItem(123))
-    self.assertItemsEqual([111, 222],
-                          self.star_service.starrer_cache.GetItem(234))
+    six.assertCountEqual(self, [123, 234], list(starrer_list_dict.keys()))
+    six.assertCountEqual(self, [111, 333], starrer_list_dict[123])
+    six.assertCountEqual(self, [111, 222], starrer_list_dict[234])
+    six.assertCountEqual(
+        self, [111, 333], self.star_service.starrer_cache.GetItem(123))
+    six.assertCountEqual(
+        self, [111, 222], self.star_service.starrer_cache.GetItem(234))
 
   def SetUpLookupStarredItemIDs(self):
     self.mock_tbl.Select(
@@ -95,9 +96,9 @@ class AbstractStarServiceTest(unittest.TestCase):
     self.mox.ReplayAll()
     item_ids = self.star_service.LookupStarredItemIDs(self.cnxn, 111)
     self.mox.VerifyAll()
-    self.assertItemsEqual([123, 234], item_ids)
-    self.assertItemsEqual([123, 234],
-                          self.star_service.star_cache.GetItem(111))
+    six.assertCountEqual(self, [123, 234], item_ids)
+    six.assertCountEqual(
+        self, [123, 234], self.star_service.star_cache.GetItem(111))
 
   def testIsItemStarredBy(self):
     self.SetUpLookupStarredItemIDs()
@@ -128,7 +129,7 @@ class AbstractStarServiceTest(unittest.TestCase):
     count_dict = self.star_service.CountItemsStars(
         self.cnxn, [123, 234])
     self.mox.VerifyAll()
-    self.assertItemsEqual([123, 234], list(count_dict.keys()))
+    six.assertCountEqual(self, [123, 234], list(count_dict.keys()))
     self.assertEqual(3, count_dict[123])
     self.assertEqual(2, count_dict[234])
 

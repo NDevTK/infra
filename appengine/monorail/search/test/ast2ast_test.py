@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import six
 import unittest
 
 from mrproto import ast_pb2
@@ -692,7 +693,7 @@ class AST2ASTTest(unittest.TestCase):
         self.cnxn, cond, [1], self.services, None, True)
     self.assertEqual(ast_pb2.QueryOp.EQ, actual.op)
     self.assertEqual([hotlist_id_field], actual.field_defs)
-    self.assertItemsEqual([10, 30, 40, 50, 60], actual.int_values)
+    six.assertCountEqual(self, [10, 30, 40, 50, 60], actual.int_values)
 
   def testPreprocessHotlistCond_UserNotFound(self):
     hotlist_field = BUILTIN_ISSUE_FIELDS['hotlist']

@@ -10,6 +10,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 import logging
+import six
 import time
 import unittest
 from mock import patch, Mock, ANY
@@ -133,8 +134,8 @@ class IssueIDTwoLevelCacheTest(unittest.TestCase):
     issue_dict = self.issue_id_2lc.FetchItems(
         self.cnxn, project_local_ids_list)
     self.mox.VerifyAll()
-    self.assertItemsEqual(project_local_ids_list, list(issue_dict.keys()))
-    self.assertItemsEqual(issue_ids, list(issue_dict.values()))
+    six.assertCountEqual(self, project_local_ids_list, list(issue_dict.keys()))
+    six.assertCountEqual(self, issue_ids, list(issue_dict.values()))
 
   def testKeyToStr(self):
     self.assertEqual('789,1', self.issue_id_2lc._KeyToStr((789, 1)))
@@ -223,14 +224,14 @@ class IssueTwoLevelCacheTest(unittest.TestCase):
         self.component_rows, self.cc_rows, self.notify_rows,
         self.fieldvalue_rows, self.relation_rows, self.dangling_relation_rows,
         self.phase_rows, self.approvalvalue_rows, self.av_approver_rows)
-    self.assertItemsEqual([78901], list(issue_dict.keys()))
+    six.assertCountEqual(self, [78901], list(issue_dict.keys()))
     issue = issue_dict[78901]
     self.assertEqual(len(issue.phases), 2)
     self.assertIsNotNone(tracker_bizobj.FindPhaseByID(1, issue.phases))
     av_21 = tracker_bizobj.FindApprovalValueByID(
         21, issue.approval_values)
     self.assertEqual(av_21.phase_id, 1)
-    self.assertItemsEqual(av_21.approver_ids, [111, 222, 333])
+    six.assertCountEqual(self, av_21.approver_ids, [111, 222, 333])
     self.assertIsNotNone(tracker_bizobj.FindPhaseByID(2, issue.phases))
     self.assertEqual(issue.phases,
                      [tracker_pb2.Phase(rank=1, phase_id=1, name='Canary'),
@@ -355,7 +356,7 @@ class IssueTwoLevelCacheTest(unittest.TestCase):
     self.mox.ReplayAll()
     issue_dict = self.issue_2lc.FetchItems(self.cnxn, issue_ids)
     self.mox.VerifyAll()
-    self.assertItemsEqual(issue_ids, list(issue_dict.keys()))
+    six.assertCountEqual(self, issue_ids, list(issue_dict.keys()))
     self.assertEqual(2, len(issue_dict[78901].phases))
 
   def testFetchItemsNoApprovalValues(self):
@@ -364,7 +365,7 @@ class IssueTwoLevelCacheTest(unittest.TestCase):
     self.mox.ReplayAll()
     issue_dict = self.issue_2lc.FetchItems(self.cnxn, issue_ids)
     self.mox.VerifyAll()
-    self.assertItemsEqual(issue_ids, list(issue_dict.keys()))
+    six.assertCountEqual(self, issue_ids, list(issue_dict.keys()))
     self.assertEqual([], issue_dict[78901].phases)
 
 
@@ -2701,16 +2702,17 @@ class IssueServiceTest(unittest.TestCase):
 
     affected_user_ids = self.services.issue.ExpungeUsersInIssues(
         self.cnxn, user_ids_by_email, limit=limit)
-    self.assertItemsEqual(
-        affected_user_ids,
-        [78901, 78902, 78903, 78904, 78905, 78906, 78907, 78908, 78909,
-         78910, 78911, 78912, 78913])
+    six.assertCountEqual(
+        self, affected_user_ids, [
+            78901, 78902, 78903, 78904, 78905, 78906, 78907, 78908, 78909,
+            78910, 78911, 78912, 78913
+        ])
 
     self.services.issue.comment_tbl.Select.assert_called_once()
     _cnxn, kwargs = self.services.issue.comment_tbl.Select.call_args
     self.assertEqual(
         kwargs['cols'], ['Comment.id', 'Comment.issue_id', 'commentcontent_id'])
-    self.assertItemsEqual(kwargs['commenter_id'], user_ids)
+    six.assertCountEqual(self, kwargs['commenter_id'], user_ids)
     self.assertEqual(kwargs['limit'], limit)
 
     # since user_ids are passed to ExpungeUsersInIssues via a dictionary,
@@ -2787,7 +2789,7 @@ Delete.assert_called_once_with(
     call_args_list = self.services.issue.issue2notify_tbl.Delete.call_args_list
     self.assertEqual(1, len(call_args_list))
     _cnxn, kwargs = call_args_list[0]
-    self.assertItemsEqual(kwargs['email'], emails)
+    six.assertCountEqual(self, kwargs['email'], emails)
     self.assertEqual(kwargs['commit'], commit)
 
     # issue snapshots

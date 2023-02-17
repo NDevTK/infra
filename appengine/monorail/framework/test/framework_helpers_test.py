@@ -14,6 +14,7 @@ try:
   from mox3 import mox
 except ImportError:
   import mox
+import six
 import time
 
 from businesslogic import work_env
@@ -380,8 +381,8 @@ class ComputeListDeltasTest(unittest.TestCase):
     """Run one call to the target method and check expected results."""
     actual_added, actual_removed = framework_helpers.ComputeListDeltas(
         old, new)
-    self.assertItemsEqual(added, actual_added)
-    self.assertItemsEqual(removed, actual_removed)
+    six.assertCountEqual(self, added, actual_added)
+    six.assertCountEqual(self, removed, actual_removed)
 
   def testEmptyLists(self):
     self.DoOne(old=[], new=[], added=[], removed=[])
@@ -429,7 +430,7 @@ class UserSettingsTest(unittest.TestCase):
         'preview_on_hover',
         'settings_user_prefs',
         ]
-    self.assertItemsEqual(expected_keys, list(page_data.keys()))
+    six.assertCountEqual(self, expected_keys, list(page_data.keys()))
 
     self.assertEqual('profile/url', page_data['profile_url_fragment'])
     self.assertTrue(page_data['settings_user_prefs'].public_issue_notice)

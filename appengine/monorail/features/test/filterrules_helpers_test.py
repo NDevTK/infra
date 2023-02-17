@@ -8,9 +8,9 @@ from __future__ import division
 from __future__ import absolute_import
 
 import mock
+import six
 import unittest
 from six.moves import urllib
-from six.moves.urllib.parse import parse_qs
 
 import settings
 from features import filterrules_helpers
@@ -176,7 +176,7 @@ class RecomputeAllDerivedFieldsTest(unittest.TestCase):
         'relative_uri')
     self.assertEqual(relative_uri, urls.RECOMPUTE_DERIVED_FIELDS_TASK + '.do')
     encoded_params = called_task.get('app_engine_http_request').get('body')
-    params = {k: v[0] for k, v in parse_qs(encoded_params).items()}
+    params = {k: v[0] for k, v in urllib.parse.parse_qs(encoded_params).items()}
     self.assertEqual(params['project_id'], str(self.project.project_id))
     self.assertEqual(
         params['lower_bound'], str(12345 // self.BLOCK * self.BLOCK + 1))
@@ -187,7 +187,7 @@ class RecomputeAllDerivedFieldsTest(unittest.TestCase):
         'relative_uri')
     self.assertEqual(relative_uri, urls.RECOMPUTE_DERIVED_FIELDS_TASK + '.do')
     encoded_params = called_task.get('app_engine_http_request').get('body')
-    params = {k: v[0] for k, v in parse_qs(encoded_params).items()}
+    params = {k: v[0] for k, v in urllib.parse.parse_qs(encoded_params).items()}
     self.assertEqual(params['project_id'], str(self.project.project_id))
     self.assertEqual(params['lower_bound'], str(1))
     self.assertEqual(params['upper_bound'], str(self.BLOCK + 1))
@@ -856,7 +856,7 @@ class FilterRulesHelpersTest(unittest.TestCase):
         tracker_pb2.FilterRule(),
         ]
     actual_user_ids = filterrules_helpers.OwnerCcsInvolvedInFilterRules(rules)
-    self.assertItemsEqual([111, 333, 777, 888, 999], actual_user_ids)
+    six.assertCountEqual(self, [111, 333, 777, 888, 999], actual_user_ids)
 
   def testBuildFilterRuleStrings(self):
     rules = [
@@ -875,8 +875,8 @@ class FilterRulesHelpersTest(unittest.TestCase):
         111: 'cow@test.com', 222: 'fox@test.com', 333: 'llama@test.com'}
     rule_strs = filterrules_helpers.BuildFilterRuleStrings(rules, emails_by_id)
 
-    self.assertItemsEqual(
-        rule_strs, [
+    six.assertCountEqual(
+        self, rule_strs, [
             'if label:machu '
             'then add cc(s): cow@test.com, llama@test.com, user not found',
             'if label:pichu then set default owner: fox@test.com',
@@ -908,19 +908,21 @@ class FilterRulesHelpersTest(unittest.TestCase):
     actual = filterrules_helpers.BuildRedactedFilterRuleStrings(
         self.cnxn, rules_by_project, self.services.user, deleted_emails)
 
-    self.assertItemsEqual(
-        actual,
-        {16: [
-            'if label:machu '
-            'then add cc(s): cow@test.com, llama@test.com, user not found',
-            'if label:pichu '
-            'then set default owner: %s' %
-            framework_constants.DELETED_USER_NAME],
-         19: [
-             'if owner:%s '
-             'then add label(s): cows-farting, chicken, machu-pichu' %
-             framework_constants.DELETED_USER_NAME,
-             'if label:rainforest '
-             'then notify: cake@test.com, %s' %
-             framework_constants.DELETED_USER_NAME],
+    six.assertCountEqual(
+        self, actual, {
+            16: [
+                'if label:machu '
+                'then add cc(s): cow@test.com, llama@test.com, user not found',
+                'if label:pichu '
+                'then set default owner: %s' %
+                framework_constants.DELETED_USER_NAME
+            ],
+            19: [
+                'if owner:%s '
+                'then add label(s): cows-farting, chicken, machu-pichu' %
+                framework_constants.DELETED_USER_NAME,
+                'if label:rainforest '
+                'then notify: cake@test.com, %s' %
+                framework_constants.DELETED_USER_NAME
+            ],
         })

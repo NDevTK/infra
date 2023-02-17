@@ -8,6 +8,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import mock
+import six
 import unittest
 
 from google.appengine.ext import testbed
@@ -78,12 +79,11 @@ class EmailFmtTest(unittest.TestCase):
         testing_helpers.HEADER_LINES + [references_header], 'awesome!')
     (from_addr, to_addrs, cc_addrs, references, incident_id, subject,
      body) = emailfmt.ParseEmailMessage(msg)
-    self.assertItemsEqual(
-        ['<5678@bar.com>',
-         '<0=969704940193871313=13442892928193434663='
-         'proj@monorail.example.com>',
-         '<1234@foo.com>'],
-        references)
+    six.assertCountEqual(
+        self, [
+            '<5678@bar.com>', '<0=969704940193871313=13442892928193434663='
+            'proj@monorail.example.com>', '<1234@foo.com>'
+        ], references)
 
   def testParseEmailMessage_Bulk(self):
     for precedence in ['Bulk', 'Junk']:

@@ -7,10 +7,11 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import flask
 import json
 import mock
+import six
 import unittest
-import flask
 
 from google.appengine.ext import testbed
 
@@ -212,7 +213,8 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
         create_task_mock, urls.OUTBOUND_EMAIL_TASK + '.do')
     self.assertEqual(3, len(call_args_list))
 
-    self.assertItemsEqual(
+    six.assertCountEqual(
+        self,
         ['user@example.com', 'mailing-list@example.com', 'member@example.com'],
         result['notified'])
     for (args, _kwargs) in call_args_list:
@@ -246,8 +248,8 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
         create_task_mock, urls.OUTBOUND_EMAIL_TASK + '.do')
     self.assertEqual(2, len(call_args_list))
 
-    self.assertItemsEqual(
-        ['user@example.com', 'mailing-list@example.com'],
+    six.assertCountEqual(
+        self, ['user@example.com', 'mailing-list@example.com'],
         result['notified'])
 
     for (args, _kwargs) in call_args_list:
@@ -531,12 +533,13 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
     self.assertTrue('sploot.jpg' in result['tasks'][0]['body'])
     self.assertTrue(
         '/issues/attachment?aid=4567' in result['tasks'][0]['body'])
-    self.assertItemsEqual(
-        ['user@example.com', 'approver_old@example.com',
-         'approver_new@example.com', 'TL@example.com',
-         'approvalTL@example.com', 'group_mem1@example.com',
-         'group_mem2@example.com', 'group_mem3@example.com'],
-        result['notified'])
+    six.assertCountEqual(
+        self, [
+            'user@example.com', 'approver_old@example.com',
+            'approver_new@example.com', 'TL@example.com',
+            'approvalTL@example.com', 'group_mem1@example.com',
+            'group_mem2@example.com', 'group_mem3@example.com'
+        ], result['notified'])
 
     # Test no approvers/groups notified
     # Status change to NEED_INFO does not email approvers.
@@ -563,8 +566,8 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
     self.assertIsNotNone(result['tasks'][0].get('references'))
     self.assertEqual(result['tasks'][0]['reply_to'], emailfmt.NoReplyAddress())
     self.assertTrue('Status: need_info' in result['tasks'][0]['body'])
-    self.assertItemsEqual(
-        ['user@example.com', 'TL@example.com', 'approvalTL@example.com'],
+    six.assertCountEqual(
+        self, ['user@example.com', 'TL@example.com', 'approvalTL@example.com'],
         result['notified'])
 
   def testNotifyApprovalChangeTask_GetApprovalEmailRecipients(self):
@@ -579,7 +582,7 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
     # Comment with not amendments notifies everyone.
     rids = task._GetApprovalEmailRecipients(
         approval_value, comment, issue, [777, 888])
-    self.assertItemsEqual(rids, [111, 222, 333, 777, 888])
+    six.assertCountEqual(self, rids, [111, 222, 333, 777, 888])
 
     # New APPROVED status notifies owners and any_comment users.
     amendment = tracker_bizobj.MakeApprovalStatusAmendment(
@@ -587,7 +590,7 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
     comment.amendments = [amendment]
     rids = task._GetApprovalEmailRecipients(
         approval_value, comment, issue, [777, 888])
-    self.assertItemsEqual(rids, [111, 777, 888])
+    six.assertCountEqual(self, rids, [111, 777, 888])
 
     # New REVIEW_REQUESTED status notifies approvers.
     approval_value.status = tracker_pb2.ApprovalStatus.REVIEW_REQUESTED
@@ -596,7 +599,7 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
     comment.amendments = [amendment]
     rids = task._GetApprovalEmailRecipients(
         approval_value, comment, issue, [777, 888])
-    self.assertItemsEqual(rids, [222, 333])
+    six.assertCountEqual(self, rids, [222, 333])
 
     # Approvers change notifies everyone.
     amendment = tracker_bizobj.MakeApprovalApproversAmendment(
@@ -605,7 +608,7 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
     approval_value.approver_ids = [222]
     rids = task._GetApprovalEmailRecipients(
         approval_value, comment, issue, [777], omit_ids=[444, 333])
-    self.assertItemsEqual(rids, [111, 222, 555, 777])
+    six.assertCountEqual(self, rids, [111, 222, 555, 777])
 
   @mock.patch('framework.cloud_tasks_helpers.create_task')
   def testNotifyRulesDeletedTask(self, _create_task_mock):
@@ -626,8 +629,8 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
     self.assertTrue('if green make yellow' in body)
     self.assertTrue('if green make yellow' in body)
     self.assertTrue('/p/proj/adminRules' in body)
-    self.assertItemsEqual(
-        ['cow@test.com', 'owner1@test.com'], result['notified'])
+    six.assertCountEqual(
+        self, ['cow@test.com', 'owner1@test.com'], result['notified'])
 
   def testOutboundEmailTask_Normal(self):
     """We can send an email."""

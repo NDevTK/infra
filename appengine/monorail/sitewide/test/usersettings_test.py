@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import six
 import unittest
 
 try:
@@ -57,10 +58,11 @@ class UserSettingsTest(unittest.TestCase):
     mr = testing_helpers.MakeMonorailRequest()
     page_data = self.servlet.GatherPageData(mr)
 
-    self.assertItemsEqual(
-        ['logged_in_user_pb', 'unified', 'user_tab_mode',
-         'viewed_user', 'offer_saved_queries_subtab', 'viewing_self'],
-        list(page_data.keys()))
+    six.assertCountEqual(
+        self, [
+            'logged_in_user_pb', 'unified', 'user_tab_mode', 'viewed_user',
+            'offer_saved_queries_subtab', 'viewing_self'
+        ], list(page_data.keys()))
     self.assertEqual(template_helpers.PBProxy(mr.auth.user_pb),
                      page_data['logged_in_user_pb'])
 

@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import six
 import unittest
 
 from framework import exceptions
@@ -59,9 +60,8 @@ class MovedTest(unittest.TestCase):
         path='/hosting/moved?project=%s' % self.old_project)
 
     page_data = self.servlet.GatherPageData(mr)
-    self.assertItemsEqual(
-        ['project_name', 'moved_to_url'],
-        list(page_data.keys()))
+    six.assertCountEqual(
+        self, ['project_name', 'moved_to_url'], list(page_data.keys()))
     self.assertEqual(self.old_project, page_data['project_name'])
     self.assertEqual('https://other-tracker.bugs', page_data['moved_to_url'])
 
@@ -73,9 +73,8 @@ class MovedTest(unittest.TestCase):
         path='/hosting/moved?project=%s' % self.old_project)
 
     page_data = self.servlet.GatherPageData(mr)
-    self.assertItemsEqual(
-        ['project_name', 'moved_to_url'],
-        list(page_data.keys()))
+    six.assertCountEqual(
+        self, ['project_name', 'moved_to_url'], list(page_data.keys()))
     self.assertEqual(self.old_project, page_data['project_name'])
     self.assertEqual('http://127.0.0.1/p/new-project/',
                      page_data['moved_to_url'])
@@ -88,9 +87,8 @@ class MovedTest(unittest.TestCase):
         path='/hosting/moved?project=%s' % self.old_project)
 
     page_data = self.servlet.GatherPageData(mr)
-    self.assertItemsEqual(
-        ['project_name', 'moved_to_url'],
-        list(page_data.keys()))
+    six.assertCountEqual(
+        self, ['project_name', 'moved_to_url'], list(page_data.keys()))
     self.assertEqual(self.old_project, page_data['project_name'])
     self.assertEqual('http://127.0.0.1/p/http-project/',
                      page_data['moved_to_url'])
@@ -103,8 +101,7 @@ class MovedTest(unittest.TestCase):
         path='/hosting/moved?project=%s' % self.old_project)
 
     page_data = self.servlet.GatherPageData(mr)
-    self.assertItemsEqual(
-        ['project_name', 'moved_to_url'],
-        list(page_data.keys()))
+    six.assertCountEqual(
+        self, ['project_name', 'moved_to_url'], list(page_data.keys()))
     self.assertEqual(self.old_project, page_data['project_name'])
     self.assertEqual('#invalid-destination-url', page_data['moved_to_url'])

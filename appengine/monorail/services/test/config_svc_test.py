@@ -7,10 +7,11 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import re
-import unittest
 import logging
 import mock
+import re
+import six
+import unittest
 
 try:
   from mox3 import mox
@@ -219,7 +220,7 @@ class ConfigRowTwoLevelCacheTest(unittest.TestCase):
         self.componentdef_rows, self.component2admin_rows,
         self.component2cc_rows, self.component2label_rows,
         self.approvaldef2approver_rows, self.approvaldef2survey_rows)
-    self.assertItemsEqual([789], list(config_dict.keys()))
+    six.assertCountEqual(self, [789], list(config_dict.keys()))
     config = config_dict[789]
     self.assertEqual(789, config.project_id)
     self.assertEqual(['Duplicate'], config.statuses_offer_merge)
@@ -279,7 +280,7 @@ class ConfigRowTwoLevelCacheTest(unittest.TestCase):
     self.mox.ReplayAll()
     config_dict = self.config_2lc._FetchConfigs(self.cnxn, keys)
     self.mox.VerifyAll()
-    self.assertItemsEqual(keys, list(config_dict.keys()))
+    six.assertCountEqual(self, keys, list(config_dict.keys()))
 
   def testFetchItems(self):
     keys = [678, 789]
@@ -287,7 +288,7 @@ class ConfigRowTwoLevelCacheTest(unittest.TestCase):
     self.mox.ReplayAll()
     config_dict = self.config_2lc.FetchItems(self.cnxn, keys)
     self.mox.VerifyAll()
-    self.assertItemsEqual(keys, list(config_dict.keys()))
+    six.assertCountEqual(self, keys, list(config_dict.keys()))
 
 
 class ConfigServiceTest(unittest.TestCase):
@@ -455,16 +456,16 @@ class ConfigServiceTest(unittest.TestCase):
     self.config_service.label_cache.CacheItem(789, label_dicts)
     # No mock calls set up because none are needed.
     self.mox.ReplayAll()
-    self.assertItemsEqual(
-        [1],
+    six.assertCountEqual(
+        self, [1],
         self.config_service.LookupIDsOfLabelsMatching(
             self.cnxn, 789, re.compile('Sec.*')))
-    self.assertItemsEqual(
-        [1, 2],
+    six.assertCountEqual(
+        self, [1, 2],
         self.config_service.LookupIDsOfLabelsMatching(
             self.cnxn, 789, re.compile('.*')))
-    self.assertItemsEqual(
-        [],
+    six.assertCountEqual(
+        self, [],
         self.config_service.LookupIDsOfLabelsMatching(
             self.cnxn, 789, re.compile('Zzzzz.*')))
     self.mox.VerifyAll()
@@ -1000,7 +1001,7 @@ class ConfigServiceTest(unittest.TestCase):
     comp_ids = self.config_service.FindMatchingComponentIDsAnyProject(
         self.cnxn, ['WindowManager', 'NetworkLayer'])
     self.mox.VerifyAll()
-    self.assertItemsEqual([1, 2, 3], comp_ids)
+    six.assertCountEqual(self, [1, 2, 3], comp_ids)
 
   def testFindMatchingComponentIDsAnyProject_NonRooted(self):
     self.SetUpFindMatchingComponentIDsAnyProject(False, [(1,), (2,), (3,)])
@@ -1009,7 +1010,7 @@ class ConfigServiceTest(unittest.TestCase):
     comp_ids = self.config_service.FindMatchingComponentIDsAnyProject(
         self.cnxn, ['WindowManager', 'NetworkLayer'], exact=False)
     self.mox.VerifyAll()
-    self.assertItemsEqual([1, 2, 3], comp_ids)
+    six.assertCountEqual(self, [1, 2, 3], comp_ids)
 
   def SetUpCreateComponentDef(self, comp_id):
     self.config_service.componentdef_tbl.InsertRow(

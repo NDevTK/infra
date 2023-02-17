@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import six
 import time
 import unittest
 
@@ -78,15 +79,15 @@ class ProjectTwoLevelCacheTest(unittest.TestCase):
     project_dict = self.project_service.project_2lc._DeserializeProjects(
         project_rows, role_rows, extraperm_rows)
 
-    self.assertItemsEqual([123, 234], list(project_dict.keys()))
+    six.assertCountEqual(self, [123, 234], list(project_dict.keys()))
     self.assertEqual(123, project_dict[123].project_id)
     self.assertEqual('proj1', project_dict[123].project_name)
     self.assertEqual(NOW, project_dict[123].recent_activity)
-    self.assertItemsEqual([111, 444], project_dict[123].owner_ids)
-    self.assertItemsEqual([222], project_dict[123].committer_ids)
-    self.assertItemsEqual([333], project_dict[123].contributor_ids)
+    six.assertCountEqual(self, [111, 444], project_dict[123].owner_ids)
+    six.assertCountEqual(self, [222], project_dict[123].committer_ids)
+    six.assertCountEqual(self, [333], project_dict[123].contributor_ids)
     self.assertEqual(234, project_dict[234].project_id)
-    self.assertItemsEqual([111], project_dict[234].owner_ids)
+    six.assertCountEqual(self, [111], project_dict[234].owner_ids)
     self.assertEqual(False, project_dict[123].issue_notify_always_detailed)
     self.assertEqual(True, project_dict[234].issue_notify_always_detailed)
 
@@ -277,7 +278,7 @@ class ProjectServiceTest(unittest.TestCase):
     project_dict = self.project_service.GetProjects(
         self.cnxn, [123, 234])
     self.mox.VerifyAll()
-    self.assertItemsEqual([123, 234], list(project_dict.keys()))
+    six.assertCountEqual(self, [123, 234], list(project_dict.keys()))
     self.assertEqual('proj1', project_dict[123].project_name)
     self.assertEqual('proj2', project_dict[234].project_name)
 
@@ -287,7 +288,7 @@ class ProjectServiceTest(unittest.TestCase):
     self.mox.ReplayAll()
     project_dict = self.project_service.GetProjects(self.cnxn, [234])
     self.mox.VerifyAll()
-    self.assertItemsEqual([234], list(project_dict.keys()))
+    six.assertCountEqual(self, [234], list(project_dict.keys()))
     self.assertEqual(
         [project_pb2.Project.ExtraPerms(
              member_id=111, perms=['FooPerm']),
@@ -314,7 +315,7 @@ class ProjectServiceTest(unittest.TestCase):
         self.cnxn, user_a, set([111]))
 
     self.mox.VerifyAll()
-    self.assertItemsEqual([234], project_ids)
+    six.assertCountEqual(self, [234], project_ids)
 
   def testGetVisibleLiveProjects_AnyoneAccessWithAnon(self):
     project_rows = [
@@ -333,7 +334,7 @@ class ProjectServiceTest(unittest.TestCase):
         self.cnxn, None, None)
 
     self.mox.VerifyAll()
-    self.assertItemsEqual([234], project_ids)
+    six.assertCountEqual(self, [234], project_ids)
 
   def testGetVisibleLiveProjects_RestrictedAccessWithMember(self):
     project_rows = [
@@ -355,7 +356,7 @@ class ProjectServiceTest(unittest.TestCase):
         self.cnxn, user_a, set([111]))
 
     self.mox.VerifyAll()
-    self.assertItemsEqual([234], project_ids)
+    six.assertCountEqual(self, [234], project_ids)
 
   def testGetVisibleLiveProjects_RestrictedAccessWithNonMember(self):
     project_rows = [
@@ -376,7 +377,7 @@ class ProjectServiceTest(unittest.TestCase):
         self.cnxn, user_a, set([111]))
 
     self.mox.VerifyAll()
-    self.assertItemsEqual([], project_ids)
+    six.assertCountEqual(self, [], project_ids)
 
   def testGetVisibleLiveProjects_RestrictedAccessWithAnon(self):
     project_rows = [
@@ -396,7 +397,7 @@ class ProjectServiceTest(unittest.TestCase):
         self.cnxn, None, None)
 
     self.mox.VerifyAll()
-    self.assertItemsEqual([], project_ids)
+    six.assertCountEqual(self, [], project_ids)
 
   def testGetVisibleLiveProjects_RestrictedAccessWithSiteAdmin(self):
     project_rows = [
@@ -418,7 +419,7 @@ class ProjectServiceTest(unittest.TestCase):
         self.cnxn, user_a, set([111]))
 
     self.mox.VerifyAll()
-    self.assertItemsEqual([234], project_ids)
+    six.assertCountEqual(self, [234], project_ids)
 
   def testGetVisibleLiveProjects_ArchivedProject(self):
     project_rows = [
@@ -439,7 +440,7 @@ class ProjectServiceTest(unittest.TestCase):
         self.cnxn, user_a, set([111]))
 
     self.mox.VerifyAll()
-    self.assertItemsEqual([], project_ids)
+    six.assertCountEqual(self, [], project_ids)
 
   def testGetProjectsByName(self):
     self.project_service.project_names_to_ids.CacheItem('proj1', 123)
@@ -450,7 +451,7 @@ class ProjectServiceTest(unittest.TestCase):
     project_dict = self.project_service.GetProjectsByName(
         self.cnxn, ['proj1', 'proj2'])
     self.mox.VerifyAll()
-    self.assertItemsEqual(['proj1', 'proj2'], list(project_dict.keys()))
+    six.assertCountEqual(self, ['proj1', 'proj2'], list(project_dict.keys()))
     self.assertEqual(123, project_dict['proj1'].project_id)
     self.assertEqual(234, project_dict['proj2'].project_id)
 
@@ -583,18 +584,18 @@ class ProjectServiceTest(unittest.TestCase):
         self.cnxn, {111, 888})
     owned_project_ids, membered_project_ids, contrib_project_ids = actual
     self.mox.VerifyAll()
-    self.assertItemsEqual([234], owned_project_ids)
-    self.assertItemsEqual([123], membered_project_ids)
-    self.assertItemsEqual([], contrib_project_ids)
+    six.assertCountEqual(self, [234], owned_project_ids)
+    six.assertCountEqual(self, [123], membered_project_ids)
+    six.assertCountEqual(self, [], contrib_project_ids)
 
   def testGetUserRolesInAllProjectsWithoutEffectiveIds(self):
     self.mox.ReplayAll()
     actual = self.project_service.GetUserRolesInAllProjects(self.cnxn, {})
     owned_project_ids, membered_project_ids, contrib_project_ids = actual
     self.mox.VerifyAll()
-    self.assertItemsEqual([], owned_project_ids)
-    self.assertItemsEqual([], membered_project_ids)
-    self.assertItemsEqual([], contrib_project_ids)
+    six.assertCountEqual(self, [], owned_project_ids)
+    six.assertCountEqual(self, [], membered_project_ids)
+    six.assertCountEqual(self, [], contrib_project_ids)
 
   def SetUpUpdateExtraPerms(self):
     self.project_service.extraperm_tbl.Delete(

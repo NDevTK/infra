@@ -12,6 +12,7 @@ try:
   from mox3 import mox
 except ImportError:
   import mox
+import six
 import time
 import unittest
 import mock
@@ -81,14 +82,14 @@ class HotlistTwoLevelCacheTest(unittest.TestCase):
     hotlist_dict = self.features_service.hotlist_2lc._DeserializeHotlists(
         hotlist_rows, issue_rows, role_rows)
 
-    self.assertItemsEqual([123, 234], list(hotlist_dict.keys()))
+    six.assertCountEqual(self, [123, 234], list(hotlist_dict.keys()))
     self.assertEqual(123, hotlist_dict[123].hotlist_id)
     self.assertEqual('hot1', hotlist_dict[123].name)
-    self.assertItemsEqual([111, 444], hotlist_dict[123].owner_ids)
-    self.assertItemsEqual([222], hotlist_dict[123].editor_ids)
-    self.assertItemsEqual([333], hotlist_dict[123].follower_ids)
+    six.assertCountEqual(self, [111, 444], hotlist_dict[123].owner_ids)
+    six.assertCountEqual(self, [222], hotlist_dict[123].editor_ids)
+    six.assertCountEqual(self, [333], hotlist_dict[123].follower_ids)
     self.assertEqual(234, hotlist_dict[234].hotlist_id)
-    self.assertItemsEqual([111], hotlist_dict[234].owner_ids)
+    six.assertCountEqual(self, [111], hotlist_dict[234].owner_ids)
 
 
 class HotlistIDTwoLevelCache(unittest.TestCase):
@@ -634,7 +635,7 @@ Delete.assert_called_once_with(
         17: [tracker_pb2.FilterRule(
             predicate=rows[3][2], add_cc_ids=[111, 222])],
     }
-    self.assertItemsEqual(rules_dict, expected_dict)
+    six.assertCountEqual(self, rules_dict, expected_dict)
 
     self.features_service.filterrule_tbl.Select.assert_called_once_with(
         self.cnxn, features_svc.FILTERRULE_COLS)
@@ -666,7 +667,7 @@ Delete.assert_called_once_with(
     emails = {'cow@fart.test': 222}
     rules_dict = self.features_service.ExpungeFilterRulesByUser(
         self.cnxn, emails)
-    self.assertItemsEqual(rules_dict, {})
+    six.assertCountEqual(self, rules_dict, {})
 
     self.features_service.filterrule_tbl.Select.assert_called_once_with(
         self.cnxn, features_svc.FILTERRULE_COLS)
@@ -964,7 +965,7 @@ Delete.assert_called_once_with(
     hotlist_dict = self.features_service.GetHotlists(
         self.cnxn, [123, 456])
     self.mox.VerifyAll()
-    self.assertItemsEqual([123, 456], list(hotlist_dict.keys()))
+    six.assertCountEqual(self, [123, 456], list(hotlist_dict.keys()))
     self.assertEqual('hotlist1', hotlist_dict[123].name)
     self.assertEqual('hotlist2', hotlist_dict[456].name)
 

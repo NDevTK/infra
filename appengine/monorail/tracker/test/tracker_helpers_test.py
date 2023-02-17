@@ -11,6 +11,7 @@ import copy
 import mock
 import unittest
 import io
+import six
 
 import settings
 
@@ -167,39 +168,39 @@ class HelpersTest(unittest.TestCase):
 
     add, remove = tracker_helpers._ClassifyPlusMinusItems(
         ['', ' ', '  \t', '-'])
-    self.assertItemsEqual([], add)
-    self.assertItemsEqual([], remove)
+    six.assertCountEqual(self, [], add)
+    six.assertCountEqual(self, [], remove)
 
     add, remove = tracker_helpers._ClassifyPlusMinusItems(
         ['a', 'b', 'c'])
-    self.assertItemsEqual(['a', 'b', 'c'], add)
-    self.assertItemsEqual([], remove)
+    six.assertCountEqual(self, ['a', 'b', 'c'], add)
+    six.assertCountEqual(self, [], remove)
 
     add, remove = tracker_helpers._ClassifyPlusMinusItems(
         ['a-a-a', 'b-b', 'c-'])
-    self.assertItemsEqual(['a-a-a', 'b-b', 'c-'], add)
-    self.assertItemsEqual([], remove)
+    six.assertCountEqual(self, ['a-a-a', 'b-b', 'c-'], add)
+    six.assertCountEqual(self, [], remove)
 
     add, remove = tracker_helpers._ClassifyPlusMinusItems(
         ['-a'])
-    self.assertItemsEqual([], add)
-    self.assertItemsEqual(['a'], remove)
+    six.assertCountEqual(self, [], add)
+    six.assertCountEqual(self, ['a'], remove)
 
     add, remove = tracker_helpers._ClassifyPlusMinusItems(
         ['-a', 'b', 'c-c'])
-    self.assertItemsEqual(['b', 'c-c'], add)
-    self.assertItemsEqual(['a'], remove)
+    six.assertCountEqual(self, ['b', 'c-c'], add)
+    six.assertCountEqual(self, ['a'], remove)
 
     add, remove = tracker_helpers._ClassifyPlusMinusItems(
         ['-a', '-b-b', '-c-'])
-    self.assertItemsEqual([], add)
-    self.assertItemsEqual(['a', 'b-b', 'c-'], remove)
+    six.assertCountEqual(self, [], add)
+    six.assertCountEqual(self, ['a', 'b-b', 'c-'], remove)
 
     # We dedup, but we don't cancel out items that are both added and removed.
     add, remove = tracker_helpers._ClassifyPlusMinusItems(
         ['a', 'a', '-a'])
-    self.assertItemsEqual(['a'], add)
-    self.assertItemsEqual(['a'], remove)
+    six.assertCountEqual(self, ['a'], add)
+    six.assertCountEqual(self, ['a'], remove)
 
   def testParseIssueRequestFields(self):
     parsed_fields = tracker_helpers._ParseIssueRequestFields(fake.PostData({
@@ -377,12 +378,12 @@ class HelpersTest(unittest.TestCase):
     self.assertEqual('', parsed_users.owner_username)
     self.assertEqual(
         framework_constants.NO_USER_SPECIFIED, parsed_users.owner_id)
-    self.assertItemsEqual(['c@example.com', 'a@example.com'],
-                          parsed_users.cc_usernames)
+    six.assertCountEqual(
+        self, ['c@example.com', 'a@example.com'], parsed_users.cc_usernames)
     self.assertEqual(['b@example.com'], parsed_users.cc_usernames_remove)
-    self.assertItemsEqual([TEST_ID_MAP['c@example.com'],
-                           TEST_ID_MAP['a@example.com']],
-                          parsed_users.cc_ids)
+    six.assertCountEqual(
+        self, [TEST_ID_MAP['c@example.com'], TEST_ID_MAP['a@example.com']],
+        parsed_users.cc_ids)
     self.assertEqual([TEST_ID_MAP['b@example.com']],
                       parsed_users.cc_ids_remove)
 
@@ -395,11 +396,12 @@ class HelpersTest(unittest.TestCase):
     self.assertEqual('fuhqwhgads@example.com', parsed_users.owner_username)
     gen_uid = framework_helpers.MurmurHash3_x86_32(parsed_users.owner_username)
     self.assertEqual(gen_uid, parsed_users.owner_id)  # autocreated user
-    self.assertItemsEqual(
-        ['c@example.com', 'fuhqwhgads@example.com'], parsed_users.cc_usernames)
+    six.assertCountEqual(
+        self, ['c@example.com', 'fuhqwhgads@example.com'],
+        parsed_users.cc_usernames)
     self.assertEqual([], parsed_users.cc_usernames_remove)
-    self.assertItemsEqual(
-       [TEST_ID_MAP['c@example.com'], gen_uid], parsed_users.cc_ids)
+    six.assertCountEqual(
+        self, [TEST_ID_MAP['c@example.com'], gen_uid], parsed_users.cc_ids)
     self.assertEqual([], parsed_users.cc_ids_remove)
 
     post_data = fake.PostData({
@@ -407,12 +409,12 @@ class HelpersTest(unittest.TestCase):
         })
     parsed_users = tracker_helpers._ParseIssueRequestUsers(
         'fake connection', post_data, self.services)
-    self.assertItemsEqual(
-        ['c@example.com', 'b@example.com'], parsed_users.cc_usernames)
+    six.assertCountEqual(
+        self, ['c@example.com', 'b@example.com'], parsed_users.cc_usernames)
     self.assertEqual([], parsed_users.cc_usernames_remove)
-    self.assertItemsEqual(
-       [TEST_ID_MAP['c@example.com'], TEST_ID_MAP['b@example.com']],
-       parsed_users.cc_ids)
+    six.assertCountEqual(
+        self, [TEST_ID_MAP['c@example.com'], TEST_ID_MAP['b@example.com']],
+        parsed_users.cc_ids)
     self.assertEqual([], parsed_users.cc_ids_remove)
 
   def testParseBlockers_BlockedOnNothing(self):
@@ -999,8 +1001,9 @@ class MakeViewsForUsersInIssuesTest(unittest.TestCase):
     issue_list = [self.issue1, self.issue2, self.issue3]
     users_by_id = tracker_helpers.MakeViewsForUsersInIssues(
         'fake cnxn', issue_list, self.user)
-    self.assertItemsEqual([0, 1, 1001, 1002, 1003, 2001, 2002, 3002],
-                          list(users_by_id.keys()))
+    six.assertCountEqual(
+        self, [0, 1, 1001, 1002, 1003, 2001, 2002, 3002],
+        list(users_by_id.keys()))
     for user_id in [1001, 1002, 1003, 2001]:
       self.assertEqual(users_by_id[user_id].user_id, user_id)
 
@@ -1008,8 +1011,8 @@ class MakeViewsForUsersInIssuesTest(unittest.TestCase):
     issue_list = [self.issue1, self.issue2, self.issue3]
     users_by_id = tracker_helpers.MakeViewsForUsersInIssues(
         'fake cnxn', issue_list, self.user, omit_ids=[1001, 1003])
-    self.assertItemsEqual([0, 1, 1002, 2001, 2002, 3002],
-        list(users_by_id.keys()))
+    six.assertCountEqual(
+        self, [0, 1, 1002, 2001, 2002, 3002], list(users_by_id.keys()))
     for user_id in [1002, 2001, 2002, 3002]:
       self.assertEqual(users_by_id[user_id].user_id, user_id)
 
@@ -1017,7 +1020,7 @@ class MakeViewsForUsersInIssuesTest(unittest.TestCase):
     issue_list = []
     users_by_id = tracker_helpers.MakeViewsForUsersInIssues(
         'fake cnxn', issue_list, self.user)
-    self.assertItemsEqual([], list(users_by_id.keys()))
+    six.assertCountEqual(self, [], list(users_by_id.keys()))
 
 
 class GetAllIssueProjectsTest(unittest.TestCase):
@@ -1285,13 +1288,13 @@ class IssueMergeTest(unittest.TestCase):
 
     new_starrers = tracker_helpers.GetNewIssueStarrers(
         self.cnxn, self.services, [1, 3], 2)
-    self.assertItemsEqual(new_starrers, [1, 2, 6])
+    six.assertCountEqual(self, new_starrers, [1, 2, 6])
     tracker_helpers.AddIssueStarrers(
         self.cnxn, self.services, mr, 2, self.project, new_starrers)
     issue_2_starrers = self.services.issue_star.LookupItemStarrers(
         self.cnxn, 2)
     # XXX(jrobbins): these tests incorrectly mix local IDs with IIDs.
-    self.assertItemsEqual([1, 2, 3, 4, 5, 6], issue_2_starrers)
+    six.assertCountEqual(self, [1, 2, 3, 4, 5, 6], issue_2_starrers)
 
 
 class MergeLinkedMembersTest(unittest.TestCase):
@@ -1354,58 +1357,61 @@ class FilterMemberDataTest(unittest.TestCase):
   def testUnsignedUser_NormalProject(self):
     visible_members = self.DoFiltering(
         permissions.READ_ONLY_PERMISSIONSET, unsigned_user=True)
-    self.assertItemsEqual(
-        [self.owner_email, self.committer_email, self.contributor_email,
-         self.indirect_member_email],
-        visible_members)
+    six.assertCountEqual(
+        self, [
+            self.owner_email, self.committer_email, self.contributor_email,
+            self.indirect_member_email
+        ], visible_members)
 
   def testUnsignedUser_RestrictedProject(self):
     self.project.only_owners_see_contributors = True
     visible_members = self.DoFiltering(
         permissions.READ_ONLY_PERMISSIONSET, unsigned_user=True)
-    self.assertItemsEqual(
+    six.assertCountEqual(
+        self,
         [self.owner_email, self.committer_email, self.indirect_member_email],
         visible_members)
 
   def testOwnersAndAdminsCanSeeAll_NormalProject(self):
     visible_members = self.DoFiltering(
         permissions.OWNER_ACTIVE_PERMISSIONSET)
-    self.assertItemsEqual(self.all_emails, visible_members)
+    six.assertCountEqual(self, self.all_emails, visible_members)
 
     visible_members = self.DoFiltering(
         permissions.ADMIN_PERMISSIONSET)
-    self.assertItemsEqual(self.all_emails, visible_members)
+    six.assertCountEqual(self, self.all_emails, visible_members)
 
   def testOwnersAndAdminsCanSeeAll_HubAndSpoke(self):
     self.project.only_owners_see_contributors = True
 
     visible_members = self.DoFiltering(
         permissions.OWNER_ACTIVE_PERMISSIONSET)
-    self.assertItemsEqual(self.all_emails, visible_members)
+    six.assertCountEqual(self, self.all_emails, visible_members)
 
     visible_members = self.DoFiltering(
         permissions.ADMIN_PERMISSIONSET)
-    self.assertItemsEqual(self.all_emails, visible_members)
+    six.assertCountEqual(self, self.all_emails, visible_members)
 
     visible_members = self.DoFiltering(
         permissions.COMMITTER_ACTIVE_PERMISSIONSET)
-    self.assertItemsEqual(self.all_emails, visible_members)
+    six.assertCountEqual(self, self.all_emails, visible_members)
 
   def testNonOwnersCanSeeAll_NormalProject(self):
     visible_members = self.DoFiltering(
         permissions.COMMITTER_ACTIVE_PERMISSIONSET)
-    self.assertItemsEqual(self.all_emails, visible_members)
+    six.assertCountEqual(self, self.all_emails, visible_members)
 
     visible_members = self.DoFiltering(
         permissions.CONTRIBUTOR_ACTIVE_PERMISSIONSET)
-    self.assertItemsEqual(self.all_emails, visible_members)
+    six.assertCountEqual(self, self.all_emails, visible_members)
 
   def testCommittersSeeOnlySameDomain_HubAndSpoke(self):
     self.project.only_owners_see_contributors = True
 
     visible_members = self.DoFiltering(
         permissions.CONTRIBUTOR_ACTIVE_PERMISSIONSET)
-    self.assertItemsEqual(
+    six.assertCountEqual(
+        self,
         [self.owner_email, self.committer_email, self.indirect_member_email],
         visible_members)
 
@@ -2435,13 +2441,13 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
 
     new_cc_ids = tracker_helpers._ComputeNewCcsFromIssueMerge(
         target_issue, [source_issue_1, source_issue_2, source_issue_3])
-    self.assertItemsEqual(new_cc_ids, [444, 555, 222])
+    six.assertCountEqual(self, new_cc_ids, [444, 555, 222])
 
   def testComputeNewCcsFromIssueMerge_Empty(self):
     target_issue = fake.MakeTestIssue(789, 10, 'Target issue', 'New', 111)
     self.services.issue.TestAddIssue(target_issue)
     new_cc_ids = tracker_helpers._ComputeNewCcsFromIssueMerge(target_issue, [])
-    self.assertItemsEqual(new_cc_ids, [])
+    six.assertCountEqual(self, new_cc_ids, [])
 
   def testEnforceNonMergeStatusDeltas(self):
     # No updates: user is setting to a non-MERGED status with no
@@ -2701,7 +2707,7 @@ class IssueChangeImpactedIssuesTest(unittest.TestCase):
             [('proj', m_remove.local_id)], default_project_name='proj')
         ]
     self.assertEqual(actual_amendments, expected_amendments)
-    self.assertItemsEqual(actual_new_starrers, [333, 444])
+    six.assertCountEqual(self, actual_new_starrers, [333, 444])
 
     expected_issue.cc_ids.append(777)
     expected_issue.blocked_on_iids = [78404, bo_add.issue_id]

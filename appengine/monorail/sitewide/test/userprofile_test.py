@@ -11,6 +11,7 @@ import mock
 import unittest
 import logging
 import ezt
+import six
 
 from framework import framework_helpers
 from framework import framework_views
@@ -108,7 +109,7 @@ class UserProfileTest(unittest.TestCase):
   def assertProjectsAnyOrder(self, value_to_test, *expected_project_names):
     actual_project_names = [project_view.project_name
                             for project_view in value_to_test]
-    self.assertItemsEqual(expected_project_names, actual_project_names)
+    six.assertCountEqual(self, expected_project_names, actual_project_names)
 
   def testGatherPageData_RegularUserViewingOtherUserProjects(self):
     """A user can see the other users' live projects, but not archived ones."""

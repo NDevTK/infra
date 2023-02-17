@@ -11,6 +11,7 @@ import datetime
 import endpoints
 import logging
 from mock import Mock, patch, ANY
+import six
 import time
 import unittest
 import webtest
@@ -702,10 +703,10 @@ class MonorailApiTest(testing.EndpointsTestCase):
     self.assertEqual(2, len(issue2_comments))  # description and merge
     source_starrers = self.services.issue_star.LookupItemStarrers(
         'cnxn', issue1.issue_id)
-    self.assertItemsEqual([111, 222, 333], source_starrers)
+    six.assertCountEqual(self, [111, 222, 333], source_starrers)
     target_starrers = self.services.issue_star.LookupItemStarrers(
         'cnxn', issue2.issue_id)
-    self.assertItemsEqual([111, 222, 333, 555], target_starrers)
+    six.assertCountEqual(self, [111, 222, 333, 555], target_starrers)
 
   def testIssuesCommentsInsert_CustomFields(self):
     """Update custom field values."""
@@ -1708,7 +1709,7 @@ class MonorailApiTest(testing.EndpointsTestCase):
         'API', self.config)
     self.assertIsNotNone(component_def)
     self.assertEqual('', component_def.docstring)
-    self.assertItemsEqual([111, 222], component_def.cc_ids)
+    six.assertCountEqual(self, [111, 222], component_def.cc_ids)
     self.assertTrue(component_def.deprecated)
 
     cd_dict = {

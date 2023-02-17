@@ -12,6 +12,7 @@ try:
 except ImportError:
   import mox
 import logging
+import six
 import unittest
 import settings
 
@@ -269,8 +270,8 @@ class TemplateDetailTest(unittest.TestCase):
     self.assertTrue(page_data['initial_owner_defaults_to_member'])
     self.assertEqual(page_data['initial_components'], 'BackEnd')
     self.assertFalse(page_data['initial_component_required'])
-    self.assertItemsEqual(
-        page_data['labels'],
+    six.assertCountEqual(
+        self, page_data['labels'],
         ['label1', 'label2', 'GateTarget-Should-Not', 'GateTarget-Be-Masked'])
     self.assertEqual(page_data['initial_admins'], 'sport@example.com')
     self.assertTrue(page_data['initial_add_approvals'])
@@ -278,8 +279,8 @@ class TemplateDetailTest(unittest.TestCase):
     phases = [phase for phase in page_data['initial_phases'] if phase.name]
     self.assertEqual(len(phases), 2)
     self.assertEqual(len(page_data['approvals']), 2)
-    self.assertItemsEqual(page_data['prechecked_approvals'],
-                          ['3_phase_0', '4_phase_1'])
+    six.assertCountEqual(
+        self, page_data['prechecked_approvals'], ['3_phase_0', '4_phase_1'])
     self.assertTrue(page_data['fields'][3].is_editable)  #nonRestrictedField
     self.assertIsNone(page_data['fields'][4].is_editable)  #restrictedField
 

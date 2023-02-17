@@ -12,6 +12,7 @@ try:
 except ImportError:
   import mox
 import mock
+import six
 import unittest
 import logging
 
@@ -82,8 +83,8 @@ class FieldCreateTest(unittest.TestCase):
     page_data = self.servlet.GatherPageData(self.mr)
     self.assertEqual(self.servlet.PROCESS_TAB_LABELS,
                      page_data['admin_tab_mode'])
-    self.assertItemsEqual(
-        ['Defect', 'Enhancement', 'Task', 'Other'],
+    six.assertCountEqual(
+        self, ['Defect', 'Enhancement', 'Task', 'Other'],
         page_data['well_known_issue_types'])
     self.assertEqual(['LaunchApproval'], page_data['approval_names'])
     self.assertEqual('', page_data['initial_admins'])

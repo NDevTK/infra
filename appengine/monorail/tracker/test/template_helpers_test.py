@@ -8,6 +8,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import logging
+import six
 import unittest
 
 import settings
@@ -86,7 +87,7 @@ class TemplateHelpers(unittest.TestCase):
     self.assertFalse(parsed.component_required)
     self.assertFalse(parsed.owner_defaults_to_member)
     self.assertFalse(parsed.add_approvals)
-    self.assertItemsEqual(parsed.phase_names, ['', '', '', '', '', ''])
+    six.assertCountEqual(self, parsed.phase_names, ['', '', '', '', '', ''])
     self.assertEqual(parsed.approvals_to_phase_idx, {})
     self.assertEqual(parsed.required_approval_ids, [])
 
@@ -138,10 +139,11 @@ class TemplateHelpers(unittest.TestCase):
     self.assertFalse(parsed.owner_defaults_to_member)
     self.assertTrue(parsed.add_approvals)
     self.assertEqual(parsed.admin_str, 'jojwang@test.com, annajo@test.com')
-    self.assertItemsEqual(parsed.phase_names,
-                          ['Canary', 'Stable-Exp', 'Stable', '', '', 'Oops'])
+    six.assertCountEqual(
+        self, parsed.phase_names,
+        ['Canary', 'Stable-Exp', 'Stable', '', '', 'Oops'])
     self.assertEqual(parsed.approvals_to_phase_idx, {3: 2, 4: None})
-    self.assertItemsEqual(parsed.required_approval_ids, [3, 4])
+    six.assertCountEqual(self, parsed.required_approval_ids, [3, 4])
 
   def testGetTemplateInfoFromParsed_Normal(self):
     self.config.field_defs.extend([self.fd_1, self.fd_2])
@@ -268,8 +270,7 @@ class TemplateHelpers(unittest.TestCase):
     (prechecked_approvals, required_approval_ids,
      phases) = template_helpers.GatherApprovalsPageData(
          approval_values, tmpl_phases, self.config)
-    self.assertItemsEqual(prechecked_approvals,
-                          ['4_phase_0', '5'])
+    six.assertCountEqual(self, prechecked_approvals, ['4_phase_0', '5'])
     self.assertEqual(required_approval_ids, [4])
     self.assertEqual(phases[0], tmpl_phases[1])
     self.assertIsNone(phases[1].name)
@@ -279,8 +280,7 @@ class TemplateHelpers(unittest.TestCase):
     approvals_to_phase_idx = {23: 0, 25: 1, 26: None}
     checked = template_helpers.GetCheckedApprovalsFromParsed(
         approvals_to_phase_idx)
-    self.assertItemsEqual(checked,
-                          ['23_phase_0', '25_phase_1', '26'])
+    six.assertCountEqual(self, checked, ['23_phase_0', '25_phase_1', '26'])
 
   def testGetIssueFromTemplate(self):
     """Can fill and return the templated issue"""

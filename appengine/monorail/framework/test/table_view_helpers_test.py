@@ -8,8 +8,8 @@ from __future__ import division
 from __future__ import absolute_import
 
 import collections
+import six
 import unittest
-import logging
 
 from framework import framework_views
 from framework import table_view_helpers
@@ -146,8 +146,9 @@ class TableCellTest(unittest.TestCase):
         users_by_id=self.users_by_id)
     self.assertEqual(cell.type, table_view_helpers.CELL_TYPE_ATTR)
     self.assertEqual(len(cell.values), 2)
-    self.assertItemsEqual([cell.values[0].item, cell.values[1].item],
-                          ['foo@example.com', 'f...@example.com'])
+    six.assertCountEqual(
+        self, [cell.values[0].item, cell.values[1].item],
+        ['foo@example.com', 'f...@example.com'])
 
   # TODO(jrobbins): TableCellProject, TableCellStars
 
