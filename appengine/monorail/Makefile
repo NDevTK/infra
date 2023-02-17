@@ -69,7 +69,7 @@ business_proto:
 	--python_out=. --prpc-python_out=. mrproto/*.proto
 
 pytest:
-	GAE_RUNTIME=python3 GAE_APPLICATION=testbed-test SERVER_SOFTWARE=test pytest
+	python -m test
 
 test:
 	../../test.py test appengine/monorail
