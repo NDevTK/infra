@@ -182,6 +182,9 @@ var (
 // gtransitHive hive value for a gTransit DUT.
 const gtransitHive string = "cros-mtv1950-144"
 
+// chromiumHive hive value for chromium-cq.
+const chromiumHive string = "chromium-cq"
+
 // GetHiveForDut returns the hive value for a DUT.
 //
 // hive value is derived from the DUT hostname.
@@ -189,6 +192,9 @@ func GetHiveForDut(hostname string) string {
 	// gTransit DUTs.
 	if gtransitRegex.MatchString(hostname) {
 		return gtransitHive
+	}
+	if IsChromiumLegacyHost(hostname) {
+		return chromiumHive
 	}
 	if sfo36OSRegex.MatchString(hostname) {
 		// 'e' is site site letter assigned to SFO36.
