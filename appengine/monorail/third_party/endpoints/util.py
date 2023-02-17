@@ -17,7 +17,7 @@
 # pylint: disable=g-bad-name
 from __future__ import absolute_import
 
-import cStringIO
+from six.moves import cStringIO
 import json
 import os
 import wsgiref.headers
@@ -159,7 +159,7 @@ def get_headers_from_environ(environ):
     headers found in environ.
   """
   headers = wsgiref.headers.Headers([])
-  for header, value in environ.iteritems():
+  for header, value in environ.items():
     if header.startswith('HTTP_'):
       headers[header[5:].replace('_', '-')] = value
   # Content-Type is special; it does not start with 'HTTP_'.

@@ -500,7 +500,7 @@ class DiscoveryGenerator(object):
     params = {}
 
     # Make sure all path parameters are covered.
-    for field_name, matched_path_parameters in path_parameter_dict.iteritems():
+    for field_name, matched_path_parameters in path_parameter_dict.items():
       field = message_type.field_by_name(field_name)
       self.__validate_path_parameters(field, matched_path_parameters)
 
@@ -552,7 +552,7 @@ class DiscoveryGenerator(object):
     """
     # Filter out any keys that aren't 'properties', 'type', or 'id'
     result = {}
-    for schema_key, schema_value in self.__parser.schemas().iteritems():
+    for schema_key, schema_value in self.__parser.schemas().items():
       field_keys = schema_value.keys()
       key_result = {}
 
@@ -561,7 +561,7 @@ class DiscoveryGenerator(object):
         key_result['properties'] = schema_value['properties'].copy()
         # Add in enumDescriptions for any enum properties and strip out
         # the required tag for consistency with Java framework
-        for prop_key, prop_value in schema_value['properties'].iteritems():
+        for prop_key, prop_value in schema_value['properties'].items():
           if 'enum' in prop_value:
             num_enums = len(prop_value['enum'])
             key_result['properties'][prop_key]['enumDescriptions'] = (
@@ -582,8 +582,8 @@ class DiscoveryGenerator(object):
         result[schema_key] = key_result
 
     # Add 'type': 'object' to all object properties
-    for schema_value in result.itervalues():
-      for field_value in schema_value.itervalues():
+    for schema_value in result.values():
+      for field_value in schema_value.values():
         if isinstance(field_value, dict):
           if '$ref' in field_value:
             field_value['type'] = 'object'
@@ -908,7 +908,7 @@ class DiscoveryGenerator(object):
     for service in services:
       remote_methods = service.all_remote_methods()
 
-      for protorpc_meth_name, protorpc_meth_info in remote_methods.iteritems():
+      for protorpc_meth_name, protorpc_meth_info in remote_methods.items():
         method_info = getattr(protorpc_meth_info, 'method_info', None)
         # Skip methods that are not decorated with @method
         if method_info is None:

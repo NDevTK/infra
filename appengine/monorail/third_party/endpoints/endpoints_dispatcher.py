@@ -25,12 +25,13 @@ configuration has changed.
 # pylint: disable=g-bad-name
 from __future__ import absolute_import
 
-import cStringIO
-import httplib
+from six.moves import cStringIO
+from six.moves import http_client
 import json
 import logging
 import re
-import urlparse
+import six
+from six.moves import urllib
 import wsgiref
 
 import pkg_resources
@@ -288,10 +289,9 @@ class EndpointsDispatcherMiddleware(object):
       An environ object with all the information necessary for the backend to
       process the request.
     """
-    if isinstance(body, unicode):
-      body = body.encode('ascii')
+    body = six.ensure_str(body, 'ascii')
 
-    url = urlparse.urlsplit(relative_url)
+    url = urllib.parse.urlsplit(relative_url)
     if port != 80:
       host = '%s:%s' % (host, port)
     else:
@@ -549,7 +549,7 @@ class EndpointsDispatcherMiddleware(object):
         path and query parameters in a request.
       source: A dictionary parsed from the body of the request.
     """
-    for key, value in source.iteritems():
+    for key, value in source.items():
       destination_value = destination.get(key)
       if isinstance(value, dict) and isinstance(destination_value, dict):
         self._update_from_body(destination_value, value)
@@ -601,7 +601,7 @@ class EndpointsDispatcherMiddleware(object):
     body_json = {}
 
     # Handle parameters from the URL path.
-    for key, value in params.iteritems():
+    for key, value in params.items():
       # Values need to be in a list to interact with query parameter values
       # and to account for case of repeated parameters
       body_json[key] = [value]
@@ -609,14 +609,14 @@ class EndpointsDispatcherMiddleware(object):
     # Add in parameters from the query string.
     if request.parameters:
       # For repeated elements, query and path work together
-      for key, value in request.parameters.iteritems():
+      for key, value in request.parameters.items():
         if key in body_json:
           body_json[key] = value + body_json[key]
         else:
           body_json[key] = value
 
     # Validate all parameters we've merged so far and convert any '.' delimited
-    # parameters to nested parameters.  We don't use iteritems since we may
+    # parameters to nested parameters.  We don't use items since we may
     # modify body_json within the loop.  For instance, 'a.b' is not a valid key
     # and would be replaced with 'a'.
     for key, value in body_json.items():
@@ -711,7 +711,7 @@ class EndpointsDispatcherMiddleware(object):
     body = error.rest_error()
 
     response_status = '%d %s' % (status_code,
-                                 httplib.responses.get(status_code,
+                                 http_client.responses.get(status_code,
                                                        'Unknown Error'))
     cors_handler = self._create_cors_handler(orig_request)
     return util.send_wsgi_response(response_status, headers, body,

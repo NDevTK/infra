@@ -21,6 +21,8 @@ uses App Engine apis.
 
 from __future__ import absolute_import
 
+import six
+
 import attr
 
 __all__ = [
@@ -30,8 +32,8 @@ __all__ = [
 
 @attr.s(frozen=True, slots=True)
 class OAuth2Scope(object):
-    scope = attr.ib(validator=attr.validators.instance_of(basestring))
-    description = attr.ib(validator=attr.validators.instance_of(basestring))
+    scope = attr.ib(validator=attr.validators.instance_of(six.string_types))
+    description = attr.ib(validator=attr.validators.instance_of(six.string_types))
 
     @classmethod
     def convert_scope(cls, scope):
