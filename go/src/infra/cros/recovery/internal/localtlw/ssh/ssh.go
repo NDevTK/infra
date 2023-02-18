@@ -13,6 +13,7 @@ import (
 	"golang.org/x/crypto/ssh"
 
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/internal/rand"
 	"infra/cros/recovery/tlw"
 	"infra/libs/sshpool"
 )
@@ -97,13 +98,18 @@ func createSessionAndExecute(ctx context.Context, cmd string, client *ssh.Client
 		Command:  cmd,
 		ExitCode: -1,
 	}
+	// TODO(b:267504440): Delete logs with session key as required only for debugging issue in the bug.
+	sessionLogsKey := rand.String(32)
+	log.Debugf(ctx, "Started SSH session: %q", sessionLogsKey)
 	session, err := client.NewSession()
 	if err != nil {
 		result.Stderr = fmt.Sprintf("internal run ssh: %v", err)
 		return
 	}
 	defer func() {
+		log.Debugf(ctx, "Closing SSH session: %q", sessionLogsKey)
 		session.Close()
+		log.Debugf(ctx, "SSH Session %q closed.", sessionLogsKey)
 	}()
 	var stdOut, stdErr bytes.Buffer
 	session.Stdout = &stdOut
@@ -141,13 +147,16 @@ func createSessionAndExecute(ctx context.Context, cmd string, client *ssh.Client
 		}()
 		select {
 		case <-sw:
+			log.Debugf(ctx, "SSH Session %q: exiting by execution", sessionLogsKey)
 			return exit(runErr)
 		case <-ctx.Done():
+			log.Debugf(ctx, "SSH Session %q: stopping by context", sessionLogsKey)
 			// At the end abort session.
 			// Session will be closed in defer.
 			if err := session.Signal(ssh.SIGABRT); err != nil {
 				log.Errorf(ctx, "Fail to abort context by ABORT signal: %s", err)
 			}
+			log.Debugf(ctx, "SSH Session %q: stopped by context", sessionLogsKey)
 			return exit(ctx.Err())
 		}
 	}
