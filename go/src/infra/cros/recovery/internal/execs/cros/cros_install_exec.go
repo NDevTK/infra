@@ -137,8 +137,12 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 					TimeoutRO: timeoutRO,
 				}
 				if err := storage.CheckBadblocks(ctx, &bbArgs); err != nil {
-					log.Debugf(ctx, "Setting the DUT state as %q", string(dutstate.NeedsReplacement))
-					info.GetDut().State = dutstate.NeedsReplacement
+					if execs.SSHErrorInternal.In(err) {
+						log.Debugf(ctx, "Install from usb drive: bad blocks check command returned a negative error code, not setting needs replacement state for the DUT.")
+					} else {
+						log.Debugf(ctx, "Setting the DUT state as %q", string(dutstate.NeedsReplacement))
+						info.GetDut().State = dutstate.NeedsReplacement
+					}
 					return errors.Annotate(err, "install from usb drive in recovery mode").Tag(retry.LoopBreakTag(), execs.PlanAbortTag).Err()
 				}
 			}

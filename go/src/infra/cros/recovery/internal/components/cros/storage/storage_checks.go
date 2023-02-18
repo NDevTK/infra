@@ -17,6 +17,7 @@ import (
 	"infra/cros/dutstate"
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/components/cros"
+	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/tlw"
@@ -552,8 +553,12 @@ func CheckBadblocks(ctx context.Context, bbArgs *BadBlocksArgs) error {
 	if usbBootErr == nil && bbArgs.AuditMode == auditModeRW {
 		if out, err := runBadBlocksCheck(ctx, bbArgs.Run, bbArgs.TimeoutRW, mainStorage, bbArgs.AuditMode); err != nil {
 			if out != "" {
-				bbArgs.Storage.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
-				bbArgs.Dut.State = dutstate.NeedsReplacement
+				if execs.SSHErrorInternal.In(err) {
+					log.Debugf(ctx, "Check Bad Blocks: RW bad blocks check command returned a negative error code, not setting needs replacement state for storage device.")
+				} else {
+					bbArgs.Storage.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
+					bbArgs.Dut.State = dutstate.NeedsReplacement
+				}
 			}
 			return errors.Annotate(err, "audit storage badblocks").Err()
 		}
@@ -566,8 +571,12 @@ func CheckBadblocks(ctx context.Context, bbArgs *BadBlocksArgs) error {
 	if bbArgs.AuditMode == auditModeRO {
 		if out, err := runBadBlocksCheck(ctx, bbArgs.Run, bbArgs.TimeoutRO, mainStorage, bbArgs.AuditMode); err != nil {
 			if out != "" {
-				bbArgs.Storage.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
-				bbArgs.Dut.State = dutstate.NeedsReplacement
+				if execs.SSHErrorInternal.In(err) {
+					log.Debugf(ctx, "Check Bad Blocks: RO bad blocks check command returned a negative error code, not setting needs replacement state for storage device.")
+				} else {
+					bbArgs.Storage.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
+					bbArgs.Dut.State = dutstate.NeedsReplacement
+				}
 			}
 			return errors.Annotate(err, "audit storage badblocks").Err()
 		}
