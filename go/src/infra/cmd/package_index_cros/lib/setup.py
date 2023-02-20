@@ -25,6 +25,7 @@ class Setup:
                board: str,
                *,
                skip_packages: List[str] = None,
+               with_build: bool = False,
                with_tests: bool = False,
                chroot_dir: str = None):
     self.board = board
@@ -65,6 +66,7 @@ class Setup:
     ]
 
     self.skip_packages = skip_packages
+    self.with_build = with_build
     self.with_tests = with_tests
 
   @property
