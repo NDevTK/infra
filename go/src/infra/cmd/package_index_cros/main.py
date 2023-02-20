@@ -209,14 +209,15 @@ def main():
   from lib.conductor import Conductor
   from lib.setup import Setup
 
-  setup = Setup(args.board,
-                skip_packages=args.skip_packages.split(' '),
-                with_tests=args.with_tests,
-                chroot_dir=args.chroot_dir)
+  setup = Setup(
+      args.board,
+      skip_packages=args.skip_packages.split(' '),
+      with_build=args.with_build,
+      with_tests=args.with_tests,
+      chroot_dir=args.chroot_dir)
 
   conductor = Conductor(setup=setup)
   conductor.Prepare(package_names=args.packages,
-                    with_build=args.with_build,
                     ignore_unsupported=args.ignore_unsupported)
   conductor.DoMagic(cdb_output_file=args.compile_commands_file,
                     targets_output_file=args.gn_targets_file,

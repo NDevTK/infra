@@ -13,6 +13,18 @@ PRINT_DEPS_SCRIPT_PATH = os.path.join(PACKAGE_SCRIPTS_DIR, 'print_deps.py')
 # Set of packages that should be fine to work with but are not handled properly
 # yet.
 TEMPORARY_UNSUPPORTED_PACKAGES = {
+    # Reason: build dir does not contain out/Debug
+    # Is built with Makefile but lists .gn in CROS_WORKON_SUBTREE.
+    'chromeos-base/avtest_label_detect',
+
+    # Reason: Fails build because it cannot find src/aosp/external/perfetto.
+    # It's a go package that pretends to be an actual package. Should be
+    # properly ignored.
+    'dev-go/perfetto-protos',
+}
+
+# Set of packages that are not currently supported when building.
+TEMPORARY_UNSUPPORTED_PACKAGES_WITH_BUILD = {
     # Reason: There are no ebuilds to satisfy
     # ">=dev-lang/python-2.7.5-r2:2.7[threads(+)]".
     # Probably perfectly fine packages otherwise.
@@ -63,9 +75,6 @@ TEMPORARY_UNSUPPORTED_PACKAGES = {
     'chromeos-base/aosp-frameworks-ml-nn',
     'chromeos-base/aosp-frameworks-ml-nn-vts',
 
-    # Reason: build dir does not contain out/Debug
-    # Is built with Makefile but lists .gn in CROS_WORKON_SUBTREE.
-    'chromeos-base/avtest_label_detect',
     # Target //croslog/log_rotator:_log_rotator-install_config has metadata
     # field which makes merge complicated.
     'chromeos-base/bootid-logger',
@@ -186,11 +195,6 @@ TEMPORARY_UNSUPPORTED_PACKAGES = {
     # Probably perfectly fine packages otherwise.
     'chromeos-base/zephyr-build-tools',
     'dev-python/hypothesis',
-
-    # Reason: Fails build because it cannot find src/aosp/external/perfetto.
-    # It's a go package that pretends to be an actual package. Should be
-    # properly ignored.
-    'dev-go/perfetto-protos',
 
     # Reason: There are no ebuilds built with USE flags to satisfy
     # "dev-libs/gmp[static-libs]" has to USE: +static-libs
