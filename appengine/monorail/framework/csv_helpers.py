@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import six
 import types
 
 from framework import framework_helpers
@@ -62,7 +63,7 @@ def EscapeCSV(s):
   """Return a version of string S that is safe as part of a CSV file."""
   if s is None:
     return ''
-  if isinstance(s, types.StringTypes):
+  if isinstance(s, six.string_types):
     s = s.strip().replace('"', '""')
     # Prefix any formula cells because some spreadsheets have built-in
     # formila functions that can actually have side-effects on the user's

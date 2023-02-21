@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import six
 import unittest
 
 from google.appengine.ext import testbed
@@ -79,7 +80,7 @@ class HotlistIssuesCsvTest(unittest.TestCase):
     for path in ('/u/222/hotlists/MyHotlist',
                  '/u/testuser2@gmail.com/hotlists/MyHotlist'):
       token = 'bad'
-      self._MakeMR(path + '?token=%s' % token)
+      self._MakeMR(path + '?token=%s' % six.ensure_str(token))
       self.mr.auth.user_id = self.user2.user_id
       self.assertRaises(xsrf.TokenIncorrect,
                         self.servlet.GatherPageData, self.mr)
@@ -90,7 +91,7 @@ class HotlistIssuesCsvTest(unittest.TestCase):
                  '/u/testuser2@gmail.com/hotlists/MyHotlist'):
       form_token_path = self.servlet._FormHandlerURL(path)
       token = xsrf.GenerateToken(self.user1.user_id, form_token_path)
-      self._MakeMR(path + '?token=%s' % token)
+      self._MakeMR(path + '?token=%s' % six.ensure_str(token))
       self.mr.auth.email = self.user1.email
       self.mr.auth.user_id = self.user1.user_id
       self.servlet.GatherPageData(self.mr)

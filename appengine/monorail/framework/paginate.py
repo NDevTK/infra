@@ -8,8 +8,9 @@ from __future__ import division
 from __future__ import absolute_import
 
 import base64
-import logging
+import hashlib
 import hmac
+import six
 
 import ezt
 from google.protobuf import message
@@ -33,12 +34,12 @@ def GeneratePageToken(request_contents, start):
   Returns:
     String next_page_token that is a serialized PageTokenContents object.
   """
-  digester = hmac.new(secrets_svc.GetPaginationKey())
-  digester.update(request_contents.SerializeToString())
+  digester = hmac.new(secrets_svc.GetPaginationKey(), digestmod=hashlib.md5)
+  digester.update(six.ensure_binary(request_contents.SerializeToString()))
   token_contents = secrets_pb2.PageTokenContents(
       start=start,
       encrypted_list_request_contents=digester.digest())
-  serialized_token = token_contents.SerializeToString()
+  serialized_token = six.ensure_binary(token_contents.SerializeToString())
   # Page tokens must be URL-safe strings (see aip.dev/158)
   # and proto string fields must be utf-8 strings while
   # `SerializeToString()` returns binary bytes contained in a str type.

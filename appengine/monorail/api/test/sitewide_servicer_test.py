@@ -40,7 +40,7 @@ class SitewideServicerTest(unittest.TestCase):
   @mock.patch('time.time')
   def testRefreshToken(self, mockTime, mockGetXSRFKey):
     """We can refresh an expired token."""
-    mockGetXSRFKey.side_effect = lambda: 'fakeXSRFKey'
+    mockGetXSRFKey.side_effect = lambda: b'fakeXSRFKey'
     # The token is at the brink of being too old
     mockTime.side_effect = lambda: 1 + xsrf.REFRESH_TOKEN_TIMEOUT_SEC
 
@@ -63,7 +63,7 @@ class SitewideServicerTest(unittest.TestCase):
   @mock.patch('time.time')
   def testRefreshToken_InvalidToken(self, mockTime, mockGetXSRFKey):
     """We reject attempts to refresh an invalid token."""
-    mockGetXSRFKey.side_effect = ['fakeXSRFKey']
+    mockGetXSRFKey.side_effect = [b'fakeXSRFKey']
     mockTime.side_effect = [123]
 
     token_path = 'token_path'
@@ -81,7 +81,7 @@ class SitewideServicerTest(unittest.TestCase):
   @mock.patch('time.time')
   def testRefreshToken_TokenTooOld(self, mockTime, mockGetXSRFKey):
     """We reject attempts to refresh a token that's too old."""
-    mockGetXSRFKey.side_effect = lambda: 'fakeXSRFKey'
+    mockGetXSRFKey.side_effect = lambda: b'fakeXSRFKey'
     mockTime.side_effect = lambda: 2 + xsrf.REFRESH_TOKEN_TIMEOUT_SEC
 
     token_path = 'token_path'

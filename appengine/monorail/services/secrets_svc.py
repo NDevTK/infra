@@ -26,12 +26,11 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import logging
+import six
 
 from google.appengine.api import memcache
 from google.appengine.ext import ndb
 
-import settings
 from framework import framework_helpers
 
 
@@ -72,14 +71,14 @@ def GetSecrets():
 
 def GetXSRFKey():
   """Return a secret key string used to generate XSRF tokens."""
-  return GetSecrets().xsrf_key
+  return six.ensure_binary(GetSecrets().xsrf_key)
 
 
 def GetEmailKey():
   """Return a secret key string used to generate email tokens."""
-  return GetSecrets().email_key
+  return six.ensure_binary(GetSecrets().email_key)
 
 
 def GetPaginationKey():
   """Return a secret key string used to generate pagination tokens."""
-  return GetSecrets().pagination_key
+  return six.ensure_binary(GetSecrets().pagination_key)

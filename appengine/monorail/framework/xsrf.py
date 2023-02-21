@@ -8,12 +8,12 @@ from __future__ import division
 from __future__ import absolute_import
 
 import base64
+import hashlib
 import hmac
-import logging
+import six
 import time
 
 # This is a file in the top-level directory that you must edit before deploying
-import settings
 from framework import framework_constants
 from services import secrets_svc
 
@@ -42,7 +42,7 @@ CLOCK_SKEW_SEC = 5
 XHR_SERVLET_PATH = 'xhr'
 
 
-DELIMITER = ':'
+DELIMITER = b':'
 
 
 def GenerateToken(user_id, servlet_path, token_time=None):
@@ -62,15 +62,15 @@ def GenerateToken(user_id, servlet_path, token_time=None):
     ValueError: if the XSRF secret was not configured.
   """
   token_time = token_time or int(time.time())
-  digester = hmac.new(secrets_svc.GetXSRFKey())
-  digester.update(str(user_id))
+  digester = hmac.new(secrets_svc.GetXSRFKey(), digestmod=hashlib.md5)
+  digester.update(six.ensure_binary(str(user_id)))
   digester.update(DELIMITER)
-  digester.update(servlet_path)
+  digester.update(six.ensure_binary(servlet_path))
   digester.update(DELIMITER)
-  digester.update(str(token_time))
+  digester.update(six.ensure_binary(str(token_time)))
   digest = digester.digest()
 
-  token = base64.urlsafe_b64encode('%s%s%d' % (digest, DELIMITER, token_time))
+  token = base64.urlsafe_b64encode(b'%s%s%d' % (digest, DELIMITER, token_time))
   return token
 
 
@@ -90,7 +90,7 @@ def ValidateToken(
     raise TokenIncorrect('missing token')
 
   try:
-    decoded = base64.urlsafe_b64decode(str(token))
+    decoded = base64.urlsafe_b64decode(six.ensure_binary(token))
     token_time = int(decoded.split(DELIMITER)[-1])
   except (TypeError, ValueError):
     raise TokenIncorrect('could not decode token')
@@ -103,8 +103,14 @@ def ValidateToken(
 
   # Perform constant time comparison to avoid timing attacks
   different = 0
+  # In Python 3, zip(bytes, bytes) gives ints, but in Python 2,
+  # zip(str, str) gives strs. We need to call ord() in Python 2 only.
+  if isinstance(token, six.string_types):
+    token = map(ord, token)
+  if isinstance(expected_token, six.string_types):
+    expected_token = map(ord, expected_token)
   for x, y in zip(token, expected_token):
-    different |= ord(x) ^ ord(y)
+    different |= x ^ y
   if different:
     raise TokenIncorrect(
         'presented token does not match expected token: %r != %r' % (

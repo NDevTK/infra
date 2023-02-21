@@ -12,6 +12,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import hashlib
 import hmac
 import logging
 import re
@@ -236,11 +237,15 @@ def MakeMessageID(to_addr, subject, from_addr):
   if isinstance(normalized_subject, six.text_type):
     normalized_subject = normalized_subject.encode('utf-8')
   mail_hmac_key = secrets_svc.GetEmailKey()
+  to_addr_hash = hmac.new(
+      mail_hmac_key, six.ensure_binary(to_addr),
+      digestmod=hashlib.md5).hexdigest()
+  subject_hash = hmac.new(
+      mail_hmac_key,
+      six.ensure_binary(normalized_subject),
+      digestmod=hashlib.md5).hexdigest()
   return '<0=%s=%s=%s@%s>' % (
-      hmac.new(mail_hmac_key, to_addr).hexdigest(),
-      hmac.new(mail_hmac_key, normalized_subject).hexdigest(),
-      from_addr.split('@')[0],
-      MailDomain())
+      to_addr_hash, subject_hash, from_addr.split('@')[0], MailDomain())
 
 
 def GetReferences(to_addr, subject, seq_num, project_from_addr):
