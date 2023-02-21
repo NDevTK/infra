@@ -62,6 +62,7 @@ For now only running in testing mode.`,
 		// TODO(otabek@) Add more details with instruction how to get default config as example.
 		c.Flags.StringVar(&c.configFile, "config", "", "Path to the custom json config file.")
 		c.Flags.StringVar(&c.karteServer, "karte-server", "dev", "Use karte metric to record the action (dev by default).")
+		c.Flags.BoolVar(&c.csaServer, "csa-server", true, "Use CSA Service or not.")
 
 		c.Flags.StringVar(&c.devJumpHost, "dev-jump-host", "", "Jump host for SSH (Dev-only feature).")
 		c.Flags.StringVar(&c.logRoot, "log-root", "", "Path to the custom json config file.")
@@ -87,6 +88,7 @@ type localRecoveryRun struct {
 	logRoot          string
 	configFile       string
 	karteServer      string
+	csaServer        bool
 	onlyVerify       bool
 	updateInventory  bool
 	showSteps        bool
@@ -158,13 +160,16 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 		Host:    e.UFSService,
 		Options: site.UFSPRPCOptions,
 	})
-	csac := fleet.NewInventoryPRPCClient(
-		&prpc.Client{
-			C:       hc,
-			Host:    e.AdminService,
-			Options: site.DefaultPRPCOptions,
-		},
-	)
+	var csac fleet.InventoryClient
+	if c.csaServer {
+		csac = fleet.NewInventoryPRPCClient(
+			&prpc.Client{
+				C:       hc,
+				Host:    e.AdminService,
+				Options: site.DefaultPRPCOptions,
+			},
+		)
+	}
 	ctx = setDevOptions(ctx)
 	access, err := recovery.NewLocalTLWAccess(ic, csac, []string{c.dutSSHKeyPath})
 	if err != nil {
@@ -185,6 +190,9 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 			metrics, err = karte.NewMetrics(ctx, kclient.ProdConfig(authOptions))
 		} else if c.karteServer == "local" {
 			metrics, err = karte.NewMetrics(ctx, kclient.LocalConfig(authOptions))
+		} else if c.karteServer == "no" {
+			// Do not create client.
+			metrics = nil
 		} else {
 			metrics, err = karte.NewMetrics(ctx, kclient.EmptyConfig())
 		}

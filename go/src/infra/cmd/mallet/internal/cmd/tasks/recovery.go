@@ -34,6 +34,7 @@ var Recovery = &subcommands.Command{
 		c.Flags.BoolVar(&c.onlyVerify, "only-verify", false, "Block recovery actions and run only verifiers.")
 		c.Flags.StringVar(&c.configFile, "config", "", "Path to the custom json config file.")
 		c.Flags.BoolVar(&c.noStepper, "no-stepper", false, "Block steper from using. This will prevent by using steps and you can only see logs.")
+		c.Flags.BoolVar(&c.useCsa, "use-csa", true, "Use CSA Service or not.")
 		c.Flags.BoolVar(&c.deployTask, "deploy", false, "Run deploy task. By default run recovery task.")
 		c.Flags.BoolVar(&c.updateUFS, "update-ufs", false, "Update result to UFS. By default no.")
 		c.Flags.BoolVar(&c.latest, "latest", false, "Use latest version of CIPD when scheduling. By default no.")
@@ -49,6 +50,7 @@ type recoveryRun struct {
 
 	onlyVerify   bool
 	noStepper    bool
+	useCsa       bool
 	configFile   string
 	deployTask   bool
 	updateUFS    bool
@@ -102,6 +104,10 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 		if c.latest {
 			v = buildbucket.CIPDLatest
 		}
+		var csaAddr string
+		if c.useCsa {
+			csaAddr = e.AdminService
+		}
 		url, _, err := buildbucket.ScheduleTask(
 			ctx,
 			bc,
@@ -110,7 +116,7 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 				UnitName:         unit,
 				TaskName:         task,
 				EnableRecovery:   !c.onlyVerify,
-				AdminService:     e.AdminService,
+				AdminService:     csaAddr,
 				InventoryService: e.UFSService,
 				UpdateInventory:  c.updateUFS,
 				NoStepper:        c.noStepper,

@@ -209,6 +209,9 @@ func (c *tlwClient) unCacheDevice(dut *tlw.Dut) {
 // getCrosStableVersion receives stable versions for ChromeOS device.
 func (c *tlwClient) getCrosStableVersion(ctx context.Context, dut *tlw.Dut) (*tlw.VersionResponse, error) {
 	req := &fleet.GetStableVersionRequest{Hostname: dut.Name}
+	if c.csaClient == nil {
+		return nil, errors.Reason("get stable-version %q: service is not specified", dut.Name).Err()
+	}
 	res, err := c.csaClient.GetStableVersion(ctx, req)
 	if err != nil {
 		if status.Code(err) == codes.NotFound {
