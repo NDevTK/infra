@@ -1099,14 +1099,14 @@ func validateCreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE,
 	if util.IsChromiumLegacyHost(machinelse.GetName()) || util.IsChromeLegacyHost(machinelse.GetName()) {
 		pools := machinelse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools()
 		if util.IsInChromiumPool(pools) != util.IsChromiumLegacyHost(machinelse.GetName()) {
-			return status.Errorf(codes.FailedPrecondition, "chromium DUTs has to have prefix of 'chromium-' and in pool 'chromium'")
+			return status.Errorf(codes.FailedPrecondition, "chromium DUTs has to have prefix of 'chromium-' and in pool 'chromium'\n")
 		}
 		if util.IsInChromePool(pools) != util.IsChromeLegacyHost(machinelse.GetName()) {
-			return status.Errorf(codes.FailedPrecondition, "chrome DUTs has to have prefix of 'chrome-' and in pool 'chrome'")
+			return status.Errorf(codes.FailedPrecondition, "chrome DUTs has to have prefix of 'chrome-' and in pool 'chrome'\n")
 		}
-		if util.IsInChromiumPool(pools) && machine.GetRealm() != util.AtlLabChromiumAdminRealm {
-			return status.Errorf(codes.FailedPrecondition, "DUTs in pool:%s has to be in realm %s, please modify asset %s's realm.",
-				util.ChromiumPool, util.AtlLabChromiumAdminRealm, machine.GetName())
+		if util.IsInChromiumPool(pools) && machine.GetLocation().GetZone() != ufspb.Zone_ZONE_SFO36_OS_CHROMIUM {
+			return status.Errorf(codes.FailedPrecondition, "DUTs in pool:%s has to be in zone %s, please modify asset %s's zone.\n",
+				util.ChromiumPool, util.RemoveZonePrefix(ufspb.Zone_ZONE_SFO36_OS_CHROMIUM.String()), machine.GetName())
 		}
 	}
 

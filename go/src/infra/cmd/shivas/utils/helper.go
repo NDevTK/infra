@@ -443,7 +443,6 @@ func GenerateAssetUpdate(machine, model, board, zone, rack string) (*ufspb.Asset
 	if asset.GetLocation().GetZone() != ufspb.Zone_ZONE_UNSPECIFIED {
 		paths = append(paths, "location.zone")
 		asset.Realm = UfleetUtil.ToUFSRealm(asset.GetLocation().GetZone().String())
-		asset.Realm = UfleetUtil.ToChromiumRealm(machine, asset.Realm)
 	}
 	if asset.GetLocation().GetRack() != "" {
 		paths = append(paths, "location.rack")

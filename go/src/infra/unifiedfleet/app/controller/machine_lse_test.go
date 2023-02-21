@@ -143,7 +143,7 @@ func TestCreateMachineLSE(t *testing.T) {
 			So(changes, ShouldHaveLength, 0)
 		})
 
-		Convey("Create new machineLSE Chromium DUT with wrong realm", func() {
+		Convey("Create new machineLSE Chromium DUT with wrong zone", func() {
 			machine1 := &ufspb.Machine{
 				Name: "chromium-asset",
 			}
@@ -156,7 +156,7 @@ func TestCreateMachineLSE(t *testing.T) {
 			resp, err := CreateMachineLSE(ctx, dut, nil)
 			So(resp, ShouldBeNil)
 			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "has to be in realm")
+			So(err.Error(), ShouldContainSubstring, "has to be in zone")
 		})
 
 		Convey("Create new machineLSE Chromium DUT with mismatched pools", func() {

@@ -64,15 +64,3 @@ func TestCheckPermission(t *testing.T) {
 		check(writer, writePermission, "", true)
 	})
 }
-
-func TestToChromiumRealm(t *testing.T) {
-	t.Parallel()
-
-	Convey("ToChromiumRealm - A chromium host", t, func() {
-		So(ToChromiumRealm("chromium-host", "defaultRealm"), ShouldEqual, AtlLabChromiumAdminRealm)
-	})
-
-	Convey("ToChromiumRealm - A non-chromium host", t, func() {
-		So(ToChromiumRealm("C123456", "defaultRealm"), ShouldEqual, "defaultRealm")
-	})
-}

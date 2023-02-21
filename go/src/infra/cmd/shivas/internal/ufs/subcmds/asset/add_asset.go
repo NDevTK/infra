@@ -142,8 +142,6 @@ func (c *addAsset) innerRun(ctx context.Context, a subcommands.Application, args
 				return err
 			}
 			createAssetRequest.Asset = &asset
-			ufsZone := createAssetRequest.GetAsset().GetLocation().GetZone()
-			createAssetRequest.GetAsset().Realm = ufsUtil.ToUFSRealm(ufsZone.String())
 			createAssetRequest.Asset.Name = ufsUtil.AddPrefix(ufsUtil.AssetCollection, createAssetRequest.Asset.Name)
 		}
 	} else if c.interactive {
@@ -200,6 +198,9 @@ func (c *addAsset) validateArgs() error {
 		} else if !ufsUtil.IsAssetType(c.assetType) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Invalid asset type %s", c.assetType)
 		}
+		if err := validateChromium(c.name, c.zone); err != nil {
+			return cmdlib.NewQuietUsageError(c.Flags, err.Error())
+		}
 	}
 	if c.scan {
 		if c.assetType == "" {
@@ -253,7 +254,6 @@ func (c *addAsset) parseArgs() (*ufspb.Asset, error) {
 		asset.Location.Shelf = c.shelf
 		asset.Location.Position = c.position
 	}
-	asset.Realm = ufsUtil.ToUFSRealm(asset.GetLocation().GetZone().String())
 	asset.Tags = c.tags
 	return asset, nil
 }
@@ -291,7 +291,6 @@ func (c *addAsset) parseMCSV() ([]*ufsAPI.CreateAssetRequest, error) {
 				}
 				ufsZone := ufsUtil.ToUFSZone(value)
 				req.Asset.Location.Zone = ufsZone
-				req.Asset.Realm = ufsUtil.ToUFSRealm(ufsZone.String())
 			case "rack":
 				if value == "" {
 					return nil, fmt.Errorf("Error in line %d.\nNeed rack to create as asset. %s", i, name)
@@ -385,10 +384,15 @@ func (c *addAsset) addAssetToUFS(ctx context.Context, ic ufsAPI.FleetClient, req
 	if req.Asset.Location.Rack == "" {
 		return nil, cmdlib.NewQuietUsageError(c.Flags, "Invalid input, Missing rack")
 	}
-	if req.Asset.Location.Zone == ufspb.Zone_ZONE_UNSPECIFIED {
+	zone := req.Asset.Location.Zone
+	if zone == ufspb.Zone_ZONE_UNSPECIFIED {
 		return nil, cmdlib.NewQuietUsageError(c.Flags, "Invalid zone")
 	}
 	assetName := ufsUtil.RemovePrefix(req.Asset.Name)
+	if err := validateChromium(assetName, ufsUtil.RemoveZonePrefix(zone.String())); err != nil {
+		return nil, err
+	}
+	req.Asset.Realm = ufsUtil.ToUFSRealm(zone.String())
 	if ufsUtil.IsBrowserLegacyAsset(assetName) {
 		if ufsUtil.IsChromiumLegacyHost(assetName) {
 			assetName = fmt.Sprintf("%s%s", ufsUtil.ChromiumNamePrefix, uuid.New().String())
@@ -396,7 +400,6 @@ func (c *addAsset) addAssetToUFS(ctx context.Context, ic ufsAPI.FleetClient, req
 			assetName = fmt.Sprintf("%s%s", ufsUtil.ChromeNamePrefix, uuid.New().String())
 		}
 	}
-	req.Asset.Realm = ufsUtil.ToChromiumRealm(assetName, req.Asset.Realm)
 	req.Asset.Name = ufsUtil.AddPrefix(ufsUtil.AssetCollection, assetName)
 	ufsAsset, err := ic.CreateAsset(ctx, req)
 	if ufsAsset != nil {
@@ -443,4 +446,13 @@ func prompt(w io.Writer, rack string) {
 	} else {
 		fmt.Fprintf(w, "\nScan a location tag:")
 	}
+}
+
+func validateChromium(name, zone string) error {
+	if ufsUtil.IsBrowserLegacyAsset(name) && ufsUtil.IsChromiumLegacyHost(name) {
+		if ufsUtil.ToUFSZone(zone) != ufspb.Zone_ZONE_SFO36_OS_CHROMIUM {
+			return fmt.Errorf("chromium legacy asset has to be in zone %q", ufsUtil.RemoveZonePrefix(ufspb.Zone_ZONE_SFO36_OS_CHROMIUM.String()))
+		}
+	}
+	return nil
 }

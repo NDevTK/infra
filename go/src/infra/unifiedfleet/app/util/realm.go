@@ -151,6 +151,8 @@ func ToUFSRealm(zone string) string {
 		return AcsLabAdminRealm
 	} else if ufsZone == ufspb.Zone_ZONE_SATLAB {
 		return SatLabInternalUserRealm
+	} else if ufsZone == ufspb.Zone_ZONE_SFO36_OS_CHROMIUM {
+		return AtlLabChromiumAdminRealm
 	}
 	return AtlLabAdminRealm
 }
@@ -161,14 +163,6 @@ func GetValidRealmName(realm string) string {
 		return BrowserLabAdminRealm
 	}
 	return realm
-}
-
-// ToChromiumRealm returns a realm after detecting if the asset/host is a chromium DUT in skylab
-func ToChromiumRealm(name, defaultRealm string) string {
-	if strings.HasPrefix(name, "chromium-") {
-		return AtlLabChromiumAdminRealm
-	}
-	return defaultRealm
 }
 
 // IsBrowserLegacyAsset returns if an asset is a legacy asset migrated from browser lab which doesn't have an assetTag
@@ -191,10 +185,12 @@ func IsChromiumLegacyHost(name string) bool {
 
 // IsInChromiumPool checks if any chromium pool exist in the given pool labels.
 func IsInChromiumPool(pools []string) bool {
-	for _, p := range pools {
-		if p == ChromiumPool {
-			return true
-		}
+	if len(pools) != 1 {
+		// Hosts in chromium pool cannot have multiple pools in case they're wrongly scheduled.
+		return false
+	}
+	if pools[0] == ChromiumPool {
+		return true
 	}
 	return false
 }

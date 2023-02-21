@@ -320,6 +320,9 @@ func (c addDUT) validateArgs() error {
 		if c.zone != "" && !ufsUtil.IsUFSZone(ufsUtil.RemoveZonePrefix(c.zone)) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Invalid zone %s", c.zone)
 		}
+		if err := validateChromium(c.hostname, c.zone, c.pools); err != nil {
+			return cmdlib.NewQuietUsageError(c.Flags, err.Error())
+		}
 		if len(c.licenseTypes) != len(c.licenseIds) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNumber of -licensetype(%s) and -licenseid(%s) must be same.", c.licenseTypes, c.licenseIds)
 		}
@@ -432,7 +435,6 @@ func (c *addDUT) addDutToUFS(ctx context.Context, ic ufsAPI.FleetClient, param *
 		MachineLSEId: param.DUT.GetName(),
 	})
 	if err != nil {
-		fmt.Printf("Failed to add DUT %s to UFS. UFS add failed %s\n", param.DUT.GetName(), err)
 		return err
 	}
 	res.Name = ufsUtil.RemovePrefix(res.Name)
@@ -664,4 +666,14 @@ func isUsingServo(dutLSE *ufspb.MachineLSE) bool {
 		return false
 	}
 	return true
+}
+
+func validateChromium(hostname, zone string, pools []string) error {
+	if ufsUtil.IsChromiumLegacyHost(hostname) && ufsUtil.ToUFSZone(zone) != ufspb.Zone_ZONE_SFO36_OS_CHROMIUM {
+		return fmt.Errorf("chromium host %s has to be in zone %q", hostname, ufsUtil.RemoveZonePrefix(ufspb.Zone_ZONE_SFO36_OS_CHROMIUM.String()))
+	}
+	if ufsUtil.IsChromiumLegacyHost(hostname) && !ufsUtil.IsInChromiumPool(pools) {
+		return fmt.Errorf("chromium host %s has to be in pool %q", hostname, ufsUtil.ChromiumPool)
+	}
+	return nil
 }
