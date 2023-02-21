@@ -6,57 +6,13 @@ package inventory
 
 import (
 	"bytes"
-	"io/ioutil"
-	"path/filepath"
 	"sort"
 	"strings"
 
 	proto "github.com/golang/protobuf/proto"
-	"go.chromium.org/luci/common/errors"
 )
 
 const labFilename = "lab.textpb"
-
-// LoadLab loads lab inventory information from the inventory data directory.
-func LoadLab(dataDir string) (*Lab, error) {
-	b, err := ioutil.ReadFile(filepath.Join(dataDir, labFilename))
-	if err != nil {
-		return nil, errors.Annotate(err, "load lab inventory %s", dataDir).Err()
-	}
-	lab := Lab{}
-	if err := LoadLabFromString(string(b), &lab); err != nil {
-		return nil, errors.Annotate(err, "load lab inventory %s", dataDir).Err()
-	}
-	return &lab, nil
-
-}
-
-// LoadLabFromString loads lab inventory information from the given string.
-func LoadLabFromString(text string, lab *Lab) error {
-	return proto.UnmarshalText(text, lab)
-}
-
-// WriteLab writes lab inventory information to the inventory data directory.
-//
-// WriteLab serializes the proto in a format that can be loaded from both
-// golang and python protobuf libraries.
-func WriteLab(lab *Lab, dataDir string) error {
-	labStr, err := WriteLabToString(lab)
-	if err != nil {
-		return errors.Annotate(err, "write lab inventory %s", dataDir).Err()
-	}
-	// rewriteMarshaledTextProtoForPython is a hacky translation of protos to
-	// python library friendly format. At least make sure we can load the proto
-	// back in to catch obvious corruption.
-	var relab Lab
-	if err := LoadLabFromString(labStr, &relab); err != nil {
-		return errors.Annotate(err, "validate lab inventory written to %s", dataDir).Err()
-	}
-	if err := oneShotWriteFile(dataDir, labFilename, labStr); err != nil {
-		return errors.Annotate(err, "write lab inventory %s", dataDir).Err()
-	}
-	return nil
-}
 
 // WriteLabToString marshals lab inventory information into a string.
 func WriteLabToString(lab *Lab) (string, error) {
