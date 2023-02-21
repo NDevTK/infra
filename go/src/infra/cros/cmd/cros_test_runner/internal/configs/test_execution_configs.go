@@ -7,11 +7,13 @@ package configs
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/luciexe/build"
 )
 
 // Config types
@@ -31,9 +33,47 @@ type Configs struct {
 	CleanupConfigs []*CommandExecutorPairedConfig
 }
 
+// ToString returns string representation of the object.
+func (configs *Configs) ToString() string {
+	if configs == nil {
+		return ""
+	}
+
+	retStringList := []string{}
+
+	// Get main configs
+	if len(configs.MainConfigs) > 0 {
+		retStringList = append(retStringList, "Main Configs:")
+
+		for _, mainConfig := range configs.MainConfigs {
+			retStringList = append(retStringList, mainConfig.ToString())
+		}
+	}
+
+	// Extra space
+	if len(retStringList) > 0 {
+		retStringList = append(retStringList, "\n")
+	}
+
+	// Get cleanup configs
+	if len(configs.CleanupConfigs) > 0 {
+		retStringList = append(retStringList, "Cleanup Configs:")
+
+		for _, cleanupConfig := range configs.CleanupConfigs {
+			retStringList = append(retStringList, cleanupConfig.ToString())
+		}
+	}
+
+	if len(retStringList) == 0 {
+		return ""
+	}
+
+	return strings.Join(retStringList, "\n")
+}
+
 // TestExecutionConfig represents the configuration for any test execution.
 type TestExecutionConfig struct {
-	interfaces.AbstractTestExecutionConfig
+	*interfaces.AbstractTestExecutionConfig
 
 	commandConfig    interfaces.CommandConfigInterface
 	stateKeeper      interfaces.StateKeeperInterface
@@ -44,11 +84,11 @@ type TestExecutionConfig struct {
 func NewTestExecutionConfig(
 	configType interfaces.ConfigType,
 	cmdConfig interfaces.CommandConfigInterface,
-	ski interfaces.StateKeeperInterface) TestExecutionConfig {
+	ski interfaces.StateKeeperInterface) *TestExecutionConfig {
 
 	executedCmdMap := make(map[interfaces.CommandType]bool)
 	abstractConfig := interfaces.NewAbstractTestExecutionConfig(configType)
-	return TestExecutionConfig{
+	return &TestExecutionConfig{
 		AbstractTestExecutionConfig: abstractConfig,
 		commandConfig:               cmdConfig,
 		stateKeeper:                 ski,
@@ -56,14 +96,26 @@ func NewTestExecutionConfig(
 }
 
 func (tecfg *TestExecutionConfig) GenerateConfig(ctx context.Context) error {
+	var err error
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("Generate configs: %s", tecfg.GetConfigType()))
+	defer func() { step.End(err) }()
+
 	switch configType := tecfg.GetConfigType(); configType {
 	case HwTestExecutionConfigType:
 		tecfg.configs = GenerateHwConfigs(ctx)
 	default:
-		return fmt.Errorf("Config type %s is not supported!", configType)
+		err = fmt.Errorf("Config type %s is not supported!", configType)
 	}
 
-	return nil
+	if tecfg.configs != nil {
+		configsLog := step.Log("generated configs")
+		_, logErr := configsLog.Write([]byte(tecfg.configs.ToString()))
+		if logErr != nil {
+			logging.Infof(ctx, "error during writing generated configs: %s", logErr)
+		}
+	}
+
+	return err
 }
 
 func (tecfg *TestExecutionConfig) Execute(ctx context.Context) error {

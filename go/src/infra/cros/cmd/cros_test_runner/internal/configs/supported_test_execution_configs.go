@@ -7,20 +7,25 @@ package configs
 import (
 	"context"
 	"fmt"
-	"time"
 
-	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
-
-	"github.com/google/uuid"
 )
 
 // CommandExecutorPairedConfig represents command and executor pair
 type CommandExecutorPairedConfig struct {
 	CommandType  interfaces.CommandType
 	ExecutorType interfaces.ExecutorType
+}
+
+// ToString returns string representation of the object.
+func (cepc *CommandExecutorPairedConfig) ToString() string {
+	if cepc == nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%s_%s", cepc.CommandType, cepc.ExecutorType)
 }
 
 // All currently supported command-executor pairs.
@@ -43,6 +48,7 @@ var RdbPublishStart_CrosRdbPublishExecutor = &CommandExecutorPairedConfig{Comman
 var RdbPublishUpload_CrosRdbPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.RdbPublishUploadCmdType, ExecutorType: executors.CrosRdbPublishExecutorType}
 var TkoPublishStart_CrosTkoPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.TkoPublishStartCmdType, ExecutorType: executors.CrosTkoPublishExecutorType}
 var TkoPublishUpload_CrosTkoPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.TkoPublishUploadCmdType, ExecutorType: executors.CrosTkoPublishExecutorType}
+var ProcessResults_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.ProcessResultsCmdType, ExecutorType: executors.NoExecutorType}
 
 // GenerateHwConfigs generates hw tests execution for lab environment.
 func GenerateHwConfigs(ctx context.Context) *Configs {
@@ -67,6 +73,7 @@ func GenerateHwConfigs(ctx context.Context) *Configs {
 		GcsPublishStart_CrosGcsPublishExecutor,
 		GcsPublishUpload_CrosGcsPublishExecutor,
 		CtrStop_CtrExecutor,
+		ProcessResults_NoExecutor,
 	}
 
 	// Clean up configs. They will be executed if any failures occurs
@@ -76,6 +83,7 @@ func GenerateHwConfigs(ctx context.Context) *Configs {
 		GcsPublishStart_CrosGcsPublishExecutor,
 		GcsPublishUpload_CrosGcsPublishExecutor,
 		CtrStop_CtrExecutor,
+		ProcessResults_NoExecutor,
 	}
 
 	return &Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
@@ -93,18 +101,4 @@ func GetHwConfigsEnvVars() []string {
 		"CONTAINER_CACHE_SERVICE_HOST",
 		"DRONE_AGENT_BOT_BLKIO_READ_BPS",
 		"DRONE_AGENT_BOT_BLKIO_WRITE_BPS"}
-}
-
-// GetHwConfigsGcsUrl gets gcs url for hw test execution configs.
-func GetHwConfigsGcsUrl() string {
-	return fmt.Sprintf(
-		"%s/%s/%s",
-		common.HwTestLabGsRoot,
-		time.Now().Format("2006-01-02"),
-		uuid.New().String())
-}
-
-// GetHwConfigsStainlessUrl gets stainless url.
-func GetHwConfigsStainlessUrl(gcsUrl string) string {
-	return fmt.Sprintf("%s%s", common.StainlessUrlPrefix, gcsUrl[len("gs://"):])
 }

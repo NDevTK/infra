@@ -25,6 +25,7 @@ type RdbPublishUploadCmd struct {
 	CurrentInvocationId string
 	TestResultForRdb    *artifactpb.TestResult
 	StainlessUrl        string
+	TesthausUrl         string
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -58,6 +59,9 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 	if sk.StainlessUrl == "" {
 		return fmt.Errorf("Cmd %q missing dependency: StainlessUrl", cmd.GetCommandType())
 	}
+	if sk.TesthausUrl == "" {
+		return fmt.Errorf("Cmd %q missing dependency: TesthausUrl", cmd.GetCommandType())
+	}
 	testResult, err := cmd.constructTestResultFromStateKeeper(ctx, sk)
 	if err != nil {
 		return errors.Annotate(err, fmt.Sprintf("Cmd %q missing dependency: TestResultForRdb", cmd.GetCommandType())).Err()
@@ -66,6 +70,7 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 	cmd.CurrentInvocationId = sk.CurrentInvocationId
 	cmd.StainlessUrl = sk.StainlessUrl
 	cmd.TestResultForRdb = testResult
+	cmd.TesthausUrl = sk.TesthausUrl
 
 	return nil
 }

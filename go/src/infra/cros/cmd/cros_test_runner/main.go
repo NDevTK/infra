@@ -40,22 +40,25 @@ func main() {
 			ctrCipdInfo := ctrCipdInfoReader(ctx)
 			logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
 			logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
-			err := executeHwTests(ctx, input.CftTestRequest, ctrCipdInfo.GetVersion().GetCipdLabel())
+			// TODO (azrahman): After stablizing in prod, move log data gs root to cft/new proto.
+			err := executeHwTests(ctx, input.CftTestRequest, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot())
 			if err != nil {
 				logging.Infof(ctx, "error found: %s", err)
 			}
 
-			// TODO (azrahman): write output properties
 			return err
 		},
 	)
 }
 
 // executeHwTests executes hw tests
-func executeHwTests(ctx context.Context, req *skylab_test_runner.CFTTestRequest, ctrCipdVersion string) error {
+func executeHwTests(ctx context.Context, req *skylab_test_runner.CFTTestRequest, ctrCipdVersion string, gsRoot string) error {
 	// Validation
 	if ctrCipdVersion == "" {
 		return fmt.Errorf("Cros-tool-runner cipd version cannot be empty for hw test execution.")
+	}
+	if gsRoot == "" {
+		return fmt.Errorf("GS root cannot be empty for hw test execution.")
 	}
 
 	// Create ctr
@@ -82,8 +85,16 @@ func executeHwTests(ctx context.Context, req *skylab_test_runner.CFTTestRequest,
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 
 	// Create state keeper
-	gcsurl := configs.GetHwConfigsGcsUrl()
-	sk := &data.HwTestStateKeeper{CftTestRequest: req, Ctr: ctr, DockerKeyFileLocation: common.LabDockerKeyFileLocation, GcsPublishSrcDir: os.Getenv("TEMPDIR"), GcsUrl: gcsurl, StainlessUrl: configs.GetHwConfigsStainlessUrl(gcsurl)}
+	gcsurl := common.GetGcsUrl(gsRoot)
+	sk := &data.HwTestStateKeeper{
+		CftTestRequest:        req,
+		Ctr:                   ctr,
+		DockerKeyFileLocation: common.LabDockerKeyFileLocation,
+		GcsPublishSrcDir:      os.Getenv("TEMPDIR"),
+		GcsUrl:                gcsurl,
+		StainlessUrl:          common.GetStainlessUrl(gcsurl),
+		TesthausUrl:           common.GetTesthausUrl(gcsurl),
+	}
 
 	// Generate config
 	hwTestConfig := configs.NewTestExecutionConfig(configs.HwTestExecutionConfigType, cmdCfg, sk)

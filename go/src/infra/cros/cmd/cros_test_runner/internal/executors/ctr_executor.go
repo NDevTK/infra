@@ -66,7 +66,7 @@ func (ex *CtrExecutor) startAsyncCommandExecution(
 
 	err = ex.StartAsync(ctx)
 	if err != nil {
-		errors.Annotate(err, "Start ctr cmd err: ")
+		return errors.Annotate(err, "Start ctr cmd err: ").Err()
 	}
 
 	return err
@@ -83,7 +83,7 @@ func (ex *CtrExecutor) stopCommandExecution(
 
 	err = ex.Stop(ctx)
 	if err != nil {
-		errors.Annotate(err, "Stop ctr cmd err: ")
+		return errors.Annotate(err, "Stop ctr cmd err: ").Err()
 	}
 
 	return err
@@ -100,7 +100,7 @@ func (ex *CtrExecutor) gcloudAuthCommandExecution(
 
 	err = ex.GcloudAuth(ctx, cmd.DockerKeyFileLocation)
 	if err != nil {
-		errors.Annotate(err, "gcloud auth cmd err: ")
+		return errors.Annotate(err, "gcloud auth cmd err: ").Err()
 	}
 
 	return err

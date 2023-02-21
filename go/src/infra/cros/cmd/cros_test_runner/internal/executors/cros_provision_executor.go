@@ -65,8 +65,12 @@ func (ex *CrosProvisionExecutor) provisionStartCommandExecution(
 		DutServer:      cmd.DutServerAddress}
 
 	err = ex.Start(ctx, provReq)
+	logErr := common.WriteContainerLogToStepLog(ctx, ex.Container, step, "cros-provision log")
 	if err != nil {
 		return errors.Annotate(err, "Start provision cmd err: ").Err()
+	}
+	if logErr != nil {
+		logging.Infof(ctx, "error during writing cros-provision log contents: %s", err)
 	}
 
 	return err
@@ -105,6 +109,7 @@ func (ex *CrosProvisionExecutor) provisionInstallCommandExecution(
 		return errors.Annotate(err, "Provision install cmd err: ").Err()
 	}
 
+	cmd.ProvisionResp = resp
 	common.WriteProtoToStepLog(ctx, step, resp, "provision response")
 
 	return err

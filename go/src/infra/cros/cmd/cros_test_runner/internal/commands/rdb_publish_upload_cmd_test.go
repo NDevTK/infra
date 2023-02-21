@@ -83,9 +83,12 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		ctx := context.Background()
 		wantInvId := "Inv-1234"
 		wantStainlessUrl := "www.stainless.com"
+		wantTesthausUrl := "www.testhaus.com"
 		sk := &data.HwTestStateKeeper{
 			CurrentInvocationId: wantInvId,
-			StainlessUrl:        wantStainlessUrl}
+			StainlessUrl:        wantStainlessUrl,
+			TesthausUrl:         wantTesthausUrl,
+		}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosPublishTemplatedContainer(
@@ -102,5 +105,6 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(cmd.CurrentInvocationId, ShouldEqual, wantInvId)
 		So(cmd.StainlessUrl, ShouldEqual, wantStainlessUrl)
+		So(cmd.TesthausUrl, ShouldEqual, wantTesthausUrl)
 	})
 }

@@ -26,8 +26,9 @@ type HwTestStateKeeper struct {
 	DutTopology      *labapi.DutTopology
 	DutServerAddress *labapi.IpEndpoint
 
-	// Provsion related
+	// Provision related
 	InstallMetadata *anypb.Any
+	ProvisionResp   *testapi.InstallResponse
 
 	// Test related
 	TestResponses *testapi.CrosTestResponse
@@ -35,9 +36,13 @@ type HwTestStateKeeper struct {
 	// Publish related
 	GcsUrl              string
 	StainlessUrl        string
+	TesthausUrl         string
 	GcsPublishSrcDir    string
 	CurrentInvocationId string
 	TkoPublishSrcDir    string
+
+	// Build related
+	SkylabResult *skylab_test_runner.Result
 
 	// Tools and their related dependencies
 	Ctr                   *crostoolrunner.CrosToolRunner

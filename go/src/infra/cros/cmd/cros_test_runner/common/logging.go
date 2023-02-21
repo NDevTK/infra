@@ -7,9 +7,11 @@ package common
 import (
 	"context"
 	"fmt"
+	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 	"os"
 	"path"
 
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -32,6 +34,49 @@ func WriteProtoToStepLog(ctx context.Context, step *build.Step, proto proto.Mess
 	if err != nil {
 		logging.Infof(ctx, "%s: %q", fmt.Sprintf("Writing %q failed:", logText), err.Error())
 	}
+}
+
+// WriteFileContentsToStepLog writes provided fileName contents at rootDir to
+// build step log.
+func WriteFileContentsToStepLog(ctx context.Context, step *build.Step, fileName string, rootDir string, logText string) error {
+	if step == nil {
+		return nil
+	}
+
+	filePath, err := FindFile(ctx, fileName, rootDir)
+	if err != nil {
+		logging.Infof(ctx, "finding file '%s' at '%s' failed:%s", fileName, rootDir, err)
+		return err
+	}
+	fileContents, err := os.ReadFile(filePath)
+	if err != nil {
+		logging.Infof(ctx, "reading file '%s' at '%s' failed:%s", fileName, filePath, err)
+		return err
+	}
+
+	outputLog := step.Log(logText)
+	_, err = outputLog.Write(fileContents)
+	if err != nil {
+		logging.Infof(ctx, "%s: %q", fmt.Sprintf("writing %q failed:", logText), err.Error())
+		return err
+	}
+
+	return nil
+}
+
+// WriteContainerLogToStepLog writes container log contents to step log.
+func WriteContainerLogToStepLog(ctx context.Context, container interfaces.ContainerInterface, step *build.Step, logTitle string) error {
+	logsLoc, err := container.GetLogsLocation()
+	if err != nil {
+		return errors.Annotate(err, "error during getting container log location: ").Err()
+	}
+
+	err = WriteFileContentsToStepLog(ctx, step, "log.txt", logsLoc, logTitle)
+	if err != nil {
+		return errors.Annotate(err, "error during writing container log contents: ").Err()
+	}
+
+	return nil
 }
 
 // WriteProtoToJsonFile writes provided proto to a json file.

@@ -20,6 +20,9 @@ type ProvisionInstallCmd struct {
 	OsImagePath     *_go.StoragePath
 	PreventReboot   bool
 	InstallMetadata *anypb.Any
+
+	// Updates
+	ProvisionResp *testapi.InstallResponse
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -38,6 +41,24 @@ func (cmd *ProvisionInstallCmd) ExtractDependencies(
 
 	if err != nil {
 		return errors.Annotate(err, "error during extracting dependencies for command %s: ", cmd.GetCommandType()).Err()
+	}
+
+	return nil
+}
+
+// UpdateStateKeeper updates the state keeper with info from the cmd.
+func (cmd *ProvisionInstallCmd) UpdateStateKeeper(
+	ctx context.Context,
+	ski interfaces.StateKeeperInterface) error {
+
+	var err error
+	switch sk := ski.(type) {
+	case *data.HwTestStateKeeper:
+		err = cmd.updateHwTestStateKeeper(ctx, sk)
+	}
+
+	if err != nil {
+		return errors.Annotate(err, "error during updating for command %s: ", cmd.GetCommandType()).Err()
 	}
 
 	return nil
@@ -62,6 +83,17 @@ func (cmd *ProvisionInstallCmd) extractDepsFromHwTestStateKeeper(
 		}
 	} else {
 		cmd.InstallMetadata = sk.InstallMetadata
+	}
+
+	return nil
+}
+
+func (cmd *ProvisionInstallCmd) updateHwTestStateKeeper(
+	ctx context.Context,
+	sk *data.HwTestStateKeeper) error {
+
+	if cmd.ProvisionResp != nil {
+		sk.ProvisionResp = cmd.ProvisionResp
 	}
 
 	return nil

@@ -65,13 +65,19 @@ func (ctr *CrosToolRunner) StartCTRServer(ctx context.Context) error {
 			strings.Join(ctr.EnvVarsToPreserve, ","),
 		))
 	}
-	cmdArgs = append(cmdArgs, ctr.CtrPath, "server", "--export-metadata", ctr.CtrTempDirLoc)
+	cmdArgs = append(cmdArgs, ctr.CtrPath, "server", "--port", "0", "--export-metadata", ctr.CtrTempDirLoc)
 	logging.Infof(ctx, "Starting CTR server...")
 
 	cmd := exec.CommandContext(ctx, "sudo", cmdArgs...)
 	err = common.RunCommandWithCustomWriter(ctx, cmd, "ctr-start", writer)
 	if err != nil {
-		return fmt.Errorf("error during ctr-start command: %s", err.Error())
+		if strings.Contains(err.Error(), common.CtrCancelingCmdErrString) {
+			logging.Infof(ctx, "Warning: non-critical error during ctr-start command: %s", err.Error())
+			err = nil
+		} else {
+			logging.Infof(ctx, "error during ctr-start command: %s", err.Error())
+			return errors.Annotate(err, "error during ctr-start command: ").Err()
+		}
 	}
 
 	return nil
@@ -186,7 +192,9 @@ func (ctr *CrosToolRunner) StopCTRServer(ctx context.Context) error {
 	logging.Infof(ctx, "Successfully stopped CTR server!")
 
 	if ctr.wg != nil {
+		logging.Infof(ctx, "Waiting for CTR start command step to exit...")
 		ctr.wg.Wait()
+		logging.Infof(ctx, "Waiting is over.")
 		ctr.wg = nil
 	}
 

@@ -13,6 +13,7 @@ const (
 	// Build/env related commands
 	BuildInputValidationCmdType interfaces.CommandType = "BuildInputValidation"
 	ParseEnvInfoCmdType         interfaces.CommandType = "ParseEnvInfoCmd"
+	ProcessResultsCmdType       interfaces.CommandType = "ProcessResultsCmd"
 
 	// Inventory service related commands
 	InvServiceStartCmdType interfaces.CommandType = "InvServiceStart"

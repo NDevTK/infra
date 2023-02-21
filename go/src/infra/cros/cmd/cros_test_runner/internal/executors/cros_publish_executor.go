@@ -3,7 +3,6 @@ package executors
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -90,8 +89,12 @@ func (ex *CrosPublishExecutor) gcsPublishStartCommandExecution(
 			},
 		},
 	)
+	logErr := common.WriteContainerLogToStepLog(ctx, ex.Container, step, "gcs-publish log")
 	if err != nil {
 		return errors.Annotate(err, "Start gcs-publish cmd err: ").Err()
+	}
+	if logErr != nil {
+		logging.Infof(ctx, "error during writing gcs-publish log contents: %s", err)
 	}
 
 	ex.GcsPublishServiceClient = publishClient
@@ -107,7 +110,8 @@ func (ex *CrosPublishExecutor) gcsPublishUploadCommandExecution(
 	var err error
 	step, ctx := build.StartStep(ctx, "gcs-publish upload")
 	defer func() { step.End(err) }()
-	step.SetSummaryMarkdown(fmt.Sprintf("* [GCS Link](%s)", getGcsClickableLink(cmd.GcsUrl)))
+
+	common.AddLinksToStepSummaryMarkdown(step, "", "", common.GetGcsClickableLink(cmd.GcsUrl))
 
 	// Create request.
 	artifactDirPath := &_go.StoragePath{
@@ -124,12 +128,15 @@ func (ex *CrosPublishExecutor) gcsPublishUploadCommandExecution(
 	gcsPublishReq := &testapi.PublishRequest{
 		ArtifactDirPath: artifactDirPath,
 		TestResponse:    nil, Metadata: gcsMetadata}
-	return ex.InvokePublishWithAsyncLogging(
+
+	err = ex.InvokePublishWithAsyncLogging(
 		ctx,
 		"gcs-publish",
 		gcsPublishReq,
 		ex.GcsPublishServiceClient,
 		step)
+
+	return err
 }
 
 // -- RDB Commands --
@@ -153,8 +160,12 @@ func (ex *CrosPublishExecutor) rdbPublishStartCommandExecution(
 			},
 		},
 	)
+	logErr := common.WriteContainerLogToStepLog(ctx, ex.Container, step, "rdb-publish log")
 	if err != nil {
 		return errors.Annotate(err, "Start rdb-publish cmd err: ").Err()
+	}
+	if logErr != nil {
+		logging.Infof(ctx, "error during writing rdb-publish log contents: %s", err)
 	}
 
 	ex.RdbPublishServiceClient = publishClient
@@ -170,7 +181,8 @@ func (ex *CrosPublishExecutor) rdbPublishUploadCommandExecution(
 	var err error
 	step, ctx := build.StartStep(ctx, "rdb-publish upload")
 	defer func() { step.End(err) }()
-	step.SetSummaryMarkdown(fmt.Sprintf("* [Stainless Link](%s)", cmd.StainlessUrl))
+
+	common.AddLinksToStepSummaryMarkdown(step, cmd.TesthausUrl, cmd.StainlessUrl, "")
 
 	// Create request.
 	rdbMetadata, err := anypb.New(&testapi_metadata.PublishRdbMetadata{
@@ -191,12 +203,14 @@ func (ex *CrosPublishExecutor) rdbPublishUploadCommandExecution(
 		TestResponse:    nil,
 		Metadata:        rdbMetadata,
 	}
-	return ex.InvokePublishWithAsyncLogging(
+	err = ex.InvokePublishWithAsyncLogging(
 		ctx,
 		"rdb-publish",
 		rdbPublishReq,
 		ex.RdbPublishServiceClient,
 		step)
+
+	return err
 }
 
 // -- TKO Commands --
@@ -221,8 +235,12 @@ func (ex *CrosPublishExecutor) tkoPublishStartCommandExecution(
 			},
 		},
 	)
+	logErr := common.WriteContainerLogToStepLog(ctx, ex.Container, step, "tko-publish log")
 	if err != nil {
 		return errors.Annotate(err, "Start tko-publish cmd err: ").Err()
+	}
+	if logErr != nil {
+		logging.Infof(ctx, "error during writing tko-publish log contents: %s", err)
 	}
 
 	ex.TkoPublishServiceClient = publishClient
@@ -257,12 +275,14 @@ func (ex *CrosPublishExecutor) tkoPublishUploadCommandExecution(
 		TestResponse:    nil,
 		Metadata:        tkoMetadata,
 	}
-	return ex.InvokePublishWithAsyncLogging(
+	err = ex.InvokePublishWithAsyncLogging(
 		ctx,
 		"tko-publish",
 		tkoPublishReq,
 		ex.TkoPublishServiceClient,
 		step)
+
+	return err
 }
 
 // Start starts the cros-publish server.
@@ -379,14 +399,4 @@ func (ex *CrosPublishExecutor) InvokePublishWithAsyncLogging(
 	common.WriteProtoToStepLog(ctx, step, resp, fmt.Sprintf("%s response", publishType))
 
 	return nil
-}
-
-// getGcsClickableLink constructs the gcs cliclable link from provided gs url.
-func getGcsClickableLink(gsUrl string) string {
-	gsPrefix := "gs://"
-	urlSuffix := gsUrl
-	if strings.HasPrefix(gsUrl, gsPrefix) {
-		urlSuffix = gsUrl[len(gsPrefix):]
-	}
-	return fmt.Sprintf("%s%s", common.GcsUrlPrefix, urlSuffix)
 }

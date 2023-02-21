@@ -163,6 +163,9 @@ func (cfg *CommandConfig) GetCommand(
 		}
 		cmd = commands.NewTkoPublishUploadCmd(exec)
 
+	case commands.ProcessResultsCmdType:
+		cmd = commands.NewProcessResultsCmd()
+
 	default:
 		return nil, fmt.Errorf("Command type %s not supported in command configs!", cmdType)
 	}

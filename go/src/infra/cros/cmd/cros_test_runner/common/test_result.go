@@ -2,9 +2,12 @@ package common
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/golang/protobuf/ptypes/duration"
+	"github.com/google/uuid"
 	configpb "go.chromium.org/chromiumos/config/go"
 	apipb "go.chromium.org/chromiumos/config/go/test/api"
 	artifactpb "go.chromium.org/chromiumos/config/go/test/artifact"
@@ -115,4 +118,33 @@ func GetValueFromRequestKeyvals(ctx context.Context, cftReq *skylab_test_runner.
 
 	logging.Infof(ctx, "%s found in keyvals with value: %s", key, value)
 	return value
+}
+
+// GetStainlessUrl gets stainless log viewer url.
+func GetStainlessUrl(gcsUrl string) string {
+	return fmt.Sprintf("%s%s", StainlessUrlPrefix, gcsUrl[len("gs://"):])
+}
+
+// GetTesthausUrl gets testhaus log viewer url.
+func GetTesthausUrl(gcsUrl string) string {
+	return fmt.Sprintf("%s%s", TesthausUrlPrefix, gcsUrl[len("gs://"):])
+}
+
+// GetGcsUrl gets gcs url where all the artifacts will be uploaded.
+func GetGcsUrl(gsRoot string) string {
+	return fmt.Sprintf(
+		"%s/%s/%s",
+		gsRoot,
+		time.Now().Format("2006-01-02"),
+		uuid.New().String())
+}
+
+// GetGcsClickableLink constructs the gcs cliclable link from provided gs url.
+func GetGcsClickableLink(gsUrl string) string {
+	gsPrefix := "gs://"
+	urlSuffix := gsUrl
+	if strings.HasPrefix(gsUrl, gsPrefix) {
+		urlSuffix = gsUrl[len(gsPrefix):]
+	}
+	return fmt.Sprintf("%s%s", GcsUrlPrefix, urlSuffix)
 }

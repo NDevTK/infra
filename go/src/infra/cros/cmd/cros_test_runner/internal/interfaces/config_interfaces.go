@@ -30,8 +30,8 @@ type AbstractTestExecutionConfig struct {
 	configType ConfigType
 }
 
-func NewAbstractTestExecutionConfig(configType ConfigType) AbstractTestExecutionConfig {
-	return AbstractTestExecutionConfig{configType: configType}
+func NewAbstractTestExecutionConfig(configType ConfigType) *AbstractTestExecutionConfig {
+	return &AbstractTestExecutionConfig{configType: configType}
 }
 
 func (absConfig *AbstractTestExecutionConfig) GetConfigType() ConfigType {

@@ -62,6 +62,21 @@ func TestProvisionInstallCmd_UpdateSK(t *testing.T) {
 		err := cmd.UpdateStateKeeper(ctx, sk)
 		So(err, ShouldBeNil)
 	})
+
+	Convey("Cmd with updates", t, func() {
+		ctx := context.Background()
+		wantProvisionResp := &api.InstallResponse{Status: api.InstallResponse_STATUS_OK}
+		sk := &data.HwTestStateKeeper{CftTestRequest: nil}
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		cont := containers.NewCrosProvisionTemplatedContainer("container/image/path", ctr)
+		exec := executors.NewCrosProvisionExecutor(cont)
+		cmd := commands.NewProvisionInstallCmd(exec)
+		cmd.ProvisionResp = wantProvisionResp
+		err := cmd.UpdateStateKeeper(ctx, sk)
+		So(err, ShouldBeNil)
+		So(sk.ProvisionResp, ShouldEqual, wantProvisionResp)
+	})
 }
 
 func TestProvisionInstallCmd_ExtractDepsSuccess(t *testing.T) {

@@ -58,8 +58,12 @@ func (ex *CrosDutExecutor) dutStartCommandExecution(
 	defer func() { step.End(err) }()
 
 	err = ex.Start(ctx, cmd.CacheServerAddress, cmd.DutSshAddress)
+	logErr := common.WriteContainerLogToStepLog(ctx, ex.Container, step, "cros-dut log")
 	if err != nil {
-		return errors.Annotate(err, "Start provision cmd err: ").Err()
+		return errors.Annotate(err, "Start dut cmd err: ").Err()
+	}
+	if logErr != nil {
+		logging.Infof(ctx, "error during writing cros-dut log contents: %s", err)
 	}
 
 	cmd.DutServerAddress = ex.DutServerAddress

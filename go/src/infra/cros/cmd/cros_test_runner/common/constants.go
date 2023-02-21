@@ -17,10 +17,12 @@ const (
 	GcsPublishTestArtifactsDir             = "/tmp/gcs-publish-test-artifacts/"
 	TKOPublishTestArtifactsDir             = "/tmp/tko-publish-test-artifacts/"
 	StainlessUrlPrefix                     = "https://stainless.corp.google.com/browse/"
+	TesthausUrlPrefix                      = "https://cros-test-analytics.appspot.com/p/chromeos/logs/browse/"
 	GcsUrlPrefix                           = "https://pantheon.corp.google.com/storage/browser/"
-	HwTestLabGsRoot                        = "gs://chromeos-test-logs/test-runner/prod"
 	HwTestCtrInputPropertyName             = "$chromeos/cros_tool_runner"
 	CftServiceMetadataFileName             = ".cftmeta"
 	CftServiceMetadataLineContentSeparator = "="
 	CftServiceMetadataServicePortKey       = "SERVICE_PORT"
+	TestDidNotRunErr                       = "Test did not run"
+	CtrCancelingCmdErrString               = "canceling Cmd"
 )

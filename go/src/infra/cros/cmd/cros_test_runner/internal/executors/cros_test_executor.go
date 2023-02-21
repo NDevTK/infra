@@ -58,8 +58,12 @@ func (ex *CrosTestExecutor) testStartCommandExecution(
 	defer func() { step.End(err) }()
 
 	err = ex.Start(ctx)
+	logErr := common.WriteContainerLogToStepLog(ctx, ex.Container, step, "cros-test log")
 	if err != nil {
 		return errors.Annotate(err, "Start test service cmd err: ").Err()
+	}
+	if logErr != nil {
+		logging.Infof(ctx, "error during writing cros-test log contents: %s", err)
 	}
 
 	return err
