@@ -24,6 +24,7 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
+	"go.chromium.org/luci/appengine/gaeauth/server"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/discovery"
 	"go.chromium.org/luci/grpc/grpcmon"
@@ -49,6 +50,9 @@ func InstallHandlers(r *router.Router, mwBase router.MiddlewareChain) {
 		UnaryServerInterceptor: grpcutil.ChainUnaryServerInterceptors(
 			grpcmon.UnaryServerInterceptor,
 			grpcutil.UnaryServerPanicCatcherInterceptor,
+			auth.AuthenticatingInterceptor([]auth.Method{
+				&server.OAuth2Method{Scopes: []string{server.EmailScope}},
+			}).Unary(),
 			versionInterceptor,
 		),
 	}

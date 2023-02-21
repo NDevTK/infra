@@ -14,6 +14,8 @@ import (
 	"go.chromium.org/luci/auth/identity"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/info"
+	"go.chromium.org/luci/grpc/grpcmon"
+	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/gerritauth"
@@ -118,8 +120,6 @@ const gerritAuthHeader = "X-Gerrit-Auth"
 //	discovery.Enable(srv)
 //	srv.InstallHandlers(router, MiddlewareForRPC())
 func NewRPCServer() *prpc.Server {
-	// TODO(vadimsh): Enable monitoring interceptor.
-	// UnaryServerInterceptor: grpcmon.NewUnaryServerInterceptor(nil),
 	return &prpc.Server{
 		// Allow cross-origin calls, in particular calls using Gerrit auth headers.
 		AccessControl: func(context.Context, string) prpc.AccessControlDecision {
@@ -129,8 +129,10 @@ func NewRPCServer() *prpc.Server {
 				AllowHeaders:             []string{gerritAuthHeader},
 			}
 		},
-		Authenticator: &auth.Authenticator{
-			Methods: []auth.Method{
+		UnaryServerInterceptor: grpcutil.ChainUnaryServerInterceptors(
+			grpcmon.UnaryServerInterceptor,
+			grpcutil.UnaryServerPanicCatcherInterceptor,
+			auth.AuthenticatingInterceptor([]auth.Method{
 				// The default method used by majority of clients.
 				&server.OAuth2Method{
 					Scopes: []string{"https://www.googleapis.com/auth/userinfo.email"},
@@ -144,7 +146,7 @@ func NewRPCServer() *prpc.Server {
 					},
 					Audience: "https://api.cr.dev",
 				},
-			},
-		},
+			}).Unary(),
+		),
 	}
 }
