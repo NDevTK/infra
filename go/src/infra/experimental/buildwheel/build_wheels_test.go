@@ -49,10 +49,6 @@ func expectedFinalBuildPb(status bbpb.Status, fakeTime *timestamppb.Timestamp) (
 				Status:    status,
 				Logs: []*bbpb.Log{
 					{
-						Name: "log",
-						Url:  "step/0/log/0",
-					},
-					{
 						Name: "stdout",
 						Url:  "step/0/log/1",
 					},
