@@ -585,9 +585,9 @@ class IssuesServicer(monorail_servicer.MonorailServicer):
     if request.group_by == 'owner':
       # Map user ids to emails.
       snapshot_counts = [
-        issues_pb2.IssueSnapshotCount(
-          dimension=self.services.user.GetUser(mc.cnxn, key).email,
-          count=result) for key, result in results.iteritems()
+          issues_pb2.IssueSnapshotCount(
+              dimension=self.services.user.GetUser(mc.cnxn, key).email,
+              count=result) for key, result in results.items()
       ]
     else:
       snapshot_counts = [

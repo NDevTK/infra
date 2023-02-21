@@ -125,7 +125,7 @@ def _IssueIdsFromLocalIds(cnxn, project_local_id_pairs, services):
   if misses:
     # Raise error with resource names rather than backend IDs.
     project_names_by_id = {
-        p_id: p_name for p_name, p_id in project_ids_by_name.iteritems()
+        p_id: p_name for p_name, p_id in project_ids_by_name.items()
     }
     misses_by_resource_name = [
         _ConstructIssueName(project_names_by_id[p_id], local_id)

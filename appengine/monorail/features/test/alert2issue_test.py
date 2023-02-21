@@ -7,7 +7,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import email
+import email.message
 import unittest
 from mock import patch
 try:
@@ -315,7 +315,7 @@ class GetAlertPropertiesTests(unittest.TestCase, TestData):
 
     # create a test email message, which tests can alternate the header values
     # to verify the behaviour of a given parser function.
-    self.test_msg = email.Message.Message()
+    self.test_msg = email.message.Message()
     for key, value in self.msg.items():
       self.test_msg[key] = value
 

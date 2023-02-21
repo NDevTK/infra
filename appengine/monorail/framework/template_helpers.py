@@ -8,7 +8,10 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import absolute_import
 
-import cgi
+try:
+  import html
+except ImportError:
+  import cgi as html
 from six.moves import http_client
 from six.moves import StringIO
 import logging
@@ -319,7 +322,7 @@ class TextRun(object):
     """Return a string that can be used in an HTML email body."""
     if self.tag == 'a' and self.href:
       return '<a href="%s">%s</a>' % (
-          cgi.escape(self.href, quote=True),
-          cgi.escape(self.content, quote=True))
+          html.escape(self.href,
+                      quote=True), html.escape(self.content, quote=True))
 
-    return cgi.escape(self.content, quote=True)
+    return html.escape(self.content, quote=True)

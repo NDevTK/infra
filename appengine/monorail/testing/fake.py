@@ -2789,7 +2789,7 @@ class FeaturesService(object):
     emails = user_ids_by_email.keys()
     user_ids = user_ids_by_email.values()
     project_rules_dict = collections.defaultdict(list)
-    for project_id, rules in self.test_rules.iteritems():
+    for project_id, rules in self.test_rules.items():
       for rule in rules:
         if rule.default_owner_id in user_ids:
           project_rules_dict[project_id].append(rule)

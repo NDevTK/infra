@@ -871,9 +871,23 @@ class PeekIterator:
       pass
     return 'End of PeekIterator'
 
+  def __next__(self):
+    # type: () -> Any
+    """Gets the next value in the iterator and increments pointer.
+
+    Returns:
+      Next value in iterator.
+
+    Raises:
+      StopIteration if you're at the end of the iterator.
+    """
+    return self.next()
+
   def next(self):
     # type: () -> Any
     """Gets the next value in the iterator and increments pointer.
+
+    For backwards compatibility with Python 2.
 
     Returns:
       Next value in iterator.

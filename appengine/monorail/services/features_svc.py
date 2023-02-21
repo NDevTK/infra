@@ -684,11 +684,10 @@ class FeaturesService(object):
         if any(email in predicate for email in emails):
           deleted_rows.append(rule_row)
           continue
-        if any(
-            (('add_notify:%s' % email) in consequence or
-             ('add_cc_id:%s' % user_id) in consequence or
-             ('default_owner_id:%s' % user_id) in consequence)
-            for email, user_id in user_ids_by_email.iteritems()):
+        if any((('add_notify:%s' % email) in consequence or
+                ('add_cc_id:%s' % user_id) in consequence or
+                ('default_owner_id:%s' % user_id) in consequence)
+               for email, user_id in user_ids_by_email.items()):
           deleted_rows.append(rule_row)
           continue
 

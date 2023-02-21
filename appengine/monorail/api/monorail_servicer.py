@@ -6,8 +6,11 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import cgi
 import functools
+try:
+  import html
+except ImportError:
+  import cgi as html
 import logging
 from six.moves import http_client
 import sys
@@ -354,7 +357,7 @@ class MonorailServicer(object):
     elif exc_type == exceptions.InputException:
       prpc_context.set_code(codes.StatusCode.INVALID_ARGUMENT)
       prpc_context.set_details(
-          'Invalid arguments: %s' % cgi.escape(e.message, quote=True))
+          'Invalid arguments: %s' % html.escape(e.message, quote=True))
     elif exc_type == ratelimiter.ApiRateLimitExceeded:
       prpc_context.set_code(codes.StatusCode.PERMISSION_DENIED)
       prpc_context.set_details('The requester has exceeded API quotas limit.')

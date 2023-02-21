@@ -237,9 +237,11 @@ def _GetCCIDs(user_svc, cnxn, cc_emails):
   if not cc_emails:
     return []
   emails = [addr for _, addr in email.utils.getaddresses([cc_emails])]
-  return [userID for _, userID
-          in user_svc.LookupExistingUserIDs(cnxn, emails).iteritems()
-          if userID is not None]
+  return [
+      userID
+      for _, userID in user_svc.LookupExistingUserIDs(cnxn, emails).items()
+      if userID is not None
+  ]
 
 
 def _GetPriority(known_labels, priority):
