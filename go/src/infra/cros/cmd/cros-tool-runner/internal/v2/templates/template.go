@@ -11,10 +11,11 @@ import (
 	"strconv"
 	"strings"
 
+	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
 const (
@@ -33,6 +34,7 @@ var aCrosGcsPublishProcessor = newCrosGcsPublishProcessor()
 var aCrosTkoPublishProcessor = newCrosTkoPublishProcessor()
 var aCrosRdbPublishProcessor = newCrosRdbPublishProcessor()
 var aCrosCpconPublishProcessor = newCrosRdbPublishProcessor()
+var aCacheServerProcessor = newCacheServerProcessor()
 
 // TemplateProcessor converts a container-specific template into a valid generic
 // StartContainerRequest. Besides request conversions, a TemplateProcessor is
@@ -88,6 +90,8 @@ func (r *RequestRouter) getActualProcessor(request *api.StartTemplatedContainerR
 		return aCrosProvisionProcessor, nil
 	case *api.Template_CrosTest:
 		return aCrosTestProcessor, nil
+	case *api.Template_CacheServer:
+		return aCacheServerProcessor, nil
 	case *api.Template_CrosPublish:
 		return r.getActualPublishProcessor(t.CrosPublish.PublishType)
 	default:
