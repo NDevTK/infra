@@ -1726,9 +1726,10 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Install stable OS on the device.",
 			},
-			Dependencies: []string{
+			Conditions: []string{
 				"Recovery version has OS image path",
 				"Device is SSHable",
+				"Internal storage is responsive",
 			},
 			ExecName:    "cros_provision",
 			ExecTimeout: &durationpb.Duration{Seconds: 3600},
@@ -2257,13 +2258,17 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Install the stable test image designated for the DUT.",
 			},
+			Conditions: []string{
+				"Device is SSHable",
+				"Internal storage is responsive",
+			},
 			Dependencies: []string{
 				"Write factory-install-reset to file system",
 				"Simple reboot",
 				"Wait to be SSHable (normal boot)",
-				"Quick provision OS",
 			},
-			ExecName: "sample_pass",
+			ExecName:    "cros_provision",
+			ExecTimeout: &durationpb.Duration{Seconds: 3600},
 		},
 		"Flash AP (FW) with GBB 0x18 by servo": {
 			Docs: []string{
