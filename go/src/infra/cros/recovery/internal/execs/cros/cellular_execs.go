@@ -21,13 +21,60 @@ import (
 func init() {
 	execs.Register("cros_audit_cellular", auditCellularExec)
 	execs.Register("cros_has_mmcli", hasModemManagerCLIExec)
-	execs.Register("has_cellular_info", hasModemManagerCLIExec)
+	execs.Register("cros_has_modemmanager_job", hasModemManagerJobExec)
+	execs.Register("cros_modemmanager_running", modemManagerRunningExec)
+	execs.Register("cros_restart_modemmanager", restartModemManagerExec)
+	execs.Register("has_cellular_info", hasCellularInfoExec)
 }
 
 // hasModemManagerCLIExec validates that mmcli is present on the DUT
 func hasModemManagerCLIExec(ctx context.Context, info *execs.ExecInfo) error {
-	if !cellular.HasModemManagerCLI(ctx, info.DefaultRunner()) {
+	if !cellular.HasModemManagerCLI(ctx, info.DefaultRunner(), info.GetExecTimeout()) {
 		return errors.Reason("has modem manager cli: mmcli is not found on device").Err()
+	}
+	return nil
+}
+
+// hasModemManagerJobExec validates that modemmanager job is known by upstart and present on the DUT.
+func hasModemManagerJobExec(ctx context.Context, info *execs.ExecInfo) error {
+	if !cellular.HasModemManagerJob(ctx, info.DefaultRunner(), info.GetExecTimeout()) {
+		return errors.Reason("has modem manager job: modemmanager is not found on device").Err()
+	}
+	return nil
+}
+
+// modemManagerRunningExec ensures modemmanager is running on the DUT and starts it if it's not already.
+func modemManagerRunningExec(ctx context.Context, info *execs.ExecInfo) error {
+	runner := info.DefaultRunner()
+	argsMap := info.GetActionArgs(ctx)
+	waitTimeout := argsMap.AsDuration(ctx, "wait_timeout", 10, time.Second)
+	startTimeout := argsMap.AsDuration(ctx, "start_timeout", 30, time.Second)
+	if cellular.WaitForModemManager(ctx, runner, waitTimeout) == nil {
+		return nil
+	}
+
+	if err := cellular.StartModemManager(ctx, runner, startTimeout); err != nil {
+		return errors.Annotate(err, "start modemmanager").Err()
+	}
+
+	if err := cellular.WaitForModemManager(ctx, runner, waitTimeout); err != nil {
+		return errors.Annotate(err, "wait for modemmanager to start").Err()
+	}
+	return nil
+}
+
+// restartModemManagerExec restarts modemmanagr on the DUT.
+func restartModemManagerExec(ctx context.Context, info *execs.ExecInfo) error {
+	runner := info.DefaultRunner()
+	argsMap := info.GetActionArgs(ctx)
+	waitTimeout := argsMap.AsDuration(ctx, "wait_timeout", 10, time.Second)
+	restartTimeout := argsMap.AsDuration(ctx, "restart_timeout", 30, time.Second)
+	if err := cellular.RestartModemManager(ctx, runner, restartTimeout); err != nil {
+		return errors.Annotate(err, "restart modemmanager").Err()
+	}
+
+	if err := cellular.WaitForModemManager(ctx, runner, waitTimeout); err != nil {
+		return errors.Annotate(err, "wait for modemmanager to start").Err()
 	}
 	return nil
 }

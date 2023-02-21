@@ -7,6 +7,8 @@ package cellular
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
@@ -16,9 +18,13 @@ import (
 )
 
 const (
-	mmcliCliPresent = "which mmcli"
-	detectCmd       = "mmcli -m a -J"
-	expectedCmd     = "cros_config /modem firmware-variant"
+	modemManagerJob           = "modemmanager"
+	detectCmd                 = "mmcli -m a -J"
+	expectedCmd               = "cros_config /modem firmware-variant"
+	mmcliCliPresentCmd        = "which mmcli"
+	modemManagerJobPresentCmd = "initctl status modemmanager"
+	restartModemManagerCmd    = "restart modemmanager"
+	startModemManagerCmd      = "start modemmanager"
 )
 
 // IsExpected returns true if cellular modem is expected to exist on the DUT.
@@ -30,11 +36,48 @@ func IsExpected(ctx context.Context, runner components.Runner) bool {
 }
 
 // HasModemManagerCLI returns true if mmcli is present on the DUT.
-func HasModemManagerCLI(ctx context.Context, runner components.Runner) bool {
-	if _, err := runner(ctx, time.Minute, mmcliCliPresent); err != nil {
+func HasModemManagerCLI(ctx context.Context, runner components.Runner, timeout time.Duration) bool {
+	if _, err := runner(ctx, timeout, mmcliCliPresentCmd); err != nil {
 		return false
 	}
 	return true
+}
+
+// HasModemManagerJob returns true if modemmanager job is present on the DUT.
+func HasModemManagerJob(ctx context.Context, runner components.Runner, timeout time.Duration) bool {
+	if _, err := runner(ctx, timeout, modemManagerJobPresentCmd); err != nil {
+		return false
+	}
+	return true
+}
+
+// StartModemManager starts modemmanager via upstart.
+func StartModemManager(ctx context.Context, runner components.Runner, timeout time.Duration) error {
+	if _, err := runner(ctx, timeout, startModemManagerCmd); err != nil {
+		return errors.Annotate(err, "start modemmanager").Err()
+	}
+	return nil
+}
+
+// RestartModemManager restarts modemmanager via upstart.
+func RestartModemManager(ctx context.Context, runner components.Runner, timeout time.Duration) error {
+	if _, err := runner(ctx, timeout, restartModemManagerCmd); err != nil {
+		return errors.Annotate(err, "restart modemmanager").Err()
+	}
+	return nil
+}
+
+// WaitForModemManager waits for the modemmanager job to be running via upstart.
+func WaitForModemManager(ctx context.Context, runner components.Runner, timeout time.Duration) error {
+	cmd := fmt.Sprintf("status %s", modemManagerJob)
+	return retry.WithTimeout(ctx, time.Second, timeout, func() error {
+		if output, err := runner(ctx, 5*time.Second, cmd); err != nil {
+			return errors.Annotate(err, "get modemmanager status").Err()
+		} else if !strings.Contains(output, "start/running") {
+			return errors.Reason("modemmanager not running").Err()
+		}
+		return nil
+	}, "wait for modemmanager")
 }
 
 // ModemInfo is a simplified version of the JSON output from ModemManager to get the modem connection state information.
