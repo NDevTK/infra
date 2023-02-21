@@ -17,12 +17,12 @@ import (
 
 func TestProgrammerV3ProgramEC(t *testing.T) {
 	t.Parallel()
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
 	ctx := context.Background()
 	logger := logger.NewLogger()
 	imagePath := "ec_image.bin"
 	Convey("Happy path for stm32 chip", t, func() {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
 		runRequest := map[string]string{
 			"which flash_ec": "",
 			"flash_ec --chip=stm32 --image=ec_image.bin --port=95 --bitbang_rate=57600 --verify --verbose": "",
@@ -41,6 +41,8 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 		So(err, ShouldBeNil)
 	})
 	Convey("Happy path for other chips", t, func() {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
 		runRequest := map[string]string{
 			"which flash_ec": "",
 			"flash_ec --chip=some_chip --image=ec_image.bin --port=96 --verify --verbose": "",
@@ -57,6 +59,46 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 
 		err := p.programEC(ctx, imagePath)
 		So(err, ShouldBeNil)
+	})
+	Convey("block for ite chips (1)", t, func() {
+		// TODO(b:270170790): remove when we can recover functionality fo flash EC for ite chips.
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		runRequest := map[string]string{
+			"which flash_ec": "",
+		}
+		servod := mocks.NewMockServod(ctrl)
+		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("it8XXXX"), nil).Times(1)
+		servod.EXPECT().Port().Return(95).Times(0)
+
+		p := &v3Programmer{
+			run:    mockRunner(runRequest),
+			servod: servod,
+			log:    logger,
+		}
+
+		err := p.programEC(ctx, imagePath)
+		So(err, ShouldNotBeNil)
+	})
+	Convey("block for ite chips (2)", t, func() {
+		// TODO(b:270170790): remove when we can recover functionality fo flash EC for ite chips.
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		runRequest := map[string]string{
+			"which flash_ec": "",
+		}
+		servod := mocks.NewMockServod(ctrl)
+		servod.EXPECT().Get(ctx, "ec_chip").Return(stringValue("it8yyyyy"), nil).Times(1)
+		servod.EXPECT().Port().Return(95).Times(0)
+
+		p := &v3Programmer{
+			run:    mockRunner(runRequest),
+			servod: servod,
+			log:    logger,
+		}
+
+		err := p.programEC(ctx, imagePath)
+		So(err, ShouldNotBeNil)
 	})
 }
 

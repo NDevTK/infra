@@ -72,6 +72,9 @@ func (p *v3Programmer) programEC(ctx context.Context, imagePath string) error {
 	var cmd string
 	if ecChip == "stm32" {
 		cmd = fmt.Sprintf(ecProgrammerStm32CmdGlob, ecChip, imagePath, p.servod.Port())
+	} else if strings.HasPrefix(ecChip, "it8") {
+		// TODO(b:270170790): Flashing blocked by b/268108518
+		return errors.Reason("program ec: flash for `ite` chips is blocked by b/268108518").Err()
 	} else {
 		cmd = fmt.Sprintf(ecProgrammerCmdGlob, ecChip, imagePath, p.servod.Port())
 	}
