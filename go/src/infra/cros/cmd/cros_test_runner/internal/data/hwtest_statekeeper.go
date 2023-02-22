@@ -6,8 +6,10 @@ package data
 
 import (
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	artifactpb "go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
@@ -17,6 +19,9 @@ import (
 // HwTestStateKeeper represents all the data hw test execution flow requires.
 type HwTestStateKeeper struct {
 	interfaces.StateKeeper
+
+	// Build related
+	BuildState *build.State
 
 	// Set from input
 	CftTestRequest *skylab_test_runner.CFTTestRequest
@@ -40,6 +45,7 @@ type HwTestStateKeeper struct {
 	GcsPublishSrcDir    string
 	CurrentInvocationId string
 	TkoPublishSrcDir    string
+	TestResultForRdb    *artifactpb.TestResult
 
 	// Build related
 	SkylabResult *skylab_test_runner.Result
