@@ -1337,6 +1337,7 @@ SPECS.update({
         Universal('google-cloud-pubsub', '2.9.0', pyversions=['py3']),
         Universal('google-cloud-resource-manager', '0.28.0'),
         Universal('google-cloud-runtimeconfig', '0.28.0'),
+        Universal('google-cloud-secret-manager', '2.10.0'),
         Universal('google-cloud-spanner', '0.29.0'),
         Universal('google-cloud-speech', '0.30.0'),
         Universal('google-cloud-storage', '1.6.0'),

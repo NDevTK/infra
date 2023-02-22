@@ -2699,6 +2699,20 @@ wheel: <
 
 * *universal*
 
+## **google-cloud-secret-manager**
+
+### 2.10.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-cloud-secret-manager-py2_py3"
+  version: "version:2.10.0"
+>
+```
+
+
+* *universal*
+
 ## **google-cloud-spanner**
 
 ### 0.29.0
