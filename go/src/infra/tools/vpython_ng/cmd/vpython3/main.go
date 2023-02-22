@@ -20,30 +20,21 @@ import (
 const DefaultPythonVersion = "3.8"
 
 type PythonRuntime struct {
-	Version     string
-	Executable  string
-	CIPDName    string
-	SpecPattern string
-	Virtualenv  string
+	Version    string
+	Virtualenv string
 }
 
 func GetPythonRuntime(ver string) *PythonRuntime {
 	switch ver {
 	case "3.8":
 		return &PythonRuntime{
-			Version:     "3.8",
-			Executable:  "python3",
-			CIPDName:    "cpython3",
-			SpecPattern: ".vpython3",
-			Virtualenv:  "version:2@16.7.12.chromium.7",
+			Version:    "3.8",
+			Virtualenv: "version:2@16.7.12.chromium.7",
 		}
 	default:
 		return &PythonRuntime{
-			Version:     ver,
-			Executable:  "python3",
-			CIPDName:    "cpython3",
-			SpecPattern: ".vpython3",
-			Virtualenv:  "version:2@20.17.1.chromium.8",
+			Version:    ver,
+			Virtualenv: "version:2@20.17.1.chromium.8",
 		}
 	}
 }
@@ -55,6 +46,8 @@ func main() {
 		PruneThreshold:    7 * 24 * time.Hour, // One week.
 		MaxPrunesPerSweep: 3,
 
+		DefaultSpecPattern: ".vpython3",
+
 		Environments: os.Environ(),
 		Arguments:    os.Args[1:],
 	}
@@ -63,12 +56,12 @@ func main() {
 	app.Must(app.ParseEnvs())
 	app.Must(app.ParseArgs())
 
+	app.PythonExecutable = "python3"
 	if app.Bypass {
 		// no-op for tool mode if we are bypassing vpython
 		if app.ToolMode != "" {
 			return
 		}
-		app.PythonExecutable = rt.Executable
 		app.Must(app.ExecutePython())
 		return
 	}
@@ -84,14 +77,13 @@ func main() {
 	if app.InterpreterPath != "" {
 		bundle = app.InterpreterPath
 	}
-	cpython, err := python.CPythonFromPath(bundle, rt.CIPDName)
+	cpython, err := python.CPythonFromPath(bundle, "cpython3")
 	if err != nil {
 		app.Fatal(err)
 	}
-	app.PythonExecutable = rt.Executable
 
 	env := python.Environment{
-		Executable: rt.Executable,
+		Executable: app.PythonExecutable,
 		CPython:    cpython,
 		Virtualenv: python.VirtualenvFromCIPD(rt.Virtualenv),
 	}

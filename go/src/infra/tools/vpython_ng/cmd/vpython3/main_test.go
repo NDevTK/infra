@@ -39,7 +39,7 @@ var testStorageDir string
 func getPythonEnvironment(ver string) *python.Environment {
 	rt := GetPythonRuntime(ver)
 	return &python.Environment{
-		Executable: rt.Executable,
+		Executable: "python3",
 		CPython: python.CPython3FromCIPD(map[string]string{
 			"3.8":  "version:2@3.8.10.chromium.24",
 			"3.11": "version:2@3.11.1.chromium.25",

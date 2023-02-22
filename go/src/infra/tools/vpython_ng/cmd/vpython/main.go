@@ -71,6 +71,8 @@ func main() {
 		PruneThreshold:    7 * 24 * time.Hour, // One week.
 		MaxPrunesPerSweep: 3,
 
+		DefaultSpecPattern: rt.SpecPattern,
+
 		Environments: os.Environ(),
 		Arguments:    os.Args[1:],
 	}
