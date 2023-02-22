@@ -12,7 +12,16 @@ import (
 
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/scopes"
 )
+
+// hasStableVersionServicePathExec checks the path of the stable version service in the context params.
+func hasStableVersionServicePathExec(ctx context.Context, info *execs.ExecInfo) error {
+	if _, ok := scopes.GetParam(ctx, scopes.ParamKeyStableVersionServicePath); ok {
+		return nil
+	}
+	return errors.Reason("has stable version path: not specified").Err()
+}
 
 // hasCrosImageStableVersionActionExec verifies that DUT provides ChromeOS image name as part of stable version.
 // Example: board-release/R90-13816.47.0.
@@ -63,6 +72,7 @@ func hasFwImageStableVersionActionExec(ctx context.Context, info *execs.ExecInfo
 }
 
 func init() {
+	execs.Register("has_stable_version_service_path", hasStableVersionServicePathExec)
 	execs.Register("has_stable_version_cros_image", hasCrosImageStableVersionActionExec)
 	execs.Register("has_stable_version_fw_version", hasFwVersionStableVersionActionExec)
 	execs.Register("has_stable_version_fw_image", hasFwImageStableVersionActionExec)

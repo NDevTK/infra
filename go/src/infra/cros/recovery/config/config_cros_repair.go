@@ -652,7 +652,7 @@ func crosRepairActions() map[string]*Action {
 				"Check whether the cros image version on the device is not as expected.",
 			},
 			Dependencies: []string{
-				"has_stable_version_cros_image",
+				"Recovery version has OS image path",
 				"cros_is_on_stable_version",
 			},
 			ExecName: "sample_fail",
@@ -899,7 +899,7 @@ func crosRepairActions() map[string]*Action {
 				"Check if the version of RO firmware on DUT matches the stable firmware version.",
 			},
 			Conditions: []string{
-				"Recovery version has firmware version",
+				"Check stable firmware version exists",
 				"Recovery version has firmware image path",
 				"Pools required to manage FW on the device",
 			},
@@ -959,7 +959,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Recovery version has OS image path",
-				"cros_not_on_stable_version",
+				"DUT not on stable version",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
@@ -2181,21 +2181,46 @@ func crosRepairActions() map[string]*Action {
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
-		"Recovery version has firmware version": {
+		"Check stable firmware version exists": {
 			Docs: []string{
-				"Verify that recovery version has firmware version.",
+				"Check the DUT has model specific firmware stable_version configured.",
+				"Flex device are exampted from this check as they don't run cros firmware",
+			},
+			Conditions: []string{
+				"Is not Flex device",
+				"Has a stable-version service",
 			},
 			ExecName: "has_stable_version_fw_version",
 		},
+		"Check stable faft version exists": {
+			Docs: []string{
+				"Check the DUT has model specific faft stable_version configured.",
+				"Flex device are exampted from this check as they don't run cros firmware",
+				"Satlab DUTs are exampted from this check given some early stage device don't have firmware branch GS bucket setup yet.",
+			},
+			Conditions: []string{
+				"Is not Flex device",
+				"Not Satlab device",
+				"Has a stable-version service",
+			},
+			ExecName: "has_stable_version_fw_image",
+		},
+		// TODO: Resolve duplication with another action when satlab condition resolved.
 		"Recovery version has firmware image path": {
 			Docs: []string{
 				"Verify that recovery version has firmware image path.",
+			},
+			Dependencies: []string{
+				"Has a stable-version service",
 			},
 			ExecName: "has_stable_version_fw_image",
 		},
 		"Recovery version has OS image path": {
 			Docs: []string{
 				"Verify that recovery version has OS image path.",
+			},
+			Dependencies: []string{
+				"Has a stable-version service",
 			},
 			ExecName: "has_stable_version_cros_image",
 		},
@@ -2941,6 +2966,13 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:               "cros_disable_cpu_fw_spi",
 			AllowFailAfterRecovery: true,
+		},
+		"Has a stable-version service": {
+			Docs: []string{
+				"Verify if we have access to the service provided access to the stable version",
+			},
+			ExecName:   "has_stable_version_service_path",
+			RunControl: RunControl_RUN_ONCE,
 		},
 	}
 }

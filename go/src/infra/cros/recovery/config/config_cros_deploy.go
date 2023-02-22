@@ -363,35 +363,16 @@ func deployActions() map[string]*Action {
 			Docs: []string{
 				"Check the DUT has model specific cros, firmware and faft stable_version configured.",
 			},
+			Conditions: []string{
+				"Has a stable-version service",
+			},
 			Dependencies: []string{
-				"has_stable_version_cros_image",
+				"Recovery version has OS image path",
 				"Check stable firmware version exists",
 				// Disabled faft version check until b/241150358 got resolved.
 				//"Check stable faft version exists",
 			},
 			ExecName: "sample_pass",
-		},
-		"Check stable firmware version exists": {
-			Docs: []string{
-				"Check the DUT has model specific firmware stable_version configured.",
-				"Flex device are exampted from this check as they don't run cros firmware",
-			},
-			Conditions: []string{
-				"Is not Flex device",
-			},
-			ExecName: "has_stable_version_fw_version",
-		},
-		"Check stable faft version exists": {
-			Docs: []string{
-				"Check the DUT has model specific faft stable_version configured.",
-				"Flex device are exampted from this check as they don't run cros firmware",
-				"Satlab DUTs are exampted from this check given some early stage device don't have firmware branch GS bucket setup yet.",
-			},
-			Conditions: []string{
-				"Is not Flex device",
-				"Not Satlab device",
-			},
-			ExecName: "has_stable_version_fw_image",
 		},
 		"Missing stable fw image": {
 			Docs: []string{
