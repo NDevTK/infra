@@ -72,7 +72,7 @@ func innerMain() error {
 // newGRPCServer creates a new gRPC server for labservice.
 func newGRPCServer(c *serverConfig) *grpc.Server {
 	ic := interceptor{}
-	gs := grpc.NewServer(ic.unaryOption())
+	gs := grpc.NewServer(ic.unaryOption(), grpc.StreamInterceptor(streamNamespaceInterceptor))
 	s := newServer(c)
 	labapi.RegisterInventoryServiceServer(gs, s)
 	lsapi.RegisterLabServiceServer(gs, s)
@@ -96,6 +96,25 @@ func (ic interceptor) unaryOption() grpc.ServerOption {
 func withUFSContext(ctx context.Context) context.Context {
 	md := metadata.Pairs("namespace", "os")
 	return metadata.NewOutgoingContext(ctx, md)
+}
+
+// serverStream overrides behavior of `grpc.serverStream` by allowing us to
+// set and get the context.
+type serverStream struct {
+	grpc.ServerStream
+	ctx context.Context
+}
+
+// Context implements the Context() method of the serverStream interface.
+func (s *serverStream) Context() context.Context {
+	return s.ctx
+}
+
+// streamNamespaceInterceptor adds the os namespace as *outgoing* context for
+// all GRPC stream requests.
+func streamNamespaceInterceptor(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+	ctx := withUFSContext(ss.Context())
+	return handler(srv, &serverStream{ss, ctx})
 }
 
 // strSlice implements flag.Value interface for specify multiple value.

@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
 	"infra/cros/cmd/labservice/internal/ufs/cache"
@@ -19,7 +18,6 @@ import (
 	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	manufacturing "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
-	ufsutil "infra/unifiedfleet/app/util"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
@@ -107,9 +105,7 @@ func (inv *Inventory) getSchedulingUnitInfo(ctx context.Context, hostnames []str
 
 // getDeviceData fetches a device entry.
 func (inv *Inventory) getDeviceData(ctx context.Context, id string) (*ufsapi.GetDeviceDataResponse, error) {
-	// Add chromeos namespace to the context for ufs rpc calls
-	osCtx := metadata.NewOutgoingContext(ctx, metadata.Pairs(ufsutil.Namespace, ufsutil.OSNamespace))
-	resp, err := inv.client.GetDeviceData(osCtx, &ufsapi.GetDeviceDataRequest{Hostname: id})
+	resp, err := inv.client.GetDeviceData(ctx, &ufsapi.GetDeviceDataRequest{Hostname: id})
 	if err != nil {
 		return nil, err
 	}
