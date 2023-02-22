@@ -67,7 +67,20 @@ func getDUTPoolMap(ctx context.Context, d *tlw.Dut) map[string]bool {
 	return poolMap
 }
 
+// notBrowserLegacyDUTExec verifies that if the DUT is a legacy DUT in browser lab.
+func notBrowserLegacyDUTExec(ctx context.Context, info *execs.ExecInfo) error {
+	// Only legacy DUT migrated from browser lab has assetTag to contain browser prefix.
+	// DUTs used for browser testing but purchased by CrOS Warehouse has real asset tag without prefix.
+	assetTag := info.GetDut().Id
+	if strings.HasPrefix(assetTag, "chrome-") || strings.HasPrefix(assetTag, "chromium-") {
+		return errors.Reason("check if not browser legacy DUT: %s is a legacy browser DUT", assetTag).Err()
+	}
+	log.Debugf(ctx, "check if not browser legacy DUT: %s is not legacy browser DUT.", assetTag)
+	return nil
+}
+
 func init() {
 	execs.Register("dut_not_in_pool", notInPoolExec)
 	execs.Register("dut_is_in_pool", isInPoolExec)
+	execs.Register("dut_is_not_browser_legacy_duts", notBrowserLegacyDUTExec)
 }

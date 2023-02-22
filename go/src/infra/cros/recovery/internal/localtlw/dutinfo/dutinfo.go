@@ -14,7 +14,6 @@ import (
 
 	"infra/cros/dutstate"
 	"infra/cros/recovery/tlw"
-	"infra/libs/skylab/inventory"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
 	ufslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
@@ -139,7 +138,8 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 	if machine.GetChromeosMachine().GetModel() == "betty" {
 		setup = tlw.DUTSetupTypeCrosVM
 	}
-	if inventory.IsCrOSBrowserHost(name) {
+	// Check hostname to see if it's DUTs for browser testing
+	if strings.HasPrefix(name, "chrome-") || strings.HasPrefix(name, "chromium-") {
 		setup = tlw.DUTSetupTypeCrosBrowser
 	}
 

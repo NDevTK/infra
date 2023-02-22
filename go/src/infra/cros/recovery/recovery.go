@@ -231,6 +231,8 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 		switch ds {
 		case tlw.DUTSetupTypeCros:
 			return config.CrosRepairConfig(), nil
+		case tlw.DUTSetupTypeCrosBrowser:
+			return config.CrosBrowserDUTRepairConfig(), nil
 		case tlw.DUTSetupTypeLabstation:
 			return config.LabstationRepairConfig(), nil
 		case tlw.DUTSetupTypeAndroid:
@@ -245,6 +247,8 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 		switch ds {
 		case tlw.DUTSetupTypeCros:
 			return config.CrosRepairWithDeepRepairConfig(), nil
+		case tlw.DUTSetupTypeCrosBrowser:
+			return config.CrosBrowserDUTRepairConfig(), nil
 		case tlw.DUTSetupTypeLabstation:
 			return config.LabstationRepairConfig(), nil
 		case tlw.DUTSetupTypeAndroid:
@@ -258,6 +262,8 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 		switch ds {
 		case tlw.DUTSetupTypeCros:
 			return config.CrosDeployConfig(), nil
+		case tlw.DUTSetupTypeCrosBrowser:
+			return config.CrosBrowserDUTDeployConfig(), nil
 		case tlw.DUTSetupTypeLabstation:
 			return config.LabstationDeployConfig(), nil
 		case tlw.DUTSetupTypeAndroid:

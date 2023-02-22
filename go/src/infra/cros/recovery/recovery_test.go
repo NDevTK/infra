@@ -166,6 +166,24 @@ var dutPlansCases = []struct {
 		buildbucket.DeepRecovery,
 		[]string{"cros"},
 	},
+	{
+		"cros browser DUT recovery",
+		tlw.DUTSetupTypeCrosBrowser,
+		buildbucket.Recovery,
+		[]string{"cros"},
+	},
+	{
+		"cros browser DUT deep recovery",
+		tlw.DUTSetupTypeCrosBrowser,
+		buildbucket.DeepRecovery,
+		[]string{"cros"},
+	},
+	{
+		"cros browser DUT deploy",
+		tlw.DUTSetupTypeCrosBrowser,
+		buildbucket.Deploy,
+		[]string{"cros"},
+	},
 }
 
 // TestLoadConfiguration tests default configuration used for recovery flow is loading right and parsibale without any issue.
@@ -195,7 +213,7 @@ func TestLoadConfiguration(t *testing.T) {
 				}
 			} else {
 				if !cmp.Equal(got.GetPlanNames(), cs.expPlanNames) {
-					t.Errorf("%q ->want: %v\n got: %v", cs.name, cs.expPlanNames, got.GetPlanNames())
+					t.Errorf("%q ->want: %v\n got: %v: %s", cs.name, cs.expPlanNames, got.GetPlanNames(), err)
 				}
 			}
 		})

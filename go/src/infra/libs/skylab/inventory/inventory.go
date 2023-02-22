@@ -45,14 +45,3 @@ func rewriteMarshaledTextProtoForPython(data []byte) []byte {
 	}
 	return []byte(strings.Join(rls, "\n"))
 }
-
-// Browser-related consts
-const (
-	ChromiumNamePrefix = "chromium-"
-	ChromeNamePrefix   = "chrome-"
-)
-
-// IsNoServoHost returns if a host is deployed for browser testing in Skylab
-func IsCrOSBrowserHost(name string) bool {
-	return strings.HasPrefix(name, ChromeNamePrefix) || strings.HasPrefix(name, ChromiumNamePrefix)
-}
