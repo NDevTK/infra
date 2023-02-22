@@ -16,9 +16,12 @@ import (
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 
 	lsapi "infra/cros/cmd/labservice/api"
+	"infra/unifiedfleet/app/util"
 )
 
 func main() {
@@ -84,7 +87,10 @@ func newGRPCServer(c *serverConfig) *grpc.Server {
 type interceptor struct{}
 
 func (interceptor) unary(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, h grpc.UnaryHandler) (interface{}, error) {
-	ctx = withUFSContext(ctx)
+	ctx, err := withUFSContext(ctx)
+	if err != nil {
+		return nil, err
+	}
 	return h(ctx, req)
 }
 
@@ -92,10 +98,45 @@ func (ic interceptor) unaryOption() grpc.ServerOption {
 	return grpc.ChainUnaryInterceptor(ic.unary)
 }
 
-// Return a context with the gRPC metadata needed to talk to UFS.
-func withUFSContext(ctx context.Context) context.Context {
-	md := metadata.Pairs("namespace", "os")
-	return metadata.NewOutgoingContext(ctx, md)
+// withUFSContext returns a context with the gRPC metadata set with either the
+// *incoming* gRPC metadata, or a reasonable default of `os` namespace.
+func withUFSContext(ctx context.Context) (context.Context, error) {
+	ns, err := determineNamespaceFromContext(ctx)
+	log.Printf("Setting ns to : %s", ns)
+	if err != nil {
+		return nil, err
+	}
+
+	md := metadata.Pairs("namespace", ns)
+	return metadata.NewOutgoingContext(ctx, md), nil
+}
+
+// determineNamespaceFromContext decides the namespace in outgoing context for
+// UFS requests
+//
+// Handles three situations:
+// - nothing set on incoming call: defaults to `os` namespace
+// - valid value in incoming call: uses that value
+// - invalid value in incoming call: errors out
+func determineNamespaceFromContext(ctx context.Context) (string, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	// No metadata is set- we should default to `os`.
+	if !ok {
+		return util.OSNamespace, nil
+	}
+
+	namespace, ok := md[util.Namespace]
+	if ok {
+		ns := strings.ToLower(namespace[0])
+		datastoreNamespace, ok := util.ClientToDatastoreNamespace[ns]
+		if ok {
+			return datastoreNamespace, nil
+		} else {
+			return "", status.Errorf(codes.InvalidArgument, "namespace %s in the context metadata is invalid. Valid namespaces: [%s]", namespace[0], strings.Join(util.ValidClientNamespaceStr(), ", "))
+		}
+	}
+
+	return util.OSNamespace, nil
 }
 
 // serverStream overrides behavior of `grpc.serverStream` by allowing us to
@@ -113,7 +154,10 @@ func (s *serverStream) Context() context.Context {
 // streamNamespaceInterceptor adds the os namespace as *outgoing* context for
 // all GRPC stream requests.
 func streamNamespaceInterceptor(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-	ctx := withUFSContext(ss.Context())
+	ctx, err := withUFSContext(ss.Context())
+	if err != nil {
+		return err
+	}
 	return handler(srv, &serverStream{ss, ctx})
 }
 

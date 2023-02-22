@@ -39,26 +39,26 @@ func TestStreamNamespaceInterceptor(t *testing.T) {
 	tests := []struct {
 		name                  string
 		incomingNamespace     string
-		wantOutgoingNamespace string
+		wantOutgoingNamespace []string
 		wantErr               bool
 	}{
 		{
 			name:                  "no ns",
 			incomingNamespace:     "",
-			wantOutgoingNamespace: "os",
+			wantOutgoingNamespace: []string{"os"},
 			wantErr:               false,
 		},
 		{
 			name:                  "valid ns",
 			incomingNamespace:     "os-partner",
-			wantOutgoingNamespace: "os",
+			wantOutgoingNamespace: []string{"os-partner"},
 			wantErr:               false,
 		},
 		{
 			name:                  "invalid ns",
 			incomingNamespace:     "fake",
-			wantOutgoingNamespace: "os",
-			wantErr:               false,
+			wantOutgoingNamespace: nil,
+			wantErr:               true,
 		},
 	}
 
@@ -95,7 +95,7 @@ func TestStreamNamespaceInterceptor(t *testing.T) {
 			}
 			// Compare the "messages received" aka namespace we sent via
 			// namespaceContextStreamHandler
-			if diff := cmp.Diff(testStream.msgs, []string{tt.wantOutgoingNamespace}); diff != "" {
+			if diff := cmp.Diff(testStream.msgs, tt.wantOutgoingNamespace); diff != "" {
 				t.Errorf("unexpected diff: %s", diff)
 			}
 		})
