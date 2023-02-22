@@ -278,7 +278,7 @@ func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State
 		}
 	}()
 	ctx = setupContextNamespace(ctx, ufsUtil.OSNamespace)
-	access, err := tlw.NewAccess(ctx, in)
+	ctx, access, err := tlw.NewAccess(ctx, in)
 	if err != nil {
 		return errors.Annotate(err, "internal run").Err()
 	}

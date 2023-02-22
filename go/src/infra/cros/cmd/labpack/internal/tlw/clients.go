@@ -16,6 +16,7 @@ import (
 	"infra/cros/cmd/labpack/internal/site"
 	steps "infra/cros/cmd/labpack/internal/steps"
 	"infra/cros/recovery"
+	"infra/cros/recovery/scopes"
 	"infra/cros/recovery/tlw"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
@@ -24,10 +25,10 @@ import (
 const defaultPartnerKeyPathInDrone = "/creds/ssh_keys/partner_testing_rsa"
 
 // NewAccess creates TLW Access for recovery engine.
-func NewAccess(ctx context.Context, in *steps.LabpackInput) (tlw.Access, error) {
+func NewAccess(ctx context.Context, in *steps.LabpackInput) (context.Context, tlw.Access, error) {
 	hc, err := httpClient(ctx)
 	if err != nil {
-		return nil, errors.Annotate(err, "create tlw access: create http client").Err()
+		return ctx, nil, errors.Annotate(err, "create tlw access: create http client").Err()
 	}
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
@@ -41,9 +42,17 @@ func NewAccess(ctx context.Context, in *steps.LabpackInput) (tlw.Access, error) 
 			Options: site.DefaultPRPCOptions,
 		},
 	)
+	params := scopes.GetParamCopy(ctx)
+	if csac != nil {
+		params[scopes.ParamKeyStableVersionServicePath] = in.AdminService
+	}
+	if ic != nil {
+		params[scopes.ParamKeyInventoryServicePath] = in.InventoryService
+	}
+	ctx = scopes.WithParams(ctx, params)
 	// TODO(otabek@): Replace with access to F20 services.
 	access, err := recovery.NewLocalTLWAccess(ic, csac, []string{defaultPartnerKeyPathInDrone})
-	return access, errors.Annotate(err, "create tlw access").Err()
+	return ctx, access, errors.Annotate(err, "create tlw access").Err()
 }
 
 // httpClient returns an HTTP client with authentication set up.

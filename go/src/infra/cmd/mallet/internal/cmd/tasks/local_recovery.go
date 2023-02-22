@@ -30,6 +30,7 @@ import (
 	"infra/cros/recovery/dev"
 	"infra/cros/recovery/karte"
 	"infra/cros/recovery/logger/metrics"
+	"infra/cros/recovery/scopes"
 	"infra/libs/skylab/buildbucket"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "infra/unifiedfleet/app/util"
@@ -170,6 +171,14 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 			},
 		)
 	}
+	params := scopes.GetParamCopy(ctx)
+	if csac != nil {
+		params[scopes.ParamKeyStableVersionServicePath] = e.AdminService
+	}
+	if ic != nil {
+		params[scopes.ParamKeyInventoryServicePath] = e.UFSService
+	}
+	ctx = scopes.WithParams(ctx, params)
 	ctx = setDevOptions(ctx)
 	access, err := recovery.NewLocalTLWAccess(ic, csac, []string{c.dutSSHKeyPath})
 	if err != nil {
