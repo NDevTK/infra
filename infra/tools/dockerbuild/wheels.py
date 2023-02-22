@@ -1587,6 +1587,7 @@ SPECS.update({
         Universal('yapf', '0.22.0'),
         Universal('yapf', '0.24.0'),
         Universal('yapf', '0.27.0'),
+        Universal('yapf', '0.29.1'),
         Universal('yapf', '0.30.0'),
         Universal('yapf', '0.31.0'),
         Universal('yapf', '0.32.0', pyversions=['py3']),
