@@ -71,6 +71,8 @@ const (
 	DUTSetupTypeJetstream DUTSetupType = "JETSTREAM"
 	// Special setup for ChromeOS devices.
 	DUTSetupTypeCros DUTSetupType = "CROS"
+	// Special setup for ChromeOS devices for browser testing.
+	DUTSetupTypeCrosBrowser DUTSetupType = "CROS_BROWSER"
 	// Special setup for Android devices.
 	DUTSetupTypeAndroid DUTSetupType = "ANDROID"
 	// Special setup for IOS devices.

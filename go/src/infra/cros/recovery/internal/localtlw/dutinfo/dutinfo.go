@@ -14,6 +14,7 @@ import (
 
 	"infra/cros/dutstate"
 	"infra/cros/recovery/tlw"
+	"infra/libs/skylab/inventory"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
 	ufslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
@@ -131,12 +132,15 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		}
 	}
 	setup := tlw.DUTSetupTypeCros
+	// TODO(b/270274087): return DUT setup type from lab service directly
 	if strings.Contains(name, "jetstream") {
 		setup = tlw.DUTSetupTypeJetstream
 	}
-
 	if machine.GetChromeosMachine().GetModel() == "betty" {
 		setup = tlw.DUTSetupTypeCrosVM
+	}
+	if inventory.IsCrOSBrowserHost(name) {
+		setup = tlw.DUTSetupTypeCrosBrowser
 	}
 
 	audio := &tlw.DUTAudio{
