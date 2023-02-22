@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "35403427_6c7dc36e",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-02-22T06:53:50Z",
+      "side": 1,
+      "message": "Yes, VM, local testing may have their own state keeper. Hence kept the implementation open.",
+      "parentUuid": "331f449e_b7d517b3",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 41,
+        "endChar": 23
+      },
+      "revId": "abf1295991cb8ce5e65d7e8296634fedbcc3779b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4eb99266_c3cba73d",
@@ -58,6 +82,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cfbc1cc6_49083acd",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-02-22T06:53:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4eb99266_c3cba73d",
+      "revId": "abf1295991cb8ce5e65d7e8296634fedbcc3779b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bdd5e0a4_5f01f75c",
@@ -71,6 +113,30 @@
       "writtenOn": "2023-02-10T07:48:14Z",
       "side": 1,
       "message": "Is this needed? As we discussed, StainlessUrl will be uploaded to artifact. If StainlessUrl is needed here, should we support the TesthausUrl here as well? \n\nJust want to make sure if we need to align with crrev.com/c/4224601",
+      "range": {
+        "startLine": 78,
+        "startChar": 5,
+        "endLine": 78,
+        "endChar": 18
+      },
+      "revId": "abf1295991cb8ce5e65d7e8296634fedbcc3779b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "56dbc1b9_8caad93f",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-02-22T06:53:50Z",
+      "side": 1,
+      "message": "This command is executed later in rdb-publish executor which uses these links to surface them to luci-ui. Testhausurl has been added as part of another cl.",
+      "parentUuid": "bdd5e0a4_5f01f75c",
       "range": {
         "startLine": 78,
         "startChar": 5,
@@ -104,6 +170,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0fa15118_12d557f9",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-02-22T06:53:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a55020c1_2df47034",
+      "range": {
+        "startLine": 102,
+        "startChar": 4,
+        "endLine": 102,
+        "endChar": 5
+      },
+      "revId": "abf1295991cb8ce5e65d7e8296634fedbcc3779b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8f2a9c7e_7edad21c",
@@ -117,6 +207,30 @@
       "writtenOn": "2023-02-10T07:48:14Z",
       "side": 1,
       "message": "Is it possible to extract different blocks of population logic into different methods? In this way, it will make the code more modular and easier to maintain.\n\nLike the Build metadata proto, I think it\u0027s possible to move all kinds of sub info proto into a separate method.",
+      "range": {
+        "startLine": 124,
+        "startChar": 1,
+        "endLine": 126,
+        "endChar": 47
+      },
+      "revId": "abf1295991cb8ce5e65d7e8296634fedbcc3779b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "47cd9e5b_bfc3298b",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-02-22T06:53:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8f2a9c7e_7edad21c",
       "range": {
         "startLine": 124,
         "startChar": 1,
@@ -150,6 +264,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e2f4814f_bd290ac3",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-02-22T06:53:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "59aba312_aac90dcc",
+      "range": {
+        "startLine": 132,
+        "startChar": 2,
+        "endLine": 133,
+        "endChar": 59
+      },
+      "revId": "abf1295991cb8ce5e65d7e8296634fedbcc3779b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "443d4dd3_def2b437",
@@ -173,6 +311,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "57339caf_3e058a42",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 349,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-02-22T06:53:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "443d4dd3_def2b437",
+      "range": {
+        "startLine": 349,
+        "startChar": 19,
+        "endLine": 349,
+        "endChar": 69
+      },
+      "revId": "abf1295991cb8ce5e65d7e8296634fedbcc3779b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "18092e48_e4750213",
@@ -186,6 +348,30 @@
       "writtenOn": "2023-02-10T07:48:14Z",
       "side": 1,
       "message": "nit: just `taskId[:len(taskId)-1] + \u00270\u0027`? \n\n`fmt.Sprintf` is using regex so it\u0027s kind of expensive and we\u0027d better avoid it for simple string manipulations.",
+      "range": {
+        "startLine": 355,
+        "startChar": 1,
+        "endLine": 355,
+        "endChar": 50
+      },
+      "revId": "abf1295991cb8ce5e65d7e8296634fedbcc3779b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8a204f89_bb082c60",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/rdb_publish_upload_cmd.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 355,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-02-22T06:53:50Z",
+      "side": 1,
+      "message": "The package uses fmt.Sprintf everywhere else. So even if we may miss out to small runtime win, I would keep it this way to be similar to other places.",
+      "parentUuid": "18092e48_e4750213",
       "range": {
         "startLine": 355,
         "startChar": 1,
