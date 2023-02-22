@@ -4913,6 +4913,20 @@ wheel: <
 * *windows-x64-py3.8*
 * *windows-x86-py3.8*
 
+## **pg8000-py3**
+
+### 1.29.4
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pg8000-py3"
+  version: "version:1.29.4"
+>
+```
+
+
+* *universal*
+
 ## **pillow**
 
 ### 8.1.2
