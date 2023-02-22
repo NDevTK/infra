@@ -403,7 +403,11 @@ func runSubrepoTests(ctx context.Context, goroot string) error {
 		Infra bool   // Infra is whether this step failing is an infrastructure failure.
 	}
 	runGo := func(a ann, args ...string) error {
-		cmd := exec.CommandContext(ctx, filepath.Join(goroot, "bin", "go"), args...)
+		var exeSuffix string
+		if runtime.GOOS == "windows" {
+			exeSuffix = ".exe"
+		}
+		cmd := exec.CommandContext(ctx, filepath.Join(goroot, "bin", "go"+exeSuffix), args...)
 		cmd.Dir = "subrepo"
 		return runCommandAsStep(ctx, a.Name, cmd, a.Infra)
 	}
