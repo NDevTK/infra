@@ -24,7 +24,7 @@ func TestGenerateConfig_UnSupportedConfig(t *testing.T) {
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
-		testExecConfig := NewTestExecutionConfig(UnSupportedTestExecutionConfigType, cmdConfig, sk)
+		testExecConfig := NewTestExecutionConfig(UnSupportedTestExecutionConfigType, cmdConfig, sk, nil)
 		err := testExecConfig.GenerateConfig(ctx)
 		So(err, ShouldNotBeNil)
 	})
@@ -40,7 +40,7 @@ func TestGenerateConfig_SupportedConfig(t *testing.T) {
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
-		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk)
+		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk, nil)
 		err := testExecConfig.GenerateConfig(ctx)
 		So(err, ShouldBeNil)
 	})
@@ -56,7 +56,7 @@ func TestExecute_WithoutGeneratedConfig(t *testing.T) {
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
-		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk)
+		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk, nil)
 		err := testExecConfig.Execute(ctx)
 		So(err, ShouldNotBeNil)
 	})
@@ -72,7 +72,7 @@ func TestExecute_UnsuccesfulHwTestsExecution(t *testing.T) {
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
-		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk)
+		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk, nil)
 
 		// Generate configs first
 		err := testExecConfig.GenerateConfig(ctx)
@@ -98,7 +98,7 @@ func TestExecute_SuccesfulHwTestsExecution(t *testing.T) {
 				ParentBuildId: 12345678,
 			},
 		}
-		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk)
+		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk, nil)
 
 		// Use mock configs for simplicity
 		testExecConfig.configs = getMockedHwTestConfig()

@@ -97,7 +97,7 @@ func executeHwTests(ctx context.Context, req *skylab_test_runner.CFTTestRequest,
 	}
 
 	// Generate config
-	hwTestConfig := configs.NewTestExecutionConfig(configs.HwTestExecutionConfigType, cmdCfg, sk)
+	hwTestConfig := configs.NewTestExecutionConfig(configs.HwTestExecutionConfigType, cmdCfg, sk, req.GetStepsConfig())
 	err := hwTestConfig.GenerateConfig(ctx)
 	if err != nil {
 		return errors.Annotate(err, "error during generating hw test configs: ").Err()

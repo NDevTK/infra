@@ -11,6 +11,8 @@ import (
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
+
+	tpcommon "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 )
 
 // CommandExecutorPairedConfig represents command and executor pair
@@ -51,40 +53,83 @@ var TkoPublishUpload_CrosTkoPublishExecutor = &CommandExecutorPairedConfig{Comma
 var ProcessResults_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.ProcessResultsCmdType, ExecutorType: executors.NoExecutorType}
 
 // GenerateHwConfigs generates hw tests execution for lab environment.
-func GenerateHwConfigs(ctx context.Context) *Configs {
-	mainConfigs := []*CommandExecutorPairedConfig{
+func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig) *Configs {
+	mainConfigs := []*CommandExecutorPairedConfig{}
+	cleanupConfigs := []*CommandExecutorPairedConfig{}
+
+	// Input validation and parse env commands
+	mainConfigs = append(mainConfigs,
 		InputValidation_NoExecutor,
-		ParseEnvInfo_NoExecutor,
-		InvServiceStart_InvExecutor,
-		LoadDutTopology_InvExecutor,
-		InvServiceStop_InvExecutor,
-		CtrStartAsync_CtrExecutor,
-		GcloudAuth_CtrExecutor,
-		DutServerStart_CrosDutExecutor,
-		ProvisionServerStart_CrosProvisionExecutor,
-		ProvisionInstall_CrosProvisionExecutor,
-		TestServerStart_CrosTestExecutor,
-		TestsExecution_CrosTestExecutor,
-		RdbPublishStart_CrosRdbPublishExecutor,
-		RdbPublishUpload_CrosRdbPublishExecutor,
-		// TODO (b/241155482): Enable TKO publish after tko publish issues are fixed.
-		//TkoPublishStart_CrosTkoPublishExecutor,
-		//TkoPublishUpload_CrosTkoPublishExecutor,
-		GcsPublishStart_CrosGcsPublishExecutor,
-		GcsPublishUpload_CrosGcsPublishExecutor,
-		CtrStop_CtrExecutor,
-		ProcessResults_NoExecutor,
+		ParseEnvInfo_NoExecutor)
+
+	// Dut topology commands
+	if !cftHwStepsConfig.GetSkipLoadingDutTopology() {
+		mainConfigs = append(mainConfigs,
+			InvServiceStart_InvExecutor,
+			LoadDutTopology_InvExecutor,
+			InvServiceStop_InvExecutor)
 	}
 
-	// Clean up configs. They will be executed if any failures occurs
-	// in main configs. If any of the cleanup cmd is already executed,
-	// they will be skipped.
-	cleanupConfigs := []*CommandExecutorPairedConfig{
-		GcsPublishStart_CrosGcsPublishExecutor,
-		GcsPublishUpload_CrosGcsPublishExecutor,
-		CtrStop_CtrExecutor,
-		ProcessResults_NoExecutor,
+	// Start CTR and gcloud auth commands
+	mainConfigs = append(mainConfigs,
+		CtrStartAsync_CtrExecutor,
+		GcloudAuth_CtrExecutor)
+
+	// Start dut server command
+	if !cftHwStepsConfig.GetSkipStartingDutService() {
+		mainConfigs = append(mainConfigs,
+			DutServerStart_CrosDutExecutor)
 	}
+
+	// Provision commands
+	if !cftHwStepsConfig.GetSkipProvision() {
+		mainConfigs = append(mainConfigs,
+			ProvisionServerStart_CrosProvisionExecutor,
+			ProvisionInstall_CrosProvisionExecutor)
+	}
+
+	// Test execution commands
+	if !cftHwStepsConfig.GetSkipTestExecution() {
+		mainConfigs = append(mainConfigs,
+			TestServerStart_CrosTestExecutor,
+			TestsExecution_CrosTestExecutor)
+	}
+
+	// Publish commands
+	if !cftHwStepsConfig.GetSkipAllResultPublish() {
+		// Rdb publish commands
+		if !cftHwStepsConfig.GetSkipRdbPublish() {
+			mainConfigs = append(mainConfigs,
+				RdbPublishStart_CrosRdbPublishExecutor,
+				RdbPublishUpload_CrosRdbPublishExecutor)
+		}
+
+		// TKO publish commands
+		if !cftHwStepsConfig.GetSkipTkoPublish() {
+			// TODO (b/241155482): Enable TKO publish after tko publish issues are fixed.
+			// mainConfigs = append(mainConfigs,
+			// 	TkoPublishStart_CrosTkoPublishExecutor,
+			// 	TkoPublishUpload_CrosTkoPublishExecutor)
+		}
+
+		// Gcs publish commands
+		if !cftHwStepsConfig.GetSkipGcsPublish() {
+			mainConfigs = append(mainConfigs,
+				GcsPublishStart_CrosGcsPublishExecutor,
+				GcsPublishUpload_CrosGcsPublishExecutor)
+			cleanupConfigs = append(cleanupConfigs,
+				GcsPublishStart_CrosGcsPublishExecutor,
+				GcsPublishUpload_CrosGcsPublishExecutor)
+		}
+	}
+
+	// Stop CTR and result processing commands
+	mainConfigs = append(mainConfigs,
+		CtrStop_CtrExecutor,
+		ProcessResults_NoExecutor)
+	cleanupConfigs = append(cleanupConfigs,
+		CtrStop_CtrExecutor,
+		ProcessResults_NoExecutor)
 
 	return &Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
 }

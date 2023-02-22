@@ -15,7 +15,7 @@ func TestGenerateHwConfigs(t *testing.T) {
 	t.Parallel()
 	Convey("GenerateHwConfigs", t, func() {
 		ctx := context.Background()
-		hwConfigs := GenerateHwConfigs(ctx)
+		hwConfigs := GenerateHwConfigs(ctx, nil)
 
 		So(hwConfigs, ShouldNotBeNil)
 		So(hwConfigs.MainConfigs, ShouldNotBeNil)

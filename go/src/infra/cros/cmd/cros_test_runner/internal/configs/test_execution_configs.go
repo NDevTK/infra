@@ -11,6 +11,7 @@ import (
 
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 
+	tpcommon "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -75,16 +76,19 @@ func (configs *Configs) ToString() string {
 type TestExecutionConfig struct {
 	*interfaces.AbstractTestExecutionConfig
 
-	commandConfig    interfaces.CommandConfigInterface
-	stateKeeper      interfaces.StateKeeperInterface
-	configs          *Configs
+	commandConfig  interfaces.CommandConfigInterface
+	stateKeeper    interfaces.StateKeeperInterface
+	cftStepsConfig *tpcommon.CftStepsConfig
+	configs        *Configs
+
 	executedCommands map[interfaces.CommandType]bool
 }
 
 func NewTestExecutionConfig(
 	configType interfaces.ConfigType,
 	cmdConfig interfaces.CommandConfigInterface,
-	ski interfaces.StateKeeperInterface) *TestExecutionConfig {
+	ski interfaces.StateKeeperInterface,
+	cftStepsConfig *tpcommon.CftStepsConfig) *TestExecutionConfig {
 
 	executedCmdMap := make(map[interfaces.CommandType]bool)
 	abstractConfig := interfaces.NewAbstractTestExecutionConfig(configType)
@@ -92,6 +96,7 @@ func NewTestExecutionConfig(
 		AbstractTestExecutionConfig: abstractConfig,
 		commandConfig:               cmdConfig,
 		stateKeeper:                 ski,
+		cftStepsConfig:              cftStepsConfig,
 		executedCommands:            executedCmdMap}
 }
 
@@ -102,7 +107,7 @@ func (tecfg *TestExecutionConfig) GenerateConfig(ctx context.Context) error {
 
 	switch configType := tecfg.GetConfigType(); configType {
 	case HwTestExecutionConfigType:
-		tecfg.configs = GenerateHwConfigs(ctx)
+		tecfg.configs = GenerateHwConfigs(ctx, tecfg.cftStepsConfig.GetHwTestConfig())
 	default:
 		err = fmt.Errorf("Config type %s is not supported!", configType)
 	}
