@@ -41,7 +41,7 @@ func main() {
 			logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
 			logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
 			// TODO (azrahman): After stablizing in prod, move log data gs root to cft/new proto.
-			err := executeHwTests(ctx, input.CftTestRequest, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot())
+			err := executeHwTests(ctx, input.CftTestRequest, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), st)
 			if err != nil {
 				logging.Infof(ctx, "error found: %s", err)
 			}
@@ -52,7 +52,13 @@ func main() {
 }
 
 // executeHwTests executes hw tests
-func executeHwTests(ctx context.Context, req *skylab_test_runner.CFTTestRequest, ctrCipdVersion string, gsRoot string) error {
+func executeHwTests(
+	ctx context.Context,
+	req *skylab_test_runner.CFTTestRequest,
+	ctrCipdVersion string,
+	gsRoot string,
+	buildState *build.State) error {
+
 	// Validation
 	if ctrCipdVersion == "" {
 		return fmt.Errorf("Cros-tool-runner cipd version cannot be empty for hw test execution.")
@@ -87,6 +93,7 @@ func executeHwTests(ctx context.Context, req *skylab_test_runner.CFTTestRequest,
 	// Create state keeper
 	gcsurl := common.GetGcsUrl(gsRoot)
 	sk := &data.HwTestStateKeeper{
+		BuildState:            buildState,
 		CftTestRequest:        req,
 		Ctr:                   ctr,
 		DockerKeyFileLocation: common.LabDockerKeyFileLocation,
