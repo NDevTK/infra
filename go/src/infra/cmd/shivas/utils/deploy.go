@@ -14,6 +14,7 @@ import (
 	"infra/cmd/shivas/site"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/swarming"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 // ScheduleDeployTask schedules a deploy task by Buildbucket for PARIS.
@@ -25,12 +26,18 @@ func ScheduleDeployTask(ctx context.Context, bc buildbucket.Client, e site.Envir
 	if useLatestVersion {
 		v = buildbucket.CIPDLatest
 	}
+	adminServicePath := e.AdminService
+	contextNamespace := ReadContextNamespace(ctx, ufsUtil.OSNamespace)
+	if contextNamespace == ufsUtil.OSPartnerNamespace {
+		// Partner do not have options with stable version.
+		adminServicePath = ""
+	}
 	p := &buildbucket.Params{
 		BuilderName:    "deploy",
 		UnitName:       unit,
 		TaskName:       string(buildbucket.Deploy),
 		EnableRecovery: true,
-		AdminService:   e.AdminService,
+		AdminService:   adminServicePath,
 		// NOTE: We use the UFS service, not the Inventory service here.
 		InventoryService: e.UnifiedFleetService,
 		UpdateInventory:  true,
@@ -38,6 +45,7 @@ func ScheduleDeployTask(ctx context.Context, bc buildbucket.Client, e site.Envir
 			sessionTag,
 			"task:deploy",
 			"client:shivas",
+			fmt.Sprintf("inventory_namespace:%s", contextNamespace),
 			fmt.Sprintf("version:%s", v),
 		},
 	}
