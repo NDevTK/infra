@@ -462,7 +462,7 @@ class IssueEntry(servlet.Servlet):
         except exceptions.OverAttachmentQuota:
           mr.errors.attachments = 'Project attachment quota exceeded.'
         except exceptions.InputException as e:
-          if 'Undefined or deprecated component with id' in e.message:
+          if 'Undefined or deprecated component with id' in str(e):
             mr.errors.components = 'Undefined or deprecated component'
 
     mr.template_name = parsed.template_name

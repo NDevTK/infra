@@ -224,7 +224,7 @@ class WorkEnv(object):
           self._AssertUserCanEditFieldsAndEnumMaskedLabels(
               project, config, field_ids, labels)
         except permissions.PermissionException as e:
-          err_agg.AddErrorMessage(e.message)
+          err_agg.AddErrorMessage(str(e))
 
         if issue_perms.HasPerm(permissions.EDIT_ISSUE, self.mc.auth.user_id,
                                project):
@@ -323,7 +323,7 @@ class WorkEnv(object):
           try:
             self._AssertUserCanEditValueForFieldDef(project, fd)
           except permissions.PermissionException as e:
-            err_agg.AddErrorMessage(e.message)
+            err_agg.AddErrorMessage(str(e))
 
   def _AssertUserCanViewFieldDef(self, project, field):
     """Make sure the user may view the field."""
@@ -1527,7 +1527,7 @@ class WorkEnv(object):
           self._AssertUserCanViewIssue(
               issue, allow_viewing_deleted=allow_viewing_deleted)
         except permissions.PermissionException as e:
-          permission_err_agg.AddErrorMessage(e.message)
+          permission_err_agg.AddErrorMessage(str(e))
 
     return issues_by_id
 

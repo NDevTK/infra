@@ -131,8 +131,8 @@ class IssueattachmentTest(unittest.TestCase):
     with self.assertRaises(exceptions.RedirectException) as e:
       self.servlet.GatherPageData(mr)
     self.mox.VerifyAll()
-    self.assertIn('googleusercontent.com', e.exception.message)
-    self.assertIn('-download', e.exception.message)
+    self.assertIn('googleusercontent.com', str(e.exception))
+    self.assertIn('-download', str(e.exception))
 
   def testGatherPageData_Download_WithoutDisposition(self):
     aid = self.attachment.attachment_id
@@ -155,8 +155,8 @@ class IssueattachmentTest(unittest.TestCase):
     with self.assertRaises(exceptions.RedirectException) as e:
       self.servlet.GatherPageData(mr)
     self.mox.VerifyAll()
-    self.assertIn('googleusercontent.com', e.exception.message)
-    self.assertNotIn('-download', e.exception.message)
+    self.assertIn('googleusercontent.com', str(e.exception))
+    self.assertNotIn('-download', str(e.exception))
 
   def testGatherPageData_DownloadBadFilename(self):
     aid = self.attachment.attachment_id
@@ -182,4 +182,4 @@ class IssueattachmentTest(unittest.TestCase):
     with self.assertRaises(exceptions.RedirectException) as e:
       self.servlet.GatherPageData(mr)
     self.mox.VerifyAll()
-    self.assertIn('googleusercontent.com', e.exception.message)
+    self.assertIn('googleusercontent.com', str(e.exception))

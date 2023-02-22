@@ -64,7 +64,7 @@ class BackendSearch(jsonfeed.InternalTask):
                  int(1000 * (time.time() - start)))
 
     if pipeline.error:
-      error_message = pipeline.error.message
+      error_message = str(pipeline.error)
     else:
       error_message = None
 

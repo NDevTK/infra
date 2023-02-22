@@ -72,7 +72,7 @@ class ProfilerTest(unittest.TestCase):
         with prof.Phase('baz'):
           raise Exception('whoops')
     except Exception as e:
-      self.assertEqual(e.message, 'whoops')
+      self.assertEqual(str(e), 'whoops')
     finally:
       self.assertEqual(prof.current_phase.name, 'overall profile')
       self.assertEqual(prof.top_phase.subphases[0].subphases[1].name, 'baz')

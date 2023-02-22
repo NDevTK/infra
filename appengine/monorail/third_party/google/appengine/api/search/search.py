@@ -294,7 +294,7 @@ class _PutOperationFuture(_RpcOperationFuture):
     try:
       return super(_PutOperationFuture, self).get_result()
     except apiproxy_errors.OverQuotaError as e:
-      message = e.message + '; index = ' + self._index.name
+      message = str(e) + '; index = ' + self._index.name
       if self._index.namespace:
         message = message + ' in namespace ' + self._index.namespace
       raise apiproxy_errors.OverQuotaError(message)

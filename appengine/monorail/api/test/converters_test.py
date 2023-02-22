@@ -1606,9 +1606,7 @@ class ConverterFunctionsTest(unittest.TestCase):
       converters.IngestFieldValues(
           self.cnxn, self.services.user, field_values, self.config, [])
 
-    self.assertEqual(
-        'Unparsable value for field SecField',
-        cm.exception.message)
+    self.assertEqual('Unparsable value for field SecField', str(cm.exception))
 
   def testIngestSavedQueries(self):
     self.services.project.TestAddProject('chromium', project_id=1)

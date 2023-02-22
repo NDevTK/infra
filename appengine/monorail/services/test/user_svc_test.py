@@ -461,7 +461,7 @@ class UserServiceTest(unittest.TestCase):
     self.user_service.linkedaccount_tbl.Select.return_value = []
     with self.assertRaises(exceptions.InputException) as cm:
       self.user_service.AcceptLinkedChild(self.cnxn, 111, 333)
-    self.assertEqual('No such invite', cm.exception.message)
+    self.assertEqual('No such invite', str(cm.exception))
 
   def testAcceptLinkedChild_Normal(self):
     """Create linkage between accounts and remove invite."""

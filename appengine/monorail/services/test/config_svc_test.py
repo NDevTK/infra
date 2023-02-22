@@ -789,9 +789,7 @@ class ConfigServiceTest(unittest.TestCase):
     with self.assertRaises(exceptions.InputException) as cm:
       self.config_service._UpdateWellKnownLabels(self.cnxn, config)
     self.mox.VerifyAll()
-    self.assertEqual(
-      'Defined label "Type-Defect" twice',
-      cm.exception.message)
+    self.assertEqual('Defined label "Type-Defect" twice', str(cm.exception))
 
   def testUpdateWellKnownStatuses(self):
     config = tracker_bizobj.MakeDefaultProjectIssueConfig(789)

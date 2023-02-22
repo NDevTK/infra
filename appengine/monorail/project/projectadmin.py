@@ -127,7 +127,7 @@ class ProjectAdmin(servlet.Servlet):
         logo_gcs_id = gcs_helpers.StoreLogoInGCS(
             logo_file_name, item.read(), mr.project.project_id)
       except gcs_helpers.UnsupportedMimeType as e:
-        mr.errors.logo = e.message
+        mr.errors.logo = str(e)
     elif mr.project.logo_gcs_id and mr.project.logo_file_name:
       logo_gcs_id = mr.project.logo_gcs_id
       logo_file_name = mr.project.logo_file_name

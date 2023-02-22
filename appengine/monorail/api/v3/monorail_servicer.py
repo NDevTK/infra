@@ -353,7 +353,6 @@ class MonorailServicer(object):
   def ProcessException(self, e, prpc_context, mc):
     """Return True if we convert an exception to a pRPC status code."""
     logging.exception(e)
-    logging.info(e.message)
     exc_type = type(e)
     if exc_type == exceptions.NoSuchUserException:
       prpc_context.set_code(codes.StatusCode.NOT_FOUND)
@@ -367,8 +366,8 @@ class MonorailServicer(object):
     elif exc_type == exceptions.NoSuchIssueException:
       prpc_context.set_code(codes.StatusCode.NOT_FOUND)
       details = 'The issue does not exist.'
-      if e.message:
-        details = html.escape(e.message, quote=True)
+      if str(e):
+        details = html.escape(str(e), quote=True)
       prpc_context.set_details(details)
     elif exc_type == exceptions.NoSuchIssueApprovalException:
       prpc_context.set_code(codes.StatusCode.NOT_FOUND)
@@ -407,7 +406,7 @@ class MonorailServicer(object):
     elif exc_type == exceptions.InputException:
       prpc_context.set_code(codes.StatusCode.INVALID_ARGUMENT)
       prpc_context.set_details(
-          'Invalid arguments: %s' % html.escape(e.message, quote=True))
+          'Invalid arguments: %s' % html.escape(str(e), quote=True))
     elif exc_type == exceptions.OverAttachmentQuota:
       prpc_context.set_code(codes.StatusCode.RESOURCE_EXHAUSTED)
       prpc_context.set_details(
@@ -420,7 +419,7 @@ class MonorailServicer(object):
       prpc_context.set_details(
           'The oauth token was not valid or must be refreshed.')
     elif exc_type == xsrf.TokenIncorrect:
-      logging.info('Bad XSRF token: %r', e.message)
+      logging.info('Bad XSRF token: %r', str(e))
       prpc_context.set_code(codes.StatusCode.INVALID_ARGUMENT)
       prpc_context.set_details('Bad XSRF token.')
     elif exc_type == exceptions.PageTokenException:

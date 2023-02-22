@@ -173,7 +173,7 @@ class RateLimiter(object):
         # monitor rate limit exceeded events with our standard tools.
         # We return a 400 with a custom error message to the client,
         # and this logging is so we can monitor it internally.
-        logging.info('%s, %d' % (exception_obj.message, count))
+        logging.info('%s, %d' % (str(exception_obj), count))
 
         self.limit_exceeded.increment()
 

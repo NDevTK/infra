@@ -775,7 +775,7 @@ class Converter(object):
         assert len(
             enums) == 0  # ShiftEnumFieldsIntoLabels must clear all enums.
       except exceptions.InputException as e:
-        err_agg.AddErrorMessage(e.message)
+        err_agg.AddErrorMessage(str(e))
 
       # Ingest merged, blocking/blocked_on.
       self._ExtractIssueRefs(issue, ingestedDict, err_agg)
@@ -919,13 +919,13 @@ class Converter(object):
       ingestedDict['blocked_on_iids'] = iids
       ingestedDict['dangling_blocked_on_refs'] = dangling_refs
     except exceptions.InputException as e:
-      err_agg.AddErrorMessage(e.message)
+      err_agg.AddErrorMessage(str(e))
     try:
       iids, dangling_refs = self._IngestIssueRefs(issue.blocking_issue_refs)
       ingestedDict['blocking_iids'] = iids
       ingestedDict['dangling_blocking_refs'] = dangling_refs
     except exceptions.InputException as e:
-      err_agg.AddErrorMessage(e.message)
+      err_agg.AddErrorMessage(str(e))
 
   def _IngestIssueRefs(self, issue_refs):
     # type: (api_proto.issue_objects.IssueRf) ->

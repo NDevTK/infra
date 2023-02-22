@@ -426,7 +426,7 @@ def IngestIssueNames(cnxn, names, services):
         project_local_id_pairs.append(
             (match.group('project'), int(match.group('local_id'))))
       except exceptions.InputException as e:
-        err_agg.AddErrorMessage(e.message)
+        err_agg.AddErrorMessage(str(e))
   return _IssueIdsFromLocalIds(cnxn, project_local_id_pairs, services)
 
 
@@ -851,7 +851,7 @@ def IngestComponentDefNames(cnxn, names, services):
           parsed_comp_projectnames.append(
               (str(match.group('path')), project_name))
       except exceptions.InputException as e:
-        err_agg.AddErrorMessage(e.message)
+        err_agg.AddErrorMessage(str(e))
 
   # Validate as many projects as possible.
   project_names = {project_name for _, project_name in parsed_comp_projectnames}

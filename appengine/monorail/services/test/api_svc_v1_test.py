@@ -163,7 +163,7 @@ class MonorailApiBadAuthTest(testing.EndpointsTestCase):
     oauth.get_current_user.side_effect = oauth.Error()
     with self.assertRaises(webtest.AppError) as cm:
       self.call_api('users_get', self.request)
-    self.assertTrue(cm.exception.message.startswith('Bad response: 401'))
+    self.assertTrue(str(cm.exception).startswith('Bad response: 401'))
 
 
 class MonorailApiTest(testing.EndpointsTestCase):

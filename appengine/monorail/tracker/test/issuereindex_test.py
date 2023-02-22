@@ -48,8 +48,8 @@ class IssueReindexTest(unittest.TestCase):
       servlet = issuereindex.IssueReindex(services=self.services)
     with self.assertRaises(permissions.PermissionException) as cm:
       servlet.AssertBasePermission(mr)
-    self.assertEqual('You are not allowed to administer this project',
-                     cm.exception.message)
+    self.assertEqual(
+        'You are not allowed to administer this project', str(cm.exception))
 
   def testAssertBasePermission_WithAccess(self):
     # Owners and admins have permission to view this page.

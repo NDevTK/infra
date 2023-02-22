@@ -102,7 +102,7 @@ def ComprehensiveSearch(fulltext_query, index_name):
             limit=_SEARCH_RESULT_CHUNK_SIZE, returned_fields=[], ids_only=True,
             cursor=search.Cursor())))
   except ValueError as e:
-    raise query2ast.InvalidQueryError(e.message)
+    raise query2ast.InvalidQueryError(str(e))
 
   logging.info('got %d initial results', len(response.results))
   ids = [int(result.doc_id) for result in response]

@@ -155,11 +155,11 @@ def SearchProjectCan(
     where.extend(query_where)
   except ast2ast.MalformedQuery as e:
     # TODO(jrobbins): inform the user that their query had invalid tokens.
-    logging.info('Invalid query tokens %s.\n %r\n\n', e.message, query_ast)
+    logging.info('Invalid query tokens %s.\n %r\n\n', str(e), query_ast)
     return [], False, e
   except ast2select.NoPossibleResults as e:
     # TODO(jrobbins): inform the user that their query was impossible.
-    logging.info('Impossible query %s.\n %r\n\n', e.message, query_ast)
+    logging.info('Impossible query %s.\n %r\n\n', str(e), query_ast)
     return [], False, e
   logging.info('translated to left_joins %r', left_joins)
   logging.info('translated to where %r', where)

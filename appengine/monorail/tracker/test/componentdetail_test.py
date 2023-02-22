@@ -209,7 +209,7 @@ class ComponentDetailTest(unittest.TestCase):
       self.servlet.ProcessFormData(self.mr, post_data)
     self.assertEqual(
         'User tried to delete component that had subcomponents',
-        cm.exception.message)
+        str(cm.exception))
 
   def testProcessFormData_Edit(self):
     post_data = fake.PostData(

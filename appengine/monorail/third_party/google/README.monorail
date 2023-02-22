@@ -29,6 +29,7 @@ Search API and are updating it ourselves for Python 3.
    * In __init__.py, relative imports --> absolute imports
    * except Exception, e: --> except Exception as e:
    * raise Exception, s --> raise Exception(s)
+   * exception.message --> str(exception)
 
    Import moves:
    * import cPickle --> from six.moves import cPickle

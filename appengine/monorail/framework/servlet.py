@@ -175,8 +175,7 @@ class Servlet(object):
         self.get()
 
     except exceptions.RedirectException as e:
-      redirect_url = e.message
-      return self.redirect(redirect_url)
+      return self.redirect(str(e))
     except exceptions.NoSuchUserException as e:
       logging.info('Trapped NoSuchUserException %s', e)
       flask.abort(404, 'user not found')
@@ -194,7 +193,7 @@ class Servlet(object):
       self.response.status_code = http_client.NOT_FOUND
 
     except xsrf.TokenIncorrect as e:
-      logging.info('Bad XSRF token: %r', e.message)
+      logging.info('Bad XSRF token: %r', str(e))
       self.response.status_code = http_client.BAD_REQUEST
 
     except permissions.BannedUserException as e:
@@ -305,7 +304,7 @@ class Servlet(object):
     except query2ast.InvalidQueryError as e:
       logging.warning('Trapped InvalidQueryError: %s', e)
       logging.exception(e)
-      msg = e.message if e.message else 'invalid query'
+      msg = str(e) if str(e) else 'invalid query'
       flask.abort(400, msg)
     except permissions.PermissionException as e:
       logging.warning('Trapped PermissionException %s', e)
@@ -319,7 +318,7 @@ class Servlet(object):
       else:
         # Display the missing permissions template.
         page_data = {
-            'reason': e.message,
+            'reason': str(e),
             'http_response_code': http_client.FORBIDDEN,
         }
         with self.mr.profiler.Phase('gather base data'):

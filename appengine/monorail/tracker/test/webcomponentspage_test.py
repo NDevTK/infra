@@ -110,4 +110,4 @@ class ProjectListPageTest(unittest.TestCase):
     self.servlet.redirect = mock.Mock()
     with self.assertRaises(exceptions.RedirectException) as e:
       self.servlet._MaybeRedirectToDomainDefaultProject(mr)
-    self.assertIn('/p/a', e.exception.message)
+    self.assertIn('/p/a', str(e.exception))

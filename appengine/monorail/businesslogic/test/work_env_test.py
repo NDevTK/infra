@@ -2836,16 +2836,14 @@ class WorkEnvTest(unittest.TestCase):
     with self.work_env as we:
       with self.assertRaises(exceptions.InputException) as cm:
         we.UpdateIssue(issue, delta, '')
-    self.assertEqual('Issue owner user ID not found.',
-                     cm.exception.message)
+    self.assertEqual('Issue owner user ID not found.', str(cm.exception))
 
     # Not a member
     delta = tracker_pb2.IssueDelta(owner_id=222)
     with self.work_env as we:
       with self.assertRaises(exceptions.InputException) as cm:
         we.UpdateIssue(issue, delta, '')
-    self.assertEqual('Issue owner must be a project member.',
-                     cm.exception.message)
+    self.assertEqual('Issue owner must be a project member.', str(cm.exception))
 
   @mock.patch(
       'features.send_notifications.PrepareAndSendIssueBlockingNotification')
@@ -2957,7 +2955,7 @@ class WorkEnvTest(unittest.TestCase):
     with self.work_env as we:
       with self.assertRaises(exceptions.InputException) as cm:
         we.UpdateIssue(issue, delta, '')
-    self.assertEqual('Cannot merge an issue into itself.', cm.exception.message)
+    self.assertEqual('Cannot merge an issue into itself.', str(cm.exception))
 
     # Original issue still available.
     self.assertEqual('Available', issue.status)
@@ -3004,13 +3002,13 @@ class WorkEnvTest(unittest.TestCase):
     with self.work_env as we:
       with self.assertRaises(exceptions.InputException) as cm:
         we.UpdateIssue(issue, delta, '')
-    self.assertEqual('Cannot block an issue on itself.', cm.exception.message)
+    self.assertEqual('Cannot block an issue on itself.', str(cm.exception))
 
     delta = tracker_pb2.IssueDelta(blocking_add=[issue.issue_id])
     with self.work_env as we:
       with self.assertRaises(exceptions.InputException) as cm:
         we.UpdateIssue(issue, delta, '')
-    self.assertEqual('Cannot block an issue on itself.', cm.exception.message)
+    self.assertEqual('Cannot block an issue on itself.', str(cm.exception))
 
     # Original issue was not modified.
     self.assertEqual(0, len(issue.blocked_on_iids))
@@ -5152,7 +5150,7 @@ class WorkEnvTest(unittest.TestCase):
     with self.work_env as we:
       with self.assertRaises(exceptions.InputException) as cm:
         we.InviteLinkedParent('x@example.com')
-      self.assertEqual('Linked account names must match', cm.exception.message)
+      self.assertEqual('Linked account names must match', str(cm.exception))
 
   @mock.patch('settings.linkable_domains', {'example.com': ['other.com']})
   def testInviteLinkedParent_BadDomain(self):
@@ -5161,8 +5159,7 @@ class WorkEnvTest(unittest.TestCase):
     with self.work_env as we:
       with self.assertRaises(exceptions.InputException) as cm:
         we.InviteLinkedParent('user_111@hacker.com')
-      self.assertEqual(
-          'Linked account unsupported domain', cm.exception.message)
+      self.assertEqual('Linked account unsupported domain', str(cm.exception))
 
   @mock.patch('settings.linkable_domains', {'example.com': ['other.com']})
   def testInviteLinkedParent_NoSuchParent(self):

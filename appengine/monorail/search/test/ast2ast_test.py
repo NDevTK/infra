@@ -182,7 +182,7 @@ class AST2ASTTest(unittest.TestCase):
       self.assertEqual(
           'Searching for issues accross multiple/all projects without '
           'project prefixes is ambiguous and is currently not supported.',
-          cm.exception.message)
+          str(cm.exception))
 
   def testPreprocessBlockedOnCond_WithExternalIssues(self):
     blockedon_field = BUILTIN_ISSUE_FIELDS['blockedon']
@@ -322,7 +322,7 @@ class AST2ASTTest(unittest.TestCase):
       self.assertEqual(
           'Searching for issues accross multiple/all projects without '
           'project prefixes is ambiguous and is currently not supported.',
-          cm.exception.message)
+          str(cm.exception))
 
   def testPreprocessBlockingCond_WithExternalIssues(self):
     blocking_field = BUILTIN_ISSUE_FIELDS['blocking']

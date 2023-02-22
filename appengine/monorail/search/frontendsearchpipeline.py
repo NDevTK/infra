@@ -523,9 +523,9 @@ def _CheckQuery(
         cnxn, query_ast, project_ids, services, harmonized_config,
         is_member=member_of_all_projects)
   except query2ast.InvalidQueryError as e:
-    return e.message
+    return str(e)
   except ast2ast.MalformedQuery as e:
-    return e.message
+    return str(e)
 
   return None
 

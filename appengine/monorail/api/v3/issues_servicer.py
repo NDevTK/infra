@@ -81,7 +81,7 @@ class IssuesServicer(monorail_servicer.MonorailServicer):
               err_agg.AddErrorMessage(
                   '%s is not a child issue of %s.' % (name, request.parent))
           except exceptions.InputException as e:
-            err_agg.AddErrorMessage(e.message)
+            err_agg.AddErrorMessage(str(e))
     with work_env.WorkEnv(mc, self.services) as we:
       # NOTE(crbug/monorail/7614): Until the referenced cleanup is complete,
       # all servicer methods that are scoped to a single Project need to call

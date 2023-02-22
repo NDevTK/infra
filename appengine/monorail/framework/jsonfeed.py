@@ -78,7 +78,7 @@ class JsonFeed(servlet.Servlet):
     except query2ast.InvalidQueryError as e:
       logging.warning('Trapped InvalidQueryError: %s', e)
       logging.exception(e)
-      msg = e.message if e.message else 'invalid query'
+      msg = str(e) if str(e) else 'invalid query'
       self.abort(400, msg)
     except permissions.PermissionException as e:
       logging.info('Trapped PermissionException %s', e)

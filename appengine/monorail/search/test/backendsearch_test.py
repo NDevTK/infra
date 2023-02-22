@@ -124,4 +124,4 @@ class BackendSearchTest(unittest.TestCase):
     self.mox.VerifyAll()
     self.assertEqual([], json_data['unfiltered_iids'])
     self.assertFalse(json_data['search_limit_reached'])
-    self.assertEqual(error.message, json_data['error'])
+    self.assertEqual(str(error), json_data['error'])

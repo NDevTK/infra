@@ -105,7 +105,7 @@ def ParseAndSimplify(query):
     node = SimplifyNode(node)
     ValidateNode(node)
   except QueryTreeException as e:
-    msg = "%s in query '%s'" % (e.message, query)
+    msg = "%s in query '%s'" % (str(e), query)
     raise QueryException(msg)
   return node
 
@@ -116,7 +116,7 @@ def Parse(query):
   try:
     return parser.query()
   except Exception as e:
-    msg = "%s in query '%s'" % (e.message, query)
+    msg = "%s in query '%s'" % (str(e), query)
     raise QueryException(msg)
 
 
