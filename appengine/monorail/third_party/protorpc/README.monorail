@@ -10,3 +10,5 @@ Local Modifications:
 1. Retain only the protorpc/remote.py file.
 2. Rename my_service.async to my_service.async_
    We don't use the async feature, and it's a reserved keyword in Python 3.
+3. Check for the existence of array.array.tostring(), and use
+   array.array.tobytes() as an alternative. It's been renamed in Python 3.

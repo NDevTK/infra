@@ -18,19 +18,17 @@ def FixImports():
 def _AddThirdPartyToPath():
   """Adds third_party/ to sys.path.
 
-  This lets us find antlr3, which is a dependency of search."""
+  This lets us find antlr3, which is a dependency of search, and endpoints."""
   sys.path.append(_ThirdPartyDir())
 
 
 def _FixProtorpcPackage():
   """Adds third_party/protorpc/ to protorpc.__path__.
 
-  protorpc generally supports Python 3, except that protorpc.remote uses
-  `async` as a field name, which is a reserved keyword starting in Python 3.5,
-  with the introduction of coroutines. protorpc has been unmaintained and
-  archived for years, and will not take pull requests. So, we have a local
-  copy of that file with `async` renamed to `async_`, and modify the package
-  __path__ to use our local copy.
+  protorpc generally supports Python 3, except for a few minor issues. protorpc
+  has been unmaintained and archived for years, and will not take pull requests.
+  So, we have a local copy of a few of the files with Python 3 modifications,
+  and update the package __path__ to use our local copy.
   """
   import protorpc
   package_path = os.path.join(_ThirdPartyDir(), 'protorpc')
