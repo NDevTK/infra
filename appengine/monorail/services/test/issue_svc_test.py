@@ -1474,8 +1474,10 @@ class IssueServiceTest(unittest.TestCase):
 
     # Calls in ApplyIssueDelta
     # Call to find added blocking issues.
-    issue_refs = {blocking_issue: (
-        blocking_issue.project_name, blocking_issue.local_id)}
+    issue_refs = {
+        blocking_issue.issue_id:
+            (blocking_issue.project_name, blocking_issue.local_id)
+    }
     self.services.issue.LookupIssueRefs(
         self.cnxn, [blocking_issue.issue_id]).AndReturn(issue_refs)
     # Call to find removed blocking issues.

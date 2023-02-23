@@ -434,15 +434,15 @@ def FindAncestorComponents(config, component_def):
 
 def GetIssueComponentsAndAncestors(issue, config):
   """Return a list of all the components that an issue is in."""
-  result = set()
+  result = []
   for component_id in issue.component_ids:
     cd = FindComponentDefByID(component_id, config)
     if cd is None:
       logging.error('Tried to look up non-existent component %r' % component_id)
       continue
     ancestors = FindAncestorComponents(config, cd)
-    result.add(cd)
-    result.update(ancestors)
+    result.append(cd)
+    result.extend(ancestors)
 
   return sorted(result, key=lambda cd: cd.path)
 

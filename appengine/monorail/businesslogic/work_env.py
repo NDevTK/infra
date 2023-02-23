@@ -2168,9 +2168,9 @@ class WorkEnv(object):
       # Group issues for each unique delta by project because
       # SendIssueBulkChangeNotification cannot handle cross-project
       # notifications and hostports are specific to each project.
-      issues_by_pid = collections.defaultdict(set)
+      issues_by_pid = collections.defaultdict(list)
       for issue in issues:
-        issues_by_pid[issue.project_id].add(issue)
+        issues_by_pid[issue.project_id].append(issue)
       for project_issues in issues_by_pid.values():
         # Send one email to involved users for the issue.
         if len(project_issues) == 1:

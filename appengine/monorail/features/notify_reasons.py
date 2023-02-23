@@ -371,9 +371,9 @@ def ComputeGroupReasonList(
   old_owner_addr_perm_list = ComputeIssueChangeAddressPermList(
       cnxn, old_direct_owners + old_transitive_owners, project, issue,
       services, omit_addrs, users_by_id)
-  owner_addr_perm_set = set(owner_addr_perm_list)
-  old_owner_addr_perm_list = [ap for ap in old_owner_addr_perm_list
-                              if ap not in owner_addr_perm_set]
+  old_owner_addr_perm_list = [
+      ap for ap in old_owner_addr_perm_list if ap not in owner_addr_perm_list
+  ]
   der_owner_addr_perm_list = ComputeIssueChangeAddressPermList(
       cnxn, der_direct_owners + der_transitive_owners, project, issue,
       services, omit_addrs, users_by_id)
