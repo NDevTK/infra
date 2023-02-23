@@ -108,7 +108,9 @@ func reflashCr50FwExec(ctx context.Context, info *execs.ExecInfo) (rErr error) {
 		karteAction.UpdateStatus(rErr)
 	}()
 	run := info.NewRunner(info.GetDut().Name)
-	runBackground := info.NewBackgroundRunner(info.GetDut().Name)
+	// TODO(b:267486665): Restore usage of background runner.
+	// runBackground := info.NewBackgroundRunner(info.GetDut().Name)
+	runBackground := run
 	// For "gsctool", we use the traditional runner because the exit code of both 0 and 1
 	// indicates successful execution of the command.
 	//
@@ -130,6 +132,7 @@ func reflashCr50FwExec(ctx context.Context, info *execs.ExecInfo) (rErr error) {
 	}
 	log.Debugf(ctx, "cr50 fw update successfully.")
 	// reboot the DUT for the reflash of the cr50 fw to be effective.
+	// TODO(b:267486665): Restore usage only reboot with background runner.
 	if out, err := runBackground(ctx, 30*time.Second, "reboot"); err != nil {
 		// Client closed connected as rebooting.
 		log.Debugf(ctx, "Client exit as device rebooted: %s", err)

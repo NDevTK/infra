@@ -2234,8 +2234,9 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_run_command",
 			ExecExtraArgs: []string{
 				"host:dut",
-				"command:reboot",
-				"background:true",
+				"command:reboot && exit",
+				// TODO(b:267486665): Restore usage of background runner.
+				// "background:true",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},

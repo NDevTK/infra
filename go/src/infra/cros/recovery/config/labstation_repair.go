@@ -223,8 +223,9 @@ func LabstationRepairConfig() *Configuration {
 						},
 						ExecName: "cros_run_command",
 						ExecExtraArgs: []string{
-							"command:reboot",
-							"background:true",
+							"command:reboot && exit",
+							// TODO(b:267486665): Restore usage of background runner.
+							// "background:true",
 						},
 						RunControl: RunControl_ALWAYS_RUN,
 					},
