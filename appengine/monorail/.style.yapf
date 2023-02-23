@@ -1,5 +1,5 @@
 [style]
-based_on_style = chromium
+based_on_style = yapf
 
 # Full list of knobs: https://github.com/google/yapf#knobs
 split_before_first_argument = true
