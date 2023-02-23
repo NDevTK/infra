@@ -51,6 +51,25 @@ func RecoveryModeRequiredPDOff(ctx context.Context, run components.Runner, servo
 	return true, nil
 }
 
+// Uptime returns uptime of resource.
+func Uptime(ctx context.Context, run components.Runner) (*time.Duration, error) {
+	// Received value represent two parts where the first value represents the total number
+	// of seconds the system has been up and the second value is the sum of how much time
+	// each core has spent idle, in seconds. We are looking
+	//  E.g.: 683503.88 1003324.85
+	// Consequently, the second value may be greater than the overall system uptime on systems with multiple cores.
+	out, err := run(ctx, time.Minute, "cat /proc/uptime")
+	if err != nil {
+		return nil, errors.Annotate(err, "uptime").Err()
+	}
+	log.Debugf(ctx, "Uptime value read: %q.", out)
+	dur, err := ProcessUptime(out)
+	if err != nil {
+		return nil, errors.Annotate(err, "get uptime").Err()
+	}
+	return dur, nil
+}
+
 func ProcessUptime(uptimeVal string) (*time.Duration, error) {
 	// uptimePattern is a decimal number, possibly containing a decimal point.
 	uptimePattern := regexp.MustCompile(`^\s*(\d+\.?\d*)\s+(\d+\.?\d*)\s*$`)

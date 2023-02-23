@@ -12,6 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 )
@@ -40,7 +41,7 @@ func validateUptime(ctx context.Context, info *execs.ExecInfo) error {
 	if maxDuration == 0 && minDuration == 0 {
 		return errors.Reason("validate uptime: neither min nor max duration is specified").Err()
 	}
-	dur, err := uptime(ctx, info.DefaultRunner())
+	dur, err := cros.Uptime(ctx, info.DefaultRunner())
 	if err != nil {
 		return errors.Annotate(err, "validate uptime").Err()
 	}

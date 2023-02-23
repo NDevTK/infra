@@ -37,25 +37,6 @@ const (
 	NormalBootingTime = 150 * time.Second
 )
 
-// uptime returns uptime of resource.
-func uptime(ctx context.Context, run execs.Runner) (*time.Duration, error) {
-	// Received value represent two parts where the first value represents the total number
-	// of seconds the system has been up and the second value is the sum of how much time
-	// each core has spent idle, in seconds. We are looking
-	//  E.g.: 683503.88 1003324.85
-	// Consequently, the second value may be greater than the overall system uptime on systems with multiple cores.
-	out, err := run(ctx, time.Minute, "cat /proc/uptime")
-	if err != nil {
-		return nil, errors.Annotate(err, "uptime").Err()
-	}
-	log.Debugf(ctx, "Read value: %q.", out)
-	dur, err := cros.ProcessUptime(out)
-	if err != nil {
-		return nil, errors.Annotate(err, "get uptime").Err()
-	}
-	return dur, nil
-}
-
 // hasOnlySingleLine determines if the given string is only one single line.
 func hasOnlySingleLine(ctx context.Context, s string) bool {
 	if s == "" {
