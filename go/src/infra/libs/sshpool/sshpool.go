@@ -51,17 +51,32 @@ func (p *Pool) Get(host string) (*ssh.Client, error) {
 	for n := len(p.pool[host]) - 1; n >= 0; n-- {
 		c := p.pool[host][n]
 		p.pool[host] = p.pool[host][:n]
-		s, err := c.NewSession()
-		if err != nil {
-			// This SSH client is probably bad, so close and stop using it.
+		if !verifyClientIsAlive(c) {
+			log.Printf("SSH client for %q is bad, closing it now!\n", host)
 			p.closeClient(c)
 			continue
 		}
-		s.Close()
 		return c, nil
 	}
+	log.Printf("Dial new SSH client for %q\n", host)
 	c, err := ssh.Dial("tcp", host, p.config)
 	return c, err
+}
+
+// verifyClientIsAlive verifies if the client is alive and can continue to use.
+func verifyClientIsAlive(c *ssh.Client) bool {
+	// Verify by request.
+	if _, _, err := c.SendRequest("keepalive@openssh.org", true, nil); err != nil {
+		return false
+	}
+	// verify by ability work with sessions.
+	if s, err := c.NewSession(); err != nil {
+		return false
+	} else {
+		s.Close()
+	}
+	// All checks passed. The client should be good!
+	return true
 }
 
 // GetContext returns a good SSH client within the context timeout.
