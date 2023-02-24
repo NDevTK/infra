@@ -115,7 +115,6 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"Power cycle DUT by RPM and wait",
 				"Cold reset by servo and wait for SSH",
-				"Cr50 reset by servo wait for SSH",
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
 				"Update FW from fw-image by servo and wait for boot",
 				"Restore AC detection by EC console and wait for ping",
@@ -153,7 +152,6 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"Power cycle DUT by RPM and wait",
 				"Cold reset by servo and wait for SSH",
-				"Cr50 reset by servo wait for SSH",
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
 				"Update FW from fw-image by servo and wait for boot",
 				"Install OS in recovery mode by booting from servo USB-drive",
@@ -344,7 +342,6 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"Power cycle DUT by RPM and wait",
 				"Cold reset by servo and wait for SSH",
-				"Cr50 reset by servo wait for SSH",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Download and install OS in DEV mode using USB-drive",
@@ -358,7 +355,6 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"Power cycle DUT by RPM and wait",
 				"Cold reset by servo and wait for SSH",
-				"Cr50 reset by servo wait for SSH",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Download and install OS in DEV mode using USB-drive",
@@ -583,7 +579,6 @@ func crosRepairActions() map[string]*Action {
 			ExecTimeout: &durationpb.Duration{Seconds: 45},
 			RecoveryActions: []string{
 				"Cold reset by servo and wait for SSH",
-				"Cr50 reset by servo wait for SSH",
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
@@ -1789,11 +1784,8 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Repair a Chrome Device by resetting cr50 by servo.",
 				"Then, using servo to initialize dut again.",
-				"TODO: (blocked by: b/221083688) Collect logs from a successfully repaired DUT.",
 			},
 			Conditions: []string{
-				// Disable by b/266830082 as possible causing issue with servod.
-				"Skip condition",
 				"Not Satlab device",
 				"Verify servod is responsive",
 			},
