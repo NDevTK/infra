@@ -34,6 +34,8 @@ type recoveryEngine struct {
 	recoveryUsageCache map[recoveryUsageKey]error
 	// Tracker the plan iterations.
 	planRunTally int32
+	// Track how many recoevry actin was used in the plan.
+	startedRecoveries int32
 }
 
 // Run runs the recovery plan.
@@ -90,6 +92,7 @@ func (r *recoveryEngine) runPlan(ctx context.Context) (rErr error) {
 			metric.Observations = append(
 				metric.Observations,
 				metrics.NewInt64Observation("restarts", int64(r.planRunTally)),
+				metrics.NewInt64Observation("started_recoveries", int64(r.startedRecoveries)),
 			)
 			metric.Restarts = r.planRunTally
 			metric.UpdateStatus(rErr)
@@ -450,6 +453,7 @@ func (r *recoveryEngine) runRecoveries(ctx context.Context, actionName string, m
 			log.Infof(ctx, "Recovery %q skipped as already used before for %q.", recoveryName, actionName)
 			continue
 		}
+		r.startedRecoveries += 1
 		recoveryMetric, status, err := r.runAction(ctx, recoveryName, actionName, false, "Recovery", metrics.ActionTypeRecovery, recoveryLevel)
 		if err != nil {
 			log.Infof(ctx, "Recovery %q: fail", recoveryName)

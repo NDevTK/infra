@@ -717,7 +717,7 @@ func TestRecoveryCachePersistence(t *testing.T) {
 }
 
 // TestCallMetricsInSimplePlan tests that calling a simple plan with a fake implementation of a metrics interface calls the metrics implementation.
-func TestCallMetricsInSimplePlan(t *testing.T) {
+func TestCallMetricsInEmptyPlan(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	m := newFakeMetrics()
@@ -734,6 +734,7 @@ func TestCallMetricsInSimplePlan(t *testing.T) {
 			Status:     "success",
 			Observations: []*metrics.Observation{
 				{MetricKind: "restarts", ValueType: "number", Value: "0"},
+				{MetricKind: "started_recoveries", ValueType: "number", Value: "0"},
 			},
 		},
 	}
@@ -793,6 +794,7 @@ func TestCallMetricsWithNonexistentAction(t *testing.T) {
 			Status:     "fail",
 			Observations: []*metrics.Observation{
 				{MetricKind: "restarts", ValueType: "number", Value: "0"},
+				{MetricKind: "started_recoveries", ValueType: "number", Value: "0"},
 			},
 			FailReason: `run plan "2e9aa66a-5fa1-4eaa-933c-eee8e4337823": run actions: run action "a": run action "a" exec: run exec "a" with timeout 1m0s: exec "a": not found`,
 		},
@@ -849,9 +851,29 @@ func TestCallMetricsWithExistentAction(t *testing.T) {
 	var zero time.Time
 	expected := []*metrics.Action{
 		{
+			Name:       "unsaved:r",
+			ActionKind: "action:r",
+			StartTime:  zero,
+			StopTime:   zero,
+			Status:     "success",
+			FailReason: "",
+			Observations: []*metrics.Observation{
+				{MetricKind: "action_type", ValueType: "string", Value: "recovery"},
+				{MetricKind: "parent_action_name", ValueType: "string", Value: "a"},
+				{MetricKind: "action_level", ValueType: "number", Value: "0"},
+				{MetricKind: "exec_execution", ValueType: "number", Value: "2"},
+				{MetricKind: "exec_execution_sec", ValueType: "number", Value: "1"},
+				{MetricKind: "plan_run_tally", ValueType: "number", Value: "0"},
+			},
+			AllowFail: "no-allow-fail",
+			PlanName:  "",
+			Type:      "recovery",
+		},
+		{
 			Name:       "unsaved:a",
 			ActionKind: "action:a",
-			Status:     "success",
+			Status:     "fail",
+			FailReason: `run action "a": run action "a" exec: run recoveries: recovery "r" requested to start over`,
 			StartTime:  zero,
 			StopTime:   zero,
 			Observations: []*metrics.Observation{
@@ -862,15 +884,37 @@ func TestCallMetricsWithExistentAction(t *testing.T) {
 				{MetricKind: "exec_execution_sec", ValueType: "number", Value: "1"},
 				{MetricKind: "plan_run_tally", ValueType: "number", Value: "0"},
 			},
-			AllowFail: "no-allow-fail",
+			RecoveredBy: "r",
+			AllowFail:   "allow-fail",
+			Type:        "verifier",
+		},
+		{
+			Name:       "unsaved:a",
+			ActionKind: "action:a",
+			StartTime:  zero,
+			StopTime:   zero,
+			Status:     "fail",
+			FailReason: `run action "a": run action "a" exec: run exec "sample_fail" with timeout 1m0s: failed`,
+			Observations: []*metrics.Observation{
+				{MetricKind: "action_type", ValueType: "string", Value: "verifier"},
+				{MetricKind: "parent_action_name", ValueType: "string", Value: "plan"},
+				{MetricKind: "action_level", ValueType: "number", Value: "0"},
+				{MetricKind: "exec_execution", ValueType: "number", Value: "2"},
+				{MetricKind: "exec_execution_sec", ValueType: "number", Value: "1"},
+				{MetricKind: "plan_run_tally", ValueType: "number", Value: "1"},
+			},
+			AllowFail: "allow-fail",
+			PlanName:  "",
 			Type:      "verifier",
 		},
 		{
 			ActionKind: "plan:2e9aa66a-5fa1-4eaa-933c-eee8e4337823",
 			Status:     "success",
 			Observations: []*metrics.Observation{
-				{MetricKind: "restarts", ValueType: "number", Value: "0"},
+				{MetricKind: "restarts", ValueType: "number", Value: "1"},
+				{MetricKind: "started_recoveries", ValueType: "number", Value: "1"},
 			},
+			Restarts: 1,
 		},
 	}
 	r.plan = &config.Plan{
@@ -878,11 +922,19 @@ func TestCallMetricsWithExistentAction(t *testing.T) {
 			"a",
 		},
 		Actions: map[string]*config.Action{
-			"a": {ExecName: exec_pass},
+			"a": {
+				ExecName:               exec_fail,
+				RecoveryActions:        []string{"r"},
+				AllowFailAfterRecovery: true,
+			},
+			"r": {
+				ExecName: exec_pass,
+			},
 		},
 	}
 	r.args = &execs.RunArgs{
-		Metrics: m,
+		Metrics:        m,
+		EnableRecovery: true,
 	}
 	r.initCache()
 	err := r.runPlan(ctx)
