@@ -99,26 +99,34 @@ func crosRepairActions() map[string]*Action {
 			},
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
+		"DUT has board info": {
+			ExecName:   "dut_has_board_name",
+			RunControl: RunControl_RUN_ONCE,
+		},
+		"DUT has model info": {
+			ExecName:   "dut_has_model_name",
+			RunControl: RunControl_RUN_ONCE,
+		},
 		"Device is pingable": {
 			Docs: []string{
 				"Verify that device is reachable by ping.",
 				"Limited to 15 seconds.",
 			},
 			Dependencies: []string{
-				"dut_has_board_name",
-				"dut_has_model_name",
+				"DUT has board info",
+				"DUT has model info",
 			},
 			ExecName: "cros_ping",
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 15,
 			},
 			RecoveryActions: []string{
-				"Power cycle DUT by RPM and wait",
 				"Cold reset by servo and wait for SSH",
+				"Power cycle DUT by RPM and wait",
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
-				"Update FW from fw-image by servo and wait for boot",
 				"Restore AC detection by EC console and wait for ping",
 				"Install OS in recovery mode by booting from servo USB-drive",
+				"Update FW from fw-image by servo and wait for boot",
 				"Install OS in recovery mode by booting from servo USB-drive (special pools)",
 				"Install OS in DEV mode by USB-drive",
 				"Reset power using servo if booted from USB",
@@ -130,18 +138,6 @@ func crosRepairActions() map[string]*Action {
 				UploadPolicy: MetricsConfig_DEFAULT_UPLOAD_POLICY,
 			},
 		},
-		"Install OS in recovery mode by booting from servo USB-drive (special pools)": {
-			Docs: []string{
-				"This action installs the test image on DUT utilizing the features of servo.",
-				"DUT will be booted in recovery mode. This action is targeted at devices ",
-				"in special pools only.",
-			},
-			Dependencies: []string{
-				"Pools allowed to stay in DEV mode",
-				"Install OS in recovery mode by booting from servo USB-drive",
-			},
-			ExecName: "sample_pass",
-		},
 		"Device is SSHable": {
 			Docs: []string{
 				"Verify that device is reachable by SSH.",
@@ -150,11 +146,11 @@ func crosRepairActions() map[string]*Action {
 			ExecName:    "cros_ssh",
 			ExecTimeout: &durationpb.Duration{Seconds: 15},
 			RecoveryActions: []string{
-				"Power cycle DUT by RPM and wait",
+				// The DUT is pingable, so no need extra reboot actions.
 				"Cold reset by servo and wait for SSH",
-				"Trigger kernel panic to reset the whole board and try ssh to DUT",
-				"Update FW from fw-image by servo and wait for boot",
 				"Install OS in recovery mode by booting from servo USB-drive",
+				"Update FW from fw-image by servo and wait for boot",
+				"Install OS in recovery mode by booting from servo USB-drive (special pools)",
 				"Install OS in DEV mode by USB-drive",
 				"Reset power using servo if booted from USB",
 			},
@@ -2027,10 +2023,29 @@ func crosRepairActions() map[string]*Action {
 				"This action installs the test image on DUT utilizing the features of servo.",
 				"DUT will be booted in recovery mode.",
 			},
+			Conditions: []string{
+				"Is servod running",
+			},
 			Dependencies: []string{
-				"Setup has servo info",
 				"Servo USB-Key needs to be reflashed",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
+				"Boot DUT in recovery and install from USB-drive",
+				"Wait to be SSHable (normal boot)",
+			},
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Install OS in recovery mode by booting from servo USB-drive (special pools)": {
+			Docs: []string{
+				"This action installs the test image on DUT utilizing the features of servo.",
+				"DUT will be booted in recovery mode. This action is targeted at devices ",
+				"in special pools only.",
+			},
+			Conditions: []string{
+				"Pools allowed to stay in DEV mode",
+				"Is servod running",
+			},
+			Dependencies: []string{
 				"Boot DUT in recovery and install from USB-drive",
 				"Wait to be SSHable (normal boot)",
 			},
