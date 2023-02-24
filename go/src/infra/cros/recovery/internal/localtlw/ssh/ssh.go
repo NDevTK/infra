@@ -48,7 +48,8 @@ func RunBackground(ctx context.Context, pool *sshpool.Pool, addr string, cmd str
 
 // run executes commands on a remote host by SSH.
 func run(ctx context.Context, pool *sshpool.Pool, addr string, cmd string, background bool) (result *tlw.RunResult) {
-
+	// TODO(b:267504440): Delete session key logs since they are only required for debugging a specific issue.
+	sessionLogsKey := rand.String(32)
 	result = &tlw.RunResult{
 		Command:  cmd,
 		ExitCode: -1,
@@ -73,16 +74,19 @@ func run(ctx context.Context, pool *sshpool.Pool, addr string, cmd string, backg
 		result.Stderr = fmt.Sprintf("%s: cmd is empty", errorMessage)
 		return
 	}
+	log.Debugf(ctx, "Getting SSH client: %q", sessionLogsKey)
 	sc, err := pool.GetContext(ctx, addr)
 	if err != nil {
 		result.Stderr = fmt.Sprintf("%s: fail to get client from pool; %s", errorMessage, err)
 		return
 	}
 	defer func() {
+		log.Debugf(ctx, "Starting finishing SSH execution: %q", sessionLogsKey)
 		pool.Put(addr, sc)
-		log.Debugf(ctx, "Finished update SSH pool for %q!", addr)
+		log.Debugf(ctx, "Finished SSH execution: %q", sessionLogsKey)
 	}()
-	result = createSessionAndExecute(ctx, cmd, sc, background)
+	log.Debugf(ctx, "SSH client received: %q", sessionLogsKey)
+	result = createSessionAndExecute(ctx, cmd, sc, background, sessionLogsKey)
 	log.Debugf(ctx, "Run SSH %q: Cmd: %q", addr, result.Command)
 	log.Debugf(ctx, "Run SSH %q: ExitCode: %d", addr, result.ExitCode)
 	log.Debugf(ctx, "Run SSH %q: Stdout: %s", addr, result.Stdout)
@@ -93,13 +97,11 @@ func run(ctx context.Context, pool *sshpool.Pool, addr string, cmd string, backg
 // createSessionAndExecute creates ssh session and perform execution by ssh.
 //
 // The function also aborted execution if context canceled.
-func createSessionAndExecute(ctx context.Context, cmd string, client *ssh.Client, background bool) (result *tlw.RunResult) {
+func createSessionAndExecute(ctx context.Context, cmd string, client *ssh.Client, background bool, sessionLogsKey string) (result *tlw.RunResult) {
 	result = &tlw.RunResult{
 		Command:  cmd,
 		ExitCode: -1,
 	}
-	// TODO(b:267504440): Delete logs with session key as required only for debugging issue in the bug.
-	sessionLogsKey := rand.String(32)
 	log.Debugf(ctx, "Started SSH session: %q", sessionLogsKey)
 	session, err := client.NewSession()
 	if err != nil {
