@@ -778,6 +778,7 @@ func TestCallMetricsWithNonexistentAction(t *testing.T) {
 			StopTime:   zero,
 			Observations: []*metrics.Observation{
 				{MetricKind: "action_type", ValueType: "string", Value: "verifier"},
+				{MetricKind: "parent_action_name", ValueType: "string", Value: "plan"},
 				{MetricKind: "action_level", ValueType: "number", Value: "0"},
 				{MetricKind: "exec_execution", ValueType: "number", Value: "2"},
 				{MetricKind: "exec_execution_sec", ValueType: "number", Value: "1"},
@@ -855,6 +856,7 @@ func TestCallMetricsWithExistentAction(t *testing.T) {
 			StopTime:   zero,
 			Observations: []*metrics.Observation{
 				{MetricKind: "action_type", ValueType: "string", Value: "verifier"},
+				{MetricKind: "parent_action_name", ValueType: "string", Value: "plan"},
 				{MetricKind: "action_level", ValueType: "number", Value: "0"},
 				{MetricKind: "exec_execution", ValueType: "number", Value: "2"},
 				{MetricKind: "exec_execution_sec", ValueType: "number", Value: "1"},

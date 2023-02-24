@@ -140,7 +140,7 @@ func (r *recoveryEngine) runCriticalActionsAttempt(ctx context.Context) (err err
 	// Critical actions represent the highest level (0).
 	level := int64(0)
 	for _, actionName := range r.plan.GetCriticalActions() {
-		if _, _, err := r.runAction(ctx, actionName, r.args.EnableRecovery, "Critical Action", metrics.ActionTypeVerifier, level); err != nil {
+		if _, _, err := r.runAction(ctx, actionName, "plan", r.args.EnableRecovery, "Critical Action", metrics.ActionTypeVerifier, level); err != nil {
 			return errors.Annotate(err, "run actions").Err()
 		}
 	}
@@ -164,7 +164,7 @@ const (
 // 2) Check if the action is applicable based on conditions. Skip if any fail.
 // 3) Run dependencies of the action. Fail if any fails.
 // 4) Run action exec function. Fail if any fail.
-func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enableRecovery bool, stepNamePrefix string, actionType metrics.ActionType, actionLevel int64) (metric *metrics.Action, status actionRunStatus, rErr error) {
+func (r *recoveryEngine) runAction(ctx context.Context, actionName, parentAction string, enableRecovery bool, stepNamePrefix string, actionType metrics.ActionType, actionLevel int64) (metric *metrics.Action, status actionRunStatus, rErr error) {
 	// The step and metrics need to know about error but if we need to stop from return then it is here.
 	forgiveError := false
 	defer func() {
@@ -225,7 +225,10 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName string, enabl
 		}
 		metric = r.args.NewMetricsAction(metricKind)
 		metric.Type = actionType
-		metric.Observations = append(metric.Observations, metrics.NewStringObservation("action_type", string(actionType)))
+		metric.Observations = append(metric.Observations,
+			metrics.NewStringObservation("action_type", string(actionType)),
+			metrics.NewStringObservation("parent_action_name", parentAction),
+		)
 		switch act.GetAllowFailAfterRecovery() {
 		case true:
 			metric.AllowFail = metrics.YesAllowFail
@@ -402,7 +405,7 @@ func (r *recoveryEngine) runActionConditions(ctx context.Context, actionName str
 	log.Debugf(ctx, "Action %q: starting running conditions...", actionName)
 	enableRecovery := false
 	for _, condition := range a.GetConditions() {
-		if _, _, err := r.runAction(ctx, condition, enableRecovery, "Condition", metrics.ActionTypeCondition, actionLevel); err != nil {
+		if _, _, err := r.runAction(ctx, condition, actionName, enableRecovery, "Condition", metrics.ActionTypeCondition, actionLevel); err != nil {
 			log.Debugf(ctx, "Action %q: condition %q fails. Error: %s", actionName, condition, err)
 			return condition, errors.Annotate(err, "run conditions").Err()
 		}
@@ -420,7 +423,7 @@ func (r *recoveryEngine) runDependencies(ctx context.Context, actionName string,
 	}
 	log.Debugf(ctx, "Action %q: starting running dependencies...", actionName)
 	for _, dependencyName := range a.GetDependencies() {
-		if _, _, err := r.runAction(ctx, dependencyName, enableRecovery, "Dependency", actionType, actionLevel); err != nil {
+		if _, _, err := r.runAction(ctx, dependencyName, actionName, enableRecovery, "Dependency", actionType, actionLevel); err != nil {
 			log.Debugf(ctx, "Action %q: dependency %q fails. Errors: %s", actionName, dependencyName, err)
 			return errors.Annotate(err, "dependencies").Err()
 		}
@@ -447,7 +450,7 @@ func (r *recoveryEngine) runRecoveries(ctx context.Context, actionName string, m
 			log.Infof(ctx, "Recovery %q skipped as already used before for %q.", recoveryName, actionName)
 			continue
 		}
-		recoveryMetric, status, err := r.runAction(ctx, recoveryName, false, "Recovery", metrics.ActionTypeRecovery, recoveryLevel)
+		recoveryMetric, status, err := r.runAction(ctx, recoveryName, actionName, false, "Recovery", metrics.ActionTypeRecovery, recoveryLevel)
 		if err != nil {
 			log.Infof(ctx, "Recovery %q: fail", recoveryName)
 			log.Debugf(ctx, "Recovery %q: fail. Error: %s", recoveryName, err)
