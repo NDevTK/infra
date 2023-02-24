@@ -69,8 +69,11 @@ class _BuildDirMerger:
           if not os.path.isdir(dest_item):
             os.mkdir(dest_item)
           CopyDir(source_item, dest_item)
-        else:
+        elif os.path.isfile(source_item):
           CopyFile(source_item, dest_item)
+        else:
+          g_logger.debug('%s: ignoring: %s (not valid file nor dir)',
+                         package.name, source_item)
 
     CopyDir(package.build_dir, self.result_build_dir)
     return source_dest_conflicts
