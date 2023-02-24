@@ -76,9 +76,7 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 	am := info.GetActionArgs(ctx)
 	dut := info.GetDut()
 	dutRun := info.NewRunner(dut.Name)
-	// TODO(b:267486665): Restore usage of background runner.
-	// dutBackgroundRun := info.NewBackgroundRunner(dut.Name)
-	dutBackgroundRun := dutRun
+	dutBackgroundRun := info.NewBackgroundRunner(dut.Name)
 	dutPing := info.NewPinger(dut.Name)
 	servod := info.NewServod()
 	logger := info.NewLogger()
@@ -203,9 +201,7 @@ func verifyBootInRecoveryModeExec(ctx context.Context, info *execs.ExecInfo) err
 	am := info.GetActionArgs(ctx)
 	dut := info.GetDut()
 	dutRun := info.NewRunner(dut.Name)
-	// TODO(b:267486665): Restore usage of background runner.
-	// dutBackgroundRun := info.NewBackgroundRunner(dut.Name)
-	dutBackgroundRun := dutRun
+	dutBackgroundRun := info.NewBackgroundRunner(dut.Name)
 	dutPing := info.NewPinger(dut.Name)
 	servod := info.NewServod()
 	// Flag to notice when device booted and sshable.

@@ -204,9 +204,7 @@ func runnerByHost(ctx context.Context, deviceType string, info *execs.ExecInfo, 
 		resource = dut.Name
 	}
 	if inBackground {
-		// TODO(b:267486665): Restore usage of background runner.
-		// return info.NewBackgroundRunner(resource), nil
-		log.Infof(ctx, "Background command runs is dissabled by b:267486665.")
+		return info.NewBackgroundRunner(resource), nil
 	}
 	return info.NewRunner(resource), nil
 }
