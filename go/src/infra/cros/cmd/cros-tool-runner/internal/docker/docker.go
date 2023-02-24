@@ -78,6 +78,7 @@ type Docker struct {
 	Stdoutbuf    *bytes.Buffer
 	Stderrbuf    *bytes.Buffer
 	PullExitCode int
+	Started      bool
 }
 
 // HostPort returns the port which the given docker port maps to.
@@ -163,6 +164,11 @@ func (d *Docker) Run(ctx context.Context, block bool, netbind bool, service stri
 		d.containerID = strings.TrimSuffix(out, "\n")
 		log.Printf("Run docker %q: container Id: %q.", d.Name, d.containerID)
 	}
+
+	// Not detached, no err, then the container is started. Detched started must be determined by the caller.
+	if !d.Detach {
+		d.Started = true
+	}
 	return nil
 }
 
@@ -200,6 +206,7 @@ func pullWithRetry(ctx context.Context, image string, service string) (error, in
 
 }
 func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, service string) (string, error) {
+	d.Started = false
 	err, exitCode := pullWithRetry(ctx, d.RequestedImageName, service)
 	d.PullExitCode = exitCode
 	if err != nil {

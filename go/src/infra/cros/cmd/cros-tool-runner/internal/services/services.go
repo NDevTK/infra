@@ -110,6 +110,7 @@ func startDutService(ctx context.Context, imagePath, registerName, dutName, netw
 		if err != nil {
 			return errors.Annotate(err, "failed to find file cros-dut log file").Err()
 		}
+		d.Started = true
 		dsPort, err = dutServerPort(filePath)
 		if err != nil {
 			return errors.Annotate(err, "failed to extract dut server port from %s", filePath).Err()
