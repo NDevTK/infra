@@ -120,7 +120,7 @@ func crosRepairActions() map[string]*Action {
 				"Restore AC detection by EC console and wait for ping",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in recovery mode by booting from servo USB-drive (special pools)",
-				"Download and install OS in DEV mode using USB-drive",
+				"Install OS in DEV mode by USB-drive",
 				"Reset power using servo if booted from USB",
 				"Check if request labstation reboot",
 			},
@@ -155,7 +155,7 @@ func crosRepairActions() map[string]*Action {
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
 				"Update FW from fw-image by servo and wait for boot",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Download and install OS in DEV mode using USB-drive",
+				"Install OS in DEV mode by USB-drive",
 				"Reset power using servo if booted from USB",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
@@ -251,7 +251,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Download and install OS in DEV mode using USB-drive",
+				"Install OS in DEV mode by USB-drive",
 			},
 		},
 		"Python is present": {
@@ -266,7 +266,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Download and install OS in DEV mode using USB-drive",
+				"Install OS in DEV mode by USB-drive",
 			},
 		},
 		"Check if last provision was good": {
@@ -281,7 +281,7 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Download and install OS in DEV mode using USB-drive",
+				"Install OS in DEV mode by USB-drive",
 			},
 		},
 		"Verify that device is not enrolled": {
@@ -344,7 +344,7 @@ func crosRepairActions() map[string]*Action {
 				"Cold reset by servo and wait for SSH",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Download and install OS in DEV mode using USB-drive",
+				"Install OS in DEV mode by USB-drive",
 			},
 		},
 		"Power is recognized by DUT": {
@@ -357,7 +357,7 @@ func crosRepairActions() map[string]*Action {
 				"Cold reset by servo and wait for SSH",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Download and install OS in DEV mode using USB-drive",
+				"Install OS in DEV mode by USB-drive",
 			},
 		},
 		"Check TPM statuses": {
@@ -375,7 +375,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Download and install OS in DEV mode using USB-drive",
+				"Install OS in DEV mode by USB-drive",
 			},
 		},
 		"Read TPM ownership": {
@@ -582,7 +582,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Download and install OS in DEV mode using USB-drive",
+				"Install OS in DEV mode by USB-drive",
 			},
 		},
 		"Start UI": {
@@ -669,8 +669,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Verify servo keyboard firmware": {
 			Conditions: []string{
-				"Setup has servo info",
-				"Verify servod is responsive",
+				"Is servod running",
 				"is_servo_keyboard_image_tool_present",
 			},
 			Dependencies: []string{
@@ -687,8 +686,10 @@ func crosRepairActions() map[string]*Action {
 			AllowFailAfterRecovery: true,
 		},
 		"Flash keyboard map": {
+			Conditions: []string{
+				"Is servod running",
+			},
 			Dependencies: []string{
-				"Verify servod is responsive",
 				"set_at_hwb_on",
 				"set_atmega_rst_on",
 				"Sleep for atmega reset",
@@ -983,7 +984,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Download and install OS in DEV mode using USB-drive",
+				"Install OS in DEV mode by USB-drive",
 			},
 			AllowFailAfterRecovery: true,
 		},
@@ -1029,7 +1030,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"servo_state_is_working",
-				"Is servod started",
+				"Is servod running",
 				"Device NOT booted from USB-drive",
 				"Print block devices of the DUT",
 			},
@@ -1105,7 +1106,7 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"ChromeOS TMP recovery (not critical)",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Download and install OS in DEV mode using USB-drive",
+				"Install OS in DEV mode by USB-drive",
 			},
 		},
 		"Verify tpm_kernver is updated correctly": {
@@ -1123,7 +1124,7 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"ChromeOS TMP recovery (not critical)",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Download and install OS in DEV mode using USB-drive",
+				"Install OS in DEV mode by USB-drive",
 			},
 		},
 		"ChromeOS TMP recovery (not critical)": {
@@ -1356,7 +1357,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Download and install OS in DEV mode using USB-drive",
+				"Install OS in DEV mode by USB-drive",
 			},
 		},
 		"Kernel does not know issues": {
@@ -1373,7 +1374,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Download and install OS in DEV mode using USB-drive",
+				"Install OS in DEV mode by USB-drive",
 			},
 		},
 		"Stateful partition has enough free index nodes": {
@@ -1388,7 +1389,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Download and install OS in DEV mode using USB-drive",
+				"Install OS in DEV mode by USB-drive",
 			},
 		},
 		"Stateful partition has enough free space": {
@@ -1404,7 +1405,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Download and install OS in DEV mode using USB-drive",
+				"Install OS in DEV mode by USB-drive",
 			},
 		},
 		"Stateful partition (encrypted) has enough free space": {
@@ -1420,7 +1421,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Download and install OS in DEV mode using USB-drive",
+				"Install OS in DEV mode by USB-drive",
 			},
 		},
 		"Update special device labels": {
@@ -1568,8 +1569,7 @@ func crosRepairActions() map[string]*Action {
 				"The action used as codiion.",
 			},
 			Dependencies: []string{
-				"Setup has servo info",
-				"Verify servod is responsive",
+				"Is servod running",
 			},
 			ExecName: "servo_usbkey_is_detected",
 		},
@@ -1755,8 +1755,7 @@ func crosRepairActions() map[string]*Action {
 				"TODO: (blocked by: b/221083688) Collect logs from a successfully repaired DUT.",
 			},
 			Conditions: []string{
-				"Setup has servo info",
-				"Verify servod is responsive",
+				"Is servod running",
 			},
 			Dependencies: []string{
 				"Trigger kernel panic by servod",
@@ -1769,7 +1768,7 @@ func crosRepairActions() map[string]*Action {
 				"This repair action repairs a Chrome device by sending a system request to the kernel.",
 			},
 			Conditions: []string{
-				"Verify servod is responsive",
+				"Is servod running",
 			},
 			Dependencies: []string{
 				"Setup has servo info",
@@ -1787,7 +1786,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Not Satlab device",
-				"Verify servod is responsive",
+				"Is servod running",
 			},
 			Dependencies: []string{
 				"servod_has_control_cr50_reboot",
@@ -1866,7 +1865,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Setup has servo info",
-				"Verify servod is responsive",
+				"Is servod running",
 			},
 			ExecName: "cros_read_gbb_by_servo",
 			ExecExtraArgs: []string{
@@ -1893,6 +1892,7 @@ func crosRepairActions() map[string]*Action {
 				"Allowed to fail as flags can applied but fail by some reason",
 			},
 			Dependencies: []string{
+				"Is servod running",
 				"Read BIOS from DUT by servo",
 			},
 			ExecName: "cros_set_gbb_by_servo",
@@ -1951,8 +1951,10 @@ func crosRepairActions() map[string]*Action {
 				"Try to recover AC detection through servod's ec control.",
 				"This action wraps the recovery action and waits for the device to come back online.",
 			},
+			Conditions: []string{
+				"Is servod running",
+			},
 			Dependencies: []string{
-				"Verify servod is responsive",
 				"Servo recover AC power",
 				"Wait to be pingable (normal boot)",
 			},
@@ -1994,9 +1996,11 @@ func crosRepairActions() map[string]*Action {
 				"The DUT may take time to become pingable again,",
 				"so we use a wrapper action to wait.",
 			},
+			Conditions: []string{
+				"Is servod running",
+			},
 			Dependencies: []string{
 				"DUT has CrOS EC",
-				"Verify servod is responsive",
 				"cros_is_battery_expected",
 			},
 			ExecName: "servo_recover_ac_power",
@@ -2010,7 +2014,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify if DUT has ChromeOS firmware for EC",
 			},
 			Dependencies: []string{
-				"Verify servod is responsive",
+				"Is servod running",
 			},
 			ExecExtraArgs: []string{
 				"command:supports_cros_ec_communication",
@@ -2038,8 +2042,10 @@ func crosRepairActions() map[string]*Action {
 				"This action installs the test image on DUT after booking the DUT in dev mode.",
 				"The action is only for deployment as not limited by pools.",
 			},
+			Conditions: []string{
+				"Is servod running",
+			},
 			Dependencies: []string{
-				"Verify servod is responsive",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
 				"Install OS in DEV mode by USB-drive",
 			},
@@ -2050,8 +2056,11 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"This action installs the test image on DUT after booking the DUT in dev mode.",
 			},
+			Conditions: []string{
+				"Is servod running",
+			},
 			Dependencies: []string{
-				"Boot DUT from USB in DEV mode retry twice",
+				"Boot DUT from USB in DEV mode",
 				"Run install after boot from USB-drive",
 				"Cold reset DUT by servo and wait to boot",
 				"Wait to be SSHable (normal boot)",
@@ -2064,8 +2073,7 @@ func crosRepairActions() map[string]*Action {
 				"Cold reset device by servo and wait for DUT to become ping-able.",
 			},
 			Conditions: []string{
-				"Setup has servo info",
-				"Verify servod is responsive",
+				"Is servod running",
 			},
 			Dependencies: []string{
 				"Cold reset DUT by servo",
@@ -2081,8 +2089,7 @@ func crosRepairActions() map[string]*Action {
 				"re-imaging the device from USB device.",
 			},
 			Conditions: []string{
-				"Setup has servo info",
-				"Verify servod is responsive",
+				"Is servod running",
 			},
 			Dependencies: []string{
 				"Cold reset DUT by servo",
@@ -2096,8 +2103,7 @@ func crosRepairActions() map[string]*Action {
 				"TODO: (blocked by: b/221083688) Collect logs from a successfully repaired DUT.",
 			},
 			Conditions: []string{
-				"Setup has servo info",
-				"Verify servod is responsive",
+				"Is servod running",
 			},
 			Dependencies: []string{
 				"Cold reset DUT by servo",
@@ -2111,8 +2117,7 @@ func crosRepairActions() map[string]*Action {
 				"Cold reset device by servo and do not wait.",
 			},
 			Dependencies: []string{
-				"Setup has servo info",
-				"Verify servod is responsive",
+				"Is servod running",
 			},
 			ExecName: "servo_set",
 			ExecExtraArgs: []string{
@@ -2294,8 +2299,7 @@ func crosRepairActions() map[string]*Action {
 				"We will retry up to 3 times since there may be flakiness on flash AP via servo.",
 			},
 			Conditions: []string{
-				"Setup has servo info",
-				"Verify servod is responsive",
+				"Is servod running",
 			},
 			Dependencies: []string{
 				"Recovery version has firmware image path",
@@ -2319,8 +2323,7 @@ func crosRepairActions() map[string]*Action {
 				"We will retry up to 5 times since there is flakiness on flash EC.",
 			},
 			Conditions: []string{
-				"Setup has servo info",
-				"Verify servod is responsive",
+				"Is servod running",
 			},
 			Dependencies: []string{
 				"Recovery version has firmware image path",
@@ -2345,8 +2348,7 @@ func crosRepairActions() map[string]*Action {
 				"The AP update on the DUT can take up to 30 minutes",
 			},
 			Conditions: []string{
-				"Setup has servo info",
-				"Verify servod is responsive",
+				"Is servod running",
 			},
 			Dependencies: []string{
 				"Recovery version has firmware image path",
@@ -2371,8 +2373,7 @@ func crosRepairActions() map[string]*Action {
 				"actions into a single repair action.",
 			},
 			Conditions: []string{
-				"Setup has servo info",
-				"Verify servod is responsive",
+				"Is servod running",
 			},
 			Dependencies: []string{
 				"Flash EC (FW) by servo",
@@ -2393,8 +2394,7 @@ func crosRepairActions() map[string]*Action {
 				"The GBB will set to 0x18 which equal to switch to DEV mode and enable boot from USB drive in DEV mode.",
 			},
 			Conditions: []string{
-				"Setup has servo info",
-				"Verify servod is responsive",
+				"Is servod running",
 			},
 			Dependencies: []string{
 				"Recovery version has firmware image path",
@@ -2437,7 +2437,7 @@ func crosRepairActions() map[string]*Action {
 			ExecTimeout: &durationpb.Duration{Seconds: 8000},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
-		"Boot DUT from USB in DEV mode retry twice": {
+		"Boot DUT from USB in DEV mode": {
 			Docs: []string{
 				"Restart and try to boot from USB-drive",
 				"First boot in dev mode can take time so set boot time to 10 minutes.",
@@ -2449,10 +2449,10 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"boot_retry:2",
 				"boot_timeout:600",
-				"retry_interval:2",
+				"retry_interval:1",
 				"verify_usbkey_boot:true",
 			},
-			ExecTimeout: &durationpb.Duration{Seconds: 1600},
+			ExecTimeout: &durationpb.Duration{Seconds: 650},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
 		"Run install after boot from USB-drive": {
@@ -2608,7 +2608,7 @@ func crosRepairActions() map[string]*Action {
 				"wait_interval:5",
 			},
 		},
-		"Is servod started": {
+		"Is servod running": {
 			Docs: []string{
 				"Verify that servo host specified in setup and servod is running.",
 			},
@@ -2898,8 +2898,7 @@ func crosRepairActions() map[string]*Action {
 				"This action erases MRC cache of the DUT via applicable flash device(servo_micro, CCD) of its servo.",
 			},
 			Dependencies: []string{
-				"Setup has servo info",
-				"Verify servod is responsive",
+				"Is servod running",
 			},
 			ExecName:    "cros_erase_mrc_cache_by_servo",
 			RunControl:  RunControl_RUN_ONCE,
@@ -2924,8 +2923,7 @@ func crosRepairActions() map[string]*Action {
 				"Disable software write protection(for flash firmware) via servo.",
 			},
 			Dependencies: []string{
-				"Setup has servo info",
-				"Verify servod is responsive",
+				"Is servod running",
 			},
 			ExecName:               "cros_disable_software_write_protection",
 			ExecTimeout:            &durationpb.Duration{Seconds: 180},
@@ -2939,8 +2937,7 @@ func crosRepairActions() map[string]*Action {
 				"Enable SPI mode for flashing CPU firmware over servo.",
 			},
 			Dependencies: []string{
-				"Setup has servo info",
-				"Verify servod is responsive",
+				"Is servod running",
 			},
 			ExecName:               "cros_enable_cpu_fw_spi",
 			AllowFailAfterRecovery: true,
@@ -2953,8 +2950,7 @@ func crosRepairActions() map[string]*Action {
 				"Disable SPI mode via servo",
 			},
 			Dependencies: []string{
-				"Setup has servo info",
-				"Verify servod is responsive",
+				"Is servod running",
 			},
 			ExecName:               "cros_disable_cpu_fw_spi",
 			AllowFailAfterRecovery: true,
