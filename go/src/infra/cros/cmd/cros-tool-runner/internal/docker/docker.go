@@ -297,6 +297,7 @@ func (d *Docker) logRunTime(ctx context.Context, service string) {
 	// File not found? Log the timeout duration.
 	if err != nil {
 		logRunTime(ctx, startTime, service)
+		logStatus(ctx, "fail")
 		log.Println("CRITICAL ERROR: Service unable to start. Likely underlying environmental issues. Task will fail.")
 		log.Println("Log file not found, logged max tiemout.")
 		return
@@ -534,9 +535,22 @@ func logServiceFound(ctx context.Context, LogFileName string, startTime time.Tim
 		if index < 0 {
 			continue
 		}
+		logStatus(ctx, "pass")
 		logRunTime(ctx, startTime, service)
 		return nil
 	}
 	return errors.Reason("failed to starting line from %s", LogFileName).Err()
 
+}
+
+// Define metrics. Note: in Go you have to declare metric field types.
+var (
+	statusMetrics = metric.NewCounter("chrome/infra/CFT/docker_run_passrate",
+		"Note of pass or fail.",
+		&types.MetricMetadata{},
+		field.String("status"))
+)
+
+func logStatus(ctx context.Context, status string) {
+	statusMetrics.Set(ctx, 1, status)
 }

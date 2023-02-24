@@ -20,9 +20,6 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/tsmon/field"
-	"go.chromium.org/luci/common/tsmon/metric"
-	"go.chromium.org/luci/common/tsmon/types"
 
 	"infra/cros/cmd/cros-tool-runner/internal/common"
 	"infra/cros/cmd/cros-tool-runner/internal/docker"
@@ -129,12 +126,10 @@ func startDutService(ctx context.Context, imagePath, registerName, dutName, netw
 
 	if err != nil {
 		log.Printf("DUT Service polling for port err: %s", err)
-		logStatus(ctx, "fail")
 		return d, err
 	}
 
 	log.Println("DUT Service polling for port completed.")
-	logStatus(ctx, "pass")
 	d.ServicePort = dsPort
 	return d, nil
 }
@@ -377,16 +372,4 @@ func dutServerPort(dutServerLogFileName string) (int, error) {
 	}
 	return 0, errors.Reason("failed to extract port from %s", dutServerLogFileName).Err()
 
-}
-
-// Define metrics. Note: in Go you have to declare metric field types.
-var (
-	statusMetrics = metric.NewCounter("chrome/infra/CFT/docker_run_passrate",
-		"Note of pass or fail.",
-		&types.MetricMetadata{},
-		field.String("status"))
-)
-
-func logStatus(ctx context.Context, status string) {
-	statusMetrics.Set(ctx, 1, status)
 }
