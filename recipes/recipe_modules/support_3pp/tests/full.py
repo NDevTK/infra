@@ -321,6 +321,20 @@ def GenTests(api):
   upload { pkg_prefix: "tools" }
   '''
 
+  pkgs_dict['dir_tools/pkg_timeout'] = '''
+  create {
+    source { script {
+      name: "fetch.py"
+      verification_timeout: "30m"
+    } }
+    build {
+      tool: "build_tools/tool"
+      dep:  "deps/dep"
+    }
+  }
+  upload { pkg_prefix: "tools" }
+  '''
+
   pkgs_dict['unsupported'] = '''
   create { unsupported: true }
   '''

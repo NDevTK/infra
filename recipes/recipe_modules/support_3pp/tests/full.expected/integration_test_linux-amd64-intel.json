@@ -92,6 +92,7 @@
       "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_tools/pkg/3pp.pb@@@",
       "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_tools/pkg_checkout/3pp.pb@@@",
       "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_tools/pkg_override_and_no_latest/3pp.pb@@@",
+      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_tools/pkg_timeout/3pp.pb@@@",
       "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_tools/posix_tool/3pp.pb@@@",
       "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_tools/windows_experiment/3pp.pb@@@",
       "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/unsupported/3pp.pb@@@",
@@ -1075,6 +1076,85 @@
       }
     },
     "name": "load package specs.Compute hash for 'tools/pkg_override_and_no_latest'",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@Hash calculated: deadbeef@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]/builder/package_repo/dir_tools/pkg_timeout/3pp.pb",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "load package specs.read 'dir_tools/pkg_timeout/3pp.pb'",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@  create {@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@    source { script {@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@      name: \"fetch.py\"@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@      verification_timeout: \"30m\"@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@    } }@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@    build {@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@      tool: \"build_tools/tool\"@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@      dep:  \"deps/dep\"@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@    }@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@  }@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@  upload { pkg_prefix: \"tools\" }@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@  @@@",
+      "@@@STEP_LOG_END@3pp.pb@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "compute_hash",
+      "[START_DIR]",
+      "../[CACHE]/builder/package_repo/dir_tools/pkg_timeout"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "load package specs.Compute hash for 'tools/pkg_timeout'",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_TEXT@Hash calculated: deadbeef@@@"
@@ -2491,7 +2571,7 @@
       "-ref",
       "latest",
       "-tag",
-      "3pp_ecosystem_hash:2393a4a4151c4933f7b07a7037bf824a0092acc8cf9a8c99f39b126f3b078b3b",
+      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -3468,7 +3548,7 @@
       "-ref",
       "latest",
       "-tag",
-      "3pp_ecosystem_hash:2393a4a4151c4933f7b07a7037bf824a0092acc8cf9a8c99f39b126f3b078b3b",
+      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -4175,7 +4255,7 @@
       "-ref",
       "latest",
       "-tag",
-      "3pp_ecosystem_hash:2393a4a4151c4933f7b07a7037bf824a0092acc8cf9a8c99f39b126f3b078b3b",
+      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -5085,7 +5165,7 @@
       "-ref",
       "latest",
       "-tag",
-      "3pp_ecosystem_hash:2393a4a4151c4933f7b07a7037bf824a0092acc8cf9a8c99f39b126f3b078b3b",
+      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -6010,7 +6090,7 @@
       "pkg-register",
       "[CACHE]/3pp_cipd/3pp/tools/pkg/linux-amd64/40-chars-fake-of-the-package-instance_id",
       "-tag",
-      "3pp_ecosystem_hash:2393a4a4151c4933f7b07a7037bf824a0092acc8cf9a8c99f39b126f3b078b3b",
+      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -7009,7 +7089,7 @@
       "-ref",
       "latest",
       "-tag",
-      "3pp_ecosystem_hash:2393a4a4151c4933f7b07a7037bf824a0092acc8cf9a8c99f39b126f3b078b3b",
+      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -8012,7 +8092,7 @@
       "-ref",
       "latest",
       "-tag",
-      "3pp_ecosystem_hash:2393a4a4151c4933f7b07a7037bf824a0092acc8cf9a8c99f39b126f3b078b3b",
+      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -9765,7 +9845,7 @@
       "-ref",
       "latest",
       "-tag",
-      "3pp_ecosystem_hash:2393a4a4151c4933f7b07a7037bf824a0092acc8cf9a8c99f39b126f3b078b3b",
+      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -11439,7 +11519,7 @@
       "pkg-register",
       "[CACHE]/3pp_cipd/3pp/build_tools/tool/linux-amd64/40-chars-fake-of-the-package-instance_id",
       "-tag",
-      "3pp_ecosystem_hash:2393a4a4151c4933f7b07a7037bf824a0092acc8cf9a8c99f39b126f3b078b3b",
+      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -12529,7 +12609,7 @@
       "-ref",
       "latest",
       "-tag",
-      "3pp_ecosystem_hash:2393a4a4151c4933f7b07a7037bf824a0092acc8cf9a8c99f39b126f3b078b3b",
+      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -13865,7 +13945,7 @@
       "-ref",
       "latest",
       "-tag",
-      "3pp_ecosystem_hash:2393a4a4151c4933f7b07a7037bf824a0092acc8cf9a8c99f39b126f3b078b3b",
+      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -15154,7 +15234,7 @@
       "-ref",
       "latest",
       "-tag",
-      "3pp_ecosystem_hash:2393a4a4151c4933f7b07a7037bf824a0092acc8cf9a8c99f39b126f3b078b3b",
+      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
       "-tag",
       "build_id:8945511751514863184",
       "-tag",
@@ -15267,6 +15347,1344 @@
       }
     },
     "name": "building tools/pkg_checkout.do upload.snoop: report_cipd",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "building tools/pkg_timeout"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "[CACHE]/builder/package_repo/dir_tools/pkg_timeout/fetch.py",
+      "latest"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.fetch.py latest",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@resolved version: 2.0.0@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "describe",
+      "3pp/tools/pkg_timeout/linux-amd64",
+      "-version",
+      "version:2@2.0.0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.cipd describe 3pp/tools/pkg_timeout/linux-amd64",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@tag 'version:2@2.0.0' not found@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"error\": \"no such tag\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": null@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.mkdir -p [workdir]",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "building tools/pkg_timeout.fetch sources",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "building tools/pkg_timeout.fetch sources.installing tools",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-deploy",
+      "[CACHE]/3pp_cipd/3pp/build_tools/tool/linux-amd64/40-chars-fake-of-the-package-instance_id",
+      "-root",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/tools_prefix",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.fetch sources.installing tools.cipd pkg-deploy [CACHE]/3pp_cipd/3pp/build_tools/tool/linux-amd64/40-chars-fake-of-the-package-instance_id",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version/of/40-ch\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/40-chars-fake-of-the-package-instance_id\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "building tools/pkg_timeout.fetch sources.installing deps",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-deploy",
+      "[CACHE]/3pp_cipd/3pp/deps/deep_dep/linux-amd64/40-chars-fake-of-the-package-instance_id",
+      "-root",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/deps_prefix",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.fetch sources.installing deps.cipd pkg-deploy [CACHE]/3pp_cipd/3pp/deps/deep_dep/linux-amd64/40-chars-fake-of-the-package-instance_id",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version/of/40-ch\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/40-chars-fake-of-the-package-instance_id\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-deploy",
+      "[CACHE]/3pp_cipd/3pp/deps/dep/linux-amd64/40-chars-fake-of-the-package-instance_id",
+      "-root",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/deps_prefix",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.fetch sources.installing deps.cipd pkg-deploy [CACHE]/3pp_cipd/3pp/deps/dep/linux-amd64/40-chars-fake-of-the-package-instance_id",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"resolved-instance_id-of-version/of/40-ch\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"pkg/name/of/40-chars-fake-of-the-package-instance_id\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/checkout"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.fetch sources.mkdir -p [workdir]/checkout/",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "describe",
+      "3pp/sources/script/tools/pkg_timeout/linux-amd64",
+      "-version",
+      "version:2@2.0.0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.fetch sources.cipd describe 3pp/sources/script/tools/pkg_timeout/linux-amd64",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_TEXT@tag 'version:2@2.0.0' not found@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"error\": \"no such tag\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": null@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "[CACHE]/builder/package_repo/dir_tools/pkg_timeout/fetch.py",
+      "get_url"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.fetch sources.fetch.py get_url",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"ext\": \".test\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"name\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"test_source\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  ], @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"url\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"https://some.internet.example.com/tools/pkg_timeout\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::url]/resources/pycurl.py",
+      "--url",
+      "https://some.internet.example.com/tools/pkg_timeout",
+      "--status-json",
+      "/path/to/tmp/json",
+      "--outfile",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/checkout/test_source"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.fetch sources.GET https://some.internet.example.com/tools/pkg_timeout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-build",
+      "-pkg-def",
+      "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/sources/script/tools/pkg_timeout/linux-amd64\", \"preserve_writable\": true, \"root\": \"[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/checkout\"}",
+      "-out",
+      "[CLEANUP]/tmp_tmp_27",
+      "-hash-algo",
+      "sha256",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.fetch sources.build 3pp/sources/script/tools/pkg_timeout/linux-amd64",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/script/tools/pkg_timeout/linux-amd64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/3pp_cipd/3pp/sources/script/tools/pkg_timeout/linux-amd64"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.fetch sources.ensure cipd pkg cache exists",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "move",
+      "[CLEANUP]/tmp_tmp_27",
+      "[CACHE]/3pp_cipd/3pp/sources/script/tools/pkg_timeout/linux-amd64/40-chars-fake-of-the-package-instance_id"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.fetch sources.mv built cipd pkg to cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "building tools/pkg_timeout.fetch sources.upload source to cipd",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "describe",
+      "3pp/sources/script/tools/pkg_timeout/linux-amd64",
+      "-version",
+      "version:2@2.0.0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.fetch sources.upload source to cipd.cipd describe 3pp/sources/script/tools/pkg_timeout/linux-amd64",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_TEXT@tag 'version:2@2.0.0' not found@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"error\": \"no such tag\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": null@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-register",
+      "[CACHE]/3pp_cipd/3pp/sources/script/tools/pkg_timeout/linux-amd64/40-chars-fake-of-the-package-instance_id",
+      "-tag",
+      "build_id:8945511751514863184",
+      "-tag",
+      "version:2@2.0.0",
+      "-verification-timeout",
+      "30m",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.fetch sources.upload source to cipd.register 3pp/sources/script/tools/pkg_timeout/linux-amd64",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@3@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/sources/script/tools/pkg_timeout/linux-amd64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@3pp/sources/script/tools/pkg_timeout/linux-amd64@https://chrome-infra-packages.appspot.com/p/3pp/sources/script/tools/pkg_timeout/linux-amd64/+/40-chars-fake-of-the-package-instance_id@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copytree",
+      "[CACHE]/builder/package_repo/dir_deps/bottom_dep_git",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/checkout/.3pp/deps/bottom_dep_git"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.fetch sources.copy package definition deps/bottom_dep_git",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copytree",
+      "[CACHE]/builder/package_repo/dir_deps/bottom_dep_url",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/checkout/.3pp/deps/bottom_dep_url"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.fetch sources.copy package definition deps/bottom_dep_url",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copytree",
+      "[CACHE]/builder/package_repo/dir_deps/deep_dep",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/checkout/.3pp/deps/deep_dep"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.fetch sources.copy package definition deps/deep_dep",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copytree",
+      "[CACHE]/builder/package_repo/dir_build_tools/tool",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/checkout/.3pp/build_tools/tool"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.fetch sources.copy package definition build_tools/tool",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copytree",
+      "[CACHE]/builder/package_repo/dir_deps/dep",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/checkout/.3pp/deps/dep"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.fetch sources.copy package definition deps/dep",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copytree",
+      "[CACHE]/builder/package_repo/dir_tools/pkg_timeout",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/checkout/.3pp/tools/pkg_timeout"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.fetch sources.copy package definition tools/pkg_timeout",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "building tools/pkg_timeout.run installation",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/out"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.run installation.make output dir",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-vpython-spec",
+      "RECIPE_REPO[infra]/infra/tools/dockerbuild/standalone.vpython3",
+      "-u",
+      "-m",
+      "infra.tools.dockerbuild",
+      "--logs-debug",
+      "run",
+      "--platform",
+      "manylinux-x64-py3.8",
+      "--workdir",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0",
+      "--env-prefix",
+      "PATH",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/tools_prefix",
+      "--env-prefix",
+      "PATH",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/tools_prefix/bin",
+      "--env",
+      "GOARCH",
+      "amd64",
+      "--env",
+      "GOOS",
+      "linux",
+      "--env",
+      "_3PP_CIPD_PACKAGE_NAME",
+      "tools/pkg_timeout",
+      "--env",
+      "_3PP_PLATFORM",
+      "linux-amd64",
+      "--env",
+      "_3PP_TOOL_PLATFORM",
+      "linux-amd64",
+      "--env",
+      "_3PP_VERSION",
+      "2.0.0",
+      "--",
+      "bash",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/checkout/.3pp/tools/pkg_timeout/install.sh",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/out",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/deps_prefix"
+    ],
+    "cwd": "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/checkout",
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "PYTHONPATH": "RECIPE_REPO[infra]",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/tools_prefix",
+        "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/tools_prefix/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.run installation.install.sh [START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/out [START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/deps_prefix",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "listdir",
+      "[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/out",
+      "--recursive"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.List files to be packaged",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_END@listdir@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-build",
+      "-pkg-def",
+      "{\"data\": [{\"dir\": \".\", \"exclude\": []}], \"install_mode\": \"copy\", \"package\": \"3pp/tools/pkg_timeout/linux-amd64\", \"root\": \"[START_DIR]/3pp/wd/tools/pkg_timeout/linux-amd64/2.0.0/out\"}",
+      "-out",
+      "[CLEANUP]/tmp_tmp_28",
+      "-hash-algo",
+      "sha256",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.build 3pp/tools/pkg_timeout/linux-amd64",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/tools/pkg_timeout/linux-amd64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/3pp_cipd/3pp/tools/pkg_timeout/linux-amd64"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.ensure cipd pkg cache exists",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "move",
+      "[CLEANUP]/tmp_tmp_28",
+      "[CACHE]/3pp_cipd/3pp/tools/pkg_timeout/linux-amd64/40-chars-fake-of-the-package-instance_id"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.mv built cipd pkg to cache",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "building tools/pkg_timeout.do upload",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@40-chars-fake-of-the-package-instance_id@https://chrome-infra-packages.appspot.com/p/3pp/tools/pkg_timeout/linux-amd64/+/40-chars-fake-of-the-package-instance_id@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "describe",
+      "3pp/tools/pkg_timeout/linux-amd64",
+      "-version",
+      "version:2@2.0.0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.do upload.cipd describe 3pp/tools/pkg_timeout/linux-amd64",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_TEXT@tag 'version:2@2.0.0' not found@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"error\": \"no such tag\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": null@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "cipd",
+      "pkg-register",
+      "[CACHE]/3pp_cipd/3pp/tools/pkg_timeout/linux-amd64/40-chars-fake-of-the-package-instance_id",
+      "-ref",
+      "latest",
+      "-tag",
+      "3pp_ecosystem_hash:97ef1b327774b3aaf31ecd99f357fdb0e81247599870a32b364a226469894470",
+      "-tag",
+      "build_id:8945511751514863184",
+      "-tag",
+      "version:2@2.0.0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.do upload.register 3pp/tools/pkg_timeout/linux-amd64",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"instance_id\": \"40-chars-fake-of-the-package-instance_id\", @@@",
+      "@@@STEP_LOG_LINE@json.output@    \"package\": \"3pp/tools/pkg_timeout/linux-amd64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@3pp/tools/pkg_timeout/linux-amd64@https://chrome-infra-packages.appspot.com/p/3pp/tools/pkg_timeout/linux-amd64/+/40-chars-fake-of-the-package-instance_id@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "file_hash",
+      "[CACHE]/3pp_cipd/3pp/tools/pkg_timeout/linux-amd64/40-chars-fake-of-the-package-instance_id"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.do upload.Compute file hash",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@2@@@",
+      "@@@STEP_TEXT@Hash calculated: deadbeef@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[START_DIR]/reporter/snoopy_broker",
+      "-report-cipd",
+      "-digest",
+      "deadbeef",
+      "-pkg-name",
+      "3pp/tools/pkg_timeout/linux-amd64",
+      "-iid",
+      "40-chars-fake-of-the-package-instance_id"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/pkg_timeout",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64",
+      "_3PP_VERSION": "2.0.0"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "building tools/pkg_timeout.do upload.snoop: report_cipd",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@2@@@"
     ]

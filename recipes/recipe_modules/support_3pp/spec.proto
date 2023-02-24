@@ -492,6 +492,13 @@ message ScriptSource {
   //     /path/to/repo/subdir/package_name/fetch.py foo checkout \
   //     /path/to/checkout
   bool use_fetch_checkout_workflow = 1002;
+  // (optional) Duration string for setting a custom timeout for
+  // the source package verification on the backend.
+  //
+  // This is intended for packages with particularly large sources.
+  //
+  // Allowed units are 's', 'm', and 'h'. Defaults to '5m' in CIPD client code.
+  string verification_timeout = 1003;
 
   reserved 1001;  // Reserved ids for removed fields
 }

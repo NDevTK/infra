@@ -427,7 +427,10 @@ def _download_source(api, download_manifest):
     assert False, 'Unknown download protocol  %r' % (protocol,)
 
 
-def _source_upload(api, source_cipd_spec, external_hash=None):
+def _source_upload(api,
+                   source_cipd_spec,
+                   external_hash=None,
+                   verification_timeout=None):
   """Uploads the copy of the source package we have on the local machine to the
   CIPD server.
 
@@ -442,11 +445,14 @@ def _source_upload(api, source_cipd_spec, external_hash=None):
       (i.e. `self.m`)
     * source_cipd_spec (spec) - CIPDSpec obj for source.
     * external_hash - Tag the output package with this hash.
+    * verification_timeout - passed to cipd client for pkg-register
   """
   with api.step.nest('upload source to cipd') as upload_step:
     try:
       extra_tags = {'external_hash': external_hash} if external_hash else {}
-      source_cipd_spec.ensure_uploaded(extra_tags=extra_tags)
+      source_cipd_spec.ensure_uploaded(
+          extra_tags=extra_tags,
+          verification_timeout=verification_timeout)
     except api.step.StepFailure:  # pragma: no cover
       upload_step.status = api.step.FAILURE
       upload_step.step_text = 'Source upload failed.'
@@ -478,7 +484,7 @@ def _source_checkout(api,
     * source_hash (str) - source_hash returned from resolved version. This is
       external hash of the source.
   """
-  method_name = spec.source_method[0]
+  method_name, source_method_pb = spec.source_method
   source_pb = spec.create_pb.source
 
   checkout_dir = workdir.checkout
@@ -506,7 +512,11 @@ def _source_checkout(api,
         exclusions=['\.git'] if method_name == 'git' else [])
 
     if not skip_upload:
-      _source_upload(api, source_cipd_spec, source_hash)
+      if method_name == 'script':
+        verification_timeout = source_method_pb.verification_timeout or None
+      else:
+        verification_timeout = None
+      _source_upload(api, source_cipd_spec, source_hash, verification_timeout)
 
   # Fetches source from cipd (or existing local package) for all types.
   else:
