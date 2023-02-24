@@ -439,7 +439,10 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "go tests"
+    "name": "go tests",
+    "~followup_annotations": [
+      "@@@STEP_TEXT@<br/>Search with \"--- FAIL:\" in stdout if this step has test failures.@@@"
+    ]
   },
   {
     "cmd": [],

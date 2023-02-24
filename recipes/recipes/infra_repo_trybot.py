@@ -112,11 +112,14 @@ def RunSteps(api, go_version_variant, run_lint):
     with api.depot_tools.on_path():
       # Some go tests test interactions with depot_tools binaries, so put
       # depot_tools on the path.
-      api.step(
+      step = api.step(
           'go tests',
           api.resultdb.wrap(
               ['vpython3', '-u',
                co.path.join(patch_root, 'go', 'test.py')]))
+      step.presentation.step_text += (
+          '\n'
+          'Search with "--- FAIL:" in stdout if this step has test failures.')
 
 
     # Do slow *.cipd packaging tests only when touching build/* or DEPS. This
