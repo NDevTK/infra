@@ -43,6 +43,15 @@ func (c realCommander) GetCommandOutput(command string, args ...string) ([]byte,
 	return exec.Command(command, args...).Output()
 }
 
+// A utility method that extracts explicit message from an error, especially for
+// the error returned by exec.Cmd.Output().
+func extractErrorMessage(err error) string {
+	if ee, ok := err.(*exec.ExitError); ok {
+		return string(ee.Stderr)
+	}
+	return err.Error()
+}
+
 // An interface that wraps some function of crypto/rand to allow unittest mock.
 type randomGenerator interface {
 	GetRandHex(l int) (string, error)
@@ -112,7 +121,14 @@ func (g *gcloudInstanceApi) Create(req *api.CreateVmInstanceRequest) (*api.VmIns
 		"--project="+gcloudConfig.GetProject(),
 		"--image="+gcloudConfig.GetImage().GetName(), "--image-project="+gcloudConfig.GetImage().GetProject(),
 		"--machine-type="+gcloudConfig.GetMachineType(), "--no-scopes",
-		"--zone="+gcloudConfig.GetZone(), "--format=json", "--network=default", "--subnet=default")
+		"--zone="+gcloudConfig.GetZone(), "--format=json")
+
+	if gcloudConfig.GetNetwork() != "" {
+		gcloudArgs = append(gcloudArgs, "--network="+gcloudConfig.GetNetwork())
+	}
+	if gcloudConfig.GetSubnet() != "" {
+		gcloudArgs = append(gcloudArgs, "--subnet="+gcloudConfig.GetSubnet())
+	}
 
 	if !gcloudConfig.GetPublicIp() {
 		gcloudArgs = append(gcloudArgs, "--no-address")
@@ -121,7 +137,7 @@ func (g *gcloudInstanceApi) Create(req *api.CreateVmInstanceRequest) (*api.VmIns
 	// TODO(fqj): implement tags
 	out, err := execCommand.GetCommandOutput("gcloud", gcloudArgs...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to launch instance: %w", err)
+		return nil, fmt.Errorf("failed to launch instance: %v", extractErrorMessage(err))
 	}
 	var gcloudResult []gcloudResponseInstance
 	if err := json.Unmarshal(out, &gcloudResult); err != nil {

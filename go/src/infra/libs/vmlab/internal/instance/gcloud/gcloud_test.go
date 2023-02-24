@@ -66,6 +66,8 @@ func TestCreateWithPublicIpAddress(t *testing.T) {
 						Zone:           "us-west-2",
 						MachineType:    "n2-standard-4",
 						InstancePrefix: "vmlab-",
+						Network:        "default",
+						Subnet:         "default",
 						PublicIp:       true,
 						Image: &api.GceImage{
 							Project: "imagestorage-project",
@@ -111,6 +113,8 @@ func TestCreateWithInternalIpAddress(t *testing.T) {
 						Zone:           "us-west-2",
 						MachineType:    "n2-standard-4",
 						InstancePrefix: "vmlab-",
+						Network:        "default",
+						Subnet:         "default",
 						PublicIp:       false,
 						Image: &api.GceImage{
 							Project: "imagestorage-project",
