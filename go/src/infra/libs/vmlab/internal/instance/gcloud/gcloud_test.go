@@ -159,3 +159,39 @@ func TestCreateMissingProject(t *testing.T) {
 		t.Errorf("expect project not set error, but got: %s", err.Error())
 	}
 }
+
+func TestDeleteMissingZone(t *testing.T) {
+	gcloud, _ := New()
+	err := gcloud.Delete(
+		&api.VmInstance{
+			Name:    "instance1",
+			Project: "vmlab-project",
+		})
+	if err.Error() != "zone must be set" {
+		t.Errorf("expect zone not set error, but got: %s", err.Error())
+	}
+}
+
+func TestDelete(t *testing.T) {
+	gcloud, _ := New()
+	// TODO(mingkong): consider to rename the mock
+	mockExecCommand := instanceCreateSuccessCommander{
+		Commands: &[][]string{},
+	}
+	execCommand = mockExecCommand
+	err := gcloud.Delete(
+		&api.VmInstance{
+			Name:    "instance1",
+			Project: "vmlab-project",
+			Zone:    "us-west-2",
+		})
+	if err != nil {
+		t.Errorf("Error: %v", err)
+	}
+	expectedCommand := []string{
+		"gcloud", "compute", "instances", "delete", "instance1",
+		"--project=vmlab-project", "--zone=us-west-2", "--quiet"}
+	if diff := cmp.Diff(*mockExecCommand.Commands, [][]string{expectedCommand}); diff != "" {
+		t.Errorf("Executed wrong command: %v", diff)
+	}
+}

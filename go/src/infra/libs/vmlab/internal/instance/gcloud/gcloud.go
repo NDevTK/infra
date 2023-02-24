@@ -159,7 +159,27 @@ func (g *gcloudInstanceApi) Create(req *api.CreateVmInstanceRequest) (*api.VmIns
 }
 
 func (g *gcloudInstanceApi) Delete(ins *api.VmInstance) error {
-	return errors.New("not implemented")
+	if ins.GetName() == "" {
+		return errors.New("instance name must be set")
+	}
+	if ins.GetProject() == "" {
+		return errors.New("project must be set")
+	}
+	if ins.GetZone() == "" {
+		return errors.New("zone must be set")
+	}
+
+	gcloudArgs := []string{"compute", "instances", "delete", ins.GetName()}
+	gcloudArgs = append(gcloudArgs,
+		"--project="+ins.GetProject(),
+		"--zone="+ins.GetZone(), "--quiet")
+
+	_, err := execCommand.GetCommandOutput("gcloud", gcloudArgs...)
+	if err != nil {
+		return fmt.Errorf("failed to launch instance: %v", extractErrorMessage(err))
+	}
+
+	return nil
 }
 
 func (g *gcloudInstanceApi) Cleanup(req *api.CleanupVmInstancesRequest) error {

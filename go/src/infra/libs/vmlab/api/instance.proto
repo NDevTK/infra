@@ -23,6 +23,10 @@ message VmInstance {
   string name = 1;
   // The AddressPort information for SSH.
   AddressPort ssh = 2;
+  // GCP project of the instance.
+  string project = 3;
+  // GCE zone of the instance.
+  string zone = 4;
 }
 
 // Request for the InstanceApi.Create endpoint.
