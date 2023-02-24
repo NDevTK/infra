@@ -2743,15 +2743,15 @@ func crosRepairActions() map[string]*Action {
 		"Check if request labstation reboot": {
 			Docs: []string{
 				"Check if there's a need to reboot the connected labstation.",
+				"Request labstation reboot may bring DUT back but it happens",
+				"in an asynchronous task so we make this action always fail",
+				"to avoid an unnecessary retry of critical actions that triggered",
+				"this action, e.g. 'Device is pingable' will get retried.",
 			},
 			Dependencies: []string{
 				"Check if servo is not connected by hub",
 				"Create request to reboot labstation",
 			},
-			// Request labstation reboot may bring DUT back but it happens in an
-			// asynchronous task so we make this action always fail to avoid an
-			// unnecessary retry of critical actions that triggered this action,
-			// e.g. "Device is pingable" will get retried.
 			ExecName: "sample_fail",
 		},
 		"Check if servo is not connected by hub": {
