@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0dade5dd_84988a32",
+        "filename": "go/src/infra/libs/vmlab/internal/image/cloudsdk/cloudsdk.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1137124
+      },
+      "writtenOn": "2023-02-25T15:28:09Z",
+      "side": 1,
+      "message": "does this call to GCP directly?\nI thought Deniz wants to do a pubsub.",
+      "revId": "eba04bb8212b5996adbb32c029a8eb60b3c496c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
