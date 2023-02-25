@@ -115,6 +115,7 @@ func (c *leaseRun) Run(a subcommands.Application, args []string, env subcommands
 	createdInstance, err := ins.Create(request)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to create instance: %v", err)
+		return 1
 	}
 	if c.leaseFlags.json {
 		if instanceJson, err := protojson.Marshal(createdInstance); err != nil {

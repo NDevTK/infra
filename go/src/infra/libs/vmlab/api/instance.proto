@@ -53,15 +53,26 @@ message Config {
     GCloudBackend gcloud_backend = 1;
   }
 
+  // Gcloud properties. Most properties are passed through to the corresponding
+  // flags of gcloud.
   message GCloudBackend {
+    // GCP project id. Mandatory
     string project = 1;
+    // GCE zone. Mandatory.
     string zone = 2;
+    // GCE machine type. Mandatory.
     string machine_type = 3;
+    // A custom prefix to instance name. Mandatory.
     string instance_prefix = 4;
+    // Network, must be consistent to zone. Optional, fallback to default.
+    string network = 7;
+    // Subnet of network. Optional, fallback to default.
+    string subnet= 8;
     // A boolean flag whether to request a public IPv4 address.
     // If requested, ssh target will be the public IPv4 address, otherwise it
     // will be the GCE internal IP address.
     bool public_ip = 5;
+    // GCE Image to be used to create instance. Mandatory.
     GceImage image = 6;
   }
 }
