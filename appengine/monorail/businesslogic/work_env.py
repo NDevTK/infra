@@ -2142,8 +2142,8 @@ class WorkEnv(object):
           self.mc.cnxn, pid, attachment_bytes_used=new_bytes_used, commit=False)
 
     # Reindex issues and commit all DB changes.
-    issues_to_reindex = set(
-        comments_by_iid.keys() + impacted_comments_by_iid.keys())
+    issues_to_reindex = (
+        set(comments_by_iid.keys()) | set(impacted_comments_by_iid.keys()))
     if issues_to_reindex:
       self.services.issue.EnqueueIssuesForIndexing(
           self.mc.cnxn, issues_to_reindex, commit=False)

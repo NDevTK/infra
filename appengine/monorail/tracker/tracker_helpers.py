@@ -1739,9 +1739,11 @@ class _IssueChangeImpactedIssues():
   def ComputeAllImpactedIIDs(self):
     # type: () -> Collection[int]
     """Computes the unique set of all impacted issue ids."""
-    return set(self.blocking_add.keys() + self.blocking_remove.keys() +
-               self.blocked_on_add.keys() + self.blocked_on_remove.keys() +
-               self.merged_from_add.keys() + self.merged_from_remove.keys())
+    return (
+        set(self.blocking_add.keys()) | set(self.blocking_remove.keys())
+        | set(self.blocked_on_add.keys()) | set(self.blocked_on_remove.keys())
+        | set(self.merged_from_add.keys())
+        | set(self.merged_from_remove.keys()))
 
   def TrackImpactedIssues(self, issue, delta):
     # type: (Issue, IssueDelta) -> None

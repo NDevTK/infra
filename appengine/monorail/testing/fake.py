@@ -1253,8 +1253,7 @@ class ConfigService(object):
     ids = []
     next_label_id = 0
     if self.id_to_label.keys():
-      existing_ids = self.id_to_label.keys()
-      existing_ids.sort()
+      existing_ids = sorted(self.id_to_label.keys())
       next_label_id = existing_ids[-1] + 1
     for label in labels:
       if self.label_to_id.get(label) is not None:

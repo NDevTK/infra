@@ -24,7 +24,7 @@ class WarmupTest(unittest.TestCase):
       response = client.get('/')
 
     self.assertEqual(response.status_code, 200)
-    self.assertEqual(response.data, '')
+    self.assertEqual(response.data, b'')
 
   def testHandleStart(self):
     app = flask.Flask(__name__)
@@ -34,7 +34,7 @@ class WarmupTest(unittest.TestCase):
       response = client.get('/')
 
     self.assertEqual(response.status_code, 200)
-    self.assertEqual(response.data, '')
+    self.assertEqual(response.data, b'')
 
   def testHandleStop(self):
     app = flask.Flask(__name__)
@@ -44,4 +44,4 @@ class WarmupTest(unittest.TestCase):
       response = client.get('/')
 
     self.assertEqual(response.status_code, 200)
-    self.assertEqual(response.data, '')
+    self.assertEqual(response.data, b'')

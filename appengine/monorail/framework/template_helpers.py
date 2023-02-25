@@ -128,11 +128,7 @@ class StringIOUnicodeWrapper(object):
     self.buffer = StringIO()
 
   def write(self, s):
-    if isinstance(s, six.text_type):
-      utf8_s = s.encode('utf-8')
-    else:
-      utf8_s = s
-    self.buffer.write(utf8_s)
+    self.buffer.write(six.ensure_str(s))
 
   def getvalue(self):
     return self.buffer.getvalue()

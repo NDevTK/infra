@@ -146,7 +146,7 @@ class MonorailServicer(object):
           'v3',
           client_id,
           client_email=requester_auth.email,
-          handler=handler.func_name)
+          handler=handler.__name__)
 
       # TODO(crbug.com/monorail/8161)We pass in a None client_id for rate
       # limiting because CheckStart and CheckEnd will track and limit requests

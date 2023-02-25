@@ -84,7 +84,7 @@ class IssueAttachmentTextTest(unittest.TestCase):
     self.blob = mock.MagicMock()
     self.client.get_bucket = mock.MagicMock(return_value=self.bucket)
     self.bucket.get_blob = mock.MagicMock(return_value=self.blob)
-    self.blob.download_as_bytes = mock.MagicMock()
+    self.blob.download_as_bytes = mock.MagicMock(return_value=b'')
     mock.patch.object(storage, 'Client', return_value=self.client).start()
 
   def tearDown(self):
@@ -155,7 +155,7 @@ class IssueAttachmentTextTest(unittest.TestCase):
 
   def testGatherPageData_Normal(self):
     self.blob.download_as_bytes = mock.MagicMock(
-        return_value='/app_default_bucket/pid/attachments/abcdefg')
+        return_value=b'/app_default_bucket/pid/attachments/abcdefg')
 
     _request, mr = testing_helpers.GetRequestObjects(
         project=self.project,
@@ -172,8 +172,8 @@ class IssueAttachmentTextTest(unittest.TestCase):
     file_lines = page_data['file_lines']
     self.assertEqual(1, len(file_lines))
     self.assertEqual(1, file_lines[0].num)
-    self.assertEqual('/app_default_bucket/pid/attachments/abcdefg',
-                     file_lines[0].line)
+    self.assertEqual(
+        b'/app_default_bucket/pid/attachments/abcdefg', file_lines[0].line)
 
     self.assertEqual(None, page_data['code_reviews'])
 

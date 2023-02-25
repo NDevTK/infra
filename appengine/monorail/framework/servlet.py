@@ -239,7 +239,7 @@ class Servlet(object):
       user_agent_str = self.mr.request.headers.get('User-Agent', '')
       ua = httpagentparser.detect(user_agent_str)
       browser, browser_major_version = 'Unknown browser', 0
-      if ua.has_key('browser'):
+      if 'browser' in ua:
         browser = ua['browser']['name']
         try:
           browser_major_version = int(ua['browser']['version'].split('.')[0])

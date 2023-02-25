@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import six
 import unittest
 
 from framework import filecontent
@@ -83,10 +84,10 @@ class DecodeFileContentsTest(unittest.TestCase):
     return is_binary
 
   def testFileIsBinaryEmpty(self):
-    self.assertFalse(self.IsBinary(''))
+    self.assertFalse(self.IsBinary(b''))
 
   def testFileIsBinaryShortText(self):
-    self.assertFalse(self.IsBinary('This is some plain text.'))
+    self.assertFalse(self.IsBinary(b'This is some plain text.'))
 
   def testLineLengthDetection(self):
     unicode_str = (
@@ -100,29 +101,35 @@ class DecodeFileContentsTest(unittest.TestCase):
     lines.append(long_line)
 
     # High lower ratio - text
-    self.assertFalse(self.IsBinary('\n'.join(lines)))
+    self.assertFalse(self.IsBinary(b'\n'.join(lines)))
 
     lines.extend([long_line] * 99)
 
     # 50/50 lower/upper ratio - binary
-    self.assertTrue(self.IsBinary('\n'.join(lines)))
+    self.assertTrue(self.IsBinary(b'\n'.join(lines)))
 
     # Single line too long - binary
     lines = [short_line] * 100
     lines.append(short_line * 100)  # Very long line
-    self.assertTrue(self.IsBinary('\n'.join(lines)))
+    self.assertTrue(self.IsBinary(b'\n'.join(lines)))
 
   def testFileIsBinaryLongText(self):
-    self.assertFalse(self.IsBinary('This is plain text. \n' * 100))
+    self.assertFalse(self.IsBinary(b'This is plain text. \n' * 100))
     # long utf-8 lines are OK
-    self.assertFalse(self.IsBinary('This one long line. ' * 100))
+    self.assertFalse(self.IsBinary(b'This one long line. ' * 100))
 
   def testFileIsBinaryLongBinary(self):
-    bin_string = ''.join([chr(c) for c in range(122, 252)])
+    if six.PY2:
+      bin_string = ''.join([chr(c) for c in range(122, 252)])
+    else:
+      bin_string = bytes(range(122, 252))
     self.assertTrue(self.IsBinary(bin_string * 100))
 
   def testFileIsTextByPath(self):
-    bin_string = ''.join([chr(c) for c in range(122, 252)] * 100)
+    if six.PY2:
+      bin_string = ''.join([chr(c) for c in range(122, 252)] * 100)
+    else:
+      bin_string = bytes(range(122, 252)) * 100
     unicode_str = (
         u'Some non-ascii chars - '
         u'\xa2\xfa\xb6\xe7\xfc\xea\xd0\xf4\xe6\xf0\xce\xf6\xbe')
@@ -142,7 +149,7 @@ class DecodeFileContentsTest(unittest.TestCase):
             filecontent.DecodeFileContents(contents, path=path)[1])
 
   def testFileIsBinaryByCommonExtensions(self):
-    contents = 'this is not examined'
+    contents = b'this is not examined'
     self.assertTrue(filecontent.DecodeFileContents(
         contents, path='junk.zip')[1])
     self.assertTrue(filecontent.DecodeFileContents(
@@ -174,13 +181,13 @@ class DecodeFileContentsTest(unittest.TestCase):
         contents, path='/wiki/PageName.wiki')[1])
 
   def testUnreasonablyLongFile(self):
-    contents = '\n' * (filecontent.SOURCE_FILE_MAX_LINES + 2)
+    contents = b'\n' * (filecontent.SOURCE_FILE_MAX_LINES + 2)
     _contents, is_binary, is_long = filecontent.DecodeFileContents(
         contents)
     self.assertFalse(is_binary)
     self.assertTrue(is_long)
 
-    contents = '\n' * 100
+    contents = b'\n' * 100
     _contents, is_binary, is_long = filecontent.DecodeFileContents(
         contents)
     self.assertFalse(is_binary)

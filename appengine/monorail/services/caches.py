@@ -160,7 +160,7 @@ class ValueCentricRamCache(RamCache):
   def InvalidateKeys(self, cnxn, keys):
     """Drop keys locally, and append their values to the Invalidate DB table."""
     # Find values to invalidate.
-    values = [self.cache[key] for key in keys if self.cache.has_key(key)]
+    values = [self.cache[key] for key in keys if key in self.cache]
     if len(values) == len(keys):
       for value in values:
         self.LocalInvalidate(value)

@@ -77,11 +77,11 @@ class IssueReindex(servlet.Servlet):
     # and we have not run out of issues to process.
     auto_submit = issues and ('auto_submit' in post_data)
 
-    query_map = {
-      'start': start + num,  # auto-increment start.
-      'num': num,
-      'auto_submit': bool(auto_submit),
-    }
+    query_map = (
+        ('start', start + num),  # auto-increment start.
+        ('num', num),
+        ('auto_submit', bool(auto_submit)),
+    )
     return '/p/%s%s?%s' % (
         mr.project_name, urls.ISSUE_REINDEX, urllib.parse.urlencode(query_map))
 

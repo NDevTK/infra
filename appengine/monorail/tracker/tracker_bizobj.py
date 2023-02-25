@@ -985,8 +985,8 @@ def ApplyFieldValueChanges(issue, config, fvs_add, fvs_remove, fields_clear):
         fd_removed_values_by_phase[fv.phase_id].append(fv)
       # Use all_fv_phase_ids to create Amendments, so no empty amendments
       # are created for issue phases that had no field value changes.
-      all_fv_phase_ids = set(
-          fd_removed_values_by_phase.keys() + fd_added_values_by_phase.keys())
+      all_fv_phase_ids = set(fd_removed_values_by_phase.keys()) | set(
+          fd_added_values_by_phase.keys())
       for phase_id in all_fv_phase_ids:
         new_values = [GetFieldValue(fv, {}) for fv
                       in fd_added_values_by_phase.get(phase_id, [])]

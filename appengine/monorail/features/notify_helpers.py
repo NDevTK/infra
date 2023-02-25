@@ -304,8 +304,7 @@ def _MakeEmailWorkItem(
     subject += ': ' + issue.summary
 
   footer = _MakeNotificationFooter(reasons, addr_perm.reply_perm, hostport)
-  if isinstance(footer, six.text_type):
-    footer = footer.encode('utf-8')
+  footer = six.ensure_str(footer)
   if should_use_link_only:
     body = _TruncateBody(body_link_only) + footer
   elif addr_perm.is_member:
@@ -336,7 +335,7 @@ def _MakeEmailWorkItem(
   template = HTML_BODY_WITH_GMAIL_ACTION_TEMPLATE
   if addr_perm.user and not addr_perm.user.email_view_widget:
     template = HTML_BODY_WITHOUT_GMAIL_ACTION_TEMPLATE
-  body_with_tags = _AddHTMLTags(body.decode('utf-8'))
+  body_with_tags = _AddHTMLTags(six.ensure_text(body))
   # Escape single quotes which are occasionally used to contain HTML
   # attributes and event handler definitions.
   body_with_tags = body_with_tags.replace("'", '&#39;')

@@ -10,6 +10,7 @@ from __future__ import absolute_import
 
 import itertools
 import logging
+import six
 
 from framework import framework_constants
 
@@ -159,7 +160,7 @@ def DecodeFileContents(file_contents, path=None):
 
   # If the string can be decoded as utf-8, we treat it as textual.
   try:
-    u_str = file_contents.decode('utf-8', 'strict')
+    u_str = six.ensure_text(file_contents)
     is_long = len(u_str.split('\n')) > SOURCE_FILE_MAX_LINES
     return u_str, False, is_long
   except UnicodeDecodeError:
@@ -167,7 +168,7 @@ def DecodeFileContents(file_contents, path=None):
 
   # Fall back on latin-1. This will always succeed, since every byte maps to
   # something in latin-1, even if that something is gibberish.
-  u_str = file_contents.decode('latin-1', 'strict')
+  u_str = six.ensure_text(file_contents, encoding='latin-1')
 
   lines = u_str.split('\n')
   is_long = len(lines) > SOURCE_FILE_MAX_LINES

@@ -99,13 +99,13 @@ class IssueReindexTest(unittest.TestCase):
     post_data = {'start': 1, 'num': 5}
     ret = self._callProcessFormData(post_data)
     self.assertEqual(
-        '/p/None/issues/reindex?start=6&auto_submit=False&num=5', ret)
+        '/p/None/issues/reindex?start=6&num=5&auto_submit=False', ret)
 
   def testProcessFormData_LargeInputs(self):
     post_data = {'start': 0, 'num': 10000000}
     ret = self._callProcessFormData(post_data)
     self.assertEqual(
-        '/p/None/issues/reindex?start=%s&auto_submit=False&num=%s' % (
+        '/p/None/issues/reindex?start=%s&num=%s&auto_submit=False' % (
             settings.max_artifact_search_results_per_page,
             settings.max_artifact_search_results_per_page), ret)
 
@@ -113,11 +113,11 @@ class IssueReindexTest(unittest.TestCase):
     post_data = {'start': 1, 'num': 5, 'auto_submit': 1}
     ret = self._callProcessFormData(post_data)
     self.assertEqual(
-        '/p/None/issues/reindex?start=6&auto_submit=True&num=5', ret)
+        '/p/None/issues/reindex?start=6&num=5&auto_submit=True', ret)
 
   def testProcessFormData_WithAutoSubmitButNoMoreIssues(self):
     """This project has no issues 6-10, so stop autosubmitting."""
     post_data = {'start': 6, 'num': 5, 'auto_submit': 1}
     ret = self._callProcessFormData(post_data, index_issue_1=False)
     self.assertEqual(
-        '/p/None/issues/reindex?start=11&auto_submit=False&num=5', ret)
+        '/p/None/issues/reindex?start=11&num=5&auto_submit=False', ret)
