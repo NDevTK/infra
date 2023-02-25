@@ -13,3 +13,7 @@ type InstanceApi interface {
 	// Cleanup releases existing VM instances that match the request.
 	Cleanup(*CleanupVmInstancesRequest) error
 }
+
+type ImageApi interface {
+	GetImage(builderPath string, wait bool) (*GceImage, error)
+}
