@@ -8,10 +8,23 @@ package vmlab.api;
 
 option go_package = "infra/libs/vmlab/api";
 
+
 // GceImage represents an existing GCE image.
 message GceImage {
   // Name of GCP project. E.g. betty-cloud-prototype
   string project = 1;
   // Name of GCE image.
   string name = 2;
+  // Readiness of GCE image.
+  Status status = 3;
+  // Status tracks the relevant status of VM lab use case: READY, PENDING and
+  // NOT_FOUND (all other statuses are mapped to NOT_FOUND).
+  enum Status {
+    UNKNOWN = 0;
+    READY = 1;
+    PENDING = 2;
+    NOT_FOUND = 3;
+  }
+  // GCS URL of source image to be imported.
+  string source = 4;
 }
