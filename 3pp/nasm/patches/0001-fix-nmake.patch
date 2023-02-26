@@ -1,0 +1,22 @@
+diff -ur nasm-2.16.01.orig/Mkfiles/msvc.mak nasm-2.16.01/Mkfiles/msvc.mak
+--- nasm-2.16.01.orig/Mkfiles/msvc.mak	2022-12-22 13:44:37.000000000 +1100
++++ nasm-2.16.01/Mkfiles/msvc.mak	2023-02-24 15:52:27.275239200 +1100
+@@ -233,14 +233,15 @@
+ # changed, to avoid rebuilding everything every time. Track the actual
+ # dependency by the empty file asm\warnings.time.
+ WARNFILES = asm\warnings.c include\warnings.h doc\warnings.src
++WARNFILES_TIME = asm\warnings.c.time include\warnings.h.time doc\warnings.src.time
+ 
+ warnings:
+-	$(RM_F) $(WARNFILES) $(WARNFILES:=.time)
++	$(RM_F) $(WARNFILES) $(WARNFILES_TIME)
+ 	$(MAKE) asm\warnings.time
+ 
+-asm\warnings.time: $(ALLOBJ_NW:.$(O)=.c)
++asm\warnings.time: $(ALLOBJ_NW:.obj=.c)
+ 	: > asm\warnings.time
+-	$(MAKE) $(WARNFILES:=.time)
++	$(MAKE) $(WARNFILES_TIME)
+ 
+ asm\warnings.c.time: asm\warnings.pl asm\warnings.time
+ 	$(RUNPERL) $(srcdir)\asm\warnings.pl c asm\warnings.c $(srcdir)
