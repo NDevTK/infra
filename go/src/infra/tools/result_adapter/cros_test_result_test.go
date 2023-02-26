@@ -58,6 +58,9 @@ func TestCrosTestResultConversions(t *testing.T) {
 				},
 				DutInfo: &artifactpb.DutInfo{
 					Dut: &labpb.Dut{
+						Id: &labpb.Dut_Id{
+							Value: "chromeos15-row4-rack5-host1",
+						},
 						DutType: &labpb.Dut_Chromeos{
 							Chromeos: &labpb.Dut_ChromeOS{
 								Name: "chromeos15-row4-rack5-host1",
@@ -82,6 +85,9 @@ func TestCrosTestResultConversions(t *testing.T) {
 						},
 					},
 					TestCaseResult: &apipb.TestCaseResult{
+						TestCaseId: &apipb.TestCase_Id{
+							Value: "rlz_CheckPing",
+						},
 						Verdict:   &apipb.TestCaseResult_Pass_{},
 						StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
 						Duration:  &duration.Duration{Seconds: 60},
@@ -105,6 +111,9 @@ func TestCrosTestResultConversions(t *testing.T) {
 						},
 					},
 					TestCaseResult: &apipb.TestCaseResult{
+						TestCaseId: &apipb.TestCase_Id{
+							Value: "power_Resume",
+						},
 						Verdict:   &apipb.TestCaseResult_Fail_{},
 						Reason:    "Test failed",
 						StartTime: timestamppb.New(parseTime("2022-09-07T18:53:34.983328614Z")),

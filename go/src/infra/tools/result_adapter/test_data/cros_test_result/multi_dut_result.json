@@ -10,6 +10,9 @@
             },
             "dut_info":{
                 "dut":{
+                    "id": {
+                        "value": "chromeos15-row4-rack5-host1"
+                    },
                     "chromeos":{
                         "name":"chromeos15-row4-rack5-host1",
                         "dut_model":{
@@ -30,8 +33,11 @@
                 },
                 "dut_info":{
                     "dut":{
+                        "id": {
+                            "value": "chromeos15-row4-rack5-host2"
+                        },
                         "chromeos":{
-                            "name":"chromeos15-row4-rack5-host1",
+                            "name": "chromeos15-row4-rack5-host2",
                             "dut_model":{
                                 "model_name":"gimble"
                             }
@@ -53,6 +59,9 @@
                     }
                 },
                 "test_case_result":{
+                    "test_case_id": {
+                        "value": "rlz_CheckPing"
+                    },
                     "pass":{},
                     "start_time":"2022-09-07T18:53:33.983328614Z",
                     "duration": "60s"

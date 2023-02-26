@@ -11,6 +11,9 @@
             },
             "dut_info":{
                 "dut":{
+                    "id": {
+                        "value": "chromeos15-row4-rack5-host1"
+                    },
                     "chromeos":{
                         "name":"chromeos15-row4-rack5-host1",
                         "dut_model":{
@@ -33,6 +36,9 @@
                     }
                 },
                 "test_case_result":{
+                    "test_case_id": {
+                        "value": "rlz_CheckPing"
+                    },
                     "pass":{},
                     "start_time":"2022-09-07T18:53:33.983328614Z",
                     "duration": "60s"
@@ -56,6 +62,9 @@
                     }
                 },
                 "test_case_result":{
+                    "test_case_id": {
+                        "value": "power_Resume"
+                    },
                     "fail":{},
                     "reason": "Test failed",
                     "start_time":"2022-09-07T18:53:34.983328614Z",

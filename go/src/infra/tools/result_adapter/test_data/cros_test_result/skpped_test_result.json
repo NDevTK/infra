@@ -11,6 +11,9 @@
                     }
                 },
                 "test_case_result":{
+                    "test_case_id": {
+                        "value": "rlz_CheckPing"
+                    },
                     "skip":{},
                     "reason": "Test was skipped expectedly",
                     "start_time":"2022-09-07T18:53:33.983328614Z",
@@ -29,6 +32,9 @@
                     }
                 },
                 "test_case_result":{
+                    "test_case_id": {
+                        "value": "power_Resume"
+                    },
                     "not_run":{},
                     "reason": "Test has not run yet",
                     "start_time":"2022-09-07T18:53:34.983328614Z",

@@ -47,15 +47,12 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 	var ret []*sinkpb.TestResult
 	for _, testRun := range r.TestResult.GetTestRuns() {
 		testCaseInfo := testRun.GetTestCaseInfo()
-		testCaseMatadata := testCaseInfo.GetTestCaseMetadata()
 		testCaseResult := testCaseInfo.GetTestCaseResult()
 		status := genTestResultStatus(testCaseResult)
-
-		testCase := testCaseMatadata.GetTestCase()
-		testId := getTestId(testCase)
+		testId := getTestId(testCaseResult)
 		if testId == "" {
-			return nil, errors.Reason("TestId is unspecified due to the missing id in test case: %v",
-				testCase).Err()
+			return nil, errors.Reason("TestId is unspecified due to the missing id in test case result: %v",
+				testCaseResult).Err()
 		}
 
 		tr := &sinkpb.TestResult{
@@ -92,18 +89,12 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 	return ret, nil
 }
 
-// getTestId gets the test id based on the test case info.
-func getTestId(testCase *apipb.TestCase) string {
-	if testCase == nil {
+// getTestId gets the test id based on the test case result.
+func getTestId(testCaseResult *apipb.TestCaseResult) string {
+	if testCaseResult == nil || testCaseResult.GetTestCaseId() == nil {
 		return ""
 	}
-
-	// Sets the test case id as test id. Otherwise, fall back to test case name.
-	id := testCase.GetId()
-	if id != nil && id.GetValue() != "" {
-		return id.GetValue()
-	}
-	return testCase.GetName()
+	return testCaseResult.GetTestCaseId().GetValue()
 }
 
 // Converts a TestCase Verdict into a ResultSink Status.
@@ -169,11 +160,12 @@ func genTestResultTags(testRun *artifactpb.TestRun, testInvocation *artifactpb.T
 			}
 
 			dutInfo := primaryExecInfo.GetDutInfo()
-			if dutInfo != nil {
-				chromeOSDUT := dutInfo.GetDut().GetChromeos()
-				if chromeOSDUT != nil {
-					tags = AppendTags(tags, "model", chromeOSDUT.GetDutModel().GetModelName())
-					tags = AppendTags(tags, "hostname", chromeOSDUT.GetName())
+			if dutInfo != nil && dutInfo.GetDut() != nil {
+				dut := dutInfo.GetDut()
+				chromeOSInfo := dut.GetChromeos()
+				if chromeOSInfo != nil {
+					tags = AppendTags(tags, "model", chromeOSInfo.GetDutModel().GetModelName())
+					tags = AppendTags(tags, "hostname", dut.GetId().GetValue())
 				}
 			}
 
