@@ -13,7 +13,6 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/client/versioncli"
 	"go.chromium.org/luci/common/cli"
-	"go.chromium.org/luci/common/data/rand/mathrand"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
 	"infra/tools/migrator/internal/plugsupport"
@@ -29,8 +28,6 @@ const (
 )
 
 func main() {
-	mathrand.SeedRandomly()
-
 	defaults := cmdBaseOptions{
 		authOpts: chromeinfra.DefaultAuthOptions(),
 	}

@@ -17,13 +17,10 @@ package main
 import (
 	"os"
 
-	"go.chromium.org/luci/common/data/rand/mathrand"
-
 	"infra/chromeperf/pinpoint/cli"
 )
 
 func main() {
-	mathrand.SeedRandomly()
 	os.Exit(cli.Main(cli.Param{
 		DefaultServiceDomain: "pinpoint-dev.endpoints.chromeperf.cloud.goog",
 		OIDCProviderURL:      "https://accounts.google.com",

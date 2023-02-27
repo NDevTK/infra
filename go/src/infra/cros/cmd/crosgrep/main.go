@@ -12,7 +12,6 @@ import (
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
-	"go.chromium.org/luci/common/data/rand/mathrand"
 
 	"infra/cros/cmd/crosgrep/internal/cmds"
 )
@@ -36,6 +35,5 @@ func newApplication() *cli.Application {
 
 // Main is the main entrypoint to the application.
 func main() {
-	mathrand.SeedRandomly()
 	os.Exit(subcommands.Run(newApplication(), nil))
 }

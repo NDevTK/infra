@@ -16,7 +16,6 @@ import (
 	"infra/tools/git/state"
 
 	"go.chromium.org/luci/cipd/version"
-	"go.chromium.org/luci/common/data/rand/mathrand"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
@@ -77,7 +76,6 @@ func probeVersionString() string {
 }
 
 func mainImpl(c context.Context, argv []string, env environ.Env, stdin io.Reader, stdout, stderr io.Writer) int {
-	mathrand.SeedRandomly()
 	// Set up our logging parameters. If we're not tracing, we will only show
 	// Info and higher level logs.
 	const loggingFormat = `[%{level:.1s} %{shortfile}] %{message}`

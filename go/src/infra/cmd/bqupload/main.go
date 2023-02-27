@@ -36,7 +36,6 @@ import (
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
-	"go.chromium.org/luci/common/data/rand/mathrand"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 
@@ -69,7 +68,6 @@ Optional flags:
 
 func main() {
 	flag.CommandLine.Usage = usage
-	mathrand.SeedRandomly()
 	if err := run(gologger.StdConfig.Use(context.Background())); err != nil {
 		fmt.Fprintf(os.Stderr, "bqupload: %s\n", err)
 		os.Exit(1)

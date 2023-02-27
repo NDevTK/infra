@@ -19,7 +19,6 @@ import (
 
 	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
-	"go.chromium.org/luci/common/data/rand/mathrand"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
@@ -42,7 +41,6 @@ type Result struct {
 }
 
 func main() {
-	mathrand.SeedRandomly()
 	flag.Parse()
 
 	ctx := context.Background()

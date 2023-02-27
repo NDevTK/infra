@@ -11,14 +11,11 @@ import (
 	"github.com/maruel/subcommands"
 
 	"go.chromium.org/luci/common/cli"
-	"go.chromium.org/luci/common/data/rand/mathrand"
 	"go.chromium.org/luci/common/flag/fixflagpos"
 	"go.chromium.org/luci/common/logging/gologger"
 )
 
 func main() {
-	mathrand.SeedRandomly()
-
 	application := cli.Application{
 		Name:  "result_adapter",
 		Title: "A CLI tool to convert test results to ResultSink native format then upload them to ResultDB via ResultSink.",

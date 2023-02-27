@@ -13,7 +13,6 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
-	"go.chromium.org/luci/common/data/rand/mathrand"
 
 	experimental_cmds "infra/cmd/shivas/internal/experimental"
 	"infra/cmd/shivas/internal/meta"
@@ -75,7 +74,6 @@ Full documentation http://go/shivas-cli`,
 }
 
 func main() {
-	mathrand.SeedRandomly()
 	log.SetOutput(ioutil.Discard)
 	os.Exit(subcommands.Run(getApplication(), nil))
 }

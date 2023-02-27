@@ -11,8 +11,6 @@ import (
 	"io/ioutil"
 	"os"
 
-	"go.chromium.org/luci/common/data/rand/mathrand"
-
 	"infra/tools/migrator"
 	"infra/tools/migrator/internal/plugsupport"
 )
@@ -32,7 +30,6 @@ func Main(factory migrator.InstantiateAPI) {
 	if err := json.Unmarshal(blob, &cmd); err != nil {
 		fatal("failed to unmarshal the command file")
 	}
-	mathrand.SeedRandomly()
 	os.Exit(plugsupport.Handle(factory, cmd))
 }
 

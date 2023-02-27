@@ -10,7 +10,6 @@ import (
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
-	"go.chromium.org/luci/common/data/rand/mathrand"
 
 	"infra/cros/cmd/paris-uploader/internal/cmds"
 )
@@ -34,6 +33,5 @@ Upload a directory according to Paris conventions`,
 
 // Main is the entrypoint to paris-uploader.
 func main() {
-	mathrand.SeedRandomly()
 	os.Exit(subcommands.Run(getApplication(), nil))
 }
