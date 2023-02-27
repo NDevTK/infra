@@ -71,14 +71,8 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
           sys_py += '.exe'
         self.m.gclient.c.solutions[0].custom_vars['infra_env_python'] = sys_py
 
-      try:
-        bot_update_step = self.m.bot_update.ensure_checkout(
-            patch_root=patch_root, **kwargs)
-      except self.m.step.InfraFailure:
-        # retry with enforce_fetch to fix broken cache.
-        # TODO(crbug.com/1418866): fix this in bot_update, and remove here.
-        bot_update_step = self.m.bot_update.ensure_checkout(
-            patch_root=patch_root, enforce_fetch=True, **kwargs)
+      bot_update_step = self.m.bot_update.ensure_checkout(
+          patch_root=patch_root, **kwargs)
 
     env_with_override = {
         'INFRA_GO_SKIP_TOOLS_INSTALL': '1',
