@@ -18,6 +18,7 @@ import (
 // Provider gives option to use pool or create new client always.
 type SSHProvider interface {
 	GetContext(ctx context.Context, addr string) (SSHClient, error)
+	Get(addr string) (SSHClient, error)
 	Put(addr string, sc SSHClient)
 	Close() error
 }
@@ -48,11 +49,23 @@ func (c *sshProviderImpl) GetContext(ctx context.Context, addr string) (SSHClien
 	if c.useSSHPool {
 		s, err := c.pool.GetContext(ctx, addr)
 		if err != nil {
-			return nil, errors.Annotate(err, "get contex from provier").Err()
+			return nil, errors.Annotate(err, "get contex from provider").Err()
 		}
 		return &sshClientImpl{s}, nil
 	}
-	return NewClient(ctx, addr, c.config)
+	return NewClient(addr, c.config)
+}
+
+// Get provides SSH client for requested host.
+func (c *sshProviderImpl) Get(addr string) (SSHClient, error) {
+	if c.useSSHPool {
+		s, err := c.pool.Get(addr)
+		if err != nil {
+			return nil, errors.Annotate(err, "get from provider").Err()
+		}
+		return &sshClientImpl{s}, nil
+	}
+	return NewClient(addr, c.config)
 }
 
 // Put wrapper method to work with pool.

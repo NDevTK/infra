@@ -7,6 +7,7 @@ package servod
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"strconv"
 	"time"
@@ -81,14 +82,22 @@ func callServodOnRemoteContainer(ctx context.Context, req *ServodCallRequest) (*
 func callServodLabstation(ctx context.Context, req *ServodCallRequest) (*xmlrpc_value.Value, error) {
 	// Convert hostname to the proxy name used for local when called.
 	host := localproxy.BuildAddr(req.Host)
-	p, err := newProxy(ctx, req.SSHProvider, host, req.Options.GetServodPort(), func(err error) {
-		log.Debugf(ctx, "Fail on proxy: %s", err)
+
+	sc, err := req.SSHProvider.Get(host)
+	if err != nil {
+		return nil, errors.Annotate(err, "call servod labstation").Err()
+	}
+	defer func() { req.SSHProvider.Put(host, sc) }()
+
+	remoteAddr := fmt.Sprintf(remoteAddrFmt, req.Options.GetServodPort())
+	f, err := sc.ForwardLocalToRemote(localAddr, remoteAddr, func(fErr error) {
+		log.Debugf(ctx, "Fail at forwarder: %s", fErr)
 	})
 	if err != nil {
 		return nil, errors.Annotate(err, "call servod labstation").Err()
 	}
-	defer p.Close()
-	newAddr := p.LocalAddr()
+	defer func() { f.Close() }()
+	newAddr := f.LocalAddr().String()
 	host, portString, err := net.SplitHostPort(newAddr)
 	if err != nil {
 		return nil, errors.Annotate(err, "call servod labstation on %q", newAddr).Err()

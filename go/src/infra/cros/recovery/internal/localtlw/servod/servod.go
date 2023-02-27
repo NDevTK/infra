@@ -24,6 +24,10 @@ import (
 const (
 	// Waiting 3 seconds when stopping servod daemon.
 	stopServodTimeout = 3
+	// Local address with dynamic port.
+	localAddr = "127.0.0.1:0"
+	// Local address template for remote host.
+	remoteAddrFmt = "127.0.0.1:%d"
 )
 
 // status of servod daemon on servo-host.
