@@ -16,6 +16,24 @@
       "message": "does this call to GCP directly?\nI thought Deniz wants to do a pubsub.",
       "revId": "eba04bb8212b5996adbb32c029a8eb60b3c496c7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "91e37748_d4615fb7",
+        "filename": "go/src/infra/libs/vmlab/internal/image/cloudsdk/cloudsdk.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1540363
+      },
+      "writtenOn": "2023-02-27T14:57:44Z",
+      "side": 1,
+      "message": "As mentioned in the description: I need import image to unblock my Test Runner v2 integration work. Not sure when pubsub will be ready but I need programmatically imported images now.\n\npubsub might be able to call this lib, I added Yi Xie as a reviewer. If not, this can be a throwaway code.",
+      "parentUuid": "0dade5dd_84988a32",
+      "revId": "eba04bb8212b5996adbb32c029a8eb60b3c496c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
