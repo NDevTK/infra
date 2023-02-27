@@ -7,6 +7,7 @@ require (
 	cloud.google.com/go/appengine v1.5.0
 	cloud.google.com/go/bigquery v1.45.0
 	cloud.google.com/go/cloudtasks v1.9.0
+	cloud.google.com/go/compute v1.15.1
 	cloud.google.com/go/compute/metadata v0.2.3
 	cloud.google.com/go/datastore v1.10.0
 	cloud.google.com/go/firestore v1.9.0
@@ -101,7 +102,6 @@ require (
 )
 
 require (
-	cloud.google.com/go/compute v1.15.1 // indirect
 	cloud.google.com/go/errorreporting v0.3.0 // indirect
 	cloud.google.com/go/iam v0.10.0 // indirect
 	cloud.google.com/go/longrunning v0.3.0 // indirect

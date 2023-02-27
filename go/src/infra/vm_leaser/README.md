@@ -46,15 +46,39 @@ vm_leaser.api.v1.VMLeaserService.ReleaseVM
 
 To call an RPC, you can specify the proto and payload via `grpcurl`. Here is an example of how to lease a VM:
 ```bash
-> grpcurl \
-  -plaintext \
-  -proto api/service.proto \
-  -d '{}' \
-  localhost:50051 \
+> grpcurl -plaintext -proto api/v1/vm_leaser.proto \
+  -d '{
+    "host_reqs": {
+      "gce_image": "projects/chrome-fleet-vm-leaser-cr-exp/global/images/betty-arc-r-release",
+      "gce_region": "us-central1-a",
+      "gce_project": "chrome-fleet-vm-leaser-cr-exp",
+      "gce_network": "global/networks/default",
+      "gce_machine_type": "e2-medium",
+      "gce_disk_size": "20"
+    }
+  }' \
+  localhost:8080 \
   vm_leaser.api.v1.VMLeaserService.LeaseVM
 
 {
-  "leaseId": "Test ID"
+  "leaseId": "test-vm-1672187152702",
+  "vm": {
+    "id": "test-vm-1672187152702"
+  }
+}
+```
+
+An example to release a VM:
+```bash
+> grpcurl -plaintext -proto api/v1/vm_leaser.proto \
+  -d '{
+    "lease_id": "test-vm-1673304809878"
+  }' \
+  localhost:8080 \
+  vm_leaser.api.v1.VMLeaserService.ReleaseVM
+
+{
+  "leaseId": "test-vm-1673304809878"
 }
 ```
 
@@ -94,7 +118,7 @@ To call an RPC, you can specify the proto and payload via `grpcurl`. Here is an 
 ```bash
 > grpcurl \
   -rpc-header "Authorization: Bearer $(gcloud auth print-identity-token)" \
-  -proto api/service.proto \
+  -proto api/v1/vm_leaser.proto \
   ${VM_LEASER_ENDPOINT}:443 \
   vm_leaser.api.v1.VMLeaserService.LeaseVM
 

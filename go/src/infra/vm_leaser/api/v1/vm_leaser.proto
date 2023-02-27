@@ -51,6 +51,7 @@ message LeaseVMRequest {
   VMRequirements host_reqs = 5;
 }
 
+// NEXT TAG: 11
 message VMRequirements {
   string gce_image = 1;
   string gce_region = 2;
@@ -61,6 +62,8 @@ message VMRequirements {
   string gce_scope = 7;
   // Specified IP address for VM. If not, use ephemeral IP.
   string gce_ip_address = 8;
+  int64 gce_disk_size = 10;
+
   VMType type = 9;
 }
 
