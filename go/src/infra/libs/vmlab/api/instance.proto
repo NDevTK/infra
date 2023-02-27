@@ -15,6 +15,7 @@ option go_package = "infra/libs/vmlab/api";
 enum ProviderId {
   UNKNOWN = 0;
   GCLOUD = 1;
+  CLOUDSDK = 2;
 }
 
 // VMInstance represents a created VM instance.

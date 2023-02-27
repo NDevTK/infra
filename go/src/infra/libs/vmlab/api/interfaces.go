@@ -13,3 +13,12 @@ type InstanceApi interface {
 	// Cleanup releases existing VM instances that match the request.
 	Cleanup(*CleanupVmInstancesRequest) error
 }
+
+type ImageApi interface {
+	// GetImage treats imported image as cache keyed by builderPath. On cache-miss
+	// the method will try to import image. When wait is true, the method will
+	// poll the image until the image is READY, or error, or timeout. When wait is
+	// false, the current status of the image is returned immediately.
+	// go/cros-image-importer
+	GetImage(builderPath string, wait bool) (*GceImage, error)
+}
