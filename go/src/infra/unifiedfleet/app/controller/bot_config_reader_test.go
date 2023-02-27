@@ -575,7 +575,7 @@ func TestGetOwnershipData(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(ownership, ShouldNotBeNil)
 			So(ownership.PoolName, ShouldEqual, "test")
-			So(ownership.SwarmingInstance, ShouldEqual, "test_name")
+			So(ownership.SwarmingInstance, ShouldEqual, "testSwarming")
 		})
 		Convey("happy path - vm", func() {
 			ctx := encTestingContext()
@@ -593,7 +593,7 @@ func TestGetOwnershipData(t *testing.T) {
 			So(ownership, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			So(ownership.PoolName, ShouldEqual, "test")
-			So(ownership.SwarmingInstance, ShouldEqual, "test_name")
+			So(ownership.SwarmingInstance, ShouldEqual, "testSwarming")
 		})
 		Convey("happy path - machineLSE", func() {
 			ctx := encTestingContext()
@@ -609,7 +609,7 @@ func TestGetOwnershipData(t *testing.T) {
 			So(ownership, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			So(ownership.PoolName, ShouldEqual, "test")
-			So(ownership.SwarmingInstance, ShouldEqual, "test_name")
+			So(ownership.SwarmingInstance, ShouldEqual, "testSwarming")
 		})
 		Convey("missing host in inventory", func() {
 			ctx := encTestingContext()

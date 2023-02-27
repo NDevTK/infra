@@ -59,10 +59,7 @@ func ImportBotConfigs(ctx context.Context) error {
 		return err
 	}
 
-	enableSecurityConfigImport := ownershipConfig.GetEnableSecurityConfigImport()
-	if enableSecurityConfigImport {
-		err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
-	}
+	err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
 	return err
 }
 
