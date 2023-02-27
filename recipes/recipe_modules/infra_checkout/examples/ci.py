@@ -86,3 +86,11 @@ def GenTests(api):
           git_repo='https://chromium.googlesource.com/infra/infra',
       )
   )
+
+  yield api.test(
+      'bot_update retry',
+      api.buildbucket.ci_build(
+          project='infra',
+          bucket='ci',
+          git_repo='https://chromium.googlesource.com/infra/infra',
+      ) + api.step_data('bot_update', retcode=1))
