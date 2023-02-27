@@ -155,11 +155,36 @@ func (g *gcloudInstanceApi) Create(req *api.CreateVmInstanceRequest) (*api.VmIns
 			Address: ipAddress,
 			Port:    22,
 		},
+		Config: req.GetConfig(),
 	}, nil
 }
 
 func (g *gcloudInstanceApi) Delete(ins *api.VmInstance) error {
-	return errors.New("not implemented")
+	gcloudConfig := ins.GetConfig().GetGcloudBackend()
+	if gcloudConfig == nil {
+		return fmt.Errorf("invalid argument: bad backend: want gcloud, got %v", ins.GetConfig())
+	}
+	if ins.GetName() == "" {
+		return errors.New("instance name must be set")
+	}
+	if gcloudConfig.GetProject() == "" {
+		return errors.New("project must be set")
+	}
+	if gcloudConfig.GetZone() == "" {
+		return errors.New("zone must be set")
+	}
+
+	gcloudArgs := []string{"compute", "instances", "delete", ins.GetName()}
+	gcloudArgs = append(gcloudArgs,
+		"--project="+gcloudConfig.GetProject(),
+		"--zone="+gcloudConfig.GetZone(), "--quiet")
+
+	_, err := execCommand.GetCommandOutput("gcloud", gcloudArgs...)
+	if err != nil {
+		return fmt.Errorf("failed to launch instance: %v", extractErrorMessage(err))
+	}
+
+	return nil
 }
 
 func (g *gcloudInstanceApi) Cleanup(req *api.CleanupVmInstancesRequest) error {
