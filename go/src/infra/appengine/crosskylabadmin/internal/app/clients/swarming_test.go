@@ -45,6 +45,7 @@ func TestGetStateDimension(t *testing.T) {
 		}, fleet.DutState_Ready},
 	}
 	for _, c := range cases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 			got := GetStateDimension(c.input)

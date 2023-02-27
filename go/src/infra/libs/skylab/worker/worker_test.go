@@ -84,7 +84,7 @@ func TestStipTime(t *testing.T) {
 	}{
 		{
 			Tag:  "riff on default format time",
-			Time: time.Date(2006, time.January, 2, 15, 4, 5, 99, time.UTC),
+			Time: time.Date(2006, time.January, 2, 15, 4, 5, 0, time.UTC),
 		},
 		{
 			Tag:  "typical example from stiptime",
@@ -97,6 +97,7 @@ func TestStipTime(t *testing.T) {
 	}
 
 	for _, c := range cases {
+		c := c
 		t.Run(c.Tag, func(t *testing.T) {
 			t.Parallel()
 			s := stiptime(c.Time)
