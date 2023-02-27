@@ -7,6 +7,7 @@ package ssh
 import (
 	"context"
 	"log"
+	"net"
 
 	"go.chromium.org/luci/common/errors"
 	"golang.org/x/crypto/ssh"
@@ -18,7 +19,12 @@ type SSHClient interface {
 	IsAlive() bool
 	Close() error
 	Client() *ssh.Client
+	ForwardLocalToRemote(localAddr, remoteAddr string, errFunc func(error)) (*Forwarder, error)
 }
+
+const (
+	supportNetwork = "tcp"
+)
 
 // Implementation of SSHClient.
 type sshClientImpl struct {
@@ -27,6 +33,7 @@ type sshClientImpl struct {
 
 // Close closing the native client.
 func (c *sshClientImpl) Close() error {
+	log.Println("New Client closed!")
 	err := c.client.Close()
 	return errors.Annotate(err, "close ssh client").Err()
 }
@@ -50,6 +57,22 @@ func (c *sshClientImpl) IsAlive() bool {
 // TODO: Remove as this created only to support current state and any manipulation need to be wrapped to special functions.
 func (c *sshClientImpl) Client() *ssh.Client {
 	return c.client
+}
+
+// ForwardLocalToRemote creates a new Forwarder that forwards connections from localAddr to remoteAddr using s.
+// network is passed to net.Listen. Only TCP networks are supported.
+// localAddr is passed to net.Listen and typically takes the form "host:port" or "ip:port".
+// remoteAddr uses the same format but is resolved by the remote SSH server.
+// If non-nil, errFunc will be invoked asynchronously on a goroutine with connection or forwarding errors.
+func (s *sshClientImpl) ForwardLocalToRemote(localAddr, remoteAddr string, errFunc func(error)) (*Forwarder, error) {
+	connFunc := func() (net.Conn, error) {
+		return s.Client().Dial(supportNetwork, remoteAddr)
+	}
+	l, err := net.Listen(supportNetwork, localAddr)
+	if err != nil {
+		return nil, err
+	}
+	return newForwarder(l, connFunc, errFunc)
 }
 
 // NewClient connects to SSH client to flesh connection.
