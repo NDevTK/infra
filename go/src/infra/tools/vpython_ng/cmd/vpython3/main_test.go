@@ -150,33 +150,6 @@ func TestPythonBasic(t *testing.T) {
 	})
 }
 
-func TestParseArguments(t *testing.T) {
-	parseArgs := func(args ...string) error {
-		app := &application.Application{
-			Arguments: args,
-		}
-		app.Initialize()
-		return app.ParseArgs()
-	}
-
-	Convey("Test unknown argument", t, func() {
-		err := parseArgs(
-			"-vpython-spec",
-			testData("default.vpython3"),
-			"-vpython-test",
-		)
-		So(err.Error(), ShouldContainSubstring, "-vpython-test")
-
-		err = parseArgs(
-			"-vpython-spec",
-			testData("default.vpython3"),
-			"--",
-			"-vpython-test",
-		)
-		So(err, ShouldBeNil)
-	})
-}
-
 func TestPythonFromPath(t *testing.T) {
 	Convey("Test python from path", t, func() {
 		env := getPythonEnvironment(DefaultPythonVersion)

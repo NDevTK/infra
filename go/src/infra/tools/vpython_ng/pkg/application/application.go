@@ -206,10 +206,17 @@ func (a *Application) ParseArgs() (err error) {
 			"install: installs the configured virtual environment.\n"+
 			"verify: verifies that a spec and its wheels are valid.")
 
+	logLevel := logging.GetLevel(a.Context)
+	fs.Var(&logLevel, "vpython-log-level",
+		"The logging level. Valid options are: debug, info, warning, error.")
+
 	vpythonArgs, pythonArgs := extractFlagsForSet(a.Arguments, &fs)
 	if err := fs.Parse(vpythonArgs); err != nil {
 		return errors.Annotate(err, "failed to parse flags").Err()
 	}
+
+	// Set log level
+	a.Context = logging.SetLevel(a.Context, logLevel)
 
 	// Check if there are any '-vpython-*' options remain. Passing these flags
 	// to python can create confusing errors.
