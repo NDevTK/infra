@@ -13,7 +13,7 @@ Helpers for managing VM Leaser project in $(PROJECT_PATH):
   gen: regenerate all go bindings
   build: build the VM Leaser service image
   dev: run the VM Leaser service locally through Docker
-  deploy: deploy the latest image to the ${GCP_PROJECT} project
+  push-image: build and push the latest image to the ${GCP_PROJECT} project
 endef
 
 .PHONY: help
@@ -29,19 +29,33 @@ gen:
 .PHONY: build
 build:
 	CGO_ENABLED=0 go build -o vm-leaser-service $(PROJECT_PATH)/server
-	docker build --tag=gcr.io/${GCP_PROJECT}/vm-leaser-service:latest --file=./Dockerfile .
 
 # Run service locally
 .PHONY: dev
 dev: build
+	./vm-leaser-service
+
+# Build Docker service
+.PHONY: build-docker
+build-docker: build
+	docker build --tag=gcr.io/${GCP_PROJECT}/vm-leaser-service:latest --file=./Dockerfile .
+
+# Push Docker image to GCP
+.PHONY: push-image
+push-image: build-docker
+  docker push gcr.io/${GCP_PROJECT}/vm-leaser-service:latest
+
+# Run Docker service locally
+.PHONY: dev-docker
+dev-docker: build-docker
 	docker run --rm --interactive --tty \
 	--publish=50051:50051 \
 	--env=PORT=50051 \
 	gcr.io/${GCP_PROJECT}/vm-leaser-service:latest
 
-# Deploy service
-.PHONY: deploy
-deploy: build
+# Deploy Docker service
+.PHONY: deploy-docker
+deploy-docker: build-docker
 	gcloud run deploy vm-leaser-service \
 	--image=gcr.io/${GCP_PROJECT}/vm-leaser-service:latest \
 	--platform=managed \
