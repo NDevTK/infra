@@ -5,11 +5,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"log"
 	"net"
 	"os"
 
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/logging/gologger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
@@ -17,13 +19,16 @@ import (
 )
 
 func main() {
+	ctx := gologger.StdConfig.Use(context.Background())
+	ctx = logging.SetLevel(ctx, logging.Debug)
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
 	grpcEndpoint := fmt.Sprintf(":%s", port)
-	log.Printf("gRPC endpoint [%s]", grpcEndpoint)
+	logging.Infof(ctx, "gRPC endpoint [%s]", grpcEndpoint)
 
 	grpcServer := grpc.NewServer()
 	pb.RegisterVMLeaserServiceServer(grpcServer, NewServer())
@@ -33,8 +38,14 @@ func main() {
 
 	listen, err := net.Listen("tcp", grpcEndpoint)
 	if err != nil {
-		log.Fatal(err)
+		logging.Errorf(ctx, "failed to listen: %v", err)
+		os.Exit(1)
 	}
-	log.Printf("Starting: gRPC Listener [%s]\n", grpcEndpoint)
-	log.Fatal(grpcServer.Serve(listen))
+
+	logging.Infof(ctx, "Starting: gRPC Listener [%s]\n", grpcEndpoint)
+	err = grpcServer.Serve(listen)
+	if err != nil {
+		logging.Errorf(ctx, "failed to serve: %v", err)
+		os.Exit(1)
+	}
 }
