@@ -360,6 +360,7 @@ def adhoc_task_backend_builder(
 luci.task_backend(
     name = "swarming_task_backend_dev",
     target = "swarming://chromium-swarm-dev",
+    config = {"bot_ping_tolerance": 120},
 )
 
 adhoc_task_backend_builder(
