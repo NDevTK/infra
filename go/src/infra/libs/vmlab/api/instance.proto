@@ -23,6 +23,8 @@ message VmInstance {
   string name = 1;
   // The AddressPort information for SSH.
   AddressPort ssh = 2;
+  // Configuration used to create the instance.
+  Config config = 3;
 }
 
 // Request for the InstanceApi.Create endpoint.
@@ -48,13 +50,15 @@ message AddressPort {
 }
 
 // TODO(b/250961857): finalize fields and add documentation
+// Configuration to specify how to create an instance.
 message Config {
   oneof backend {
     GCloudBackend gcloud_backend = 1;
   }
 
   // Gcloud properties. Most properties are passed through to the corresponding
-  // flags of gcloud.
+  // flags of gcloud. A mandatory field is required when the config is used to
+  // create an instance.
   message GCloudBackend {
     // GCP project id. Mandatory
     string project = 1;
