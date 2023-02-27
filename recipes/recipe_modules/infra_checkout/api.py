@@ -226,7 +226,7 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
 
     # https://chrome-infra-packages.appspot.com/p/infra/3pp/tools/golangci-lint
     linter = self.m.cipd.ensure_tool(
-        'infra/3pp/tools/golangci-lint/${platform}', 'version:2@1.50.0')
+        'infra/3pp/tools/golangci-lint/${platform}', 'version:2@1.51.2')
     result = self.m.step(
         'run golangci-lint',
         [
