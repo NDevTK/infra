@@ -5,8 +5,6 @@
 package ssh
 
 import (
-	"context"
-
 	"go.chromium.org/luci/common/errors"
 	"golang.org/x/crypto/ssh"
 
@@ -17,7 +15,6 @@ import (
 //
 // Provider gives option to use pool or create new client always.
 type SSHProvider interface {
-	GetContext(ctx context.Context, addr string) (SSHClient, error)
 	Get(addr string) (SSHClient, error)
 	Put(addr string, sc SSHClient)
 	Close() error
@@ -42,18 +39,6 @@ func NewProvider(config *ssh.ClientConfig) SSHProvider {
 		p.pool = sshpool.New(p.config)
 	}
 	return p
-}
-
-// GetContext provides SSH client for requested host.
-func (c *sshProviderImpl) GetContext(ctx context.Context, addr string) (SSHClient, error) {
-	if c.useSSHPool {
-		s, err := c.pool.GetContext(ctx, addr)
-		if err != nil {
-			return nil, errors.Annotate(err, "get contex from provider").Err()
-		}
-		return &sshClientImpl{s}, nil
-	}
-	return NewClient(addr, c.config)
 }
 
 // Get provides SSH client for requested host.

@@ -119,7 +119,7 @@ func copyToHelper(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRe
 	if ok := strings.Contains(addr, ":"); !ok {
 		addr = net.JoinHostPort(req.Resource, strconv.Itoa(defaultSSHPort))
 	}
-	client, err := provider.GetContext(ctx, addr)
+	client, err := provider.Get(addr)
 	if err != nil {
 		return errors.Annotate(err, "copy to helper").Err()
 	}
@@ -218,7 +218,7 @@ func copyFromHelper(ctx context.Context, provider ssh.SSHProvider, req *tlw.Copy
 	if ok := strings.Contains(addr, ":"); !ok {
 		addr = net.JoinHostPort(req.Resource, strconv.Itoa(defaultSSHPort))
 	}
-	client, err := provider.GetContext(ctx, addr)
+	client, err := provider.Get(addr)
 	if err != nil {
 		return errors.Annotate(err, "copy from helper: failed to get client for %q from pool", addr).Err()
 	}
