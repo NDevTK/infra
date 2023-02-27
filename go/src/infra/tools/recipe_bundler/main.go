@@ -13,7 +13,6 @@ import (
 
 	"go.chromium.org/luci/client/versioncli"
 	"go.chromium.org/luci/common/cli"
-	"go.chromium.org/luci/common/data/rand/mathrand"
 	log "go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 )
@@ -36,8 +35,6 @@ func handleInterruption(ctx context.Context) context.Context {
 }
 
 func main() {
-	mathrand.SeedRandomly()
-
 	var application = cli.Application{
 		Name: "recipe_bundler",
 		Title: `"Recipe Bundler"

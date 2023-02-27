@@ -14,7 +14,6 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
-	"go.chromium.org/luci/common/data/rand/mathrand"
 	"go.chromium.org/luci/common/logging/gologger"
 
 	"infra/appengine/crosskylabadmin/gaev2/adminclient/cmds"
@@ -51,6 +50,5 @@ func newApplication() *cli.Application {
 
 // Main is the main entrypoint for adminclient.
 func main() {
-	mathrand.SeedRandomly()
 	os.Exit(subcommands.Run(newApplication(), nil))
 }

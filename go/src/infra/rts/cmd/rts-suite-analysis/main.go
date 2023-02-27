@@ -13,7 +13,6 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/api/gerrit"
 	"go.chromium.org/luci/common/cli"
-	"go.chromium.org/luci/common/data/rand/mathrand"
 	"go.chromium.org/luci/common/flag/fixflagpos"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
@@ -27,7 +26,6 @@ var logCfg = gologger.LoggerConfig{
 }
 
 func main() {
-	mathrand.SeedRandomly()
 	authOpt := chromeinfra.DefaultAuthOptions()
 	authOpt.Scopes = append(authOpt.Scopes, bigquery.Scope, gerrit.OAuthScope, storage.ScopeReadOnly)
 

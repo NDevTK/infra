@@ -12,7 +12,6 @@ import (
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
-	"go.chromium.org/luci/common/data/rand/mathrand"
 	"go.chromium.org/luci/common/logging/gologger"
 
 	kartecli "infra/cros/karte/cli"
@@ -43,6 +42,5 @@ func newApplication() *cli.Application {
 }
 
 func main() {
-	mathrand.SeedRandomly()
 	os.Exit(subcommands.Run(newApplication(), nil))
 }

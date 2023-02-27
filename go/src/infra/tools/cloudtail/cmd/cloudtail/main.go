@@ -24,7 +24,6 @@ import (
 	"go.chromium.org/luci/client/versioncli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/clock"
-	"go.chromium.org/luci/common/data/rand/mathrand"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/common/tsmon"
@@ -564,8 +563,6 @@ func getApplication(defaultAuthOpts auth.Options) *cli.Application {
 }
 
 func main() {
-	mathrand.SeedRandomly()
-
 	authOpts := infraenv.DefaultAuthOptions()
 	authOpts.ServiceAccountJSONPath = defaultServiceAccountJSONPath()
 	authOpts.Scopes = []string{

@@ -23,7 +23,6 @@ import (
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/buildbucket/protoutil"
 	"go.chromium.org/luci/common/clock"
-	"go.chromium.org/luci/common/data/rand/mathrand"
 	"go.chromium.org/luci/common/data/strpair"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
@@ -35,8 +34,6 @@ import (
 )
 
 func main() {
-	mathrand.SeedRandomly()
-
 	inputs := &fakebuildpb.Inputs{}
 
 	build.Main(inputs, nil, nil, func(ctx context.Context, args []string, st *build.State) error {

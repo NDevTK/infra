@@ -8,14 +8,12 @@ import (
 	"context"
 	"os"
 
-	"go.chromium.org/luci/common/data/rand/mathrand"
 	"go.chromium.org/luci/logdog/client/cli"
 
 	"infra/libs/infraenv"
 )
 
 func main() {
-	mathrand.SeedRandomly()
 	os.Exit(cli.Main(context.Background(), cli.Parameters{
 		Args:               os.Args[1:],
 		Host:               infraenv.ProdLogDogHost,

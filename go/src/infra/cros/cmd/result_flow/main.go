@@ -13,7 +13,6 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
-	"go.chromium.org/luci/common/data/rand/mathrand"
 	"go.chromium.org/luci/common/logging/gologger"
 
 	"infra/cros/cmd/result_flow/internal/cmd"
@@ -44,6 +43,5 @@ func getApplication() *cli.Application {
 }
 
 func main() {
-	mathrand.SeedRandomly()
 	os.Exit(subcommands.Run(getApplication(), nil))
 }

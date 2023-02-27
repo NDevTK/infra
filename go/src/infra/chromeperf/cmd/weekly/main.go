@@ -18,12 +18,9 @@ import (
 	"os"
 
 	"infra/chromeperf/weekly"
-
-	"go.chromium.org/luci/common/data/rand/mathrand"
 )
 
 func main() {
-	mathrand.SeedRandomly()
 	os.Exit(weekly.Main(weekly.Param{
 		DefaultServiceDomain: "pinpoint-dev.endpoints.chromeperf.cloud.goog",
 		OIDCProviderURL:      "https://accounts.google.com",
