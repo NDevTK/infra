@@ -32,7 +32,6 @@ type sshClientImpl struct {
 
 // Close closing the native client.
 func (c *sshClientImpl) Close() error {
-	log.Println("New Client closed!")
 	err := c.client.Close()
 	return errors.Annotate(err, "close ssh client").Err()
 }
@@ -76,12 +75,10 @@ func (s *sshClientImpl) ForwardLocalToRemote(localAddr, remoteAddr string, errFu
 
 // NewClient connects to SSH client to flesh connection.
 func NewClient(addr string, config *ssh.ClientConfig) (SSHClient, error) {
-	log.Printf("New Client Starting... with addr:%q\n", addr)
 	ssh, err := ssh.Dial("tcp", addr, config)
 	if err != nil {
 		log.Printf("New Client created with error: %s\n", err)
 		return nil, errors.Annotate(err, "new SSH client").Err()
 	}
-	log.Println("New Client created!")
 	return &sshClientImpl{ssh}, nil
 }

@@ -123,7 +123,15 @@ func copyToHelper(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRe
 	if err != nil {
 		return errors.Annotate(err, "copy to helper").Err()
 	}
-	defer func() { provider.Put(addr, client) }()
+	defer func() {
+		if err := client.Close(); err != nil {
+			// TODO(b:270462604): Delete the log after finish migration.
+			log.Debugf(ctx, "SSH client closed with error: %s", err)
+		} else {
+			// TODO(b:270462604): Delete the log after finish migration.
+			log.Debugf(ctx, "SSH client closed!")
+		}
+	}()
 	session, err := client.NewSession()
 	if err != nil {
 		return errors.Annotate(err, "copy to helper").Err()
@@ -222,7 +230,15 @@ func copyFromHelper(ctx context.Context, provider ssh.SSHProvider, req *tlw.Copy
 	if err != nil {
 		return errors.Annotate(err, "copy from helper: failed to get client for %q from pool", addr).Err()
 	}
-	defer func() { provider.Put(addr, client) }()
+	defer func() {
+		if err := client.Close(); err != nil {
+			// TODO(b:270462604): Delete the log after finish migration.
+			log.Debugf(ctx, "SSH client closed with error: %s", err)
+		} else {
+			// TODO(b:270462604): Delete the log after finish migration.
+			log.Debugf(ctx, "SSH client closed!")
+		}
+	}()
 	session, err := client.NewSession()
 	if err != nil {
 		return errors.Annotate(err, "copy from helper: failed to create SSH session").Err()

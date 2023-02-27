@@ -87,7 +87,15 @@ func callServodLabstation(ctx context.Context, req *ServodCallRequest) (*xmlrpc_
 	if err != nil {
 		return nil, errors.Annotate(err, "call servod labstation").Err()
 	}
-	defer func() { req.SSHProvider.Put(host, sc) }()
+	defer func() {
+		if err := sc.Close(); err != nil {
+			// TODO(b:270462604): Delete the log after finish migration.
+			log.Debugf(ctx, "SSH client closed with error: %s", err)
+		} else {
+			// TODO(b:270462604): Delete the log after finish migration.
+			log.Debugf(ctx, "SSH client closed!")
+		}
+	}()
 
 	remoteAddr := fmt.Sprintf(remoteAddrFmt, req.Options.GetServodPort())
 	f, err := sc.ForwardLocalToRemote(localAddr, remoteAddr, func(fErr error) {
