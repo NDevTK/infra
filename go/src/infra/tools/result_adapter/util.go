@@ -142,7 +142,7 @@ func ReadJSONFileToString(file string) string {
 	return string(data)
 }
 
-// parseMetadata reads the CFT test metadata file and parses into a map keyed by the test name.
+// parseMetadata reads the CFT test metadata file and parses into a map keyed by the test ID.
 func parseMetadata(filePath string) (map[string]*api.TestCaseMetadata, error) {
 	f, err := os.ReadFile(filePath)
 	if err != nil {
@@ -157,7 +157,7 @@ func parseMetadata(filePath string) (map[string]*api.TestCaseMetadata, error) {
 	mp := make(map[string]*api.TestCaseMetadata, 0)
 	for _, v := range metadata.Values {
 		if v.TestCase != nil {
-			mp[v.TestCase.Name] = v
+			mp[v.TestCase.Id.Value] = v
 		}
 	}
 	return mp, nil

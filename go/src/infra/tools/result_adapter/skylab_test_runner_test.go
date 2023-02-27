@@ -163,9 +163,15 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 			So(testResults, ShouldResemble, expected)
 		})
 
-		Convey("test passes with metadata", func() {
+		Convey("test passes: CFT test run with CFT metadata", func() {
 			testCases := make([]TestRunnerTestCase, len(tc))
 			copy(testCases, tc)
+
+			// The test_metadata.json file is only available for CFT runs. In
+			// these runs the test name is prefixed with 'tauto.'.
+			for i := range testCases {
+				testCases[i].Name = "tauto." + testCases[i].Name
+			}
 			results := TestRunnerResult{Autotest: TestRunnerAutotest{
 				TestCases: testCases,
 			}}
@@ -174,7 +180,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 
 			expected := []*sinkpb.TestResult{
 				{
-					TestId:    "test1",
+					TestId:    "tauto.test1",
 					Expected:  true,
 					Status:    pb.TestStatus_PASS,
 					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
@@ -188,7 +194,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					},
 				},
 				{
-					TestId:    "test2",
+					TestId:    "tauto.test2",
 					Expected:  true,
 					Status:    pb.TestStatus_SKIP,
 					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
@@ -197,7 +203,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					},
 				},
 				{
-					TestId:      "test3",
+					TestId:      "tauto.test3",
 					Expected:    false,
 					Status:      pb.TestStatus_FAIL,
 					SummaryHtml: "<pre>test failure</pre>",
@@ -209,7 +215,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					},
 				},
 				{
-					TestId:      "test4",
+					TestId:      "tauto.test4",
 					Expected:    false,
 					Status:      pb.TestStatus_CRASH,
 					SummaryHtml: "<pre>test error</pre>",
@@ -223,7 +229,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					},
 				},
 				{
-					TestId:      "test5",
+					TestId:      "tauto.test5",
 					Expected:    false,
 					Status:      pb.TestStatus_ABORT,
 					SummaryHtml: "<pre>test abort</pre>",

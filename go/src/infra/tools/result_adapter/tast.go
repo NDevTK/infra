@@ -109,7 +109,7 @@ func (r *TastResults) ToProtos(ctx context.Context, testMetadataFile string, pro
 		tr.Tags = append(tr.Tags, pbutil.StringPair("contacts", contacts))
 		tr.Tags = append(tr.Tags, c.SearchFlags...)
 
-		testMetadata, ok := metadata[c.Name]
+		testMetadata, ok := metadata[testName]
 		if ok {
 			tr.Tags = append(tr.Tags, metadataToTags(testMetadata)...)
 		}
