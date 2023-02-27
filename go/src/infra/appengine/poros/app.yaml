@@ -1,4 +1,4 @@
-runtime: go119
+runtime: go120
 service: default
 app_engine_apis: true
 
