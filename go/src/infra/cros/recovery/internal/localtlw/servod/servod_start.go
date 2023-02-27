@@ -16,17 +16,17 @@ import (
 	"infra/cros/recovery/dev"
 	"infra/cros/recovery/docker"
 	"infra/cros/recovery/internal/localtlw/localproxy"
+	"infra/cros/recovery/internal/localtlw/ssh"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/tlw"
-	"infra/libs/sshpool"
 )
 
 // StartServodRequest holds data to start servod container.
 type StartServodRequest struct {
-	Host    string
-	Options *tlw.ServodOptions
-	SSHPool *sshpool.Pool
+	Host        string
+	Options     *tlw.ServodOptions
+	SSHProvider ssh.SSHProvider
 	// Containers info.
 	ContainerName    string
 	ContainerNetwork string
@@ -43,8 +43,8 @@ func StartServod(ctx context.Context, req *StartServodRequest) error {
 	switch {
 	case req.Host == "":
 		return errors.Reason("start servod: host is ot specified").Err()
-	case req.SSHPool == nil:
-		return errors.Reason("start servod: ssh pool is not specified").Err()
+	case req.SSHProvider == nil:
+		return errors.Reason("start servod: SSH provider is not specified").Err()
 	case req.Options == nil:
 		return errors.Reason("start servod: options is not specified").Err()
 	case req.Options.GetServodPort() <= 0 && req.ContainerName == "":
@@ -114,13 +114,13 @@ func startServodOnRemoteContainer(ctx context.Context, req *StartServodRequest) 
 func startServodLabstation(ctx context.Context, req *StartServodRequest) error {
 	// Convert hostname to the proxy name used for local when called.
 	host := localproxy.BuildAddr(req.Host)
-	if stat, err := getServodStatus(ctx, host, req.Options.GetServodPort(), req.SSHPool); err != nil {
+	if stat, err := getServodStatus(ctx, host, req.Options.GetServodPort(), req.SSHProvider); err != nil {
 		return errors.Annotate(err, "start servod on labstation").Err()
 	} else if stat == servodRunning {
 		// Servod is running already.
 		return nil
 	}
-	if err := startServod(ctx, host, req.Options.GetServodPort(), GenerateParams(req.Options), req.SSHPool); err != nil {
+	if err := startServod(ctx, host, req.Options.GetServodPort(), GenerateParams(req.Options), req.SSHProvider); err != nil {
 		return errors.Annotate(err, "start servod on labstation").Err()
 	}
 	return nil
@@ -177,7 +177,7 @@ func dockerVerifyServodDaemonIsUp(ctx context.Context, dc docker.Client, contain
 	}
 	startTime := time.Now()
 	res, err := dc.Exec(ctx, containerName, eReq)
-	servodStartDuration := time.Now().Sub(startTime)
+	servodStartDuration := time.Since(startTime)
 	if err != nil {
 		metrics.DefaultActionAddObservations(ctx, metrics.NewFloat64Observation(observationKindStartServodTimeoutFail, servodStartDuration.Seconds()))
 		return errors.Annotate(err, "docker verify servod daemon is up").Err()

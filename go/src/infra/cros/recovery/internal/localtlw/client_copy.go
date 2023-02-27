@@ -33,7 +33,7 @@ func (c *tlwClient) CopyFileTo(ctx context.Context, req *tlw.CopyRequest) error 
 	if err := validateCopyRequest(req); err != nil {
 		return errors.Annotate(err, "copy file to").Err()
 	}
-	if err := tlwio.CopyFileTo(ctx, c.sshPool, req); err != nil {
+	if err := tlwio.CopyFileTo(ctx, c.sshProvider, req); err != nil {
 		return errors.Annotate(err, "copy file to").Err()
 	}
 	return nil
@@ -64,7 +64,7 @@ func (c *tlwClient) CopyFileFrom(ctx context.Context, req *tlw.CopyRequest) (mai
 		mainErr = d.CopyFrom(ctx, containerName, req.PathSource, req.PathDestination)
 	} else {
 		// Use dirrect copy if hosts support SSH.
-		mainErr = tlwio.CopyFileFrom(ctx, c.sshPool, &tlw.CopyRequest{
+		mainErr = tlwio.CopyFileFrom(ctx, c.sshProvider, &tlw.CopyRequest{
 			Resource:        localproxy.BuildAddr(req.Resource),
 			PathSource:      req.PathSource,
 			PathDestination: req.PathDestination,
@@ -75,7 +75,7 @@ func (c *tlwClient) CopyFileFrom(ctx context.Context, req *tlw.CopyRequest) (mai
 
 // CopyDirectoryTo copies directory to remote device from local, recursively.
 func (c *tlwClient) CopyDirectoryTo(ctx context.Context, req *tlw.CopyRequest) error {
-	if err := tlwio.CopyDirectoryTo(ctx, c.sshPool, req); err != nil {
+	if err := tlwio.CopyDirectoryTo(ctx, c.sshProvider, req); err != nil {
 		return errors.Annotate(err, "copy directory to").Err()
 	}
 	return nil
@@ -85,7 +85,7 @@ func (c *tlwClient) CopyDirectoryTo(ctx context.Context, req *tlw.CopyRequest) e
 func (c *tlwClient) CopyDirectoryFrom(ctx context.Context, req *tlw.CopyRequest) error {
 	// TODO (vkjoshi@): Need to add support for containerized
 	// servo-hosts, analogous to that in CopyFileFrom.
-	if err := tlwio.CopyDirectoryFrom(ctx, c.sshPool, &tlw.CopyRequest{
+	if err := tlwio.CopyDirectoryFrom(ctx, c.sshProvider, &tlw.CopyRequest{
 		Resource:        localproxy.BuildAddr(req.Resource),
 		PathSource:      req.PathSource,
 		PathDestination: req.PathDestination,

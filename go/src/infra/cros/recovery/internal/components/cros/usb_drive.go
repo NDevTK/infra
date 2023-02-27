@@ -109,7 +109,7 @@ func BootFromServoUSBDriveInDevMode(ctx context.Context, waitBootTimeout, waitBo
 func RunInstallOSCommand(ctx context.Context, timeout time.Duration, run components.Runner) error {
 	startTime := time.Now()
 	out, err := run(ctx, timeout, "chromeos-install", "--yes")
-	execTime := time.Now().Sub(startTime)
+	execTime := time.Since(startTime)
 	log.Debugf(ctx, "Execution time: %s", execTime.Seconds())
 	log.Debugf(ctx, "Install OS:\n%s", out)
 	if err != nil {

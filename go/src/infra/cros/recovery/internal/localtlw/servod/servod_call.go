@@ -16,17 +16,17 @@ import (
 
 	"infra/cros/recovery/docker"
 	"infra/cros/recovery/internal/localtlw/localproxy"
+	"infra/cros/recovery/internal/localtlw/ssh"
 	"infra/cros/recovery/internal/localtlw/xmlrpc"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
-	"infra/libs/sshpool"
 )
 
 // ServodCallRequest holds data to call servod daemon.
 type ServodCallRequest struct {
-	Host    string
-	Options *tlw.ServodOptions
-	SSHPool *sshpool.Pool
+	Host        string
+	Options     *tlw.ServodOptions
+	SSHProvider ssh.SSHProvider
 	// Containers info.
 	ContainerName string
 	// Call info.
@@ -42,8 +42,8 @@ func CallServod(ctx context.Context, req *ServodCallRequest) (*xmlrpc_value.Valu
 	switch {
 	case req.Host == "":
 		return nil, errors.Reason("call servod: host is ot specified").Err()
-	case req.SSHPool == nil:
-		return nil, errors.Reason("call servod: ssh pool is not specified").Err()
+	case req.SSHProvider == nil:
+		return nil, errors.Reason("call servod: SSH provider is not specified").Err()
 	case req.Options == nil:
 		return nil, errors.Reason("call servod: options is not specified").Err()
 	case req.Options.ServodPort <= 0:
@@ -81,7 +81,7 @@ func callServodOnRemoteContainer(ctx context.Context, req *ServodCallRequest) (*
 func callServodLabstation(ctx context.Context, req *ServodCallRequest) (*xmlrpc_value.Value, error) {
 	// Convert hostname to the proxy name used for local when called.
 	host := localproxy.BuildAddr(req.Host)
-	p, err := newProxy(ctx, req.SSHPool, host, req.Options.GetServodPort(), func(err error) {
+	p, err := newProxy(ctx, req.SSHProvider, host, req.Options.GetServodPort(), func(err error) {
 		log.Debugf(ctx, "Fail on proxy: %s", err)
 	})
 	if err != nil {

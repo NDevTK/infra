@@ -40,8 +40,8 @@ func (c *tlwClient) CallBluetoothPeer(ctx context.Context, req *tlw.CallBluetoot
 		return fail(err)
 	}
 	val, err := servod.CallServod(ctx, &servod.ServodCallRequest{
-		Host:    localproxy.BuildAddr(req.GetResource()),
-		SSHPool: c.sshPool,
+		Host:        localproxy.BuildAddr(req.GetResource()),
+		SSHProvider: c.sshProvider,
 		Options: &tlw.ServodOptions{
 			ServodPort: int32(defaultBluetoothPeerServerPort),
 		},

@@ -21,7 +21,6 @@ import (
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/rpm"
 	"infra/cros/recovery/tlw"
-	"infra/libs/sshpool"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
@@ -58,9 +57,9 @@ const (
 
 // tlwClient holds data and represents the local implementation of TLW Access interface.
 type tlwClient struct {
-	csaClient CSAClient
-	ufsClient UFSClient
-	sshPool   *sshpool.Pool
+	csaClient   CSAClient
+	ufsClient   UFSClient
+	sshProvider ssh.SSHProvider
 	// Cache received devices from inventory
 	devices   map[string]*tlw.Dut
 	hostTypes map[string]hostType
@@ -75,7 +74,7 @@ func New(ufs UFSClient, csac CSAClient, sshKeyPaths []string) (tlw.Access, error
 	c := &tlwClient{
 		ufsClient:     ufs,
 		csaClient:     csac,
-		sshPool:       sshpool.New(ssh.SSHConfig(sshKeyPaths)),
+		sshProvider:   ssh.NewProvider(ssh.SSHConfig(sshKeyPaths)),
 		devices:       make(map[string]*tlw.Dut),
 		hostTypes:     make(map[string]hostType),
 		hostToParents: make(map[string]string),
@@ -87,8 +86,8 @@ func New(ufs UFSClient, csac CSAClient, sshKeyPaths []string) (tlw.Access, error
 // Close closes all used resources.
 func (c *tlwClient) Close(ctx context.Context) error {
 	log.Debugf(ctx, "Starting closing client..")
-	if err := c.sshPool.Close(); err != nil {
-		return errors.Annotate(err, "tlw client").Err()
+	if err := c.sshProvider.Close(); err != nil {
+		return errors.Annotate(err, "close tlw client").Err()
 	}
 	return nil
 }
@@ -220,9 +219,9 @@ func (c *tlwClient) Run(ctx context.Context, req *tlw.RunRequest) *tlw.RunResult
 		go func() {
 			addr := localproxy.BuildAddr(req.GetResource())
 			if req.GetInBackground() {
-				runResult = ssh.RunBackground(ctx, c.sshPool, addr, fullCmd)
+				runResult = ssh.RunBackground(ctx, c.sshProvider, addr, fullCmd)
 			} else {
-				runResult = ssh.Run(ctx, c.sshPool, addr, fullCmd)
+				runResult = ssh.Run(ctx, c.sshProvider, addr, fullCmd)
 			}
 			cr <- true
 		}()

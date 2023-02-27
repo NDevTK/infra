@@ -19,7 +19,6 @@ import (
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/tlw"
-	"infra/libs/sshpool"
 )
 
 const (
@@ -38,8 +37,8 @@ const (
 )
 
 // getServodStatus return status of servod daemon on the servo-host.
-func getServodStatus(ctx context.Context, servodHost string, servoPort int32, pool *sshpool.Pool) (status, error) {
-	r := ssh.Run(ctx, pool, servodHost, fmt.Sprintf("status servod PORT=%d", servoPort))
+func getServodStatus(ctx context.Context, servodHost string, servoPort int32, provider ssh.SSHProvider) (status, error) {
+	r := ssh.Run(ctx, provider, servodHost, fmt.Sprintf("status servod PORT=%d", servoPort))
 	if r.ExitCode == 0 {
 		if strings.Contains(strings.ToLower(r.Stdout), "start/running") {
 			return servodRunning, nil
@@ -54,17 +53,17 @@ func getServodStatus(ctx context.Context, servodHost string, servoPort int32, po
 }
 
 // startServod starts servod daemon on servo-host.
-func startServod(ctx context.Context, servodHost string, servoPort int32, params []string, pool *sshpool.Pool) error {
+func startServod(ctx context.Context, servodHost string, servoPort int32, params []string, provider ssh.SSHProvider) error {
 	log.Infof(ctx, "Start servod with %v", params)
 	cmd := strings.Join(append([]string{"start", "servod"}, params...), " ")
-	if r := ssh.Run(ctx, pool, servodHost, cmd); r.ExitCode != 0 {
+	if r := ssh.Run(ctx, provider, servodHost, cmd); r.ExitCode != 0 {
 		return errors.Reason("start servod: %s", r.Stderr).Err()
 	}
 	// Use servodtool to check whether the servod is started.
 	log.Debugf(ctx, "Start servod: use servodtool to check and wait the servod on labstation device to be fully started.")
 	startTime := time.Now()
-	execResult := ssh.Run(ctx, pool, servodHost, fmt.Sprintf("servodtool instance wait-for-active -p %d --timeout 60", servoPort))
-	servodStartDuration := time.Now().Sub(startTime)
+	execResult := ssh.Run(ctx, provider, servodHost, fmt.Sprintf("servodtool instance wait-for-active -p %d --timeout 60", servoPort))
+	servodStartDuration := time.Since(startTime)
 	if execResult.ExitCode != 0 {
 		metrics.DefaultActionAddObservations(ctx, metrics.NewFloat64Observation(observationKindStartServodTimeoutFail, servodStartDuration.Seconds()))
 		return errors.Reason("start servod: servodtool check: %s", execResult.Stderr).Err()
@@ -73,8 +72,8 @@ func startServod(ctx context.Context, servodHost string, servoPort int32, params
 	return nil
 }
 
-func stopServod(ctx context.Context, servodHost string, servoPort int32, pool *sshpool.Pool) error {
-	r := ssh.Run(ctx, pool, servodHost, fmt.Sprintf("stop servod PORT=%d", servoPort))
+func stopServod(ctx context.Context, servodHost string, servoPort int32, provider ssh.SSHProvider) error {
+	r := ssh.Run(ctx, provider, servodHost, fmt.Sprintf("stop servod PORT=%d", servoPort))
 	if r.ExitCode != 0 {
 		log.Debugf(ctx, "stop servod: %s", r.Stderr)
 		return errors.Reason("stop servod: %s", r.Stderr).Err()

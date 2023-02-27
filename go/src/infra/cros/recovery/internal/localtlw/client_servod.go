@@ -37,9 +37,9 @@ func (c *tlwClient) InitServod(ctx context.Context, req *tlw.InitServodRequest) 
 		options.ServodPort = 0
 	}
 	startReq := &servod.StartServodRequest{
-		Host:    servoHost.GetName(),
-		SSHPool: c.sshPool,
-		Options: options,
+		Host:        servoHost.GetName(),
+		SSHProvider: c.sshProvider,
+		Options:     options,
 		// Container info.
 		ContainerName: servoHost.GetContainerName(),
 	}
@@ -54,8 +54,8 @@ func (c *tlwClient) InitServod(ctx context.Context, req *tlw.InitServodRequest) 
 	case startReq.ContainerName == "" && req.GetNoServod():
 		// Just try to stop servod if it is running.
 		if err := servod.StopServod(ctx, &servod.StopServodRequest{
-			Host:    servoHost.GetName(),
-			SSHPool: c.sshPool,
+			Host:        servoHost.GetName(),
+			SSHProvider: c.sshProvider,
 			Options: &tlw.ServodOptions{
 				ServodPort: servoHost.GetServodPort(),
 			},
@@ -119,8 +119,8 @@ func (c *tlwClient) StopServod(ctx context.Context, resourceName string) error {
 		return errors.Reason("stop servod %q: servo is not found", resourceName).Err()
 	}
 	stopReq := &servod.StopServodRequest{
-		Host:    servoHost.GetName(),
-		SSHPool: c.sshPool,
+		Host:        servoHost.GetName(),
+		SSHProvider: c.sshProvider,
 		Options: &tlw.ServodOptions{
 			ServodPort: servoHost.GetServodPort(),
 		},
@@ -145,8 +145,8 @@ func (c *tlwClient) CallServod(ctx context.Context, req *tlw.CallServodRequest) 
 		return generateFailCallServodResponse(ctx, req.GetResource(), errors.Reason("call servod %q: servo not found", req.GetResource()).Err())
 	}
 	callReq := &servod.ServodCallRequest{
-		Host:    servoHost.GetName(),
-		SSHPool: c.sshPool,
+		Host:        servoHost.GetName(),
+		SSHProvider: c.sshProvider,
 		Options: &tlw.ServodOptions{
 			ServodPort: servoHost.GetServodPort(),
 		},

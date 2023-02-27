@@ -13,7 +13,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/libs/sshpool"
+	"infra/cros/recovery/internal/localtlw/ssh"
 )
 
 // proxy holds info to perform proxy confection to servod daemon.
@@ -36,16 +36,16 @@ const (
 // newProxy creates a new proxy with forward from remote to local host.
 // Function is using a goroutine to listen and handle each incoming connection.
 // Initialization of proxy is going asynchronous after return proxy instance.
-func newProxy(ctx context.Context, pool *sshpool.Pool, host string, remotePort int32, errFuncs ...func(error)) (*proxy, error) {
+func newProxy(ctx context.Context, provider ssh.SSHProvider, host string, remotePort int32, errFuncs ...func(error)) (*proxy, error) {
 	remoteAddr := fmt.Sprintf(remoteAddrFmt, remotePort)
 	connFunc := func() (net.Conn, error) {
-		conn, err := pool.GetContext(ctx, host)
+		conn, err := provider.GetContext(ctx, host)
 		if err != nil {
-			return nil, errors.Annotate(err, "get proxy %q: fail to get client from pool", host).Err()
+			return nil, errors.Annotate(err, "get proxy %q", host).Err()
 		}
-		defer func() { pool.Put(host, conn) }()
+		defer func() { provider.Put(host, conn) }()
 		// Establish connection with remote server.
-		return conn.Dial("tcp", remoteAddr)
+		return conn.Client().Dial("tcp", remoteAddr)
 	}
 	// Create listener for local port.
 	local, err := net.Listen("tcp", localAddr)

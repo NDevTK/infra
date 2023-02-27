@@ -19,9 +19,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/localtlw/ssh"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
-	"infra/libs/sshpool"
 )
 
 // These constants avoid magic numbers in the code. E.g. if we ever
@@ -48,8 +48,8 @@ const (
 // local machine where the source directory will be copied. The
 // destination path is the directory within which the source directory
 // will be copied.
-func CopyDirectoryFrom(ctx context.Context, pool *sshpool.Pool, req *tlw.CopyRequest) error {
-	if err := copyFromHelper(ctx, pool, req, true); err != nil {
+func CopyDirectoryFrom(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRequest) error {
+	if err := copyFromHelper(ctx, provider, req, true); err != nil {
 		return errors.Annotate(err, "copy directory from").Err()
 	}
 	return nil
@@ -61,8 +61,8 @@ func CopyDirectoryFrom(ctx context.Context, pool *sshpool.Pool, req *tlw.CopyReq
 // on the local machine where the source file will be copied. The
 // destination path is just the directory name, and does not include
 // the filename.
-func CopyFileFrom(ctx context.Context, pool *sshpool.Pool, req *tlw.CopyRequest) error {
-	if err := copyFromHelper(ctx, pool, req, false); err != nil {
+func CopyFileFrom(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRequest) error {
+	if err := copyFromHelper(ctx, provider, req, false); err != nil {
 		return errors.Annotate(err, "copy file from").Err()
 	}
 	return nil
@@ -73,14 +73,14 @@ func CopyFileFrom(ctx context.Context, pool *sshpool.Pool, req *tlw.CopyRequest)
 // directory on the local machine, and the complete path of the
 // destination directory on the remote device where the source
 // directory will be copied.
-func CopyDirectoryTo(ctx context.Context, pool *sshpool.Pool, req *tlw.CopyRequest) error {
-	if err := validateInputParams(ctx, pool, req); err != nil {
+func CopyDirectoryTo(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRequest) error {
+	if err := validateInputParams(ctx, provider, req); err != nil {
 		return errors.Annotate(err, "copy directory to").Err()
 	}
 	if err := ensureDirExists(ctx, req.PathSource, false); err != nil {
 		return errors.Annotate(err, "copy directory to: error while checking whether the source directory exists").Err()
 	}
-	if err := copyToHelper(ctx, pool, req); err != nil {
+	if err := copyToHelper(ctx, provider, req); err != nil {
 		return errors.Annotate(err, "copy directory to").Err()
 	}
 	return nil
@@ -90,14 +90,14 @@ func CopyDirectoryTo(ctx context.Context, pool *sshpool.Pool, req *tlw.CopyReque
 // device. req contains the complete path of the source file on the
 // local machine, and the complete path of the destination directory
 // on the remote device where the source file will be copied.
-func CopyFileTo(ctx context.Context, pool *sshpool.Pool, req *tlw.CopyRequest) error {
-	if err := validateInputParams(ctx, pool, req); err != nil {
+func CopyFileTo(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRequest) error {
+	if err := validateInputParams(ctx, provider, req); err != nil {
 		return errors.Annotate(err, "copy file to").Err()
 	}
 	if err := checkFileExists(ctx, req.PathSource); err != nil {
 		return errors.Annotate(err, "copy file to: error while checking whether the source file exists").Err()
 	}
-	if err := copyToHelper(ctx, pool, req); err != nil {
+	if err := copyToHelper(ctx, provider, req); err != nil {
 		return errors.Annotate(err, "copy file to").Err()
 	}
 	return nil
@@ -108,7 +108,7 @@ func CopyFileTo(ctx context.Context, pool *sshpool.Pool, req *tlw.CopyRequest) e
 // the local machine that needs to be copied to destination on the
 // remote machine. This function can handle both, a single file, as
 // well as a single directory, as the source.
-func copyToHelper(ctx context.Context, pool *sshpool.Pool, req *tlw.CopyRequest) error {
+func copyToHelper(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRequest) error {
 	// TODO(b/249617502): Add greater validation for the address here.
 	//
 	// Based on reading the code for net.JoinHostPort, net.JoinHostPort assumes that the
@@ -119,14 +119,14 @@ func copyToHelper(ctx context.Context, pool *sshpool.Pool, req *tlw.CopyRequest)
 	if ok := strings.Contains(addr, ":"); !ok {
 		addr = net.JoinHostPort(req.Resource, strconv.Itoa(defaultSSHPort))
 	}
-	client, err := pool.GetContext(ctx, addr)
+	client, err := provider.GetContext(ctx, addr)
 	if err != nil {
-		return errors.Annotate(err, "copy to helper: failed to get client %q from pool", addr).Err()
+		return errors.Annotate(err, "copy to helper").Err()
 	}
-	defer func() { pool.Put(addr, client) }()
+	defer func() { provider.Put(addr, client) }()
 	session, err := client.NewSession()
 	if err != nil {
-		return errors.Annotate(err, "copy to helper: failed to create SSH session").Err()
+		return errors.Annotate(err, "copy to helper").Err()
 	}
 	defer func() { session.Close() }()
 
@@ -204,8 +204,8 @@ func copyToHelper(ctx context.Context, pool *sshpool.Pool, req *tlw.CopyRequest)
 // the remote machine that needs to be copied to destination on the
 // local machine. The function can handle both, a single file, as well
 // as a single directory, as the source.
-func copyFromHelper(ctx context.Context, pool *sshpool.Pool, req *tlw.CopyRequest, isDir bool) error {
-	if err := validateInputParams(ctx, pool, req); err != nil {
+func copyFromHelper(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRequest, isDir bool) error {
+	if err := validateInputParams(ctx, provider, req); err != nil {
 		return errors.Annotate(err, "copy from helper").Err()
 	}
 	if err := ensureDirExists(ctx, req.PathDestination, true); err != nil {
@@ -218,11 +218,11 @@ func copyFromHelper(ctx context.Context, pool *sshpool.Pool, req *tlw.CopyReques
 	if ok := strings.Contains(addr, ":"); !ok {
 		addr = net.JoinHostPort(req.Resource, strconv.Itoa(defaultSSHPort))
 	}
-	client, err := pool.GetContext(ctx, addr)
+	client, err := provider.GetContext(ctx, addr)
 	if err != nil {
 		return errors.Annotate(err, "copy from helper: failed to get client for %q from pool", addr).Err()
 	}
-	defer func() { pool.Put(addr, client) }()
+	defer func() { provider.Put(addr, client) }()
 	session, err := client.NewSession()
 	if err != nil {
 		return errors.Annotate(err, "copy from helper: failed to create SSH session").Err()
@@ -296,9 +296,9 @@ func copyFromHelper(ctx context.Context, pool *sshpool.Pool, req *tlw.CopyReques
 	return nil
 }
 
-func validateInputParams(ctx context.Context, pool *sshpool.Pool, req *tlw.CopyRequest) error {
-	if pool == nil {
-		return errors.New("validate input params: ssh pool is not initialized")
+func validateInputParams(ctx context.Context, provider ssh.SSHProvider, req *tlw.CopyRequest) error {
+	if provider == nil {
+		return errors.New("validate input params: SSH provider is not initialized")
 	} else if req.Resource == "" {
 		return errors.New("validate input params: resource is empty")
 	} else if req.PathSource == "" {

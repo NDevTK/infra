@@ -15,7 +15,6 @@ import (
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/rand"
 	"infra/cros/recovery/tlw"
-	"infra/libs/sshpool"
 )
 
 const (
@@ -37,17 +36,17 @@ func SSHConfig(sshKeyPaths []string) *ssh.ClientConfig {
 }
 
 // Run executes command on the target address by SSH.
-func Run(ctx context.Context, pool *sshpool.Pool, addr string, cmd string) (result *tlw.RunResult) {
-	return run(ctx, pool, addr, cmd, false)
+func Run(ctx context.Context, provider SSHProvider, addr string, cmd string) (result *tlw.RunResult) {
+	return run(ctx, provider, addr, cmd, false)
 }
 
 // RunBackground executes command on the target address by SSH in background.
-func RunBackground(ctx context.Context, pool *sshpool.Pool, addr string, cmd string) (result *tlw.RunResult) {
-	return run(ctx, pool, addr, cmd, true)
+func RunBackground(ctx context.Context, provider SSHProvider, addr string, cmd string) (result *tlw.RunResult) {
+	return run(ctx, provider, addr, cmd, true)
 }
 
 // run executes commands on a remote host by SSH.
-func run(ctx context.Context, pool *sshpool.Pool, addr string, cmd string, background bool) (result *tlw.RunResult) {
+func run(ctx context.Context, provider SSHProvider, addr string, cmd string, background bool) (result *tlw.RunResult) {
 	// TODO(b:267504440): Delete session key logs since they are only required for debugging a specific issue.
 	sessionLogsKey := rand.String(32)
 	result = &tlw.RunResult{
@@ -58,8 +57,8 @@ func run(ctx context.Context, pool *sshpool.Pool, addr string, cmd string, backg
 	if background {
 		errorMessage = "run SSH background"
 	}
-	if pool == nil {
-		result.Stderr = fmt.Sprintf("%s: pool is not initialized", errorMessage)
+	if provider == nil {
+		result.Stderr = fmt.Sprintf("%s: provider is not initialized", errorMessage)
 		return
 	} else if addr == "" {
 		result.Stderr = fmt.Sprintf("%s: addr is empty", errorMessage)
@@ -75,14 +74,14 @@ func run(ctx context.Context, pool *sshpool.Pool, addr string, cmd string, backg
 		return
 	}
 	log.Debugf(ctx, "Getting SSH client: %q", sessionLogsKey)
-	sc, err := pool.GetContext(ctx, addr)
+	sc, err := provider.GetContext(ctx, addr)
 	if err != nil {
 		result.Stderr = fmt.Sprintf("%s: fail to get client from pool; %s", errorMessage, err)
 		return
 	}
 	defer func() {
 		log.Debugf(ctx, "Starting finishing SSH execution: %q", sessionLogsKey)
-		pool.Put(addr, sc)
+		provider.Put(addr, sc)
 		log.Debugf(ctx, "Finished SSH execution: %q", sessionLogsKey)
 	}()
 	log.Debugf(ctx, "SSH client received: %q", sessionLogsKey)
@@ -97,7 +96,7 @@ func run(ctx context.Context, pool *sshpool.Pool, addr string, cmd string, backg
 // createSessionAndExecute creates ssh session and perform execution by ssh.
 //
 // The function also aborted execution if context canceled.
-func createSessionAndExecute(ctx context.Context, cmd string, client *ssh.Client, background bool, sessionLogsKey string) (result *tlw.RunResult) {
+func createSessionAndExecute(ctx context.Context, cmd string, client SSHClient, background bool, sessionLogsKey string) (result *tlw.RunResult) {
 	result = &tlw.RunResult{
 		Command:  cmd,
 		ExitCode: -1,

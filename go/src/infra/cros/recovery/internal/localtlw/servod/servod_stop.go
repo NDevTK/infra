@@ -11,16 +11,16 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/localtlw/localproxy"
+	"infra/cros/recovery/internal/localtlw/ssh"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
-	"infra/libs/sshpool"
 )
 
 // StopServodRequest holds data to stop servod container.
 type StopServodRequest struct {
-	Host    string
-	Options *tlw.ServodOptions
-	SSHPool *sshpool.Pool
+	Host        string
+	Options     *tlw.ServodOptions
+	SSHProvider ssh.SSHProvider
 	// Containers info.
 	ContainerName    string
 	ContainerNetwork string
@@ -32,8 +32,8 @@ func StopServod(ctx context.Context, req *StopServodRequest) error {
 	switch {
 	case req.Host == "":
 		return errors.Reason("stop servod: host is ot specified").Err()
-	case req.SSHPool == nil:
-		return errors.Reason("stop servod: ssh pool is not specified").Err()
+	case req.SSHProvider == nil:
+		return errors.Reason("stop servod: SSH provider is not specified").Err()
 	case req.Options == nil:
 		return errors.Reason("stop servod: options is not specified").Err()
 	case req.Options.GetServodPort() <= 0 && req.ContainerName == "":
@@ -69,13 +69,13 @@ func stopServodOnRemoteContainer(ctx context.Context, req *StopServodRequest) er
 func stopServodLabstation(ctx context.Context, req *StopServodRequest) error {
 	// Convert hostname to the proxy name used for local when called.
 	host := localproxy.BuildAddr(req.Host)
-	if stat, err := getServodStatus(ctx, host, req.Options.GetServodPort(), req.SSHPool); err != nil {
+	if stat, err := getServodStatus(ctx, host, req.Options.GetServodPort(), req.SSHProvider); err != nil {
 		return errors.Annotate(err, "stop servod on labstation").Err()
 	} else if stat == servodNotRunning {
 		// Servod is not running.
 		return nil
 	}
-	if err := stopServod(ctx, host, req.Options.GetServodPort(), req.SSHPool); err != nil {
+	if err := stopServod(ctx, host, req.Options.GetServodPort(), req.SSHProvider); err != nil {
 		return errors.Annotate(err, "stop servod on labstation").Err()
 	}
 	return nil
