@@ -159,6 +159,7 @@ func TestEnv_DownloadMetadata(t *testing.T) {
 	}
 	gsPrefix := "gs://bucket/build/version"
 	for _, tc := range tests {
+		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			got := ""
