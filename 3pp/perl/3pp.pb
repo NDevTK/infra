@@ -7,6 +7,7 @@ create {
       extension: ".zip"
     }
     unpack_archive: true
+    cpe_base_address: "cpe:/a:perl:perl"
   }
 
   build {}
