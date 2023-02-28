@@ -489,6 +489,214 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                      fetched_entities[0].incremental_percentages)
     self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
 
+  @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  def testProcessCLPatchDataRTSBuilder_NewEntity(self,
+                                                 mocked_is_request_from_appself,
+                                                 mocked_get_build,
+                                                 mocked_get_validated_data,
+                                                 mocked_inc_percentages):
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'linux-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_is_presubmit', True),
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'presubmit/chromium-review.googlesource.com/138000/4/try/'
+            'linux-rel_unit/123456789/metadata'
+        ]), ('mimic_builder_names', ['linux-rel_unit']), ('rts_was_used', True)
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+
+    # Mock get validated data from cloud storage.
+    coverage_data = {
+        'dirs': None,
+        'files': [{
+            'path':
+                '//dir/test.cc',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 1,
+            }, {
+                'count': 0,
+                'first': 2,
+                'last': 2,
+            }],
+        }],
+        'summaries': None,
+        'components': None,
+    }
+    mocked_get_validated_data.return_value = coverage_data
+    inc_percentages = [
+        CoveragePercentage(
+            path='//dir/test.cc', total_lines=1, covered_lines=1)
+    ]
+    mocked_inc_percentages.return_value = inc_percentages
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    response = self.test_app.post(request_url)
+    self.assertEqual(200, response.status_int)
+    mocked_is_request_from_appself.assert_called()
+
+    mocked_get_validated_data.assert_called_with(
+        '/code-coverage-data/presubmit/chromium-review.googlesource.com/138000/'
+        '4/try/linux-rel_unit/123456789/metadata/all.json.gz')
+
+    expected_entity = PresubmitCoverageData.Create(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4,
+        data_unit=coverage_data['files'],
+        data_unit_rts=coverage_data['files'])
+    expected_entity.absolute_percentages_unit_rts = [
+        CoveragePercentage(
+            path='//dir/test.cc', total_lines=2, covered_lines=1)
+    ]
+    expected_entity.insert_timestamp = datetime.now()
+    expected_entity.update_timestamp = datetime.now()
+    fetched_entities = PresubmitCoverageData.query().fetch()
+
+    self.assertEqual(1, len(fetched_entities))
+    self.assertEqual(expected_entity.cl_patchset,
+                     fetched_entities[0].cl_patchset)
+    self.assertEqual(expected_entity.data_unit_rts,
+                     fetched_entities[0].data_unit_rts)
+    self.assertEqual(expected_entity.absolute_percentages_unit_rts,
+                     fetched_entities[0].absolute_percentages_unit_rts)
+    self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
+
+  @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  def testProcessCLPatchDataRTSBuilder_MergeDataIntoExistingEntity(
+      self, mocked_is_request_from_appself, mocked_get_build,
+      mocked_get_validated_data, mocked_inc_percentages):
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'linux-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_is_presubmit', True),
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'presubmit/chromium-review.googlesource.com/138000/4/try/'
+            'linux-rel/123456789/metadata'
+        ]), ('mimic_builder_names', ['linux-rel']), ('rts_was_used', True)
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+
+    # Mock get validated data from cloud storage.
+    coverage_data = {
+        'dirs': None,
+        'files': [{
+            'path':
+                '//dir/test.cc',
+            'lines': [{
+                'count': 0,
+                'first': 1,
+                'last': 1,
+            }, {
+                'count': 100,
+                'first': 2,
+                'last': 2,
+            }],
+        }],
+        'summaries': None,
+        'components': None,
+    }
+    mocked_get_validated_data.return_value = coverage_data
+    inc_percentages = [
+        CoveragePercentage(
+            path='//dir/test.cc', total_lines=1, covered_lines=1)
+    ]
+    mocked_inc_percentages.return_value = inc_percentages
+
+    existing_file_coverage = [{
+        'path': '//dir/test.cc',
+        'lines': [{
+            'count': 100,
+            'first': 3,
+            'last': 3,
+        }],
+    }]
+    existing_entity = PresubmitCoverageData.Create(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4,
+        data=existing_file_coverage,
+        data_rts=existing_file_coverage)
+    existing_entity.absolute_percentages_rts = [
+        CoveragePercentage(
+            path='//dir/test.cc', total_lines=1, covered_lines=1)
+    ]
+    existing_entity.put()
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    response = self.test_app.post(request_url)
+    self.assertEqual(200, response.status_int)
+    mocked_is_request_from_appself.assert_called()
+
+    mocked_get_validated_data.assert_called_with(
+        '/code-coverage-data/presubmit/chromium-review.googlesource.com/138000/'
+        '4/try/linux-rel/123456789/metadata/all.json.gz')
+
+    expected_file_coverage = [{
+        'path':
+            '//dir/test.cc',
+        'lines': [{
+            'count': 0,
+            'first': 1,
+            'last': 1,
+        }, {
+            'count': 100,
+            'first': 2,
+            'last': 3,
+        }],
+    }]
+    expected_entity = PresubmitCoverageData.Create(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4,
+        data=expected_file_coverage,
+        data_rts=expected_file_coverage)
+    expected_entity.absolute_percentages_rts = [
+        CoveragePercentage(
+            path='//dir/test.cc', total_lines=3, covered_lines=2)
+    ]
+    expected_entity.insert_timestamp = datetime.now()
+    expected_entity.update_timestamp = datetime.now()
+    fetched_entities = PresubmitCoverageData.query().fetch()
+
+    self.assertEqual(1, len(fetched_entities))
+    self.assertEqual(expected_entity.cl_patchset,
+                     fetched_entities[0].cl_patchset)
+    self.assertEqual(expected_entity.data_rts, fetched_entities[0].data_rts)
+    self.assertEqual(expected_entity.absolute_percentages_rts,
+                     fetched_entities[0].absolute_percentages_rts)
+    self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
+
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')

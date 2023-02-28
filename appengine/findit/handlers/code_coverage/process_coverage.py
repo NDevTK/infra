@@ -497,7 +497,11 @@ class ProcessCodeCoverageData(BaseHandler):
         queue_name='code-coverage-fetch-source-file',
         params=params)
 
-  def _ProcessCLPatchData(self, mimic_builder, patch, coverage_data):
+  def _ProcessCLPatchData(self,
+                          mimic_builder,
+                          patch,
+                          coverage_data,
+                          is_rts=False):
     """Processes and updates coverage data for per-cl build.
 
     Part of the responsibility of this method is to calculate per-file coverage
@@ -537,6 +541,11 @@ class ProcessCodeCoverageData(BaseHandler):
             code_coverage_util.CalculateIncrementalPercentages(
                 patch.host, patch.project, patch.change, patch.patchset,
                 entity.data))
+        if is_rts:
+          entity.data_rts = code_coverage_util.MergeFilesCoverageDataForPerCL(
+              entity.data_rts, coverage_data)
+          entity.absolute_percentages_rts = (
+              code_coverage_util.CalculateAbsolutePercentages(entity.data_rts))
         return entity
 
       def _GetEntityForUnit(entity):
@@ -556,6 +565,13 @@ class ProcessCodeCoverageData(BaseHandler):
             code_coverage_util.CalculateIncrementalPercentages(
                 patch.host, patch.project, patch.change, patch.patchset,
                 entity.data_unit))
+        if is_rts:
+          entity.data_unit_rts = (
+              code_coverage_util.MergeFilesCoverageDataForPerCL(
+                  entity.data_unit_rts, coverage_data))
+          entity.absolute_percentages_unit_rts = (
+              code_coverage_util.CalculateAbsolutePercentages(
+                  entity.data_unit_rts))
         return entity
 
       def _GetLowCoverageCulpritFiles(entity):
@@ -748,7 +764,9 @@ class ProcessCodeCoverageData(BaseHandler):
         all_json_gs_path = '%s/all.json.gz' % full_gs_metadata_dir
         data = _GetValidatedData(all_json_gs_path)
         patch = build.input.gerrit_changes[0]
-        self._ProcessCLPatchData(mimic_builder_name, patch, data['files'])
+        is_rts = properties.get('rts_was_used', False)
+        self._ProcessCLPatchData(mimic_builder_name, patch, data['files'],
+                                 is_rts)
     else:
       if (properties.get('coverage_override_gitiles_commit', False) or
           not self._IsGitilesCommitAvailable(build.input.gitiles_commit)):

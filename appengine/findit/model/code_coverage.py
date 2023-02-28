@@ -76,13 +76,23 @@ class PresubmitCoverageData(ndb.Model):
   # The CL patchset.
   cl_patchset = ndb.StructuredProperty(CLPatchset, indexed=True, required=True)
 
-  # A list of file level coverage data for all the source files modified by the
-  # this CL.
+  # A list of file level coverage data for all the source files modified by
+  # the CL.
   data = ndb.JsonProperty(indexed=False, compressed=True, required=False)
 
   # A list of file level coverage data (unit tests only) for all the source
   # files modified by this CL.
   data_unit = ndb.JsonProperty(indexed=False, compressed=True, required=False)
+
+  # A list of file level coverage data for all the source files modified by the
+  # this CL, based on coverage data collected from builders using RTS
+  data_rts = ndb.JsonProperty(indexed=False, compressed=True, required=False)
+
+  # A list of file level coverage data (unit tests only) for all the source
+  # files modified by this CL, based on coverage data collected from
+  # builders using RTS
+  data_unit_rts = ndb.JsonProperty(
+      indexed=False, compressed=True, required=False)
 
   # Coverage percentages(overall) of all executable lines of the files.
   absolute_percentages = ndb.LocalStructuredProperty(
@@ -100,6 +110,16 @@ class PresubmitCoverageData(ndb.Model):
   # Coverage percentages(unit) of *newly added* and executable lines
   # of the files.
   incremental_percentages_unit = ndb.LocalStructuredProperty(
+      CoveragePercentage, indexed=False, repeated=True)
+
+  # Coverage percentages(overall) of all executable lines of the files,
+  # based on coverage data collected from builders using RTS
+  absolute_percentages_rts = ndb.LocalStructuredProperty(
+      CoveragePercentage, indexed=False, repeated=True)
+
+  # Coverage percentages(unit) of all executable lines of the files,
+  # based on coverage data collected from builders using RTS
+  absolute_percentages_unit_rts = ndb.LocalStructuredProperty(
       CoveragePercentage, indexed=False, repeated=True)
 
   # If assigned, represents the patchset number from which this coverage data is
@@ -130,6 +150,8 @@ class PresubmitCoverageData(ndb.Model):
              patchset,
              data=None,
              data_unit=None,
+             data_rts=None,
+             data_unit_rts=None,
              project=None):
     assert data or data_unit, "Atleast one of data/data_unit must be specified."
     key = cls._CreateKey(server_host, change, patchset)
@@ -138,7 +160,13 @@ class PresubmitCoverageData(ndb.Model):
         project=project,
         change=change,
         patchset=patchset)
-    return cls(key=key, cl_patchset=cl_patchset, data=data, data_unit=data_unit)
+    return cls(
+        key=key,
+        cl_patchset=cl_patchset,
+        data=data,
+        data_unit=data_unit,
+        data_rts=data_rts,
+        data_unit_rts=data_unit_rts)
 
   @classmethod
   def Get(cls, server_host, change, patchset):
