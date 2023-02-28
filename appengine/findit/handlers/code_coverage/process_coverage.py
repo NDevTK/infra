@@ -631,7 +631,9 @@ class ProcessCodeCoverageData(BaseHandler):
                      'or add Low-Coverage-Reason:<reason> in '
                      'the change description. If you think coverage is '
                      'underreported, file a bug to Infra>Test>CodeCoverage' %
-                     _DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING)
+                     waterfall_config.GetCodeCoverageSettings().get(
+                         'block_low_coverage_changes_trigger_threshold',
+                         _DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING))
             }
             logging.info(('Adding CodeCoverage-1 label for '
                           'project %s, change %d,  patchset %d'), patch.project,
