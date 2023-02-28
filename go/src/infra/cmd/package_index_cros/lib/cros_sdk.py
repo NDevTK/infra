@@ -7,6 +7,7 @@ from typing import List
 from chromite.lib import cros_build_lib
 
 from .constants import PRINT_DEPS_SCRIPT_PATH
+from .constants import PACKAGES_FAILING_TESTS
 from .logger import g_logger
 from .path_handler import PathHandler
 from .setup import Setup
@@ -107,14 +108,33 @@ class CrosSdk:
     Raises:
       * cros_build_lib.CompletedProcess if command failed.
     """
-    features = ['noclean']
-    if self.setup.with_tests:
-      features.append('test')
-    cmd = ' '.join([
-        f'FEATURES="{" ".join(features)}"', 'parallel_emerge', '--board',
-        self.setup.board
-    ] + package_names)
+    cmd = [
+        'FEATURES="noclean"',
+        'parallel_emerge',
+        '--board',
+        self.setup.board,
+    ] + package_names
+
+    cmd = ' '.join(cmd)
     self._Exec(cmd, with_sudo=True)
+
+  def RunTests(self, package_names: List[str]) -> None:
+    """
+    Builds given testable packages, runs tests and preserves build artifcats.
+
+    Raises:
+      * cros_build_lib.CompletedProcess if command failed.
+    """
+    cmd = [
+        'FEATURES="noclean"', 'cros_run_unit_tests', '--board',
+        self.setup.board, '--filter-only-cros-workon',
+        '--no-testable-packages-ok', '--packages',
+        f'"{" ".join(package_names)}"', '--skip-packages',
+        f'"{" ".join(list(PACKAGES_FAILING_TESTS))}"'
+    ]
+
+    cmd = ' '.join(cmd)
+    self._Exec(cmd)
 
   def GenerateCompileCommands(self, chroot_build_dir: str) -> str:
     """
@@ -166,8 +186,15 @@ class CrosSdk:
     Raises:
       * cros_build_lib.CompletedProcess if command failed.
     """
+    use_flags = ''
+    if self.setup.with_tests and not self.setup.with_build:
+      # Add the test use flag if packages were built with tests. Do not add if
+      # packages are not built yet.
+      use_flags = 'USE="test"'
     cmd = [
+        use_flags,
         PathHandler(self.setup).ToChroot(PRINT_DEPS_SCRIPT_PATH),
         self.setup.board
     ] + package_names
+    cmd = ' '.join(cmd)
     return self._Exec(cmd, capture_output=True, with_sudo=True).stdout
