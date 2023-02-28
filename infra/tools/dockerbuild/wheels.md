@@ -1081,6 +1081,18 @@ wheel: <
 
 * *universal*
 
+### 23.1.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/black-py3"
+  version: "version:23.1.0"
+>
+```
+
+
+* *universal*
+
 ## **blessings-py3**
 
 ### 1.7
