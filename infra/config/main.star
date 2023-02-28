@@ -120,6 +120,24 @@ luci.recipe.defaults.use_bbagent.set(True)
 
 luci.bucket(name = "ci")
 
+# Shadow bucket of `ci`, for led builds.
+# TODO(crbug.com/1420100): Review and fix the permissions.
+luci.bucket(
+    name = "ci.shadow",
+    shadows = "ci",
+    constraints = luci.bucket_constraints(
+        pools = ["luci.infra.ci"],
+        service_accounts = ["infra-ci-builder@chops-service-accounts.iam.gserviceaccount.com"],
+    ),
+    bindings = [
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = "flex-ci-led-users",
+        ),
+    ],
+    dynamic = True,
+)
+
 luci.bucket(
     name = "try",
     acls = [
@@ -145,6 +163,27 @@ luci.bucket(
     ],
 )
 
+# Shadow bucket of `try`, for led builds.
+# TODO(crbug.com/1420100): Review and fix the permissions.
+luci.bucket(
+    name = "try.shadow",
+    shadows = "try",
+    constraints = luci.bucket_constraints(
+        pools = ["luci.infra.try"],
+        service_accounts = [
+            "infra-try-builder@chops-service-accounts.iam.gserviceaccount.com",
+            "infra-try-recipes-tester@chops-service-accounts.iam.gserviceaccount.com",
+        ],
+    ),
+    bindings = [
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = "flex-try-led-users",
+        ),
+    ],
+    dynamic = True,
+)
+
 luci.bucket(
     name = "cron",
     acls = [
@@ -155,6 +194,28 @@ luci.bucket(
             ],
         ),
     ],
+)
+
+# Shadow bucket of `cron`, for led builds.
+# TODO(crbug.com/1420100): Review and fix the permissions.
+luci.bucket(
+    name = "cron.shadow",
+    shadows = "cron",
+    constraints = luci.bucket_constraints(
+        pools = ["luci.infra.cron"],
+        service_accounts = [
+            "chromium-lkgr-finder-builder@chops-service-accounts.iam.gserviceaccount.com",
+            "chromium-tarball-builder@chops-service-accounts.iam.gserviceaccount.com",
+            "wpt-autoroller@chops-service-accounts.iam.gserviceaccount.com",
+        ],
+    ),
+    bindings = [
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = "mdb/chrome-troopers",
+        ),
+    ],
+    dynamic = True,
 )
 
 # Config realms for infra pools.

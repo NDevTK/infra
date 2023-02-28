@@ -22,6 +22,22 @@ luci.bucket(
     ],
 )
 
+# Shadow bucket of `codesearch`, for led builds.
+luci.bucket(
+    name = "codesearch.shadow",
+    shadows = "codesearch",
+    constraints = luci.bucket_constraints(
+        pools = ["luci.infra.codesearch"],
+    ),
+    bindings = [
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = ["flex-try-led-users", "mdb/chrome-troopers", "google/luci-task-force@google.com"],
+        ),
+    ],
+    dynamic = True,
+)
+
 luci.realm(name = "pools/codesearch")
 
 led.users(
@@ -112,6 +128,7 @@ def builder(
         triggered_by = [triggered_by] if triggered_by else None,
         schedule = schedule,
         experiments = {"luci.recipes.use_python3": 100},
+        shadow_service_account = "chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com",
     )
 
     luci.console_view_entry(
