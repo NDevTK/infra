@@ -636,20 +636,26 @@ class ProcessCodeCoverageData(BaseHandler):
           # Block CL only if it qualifies and is not a revert CL
           low_coverage_culprit_files = _GetLowCoverageCulpritFiles(entity)
           if low_coverage_culprit_files and 'revert_of' not in change_details:
+            msg_header = (
+                'This change will be blocked from submission as the following'
+                ' files have incremental coverage(all tests) < %d%%. ' %
+                waterfall_config.GetCodeCoverageSettings().get(
+                    'block_low_coverage_changes_trigger_threshold',
+                    _DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING))
+            file_names_with_bullets = [
+                "- %s" % x for x in low_coverage_culprit_files
+            ]
+            msg_body = "\n".join(file_names_with_bullets)
+            msg_footer = (
+                'Please add tests for uncovered lines, '
+                'or add Low-Coverage-Reason:<reason> in '
+                'the change description. If you think coverage is '
+                'underreported, file a bug to Infra>Test>CodeCoverage')
             data = {
                 'labels': {
                     'Code-Coverage': -1
                 },
-                'message':
-                    ('This change will be blocked from submission as there are '
-                     'files with incremental coverage(all tests) < %d%%. '
-                     'Please add tests for uncovered lines, '
-                     'or add Low-Coverage-Reason:<reason> in '
-                     'the change description. If you think coverage is '
-                     'underreported, file a bug to Infra>Test>CodeCoverage' %
-                     waterfall_config.GetCodeCoverageSettings().get(
-                         'block_low_coverage_changes_trigger_threshold',
-                         _DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING))
+                'message': "\n".join([msg_header, msg_body, "", msg_footer])
             }
             logging.info(('Adding CodeCoverage-1 label for '
                           'project %s, change %d,  patchset %d'), patch.project,
