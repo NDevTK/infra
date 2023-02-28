@@ -73,25 +73,34 @@ def _BuildParser():
       dest='verbose',
       help='Use DEBUG level for logging instead of default WARNING.')
 
-  parser.add_argument('--with-build',
-                      '--with_build',
-                      action='store_true',
-                      default=False,
-                      dest='with_build',
-                      help=textwrap.dedent("""\
+  parser.add_argument(
+      '--with-build',
+      '--with_build',
+      action='store_true',
+      default=False,
+      dest='with_build',
+      help=textwrap.dedent("""\
+    DEPRECATED: consider building packages
+    yourself before running the script.
+
     Build packages before generating.
     If you've already built packages
     and want to regenerate, you may
     skip this option."""))
 
-  parser.add_argument('--with-tests',
-                      '--with_tests',
-                      action='store_true',
-                      default=False,
-                      dest='with_tests',
-                      help=textwrap.dedent("""\
-    Build tests alongside packages before generating.
-    This assumes --with-build is set."""))
+  parser.add_argument(
+      '--with-tests',
+      '--with_tests',
+      action='store_true',
+      default=False,
+      dest='with_tests',
+      help=textwrap.dedent("""\
+    Indicate that packages are built
+    with test targets.
+
+    If --with-build option is set,
+    build tests alongside packages
+    before generating."""))
 
   parser.add_argument('--board',
                       '-b',
