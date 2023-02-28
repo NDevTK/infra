@@ -146,18 +146,19 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 
 	inputPb := st.Build().GetInput()
 
-	// Fetch the main Go repository into goroot.
 	isDryRun := false
 	if mode, err := cv.RunMode(ctx); err == nil {
 		isDryRun = strings.HasSuffix(mode, "DRY_RUN")
 	} else if err != cv.ErrNotActive {
 		return err
 	}
-	if err := fetchRepo(ctx, httpClient, inputs.Project, goroot, inputPb.GetGitilesCommit(), inputPb.GetGerritChanges(), isDryRun); err != nil {
-		return err
-	}
 
 	if inputs.Project == "go" {
+		// Fetch the main Go repository into goroot.
+		if err := fetchRepo(ctx, httpClient, "go", goroot, inputPb.GetGitilesCommit(), inputPb.GetGerritChanges(), isDryRun); err != nil {
+			return err
+		}
+
 		// Build and test Go.
 		//
 		// TODO(mknyszek): Support cross-compile-only modes, perhaps by having CompileGOOS
@@ -176,9 +177,23 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 			return err
 		}
 	} else {
-		// TODO(dmitshur): Build (only) the Go toolchain to use.
-		// TODO(dmitshur): Test this specific subrepo.
-		return fmt.Errorf("subrepository build/test is unimplemented")
+		// Fetch the main and target repositories.
+		if err := fetchGoRepoAtBranch(ctx, goroot, inputs.GoBranch); err != nil {
+			return err
+		}
+		if err := fetchRepo(ctx, httpClient, inputs.Project, "targetrepo", inputPb.GetGitilesCommit(), inputPb.GetGerritChanges(), isDryRun); err != nil {
+			return err
+		}
+
+		// Build (only) the Go toolchain to use.
+		if err := runGoScript(ctx, goroot, "make"+scriptExt()); err != nil {
+			return err
+		}
+
+		// Test this specific subrepo.
+		if err := runSingleSubrepoTests(ctx, goroot, "targetrepo", inputs.RaceMode); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -286,17 +301,21 @@ func fetchRepo(ctx context.Context, hc *http.Client, project, dst string, commit
 	}
 	switch {
 	case change != nil && isDryRun:
-		return fetchRepoForTry(ctx, hc, project, dst, change)
+		return fetchRepoChangeAsIs(ctx, hc, dst, change)
 	case change != nil && !isDryRun:
-		return fetchRepoForSubmit(ctx, hc, dst, change)
+		return fetchRepoChangeWithRebase(ctx, hc, dst, change)
 	case commit != nil:
-		return fetchRepoForCI(ctx, hc, project, dst, commit)
+		if isDryRun {
+			return fmt.Errorf("DRY_RUN is unexpectedly set in the commit case")
+		}
+		return fetchRepoAtCommit(ctx, hc, dst, commit)
+	default:
+		return fmt.Errorf("no commit or change specified for build and test")
 	}
-	// TODO(mknyszek): Fetch repo at HEAD here for subrepo tests.
-	return fmt.Errorf("no commit or change specified for build and test")
 }
 
-func fetchRepoForTry(ctx context.Context, hc *http.Client, project, dst string, change *bbpb.GerritChange) (err error) {
+// fetchRepoChangeAsIs checks out a change to be tested as is, without rebasing.
+func fetchRepoChangeAsIs(ctx context.Context, hc *http.Client, dst string, change *bbpb.GerritChange) error {
 	// TODO(mknyszek): We're cloning tip here then fetching what we actually want because git doesn't
 	// provide a good way to clone at a specific ref or commit. Is there a way to speed this up?
 	// Maybe caching is sufficient?
@@ -310,10 +329,16 @@ func fetchRepoForTry(ctx context.Context, hc *http.Client, project, dst string, 
 	if err := runGit(ctx, "git checkout", "-C", dst, "checkout", "FETCH_HEAD"); err != nil {
 		return err
 	}
-	return writeVersionFile(ctx, dst, fmt.Sprintf("%d/%d", change.Change, change.Patchset))
+	if change.Project == "go" {
+		if err := writeVersionFile(ctx, dst, fmt.Sprintf("%d/%d", change.Change, change.Patchset)); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
-func fetchRepoForSubmit(ctx context.Context, hc *http.Client, dst string, change *bbpb.GerritChange) (err error) {
+// fetchRepoChangeWithRebase checks out a change, rebasing it on top of its branch.
+func fetchRepoChangeWithRebase(ctx context.Context, hc *http.Client, dst string, change *bbpb.GerritChange) error {
 	// For submit, fetch HEAD for the branch this change is for, fetch the CL, and cherry-pick it.
 	gc, err := gerrit.NewRESTClient(hc, change.Host, true)
 	if err != nil {
@@ -337,10 +362,16 @@ func fetchRepoForSubmit(ctx context.Context, hc *http.Client, dst string, change
 	if err := runGit(ctx, "git cherry-pick", "-C", dst, "cherry-pick", "FETCH_HEAD"); err != nil {
 		return err
 	}
-	return writeVersionFile(ctx, dst, fmt.Sprintf("%d/%d", change.Change, change.Patchset))
+	if change.Project == "go" {
+		if err := writeVersionFile(ctx, dst, fmt.Sprintf("%d/%d", change.Change, change.Patchset)); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
-func fetchRepoForCI(ctx context.Context, hc *http.Client, project, dst string, commit *bbpb.GitilesCommit) (err error) {
+// fetchRepoAtCommit checks out a commit to be tested as is.
+func fetchRepoAtCommit(ctx context.Context, hc *http.Client, dst string, commit *bbpb.GitilesCommit) error {
 	// TODO(mknyszek): This is a full git checkout, which is wasteful. Consider caching.
 	if err := runGit(ctx, "git clone", "-C", ".", "clone", "https://"+commit.Host+"/"+commit.Project, dst); err != nil {
 		return err
@@ -348,7 +379,27 @@ func fetchRepoForCI(ctx context.Context, hc *http.Client, project, dst string, c
 	if err := runGit(ctx, "git checkout", "-C", dst, "checkout", commit.Id); err != nil {
 		return err
 	}
-	return writeVersionFile(ctx, dst, commit.Id)
+	if commit.Project == "go" {
+		if err := writeVersionFile(ctx, dst, commit.Id); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// fetchGoRepoAtBranch checks out the head of the specified branch of the main Go repository.
+func fetchGoRepoAtBranch(ctx context.Context, dst, branch string) error {
+	if err := runGit(ctx, "git clone", "-C", ".", "clone", "--depth", "1", "-b", branch, "https://"+goHost+"/go", dst); err != nil {
+		return err
+	}
+	if branch == tipBranch {
+		// Write a VERSION file when testing the main branch.
+		// Release branches have a checked-in VERSION file, reuse it as is for now.
+		if err := writeVersionFile(ctx, dst, "tip"); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func writeVersionFile(ctx context.Context, dst, version string) error {
@@ -439,6 +490,33 @@ import (
 	}
 
 	return nil
+}
+
+// runSingleSubrepoTests runs tests for Go packages in the module at dir
+// using the Go toolchain at goroot.
+//
+// TODO(dmitshur): For final version, don't forget to also test packages in nested modules.
+// TODO(dmitshur): Improve coverage (at cost of setup complexity) by running tests outside their repositories. See go.dev/issue/34352.
+func runSingleSubrepoTests(ctx context.Context, goroot, dir string, race bool) error {
+	type ann struct {
+		Name  string // Name is the step name to be displayed.
+		Infra bool   // Infra is whether this step failing is an infrastructure failure.
+	}
+	runGo := func(a ann, args ...string) error {
+		var exeSuffix string
+		if runtime.GOOS == "windows" {
+			exeSuffix = ".exe"
+		}
+		cmd := exec.CommandContext(ctx, filepath.Join(goroot, "bin", "go"+exeSuffix), args...)
+		cmd.Dir = dir
+		return runCommandAsStep(ctx, a.Name, cmd, a.Infra)
+	}
+	args := []string{"test"}
+	if race {
+		args = append(args, "-race")
+	}
+	args = append(args, "./...")
+	return runGo(ann{Name: "go test [-race] ./..."}, args...)
 }
 
 // runCommandAsStep runs the provided command as a build step.

@@ -9,16 +9,18 @@ package golangbuildpb;
 option go_package = "infra/experimental/golangbuild/golangbuildpb";
 
 message Inputs {
-  // Name of the project this is supposed to build against.
-  //
-  // Used for both validation, and necessary in order to identify when a
-  // subrepo builder is triggered by a different repository, like the main
-  // Go repository.
+  // Name of the Gerrit project to be tested.
   string project = 1;
 
+  // GoBranch specifies what Go toolchain branch to use.
+  // It is set and applies only when project != "go".
+  // Its value is a branch name like "master" or "release-branch.go1.20"
+  // (the "refs/heads/" prefix is omitted).
+  string go_branch = 2;
+
   // Indicates that this build should run with the race detector enabled.
-  bool race_mode = 2;
+  bool race_mode = 3;
 
   // Extra environment variables to set for building and testing.
-  map<string, string> env = 3;
+  map<string, string> env = 4;
 }
