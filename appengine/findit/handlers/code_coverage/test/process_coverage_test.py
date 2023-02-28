@@ -219,13 +219,12 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                      response.json_body.get('error_message'))
 
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
-  @mock.patch.object(code_coverage_util, 'CalculateAbsolutePercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   def testProcessCLPatchData(self, mocked_is_request_from_appself,
                              mocked_get_build, mocked_get_validated_data,
-                             mocked_abs_percentages, mocked_inc_percentages):
+                             mocked_inc_percentages):
     # Mock buildbucket v2 API.
     build = mock.Mock()
     build.builder.project = 'chromium'
@@ -268,13 +267,6 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         'components': None,
     }
     mocked_get_validated_data.return_value = coverage_data
-
-    abs_percentages = [
-        CoveragePercentage(
-            path='//dir/test.cc', total_lines=2, covered_lines=1)
-    ]
-    mocked_abs_percentages.return_value = abs_percentages
-
     inc_percentages = [
         CoveragePercentage(
             path='//dir/test.cc', total_lines=1, covered_lines=1)
@@ -295,7 +287,10 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         change=138000,
         patchset=4,
         data=coverage_data['files'])
-    expected_entity.absolute_percentages = abs_percentages
+    expected_entity.absolute_percentages = [
+        CoveragePercentage(
+            path='//dir/test.cc', total_lines=2, covered_lines=1)
+    ]
     expected_entity.incremental_percentages = inc_percentages
     expected_entity.insert_timestamp = datetime.now()
     expected_entity.update_timestamp = datetime.now()
@@ -312,7 +307,6 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
 
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
-  @mock.patch.object(code_coverage_util, 'CalculateAbsolutePercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
@@ -320,7 +314,6 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                                             mocked_is_request_from_appself,
                                             mocked_get_build,
                                             mocked_get_validated_data,
-                                            mocked_abs_percentages,
                                             mocked_inc_percentages):
     # Mock buildbucket v2 API.
     build = mock.Mock()
@@ -364,13 +357,6 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         'components': None,
     }
     mocked_get_validated_data.return_value = coverage_data
-
-    abs_percentages = [
-        CoveragePercentage(
-            path='//dir/test.cc', total_lines=2, covered_lines=1)
-    ]
-    mocked_abs_percentages.return_value = abs_percentages
-
     inc_percentages = [
         CoveragePercentage(
             path='//dir/test.cc', total_lines=1, covered_lines=1)
@@ -391,7 +377,10 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         change=138000,
         patchset=4,
         data_unit=coverage_data['files'])
-    expected_entity.absolute_percentages_unit = abs_percentages
+    expected_entity.absolute_percentages_unit = [
+        CoveragePercentage(
+            path='//dir/test.cc', total_lines=2, covered_lines=1)
+    ]
     expected_entity.incremental_percentages_unit = inc_percentages
     expected_entity.insert_timestamp = datetime.now()
     expected_entity.update_timestamp = datetime.now()
@@ -408,13 +397,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
 
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
-  @mock.patch.object(code_coverage_util, 'CalculateAbsolutePercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   def testProcessCLPatchDataMergingData(self, _, mocked_get_build,
                                         mocked_get_validated_data,
-                                        mocked_abs_percentages,
                                         mocked_inc_percentages):
     # Mock buildbucket v2 API.
     build = mock.Mock()
@@ -453,8 +440,6 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         'components': None,
     }
     mocked_get_validated_data.return_value = coverage_data
-
-    mocked_abs_percentages.return_value = []
     mocked_inc_percentages.return_value = []
 
     existing_entity = PresubmitCoverageData.Create(
@@ -487,11 +472,13 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                 'last': 2,
             }],
         }])
-    expected_entity.absolute_percentages = []
+    expected_entity.absolute_percentages = [
+        CoveragePercentage(
+            covered_lines=2, path=u'//dir/test.cc', total_lines=2)
+    ]
     expected_entity.incremental_percentages = []
     fetched_entities = PresubmitCoverageData.query().fetch()
 
-    mocked_abs_percentages.assert_called_with(expected_entity.data)
     self.assertEqual(1, len(fetched_entities))
     self.assertEqual(expected_entity.cl_patchset,
                      fetched_entities[0].cl_patchset)
