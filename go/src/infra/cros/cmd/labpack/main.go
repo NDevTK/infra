@@ -282,7 +282,11 @@ func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State
 	if err != nil {
 		return errors.Annotate(err, "internal run").Err()
 	}
-	defer func() { access.Close(ctx) }()
+	defer func() {
+		lg.Debugf("Close access point: starting...")
+		access.Close(ctx)
+		lg.Debugf("Close access point: finished!")
+	}()
 
 	// Recovery is the task that we want 90% of the time. However, silently making
 	// recovery the default can cause us to silently fall back to performing a recovery task

@@ -137,6 +137,8 @@ func (p *Pool) closeClient(c *ssh.Client) {
 		// Ignore the error returned in case the client is already closed.
 		// Which could happen if the DUT was rebooted, but the ssh.Client
 		// is being put back into the pool.
+		log.Printf("SSHPool close SSH client: started wating!")
 		_ = c.Close()
+		log.Printf("SSHPool close SSH client: client closed!")
 	}()
 }
