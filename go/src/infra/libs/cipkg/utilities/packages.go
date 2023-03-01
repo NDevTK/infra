@@ -23,73 +23,76 @@ import (
 
 func blocker() error { return clock.Sleep(context.Background(), time.Millisecond*10).Err }
 
-type LocalStorage struct {
+// LocalPackageManager is a PackageManager implementation that stores packages
+// locally. It supports recording package references acrossing multiple
+// instances using fslock.
+type LocalPackageManager struct {
 	storagePath string
 	packages    map[string]cipkg.Package
 }
 
-func NewLocalStorage(path string) (cipkg.Storage, error) {
+func NewLocalPackageManager(path string) (*LocalPackageManager, error) {
 	if err := os.MkdirAll(path, os.ModePerm); err != nil {
 		return nil, fmt.Errorf("initialize local storage failed: %s: %w", path, err)
 	}
-	s := &LocalStorage{
+	s := &LocalPackageManager{
 		storagePath: path,
 		packages:    make(map[string]cipkg.Package),
 	}
 	return s, nil
 }
 
-func (s *LocalStorage) Get(id string) cipkg.Package {
-	if pkg := s.packages[id]; pkg != nil {
+func (pm *LocalPackageManager) Get(id string) cipkg.Package {
+	if pkg := pm.packages[id]; pkg != nil {
 		return pkg
 	}
 
 	// The ill-formed package is returned for (maybe) cleanup.
-	return &LocalStoragePackage{
-		baseDirectory: filepath.Join(s.storagePath, id),
-		lockFile:      filepath.Join(s.storagePath, fmt.Sprintf(".%s.lock", id)),
+	return &LocalPackage{
+		baseDirectory: filepath.Join(pm.storagePath, id),
+		lockFile:      filepath.Join(pm.storagePath, fmt.Sprintf(".%s.lock", id)),
 	}
 }
 
-func (s *LocalStorage) Add(drv cipkg.Derivation, m cipkg.PackageMetadata) cipkg.Package {
+func (pm *LocalPackageManager) Add(drv cipkg.Derivation, m cipkg.PackageMetadata) cipkg.Package {
 	id := drv.ID()
-	pkg := &LocalStoragePackage{
-		baseDirectory: filepath.Join(s.storagePath, id),
+	pkg := &LocalPackage{
+		baseDirectory: filepath.Join(pm.storagePath, id),
 		derivation:    &drv,
 		metadata:      &m,
-		lockFile:      filepath.Join(s.storagePath, fmt.Sprintf(".%s.lock", id)),
+		lockFile:      filepath.Join(pm.storagePath, fmt.Sprintf(".%s.lock", id)),
 	}
-	s.packages[id] = pkg
+	pm.packages[id] = pkg
 	return pkg
 }
 
-func (s *LocalStorage) Prune(c context.Context, ttl time.Duration, max int) {
+func (pm *LocalPackageManager) Prune(c context.Context, ttl time.Duration, max int) {
 	deadline := time.Now().Add(-ttl)
-	locks, err := fs.Glob(os.DirFS(s.storagePath), ".*.lock")
+	locks, err := fs.Glob(os.DirFS(pm.storagePath), ".*.lock")
 	if err != nil {
 		logging.WithError(err).Warningf(c, "failed to list locks")
 	}
 	pruned := 0
 	for _, l := range locks {
 		id := l[1 : len(l)-5] // remove prefix "." and suffix ".lock"
-		pkg := s.Get(id)
-		if ok, mtime := pkg.Available(); !ok || mtime.Before(deadline) {
+		pkg := pm.Get(id)
+		if st := pkg.Status(); !st.Available || st.LastUsed.Before(deadline) {
 			if removed, err := pkg.TryRemove(); err != nil {
 				logging.WithError(err).Warningf(c, "failed to remove package")
 			} else if removed {
-				logging.Debugf(c, "prune: remove package (not used since %s): %s", mtime, id)
+				logging.Debugf(c, "prune: remove package (not used since %s): %s", st.LastUsed, id)
 				if pruned++; pruned == max {
 					logging.Debugf(c, "prune: hit prune limit of %d ", max)
 					break
 				}
 			}
 		} else {
-			logging.Debugf(c, "prune: skip package (not used since %s): %s", mtime, id)
+			logging.Debugf(c, "prune: skip package (not used since %s): %s", st.LastUsed, id)
 		}
 	}
 }
 
-type LocalStoragePackage struct {
+type LocalPackage struct {
 	baseDirectory string
 	derivation    *cipkg.Derivation
 	metadata      *cipkg.PackageMetadata
@@ -97,25 +100,25 @@ type LocalStoragePackage struct {
 	rlockHandle   fslock.Handle
 }
 
-func (p *LocalStoragePackage) Derivation() cipkg.Derivation {
+func (p *LocalPackage) Derivation() cipkg.Derivation {
 	return *p.derivation
 }
 
-func (p *LocalStoragePackage) Metadata() cipkg.PackageMetadata {
+func (p *LocalPackage) Metadata() cipkg.PackageMetadata {
 	return *p.metadata
 }
 
-func (p *LocalStoragePackage) Directory() string {
+func (p *LocalPackage) Directory() string {
 	return filepath.Join(p.baseDirectory, "contents")
 }
 
-func (p *LocalStoragePackage) Build(builder func(cipkg.Package) error) error {
+func (p *LocalPackage) Build(builder func(cipkg.Package) error) error {
 	if p.rlockHandle != nil {
 		return fmt.Errorf("can't build package when read lock is held")
 	}
 
 	return fslock.WithBlocking(p.lockFile, blocker, func() error {
-		if ok, _ := p.Available(); ok {
+		if st := p.Status(); st.Available {
 			return nil
 		}
 
@@ -142,7 +145,7 @@ func (p *LocalStoragePackage) Build(builder func(cipkg.Package) error) error {
 	})
 }
 
-func (p *LocalStoragePackage) TryRemove() (ok bool, err error) {
+func (p *LocalPackage) TryRemove() (ok bool, err error) {
 	switch err := fslock.With(p.lockFile, func() error {
 		if err := filesystem.RemoveAll(p.baseDirectory); err != nil {
 			return fmt.Errorf("failed to remove package dir: %s: %w", p.Directory(), err)
@@ -161,14 +164,20 @@ func (p *LocalStoragePackage) TryRemove() (ok bool, err error) {
 	}
 }
 
-func (p *LocalStoragePackage) Available() (bool, time.Time) {
+func (p *LocalPackage) Status() cipkg.PackageStatus {
 	if s, err := os.Stat(p.stampPath()); err == nil {
-		return true, s.ModTime()
+		return cipkg.PackageStatus{
+			Available: true,
+			LastUsed:  s.ModTime(),
+		}
 	}
-	return false, time.Time{}
+
+	return cipkg.PackageStatus{
+		Available: false,
+	}
 }
 
-func (p *LocalStoragePackage) RLock() error {
+func (p *LocalPackage) IncRef() error {
 	if p.rlockHandle != nil {
 		return fmt.Errorf("acquire read lock multiple times on same package")
 	}
@@ -181,7 +190,7 @@ func (p *LocalStoragePackage) RLock() error {
 		if err := h.PreserveExec(); err != nil {
 			return fmt.Errorf("failed to perserve lock: %w", err)
 		}
-		if ok, _ := p.Available(); !ok {
+		if st := p.Status(); !st.Available {
 			return fmt.Errorf("package not available")
 		}
 
@@ -200,7 +209,7 @@ func (p *LocalStoragePackage) RLock() error {
 	return nil
 }
 
-func (p *LocalStoragePackage) RUnlock() error {
+func (p *LocalPackage) DecRef() error {
 	if err := p.rlockHandle.Unlock(); err != nil {
 		return fmt.Errorf("failed to release read lock: %w", err)
 	}
@@ -208,34 +217,34 @@ func (p *LocalStoragePackage) RUnlock() error {
 	return nil
 }
 
-func (p *LocalStoragePackage) stampPath() string {
+func (p *LocalPackage) stampPath() string {
 	return filepath.Join(p.baseDirectory, "derivation.json")
 }
 
-func (p *LocalStoragePackage) touch() error {
-	if ok, _ := p.Available(); !ok {
+func (p *LocalPackage) touch() error {
+	if st := p.Status(); !st.Available {
 		return nil
 	}
 	return filesystem.Touch(p.stampPath(), time.Time{}, 0644)
 }
 
-// RLockRecursive will RLock the package with all its dependencies recursively.
-// If an error happened, it may end up with only part of the packages are
-// locked.
-func RLockRecursive(s cipkg.Storage, pkg cipkg.Package) error {
-	return doPackageRecursive(s, pkg, make(map[string]struct{}),
-		func(pkg cipkg.Package) error { return pkg.RLock() })
-}
-
-// RUnlockRecursive will RUnlock the package with all its dependencies
+// IncRefRecursive will IncRef the package with all its dependencies
 // recursively. If an error happened, it may end up with only part of the
-// packages are unlocked.
-func RUnlockRecursive(s cipkg.Storage, pkg cipkg.Package) error {
-	return doPackageRecursive(s, pkg, make(map[string]struct{}),
-		func(pkg cipkg.Package) error { return pkg.RUnlock() })
+// packages are referenced.
+func IncRefRecursive(pm cipkg.PackageManager, pkg cipkg.Package) error {
+	return doPackageRecursive(pm, pkg, make(map[string]struct{}),
+		func(pkg cipkg.Package) error { return pkg.IncRef() })
 }
 
-func doPackageRecursive(s cipkg.Storage, pkg cipkg.Package, visited map[string]struct{}, f func(cipkg.Package) error) error {
+// DecRefRecursive will DecRef the package with all its dependencies
+// recursively. If an error happened, it may end up with only part of the
+// packages are dereferenced.
+func DecRefRecursive(pm cipkg.PackageManager, pkg cipkg.Package) error {
+	return doPackageRecursive(pm, pkg, make(map[string]struct{}),
+		func(pkg cipkg.Package) error { return pkg.DecRef() })
+}
+
+func doPackageRecursive(pm cipkg.PackageManager, pkg cipkg.Package, visited map[string]struct{}, f func(cipkg.Package) error) error {
 	if _, ok := visited[pkg.Derivation().ID()]; ok {
 		return nil
 	}
@@ -245,8 +254,8 @@ func doPackageRecursive(s cipkg.Storage, pkg cipkg.Package, visited map[string]s
 	visited[pkg.Derivation().ID()] = struct{}{}
 
 	for _, id := range pkg.Metadata().Dependencies {
-		dep := s.Get(id)
-		if err := doPackageRecursive(s, dep, visited, f); err != nil {
+		dep := pm.Get(id)
+		if err := doPackageRecursive(pm, dep, visited, f); err != nil {
 			return err
 		}
 	}

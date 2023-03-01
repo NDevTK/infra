@@ -1,4 +1,4 @@
-package storage
+package packages
 
 import (
 	"context"
@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"infra/libs/cipkg"
 	"infra/libs/cipkg/builtins"
@@ -16,41 +15,37 @@ import (
 	"go.chromium.org/luci/common/system/filesystem"
 )
 
-type CIPDStorage struct {
+type CIPDPackageManager struct {
 	serviceURL string
 	logger     logging.Logger
 
-	cipkg.Storage
+	cipkg.PackageManager
 }
 
 // An overlay storage implementation for cipd package caches. It will check
 // the cipd service before build the package locallly.
-func NewCIPDStorage(ctx context.Context, serviceURL string, s cipkg.Storage) cipkg.Storage {
-	return &CIPDStorage{
-		serviceURL: serviceURL,
-		logger:     logging.Get(ctx),
-		Storage:    s,
+func NewCIPDPackageManager(ctx context.Context, serviceURL string, pm cipkg.PackageManager) *CIPDPackageManager {
+	return &CIPDPackageManager{
+		serviceURL:     serviceURL,
+		logger:         logging.Get(ctx),
+		PackageManager: pm,
 	}
 }
 
-func (s *CIPDStorage) Get(id string) cipkg.Package {
+func (pm *CIPDPackageManager) Get(id string) cipkg.Package {
 	return &CIPDStoragePackage{
-		serviceURL: s.serviceURL,
-		logger:     s.logger,
-		Package:    s.Storage.Get(id),
+		serviceURL: pm.serviceURL,
+		logger:     pm.logger,
+		Package:    pm.PackageManager.Get(id),
 	}
 }
 
-func (s *CIPDStorage) Add(drv cipkg.Derivation, m cipkg.PackageMetadata) cipkg.Package {
+func (pm *CIPDPackageManager) Add(drv cipkg.Derivation, m cipkg.PackageMetadata) cipkg.Package {
 	return &CIPDStoragePackage{
-		serviceURL: s.serviceURL,
-		logger:     s.logger,
-		Package:    s.Storage.Add(drv, m),
+		serviceURL: pm.serviceURL,
+		logger:     pm.logger,
+		Package:    pm.PackageManager.Add(drv, m),
 	}
-}
-
-func (s *CIPDStorage) Prune(c context.Context, ttl time.Duration, max int) {
-	s.Storage.Prune(c, ttl, max)
 }
 
 type CIPDStoragePackage struct {

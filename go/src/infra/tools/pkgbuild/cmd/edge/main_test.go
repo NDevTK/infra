@@ -64,9 +64,9 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 		initStdenv(buildPlatform)
 
 		mockBuild := NewMockBuild()
-		mockStorage := NewMockStorage()
+		mockPackageManage := NewMockPackageManage()
 		b := &PackageBuilder{
-			Storage: mockStorage,
+			Packages: mockPackageManage,
 			Platforms: cipkg.Platforms{
 				Build:  buildPlatform,
 				Host:   buildPlatform,
@@ -76,7 +76,7 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			CIPDTarget:        cipdPlatform,
 			SpecLoader:        loader,
 			BuildTempDir:      buildTemp,
-			DerivationBuilder: utilities.NewBuilder(mockStorage),
+			DerivationBuilder: utilities.NewBuilder(mockPackageManage),
 
 			BuildFunc: mockBuild.Build,
 		}
@@ -115,9 +115,9 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 		initStdenv(buildPlatform)
 
 		mockBuild := NewMockBuild()
-		mockStorage := NewMockStorage()
+		mockPackageManage := NewMockPackageManage()
 		b := &PackageBuilder{
-			Storage: mockStorage,
+			Packages: mockPackageManage,
 			Platforms: cipkg.Platforms{
 				Build:  buildPlatform,
 				Host:   hostPlatform,
@@ -127,7 +127,7 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 			CIPDTarget:        cipdTarget,
 			SpecLoader:        loader,
 			BuildTempDir:      buildTemp,
-			DerivationBuilder: utilities.NewBuilder(mockStorage),
+			DerivationBuilder: utilities.NewBuilder(mockPackageManage),
 
 			BuildFunc: mockBuild.Build,
 		}
@@ -181,9 +181,9 @@ func TestPackageSources(t *testing.T) {
 		initStdenv(buildPlatform)
 
 		mockBuild := NewMockBuild()
-		mockStorage := NewMockStorage()
+		mockPackageManage := NewMockPackageManage()
 		b := &PackageBuilder{
-			Storage: mockStorage,
+			Packages: mockPackageManage,
 			Platforms: cipkg.Platforms{
 				Build:  buildPlatform,
 				Host:   buildPlatform,
@@ -193,7 +193,7 @@ func TestPackageSources(t *testing.T) {
 			CIPDTarget:        cipdPlatform,
 			SpecLoader:        loader,
 			BuildTempDir:      buildTemp,
-			DerivationBuilder: utilities.NewBuilder(mockStorage),
+			DerivationBuilder: utilities.NewBuilder(mockPackageManage),
 
 			BuildFunc: mockBuild.Build,
 		}

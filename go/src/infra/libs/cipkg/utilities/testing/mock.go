@@ -1,7 +1,7 @@
 package testing
 
 import (
-	"context"
+	"fmt"
 	"infra/libs/cipkg"
 	"time"
 )
@@ -30,41 +30,40 @@ func (b *MockBuild) Reset() { b.Packages = b.Packages[:0] }
 // MockStorage and MockPackage implements cipkg.Storage interface. It stores
 // metadata and derivation in the memory. It doesn't allocate any "real" storage
 // in the filesystem.
-// To simplify the implementation, there are some behavior differences:
-// - Prune is a no-op.
-// - No locking provided. RLock and RUnlock don't actually lock anything.
-// - Available always returns an empty timestamp.
-type MockStorage struct {
+type MockPackageManager struct {
 	pkgs map[string]cipkg.Package
 }
 
-func NewMockStorage() cipkg.Storage {
-	return &MockStorage{
+func NewMockPackageManage() cipkg.PackageManager {
+	return &MockPackageManager{
 		pkgs: make(map[string]cipkg.Package),
 	}
 }
 
-func (s *MockStorage) Get(id string) cipkg.Package { return s.pkgs[id] }
-func (s *MockStorage) Add(drv cipkg.Derivation, metadata cipkg.PackageMetadata) cipkg.Package {
+func (pm *MockPackageManager) Get(id string) cipkg.Package { return pm.pkgs[id] }
+func (pm *MockPackageManager) Add(drv cipkg.Derivation, metadata cipkg.PackageMetadata) cipkg.Package {
 	pkg := &MockPackage{
 		derivation: drv,
 		metadata:   metadata,
 		available:  false,
 	}
-	s.pkgs[drv.ID()] = pkg
+	pm.pkgs[drv.ID()] = pkg
 	return pkg
 }
-func (s *MockStorage) Prune(ctx context.Context, ttl time.Duration, max int) {}
 
 type MockPackage struct {
 	derivation cipkg.Derivation
 	metadata   cipkg.PackageMetadata
 	available  bool
+
+	lastUsed time.Time
+	ref      int
 }
 
 func (p *MockPackage) Derivation() cipkg.Derivation    { return p.derivation }
 func (p *MockPackage) Metadata() cipkg.PackageMetadata { return p.metadata }
 func (p *MockPackage) Directory() string               { return p.derivation.ID() }
+
 func (p *MockPackage) Build(f func(cipkg.Package) error) error {
 	if err := f(p); err != nil {
 		return err
@@ -72,13 +71,32 @@ func (p *MockPackage) Build(f func(cipkg.Package) error) error {
 	p.available = true
 	return nil
 }
+
 func (p *MockPackage) TryRemove() (ok bool, err error) {
-	if !p.available {
+	if !p.available || p.ref != 0 {
 		return false, nil
 	}
 	p.available = false
 	return true, nil
 }
-func (p *MockPackage) Available() (ok bool, mtime time.Time) { return p.available, time.Time{} }
-func (p *MockPackage) RLock() error                          { return nil }
-func (p *MockPackage) RUnlock() error                        { return nil }
+
+func (p *MockPackage) Status() cipkg.PackageStatus {
+	return cipkg.PackageStatus{
+		Available: p.available,
+		LastUsed:  p.lastUsed,
+	}
+}
+
+func (p *MockPackage) IncRef() error {
+	p.ref += 1
+	p.lastUsed = time.Now()
+	return nil
+}
+
+func (p *MockPackage) DecRef() error {
+	if p.ref == 0 {
+		return fmt.Errorf("no reference to the package")
+	}
+	p.ref -= 1
+	return nil
+}

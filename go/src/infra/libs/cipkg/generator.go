@@ -77,5 +77,5 @@ func (dep *Dependency) Generate(ctx *BuildContext) (Package, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ctx.Storage.Add(drv, meta), nil
+	return ctx.Packages.Add(drv, meta), nil
 }

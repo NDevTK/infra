@@ -16,8 +16,8 @@ import (
 	"infra/libs/cipkg"
 	"infra/libs/cipkg/builtins"
 	"infra/libs/cipkg/utilities"
+	"infra/tools/pkgbuild/pkg/packages"
 	"infra/tools/pkgbuild/pkg/spec"
-	"infra/tools/pkgbuild/pkg/storage"
 
 	"go.chromium.org/luci/cipd/client/cipd/platform"
 	"go.chromium.org/luci/common/errors"
@@ -54,6 +54,9 @@ type Application struct {
 
 	// List of packages to be built. If empty, build all packages in the pool.
 	Packages []string
+
+	// Local Package Manager
+	packages *utilities.LocalPackageManager
 }
 
 func (a *Application) Parse(args []string) error {
@@ -111,11 +114,12 @@ func (a *Application) Parse(args []string) error {
 }
 
 func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
-	s, err := utilities.NewLocalStorage(a.StorageDir)
+	var err error
+	a.packages, err = utilities.NewLocalPackageManager(a.StorageDir)
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to load storage").Err()
 	}
-	s = storage.NewCIPDStorage(ctx, a.CIPDService, s)
+	pm := packages.NewCIPDPackageManager(ctx, a.CIPDService, a.packages)
 
 	target, err := spec.ParseCIPDPlatform(a.TargetPlatform)
 	if err != nil {
@@ -134,7 +138,7 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 	}
 
 	return &PackageBuilder{
-		Storage: s,
+		Packages: pm,
 		Platforms: cipkg.Platforms{
 			Build:  utilities.CurrentPlatform(),
 			Host:   target,
@@ -146,14 +150,18 @@ func (a *Application) NewBuilder(ctx context.Context) (*PackageBuilder, error) {
 		SpecLoader: loader,
 
 		BuildTempDir:      filepath.Join(a.StorageDir, "temp"),
-		DerivationBuilder: utilities.NewBuilder(s),
+		DerivationBuilder: utilities.NewBuilder(pm),
 
 		StatisticsDir: a.StatisticsDir,
 	}, nil
 }
 
+func (a *Application) Prune(ctx context.Context, ttl time.Duration, max int) {
+	a.packages.Prune(ctx, ttl, max)
+}
+
 type PackageBuilder struct {
-	Storage   cipkg.Storage
+	Packages  cipkg.PackageManager
 	Platforms cipkg.Platforms
 
 	CIPDHost   string
@@ -182,7 +190,7 @@ func (b *PackageBuilder) Add(ctx context.Context, name string) (cipkg.Package, e
 	// Generate derivations
 	bctx := &cipkg.BuildContext{
 		Platforms: b.Platforms,
-		Storage:   b.Storage,
+		Packages:  b.Packages,
 		Context:   ctx,
 	}
 
@@ -190,7 +198,7 @@ func (b *PackageBuilder) Add(ctx context.Context, name string) (cipkg.Package, e
 	if err != nil {
 		return nil, errors.Annotate(err, "failed to generate derivation").Err()
 	}
-	pkg := b.Storage.Add(drv, meta)
+	pkg := b.Packages.Add(drv, meta)
 
 	if err := b.DerivationBuilder.Add(pkg); err != nil {
 		return nil, errors.Annotate(err, "failed to add package to builder").Err()

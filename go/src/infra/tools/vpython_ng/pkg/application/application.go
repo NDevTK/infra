@@ -323,7 +323,7 @@ func (a *Application) BuildVENV(venv cipkg.Generator) error {
 		root = tmp
 	}
 
-	s, err := NewLocalStorageWithStamp(filepath.Join(root, "store"))
+	pm, err := NewLocalPackageManagerWithStamp(filepath.Join(root, "store"))
 	if err != nil {
 		return errors.Annotate(err, "failed to load storage").Err()
 	}
@@ -336,18 +336,18 @@ func (a *Application) BuildVENV(venv cipkg.Generator) error {
 			Host:   curPlat,
 			Target: curPlat,
 		},
-		Storage: s,
-		Context: ctx,
+		Packages: pm,
+		Context:  ctx,
 	}
 
 	drv, meta, err := venv.Generate(bctx)
 	if err != nil {
 		return errors.Annotate(err, "failed to generate venv derivation").Err()
 	}
-	pkg := s.Add(drv, meta)
+	pkg := pm.Add(drv, meta)
 
 	// Build derivations
-	b := utilities.NewBuilder(s)
+	b := utilities.NewBuilder(pm)
 	if err := b.Add(pkg); err != nil {
 		return errors.Annotate(err, "failed to add venv to builder").Err()
 	}
@@ -369,18 +369,18 @@ func (a *Application) BuildVENV(venv cipkg.Generator) error {
 		return errors.Annotate(err, "failed to build venv").Err()
 	}
 
-	if err := utilities.RLockRecursive(s, pkg); err != nil {
-		return errors.Annotate(err, "failed to acquire read lock for venv").Err()
+	if err := utilities.IncRefRecursive(pm, pkg); err != nil {
+		return errors.Annotate(err, "failed to refer venv").Err()
 	}
 	a.Close = func() {
-		a.Must(utilities.RUnlockRecursive(s, pkg))
+		a.Must(utilities.DecRefRecursive(pm, pkg))
 	}
 
 	a.PythonExecutable = common.PythonVENV(pkg.Directory(), a.PythonExecutable)
 
 	// Prune used packages
 	if a.PruneThreshold > 0 {
-		s.Prune(ctx, a.PruneThreshold, a.MaxPrunesPerSweep)
+		pm.Prune(ctx, a.PruneThreshold, a.MaxPrunesPerSweep)
 	}
 	return nil
 }
@@ -424,8 +424,8 @@ func (a *Application) GetExecCommand() *exec.Cmd {
 // Update the complete.flag under the storage root, which will be treated as a
 // single venv in the old vpython implementation.
 // TODO(fancl): Remove after legacy vpython eliminated.
-func NewLocalStorageWithStamp(path string) (cipkg.Storage, error) {
-	s, err := utilities.NewLocalStorage(path)
+func NewLocalPackageManagerWithStamp(path string) (*utilities.LocalPackageManager, error) {
+	pm, err := utilities.NewLocalPackageManager(path)
 	if err != nil {
 		return nil, err
 	}
@@ -433,5 +433,5 @@ func NewLocalStorageWithStamp(path string) (cipkg.Storage, error) {
 	if err := filesystem.Touch(stamp, time.Time{}, 0644); err != nil {
 		return nil, errors.Annotate(err, "failed to update legacy complete flag").Err()
 	}
-	return s, nil
+	return pm, nil
 }

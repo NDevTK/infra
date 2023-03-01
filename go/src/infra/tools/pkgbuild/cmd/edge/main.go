@@ -83,5 +83,5 @@ func main() {
 		fmt.Println(pkg.Metadata().CacheKey, pkg.Metadata().Version) // (TODO): Upload package here
 	}
 
-	b.Storage.Prune(ctx, time.Hour*24, 256)
+	app.Prune(ctx, time.Hour*24, 256)
 }
