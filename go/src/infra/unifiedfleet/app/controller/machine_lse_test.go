@@ -96,6 +96,31 @@ func mockAttachedDeviceMachineLSE(name string) *ufspb.MachineLSE {
 	}
 }
 
+func mockDevboardMachineLSE(name string) *ufspb.MachineLSE {
+	device := &ufspb.ChromeOSDeviceLSE_Devboard{
+		Devboard: &chromeosLab.Devboard{
+			Servo: &chromeosLab.Servo{},
+		},
+	}
+	deviceLse := &ufspb.ChromeOSDeviceLSE{
+		Device: device,
+	}
+	chromeosLse := &ufspb.ChromeOSMachineLSE_DeviceLse{
+		DeviceLse: deviceLse,
+	}
+	chromeOSMachineLse := &ufspb.ChromeOSMachineLSE{
+		ChromeosLse: chromeosLse,
+	}
+	lse := &ufspb.MachineLSE_ChromeosMachineLse{
+		ChromeosMachineLse: chromeOSMachineLse,
+	}
+	return &ufspb.MachineLSE{
+		Name:     name,
+		Hostname: name,
+		Lse:      lse,
+	}
+}
+
 func TestCreateMachineLSE(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
@@ -3260,6 +3285,38 @@ func TestUpdateBluetoothPeerStates(t *testing.T) {
 			So(p.GetBluetoothPeers()[0].GetRaspberryPi().GetState(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
 			So(p.GetBluetoothPeers()[1].GetRaspberryPi().GetHostname(), ShouldEqual, "h2")
 			So(p.GetBluetoothPeers()[1].GetRaspberryPi().GetState(), ShouldEqual, chromeosLab.PeripheralState_BROKEN)
+		})
+	})
+}
+
+func TestUpdateMachineLSEDevboard(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+
+	devboardMachinelse1 := mockDevboardMachineLSE("fake-devboard")
+	inventory.CreateMachineLSE(ctx, devboardMachinelse1)
+	Convey("UpdateMachineLSE for a Devboard", t, func() {
+		Convey("Update non-existing machineLSE Devboard", func() {
+			devboardMachinelse := mockDevboardMachineLSE("fake-devboard-non-existing")
+			resp, err := UpdateMachineLSE(ctx, devboardMachinelse, nil)
+
+			So(resp, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, NotFound)
+		})
+		Convey("Update machineLSE Devboard pools", func() {
+			devboardMachinelse := mockDevboardMachineLSE("fake-devboard")
+			devboardMachinelse.GetChromeosMachineLse().GetDeviceLse().GetDevboard().Pools = []string{"new-pool"}
+
+			resp, err := UpdateMachineLSE(ctx, devboardMachinelse, &field_mask.FieldMask{Paths: []string{"pools-devboard"}})
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp.GetChromeosMachineLse().GetDeviceLse().GetDevboard().GetPools(), ShouldContain, "new-pool")
+
+			resp, err = UpdateMachineLSE(ctx, devboardMachinelse, &field_mask.FieldMask{Paths: []string{"pools-devboard-remove"}})
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp.GetChromeosMachineLse().GetDeviceLse().GetDevboard().GetPools(), ShouldNotContain, "new-pool")
 		})
 	})
 }

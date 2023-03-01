@@ -210,6 +210,11 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 		return UpdateDUT(ctx, machinelse, mask)
 	}
 
+	// If it's a Devboard
+	if machinelse.GetChromeosMachineLse().GetDeviceLse().GetDevboard() != nil {
+		return updateDevboard(ctx, machinelse, mask)
+	}
+
 	var oldMachinelse *ufspb.MachineLSE
 	var updatedMachinelse *ufspb.MachineLSE
 	// If its a Chrome browser host, ChromeOS server or a ChormeOS labstation
@@ -1999,4 +2004,83 @@ func GetAttachedDeviceData(ctx context.Context, lse *ufspb.MachineLSE) (*ufsAPI.
 		Machine:   machine,
 		DutState:  dutState,
 	}, nil
+}
+
+// updateDevboard updates devboard machinelse in datastore.
+func updateDevboard(ctx context.Context, machinelse *ufspb.MachineLSE, mask *field_mask.FieldMask) (*ufspb.MachineLSE, error) {
+
+	f := func(ctx context.Context) error {
+		hc := getHostHistoryClient(machinelse)
+
+		// Get the existing MachineLSE(Devboard).
+		oldMachinelse, err := inventory.GetMachineLSE(ctx, machinelse.GetName())
+		if err != nil {
+			return errors.Annotate(err, "Failed to get existing MachineLSE").Err()
+		}
+		// Validate that we are updating a Devboard. Will lead to segfault later otherwise.
+		if oldMachinelse.GetChromeosMachineLse() == nil || oldMachinelse.GetChromeosMachineLse().GetDeviceLse().GetDevboard() == nil {
+			return status.Errorf(codes.Aborted, "%s is not a devboard. Cannot update", machinelse.GetName())
+		}
+		// Validate the update mask and process it.
+		if mask != nil && len(mask.Paths) > 0 {
+			if err := validateUpdateMachineLSEDDevboardMask(mask, machinelse); err != nil {
+				return err
+			}
+			machinelse, err = processUpdateMachineLSEDevboardUpdateMask(ctx, proto.Clone(oldMachinelse).(*ufspb.MachineLSE), machinelse, mask)
+			if err != nil {
+				return err
+			}
+		} else {
+			// TODO(bniche): After shivas implemented full proto update, allow entire proto update.
+			return status.Error(codes.InvalidArgument, "devboard mask cannot be empty/nil.")
+		}
+
+		hc.LogMachineLSEChanges(oldMachinelse, machinelse)
+		return hc.SaveChangeEvents(ctx)
+	}
+	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
+		logging.Errorf(ctx, "Failed to update MachineLSE Devboard in datastore: %s", err)
+		return nil, errors.Annotate(err, "UpdateDevboard - failed transaction").Err()
+	}
+	return machinelse, nil
+}
+
+// validateUpdateMachineLSEDevboardMask validates the input mask for the given machineLSE.
+//
+// Assumes that devboard and mask aren't empty. This is because this function is not called otherwise.
+func validateUpdateMachineLSEDDevboardMask(mask *field_mask.FieldMask, machinelse *ufspb.MachineLSE) error {
+	// validate the given field mask
+	for _, path := range mask.Paths {
+		switch path {
+		case "name":
+			return status.Error(codes.InvalidArgument, "validateUpdateMachineLSEDevboardUpdateMask - name cannot be updated, delete and create a new machinelse instead.")
+		case "pools-devboard":
+		case "pools-devboard-remove":
+		default:
+			return status.Errorf(codes.InvalidArgument, "validateUpdateMachineLSEDevboardUpdateMask - unsupported update mask path %q", path)
+		}
+	}
+	return nil
+}
+
+// processUpdateMachineLSEDevboardUpdateMask process the update mask and returns the machine lse with updated parameters.
+func processUpdateMachineLSEDevboardUpdateMask(ctx context.Context, oldMachineLse, newMachineLse *ufspb.MachineLSE, mask *field_mask.FieldMask) (*ufspb.MachineLSE, error) {
+	oldDevboard := oldMachineLse.GetChromeosMachineLse().GetDeviceLse().GetDevboard()
+	newDevboard := newMachineLse.GetChromeosMachineLse().GetDeviceLse().GetDevboard()
+	for _, path := range mask.Paths {
+		switch path {
+		// Appends the contents of pools from rpc to the devboard pools.
+		case "pools-devboard":
+			oldDevboard.Pools = mergeTags(oldDevboard.GetPools(), newDevboard.GetPools())
+		// Removes the contents of pools from rpc to the devboard pools.
+		case "pools-devboard-remove":
+			oldPools := oldDevboard.GetPools()
+			for _, p := range newDevboard.GetPools() {
+				oldPools = util.RemoveStringEntry(oldPools, p)
+			}
+			oldDevboard.Pools = oldPools
+		}
+	}
+	// return existing/old machinelse with new updated values.
+	return oldMachineLse, nil
 }
