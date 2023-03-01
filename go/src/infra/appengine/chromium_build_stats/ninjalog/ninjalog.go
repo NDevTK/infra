@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -137,20 +138,37 @@ type Metadata struct {
 	Error string
 }
 
+// isAbs checks if the path is an absolute path.
+// This covers the both unix path and Windows path.
+func isAbs(p string) bool {
+	winVolumeAbs := regexp.MustCompile(`^[a-zA-Z]:\\`)
+	return strings.HasPrefix(p, "/") || strings.HasPrefix(p, "\\") || winVolumeAbs.MatchString(p)
+}
+
+// getTargets returns targets. It parses the command line if the targets are not set, yet.
+// It also avoids uploading absolute paths in case they are included accidentally. e.g. b/270907050
 func (m *Metadata) getTargets() []string {
+	var targets []string
 	if len(m.Targets) != 0 {
-		return m.Targets
+		for _, t := range m.Targets {
+			if isAbs(t) {
+				continue
+			}
+			targets = append(targets, t)
+		}
+		return targets
 	}
 
 	// Parse ninja's commandline to extract build targets, if targets is not given.
-	var targets []string
-
-	// We assume info.Metadata.Cmdline[0] is ninja or ninja.exe
-	for i := 1; i < len(m.Cmdline); i++ {
+	// We assume the first two arguments are python and ninja.py
+	for i := 2; i < len(m.Cmdline); i++ {
 		arg := m.Cmdline[i]
 		switch arg {
 		case "-C", "-f", "-j", "-k", "-l", "-d", "-t", "-w":
 			i++
+			continue
+		}
+		if isAbs(arg) {
 			continue
 		}
 
