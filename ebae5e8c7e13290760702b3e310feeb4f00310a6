@@ -16,6 +16,24 @@
       "message": "@fqj@google.com mentioned that we\u0027d like to keep every piece of information in the build path. Is it a good idea trimming the build id?\n\nI thought we could encode it using base36, reducing characters from 19 to 13:\nstrconv.FormatUint(buildId, 36)",
       "revId": "ebae5e8c7e13290760702b3e310feeb4f00310a6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "23e8be5d_b54dc4fc",
+        "filename": "go/src/infra/libs/vmlab/internal/image/cloudsdk/cloudsdk.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1137124
+      },
+      "writtenOn": "2023-03-01T06:49:49Z",
+      "side": 1,
+      "message": "Ming\u0027s implementation intentionally put the board name and build type at the end. so if there is a build id, trimming the board name and build type can still guarantee the image name is unique.\n\nBut I agree with Yi that re-encode build id to shorter name can solve the problem and doesn\u0027t require to trim anything.",
+      "parentUuid": "0c9e9506_a9b3ff7e",
+      "revId": "ebae5e8c7e13290760702b3e310feeb4f00310a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
