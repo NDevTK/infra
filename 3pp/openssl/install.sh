@@ -31,6 +31,20 @@ PREFIX="$1"
 ARGS="-DNO_GETENTROPY=1"
 
 case $_3PP_PLATFORM in
+  windows-*)
+    PTHREAD=""
+    PERL="perl.bat"
+    # Move /usr/bin to the end of PATH because otherwise nmake will use
+    # /usr/bin/link, which doesn't work, instead of the MSVC linker.
+    PATH=$(echo $PATH | sed 's/:\/usr\/bin//g'):/usr/bin
+    ;;
+  *)
+    PTHREAD="-lpthread"
+    PERL="perl"
+    ;;
+esac
+
+case $_3PP_PLATFORM in
   mac-amd64)
     TARGET=darwin64-x86_64-cc
     ;;
@@ -43,17 +57,42 @@ case $_3PP_PLATFORM in
   linux-*)
     TARGET="linux-${CROSS_TRIPLE%%-*}"
     ;;
+  windows-amd64)
+    TARGET="VC-WIN64A"
+    ;;
+  windows-386)
+    TARGET="VC-WIN32"
+    ;;
+  windows-arm64)
+    TARGET="VC-WIN64-ARM"
+    ;;
   *)
     echo IDKWTF
     exit 1
     ;;
 esac
 
-perl Configure -lpthread --prefix="$PREFIX" --cross-compile-prefix= \
+echo PATH=$PATH
+${PERL} Configure $PTHREAD --prefix="$PREFIX" --cross-compile-prefix= \
   no-shared $ARGS "$TARGET"
 
-make -j "$(nproc)"
-make install_sw
+case $_3PP_PLATFORM in
+  windows-*)
+    nmake
+    if [[ $_3PP_PLATFORM == $_3PP_TOOL_PLATFORM ]]; then # not cross-compiling
+      nmake test
+    fi
+    nmake install_sw
+    ;;
+  *)
+    make -j "$(nproc)"
+    if [[ $_3PP_PLATFORM == $_3PP_TOOL_PLATFORM ]]; then # not cross-compiling
+      make test
+    fi
+    make install_sw
+    ;;
+esac
+
 # pkg-config will have the original build prefix, which is not useful
 # for relocatable packages. Remove the configs completely.
 rm -rf $PREFIX/lib/pkgconfig

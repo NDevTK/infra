@@ -1,6 +1,6 @@
-From 0dcc9b8b910d6ecd0d600e93869864d6204c7e98 Mon Sep 17 00:00:00 2001
+From 683a30080dd5b96ba00852ff6a573a6bfd9b61f9 Mon Sep 17 00:00:00 2001
 From: Brian Ryner <bryner@google.com>
-Date: Mon, 22 Mar 2021 10:32:50 +1100
+Date: Tue, 28 Feb 2023 09:36:28 +1100
 Subject: [PATCH] Add define to disallow getentropy
 
 ---
@@ -8,7 +8,7 @@ Subject: [PATCH] Add define to disallow getentropy
  1 file changed, 2 insertions(+)
 
 diff --git a/crypto/rand/rand_unix.c b/crypto/rand/rand_unix.c
-index ec6be791b3..c229c6ad2f 100644
+index 0f4525106a..e83610b12d 100644
 --- a/crypto/rand/rand_unix.c
 +++ b/crypto/rand/rand_unix.c
 @@ -370,6 +370,7 @@ static ssize_t syscall_random(void *buf, size_t buflen)
@@ -24,9 +24,9 @@ index ec6be791b3..c229c6ad2f 100644
              return -1;
      }
 +#    endif
- #  else
-     union {
-         void *p;
+ #  elif defined(OPENSSL_APPLE_CRYPTO_RANDOM)
+     if (CCRandomGenerateBytes(buf, buflen) == kCCSuccess)
+ 	    return (ssize_t)buflen;
 -- 
-2.31.0.rc2.261.g7f71774620-goog
+2.39.2.722.g9855ee24e9-goog
 
