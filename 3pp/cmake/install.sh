@@ -13,10 +13,13 @@ DEPS_PREFIX="$2"
 mkdir cmake-build
 cd cmake-build
 
-if [[ $_3PP_PLATFORM  == windows* ]]; then
-  USE_OPENSSL=OFF
+# On Windows, paths should use forward slash.
+if [[ $_3PP_PLATFORM =~ windows-* ]]; then
+  CMAKE_INSTALL_PREFIX="${PREFIX//\\/\/}"
+  CMAKE_DEPS_PREFIX="${DEPS_PREFIX//\\/\/}"
 else
-  USE_OPENSSL=ON
+  CMAKE_INSTALL_PREFIX="${PREFIX}"
+  CMAKE_DEPS_PREFIX="${DEPS_PREFIX}"
 fi
 
 # Use the cmake in path to bootstrap cmak'ing cmake!
@@ -25,9 +28,9 @@ fi
 cmake .. \
   -GNinja \
   -DCMAKE_BUILD_TYPE:STRING=Release \
-  -DCMAKE_INSTALL_PREFIX:STRING="$PREFIX" \
-  -DCMAKE_USE_OPENSSL:BOOL=$USE_OPENSSL \
-  -DOPENSSL_ROOT_DIR:STRING="$DEPS_PREFIX" \
+  -DCMAKE_INSTALL_PREFIX:STRING="${CMAKE_INSTALL_PREFIX}" \
+  -DCMAKE_USE_OPENSSL:BOOL=ON \
+  -DOPENSSL_ROOT_DIR:STRING="${CMAKE_DEPS_PREFIX}" \
   -DBUILD_TESTING:BOOL=ON \
   -DCMAKE_CXX_STANDARD:STRING=14
 # Our dockcross environment should automatically set the CMAKE toolchain to
