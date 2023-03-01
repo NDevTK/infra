@@ -35,13 +35,16 @@ func NewAccess(ctx context.Context, in *steps.LabpackInput) (context.Context, tl
 		Host:    in.InventoryService,
 		Options: site.UFSPRPCOptions,
 	})
-	csac := fleet.NewInventoryPRPCClient(
-		&prpc.Client{
-			C:       hc,
-			Host:    in.AdminService,
-			Options: site.DefaultPRPCOptions,
-		},
-	)
+	var csac fleet.InventoryClient
+	if in.AdminService != "" {
+		csac = fleet.NewInventoryPRPCClient(
+			&prpc.Client{
+				C:       hc,
+				Host:    in.AdminService,
+				Options: site.DefaultPRPCOptions,
+			},
+		)
+	}
 	params := scopes.GetParamCopy(ctx)
 	if csac != nil {
 		params[scopes.ParamKeyStableVersionServicePath] = in.AdminService
