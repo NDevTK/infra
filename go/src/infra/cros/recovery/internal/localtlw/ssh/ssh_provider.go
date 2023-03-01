@@ -31,9 +31,8 @@ type sshProviderImpl struct {
 func NewProvider(config *ssh.ClientConfig) SSHProvider {
 	p := &sshProviderImpl{
 		config: config,
-		// Use pool by default.
-		// Following changes will made it an optional.
-		useSSHPool: true,
+		// Do not use pool by default.
+		useSSHPool: false,
 	}
 	if p.useSSHPool {
 		p.pool = sshpool.New(p.config)
@@ -63,7 +62,7 @@ func (c *sshProviderImpl) Put(addr string, sc SSHClient) {
 
 // Close closing used resource of the provider.
 func (c *sshProviderImpl) Close() error {
-	if c.pool != nil {
+	if c.useSSHPool && c.pool != nil {
 		if err := c.pool.Close(); err != nil {
 			return errors.Annotate(err, "close provider").Err()
 		}
