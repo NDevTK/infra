@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0c9e9506_a9b3ff7e",
+        "filename": "go/src/infra/libs/vmlab/internal/image/cloudsdk/cloudsdk.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1368301
+      },
+      "writtenOn": "2023-03-01T06:46:33Z",
+      "side": 1,
+      "message": "@fqj@google.com mentioned that we\u0027d like to keep every piece of information in the build path. Is it a good idea trimming the build id?\n\nI thought we could encode it using base36, reducing characters from 19 to 13:\nstrconv.FormatUint(buildId, 36)",
+      "revId": "ebae5e8c7e13290760702b3e310feeb4f00310a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
