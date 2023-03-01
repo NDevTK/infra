@@ -253,6 +253,8 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 	if d.LogFileDir != "" {
 		log.Printf("Attempting to gather metrics")
 		go d.logRunTime(ctx, service)
+		log.Printf("\nfinished metrics \n")
+
 	} else {
 		log.Printf("Skipping metrics gathering")
 	}
@@ -297,16 +299,29 @@ func (d *Docker) logRunTime(ctx context.Context, service string) {
 		if err != nil {
 			return errors.Annotate(err, "logServiceFound Metric upload failed %s", d.LogFileDir).Err()
 		}
+		log.Printf("METRICS: Successful Log for %s\n", service)
 
 		return nil
 	}, &common.PollOptions{Timeout: 5 * time.Minute, Interval: time.Second})
 
 	// File not found? Log the timeout duration.
 	if err != nil {
-		logRunTime(ctx, startTime, service)
-		logStatus(ctx, "fail")
-		log.Println("CRITICAL ERROR: Service unable to start. Likely underlying environmental issues. Task will fail.")
-		log.Println("Log file not found, logged max tiemout.")
+		// One last try to find the start symbols, in the event the file is found between poll loops.
+		// which happens when a service finishes very very fast.
+		filePath, err := common.FindFile("log.txt", d.LogFileDir)
+		if err != nil {
+			log.Printf("METRICS: Failed service log, will log fail to start for %s. Err:%s\n", service, err)
+			logRunTime(ctx, startTime, service)
+			logStatus(ctx, "fail")
+		}
+		err = logServiceFound(ctx, filePath, startTime, service)
+		if err != nil {
+			log.Printf("METRICS: Failed service start Marker, will log fail to start for %s. Err:%s\n", service, err)
+			logRunTime(ctx, startTime, service)
+			logStatus(ctx, "fail")
+		}
+		log.Printf("METRICS: Successful second log attempt for %s\n", service)
+
 		return
 	}
 }
@@ -542,6 +557,8 @@ func logServiceFound(ctx context.Context, LogFileName string, startTime time.Tim
 		if index < 0 {
 			continue
 		}
+
+		log.Println("Service found started, logging success.")
 		logStatus(ctx, "pass")
 		logRunTime(ctx, startTime, service)
 		return nil
