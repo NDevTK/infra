@@ -34,6 +34,24 @@
       "parentUuid": "0c9e9506_a9b3ff7e",
       "revId": "ebae5e8c7e13290760702b3e310feeb4f00310a6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "85f215f3_ae6102b1",
+        "filename": "go/src/infra/libs/vmlab/internal/image/cloudsdk/cloudsdk.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1540363
+      },
+      "writtenOn": "2023-03-01T15:47:15Z",
+      "side": 1,
+      "message": "The CL was created to unblock my integration work and the code could be throw away. So a simple approach was adopted.\n\nThen I saw Deniz\u0027 email yesterday. @yixie@google.com I assume you will be continue working on this library setup? Please feel free to make additional changes after the CL is submitted.\n\nAn alternative to encoding the build id in the name: we may use tags to associate more information to images. Then the name stays simple; Tags might be easier for filtering for bulk cleanup, and won\u0027t require decoding when information is needed. The lib already uses tags for GCE instances. https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/libs/vmlab/api/instance.proto;l\u003d35;drc\u003d5370234ab547d7dc7d03aadda18d9144eebb3c0a",
+      "parentUuid": "23e8be5d_b54dc4fc",
+      "revId": "ebae5e8c7e13290760702b3e310feeb4f00310a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
