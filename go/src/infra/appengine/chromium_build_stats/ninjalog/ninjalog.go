@@ -164,7 +164,7 @@ func (m *Metadata) getTargets() []string {
 	for i := 2; i < len(m.Cmdline); i++ {
 		arg := m.Cmdline[i]
 		switch arg {
-		case "-C", "-f", "-j", "-k", "-l", "-d", "-t", "-w":
+		case "-C", "-d", "-f", "-j", "-k", "-l", "-p", "-t", "-w":
 			i++
 			continue
 		}
