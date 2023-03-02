@@ -41,7 +41,6 @@ func TestCreateMachineLSE(t *testing.T) {
 		SwarmingInstance: "test-swarming",
 		Customer:         "test-customer",
 		SecurityLevel:    "test-security-level",
-		MibaRealm:        "test-miba-realm",
 	}
 	machineLSE3Ownership := mockMachineLSEWithOwnership("machineLSE-3", ownershipData)
 	Convey("CreateMachineLSE", t, func() {
@@ -113,14 +112,12 @@ func TestUpdateMachineOwnership(t *testing.T) {
 		SwarmingInstance: "test-swarming",
 		Customer:         "test-customer",
 		SecurityLevel:    "test-security-level",
-		MibaRealm:        "test-miba-realm",
 	}
 	ownershipData2 := &ufspb.OwnershipData{
 		PoolName:         "pool2",
 		SwarmingInstance: "test-swarming",
 		Customer:         "test-customer",
 		SecurityLevel:    "test-security-level",
-		MibaRealm:        "test-miba-realm",
 	}
 	machineLSE1 := mockMachineLSEWithOwnership("machineLSE-1", ownershipData)
 	machineLSE2 := mockMachineLSEWithOwnership("machineLSE-1", ownershipData2)

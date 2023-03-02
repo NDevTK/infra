@@ -52,7 +52,7 @@ type MachineLSEEntity struct {
 	SwarmingServer        string   `gae:"swarming_server"`
 	Customer              string   `gae:"customer"`
 	SecurityLevel         string   `gae:"security_level"`
-	MibaRealm             string   `gae:"miba_realm"`
+	MibaRealm             string   `gae:"miba_realm,noindex"` // deprecated
 	// ufspb.MachineLSE cannot be directly used as it contains pointer.
 	MachineLSE []byte `gae:",noindex"`
 }
@@ -102,13 +102,11 @@ func newMachineLSEEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEnti
 	var swarmingInstance string
 	var customer string
 	var securityLevel string
-	var mibaRealm string
 	if p.GetOwnership() != nil {
 		poolName = p.GetOwnership().PoolName
 		swarmingInstance = p.GetOwnership().SwarmingInstance
 		customer = p.GetOwnership().Customer
 		securityLevel = p.GetOwnership().SecurityLevel
-		mibaRealm = p.GetOwnership().MibaRealm
 	}
 
 	return &MachineLSEEntity{
@@ -136,7 +134,6 @@ func newMachineLSEEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEnti
 		SwarmingServer:        swarmingInstance,
 		Customer:              customer,
 		SecurityLevel:         securityLevel,
-		MibaRealm:             mibaRealm,
 		MachineLSE:            machineLSE,
 	}, nil
 }
