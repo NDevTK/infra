@@ -70,6 +70,24 @@
       "parentUuid": "85f215f3_ae6102b1",
       "revId": "ebae5e8c7e13290760702b3e310feeb4f00310a6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5a4416f2_5c796360",
+        "filename": "go/src/infra/libs/vmlab/internal/image/cloudsdk/cloudsdk.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1540363
+      },
+      "writtenOn": "2023-03-02T14:00:45Z",
+      "side": 1,
+      "message": "Synced with Yi Xie. He will work on improving the name conventions.\n\nSince my test runner v2 integration is still in local development, it is ok to update the naming here, or to migrate to some other place.\n\nI am going to submit this CL.",
+      "parentUuid": "36fbb495_cf7029bb",
+      "revId": "ebae5e8c7e13290760702b3e310feeb4f00310a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
