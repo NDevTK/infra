@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c9bec423_33058575",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2023-03-02T20:43:34Z",
+      "side": 1,
+      "message": "1. Other tests here also look suspects. Tests that rely on real time and sleeps are inherently flaky. A timer with 100ms tick time can e.g. tick once a second or even slower on a busy bot that runs other tests in parallel.\n2. Mac is irrelevant, this test can be failing on Linux as well, it just happened on a Mac bot first.",
+      "revId": "a2c1d372cb0a39d78568b146295d0ec4aa4e597b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
