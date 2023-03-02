@@ -244,22 +244,57 @@ func TestUnpackTarball(t *testing.T) {
 func TestGenerateConfigs(t *testing.T) {
 	// Init the mock files and verifying structures.
 	expectedTasks := map[taskConfig]bool{}
-	mockResponses := map[string]string{
-		"test1.so.sym": "FOUND",
-		"test2.so.sym": "FOUND",
-		"test3.so.sym": "MISSING",
-		"test4.so.sym": "MISSING",
-		"test5.so.sym": "STATUS_UNSPECIFIED",
-		"test6.so.sym": "STATUS_UNSPECIFIED",
+	type responseInfo struct {
+		filename string
+		symbol   string
+		status   string
+		// Local path to write the file to. Used for dupe debug symbols
+		// (mimicking behavior in unpackTarball)
+		localPath string
+	}
+	mockResponses := []*responseInfo{
+		{
+			filename: "test1.so.sym",
+			symbol:   "F4F6FA6CCBDEF455039C8DE869C8A2F40",
+			status:   "FOUND",
+		}, {
+			filename:  "test1.so.sym",
+			symbol:    "F4F6FA6CCBDEF455039C8DE869C8A2F41",
+			status:    "MISSING",
+			localPath: "test1.so.sym-1",
+		}, {
+			filename: "test2.so.sym",
+			symbol:   "F4F6FA6CCBDEF455039C8DE869C8A2F40",
+			status:   "FOUND",
+		}, {
+			filename: "test3.so.sym",
+			symbol:   "F4F6FA6CCBDEF455039C8DE869C8A2F40",
+			status:   "Missing",
+		},
+		{
+			filename: "test4.so.sym",
+			symbol:   "F4F6FA6CCBDEF455039C8DE869C8A2F40",
+			status:   "MISSING",
+		},
+		{
+			filename: "test5.so.sym",
+			symbol:   "F4F6FA6CCBDEF455039C8DE869C8A2F40",
+			status:   "STATUS_UNSPECIFIED",
+		},
+		{
+			filename: "test6.so.sym",
+			symbol:   "F4F6FA6CCBDEF455039C8DE869C8A2F40",
+			status:   "STATUS_UNSPECIFIED",
+		},
 	}
 
 	// Make the expected request body
 	responseBody := filterResponseBody{Pairs: []filterResponseStatusPair{}}
 
 	// Test for all 3 cases found in http://google3/net/crash/symbolcollector/symbol_collector.proto?l=19
-	for filename, symbolStatus := range mockResponses {
-		symbol := filterSymbolFileInfo{filename, "F4F6FA6CCBDEF455039C8DE869C8A2F40"}
-		responseBody.Pairs = append(responseBody.Pairs, filterResponseStatusPair{SymbolId: symbol, Status: symbolStatus})
+	for _, response := range mockResponses {
+		symbol := filterSymbolFileInfo{response.filename, response.symbol}
+		responseBody.Pairs = append(responseBody.Pairs, filterResponseStatusPair{SymbolId: symbol, Status: response.status})
 	}
 	mockResponseBody, err := json.Marshal(responseBody)
 	if err != nil {
@@ -274,15 +309,19 @@ func TestGenerateConfigs(t *testing.T) {
 	defer os.RemoveAll(testDir)
 
 	mockPaths := []string{}
-	for f, symbolStatus := range mockResponses {
-		mockPath := filepath.Join(testDir, f)
-		err = ioutil.WriteFile(mockPath, []byte("MODULE Linux arm F4F6FA6CCBDEF455039C8DE869C8A2F40 "+filepath.Base(f)), 0644)
+	for _, response := range mockResponses {
+		localPath := response.filename
+		if response.localPath != "" {
+			localPath = response.localPath
+		}
+		mockPath := filepath.Join(testDir, localPath)
+		err = ioutil.WriteFile(mockPath, []byte(fmt.Sprintf("MODULE Linux arm %s %s", response.symbol, filepath.Base(response.filename))), 0644)
 		if err != nil {
 			t.Error("error: " + err.Error())
 		}
-		task := taskConfig{mockPath, f, "F4F6FA6CCBDEF455039C8DE869C8A2F40", false, false}
+		task := taskConfig{mockPath, response.filename, response.symbol, false, false}
 
-		if symbolStatus != "FOUND" {
+		if response.status != "FOUND" {
 			expectedTasks[task] = false
 		}
 		mockPaths = append(mockPaths, mockPath)
@@ -305,7 +344,7 @@ func TestGenerateConfigs(t *testing.T) {
 	for _, task := range tasks {
 		if val, ok := expectedTasks[task]; ok {
 			if val {
-				t.Error("error: task appeared multiple times in function return")
+				t.Errorf("error: task %v appeared multiple times in function return", task)
 			}
 			expectedTasks[task] = true
 		} else {

@@ -565,7 +565,6 @@ func generateConfigs(ctx context.Context, symbolFiles []string, retryQuota uint6
 // file upload status. It will then filter out symbols that have already been
 // uploaded, reducing our upload time.
 // Variable name formatting comes from API definition.
-
 func filterTasksAlreadyUploaded(ctx context.Context, tasks []taskConfig, dryRun bool, crash crashConnectionInfo) ([]taskConfig, error) {
 	LogOut("Filtering out previously uploaded symbol files.")
 
@@ -622,13 +621,13 @@ func filterTasksAlreadyUploaded(ctx context.Context, tasks []taskConfig, dryRun 
 	responseMap := make(map[string]string)
 
 	for _, pair := range responseInfo.Pairs {
-		responseMap[pair.SymbolId.DebugFile] = pair.Status
+		responseMap[pair.SymbolId.DebugFile+pair.SymbolId.DebugId] = pair.Status
 	}
 
 	// Return a list of tasks that include the non-uploaded symbol files only.
 	filtered := []taskConfig{}
 	for _, task := range tasks {
-		if responseMap[task.debugFile] != "FOUND" {
+		if responseMap[task.debugFile+task.debugId] != "FOUND" {
 			filtered = append(filtered, task)
 		}
 	}
