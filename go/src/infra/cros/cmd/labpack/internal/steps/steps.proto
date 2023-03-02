@@ -28,6 +28,8 @@ message LabpackInput {
   bool no_metrics = 9;
   // Custom configuration.
   string configuration = 8;
+  // Namespace to use when fetching/updating DUT information
+  string inventory_namespace = 10;
 };
 
 // LabpackResponse represents result of execution the task on unit.
