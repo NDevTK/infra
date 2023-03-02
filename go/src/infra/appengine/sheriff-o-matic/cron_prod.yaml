@@ -70,11 +70,6 @@ cron:
   schedule: every 5 minutes
   target: analyzer
 
-- description: Update Chromium Fuzz alerts
-  url: /_cron/analyze/chromium.fuzz
-  schedule: every 5 minutes
-  target: analyzer
-
 - description: Update Lacros Skylab alerts
   url: /_cron/analyze/lacros_skylab
   schedule: every 5 minutes

@@ -1440,8 +1440,6 @@ func TestGetFilterFuncForTree(t *testing.T) {
 		So(err, ShouldBeNil)
 		_, err = getFilterFuncForTree("chromium.perf")
 		So(err, ShouldBeNil)
-		_, err = getFilterFuncForTree("chromium.fuzz")
-		So(err, ShouldBeNil)
 		_, err = getFilterFuncForTree("ios")
 		So(err, ShouldBeNil)
 		_, err = getFilterFuncForTree("chrome_browser_release")
