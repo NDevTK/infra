@@ -42,6 +42,12 @@ func encTestingContext() context.Context {
 					RemotePath: "test_enc_git_path",
 				},
 			},
+			SecurityConfig: []*config.OwnershipConfig_ConfigFile{
+				{
+					Name:       "test_name",
+					RemotePath: "test_security_git_path",
+				},
+			},
 		},
 	})
 	c = external.WithTestingContext(c)
@@ -73,7 +79,7 @@ func TestGetOwnershipData(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(res, ShouldNotBeNil)
 			So(res.PoolName, ShouldEqual, "test")
-			So(res.SwarmingInstance, ShouldEqual, "test_name")
+			So(res.SwarmingInstance, ShouldEqual, "testSwarming")
 		})
 		Convey("Missing host - returns error", func() {
 			req := &api.GetOwnershipDataRequest{

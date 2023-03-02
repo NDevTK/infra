@@ -17,7 +17,6 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/proto/gitiles"
 	"go.chromium.org/luci/gae/service/datastore"
-	configpb "go.chromium.org/luci/swarming/proto/config"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/prototext"
@@ -54,11 +53,6 @@ func ImportBotConfigs(ctx context.Context) error {
 		return nil
 	}
 
-	err = ImportENCBotConfig(ctx, ownershipConfig, gitClient)
-	if err != nil {
-		return err
-	}
-
 	err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
 	return err
 }
@@ -91,28 +85,6 @@ func GetConfigAndGitClient(ctx context.Context) (*config.OwnershipConfig, git.Cl
 	return ownershipConfig, gitClient, nil
 }
 
-// ImportENCBotConfig imports Bot Config files and stores the bot configs for ownership data in the DataStore.
-func ImportENCBotConfig(ctx context.Context, ownershipConfig *config.OwnershipConfig, gitClient git.ClientInterface) error {
-	logging.Infof(ctx, "Parsing Ownership config for %d files", len(ownershipConfig.GetEncConfig()))
-	for _, cfg := range ownershipConfig.GetEncConfig() {
-		start := time.Now()
-		logging.Debugf(ctx, "########### Parse %s ###########", cfg.GetName())
-		conf, err := gitClient.GetFile(ctx, cfg.GetRemotePath())
-		if err != nil {
-			return err
-		}
-		content := &configpb.BotsCfg{}
-		err = prototext.Unmarshal([]byte(conf), content)
-		if err != nil {
-			return err
-		}
-		ParseBotConfig(ctx, content, cfg.GetName())
-		duration := time.Since(start)
-		logging.Debugf(ctx, "########### Done Parsing %s; Time taken %s ###########", cfg.GetName(), fmt.Sprintf(duration.String()))
-	}
-	return nil
-}
-
 // ImportSecurityConfig imports Security Config files and stores security data for each bot in the DataStore.
 func ImportSecurityConfig(ctx context.Context, ownershipConfig *config.OwnershipConfig, gitClient git.ClientInterface) error {
 	logging.Infof(ctx, "Parsing Security config for %d files", len(ownershipConfig.GetSecurityConfig()))
@@ -133,49 +105,6 @@ func ImportSecurityConfig(ctx context.Context, ownershipConfig *config.Ownership
 		logging.Debugf(ctx, "########### Done Parsing %s; Time taken %s ###########", cfg.GetName(), fmt.Sprintf(duration.String()))
 	}
 	return nil
-}
-
-// ParseBotConfig parses the Bot Config files and stores the ownership data in the Data store for every bot in the config.
-func ParseBotConfig(ctx context.Context, config *configpb.BotsCfg, swarmingInstance string) {
-	for _, botGroup := range config.BotGroup {
-		if len(botGroup.BotId) == 0 && len(botGroup.BotIdPrefix) == 0 {
-			continue
-		}
-		botsIds := []string{}
-		for _, id := range botGroup.BotId {
-			if strings.Contains(id, "{") {
-				// Parse the BotId Range
-				botsIds = append(botsIds, parseBotIds(id)...)
-			} else {
-				botsIds = append(botsIds, id)
-			}
-		}
-
-		pool := ""
-		for _, dim := range botGroup.GetDimensions() {
-			// Extract pool from the bot dimensions
-			if strings.HasPrefix(dim, POOL_PREFIX) {
-				pool = strings.TrimPrefix(dim, POOL_PREFIX)
-				break
-			}
-		}
-		ownershipData := &ufspb.OwnershipData{
-			PoolName:         pool,
-			SwarmingInstance: swarmingInstance,
-		}
-
-		// Update the ownership for the botIdPrefixes
-		err := updateBotConfigForBotIdPrefix(ctx, botGroup.BotIdPrefix, ownershipData)
-		if err != nil {
-			logging.Debugf(ctx, "Got errors while parsing bot id prefix config for %s - %v", swarmingInstance, err)
-		}
-
-		// Update the ownership data for the botIds collected so far.
-		err = updateBotConfigForBotIds(ctx, botsIds, ownershipData)
-		if err != nil {
-			logging.Debugf(ctx, "Got errors while parsing bot id config for %s - %v", swarmingInstance, err)
-		}
-	}
 }
 
 // ParseSecurityConfig parses the Security Config files and stores the security data in the DataStore for every bot in the config.
