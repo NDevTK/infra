@@ -36,7 +36,6 @@ func assertVMWithOwnershipEqual(a *ufspb.VM, b *ufspb.VM) {
 	So(a.GetOwnership().SwarmingInstance, ShouldEqual, b.GetOwnership().SwarmingInstance)
 	So(a.GetOwnership().Customer, ShouldEqual, b.GetOwnership().Customer)
 	So(a.GetOwnership().SecurityLevel, ShouldEqual, b.GetOwnership().SecurityLevel)
-	So(a.GetOwnership().MibaRealm, ShouldEqual, b.GetOwnership().MibaRealm)
 }
 
 func TestBatchUpdateVMs(t *testing.T) {
@@ -77,14 +76,12 @@ func TestUpdateVMOwnership(t *testing.T) {
 		SwarmingInstance: "test-swarming",
 		Customer:         "test-customer",
 		SecurityLevel:    "test-security-level",
-		MibaRealm:        "test-miba-realm",
 	}
 	ownershipData2 := &ufspb.OwnershipData{
 		PoolName:         "pool2",
 		SwarmingInstance: "test-swarming",
 		Customer:         "test-customer",
 		SecurityLevel:    "test-security-level",
-		MibaRealm:        "test-miba-realm",
 	}
 	vm1 := mockVM("vm-1")
 	vm1_ownership := mockVMWithOwnership("vm-1", ownershipData)
@@ -298,7 +295,6 @@ func TestDeleteVMs(t *testing.T) {
 		SwarmingInstance: "test-swarming",
 		Customer:         "test-customer",
 		SecurityLevel:    "test-security-level",
-		MibaRealm:        "test-miba-realm",
 	}
 	vm1_ownership := mockVMWithOwnership("vm-delete1", ownershipData)
 	Convey("DeleteVMs", t, func() {

@@ -44,7 +44,7 @@ type VMEntity struct {
 	SwarmingServer string   `gae:"swarming_server"`
 	Customer       string   `gae:"customer"`
 	SecurityLevel  string   `gae:"security_level"`
-	MibaRealm      string   `gae:"miba_realm"`
+	MibaRealm      string   `gae:"miba_realm,noindex"` // deprecated
 	// Follow others entities, store ufspb.VM bytes.
 	VM []byte `gae:",noindex"`
 }
@@ -72,13 +72,11 @@ func newVMEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, erro
 	swarmingInstance := ""
 	customer := ""
 	securityLevel := ""
-	mibaRealm := ""
 	if p.GetOwnership() != nil {
 		poolName = p.GetOwnership().PoolName
 		swarmingInstance = p.GetOwnership().SwarmingInstance
 		customer = p.GetOwnership().Customer
 		securityLevel = p.GetOwnership().SecurityLevel
-		mibaRealm = p.GetOwnership().MibaRealm
 	}
 	return &VMEntity{
 		ID:             p.GetName(),
@@ -97,7 +95,6 @@ func newVMEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, erro
 		SwarmingServer: swarmingInstance,
 		Customer:       customer,
 		SecurityLevel:  securityLevel,
-		MibaRealm:      mibaRealm,
 		VM:             vm,
 	}, nil
 }
