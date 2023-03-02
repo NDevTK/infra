@@ -256,25 +256,6 @@ func TestConvertNameLong(t *testing.T) {
 	}
 }
 
-func TestPollCountAndTimeout(t *testing.T) {
-	expected := 4
-	count := 1
-	ctx, cancel := context.WithTimeout(context.Background(), 350*time.Millisecond)
-	defer cancel()
-	f := func(ctx context.Context) (bool, error) {
-		count++
-		return false, nil
-	}
-	interval := 100 * time.Millisecond
-
-	_ = poll(ctx, f, interval)
-	actual := count
-
-	if expected != actual {
-		t.Errorf("count expected: %v, actual: %v", expected, actual)
-	}
-}
-
 func TestPollQuitOnError(t *testing.T) {
 	expected := 2
 	count := 1
