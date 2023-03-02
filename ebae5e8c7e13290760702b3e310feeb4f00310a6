@@ -52,6 +52,24 @@
       "parentUuid": "23e8be5d_b54dc4fc",
       "revId": "ebae5e8c7e13290760702b3e310feeb4f00310a6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "36fbb495_cf7029bb",
+        "filename": "go/src/infra/libs/vmlab/internal/image/cloudsdk/cloudsdk.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1137124
+      },
+      "writtenOn": "2023-03-02T12:58:19Z",
+      "side": 1,
+      "message": "In this case, I think it is okay to have this PoC submitted, and Yi can revamp the namings.\n\nRegarding tags, ideally it would be good to have name uniquely identify the image  so we leverage image state rather than handling race ourselves. If the name can contain the info without truncating, it would be even better.",
+      "parentUuid": "85f215f3_ae6102b1",
+      "revId": "ebae5e8c7e13290760702b3e310feeb4f00310a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
