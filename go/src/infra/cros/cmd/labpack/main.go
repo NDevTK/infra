@@ -277,7 +277,10 @@ func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State
 			err = errors.Reason("panic: %v", r).Err()
 		}
 	}()
-	ctx = setupContextNamespace(ctx, ufsUtil.OSNamespace)
+	if in.InventoryNamespace == "" {
+		in.InventoryNamespace = ufsUtil.OSNamespace
+	}
+	ctx = setupContextNamespace(ctx, in.InventoryNamespace)
 	ctx, access, err := tlw.NewAccess(ctx, in)
 	if err != nil {
 		return errors.Annotate(err, "internal run").Err()
