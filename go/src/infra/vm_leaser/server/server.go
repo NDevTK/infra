@@ -7,12 +7,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 
 	compute "cloud.google.com/go/compute/apiv1"
 	"cloud.google.com/go/compute/apiv1/computepb"
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/logging/gologger"
 	"google.golang.org/protobuf/proto"
 
 	pb "infra/vm_leaser/api/v1"
@@ -31,20 +32,23 @@ func NewServer() *Server {
 	return &Server{}
 }
 
-const (
-	projectId string = "chrome-fleet-vm-leaser-dev"
-)
+func serviceContext(ctx context.Context) context.Context {
+	ctx = gologger.StdConfig.Use(ctx)
+	ctx = logging.SetLevel(ctx, logging.Debug)
+	return ctx
+}
 
 // LeaseVM leases a VM defined by LeaseVMRequest
 func (s *Server) LeaseVM(ctx context.Context, r *pb.LeaseVMRequest) (*pb.LeaseVMResponse, error) {
-	log.Println("[server:LeaseVM] Started")
+	ctx = serviceContext(ctx)
+	logging.Infof(ctx, "[server:LeaseVM] Started")
 	if ctx.Err() == context.Canceled {
 		return &pb.LeaseVMResponse{}, fmt.Errorf("client cancelled: abandoning")
 	}
 
 	leaseId := fmt.Sprintf("test-vm-%s", strconv.FormatInt(time.Now().UnixMilli(), 10))
 
-	err := createInstance(leaseId, r.GetHostReqs())
+	err := createInstance(ctx, leaseId, r.GetHostReqs())
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +63,8 @@ func (s *Server) LeaseVM(ctx context.Context, r *pb.LeaseVMRequest) (*pb.LeaseVM
 
 // ExtendLease extends a VM lease
 func (s *Server) ExtendLease(ctx context.Context, r *pb.ExtendLeaseRequest) (*pb.ExtendLeaseResponse, error) {
-	log.Println("[server:ExtendLease] Started")
+	ctx = serviceContext(ctx)
+	logging.Infof(ctx, "[server:ExtendLease] Started")
 	if ctx.Err() == context.Canceled {
 		return &pb.ExtendLeaseResponse{}, fmt.Errorf("client cancelled: abandoning")
 	}
@@ -69,16 +74,18 @@ func (s *Server) ExtendLease(ctx context.Context, r *pb.ExtendLeaseRequest) (*pb
 
 // ReleaseVM releases a VM lease
 func (s *Server) ReleaseVM(ctx context.Context, r *pb.ReleaseVMRequest) (*pb.ReleaseVMResponse, error) {
-	log.Println("[server:ReleaseVM] Started")
+	ctx = serviceContext(ctx)
+	logging.Infof(ctx, "[server:ReleaseVM] Started")
 	if ctx.Err() == context.Canceled {
 		return &pb.ReleaseVMResponse{}, fmt.Errorf("client cancelled: abandoning")
 	}
 
 	leaseId := r.GetLeaseId()
-	// TODO (justinsuen): add zone as an argument
+	// TODO (justinsuen): add zone, projectId as an argument
 	zone := "us-central1-a"
+	projectId := "chrome-fleet-vm-leaser-cr-exp"
 
-	err := deleteInstance(leaseId, zone)
+	err := deleteInstance(ctx, leaseId, projectId, zone)
 	if err != nil {
 		return nil, err
 	}
@@ -89,8 +96,7 @@ func (s *Server) ReleaseVM(ctx context.Context, r *pb.ReleaseVMRequest) (*pb.Rel
 }
 
 // createInstance sends an instance creation request to the Compute Engine API and waits for it to complete.
-func createInstance(leaseId string, hostReqs *pb.VMRequirements) error {
-	ctx := context.Background()
+func createInstance(ctx context.Context, leaseId string, hostReqs *pb.VMRequirements) error {
 	instancesClient, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		return fmt.Errorf("NewInstancesRESTClient error: %v", err)
@@ -99,7 +105,7 @@ func createInstance(leaseId string, hostReqs *pb.VMRequirements) error {
 
 	zone := hostReqs.GetGceRegion()
 	req := &computepb.InsertInstanceRequest{
-		Project: projectId,
+		Project: hostReqs.GetGceProject(),
 		Zone:    zone,
 		InstanceResource: &computepb.Instance{
 			Name: proto.String(leaseId),
@@ -123,7 +129,7 @@ func createInstance(leaseId string, hostReqs *pb.VMRequirements) error {
 		},
 	}
 
-	log.Println("instance request params: ", req)
+	logging.Debugf(ctx, "instance request params: %v", req)
 	op, err := instancesClient.Insert(ctx, req)
 	if err != nil {
 		return fmt.Errorf("unable to create instance: %v", err)
@@ -133,13 +139,12 @@ func createInstance(leaseId string, hostReqs *pb.VMRequirements) error {
 		return fmt.Errorf("unable to wait for the operation: %v", err)
 	}
 
-	log.Println("instance created")
+	logging.Infof(ctx, "instance created")
 	return nil
 }
 
 // deleteInstance sends an instance deletion request to the Compute Engine API and waits for it to complete.
-func deleteInstance(leaseId, zone string) error {
-	ctx := context.Background()
+func deleteInstance(ctx context.Context, leaseId, projectId, zone string) error {
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		return fmt.Errorf("NewInstancesRESTClient error: %v", err)
@@ -152,7 +157,7 @@ func deleteInstance(leaseId, zone string) error {
 		Zone:     zone,
 	}
 
-	log.Println("instance request params: ", req)
+	logging.Debugf(ctx, "instance request params: %v", req)
 	op, err := c.Delete(ctx, req)
 	if err != nil {
 		return fmt.Errorf("unable to delete instance: %v", err)
@@ -165,6 +170,6 @@ func deleteInstance(leaseId, zone string) error {
 		return fmt.Errorf("unable to wait for the operation: %v", err)
 	}
 
-	log.Println("instance deleted")
+	logging.Infof(ctx, "instance deleted")
 	return nil
 }
