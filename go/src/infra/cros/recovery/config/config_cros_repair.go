@@ -1551,6 +1551,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Setup has servo info",
+				"Has a stable-version service",
 				"Stable version image is missing from servo usbkey",
 			},
 			Dependencies: []string{
@@ -1576,6 +1577,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Setup has servo info",
+				"Has a stable-version service",
 				"Stable version image is missing from servo usbkey",
 			},
 			Dependencies: []string{

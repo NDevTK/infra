@@ -74,7 +74,6 @@ func deployActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Device is pingable before deploy",
-				"Recovery version has OS image path",
 				"Device NOT booted from USB-drive",
 			},
 			ExecName: "cros_is_os_test_channel",
