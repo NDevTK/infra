@@ -34,6 +34,24 @@
       "parentUuid": "e2272c86_e13c0106",
       "revId": "e1fff5a03463b28b90584e2da8d6c214ad948eb5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bc87e3fe_39ec5f77",
+        "filename": "go/src/infra/libs/vmlab/internal/image/cloudsdk/cloudsdk_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1528167
+      },
+      "writtenOn": "2023-03-02T23:00:57Z",
+      "side": 1,
+      "message": "I think any time there are arbitrary timeout values in test code, there is a potential for flakiness.",
+      "parentUuid": "07d56906_daf22beb",
+      "revId": "e1fff5a03463b28b90584e2da8d6c214ad948eb5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
