@@ -52,6 +52,24 @@
       "parentUuid": "07d56906_daf22beb",
       "revId": "e1fff5a03463b28b90584e2da8d6c214ad948eb5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "23619db9_a5711476",
+        "filename": "go/src/infra/libs/vmlab/internal/image/cloudsdk/cloudsdk_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1540363
+      },
+      "writtenOn": "2023-03-02T23:12:57Z",
+      "side": 1,
+      "message": "Is there a way to properly test this timeout function?\nhttps://crsrc.org/i/go/src/infra/libs/vmlab/internal/image/cloudsdk/cloudsdk.go;l\u003d189",
+      "parentUuid": "bc87e3fe_39ec5f77",
+      "revId": "e1fff5a03463b28b90584e2da8d6c214ad948eb5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
