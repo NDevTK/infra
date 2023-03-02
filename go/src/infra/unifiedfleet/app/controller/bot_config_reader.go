@@ -198,7 +198,6 @@ func ParseSecurityConfig(ctx context.Context, config *ufspb.SecurityInfos) {
 			SecurityLevel:    pool.SecurityLevel,
 			PoolName:         pool.PoolName,
 			SwarmingInstance: pool.SwarmingServerId,
-			MibaRealm:        pool.MibaRealm,
 			Customer:         pool.Customer,
 			Builders:         pool.Builders,
 		}
@@ -287,7 +286,6 @@ func isBotOwnershipUpdated(ctx context.Context, botId string, newOwnership *ufsp
 	}
 	pm := p.(*ufspb.OwnershipData)
 	if isOwnershipFieldUpdated(pm.GetCustomer(), newOwnership.GetCustomer()) ||
-		isOwnershipFieldUpdated(pm.GetMibaRealm(), newOwnership.GetMibaRealm()) ||
 		isOwnershipFieldUpdated(pm.GetSecurityLevel(), newOwnership.GetSecurityLevel()) ||
 		isOwnershipFieldUpdated(pm.GetPoolName(), newOwnership.GetPoolName()) ||
 		isOwnershipFieldUpdated(pm.GetSwarmingInstance(), newOwnership.GetSwarmingInstance()) ||
@@ -391,7 +389,7 @@ func updateBotConfigForBotIdPrefix(ctx context.Context, botIdPrefixes []string, 
 				logging.Debugf(ctx, "Failed to update ownership for bot id prefix %s - %v", prefix, err)
 				errs = append(errs, err)
 			} else {
-				logging.Debugf(ctx, "updated ownership for bot id prefix %s - %v", prefix, err)
+				logging.Debugf(ctx, "updated ownership for bot id prefix %s", prefix)
 			}
 		}
 	}
