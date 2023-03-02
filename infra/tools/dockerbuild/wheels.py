@@ -1205,6 +1205,7 @@ SPECS.update({
         Universal('Keras-Preprocessing', '1.1.2'),
         Universal('Markdown', '3.0.1'),
         Universal('Markdown', '3.3.4', pyversions=['py3']),
+        Universal('Markdown', '3.4.1', pyversions=['py3']),
         Universal('SecretStorage', '3.1.2', pyversions=['py3']),
         Universal('WebOb', '1.8.6'),
         Universal('WebTest', '2.0.35'),

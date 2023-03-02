@@ -244,6 +244,18 @@ wheel: <
 
 * *universal*
 
+### 3.4.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/markdown-py3"
+  version: "version:3.4.1"
+>
+```
+
+
+* *universal*
+
 ## **MarkupSafe**
 
 ### 1.1.1
