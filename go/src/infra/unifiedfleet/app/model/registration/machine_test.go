@@ -75,7 +75,6 @@ func assertMachineWithOwnershipEqual(a *ufspb.Machine, b *ufspb.Machine) {
 	So(a.GetOwnership().SwarmingInstance, ShouldEqual, b.GetOwnership().SwarmingInstance)
 	So(a.GetOwnership().Customer, ShouldEqual, b.GetOwnership().Customer)
 	So(a.GetOwnership().SecurityLevel, ShouldEqual, b.GetOwnership().SecurityLevel)
-	So(a.GetOwnership().MibaRealm, ShouldEqual, b.GetOwnership().MibaRealm)
 }
 
 func getMachineNames(machines []*ufspb.Machine) []string {
@@ -100,7 +99,6 @@ func TestCreateMachine(t *testing.T) {
 		SwarmingInstance: "test-swarming",
 		Customer:         "test-customer",
 		SecurityLevel:    "test-security-level",
-		MibaRealm:        "test-miba-relam",
 	}
 	chromeBrowserMachineWithOwnership := mockChromeBrowserMachineWithOwnership("chrome-asset-1", "chromelab", "machine-1", ownershipData)
 	Convey("CreateMachine", t, func() {
@@ -146,7 +144,6 @@ func TestUpdateMachine(t *testing.T) {
 		SwarmingInstance: "test-swarming",
 		Customer:         "test-customer",
 		SecurityLevel:    "test-security-level",
-		MibaRealm:        "test-miba-relam",
 	}
 	chromeBrowserMachineWithOwnership := mockChromeBrowserMachineWithOwnership("chrome-asset-1", "chromelab", "machine-1", ownershipData)
 	chromeOSMachine3 := mockChromeOSMachine("", "chromeoslab", "samus")
@@ -194,14 +191,12 @@ func TestUpdateMachineOwnership(t *testing.T) {
 		SwarmingInstance: "test-swarming",
 		Customer:         "test-customer",
 		SecurityLevel:    "test-security-level",
-		MibaRealm:        "test-miba-relam",
 	}
 	ownershipData2 := &ufspb.OwnershipData{
 		PoolName:         "pool2",
 		SwarmingInstance: "test-swarming",
 		Customer:         "test-customer",
 		SecurityLevel:    "test-security-level",
-		MibaRealm:        "test-miba-relam",
 	}
 	chromeBrowserMachine1 := mockChromeBrowserMachineWithOwnership("chrome-asset-1", "chromelab", "machine-1", ownershipData)
 	chromeBrowserMachine1copy := mockChromeBrowserMachineWithOwnership("chrome-asset-1", "chromelab", "machine-1", ownershipData)
@@ -253,7 +248,6 @@ func TestGetMachine(t *testing.T) {
 		SwarmingInstance: "test-swarming",
 		Customer:         "test-customer",
 		SecurityLevel:    "test-security-level",
-		MibaRealm:        "test-miba-relam",
 	}
 	chromeBrowserMachine1 := mockChromeBrowserMachineWithOwnership("chrome-asset-1", "chromelab", "machine-1", ownershipData)
 	chromeBrowserMachinecopy := mockChromeBrowserMachineWithOwnership("chrome-asset-1", "chromelab", "machine-1", ownershipData)
@@ -399,7 +393,6 @@ func TestDeleteMachine(t *testing.T) {
 		SwarmingInstance: "test-swarming",
 		Customer:         "test-customer",
 		SecurityLevel:    "test-security-level",
-		MibaRealm:        "test-miba-relam",
 	}
 	chromeBrowserMachine1 := mockChromeBrowserMachineWithOwnership("chrome-asset-3", "chromelab", "machine-1", ownershipData)
 	chromeBrowserMachinecopy := mockChromeBrowserMachineWithOwnership("chrome-asset-3", "chromelab", "machine-1", ownershipData)
