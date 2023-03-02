@@ -2243,6 +2243,15 @@ Delete tags of an existing devboard machine entry.
 
 For now, only used on Satlab.
 `
+	// UpdateDevboardLSELongDesc description for UpdateDevboardLSECmd
+	UpdateDevboardLSEText string = `Update a devboard LSE by name to UFS.
+
+Examples:
+shivas update devboard-lse -name lse1 -pools new_pool1,new_pool2
+Update the pools to devboard.
+
+For now, only used on Satlab.
+`
 
 	// DeleteDevboardMachineLongDesc description for DeleteDevboardMachineCmd
 	DeleteDevboardMachineLongDesc string = `Delete a devboard machine.

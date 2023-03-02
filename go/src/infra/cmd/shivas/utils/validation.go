@@ -231,3 +231,18 @@ func IsDUT(lse *ufspb.MachineLSE) error {
 	}
 	return nil
 }
+
+// IsDevboard returns nil if lse represent Devboard  or returns error with a reason
+func IsDevboard(lse *ufspb.MachineLSE) error {
+	if croslse := lse.GetChromeosMachineLse(); croslse == nil {
+		return errors.Reason("Not a ChromeOSMachine").Err()
+	} else if dlse := croslse.GetDeviceLse(); dlse == nil {
+		return errors.Reason("Missing DeviceLse").Err()
+	} else if db := dlse.GetDevboard(); db == nil {
+		return errors.Reason("Not a Devboard").Err()
+	}
+	if len(lse.GetMachines()) == 0 {
+		return errors.Reason("Missing Asset").Err()
+	}
+	return nil
+}

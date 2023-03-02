@@ -80,6 +80,7 @@ func (c updateApp) GetCommands() []*subcommands.Command {
 		attacheddevicemachine.UpdateAttachedDeviceMachineCmd,
 		attacheddevicemachine.UpdateADMCmd,
 		devboard.UpdateDevboardMachineCmd,
+		devboard.UpdateDevboardLSECmd,
 		host.UpdateHostCmd,
 		attacheddevicehost.UpdateAttachedDeviceHostCmd,
 		attacheddevicehost.UpdateADHCmd,
