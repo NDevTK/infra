@@ -6700,6 +6700,20 @@ wheel: <
 
 * *universal*
 
+## **requests-mock-py3**
+
+### 1.10.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/requests-mock-py3"
+  version: "version:1.10.0"
+>
+```
+
+
+* *universal*
+
 ## **requests-oauthlib**
 
 ### 1.2.0
