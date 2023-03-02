@@ -412,6 +412,11 @@ class PathHandler:
                              f"{g_explicit_proto_arg_prefix_regex}"
                              ")")
 
+  # Matches:
+  # 1. "
+  # 2. \"
+  g_quote_with_escape = '(?:\\\\?")?'
+
   # Captures:
   # 1. Group 1: arg prefix
   # 2. Group 2: path
@@ -419,7 +424,7 @@ class PathHandler:
       "^"
       f"({g_argument_prefix_regex}?)"
       # Path may be inside quote marks.
-      f'(?:\\\\")?({g_path_regex})(?:\\\\")?'
+      f"(?:{g_quote_with_escape})({g_path_regex})(?:{g_quote_with_escape})"
       "$")
 
   # Matches:
