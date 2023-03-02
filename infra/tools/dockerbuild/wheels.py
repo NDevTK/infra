@@ -254,6 +254,12 @@ SPECS.update({
             packaged=(),
         ),
         SourceOrPrebuilt(
+            'SQLAlchemy',
+            '2.0.4',
+            packaged=(),
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
             'aioquic',
             '0.9.15',
             # TODO(crbug/1252073): We don't yet build OpenSSL for Windows.
