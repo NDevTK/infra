@@ -5,7 +5,7 @@
 import filecmp
 import json
 import os
-from typing import Any, Dict, List
+from typing import Any, Callable, Dict, List
 
 from .cros_sdk import CrosSdk
 from .logger import g_logger
@@ -135,18 +135,34 @@ class GnTargets:
   def _FixArgList(self, args_list: List[str]) -> List[str]:
     """Fix paths in arguments. Ignores all misses."""
 
+    # Split each argument in the list by comma, then by colon, then by
+    # whitespace. Fix split argument separately, then join them back to get
+    # fixed actual arg.
+    def FixWithSeparator(arg: str, separator: str, fixer: Callable[[str], str]):
+      fixed_split_args = [
+          fixer(split_arg) for split_arg in arg.split(separator)
+      ]
+      return separator.join(fixed_split_args)
+
+    def FixWhiteSpaceSeparator(arg: str) -> str:
+      return FixWithSeparator(arg, ' ',
+                              lambda split_arg: self._FixArg(split_arg))
+
+    def FixWithColonSeparator(arg: str) -> str:
+      return FixWithSeparator(
+          arg, ':', lambda split_arg: FixWhiteSpaceSeparator(split_arg))
+
+    def FixWithCommaSeparator(arg: str) -> str:
+      return FixWithSeparator(
+          arg, ',', lambda split_arg: FixWithColonSeparator(split_arg))
+
     actual_arg_list = []
     for arg in args_list:
-      actual_arg = ','.join([
-          ':'.join([self.FixArg(subsubarg)
-                    for subsubarg in subarg.split(':')])
-          for subarg in arg.split(',')
-      ])
-      actual_arg_list.append(actual_arg)
+      actual_arg_list.append(FixWithCommaSeparator(arg))
 
     return actual_arg_list
 
-  def FixArg(self, arg: str) -> str:
+  def _FixArg(self, arg: str) -> str:
 
     def Fixer(chroot_path):
       return self._FixPath(chroot_path).actual
