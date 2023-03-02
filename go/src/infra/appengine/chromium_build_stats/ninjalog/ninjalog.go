@@ -102,9 +102,6 @@ type Metadata struct {
 	// Compiler is compiler used.
 	Compiler string `json:"compiler"`
 
-	// Cmdline is command line of ninja.
-	Cmdline []string `json:"cmdline"`
-
 	// Exit is exit status of ninja.
 	Exit int `json:"exit"`
 
@@ -145,45 +142,16 @@ func isAbs(p string) bool {
 	return strings.HasPrefix(p, "/") || strings.HasPrefix(p, "\\") || winVolumeAbs.MatchString(p)
 }
 
-// getTargets returns targets. It parses the command line if the targets are not set, yet.
-// It also avoids uploading absolute paths in case they are included accidentally. e.g. b/270907050
+// getTargets returns targets from the metadata.
+// It also filters out invalid targets such as absolute paths, ninja options which may be accidentally included. e.g. b/270907050
 func (m *Metadata) getTargets() []string {
 	var targets []string
-	if len(m.Targets) != 0 {
-		for _, t := range m.Targets {
-			if isAbs(t) {
-				continue
-			}
-			targets = append(targets, t)
+	for _, t := range m.Targets {
+		if isAbs(t) || strings.HasPrefix(t, "-") {
+			continue
 		}
-		return targets
+		targets = append(targets, t)
 	}
-
-	// Parse ninja's commandline to extract build targets, if targets is not given.
-	// We assume the first two arguments are python and ninja.py
-	for i := 2; i < len(m.Cmdline); i++ {
-		arg := m.Cmdline[i]
-		switch arg {
-		case "-C", "-d", "-f", "-j", "-k", "-l", "-p", "-t", "-w":
-			i++
-			continue
-		}
-		if isAbs(arg) {
-			continue
-		}
-
-		if arg == "--" {
-			targets = append(targets, m.Cmdline[i+1:]...)
-			break
-		}
-
-		if strings.HasPrefix(arg, "-") {
-			continue
-		}
-
-		targets = append(targets, arg)
-	}
-
 	return targets
 }
 
@@ -261,7 +229,7 @@ func Parse(fname string, r io.Reader) (*NinjaLog, error) {
 
 	lineno++
 	nlog.Metadata.Raw = scanner.Text()
-	if err := parseMetadata([]byte(nlog.Metadata.Raw), &nlog.Metadata); err != nil {
+	if err := json.Unmarshal([]byte(nlog.Metadata.Raw), &nlog.Metadata); err != nil {
 		nlog.Metadata.Error = fmt.Sprintf("error at %d: %v", lineno, err)
 	}
 	return nlog, nil
@@ -314,21 +282,6 @@ func stepToLine(s Step) string {
 		s.Restat,
 		s.Out,
 		s.CmdHash)
-}
-
-func parseMetadata(buf []byte, metadata *Metadata) error {
-	if err := json.Unmarshal(buf, metadata); err != nil {
-		return err
-	}
-
-	if metadata.Jobs == 0 {
-		jobs, err := getJobs(metadata.Cmdline)
-		if err != nil {
-			return fmt.Errorf("failed to get jobs: %v", err)
-		}
-		metadata.Jobs = jobs
-	}
-	return nil
 }
 
 // Dump dumps steps as ninja log v5 format in w.
@@ -562,33 +515,4 @@ func StatsByType(steps []Step, weighted map[string]time.Duration, typeOf func(St
 		return stats[i].Weighted > stats[j].Weighted
 	})
 	return stats
-}
-
-func getJobs(cmdLine []string) (int, error) {
-	strJobs := ""
-	for i, c := range cmdLine {
-		if !strings.HasPrefix(c, "-j") {
-			continue
-		}
-		if c == "-j" { // the case ... []string{ ..., "-j", "50"}
-			if i+1 < len(cmdLine) {
-				strJobs = cmdLine[i+1]
-			} else { // the error case ... []string{ ..., "-j"}
-				return 0, fmt.Errorf("trailing -j: %v", cmdLine)
-			}
-		} else { // the case ... []string{ ..., "-j50"}
-			strJobs = strings.TrimLeft(c, "-j")
-		}
-		break
-	}
-	// -j isn't found
-	if strJobs == "" {
-		return 0, nil
-	}
-
-	jobs, err := strconv.Atoi(strJobs)
-	if err != nil { // the error case ... []string{ ..., "-j", "abc"}
-		return 0, fmt.Errorf("failed to parse %v: %v", strJobs, err)
-	}
-	return jobs, nil
 }
