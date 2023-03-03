@@ -61,9 +61,9 @@ To call an RPC, you can specify the proto and payload via `grpcurl`. Here is an 
   vm_leaser.api.v1.VMLeaserService.LeaseVM
 
 {
-  "leaseId": "test-vm-1672187152702",
+  "leaseId": "vm-12107b1b-52be-475f-bdd5-8b68306645d2",
   "vm": {
-    "id": "test-vm-1672187152702"
+    "id": "vm-12107b1b-52be-475f-bdd5-8b68306645d2"
   }
 }
 ```
@@ -72,7 +72,7 @@ An example to release a VM:
 ```bash
 > grpcurl -plaintext -proto api/v1/vm_leaser.proto \
   -d '{
-    "lease_id": "test-vm-1673304809878",
+    "lease_id": "vm-12107b1b-52be-475f-bdd5-8b68306645d2",
     "gce_project": "chrome-fleet-vm-leaser-cr-exp",
     "gce_region": "us-central1-a"
   }' \
@@ -80,7 +80,7 @@ An example to release a VM:
   vm_leaser.api.v1.VMLeaserService.ReleaseVM
 
 {
-  "leaseId": "test-vm-1673304809878"
+  "leaseId": "vm-12107b1b-52be-475f-bdd5-8b68306645d2"
 }
 ```
 

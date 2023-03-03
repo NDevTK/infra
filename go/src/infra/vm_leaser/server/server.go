@@ -7,11 +7,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"strconv"
-	"time"
 
 	compute "cloud.google.com/go/compute/apiv1"
 	"cloud.google.com/go/compute/apiv1/computepb"
+	"github.com/google/uuid"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"google.golang.org/protobuf/proto"
@@ -46,7 +45,8 @@ func (s *Server) LeaseVM(ctx context.Context, r *pb.LeaseVMRequest) (*pb.LeaseVM
 		return &pb.LeaseVMResponse{}, fmt.Errorf("client cancelled: abandoning")
 	}
 
-	leaseId := fmt.Sprintf("test-vm-%s", strconv.FormatInt(time.Now().UnixMilli(), 10))
+	// Appending "vm-" to satisfy GCE regex
+	leaseId := fmt.Sprintf("vm-%s", uuid.New().String())
 	err := createInstance(ctx, leaseId, r.GetHostReqs())
 	if err != nil {
 		return nil, err
