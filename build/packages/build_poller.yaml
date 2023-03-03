@@ -1,0 +1,10 @@
+package: chromiumos/infra/build_poller/${platform}
+description: Used by ChromeOS CI builders to poll for builds setting an output property.
+platforms:
+  linux-amd64
+go_packages:
+  - infra/cros/cmd/build_poller
+root: ../../go/bin
+data:
+  - file: build_poller${exe_suffix}
+  - version_file: .versions/build_poller${exe_suffix}.cipd_version
