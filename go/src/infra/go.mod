@@ -22,7 +22,7 @@ require (
 	github.com/aclements/go-moremath v0.0.0-20210112150236-f10218a38794
 	github.com/andygrunwald/go-gerrit v0.0.0-20210726065827-cc4e14e40b5b
 	github.com/bazelbuild/remote-apis v0.0.0-20220510175640-3b4b64021035
-	github.com/bazelbuild/remote-apis-sdks v0.0.0-20230123164355-3533698631dd
+	github.com/bazelbuild/remote-apis-sdks v0.0.0-20230303145537-3a73c5ed0419
 	github.com/bmatcuk/doublestar v1.3.4
 	github.com/containerd/cgroups v1.0.4
 	github.com/danjacques/gofslock v0.0.0-20220131014315-6e321f4509c8
@@ -86,7 +86,7 @@ require (
 	google.golang.org/appengine v1.6.8-0.20221117013220-504804fb50de
 	google.golang.org/appengine/v2 v2.0.1
 	google.golang.org/genproto v0.0.0-20230124163310-31e0e69b6fc2
-	google.golang.org/grpc v1.52.1
+	google.golang.org/grpc v1.52.3
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.2.0
 	google.golang.org/protobuf v1.28.1
 	gopkg.in/fsnotify.v1 v1.4.7
