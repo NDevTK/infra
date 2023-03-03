@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -10,6 +10,8 @@ individual packages.
 See build/packages/*.yaml for definition of packages and README.md for more
 details.
 """
+
+from __future__ import print_function
 
 import argparse
 import collections
@@ -191,7 +193,8 @@ class PackageDef(collections.namedtuple(
       if var_name not in ['CGO_ENABLED', 'race']:
         raise PackageDefException(
             self.path,
-            'Only "CGO_ENABLED" and "race" is supported in "go_build_environ" currently'
+            'Only "CGO_ENABLED" and "race" is supported in "go_build_environ" '
+            'currently'
         )
 
   def should_visit(self):
@@ -400,7 +403,7 @@ class GoEnviron(
 
 def render_path(p, pkg_vars, replace_sep=True):
   """Renders ${...} substitutions in paths, converts them to native slash."""
-  for k, v in pkg_vars.iteritems():
+  for k, v in pkg_vars.items():
     assert '${' not in v  # just in case, to avoid recursive expansion
     p = p.replace('${%s}' % k, v)
   if replace_sep:
@@ -433,7 +436,7 @@ def cipd_export(ensure_contents, dst_root, cipd_exe):
       stdin=subprocess.PIPE,
       stderr=subprocess.STDOUT,
       executable=cipd_exe)
-  out, _ = cmd.communicate(ensure_contents)
+  out, _ = cmd.communicate(ensure_contents.encode())
   if cmd.returncode:
     raise subprocess.CalledProcessError(cmd.returncode, args, output=out)
 
@@ -515,7 +518,7 @@ def get_env_dot_py():
     return 'env.py'
 
 
-def run_python(script, args):
+def run_host_python2(script, args):
   """Invokes a python script via the root python interpreter.
 
   Escapes virtualenv if finds itself running with VIRTUAL_ENV env var set.
@@ -525,26 +528,27 @@ def run_python(script, args):
     subprocess.CalledProcessError on non zero exit code.
   """
   environ = os.environ.copy()
-  python_exe = sys.executable
 
-  venv = environ.pop('VIRTUAL_ENV')
+  venv = environ.pop('VIRTUAL_ENV', None)
+  # VIRTUAL_ENV cannot be relied upon to determine whether a virtual environment
+  # is being used. Find the host python from the PATH regardlessly.
+  path = environ['PATH'].split(os.pathsep)
   if venv:
-    path = environ['PATH'].split(os.pathsep)
     path = [p for p in path if not p.startswith(venv+os.sep)]
-    environ['PATH'] = os.pathsep.join(path)
-    # Popen doesn't use new env['PATH'] to search for binaries. Do it ourselves.
-    for p in path:
-      candidate = os.path.join(p, 'python' + EXE_SUFFIX)
-      if os.path.exists(candidate):
-        python_exe = candidate
-        break
-    else:
-      raise BuildException(
-          'Could\'n find python%s in %s' % (EXE_SUFFIX, environ['PATH']))
+  environ['PATH'] = os.pathsep.join(path)
+  # Popen doesn't use new env['PATH'] to search for binaries. Do it ourselves.
+  for p in path:
+    candidate = os.path.join(p, 'python' + EXE_SUFFIX)
+    if os.path.exists(candidate):
+      python_exe = candidate
+      break
+  else:
+    raise BuildException(
+        'Could\'n find python%s in %s' % (EXE_SUFFIX, environ['PATH']))
 
-  print 'Running %s %s' % (script, ' '.join(args))
-  print '  via %s' % python_exe
-  print '  in  %s' % os.getcwd()
+  print('Running %s %s' % (script, ' '.join(args)))
+  print('  via %s' % python_exe)
+  print('  in  %s' % os.getcwd())
   subprocess.check_call(
       args=['python', '-u', script] + list(args),
       executable=python_exe,
@@ -581,7 +585,7 @@ def run_cipd(cipd_exe, cmd, args):
 
     cmd_line = [cipd_exe, cmd, '-json-output', temp_file] + list(args)
 
-    print 'Running %s' % ' '.join(cmd_line)
+    print('Running %s' % ' '.join(cmd_line))
     exit_code = subprocess.call(args=cmd_line, executable=cmd_line[0])
     try:
       with open(temp_file, 'r') as f:
@@ -602,10 +606,10 @@ def print_title(title):
   """Pretty prints a banner to stdout."""
   sys.stdout.flush()
   sys.stderr.flush()
-  print
-  print '-' * 80
-  print title
-  print '-' * 80
+  print()
+  print('-' * 80)
+  print(title)
+  print('-' * 80)
 
 
 def print_go_step_title(title):
@@ -664,7 +668,7 @@ def workspace_env(go_environ):
     os.chdir(orig_cwd)
     # Apparently 'os.environ = orig_environ' doesn't actually modify process
     # environment, only modifications of os.environ object itself do.
-    for k, v in orig_environ.iteritems():
+    for k, v in orig_environ.items():
       os.environ[k] = v
     for k in os.environ.keys():
       if k not in orig_environ:
@@ -682,14 +686,13 @@ def bootstrap_go_toolset(go_workspace):
     # env.py does the actual job of bootstrapping if the toolset is missing.
     output = subprocess.check_output(
         args=[
-            'python', '-u',
+            sys.executable, '-u',
             os.path.join(go_workspace, get_env_dot_py()), 'go', 'env'
-        ],
-        executable=sys.executable)
+        ]).decode()
     # See https://github.com/golang/go/blob/master/src/cmd/go/env.go for format
     # of the output.
-    print 'Go environ:'
-    print output.strip()
+    print('Go environ:')
+    print(output.strip())
     env = {}
     for line in output.splitlines():
       k, _, v = line.lstrip('set ').partition('=')
@@ -701,11 +704,10 @@ def bootstrap_go_toolset(go_workspace):
     print_go_step_title('Go version')
     output = subprocess.check_output(
         args=[
-            'python', '-u',
+            sys.executable, '-u',
             os.path.join(go_workspace, get_env_dot_py()), 'go', 'version'
-        ],
-        executable=sys.executable)
-    print output.strip()
+        ]).decode()
+    print(output.strip())
 
     # We want only "go1.15.8" part.
     version = re.match(r'go version (go[\d\.]+)', output).group(1)
@@ -729,15 +731,14 @@ def run_go_clean(go_workspace, go_environ, packages):
     print_go_step_title('Preparing:\n  %s' % '\n  '.join(packages))
     subprocess.check_call(
         args=[
-            'python', '-u',
+            sys.executable, '-u',
             os.path.join(go_workspace, get_env_dot_py()), 'go', 'clean', '-i',
             '-r'
         ] + list(packages),
-        executable=sys.executable,
         stderr=subprocess.STDOUT)
     # Above command is either silent (without '-x') or too verbose (with '-x').
     # Prefer silent version, but add a note that it's alright.
-    print 'Done.'
+    print('Done.')
 
 
 def run_go_install(go_workspace, go_environ, packages):
@@ -753,7 +754,7 @@ def run_go_install(go_workspace, go_environ, packages):
     rebuild: if True, will forcefully rebuild all dependences.
   """
   args = [
-      'python', '-u',
+      sys.executable, '-u',
       os.path.join(go_workspace, get_env_dot_py()), 'go', 'install',
       '-trimpath',
       '-ldflags=-buildid=',
@@ -767,7 +768,7 @@ def run_go_install(go_workspace, go_environ, packages):
   with workspace_env(go_environ):
     print_go_step_title('Building:\n  %s' % '\n  '.join(packages))
     subprocess.check_call(
-        args=args, executable=sys.executable, stderr=subprocess.STDOUT)
+        args=args, stderr=subprocess.STDOUT)
 
 
 def run_go_build(go_workspace, go_environ, package, output):
@@ -780,7 +781,7 @@ def run_go_build(go_workspace, go_environ, package, output):
     output: where to put the resulting binary.
   """
   args = [
-      'python', '-u',
+      sys.executable, '-u',
       os.path.join(go_workspace, get_env_dot_py()), 'go', 'build',
       '-trimpath',
       '-ldflags=-buildid=',
@@ -795,7 +796,7 @@ def run_go_build(go_workspace, go_environ, package, output):
   with workspace_env(go_environ):
     print_go_step_title('Building %s' % (package,))
     subprocess.check_call(
-        args=args, executable=sys.executable, stderr=subprocess.STDOUT)
+        args=args, stderr=subprocess.STDOUT)
 
 
 def find_main_module(module_map, pkg):
@@ -879,11 +880,11 @@ def build_go_code(go_workspace, module_map, pkg_defs):
 
   # Group packages by the environment they want.
   packages_per_env = {}  # GoEnviron => [str]
-  for name, pkg_env in go_packages.iteritems():
+  for name, pkg_env in go_packages.items():
     packages_per_env.setdefault(pkg_env, []).append(name)
 
   # Execute build command for each individual environment.
-  for pkg_env, to_install in sorted(packages_per_env.iteritems()):
+  for pkg_env, to_install in sorted(packages_per_env.items()):
     to_install = sorted(to_install)
     if not to_install:
       continue
@@ -1034,6 +1035,7 @@ def get_host_package_vars():
   # linux, mac or windows.
   platform_variant = {
       'darwin': 'mac',
+      'linux': 'linux',
       'linux2': 'linux',
       'win32': 'windows',
   }.get(sys.platform)
@@ -1041,7 +1043,7 @@ def get_host_package_vars():
     raise ValueError('Unknown OS: %s' % sys.platform)
 
   sys_arch = None
-  if sys.platform == 'linux2':
+  if sys.platform in ('linux', 'linux2'):
     sys_arch = get_linux_host_arch()
 
   # If we didn't override our system architecture, identify it using "platform".
@@ -1057,7 +1059,7 @@ def get_host_package_vars():
       'arm64': 'arm64',
       'armv6l': 'armv6l',
       'armv7l': 'armv6l',  # we prefer to use older instruction set for builds
-  }.get(sys_arch.lower())
+  }.get(sys_arch.lower().decode())
   if not platform_arch:
     raise ValueError('Unknown machine arch: %s' % sys_arch)
 
@@ -1081,6 +1083,7 @@ def get_host_goos():
   """Returns GOOS value matching the host that builds the package."""
   goos = {
       'darwin': 'darwin',
+      'linux': 'linux',
       'linux2': 'linux',
       'win32': 'windows',
   }.get(sys.platform)
@@ -1148,13 +1151,13 @@ def build_pkg(cipd_exe, pkg_def, out_file, package_vars, sign_id=None):
     args.extend(['-hash-algo', HASH_ALGO])
     exit_code, json_output = run_cipd(cipd_exe, 'pkg-build', args)
     if exit_code:
-      print
-      print >> sys.stderr, 'FAILED! ' * 10
+      print()
+      print('FAILED! ' * 10, file=sys.stderr)
       raise BuildException('Failed to build the CIPD package, see logs')
 
     # Expected result is {'package': 'name', 'instance_id': 'hash'}
     info = json_output['result']
-    print '%s %s' % (info['package'], info['instance_id'])
+    print('%s %s' % (info['package'], info['instance_id']))
     return info
   finally:
     shutil.rmtree(build_root, ignore_errors=True)
@@ -1191,13 +1194,13 @@ def upload_pkg(cipd_exe, pkg_file, service_url, tags, update_latest_ref,
   args.append(pkg_file)
   exit_code, json_output = run_cipd(cipd_exe, 'pkg-register', args)
   if exit_code:
-    print
-    print >> sys.stderr, 'FAILED! ' * 10
+    print()
+    print('FAILED! ' * 10, file=sys.stderr)
     raise UploadException('Failed to upload the CIPD package, see logs')
   info = json_output['result']
   info['url'] = '%s/p/%s/+/%s' % (
       service_url, info['package'], info['instance_id'])
-  print '%s %s' % (info['package'], info['instance_id'])
+  print('%s %s' % (info['package'], info['instance_id']))
   return info
 
 
@@ -1230,13 +1233,13 @@ def search_pkg(cipd_exe, pkg_name, service_url, tags, service_account):
     if json_output['error_code'] == 'auth_error':
       # Maybe the package doesn't exist
       return None
-    print
-    print >> sys.stderr, 'FAILED! ' * 10
+    print()
+    print('FAILED! ' * 10, file=sys.stderr)
     raise SearchException('Failed to search the CIPD package, see logs')
   result = json_output['result']
   if result and len(result) > 1:
-    print
-    print >> sys.stderr, 'FAILED! ' * 10
+    print()
+    print('FAILED! ' * 10, file=sys.stderr)
     raise SearchException('Multiple CIPD package matched, %s', result)
   return result[0] if result else None
 
@@ -1270,8 +1273,8 @@ def tag_pkg(cipd_exe, pkg_name, pkg_version, service_url, tags,
   args.append(pkg_name)
   exit_code, _ = run_cipd(cipd_exe, 'attach', args)
   if exit_code:
-    print
-    print >> sys.stderr, 'FAILED! ' * 10
+    print()
+    print('FAILED! ' * 10, file=sys.stderr)
     raise TagException('Failed to tag the CIPD package, see logs')
 
 
@@ -1332,12 +1335,11 @@ def run(
   # We need both GOOS and GOARCH or none.
   if is_cross_compiling():
     if not os.environ.get('GOOS') or not os.environ.get('GOARCH'):
-      print >> sys.stderr, (
-          'When cross-compiling both GOOS and GOARCH environment variables '
-          'must be set.')
+      print('When cross-compiling both GOOS and GOARCH environment variables '
+            'must be set.', file=sys.stderr)
       return 1
     if os.environ.get('GOARM', '6') != '6':
-      print >> sys.stderr, 'Only GOARM=6 is supported for now.'
+      print('Only GOARM=6 is supported for now.', file=sys.stderr)
       return 1
 
   # Load all package definitions and pick ones we want to build (based on
@@ -1345,7 +1347,7 @@ def run(
   try:
     defs = enumerate_packages(package_def_dir, package_def_files)
   except PackageDefException as exc:
-    print >> sys.stderr, exc
+    print(exc, file=sys.stderr)
     return 1
   packages_to_visit = [p for p in defs if p.should_visit()]
 
@@ -1358,9 +1360,9 @@ def run(
   host_vars = get_host_package_vars()
   expected_arch = host_vars['platform'].split('-')[1]
   if go_env['GOHOSTARCH'] != expected_arch:
-    print >> sys.stderr, (
+    print(
         'Go toolset GOHOSTARCH (%s) doesn\'t match expected architecture (%s)' %
-        (go_env['GOHOSTARCH'], expected_arch))
+        (go_env['GOHOSTARCH'], expected_arch), file=sys.stderr)
     return 1
 
   # Append tags related to the build host. They are especially important when
@@ -1373,35 +1375,35 @@ def run(
 
   print_title('Overview')
   if upload:
-    print 'Service URL: %s' % service_url
-    print
+    print('Service URL: %s' % service_url)
+    print()
   if builder:
-    print 'Package definition files to process on %s:' % builder
+    print('Package definition files to process on %s:' % builder)
   else:
-    print 'Package definition files to process:'
+    print('Package definition files to process:')
   for pkg_def in packages_to_visit:
-    print '  %s' % pkg_def.name
+    print('  %s' % pkg_def.name)
   if not packages_to_visit:
-    print '  <none>'
-  print
-  print 'Variables to pass to CIPD:'
+    print('  <none>')
+    print()
+  print('Variables to pass to CIPD:')
   package_vars = get_package_vars()
   for k, v in sorted(package_vars.items()):
-    print '  %s = %s' % (k, v)
+    print('  %s = %s' % (k, v))
   if upload and tags:
-    print
-    print 'Tags to attach to uploaded packages:'
+    print()
+    print('Tags to attach to uploaded packages:')
     for tag in sorted(tags):
-      print '  %s' % tag
+      print('  %s' % tag)
   if not packages_to_visit:
-    print
-    print 'Nothing to do.'
+    print()
+    print('Nothing to do.')
     return 0
 
   # Find a CIPD client in PATH to use for building and uploading packages.
   print_title('CIPD client')
   cipd_exe = find_cipd()
-  print 'Binary: %s' % cipd_exe
+  print('Binary: %s' % cipd_exe)
   subprocess.check_call(['cipd', 'version'], executable=cipd_exe)
 
   # Remove old build artifacts to avoid stale files in case the script crashes
@@ -1414,11 +1416,11 @@ def run(
     for pkg_def in packages_to_visit:
       out_file = get_build_out_file(package_out_dir, pkg_def)
       if os.path.exists(out_file):
-        print 'Removing stale %s' % os.path.basename(out_file)
+        print('Removing stale %s' % os.path.basename(out_file))
         os.remove(out_file)
         cleaned = True
     if not cleaned:
-      print 'Nothing to clean'
+      print('Nothing to clean')
 
   # Build the world.
   if build:
@@ -1488,9 +1490,9 @@ def run(
 
   print_title('Summary')
   for d in failed:
-    print 'FAILED %s, see log above' % d['pkg_def_name']
+    print('FAILED %s, see log above' % d['pkg_def_name'])
   for d in succeeded:
-    print '%s %s' % (d['info']['package'], d['info']['instance_id'])
+    print('%s %s' % (d['info']['package'], d['info']['instance_id']))
 
   if json_output:
     with open(json_output, 'w') as f:
@@ -1513,7 +1515,7 @@ def build_infra(pkg_defs, should_refresh_python):
   """
   if should_refresh_python:
     print_title('Making sure python virtual environment is fresh')
-    run_python(
+    run_host_python2(
         script=os.path.join(ROOT, 'bootstrap', 'bootstrap.py'),
         args=[
             '--deps_file',
