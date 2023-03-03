@@ -119,6 +119,8 @@ message ExtendLeaseResponse {
 
 message ReleaseVMRequest {
   string lease_id = 1;
+  string gce_project = 2;
+  string gce_region = 3;
 }
 
 message ReleaseVMResponse {

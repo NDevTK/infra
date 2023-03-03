@@ -72,7 +72,9 @@ An example to release a VM:
 ```bash
 > grpcurl -plaintext -proto api/v1/vm_leaser.proto \
   -d '{
-    "lease_id": "test-vm-1673304809878"
+    "lease_id": "test-vm-1673304809878",
+    "gce_project": "chrome-fleet-vm-leaser-cr-exp",
+    "gce_region": "us-central1-a"
   }' \
   localhost:8080 \
   vm_leaser.api.v1.VMLeaserService.ReleaseVM

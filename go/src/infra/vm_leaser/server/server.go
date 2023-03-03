@@ -47,7 +47,6 @@ func (s *Server) LeaseVM(ctx context.Context, r *pb.LeaseVMRequest) (*pb.LeaseVM
 	}
 
 	leaseId := fmt.Sprintf("test-vm-%s", strconv.FormatInt(time.Now().UnixMilli(), 10))
-
 	err := createInstance(ctx, leaseId, r.GetHostReqs())
 	if err != nil {
 		return nil, err
@@ -80,18 +79,13 @@ func (s *Server) ReleaseVM(ctx context.Context, r *pb.ReleaseVMRequest) (*pb.Rel
 		return &pb.ReleaseVMResponse{}, fmt.Errorf("client cancelled: abandoning")
 	}
 
-	leaseId := r.GetLeaseId()
-	// TODO (justinsuen): add zone, projectId as an argument
-	zone := "us-central1-a"
-	projectId := "chrome-fleet-vm-leaser-cr-exp"
-
-	err := deleteInstance(ctx, leaseId, projectId, zone)
+	err := deleteInstance(ctx, r)
 	if err != nil {
 		return nil, err
 	}
 
 	return &pb.ReleaseVMResponse{
-		LeaseId: leaseId,
+		LeaseId: r.GetLeaseId(),
 	}, nil
 }
 
@@ -144,7 +138,7 @@ func createInstance(ctx context.Context, leaseId string, hostReqs *pb.VMRequirem
 }
 
 // deleteInstance sends an instance deletion request to the Compute Engine API and waits for it to complete.
-func deleteInstance(ctx context.Context, leaseId, projectId, zone string) error {
+func deleteInstance(ctx context.Context, r *pb.ReleaseVMRequest) error {
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		return fmt.Errorf("NewInstancesRESTClient error: %v", err)
@@ -152,9 +146,9 @@ func deleteInstance(ctx context.Context, leaseId, projectId, zone string) error 
 	defer c.Close()
 
 	req := &computepb.DeleteInstanceRequest{
-		Instance: leaseId,
-		Project:  projectId,
-		Zone:     zone,
+		Instance: r.GetLeaseId(),
+		Project:  r.GetGceProject(),
+		Zone:     r.GetGceRegion(),
 	}
 
 	logging.Debugf(ctx, "instance request params: %v", req)
