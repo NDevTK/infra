@@ -50,16 +50,18 @@ class Setup:
 
     # List of dirs that might not exist and can be ignored during path fix.
     self.ignorable_dirs = [
+        os.path.join(self.board_dir, 'usr', 'include', 'chromeos', 'libica'),
         os.path.join(self.board_dir, 'usr', 'include', 'chromeos', 'libsoda'),
+        os.path.join(self.board_dir, 'usr', 'include', 'u2f', 'client'),
         os.path.join(self.board_dir, 'usr', 'share', 'dbus-1'),
         os.path.join(self.board_dir, 'usr', 'share', 'proto'),
+        os.path.join(self.chroot_dir, 'build', 'share'),
         os.path.join(self.chroot_dir, 'usr', 'include', 'android'),
         os.path.join(self.chroot_dir, 'usr', 'include', 'cros-camera'),
         os.path.join(self.chroot_dir, 'usr', 'lib64', 'shill'),
         os.path.join(self.chroot_dir, 'usr', 'libexec', 'ipsec'),
         os.path.join(self.chroot_dir, 'usr', 'libexec', 'l2tpipsec_vpn'),
         os.path.join(self.chroot_dir, 'usr', 'share', 'cros-camera'),
-        os.path.join(self.chroot_dir, 'build', 'share'),
     ]
 
     self.skip_packages = skip_packages
