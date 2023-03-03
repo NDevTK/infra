@@ -18,6 +18,11 @@ import (
 	pb "infra/vm_leaser/api/v1"
 )
 
+// Default VM creation parameters
+const (
+	DefaultNetwork string = "global/networks/default"
+)
+
 // Prove that Server implements pb.VMLeaserServiceServer by instantiating a Server
 var _ pb.VMLeaserServiceServer = (*Server)(nil)
 
@@ -97,6 +102,12 @@ func createInstance(ctx context.Context, leaseId string, hostReqs *pb.VMRequirem
 	}
 	defer instancesClient.Close()
 
+	// Set default values if not provided
+	network := hostReqs.GetGceNetwork()
+	if network == "" {
+		network = DefaultNetwork
+	}
+
 	zone := hostReqs.GetGceRegion()
 	req := &computepb.InsertInstanceRequest{
 		Project: hostReqs.GetGceProject(),
@@ -117,7 +128,7 @@ func createInstance(ctx context.Context, leaseId string, hostReqs *pb.VMRequirem
 			MachineType: proto.String(fmt.Sprintf("zones/%s/machineTypes/%s", zone, hostReqs.GetGceMachineType())),
 			NetworkInterfaces: []*computepb.NetworkInterface{
 				{
-					Name: proto.String(hostReqs.GetGceNetwork()),
+					Name: proto.String(network),
 				},
 			},
 		},
