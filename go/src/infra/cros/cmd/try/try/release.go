@@ -30,7 +30,8 @@ func GetCmdRelease() *subcommands.Command {
 			c.addProductionFlag()
 			c.addPatchesFlag()
 			c.addBuildTargetsFlag()
-			c.Flags.BoolVar(&c.useProdTests, "prod_tests", false, "Use the production testing config even if staging.")
+			c.Flags.BoolVar(&c.useProdTests, "prod_tests", false, "Run (production) HW tests even if in staging. "+
+				"By default, HW tests are disabled in staging.")
 			c.Flags.BoolVar(&c.skipPaygen, "skip_paygen", false, "Skip payload generation. Only supported for staging builds.")
 			if flag.NArg() > 1 && flag.Args()[1] == "help" {
 				fmt.Printf("Run `cros try help` or `cros try help ${subcomand}` for help.")
