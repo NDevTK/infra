@@ -88,6 +88,24 @@
       "parentUuid": "23619db9_a5711476",
       "revId": "e1fff5a03463b28b90584e2da8d6c214ad948eb5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e7b09a9d_74c808be",
+        "filename": "go/src/infra/libs/vmlab/internal/image/cloudsdk/cloudsdk_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1540363
+      },
+      "writtenOn": "2023-03-03T01:37:03Z",
+      "side": 1,
+      "message": "Thanks! Let me think about it.\n\nThe tricky part is that the loop is in the method being tested, not part of the tests. And I mainly want to verify the polling behavior, like how many polls for the given time and/or conditions.",
+      "parentUuid": "1adb9c59_5b8d46fc",
+      "revId": "e1fff5a03463b28b90584e2da8d6c214ad948eb5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
