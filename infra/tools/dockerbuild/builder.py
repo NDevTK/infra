@@ -526,23 +526,35 @@ def BuildPackageFromSource(system,
         return pkg_dir
 
       if tpp_libs:
-        cflags = extra_env.get('CFLAGS', '')
-        cxxflags = extra_env.get('CXXFLAGS', '')
-        ldflags = extra_env.get('LDFLAGS', '')
+        tpp_include_dirs = []
+        tpp_lib_dirs = []
         for pkg, version in tpp_libs:
           pkg_dir = install_pkg(pkg, wheel.plat.cipd_platform)
-          cflags += ' -I' + os.path.join(pkg_dir, 'include')
-          cxxflags += ' -I' + os.path.join(pkg_dir, 'include')
-          ldflags += ' -L' + os.path.join(pkg_dir, 'lib')
+          tpp_include_dirs.append(os.path.join(pkg_dir, 'include'))
+          tpp_lib_dirs.append(os.path.join(pkg_dir, 'lib'))
           # Prepend the bin/ directory of each package to PATH.
           env_prefix.append(('PATH', os.path.join(pkg_dir, 'bin')))
-          # Make sure the lib/ directory is also in LD_LIBRARY PATH in case of
-          # shared libraries. This can be needed below when running auditwheel.
-          env_prefix.append(('LD_LIBRARY_PATH', os.path.join(pkg_dir, 'lib')))
+          if sys.platform.startswith('linux'):
+            # Make sure the lib/ directory is also in LD_LIBRARY PATH in case
+            # of shared libraries. This can be needed below when running
+            # auditwheel.
+            env_prefix.append(('LD_LIBRARY_PATH', os.path.join(pkg_dir, 'lib')))
 
-        extra_env['CFLAGS'] = cflags.lstrip()
-        extra_env['CXXFLAGS'] = cxxflags.lstrip()
-        extra_env['LDFLAGS'] = ldflags.lstrip()
+        if sys.platform == 'win32':
+          env_prefix.extend(('INCLUDE', d) for d in tpp_include_dirs)
+          env_prefix.extend(('LIB', d) for d in tpp_lib_dirs)
+        else:
+          cflags = extra_env.get('CFLAGS', '')
+          cxxflags = extra_env.get('CXXFLAGS', '')
+          ldflags = extra_env.get('LDFLAGS', '')
+          for d in tpp_include_dirs:
+            cflags += ' -I' + d
+            cxxflags += ' -I' + d
+          for d in tpp_lib_dirs:
+            ldflags += ' -L' + d
+          extra_env['CFLAGS'] = cflags.lstrip()
+          extra_env['CXXFLAGS'] = cxxflags.lstrip()
+          extra_env['LDFLAGS'] = ldflags.lstrip()
 
       if tpp_tools:
         host_plat = HostCipdPlatform()

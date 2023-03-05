@@ -528,12 +528,12 @@ wheel: <
 
 ## **aioquic**
 
-### 0.9.15
+### 0.9.15.chromium.1
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/aioquic/${vpython_platform}"
-  version: "version:0.9.15"
+  version: "version:0.9.15.chromium.1"
 >
 ```
 
