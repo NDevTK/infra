@@ -16,6 +16,30 @@
       "message": "Hi Gavin,\n\nThis is where new behaviour for --with-build flag begins.",
       "revId": "48ef452289e527941038e401cff139e5026d35a3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2c845667_4c16fedf",
+        "filename": "go/src/infra/cmd/package_index_cros/lib/cros_sdk.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1367998
+      },
+      "writtenOn": "2023-03-06T18:57:13Z",
+      "side": 1,
+      "message": "\u003e \"artifcats\" is a possible misspelling of \"artifacts\".\n\nPlease fix.",
+      "parentUuid": "19f28edc_97977030",
+      "range": {
+        "startLine": 123,
+        "startChar": 67,
+        "endLine": 123,
+        "endChar": 76
+      },
+      "revId": "48ef452289e527941038e401cff139e5026d35a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
