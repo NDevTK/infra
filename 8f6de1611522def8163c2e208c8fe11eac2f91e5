@@ -16,6 +16,24 @@
       "message": "// M is a map of file\u0027s basename to *entry\n?\n\n(or just // a map of file\u0027s basename to *entry\nsince M would not be exported)",
       "revId": "8f6de1611522def8163c2e208c8fe11eac2f91e5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "69f7a513_6eb994b1",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-03-06T06:49:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "04c47d8f_bebff6d3",
+      "revId": "8f6de1611522def8163c2e208c8fe11eac2f91e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
