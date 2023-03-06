@@ -578,3 +578,10 @@ var (
 func logStatus(ctx context.Context, status string) {
 	statusMetrics.Set(ctx, 1, status)
 }
+
+// Export metrics API.
+var (
+	LogPullTime = logPullTime
+	LogRunTime  = logRunTime
+	LogStatus   = logStatus
+)

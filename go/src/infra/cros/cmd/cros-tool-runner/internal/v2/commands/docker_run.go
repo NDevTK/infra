@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/gofrs/flock"
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -67,7 +68,21 @@ func (c *DockerRun) Execute(ctx context.Context) (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
-	return execute(ctx, dockerCmd, args)
+	// Normally docker run -d should return a container ID instantly. However, on
+	// Drone, I/O constraints may delay execution significantly. See discussion in
+	// b/238684062
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+	defer cancel()
+
+	startTime := time.Now()
+	stdout, stderr, err := execute(ctx, dockerCmd, args)
+	status := statusPass
+	if err != nil {
+		status = statusFail
+	}
+	monitorTime(c, startTime)
+	monitorStatus(c, status)
+	return stdout, stderr, err
 }
 
 // DockerPull represents `docker pull`
@@ -77,7 +92,12 @@ type DockerPull struct {
 
 func (c *DockerPull) Execute(ctx context.Context) (string, string, error) {
 	args := []string{"pull", c.ContainerImage}
-	return execute(ctx, dockerCmd, args)
+	startTime := time.Now()
+	stdout, stderr, err := execute(ctx, dockerCmd, args)
+	if err == nil {
+		monitorTime(c, startTime)
+	}
+	return stdout, stderr, err
 }
 
 // DockerLogin represents `docker login` and is an alias to LoginRegistryRequest

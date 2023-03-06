@@ -377,13 +377,23 @@ func (m *serverStateManager) cleanup() {
 	m.removeNetworks()
 }
 
-// handlePanic recovers from panic, cleans up server state before panics again.
+// handlePanic recovers from panic, cleans up server state before signals server
+// to terminate, which allows properly close other processes such as metrics.
+// Only panics again when unable to terminate server.
 func (m *serverStateManager) handlePanic() {
 	if r := recover(); r != nil {
 		log.Println("recovered from panic", r)
 		log.Println("cleanup server state due to panic")
 		m.cleanup()
-		log.Println("finished state cleanup and panic again")
-		panic(fmt.Sprintf("rethrow panic: %v", r))
+		log.Println("finished essential server state cleanup")
+		log.Println("signaling to terminate server for complete cleanup")
+		p, err := os.FindProcess(os.Getpid())
+		if err == nil {
+			err = p.Signal(os.Interrupt)
+		}
+		if err != nil {
+			log.Printf("error when signaling to terminate server %v, rethrow panic", err)
+			panic(fmt.Sprintf("rethrow panic: %v", r))
+		}
 	}
 }

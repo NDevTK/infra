@@ -20,6 +20,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/templates"
+	"infra/cros/cmd/cros-tool-runner/internal/v2/tsmon"
 )
 
 var serverCleanup = &serverStateManager{}
@@ -82,6 +83,12 @@ func StartServer(port int, exportTo string) int {
 
 	if exportTo != "" {
 		exportMetadata(lis, exportTo)
+	}
+	// init metrics
+	if err = tsmon.Init(); err != nil {
+		log.Printf("warning: metrics init Failed (NON-CRITICAL): %s", err)
+	} else {
+		defer tsmon.Shutdown()
 	}
 
 	// Wait for channel operations
