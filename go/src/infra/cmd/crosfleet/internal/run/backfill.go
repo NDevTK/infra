@@ -52,6 +52,7 @@ Mutually exclusive with -id.`)
 		c.Flags.Var(flagx.KeyVals(&c.buildTags), "tags", "Comma-separated build tags in same format as -tag. Mutually exclusive with -id.")
 		c.Flags.BoolVar(&c.skipConfirmation, "skip-confirmation", false, "Skip confirmation when backfilling multiple runs.")
 		c.Flags.BoolVar(&c.allowDupes, "allow-duplicates", false, "For development purposes only: allow duplicate backfills for the given id/tag(s).")
+		c.Flags.BoolVar(&c.dryrun, "dryrun", false, "Run the command without actually scheduling any tests.")
 		// -------------------------------------------------------------------------
 		// NOTE: This is not a public feature. Only un-comment this section for
 		// locally-built crosfleet executions by the Test Scheduling team.
@@ -70,6 +71,7 @@ type backfillRun struct {
 	skipConfirmation bool
 	allowDupes       bool
 	qsAccount        string
+	dryrun           bool
 }
 
 func (args *backfillRun) Run(a subcommands.Application, _ []string, env subcommands.Env) int {
@@ -129,6 +131,10 @@ func (args *backfillRun) innerRun(a subcommands.Application, env subcommands.Env
 		//	properties["requests"] = newRequests
 		//}
 		// -------------------------------------------------------------------------
+		if args.dryrun {
+			fmt.Fprintf(os.Stdout, "(Dryrun) Would have scheduled backfill for original build %d\n", original.Id)
+			continue
+		}
 		newBackfill, err := ctpBBClient.ScheduleBuild(ctx, properties, nil, backfillTags, 0)
 		if err != nil {
 			return err
