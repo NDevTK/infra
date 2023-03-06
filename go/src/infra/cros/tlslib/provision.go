@@ -298,8 +298,14 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 			}
 			log.Printf("provision: time to verify provision took %v", time.Since(t))
 		}
-	} else if isStatefulCorrupt(p.c) || mismatchStatefulCheck(p.c) {
-		log.Printf("provision: Stateful is corrupt, provisioning stateful partition.")
+	} else {
+		if isStatefulCorrupt(p.c) {
+			log.Printf("provision: Stateful is corrupt, provisioning stateful partition.")
+		} else if mismatchStatefulCheck(p.c) {
+			log.Printf("provision: Stateful mismatch detected, provisioning stateful partition.")
+		} else {
+			log.Printf("provision: wiping and reinstalling stateful partition.")
+		}
 		t := time.Now()
 		if !req.GetPreserveStateful() && !req.PreventReboot {
 			if err := p.wipeStateful(ctx); err != nil {
@@ -349,8 +355,6 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 		defer disconnect()
 
 		log.Printf("provision: time to provision stateful took %v", time.Since(t))
-	} else {
-		log.Printf("provision: Operation=%s skipped as DUT is already on builder path %s", opName, p.targetBuilderPath)
 	}
 
 	// Provision DLCs.
