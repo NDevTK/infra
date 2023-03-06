@@ -157,7 +157,7 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		}
 
 		// TODO(heschi): select gcc32 for GOARCH=i386
-		env.Set("PATH", fmt.Sprintf("%v%v%v", env.Get("PATH"), os.PathListSeparator, filepath.Join(toolsRoot, "cc/windows/gcc64/bin")))
+		env.Set("PATH", fmt.Sprintf("%v%c%v", env.Get("PATH"), os.PathListSeparator, filepath.Join(toolsRoot, "cc/windows/gcc64/bin")))
 	}
 
 	fmt.Println(env)
