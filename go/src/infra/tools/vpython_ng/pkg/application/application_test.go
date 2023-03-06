@@ -27,15 +27,24 @@ func TestParseArguments(t *testing.T) {
 		})
 
 		Convey("Test unknown argument", func() {
-			err := parseArgs(
-				"-vpython-test",
-			)
-			So(err.Error(), ShouldContainSubstring, "-vpython-test")
+			const unknownErr = "failed to extract flags: unknown flag: vpython-test"
 
-			err = parseArgs(
-				"--",
-				"-vpython-test",
-			)
+			// Care but only care arguments begin with "-" or "--".
+			err := parseArgs("-vpython-test")
+			So(err, ShouldBeError, unknownErr)
+			err = parseArgs("--vpython-test")
+			So(err, ShouldBeError, unknownErr)
+			err = parseArgs("-vpython-root", "root", "vpython-test")
+			So(err, ShouldBeNil)
+
+			// All arguments after the script file should be bypassed.
+			err = parseArgs("-vpython-test", "test.py")
+			So(err, ShouldBeError, unknownErr)
+			err = parseArgs("test.py", "-vpython-test")
+			So(err, ShouldBeNil)
+
+			// Stop parsing arguments when seen --
+			err = parseArgs("--", "-vpython-test")
 			So(err, ShouldBeNil)
 		})
 	})

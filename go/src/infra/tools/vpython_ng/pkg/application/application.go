@@ -210,32 +210,16 @@ func (a *Application) ParseArgs() (err error) {
 	fs.Var(&logLevel, "vpython-log-level",
 		"The logging level. Valid options are: debug, info, warning, error.")
 
-	vpythonArgs, pythonArgs := extractFlagsForSet(a.Arguments, &fs)
+	vpythonArgs, pythonArgs, err := extractFlagsForSet("vpython-", a.Arguments, &fs)
+	if err != nil {
+		return errors.Annotate(err, "failed to extract flags").Err()
+	}
 	if err := fs.Parse(vpythonArgs); err != nil {
 		return errors.Annotate(err, "failed to parse flags").Err()
 	}
 
 	// Set log level
 	a.Context = logging.SetLevel(a.Context, logLevel)
-
-	// Check if there are any '-vpython-*' options remain. Passing these flags
-	// to python can create confusing errors.
-	for _, arg := range pythonArgs {
-		// Stop checking options
-		if arg == "--" {
-			break
-		}
-
-		// Not an option
-		if !strings.HasPrefix(arg, "-") {
-			continue
-		}
-
-		// An vpython option shouldn't be passed to python
-		if strings.HasPrefix(strings.TrimLeft(arg, "-"), "vpython-") {
-			return errors.Reason("unknown vpython argument: %s", arg).Err()
-		}
-	}
 
 	if a.PythonCommandLine, err = python.ParseCommandLine(pythonArgs); err != nil {
 		return errors.Annotate(err, "failed to parse python commandline").Err()

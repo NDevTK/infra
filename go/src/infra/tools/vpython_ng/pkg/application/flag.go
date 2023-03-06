@@ -7,6 +7,8 @@ package application
 import (
 	"flag"
 	"strings"
+
+	"go.chromium.org/luci/common/errors"
 )
 
 // boolFlag is an interface implemented by boolean flag Value instances. We use
@@ -19,7 +21,7 @@ type boolFlag interface {
 	IsBoolFlag() bool
 }
 
-func extractFlagsForSet(args []string, fs *flag.FlagSet) (fsArgs, remainder []string) {
+func extractFlagsForSet(guardPrefix string, args []string, fs *flag.FlagSet) (fsArgs, remainder []string, err error) {
 	// Fast paths.
 	switch {
 	case len(args) == 0:
@@ -53,9 +55,9 @@ func extractFlagsForSet(args []string, fs *flag.FlagSet) (fsArgs, remainder []st
 		flags[f.Name] = ok && bf.IsBoolFlag()
 	})
 
-	processOne := func(args []string) int {
+	processOne := func(args []string) (int, error) {
 		if len(args) == 0 {
-			return 0
+			return 0, nil
 		}
 		arg := args[0]
 
@@ -71,7 +73,7 @@ func extractFlagsForSet(args []string, fs *flag.FlagSet) (fsArgs, remainder []st
 
 		if numMinuses == 0 || len(arg) == 0 {
 			// Not a flag, so we're done.
-			return 0
+			return 0, nil
 		}
 
 		single := false
@@ -84,16 +86,23 @@ func extractFlagsForSet(args []string, fs *flag.FlagSet) (fsArgs, remainder []st
 		flagIsBool, ok := flags[arg]
 		if !ok {
 			// Unknown flag.
-			return 0
+			if strings.HasPrefix(arg, guardPrefix) {
+				return 0, errors.Reason("unknown flag: %s", arg).Err()
+			}
+			return 0, nil
 		}
 		if flagIsBool || single {
-			return 1
+			return 1, nil
 		}
-		return 2
+		return 2, nil
 	}
 
 	for i := 0; i < len(candidates); {
-		consume := processOne(candidates[i:])
+		var consume int
+		if consume, err = processOne(candidates[i:]); err != nil {
+			return nil, nil, err
+		}
+
 		if consume == 0 {
 			fsArgs, remainder = args[:i], args[i:]
 			return
