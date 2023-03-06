@@ -44,9 +44,11 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 	ctx, cancel := context.WithTimeout(s.ctx, time.Hour)
 	defer cancel()
 
+	startTime := time.Now()
 	defer func() {
 		provisionDutCounter.Add(ctx, 1)
 		log.Printf("provision: finished %v on hostname=%v", opName, req.GetName())
+		log.Printf("provision: time to provision took %v", time.Since(startTime))
 	}()
 
 	var p *provisionState
