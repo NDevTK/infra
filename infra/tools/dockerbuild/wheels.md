@@ -3569,6 +3569,20 @@ wheel: <
 
 * *universal*
 
+## **importlib-metadata-py3**
+
+### 6.0.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/importlib-metadata-py3"
+  version: "version:6.0.0"
+>
+```
+
+
+* *universal*
+
 ## **infra_libs**
 
 ### 2.4.0

@@ -1373,6 +1373,7 @@ SPECS.update({
         Universal('idna', '2.10'),
         Universal('idna', '3.2', pyversions=['py3']),
         Universal('importlib-metadata', '1.6.0'),
+        Universal('importlib-metadata', '6.0.0', pyversions=['py3']),
         Universal('iniconfig', '1.1.1', pyversions=['py3']),
         Universal('iso8601', '0.1.12', pyversions=['py3']),
         Universal('isort', '4.3.4', pyversions=['py3']),
