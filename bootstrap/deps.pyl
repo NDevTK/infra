@@ -316,10 +316,10 @@
     'implicit': True,  # Required by docker
   },
   'WebTest': {
-    'version': '2.0.16.dev0',
+    'version': '2.0.35',
     'build': '0',
     'repo': 'external/github.com/Pylons/webtest',
-    'rev': '6581ebfe7e1f95b6f2e193723a9e0e1f02337851',
+    'rev': '25fc6c3492a4d50319c63b008cb9c7e4a4a2d1d6',
   },
   'WebOb': {
     'version': '1.4.1dev',

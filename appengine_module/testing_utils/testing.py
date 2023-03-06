@@ -4,6 +4,7 @@
 
 from contextlib import contextmanager
 import collections
+import logging
 import mock
 import six
 import time
@@ -239,15 +240,59 @@ class EndpointsTestCase(AppengineTestCase):  # pragma: no cover
   @property
   def app_module(self):
     """WSGI module that wraps the API class, used by AppengineTestCase."""
-    return endpoints.api_server([self.api_service_cls], restricted=False)
+    # Import endpoints_flask here because this method is not called by
+    # every user of the library and they may not have this dependency.
+    from components import endpoints_flask
+    return endpoints_flask.api_server([self.api_service_cls])
 
   def call_api(self, method, body=None, status=None):
     """Calls endpoints API method identified by its name."""
-    self.assertTrue(hasattr(self.api_service_cls, method))
-    return self.test_app.post_json(
-        '/_ah/spi/%s.%s' % (self.api_service_cls.__name__, method),
-        body or {},
-        status=status or self.expected_fail_status)
+    # Because body is a dict and not a ResourceContainer, there's no way to tell
+    # which parameters belong in the URL and which belong in the body when the
+    # HTTP method supports both. However there's no harm in supplying parameters
+    # in both the URL and the body since ResourceContainers don't allow the same
+    # parameter name to be used in both places. Supplying parameters in both
+    # places produces no ambiguity and extraneous parameters are safely ignored.
+    assert hasattr(self.api_service_cls, method), method
+    info = getattr(self.api_service_cls, method).method_info
+    path = info.get_path(self.api_service_cls.api_info)
+
+    # Identify which arguments are path parameters and which are query strings.
+    body = body or {}
+    query_strings = []
+    for key, value in sorted(body.items()):
+      if '{%s}' % str(key) in path:
+        path = path.replace('{%s}' % str(key), str(value))
+      else:
+        # We cannot tell if the parameter is a repeated field from a dict.
+        # Allow all query strings to be multi-valued.
+        if not isinstance(value, list):
+          value = [value]
+        for val in value:
+          query_strings.append('%s=%s' % (str(key), str(val)))
+    if query_strings:
+      path = '%s?%s' % (path, '&'.join(query_strings))
+
+    api_info = self.api_service_cls.api_info
+    path_version = (
+        api_info.path_version
+        if hasattr(api_info, 'path_version') else api_info.version)
+    path = '/_ah/api/%s/%s/%s' % (api_info.name, path_version, path)
+    status = status or self.expected_fail_status
+    try:
+      if info.http_method == 'DELETE':
+        return self.test_app.delete_json(path, body, status=status)
+      if info.http_method == 'PATCH':
+        return self.test_app.patch_json(path, body, status=status)
+      if info.http_method == 'POST':
+        return self.test_app.post_json(path, body, status=status)
+      if info.http_method == 'PUT':
+        return self.test_app.put_json(path, body, status=status)
+      return self.test_app.get(path, status=status)
+    except Exception as e:
+      # Useful for diagnosing issues in test cases.
+      logging.info('%s failed: %s', path, e)
+      raise
 
   @contextmanager
   def call_should_fail(self, status):

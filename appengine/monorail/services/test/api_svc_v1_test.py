@@ -1470,9 +1470,13 @@ class MonorailApiTest(testing.EndpointsTestCase):
     with self.call_should_fail(403):
       self.call_api('groups_create', self.request)
 
-  def SetUpGroupRequest(self, group_name, who_can_view_members='MEMBERS',
-                        ext_group_type=None, perms=None,
-                        requester='requester@example.com'):
+  def SetUpGroupRequest(
+      self,
+      group_name,
+      who_can_view_members='MEMBERS',
+      ext_group_type='CHROME_INFRA_AUTH',
+      perms=None,
+      requester='requester@example.com'):
     request = {
         'groupName': group_name,
         'requester': requester,
@@ -1648,7 +1652,7 @@ class MonorailApiTest(testing.EndpointsTestCase):
     cd_dict = {
       'componentPath': 'API'}
     self.request.update(cd_dict)
-    _ = self.call_api('components_delete', self.request).json_body
+    _ = self.call_api('components_delete', self.request)
     self.assertEqual(0, len(self.config.component_defs))
 
   def testComponentsUpdate_Invalid(self):
@@ -1704,7 +1708,7 @@ class MonorailApiTest(testing.EndpointsTestCase):
               'requester@example.com', 'user@example.com', '', ' ']},
           {'field': 'DEPRECATED', 'deprecated': True}]}
     self.request.update(cd_dict)
-    _ = self.call_api('components_update', self.request).json_body
+    _ = self.call_api('components_update', self.request)
     component_def = tracker_bizobj.FindComponentDef(
         'API', self.config)
     self.assertIsNotNone(component_def)
@@ -1717,7 +1721,7 @@ class MonorailApiTest(testing.EndpointsTestCase):
       'updates': [
           {'field': 'LEAF_NAME', 'leafName': 'NewParent'}]}
     self.request.update(cd_dict)
-    _ = self.call_api('components_update', self.request).json_body
+    _ = self.call_api('components_update', self.request)
     cd_parent = tracker_bizobj.FindComponentDef(
         'NewParent', self.config)
     cd_child = tracker_bizobj.FindComponentDef(
