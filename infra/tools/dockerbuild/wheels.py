@@ -334,7 +334,8 @@ SPECS.update({
             'cryptography',
             '3.3.2',
             pyversions=['py2', 'py3'],
-            packaged=['windows-x86-py3.8', 'windows-x64-py3.8'],
+            patch_version='chromium.1',
+            packaged=(),
             build_deps=BuildDependencies(
                 remote=[
                     'setuptools >= 40.6.0',
@@ -349,7 +350,7 @@ SPECS.update({
                 ],
             ),
             tpp_libs=[('infra/3pp/static_libs/openssl',
-                       'version:2@1.1.1j.chromium.2')],
+                       'version:2@1.1.1t.chromium.2')],
         ),
         SourceOrPrebuilt(
             'debugpy',
