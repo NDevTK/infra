@@ -10,14 +10,14 @@ import (
 	"net/http"
 	"strings"
 
-	"infra/appengine/test-results/model"
-
 	"cloud.google.com/go/storage"
 	"go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/memcache"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
+
+	"infra/appengine/test-results/model"
 )
 
 var builderNameReplacedStrings = []string{".", "(", ")", " "}

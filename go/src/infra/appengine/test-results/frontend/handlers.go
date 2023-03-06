@@ -8,18 +8,12 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"html/template"
 	"net/http"
 	"time"
 
-	"go.chromium.org/luci/appengine/gaeauth/server"
-	"go.chromium.org/luci/appengine/gaemiddleware"
 	"go.chromium.org/luci/appengine/gaemiddleware/standard"
-	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/gae/service/info"
-	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
 	"go.chromium.org/luci/server/templates"
 )
@@ -35,40 +29,16 @@ func init() {
 
 	baseMW := standard.Base()
 	frontendMW := baseMW.Extend(timeoutMiddleware(2 * time.Minute))
-	cronMW := baseMW.Extend(timeoutMiddleware(10 * time.Minute))
 	getMW := frontendMW.Extend(templatesMiddleware())
-	authMW := frontendMW.Extend(
-		auth.Authenticate(&server.OAuth2Method{Scopes: []string{server.EmailScope}}),
-	)
 
 	standard.InstallHandlers(r)
 
 	// Endpoints used by end users.
 	r.GET("/", getMW, polymerHandler)
 	r.GET("/home", getMW, polymerHandler)
-
-	// TODO(sergiyb): This endpoint may return JSON if supplied parameters select
-	// exactly one test file, but normally returns HTML. Consider separating JSON
-	// output into a /data/ endpoint, but make sure that all clients are updated.
-	r.GET("/testfile", getMW, getHandler)
 	r.GET("/revision_range", frontendMW, revisionHandler)
-
-	// POST endpoints.
-	r.POST("/testfile/upload", authMW.Extend(withParsedUploadForm), uploadHandler)
-
-	r.POST(
-		deleteKeysPath,
-		frontendMW.Extend(gaemiddleware.RequireTaskQueue(deleteKeysQueueName)),
-		deleteKeysHandler,
-	)
-
-	// Endpoints that return JSON and not expected to be used by humans.
-	r.GET("/data/builders", frontendMW, getBuildersHandler)
 	// Endpoint that returns layout results unzipped from an archive in google storage.
 	r.GET("/data/layout_results/:builder/:buildnum/*filepath", frontendMW, getZipHandler)
-
-	// Internal cron handlers.
-	r.GET("/internal/cron/delete_old_results", cronMW, deleteOldResultsHandler)
 
 	http.DefaultServeMux.Handle("/", r)
 }
@@ -81,6 +51,10 @@ func timeoutMiddleware(timeoutMs time.Duration) func(*router.Context, router.Han
 		next(c)
 	}
 }
+
+// paramsTimeFormat is the time format string in incoming GET
+// /testfile requests.
+const paramsTimeFormat = "2006-01-02T15:04:05Z" // RFC3339, but enforce Z for timezone.
 
 // templatesMiddleware returns the templates middleware.
 func templatesMiddleware() router.Middleware {
@@ -96,42 +70,4 @@ func templatesMiddleware() router.Middleware {
 			},
 		},
 	})
-}
-
-func reportOldEndpoint(c *router.Context, next router.Handler) {
-	logging.Debugf(c.Context, "Detected request to a deprecated endpoint %s", c.Request.URL)
-	next(c)
-}
-
-// deleteKeysHandler is task queue handler for deleting keys.
-func deleteKeysHandler(ctx *router.Context) {
-	c, w, r := ctx.Context, ctx.Writer, ctx.Request
-
-	keys := struct {
-		Keys []string `json:"keys"`
-	}{}
-	if err := json.NewDecoder(r.Body).Decode(&keys); err != nil {
-		logging.WithError(err).Errorf(c, "deleteKeysHandler: error decoding")
-		w.WriteHeader(http.StatusOK) // Prevent retrying with the same r.Body.
-		return
-	}
-
-	dkeys := make([]*datastore.Key, 0, len(keys.Keys))
-	for _, k := range keys.Keys {
-		dk, err := datastore.NewKeyEncoded(k)
-		if err != nil {
-			logging.WithError(err).Errorf(c, "deleteKeysHandler")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-		dkeys = append(dkeys, dk)
-	}
-
-	if err := datastore.Delete(c, dkeys); err != nil {
-		logging.WithError(err).Errorf(c, "deleteKeysHandler")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
 }

@@ -1,61 +1,8 @@
 <!DOCTYPE html>
-<title>Test Results Server</title>
-<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+<title>Test Results Server Has Been Turned Down</title>
 <meta name="viewport" content="width=device-width, minimum-scale=1.0">
-<base href="/">
 
-<script>
-  // setup Polymer options
-  window.Polymer = {lazyRegister: true, dom: 'shadow'};
-
-  // load webcomponents polyfills
-  (function() {
-    if ('registerElement' in document
-        && 'import' in document.createElement('link')
-        && 'content' in document.createElement('template')) {
-      // browser has web components
-    } else {
-      // polyfill web components
-      var e = document.createElement('script');
-      e.src = '/bower_components/webcomponentsjs/webcomponents-lite.min.js';
-      document.head.appendChild(e);
-    }
-  })();
-
-  function loadNonVulcanized() {
-    var link = document.createElement('link');
-    link.rel = 'import';
-    link.href = 'src/test-results.html';
-    document.head.appendChild(link);
-  }
-</script>
-<link rel="import" href="/src/test-results.vulcanized.html" onerror="loadNonVulcanized()">
-
-{{- if not .IsDevAppServer}}
-<script>
-  /* Feedback button */
-  (function(i,s,o,g,r,a,m){i['CrDXObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://storage.googleapis.com/chops-feedback/feedback.js','crdx');
-
-  crdx('setFeedbackButtonLink', 'https://bugs.chromium.org/p/chromium/issues/entry?template=Build%20Infrastructure&components=Infra>Flakiness>Dashboard&labels=Pri-2,Infra-DX&cc=estaab@chromium.org,seanmccullough@chromium.org,zhangtiff@chromium.org&comment=Test-Results+Issue');
-
-  /* Google Analytics */
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-55762617-8', {'siteSpeedSampleRate': 100});
-  ga('send', 'pageview');
-</script>
-{{- end -}}
-
-<style>
-  body {
-    margin: 0px;
-  }
-</style>
-
-<test-results></test-results>
+<h1>Test Results Server Has Been Turned down</h1>
+<p>This is the old test results server.  It has been replaced by ResultDB.</p>
+<p>This site remains for some minor legacy functions that have not yet completed migration, but the majority of functionality has been turned off.</p>
+<p>Please contact the LUCI Test team for any questions.</p>
