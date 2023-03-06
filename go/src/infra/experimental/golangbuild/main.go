@@ -105,6 +105,8 @@ func main() {
 }
 
 func run(ctx context.Context, args []string, st *build.State, inputs *golangbuildpb.Inputs) (err error) {
+	fmt.Println(inputs)
+
 	authOpts := chromeinfra.SetDefaultAuthOptions(auth.Options{
 		Scopes: []string{
 			"https://www.googleapis.com/auth/userinfo.email",
@@ -122,6 +124,8 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		return err
 	}
 
+	fmt.Println(toolsRoot)
+
 	// Define working directory.
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -138,10 +142,27 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	env.Set("GOBIN", "")
 	env.Set("GOCACHE", gocacheDir)
 	env.Set("GO_BUILDER_NAME", st.Build().GetBuilder().GetBuilder()) // TODO(mknyszek): This is underspecified. We may need Project and Bucket.
+
+	fmt.Println(env)
+	fmt.Println(os.Environ())
+
 	if runtime.GOOS == "windows" {
+		p := fmt.Sprintf("%s/cc/windows/gcc64", toolsRoot)
+		files, err := os.ReadDir(p)
+		if err != nil {
+			fmt.Println(err)
+		}
+		for i, v := range files {
+			fmt.Println(i, v.IsDir(), v.Name(), v.Type())
+		}
+
 		// TODO(heschi): select gcc32 for GOARCH=i386
 		env.Set("PATH", fmt.Sprintf("%v%v%v", env.Get("PATH"), os.PathListSeparator, filepath.Join(toolsRoot, "cc/windows/gcc64/bin")))
 	}
+
+	fmt.Println(env)
+	fmt.Println(os.Environ())
+
 	ctx = env.SetInCtx(ctx)
 
 	inputPb := st.Build().GetInput()
