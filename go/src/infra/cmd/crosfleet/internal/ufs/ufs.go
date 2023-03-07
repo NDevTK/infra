@@ -24,26 +24,6 @@ type Client interface {
 	CheckFleetTestsPolicy(context.Context, *ufsapi.CheckFleetTestsPolicyRequest, ...grpc.CallOption) (*ufsapi.CheckFleetTestsPolicyResponse, error)
 }
 
-// ClientImpl is the concrete implementation of this client.
-type clientImpl struct {
-	client ufsapi.FleetClient
-}
-
-// CheckFleetTestsPolicy checks the fleet test policy for the given test parameters.
-func (c *clientImpl) CheckFleetTestsPolicy(ctx context.Context, req *ufsapi.CheckFleetTestsPolicyRequest) (*ufsapi.CheckFleetTestsPolicyResponse, error) {
-	return c.client.CheckFleetTestsPolicy(ctx, req)
-}
-
-// GetMachineLSE gets information about a DUT.
-func (c *clientImpl) GetMachineLSE(ctx context.Context, req *ufsapi.GetMachineLSERequest) (*models.MachineLSE, error) {
-	return c.client.GetMachineLSE(ctx, req)
-}
-
-// GetMachine retrieves the details of the machine
-func (c *clientImpl) GetMachine(ctx context.Context, req *ufsapi.GetMachineRequest) (*models.Machine, error) {
-	return c.client.GetMachine(ctx, req)
-}
-
 // newUFSClient returns a new client to interact with the Unified Fleet System.
 func NewUFSClient(ctx context.Context, ufsService string, authFlags *authcli.Flags) (Client, error) {
 	httpClient, err := cmdlib.NewHTTPClient(ctx, authFlags)

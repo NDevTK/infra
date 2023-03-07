@@ -156,7 +156,7 @@ func (c *leasesRun) innerRun(a subcommands.Application, env subcommands.Env) err
 // leaseInfoAsBashVariables returns a pretty-printed string containing info
 // about the given lease formatted as bash variables. Only the variables that
 // are found in the lease info proto message are printed.
-func leaseInfoAsBashVariables(info *dutinfopb.LeaseInfo, leasesBBClient *buildbucket.Client) string {
+func leaseInfoAsBashVariables(info *dutinfopb.LeaseInfo, leasesBBClient buildbucket.Client) string {
 	var bashVars []string
 
 	build := info.GetBuild()

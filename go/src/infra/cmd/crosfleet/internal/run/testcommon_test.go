@@ -190,7 +190,7 @@ func TestValidateArgs(t *testing.T) {
 			if err := flagSet.Parse(tt.args); err != nil {
 				t.Fatalf("unexpected error parsing command line args %v for test: %v", tt.args, err)
 			}
-			gotValidationErr := tt.testCommonFlags.validateArgs(&flagSet, tt.mainArgType)
+			gotValidationErr := tt.testCommonFlags.validateArgs(&flagSet, flagSet.Args(), tt.mainArgType)
 			gotValidationErrString := common.ErrToString(gotValidationErr)
 			if tt.wantValidationErrString != gotValidationErrString {
 				t.Errorf("unexpected error: wanted '%s', got '%s'", tt.wantValidationErrString, gotValidationErrString)

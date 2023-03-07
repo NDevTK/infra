@@ -33,7 +33,7 @@ func TestAddServiceVersion(t *testing.T) {
 }
 
 func TestBuildURL(t *testing.T) {
-	client := Client{
+	client := &client{
 		builderID: &buildbucketpb.BuilderID{
 			Project: "chromeos",
 			Bucket:  "test_runner",

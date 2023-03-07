@@ -20,6 +20,7 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/lucictx"
 	"google.golang.org/genproto/protobuf/field_mask"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -49,15 +50,37 @@ func AddServiceVersion(props map[string]interface{}) map[string]interface{} {
 	return props
 }
 
+// BuildsClient is a subset of buildbucketpb.BuildsClient providing a smaller surface area for unit tests
+type BuildsClient interface {
+	GetBuild(context.Context, *buildbucketpb.GetBuildRequest, ...grpc.CallOption) (*buildbucketpb.Build, error)
+	ScheduleBuild(context.Context, *buildbucketpb.ScheduleBuildRequest, ...grpc.CallOption) (*buildbucketpb.Build, error)
+	SearchBuilds(ctx context.Context, in *buildbucketpb.SearchBuildsRequest, opts ...grpc.CallOption) (*buildbucketpb.SearchBuildsResponse, error)
+	CancelBuild(ctx context.Context, in *buildbucketpb.CancelBuildRequest, opts ...grpc.CallOption) (*buildbucketpb.Build, error)
+}
+
 // Client provides helper methods to interact with Buildbucket builds.
-type Client struct {
-	client    buildbucketpb.BuildsClient
+type Client interface {
+	GetBuildsClient() BuildsClient
+	GetBuilderID() *buildbucketpb.BuilderID
+	ScheduleBuild(ctx context.Context, props map[string]interface{}, dims map[string]string, tags map[string]string, priority int32) (*buildbucketpb.Build, error)
+	WaitForBuildStepStart(ctx context.Context, id int64, stepName string) (*buildbucketpb.Build, error)
+	GetAllBuildsWithTags(ctx context.Context, tags map[string]string, searchBuildsRequest *buildbucketpb.SearchBuildsRequest) ([]*buildbucketpb.Build, error)
+	GetBuild(ctx context.Context, ID int64, fields ...string) (*buildbucketpb.Build, error)
+	GetLatestGreenBuild(ctx context.Context) (*buildbucketpb.Build, error)
+	AnyIncompleteBuildsWithTags(ctx context.Context, tags map[string]string) (bool, int64, error)
+	CancelBuildsByUser(ctx context.Context, printer common.CLIPrinter, earliestCreateTime *timestamppb.Timestamp, user string, ids []string, reason string) error
+	GetAllBuildsByUser(ctx context.Context, user string, searchBuildsRequest *buildbucketpb.SearchBuildsRequest) ([]*buildbucketpb.Build, error)
+	BuildURL(ID int64) string
+}
+
+type client struct {
+	client    BuildsClient
 	builderID *buildbucketpb.BuilderID
 }
 
 // NewClient returns a new client to interact with Buildbucket builds from the
 // given builder.
-func NewClient(ctx context.Context, builder *buildbucketpb.BuilderID, bbService string, authFlags authcli.Flags) (*Client, error) {
+func NewClient(ctx context.Context, builder *buildbucketpb.BuilderID, bbService string, authFlags authcli.Flags) (Client, error) {
 	httpClient, err := cmdlib.NewHTTPClient(ctx, &authFlags)
 	if err != nil {
 		return nil, err
@@ -69,25 +92,25 @@ func NewClient(ctx context.Context, builder *buildbucketpb.BuilderID, bbService 
 		Options: site.DefaultPRPCOptions,
 	}
 
-	return &Client{
+	return &client{
 		client:    buildbucketpb.NewBuildsPRPCClient(prpcClient),
 		builderID: builder,
 	}, nil
 }
 
 // GetBuildsClient returns a builds client associated with the Client.
-func (c *Client) GetBuildsClient() buildbucketpb.BuildsClient {
+func (c *client) GetBuildsClient() BuildsClient {
 	return c.client
 }
 
 // GetBuilderId returns a builder ID associated with the Client.
-func (c *Client) GetBuilderID() *buildbucketpb.BuilderID {
+func (c *client) GetBuilderID() *buildbucketpb.BuilderID {
 	return c.builderID
 }
 
 // NewClientForTesting returns a new client with only the builderID configured.
-func NewClientForTesting(builder *buildbucketpb.BuilderID) *Client {
-	return &Client{builderID: builder}
+func NewClientForTesting(builder *buildbucketpb.BuilderID) Client {
+	return &client{builderID: builder}
 }
 
 // ScheduleBuild schedules a new build (of the client's builder) with the given
@@ -102,7 +125,7 @@ func NewClientForTesting(builder *buildbucketpb.BuilderID) *Client {
 // that fulfils the same requirements recursively.
 //
 // NOTE: Buildbucket priority is separate from internal swarming priority.
-func (c *Client) ScheduleBuild(ctx context.Context, props map[string]interface{}, dims map[string]string, tags map[string]string, priority int32) (*buildbucketpb.Build, error) {
+func (c *client) ScheduleBuild(ctx context.Context, props map[string]interface{}, dims map[string]string, tags map[string]string, priority int32) (*buildbucketpb.Build, error) {
 	props = AddServiceVersion(props)
 	propStruct, err := common.MapToStruct(props)
 
@@ -145,7 +168,7 @@ func (c *Client) ScheduleBuild(ctx context.Context, props map[string]interface{}
 // the given ID, and returns the build once it has started the given step.
 // If the build has a status other than scheduled/started, both the build and
 // a printable error message are returned.
-func (c *Client) WaitForBuildStepStart(ctx context.Context, id int64, stepName string) (*buildbucketpb.Build, error) {
+func (c *client) WaitForBuildStepStart(ctx context.Context, id int64, stepName string) (*buildbucketpb.Build, error) {
 	stepStarted := false
 	for {
 		build, err := c.GetBuild(ctx, id)
@@ -187,7 +210,7 @@ For more details, please visit the build page at %s`, statusString, buildSummary
 // and returns all the builds that were found. For searches that return many
 // builds, this function avoids having to deal with search pagination logic.
 // This function only searches builds from the Client's builder.
-func (c *Client) getAllBuilds(ctx context.Context, searchBuildsRequest *buildbucketpb.SearchBuildsRequest) ([]*buildbucketpb.Build, error) {
+func (c *client) getAllBuilds(ctx context.Context, searchBuildsRequest *buildbucketpb.SearchBuildsRequest) ([]*buildbucketpb.Build, error) {
 	// The Client is only designed to interact with builds from its builderID,
 	// so we set that builderID within this function to keep the caller's
 	// request simple.
@@ -214,7 +237,7 @@ func (c *Client) getAllBuilds(ctx context.Context, searchBuildsRequest *buildbuc
 // matching the given SearchBuildsRequest. This function expects the field
 // "builds.*.created_by" to be included in the field mask of the given
 // SearchBuildRequest.
-func (c *Client) GetAllBuildsByUser(ctx context.Context, user string, searchBuildsRequest *buildbucketpb.SearchBuildsRequest) ([]*buildbucketpb.Build, error) {
+func (c *client) GetAllBuildsByUser(ctx context.Context, user string, searchBuildsRequest *buildbucketpb.SearchBuildsRequest) ([]*buildbucketpb.Build, error) {
 	allBuilds, err := c.getAllBuilds(ctx, searchBuildsRequest)
 	if err != nil {
 		return nil, err
@@ -232,7 +255,7 @@ func (c *Client) GetAllBuildsByUser(ctx context.Context, user string, searchBuil
 // given SearchBuildsRequest. (Technically, the SearchBuildsRequest could
 // include tags in the form []*buildbucketpb.StringPair; this function simply
 // allows passing tags in the simpler map[string]string form.)
-func (c *Client) GetAllBuildsWithTags(ctx context.Context, tags map[string]string, searchBuildsRequest *buildbucketpb.SearchBuildsRequest) ([]*buildbucketpb.Build, error) {
+func (c *client) GetAllBuildsWithTags(ctx context.Context, tags map[string]string, searchBuildsRequest *buildbucketpb.SearchBuildsRequest) ([]*buildbucketpb.Build, error) {
 	// Convert tags to []*buildbucketpb.StringPair and add to search request.
 	searchPredicate := searchBuildsRequest.Predicate
 	if searchPredicate == nil {
@@ -246,7 +269,7 @@ func (c *Client) GetAllBuildsWithTags(ctx context.Context, tags map[string]strin
 // AnyIncompleteBuildsWithTags returns a bool indicating whether there are any
 // scheduled or started builds matching the given tags. If any builds are found,
 // the first ID is returned.
-func (c *Client) AnyIncompleteBuildsWithTags(ctx context.Context, tags map[string]string) (bool, int64, error) {
+func (c *client) AnyIncompleteBuildsWithTags(ctx context.Context, tags map[string]string) (bool, int64, error) {
 	// Search for started builds first.
 	builds, err := c.GetAllBuildsWithTags(ctx, tags, &buildbucketpb.SearchBuildsRequest{
 		Predicate: &buildbucketpb.BuildPredicate{
@@ -274,7 +297,7 @@ func (c *Client) AnyIncompleteBuildsWithTags(ctx context.Context, tags map[strin
 // given timestamp that was launched by the given user. An optional bot ID list
 // can be given, which restricts cancellations to builds running on bots on the
 // given list. The optional cancellation reason is used if not blank.
-func (c *Client) CancelBuildsByUser(ctx context.Context, printer common.CLIPrinter, earliestCreateTime *timestamppb.Timestamp, user string, ids []string, reason string) error {
+func (c *client) CancelBuildsByUser(ctx context.Context, printer common.CLIPrinter, earliestCreateTime *timestamppb.Timestamp, user string, ids []string, reason string) error {
 	if reason == "" {
 		reason = "cancelled from crosfleet CLI"
 	}
@@ -354,7 +377,7 @@ func (c *Client) CancelBuildsByUser(ctx context.Context, printer common.CLIPrint
 
 // GetBuild gets a Buildbucket build by ID, with the given build fields
 // populated. If no fields are given, all fields will be populated.
-func (c *Client) GetBuild(ctx context.Context, ID int64, fields ...string) (*buildbucketpb.Build, error) {
+func (c *client) GetBuild(ctx context.Context, ID int64, fields ...string) (*buildbucketpb.Build, error) {
 	if len(fields) == 0 {
 		fields = []string{"*"}
 	}
@@ -372,7 +395,7 @@ func (c *Client) GetBuild(ctx context.Context, ID int64, fields ...string) (*bui
 // GetLatestGreenBuild gets the latest green build for the client's builder.
 // To optimize runtime, this call is only configured to populate the build's ID
 // and output properties. More fields can be added to the field mask if needed.
-func (c *Client) GetLatestGreenBuild(ctx context.Context) (*buildbucketpb.Build, error) {
+func (c *client) GetLatestGreenBuild(ctx context.Context) (*buildbucketpb.Build, error) {
 	searchBuildsRequest := &buildbucketpb.SearchBuildsRequest{
 		Predicate: &buildbucketpb.BuildPredicate{
 			Builder: c.builderID,
@@ -400,7 +423,7 @@ func (c *Client) GetLatestGreenBuild(ctx context.Context) (*buildbucketpb.Build,
 
 // BuildURL constructs the URL for the LUCI page of the build (of the client's
 // builder) with the given ID.
-func (c *Client) BuildURL(ID int64) string {
+func (c *client) BuildURL(ID int64) string {
 	return fmt.Sprintf(
 		"https://ci.chromium.org/ui/p/%s/builders/%s/%s/b%d",
 		c.builderID.Project, c.builderID.Bucket, c.builderID.Builder, ID)

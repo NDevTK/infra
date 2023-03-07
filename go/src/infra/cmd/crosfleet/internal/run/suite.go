@@ -5,6 +5,7 @@
 package run
 
 import (
+	"context"
 	"fmt"
 
 	"infra/cmd/crosfleet/internal/buildbucket"
@@ -52,28 +53,32 @@ type suiteRun struct {
 }
 
 func (c *suiteRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
-	if err := c.innerRun(a, args, env); err != nil {
-		cmdlib.PrintError(a, err)
-		return 1
-	}
-	return 0
-}
-
-func (c *suiteRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-	bbService := c.envFlags.Env().BuildbucketService
 	ctx := cli.GetContext(a, c, env)
-	if err := c.validateAndAutocompleteFlags(ctx, &c.Flags, suiteCmdName, bbService, c.authFlags, c.printer); err != nil {
-		return err
-	}
+	bbService := c.envFlags.Env().BuildbucketService
 
 	ctpBuilder := c.getCTPBuilder(c.envFlags.Env())
 	ctpBBClient, err := buildbucket.NewClient(ctx, ctpBuilder, bbService, c.authFlags)
 	if err != nil {
-		return err
+		cmdlib.PrintError(a, err)
+		return 1
 	}
 
 	ufsClient, err := ufs.NewUFSClient(ctx, c.envFlags.Env().UFSService, &c.authFlags)
 	if err != nil {
+		cmdlib.PrintError(a, err)
+		return 2
+	}
+
+	if err := c.innerRun(a, args, ctx, ctpBBClient, ufsClient); err != nil {
+		cmdlib.PrintError(a, err)
+		return 3
+	}
+	return 0
+}
+
+func (c *suiteRun) innerRun(a subcommands.Application, args []string, ctx context.Context, ctpBBClient buildbucket.Client, ufsClient ufs.Client) error {
+	bbService := c.envFlags.Env().BuildbucketService
+	if err := c.validateAndAutocompleteFlags(ctx, &c.Flags, args, suiteCmdName, bbService, c.authFlags, c.printer); err != nil {
 		return err
 	}
 

@@ -64,7 +64,7 @@ func (c *testRun) Run(a subcommands.Application, args []string, env subcommands.
 func (c *testRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
 	bbService := c.envFlags.Env().BuildbucketService
 	ctx := cli.GetContext(a, c, env)
-	if err := c.validateAndAutocompleteFlags(ctx, &c.Flags, testCmdName, bbService, c.authFlags, c.printer); err != nil {
+	if err := c.validateAndAutocompleteFlags(ctx, &c.Flags, args, testCmdName, bbService, c.authFlags, c.printer); err != nil {
 		return err
 	}
 

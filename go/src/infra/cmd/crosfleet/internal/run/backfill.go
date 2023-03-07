@@ -145,7 +145,7 @@ func (args *backfillRun) innerRun(a subcommands.Application, env subcommands.Env
 	return nil
 }
 
-func (args *backfillRun) findOriginalBuilds(ctx context.Context, bbClient *buildbucket.Client) ([]*buildbucketpb.Build, error) {
+func (args *backfillRun) findOriginalBuilds(ctx context.Context, bbClient buildbucket.Client) ([]*buildbucketpb.Build, error) {
 	searchByTags := len(args.buildTags) > 0
 	searchByID := args.buildID > 0
 	if searchByTags == searchByID {

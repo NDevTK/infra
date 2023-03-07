@@ -145,8 +145,8 @@ If a Quota Scheduler account is specified via -qs-account, this value is not use
 
 // validateAndAutocompleteFlags returns any errors after validating the CLI
 // flags, and autocompletes the -image flag unless it was specified by the user.
-func (c *testCommonFlags) validateAndAutocompleteFlags(ctx context.Context, f *flag.FlagSet, mainArgType, bbService string, authFlags authcli.Flags, printer common.CLIPrinter) error {
-	if err := c.validateArgs(f, mainArgType); err != nil {
+func (c *testCommonFlags) validateAndAutocompleteFlags(ctx context.Context, f *flag.FlagSet, args []string, mainArgType, bbService string, authFlags authcli.Flags, printer common.CLIPrinter) error {
+	if err := c.validateArgs(f, args, mainArgType); err != nil {
 		return err
 	}
 	if c.release != "" {
@@ -167,7 +167,7 @@ func (c *testCommonFlags) validateAndAutocompleteFlags(ctx context.Context, f *f
 	return nil
 }
 
-func (c *testCommonFlags) validateArgs(f *flag.FlagSet, mainArgType string) error {
+func (c *testCommonFlags) validateArgs(f *flag.FlagSet, args []string, mainArgType string) error {
 	var errors []string
 	if c.board == "" {
 		errors = append(errors, "missing board flag")
@@ -193,7 +193,7 @@ func (c *testCommonFlags) validateArgs(f *flag.FlagSet, mainArgType string) erro
 	if numUniqueDUTs*c.repeats > maxCTPRunsPerCmd {
 		errors = append(errors, fmt.Sprintf("total number of CTP runs launched (# models specified * repeats) cannot exceed %d", maxCTPRunsPerCmd))
 	}
-	if f.NArg() == 0 {
+	if len(args) == 0 {
 		errors = append(errors, fmt.Sprintf("missing %v arg", mainArgType))
 	}
 	// For multi-DUTs result reporting purpose we need board info, so even if
@@ -313,7 +313,7 @@ type ctpRunLauncher struct {
 	mainArgsTag string
 	printer     common.CLIPrinter
 	cmdName     string
-	bbClient    *buildbucket.Client
+	bbClient    buildbucket.Client
 	testPlan    *test_platform.Request_TestPlan
 	cliFlags    *testCommonFlags
 }
