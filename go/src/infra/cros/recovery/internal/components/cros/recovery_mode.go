@@ -101,6 +101,8 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 		if err := servo.SetPowerState(ctx, servod, servo.PowerStateValueON); err != nil {
 			return errors.Annotate(err, "boot in recovery mode").Err()
 		}
+		// Waiting 3 seconds before allowed followeing commands to try something else.
+		time.Sleep(3 * time.Second)
 		log.Debugf("Boot in recovery mode: servo states recovered.")
 		return nil
 	}
