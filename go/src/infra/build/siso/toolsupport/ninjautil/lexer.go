@@ -367,9 +367,8 @@ var esbuf = EvalString{
 
 func (l *lexer) evalString(path bool) (EvalString, error) {
 	esbuf.s = esbuf.s[:0]
-	var s int
+	s := l.pos
 loop:
-	// TODO(b/267409605): Add test coverage for path=true.
 	for {
 		s = l.pos
 		cur := l.buf[l.pos:]
@@ -393,14 +392,14 @@ loop:
 			}
 			break loop
 		}
-		// TODO(b/267409605): Ensure all cases have test coverage.
 		switch cur[0] {
 		case ' ', ':', '|':
 			if !path {
 				esbuf.addLiteral(cur[:1])
+				l.pos++
+				continue
 			}
-			l.pos++
-			continue
+			break loop
 		}
 		if bytes.HasPrefix(cur, []byte("$$")) {
 			esbuf.addLiteral(cur[1:2])
