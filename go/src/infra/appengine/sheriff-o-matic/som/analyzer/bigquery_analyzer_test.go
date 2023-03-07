@@ -1446,8 +1446,6 @@ func TestGetFilterFuncForTree(t *testing.T) {
 		So(err, ShouldBeNil)
 		_, err = getFilterFuncForTree("chromium.clang")
 		So(err, ShouldBeNil)
-		_, err = getFilterFuncForTree("lacros_skylab")
-		So(err, ShouldBeNil)
 		_, err = getFilterFuncForTree("another")
 		So(err, ShouldNotBeNil)
 	})
