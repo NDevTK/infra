@@ -91,6 +91,9 @@ func stringCapabilitiesConverter(dims Dimensions, ls *inventory.SchedulableLabel
 	if v := c.GetTelephony(); v != "" {
 		dims["label-telephony"] = []string{v}
 	}
+	if v := c.GetStarfishSlotMapping(); v != "" {
+		dims["label-starfish_slot_mapping"] = []string{v}
+	}
 }
 
 func stringCapabilitiesReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
@@ -101,6 +104,7 @@ func stringCapabilitiesReverter(ls *inventory.SchedulableLabels, d Dimensions) D
 	d = assignLastStringValueAndDropKey(d, c.Power, "label-power")
 	d = assignLastStringValueAndDropKey(d, c.Storage, "label-storage")
 	d = assignLastStringValueAndDropKey(d, c.Telephony, "label-telephony")
+	d = assignLastStringValueAndDropKey(d, c.StarfishSlotMapping, "label-starfish_slot_mapping")
 	return d
 }
 

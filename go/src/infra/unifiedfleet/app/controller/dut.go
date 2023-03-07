@@ -510,6 +510,7 @@ func validateUpdateMachineLSEDUTMask(mask *field_mask.FieldMask, machinelse *ufs
 		case "dut.wifi.router":
 		case "dut.touch.mimo":
 		case "dut.carrier":
+		case "dut.starfishSlotMapping":
 		case "dut.chaos":
 		case "dut.camerabox":
 		case "dut.camerabox.facing":
@@ -639,6 +640,8 @@ func processUpdateMachineLSEDUTMask(oldDut, newDut *chromeosLab.DeviceUnderTest,
 		}
 	case "dut.carrier":
 		oldDut.GetPeripherals().Carrier = newDut.GetPeripherals().GetCarrier()
+	case "dut.starfishSlotMapping":
+		oldDut.GetPeripherals().StarfishSlotMapping = newDut.GetPeripherals().GetStarfishSlotMapping()
 	case "dut.chaos":
 		oldDut.GetPeripherals().Chaos = newDut.GetPeripherals().GetChaos()
 	case "dut.usb.smarthub":

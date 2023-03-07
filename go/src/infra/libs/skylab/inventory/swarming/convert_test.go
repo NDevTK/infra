@@ -99,6 +99,7 @@ capabilities {
   touchscreen: true
   telephony: "telephonyval"
   storage: "storageval"
+  starfish_slot_mapping: "1_verizon,2_tmobile,4_att"
   power: "powerval"
   modem: "modemval"
   lucidsleep: true
@@ -249,6 +250,7 @@ capabilities {
   touchscreen: true
   telephony: "telephonyval"
   storage: "storageval"
+  starfish_slot_mapping: "1_verizon,2_tmobile,4_att"
   power: "powerval"
   modem: "modemval"
   lucidsleep: true
@@ -407,6 +409,7 @@ var fullDimensions = Dimensions{
 	"label-sku":                     {"skuval"},
 	"label-brand":                   {"HOMH"},
 	"label-router_802_11ax":         {"True"},
+	"label-starfish_slot_mapping":   {"1_verizon,2_tmobile,4_att"},
 	"label-storage":                 {"storageval"},
 	"label-stylus":                  {"True"},
 	"label-telephony":               {"telephonyval"},

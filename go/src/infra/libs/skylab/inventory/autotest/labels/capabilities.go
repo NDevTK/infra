@@ -86,6 +86,10 @@ func stringCapabilitiesConverter(ls *inventory.SchedulableLabels) []string {
 		lv := "telephony:" + v
 		labels = append(labels, lv)
 	}
+	if v := c.GetStarfishSlotMapping(); v != "" {
+		lv := "starfish_slot_mapping:" + v
+		labels = append(labels, lv)
+	}
 	return labels
 }
 
@@ -158,6 +162,8 @@ func stringCapabilitiesReverter(ls *inventory.SchedulableLabels, labels []string
 			*c.Storage = v
 		case "telephony":
 			*c.Telephony = v
+		case "starfish_slot_mapping":
+			*c.StarfishSlotMapping = v
 		default:
 			continue
 		}

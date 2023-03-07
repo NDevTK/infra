@@ -2604,6 +2604,85 @@ func TestUpdateDUT(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(msgs, ShouldHaveLength, 1)
 		})
+
+		Convey("UpdateDUT - Add Starfish slot mapping to DUT", func() {
+			// Create a DUT with labstation.
+			createValidDUTWithLabstation(ctx, "dut-43", "machine-109", "labstation-36", "machine-84")
+			dut2, err := GetMachineLSE(ctx, "dut-43")
+			So(err, ShouldBeNil)
+			// Add Starfish slot mapping to the DUT.
+			dut2.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().StarfishSlotMapping = "GenericMapping"
+			dut2.UpdateTime = nil
+			// Update DUT with proper paths.
+			resp, err := UpdateDUT(ctx, dut2, mockFieldMask("dut.starfishSlotMapping"))
+			So(err, ShouldBeNil)
+			resp.UpdateTime = nil
+			// Verify that the returned proto is updated.
+			So(dut2, ShouldResembleProto, resp)
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/dut-43")
+			So(err, ShouldBeNil)
+			So(changes, ShouldHaveLength, 2)
+			// Verify all changes recorded by the history.
+			So(changes[1].OldValue, ShouldEqual, "")
+			So(changes[1].NewValue, ShouldEqual, "GenericMapping")
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/dut-43")
+			So(err, ShouldBeNil)
+			So(msgs, ShouldHaveLength, 2)
+			s, err := state.GetStateRecord(ctx, "hosts/dut-43")
+			So(err, ShouldBeNil)
+			// State should be unchanged.
+			So(s.GetState(), ShouldEqual, dut2.GetResourceState())
+		})
+
+		Convey("UpdateDUT - Remove Starfish slot mapping from DUT", func() {
+			// Create a DUT with labstation.
+			createValidDUTWithLabstation(ctx, "dut-44", "machine-110", "labstation-37", "machine-85")
+			dut2, err := GetMachineLSE(ctx, "dut-44")
+			So(err, ShouldBeNil)
+			// Add Starfish slot mapping to the DUT.
+			dut2.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().StarfishSlotMapping = "GenericMapping"
+			dut2.UpdateTime = nil
+			// Update DUT with proper paths.
+			resp, err := UpdateDUT(ctx, dut2, mockFieldMask("dut.starfishSlotMapping"))
+			So(err, ShouldBeNil)
+			resp.UpdateTime = nil
+			// Verify that the returned proto is updated.
+			So(dut2, ShouldResembleProto, resp)
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/dut-44")
+			So(err, ShouldBeNil)
+			So(changes, ShouldHaveLength, 2)
+			// Verify all changes recorded by the history.
+			So(changes[1].OldValue, ShouldEqual, "")
+			So(changes[1].NewValue, ShouldEqual, "GenericMapping")
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/dut-44")
+			So(err, ShouldBeNil)
+			So(msgs, ShouldHaveLength, 2)
+			s, err := state.GetStateRecord(ctx, "hosts/dut-44")
+			So(err, ShouldBeNil)
+			// State should be unchanged.
+			So(s.GetState(), ShouldEqual, dut2.GetResourceState())
+			// Delete/reset Starfish slot mapping in DUT
+			dut2.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().StarfishSlotMapping = ""
+			// Update DUT with Starfish slot mapping mask.
+			resp, err = UpdateDUT(ctx, dut2, mockFieldMask("dut.starfishSlotMapping"))
+			So(err, ShouldBeNil)
+			resp.UpdateTime = nil
+			So(resp, ShouldResembleProto, dut2)
+			changes, err = history.QueryChangesByPropertyName(ctx, "name", "hosts/dut-44")
+			So(err, ShouldBeNil)
+			So(changes, ShouldHaveLength, 3)
+			// Verify that the changes were recorded by the history.
+			So(changes[2].NewValue, ShouldEqual, "")
+			So(changes[2].OldValue, ShouldEqual, "GenericMapping")
+			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/dut-44")
+			So(err, ShouldBeNil)
+			So(msgs, ShouldHaveLength, 3)
+			s, err = state.GetStateRecord(ctx, "hosts/dut-44")
+			So(err, ShouldBeNil)
+			// State should be unchanged.
+			So(s.GetState(), ShouldEqual, dut2.GetResourceState())
+		})
+
 	})
 }
 

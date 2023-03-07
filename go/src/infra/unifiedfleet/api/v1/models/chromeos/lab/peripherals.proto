@@ -16,7 +16,7 @@ import "infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
 
 // This proto defines setup labels in lab config of a DUT.
 
-// Peripherals of device. Next Tag: 17
+// Peripherals of device. Next Tag: 18
 message Peripherals {
   Servo servo = 1;
   Chameleon chameleon = 2;
@@ -28,6 +28,8 @@ message Peripherals {
   Touch touch = 7;
   // e.g: "att", "verizon",.. It's a manual label set by lab, varies dut by dut.
   string carrier = 8;
+  // e.g: "0_att,1_verizon,3_tmobile", "1_kddi,6_rakuten".. slot mapping: only for Starfish enabled modules.
+  string starfish_slot_mapping = 17;
   // Indicate if the device is setup in a steady and controllable camera box environment for camera test automation.
   // http://go/cros-camera-box
   bool camerabox = 9;

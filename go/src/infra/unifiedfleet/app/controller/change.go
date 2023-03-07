@@ -790,6 +790,7 @@ func logDut(resourceName string, oldData, newData *chromeosLab.DeviceUnderTest) 
 	}
 	changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.camerabox", oldData.GetPeripherals().GetCamerabox(), newData.GetPeripherals().GetCamerabox())...)
 	changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.carrier", oldData.GetPeripherals().GetCarrier(), newData.GetPeripherals().GetCarrier())...)
+	changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.starfishSlotMapping", oldData.GetPeripherals().GetStarfishSlotMapping(), newData.GetPeripherals().GetStarfishSlotMapping())...)
 	changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.chaos", oldData.GetPeripherals().GetChaos(), newData.GetPeripherals().GetChaos())...)
 	changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.usb.smarthub", oldData.GetPeripherals().GetSmartUsbhub(), newData.GetPeripherals().GetSmartUsbhub())...)
 	changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.camera.type", oldData.GetPeripherals().GetConnectedCamera(), newData.GetPeripherals().GetConnectedCamera())...)

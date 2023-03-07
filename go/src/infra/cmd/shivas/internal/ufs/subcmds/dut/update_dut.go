@@ -80,6 +80,7 @@ const (
 	usbHubPath               = "dut.usb.smarthub"
 	modemInfoPath            = "dut.modeminfo"
 	simInfoPath              = "dut.siminfo"
+	starfishSlotMappingPath  = "dut.starfishSlotMapping"
 
 	// Operations string for Summary table.
 	ufsOp   = "Update to Database"
@@ -134,6 +135,7 @@ var UpdateDUTCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.facing, "facing", "", cmdhelp.FacingHelpText)
 		c.Flags.StringVar(&c.light, "light", "", cmdhelp.LightHelpText)
 		c.Flags.StringVar(&c.carrier, "carrier", "", "name of the carrier."+". "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.starfishSlotMapping, "starfishSlotMapping", "", "comma separated slot vs carrier mapping for Starfish module."+". "+cmdhelp.ClearFieldHelpText)
 		c.Flags.BoolVar(&c.audioBoard, "audioboard", false, "adding this flag will specify if audioboard is present")
 		c.Flags.BoolVar(&c.audioBox, "audiobox", false, "adding this flag will specify if audiobox is present")
 		c.Flags.BoolVar(&c.atrus, "atrus", false, "adding this flag will specify if atrus is present")
@@ -181,25 +183,26 @@ type updateDUT struct {
 	deployTags  []string
 
 	// ACS DUT fields
-	chameleons        []string
-	cameras           []string
-	antennaConnection string
-	router            string
-	cables            []string
-	facing            string
-	light             string
-	carrier           string
-	audioBoard        bool
-	audioBox          bool
-	atrus             bool
-	wifiCell          bool
-	touchMimo         bool
-	cameraBox         bool
-	chaos             bool
-	audioCable        bool
-	smartUSBHub       bool
-	modemInfo         []string
-	simInfo           [][]string
+	chameleons          []string
+	cameras             []string
+	antennaConnection   string
+	router              string
+	cables              []string
+	facing              string
+	light               string
+	carrier             string
+	audioBoard          bool
+	audioBox            bool
+	atrus               bool
+	wifiCell            bool
+	touchMimo           bool
+	cameraBox           bool
+	chaos               bool
+	audioCable          bool
+	smartUSBHub         bool
+	modemInfo           []string
+	simInfo             [][]string
+	starfishSlotMapping string
 
 	// For use in determining if a flag is set
 	flagInputs map[string]bool
@@ -888,6 +891,16 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 	if c.flagInputs["smartusbhub"] {
 		mask.Paths = append(mask.Paths, usbHubPath)
 		peripherals.SmartUsbhub = c.smartUSBHub
+	}
+
+	// StarfishSlotMapping
+	if c.flagInputs["starfishSlotMapping"] {
+		if c.starfishSlotMapping == utils.ClearFieldValue {
+			// Clear the starfishSlotMapping if required
+			c.starfishSlotMapping = ""
+		}
+		mask.Paths = append(mask.Paths, starfishSlotMappingPath)
+		peripherals.StarfishSlotMapping = c.starfishSlotMapping
 	}
 
 	// Check if nothing is being updated. Updating with an empty mask overwrites everything.
