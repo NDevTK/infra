@@ -32,8 +32,8 @@ const (
 	provisionFailed       = "/var/tmp/provision_failed"
 	provisionFailedMarker = "/mnt/stateful_partition/unencrypted/provision_failed"
 
-	verificationTimeout        = 120 * time.Second
-	postProvisionRebootTimeout = 360 * time.Second
+	verificationTimeout = 5 * time.Minute
+	rebootTimeout       = 10 * time.Minute
 )
 
 func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
@@ -129,7 +129,7 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 		// Wait for DUT to come up after provisioning the OS.
 		// Can continue as soon as a connection can be established.
 		// Give extra time in case of firmware updates prior to UI spawning.
-		rebootWaitCtx, cancel := context.WithTimeout(ctx, postProvisionRebootTimeout)
+		rebootWaitCtx, cancel := context.WithTimeout(ctx, rebootTimeout)
 		defer cancel()
 		disconnect, err = p.connect(rebootWaitCtx, addr)
 		if err != nil {
@@ -142,9 +142,10 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 		defer disconnect()
 		log.Printf("DUT came up after provisioning the OS.")
 
-		// Shorten the time waiting for reboot to complete booting into the new OS.
+		// Should shorten the time waiting for reboot to complete booting into the new OS.
+		// Certain images will take significantly longer due to debug features being enabled.
 		// Follow through subsequent reboots until "ui" job is running.
-		uiStabilizeCtx, cancel := context.WithTimeout(ctx, 360*time.Second)
+		uiStabilizeCtx, cancel := context.WithTimeout(ctx, rebootTimeout)
 		defer cancel()
 		if err := p.waitForUIToStabilize(uiStabilizeCtx, addr); err != nil {
 			setError(newOperationError(
@@ -176,7 +177,7 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 			}
 			// If firmware changed and reboot doesn't get blocked by request, make sure DUT comes back after post update reboot.
 			if fwChanged && !req.PreventReboot {
-				fwRebootWaitCtx, cancel := context.WithTimeout(ctx, 300*time.Second)
+				fwRebootWaitCtx, cancel := context.WithTimeout(ctx, rebootTimeout)
 				defer cancel()
 				disconnect, err = p.connect(fwRebootWaitCtx, addr)
 				if err != nil {
@@ -248,7 +249,7 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 				return
 			}
 			// After a reboot, need a new client connection.
-			sshCtx, cancel := context.WithTimeout(ctx, 300*time.Second)
+			sshCtx, cancel := context.WithTimeout(ctx, rebootTimeout)
 			defer cancel()
 
 			disconnect, err := p.connect(sshCtx, addr)
@@ -274,7 +275,7 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 		log.Printf("provision: time to provision stateful took %v", time.Since(t))
 
 		// After a reboot, need a new client connection.
-		sshCtx, cancel := context.WithTimeout(ctx, 300*time.Second)
+		sshCtx, cancel := context.WithTimeout(ctx, rebootTimeout)
 		defer cancel()
 
 		disconnect, err := p.connect(sshCtx, addr)
@@ -318,7 +319,7 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 				return
 			}
 			// After a reboot, need a new client connection.
-			sshCtx, cancel := context.WithTimeout(ctx, 300*time.Second)
+			sshCtx, cancel := context.WithTimeout(ctx, rebootTimeout)
 			defer cancel()
 
 			disconnect, err := p.connect(sshCtx, addr)
@@ -343,7 +344,7 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 		}
 
 		// After a reboot, need a new client connection.
-		sshCtx, cancel := context.WithTimeout(ctx, 300*time.Second)
+		sshCtx, cancel := context.WithTimeout(ctx, rebootTimeout)
 		defer cancel()
 
 		disconnect, err := p.connect(sshCtx, addr)
