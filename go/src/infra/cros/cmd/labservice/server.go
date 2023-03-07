@@ -39,6 +39,7 @@ func newServer(c *serverConfig) *server {
 			ServiceAccountPath: c.serviceAccountPath,
 		},
 		cacheLocator: l,
+		tkoSocket:    c.tkoSocket,
 	}
 }
 
