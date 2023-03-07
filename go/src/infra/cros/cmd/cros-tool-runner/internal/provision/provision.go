@@ -85,6 +85,11 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 
 	log.Printf("--> Starting cros-dut service for %q ...", dutName)
 	dutService, err := services.CreateDutService(ctx, crosDutContainer, dutName, networkName, cacheServerInfo, dutSshInfo, crosDutResultsDir, tokenFile)
+	defer func() {
+		// Both errs will be ignored as they are non-critical and logged in the respective calls.
+		dutService.Remove(ctx)
+		common.AddContentsToLog("log.txt", crosDutResultsDir, "Reading cros-dut log file.")
+	}()
 	if err != nil {
 		res.Err = errors.Annotate(err, "run provision").Err()
 		var reason = api.InstallFailure_REASON_DOCKER_UNABLE_TO_START
@@ -104,10 +109,7 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 
 		return res
 	}
-	defer func() {
-		dutService.Remove(ctx)
-		common.AddContentsToLog("log.txt", crosDutResultsDir, "Reading cros-dut log file.")
-	}()
+
 	log.Printf("--> Container of cros-dut was started for %q", dutName)
 
 	// Create temp results dir for cros-provision

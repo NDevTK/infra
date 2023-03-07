@@ -7,7 +7,6 @@
 package docker
 
 import (
-	"bufio"
 	"bytes"
 	"context"
 	"encoding/base64"
@@ -292,36 +291,19 @@ func (d *Docker) logRunTime(ctx context.Context, service string) {
 			return errors.Annotate(err, "failed to find file %s log file; logged timeout as metric", d.LogFileDir).Err()
 		}
 
-		// File found? Search the file for the starter text and log once found.
-		// This will *only* log if the start-key is found, otherwise it exits w/ err
-		// and the loop continues until either its found, or the timeout is hit.
-		err = logServiceFound(ctx, filePath, startTime, service)
-		if err != nil {
-			return errors.Annotate(err, "logServiceFound Metric upload failed %s", d.LogFileDir).Err()
-		}
+		// File found? This is enough signal to show the service started.
+		logServiceFound(ctx, filePath, startTime, service)
 		log.Printf("METRICS: Successful Log for %s\n", service)
 
 		return nil
 	}, &common.PollOptions{Timeout: 5 * time.Minute, Interval: time.Second})
 
-	// File not found? Log the timeout duration.
+	// File not found? Log the timeout duration && fail.
 	if err != nil {
-		// One last try to find the start symbols, in the event the file is found between poll loops.
-		// which happens when a service finishes very very fast.
-		filePath, err := common.FindFile("log.txt", d.LogFileDir)
-		if err != nil {
-			log.Printf("METRICS: Failed service log, will log fail to start for %s. Err:%s\n", service, err)
-			logRunTime(ctx, startTime, service)
-			logStatus(ctx, "fail")
-		}
-		err = logServiceFound(ctx, filePath, startTime, service)
-		if err != nil {
-			log.Printf("METRICS: Failed service start Marker, will log fail to start for %s. Err:%s\n", service, err)
-			logRunTime(ctx, startTime, service)
-			logStatus(ctx, "fail")
-		}
-		log.Printf("METRICS: Successful second log attempt for %s\n", service)
-
+		logRunTime(ctx, startTime, service)
+		logStatus(ctx, "fail")
+		log.Println("CRITICAL ERROR: Service unable to start. Likely underlying environmental issues. Task will fail.")
+		log.Println("Log file not found, logged timediff anyways..")
 		return
 	}
 }
@@ -531,40 +513,10 @@ func logRunTime(ctx context.Context, startTime time.Time, service string) {
 }
 
 // logServiceFound logs the when the service has started.
-func logServiceFound(ctx context.Context, LogFileName string, startTime time.Time, service string) error {
-	file, err := os.Open(LogFileName)
-	if err != nil {
-		return errors.Annotate(err, "failed to open cros-dut log file %s", LogFileName).Err()
-	}
-	defer file.Close()
-
-	// Example of the line with dutservice port number.
-	// "Starting dutservice on port 12300"
-	var searchStr string
-	switch {
-	case service == "cros-dut":
-		searchStr = "Starting dutservice version"
-	case service == "cros-test":
-		searchStr = "Starting executionservice"
-	case service == "cros-provision":
-		searchStr = "Running"
-	}
-	s := bufio.NewScanner(file)
-	for s.Scan() {
-		line := s.Text()
-
-		index := strings.Index(line, searchStr)
-		if index < 0 {
-			continue
-		}
-
-		log.Println("Service found started, logging success.")
-		logStatus(ctx, "pass")
-		logRunTime(ctx, startTime, service)
-		return nil
-	}
-	return errors.Reason("failed to starting line from %s", LogFileName).Err()
-
+func logServiceFound(ctx context.Context, LogFileName string, startTime time.Time, service string) {
+	log.Printf("Service: %s found started, logging success.\n", service)
+	logStatus(ctx, "pass")
+	logRunTime(ctx, startTime, service)
 }
 
 // Define metrics. Note: in Go you have to declare metric field types.
