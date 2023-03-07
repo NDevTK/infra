@@ -20,7 +20,7 @@ import (
 
 // WriteProtoToStepLog writes provided proto to build step.
 func WriteProtoToStepLog(ctx context.Context, step *build.Step, proto proto.Message, logText string) {
-	if step == nil {
+	if step == nil || proto == nil {
 		return
 	}
 

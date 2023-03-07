@@ -106,11 +106,19 @@ func (ex *CrosProvisionExecutor) provisionInstallCommandExecution(
 	taskDone <- true // Notify logging process that main task is done
 	wg.Wait()        // Wait for the logging to complete
 	if err != nil {
-		return errors.Annotate(err, "Provision install cmd err: ").Err()
+		err = errors.Annotate(err, "Provision install cmd err: ").Err()
 	}
 
+	step.SetSummaryMarkdown(resp.GetStatus().String())
+	step.AddTagValue("provision_status", resp.GetStatus().String())
 	cmd.ProvisionResp = resp
 	common.WriteProtoToStepLog(ctx, step, resp, "provision response")
+
+	if resp.GetStatus() != api.InstallResponse_STATUS_SUCCESS {
+		// Fail the step in ui but do not fail the command
+		err = fmt.Errorf("Provision failure: %s", resp.GetStatus().String())
+		return nil
+	}
 
 	return err
 }

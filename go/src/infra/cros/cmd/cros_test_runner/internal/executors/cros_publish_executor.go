@@ -393,10 +393,10 @@ func (ex *CrosPublishExecutor) InvokePublishWithAsyncLogging(
 	wg.Wait()        // wait for the logging to complete
 
 	if err != nil {
-		return errors.Annotate(err, fmt.Sprintf("%s publish cmd err: ", publishType)).Err()
+		err = errors.Annotate(err, fmt.Sprintf("%s publish cmd err: ", publishType)).Err()
 	}
 
 	common.WriteProtoToStepLog(ctx, step, resp, fmt.Sprintf("%s response", publishType))
 
-	return nil
+	return err
 }

@@ -39,6 +39,7 @@ type RdbPublishUploadCmd struct {
 	BuildState     *build.State
 	DutTopology    *labapi.DutTopology
 	CftTestRequest *skylab_test_runner.CFTTestRequest
+	TestResponses  *testapipb.CrosTestResponse
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -92,6 +93,9 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 		if sk.DutTopology == nil {
 			return fmt.Errorf("Cmd %q missing dependency: DutTopology", cmd.GetCommandType())
 		}
+		if sk.TestResponses == nil {
+			return fmt.Errorf("Cmd %q missing dependency: TestResponses", cmd.GetCommandType())
+		}
 
 		// Construct testResultProto
 		var testResultProtoErr error
@@ -107,6 +111,7 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 	cmd.TesthausUrl = sk.TesthausUrl
 	cmd.BuildState = sk.BuildState
 	cmd.GcsUrl = sk.GcsUrl
+	cmd.TestResponses = sk.TestResponses
 
 	return nil
 }
@@ -247,7 +252,6 @@ func populatePrimaryBuildMetadata(
 	if lacrosVersion := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, "lacros_version"); lacrosVersion != "" {
 		lacrosInfo.LacrosVersion = lacrosVersion
 	}
-
 }
 
 // populatePrimaryDutInfo populates primary dut info.

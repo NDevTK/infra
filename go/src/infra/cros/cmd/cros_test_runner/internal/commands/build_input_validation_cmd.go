@@ -55,13 +55,12 @@ func (cmd *BuildInputValidationCmd) Execute(ctx context.Context) error {
 	req := step.Log("request")
 	marsh := jsonpb.Marshaler{Indent: "  "}
 	if err = marsh.Marshal(req, cmd.CftTestRequest); err != nil {
-		return errors.Annotate(err, "failed to marshal proto").Err()
+		err = errors.Annotate(err, "failed to marshal proto").Err()
 	}
 
 	// TODO (azrahman): add inputs validations steps here.
 
-	return nil
-
+	return err
 }
 
 func (cmd *BuildInputValidationCmd) extractDepsFromHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {

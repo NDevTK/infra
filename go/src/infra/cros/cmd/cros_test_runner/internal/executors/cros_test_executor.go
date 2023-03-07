@@ -102,7 +102,7 @@ func (ex *CrosTestExecutor) testExecutionCommandExecution(
 	wg.Wait()        // wait for the logging to complete
 
 	if err != nil {
-		return errors.Annotate(err, "Tests execution cmd err: ").Err()
+		err = errors.Annotate(err, "Tests execution cmd err: ").Err()
 	}
 	cmd.TestResponses = testResp
 	cmd.TkoPublishSrcDir = filepath.Join(logsLoc, "cros-test/results")

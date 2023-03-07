@@ -96,7 +96,7 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 			prejobVerdict = skylab_test_runner.Result_Prejob_Step_VERDICT_FAIL
 		}
 		prejobReason = cmd.ProvisionResp.GetStatus().String()
-		_ = common.CreateStepWithStatus(ctx, "Provision", cmd.ProvisionResp.GetStatus().String(), cmd.ProvisionResp.GetStatus() != api.InstallResponse_STATUS_OK, false)
+		_ = common.CreateStepWithStatus(ctx, "Provision", cmd.ProvisionResp.GetStatus().String(), cmd.ProvisionResp.GetStatus() != api.InstallResponse_STATUS_SUCCESS, false)
 	}
 
 	// Parse test results

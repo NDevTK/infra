@@ -95,13 +95,13 @@ func (ex *InvServiceExecutor) loadDutTopologyCommandExecution(
 
 	dutTopology, err := ex.GetDUTTopology(ctx, cmd.HostName)
 	if err != nil {
-		return errors.Annotate(err, "Load dut topology cmd err: ").Err()
+		err = errors.Annotate(err, "Load dut topology cmd err: ").Err()
 	}
 
 	common.WriteProtoToStepLog(ctx, step, dutTopology, "Dut Topology")
 	cmd.DutTopology = dutTopology
 
-	return nil
+	return err
 }
 
 // invServiceStopCommandExecution executes the invenotry service stop command.

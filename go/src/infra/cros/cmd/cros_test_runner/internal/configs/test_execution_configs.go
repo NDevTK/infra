@@ -147,10 +147,10 @@ func (tecfg *TestExecutionConfig) Execute(ctx context.Context) error {
 		return errors.Annotate(err, "error during processing clean up configs for config type %s: ", tecfg.GetConfigType()).Err()
 	}
 
-	err = tecfg.executeCommands(ctx, cmds)
+	err = tecfg.executeCommands(ctx, cmds, false)
 	if err != nil {
 		// execute clean up commands
-		cleanupErr := tecfg.executeCommands(ctx, cleanupCmds)
+		cleanupErr := tecfg.executeCommands(ctx, cleanupCmds, true)
 		if cleanupErr != nil {
 			err = fmt.Errorf("main error: %w; cleanup error: %s", err, cleanupErr)
 		}
@@ -182,8 +182,10 @@ func (tecfg *TestExecutionConfig) processCommandConfig(
 // It will skip any commands that are already executed.
 func (tecfg *TestExecutionConfig) executeCommands(
 	ctx context.Context,
-	cmds []interfaces.CommandInterface) error {
-	var err error
+	cmds []interfaces.CommandInterface,
+	executeAllCmds bool) error {
+	var allErr error
+	var singleErr error
 	for _, cmd := range cmds {
 		cmdType := cmd.GetCommandType()
 		logging.Infof(ctx, "Executing cmd: %T", cmd)
@@ -192,17 +194,29 @@ func (tecfg *TestExecutionConfig) executeCommands(
 			continue
 		}
 
-		if err = cmd.ExtractDependencies(ctx, tecfg.stateKeeper); err != nil {
-			return err
+		if singleErr = cmd.ExtractDependencies(ctx, tecfg.stateKeeper); singleErr != nil {
+			if executeAllCmds {
+				allErr = errors.Append(allErr, singleErr)
+			} else {
+				return singleErr
+			}
 		}
-		if err = cmd.Execute(ctx); err != nil {
-			return err
+		if singleErr = cmd.Execute(ctx); singleErr != nil {
+			if executeAllCmds {
+				allErr = errors.Append(allErr, singleErr)
+			} else {
+				return singleErr
+			}
 		}
 		tecfg.executedCommands[cmdType] = true
-		if err = cmd.UpdateStateKeeper(ctx, tecfg.stateKeeper); err != nil {
-			return err
+		if singleErr = cmd.UpdateStateKeeper(ctx, tecfg.stateKeeper); singleErr != nil {
+			if executeAllCmds {
+				allErr = errors.Append(allErr, singleErr)
+			} else {
+				return singleErr
+			}
 		}
 	}
 
-	return nil
+	return allErr
 }
