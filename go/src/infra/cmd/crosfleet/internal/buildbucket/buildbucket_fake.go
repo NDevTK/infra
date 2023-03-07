@@ -41,8 +41,7 @@ func (p *ScheduleParams) matches(in *buildbucketpb.ScheduleBuildRequest) bool {
 }
 
 type FakeBuildClient struct {
-	// Currently only supports one ScheduleBuildCall.
-	ExpectedSchedule ScheduleParams
+	ExpectedSchedule []ScheduleParams
 }
 
 // Important that this is not a pointer receiver so that it can't be nil, see
@@ -54,10 +53,25 @@ func (f FakeBuildClient) GetBuild(context.Context, *buildbucketpb.GetBuildReques
 	return nil, nil
 }
 
+func requestSummary(in *buildbucketpb.ScheduleBuildRequest) string {
+	return fmt.Sprintf("builder: %+v\ntags: %+v\n", in.Builder, in.GetTags())
+}
+
 func (f FakeBuildClient) ScheduleBuild(ctx context.Context, in *buildbucketpb.ScheduleBuildRequest, opts ...grpc.CallOption) (*buildbucketpb.Build, error) {
-	if !f.ExpectedSchedule.matches(in) {
-		return nil, fmt.Errorf("unexpected ScheduleBuild call, expected\n%+v\ngot\n%+v\n", f.ExpectedSchedule, in)
+	matchedExpectation := false
+	for i, expected := range f.ExpectedSchedule {
+		if expected.matches(in) {
+			matchedExpectation = true
+			// Matching an expectation "consumes" it.
+			f.ExpectedSchedule = append(f.ExpectedSchedule[:i], f.ExpectedSchedule[i:]...)
+			break
+		}
 	}
+
+	if !matchedExpectation {
+		return nil, fmt.Errorf("unexpected ScheduleBuild call:\n%+v\n", requestSummary(in))
+	}
+
 	return &buildbucketpb.Build{
 		Id: 123,
 	}, nil

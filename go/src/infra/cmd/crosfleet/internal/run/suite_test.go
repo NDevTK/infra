@@ -54,14 +54,64 @@ func TestSuiteNoModels(t *testing.T) {
 	ufs := &fakeUFSClient{}
 	bb := &buildbucket.FakeClient{
 		Client: buildbucket.FakeBuildClient{
-			ExpectedSchedule: buildbucket.ScheduleParams{
-				BuilderName: "cros_test_platform",
-				Tags: map[string]string{
-					"crosfleet-tool": "suite",
-					"label-board":    "drallion",
-					"label-image":    "drallion-release/R112-15357.0.0",
-					"label-pool":     "DUT_POOL_QUOTA",
-					"user_agent":     "crosfleet",
+			ExpectedSchedule: []buildbucket.ScheduleParams{
+				{
+					BuilderName: "cros_test_platform",
+					Tags: map[string]string{
+						"crosfleet-tool": "suite",
+						"label-board":    "drallion",
+						"label-image":    "drallion-release/R112-15357.0.0",
+						"label-pool":     "DUT_POOL_QUOTA",
+						"user_agent":     "crosfleet",
+					},
+				},
+			},
+		},
+	}
+	err := r.innerRun(nil, []string{"bvt-installer"}, ctx, bb, ufs)
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+}
+
+func TestSuiteModels(t *testing.T) {
+	r := suiteRun{
+		testCommonFlags: testCommonFlags{
+			exitEarly: true,
+			repeats:   1,
+			priority:  DefaultSwarmingPriority,
+			release:   "R112-15357.0.0",
+			board:     "drallion",
+			models:    []string{"drallion", "drallion360"},
+			pool:      "DUT_POOL_QUOTA",
+		},
+	}
+	ctx := context.Background()
+
+	ufs := &fakeUFSClient{}
+	bb := &buildbucket.FakeClient{
+		Client: buildbucket.FakeBuildClient{
+			ExpectedSchedule: []buildbucket.ScheduleParams{
+				{
+					BuilderName: "cros_test_platform",
+					Tags: map[string]string{
+						"crosfleet-tool": "suite",
+						"label-board":    "drallion",
+						"label-model":    "drallion",
+						"label-image":    "drallion-release/R112-15357.0.0",
+						"label-pool":     "DUT_POOL_QUOTA",
+						"user_agent":     "crosfleet",
+					},
+				}, {
+					BuilderName: "cros_test_platform",
+					Tags: map[string]string{
+						"crosfleet-tool": "suite",
+						"label-board":    "drallion",
+						"label-model":    "drallion360",
+						"label-image":    "drallion-release/R112-15357.0.0",
+						"label-pool":     "DUT_POOL_QUOTA",
+						"user_agent":     "crosfleet",
+					},
 				},
 			},
 		},
