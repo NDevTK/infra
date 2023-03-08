@@ -490,8 +490,10 @@ class IssuesServicerTest(unittest.TestCase):
         parent='projects/chicken',
         issue=request_issue,
         description='description',
-        uploads=[issues_pb2.AttachmentUpload(
-            filename='mowgli.gif', content='cute dog')],
+        uploads=[
+            issues_pb2.AttachmentUpload(
+                filename='mowgli.gif', content=b'cute dog')
+        ],
     )
     mc = monorailcontext.MonorailContext(
         self.services, cnxn=self.cnxn, requester=self.owner.email)
@@ -541,12 +543,15 @@ class IssuesServicerTest(unittest.TestCase):
             issues_pb2.IssueDelta(
                 issue=issue_objects_pb2.Issue(
                     name='projects/proj-780/issues/1',
-                    labels=[issue_objects_pb2.Issue.LabelValue(
-                        label='add-me')]),
+                    labels=[issue_objects_pb2.Issue.LabelValue(label='add-me')
+                           ]),
                 update_mask=field_mask_pb2.FieldMask(paths=['labels']),
-                labels_remove=['remove-me'])],
-        uploads=[issues_pb2.AttachmentUpload(
-            filename='mowgli.gif', content='cute dog')],
+                labels_remove=['remove-me'])
+        ],
+        uploads=[
+            issues_pb2.AttachmentUpload(
+                filename='mowgli.gif', content=b'cute dog')
+        ],
         comment_content='Release the chicken.',
         notify_type=issues_pb2.NotifyType.Value('NO_NOTIFICATION'))
 
@@ -565,8 +570,10 @@ class IssuesServicerTest(unittest.TestCase):
     # the ApplyFilterRules path. (see filter_helpers._ComputeDerivedFields)
     exp_issue.derived_owner_id = 0
     exp_issue.derived_status = ''
-    exp_attachments = [framework_helpers.AttachmentUpload(
-        'mowgli.gif', 'cute dog', 'image/gif')]
+    exp_attachments = [
+        framework_helpers.AttachmentUpload(
+            'mowgli.gif', b'cute dog', 'image/gif')
+    ]
     exp_amendments = [tracker_pb2.Amendment(
         field=tracker_pb2.FieldID.LABELS, newvalue='-remove-me add-me')]
     self.services.issue.CreateIssueComment.assert_called_once_with(

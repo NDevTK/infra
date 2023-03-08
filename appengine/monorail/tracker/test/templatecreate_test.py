@@ -370,6 +370,16 @@ class TemplateCreateTest(unittest.TestCase):
                 tracker_pb2.ApprovalStatus.NEEDS_REVIEW), phase_id=1)
         ]
     self.services.template.CreateIssueTemplateDef.assert_called_once_with(
-        self.mr.cnxn, 47925, 'secondtemplate', 'HEY WHY', 'TLDR', True,
-        'Accepted', True, False, True, 0, ['label-One', 'label-Two'], [], [],
-        [fv], phases=phases, approval_values=approval_values)
+        self.mr.cnxn,
+        self.mr.project_id,
+        'secondtemplate',
+        'HEY WHY',
+        'TLDR',
+        True,
+        'Accepted',
+        True,
+        False,
+        True,
+        0, ['label-One', 'label-Two'], [], [], [fv],
+        phases=phases,
+        approval_values=approval_values)

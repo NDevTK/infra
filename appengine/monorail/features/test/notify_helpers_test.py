@@ -10,6 +10,7 @@ from __future__ import absolute_import
 
 import json
 import mock
+import six
 import unittest
 import os
 
@@ -365,9 +366,12 @@ class MakeEmailWorkItemTest(unittest.TestCase):
 
     expected_html_body = (
         notify_helpers.HTML_BODY_WITH_GMAIL_ACTION_TEMPLATE % {
-            'url': self.detail_url,
-            'body': '%s-- <br/>%s' % (unicode_content.decode('utf-8'),
-                                      self.expected_html_footer)})
+            'url':
+                self.detail_url,
+            'body':
+                '%s-- <br/>%s' %
+                (six.ensure_text(unicode_content), self.expected_html_footer)
+        })
     self.assertEqual(expected_html_body, email_task['html_body'])
 
   def testHtmlBody_WithLinks(self):

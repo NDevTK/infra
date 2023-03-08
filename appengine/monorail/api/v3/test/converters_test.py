@@ -896,20 +896,21 @@ class ConverterFunctionsTest(unittest.TestCase):
 
   def testIngestAttachmentUploads(self):
     up_1 = issues_pb2.AttachmentUpload(
-        filename='clown.gif', content='iTs prOUnOuNcED JIF')
-    up_2 = issues_pb2.AttachmentUpload(
-        filename='mowgli', content='cutest dog')
+        filename='clown.gif', content=b'iTs prOUnOuNcED JIF')
+    up_2 = issues_pb2.AttachmentUpload(filename='mowgli', content=b'cutest dog')
 
     ingested = self.converter.IngestAttachmentUploads([up_1, up_2])
-    expected = [framework_helpers.AttachmentUpload(
-        'clown.gif', 'iTs prOUnOuNcED JIF', 'image/gif'),
-                framework_helpers.AttachmentUpload(
-                    'mowgli', 'cutest dog', 'text/plain')]
+    expected = [
+        framework_helpers.AttachmentUpload(
+            'clown.gif', b'iTs prOUnOuNcED JIF', 'image/gif'),
+        framework_helpers.AttachmentUpload(
+            'mowgli', b'cutest dog', 'text/plain')
+    ]
     self.assertEqual(ingested, expected)
 
   def testtIngestAttachmentUploads_Invalid(self):
     up_1 = issues_pb2.AttachmentUpload(filename='clown.gif')
-    up_2 = issues_pb2.AttachmentUpload(content='cutest dog')
+    up_2 = issues_pb2.AttachmentUpload(content=b'cutest dog')
 
     with self.assertRaisesRegexp(
         exceptions.InputException, 'Uploaded .+\nUploaded .+'):

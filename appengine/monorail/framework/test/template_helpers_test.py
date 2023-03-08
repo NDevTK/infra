@@ -81,7 +81,6 @@ class HelpersUnitTest(unittest.TestCase):
     # pylint: disable=anomalous-unicode-escape-in-string
     test_data = (
         u'This is a short string.',
-
         u'This is a much longer string. '
         u'This is a much longer string. '
         u'This is a much longer string. '
@@ -94,52 +93,52 @@ class HelpersUnitTest(unittest.TestCase):
         u'This is a much longer string. ',
 
         # This is a short escaped i18n string
-        '\xd5\xa1\xd5\xba\xd5\xa1\xd5\xaf\xd5\xab'.decode('utf-8'),
+        b'\xd5\xa1\xd5\xba\xd5\xa1\xd5\xaf\xd5\xab'.decode('utf-8'),
 
         # This is a longer i18n string
-        '\xd5\xa1\xd5\xba\xd5\xa1\xd5\xaf\xd5\xab '
-        '\xe6\x88\x91\xe8\x83\xbd\xe5\x90\x9e '
-        '\xd5\xa1\xd5\xba\xd5\xa1\xd5\xaf\xd5\xab '
-        '\xe6\x88\x91\xe8\x83\xbd\xe5\x90\x9e '
-        '\xd5\xa1\xd5\xba\xd5\xa1\xd5\xaf\xd5\xab '
-        '\xe6\x88\x91\xe8\x83\xbd\xe5\x90\x9e '
-        '\xd5\xa1\xd5\xba\xd5\xa1\xd5\xaf\xd5\xab '
-        '\xe6\x88\x91\xe8\x83\xbd\xe5\x90\x9e '.decode('utf-8'),
+        b'\xd5\xa1\xd5\xba\xd5\xa1\xd5\xaf\xd5\xab '
+        b'\xe6\x88\x91\xe8\x83\xbd\xe5\x90\x9e '
+        b'\xd5\xa1\xd5\xba\xd5\xa1\xd5\xaf\xd5\xab '
+        b'\xe6\x88\x91\xe8\x83\xbd\xe5\x90\x9e '
+        b'\xd5\xa1\xd5\xba\xd5\xa1\xd5\xaf\xd5\xab '
+        b'\xe6\x88\x91\xe8\x83\xbd\xe5\x90\x9e '
+        b'\xd5\xa1\xd5\xba\xd5\xa1\xd5\xaf\xd5\xab '
+        b'\xe6\x88\x91\xe8\x83\xbd\xe5\x90\x9e '.decode('utf-8'),
 
         # This is a longer i18n string that was causing trouble.
-        '\u041d\u0430 \u0431\u0435\u0440\u0435\u0433\u0443'
-        ' \u043f\u0443\u0441\u0442\u044b\u043d\u043d\u044b\u0445'
-        ' \u0432\u043e\u043b\u043d \u0421\u0442\u043e\u044f\u043b'
-        ' \u043e\u043d, \u0434\u0443\u043c'
-        ' \u0432\u0435\u043b\u0438\u043a\u0438\u0445'
-        ' \u043f\u043e\u043b\u043d, \u0418'
-        ' \u0432\u0434\u0430\u043b\u044c'
-        ' \u0433\u043b\u044f\u0434\u0435\u043b.'
-        ' \u041f\u0440\u0435\u0434 \u043d\u0438\u043c'
-        ' \u0448\u0438\u0440\u043e\u043a\u043e'
-        ' \u0420\u0435\u043a\u0430'
-        ' \u043d\u0435\u0441\u043b\u0430\u0441\u044f;'
-        ' \u0431\u0435\u0434\u043d\u044b\u0439'
-        ' \u0447\u0451\u043b\u043d \u041f\u043e'
-        ' \u043d\u0435\u0439'
-        ' \u0441\u0442\u0440\u0435\u043c\u0438\u043b\u0441\u044f'
-        ' \u043e\u0434\u0438\u043d\u043e\u043a\u043e.'
-        ' \u041f\u043e \u043c\u0448\u0438\u0441\u0442\u044b\u043c,'
-        ' \u0442\u043e\u043f\u043a\u0438\u043c'
-        ' \u0431\u0435\u0440\u0435\u0433\u0430\u043c'
-        ' \u0427\u0435\u0440\u043d\u0435\u043b\u0438'
-        ' \u0438\u0437\u0431\u044b \u0437\u0434\u0435\u0441\u044c'
-        ' \u0438 \u0442\u0430\u043c, \u041f\u0440\u0438\u044e\u0442'
-        ' \u0443\u0431\u043e\u0433\u043e\u0433\u043e'
-        ' \u0447\u0443\u0445\u043e\u043d\u0446\u0430;'
-        ' \u0418 \u043b\u0435\u0441,'
-        ' \u043d\u0435\u0432\u0435\u0434\u043e\u043c\u044b\u0439'
-        ' \u043b\u0443\u0447\u0430\u043c \u0412'
-        ' \u0442\u0443\u043c\u0430\u043d\u0435'
-        ' \u0441\u043f\u0440\u044f\u0442\u0430\u043d\u043d\u043e'
-        '\u0433\u043e \u0441\u043e\u043b\u043d\u0446\u0430,'
-        ' \u041a\u0440\u0443\u0433\u043e\u043c'
-        ' \u0448\u0443\u043c\u0435\u043b.'.decode('utf-8'))
+        u'\u041d\u0430 \u0431\u0435\u0440\u0435\u0433\u0443'
+        u' \u043f\u0443\u0441\u0442\u044b\u043d\u043d\u044b\u0445'
+        u' \u0432\u043e\u043b\u043d \u0421\u0442\u043e\u044f\u043b'
+        u' \u043e\u043d, \u0434\u0443\u043c'
+        u' \u0432\u0435\u043b\u0438\u043a\u0438\u0445'
+        u' \u043f\u043e\u043b\u043d, \u0418'
+        u' \u0432\u0434\u0430\u043b\u044c'
+        u' \u0433\u043b\u044f\u0434\u0435\u043b.'
+        u' \u041f\u0440\u0435\u0434 \u043d\u0438\u043c'
+        u' \u0448\u0438\u0440\u043e\u043a\u043e'
+        u' \u0420\u0435\u043a\u0430'
+        u' \u043d\u0435\u0441\u043b\u0430\u0441\u044f;'
+        u' \u0431\u0435\u0434\u043d\u044b\u0439'
+        u' \u0447\u0451\u043b\u043d \u041f\u043e'
+        u' \u043d\u0435\u0439'
+        u' \u0441\u0442\u0440\u0435\u043c\u0438\u043b\u0441\u044f'
+        u' \u043e\u0434\u0438\u043d\u043e\u043a\u043e.'
+        u' \u041f\u043e \u043c\u0448\u0438\u0441\u0442\u044b\u043c,'
+        u' \u0442\u043e\u043f\u043a\u0438\u043c'
+        u' \u0431\u0435\u0440\u0435\u0433\u0430\u043c'
+        u' \u0427\u0435\u0440\u043d\u0435\u043b\u0438'
+        u' \u0438\u0437\u0431\u044b \u0437\u0434\u0435\u0441\u044c'
+        u' \u0438 \u0442\u0430\u043c, \u041f\u0440\u0438\u044e\u0442'
+        u' \u0443\u0431\u043e\u0433\u043e\u0433\u043e'
+        u' \u0447\u0443\u0445\u043e\u043d\u0446\u0430;'
+        u' \u0418 \u043b\u0435\u0441,'
+        u' \u043d\u0435\u0432\u0435\u0434\u043e\u043c\u044b\u0439'
+        u' \u043b\u0443\u0447\u0430\u043c \u0412'
+        u' \u0442\u0443\u043c\u0430\u043d\u0435'
+        u' \u0441\u043f\u0440\u044f\u0442\u0430\u043d\u043d\u043e'
+        u'\u0433\u043e \u0441\u043e\u043b\u043d\u0446\u0430,'
+        u' \u041a\u0440\u0443\u0433\u043e\u043c'
+        u' \u0448\u0443\u043c\u0435\u043b.')
 
     for unicode_s in test_data:
       # Get the length in characters, not bytes.

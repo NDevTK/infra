@@ -658,7 +658,7 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
     res_json = json.loads(res_string)
     self.assertEqual(
         'Skipping because no "to" address found.', res_json['note'])
-    self.assertNotIn('from_addr', res_string)
+    self.assertNotIn(b'from_addr', res_string)
 
   def testOutboundEmailTask_BannedUser(self):
     """We don't send emails to banned users.."""
@@ -674,4 +674,4 @@ class NotifyTaskHandleRequestTest(unittest.TestCase):
     res_string = res.get_data()[5:]
     res_json = json.loads(res_string)
     self.assertEqual('Skipping because user is banned.', res_json['note'])
-    self.assertNotIn('from_addr', res_string)
+    self.assertNotIn(b'from_addr', res_string)

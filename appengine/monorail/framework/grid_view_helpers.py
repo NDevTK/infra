@@ -86,7 +86,7 @@ def _WKSortingValue(value, well_known_list):
     return sorting.MAX_STRING  # Undefined values sort last.
   try:
     # well-known values sort by index
-    return well_known_list.index(value)
+    return '%09d' % well_known_list.index(value)
   except ValueError:
     return value  # odd-ball values lexicographically after all well-known ones
 

@@ -898,8 +898,10 @@ class FeaturesService(object):
       affected_issue_ids.update(remove_issue_ids)
       self.hotlist2issue_tbl.Delete(
           cnxn, hotlist_id=hotlist_id, issue_id=remove_issue_ids, commit=False)
-      all_hotlist_items = filter(
-          lambda item: item.issue_id not in remove_issue_ids, all_hotlist_items)
+      all_hotlist_items = list(
+          filter(
+              lambda item: item.issue_id not in remove_issue_ids,
+              all_hotlist_items))
 
     if updated_items:
       updated_issue_ids = [item.issue_id for item in updated_items]
@@ -914,9 +916,10 @@ class FeaturesService(object):
                 item.date_added, item.note))
       self.hotlist2issue_tbl.InsertRows(
           cnxn, cols=HOTLIST2ISSUE_COLS, row_values=insert_rows, commit=False)
-      all_hotlist_items = filter(
-          lambda item: item.issue_id not in updated_issue_ids,
-          all_hotlist_items)
+      all_hotlist_items = list(
+          filter(
+              lambda item: item.issue_id not in updated_issue_ids,
+              all_hotlist_items))
       all_hotlist_items.extend(updated_items)
 
     if commit:

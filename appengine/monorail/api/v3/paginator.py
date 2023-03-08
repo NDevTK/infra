@@ -6,6 +6,8 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import six
+
 from framework import exceptions
 from framework import paginate
 from mrproto import secrets_pb2
@@ -71,7 +73,7 @@ class Paginator(object):
       # string types. paginate.ValidateAndParsePageToken requires a string token
       # during validation (compare_digest()). Once we move to python 3, we can
       # remove this string casting.
-      token = str(page_token)
+      token = six.ensure_binary(page_token)
       return paginate.ValidateAndParsePageToken(token, self.request_contents)
     return 0
 

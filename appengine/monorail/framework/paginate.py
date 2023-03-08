@@ -48,7 +48,7 @@ def GeneratePageToken(request_contents, start):
 
 
 def ValidateAndParsePageToken(token, request_contents):
-  # type: (str, secrets_pb2.ListRequestContents) -> int
+  # type: (bytes, secrets_pb2.ListRequestContents) -> int
   """Returns the start index of the page if the token is valid.
 
   Args:

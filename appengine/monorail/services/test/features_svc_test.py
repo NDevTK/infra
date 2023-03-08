@@ -1306,7 +1306,7 @@ Delete.assert_called_once_with(
     self.features_service.GetProjectIDsFromHotlist = mock.Mock(
         return_value=[hotlists_project_id])
 
-    hotlist_ids = hotlists_by_id.keys()
+    hotlist_ids = list(hotlists_by_id.keys())
     commit = True  # commit in ExpungeHotlists should be True by default.
     self.features_service.ExpungeHotlists(
         self.cnxn, hotlist_ids, star_service, user_service, chart_service)

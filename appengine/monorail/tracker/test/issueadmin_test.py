@@ -429,8 +429,9 @@ class AdminViewsFunctionsTest(unittest.TestCase):
     self.assertEqual('label1-sub1', y_attr)
 
     # Test that multibyte strings are not mangled.
-    spec = ('\xe7\xaa\xbf\xe8\x8b\xa5-\xe7\xb9\xb9 '
-            '\xe5\x9c\xb0\xe3\x81\xa6-\xe5\xbd\x93-\xe3\x81\xbe\xe3\x81\x99')
+    spec = (
+        b'\xe7\xaa\xbf\xe8\x8b\xa5-\xe7\xb9\xb9 '
+        b'\xe5\x9c\xb0\xe3\x81\xa6-\xe5\xbd\x93-\xe3\x81\xbe\xe3\x81\x99')
     spec = spec.decode('utf-8')
     (col_spec, sort_spec, x_attr, y_attr, member_default_query,
      ) = issueadmin._ParseListPreferences(
@@ -442,10 +443,10 @@ class AdminViewsFunctionsTest(unittest.TestCase):
         )
     self.assertEqual(spec, col_spec)
     self.assertEqual(' '.join(spec.split()), sort_spec)
-    self.assertEqual('\xe7\xaa\xbf\xe8\x8b\xa5-\xe7\xb9\xb9'.decode('utf-8'),
-                     x_attr)
-    self.assertEqual('\xe7\xaa\xbf\xe8\x8b\xa5-\xe7\xb9\xb9'.decode('utf-8'),
-                     y_attr)
+    self.assertEqual(
+        b'\xe7\xaa\xbf\xe8\x8b\xa5-\xe7\xb9\xb9'.decode('utf-8'), x_attr)
+    self.assertEqual(
+        b'\xe7\xaa\xbf\xe8\x8b\xa5-\xe7\xb9\xb9'.decode('utf-8'), y_attr)
     self.assertEqual(spec, member_default_query)
 
 

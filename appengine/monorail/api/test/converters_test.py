@@ -1422,21 +1422,22 @@ class ConverterFunctionsTest(unittest.TestCase):
     """Uploading files results in a list of attachments."""
     uploads = [
         issue_objects_pb2.AttachmentUpload(
-            filename='hello.c', content='int main() {}'),
+            filename='hello.c', content=b'int main() {}'),
         issue_objects_pb2.AttachmentUpload(
-            filename='README.md', content='readme content'),
-        ]
+            filename='README.md', content=b'readme content'),
+    ]
     actual = converters.IngestAttachmentUploads(uploads)
     self.assertEqual(
-      [('hello.c', 'int main() {}', 'text/plain'),
-       ('README.md', 'readme content', 'text/plain')],
-      actual)
+        [
+            ('hello.c', b'int main() {}', 'text/plain'),
+            ('README.md', b'readme content', 'text/plain')
+        ], actual)
 
   def testIngestAttachmentUploads_Invalid(self):
     """We reject uploaded files that lack a name or content."""
     with self.assertRaises(exceptions.InputException):
-      converters.IngestAttachmentUploads([
-          issue_objects_pb2.AttachmentUpload(content='name is mssing')])
+      converters.IngestAttachmentUploads(
+          [issue_objects_pb2.AttachmentUpload(content=b'name is mssing')])
 
     with self.assertRaises(exceptions.InputException):
       converters.IngestAttachmentUploads([

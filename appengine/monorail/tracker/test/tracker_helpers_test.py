@@ -255,9 +255,7 @@ class HelpersTest(unittest.TestCase):
     attachments = tracker_helpers._ParseIssueRequestAttachments(fake.PostData({
         'file1': [file1],
         }))
-    self.assertEqual(
-        [('hello.c', 'hello world', 'text/plain')],
-        attachments)
+    self.assertEqual([('hello.c', b'hello world', 'text/plain')], attachments)
     file1.seek(0)
 
     attachments = tracker_helpers._ParseIssueRequestAttachments(fake.PostData({
@@ -265,9 +263,10 @@ class HelpersTest(unittest.TestCase):
         'file2': [file2],
         }))
     self.assertEqual(
-        [('hello.c', 'hello world', 'text/plain'),
-         ('README', 'Welcome to our project', 'text/plain')],
-        attachments)
+        [
+            ('hello.c', b'hello world', 'text/plain'),
+            ('README', b'Welcome to our project', 'text/plain')
+        ], attachments)
     file1.seek(0)
     file2.seek(0)
 
@@ -275,9 +274,11 @@ class HelpersTest(unittest.TestCase):
         'file3': [file3],
         }))
     self.assertEqual(
-        [('FILENAME.EXT', 'Abort, Retry, or Fail?',
-          'application/octet-stream')],
-        attachments)
+        [
+            (
+                'FILENAME.EXT', b'Abort, Retry, or Fail?',
+                'application/octet-stream')
+        ], attachments)
     file3.seek(0)
 
     attachments = tracker_helpers._ParseIssueRequestAttachments(fake.PostData({
@@ -286,9 +287,11 @@ class HelpersTest(unittest.TestCase):
         'file4': [file4],  # Does not appear in result
         }))
     self.assertEqual(
-        [('FILENAME.EXT', 'Abort, Retry, or Fail?',
-          'application/octet-stream')],
-        attachments)
+        [
+            (
+                'FILENAME.EXT', b'Abort, Retry, or Fail?',
+                'application/octet-stream')
+        ], attachments)
     file3.seek(0)
 
   def testParseIssueRequestKeptAttachments(self):
@@ -709,9 +712,9 @@ class HelpersTest(unittest.TestCase):
   @mock.patch('tracker.tracker_constants.ISSUE_ATTACHMENTS_QUOTA_HARD', 1)
   def testComputeNewQuotaBytesUsed_ProjectQuota(self):
     upload_1 = framework_helpers.AttachmentUpload(
-        'matter not', 'three men make a tiger', 'matter not')
+        'matter not', b'three men make a tiger', 'matter not')
     upload_2 = framework_helpers.AttachmentUpload(
-        'matter not', 'chicken', 'matter not')
+        'matter not', b'chicken', 'matter not')
     attachments = [upload_1, upload_2]
 
     project = fake.Project()
@@ -724,7 +727,7 @@ class HelpersTest(unittest.TestCase):
     self.assertEqual(actual_new, expected_new)
 
     upload_3 = framework_helpers.AttachmentUpload(
-        'matter not', 'donut', 'matter not')
+        'matter not', b'donut', 'matter not')
     attachments.append(upload_3)
     with self.assertRaises(exceptions.OverAttachmentQuota):
       tracker_helpers.ComputeNewQuotaBytesUsed(project, attachments)
@@ -733,7 +736,7 @@ class HelpersTest(unittest.TestCase):
       'tracker.tracker_constants.ISSUE_ATTACHMENTS_QUOTA_HARD', len('tiger'))
   def testComputeNewQuotaBytesUsed_GeneralQuota(self):
     upload_1 = framework_helpers.AttachmentUpload(
-        'matter not', 'tiger', 'matter not')
+        'matter not', b'tiger', 'matter not')
     attachments = [upload_1]
 
     project = fake.Project()
@@ -743,13 +746,13 @@ class HelpersTest(unittest.TestCase):
     self.assertEqual(actual_new, expected_new)
 
     upload_2 = framework_helpers.AttachmentUpload(
-        'matter not', 'donut', 'matter not')
+        'matter not', b'donut', 'matter not')
     attachments.append(upload_2)
     with self.assertRaises(exceptions.OverAttachmentQuota):
       tracker_helpers.ComputeNewQuotaBytesUsed(project, attachments)
 
     upload_3 = framework_helpers.AttachmentUpload(
-        'matter not', 'donut', 'matter not')
+        'matter not', b'donut', 'matter not')
     attachments.append(upload_3)
     with self.assertRaises(exceptions.OverAttachmentQuota):
       tracker_helpers.ComputeNewQuotaBytesUsed(project, attachments)
@@ -2101,9 +2104,9 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
     ]
 
     upload_1 = framework_helpers.AttachmentUpload(
-        'dragon', 'OOOOOO\n', 'text/plain')
+        'dragon', b'OOOOOO\n', 'text/plain')
     upload_2 = framework_helpers.AttachmentUpload(
-        'snake', 'ooooo\n', 'text/plain')
+        'snake', b'ooooo\n', 'text/plain')
     attachment_uploads = [upload_1, upload_2]
 
     actual = tracker_helpers._EnforceAttachmentQuotaLimits(
@@ -2133,9 +2136,9 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
     ]
 
     upload_1 = framework_helpers.AttachmentUpload(
-        'dragon', 'OOOOOO\n', 'text/plain')
+        'dragon', b'OOOOOO\n', 'text/plain')
     upload_2 = framework_helpers.AttachmentUpload(
-        'snake', 'ooooo\n', 'text/plain')
+        'snake', b'ooooo\n', 'text/plain')
     attachment_uploads = [upload_1, upload_2]
 
     with self.assertRaisesRegexp(exceptions.OverAttachmentQuota,

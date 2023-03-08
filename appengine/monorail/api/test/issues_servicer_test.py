@@ -559,10 +559,11 @@ class IssuesServicerTest(unittest.TestCase):
     request.issue_ref.project_name = 'proj'
     request.issue_ref.local_id = 1
     request.comment_content = 'test comment'
-    request.uploads.extend([
-          issue_objects_pb2.AttachmentUpload(
-              filename='a.txt',
-              content='aaaaa')])
+    request.uploads.extend(
+        [
+            issue_objects_pb2.AttachmentUpload(
+                filename='a.txt', content=b'aaaaa')
+        ])
     mc = monorailcontext.MonorailContext(
         self.services, cnxn=self.cnxn, requester='owner@example.com')
     mc.LookupLoggedInUserPerms(self.project)
@@ -1175,10 +1176,11 @@ class IssuesServicerTest(unittest.TestCase):
     )
     request.issue_ref.project_name = 'proj'
     request.issue_ref.local_id = 1
-    request.uploads.extend([
-          issue_objects_pb2.AttachmentUpload(
-              filename='a.txt',
-              content='aaaaa')])
+    request.uploads.extend(
+        [
+            issue_objects_pb2.AttachmentUpload(
+                filename='a.txt', content=b'aaaaa')
+        ])
     request.kept_attachments.extend([1, 2, 3])
     request.send_email = True
 
@@ -1221,7 +1223,7 @@ class IssuesServicerTest(unittest.TestCase):
     work_env.WorkEnv(mc, self.services).UpdateIssueApproval.\
     assert_called_once_with(
         self.issue_1.issue_id, 3, ANY, u'Well, actually', False,
-        attachments=[(u'a.txt', 'aaaaa', 'text/plain')], send_email=True,
+        attachments=[(u'a.txt', b'aaaaa', 'text/plain')], send_email=True,
         kept_attachments=[1, 2, 3])
     self.assertEqual(expected, actual)
 

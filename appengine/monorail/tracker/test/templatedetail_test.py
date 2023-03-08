@@ -438,7 +438,7 @@ class TemplateDetailTest(unittest.TestCase):
 
     self.services.template.UpdateIssueTemplateDef.assert_called_once_with(
         self.mr.cnxn,
-        47925,
+        self.mr.project_id,
         12345,
         status='Accepted',
         component_required=True,
@@ -495,19 +495,32 @@ class TemplateDetailTest(unittest.TestCase):
     self.assertTrue('/templates/detail?saved=1&template=TestTemplate&' in url)
 
     self.services.template.UpdateIssueTemplateDef.assert_called_once_with(
-        self.mr.cnxn, 47925, 12345, status='Accepted', component_required=True,
+        self.mr.cnxn,
+        self.mr.project_id,
+        12345,
+        status='Accepted',
+        component_required=True,
         phases=[
             tracker_pb2.Phase(name='Canary', rank=0, phase_id=0),
-            tracker_pb2.Phase(name='Stable', rank=1, phase_id=1)],
-        approval_values=[tracker_pb2.ApprovalValue(approval_id=3, phase_id=0),
-                         tracker_pb2.ApprovalValue(approval_id=4, phase_id=1)],
-        name='TestTemplate', field_values=[
+            tracker_pb2.Phase(name='Stable', rank=1, phase_id=1)
+        ],
+        approval_values=[
+            tracker_pb2.ApprovalValue(approval_id=3, phase_id=0),
+            tracker_pb2.ApprovalValue(approval_id=4, phase_id=1)
+        ],
+        name='TestTemplate',
+        field_values=[
             tracker_pb2.FieldValue(field_id=1, str_value='NO', derived=False),
-            tracker_pb2.FieldValue(
-                field_id=2, str_value='MOOD', derived=False)],
-        labels=['label-One', 'label-Two'], owner_defaults_to_member=True,
-        admin_ids=[], content='HEY WHY', component_ids=[1],
-        summary_must_be_edited=False, summary='TLDR', members_only=True,
+            tracker_pb2.FieldValue(field_id=2, str_value='MOOD', derived=False)
+        ],
+        labels=['label-One', 'label-Two'],
+        owner_defaults_to_member=True,
+        admin_ids=[],
+        content='HEY WHY',
+        component_ids=[1],
+        summary_must_be_edited=False,
+        summary='TLDR',
+        members_only=True,
         owner_id=333)
 
   def testProcessFormData_Delete(self):
@@ -520,4 +533,4 @@ class TemplateDetailTest(unittest.TestCase):
 
     self.assertTrue('/p/None/adminTemplates?deleted=1' in url)
     self.services.template.DeleteIssueTemplateDef\
-        .assert_called_once_with(self.mr.cnxn, 47925, 12345)
+        .assert_called_once_with(self.mr.cnxn, self.mr.project_id, 12345)

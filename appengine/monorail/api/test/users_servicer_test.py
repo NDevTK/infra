@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import six
 import unittest
 
 try:
@@ -83,7 +84,7 @@ class UsersServicerTest(unittest.TestCase):
             display_name='group2@test.com', user_id=self.group2_id)
     ]
 
-    self.assertItemsEqual(expected_group_refs, response.group_refs)
+    six.assertCountEqual(self, expected_group_refs, response.group_refs)
 
   def testGetMemberships_NonExistentUser(self):
     request = users_pb2.GetMembershipsRequest(

@@ -758,7 +758,7 @@ class BizobjTest(unittest.TestCase):
 
   def CheckDefaultConfig(self, config):
     self.assertTrue(len(config.well_known_statuses) > 0)
-    self.assertTrue(config.statuses_offer_merge > 0)
+    self.assertTrue(len(config.statuses_offer_merge) > 0)
     self.assertTrue(len(config.well_known_labels) > 0)
     self.assertTrue(len(config.exclusive_label_prefixes) > 0)
     # TODO(jrobbins): test actual values from default config

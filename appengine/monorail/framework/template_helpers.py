@@ -16,7 +16,6 @@ from six.moves import http_client
 from six.moves import StringIO
 import logging
 import time
-import types
 
 import ezt
 import six
@@ -295,7 +294,7 @@ def ExpandLabels(page_data):
     page_data: Template data which may include a 'labels' field.
   """
   label_list = page_data.get('labels', [])
-  if isinstance(label_list, types.StringTypes):
+  if isinstance(label_list, six.string_types):
     label_list = [label.strip() for label in page_data['labels'].split(',')]
 
   for i in range(len(label_list)):

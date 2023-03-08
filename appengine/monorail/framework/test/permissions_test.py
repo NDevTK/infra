@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import six
 import time
 import unittest
 
@@ -159,10 +160,20 @@ class PermissionSetTest(unittest.TestCase):
     self.assertEqual('PermissionSet(a, b, cc)', self.perms.DebugString())
 
   def testRepr(self):
-    self.assertEqual('PermissionSet(frozenset([]))',
-                     permissions.PermissionSet([]).__repr__())
-    self.assertEqual('PermissionSet(frozenset([\'a\']))',
-                     permissions.PermissionSet(['A']).__repr__())
+    if six.PY2:
+      self.assertEqual(
+          'PermissionSet(frozenset([]))',
+          permissions.PermissionSet([]).__repr__())
+      self.assertEqual(
+          "PermissionSet(frozenset(['a']))",
+          permissions.PermissionSet(['A']).__repr__())
+    else:
+      self.assertEqual(
+          'PermissionSet(frozenset())',
+          permissions.PermissionSet([]).__repr__())
+      self.assertEqual(
+          "PermissionSet(frozenset({'a'}))",
+          permissions.PermissionSet(['A']).__repr__())
 
 
 class PermissionsTest(unittest.TestCase):

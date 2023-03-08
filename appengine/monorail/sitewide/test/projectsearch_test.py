@@ -30,7 +30,7 @@ class ProjectSearchTest(unittest.TestCase):
     for idx in range(27, 110):
       self.services.project.TestAddProject(str(idx), project_id=idx)
 
-    self.addCleanup(mock.patch.stopall())
+    self.addCleanup(mock.patch.stopall)
 
   def TestPipeline(self, expected_last, expected_len):
     mr = testing_helpers.MakeMonorailRequest()

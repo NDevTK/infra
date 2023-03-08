@@ -429,7 +429,7 @@ def _IndexListAccessor(wk_values, base_accessor):
       return MAX_STRING
 
     indexes = [well_known_value_indexes.get(val, MAX_STRING) for val in values]
-    return sorted(indexes)
+    return _SortedWithInts(indexes)
 
   return Accessor
 
@@ -465,7 +465,7 @@ def _IndexOrLexicalList(wk_values, full_fd_list, col_name, users_by_id):
           _SortableLabelValues(art, col_name, well_known_value_indexes))
       if not idx_or_lex_list:
         return MAX_STRING  # issues with no value sort to the end of the list.
-      return sorted(idx_or_lex_list)
+      return _SortedWithInts(idx_or_lex_list)
 
     return ApproverAccessor
 
@@ -494,7 +494,7 @@ def _IndexOrLexicalList(wk_values, full_fd_list, col_name, users_by_id):
         _SortableLabelValues(art, col_name, well_known_value_indexes))
     if not idx_or_lex_list:
       return MAX_STRING  # issues with no value sort to the end of the list.
-    return sorted(idx_or_lex_list)
+    return _SortedWithInts(idx_or_lex_list)
 
   return Accessor
 
@@ -572,3 +572,13 @@ def _SortableLabelValues(art, col_name, well_known_value_indexes):
     sortable_value_list.append(idx_or_lex)
 
   return sortable_value_list
+
+
+def _SortedWithInts(iterable):
+  """Sorts an iterable with ints preceding all other objects.
+
+  For Python 3 compatibility with the way Python 2 sorted objects.
+  """
+  ints = [item for item in iterable if isinstance(item, int)]
+  non_ints = [item for item in iterable if not isinstance(item, int)]
+  return sorted(ints) + sorted(non_ints)

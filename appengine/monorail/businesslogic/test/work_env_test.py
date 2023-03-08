@@ -4065,7 +4065,7 @@ class WorkEnvTest(unittest.TestCase):
     self.SignIn(self.user_1.user_id)
 
     upload = framework_helpers.AttachmentUpload(
-        'BEAR-necessities', 'Forget about your worries and your strife',
+        'BEAR-necessities', b'Forget about your worries and your strife',
         'text/plain')
 
     with self.work_env as we:

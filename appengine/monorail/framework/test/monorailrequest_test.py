@@ -512,10 +512,13 @@ class TestMonorailRequestFunctions(unittest.TestCase):
     self.assertEqual(['Foo-Bar', 'Foo-Bar-Baz', 'Release-1.2', 'Hey', 'There'],
                      parse('Foo-Bar Foo-Bar-Baz Release-1.2 Hey!There'))
     self.assertEqual(
-        ['\xe7\xaa\xbf\xe8\x8b\xa5\xe7\xb9\xb9'.decode('utf-8'),
-         '\xe5\x9f\xba\xe5\x9c\xb0\xe3\x81\xaf'.decode('utf-8')],
-        parse('\xe7\xaa\xbf\xe8\x8b\xa5\xe7\xb9\xb9 '
-              '\xe5\x9f\xba\xe5\x9c\xb0\xe3\x81\xaf'.decode('utf-8')))
+        [
+            b'\xe7\xaa\xbf\xe8\x8b\xa5\xe7\xb9\xb9'.decode('utf-8'),
+            b'\xe5\x9f\xba\xe5\x9c\xb0\xe3\x81\xaf'.decode('utf-8')
+        ],
+        parse(
+            b'\xe7\xaa\xbf\xe8\x8b\xa5\xe7\xb9\xb9 '
+            b'\xe5\x9f\xba\xe5\x9c\xb0\xe3\x81\xaf'.decode('utf-8')))
 
   def testParseColSpec_Dedup(self):
     """An attacker cannot inflate response size by repeating a column."""
