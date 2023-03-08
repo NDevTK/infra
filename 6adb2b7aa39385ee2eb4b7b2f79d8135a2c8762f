@@ -131,6 +131,52 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "4437e0ec_168bca5d",
+        "filename": "go/src/infra/build/siso/toolsupport/ninjautil/manifest_parser.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 320,
+      "author": {
+        "id": 1158025
+      },
+      "writtenOn": "2023-03-08T06:59:05Z",
+      "side": 1,
+      "message": "AFAIK Ninja does not allow specifying \"non-special\" variables for rules and currently throws an error if you try. Although they at some point were wondering if they should allow it, according to a comment in their code.",
+      "range": {
+        "startLine": 320,
+        "startChar": 30,
+        "endLine": 320,
+        "endChar": 65
+      },
+      "revId": "6adb2b7aa39385ee2eb4b7b2f79d8135a2c8762f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c8592d1a_a65df7b9",
+        "filename": "go/src/infra/build/siso/toolsupport/ninjautil/manifest_parser.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 361,
+      "author": {
+        "id": 1158025
+      },
+      "writtenOn": "2023-03-08T06:59:05Z",
+      "side": 1,
+      "message": "nit: \"one or more default targets\" ?",
+      "range": {
+        "startLine": 361,
+        "startChar": 33,
+        "endLine": 361,
+        "endChar": 49
+      },
+      "revId": "6adb2b7aa39385ee2eb4b7b2f79d8135a2c8762f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "455c5f87_31a57755",
         "filename": "go/src/infra/build/siso/toolsupport/ninjautil/manifest_parser.go",
         "patchSetId": 3
