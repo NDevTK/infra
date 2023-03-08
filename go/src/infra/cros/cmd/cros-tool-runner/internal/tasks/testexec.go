@@ -107,8 +107,14 @@ func (c *runTestCmd) innerRun(ctx context.Context, a subcommands.Application, ar
 	}
 	lookupKey := device.ContainerMetadataKey
 
-	crosTestContainer := findContainer(cm, lookupKey, "cros-test")
-	crosDUTContainer := findContainer(cm, lookupKey, "cros-dut")
+	crosTestContainer, err := findContainer(cm, lookupKey, "cros-test")
+	if err != nil {
+		return nil, errors.Annotate(err, "inner run: failed to find container").Err()
+	}
+	crosDUTContainer, err := findContainer(cm, lookupKey, "cros-dut")
+	if err != nil {
+		return nil, errors.Annotate(err, "inner run: failed to find container").Err()
+	}
 	result, err := testexec.Run(ctx, req, crosTestContainer, crosDUTContainer, c.dockerKeyFile)
 	return result, errors.Annotate(err, "inner run: failed to run tests").Err()
 }

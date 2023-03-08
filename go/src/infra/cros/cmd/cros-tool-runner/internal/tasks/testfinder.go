@@ -97,7 +97,10 @@ func (c *runTestFinderCmd) innerRun(ctx context.Context, a subcommands.Applicati
 	}
 	lookupKey := req.ContainerMetadataKey
 
-	crosTestFinderContainer := findContainer(cm, lookupKey, testfinder.CrosTestFinderName)
+	crosTestFinderContainer, err := findContainer(cm, lookupKey, testfinder.CrosTestFinderName)
+	if err != nil {
+		return nil, errors.Annotate(err, "inner run: failed to find container").Err()
+	}
 	result, err := testfinder.Run(ctx, req, crosTestFinderContainer, c.dockerKeyFile)
 	return result, errors.Annotate(err, "inner run: failed to find tests").Err()
 }

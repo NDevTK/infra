@@ -11,6 +11,8 @@ import (
 	"os"
 	"time"
 
+	"infra/cros/cmd/cros-tool-runner/internal/common"
+
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
@@ -18,7 +20,6 @@ import (
 	"go.chromium.org/luci/common/tsmon"
 	"go.chromium.org/luci/common/tsmon/target"
 	"go.chromium.org/luci/lucictx"
-	"infra/cros/cmd/cros-tool-runner/internal/common"
 )
 
 // readContainersMetadata reads the jsonproto at path containers metadata file.
@@ -34,17 +35,17 @@ func readContainersMetadata(p string) (*build_api.ContainerMetadata, error) {
 	return in, errors.Annotate(err, "read container metadata %q", p).Err()
 }
 
-func findContainer(cm *build_api.ContainerMetadata, lookupKey, name string) *build_api.ContainerImageInfo {
+func findContainer(cm *build_api.ContainerMetadata, lookupKey, name string) (*build_api.ContainerImageInfo, error) {
 	containers := cm.GetContainers()
 	if containers == nil {
-		return nil
+		return nil, nil
 	}
 	imageMap, ok := containers[lookupKey]
 	if !ok {
 		log.Printf("Image %q not found", name)
-		return nil
+		return nil, fmt.Errorf("Image %q not found for lookupkey %s", name, lookupKey)
 	}
-	return imageMap.Images[name]
+	return imageMap.Images[name], nil
 }
 
 func useSystemAuth(ctx context.Context, authFlags *authcli.Flags) (context.Context, error) {

@@ -126,11 +126,19 @@ func (c *runCmd) innerRun(ctx context.Context, a subcommands.Application, args [
 	// Each DUT will run in parallel execution.
 	for i, device := range req.GetDevices() {
 		i, device := i, device
+		crosDutContainer, err := findContainer(cm, device.GetContainerMetadataKey(), "cros-dut")
+		if err != nil {
+			return out, errors.Annotate(err, "inner run: failed to find container").Err()
+		}
+		crosProvisionContainer, err := findContainer(cm, device.GetContainerMetadataKey(), "cros-provision")
+		if err != nil {
+			return out, errors.Annotate(err, "inner run: failed to find container").Err()
+		}
 		g.Go(func() error {
 			result := provision.Run(ctx,
 				device,
-				findContainer(cm, device.GetContainerMetadataKey(), "cros-dut"),
-				findContainer(cm, device.GetContainerMetadataKey(), "cros-provision"),
+				crosDutContainer,
+				crosProvisionContainer,
 				c.dockerKeyFile)
 			provisionResults[i] = result.Out
 			return result.Err
