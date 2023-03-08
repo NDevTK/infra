@@ -60,7 +60,7 @@ class Conductor:
         packages_names=supported_packages)
 
     assert packages_list, 'No packages to work with'
-    assert len(packages_list) == len(set([p.name for p in packages_list
+    assert len(packages_list) == len(set([p.full_name for p in packages_list
                                          ])), 'Duplicates among packages'
 
     if ignored_packages_list:
@@ -71,7 +71,7 @@ class Conductor:
     self.packages = Conductor._GetSortedPackages(packages_list)
 
     if with_build:
-      package_names = [p.name for p in self.packages]
+      package_names = [p.full_name for p in self.packages]
       with self.cros_sdk.StartWorkonPackagesSafe(
           package_names) as workon_handler:
         self.cros_sdk.BuildPackages(package_names)
@@ -121,9 +121,9 @@ class Conductor:
     packages go first.
     """
     result_packages = []
-    packages_dict = {p.name: p for p in packages_list}
+    packages_dict = {p.full_name: p for p in packages_list}
 
-    in_degrees = {p.name: 0 for p in packages_list}
+    in_degrees = {p.full_name: 0 for p in packages_list}
     for p in packages_list:
       for dep in p.dependencies:
         in_degrees[dep.name] = in_degrees[dep.name] + 1

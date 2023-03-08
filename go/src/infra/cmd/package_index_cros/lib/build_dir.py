@@ -46,15 +46,16 @@ class _BuildDirMerger:
       if any([
           source.endswith(ext) for ext in _BuildDirMerger.g_ignore_extensions
       ]):
-        g_logger.debug('%s: ignore file: %s', package.name, source)
+        g_logger.debug('%s: ignore file: %s', package.full_name, source)
         return
 
       if os.path.exists(dest) and not filecmp.cmp(source, dest):
-        dest = os.path.join(os.path.dirname(dest),
-                            package.simple_name + '_' + os.path.basename(dest))
+        dest = os.path.join(
+            os.path.dirname(dest),
+            package.package_info.name + '_' + os.path.basename(dest))
         g_logger.debug(
             '%s: Copying conflicting file with package prefix: %s to %s',
-            package.name, source, dest)
+            package.full_name, source, dest)
         source_dest_conflicts[source] = dest
       shutil.copy2(source, dest)
 
@@ -112,7 +113,7 @@ class BuildDirGenerator:
     source_dest_conflicts = {}
     for package in packages:
       source_dest_conflicts.update(merger.Append(package))
-      g_logger.debug('Added %s to result build dir: %s', package.name,
+      g_logger.debug('Added %s to result build dir: %s', package.full_name,
                      package.build_dir)
 
     return source_dest_conflicts

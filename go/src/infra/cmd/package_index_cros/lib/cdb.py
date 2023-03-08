@@ -85,12 +85,12 @@ class Cdb:
 
     for dep in self.package.dependencies:
       if dep.name not in package_to_include_args:
-        raise Cdb.CdbException(
-            f"{self.package.name}: No include path for dependency: {dep.name}")
+        raise Cdb.CdbException(f"{self.package.full_name}:"
+                               f" No include path for dependency: {dep.name}")
 
     self.package_to_include_args = package_to_include_args
-    self.package_to_include_args[self.package.name] = Cdb._IncludePathOrder(
-        set(), set(), set())
+    self.package_to_include_args[
+        self.package.full_name] = Cdb._IncludePathOrder(set(), set(), set())
 
   def Fix(self) -> 'Cdb':
     """
@@ -103,12 +103,12 @@ class Cdb:
     """
     if self.package.is_highly_volatile:
       g_logger.debug('%s: Is highly volatile package. Not all checks performed',
-                     self.package.name)
+                     self.package.full_name)
 
     if self.package.additional_include_paths:
       for include_path in self.package.additional_include_paths:
         g_logger.debug('%s: Additional include path will be used: %s',
-                       self.package.name, include_path)
+                       self.package.full_name, include_path)
 
     for entry in self.data:
       entry['directory'] = self._GetFixedDirectory(entry)
@@ -186,9 +186,9 @@ class Cdb:
         actual_include_args.local.add('-I' + include_path)
 
     # Do not pass our dependencies up.
-    self.package_to_include_args[self.package.name].local.update(
+    self.package_to_include_args[self.package.full_name].local.update(
         actual_include_args.local)
-    self.package_to_include_args[self.package.name].generated.update(
+    self.package_to_include_args[self.package.full_name].generated.update(
         actual_include_args.generated)
 
     for dep in self.package.dependencies:
@@ -215,12 +215,12 @@ class Cdb:
       if not os.path.isfile(temp_file) or not os.path.isfile(actual_file):
         g_logger.debug(
             '%s: Cannot verify if temp and actual file are the same: %s vs %s',
-            self.package.name, temp_file, actual_file)
+            self.package.full_name, temp_file, actual_file)
       elif not filecmp.cmp(temp_file, actual_file):
         if self.package.is_highly_volatile:
           g_logger.debug(
               '%s: Temp and actual files differ. Possibly patches: %s vs %s',
-              self.package.name, temp_file, actual_file)
+              self.package.full_name, temp_file, actual_file)
         else:
           raise Cdb.FileFieldException(self.package,
                                        'Temp and actual file differ', temp_file,
@@ -293,11 +293,11 @@ class CdbGenerator:
                              packages_to_include_args: Dict) -> Cdb:
     cdb_str = CrosSdk(self.setup).GenerateCompileCommands(
         PathHandler(self.setup).ToChroot(package.build_dir))
-    g_logger.debug('%s: Generated compile commands', package.name)
+    g_logger.debug('%s: Generated compile commands', package.full_name)
 
     cdb_data = json.loads(cdb_str)
     if not cdb_data:
-      g_logger.error('%s: Compile commands are empty', package.name)
+      g_logger.error('%s: Compile commands are empty', package.full_name)
 
     assert isinstance(cdb_data, List)
 
@@ -319,8 +319,8 @@ class CdbGenerator:
         result_cdb_data.extend(cdb_data)
       except (Cdb.CdbException, PackagePathException) as e:
         if self.keep_going:
-          g_logger.error('%s: Failed to fix compile commands: %s', package.name,
-                         e)
+          g_logger.error('%s: Failed to fix compile commands: %s',
+                         package.full_name, e)
         else:
           raise e
 

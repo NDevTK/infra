@@ -98,7 +98,7 @@ class GnTargets:
       if self.package.is_highly_volatile:
         g_logger.debug(
             '%s: Temp and actual scripts differ. Possibly patches: %s vs %s',
-            self.package.name, temp_script_file, actual_script_file)
+            self.package.full_name, temp_script_file, actual_script_file)
       else:
         raise GnTargets.TargetPathException(self.package,
                                             'Temp and actual scripts differ',
@@ -213,7 +213,7 @@ class GnTargetsMerger:
         continue
 
       g_logger.debug('%s: Merging existing target: %s',
-                     new_targets.package.name, target)
+                     new_targets.package.full_name, target)
 
       for field in new_targets.data[target]:
         if not field in self.data[target]:
@@ -229,11 +229,12 @@ class GnTargetsMerger:
           continue
 
         g_logger.debug('%s: %s: Merging existing field: %s',
-                       new_targets.package.name, target, field)
+                       new_targets.package.full_name, target, field)
 
         if not field in self.fields_to_resolve:
           raise GnTargetsMerger.GnTargetsMergeException(
-              f"{new_targets.package.name}: Unknown '{field}' in '{target}'")
+              f"{new_targets.package.full_name}: "
+              f"Unknown '{field}' in '{target}'")
 
         self.data[target][field] = self.fields_to_resolve[field](field_data,
                                                                  new_field_data,
@@ -284,7 +285,7 @@ class GnTargetsGenerator:
     targets_str = CrosSdk(self.setup).GenerateGnTargets(chroot_targets_root_dir,
                                                         chroot_build_dir)
     targets_str = targets_str[targets_str.find('{'):targets_str.rfind('}') + 1]
-    g_logger.debug('%s: Generated targets', package.name)
+    g_logger.debug('%s: Generated targets', package.full_name)
 
     targets_data = json.loads(targets_str)
     if not targets_data:
@@ -292,7 +293,7 @@ class GnTargetsGenerator:
 
     if not isinstance(targets_data, Dict):
       raise NotImplementedError(
-          f"gn targets are not dict for package: {package.name}")
+          f"gn targets are not dict for package: {package.full_name}")
 
     return GnTargets(targets_data,
                      package,
@@ -309,12 +310,13 @@ class GnTargetsGenerator:
       try:
         new_targets = self._GenerateTargetsForPackage(package).Fix()
         result_targets.Append(new_targets)
-        g_logger.debug('%s: targets merged', package.name)
+        g_logger.debug('%s: targets merged', package.full_name)
       except (GnTargets.TargetPathException,
               GnTargetsMerger.GnTargetsMergeException,
               PackagePathException) as e:
         if self.keep_going:
-          g_logger.error('%s: Failed to fix gn targets: %s', package.name, e)
+          g_logger.error('%s: Failed to fix gn targets: %s', package.full_name,
+                         e)
         else:
           raise e
 
