@@ -26,15 +26,12 @@ class Conductor:
   def Prepare(self,
               package_names: List[str],
               *,
-              with_build: bool = False,
               ignore_unsupported: bool = False):
     """
     Does:
       * List packages:
         * If |package_names| - fetches given packages and their dependencies.
         * If not |package_names| - fetches all available packages.
-      * If |with_build|:
-        * Build packages.
       * If |ignore_unsupported|:
         * Ignore any packages marked as unsupported from processing as
           well as their dependencies.
@@ -46,9 +43,15 @@ class Conductor:
     package_sleuth = PackageSleuth(self.setup)
 
     if ignore_unsupported:
+      unsupported_packages = constants.TEMPORARY_UNSUPPORTED_PACKAGES
+      if self.setup.with_build:
+        unsupported_packages.update(
+            constants.TEMPORARY_UNSUPPORTED_PACKAGES_WITH_BUILD)
+      if self.setup.with_tests:
+        unsupported_packages.update(
+            constants.TEMPORARY_UNSUPPORTED_PACKAGES_WITH_TESTS)
       supported_packages = [
-          pn for pn in package_names
-          if not pn in constants.TEMPORARY_UNSUPPORTED_PACKAGES
+          pn for pn in package_names if not pn in unsupported_packages
       ]
 
       g_logger.warn("Unsupported input packages: %s",
@@ -70,7 +73,7 @@ class Conductor:
     # Sort packages so that dependencies go first.
     self.packages = Conductor._GetSortedPackages(packages_list)
 
-    if with_build:
+    if self.setup.with_build:
       package_names = [p.full_name for p in self.packages]
       with self.cros_sdk.StartWorkonPackagesSafe(
           package_names) as workon_handler:
