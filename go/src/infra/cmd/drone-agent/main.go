@@ -21,8 +21,12 @@ import (
 	"time"
 
 	specs "github.com/opencontainers/runtime-spec/specs-go"
+
 	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
+	"go.opentelemetry.io/otel/sdk/trace"
+
 	"google.golang.org/grpc/metadata"
 
 	"infra/appengine/drone-queen/api"
@@ -31,6 +35,7 @@ import (
 	"infra/cmd/drone-agent/internal/draining"
 	"infra/cmd/drone-agent/internal/metrics"
 	"infra/cmd/drone-agent/internal/tokman"
+	"infra/cmd/drone-agent/internal/tracing"
 )
 
 const (
@@ -74,10 +79,34 @@ var (
 	botBlkIOWriteBPS = getIntEnv("DRONE_AGENT_BOT_BLKIO_WRITE_BPS", 0)
 )
 
-// versionFilePath is the path to a drone-agent version file.
-// This file should only contain the version i.e. 12345.
-var versionFilePath = flag.String("version-file", "", "Path for drone-agent version file."+
-	"  This is reported to drone queen for analytics.")
+// Flag options.
+var (
+	// versionFilePath is the path to a drone-agent version file.
+	// This file should only contain the version i.e. 12345.
+	versionFilePath = flag.String("version-file", "", "Path for drone-agent version file."+
+		" This is reported to drone queen for analytics.")
+	// traceBackend denotes the backend used for OTel traces.
+	traceBackend string
+	// traceTarget is the destination for traces.
+	traceTarget = flag.String("trace-target", "", "Traces destination. "+
+		"See \"trace-backend\" description for usage.")
+)
+
+func init() {
+	const desc = `Exporter for OTel traces. Valid options are "console", "grpc" and "none". Default is "none".
+For values other than "none", -trace-target must be set.
+For "grpc", the format is "host:port" for an OTel collector service.
+For "console", -trace-target should be a path for the output file.`
+	flag.Func("trace-backend", desc, func(s string) error {
+		switch s {
+		case "console", "grpc", "none":
+			traceBackend = s
+			return nil
+		default:
+			return errors.Reason("invalid value %s. Allowed values are: %s", s, "console, grpc, none").Err()
+		}
+	})
+}
 
 func main() {
 	flag.Parse()
@@ -105,6 +134,17 @@ func innerMain() error {
 	defer wg.Wait()
 	defer cancel()
 	defer metrics.Shutdown(ctx)
+
+	if traceBackend != "" && traceBackend != "none" {
+		// Initialize tracing.
+		exp, err, close := initSpanExporter(ctx, traceBackend, *traceTarget)
+		if err != nil {
+			return err
+		}
+		defer close()
+		cleanup := tracing.InitTracer(ctx, exp, version)
+		defer cleanup(ctx)
+	}
 
 	authn := auth.NewAuthenticator(ctx, auth.SilentLogin, authOptions)
 
@@ -270,4 +310,37 @@ func newThrottleDevice(major, minor int64, rate uint64) *specs.LinuxThrottleDevi
 	dev.Major = major
 	dev.Minor = minor
 	return &dev
+}
+
+// initSpanExporter uses the traceBackend flag to instantiate the relevant span exporter.
+// initSpanExporter expects "target" to be specified and will error out if it is not.
+func initSpanExporter(ctx context.Context, traceBackend, target string) (_ trace.SpanExporter, _ error, close func() error) {
+	log.Printf("trace backend: %v", traceBackend)
+	if target == "" {
+		return nil, errors.Reason("no trace target provided").Err(), nil
+	}
+	var exp trace.SpanExporter
+	var err error
+	var cleanup func() error
+	switch traceBackend {
+	case "console":
+		f, err := os.Create(target)
+		if err != nil {
+			return nil, err, nil
+		}
+		cleanup = f.Close
+		exp, err = tracing.NewConsoleExporter(f)
+		if err != nil {
+			cleanup()
+			return nil, err, nil
+		}
+	case "grpc":
+		exp, err = tracing.NewGRPCExporter(ctx, target)
+		if err != nil {
+			return nil, err, nil
+		}
+	default:
+		log.Panicf("unexpected value for trace backend: %v", traceBackend)
+	}
+	return exp, nil, cleanup
 }
