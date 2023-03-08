@@ -142,7 +142,8 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	env.Set("GOBIN", "")
 	env.Set("GOCACHE", gocacheDir)
 	env.Set("GO_BUILDER_NAME", st.Build().GetBuilder().GetBuilder()) // TODO(mknyszek): This is underspecified. We may need Project and Bucket.
-
+	// Use our tools before the system tools. Notably, use raw Git rather than the Chromium wrapper.
+	env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(toolsRoot, "bin"), os.PathListSeparator, env.Get("PATH")))
 	fmt.Println(env)
 	fmt.Println(os.Environ())
 
@@ -236,12 +237,12 @@ func scriptExt() string {
 //
 // N.B. We assume a few tools are already available on the machine we're
 // running on. Namely:
-// - git
 // - For non-Windows, a C/C++ toolchain
 //
 // TODO(mknyszek): Make sure Go 1.17 still works as the bootstrap toolchain since
 // it's our published minimum.
 var cipdDeps = `
+infra/3pp/tools/git/${platform} version:2@2.39.2.chromium.11
 @Subdir go_bootstrap
 infra/3pp/tools/go/${platform} version:2@1.19.3
 @Subdir cc/${os=windows}
