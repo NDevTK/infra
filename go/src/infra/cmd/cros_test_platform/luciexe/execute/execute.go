@@ -8,6 +8,7 @@ package execute
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"go.chromium.org/luci/luciexe/exe"
@@ -84,13 +85,22 @@ func Run(ctx context.Context, args Args) error {
 		func(ctx context.Context) error {
 			var err error
 			// Captured: resps
-			resps, err = execution.Run(ctx, skylab, ea)
+			resps, err = execution.Run(ctx, skylab, ea, args.InputPath)
 			return err
 		},
 		deadline,
 	)
+
+	// capture the suite timeout errors and record responses done so far
 	if err != nil {
-		return err
+		if !strings.Contains(err.Error(), "TestExecutionLimit: Maximum suite execution runtime exceeded.") {
+			return err
+		}
+
+		// If the error was caused by the suite execution limit log the warning then
+		// continue on with results uploading.
+		logging.Warningf(ctx, "TestExecutionLimit: Exiting early due to over testing.")
+		logging.Warningf(ctx, err.Error())
 	}
 	if tErr != nil {
 		// Timeout while waiting for tasks is not considered an Test Platform

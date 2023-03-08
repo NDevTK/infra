@@ -140,6 +140,10 @@ func (b *Build) Completed() bool {
 	return !transientLifeCycles[b.lifeCycle]
 }
 
+func (b *Build) Running() bool {
+	return b.lifeCycle == test_platform.TaskState_LIFE_CYCLE_RUNNING
+}
+
 // verdict aggregates the information about test cases contained in a task into
 // a single verdict.
 func (b *Build) verdict() test_platform.TaskState_Verdict {

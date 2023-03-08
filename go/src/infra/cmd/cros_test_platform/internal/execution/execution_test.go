@@ -11,6 +11,8 @@ package execution_test
 import (
 	"context"
 	"fmt"
+	"os"
+	"path/filepath"
 	"sort"
 	"sync"
 	"testing"
@@ -676,7 +678,12 @@ func runWithParams(ctx context.Context, skylab trservice.Client, params *test_pl
 		Deadline:     time.Now().Add(time.Hour),
 		SwarmingPool: pool,
 	}
-	return execution.Run(ctx, skylab, args)
+
+	inputJson, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	return execution.Run(ctx, skylab, args, filepath.Dir(inputJson))
 }
 
 func basicParams() *test_platform.Request_Params {

@@ -7,6 +7,8 @@ package execution
 import (
 	"context"
 	"fmt"
+	"path/filepath"
+	"sync"
 	"time"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
@@ -21,6 +23,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
+	"infra/cmd/cros_test_platform/internal/execution/types"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
 )
 
@@ -40,10 +43,14 @@ type Args struct {
 	SwarmingPool string
 }
 
+const (
+	bufferSize = 1024
+)
+
 // Run runs an execution until success.
 //
 // Run may be aborted by cancelling the supplied context.
-func Run(ctx context.Context, c trservice.Client, args Args) (map[string]*steps.ExecuteResponse, error) {
+func Run(ctx context.Context, c trservice.Client, args Args, inputPath string) (map[string]*steps.ExecuteResponse, error) {
 	// Build may be updated as each of the task sets is Close()ed by a deferred
 	// function. Send() one last time to capture those changes.
 	defer args.Send()
@@ -116,7 +123,7 @@ func Run(ctx context.Context, c trservice.Client, args Args) (map[string]*steps.
 		requestTaskSets: ts,
 		send:            args.Send,
 	}
-	err := r.LaunchAndWait(ctx, c)
+	err := r.LaunchAndWait(ctx, c, filepath.Dir(inputPath))
 	if isFatalError(ctx, err) {
 		return nil, err
 	}
@@ -178,12 +185,42 @@ type runner struct {
 // If the supplied context is cancelled prior to completion, or some other error
 // is encountered, this method returns whatever partial execution response
 // was visible to it prior to that error.
-func (r *runner) LaunchAndWait(ctx context.Context, c trservice.Client) error {
+func (r *runner) LaunchAndWait(ctx context.Context, c trservice.Client, workingDirectory string) error {
+	// Create the metrics channel to be used for logging suite execution. This
+	// isn't done in a global field because `go test` is done concurrently by
+	// design and this meant a single channel was used for all test suites.
+	logChan := make(chan trackingMetric, bufferSize)
+
+	// Launch the goroutine to collect metrics from the run.
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func(ctx context.Context, wg *sync.WaitGroup) {
+		defer wg.Done()
+
+		err := logMetrics(ctx, logChan, workingDirectory)
+		if err != nil {
+			logging.Warningf(ctx, "Writing execution logs failed: %s", err.Error())
+		}
+
+	}(ctx, &wg)
+
+	// Once everything is done write the metrics to the proper files so that we
+	// can attach them to the builder steps in recipes.
+	defer func(ctx context.Context, wg *sync.WaitGroup) {
+		// Closing the channel here flushes all the logs to the appropriate CSVs
+		err := logTotals(ctx, workingDirectory)
+		if err != nil {
+			logging.Warningf(ctx, "Printing final execution metrics to logs failed: %s", err.Error())
+		}
+		close(logChan)
+		wg.Wait()
+	}(ctx, &wg)
+
 	if err := r.launchTasks(ctx, c); err != nil {
 		return err
 	}
 	for {
-		allDone, err := r.checkTasksAndRetry(ctx, c)
+		allDone, err := r.checkTasksAndRetry(ctx, c, logChan)
 
 		// Each call to checkTasksAndRetry() potentially updates the Build.
 		// We unconditionally send() the updated build so that we reflect the
@@ -221,13 +258,24 @@ func (r *runner) launchTasks(ctx context.Context, c trservice.Client) error {
 
 // Returns whether all tasks are complete (so future calls to this function are
 // unnecessary)
-func (r *runner) checkTasksAndRetry(ctx context.Context, c trservice.Client) (bool, error) {
+func (r *runner) checkTasksAndRetry(ctx context.Context, c trservice.Client, logChan chan trackingMetric) (bool, error) {
 	allDone := true
 	for t, ts := range r.requestTaskSets {
-		c, err := ts.CheckTasksAndRetry(ctx, c)
+
+		// Make an entry for the suite the first time it is ran.
+		if _, ok := lastSeenRuntimePerTask[t]; !ok {
+			lastSeenRuntimePerTask[t] = &suiteTestExecutionTrackerEntry{
+				allDone:                false,
+				totalSuiteTrackingTime: time.Duration(0),
+				lastSeenMap:            make(map[types.InvocationID]time.Time),
+			}
+		}
+
+		c, err := ts.CheckTasksAndRetry(ctx, c, t, logChan)
 		if err != nil {
 			return false, errors.Annotate(err, "check tasks and retry for %s", t).Err()
 		}
+		lastSeenRuntimePerTask[t].allDone = c
 		allDone = allDone && c
 	}
 	return allDone, nil

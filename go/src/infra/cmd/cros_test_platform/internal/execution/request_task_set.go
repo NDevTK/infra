@@ -32,7 +32,29 @@ import (
 )
 
 // Retry count on transient errors
-const RetryCountOnTransientError = 5
+const (
+	hour                       = 60 * 60
+	day                        = 24 * hour
+	RetryCountOnTransientError = 5
+
+	// TODO(b:254114334): Once an execution time has been finalized this this to
+	// the proposed limit.
+	SuiteTestExecutionMaximumSeconds = 3 * hour
+
+	completed = true
+	running   = false
+)
+
+// suiteTestExecutionTrackerEntry will allow for easy access to the total
+// tracking time per suite.
+type suiteTestExecutionTrackerEntry struct {
+	allDone                bool
+	totalSuiteTrackingTime time.Duration
+	lastSeenMap            map[types.InvocationID]time.Time
+}
+
+// Map recording the last time each task was seen running.
+var lastSeenRuntimePerTask = map[string]*suiteTestExecutionTrackerEntry{}
 
 // RequestTaskSet encapsulates the running state of the set of tasks for one
 // cros_test_platform request.
@@ -213,22 +235,97 @@ func (r *RequestTaskSet) getInvocationStep(iid types.InvocationID) *build.Invoca
 	return s
 }
 
+// updateTestExecutionTracking calculates the amount of time it's been since
+// this task was last seen. It then increase the global value tracking test
+// execution and returns the updated map with a new timestamp for the current iid.
+func updateTestExecutionTracking(ctx context.Context, iid types.InvocationID, lastSeen time.Time, taskSetName string, request *RequestTaskSet, completed bool, logChan chan trackingMetric) error {
+
+	// Mark the current time for calculation of the duration since last seen.
+	currentlySeenAt := time.Now()
+	lastSeenRuntimePerTask[taskSetName].lastSeenMap[iid] = currentlySeenAt
+
+	// Calculate the duration of time it has been since the last time we've seen
+	// this iid running.
+	delta := lastSeenRuntimePerTask[taskSetName].lastSeenMap[iid].Sub(lastSeen)
+
+	// Increase the total test execution time for the suite.
+	lastSeenRuntimePerTask[taskSetName].totalSuiteTrackingTime += delta
+
+	// Add update to the log.
+	logChan <- trackingMetric{
+		suiteName:       taskSetName,
+		taskName:        string(iid),
+		lastSeen:        lastSeen,
+		currentlySeenAt: currentlySeenAt,
+		delta:           delta,
+		completed:       completed,
+	}
+
+	// Check if we've exceeded the maximum time allowed for test execution.
+	// TODO(b/254114334): Introduce this once we find an agreed upon value for the limit.
+	// if lastSeenRuntimePerTask[taskSetName].totalSuiteTrackingTime.Seconds() > SuiteTestExecutionMaximumSeconds {
+	// 	return fmt.Errorf("TestExecutionLimit: Maximum suite execution runtime exceeded.")
+	// }
+
+	return nil
+}
+
 // CheckTasksAndRetry checks the status of currently running tasks for this
 // request and retries failed tasks when allowed.
 //
 // Returns whether all tasks are complete (so future calls to this function are
 // unnecessary)
-func (r *RequestTaskSet) CheckTasksAndRetry(ctx context.Context, c trservice.Client) (bool, error) {
-	completedTests := make([]types.InvocationID, len(r.activeTasks))
+func (r *RequestTaskSet) CheckTasksAndRetry(ctx context.Context, c trservice.Client, taskSetName string, logChan chan trackingMetric) (bool, error) {
+	completedTests := make(map[types.InvocationID]bool, len(r.activeTasks))
 	newTasks := make(map[types.InvocationID]*testrunner.Build)
+
 	for iid, task := range r.activeTasks {
 		rerr := task.Refresh(ctx, c)
 		tr := task.Result()
 		if rerr != nil {
 			return false, errors.Annotate(rerr, "tick for task %s", tr.LogUrl).Err()
 		}
+
+		// If the task is running then update out execution limit tracking log.
+		if task.Running() {
+			// Grab suite entry that was pre-made in outer execution loop.
+			entry := lastSeenRuntimePerTask[taskSetName]
+
+			// If the current iid(task) is being tracked update it's log, otherwise
+			// create a log.
+			if lastSeen, iidTracked := entry.lastSeenMap[iid]; iidTracked {
+				rerr = updateTestExecutionTracking(ctx, iid, lastSeen, taskSetName, r, running, logChan)
+				// If we've exceeded the limit, fail the run.
+				if rerr != nil {
+					return false, rerr
+				}
+			} else {
+				logging.Infof(ctx, "Suite tracking: task %s started, adding to suite %s\n", iid, taskSetName)
+				entry.lastSeenMap[iid] = time.Now()
+			}
+		}
+
 		if !task.Completed() {
 			continue
+		}
+
+		// If the task completed then we need to add time to the tracker one last
+		// time then remove it from the tracking map. If it needs to retry then that
+		// will be re added to the activeTasks set and then we'll begin the
+		// tracking loop once more.
+		if task.Completed() {
+			// Update the runtime one last time with
+			if lastSeen, ok := lastSeenRuntimePerTask[taskSetName].lastSeenMap[iid]; ok {
+				rerr = updateTestExecutionTracking(ctx, iid, lastSeen, taskSetName, r, completed, logChan)
+
+				// If we've exceeded the limit, fail the run.
+				if rerr != nil {
+					return false, rerr
+				}
+
+				logging.Infof(ctx, "Suite tracking: task completed removing task %s from suite %s entry\n", taskSetName, iid)
+				delete(lastSeenRuntimePerTask[taskSetName].lastSeenMap, iid)
+			}
 		}
 
 		ts := r.getInvocationResponse(iid)
@@ -239,7 +336,8 @@ func (r *RequestTaskSet) CheckTasksAndRetry(ctx context.Context, c trservice.Cli
 		// attention set... as long as we don't have to retry.
 		shouldRetry := retry.IsNeeded(task.Result()) && r.retryCounter.CanRetry(ctx, iid)
 		if !shouldRetry {
-			completedTests = append(completedTests, iid)
+			completedTests[iid] = true
+			delete(r.activeTasks, iid)
 			continue
 		}
 
@@ -259,9 +357,6 @@ func (r *RequestTaskSet) CheckTasksAndRetry(ctx context.Context, c trservice.Cli
 		r.retryCounter.NotifyRetry(iid)
 	}
 
-	for _, iid := range completedTests {
-		delete(r.activeTasks, iid)
-	}
 	for iid, task := range newTasks {
 		r.activeTasks[iid] = task
 	}

@@ -11,6 +11,8 @@ import (
 	"context"
 	"fmt"
 	"infra/cmd/cros_test_platform/internal/execution/testrunner"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
@@ -362,7 +364,12 @@ func runWithBuildAccumulator(ctx context.Context, skylab trservice.Client, ba *b
 		ParentTaskID: "foo-parent-task-id",
 		Deadline:     time.Now().Add(time.Hour),
 	}
-	return execution.Run(ctx, skylab, args)
+
+	inputJson, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	return execution.Run(ctx, skylab, args, filepath.Dir(inputJson))
 }
 
 type stubTestRunnerClientWithCannedURL struct {
