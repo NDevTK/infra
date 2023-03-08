@@ -143,7 +143,7 @@ func TestInvocationKeyvals(t *testing.T) {
 				},
 			}
 
-			_, err := runWithParams(context.Background(), trClient, p, invs)
+			_, err := runWithParams(context.Background(), trClient, p, invs, "")
 			So(err, ShouldBeNil)
 
 			Convey("created command includes request suite keyval", func() {
@@ -188,7 +188,7 @@ func TestKeyvalsAcrossTestRuns(t *testing.T) {
 				trClient := &trservice.ArgsCollectingClientWrapper{
 					Client: trservice.StubClient{},
 				}
-				_, err := runWithParams(context.Background(), trClient, p, invs)
+				_, err := runWithParams(context.Background(), trClient, p, invs, "")
 				So(err, ShouldBeNil)
 
 				So(trClient.Calls.LaunchTask, ShouldHaveLength, 2)
@@ -247,6 +247,7 @@ func TestQuotaSchedulerAccountOnQSAccount(t *testing.T) {
 			[]*steps.EnumerationResponse_AutotestInvocation{
 				serverTestInvocation("name1", ""),
 			},
+			"",
 		)
 		So(err, ShouldBeNil)
 
@@ -284,6 +285,7 @@ func TestReservedTagShouldNotBeSetByUsers(t *testing.T) {
 			[]*steps.EnumerationResponse_AutotestInvocation{
 				serverTestInvocation("name1", ""),
 			},
+			"",
 		)
 		So(err, ShouldBeNil)
 
@@ -315,6 +317,7 @@ func TestUnmanagedPool(t *testing.T) {
 			[]*steps.EnumerationResponse_AutotestInvocation{
 				serverTestInvocation("name1", ""),
 			},
+			"",
 		)
 		So(err, ShouldBeNil)
 

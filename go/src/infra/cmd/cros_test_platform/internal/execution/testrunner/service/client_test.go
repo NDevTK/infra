@@ -37,33 +37,48 @@ import (
 
 // fakeSwarming implements skylab_api.Swarming.
 type fakeSwarming struct {
-	botsByBoard map[string]bool
+	botBoardsPerPool map[string][]string // pool -> list of boards
 }
 
 func newFakeSwarming() *fakeSwarming {
 	return &fakeSwarming{
-		botsByBoard: make(map[string]bool),
+		botBoardsPerPool: make(map[string][]string),
 	}
 }
 
 // BotExists implements swarmingClient interface.
 func (f *fakeSwarming) BotExists(_ context.Context, dims []*swarming_api.SwarmingRpcsStringPair) (bool, error) {
+	pool := ""
+	board := ""
 	for _, dim := range dims {
-		if dim.Key == "label-board" {
-			return f.botsByBoard[dim.Value], nil
+		switch dim.Key {
+		case "label-board":
+			board = dim.Value
+		case "pool":
+			pool = dim.Value
 		}
 	}
-	return false, nil
+	return contains(f.botBoardsPerPool[pool], board), nil
 }
 
-func (f *fakeSwarming) addBot(board string) {
-	f.botsByBoard[board] = true
+// contains scans `s` for presence of `e`
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
+func (f *fakeSwarming) addBot(board string, pool string) {
+	f.botBoardsPerPool[pool] = append(f.botBoardsPerPool[pool], board)
 }
 
 func TestNonExistentBot(t *testing.T) {
 	Convey("When arguments ask for a non-existent bot", t, func() {
 		swarming := newFakeSwarming()
-		swarming.addBot("existing-board")
+		swarming.addBot("existing-board", "ChromeOSSkylab")
 		skylab := &clientImpl{
 			swarmingClient: swarming,
 		}
@@ -105,7 +120,7 @@ func loggerOutput(ml memlogger.MemLogger, level logging.Level) string {
 func TestExistingBot(t *testing.T) {
 	Convey("When arguments ask for an existing bot", t, func() {
 		swarming := newFakeSwarming()
-		swarming.addBot("existing-board")
+		swarming.addBot("existing-board", "ChromeOSSkylab")
 		skylab := &clientImpl{
 			swarmingClient: swarming,
 		}
@@ -114,6 +129,42 @@ func TestExistingBot(t *testing.T) {
 		addBoard(&args, "existing-board")
 		Convey("the validation passes.", func() {
 			botExists, rejectedTaskDims, err := skylab.ValidateArgs(context.Background(), &args)
+			So(err, ShouldBeNil)
+			So(rejectedTaskDims, ShouldBeNil)
+			So(botExists, ShouldBeTrue)
+		})
+	})
+}
+
+// TestValidateArgsExplicitPool verifies behavior when a specific pool is given
+// as an argument (instead of implicitly being `ChromeOSSkylab`)
+func TestValidateArgsExplicitPool(t *testing.T) {
+	Convey("When validating args with a specific pool with no bot", t, func() {
+		swarming := newFakeSwarming()
+		swarming.addBot("existing-board", "ChromeOSSkylab")
+		skylab := &clientImpl{
+			swarmingClient: swarming,
+		}
+		var ml memlogger.MemLogger
+		ctx := setLogger(context.Background(), &ml)
+		var args request.Args
+		args.SchedulableLabels = &inventory.SchedulableLabels{}
+		args.SwarmingPool = "OtherPool"
+		addBoard(&args, "existing-board")
+		expectedRejectedTaskDims := []types.TaskDimKeyVal{
+			{Key: "label-board", Val: "existing-board"},
+			{Key: "pool", Val: "OtherPool"},
+		}
+		Convey("the validation fails.", func() {
+			botExists, rejectedTaskDims, err := skylab.ValidateArgs(ctx, &args)
+			So(err, ShouldBeNil)
+			So(rejectedTaskDims, ShouldResemble, expectedRejectedTaskDims)
+			So(botExists, ShouldBeFalse)
+			So(loggerOutput(ml, logging.Warning), ShouldContainSubstring, "existing-board")
+		})
+		Convey("Once the bot is added, the validation succeeds.", func() {
+			swarming.addBot("existing-board", "OtherPool")
+			botExists, rejectedTaskDims, err := skylab.ValidateArgs(ctx, &args)
 			So(err, ShouldBeNil)
 			So(rejectedTaskDims, ShouldBeNil)
 			So(botExists, ShouldBeTrue)

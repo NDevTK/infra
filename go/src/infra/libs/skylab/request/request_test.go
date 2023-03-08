@@ -11,11 +11,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kylelemons/godebug/pretty"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/ptypes"
+	"github.com/kylelemons/godebug/pretty"
+	. "github.com/smartystreets/goconvey/convey"
 	goconfig "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/build/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
@@ -24,12 +23,11 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
+	. "go.chromium.org/luci/common/testing/assertions"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/libs/skylab/inventory"
 	"infra/libs/skylab/request"
-
-	. "github.com/smartystreets/goconvey/convey"
-	. "go.chromium.org/luci/common/testing/assertions"
 )
 
 var prettyConfig = &pretty.Config{
@@ -573,6 +571,13 @@ func TestStaticDimensions(t *testing.T) {
 				},
 			},
 			Want: toStringPairs([]string{"pool:ChromeOSSkylab", "label-board:coral", "label-model:babytiger", "some:value", "label-board:coral_2", "label-model:babytiger_2"}),
+		},
+		{
+			Tag: "explicitly specified pool in args",
+			Args: &request.Args{
+				SwarmingPool: "OtherPool",
+			},
+			Want: toStringPairs([]string{"pool:OtherPool"}),
 		},
 	}
 

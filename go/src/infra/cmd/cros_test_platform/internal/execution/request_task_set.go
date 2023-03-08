@@ -68,7 +68,9 @@ func NewRequestTaskSet(
 	workerConfig *config.Config_SkylabWorker,
 	tc *TaskSetConfig,
 	params *test_platform.Request_Params,
-	tests []*steps.EnumerationResponse_AutotestInvocation) (*RequestTaskSet, error) {
+	tests []*steps.EnumerationResponse_AutotestInvocation,
+	pool string,
+) (*RequestTaskSet, error) {
 
 	step := build.NewRequestStep(name, buildInstance)
 
@@ -91,6 +93,7 @@ func NewRequestTaskSet(
 			StatusUpdateChannel: tc.StatusUpdateChannel,
 			Experiments:         buildInstance.GetInput().GetExperiments(),
 			GerritChanges:       buildInstance.GetInput().GetGerritChanges(),
+			SwarmingPool:        pool,
 		}
 		// test, params, workerConfig, tc.ParentTaskID, tc.RequestUID, tc.Deadline)
 		invocationResponses[iid] = response.NewInvocation(test.GetTest().GetName())

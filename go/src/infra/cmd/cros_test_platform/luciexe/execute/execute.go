@@ -61,6 +61,7 @@ func Run(ctx context.Context, args Args) error {
 		WorkerConfig: cfg.SkylabWorker,
 		ParentTaskID: args.SwarmingTaskID,
 		Deadline:     deadline,
+		SwarmingPool: cfg.TestRunner.SwarmingPool,
 	}
 	// crbug.com/1112514 These arguments optional during the transition to
 	// luciexe.

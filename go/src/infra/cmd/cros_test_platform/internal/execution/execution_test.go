@@ -293,6 +293,7 @@ func TestEnumerationResponseWithRetries(t *testing.T) {
 					trservice.NewStubClientWithFailedTasks(),
 					params,
 					invs,
+					"",
 				)
 				So(err, ShouldBeNil)
 				resp := extractSingleResponse(resps)
@@ -546,7 +547,7 @@ func TestRetries(t *testing.T) {
 				trClient := &trservice.CallCountingClientWrapper{
 					Client: c.trClient,
 				}
-				resps, err := runWithParams(ctx, trClient, params, c.invocations)
+				resps, err := runWithParams(ctx, trClient, params, c.invocations, "")
 				So(err, ShouldBeNil)
 				resp := extractSingleResponse(resps)
 
@@ -647,10 +648,10 @@ func TestResponseVerdict(t *testing.T) {
 }
 
 func runWithDefaults(ctx context.Context, skylab trservice.Client, invs []*steps.EnumerationResponse_AutotestInvocation) (map[string]*steps.ExecuteResponse, error) {
-	return runWithParams(ctx, skylab, basicParams(), invs)
+	return runWithParams(ctx, skylab, basicParams(), invs, "")
 }
 
-func runWithParams(ctx context.Context, skylab trservice.Client, params *test_platform.Request_Params, invs []*steps.EnumerationResponse_AutotestInvocation) (map[string]*steps.ExecuteResponse, error) {
+func runWithParams(ctx context.Context, skylab trservice.Client, params *test_platform.Request_Params, invs []*steps.EnumerationResponse_AutotestInvocation, pool string) (map[string]*steps.ExecuteResponse, error) {
 	args := execution.Args{
 		Build: &bbpb.Build{},
 		Send:  exe.BuildSender(func() {}),
@@ -673,6 +674,7 @@ func runWithParams(ctx context.Context, skylab trservice.Client, params *test_pl
 		},
 		ParentTaskID: "foo-parent-task-id",
 		Deadline:     time.Now().Add(time.Hour),
+		SwarmingPool: pool,
 	}
 	return execution.Run(ctx, skylab, args)
 }
@@ -770,4 +772,32 @@ func loggerInfo(ml memlogger.MemLogger) string {
 		}
 	}
 	return out
+}
+
+// TestSwarmingPool tests whether swarming pool is correctly passed to the
+// ValidateArgs, LaunchTask functions
+func TestSwarmingPool(t *testing.T) {
+	Convey("Given test", t, func() {
+		Convey("when running a skylab execution", func() {
+			trClient := &trservice.ArgsCollectingClientWrapper{
+				Client: trservice.StubClient{},
+			}
+			resps, err := runWithParams(
+				context.Background(),
+				trClient, basicParams(),
+				[]*steps.EnumerationResponse_AutotestInvocation{
+					clientTestInvocation("", ""),
+				},
+				"OtherPool",
+			)
+
+			So(err, ShouldBeNil)
+			extractSingleResponse(resps)
+			So(len(trClient.Calls.ValidateArgs), ShouldEqual, 1)
+			So(trClient.Calls.ValidateArgs[0].Args.SwarmingPool, ShouldEqual, "OtherPool")
+			// we dont actually (explicitly) use this dimension when scheduling
+			// tests; pool automatically added based on the bb builder
+			So(len(trClient.Calls.LaunchTask), ShouldEqual, 1)
+		})
+	})
 }

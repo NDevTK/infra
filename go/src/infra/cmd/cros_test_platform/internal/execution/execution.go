@@ -36,6 +36,8 @@ type Args struct {
 	WorkerConfig *config.Config_SkylabWorker
 	ParentTaskID string
 	Deadline     time.Time
+
+	SwarmingPool string
 }
 
 // Run runs an execution until success.
@@ -62,6 +64,7 @@ func Run(ctx context.Context, c trservice.Client, args Args) (map[string]*steps.
 			},
 			r.RequestParams,
 			r.Enumeration.AutotestInvocations,
+			args.SwarmingPool,
 		)
 		if err != nil {
 			return nil, err

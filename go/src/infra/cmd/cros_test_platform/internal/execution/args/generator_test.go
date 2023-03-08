@@ -185,3 +185,28 @@ func TestGerritChanges(t *testing.T) {
 		})
 	})
 }
+
+// TestSwarmingPool ensures we correctly pass on the `SwarmingPool` arg
+func TestSwarmingPool(t *testing.T) {
+	Convey("Given SwarmingPool", t, func() {
+		ctx := context.Background()
+		inv := basicInvocation()
+		setTestName(inv, "foo-name")
+		var params test_platform.Request_Params
+		var dummyWorkerConfig = &config.Config_SkylabWorker{}
+		setRequestMaximumDuration(&params, 1000)
+		Convey("when generating a test runner request's args", func() {
+			g := Generator{
+				Invocation:   inv,
+				Params:       &params,
+				WorkerConfig: dummyWorkerConfig,
+				SwarmingPool: "OtherPool",
+			}
+			got, err := g.GenerateArgs(ctx)
+			So(err, ShouldBeNil)
+			Convey("the SwarmingPool should be added correctly", func() {
+				So(got.SwarmingPool, ShouldEqual, "OtherPool")
+			})
+		})
+	})
+}

@@ -48,6 +48,7 @@ func TestLaunchForNonExistentBot(t *testing.T) {
 			[]*steps.EnumerationResponse_AutotestInvocation{
 				clientTestInvocation("", ""),
 			},
+			"",
 		)
 		So(err, ShouldBeNil)
 
@@ -92,6 +93,7 @@ func TestRequestShouldNotSetBothQSAccountAndPriority(t *testing.T) {
 						[]*steps.EnumerationResponse_AutotestInvocation{
 							serverTestInvocation("name1", ""),
 						},
+						"",
 					)
 				},
 				ShouldPanic,
@@ -155,6 +157,7 @@ func TestIncompatibleDependencies(t *testing.T) {
 					trClient,
 					c.Params,
 					c.Invs,
+					"",
 				)
 				So(err, ShouldBeNil)
 				resp := extractSingleResponse(resps)

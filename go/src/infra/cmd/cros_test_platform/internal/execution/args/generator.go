@@ -58,6 +58,9 @@ type Generator struct {
 	Experiments []string
 	// The Gerrit Changes associated with the test_runner invocation.
 	GerritChanges []*bbpb.GerritChange
+	// What swarming pool the test runner build should run in. If not provided,
+	// assumed to be `ChromeOSSkylab`
+	SwarmingPool string
 }
 
 // CheckConsistency checks the internal consistency of the various inputs to the
@@ -184,6 +187,7 @@ func (g *Generator) GenerateArgs(ctx context.Context) (request.Args, error) {
 		ProvisionableDimensionExpiration: provisionableDimensionExpiration,
 		StatusTopic:                      pubSubTopicFullName(g.StatusUpdateChannel),
 		SwarmingTags:                     g.swarmingTags(ctx, kv, cmd),
+		SwarmingPool:                     g.SwarmingPool,
 		TestRunnerRequest:                trr,
 		CFTTestRunnerRequest:             cft_trr,
 		CFTIsEnabled:                     g.Params.RunViaCft,

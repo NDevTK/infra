@@ -31,6 +31,11 @@ type Args struct {
 	Cmd worker.Command
 	// TODO(crbug.com/1033291): Rename to Skylab tags.
 	SwarmingTags []string
+	// SwarmingPool specifies the pool that the test runner build should run
+	// in. This is used when checking for bots during requests/
+	//
+	// Defaults to `ChromeOSSkylab` if not provided
+	SwarmingPool string
 	// ProvisionableDimensions specifies the provisionable dimensions in raw
 	// string form; e.g. {"provisionable-cros-version:foo-cq-R75-1.2.3.4"}
 	ProvisionableDimensions []string
@@ -364,9 +369,13 @@ func (a *Args) StaticDimensions() ([]*swarming.SwarmingRpcsStringPair, error) {
 		return nil, errors.Annotate(err, "get static dimensions").Err()
 	}
 	ret = append(ret, d...)
+	pool := a.SwarmingPool
+	if pool == "" {
+		pool = "ChromeOSSkylab"
+	}
 	ret = append(ret, &swarming.SwarmingRpcsStringPair{
 		Key:   "pool",
-		Value: "ChromeOSSkylab",
+		Value: pool,
 	})
 	return ret, nil
 }
