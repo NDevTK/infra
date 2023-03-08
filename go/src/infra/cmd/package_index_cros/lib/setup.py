@@ -37,9 +37,11 @@ class Setup:
     self.cros_dir = checkout_info.root
     if chroot_dir:
       self.chroot_dir = os.path.realpath(chroot_dir)
-      assert not self.chroot_dir.startswith(self.cros_dir), (
-          f"Custom chroot dir inside {self.cros_dir} is not supported, and "
-          f"chromite resolves it to {constants.DEFAULT_CHROOT_DIR}.")
+      assert (
+          not self.chroot_dir.startswith(self.cros_dir) or
+          self.chroot_dir == constants.DEFAULT_CHROOT_DIR), (
+              f"Custom chroot dir inside {self.cros_dir} is not supported, and "
+              f"chromite resolves it to {constants.DEFAULT_CHROOT_DIR}.")
     else:
       self.chroot_dir = path_util.FromChrootPath('/', self.cros_dir)
     self.board_dir = os.path.join(self.chroot_dir, 'build', self.board)
