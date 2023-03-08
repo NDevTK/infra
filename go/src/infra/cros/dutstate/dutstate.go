@@ -19,6 +19,7 @@ import (
 
 	ufsProto "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"infra/unifiedfleet/app/util"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
@@ -74,7 +75,7 @@ func (s State) String() string {
 //
 // If state not exist in the UFS the state will be default and time is 0.
 func Read(ctx context.Context, c UFSClient, host string) Info {
-	ctx = setupContext(ctx, ufsUtil.OSNamespace)
+	ctx = addNamespaceCtxIfNotPresent(ctx, ufsUtil.OSNamespace)
 	log.Printf("dutstate: Try to read DUT/Labstation state for %s", host)
 	res, err := c.GetMachineLSE(ctx, &ufsAPI.GetMachineLSERequest{
 		Name: ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, host),
@@ -98,7 +99,7 @@ func Read(ctx context.Context, c UFSClient, host string) Info {
 
 // Update push new DUT/Labstation state to UFS.
 func Update(ctx context.Context, c UFSClient, host string, state State) error {
-	ctx = setupContext(ctx, ufsUtil.OSNamespace)
+	ctx = addNamespaceCtxIfNotPresent(ctx, ufsUtil.OSNamespace)
 	ufsState := ConvertToUFSState(state)
 
 	// Get the MachineLSE to determine if its a DUT or a Labstation.
@@ -140,10 +141,19 @@ func ConvertFromUFSState(state ufsProto.State) State {
 	return Unknown
 }
 
-// setupContext sets up context with namespace
-func setupContext(ctx context.Context, namespace string) context.Context {
-	md := metadata.Pairs(ufsUtil.Namespace, namespace)
-	return metadata.NewOutgoingContext(ctx, md)
+// addNamespaceCtxIfNotPresent checks if a namespace is set in the metadata
+// contained in the context. If not, sets it to the default value specified in
+// namespace.
+func addNamespaceCtxIfNotPresent(ctx context.Context, namespace string) context.Context {
+	if existingMetadata, ok := metadata.FromOutgoingContext(ctx); ok {
+		// we found a namespace already set in the context, so should just use that
+		if _, ok := existingMetadata[util.Namespace]; ok {
+			return ctx
+		}
+	}
+
+	newMetadata := metadata.Pairs(ufsUtil.Namespace, namespace)
+	return metadata.NewOutgoingContext(ctx, newMetadata)
 }
 
 var stateToUFS = map[State]ufsProto.State{
