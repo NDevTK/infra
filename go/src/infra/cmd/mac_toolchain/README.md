@@ -77,9 +77,12 @@ upload and tag them properly. Run `mac_toolchain help upload` for more options.
 The upload command is meant to be run manually, and it will upload many GB of
 data. Be patient.
 
-By changing `CFBundleShortVersionString` and `ProductBuildVersion` in
+~~By changing `CFBundleShortVersionString` and `ProductBuildVersion` in
 `Xcode.app/Contents/version.plist`, you can customize the Xcode version in CIPD
-`ref`s and `tag`s attached to Xcode when uploading.
+`ref`s and `tag`s attached to Xcode when uploading.~~<br>
+**Update**: changing the contents in Xcode.app is no longer recommended due to the
+new codesign check added in macOS 13. If the Xcode will be installed and run on
+macOS 13+, please don't change anything in `Xcode.app/Contents/version.plist`.
 
 By passing in `-skip-ref-tag` argument, the uploaded packages will have no CIPD
 `ref` or `tag` attached.

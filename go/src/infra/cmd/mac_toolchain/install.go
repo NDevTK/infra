@@ -16,6 +16,36 @@ import (
 	"go.chromium.org/luci/common/system/filesystem"
 )
 
+func getCipdFileNames() []string {
+	return []string{".xcode_versions", ".cipd"}
+}
+
+func moveCipdFiles(sourcePath string, destPath string) error {
+	for _, f := range getCipdFileNames() {
+		// if file doesn't exist, return error
+		srcFilePath := filepath.Join(sourcePath, f)
+		_, error := os.Stat(srcFilePath)
+		if os.IsNotExist(error) {
+			return errors.Annotate(error, "failed to move %s because it doesn't exist", srcFilePath).Err()
+		}
+
+		destFilePath := filepath.Join(destPath, f)
+		// if file already exists in dest, then remove first
+		if _, err := os.Stat(destFilePath); err == nil {
+			err := os.RemoveAll(destFilePath)
+			if err != nil {
+				return errors.Annotate(err, "failed to remove existing cipd file %s", destFilePath).Err()
+			}
+		}
+
+		err := os.Rename(srcFilePath, destFilePath)
+		if err != nil {
+			return errors.Annotate(err, "failed to move %s to %s", srcFilePath, destFilePath).Err()
+		}
+	}
+	return nil
+}
+
 // InstallPackagesArgs are the parameters for installPackages() to keep them manageable.
 type InstallPackagesArgs struct {
 	ref                string
@@ -235,14 +265,37 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 			return err
 		}
 	}
+
+	// crbug/1420480: move files to /tmp to avoid codesign failure when first launch
+	// TODO(crbug/1420480): temporarily testing this out on Xcode 14.3 beta 3,
+	// remove the conditional once this is proven working on the bot.
+	if args.xcodeVersion == "14e5207e" {
+		logging.Warningf(ctx, "Temporarily moving cipd files out of Xcode app...")
+		if err := moveCipdFiles(args.xcodeAppPath, "/tmp"); err != nil {
+			return err
+		}
+	}
+
 	if needToAcceptLicense(ctx, args.xcodeAppPath, args.acceptedLicensesFile) {
 		if err := acceptLicense(ctx, args.xcodeAppPath); err != nil {
 			return err
 		}
 	}
+
 	if err := finalizeInstall(ctx, args.xcodeAppPath, args.xcodeVersion, args.packageInstallerOnBots); err != nil {
 		return err
 	}
+
+	// crbug/1420480: moves files back to Xcode.app from /tmp after codesign check
+	// TODO(crbug/1420480): temporarily testing this out on Xcode 14.3 beta 3,
+	// remove the conditional once this is proven working on the bot.
+	if args.xcodeVersion == "14e5207e" {
+		logging.Warningf(ctx, "Moving cipd files back to Xcode app...")
+		if err := moveCipdFiles("/tmp", args.xcodeAppPath); err != nil {
+			return err
+		}
+	}
+
 	return checkDeveloperMode(ctx)
 }
 
