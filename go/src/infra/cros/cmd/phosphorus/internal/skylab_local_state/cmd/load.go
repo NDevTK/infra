@@ -109,6 +109,7 @@ func (c *loadRun) innerRun(a subcommands.Application, args []string, env subcomm
 	}
 
 	ctx := cli.GetContext(a, c, env)
+	ctx = ufs.SetupContext(ctx, request.Config.UfsNamespace)
 
 	client, err := ufs.NewClient(ctx, request.Config.CrosUfsService, &c.authFlags)
 	if err != nil {
@@ -147,6 +148,7 @@ func (c *loadRun) innerRun(a subcommands.Application, args []string, env subcomm
 	return writeJSONPb(c.outputPath, &response)
 }
 
+// validateLoadRequest checks for missing args and inserts any default values
 func validateLoadRequest(request *skylab_local_state.LoadRequest) error {
 	if request == nil {
 		return fmt.Errorf("nil request")
@@ -176,6 +178,11 @@ func validateLoadRequest(request *skylab_local_state.LoadRequest) error {
 
 	if len(missingArgs) > 0 {
 		return fmt.Errorf("no %s provided", strings.Join(missingArgs, ", "))
+	}
+
+	// note that this is adding a default value, not throwing an error
+	if request.Config.GetUfsNamespace() == "" {
+		request.Config.UfsNamespace = ufsutil.OSNamespace
 	}
 
 	return nil
@@ -211,11 +218,10 @@ func getSchedulingUnitInfo(ctx context.Context, client ufsapi.FleetClient, hostn
 
 // getDeviceInfo fetches a device entry from UFS.
 func getDeviceInfo(ctx context.Context, client ufsapi.FleetClient, hostname string) (*ufsapi.GetDeviceDataResponse, error) {
-	osctx := ufs.SetupContext(ctx, ufsutil.OSNamespace)
 	req := &ufsapi.GetDeviceDataRequest{
 		Hostname: hostname,
 	}
-	resp, err := client.GetDeviceData(osctx, req)
+	resp, err := client.GetDeviceData(ctx, req)
 	if err != nil {
 		return nil, errors.Annotate(err, "get device info for %s", hostname).Err()
 	}

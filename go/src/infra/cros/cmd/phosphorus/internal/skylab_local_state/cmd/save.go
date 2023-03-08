@@ -24,6 +24,7 @@ import (
 	"infra/cros/cmd/phosphorus/internal/botcache"
 	"infra/cros/cmd/phosphorus/internal/skylab_local_state/location"
 	"infra/cros/cmd/phosphorus/internal/skylab_local_state/ufs"
+	ufsutil "infra/unifiedfleet/app/util"
 )
 
 // Save subcommand: Update the bot state json file.
@@ -92,6 +93,7 @@ func (c *saveRun) innerRun(a subcommands.Application, env subcommands.Env) error
 	targets := append(request.PeerDuts, request.DutName)
 
 	ctx := cli.GetContext(a, c, env)
+	ctx = ufs.SetupContext(ctx, request.Config.UfsNamespace)
 
 	for _, hostname := range targets {
 		bcs := botcache.Store{
@@ -124,6 +126,7 @@ func (c *saveRun) innerRun(a subcommands.Application, env subcommands.Env) error
 	return nil
 }
 
+// validateSaveRequest checks for missing args and inserts any default values
 func validateSaveRequest(request *skylab_local_state.SaveRequest) error {
 	if request == nil {
 		return fmt.Errorf("nil request")
@@ -153,6 +156,11 @@ func validateSaveRequest(request *skylab_local_state.SaveRequest) error {
 
 	if len(missingArgs) > 0 {
 		return fmt.Errorf("no %s provided", strings.Join(missingArgs, ", "))
+	}
+
+	// note that this is adding a default value, not throwing an error
+	if request.Config.GetUfsNamespace() == "" {
+		request.Config.UfsNamespace = ufsutil.OSNamespace
 	}
 
 	return nil

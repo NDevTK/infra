@@ -7,8 +7,9 @@ package cmd
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state"
 )
@@ -40,3 +41,84 @@ func TestNewDutStateFromHostInfo(t *testing.T) {
 		So(want, ShouldResemble, state)
 	})
 }
+
+// TestValidateSaveRequest verifies the validation and default val logic
+func TestValidateSaveRequest(t *testing.T) {
+	tests := []struct {
+		name    string
+		req     *skylab_local_state.SaveRequest
+		wantReq *skylab_local_state.SaveRequest
+		wantErr bool
+	}{
+		{
+			name:    "valid",
+			req:     validSaveRequest,
+			wantReq: validSaveRequest,
+			wantErr: false,
+		},
+		{
+			name:    "invalid",
+			req:     invalidSaveRequest,
+			wantReq: invalidSaveRequest,
+			wantErr: true,
+		},
+		{
+			name:    "add default",
+			req:     validSaveRequestNoNamespace,
+			wantReq: validSaveRequestDefaultNamespace,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := validateSaveRequest(tt.req); (err != nil) != tt.wantErr {
+				t.Errorf("validateSaveRequest() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if diff := cmp.Diff(tt.req, tt.wantReq, cmpopts.IgnoreUnexported(skylab_local_state.SaveRequest{}, skylab_local_state.Config{})); diff != "" {
+				t.Errorf("unexpected diff: %s", diff)
+			}
+		})
+	}
+}
+
+var (
+	// validSaveRequest is a completely valid request
+	validSaveRequest = &skylab_local_state.SaveRequest{
+		Config: &skylab_local_state.Config{
+			AutotestDir:  "dir",
+			UfsNamespace: "namespace",
+		},
+		ResultsDir: "dir",
+		DutName:    "name",
+		DutId:      "id",
+		DutState:   "state",
+	}
+
+	// validSaveRequestNoNamespace is a request that is valid but will get a
+	// Config.UfsNamespace added to it
+	validSaveRequestNoNamespace = &skylab_local_state.SaveRequest{
+		Config: &skylab_local_state.Config{
+			AutotestDir: "dir",
+		},
+		ResultsDir: "dir",
+		DutName:    "name",
+		DutId:      "id",
+		DutState:   "state",
+	}
+
+	// validSaveRequestDefaultNamespace is the expected result of the above
+	// NoNamespace getting the default added
+	validSaveRequestDefaultNamespace = &skylab_local_state.SaveRequest{
+		Config: &skylab_local_state.Config{
+			AutotestDir:  "dir",
+			UfsNamespace: "os",
+		},
+		ResultsDir: "dir",
+		DutName:    "name",
+		DutId:      "id",
+		DutState:   "state",
+	}
+
+	// invalidSaveRequest should be rejected
+	invalidSaveRequest = &skylab_local_state.SaveRequest{}
+)

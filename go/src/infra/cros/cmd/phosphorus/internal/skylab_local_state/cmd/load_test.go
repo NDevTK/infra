@@ -14,6 +14,8 @@ import (
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
 
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	. "github.com/smartystreets/goconvey/convey"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
@@ -365,3 +367,84 @@ func keyValue(key string, value string) *inventory.KeyValue {
 		Value: &value,
 	}
 }
+
+// TestValidateLoadRequest verifies the validation and default val logic
+func TestValidateLoadRequest(t *testing.T) {
+	tests := []struct {
+		name    string
+		req     *skylab_local_state.LoadRequest
+		wantReq *skylab_local_state.LoadRequest
+		wantErr bool
+	}{
+		{
+			name:    "valid",
+			req:     validLoadRequest,
+			wantReq: validLoadRequest,
+			wantErr: false,
+		},
+		{
+			name:    "invalid",
+			req:     invalidLoadRequest,
+			wantReq: invalidLoadRequest,
+			wantErr: true,
+		},
+		{
+			name:    "add default",
+			req:     validLoadRequestNoNamespace,
+			wantReq: validLoadRequestDefaultNamespace,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := validateLoadRequest(tt.req); (err != nil) != tt.wantErr {
+				t.Errorf("validateLoadRequest() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if diff := cmp.Diff(tt.req, tt.wantReq, cmpopts.IgnoreUnexported(skylab_local_state.LoadRequest{}, skylab_local_state.Config{})); diff != "" {
+				t.Errorf("unexpected diff: %s", diff)
+			}
+		})
+	}
+}
+
+var (
+	// validLoadRequest is a completely valid request
+	validLoadRequest = &skylab_local_state.LoadRequest{
+		Config: &skylab_local_state.Config{
+			AdminService: "admin",
+			AutotestDir:  "dir",
+			UfsNamespace: "namespace",
+		},
+		RunId:   "run",
+		DutName: "name",
+		DutId:   "id",
+	}
+
+	// validLoadRequestNoNamespace is a request that is valid but will get a
+	// Config.UfsNamespace added to it
+	validLoadRequestNoNamespace = &skylab_local_state.LoadRequest{
+		Config: &skylab_local_state.Config{
+			AdminService: "admin",
+			AutotestDir:  "dir",
+		},
+		RunId:   "run",
+		DutName: "name",
+		DutId:   "id",
+	}
+
+	// validLoadRequestDefaultNamespace is the expected result of the above
+	// NoNamespace getting the default added
+	validLoadRequestDefaultNamespace = &skylab_local_state.LoadRequest{
+		Config: &skylab_local_state.Config{
+			AdminService: "admin",
+			AutotestDir:  "dir",
+			UfsNamespace: "os",
+		},
+		RunId:   "run",
+		DutName: "name",
+		DutId:   "id",
+	}
+
+	// invalidLoadRequest should be rejected
+	invalidLoadRequest = &skylab_local_state.LoadRequest{}
+)
