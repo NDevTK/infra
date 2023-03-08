@@ -18,9 +18,8 @@ message OwnershipData {
    string pool_name = 3;
    // swarming instance to which this bot will communicate
    string swarming_instance = 4;
-   // custom miba realm for this bot.
-   // If custom miba realm is empty then default is <customer>_<security_level>
-   string miba_realm = 5;
+   // custom miba realm for this bot - deprecated
+   string miba_realm = 5 [deprecated=true];
    // Customer who uses this bot.
    string customer = 6;
    // builders for this bot, if any

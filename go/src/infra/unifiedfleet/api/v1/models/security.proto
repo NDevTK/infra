@@ -16,9 +16,8 @@ message SecurityInfo {
    string customer = 2;
    // security level of the bot ex:trusted, untrusted etc
    string security_level = 3;
-   // custom MIBA realm for this pool
-   // default is "<customer>_<security_level>"
-   string miba_realm = 4;
+   // custom MIBA realm for this pool - deprecated
+   string miba_realm = 4 [deprecated=true];
    // id of the swarming server that owns this pool
    string swarming_server_id = 5;
    // hosts that belong to this group
