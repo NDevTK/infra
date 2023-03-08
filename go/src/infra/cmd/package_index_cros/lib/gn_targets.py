@@ -166,6 +166,7 @@ class GnTargets:
         conflicting_paths=self.file_conflicts,
         ignore_highly_volatile=True,
         ignore_generated=True,
+        ignore_stable=True,
         ignorable_dirs=self.setup.ignorable_dirs,
         ignorable_extensions=GnTargets.g_ignorable_extensions)
 
