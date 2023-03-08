@@ -2,7 +2,7 @@ package buildbucket_test
 
 import (
 	"context"
-	"infra/cros/internal/buildbucket"
+	"infra/cros/lib/buildbucket"
 	"testing"
 	"time"
 

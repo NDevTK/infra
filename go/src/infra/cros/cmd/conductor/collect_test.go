@@ -12,8 +12,8 @@ import (
 
 	"infra/cros/cmd/try/try"
 	"infra/cros/internal/assert"
-	bb "infra/cros/internal/buildbucket"
 	"infra/cros/internal/cmd"
+	bb "infra/cros/lib/buildbucket"
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 )

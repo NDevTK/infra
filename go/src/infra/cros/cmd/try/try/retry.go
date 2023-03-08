@@ -13,8 +13,8 @@ import (
 	"reflect"
 	"strings"
 
-	bb "infra/cros/internal/buildbucket"
 	"infra/cros/internal/cmd"
+	bb "infra/cros/lib/buildbucket"
 
 	"github.com/maruel/subcommands"
 	pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"

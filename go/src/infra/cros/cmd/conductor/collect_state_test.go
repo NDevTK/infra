@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"infra/cros/internal/assert"
-	bb "infra/cros/internal/buildbucket"
+	bb "infra/cros/lib/buildbucket"
 
 	pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	bbpb "go.chromium.org/luci/buildbucket/proto"

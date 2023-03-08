@@ -15,8 +15,8 @@ import (
 	"strings"
 
 	"infra/cros/cmd/try/try"
-	bb "infra/cros/internal/buildbucket"
 	"infra/cros/internal/cmd"
+	bb "infra/cros/lib/buildbucket"
 
 	"go.chromium.org/luci/common/errors"
 

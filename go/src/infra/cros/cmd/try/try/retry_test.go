@@ -10,8 +10,8 @@ import (
 	"testing"
 
 	"infra/cros/internal/assert"
-	bb "infra/cros/internal/buildbucket"
 	"infra/cros/internal/cmd"
+	bb "infra/cros/lib/buildbucket"
 
 	pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	bbpb "go.chromium.org/luci/buildbucket/proto"

@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"infra/cros/internal/buildbucket"
+	"infra/cros/lib/buildbucket"
 	"os"
 	"strconv"
 	"strings"

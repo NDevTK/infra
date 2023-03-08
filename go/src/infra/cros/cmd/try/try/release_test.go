@@ -11,8 +11,8 @@ import (
 	"testing"
 
 	"infra/cros/internal/assert"
-	bb "infra/cros/internal/buildbucket"
 	"infra/cros/internal/cmd"
+	bb "infra/cros/lib/buildbucket"
 )
 
 const (
