@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d50592a5_f570a62e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-03-08T06:43:39Z",
+      "side": 1,
+      "message": "bug label?",
+      "revId": "6adb2b7aa39385ee2eb4b7b2f79d8135a2c8762f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "80b8efbd_5e6018ea",
+        "filename": "go/src/infra/build/siso/toolsupport/ninjautil/manifest_parser.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-03-08T06:43:39Z",
+      "side": 1,
+      "message": "I think this vague? It sounds like depn is file, but consumed as input for the action, although this is mainly used to specify deps to actions that generates inputs for this action?",
+      "range": {
+        "startLine": 162,
+        "startChar": 34,
+        "endLine": 162,
+        "endChar": 78
+      },
+      "revId": "6adb2b7aa39385ee2eb4b7b2f79d8135a2c8762f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8b8a135a_feb7546b",
+        "filename": "go/src/infra/build/siso/toolsupport/ninjautil/manifest_parser.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-03-08T06:43:39Z",
+      "side": 1,
+      "message": "better to refer ninja document?",
+      "range": {
+        "startLine": 164,
+        "startChar": 35,
+        "endLine": 164,
+        "endChar": 62
+      },
+      "revId": "6adb2b7aa39385ee2eb4b7b2f79d8135a2c8762f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "455c5f87_31a57755",
+        "filename": "go/src/infra/build/siso/toolsupport/ninjautil/manifest_parser.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 362,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-03-08T06:43:39Z",
+      "side": 1,
+      "message": "bar?",
+      "range": {
+        "startLine": 362,
+        "startChar": 61,
+        "endLine": 362,
+        "endChar": 64
+      },
+      "revId": "6adb2b7aa39385ee2eb4b7b2f79d8135a2c8762f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
