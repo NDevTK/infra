@@ -229,13 +229,13 @@ class HotlistIDTwoLevelCache(caches.AbstractTwoLevelCache):
 
     role_rows = self.features_service.hotlist2user_tbl.Select(
         cnxn, cols=['hotlist_id', 'user_id'],
-        user_id=wanted_names_for_owner.keys(), role_name='owner')
+        user_id=sorted(wanted_names_for_owner.keys()), role_name='owner')
 
     hotlist_ids = [row[0] for row in role_rows]
     hotlist_rows = self.features_service.hotlist_tbl.Select(
         cnxn, cols=['id', 'name'], id=hotlist_ids, is_deleted=False,
         where=[('LOWER(name) IN (%s)' % sql.PlaceHolders(hotlist_names_set),
-                [name.lower() for name in hotlist_names_set])])
+                [name.lower() for name in sorted(hotlist_names_set)])])
 
     return self._DeserializeHotlistIDs(
         hotlist_rows, role_rows, wanted_names_for_owner)

@@ -2875,7 +2875,7 @@ class WorkEnvTest(unittest.TestCase):
     # Original issue marked as duplicate.
     self.assertEqual('Duplicate', merged_issue.status)
     # Target issue has original issue's CCs.
-    self.assertEqual([444, 333, 222, 111], merged_into_issue.cc_ids)
+    self.assertEqual([111, 222, 333, 444], merged_into_issue.cc_ids)
     # A comment was added to the target issue.
     merged_into_issue_comment = merged_into_issue_comments[-1]
     self.assertEqual(
@@ -3422,8 +3422,8 @@ class WorkEnvTest(unittest.TestCase):
             default_project_name=issue_shared_b.project_name)]
     exp_issue_empty.blocking_iids.append(issue_shared_b.issue_id)
 
-    added_refs = [(issue_shared_b.project_name, issue_shared_b.local_id),
-                  (issue_shared_a.project_name, issue_shared_a.local_id)]
+    added_refs = [(issue_shared_a.project_name, issue_shared_a.local_id),
+                  (issue_shared_b.project_name, issue_shared_b.local_id)]
     exp_amendments_empty_imp.append(tracker_bizobj.MakeBlockingAmendment(
         added_refs, [], default_project_name=issue_empty.project_name))
 

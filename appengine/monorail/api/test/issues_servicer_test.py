@@ -1512,10 +1512,10 @@ class IssuesServicerTest(unittest.TestCase):
     response = self.CallWrapped(self.issues_svcr.IssueSnapshot, mc, request)
 
     self.assertEqual(2, len(response.snapshot_count))
-    self.assertEqual('Opened', response.snapshot_count[0].dimension)
-    self.assertEqual(100, response.snapshot_count[0].count)
-    self.assertEqual('Closed', response.snapshot_count[1].dimension)
-    self.assertEqual(23, response.snapshot_count[1].count)
+    self.assertEqual('Closed', response.snapshot_count[0].dimension)
+    self.assertEqual(23, response.snapshot_count[0].count)
+    self.assertEqual('Opened', response.snapshot_count[1].dimension)
+    self.assertEqual(100, response.snapshot_count[1].count)
     mockSnapshotCountsQuery.assert_called_once_with(self.project, 1531334109,
         'open', label_prefix='', query=None, canned_query=None, hotlist=None)
 
@@ -1532,10 +1532,10 @@ class IssuesServicerTest(unittest.TestCase):
     response = self.CallWrapped(self.issues_svcr.IssueSnapshot, mc, request)
 
     self.assertEqual(2, len(response.snapshot_count))
-    self.assertEqual('Fixed', response.snapshot_count[0].dimension)
-    self.assertEqual(23, response.snapshot_count[0].count)
-    self.assertEqual('Accepted', response.snapshot_count[1].dimension)
-    self.assertEqual(100, response.snapshot_count[1].count)
+    self.assertEqual('Accepted', response.snapshot_count[0].dimension)
+    self.assertEqual(100, response.snapshot_count[0].count)
+    self.assertEqual('Fixed', response.snapshot_count[1].dimension)
+    self.assertEqual(23, response.snapshot_count[1].count)
     mockSnapshotCountsQuery.assert_called_once_with(self.project, 1531334109,
         'status', label_prefix='', query=None, canned_query=None, hotlist=None)
 

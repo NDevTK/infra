@@ -1042,7 +1042,7 @@ class ProjectService(object):
 
   def GetVisibleLiveProjects(
       self, _cnxn, logged_in_user, effective_ids, domain=None, use_cache=True):
-    project_ids = list(self.projects_by_id.keys())
+    project_ids = sorted(self.projects_by_id.keys())
     visible_project_ids = []
     for pid in project_ids:
       can_view = permissions.UserCanViewProject(

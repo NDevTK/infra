@@ -455,7 +455,7 @@ def MakeAllFieldValueViews(
 
   # Make a phase field's view for each unique phase_name found in phases.
   (_, _, _, _, phases_by_name) = precomp_view_info
-  for phase_name in phases_by_name.keys():
+  for phase_name in sorted(phases_by_name.keys()):
     field_value_views.extend([
         _MakeFieldValueView(
             fd, config, precomp_view_info, users_by_id, phase_name=phase_name)

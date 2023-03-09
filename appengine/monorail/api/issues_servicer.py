@@ -587,12 +587,12 @@ class IssuesServicer(monorail_servicer.MonorailServicer):
       snapshot_counts = [
           issues_pb2.IssueSnapshotCount(
               dimension=self.services.user.GetUser(mc.cnxn, key).email,
-              count=result) for key, result in results.items()
+              count=result) for key, result in sorted(results.items())
       ]
     else:
       snapshot_counts = [
         issues_pb2.IssueSnapshotCount(dimension=key, count=result)
-          for key, result in results.items()
+          for key, result in sorted(results.items())
       ]
     response = issues_pb2.IssueSnapshotResponse()
     response.snapshot_count.extend(snapshot_counts)

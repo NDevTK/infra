@@ -1490,7 +1490,7 @@ def _EnforceAttachmentQuotaLimits(
 
   new_bytes_by_pid = {}
   with exceptions.ErrorAggregator(exceptions.OverAttachmentQuota) as err_agg:
-    for pid, count in issue_count_by_pid.items():
+    for pid, count in sorted(issue_count_by_pid.items()):
       project = projects_by_id[pid]
       try:
         new_bytes_used = ComputeNewQuotaBytesUsed(
@@ -1689,7 +1689,10 @@ def _ComputeNewCcsFromIssueMerge(merge_into_issue, source_issues):
     if issue.owner_id:
       new_cc_ids.add(issue.owner_id)
 
-  return [cc_id for cc_id in new_cc_ids if cc_id not in merge_into_issue.cc_ids]
+  return [
+      cc_id for cc_id in sorted(new_cc_ids)
+      if cc_id not in merge_into_issue.cc_ids
+  ]
 
 
 def _EnforceNonMergeStatusDeltas(cnxn, issue_delta_pairs, services):

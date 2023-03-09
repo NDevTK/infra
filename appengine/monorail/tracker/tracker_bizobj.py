@@ -1225,8 +1225,12 @@ def ApplyIssueBlockRelationChanges(
   impacted_iids = set()
 
   def addAmendment(add_iids, remove_iids, amendment_func):
-    add_refs = issue_service.LookupIssueRefs(cnxn, add_iids).values()
-    remove_refs = issue_service.LookupIssueRefs(cnxn, remove_iids).values()
+    add_refs_dict = issue_service.LookupIssueRefs(cnxn, add_iids)
+    add_refs = [add_refs_dict[iid] for iid in add_iids if iid in add_refs_dict]
+    remove_refs_dict = issue_service.LookupIssueRefs(cnxn, remove_iids)
+    remove_refs = [
+        remove_refs_dict[iid] for iid in remove_iids if iid in remove_refs_dict
+    ]
     new_am = amendment_func(
         add_refs, remove_refs, default_project_name=issue.project_name)
     amendments.append(new_am)

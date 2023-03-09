@@ -1912,7 +1912,7 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
     expected_merge_add = copy.deepcopy(merge_add)
     expected_merge_add.assume_stale = False
     # We are adding 333 and removing 222 in issue_main with delta_main.
-    expected_merge_add.cc_ids = [expected_main.owner_id, 333, 111]
+    expected_merge_add.cc_ids = sorted([expected_main.owner_id, 111, 333])
     expected_merged_from_add[expected_merge_add.issue_id] = [
         issue_main.issue_id
     ]

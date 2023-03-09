@@ -138,12 +138,12 @@ class HotlistIDTwoLevelCache(unittest.TestCase):
 
     # Assertions
     self.features_service.hotlist2user_tbl.Select.assert_called_once_with(
-        self.cnxn, cols=['hotlist_id', 'user_id'], user_id=[555, 333, 222],
+        self.cnxn, cols=['hotlist_id', 'user_id'], user_id=[222, 333, 555],
         role_name='owner')
     hotlist_ids = [123, 124, 125, 126, 127]
     self.features_service.hotlist_tbl.Select.assert_called_once_with(
         self.cnxn, cols=['id', 'name'], id=hotlist_ids, is_deleted=False,
-        where=[('LOWER(name) IN (%s,%s)', ['name3', 'name1'])])
+        where=[('LOWER(name) IN (%s,%s)', ['name1', 'name3'])])
 
     self.assertEqual(hit,{
         ('name1', 111): 121,
@@ -773,7 +773,7 @@ Delete.assert_called_once_with(
         self.cnxn, ['q3-todo', 'Q4-TODO'], [222, 333, 444])
     self.assertEqual(ret, {('q3-todo', 222) : 123, ('q4-todo', 333): 124})
     self.features_service.hotlist2user_tbl.Select.assert_called_once_with(
-        self.cnxn, cols=['hotlist_id', 'user_id'], user_id=[444, 333, 222],
+        self.cnxn, cols=['hotlist_id', 'user_id'], user_id=[222, 333, 444],
         role_name='owner')
     self.features_service.hotlist_tbl.Select.assert_called_once_with(
         self.cnxn, cols=['id', 'name'], id=[123, 125], is_deleted=False,

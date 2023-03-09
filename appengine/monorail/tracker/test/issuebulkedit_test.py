@@ -696,7 +696,7 @@ class IssueBulkEditTest(unittest.TestCase):
 
     # Verify CC lists and owner were merged to the merge_into issue.
     self.assertEqual(
-            [113, 120, 114, 115, 118, 111], merge_into_issue.cc_ids)
+            [113, 120, 111, 114, 115, 118], merge_into_issue.cc_ids)
     # Verify new starrers were added to the merge_into issue.
     self.assertEqual(4,
                       self.services.issue_star.CountItemStars(
