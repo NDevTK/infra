@@ -22,6 +22,30 @@
       },
       "revId": "ab260bbaf2c81ddbfd38acf8237b8c0756cf1767",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7f859076_b7a440d9",
+        "filename": "go/src/infra/experimental/golangbuild/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 485,
+      "author": {
+        "id": 1568168
+      },
+      "writtenOn": "2023-03-09T21:31:35Z",
+      "side": 1,
+      "message": "Eh. It\u0027s only temporary.",
+      "parentUuid": "414c2a31_38db9214",
+      "range": {
+        "startLine": 485,
+        "startChar": 36,
+        "endLine": 485,
+        "endChar": 118
+      },
+      "revId": "ab260bbaf2c81ddbfd38acf8237b8c0756cf1767",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
