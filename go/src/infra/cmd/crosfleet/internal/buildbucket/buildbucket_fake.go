@@ -7,6 +7,7 @@ package buildbucket
 import (
 	"context"
 	"fmt"
+	"reflect"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/grpc"
@@ -87,8 +88,15 @@ func (f FakeBuildClient) CancelBuild(ctx context.Context, in *buildbucketpb.Canc
 	return nil, nil
 }
 
+type ExpectedGetIncompleteBuildsWithTagsCall struct {
+	Tags     map[string]string
+	Response []*buildbucketpb.Build
+}
+
 type FakeClient struct {
 	Client FakeBuildClient
+	// Test data for GetIncompleteBuildsWithTags.
+	ExpectedGetIncompleteBuildsWithTags []*ExpectedGetIncompleteBuildsWithTagsCall
 }
 
 func (c *FakeClient) GetBuildsClient() BuildsClient {
@@ -128,6 +136,21 @@ func (c *FakeClient) GetLatestGreenBuild(ctx context.Context) (*buildbucketpb.Bu
 func (c *FakeClient) AnyIncompleteBuildsWithTags(ctx context.Context, tags map[string]string) (bool, int64, error) {
 	// Not yet implemented.
 	return false, 0, nil
+}
+
+func (c *FakeClient) GetIncompleteBuildsWithTags(ctx context.Context, tags map[string]string) ([]*buildbucketpb.Build, error) {
+	if c.ExpectedGetIncompleteBuildsWithTags == nil {
+		return nil, fmt.Errorf("Unexpected call to GetIncompleteBuildsWithTags")
+	}
+
+	for i, expected := range c.ExpectedGetIncompleteBuildsWithTags {
+		if reflect.DeepEqual(expected.Tags, tags) {
+			c.ExpectedGetIncompleteBuildsWithTags = append(c.ExpectedGetIncompleteBuildsWithTags[:i], c.ExpectedGetIncompleteBuildsWithTags[i:]...)
+			return expected.Response, nil
+		}
+	}
+
+	return nil, fmt.Errorf("Unexpected call to GetIncompleteBuildsWithTags:\n%v\n", tags)
 }
 
 func (c *FakeClient) CancelBuildsByUser(ctx context.Context, printer common.CLIPrinter, earliestCreateTime *timestamppb.Timestamp, user string, ids []string, reason string) error {

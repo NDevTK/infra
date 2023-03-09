@@ -68,6 +68,7 @@ type Client interface {
 	GetBuild(ctx context.Context, ID int64, fields ...string) (*buildbucketpb.Build, error)
 	GetLatestGreenBuild(ctx context.Context) (*buildbucketpb.Build, error)
 	AnyIncompleteBuildsWithTags(ctx context.Context, tags map[string]string) (bool, int64, error)
+	GetIncompleteBuildsWithTags(ctx context.Context, tags map[string]string) ([]*buildbucketpb.Build, error)
 	CancelBuildsByUser(ctx context.Context, printer common.CLIPrinter, earliestCreateTime *timestamppb.Timestamp, user string, ids []string, reason string) error
 	GetAllBuildsByUser(ctx context.Context, user string, searchBuildsRequest *buildbucketpb.SearchBuildsRequest) ([]*buildbucketpb.Build, error)
 	BuildURL(ID int64) string
@@ -291,6 +292,42 @@ func (c *client) AnyIncompleteBuildsWithTags(ctx context.Context, tags map[strin
 		return true, builds[0].Id, nil
 	}
 	return false, 0, nil
+}
+
+// GetIncompleteBuildsWithTags returns any scheduled or started builds matching
+// the given tags.
+func (c *client) GetIncompleteBuildsWithTags(ctx context.Context, tags map[string]string) ([]*buildbucketpb.Build, error) {
+	var builds []*buildbucketpb.Build
+	fieldsMask := &field_mask.FieldMask{Paths: []string{
+		"builds.*.id",
+		"builds.*.status",
+		"builds.*.input",
+	}}
+	startedBuilds, err := c.GetAllBuildsWithTags(ctx, tags, &buildbucketpb.SearchBuildsRequest{
+		Predicate: &buildbucketpb.BuildPredicate{
+			Status: buildbucketpb.Status_STARTED,
+		},
+		Fields: fieldsMask,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if startedBuilds != nil {
+		builds = append(builds, startedBuilds...)
+	}
+	scheduledBuilds, err := c.GetAllBuildsWithTags(ctx, tags, &buildbucketpb.SearchBuildsRequest{
+		Predicate: &buildbucketpb.BuildPredicate{
+			Status: buildbucketpb.Status_SCHEDULED,
+		},
+		Fields: fieldsMask,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if scheduledBuilds != nil {
+		builds = append(builds, scheduledBuilds...)
+	}
+	return builds, nil
 }
 
 // CancelBuildsByUser cancels any pending or active build created after the

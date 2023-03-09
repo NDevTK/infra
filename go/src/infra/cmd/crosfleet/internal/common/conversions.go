@@ -39,7 +39,7 @@ func MapToStruct(m map[string]interface{}) (*structpb.Struct, error) {
 
 		switch val := val.(type) {
 		case protoreflect.ProtoMessage:
-			newStructVal, err = protoToStructVal(val)
+			newStructVal, err = ProtoToStructVal(val)
 			if err != nil {
 				return nil, fmt.Errorf("error converting proto %v to *structpb.Value: %s", val, err)
 			}
@@ -65,8 +65,8 @@ func MapToStruct(m map[string]interface{}) (*structpb.Struct, error) {
 	return s, nil
 }
 
-// protoToStructVal converts a proto message to a *structpb.Value.
-func protoToStructVal(msg protoreflect.ProtoMessage) (*structpb.Value, error) {
+// ProtoToStructVal converts a proto message to a *structpb.Value.
+func ProtoToStructVal(msg protoreflect.ProtoMessage) (*structpb.Value, error) {
 	m := jsonpb.Marshaler{}
 	msgJSON, err := m.MarshalToString(msg.(proto.Message))
 	if err != nil {

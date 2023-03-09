@@ -6,11 +6,15 @@ package run
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"infra/cmd/crosfleet/internal/buildbucket"
+	crosbb "infra/cros/lib/buildbucket"
 
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/structpb"
 
 	models "infra/unifiedfleet/api/v1/models"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
@@ -39,6 +43,7 @@ func (c *fakeUFSClient) GetMachine(ctx context.Context, req *ufsapi.GetMachineRe
 }
 
 func TestSuiteNoModels(t *testing.T) {
+	t.Parallel()
 	r := suiteRun{
 		testCommonFlags: testCommonFlags{
 			exitEarly: true,
@@ -48,6 +53,7 @@ func TestSuiteNoModels(t *testing.T) {
 			board:     "drallion",
 			pool:      "DUT_POOL_QUOTA",
 		},
+		allowDupes: true,
 	}
 	ctx := context.Background()
 
@@ -75,6 +81,7 @@ func TestSuiteNoModels(t *testing.T) {
 }
 
 func TestSuiteModels(t *testing.T) {
+	t.Parallel()
 	r := suiteRun{
 		testCommonFlags: testCommonFlags{
 			exitEarly: true,
@@ -85,6 +92,7 @@ func TestSuiteModels(t *testing.T) {
 			models:    []string{"drallion", "drallion360"},
 			pool:      "DUT_POOL_QUOTA",
 		},
+		allowDupes: true,
 	}
 	ctx := context.Background()
 
@@ -118,6 +126,373 @@ func TestSuiteModels(t *testing.T) {
 	}
 	err := r.innerRun(nil, []string{"bvt-installer"}, ctx, bb, ufs)
 	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+}
+
+func TestSuiteDedupeNoModels_Run(t *testing.T) {
+	t.Parallel()
+	r := suiteRun{
+		testCommonFlags: testCommonFlags{
+			exitEarly: true,
+			repeats:   1,
+			priority:  DefaultSwarmingPriority,
+			release:   "R112-15357.0.0",
+			board:     "drallion",
+			pool:      "DUT_POOL_QUOTA",
+		},
+	}
+	ctx := context.Background()
+	suite := "bvt-installer"
+
+	ufs := &fakeUFSClient{}
+	bb := &buildbucket.FakeClient{
+		ExpectedGetIncompleteBuildsWithTags: []*buildbucket.ExpectedGetIncompleteBuildsWithTagsCall{
+			{
+				Tags: map[string]string{
+					"crosfleet-tool": "suite",
+					"user_agent":     "crosfleet",
+					"label-image":    "drallion-release/R112-15357.0.0",
+					"label-suite":    suite,
+				},
+				Response: []*buildbucketpb.Build{},
+			},
+		},
+		Client: buildbucket.FakeBuildClient{
+			ExpectedSchedule: []buildbucket.ScheduleParams{
+				{
+					BuilderName: "cros_test_platform",
+					Tags: map[string]string{
+						"crosfleet-tool": "suite",
+						"label-board":    "drallion",
+						"label-image":    "drallion-release/R112-15357.0.0",
+						"label-pool":     "DUT_POOL_QUOTA",
+						"user_agent":     "crosfleet",
+					},
+				},
+			},
+		},
+	}
+	err := r.innerRun(nil, []string{suite}, ctx, bb, ufs)
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+}
+
+func TestSuiteDedupeNoModels_NoRun(t *testing.T) {
+	t.Parallel()
+	r := suiteRun{
+		testCommonFlags: testCommonFlags{
+			exitEarly:   true,
+			repeats:     1,
+			priority:    DefaultSwarmingPriority,
+			bucket:      defaultImageBucket,
+			timeoutMins: 360,
+			release:     "R112-15357.0.0",
+			board:       "drallion",
+			pool:        "DUT_POOL_QUOTA",
+		},
+	}
+	ctx := context.Background()
+	suite := "bvt-installer"
+
+	ufs := &fakeUFSClient{}
+	bb := &buildbucket.FakeClient{
+		ExpectedGetIncompleteBuildsWithTags: []*buildbucket.ExpectedGetIncompleteBuildsWithTagsCall{
+			{
+				Tags: map[string]string{
+					"crosfleet-tool": "suite",
+					"user_agent":     "crosfleet",
+					"label-image":    "drallion-release/R112-15357.0.0",
+					"label-suite":    suite,
+				},
+				Response: []*buildbucketpb.Build{
+					{
+						Builder: &buildbucketpb.BuilderID{
+							Builder: "cros_test_platform",
+						},
+						Status: buildbucketpb.Status_SCHEDULED,
+						Tags: []*buildbucketpb.StringPair{
+							{
+								Key:   "label-image",
+								Value: "drallion-release/R112-15357.0.0",
+							},
+							{
+								Key:   "label-suite",
+								Value: suite,
+							},
+						},
+						Input: &buildbucketpb.Build_Input{
+							Properties: getInputProps(t, ""),
+						},
+					},
+				},
+			},
+		},
+		Client: buildbucket.FakeBuildClient{},
+	}
+	err := r.innerRun(nil, []string{suite}, ctx, bb, ufs)
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+}
+
+func TestSuiteDedupeModels_Run(t *testing.T) {
+	t.Parallel()
+	r := suiteRun{
+		testCommonFlags: testCommonFlags{
+			exitEarly: true,
+			repeats:   1,
+			priority:  DefaultSwarmingPriority,
+			release:   "R112-15357.0.0",
+			board:     "drallion",
+			models:    []string{"drallion", "drallion360"},
+			pool:      "DUT_POOL_QUOTA",
+		},
+	}
+	ctx := context.Background()
+	suite := "bvt-installer"
+
+	ufs := &fakeUFSClient{}
+	bb := &buildbucket.FakeClient{
+		ExpectedGetIncompleteBuildsWithTags: []*buildbucket.ExpectedGetIncompleteBuildsWithTagsCall{
+			{
+				Tags: map[string]string{
+					"crosfleet-tool": "suite",
+					"user_agent":     "crosfleet",
+					"label-image":    "drallion-release/R112-15357.0.0",
+					"label-suite":    suite,
+					"label-model":    "drallion",
+				},
+				Response: []*buildbucketpb.Build{
+					{
+						Builder: &buildbucketpb.BuilderID{
+							Builder: "cros_test_platform",
+						},
+						Status: buildbucketpb.Status_SCHEDULED,
+						Tags: []*buildbucketpb.StringPair{
+							{
+								Key:   "label-image",
+								Value: "drallion-release/R112-15357.0.0",
+							},
+							{
+								Key:   "label-suite",
+								Value: suite,
+							},
+							{
+								Key:   "label-model",
+								Value: "drallion",
+							},
+						},
+					},
+				},
+			},
+			{
+				Tags: map[string]string{
+					"crosfleet-tool": "suite",
+					"user_agent":     "crosfleet",
+					"label-image":    "drallion-release/R112-15357.0.0",
+					"label-suite":    suite,
+					"label-model":    "drallion360",
+				},
+				Response: []*buildbucketpb.Build{},
+			},
+		},
+		Client: buildbucket.FakeBuildClient{
+			ExpectedSchedule: []buildbucket.ScheduleParams{
+				{
+					BuilderName: "cros_test_platform",
+					Tags: map[string]string{
+						"crosfleet-tool": "suite",
+						"label-board":    "drallion",
+						"label-image":    "drallion-release/R112-15357.0.0",
+						// drallion had an existing run, only expect drallion360
+						"label-model": "drallion360",
+						"label-pool":  "DUT_POOL_QUOTA",
+						"user_agent":  "crosfleet",
+					},
+				},
+			},
+		},
+	}
+	err := r.innerRun(nil, []string{suite}, ctx, bb, ufs)
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+}
+
+func getInputProps(t *testing.T, model string) *structpb.Struct {
+	t.Helper()
+	inputProps, err := structpb.NewStruct(map[string]interface{}{
+		"requests": map[string]interface{}{
+			"default": map[string]interface{}{
+				"params": map[string]interface{}{
+					"decorations":        map[string]interface{}{},
+					"freeformAttributes": map[string]interface{}{},
+					"hardwareAttributes": map[string]interface{}{},
+					"metadata": map[string]interface{}{
+						"containerMetadataUrl":   "gs://chromeos-image-archive/drallion-release/R112-15357.0.0/metadata/containers.jsonpb",
+						"debugSymbolsArchiveUrl": "gs://chromeos-image-archive/drallion-release/R112-15357.0.0",
+						"testMetadataUrl":        "gs://chromeos-image-archive/drallion-release/R112-15357.0.0",
+					},
+					"retry": map[string]interface{}{},
+					"scheduling": map[string]interface{}{
+						"managedPool": "MANAGED_POOL_QUOTA",
+						"priority":    "140",
+					},
+					"softwareAttributes": map[string]interface{}{
+						"buildTarget": map[string]interface{}{
+							"name": "drallion",
+						},
+					},
+					"softwareDependencies": []interface{}{
+						map[string]interface{}{
+							"chromeosBuildGcsBucket": "chromeos-image-archive",
+						},
+						map[string]interface{}{
+							"chromeosBuild": "drallion-release/R112-15357.0.0",
+						},
+					},
+					"time": map[string]interface{}{
+						"maximumDuration": "21600s",
+					},
+				},
+				"testPlan": map[string]interface{}{
+					"suite": []interface{}{
+						map[string]interface{}{
+							"name": "bvt-installer",
+						},
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	tags := []interface{}{
+		"crosfleet-tool:suite",
+		"label-board:drallion",
+		"label-image:drallion-release/R112-15357.0.0",
+		"label-pool:DUT_POOL_QUOTA",
+		"label-priority:140",
+		"label-suite:bvt-installer",
+	}
+	if model != "" {
+		tags = append(tags, fmt.Sprintf("label-model:%s", model))
+		if err := crosbb.SetProperty(inputProps, "requests.default.params.hardwareAttributes.model", model); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := crosbb.SetProperty(inputProps, "requests.default.params.decorations.tags", tags); err != nil {
+		t.Fatal(err)
+	}
+	return inputProps
+}
+
+func TestSuiteDedupeModels_NoRun(t *testing.T) {
+	t.Parallel()
+	r := suiteRun{
+		testCommonFlags: testCommonFlags{
+			exitEarly:   true,
+			repeats:     1,
+			priority:    DefaultSwarmingPriority,
+			bucket:      defaultImageBucket,
+			timeoutMins: 360,
+			release:     "R112-15357.0.0",
+			board:       "drallion",
+			models:      []string{"drallion", "drallion360"},
+			pool:        "DUT_POOL_QUOTA",
+		},
+	}
+	ctx := context.Background()
+	suite := "bvt-installer"
+
+	ufs := &fakeUFSClient{}
+	bb := &buildbucket.FakeClient{
+		ExpectedGetIncompleteBuildsWithTags: []*buildbucket.ExpectedGetIncompleteBuildsWithTagsCall{
+			{
+				Tags: map[string]string{
+					"crosfleet-tool": "suite",
+					"user_agent":     "crosfleet",
+					"label-image":    "drallion-release/R112-15357.0.0",
+					"label-suite":    suite,
+					"label-model":    "drallion",
+				},
+				Response: []*buildbucketpb.Build{
+					{
+						Builder: &buildbucketpb.BuilderID{
+							Builder: "cros_test_platform",
+						},
+						Status: buildbucketpb.Status_SCHEDULED,
+						Tags: []*buildbucketpb.StringPair{
+							{
+								Key:   "label-image",
+								Value: "drallion-release/R112-15357.0.0",
+							},
+							{
+								Key:   "label-suite",
+								Value: suite,
+							},
+							{
+								Key:   "label-model",
+								Value: "drallion",
+							},
+						},
+						Input: &buildbucketpb.Build_Input{
+							Properties: getInputProps(t, "drallion"),
+						},
+					},
+				},
+			},
+			{
+				Tags: map[string]string{
+					"crosfleet-tool": "suite",
+					"user_agent":     "crosfleet",
+					"label-image":    "drallion-release/R112-15357.0.0",
+					"label-suite":    suite,
+					"label-model":    "drallion360",
+				},
+				Response: []*buildbucketpb.Build{
+					{
+						Builder: &buildbucketpb.BuilderID{
+							Builder: "cros_test_platform",
+						},
+						Status: buildbucketpb.Status_SCHEDULED,
+						Tags: []*buildbucketpb.StringPair{
+							{
+								Key:   "label-image",
+								Value: "drallion-release/R112-15357.0.0",
+							},
+							{
+								Key:   "label-suite",
+								Value: suite,
+							},
+							{
+								Key:   "label-model",
+								Value: "drallion360",
+							},
+						},
+						Input: &buildbucketpb.Build_Input{
+							Properties: getInputProps(t, "drallion360"),
+						},
+					},
+				},
+			},
+			{
+				Tags: map[string]string{
+					"crosfleet-tool": "suite",
+					"user_agent":     "crosfleet",
+					"label-image":    "drallion-release/R112-15357.0.0",
+					"label-suite":    suite,
+					"label-model":    "drallion360",
+				},
+				Response: []*buildbucketpb.Build{},
+			},
+		},
+		Client: buildbucket.FakeBuildClient{},
+	}
+	if err := r.innerRun(nil, []string{suite}, ctx, bb, ufs); err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
 }

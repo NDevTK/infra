@@ -218,3 +218,33 @@ func SetProperty(s *structpb.Struct, key string, value interface{}) error {
 
 	return setPropertyInner(s, strings.Split(key, "."), value)
 }
+
+// GetProp gets a property.
+func GetProp(props map[string]interface{}, prop string) (interface{}, bool) {
+	toks := strings.Split(prop, ".")
+	for i, tok := range toks {
+		val, ok := props[tok]
+		if !ok {
+			return nil, false
+		}
+		if i == len(toks)-1 {
+			return val, true
+		}
+		subprops, ok := val.(map[string]interface{})
+		if !ok {
+			return nil, false
+		}
+		props = subprops
+	}
+	return nil, false
+}
+
+// HasProp checks if the given key value pair is in the dict.
+// prop may be a nested field (. delmited).
+func HasProp(props map[string]interface{}, prop string, value interface{}) bool {
+	val, ok := GetProp(props, prop)
+	if !ok {
+		return false
+	}
+	return reflect.DeepEqual(value, val)
+}
