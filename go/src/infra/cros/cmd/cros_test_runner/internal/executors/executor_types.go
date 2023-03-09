@@ -14,6 +14,8 @@ const (
 	InvServiceExecutorType     interfaces.ExecutorType = "InvServiceExecutor"
 	CtrExecutorType            interfaces.ExecutorType = "CtrExecutor"
 	CrosDutExecutorType        interfaces.ExecutorType = "CrosDutExecutor"
+	CrosDutVmExecutorType      interfaces.ExecutorType = "CrosDutVmExecutor"
+	CacheServerExecutorType    interfaces.ExecutorType = "CacheServerExecutor"
 	CrosProvisionExecutorType  interfaces.ExecutorType = "CrosProvisionExecutor"
 	CrosTestExecutorType       interfaces.ExecutorType = "CrosTestExecutor"
 	CrosGcsPublishExecutorType interfaces.ExecutorType = "CrosGcsPublishExecutor"

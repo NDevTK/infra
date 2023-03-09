@@ -2,6 +2,7 @@ package configs
 
 import (
 	"fmt"
+
 	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/containers"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
@@ -55,6 +56,12 @@ func (cfg *CftContainerConfig) GetContainer(contType interfaces.ContainerType) (
 			return nil, errors.Annotate(err, "error during getting container image from map for %s container type", contType).Err()
 		}
 		cont = containers.NewCrosDutTemplatedContainer(containerImage, cfg.Ctr)
+
+	case containers.CacheServerTemplatedContainerType:
+		// containerImage := "us-docker.pkg.dev/cros-registry/test-services/cacheserver:cacheserver1"
+		// TODO(mingkong): replace poc container image with formal one.
+		containerImage := "us-docker.pkg.dev/mingkong-cros/mkrepo/cacheserver:authed"
+		cont = containers.NewCacheServerTemplatedContainer(containerImage, cfg.Ctr)
 
 	case containers.CrosProvisionTemplatedContainerType:
 		containerImage, err := common.GetContainerImageFromMap("cros-provision", cfg.ContainerImagesMap)

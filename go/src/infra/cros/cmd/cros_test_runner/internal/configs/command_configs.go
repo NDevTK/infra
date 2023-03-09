@@ -6,6 +6,7 @@ package configs
 
 import (
 	"fmt"
+
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 
@@ -92,6 +93,34 @@ func (cfg *CommandConfig) GetCommand(
 			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
 		}
 		cmd = commands.NewDutServiceStartCmd(exec)
+
+	case commands.DutVmLeaseCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewDutVmLeaseCmd(exec)
+
+	case commands.DutVmReleaseCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewDutVmReleaseCmd(exec)
+
+	case commands.DutVmGetImageCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewDutVmGetImageCmd(exec)
+
+	case commands.CacheServerStartCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewCacheServerStartCmd(exec)
 
 	case commands.ProvisionServiceStartCmdType:
 		exec, err := cfg.ExecutorConfig.GetExecutor(execType)

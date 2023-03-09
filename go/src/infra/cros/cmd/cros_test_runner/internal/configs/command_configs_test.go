@@ -5,10 +5,11 @@
 package configs
 
 import (
+	"testing"
+
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
 	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
-	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -71,6 +72,22 @@ func TestGetCommand_SupportedCmdType(t *testing.T) {
 
 		cmd, err = cmdConfig.GetCommand(commands.DutServiceStartCmdType, executors.CrosDutExecutorType)
 		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.DutVmGetImageCmdType, executors.CrosDutVmExecutorType)
+		So(cmd.GetCommandType(), ShouldEqual, commands.DutVmGetImageCmdType)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.DutVmLeaseCmdType, executors.CrosDutVmExecutorType)
+		So(cmd.GetCommandType(), ShouldEqual, commands.DutVmLeaseCmdType)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.DutVmReleaseCmdType, executors.CrosDutVmExecutorType)
+		So(cmd.GetCommandType(), ShouldEqual, commands.DutVmReleaseCmdType)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.CacheServerStartCmdType, executors.CrosDutVmExecutorType)
+		So(cmd.GetCommandType(), ShouldEqual, commands.CacheServerStartCmdType)
 		So(err, ShouldBeNil)
 
 		cmd, err = cmdConfig.GetCommand(commands.ProvisionServiceStartCmdType, executors.CrosProvisionExecutorType)
