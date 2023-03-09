@@ -18,9 +18,18 @@ import (
 	pb "infra/vm_leaser/api/v1"
 )
 
-// Default VM creation parameters
+// Default VM Leaser parameters
 const (
+	// Default disk size to use for VM creation
+	DefaultDiskSize int64 = 20
+	// Default machine type to use for VM creation
+	DefaultMachineType string = "e2-medium"
+	// Default network to use for VM creation
 	DefaultNetwork string = "global/networks/default"
+	// Default GCP Project to use
+	DefaultProject string = "chrome-fleet-vm-leaser-dev"
+	// Default region (zone) to use
+	DefaultRegion string = "us-central1-a"
 )
 
 // Prove that Server implements pb.VMLeaserServiceServer by instantiating a Server
@@ -48,6 +57,13 @@ func (s *Server) LeaseVM(ctx context.Context, r *pb.LeaseVMRequest) (*pb.LeaseVM
 	logging.Infof(ctx, "[server:LeaseVM] Started")
 	if ctx.Err() == context.Canceled {
 		return &pb.LeaseVMResponse{}, fmt.Errorf("client cancelled: abandoning")
+	}
+
+	// Set defaults for LeaseVMRequest if needed.
+	r = setDefaultLeaseVMRequest(r)
+
+	if err := r.Validate(); err != nil {
+		return nil, err
 	}
 
 	// Appending "vm-" to satisfy GCE regex
@@ -84,6 +100,13 @@ func (s *Server) ReleaseVM(ctx context.Context, r *pb.ReleaseVMRequest) (*pb.Rel
 		return &pb.ReleaseVMResponse{}, fmt.Errorf("client cancelled: abandoning")
 	}
 
+	// Set default values for ReleaseVMRequest if needed.
+	r = setDefaultReleaseVMRequest(r)
+
+	if err := r.Validate(); err != nil {
+		return nil, err
+	}
+
 	err := deleteInstance(ctx, r)
 	if err != nil {
 		return nil, err
@@ -101,12 +124,6 @@ func createInstance(ctx context.Context, leaseId string, hostReqs *pb.VMRequirem
 		return fmt.Errorf("NewInstancesRESTClient error: %v", err)
 	}
 	defer instancesClient.Close()
-
-	// Set default values if not provided
-	network := hostReqs.GetGceNetwork()
-	if network == "" {
-		network = DefaultNetwork
-	}
 
 	zone := hostReqs.GetGceRegion()
 	req := &computepb.InsertInstanceRequest{
@@ -128,7 +145,7 @@ func createInstance(ctx context.Context, leaseId string, hostReqs *pb.VMRequirem
 			MachineType: proto.String(fmt.Sprintf("zones/%s/machineTypes/%s", zone, hostReqs.GetGceMachineType())),
 			NetworkInterfaces: []*computepb.NetworkInterface{
 				{
-					Name: proto.String(network),
+					Name: proto.String(hostReqs.GetGceNetwork()),
 				},
 			},
 		},
@@ -177,4 +194,36 @@ func deleteInstance(ctx context.Context, r *pb.ReleaseVMRequest) error {
 
 	logging.Infof(ctx, "instance deleted")
 	return nil
+}
+
+// setDefaultLeaseVMRequest sets default values for VMRequirements.
+func setDefaultLeaseVMRequest(r *pb.LeaseVMRequest) *pb.LeaseVMRequest {
+	hostReqs := r.GetHostReqs()
+	if hostReqs.GetGceDiskSize() == 0 {
+		hostReqs.GceDiskSize = DefaultDiskSize
+	}
+	if hostReqs.GetGceMachineType() == "" {
+		hostReqs.GceMachineType = DefaultMachineType
+	}
+	if hostReqs.GetGceNetwork() == "" {
+		hostReqs.GceNetwork = DefaultNetwork
+	}
+	if hostReqs.GetGceProject() == "" {
+		hostReqs.GceProject = DefaultProject
+	}
+	if hostReqs.GetGceRegion() == "" {
+		hostReqs.GceRegion = DefaultRegion
+	}
+	return r
+}
+
+// setDefaultReleaseVMRequest sets default values for ReleaseVMRequest.
+func setDefaultReleaseVMRequest(r *pb.ReleaseVMRequest) *pb.ReleaseVMRequest {
+	if r.GetGceProject() == "" {
+		r.GceProject = DefaultProject
+	}
+	if r.GetGceRegion() == "" {
+		r.GceRegion = DefaultRegion
+	}
+	return r
 }
