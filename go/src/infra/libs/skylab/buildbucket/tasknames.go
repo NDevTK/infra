@@ -32,6 +32,10 @@ const (
 	// Task used to execute custom plans.
 	// Configuration has to be provided by the user.
 	Custom TaskName = "custom"
+	// DryRun is a task that runs an empty plan with no actions.
+	// Its intended use case is to verify that a recipe or luciexe executable
+	// can transfer control to labpack (or another recoverylib runner) successfully.
+	DryRun TaskName = "dry_run"
 )
 
 // String returns the name of the task as an argument to the labpack command-line tool.
@@ -62,6 +66,8 @@ func NormalizeTaskName(name string) (TaskName, error) {
 		return DeepRecovery, nil
 	case "deploy":
 		return Deploy, nil
+	case "dry_run", "dry-run":
+		return DryRun, nil
 	case "custom":
 		return Custom, nil
 	}

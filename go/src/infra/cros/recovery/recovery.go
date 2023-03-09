@@ -105,7 +105,7 @@ func Run(ctx context.Context, args *RunArgs) (rErr error) {
 
 // runResource run single resource.
 func runResource(ctx context.Context, resource string, runMetric *metrics.Action, args *RunArgs) (rErr error) {
-	log.Infof(ctx, "Resource %q: started", resource)
+	log.Infof(ctx, "Resource %q: started task %q", resource, args.TaskName)
 	if args.ShowSteps {
 		var step *build.Step
 		step, ctx = build.StartStep(ctx, fmt.Sprintf("Start %q for %q", args.TaskName, resource))
@@ -298,6 +298,8 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 		default:
 			return nil, errors.Reason("setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
+	case buildbucket.DryRun:
+		return config.ConfigDryRun(), nil
 	case buildbucket.Custom:
 		return nil, errors.Reason("Setup type: %q does not have default configuration for custom tasks", ds).Err()
 	default:

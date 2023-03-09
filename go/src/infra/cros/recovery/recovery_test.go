@@ -211,6 +211,27 @@ var dutPlansCases = []struct {
 		[]string{"cros"},
 		true,
 	},
+	{
+		"cros dry run",
+		tlw.DUTSetupTypeCrosBrowser,
+		buildbucket.DryRun,
+		nil,
+		true,
+	},
+	{
+		"android dry run",
+		tlw.DUTSetupTypeAndroid,
+		buildbucket.DryRun,
+		nil,
+		true,
+	},
+	{
+		"labstation dry run",
+		tlw.DUTSetupTypeLabstation,
+		buildbucket.DryRun,
+		nil,
+		true,
+	},
 }
 
 // TestLoadConfiguration tests default configuration used for recovery flow is loading right and parsibale without any issue.
