@@ -28,6 +28,7 @@ import (
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.12.0"
@@ -61,6 +62,7 @@ func main() {
 		} else {
 			logging.Infof(ctx, "Error setting up trace exporter: %s", err)
 		}
+		otel.SetTextMapPropagator(propagation.TraceContext{})
 
 		icron.InstallHandlers()
 		srv.RegisterUnaryServerInterceptors(otelgrpc.UnaryServerInterceptor(), config.UnaryConfig)
