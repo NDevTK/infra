@@ -5,4 +5,4 @@
 // Package vmleaserpb contains the VM Leaser service API.
 package vmleaserpb
 
-//go:generate cproto -proto-path ../../../../../..
+//go:generate cproto -proto-path ../../../../../.. -use-grpc-plugin

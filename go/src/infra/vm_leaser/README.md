@@ -57,7 +57,7 @@ To call an RPC, you can specify the proto and payload via `grpcurl`. Here is an 
       "gce_disk_size": "20"
     }
   }' \
-  localhost:8080 \
+  localhost:50051 \
   vm_leaser.api.v1.VMLeaserService.LeaseVM
 
 {
@@ -76,7 +76,7 @@ An example to release a VM:
     "gce_project": "chrome-fleet-vm-leaser-cr-exp",
     "gce_region": "us-central1-a"
   }' \
-  localhost:8080 \
+  localhost:50051 \
   vm_leaser.api.v1.VMLeaserService.ReleaseVM
 
 {

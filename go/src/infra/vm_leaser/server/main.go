@@ -5,47 +5,45 @@
 package main
 
 import (
-	"context"
-	"fmt"
-	"net"
-	"os"
-
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
+	"go.chromium.org/luci/config/server/cfgmodule"
+	"go.chromium.org/luci/server"
+	"go.chromium.org/luci/server/cron"
+	"go.chromium.org/luci/server/gaeemulation"
+	"go.chromium.org/luci/server/module"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 
 	pb "infra/vm_leaser/api/v1"
 )
 
+// InstallServices takes a VM Leaser service server and exposes it to a
+// LUCI prpc.Server.
+func InstallServices(s *Server, srv grpc.ServiceRegistrar) {
+	pb.RegisterVMLeaserServiceServer(srv, s)
+}
+
 func main() {
-	ctx := gologger.StdConfig.Use(context.Background())
-	ctx = logging.SetLevel(ctx, logging.Debug)
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
+	modules := []module.Module{
+		gaeemulation.NewModuleFromFlags(),
+		cfgmodule.NewModuleFromFlags(),
+		cron.NewModuleFromFlags(),
 	}
 
-	grpcEndpoint := fmt.Sprintf(":%s", port)
-	logging.Infof(ctx, "gRPC endpoint [%s]", grpcEndpoint)
-
-	grpcServer := grpc.NewServer()
-	pb.RegisterVMLeaserServiceServer(grpcServer, NewServer())
-
-	// Register reflection service on gRPC server.
-	reflection.Register(grpcServer)
-
-	listen, err := net.Listen("tcp", grpcEndpoint)
-	if err != nil {
-		logging.Errorf(ctx, "failed to listen: %v", err)
-		os.Exit(1)
+	// TODO(justinsuen): Temporarily use localhost endpoint. Need to add endpoint
+	// to configs and dynamically determine GRPCAddr.
+	options := server.Options{
+		GRPCAddr: "127.0.0.1:50051",
 	}
 
-	logging.Infof(ctx, "Starting: gRPC Listener [%s]\n", grpcEndpoint)
-	err = grpcServer.Serve(listen)
-	if err != nil {
-		logging.Errorf(ctx, "failed to serve: %v", err)
-		os.Exit(1)
-	}
+	server.Main(&options, modules, func(srv *server.Server) error {
+		srv.Context = gologger.StdConfig.Use(srv.Context)
+		srv.Context = logging.SetLevel(srv.Context, logging.Debug)
+
+		logging.Infof(srv.Context, "Starting server.")
+		logging.Infof(srv.Context, "Installing Services.")
+		InstallServices(NewServer(), srv)
+		logging.Infof(srv.Context, "Initialization finished.")
+		return nil
+	})
 }
