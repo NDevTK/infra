@@ -10,6 +10,7 @@ import "infra/cros/cmd/cros_test_runner/internal/interfaces"
 const (
 	// For testing purposes only
 	UnsupportedContainerType             interfaces.ContainerType = "UnsupportedContainer"
+	CacheServerTemplatedContainerType    interfaces.ContainerType = "CacheServerTemplatedContainer"
 	CrosProvisionTemplatedContainerType  interfaces.ContainerType = "CrosProvisionTemplatedContainer"
 	CrosDutTemplatedContainerType        interfaces.ContainerType = "CrosDutTemplatedContainer"
 	CrosTestTemplatedContainerType       interfaces.ContainerType = "CrosTestTemplatedContainer"

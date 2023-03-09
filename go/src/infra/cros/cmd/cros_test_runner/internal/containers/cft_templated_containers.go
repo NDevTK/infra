@@ -12,6 +12,13 @@ func NewCrosDutTemplatedContainer(
 	return NewContainer(CrosDutTemplatedContainerType, "cros-dut", containerImage, ctr, true)
 }
 
+func NewCacheServerTemplatedContainer(
+	containerImage string,
+	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
+
+	return NewContainer(CacheServerTemplatedContainerType, "cacheserver", containerImage, ctr, true)
+}
+
 func NewCrosProvisionTemplatedContainer(
 	containerImage string,
 	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
