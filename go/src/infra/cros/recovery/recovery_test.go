@@ -253,6 +253,9 @@ func TestLoadConfiguration(t *testing.T) {
 			dut := &tlw.Dut{SetupType: c.setupType}
 			got, err := loadConfiguration(ctx, dut, args)
 			if cs.ok {
+				if err != nil {
+					t.Errorf("encountered unexpected error %q in test %q", err, cs.name)
+				}
 				if !cmp.Equal(got.GetPlanNames(), cs.expPlanNames) {
 					t.Errorf("%q ->want: %v\n got: %v: %s", cs.name, cs.expPlanNames, got.GetPlanNames(), err)
 				}
