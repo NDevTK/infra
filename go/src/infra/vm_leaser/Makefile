@@ -38,7 +38,7 @@ cover:
 # Build service image
 .PHONY: build
 build:
-	CGO_ENABLED=0 go build -o vm-leaser-service $(PROJECT_PATH)/server
+	CGO_ENABLED=0 go build -o vm-leaser-service $(PROJECT_PATH)/cmd/vm_leaser
 
 # Run service locally
 .PHONY: dev

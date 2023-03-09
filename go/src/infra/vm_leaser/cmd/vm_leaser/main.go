@@ -17,11 +17,13 @@ import (
 	"google.golang.org/grpc"
 
 	pb "infra/vm_leaser/api/v1"
+	"infra/vm_leaser/internal/acl"
+	"infra/vm_leaser/internal/frontend"
 )
 
 // InstallServices takes a VM Leaser service server and exposes it to a
 // LUCI prpc.Server.
-func InstallServices(s *Server, srv grpc.ServiceRegistrar) {
+func InstallServices(s *frontend.Server, srv grpc.ServiceRegistrar) {
 	pb.RegisterVMLeaserServiceServer(srv, s)
 }
 
@@ -58,10 +60,10 @@ func main() {
 		})
 
 		// Per-RPC authorization interceptor.
-		srv.RegisterUnifiedServerInterceptors(RPCAccessInterceptor)
+		srv.RegisterUnifiedServerInterceptors(acl.RPCAccessInterceptor)
 
 		logging.Infof(srv.Context, "Installing Services.")
-		InstallServices(NewServer(), srv)
+		InstallServices(frontend.NewServer(), srv)
 
 		logging.Infof(srv.Context, "Initialization finished.")
 		return nil
