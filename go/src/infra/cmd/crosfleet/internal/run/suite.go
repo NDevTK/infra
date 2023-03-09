@@ -232,15 +232,21 @@ func buildHasRequest(build *buildbucketpb.Build, request *test_platform.Request)
 		return false, err
 	}
 	requestStruct := r.GetStructValue()
-	buildRequestStruct := build.GetInput().GetProperties().GetFields()["requests"].GetStructValue().GetFields()["default"].GetStructValue()
+	buildRequests := build.GetInput().GetProperties().GetFields()["requests"].GetStructValue().GetFields()
 
-	// Need to sort tags.
-	if err := sortTags(requestStruct); err != nil {
-		return false, err
-	}
-	if err := sortTags(buildRequestStruct); err != nil {
-		return false, err
-	}
+	for _, request := range buildRequests {
+		buildRequestStruct := request.GetStructValue()
+		// Need to sort tags.
+		if err := sortTags(requestStruct); err != nil {
+			return false, err
+		}
+		if err := sortTags(buildRequestStruct); err != nil {
+			return false, err
+		}
 
-	return reflect.DeepEqual(requestStruct.AsMap(), buildRequestStruct.AsMap()), nil
+		if reflect.DeepEqual(requestStruct.AsMap(), buildRequestStruct.AsMap()) {
+			return true, nil
+		}
+	}
+	return false, nil
 }
