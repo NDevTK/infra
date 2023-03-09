@@ -25,6 +25,16 @@ help:
 gen:
 	go generate ./...
 
+# Run Go tests
+.PHONY: test
+test:
+	go test ./... -coverprofile=coverage.out
+
+# Check code coverage
+.PHONY: cover
+cover:
+	go tool cover -func=coverage.out
+
 # Build service image
 .PHONY: build
 build:
