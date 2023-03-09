@@ -145,7 +145,7 @@ func (cmd *RdbPublishUploadCmd) constructTestResultFromStateKeeper(
 	populateSecondaryExecutionInfo(ctx, resultProto, sk)
 
 	// TestRuns
-	populateTestRunsInfo(ctx, resultProto, sk, build)
+	populateTestRunsInfo(ctx, resultProto, sk, botDims, build)
 
 	return resultProto, nil
 }
@@ -373,6 +373,7 @@ func populateTestRunsInfo(
 	ctx context.Context,
 	resultProto *artifactpb.TestResult,
 	sk *data.HwTestStateKeeper,
+	botDims []*buildbucketpb.StringPair,
 	build *buildbucketpb.Build) {
 
 	testRuns := []*artifactpb.TestRun{}
@@ -380,7 +381,8 @@ func populateTestRunsInfo(
 
 	suite := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, "suite")
 	branch := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, "branch")
-	main_builder_name := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, "master_build_config")
+	mainBuilderName := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, "master_build_config")
+	displayName := getSingleTagValue(botDims, "display_name")
 	for _, testCaseResult := range sk.TestResponses.GetTestCaseResults() {
 		// - TestRun
 		testRun := &artifactpb.TestRun{}
@@ -389,25 +391,20 @@ func populateTestRunsInfo(
 
 		testRun.LogsInfo = []*_go.StoragePath{{HostType: _go.StoragePath_GS, Path: sk.GcsUrl}}
 
-		// -- TestCaseMetadata
-		// TODO (azrahman): Remove this once result_adapter gets the id from testcaseinfo.
-		// Adding this for now to prevent result_adapter to fail upload.
-		testCaseMetadata := &testapipb.TestCaseMetadata{}
-		testCaseInfo.TestCaseMetadata = testCaseMetadata
-		testCase := &testapipb.TestCase{Id: testCaseResult.TestCaseId}
-		testCaseMetadata.TestCase = testCase
-
 		// -- TestCaseInfo
 		testCaseInfo.TestCaseResult = testCaseResult
-		testCaseInfo.DisplayName = testCaseResult.GetTestCaseId().GetValue()
+		if displayName != "" {
+			testCaseInfo.DisplayName = displayName
+		}
+
 		if suite != "" {
 			testCaseInfo.Suite = suite
 		}
 		if branch != "" {
 			testCaseInfo.Branch = branch
 		}
-		if main_builder_name != "" {
-			testCaseInfo.MainBuilderName = main_builder_name
+		if mainBuilderName != "" {
+			testCaseInfo.MainBuilderName = mainBuilderName
 		}
 
 		timeInfo := &artifactpb.TimingInfo{}
