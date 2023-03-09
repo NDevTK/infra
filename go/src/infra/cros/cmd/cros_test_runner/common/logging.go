@@ -36,6 +36,22 @@ func WriteProtoToStepLog(ctx context.Context, step *build.Step, proto proto.Mess
 	}
 }
 
+// GetFileContents finds the file and return the file contents.
+func GetFileContents(ctx context.Context, fileName string, rootDir string) ([]byte, error) {
+	filePath, err := FindFile(ctx, fileName, rootDir)
+	if err != nil {
+		logging.Infof(ctx, "finding file '%s' at '%s' failed: %s", fileName, rootDir, err)
+		return nil, err
+	}
+	fileContents, err := os.ReadFile(filePath)
+	if err != nil {
+		logging.Infof(ctx, "reading file '%s' at '%s' failed: %s", fileName, filePath, err)
+		return nil, err
+	}
+
+	return fileContents, nil
+}
+
 // WriteFileContentsToStepLog writes provided fileName contents at rootDir to
 // build step log.
 func WriteFileContentsToStepLog(ctx context.Context, step *build.Step, fileName string, rootDir string, logText string) error {
@@ -43,14 +59,9 @@ func WriteFileContentsToStepLog(ctx context.Context, step *build.Step, fileName 
 		return nil
 	}
 
-	filePath, err := FindFile(ctx, fileName, rootDir)
+	fileContents, err := GetFileContents(ctx, fileName, rootDir)
 	if err != nil {
-		logging.Infof(ctx, "finding file '%s' at '%s' failed:%s", fileName, rootDir, err)
-		return err
-	}
-	fileContents, err := os.ReadFile(filePath)
-	if err != nil {
-		logging.Infof(ctx, "reading file '%s' at '%s' failed:%s", fileName, filePath, err)
+		logging.Infof(ctx, "getting file contents for '%s' failed: %s", fileName, err)
 		return err
 	}
 

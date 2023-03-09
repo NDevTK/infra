@@ -221,13 +221,32 @@ func CheckIfFileExists(filePath string) error {
 	}
 }
 
+// WriteToExistingFile writes provided contents to existing file.
+func WriteToExistingFile(ctx context.Context, filePath string, contents string) error {
+	if err := CheckIfFileExists(filePath); err != nil {
+		return errors.Annotate(err, "Could not find file at: %s", filePath).Err()
+	}
+
+	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+		return errors.Annotate(err, "Error while opening file at: %s", filePath).Err()
+	}
+	defer file.Close()
+
+	_, err = file.Write([]byte(contents))
+	if err != nil {
+		return errors.Annotate(err, "Error while writing to file at: %s", filePath).Err()
+	}
+	return nil
+}
+
 // GetFileContentsInMap returns a map of file contents where the contents on
 // each line is separated by provided separator. Will return error if
 // each line is not formatted like 'key<separator>value'. If writer provided,
 // file contents will be written to writer simultaneously.
 func GetFileContentsInMap(ctx context.Context, filePath string, contentSeparator string, writer io.Writer) (map[string]string, error) {
 	if err := CheckIfFileExists(filePath); err != nil {
-		return nil, err
+		return nil, errors.Annotate(err, "Could not find file at: %s", filePath).Err()
 	}
 
 	file, err := os.Open(filePath)

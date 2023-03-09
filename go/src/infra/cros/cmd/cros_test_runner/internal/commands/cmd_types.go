@@ -47,6 +47,7 @@ const (
 
 	TkoPublishStartCmdType  interfaces.CommandType = "TkoPublishStart"
 	TkoPublishUploadCmdType interfaces.CommandType = "TkoPublishUpload"
+	TkoDirectUploadCmdType  interfaces.CommandType = "TkoDirectUpload"
 
 	RdbPublishStartCmdType  interfaces.CommandType = "RdbPublishStart"
 	RdbPublishUploadCmdType interfaces.CommandType = "RdbPublishUpload"

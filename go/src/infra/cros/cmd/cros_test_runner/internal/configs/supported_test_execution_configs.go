@@ -52,6 +52,7 @@ var TkoPublishStart_CrosTkoPublishExecutor = &CommandExecutorPairedConfig{Comman
 var TkoPublishUpload_CrosTkoPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.TkoPublishUploadCmdType, ExecutorType: executors.CrosTkoPublishExecutorType}
 var ProcessResults_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.ProcessResultsCmdType, ExecutorType: executors.NoExecutorType}
 var UpdateDutState_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.UpdateDutStateCmdType, ExecutorType: executors.NoExecutorType}
+var TkoDirectUpload_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.TkoDirectUploadCmdType, ExecutorType: executors.NoExecutorType}
 
 // GenerateHwConfigs generates hw tests execution for lab environment.
 func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig) *Configs {
@@ -111,6 +112,10 @@ func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestCon
 			// mainConfigs = append(mainConfigs,
 			// 	TkoPublishStart_CrosTkoPublishExecutor,
 			// 	TkoPublishUpload_CrosTkoPublishExecutor)
+
+			// Meanwhile, we will invoke the script directly
+			mainConfigs = append(mainConfigs,
+				TkoDirectUpload_NoExecutor)
 		}
 
 		// Gcs publish commands

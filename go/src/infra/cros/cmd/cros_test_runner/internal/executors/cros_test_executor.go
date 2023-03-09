@@ -105,7 +105,7 @@ func (ex *CrosTestExecutor) testExecutionCommandExecution(
 		err = errors.Annotate(err, "Tests execution cmd err: ").Err()
 	}
 	cmd.TestResponses = testResp
-	cmd.TkoPublishSrcDir = filepath.Join(logsLoc, "cros-test/results")
+	cmd.TkoPublishSrcDir = filepath.Join(logsLoc, "cros-test")
 
 	common.WriteProtoToStepLog(ctx, step, testResp, "test response")
 

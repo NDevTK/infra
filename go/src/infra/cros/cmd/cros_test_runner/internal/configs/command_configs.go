@@ -169,6 +169,9 @@ func (cfg *CommandConfig) GetCommand(
 	case commands.UpdateDutStateCmdType:
 		cmd = commands.NewUpdateDutStateCmd()
 
+	case commands.TkoDirectUploadCmdType:
+		cmd = commands.NewTkoDirectUploadCmd()
+
 	default:
 		return nil, fmt.Errorf("Command type %s not supported in command configs!", cmdType)
 	}

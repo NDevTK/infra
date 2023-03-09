@@ -33,10 +33,10 @@ type HwTestStateKeeper struct {
 	HostName         string
 	DutTopology      *labapi.DutTopology
 	DutServerAddress *labapi.IpEndpoint
+	CurrentDutState  dutstate.State
 	// Only when DUT is a VM
-	DutVmGceImage   *vmlabapi.GceImage
-	DutVm           *vmlabapi.VmInstance
-	CurrentDutState dutstate.State
+	DutVmGceImage *vmlabapi.GceImage
+	DutVm         *vmlabapi.VmInstance
 
 	// Provision related
 	InstallMetadata *anypb.Any

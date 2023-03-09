@@ -26,4 +26,5 @@ const (
 	TestDidNotRunErr                       = "Test did not run"
 	CtrCancelingCmdErrString               = "canceling Cmd"
 	UfsServiceUrl                          = "ufs.api.cr.dev"
+	TkoParseScriptPath                     = "/usr/local/autotest/tko/parse"
 )

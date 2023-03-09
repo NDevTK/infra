@@ -115,9 +115,7 @@ func (ex *CrosProvisionExecutor) provisionInstallCommandExecution(
 	common.WriteProtoToStepLog(ctx, step, resp, "provision response")
 
 	if resp.GetStatus() != api.InstallResponse_STATUS_SUCCESS {
-		// Fail the step in ui but do not fail the command
 		err = fmt.Errorf("Provision failure: %s", resp.GetStatus().String())
-		return nil
 	}
 
 	return err
