@@ -198,6 +198,7 @@ class MonorailApiTest(testing.EndpointsTestCase):
               lambda x, y, z, u, v, w: ('id', 'email'))
 
     self.mock(tracker_fulltext, 'IndexIssues', lambda x, y, z, u, v: None)
+    self.mock(tracker_fulltext, 'UnindexIssues', lambda _: None)
 
   def SetUpComponents(
       self, project_id, component_id, component_name, component_doc='doc',

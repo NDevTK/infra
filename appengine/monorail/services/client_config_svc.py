@@ -7,6 +7,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import base64
+import binascii
 import json
 import logging
 import os
@@ -66,7 +67,7 @@ def _process_response(response):
 
   try:
     content_text = base64.b64decode(config_content)
-  except TypeError:
+  except (TypeError, binascii.Error):  # TypeError in Python 2 only
     logging.error('Content was not b64: %r', config_content)
     _CONFIG_LOADS.increment({'success': False, 'type': 'b64-decode-error'})
     raise

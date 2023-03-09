@@ -504,7 +504,7 @@ class ConfigService(object):
       result.extend(pids_to_label_rows_shard[key])
     # Sort in python to reduce DB load and integrate results from shards.
     # row[2] is rank, row[3] is label name.
-    result.sort(key=lambda row: (row[2], row[3]), reverse=True)
+    result.sort(key=lambda row: (row[2] or 0, row[3]), reverse=True)
     return result
 
   def GetLabelDefRowsAnyProject(self, cnxn, where=None):

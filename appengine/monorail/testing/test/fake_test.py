@@ -8,6 +8,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import inspect
+import six
 import unittest
 
 from services import cachemanager_svc
@@ -43,7 +44,10 @@ class FakeMetaTest(unittest.TestCase):
       to_test = [x for x in both_attrs if '__' not in x]
       for name in to_test:
         real_attr = getattr(real_cls, name)
-        assert inspect.ismethod(real_attr)
+        if six.PY2:
+          assert inspect.ismethod(real_attr)
+        else:
+          assert inspect.isfunction(real_attr)
         real_spec = inspect.getargspec(real_attr)
         fake_spec = inspect.getargspec(getattr(fake_cls, name))
         # check same number of args and kwargs

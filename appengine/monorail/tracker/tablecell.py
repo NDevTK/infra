@@ -220,7 +220,7 @@ class TableCellBlockedOn(table_view_helpers.TableCell):
     values = [_make_issue_view(issue.project_name, _kw["config"],
                                 _kw["viewable_iids_set"], ref_issue)
               for ref_issue in ref_issues]
-    values.sort(key=lambda x: (x.closed, x.id))
+    values.sort(key=lambda x: (bool(x.closed), x.id))
     table_view_helpers.TableCell.__init__(
         self, table_view_helpers.CELL_TYPE_ISSUES, values, sort_values=False)
 
@@ -234,7 +234,7 @@ class TableCellBlocking(table_view_helpers.TableCell):
     values = [_make_issue_view(issue.project_name, _kw["config"],
                                 _kw["viewable_iids_set"], ref_issue)
               for ref_issue in ref_issues]
-    values.sort(key=lambda x: (x.closed, x.id))
+    values.sort(key=lambda x: (bool(x.closed), x.id))
     table_view_helpers.TableCell.__init__(
         self, table_view_helpers.CELL_TYPE_ISSUES, values, sort_values=False)
 

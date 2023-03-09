@@ -192,8 +192,10 @@ class ResourceNameConverterTest(unittest.TestCase):
   def testConvertHotlistItemNames(self):
     """We can get Hotlist items' resource names."""
     expected_dict = {
-        self.hotlist_1.items[0].issue_id: 'hotlists/7739/items/proj.1',
-        self.hotlist_1.items[1].issue_id: 'hotlists/7739/items/goose.2',
+        self.hotlist_1.items[0].issue_id:
+            'hotlists/%d/items/proj.1' % self.hotlist_1.hotlist_id,
+        self.hotlist_1.items[1].issue_id:
+            'hotlists/%d/items/goose.2' % self.hotlist_1.hotlist_id,
     }
     self.assertEqual(
         rnc.ConvertHotlistItemNames(

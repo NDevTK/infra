@@ -26,8 +26,7 @@ class GcsHelpersTest(unittest.TestCase):
     self.testbed.init_memcache_stub()
     self.testbed.init_app_identity_stub()
 
-    self.test_storage_client = mock.create_autospec(
-        storage.Client, instance=True)
+    self.test_storage_client = mock.MagicMock()
     mock.patch.object(
         storage, 'Client', return_value=self.test_storage_client).start()
 

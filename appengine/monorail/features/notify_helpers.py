@@ -338,7 +338,7 @@ def _MakeEmailWorkItem(
   body_with_tags = _AddHTMLTags(six.ensure_text(body))
   # Escape single quotes which are occasionally used to contain HTML
   # attributes and event handler definitions.
-  body_with_tags = body_with_tags.replace("'", '&#39;')
+  body_with_tags = body_with_tags.replace("'", '&#x27;')
   html_body = template % {
       'url': detail_url,
       'body': body_with_tags,

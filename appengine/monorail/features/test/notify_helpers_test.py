@@ -445,7 +445,7 @@ class MakeEmailWorkItemTest(unittest.TestCase):
 
     escaped_body_with_html_content = (
         '&lt;a href=&quot;http://www.google.com&quot;&gt;test&lt;/a&gt; '
-        '&#39;something&#39;')
+        '&#x27;something&#x27;')
     notify_helpers._MakeNotificationFooter(
         ['reason'], REPLY_NOT_ALLOWED, 'example.com')
     expected_html_body = (

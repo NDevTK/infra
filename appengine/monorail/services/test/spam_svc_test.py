@@ -21,6 +21,7 @@ from google.appengine.ext import testbed
 import settings
 from framework import sql
 from framework import framework_constants
+from infra_libs import ts_mon
 from mrproto import user_pb2
 from mrproto import tracker_pb2
 from services import spam_svc
@@ -51,6 +52,8 @@ class SpamServiceTest(unittest.TestCase):
 
     self.spam_service.report_tbl.Delete = Mock()
     self.spam_service.verdict_tbl.Delete = Mock()
+
+    ts_mon.reset_for_unittest()
 
   def tearDown(self):
     self.testbed.deactivate()

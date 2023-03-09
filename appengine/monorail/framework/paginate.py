@@ -8,6 +8,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import base64
+import binascii
 import hashlib
 import hmac
 import six
@@ -67,7 +68,7 @@ def ValidateAndParsePageToken(token, request_contents):
   try:
     decoded_serialized_token = base64.b64decode(token)
     token_contents.ParseFromString(decoded_serialized_token)
-  except (message.DecodeError, TypeError):
+  except (message.DecodeError, TypeError, binascii.Error):  # TypeError in Py2.
     raise exceptions.PageTokenException('Invalid page token.')
 
   start = token_contents.start

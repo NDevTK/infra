@@ -8,6 +8,8 @@ from __future__ import division
 from __future__ import absolute_import
 
 import base64
+import binascii
+import six
 import unittest
 
 from services import client_config_svc
@@ -32,8 +34,12 @@ class LoadApiClientConfigsTest(unittest.TestCase):
   def testProcessResponse_NotB64(self):
     # 'asd' is not a valid base64-encoded string.
     r = self.FakeResponse('{"content": "asd"}')
-    with self.assertRaises(TypeError):
-      client_config_svc._process_response(r)
+    if six.PY2:
+      with self.assertRaises(TypeError):
+        client_config_svc._process_response(r)
+    else:
+      with self.assertRaises(binascii.Error):
+        client_config_svc._process_response(r)
 
   def testProcessResponse_NotProto(self):
     # 'asdf' is a valid base64-encoded string.
@@ -42,10 +48,10 @@ class LoadApiClientConfigsTest(unittest.TestCase):
       client_config_svc._process_response(r)
 
   def testProcessResponse_Success(self):
-    with open(client_config_svc.CONFIG_FILE_PATH) as f:
-      r = self.FakeResponse('{"content": "%s"}' % base64.b64encode(f.read()))
+    with open(client_config_svc.CONFIG_FILE_PATH, 'rb') as f:
+      r = self.FakeResponse(b'{"content": "%s"}' % base64.b64encode(f.read()))
     c = client_config_svc._process_response(r)
-    assert '123456789.apps.googleusercontent.com' in c
+    assert b'123456789.apps.googleusercontent.com' in c
 
 
 class ClientConfigServiceTest(unittest.TestCase):

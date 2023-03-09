@@ -71,7 +71,7 @@ def GenerateToken(user_id, servlet_path, token_time=None):
   digest = digester.digest()
 
   token = base64.urlsafe_b64encode(b'%s%s%d' % (digest, DELIMITER, token_time))
-  return token
+  return six.ensure_str(token)
 
 
 def ValidateToken(
