@@ -77,6 +77,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -105,8 +106,7 @@ func main() {
 }
 
 func run(ctx context.Context, args []string, st *build.State, inputs *golangbuildpb.Inputs) (err error) {
-	fmt.Println(inputs)
-
+	log.Printf("run starting")
 	authOpts := chromeinfra.SetDefaultAuthOptions(auth.Options{
 		Scopes: []string{
 			"https://www.googleapis.com/auth/userinfo.email",
@@ -117,14 +117,14 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	if err != nil {
 		return err
 	}
+	log.Printf("auth created")
 
 	// Install some tools we'll need, including a bootstrap toolchain.
 	toolsRoot, err := installTools(ctx)
 	if err != nil {
 		return err
 	}
-
-	fmt.Println(toolsRoot)
+	log.Printf("installed tools")
 
 	// Define working directory.
 	cwd, err := os.Getwd()
@@ -144,25 +144,11 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	env.Set("GO_BUILDER_NAME", st.Build().GetBuilder().GetBuilder()) // TODO(mknyszek): This is underspecified. We may need Project and Bucket.
 	// Use our tools before the system tools. Notably, use raw Git rather than the Chromium wrapper.
 	env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(toolsRoot, "bin"), os.PathListSeparator, env.Get("PATH")))
-	fmt.Println(env)
-	fmt.Println(os.Environ())
 
 	if runtime.GOOS == "windows" {
-		p := fmt.Sprintf("%s/cc/windows/gcc64", toolsRoot)
-		files, err := os.ReadDir(p)
-		if err != nil {
-			fmt.Println(err)
-		}
-		for i, v := range files {
-			fmt.Println(i, v.IsDir(), v.Name(), v.Type())
-		}
-
 		// TODO(heschi): select gcc32 for GOARCH=i386
 		env.Set("PATH", fmt.Sprintf("%v%c%v", env.Get("PATH"), os.PathListSeparator, filepath.Join(toolsRoot, "cc/windows/gcc64/bin")))
 	}
-
-	fmt.Println(env)
-	fmt.Println(os.Environ())
 
 	ctx = env.SetInCtx(ctx)
 
@@ -464,16 +450,22 @@ func runGoScript(ctx context.Context, goroot, script string) (err error) {
 	return runCommandAsStep(ctx, script, cmd, false)
 }
 
-// runSubrepoTests tests the latest version of some subrepos
+// runSubrepoTests tests the tip version of some subrepos
 // using the Go toolchain at goroot.
-func runSubrepoTests(ctx context.Context, goroot string) error {
+func runSubrepoTests(ctx context.Context, goroot string) (err error) {
+	step, ctx := build.StartStep(ctx, "Run subrepo tests")
+	defer func() {
+		step.End(err)
+	}()
+
 	if err := os.Mkdir("subrepo", 0755); err != nil {
 		return err
 	}
 
 	type ann struct {
-		Name  string // Name is the step name to be displayed.
-		Infra bool   // Infra is whether this step failing is an infrastructure failure.
+		Name  string            // Name is the step name to be displayed.
+		Infra bool              // Infra is whether this step failing is an infrastructure failure.
+		Env   map[string]string // Extra environment to set.
 	}
 	runGo := func(a ann, args ...string) error {
 		var exeSuffix string
@@ -481,33 +473,25 @@ func runSubrepoTests(ctx context.Context, goroot string) error {
 			exeSuffix = ".exe"
 		}
 		cmd := exec.CommandContext(ctx, filepath.Join(goroot, "bin", "go"+exeSuffix), args...)
-		cmd.Dir = "subrepo"
+		env := environ.FromCtx(ctx)
+		env.Load(a.Env)
+		ctx = env.SetInCtx(ctx)
 		return runCommandAsStep(ctx, a.Name, cmd, a.Infra)
 	}
 
 	// TODO(dmitshur): Think about the optimal general test strategy.
 
 	// Create a local module with golang.org/x modules in its build list.
-	if err := runGo(ann{Name: "go mod init test", Infra: true}, "mod", "init", "test"); err != nil {
+	if err := writeFile(ctx, "go.mod", "module test\nrequire golang.org/x/mod master\nrequire golang.org/x/term master\n"); err != nil { // nocheck
 		return err
 	}
-	if err := writeFile(ctx, filepath.Join("subrepo", "test.go"), `//go:build test
 
-package p
-
-import (
-	_ "golang.org/x/mod/zip"
-	_ "golang.org/x/term"
-)
-`); err != nil {
-		return err
-	}
-	if err := runGo(ann{Name: "go mod tidy", Infra: true}, "mod", "tidy"); err != nil {
+	if err := runGo(ann{Name: "download subrepos and deps", Infra: true, Env: map[string]string{"GOPROXY": "direct"}}, "list", "-mod=mod", "-deps", "-test", "golang.org/x/mod/...", "golang.org/x/term/..."); err != nil {
 		return err
 	}
 
 	// Run the tests.
-	if err := runGo(ann{Name: "go test -json golang.org/x/{mod,term}/..."}, "test", "-json", "golang.org/x/mod/...", "golang.org/x/term/..."); err != nil {
+	if err := runGo(ann{Name: "go test golang.org/x/{mod,term}/..."}, "test", "golang.org/x/mod/...", "golang.org/x/term/..."); err != nil {
 		return err
 	}
 
