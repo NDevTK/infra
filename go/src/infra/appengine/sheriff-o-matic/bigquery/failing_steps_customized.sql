@@ -45,9 +45,9 @@ WITH
           (STARTS_WITH(cluster_algorithm, 'rule'),
             'a',
             'b'), cluster_algorithm, '/', cluster_id)), 2)) AS cluster_name
-  FROM ((
+  FROM (
       SELECT
-        'chromium' as project,
+        project,
         cluster_algorithm,
         cluster_id,
         test_result_system,
@@ -63,94 +63,12 @@ WITH
           realm,
           variant_hash
         ) ORDER BY last_updated DESC LIMIT 1)[OFFSET(0)] as r
-      FROM `luci-analysis.chromium.clustered_failures` cf
-      WHERE partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
-      GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time))
-    UNION ALL ( -- TODO: should only query the LUCI Analysis projects relevant to the tree rather than all of them.
-      SELECT
-        'chrome' as project,
-        cluster_algorithm,
-        cluster_id,
-        test_result_system,
-        test_result_id,
-        DATE(partition_time) as partition_time,
-        ARRAY_AGG(STRUCT(
-          ingested_invocation_id,
-          test_id,
-          is_ingested_invocation_blocked,
-          exonerations,
-          is_included,
-          tags,
-          realm,
-          variant_hash
-        ) ORDER BY last_updated DESC LIMIT 1)[OFFSET(0)] as r
-      FROM `luci-analysis.chrome.clustered_failures` cf
-      WHERE partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
-      GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time))
-      UNION ALL (
-      SELECT
-        'chromeos' as project,
-        cluster_algorithm,
-        cluster_id,
-        test_result_system,
-        test_result_id,
-        DATE(partition_time) as partition_time,
-        ARRAY_AGG(STRUCT(
-          ingested_invocation_id,
-          test_id,
-          is_ingested_invocation_blocked,
-          exonerations,
-          is_included,
-          tags,
-          realm,
-          variant_hash
-        ) ORDER BY last_updated DESC LIMIT 1)[OFFSET(0)] as r
-      FROM `luci-analysis.chromeos.clustered_failures` cf
-      WHERE partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
-      GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time))
-      UNION ALL (
-      SELECT
-        'fuchsia' as project,
-        cluster_algorithm,
-        cluster_id,
-        test_result_system,
-        test_result_id,
-        DATE(partition_time) as partition_time,
-        ARRAY_AGG(STRUCT(
-          ingested_invocation_id,
-          test_id,
-          is_ingested_invocation_blocked,
-          exonerations,
-          is_included,
-          tags,
-          realm,
-          variant_hash
-        ) ORDER BY last_updated DESC LIMIT 1)[OFFSET(0)] as r
-      FROM `luci-analysis.fuchsia.clustered_failures` cf
-      WHERE partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
-      GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time))
-      UNION ALL (
-      SELECT
-        'turquoise' as project,
-        cluster_algorithm,
-        cluster_id,
-        test_result_system,
-        test_result_id,
-        DATE(partition_time) as partition_time,
-        ARRAY_AGG(STRUCT(
-          ingested_invocation_id,
-          test_id,
-          is_ingested_invocation_blocked,
-          exonerations,
-          is_included,
-          tags,
-          realm,
-          variant_hash
-        ) ORDER BY last_updated DESC LIMIT 1)[OFFSET(0)] as r
-      FROM `luci-analysis.turquoise.clustered_failures` cf
-      WHERE partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
-      GROUP BY cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time))
-    )
+      FROM `luci-analysis.internal.clustered_failures` cf
+      WHERE
+        partition_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
+        AND project in ("chrome", "chromeos", "chromium", "turquoise", "fuchsia") -- TODO: should only query the LUCI Analysis projects relevant to the tree rather than all of them.
+      GROUP BY project, cluster_algorithm, cluster_id, test_result_system, test_result_id, DATE(partition_time)
+      )
   WHERE r.is_included
     AND r.is_ingested_invocation_blocked
     AND ARRAY_LENGTH(r.exonerations) = 0
