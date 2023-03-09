@@ -147,7 +147,7 @@ func TestSuiteDedupeNoModels_Run(t *testing.T) {
 
 	ufs := &fakeUFSClient{}
 	bb := &buildbucket.FakeClient{
-		ExpectedGetIncompleteBuildsWithTags: []*buildbucket.ExpectedGetIncompleteBuildsWithTagsCall{
+		ExpectedGetIncompleteBuildsWithTags: []*buildbucket.ExpectedGetWithTagsCall{
 			{
 				Tags: map[string]string{
 					"crosfleet-tool": "suite",
@@ -198,7 +198,7 @@ func TestSuiteDedupeNoModels_NoRun(t *testing.T) {
 
 	ufs := &fakeUFSClient{}
 	bb := &buildbucket.FakeClient{
-		ExpectedGetIncompleteBuildsWithTags: []*buildbucket.ExpectedGetIncompleteBuildsWithTagsCall{
+		ExpectedGetIncompleteBuildsWithTags: []*buildbucket.ExpectedGetWithTagsCall{
 			{
 				Tags: map[string]string{
 					"crosfleet-tool": "suite",
@@ -255,7 +255,7 @@ func TestSuiteDedupeModels_Run(t *testing.T) {
 
 	ufs := &fakeUFSClient{}
 	bb := &buildbucket.FakeClient{
-		ExpectedGetIncompleteBuildsWithTags: []*buildbucket.ExpectedGetIncompleteBuildsWithTagsCall{
+		ExpectedGetIncompleteBuildsWithTags: []*buildbucket.ExpectedGetWithTagsCall{
 			{
 				Tags: map[string]string{
 					"crosfleet-tool": "suite",
@@ -410,7 +410,7 @@ func TestSuiteDedupeModels_NoRun(t *testing.T) {
 
 	ufs := &fakeUFSClient{}
 	bb := &buildbucket.FakeClient{
-		ExpectedGetIncompleteBuildsWithTags: []*buildbucket.ExpectedGetIncompleteBuildsWithTagsCall{
+		ExpectedGetIncompleteBuildsWithTags: []*buildbucket.ExpectedGetWithTagsCall{
 			{
 				Tags: map[string]string{
 					"crosfleet-tool": "suite",

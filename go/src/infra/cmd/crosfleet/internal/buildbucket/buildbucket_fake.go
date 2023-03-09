@@ -51,7 +51,7 @@ type FakeBuildClient struct {
 
 func (f FakeBuildClient) GetBuild(context.Context, *buildbucketpb.GetBuildRequest, ...grpc.CallOption) (*buildbucketpb.Build, error) {
 	// Not yet implemented.
-	return nil, nil
+	return nil, fmt.Errorf("GetBuild not yet implemented")
 }
 
 func requestSummary(in *buildbucketpb.ScheduleBuildRequest) string {
@@ -80,23 +80,33 @@ func (f FakeBuildClient) ScheduleBuild(ctx context.Context, in *buildbucketpb.Sc
 
 func (f FakeBuildClient) SearchBuilds(ctx context.Context, in *buildbucketpb.SearchBuildsRequest, opts ...grpc.CallOption) (*buildbucketpb.SearchBuildsResponse, error) {
 	// Not yet implemented.
-	return nil, nil
+	return nil, fmt.Errorf("SearchBuilds not yet implemented")
 }
 
 func (f FakeBuildClient) CancelBuild(ctx context.Context, in *buildbucketpb.CancelBuildRequest, opts ...grpc.CallOption) (*buildbucketpb.Build, error) {
 	// Not yet implemented.
-	return nil, nil
+	return nil, fmt.Errorf("CancelBuild not yet implemented")
 }
 
-type ExpectedGetIncompleteBuildsWithTagsCall struct {
+type ExpectedGetWithTagsCall struct {
 	Tags     map[string]string
 	Response []*buildbucketpb.Build
 }
 
+type ExpectedScheduleCall struct {
+	Tags     map[string]string
+	Response *buildbucketpb.Build
+}
+
 type FakeClient struct {
 	Client FakeBuildClient
+	// Test data for ScheduleBuild.
+	ExpectedScheduleBuild []*ExpectedScheduleCall
 	// Test data for GetIncompleteBuildsWithTags.
-	ExpectedGetIncompleteBuildsWithTags []*ExpectedGetIncompleteBuildsWithTagsCall
+	ExpectedGetIncompleteBuildsWithTags []*ExpectedGetWithTagsCall
+	ExpectedAnyIncompleteBuildsWithTags []*ExpectedGetWithTagsCall
+	// Test data for GetAllBuildsWithTags.
+	ExpectedGetAllBuildsWithTags []*ExpectedGetWithTagsCall
 }
 
 func (c *FakeClient) GetBuildsClient() BuildsClient {
@@ -109,38 +119,65 @@ func (c *FakeClient) GetBuilderID() *buildbucketpb.BuilderID {
 }
 
 func (c *FakeClient) ScheduleBuild(ctx context.Context, props map[string]interface{}, dims map[string]string, tags map[string]string, priority int32) (*buildbucketpb.Build, error) {
-	// Not yet implemented.
-	return nil, nil
+	for i, expected := range c.ExpectedScheduleBuild {
+		if reflect.DeepEqual(tags, expected.Tags) {
+			// Matching an expectation "consumes" it.
+			c.ExpectedScheduleBuild = append(c.ExpectedScheduleBuild[:i], c.ExpectedScheduleBuild[i:]...)
+			return expected.Response, nil
+		}
+	}
+
+	return nil, fmt.Errorf("unexpected ScheduleBuild call:\ntags: %+v\n", tags)
 }
 
 func (c *FakeClient) WaitForBuildStepStart(ctx context.Context, id int64, stepName string) (*buildbucketpb.Build, error) {
 	// Not yet implemented.
-	return nil, nil
+	return nil, fmt.Errorf("WaitForBuildStepStart not yet implemented")
 }
 
 func (c *FakeClient) GetAllBuildsWithTags(ctx context.Context, tags map[string]string, searchBuildsRequest *buildbucketpb.SearchBuildsRequest) ([]*buildbucketpb.Build, error) {
-	// Not yet implemented.
-	return nil, nil
+	if c.ExpectedGetAllBuildsWithTags == nil {
+		return nil, fmt.Errorf("Unexpected call to GetAllBuildsWithTags:\n%v\n", tags)
+	}
+
+	for i, expected := range c.ExpectedGetAllBuildsWithTags {
+		if reflect.DeepEqual(expected.Tags, tags) {
+			c.ExpectedGetAllBuildsWithTags = append(c.ExpectedGetAllBuildsWithTags[:i], c.ExpectedGetAllBuildsWithTags[i:]...)
+			return expected.Response, nil
+		}
+	}
+
+	return nil, fmt.Errorf("Unexpected call to GetAllBuildsWithTags:\n%v\n", tags)
 }
 
 func (c *FakeClient) GetBuild(ctx context.Context, ID int64, fields ...string) (*buildbucketpb.Build, error) {
 	// Not yet implemented.
-	return nil, nil
+	return nil, fmt.Errorf("GetBuild not yet implemented")
 }
 
 func (c *FakeClient) GetLatestGreenBuild(ctx context.Context) (*buildbucketpb.Build, error) {
 	// Not yet implemented.
-	return nil, nil
+	return nil, fmt.Errorf("GetLatestGreenBuild not yet implemented")
 }
 
 func (c *FakeClient) AnyIncompleteBuildsWithTags(ctx context.Context, tags map[string]string) (bool, int64, error) {
-	// Not yet implemented.
-	return false, 0, nil
+	if c.ExpectedAnyIncompleteBuildsWithTags == nil {
+		return false, 0, fmt.Errorf("Unexpected call to AnyIncompleteBuildsWithTags:\n%v\n", tags)
+	}
+
+	for i, expected := range c.ExpectedAnyIncompleteBuildsWithTags {
+		if reflect.DeepEqual(expected.Tags, tags) {
+			c.ExpectedAnyIncompleteBuildsWithTags = append(c.ExpectedAnyIncompleteBuildsWithTags[:i], c.ExpectedAnyIncompleteBuildsWithTags[i:]...)
+			return true, expected.Response[0].Id, nil
+		}
+	}
+
+	return false, 0, fmt.Errorf("Unexpected call to AnyIncompleteBuildsWithTags:\n%v\n", tags)
 }
 
 func (c *FakeClient) GetIncompleteBuildsWithTags(ctx context.Context, tags map[string]string) ([]*buildbucketpb.Build, error) {
 	if c.ExpectedGetIncompleteBuildsWithTags == nil {
-		return nil, fmt.Errorf("Unexpected call to GetIncompleteBuildsWithTags")
+		return nil, fmt.Errorf("Unexpected call to GetIncompleteBuildsWithTags:\n%v\n", tags)
 	}
 
 	for i, expected := range c.ExpectedGetIncompleteBuildsWithTags {
@@ -155,12 +192,12 @@ func (c *FakeClient) GetIncompleteBuildsWithTags(ctx context.Context, tags map[s
 
 func (c *FakeClient) CancelBuildsByUser(ctx context.Context, printer common.CLIPrinter, earliestCreateTime *timestamppb.Timestamp, user string, ids []string, reason string) error {
 	// Not yet implemented.
-	return nil
+	return fmt.Errorf("CancelBuildsByUser not yet implemented")
 }
 
 func (c *FakeClient) GetAllBuildsByUser(ctx context.Context, user string, searchBuildsRequest *buildbucketpb.SearchBuildsRequest) ([]*buildbucketpb.Build, error) {
 	// Not yet implemented.
-	return nil, nil
+	return nil, fmt.Errorf("GetAllBuildsByUser not yet implemented")
 }
 
 func (c *FakeClient) BuildURL(ID int64) string {

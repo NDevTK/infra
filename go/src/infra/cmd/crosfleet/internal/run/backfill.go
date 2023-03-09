@@ -75,20 +75,22 @@ type backfillRun struct {
 }
 
 func (args *backfillRun) Run(a subcommands.Application, _ []string, env subcommands.Env) int {
-	if err := args.innerRun(a, env); err != nil {
-		cmdlib.PrintError(a, err)
-		return 1
-	}
-	return 0
-}
-
-func (args *backfillRun) innerRun(a subcommands.Application, env subcommands.Env) error {
 	ctx := cli.GetContext(a, args, env)
 	bbService := args.envFlags.Env().BuildbucketService
 	ctpBBClient, err := buildbucket.NewClient(ctx, args.envFlags.Env().DefaultCTPBuilder, bbService, args.authFlags)
 	if err != nil {
-		return err
+		cmdlib.PrintError(a, err)
+		return 1
 	}
+
+	if err := args.innerRun(a, env, ctx, ctpBBClient); err != nil {
+		cmdlib.PrintError(a, err)
+		return 2
+	}
+	return 0
+}
+
+func (args *backfillRun) innerRun(a subcommands.Application, env subcommands.Env, ctx context.Context, ctpBBClient buildbucket.Client) error {
 	originalBuilds, err := args.findOriginalBuilds(ctx, ctpBBClient)
 	if err != nil {
 		return err
