@@ -30,6 +30,11 @@ message LabpackInput {
   string configuration = 8;
   // Namespace to use when fetching/updating DUT information
   string inventory_namespace = 10;
+  // bbid is the buildbucket id of the task that invoked us, primarily intended for the ile-de-france
+  // use case.
+  string bbid = 11;
+  // swarming_task_id is the ID of the swarming task.
+  string swarming_task_id = 12;
 };
 
 // LabpackResponse represents result of execution the task on unit.
