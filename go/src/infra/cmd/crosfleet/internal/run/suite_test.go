@@ -325,7 +325,7 @@ func getInputProps(t *testing.T, model string) *structpb.Struct {
 	t.Helper()
 	inputProps, err := structpb.NewStruct(map[string]interface{}{
 		"requests": map[string]interface{}{
-			"default": map[string]interface{}{
+			"my-custom-request-name": map[string]interface{}{
 				"params": map[string]interface{}{
 					"decorations":        map[string]interface{}{},
 					"freeformAttributes": map[string]interface{}{},
@@ -365,6 +365,7 @@ func getInputProps(t *testing.T, model string) *structpb.Struct {
 					},
 				},
 			},
+			"default": map[string]interface{}{},
 		},
 	})
 	if err != nil {
@@ -380,11 +381,11 @@ func getInputProps(t *testing.T, model string) *structpb.Struct {
 	}
 	if model != "" {
 		tags = append(tags, fmt.Sprintf("label-model:%s", model))
-		if err := crosbb.SetProperty(inputProps, "requests.default.params.hardwareAttributes.model", model); err != nil {
+		if err := crosbb.SetProperty(inputProps, "requests.my-custom-request-name.params.hardwareAttributes.model", model); err != nil {
 			t.Fatal(err)
 		}
 	}
-	if err := crosbb.SetProperty(inputProps, "requests.default.params.decorations.tags", tags); err != nil {
+	if err := crosbb.SetProperty(inputProps, "requests.my-custom-request-name.params.decorations.tags", tags); err != nil {
 		t.Fatal(err)
 	}
 	return inputProps
