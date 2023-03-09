@@ -266,12 +266,19 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 		}
 	}
 
-	// crbug/1420480: move files to /tmp to avoid codesign failure when first launch
+	// crbug/1420480: temporarily move cipd files to Xcode parent dir
+	// to avoid codesign failure when first launch
 	// TODO(crbug/1420480): temporarily testing this out on Xcode 14.3 beta 3,
 	// remove the conditional once this is proven working on the bot.
+	tmpCipdPath := ""
 	if args.xcodeVersion == "14e5207e" {
 		logging.Warningf(ctx, "Temporarily moving cipd files out of Xcode app...")
-		if err := moveCipdFiles(args.xcodeAppPath, "/tmp"); err != nil {
+		tmpCipdPath, tmpDirErr := os.MkdirTemp(filepath.Join(args.xcodeAppPath, ".."), "tmp")
+		if tmpDirErr != nil {
+			return tmpDirErr
+		}
+		defer os.RemoveAll(tmpCipdPath)
+		if err := moveCipdFiles(args.xcodeAppPath, tmpCipdPath); err != nil {
 			return err
 		}
 	}
@@ -286,12 +293,12 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 		return err
 	}
 
-	// crbug/1420480: moves files back to Xcode.app from /tmp after codesign check
+	// crbug/1420480: moves files back to Xcode.app from parent dir after codesign check
 	// TODO(crbug/1420480): temporarily testing this out on Xcode 14.3 beta 3,
 	// remove the conditional once this is proven working on the bot.
-	if args.xcodeVersion == "14e5207e" {
+	if args.xcodeVersion == "14e5207e" && tmpCipdPath != "" {
 		logging.Warningf(ctx, "Moving cipd files back to Xcode app...")
-		if err := moveCipdFiles("/tmp", args.xcodeAppPath); err != nil {
+		if err := moveCipdFiles(tmpCipdPath, args.xcodeAppPath); err != nil {
 			return err
 		}
 	}

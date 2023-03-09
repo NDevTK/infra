@@ -686,18 +686,23 @@ func TestInstallXcode(t *testing.T) {
 
 	Convey("moveCipdFiles works", t, func() {
 		Convey("move files to tmp and move back", func() {
-			err := moveCipdFiles("testdata", "/tmp")
+			srcPath := "testdata/"
+			tmpCipdPath, err := os.MkdirTemp(filepath.Join(srcPath, ".."), "tmp")
+			So(err, ShouldBeNil)
+			defer os.RemoveAll(tmpCipdPath)
+
+			err = moveCipdFiles(srcPath, tmpCipdPath)
 			So(err, ShouldBeNil)
 
 			// moving again should return error because they don't exist anymore
-			err = moveCipdFiles("testdata", "/tmp")
+			err = moveCipdFiles(srcPath, tmpCipdPath)
 			So(err, ShouldNotBeNil)
 
-			err = moveCipdFiles("/tmp", "testdata")
+			err = moveCipdFiles(tmpCipdPath, srcPath)
 			So(err, ShouldBeNil)
 
 			// moving again should return error because they don't exist anymore
-			err = moveCipdFiles("/tmp", "testdata")
+			err = moveCipdFiles(tmpCipdPath, srcPath)
 			So(err, ShouldNotBeNil)
 		})
 	})
