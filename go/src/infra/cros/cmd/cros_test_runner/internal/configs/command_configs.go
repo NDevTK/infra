@@ -166,6 +166,9 @@ func (cfg *CommandConfig) GetCommand(
 	case commands.ProcessResultsCmdType:
 		cmd = commands.NewProcessResultsCmd()
 
+	case commands.UpdateDutStateCmdType:
+		cmd = commands.NewUpdateDutStateCmd()
+
 	default:
 		return nil, fmt.Errorf("Command type %s not supported in command configs!", cmdType)
 	}

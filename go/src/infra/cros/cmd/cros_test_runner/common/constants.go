@@ -25,4 +25,5 @@ const (
 	CftServiceMetadataServicePortKey       = "SERVICE_PORT"
 	TestDidNotRunErr                       = "Test did not run"
 	CtrCancelingCmdErrString               = "canceling Cmd"
+	UfsServiceUrl                          = "ufs.api.cr.dev"
 )

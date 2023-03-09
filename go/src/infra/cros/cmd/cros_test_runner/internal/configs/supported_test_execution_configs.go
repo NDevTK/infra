@@ -51,6 +51,7 @@ var RdbPublishUpload_CrosRdbPublishExecutor = &CommandExecutorPairedConfig{Comma
 var TkoPublishStart_CrosTkoPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.TkoPublishStartCmdType, ExecutorType: executors.CrosTkoPublishExecutorType}
 var TkoPublishUpload_CrosTkoPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.TkoPublishUploadCmdType, ExecutorType: executors.CrosTkoPublishExecutorType}
 var ProcessResults_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.ProcessResultsCmdType, ExecutorType: executors.NoExecutorType}
+var UpdateDutState_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.UpdateDutStateCmdType, ExecutorType: executors.NoExecutorType}
 
 // GenerateHwConfigs generates hw tests execution for lab environment.
 func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig) *Configs {
@@ -126,9 +127,11 @@ func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestCon
 	// Stop CTR and result processing commands
 	mainConfigs = append(mainConfigs,
 		CtrStop_CtrExecutor,
+		UpdateDutState_NoExecutor,
 		ProcessResults_NoExecutor)
 	cleanupConfigs = append(cleanupConfigs,
 		CtrStop_CtrExecutor,
+		UpdateDutState_NoExecutor,
 		ProcessResults_NoExecutor)
 
 	return &Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}

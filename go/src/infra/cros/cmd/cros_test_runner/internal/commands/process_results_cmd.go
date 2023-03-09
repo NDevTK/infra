@@ -10,6 +10,7 @@ import (
 	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/data"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
+	"infra/cros/dutstate"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	commonpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
@@ -32,7 +33,8 @@ type ProcessResultsCmd struct {
 	TestResponses  *api.CrosTestResponse
 
 	// Updates
-	SkylabResult *skylab_test_runner.Result
+	SkylabResult    *skylab_test_runner.Result
+	CurrentDutState dutstate.State
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -141,7 +143,7 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 			"original_test": autotestResult,
 		},
 		StateUpdate: &skylab_test_runner.Result_StateUpdate{
-			DutState: "ready",
+			DutState: cmd.CurrentDutState.String(),
 		},
 		LogData: logData,
 	}

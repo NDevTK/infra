@@ -5,16 +5,18 @@
 package data
 
 import (
+	vmlabapi "infra/libs/vmlab/api"
+
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	artifactpb "go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/protobuf/types/known/anypb"
-	vmlabapi "infra/libs/vmlab/api"
 
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
+	"infra/cros/dutstate"
 )
 
 // HwTestStateKeeper represents all the data hw test execution flow requires.
@@ -32,8 +34,9 @@ type HwTestStateKeeper struct {
 	DutTopology      *labapi.DutTopology
 	DutServerAddress *labapi.IpEndpoint
 	// Only when DUT is a VM
-	DutVmGceImage *vmlabapi.GceImage
-	DutVm         *vmlabapi.VmInstance
+	DutVmGceImage   *vmlabapi.GceImage
+	DutVm           *vmlabapi.VmInstance
+	CurrentDutState dutstate.State
 
 	// Provision related
 	InstallMetadata *anypb.Any

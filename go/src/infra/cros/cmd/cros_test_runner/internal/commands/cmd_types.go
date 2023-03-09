@@ -51,6 +51,9 @@ const (
 	RdbPublishStartCmdType  interfaces.CommandType = "RdbPublishStart"
 	RdbPublishUploadCmdType interfaces.CommandType = "RdbPublishUpload"
 
+	// Ufs related commands
+	UpdateDutStateCmdType interfaces.CommandType = "UpdateDutState"
+
 	// For testing purposes only
 	UnSupportedCmdType interfaces.CommandType = "UnSupportedCmd"
 )

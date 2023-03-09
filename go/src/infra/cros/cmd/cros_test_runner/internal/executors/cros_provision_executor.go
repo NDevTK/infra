@@ -109,7 +109,7 @@ func (ex *CrosProvisionExecutor) provisionInstallCommandExecution(
 		err = errors.Annotate(err, "Provision install cmd err: ").Err()
 	}
 
-	step.SetSummaryMarkdown(resp.GetStatus().String())
+	step.SetSummaryMarkdown(fmt.Sprintf("provision status: %s", resp.GetStatus().String()))
 	step.AddTagValue("provision_status", resp.GetStatus().String())
 	cmd.ProvisionResp = resp
 	common.WriteProtoToStepLog(ctx, step, resp, "provision response")

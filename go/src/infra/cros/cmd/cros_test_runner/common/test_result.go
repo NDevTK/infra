@@ -148,3 +148,17 @@ func GetGcsClickableLink(gsUrl string) string {
 	}
 	return fmt.Sprintf("%s%s", GcsUrlPrefix, urlSuffix)
 }
+
+// IsAnyTestFailure returns if there is any failed tests in test results
+func IsAnyTestFailure(testResults []*apipb.TestCaseResult) bool {
+	for _, testResult := range testResults {
+		switch testResult.Verdict.(type) {
+		case *apipb.TestCaseResult_Fail_, *apipb.TestCaseResult_Abort_, *apipb.TestCaseResult_Crash_:
+			return true
+		default:
+			continue
+		}
+	}
+
+	return false
+}
