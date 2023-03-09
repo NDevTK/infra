@@ -26,6 +26,7 @@ import (
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 	"go.opentelemetry.io/contrib/detectors/gcp"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"go.opentelemetry.io/otel/sdk/trace"
@@ -34,7 +35,6 @@ import (
 	"infra/appengine/drone-queen/internal/config"
 	icron "infra/appengine/drone-queen/internal/cron"
 	"infra/appengine/drone-queen/internal/frontend"
-	"infra/appengine/drone-queen/internal/middleware"
 )
 
 func main() {
@@ -63,7 +63,7 @@ func main() {
 		}
 
 		icron.InstallHandlers()
-		srv.RegisterUnaryServerInterceptors(middleware.UnaryTrace, config.UnaryConfig)
+		srv.RegisterUnaryServerInterceptors(otelgrpc.UnaryServerInterceptor(), config.UnaryConfig)
 		frontend.RegisterServers(srv)
 		return nil
 	})

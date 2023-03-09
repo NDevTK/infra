@@ -15,7 +15,7 @@ require (
 	cloud.google.com/go/monitoring v1.8.0
 	cloud.google.com/go/pubsub v1.28.0
 	cloud.google.com/go/storage v1.29.0
-	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.9.0
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.11.2
 	github.com/PaesslerAG/jsonpath v0.1.1
 	github.com/StackExchange/wmi v1.2.1
 	github.com/VividCortex/godaemon v1.0.0
@@ -66,6 +66,7 @@ require (
 	go.chromium.org/luci v0.0.0-20230103053340-8a57daa72e32
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/contrib/detectors/gcp v1.10.0
+	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.40.0
 	go.opentelemetry.io/otel v1.14.0
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.14.0
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.14.0
@@ -87,7 +88,7 @@ require (
 	google.golang.org/api v0.108.0
 	google.golang.org/appengine v1.6.8-0.20221117013220-504804fb50de
 	google.golang.org/appengine/v2 v2.0.1
-	google.golang.org/genproto v0.0.0-20230124163310-31e0e69b6fc2
+	google.golang.org/genproto v0.0.0-20230125152338-dcaf20b6aeaa
 	google.golang.org/grpc v1.53.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.2.0
 	google.golang.org/protobuf v1.28.1
@@ -109,10 +110,10 @@ require (
 	cloud.google.com/go/longrunning v0.3.0 // indirect
 	cloud.google.com/go/profiler v0.3.1 // indirect
 	cloud.google.com/go/secretmanager v1.10.0 // indirect
-	cloud.google.com/go/trace v1.4.0 // indirect
+	cloud.google.com/go/trace v1.8.0 // indirect
 	contrib.go.opencensus.io/exporter/stackdriver v0.13.12 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v0.33.0 // indirect
-	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.33.0 // indirect
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.35.2 // indirect
 	github.com/Microsoft/go-winio v0.6.0 // indirect
 	github.com/PaesslerAG/gval v1.0.0 // indirect
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20210907221601-4f80a5e09cd0 // indirect
@@ -192,8 +193,9 @@ require (
 	github.com/zeebo/bencode v1.0.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/internal/retry v1.14.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.14.0 // indirect
+	go.opentelemetry.io/otel/metric v0.37.0 // indirect
 	go.opentelemetry.io/proto/otlp v0.19.0 // indirect
-	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/exp v0.0.0-20221031165847-c99f073a8326 // indirect
 	golang.org/x/mod v0.7.0 // indirect
