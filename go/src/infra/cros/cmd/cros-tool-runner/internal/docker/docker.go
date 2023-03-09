@@ -186,7 +186,7 @@ func pullImage(ctx context.Context, image string, service string) (error, int) {
 		return errors.Annotate(err, "Pull image").Err(), 0
 	}
 	log.Printf("pull image %q: successful pulled.", image)
-	logPullTime(ctx, startTime, service)
+	logPullTimeProd(ctx, startTime, service)
 	return nil, 0
 }
 
@@ -300,8 +300,8 @@ func (d *Docker) logRunTime(ctx context.Context, service string) {
 
 	// File not found? Log the timeout duration && fail.
 	if err != nil {
-		logRunTime(ctx, startTime, service)
-		logStatus(ctx, "fail")
+		logRunTimeProd(ctx, startTime, service)
+		logStatusProd(ctx, "fail")
 		log.Println("CRITICAL ERROR: Service unable to start. Likely underlying environmental issues. Task will fail.")
 		log.Println("Log file not found, logged timediff anyways..")
 		return
@@ -483,6 +483,18 @@ var (
 		field.String("service"),
 		field.String("drone"),
 		field.String("image"))
+	pullTimeExperimental = metric.NewFloat("chrome/infra/CFT/docker_pullExperimental",
+		"Duration of the docker pull.",
+		&types.MetricMetadata{Units: types.Seconds},
+		field.String("service"),
+		field.String("drone"),
+		field.String("image"))
+	runTimeExperimental = metric.NewFloat("chrome/infra/CFT/docker_runNewExperimental",
+		"Duration of the docker run.",
+		&types.MetricMetadata{Units: types.Seconds},
+		field.String("service"),
+		field.String("drone"),
+		field.String("image"))
 )
 
 func getEnvVar(v string) string {
@@ -505,18 +517,26 @@ func droneImage() string {
 }
 
 func logPullTime(ctx context.Context, startTime time.Time, service string) {
-	pullTime.Set(ctx, float64(time.Since(startTime).Seconds()), service, droneName(), droneImage())
+	pullTimeExperimental.Set(ctx, float64(time.Since(startTime).Seconds()), service, droneName(), droneImage())
 }
 
 func logRunTime(ctx context.Context, startTime time.Time, service string) {
+	runTimeExperimental.Set(ctx, float64(time.Since(startTime).Seconds()), service, droneName(), droneImage())
+}
+
+func logPullTimeProd(ctx context.Context, startTime time.Time, service string) {
+	pullTime.Set(ctx, float64(time.Since(startTime).Seconds()), service, droneName(), droneImage())
+}
+
+func logRunTimeProd(ctx context.Context, startTime time.Time, service string) {
 	runTime.Set(ctx, float64(time.Since(startTime).Seconds()), service, droneName(), droneImage())
 }
 
 // logServiceFound logs the when the service has started.
 func logServiceFound(ctx context.Context, LogFileName string, startTime time.Time, service string) {
 	log.Printf("Service: %s found started, logging success.\n", service)
-	logStatus(ctx, "pass")
-	logRunTime(ctx, startTime, service)
+	logStatusProd(ctx, "pass")
+	logRunTimeProd(ctx, startTime, service)
 }
 
 // Define metrics. Note: in Go you have to declare metric field types.
@@ -525,15 +545,26 @@ var (
 		"Note of pass or fail.",
 		&types.MetricMetadata{},
 		field.String("status"))
+	statusMetricsExperimental = metric.NewCounter("chrome/infra/CFT/docker_run_passrateExperimental",
+		"Note of pass or fail.",
+		&types.MetricMetadata{},
+		field.String("status"))
 )
 
 func logStatus(ctx context.Context, status string) {
+	statusMetricsExperimental.Set(ctx, 1, status)
+}
+
+func logStatusProd(ctx context.Context, status string) {
 	statusMetrics.Set(ctx, 1, status)
 }
 
 // Export metrics API.
 var (
-	LogPullTime = logPullTime
-	LogRunTime  = logRunTime
-	LogStatus   = logStatus
+	LogPullTime     = logPullTime
+	LogRunTime      = logRunTime
+	LogStatus       = logStatus
+	LogPullTimeProd = logPullTimeProd
+	LogRunTimeProd  = logRunTimeProd
+	LogStatusProd   = logStatusProd
 )
