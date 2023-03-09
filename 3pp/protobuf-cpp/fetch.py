@@ -52,6 +52,9 @@ RELEASES = 'https://api.github.com/repos/protocolbuffers/protobuf/releases'
 TAGGED_RELEASE = (
     'https://api.github.com/repos/protocolbuffers/protobuf/releases/tags/v%s')
 
+# TODO(crbug.com/1422445): Remove version limit once blocking issues are fixed.
+VERSION_LIMIT = parse_version("22.0")
+
 
 def do_latest():
   releases = json.load(urllib.request.urlopen(RELEASES))
@@ -59,7 +62,10 @@ def do_latest():
   for r in releases:
     if r['prerelease']:
       continue
-    latest = max(latest, parse_version(r['tag_name'][1:]))  # Strip leading 'v'
+    v = parse_version(r['tag_name'][1:])  # Strip leading 'v'
+    if v >= VERSION_LIMIT:
+      continue
+    latest = max(latest, v)
   print(latest)
 
 
