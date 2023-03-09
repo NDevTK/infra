@@ -1,11 +1,16 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package dumper
 
 import (
 	"context"
 	"fmt"
-	"google.golang.org/protobuf/types/known/timestamppb"
 	"regexp"
 	"strings"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/datastore"
