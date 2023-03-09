@@ -552,7 +552,20 @@ def CommonChecks(input_api, output_api):  # pragma: no cover
   output.extend(
       input_api.canned_checks.PanProjectChecks(
           input_api, output_api, excluded_paths=[r'.*python_pb2/.*_pb2\.py$']))
-  output.extend(input_api.canned_checks.CheckLicense(input_api, output_api))
+
+  files_to_skip = list(input_api.DEFAULT_FILES_TO_SKIP) + [
+      r'.+\.pb\.go$',
+  ]
+  files_to_check = list(input_api.DEFAULT_FILES_TO_CHECK) + [
+      r'.+\.go$',
+  ]
+
+  output.extend(
+      input_api.canned_checks.CheckLicense(
+          input_api,
+          output_api,
+          source_file_filter=lambda x: input_api.FilterSourceFile(
+              x, files_to_check=files_to_check, files_to_skip=files_to_skip)))
 
   return output
 
