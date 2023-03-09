@@ -7,6 +7,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"strconv"
+	"time"
 
 	compute "cloud.google.com/go/compute/apiv1"
 	"cloud.google.com/go/compute/apiv1/computepb"
@@ -14,6 +16,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/durationpb"
 
 	pb "infra/vm_leaser/api/v1"
 )
@@ -30,6 +33,8 @@ const (
 	DefaultProject string = "chrome-fleet-vm-leaser-dev"
 	// Default region (zone) to use
 	DefaultRegion string = "us-central1-a"
+	// Default duration of lease (in minutes)
+	DefaultLeaseDuration int64 = 60
 )
 
 // Prove that Server implements pb.VMLeaserServiceServer by instantiating a Server
@@ -68,7 +73,12 @@ func (s *Server) LeaseVM(ctx context.Context, r *pb.LeaseVMRequest) (*pb.LeaseVM
 
 	// Appending "vm-" to satisfy GCE regex
 	leaseId := fmt.Sprintf("vm-%s", uuid.New().String())
-	err := createInstance(ctx, leaseId, r.GetHostReqs())
+	expirationTime, err := computeExpirationTime(ctx, r.GetLeaseDuration())
+	if err != nil {
+		return nil, err
+	}
+
+	err = createInstance(ctx, leaseId, expirationTime, r.GetHostReqs())
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +128,7 @@ func (s *Server) ReleaseVM(ctx context.Context, r *pb.ReleaseVMRequest) (*pb.Rel
 }
 
 // createInstance sends an instance creation request to the Compute Engine API and waits for it to complete.
-func createInstance(ctx context.Context, leaseId string, hostReqs *pb.VMRequirements) error {
+func createInstance(ctx context.Context, leaseId string, expirationTime int64, hostReqs *pb.VMRequirements) error {
 	instancesClient, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		return fmt.Errorf("NewInstancesRESTClient error: %v", err)
@@ -143,6 +153,14 @@ func createInstance(ctx context.Context, leaseId string, hostReqs *pb.VMRequirem
 				},
 			},
 			MachineType: proto.String(fmt.Sprintf("zones/%s/machineTypes/%s", zone, hostReqs.GetGceMachineType())),
+			Metadata: &computepb.Metadata{
+				Items: []*computepb.Items{
+					{
+						Key:   proto.String("expiration_time"),
+						Value: proto.String(strconv.FormatInt(expirationTime, 10)),
+					},
+				},
+			},
 			NetworkInterfaces: []*computepb.NetworkInterface{
 				{
 					Name: proto.String(hostReqs.GetGceNetwork()),
@@ -226,4 +244,16 @@ func setDefaultReleaseVMRequest(r *pb.ReleaseVMRequest) *pb.ReleaseVMRequest {
 		r.GceRegion = DefaultRegion
 	}
 	return r
+}
+
+// computeExpirationTime calculates the expiration time of a VM
+//
+// computeExpirationTime return a future Unix time as an int64. The calculation
+// is based on the specified lease duration.
+func computeExpirationTime(ctx context.Context, leaseDuration *durationpb.Duration) (int64, error) {
+	expirationTime := time.Now().Unix()
+	if leaseDuration == nil {
+		return expirationTime + (DefaultLeaseDuration * 60), nil
+	}
+	return expirationTime + leaseDuration.GetSeconds(), nil
 }
