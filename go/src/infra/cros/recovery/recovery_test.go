@@ -27,162 +27,189 @@ var dutPlansCases = []struct {
 	setupType    tlw.DUTSetupType
 	taskName     buildbucket.TaskName
 	expPlanNames []string
+	ok           bool
 }{
 	{
 		"default no task",
 		tlw.DUTSetupTypeUnspecified,
 		buildbucket.TaskName(""),
 		nil,
+		false,
 	},
 	{
 		"default recovery",
 		tlw.DUTSetupTypeUnspecified,
 		buildbucket.Recovery,
 		nil,
+		false,
 	},
 	{
 		"default deploy",
 		tlw.DUTSetupTypeUnspecified,
 		buildbucket.Deploy,
 		nil,
+		false,
 	},
 	{
 		"default custom",
 		tlw.DUTSetupTypeUnspecified,
 		buildbucket.Custom,
 		nil,
+		false,
 	},
 	{
 		"cros no task",
 		tlw.DUTSetupTypeCros,
 		buildbucket.TaskName(""),
 		nil,
+		false,
 	},
 	{
 		"cros recovery",
 		tlw.DUTSetupTypeCros,
 		buildbucket.Recovery,
 		[]string{"servo", "cros", "chameleon", "bluetooth_peer", "wifi_router", "close"},
+		true,
 	},
 	{
 		"cros deploy",
 		tlw.DUTSetupTypeCros,
 		buildbucket.Deploy,
 		[]string{"servo", "cros", "chameleon", "bluetooth_peer", "wifi_router", "close"},
+		true,
 	},
 	{
 		"cros custom",
 		tlw.DUTSetupTypeCros,
 		buildbucket.Custom,
 		nil,
+		false,
 	},
 	{
 		"labstation no task",
 		tlw.DUTSetupTypeCros,
 		buildbucket.TaskName(""),
 		nil,
+		false,
 	},
 	{
 		"labstation recovery",
 		tlw.DUTSetupTypeLabstation,
 		buildbucket.Recovery,
 		[]string{"cros"},
+		true,
 	},
 	{
 		"labstation deploy",
 		tlw.DUTSetupTypeLabstation,
 		buildbucket.Deploy,
 		[]string{"cros"},
+		true,
 	},
 	{
 		"labstation custom",
 		tlw.DUTSetupTypeLabstation,
 		buildbucket.Custom,
 		nil,
+		false,
 	},
 	{
 		"android no task",
 		tlw.DUTSetupTypeAndroid,
 		buildbucket.TaskName(""),
 		nil,
+		false,
 	},
 	{
 		"android recovery",
 		tlw.DUTSetupTypeAndroid,
 		buildbucket.Recovery,
 		[]string{"android", "close"},
+		true,
 	},
 	{
 		"android deploy",
 		tlw.DUTSetupTypeAndroid,
 		buildbucket.Deploy,
 		[]string{"android", "close"},
+		true,
 	},
 	{
 		"android custom",
 		tlw.DUTSetupTypeAndroid,
 		buildbucket.Custom,
 		nil,
+		false,
 	},
 	{
 		"android no task",
 		tlw.DUTSetupTypeAndroid,
 		buildbucket.TaskName(""),
 		nil,
+		false,
 	},
 	{
 		"chromeos audit RPM",
 		tlw.DUTSetupTypeCros,
 		buildbucket.AuditRPM,
 		[]string{"servo", "cros", "close"},
+		true,
 	},
 	{
 		"chromeos audit USB-key",
 		tlw.DUTSetupTypeCros,
 		buildbucket.AuditUSB,
 		[]string{"servo", "cros", "close"},
+		true,
 	},
 	{
 		"labstation does not have audit RPM",
 		tlw.DUTSetupTypeLabstation,
 		buildbucket.AuditRPM,
 		nil,
+		false,
 	},
 	{
 		"android does not have audit RPM",
 		tlw.DUTSetupTypeAndroid,
 		buildbucket.AuditRPM,
 		nil,
+		false,
 	},
 	{
 		"cros deep recovery",
 		tlw.DUTSetupTypeCros,
 		buildbucket.DeepRecovery,
 		[]string{"servo_deep_repair", "cros_deep_repair", "servo", "cros", "chameleon", "bluetooth_peer", "wifi_router", "close"},
+		true,
 	},
 	{
 		"cros deep recovery",
 		tlw.DUTSetupTypeLabstation,
 		buildbucket.DeepRecovery,
 		[]string{"cros"},
+		true,
 	},
 	{
 		"cros browser DUT recovery",
 		tlw.DUTSetupTypeCrosBrowser,
 		buildbucket.Recovery,
 		[]string{"cros"},
+		true,
 	},
 	{
 		"cros browser DUT deep recovery",
 		tlw.DUTSetupTypeCrosBrowser,
 		buildbucket.DeepRecovery,
 		[]string{"cros"},
+		true,
 	},
 	{
 		"cros browser DUT deploy",
 		tlw.DUTSetupTypeCrosBrowser,
 		buildbucket.Deploy,
 		[]string{"cros"},
+		true,
 	},
 }
 
@@ -204,16 +231,16 @@ func TestLoadConfiguration(t *testing.T) {
 			}
 			dut := &tlw.Dut{SetupType: c.setupType}
 			got, err := loadConfiguration(ctx, dut, args)
-			if len(cs.expPlanNames) == 0 {
+			if cs.ok {
+				if !cmp.Equal(got.GetPlanNames(), cs.expPlanNames) {
+					t.Errorf("%q ->want: %v\n got: %v: %s", cs.name, cs.expPlanNames, got.GetPlanNames(), err)
+				}
+			} else {
 				if err == nil {
 					t.Errorf("%q -> expected to finish with error but passed", cs.name)
 				}
 				if len(got.GetPlanNames()) != 0 {
 					t.Errorf("%q -> want: %v\n got: %v", cs.name, cs.expPlanNames, got.GetPlanNames())
-				}
-			} else {
-				if !cmp.Equal(got.GetPlanNames(), cs.expPlanNames) {
-					t.Errorf("%q ->want: %v\n got: %v: %s", cs.name, cs.expPlanNames, got.GetPlanNames(), err)
 				}
 			}
 		})
@@ -233,16 +260,16 @@ func TestParsedDefaultConfiguration(t *testing.T) {
 		t.Run(cs.name, func(t *testing.T) {
 			ctx := context.Background()
 			got, err := ParsedDefaultConfiguration(ctx, c.taskName, c.setupType)
-			if len(cs.expPlanNames) == 0 {
+			if cs.ok {
+				if !cmp.Equal(got.GetPlanNames(), cs.expPlanNames) {
+					t.Errorf("%q ->want: %v\n got: %v", cs.name, cs.expPlanNames, got.GetPlanNames())
+				}
+			} else {
 				if err == nil {
 					t.Errorf("%q -> expected to finish with error but passed", cs.name)
 				}
 				if len(got.GetPlanNames()) != 0 {
 					t.Errorf("%q -> want: %v\n got: %v", cs.name, cs.expPlanNames, got.GetPlanNames())
-				}
-			} else {
-				if !cmp.Equal(got.GetPlanNames(), cs.expPlanNames) {
-					t.Errorf("%q ->want: %v\n got: %v", cs.name, cs.expPlanNames, got.GetPlanNames())
 				}
 			}
 		})
