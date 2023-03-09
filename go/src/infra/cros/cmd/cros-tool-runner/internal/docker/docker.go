@@ -300,6 +300,17 @@ func (d *Docker) logRunTime(ctx context.Context, service string) {
 
 	// File not found? Log the timeout duration && fail.
 	if err != nil {
+		// One last check. Its possible that the file is found, service exits
+		// the poll is killed, all in the 1 second loop interval.
+		log.Printf("METRICS: Final log check for %s\n", service)
+
+		filePath, err := common.FindFile("log.txt", d.LogFileDir)
+		// No err? File is found.
+		if err == nil {
+			logServiceFound(ctx, filePath, startTime, service)
+			return
+		}
+		// Otherwise, its not found. And I give up trying to fix this race without breaking other flows.
 		logRunTimeProd(ctx, startTime, service)
 		logStatusProd(ctx, "fail")
 		log.Println("CRITICAL ERROR: Service unable to start. Likely underlying environmental issues. Task will fail.")
