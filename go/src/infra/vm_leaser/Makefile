@@ -43,7 +43,7 @@ build:
 # Run service locally
 .PHONY: dev
 dev: build
-	./vm-leaser-service
+	./vm-leaser-service --auth-service-host="chrome-infra-auth-dev.appspot.com"
 
 # Build Docker service
 .PHONY: build-docker

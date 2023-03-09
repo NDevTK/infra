@@ -31,14 +31,22 @@ To interact with the service, you can use `grpcurl`. Locally, there is no authen
 
 To list all services available at the endpoint:
 ```bash
-> grpcurl -plaintext localhost:50051 list
+> grpcurl -plaintext \
+  -reflect-header "authorization: Bearer $(gcloud auth print-identity-token)" \
+  localhost:50051 \
+  list
+
 grpc.reflection.v1alpha.ServerReflection
 vm_leaser.api.v1.VMLeaserService
 ```
 
 To list all APIs available for a given service:
 ```bash
-> grpcurl -plaintext localhost:50051 list vm_leaser.api.v1.VMLeaserService
+> grpcurl -plaintext \
+  -reflect-header "authorization: Bearer $(gcloud auth print-identity-token)" \
+  localhost:50051 \
+  list vm_leaser.api.v1.VMLeaserService
+
 vm_leaser.api.v1.VMLeaserService.ExtendLease
 vm_leaser.api.v1.VMLeaserService.LeaseVM
 vm_leaser.api.v1.VMLeaserService.ReleaseVM
@@ -46,7 +54,9 @@ vm_leaser.api.v1.VMLeaserService.ReleaseVM
 
 To call an RPC, you can specify the proto and payload via `grpcurl`. Here is an example of how to lease a VM:
 ```bash
-> grpcurl -plaintext -proto api/v1/vm_leaser.proto \
+> grpcurl -plaintext \
+  -rpc-header "Authorization: Bearer $(gcloud auth print-identity-token)" \
+  -proto api/v1/vm_leaser.proto \
   -d '{
     "host_reqs": {
       "gce_image": "projects/chrome-fleet-vm-leaser-cr-exp/global/images/betty-arc-r-release",
@@ -70,7 +80,9 @@ To call an RPC, you can specify the proto and payload via `grpcurl`. Here is an 
 
 An example to release a VM:
 ```bash
-> grpcurl -plaintext -proto api/v1/vm_leaser.proto \
+> grpcurl -plaintext \
+  -rpc-header "Authorization: Bearer $(gcloud auth print-identity-token)" \
+  -proto api/v1/vm_leaser.proto \
   -d '{
     "lease_id": "vm-12107b1b-52be-475f-bdd5-8b68306645d2",
     "gce_project": "chrome-fleet-vm-leaser-cr-exp",

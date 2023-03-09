@@ -9,6 +9,8 @@ import (
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/config/server/cfgmodule"
 	"go.chromium.org/luci/server"
+	"go.chromium.org/luci/server/auth"
+	"go.chromium.org/luci/server/auth/openid"
 	"go.chromium.org/luci/server/cron"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
@@ -41,8 +43,26 @@ func main() {
 		srv.Context = logging.SetLevel(srv.Context, logging.Debug)
 
 		logging.Infof(srv.Context, "Starting server.")
+
+		// This allows auth to use Identity tokens.
+		srv.SetRPCAuthMethods([]auth.Method{
+			// The primary authentication method.
+			&openid.GoogleIDTokenAuthMethod{
+				AudienceCheck: openid.AudienceMatchesHost,
+				SkipNonJWT:    true, // pass OAuth2 access tokens through
+			},
+			// Backward compatibility for RPC Explorer and old clients.
+			&auth.GoogleOAuth2Method{
+				Scopes: []string{"https://www.googleapis.com/auth/userinfo.email"},
+			},
+		})
+
+		// Per-RPC authorization interceptor.
+		srv.RegisterUnifiedServerInterceptors(RPCAccessInterceptor)
+
 		logging.Infof(srv.Context, "Installing Services.")
 		InstallServices(NewServer(), srv)
+
 		logging.Infof(srv.Context, "Initialization finished.")
 		return nil
 	})
