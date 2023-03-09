@@ -637,15 +637,35 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 		ModelName:   g.Params.GetHardwareAttributes().GetModel(),
 	}
 
-	// TODO(b/242007010): use buildTarget when the root cause of buildTarget not having variant fixed.
-	buildTargetInferred := buildTarget
-	for _, sd := range g.Params.GetSoftwareDependencies() {
-		if b := sd.GetChromeosBuild(); b != "" {
-			builderNameSliced := strings.Split(strings.Split(b, "/")[0], "-")
-			buildTargetInferred = strings.Join(builderNameSliced[0:len(builderNameSliced)-1], "-")
-			logging.Infof(ctx, "Using %s as new buildTargetInferred", buildTargetInferred)
-			break
+	buildTargetInferred := ""
+	// If build_target is provided via keyvals, use it.
+	if g.Params.GetDecorations().GetAutotestKeyvals() != nil {
+		keyvalBuildTarget := g.Params.GetDecorations().GetAutotestKeyvals()["build_target"]
+		if keyvalBuildTarget != "" {
+			buildTargetInferred = keyvalBuildTarget
 		}
+	}
+
+	// Otherwise, try to construct it.
+	// TODO(b/242007010): use buildTarget when the root cause of buildTarget not having variant fixed.
+	if buildTargetInferred == "" {
+		for _, sd := range g.Params.GetSoftwareDependencies() {
+			if b := sd.GetChromeosBuild(); b != "" {
+				builderNameSliced := strings.Split(strings.Split(b, "/")[0], "-")
+				// Strip prefixes that aren't included in build_target
+				if builderNameSliced[0] == "staging" || builderNameSliced[0] == "dev" {
+					builderNameSliced = builderNameSliced[1:]
+				}
+				buildTargetInferred = strings.Join(builderNameSliced[0:len(builderNameSliced)-1], "-")
+				logging.Infof(ctx, "Using %s as new buildTargetInferred", buildTargetInferred)
+				break
+			}
+		}
+	}
+
+	// Otherwise, use the board value.
+	if buildTargetInferred == "" {
+		buildTargetInferred = buildTarget
 	}
 
 	testName := g.Invocation.Test.Name
