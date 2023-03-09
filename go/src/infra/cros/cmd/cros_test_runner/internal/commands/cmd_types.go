@@ -28,6 +28,11 @@ const (
 	// Dut service related commands
 	DutServiceStartCmdType interfaces.CommandType = "DutServiceStart"
 
+	// Dut VM test related commands
+	DutVmGetImageCmdType interfaces.CommandType = "DutVmGetImage"
+	DutVmLeaseCmdType    interfaces.CommandType = "DutVmLease"
+	DutVmReleaseCmdType  interfaces.CommandType = "DutVmRelease"
+
 	// Provision service related commands
 	ProvisionServiceStartCmdType interfaces.CommandType = "ProvisionServiceStart"
 	ProvisonInstallCmdType       interfaces.CommandType = "ProvisonInstall"

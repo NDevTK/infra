@@ -11,6 +11,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/protobuf/types/known/anypb"
+	vmlabapi "infra/libs/vmlab/api"
 
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
@@ -30,6 +31,9 @@ type HwTestStateKeeper struct {
 	HostName         string
 	DutTopology      *labapi.DutTopology
 	DutServerAddress *labapi.IpEndpoint
+	// Only when DUT is a VM
+	DutVmGceImage *vmlabapi.GceImage
+	DutVm         *vmlabapi.VmInstance
 
 	// Provision related
 	InstallMetadata *anypb.Any
