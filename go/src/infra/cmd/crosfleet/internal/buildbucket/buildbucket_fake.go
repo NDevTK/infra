@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"strings"
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/grpc"
@@ -20,6 +21,7 @@ import (
 // match against in the fake client.
 type ScheduleParams struct {
 	BuilderName string
+	Props       map[string]interface{}
 	Tags        map[string]string
 }
 
@@ -38,7 +40,8 @@ func (p *ScheduleParams) matches(in *buildbucketpb.ScheduleBuildRequest) bool {
 			return false
 		}
 	}
-	return true
+
+	return hasProps(p.Props, in.GetProperties().AsMap())
 }
 
 type FakeBuildClient struct {
@@ -55,7 +58,8 @@ func (f FakeBuildClient) GetBuild(context.Context, *buildbucketpb.GetBuildReques
 }
 
 func requestSummary(in *buildbucketpb.ScheduleBuildRequest) string {
-	return fmt.Sprintf("builder: %+v\ntags: %+v\n", in.Builder, in.GetTags())
+	return fmt.Sprintf("builder: %+v\ntags: %+v\nprops: %+v\n",
+		in.Builder, in.GetTags(), in.GetProperties().AsMap())
 }
 
 func (f FakeBuildClient) ScheduleBuild(ctx context.Context, in *buildbucketpb.ScheduleBuildRequest, opts ...grpc.CallOption) (*buildbucketpb.Build, error) {
@@ -94,7 +98,9 @@ type ExpectedGetWithTagsCall struct {
 }
 
 type ExpectedScheduleCall struct {
-	Tags     map[string]string
+	Tags map[string]string
+	// Properties may be nested, '.' is used as a delimiter.
+	Props    map[string]interface{}
 	Response *buildbucketpb.Build
 }
 
@@ -118,16 +124,46 @@ func (c *FakeClient) GetBuilderID() *buildbucketpb.BuilderID {
 	return nil
 }
 
+// hasProp checks if the given key value pair is in the dict.
+// prop may be a nested field (. delmited).
+func hasProp(props map[string]interface{}, prop string, value interface{}) bool {
+	toks := strings.Split(prop, ".")
+	for i, tok := range toks {
+		val, ok := props[tok]
+		if !ok {
+			return false
+		}
+		if i == len(toks)-1 {
+			return reflect.DeepEqual(value, val)
+		}
+		subprops, ok := val.(map[string]interface{})
+		if !ok {
+			return false
+		}
+		props = subprops
+	}
+	return false
+}
+
+func hasProps(expectedProps map[string]interface{}, props map[string]interface{}) bool {
+	for k, v := range expectedProps {
+		if !hasProp(props, k, v) {
+			return false
+		}
+	}
+	return true
+}
+
 func (c *FakeClient) ScheduleBuild(ctx context.Context, props map[string]interface{}, dims map[string]string, tags map[string]string, priority int32) (*buildbucketpb.Build, error) {
 	for i, expected := range c.ExpectedScheduleBuild {
-		if reflect.DeepEqual(tags, expected.Tags) {
+		if reflect.DeepEqual(tags, expected.Tags) && hasProps(expected.Props, props) {
 			// Matching an expectation "consumes" it.
 			c.ExpectedScheduleBuild = append(c.ExpectedScheduleBuild[:i], c.ExpectedScheduleBuild[i:]...)
 			return expected.Response, nil
 		}
 	}
 
-	return nil, fmt.Errorf("unexpected ScheduleBuild call:\ntags: %+v\n", tags)
+	return nil, fmt.Errorf("unexpected ScheduleBuild call:\ntags: %+v\nprops: %+v\n", tags, props)
 }
 
 func (c *FakeClient) WaitForBuildStepStart(ctx context.Context, id int64, stepName string) (*buildbucketpb.Build, error) {
@@ -168,6 +204,9 @@ func (c *FakeClient) AnyIncompleteBuildsWithTags(ctx context.Context, tags map[s
 	for i, expected := range c.ExpectedAnyIncompleteBuildsWithTags {
 		if reflect.DeepEqual(expected.Tags, tags) {
 			c.ExpectedAnyIncompleteBuildsWithTags = append(c.ExpectedAnyIncompleteBuildsWithTags[:i], c.ExpectedAnyIncompleteBuildsWithTags[i:]...)
+			if len(expected.Response) == 0 {
+				return false, 0, nil
+			}
 			return true, expected.Response[0].Id, nil
 		}
 	}

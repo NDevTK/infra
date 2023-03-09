@@ -53,6 +53,7 @@ Mutually exclusive with -id.`)
 		c.Flags.BoolVar(&c.skipConfirmation, "skip-confirmation", false, "Skip confirmation when backfilling multiple runs.")
 		c.Flags.BoolVar(&c.allowDupes, "allow-duplicates", false, "For development purposes only: allow duplicate backfills for the given id/tag(s).")
 		c.Flags.BoolVar(&c.dryrun, "dryrun", false, "Run the command without actually scheduling any tests.")
+		c.Flags.BoolVar(&c.releaseRetryUrgent, "release-retry-urgent", false, `Use the release_p0 quota scheduler account. Only for use by release team.`)
 		// -------------------------------------------------------------------------
 		// NOTE: This is not a public feature. Only un-comment this section for
 		// locally-built crosfleet executions by the Test Scheduling team.
@@ -64,14 +65,15 @@ Mutually exclusive with -id.`)
 
 type backfillRun struct {
 	subcommands.CommandRunBase
-	authFlags        authcli.Flags
-	envFlags         common.EnvFlags
-	buildID          int64
-	buildTags        map[string]string
-	skipConfirmation bool
-	allowDupes       bool
-	qsAccount        string
-	dryrun           bool
+	authFlags          authcli.Flags
+	envFlags           common.EnvFlags
+	buildID            int64
+	buildTags          map[string]string
+	skipConfirmation   bool
+	allowDupes         bool
+	qsAccount          string
+	dryrun             bool
+	releaseRetryUrgent bool
 }
 
 func (args *backfillRun) Run(a subcommands.Application, _ []string, env subcommands.Env) int {
@@ -91,6 +93,9 @@ func (args *backfillRun) Run(a subcommands.Application, _ []string, env subcomma
 }
 
 func (args *backfillRun) innerRun(a subcommands.Application, env subcommands.Env, ctx context.Context, ctpBBClient buildbucket.Client) error {
+	if args.releaseRetryUrgent {
+		args.qsAccount = releaseP0QSaccount
+	}
 	originalBuilds, err := args.findOriginalBuilds(ctx, ctpBBClient)
 	if err != nil {
 		return err
@@ -111,9 +116,11 @@ func (args *backfillRun) innerRun(a subcommands.Application, env subcommands.Env
 	}
 
 	for _, original := range originalBuilds {
-		backfillTags := backfillTags(original)
+		searchTags := map[string]string{
+			"backfill": fmt.Sprintf("%v", original.Id),
+		}
 		if !args.allowDupes {
-			backfillAlreadyRunning, runningBackfillID, err := ctpBBClient.AnyIncompleteBuildsWithTags(ctx, backfillTags)
+			backfillAlreadyRunning, runningBackfillID, err := ctpBBClient.AnyIncompleteBuildsWithTags(ctx, searchTags)
 			if err != nil {
 				return err
 			}
@@ -125,19 +132,17 @@ func (args *backfillRun) innerRun(a subcommands.Application, env subcommands.Env
 		}
 		requests := original.Input.Properties.GetFields()["requests"]
 		properties := map[string]interface{}{"requests": requests}
-		// -------------------------------------------------------------------------
-		// NOTE: This is not a public feature. Only un-comment this section for
-		// locally-built crosfleet executions by the Test Scheduling team.
-		//if args.qsAccount != "" {
-		//	newRequests := changeQuotaAccount(requests.GetStructValue().GetFields(), args.qsAccount)
-		//	properties["requests"] = newRequests
-		//}
-		// -------------------------------------------------------------------------
+
+		if args.qsAccount != "" {
+			newRequests := changeQuotaAccount(requests.GetStructValue().GetFields(), args.qsAccount)
+			properties["requests"] = newRequests
+		}
+
 		if args.dryrun {
 			fmt.Fprintf(os.Stdout, "(Dryrun) Would have scheduled backfill for original build %d\n", original.Id)
 			continue
 		}
-		newBackfill, err := ctpBBClient.ScheduleBuild(ctx, properties, nil, backfillTags, 0)
+		newBackfill, err := ctpBBClient.ScheduleBuild(ctx, properties, nil, args.backfillTags(original), 0)
 		if err != nil {
 			return err
 		}
@@ -195,13 +200,17 @@ func removeBackfills(builds []*buildbucketpb.Build) []*buildbucketpb.Build {
 
 // backfillTags constructs backfill-specific tags for a backfill of the given
 // build.
-func backfillTags(build *buildbucketpb.Build) map[string]string {
+func (args *backfillRun) backfillTags(build *buildbucketpb.Build) map[string]string {
 	tags := map[string]string{}
 	for _, originalTag := range build.Tags {
 		tags[originalTag.Key] = originalTag.Value
 	}
 	tags[common.CrosfleetToolTag] = backfillCmd
 	tags["backfill"] = strconv.FormatInt(build.Id, 10)
+	tags[buildbucket.UserAgentTagKey] = buildbucket.CrosfleetUserAgent
+	if args.qsAccount != "" {
+		tags["quota_account"] = args.qsAccount
+	}
 	return tags
 }
 

@@ -11,6 +11,7 @@ import (
 
 	"infra/cmd/crosfleet/internal/buildbucket"
 	"infra/cmd/crosfleet/internal/common"
+	crosbb "infra/cros/lib/buildbucket"
 
 	"github.com/google/go-cmp/cmp"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
@@ -35,35 +36,45 @@ func TestRemoveBackfills(t *testing.T) {
 }
 
 var testBackfillTagsData = []struct {
-	build    *buildbucketpb.Build
-	wantTags map[string]string
+	build     *buildbucketpb.Build
+	wantTags  map[string]string
+	qsAccount string
 }{
 	{
-		&buildbucketpb.Build{
+		build: &buildbucketpb.Build{
 			Id: 1,
 			Tags: []*buildbucketpb.StringPair{
 				{Key: "foo", Value: "bar"},
-				{Key: "baz", Value: "lol"}}},
-		map[string]string{
+				{Key: "baz", Value: "lol"},
+				{Key: "quota_account", Value: "original_account"},
+			}},
+		wantTags: map[string]string{
 			"foo":            "bar",
 			"baz":            "lol",
 			"crosfleet-tool": "backfill",
 			"backfill":       "1",
+			"quota_account":  "new_account",
+			"user_agent":     "crosfleet",
 		},
+		qsAccount: "new_account",
 	},
 	{
-		&buildbucketpb.Build{
+		build: &buildbucketpb.Build{
 			Id: 2,
 			Tags: []*buildbucketpb.StringPair{
 				{Key: "bar", Value: "foo"},
 				{Key: "lol", Value: "baz"},
 				{Key: "backfill", Value: "3"},
-				{Key: "crosfleet-tool", Value: "suite"}}},
-		map[string]string{
+				{Key: "crosfleet-tool", Value: "suite"},
+				{Key: "quota_account", Value: "original_account"},
+			}},
+		wantTags: map[string]string{
 			"bar":            "foo",
 			"lol":            "baz",
 			"crosfleet-tool": "backfill",
 			"backfill":       "2",
+			"quota_account":  "original_account",
+			"user_agent":     "crosfleet",
 		},
 	},
 }
@@ -74,7 +85,10 @@ func TestBackfillTags(t *testing.T) {
 		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.wantTags), func(t *testing.T) {
 			t.Parallel()
-			gotTags := backfillTags(tt.build)
+			r := backfillRun{
+				qsAccount: tt.qsAccount,
+			}
+			gotTags := r.backfillTags(tt.build)
 			if diff := cmp.Diff(tt.wantTags, gotTags); diff != "" {
 				t.Errorf("unexpected diff (%s)", diff)
 			}
@@ -112,6 +126,7 @@ func TestBackfill_ByTags(t *testing.T) {
 				},
 				Response: []*buildbucketpb.Build{
 					{
+						Id: 1000,
 						Builder: &buildbucketpb.BuilderID{
 							Builder: "cros_test_platform",
 						},
@@ -134,6 +149,7 @@ func TestBackfill_ByTags(t *testing.T) {
 							Properties: inputProps,
 						},
 					}, {
+						Id: 2000,
 						Builder: &buildbucketpb.BuilderID{
 							Builder: "cros_test_platform",
 						},
@@ -150,6 +166,10 @@ func TestBackfill_ByTags(t *testing.T) {
 							{
 								Key:   "label-board",
 								Value: "asurada",
+							},
+							{
+								Key:   "arbitrary-tag",
+								Value: "foo",
 							},
 						},
 						Input: &buildbucketpb.Build_Input{
@@ -192,11 +212,7 @@ func TestBackfill_ByTags(t *testing.T) {
 		ExpectedAnyIncompleteBuildsWithTags: []*buildbucket.ExpectedGetWithTagsCall{
 			{
 				Tags: map[string]string{
-					"backfill":       "0",
-					"crosfleet-tool": "backfill",
-					"build":          "asurada-release/R112-15357.0.0",
-					"suite":          "bvt-installer",
-					"label-board":    "asurada",
+					"backfill": "1000",
 				},
 				Response: []*buildbucketpb.Build{
 					{
@@ -217,6 +233,10 @@ func TestBackfill_ByTags(t *testing.T) {
 								Key:   "label-board",
 								Value: "asurada",
 							},
+							{
+								Key:   "backfill",
+								Value: "1000",
+							},
 						},
 						Input: &buildbucketpb.Build_Input{
 							Properties: inputProps,
@@ -224,15 +244,25 @@ func TestBackfill_ByTags(t *testing.T) {
 					},
 				},
 			},
+			{
+				Tags: map[string]string{
+					"backfill": "2000",
+				},
+				// No existing backfills, should backfill this build.
+				Response: nil,
+			},
 		},
 		ExpectedScheduleBuild: []*buildbucket.ExpectedScheduleCall{
 			{
 				Tags: map[string]string{
-					"crosfleet-tool": "backfill",
-					"backfill":       "0",
+					// Tags are copied over from the original build.
+					"arbitrary-tag":  "foo",
+					"backfill":       "2000",
 					"build":          "asurada-release/R112-15357.0.0",
-					"suite":          "bvt-installer",
+					"crosfleet-tool": "backfill",
 					"label-board":    "asurada",
+					"suite":          "bvt-installer",
+					"user_agent":     "crosfleet",
 				},
 				Response: &buildbucketpb.Build{
 					Id: 1,
@@ -252,14 +282,38 @@ func TestBackfill_ByTags_AllowDupes(t *testing.T) {
 			"build":       "asurada-release/R112-15357.0.0",
 			"label-board": "asurada",
 		},
-		allowDupes: true,
+		releaseRetryUrgent: true,
+		allowDupes:         true,
 	}
 	ctx := context.Background()
 
 	inputProps, err := structpb.NewStruct(map[string]interface{}{
-		"request": "foo",
+		"requests": map[string]interface{}{
+			"default": map[string]interface{}{
+				"params": map[string]interface{}{
+					"scheduling": map[string]interface{}{
+						"qsAccount": "release_direct_sched",
+					},
+					"softwareDependencies": []interface{}{
+						map[string]interface{}{
+							"chromeosBuildGcsBucket": "chromeos-image-archive",
+						},
+					},
+				},
+			},
+		},
 	})
 	if err != nil {
+		t.Error(err)
+	}
+
+	expectedProps, err := structpb.NewStruct(inputProps.AsMap())
+	if err != nil {
+		t.Error(err)
+	}
+	if err := crosbb.SetProperty(expectedProps,
+		"requests.default.params.scheduling.qsAccount",
+		"release_p0"); err != nil {
 		t.Error(err)
 	}
 
@@ -290,6 +344,10 @@ func TestBackfill_ByTags_AllowDupes(t *testing.T) {
 								Key:   "label-board",
 								Value: "asurada",
 							},
+							{
+								Key:   "user_agent",
+								Value: "recipe",
+							},
 						},
 						Input: &buildbucketpb.Build_Input{
 							Properties: inputProps,
@@ -306,7 +364,10 @@ func TestBackfill_ByTags_AllowDupes(t *testing.T) {
 					"build":          "asurada-release/R112-15357.0.0",
 					"suite":          "bvt-installer",
 					"label-board":    "asurada",
+					"user_agent":     "crosfleet",
+					"quota_account":  "release_p0",
 				},
+				Props: expectedProps.AsMap(),
 				Response: &buildbucketpb.Build{
 					Id: 1,
 				},

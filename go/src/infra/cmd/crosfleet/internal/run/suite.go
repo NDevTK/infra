@@ -172,6 +172,7 @@ func (c *suiteRun) dedupeRequests(ctx context.Context, runToLaunch *ctpRunLaunch
 			return false, nil, err
 		}
 
+		// TODO(b/271462223): Dedupe irrespective of qs_account.
 		var duplicateBuilds []*buildbucketpb.Build
 		for _, build := range incompleteBuilds {
 			if hasRequest, err := buildHasRequest(build, request); err != nil {

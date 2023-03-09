@@ -53,6 +53,8 @@ const (
 	// Maximum number of CTP builds that can be run from one "crosfleet run ..."
 	// command.
 	maxCTPRunsPerCmd = 12
+	// Release P0 QS account.
+	releaseP0QSaccount = "release_p0"
 )
 
 // testCommonFlags contains parameters common to the "run
@@ -68,6 +70,7 @@ type testCommonFlags struct {
 	secondaryImages      []string
 	release              string
 	qsAccount            string
+	releaseRetryUrgent   bool
 	maxRetries           int
 	repeats              int
 	priority             int64
@@ -113,6 +116,7 @@ A maximum of %d tests may be launched per "crosfleet run" command.`, maxCTPRunsP
 	f.StringVar(&c.pool, "pool", "", "Device pool to run tests on.")
 	f.StringVar(&c.qsAccount, "qs-account", "", `Optional Quota Scheduler account to use for this task. Overrides -priority flag.
 If no account is set, tests are scheduled using -priority flag.`)
+	f.BoolVar(&c.releaseRetryUrgent, "release-retry-urgent", false, `Use the release_p0 quota scheduler account. Only for use by release team.`)
 	f.IntVar(&c.maxRetries, "max-retries", 0, "Maximum retries allowed. No retry if set to 0.")
 	f.Int64Var(&c.priority, "priority", DefaultSwarmingPriority, `Swarming scheduling priority for tests, between 50 and 255 (lower values indicate higher priorities).
 If a Quota Scheduler account is specified via -qs-account, this value is not used.`)
@@ -373,6 +377,10 @@ func (l *ctpRunLauncher) ctpBuilder(model string) *builder.CTPBuilder {
 	testRunnerTags := l.cliFlags.commonTagsForAllBuilds(l.cmdName, l.mainArgsTag)
 	props := map[string]interface{}{}
 	buildbucket.AddServiceVersion(props)
+
+	if l.cliFlags.releaseRetryUrgent {
+		l.cliFlags.qsAccount = releaseP0QSaccount
+	}
 
 	return &builder.CTPBuilder{
 		BBClient:             l.bbClient.GetBuildsClient(),

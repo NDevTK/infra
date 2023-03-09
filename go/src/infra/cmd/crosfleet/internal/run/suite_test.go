@@ -46,12 +46,13 @@ func TestSuiteNoModels(t *testing.T) {
 	t.Parallel()
 	r := suiteRun{
 		testCommonFlags: testCommonFlags{
-			exitEarly: true,
-			repeats:   1,
-			priority:  DefaultSwarmingPriority,
-			release:   "R112-15357.0.0",
-			board:     "drallion",
-			pool:      "DUT_POOL_QUOTA",
+			exitEarly:          true,
+			repeats:            1,
+			priority:           DefaultSwarmingPriority,
+			releaseRetryUrgent: true,
+			release:            "R112-15357.0.0",
+			board:              "drallion",
+			pool:               "DUT_POOL_QUOTA",
 		},
 		allowDupes: true,
 	}
@@ -63,6 +64,9 @@ func TestSuiteNoModels(t *testing.T) {
 			ExpectedSchedule: []buildbucket.ScheduleParams{
 				{
 					BuilderName: "cros_test_platform",
+					Props: map[string]interface{}{
+						"requests.default.params.scheduling.qsAccount": "release_p0",
+					},
 					Tags: map[string]string{
 						"crosfleet-tool": "suite",
 						"label-board":    "drallion",
@@ -74,8 +78,7 @@ func TestSuiteNoModels(t *testing.T) {
 			},
 		},
 	}
-	err := r.innerRun(nil, []string{"bvt-installer"}, ctx, bb, ufs)
-	if err != nil {
+	if err := r.innerRun(nil, []string{"bvt-installer"}, ctx, bb, ufs); err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
 }
@@ -87,6 +90,7 @@ func TestSuiteModels(t *testing.T) {
 			exitEarly: true,
 			repeats:   1,
 			priority:  DefaultSwarmingPriority,
+			qsAccount: "release_direct_sched",
 			release:   "R112-15357.0.0",
 			board:     "drallion",
 			models:    []string{"drallion", "drallion360"},
@@ -102,6 +106,9 @@ func TestSuiteModels(t *testing.T) {
 			ExpectedSchedule: []buildbucket.ScheduleParams{
 				{
 					BuilderName: "cros_test_platform",
+					Props: map[string]interface{}{
+						"requests.default.params.scheduling.qsAccount": "release_direct_sched",
+					},
 					Tags: map[string]string{
 						"crosfleet-tool": "suite",
 						"label-board":    "drallion",
@@ -112,6 +119,9 @@ func TestSuiteModels(t *testing.T) {
 					},
 				}, {
 					BuilderName: "cros_test_platform",
+					Props: map[string]interface{}{
+						"requests.default.params.scheduling.qsAccount": "release_direct_sched",
+					},
 					Tags: map[string]string{
 						"crosfleet-tool": "suite",
 						"label-board":    "drallion",
@@ -162,6 +172,9 @@ func TestSuiteDedupeNoModels_Run(t *testing.T) {
 			ExpectedSchedule: []buildbucket.ScheduleParams{
 				{
 					BuilderName: "cros_test_platform",
+					Props: map[string]interface{}{
+						"requests.default.params.scheduling.priority": "140",
+					},
 					Tags: map[string]string{
 						"crosfleet-tool": "suite",
 						"label-board":    "drallion",
