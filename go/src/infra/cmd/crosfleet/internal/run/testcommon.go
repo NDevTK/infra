@@ -11,7 +11,6 @@ import (
 	"math"
 	"strings"
 	"sync"
-	"time"
 
 	"infra/cmd/crosfleet/internal/buildbucket"
 	"infra/cmd/crosfleet/internal/common"
@@ -23,14 +22,11 @@ import (
 
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
 
-	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp/builder"
 	"go.chromium.org/luci/auth/client/authcli"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
-	"go.chromium.org/luci/common/errors"
 	luciflag "go.chromium.org/luci/common/flag"
-	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 const (
@@ -488,157 +484,6 @@ func (l *ctpRunLauncher) confirmCTPBuildsAsync(ctx context.Context, buildLaunchL
 	return
 }
 
-// testPlatformRequest constructs a cros_test_platform.Request from the given
-// test plan, build tags, and command line flags.
-func (l *ctpRunLauncher) testPlatformRequest(model string, buildTags map[string]string) (*test_platform.Request, error) {
-	softwareDependencies, err := l.cliFlags.softwareDependencies()
-	if err != nil {
-		return nil, err
-	}
-	gsPath := fmt.Sprintf("gs://%s/%s", l.cliFlags.bucket, l.cliFlags.image)
-
-	request := &test_platform.Request{
-		TestPlan: l.testPlan,
-		Params: &test_platform.Request_Params{
-			FreeformAttributes: &test_platform.Request_Params_FreeformAttributes{
-				SwarmingDimensions: common.ToKeyvalSlice(l.cliFlags.addedDims),
-			},
-			HardwareAttributes: &test_platform.Request_Params_HardwareAttributes{
-				Model: model,
-			},
-			SoftwareAttributes: &test_platform.Request_Params_SoftwareAttributes{
-				BuildTarget: &chromiumos.BuildTarget{Name: l.cliFlags.board},
-			},
-			SoftwareDependencies: softwareDependencies,
-			Scheduling:           l.cliFlags.schedulingParams(),
-			Decorations: &test_platform.Request_Params_Decorations{
-				AutotestKeyvals: l.cliFlags.keyvals,
-				Tags:            common.ToKeyvalSlice(buildTags),
-			},
-			Retry: l.cliFlags.retryParams(),
-			Metadata: &test_platform.Request_Params_Metadata{
-				TestMetadataUrl:        gsPath,
-				DebugSymbolsArchiveUrl: gsPath,
-				ContainerMetadataUrl:   gsPath + "/" + containerMetadataURLSuffix,
-			},
-			Time: &test_platform.Request_Params_Time{
-				MaximumDuration: durationpb.New(
-					time.Duration(l.cliFlags.timeoutMins) * time.Minute),
-			},
-			RunViaCft:           l.cliFlags.cft,
-			ScheduleViaScheduke: l.cliFlags.scheduke,
-		},
-	}
-	// Handling multi-DUTs use case if secondaryBoards provided.
-	if len(l.cliFlags.secondaryBoards) > 0 {
-		request.Params.SecondaryDevices = l.cliFlags.secondaryDevices()
-	}
-	return request, nil
-}
-
-// softwareDependencies constructs test platform software dependencies from
-// test run flags.
-func (c *testCommonFlags) softwareDependencies() ([]*test_platform.Request_Params_SoftwareDependency, error) {
-	// Add dependencies from provision labels.
-	deps, err := softwareDepsFromProvisionLabels(c.provisionLabels)
-	if err != nil {
-		return nil, err
-	}
-	// Add build image GS bucket.
-	if c.bucket != "" {
-		deps = append(deps, &test_platform.Request_Params_SoftwareDependency{
-			Dep: &test_platform.Request_Params_SoftwareDependency_ChromeosBuildGcsBucket{
-				ChromeosBuildGcsBucket: c.bucket,
-			}})
-	}
-	// Add build image dependency.
-	if c.image != "" {
-		deps = append(deps, &test_platform.Request_Params_SoftwareDependency{
-			Dep: &test_platform.Request_Params_SoftwareDependency_ChromeosBuild{ChromeosBuild: c.image},
-		})
-	}
-	// Add lacros path dependency.
-	if c.lacrosPath != "" {
-		deps = append(deps, &test_platform.Request_Params_SoftwareDependency{
-			Dep: &test_platform.Request_Params_SoftwareDependency_LacrosGcsPath{LacrosGcsPath: c.lacrosPath},
-		})
-	}
-	return deps, nil
-}
-
-// softwareDepsFromProvisionLabels parses the given provision labels into a
-// []*test_platform.Request_Params_SoftwareDependency.
-func softwareDepsFromProvisionLabels(labels map[string]string) ([]*test_platform.Request_Params_SoftwareDependency, error) {
-	var deps []*test_platform.Request_Params_SoftwareDependency
-	for label, value := range labels {
-		dep := &test_platform.Request_Params_SoftwareDependency{}
-		switch label {
-		// These prefixes are interpreted by autotest's provisioning behavior;
-		// they are defined in the autotest repo, at utils/labellib.py
-		case "cros-version":
-			dep.Dep = &test_platform.Request_Params_SoftwareDependency_ChromeosBuild{
-				ChromeosBuild: value,
-			}
-		case "fwro-version":
-			dep.Dep = &test_platform.Request_Params_SoftwareDependency_RoFirmwareBuild{
-				RoFirmwareBuild: value,
-			}
-		case "fwrw-version":
-			dep.Dep = &test_platform.Request_Params_SoftwareDependency_RwFirmwareBuild{
-				RwFirmwareBuild: value,
-			}
-		default:
-			return nil, errors.Reason("invalid provisionable label %s", label).Err()
-		}
-		deps = append(deps, dep)
-	}
-	return deps, nil
-}
-
-// schedulingParams constructs Swarming scheduling params from test run flags.
-func (c *testCommonFlags) schedulingParams() *test_platform.Request_Params_Scheduling {
-	s := &test_platform.Request_Params_Scheduling{}
-
-	if managedPool, isManaged := managedPool(c.pool); isManaged {
-		s.Pool = &test_platform.Request_Params_Scheduling_ManagedPool_{ManagedPool: managedPool}
-	} else {
-		s.Pool = &test_platform.Request_Params_Scheduling_UnmanagedPool{UnmanagedPool: c.pool}
-	}
-
-	// Priority and Quota Scheduler account cannot coexist in a CTP request.
-	// Only attach priority if no quota account is specified.
-	if c.qsAccount != "" {
-		s.QsAccount = c.qsAccount
-	} else {
-		s.Priority = c.priority
-	}
-
-	return s
-}
-
-// managedPool returns the test_platform.Request_Params_Scheduling_ManagedPool
-// matching the given pool string, and returns false if no match was found.
-func managedPool(pool string) (test_platform.Request_Params_Scheduling_ManagedPool, bool) {
-	// Attempt to handle common pool name format discrepancies.
-	pool = strings.ToUpper(pool)
-	pool = strings.Replace(pool, "-", "_", -1)
-	pool = strings.Replace(pool, "DUT_POOL_", "MANAGED_POOL_", 1)
-
-	enum, ok := test_platform.Request_Params_Scheduling_ManagedPool_value[pool]
-	if !ok {
-		return 0, false
-	}
-	return test_platform.Request_Params_Scheduling_ManagedPool(enum), true
-}
-
-// schedulingParams constructs test retry params from test run flags.
-func (c *testCommonFlags) retryParams() *test_platform.Request_Params_Retry {
-	return &test_platform.Request_Params_Retry{
-		Max:   int32(c.maxRetries),
-		Allow: c.maxRetries != 0,
-	}
-}
-
 // testOrSuiteNamesTag formats a label for the given test/suite names, to be
 // added to the build tags of a cros_test_platform build launched for the given
 // tests/suites.
@@ -656,36 +501,6 @@ func testOrSuiteNamesTag(names []string) string {
 		return label[:maxSwarmingTagLength]
 	}
 	return label
-}
-
-// secondaryDevices constructs secondary devices data for a test platform
-// request from test run flags.
-func (c *testCommonFlags) secondaryDevices() []*test_platform.Request_Params_SecondaryDevice {
-	var secondary_devices []*test_platform.Request_Params_SecondaryDevice
-	for i, b := range c.secondaryBoards {
-		sd := &test_platform.Request_Params_SecondaryDevice{
-			SoftwareAttributes: &test_platform.Request_Params_SoftwareAttributes{
-				BuildTarget: &chromiumos.BuildTarget{Name: b},
-			},
-		}
-		if len(c.secondaryImages) > 0 && c.secondaryImages[i] != "" {
-			sd.SoftwareDependencies = append(sd.SoftwareDependencies, &test_platform.Request_Params_SoftwareDependency{
-				Dep: &test_platform.Request_Params_SoftwareDependency_ChromeosBuild{ChromeosBuild: c.secondaryImages[i]},
-			})
-		}
-		if len(c.secondaryModels) > 0 {
-			sd.HardwareAttributes = &test_platform.Request_Params_HardwareAttributes{
-				Model: c.secondaryModels[i],
-			}
-		}
-		if len(c.secondaryLacrosPaths) > 0 && c.secondaryLacrosPaths[i] != "" {
-			sd.SoftwareDependencies = append(sd.SoftwareDependencies, &test_platform.Request_Params_SoftwareDependency{
-				Dep: &test_platform.Request_Params_SoftwareDependency_LacrosGcsPath{LacrosGcsPath: c.secondaryLacrosPaths[i]},
-			})
-		}
-		secondary_devices = append(secondary_devices, sd)
-	}
-	return secondary_devices
 }
 
 // verifyFleetTestsPolicy validate tests based on fleet-side permission check.
