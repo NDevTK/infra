@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,9 @@ package main
 
 import (
 	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/common/logging/gologger"
-	"go.chromium.org/luci/config/server/cfgmodule"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/openid"
-	"go.chromium.org/luci/server/cron"
-	"go.chromium.org/luci/server/gaeemulation"
-	"go.chromium.org/luci/server/module"
 	"google.golang.org/grpc"
 
 	pb "infra/vm_leaser/api/v1"
@@ -28,22 +23,13 @@ func InstallServices(s *frontend.Server, srv grpc.ServiceRegistrar) {
 }
 
 func main() {
-	modules := []module.Module{
-		gaeemulation.NewModuleFromFlags(),
-		cfgmodule.NewModuleFromFlags(),
-		cron.NewModuleFromFlags(),
-	}
-
 	// TODO(justinsuen): Temporarily use localhost endpoint. Need to add endpoint
 	// to configs and dynamically determine GRPCAddr.
 	options := server.Options{
 		GRPCAddr: "127.0.0.1:50051",
 	}
 
-	server.Main(&options, modules, func(srv *server.Server) error {
-		srv.Context = gologger.StdConfig.Use(srv.Context)
-		srv.Context = logging.SetLevel(srv.Context, logging.Debug)
-
+	server.Main(&options, nil, func(srv *server.Server) error {
 		logging.Infof(srv.Context, "Starting server.")
 
 		// This allows auth to use Identity tokens.
