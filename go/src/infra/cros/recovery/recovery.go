@@ -44,6 +44,9 @@ const (
 //   - Load execution plan for required task with verification.
 //   - Send DUTs info to inventory.
 func Run(ctx context.Context, args *RunArgs) (rErr error) {
+	if args == nil {
+		panic("caller error at .../cros/recovery/recovery.go: args must not be nil")
+	}
 	if err := args.verify(); err != nil {
 		return errors.Annotate(err, "run recovery: verify input").Err()
 	}
