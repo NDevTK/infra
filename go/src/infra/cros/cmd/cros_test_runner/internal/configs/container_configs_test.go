@@ -5,9 +5,10 @@
 package configs
 
 import (
+	"testing"
+
 	"infra/cros/cmd/cros_test_runner/internal/containers"
 	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
-	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/chromiumos/config/go/build/api"
@@ -45,7 +46,7 @@ func TestGetContainer_SupportedContainerType(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		container, err = contConfig.GetContainer(containers.CacheServerTemplatedContainerType)
-		So(container, ShouldNotBeNil)
+		So(container.GetContainerType(), ShouldEqual, containers.CacheServerTemplatedContainerType)
 		So(err, ShouldBeNil)
 	})
 }
