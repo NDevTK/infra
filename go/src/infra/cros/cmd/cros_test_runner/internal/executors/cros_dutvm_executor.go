@@ -100,7 +100,8 @@ func (ex *CrosDutVmExecutor) vmGetImageCommandExecution(
 	return err
 }
 
-// vmReleaseCommandExecution executes the "Release Dut VM" step.
+// vmReleaseCommandExecution executes the "Release Dut VM" step. This step is
+// non-critical: all errors will be logged as warnings.
 func (ex *CrosDutVmExecutor) vmReleaseCommandExecution(
 	ctx context.Context,
 	cmd *commands.DutVmReleaseCmd) error {
@@ -110,14 +111,17 @@ func (ex *CrosDutVmExecutor) vmReleaseCommandExecution(
 
 	instanceApi, err := ex.getInstanceApi()
 	if err != nil {
-		return err
+		logging.Warningf(ctx, "failed to get instance API from vmlab: %v", err)
+		return nil
 	}
 
 	err = instanceApi.Delete(cmd.DutVm)
 	if err == nil {
 		logging.Infof(ctx, "successfully released Dut VM: %s", cmd.DutVm.Name)
+	} else {
+		logging.Warningf(ctx, "failed to delete instance by vmlab: %v", err)
 	}
-	return err
+	return nil
 }
 
 // vmLeaseCommandExecution executes the "Lease Dut VM" step.

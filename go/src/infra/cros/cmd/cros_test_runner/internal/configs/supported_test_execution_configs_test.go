@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"infra/cros/cmd/cros_test_runner/common"
 )
 
 func TestGenerateHwConfigs(t *testing.T) {
@@ -23,6 +24,26 @@ func TestGenerateHwConfigs(t *testing.T) {
 		So(hwConfigs.CleanupConfigs, ShouldNotBeNil)
 		So(len(hwConfigs.MainConfigs), ShouldBeGreaterThan, 0)
 		So(len(hwConfigs.CleanupConfigs), ShouldBeGreaterThan, 0)
+	})
+
+	Convey("hwConfigsForPlatform for VM", t, func() {
+		hwConfigs := hwConfigsForPlatform(nil, common.BotProviderGce)
+
+		So(hwConfigs.MainConfigs, ShouldContain, DutVmRelease_CrosDutVmExecutor)
+		So(hwConfigs.CleanupConfigs, ShouldContain, DutVmRelease_CrosDutVmExecutor)
+		So(hwConfigs.MainConfigs, ShouldNotContain, DutServerStart_CrosDutExecutor)
+		So(hwConfigs.MainConfigs, ShouldNotContain, UpdateDutState_NoExecutor)
+		So(hwConfigs.CleanupConfigs, ShouldNotContain, UpdateDutState_NoExecutor)
+	})
+
+	Convey("hwConfigsForPlatform for HW", t, func() {
+		hwConfigs := hwConfigsForPlatform(nil, common.BotProviderDrone)
+
+		So(hwConfigs.MainConfigs, ShouldContain, DutServerStart_CrosDutExecutor)
+		So(hwConfigs.MainConfigs, ShouldContain, UpdateDutState_NoExecutor)
+		So(hwConfigs.CleanupConfigs, ShouldContain, UpdateDutState_NoExecutor)
+		So(hwConfigs.MainConfigs, ShouldNotContain, DutVmRelease_CrosDutVmExecutor)
+		So(hwConfigs.CleanupConfigs, ShouldNotContain, DutVmRelease_CrosDutVmExecutor)
 	})
 }
 

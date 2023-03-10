@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 
+	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/data"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
@@ -64,9 +65,33 @@ var CacheServerStart_CacheServerExecutor = &CommandExecutorPairedConfig{CommandT
 var UpdateContainerImagesLocally_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.UpdateContainerImagesLocallyCmdType, ExecutorType: executors.NoExecutorType}
 var FetchContainerMetadata_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.FetchContainerMetadataCmdType, ExecutorType: executors.NoExecutorType}
 var ParseArgs_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.ParseArgsCmdType, ExecutorType: executors.NoExecutorType}
+var DutVmCacheServerStart_CacheServerExecutor = &CommandExecutorPairedConfig{CommandType: commands.DutVmCacheServerStartCmdType, ExecutorType: executors.CacheServerExecutorType}
+var DutVmLease_CrosDutVmExecutor = &CommandExecutorPairedConfig{CommandType: commands.DutVmLeaseCmdType, ExecutorType: executors.CrosDutVmExecutorType}
+var DutVmRelease_CrosDutVmExecutor = &CommandExecutorPairedConfig{CommandType: commands.DutVmReleaseCmdType, ExecutorType: executors.CrosDutVmExecutorType}
+var DutVmGetImage_CrosDutVmExecutor = &CommandExecutorPairedConfig{CommandType: commands.DutVmGetImageCmdType, ExecutorType: executors.CrosDutVmExecutorType}
+var DutServiceStart_CrosDutVmExecutor = &CommandExecutorPairedConfig{CommandType: commands.DutServiceStartCmdType, ExecutorType: executors.CrosDutVmExecutorType}
 
 // GenerateHwConfigs generates hw tests execution for lab environment.
 func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig) *Configs {
+	platform := common.GetBotProvider()
+	return hwConfigsForPlatform(cftHwStepsConfig, platform)
+}
+
+// hwConfigsForPlatform generates platform-specific configs.
+// GCE platform will get configs for VM test on GCE.
+// Non-GCE platforms (Drone and Unknown) will get configs for HW test on Drone.
+func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform common.SwarmingBotProvider) *Configs {
+	// Overwrite configs that don't apply to VM test
+	if platform == common.BotProviderGce {
+		if cftHwStepsConfig == nil {
+			cftHwStepsConfig = &tpcommon.HwTestConfig{}
+		}
+		// Skip DutTopology and Provision steps, as those are done in the
+		// non-skippable Starting Dut Service step
+		cftHwStepsConfig.SkipLoadingDutTopology = true
+		cftHwStepsConfig.SkipProvision = true
+		cftHwStepsConfig.SkipStartingDutService = false
+	}
 	mainConfigs := []*CommandExecutorPairedConfig{}
 	cleanupConfigs := []*CommandExecutorPairedConfig{}
 
@@ -90,8 +115,17 @@ func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestCon
 
 	// Start dut server command
 	if !cftHwStepsConfig.GetSkipStartingDutService() {
-		mainConfigs = append(mainConfigs,
-			DutServerStart_CrosDutExecutor)
+		if platform == common.BotProviderGce {
+			// Prepare image, lease VM, start cache server before finally start Dut service
+			mainConfigs = append(mainConfigs,
+				DutVmGetImage_CrosDutVmExecutor,
+				DutVmLease_CrosDutVmExecutor,
+				DutVmCacheServerStart_CacheServerExecutor,
+				DutServiceStart_CrosDutVmExecutor)
+		} else {
+			mainConfigs = append(mainConfigs,
+				DutServerStart_CrosDutExecutor)
+		}
 	}
 
 	// Provision commands
@@ -140,14 +174,20 @@ func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestCon
 		}
 	}
 
+	// Recycle Dut is either update state to need repair (HW) or release (VM)
+	dutRecycle := UpdateDutState_NoExecutor
+	if platform == common.BotProviderGce {
+		dutRecycle = DutVmRelease_CrosDutVmExecutor
+	}
+
 	// Stop CTR and result processing commands
 	mainConfigs = append(mainConfigs,
 		CtrStop_CtrExecutor,
-		UpdateDutState_NoExecutor,
+		dutRecycle,
 		ProcessResults_NoExecutor)
 	cleanupConfigs = append(cleanupConfigs,
 		CtrStop_CtrExecutor,
-		UpdateDutState_NoExecutor,
+		dutRecycle,
 		ProcessResults_NoExecutor)
 
 	return &Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}

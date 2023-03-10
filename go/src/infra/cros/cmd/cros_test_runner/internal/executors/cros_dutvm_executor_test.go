@@ -138,7 +138,7 @@ func TestCrosDutVmExecutor_ReleaseVm(t *testing.T) {
 
 		err := exec.ExecuteCommand(ctx, cmd)
 
-		So(err, ShouldNotBeNil)
+		So(err, ShouldBeNil)
 	})
 }
 
