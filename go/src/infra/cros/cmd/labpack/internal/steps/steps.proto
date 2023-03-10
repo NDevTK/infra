@@ -35,6 +35,9 @@ message LabpackInput {
   string bbid = 11;
   // swarming_task_id is the ID of the swarming task.
   string swarming_task_id = 12;
+  // Caller identifies who or what called labpack or caused it to be executed.
+  // Prototypical examples include "test_runner.py" or "cros_test_runner".
+  string caller = 13;
 };
 
 // LabpackResponse represents result of execution the task on unit.
