@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b230f5f4_590771d9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1540363
+      },
+      "writtenOn": "2023-03-10T01:20:54Z",
+      "side": 1,
+      "message": "PTAL",
+      "revId": "17906eccbfa5df0f61785bbfb093c10ea4ae505e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8c415e3e_3cd02622",
@@ -20,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ec884e94_1a00eed0",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/common/network.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1540363
+      },
+      "writtenOn": "2023-03-10T01:20:54Z",
+      "side": 1,
+      "message": "Will line 22 cover that error case?",
+      "parentUuid": "8c415e3e_3cd02622",
+      "revId": "17906eccbfa5df0f61785bbfb093c10ea4ae505e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "705312f6_c1045d9e",
         "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/configs/container_configs.go",
         "patchSetId": 1
@@ -31,6 +66,24 @@
       "writtenOn": "2023-03-10T00:58:56Z",
       "side": 1,
       "message": "Is this the bespoke image you created for this or something else? Def ok to keep for now if former.",
+      "revId": "17906eccbfa5df0f61785bbfb093c10ea4ae505e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "309a1672_f07c710d",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/configs/container_configs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1540363
+      },
+      "writtenOn": "2023-03-10T01:20:54Z",
+      "side": 1,
+      "message": "A temporary custom image to unblock the integration work. Line 62 has a TODO",
+      "parentUuid": "705312f6_c1045d9e",
       "revId": "17906eccbfa5df0f61785bbfb093c10ea4ae505e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
