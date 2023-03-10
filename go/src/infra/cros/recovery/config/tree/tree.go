@@ -5,8 +5,6 @@
 package tree
 
 import (
-	"fmt"
-
 	"infra/cros/recovery/config"
 )
 
@@ -107,7 +105,7 @@ func (t *planConverter) convertAcion(name string) {
 		RunControl:             action.GetRunControl().String(),
 	}
 	if action.GetExecTimeout() != nil {
-		a.Timeout = fmt.Sprintf("%s", action.GetExecTimeout().AsDuration())
+		a.Timeout = action.GetExecTimeout().AsDuration().String()
 	}
 	t.actions[name] = a
 	for _, actionName := range action.GetConditions() {
