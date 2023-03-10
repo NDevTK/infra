@@ -234,6 +234,30 @@
       },
       "revId": "17906eccbfa5df0f61785bbfb093c10ea4ae505e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "13b51671_ee185c7c",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/executors/cros_dutvm_executor.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-03-10T21:57:45Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "1be9a26b_509b81c4",
+      "range": {
+        "startLine": 139,
+        "startChar": 0,
+        "endLine": 155,
+        "endChar": 2
+      },
+      "revId": "17906eccbfa5df0f61785bbfb093c10ea4ae505e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
