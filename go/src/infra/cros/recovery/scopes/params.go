@@ -13,7 +13,7 @@ const (
 	ParamKeyInventoryServicePath     = "inventory_service_path"
 )
 
-// Special type to describe mapping of params of context
+// ParamsMap is a special type to describe mapping of params of context
 type ParamsMap = map[string]any
 
 // WithParams sets params value map to the context.
