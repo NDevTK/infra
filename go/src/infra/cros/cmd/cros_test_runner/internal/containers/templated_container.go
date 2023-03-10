@@ -52,13 +52,17 @@ func (cont *TemplatedContainer) Initialize(
 		if err = cont.initializeCrosDutTemplate(ctx, t.CrosDut); err != nil {
 			return errors.Annotate(err, "initialization failed for cros-dut template: ").Err()
 		}
+	case *api.Template_CacheServer:
+		if err = cont.initializeCacheServerTemplate(ctx, t.CacheServer); err != nil {
+			return errors.Annotate(err, "initialization failed for cache-server template: ").Err()
+		}
 	case *api.Template_CrosProvision:
 		if err = cont.initializeCrosProvisionTemplate(ctx, t.CrosProvision); err != nil {
-			return errors.Annotate(err, "initialization failed for cros-dut template: ").Err()
+			return errors.Annotate(err, "initialization failed for cros-provision template: ").Err()
 		}
 	case *api.Template_CrosTest:
 		if err = cont.initializeCrosTestTemplate(ctx, t.CrosTest); err != nil {
-			return errors.Annotate(err, "initialization failed for cros-dut template: ").Err()
+			return errors.Annotate(err, "initialization failed for cros-test template: ").Err()
 		}
 	case *api.Template_CrosPublish:
 		if err = cont.initializeCrosPublishTemplate(ctx, t.CrosPublish); err != nil {
@@ -99,6 +103,18 @@ func (cont *TemplatedContainer) initializeCrosDutTemplate(
 
 	if dutTemplate.GetDutAddress() == nil {
 		return fmt.Errorf("No dut address provided for dut template")
+	}
+
+	return nil
+}
+
+// initializeCacheServerTemplate initializes cache server template.
+func (cont *TemplatedContainer) initializeCacheServerTemplate(
+	ctx context.Context,
+	cacheTemplate *api.CacheServerTemplate) error {
+
+	if cacheTemplate == nil {
+		return fmt.Errorf("Provided CacheServerTemplate is nil!")
 	}
 
 	return nil
