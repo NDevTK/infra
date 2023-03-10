@@ -54,7 +54,4 @@ func TestModifyingSealedActionShouldFail(t *testing.T) {
 	if diff := cmp.Diff(fmt.Sprintf("%d:%d", 3+12*60*60, 0), sealTime); diff != "" {
 		t.Errorf("unexpected diff: %s", diff)
 	}
-
-	testClock = testclock.New(time.Unix(13*60*60, 0).UTC())
-	ctx = clock.Set(ctx, testClock)
 }
