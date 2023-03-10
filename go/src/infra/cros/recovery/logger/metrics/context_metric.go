@@ -15,7 +15,7 @@ const (
 	deafultMetricActionKey defaultMetricActionKeyType = "default_metric_action"
 )
 
-// With sets metrics to the context.
+// WithAction sets metrics to the context.
 // If Logger is not provided process will be finished with panic.
 func WithAction(ctx context.Context, action *Action) context.Context {
 	if action != nil {
