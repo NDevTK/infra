@@ -5,9 +5,10 @@
 package configs
 
 import (
+	"testing"
+
 	"infra/cros/cmd/cros_test_runner/internal/executors"
 	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
-	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -47,6 +48,10 @@ func TestGetExecutor_SupportedExecutorType(t *testing.T) {
 
 		executor, err = execConfig.GetExecutor(executors.CrosDutExecutorType)
 		So(executor, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		executor, err = execConfig.GetExecutor(executors.CrosDutVmExecutorType)
+		So(executor.GetExecutorType(), ShouldEqual, executors.CrosDutVmExecutorType)
 		So(err, ShouldBeNil)
 
 		executor, err = execConfig.GetExecutor(executors.CrosProvisionExecutorType)
