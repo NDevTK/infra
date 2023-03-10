@@ -86,6 +86,70 @@
       "parentUuid": "705312f6_c1045d9e",
       "revId": "17906eccbfa5df0f61785bbfb093c10ea4ae505e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aa1dc99a_2f31fbf0",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/configs/container_configs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-03-10T01:28:18Z",
+      "side": 1,
+      "message": "if long term this is gonna be a const, consider placing this in common.constants.",
+      "parentUuid": "309a1672_f07c710d",
+      "revId": "17906eccbfa5df0f61785bbfb093c10ea4ae505e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "342c8b53_d3e5e162",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/executors/cache_server_executor.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-03-10T01:28:18Z",
+      "side": 1,
+      "message": "Looks like Chris is also implementing one here: https://crrev.com/c/4241716\n\nThey look very different from each other. So may be consider renaming it to avoid conflict.",
+      "range": {
+        "startLine": 48,
+        "startChar": 10,
+        "endLine": 48,
+        "endChar": 29
+      },
+      "revId": "17906eccbfa5df0f61785bbfb093c10ea4ae505e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "772d2f78_60fd4ad3",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/executors/cros_dutvm_executor.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-03-10T01:28:18Z",
+      "side": 1,
+      "message": "For my knowledge, long term is this gonna be retrieved from input?",
+      "range": {
+        "startLine": 139,
+        "startChar": 0,
+        "endLine": 155,
+        "endChar": 2
+      },
+      "revId": "17906eccbfa5df0f61785bbfb093c10ea4ae505e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
