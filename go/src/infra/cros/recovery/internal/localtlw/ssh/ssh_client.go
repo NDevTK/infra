@@ -62,9 +62,9 @@ func (c *sshClientImpl) Client() *ssh.Client {
 // localAddr is passed to net.Listen and typically takes the form "host:port" or "ip:port".
 // remoteAddr uses the same format but is resolved by the remote SSH server.
 // If non-nil, errFunc will be invoked asynchronously on a goroutine with connection or forwarding errors.
-func (s *sshClientImpl) ForwardLocalToRemote(localAddr, remoteAddr string, errFunc func(error)) (*Forwarder, error) {
+func (c *sshClientImpl) ForwardLocalToRemote(localAddr, remoteAddr string, errFunc func(error)) (*Forwarder, error) {
 	connFunc := func() (net.Conn, error) {
-		return s.Client().Dial(supportNetwork, remoteAddr)
+		return c.Client().Dial(supportNetwork, remoteAddr)
 	}
 	l, err := net.Listen(supportNetwork, localAddr)
 	if err != nil {
