@@ -53,6 +53,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f87c447b_a14688b3",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/common/network.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1540363
+      },
+      "writtenOn": "2023-03-10T21:54:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ec884e94_1a00eed0",
+      "revId": "17906eccbfa5df0f61785bbfb093c10ea4ae505e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "705312f6_c1045d9e",
