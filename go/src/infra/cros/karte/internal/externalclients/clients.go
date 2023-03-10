@@ -10,7 +10,9 @@ import (
 	"cloud.google.com/go/bigquery"
 )
 
-var BQClientKey = "karte bigquery client"
+type key string
+
+var BQClientKey key = "karte bigquery client"
 
 // UseBQ installs the bigquery client on the context
 func UseBQ(ctx context.Context, bqClient *bigquery.Client) context.Context {
