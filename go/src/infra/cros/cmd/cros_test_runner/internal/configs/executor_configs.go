@@ -6,6 +6,7 @@ package configs
 
 import (
 	"fmt"
+
 	"infra/cros/cmd/cros_test_runner/internal/containers"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
@@ -60,6 +61,13 @@ func (cfg *ExecutorConfig) GetExecutor(execType interfaces.ExecutorType) (interf
 			return nil, errors.Annotate(err, "error during getting container for executor type %s", execType).Err()
 		}
 		exec = executors.NewCrosDutExecutor(container)
+
+	case executors.CrosDutVmExecutorType:
+		container, err := cfg.ContainerConfig.GetContainer(containers.CrosDutTemplatedContainerType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting container for executor type %s", execType).Err()
+		}
+		exec = executors.NewCrosDutVmExecutor(container)
 
 	case executors.CrosProvisionExecutorType:
 		container, err := cfg.ContainerConfig.GetContainer(containers.CrosProvisionTemplatedContainerType)
