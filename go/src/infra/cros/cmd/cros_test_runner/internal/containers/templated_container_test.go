@@ -6,8 +6,9 @@ package containers
 
 import (
 	"context"
-	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
 	"testing"
+
+	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -97,6 +98,33 @@ func TestCrosProvisionTemplate(t *testing.T) {
 			InputRequest: &api.CrosProvisionRequest{},
 		}
 		err := cont.initializeCrosProvisionTemplate(ctx, provisionTemplate)
+		So(err, ShouldBeNil)
+	})
+}
+
+func TestCacheServerTemplate(t *testing.T) {
+	t.Parallel()
+
+	createContainer := func() *TemplatedContainer {
+		wantContType := CacheServerTemplatedContainerType
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		cont := NewTemplatedContainer(wantContType, "test-container", "container-image", ctr)
+		return cont
+	}
+
+	Convey("Initialize_empty_template", t, func() {
+		ctx := context.Background()
+		cont := createContainer()
+		err := cont.initializeCacheServerTemplate(ctx, nil)
+		So(err, ShouldNotBeNil)
+	})
+
+	Convey("Initialize_success", t, func() {
+		ctx := context.Background()
+		cont := createContainer()
+		template := &api.CacheServerTemplate{}
+		err := cont.initializeCacheServerTemplate(ctx, template)
 		So(err, ShouldBeNil)
 	})
 }
