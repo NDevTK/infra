@@ -106,6 +106,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7cd6cd62_4b776cf7",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/configs/container_configs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1540363
+      },
+      "writtenOn": "2023-03-10T18:52:23Z",
+      "side": 1,
+      "message": "Ack. Will do after the formal image is built.",
+      "parentUuid": "aa1dc99a_2f31fbf0",
+      "revId": "17906eccbfa5df0f61785bbfb093c10ea4ae505e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "342c8b53_d3e5e162",
@@ -129,6 +147,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d8ab2b9f_4cd4a664",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/executors/cache_server_executor.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1540363
+      },
+      "writtenOn": "2023-03-10T18:52:23Z",
+      "side": 1,
+      "message": "Ack. Will merge conflicts after his CL is submitted.",
+      "parentUuid": "342c8b53_d3e5e162",
+      "range": {
+        "startLine": 48,
+        "startChar": 10,
+        "endLine": 48,
+        "endChar": 29
+      },
+      "revId": "17906eccbfa5df0f61785bbfb093c10ea4ae505e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "772d2f78_60fd4ad3",
@@ -142,6 +184,30 @@
       "writtenOn": "2023-03-10T01:28:18Z",
       "side": 1,
       "message": "For my knowledge, long term is this gonna be retrieved from input?",
+      "range": {
+        "startLine": 139,
+        "startChar": 0,
+        "endLine": 155,
+        "endChar": 2
+      },
+      "revId": "17906eccbfa5df0f61785bbfb093c10ea4ae505e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1be9a26b_509b81c4",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/executors/cros_dutvm_executor.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1540363
+      },
+      "writtenOn": "2023-03-10T18:52:23Z",
+      "side": 1,
+      "message": "I think so. Although not sure where would be the best place to provide these values.",
+      "parentUuid": "772d2f78_60fd4ad3",
       "range": {
         "startLine": 139,
         "startChar": 0,
