@@ -12,11 +12,14 @@ import (
 const (
 	NoExecutorType             interfaces.ExecutorType = "NoExecutor"
 	InvServiceExecutorType     interfaces.ExecutorType = "InvServiceExecutor"
+	CacheServerExecutorType    interfaces.ExecutorType = "CacheServerExecutor"
 	CtrExecutorType            interfaces.ExecutorType = "CtrExecutor"
 	CrosDutExecutorType        interfaces.ExecutorType = "CrosDutExecutor"
 	CrosProvisionExecutorType  interfaces.ExecutorType = "CrosProvisionExecutor"
 	CrosTestExecutorType       interfaces.ExecutorType = "CrosTestExecutor"
+	CrosTestFinderExecutorType interfaces.ExecutorType = "CrosTestFinderExecutor"
 	CrosGcsPublishExecutorType interfaces.ExecutorType = "CrosGcsPublishExecutor"
 	CrosTkoPublishExecutorType interfaces.ExecutorType = "CrosTkoPublishExecutor"
 	CrosRdbPublishExecutorType interfaces.ExecutorType = "CrosRdbPublishExecutor"
+	SshTunnelExecutorType      interfaces.ExecutorType = "SshTunnelExecutor"
 )

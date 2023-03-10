@@ -172,6 +172,64 @@ func (cfg *CommandConfig) GetCommand(
 	case commands.TkoDirectUploadCmdType:
 		cmd = commands.NewTkoDirectUploadCmd()
 
+	case commands.SshStartTunnelCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewSshStartTunnelCmd(exec)
+
+	case commands.SshStartReverseTunnelCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewSshStartReverseTunnelCmd(exec)
+
+	case commands.SshStopTunnelsCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewSshStopTunnelsCmd(exec)
+
+	case commands.CacheServerStartCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewCacheServerStartCmd(exec)
+
+	case commands.BuildDutTopologyCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewBuildDutTopologyCmd(exec)
+
+	case commands.TestFinderServiceStartCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewTestFinderServiceStartCmd(exec)
+
+	case commands.TestFinderExecutionCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewTestFinderExecutionCmd(exec)
+
+	case commands.UpdateContainerImagesLocallyCmdType:
+		cmd = commands.NewUpdateContainerImagesLocallyCmd()
+
+	case commands.FetchContainerMetadataCmdType:
+		cmd = commands.NewFetchContainerMetadataCmd()
+
+	case commands.ParseArgsCmdType:
+		cmd = commands.NewParseArgsCmd()
+
 	default:
 		return nil, fmt.Errorf("Command type %s not supported in command configs!", cmdType)
 	}

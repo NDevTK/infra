@@ -96,6 +96,23 @@ func (cfg *ExecutorConfig) GetExecutor(execType interfaces.ExecutorType) (interf
 		}
 		exec = executors.NewCrosPublishExecutor(container, execType)
 
+	case executors.SshTunnelExecutorType:
+		exec = executors.NewSshTunnelExecutor()
+
+	case executors.CacheServerExecutorType:
+		container, err := cfg.ContainerConfig.GetContainer(containers.CacheServerTemplatedContainerType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting container for executor type %s", execType).Err()
+		}
+		exec = executors.NewCacheServerExecutor(container)
+
+	case executors.CrosTestFinderExecutorType:
+		container, err := cfg.ContainerConfig.GetContainer(containers.CrosTestFinderTemplatedContainerType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting container for executor type %s", execType).Err()
+		}
+		exec = executors.NewCrosTestFinderExecutor(container)
+
 	default:
 		return nil, fmt.Errorf("Executor type %s not supported in executor configs!", execType)
 	}

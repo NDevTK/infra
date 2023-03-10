@@ -27,4 +27,14 @@ const (
 	CtrCancelingCmdErrString               = "canceling Cmd"
 	UfsServiceUrl                          = "ufs.api.cr.dev"
 	TkoParseScriptPath                     = "/usr/local/autotest/tko/parse"
+	DutConnectionPort                      = 22
+	// OS file constants
+	// OWNER: Execute, Read, Write
+	// GROUP: Execute, Read
+	// OTHER: Execute, Read
+	DirPermission = 0755
+	// OWNER: Read, Write
+	// GROUP: Read
+	// OTHER: Read
+	FilePermission = 0644
 )

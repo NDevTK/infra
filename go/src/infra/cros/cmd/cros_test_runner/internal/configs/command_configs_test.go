@@ -109,7 +109,39 @@ func TestGetCommand_SupportedCmdType(t *testing.T) {
 		So(cmd, ShouldNotBeNil)
 		So(err, ShouldBeNil)
 
-		cmd, err = cmdConfig.GetCommand(commands.GcsPublishUploadCmdType, executors.CrosGcsPublishExecutorType)
+		cmd, err = cmdConfig.GetCommand(commands.SshStartReverseTunnelCmdType, executors.SshTunnelExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.SshStartTunnelCmdType, executors.SshTunnelExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.SshStopTunnelsCmdType, executors.SshTunnelExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.TestFinderServiceStartCmdType, executors.CrosTestFinderExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.TestFinderExecutionCmdType, executors.CrosTestFinderExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.BuildDutTopologyCmdType, executors.InvServiceExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.CacheServerStartCmdType, executors.CacheServerExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.ParseArgsCmdType, executors.NoExecutorType)
+		So(cmd, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		cmd, err = cmdConfig.GetCommand(commands.UpdateContainerImagesLocallyCmdType, executors.NoExecutorType)
 		So(cmd, ShouldNotBeNil)
 		So(err, ShouldBeNil)
 	})

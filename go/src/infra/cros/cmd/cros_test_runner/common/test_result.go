@@ -141,6 +141,9 @@ func GetGcsUrl(gsRoot string) string {
 
 // GetGcsClickableLink constructs the gcs cliclable link from provided gs url.
 func GetGcsClickableLink(gsUrl string) string {
+	if gsUrl == "" {
+		return ""
+	}
 	gsPrefix := "gs://"
 	urlSuffix := gsUrl
 	if strings.HasPrefix(gsUrl, gsPrefix) {

@@ -10,20 +10,37 @@ import (
 
 // All supported command types.
 const (
+	// Server related commands
+	CommandsServerCmdType interfaces.CommandType = "CommandsServer"
+
 	// Build/env related commands
 	BuildInputValidationCmdType interfaces.CommandType = "BuildInputValidation"
 	ParseEnvInfoCmdType         interfaces.CommandType = "ParseEnvInfoCmd"
 	ProcessResultsCmdType       interfaces.CommandType = "ProcessResultsCmd"
+	ParseArgsCmdType            interfaces.CommandType = "ParseArgs"
+
+	// Container related commands
+	UpdateContainerImagesLocallyCmdType interfaces.CommandType = "UpdateContainerImagesLocally"
+	FetchContainerMetadataCmdType       interfaces.CommandType = "FetchContainerMetadata"
 
 	// Inventory service related commands
-	InvServiceStartCmdType interfaces.CommandType = "InvServiceStart"
-	InvServiceStopCmdType  interfaces.CommandType = "InvServiceStop"
-	LoadDutTopologyCmdType interfaces.CommandType = "LoadDutTopology"
+	InvServiceStartCmdType  interfaces.CommandType = "InvServiceStart"
+	InvServiceStopCmdType   interfaces.CommandType = "InvServiceStop"
+	LoadDutTopologyCmdType  interfaces.CommandType = "LoadDutTopology"
+	BuildDutTopologyCmdType interfaces.CommandType = "BuildDutTopology"
 
 	// Ctr service related commands
 	CtrServiceStartAsyncCmdType interfaces.CommandType = "CtrServiceStartAsync"
 	CtrServiceStopCmdType       interfaces.CommandType = "CtrServiceStop"
 	GcloudAuthCmdType           interfaces.CommandType = "GcloudAuth"
+
+	// SSH service related commands
+	SshStartTunnelCmdType        interfaces.CommandType = "SshTunnelStart"
+	SshStartReverseTunnelCmdType interfaces.CommandType = "SshReverseTunnelStart"
+	SshStopTunnelsCmdType        interfaces.CommandType = "SshTunnelsStop"
+
+	// Cache server related commands
+	CacheServerStartCmdType interfaces.CommandType = "CacheServerStart"
 
 	// Dut service related commands
 	DutServiceStartCmdType interfaces.CommandType = "DutServiceStart"
@@ -36,6 +53,10 @@ const (
 	// Provision service related commands
 	ProvisionServiceStartCmdType interfaces.CommandType = "ProvisionServiceStart"
 	ProvisonInstallCmdType       interfaces.CommandType = "ProvisonInstall"
+
+	// Test Finder service related commands
+	TestFinderServiceStartCmdType interfaces.CommandType = "TestFinderServiceStart"
+	TestFinderExecutionCmdType    interfaces.CommandType = "TestFinderExecution"
 
 	// Test service related commands
 	TestServiceStartCmdType interfaces.CommandType = "TestServiceStart"

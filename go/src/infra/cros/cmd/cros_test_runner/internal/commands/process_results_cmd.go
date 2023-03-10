@@ -43,6 +43,8 @@ func (cmd *ProcessResultsCmd) ExtractDependencies(ctx context.Context, ski inter
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
 		err = cmd.extractDepsFromHwTestStateKeeper(ctx, sk)
+	case *data.LocalTestStateKeeper:
+		err = cmd.extractDepsFromHwTestStateKeeper(ctx, &sk.HwTestStateKeeper)
 
 	default:
 		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
@@ -64,6 +66,8 @@ func (cmd *ProcessResultsCmd) UpdateStateKeeper(
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
 		err = cmd.updateHwTestStateKeeper(ctx, sk)
+	case *data.LocalTestStateKeeper:
+		err = cmd.updateHwTestStateKeeper(ctx, &sk.HwTestStateKeeper)
 
 	default:
 		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())

@@ -34,6 +34,8 @@ func (cmd *ProvisionInstallCmd) ExtractDependencies(
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
 		err = cmd.extractDepsFromHwTestStateKeeper(ctx, sk)
+	case *data.LocalTestStateKeeper:
+		err = cmd.extractDepsFromLocalTestStateKeeper(ctx, sk)
 
 	default:
 		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
@@ -55,6 +57,8 @@ func (cmd *ProvisionInstallCmd) UpdateStateKeeper(
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
 		err = cmd.updateHwTestStateKeeper(ctx, sk)
+	case *data.LocalTestStateKeeper:
+		err = cmd.updateHwTestStateKeeper(ctx, &sk.HwTestStateKeeper)
 	}
 
 	if err != nil {
@@ -73,6 +77,37 @@ func (cmd *ProvisionInstallCmd) extractDepsFromHwTestStateKeeper(
 		return fmt.Errorf("Cmd %q missing dependency: OsImagePath", cmd.GetCommandType())
 	}
 	cmd.OsImagePath = sk.CftTestRequest.GetPrimaryDut().GetProvisionState().GetSystemImage().GetSystemImagePath()
+
+	cmd.PreventReboot = false
+
+	if sk.InstallMetadata == nil {
+		cmd.InstallMetadata, err = anypb.New(&testapi.CrOSProvisionMetadata{})
+		if err != nil {
+			return errors.Annotate(err, "error during creating provision metadata: ").Err()
+		}
+	} else {
+		cmd.InstallMetadata = sk.InstallMetadata
+	}
+
+	return nil
+}
+
+func (cmd *ProvisionInstallCmd) extractDepsFromLocalTestStateKeeper(
+	ctx context.Context,
+	sk *data.LocalTestStateKeeper) error {
+
+	var err error
+	if sk.ImagePath == "" {
+		if sk.CftTestRequest == nil || sk.CftTestRequest.GetPrimaryDut().GetProvisionState().GetSystemImage().GetSystemImagePath() == nil {
+			return fmt.Errorf("Cmd %q missing dependency: OsImagePath", cmd.GetCommandType())
+		}
+		cmd.OsImagePath = sk.CftTestRequest.GetPrimaryDut().GetProvisionState().GetSystemImage().GetSystemImagePath()
+	} else {
+		cmd.OsImagePath = &_go.StoragePath{
+			HostType: _go.StoragePath_GS,
+			Path:     sk.ImagePath,
+		}
+	}
 
 	cmd.PreventReboot = false
 

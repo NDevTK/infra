@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/cmd/cros_test_runner/internal/data"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
@@ -29,6 +30,8 @@ func (cmd *GcloudAuthCmd) ExtractDependencies(ctx context.Context,
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
 		err = cmd.extractDepsFromHwTestStateKeeper(ctx, sk)
+	case *data.LocalTestStateKeeper:
+		err = cmd.extractDepsFromLocalTestStateKeeper(ctx, sk)
 	default:
 		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
 	}
@@ -46,6 +49,18 @@ func (cmd *GcloudAuthCmd) extractDepsFromHwTestStateKeeper(
 
 	if sk.DockerKeyFileLocation == "" {
 		return fmt.Errorf("Cmd %q missing dependency: DockerKeyFileLocation", cmd.GetCommandType())
+	}
+	cmd.DockerKeyFileLocation = sk.DockerKeyFileLocation
+
+	return nil
+}
+
+func (cmd *GcloudAuthCmd) extractDepsFromLocalTestStateKeeper(
+	ctx context.Context,
+	sk *data.LocalTestStateKeeper) error {
+
+	if sk.DockerKeyFileLocation == "" {
+		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: DockerKeyFileLocation", cmd.GetCommandType())
 	}
 	cmd.DockerKeyFileLocation = sk.DockerKeyFileLocation
 

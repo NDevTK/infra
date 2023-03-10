@@ -40,15 +40,24 @@ func TestGetContainer_SupportedContainerType(t *testing.T) {
 		So(container, ShouldNotBeNil)
 		So(err, ShouldBeNil)
 
+		container, err = contConfig.GetContainer(containers.CrosTestFinderTemplatedContainerType)
+		So(container, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		container, err = contConfig.GetContainer(containers.CacheServerTemplatedContainerType)
+		So(container, ShouldNotBeNil)
+		So(err, ShouldBeNil)
 	})
 }
 
 func getMockContainerImagesInfo() map[string]*api.ContainerImageInfo {
 	return map[string]*api.ContainerImageInfo{
-		"cros-dut":       getMockedContainerImageInfo(),
-		"cros-provision": getMockedContainerImageInfo(),
-		"cros-test":      getMockedContainerImageInfo(),
-		"cros-publish":   getMockedContainerImageInfo(),
+		"cros-dut":         getMockedContainerImageInfo(),
+		"cros-provision":   getMockedContainerImageInfo(),
+		"cros-test":        getMockedContainerImageInfo(),
+		"cros-publish":     getMockedContainerImageInfo(),
+		"cros-test-finder": getMockedContainerImageInfo(),
+		"cache-server":     getMockedContainerImageInfo(),
 	}
 }
 

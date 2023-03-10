@@ -60,12 +60,50 @@ func (ex *InvServiceExecutor) ExecuteCommand(
 		return ex.loadDutTopologyCommandExecution(ctx, cmd)
 	case *commands.InvServiceStopCmd:
 		return ex.invServiceStopCommandExecution(ctx, cmd)
+	case *commands.BuildDutTopologyCmd:
+		return ex.invServiceBuildDutTopology(ctx, cmd)
 	default:
 		return fmt.Errorf(
 			"Command type %s is not supported by %s executor type!",
 			cmd.GetCommandType(),
 			ex.GetExecutorType())
 	}
+}
+
+// invServiceBuildDutTopology builds the dut topology from supplied inputs.
+func (ex *InvServiceExecutor) invServiceBuildDutTopology(
+	ctx context.Context,
+	cmd *commands.BuildDutTopologyCmd) error {
+
+	var err error
+	step, ctx := build.StartStep(ctx, "Build Dut Topology")
+	defer func() { step.End(err) }()
+
+	cmd.DutTopology = &labapi.DutTopology{
+		Duts: []*labapi.Dut{
+			{
+				Id: &labapi.Dut_Id{
+					Value: "localhost",
+				},
+				DutType: &labapi.Dut_Chromeos{
+					Chromeos: &labapi.Dut_ChromeOS{
+						Ssh: cmd.DutSshAddress,
+						DutModel: &labapi.DutModel{
+							BuildTarget: cmd.Board,
+						},
+						Servo: &labapi.Servo{
+							Present: false,
+						},
+					},
+				},
+				CacheServer: &labapi.CacheServer{
+					Address: cmd.CacheServerAddress,
+				},
+			},
+		},
+	}
+
+	return nil
 }
 
 // invServiceStartCommandExecution executes the inventory service start command.

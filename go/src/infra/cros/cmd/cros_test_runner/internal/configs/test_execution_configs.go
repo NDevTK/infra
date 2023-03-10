@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strings"
 
+	"infra/cros/cmd/cros_test_runner/internal/data"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 
 	tpcommon "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
@@ -19,7 +20,9 @@ import (
 
 // Config types
 const (
-	HwTestExecutionConfigType interfaces.ConfigType = "HwTest"
+	HwTestExecutionConfigType       interfaces.ConfigType = "HwTest"
+	PreLocalTestExecutionConfigType interfaces.ConfigType = "PreLocalTest"
+	LocalTestExecutionConfigType    interfaces.ConfigType = "LocalTest"
 
 	// For unit tests purposes only
 	UnSupportedTestExecutionConfigType interfaces.ConfigType = "UnsupportedTest"
@@ -108,6 +111,10 @@ func (tecfg *TestExecutionConfig) GenerateConfig(ctx context.Context) error {
 	switch configType := tecfg.GetConfigType(); configType {
 	case HwTestExecutionConfigType:
 		tecfg.configs = GenerateHwConfigs(ctx, tecfg.cftStepsConfig.GetHwTestConfig())
+	case LocalTestExecutionConfigType:
+		tecfg.configs = GenerateLocalConfigs(ctx, tecfg.stateKeeper.(*data.LocalTestStateKeeper))
+	case PreLocalTestExecutionConfigType:
+		tecfg.configs = GeneratePreLocalConfigs(ctx)
 	default:
 		err = fmt.Errorf("Config type %s is not supported!", configType)
 	}

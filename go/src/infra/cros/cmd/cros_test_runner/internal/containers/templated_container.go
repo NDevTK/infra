@@ -54,15 +54,23 @@ func (cont *TemplatedContainer) Initialize(
 		}
 	case *api.Template_CrosProvision:
 		if err = cont.initializeCrosProvisionTemplate(ctx, t.CrosProvision); err != nil {
-			return errors.Annotate(err, "initialization failed for cros-dut template: ").Err()
+			return errors.Annotate(err, "initialization failed for cros-provision template: ").Err()
 		}
 	case *api.Template_CrosTest:
 		if err = cont.initializeCrosTestTemplate(ctx, t.CrosTest); err != nil {
-			return errors.Annotate(err, "initialization failed for cros-dut template: ").Err()
+			return errors.Annotate(err, "initialization failed for cros-test template: ").Err()
+		}
+	case *api.Template_CrosTestFinder:
+		if err = cont.initializeCrosTestFinderTemplate(ctx, t.CrosTestFinder); err != nil {
+			return errors.Annotate(err, "initialization failed for cros-test-finder template: ").Err()
 		}
 	case *api.Template_CrosPublish:
 		if err = cont.initializeCrosPublishTemplate(ctx, t.CrosPublish); err != nil {
 			return errors.Annotate(err, "initialization failed for cros-publish template: ").Err()
+		}
+	case *api.Template_CacheServer:
+		if err = cont.initializeCacheServerTemplate(ctx, t.CacheServer); err != nil {
+			return errors.Annotate(err, "initialization failed for cache-server template: ").Err()
 		}
 	default:
 		return fmt.Errorf("Provided template %v not found!", t)
@@ -127,6 +135,30 @@ func (cont *TemplatedContainer) initializeCrosTestTemplate(
 
 	if testTemplate == nil {
 		return fmt.Errorf("Provided CrosTestTemplate is nil!")
+	}
+
+	return nil
+}
+
+// initializeCrosTestFinderTemplate initializes cros test finder template.
+func (cont *TemplatedContainer) initializeCrosTestFinderTemplate(
+	ctx context.Context,
+	testFinderTemplate *api.CrosTestFinderTemplate) error {
+
+	if testFinderTemplate == nil {
+		return fmt.Errorf("Provided CrosTestFinderTemplate is nil!")
+	}
+
+	return nil
+}
+
+// initializeCacheServerTemplate initializes cache server template.
+func (cont *TemplatedContainer) initializeCacheServerTemplate(
+	ctx context.Context,
+	cacheTemplate *api.CacheServerTemplate) error {
+
+	if cacheTemplate == nil {
+		return fmt.Errorf("Provided CacheServerTemplate is nil!")
 	}
 
 	return nil

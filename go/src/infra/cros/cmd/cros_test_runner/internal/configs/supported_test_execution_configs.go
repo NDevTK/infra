@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	"infra/cros/cmd/cros_test_runner/internal/commands"
+	"infra/cros/cmd/cros_test_runner/internal/data"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 
@@ -36,6 +37,7 @@ var ParseEnvInfo_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands
 var InvServiceStart_InvExecutor = &CommandExecutorPairedConfig{CommandType: commands.InvServiceStartCmdType, ExecutorType: executors.InvServiceExecutorType}
 var InvServiceStop_InvExecutor = &CommandExecutorPairedConfig{CommandType: commands.InvServiceStopCmdType, ExecutorType: executors.InvServiceExecutorType}
 var LoadDutTopology_InvExecutor = &CommandExecutorPairedConfig{CommandType: commands.LoadDutTopologyCmdType, ExecutorType: executors.InvServiceExecutorType}
+var BuildDutTopology_InvExecutor = &CommandExecutorPairedConfig{CommandType: commands.BuildDutTopologyCmdType, ExecutorType: executors.InvServiceExecutorType}
 var CtrStartAsync_CtrExecutor = &CommandExecutorPairedConfig{CommandType: commands.CtrServiceStartAsyncCmdType, ExecutorType: executors.CtrExecutorType}
 var CtrStop_CtrExecutor = &CommandExecutorPairedConfig{CommandType: commands.CtrServiceStopCmdType, ExecutorType: executors.CtrExecutorType}
 var GcloudAuth_CtrExecutor = &CommandExecutorPairedConfig{CommandType: commands.GcloudAuthCmdType, ExecutorType: executors.CtrExecutorType}
@@ -44,6 +46,8 @@ var ProvisionServerStart_CrosProvisionExecutor = &CommandExecutorPairedConfig{Co
 var ProvisionInstall_CrosProvisionExecutor = &CommandExecutorPairedConfig{CommandType: commands.ProvisonInstallCmdType, ExecutorType: executors.CrosProvisionExecutorType}
 var TestServerStart_CrosTestExecutor = &CommandExecutorPairedConfig{CommandType: commands.TestServiceStartCmdType, ExecutorType: executors.CrosTestExecutorType}
 var TestsExecution_CrosTestExecutor = &CommandExecutorPairedConfig{CommandType: commands.TestsExecutionCmdType, ExecutorType: executors.CrosTestExecutorType}
+var TestFinderServerStart_CrosTestFinderExecutor = &CommandExecutorPairedConfig{CommandType: commands.TestFinderServiceStartCmdType, ExecutorType: executors.CrosTestFinderExecutorType}
+var TestFinderExecution_CrosTestFinderExecutor = &CommandExecutorPairedConfig{CommandType: commands.TestFinderExecutionCmdType, ExecutorType: executors.CrosTestFinderExecutorType}
 var GcsPublishStart_CrosGcsPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.GcsPublishStartCmdType, ExecutorType: executors.CrosGcsPublishExecutorType}
 var GcsPublishUpload_CrosGcsPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.GcsPublishUploadCmdType, ExecutorType: executors.CrosGcsPublishExecutorType}
 var RdbPublishStart_CrosRdbPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.RdbPublishStartCmdType, ExecutorType: executors.CrosRdbPublishExecutorType}
@@ -53,6 +57,13 @@ var TkoPublishUpload_CrosTkoPublishExecutor = &CommandExecutorPairedConfig{Comma
 var ProcessResults_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.ProcessResultsCmdType, ExecutorType: executors.NoExecutorType}
 var UpdateDutState_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.UpdateDutStateCmdType, ExecutorType: executors.NoExecutorType}
 var TkoDirectUpload_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.TkoDirectUploadCmdType, ExecutorType: executors.NoExecutorType}
+var SshStartTunnel_SshTunnelExecutor = &CommandExecutorPairedConfig{CommandType: commands.SshStartTunnelCmdType, ExecutorType: executors.SshTunnelExecutorType}
+var SshStartReverseTunnel_SshTunnelExecutor = &CommandExecutorPairedConfig{CommandType: commands.SshStartReverseTunnelCmdType, ExecutorType: executors.SshTunnelExecutorType}
+var SshStopTunnels_SshTunnelExecutor = &CommandExecutorPairedConfig{CommandType: commands.SshStopTunnelsCmdType, ExecutorType: executors.SshTunnelExecutorType}
+var CacheServerStart_CacheServerExecutor = &CommandExecutorPairedConfig{CommandType: commands.CacheServerStartCmdType, ExecutorType: executors.CacheServerExecutorType}
+var UpdateContainerImagesLocally_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.UpdateContainerImagesLocallyCmdType, ExecutorType: executors.NoExecutorType}
+var FetchContainerMetadata_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.FetchContainerMetadataCmdType, ExecutorType: executors.NoExecutorType}
+var ParseArgs_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.ParseArgsCmdType, ExecutorType: executors.NoExecutorType}
 
 // GenerateHwConfigs generates hw tests execution for lab environment.
 func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig) *Configs {
@@ -138,6 +149,84 @@ func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestCon
 		CtrStop_CtrExecutor,
 		UpdateDutState_NoExecutor,
 		ProcessResults_NoExecutor)
+
+	return &Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
+}
+
+func GeneratePreLocalConfigs(ctx context.Context) *Configs {
+	mainConfigs := []*CommandExecutorPairedConfig{
+		ParseArgs_NoExecutor,
+		FetchContainerMetadata_NoExecutor,
+		UpdateContainerImagesLocally_NoExecutor,
+	}
+
+	// Clean up configs. They will be executed if any failures occurs
+	// in main configs. If any of the cleanup cmd is already executed,
+	// they will be skipped.
+	cleanupConfigs := []*CommandExecutorPairedConfig{}
+
+	return &Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
+}
+
+func GenerateLocalConfigs(ctx context.Context, sk *data.LocalTestStateKeeper) *Configs {
+	mainConfigs := []*CommandExecutorPairedConfig{
+		CtrStartAsync_CtrExecutor,
+		GcloudAuth_CtrExecutor,
+	}
+
+	if !sk.Args.SkipCacheServer {
+		mainConfigs = append(mainConfigs,
+			CacheServerStart_CacheServerExecutor)
+	}
+
+	if !sk.Args.SkipSshTunnel {
+		mainConfigs = append(mainConfigs,
+			SshStartTunnel_SshTunnelExecutor)
+	}
+
+	if !sk.Args.SkipSshReverseTunnel {
+		mainConfigs = append(mainConfigs,
+			SshStartReverseTunnel_SshTunnelExecutor)
+	}
+
+	if !sk.Args.SkipBuildDutTopology {
+		mainConfigs = append(mainConfigs,
+			BuildDutTopology_InvExecutor)
+	}
+
+	if !sk.Args.SkipDutServer {
+		mainConfigs = append(mainConfigs,
+			DutServerStart_CrosDutExecutor)
+	}
+	if !sk.Args.SkipProvision {
+		mainConfigs = append(mainConfigs,
+			ProvisionServerStart_CrosProvisionExecutor,
+			ProvisionInstall_CrosProvisionExecutor)
+	}
+	if !sk.Args.SkipTestFinder {
+		mainConfigs = append(mainConfigs,
+			TestFinderServerStart_CrosTestFinderExecutor,
+			TestFinderExecution_CrosTestFinderExecutor)
+	}
+	if !sk.Args.SkipTest {
+		mainConfigs = append(mainConfigs,
+			TestServerStart_CrosTestExecutor,
+			TestsExecution_CrosTestExecutor)
+	}
+
+	mainConfigs = append(mainConfigs,
+		CtrStop_CtrExecutor,
+		SshStopTunnels_SshTunnelExecutor,
+		ProcessResults_NoExecutor)
+
+	// Clean up configs. They will be executed if any failures occurs
+	// in main configs. If any of the cleanup cmd is already executed,
+	// they will be skipped.
+	cleanupConfigs := []*CommandExecutorPairedConfig{
+		CtrStop_CtrExecutor,
+		SshStopTunnels_SshTunnelExecutor,
+		ProcessResults_NoExecutor,
+	}
 
 	return &Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
 }

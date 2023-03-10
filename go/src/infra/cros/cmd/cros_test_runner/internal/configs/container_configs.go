@@ -46,36 +46,50 @@ func (cfg *CftContainerConfig) GetContainer(contType interfaces.ContainerType) (
 	}
 
 	var cont interfaces.ContainerInterface
-
+	key := containers.GetContainerImageKeyFromContainerType(contType)
 	// Get container based on container type.
 	switch contType {
 	case containers.CrosDutTemplatedContainerType:
-		containerImage, err := common.GetContainerImageFromMap("cros-dut", cfg.ContainerImagesMap)
+		containerImage, err := common.GetContainerImageFromMap(key, cfg.ContainerImagesMap)
 		if err != nil {
 			return nil, errors.Annotate(err, "error during getting container image from map for %s container type", contType).Err()
 		}
 		cont = containers.NewCrosDutTemplatedContainer(containerImage, cfg.Ctr)
 
 	case containers.CrosProvisionTemplatedContainerType:
-		containerImage, err := common.GetContainerImageFromMap("cros-provision", cfg.ContainerImagesMap)
+		containerImage, err := common.GetContainerImageFromMap(key, cfg.ContainerImagesMap)
 		if err != nil {
 			return nil, errors.Annotate(err, "error during getting container image from map for %s container type", contType).Err()
 		}
 		cont = containers.NewCrosProvisionTemplatedContainer(containerImage, cfg.Ctr)
 
 	case containers.CrosTestTemplatedContainerType:
-		containerImage, err := common.GetContainerImageFromMap("cros-test", cfg.ContainerImagesMap)
+		containerImage, err := common.GetContainerImageFromMap(key, cfg.ContainerImagesMap)
 		if err != nil {
 			return nil, errors.Annotate(err, "error during getting container image from map for %s container type", contType).Err()
 		}
 		cont = containers.NewCrosTestTemplatedContainer(containerImage, cfg.Ctr)
 
+	case containers.CrosTestFinderTemplatedContainerType:
+		containerImage, err := common.GetContainerImageFromMap(key, cfg.ContainerImagesMap)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting container image from map for %s container type", contType).Err()
+		}
+		cont = containers.NewCrosTestFinderTemplatedContainer(containerImage, cfg.Ctr)
+
 	case containers.CrosGcsPublishTemplatedContainerType, containers.CrosTkoPublishTemplatedContainerType, containers.CrosRdbPublishTemplatedContainerType:
-		containerImage, err := common.GetContainerImageFromMap("cros-publish", cfg.ContainerImagesMap)
+		containerImage, err := common.GetContainerImageFromMap(key, cfg.ContainerImagesMap)
 		if err != nil {
 			return nil, errors.Annotate(err, "error during getting container image from map for %s container type", contType).Err()
 		}
 		cont = containers.NewCrosPublishTemplatedContainer(contType, containerImage, cfg.Ctr)
+
+	case containers.CacheServerTemplatedContainerType:
+		containerImage, err := common.GetContainerImageFromMap(key, cfg.ContainerImagesMap)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting container image from map for %s container type", contType).Err()
+		}
+		cont = containers.NewCacheServerTemplatedContainer(containerImage, cfg.Ctr)
 
 	default:
 		return nil, fmt.Errorf("Container type %s not supported in container configs!", contType)

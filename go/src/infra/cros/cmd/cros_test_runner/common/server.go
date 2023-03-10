@@ -7,6 +7,8 @@ package common
 import (
 	"context"
 	"fmt"
+	"log"
+	"net"
 	"strconv"
 	"strings"
 	"time"
@@ -80,4 +82,16 @@ func GetIpEndpoint(serverAddress string) (*labapi.IpEndpoint, error) {
 	}
 
 	return &labapi.IpEndpoint{Address: addressInfo[0], Port: int32(port)}, nil
+}
+
+// Finds an available port on the running OS
+// to prevent collisions between services
+func GetFreePort() uint16 {
+	l, err := net.Listen("tcp", ":0")
+	defer l.Close()
+	if err != nil {
+		log.Fatalf("Failed to get port, %s", err)
+	}
+
+	return uint16(l.Addr().(*net.TCPAddr).Port)
 }

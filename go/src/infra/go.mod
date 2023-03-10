@@ -51,6 +51,7 @@ require (
 	github.com/linkedin/goavro/v2 v2.11.0
 	github.com/maruel/subcommands v1.1.1
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/opencontainers/image-spec v1.0.1
 	github.com/opencontainers/runtime-spec v1.0.3-0.20210326190908-1c3f411f0417
 	github.com/otiai10/copy v1.6.0
@@ -168,7 +169,6 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/mostynb/zstdpool-syncpool v0.0.12 // indirect
-	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/pborman/uuid v1.2.1 // indirect
 	github.com/pkg/xattr v0.4.7 // indirect

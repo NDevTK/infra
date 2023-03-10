@@ -229,7 +229,7 @@ func (ctr *CrosToolRunner) StartContainer(
 	}
 
 	common.WriteProtoToStepLog(ctx, step, resp, "StartContainerResponse")
-	logging.Infof(ctx, "Successfully started container %s!", &startContainerReq.Name)
+	logging.Infof(ctx, "Successfully started container %s!", startContainerReq.Name)
 	return resp, nil
 }
 

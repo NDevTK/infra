@@ -26,6 +26,20 @@ func NewCrosTestTemplatedContainer(
 	return NewContainer(CrosTestTemplatedContainerType, "cros-test", containerImage, ctr, true)
 }
 
+func NewCrosTestFinderTemplatedContainer(
+	containerImage string,
+	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
+
+	return NewContainer(CrosTestFinderTemplatedContainerType, "cros-test-finder", containerImage, ctr, true)
+}
+
+func NewCacheServerTemplatedContainer(
+	containerImage string,
+	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
+
+	return NewContainer(CacheServerTemplatedContainerType, "cache-server", containerImage, ctr, true)
+}
+
 func NewCrosPublishTemplatedContainer(
 	contType interfaces.ContainerType,
 	containerImage string,

@@ -52,5 +52,17 @@ func TestGetExecutor_SupportedExecutorType(t *testing.T) {
 		executor, err = execConfig.GetExecutor(executors.CrosProvisionExecutorType)
 		So(executor, ShouldNotBeNil)
 		So(err, ShouldBeNil)
+
+		executor, err = execConfig.GetExecutor(executors.CrosTestFinderExecutorType)
+		So(executor, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		executor, err = execConfig.GetExecutor(executors.CacheServerExecutorType)
+		So(executor, ShouldNotBeNil)
+		So(err, ShouldBeNil)
+
+		executor, err = execConfig.GetExecutor(executors.SshTunnelExecutorType)
+		So(executor, ShouldNotBeNil)
+		So(err, ShouldBeNil)
 	})
 }
