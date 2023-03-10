@@ -73,7 +73,7 @@ func RestoreHWIDFromInventoryConfig() *Configuration {
 	}
 }
 
-// RecoveryCBIFromInventoryConfig restores backup CBI contents from UFS
+// RecoverCBIFromInventoryConfig restores backup CBI contents from UFS
 func RecoverCBIFromInventoryConfig() *Configuration {
 	return &Configuration{
 		PlanNames: []string{
