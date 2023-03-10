@@ -15,10 +15,6 @@ import (
 // be used in tests to ensure that specific log messages were written at
 // specific severity levels.
 
-// logCB is a callback that intercepts an attempt to write a log message.
-// This is used inside the fake logger to test what log messages were emitted.
-type logCB = func(level string, format string, args []interface{})
-
 // FakeLogger is an implementation of the logger interface
 // that is suitable for use in tests. It records calls as
 // necessary to support tests.
