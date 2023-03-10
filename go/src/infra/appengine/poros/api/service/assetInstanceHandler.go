@@ -83,7 +83,7 @@ func (e *AssetInstanceHandler) Create(ctx context.Context, req *proto.CreateAsse
 		Status:          req.GetStatus(),
 		CreatedBy:       auth.CurrentUser(ctx).Email,
 		CreatedAt:       timestamp,
-		DeleteAt:        timestamp.Add(time.Hour * 6),
+		DeleteAt:        timestamp.Add(time.Hour * 24 * 7),
 	}
 	if err := validateAssetInstanceEntity(entity); err != nil {
 		return nil, err
@@ -233,7 +233,7 @@ func (e *AssetInstanceHandler) TriggerDeployment(ctx context.Context, in *proto.
 			ProjectId:       project,
 			CreatedBy:       auth.CurrentUser(ctx).Email,
 			CreatedAt:       timestamp,
-			DeleteAt:        timestamp.Add(time.Hour * 6),
+			DeleteAt:        timestamp.Add(time.Hour * 24 * 7),
 		}
 	} else if entityType == "AssetInstance" {
 		entity, err = getAssetInstanceById(ctx, entityId)

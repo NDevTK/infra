@@ -2,3 +2,7 @@ There has been changes to the deployment of your lab. Details:
 Asset: %v,
 Project: https://console.cloud.google.com/compute/instances?project=%v,
 Status: %v
+
+Please note that the lab instance will be deleted after 1 week by default. If you want to extend your lab, please click the edit button of your lab instance to change delete time.
+
+Please refer to go/poros-g3doc#access-the-lab to learn how to remote access the lab VMs.

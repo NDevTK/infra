@@ -55,7 +55,7 @@ func TestAssetInstanceCreateWithValidData(t *testing.T) {
 		want := []string{request.GetAssetId(), request.GetStatus()}
 		get := []string{model.GetAssetId(), model.GetStatus()}
 		So(get, ShouldResemble, want)
-		So(model.CreatedAt.AsTime().Add(time.Hour*6), ShouldEqual, model.DeleteAt.AsTime())
+		So(model.CreatedAt.AsTime().Add(time.Hour*24*7), ShouldEqual, model.DeleteAt.AsTime())
 	})
 }
 
@@ -337,7 +337,7 @@ func TestFetchLogs(t *testing.T) {
 			Logs:            "My Test Logs",
 			CreatedBy:       "test@test.com",
 			CreatedAt:       timestamp,
-			DeleteAt:        timestamp.Add(time.Hour * 6),
+			DeleteAt:        timestamp.Add(time.Hour * 24 * 7),
 		}
 
 		ctx := memory.Use(context.Background())
