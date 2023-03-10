@@ -8,6 +8,6 @@ import (
 	"io/fs"
 )
 
-// Permissions is the default file permissions for log files.
+// DefaultFilePermissions is the default file permissions for log files.
 // Currently, we allow everyone to read and write and nobody to execute.
 const DefaultFilePermissions fs.FileMode = 0666
