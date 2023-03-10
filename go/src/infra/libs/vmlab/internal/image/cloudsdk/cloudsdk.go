@@ -8,13 +8,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
+
+	"infra/libs/vmlab/api"
 
 	compute "cloud.google.com/go/compute/apiv1"
 	"cloud.google.com/go/compute/apiv1/computepb"
 	"github.com/googleapis/gax-go/v2"
-	"infra/libs/vmlab/api"
 )
 
 const (
@@ -28,6 +30,18 @@ const (
 // go/cros-image-importer
 type cloudsdkImageApi struct{}
 
+// buildInfo contains information about a build.
+type buildInfo struct {
+	buildType    string
+	board        string
+	milestone    string
+	majorVersion string
+	minorVersion string
+	patchNumber  string
+	snapshot     string
+	buildNumber  string
+}
+
 // New constructs a new api.ImageApi with CloudSDK backend.
 func New() (api.ImageApi, error) {
 	return &cloudsdkImageApi{}, nil
@@ -40,10 +54,11 @@ type computeImagesClient interface {
 }
 
 func (c *cloudsdkImageApi) GetImage(buildPath string, wait bool) (*api.GceImage, error) {
-	imageName, err := convertName(buildPath)
+	buildInfo, err := parseBuildPath(buildPath)
 	if err != nil {
-		return nil, fmt.Errorf("Unable to convert image name from GCS to GCE format: %v", err)
+		return nil, fmt.Errorf("Unable to parse build path: %w", err)
 	}
+	imageName := getImageName(*buildInfo)
 
 	gceImage := &api.GceImage{
 		Project: project,
@@ -61,24 +76,27 @@ func (c *cloudsdkImageApi) GetImage(buildPath string, wait bool) (*api.GceImage,
 	}
 	defer client.Close()
 
-	op, gceImage, _ := c.handle(client, gceImage)
+	op, gceImage, err := c.handle(client, buildInfo, gceImage)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to import image: %w", err)
+	}
 
 	if wait {
 		if op != nil {
 			_ = op.Wait(ctx)
 		} else {
-			return c.poll(ctx, client, gceImage)
+			return c.poll(ctx, client, buildInfo, gceImage)
 		}
 	}
 	return c.describeImage(client, gceImage)
 }
 
 // handle retrieves image info, and imports the image when not found.
-func (c *cloudsdkImageApi) handle(client computeImagesClient, gceImage *api.GceImage) (*compute.Operation, *api.GceImage, error) {
+func (c *cloudsdkImageApi) handle(client computeImagesClient, buildInfo *buildInfo, gceImage *api.GceImage) (*compute.Operation, *api.GceImage, error) {
 	gceImage, _ = c.describeImage(client, gceImage)
 
 	if gceImage.GetStatus() == api.GceImage_NOT_FOUND {
-		op, err := c.importImage(client, gceImage)
+		op, err := c.importImage(client, buildInfo, gceImage)
 		if err == nil {
 			gceImage.Status = api.GceImage_PENDING
 		}
@@ -89,9 +107,9 @@ func (c *cloudsdkImageApi) handle(client computeImagesClient, gceImage *api.GceI
 }
 
 // poll retrieves image info periodically until error, success, or timeout.
-func (c *cloudsdkImageApi) poll(ctx context.Context, client computeImagesClient, gceImage *api.GceImage) (*api.GceImage, error) {
+func (c *cloudsdkImageApi) poll(ctx context.Context, client computeImagesClient, buildInfo *buildInfo, gceImage *api.GceImage) (*api.GceImage, error) {
 	return gceImage, poll(ctx, func(ctx context.Context) (bool, error) {
-		_, gceImage, err := c.handle(client, gceImage)
+		_, gceImage, err := c.handle(client, buildInfo, gceImage)
 		if gceImage.GetStatus() == api.GceImage_READY {
 			return true, err
 		}
@@ -127,8 +145,8 @@ func (c *cloudsdkImageApi) describeImage(client computeImagesClient, gceImage *a
 	return gceImage, err
 }
 
-// importImage imports an image from GCS into GCE
-func (c *cloudsdkImageApi) importImage(client computeImagesClient, image *api.GceImage) (*compute.Operation, error) {
+// importImage imports an image from GCS into GCE.
+func (c *cloudsdkImageApi) importImage(client computeImagesClient, buildInfo *buildInfo, image *api.GceImage) (*compute.Operation, error) {
 	ctx := context.Background()
 
 	// Create the image
@@ -136,6 +154,7 @@ func (c *cloudsdkImageApi) importImage(client computeImagesClient, image *api.Gc
 		ImageResource: &computepb.Image{
 			Licenses: []string{license},
 			Name:     &image.Name,
+			Labels:   getImageLabels(buildInfo),
 			RawDisk: &computepb.RawDisk{
 				Source: &image.Source,
 			},
@@ -146,37 +165,65 @@ func (c *cloudsdkImageApi) importImage(client computeImagesClient, image *api.Gc
 	return client.Insert(ctx, req)
 }
 
-// convertName constructs GCE image name from the build path in GCS.
-// buildPath is the path between "chromeos-image-archive/" and "/chromiumos_test_image_gce.tar.gz"
-// as found in autotest_keyvals in CtrRequest. Examples:
-// betty-arc-r-cq/R108-15164.0.0-71927-8801111609984657185
-// betty-arc-r-release/R108-15178.0.0
-// The image name convention is to swap the order of two directories, rejoin
-// with --, replace any . and _ with -, in lowercase and maximum length of 63.
-// After conversion, the above examples would become:
-// r108-15164-0-0-71927-8801111609984657185--betty-arc-r-cq
-// r108-15178-0-0--betty-arc-r-release
-func convertName(buildPath string) (string, error) {
-	// Split the source build path
-	bucket, build, found := strings.Cut(buildPath, "/")
-	if !found {
-		return "", fmt.Errorf("Invalid build path format: %s", buildPath)
+// parseBuildPath parses build info from build path. Possible naming schemes:
+// - betty-arc-r-release/R108-15178.0.0
+// - betty-arc-r-cq/R108-15164.0.0-71927-8801111609984657185
+// - betty-pi-arc-postsubmit/R113-15376.0.0-79071-8787141177342104481
+func parseBuildPath(buildPath string) (*buildInfo, error) {
+	re := regexp.MustCompile(`(.+)-(\w+)\/R(\d+)-(\d+).(\d+).(\d+)\-(\d+)\-(\d+)`)
+	matches := re.FindStringSubmatch(buildPath)
+	if len(matches) == 9 {
+		return &buildInfo{
+			buildType:    matches[2],
+			board:        matches[1],
+			milestone:    matches[3],
+			majorVersion: matches[4],
+			minorVersion: matches[5],
+			patchNumber:  matches[6],
+			snapshot:     matches[7],
+			buildNumber:  matches[8],
+		}, nil
 	}
+	re = regexp.MustCompile(`(.+)-(\w+)\/R(\d+)-(\d+).(\d+).(\d+)`)
+	matches = re.FindStringSubmatch(buildPath)
+	if len(matches) == 7 {
+		return &buildInfo{
+			buildType:    matches[2],
+			board:        matches[1],
+			milestone:    matches[3],
+			majorVersion: matches[4],
+			minorVersion: matches[5],
+			patchNumber:  matches[6],
+		}, nil
+	}
+	return nil, errors.New("Build path did not match known regex")
+}
 
-	// Switch order of build and bucket
-	imageName := fmt.Sprintf("%s--%s", build, bucket)
+// getImageName generates an unique image name from buildInfo.
+func getImageName(info buildInfo) string {
+	imageName := strings.Join([]string{
+		info.board, info.milestone, info.majorVersion, info.minorVersion,
+		info.patchNumber, info.snapshot, info.buildNumber, info.buildType}, "-")
 
 	// Shorten name
 	if len(imageName) > 63 {
-		imageName = imageName[0:62]
+		imageName = imageName[:63]
 	}
-
-	// Convert to legit GCE name
 	imageName = strings.ToLower(imageName)
 	imageName = strings.ReplaceAll(imageName, ".", "-")
 	imageName = strings.ReplaceAll(imageName, "_", "-")
+	return imageName
+}
 
-	return imageName, nil
+// getImageLabels creates a map of labels for GCE image.
+func getImageLabels(info *buildInfo) map[string]string {
+	labels := make(map[string]string)
+	if info != nil {
+		labels["build-type"] = info.buildType
+		labels["board"] = info.board
+		labels["milestone"] = info.milestone
+	}
+	return labels
 }
 
 // getGcsImagePath returns the full path of the tarball on GCS.

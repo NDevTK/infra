@@ -6,14 +6,16 @@ package cloudsdk
 
 import (
 	"context"
+	"reflect"
 	"testing"
 	"time"
+
+	"infra/libs/vmlab/api"
 
 	compute "cloud.google.com/go/compute/apiv1"
 	"cloud.google.com/go/compute/apiv1/computepb"
 	"github.com/googleapis/gax-go/v2"
 	"go.chromium.org/luci/common/errors"
-	"infra/libs/vmlab/api"
 )
 
 type mockImageClient struct {
@@ -111,7 +113,7 @@ func TestHandleReady(t *testing.T) {
 		Project: "my-project",
 	}
 
-	op, gceImage, err := imageApi.handle(client, gceImage)
+	op, gceImage, err := imageApi.handle(client, nil, gceImage)
 
 	if op != nil {
 		t.Errorf("handle() expected nil operation, got %v", op)
@@ -140,7 +142,7 @@ func TestHandlePending(t *testing.T) {
 		Project: "my-project",
 	}
 
-	_, gceImage, err := imageApi.handle(client, gceImage)
+	_, gceImage, err := imageApi.handle(client, nil, gceImage)
 
 	if err != nil {
 		t.Errorf("handle() expected nil error, got %v", err)
@@ -166,7 +168,7 @@ func TestHandleImportImage(t *testing.T) {
 		Project: "my-project",
 	}
 
-	op, gceImage, err := imageApi.handle(client, gceImage)
+	op, gceImage, err := imageApi.handle(client, nil, gceImage)
 
 	if op != expected {
 		t.Errorf("handle() expected operation %v, got %v", expected, op)
@@ -194,7 +196,7 @@ func TestHandleImportError(t *testing.T) {
 		Project: "my-project",
 	}
 
-	_, gceImage, err := imageApi.handle(client, gceImage)
+	_, gceImage, err := imageApi.handle(client, nil, gceImage)
 
 	if err == nil {
 		t.Errorf("handle() expected error, got nil")
@@ -204,55 +206,139 @@ func TestHandleImportError(t *testing.T) {
 	}
 }
 
-func TestConvertNameInvalid(t *testing.T) {
+func TestParseBuildPathInvalid(t *testing.T) {
 	buildPath := "R108-15164.0.0-71927-8801111609984657185"
-
-	_, err := convertName(buildPath)
-
+	_, err := parseBuildPath(buildPath)
 	if err == nil {
-		t.Errorf("convertName() expected error, got nil")
+		t.Errorf("parseBuildPath() expected error, got nil")
 	}
 }
 
-func TestConvertNameCq(t *testing.T) {
-	buildPath := "betty-arc-r-cq/R108-15164.0.0-71927-8801111609984657185"
-	expected, err := convertName(buildPath)
+func TestParseBuildPathAndConvertNameCq(t *testing.T) {
+	buildPath := "betty-arc-r-cq/R108-15164.0.1-71927-8801111609984657185"
+	info, err := parseBuildPath(buildPath)
 	if err != nil {
-		t.Errorf("convertName() error: %v", err)
+		t.Fatalf("parseBuildPath() error: %v", err)
 	}
 
-	actual := "r108-15164-0-0-71927-8801111609984657185--betty-arc-r-cq"
+	expectedInfo := buildInfo{
+		buildType:    "cq",
+		board:        "betty-arc-r",
+		milestone:    "108",
+		majorVersion: "15164",
+		minorVersion: "0",
+		patchNumber:  "1",
+		snapshot:     "71927",
+		buildNumber:  "8801111609984657185",
+	}
+	if !reflect.DeepEqual(*info, expectedInfo) {
+		t.Errorf("Expected build info: %s, but is actual: %s", expectedInfo, info)
+	}
 
-	if expected != actual {
-		t.Errorf("convertName() expected: %s, actual: %s", expected, actual)
+	actualName := getImageName(*info)
+	expectedName := "betty-arc-r-108-15164-0-1-71927-8801111609984657185-cq"
+	if expectedName != actualName {
+		t.Errorf("Expected image name: %s, but is actual: %s", expectedName, actualName)
 	}
 }
 
-func TestConvertNameRelease(t *testing.T) {
+func TestParseBuildPathAndConvertNamePostsubmit(t *testing.T) {
+	buildPath := "betty-pi-arc-postsubmit/R113-15376.0.0-79071-8787141177342104481"
+	info, err := parseBuildPath(buildPath)
+	if err != nil {
+		t.Fatalf("parseBuildPath() error: %v", err)
+	}
+
+	expectedInfo := buildInfo{
+		buildType:    "postsubmit",
+		board:        "betty-pi-arc",
+		milestone:    "113",
+		majorVersion: "15376",
+		minorVersion: "0",
+		patchNumber:  "0",
+		snapshot:     "79071",
+		buildNumber:  "8787141177342104481",
+	}
+	if !reflect.DeepEqual(*info, expectedInfo) {
+		t.Errorf("Expected build info: %s, but is actual: %s", expectedInfo, info)
+	}
+
+	actualName := getImageName(*info)
+	expectedName := "betty-pi-arc-113-15376-0-0-79071-8787141177342104481-postsubmit"
+	if expectedName != actualName {
+		t.Errorf("Expected image name: %s, but is actual: %s", expectedName, actualName)
+	}
+}
+
+func TestParseBuildPathAndConvertNameRelease(t *testing.T) {
 	buildPath := "betty-arc-r-release/R108-15178.0.0"
-	expected, err := convertName(buildPath)
+	info, err := parseBuildPath(buildPath)
 	if err != nil {
-		t.Errorf("convertName() error: %v", err)
+		t.Fatalf("parseBuildPath() error: %v", err)
 	}
 
-	actual := "r108-15178-0-0--betty-arc-r-release"
+	expectedInfo := buildInfo{
+		buildType:    "release",
+		board:        "betty-arc-r",
+		milestone:    "108",
+		majorVersion: "15178",
+		minorVersion: "0",
+		patchNumber:  "0",
+		snapshot:     "",
+		buildNumber:  "",
+	}
+	if !reflect.DeepEqual(*info, expectedInfo) {
+		t.Errorf("Expected build info: %s, but is actual: %s", expectedInfo, info)
+	}
 
-	if expected != actual {
-		t.Errorf("convertName() expected: %s, actual: %s", expected, actual)
+	actualName := getImageName(*info)
+	expectedName := "betty-arc-r-108-15178-0-0---release"
+	if expectedName != actualName {
+		t.Errorf("Expected image name: %s, but is actual: %s", expectedName, actualName)
 	}
 }
 
-func TestConvertNameLong(t *testing.T) {
-	buildPath := "betty-arc-r-postsubmit-main/R108-15164.0.0-71927-8801111609984657185"
-	expected, err := convertName(buildPath)
+func TestParseBuildPathAndConvertNameLong(t *testing.T) {
+	buildPath := "betty-arc-r-postsubmit/R113-15376.99.99-79071-8787141177342104481"
+	info, err := parseBuildPath(buildPath)
 	if err != nil {
-		t.Errorf("convertName() error: %v", err)
+		t.Fatalf("parseBuildPath() error: %v", err)
 	}
 
-	actual := "r108-15164-0-0-71927-8801111609984657185--betty-arc-r-postsubm"
+	expectedInfo := buildInfo{
+		buildType:    "postsubmit",
+		board:        "betty-arc-r",
+		milestone:    "113",
+		majorVersion: "15376",
+		minorVersion: "99",
+		patchNumber:  "99",
+		snapshot:     "79071",
+		buildNumber:  "8787141177342104481",
+	}
+	if !reflect.DeepEqual(*info, expectedInfo) {
+		t.Errorf("Expected build info: %s, but is actual: %s", expectedInfo, info)
+	}
 
-	if expected != actual {
-		t.Errorf("convertName() expected: %s, actual: %s", expected, actual)
+	actualName := getImageName(*info)
+	expectedName := "betty-arc-r-113-15376-99-99-79071-8787141177342104481-postsubmi"
+	if expectedName != actualName {
+		t.Errorf("Expected image name: %s, but is actual: %s", expectedName, actualName)
+	}
+}
+
+func TestGetImageLabels(t *testing.T) {
+	actual := getImageLabels(&buildInfo{
+		buildType: "cq",
+		board:     "betty-arc-r",
+		milestone: "100",
+	})
+	expected := map[string]string{
+		"build-type": "cq",
+		"board":      "betty-arc-r",
+		"milestone":  "100",
+	}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("Expected labels: %v, but is actual: %v", expected, actual)
 	}
 }
 
