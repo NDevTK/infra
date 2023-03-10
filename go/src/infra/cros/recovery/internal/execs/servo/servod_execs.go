@@ -63,8 +63,6 @@ const (
 	// Time to allow for boot from power off. Among other things, this must account for the 30 second dev-mode
 	// screen delay, time to start the network on the DUT, and the ssh timeout of 120 seconds.
 	dutBootTimeout = 150 * time.Second
-	// Time to allow for boot from a USB device, including the 30 second dev-mode delay and time to start the network.
-	usbkeyBootTimeout = 5 * time.Minute
 )
 
 func servodDUTColdResetActionExec(ctx context.Context, info *execs.ExecInfo) error {
