@@ -2472,6 +2472,24 @@ func crosRepairActions() map[string]*Action {
 			ExecTimeout: &durationpb.Duration{Seconds: 1000},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
+		"Restore FW and reset GBB flags from USB drive": {
+			Docs: []string{
+				"The goal to force update DUT fw when devices booted in the recovery mode from USB-stick",
+			},
+			ExecName: "cros_install_in_recovery_mode",
+			ExecExtraArgs: []string{
+				"run_custom_commands:true",
+				"boot_timeout:480",
+				"boot_interval:10",
+				"boot_retry:1",
+				"halt_timeout:120",
+				"custom_command_allowed_to_fail:true",
+				"custom_command_timeout:60",
+				"custom_commands:/usr/share/vboot/bin/set_gbb_flags.sh 0 ## chromeos-firemwareupdate --mode=recovery",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 1000},
+			RunControl:  RunControl_ALWAYS_RUN,
+		},
 		"Restore from TPM 0x54 error": {
 			Docs: []string{
 				"Process based on b/272310645#comment39.",
@@ -2485,7 +2503,7 @@ func crosRepairActions() map[string]*Action {
 				"halt_timeout:120",
 				"custom_command_allowed_to_fail:false",
 				"custom_command_timeout:60",
-				"custom_commands:tpm_manager_client status##tpm_manager_client take_ownership##cryptohome --action=remove_firmware_management_parameters",
+				"custom_commands:tpm_manager_client status ## tpm_manager_client take_ownership ## cryptohome --action=remove_firmware_management_parameters",
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 1000},
 			RunControl:  RunControl_ALWAYS_RUN,

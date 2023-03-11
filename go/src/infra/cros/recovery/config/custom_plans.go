@@ -133,7 +133,7 @@ func FixTPM54Config() *Configuration {
 				CriticalActions: []string{
 					"Is servod running",
 					"Download stable version OS image to servo usbkey if necessary (allow fail)",
-					"Restore FW from USB drive",
+					"Restore FW and reset GBB flags from USB drive",
 					"Cold reset DUT by servo",
 					"Sleep 60 seconds",
 					"Restore from TPM 0x54 error",
