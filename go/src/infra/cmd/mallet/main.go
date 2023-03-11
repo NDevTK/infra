@@ -53,6 +53,7 @@ func getApplication() *cli.Application {
 			tasks.RepairCBI,
 			tasks.ParseStableVersion,
 			tasks.EraseMRCCache,
+			tasks.FixTPM54,
 		},
 	}
 }

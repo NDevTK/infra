@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium OS Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -2452,6 +2452,42 @@ func crosRepairActions() map[string]*Action {
 				"ro_badblocks_timeout:3600",
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 8000},
+			RunControl:  RunControl_ALWAYS_RUN,
+		},
+		"Restore FW from USB drive": {
+			Docs: []string{
+				"The goal to force update DUT fw when devices booted in the recovery mode from USB-stick",
+			},
+			ExecName: "cros_install_in_recovery_mode",
+			ExecExtraArgs: []string{
+				"run_custom_commands:true",
+				"boot_timeout:480",
+				"boot_interval:10",
+				"boot_retry:1",
+				"halt_timeout:120",
+				"custom_command_allowed_to_fail:true",
+				"custom_command_timeout:60",
+				"custom_commands:chromeos-firemwareupdate --mode=recovery",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 1000},
+			RunControl:  RunControl_ALWAYS_RUN,
+		},
+		"Restore from TPM 0x54 error": {
+			Docs: []string{
+				"Process based on b/272310645#comment39.",
+			},
+			ExecName: "cros_install_in_recovery_mode",
+			ExecExtraArgs: []string{
+				"run_custom_commands:true",
+				"boot_timeout:480",
+				"boot_interval:10",
+				"boot_retry:1",
+				"halt_timeout:120",
+				"custom_command_allowed_to_fail:false",
+				"custom_command_timeout:60",
+				"custom_commands:tpm_manager_client status##tpm_manager_client take_ownership##cryptohome --action=remove_firmware_management_parameters",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 1000},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
 		"Boot DUT from USB in DEV mode": {

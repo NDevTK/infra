@@ -1,4 +1,4 @@
-// Copyright 2021 The ChromiumOS Authors. All rights reserved.
+// Copyright 2021 The ChromiumOS Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -551,6 +551,12 @@ var customConfigurationTestCases = []struct {
 		"Custom dowload image to USB drive",
 		func() *config.Configuration {
 			return config.DownloadImageToServoUSBDrive("image_path", "image_name")
+		},
+	},
+	{
+		"TPM 0x54 recovery error",
+		func() *config.Configuration {
+			return config.FixTPM54Config()
 		},
 	},
 }
