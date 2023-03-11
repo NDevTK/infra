@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium OS Authors.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@ package cros
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
@@ -93,6 +94,23 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 	}()
 	callback := func(_ context.Context) error {
 		bootedInrecoveryMode = "yes"
+		if am.AsBool(ctx, "run_custom_commands", false) {
+			allowedToFail := am.AsBool(ctx, "custom_command_allowed_to_fail", false)
+			commandTimeout := am.AsDuration(ctx, "custom_command_timeout", 60, time.Second)
+			customCommands := am.AsString(ctx, "custom_commands", "")
+			if customCommands != "" {
+				for _, customCommand := range strings.Split(customCommands, "##") {
+					logger.Debugf("Prepare run custom command: %q", customCommand)
+					if _, err := dutRun(ctx, commandTimeout, customCommand); err != nil {
+						if allowedToFail {
+							logger.Debugf("Run custom command allowed to continue after fail with error: %s", err)
+						} else {
+							return errors.Annotate(err, "run custom command").Err()
+						}
+					}
+				}
+			}
+		}
 		if am.AsBool(ctx, "run_tpm_reset", false) {
 			// Clear TPM is not critical as can fail in some cases.
 			tpmResetTimeout := am.AsDuration(ctx, "tpm_reset_timeout", 60, time.Second)
