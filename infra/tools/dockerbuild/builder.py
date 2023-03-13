@@ -325,14 +325,26 @@ def _FixSysconfigPaths(python_dir, wheel_platform, work_root):
   # When using docker, translate the Python directory so that it
   # works inside the container.
   if wheel_platform.dockcross_base:
-    python_dir = '/work/' + os.path.relpath(python_dir, work_root)
+    work_python_dir = '/work/' + os.path.relpath(python_dir, work_root)
+  else:
+    work_python_dir = python_dir
 
   for config_data in glob.iglob('%s/lib/python*/_sysconfigdata*.py' %
                                 python_dir):
     output_lines = []
     with open(config_data, 'r') as f:
       for line in f:
-        output_lines.append(line.replace('[INSTALL_PREFIX]', python_dir))
+        line = line.replace('[INSTALL_PREFIX]', work_python_dir)
+        # Fix up paths as we transition to new docker images.
+        # Remove this once new Python packages have been built.
+        if wheel_platform.dockcross_base == 'linux-arm64-lts':
+          line = line.replace('aarch64-unknown-linux-gnueabi',
+                              wheel_platform.cross_triple)
+        elif wheel_platform.dockcross_base == 'linux-armv6-lts':
+          line = line.replace(
+              '/usr/bin/arm-linux-gnueabihf',
+              '/usr/xcc/{0}/bin/{0}'.format(wheel_platform.cross_triple))
+        output_lines.append(line)
     st = os.stat(config_data)
     os.chmod(config_data, st.st_mode | stat.S_IWUSR)
     with open(config_data, 'w') as f:
