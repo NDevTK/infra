@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -187,7 +187,7 @@ func isPublicGroupMember(ctx context.Context, req *api.CheckFleetTestsPolicyRequ
 }
 
 func getValidPublicTestNames() []string {
-	return []string{"tast.lacros", "chromium", "chromium_GPU"}
+	return []string{"tast.lacros", "chromium", "chromium_Graphics"}
 }
 
 func validatePublicBoardModel(ctx context.Context, board string, model string) error {
