@@ -15,6 +15,9 @@
 # an explanation why it is frozen.
 
 pins:
+- image: docker.io/library/debian
+  tag: "bookworm-slim"
+  digest: sha256:946dcd5fcb0c6d072a8b12c25abdba542a40126c6e11c432128e8fe5dce511a7
 - image: docker.io/library/ubuntu
   tag: "14.04"
   digest: sha256:64483f3496c1373bfd55348e88694d1c4d0c9b660dee6bfef5e12f43b9933b30
