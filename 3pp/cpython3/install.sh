@@ -25,11 +25,14 @@ LDFLAGS="-L$DEPS_PREFIX/lib"
 
 export CONFIG_ARGS="--host $CROSS_TRIPLE"
 
-# These modules are broken, and seem to reference non-existent symbols
-# at compile time.
 SETUP_LOCAL_SKIP=(
+  # These modules are broken, and seem to reference non-existent symbols
+  # at compile time.
   "_testcapi"
   "_testinternalcapi"
+  # We don't have these libraries on Mac, and don't want to depend on
+  # them on Linux either.
+  "_tkinter"
 )
 SETUP_LOCAL_ATTACH=(
   "$DEPS_PREFIX/lib/libbz2.a"
@@ -71,9 +74,6 @@ if [[ $_3PP_PLATFORM == mac* ]]; then
   # rather than search all of the paths for a ".dylib" and then, failing
   # that, do a second sweep for ".a".
   LDFLAGS="$LDFLAGS -Wl,-search_paths_first"
-
-  # Our builder system is missing X11 headers, so this module does not build.
-  SETUP_LOCAL_SKIP+=(_tkinter)
 
   # For use with cross-compiling.
   if [[ $_3PP_TOOL_PLATFORM == mac-arm64 ]]; then

@@ -28,9 +28,14 @@ PY_VERSION="$_3PP_VERSION+${_3PP_PATCH_VERSION}"
 
 export CONFIG_ARGS="--host $CROSS_TRIPLE"
 
-# This module is broken, and seems to reference a non-existent symbol
-# at compile time.
-SETUP_LOCAL_SKIP=(_testcapi)
+SETUP_LOCAL_SKIP=(
+  # This module is broken, and seems to reference a non-existent symbol
+  # at compile time.
+  "_testcapi"
+  # We don't have these libraries on Mac, and don't want to depend on
+  # them on Linux either.
+  "_tkinter"
+)
 SETUP_LOCAL_ATTACH=(
   "$DEPS_PREFIX/lib/libbz2.a"
   "$DEPS_PREFIX/lib/libreadline.a"
@@ -113,8 +118,6 @@ if [[ $_3PP_PLATFORM == mac* ]]; then
   # Statically linking the _ctypes module requires linking against libffi.
   SETUP_LOCAL_ATTACH+=('_ctypes::-lffi')
 
-  # Our builder system is missing X11 headers, so this module does not build.
-  SETUP_LOCAL_SKIP+=(_tkinter)
   # QuickTime.framework is no longer present on macOS 10.15
   SETUP_LOCAL_SKIP+=(_Qt)
 
