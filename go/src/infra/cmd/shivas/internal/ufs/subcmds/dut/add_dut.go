@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -117,6 +117,8 @@ var AddDUTCmd = &subcommands.Command{
 
 		// Scheduling
 		c.Flags.BoolVar(&c.latestVersion, "latest", false, "Use latest version of CIPD when scheduling. By default use prod.")
+		c.Flags.StringVar(&c.deployBBProject, "deploy-project", "chromeos", "LUCI project to run deploy in. Defaults to `chromeos`")
+		c.Flags.StringVar(&c.deployBBBucket, "deploy-bucket", "labpack_runner", "LUCI bucket to run deploy in. Defaults to `labpack`")
 		return c
 	},
 }
@@ -179,7 +181,9 @@ type addDUT struct {
 	bluetoothPeersCount uint
 
 	// Scheduling
-	latestVersion bool
+	latestVersion   bool
+	deployBBProject string
+	deployBBBucket  string
 }
 
 var mcsvFields = []string{
@@ -275,7 +279,17 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 				continue
 			}
 		}
-		utils.ScheduleDeployTask(ctx, bc, e, param.DUT.GetName(), sessionTag, c.latestVersion)
+		deployParams := utils.DeployTaskParams{
+			Client:           bc,
+			Env:              e,
+			Unit:             param.DUT.GetName(),
+			SessionTag:       sessionTag,
+			UseLatestVersion: c.latestVersion,
+			BBProject:        c.deployBBProject,
+			BBBucket:         c.deployBBBucket,
+		}
+
+		utils.ScheduleDeployTask(ctx, deployParams)
 	}
 	if len(dutParams) > 1 {
 		fmt.Fprintf(a.GetOut(), "\nBatch tasks URL: %s\n\n", utils.TasksBatchLink(e.SwarmingService, sessionTag))

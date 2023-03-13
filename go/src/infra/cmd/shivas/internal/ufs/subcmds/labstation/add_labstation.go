@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,6 +77,8 @@ var AddLabstationCmd = &subcommands.Command{
 
 		// Scheduling
 		c.Flags.BoolVar(&c.latestVersion, "latest", false, "Use latest version of CIPD when scheduling. By default use prod.")
+		c.Flags.StringVar(&c.deployBBProject, "deploy-project", "chromeos", "LUCI project to run deploy in. Defaults to `chromeos`")
+		c.Flags.StringVar(&c.deployBBBucket, "deploy-bucket", "labpack_runner", "LUCI bucket to run deploy in. Defaults to `labpack`")
 		return c
 	},
 }
@@ -107,7 +109,9 @@ type addLabstation struct {
 	zone  string
 
 	// Scheduling
-	latestVersion bool
+	latestVersion   bool
+	deployBBProject string
+	deployBBBucket  string
 }
 
 var mcsvFields = []string{
@@ -181,7 +185,16 @@ func (c *addLabstation) innerRun(a subcommands.Application, args []string, env s
 		err := c.addLabstationToUFS(ctx, ic, params)
 		resTable.RecordResult(ufsOp, params.Labstation.GetHostname(), err)
 		if err == nil {
-			dErr := utils.ScheduleDeployTask(ctx, bbClient, e, params.Labstation.GetHostname(), sessionTag, c.latestVersion)
+			scheduleDeployParams := utils.DeployTaskParams{
+				Client:           bbClient,
+				Env:              e,
+				Unit:             params.Labstation.GetHostname(),
+				SessionTag:       sessionTag,
+				UseLatestVersion: c.latestVersion,
+				BBProject:        c.deployBBProject,
+				BBBucket:         c.deployBBBucket,
+			}
+			dErr := utils.ScheduleDeployTask(ctx, scheduleDeployParams)
 			resTable.RecordResult(swarmingOp, params.Labstation.GetHostname(), dErr)
 		} else {
 			// Record deploy task skip.

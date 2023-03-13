@@ -35,16 +35,18 @@ func (c stubClient) ScheduleLabpackTask(ctx context.Context, params *buildbucket
 	return "fake", 0, nil
 }
 
-// TestScheduleDeployTaskNamespace tests namespace propagates appropriately
-func TestScheduleDeployTaskNamespace(t *testing.T) {
+// TestScheduleDeployTask tests params propagates appropriately
+func TestScheduleDeployTask(t *testing.T) {
 	tests := []struct {
 		name         string
 		ctx          context.Context
+		deployParams *DeployTaskParams
 		expectedCall *buildbucket.ScheduleLabpackTaskParams
 	}{
 		{
-			name: "no explicit namespace",
-			ctx:  context.Background(),
+			name:         "no explicit namespace",
+			ctx:          context.Background(),
+			deployParams: &DeployTaskParams{},
 			expectedCall: &buildbucket.ScheduleLabpackTaskParams{
 				UnitName: "test-unit",
 				Props: &structpb.Struct{
@@ -68,8 +70,9 @@ func TestScheduleDeployTaskNamespace(t *testing.T) {
 			},
 		},
 		{
-			name: "explicit namespace",
-			ctx:  SetupContext(context.Background(), ufsUtil.OSPartnerNamespace),
+			name:         "explicit namespace",
+			ctx:          SetupContext(context.Background(), ufsUtil.OSPartnerNamespace),
+			deployParams: &DeployTaskParams{},
 			expectedCall: &buildbucket.ScheduleLabpackTaskParams{
 				UnitName: "test-unit",
 				Props: &structpb.Struct{
@@ -92,12 +95,46 @@ func TestScheduleDeployTaskNamespace(t *testing.T) {
 				BuilderBucket:  "labpack_runner",
 			},
 		},
+		{
+			name: "explicit params",
+			ctx:  context.Background(),
+			deployParams: &DeployTaskParams{
+				BBBucket:  "eli-bucket",
+				BBProject: "eli-project",
+			},
+			expectedCall: &buildbucket.ScheduleLabpackTaskParams{
+				UnitName: "test-unit",
+				Props: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"admin_service":       structpb.NewStringValue("skylab-staging-bot-fleet.appspot.com"),
+						"configuration":       structpb.NewStringValue(""),
+						"enable_recovery":     structpb.NewBoolValue(true),
+						"inventory_service":   structpb.NewStringValue("staging.ufs.api.cr.dev"),
+						"inventory_namespace": structpb.NewStringValue("os"),
+						"no_metrics":          structpb.NewBoolValue(false),
+						"no_stepper":          structpb.NewBoolValue(false),
+						"task_name":           structpb.NewStringValue("deploy"),
+						"unit_name":           structpb.NewStringValue("test-unit"),
+						"update_inventory":    structpb.NewBoolValue(true),
+					},
+				},
+				ExtraTags:      []string{"test-session", "task:deploy", "client:shivas", "inventory_namespace:os", "version:prod"},
+				BuilderName:    "deploy",
+				BuilderProject: "eli-project",
+				BuilderBucket:  "eli-bucket",
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// t.Parallel() disabled since we have global state used to verify calls
 			client := newStubClient()
-			err := ScheduleDeployTask(tt.ctx, client, site.Dev, "test-unit", "test-session", false)
+			tt.deployParams.Client = client
+			tt.deployParams.Env = site.Dev
+			tt.deployParams.Unit = "test-unit"
+			tt.deployParams.SessionTag = "test-session"
+			tt.deployParams.UseLatestVersion = false
+			err := ScheduleDeployTask(tt.ctx, *tt.deployParams)
 
 			if err != nil {
 				t.Errorf("unexpected err: %s", err)

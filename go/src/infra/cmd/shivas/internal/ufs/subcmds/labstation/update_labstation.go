@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,6 +76,8 @@ var UpdateLabstationCmd = &subcommands.Command{
 
 		// Scheduling
 		c.Flags.BoolVar(&c.latestVersion, "latest", false, "Use latest version of CIPD when scheduling. By default use prod.")
+		c.Flags.StringVar(&c.deployBBProject, "deploy-project", "chromeos", "LUCI project to run deploy in. Defaults to `chromeos`")
+		c.Flags.StringVar(&c.deployBBBucket, "deploy-bucket", "labpack_runner", "LUCI bucket to run deploy in. Defaults to `labpack`")
 		return c
 	},
 }
@@ -102,7 +104,9 @@ type updateLabstation struct {
 	deployTags  []string
 
 	// Scheduling
-	latestVersion bool
+	latestVersion   bool
+	deployBBProject string
+	deployBBBucket  string
 }
 
 func (c *updateLabstation) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -180,7 +184,17 @@ func (c *updateLabstation) innerRun(a subcommands.Application, args []string, en
 		for _, req := range deployTasks {
 			// Check if deploy task is required or force deploy is set.
 			if c.forceDeploy || c.isDeployTaskRequired(req) {
-				err = utils.ScheduleDeployTask(ctx, bbClient, e, req.MachineLSE.GetHostname(), sessionTag, c.latestVersion)
+				deployParams := utils.DeployTaskParams{
+					Client:           bbClient,
+					Env:              e,
+					Unit:             req.MachineLSE.GetHostname(),
+					SessionTag:       sessionTag,
+					UseLatestVersion: c.latestVersion,
+					BBProject:        c.deployBBProject,
+					BBBucket:         c.deployBBBucket,
+				}
+
+				err = utils.ScheduleDeployTask(ctx, deployParams)
 				if err != nil {
 					c.verbosePrint("Unable to deploy task for %s: %s\n", req.MachineLSE.GetHostname(), err.Error())
 				}

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -150,6 +150,8 @@ var UpdateDUTCmd = &subcommands.Command{
 
 		// Scheduling
 		c.Flags.BoolVar(&c.latestVersion, "latest", false, "Use latest version of CIPD when scheduling. By default use prod.")
+		c.Flags.StringVar(&c.deployBBProject, "deploy-project", "chromeos", "LUCI project to run deploy in. Defaults to `chromeos`")
+		c.Flags.StringVar(&c.deployBBBucket, "deploy-bucket", "labpack_runner", "LUCI bucket to run deploy in. Defaults to `labpack`")
 		return c
 	},
 }
@@ -208,7 +210,9 @@ type updateDUT struct {
 	flagInputs map[string]bool
 
 	// Scheduling
-	latestVersion bool
+	latestVersion   bool
+	deployBBProject string
+	deployBBBucket  string
 }
 
 func (c *updateDUT) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -304,7 +308,16 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 		}
 		// Swarm a deploy task if required or enforced.
 		if needRunDeploy || c.forceDeploy {
-			utils.ScheduleDeployTask(ctx, bc, e, req.GetMachineLSE().GetHostname(), sessionTag, c.latestVersion)
+			deployParams := utils.DeployTaskParams{
+				Client:           bc,
+				Env:              e,
+				Unit:             req.GetMachineLSE().GetHostname(),
+				SessionTag:       sessionTag,
+				UseLatestVersion: c.latestVersion,
+				BBProject:        c.deployBBProject,
+				BBBucket:         c.deployBBBucket,
+			}
+			utils.ScheduleDeployTask(ctx, deployParams)
 			resTable.RecordResult(swarmOp, req.MachineLSE.GetName(), err)
 
 			// Remove the task entry to avoid triggering multiple tasks.
