@@ -15,6 +15,7 @@ import (
 	"infra/cmd/crosfleet/internal/site"
 	"infra/cmd/crosfleet/internal/ufs"
 	"infra/cmdsupport/cmdlib"
+	"infra/libs/skylab/common/heuristics"
 	"strings"
 	"time"
 
@@ -147,7 +148,7 @@ func botDimsAndBuildTags(ctx context.Context, swarmingService *swarmingapi.Servi
 	tags = map[string]string{}
 	if leaseFlags.host != "" {
 		// Hostname-based lease.
-		correctedHostname := correctedHostname(leaseFlags.host)
+		correctedHostname := heuristics.NormalizeBotNameToDeviceName(leaseFlags.host)
 		id, err := hostnameToBotID(ctx, swarmingService, correctedHostname)
 		if err != nil {
 			return nil, nil, err

@@ -21,6 +21,7 @@ import (
 	"infra/cmd/skylab/internal/site"
 	"infra/cmd/skylab/internal/userinput"
 	"infra/cmdsupport/cmdlib"
+	"infra/libs/skylab/common/heuristics"
 	"infra/libs/skylab/swarming"
 )
 
@@ -134,7 +135,7 @@ func (c *leaseDutRun) innerRun(a subcommands.Application, args []string, env sub
 	switch {
 	case hasOneHostname:
 		oldhost := args[0]
-		host := skycmdlib.FixSuspiciousHostname(oldhost)
+		host := heuristics.NormalizeBotNameToDeviceName(oldhost)
 		if host != oldhost {
 			fmt.Fprintf(a.GetErr(), "correcting (%s) to (%s)\n", oldhost, host)
 		}

@@ -10,6 +10,7 @@ import (
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/site"
 	"infra/cmdsupport/cmdlib"
+	"infra/libs/skylab/common/heuristics"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
@@ -71,7 +72,7 @@ func (c *abandonRun) innerRun(a subcommands.Application, args []string, env subc
 	earliestCreateTime := common.OffsetTimestamp(-1 * maxLeaseLengthMinutes)
 	var botIDs []string
 	for _, hostname := range args {
-		correctedHostname := correctedHostname(hostname)
+		correctedHostname := heuristics.NormalizeBotNameToDeviceName(hostname)
 		id, err := hostnameToBotID(ctx, swarmingService, correctedHostname)
 		if err != nil {
 			return err

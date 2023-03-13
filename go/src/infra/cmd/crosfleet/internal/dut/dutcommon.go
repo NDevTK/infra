@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"infra/cmdsupport/cmdlib"
 	ufsutil "infra/unifiedfleet/app/util"
-	"strings"
 
 	"google.golang.org/grpc/metadata"
 
@@ -57,14 +56,6 @@ func countBotsWithDims(ctx context.Context, s *swarmingapi.Service, dimsMap map[
 		dims = append(dims, fmt.Sprintf("%s:%s", key, val))
 	}
 	return s.Bots.Count().Context(ctx).Dimensions(dims...).Do()
-}
-
-// correctedHostname checks the given hostname for common errors when entering a
-// DUT hostname, and returns a corrected hostname.
-func correctedHostname(hostname string) string {
-	hostname = strings.TrimPrefix(hostname, "crossk-")
-	hostname = strings.TrimSuffix(hostname, ".cros")
-	return hostname
 }
 
 // contextWithOSNamespace adds an "os" namespace to the given context, which

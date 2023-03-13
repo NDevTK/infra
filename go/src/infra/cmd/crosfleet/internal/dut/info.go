@@ -12,6 +12,7 @@ import (
 	"infra/cmd/crosfleet/internal/site"
 	"infra/cmd/crosfleet/internal/ufs"
 	"infra/cmdsupport/cmdlib"
+	"infra/libs/skylab/common/heuristics"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
 	ufsutil "infra/unifiedfleet/app/util"
 	"strings"
@@ -90,7 +91,7 @@ func (c *infoRun) innerRun(a subcommands.Application, args []string, env subcomm
 // bool indicating whether all information fields were found in UFS.
 func getDutInfo(ctx context.Context, ufsClient ufs.Client, hostname string) (*dutinfopb.DUTInfo, bool, error) {
 	info := &dutinfopb.DUTInfo{
-		Hostname: correctedHostname(hostname),
+		Hostname: heuristics.NormalizeBotNameToDeviceName(hostname),
 	}
 
 	ctx = contextWithOSNamespace(ctx)

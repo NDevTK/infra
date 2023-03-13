@@ -7,15 +7,16 @@ package cmdlib
 import (
 	"context"
 	"flag"
-	"strings"
 
-	"go.chromium.org/luci/common/logging"
-	"google.golang.org/grpc/metadata"
 	"infra/cmd/skylab/internal/site"
 	rem "infra/libs/skylab/inventory/removalreason"
 
-	lflag "go.chromium.org/luci/common/flag"
+	"go.chromium.org/luci/common/logging"
+	"google.golang.org/grpc/metadata"
+
 	ufsUtil "infra/unifiedfleet/app/util"
+
+	lflag "go.chromium.org/luci/common/flag"
 )
 
 // DefaultTaskPriority is the default priority for a swarming task.
@@ -64,18 +65,6 @@ func RegisterRemovalReason(rr *rem.RemovalReason, f *flag.FlagSet) {
 	f.StringVar(&rr.Bug, "bug", "", "Bug link for why DUT is being removed.  Required.")
 	f.StringVar(&rr.Comment, "comment", "", "Short comment about why DUT is being removed.")
 	f.Var(lflag.RelativeTime{T: &rr.Expire}, "expires-in", "Expire removal reason in `days`.")
-}
-
-// FixSuspiciousHostname checks whether a hostname is suspicious and potentially indicates a bug of some kind.
-// The prefix "crossk-" is suspicious and should be removed. The suffix ".cros" is also suspicious and should be removed.
-func FixSuspiciousHostname(hostname string) string {
-	if strings.HasPrefix(hostname, "crossk-") {
-		return strings.TrimPrefix(hostname, "crossk-")
-	}
-	if strings.HasSuffix(hostname, ".cros") {
-		return strings.TrimSuffix(hostname, ".cros")
-	}
-	return hostname
 }
 
 // SetupContext sets up context with namespace

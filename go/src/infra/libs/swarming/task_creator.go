@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"strings"
 	"time"
 
 	"infra/cmdsupport/cmdlib"
@@ -131,79 +130,6 @@ func MapToSwarmingDimensions(dims map[string]string) []*swarming.SwarmingRpcsStr
 	return dimensions
 }
 
-// ReserveDUT schedule task to change DUT state to reserved.
-func (tc *TaskCreator) ReserveDUT(ctx context.Context, serviceAccount, host, user string, expirationSec int) (*TaskInfo, error) {
-	return tc.schedule(ctx, tc.setDUTStateRequest(serviceAccount, host, user, "Reserve", "set_reserved", DefaultAdminTaskPriority, expirationSec))
-}
-
-// SetManualRepair schedule task to change DUT state to manual_repair.
-func (tc *TaskCreator) SetManualRepair(ctx context.Context, serviceAccount, host, user string, expirationSec int) (*TaskInfo, error) {
-	return tc.schedule(ctx, tc.setDUTStateRequest(serviceAccount, host, user, "ManualRepair", "set_manual_repair", DefaultAdminTaskPriority, expirationSec))
-}
-
-// setDUTStateRequest creates task request to change DUT state.
-func (tc *TaskCreator) setDUTStateRequest(serviceAccount, host, user, taskName, changeStateCommand string, priority int64, expirationSec int) *swarming.SwarmingRpcsNewTaskRequest {
-	slices := []*swarming.SwarmingRpcsTaskSlice{{
-		ExpirationSecs: int64(expirationSec),
-		Properties: &swarming.SwarmingRpcsTaskProperties{
-			Command: changeDUTStateCommand(changeStateCommand),
-			Dimensions: []*swarming.SwarmingRpcsStringPair{
-				{Key: PoolDimensionKey, Value: sw.SkylabPool},
-				{Key: IDDimensionKey, Value: dutNameToBotID(host)},
-			},
-			ExecutionTimeoutSecs: int64(5 * 60),
-		},
-	}}
-	return &swarming.SwarmingRpcsNewTaskRequest{
-		Name: fmt.Sprintf("%s by %s", taskName, user),
-		Tags: tc.combineTags(taskName, "",
-			[]string{
-				fmt.Sprintf("dut-name:%s", host),
-			}),
-		TaskSlices:     slices,
-		Priority:       priority,
-		ServiceAccount: serviceAccount,
-	}
-}
-
-// LegacyRepairTask creates admin_repair task for particular DUT
-func (tc *TaskCreator) LegacyRepairTask(ctx context.Context, serviceAccount, host string, expirationSec int, cmd []string, logDogURL string) (*TaskInfo, error) {
-	return tc.schedule(ctx, tc.repairVerifyTaskRequest("admin_repair", "repair", serviceAccount, host, expirationSec, 90*60, cmd, logDogURL))
-}
-
-// VerifyTask creates admin_repair task for particular DUT
-func (tc *TaskCreator) VerifyTask(ctx context.Context, serviceAccount, host string, expirationSec int, cmd []string, logDogURL string) (*TaskInfo, error) {
-	return tc.schedule(ctx, tc.repairVerifyTaskRequest("admin_verify", "verify", serviceAccount, host, expirationSec, 90*60, cmd, logDogURL))
-}
-
-// LegacyAuditTask creates admin_audit task for particular DUT
-func (tc *TaskCreator) LegacyAuditTask(ctx context.Context, serviceAccount, host string, expirationSec int, cmd []string, logDogURL string) (*TaskInfo, error) {
-	return tc.schedule(ctx, tc.repairVerifyTaskRequest("admin_audit", "audit", serviceAccount, host, expirationSec, 8*60*60, cmd, logDogURL))
-}
-
-// repairVerifyTaskRequest creates task request for AdminRepair task
-func (tc *TaskCreator) repairVerifyTaskRequest(taskName, toolName, serviceAccount, host string, expirationSec, executionSec int, cmd []string, logDogURL string) *swarming.SwarmingRpcsNewTaskRequest {
-	slices := []*swarming.SwarmingRpcsTaskSlice{{
-		ExpirationSecs: int64(expirationSec),
-		Properties: &swarming.SwarmingRpcsTaskProperties{
-			Command: cmd,
-			Dimensions: []*swarming.SwarmingRpcsStringPair{
-				{Key: PoolDimensionKey, Value: sw.SkylabPool},
-				{Key: IDDimensionKey, Value: dutNameToBotID(host)},
-			},
-			ExecutionTimeoutSecs: int64(executionSec),
-		},
-		WaitForCapacity: true,
-	}}
-	return &swarming.SwarmingRpcsNewTaskRequest{
-		Name:           taskName,
-		Tags:           tc.combineTags(toolName, logDogURL, nil),
-		TaskSlices:     slices,
-		Priority:       DefaultAdminTaskPriority,
-		ServiceAccount: serviceAccount,
-	}
-}
-
 // Schedule registers task in the swarming
 func (tc *TaskCreator) schedule(ctx context.Context, req *swarming.SwarmingRpcsNewTaskRequest) (*TaskInfo, error) {
 	ctx, cf := context.WithTimeout(ctx, 60*time.Second)
@@ -244,16 +170,6 @@ func changeDUTStateCommand(task string) []string {
 		"-c",
 		fmt.Sprintf("/opt/infra-tools/skylab_swarming_worker -task-name %s; echo Zzz...; do sleep 180", task),
 	}
-}
-
-func dutNameToBotID(hostname string) string {
-	if strings.HasSuffix(hostname, ".cros") {
-		hostname = strings.TrimSuffix(hostname, ".cros")
-	}
-	if !strings.HasPrefix(hostname, "crossk-") {
-		return "crossk-" + hostname
-	}
-	return hostname
 }
 
 func (tc *TaskCreator) combineTags(toolName, logDogURL string, customTags []string) []string {

@@ -91,7 +91,7 @@ func (c *clientImpl) ScheduleLabpackTask(ctx context.Context, params *ScheduleLa
 		return "", 0, errors.Reason("ScheduleLabpackTask: params cannot be nil").Err()
 	}
 	dims := make(map[string]string)
-	dims["id"] = "crossk-" + params.UnitName
+	dims["dut_name"] = params.UnitName
 	if params.ExpectedDUTState != "" {
 		dims["dut_state"] = params.ExpectedDUTState
 	}

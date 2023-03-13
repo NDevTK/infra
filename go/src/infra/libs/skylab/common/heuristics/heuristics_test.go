@@ -5,6 +5,7 @@
 package heuristics
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -47,45 +48,6 @@ func TestLooksLikeSatlab(t *testing.T) {
 			t.Parallel()
 			expected := tt.out
 			actual := LooksLikeSatlabDevice(tt.in)
-			if diff := cmp.Diff(expected, actual); diff != "" {
-				t.Errorf("unexpected diff (-want +got): %s", diff)
-			}
-		})
-	}
-}
-
-// TestLooksLikeCrosskBotName tests identification of bots.
-func TestLooksLikeCrosskBotName(t *testing.T) {
-	t.Parallel()
-
-	cases := []struct {
-		name string
-		in   string
-		out  bool
-	}{
-		{
-			name: "empty string",
-			in:   "",
-			out:  false,
-		},
-		{
-			name: "has prefix",
-			in:   "crossk-a",
-			out:  true,
-		},
-		{
-			name: "no prefix",
-			in:   "a",
-			out:  false,
-		},
-	}
-
-	for _, tt := range cases {
-		tt := tt
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			expected := tt.out
-			actual := LooksLikeCrosskBotName(tt.in)
 			if diff := cmp.Diff(expected, actual); diff != "" {
 				t.Errorf("unexpected diff (-want +got): %s", diff)
 			}
@@ -234,6 +196,45 @@ func TestLooksLikeFieldMask(t *testing.T) {
 			actual := LooksLikeFieldMask(tt.in)
 			if diff := cmp.Diff(expected, actual); diff != "" {
 				t.Errorf("unexpected diff (-want +got): %s", diff)
+			}
+		})
+	}
+}
+
+var testNormalizeBotNameToDeviceNameData = []struct {
+	startingHostname, wantCorrectedHostname string
+}{
+	{
+		"crossk-foo-hostname.cros",
+		"foo-hostname",
+	},
+	{
+		"crossk-bar-hostname",
+		"bar-hostname",
+	},
+	{
+		"cros-chromeos1-bar-hostname",
+		"chromeos1-bar-hostname",
+	},
+	{
+		"baz-hostname.cros",
+		"baz-hostname",
+	},
+	{
+		"lol-hostname",
+		"lol-hostname",
+	},
+}
+
+func TestNormalizeBotNameToDeviceName(t *testing.T) {
+	t.Parallel()
+	for _, tt := range testNormalizeBotNameToDeviceNameData {
+		tt := tt
+		t.Run(fmt.Sprintf("(%s)", tt.startingHostname), func(t *testing.T) {
+			t.Parallel()
+			gotCorrectedHostname := NormalizeBotNameToDeviceName(tt.startingHostname)
+			if tt.wantCorrectedHostname != gotCorrectedHostname {
+				t.Errorf("unexpected error: wanted '%s', got '%s'", tt.wantCorrectedHostname, gotCorrectedHostname)
 			}
 		})
 	}

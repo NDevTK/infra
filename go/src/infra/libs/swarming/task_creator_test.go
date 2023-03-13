@@ -5,11 +5,9 @@
 package swarming
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestChangeDUTStateCommand(t *testing.T) {
@@ -29,106 +27,6 @@ func TestChangeDUTStateCommand(t *testing.T) {
 				"/opt/infra-tools/skylab_swarming_worker -task-name " + tc + "; echo Zzz...; do sleep 180",
 			}
 			if diff := cmp.Diff(out, got); diff != "" {
-				t.Errorf("output mismatch (-want +got): %s\n", diff)
-			}
-		})
-	}
-}
-
-func TestSetDUTStateRequest(t *testing.T) {
-	t.Parallel()
-	Convey("Verify deploy task request is correct formated", t, func() {
-		tc := &TaskCreator{
-			client:          nil,
-			swarmingService: "https://chromium-swarm-dev.appspot.com/",
-			session:         "session0",
-		}
-		testPriority := int64(13)
-		r := tc.setDUTStateRequest("fake_service_account", "fake_dut_host", "fake_user", "My Task", "set_my_command", testPriority, 87)
-		So(r.Name, ShouldEqual, "My Task by fake_user")
-		So(r.TaskSlices, ShouldHaveLength, 1)
-		command := strings.Join(r.TaskSlices[0].Properties.Command, " ")
-		So(command, ShouldContainSubstring, "/bin/sh -c /opt/infra-tools/skylab_swarming_worker")
-		So(command, ShouldContainSubstring, "-task-name set_my_command")
-		for _, d := range r.TaskSlices[0].Properties.Dimensions {
-			switch d.Key {
-			case "pool":
-				So(d.Value, ShouldEqual, "ChromeOSSkylab")
-			case "id":
-				So(d.Value, ShouldEqual, "crossk-fake_dut_host")
-			}
-		}
-		So("skylab-tool:My Task", ShouldBeIn, r.Tags)
-		So("admin_session:session0", ShouldBeIn, r.Tags)
-		So("dut-name:fake_dut_host", ShouldBeIn, r.Tags)
-		So("pool:ChromeOSSkylab", ShouldBeIn, r.Tags)
-		So(r.ServiceAccount, ShouldEqual, "fake_service_account")
-		So(r.TaskSlices[0].ExpirationSecs, ShouldEqual, int64(87))
-		So(r.Priority, ShouldEqual, testPriority)
-	})
-}
-
-func TestRepairVerifyDUTRequest(t *testing.T) {
-	t.Parallel()
-	Convey("Verify deploy task request is correct formated", t, func() {
-		fakeArgs := []string{"args1", "args2"}
-		logDogURL := "logDogURL0"
-		tc := &TaskCreator{
-			client:          nil,
-			swarmingService: "https://chromium-swarm-dev.appspot.com/",
-			session:         "session0",
-		}
-		r := tc.repairVerifyTaskRequest("task-name", "tool-name", "fake_service_account", "fake_dut_host", 12345, 23456, fakeArgs, logDogURL)
-		So(r.Name, ShouldEqual, "task-name")
-		So(r.TaskSlices, ShouldHaveLength, 1)
-		command := strings.Join(r.TaskSlices[0].Properties.Command, " ")
-		So(command, ShouldContainSubstring, "args1")
-		So(command, ShouldContainSubstring, "args2")
-		for _, d := range r.TaskSlices[0].Properties.Dimensions {
-			switch d.Key {
-			case "pool":
-				So(d.Value, ShouldEqual, "ChromeOSSkylab")
-			case "id":
-				So(d.Value, ShouldEqual, "crossk-fake_dut_host")
-			}
-		}
-		So("skylab-tool:tool-name", ShouldBeIn, r.Tags)
-		So("admin_session:session0", ShouldBeIn, r.Tags)
-		So("luci_project:", ShouldBeIn, r.Tags)
-		So("log_location:logDogURL0", ShouldBeIn, r.Tags)
-		So("pool:ChromeOSSkylab", ShouldBeIn, r.Tags)
-		So(r.ServiceAccount, ShouldEqual, "fake_service_account")
-		So(r.Priority, ShouldEqual, 25)
-		So(r.TaskSlices[0].ExpirationSecs, ShouldEqual, int64(12345))
-		So(r.TaskSlices[0].Properties.ExecutionTimeoutSecs, ShouldEqual, int64(23456))
-	})
-}
-
-func TestDUTNameToBotID(t *testing.T) {
-	t.Parallel()
-	testcases := []struct {
-		in  string
-		out string
-	}{
-		{
-			"dut",
-			"crossk-dut",
-		},
-		{
-			"dut2.cros",
-			"crossk-dut2",
-		},
-		{
-			"crossk-dut3.cros",
-			"crossk-dut3",
-		},
-	}
-	for _, tc := range testcases {
-		tc := tc
-		t.Run(tc.in, func(t *testing.T) {
-			t.Parallel()
-			got := dutNameToBotID(tc.in)
-			if diff := cmp.Diff(tc.out, got); diff != "" {
 				t.Errorf("output mismatch (-want +got): %s\n", diff)
 			}
 		})

@@ -11,6 +11,8 @@ import (
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
+
+	"infra/libs/skylab/common/heuristics"
 )
 
 // SwarmingBotProvider is the host that runs a swarming bot, e.g. GCE or Drone.
@@ -19,8 +21,7 @@ type SwarmingBotProvider string
 const (
 	// swarmingBotIdEnvName is the env variable name for bot ID
 	swarmingBotIdEnvName = "SWARMING_BOT_ID"
-	// swarmingBotPrefixDrone is the prefix used in all Drone bots.
-	swarmingBotPrefixDrone = "crossk-"
+
 	// swarmingBotPrefixGce is the prefix used in all Gce bots for VMLab.
 	// The vmlab PROD pool has a more specific prefix: "chromeos-test-vmlab-"
 	// See https://crrev.com/i/5266273. Note that the staging pool is shared.
@@ -49,8 +50,10 @@ func GetHostIp() (string, error) {
 // GetBotProvider detects the SwarmingBotProvider by examining env variable.
 func GetBotProvider() SwarmingBotProvider {
 	if lookup, found := os.LookupEnv(swarmingBotIdEnvName); found {
-		if strings.HasPrefix(lookup, swarmingBotPrefixDrone) {
-			return BotProviderDrone
+		for _, p := range heuristics.HwSwarmingBotIdPrefixes {
+			if strings.HasPrefix(lookup, p) {
+				return BotProviderDrone
+			}
 		}
 		if strings.HasPrefix(lookup, swarmingBotPrefixGce) {
 			return BotProviderGce

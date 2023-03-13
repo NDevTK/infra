@@ -7,9 +7,9 @@ package commands
 import (
 	"context"
 	"fmt"
-	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/data"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
+	"infra/libs/skylab/common/heuristics"
 	"os"
 	"strings"
 
@@ -56,7 +56,7 @@ func (cmd *ParseEnvInfoCmd) Execute(ctx context.Context) error {
 	summary := []string{}
 
 	botID := os.Getenv("SWARMING_BOT_ID")
-	hostName := strings.TrimPrefix(botID, common.HwSwarmingBotIdPrefix)
+	hostName := heuristics.NormalizeBotNameToDeviceName(botID)
 	summary = append(summary, fmt.Sprintf("hostname: %s", hostName))
 	cmd.HostName = hostName
 

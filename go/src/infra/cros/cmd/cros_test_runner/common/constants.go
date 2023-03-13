@@ -8,7 +8,6 @@ import "time"
 
 // All common constants used throughout the service.
 const (
-	HwSwarmingBotIdPrefix                  = "crossk-"
 	ServiceConnectionTimeout               = 5 * time.Minute
 	CtrCipdPackage                         = "chromiumos/infra/cros-tool-runner/${platform}"
 	ContainerDefaultNetwork                = "host"
