@@ -34,6 +34,8 @@ type Params struct {
 	AdminService string
 	// Hostname of the inventory service.
 	InventoryService string
+	// Namespace to use in inventory service.
+	InventoryNamespace string
 	// Whether to update the inventory or not when the task is finished.
 	UpdateInventory bool
 	// NoStepper determines whether the log stepper things.
@@ -56,15 +58,16 @@ type Params struct {
 // end up as properties here.
 func (p *Params) AsMap() map[string]interface{} {
 	return map[string]interface{}{
-		"unit_name":         p.UnitName,
-		"task_name":         p.TaskName,
-		"enable_recovery":   p.EnableRecovery,
-		"admin_service":     p.AdminService,
-		"inventory_service": p.InventoryService,
-		"update_inventory":  p.UpdateInventory,
-		"no_stepper":        p.NoStepper,
-		"no_metrics":        p.NoMetrics,
-		"configuration":     p.Configuration,
+		"unit_name":           p.UnitName,
+		"task_name":           p.TaskName,
+		"enable_recovery":     p.EnableRecovery,
+		"admin_service":       p.AdminService,
+		"inventory_service":   p.InventoryService,
+		"update_inventory":    p.UpdateInventory,
+		"no_stepper":          p.NoStepper,
+		"no_metrics":          p.NoMetrics,
+		"configuration":       p.Configuration,
+		"inventory_namespace": p.InventoryNamespace,
 	}
 }
 

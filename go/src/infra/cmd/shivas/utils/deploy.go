@@ -39,8 +39,9 @@ func ScheduleDeployTask(ctx context.Context, bc buildbucket.Client, e site.Envir
 		EnableRecovery: true,
 		AdminService:   adminServicePath,
 		// NOTE: We use the UFS service, not the Inventory service here.
-		InventoryService: e.UnifiedFleetService,
-		UpdateInventory:  true,
+		InventoryService:   e.UnifiedFleetService,
+		InventoryNamespace: contextNamespace,
+		UpdateInventory:    true,
 		ExtraTags: []string{
 			sessionTag,
 			"task:deploy",
