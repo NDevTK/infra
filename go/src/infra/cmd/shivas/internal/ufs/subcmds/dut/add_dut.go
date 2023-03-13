@@ -289,7 +289,9 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 			BBBucket:         c.deployBBBucket,
 		}
 
-		utils.ScheduleDeployTask(ctx, deployParams)
+		if err := utils.ScheduleDeployTask(ctx, deployParams); err != nil {
+			fmt.Printf("Failed to schedule deploy task for DUT %s with error: %s", param.DUT.GetName(), err.Error())
+		}
 	}
 	if len(dutParams) > 1 {
 		fmt.Fprintf(a.GetOut(), "\nBatch tasks URL: %s\n\n", utils.TasksBatchLink(e.SwarmingService, sessionTag))
