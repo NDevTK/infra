@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,9 +50,10 @@ func mockDutMachineLSE(name string) *ufspb.MachineLSE {
 		ChromeosMachineLse: chromeOSMachineLse,
 	}
 	return &ufspb.MachineLSE{
-		Name:     name,
-		Hostname: name,
-		Lse:      lse,
+		Name:        name,
+		Hostname:    name,
+		Lse:         lse,
+		LogicalZone: ufspb.LogicalZone_NONE,
 	}
 }
 
@@ -775,6 +776,15 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 			So(err.Error(), ShouldContainSubstring, "Invalid Pool Name")
 		})
 
+		Convey("Update machineLSE DUT LogicalZone", func() {
+			dutMachinelse3 := mockDutMachineLSE("DUTMachineLSE-22")
+			dutMachinelse3.Machines = []string{"machine-22"}
+			dutMachinelse3.LogicalZone = ufspb.LogicalZone_DRILLZONE_SFO36
+			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil)
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp, ShouldResembleProto, dutMachinelse3)
+		})
 	})
 }
 

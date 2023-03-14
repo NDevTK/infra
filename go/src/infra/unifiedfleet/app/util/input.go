@@ -445,6 +445,36 @@ func ValidAssetTypeStr() []string {
 	return keys
 }
 
+// IsLogicalZone checks if a string is a valid logical zone
+func IsLogicalZone(logicalZone string) bool {
+	for _, x := range ValidLogicalZoneStr() {
+		if x == logicalZone {
+			return true
+		}
+	}
+	return false
+}
+
+// ToLogicalZone returns an LogicalZone object corresponding to string
+func ToLogicalZone(logicalZone string) ufspb.LogicalZone {
+	lZone := RemoveGivenPrefix(logicalZone, "logicalzone")
+	for k, v := range ufspb.LogicalZone_value {
+		if strings.EqualFold(k, lZone) {
+			return ufspb.LogicalZone(v)
+		}
+	}
+	return ufspb.LogicalZone_NONE
+}
+
+// ValidAssetTypeStr returns a valid str list for AssetTypes
+func ValidLogicalZoneStr() []string {
+	keys := make([]string, 0, len(ufspb.LogicalZone_name))
+	for _, v := range ufspb.LogicalZone_name {
+		keys = append(keys, strings.ToLower(v))
+	}
+	return keys
+}
+
 // ValidDeploymentEnvStr returns a valid str list for DeploymentEnv
 func ValidDeploymentEnvStr() []string {
 	keys := make([]string, 0, len(ufspb.DeploymentEnv_name))
