@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -198,6 +199,14 @@ type LoggerConfig struct {
 
 // DumpStepsToFolder cleans and writes the step information gathered during execution to a designated path.
 func (lc *LoggerConfig) DumpStepsToFolder(basePath string) {
+	if basePath == "" {
+		// Use temporary folder
+		tempPath, err := ioutil.TempDir("/tmp", "cros_test_runner*")
+		if err != nil {
+			panic(err)
+		}
+		basePath = tempPath
+	}
 	root := path.Join(basePath, "test_runner_steps")
 
 	if err := os.RemoveAll(root); err != nil {

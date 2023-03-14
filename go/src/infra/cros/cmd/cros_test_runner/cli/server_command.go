@@ -23,7 +23,8 @@ type ServerCommand struct {
 
 func NewServerCommand() *ServerCommand {
 	sc := &ServerCommand{
-		flagSet: flag.NewFlagSet("server", flag.ContinueOnError),
+		flagSet:  flag.NewFlagSet("server", flag.ContinueOnError),
+		metadata: &service.ServerMetadata{},
 	}
 
 	sc.flagSet.IntVar(&sc.metadata.Port, "port", 0, fmt.Sprintf("Specify the port for the server. Default value %d.", 0))
@@ -79,7 +80,7 @@ func (sc *ServerCommand) Run() error {
 	}
 
 	if err := server.Start(); err != nil {
-		log.Fatalln("failed to start cros-test-runner server:", err)
+		log.Fatalln("failed to start cros-test-runner server: ", err)
 		return err
 	}
 
