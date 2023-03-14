@@ -53,6 +53,7 @@ type MachineLSEEntity struct {
 	Customer              string   `gae:"customer"`
 	SecurityLevel         string   `gae:"security_level"`
 	MibaRealm             string   `gae:"miba_realm,noindex"` // deprecated
+	LogicalZone           string   `gae:"logical_zone"`
 	// ufspb.MachineLSE cannot be directly used as it contains pointer.
 	MachineLSE []byte `gae:",noindex"`
 }
@@ -135,6 +136,7 @@ func newMachineLSEEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEnti
 		Customer:              customer,
 		SecurityLevel:         securityLevel,
 		MachineLSE:            machineLSE,
+		LogicalZone:           p.GetLogicalZone().String(),
 	}, nil
 }
 
@@ -564,8 +566,10 @@ func GetMachineLSEIndexedFieldName(input string) (string, error) {
 		field = "nic"
 	case util.PoolsFilterName:
 		field = "pools"
+	case util.LogicalZoneFilterName:
+		field = "logical_zone"
 	default:
-		return "", status.Errorf(codes.InvalidArgument, "Invalid field name %s - field name for host are nic/machine/machineprototype/rpm/rpmport/vlan/servo/servotype/zone/rack/switch/man/free/tag/state/os/vdc(virtualdatacenter)/pools", input)
+		return "", status.Errorf(codes.InvalidArgument, "Invalid field name %s - field name for host are nic/machine/machineprototype/rpm/rpmport/vlan/servo/servotype/zone/rack/switch/man/free/tag/state/os/vdc(virtualdatacenter)/pools/logicalzone", input)
 	}
 	return field, nil
 }
