@@ -18,7 +18,7 @@ create {
   build {
     tool: "tools/flex"
     tool: "tools/protoc@21.12"
-    dep: "tools/protobuf-cpp"
+    dep: "tools/protobuf-cpp-21"
     dep: "tools/libnl"
   }
 }

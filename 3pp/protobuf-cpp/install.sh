@@ -9,14 +9,24 @@ set -o pipefail
 
 PREFIX="$1"
 
-export CXXFLAGS+=" -fPIC -std=c++11"
-./autogen.sh
+export CXXFLAGS+=" -fPIC"
 
-./configure --enable-static --disable-shared \
-  --prefix="$PREFIX" \
-  --host="$CROSS_TRIPLE"
+PROTOC_OPT=
+if [[ $_3PP_PLATFORM != $_3PP_TOOL_PLATFORM ]]; then  # cross compiling
+  BUILD_PROTOC=`which protoc`
+  PROTOC_OPT=-DWITH_PROTOC=${BUILD_PROTOC}
+fi
+
+mkdir cmake-build
+cd cmake-build
+cmake .. \
+  -DCMAKE_BUILD_TYPE:STRING=Release \
+  -DCMAKE_INSTALL_PREFIX:STRING="${PREFIX}" \
+  -DCMAKE_CXX_STANDARD=14 \
+  ${PROTOC_OPT}
+
 make -j $(nproc)
 if [[ $_3PP_PLATFORM == $_3PP_TOOL_PLATFORM ]]; then
-  make check -j $(nproc)
+  make test -j $(nproc)
 fi
 make install -j $(nproc)
