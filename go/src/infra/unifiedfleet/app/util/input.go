@@ -132,6 +132,7 @@ var (
 	CpuCoresFilterName             string = "cpucores"
 	MemoryFilterName               string = "memory"
 	StorageFilterName              string = "storage"
+	LogicalZoneFilterName          string = "logicalzone"
 	AssetType                      string = "assettype"
 )
 
