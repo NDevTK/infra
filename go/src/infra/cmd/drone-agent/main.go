@@ -25,6 +25,8 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/trace"
 
 	"google.golang.org/grpc/metadata"
@@ -36,6 +38,7 @@ import (
 	"infra/cmd/drone-agent/internal/metrics"
 	"infra/cmd/drone-agent/internal/tokman"
 	"infra/cmd/drone-agent/internal/tracing"
+	"infra/libs/otil"
 )
 
 const (
@@ -145,6 +148,9 @@ func innerMain() error {
 		cleanup := tracing.InitTracer(ctx, exp, version)
 		defer cleanup(ctx)
 	}
+	p := propagation.NewCompositeTextMapPropagator(
+		propagation.TraceContext{}, propagation.Baggage{})
+	otel.SetTextMapPropagator(p)
 
 	authn := auth.NewAuthenticator(ctx, auth.SilentLogin, authOptions)
 
@@ -165,6 +171,7 @@ func innerMain() error {
 	if err := os.MkdirAll(workingDirPath, 0777); err != nil {
 		return err
 	}
+	otil.AddHTTP(h)
 
 	a := agent.Agent{
 		Client: api.NewDronePRPCClient(&prpc.Client{

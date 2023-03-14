@@ -20,8 +20,12 @@ package otil
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"net/http/httptrace"
 	"runtime"
 
+	"go.opentelemetry.io/contrib/instrumentation/net/http/httptrace/otelhttptrace"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -86,4 +90,12 @@ func EndSpan(span trace.Span, err error) {
 		span.SetStatus(codes.Error, err.Error())
 	}
 	span.End()
+}
+
+// AddHTTP adds tracing and context propagation integration to an HTTP client.
+// The context provides the parent span for any child request spans.
+func AddHTTP(c *http.Client) {
+	c.Transport = otelhttp.NewTransport(c.Transport, otelhttp.WithClientTrace(func(ctx context.Context) *httptrace.ClientTrace {
+		return otelhttptrace.NewClientTrace(ctx)
+	}))
 }
