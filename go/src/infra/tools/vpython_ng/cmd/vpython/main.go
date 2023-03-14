@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"infra/tools/vpython_ng/pkg/application"
@@ -95,6 +96,9 @@ func main() {
 
 	// Update the Python Runtime based on vpython spec, if specified.
 	if v := app.VpythonSpec.PythonVersion; v != "" {
+		if strings.HasPrefix(rt.Version, "3.") && strings.HasPrefix(v, "2.") {
+			app.Fatal(errors.Reason("Python2 specs must be explicitly executed using 'vpython'.").Err())
+		}
 		rt = GetPythonRuntime(v)
 	}
 
