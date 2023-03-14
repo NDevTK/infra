@@ -57,7 +57,7 @@ func TestProcessResultsCmdDeps_Execute(t *testing.T) {
 			GcsUrl:         "some/url",
 			StainlessUrl:   "some/url",
 			TesthausUrl:    "some/url",
-			ProvisionResp:  &api.InstallResponse{Status: api.InstallResponse_STATUS_OK},
+			ProvisionResp:  &api.InstallResponse{Status: api.InstallResponse_STATUS_SUCCESS},
 			TestResponses: &api.CrosTestResponse{
 				TestCaseResults: []*api.TestCaseResult{
 					{
@@ -138,7 +138,7 @@ func TestProcessResultsCmdDeps_Execute(t *testing.T) {
 			GcsUrl:        "some/url",
 			StainlessUrl:  "some/url",
 			TesthausUrl:   "some/url",
-			ProvisionResp: &api.InstallResponse{Status: api.InstallResponse_STATUS_OK},
+			ProvisionResp: &api.InstallResponse{Status: api.InstallResponse_STATUS_SUCCESS},
 		}
 		cmd := commands.NewProcessResultsCmd()
 

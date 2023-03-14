@@ -65,7 +65,7 @@ func TestProvisionInstallCmd_UpdateSK(t *testing.T) {
 
 	Convey("Cmd with updates", t, func() {
 		ctx := context.Background()
-		wantProvisionResp := &api.InstallResponse{Status: api.InstallResponse_STATUS_OK}
+		wantProvisionResp := &api.InstallResponse{Status: api.InstallResponse_STATUS_SUCCESS}
 		sk := &data.HwTestStateKeeper{CftTestRequest: nil}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}

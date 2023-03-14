@@ -25,16 +25,16 @@ type ProcessResultsCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
 
 	// Deps (all are optional)
-	CftTestRequest *skylab_test_runner.CFTTestRequest
-	GcsUrl         string
-	StainlessUrl   string
-	TesthausUrl    string
-	ProvisionResp  *api.InstallResponse
-	TestResponses  *api.CrosTestResponse
+	CftTestRequest  *skylab_test_runner.CFTTestRequest
+	GcsUrl          string
+	StainlessUrl    string
+	TesthausUrl     string
+	ProvisionResp   *api.InstallResponse
+	TestResponses   *api.CrosTestResponse
+	CurrentDutState dutstate.State // optional
 
 	// Updates
-	SkylabResult    *skylab_test_runner.Result
-	CurrentDutState dutstate.State
+	SkylabResult *skylab_test_runner.Result
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -96,7 +96,7 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 
 	// Parse provision info
 	if cmd.ProvisionResp != nil {
-		if cmd.ProvisionResp.GetStatus() == api.InstallResponse_STATUS_OK {
+		if cmd.ProvisionResp.GetStatus() == api.InstallResponse_STATUS_SUCCESS {
 			prejobVerdict = skylab_test_runner.Result_Prejob_Step_VERDICT_PASS
 		} else {
 			prejobVerdict = skylab_test_runner.Result_Prejob_Step_VERDICT_FAIL
@@ -134,6 +134,9 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 		Incomplete: isIncomplete,
 	}
 	skylabResult := &skylab_test_runner.Result{
+		Harness: &skylab_test_runner.Result_AutotestResult{
+			AutotestResult: autotestResult,
+		},
 		Prejob: &skylab_test_runner.Result_Prejob{
 			Step: []*skylab_test_runner.Result_Prejob_Step{
 				{
@@ -178,6 +181,9 @@ func (cmd *ProcessResultsCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 	if sk.TesthausUrl == "" {
 		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: TesthausUrl", cmd.GetCommandType())
 	}
+	if sk.CurrentDutState == "" {
+		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: CurrentDutState", cmd.GetCommandType())
+	}
 
 	cmd.CftTestRequest = sk.CftTestRequest
 	cmd.ProvisionResp = sk.ProvisionResp
@@ -185,6 +191,7 @@ func (cmd *ProcessResultsCmd) extractDepsFromHwTestStateKeeper(ctx context.Conte
 	cmd.GcsUrl = sk.GcsUrl
 	cmd.StainlessUrl = sk.StainlessUrl
 	cmd.TesthausUrl = sk.TesthausUrl
+	cmd.CurrentDutState = sk.CurrentDutState
 
 	return nil
 }

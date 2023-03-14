@@ -221,7 +221,7 @@ func (cmd *TkoDirectUploadCmd) extractDepsFromHwTestStateKeeper(ctx context.Cont
 }
 
 func NewTkoDirectUploadCmd() *TkoDirectUploadCmd {
-	abstractCmd := interfaces.NewAbstractCmd(UpdateDutStateCmdType)
+	abstractCmd := interfaces.NewAbstractCmd(TkoDirectUploadCmdType)
 	abstractSingleCmdByNoExecutor := &interfaces.AbstractSingleCmdByNoExecutor{AbstractCmd: abstractCmd}
 	return &TkoDirectUploadCmd{AbstractSingleCmdByNoExecutor: abstractSingleCmdByNoExecutor}
 }

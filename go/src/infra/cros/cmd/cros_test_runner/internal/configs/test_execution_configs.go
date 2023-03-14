@@ -215,6 +215,7 @@ func (tecfg *TestExecutionConfig) executeCommands(
 				return singleErr
 			}
 		}
+		logging.Infof(ctx, "Command type %s execution completed. Marking as completed.", cmdType)
 		tecfg.executedCommands[cmdType] = true
 		if singleErr = cmd.UpdateStateKeeper(ctx, tecfg.stateKeeper); singleErr != nil {
 			if executeAllCmds {
