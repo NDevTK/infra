@@ -269,6 +269,15 @@ SPECS.update({
                        'version:2@1.1.1t.chromium.2')],
         ),
         SourceOrPrebuilt(
+            'aioquic',
+            '0.9.20',
+            packaged=(),
+            pyversions=['py3'],
+            patch_version='chromium.1',
+            tpp_libs=[('infra/3pp/static_libs/openssl',
+                       'version:2@1.1.1t.chromium.2')],
+        ),
+        SourceOrPrebuilt(
             'bcrypt',
             '3.1.4',
             packaged=(),
@@ -1497,6 +1506,7 @@ SPECS.update({
         Universal('pyocd', '0.33.1', pyversions=['py3']),
         Universal('pyopenssl', '17.2.0'),
         Universal('pyopenssl', '19.0.0'),
+        Universal('pyopenssl', '20.0.0'),
         Universal('pyparsing', '2.2.0'),
         Universal('pyparsing', '2.4.7'),
         Universal('pyparsing', '3.0.7', pyversions=['py3']),

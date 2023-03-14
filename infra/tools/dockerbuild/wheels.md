@@ -549,6 +549,27 @@ wheel: <
 * *windows-x64-py3.8*
 * *windows-x86-py3.8*
 
+### 0.9.20.chromium.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/aioquic/${vpython_platform}"
+  version: "version:0.9.20.chromium.1"
+>
+```
+
+
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.11*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.11*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
+
 ## **altgraph**
 
 ### 0.16.1
@@ -6205,6 +6226,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/pyopenssl-py2_py3"
   version: "version:19.0.0"
+>
+```
+
+
+* *universal*
+
+### 20.0.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pyopenssl-py2_py3"
+  version: "version:20.0.0"
 >
 ```
 
