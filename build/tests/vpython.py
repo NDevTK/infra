@@ -40,6 +40,20 @@ def main():
     print('sys.version_info.major: expected 3, actual {}'.format(res))
     return 1
 
+  with open(os.path.join(os.getcwd(), '.vpython3'), 'w') as f:
+    f.write('python_version: "2.7"')
+  try:
+    res = subprocess.check_output([
+        os.path.join(os.getcwd(), 'vpython3'+EXE_SUFFIX),
+        '-c',
+        'import sys; print(sys.version_info.major)',
+    ], env=env)
+  except subprocess.CalledProcessError:
+    pass
+  else:
+    print('Python2 should only work with calling vpython')
+    return 1
+
   return 0
 
 if __name__ == '__main__':
