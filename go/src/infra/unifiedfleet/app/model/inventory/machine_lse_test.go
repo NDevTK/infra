@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -370,6 +370,7 @@ func TestQueryMachineLSEByPropertyName(t *testing.T) {
 			Name:                "machineLSE-1",
 			Machines:            []string{"machine-1", "machine-2"},
 			MachineLsePrototype: "machineLsePrototype-1",
+			LogicalZone:         ufspb.LogicalZone_DRILLZONE_SFO36,
 		}
 		resp, cerr := CreateMachineLSE(ctx, machineLSE1)
 		So(cerr, ShouldBeNil)
@@ -399,6 +400,11 @@ func TestQueryMachineLSEByPropertyName(t *testing.T) {
 			resp, err := QueryMachineLSEByPropertyName(ctx, "machinelse_prototype_id", "machineLsePrototype-2", true)
 			So(err, ShouldBeNil)
 			So(resp, ShouldBeNil)
+		})
+		Convey("Query By LogicalZone", func() {
+			resp, err := QueryMachineLSEByPropertyName(ctx, "logical_zone", "DRILLZONE_SFO36", false)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, machineLSEs)
 		})
 	})
 }
