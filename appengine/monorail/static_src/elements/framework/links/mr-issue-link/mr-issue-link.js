@@ -6,8 +6,6 @@ import {LitElement, html, css} from 'lit-element';
 import {ifDefined} from 'lit-html/directives/if-defined';
 import {issueRefToString, issueRefToUrl} from 'shared/convertersV0.js';
 import {SHARED_STYLES} from 'shared/shared-styles.js';
-import '../../mr-dropdown/mr-dropdown.js';
-import '../../../help/mr-cue/mr-fed-ref-cue.js';
 
 /**
  * `<mr-issue-link>`
@@ -24,41 +22,19 @@ export class MrIssueLink extends LitElement {
         a[is-closed] {
           text-decoration: line-through;
         }
-        mr-dropdown {
-          width: var(--chops-main-font-size);
-          --mr-dropdown-icon-font-size: var(--chops-main-font-size);
-          --mr-dropdown-menu-min-width: 100px;
-        }
       `,
     ];
   }
 
   /** @override */
   render() {
-    let fedRefInfo;
-    if (this.issue && this.issue.extIdentifier) {
-      fedRefInfo = html`
-        <!-- TODO(jeffcarp): Figure out CSS to enable menuAlignment=left -->
-        <mr-dropdown
-          label="Federated Reference Info"
-          icon="info_outline"
-          menuAlignment="right"
-        >
-          <mr-fed-ref-cue
-            cuePrefName="federated_reference"
-            fedRefShortlink=${this.issue.extIdentifier}
-            nondismissible>
-          </mr-fed-ref-cue>
-        </mr-dropdown>
-      `;
-    }
     return html`
       <a
         id="bugLink"
         href=${this.href}
         title=${ifDefined(this.issue && this.issue.summary)}
         ?is-closed=${this.isClosed}
-      >${this._linkText}</a>${fedRefInfo}`;
+      >${this._linkText}</a>`;
   }
 
   /** @override */
