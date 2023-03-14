@@ -10,7 +10,7 @@ module.exports = function (app) {
   app.use(
     '/prpc',
     createProxyMiddleware({
-      target: 'http://localhost:8800',
+      target: 'http://127.0.0.1:8800',
       changeOrigin: true,
     })
   );

@@ -7,6 +7,7 @@ import {
   DataGrid,
   GridRowsProp,
   GridColDef,
+  GridComparatorFn,
   GridFilterItem,
   GridFilterModel,
   GridToolbarContainer,
@@ -62,6 +63,9 @@ export function AssetInstanceList() {
 
   const ref = useRef<HTMLDivElement>(null);
 
+  const localeStringComparator: GridComparatorFn<Date> = (v1, v2) =>
+    new Date(v1).valueOf() - new Date(v2).valueOf();
+
   const columns: GridColDef[] = [
     { field: 'assetInstanceId', headerName: 'Id', flex: 1, hide: true },
     {
@@ -76,8 +80,9 @@ export function AssetInstanceList() {
       field: 'createdAt',
       headerName: 'Created At',
       flex: 1,
+      type: 'date',
       valueGetter: getLocalTime,
-      sortComparator: gridDateComparator,
+      sortComparator: localeStringComparator,
     },
     {
       field: 'createdBy',
