@@ -170,7 +170,11 @@ func UpdateDUT(ctx context.Context, machinelse *ufspb.MachineLSE, mask *field_ma
 
 		// Validate the update mask and process it.
 		if mask != nil && len(mask.Paths) > 0 {
-			if err := validateUpdateMachineLSEDUTMask(mask, machinelse); err != nil {
+			machine, err = GetMachine(ctx, oldMachinelse.GetMachines()[0])
+			if err != nil {
+				return errors.Annotate(err, "unable to get machine %s", oldMachinelse.GetMachines()[0]).Err()
+			}
+			if err := validateUpdateMachineLSEDUTMask(mask, machinelse, machine); err != nil {
 				return err
 			}
 			machinelse, err = processUpdateMachineLSEUpdateMask(ctx, proto.Clone(oldMachinelse).(*ufspb.MachineLSE), machinelse, mask)
@@ -386,7 +390,7 @@ func validateDeviceConfig(ctx context.Context, dut *ufspb.Machine) error {
 			return nil
 		}
 	}
-	errStr := fmt.Sprintf("No device config for platform %q, model %q, config (%+v)", devConfigID.GetModelId(), devConfigID.GetModelId(), devConfigID)
+	errStr := fmt.Sprintf("No device config for platform %q, model %q, config (%+v)", devConfigID.GetPlatformId(), devConfigID.GetModelId(), devConfigID)
 	return status.Error(codes.InvalidArgument, errStr)
 }
 
@@ -434,7 +438,7 @@ func cleanPreDeployFields(servo *chromeosLab.Servo) {
 // validateUpdateMachineLSEDUTMask validates the input mask for the given machineLSE.
 //
 // Assumes that dut and mask aren't empty. This is because this function is not called otherwise.
-func validateUpdateMachineLSEDUTMask(mask *field_mask.FieldMask, machinelse *ufspb.MachineLSE) error {
+func validateUpdateMachineLSEDUTMask(mask *field_mask.FieldMask, machinelse *ufspb.MachineLSE, machine *ufspb.Machine) error {
 	var servo *chromeosLab.Servo
 	var rpm *chromeosLab.OSRPM
 
@@ -484,6 +488,10 @@ func validateUpdateMachineLSEDUTMask(mask *field_mask.FieldMask, machinelse *ufs
 			// Check for deletion of rpm outlet. This should not be possible without deleting the host.
 			if _, ok := maskSet["dut.rpm.host"]; rpm.GetPowerunitOutlet() == "" && (!ok || (ok && rpm.GetPowerunitName() != "")) {
 				return status.Error(codes.InvalidArgument, "validateUpdateMachineLSEDUTUpdateMask - Cannot remove rpm outlet. Please delete rpm.")
+			}
+		case "logicalZone":
+			if err := validateMachineLSELogicalZone(machinelse, machine); err != nil {
+				return err
 			}
 		case "deploymentTicket":
 		case "tags":
@@ -592,6 +600,8 @@ func processUpdateMachineLSEUpdateMask(ctx context.Context, oldMachineLse, newMa
 			oldMachineLse.Description = newMachineLse.Description
 		case "deploymentTicket":
 			oldMachineLse.DeploymentTicket = newMachineLse.GetDeploymentTicket()
+		case "logicalZone":
+			oldMachineLse.LogicalZone = newMachineLse.GetLogicalZone()
 		default:
 			if strings.HasPrefix(path, "dut") {
 				if strings.HasPrefix(path, "dut.servo") {
