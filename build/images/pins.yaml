@@ -16,8 +16,8 @@
 
 pins:
 - image: docker.io/library/debian
-  tag: "bookworm-slim"
-  digest: sha256:946dcd5fcb0c6d072a8b12c25abdba542a40126c6e11c432128e8fe5dce511a7
+  tag: bookworm-slim
+  digest: sha256:b4a3c782e3b801389ba472692cc941ee6d9ac6b459cf2d7551aa1f2f987c613c
 - image: docker.io/library/ubuntu
   tag: "14.04"
   digest: sha256:64483f3496c1373bfd55348e88694d1c4d0c9b660dee6bfef5e12f43b9933b30
