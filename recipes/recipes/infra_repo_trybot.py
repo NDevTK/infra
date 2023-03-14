@@ -89,6 +89,12 @@ def RunSteps(api, go_version_variant, run_lint):
                 '--ignore=go/'
             ])
 
+        if (api.platform.is_linux or api.platform.is_mac) and any(
+            f.startswith('appengine/monorail') for f in files):
+          cwd = api.path['checkout'].join('appengine', 'monorail')
+          with api.context(cwd=cwd):
+            api.step('monorail python3 tests', ['vpython3', 'test.py'])
+
       if not internal and api.platform.is_linux and api.platform.bits == 64:
         api.step('recipe test', [
             'python3',
@@ -199,6 +205,8 @@ def GenTests(api):
 
   yield (test('infra_internal_with_chromium_dash', internal=True) +
          diff('appengine/chromiumdash/foo.py'))
+
+  yield (test('monorail') + diff('appengine/monorail/foo.py'))
 
   yield (
     test('only_cipd_build') +

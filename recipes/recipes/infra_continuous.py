@@ -281,6 +281,11 @@ def run_python_tests(api, project_name):
         api.step('infra python tests',
                  ['python', 'test.py', 'test'])
 
+      if api.platform.is_linux or api.platform.is_mac:
+        cwd = api.path['checkout'].join('appengine', 'monorail')
+        with api.context(cwd=cwd):
+          api.step('monorail python tests', ['vpython3', 'test.py'])
+
       # Validate ccompute configs.
       if api.platform.is_linux and project_name == 'infra_internal':
         ccompute_config = api.path['checkout'].join(
