@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,7 @@ import (
 	"infra/cmd/drone-agent/internal/agent/state"
 	"infra/cmd/drone-agent/internal/bot"
 	"infra/cmd/drone-agent/internal/draining"
+	"infra/libs/otil"
 )
 
 // Agent talks to a drone queen service and manages Swarming bots.
@@ -107,7 +108,9 @@ func (a *Agent) Run(ctx context.Context) {
 //
 // If the assignment is lost or expired for whatever reason, this
 // function returns an error.
-func (a *Agent) runOnce(ctx context.Context) error {
+func (a *Agent) runOnce(ctx context.Context) (err error) {
+	ctx, span := otil.FuncSpan(ctx)
+	defer func() { otil.EndSpan(span, err) }()
 	a.log("Registering with queen")
 	res, err := a.Client.ReportDrone(ctx, a.reportRequest(ctx, ""))
 	if err != nil {
