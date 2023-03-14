@@ -6,8 +6,11 @@ package cloudsdk
 
 import (
 	"context"
+	"crypto/md5"
+	"encoding/hex"
 	"errors"
 	"fmt"
+	"log"
 	"regexp"
 	"strings"
 	"time"
@@ -56,9 +59,9 @@ type computeImagesClient interface {
 func (c *cloudsdkImageApi) GetImage(buildPath string, wait bool) (*api.GceImage, error) {
 	buildInfo, err := parseBuildPath(buildPath)
 	if err != nil {
-		return nil, fmt.Errorf("Unable to parse build path: %w", err)
+		log.Default().Printf("Unable to parse build path: %v", err)
 	}
-	imageName := getImageName(*buildInfo)
+	imageName := getImageName(buildInfo, buildPath)
 
 	gceImage := &api.GceImage{
 		Project: project,
@@ -152,9 +155,10 @@ func (c *cloudsdkImageApi) importImage(client computeImagesClient, buildInfo *bu
 	// Create the image
 	req := &computepb.InsertImageRequest{
 		ImageResource: &computepb.Image{
-			Licenses: []string{license},
-			Name:     &image.Name,
-			Labels:   getImageLabels(buildInfo),
+			Licenses:    []string{license},
+			Name:        &image.Name,
+			Labels:      getImageLabels(buildInfo),
+			Description: &image.Source,
 			RawDisk: &computepb.RawDisk{
 				Source: &image.Source,
 			},
@@ -199,29 +203,44 @@ func parseBuildPath(buildPath string) (*buildInfo, error) {
 	return nil, errors.New("Build path did not match known regex")
 }
 
-// getImageName generates an unique image name from buildInfo.
-func getImageName(info buildInfo) string {
-	imageName := strings.Join([]string{
-		info.board, info.milestone, info.majorVersion, info.minorVersion,
-		info.patchNumber, info.snapshot, info.buildNumber, info.buildType}, "-")
+// getImageName generates an unique image name from buildInfo. If buildInfo is
+// nil, generate name in format "unknown-{md5(buildPath)}" so that the same
+// build always generates the same name, making image caching possible.
+func getImageName(info *buildInfo, buildPath string) string {
+	if info == nil {
+		md5Hash := md5.Sum([]byte(buildPath))
+		return "unknown-" + hex.EncodeToString(md5Hash[:])
+	}
 
-	// Shorten name
+	imageName := strings.Join([]string{
+		info.board, info.milestone, info.buildNumber, info.majorVersion,
+		info.minorVersion, info.patchNumber, info.snapshot, info.buildType}, "-")
+
+	// Image name have 63 characters limit.
 	if len(imageName) > 63 {
 		imageName = imageName[:63]
 	}
+	// Image name require lowercase letters.
 	imageName = strings.ToLower(imageName)
-	imageName = strings.ReplaceAll(imageName, ".", "-")
-	imageName = strings.ReplaceAll(imageName, "_", "-")
+
+	// Replace all remaining unsupported characters.
+	re := regexp.MustCompile(`[^a-z0-9-]`)
+	imageName = re.ReplaceAllString(imageName, "-")
+
 	return imageName
 }
 
-// getImageLabels creates a map of labels for GCE image.
+// getImageLabels creates a map of labels for GCE image. For known images there
+// are build-type, board, milestone. For unknown images build-type is set to
+// unknown.
 func getImageLabels(info *buildInfo) map[string]string {
 	labels := make(map[string]string)
 	if info != nil {
 		labels["build-type"] = info.buildType
 		labels["board"] = info.board
 		labels["milestone"] = info.milestone
+	} else {
+		labels["build-type"] = "unknown"
 	}
 	return labels
 }

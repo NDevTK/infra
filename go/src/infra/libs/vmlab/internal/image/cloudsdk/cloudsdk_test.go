@@ -215,7 +215,7 @@ func TestParseBuildPathInvalid(t *testing.T) {
 }
 
 func TestParseBuildPathAndConvertNameCq(t *testing.T) {
-	buildPath := "betty-arc-r-cq/R108-15164.0.1-71927-8801111609984657185"
+	buildPath := "amd64-generic-cq/R108-15164.0.1-71927-8801111609984657185"
 	info, err := parseBuildPath(buildPath)
 	if err != nil {
 		t.Fatalf("parseBuildPath() error: %v", err)
@@ -223,7 +223,7 @@ func TestParseBuildPathAndConvertNameCq(t *testing.T) {
 
 	expectedInfo := buildInfo{
 		buildType:    "cq",
-		board:        "betty-arc-r",
+		board:        "amd64-generic",
 		milestone:    "108",
 		majorVersion: "15164",
 		minorVersion: "0",
@@ -235,8 +235,8 @@ func TestParseBuildPathAndConvertNameCq(t *testing.T) {
 		t.Errorf("Expected build info: %s, but is actual: %s", expectedInfo, info)
 	}
 
-	actualName := getImageName(*info)
-	expectedName := "betty-arc-r-108-15164-0-1-71927-8801111609984657185-cq"
+	actualName := getImageName(info, buildPath)
+	expectedName := "amd64-generic-108-8801111609984657185-15164-0-1-71927-cq"
 	if expectedName != actualName {
 		t.Errorf("Expected image name: %s, but is actual: %s", expectedName, actualName)
 	}
@@ -263,8 +263,8 @@ func TestParseBuildPathAndConvertNamePostsubmit(t *testing.T) {
 		t.Errorf("Expected build info: %s, but is actual: %s", expectedInfo, info)
 	}
 
-	actualName := getImageName(*info)
-	expectedName := "betty-pi-arc-113-15376-0-0-79071-8787141177342104481-postsubmit"
+	actualName := getImageName(info, buildPath)
+	expectedName := "betty-pi-arc-113-8787141177342104481-15376-0-0-79071-postsubmit"
 	if expectedName != actualName {
 		t.Errorf("Expected image name: %s, but is actual: %s", expectedName, actualName)
 	}
@@ -291,8 +291,8 @@ func TestParseBuildPathAndConvertNameRelease(t *testing.T) {
 		t.Errorf("Expected build info: %s, but is actual: %s", expectedInfo, info)
 	}
 
-	actualName := getImageName(*info)
-	expectedName := "betty-arc-r-108-15178-0-0---release"
+	actualName := getImageName(info, buildPath)
+	expectedName := "betty-arc-r-108--15178-0-0--release"
 	if expectedName != actualName {
 		t.Errorf("Expected image name: %s, but is actual: %s", expectedName, actualName)
 	}
@@ -319,14 +319,28 @@ func TestParseBuildPathAndConvertNameLong(t *testing.T) {
 		t.Errorf("Expected build info: %s, but is actual: %s", expectedInfo, info)
 	}
 
-	actualName := getImageName(*info)
-	expectedName := "betty-arc-r-113-15376-99-99-79071-8787141177342104481-postsubmi"
+	actualName := getImageName(info, buildPath)
+	expectedName := "betty-arc-r-113-8787141177342104481-15376-99-99-79071-postsubmi"
 	if expectedName != actualName {
 		t.Errorf("Expected image name: %s, but is actual: %s", expectedName, actualName)
 	}
 }
 
-func TestGetImageLabels(t *testing.T) {
+func TestParseBuildPathAndConvertNameInvalid(t *testing.T) {
+	buildPath := "invalid*build#{path}-for_test.gz"
+	info, err := parseBuildPath(buildPath)
+	if err == nil || info != nil {
+		t.Fatalf("parseBuildPath() should not succeed.")
+	}
+
+	actualName := getImageName(info, buildPath)
+	expectedName := "unknown-b241a61a97da858ca70e7837aa1e209e"
+	if expectedName != actualName {
+		t.Errorf("Expected image name: %s, but is actual: %s", expectedName, actualName)
+	}
+}
+
+func TestGetImageLabelsValid(t *testing.T) {
 	actual := getImageLabels(&buildInfo{
 		buildType: "cq",
 		board:     "betty-arc-r",
@@ -336,6 +350,16 @@ func TestGetImageLabels(t *testing.T) {
 		"build-type": "cq",
 		"board":      "betty-arc-r",
 		"milestone":  "100",
+	}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("Expected labels: %v, but is actual: %v", expected, actual)
+	}
+}
+
+func TestGetImageLabelsInvalid(t *testing.T) {
+	actual := getImageLabels(nil)
+	expected := map[string]string{
+		"build-type": "unknown",
 	}
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf("Expected labels: %v, but is actual: %v", expected, actual)
