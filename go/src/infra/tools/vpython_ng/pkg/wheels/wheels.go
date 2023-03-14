@@ -138,16 +138,21 @@ func ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
 }
 
 func ensureFileFromWheels(expander template.Expander, wheels []*vpython.Spec_Package) (*ensure.File, error) {
+	names := make(map[string]struct{})
 	pslice := make(ensure.PackageSlice, len(wheels))
 	for i, pkg := range wheels {
 		name, err := expander.Expand(pkg.Name)
-		switch err {
-		case template.ErrSkipTemplate:
-			continue
-		case nil:
-		default:
-			return nil, errors.Annotate(err, "expanding %#v", pkg).Err()
+		if err != nil {
+			if err == template.ErrSkipTemplate {
+				continue
+			}
+			return nil, errors.Annotate(err, "expanding %v", pkg).Err()
 		}
+		if _, ok := names[name]; ok {
+			return nil, errors.Reason("duplicated package: %v", pkg).Err()
+		}
+		names[name] = struct{}{}
+
 		pslice[i] = ensure.PackageDef{
 			PackageTemplate:   name,
 			UnresolvedVersion: pkg.Version,
