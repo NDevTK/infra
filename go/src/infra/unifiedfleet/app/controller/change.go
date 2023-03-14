@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -323,6 +323,12 @@ func (hc *HistoryClient) LogMachineLSEChanges(oldData *ufspb.MachineLSE, newData
 		hc.changes = append(hc.changes, logChromeBrowserMachineLse(resourceName, oldData.GetChromeBrowserMachineLse(), newData.GetChromeBrowserMachineLse())...)
 	} else {
 		hc.changes = append(hc.changes, logChromeOSMachineLse(resourceName, oldData.GetChromeosMachineLse(), newData.GetChromeosMachineLse())...)
+	}
+	if oldDevboard := oldData.GetChromeosMachineLse().GetDeviceLse().GetDevboard(); oldDevboard != nil {
+		if newDevboard := newData.GetChromeosMachineLse().GetDeviceLse().GetDevboard(); newDevboard != nil {
+			hc.changes = append(hc.changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.device_lse.devboard.pools", oldDevboard.GetPools(), newDevboard.GetPools())...)
+		}
+
 	}
 	hc.logMsgEntity(resourceName, false, newData)
 }

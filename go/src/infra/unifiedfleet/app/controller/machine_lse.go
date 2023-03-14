@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -2034,7 +2034,12 @@ func updateDevboard(ctx context.Context, machinelse *ufspb.MachineLSE, mask *fie
 			// TODO(bniche): After shivas implemented full proto update, allow entire proto update.
 			return status.Error(codes.InvalidArgument, "devboard mask cannot be empty/nil.")
 		}
-
+		// BatchUpdate Devboards
+		_, err = inventory.BatchUpdateMachineLSEs(ctx, []*ufspb.MachineLSE{machinelse})
+		if err != nil {
+			logging.Errorf(ctx, "Failed to BatchUpdate Devboard machinelse %s", err)
+			return err
+		}
 		hc.LogMachineLSEChanges(oldMachinelse, machinelse)
 		return hc.SaveChangeEvents(ctx)
 	}
