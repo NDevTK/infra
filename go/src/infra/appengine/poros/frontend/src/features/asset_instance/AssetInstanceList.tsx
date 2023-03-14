@@ -7,6 +7,8 @@ import {
   DataGrid,
   GridRowsProp,
   GridColDef,
+  GridFilterItem,
+  GridFilterModel,
   GridToolbarContainer,
   GridToolbarColumnsButton,
   GridToolbarDensitySelector,
@@ -179,7 +181,7 @@ export function AssetInstanceList() {
   }
 
   function getProject(params: GridValueGetterParams) {
-    if(params.row.projectId == '') return '';
+    if (params.row.projectId == '') return '';
 
     return `https://console.cloud.google.com/compute/instances?project=${params.row.projectId}`
   }
@@ -251,13 +253,18 @@ export function AssetInstanceList() {
                 sorting: {
                   sortModel: [{ field: 'createdAt', sort: 'desc' }],
                 },
+                filter: {
+                  filterModel: {
+                    items: [{ columnField: 'status', operatorValue: 'isAnyOf', value: ['STATUS_PENDING', 'STATUS_RUNNING', 'STATUS_COMPLETED'] }],
+                  },
+                },
               }}
             />
           </div>
         </CardContent>
       </Card>
       <hr style={{ height: 1, visibility: 'hidden' }} />
-      <div style={{maxWidth: '80vw', margin: 'auto'}} ref={ref}>
+      <div style={{ maxWidth: '80vw', margin: 'auto' }} ref={ref}>
         {showLogs ? (
           <Card>
             <AssetInstanceLogs></AssetInstanceLogs>
