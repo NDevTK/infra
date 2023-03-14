@@ -18,7 +18,7 @@ import (
 const (
 	// command to check whether the wifi device has been recogonized
 	// and its device driver been loaded by the kernel.
-	wifiDetectCmd = `lspci -vvn | grep iwlwifi`
+	wifiDetectCmd = `lsmod | grep -E iwl\|rtw\|mt792\|ath\|mwifiex`
 )
 
 // auditWiFiExec will validate wifi chip and update state.
