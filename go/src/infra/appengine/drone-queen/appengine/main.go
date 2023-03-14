@@ -52,7 +52,9 @@ func main() {
 		} else {
 			logging.Infof(ctx, "Error setting up trace exporter: %s", err)
 		}
-		otel.SetTextMapPropagator(propagation.TraceContext{})
+		p := propagation.NewCompositeTextMapPropagator(
+			propagation.TraceContext{}, propagation.Baggage{})
+		otel.SetTextMapPropagator(p)
 
 		icron.InstallHandlers()
 		srv.RegisterUnaryServerInterceptors(otelgrpc.UnaryServerInterceptor(), config.UnaryConfig)
