@@ -67,6 +67,10 @@ cros-tool-runner provision -images docker-images.json -input provision_request.j
 // Run executes the tool.
 func (c *runCmd) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	ctx := cli.GetContext(a, c, env)
+	err := common.SetUpLog()
+	if err != nil {
+		log.Printf("Failed to setup global logger: %s", err)
+	}
 	if err := metricsInit(ctx); err != nil {
 		log.Printf("metrics init Failed (NON-CRITICAL): %s", err)
 	} else {

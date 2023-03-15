@@ -13,8 +13,12 @@ import (
 	"io/fs"
 	"io/ioutil"
 	"log"
+	"math/rand"
+	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/golang/protobuf/jsonpb"
@@ -73,6 +77,38 @@ func PrintToLog(cmd string, stdout string, stderr string) {
 	if stderr != "" {
 		log.Printf("stderr: %s", stderr)
 	}
+}
+
+// SetUpLog sets up the logging for CTR within /var/tmp/bbid/ctrlog.txt
+func SetUpLog() error {
+	basedir := "/var/tmp/"
+	out := os.Getenv("LOGDOG_STREAM_PREFIX")
+	if out == "" {
+		out = "NOT_FOUND"
+	}
+	bbid := ""
+	bbidArr := strings.Split(out, "/")
+	if len(bbidArr) == 0 {
+		// If we don't have it, random it.
+		bbid = fmt.Sprint(rand.New(rand.NewSource(time.Now().UnixNano())).Int())
+	} else {
+		bbid = bbidArr[len(bbidArr)-1]
+	}
+
+	logPath := path.Join(basedir, bbid)
+	if err := os.MkdirAll(logPath, 0755); err != nil {
+		return fmt.Errorf("failed to create directory %v: %v", basedir, err)
+	}
+	lfp := filepath.Join(logPath, "ctrlog.txt")
+	lf, err := os.Create(lfp)
+	if err != nil {
+		return fmt.Errorf("failed to create file %v: %v", lfp, err)
+	}
+	log.SetOutput(io.MultiWriter(lf, os.Stderr))
+	log.SetPrefix("<cros-tool-runner>")
+	log.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmsgprefix)
+	log.Printf("Made logger @ %s", lfp)
+	return nil
 }
 
 // AddContentsToLog adds contents of the file of fileName to log
