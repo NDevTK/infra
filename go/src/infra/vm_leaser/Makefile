@@ -9,11 +9,19 @@ GCP_PROJECT := chrome-fleet-vm-leaser-cr-exp
 GCP_REGION := us-west1
 
 define help_message
-Helpers for managing VM Leaser project in $(PROJECT_PATH):
+
+Helpers for managing VM Leaser project in $(PROJECT_PATH)
+
+For the main VM Leaser service:
   gen: regenerate all go bindings
   build: build the VM Leaser service image
-  dev: run the VM Leaser service locally through Docker
+  dev: run the VM Leaser service locally
   push-image: build and push the latest image to the ${GCP_PROJECT} project
+
+For the cron service:
+  build-cron: build the VM Leaser cron image
+  dev-cron: run the VM Leaser cron service locally
+
 endef
 
 .PHONY: help
@@ -72,3 +80,13 @@ deploy-docker: build-docker
 	--use-http2 \
 	--project=${GCP_PROJECT} \
 	--region=${GCP_REGION}
+
+# Build cron service
+.PHONY: build-cron
+build-cron:
+	go build -o cron-service $(PROJECT_PATH)/cmd/cron
+
+# Run cron service locally
+.PHONY: dev-cron
+dev-cron: build-cron
+	./cron-service --auth-service-host="chrome-infra-auth-dev.appspot.com"
