@@ -31,22 +31,22 @@ luci_gae_vars:
 
 handlers:
 - url: /_ah/warmup
-  script: monorailapp.app
+  script: main.app
   login: admin
 
 - url: /_ah/api/.*
-  script: monorailapp.endpoints
+  script: main.endpoints
 
 - url: /_task/.*
-  script: monorailapp.app
+  script: main.app
   login: admin
 
 - url: /_cron/.*
-  script: monorailapp.app
+  script: main.app
   login: admin
 
 - url: /_ah/mail/.*
-  script: monorailapp.app
+  script: main.app
   login: admin
 
 inbound_services:

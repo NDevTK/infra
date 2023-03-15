@@ -41,7 +41,7 @@ dependencies going downward:
 
 App-integration layer
 
-*  The main program `monorailapp.py` that ties all the servlets together.
+*  The main program `main.py` that ties all the servlets together.
 
 *  All GAE configuration files, e.g., `app.yaml` and `cron.yaml`.
 
@@ -87,7 +87,7 @@ Asset layer
 
 App-integration layer
 
-*  `monorailapp.py`: The main program that loads all web app request
+*  `main.py`: The main program that loads all web app request
    handlers.
 
 *  `registerpages.py`: Code to register specific request handlers at

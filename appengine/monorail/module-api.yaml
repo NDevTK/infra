@@ -29,10 +29,10 @@ luci_gae_vars:
 
 handlers:
 - url: /prpc/.*
-  script: monorailapp.app
+  script: main.app
   secure: always
 - url: /_ah/warmup
-  script: monorailapp.app
+  script: main.app
   login: admin
 
 inbound_services:

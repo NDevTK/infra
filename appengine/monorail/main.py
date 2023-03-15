@@ -1,7 +1,6 @@
 # Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Main program for Monorail.
 
 Monorail is an issue tracking tool that is based on the code.google.com
@@ -21,7 +20,6 @@ import registerpages
 from framework import sorting
 from services import api_svc_v1
 from services import service_manager
-
 
 import_utils.FixImports()
 
