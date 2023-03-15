@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3baf1752_c6295b54",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/v2/templates/template_cache_server.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1313390
+      },
+      "writtenOn": "2023-03-15T01:38:30Z",
+      "side": 1,
+      "message": "this will only be hit on non-skylab drones right?",
+      "range": {
+        "startLine": 58,
+        "startChar": 2,
+        "endLine": 58,
+        "endChar": 21
+      },
+      "revId": "ae966130acee9f1e70ed5c0f10560b6aa986045b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
