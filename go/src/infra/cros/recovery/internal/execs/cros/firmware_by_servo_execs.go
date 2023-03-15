@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright (c) 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -140,21 +140,23 @@ func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error
 	downloadFilename := fmt.Sprintf("%s/%s", downloadPath, fwFileName)
 	servod := info.NewServod()
 	req := &firmware.InstallFirmwareImageRequest{
-		DownloadImagePath:    downloadFilename,
-		DownloadImageTimeout: am.AsDuration(ctx, "download_timeout", 240, time.Second),
-		DownloadDir:          fwDownloadDir,
-		Board:                am.AsString(ctx, "dut_board", info.GetChromeos().GetBoard()),
-		Model:                am.AsString(ctx, "dut_model", info.GetChromeos().GetModel()),
-		Hwid:                 am.AsString(ctx, "hwid", info.GetChromeos().GetHwid()),
-		ForceUpdate:          am.AsBool(ctx, "force", false),
-		UpdateEcAttemptCount: am.AsInt(ctx, "update_ec_attempt_count", 0),
-		UpdateApAttemptCount: am.AsInt(ctx, "update_ap_attempt_count", 0),
-		GBBFlags:             am.AsString(ctx, "gbb_flags", ""),
-		FlashThroughServo:    true,
-		Servod:               servod,
-		ServoHostRunner:      info.NewRunner(info.GetChromeos().GetServo().GetName()),
-		UseCacheToExtractor:  am.AsBool(ctx, "use_cache_extractor", false),
-		UseExternalFlashrom:  am.AsBool(ctx, "use_external_flashrom", false),
+		DownloadImagePath:           downloadFilename,
+		DownloadImageTimeout:        am.AsDuration(ctx, "download_timeout", 240, time.Second),
+		DownloadDir:                 fwDownloadDir,
+		Board:                       am.AsString(ctx, "dut_board", info.GetChromeos().GetBoard()),
+		Model:                       am.AsString(ctx, "dut_model", info.GetChromeos().GetModel()),
+		Hwid:                        am.AsString(ctx, "hwid", info.GetChromeos().GetHwid()),
+		ForceUpdate:                 am.AsBool(ctx, "force", false),
+		UpdateEcAttemptCount:        am.AsInt(ctx, "update_ec_attempt_count", 0),
+		UpdateApAttemptCount:        am.AsInt(ctx, "update_ap_attempt_count", 0),
+		GBBFlags:                    am.AsString(ctx, "gbb_flags", ""),
+		FlashThroughServo:           true,
+		Servod:                      servod,
+		ServoHostRunner:             info.NewRunner(info.GetChromeos().GetServo().GetName()),
+		UseCacheToExtractor:         am.AsBool(ctx, "use_cache_extractor", false),
+		UseExternalFlashrom:         am.AsBool(ctx, "use_external_flashrom", false),
+		DownloadImageReattemptCount: am.AsInt(ctx, "reattempt_count", 3),
+		DownloadImageReattemptWait:  am.AsDuration(ctx, "reattempt_wait", 5, time.Second),
 	}
 	err = firmware.InstallFirmwareImage(ctx, req, info.NewLogger())
 	return errors.Annotate(err, mn).Err()

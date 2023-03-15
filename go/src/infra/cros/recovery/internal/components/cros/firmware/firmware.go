@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright (c) 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -222,6 +222,13 @@ type InstallFirmwareImageRequest struct {
 
 	// Timeout value for run firmware updater on the DUT, only has effect when flash on the DUT side.
 	UpdaterTimeout time.Duration
+
+	// The number of times that the download will be re-attempted
+	// after it has failed once, e.g. due to HTTP 500 errors.
+	DownloadImageReattemptCount int
+
+	// The wait time before re-attempting the download.
+	DownloadImageReattemptWait time.Duration
 }
 
 // targetHostRunner returns a runner should be used based on FlashThroughServo flag.
@@ -317,11 +324,20 @@ func InstallFirmwareImage(ctx context.Context, req *InstallFirmwareImageRequest,
 	tarballPath := filepath.Join(req.DownloadDir, downloadFilename)
 	if !req.UseCacheToExtractor {
 		// No need to download the file if we use cache extractor.
-		if httpResponseCode, err := cache.CurlFile(ctx, run, req.DownloadImagePath, tarballPath, req.DownloadImageTimeout); err != nil {
-			// TODO (http://b/267359775): If the HTTP Response Code is
-			// 500, retry the download.
-			log.Debugf("Install Firmware Image: HTTP Response Code is :%d", httpResponseCode)
-			return errors.Annotate(err, "install firmware image").Err()
+		// We need to count the original download as well as any re-attempts.
+		remainingDownloadAttempts := req.DownloadImageReattemptCount + 1
+		for {
+			if httpResponseCode, err := cache.CurlFile(ctx, run, req.DownloadImagePath, tarballPath, req.DownloadImageTimeout); err != nil {
+				log.Debugf("Install Firmware Image: HTTP Response Code is :%d", httpResponseCode)
+				if httpResponseCode/100 == 5 && remainingDownloadAttempts > 1 {
+					remainingDownloadAttempts -= 1
+					time.Sleep(req.DownloadImageReattemptWait)
+					continue
+				}
+				return errors.Annotate(err, "install firmware image").Err()
+			} else {
+				break
+			}
 		}
 	}
 	log.Infof("Successful download tarbar %q from %q", tarballPath, req.DownloadImagePath)
@@ -446,7 +462,7 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 	var imagePath string
 	if req.UseCacheToExtractor {
 		imagePath = "ec.bin"
-		if err := extractFromCache(ctx, req.DownloadImagePath, destDir, imagePath, candidatesFiles, run, log); err != nil {
+		if err := extractFromCache(ctx, req.DownloadImagePath, destDir, imagePath, req.DownloadImageReattemptCount, req.DownloadImageReattemptWait, candidatesFiles, run, log); err != nil {
 			return "", errors.Annotate(err, "extract ec files").Err()
 		}
 	} else {
@@ -463,7 +479,7 @@ func extractECImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 		monitorFiles = append(monitorFiles, strings.Replace(f, "ec.bin", ecMonitorFileName, 1))
 	}
 	if req.UseCacheToExtractor {
-		if err := extractFromCache(ctx, req.DownloadImagePath, destDir, ecMonitorFileName, monitorFiles, run, log); err != nil {
+		if err := extractFromCache(ctx, req.DownloadImagePath, destDir, ecMonitorFileName, req.DownloadImageReattemptCount, req.DownloadImageReattemptWait, monitorFiles, run, log); err != nil {
 			log.Debugf("Extract EC files: fail to extract %q file. Error: %s", ecMonitorFileName, err)
 		}
 	} else {
@@ -496,7 +512,7 @@ func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 	var imagePath string
 	if req.UseCacheToExtractor {
 		imagePath = "image.bin"
-		if err := extractFromCache(ctx, req.DownloadImagePath, destDir, imagePath, candidatesFiles, run, log); err != nil {
+		if err := extractFromCache(ctx, req.DownloadImagePath, destDir, imagePath, req.DownloadImageReattemptCount, req.DownloadImageReattemptWait, candidatesFiles, run, log); err != nil {
 			return "", errors.Annotate(err, "extract ap files").Err()
 		}
 	} else {
@@ -546,14 +562,16 @@ func extractFromTarball(ctx context.Context, tarballPath, destDirPath string, ca
 }
 
 // Try extracting the image_candidates from Cache Service.
-func extractFromCache(ctx context.Context, sourceCachePath, destDirPath, destFileName string, candidates []string, run components.Runner, log logger.Logger) error {
+func extractFromCache(ctx context.Context, sourceCachePath, destDirPath, destFileName string, downloadReattemptCount int, downloadReattemptWait time.Duration, candidates []string, run components.Runner, log logger.Logger) error {
 	// Try to download candidates till first success.
 	for _, cf := range candidates {
 		req := &cache.ExtractRequest{
-			CacheFileURL:       sourceCachePath,
-			ExtractFileName:    cf,
-			DestintionFilePath: filepath.Join(destDirPath, destFileName),
-			Timeout:            extractFileTimeout,
+			CacheFileURL:                sourceCachePath,
+			ExtractFileName:             cf,
+			DestintionFilePath:          filepath.Join(destDirPath, destFileName),
+			Timeout:                     extractFileTimeout,
+			DownloadImageReattemptCount: downloadReattemptCount,
+			DownloadImageReattemptWait:  downloadReattemptWait,
 		}
 		if err := cache.Extract(ctx, req, run); err != nil {
 			log.Debugf("Fail to download candidate %q: %s", cf, err)

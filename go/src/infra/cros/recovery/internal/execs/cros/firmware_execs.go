@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright (c) 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -176,21 +176,23 @@ func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) 
 	downloadFilename := fmt.Sprintf("%s/%s", downloadPath, fwFileName)
 	run := info.DefaultRunner()
 	req := &firmware.InstallFirmwareImageRequest{
-		DownloadImagePath:    downloadFilename,
-		DownloadImageTimeout: actionArgs.AsDuration(ctx, "download_timeout", 240, time.Second),
-		DownloadDir:          fwDownloadDir,
-		DutRunner:            run,
-		Board:                actionArgs.AsString(ctx, "dut_board", info.GetChromeos().GetBoard()),
-		Model:                actionArgs.AsString(ctx, "dut_model", info.GetChromeos().GetModel()),
-		Hwid:                 actionArgs.AsString(ctx, "hwid", info.GetChromeos().GetHwid()),
-		Servod:               info.NewServod(),
-		ForceUpdate:          actionArgs.AsBool(ctx, "force", false),
-		UpdateEcAttemptCount: actionArgs.AsInt(ctx, "update_ec_attempt_count", 0),
-		UpdateApAttemptCount: actionArgs.AsInt(ctx, "update_ap_attempt_count", 0),
-		UpdaterMode:          actionArgs.AsString(ctx, "mode", defaultFirmwareImageUpdateMode),
-		UpdaterTimeout:       actionArgs.AsDuration(ctx, "updater_timeout", 600, time.Second),
-		UseCacheToExtractor:  actionArgs.AsBool(ctx, "use_cache_extractor", false),
-		UseExternalFlashrom:  actionArgs.AsBool(ctx, "use_external_flashrom", false),
+		DownloadImagePath:           downloadFilename,
+		DownloadImageTimeout:        actionArgs.AsDuration(ctx, "download_timeout", 240, time.Second),
+		DownloadDir:                 fwDownloadDir,
+		DutRunner:                   run,
+		Board:                       actionArgs.AsString(ctx, "dut_board", info.GetChromeos().GetBoard()),
+		Model:                       actionArgs.AsString(ctx, "dut_model", info.GetChromeos().GetModel()),
+		Hwid:                        actionArgs.AsString(ctx, "hwid", info.GetChromeos().GetHwid()),
+		Servod:                      info.NewServod(),
+		ForceUpdate:                 actionArgs.AsBool(ctx, "force", false),
+		UpdateEcAttemptCount:        actionArgs.AsInt(ctx, "update_ec_attempt_count", 0),
+		UpdateApAttemptCount:        actionArgs.AsInt(ctx, "update_ap_attempt_count", 0),
+		UpdaterMode:                 actionArgs.AsString(ctx, "mode", defaultFirmwareImageUpdateMode),
+		UpdaterTimeout:              actionArgs.AsDuration(ctx, "updater_timeout", 600, time.Second),
+		UseCacheToExtractor:         actionArgs.AsBool(ctx, "use_cache_extractor", false),
+		UseExternalFlashrom:         actionArgs.AsBool(ctx, "use_external_flashrom", false),
+		DownloadImageReattemptCount: actionArgs.AsInt(ctx, "reattempt_count", 3),
+		DownloadImageReattemptWait:  actionArgs.AsDuration(ctx, "reattempt_wait", 5, time.Second),
 	}
 	logger := info.NewLogger()
 	if err := firmware.InstallFirmwareImage(ctx, req, logger); err != nil {

@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors.
+// Copyright (c) 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,10 @@ type ExtractRequest struct {
 	DestintionFilePath string
 	// Download timeout.
 	Timeout time.Duration
+	// Number of times the download can be re-attempted.
+	DownloadImageReattemptCount int
+	// Wait before the download is re-attempted.
+	DownloadImageReattemptWait time.Duration
 }
 
 // Extract extract file from cache service by modifying URL to download the file.
@@ -36,8 +40,20 @@ func Extract(ctx context.Context, req *ExtractRequest, run components.Runner) er
 	// Example: `http://Addr:8082/extract/chromeos-image-archive/board-release/R99-XXXXX.XX.0/chromiumos_test_image.tar.xz?file=chromiumos_test_image.bin`
 	extractPath := strings.Replace(req.CacheFileURL, "/download/", "/extract/", 1)
 	sourcePath := fmt.Sprintf("%s?file=%s", extractPath, req.ExtractFileName)
-	if _, err := CurlFile(ctx, run, sourcePath, req.DestintionFilePath, req.Timeout); err != nil {
-		return errors.Annotate(err, "extract from cache").Err()
+	// We need to count the original download as well as any re-attempts.
+	remainingDownloadAttempts := req.DownloadImageReattemptCount + 1
+	for {
+		if httpResponseCode, err := CurlFile(ctx, run, sourcePath, req.DestintionFilePath, req.Timeout); err != nil {
+			log.Debugf(ctx, "Extract: HTTP Response Code is :%d", httpResponseCode)
+			if httpResponseCode/100 == 5 && remainingDownloadAttempts > 1 {
+				remainingDownloadAttempts -= 1
+				time.Sleep(req.DownloadImageReattemptWait)
+				continue
+			}
+			return errors.Annotate(err, "extract from cache").Err()
+		} else {
+			break
+		}
 	}
 	return nil
 }
