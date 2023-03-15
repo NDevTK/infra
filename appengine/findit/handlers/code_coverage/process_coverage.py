@@ -520,6 +520,95 @@ class ProcessCodeCoverageData(BaseHandler):
       coverage_data (list): A list of File in coverage proto.
     """
 
+    def _GetLowCoverageCulpritFiles(entity):
+      low_coverage_files = []
+      for inc_metrics in entity.incremental_percentages:
+        if not inc_metrics.path.endswith(".java"):
+          logging.info("%s is not a java file", inc_metrics.path)
+          continue
+        if not _IsFileInAllowlistForBlocking(inc_metrics.path):
+          logging.info("%s is not in allowed dirs", inc_metrics.path)
+          continue
+        # Do not block because of test/main files
+        if re.match(utils.TEST_FILE_REGEX, inc_metrics.path) or re.match(
+            utils.MAIN_FILE_REGEX, inc_metrics.path):
+          logging.info("%s is a test/main file", inc_metrics.path)
+          continue
+        if not _HaveEnoughLinesChangedForBlocking(inc_metrics):
+          logging.info("%s doesn't have enough lines changed", inc_metrics.path)
+          continue
+        if _HasLowCoverageForBlocking(inc_metrics):
+          logging.info("%s has low incremental coverage", inc_metrics.path)
+          for abs_metrics in entity.absolute_percentages:
+            if (abs_metrics.path == inc_metrics.path and
+                not _CanBeExemptFromBlocking(abs_metrics)):
+              logging.info("%s has low absolute coverate too", inc_metrics.path)
+              low_coverage_files.append(inc_metrics.path)
+      return low_coverage_files
+
+    # TODO(crbug/1412897): Cache this
+    def _GetChromiumToGooglerMapping():
+      content = utils.GetFileContentFromGs(_CHROMIUM_TO_GOOGLER_MAPPING_PATH)
+      assert content, ('Failed to fetch account mappings data from %s' %
+                       _CHROMIUM_TO_GOOGLER_MAPPING_PATH)
+      return json.loads(content)
+
+    def _MayBeBlockCLForLowCoverage(entity):
+      # We block some CLs based on overall coverage metrics.
+      # TODO(crbug/1412897): Wait on all coverage builders
+      if _IsBlockingChangesAllowed(
+          patch.project) and mimic_builder == 'android-nougat-x86-rel':
+        change_details = code_coverage_util.FetchChangeDetails(
+            patch.host, patch.project, patch.change, detailed_accounts=True)
+        author_email = change_details['owner']['email']
+        author_email = _GetChromiumToGooglerMapping().get(
+            author_email, author_email)
+        if not _IsAuthorInAllowlistForBlocking(author_email):
+          logging.info("%s is not in allowlist", author_email)
+          return
+        url = 'https://%s/changes/%d/revisions/%d/review' % (
+            patch.host, patch.change, patch.patchset)
+        headers = {'Content-Type': 'application/json; charset=UTF-8'}
+        # Block CL only if it qualifies and is not a revert CL
+        low_coverage_culprit_files = _GetLowCoverageCulpritFiles(entity)
+        if low_coverage_culprit_files and 'revert_of' not in change_details:
+          msg_header = (
+              'This change will be blocked from submission as the following'
+              ' files have incremental coverage(all tests) < %d%%. ' %
+              waterfall_config.GetCodeCoverageSettings().get(
+                  'block_low_coverage_changes_trigger_threshold',
+                  _DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING))
+          file_names_with_bullets = [
+              "- %s" % x for x in low_coverage_culprit_files
+          ]
+          msg_body = "\n".join(file_names_with_bullets)
+          msg_footer = ('Please add tests for uncovered lines, '
+                        'or add Low-Coverage-Reason:<reason> in '
+                        'the change description. If you think coverage is '
+                        'underreported, file a bug to Infra>Test>CodeCoverage')
+          data = {
+              'labels': {
+                  'Code-Coverage': -1
+              },
+              'message': "\n".join([msg_header, msg_body, "", msg_footer])
+          }
+          logging.info(('Adding CodeCoverage-1 label for '
+                        'project %s, change %d,  patchset %d'), patch.project,
+                       patch.change, patch.patchset)
+          logging.info("low_coverage_culprit_files = %r",
+                       low_coverage_culprit_files)
+        else:
+          data = {
+              'labels': {
+                  'Code-Coverage': +1
+              },
+              'message': 'This change meets the code coverage requirements.'
+          }
+          logging.info(('Adding CodeCoverage+1 label for '
+                        'project %s, change %d,  patchset %d'), patch.project,
+                       patch.change, patch.patchset)
+        FinditHttpClient().Post(url, json.dumps(data), headers=headers)
+
     @ndb.tasklet
     @ndb.transactional
     def _UpdateCoverageDataAsync():
@@ -574,41 +663,6 @@ class ProcessCodeCoverageData(BaseHandler):
                   entity.data_unit_rts))
         return entity
 
-      def _GetLowCoverageCulpritFiles(entity):
-        low_coverage_files = []
-        for inc_metrics in entity.incremental_percentages:
-          if not inc_metrics.path.endswith(".java"):
-            logging.info("%s is not a java file", inc_metrics.path)
-            continue
-          if not _IsFileInAllowlistForBlocking(inc_metrics.path):
-            logging.info("%s is not in allowed dirs", inc_metrics.path)
-            continue
-          # Do not block because of test/main files
-          if re.match(utils.TEST_FILE_REGEX, inc_metrics.path) or re.match(
-              utils.MAIN_FILE_REGEX, inc_metrics.path):
-            logging.info("%s is a test/main file", inc_metrics.path)
-            continue
-          if not _HaveEnoughLinesChangedForBlocking(inc_metrics):
-            logging.info("%s doesn't have enough lines changed",
-                         inc_metrics.path)
-            continue
-          if _HasLowCoverageForBlocking(inc_metrics):
-            logging.info("%s has low incremental coverage", inc_metrics.path)
-            for abs_metrics in entity.absolute_percentages:
-              if (abs_metrics.path == inc_metrics.path and
-                  not _CanBeExemptFromBlocking(abs_metrics)):
-                logging.info("%s has low absolute coverate too",
-                             inc_metrics.path)
-                low_coverage_files.append(inc_metrics.path)
-        return low_coverage_files
-
-      # TODO(crbug/1412897): Cache this
-      def _GetChromiumToGooglerMapping():
-        content = utils.GetFileContentFromGs(_CHROMIUM_TO_GOOGLER_MAPPING_PATH)
-        assert content, ('Failed to fetch account mappings data from %s' %
-                         _CHROMIUM_TO_GOOGLER_MAPPING_PATH)
-        return json.loads(content)
-
       logging.info("mimic_builder = %s", mimic_builder)
       entity = yield PresubmitCoverageData.GetAsync(
           server_host=patch.host, change=patch.change, patchset=patch.patchset)
@@ -618,62 +672,8 @@ class ProcessCodeCoverageData(BaseHandler):
         entity = _GetEntityForUnit(entity)
       else:
         entity = _GetEntity(entity)
-        # We block some CLs based on overall coverage metrics.
-        # TODO(crbug/1412897): Wait on all coverage builders
-        if _IsBlockingChangesAllowed(
-            patch.project) and mimic_builder == 'android-nougat-x86-rel':
-          change_details = code_coverage_util.FetchChangeDetails(
-              patch.host, patch.project, patch.change, detailed_accounts=True)
-          author_email = change_details['owner']['email']
-          author_email = _GetChromiumToGooglerMapping().get(
-              author_email, author_email)
-          if not _IsAuthorInAllowlistForBlocking(author_email):
-            logging.info("%s is not in allowlist", author_email)
-            return
-          url = 'https://%s/changes/%d/revisions/%d/review' % (
-              patch.host, patch.change, patch.patchset)
-          headers = {'Content-Type': 'application/json; charset=UTF-8'}
-          # Block CL only if it qualifies and is not a revert CL
-          low_coverage_culprit_files = _GetLowCoverageCulpritFiles(entity)
-          if low_coverage_culprit_files and 'revert_of' not in change_details:
-            msg_header = (
-                'This change will be blocked from submission as the following'
-                ' files have incremental coverage(all tests) < %d%%. ' %
-                waterfall_config.GetCodeCoverageSettings().get(
-                    'block_low_coverage_changes_trigger_threshold',
-                    _DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING))
-            file_names_with_bullets = [
-                "- %s" % x for x in low_coverage_culprit_files
-            ]
-            msg_body = "\n".join(file_names_with_bullets)
-            msg_footer = (
-                'Please add tests for uncovered lines, '
-                'or add Low-Coverage-Reason:<reason> in '
-                'the change description. If you think coverage is '
-                'underreported, file a bug to Infra>Test>CodeCoverage')
-            data = {
-                'labels': {
-                    'Code-Coverage': -1
-                },
-                'message': "\n".join([msg_header, msg_body, "", msg_footer])
-            }
-            logging.info(('Adding CodeCoverage-1 label for '
-                          'project %s, change %d,  patchset %d'), patch.project,
-                         patch.change, patch.patchset)
-            logging.info("low_coverage_culprit_files = %r",
-                         low_coverage_culprit_files)
-          else:
-            data = {
-                'labels': {
-                    'Code-Coverage': +1
-                },
-                'message': 'This change meets the code coverage requirements.'
-            }
-            logging.info(('Adding CodeCoverage+1 label for '
-                          'project %s, change %d,  patchset %d'), patch.project,
-                         patch.change, patch.patchset)
-          FinditHttpClient().Post(url, json.dumps(data), headers=headers)
       yield entity.put_async()
+      raise ndb.Return(entity)
 
     update_future = _UpdateCoverageDataAsync()
 
@@ -706,9 +706,11 @@ class ProcessCodeCoverageData(BaseHandler):
             PresubmitCoverageData.based_on == patch.patchset).fetch(
                 keys_only=True))
 
-    update_future.get_result()
+    entity = update_future.get_result()
     for f in delete_futures:
       f.get_result()
+
+    _MayBeBlockCLForLowCoverage(entity)
 
   def _ProcessCodeCoverageData(self, build_id):
     build = GetV2Build(

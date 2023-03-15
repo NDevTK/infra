@@ -7,6 +7,8 @@ import json
 import mock
 import webapp2
 
+from google.appengine.ext import ndb
+
 from gae_libs.handlers.base_handler import BaseHandler
 from handlers.code_coverage import process_coverage
 from handlers.code_coverage import utils
