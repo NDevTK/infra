@@ -57,7 +57,7 @@ func NewCrosTestRunnerService(execReq *skylab_test_runner.ExecuteRequest, server
 	}, nil
 }
 
-func (crs *CrosTestRunnerService) Execute(ctx context.Context) (*skylab_test_runner.ExecuteResponse, error) {
+func (crs *CrosTestRunnerService) Execute(ctx context.Context, logPath string) (*skylab_test_runner.ExecuteResponse, error) {
 	crs.sk.CftTestRequest = crs.req.GetCftTestRequest()
 	// TODO: plug in test-finder inputs. Ignored for server implementation
 	//
@@ -70,5 +70,5 @@ func (crs *CrosTestRunnerService) Execute(ctx context.Context) (*skylab_test_run
 	// 	}
 	// }
 
-	return executions.LocalExecution(crs.sk, crs.req.CtrCipdVersion)
+	return executions.LocalExecution(crs.sk, crs.req.CtrCipdVersion, logPath)
 }

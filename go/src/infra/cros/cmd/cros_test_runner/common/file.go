@@ -12,24 +12,38 @@ import (
 	"io/fs"
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
 	"go.chromium.org/chromiumos/config/go/build/api"
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 )
 
-// CreateTempDir creates temp dir in luci TEMPDIR location.
+var GlobalTempDir = os.Getenv("TEMPDIR")
+
+// CreateUniquePrefixedName creates a unique name with provided pattern
+func CreateUniquePrefixedName(pattern string) string {
+	if pattern == "" {
+		pattern = "unique"
+	}
+	id := uuid.New().String()
+	return fmt.Sprintf("%s-%s", pattern, strings.Split(id, "-")[0])
+}
+
+// CreateTempDir creates temp dir in global TEMPDIR(luci for builders) location.
 func CreateTempDir(ctx context.Context, tempDirPattern string) (tempDir string, err error) {
-	luciTempDir := os.Getenv("TEMPDIR")
-	logging.Infof(ctx, fmt.Sprintf("Luci temp Dir: %s", luciTempDir))
-	tempDir, err = os.MkdirTemp(luciTempDir, tempDirPattern)
+	uniqueFolderName := CreateUniquePrefixedName(tempDirPattern)
+	tempDir = path.Join(GlobalTempDir, uniqueFolderName)
+	logging.Infof(ctx, fmt.Sprintf("Global temp Dir: %s", GlobalTempDir))
+	err = os.MkdirAll(tempDir, 0755)
 	if err != nil {
-		logging.Infof(ctx, fmt.Sprintf("Temp dir %q creation at %q failed", tempDir, luciTempDir))
+		logging.Infof(ctx, fmt.Sprintf("Temp dir %q creation at %q failed", tempDir, GlobalTempDir))
 	}
 	return tempDir, err
 }

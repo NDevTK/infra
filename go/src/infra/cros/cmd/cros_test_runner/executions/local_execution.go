@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"path"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
@@ -21,7 +22,8 @@ import (
 	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
 )
 
-func LocalExecution(sk *data.LocalTestStateKeeper, ctrCipdVersion string) (*skylab_test_runner.ExecuteResponse, error) {
+func LocalExecution(sk *data.LocalTestStateKeeper, ctrCipdVersion string, logPath string) (*skylab_test_runner.ExecuteResponse, error) {
+	common.GlobalTempDir = path.Join(logPath, common.CreateUniquePrefixedName("execution-logs"))
 	emptyBuild := &buildbucketpb.Build{}
 	build_state, ctx, err := build.Start(context.Background(), emptyBuild)
 
@@ -29,9 +31,10 @@ func LocalExecution(sk *data.LocalTestStateKeeper, ctrCipdVersion string) (*skyl
 	ctx = logCfg.Use(ctx)
 	defer func() {
 		build_state.End(err)
-		logCfg.DumpStepsToFolder(sk.GcsPublishSrcDir)
+		logCfg.DumpStepsToFolder(common.GlobalTempDir)
 	}()
 
+	sk.GcsPublishSrcDir = common.GlobalTempDir
 	result, err := executeLocalTests(ctx, sk, ctrCipdVersion)
 	if err != nil {
 		fmt.Println(err)
