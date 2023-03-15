@@ -64,7 +64,7 @@ func (server *CrosTestRunnerServer) Start() error {
 	}
 
 	// Construct state keeper to be used throughout the whole server session
-	server.ConstructStateKeeper()
+	server.sk = server.ConstructStateKeeper()
 
 	server.server = grpc.NewServer()
 	skylab_test_runner.RegisterCrosTestRunnerServiceServer(server.server, server)
@@ -118,7 +118,7 @@ func (server *CrosTestRunnerServer) Execute(ctx context.Context, req *skylab_tes
 		return out, fmt.Errorf("execution failed: %s", err)
 	}
 
-	log.Println("Execution finished successfuly!")
+	log.Println("Execution finished successfully!")
 	return out, nil
 }
 

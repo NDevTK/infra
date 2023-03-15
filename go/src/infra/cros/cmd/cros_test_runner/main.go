@@ -14,7 +14,7 @@ import (
 func main() {
 	opt, err := cli.ParseInputs()
 	if err != nil {
-		fmt.Printf("unable to parse inputs: %s", err)
+		fmt.Printf("unable to parse inputs: %s\n", err)
 		os.Exit(2)
 	}
 	_ = opt.Run()
