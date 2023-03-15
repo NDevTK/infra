@@ -334,17 +334,7 @@ def _FixSysconfigPaths(python_dir, wheel_platform, work_root):
     output_lines = []
     with open(config_data, 'r') as f:
       for line in f:
-        line = line.replace('[INSTALL_PREFIX]', work_python_dir)
-        # Fix up paths as we transition to new docker images.
-        # Remove this once new Python packages have been built.
-        if wheel_platform.dockcross_base == 'linux-arm64-lts':
-          line = line.replace('aarch64-unknown-linux-gnueabi',
-                              wheel_platform.cross_triple)
-        elif wheel_platform.dockcross_base == 'linux-armv6-lts':
-          line = line.replace(
-              '/usr/bin/arm-linux-gnueabihf',
-              '/usr/xcc/{0}/bin/{0}'.format(wheel_platform.cross_triple))
-        output_lines.append(line)
+        output_lines.append(line.replace('[INSTALL_PREFIX]', work_python_dir))
     st = os.stat(config_data)
     os.chmod(config_data, st.st_mode | stat.S_IWUSR)
     with open(config_data, 'w') as f:
@@ -360,8 +350,8 @@ _initialized_cipd_python = set()
 def _InstallCipdPythonPackage(system, cipd_platform, wheel, base_dir,
                               work_root):
   PY_CIPD_VERSION_MAP = {
-      '38': 'version:2@3.8.10.chromium.25',
-      '311': 'version:2@3.11.0.chromium.23',
+      '38': 'version:2@3.8.10.chromium.28',
+      '311': 'version:2@3.11.2.chromium.27',
   }
 
   package_ident = 'py_%s_%s' % (wheel.pyversion, cipd_platform)
