@@ -242,6 +242,9 @@ export class MrIssueHeader extends connectStore(LitElement) {
     const riskyOptions = [];
     const isSpam = this.issue.isSpam;
     const isRestricted = this.isRestricted;
+    // Projects that allow some restricted issues to move.
+    // Context: https://crbug.com/monorail/11894
+    const projectsAllowedToMove = ['chromium', 'webrtc'];
 
     const permissions = this.issuePermissions;
     const templates = this.projectTemplates;
@@ -265,11 +268,14 @@ export class MrIssueHeader extends connectStore(LitElement) {
         text: 'Delete issue',
         handler: this._deleteIssue.bind(this),
       });
-      if (!isRestricted) {
+      if (!isRestricted ||
+          projectsAllowedToMove.includes(this.projectName.toLowerCase())) {
         editOptions.push({
           text: 'Move issue',
           handler: this._openMoveCopyIssue.bind(this, 'Move'),
         });
+      }
+      if (!isRestricted) {
         editOptions.push({
           text: 'Copy issue',
           handler: this._openMoveCopyIssue.bind(this, 'Copy'),

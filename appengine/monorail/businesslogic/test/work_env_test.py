@@ -1588,6 +1588,36 @@ class WorkEnvTest(unittest.TestCase):
     self.assertEqual(
         comments[2].content, 'Moved issue dest:1 back to issue proj:1 again.')
 
+  @mock.patch('services.tracker_fulltext.IndexIssues')
+  @mock.patch('services.tracker_fulltext.UnindexIssues')
+  def testMoveIssue_AllowedRestrictions(self, mock_unindex, mock_index):
+    """We can move restricted issues on allowed projects and labels."""
+    issue = fake.MakeTestIssue(
+        789, 1, 'sum', 'New', 111, issue_id=78901, project_name='WebRTC')
+    issue.labels = ['Restrict-View-SecurityTeam']
+    self.services.issue.TestAddIssue(issue)
+    self.project.owner_ids = [111]
+    target_project = self.services.project.TestAddProject(
+        'Chromium', project_id=988, committer_ids=[111])
+
+    self.SignIn(user_id=111)
+    with self.work_env as we:
+      moved_issue = we.MoveIssue(issue, target_project)
+
+    self.assertEqual(moved_issue.project_name, 'Chromium')
+    self.assertEqual(moved_issue.local_id, 1)
+
+    moved_issue = self.services.issue.GetIssueByLocalID(
+        'cnxn', target_project.project_id, 1)
+    self.assertEqual(target_project.project_id, moved_issue.project_id)
+    self.assertEqual(issue.summary, moved_issue.summary)
+    self.assertEqual(moved_issue.reporter_id, 111)
+
+    mock_unindex.assert_called_once_with([issue.issue_id])
+    mock_index.assert_called_once_with(
+        self.mr.cnxn, [issue], self.services.user, self.services.issue,
+        self.services.config)
+
   def testMoveIssue_Anon(self):
     """Anon can't move issues."""
     issue = fake.MakeTestIssue(789, 1, 'sum', 'New', 111, issue_id=78901)

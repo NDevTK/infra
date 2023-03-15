@@ -99,6 +99,7 @@ describe('mr-issue-header', () => {
   });
 
   it('_issueOptions toggles move and copy', () => {
+    element.projectName = '';
     element.issuePermissions = [ISSUE_DELETE_PERMISSION];
     assert.isDefined(findOptionWithText(element._issueOptions,
         'Move issue'));
@@ -109,7 +110,25 @@ describe('mr-issue-header', () => {
     assert.isUndefined(findOptionWithText(element._issueOptions,
         'Move issue'));
     assert.isUndefined(findOptionWithText(element._issueOptions,
-        'Copy issue'));
+      'Copy issue'));
+
+    element.projectName = 'Chromium';
+    assert.isDefined(findOptionWithText(element._issueOptions,
+        'Move issue'));
+    assert.isUndefined(findOptionWithText(element._issueOptions,
+      'Copy issue'));
+
+    element.projectName = 'Monkeyrail';
+    assert.isUndefined(findOptionWithText(element._issueOptions,
+        'Move issue'));
+    assert.isUndefined(findOptionWithText(element._issueOptions,
+      'Copy issue'));
+
+    element.projectName = 'webrtc';
+    assert.isDefined(findOptionWithText(element._issueOptions,
+        'Move issue'));
+    assert.isUndefined(findOptionWithText(element._issueOptions,
+      'Copy issue'));
 
     element.issuePermissions = [];
 

@@ -1273,7 +1273,18 @@ class WorkEnv(object):
     self._AssertPermInIssue(issue, permissions.DELETE_ISSUE)
     self._AssertPermInProject(permissions.EDIT_ISSUE, target_project)
 
-    if permissions.GetRestrictions(issue):
+    restrictions = permissions.GetRestrictions(issue)
+    # Issues with allowed labels may move between allowed projects.
+    # Context: https://crbug.com/monorail/11894
+    allowed_project_names = ['chromium', 'webrtc']
+    allowed_labels = frozenset(
+        ['restrict-view-securityteam', 'restrict-view-securitynotify'])
+    if (target_project.project_name.lower()
+        in allowed_project_names) and (issue.project_name.lower()
+                                       in allowed_project_names):
+      restrictions = set(restrictions) - allowed_labels
+
+    if restrictions:
       raise exceptions.InputException(
           'Issues with Restrict labels are not allowed to be moved')
 
