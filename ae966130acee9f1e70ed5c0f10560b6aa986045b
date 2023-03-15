@@ -22,6 +22,30 @@
       },
       "revId": "ae966130acee9f1e70ed5c0f10560b6aa986045b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "244d3e68_4c5a3b91",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/v2/templates/template_cache_server.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1540363
+      },
+      "writtenOn": "2023-03-15T02:52:39Z",
+      "side": 1,
+      "message": "Yes, only VM tests need to start cache server. But this is command is inside the container. So it shouldn\u0027t matter where it runs on.",
+      "parentUuid": "3baf1752_c6295b54",
+      "range": {
+        "startLine": 58,
+        "startChar": 2,
+        "endLine": 58,
+        "endChar": 21
+      },
+      "revId": "ae966130acee9f1e70ed5c0f10560b6aa986045b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
