@@ -11,7 +11,7 @@
 // To add instrumentation to a function:
 //
 //	func MyFunc(ctx context.Context) (err error) {
-//		ctx, span :- otil.FuncSpan(ctx)
+//		ctx, span := otil.FuncSpan(ctx)
 //		defer func() { otil.EndSpan(span, err) }()
 //		// rest of function
 //	}
