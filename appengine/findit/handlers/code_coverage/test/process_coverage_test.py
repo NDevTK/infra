@@ -7,7 +7,12 @@ import json
 import mock
 import webapp2
 
-from google.appengine.ext import ndb
+from components.prpc import client as prpc_client
+
+from go.chromium.org.luci.buildbucket.proto import build_pb2
+from go.chromium.org.luci.buildbucket.proto import builder_common_pb2
+from go.chromium.org.luci.buildbucket.proto import builds_service_pb2
+from go.chromium.org.luci.buildbucket.proto import common_pb2
 
 from gae_libs.handlers.base_handler import BaseHandler
 from handlers.code_coverage import process_coverage
@@ -700,19 +705,25 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testProcessCLPatchDataLowCoverageBlocking_block(
+  # pylint: disable=line-too-long
+  def testProcessCLPatchDataLowCoverageBlocking_allCoverageBuildsCompletedSuccessfully_block(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      *_):
+      mock_buildbucket_client, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
-            'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
+            'allowed_builders': [
+                'chromium/try/android-nougat-x86-rel',
+                'chromium/try/android-pie-x86-rel',
+            ],
             'block_low_coverage_changes_projects': ['chromium/src'],
             'block_low_coverage_changes_authors': ['john'],
             'block_low_coverage_changes_directories': ['//dir']
@@ -763,6 +774,23 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
             path='//dir/myfile.java', total_lines=90, covered_lines=9)
     ]
     mocked_inc_percentages.return_value = inc_percentages
+    # Two coverage builds were triggered for the CL
+    # and both completed without error
+    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
+        builds_service_pb2.SearchBuildsResponse(builds=[
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-nougat-x86-rel'),
+                status=common_pb2.Status.SUCCESS),
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-pie-x86-rel'),
+                status=common_pb2.Status.SUCCESS),
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-performance-rel'),
+                status=common_pb2.Status.SCHEDULED)
+        ]))
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@chromium.org'
@@ -783,19 +811,25 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertTrue('50%' in data['message'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testProcessCLPatchDataLowCoverageBlocking_nonNougatRelBuilder_noop(
+  # pylint: disable=line-too-long
+  def testProcessCLPatchDataLowCoverageBlocking_onlySomeCoverageBuildsCompletedSuccessfully_noop(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      *_):
+      mock_buildbucket_client, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
-            'allowed_builders': ['chromium/try/android-marshmellow-x86-rel',],
+            'allowed_builders': [
+                'chromium/try/android-nougat-x86-rel',
+                'chromium/try/android-pie-x86-rel',
+            ],
             'block_low_coverage_changes_projects': ['chromium/src'],
             'block_low_coverage_changes_authors': ['john'],
             'block_low_coverage_changes_directories': ['//dir']
@@ -804,14 +838,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     build = mock.Mock()
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
-    build.builder.builder = 'android-marshmellow-x86-rel'
+    build.builder.builder = 'android-nougat-x86-rel'
     build.output.properties.items.return_value = [
         ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
-            'android-marshmellow-x86-rel/123456789/metadata'
-        ]), ('mimic_builder_names', ['android-marshmellow-x86-rel'])
+            'android-nougat-x86-rel/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel'])
     ]
     build.input.gerrit_changes = [
         mock.Mock(
@@ -846,6 +880,19 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
             path='//dir/myfile.java', total_lines=90, covered_lines=9)
     ]
     mocked_inc_percentages.return_value = inc_percentages
+    # Two coverage builds were triggered for the CL
+    # and only one has completed without error
+    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
+        builds_service_pb2.SearchBuildsResponse(builds=[
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-nougat-x86-rel'),
+                status=common_pb2.Status.SUCCESS),
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-pie-x86-rel'),
+                status=common_pb2.Status.SCHEDULED)
+        ]))
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@chromium.org'
@@ -860,16 +907,18 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(len(mock_http_client.call_args_list), 0)
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testProcessCLPatchDataLowCoverageBlocking_revertCL_allow(
+  def testProcessCLPatchDataLowCoverageBlocking_revertCL_noop(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      *_):
+      mock_buildbucket_client, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -923,6 +972,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
             path='//dir/myfile.java', total_lines=90, covered_lines=9)
     ]
     mocked_inc_percentages.return_value = inc_percentages
+    # One coverage build was triggered and it succeeded
+    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
+        builds_service_pb2.SearchBuildsResponse(builds=[
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-nougat-x86-rel'),
+                status=common_pb2.Status.SUCCESS)
+        ]))
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@google.com'
@@ -935,14 +992,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)
 
-    self.assertEqual(len(mock_http_client.call_args_list), 1)
-    args, _ = mock_http_client.call_args_list[0]
-    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
-                               '/changes/138000/revisions/4/review'))
-    data = json.loads(args[1])
-    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
+    self.assertEqual(len(mock_http_client.call_args_list), 0)
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
@@ -952,7 +1006,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   def testProcessCLPatchDataLowCoverageBlocking_testAndMainFile_allow(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      *_):
+      mock_buildbucket_client, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -1023,6 +1077,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
             path='//dir/myfileTests.java', total_lines=90, covered_lines=9)
     ]
     mocked_inc_percentages.return_value = inc_percentages
+    # One coverage build was triggere and it succeeded
+    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
+        builds_service_pb2.SearchBuildsResponse(builds=[
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-nougat-x86-rel'),
+                status=common_pb2.Status.SUCCESS)
+        ]))
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@chromium.org'
@@ -1042,6 +1104,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
@@ -1051,7 +1115,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   def testProcessCLPatchDataLowCoverageBlocking_highAbsoluteCoverage_allow(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      *_):
+      mock_buildbucket_client, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -1105,6 +1169,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
             path='//dir/myfile.java', total_lines=90, covered_lines=9)
     ]
     mocked_inc_percentages.return_value = inc_percentages
+    # One coverage build was triggered and it succeeded
+    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
+        builds_service_pb2.SearchBuildsResponse(builds=[
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-nougat-x86-rel'),
+                status=common_pb2.Status.SUCCESS)
+        ]))
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@google.com'
@@ -1124,6 +1196,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
@@ -1133,7 +1207,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   def testProcessCLPatchDataLowCoverageBlocking_authorNotOptIn_noop(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      *_):
+      mock_buildbucket_client, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -1187,6 +1261,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
             path='//dir/myfile.java', total_lines=90, covered_lines=9)
     ]
     mocked_inc_percentages.return_value = inc_percentages
+    # One coverage build was triggered and it succeeded
+    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
+        builds_service_pb2.SearchBuildsResponse(builds=[
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-nougat-x86-rel'),
+                status=common_pb2.Status.SUCCESS)
+        ]))
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@google.com'
@@ -1201,6 +1283,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(len(mock_http_client.call_args_list), 0)
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
@@ -1210,7 +1294,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   def testProcessCLPatchDataLowCoverageBlocking_externalAuthor_noop(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      *_):
+      mock_buildbucket_client, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -1264,6 +1348,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
             path='//dir/myfile.java', total_lines=90, covered_lines=9)
     ]
     mocked_inc_percentages.return_value = inc_percentages
+    # One coverage build was triggered and it succeeded
+    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
+        builds_service_pb2.SearchBuildsResponse(builds=[
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-nougat-x86-rel'),
+                status=common_pb2.Status.SUCCESS)
+        ]))
     mocked_fetch_change_details.return_value = {
         'owner': {
             # some other john from outside google created the change.
@@ -1279,6 +1371,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(len(mock_http_client.call_args_list), 0)
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
@@ -1288,7 +1382,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   def testProcessCLPatchDataLowCoverageBlocking_DirNotOptIn_allow(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      *_):
+      mock_buildbucket_client, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -1342,6 +1436,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
             path='//dir/myfile.java', total_lines=90, covered_lines=9)
     ]
     mocked_inc_percentages.return_value = inc_percentages
+    # One coverage build was triggered and it succeeded
+    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
+        builds_service_pb2.SearchBuildsResponse(builds=[
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-nougat-x86-rel'),
+                status=common_pb2.Status.SUCCESS)
+        ]))
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@google.com'
@@ -1361,6 +1463,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
@@ -1370,7 +1474,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   def testProcessCLPatchDataLowCoverageBlocking_notEnoughLines_allow(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      *_):
+      mock_buildbucket_client, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -1425,6 +1529,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
             path='//dir/myfile.java', total_lines=9, covered_lines=1)
     ]
     mocked_inc_percentages.return_value = inc_percentages
+    # One coverage build was triggered and it succeeded
+    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
+        builds_service_pb2.SearchBuildsResponse(builds=[
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-nougat-x86-rel'),
+                status=common_pb2.Status.SUCCESS)
+        ]))
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@google.com'
@@ -1444,6 +1556,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
   @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
@@ -1453,7 +1567,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   def testProcessCLPatchDataLowCoverageBlocking_nonJavaFile_allow(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      *_):
+      mock_buildbucket_client, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -1507,6 +1621,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
             path='//dir/myfile.cc', total_lines=90, covered_lines=9)
     ]
     mocked_inc_percentages.return_value = inc_percentages
+    # One coverage build was triggered and it succeeded
+    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
+        builds_service_pb2.SearchBuildsResponse(builds=[
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-nougat-x86-rel'),
+                status=common_pb2.Status.SUCCESS)
+        ]))
     mocked_fetch_change_details.return_value = {
         'owner': {
             'email': 'john@google.com'
@@ -1526,16 +1648,17 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
   @mock.patch.object(utils, 'GetFileContentFromGs')
   @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
+  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
   def testProcessCLPatchDataLowCoverageBlocking_ProjectNotAllowed_noop(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      *_):
+      mock_http_client, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
@@ -1589,13 +1712,6 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
             path='//dir/myfile.java', total_lines=90, covered_lines=9)
     ]
     mocked_inc_percentages.return_value = inc_percentages
-    mocked_fetch_change_details.return_value = {
-        'owner': {
-            'email': 'john@google.com'
-        }
-    }
-    mocked_get_file_content.return_value = json.dumps(
-        {'john@chromium.org': 'john@google.com'})
 
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)

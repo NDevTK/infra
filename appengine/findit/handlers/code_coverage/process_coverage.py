@@ -15,6 +15,12 @@ from google.appengine.ext import ndb
 from google.protobuf import json_format
 from google.protobuf.field_mask_pb2 import FieldMask
 
+from components import prpc
+from components.prpc import client as prpc_client
+from go.chromium.org.luci.buildbucket.proto import builds_service_pb2
+from go.chromium.org.luci.buildbucket.proto import builds_service_prpc_pb2
+from go.chromium.org.luci.buildbucket.proto import common_pb2
+
 from common import constants
 from common import monitoring
 from common.findit_http_client import FinditHttpClient
@@ -39,6 +45,7 @@ _CHROMIUM_TO_GOOGLER_MAPPING_PATH = '/cr2goog/cr2goog.txt'
 _DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING = 50
 _DEFAULT_RELAX_ABS_COV_THRESHOLD_FOR_BLOCKING = 80
 _DEFAULT_MINIMUM_LINES_OF_CHANGE_FOR_BLOCKING = 10
+_BUILDBUCKET_HOST = 'cr-buildbucket.appspot.com'
 
 
 def _AddDependencyToManifest(path, url, revision,
@@ -77,6 +84,14 @@ def _GetDisallowedDeps():  # pragma: no cover.
   the root of the checkout).
   """
   return waterfall_config.GetCodeCoverageSettings().get('blacklisted_deps', {})
+
+
+def _GetAllowedChromiumTryBuilders():
+  prefix = 'chromium/try/'
+  return [
+      x[len(prefix):] for x in waterfall_config.GetCodeCoverageSettings().get(
+          'allowed_builders', []) if x.startswith(prefix)
+  ]
 
 
 def _IsBlockingChangesAllowed(project):
@@ -553,25 +568,51 @@ class ProcessCodeCoverageData(BaseHandler):
                        _CHROMIUM_TO_GOOGLER_MAPPING_PATH)
       return json.loads(content)
 
+    def _AreAllCoverageBuildsSucessful(patch):
+      predicate = {
+          'gerrit_changes': [{
+              'host': patch.host,
+              'change': patch.change,
+              'patchset': patch.patchset
+          }]
+      }
+      req = builds_service_pb2.SearchBuildsRequest(predicate=predicate)
+      try_builders = _GetAllowedChromiumTryBuilders()
+      service_client = prpc_client.Client(
+          _BUILDBUCKET_HOST, builds_service_prpc_pb2.BuildsServiceDescription)
+      resp = service_client.SearchBuilds(
+          req, credentials=prpc_client.service_account_credentials())
+      for build in resp.builds:
+        if (build.builder.builder in try_builders and
+            build.status != common_pb2.Status.SUCCESS):
+          return False
+      return True
+
     def _MayBeBlockCLForLowCoverage(entity):
       # We block some CLs based on overall coverage metrics.
-      # TODO(crbug/1412897): Wait on all coverage builders
-      if _IsBlockingChangesAllowed(
-          patch.project) and mimic_builder == 'android-nougat-x86-rel':
+      if _IsBlockingChangesAllowed(patch.project):
         change_details = code_coverage_util.FetchChangeDetails(
             patch.host, patch.project, patch.change, detailed_accounts=True)
+        if 'revert_of' in change_details:
+          logging.info("Bypassing the check as %d is a revert CL", patch.change)
+          return
+        if not _AreAllCoverageBuildsSucessful(patch):
+          logging.info("Bypassing the check" +
+                       " as there are pending/failed coverage builds")
+          return
         author_email = change_details['owner']['email']
         author_email = _GetChromiumToGooglerMapping().get(
             author_email, author_email)
         if not _IsAuthorInAllowlistForBlocking(author_email):
-          logging.info("%s is not in allowlist", author_email)
+          logging.info("Bypassing the check" + " as %s is not in allowlist",
+                       author_email)
           return
         url = 'https://%s/changes/%d/revisions/%d/review' % (
             patch.host, patch.change, patch.patchset)
         headers = {'Content-Type': 'application/json; charset=UTF-8'}
-        # Block CL only if it qualifies and is not a revert CL
+        # Block CL only some files have low coverage
         low_coverage_culprit_files = _GetLowCoverageCulpritFiles(entity)
-        if low_coverage_culprit_files and 'revert_of' not in change_details:
+        if low_coverage_culprit_files:
           msg_header = (
               'This change will be blocked from submission as the following'
               ' files have incremental coverage(all tests) < %d%%. ' %
