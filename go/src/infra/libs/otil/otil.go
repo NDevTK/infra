@@ -1,3 +1,7 @@
+// Copyright 2023 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 // Package otil contains OpenTelemetry utilities.
 //
 // These utilities are for convenience and do not have to be used.
