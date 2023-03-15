@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a1bf5168_a3aac305",
+        "filename": "go/src/infra/build/siso/build/builder.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-03-15T08:26:14Z",
+      "side": 1,
+      "message": "import this in second block?",
+      "revId": "de33fa0e38af01517564a10049c79d5e0f096f79",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3472771a_a9b6ad9e",
+        "filename": "go/src/infra/build/siso/build/deps.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-03-15T08:26:14Z",
+      "side": 1,
+      "message": "import this in second block?",
+      "revId": "de33fa0e38af01517564a10049c79d5e0f096f79",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5f5d2325_6d630404",
+        "filename": "go/src/infra/build/siso/build/deps_gcc.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-03-15T08:26:14Z",
+      "side": 1,
+      "message": "ditto",
+      "revId": "de33fa0e38af01517564a10049c79d5e0f096f79",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
