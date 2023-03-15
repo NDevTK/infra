@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
@@ -112,6 +113,14 @@ func (r *TastResults) ToProtos(ctx context.Context, testMetadataFile string, pro
 		testMetadata, ok := metadata[testName]
 		if ok {
 			tr.Tags = append(tr.Tags, metadataToTags(testMetadata)...)
+			tr.TestMetadata.BugComponent, err = parseBugComponentMetadata(testMetadata)
+			if err != nil {
+				logging.Errorf(
+					ctx,
+					"could not parse bug component metadata from: %v due to: %v",
+					testMetadata,
+					err)
+			}
 		}
 
 		if status == pb.TestStatus_SKIP {

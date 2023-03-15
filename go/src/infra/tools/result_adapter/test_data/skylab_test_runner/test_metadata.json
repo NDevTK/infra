@@ -24,7 +24,7 @@
                     }
                 ],
                 "bugComponent": {
-                    "value": "b/0"
+                    "value": "b:1234"
                 },
                 "criteria": {
                     "value": "criteria 1"
@@ -94,7 +94,7 @@
             },
             "testCaseInfo": {
                 "bugComponent": {
-                    "value": "b/0"
+                    "value": "crbug:Blink>JavaScript>WebAssembly"
                 }
             }
         }

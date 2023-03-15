@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/logging"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -72,8 +73,9 @@ func (r *TestRunnerResult) ToProtos(ctx context.Context, testMetadataFile string
 		tr := &sinkpb.TestResult{
 			TestId: c.Name,
 			// The status is expected if the test passed or was skipped expectedly.
-			Expected: status == pb.TestStatus_PASS || isExpectedSkipStatus(c),
-			Status:   status,
+			Expected:     status == pb.TestStatus_PASS || isExpectedSkipStatus(c),
+			Status:       status,
+			TestMetadata: &pb.TestMetadata{},
 		}
 		if c.HumanReadableSummary != "" {
 			// Limits the maximum size of the summary html message with an offset for the additional html tags.
@@ -94,6 +96,14 @@ func (r *TestRunnerResult) ToProtos(ctx context.Context, testMetadataFile string
 		testMetadata, ok := metadata[c.Name]
 		if ok {
 			tr.Tags = metadataToTags(testMetadata)
+			tr.TestMetadata.BugComponent, err = parseBugComponentMetadata(testMetadata)
+			if err != nil {
+				logging.Errorf(
+					ctx,
+					"could not parse bug component metadata from: %v due to: %v",
+					testMetadata,
+					err)
+			}
 		}
 
 		ret = append(ret, tr)

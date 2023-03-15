@@ -41,6 +41,13 @@ const (
 
 	// ResultSink limits the summary html message to 4096 bytes in UTF-8.
 	maxSummaryHtmlBytes = 4096
+
+	// Prefix of IssueTracker (internally known as Buganizer) components.
+	// See https://developers.google.com/issue-tracker for disambiguation.
+	issueTrackerBugComponentPrefix = "b:"
+
+	// Prefix of Monorail components.
+	monorailBugComponentPrefix = "crbug:"
 )
 
 // summaryTmpl is used to generate SummaryHTML in GTest and JTR-based test
@@ -211,4 +218,54 @@ func metadataToTags(metadata *api.TestCaseMetadata) []*pb.StringPair {
 	}
 
 	return tags
+}
+
+// parseBugComponentMetadata parses the CFT TestCaseInfo.BugComponent metadata to a
+// ResultDB pb.BugComponent. If there's no bug component metadata to parse,
+// returns nil.
+func parseBugComponentMetadata(metadata *api.TestCaseMetadata) (*pb.BugComponent, error) {
+	if metadata.TestCaseInfo == nil || metadata.TestCaseInfo.BugComponent == nil {
+		return nil, nil
+	}
+
+	bugComponent := metadata.TestCaseInfo.BugComponent.GetValue()
+	lowerCasedBugComponent := strings.ToLower(bugComponent)
+
+	// IssueTracker (aka Buganizer) component.
+	if strings.HasPrefix(lowerCasedBugComponent, issueTrackerBugComponentPrefix) {
+
+		// Extract the ID from the bug component, e.g. 12345 from "b:12345"
+		componentID, err := strconv.ParseInt(
+			bugComponent[len(issueTrackerBugComponentPrefix):], 10, 64,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		return &pb.BugComponent{
+			System: &pb.BugComponent_IssueTracker{
+				IssueTracker: &pb.IssueTrackerComponent{
+					ComponentId: componentID,
+				},
+			},
+		}, nil
+	}
+
+	// Monorail (Chromium bug tracker) component.
+	if strings.HasPrefix(lowerCasedBugComponent, monorailBugComponentPrefix) {
+
+		// Extract the component label from the bug component,
+		// e.g. "Blink>JavaScript>WebAssembly" from "crbug:Blink>JavaScript>WebAssembly"
+		componentLabel := bugComponent[len(monorailBugComponentPrefix):]
+		return &pb.BugComponent{
+			System: &pb.BugComponent_Monorail{
+				Monorail: &pb.MonorailComponent{
+					Project: "chromium",
+					Value:   componentLabel,
+				},
+			},
+		}, nil
+	}
+
+	return nil, nil
 }

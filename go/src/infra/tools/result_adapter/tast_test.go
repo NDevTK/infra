@@ -126,34 +126,74 @@ func TestTastConversions(t *testing.T) {
 			})
 		})
 		Convey(`With metadata`, func() {
-			jsonLine := genJSONLine(nil)
 			r := &TastResults{
 				BaseDir: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test",
 			}
-			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
+			err := r.ConvertFromJSON(strings.NewReader(genJSONLine(nil) + "\n" + genJSONLine(map[string]string{
+				"name":   "lacros.Migrate",
+				"outDir": "/usr/local/autotest/results/lxc_job_folder/tast/results/tests/lacros.Migrate",
+			})))
 			So(err, ShouldBeNil)
 			got, err := r.ToProtos(ctx, "./test_data/tast/test_metadata.json", mockCollect)
 			So(err, ShouldBeNil)
-			So(got[0], ShouldResembleProto, &sinkpb.TestResult{
-				TestId:   "tast.lacros.Basic",
-				Expected: true,
-				Status:   pb.TestStatus_PASS,
-				Artifacts: map[string]*sinkpb.Artifact{
-					"foo": {
-						Body: &sinkpb.Artifact_FilePath{FilePath: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test/tast/results/tests/lacros.Basic/foo"},
+			expected := []*sinkpb.TestResult{
+				{
+					TestId:   "tast.lacros.Basic",
+					Expected: true,
+					Status:   pb.TestStatus_PASS,
+					Artifacts: map[string]*sinkpb.Artifact{
+						"foo": {
+							Body: &sinkpb.Artifact_FilePath{FilePath: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test/tast/results/tests/lacros.Basic/foo"},
+						},
 					},
+					Tags: []*pb.StringPair{
+						pbutil.StringPair("contacts", "user1@google.com,user2@google.com"),
+						pbutil.StringPair("owners", "owner1@test.com,owner2@test.com"),
+						pbutil.StringPair("bug_component", "b:1234"),
+					},
+					TestMetadata: &pb.TestMetadata{
+						Name: "tast.lacros.Basic",
+						BugComponent: &pb.BugComponent{
+							System: &pb.BugComponent_IssueTracker{
+								IssueTracker: &pb.IssueTrackerComponent{
+									ComponentId: 1234,
+								},
+							},
+						},
+					},
+					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
+					Duration:  &duration.Duration{Seconds: 1},
 				},
-				Tags: []*pb.StringPair{
-					pbutil.StringPair("contacts", "user1@google.com,user2@google.com"),
-					pbutil.StringPair("owners", "owner1@test.com,owner2@test.com"),
-					pbutil.StringPair("bug_component", "b/0"),
+				{
+					TestId:   "tast.lacros.Migrate",
+					Expected: true,
+					Status:   pb.TestStatus_PASS,
+					Artifacts: map[string]*sinkpb.Artifact{
+						"foo": {
+							Body: &sinkpb.Artifact_FilePath{FilePath: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test/tast/results/tests/lacros.Migrate/foo"},
+						},
+					},
+					Tags: []*pb.StringPair{
+						pbutil.StringPair("contacts", "user1@google.com,user2@google.com"),
+						pbutil.StringPair("bug_component", "crbug:OS>LaCrOS"),
+					},
+					TestMetadata: &pb.TestMetadata{
+						Name: "tast.lacros.Migrate",
+						BugComponent: &pb.BugComponent{
+							System: &pb.BugComponent_Monorail{
+								Monorail: &pb.MonorailComponent{
+									Project: "chromium",
+									Value:   "OS>LaCrOS",
+								},
+							},
+						},
+					},
+					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
+					Duration:  &duration.Duration{Seconds: 1},
 				},
-				TestMetadata: &pb.TestMetadata{
-					Name: "tast.lacros.Basic",
-				},
-				StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
-				Duration:  &duration.Duration{Seconds: 1},
-			})
+			}
+			So(got, ShouldHaveLength, 2)
+			So(got, ShouldResemble, expected)
 		})
 		Convey(`Skipped`, func() {
 			jsonLine := genJSONLine(map[string]string{

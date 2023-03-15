@@ -22,10 +22,28 @@
                     }
                 ],
                 "bugComponent": {
-                    "value": "b/0"
+                    "value": "b:1234"
                 },
                 "criteria": {
                     "value": ""
+                }
+            }
+        },
+        {
+            "testCase": {
+                "id": {
+                    "value": "tast.lacros.Migrate"
+                },
+                "name": "lacros.Migrate"
+            },
+            "testCaseExec": {
+                "testHarness": {
+                    "tast": {}
+                }
+            },
+            "testCaseInfo": {
+                "bugComponent": {
+                    "value": "crbug:OS>LaCrOS"
                 }
             }
         }
