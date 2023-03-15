@@ -1562,18 +1562,18 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 &mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/examples/full.py#52)(api):**
 ### *recipes* / [codesearch:tests/checkout\_generated\_files\_repo\_and\_sync](/recipes/recipe_modules/codesearch/tests/checkout_generated_files_repo_and_sync.py)
 
-[DEPS](/recipes/recipe_modules/codesearch/tests/checkout_generated_files_repo_and_sync.py#5): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [codesearch](#recipe_modules-codesearch), [recipe\_engine/properties][recipe_engine/recipe_modules/properties]
+[DEPS](/recipes/recipe_modules/codesearch/tests/checkout_generated_files_repo_and_sync.py#9): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [codesearch](#recipe_modules-codesearch), [recipe\_engine/properties][recipe_engine/recipe_modules/properties]
 
 PYTHON_VERSION_COMPATIBILITY: PY3
 
-&mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/tests/checkout_generated_files_repo_and_sync.py#13)(api):**
+&mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/tests/checkout_generated_files_repo_and_sync.py#17)(api):**
 ### *recipes* / [codesearch:tests/clone\_and\_run\_clang\_tool](/recipes/recipe_modules/codesearch/tests/clone_and_run_clang_tool.py)
 
-[DEPS](/recipes/recipe_modules/codesearch/tests/clone_and_run_clang_tool.py#5): [codesearch](#recipe_modules-codesearch), [recipe\_engine/path][recipe_engine/recipe_modules/path]
+[DEPS](/recipes/recipe_modules/codesearch/tests/clone_and_run_clang_tool.py#8): [codesearch](#recipe_modules-codesearch), [recipe\_engine/path][recipe_engine/recipe_modules/path]
 
 PYTHON_VERSION_COMPATIBILITY: PY3
 
-&mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/tests/clone_and_run_clang_tool.py#11)(api):**
+&mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/tests/clone_and_run_clang_tool.py#14)(api):**
 ### *recipes* / [codesearch:tests/configs](/recipes/recipe_modules/codesearch/tests/configs.py)
 
 [DEPS](/recipes/recipe_modules/codesearch/tests/configs.py#7): [codesearch](#recipe_modules-codesearch), [recipe\_engine/properties][recipe_engine/recipe_modules/properties]
@@ -1583,11 +1583,11 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 &mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/tests/configs.py#13)(api):**
 ### *recipes* / [codesearch:tests/create\_and\_upload\_kythe\_index\_pack](/recipes/recipe_modules/codesearch/tests/create_and_upload_kythe_index_pack.py)
 
-[DEPS](/recipes/recipe_modules/codesearch/tests/create_and_upload_kythe_index_pack.py#5): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [codesearch](#recipe_modules-codesearch), [recipe\_engine/properties][recipe_engine/recipe_modules/properties]
+[DEPS](/recipes/recipe_modules/codesearch/tests/create_and_upload_kythe_index_pack.py#9): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [codesearch](#recipe_modules-codesearch), [recipe\_engine/properties][recipe_engine/recipe_modules/properties]
 
 PYTHON_VERSION_COMPATIBILITY: PY3
 
-&mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/tests/create_and_upload_kythe_index_pack.py#13)(api):**
+&mdash; **def [RunSteps](/recipes/recipe_modules/codesearch/tests/create_and_upload_kythe_index_pack.py#17)(api):**
 ### *recipes* / [cv\_testing/tryjob](/recipes/recipes/cv_testing/tryjob.py)
 
 [DEPS](/recipes/recipes/cv_testing/tryjob.py#11): [recipe\_engine/cq][recipe_engine/recipe_modules/cq], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step]

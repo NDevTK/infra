@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from recipe_engine.post_process import (DropExpectation, StatusSuccess,
+                                        StepSuccess, StepWarning)
+
 DEPS = [
     'codesearch',
     'recipe_engine/path',
@@ -15,9 +18,21 @@ def RunSteps(api):
 
 
 def GenTests(api):
-  yield api.test('basic')
+  yield api.test(
+      'basic',
+      api.post_process(StepSuccess, 'remove previous instance of clang tools'),
+      api.post_process(StepSuccess, 'download translation_unit clang tool'),
+      api.post_process(StepSuccess, 'run translation_unit clang tool'),
+      api.post_process(StatusSuccess),
+      api.post_process(DropExpectation),
+  )
 
   yield api.test(
       'run_translation_unit_clang_tool_failed',
       api.step_data('run translation_unit clang tool', retcode=1),
+      api.post_process(StepSuccess, 'remove previous instance of clang tools'),
+      api.post_process(StepSuccess, 'download translation_unit clang tool'),
+      api.post_process(StepWarning, 'run translation_unit clang tool'),
+      api.post_process(StatusSuccess),
+      api.post_process(DropExpectation),
   )

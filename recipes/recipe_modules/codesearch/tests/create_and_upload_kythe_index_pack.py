@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from recipe_engine.post_process import (DropExpectation, StatusException,
+                                        StatusSuccess, StepCommandContains,
+                                        StepSuccess, SummaryMarkdown)
+
 DEPS = [
     'codesearch',
     'depot_tools/bot_update',
@@ -35,35 +39,70 @@ def RunSteps(api):
 
 
 def GenTests(api):
-  yield api.test('basic')
+
+  def GetBasicStepChecks(project, revision):
+    return (
+        api.post_process(StepSuccess, 'create kythe index pack'),
+        api.post_process(StepCommandContains, 'create kythe index pack', [
+            '--project',
+            project,
+        ]),
+        api.post_process(StepSuccess, 'gsutil upload kythe index pack'),
+        api.post_process(
+            StepCommandContains, 'gsutil upload kythe index pack', [
+                'gs://chrome-codesearch/prod/%s_linux_%s+1337000000.kzip' %
+                (project, revision),
+            ]),
+        api.post_process(StepSuccess, 'gsutil upload compile_commands.json'),
+    )
 
   yield api.test(
-      'basic_chromium',
-      api.properties(codesearch_config='chromium', project='chromium'),
+      'basic',
+      *GetBasicStepChecks('chromium', '123_' + ('a' * 40)),
+      api.post_process(StatusSuccess),
+      api.post_process(DropExpectation),
   )
 
   yield api.test(
       'basic_chromiumos',
       api.properties(codesearch_config='chromiumos', project='chromiumos'),
+      *GetBasicStepChecks('chromiumos', 'a' * 40),
+      api.post_process(StatusSuccess),
+      api.post_process(DropExpectation),
   )
 
   yield api.test(
       'without_kythe_revision',
       api.properties(set_kythe_commit_hash_to_none=True),
+      *GetBasicStepChecks('chromium', '123_None'),
+      api.post_process(StatusSuccess),
+      api.post_process(DropExpectation),
   )
 
   yield api.test(
       'bucket_name_not_set_failed',
       api.properties(codesearch_config='base'),
       api.expect_exception('AssertionError'),
+      api.post_process(
+          SummaryMarkdown,
+          "Uncaught Exception: AssertionError('Trying to upload Kythe index "
+          "pack but no google storage bucket name')"),
+      api.post_process(StatusException),
+      api.post_process(DropExpectation),
   )
 
   yield api.test(
       'basic_without_got_revision_cp',
       api.properties(set_got_revision_cp_to_none=True),
+      *GetBasicStepChecks('chromium', '123_' + ('a' * 40)),
+      api.post_process(StatusSuccess),
+      api.post_process(DropExpectation),
   )
 
   yield api.test(
       'basic_without_kythe_root',
       api.properties(root=''),
+      *GetBasicStepChecks('chromium', '123_' + ('a' * 40)),
+      api.post_process(StatusSuccess),
+      api.post_process(DropExpectation),
   )
