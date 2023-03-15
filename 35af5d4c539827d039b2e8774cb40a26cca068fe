@@ -22,6 +22,30 @@
       },
       "revId": "35af5d4c539827d039b2e8774cb40a26cca068fe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "457147b5_dc89f8e3",
+        "filename": "go/src/infra/unifiedfleet/api/v1/models/machine_lse.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 319,
+      "author": {
+        "id": 1552404
+      },
+      "writtenOn": "2023-03-15T14:36:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3b4ba1f5_33fb3c33",
+      "range": {
+        "startLine": 319,
+        "startChar": 2,
+        "endLine": 319,
+        "endChar": 6
+      },
+      "revId": "35af5d4c539827d039b2e8774cb40a26cca068fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
