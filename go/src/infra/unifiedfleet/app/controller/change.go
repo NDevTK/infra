@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -319,6 +319,7 @@ func (hc *HistoryClient) LogMachineLSEChanges(oldData *ufspb.MachineLSE, newData
 	hc.changes = append(hc.changes, logCommon(resourceName, "machine_lse.manufacturer", oldData.GetManufacturer(), newData.GetManufacturer())...)
 	hc.changes = append(hc.changes, logCommon(resourceName, "machine_lse.deployment_ticket", oldData.GetDeploymentTicket(), newData.GetDeploymentTicket())...)
 	hc.changes = append(hc.changes, logCommon(resourceName, "machine_lse.description", oldData.GetDescription(), newData.GetDescription())...)
+	hc.changes = append(hc.changes, logCommon(resourceName, "machine_lse.logical_zone", oldData.GetLogicalZone(), newData.GetLogicalZone())...)
 	if newData.GetChromeBrowserMachineLse() != nil {
 		hc.changes = append(hc.changes, logChromeBrowserMachineLse(resourceName, oldData.GetChromeBrowserMachineLse(), newData.GetChromeBrowserMachineLse())...)
 	} else {
