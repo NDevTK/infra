@@ -10,10 +10,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path"
 	"strings"
 	"sync"
+	"time"
 
 	gol "github.com/op/go-logging"
 	"go.chromium.org/luci/common/logging"
@@ -198,7 +200,17 @@ type LoggerConfig struct {
 
 // DumpStepsToFolder cleans and writes the step information gathered during execution to a designated path.
 func (lc *LoggerConfig) DumpStepsToFolder(basePath string) {
-	root := path.Join(basePath, "test_runner_steps")
+	if basePath == "" {
+		// Use temporary folder
+		tempPath, err := ioutil.TempDir("/tmp", "cros_test_runner*")
+		if err != nil {
+			panic(err)
+		}
+		basePath = tempPath
+	}
+	layout := "20060102-150405"
+	t := time.Now()
+	root := path.Join(basePath, "test_runner_steps"+t.Format(layout))
 
 	if err := os.RemoveAll(root); err != nil {
 		panic(err)
