@@ -16,6 +16,24 @@
       "message": "Awaiting license changes as per presubmit checks",
       "revId": "6cf8b42ea48da0295f6c6b31b06a64014eacd336",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5dd0a7f8_bed16b72",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1552404
+      },
+      "writtenOn": "2023-03-16T15:18:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b8d459af_e9169a82",
+      "revId": "6cf8b42ea48da0295f6c6b31b06a64014eacd336",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
