@@ -243,7 +243,7 @@ func parallelUpload(ctx context.Context, lg logger.Logger, client lucigs.Client,
 	// TODO(crbug/1311842): Switch this bucket back to chromeos-autotest-results.
 	gsURL := fmt.Sprintf("gs://chrome-fleet-karte-autotest-results/swarming-%s", swarmingTaskID)
 	lg.Infof("Swarming task %q is non-empty. Uploading to %q", swarmingTaskID, gsURL)
-	status, err := callFuncWithTimeout(ctx, 5*time.Minute, func(ctx context.Context) error {
+	status, err := callFuncWithTimeout(ctx, 5*time.Minute, func(ctxTimeout context.Context) error {
 		lg.Infof("Beginning upload attempt. Starting five minute timeout.")
 		lg.Infof("Writing upload marker.")
 		// TODO(b:227489086): Remove this file.
@@ -252,7 +252,7 @@ func parallelUpload(ctx context.Context, lg logger.Logger, client lucigs.Client,
 		}
 
 		lg.Infof("Calling upload.")
-		return upload.Upload(ctx, client, &upload.Params{
+		return upload.Upload(ctxTimeout, client, &upload.Params{
 			// TODO(gregorynisbet): Change this to the log root.
 			SourceDir:         ".",
 			GSURL:             gsURL,
