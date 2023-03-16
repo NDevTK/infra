@@ -10,6 +10,9 @@ import (
 	"errors"
 	"fmt"
 	"os/exec"
+	"regexp"
+	"sort"
+	"strings"
 
 	"infra/libs/vmlab/api"
 )
@@ -106,6 +109,18 @@ func (g *gcloudInstanceApi) Create(req *api.CreateVmInstanceRequest) (*api.VmIns
 	if err := checkGCloudConfig(gcloudConfig); err != nil {
 		return nil, fmt.Errorf("invalid config argument: %w", err)
 	}
+	tagKeyFormat := regexp.MustCompile(`[a-z][a-z\-_0-9]*`)
+	tagValueFormat := regexp.MustCompile(`[a-z\-_0-9]+`)
+	tagsToSet := []string{}
+	for tagKey, tagValue := range req.Tags {
+		if !tagKeyFormat.MatchString(tagKey) {
+			return nil, fmt.Errorf("Tag key doesn't match format: %v", tagKey)
+		}
+		if !tagValueFormat.MatchString(tagValue) {
+			return nil, fmt.Errorf("Tag value doesn't match format: %v", tagValue)
+		}
+		tagsToSet = append(tagsToSet, tagKey+"="+tagValue)
+	}
 
 	gcloudArgs := []string{}
 
@@ -133,8 +148,12 @@ func (g *gcloudInstanceApi) Create(req *api.CreateVmInstanceRequest) (*api.VmIns
 	if !gcloudConfig.GetPublicIp() {
 		gcloudArgs = append(gcloudArgs, "--no-address")
 	}
+	if len(tagsToSet) > 0 {
+		// Sort the tags to make sure it has fixed command for unittest.
+		sort.Strings(tagsToSet)
+		gcloudArgs = append(gcloudArgs, "--labels="+strings.Join(tagsToSet, ","))
+	}
 
-	// TODO(fqj): implement tags
 	out, err := execCommand.GetCommandOutput("gcloud", gcloudArgs...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to launch instance: %v", extractErrorMessage(err))

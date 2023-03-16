@@ -145,6 +145,58 @@ func TestCreateWithInternalIpAddress(t *testing.T) {
 	}
 }
 
+func TestCreateWithTags(t *testing.T) {
+	gcloud, _ := New()
+	mockExecCommand := instanceCreateSuccessCommander{
+		Commands: &[][]string{},
+	}
+	execCommand = mockExecCommand
+	random = fakeRandomGenerator{}
+	instance, err := gcloud.Create(
+		&api.CreateVmInstanceRequest{
+			Config: &api.Config{
+				Backend: &api.Config_GcloudBackend{
+					GcloudBackend: &api.Config_GCloudBackend{
+						Project:        "vmlab-project",
+						Zone:           "us-west-2",
+						MachineType:    "n2-standard-4",
+						InstancePrefix: "vmlab-",
+						Network:        "default",
+						Subnet:         "default",
+						PublicIp:       false,
+						Image: &api.GceImage{
+							Project: "imagestorage-project",
+							Name:    "betty-arc-r-release-r110-111111111111",
+						},
+					},
+				},
+			},
+			Tags: map[string]string{
+				"swarming-bot": "vm-bot-1",
+				"label-model":  "betty",
+			},
+		})
+	if err != nil {
+		t.Errorf("Error: %v", err)
+	}
+	expectedCommand := []string{
+		"gcloud", "compute", "instances", "create", "vmlab-aaaaaa",
+		"--project=vmlab-project", "--image=betty-arc-r-release-r110-111111111111",
+		"--image-project=imagestorage-project", "--machine-type=n2-standard-4", "--no-scopes",
+		"--zone=us-west-2", "--format=json", "--network=default", "--subnet=default",
+		"--no-address", "--labels=label-model=betty,swarming-bot=vm-bot-1"}
+	if diff := cmp.Diff(*mockExecCommand.Commands, [][]string{expectedCommand}); diff != "" {
+		t.Errorf("Executed wrong command: %v", diff)
+	}
+	if !strings.HasPrefix(instance.GetName(), "vmlab-") {
+		t.Errorf("Instance name incorrect: %v", instance)
+	}
+	expectedSshTarget := &api.AddressPort{Address: "192.168.0.1", Port: 22}
+	if diff := cmp.Diff(instance.GetSsh(), expectedSshTarget, protocmp.Transform()); diff != "" {
+		t.Errorf("Got wrong ssh target: %v Diff is:\n%v", instance.GetSsh(), diff)
+	}
+}
+
 func TestCreateMissingProject(t *testing.T) {
 	gcloud, _ := New()
 	_, err := gcloud.Create(
