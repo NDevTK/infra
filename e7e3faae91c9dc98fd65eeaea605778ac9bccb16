@@ -16,6 +16,24 @@
       "message": "Right now, the drillzone enum value should be limited to a) DUTs in b) SFO36. This is my attempt at addressing the latter, but I have added no such checks for the former. Let me know if I should change my approach here.",
       "revId": "e7e3faae91c9dc98fd65eeaea605778ac9bccb16",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f7356ffb_e13d90c0",
+        "filename": "go/src/infra/unifiedfleet/app/controller/machine_lse.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1526,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2023-03-16T17:36:10Z",
+      "side": 1,
+      "message": "Does this apply to browser lab duts too? If that is the case, the only missing validation I can think of is for labstations. Unless those are included too.",
+      "parentUuid": "0c37d741_35567f2c",
+      "revId": "e7e3faae91c9dc98fd65eeaea605778ac9bccb16",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
