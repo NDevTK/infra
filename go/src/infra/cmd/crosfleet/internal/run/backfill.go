@@ -119,6 +119,10 @@ func (args *backfillRun) innerRun(a subcommands.Application, env subcommands.Env
 		searchTags := map[string]string{
 			"backfill": fmt.Sprintf("%v", original.Id),
 		}
+		// If QS Account is set, we only want to detect dupes that use that account.
+		if args.qsAccount != "" {
+			searchTags["quota_account"] = args.qsAccount
+		}
 		if !args.allowDupes {
 			backfillAlreadyRunning, runningBackfillID, err := ctpBBClient.AnyIncompleteBuildsWithTags(ctx, searchTags)
 			if err != nil {

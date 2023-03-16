@@ -104,15 +104,39 @@ func TestBackfill_ByTags(t *testing.T) {
 			"build":       "asurada-release/R112-15357.0.0",
 			"label-board": "asurada",
 		},
-		allowDupes:       false,
-		skipConfirmation: true,
+		allowDupes:         false,
+		skipConfirmation:   true,
+		releaseRetryUrgent: true,
 	}
 	ctx := context.Background()
 
-	inputProps, err := structpb.NewStruct(map[string]interface{}{
-		"request": "foo",
+	directSchedProps, err := structpb.NewStruct(map[string]interface{}{
+		"requests": map[string]interface{}{
+			"default": map[string]interface{}{
+				"params": map[string]interface{}{
+					"scheduling": map[string]interface{}{
+						"qsAccount": "release_direct_sched",
+					},
+					"softwareDependencies": []interface{}{
+						map[string]interface{}{
+							"chromeosBuildGcsBucket": "chromeos-image-archive",
+						},
+					},
+				},
+			},
+		},
 	})
 	if err != nil {
+		t.Error(err)
+	}
+
+	p0Props, err := structpb.NewStruct(directSchedProps.AsMap())
+	if err != nil {
+		t.Error(err)
+	}
+	if err := crosbb.SetProperty(p0Props,
+		"requests.default.params.scheduling.qsAccount",
+		"release_p0"); err != nil {
 		t.Error(err)
 	}
 
@@ -146,7 +170,7 @@ func TestBackfill_ByTags(t *testing.T) {
 							},
 						},
 						Input: &buildbucketpb.Build_Input{
-							Properties: inputProps,
+							Properties: directSchedProps,
 						},
 					}, {
 						Id: 2000,
@@ -173,7 +197,7 @@ func TestBackfill_ByTags(t *testing.T) {
 							},
 						},
 						Input: &buildbucketpb.Build_Input{
-							Properties: inputProps,
+							Properties: directSchedProps,
 						},
 					}, {
 						Builder: &buildbucketpb.BuilderID{
@@ -203,7 +227,7 @@ func TestBackfill_ByTags(t *testing.T) {
 							},
 						},
 						Input: &buildbucketpb.Build_Input{
-							Properties: inputProps,
+							Properties: directSchedProps,
 						},
 					},
 				},
@@ -212,7 +236,8 @@ func TestBackfill_ByTags(t *testing.T) {
 		ExpectedAnyIncompleteBuildsWithTags: []*buildbucket.ExpectedGetWithTagsCall{
 			{
 				Tags: map[string]string{
-					"backfill": "1000",
+					"backfill":      "1000",
+					"quota_account": releaseP0QSaccount,
 				},
 				Response: []*buildbucketpb.Build{
 					{
@@ -239,14 +264,15 @@ func TestBackfill_ByTags(t *testing.T) {
 							},
 						},
 						Input: &buildbucketpb.Build_Input{
-							Properties: inputProps,
+							Properties: p0Props,
 						},
 					},
 				},
 			},
 			{
 				Tags: map[string]string{
-					"backfill": "2000",
+					"backfill":      "2000",
+					"quota_account": releaseP0QSaccount,
 				},
 				// No existing backfills, should backfill this build.
 				Response: nil,
@@ -263,7 +289,9 @@ func TestBackfill_ByTags(t *testing.T) {
 					"label-board":    "asurada",
 					"suite":          "bvt-installer",
 					"user_agent":     "crosfleet",
+					"quota_account":  releaseP0QSaccount,
 				},
+				Props: p0Props.AsMap(),
 				Response: &buildbucketpb.Build{
 					Id: 1,
 				},
