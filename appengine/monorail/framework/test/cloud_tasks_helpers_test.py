@@ -34,8 +34,8 @@ class CloudTasksHelpersTest(unittest.TestCase):
     get_client_mock().queue_path.assert_called_with(
         settings.app_id, settings.CLOUD_TASKS_REGION, queue)
     get_client_mock().create_task.assert_called_once()
-    ((_parent, called_task), _kwargs) = get_client_mock().create_task.call_args
-    self.assertEqual(called_task, task)
+    _, kwargs = get_client_mock().create_task.call_args
+    self.assertEqual(kwargs['task'], task)
 
   @mock.patch('framework.cloud_tasks_helpers._get_client')
   def test_create_task_raises(self, get_client_mock):
@@ -53,7 +53,7 @@ class CloudTasksHelpersTest(unittest.TestCase):
 
     cloud_tasks_helpers.create_task(task)
 
-    (_args, kwargs) = get_client_mock().create_task.call_args
+    _, kwargs = get_client_mock().create_task.call_args
     self.assertEqual(kwargs.get('retry'), cloud_tasks_helpers._DEFAULT_RETRY)
 
   def test_generate_simple_task(self):

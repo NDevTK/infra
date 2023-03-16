@@ -80,8 +80,8 @@ class BanSpammerTest(unittest.TestCase):
     get_client_mock().queue_path.assert_called_with(
         settings.app_id, settings.CLOUD_TASKS_REGION, 'default')
     get_client_mock().create_task.assert_called_once()
-    ((_parent, called_task), _kwargs) = get_client_mock().create_task.call_args
-    self.assertEqual(called_task, task)
+    _, kwargs = get_client_mock().create_task.call_args
+    self.assertEqual(kwargs['task'], task)
 
 
 class BanSpammerTaskTest(unittest.TestCase):

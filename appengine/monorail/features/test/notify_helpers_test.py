@@ -46,7 +46,7 @@ class TaskQueueingFunctionsTest(unittest.TestCase):
     self.assertEqual(queue, features_constants.QUEUE_OUTBOUND_EMAIL)
 
     task_call_args = get_client_mock().create_task.call_args_list
-    ((_parent, task), _kwargs) = task_call_args[0]
+    _, kwargs = task_call_args[0]
     expected_task = {
         'app_engine_http_request':
             {
@@ -59,8 +59,8 @@ class TaskQueueingFunctionsTest(unittest.TestCase):
                 }
             }
     }
-    self.assertEqual(task, expected_task)
-    ((_parent, task), _kwargs) = task_call_args[1]
+    self.assertEqual(kwargs['task'], expected_task)
+    _, kwargs = task_call_args[1]
     expected_task = {
         'app_engine_http_request':
             {
@@ -73,7 +73,7 @@ class TaskQueueingFunctionsTest(unittest.TestCase):
                 }
             }
     }
-    self.assertEqual(task, expected_task)
+    self.assertEqual(kwargs['task'], expected_task)
 
 
 class MergeLinkedAccountReasonsTest(unittest.TestCase):

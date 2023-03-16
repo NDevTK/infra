@@ -8,7 +8,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import os
-import re
+import six
 
 from google.appengine.api import app_identity
 
@@ -171,8 +171,8 @@ enable_quick_edit = True
 
 # local_mode makes the server slower and more dynamic for easier debugging.
 # E.g., template files are reloaded on each request.
-local_mode = os.environ['SERVER_SOFTWARE'].startswith('Development')
 unit_test_mode = os.environ['SERVER_SOFTWARE'].startswith('test')
+local_mode = not (os.getenv('GAE_ENV') == 'standard' or unit_test_mode)
 
 # If we assume 1KB each, then this would be 400 MB for this cache in frontends
 # that have only 1024 MB total.
@@ -361,7 +361,7 @@ borg_service_account = 'chrome-infra-prod-borg@system.gserviceaccount.com'
 classifier_project_id = 'project-id-testing-only'
 
 # Necessary for tests.
-if 'APPLICATION_ID' not in os.environ:
+if six.PY2 and 'APPLICATION_ID' not in os.environ:
   os.environ['APPLICATION_ID'] = 'testing-app'
 
 if local_mode:

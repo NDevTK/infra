@@ -23,6 +23,7 @@ import collections
 import logging
 import math
 import random
+import six
 import time
 
 from google.appengine.api import apiproxy_stub_map
@@ -689,7 +690,7 @@ def real_wait_any(active_rpcs):
 
   Instead, we do the same check, without blocking on any individual RPC.
   """
-  if settings.local_mode:
+  if six.PY3 or settings.local_mode:
     # The development server has very different code for RPCs than the
     # code used in the hosted environment.
     return apiproxy_stub_map.UserRPC.wait_any(active_rpcs)

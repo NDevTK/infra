@@ -92,8 +92,8 @@ class DateActionCronTest(unittest.TestCase):
             }
     }
     get_client_mock().create_task.assert_any_call(
-        get_client_mock().queue_path(),
-        expected_task,
+        parent=get_client_mock().queue_path(),
+        task=expected_task,
         retry=cloud_tasks_helpers._DEFAULT_RETRY)
 
   @mock.patch('framework.cloud_tasks_helpers._get_client')
@@ -110,8 +110,8 @@ class DateActionCronTest(unittest.TestCase):
             }
     }
     get_client_mock().create_task.assert_any_call(
-        get_client_mock().queue_path(),
-        expected_task,
+        parent=get_client_mock().queue_path(),
+        task=expected_task,
         retry=cloud_tasks_helpers._DEFAULT_RETRY)
 
 

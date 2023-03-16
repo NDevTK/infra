@@ -53,22 +53,22 @@ class TestWipeoutSyncCron(unittest.TestCase):
     expected_task = self.generate_simple_task(
         urls.SEND_WIPEOUT_USER_LISTS_TASK + '.do', 'limit=2&offset=0')
     get_client_mock().create_task.assert_any_call(
-        get_client_mock().queue_path(),
-        expected_task,
+        parent=get_client_mock().queue_path(),
+        task=expected_task,
         retry=cloud_tasks_helpers._DEFAULT_RETRY)
 
     expected_task = self.generate_simple_task(
         urls.SEND_WIPEOUT_USER_LISTS_TASK + '.do', 'limit=2&offset=2')
     get_client_mock().create_task.assert_any_call(
-        get_client_mock().queue_path(),
-        expected_task,
+        parent=get_client_mock().queue_path(),
+        task=expected_task,
         retry=cloud_tasks_helpers._DEFAULT_RETRY)
 
     expected_task = self.generate_simple_task(
         urls.DELETE_WIPEOUT_USERS_TASK + '.do', '')
     get_client_mock().create_task.assert_any_call(
-        get_client_mock().queue_path(),
-        expected_task,
+        parent=get_client_mock().queue_path(),
+        task=expected_task,
         retry=cloud_tasks_helpers._DEFAULT_RETRY)
 
   @mock.patch('framework.cloud_tasks_helpers._get_client')
@@ -80,8 +80,8 @@ class TestWipeoutSyncCron(unittest.TestCase):
         urls.SEND_WIPEOUT_USER_LISTS_TASK + '.do',
         'limit={}&offset=0'.format(deleteusers.MAX_BATCH_SIZE))
     get_client_mock().create_task.assert_any_call(
-        get_client_mock().queue_path(),
-        expected_task,
+        parent=get_client_mock().queue_path(),
+        task=expected_task,
         retry=cloud_tasks_helpers._DEFAULT_RETRY)
 
   @mock.patch('framework.cloud_tasks_helpers._get_client')
@@ -177,8 +177,8 @@ class DeleteWipeoutUsersTaskTest(unittest.TestCase):
         urls.DELETE_USERS_TASK + '.do', query)
 
     get_client_mock().create_task.assert_any_call(
-        get_client_mock().queue_path(),
-        expected_task,
+        parent=get_client_mock().queue_path(),
+        task=expected_task,
         retry=cloud_tasks_helpers._DEFAULT_RETRY)
 
     query = urllib.parse.urlencode({'emails': 'user4@gmail.com'})
@@ -186,8 +186,8 @@ class DeleteWipeoutUsersTaskTest(unittest.TestCase):
         urls.DELETE_USERS_TASK + '.do', query)
 
     get_client_mock().create_task.assert_any_call(
-        get_client_mock().queue_path(),
-        expected_task,
+        parent=get_client_mock().queue_path(),
+        task=expected_task,
         retry=cloud_tasks_helpers._DEFAULT_RETRY)
 
   @mock.patch('framework.cloud_tasks_helpers._get_client')
@@ -205,6 +205,6 @@ class DeleteWipeoutUsersTaskTest(unittest.TestCase):
         urls.DELETE_USERS_TASK + '.do', query)
 
     get_client_mock().create_task.assert_any_call(
-        get_client_mock().queue_path(),
-        expected_task,
+        parent=get_client_mock().queue_path(),
+        task=expected_task,
         retry=cloud_tasks_helpers._DEFAULT_RETRY)

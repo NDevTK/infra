@@ -27,6 +27,11 @@ luci_gae_vars:
     MIN_IDLE_INSTANCES: "25"
     MAX_PENDING_LATENCY: "0.2s"
 
+env_variables:
+  # https://cloud.google.com/appengine/docs/standard/python3/services/access#compatibility
+  MEMCACHE_USE_CROSS_COMPATIBLE_PROTOCOL: "True"
+  NDB_USE_CROSS_COMPATIBLE_PICKLE_PROTOCOL: "True"
+
 handlers:
 - url: /prpc/.*
   script: main.app

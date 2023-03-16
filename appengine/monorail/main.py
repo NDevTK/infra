@@ -11,17 +11,27 @@ from __future__ import division
 from __future__ import absolute_import
 
 import flask
+import six
+
+# Fix imports before importing gae_ts_mon.
+import import_utils
+
+import_utils.FixImports()
 
 from components import endpoints_flask
 import gae_ts_mon
 
-import import_utils
 import registerpages
 from framework import sorting
 from services import api_svc_v1
 from services import service_manager
 
-import_utils.FixImports()
+if six.PY3:
+  # https://github.com/GoogleCloudPlatform/appengine-python-standard/issues/70
+  import functools
+  from google.appengine.api import memcache
+  unpickler = functools.partial(six.moves.cPickle.Unpickler, encoding='bytes')
+  memcache.setup_client(memcache.Client(unpickler=unpickler))
 
 services = service_manager.set_up_services()
 sorting.InitializeArtValues(services)

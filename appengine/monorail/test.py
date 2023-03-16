@@ -16,7 +16,7 @@ import import_utils
 
 if __name__ == '__main__':
   os.environ['GAE_RUNTIME'] = 'python3'
-  os.environ['GAE_APPLICATION'] = 'testbed-test'
+  os.environ['GAE_APPLICATION'] = 'testing-app'
   os.environ['SERVER_SOFTWARE'] = 'test'
 
   import_utils.FixImports()

@@ -146,7 +146,7 @@ class RecomputeAllDerivedFieldsTest(unittest.TestCase):
               }
       }
       get_client_mock().create_task.assert_any_call(
-          parent, task, retry=cloud_tasks_helpers._DEFAULT_RETRY)
+          parent=parent, task=task, retry=cloud_tasks_helpers._DEFAULT_RETRY)
       shard_id = (shard_id + 1) % settings.num_logical_shards
 
     settings.recompute_derived_fields_in_worker = saved_flag
@@ -170,23 +170,22 @@ class RecomputeAllDerivedFieldsTest(unittest.TestCase):
     self.assertEqual(get_client_mock().queue_path.call_count, num_calls)
     self.assertEqual(get_client_mock().create_task.call_count, num_calls)
 
-    ((_parent, called_task),
-     _kwargs) = get_client_mock().create_task.call_args_list[0]
-    relative_uri = called_task.get('app_engine_http_request').get(
+    _, kwargs = get_client_mock().create_task.call_args_list[0]
+    relative_uri = kwargs['task'].get('app_engine_http_request').get(
         'relative_uri')
     self.assertEqual(relative_uri, urls.RECOMPUTE_DERIVED_FIELDS_TASK + '.do')
-    encoded_params = called_task.get('app_engine_http_request').get('body')
+    encoded_params = kwargs['task'].get('app_engine_http_request').get('body')
     params = {k: v[0] for k, v in urllib.parse.parse_qs(encoded_params).items()}
     self.assertEqual(params['project_id'], str(self.project.project_id))
     self.assertEqual(
         params['lower_bound'], str(12345 // self.BLOCK * self.BLOCK + 1))
     self.assertEqual(params['upper_bound'], str(12345))
 
-    ((_parent, called_task), _kwargs) = get_client_mock().create_task.call_args
-    relative_uri = called_task.get('app_engine_http_request').get(
+    _, kwargs = get_client_mock().create_task.call_args
+    relative_uri = kwargs['task'].get('app_engine_http_request').get(
         'relative_uri')
     self.assertEqual(relative_uri, urls.RECOMPUTE_DERIVED_FIELDS_TASK + '.do')
-    encoded_params = called_task.get('app_engine_http_request').get('body')
+    encoded_params = kwargs['task'].get('app_engine_http_request').get('body')
     params = {k: v[0] for k, v in urllib.parse.parse_qs(encoded_params).items()}
     self.assertEqual(params['project_id'], str(self.project.project_id))
     self.assertEqual(params['lower_bound'], str(1))

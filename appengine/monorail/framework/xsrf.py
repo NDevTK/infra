@@ -106,9 +106,9 @@ def ValidateToken(
   # In Python 3, zip(bytes, bytes) gives ints, but in Python 2,
   # zip(str, str) gives strs. We need to call ord() in Python 2 only.
   if isinstance(token, six.string_types):
-    token = map(ord, token)
+    token = list(map(ord, token))
   if isinstance(expected_token, six.string_types):
-    expected_token = map(ord, expected_token)
+    expected_token = list(map(ord, expected_token))
   for x, y in zip(token, expected_token):
     different |= x ^ y
   if different:

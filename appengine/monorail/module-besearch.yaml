@@ -31,6 +31,11 @@ luci_gae_vars:
     MAX_INSTANCES: "800"
     MAX_PENDING_LATENCY: "0.2s"
 
+env_variables:
+  # https://cloud.google.com/appengine/docs/standard/python3/services/access#compatibility
+  MEMCACHE_USE_CROSS_COMPATIBLE_PROTOCOL: "True"
+  NDB_USE_CROSS_COMPATIBLE_PICKLE_PROTOCOL: "True"
+
 handlers:
 - url: /_ah/warmup
   script: main.app

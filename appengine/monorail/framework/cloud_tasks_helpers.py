@@ -74,7 +74,7 @@ def create_task(task, queue='default', **kwargs):
   target = task.get('app_engine_http_request').get('relative_uri')
   kwargs.setdefault('retry', _DEFAULT_RETRY)
   logging.info('Enqueueing %s task to %s', target, parent)
-  return client.create_task(parent, task, **kwargs)
+  return client.create_task(parent=parent, task=task, **kwargs)
 
 
 def generate_simple_task(url, params):
