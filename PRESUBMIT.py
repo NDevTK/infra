@@ -554,7 +554,7 @@ def CommonChecks(input_api, output_api):  # pragma: no cover
           input_api, output_api, excluded_paths=[r'.*python_pb2/.*_pb2\.py$']))
 
   files_to_skip = list(input_api.DEFAULT_FILES_TO_SKIP) + [
-      r'.+\.pb\.go$',
+      r'.*pb[^/]*\.go$',
   ]
   files_to_check = list(input_api.DEFAULT_FILES_TO_CHECK) + [
       r'.+\.go$',
