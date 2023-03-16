@@ -1,3 +1,7 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package executors
 
 import (
@@ -23,11 +27,12 @@ import (
 type CrosPublishExecutor struct {
 	*interfaces.AbstractExecutor
 
-	Container               interfaces.ContainerInterface
-	GcsPublishServiceClient testapi.GenericPublishServiceClient
-	TkoPublishServiceClient testapi.GenericPublishServiceClient
-	RdbPublishServiceClient testapi.GenericPublishServiceClient
-	ServerAddress           string
+	Container                 interfaces.ContainerInterface
+	GcsPublishServiceClient   testapi.GenericPublishServiceClient
+	TkoPublishServiceClient   testapi.GenericPublishServiceClient
+	CpconPublishServiceClient testapi.GenericPublishServiceClient
+	RdbPublishServiceClient   testapi.GenericPublishServiceClient
+	ServerAddress             string
 }
 
 func NewCrosPublishExecutor(
@@ -35,6 +40,7 @@ func NewCrosPublishExecutor(
 	execType interfaces.ExecutorType) *CrosPublishExecutor {
 	if execType != CrosGcsPublishExecutorType &&
 		execType != CrosTkoPublishExecutorType &&
+		execType != CrosCpconPublishExecutorType &&
 		execType != CrosRdbPublishExecutorType {
 		return nil
 	}
@@ -59,6 +65,10 @@ func (ex *CrosPublishExecutor) ExecuteCommand(
 		return ex.tkoPublishStartCommandExecution(ctx, cmd)
 	case *commands.TkoPublishUploadCmd:
 		return ex.tkoPublishUploadCommandExecution(ctx, cmd)
+	case *commands.CpconPublishServiceStartCmd:
+		return ex.cpconPublishStartCommandExecution(ctx, cmd)
+	case *commands.CpconPublishUploadCmd:
+		return ex.cpconPublishUploadCommandExecution(ctx, cmd)
 	default:
 		return fmt.Errorf(
 			"Command type %s is not supported by %s executor type!",
@@ -280,6 +290,77 @@ func (ex *CrosPublishExecutor) tkoPublishUploadCommandExecution(
 		"tko-publish",
 		tkoPublishReq,
 		ex.TkoPublishServiceClient,
+		step)
+
+	return err
+}
+
+// cpconPublishStartCommandExecution executes the cpcon-publish start command.
+func (ex *CrosPublishExecutor) cpconPublishStartCommandExecution(
+	ctx context.Context,
+	cmd *commands.CpconPublishServiceStartCmd) error {
+
+	var err error
+	step, ctx := build.StartStep(ctx, "cpcon-publish service start")
+	defer func() { step.End(err) }()
+
+	cpconPublishTemplate := &testapi.CrosPublishTemplate{
+		PublishType:   testapi.CrosPublishTemplate_PUBLISH_CPCON,
+		PublishSrcDir: cmd.CpconPublishSrcDir}
+	publishClient, err := ex.Start(
+		ctx,
+		&api.Template{
+			Container: &api.Template_CrosPublish{
+				CrosPublish: cpconPublishTemplate,
+			},
+		},
+	)
+	logErr := common.WriteContainerLogToStepLog(ctx, ex.Container, step, "cpcon-publish log")
+	if err != nil {
+		return errors.Annotate(err, "Start cpcon-publish cmd err: ").Err()
+	}
+	if logErr != nil {
+		logging.Infof(ctx, "error during writing cpcon-publish log contents: %s", err)
+	}
+
+	ex.CpconPublishServiceClient = publishClient
+
+	return err
+}
+
+// cpconPublishUploadCommandExecution executes the cpcon-publish upload command.
+func (ex *CrosPublishExecutor) cpconPublishUploadCommandExecution(
+	ctx context.Context,
+	cmd *commands.CpconPublishUploadCmd) error {
+
+	var err error
+	step, ctx := build.StartStep(ctx, "cpcon-publish upload")
+	defer func() { step.End(err) }()
+
+	// Create request.
+	artifactDirPath := &_go.StoragePath{
+		HostType: _go.StoragePath_LOCAL,
+		Path:     common.CpconPublishTestArtifactsDir,
+	}
+	//reuse tko metadata function of testapi
+	cpconMetadata, err := anypb.New(&testapi.PublishTkoMetadata{
+		JobName: cmd.CpconJobName,
+	},
+	)
+	if err != nil {
+		return errors.Annotate(err, "Creating publish cpcon metadata err: ").Err()
+	}
+
+	cpconPublishReq := &testapi.PublishRequest{
+		ArtifactDirPath: artifactDirPath,
+		TestResponse:    nil,
+		Metadata:        cpconMetadata,
+	}
+	err = ex.InvokePublishWithAsyncLogging(
+		ctx,
+		"cpcon-publish",
+		cpconPublishReq,
+		ex.CpconPublishServiceClient,
 		step)
 
 	return err

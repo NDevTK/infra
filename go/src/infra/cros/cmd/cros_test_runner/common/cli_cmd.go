@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,4 +77,12 @@ func logOutputs(ctx context.Context, cmdName string, stdout string, stderr strin
 		logging.Infof(ctx, stderr)
 		logging.Infof(ctx, "#### stderr from %q end ####\n", cmdName)
 	}
+}
+
+// # A swarming task may have multiple attempts ("runs").
+// # The swarming task ID always ends in "0", e.g. "123456789abcdef0".
+// # The corresponding runs will have IDs ending in "1", "2", etc., e.g. "123456789abcdef1".
+// # All attempts should be recorded under same job ending with 0.
+func FormatSwarmingTaskId(swarmingTaskId string) string {
+	return swarmingTaskId[:len(swarmingTaskId)-1]
 }

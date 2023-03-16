@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,16 @@ import "infra/cros/cmd/cros_test_runner/internal/interfaces"
 // All supported container types.
 const (
 	// For testing purposes only
-	UnsupportedContainerType             interfaces.ContainerType = "UnsupportedContainer"
-	CacheServerTemplatedContainerType    interfaces.ContainerType = "CacheServerTemplatedContainer"
-	CrosProvisionTemplatedContainerType  interfaces.ContainerType = "CrosProvisionTemplatedContainer"
-	CrosDutTemplatedContainerType        interfaces.ContainerType = "CrosDutTemplatedContainer"
-	CrosTestTemplatedContainerType       interfaces.ContainerType = "CrosTestTemplatedContainer"
-	CrosTestFinderTemplatedContainerType interfaces.ContainerType = "CrosTestFinderTemplatedContainer"
-	CrosGcsPublishTemplatedContainerType interfaces.ContainerType = "CrosGcsPublishTemplatedContainer"
-	CrosTkoPublishTemplatedContainerType interfaces.ContainerType = "CrosTkoPublishTemplatedContainer"
-	CrosRdbPublishTemplatedContainerType interfaces.ContainerType = "CrosRdbPublishTemplatedContainer"
+	UnsupportedContainerType               interfaces.ContainerType = "UnsupportedContainer"
+	CacheServerTemplatedContainerType      interfaces.ContainerType = "CacheServerTemplatedContainer"
+	CrosProvisionTemplatedContainerType    interfaces.ContainerType = "CrosProvisionTemplatedContainer"
+	CrosDutTemplatedContainerType          interfaces.ContainerType = "CrosDutTemplatedContainer"
+	CrosTestTemplatedContainerType         interfaces.ContainerType = "CrosTestTemplatedContainer"
+	CrosTestFinderTemplatedContainerType   interfaces.ContainerType = "CrosTestFinderTemplatedContainer"
+	CrosGcsPublishTemplatedContainerType   interfaces.ContainerType = "CrosGcsPublishTemplatedContainer"
+	CrosTkoPublishTemplatedContainerType   interfaces.ContainerType = "CrosTkoPublishTemplatedContainer"
+	CrosRdbPublishTemplatedContainerType   interfaces.ContainerType = "CrosRdbPublishTemplatedContainer"
+	CrosCpconPublishTemplatedContainerType interfaces.ContainerType = "CrosCpconPublishTemplatedContainer"
 )
 
 // GetContainerImageKeyFromContainerType converts a ContainerType to its commonly known string representation.

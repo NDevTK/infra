@@ -1,3 +1,7 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package commands
 
 import (
@@ -22,8 +26,9 @@ type TestsExecutionCmd struct {
 	CompanionDevices []*testapi.CrosTestRequest_Device
 
 	// Updates
-	TestResponses    *testapi.CrosTestResponse
-	TkoPublishSrcDir string
+	TestResponses      *testapi.CrosTestResponse
+	TkoPublishSrcDir   string
+	CpconPublishSrcDir string
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -109,7 +114,9 @@ func (cmd *TestsExecutionCmd) updateHwTestStateKeeper(
 	if cmd.TkoPublishSrcDir != "" {
 		sk.TkoPublishSrcDir = cmd.TkoPublishSrcDir
 	}
-
+	if cmd.CpconPublishSrcDir != "" {
+		sk.CpconPublishSrcDir = cmd.CpconPublishSrcDir
+	}
 	return nil
 }
 

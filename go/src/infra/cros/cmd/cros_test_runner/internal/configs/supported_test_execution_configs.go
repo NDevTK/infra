@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,6 +55,8 @@ var RdbPublishStart_CrosRdbPublishExecutor = &CommandExecutorPairedConfig{Comman
 var RdbPublishUpload_CrosRdbPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.RdbPublishUploadCmdType, ExecutorType: executors.CrosRdbPublishExecutorType}
 var TkoPublishStart_CrosTkoPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.TkoPublishStartCmdType, ExecutorType: executors.CrosTkoPublishExecutorType}
 var TkoPublishUpload_CrosTkoPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.TkoPublishUploadCmdType, ExecutorType: executors.CrosTkoPublishExecutorType}
+var CpconPublishStart_CrosCpconPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.CpconPublishStartCmdType, ExecutorType: executors.CrosCpconPublishExecutorType}
+var CpconPublishUpload_CrosCpconPublishExecutor = &CommandExecutorPairedConfig{CommandType: commands.CpconPublishUploadCmdType, ExecutorType: executors.CrosCpconPublishExecutorType}
 var ProcessResults_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.ProcessResultsCmdType, ExecutorType: executors.NoExecutorType}
 var UpdateDutState_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.UpdateDutStateCmdType, ExecutorType: executors.NoExecutorType}
 var TkoDirectUpload_NoExecutor = &CommandExecutorPairedConfig{CommandType: commands.TkoDirectUploadCmdType, ExecutorType: executors.NoExecutorType}
@@ -171,6 +173,16 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform comm
 			cleanupConfigs = append(cleanupConfigs,
 				GcsPublishStart_CrosGcsPublishExecutor,
 				GcsPublishUpload_CrosGcsPublishExecutor)
+		}
+
+		// Cpcon publish commands
+		if cftHwStepsConfig.GetRunCpconPublish() {
+			mainConfigs = append(mainConfigs,
+				CpconPublishStart_CrosCpconPublishExecutor,
+				CpconPublishUpload_CrosCpconPublishExecutor)
+			cleanupConfigs = append(cleanupConfigs,
+				CpconPublishStart_CrosCpconPublishExecutor,
+				CpconPublishUpload_CrosCpconPublishExecutor)
 		}
 	}
 

@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -300,6 +300,32 @@ func TestPublishServiceExecuteCommand(t *testing.T) {
 			ctr)
 		exec := NewCrosPublishExecutor(cont, CrosTkoPublishExecutorType)
 		err := exec.ExecuteCommand(ctx, commands.NewTkoPublishUploadCmd(exec))
+		So(err, ShouldNotBeNil)
+	})
+
+	Convey("Publish service cpcon start cmd execution error", t, func() {
+		ctx := context.Background()
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		cont := containers.NewCrosPublishTemplatedContainer(
+			containers.CrosGcsPublishTemplatedContainerType,
+			"container/image/path",
+			ctr)
+		exec := NewCrosPublishExecutor(cont, CrosCpconPublishExecutorType)
+		err := exec.ExecuteCommand(ctx, commands.NewCpconPublishServiceStartCmd(exec))
+		So(err, ShouldNotBeNil)
+	})
+
+	Convey("Publish service cpcon publish results cmd execution error", t, func() {
+		ctx := context.Background()
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		cont := containers.NewCrosPublishTemplatedContainer(
+			containers.CrosGcsPublishTemplatedContainerType,
+			"container/image/path",
+			ctr)
+		exec := NewCrosPublishExecutor(cont, CrosCpconPublishExecutorType)
+		err := exec.ExecuteCommand(ctx, commands.NewCpconPublishUploadCmd(exec))
 		So(err, ShouldNotBeNil)
 	})
 

@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@ const (
 	LroSleepTime                           = 5 * time.Second
 	GcsPublishTestArtifactsDir             = "/tmp/gcs-publish-test-artifacts/"
 	TKOPublishTestArtifactsDir             = "/tmp/tko-publish-test-artifacts/"
+	CpconPublishTestArtifactsDir           = "/tmp/cpcon-publish-test-artifacts/"
 	StainlessUrlPrefix                     = "https://stainless.corp.google.com/browse/"
 	TesthausUrlPrefix                      = "https://cros-test-analytics.appspot.com/p/chromeos/logs/browse/"
 	GcsUrlPrefix                           = "https://pantheon.corp.google.com/storage/browser/"

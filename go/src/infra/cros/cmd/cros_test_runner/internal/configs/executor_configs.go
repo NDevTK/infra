@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,6 +92,13 @@ func (cfg *ExecutorConfig) GetExecutor(execType interfaces.ExecutorType) (interf
 
 	case executors.CrosTkoPublishExecutorType:
 		container, err := cfg.ContainerConfig.GetContainer(containers.CrosTkoPublishTemplatedContainerType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting container for executor type %s", execType).Err()
+		}
+		exec = executors.NewCrosPublishExecutor(container, execType)
+
+	case executors.CrosCpconPublishExecutorType:
+		container, err := cfg.ContainerConfig.GetContainer(containers.CrosCpconPublishTemplatedContainerType)
 		if err != nil {
 			return nil, errors.Annotate(err, "error during getting container for executor type %s", execType).Err()
 		}

@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -174,9 +174,10 @@ func (cont *TemplatedContainer) initializeCrosPublishTemplate(
 	}
 
 	if publishTemplate.PublishType == api.CrosPublishTemplate_PUBLISH_GCS ||
-		publishTemplate.PublishType == api.CrosPublishTemplate_PUBLISH_TKO {
+		publishTemplate.PublishType == api.CrosPublishTemplate_PUBLISH_TKO ||
+		publishTemplate.PublishType == api.CrosPublishTemplate_PUBLISH_CPCON {
 		if publishTemplate.PublishSrcDir == "" {
-			return fmt.Errorf("PublishSrcDir is empty but required for GCS and TKO publish types!")
+			return fmt.Errorf("PublishSrcDir is empty but required for GCS, TKO, and CPCON publish types!")
 		}
 	}
 

@@ -1,3 +1,7 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package configs
 
 import (
@@ -77,7 +81,7 @@ func (cfg *CftContainerConfig) GetContainer(contType interfaces.ContainerType) (
 		}
 		cont = containers.NewCrosTestFinderTemplatedContainer(containerImage, cfg.Ctr)
 
-	case containers.CrosGcsPublishTemplatedContainerType, containers.CrosTkoPublishTemplatedContainerType, containers.CrosRdbPublishTemplatedContainerType:
+	case containers.CrosGcsPublishTemplatedContainerType, containers.CrosTkoPublishTemplatedContainerType, containers.CrosRdbPublishTemplatedContainerType, containers.CrosCpconPublishTemplatedContainerType:
 		containerImage, err := common.GetContainerImageFromMap(key, cfg.ContainerImagesMap)
 		if err != nil {
 			return nil, errors.Annotate(err, "error during getting container image from map for %s container type", contType).Err()

@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -191,6 +191,20 @@ func (cfg *CommandConfig) GetCommand(
 			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
 		}
 		cmd = commands.NewTkoPublishUploadCmd(exec)
+
+	case commands.CpconPublishStartCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewCpconPublishServiceStartCmd(exec)
+
+	case commands.CpconPublishUploadCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewCpconPublishUploadCmd(exec)
 
 	case commands.ProcessResultsCmdType:
 		cmd = commands.NewProcessResultsCmd()

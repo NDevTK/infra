@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,6 +70,9 @@ const (
 	TkoPublishStartCmdType  interfaces.CommandType = "TkoPublishStart"
 	TkoPublishUploadCmdType interfaces.CommandType = "TkoPublishUpload"
 	TkoDirectUploadCmdType  interfaces.CommandType = "TkoDirectUpload"
+
+	CpconPublishStartCmdType  interfaces.CommandType = "CpconPublishStart"
+	CpconPublishUploadCmdType interfaces.CommandType = "CpconPublishUpload"
 
 	RdbPublishStartCmdType  interfaces.CommandType = "RdbPublishStart"
 	RdbPublishUploadCmdType interfaces.CommandType = "RdbPublishUpload"

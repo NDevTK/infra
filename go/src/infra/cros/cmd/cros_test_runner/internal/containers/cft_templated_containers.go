@@ -1,3 +1,7 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package containers
 
 import (
@@ -45,7 +49,7 @@ func NewCrosPublishTemplatedContainer(
 	containerImage string,
 	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
 
-	if contType != CrosGcsPublishTemplatedContainerType && contType != CrosTkoPublishTemplatedContainerType && contType != CrosRdbPublishTemplatedContainerType {
+	if contType != CrosGcsPublishTemplatedContainerType && contType != CrosTkoPublishTemplatedContainerType && contType != CrosCpconPublishTemplatedContainerType && contType != CrosRdbPublishTemplatedContainerType {
 		return nil
 	}
 	return NewContainer(contType, "cros-publish", containerImage, ctr, true)
