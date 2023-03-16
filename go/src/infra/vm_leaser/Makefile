@@ -56,7 +56,7 @@ dev: build
 # Build Docker service
 .PHONY: build-docker
 build-docker: build
-	docker build --tag=gcr.io/${GCP_PROJECT}/vm-leaser-service:latest --file=./Dockerfile .
+	docker build --tag=gcr.io/${GCP_PROJECT}/vm-leaser-service:latest --file=./cmd/vm_leaser/docker/Dockerfile .
 
 # Push Docker image to GCP
 .PHONY: push-image
