@@ -312,8 +312,8 @@ func (d *Docker) logRunTime(ctx context.Context, service string) {
 		}
 		// Otherwise, its not found. And I give up trying to fix this race without breaking other flows.
 		logRunTimeProd(ctx, startTime, service)
+		log.Printf("CRITICAL ERROR: Service: %s unable to start. Likely underlying environmental issues. Task will fail.\n", service)
 		logStatusProd(ctx, "fail")
-		log.Println("CRITICAL ERROR: Service unable to start. Likely underlying environmental issues. Task will fail.")
 		log.Println("Log file not found, logged timediff anyways..")
 		return
 	}
@@ -528,24 +528,32 @@ func droneImage() string {
 }
 
 func logPullTime(ctx context.Context, startTime time.Time, service string) {
-	pullTimeExperimental.Set(ctx, float64(time.Since(startTime).Seconds()), service, droneName(), droneImage())
+	td := float64(time.Since(startTime).Seconds())
+	log.Printf("Service: %s logging pulltime (non-prod): %v.\n", service, td)
+	pullTimeExperimental.Set(ctx, td, service, droneName(), droneImage())
 }
 
 func logRunTime(ctx context.Context, startTime time.Time, service string) {
-	runTimeExperimental.Set(ctx, float64(time.Since(startTime).Seconds()), service, droneName(), droneImage())
+	td := float64(time.Since(startTime).Seconds())
+	log.Printf("Service: %s logging runtime (non-prod): %v.\n", service, td)
+	runTimeExperimental.Set(ctx, td, service, droneName(), droneImage())
 }
 
 func logPullTimeProd(ctx context.Context, startTime time.Time, service string) {
-	pullTime.Set(ctx, float64(time.Since(startTime).Seconds()), service, droneName(), droneImage())
+	td := float64(time.Since(startTime).Seconds())
+	log.Printf("Service: %s logging pulltime (prod): %v.\n", service, td)
+	pullTime.Set(ctx, td, service, droneName(), droneImage())
 }
 
 func logRunTimeProd(ctx context.Context, startTime time.Time, service string) {
-	runTime.Set(ctx, float64(time.Since(startTime).Seconds()), service, droneName(), droneImage())
+	td := float64(time.Since(startTime).Seconds())
+	log.Printf("Service: %s logging runtime (prod): %v.\n", service, td)
+	runTime.Set(ctx, td, service, droneName(), droneImage())
 }
 
 // logServiceFound logs the when the service has started.
 func logServiceFound(ctx context.Context, LogFileName string, startTime time.Time, service string) {
-	log.Printf("Service: %s found started, logging success.\n", service)
+	log.Printf("Service: %s started. \n", service)
 	logStatusProd(ctx, "pass")
 	logRunTimeProd(ctx, startTime, service)
 }
@@ -563,10 +571,12 @@ var (
 )
 
 func logStatus(ctx context.Context, status string) {
+	log.Printf("Logging Status (non-prod): %s\n", status)
 	statusMetricsExperimental.Set(ctx, 1, status)
 }
 
 func logStatusProd(ctx context.Context, status string) {
+	log.Printf("Logging Status (prod): %s\n", status)
 	statusMetrics.Set(ctx, 1, status)
 }
 

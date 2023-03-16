@@ -83,15 +83,13 @@ func PrintToLog(cmd string, stdout string, stderr string) {
 func SetUpLog() error {
 	basedir := "/var/tmp/"
 	out := os.Getenv("LOGDOG_STREAM_PREFIX")
-	if out == "" {
-		out = "NOT_FOUND"
-	}
+
 	bbid := ""
-	bbidArr := strings.Split(out, "/")
-	if len(bbidArr) == 0 {
-		// If we don't have it, random it.
+	if out == "" {
+		// Not found? Use random time.
 		bbid = fmt.Sprint(rand.New(rand.NewSource(time.Now().UnixNano())).Int())
 	} else {
+		bbidArr := strings.Split(out, "/")
 		bbid = bbidArr[len(bbidArr)-1]
 	}
 
@@ -105,7 +103,7 @@ func SetUpLog() error {
 		return fmt.Errorf("failed to create file %v: %v", lfp, err)
 	}
 	log.SetOutput(io.MultiWriter(lf, os.Stderr))
-	log.SetPrefix("<cros-tool-runner>")
+	log.SetPrefix("<cros-tool-runner> ")
 	log.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmsgprefix)
 	log.Printf("Made logger @ %s", lfp)
 	return nil
