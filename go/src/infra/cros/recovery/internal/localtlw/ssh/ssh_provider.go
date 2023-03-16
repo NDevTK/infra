@@ -5,10 +5,7 @@
 package ssh
 
 import (
-	"go.chromium.org/luci/common/errors"
 	"golang.org/x/crypto/ssh"
-
-	"infra/libs/sshpool"
 )
 
 // SSHProvider provide access to SSH client manager.
@@ -16,62 +13,27 @@ import (
 // Provider gives option to use pool or create new client always.
 type SSHProvider interface {
 	Get(addr string) (SSHClient, error)
-	Put(addr string, sc SSHClient)
 	Close() error
 }
 
 // Implementation of SSHProvider.
 type sshProviderImpl struct {
-	config     *ssh.ClientConfig
-	useSSHPool bool
-	pool       *sshpool.Pool
+	config *ssh.ClientConfig
 }
 
 // NewProvider creates new provider for use.
 func NewProvider(config *ssh.ClientConfig) SSHProvider {
-	p := &sshProviderImpl{
+	return &sshProviderImpl{
 		config: config,
-		// Do not use pool by default.
-		useSSHPool: false,
 	}
-	if p.useSSHPool {
-		p.pool = sshpool.New(p.config)
-	}
-	return p
 }
 
 // Get provides SSH client for requested host.
 func (c *sshProviderImpl) Get(addr string) (SSHClient, error) {
-	if c.useSSHPool {
-		s, err := c.pool.Get(addr)
-		if err != nil {
-			return nil, errors.Annotate(err, "get from provider").Err()
-		}
-		return &sshClientImpl{s}, nil
-	}
 	return NewClient(addr, c.config)
-}
-
-// Put wrapper method to work with pool.
-func (c *sshProviderImpl) Put(addr string, sc SSHClient) {
-	if c.useSSHPool {
-		c.pool.Put(addr, sc.Client())
-	}
-	// Do nothing. themethod only for pool option.
 }
 
 // Close closing used resource of the provider.
 func (c *sshProviderImpl) Close() error {
-	if c.useSSHPool && c.pool != nil {
-		if err := c.pool.Close(); err != nil {
-			return errors.Annotate(err, "close provider").Err()
-		}
-	}
-	// If we do not use pool then provider does not track created clients.
 	return nil
-}
-
-// IsUseSSHPool reports if provider works with pool or not.
-func (c *sshProviderImpl) IsUseSSHPool() bool {
-	return c.useSSHPool
 }
