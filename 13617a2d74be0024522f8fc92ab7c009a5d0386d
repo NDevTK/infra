@@ -34,6 +34,29 @@
       "parentUuid": "f7d92d92_e24baff2",
       "revId": "13617a2d74be0024522f8fc92ab7c009a5d0386d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e1b858dd_9f49addc",
+        "filename": "go/src/infra/build/siso/build/deps.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2023-03-16T04:57:46Z",
+      "side": 1,
+      "message": "I wonder if writing this sort of code can be error-prone? Filed b/273669921",
+      "range": {
+        "startLine": 60,
+        "startChar": 0,
+        "endLine": 62,
+        "endChar": 2
+      },
+      "revId": "13617a2d74be0024522f8fc92ab7c009a5d0386d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
