@@ -34,7 +34,7 @@ RUN /usr/bin/wget -O- \
         > /tmp/setup-deps/install-build-deps.sh
 RUN /bin/chmod a+x /tmp/setup-deps/install-build-deps.sh
 # This will also install the Android dependencies.
-RUN /bin/bash -x /tmp/setup-deps/install-build-deps.sh --android
+RUN /bin/bash -x /tmp/setup-deps/install-build-deps.sh --android --no-chromeos-fonts
 
 # Cleanup to shrink image sizes.
 RUN /usr/bin/find /var/lib/apt/lists /tmp /var/tmp /usr/share/info \
