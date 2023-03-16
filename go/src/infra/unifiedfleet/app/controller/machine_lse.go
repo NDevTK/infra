@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -267,7 +267,7 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 				return errors.Annotate(err, "UpdateMachineLSE - processing update mask failed").Err()
 			}
 		} else {
-			// This is for the compelte object
+			// This is for the complete object
 			if machinelse.GetMachines() == nil || len(machinelse.GetMachines()) == 0 || machinelse.GetMachines()[0] == "" {
 				return status.Error(codes.InvalidArgument, "machines field cannot be empty/nil.")
 			}
@@ -457,6 +457,8 @@ func processMachineLSEUpdateMask(ctx context.Context, oldMachinelse *ufspb.Machi
 			oldMachinelse.GetAttachedDeviceLse().AssociatedHostPort = machinelse.GetAttachedDeviceLse().GetAssociatedHostPort()
 		case "schedulable":
 			oldMachinelse.Schedulable = machinelse.GetSchedulable()
+		case "logicalZone":
+			oldMachinelse.LogicalZone = machinelse.GetLogicalZone()
 		}
 	}
 	// return existing/old machinelse with new updated values
@@ -1212,6 +1214,11 @@ func validateCreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE,
 		}
 	}
 
+	// 7. Check LogicalZone field is valid
+	if err := validateMachineLSELogicalZone(machinelse, machine); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -1453,11 +1460,11 @@ func validateUpdateMachineLSE(ctx context.Context, oldMachinelse *ufspb.MachineL
 	}
 
 	// validate update mask
-	return validateMachineLSEUpdateMask(machinelse, mask)
+	return validateMachineLSEUpdateMask(machinelse, machine, mask)
 }
 
 // validateMachineLSEUpdateMask validates the update mask for machinelse update
-func validateMachineLSEUpdateMask(machinelse *ufspb.MachineLSE, mask *field_mask.FieldMask) error {
+func validateMachineLSEUpdateMask(machinelse *ufspb.MachineLSE, machine *ufspb.Machine, mask *field_mask.FieldMask) error {
 	if mask != nil {
 		// validate the give field mask
 		for _, path := range mask.Paths {
@@ -1497,6 +1504,10 @@ func validateMachineLSEUpdateMask(machinelse *ufspb.MachineLSE, mask *field_mask
 				if machinelse.GetAttachedDeviceLse() == nil {
 					return status.Error(codes.InvalidArgument, "validateMachineLSEUpdateMask - machine is not an attached device")
 				}
+			case "logicalZone":
+				if err := validateMachineLSELogicalZone(machinelse, machine); err != nil {
+					return err
+				}
 			case "schedulable":
 			case "deploymentTicket":
 			case "tags":
@@ -1507,6 +1518,21 @@ func validateMachineLSEUpdateMask(machinelse *ufspb.MachineLSE, mask *field_mask
 				return status.Errorf(codes.InvalidArgument, "validateMachineLSEUpdateMask - unsupported update mask path %q", path)
 			}
 		}
+	}
+	return nil
+}
+
+// validateMachineLSELogicalZone validates if the LogicalZone value can be set
+func validateMachineLSELogicalZone(machinelse *ufspb.MachineLSE, machine *ufspb.Machine) error {
+	switch machinelse.GetLogicalZone() {
+	case ufspb.LogicalZone_LOGICAL_ZONE_UNSPECIFIED:
+		// nothing to check
+	case ufspb.LogicalZone_LOGICAL_ZONE_DRILLZONE_SFO36:
+		if machinelse.GetChromeosMachineLse().GetDeviceLse().GetDut() == nil || machine.GetLocation().GetZone() != ufspb.Zone_ZONE_SFO36_OS {
+			return status.Error(codes.InvalidArgument, "validateMachineLSELogicalZone - Drill Zone label should only be applied for DUTs in zone SFO36_OS")
+		}
+	default:
+		return status.Error(codes.InvalidArgument, "validateMachineLSELogicalZone - unsupported LogicalZone value")
 	}
 	return nil
 }
