@@ -11,11 +11,17 @@ vars = {
   # This package is an awful way to distribute software, so if you see an
   # opportunity to kill it, please do so.
   "infra_env_python": "python",
+  #
+  # This is used during the transition phase of moving infra repos to git
+  # submodules. To add new deps here check with the Chrome Source Team.
+  "infra_superproject_checkout": False,
 }
 
 deps = {
-  "build":
-    "{chromium_git}/chromium/tools/build.git",
+  "build": {
+    "url": "{chromium_git}/chromium/tools/build.git",
+    "condition": "not infra_superproject_checkout",
+  },
 
   # Used to initiate bootstrapping.
   #
@@ -102,8 +108,10 @@ deps = {
   "infra/packages/expect_tests":
      "{chromium_git}/infra/testing/expect_tests.git@" +
      "eae70af12019781088e586ded8891055471233c7",
-  "testing_support":
-     "{chromium_git}/infra/testing/testing_support.git",
+  "testing_support": {
+     "url": "{chromium_git}/infra/testing/testing_support.git",
+     "condition": "not infra_superproject_checkout",
+  },
 
   "infra/appengine/third_party/npm_modules": {
      "url":
