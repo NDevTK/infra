@@ -453,13 +453,15 @@ func (r *retryRun) innerRun() (string, int) {
 
 	recipe := propsStruct.AsMap()["recipe"].(string)
 	if recipe == "paygen_orchestrator" || recipe == "paygen" {
-		r.LogOut("Warning: paygen-orchestrator/paygen builds do not communicate directly with GoldenEye. " +
-			"This build will not be ingested unless a child builder reports its results -- this " +
-			"will happen if this build was relaunched with the conductor, but not if it was " +
-			"retried manually.")
-		// No partial retries for paygen-orchestrator but clobbering is allowed
-		// so just fire off a new one.
+		r.LogErr("paygen-orchestrator/paygen builds do not communicate directly with GoldenEye." +
+			" Please relaunch from the child builder/orchestrator.")
+		return "", CmdError
 	} else if r.paygenRetry {
+		if recipe != "build_release" {
+			r.LogErr("A --paygen retry can only be launched from a child builder " +
+				"(e.g. eve-release-main), please use the BBID for that builder.")
+			return "", CmdError
+		}
 		ret := r.processPaygenRetry(ctx, buildData, propsStruct)
 		if ret != Success {
 			return "", ret
