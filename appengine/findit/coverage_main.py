@@ -32,6 +32,8 @@ if appengine_util.IsInProductionApp():
 
 # Referenced coverage worker module.
 referenced_coverage_worker_handler_mappings = [
+    ('.*/coverage/task/referenced-coverage.*',
+     create_referenced_coverage.CreateReferencedCoverageMetrics),
     ('.*/coverage/task/incremental-coverage',
      export_incremental_coverage.ExportIncrementalCoverageMetrics),
 ]
