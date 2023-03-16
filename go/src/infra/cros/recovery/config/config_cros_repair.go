@@ -2027,6 +2027,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
+				"Is servo USB key detected",
 			},
 			Dependencies: []string{
 				"Servo USB-Key needs to be reflashed",
@@ -2045,7 +2046,9 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Pools allowed to stay in DEV mode",
+				"Recovery version has OS image path",
 				"Is servod running",
+				"Is servo USB key detected",
 			},
 			Dependencies: []string{
 				"Boot DUT in recovery and install from USB-drive",
@@ -2074,7 +2077,9 @@ func crosRepairActions() map[string]*Action {
 				"This action installs the test image on DUT after booking the DUT in dev mode.",
 			},
 			Conditions: []string{
+				"Recovery version has OS image path",
 				"Is servod running",
+				"Is servo USB key detected",
 			},
 			Dependencies: []string{
 				"Boot DUT from USB in DEV mode",
