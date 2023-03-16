@@ -131,7 +131,7 @@ func updateStep(step *Step, logname string, message string) string {
 	statusSplitter := ": "
 	splitMessage := strings.Split(message, statusSplitter)
 	if strings.Contains(message, statusPrefix) {
-		step.Status = splitMessage[1]
+		step.Status = strings.Split(splitMessage[1], "\n")[0]
 	} else {
 		log, ok := step.Logs[logname]
 		if !ok {

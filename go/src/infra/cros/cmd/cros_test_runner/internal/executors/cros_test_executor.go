@@ -11,6 +11,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
@@ -78,10 +79,12 @@ func (ex *CrosTestExecutor) testExecutionCommandExecution(
 	step, ctx := build.StartStep(ctx, "Tests execution")
 	defer func() { step.End(err) }()
 
+	metadata, _ := anypb.New(cmd.TestArgs)
 	testReq := &testapi.CrosTestRequest{
 		TestSuites: cmd.TestSuites,
 		Primary:    cmd.PrimaryDevice,
-		Companions: cmd.CompanionDevices}
+		Companions: cmd.CompanionDevices,
+		Metadata:   metadata}
 
 	common.WriteProtoToStepLog(ctx, step, testReq, "test request")
 

@@ -59,16 +59,11 @@ func NewCrosTestRunnerService(execReq *skylab_test_runner.ExecuteRequest, server
 
 func (crs *CrosTestRunnerService) Execute(ctx context.Context, logPath string) (*skylab_test_runner.ExecuteResponse, error) {
 	crs.sk.CftTestRequest = crs.req.GetCftTestRequest()
-	// TODO: plug in test-finder inputs. Ignored for server implementation
-	//
-	// testPlan := crs.req.GetTestPlan()
-	// if testPlan != nil {
-	// 	tagCriteria := testPlan.GetTagCriteria()
-	// 	if tagCriteria != nil {
-	// 		crs.sk.Args.Tags = strings.Join(tagCriteria.GetTags(), ",")
-	// 		crs.sk.Args.TagsExclude = strings.Join(tagCriteria.TagExcludes, ",")
-	// 	}
-	// }
+
+	testPlan := crs.req.GetTestPlan()
+	if testPlan != nil {
+		crs.sk.TestArgs = testPlan.TestArgs
+	}
 
 	return executions.LocalExecution(crs.sk, crs.req.CtrCipdVersion, logPath)
 }

@@ -43,6 +43,7 @@ type HwTestStateKeeper struct {
 	ProvisionResp   *testapi.InstallResponse
 
 	// Test related
+	TestArgs      *testapi.AutotestExecutionMetadata
 	TestResponses *testapi.CrosTestResponse
 
 	// Publish related

@@ -24,6 +24,7 @@ type TestsExecutionCmd struct {
 	TestSuites       []*testapi.TestSuite
 	PrimaryDevice    *testapi.CrosTestRequest_Device
 	CompanionDevices []*testapi.CrosTestRequest_Device
+	TestArgs         *testapi.AutotestExecutionMetadata
 
 	// Updates
 	TestResponses      *testapi.CrosTestResponse
@@ -82,6 +83,7 @@ func (cmd *TestsExecutionCmd) extractDepsFromHwTestStateKeeper(
 		return fmt.Errorf("Cmd %q missing dependency: TestSuites", cmd.GetCommandType())
 	}
 	cmd.TestSuites = sk.CftTestRequest.GetTestSuites()
+	cmd.TestArgs = sk.TestArgs
 
 	if sk.DutTopology == nil || sk.DutTopology.GetDuts() == nil || len(sk.DutTopology.GetDuts()) == 0 {
 		return fmt.Errorf("Cmd %q missing dependency: PrimaryDevice", cmd.GetCommandType())
