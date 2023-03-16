@@ -132,6 +132,14 @@ else
   # isn't available when we build wheels. It's not necessary there anyway.
   LDFLAGS_NODIST="${LDFLAGS}"
   LDFLAGS_NODIST+=" -Wl,--version-script=$SCRIPT_DIR/gnu_version_script.txt"
+
+  if [[ $_3PP_PLATFORM != $_3PP_TOOL_PLATFORM ]]; then
+    # -pthread detection does not work when cross-compiling, but we need this
+    # flag in order for OpenSSL libraries to get their symbols resolved.
+    export ac_cv_pthread=yes
+    export ac_cv_cxx_thread=yes
+    export ac_cv_pthread_system_supported=yes
+  fi
 fi
 
 # Assert blindly that the target distro will have /dev/ptmx and not /dev/ptc.
