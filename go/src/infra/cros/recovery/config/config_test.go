@@ -250,12 +250,12 @@ var cycleTestCases = []struct {
 				"A": {Dependencies: []string{"B", "E"}},
 				"B": {Conditions: []string{"C"}},
 				"C": {RecoveryActions: []string{"D", "F"}},
-				"D": {RecoveryActions: []string{"E"}},
+				"D": {RecoveryActions: []string{"E", "C"}},
 				"E": {Dependencies: []string{"F"}},
 				"F": {},
 			},
 		},
-		[]string{},
+		[]string{"B", "C", "D", "C"},
 	},
 	// Test Case: Cycle in actions, but not reachable by critical actions.
 	{

@@ -259,6 +259,9 @@ func TestLoadConfiguration(t *testing.T) {
 				if !cmp.Equal(got.GetPlanNames(), cs.expPlanNames) {
 					t.Errorf("%q ->want: %v\n got: %v: %s", cs.name, cs.expPlanNames, got.GetPlanNames(), err)
 				}
+				if _, err := config.Validate(ctx, got, execs.Exist); err != nil {
+					t.Errorf("%q -> fail to validate configuration with error: %s", cs.name, err)
+				}
 			} else {
 				if err == nil {
 					t.Errorf("%q -> expected to finish with error but passed", cs.name)
@@ -574,8 +577,7 @@ func TestOtherConfigurations(t *testing.T) {
 		t.Run(cs.name, func(t *testing.T) {
 			ctx := context.Background()
 			configuration := cs.getConfig()
-			_, err := config.Validate(ctx, configuration, execs.Exist)
-			if err != nil {
+			if _, err := config.Validate(ctx, configuration, execs.Exist); err != nil {
 				t.Errorf("%q -> fail to validate configuration with error: %s", cs.name, err)
 			}
 		})
