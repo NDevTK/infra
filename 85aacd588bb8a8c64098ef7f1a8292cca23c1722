@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8459bc3c_c2df5271",
+        "filename": "go/src/infra/unifiedfleet/app/controller/change.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2023-03-17T23:54:11Z",
+      "side": 1,
+      "message": "I think we stopped using this.",
+      "range": {
+        "startLine": 1,
+        "startChar": 39,
+        "endLine": 1,
+        "endChar": 60
+      },
+      "revId": "85aacd588bb8a8c64098ef7f1a8292cca23c1722",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ad89fd09_4daab6ed",
+        "filename": "go/src/infra/unifiedfleet/app/controller/dut.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2023-03-17T23:54:11Z",
+      "side": 1,
+      "message": "I don\u0027t think we use the all rights reserved anymore. For some reason.",
+      "range": {
+        "startLine": 1,
+        "startChar": 41,
+        "endLine": 1,
+        "endChar": 60
+      },
+      "revId": "85aacd588bb8a8c64098ef7f1a8292cca23c1722",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "45470127_0b555190",
+        "filename": "go/src/infra/unifiedfleet/app/controller/dut.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 497,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2023-03-17T23:54:11Z",
+      "side": 1,
+      "message": "Just a quick question. I noticed that `update_time` uses Python case, but `deploymentTicket` uses camel case. Is camel case the new way of doing things?",
+      "range": {
+        "startLine": 497,
+        "startChar": 8,
+        "endLine": 497,
+        "endChar": 19
+      },
+      "revId": "85aacd588bb8a8c64098ef7f1a8292cca23c1722",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
