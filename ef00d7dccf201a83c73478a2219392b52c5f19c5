@@ -16,6 +16,24 @@
       "message": "This is not true. If `machinelse.GetMachines()` contains a single machine name that\u0027s an empty string, it will pass the `validateUpdateMachineLSE()` check.",
       "revId": "ef00d7dccf201a83c73478a2219392b52c5f19c5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "96dced78_801eff6f",
+        "filename": "go/src/infra/unifiedfleet/app/controller/dut.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1552404
+      },
+      "writtenOn": "2023-03-17T22:14:16Z",
+      "side": 0,
+      "message": "Resolving",
+      "parentUuid": "4cb18c75_0be66d8a",
+      "revId": "ef00d7dccf201a83c73478a2219392b52c5f19c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
