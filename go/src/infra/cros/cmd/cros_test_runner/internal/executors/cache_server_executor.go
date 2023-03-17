@@ -95,7 +95,10 @@ func (ex *CacheServerExecutor) vmCacheServerStartCommandExecution(
 
 	logging.Infof(ctx, "Starting cache server.")
 
-	csTemplate := &testapi.CacheServerTemplate{}
+	csTemplate := &testapi.CacheServerTemplate{
+		ApplicationDefaultCredentials: &testapi.CacheServerTemplate_ServiceAccountKeyfile{
+			ServiceAccountKeyfile: common.VmLabDockerKeyFileLocation,
+		}}
 	template := &api.Template{
 		Container: &api.Template_CacheServer{
 			CacheServer: csTemplate,

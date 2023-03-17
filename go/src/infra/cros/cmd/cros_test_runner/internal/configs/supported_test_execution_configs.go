@@ -93,6 +93,9 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform comm
 		cftHwStepsConfig.SkipLoadingDutTopology = true
 		cftHwStepsConfig.SkipProvision = true
 		cftHwStepsConfig.SkipStartingDutService = false
+		// Current workaround of TKO publish doesn't work for GCE bot (no script
+		// installed on bot) and TKO is scheduled to be deprecated in Q2 2023.
+		cftHwStepsConfig.SkipTkoPublish = true
 	}
 	mainConfigs := []*CommandExecutorPairedConfig{}
 	cleanupConfigs := []*CommandExecutorPairedConfig{}

@@ -103,6 +103,10 @@ func executeHwTests(
 	if !ok {
 		return nil, fmt.Errorf("Provided key %q does not exist in provided container metadata.", metadataKey)
 	}
+	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
+	if err != nil {
+		return nil, fmt.Errorf("unable to locate dockerKeyFile during initialization: %w", err)
+	}
 	containerImagesMap := metadataMap.GetImages()
 	containerCfg := configs.NewCftContainerConfig(ctr, containerImagesMap)
 	executorCfg := configs.NewExecutorConfig(ctr, containerCfg)
@@ -114,7 +118,7 @@ func executeHwTests(
 		BuildState:            buildState,
 		CftTestRequest:        req,
 		Ctr:                   ctr,
-		DockerKeyFileLocation: common.LabDockerKeyFileLocation,
+		DockerKeyFileLocation: dockerKeyFile,
 		GcsPublishSrcDir:      os.Getenv("TEMPDIR"),
 		GcsUrl:                gcsurl,
 		StainlessUrl:          common.GetStainlessUrl(gcsurl),
@@ -123,7 +127,7 @@ func executeHwTests(
 
 	// Generate config
 	hwTestConfig := configs.NewTestExecutionConfig(configs.HwTestExecutionConfigType, cmdCfg, sk, req.GetStepsConfig())
-	err := hwTestConfig.GenerateConfig(ctx)
+	err = hwTestConfig.GenerateConfig(ctx)
 	if err != nil {
 		return sk.SkylabResult, errors.Annotate(err, "error during generating hw test configs: ").Err()
 	}

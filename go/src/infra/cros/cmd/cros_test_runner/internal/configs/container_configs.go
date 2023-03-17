@@ -6,6 +6,7 @@ package configs
 
 import (
 	"fmt"
+
 	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/containers"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
@@ -89,10 +90,7 @@ func (cfg *CftContainerConfig) GetContainer(contType interfaces.ContainerType) (
 		cont = containers.NewCrosPublishTemplatedContainer(contType, containerImage, cfg.Ctr)
 
 	case containers.CacheServerTemplatedContainerType:
-		containerImage, err := common.GetContainerImageFromMap(key, cfg.ContainerImagesMap)
-		if err != nil {
-			return nil, errors.Annotate(err, "error during getting container image from map for %s container type", contType).Err()
-		}
+		containerImage := common.DockerImageCacheServer
 		cont = containers.NewCacheServerTemplatedContainer(containerImage, cfg.Ctr)
 
 	default:

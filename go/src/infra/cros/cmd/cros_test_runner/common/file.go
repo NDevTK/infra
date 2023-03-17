@@ -346,3 +346,15 @@ func GetCftLocalServerAddress(ctx context.Context, metadataFilePath string, file
 
 	return serverAddress, nil
 }
+
+// LocateFile locates file from multiple possible locations where the file may
+// exist. Return the located file as soon as the first one is found, or an error
+// if none of the candidates exists.
+func LocateFile(candidates []string) (string, error) {
+	for _, file := range candidates {
+		if _, err := os.Stat(file); err == nil {
+			return file, nil
+		}
+	}
+	return "", fmt.Errorf("failed to locate file from all candidates %v", candidates)
+}
