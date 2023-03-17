@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -205,6 +205,7 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *chromeosLab.Perip
 	}
 
 	p.SmartUsbhub = &(d.SmartUsbhub)
+	c.StarfishSlotMapping = &(d.StarfishSlotMapping)
 }
 
 func setServoTopology(p *inventory.Peripherals, st *chromeosLab.ServoTopology) {
@@ -638,24 +639,25 @@ func adaptV2LabstationToV1DutSpec(data *ufspb.ChromeOSDeviceData) (*inventory.De
 	acOnly := "AC_only"
 	carrierInvalid := inventory.HardwareCapabilities_CARRIER_INVALID
 	labels.Capabilities = &inventory.HardwareCapabilities{
-		Atrus:           &falseValue,
-		Bluetooth:       &falseValue,
-		Carrier:         &carrierInvalid,
-		Detachablebase:  &falseValue,
-		Fingerprint:     &falseValue,
-		Flashrom:        &falseValue,
-		GpuFamily:       &emptyString,
-		Graphics:        &emptyString,
-		Hotwording:      &falseValue,
-		InternalDisplay: &falseValue,
-		Lucidsleep:      &falseValue,
-		Modem:           &emptyString,
-		Power:           &acOnly,
-		Storage:         &emptyString,
-		Telephony:       &emptyString,
-		Webcam:          &falseValue,
-		Touchpad:        &falseValue,
-		Touchscreen:     &falseValue,
+		Atrus:               &falseValue,
+		Bluetooth:           &falseValue,
+		Carrier:             &carrierInvalid,
+		Detachablebase:      &falseValue,
+		Fingerprint:         &falseValue,
+		Flashrom:            &falseValue,
+		GpuFamily:           &emptyString,
+		Graphics:            &emptyString,
+		Hotwording:          &falseValue,
+		InternalDisplay:     &falseValue,
+		Lucidsleep:          &falseValue,
+		Modem:               &emptyString,
+		Power:               &acOnly,
+		StarfishSlotMapping: &emptyString,
+		Storage:             &emptyString,
+		Telephony:           &emptyString,
+		Webcam:              &falseValue,
+		Touchpad:            &falseValue,
+		Touchscreen:         &falseValue,
 	}
 	cr50PhaseInvalid := inventory.SchedulableLabels_CR50_PHASE_INVALID
 	labels.Cr50Phase = &cr50PhaseInvalid

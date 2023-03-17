@@ -1,6 +1,6 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file
+// found in the LICENSE file.
 
 package osutil
 
@@ -152,7 +152,8 @@ var lse = ufspb.MachineLSE{
 										Type: chromeosLab.CableType_CABLE_HDMIAUDIO,
 									},
 								},
-								SmartUsbhub: true,
+								SmartUsbhub:         true,
+								StarfishSlotMapping: "test-map-key:test-value",
 							},
 							Licenses: []*chromeosLab.License{
 								{
@@ -440,6 +441,7 @@ common {
 			gpu_family: "test_gpu"
 			graphics: "gles"
 			power: "AC_only"
+			starfish_slot_mapping: "test-map-key:test-value"
 			storage: "ssd"
 			touchscreen: true
 			video_acceleration: VIDEO_ACCELERATION_ENC_H264
@@ -621,9 +623,10 @@ common {
           lucidsleep: false
           modem: ""
           power: "AC_only"
+          starfish_slot_mapping: ""
           storage: ""
-          telephony: ""
           webcam: false
+          telephony: ""
           touchpad: false
           touchscreen: false
         }
