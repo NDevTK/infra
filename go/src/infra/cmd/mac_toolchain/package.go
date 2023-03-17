@@ -247,7 +247,7 @@ type PackageXcodeArgs struct {
 }
 
 func packageXcode(ctx context.Context, args PackageXcodeArgs) error {
-	xcodeVersion, buildVersion, err := getXcodeVersion(filepath.Join(args.xcodeAppPath, "Contents", "version.plist"))
+	cfBundleVersion, xcodeVersion, buildVersion, err := getXcodeVersion(filepath.Join(args.xcodeAppPath, "Contents", "version.plist"))
 	if err != nil {
 		return errors.Annotate(err, "this doesn't look like a valid Xcode.app folder: %s", args.xcodeAppPath).Err()
 	}
@@ -257,6 +257,7 @@ func packageXcode(ctx context.Context, args PackageXcodeArgs) error {
 		return err
 	}
 	tags := []string{
+		"cf_bundle_version:" + cfBundleVersion,
 		"xcode_version:" + xcodeVersion,
 		"build_version:" + buildVersion,
 	}
@@ -347,7 +348,7 @@ func packageRuntime(ctx context.Context, args PackageRuntimeArgs) error {
 	xcodeBuildVersion := ""
 	if args.xcodeAppPath != "" {
 		var err error
-		_, xcodeBuildVersion, err = getXcodeVersion(filepath.Join(args.xcodeAppPath, "Contents", "version.plist"))
+		_, _, xcodeBuildVersion, err = getXcodeVersion(filepath.Join(args.xcodeAppPath, "Contents", "version.plist"))
 		if err != nil {
 			return errors.Annotate(err, "this doesn't look like a valid Xcode.app folder: %s", args.xcodeAppPath).Err()
 		}

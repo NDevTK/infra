@@ -15,21 +15,22 @@ func TestPlistReading(t *testing.T) {
 
 	Convey("getXcodeVersion works", t, func() {
 		Convey("for valid plist", func() {
-			xv, bv, err := getXcodeVersion("testdata/version.plist")
+			cfbv, xv, bv, err := getXcodeVersion("testdata/version.plist")
 			So(err, ShouldBeNil)
+			So(cfbv, ShouldEqual, "12345")
 			So(xv, ShouldEqual, "TESTXCODEVERSION")
 			So(bv, ShouldEqual, "TESTBUILDVERSION")
 		})
 		Convey("when version is missing", func() {
-			_, _, err := getXcodeVersion("testdata/badKeys.plist")
+			_, _, _, err := getXcodeVersion("testdata/badKeys.plist")
 			So(err, ShouldNotBeNil)
 		})
 		Convey("when version file is broken", func() {
-			_, _, err := getXcodeVersion("testdata/broken.plist")
+			_, _, _, err := getXcodeVersion("testdata/broken.plist")
 			So(err, ShouldNotBeNil)
 		})
 		Convey("when version file is missing", func() {
-			_, _, err := getXcodeVersion("testdata/nonexistent")
+			_, _, _, err := getXcodeVersion("testdata/nonexistent")
 			So(err, ShouldNotBeNil)
 		})
 	})

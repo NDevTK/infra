@@ -14,13 +14,14 @@ import (
 )
 
 type versionPlist struct {
-	BuildVersion string `plist:"ProductBuildVersion"`
-	XcodeVersion string `plist:"CFBundleShortVersionString"`
+	BuildVersion    string `plist:"ProductBuildVersion"`
+	XcodeVersion    string `plist:"CFBundleShortVersionString"`
+	CFBundleVersion string `plist:"CFBundleVersion"`
 }
 
 // getXcodeVersion takes the path to the `version.plist` file within Xcode.app
 // and extracts the Xcode and build versions.
-func getXcodeVersion(versionFile string) (xcodeVersion string, buildVersion string, err error) {
+func getXcodeVersion(versionFile string) (cfBundleVersion string, xcodeVersion string, buildVersion string, err error) {
 	var vp versionPlist
 	r, err := os.Open(versionFile)
 	if err != nil {
@@ -36,8 +37,9 @@ func getXcodeVersion(versionFile string) (xcodeVersion string, buildVersion stri
 
 	xcodeVersion = vp.XcodeVersion
 	buildVersion = vp.BuildVersion
-	if xcodeVersion == "" || buildVersion == "" {
-		err = errors.Reason("Contents/version.plist is missing ProductBuildVersion or CFBundleShortVersionString").Err()
+	cfBundleVersion = vp.CFBundleVersion
+	if xcodeVersion == "" || buildVersion == "" || cfBundleVersion == "" {
+		err = errors.Reason("Contents/version.plist is missing ProductBuildVersion, CFBundleShortVersionString or CFBundleVersion").Err()
 		return
 	}
 	return

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
@@ -20,27 +21,15 @@ func getCipdFileNames() []string {
 	return []string{".xcode_versions", ".cipd"}
 }
 
-func moveCipdFiles(sourcePath string, destPath string) error {
+func removeCipdFiles(xcodePackagePath string) error {
 	for _, f := range getCipdFileNames() {
-		// if file doesn't exist, return error
-		srcFilePath := filepath.Join(sourcePath, f)
-		_, error := os.Stat(srcFilePath)
-		if os.IsNotExist(error) {
-			return errors.Annotate(error, "failed to move %s because it doesn't exist", srcFilePath).Err()
-		}
-
-		destFilePath := filepath.Join(destPath, f)
-		// if file already exists in dest, then remove first
-		if _, err := os.Stat(destFilePath); err == nil {
-			err := os.RemoveAll(destFilePath)
+		packagePath := filepath.Join(xcodePackagePath, f)
+		// remove if the file exists
+		if _, err := os.Stat(packagePath); err == nil {
+			err := os.RemoveAll(packagePath)
 			if err != nil {
-				return errors.Annotate(err, "failed to remove existing cipd file %s", destFilePath).Err()
+				return errors.Annotate(err, "failed to remove cipd file %s", packagePath).Err()
 			}
-		}
-
-		err := os.Rename(srcFilePath, destFilePath)
-		if err != nil {
-			return errors.Annotate(err, "failed to move %s to %s", srcFilePath, destFilePath).Err()
 		}
 	}
 	return nil
@@ -231,21 +220,81 @@ type InstallArgs struct {
 	withRuntime            bool
 }
 
+func describeRef(ctx context.Context, packagePath, ref string) (string, error) {
+	resolveArgs := []string{"describe", packagePath, "-version", ref}
+	output, err := RunOutput(ctx, "cipd", resolveArgs...)
+	if err != nil {
+		err = errors.Annotate(err, "Error when describing package path %s with ref %s.", packagePath, ref).Err()
+		return "", err
+	}
+	return output, nil
+}
+
+// get the CFBundleVersion from the latest Xcode on cipd
+func getLatestCFBundleVersion(ctx context.Context, xcodePackagePath, xcodeVersion string) (string, error) {
+	output, err := describeRef(ctx, xcodePackagePath, xcodeVersion)
+	if err != nil {
+		err = errors.Annotate(err, "Error when getting latest CFBundleVersion from cipd").Err()
+		return "", err
+	}
+	var cfBundleVersionRegex = regexp.MustCompile(`cf_bundle_version:(\d+)`)
+	result := cfBundleVersionRegex.FindStringSubmatch(output)
+	if len(result) > 0 {
+		return result[1], nil
+	}
+	return "", errors.Reason("Unable to parse CFBundleVersion from cipd describe output %s", output).Err()
+}
+func shouldReInstallXcode(ctx context.Context, cipdPackagePrefix, xcodeAppPath, xcodeVersion string) (bool, error) {
+	xcodePackagePath := cipdPackagePrefix + "/" + MacPackageName
+	cfBundleVersion, _, _, err := getXcodeVersion(filepath.Join(xcodeAppPath, "Contents", "version.plist"))
+	if err != nil {
+		logging.Warningf(ctx, "Xcode should be re-installed due to error %s", err.Error())
+		return true, err
+	}
+	cfBundleVersionOnCipd, err := getLatestCFBundleVersion(ctx, xcodePackagePath, xcodeVersion)
+	if err != nil {
+		logging.Warningf(ctx, "Xcode should be re-installed due to error %s", err.Error())
+		return true, err
+	}
+	if cfBundleVersion != cfBundleVersionOnCipd {
+		logging.Warningf(ctx, "CFBundleVersion mismatched between local %s and cipd %s, Xcode should be re-installed", cfBundleVersion, cfBundleVersionOnCipd)
+		return true, nil
+	}
+	logging.Warningf(ctx, "CFBundleVersion %s matches between local and cipd, Xcode should not be re-installed", cfBundleVersion)
+	return false, nil
+}
+
 // Installs Xcode. The default runtime of the Xcode version will be installed
 // unless |args.withRuntime| is False.
 func installXcode(ctx context.Context, args InstallArgs) error {
 	if err := os.MkdirAll(args.xcodeAppPath, 0700); err != nil {
 		return errors.Annotate(err, "failed to create a folder %s", args.xcodeAppPath).Err()
 	}
-	installPackagesArgs := InstallPackagesArgs{
-		ref:                args.xcodeVersion,
-		rootPath:           args.xcodeAppPath,
-		cipdPackagePrefix:  args.cipdPackagePrefix,
-		kind:               args.kind,
-		serviceAccountJSON: args.serviceAccountJSON,
+	shouldInstallXcode := true
+
+	// if on MacOS13 or later, then we should use cipd tag to check for re-intall first
+	// see crbug/1420480
+	logging.Warningf(ctx, "Checking if the host is on MacOS13 or later")
+	onMacOS13OrLater, err := isMacOS13OrLater(ctx)
+	if err == nil {
+		if onMacOS13OrLater {
+			logging.Warningf(ctx, "Checking if Xcode should be re-installed")
+			shouldInstallXcode, _ = shouldReInstallXcode(ctx, args.cipdPackagePrefix, args.xcodeAppPath, args.xcodeVersion)
+		}
+	} else {
+		logging.Warningf(ctx, "Failed to check MacOS version with the error: %s", err)
 	}
-	if err := installPackages(ctx, installPackagesArgs); err != nil {
-		return err
+	if shouldInstallXcode {
+		installPackagesArgs := InstallPackagesArgs{
+			ref:                args.xcodeVersion,
+			rootPath:           args.xcodeAppPath,
+			cipdPackagePrefix:  args.cipdPackagePrefix,
+			kind:               args.kind,
+			serviceAccountJSON: args.serviceAccountJSON,
+		}
+		if err := installPackages(ctx, installPackagesArgs); err != nil {
+			return err
+		}
 	}
 	simulatorDirPath := filepath.Join(args.xcodeAppPath, XcodeIOSSimulatorRuntimeRelPath)
 	simulatorFilePath := filepath.Join(simulatorDirPath, XcodeIOSSimulatorRuntimeFilename)
@@ -266,19 +315,11 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 		}
 	}
 
-	// crbug/1420480: temporarily move cipd files to Xcode parent dir
-	// to avoid codesign failure when first launch
-	// TODO(crbug/1420480): temporarily testing this out on Xcode 14.3 beta 3,
-	// remove the conditional once this is proven working on the bot.
-	tmpCipdPath := ""
-	if args.xcodeVersion == "14e5207e" {
-		logging.Warningf(ctx, "Temporarily moving cipd files out of Xcode app...")
-		tmpCipdPath, tmpDirErr := os.MkdirTemp(filepath.Join(args.xcodeAppPath, ".."), "tmp")
-		if tmpDirErr != nil {
-			return tmpDirErr
-		}
-		defer os.RemoveAll(tmpCipdPath)
-		if err := moveCipdFiles(args.xcodeAppPath, tmpCipdPath); err != nil {
+	// crbug/1420480: on MacOS13+, cipd files are no longer allowed to be part of Xcode.app.
+	// If Xcode is installed on MacOS13+, we need to remove them before runFirstLaunch.
+	if onMacOS13OrLater {
+		logging.Warningf(ctx, "Removing the hidden cipd files if exists to be compliant with MacOS13+ codesign check...")
+		if err := removeCipdFiles(args.xcodeAppPath); err != nil {
 			return err
 		}
 	}
@@ -291,16 +332,6 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 
 	if err := finalizeInstall(ctx, args.xcodeAppPath, args.xcodeVersion, args.packageInstallerOnBots); err != nil {
 		return err
-	}
-
-	// crbug/1420480: moves files back to Xcode.app from parent dir after codesign check
-	// TODO(crbug/1420480): temporarily testing this out on Xcode 14.3 beta 3,
-	// remove the conditional once this is proven working on the bot.
-	if args.xcodeVersion == "14e5207e" && tmpCipdPath != "" {
-		logging.Warningf(ctx, "Moving cipd files back to Xcode app...")
-		if err := moveCipdFiles(tmpCipdPath, args.xcodeAppPath); err != nil {
-			return err
-		}
 	}
 
 	return checkDeveloperMode(ctx)
