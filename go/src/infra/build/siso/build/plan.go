@@ -195,7 +195,8 @@ func newScheduler(ctx context.Context, opt schedulerOption) *scheduler {
 		path:   opt.Path,
 		hashFS: opt.HashFS,
 		plan: &plan{
-			m:     make(map[string]bool),
+			m: make(map[string]bool),
+			// preallocate capacity for performance optimization.
 			q:     make(chan *Step, 10000),
 			waits: make(map[string][]*Step),
 		},
@@ -289,6 +290,7 @@ func (p *plan) pushReady() {
 	select {
 	case p.q <- p.ready[0]:
 		p.ready[0].queueDuration = time.Since(p.ready[0].queueTime)
+		// Deallocate p.ready[0] explcitily.
 		copy(p.ready, p.ready[1:])
 		p.ready[len(p.ready)-1] = nil
 		p.ready = p.ready[:len(p.ready)-1]
