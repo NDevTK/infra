@@ -55,7 +55,8 @@ type LabpackInput struct {
 	Bbid string `protobuf:"bytes,11,opt,name=bbid,proto3" json:"bbid,omitempty"`
 	// swarming_task_id is the ID of the swarming task.
 	SwarmingTaskId string `protobuf:"bytes,12,opt,name=swarming_task_id,json=swarmingTaskId,proto3" json:"swarming_task_id,omitempty"`
-	// Caller identifies the entity that immediately called labpack.
+	// Caller identifies who or what called labpack or caused it to be executed.
+	// Prototypical examples include "test_runner.py" or "cros_test_runner".
 	Caller string `protobuf:"bytes,13,opt,name=caller,proto3" json:"caller,omitempty"`
 }
 
