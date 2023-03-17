@@ -1048,7 +1048,7 @@ def _HandleBackendSearchResponse(
     logging.info('got json text: %r length %r',
                  json_content[:framework_constants.LOGGING_MAX_LENGTH],
                  len(json_content))
-    if json_content == '':
+    if json_content == b'':
       raise Exception('Fast fail')
     json_data = json.loads(json_content)
     unfiltered_iids[shard_key] = json_data['unfiltered_iids']
@@ -1110,7 +1110,7 @@ def _HandleBackendNonviewableResponse(
     logging.info('got json text: %r length %r',
                  json_content[:framework_constants.LOGGING_MAX_LENGTH],
                  len(json_content))
-    if json_content == '':
+    if json_content == b'':
       raise Exception('Fast fail')
     json_data = json.loads(json_content)
     nonviewable_iids[shard_id] = set(json_data['nonviewable'])

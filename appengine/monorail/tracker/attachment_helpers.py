@@ -8,8 +8,8 @@ from __future__ import division
 from __future__ import absolute_import
 
 import base64
+import hashlib
 import hmac
-import logging
 
 from framework import urls
 from services import secrets_svc
@@ -70,7 +70,7 @@ def IsViewableText(mimetype, filesize):
 
 def SignAttachmentID(aid):
   """One-way hash of attachment ID to make it harder for people to scan."""
-  digester = hmac.new(secrets_svc.GetXSRFKey())
+  digester = hmac.new(secrets_svc.GetXSRFKey(), digestmod=hashlib.md5)
   digester.update(str(aid))
   return base64.urlsafe_b64encode(digester.digest())
 

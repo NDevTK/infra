@@ -90,7 +90,7 @@ class TemplateCreate(servlet.Servlet):
         'fields':
             [
                 view for view in field_views
-                if view.field_def.type_name is not "APPROVAL_TYPE"
+                if view.field_def.type_name != "APPROVAL_TYPE"
             ],
         'initial_add_approvals':
             ezt.boolean(False),
@@ -99,7 +99,7 @@ class TemplateCreate(servlet.Servlet):
         'approvals':
             [
                 view for view in field_views
-                if view.field_def.type_name is "APPROVAL_TYPE"
+                if view.field_def.type_name == "APPROVAL_TYPE"
             ],
         'prechecked_approvals': [],
         'required_approval_ids': [],
@@ -163,12 +163,12 @@ class TemplateCreate(servlet.Servlet):
           initial_admins=parsed.admin_str,
           labels=parsed.labels,
           fields=[view for view in field_views
-                  if view.field_def.type_name is not 'APPROVAL_TYPE'],
+                  if view.field_def.type_name != 'APPROVAL_TYPE'],
           initial_add_approvals=ezt.boolean(parsed.add_approvals),
           initial_phases=[tracker_pb2.Phase(name=name) for name in
                           parsed.phase_names],
           approvals=[view for view in field_views
-                     if view.field_def.type_name is 'APPROVAL_TYPE'],
+                     if view.field_def.type_name == 'APPROVAL_TYPE'],
           prechecked_approvals=prechecked_approvals,
           required_approval_ids=parsed.required_approval_ids
       )

@@ -313,7 +313,6 @@ def api_base_checks(request, requester, services, cnxn,
 
 @endpoints.api(name=ENDPOINTS_API_NAME, version='v1',
                description='Monorail API to manage issues.',
-               auth_level=endpoints.AUTH_LEVEL.NONE,
                allowed_client_ids=endpoints.SKIP_CLIENT_ID_CHECK,
                documentation=DOC_URL)
 class MonorailApi(remote.Service):
