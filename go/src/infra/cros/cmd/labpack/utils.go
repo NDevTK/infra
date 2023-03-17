@@ -32,7 +32,9 @@ func createLogger(ctx context.Context, logDir string, level logging.Level) (cont
 
 // printInputs prints input params.
 func printInputs(ctx context.Context, input *steps.LabpackInput) (err error) {
-	step, ctx := build.StartStep(ctx, "Input params")
+	// If this function changes significantly, you need to assign the context
+	// here to a named variable so it can be passed to subsequent functions.
+	step, _ := build.StartStep(ctx, "Input params")
 	defer func() { step.End(err) }()
 	req := step.Log("input proto")
 	marsh := jsonpb.Marshaler{Indent: "  "}
