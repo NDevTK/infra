@@ -117,6 +117,7 @@ func backupCBI(ctx context.Context, info *execs.ExecInfo) error {
 	return err
 }
 
+// TODO(b/268499406): Replace all references of this function with cbiContentsAreValidExec
 // cbiContentsContainValidMagic reads the CBI contents on the DUT  and returns an
 // error if they do not contain valid CBI magic.
 func cbiContentsContainValidMagic(ctx context.Context, info *execs.ExecInfo) error {
@@ -133,6 +134,28 @@ func cbiContentsContainValidMagic(ctx context.Context, info *execs.ExecInfo) err
 	return nil
 }
 
+// cbiContentsAreValidExec reads the CBI contents on the DUT and returns an
+// error if they do not contain valid CBI magic or are missing any of the
+// required fields.
+func cbiContentsAreValidExec(ctx context.Context, info *execs.ExecInfo) error {
+	runner := info.NewRunner(info.GetDut().Name)
+	dutCBI, err := cbi.GetCBIContents(ctx, runner)
+	if err != nil {
+		return errors.Annotate(err, "CBI contents are valid").Err()
+	}
+
+	if !cbi.ContainsCBIMagic(dutCBI) {
+		log.Debugf(ctx, "CBI contents are valid: CBI contents found on the DUT: %s", dutCBI.GetRawContents())
+		return errors.Reason("CBI contents are valid: the CBI contents on the DUT do not contain valid magic").Err()
+	}
+
+	if err := cbi.VerifyRequiredFields(ctx, runner); err != nil {
+		return errors.Annotate(err, "CBI contents are valid").Err()
+	}
+
+	return nil
+}
+
 func init() {
 	execs.Register("cros_restore_cbi_contents_from_ufs", restoreCBIContentsFromUFS)
 	execs.Register("cros_cbi_contents_do_not_match", cbiContentsDoNotMatch)
@@ -143,4 +166,5 @@ func init() {
 	execs.Register("cros_backup_cbi", backupCBI)
 	execs.Register("cros_invalidate_cbi_cache", invalidateCBICache)
 	execs.Register("cros_cbi_contents_contain_valid_magic", cbiContentsContainValidMagic)
+	execs.Register("cros_cbi_contents_are_valid", cbiContentsAreValidExec)
 }

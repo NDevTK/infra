@@ -7,6 +7,7 @@ package cbi
 
 import (
 	"context"
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -36,6 +37,10 @@ const (
 	transferCBICommand = "ectool i2cxfer"
 	cbiSize            = 256 // How many bytes of memory are stored in CBI.
 
+	// Base command to retrieve the value of a specific CBI field.
+	// e.g. ectool cbi get 0
+	readCBIFieldCommand = "ectool cbi get"
+
 	// Invalidates the cache by querying for the 0th tag in CBI
 	// (any arbitrary tag will work), with an additional flag equal to "1" passed
 	// indicating that the entire cache should be invalidated (run `ectool cbi`
@@ -62,6 +67,15 @@ var cbiCommandTimeout = time.Second * 10
 
 var readCBIRegex = regexp.MustCompile(`0x[[:xdigit:]]{1,2}|00`) // Match bytes printed in hex format (e.g. 00, 0x12, 0x3)
 var locateCBIRegex = regexp.MustCompile(`Port:\s(\d+).*Address:\s(0x\w+)`)
+
+// A mapping of all required CBI field names to the "tag" (essentially an index)
+// they're stored underneath. More information can be found here:
+// here: https://chromium.googlesource.com/chromiumos/docs/+/HEAD/design_docs/cros_board_info.md#data-fields
+var requiredFields = map[string]int{
+	"BOARD_VERSION": 0,
+	"SKU_ID":        2,
+	"FW_CONFIG":     6,
+}
 
 // GetCBILocation uses the `ectool locatechip` utility to get the CBILocation
 // from the DUT. Will return an error if the DUT doesn't support CBI or if it
@@ -184,4 +198,20 @@ func parseBytesFromCBIContents(cbiContents string, numBytesToRead int) ([]string
 // the CBI magic bytes.
 func ContainsCBIMagic(cbi *labapi.Cbi) bool {
 	return strings.HasPrefix(cbi.GetRawContents(), cbiMagic)
+}
+
+// VerifyRequiredFields returns an error if any of the required fields are
+// invalid or unable to be retrieved.
+func VerifyRequiredFields(ctx context.Context, run components.Runner) error {
+	for name, tag := range requiredFields {
+		getRequiredFieldOutput, err := run(ctx, cbiCommandTimeout, readCBIFieldCommand, strconv.Itoa(tag))
+		if strings.Contains(strings.ToLower(getRequiredFieldOutput), "error") {
+			errorString := fmt.Sprintf("verify required fields: required field %s is undefined", name)
+			if err != nil {
+				errorString += fmt.Sprintf("\nerror: %s", err)
+			}
+			return errors.Reason(errorString).Err()
+		}
+	}
+	return nil
 }

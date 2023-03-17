@@ -454,10 +454,13 @@ func crosRepairActions() map[string]*Action {
 				"CBI is present",
 				"UFS contains CBI contents",
 			},
-			Dependencies: []string{
-				"CBI contents contain valid magic",
-			},
-			ExecName:               "cros_cbi_contents_match",
+			ExecName: "cros_cbi_contents_are_valid",
+			// Realistically, this should always complete in a few seconds.
+			// However, because we run mutliple ssh commands with a generous timeout
+			// if all of those commands (because of a slow or bad connection)
+			// take the maximum allotted time, we could timeout with
+			// the default 1 minute timeout.
+			ExecTimeout:            &durationpb.Duration{Seconds: 180},
 			AllowFailAfterRecovery: true,
 		},
 		"Recover CBI With Contents From Inventory": {
