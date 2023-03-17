@@ -44,7 +44,6 @@ type Plan struct {
 // planConverter holds data to convert actions of single plan.
 type planConverter struct {
 	srcPlan *config.Plan
-	actions map[string]*Action
 }
 
 // ConvertPlan converts Plan to a tree representation.
@@ -53,13 +52,9 @@ func ConvertPlan(name string, plan *config.Plan) *Plan {
 		Name:      name,
 		AllowFail: plan.GetAllowFail(),
 	}
-	converter := &planConverter{
-		srcPlan: plan,
-		actions: make(map[string]*Action, len(plan.GetActions())),
-	}
+	converter := &planConverter{srcPlan: plan}
 	for _, actionName := range plan.GetCriticalActions() {
-		converter.convertAcion(actionName)
-		p.CriticalActions = append(p.CriticalActions, converter.actions[actionName])
+		p.CriticalActions = append(p.CriticalActions, converter.convertAcion(actionName, false))
 	}
 	return p
 }
@@ -90,12 +85,11 @@ type Action struct {
 	RunControl string `json:"run_control,omitempty"`
 }
 
-func (t *planConverter) convertAcion(name string) {
-	if _, ok := t.actions[name]; ok {
-		// Action already converted.
-		return
+func (t *planConverter) convertAcion(name string, excludeRecoveries bool) *Action {
+	action, ok := t.srcPlan.GetActions()[name]
+	if !ok {
+		return nil
 	}
-	action := t.srcPlan.GetActions()[name]
 	a := &Action{
 		Name:                   name,
 		Docs:                   action.GetDocs(),
@@ -107,17 +101,16 @@ func (t *planConverter) convertAcion(name string) {
 	if action.GetExecTimeout() != nil {
 		a.Timeout = action.GetExecTimeout().AsDuration().String()
 	}
-	t.actions[name] = a
 	for _, actionName := range action.GetConditions() {
-		t.convertAcion(actionName)
-		a.Conditions = append(a.Conditions, t.actions[actionName])
+		a.Conditions = append(a.Conditions, t.convertAcion(actionName, true))
 	}
 	for _, actionName := range action.GetDependencies() {
-		t.convertAcion(actionName)
-		a.Dependencies = append(a.Dependencies, t.actions[actionName])
+		a.Dependencies = append(a.Dependencies, t.convertAcion(actionName, excludeRecoveries || false))
 	}
-	for _, actionName := range action.GetRecoveryActions() {
-		t.convertAcion(actionName)
-		a.Recoveries = append(a.Recoveries, t.actions[actionName])
+	if !excludeRecoveries {
+		for _, actionName := range action.GetRecoveryActions() {
+			a.Recoveries = append(a.Recoveries, t.convertAcion(actionName, true))
+		}
 	}
+	return a
 }
