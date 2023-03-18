@@ -48,7 +48,7 @@ type loggerImpl struct {
 	mu      sync.Mutex
 }
 
-// Create custom logger config with custom formatter.
+// NewLogger creates a custom logger config with custom formatter.
 func NewLogger(ctx context.Context, callDepth int, logDir string, stdLevel logging.Level, format string, createFiles bool) (_ context.Context, _ Logger, rErr error) {
 	if format == "" {
 		return ctx, nil, errors.Reason("create logger: format not specified").Err()
