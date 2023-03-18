@@ -12,11 +12,11 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/golang/protobuf/jsonpb"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	steps "infra/cros/cmd/labpack/internal/steps"
 	"infra/cros/cmd/labpack/logger"
@@ -37,11 +37,15 @@ func printInputs(ctx context.Context, input *steps.LabpackInput) (err error) {
 	step, _ := build.StartStep(ctx, "Input params")
 	defer func() { step.End(err) }()
 	req := step.Log("input proto")
-	marsh := jsonpb.Marshaler{Indent: "  "}
-	if err = marsh.Marshal(req, input); err != nil {
+	marshalOptions := protojson.MarshalOptions{
+		Indent: "  ",
+	}
+	msg, err := marshalOptions.Marshal(input)
+	if err != nil {
 		return errors.Annotate(err, "failed to marshal proto").Err()
 	}
-	return nil
+	_, err = req.Write(msg)
+	return errors.Annotate(err, "failed to write message").Err()
 }
 
 // describeEnvironment describes the environment where labpack is being run.
