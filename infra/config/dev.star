@@ -284,9 +284,6 @@ adhoc_builder(
         ],
     },
     schedule = "with 10m interval",
-    experiments = {
-        "luci.buildbucket.agent.start_build": 100,
-    },
 )
 
 adhoc_builder(
