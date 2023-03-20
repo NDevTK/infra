@@ -24,6 +24,7 @@ var application = &cli.Application{
 	Commands: []*subcommands.Command{
 		subcommands.CmdHelp,
 		cmd.LeaseCmd,
+		cmd.ReleaseCmd,
 		cmd.ImageCmd,
 	},
 }
