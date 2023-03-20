@@ -20,9 +20,16 @@ import (
 	compute "cloud.google.com/go/compute/apiv1"
 	"cloud.google.com/go/compute/apiv1/computepb"
 	"github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/iterator"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
+	// Project name is hard-coded as this code will be migrated to a cloud native
+	// implementation in the future (go/cros-vm-cloud-native-image-sync) and the
+	// project name will be hard-coded by then anyway.
+	// Additionally, GCE images can be used across projects. There is no much
+	// benefit making it configurable here.
 	project      = "betty-cloud-prototype"
 	license      = "https://www.googleapis.com/compute/v1/projects/vm-options/global/licenses/enable-vmx"
 	timeout      = 10 * time.Minute
@@ -52,8 +59,10 @@ func New() (api.ImageApi, error) {
 
 // computeImagesClient interfaces partial GCE client API
 type computeImagesClient interface {
+	Delete(ctx context.Context, req *computepb.DeleteImageRequest, opts ...gax.CallOption) (*compute.Operation, error)
 	Get(context.Context, *computepb.GetImageRequest, ...gax.CallOption) (*computepb.Image, error)
 	Insert(context.Context, *computepb.InsertImageRequest, ...gax.CallOption) (*compute.Operation, error)
+	List(ctx context.Context, req *computepb.ListImagesRequest, opts ...gax.CallOption) *compute.ImageIterator
 }
 
 func (c *cloudsdkImageApi) GetImage(buildPath string, wait bool) (*api.GceImage, error) {
@@ -94,11 +103,71 @@ func (c *cloudsdkImageApi) GetImage(buildPath string, wait bool) (*api.GceImage,
 	return c.describeImage(client, gceImage)
 }
 
-// handle retrieves image info, and imports the image when not found.
+func (c *cloudsdkImageApi) ListImages(filter string) ([]api.GceImage, error) {
+	var ctx = context.Background()
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
+	client, err := compute.NewImagesRESTClient(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("NewImagesRESTClient: %v", err)
+	}
+	defer client.Close()
+
+	gceImages, err := c.listImages(client, filter)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to list images: %w", err)
+	}
+	return gceImages, nil
+}
+
+func (c *cloudsdkImageApi) DeleteImage(imageName string, wait bool) error {
+	var ctx = context.Background()
+	ctx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
+	client, err := compute.NewImagesRESTClient(ctx)
+	if err != nil {
+		return fmt.Errorf("NewImagesRESTClient: %v", err)
+	}
+	defer client.Close()
+
+	if err := c.deleteImage(client, imageName, wait); err != nil {
+		return fmt.Errorf("Failed to delete image %s: %v", imageName, err)
+	}
+	return nil
+}
+
+// handle retrieves image info, waits for delete operation is finished if the
+// image with the same name is being deleted. Then imports the image if the
+// status is not PENDING or READY.
 func (c *cloudsdkImageApi) handle(client computeImagesClient, buildInfo *buildInfo, gceImage *api.GceImage) (*compute.Operation, *api.GceImage, error) {
 	gceImage, _ = c.describeImage(client, gceImage)
 
-	if gceImage.GetStatus() == api.GceImage_NOT_FOUND {
+	// If an image is being deleted, wait until it's finished.
+	if gceImage.GetStatus() == api.GceImage_DELETING {
+		var ctx = context.Background()
+		ctx, cancel := context.WithTimeout(ctx, timeout)
+		defer cancel()
+		if err := poll(ctx, func(ctx context.Context) (bool, error) {
+			gceImage, err := c.describeImage(client, gceImage)
+			if gceImage.GetStatus() == api.GceImage_NOT_FOUND {
+				return true, err
+			}
+			if err != nil {
+				return false, err
+			}
+			return false, nil
+		}, pollInterval); err != nil {
+			return nil, gceImage, fmt.Errorf("Failed to wait for image to be deleted: %w", err)
+		}
+		gceImage.Status = api.GceImage_NOT_FOUND
+	}
+
+	if gceImage.GetStatus() != api.GceImage_PENDING && gceImage.GetStatus() != api.GceImage_READY {
+		if gceImage.GetStatus() != api.GceImage_NOT_FOUND {
+			log.Default().Printf("Unexpected image status %s, attempt to import anyway", gceImage.GetStatus().String())
+		}
 		op, err := c.importImage(client, buildInfo, gceImage)
 		if err == nil {
 			gceImage.Status = api.GceImage_PENDING
@@ -137,12 +206,7 @@ func (c *cloudsdkImageApi) describeImage(client computeImagesClient, gceImage *a
 
 	gceImage.Status = api.GceImage_NOT_FOUND
 	if i != nil {
-		switch i.GetStatus() {
-		case "READY":
-			gceImage.Status = api.GceImage_READY
-		case "PENDING":
-			gceImage.Status = api.GceImage_PENDING
-		}
+		gceImage.Status = parseImageStatus(*i.Status)
 	}
 
 	return gceImage, err
@@ -167,6 +231,71 @@ func (c *cloudsdkImageApi) importImage(client computeImagesClient, buildInfo *bu
 	}
 
 	return client.Insert(ctx, req)
+}
+
+// listImages gets a list of images in the project, optionally with a filter.
+func (c *cloudsdkImageApi) listImages(client computeImagesClient, filter string) ([]api.GceImage, error) {
+	ctx := context.Background()
+
+	req := &computepb.ListImagesRequest{
+		Project: project,
+		Filter:  &filter,
+	}
+	var gceImages []api.GceImage
+
+	// The iterator goes through all matched images without paging.
+	it := client.List(ctx, req)
+	for {
+		image, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, fmt.Errorf("Failed to iterate image: %w", err)
+		}
+		creationTime, err := time.Parse(time.RFC3339, *image.CreationTimestamp)
+		if err != nil {
+			return nil, fmt.Errorf("Failed to parse timestamp %s: %w", *image.CreationTimestamp, err)
+		}
+		description := ""
+		if image.Description != nil {
+			description = *image.Description
+		}
+		gceImages = append(gceImages, api.GceImage{
+			Project:     project,
+			Name:        *image.Name,
+			Status:      parseImageStatus(*image.Status),
+			Labels:      image.Labels,
+			Description: description,
+			TimeCreated: timestamppb.New(creationTime),
+		})
+	}
+	return gceImages, nil
+}
+
+// deleteImage deletes an image from the project.
+func (c *cloudsdkImageApi) deleteImage(client computeImagesClient, imageName string, wait bool) error {
+	ctx := context.Background()
+
+	req := &computepb.DeleteImageRequest{
+		Project: project,
+		Image:   imageName,
+	}
+	op, err := client.Delete(ctx, req)
+
+	if err != nil {
+		return fmt.Errorf("Error deleting image: %w", err)
+	}
+
+	if wait {
+		if op == nil {
+			return errors.New("No operation returned for waiting")
+		}
+		if err := op.Wait(ctx); err != nil {
+			return fmt.Errorf("Failed to wait for image %s to be deleted: %w", imageName, err)
+		}
+	}
+	return nil
 }
 
 // parseBuildPath parses build info from build path. Possible naming schemes:
@@ -232,9 +361,10 @@ func getImageName(info *buildInfo, buildPath string) string {
 
 // getImageLabels creates a map of labels for GCE image. For known images there
 // are build-type, board, milestone. For unknown images build-type is set to
-// unknown.
+// unknown. All images imported by this API will have created-by set to vmlab.
 func getImageLabels(info *buildInfo) map[string]string {
 	labels := make(map[string]string)
+	labels["created-by"] = "vmlab"
 	if info != nil {
 		labels["build-type"] = info.buildType
 		labels["board"] = info.board
@@ -248,6 +378,20 @@ func getImageLabels(info *buildInfo) map[string]string {
 // getGcsImagePath returns the full path of the tarball on GCS.
 func getGcsImagePath(buildPath string) string {
 	return fmt.Sprintf("https://storage.googleapis.com/chromeos-image-archive/%s/chromiumos_test_image_gce.tar.gz", buildPath)
+}
+
+func parseImageStatus(status string) api.GceImage_Status {
+	switch status {
+	case "READY":
+		return api.GceImage_READY
+	case "PENDING":
+		return api.GceImage_PENDING
+	case "FAILED":
+		return api.GceImage_FAILED
+	case "DELETING":
+		return api.GceImage_DELETING
+	}
+	return api.GceImage_UNKNOWN
 }
 
 // poll provides a generic implementation of calling f at interval, exits on

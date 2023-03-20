@@ -19,8 +19,14 @@ import (
 )
 
 type mockImageClient struct {
+	deleteFunc func() (*compute.Operation, error)
 	getFunc    func() (*computepb.Image, error)
 	importFunc func() (*compute.Operation, error)
+	listFunc   func() *compute.ImageIterator
+}
+
+func (m *mockImageClient) Delete(context.Context, *computepb.DeleteImageRequest, ...gax.CallOption) (*compute.Operation, error) {
+	return m.deleteFunc()
 }
 
 func (m *mockImageClient) Get(ctx context.Context, req *computepb.GetImageRequest, opts ...gax.CallOption) (*computepb.Image, error) {
@@ -29,6 +35,10 @@ func (m *mockImageClient) Get(ctx context.Context, req *computepb.GetImageReques
 
 func (m *mockImageClient) Insert(context.Context, *computepb.InsertImageRequest, ...gax.CallOption) (*compute.Operation, error) {
 	return m.importFunc()
+}
+
+func (m *mockImageClient) List(ctx context.Context, req *computepb.ListImagesRequest, opts ...gax.CallOption) *compute.ImageIterator {
+	return m.listFunc()
 }
 
 func TestDescribeImageError(t *testing.T) {
@@ -96,6 +106,54 @@ func TestDescribeImagePending(t *testing.T) {
 	}
 	if gceImage.Status != api.GceImage_PENDING {
 		t.Errorf("describeImage() expected status api.GceImage_PENDING, got %v", gceImage.Status)
+	}
+}
+
+func TestDescribeImageDeleting(t *testing.T) {
+	imageApi := &cloudsdkImageApi{}
+	client := &mockImageClient{getFunc: func() (*computepb.Image, error) {
+		status := "DELETING"
+		i := &computepb.Image{
+			Status: &status,
+		}
+		return i, nil
+	}}
+	gceImage := &api.GceImage{
+		Name:    "my-image",
+		Project: "my-project",
+	}
+
+	gceImage, err := imageApi.describeImage(client, gceImage)
+
+	if err != nil {
+		t.Errorf("describeImage() expected nil error, got %v", err)
+	}
+	if gceImage.Status != api.GceImage_DELETING {
+		t.Errorf("describeImage() expected status api.GceImage_DELETING, got %v", gceImage.Status)
+	}
+}
+
+func TestDescribeImageFailed(t *testing.T) {
+	imageApi := &cloudsdkImageApi{}
+	client := &mockImageClient{getFunc: func() (*computepb.Image, error) {
+		status := "FAILED"
+		i := &computepb.Image{
+			Status: &status,
+		}
+		return i, nil
+	}}
+	gceImage := &api.GceImage{
+		Name:    "my-image",
+		Project: "my-project",
+	}
+
+	gceImage, err := imageApi.describeImage(client, gceImage)
+
+	if err != nil {
+		t.Errorf("describeImage() expected nil error, got %v", err)
+	}
+	if gceImage.Status != api.GceImage_FAILED {
+		t.Errorf("describeImage() expected status api.GceImage_FAILED, got %v", gceImage.Status)
 	}
 }
 
@@ -203,6 +261,45 @@ func TestHandleImportError(t *testing.T) {
 	}
 	if gceImage.Status != api.GceImage_NOT_FOUND {
 		t.Errorf("handle() expected status api.GceImage_NOT_FOUND, got %v", gceImage.Status)
+	}
+}
+
+func TestDeleteImageNoWait(t *testing.T) {
+	imageApi := &cloudsdkImageApi{}
+	client := &mockImageClient{
+		deleteFunc: func() (*compute.Operation, error) {
+			return &compute.Operation{}, nil
+		},
+	}
+	err := imageApi.deleteImage(client, "test", false)
+	if err != nil {
+		t.Errorf("listImages() unexpected error: %v", err)
+	}
+}
+
+func TestDeleteImageNoWaitError(t *testing.T) {
+	imageApi := &cloudsdkImageApi{}
+	client := &mockImageClient{
+		deleteFunc: func() (*compute.Operation, error) {
+			return nil, errors.New("error")
+		},
+	}
+	err := imageApi.deleteImage(client, "test", false)
+	if err == nil {
+		t.Errorf("listImages() expected error but got nil")
+	}
+}
+
+func TestDeleteImageWaitNoOperationError(t *testing.T) {
+	imageApi := &cloudsdkImageApi{}
+	client := &mockImageClient{
+		deleteFunc: func() (*compute.Operation, error) {
+			return nil, nil
+		},
+	}
+	err := imageApi.deleteImage(client, "test", true)
+	if err == nil {
+		t.Errorf("listImages() expected error but got nil")
 	}
 }
 
@@ -347,6 +444,7 @@ func TestGetImageLabelsValid(t *testing.T) {
 		milestone: "100",
 	})
 	expected := map[string]string{
+		"created-by": "vmlab",
 		"build-type": "cq",
 		"board":      "betty-arc-r",
 		"milestone":  "100",
@@ -359,10 +457,27 @@ func TestGetImageLabelsValid(t *testing.T) {
 func TestGetImageLabelsInvalid(t *testing.T) {
 	actual := getImageLabels(nil)
 	expected := map[string]string{
+		"created-by": "vmlab",
 		"build-type": "unknown",
 	}
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf("Expected labels: %v, but is actual: %v", expected, actual)
+	}
+}
+
+func TestParseImageStatus(t *testing.T) {
+	expectedResults := map[string]api.GceImage_Status{
+		"UNKNOWN":  api.GceImage_UNKNOWN,
+		"READY":    api.GceImage_READY,
+		"PENDING":  api.GceImage_PENDING,
+		"FAILED":   api.GceImage_FAILED,
+		"DELETING": api.GceImage_DELETING,
+	}
+	for status, expected := range expectedResults {
+		actual := parseImageStatus(status)
+		if expected != actual {
+			t.Errorf("Expected status is %s for %s, but is actual %s", expected, status, actual)
+		}
 	}
 }
 

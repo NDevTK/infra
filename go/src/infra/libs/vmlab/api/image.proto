@@ -6,6 +6,8 @@ syntax = "proto3";
 
 package vmlab.api;
 
+import "google/protobuf/timestamp.proto";
+
 option go_package = "infra/libs/vmlab/api";
 
 
@@ -17,14 +19,22 @@ message GceImage {
   string name = 2;
   // Readiness of GCE image.
   Status status = 3;
-  // Status tracks the relevant status of VM lab use case: READY, PENDING and
-  // NOT_FOUND (all other statuses are mapped to NOT_FOUND).
+  // Status tracks the relevant status of VM lab use case: READY, PENDING,
+  // FAILED, DELETING, NOT_FOUND. Unknown statuses are mapped to UNKNOWN.
   enum Status {
     UNKNOWN = 0;
     READY = 1;
     PENDING = 2;
-    NOT_FOUND = 3;
+    FAILED = 3;
+    DELETING = 4;
+    NOT_FOUND = 5;
   }
   // GCS URL of source image to be imported.
   string source = 4;
+  // Labels of the image, including build-type, board, milestone.
+  map<string, string> labels = 5;
+  // Description of the image which contains source image in GS bucket.
+  string description = 6;
+  // Timestamp when the image is created in UTC.
+  google.protobuf.Timestamp timeCreated = 7;
 }
