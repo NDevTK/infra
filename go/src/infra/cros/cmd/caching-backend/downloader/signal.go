@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,10 +21,12 @@ import (
 func cancelOnSignals(ctx context.Context, idleConns chan struct{}, svr *http.Server, gracePeriod time.Duration) context.Context {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, unix.SIGTERM)
+	outerCtx, outerCancel := context.WithCancel(ctx)
+	// We leak the cancellation resource if we never get a signal.
 	go func() {
 		sig := <-c
 		log.Printf("Caught signal: %s. Gracefully shutting down archive-server", sig)
-		ctx, cancel := context.WithTimeout(ctx, gracePeriod)
+		ctx, cancel := context.WithTimeout(outerCtx, gracePeriod)
 		defer cancel()
 		if err := svr.Shutdown(ctx); err != nil {
 			log.Printf("archive-server shutdown unsuccesfully: %v", err)
@@ -32,6 +34,7 @@ func cancelOnSignals(ctx context.Context, idleConns chan struct{}, svr *http.Ser
 			log.Printf("archive-server shutdown successfully!")
 		}
 		close(idleConns)
+		outerCancel()
 	}()
-	return ctx
+	return outerCtx
 }
