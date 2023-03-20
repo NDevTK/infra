@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -170,7 +170,11 @@ func UpdateDUT(ctx context.Context, machinelse *ufspb.MachineLSE, mask *field_ma
 
 		// Validate the update mask and process it.
 		if mask != nil && len(mask.Paths) > 0 {
-			if err := validateUpdateMachineLSEDUTMask(mask, machinelse); err != nil {
+			machine, err = GetMachine(ctx, oldMachinelse.GetMachines()[0])
+			if err != nil {
+				return errors.Annotate(err, "unable to get machine %s", oldMachinelse.GetMachines()[0]).Err()
+			}
+			if err := validateUpdateMachineLSEDUTMask(mask, machinelse, machine); err != nil {
 				return err
 			}
 			machinelse, err = processUpdateMachineLSEUpdateMask(ctx, proto.Clone(oldMachinelse).(*ufspb.MachineLSE), machinelse, mask)
@@ -183,10 +187,11 @@ func UpdateDUT(ctx context.Context, machinelse *ufspb.MachineLSE, mask *field_ma
 				if len(oldMachinelse.GetMachines()) == 0 {
 					return errors.Reason("DUT in invalid state. Delete DUT and recreate").Err()
 				}
+				if machine, err = GetMachine(ctx, machinelse.GetMachines()[0]); err != nil {
+					return err
+				}
 				// Check if the machines have been changed.
 				if machinelse.GetMachines()[0] != oldMachinelse.GetMachines()[0] {
-					// Ignore error as validateUpdateMachineLSE verifies that the given machine exists.
-					machine, _ = GetMachine(ctx, machinelse.GetMachines()[0])
 					setOutputField(ctx, machine, machinelse)
 				}
 			} else {
@@ -196,6 +201,10 @@ func UpdateDUT(ctx context.Context, machinelse *ufspb.MachineLSE, mask *field_ma
 			// Copy state if its not updated.
 			if machinelse.GetResourceState() == ufspb.State_STATE_UNSPECIFIED {
 				machinelse.ResourceState = oldMachinelse.GetResourceState()
+			}
+			// Verify LogicalZone
+			if err := validateMachineLSELogicalZone(machinelse, machine); err != nil {
+				return err
 			}
 		}
 
@@ -386,7 +395,7 @@ func validateDeviceConfig(ctx context.Context, dut *ufspb.Machine) error {
 			return nil
 		}
 	}
-	errStr := fmt.Sprintf("No device config for platform %q, model %q, config (%+v)", devConfigID.GetModelId(), devConfigID.GetModelId(), devConfigID)
+	errStr := fmt.Sprintf("No device config for platform %q, model %q, config (%+v)", devConfigID.GetPlatformId(), devConfigID.GetModelId(), devConfigID)
 	return status.Error(codes.InvalidArgument, errStr)
 }
 
@@ -434,7 +443,7 @@ func cleanPreDeployFields(servo *chromeosLab.Servo) {
 // validateUpdateMachineLSEDUTMask validates the input mask for the given machineLSE.
 //
 // Assumes that dut and mask aren't empty. This is because this function is not called otherwise.
-func validateUpdateMachineLSEDUTMask(mask *field_mask.FieldMask, machinelse *ufspb.MachineLSE) error {
+func validateUpdateMachineLSEDUTMask(mask *field_mask.FieldMask, machinelse *ufspb.MachineLSE, machine *ufspb.Machine) error {
 	var servo *chromeosLab.Servo
 	var rpm *chromeosLab.OSRPM
 
@@ -484,6 +493,10 @@ func validateUpdateMachineLSEDUTMask(mask *field_mask.FieldMask, machinelse *ufs
 			// Check for deletion of rpm outlet. This should not be possible without deleting the host.
 			if _, ok := maskSet["dut.rpm.host"]; rpm.GetPowerunitOutlet() == "" && (!ok || (ok && rpm.GetPowerunitName() != "")) {
 				return status.Error(codes.InvalidArgument, "validateUpdateMachineLSEDUTUpdateMask - Cannot remove rpm outlet. Please delete rpm.")
+			}
+		case "logicalZone":
+			if err := validateMachineLSELogicalZone(machinelse, machine); err != nil {
+				return err
 			}
 		case "deploymentTicket":
 		case "tags":
@@ -592,6 +605,8 @@ func processUpdateMachineLSEUpdateMask(ctx context.Context, oldMachineLse, newMa
 			oldMachineLse.Description = newMachineLse.Description
 		case "deploymentTicket":
 			oldMachineLse.DeploymentTicket = newMachineLse.GetDeploymentTicket()
+		case "logicalZone":
+			oldMachineLse.LogicalZone = newMachineLse.GetLogicalZone()
 		default:
 			if strings.HasPrefix(path, "dut") {
 				if strings.HasPrefix(path, "dut.servo") {
