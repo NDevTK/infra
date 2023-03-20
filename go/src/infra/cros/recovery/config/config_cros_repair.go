@@ -460,27 +460,31 @@ func crosRepairActions() map[string]*Action {
 			// if all of those commands (because of a slow or bad connection)
 			// take the maximum allotted time, we could timeout with
 			// the default 1 minute timeout.
-			ExecTimeout:            &durationpb.Duration{Seconds: 180},
+			ExecTimeout: &durationpb.Duration{Seconds: 180},
+			// TODO(b/268499406): Remove this after we've verified it works as intended on actual lab devices.
 			AllowFailAfterRecovery: true,
+			// TODO(b/268499406): Add "Recover CBI" as a recovery action
 		},
-		"Recover CBI With Contents From Inventory": {
+		"Recover and Validate CBI": {
 			Docs: []string{
 				"Manages the CBI repair workflow.",
+				"Checks that the CBI contents are valid after restoring contents",
+				"from UFS as some DUTs have been observed to return 0 on attempted writes",
+				"but not actually change the CBI contents stored in EEPROM",
 			},
 			Conditions: []string{
 				"Hardware write protection is disabled",
 				"CBI is present",
 				"UFS contains CBI contents",
-				"CBI contents do not match",
 			},
 			Dependencies: []string{
 				"Restore CBI contents from UFS",
 				"Simple reboot",
 				"Wait to be SSHable (normal boot)",
 				"Invalidate CBI cache",
-				"CBI contents match",
 			},
-			ExecName: "sample_pass",
+			ExecName:    "cros_cbi_contents_are_valid",
+			ExecTimeout: &durationpb.Duration{Seconds: 180},
 		},
 		"Restore CBI contents from UFS": {
 			Docs: []string{
@@ -490,18 +494,18 @@ func crosRepairActions() map[string]*Action {
 				"Hardware write protection is disabled",
 				"CBI is present",
 				"UFS contains CBI contents",
-				"CBI contents do not match",
 			},
 			ExecName: "cros_restore_cbi_contents_from_ufs",
 		},
-		"CBI contents contain valid magic": {
+		"CBI contents are valid": {
 			Docs: []string{
-				"Check if CBI contents on the DUT contain valid CBI magic",
+				"Check if CBI contents on the DUT contain valid CBI magic and all required fields are present",
 			},
 			Dependencies: []string{
 				"CBI is present",
 			},
-			ExecName: "cros_cbi_contents_contain_valid_magic",
+			ExecName:   "cros_cbi_contents_are_valid",
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Invalidate CBI cache": {
 			Docs: []string{
@@ -521,30 +525,10 @@ func crosRepairActions() map[string]*Action {
 				"UFS does not contain CBI contents",
 			},
 			Dependencies: []string{
-				"CBI contents contain valid magic",
+				"CBI contents are valid",
 			},
 			ExecName:               "cros_backup_cbi",
 			AllowFailAfterRecovery: true,
-		},
-		"CBI contents match": {
-			Docs: []string{
-				"Check if the contents on the DUT match the contents stored in UFS.",
-			},
-			Dependencies: []string{
-				"CBI is present",
-				"UFS contains CBI contents",
-			},
-			ExecName: "cros_cbi_contents_match",
-		},
-		"CBI contents do not match": {
-			Docs: []string{
-				"Check if the contents on the DUT do not match the contents stored in UFS.",
-			},
-			Dependencies: []string{
-				"CBI is present",
-				"UFS contains CBI contents",
-			},
-			ExecName: "cros_cbi_contents_do_not_match",
 		},
 		"UFS contains CBI contents": {
 			Docs: []string{

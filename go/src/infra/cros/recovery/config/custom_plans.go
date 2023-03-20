@@ -82,7 +82,7 @@ func RecoverCBIFromInventoryConfig() *Configuration {
 		Plans: map[string]*Plan{
 			PlanCrOS: {
 				CriticalActions: []string{
-					"Recover CBI With Contents From Inventory",
+					"Recover and Validate CBI",
 				},
 				Actions: crosRepairActions(),
 			},

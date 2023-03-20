@@ -58,40 +58,6 @@ func ufsDoesNotContainCBIContents(ctx context.Context, info *execs.ExecInfo) err
 	return nil
 }
 
-// cbiContentsMatch checks if the CBI contents on the DUT match what
-// was previously stored in UFS.
-func cbiContentsMatch(ctx context.Context, info *execs.ExecInfo) error {
-	runner := info.NewRunner(info.GetDut().Name)
-	dutCBI, err := cbi.GetCBIContents(ctx, runner)
-	if err != nil {
-		return errors.Annotate(err, "CBI contents match").Err()
-	}
-
-	if info.GetChromeos().GetCbi().GetRawContents() == dutCBI.GetRawContents() {
-		log.Debugf(ctx, "CBI contents match: CBI contents on the DUT match the CBI contents stored in UFS.\nCBI contents: %s", dutCBI.GetRawContents())
-		return nil
-	}
-	log.Debugf(ctx, "CBI contents match: CBI contents on DUT: %s\nCBI contents in UFS: %s", dutCBI.GetRawContents(), info.GetChromeos().GetCbi().GetRawContents())
-	return errors.Reason("CBI contents match: CBI contents on the DUT do not match the CBI contents stored in UFS").Err()
-}
-
-// cbiContentsDoNotMatch checks if the CBI contents on the DUT do not match what
-// was previously stored in UFS. If they do not match, then the CBI contents
-// have been corrupted.
-func cbiContentsDoNotMatch(ctx context.Context, info *execs.ExecInfo) error {
-	runner := info.NewRunner(info.GetDut().Name)
-	dutCBI, err := cbi.GetCBIContents(ctx, runner)
-	if err != nil {
-		return errors.Annotate(err, "CBI contents do not match").Err()
-	}
-
-	if info.GetChromeos().GetCbi().GetRawContents() != dutCBI.GetRawContents() {
-		log.Debugf(ctx, "CBI contents do not match: CBI contents on the DUT do not match the CBI contents stored in UFS.\nCBI contents on DUT: %s\nCBI contents in UFS: %s", dutCBI.GetRawContents(), info.GetChromeos().GetCbi().GetRawContents())
-		return nil
-	}
-	return errors.Reason("CBI contents do not match: CBI contents on DUT match the contents stored in UFS").Err()
-}
-
 // cbiIsPresent checks if CBI contents are found on the DUT.
 func cbiIsPresent(ctx context.Context, info *execs.ExecInfo) error {
 	runner := info.NewRunner(info.GetDut().Name)
@@ -115,23 +81,6 @@ func backupCBI(ctx context.Context, info *execs.ExecInfo) error {
 
 	info.GetChromeos().Cbi = dutCBI
 	return err
-}
-
-// TODO(b/268499406): Replace all references of this function with cbiContentsAreValidExec
-// cbiContentsContainValidMagic reads the CBI contents on the DUT  and returns an
-// error if they do not contain valid CBI magic.
-func cbiContentsContainValidMagic(ctx context.Context, info *execs.ExecInfo) error {
-	runner := info.NewRunner(info.GetDut().Name)
-	dutCBI, err := cbi.GetCBIContents(ctx, runner)
-	if err != nil {
-		return errors.Annotate(err, "CBI contents contain valid magic").Err()
-	}
-
-	if !cbi.ContainsCBIMagic(dutCBI) {
-		return errors.Reason("CBI contents contain valid magic: the CBI contents on the DUT do not contain valid magic:  %s", dutCBI.GetRawContents()).Err()
-	}
-
-	return nil
 }
 
 // cbiContentsAreValidExec reads the CBI contents on the DUT and returns an
@@ -158,13 +107,10 @@ func cbiContentsAreValidExec(ctx context.Context, info *execs.ExecInfo) error {
 
 func init() {
 	execs.Register("cros_restore_cbi_contents_from_ufs", restoreCBIContentsFromUFS)
-	execs.Register("cros_cbi_contents_do_not_match", cbiContentsDoNotMatch)
-	execs.Register("cros_cbi_contents_match", cbiContentsMatch)
 	execs.Register("cros_ufs_contains_cbi_contents", ufsContainsCBIContents)
 	execs.Register("cros_ufs_does_not_contain_cbi_contents", ufsDoesNotContainCBIContents)
 	execs.Register("cros_cbi_is_present", cbiIsPresent)
 	execs.Register("cros_backup_cbi", backupCBI)
 	execs.Register("cros_invalidate_cbi_cache", invalidateCBICache)
-	execs.Register("cros_cbi_contents_contain_valid_magic", cbiContentsContainValidMagic)
 	execs.Register("cros_cbi_contents_are_valid", cbiContentsAreValidExec)
 }
