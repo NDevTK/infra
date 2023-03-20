@@ -392,7 +392,8 @@ SPECS.update({
             # The freetype build script does not correctly support
             # cross-compiling, and there is also no 32-bit Windows wheel.
             skip_plat=[
-                'linux-armv6-py3.8', 'linux-arm64-py3.8', 'windows-x86-py3.8'
+                'linux-armv6-py3.8', 'linux-armv6-py3.11', 'linux-arm64-py3.8',
+                'linux-arm64-py3.11', 'windows-x86-py3.8'
             ],
         ),
         # TODO: Update to gevent with greenlet 2 for Python 3.11.
@@ -501,12 +502,7 @@ SPECS.update({
             '1.44.0',
             pyversions=['py3'],
             env_cb=_GrpcEnv,
-            skip_plat=build_platform.ALL_PY311 +
-            [  # TODO: update to version 1.50+
-                # This won't work until we update to a dockcross image
-                # with a C++14-compatible compiler.
-                'linux-armv6-py3.8'
-            ]),
+            skip_plat=build_platform.ALL_PY311),  # TODO: update to v1.50+
         SourceOrPrebuilt(
             'grpcio-tools',
             '1.32.0',
@@ -598,21 +594,24 @@ SPECS.update({
                 'windows-x86-py3.8',
                 'windows-x64-py3.8',
                 'linux-arm64-py3.8',
+                'linux-arm64-py3.11',
             ),
             arch_map={
                 'mac-x64-py3.8': ['macosx_10_9_x86_64'],
                 'mac-arm64-py3.8': ['macosx_11_0_arm64'],
                 'linux-arm64-py3.8': ['manylinux2014_aarch64'],
+                'linux-arm64-py3.11': ['manylinux2014_aarch64'],
             },
             skip_plat=[
                 'linux-armv6-py3.8',
+                'linux-armv6-py3.11',
             ],
             patch_version='chromium.1',
             pyversions=['py3'],
             # Installing cmake through setup.py is both unreliable and
             # non-hermetic, so supply it from the 3pp package.
             tpp_tools=[
-                ('infra/3pp/tools/cmake', 'version:2@3.25.2.chromium.6'),
+                ('infra/3pp/tools/cmake', 'version:2@3.26.0.chromium.7'),
             ],
         ),
         SourceOrPrebuilt(
@@ -729,8 +728,7 @@ SPECS.update({
             skip_plat=[
                 'linux-arm64-py3.8',
                 'manylinux-x64-py3.8',
-                'manylinux-x64-py3.11',
-            ],
+            ] + build_platform.ALL_PY311,
             pyversions=['py2', 'py3'],
         ),
         SourceOrPrebuilt(
@@ -785,10 +783,10 @@ SPECS.update({
             'pynacl',
             '1.2.1',
             packaged=(),
-            skip_plat=[
-                'linux-armv6-py3.8', 'linux-arm64-py3.8', 'windows-x86-py3.8',
-                'windows-x64-py3.8'
-            ] + build_platform.ALL_MAC,
+            only_plat=[
+                'manylinux-x64-py3.8',
+                'manylinux-x64-py3.11',
+            ],
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
@@ -807,7 +805,12 @@ SPECS.update({
                 'windows-x86-py3.8',
                 'windows-x64-py3.8',
             ),
-            skip_plat=['linux-armv6-py3.8', 'linux-arm64-py3.8'],
+            skip_plat=[
+                'linux-armv6-py3.8',
+                'linux-armv6-py3.11',
+                'linux-arm64-py3.8',
+                'linux-arm64-py3.11',
+            ],
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
@@ -879,7 +882,7 @@ SPECS.update({
             skip_plat=build_platform.ALL_PY311,
             pyversions=['py3'],
         ),
-        # TODO: version 1.14.0+ of wrap for python 3.11.
+        # TODO: version 1.14.0+ of wrapt for python 3.11.
         SourceOrPrebuilt(
             'wrapt',
             '1.10.11',
@@ -986,11 +989,15 @@ SPECS.update({
                 'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
                 'linux-arm64-py3.8',
+                'linux-arm64-py3.11',
                 'mac-x64-py3.8',
                 'mac-arm64-py3.8',
                 'windows-x64-py3.8',
             ],
-            arch_map={'linux-arm64-py3.8': ['manylinux2014_aarch64']},
+            arch_map={
+                'linux-arm64-py3.8': ['manylinux2014_aarch64'],
+                'linux-arm64-py3.11': ['manylinux2014_aarch64'],
+            },
             pyversions=['py3'],
         ),
         Prebuilt(

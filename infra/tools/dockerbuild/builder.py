@@ -351,7 +351,7 @@ def _InstallCipdPythonPackage(system, cipd_platform, wheel, base_dir,
                               work_root):
   PY_CIPD_VERSION_MAP = {
       '38': 'version:2@3.8.10.chromium.28',
-      '311': 'version:2@3.11.2.chromium.27',
+      '311': 'version:2@3.11.2.chromium.28',
   }
 
   package_ident = 'py_%s_%s' % (wheel.pyversion, cipd_platform)
@@ -441,8 +441,9 @@ def SetupPythonPackages(system, wheel, base_dir, work_root):
     env['PYTHONHOME'] = pkg_dir
     # Set _PYTHON_SYSCONFIGDATA_NAME to point to the target-architecture
     # sysconfig module.
-    sysconfigdata_modules = glob.glob('%s/lib/python%s/_sysconfigdata_*.py' %
-                                      (pkg_dir, '.'.join(wheel.pyversion)))
+    sysconfigdata_modules = glob.glob(
+        '%s/lib/python%s.%s/_sysconfigdata_*.py' %
+        (pkg_dir, wheel.pyversion[0], wheel.pyversion[1:]))
     if len(sysconfigdata_modules) != 1:
       raise Exception(
           'Expected 1 sysconfigdata module in python package ' +

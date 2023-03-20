@@ -43,7 +43,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -268,7 +270,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -289,7 +293,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -340,7 +346,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -391,7 +399,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -538,7 +548,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -559,7 +571,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -1088,7 +1102,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-x64-py3.11*
 * *mac-x64-py3.8*
@@ -1243,7 +1259,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -1392,7 +1410,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -1574,7 +1594,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -1659,7 +1681,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -3212,6 +3236,7 @@ wheel: <
 
 
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
 * *mac-arm64-py3.8*
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.8*
@@ -3862,6 +3887,8 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -3881,6 +3908,8 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -3933,6 +3962,7 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
 * *mac-arm64-py3.8*
 * *mac-x64-py3.8*
@@ -4374,7 +4404,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -4467,6 +4499,7 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -5048,7 +5081,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -5518,9 +5553,7 @@ wheel: <
 
 
 * *linux-armv6-py3.8*
-* *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
-* *mac-x64-py3.11*
 * *mac-x64-py3.8*
 * *windows-x64-py3.8*
 * *windows-x86-py3.8*
@@ -5535,7 +5568,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -5556,7 +5591,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -5605,7 +5642,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -6132,7 +6171,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -8256,7 +8297,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
@@ -8319,7 +8362,9 @@ wheel: <
 ```
 
 
+* *linux-arm64-py3.11*
 * *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
 * *linux-armv6-py3.8*
 * *mac-arm64-py3.11*
 * *mac-arm64-py3.8*
