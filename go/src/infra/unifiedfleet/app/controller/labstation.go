@@ -109,7 +109,11 @@ func UpdateLabstation(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 		// Validate the update mask and process it.
 		if mask != nil && len(mask.Paths) > 0 {
 			// Partial update with mask
-			if err := validateUpdateLabstationMask(mask, machinelse); err != nil {
+			machine, err = GetMachine(ctx, oldMachinelse.GetMachines()[0])
+			if err != nil {
+				return errors.Annotate(err, "unable to get machine %s", oldMachinelse.GetMachines()[0]).Err()
+			}
+			if err := validateUpdateLabstationMask(mask, machinelse, machine); err != nil {
 				return errors.Annotate(err, "UpdateLabstation - Failed update mask validation").Err()
 			}
 			if machinelse, err = processUpdateLabstationMask(ctx, proto.Clone(oldMachinelse).(*ufspb.MachineLSE), machinelse, mask); err != nil {
@@ -118,10 +122,10 @@ func UpdateLabstation(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 		} else {
 			// Full update, Machines cannot be empty.
 			if len(machinelse.GetMachines()) > 0 {
+				if machine, err = GetMachine(ctx, machinelse.GetMachines()[0]); err != nil {
+					return err
+				}
 				if machinelse.GetMachines()[0] != oldMachinelse.GetMachines()[0] {
-					if machine, err = GetMachine(ctx, machinelse.GetMachines()[0]); err != nil {
-						return err
-					}
 					// Check if we have permission for the new machine.
 					if err := util.CheckPermission(ctx, util.InventoriesUpdate, machine.GetRealm()); err != nil {
 						return err
@@ -136,6 +140,10 @@ func UpdateLabstation(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 			// Copy old state if state was not updated.
 			if machinelse.GetResourceState() == ufspb.State_STATE_UNSPECIFIED {
 				machinelse.ResourceState = oldMachinelse.GetResourceState()
+			}
+			// Verify LogicalZone
+			if err := validateMachineLSELogicalZone(machinelse, machine); err != nil {
+				return err
 			}
 		}
 
@@ -160,7 +168,7 @@ func UpdateLabstation(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 }
 
 // validateUpdateLabstationMask validates the labstation update mask.
-func validateUpdateLabstationMask(mask *field_mask.FieldMask, machinelse *ufspb.MachineLSE) error {
+func validateUpdateLabstationMask(mask *field_mask.FieldMask, machinelse *ufspb.MachineLSE, machine *ufspb.Machine) error {
 	// GetLabstation should return an object. Otherwise UpdateLabstation isn't called
 	labstation := machinelse.GetChromeosMachineLse().GetDeviceLse().GetLabstation()
 	rpm := labstation.GetRpm()
@@ -195,6 +203,10 @@ func validateUpdateLabstationMask(mask *field_mask.FieldMask, machinelse *ufspb.
 			// Check for deletion of rpm outlet. This should not be possible without deleting the host.
 			if _, ok := maskSet["labstation.rpm.host"]; rpm.GetPowerunitOutlet() == "" && (!ok || (ok && rpm.GetPowerunitName() != "")) {
 				return status.Error(codes.InvalidArgument, "validateUpdateMachineLSELabstationUpdateMask - Cannot remove rpm outlet. Please delete rpm.")
+			}
+		case "logicalZone":
+			if err := validateMachineLSELogicalZone(machinelse, machine); err != nil {
+				return err
 			}
 		case "deploymentTicket":
 		case "tags":
@@ -283,6 +295,8 @@ func processUpdateLabstationMask(ctx context.Context, oldMachineLSE, newMachineL
 				// Copy the outlet for update
 				oldLabstation.GetRpm().PowerunitOutlet = newLabstation.GetRpm().GetPowerunitOutlet()
 			}
+		case "logicalZone":
+			oldMachineLSE.LogicalZone = newMachineLSE.GetLogicalZone()
 		default:
 			// Ideally, this piece of code should never execute unless validation is wrong.
 			return nil, status.Errorf(codes.Internal, "Unable to process update mask for %s", path)

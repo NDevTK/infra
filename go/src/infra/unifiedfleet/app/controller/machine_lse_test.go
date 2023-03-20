@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,9 +50,10 @@ func mockDutMachineLSE(name string) *ufspb.MachineLSE {
 		ChromeosMachineLse: chromeOSMachineLse,
 	}
 	return &ufspb.MachineLSE{
-		Name:     name,
-		Hostname: name,
-		Lse:      lse,
+		Name:        name,
+		Hostname:    name,
+		Lse:         lse,
+		LogicalZone: ufspb.LogicalZone_LOGICAL_ZONE_UNSPECIFIED,
 	}
 }
 
@@ -585,11 +586,17 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 
 	machine21 := &ufspb.Machine{
 		Name: "machine-21",
+		Location: &ufspb.Location{
+			Zone: ufspb.Zone_ZONE_UNSPECIFIED,
+		},
 	}
 	registration.CreateMachine(ctx, machine21)
 
 	machine22 := &ufspb.Machine{
 		Name: "machine-22",
+		Location: &ufspb.Location{
+			Zone: ufspb.Zone_ZONE_SFO36_OS,
+		},
 	}
 	registration.CreateMachine(ctx, machine22)
 
@@ -774,7 +781,26 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 			So(resp, ShouldBeNil)
 			So(err.Error(), ShouldContainSubstring, "Invalid Pool Name")
 		})
+	})
 
+	Convey("UpdateMachineLSE for a DUT - LogicalZone", t, func() {
+		Convey("Update machineLSE DUT LogicalZone - DRILLZONE_SFO36 - Success", func() {
+			dutMachinelse3 := mockDutMachineLSE("DUTMachineLSE-22")
+			dutMachinelse3.Machines = []string{"machine-22"}
+			dutMachinelse3.LogicalZone = ufspb.LogicalZone_LOGICAL_ZONE_DRILLZONE_SFO36
+			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil)
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp, ShouldResembleProto, dutMachinelse3)
+		})
+		Convey("Update machineLSE DUT LogicalZone - DRILLZONE_SFO36 - Failure", func() {
+			dutMachinelse3 := mockDutMachineLSE("DUTMachineLSE-21")
+			dutMachinelse3.Machines = []string{"machine-21"}
+			dutMachinelse3.LogicalZone = ufspb.LogicalZone_LOGICAL_ZONE_DRILLZONE_SFO36
+			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil)
+			So(resp, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+		})
 	})
 }
 
@@ -881,6 +907,46 @@ func TestUpdateMachineLSELabstation(t *testing.T) {
 			So(resp, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "Invalid Pool Name")
+		})
+	})
+
+	Convey("UpdateMachineLSE for a Labstation - LogicalZone", t, func() {
+		Convey("Update machineLSE Labstation LogicalZone - UNSPECIFIED - Success", func() {
+			machine := &ufspb.Machine{
+				Name: "machine-101",
+			}
+			_, err := registration.CreateMachine(ctx, machine)
+			So(err, ShouldBeNil)
+
+			labstationMachinelse1 := mockLabstationMachineLSE("RedLabstation-101")
+			labstationMachinelse1.Machines = []string{"machine-101"}
+			inventory.CreateMachineLSE(ctx, labstationMachinelse1)
+
+			labstationMachinelse2 := mockLabstationMachineLSE("RedLabstation-101")
+			labstationMachinelse2.Machines = []string{"machine-101"}
+			labstationMachinelse2.LogicalZone = ufspb.LogicalZone_LOGICAL_ZONE_UNSPECIFIED
+			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil)
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp, ShouldResembleProto, labstationMachinelse2)
+		})
+		Convey("Update machineLSE Labstation LogicalZone - DRILLZONE_SFO36 - Failure", func() {
+			machine := &ufspb.Machine{
+				Name: "machine-102",
+			}
+			_, err := registration.CreateMachine(ctx, machine)
+			So(err, ShouldBeNil)
+
+			labstationMachinelse1 := mockLabstationMachineLSE("RedLabstation-102")
+			labstationMachinelse1.Machines = []string{"machine-102"}
+			inventory.CreateMachineLSE(ctx, labstationMachinelse1)
+
+			labstationMachinelse2 := mockLabstationMachineLSE("RedLabstation-102")
+			labstationMachinelse2.Machines = []string{"machine-102"}
+			labstationMachinelse2.LogicalZone = ufspb.LogicalZone_LOGICAL_ZONE_DRILLZONE_SFO36
+			resp, err := UpdateMachineLSE(ctx, labstationMachinelse2, nil)
+			So(resp, ShouldBeNil)
+			So(err, ShouldNotBeNil)
 		})
 	})
 }
