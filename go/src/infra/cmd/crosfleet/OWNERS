@@ -1,9 +1,2 @@
-# ChromeOS CI Team
-andrewlamb@chromium.org
-ctmcnamara@chromium.org
-dhanyaganesh@chromium.org
-engeg@google.com
-jackneus@google.com
-jaredloucks@google.com
-juahurta@google.com
-navil@google.com
+# CrOS Infra Test Scheduling & Execution Team
+include chromiumos/owners:v1:/infra/OWNERS.tse
