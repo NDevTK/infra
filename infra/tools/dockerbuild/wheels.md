@@ -6721,6 +6721,20 @@ wheel: <
 
 * *universal*
 
+## **pyusb-py3**
+
+### 1.2.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pyusb-py3"
+  version: "version:1.2.1"
+>
+```
+
+
+* *universal*
+
 ## **pywin32**
 
 ### 300

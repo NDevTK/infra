@@ -1539,6 +1539,7 @@ SPECS.update({
         Universal('python-magic', '0.4.24'),
         Universal('pytz', '2018.4'),
         Universal('pytz', '2021.1'),
+        Universal('pyusb', '1.2.1', pyversions=['py3']),
         Universal('pywinauto', '0.6.8'),
         Universal('requests', '2.13.0'),
         Universal('requests', '2.21.0'),
