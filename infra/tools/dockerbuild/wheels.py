@@ -1519,6 +1519,7 @@ SPECS.update({
         Universal('pytest', '5.4.3', pyversions=['py3']),
         Universal('pytest', '6.2.2', pyversions=['py3']),
         Universal('pytest-asyncio', '0.14.0', pyversions=['py3']),
+        Universal('pytest-asyncio', '0.19.0', pyversions=['py3']),
         Universal('pytest-cov', '2.5.1'),
         Universal('pytest-cov', '2.6.1'),
         Universal('pytest-cov', '2.8.1'),

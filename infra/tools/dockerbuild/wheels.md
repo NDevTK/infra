@@ -6442,6 +6442,18 @@ wheel: <
 
 * *universal*
 
+### 0.19.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-asyncio-py3"
+  version: "version:0.19.0"
+>
+```
+
+
+* *universal*
+
 ## **pytest-cov**
 
 ### 2.5.1
