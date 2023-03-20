@@ -112,7 +112,9 @@ func (server *CrosTestRunnerServer) Execute(ctx context.Context, req *skylab_tes
 		return out, fmt.Errorf("failed to create new cros-test-runner service: %s", err)
 	}
 
-	out, err = service.Execute(ctx, server.metadata.LogPath)
+	logPath := path.Join(server.metadata.LogPath, req.ArtifactsPath)
+
+	out, err = service.Execute(ctx, logPath)
 	if err != nil {
 		log.Printf("execution failed: %s", err)
 		return out, fmt.Errorf("execution failed: %s", err)
