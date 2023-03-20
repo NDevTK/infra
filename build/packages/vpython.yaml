@@ -28,11 +28,11 @@ copies:
       - windows-arm64
 cipd_export: |
   @Subdir 2.7
-  infra/3pp/tools/cpython/${target_platform} version:2@2.7.18.chromium.44
+  infra/3pp/tools/cpython/${target_platform} version:2@2.7.18.chromium.45
   @Subdir 3.8
-  infra/3pp/tools/cpython3/${target_platform} version:2@3.8.10.chromium.25
+  infra/3pp/tools/cpython3/${target_platform} version:2@3.8.10.chromium.28
   @Subdir 3.11
-  infra/3pp/tools/cpython3/${target_platform} version:2@3.11.1.chromium.23
+  infra/3pp/tools/cpython3/${target_platform} version:2@3.11.2.chromium.28
 data:
   - file: vpython${exe_suffix}
     generate_bat_shim: true

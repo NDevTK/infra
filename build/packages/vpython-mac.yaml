@@ -34,11 +34,11 @@ mac_bundle:
       path: ./
     - cipd_export: |
         @Subdir Contents/Resources/2.7
-        infra/3pp/tools/cpython/${target_platform} version:2@2.7.18.chromium.44
+        infra/3pp/tools/cpython/${target_platform} version:2@2.7.18.chromium.45
         @Subdir Contents/Resources/3.8
-        infra/3pp/tools/cpython3/${target_platform} version:2@3.8.10.chromium.25
+        infra/3pp/tools/cpython3/${target_platform} version:2@3.8.10.chromium.28
         @Subdir Contents/Resources/3.11
-        infra/3pp/tools/cpython3/${target_platform} version:2@3.11.1.chromium.23
+        infra/3pp/tools/cpython3/${target_platform} version:2@3.11.2.chromium.28
   codesign:
     requirements: =designated => identifier "org.chromium.infra.vpython" and anchor trusted
 posix_symlinks:
