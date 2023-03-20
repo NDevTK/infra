@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package shivas
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -14,7 +15,22 @@ import (
 
 	"infra/cros/cmd/satlab/internal/commands"
 	"infra/cros/cmd/satlab/internal/paths"
+	"infra/cros/cmd/satlab/internal/site"
 )
+
+// commandRunnerFunc is a type allowing us to monkey patch command execution
+// for testing.
+type commandRunnerFunc func(*exec.Cmd) error
+
+// execCommand is a function of type `commandRunnerFunc` that just calls the
+// existing Cmd.Run().
+func execCommand(c *exec.Cmd) error {
+	return c.Run()
+}
+
+// commandRunner is a package level variable controlling the behavior of
+// executing commands. Should be overridden when testing.
+var commandRunner commandRunnerFunc = execCommand
 
 // DUT contains all the information necessary to add a DUT.
 type DUT struct {
@@ -56,8 +72,12 @@ func (d *DUT) check() (string, error) {
 	fmt.Fprintf(os.Stderr, "Add dut: run %s\n", args)
 	command := exec.Command(args[0], args[1:]...)
 	command.Stderr = os.Stderr
-	dutMsgBytes, err := command.Output()
-	dutMsg := commands.TrimOutput(dutMsgBytes)
+	var stdout bytes.Buffer
+	command.Stdout = &stdout
+
+	err := commandRunner(command)
+
+	dutMsg := commands.TrimOutput(stdout.Bytes())
 	if err != nil {
 		return "", errors.Annotate(err, "check DUT in UFS: running %s", strings.Join(args, " ")).Err()
 	}
@@ -80,6 +100,10 @@ func (d *DUT) add() error {
 	// TODO(gregorynisbet): Consider pre-populating it.
 	flags["servo"] = []string{d.Servo}
 
+	// These flags control where the deploy task is run.
+	flags["deploy-project"] = []string{site.GetLUCIProject()}
+	flags["deploy-bucket"] = []string{site.GetDeployBucket()}
+
 	// TODO(gregorynisbet): Consider a different strategy for tracking flags
 	// that cannot be passed to shivas add dut.
 	args := (&commands.CommandWithFlags{
@@ -90,7 +114,7 @@ func (d *DUT) add() error {
 	command := exec.Command(args[0], args[1:]...)
 	command.Stdout = os.Stdout
 	command.Stderr = os.Stderr
-	err := command.Run()
+	err := commandRunner(command)
 	return errors.Annotate(
 		err,
 		fmt.Sprintf(
