@@ -164,6 +164,30 @@
       },
       "revId": "85aacd588bb8a8c64098ef7f1a8292cca23c1722",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "14d2c54b_949e5faa",
+        "filename": "go/src/infra/unifiedfleet/app/controller/dut.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 497,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2023-03-20T21:00:11Z",
+      "side": 1,
+      "message": "My Bad. Looks like there wasn\u0027t a consensus from the beginning. Looking back I can\u0027t find an argument for one over other. I prefer `camelCase` though. This should be fine IMHO",
+      "parentUuid": "870920c2_fd3b335e",
+      "range": {
+        "startLine": 497,
+        "startChar": 8,
+        "endLine": 497,
+        "endChar": 19
+      },
+      "revId": "85aacd588bb8a8c64098ef7f1a8292cca23c1722",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
