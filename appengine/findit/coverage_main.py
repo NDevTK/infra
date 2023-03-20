@@ -9,6 +9,7 @@ import gae_ts_mon
 from gae_libs import appengine_util
 
 from handlers.code_coverage import create_author_coverage
+from handlers.code_coverage import create_referenced_coverage
 from handlers.code_coverage import export_absolute_coverage
 from handlers.code_coverage import export_incremental_coverage
 from handlers.code_coverage import export_gerrit_filter_coverage
