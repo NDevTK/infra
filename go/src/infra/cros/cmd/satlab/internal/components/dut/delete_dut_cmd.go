@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,7 +66,7 @@ func (c *deleteDUT) innerRun(a subcommands.Application, positionalArgs []string,
 		Commands:       []string{paths.ShivasCLI, "delete", "dut"},
 		PositionalArgs: positionalArgs,
 		Flags: map[string][]string{
-			"namespace": {c.envFlags.Namespace},
+			"namespace": {c.envFlags.GetNamespace()},
 		},
 	}).ToCommand()
 	command := exec.Command(args[0], args[1:]...)

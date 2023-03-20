@@ -93,7 +93,7 @@ func (c *startServodRun) innerRun(a subcommands.Application, args []string, env 
 	}
 
 	ctx := cli.GetContext(a, c, env)
-	ctx = utils.SetupContext(ctx, c.envFlags.Namespace)
+	ctx = utils.SetupContext(ctx, c.envFlags.GetNamespace())
 
 	ef := c.envFlags
 	ufs, err := ufs.NewUFSClient(ctx, ef.GetUFSService(), &c.authFlags)

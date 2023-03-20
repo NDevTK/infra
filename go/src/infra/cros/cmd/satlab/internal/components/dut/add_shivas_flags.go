@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -138,8 +138,8 @@ func makeAddShivasFlags(c *addDUT) flagmap {
 	if c.board != "" {
 		out["board"] = []string{c.board}
 	}
-	if c.envFlags.Namespace != "" {
-		out["namespace"] = []string{c.envFlags.Namespace}
+	if c.envFlags.GetNamespace() != "" {
+		out["namespace"] = []string{c.envFlags.GetNamespace()}
 	}
 	return out
 }

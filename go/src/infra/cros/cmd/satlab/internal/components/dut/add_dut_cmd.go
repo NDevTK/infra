@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -143,7 +143,7 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 
 	if err := (&shivas.Rack{
 		Name:      c.qualifiedRack,
-		Namespace: c.envFlags.Namespace,
+		Namespace: c.envFlags.GetNamespace(),
 		Zone:      c.zone,
 	}).CheckAndAdd(); err != nil {
 		return errors.Annotate(err, "add dut").Err()
@@ -155,14 +155,14 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 		Zone:      c.zone,
 		Model:     c.model,
 		Board:     c.board,
-		Namespace: c.envFlags.Namespace,
+		Namespace: c.envFlags.GetNamespace(),
 		Type:      c.assetType,
 	}).CheckAndAdd(); err != nil {
 		return errors.Annotate(err, "add dut").Err()
 	}
 
 	if err := (&shivas.DUT{
-		Namespace:  c.envFlags.Namespace,
+		Namespace:  c.envFlags.GetNamespace(),
 		Zone:       c.zone,
 		Name:       c.qualifiedHostname,
 		Rack:       c.qualifiedRack,

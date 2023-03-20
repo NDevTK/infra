@@ -42,3 +42,112 @@ func TestGetFullyQualifiedHostname(t *testing.T) {
 		})
 	}
 }
+
+// TestEnvFlags_GetNamespace ensures we properly respect the priority in which
+// we should fetch namespace:
+//  1. set via flag
+//  2. set via env
+//  3. default to OS
+func TestEnvFlags_GetNamespace(t *testing.T) {
+	tests := []struct {
+		name          string
+		flagNamespace string
+		envNamespace  string
+		wantNamespace string
+	}{
+		{
+			name:          "no env, no flag",
+			flagNamespace: "",
+			envNamespace:  "",
+			wantNamespace: DefaultNamespace,
+		},
+		{
+			name:          "env, no flag",
+			flagNamespace: "",
+			envNamespace:  "env-ns",
+			wantNamespace: "env-ns",
+		},
+		{
+			name:          "no env, flag",
+			flagNamespace: "flag-ns",
+			envNamespace:  "",
+			wantNamespace: "flag-ns",
+		},
+		{
+			name:          "no env, no flag",
+			flagNamespace: "flag-ns",
+			envNamespace:  "env-ns",
+			wantNamespace: "flag-ns",
+		},
+	}
+	for _, tt := range tests {
+		// t.Parallel() env var manipulation
+		t.Run(tt.name, func(t *testing.T) {
+			f := &EnvFlags{
+				namespace: tt.flagNamespace,
+			}
+			t.Setenv(UFSNamespaceEnv, tt.envNamespace)
+			if got := f.GetNamespace(); got != tt.wantNamespace {
+				t.Errorf("EnvFlags.GetNamespace() = %v, want %v", got, tt.wantNamespace)
+			}
+		})
+	}
+}
+
+// TestGetLUCIProject ensures we are properly using env vars/defaults.
+func TestGetLUCIProject(t *testing.T) {
+	tests := []struct {
+		name        string
+		envProject  string
+		wantProject string
+	}{
+		{
+			name:        "no env",
+			envProject:  "",
+			wantProject: DefaultLUCIProject,
+		},
+		{
+			name:        "env",
+			envProject:  "fake-project",
+			wantProject: "fake-project",
+		},
+	}
+	for _, tt := range tests {
+		// t.Parallel() env var manipulation
+		t.Run(tt.name, func(t *testing.T) {
+			t.Setenv(LUCIProjectEnv, tt.envProject)
+			if got := GetLUCIProject(); got != tt.wantProject {
+				t.Errorf("GetLUCIProject() = %v, want %v", got, tt.wantProject)
+			}
+		})
+	}
+}
+
+// TestGetDeployBucket ensures we properly use env var/defaults.
+func TestGetDeployBucket(t *testing.T) {
+	tests := []struct {
+		name             string
+		envDeployBucket  string
+		wantDeployBucket string
+	}{
+		{
+			name:             "no env",
+			envDeployBucket:  "",
+			wantDeployBucket: DefaultDeployBuilderBucket,
+		},
+		{
+			name:             "env",
+			envDeployBucket:  "fake-project",
+			wantDeployBucket: "fake-project",
+		},
+	}
+	for _, tt := range tests {
+		// t.Parallel() env var manipulation
+		t.Run(tt.name, func(t *testing.T) {
+			t.Setenv(DeployBuilderBucketEnv, tt.envDeployBucket)
+			if got := GetDeployBucket(); got != tt.wantDeployBucket {
+				t.Errorf("GetDeployBucket() = %v, want %v", got, tt.wantDeployBucket)
+			}
+		})
+	}
+}

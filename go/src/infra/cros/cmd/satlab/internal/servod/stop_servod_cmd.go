@@ -70,7 +70,7 @@ func (c *stopServodRun) innerRun(a subcommands.Application, args []string, env s
 		return err
 	}
 	ctx := cli.GetContext(a, c, env)
-	ctx = utils.SetupContext(ctx, c.envFlags.Namespace)
+	ctx = utils.SetupContext(ctx, c.envFlags.GetNamespace())
 
 	ufs, err := ufs.NewUFSClient(ctx, c.envFlags.GetUFSService(), &c.authFlags)
 	if err != nil {

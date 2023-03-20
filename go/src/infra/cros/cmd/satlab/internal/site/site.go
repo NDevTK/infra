@@ -37,6 +37,27 @@ const ProdUFSService = "ufs.api.cr.dev"
 // places to create resource names.
 const Satlab = "satlab"
 
+const (
+	// LUCIProjectEnv is the env var used to determine what LUCI project bb
+	// tasks should run in.
+	LUCIProjectEnv = "LUCI_PROJECT"
+	// DeployBuilderBucketEnv is the env var used to determine what bucket the
+	// deploy task should run in.
+	DeployBuilderBucketEnv = "DEPLOY_BUILDER_BUCKET"
+	// UFSNamespaceEnv is the env var used to determine what namespace should
+	// be used to interface with UFS
+	UFSNamespaceEnv = "UFS_NAMESPACE"
+
+	// DefaultLUCIProject is the LUCI project to specify if `LUCIProjectEnv` is
+	// not present
+	DefaultLUCIProject = "chromeos"
+	// DefaultDeployBuilderBucket is the bb bucket to specify if
+	// `DeployBuilderBucketEnv` is not specified.
+	DefaultDeployBuilderBucket = "labpack"
+	// DefaultNamespace is the default namespace to use for all operations.
+	DefaultNamespace = "os"
+)
+
 // CommonFlags controls some commonly-used CLI flags.
 type CommonFlags struct {
 	Verbose  bool
@@ -88,16 +109,28 @@ func (f *OutputFlags) NoEmit() bool {
 // EnvFlags controls selection of the environment: either prod (default) or dev.
 type EnvFlags struct {
 	dev       bool
-	Namespace string
+	namespace string
 }
-
-// DefaultNamespace is the default namespace to use for all operations.
-const DefaultNamespace = "os"
 
 // Register sets up the -dev argument.
 func (f *EnvFlags) Register(fl *flag.FlagSet) {
 	fl.BoolVar(&f.dev, "dev", false, "Run in dev environment.")
-	fl.StringVar(&f.Namespace, "namespace", DefaultNamespace, "namespace where data resides.")
+	fl.StringVar(&f.namespace, "namespace", "", "namespace where data resides.")
+}
+
+// GetNamespace determines the namespace, in descending priority, by
+//  1. Specified in flag
+//  2. Specified in environment
+//  3. Default to `os`
+func (f *EnvFlags) GetNamespace() string {
+	if f.namespace != "" {
+		return f.namespace
+	}
+	ns := os.Getenv(UFSNamespaceEnv)
+	if ns == "" {
+		return DefaultNamespace
+	}
+	return ns
 }
 
 // GetCrosAdmService returns the hostname of the CrOSSkylabAdmin service that is
@@ -115,6 +148,26 @@ func (f *EnvFlags) GetUFSService() string {
 		return DevUFSService
 	}
 	return ProdUFSService
+}
+
+// GetLUCIProject determines what LUCI project we expect any buildbucket tasks
+// to run in, based on the environment.
+func GetLUCIProject() string {
+	project := os.Getenv(LUCIProjectEnv)
+	if project == "" {
+		return DefaultLUCIProject
+	}
+	return project
+}
+
+// GetDeployBucket determines which bucket we expect any deploy tasks
+// to run in, based on the environment.
+func GetDeployBucket() string {
+	bucket := os.Getenv(DeployBuilderBucketEnv)
+	if bucket == "" {
+		return DefaultDeployBuilderBucket
+	}
+	return bucket
 }
 
 // DefaultZone is the default value for the zone command line flag.
