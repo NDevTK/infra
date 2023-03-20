@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9afad10b_d2d176a1",
+        "filename": "go/src/infra/unifiedfleet/app/controller/change.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1552404
+      },
+      "writtenOn": "2023-03-20T15:50:28Z",
+      "side": 1,
+      "message": "Yep: go/chromium-update-copyright-2022",
+      "parentUuid": "8459bc3c_c2df5271",
+      "range": {
+        "startLine": 1,
+        "startChar": 39,
+        "endLine": 1,
+        "endChar": 60
+      },
+      "revId": "85aacd588bb8a8c64098ef7f1a8292cca23c1722",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ad89fd09_4daab6ed",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "81558ae3_99b76287",
+        "filename": "go/src/infra/unifiedfleet/app/controller/dut.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1552404
+      },
+      "writtenOn": "2023-03-20T15:50:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ad89fd09_4daab6ed",
+      "range": {
+        "startLine": 1,
+        "startChar": 41,
+        "endLine": 1,
+        "endChar": 60
+      },
+      "revId": "85aacd588bb8a8c64098ef7f1a8292cca23c1722",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "45470127_0b555190",
@@ -60,6 +108,30 @@
       "writtenOn": "2023-03-17T23:54:11Z",
       "side": 1,
       "message": "Just a quick question. I noticed that `update_time` uses Python case, but `deploymentTicket` uses camel case. Is camel case the new way of doing things?",
+      "range": {
+        "startLine": 497,
+        "startChar": 8,
+        "endLine": 497,
+        "endChar": 19
+      },
+      "revId": "85aacd588bb8a8c64098ef7f1a8292cca23c1722",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a5e4f575_f87b315f",
+        "filename": "go/src/infra/unifiedfleet/app/controller/dut.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 497,
+      "author": {
+        "id": 1552404
+      },
+      "writtenOn": "2023-03-20T15:50:28Z",
+      "side": 1,
+      "message": "Looking at a few `shivas` files, most of the update masks are in camel case. Is there a general precedent for snake case?",
+      "parentUuid": "45470127_0b555190",
       "range": {
         "startLine": 497,
         "startChar": 8,
