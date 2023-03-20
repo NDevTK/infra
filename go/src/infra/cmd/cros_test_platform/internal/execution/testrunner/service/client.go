@@ -11,12 +11,14 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"infra/cmd/cros_test_platform/internal/execution/types"
-	"infra/libs/skylab/request"
-	"infra/libs/skylab/swarming"
 	"io/ioutil"
 	"net/http"
 	"sort"
+
+	"infra/cmd/cros_test_platform/internal/execution/types"
+	"infra/cmd/cros_test_platform/internal/execution/vmlab"
+	"infra/libs/skylab/request"
+	"infra/libs/skylab/swarming"
 
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
 
@@ -90,8 +92,10 @@ type clientImpl struct {
 	bbClient       buildbucketpb.BuildsClient
 	recorderClient resultpb.RecorderClient
 	builder        *buildbucketpb.BuilderID
-	knownTasks     map[TaskReference]*task
-	ufsClient      ufsapi.FleetClient
+	// builderGce is the corresponding VMLab version to builder
+	builderGce *buildbucketpb.BuilderID
+	knownTasks map[TaskReference]*task
+	ufsClient  ufsapi.FleetClient
 }
 
 // Ensure we satisfy the promised interface.
@@ -128,6 +132,11 @@ func NewClient(ctx context.Context, cfg *config.Config, rdbHost string) (Client,
 			Project: cfg.TestRunner.Buildbucket.Project,
 			Bucket:  cfg.TestRunner.Buildbucket.Bucket,
 			Builder: cfg.TestRunner.Buildbucket.Builder,
+		},
+		builderGce: &buildbucketpb.BuilderID{
+			Project: cfg.TestRunner.Buildbucket.Project,
+			Bucket:  cfg.TestRunner.Buildbucket.Bucket,
+			Builder: vmlab.ConvertBuilderName(cfg.TestRunner.Buildbucket.Builder),
 		},
 		knownTasks: make(map[TaskReference]*task),
 		ufsClient:  ufsclient,
@@ -253,9 +262,21 @@ func (c *clientImpl) ValidateArgs(ctx context.Context, args *request.Args) (botE
 
 // LaunchTask sends an RPC request to start the task.
 func (c *clientImpl) LaunchTask(ctx context.Context, args *request.Args) (TaskReference, error) {
-	req, err := args.NewBBRequest(c.builder)
+	builderId := c.builder
+	// VmLab runs CFT via test runner v2, and VmLab rollout is ahead of TRv2 rollout for HW
+	shouldRunOnVmLab := vmlab.ShouldRun(args)
+	if shouldRunOnVmLab {
+		args.CFTTestRunnerRequest.RunViaTrv2 = true
+		builderId = c.builderGce
+	}
+	req, err := args.NewBBRequest(builderId)
 	if err != nil {
 		return "", errors.Annotate(err, "launch task for %s", args.TestRunnerRequest.GetTest().GetAutotest().GetName()).Err()
+	}
+	// Clear dimensions in the request as the GCE builders populate all required
+	// dimensions for VM tests
+	if shouldRunOnVmLab {
+		req.Dimensions = make([]*buildbucketpb.RequestedDimension, 0)
 	}
 
 	// Check if there's a parent build for the task to be launched.

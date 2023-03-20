@@ -8,9 +8,6 @@ package testrunner
 import (
 	"context"
 
-	"infra/cmd/cros_test_platform/internal/execution/args"
-	"infra/cmd/cros_test_platform/internal/execution/types"
-
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
@@ -18,6 +15,9 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"infra/cmd/cros_test_platform/internal/execution/args"
+	"infra/cmd/cros_test_platform/internal/execution/types"
+	"infra/cmd/cros_test_platform/internal/execution/vmlab"
 
 	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
 	"infra/libs/skylab/request"
@@ -41,7 +41,7 @@ type ArgsModifier interface {
 var InvalidDependencies = errors.BoolTag{Key: errors.NewTagKey("invalid test dependencies")}
 
 // ValidateDependencies checks whether this test has dependencies satisfied by
-// at least one Skylab bot.
+// VMLab or at least one Skylab bot.
 //
 // Returns nil if the dependencies are valid and satisfiable.
 // Returns an error tagged with InvalidDependencies tag if provided dependencies
@@ -58,6 +58,9 @@ func ValidateDependencies(ctx context.Context, c trservice.Client, argsGenerator
 	args, err := argsGenerator.GenerateArgs(ctx)
 	if err != nil {
 		return nil, errors.Annotate(err, "validate dependencies").Err()
+	}
+	if vmlab.ShouldRun(&args) {
+		return nil, nil
 	}
 	ok, rejected, err := c.ValidateArgs(ctx, &args)
 	if err != nil {
