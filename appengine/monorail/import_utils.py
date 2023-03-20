@@ -12,7 +12,6 @@ def FixImports():
   """Adds third_party packages to their respective package namespaces."""
   _AddThirdPartyToPath()
   _FixProtorpcPackage()
-  _FixDefaultApiStub()
   _ImportAppEngineSearchApi()
 
 
@@ -34,21 +33,6 @@ def _FixProtorpcPackage():
   import protorpc
   package_path = os.path.join(_ThirdPartyDir(), 'protorpc')
   protorpc.__path__.insert(0, package_path)
-
-
-def _FixDefaultApiStub():
-  """Fixes "Attempted RPC call without active security ticket" error.
-
-  In appengine-python-standard==1.0.0, default_api_stub throws an error when
-  trying to access NDB outside of a Flask request. This was fixed in commit
-  cc19a2e on Juy 21, 2022, but wasn't included in the 1.0.1rc1 release on
-  Sep 6, 2022. It's been months since that release, so instead of waiting on
-  another release, we'll just monkeypatch the file here.
-  """
-  sys.path.append(os.path.join(_ThirdPartyDir(), 'appengine-python-standard'))
-  import default_api_stub as fixed_default_api_stub
-  from google.appengine.runtime import default_api_stub
-  default_api_stub.DefaultApiRPC = fixed_default_api_stub.DefaultApiRPC
 
 
 def _ImportAppEngineSearchApi():
