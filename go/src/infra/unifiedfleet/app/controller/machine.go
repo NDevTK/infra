@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -677,9 +677,9 @@ func ListMachines(ctx context.Context, pageSize int32, pageToken, filter string,
 			return nil, "", errors.Annotate(err, "ListMachines - failed to read filter for listing machines").Err()
 		}
 	}
-	filterMap = resetStateFilter(filterMap)
-	filterMap = resetZoneFilter(filterMap)
-	filterMap = resetDeviceTypeFilter(filterMap)
+	filterMap = resetStateFilter(filterMap, registration.GetMachineIndexedFieldName)
+	filterMap = resetZoneFilter(filterMap, registration.GetMachineIndexedFieldName)
+	filterMap = resetDeviceTypeFilter(filterMap, registration.GetMachineIndexedFieldName)
 	machines, nextPageToken, err := registration.ListMachines(ctx, pageSize, pageToken, filterMap, keysOnly)
 	if full && !keysOnly {
 		for _, machine := range machines {

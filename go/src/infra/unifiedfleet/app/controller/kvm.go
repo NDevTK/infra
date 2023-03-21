@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -247,8 +247,8 @@ func ListKVMs(ctx context.Context, pageSize int32, pageToken, filter string, key
 			return nil, "", errors.Annotate(err, "Failed to read filter for listing kvms").Err()
 		}
 	}
-	filterMap = resetStateFilter(filterMap)
-	filterMap = resetZoneFilter(filterMap)
+	filterMap = resetStateFilter(filterMap, registration.GetKVMIndexedFieldName)
+	filterMap = resetZoneFilter(filterMap, registration.GetKVMIndexedFieldName)
 	return registration.ListKVMs(ctx, pageSize, pageToken, filterMap, keysOnly)
 }
 

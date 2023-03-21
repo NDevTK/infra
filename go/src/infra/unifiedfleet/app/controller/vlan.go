@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -160,8 +160,8 @@ func ListVlans(ctx context.Context, pageSize int32, pageToken, filter string, ke
 			return nil, "", errors.Annotate(err, "Failed to read filter for listing vlans").Err()
 		}
 	}
-	filterMap = resetStateFilter(filterMap)
-	filterMap = resetZoneFilter(filterMap)
+	filterMap = resetStateFilter(filterMap, configuration.GetVlanIndexedFieldName)
+	filterMap = resetZoneFilter(filterMap, configuration.GetVlanIndexedFieldName)
 	return configuration.ListVlans(ctx, pageSize, pageToken, filterMap, keysOnly)
 }
 

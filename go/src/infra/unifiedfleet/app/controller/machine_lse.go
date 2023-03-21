@@ -497,10 +497,10 @@ func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken, filter stri
 			return nil, "", errors.Annotate(err, "Failed to read filter for listing hosts").Err()
 		}
 	}
-	filterMap = resetStateFilter(filterMap)
-	filterMap = resetOSFilter(filterMap)
-	filterMap = resetZoneFilter(filterMap)
-	filterMap = resetLogicalZoneFilter(filterMap)
+	filterMap = resetStateFilter(filterMap, inventory.GetMachineLSEIndexedFieldName)
+	filterMap = resetOSFilter(filterMap, inventory.GetMachineLSEIndexedFieldName)
+	filterMap = resetZoneFilter(filterMap, inventory.GetMachineLSEIndexedFieldName)
+	filterMap = resetLogicalZoneFilter(filterMap, inventory.GetMachineLSEIndexedFieldName)
 	if _, ok := filterMap[util.FreeVMFilterName]; ok {
 		delete(filterMap, util.FreeVMFilterName)
 		allVMs, err := inventory.GetAllVMs(ctx)

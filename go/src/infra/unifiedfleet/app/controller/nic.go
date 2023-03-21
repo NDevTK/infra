@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -265,7 +265,7 @@ func ListNics(ctx context.Context, pageSize int32, pageToken, filter string, key
 			return nil, "", errors.Annotate(err, "Failed to read filter for listing nics").Err()
 		}
 	}
-	filterMap = resetZoneFilter(filterMap)
+	filterMap = resetZoneFilter(filterMap, registration.GetNicIndexedFieldName)
 	return registration.ListNics(ctx, pageSize, pageToken, filterMap, keysOnly)
 }
 

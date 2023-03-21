@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -360,9 +360,9 @@ func ListVMs(ctx context.Context, pageSize int32, pageToken, filter string, keys
 			return nil, "", errors.Annotate(err, "Failed to read filter for listing vms").Err()
 		}
 	}
-	filterMap = resetStateFilter(filterMap)
-	filterMap = resetOSFilter(filterMap)
-	filterMap = resetZoneFilter(filterMap)
+	filterMap = resetStateFilter(filterMap, inventory.GetVMIndexedFieldName)
+	filterMap = resetOSFilter(filterMap, inventory.GetVMIndexedFieldName)
+	filterMap = resetZoneFilter(filterMap, inventory.GetVMIndexedFieldName)
 	filterMap, err = parseIntTypeFilter(filterMap, "cpu_cores", "memory", "storage")
 	if err != nil {
 		return nil, "", errors.Annotate(err, "filter value for cpu_cores, memory, and/or storage cannot be parsed").Err()

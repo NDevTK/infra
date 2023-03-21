@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -194,8 +194,8 @@ func ListSwitches(ctx context.Context, pageSize int32, pageToken, filter string,
 			return nil, "", errors.Annotate(err, "Failed to read filter for listing switches").Err()
 		}
 	}
-	filterMap = resetStateFilter(filterMap)
-	filterMap = resetZoneFilter(filterMap)
+	filterMap = resetStateFilter(filterMap, registration.GetSwitchIndexedFieldName)
+	filterMap = resetZoneFilter(filterMap, registration.GetSwitchIndexedFieldName)
 	return registration.ListSwitches(ctx, pageSize, pageToken, filterMap, keysOnly)
 }
 

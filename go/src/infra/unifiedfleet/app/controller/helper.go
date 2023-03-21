@@ -43,6 +43,7 @@ type Resource struct {
 }
 
 type getFieldFunc func(string) (string, error)
+type convertFilterFunc func(string) string
 
 // GetChromePlatformResource returns a Resource with ChromePlatformEntity
 func GetChromePlatformResource(chromePlatformID string) *Resource {
@@ -559,77 +560,87 @@ func validateReservedIPs(ctx context.Context, vlan *ufspb.Vlan) error {
 	return nil
 }
 
-func resetStateFilter(filterMap map[string][]interface{}) map[string][]interface{} {
-	if v, ok := filterMap["state"]; ok {
-		s := util.ToUFSState(fmt.Sprintf("%s", v[0]))
-		filterMap["state"] = []interface{}{s.String()}
-	}
-	return filterMap
-}
-
-func resetOSFilter(filterMap map[string][]interface{}) map[string][]interface{} {
-	if v, ok := filterMap["os"]; ok {
-		for i, id := range v {
-			v[i] = strings.ToLower(id.(string))
-		}
-		filterMap["os"] = v
-	}
-	return filterMap
-}
-
-func resetZoneFilter(filterMap map[string][]interface{}) map[string][]interface{} {
-	for _, k := range []string{"zone", "zones"} {
-		if v, ok := filterMap[k]; ok {
+// resetFilter is a helper function for converting filterMap values
+// from shivas format to DataStore format. This mostly applies to enums.
+// Other resetFilter functions should call this function.
+//
+// filterMap: the return value from getFilterMap() or another resetFilter().
+// getIndexedFieldName: a functions that take a filter name and returns the field name.
+// This should match the second param that gets passed to getFilterMap().
+// convertFilter: a function that converts a shivas-formatted value to a DataStore value.
+// filterNames: the filter names used by shivas for this field.
+func resetFilter(
+	filterMap map[string][]interface{},
+	getIndexedFieldName getFieldFunc,
+	convertFilter convertFilterFunc,
+	filterNames ...string) map[string][]interface{} {
+	for _, k := range filterNames {
+		filterMapKey, _ := getIndexedFieldName(k)
+		if v, ok := filterMap[filterMapKey]; ok {
 			for i, vz := range v {
-				v[i] = util.ToUFSZone(fmt.Sprintf("%s", vz)).String()
+				v[i] = convertFilter(fmt.Sprintf("%s", vz))
 			}
-			filterMap[k] = v
+			filterMap[filterMapKey] = v
 		}
 	}
 	return filterMap
 }
 
-func resetAssetTypeFilter(filterMap map[string][]interface{}) map[string][]interface{} {
-	if v, ok := filterMap["type"]; ok {
-		for i, vt := range v {
-			v[i] = util.ToAssetType(fmt.Sprintf("%s", vt)).String()
-			fmt.Println(v[i])
-		}
-		filterMap["type"] = v
-	}
-	return filterMap
+func resetStateFilter(filterMap map[string][]interface{}, getIndexedFieldName getFieldFunc) map[string][]interface{} {
+	return resetFilter(
+		filterMap,
+		getIndexedFieldName,
+		func(v string) string { return util.ToUFSState(v).String() },
+		util.StateFilterName)
 }
 
-func resetSchedulingUnitTypeFilter(filterMap map[string][]interface{}) map[string][]interface{} {
-	if v, ok := filterMap["type"]; ok {
-		for i, vt := range v {
-			v[i] = util.ToSchedulingUnitType(fmt.Sprintf("%s", vt)).String()
-			fmt.Println(v[i])
-		}
-		filterMap["type"] = v
-	}
-	return filterMap
+func resetOSFilter(filterMap map[string][]interface{}, getIndexedFieldName getFieldFunc) map[string][]interface{} {
+	return resetFilter(
+		filterMap,
+		getIndexedFieldName,
+		strings.ToLower,
+		util.OSFilterName)
 }
 
-func resetDeviceTypeFilter(filterMap map[string][]interface{}) map[string][]interface{} {
-	if v, ok := filterMap[util.DeviceTypeFilterName]; ok {
-		for i, vz := range v {
-			v[i] = util.ToUFSDeviceType(fmt.Sprintf("%s", vz)).String()
-		}
-		filterMap[util.DeviceTypeFilterName] = v
-	}
-	return filterMap
+func resetZoneFilter(filterMap map[string][]interface{}, getIndexedFieldName getFieldFunc) map[string][]interface{} {
+	return resetFilter(
+		filterMap,
+		getIndexedFieldName,
+		func(v string) string { return util.ToUFSZone(v).String() },
+		util.ZoneFilterName,
+		util.ZonesFilterName)
 }
 
-func resetLogicalZoneFilter(filterMap map[string][]interface{}) map[string][]interface{} {
-	filterMapKey, _ := inventory.GetMachineLSEIndexedFieldName(util.LogicalZoneFilterName)
-	if v, ok := filterMap[filterMapKey]; ok {
-		for i, vz := range v {
-			v[i] = util.ToLogicalZone(fmt.Sprintf("%s", vz)).String()
-		}
-		filterMap[filterMapKey] = v
-	}
-	return filterMap
+func resetAssetTypeFilter(filterMap map[string][]interface{}, getIndexedFieldName getFieldFunc) map[string][]interface{} {
+	return resetFilter(
+		filterMap,
+		getIndexedFieldName,
+		func(v string) string { return util.ToAssetType(v).String() },
+		util.AssetTypeFilterName)
+}
+
+func resetSchedulingUnitTypeFilter(filterMap map[string][]interface{}, getIndexedFieldName getFieldFunc) map[string][]interface{} {
+	return resetFilter(
+		filterMap,
+		getIndexedFieldName,
+		func(v string) string { return util.ToSchedulingUnitType(v).String() },
+		util.TypeFilterName)
+}
+
+func resetDeviceTypeFilter(filterMap map[string][]interface{}, getIndexedFieldName getFieldFunc) map[string][]interface{} {
+	return resetFilter(
+		filterMap,
+		getIndexedFieldName,
+		func(v string) string { return util.ToUFSDeviceType(v).String() },
+		util.DeviceTypeFilterName)
+}
+
+func resetLogicalZoneFilter(filterMap map[string][]interface{}, getIndexedFieldName getFieldFunc) map[string][]interface{} {
+	return resetFilter(
+		filterMap,
+		getIndexedFieldName,
+		func(v string) string { return util.ToLogicalZone(v).String() },
+		util.LogicalZoneFilterName)
 }
 
 func parseIntTypeFilter(filterMap map[string][]interface{}, filterNames ...string) (map[string][]interface{}, error) {

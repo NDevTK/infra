@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -157,8 +157,8 @@ func ListRPMs(ctx context.Context, pageSize int32, pageToken, filter string, key
 			return nil, "", errors.Annotate(err, "Failed to read filter for listing rpms").Err()
 		}
 	}
-	filterMap = resetStateFilter(filterMap)
-	filterMap = resetZoneFilter(filterMap)
+	filterMap = resetStateFilter(filterMap, registration.GetRPMIndexedFieldName)
+	filterMap = resetZoneFilter(filterMap, registration.GetRPMIndexedFieldName)
 	return registration.ListRPMs(ctx, pageSize, pageToken, filterMap, keysOnly)
 }
 

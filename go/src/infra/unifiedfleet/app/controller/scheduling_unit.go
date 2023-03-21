@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -116,7 +116,7 @@ func ListSchedulingUnits(ctx context.Context, pageSize int32, pageToken, filter 
 			return nil, "", errors.Annotate(err, "failed to read filter for listing SchedulingUnits").Err()
 		}
 	}
-	filterMap = resetSchedulingUnitTypeFilter(filterMap)
+	filterMap = resetSchedulingUnitTypeFilter(filterMap, inventory.GetSchedulingUnitIndexedFieldName)
 	return inventory.ListSchedulingUnits(ctx, pageSize, pageToken, filterMap, keysOnly)
 }
 

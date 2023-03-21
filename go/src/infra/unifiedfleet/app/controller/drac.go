@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -308,8 +308,8 @@ func ListDracs(ctx context.Context, pageSize int32, pageToken, filter string, ke
 			return nil, "", errors.Annotate(err, "Failed to read filter for listing dracs").Err()
 		}
 	}
-	filterMap = resetZoneFilter(filterMap)
-	filterMap = resetStateFilter(filterMap)
+	filterMap = resetZoneFilter(filterMap, registration.GetDracIndexedFieldName)
+	filterMap = resetStateFilter(filterMap, registration.GetDracIndexedFieldName)
 	return registration.ListDracs(ctx, pageSize, pageToken, filterMap, keysOnly)
 }
 

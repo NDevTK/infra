@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -303,8 +303,8 @@ func ListRacks(ctx context.Context, pageSize int32, pageToken, filter string, ke
 			return nil, "", errors.Annotate(err, "Failed to read filter for listing Racks").Err()
 		}
 	}
-	filterMap = resetStateFilter(filterMap)
-	filterMap = resetZoneFilter(filterMap)
+	filterMap = resetStateFilter(filterMap, registration.GetRackIndexedFieldName)
+	filterMap = resetZoneFilter(filterMap, registration.GetRackIndexedFieldName)
 	filterMap, err = parseIntTypeFilter(filterMap, "bbnum")
 	if err != nil {
 		return nil, "", errors.Annotate(err, "filter value for bbnum cannot be parsed").Err()
