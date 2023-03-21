@@ -129,7 +129,6 @@ doc/users/services 1 1
 doc/users/services/code_search 2 1
 doc/users/services/commit_queue 4 1
 doc/users/services/luci_config 5 1
-glyco/tests/data/source_package 1 1
 go 126 3
 go/src/infra/appengine/arquebus/app/static/bootstrap/css 2 1
 go/src/infra/appengine/chromium_build_stats 1 1

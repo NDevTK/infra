@@ -379,7 +379,6 @@ def PylintChecks(input_api, output_api, only_changed):  # pragma: no cover
       r'^infra/tools/log/.*\.py$',
       r'^infra/tools/new_tool/.*\.py$',
       r'^infra/tools/zip_release_commits/.*\.py$',
-      r'^glyco/glucose/.*\.py$',
       r'^go/src/infra/tools/cloudtail/.*\.py$',
   ]
   tests = []
