@@ -1,0 +1,29 @@
+package: infra/swarm_docker_tools
+description: swarm_docker, android_docker and cros_docker python code.
+platforms:
+  - linux-amd64
+
+root: ../../
+data:
+  # Infra library code; used by swarm_docker and android_docker.
+  - dir: "infra/libs"
+    exclude:
+      - .*\.pyc
+
+  - dir: "infra/services/android_docker"
+    exclude:
+      - .*\.pyc
+      - test
+
+  - dir: "infra/services/cros_docker"
+    exclude:
+      - .*\.pyc
+      - test
+
+  - dir: "infra/services/swarm_docker"
+    exclude:
+      - .*\.pyc
+      - test
+
+  # Where to put info about installed package version.
+  - version_file: CIPD_VERSION.json
