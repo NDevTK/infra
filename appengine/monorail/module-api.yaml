@@ -3,8 +3,9 @@
 # found in the LICENSE file.
 
 service: api
-runtime: python39
-app_engine_apis: true
+runtime: python27
+api_version: 1
+threadsafe: no
 
 instance_class: F4
 automatic_scaling:
@@ -42,5 +43,28 @@ handlers:
 inbound_services:
 - warmup
 
+libraries:
+- name: endpoints
+  version: "1.0"
+- name: grpcio
+  version: "1.0.0"
+- name: MySQLdb
+  version: "latest"
+- name: ssl  # needed for google.auth.transport
+  version: "2.7.11"
+
 includes:
 - gae_ts_mon
+
+skip_files:
+- ^(.*/)?#.*#$
+- ^(.*/)?.*~$
+- ^(.*/)?.*\.py[co]$
+- ^(.*/)?.*/RCS/.*$
+- ^(.*/)?\..*$
+- node_modules/
+- static/
+- schema/
+- doc/
+- tools/
+- venv/

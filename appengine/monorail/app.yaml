@@ -2,8 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-runtime: python39
-app_engine_apis: true
+runtime: python27
+api_version: 1
+threadsafe: no
 
 default_expiration: "10d"
 
@@ -83,5 +84,26 @@ inbound_services:
 - mail_bounce
 - warmup
 
+libraries:
+- name: endpoints
+  version: "1.0"
+- name: grpcio
+  version: "1.0.0"
+- name: markupsafe
+  version: "0.23"
+- name: MySQLdb
+  version: "latest"
+- name: ssl # needed for google.auth.transport and GAE_USE_SOCKETS_HTTPLIB
+  version: "2.7.11"
+
 includes:
 - gae_ts_mon
+
+skip_files:
+- ^(.*/)?#.*#$
+- ^(.*/)?.*~$
+- ^(.*/)?.*\.py[co]$
+- ^(.*/)?.*/RCS/.*$
+- ^(.*/)?\..*$
+- node_modules/
+- venv/
