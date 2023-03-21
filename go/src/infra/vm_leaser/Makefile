@@ -89,4 +89,7 @@ build-cron:
 # Run cron service locally
 .PHONY: dev-cron
 dev-cron: build-cron
-	./cron-service --auth-service-host="chrome-infra-auth-dev.appspot.com"
+	./cron-service \
+	--http-addr="127.0.0.1:8081" \
+	--admin-addr="127.0.0.1:8901" \
+	--auth-service-host="chrome-infra-auth-dev.appspot.com"
