@@ -91,7 +91,7 @@ require (
 	golang.org/x/time v0.3.0
 	golang.org/x/tools v0.5.0
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
-	gonum.org/v1/gonum v0.9.3
+	gonum.org/v1/gonum v0.12.0
 	google.golang.org/api v0.108.0
 	google.golang.org/appengine v1.6.8-0.20221117013220-504804fb50de
 	google.golang.org/appengine/v2 v2.0.1
