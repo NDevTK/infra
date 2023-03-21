@@ -416,7 +416,7 @@
   },
   {
     "cmd": [
-      "vpython3",
+      "vpython",
       "[CACHE]/builder/infra/build/build.py"
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",

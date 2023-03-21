@@ -134,7 +134,7 @@ def RunSteps(api, go_version_variant, run_lint):
     if is_build_change or is_deps_roll:
       api.step(
           'cipd - build packages',
-          ['vpython3', co.path.join(patch_root, 'build', 'build.py')])
+          ['vpython', co.path.join(patch_root, 'build', 'build.py')])
       api.step(
           'cipd - test packages integrity',
           ['vpython',
@@ -142,7 +142,7 @@ def RunSteps(api, go_version_variant, run_lint):
       if api.platform.is_win:
         with api.context(env={'GOOS': 'windows', 'GOARCH': 'arm64'}):
           api.step('cipd - build packages (ARM64)',
-                   ['vpython3',
+                   ['vpython',
                     co.path.join(patch_root, 'build', 'build.py')])
           # Cross-compiling, so no tests.
     else:

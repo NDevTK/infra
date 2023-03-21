@@ -194,7 +194,7 @@
   },
   {
     "cmd": [
-      "vpython3",
+      "vpython",
       "[CACHE]/builder/infra_internal/build/build.py",
       "--no-freshen-python-env",
       "--builder",
@@ -233,7 +233,7 @@
   },
   {
     "cmd": [
-      "vpython3",
+      "vpython",
       "[CACHE]/builder/infra_internal/build/build.py",
       "--no-rebuild",
       "--upload",
@@ -295,7 +295,7 @@
   },
   {
     "cmd": [
-      "vpython3",
+      "vpython",
       "[CACHE]/builder/infra_internal/build/build.py",
       "--no-freshen-python-env",
       "--builder",
@@ -336,7 +336,7 @@
   },
   {
     "cmd": [
-      "vpython3",
+      "vpython",
       "[CACHE]/builder/infra_internal/build/build.py",
       "--no-rebuild",
       "--upload",
@@ -400,7 +400,7 @@
   },
   {
     "cmd": [
-      "vpython3",
+      "vpython",
       "[CACHE]/builder/infra_internal/build/build.py",
       "--no-freshen-python-env",
       "--builder",
@@ -441,7 +441,7 @@
   },
   {
     "cmd": [
-      "vpython3",
+      "vpython",
       "[CACHE]/builder/infra_internal/build/build.py",
       "--no-rebuild",
       "--upload",

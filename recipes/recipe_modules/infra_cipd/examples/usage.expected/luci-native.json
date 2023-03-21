@@ -1,7 +1,7 @@
 [
   {
     "cmd": [
-      "vpython3",
+      "vpython",
       "[CACHE]/builder/assume/infra/build/build.py",
       "--no-freshen-python-env",
       "--builder",
@@ -42,7 +42,7 @@
   },
   {
     "cmd": [
-      "vpython3",
+      "vpython",
       "[CACHE]/builder/assume/infra/build/build.py",
       "--no-rebuild",
       "--upload",
