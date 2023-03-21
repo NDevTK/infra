@@ -325,6 +325,12 @@ func (hc *HistoryClient) LogMachineLSEChanges(oldData *ufspb.MachineLSE, newData
 	} else {
 		hc.changes = append(hc.changes, logChromeOSMachineLse(resourceName, oldData.GetChromeosMachineLse(), newData.GetChromeosMachineLse())...)
 	}
+	if oldDevboard := oldData.GetChromeosMachineLse().GetDeviceLse().GetDevboard(); oldDevboard != nil {
+		if newDevboard := newData.GetChromeosMachineLse().GetDeviceLse().GetDevboard(); newDevboard != nil {
+			hc.changes = append(hc.changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.device_lse.devboard.pools", oldDevboard.GetPools(), newDevboard.GetPools())...)
+		}
+
+	}
 	hc.logMsgEntity(resourceName, false, newData)
 }
 
