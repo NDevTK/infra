@@ -1971,6 +1971,20 @@ wheel: <
 
 * *universal*
 
+## **flake8**
+
+### 6.0.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/flake8-py2_py3"
+  version: "version:6.0.0"
+>
+```
+
+
+* *universal*
+
 ## **flask**
 
 ### 1.0.2
