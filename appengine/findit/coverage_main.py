@@ -61,6 +61,8 @@ code_coverage_backend_handler_mappings = [
      export_gerrit_filter_coverage.ExportAllCoverageMetrics),
     ('.*/coverage/cron/author-coverage',
      create_author_coverage.CreateAuthorCoverageMetricsCron),
+    ('.*/coverage/cron/referenced-coverage',
+     create_referenced_coverage.CreateReferencedCoverageMetricsCron),
     ('.*/coverage/task/postsubmit-report/update',
      update_postsubmit_report.UpdatePostsubmitReport),
 ]

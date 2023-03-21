@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import cloudstorage
+import logging
 
 from common.findit_http_client import FinditHttpClient
 from gae_libs.gitiles.cached_gitiles_repository import CachedGitilesRepository
@@ -132,8 +133,11 @@ def GetLastActiveReferenceCommitForYear(server_host, project, year):
   """
   modifier_ids = GetActiveReferenceCommits(server_host, project)
   reference_commits = []
+  logging.info("year = %d", year)
+  logging.info("modifier_ids = %r", modifier_ids)
   for modifier_id in modifier_ids:
     modifier = CoverageReportModifier.Get(modifier_id)
+    logging.info("modifier_year = %d", modifier.reference_commit_timestamp.year)
     if modifier.reference_commit_timestamp.year == year:
       reference_commits.append(
           (modifier.reference_commit_timestamp, modifier_id))
