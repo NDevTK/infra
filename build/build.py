@@ -32,6 +32,7 @@ import tempfile
 
 import yaml
 
+PY2 = sys.version[0] == '2'
 
 # Root of infra.git repository.
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -1048,6 +1049,9 @@ def get_host_package_vars():
 
   # If we didn't override our system architecture, identify it using "platform".
   sys_arch = sys_arch or platform.machine()
+  sys_arch_lower = sys_arch.lower()
+  if PY2:
+    sys_arch_lower = sys_arch_lower.decode()
 
   # amd64, 386, etc.
   platform_arch = {
@@ -1059,7 +1063,7 @@ def get_host_package_vars():
       'arm64': 'arm64',
       'armv6l': 'armv6l',
       'armv7l': 'armv6l',  # we prefer to use older instruction set for builds
-  }.get(sys_arch.lower().decode())
+  }.get(sys_arch_lower)
   if not platform_arch:
     raise ValueError('Unknown machine arch: %s' % sys_arch)
 
