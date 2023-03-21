@@ -364,7 +364,7 @@ def _InstallCipdPythonPackage(system, cipd_platform, wheel, base_dir,
   with CIPD_PYTHON_LOCK.get(package_ident):
     if package_ident not in _initialized_cipd_python:
       if os.path.exists(common_dir):
-        shutil.rmtree(common_dir)
+        util.removeall(common_dir)
       os.makedirs(common_dir)
       system.cipd.init(common_dir)
 

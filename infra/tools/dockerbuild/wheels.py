@@ -380,7 +380,7 @@ SPECS.update({
             '2.2.0',
             # The bundled freetype build script seems to not work for building
             # a 64-bit Windows library, so use prebuilt for now.
-            packaged=('windows-x64-py3.8',),
+            packaged=['windows-x64-py3.8', 'windows-x64-py3.11'],
             pyversions=['py3'],
             patches=('mac-arm64',),
             patch_version='chromium.4',
@@ -392,8 +392,12 @@ SPECS.update({
             # The freetype build script does not correctly support
             # cross-compiling, and there is also no 32-bit Windows wheel.
             skip_plat=[
-                'linux-armv6-py3.8', 'linux-armv6-py3.11', 'linux-arm64-py3.8',
-                'linux-arm64-py3.11', 'windows-x86-py3.8'
+                'linux-armv6-py3.8',
+                'linux-armv6-py3.11',
+                'linux-arm64-py3.8',
+                'linux-arm64-py3.11',
+                'windows-x86-py3.8',
+                'windows-x86-py3.11',
             ],
         ),
         # TODO: Update to gevent with greenlet 2 for Python 3.11.
@@ -592,7 +596,9 @@ SPECS.update({
                 'mac-x64-py3.8',
                 'mac-arm64-py3.8',
                 'windows-x86-py3.8',
+                'windows-x86-py3.11',
                 'windows-x64-py3.8',
+                'windows-x64-py3.11',
                 'linux-arm64-py3.8',
                 'linux-arm64-py3.11',
             ),
@@ -749,8 +755,16 @@ SPECS.update({
             'pyahocorasick',
             '1.4.1',
             packaged=(),
+            # Windows requires a newer version to build with 3.11.
+            skip_plat=['windows-x64-py3.11', 'windows-x86-py3.11'],
             pyversions=['py3'],
             patch_version='chromium.2',  # Rebuild for crbug/1233745
+        ),
+        SourceOrPrebuilt(
+            'pyahocorasick',
+            '1.4.4',
+            packaged=(),
+            pyversions=['py3'],
         ),
         # Prefer to use 'cryptography' instead of PyCrypto, if possible. We have
         # to use PyCrypto for GAE dev server (it's the only crypto package
@@ -803,7 +817,9 @@ SPECS.update({
             ),
             packaged=(
                 'windows-x86-py3.8',
+                'windows-x86-py3.11',
                 'windows-x64-py3.8',
+                'windows-x64-py3.11',
             ),
             skip_plat=[
                 'linux-armv6-py3.8',
@@ -993,6 +1009,7 @@ SPECS.update({
                 'mac-x64-py3.8',
                 'mac-arm64-py3.8',
                 'windows-x64-py3.8',
+                'windows-x64-py3.11',
             ],
             arch_map={
                 'linux-arm64-py3.8': ['manylinux2014_aarch64'],

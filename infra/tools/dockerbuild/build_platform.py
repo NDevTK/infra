@@ -245,9 +245,35 @@ ALL = {
             env={},
         ),
         Platform(
+            name='windows-x86-py3.11',
+            cross_triple='',
+            wheel_abi='cp311',
+            wheel_plat=('win32',),
+            dockcross_base=None,
+            dockcross_tag=None,
+            dockerbuild_image=None,
+            openssl_target='Cygwin-x86',
+            packaged=True,
+            cipd_platform='windows-386',
+            env={},
+        ),
+        Platform(
             name='windows-x64-py3.8',
             cross_triple='',
             wheel_abi='cp38',
+            wheel_plat=('win_amd64',),
+            dockcross_base=None,
+            dockcross_tag=None,
+            dockerbuild_image=None,
+            openssl_target='Cygwin-x86_64',
+            packaged=True,
+            cipd_platform='windows-amd64',
+            env={},
+        ),
+        Platform(
+            name='windows-x64-py3.11',
+            cross_triple='',
+            wheel_abi='cp311',
             wheel_plat=('win_amd64',),
             dockcross_base=None,
             dockcross_tag=None,
@@ -318,7 +344,10 @@ def NativePlatforms():
     mac_plats = {'x86_64': ALL_MAC_X64, 'arm64': ALL_MAC_ARM64}
     return plats + [ALL[p] for p in mac_plats[NativeMachine()]]
   elif sys.platform == 'win32':
-    return plats + [ALL['windows-x86-py3.8'], ALL['windows-x64-py3.8']]
+    return plats + [
+        ALL['windows-x86-py3.8'], ALL['windows-x86-py3.11'],
+        ALL['windows-x64-py3.8'], ALL['windows-x64-py3.11']
+    ]
   elif sys.platform.startswith('linux'):
     # Linux platforms are built with docker, so Linux doesn't support any
     # non-universal platforms natively.

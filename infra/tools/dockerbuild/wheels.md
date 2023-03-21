@@ -53,7 +53,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **CherryPy**
@@ -280,7 +282,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ### 2.0.1
@@ -303,7 +307,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **PeakUtils**
@@ -356,7 +362,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **PyYAML-py3**
@@ -409,7 +417,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **SecretStorage-py3**
@@ -558,7 +568,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ### 0.9.20.chromium.1
@@ -581,7 +593,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **altgraph**
@@ -1110,7 +1124,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **beautifulsoup4-py3**
@@ -1269,7 +1285,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **certifi**
@@ -1420,7 +1438,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **chardet**
@@ -1604,7 +1624,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **crontab**
@@ -1691,7 +1713,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **debugpy**
@@ -2051,6 +2075,7 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
 
 ## **frozendict-py3**
@@ -3895,7 +3920,9 @@ wheel: <
 * *mac-x64-py3.11*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ### 1.4.3
@@ -3917,7 +3944,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **libclang**
@@ -3968,6 +3997,7 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
 
 ## **libcst-py3**
@@ -4414,7 +4444,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **multiprocessing-logging**
@@ -4507,7 +4539,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **nose-py3**
@@ -5091,7 +5125,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **pg8000-py3**
@@ -5578,7 +5614,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ### 5.8.0.chromium.3
@@ -5601,7 +5639,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **py**
@@ -5653,6 +5693,31 @@ wheel: <
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
 * *windows-x64-py3.8*
+* *windows-x86-py3.8*
+
+### 1.4.4
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pyahocorasick/${vpython_platform}"
+  version: "version:1.4.4"
+>
+```
+
+
+* *linux-arm64-py3.11*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.11*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.11*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
+* *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **pyasn1**
@@ -6181,7 +6246,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **pynacl**
@@ -6215,7 +6282,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **pyobjc**
@@ -8321,7 +8390,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 ## **zipp**
@@ -8386,7 +8457,9 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 * *windows-x64-py3.8*
+* *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
 
