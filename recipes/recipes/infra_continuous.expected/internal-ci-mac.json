@@ -347,7 +347,7 @@
   },
   {
     "cmd": [
-      "vpython",
+      "vpython3",
       "[CACHE]/builder/infra_internal/build/build.py",
       "--no-freshen-python-env",
       "--builder",
