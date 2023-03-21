@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -617,6 +617,17 @@ func resetDeviceTypeFilter(filterMap map[string][]interface{}) map[string][]inte
 			v[i] = util.ToUFSDeviceType(fmt.Sprintf("%s", vz)).String()
 		}
 		filterMap[util.DeviceTypeFilterName] = v
+	}
+	return filterMap
+}
+
+func resetLogicalZoneFilter(filterMap map[string][]interface{}) map[string][]interface{} {
+	filterMapKey, _ := inventory.GetMachineLSEIndexedFieldName(util.LogicalZoneFilterName)
+	if v, ok := filterMap[filterMapKey]; ok {
+		for i, vz := range v {
+			v[i] = util.ToLogicalZone(fmt.Sprintf("%s", vz)).String()
+		}
+		filterMap[filterMapKey] = v
 	}
 	return filterMap
 }
