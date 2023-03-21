@@ -86,6 +86,7 @@ var AddDUTCmd = &subcommands.Command{
 		c.Flags.Var(flag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times.")
 		c.Flags.StringVar(&c.state, "state", "", cmdhelp.StateHelp)
 		c.Flags.StringVar(&c.description, "desc", "", "description for the machine.")
+		c.Flags.StringVar(&c.logicalZone, "logicalzone", "", "Logical zone. "+cmdhelp.LogicalZoneHelpText)
 
 		// ACS DUT fields
 		c.Flags.Var(utils.CSVString(&c.chameleons), "chameleons", cmdhelp.ChameleonTypeHelpText)
@@ -148,6 +149,7 @@ type addDUT struct {
 	tags             []string
 	state            string
 	description      string
+	logicalZone      string
 
 	// Asset location fields
 	zone string
@@ -374,6 +376,9 @@ func (c addDUT) validateArgs() error {
 		if c.light != "" && !ufsUtil.IsLight(c.light) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid light name, please check help info for '-light'.", c.light)
 		}
+		if c.logicalZone != "" && !ufsUtil.IsLogicalZone(c.logicalZone) {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid logical zone name, please check help info for '-logicalzone'.", c.logicalZone)
+		}
 	}
 	if c.newSpecsFile == "" && c.hostname == "" {
 		return cmdlib.NewQuietUsageError(c.Flags, "Need hostname to create a DUT")
@@ -487,7 +492,6 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 	var pools, machines []string
 	var servoPort int32
 	var servoSetup chromeosLab.ServoSetupType
-	resourceState := ufsUtil.ToUFSState(c.state)
 	if recMap != nil {
 		// CSV map
 		name = recMap["name"]
@@ -543,7 +547,8 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 	lse.Description = c.description
 	lse.DeploymentTicket = c.deploymentTicket
 	lse.Tags = c.tags
-	lse.ResourceState = resourceState
+	lse.ResourceState = ufsUtil.ToUFSState(c.state)
+	lse.LogicalZone = ufsUtil.ToLogicalZone(c.logicalZone)
 
 	licenses := make([]*chromeosLab.License, 0, len(c.licenseTypes))
 	for i := range c.licenseTypes {

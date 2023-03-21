@@ -445,6 +445,37 @@ func ValidAssetTypeStr() []string {
 	return keys
 }
 
+// StrToLogicalZone refers a map between a string to a LogicalZone map.
+var StrToLogicalZone = map[string]string{
+	"unspecified":     "LOGICAL_ZONE_UNSPECIFIED",
+	"drillzone_sfo36": "LOGICAL_ZONE_DRILLZONE_SFO36",
+}
+
+// IsLogicalZone checks if a string is a valid logical zone
+func IsLogicalZone(logicalZone string) bool {
+	_, ok := StrToLogicalZone[logicalZone]
+	return ok
+}
+
+// ToLogicalZone returns an LogicalZone object corresponding to string
+func ToLogicalZone(logicalZone string) ufspb.LogicalZone {
+	logicalZone = RemoveGivenPrefix(logicalZone, "logical_zone_")
+	v, ok := StrToLogicalZone[logicalZone]
+	if !ok {
+		return ufspb.LogicalZone_LOGICAL_ZONE_UNSPECIFIED
+	}
+	return ufspb.LogicalZone(ufspb.LogicalZone_value[v])
+}
+
+// ValidAssetTypeStr returns a valid str list for LogicalZone
+func ValidLogicalZoneStr() []string {
+	ks := make([]string, 0, len(StrToLogicalZone))
+	for k := range StrToLogicalZone {
+		ks = append(ks, k)
+	}
+	return ks
+}
+
 // ValidDeploymentEnvStr returns a valid str list for DeploymentEnv
 func ValidDeploymentEnvStr() []string {
 	keys := make([]string, 0, len(ufspb.DeploymentEnv_name))

@@ -1583,6 +1583,9 @@ https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/uni
 	// AssetTypesHelpText help text for asset type filters
 	AssetTypesHelpText string = fmt.Sprintf("\nValid type filters [%s]", strings.Join(ufsUtil.ValidAssetTypeStr(), ", "))
 
+	// LogicalZoneHelpText help text for logical zone filters
+	LogicalZoneHelpText string = fmt.Sprintf("\nValid logical zone filters [%s]", strings.Join(ufsUtil.ValidLogicalZoneStr(), ", "))
+
 	// StateFilterHelpText help text for state filters for list command
 	StateFilterHelpText string = fmt.Sprintf("Valid state filters: [%s]\n", strings.Join(ufsUtil.ValidStateStr(), ", "))
 

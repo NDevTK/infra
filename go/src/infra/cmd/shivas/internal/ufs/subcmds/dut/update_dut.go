@@ -51,6 +51,7 @@ const (
 	descriptionPath = "description"
 	tagsPath        = "tags"
 	ticketPath      = "deploymentTicket"
+	logicalZonePath = "logicalZone"
 
 	// RPM related UpdateMask paths.
 	rpmHostPath   = "dut.rpm.host"
@@ -122,6 +123,7 @@ var UpdateDUTCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.deploymentTicket, "ticket", "", "the deployment ticket for this machine. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.Var(luciFlag.StringSlice(&c.tags), "tag", "Name(s) of tag(s). Can be specified multiple times. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.description, "desc", "", "description for the machine. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.logicalZone, "logicalzone", "", "Logical zone. "+cmdhelp.LogicalZoneHelpText)
 
 		c.Flags.BoolVar(&c.forceDeploy, "force-deploy", false, "forces a deploy task for all the updates.")
 		c.Flags.Var(utils.CSVString(&c.deployTags), "deploy-tags", "comma seperated tags for deployment task.")
@@ -179,6 +181,7 @@ type updateDUT struct {
 	deploymentTicket         string
 	tags                     []string
 	description              string
+	logicalZone              string
 
 	// Deploy task inputs.
 	forceDeploy bool
@@ -423,6 +426,11 @@ func (c updateDUT) validateArgs() error {
 				}
 			}
 		}
+
+		if c.logicalZone != "" && !ufsUtil.IsLogicalZone(c.logicalZone) {
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not a valid logical zone, please check help info for '-logicalzone'.", c.logicalZone)
+		}
+
 	}
 	if c.newSpecsFile != "" {
 		// Helper function to return the formatted error.
@@ -699,6 +707,12 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 		if ufsUtil.ContainsAnyStrings(c.tags, utils.ClearFieldValue) {
 			lse.Tags = nil
 		}
+	}
+
+	// Check if logical zone is being updated.
+	if c.logicalZone != "" {
+		mask.Paths = append(mask.Paths, logicalZonePath)
+		lse.LogicalZone = ufsUtil.ToLogicalZone(c.logicalZone)
 	}
 
 	// ACS DUT fields
