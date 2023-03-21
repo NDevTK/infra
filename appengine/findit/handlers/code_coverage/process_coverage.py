@@ -751,7 +751,9 @@ class ProcessCodeCoverageData(BaseHandler):
     for f in delete_futures:
       f.get_result()
 
-    _MayBeBlockCLForLowCoverage(entity)
+    # TODO(crbug/1412897): Wait for ALL coverage builders before blocking
+    if mimic_builder == 'android-nougat-x86-rel':
+      _MayBeBlockCLForLowCoverage(entity)
 
   def _ProcessCodeCoverageData(self, build_id):
     build = GetV2Build(
