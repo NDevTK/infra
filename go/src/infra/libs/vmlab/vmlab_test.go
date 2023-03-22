@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,31 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+
 	"infra/libs/vmlab/api"
 	"infra/libs/vmlab/internal/instance/gcloud"
+	vmleaser "infra/libs/vmlab/internal/instance/vm_leaser"
 )
+
+func TestNewInstanceApi_unimplemented(t *testing.T) {
+	ins, err := NewInstanceApi(api.ProviderId_UNKNOWN)
+	if ins != nil {
+		t.Errorf("InstanceApi = %v, but want nil", ins)
+	}
+	if err == nil {
+		t.Errorf("error should not be nil")
+	}
+}
+
+func TestNewInstanceApi_cloudsdk(t *testing.T) {
+	ins, err := NewInstanceApi(api.ProviderId_CLOUDSDK)
+	if ins != nil {
+		t.Errorf("InstanceApi = %v, but want nil", ins)
+	}
+	if err == nil {
+		t.Errorf("error should not be nil")
+	}
+}
 
 func TestNewInstanceApi_gcloud(t *testing.T) {
 	want, _ := gcloud.New()
@@ -23,12 +45,13 @@ func TestNewInstanceApi_gcloud(t *testing.T) {
 	}
 }
 
-func TestNewInstanceApi_unimplemented(t *testing.T) {
-	ins, err := NewInstanceApi(api.ProviderId_UNKNOWN)
-	if ins != nil {
-		t.Errorf("InstanceApi = %v, but want nil", ins)
+func TestNewInstanceApi_vmLeaser(t *testing.T) {
+	want, _ := vmleaser.New()
+	ins, err := NewInstanceApi(api.ProviderId_VM_LEASER)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
 	}
-	if err == nil {
-		t.Errorf("error should not be nil")
+	if !cmp.Equal(ins, want) {
+		t.Errorf("InstanceApi = %v, but want %v", ins, want)
 	}
 }

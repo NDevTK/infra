@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,20 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+
 	"infra/libs/vmlab/api"
 	"infra/libs/vmlab/internal/image/cloudsdk"
 )
+
+func TestNewImageApi_unimplemented(t *testing.T) {
+	imageApi, err := NewImageApi(api.ProviderId_UNKNOWN)
+	if imageApi != nil {
+		t.Errorf("ImageApi = %v, but want nil", imageApi)
+	}
+	if err == nil {
+		t.Errorf("error should not be nil")
+	}
+}
 
 func TestNewImageApi_cloudsdk(t *testing.T) {
 	want, _ := cloudsdk.New()
@@ -23,8 +34,18 @@ func TestNewImageApi_cloudsdk(t *testing.T) {
 	}
 }
 
-func TestNewImageApi_unimplemented(t *testing.T) {
+func TestNewImageApi_gcloud(t *testing.T) {
 	imageApi, err := NewImageApi(api.ProviderId_GCLOUD)
+	if imageApi != nil {
+		t.Errorf("ImageApi = %v, but want nil", imageApi)
+	}
+	if err == nil {
+		t.Errorf("error should not be nil")
+	}
+}
+
+func TestNewImageApi_VmLeaser(t *testing.T) {
+	imageApi, err := NewImageApi(api.ProviderId_VM_LEASER)
 	if imageApi != nil {
 		t.Errorf("ImageApi = %v, but want nil", imageApi)
 	}

@@ -6,7 +6,9 @@ syntax = "proto3";
 
 package vmlab.api;
 
+import "google/protobuf/duration.proto";
 import "infra/libs/vmlab/api/image.proto";
+import "infra/vm_leaser/api/v1/vm_leaser.proto";
 
 option go_package = "infra/libs/vmlab/api";
 
@@ -16,6 +18,7 @@ enum ProviderId {
   UNKNOWN = 0;
   GCLOUD = 1;
   CLOUDSDK = 2;
+  VM_LEASER = 3;
 }
 
 // VMInstance represents a created VM instance.
@@ -55,6 +58,7 @@ message AddressPort {
 message Config {
   oneof backend {
     GCloudBackend gcloud_backend = 1;
+    VmLeaserBackend vm_leaser_backend = 2;
   }
 
   // Gcloud properties. Most properties are passed through to the corresponding
@@ -79,5 +83,17 @@ message Config {
     bool public_ip = 5;
     // GCE Image to be used to create instance. Mandatory.
     GceImage image = 6;
+  }
+
+  // VM Leaser properties. The fields will be passed to VM Leaser service for
+  // VM creation and deletion. Required fields must be passed.
+  message VmLeaserBackend {
+    // The populated fields will specify the requirements for operations on a VM
+    // lease. Required.
+    vm_leaser.api.v1.VMRequirements vm_requirements = 1;
+
+    // Duration of a VM lease. Optional, fallback to service default.
+    // This will put a ceiling on time wasted if the client dies.
+    google.protobuf.Duration lease_duration = 2;
   }
 }
