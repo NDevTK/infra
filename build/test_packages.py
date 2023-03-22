@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env python3
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -35,11 +35,10 @@ class TestException(Exception):
 def print_title(title):
   """Pretty prints a banner to stdout."""
   sys.stdout.flush()
-  sys.stderr.flush()
-  print
-  print '-' * 80
-  print title
-  print '-' * 80
+  print()
+  print('-' * 80)
+  print(title)
+  print('-' * 80)
 
 
 def get_docstring(test_script):
@@ -68,13 +67,13 @@ def run_test(cipd_client, package, work_dir, test_script):
   """Extracts a package to a dir and runs test_script with cwd == work_dir."""
   print_title('Deploying %s' % os.path.basename(package))
   cmd_line = ['cipd', 'pkg-deploy', '-root', work_dir, package]
-  print ' '.join(cmd_line)
+  print(' '.join(cmd_line))
   if subprocess.call(args=cmd_line, executable=cipd_client):
     raise TestException('Failed to install %s, see logs' % package)
 
   print_title(get_docstring(test_script) or 'Running tests...')
-  cmd_line = ['python', test_script]
-  print '%s in %s' % (' '.join(cmd_line), work_dir)
+  cmd_line = [sys.executable, test_script]
+  print('%s in %s' % (' '.join(cmd_line), work_dir))
   env = os.environ.copy()
   env.pop('PYTHONPATH', None)
   ret = subprocess.call(
@@ -88,7 +87,7 @@ def run(
     package_tests_dir,
     work_dir,
     packages):
-  """Deployes build *.cipd package locally and runs tests against them.
+  """Deploys build *.cipd package locally and runs tests against them.
 
   Used to verify the packaged code works when installed as CIPD package, it is
   important for infra_python package that has non-trivial structure.
@@ -123,7 +122,7 @@ def run(
       paths.append(abs_path)
   paths = sorted(paths)
   if not paths:
-    print 'Nothing to test.'
+    print('Nothing to test.')
     return 0
 
   cipd_client = find_cipd()
@@ -142,7 +141,7 @@ def run(
       name = os.path.splitext(os.path.basename(path))[0]
       test_script = os.path.join(package_tests_dir, '%s.py' % name)
       if not os.path.isfile(test_script):
-        print 'Skipping tests for %s - no such file: %s' % (name, test_script)
+        print('Skipping tests for %s - no such file: %s' % (name, test_script))
         continue
       try:
         run_test(
@@ -150,12 +149,12 @@ def run(
             package=path,
             work_dir=os.path.join(work_dir, name),
             test_script=test_script)
-        print ''
-        print 'PASS'
+        print('')
+        print('PASS')
       except TestException as exc:
-        print >> sys.stderr, ''
-        print >> sys.stderr, 'FAILED! ' * 10
-        print >> sys.stderr, 'Tests for %s failed: %s' % (name, exc)
+        print('')
+        print('FAILED! ' * 10)
+        print('Tests for %s failed: %s' % (name, exc))
         fail = True
     return 1 if fail else 0
   finally:
@@ -163,7 +162,7 @@ def run(
       try:
         shutil.rmtree(work_dir, ignore_errors=True)
       except OSError as exc:
-        print >> sys.stderr, 'Failed to delete %s: %s' % (work_dir, exc)
+        print('Failed to delete %s: %s' % (work_dir, exc))
 
 
 def main(
