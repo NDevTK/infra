@@ -31,7 +31,7 @@ import "infra/unifiedfleet/api/v1/models/ownership.proto";
 // It refers to the entity in the lab which has Machine(s) associated
 // with it. It also has other components associated with it.
 //
-// Next tag: 24
+// Next tag: 25
 message MachineLSE {
     option (google.api.resource) = {
         type: "unified-fleet-system.appspot.com/MachineLSE"
@@ -131,8 +131,11 @@ message MachineLSE {
     // Ownership information of the host like ResourceGroup, Security level etc.
     OwnershipData ownership = 22;
 
-    // a virtual (non-physical) grouping
-    LogicalZone logicalZone = 23;
+    reserved 23;
+    reserved "logicalZone";
+
+    // A virtual (non-physical) grouping
+    LogicalZone logical_zone = 24;
 }
 
 // ChromeBrowserMachineLSE refers to the entity
