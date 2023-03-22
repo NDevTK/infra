@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,7 +55,7 @@ func Run(ctx context.Context, args *RunArgs) (rErr error) {
 	}
 
 	ctx = log.WithLogger(ctx, args.Logger)
-	if !args.EnableRecovery {
+	if !args.GetEnableRecovery() {
 		log.Infof(ctx, "Recovery actions is blocker by run arguments.")
 	}
 	log.Infof(ctx, "Run recovery for %q", args.UnitName)
@@ -395,7 +395,7 @@ func runDUTPlans(ctx context.Context, dut *tlw.Dut, c *config.Configuration, arg
 	execArgs := &execs.RunArgs{
 		DUT:            dut,
 		Access:         args.Access,
-		EnableRecovery: args.EnableRecovery,
+		EnableRecovery: args.GetEnableRecovery(),
 		Logger:         args.Logger,
 		ShowSteps:      args.ShowSteps,
 		Metrics:        args.Metrics,
@@ -596,6 +596,11 @@ type RunArgs struct {
 	DevJumpHost string
 	// MetricSaver provides ability to save a metric with original context.
 	metricSaver metrics.MetricSaver
+}
+
+// EnableRecovery returns whether recovery is enabled.
+func (a RunArgs) GetEnableRecovery() bool {
+	return a.EnableRecovery
 }
 
 // UseConfigBase64 attaches a base64 encoded string as a config
