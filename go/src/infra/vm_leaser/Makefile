@@ -46,12 +46,16 @@ cover:
 # Build service image
 .PHONY: build
 build:
-	CGO_ENABLED=0 go build -o vm-leaser-service $(PROJECT_PATH)/cmd/vm_leaser
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o vm-leaser-service $(PROJECT_PATH)/cmd/vm_leaser
 
 # Run service locally
 .PHONY: dev
 dev: build
-	./vm-leaser-service --auth-service-host="chrome-infra-auth-dev.appspot.com"
+	./vm-leaser-service \
+	--auth-service-host="chrome-infra-auth-dev.appspot.com" \
+	--grpc-addr=":50051" \
+	--http-addr=":8800" \
+	--admin-addr=":8900"
 
 # Build Docker service
 .PHONY: build-docker
@@ -84,12 +88,12 @@ deploy-docker: build-docker
 # Build cron service
 .PHONY: build-cron
 build-cron:
-	go build -o cron-service $(PROJECT_PATH)/cmd/cron
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o cron-service $(PROJECT_PATH)/cmd/cron
 
 # Run cron service locally
 .PHONY: dev-cron
 dev-cron: build-cron
 	./cron-service \
-	--http-addr="127.0.0.1:8081" \
-	--admin-addr="127.0.0.1:8901" \
+	--http-addr=":8801" \
+	--admin-addr=":8901" \
 	--auth-service-host="chrome-infra-auth-dev.appspot.com"

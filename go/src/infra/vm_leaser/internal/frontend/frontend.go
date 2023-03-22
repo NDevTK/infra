@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@ import (
 	"cloud.google.com/go/compute/apiv1/computepb"
 	"github.com/google/uuid"
 	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/common/logging/gologger"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
 
@@ -50,15 +49,8 @@ func NewServer() *Server {
 	return &Server{}
 }
 
-func serviceContext(ctx context.Context) context.Context {
-	ctx = gologger.StdConfig.Use(ctx)
-	ctx = logging.SetLevel(ctx, logging.Debug)
-	return ctx
-}
-
 // LeaseVM leases a VM defined by LeaseVMRequest
 func (s *Server) LeaseVM(ctx context.Context, r *pb.LeaseVMRequest) (*pb.LeaseVMResponse, error) {
-	ctx = serviceContext(ctx)
 	logging.Infof(ctx, "[server:LeaseVM] Started")
 	if ctx.Err() == context.Canceled {
 		return &pb.LeaseVMResponse{}, fmt.Errorf("client cancelled: abandoning")
@@ -93,7 +85,6 @@ func (s *Server) LeaseVM(ctx context.Context, r *pb.LeaseVMRequest) (*pb.LeaseVM
 
 // ExtendLease extends a VM lease
 func (s *Server) ExtendLease(ctx context.Context, r *pb.ExtendLeaseRequest) (*pb.ExtendLeaseResponse, error) {
-	ctx = serviceContext(ctx)
 	logging.Infof(ctx, "[server:ExtendLease] Started")
 	if ctx.Err() == context.Canceled {
 		return &pb.ExtendLeaseResponse{}, fmt.Errorf("client cancelled: abandoning")
@@ -104,7 +95,6 @@ func (s *Server) ExtendLease(ctx context.Context, r *pb.ExtendLeaseRequest) (*pb
 
 // ReleaseVM releases a VM lease
 func (s *Server) ReleaseVM(ctx context.Context, r *pb.ReleaseVMRequest) (*pb.ReleaseVMResponse, error) {
-	ctx = serviceContext(ctx)
 	logging.Infof(ctx, "[server:ReleaseVM] Started")
 	if ctx.Err() == context.Canceled {
 		return &pb.ReleaseVMResponse{}, fmt.Errorf("client cancelled: abandoning")

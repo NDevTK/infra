@@ -9,6 +9,6 @@ FROM gcr.io/distroless/static-debian11:latest
 # The binary is built on the host. Copy it into the image.
 COPY vm-leaser-service /
 
-EXPOSE 8080
+USER nobody
 
 ENTRYPOINT ["/vm-leaser-service"]

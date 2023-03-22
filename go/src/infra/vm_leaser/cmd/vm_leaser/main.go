@@ -23,13 +23,7 @@ func InstallServices(s *frontend.Server, srv grpc.ServiceRegistrar) {
 }
 
 func main() {
-	// TODO(justinsuen): Temporarily use localhost endpoint. Need to add endpoint
-	// to configs and dynamically determine GRPCAddr.
-	options := server.Options{
-		GRPCAddr: "127.0.0.1:50051",
-	}
-
-	server.Main(&options, nil, func(srv *server.Server) error {
+	server.Main(nil, nil, func(srv *server.Server) error {
 		logging.Infof(srv.Context, "Starting server.")
 
 		// This allows auth to use Identity tokens.
