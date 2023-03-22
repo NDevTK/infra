@@ -149,6 +149,9 @@ func (inv *Inventory) makeDutProto(di *deviceInfo) (*labapi.Dut, error) {
 
 // makeChromeOsDutProto populates DutTopology proto for ChromeOS device.
 func (inv *Inventory) makeChromeOsDutProto(di *deviceInfo) (*labapi.Dut, error) {
+	if di.machine.GetDevboard() != nil {
+		return inv.makeChromeOsDevboardProto(di)
+	}
 	lse := di.machineLse
 	hostname := lse.GetHostname()
 	if hostname == "" {
@@ -202,6 +205,70 @@ func (inv *Inventory) makeChromeOsDutProto(di *deviceInfo) (*labapi.Dut, error) 
 			Address: cs,
 		},
 	}, nil
+}
+
+// makeChromeOsDevboardProto populates DutTopology proto for Devboard device.
+func (inv *Inventory) makeChromeOsDevboardProto(di *deviceInfo) (*labapi.Dut, error) {
+	lse := di.machineLse
+	hostname := lse.GetHostname()
+	if hostname == "" {
+		return nil, errors.New("make devboard proto: empty hostname")
+	}
+	croslse := lse.GetChromeosMachineLse()
+	if croslse == nil {
+		return nil, errors.New("make devboard proto: empty chromeos_machine_lse")
+	}
+	dlse := croslse.GetDeviceLse()
+	if dlse == nil {
+		return nil, errors.New("make devboard proto: empty device_lse")
+	}
+	lsed := dlse.GetDevboard()
+	if lsed == nil {
+		return nil, errors.New("make devboard proto: empty devboard machinelse")
+	}
+	mdb := di.machine.GetDevboard()
+	if mdb == nil {
+		return nil, errors.New("Make devboard proto: emtpy devboard machine")
+	}
+	cs, err := inv.cacheLocator.FindCacheServer(hostname, inv.client)
+	if err != nil {
+		return nil, fmt.Errorf("make chromeos dut proto: %s", err)
+	}
+	ret := &labapi.Dut{
+		Id: &labapi.Dut_Id{Value: hostname},
+		DutType: &labapi.Dut_Devboard_{
+			Devboard: &labapi.Dut_Devboard{
+				Servo: &labapi.Servo{},
+			},
+		},
+		CacheServer: &labapi.CacheServer{
+			Address: cs,
+		},
+	}
+	if s := lsed.GetServo(); s != nil {
+		if s.GetServoHostname() != "" {
+			ret.GetDevboard().GetServo().Present = true
+			ret.GetDevboard().GetServo().Serial = s.GetServoSerial()
+			ret.GetDevboard().GetServo().ServodAddress = &labapi.IpEndpoint{
+				Address: s.GetServoHostname(),
+				Port:    s.GetServoPort(),
+			}
+		}
+	}
+
+	switch mdb.GetBoard().(type) {
+	case *ufspb.Devboard_Andreiboard:
+		ret.GetDevboard().BoardType = "andreiboard"
+		ret.GetDevboard().UltradebugSerial = mdb.GetAndreiboard().GetUltradebugSerial()
+	case *ufspb.Devboard_Icetower:
+		ret.GetDevboard().BoardType = "icetower"
+		ret.GetDevboard().FingerprintModuleId = mdb.GetIcetower().GetFingerprintId()
+	case *ufspb.Devboard_Dragonclaw:
+		ret.GetDevboard().BoardType = "dragonclaw"
+		ret.GetDevboard().FingerprintModuleId = mdb.GetDragonclaw().GetFingerprintId()
+	}
+
+	return ret, nil
 }
 
 // makeAndroidDutProto populates DutTopology proto for Android device.

@@ -299,6 +299,116 @@ func TestGetAndroidDutTopology_single(t *testing.T) {
 	}
 }
 
+func TestGetChromeOsDevboardTopology_single(t *testing.T) {
+	t.Parallel()
+	ctx, cf := context.WithCancel(context.Background())
+	defer cf()
+	s := &fakeServer{
+		ChromeOSDeviceData: &ufspb.ChromeOSDeviceData{
+			LabConfig: &ufspb.MachineLSE{
+				Hostname: "200.200.200.200",
+				Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+					ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+						ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+							DeviceLse: &ufspb.ChromeOSDeviceLSE{
+								Device: &ufspb.ChromeOSDeviceLSE_Devboard{
+									Devboard: &lab.Devboard{
+										Pools: []string{"test-pool"},
+										Servo: &lab.Servo{
+											ServoHostname: "servo-host",
+											ServoPort:     33,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			Machine: &ufspb.Machine{
+				Name: "mary",
+				Device: &ufspb.Machine_Devboard{
+					Devboard: &ufspb.Devboard{
+						Board: &ufspb.Devboard_Andreiboard{
+							Andreiboard: &ufspb.Andreiboard{
+								UltradebugSerial: "fake-serial",
+							},
+						},
+					},
+				},
+			},
+			ManufacturingConfig: &manufacturing.ManufacturingConfig{
+				HwidComponent: []string{
+					"fake-component1",
+					"fake-component2",
+				},
+			},
+			HwidData: &ufspb.HwidData{
+				Sku:  "fake-sku",
+				Hwid: "fake-hwid",
+				DutLabel: &ufspb.DutLabel{
+					Labels: []*ufspb.DutLabel_Label{
+						{
+							Name:  "phase",
+							Value: "EVT-Maple",
+						},
+					},
+				},
+			},
+			DutState: &lab.DutState{
+				Chameleon: lab.PeripheralState_NOT_APPLICABLE,
+			},
+		},
+		CachingServices: &ufsapi.ListCachingServicesResponse{
+			CachingServices: []*ufspb.CachingService{
+				{
+					Name:           "cachingservice/200.200.200.208",
+					Port:           55,
+					ServingSubnets: []string{"200.200.200.200/24"},
+					State:          ufspb.State_STATE_SERVING,
+				},
+			},
+		},
+	}
+	cl := cache.NewLocator()
+	c := newFakeClient(ctx, t, s)
+	inventory := NewInventory(c, cl)
+	got, err := inventory.GetDutTopology(ctx, "alice")
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := &labapi.DutTopology{
+		Id: &labapi.DutTopology_Id{Value: "alice"},
+		Duts: []*labapi.Dut{
+			{
+				Id: &labapi.Dut_Id{Value: "200.200.200.200"},
+				DutType: &labapi.Dut_Devboard_{
+					Devboard: &labapi.Dut_Devboard{
+						BoardType:        "andreiboard",
+						UltradebugSerial: "fake-serial",
+						Servo: &labapi.Servo{
+							Present: true,
+							ServodAddress: &labapi.IpEndpoint{
+								Address: "servo-host",
+								Port:    33,
+							},
+						},
+					},
+				},
+				CacheServer: &labapi.CacheServer{
+					Address: &labapi.IpEndpoint{
+						Address: "200.200.200.208",
+						Port:    55,
+					},
+				},
+			},
+		},
+	}
+	if !proto.Equal(want, got) {
+		t.Errorf("GetDutTopology() mismatch (-want +got):\n%s\n%s", want, got)
+	}
+}
+
 type fakeServer struct {
 	ufsapi.UnimplementedFleetServer
 	ChromeOSDeviceData *ufspb.ChromeOSDeviceData
