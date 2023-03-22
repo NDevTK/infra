@@ -339,4 +339,5 @@ var supportedTasks = map[string]buildbucket.TaskName{
 	string(buildbucket.Recovery):     buildbucket.Recovery,
 	string(buildbucket.DeepRecovery): buildbucket.DeepRecovery,
 	string(buildbucket.DryRun):       buildbucket.DryRun,
+	string(buildbucket.PostTest):     buildbucket.PostTest,
 }

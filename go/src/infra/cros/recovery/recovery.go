@@ -305,6 +305,8 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 		return config.ConfigDryRun(), nil
 	case buildbucket.Custom:
 		return nil, errors.Reason("Setup type: %q does not have default configuration for custom tasks", ds).Err()
+	case buildbucket.PostTest:
+		return nil, errors.Reason("post test is not yet supported").Err()
 	default:
 		return nil, errors.Reason("TaskName: %q is not supported..", tn).Err()
 	}

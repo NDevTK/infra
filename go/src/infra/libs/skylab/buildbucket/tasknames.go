@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,9 @@ const (
 	// Its intended use case is to verify that a recipe or luciexe executable
 	// can transfer control to labpack (or another recoverylib runner) successfully.
 	DryRun TaskName = "dry_run"
+	// PostTest is a task that runs a lightweight verifier task during test
+	// teardown. Also known as "ile-de-france".
+	PostTest = "post_test"
 )
 
 // String returns the name of the task as an argument to the labpack command-line tool.

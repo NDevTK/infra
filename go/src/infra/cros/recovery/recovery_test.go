@@ -1,4 +1,4 @@
-// Copyright 2021 The ChromiumOS Authors
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -231,6 +231,34 @@ var dutPlansCases = []struct {
 		buildbucket.DryRun,
 		nil,
 		true,
+	},
+	{
+		"cros post test",
+		tlw.DUTSetupTypeCros,
+		buildbucket.PostTest,
+		nil,
+		false,
+	},
+	{
+		"cros browser lightweight verifier",
+		tlw.DUTSetupTypeCrosBrowser,
+		buildbucket.PostTest,
+		nil,
+		false,
+	},
+	{
+		"android lightweight verifier",
+		tlw.DUTSetupTypeAndroid,
+		buildbucket.PostTest,
+		nil,
+		false,
+	},
+	{
+		"android labstation verifier",
+		tlw.DUTSetupTypeLabstation,
+		buildbucket.PostTest,
+		nil,
+		false,
 	},
 }
 
