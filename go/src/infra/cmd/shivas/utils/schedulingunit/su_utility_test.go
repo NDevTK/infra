@@ -34,21 +34,21 @@ func TestSchedulingUnitDutState(t *testing.T) {
 
 	Convey("Test when where one child DUT in needs_manual_repair.", t, func() {
 		s := []string{"ready", "ready", "needs_manual_repair", "needs_repair", "repair_failed"}
-		So(schedulingUnitDutState(s), ShouldEqual, "needs_manual_attention")
+		So(schedulingUnitDutState(s), ShouldEqual, "needs_manual_repair")
 	})
 
 	Convey("Test when where one child DUT in needs_replacement.", t, func() {
-		s := []string{"ready", "ready", "needs_replacement", "needs_repair", "repair_failed"}
-		So(schedulingUnitDutState(s), ShouldEqual, "needs_manual_attention")
+		s := []string{"ready", "needs_deploy", "needs_replacement", "needs_repair", "needs_manual_repair"}
+		So(schedulingUnitDutState(s), ShouldEqual, "needs_replacement")
 	})
 
 	Convey("Test when where one child DUT in needs_deploy.", t, func() {
-		s := []string{"ready", "ready", "needs_deploy", "needs_repair", "repair_failed"}
-		So(schedulingUnitDutState(s), ShouldEqual, "needs_manual_attention")
+		s := []string{"ready", "ready", "needs_deploy", "needs_manual_repair", "repair_failed"}
+		So(schedulingUnitDutState(s), ShouldEqual, "needs_deploy")
 	})
 
 	Convey("Test when where one child DUT in reserved.", t, func() {
-		s := []string{"ready", "reserved", "needs_deploy", "needs_repair", "repair_failed"}
+		s := []string{"ready", "reserved", "needs_deploy", "needs_repair", "needs_replacement"}
 		So(schedulingUnitDutState(s), ShouldEqual, "reserved")
 	})
 

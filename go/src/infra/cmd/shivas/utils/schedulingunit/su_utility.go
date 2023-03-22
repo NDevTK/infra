@@ -20,9 +20,9 @@ var dutStateWeights = map[string]int{
 	"needs_repair":        2,
 	"repair_failed":       3,
 	"needs_manual_repair": 4,
-	"needs_replacement":   4,
-	"needs_deploy":        4,
-	"reserved":            5,
+	"needs_deploy":        5,
+	"needs_replacement":   6,
+	"reserved":            7,
 }
 
 var suStateMap = map[int]string{
@@ -30,8 +30,10 @@ var suStateMap = map[int]string{
 	1: "ready",
 	2: "needs_repair",
 	3: "repair_failed",
-	4: "needs_manual_attention",
-	5: "reserved",
+	4: "needs_manual_repair",
+	5: "needs_deploy",
+	6: "needs_replacement",
+	7: "reserved",
 }
 
 var dutToSULabelMap = map[string]string{
