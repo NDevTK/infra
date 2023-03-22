@@ -270,6 +270,7 @@ func getDUTBotDimensions(deviceData *ufspb.ChromeOSDeviceData, ds dutstate.Info,
 	}
 	dims["dut_state"] = []string{string(ds.State)}
 	dims["ufs_zone"] = []string{deviceData.GetLabConfig().GetZone()}
+	dims["logical_zone"] = []string{deviceData.GetLabConfig().GetLogicalZone().String()}
 	swarming.Sanitize(dims, r)
 	return dims
 }
