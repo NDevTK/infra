@@ -64,6 +64,7 @@ def builder(
         # Builder props.
         os = None,
         cpu_cores = None,
+        cpu = None,
         properties = None,
         builder_group_property_name = "mastername",
         caches = None,
@@ -83,6 +84,7 @@ def builder(
       executable: a recipe to run.
       os: the target OS dimension.
       cpu_cores: the CPU cores count dimension (as string).
+      cpu: the CPU architecture (as string)
       properties: a dict with properties to pass to the recipe.
       builder_group_property_name: the name of the property to set with the
         builder group.
@@ -117,7 +119,7 @@ def builder(
         properties = properties,
         dimensions = {
             "os": os or "Ubuntu-18.04",
-            "cpu": "x86-64",
+            "cpu": cpu or "x86-64",
             "cores": cpu_cores or "8",
             "pool": "luci.infra.codesearch",
         },
@@ -138,7 +140,7 @@ def builder(
         short_name = short_name,
     )
 
-def chromium_genfiles(short_name, name, recipe_properties, os = None, cpu_cores = None):
+def chromium_genfiles(short_name, name, recipe_properties, os = None, cpu_cores = None, cpu = None):
     """A builder for generating kzips for chromium/src.
 
       In recipe_properties, you can specify the following parameters:
@@ -160,6 +162,7 @@ def chromium_genfiles(short_name, name, recipe_properties, os = None, cpu_cores 
         builder_group_property_name = "builder_group",
         os = os,
         cpu_cores = cpu_cores,
+        cpu = cpu,
         caches = [swarming.cache(
             path = "generated",
             name = "codesearch_git_genfiles_repo",
@@ -316,6 +319,24 @@ chromium_genfiles(
         "corpus": "chromium.googlesource.com/chromium/src",
         "build_config": "fuchsia",
     },
+)
+
+chromium_genfiles(
+    short_name = "ios",
+    name = "codesearch-gen-chromium-ios",
+    recipe_properties = {
+        "compile_targets": ["all"],
+        "platform": "ios",
+        "sync_generated_files": True,
+        # Generated files will end up in out/ios-Debug/gen.
+        "gen_repo_out_dir": "ios-Debug",
+        "gen_repo_branch": "main",
+        "corpus": "chromium.googlesource.com/chromium/src",
+        "build_config": "ios",
+    },
+    os = "Mac-13",
+    cpu_cores = "8",
+    cpu = "arm64",
 )
 
 chromium_genfiles(
