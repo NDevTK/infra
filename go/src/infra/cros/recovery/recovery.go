@@ -685,9 +685,7 @@ func (a *RunArgs) verify() error {
 	case a.Access == nil:
 		return errors.Reason("access point is not provided").Err()
 	case a.LogRoot == "":
-		// TODO(otabek): Upgrade this to a real error.
-		fmt.Fprintf(os.Stderr, "%s\n", "log root cannot be empty!\n")
+		return errors.Reason("log root cannot be empty!").Err()
 	}
-	fmt.Fprintf(os.Stderr, "log root is %q\n", a.LogRoot)
 	return nil
 }
