@@ -4,7 +4,7 @@
 
 # Use an empty base image
 # https://github.com/GoogleContainerTools/distroless
-FROM gcr.io/distroless/static-debian11:latest
+FROM gcr.io/distroless/static:latest
 
 # The binary is built on the host. Copy it into the image.
 COPY vm-leaser-service /

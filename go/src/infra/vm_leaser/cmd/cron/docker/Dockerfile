@@ -4,8 +4,8 @@
 
 FROM gcr.io/distroless/static:latest
 
-COPY cron .
+COPY cron-service /
 
 USER nobody
 
-ENTRYPOINT ["./cron"]
+ENTRYPOINT ["/cron"]

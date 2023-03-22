@@ -1,0 +1,12 @@
+name: vm-leaser/vm-leaser-service
+extends: ../../base.yaml
+
+dockerfile: ../../../../go/src/infra/vm_leaser/cmd/vm_leaser/docker/Dockerfile
+deterministic: true
+
+sources:
+  - ../../../../go/src/infra/vm_leaser
+
+build:
+  - go_binary: infra/vm_leaser/cmd/vm_leaser
+    dest: ${contextdir}/vm-leaser-service
