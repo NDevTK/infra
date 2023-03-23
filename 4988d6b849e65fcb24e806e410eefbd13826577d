@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "27bca13f_d28a300b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2023-03-23T17:43:13Z",
+      "side": 1,
+      "message": "The hope was to put it in this repo to make it easier to integration test against the schema that it\u0027s assuming in Buildbucket. Wdyt?",
+      "parentUuid": "7c055fbb_e3557521",
+      "revId": "4988d6b849e65fcb24e806e410eefbd13826577d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "231cd123_76e0bad4",
@@ -31,6 +49,30 @@
       "writtenOn": "2023-03-23T00:03:13Z",
       "side": 1,
       "message": "this can be deleted, by default all requests will be routed to the Go code, which is what we want anyway",
+      "range": {
+        "startLine": 3,
+        "startChar": 0,
+        "endLine": 6,
+        "endChar": 16
+      },
+      "revId": "4988d6b849e65fcb24e806e410eefbd13826577d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b00467fb_f878aa43",
+        "filename": "go/src/infra/appengine/builder_health_indicators/app.yaml",
+        "patchSetId": 2
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2023-03-23T17:43:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "231cd123_76e0bad4",
       "range": {
         "startLine": 3,
         "startChar": 0,
@@ -64,6 +106,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "599fe234_0eda0fff",
+        "filename": "go/src/infra/appengine/builder_health_indicators/app.yaml",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2023-03-23T17:43:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1db8a605_7cce126e",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 12
+      },
+      "revId": "4988d6b849e65fcb24e806e410eefbd13826577d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "115573ea_370e9923",
@@ -77,6 +143,30 @@
       "writtenOn": "2023-03-23T00:03:13Z",
       "side": 1,
       "message": "you may want to use e.g. \"every day 00:00\" to control precisely when updates happen. With \"every 24 hours\" the initial time-of-day offset is basically random.",
+      "range": {
+        "startLine": 4,
+        "startChar": 12,
+        "endLine": 4,
+        "endChar": 26
+      },
+      "revId": "4988d6b849e65fcb24e806e410eefbd13826577d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b7631b09_64ec649a",
+        "filename": "go/src/infra/appengine/builder_health_indicators/cron.yaml",
+        "patchSetId": 2
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2023-03-23T17:43:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "115573ea_370e9923",
       "range": {
         "startLine": 4,
         "startChar": 12,
@@ -133,6 +223,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "840dbfb7_639126cd",
+        "filename": "go/src/infra/appengine/builder_health_indicators/deploy.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2023-03-23T17:43:13Z",
+      "side": 1,
+      "message": "That is a good idea. Added one.",
+      "parentUuid": "9a4f1e4e_184ff6c5",
+      "range": {
+        "startLine": 7,
+        "startChar": 23,
+        "endLine": 7,
+        "endChar": 60
+      },
+      "revId": "4988d6b849e65fcb24e806e410eefbd13826577d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a7537a83_f01b0cd9",
+        "filename": "go/src/infra/appengine/builder_health_indicators/deploy.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2023-03-23T17:43:13Z",
+      "side": 1,
+      "message": "I think we want alerting on errors, but not necessarily CI/CD automation just yet. We\u0027re trying for a MVP, and I think the error alerting will give us enough time to fix potential issues, since it\u0027s not the end of the world for the health to be a few days stale, at this stage.",
+      "parentUuid": "915bdb20_2387c4c3",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 13
+      },
+      "revId": "4988d6b849e65fcb24e806e410eefbd13826577d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "45984977_6cfab2ea",
@@ -156,6 +294,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c29ef15e_74c73228",
+        "filename": "go/src/infra/appengine/builder_health_indicators/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2023-03-23T17:43:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "45984977_6cfab2ea",
+      "range": {
+        "startLine": 17,
+        "startChar": 2,
+        "endLine": 17,
+        "endChar": 36
+      },
+      "revId": "4988d6b849e65fcb24e806e410eefbd13826577d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "64b194e7_babd0a09",
@@ -169,6 +331,30 @@
       "writtenOn": "2023-03-23T00:03:13Z",
       "side": 1,
       "message": "https://pkg.go.dev/go.chromium.org/luci/server/cron#RegisterHandler\n\n```\ncron.RegisterHandler(\"generate\", generate.Generate)\n```\n\nThen change the URL in cron.yaml to /internal/cron/generate (this is where `cron` module exposes handlers).\n\nAmong other things, this will do correct authentication and will produce monitoring metrics.",
+      "range": {
+        "startLine": 21,
+        "startChar": 2,
+        "endLine": 21,
+        "endChar": 62
+      },
+      "revId": "4988d6b849e65fcb24e806e410eefbd13826577d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5db7adcc_93e1e26f",
+        "filename": "go/src/infra/appengine/builder_health_indicators/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2023-03-23T17:43:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "64b194e7_babd0a09",
       "range": {
         "startLine": 21,
         "startChar": 2,
