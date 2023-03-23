@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f7ad44cf_f91f3dab",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2023-03-23T16:42:20Z",
+      "side": 1,
+      "message": "Hi Abhishek, PTAL Floss adapter detection logic when you get a chance.",
+      "revId": "354541f3d96ab656562eb836c13f479a5d4f33e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3e868a6a_0aaa5cc1",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/bluetooth/adapter.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2023-03-23T16:42:20Z",
+      "side": 1,
+      "message": "FYI, added `--print-reply\u003dliteral` here so no need to strip the header from the dbus reply",
+      "range": {
+        "startLine": 46,
+        "startChar": 26,
+        "endLine": 46,
+        "endChar": 45
+      },
+      "revId": "354541f3d96ab656562eb836c13f479a5d4f33e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
