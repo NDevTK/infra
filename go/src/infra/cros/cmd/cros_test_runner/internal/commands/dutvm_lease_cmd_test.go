@@ -8,6 +8,8 @@ import (
 	"context"
 	"testing"
 
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/data"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
@@ -25,11 +27,30 @@ func buildDutVmLeaseCmdForTest() *commands.DutVmLeaseCmd {
 	return cmd
 }
 
-func TestDutVmLeaseCmd_MissingDeps(t *testing.T) {
+func buildDutVmLeaseCmdStateKeeper() *data.HwTestStateKeeper {
+	sk := &data.HwTestStateKeeper{
+		DutVmGceImage: &vmlabapi.GceImage{
+			Name:    "some-name",
+			Project: "some-project",
+		},
+		CftTestRequest: &skylab_test_runner.CFTTestRequest{
+			PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
+				DutModel: &labapi.DutModel{
+					BuildTarget: "betty",
+					ModelName:   "betty",
+				},
+			},
+		},
+	}
+	return sk
+}
+
+func TestDutVmLeaseCmd_MissingDepsDutVmGceImage(t *testing.T) {
 	t.Parallel()
 	Convey("Cmd missing deps", t, func() {
 		ctx := context.Background()
-		sk := &data.HwTestStateKeeper{}
+		sk := buildDutVmLeaseCmdStateKeeper()
+		sk.DutVmGceImage = nil
 		cmd := buildDutVmLeaseCmdForTest()
 		err := cmd.ExtractDependencies(ctx, sk)
 		So(err, ShouldNotBeNil)
@@ -40,11 +61,8 @@ func TestDutVmLeaseCmd_MissingDepsName(t *testing.T) {
 	t.Parallel()
 	Convey("Cmd missing deps name", t, func() {
 		ctx := context.Background()
-		sk := &data.HwTestStateKeeper{
-			DutVmGceImage: &vmlabapi.GceImage{
-				Project: "some-project",
-			},
-		}
+		sk := buildDutVmLeaseCmdStateKeeper()
+		sk.DutVmGceImage.Name = ""
 		cmd := buildDutVmLeaseCmdForTest()
 		err := cmd.ExtractDependencies(ctx, sk)
 		So(err, ShouldNotBeNil)
@@ -55,11 +73,44 @@ func TestDutVmLeaseCmd_MissingDepsProject(t *testing.T) {
 	t.Parallel()
 	Convey("Cmd missing deps project", t, func() {
 		ctx := context.Background()
-		sk := &data.HwTestStateKeeper{
-			DutVmGceImage: &vmlabapi.GceImage{
-				Name: "some-name",
-			},
-		}
+		sk := buildDutVmLeaseCmdStateKeeper()
+		sk.DutVmGceImage.Project = ""
+		cmd := buildDutVmLeaseCmdForTest()
+		err := cmd.ExtractDependencies(ctx, sk)
+		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestDutVmLeaseCmd_MissingDepsCftTestRequest(t *testing.T) {
+	t.Parallel()
+	Convey("Cmd missing deps project", t, func() {
+		ctx := context.Background()
+		sk := buildDutVmLeaseCmdStateKeeper()
+		sk.CftTestRequest = nil
+		cmd := buildDutVmLeaseCmdForTest()
+		err := cmd.ExtractDependencies(ctx, sk)
+		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestDutVmLeaseCmd_MissingDepsCftTestRequestPrimaryDut(t *testing.T) {
+	t.Parallel()
+	Convey("Cmd missing deps project", t, func() {
+		ctx := context.Background()
+		sk := buildDutVmLeaseCmdStateKeeper()
+		sk.CftTestRequest.PrimaryDut = nil
+		cmd := buildDutVmLeaseCmdForTest()
+		err := cmd.ExtractDependencies(ctx, sk)
+		So(err, ShouldNotBeNil)
+	})
+}
+
+func TestDutVmLeaseCmd_MissingDepsCftTestRequestDutModel(t *testing.T) {
+	t.Parallel()
+	Convey("Cmd missing deps project", t, func() {
+		ctx := context.Background()
+		sk := buildDutVmLeaseCmdStateKeeper()
+		sk.CftTestRequest.PrimaryDut.DutModel = nil
 		cmd := buildDutVmLeaseCmdForTest()
 		err := cmd.ExtractDependencies(ctx, sk)
 		So(err, ShouldNotBeNil)
@@ -70,12 +121,7 @@ func TestDutVmLeaseCmd_ExtractDepsSuccess(t *testing.T) {
 	t.Parallel()
 	Convey("Cmd extract deps success", t, func() {
 		ctx := context.Background()
-		sk := &data.HwTestStateKeeper{
-			DutVmGceImage: &vmlabapi.GceImage{
-				Name:    "some-name",
-				Project: "some-project",
-			},
-		}
+		sk := buildDutVmLeaseCmdStateKeeper()
 		cmd := buildDutVmLeaseCmdForTest()
 		err := cmd.ExtractDependencies(ctx, sk)
 		So(err, ShouldBeNil)

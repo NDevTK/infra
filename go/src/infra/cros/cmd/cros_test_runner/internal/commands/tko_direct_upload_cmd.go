@@ -7,14 +7,15 @@ package commands
 import (
 	"context"
 	"fmt"
-	"infra/cros/cmd/cros_test_runner/common"
-	"infra/cros/cmd/cros_test_runner/internal/data"
-	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 	"os"
 	"os/exec"
 	"path"
 	"strconv"
 	"strings"
+
+	"infra/cros/cmd/cros_test_runner/common"
+	"infra/cros/cmd/cros_test_runner/internal/data"
+	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
@@ -147,6 +148,14 @@ func (cmd *TkoDirectUploadCmd) uploadTestResultToTKO(ctx context.Context, testRe
 	_, err = kvLog2.Write([]byte(finalKvContents))
 	if err != nil {
 		logging.Infof(ctx, "error while writing keyval contents: %s", err)
+	}
+
+	// For VMLab test, preserve keyval appending that is required by CTS archiver,
+	// but skip current workaround of TKO publish: it won't work as no script
+	// installed on bot and TKO is scheduled to be deprecated in Q2 2023.
+	if common.GetBotProvider() == common.BotProviderGce {
+		logging.Infof(ctx, "skip TKO upload for VMLab: no script installed")
+		return nil
 	}
 
 	parseCmd, err := tkoParseCmd(ctx, resultsDirPath, cmd.TkoJobName)

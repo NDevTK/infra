@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 	vmlabapi "infra/libs/vmlab/api"
 
@@ -21,7 +22,8 @@ type DutVmLeaseCmd struct {
 	*interfaces.SingleCmdByExecutor
 
 	// Deps
-	DutVmGceImage *vmlabapi.GceImage
+	DutVmGceImage  *vmlabapi.GceImage
+	CftTestRequest *skylab_test_runner.CFTTestRequest
 
 	// Updates
 	DutVm *vmlabapi.VmInstance
@@ -44,6 +46,16 @@ func (cmd *DutVmLeaseCmd) ExtractDependencies(
 			return fmt.Errorf("cmd %q missing dependency: DutVmGceImage.Project", cmd.GetCommandType())
 		}
 		cmd.DutVmGceImage = sk.DutVmGceImage
+		if sk.CftTestRequest == nil {
+			return fmt.Errorf("cmd %q missing dependency: CftTestRequest", cmd.GetCommandType())
+		}
+		if sk.CftTestRequest.GetPrimaryDut() == nil {
+			return fmt.Errorf("cmd %q missing dependency: CftTestRequest.PrimaryDut", cmd.GetCommandType())
+		}
+		if sk.CftTestRequest.GetPrimaryDut().GetDutModel() == nil {
+			return fmt.Errorf("cmd %q missing dependency: CftTestRequest.PrimaryDut.DutModel", cmd.GetCommandType())
+		}
+		cmd.CftTestRequest = sk.CftTestRequest
 	default:
 		return fmt.Errorf("stateKeeper '%T' is not supported by cmd type %s", sk, cmd.GetCommandType())
 	}
@@ -85,13 +97,14 @@ func (cmd *DutVmLeaseCmd) updateVmTestStateKeeper(
 
 	if cmd.DutVm.GetSsh() != nil {
 		duts := []*labapi.Dut{{
-			Id: &labapi.Dut_Id{Value: "VM"},
+			Id: &labapi.Dut_Id{Value: cmd.DutVm.GetName()},
 			DutType: &labapi.Dut_Chromeos{
 				Chromeos: &labapi.Dut_ChromeOS{
 					Ssh: &labapi.IpEndpoint{
 						Address: cmd.DutVm.GetSsh().GetAddress(),
 						Port:    cmd.DutVm.GetSsh().GetPort(),
 					},
+					DutModel: cmd.CftTestRequest.GetPrimaryDut().GetDutModel(),
 				},
 			}}}
 		sk.DutTopology = &labapi.DutTopology{
