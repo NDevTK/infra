@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "af0b8908_ab3d9d9c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1365249
+      },
+      "writtenOn": "2023-03-23T18:20:03Z",
+      "side": 1,
+      "message": "Looks ok from dbus api perspective. Please also get a go reviewer to look at this.",
+      "revId": "482e07a8d72c569a071270213c9c862b7563668c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
