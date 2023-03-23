@@ -1,7 +1,6 @@
 include chromiumos/chromite:/OWNERS.ci
 
 ayatane@chromium.org
-ayatane@google.com
 guocb@chromium.org
 guocb@google.com
 jaredloucks@google.com
