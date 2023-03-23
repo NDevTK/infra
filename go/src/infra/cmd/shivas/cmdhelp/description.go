@@ -487,6 +487,18 @@ shivas update dut -name chromeos6-rack3-row2-host1 -tags -
 Delete tags to an existing DUT.
 
 `
+
+	// UpdateDUTBatchLongDesc long description for UpdateDUTBatchCmd
+	UpdateDUTBatchLongDesc string = `Update a batch of DUTs based on specified filters.
+
+For now, updates are limited to the logicalzone field.
+
+Examples:
+shivas update dut-batch -update-field logicalzone -update-value drillzone_sfo36 -count 10
+Update 10 random DUT's under the same procedure as 'shivas update dut -logicalzone drillzone_sfo36'
+
+`
+
 	// UpdateSwitchLongDesc long description for UpdateSwitchCmd
 	UpdateSwitchLongDesc string = `Update a switch by name.
 

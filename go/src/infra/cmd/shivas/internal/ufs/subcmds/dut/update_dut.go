@@ -465,21 +465,6 @@ func (c updateDUT) validateArgs() error {
 	return nil
 }
 
-// validateRequest checks if the req is valid based on the cmdline input.
-func (c *updateDUT) validateRequest(ctx context.Context, ic ufsAPI.FleetClient, req *ufsAPI.UpdateMachineLSERequest) error {
-	lse := req.MachineLSE
-	mask := req.UpdateMask
-	if mask == nil || len(mask.Paths) == 0 {
-		if lse == nil {
-			return fmt.Errorf("Internal Error. Invalid UpdateMachineLSERequest")
-		}
-		if lse.Name == "" {
-			return fmt.Errorf("Invalid update. Missing DUT name")
-		}
-	}
-	return suUtil.CheckIfLSEBelongsToSU(ctx, ic, lse.GetName())
-}
-
 // parseArgs reads input from the cmd line parameters and generates update dut request.
 func (c *updateDUT) parseArgs() ([]*ufsAPI.UpdateMachineLSERequest, error) {
 	if c.newSpecsFile != "" {
@@ -1157,7 +1142,7 @@ func (c *updateDUT) needToDeploy(ctx context.Context, ic ufsAPI.FleetClient, req
 // updateDUTToUFS verifies the request and calls UpdateMachineLSE API with the given request.
 func (c *updateDUT) updateDUTToUFS(ctx context.Context, ic ufsAPI.FleetClient, req *ufsAPI.UpdateMachineLSERequest) error {
 	// Validate the update request.
-	if err := c.validateRequest(ctx, ic, req); err != nil {
+	if err := validateUpdateDUTRequest(ctx, ic, req); err != nil {
 		return err
 	}
 	// Print existing LSE before update.
@@ -1175,6 +1160,21 @@ func (c *updateDUT) updateDUTToUFS(ctx context.Context, ic ufsAPI.FleetClient, r
 	utils.PrintProtoJSON(res, !utils.NoEmitMode(false))
 	fmt.Printf("Successfully updated DUT to UFS: %s \n", res.GetName())
 	return nil
+}
+
+// validateUpdateDUTRequest checks if the req is valid based on the cmdline input.
+func validateUpdateDUTRequest(ctx context.Context, ic ufsAPI.FleetClient, req *ufsAPI.UpdateMachineLSERequest) error {
+	lse := req.MachineLSE
+	mask := req.UpdateMask
+	if mask == nil || len(mask.Paths) == 0 {
+		if lse == nil {
+			return errors.New("Internal Error. Invalid UpdateMachineLSERequest")
+		}
+		if lse.Name == "" {
+			return errors.New("Invalid update. Missing DUT name")
+		}
+	}
+	return suUtil.CheckIfLSEBelongsToSU(ctx, ic, lse.GetName())
 }
 
 func appendServoFwChannelPrefix(servoFwChannel string) string {

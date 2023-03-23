@@ -43,7 +43,7 @@ var UpdateCmd = &subcommands.Command{
 	LongDesc: `Update details for
 	machine/rack/kvm/rpm/switch/drac/nic
 	host/vm
-	asset/dut/labstation/cachingservice/schedulingunit
+	asset/dut/dut-batch/labstation/cachingservice/schedulingunit
 	machine-prototype/rack-prototype/chromeplatform/vlan/host-deployment
 	attached-device-machine (aliased as adm/attached-device-machine)
 	attached-device-host (aliased as adh/attached-device-host)`,
@@ -73,6 +73,7 @@ func (c updateApp) GetCommands() []*subcommands.Command {
 		subcommands.CmdHelp,
 		asset.UpdateAssetCmd,
 		dut.UpdateDUTCmd,
+		dut.UpdateDUTBatchCmd,
 		labstation.UpdateLabstationCmd,
 		cachingservice.UpdateCachingServiceCmd,
 		schedulingunit.UpdateSchedulingUnitCmd,
