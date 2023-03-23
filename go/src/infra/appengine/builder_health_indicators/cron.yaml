@@ -1,0 +1,5 @@
+cron:
+- description: Generate health indicators
+  url: /internal/cron/generate
+  schedule: every day 01:23
+
