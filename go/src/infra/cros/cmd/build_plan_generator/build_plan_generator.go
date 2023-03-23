@@ -34,7 +34,7 @@ const (
 	buildIrrelevanceConfigPath       = "buildplanconfig/generated/build_irrelevance_config.binaryproto"
 	builderConfigsPath               = "generated/builder_configs.binaryproto"
 	slimBuildConfigPath              = "buildplanconfig/generated/slim_build_config.binaryproto"
-	targetTestRequirementsConfigPath = "testingconfig/generated/target_test_requirements.binaryproto"
+	targetTestRequirementsConfigPath = "testingconfig/generated/target_test_requirements_cq_only.binaryproto"
 )
 
 var (
