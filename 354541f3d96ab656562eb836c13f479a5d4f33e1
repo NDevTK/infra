@@ -39,6 +39,30 @@
       },
       "revId": "354541f3d96ab656562eb836c13f479a5d4f33e1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "539620c9_43eb6d8f",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/bluetooth/adapter.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-03-23T19:32:00Z",
+      "side": 1,
+      "message": "ack. please include it to the comment of usage of the command for future readers.",
+      "parentUuid": "3e868a6a_0aaa5cc1",
+      "range": {
+        "startLine": 46,
+        "startChar": 26,
+        "endLine": 46,
+        "endChar": 45
+      },
+      "revId": "354541f3d96ab656562eb836c13f479a5d4f33e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

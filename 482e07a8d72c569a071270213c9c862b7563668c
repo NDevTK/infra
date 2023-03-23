@@ -16,6 +16,23 @@
       "message": "Looks ok from dbus api perspective. Please also get a go reviewer to look at this.",
       "revId": "482e07a8d72c569a071270213c9c862b7563668c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a18a84c2_1b72472a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-03-23T19:32:00Z",
+      "side": 1,
+      "message": "LGTM % comment\n\nalso please run with mallet to verify that logics works for both type of components",
+      "revId": "482e07a8d72c569a071270213c9c862b7563668c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
