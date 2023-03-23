@@ -2316,6 +2316,18 @@ wheel: <
 
 * *universal*
 
+### 2.11.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-api-core-py3"
+  version: "version:2.11.0"
+>
+```
+
+
+* *universal*
+
 ## **google-api-python-client**
 
 ### 1.6.2
@@ -2426,6 +2438,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/google-auth-py3"
   version: "version:2.6.0"
+>
+```
+
+
+* *universal*
+
+### 2.16.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-auth-py3"
+  version: "version:2.16.2"
 >
 ```
 
@@ -2590,6 +2614,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/google-cloud-build-py3"
   version: "version:3.8.3"
+>
+```
+
+
+* *universal*
+
+### 3.13.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-cloud-build-py3"
+  version: "version:3.13.0"
 >
 ```
 
@@ -3118,6 +3154,18 @@ wheel: <
 
 * *universal*
 
+### 1.59.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/googleapis-common-protos-py2_py3"
+  version: "version:1.59.0"
+>
+```
+
+
+* *universal*
+
 ## **greenlet**
 
 ### 0.4.15.chromium.1
@@ -3210,6 +3258,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/grpc-google-iam-v1-py3"
   version: "version:0.12.3"
+>
+```
+
+
+* *universal*
+
+### 0.12.6
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/grpc-google-iam-v1-py3"
+  version: "version:0.12.6"
 >
 ```
 
@@ -5372,6 +5432,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/proto-plus-py3"
   version: "version:1.20.3"
+>
+```
+
+
+* *universal*
+
+### 1.22.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/proto-plus-py3"
+  version: "version:1.22.2"
 >
 ```
 
