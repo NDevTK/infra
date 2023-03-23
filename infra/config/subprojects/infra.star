@@ -207,16 +207,6 @@ def wheel_tryjob(builder):
         ],
     )
 
-    # Experimental tryjobs for crbug.com/1410063
-    luci.cq_tryjob_verifier(
-        builder = builder + " (experimental)",
-        cq_group = "infra",
-        experiment_percentage = 100,
-        location_filters = [
-            cq.location_filter(path_regexp = "infra/tools/dockerbuild/.+"),
-        ],
-    )
-
 wheel_tryjob("infra-internal:try/Universal wheel builder")
 wheel_tryjob("infra-internal:try/Linux x64 wheel builder")
 wheel_tryjob("infra-internal:try/Linux ARM wheel builder")
