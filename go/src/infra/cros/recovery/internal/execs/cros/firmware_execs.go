@@ -190,7 +190,6 @@ func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) 
 		UpdaterMode:                 actionArgs.AsString(ctx, "mode", defaultFirmwareImageUpdateMode),
 		UpdaterTimeout:              actionArgs.AsDuration(ctx, "updater_timeout", 600, time.Second),
 		UseCacheToExtractor:         actionArgs.AsBool(ctx, "use_cache_extractor", false),
-		UseExternalFlashrom:         actionArgs.AsBool(ctx, "use_external_flashrom", false),
 		DownloadImageReattemptCount: actionArgs.AsInt(ctx, "reattempt_count", 3),
 		DownloadImageReattemptWait:  actionArgs.AsDuration(ctx, "reattempt_wait", 5, time.Second),
 	}

@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,11 +44,10 @@ const (
 	ecProgrammerStm32CmdGlob = "flash_ec --chip=%s --image=%s --port=%d --bitbang_rate=57600 --verify --verbose"
 
 	// Tools and commands used for flashing AP.
-	apProgrammerToolName             = "futility"
-	apProgrammerCmdGlob              = "futility update -i %s --servo_port=%d"
-	apProgrammerWithGbbFlag          = "--gbb_flags=%s"
-	apProgrammerWithForce            = "--force"
-	apProgrammerWithExternalFlashrom = "--quirks external_flashrom"
+	apProgrammerToolName    = "futility"
+	apProgrammerCmdGlob     = "futility update -i %s --servo_port=%d"
+	apProgrammerWithGbbFlag = "--gbb_flags=%s"
+	apProgrammerWithForce   = "--force"
 )
 
 // ProgramEC programs EC firmware to devices by servo.
@@ -89,16 +88,16 @@ func (p *v3Programmer) programEC(ctx context.Context, imagePath string) error {
 // E.g. 0x18 to set force boot in DEV-mode and allow to boot from USB-drive in DEV-mode.
 // When force enabled, programmer will do force update (skip checking contents).
 // When externalFlashrom enabled, programmer will use external flashrom instead of libflashrom.
-func (p *v3Programmer) ProgramAP(ctx context.Context, imagePath, gbbHex string, force bool, useExternalFlashrom bool) error {
+func (p *v3Programmer) ProgramAP(ctx context.Context, imagePath, gbbHex string, force bool) error {
 	if err := isFileExist(ctx, imagePath, p.run); err != nil {
 		return errors.Annotate(err, "program ap").Err()
 	}
-	return p.programAP(ctx, imagePath, gbbHex, force, useExternalFlashrom)
+	return p.programAP(ctx, imagePath, gbbHex, force)
 }
 
 // programAP programs AP firmware to devices by servo.
 // Extracted for test purpose to avoid file present check.
-func (p *v3Programmer) programAP(ctx context.Context, imagePath, gbbHex string, force bool, useExternalFlashrom bool) error {
+func (p *v3Programmer) programAP(ctx context.Context, imagePath, gbbHex string, force bool) error {
 	if err := isToolPresent(ctx, apProgrammerToolName, p.run); err != nil {
 		return errors.Annotate(err, "program ap").Err()
 	}
@@ -110,9 +109,6 @@ func (p *v3Programmer) programAP(ctx context.Context, imagePath, gbbHex string, 
 	}
 	if force {
 		cmd = append(cmd, apProgrammerWithForce)
-	}
-	if useExternalFlashrom {
-		cmd = append(cmd, apProgrammerWithExternalFlashrom)
 	}
 	out, err := p.run(ctx, firmwareProgramTimeout, strings.Join(cmd, " "))
 	p.log.Debugf("Program AP output:\n%s", out)

@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ type Programmer interface {
 	// ProgramEC programs EC firmware to devices by servo.
 	ProgramEC(ctx context.Context, imagePath string) error
 	// ProgramAP programs AP firmware to devices by servo.
-	ProgramAP(ctx context.Context, imagePath, gbbHex string, force, useExternalFlashrom bool) error
+	ProgramAP(ctx context.Context, imagePath, gbbHex string, force bool) error
 	// ExtractAP extracts AP firmware from device.
 	ExtractAP(ctx context.Context, imagePath string, force bool) error
 	// Close closes programming resources.
