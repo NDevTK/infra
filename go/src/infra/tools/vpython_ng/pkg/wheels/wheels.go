@@ -36,15 +36,6 @@ func FromSpec(spec *vpython.Spec, tags cipkg.Generator) (cipkg.Generator, error)
 		"python_pep425tags={{.python_pep425tags}}",
 	}
 
-	// Add all environment variables started with "CIPD_" from host to Env.
-	// These are environment variables change cipd's behaviour and can be
-	// listed by `cipd help -advanced`.
-	for _, e := range os.Environ() {
-		if strings.HasPrefix(e, "CIPD_") {
-			env = append(env, e)
-		}
-	}
-
 	return &utilities.BaseGenerator{
 		Name:    "wheels",
 		Builder: "builtin:udf:ensureWheels",
@@ -112,7 +103,7 @@ func ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
 
 	// Construct CIPD command and execute
 	export := builtins.CIPDCommand("export", "--root", builtins.GetEnv("out", cmd.Env), "--ensure-file", "-")
-	export.Env = cmd.Env
+	export.Env = os.Environ() // Pass host environment variables to cipd.
 	export.Dir = cmd.Dir
 	export.Stdin = strings.NewReader(efs.String())
 	export.Stdout = cmd.Stdout
