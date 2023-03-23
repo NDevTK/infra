@@ -18,6 +18,7 @@ import (
 	"strings"
 	"time"
 
+	lab "go.chromium.org/chromiumos/infra/proto/go/lab"
 	luciauth "go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
 	lucigs "go.chromium.org/luci/common/gcloud/gs"
@@ -26,7 +27,6 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"infra/cros/cmd/labpack/internal/site"
-	steps "infra/cros/cmd/labpack/internal/steps"
 	"infra/cros/cmd/labpack/internal/tlw"
 	kclient "infra/cros/karte/client"
 	"infra/cros/recovery"
@@ -45,14 +45,14 @@ const DescribeMyDirectoryAndEnvironment = true
 // DescriptionCommand describes the environment where labpack was run. It must write all of its output to stdout.
 const DescriptionCommand = `( echo BEGIN; echo PWD; pwd ; echo FIND; find . ; echo ENV; env; echo END )`
 
-type ResponseUpdater func(*steps.LabpackResponse)
+type ResponseUpdater func(*lab.LabpackResponse)
 
 func main() {
 	log.SetPrefix(fmt.Sprintf("%s: ", filepath.Base(os.Args[0])))
 	log.Printf("Running version: %s", site.VersionNumber)
 	log.Printf("Running in buildbucket mode")
 
-	input := &steps.LabpackInput{}
+	input := &lab.LabpackInput{}
 	var writeOutputProps ResponseUpdater
 	var mergeOutputProps ResponseUpdater
 	build.Main(input, &writeOutputProps, &mergeOutputProps,
@@ -85,7 +85,7 @@ func main() {
 }
 
 // mainRun runs function for BB and provide result.
-func mainRunInternal(ctx context.Context, input *steps.LabpackInput, state *build.State, writeOutputProps ResponseUpdater) error {
+func mainRunInternal(ctx context.Context, input *lab.LabpackInput, state *build.State, writeOutputProps ResponseUpdater) error {
 	// Result errors which specify the result of main run.
 	var resultErrors []error
 
@@ -102,7 +102,7 @@ func mainRunInternal(ctx context.Context, input *steps.LabpackInput, state *buil
 
 	// Run recovery lib and get response.
 	// Set result as fail by default in case it fail to finish by some reason.
-	res := &steps.LabpackResponse{
+	res := &lab.LabpackResponse{
 		Success:    false,
 		FailReason: "Fail by unknown reason!",
 	}
@@ -268,7 +268,7 @@ func parallelUpload(ctx context.Context, lg logger.Logger, client lucigs.Client,
 }
 
 // internalRun main entry point to execution received request.
-func internalRun(ctx context.Context, in *steps.LabpackInput, state *build.State, metrics metrics.Metrics, lg logger.Logger, logRoot string) (err error) {
+func internalRun(ctx context.Context, in *lab.LabpackInput, state *build.State, metrics metrics.Metrics, lg logger.Logger, logRoot string) (err error) {
 	defer func() {
 		// Catching the panic here as luciexe just set a step as fail and but not exit execution.
 		lg.Debugf("Checking if there is a panic!")

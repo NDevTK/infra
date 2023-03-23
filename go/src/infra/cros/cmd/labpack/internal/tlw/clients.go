@@ -8,13 +8,13 @@ import (
 	"context"
 	"net/http"
 
+	lab "go.chromium.org/chromiumos/infra/proto/go/lab"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/cros/cmd/labpack/internal/site"
-	steps "infra/cros/cmd/labpack/internal/steps"
 	"infra/cros/recovery"
 	"infra/cros/recovery/scopes"
 	"infra/cros/recovery/tlw"
@@ -25,7 +25,7 @@ import (
 const defaultPartnerKeyPathInDrone = "/creds/ssh_keys/partner_testing_rsa"
 
 // NewAccess creates TLW Access for recovery engine.
-func NewAccess(ctx context.Context, in *steps.LabpackInput) (context.Context, tlw.Access, error) {
+func NewAccess(ctx context.Context, in *lab.LabpackInput) (context.Context, tlw.Access, error) {
 	hc, err := httpClient(ctx)
 	if err != nil {
 		return ctx, nil, errors.Annotate(err, "create tlw access: create http client").Err()

@@ -12,13 +12,13 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	lab "go.chromium.org/chromiumos/infra/proto/go/lab"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	steps "infra/cros/cmd/labpack/internal/steps"
 	"infra/cros/cmd/labpack/logger"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
@@ -31,7 +31,7 @@ func createLogger(ctx context.Context, logDir string, level logging.Level) (cont
 }
 
 // printInputs prints input params.
-func printInputs(ctx context.Context, input *steps.LabpackInput) (err error) {
+func printInputs(ctx context.Context, input *lab.LabpackInput) (err error) {
 	// If this function changes significantly, you need to assign the context
 	// here to a named variable so it can be passed to subsequent functions.
 	step, _ := build.StartStep(ctx, "Input params")
