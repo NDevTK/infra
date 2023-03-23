@@ -1,0 +1,11 @@
+runtime: go120
+
+handlers:
+- url: /internal/generate
+  script: auto
+  secure: always
+
+network:
+  forwarded_ports:
+  - 8800/tcp
+  - 8081/tcp
