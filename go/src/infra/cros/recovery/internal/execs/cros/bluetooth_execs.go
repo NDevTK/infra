@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,29 +6,14 @@ package cros
 
 import (
 	"context"
-	"reflect"
-	"strings"
 	"time"
 
+	bt "infra/cros/recovery/internal/components/cros/bluetooth"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 
 	"go.chromium.org/luci/common/errors"
-)
-
-const (
-	// Command to check whether the bluetooth device is powered-on and
-	// responsive on system DBus. In case of successful Bluetooth
-	// detection, the exit code will be 0 (success) and output string
-	// will approximately be like '\s*variant\s+boolean\s+true'. In
-	// case of failure, the output will either include 'false' instead
-	// of 'true', or the exist code will be non-zero, and output will
-	// be empty.
-	bluetoothDetectionCmd = `dbus-send --print-reply ` +
-		`--system --dest=org.bluez /org/bluez/hci0 ` +
-		`org.freedesktop.DBus.Properties.Get ` +
-		`string:"org.bluez.Adapter1" string:"Powered"`
 )
 
 // auditBluetoothExec will verify bluetooth on the host is detected correctly.
@@ -40,22 +25,24 @@ func auditBluetoothExec(ctx context.Context, info *execs.ExecInfo) error {
 	if bluetooth == nil {
 		return errors.Reason("audit bluetooth: data is not present in dut info").Err()
 	}
-	output, err := r(ctx, time.Minute, bluetoothDetectionCmd)
-	if err == nil {
-		// dbus-send command completed with success
-		// example output:
-		// 		method return time=1635461296.023563 sender=:1.65 -> destination=:1.276 serial=65 reply_serial=2
-		// 		variant       boolean true
-		lines := strings.Split(output, "\n")
-		if len(lines) == 2 {
-			btInfoArray := strings.Fields(lines[1])
-			if reflect.DeepEqual(btInfoArray, []string{"variant", "boolean", "true"}) {
-				bluetooth.State = tlw.HardwareState_HARDWARE_NORMAL
-				log.Infof(ctx, "set bluetooth state to be: %s", tlw.HardwareState_HARDWARE_NORMAL)
-				return nil
-			}
-		}
+
+	argsMap := info.GetActionArgs(ctx)
+	cmdTimeout := argsMap.AsDuration(ctx, "cmd_timeout", 30, time.Second)
+
+	var hasBluetooth bool
+	var err error
+	if bt.FlossEnabled(ctx, r, cmdTimeout) {
+		hasBluetooth, err = bt.HasAdapterFloss(ctx, r, cmdTimeout)
+	} else {
+		hasBluetooth, err = bt.HasAdapterBlueZ(ctx, r, cmdTimeout)
 	}
+
+	if hasBluetooth {
+		bluetooth.State = tlw.HardwareState_HARDWARE_NORMAL
+		log.Infof(ctx, "set bluetooth state to be: %s", tlw.HardwareState_HARDWARE_NORMAL)
+		return nil
+	}
+
 	if execs.SSHErrorInternal.In(err) || execs.SSHErrorCLINotFound.In(err) {
 		bluetooth.State = tlw.HardwareState_HARDWARE_UNSPECIFIED
 		log.Infof(ctx, "set bluetooth state to be: %s", tlw.HardwareState_HARDWARE_UNSPECIFIED)
