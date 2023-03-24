@@ -8,6 +8,10 @@ package testrunner
 import (
 	"context"
 
+	"infra/cmd/cros_test_platform/internal/execution/args"
+	"infra/cmd/cros_test_platform/internal/execution/types"
+	"infra/cmd/cros_test_platform/internal/execution/vmlab"
+
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
@@ -15,9 +19,6 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"infra/cmd/cros_test_platform/internal/execution/args"
-	"infra/cmd/cros_test_platform/internal/execution/types"
-	"infra/cmd/cros_test_platform/internal/execution/vmlab"
 
 	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
 	"infra/libs/skylab/request"
@@ -205,9 +206,28 @@ func (b *Build) Refresh(ctx context.Context, c trservice.Client) error {
 	b.result = resp.Result
 	// If the autotest result is missing, treat the build as incomplete.
 	if b.autotestResult() == nil {
+		testCases := []*skylab_test_runner.Result_Autotest_TestCase{}
+		if b.args.CFTIsEnabled && b.args.CFTTestRunnerRequest != nil && !proto.Equal(b.args.CFTTestRunnerRequest, &skylab_test_runner.CFTTestRequest{}) {
+			for _, test_case := range b.args.CFTTestRunnerRequest.GetTestSuites()[0].GetTestCaseIds().GetTestCaseIds() {
+				testCases = append(testCases, &skylab_test_runner.Result_Autotest_TestCase{
+					Name:    test_case.Value,
+					Verdict: skylab_test_runner.Result_Autotest_TestCase_VERDICT_NO_VERDICT,
+				})
+			}
+		} else if b.args.TestRunnerRequest != nil && !proto.Equal(b.args.TestRunnerRequest, &skylab_test_runner.Request{}) {
+			for _, test_case := range b.args.TestRunnerRequest.GetTests() {
+				testCases = append(testCases, &skylab_test_runner.Result_Autotest_TestCase{
+					Name:    test_case.GetAutotest().Name,
+					Verdict: skylab_test_runner.Result_Autotest_TestCase_VERDICT_NO_VERDICT,
+				})
+			}
+		}
 		b.result = &skylab_test_runner.Result{
 			Harness: &skylab_test_runner.Result_AutotestResult{
-				AutotestResult: &skylab_test_runner.Result_Autotest{Incomplete: true},
+				AutotestResult: &skylab_test_runner.Result_Autotest{
+					TestCases:  testCases,
+					Incomplete: true,
+				},
 			},
 		}
 	}
