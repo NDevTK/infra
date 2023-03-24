@@ -47,6 +47,11 @@ wheel: <
 >
 
 wheel: <
+  name: "infra/python/wheels/gunicorn-py3"
+  version: "version:20.1.0"
+>
+
+wheel: <
   name: "infra/python/wheels/httpagentparser-py2_py3"
   version: "version:1.9.3"
 >
