@@ -29,9 +29,10 @@ class UserHotlists(servlet.Servlet):
     viewed_users_starred_hotlists, _ = self.services.features.GetHotlistsByID(
         mr.cnxn, viewed_starred_hids)
 
-    viewed_users_relevant_hotlists = viewed_users_hotlists + list(
-        set(viewed_users_starred_hotlists.values()) -
-        set(viewed_users_hotlists))
+    viewed_users_relevant_hotlists = viewed_users_hotlists + [
+        hotlist for hotlist in viewed_users_starred_hotlists.values()
+        if hotlist not in viewed_users_hotlists
+    ]
 
     users_by_id = framework_views.MakeAllUserViews(
         mr.cnxn, self.services.user,

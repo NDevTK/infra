@@ -162,7 +162,7 @@ class _Phase(object):
 
   def AccumulateStatLines(self, total_seconds, lines, indent=''):
     # Only phases that took longer than 30ms are interesting.
-    if self.ms <= 30:
+    if self.ms == 'in_progress' or self.ms <= 30:
       return
 
     percent = self.elapsed_seconds // total_seconds * 100
