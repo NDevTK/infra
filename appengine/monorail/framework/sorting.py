@@ -340,7 +340,7 @@ def _MakeAccessorWithPostProcessor(users_by_id, base_accessor, postprocessor):
     else:
       values = [postprocessor(users_by_id[id_or_id_list])]
 
-    return sorted(values) or MAX_STRING
+    return sorted(values) or [MAX_STRING]
 
   return Accessor
 
@@ -426,7 +426,7 @@ def _IndexListAccessor(wk_values, base_accessor):
     values = base_accessor(art)
     if not values:
       # Undefined values sort last.
-      return MAX_STRING
+      return [MAX_STRING]
 
     indexes = [well_known_value_indexes.get(val, MAX_STRING) for val in values]
     return _SortedWithInts(indexes)
@@ -464,7 +464,7 @@ def _IndexOrLexicalList(wk_values, full_fd_list, col_name, users_by_id):
           _SortableApprovalApproverValues(art, approval_fds, users_by_id) +
           _SortableLabelValues(art, col_name, well_known_value_indexes))
       if not idx_or_lex_list:
-        return MAX_STRING  # issues with no value sort to the end of the list.
+        return [MAX_STRING]  # issues with no value sort to the end of the list.
       return _SortedWithInts(idx_or_lex_list)
 
     return ApproverAccessor
@@ -493,7 +493,7 @@ def _IndexOrLexicalList(wk_values, full_fd_list, col_name, users_by_id):
         _SortableFieldValues(art, fd_list, users_by_id, phase_name) +
         _SortableLabelValues(art, col_name, well_known_value_indexes))
     if not idx_or_lex_list:
-      return MAX_STRING  # issues with no value sort to the end of the list.
+      return [MAX_STRING]  # issues with no value sort to the end of the list.
     return _SortedWithInts(idx_or_lex_list)
 
   return Accessor

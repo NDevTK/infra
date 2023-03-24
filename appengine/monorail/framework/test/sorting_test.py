@@ -160,9 +160,9 @@ class SortingTest(unittest.TestCase):
     accessor = sorting._IndexListAccessor(well_known_values, base_accessor)
 
     # Case 1: accessor generates no values.
-    self.assertEqual(sorting.MAX_STRING, accessor(art))
+    self.assertEqual([sorting.MAX_STRING], accessor(art))
     neg_accessor = MakeDescending(accessor)
-    self.assertEqual(sorting.MAX_STRING, neg_accessor(art))
+    self.assertEqual([sorting.MAX_STRING], neg_accessor(art))
 
     # Case 2: A single well-known value
     art.component_ids = [33]
@@ -185,9 +185,9 @@ class SortingTest(unittest.TestCase):
     accessor = sorting._IndexListAccessor(well_known_values, base_accessor)
 
     # Case 1: accessor generates no values.
-    self.assertEqual(sorting.MAX_STRING, accessor(art))
+    self.assertEqual([sorting.MAX_STRING], accessor(art))
     neg_accessor = MakeDescending(accessor)
-    self.assertEqual(sorting.MAX_STRING, neg_accessor(art))
+    self.assertEqual([sorting.MAX_STRING], neg_accessor(art))
 
     # Case 2: A single oddball value
     art.component_ids = [33]
@@ -211,9 +211,9 @@ class SortingTest(unittest.TestCase):
 
     # Case 1: accessor generates no values.
     accessor = sorting._IndexOrLexicalList(well_known_values, [], 'pri', {})
-    self.assertEqual(sorting.MAX_STRING, accessor(art))
+    self.assertEqual([sorting.MAX_STRING], accessor(art))
     neg_accessor = MakeDescending(accessor)
-    self.assertEqual(sorting.MAX_STRING, neg_accessor(art))
+    self.assertEqual([sorting.MAX_STRING], neg_accessor(art))
 
     # Case 2: A single well-known value
     art.labels = ['Pri-Med']
