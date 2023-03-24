@@ -16655,6 +16655,7 @@ iclude->include
 icluded->included
 icludes->includes
 icluding->including
+icognito->incognito
 iconclastic->iconoclastic
 iconifie->iconify
 icrease->increase
@@ -17225,6 +17226,7 @@ incluing->including
 inclused->included
 inclusinve->inclusive
 incmrement->increment
+incogito->incognito
 incoherance->incoherence
 incoherancy->incoherency
 incoherant->incoherent
