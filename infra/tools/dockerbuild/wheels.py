@@ -1403,6 +1403,7 @@ SPECS.update({
         Universal('google-resumable-media', '2.3.0', pyversions=['py3']),
         Universal('googleapis-common-protos', '1.52.0'),
         Universal('grpcio-status', '1.44.0', pyversions=['py3']),
+        Universal('gunicorn', '20.1.0', pyversions=['py3']),
         Universal('h11', '0.13.0', pyversions=['py3']),
         Universal('html5lib', '1.0.1'),
         Universal('httplib2', '0.19.1', pyversions=['py3']),

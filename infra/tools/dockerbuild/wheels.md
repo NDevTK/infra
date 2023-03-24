@@ -3389,6 +3389,20 @@ wheel: <
 * *windows-x64-py3.8*
 * *windows-x86-py3.8*
 
+## **gunicorn-py3**
+
+### 20.1.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/gunicorn-py3"
+  version: "version:20.1.0"
+>
+```
+
+
+* *universal*
+
 ## **gym-py3**
 
 ### 0.18.0
