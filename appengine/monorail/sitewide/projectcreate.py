@@ -136,7 +136,7 @@ class ProjectCreate(servlet.Servlet):
             item = post_data['logo']
             logo_file_name = item.filename
             logo_gcs_id = gcs_helpers.StoreLogoInGCS(
-                logo_file_name, item.value, project_id)
+                logo_file_name, item.read(), project_id)
             we.UpdateProject(
                 project_id, logo_gcs_id=logo_gcs_id,
                 logo_file_name=logo_file_name)
