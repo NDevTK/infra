@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4f2c2cd8_cc00fcce",
+        "filename": "appengine/monorail/.vpython3",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2023-03-24T16:49:31Z",
+      "side": 1,
+      "message": "Add gunicorn to .vpython3 and requirements.txt. We need to specify `entrypoint` in app.yaml to pass in arguments to gunicorn, which also means that we need gunicorn in requirements.txt, as documented here:\nhttps://cloud.google.com/appengine/docs/standard/python3/runtime#application_startup",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 0
+      },
+      "revId": "69e0a073589339cbe78f67a3b3795748a2cbb346",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3e5d7e4a_91700e9e",
+        "filename": "appengine/monorail/features/userhotlists.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2023-03-24T16:49:31Z",
+      "side": 1,
+      "message": "Hotlists are unhashable in Python 3, so we can\u0027t add them to a set. Use a filtering list comprehension instead.",
+      "range": {
+        "startLine": 32,
+        "startChar": 0,
+        "endLine": 36,
+        "endChar": 0
+      },
+      "revId": "69e0a073589339cbe78f67a3b3795748a2cbb346",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fcaf8e10_df883ea3",
+        "filename": "appengine/monorail/framework/profiler.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 165,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2023-03-24T16:49:31Z",
+      "side": 1,
+      "message": "`self.ms` is initialized to `\u0027in_progress\u0027` in the constructor. It\u0027s a `TypeError` to compare `str` with `int` in Python 3. So explicitly check for the string.",
+      "range": {
+        "startLine": 165,
+        "startChar": 0,
+        "endLine": 165,
+        "endChar": 49
+      },
+      "revId": "69e0a073589339cbe78f67a3b3795748a2cbb346",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5af7054b_405a2b52",
+        "filename": "appengine/monorail/framework/sorting.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 343,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2023-03-24T16:49:31Z",
+      "side": 1,
+      "message": "It\u0027s a `TypeError` to compare `list` with `str` in Python 3. So none of the accessors should return `Union[list, str]`. Fix this by wrapping all of the `str`s in a `list`.",
+      "range": {
+        "startLine": 343,
+        "startChar": 29,
+        "endLine": 343,
+        "endChar": 41
+      },
+      "revId": "69e0a073589339cbe78f67a3b3795748a2cbb346",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e0836462_0568c53b",
+        "filename": "appengine/monorail/sitewide/projectcreate.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2023-03-24T16:49:31Z",
+      "side": 1,
+      "message": "This is a fix from the Flask migration. `item` comes from `request.files`, so it\u0027s a `werkzeug.datastructures.FileStorage` object. Use `storage.read()` to get the file data as a `str`.\nhttps://werkzeug.palletsprojects.com/en/2.2.x/datastructures/#werkzeug.datastructures.FileStorage",
+      "range": {
+        "startLine": 139,
+        "startChar": 32,
+        "endLine": 139,
+        "endChar": 43
+      },
+      "revId": "69e0a073589339cbe78f67a3b3795748a2cbb346",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4a1f8fc3_00fa6540",
+        "filename": "appengine/monorail/tracker/attachment_helpers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2023-03-24T16:49:31Z",
+      "side": 1,
+      "message": "`hmac.HMAC.update()` takes in only `bytes` as an argument, so cast `str` to `bytes`. We still need to call `str()` to convert `aid` from an `int` to a `str`.",
+      "range": {
+        "startLine": 75,
+        "startChar": 18,
+        "endLine": 75,
+        "endChar": 45
+      },
+      "revId": "69e0a073589339cbe78f67a3b3795748a2cbb346",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
