@@ -171,11 +171,15 @@ class CodesearchApi(recipe_api.RecipeApi):
     self._upload_kythe_index_pack(self.c.bucket_name, index_pack_kythe_path,
                                   index_pack_kythe_name_with_id)
 
-    # Also upload compile_commands.json for debugging purposes.
+    # Also upload compile_commands and gn_targets for debugging purposes.
     compdb_name_with_revision = 'compile_commands_%s_%s.json' % (
         self.c.PLATFORM, commit_position or commit_hash)
     self._upload_compile_commands_json(self.c.bucket_name,
                                        compdb_name_with_revision)
+    if project_type == self._PROJECT_BROWSER:
+      gn_name_with_revision = 'gn_targets_%s_%s.json' % (self.c.PLATFORM,
+                                                         commit_position)
+      self._upload_gn_targets_json(self.c.bucket_name, gn_name_with_revision)
 
     return index_pack_kythe_path
 
@@ -249,6 +253,22 @@ class CodesearchApi(recipe_api.RecipeApi):
     self.m.gsutil.upload(
         name='upload compile_commands.json',
         source=self.c.compile_commands_json_file,
+        bucket=bucket_name,
+        dest='debug/%s' % destination_filename)
+
+  def _upload_gn_targets_json(self, bucket_name, destination_filename):
+    """Upload the gn_targets.json file to Google Storage.
+
+    This is useful for debugging.
+
+    Args:
+      bucket_name: Name of the Google Storage bucket to upload to
+      destination_filename: Name to use for the compile_commands file in
+                            Google Storage
+    """
+    self.m.gsutil.upload(
+        name='upload gn_targets.json',
+        source=self.c.gn_targets_json_file,
         bucket=bucket_name,
         dest='debug/%s' % destination_filename)
 

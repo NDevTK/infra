@@ -350,7 +350,7 @@ This metadata is used to connect things in the generated file to the thing
 in the Mojom file which generated it. This is made possible by annotations
 added to the generated file by the Mojo compiler.
 
-&mdash; **def [checkout\_generated\_files\_repo\_and\_sync](/recipes/recipe_modules/codesearch/api.py#255)(self, copy, revision, kzip_path=None, ignore=None):**
+&mdash; **def [checkout\_generated\_files\_repo\_and\_sync](/recipes/recipe_modules/codesearch/api.py#275)(self, copy, revision, kzip_path=None, ignore=None):**
 
 Check out the generated files repo and sync the generated files
    into this checkout.
