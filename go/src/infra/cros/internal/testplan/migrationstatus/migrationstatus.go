@@ -34,7 +34,8 @@ var orchestratorNames = []string{"cq-orchestrator", "staging-cq-orchestrator"}
 type cqOrchProperties struct {
 	CrosTestPlanV2 struct {
 		MigrationConfigs []struct {
-			Project string
+			Project          string
+			ProjectBlocklist []string `json:"project_blocklist"`
 		} `json:"migration_configs"`
 	} `json:"$chromeos/cros_test_plan_v2"`
 }
@@ -192,6 +193,19 @@ func Compute(
 				if err != nil {
 					return nil, err
 				}
+
+				for _, blockedProject := range migrationConfig.ProjectBlocklist {
+					matchedBlocklist, err := regexp.Match(blockedProject, []byte(project.Name))
+					if err != nil {
+						return nil, err
+					}
+
+					if matchedBlocklist {
+						matched = false
+						break
+					}
+				}
+
 				if matched {
 					matchesMigrationConfig = true
 					break

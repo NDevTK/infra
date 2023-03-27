@@ -28,6 +28,9 @@ var bbCfg *bbpb.BuildbucketCfg = &bbpb.BuildbucketCfg{
 							"migration_configs": [
 								{
 									"project": "chromeos/testprojects/.*",
+									"project_blocklist": [
+										"chromeos/testprojects/blocklistedproject.*"
+									],
 									"other_field": 123
 								},
 								{
@@ -71,6 +74,9 @@ var cvConfig = &cvpb.Config{
 						{
 							Name: "chromeos/excludedbyorch1",
 						},
+						{
+							Name: "chromeos/testprojects/blocklistedproject1",
+						},
 					},
 				},
 			},
@@ -106,6 +112,9 @@ var manifest *repo.Manifest = &repo.Manifest{
 		},
 		{
 			Name: "chromeos/excludedbyorch1",
+		},
+		{
+			Name: "chromeos/testprojects/blocklistedproject1",
 		},
 	},
 }
@@ -149,6 +158,13 @@ func TestCompute(t *testing.T) {
 			IncludedByBuilder:      false,
 		},
 		{
+			BuilderName:            "cq-orchestrator",
+			ProjectName:            "chromeos/testprojects/blocklistedproject1",
+			IncludedByToT:          true,
+			IncludedByBuilder:      true,
+			MatchesMigrationConfig: false,
+		},
+		{
 			BuilderName:            "staging-cq-orchestrator",
 			ProjectName:            "chromeos/testprojects/testproject1",
 			MatchesMigrationConfig: true,
@@ -175,6 +191,13 @@ func TestCompute(t *testing.T) {
 			MatchesMigrationConfig: false,
 			IncludedByToT:          true,
 			IncludedByBuilder:      false,
+		},
+		{
+			BuilderName:            "staging-cq-orchestrator",
+			ProjectName:            "chromeos/testprojects/blocklistedproject1",
+			IncludedByToT:          true,
+			IncludedByBuilder:      true,
+			MatchesMigrationConfig: true,
 		},
 	}
 
