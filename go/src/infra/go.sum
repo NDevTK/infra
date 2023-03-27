@@ -1302,8 +1302,8 @@ go.opentelemetry.io/otel/trace v1.14.0/go.mod h1:8avnQLK+CG77yNLUae4ea2JDQ6iT+go
 go.opentelemetry.io/proto/otlp v0.7.0/go.mod h1:PqfVotwruBrMGOCsRd/89rSnXhoiJIqeYNgFYFoEGnI=
 go.opentelemetry.io/proto/otlp v0.19.0 h1:IVN6GR+mhC4s5yfcTbmzHYODqvWAp3ZedA2SJPI1Nnw=
 go.opentelemetry.io/proto/otlp v0.19.0/go.mod h1:H7XAot3MsfNsj7EXtrA2q5xSNQ10UqI405h3+duxN4U=
-go.skia.org/infra v0.0.0-20230228131630-fbf0bc5976a9 h1:jPucX2GB0nZYRKla5L5jozPjZwfPB+7mqicNdGVP4c4=
-go.skia.org/infra v0.0.0-20230228131630-fbf0bc5976a9/go.mod h1:gpm6L4QeVrn1ZJXPpQ6o5nLGj3oapPhfjvH0RAFgl8o=
+go.skia.org/infra v0.0.0-20230327134932-711c1ecd47c0 h1:UHmXr8zEebBV37sZjwM/EJE8Swx1jnszJ9C05naoTzE=
+go.skia.org/infra v0.0.0-20230327134932-711c1ecd47c0/go.mod h1:gpm6L4QeVrn1ZJXPpQ6o5nLGj3oapPhfjvH0RAFgl8o=
 go.starlark.net v0.0.0-20230122040757-066229b0515d h1:CTI+tbxvlfu7QlBj+4QjF8YPHoDh71h0/l2tXOM2k0o=
 go.starlark.net v0.0.0-20230122040757-066229b0515d/go.mod h1:1NtVfE+l6AHFaY4GmUPGHeLIW8/THkXnym5iweVgCwU=
 go.uber.org/atomic v1.3.2/go.mod h1:gD2HeocX3+yG+ygLZcrzQJaqmWj9AIm7n08wl/qW/PE=

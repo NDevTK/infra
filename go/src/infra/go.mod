@@ -79,7 +79,7 @@ require (
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.14.0
 	go.opentelemetry.io/otel/sdk v1.14.0
 	go.opentelemetry.io/otel/trace v1.14.0
-	go.skia.org/infra v0.0.0-20230228131630-fbf0bc5976a9
+	go.skia.org/infra v0.0.0-20230327134932-711c1ecd47c0
 	go.starlark.net v0.0.0-20230122040757-066229b0515d
 	golang.org/x/build v0.0.0-20210913192547-14e3e09d6b10
 	golang.org/x/crypto v0.5.0
