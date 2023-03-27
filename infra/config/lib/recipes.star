@@ -129,7 +129,6 @@ def led_recipes_tester(name, cq_group, repo_name):
         experiments = {
             # TODO(crbug.com/1393420): remove this.
             "luci.buildbucket.omit_python2": 0,
-            "recipe.led.real_build": 100,
         },
     )
     luci.cq_tryjob_verifier(
