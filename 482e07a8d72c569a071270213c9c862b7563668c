@@ -33,6 +33,24 @@
       "message": "LGTM % comment\n\nalso please run with mallet to verify that logics works for both type of components",
       "revId": "482e07a8d72c569a071270213c9c862b7563668c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "698aee06_979b7424",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2023-03-27T17:14:27Z",
+      "side": 1,
+      "message": "verified using `mallet local` with and without floss enabled.",
+      "parentUuid": "a18a84c2_1b72472a",
+      "revId": "482e07a8d72c569a071270213c9c862b7563668c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
