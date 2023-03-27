@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -1048,6 +1048,9 @@ func crosRepairActions() map[string]*Action {
 				"Device is SSHable",
 			},
 			ExecName: "cros_audit_bluetooth",
+			ExecExtraArgs: []string{
+				"cmd_timeout:30",
+			},
 			RecoveryActions: []string{
 				"Cold reset by servo and wait for SSH",
 			},
