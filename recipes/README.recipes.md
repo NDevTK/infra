@@ -1718,23 +1718,23 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 &mdash; **def [run\_python\_tests](/recipes/recipes/infra_continuous.py#276)(api, project_name):**
 ### *recipes* / [infra\_frontend\_tester](/recipes/recipes/infra_frontend_tester.py)
 
-[DEPS](/recipes/recipes/infra_frontend_tester.py#7): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+[DEPS](/recipes/recipes/infra_frontend_tester.py#7): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 PYTHON_VERSION_COMPATIBILITY: PY3
 
-&mdash; **def [RunFrontendTests](/recipes/recipes/infra_frontend_tester.py#98)(api, env, cwd, app_name):**
+&mdash; **def [RunFrontendTests](/recipes/recipes/infra_frontend_tester.py#111)(api, env, cwd, app_name):**
 
-&mdash; **def [RunInfraFrontendTests](/recipes/recipes/infra_frontend_tester.py#68)(api, env):**
+&mdash; **def [RunInfraFrontendTests](/recipes/recipes/infra_frontend_tester.py#81)(api, env, root_path):**
 
 This function runs the UI tests in `infra` project.
   
 
-&mdash; **def [RunInfraInternalFrontendTests](/recipes/recipes/infra_frontend_tester.py#50)(api, env):**
+&mdash; **def [RunInfraInternalFrontendTests](/recipes/recipes/infra_frontend_tester.py#63)(api, env, root_path):**
 
 This function runs UI tests in `infra_internal` project.
   
 
-&mdash; **def [RunLuciGoTests](/recipes/recipes/infra_frontend_tester.py#80)(api, env):**
+&mdash; **def [RunLuciGoTests](/recipes/recipes/infra_frontend_tester.py#93)(api, env):**
 
 This function runs UI tests in the `luci-go` project.
   

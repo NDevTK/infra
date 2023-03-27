@@ -5,16 +5,16 @@
 PYTHON_VERSION_COMPATIBILITY = "PY2+3"
 
 DEPS = [
-  'recipe_engine/buildbucket',
-  'recipe_engine/cipd',
-  'recipe_engine/context',
-  'recipe_engine/path',
-  'recipe_engine/platform',
-  'recipe_engine/properties',
-  'recipe_engine/step',
-
-  'depot_tools/bot_update',
-  'depot_tools/gclient',
+    'recipe_engine/buildbucket',
+    'recipe_engine/cipd',
+    'recipe_engine/context',
+    'recipe_engine/path',
+    'recipe_engine/platform',
+    'recipe_engine/properties',
+    'recipe_engine/step',
+    'recipe_engine/file',
+    'depot_tools/bot_update',
+    'depot_tools/gclient',
 ]
 
 def RunSteps(api):
@@ -22,12 +22,22 @@ def RunSteps(api):
   cl = api.buildbucket.build.input.gerrit_changes[0]
   project_name = cl.project
   assert project_name in ('infra/infra', 'infra/infra_internal',
+                          'infra/infra_superproject',
                           'infra/luci/luci-go'), ('unknown project: "%s"' %
                                                   project_name)
   patch_root = project_name.split('/')[-1]
-  api.gclient.set_config(patch_root.replace("-", "_"))
-  api.bot_update.ensure_checkout(patch_root=patch_root)
-  api.gclient.runhooks()
+  config_name = patch_root.replace("-", "_")
+  if patch_root == 'infra_superproject':
+    patch_root = '.'
+
+  path = api.path['cache'].join('builder')
+  api.file.ensure_directory('ensure builder dir', path)
+
+  with api.context(cwd=path):
+    api.gclient.set_config(config_name)
+
+    api.bot_update.ensure_checkout(patch_root=patch_root)
+    api.gclient.runhooks()
 
   packages_dir = api.path['start_dir'].join('packages')
   ensure_file = api.cipd.EnsureFile()
@@ -40,14 +50,17 @@ def RunSteps(api):
       'PATH': api.path.pathsep.join([str(node_path), '%(PATH)s'])
   }
   if patch_root == 'infra':
-    RunInfraFrontendTests(api, env)
+    RunInfraFrontendTests(api, env, api.path['checkout'])
   elif patch_root == 'infra_internal':
-    RunInfraInternalFrontendTests(api, env)
+    RunInfraInternalFrontendTests(api, env, api.path['checkout'])
+  elif config_name == 'infra_superproject':
+    RunInfraFrontendTests(api, env, api.path['checkout'].join('infra'))
+    # (TODO: crbug.com/1421776): add infra_internal
   else:
     RunLuciGoTests(api, env)
 
 
-def RunInfraInternalFrontendTests(api, env):
+def RunInfraInternalFrontendTests(api, env, root_path):
   """This function runs UI tests in `infra_internal` project.
   """
 
@@ -56,24 +69,24 @@ def RunInfraInternalFrontendTests(api, env):
   # RunFrontendTests(api, env, cwd, 'myapp')
   # `myapp` is the name that will show up in the step.
 
-  testhaus = api.path['checkout'].join('go', 'src', 'infra_internal',
-                                       'appengine', 'testhaus')
+  testhaus = root_path.join('go', 'src', 'infra_internal', 'appengine',
+                            'testhaus')
   RunFrontendTests(api, env, testhaus.join('frontend', 'ui'), 'testhaus')
 
-  cwd = api.path['checkout'].join('go', 'src', 'infra_internal', 'appengine',
-                                  'spike', 'appengine', 'frontend', 'ui')
+  cwd = root_path.join('go', 'src', 'infra_internal', 'appengine', 'spike',
+                       'appengine', 'frontend', 'ui')
   RunFrontendTests(api, env, cwd, 'spike')
 
 
-def RunInfraFrontendTests(api, env):
+def RunInfraFrontendTests(api, env, root_path):
   """This function runs the UI tests in `infra` project.
   """
 
-  cwd = api.path['checkout'].join('appengine', 'monorail')
+  cwd = root_path.join('appengine', 'monorail')
   RunFrontendTests(api, env, cwd, 'monorail')
 
-  cwd = api.path['checkout'].join('go', 'src', 'infra', 'appengine',
-                                  'dashboard', 'frontend')
+  cwd = root_path.join('go', 'src', 'infra', 'appengine', 'dashboard',
+                       'frontend')
   RunFrontendTests(api, env, cwd, 'chopsdash')
 
 
@@ -108,5 +121,7 @@ def GenTests(api):
   yield (
       api.test('basic-internal') +
       api.buildbucket.try_build(project='infra/infra_internal'))
+  yield (api.test('basic-superproject') +
+         api.buildbucket.try_build(project='infra/infra_superproject'))
   yield (api.test('basic-luci-go') +
          api.buildbucket.try_build(project='infra/luci/luci-go'))

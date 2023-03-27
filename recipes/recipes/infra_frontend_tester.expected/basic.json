@@ -2,6 +2,33 @@
   {
     "cmd": [
       "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "ensure-directory",
+      "--mode",
+      "0777",
+      "[CACHE]/builder"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra/infra:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure builder dir"
+  },
+  {
+    "cmd": [
+      "vpython3",
       "RECIPE_REPO[depot_tools]/gerrit_client.py",
       "changes",
       "--host",
@@ -17,6 +44,7 @@
       "-o",
       "DOWNLOAD_COMMANDS"
     ],
+    "cwd": "[CACHE]/builder",
     "env": {
       "PATH": "<PATH>:RECIPE_REPO[depot_tools]"
     },
@@ -77,6 +105,7 @@
       "--refs",
       "refs/heads/main"
     ],
+    "cwd": "[CACHE]/builder",
     "env": {
       "DEPOT_TOOLS_REPORT_BUILD": "infra/infra/try/builder/8945511751514863184",
       "GIT_HTTP_LOW_SPEED_LIMIT": "102400",
@@ -149,7 +178,7 @@
       "RECIPE_REPO[depot_tools]/gclient.py",
       "runhooks"
     ],
-    "cwd": "[START_DIR]/infra",
+    "cwd": "[CACHE]/builder",
     "env": {
       "DEPOT_TOOLS_REPORT_BUILD": "infra/infra/try/builder/8945511751514863184"
     },
@@ -217,7 +246,7 @@
       "npm",
       "ci"
     ],
-    "cwd": "[START_DIR]/infra/appengine/monorail",
+    "cwd": "[CACHE]/builder/infra/appengine/monorail",
     "env": {
       "PATH": "[START_DIR]/packages/bin:<PATH>"
     },
@@ -241,7 +270,7 @@
       "run",
       "test"
     ],
-    "cwd": "[START_DIR]/infra/appengine/monorail",
+    "cwd": "[CACHE]/builder/infra/appengine/monorail",
     "env": {
       "PATH": "[START_DIR]/packages/bin:<PATH>"
     },
@@ -264,7 +293,7 @@
       "npm",
       "ci"
     ],
-    "cwd": "[START_DIR]/infra/go/src/infra/appengine/dashboard/frontend",
+    "cwd": "[CACHE]/builder/infra/go/src/infra/appengine/dashboard/frontend",
     "env": {
       "PATH": "[START_DIR]/packages/bin:<PATH>"
     },
@@ -288,7 +317,7 @@
       "run",
       "test"
     ],
-    "cwd": "[START_DIR]/infra/go/src/infra/appengine/dashboard/frontend",
+    "cwd": "[CACHE]/builder/infra/go/src/infra/appengine/dashboard/frontend",
     "env": {
       "PATH": "[START_DIR]/packages/bin:<PATH>"
     },
