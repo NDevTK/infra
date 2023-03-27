@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e1be3d27_326f820d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2023-03-27T23:06:09Z",
+      "side": 1,
+      "message": "It can still be a Go codebase using the exact same libraries (and protobuf schemas), using https://pkg.go.dev/go.chromium.org/luci/luciexe/exe. You will *not need* to write Python code.\n\nIt is giant PITA to properly maintain a GAE application and associated cloud resources. You\u0027ll need to setup Terraform automation, deployment automation, a staging instance, etc. \"gae.py upload\" must not be used for production services. Production deployment must happen from trusted build machines.\n\nThis is true for builder luciexe binaries too, but it is easier to setup it up and maintain (especially for a team that maintains a lot of builders, but not a lot of GAE apps).\n\nYou\u0027ll basically just need to add a CIPD manifest for it to https://chromium.googlesource.com/infra/infra/+/refs/heads/main/build/packages/ and refer to it in builder configs using luci.executable e.g. https://chrome-internal.googlesource.com/infra/infra_internal/+/refs/heads/main/infra/config/subprojects/owners_cleanup.star#211\n\n(You\u0027ll likely need a staging builder and a production builder, same as when using GAE. Staging can use \"latest\" version of the package, and the production builder will use a concrete \"git_revision:...\" you\u0027ll update whenever releasing changes).",
+      "parentUuid": "27bca13f_d28a300b",
+      "revId": "4988d6b849e65fcb24e806e410eefbd13826577d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "231cd123_76e0bad4",
