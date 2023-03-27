@@ -96,7 +96,7 @@ func mustAlwaysRunTest(testFile string) bool {
 // ReadTestFiles reads test files written by writeTestFilesFrom().
 func ReadTestFiles(r io.Reader, callback func(*TestFile) error) error {
 	scan := bufio.NewScanner(r)
-	scan.Buffer(nil, 1e7) // 10 MB.
+	scan.Buffer(nil, 1e8) // 100 MB.
 	for scan.Scan() {
 		testFile := &TestFile{}
 		if err := protojson.Unmarshal(scan.Bytes(), testFile); err != nil {
