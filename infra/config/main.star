@@ -94,6 +94,18 @@ luci.project(
             roles = "role/configs.validator",
             users = "infra-try-builder@chops-service-accounts.iam.gserviceaccount.com",
         ),
+        luci.binding(
+            roles = "role/analysis.reader",
+            groups = "all",
+        ),
+        luci.binding(
+            roles = "role/analysis.queryUser",
+            groups = "project-infra-committers",
+        ),
+        luci.binding(
+            roles = "role/analysis.editor",
+            groups = "project-infra-committers",
+        ),
     ],
 )
 
