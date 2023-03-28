@@ -47,6 +47,7 @@ import (
 	"go.chromium.org/luci/common/tsmon/metric"
 	"go.chromium.org/luci/common/tsmon/target"
 	"go.chromium.org/luci/common/tsmon/types"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -54,6 +55,8 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	"infra/libs/otil"
 )
 
 var (
@@ -128,8 +131,13 @@ func innerMain() error {
 	mux.HandleFunc("/debug/pprof/symbol/", pprof.Symbol)
 	mux.HandleFunc("/debug/pprof/trace/", pprof.Trace)
 
+	otelMux := otelhttp.NewHandler(
+		mux,
+		"caching-backend-downloader",
+		otelhttp.WithMessageEvents(otelhttp.ReadEvents, otelhttp.WriteEvents),
+	)
 	idleConnsClosed := make(chan struct{})
-	svr := http.Server{Addr: *archiveServerAddress, Handler: mux}
+	svr := http.Server{Addr: *archiveServerAddress, Handler: otelMux}
 	ctx = cancelOnSignals(ctx, idleConnsClosed, &svr, *shutdownGracePeriod)
 	c.rotateClient(ctx, *credentialFile, *clientRotationPeriod, *shutdownGracePeriod)
 	log.Println("starting archive-server...")
@@ -230,8 +238,11 @@ func (c *archiveServer) rotateClient(ctx context.Context, credPath string, rotat
 // It writes file stat to header for HEAD, GET method.
 // It writes file content to body for GET method.
 func (c *archiveServer) downloadHandler(w http.ResponseWriter, r *http.Request) {
+	ctx, span := otil.FuncSpan(r.Context())
+	defer func() { otil.EndSpan(span, nil) }()
 	startTime := time.Now()
-	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Minute)
+
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Minute)
 	defer cancel()
 
 	md := metricData{}
@@ -428,13 +439,15 @@ func (r *byteRange) formatContentRange(totalSize int64) string {
 // It extracts target_file from tar writes the stat to header,
 // the content to body.
 func (c *archiveServer) extractHandler(w http.ResponseWriter, r *http.Request) {
+	ctx, span := otil.FuncSpan(r.Context())
+	defer func() { otil.EndSpan(span, nil) }()
 	startTime := time.Now()
 
 	id := generateTraceID(r)
 	log.Printf("%s request started", id)
 	defer func() { log.Printf("%s request completed in %s", id, time.Since(startTime)) }()
 
-	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Minute)
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Minute)
 	defer cancel()
 
 	md := metricData{}
@@ -575,13 +588,15 @@ func extractTarAndWriteHeader(ctx context.Context, r io.Reader, fileName string,
 // decompressHandler handles the /decompress/bucket/path/to/file requests.
 // It decompresses compressed file and returns content to body for GET method.
 func (c *archiveServer) decompressHandler(w http.ResponseWriter, r *http.Request) {
+	ctx, span := otil.FuncSpan(r.Context())
+	defer func() { otil.EndSpan(span, nil) }()
 	startTime := time.Now()
 
 	id := generateTraceID(r)
 	log.Printf("%s request started", id)
 	defer func() { log.Printf("%s request completed in %s", id, time.Since(startTime)) }()
 
-	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Minute)
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Minute)
 	defer cancel()
 
 	md := metricData{}
