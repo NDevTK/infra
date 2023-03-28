@@ -199,8 +199,16 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		}
 
 		// Test this specific subrepo.
-		if err := runSingleSubrepoTests(ctx, goroot, "targetrepo", inputs.RaceMode); err != nil {
-			return err
+		tryResultAdapter := inputs.Project == "build"
+		if tryResultAdapter {
+			if err := runSingleSubrepoTestsWithResultAdapter(ctx, goroot, "targetrepo", inputs.RaceMode,
+				filepath.Join(toolsRoot, "bin", "result_adapter")); err != nil {
+				return err
+			}
+		} else {
+			if err := runSingleSubrepoTests(ctx, goroot, "targetrepo", inputs.RaceMode); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -229,6 +237,8 @@ func scriptExt() string {
 // it's our published minimum.
 var cipdDeps = `
 infra/3pp/tools/git/${platform} version:2@2.39.2.chromium.11
+@Subdir bin
+infra/tools/result_adapter/${platform} latest
 @Subdir go_bootstrap
 infra/3pp/tools/go/${platform} version:2@1.19.3
 @Subdir cc/${os=windows}
@@ -499,7 +509,7 @@ func runSubrepoTests(ctx context.Context, goroot string) (err error) {
 }
 
 // runSingleSubrepoTests runs tests for Go packages in the module at dir
-// using the Go toolchain at goroot.
+// using the Go toolchain at goroot. It prints test results to stdout/stderr.
 //
 // TODO(dmitshur): For final version, don't forget to also test packages in nested modules.
 // TODO(dmitshur): Improve coverage (at cost of setup complexity) by running tests outside their repositories. See go.dev/issue/34352.
@@ -523,6 +533,20 @@ func runSingleSubrepoTests(ctx context.Context, goroot, dir string, race bool) e
 	}
 	args = append(args, "./...")
 	return runGo(ann{Name: "go test [-race] ./..."}, args...)
+}
+
+// runSingleSubrepoTestsWithResultAdapter runs tests for Go packages in the module at dir
+// using the Go toolchain at goroot. It uses the provided result_adapter (go/result-sink#result-adapter)
+// to upload test results to ResultSink.
+func runSingleSubrepoTestsWithResultAdapter(ctx context.Context, goroot, dir string, race bool, resultAdapter string) error {
+	args := []string{"go", "--", filepath.Join(goroot, "bin", "go"), "test", "-json"}
+	if race {
+		args = append(args, "-race")
+	}
+	args = append(args, "./...")
+	cmd := exec.CommandContext(ctx, resultAdapter, args...)
+	cmd.Dir = dir
+	return runCommandAsStep(ctx, "go test -json [-race] ./... (with result_adapter)", cmd, false)
 }
 
 // runCommandAsStep runs the provided command as a build step.
