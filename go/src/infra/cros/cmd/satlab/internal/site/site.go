@@ -21,6 +21,16 @@ import (
 // AppPrefix is the prefix to use the satlab CLI.
 var AppPrefix = "satlab"
 
+// Buildbucket builder ID
+var (
+	LUCIProject   = os.Getenv("LUCI_PROJECT")
+	BuilderBucket = os.Getenv("BUILDER_BUCKET")
+	CTPBuilder    = os.Getenv("CTP_BUILDER")
+)
+
+// GCSBucket is the partner bucket for staging images.
+var GCSBucket = os.Getenv("GCS_BUCKET")
+
 // DevCrosAdmService is the dev CrOSSkylabAdmin service.
 const DevCrosAdmService = "staging-skylab-bot-fleet.appspot.com"
 

@@ -1250,8 +1250,8 @@ github.com/yvasiyarov/newrelic_platform_go v0.0.0-20140908184405-b21fdbd4370f/go
 github.com/zeebo/bencode v1.0.0 h1:zgop0Wu1nu4IexAZeCZ5qbsjU4O1vMrfCrVgUjbHVuA=
 github.com/zeebo/bencode v1.0.0/go.mod h1:Ct7CkrWIQuLWAy9M3atFHYq4kG9Ao/SsY5cdtCXmp9Y=
 github.com/zenazn/goji v0.9.0/go.mod h1:7S9M489iMyHBNxwZnk9/EHS098H4/F6TATF2mIxtB1Q=
-go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp v0.0.0-20230322184036-7b52ca6d5efb h1:R3Ax4Rwh8w+r7SaWqP0zgjtpg0k+h5odMhPpkzTro2E=
-go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp v0.0.0-20230322184036-7b52ca6d5efb/go.mod h1:g6TE+os6J9Pw2me6w6R+wGdqgi7RkUS3ArCcNRSj0Q8=
+go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp v0.0.0-20230324193748-f3c317a057be h1:sJc42MYCzpiZuxQnFwX7+sJBWzCVwdZb0GOvHOcDLHw=
+go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp v0.0.0-20230324193748-f3c317a057be/go.mod h1:yBarY0Dw+lvyXCcPocYR6Ka8CEDdGN7n34UqkguoBbc=
 go.etcd.io/bbolt v1.3.2/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/bbolt v1.3.5/go.mod h1:G5EMThwa9y8QZGBClrRx5EY+Yw9kAhnjy3bSjsnlVTQ=
