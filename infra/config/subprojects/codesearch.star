@@ -238,7 +238,7 @@ chromium_genfiles(
         "gen_repo_branch": "main",
         # Generated files will end up in out/android-Debug/gen.
         "gen_repo_out_dir": "android-Debug",
-        "corpus": "chromium.googlesource.com/chromium/src",
+        "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
         "build_config": "android",
     },
 )
@@ -253,7 +253,7 @@ chromium_genfiles(
         "gen_repo_branch": "main",
         # Generated files will end up in out/webview-Debug/gen.
         "gen_repo_out_dir": "webview-Debug",
-        "corpus": "chromium.googlesource.com/chromium/src",
+        "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
         "build_config": "webview",
     },
 )
@@ -301,7 +301,7 @@ chromium_genfiles(
         "gen_repo_branch": "main",
         # Generated files will end up in out/chromeos-Debug/gen.
         "gen_repo_out_dir": "chromeos-Debug",
-        "corpus": "chromium.googlesource.com/chromium/src",
+        "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
         "build_config": "chromeos",
     },
 )
@@ -316,7 +316,7 @@ chromium_genfiles(
         "gen_repo_branch": "main",
         # Generated files will end up in out/fuchsia-Debug/gen.
         "gen_repo_out_dir": "fuchsia-Debug",
-        "corpus": "chromium.googlesource.com/chromium/src",
+        "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
         "build_config": "fuchsia",
     },
 )
@@ -331,7 +331,7 @@ chromium_genfiles(
         # Generated files will end up in out/ios-Debug/gen.
         "gen_repo_out_dir": "ios-Debug",
         "gen_repo_branch": "main",
-        "corpus": "chromium.googlesource.com/chromium/src",
+        "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
         "build_config": "ios",
     },
     os = "Mac-13",
@@ -347,7 +347,7 @@ chromium_genfiles(
         "platform": "lacros",
         "sync_generated_files": True,
         "gen_repo_branch": "main",
-        "corpus": "chromium.googlesource.com/chromium/src",
+        "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
         "build_config": "lacros",
     },
 )
@@ -360,7 +360,7 @@ chromium_genfiles(
         "platform": "linux",
         "sync_generated_files": True,
         "gen_repo_branch": "main",
-        "corpus": "chromium.googlesource.com/chromium/src",
+        "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
         "build_config": "linux",
     },
 )
@@ -375,7 +375,7 @@ chromium_genfiles(
         # Generated files will end up in out/mac-Debug/gen.
         "gen_repo_out_dir": "mac-Debug",
         "gen_repo_branch": "main",
-        "corpus": "chromium.googlesource.com/chromium/src",
+        "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
         "build_config": "mac",
     },
     os = "Mac-11",
@@ -392,7 +392,7 @@ chromium_genfiles(
         "gen_repo_branch": "main",
         # Generated files will end up in out/win-Debug/gen.
         "gen_repo_out_dir": "win-Debug",
-        "corpus": "chromium.googlesource.com/chromium/src",
+        "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
         "build_config": "win",
     },
     os = "Windows-10",
