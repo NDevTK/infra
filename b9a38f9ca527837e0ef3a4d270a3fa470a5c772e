@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c267df36_dfcac676",
+        "filename": "go/src/infra/cros/lib/buildbucket/poll.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1345347
+      },
+      "writtenOn": "2023-03-28T21:49:56Z",
+      "side": 1,
+      "message": "optional: Could we limit it to just the ones we are interested in? Do the rest provide any value?",
+      "range": {
+        "startLine": 15,
+        "startChar": 4,
+        "endLine": 15,
+        "endChar": 17
+      },
+      "revId": "b9a38f9ca527837e0ef3a4d270a3fa470a5c772e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "98cbc08f_6eddd0c6",
+        "filename": "go/src/infra/cros/lib/buildbucket/poll.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1345347
+      },
+      "writtenOn": "2023-03-28T21:49:56Z",
+      "side": 1,
+      "message": "optional:\n\nIs this to limit the size of the # of builds we request each time?\n\nIf so, we can further reduce by not polling again for propSetBuilds until the very end in order to get their latest status.",
+      "range": {
+        "startLine": 53,
+        "startChar": 18,
+        "endLine": 53,
+        "endChar": 33
+      },
+      "revId": "b9a38f9ca527837e0ef3a4d270a3fa470a5c772e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9f7efe72_694dbc73",
+        "filename": "go/src/infra/cros/lib/buildbucket/poll.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1345347
+      },
+      "writtenOn": "2023-03-28T21:49:56Z",
+      "side": 1,
+      "message": "This is no longer true.",
+      "range": {
+        "startLine": 86,
+        "startChar": 33,
+        "endLine": 86,
+        "endChar": 55
+      },
+      "revId": "b9a38f9ca527837e0ef3a4d270a3fa470a5c772e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
