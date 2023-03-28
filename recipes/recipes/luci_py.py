@@ -11,6 +11,7 @@ DEPS = [
     'depot_tools/git',
     'recipe_engine/buildbucket',
     'recipe_engine/context',
+    'recipe_engine/cipd',
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/raw_io',
@@ -112,7 +113,12 @@ def _step_run_py_tests(api, cwd, python3=False, timeout=None):
     else:
       venv = luci_dir.join('.vpython')
       py = 'python2'
-      cmd = ['vpython']
+      # Install vpython2.7 to run these tests.
+      vpython_path = api.path['cache'].join('builder', 'vpython2.7')
+      ensure_file = api.cipd.EnsureFile().add_package(
+          'infra/tools/luci/vpython2.7/${platform}', 'latest')
+      api.cipd.ensure(vpython_path, ensure_file)
+      cmd = [vpython_path.join('vpython')]
 
     cmd += ['-vpython-spec', venv, '-u', 'test.py'] + testpy_args
     api.step('run tests %s' % py, cmd, timeout=timeout)
