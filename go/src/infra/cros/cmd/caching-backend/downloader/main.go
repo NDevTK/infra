@@ -47,6 +47,13 @@ import (
 	"go.chromium.org/luci/common/tsmon/metric"
 	"go.chromium.org/luci/common/tsmon/target"
 	"go.chromium.org/luci/common/tsmon/types"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 var (
@@ -57,6 +64,7 @@ var (
 	clientRotationPeriod = flag.Duration("client-rotation-period", 24*time.Hour, "The time duration before rotating to new storage client.")
 	tsmonEndpoint        = flag.String("tsmon-endpoint", "", "URL (including file://, https://, // pubsub://project/topic) to post monitoring metrics to.")
 	tsmonCredentialPath  = flag.String("tsmon-credential", "", "The credentail file for tsmon client")
+	traceEndpoint        = flag.String("trace-endpoint", "", "URL (including file://, http://) to post trace logs to.")
 )
 
 type archiveServer struct {
@@ -89,6 +97,21 @@ func innerMain() error {
 	}
 	defer metricsShutdown(ctx)
 
+	if *traceEndpoint != "" {
+		tp, err := newTracerProvider(ctx, *traceEndpoint)
+		if err != nil {
+			log.Printf("tracer provider error: %s", err)
+		} else {
+			defer func() {
+				if err := tp.Shutdown(ctx); err != nil {
+					log.Printf("failed to shutdown tracer provider: %v", err)
+				}
+			}()
+			log.Printf("Will post traces to %s", *traceEndpoint)
+			otel.SetTracerProvider(tp)
+		}
+	}
+
 	c := &archiveServer{
 		gsClient:       gsClient,
 		cacheServerURL: *cacheServerURL,
@@ -115,6 +138,51 @@ func innerMain() error {
 	}
 	<-idleConnsClosed
 	return err
+}
+
+// newGRPCExporter returns a gRPC exporter.
+func newGRPCExporter(ctx context.Context, target string) (sdktrace.SpanExporter, error) {
+	conn, err := grpc.DialContext(ctx, target,
+		// Connection is not secured.
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithBlock(),
+	)
+	if err != nil {
+		return nil, err
+	}
+	return otlptracegrpc.New(ctx, otlptracegrpc.WithGRPCConn(conn))
+}
+
+// newTraceProvider returns trace provider with given endpoint.
+// endpoint can be a file or grpc type.
+func newTracerProvider(ctx context.Context, endpoint string) (*sdktrace.TracerProvider, error) {
+	r, err := newResource(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("resource error: %w", err)
+	}
+	var exp sdktrace.SpanExporter
+	exp, err = newGRPCExporter(ctx, endpoint)
+	if err != nil {
+		return nil, err
+	}
+	return sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(exp),
+		sdktrace.WithResource(r),
+		sdktrace.WithSampler(sdktrace.ParentBased(sdktrace.TraceIDRatioBased(0.5))),
+	), nil
+}
+
+// newResource creates a new cache-downloader OTel resource.
+func newResource(ctx context.Context) (*resource.Resource, error) {
+	// This should never error.
+	// Even if it does, try to keep running normally.
+	return resource.New(
+		ctx,
+		resource.WithTelemetrySDK(),
+		resource.WithAttributes(
+			semconv.ServiceNameKey.String("cache-downloader"),
+		),
+	)
 }
 
 // rotateClient updates client every rotationPeriod. It loads credPath file.
