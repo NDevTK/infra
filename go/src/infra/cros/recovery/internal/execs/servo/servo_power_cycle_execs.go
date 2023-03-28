@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,10 +37,18 @@ func servoPowerCycleRootServoExec(ctx context.Context, info *execs.ExecInfo) err
 	}
 	log.Infof(ctx, "Servo usb devnum before reset: %s", preResetDevnum)
 	// Resetting servo.
-	log.Infof(ctx, "Resetting servo through smart usbhub.")
-	if _, err := run(ctx, resetTimeout, "servodtool", "device", "-s", servoSerial, "power-cycle"); err != nil {
-		log.Warningf(ctx, `Failed to reset servo with serial: %s. Please ignore this error if the DUT is not connected to a smart usbhub`, servoSerial)
-		return errors.Annotate(err, "servo power cycle root servo").Err()
+	if _, err := run(ctx, 10*time.Second, "test  -f /usr/local/bin/cambronix_power_cycle"); err == nil {
+		log.Infof(ctx, "Resetting servo through Cambronix usbhub.")
+		if _, err := run(ctx, resetTimeout, "cambronix_power_cycle", servoSerial); err != nil {
+			log.Warningf(ctx, `Failed to reset servo with serial: %s. Please ignore this error if the DUT is not connected to a Cambronix usbhub`, servoSerial)
+			return errors.Annotate(err, "servo power cycle root servo by cambronix").Err()
+		}
+	} else {
+		log.Infof(ctx, "Resetting servo through smart usbhub.")
+		if _, err := run(ctx, resetTimeout, "servodtool", "device", "-s", servoSerial, "power-cycle"); err != nil {
+			log.Warningf(ctx, "Failed to reset servo with serial: %s. Please ignore this error if the DUT is not connected to a smart usbhub", servoSerial)
+			return errors.Annotate(err, "servo power cycle root servo").Err()
+		}
 	}
 	// Since we are able to run the power cycle servodtool command
 	// It implies the smartUsb is present.
