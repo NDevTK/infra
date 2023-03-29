@@ -56,6 +56,29 @@ http {
                   '$status $body_bytes_sent "$sent_http_content_length" '
                   '$request_time "$http_referer" '
                   '"$http_user_agent" "$http_x_forwarded_for" $upstream_cache_status';
+
+  log_format main_json escape=json
+  '{'
+    '"access_time":"$time_iso8601",'
+    '"bytes_sent":$body_bytes_sent,'
+    '"content_length":$sent_http_content_length,'
+    '"host":"$host",'
+    '"method":"$request_method",'
+    '"proxy_host":"$proxy_host",'
+    '"referer":"$http_referer",'
+    '"remote_addr":"$remote_addr",'
+    '"remote_user":"$remote_user",'
+    '"request":"$request",'
+    '"request_time":$request_time,'
+    '"status":$status,'
+    '"uri":"$uri",'
+    '"user_agent":"$http_user_agent",'
+    '"upstream":"$upstream_addr",'
+    '"upstream_cache_status":"$upstream_cache_status",'
+    '"upstream_response_time":"$upstream_response_time",'
+    '"x_forwarded_for":"$http_x_forwarded_for"'
+  '}';
+
   proxy_cache_path  /var/cache/nginx levels=1:2 keys_zone=google-storage:80m
                     max_size={{ .CacheSizeInGB }}g inactive=720h;
   # gs_cache upstream definition.
@@ -80,7 +103,9 @@ http {
     add_header            '{{ if .UpstreamHost }}X-Cache-Primary{{ else }}X-Cache-Secondary{{ end }}' '$upstream_cache_status';
     index  index.html index.htm index.php;
     access_log            /var/log/nginx/gs-cache.access.log main;
+    access_log            /dev/stdout main_json;
     error_log             /var/log/nginx/gs-cache.error.log;
+    error_log             /dev/stdout;
 
 
     # CQ build cache configuration.
