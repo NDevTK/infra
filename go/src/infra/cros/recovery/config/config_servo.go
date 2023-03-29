@@ -1647,7 +1647,9 @@ func servoRepairPlan() *Plan {
 				ExecExtraArgs: []string{
 					"sleep:1",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:             RunControl_ALWAYS_RUN,
+				AllowFailAfterRecovery: true,
+				MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Read release info": {
 				// TODO(otabek): Think to save the result to logs.

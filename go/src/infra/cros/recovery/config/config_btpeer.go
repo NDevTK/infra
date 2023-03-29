@@ -88,7 +88,9 @@ func btpeerRepairPlan() *Plan {
 				ExecExtraArgs: []string{
 					"sleep:10",
 				},
-				RunControl: RunControl_ALWAYS_RUN,
+				RunControl:             RunControl_ALWAYS_RUN,
+				AllowFailAfterRecovery: true,
+				MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 		},
 	}

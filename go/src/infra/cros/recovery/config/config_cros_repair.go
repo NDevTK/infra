@@ -727,7 +727,9 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"sleep:1",
 			},
-			RunControl: RunControl_ALWAYS_RUN,
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"set_atmega_rst_off": {
 			Docs: []string{
@@ -763,7 +765,9 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"sleep:1",
 			},
-			RunControl: RunControl_ALWAYS_RUN,
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Check if expected Atmel chip": {
 			Docs: []string{
@@ -1860,7 +1864,9 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"sleep:1",
 			},
-			RunControl: RunControl_ALWAYS_RUN,
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Read BIOS from DUT by servo": {
 			Docs: []string{
@@ -2991,11 +2997,10 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"sleep:60",
 			},
-			ExecTimeout: &durationpb.Duration{
-				Seconds: 70,
-			},
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-			RunControl:    RunControl_ALWAYS_RUN,
+			ExecTimeout:            &durationpb.Duration{Seconds: 70},
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		// This action is intended to be served as an temporary solution for b/255617349,
 		// and it should not to be added as part of formal auto-repair task.
