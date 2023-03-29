@@ -168,7 +168,8 @@ func (r *collectRun) doRun(ctx context.Context, args []string) error {
 	serializedBuilds := strings.Join(jsonpbBuilds, "\n") + "\n"
 
 	if r.json == "-" {
-		fmt.Fprint(os.Stdout, serializedBuilds)
+		_, err := fmt.Fprint(os.Stdout, serializedBuilds)
+		return err
 	}
 
 	return os.WriteFile(r.json, []byte(serializedBuilds), os.ModePerm)
