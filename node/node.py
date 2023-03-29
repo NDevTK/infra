@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -11,7 +11,7 @@ import sys
 import subprocess
 import tarfile
 import tempfile
-import urllib2
+import urllib.request
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -51,7 +51,7 @@ def install_latest_node_js(version, tmp_dir):
   url = 'https://storage.googleapis.com/%s/node/%s/%s' % (
       BUCKET, version, target)
   print('Fetching %s' % url)
-  u = urllib2.urlopen(url)
+  u = urllib.request.urlopen(url)
   with open(dest, 'wb') as f:
     while True:
       chunk = u.read(2 ** 20)

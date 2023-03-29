@@ -444,7 +444,7 @@ def JshintChecks(input_api, output_api):  # pragma: no cover
 
   tests = []
   for js_file in GetAffectedJsFiles(input_api):
-    cmd = [input_api.python_executable, node_jshint_path, js_file]
+    cmd = [input_api.python3_executable, node_jshint_path, js_file]
     tests.append(input_api.Command(
         name='Jshint %s' % js_file,
         cmd=cmd,
