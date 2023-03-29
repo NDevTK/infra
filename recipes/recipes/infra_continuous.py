@@ -224,7 +224,7 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
         api.step(
             'infra go tests',
             api.resultdb.wrap(
-                ['vpython', '-u', api.path['checkout'].join('go', 'test.py')]))
+                ['python3', '-u', api.path['checkout'].join('go', 'test.py')]))
 
     fails = []
     for plat in CIPD_PACKAGE_BUILDERS.get(buildername, []):
@@ -278,8 +278,7 @@ def run_python_tests(api, project_name):
     with api.context(cwd=api.path['checkout']):
       # Run Linux tests everywhere, Windows tests only on public CI.
       if api.platform.is_linux or project_name == 'infra':
-        api.step('infra python tests',
-                 ['python', 'test.py', 'test'])
+        api.step('infra python tests', ['python3', 'test.py', 'test'])
 
       if api.platform.is_linux or api.platform.is_mac:
         cwd = api.path['checkout'].join('appengine', 'monorail')
@@ -290,8 +289,7 @@ def run_python_tests(api, project_name):
       if api.platform.is_linux and project_name == 'infra_internal':
         ccompute_config = api.path['checkout'].join(
             'ccompute', 'scripts', 'ccompute_config.py')
-        api.step(
-            'ccompute config test', ['python', ccompute_config, 'test'])
+        api.step('ccompute config test', ['python3', ccompute_config, 'test'])
 
 
 def GenTests(api):
