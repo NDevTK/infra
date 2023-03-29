@@ -54,6 +54,7 @@
   * [infra_continuous](#recipes-infra_continuous) (Python3 ✅)
   * [infra_frontend_tester](#recipes-infra_frontend_tester) (Python3 ✅)
   * [infra_repo_trybot](#recipes-infra_repo_trybot) (Python3 ✅)
+  * [infra_superproject_tester](#recipes-infra_superproject_tester) (Python3 ✅)
   * [infra_system:examples/full](#recipes-infra_system_examples_full) (Python3 ✅)
   * [luci_go](#recipes-luci_go) (Python3 ✅)
   * [luci_py](#recipes-luci_py) (Python3 ✅)
@@ -1747,6 +1748,15 @@ This function runs UI tests in the `luci-go` project.
 PYTHON_VERSION_COMPATIBILITY: PY3
 
 &mdash; **def [RunSteps](/recipes/recipes/infra_repo_trybot.py#40)(api, go_version_variant, run_lint):**
+### *recipes* / [infra\_superproject\_tester](/recipes/recipes/infra_superproject_tester.py)
+
+[DEPS](/recipes/recipes/infra_superproject_tester.py#7): [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket]
+
+PYTHON_VERSION_COMPATIBILITY: PY3
+
+&mdash; **def [RunSteps](/recipes/recipes/infra_superproject_tester.py#12)(api):**
+
+Runs infra{_internal} builds for infra_superproject changes.
 ### *recipes* / [infra\_system:examples/full](/recipes/recipe_modules/infra_system/examples/full.py)
 
 [DEPS](/recipes/recipe_modules/infra_system/examples/full.py#7): [infra\_system](#recipe_modules-infra_system), [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/step][recipe_engine/recipe_modules/step]
