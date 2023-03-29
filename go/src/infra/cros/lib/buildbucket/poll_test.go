@@ -17,7 +17,22 @@ import (
 )
 
 var (
-	allFieldMask = &fieldmaskpb.FieldMask{Paths: []string{"*"}}
+	expectedFieldMask = &fieldmaskpb.FieldMask{Paths: []string{
+		"builder",
+		"create_time",
+		"created_by",
+		"critical",
+		"end_time",
+		"id",
+		"input",
+		"number",
+		"output",
+		"start_time",
+		"status",
+		"update_time",
+		"tags",
+	},
+	}
 )
 
 func TestPollForOutputProp(t *testing.T) {
@@ -28,21 +43,24 @@ func TestPollForOutputProp(t *testing.T) {
 
 	client := bbpb.NewMockBuildsClient(ctrl)
 
-	// Each call requests all 3 builds.
-	req := &bbpb.BatchRequest{Requests: []*bbpb.BatchRequest_Request{
+	// First call requests all 4 builds.
+	firstReq := &bbpb.BatchRequest{Requests: []*bbpb.BatchRequest_Request{
 		{Request: &bbpb.BatchRequest_Request_GetBuild{
-			GetBuild: &bbpb.GetBuildRequest{Id: 1, Fields: allFieldMask},
+			GetBuild: &bbpb.GetBuildRequest{Id: 1, Fields: expectedFieldMask},
 		}},
 		{Request: &bbpb.BatchRequest_Request_GetBuild{
-			GetBuild: &bbpb.GetBuildRequest{Id: 2, Fields: allFieldMask},
+			GetBuild: &bbpb.GetBuildRequest{Id: 2, Fields: expectedFieldMask},
 		}},
 		{Request: &bbpb.BatchRequest_Request_GetBuild{
-			GetBuild: &bbpb.GetBuildRequest{Id: 3, Fields: allFieldMask},
+			GetBuild: &bbpb.GetBuildRequest{Id: 3, Fields: expectedFieldMask},
+		}},
+		{Request: &bbpb.BatchRequest_Request_GetBuild{
+			GetBuild: &bbpb.GetBuildRequest{Id: 4, Fields: expectedFieldMask},
 		}},
 	}}
 
 	// On the first iteration, one build is completed, one build is running w/o
-	// the output prop, and one build is running w/ the output prop.
+	// the output prop, and two builds are running w/ the output prop.
 	firstResp := &bbpb.BatchResponse{
 		Responses: []*bbpb.BatchResponse_Response{
 			{Response: &bbpb.BatchResponse_Response_GetBuild{
@@ -59,7 +77,28 @@ func TestPollForOutputProp(t *testing.T) {
 						}},
 					}},
 			}},
+			{Response: &bbpb.BatchResponse_Response_GetBuild{
+				GetBuild: &bbpb.Build{Id: 4, Status: bbpb.Status_STARTED,
+					Output: &bbpb.Build_Output{
+						Properties: &structpb.Struct{Fields: map[string]*structpb.Value{
+							"testprop": structpb.NewBoolValue(true),
+						}},
+					}},
+			}},
 		}}
+
+	// Second call requests only the 3 builds still running.
+	secondReq := &bbpb.BatchRequest{Requests: []*bbpb.BatchRequest_Request{
+		{Request: &bbpb.BatchRequest_Request_GetBuild{
+			GetBuild: &bbpb.GetBuildRequest{Id: 2, Fields: expectedFieldMask},
+		}},
+		{Request: &bbpb.BatchRequest_Request_GetBuild{
+			GetBuild: &bbpb.GetBuildRequest{Id: 3, Fields: expectedFieldMask},
+		}},
+		{Request: &bbpb.BatchRequest_Request_GetBuild{
+			GetBuild: &bbpb.GetBuildRequest{Id: 4, Fields: expectedFieldMask},
+		}},
+	}}
 
 	// On the second call, all builds are completed or have set the output prop.
 	secondResp := &bbpb.BatchResponse{
@@ -78,14 +117,22 @@ func TestPollForOutputProp(t *testing.T) {
 						}},
 					}},
 			}},
+			{Response: &bbpb.BatchResponse_Response_GetBuild{
+				GetBuild: &bbpb.Build{Id: 4, Status: bbpb.Status_SUCCESS,
+					Output: &bbpb.Build_Output{
+						Properties: &structpb.Struct{Fields: map[string]*structpb.Value{
+							"testprop": structpb.NewBoolValue(false),
+						}},
+					}},
+			}},
 		}}
 
 	gomock.InOrder(
-		client.EXPECT().Batch(gomock.AssignableToTypeOf(ctx), req).Return(firstResp, nil),
-		client.EXPECT().Batch(gomock.AssignableToTypeOf(ctx), req).Return(secondResp, nil),
+		client.EXPECT().Batch(gomock.AssignableToTypeOf(ctx), firstReq).Return(firstResp, nil),
+		client.EXPECT().Batch(gomock.AssignableToTypeOf(ctx), secondReq).Return(secondResp, nil),
 	)
 
-	builds, err := buildbucket.PollForOutputProp(ctx, client, []int64{1, 2, 3}, "testprop", time.Millisecond*10)
+	builds, err := buildbucket.PollForOutputProp(ctx, client, []int64{1, 2, 3, 4}, "testprop", time.Millisecond*10)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -94,6 +141,12 @@ func TestPollForOutputProp(t *testing.T) {
 		1: {Id: 1, Status: bbpb.Status_SUCCESS},
 		2: {Id: 2, Status: bbpb.Status_FAILURE},
 		3: {Id: 3, Status: bbpb.Status_STARTED,
+			Output: &bbpb.Build_Output{
+				Properties: &structpb.Struct{Fields: map[string]*structpb.Value{
+					"testprop": structpb.NewBoolValue(false),
+				}},
+			}},
+		4: {Id: 4, Status: bbpb.Status_SUCCESS,
 			Output: &bbpb.Build_Output{
 				Properties: &structpb.Struct{Fields: map[string]*structpb.Value{
 					"testprop": structpb.NewBoolValue(false),
@@ -116,7 +169,7 @@ func TestPollForOutputPropError(t *testing.T) {
 
 	req := &bbpb.BatchRequest{Requests: []*bbpb.BatchRequest_Request{
 		{Request: &bbpb.BatchRequest_Request_GetBuild{
-			GetBuild: &bbpb.GetBuildRequest{Id: 1, Fields: allFieldMask},
+			GetBuild: &bbpb.GetBuildRequest{Id: 1, Fields: expectedFieldMask},
 		}},
 	}}
 
