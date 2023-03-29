@@ -24,6 +24,7 @@ func init() {
 	execs.Register("cros_has_modemmanager_job", hasModemManagerJobExec)
 	execs.Register("cros_modemmanager_running", modemManagerRunningExec)
 	execs.Register("cros_restart_modemmanager", restartModemManagerExec)
+	execs.Register("set_cellular_modem_state", setCellularModemStateExec)
 	execs.Register("has_cellular_info", hasCellularInfoExec)
 }
 
@@ -87,13 +88,32 @@ func hasCellularInfoExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+func setCellularModemStateExec(ctx context.Context, info *execs.ExecInfo) error {
+	c := info.GetChromeos().GetCellular()
+	if c == nil {
+		return errors.Reason("set cellular modem state: cellular data is not present in dut info").Err()
+	}
+
+	actionMap := info.GetActionArgs(ctx)
+	state := strings.ToUpper(actionMap.AsString(ctx, "state", ""))
+	if state == "" {
+		return errors.Reason("set cellular modem state: state is not provided").Err()
+	}
+	s, ok := tlw.HardwareState_value[state]
+	if !ok {
+		return errors.Reason("set cellular modem state state: state %q is invalid", state).Err()
+	}
+
+	c.ModemState = tlw.HardwareState(s)
+	return nil
+}
+
 // auditCellularExec will validate cellular modem and connectivity state.
 func auditCellularExec(ctx context.Context, info *execs.ExecInfo) error {
 	c := info.GetChromeos().GetCellular()
 	if c == nil {
 		return errors.Reason("audit cellular: cellular data is not present in dut info").Err()
 	}
-
 	expected := cellular.IsExpected(ctx, info.DefaultRunner())
 
 	// if no cellular is expected then set total timeout to be much lower otherwise we will add

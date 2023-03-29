@@ -91,6 +91,7 @@ func crosClosePlan() *Plan {
 			"Update chameleon state for chameleonless dut",
 			"Update DUT state for failures more than threshold",
 			"Update DUT state based on servo state",
+			"Update cellular modem state for non-cellular pools",
 			"Close Servo-host",
 		},
 		Actions: map[string]*Action{
@@ -180,6 +181,32 @@ func crosClosePlan() *Plan {
 					"src_path:/var/log/messages",
 					"src_type:file",
 					"use_host_dir:true",
+				},
+				AllowFailAfterRecovery: true,
+			},
+			"Is not in cellular pool": {
+				Docs: []string{
+					"Verify that DUT is not in a cellular pool.",
+				},
+				ExecName: "dut_not_in_pool_regex",
+				ExecExtraArgs: []string{
+					"regex:(?i)^cellular",
+				},
+				MetricsConfig: &MetricsConfig{
+					UploadPolicy: MetricsConfig_SKIP_ALL,
+				},
+			},
+			"Update cellular modem state for non-cellular pools": {
+				Docs: []string{
+					"Set cellular modem state for DUTs in non-cellular pools.",
+				},
+				Conditions: []string{
+					"Is not in cellular pool",
+					"has_cellular_info",
+				},
+				ExecName: "set_cellular_modem_state",
+				ExecExtraArgs: []string{
+					"state:hardware_not_detected",
 				},
 				AllowFailAfterRecovery: true,
 			},

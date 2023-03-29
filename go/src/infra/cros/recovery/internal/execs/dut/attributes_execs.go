@@ -6,6 +6,7 @@ package dut
 
 import (
 	"context"
+	"regexp"
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
@@ -67,6 +68,68 @@ func getDUTPoolMap(ctx context.Context, d *tlw.Dut) map[string]bool {
 	return poolMap
 }
 
+// notInPoolRegexExec verifies that DUT is in a pool that matches the provided regex.
+func notInPoolRegexExec(ctx context.Context, info *execs.ExecInfo) error {
+	d := info.GetDut()
+	if d == nil {
+		return errors.Reason("not in pool regex: DUT not found").Err()
+	}
+
+	actionMap := info.GetActionArgs(ctx)
+	regex := actionMap.AsString(ctx, "regex", "")
+	if regex == "" {
+		return errors.Reason("not in pool regex: regex is empty").Err()
+	}
+
+	if exists, err := hasPoolRegex(regex, d); err != nil {
+		return errors.Annotate(err, "not in pool regex").Err()
+	} else if exists {
+		return errors.Reason("not in pool regex: found match").Err()
+	}
+	return nil
+}
+
+// isInPoolRegexExec verifies that DUT is in a pool that matches the provided regex.
+func isInPoolRegexExec(ctx context.Context, info *execs.ExecInfo) error {
+	d := info.GetDut()
+	if d == nil {
+		return errors.Reason("in pool regex: DUT not found").Err()
+	}
+
+	actionMap := info.GetActionArgs(ctx)
+	regex := actionMap.AsString(ctx, "regex", "")
+	if regex == "" {
+		return errors.Reason("in pool regex: regex is empty").Err()
+	}
+
+	if exists, err := hasPoolRegex(regex, d); err != nil {
+		return errors.Annotate(err, "in pool regex").Err()
+	} else if !exists {
+		return errors.Reason("regex pool match: no match found").Err()
+	}
+	return nil
+}
+
+// hasPoolRegex checks if the DUT is in a pool whose name matches he provided regex.
+func hasPoolRegex(regex string, d *tlw.Dut) (bool, error) {
+	r, err := regexp.Compile(regex)
+	if err != nil {
+		return false, errors.Annotate(err, "has pool regex").Err()
+	}
+
+	extraAttributes := d.ExtraAttributes
+	if pools, ok := extraAttributes[tlw.ExtraAttributePools]; ok {
+		for _, pool := range pools {
+			if r.MatchString(pool) {
+				return true, nil
+			}
+		}
+	}
+
+	return false, nil
+
+}
+
 // notBrowserLegacyDUTExec verifies that if the DUT is a legacy DUT in browser lab.
 func notBrowserLegacyDUTExec(ctx context.Context, info *execs.ExecInfo) error {
 	// Only legacy DUT migrated from browser lab has assetTag to contain browser prefix.
@@ -82,5 +145,7 @@ func notBrowserLegacyDUTExec(ctx context.Context, info *execs.ExecInfo) error {
 func init() {
 	execs.Register("dut_not_in_pool", notInPoolExec)
 	execs.Register("dut_is_in_pool", isInPoolExec)
+	execs.Register("dut_not_in_pool_regex", notInPoolRegexExec)
+	execs.Register("dut_is_in_pool_regex", isInPoolRegexExec)
 	execs.Register("dut_is_not_browser_legacy_duts", notBrowserLegacyDUTExec)
 }

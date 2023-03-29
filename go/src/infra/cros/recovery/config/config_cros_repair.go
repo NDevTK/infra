@@ -1056,11 +1056,24 @@ func crosRepairActions() map[string]*Action {
 			},
 			AllowFailAfterRecovery: true,
 		},
+		"Is in cellular pool": {
+			Docs: []string{
+				"Verify that DUT is not in a cellular pool.",
+			},
+			ExecName: "dut_is_in_pool_regex",
+			ExecExtraArgs: []string{
+				"regex:(?i)^cellular",
+			},
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
+		},
 		"Audit cellular": {
 			Docs: []string{
 				"Check cellular modem on the DUT is normal and update cellular modem state accordingly.",
 			},
 			Conditions: []string{
+				"Is in cellular pool",
 				"cros_has_mmcli",
 				"has_cellular_info",
 			},
@@ -1071,6 +1084,9 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"wait_manager_when_not_expected:120",
 				"wait_manager_when_expected:15",
+			},
+			RecoveryActions: []string{
+				"Cold reset by servo and wait for SSH",
 			},
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 180,
