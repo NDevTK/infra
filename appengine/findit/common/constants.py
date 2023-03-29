@@ -34,6 +34,7 @@ INCREMENTAL_COVERAGE_QUEUE = 'incremental-coverage-queue'
 EXPERIMENTAL_COVERAGE_QUEUE = 'experimental-coverage-queue'
 ALL_GERRIT_FILTER_COVERAGE_QUEUE = 'all-gerrit-filter-coverage-queue'
 REFERENCED_COVERAGE_QUEUE = 'referenced-coverage-queue'
+POSTREVIEW_REQUEST_QUEUE = 'postreview-request-queue'
 # Waterfall-related.
 WATERFALL_PROCESS_FAILURE_ANALYSIS_REQUESTS_URL = (
     '/waterfall/task/process-failure-analysis-requests')
