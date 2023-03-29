@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2f746221_6bec6015",
+        "filename": "go/src/infra/cros/lib/buildbucket/poll.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2023-03-29T16:17:20Z",
+      "side": 1,
+      "message": "At completion, the program outputs the collected Builds, which are read by the recipe (http://cs/chromeos_public/infra/recipes/recipe_modules/orch_menu/api.py;l\u003d635-638;rcl\u003ddba606aeca19e37d4faf516e29268cd55c0337b6). So most of these aren\u0027t needed for the actual polling, but I wanted to keep the final output protos the same as what the recipe got before.",
+      "parentUuid": "c267df36_dfcac676",
+      "range": {
+        "startLine": 15,
+        "startChar": 4,
+        "endLine": 15,
+        "endChar": 17
+      },
+      "revId": "b9a38f9ca527837e0ef3a4d270a3fa470a5c772e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "98cbc08f_6eddd0c6",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f6fdfe01_186d4135",
+        "filename": "go/src/infra/cros/lib/buildbucket/poll.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2023-03-29T16:17:20Z",
+      "side": 1,
+      "message": "Yeah, I figured including fully completed builds in the request was a waste, since they would never change. I don\u0027t think this would actually prevent the failures from BB we saw (the failures would happen deterministically if you request enough builds, I think there\u0027s just an upper limit on the size it can handle), but figured it would be good to not request builds we know can\u0027t change.\n\nI think the only downside of not requesting `propSetBuilds` until the end is that it adds one more request at the end, and maybe a bit more complexity. I added a note to consider it in the future if it seems this is putting too much load on bb. But I think the current behavior should be ok for now, since it should do exactly what the current `bb collect` does (request every minute for builds that haven\u0027t completed).",
+      "parentUuid": "98cbc08f_6eddd0c6",
+      "range": {
+        "startLine": 53,
+        "startChar": 18,
+        "endLine": 53,
+        "endChar": 33
+      },
+      "revId": "b9a38f9ca527837e0ef3a4d270a3fa470a5c772e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9f7efe72_694dbc73",
@@ -60,6 +108,30 @@
       "writtenOn": "2023-03-28T21:49:56Z",
       "side": 1,
       "message": "This is no longer true.",
+      "range": {
+        "startLine": 86,
+        "startChar": 33,
+        "endLine": 86,
+        "endChar": 55
+      },
+      "revId": "b9a38f9ca527837e0ef3a4d270a3fa470a5c772e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "be0cbd6c_7e8405cf",
+        "filename": "go/src/infra/cros/lib/buildbucket/poll.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1325055
+      },
+      "writtenOn": "2023-03-29T16:17:20Z",
+      "side": 1,
+      "message": "Updated.",
+      "parentUuid": "9f7efe72_694dbc73",
       "range": {
         "startLine": 86,
         "startChar": 33,
