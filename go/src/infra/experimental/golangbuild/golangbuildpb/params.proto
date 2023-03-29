@@ -23,4 +23,10 @@ message Inputs {
 
   // Extra environment variables to set for building and testing.
   map<string, string> env = 4;
+
+  // List of builders to trigger builds for once make.bash is done.
+  // Must be empty if project is not "go." The builds are triggered
+  // with the same gerrit and gitiles build data this build was
+  // triggered with.
+  repeated string builders_to_trigger = 5;
 }

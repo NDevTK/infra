@@ -140,6 +140,7 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	env.Set("GOROOT_BOOTSTRAP", filepath.Join(toolsRoot, "go_bootstrap"))
 	env.Set("GOPATH", filepath.Join(cwd, "gopath")) // Explicitly set to an empty per-build directory, to avoid reusing the implicit default one.
 	env.Set("GOBIN", "")
+	env.Set("GOROOT", "") // Clear GOROOT because it's likely someone has one set locally, e.g. for luci-go development.
 	env.Set("GOCACHE", gocacheDir)
 	env.Set("GO_BUILDER_NAME", st.Build().GetBuilder().GetBuilder()) // TODO(mknyszek): This is underspecified. We may need Project and Bucket.
 	// Use our tools before the system tools. Notably, use raw Git rather than the Chromium wrapper.
@@ -149,47 +150,70 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		// TODO(heschi): select gcc32 for GOARCH=i386
 		env.Set("PATH", fmt.Sprintf("%v%c%v", env.Get("PATH"), os.PathListSeparator, filepath.Join(toolsRoot, "cc/windows/gcc64/bin")))
 	}
-
 	ctx = env.SetInCtx(ctx)
 
-	inputPb := st.Build().GetInput()
-
+	// Grab commit/change/presubmit state.
 	isDryRun := false
 	if mode, err := cv.RunMode(ctx); err == nil {
 		isDryRun = strings.HasSuffix(mode, "DRY_RUN")
 	} else if err != cv.ErrNotActive {
 		return err
 	}
+	gitilesCommit := st.Build().GetInput().GetGitilesCommit()
+	gerritChanges := st.Build().GetInput().GetGerritChanges()
 
 	if inputs.Project == "go" {
 		// Fetch the main Go repository into goroot.
-		if err := fetchRepo(ctx, httpClient, "go", goroot, inputPb.GetGitilesCommit(), inputPb.GetGerritChanges(), isDryRun); err != nil {
+		if err := fetchRepo(ctx, httpClient, "go", goroot, gitilesCommit, gerritChanges, isDryRun); err != nil {
 			return err
 		}
 
-		// Build and test Go.
+		// Build Go.
 		//
 		// TODO(mknyszek): Support cross-compile-only modes, perhaps by having CompileGOOS
 		// and CompileGOARCH repeated fields in the input proto to identify what to build.
-		// TODO(mknyszek): Support split make/run and sharding.
-		allScript := "all"
-		if inputs.RaceMode {
-			allScript = "race"
-		}
-		if err := runGoScript(ctx, goroot, allScript+scriptExt()); err != nil {
+		if err := runGoScript(ctx, goroot, "make"+scriptExt()); err != nil {
 			return err
 		}
+		// TODO(mknyszek): Upload the result of make.bash somewhere that downstream builders can find.
 
-		// Test the latest version of some subrepos.
-		if err := runSubrepoTests(ctx, goroot); err != nil {
+		// Trigger downstream builders (subrepo builders) with the commit and/or Gerrit change we got.
+		if len(inputs.BuildersToTrigger) > 0 {
+			err := triggerBuilders(ctx,
+				filepath.Join(toolsRoot, "bin", "bb"),
+				gitilesCommit,
+				gerritChanges,
+				inputs.BuildersToTrigger...,
+			)
+			if err != nil {
+				return err
+			}
+		}
+
+		// Test Go.
+		//
+		// TODO(mknyszek): Support sharding by running `go tool dist test -list` and
+		// triggering N test builders with a subset of those tests in their properties.
+		// Pass the newly-built toolchain via CAS.
+		distTestArgs := []string{"tool", "dist", "test", "-no-rebuild"}
+		if inputs.RaceMode {
+			distTestArgs = append(distTestArgs, "-race")
+		}
+		if err := runGo(ctx, "go tool dist test", goroot, goroot, distTestArgs...); err != nil {
 			return err
 		}
 	} else {
+		if len(inputs.BuildersToTrigger) != 0 {
+			return fmt.Errorf("specified builders to trigger for unsupported project")
+		}
+
 		// Fetch the main and target repositories.
+		//
+		// TODO(mknyszek): Grab a prebuilt Go toolchain from a shared location instead.
 		if err := fetchGoRepoAtBranch(ctx, goroot, inputs.GoBranch); err != nil {
 			return err
 		}
-		if err := fetchRepo(ctx, httpClient, inputs.Project, "targetrepo", inputPb.GetGitilesCommit(), inputPb.GetGerritChanges(), isDryRun); err != nil {
+		if err := fetchRepo(ctx, httpClient, inputs.Project, "targetrepo", gitilesCommit, gerritChanges, isDryRun); err != nil {
 			return err
 		}
 
@@ -201,13 +225,13 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		// Test this specific subrepo.
 		tryResultAdapter := inputs.Project == "build"
 		if tryResultAdapter {
-			if err := runSingleSubrepoTestsWithResultAdapter(ctx, goroot, "targetrepo", inputs.RaceMode,
+			if err := runSubrepoTestsWithResultAdapter(ctx, goroot, "targetrepo", inputs.RaceMode,
 				filepath.Join(toolsRoot, "bin", "rdb"),
 				filepath.Join(toolsRoot, "bin", "result_adapter")); err != nil {
 				return err
 			}
 		} else {
-			if err := runSingleSubrepoTests(ctx, goroot, "targetrepo", inputs.RaceMode); err != nil {
+			if err := runSubrepoTests(ctx, goroot, "targetrepo", inputs.RaceMode); err != nil {
 				return err
 			}
 		}
@@ -239,6 +263,7 @@ func scriptExt() string {
 var cipdDeps = `
 infra/3pp/tools/git/${platform} version:2@2.39.2.chromium.11
 @Subdir bin
+infra/tools/bb/${platform} latest
 infra/tools/rdb/${platform} latest
 infra/tools/result_adapter/${platform} latest
 @Subdir go_bootstrap
@@ -462,85 +487,39 @@ func runGoScript(ctx context.Context, goroot, script string) (err error) {
 	return runCommandAsStep(ctx, script, cmd, false)
 }
 
-// runSubrepoTests tests the tip version of some subrepos
-// using the Go toolchain at goroot.
-func runSubrepoTests(ctx context.Context, goroot string) (err error) {
-	step, ctx := build.StartStep(ctx, "Run subrepo tests")
-	defer func() {
-		step.End(err)
-	}()
+// runGo runs the Go command from goroot in dir as a step.
+func runGo(ctx context.Context, stepName, goroot, dir string, args ...string) error {
+	// Add the Go binary we're about to execute to PATH. There are a whole bunch of cases
+	// like `go tool dist test` where the expectation is that the invoked `go` binary is
+	// the one found in PATH.
+	env := environ.FromCtx(ctx)
+	env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(goroot, "bin"), os.PathListSeparator, env.Get("PATH")))
 
-	if err := os.Mkdir("subrepo", 0755); err != nil {
-		return err
-	}
-
-	type ann struct {
-		Name  string            // Name is the step name to be displayed.
-		Infra bool              // Infra is whether this step failing is an infrastructure failure.
-		Env   map[string]string // Extra environment to set.
-	}
-	runGo := func(a ann, args ...string) error {
-		var exeSuffix string
-		if runtime.GOOS == "windows" {
-			exeSuffix = ".exe"
-		}
-		cmd := exec.CommandContext(ctx, filepath.Join(goroot, "bin", "go"+exeSuffix), args...)
-		env := environ.FromCtx(ctx)
-		env.Load(a.Env)
-		ctx = env.SetInCtx(ctx)
-		return runCommandAsStep(ctx, a.Name, cmd, a.Infra)
-	}
-
-	// TODO(dmitshur): Think about the optimal general test strategy.
-
-	// Create a local module with golang.org/x modules in its build list.
-	if err := writeFile(ctx, "go.mod", "module test\nrequire golang.org/x/mod master\nrequire golang.org/x/term master\n"); err != nil { // nocheck
-		return err
-	}
-
-	if err := runGo(ann{Name: "download subrepos and deps", Infra: true, Env: map[string]string{"GOPROXY": "direct"}}, "list", "-mod=mod", "-deps", "-test", "golang.org/x/mod/...", "golang.org/x/term/..."); err != nil {
-		return err
-	}
-
-	// Run the tests.
-	if err := runGo(ann{Name: "go test golang.org/x/{mod,term}/..."}, "test", "golang.org/x/mod/...", "golang.org/x/term/..."); err != nil {
-		return err
-	}
-
-	return nil
+	// Run the command.
+	cmd := exec.CommandContext(ctx, filepath.Join(goroot, "bin", "go"), args...)
+	cmd.Dir = dir
+	cmd.Env = env.Sorted()
+	return runCommandAsStep(ctx, stepName, cmd, false)
 }
 
-// runSingleSubrepoTests runs tests for Go packages in the module at dir
+// runSubrepoTests runs tests for Go packages in the module at dir
 // using the Go toolchain at goroot. It prints test results to stdout/stderr.
 //
 // TODO(dmitshur): For final version, don't forget to also test packages in nested modules.
 // TODO(dmitshur): Improve coverage (at cost of setup complexity) by running tests outside their repositories. See go.dev/issue/34352.
-func runSingleSubrepoTests(ctx context.Context, goroot, dir string, race bool) error {
-	type ann struct {
-		Name  string // Name is the step name to be displayed.
-		Infra bool   // Infra is whether this step failing is an infrastructure failure.
-	}
-	runGo := func(a ann, args ...string) error {
-		var exeSuffix string
-		if runtime.GOOS == "windows" {
-			exeSuffix = ".exe"
-		}
-		cmd := exec.CommandContext(ctx, filepath.Join(goroot, "bin", "go"+exeSuffix), args...)
-		cmd.Dir = dir
-		return runCommandAsStep(ctx, a.Name, cmd, a.Infra)
-	}
+func runSubrepoTests(ctx context.Context, goroot, dir string, race bool) error {
 	args := []string{"test"}
 	if race {
 		args = append(args, "-race")
 	}
 	args = append(args, "./...")
-	return runGo(ann{Name: "go test [-race] ./..."}, args...)
+	return runGo(ctx, "go test", goroot, dir, args...)
 }
 
-// runSingleSubrepoTestsWithResultAdapter runs tests for Go packages in the module at dir
+// runSubrepoTestsWithResultAdapter runs tests for Go packages in the module at dir
 // using the Go toolchain at goroot. It uses the provided result_adapter (go/result-sink#result-adapter)
 // and rdb (go/result-sink#resultsink-on-ci) to stream test results to ResultSink.
-func runSingleSubrepoTestsWithResultAdapter(ctx context.Context, goroot, dir string, race bool, rdb, resultAdapter string) error {
+func runSubrepoTestsWithResultAdapter(ctx context.Context, goroot, dir string, race bool, rdb, resultAdapter string) error {
 	args := []string{rdb, "stream", "--",
 		resultAdapter, "go", "--",
 		filepath.Join(goroot, "bin", "go"), "test", "-json"}
@@ -551,6 +530,44 @@ func runSingleSubrepoTestsWithResultAdapter(ctx context.Context, goroot, dir str
 	cmd := exec.CommandContext(ctx, args[0], args[1:]...)
 	cmd.Dir = dir
 	return runCommandAsStep(ctx, "go test -json [-race] ./... (with rdb+result_adapter)", cmd, false)
+}
+
+// triggerBuilders triggers builds for downstream builders using the same commit
+// and/or changes. Note: commit or changes must be specified, but not both.
+func triggerBuilders(ctx context.Context, bbPath string, commit *bbpb.GitilesCommit, changes []*bbpb.GerritChange, builders ...string) (err error) {
+	step, ctx := build.StartStep(ctx, "trigger downstream builders")
+	defer func() {
+		// Any failure in this function is an infrastructure failure.
+		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
+		step.End(err)
+	}()
+
+	// Scribble down the builders we're triggering.
+	buildersLog := step.Log("builders")
+	if _, err := io.WriteString(buildersLog, strings.Join(builders, "\n")+"\n"); err != nil {
+		return err
+	}
+
+	// Figure out the arguments to bb.
+	bbArgs := []string{"add"}
+	switch {
+	case commit != nil && len(changes) == 0:
+		bbArgs = append(bbArgs, "-commit", fmt.Sprintf("https://%s/%s/+/%s", commit.Host, commit.Project, commit.Id))
+	case commit == nil && len(changes) != 0:
+		if len(changes) > 1 {
+			return fmt.Errorf("specifying more than one Gerrit change is unsupported")
+		}
+		change := changes[0]
+		bbArgs = append(bbArgs, "-cl", fmt.Sprintf("https://%s/c/%s/+/%d/%d", change.Host, change.Project, change.Change, change.Patchset))
+	case commit == nil && len(changes) == 0:
+		return fmt.Errorf("no source information specified")
+	default:
+		return fmt.Errorf("specifying both a commit and a Gerrit change is unsupported")
+	}
+	bbArgs = append(bbArgs, builders...)
+
+	// Run bb add.
+	return runCommandAsStep(ctx, "bb add", exec.CommandContext(ctx, bbPath, bbArgs...), true)
 }
 
 // runCommandAsStep runs the provided command as a build step.
