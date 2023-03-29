@@ -147,7 +147,7 @@
   },
   {
     "cmd": [
-      "python",
+      "python3",
       "test.py",
       "test"
     ],
@@ -188,7 +188,7 @@
   },
   {
     "cmd": [
-      "python",
+      "python3",
       "[CACHE]/builder/infra_internal/ccompute/scripts/ccompute_config.py",
       "test"
     ],
@@ -259,7 +259,7 @@
       "rdb",
       "stream",
       "--",
-      "vpython",
+      "python3",
       "-u",
       "[CACHE]/builder/infra_internal/go/test.py"
     ],
