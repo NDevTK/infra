@@ -147,7 +147,48 @@
   },
   {
     "cmd": [
-      "python",
+      "cipd",
+      "ensure",
+      "-root",
+      "[CACHE]/builder/cpython",
+      "-ensure-file",
+      "infra/3pp/tools/cpython/${platform} latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[CACHE]/builder/infra",
+    "luci_context": {
+      "realm": {
+        "name": "infra:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure_installed",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/cpython/resolved-platform\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/cpython/bin/python",
       "test.py",
       "test"
     ],
@@ -238,7 +279,7 @@
       "rdb",
       "stream",
       "--",
-      "vpython",
+      "vpython3",
       "-u",
       "[CACHE]/builder/infra/go/test.py"
     ],

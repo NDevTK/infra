@@ -13,6 +13,7 @@ DEPS = [
     'depot_tools/gclient',
     'depot_tools/osx_sdk',
     'recipe_engine/buildbucket',
+    'recipe_engine/cipd',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/json',
@@ -224,7 +225,7 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
         api.step(
             'infra go tests',
             api.resultdb.wrap(
-                ['vpython', '-u', api.path['checkout'].join('go', 'test.py')]))
+                ['vpython3', '-u', api.path['checkout'].join('go', 'test.py')]))
 
     fails = []
     for plat in CIPD_PACKAGE_BUILDERS.get(buildername, []):
@@ -278,8 +279,13 @@ def run_python_tests(api, project_name):
     with api.context(cwd=api.path['checkout']):
       # Run Linux tests everywhere, Windows tests only on public CI.
       if api.platform.is_linux or project_name == 'infra':
+        # These tests still require python 2.7.
+        cpython_path = api.path['cache'].join('builder', 'cpython')
+        ensure_file = api.cipd.EnsureFile().add_package(
+            'infra/3pp/tools/cpython/${platform}', 'latest')
+        api.cipd.ensure(cpython_path, ensure_file)
         api.step('infra python tests',
-                 ['python', 'test.py', 'test'])
+                 [cpython_path.join('bin', 'python'), 'test.py', 'test'])
 
       if api.platform.is_linux or api.platform.is_mac:
         cwd = api.path['checkout'].join('appengine', 'monorail')
@@ -290,8 +296,7 @@ def run_python_tests(api, project_name):
       if api.platform.is_linux and project_name == 'infra_internal':
         ccompute_config = api.path['checkout'].join(
             'ccompute', 'scripts', 'ccompute_config.py')
-        api.step(
-            'ccompute config test', ['python', ccompute_config, 'test'])
+        api.step('ccompute config test', ['python3', ccompute_config, 'test'])
 
 
 def GenTests(api):
