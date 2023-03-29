@@ -17,9 +17,11 @@ from go.chromium.org.luci.buildbucket.proto import common_pb2
 from gae_libs.handlers.base_handler import BaseHandler
 from handlers.code_coverage import process_coverage
 from handlers.code_coverage import utils
+from model.code_coverage import BlockingStatus
 from model.code_coverage import CoveragePercentage
 from model.code_coverage import DependencyRepository
 from model.code_coverage import FileCoverageData
+from model.code_coverage import LowCoverageBlocking
 from model.code_coverage import PostsubmitReport
 from model.code_coverage import PresubmitCoverageData
 from model.code_coverage import SummaryCoverageData
@@ -225,13 +227,15 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                       'Please log in with your @google.com account.'),
                      response.json_body.get('error_message'))
 
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   def testProcessCLPatchData(self, mocked_is_request_from_appself,
                              mocked_get_build, mocked_get_validated_data,
-                             mocked_inc_percentages):
+                             mocked_inc_percentages, *_):
     # Mock buildbucket v2 API.
     build = mock.Mock()
     build.builder.project = 'chromium'
@@ -313,6 +317,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                      fetched_entities[0].incremental_percentages)
     self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
 
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
@@ -321,7 +327,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                                             mocked_is_request_from_appself,
                                             mocked_get_build,
                                             mocked_get_validated_data,
-                                            mocked_inc_percentages):
+                                            mocked_inc_percentages, *_):
     # Mock buildbucket v2 API.
     build = mock.Mock()
     build.builder.project = 'chromium'
@@ -403,13 +409,15 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                      fetched_entities[0].incremental_percentages_unit)
     self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
 
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
-  def testProcessCLPatchDataMergingData(self, _, mocked_get_build,
+  def testProcessCLPatchDataMergingData(self, mocked_get_build,
                                         mocked_get_validated_data,
-                                        mocked_inc_percentages):
+                                        mocked_inc_percentages, *_):
     # Mock buildbucket v2 API.
     build = mock.Mock()
     build.builder.project = 'chromium'
@@ -496,6 +504,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                      fetched_entities[0].incremental_percentages)
     self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
 
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
@@ -504,7 +514,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                                                  mocked_is_request_from_appself,
                                                  mocked_get_build,
                                                  mocked_get_validated_data,
-                                                 mocked_inc_percentages):
+                                                 mocked_inc_percentages, *_):
     # Mock buildbucket v2 API.
     build = mock.Mock()
     build.builder.project = 'chromium'
@@ -585,13 +595,15 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                      fetched_entities[0].absolute_percentages_unit_rts)
     self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
 
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   def testProcessCLPatchDataRTSBuilder_MergeDataIntoExistingEntity(
       self, mocked_is_request_from_appself, mocked_get_build,
-      mocked_get_validated_data, mocked_inc_percentages):
+      mocked_get_validated_data, mocked_inc_percentages, *_):
     # Mock buildbucket v2 API.
     build = mock.Mock()
     build.builder.project = 'chromium'
@@ -704,20 +716,21 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                      fetched_entities[0].absolute_percentages_rts)
     self.assertEqual(expected_entity.based_on, fetched_entities[0].based_on)
 
+  # This test case tests the scenario where multiple coverage builders
+  # were triggered for a CL, and the first coverage build is being processed.
+  # In this case, the said coverage build produced coverage data.
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
   @mock.patch.object(prpc_client, 'Client')
-  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
-  @mock.patch.object(utils, 'GetFileContentFromGs')
-  @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
+  @mock.patch.object(process_coverage.ProcessCodeCoverageData,
+                     '_MayBeBlockCLForLowCoverage')
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
   # pylint: disable=line-too-long
-  def testProcessCLPatchDataLowCoverageBlocking_allCoverageBuildsCompletedSuccessfully_block(
+  def testLowCoverageBlocking_firstCoverageBuildWithData_dontCheckForLowCoverage(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
-      mock_buildbucket_client, *_):
+      mock_blocking_logic, mock_buildbucket_client, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': [
@@ -785,30 +798,419 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
             build_pb2.Build(
                 builder=builder_common_pb2.BuilderID(
                     builder='android-pie-x86-rel'),
-                status=common_pb2.Status.SUCCESS),
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-performance-rel'),
-                status=common_pb2.Status.SCHEDULED)
+                status=common_pb2.Status.SUCCESS)
         ]))
-    mocked_fetch_change_details.return_value = {
-        'owner': {
-            'email': 'john@chromium.org'
-        }
-    }
-    mocked_get_file_content.return_value = json.dumps(
-        {'john@chromium.org': 'john@google.com'})
 
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)
 
-    self.assertEqual(len(mock_http_client.call_args_list), 1)
-    args, _ = mock_http_client.call_args_list[0]
-    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
-                               '/changes/138000/revisions/4/review'))
-    data = json.loads(args[1])
-    self.assertDictEqual({'Code-Coverage': -1}, data['labels'])
-    self.assertTrue('50%' in data['message'])
+    blocking_entity = LowCoverageBlocking.Get(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4)
+    self.assertEqual(blocking_entity.blocking_status, BlockingStatus.DEFAULT)
+    self.assertEqual(
+        set(blocking_entity.expected_builders),
+        set(['android-nougat-x86-rel', 'android-pie-x86-rel']))
+    self.assertEqual(
+        set(blocking_entity.successful_builders),
+        set(['android-nougat-x86-rel', 'android-pie-x86-rel']))
+    self.assertEqual(
+        set(blocking_entity.processed_builders),
+        set(['android-nougat-x86-rel']))
+    # Assert that CL was not checked for low coverage
+    self.assertEqual(len(mock_blocking_logic.call_args_list), 0)
+
+  # This test case tests the scenario where multiple coverage builders
+  # were triggered for a CL, and the first coverage build is being processed.
+  # In this case, the said coverage build produced no data.
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
+  @mock.patch.object(process_coverage.ProcessCodeCoverageData,
+                     '_MayBeBlockCLForLowCoverage')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  # pylint: disable=line-too-long
+  def testLowCoverageBlocking_firstCoverageBuildWithNoData_dontCheckForLowCoverage(
+      self, mocked_get_build, mock_blocking_logic, mock_buildbucket_client, *_):
+    self.UpdateUnitTestConfigSettings(
+        'code_coverage_settings', {
+            'allowed_builders': [
+                'chromium/try/android-nougat-x86-rel',
+                'chromium/try/android-pie-x86-rel',
+            ],
+            'block_low_coverage_changes_projects': ['chromium/src'],
+            'block_low_coverage_changes_authors': ['john'],
+            'block_low_coverage_changes_directories': ['//dir']
+        })
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'android-nougat-x86-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_is_presubmit', True),
+        # coverage_gs_bucket and coverage_metadata_gs_paths properties are
+        # missing indicating this build did not produce any coverage data
+        ('mimic_builder_names', ['android-nougat-x86-rel'])
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+
+    # Two coverage builds were triggered for the CL
+    # and both completed without error
+    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
+        builds_service_pb2.SearchBuildsResponse(builds=[
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-nougat-x86-rel'),
+                status=common_pb2.Status.SUCCESS),
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-pie-x86-rel'),
+                status=common_pb2.Status.SUCCESS)
+        ]))
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    self.test_app.post(request_url)
+
+    blocking_entity = LowCoverageBlocking.Get(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4)
+    self.assertEqual(blocking_entity.blocking_status, BlockingStatus.DEFAULT)
+    self.assertEqual(
+        set(blocking_entity.expected_builders),
+        set(['android-nougat-x86-rel', 'android-pie-x86-rel']))
+    self.assertEqual(
+        set(blocking_entity.successful_builders),
+        set(['android-nougat-x86-rel', 'android-pie-x86-rel']))
+    self.assertEqual(
+        set(blocking_entity.processed_builders),
+        set(['android-nougat-x86-rel']))
+    # Assert that CL was not checked for low coverage
+    self.assertEqual(len(mock_blocking_logic.call_args_list), 0)
+
+  # This test case tests the scenario where multiple coverage builders
+  # were triggered for a CL, and one of them failed to complete.
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
+  @mock.patch.object(process_coverage.ProcessCodeCoverageData,
+                     '_MayBeBlockCLForLowCoverage')
+  @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  # pylint: disable=line-too-long
+  def testLowCoverageBlocking_buildFailure_dontCheckForLowCoverage(
+      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
+      mock_blocking_logic, mock_buildbucket_client, *_):
+    self.UpdateUnitTestConfigSettings(
+        'code_coverage_settings', {
+            'allowed_builders': [
+                'chromium/try/android-nougat-x86-rel',
+                'chromium/try/android-pie-x86-rel',
+            ],
+            'block_low_coverage_changes_projects': ['chromium/src'],
+            'block_low_coverage_changes_authors': ['john'],
+            'block_low_coverage_changes_directories': ['//dir']
+        })
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'android-nougat-x86-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_is_presubmit', True),
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'presubmit/chromium-review.googlesource.com/138000/4/try/'
+            'android-nougat-x86-rel/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel'])
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+    # Mock get validated data from cloud storage.
+    coverage_data = {
+        'dirs': None,
+        'files': [{
+            'path':
+                '//dir/myfile.java',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 10,
+            }, {
+                'count': 0,
+                'first': 11,
+                'last': 100,
+            }],
+        }],
+        'summaries': None,
+        'components': None,
+    }
+    mocked_get_validated_data.return_value = coverage_data
+    inc_percentages = [
+        CoveragePercentage(
+            path='//dir/myfile.java', total_lines=90, covered_lines=9)
+    ]
+    mocked_inc_percentages.return_value = inc_percentages
+    # Two coverage builds were triggered for the CL
+    # and both completed without error
+    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
+        builds_service_pb2.SearchBuildsResponse(builds=[
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-nougat-x86-rel'),
+                status=common_pb2.Status.SUCCESS),
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-pie-x86-rel'),
+                status=common_pb2.Status.FAILURE)
+        ]))
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    self.test_app.post(request_url)
+
+    blocking_entity = LowCoverageBlocking.Get(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4)
+    self.assertEqual(blocking_entity.blocking_status,
+                     BlockingStatus.DONT_BLOCK_BUILDER_FAILURE)
+    self.assertEqual(
+        set(blocking_entity.expected_builders),
+        set(['android-nougat-x86-rel', 'android-pie-x86-rel']))
+    self.assertEqual(
+        set(blocking_entity.successful_builders),
+        set(['android-nougat-x86-rel']))
+    self.assertEqual(
+        set(blocking_entity.processed_builders),
+        set(['android-nougat-x86-rel']))
+    # Assert that CL was not checked for low coverage
+    self.assertEqual(len(mock_blocking_logic.call_args_list), 0)
+
+  # This test tests for the scenario where all coverage builders have completed
+  # successfully, only the last one is pending processing and the last builder
+  # has produced coverage data
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
+  @mock.patch.object(process_coverage.ProcessCodeCoverageData,
+                     '_MayBeBlockCLForLowCoverage')
+  @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  # pylint: disable=line-too-long
+  def testLowCoverageBlocking_FinalBuildHasData_checkForLowCoverage(
+      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
+      mock_blocking_logic, mock_buildbucket_client, *_):
+    self.UpdateUnitTestConfigSettings(
+        'code_coverage_settings', {
+            'allowed_builders': [
+                'chromium/try/android-nougat-x86-rel',
+                'chromium/try/android-pie-x86-rel',
+            ],
+            'block_low_coverage_changes_projects': ['chromium/src'],
+            'block_low_coverage_changes_authors': ['john'],
+            'block_low_coverage_changes_directories': ['//dir']
+        })
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'android-nougat-x86-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_is_presubmit', True),
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'presubmit/chromium-review.googlesource.com/138000/4/try/'
+            'android-nougat-x86-rel/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel'])
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+    # Mock get validated data from cloud storage.
+    coverage_data = {
+        'dirs': None,
+        'files': [{
+            'path':
+                '//dir/myfile.java',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 10,
+            }, {
+                'count': 0,
+                'first': 11,
+                'last': 100,
+            }],
+        }],
+        'summaries': None,
+        'components': None,
+    }
+    mocked_get_validated_data.return_value = coverage_data
+    inc_percentages = [
+        CoveragePercentage(
+            path='//dir/myfile.java', total_lines=90, covered_lines=9)
+    ]
+    mocked_inc_percentages.return_value = inc_percentages
+    # Two coverage builds were triggered for the CL
+    # and both completed without error. The third build is in the list
+    # just for completeness
+    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
+        builds_service_pb2.SearchBuildsResponse(builds=[
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-nougat-x86-rel'),
+                status=common_pb2.Status.SUCCESS),
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-pie-x86-rel'),
+                status=common_pb2.Status.SUCCESS),
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-performance-rel'),  # not a coverage build
+                status=common_pb2.Status.SCHEDULED)
+        ]))
+    # Blocking entity created during the processing of a coverage build earlier
+    # i.e. chromium/try/android-pie-x86-rel
+    LowCoverageBlocking.Create(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4,
+        expected_builders=['android-nougat-x86-rel', 'android-pie-x86-rel'],
+        successful_builders=['android-pie-x86-rel'],
+        processed_builders=['android-pie-x86-rel']).put()
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    self.test_app.post(request_url)
+
+    blocking_entity = LowCoverageBlocking.Get(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4)
+    self.assertEqual(blocking_entity.blocking_status,
+                     BlockingStatus.READY_FOR_VERDICT)
+    self.assertEqual(
+        set(blocking_entity.expected_builders),
+        set(['android-nougat-x86-rel', 'android-pie-x86-rel']))
+    self.assertEqual(
+        set(blocking_entity.successful_builders),
+        set(['android-nougat-x86-rel', 'android-pie-x86-rel']))
+    self.assertEqual(
+        set(blocking_entity.processed_builders),
+        set(['android-nougat-x86-rel', 'android-pie-x86-rel']))
+    # Assert that CL was checked for low coverage
+    self.assertEqual(len(mock_blocking_logic.call_args_list), 1)
+
+  # This test tests for the scenario where all coverage builders have completed
+  # successfully, only the last one is pending processing and the last builder
+  # has produced coverage data
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
+  @mock.patch.object(process_coverage.ProcessCodeCoverageData,
+                     '_MayBeBlockCLForLowCoverage')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  # pylint: disable=line-too-long
+  def testLowCoverageBlocking_FinalBuildHasNoData_checkForLowCoverage(
+      self, mocked_get_build, mock_blocking_logic, mock_buildbucket_client, *_):
+    self.UpdateUnitTestConfigSettings(
+        'code_coverage_settings', {
+            'allowed_builders': [
+                'chromium/try/android-nougat-x86-rel',
+                'chromium/try/android-pie-x86-rel',
+            ],
+            'block_low_coverage_changes_projects': ['chromium/src'],
+            'block_low_coverage_changes_authors': ['john'],
+            'block_low_coverage_changes_directories': ['//dir']
+        })
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'android-nougat-x86-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_is_presubmit', True),
+        # coverage_gs_bucket and coverage_metadata_gs_paths properties are
+        # missing indicating this build did not produce any coverage data
+        ('mimic_builder_names', ['android-nougat-x86-rel'])
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+    # Two coverage builds were triggered for the CL
+    # and both completed without error. The third build is in the list
+    # just for completeness
+    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
+        builds_service_pb2.SearchBuildsResponse(builds=[
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-nougat-x86-rel'),
+                status=common_pb2.Status.SUCCESS),
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-pie-x86-rel'),
+                status=common_pb2.Status.SUCCESS),
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-performance-rel'),  # not a coverage build
+                status=common_pb2.Status.SCHEDULED)
+        ]))
+    # Blocking entity created during the processing of a coverage build earlier
+    # i.e. chromium/try/android-pie-x86-rel
+    LowCoverageBlocking.Create(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4,
+        expected_builders=['android-nougat-x86-rel', 'android-pie-x86-rel'],
+        successful_builders=['android-pie-x86-rel'],
+        processed_builders=['android-pie-x86-rel']).put()
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    self.test_app.post(request_url)
+
+    blocking_entity = LowCoverageBlocking.Get(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4)
+    self.assertEqual(blocking_entity.blocking_status,
+                     BlockingStatus.READY_FOR_VERDICT)
+    self.assertEqual(
+        set(blocking_entity.expected_builders),
+        set(['android-nougat-x86-rel', 'android-pie-x86-rel']))
+    self.assertEqual(
+        set(blocking_entity.successful_builders),
+        set(['android-nougat-x86-rel', 'android-pie-x86-rel']))
+    self.assertEqual(
+        set(blocking_entity.processed_builders),
+        set(['android-nougat-x86-rel', 'android-pie-x86-rel']))
+    # Assert that CL was checked for low coverage
+    self.assertEqual(len(mock_blocking_logic.call_args_list), 1)
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -820,7 +1222,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
   # pylint: disable=line-too-long
-  def testProcessCLPatchDataLowCoverageBlocking_onlySomeCoverageBuildsCompletedSuccessfully_noop(
+  def testLowCoverageBlocking_allCoverageBuildsProcessedSuccessfully_block(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
       mock_buildbucket_client, *_):
@@ -880,18 +1282,13 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
             path='//dir/myfile.java', total_lines=90, covered_lines=9)
     ]
     mocked_inc_percentages.return_value = inc_percentages
-    # Two coverage builds were triggered for the CL
-    # and only one has completed without error
+    # One coverage build, and it completed successfully
     mock_buildbucket_client.return_value.SearchBuilds.return_value = (
         builds_service_pb2.SearchBuildsResponse(builds=[
             build_pb2.Build(
                 builder=builder_common_pb2.BuilderID(
                     builder='android-nougat-x86-rel'),
-                status=common_pb2.Status.SUCCESS),
-            build_pb2.Build(
-                builder=builder_common_pb2.BuilderID(
-                    builder='android-pie-x86-rel'),
-                status=common_pb2.Status.SCHEDULED)
+                status=common_pb2.Status.SUCCESS)
         ]))
     mocked_fetch_change_details.return_value = {
         'owner': {
@@ -904,7 +1301,19 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)
 
-    self.assertEqual(len(mock_http_client.call_args_list), 0)
+    blocking_entity = LowCoverageBlocking.Get(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4)
+    self.assertEqual(blocking_entity.blocking_status,
+                     BlockingStatus.VERDICT_BLOCK)
+    self.assertEqual(len(mock_http_client.call_args_list), 1)
+    args, _ = mock_http_client.call_args_list[0]
+    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
+                               '/changes/138000/revisions/4/review'))
+    data = json.loads(args[1])
+    self.assertDictEqual({'Code-Coverage': -1}, data['labels'])
+    self.assertTrue('50%' in data['message'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -915,7 +1324,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testProcessCLPatchDataLowCoverageBlocking_revertCL_noop(
+  def testLowCoverageBlocking_revertCL_noop(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
       mock_buildbucket_client, *_):
@@ -1003,7 +1412,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testProcessCLPatchDataLowCoverageBlocking_testAndMainFile_allow(
+  def testLowCoverageBlocking_testAndMainFile_allow(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
       mock_buildbucket_client, *_):
@@ -1096,6 +1505,12 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)
 
+    blocking_entity = LowCoverageBlocking.Get(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4)
+    self.assertEqual(blocking_entity.blocking_status,
+                     BlockingStatus.VERDICT_NOT_BLOCK)
     self.assertEqual(len(mock_http_client.call_args_list), 1)
     args, _ = mock_http_client.call_args_list[0]
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
@@ -1112,7 +1527,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testProcessCLPatchDataLowCoverageBlocking_highAbsoluteCoverage_allow(
+  def testLowCoverageBlocking_highAbsoluteCoverage_allow(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
       mock_buildbucket_client, *_):
@@ -1188,6 +1603,12 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)
 
+    blocking_entity = LowCoverageBlocking.Get(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4)
+    self.assertEqual(blocking_entity.blocking_status,
+                     BlockingStatus.VERDICT_NOT_BLOCK)
     self.assertEqual(len(mock_http_client.call_args_list), 1)
     args, _ = mock_http_client.call_args_list[0]
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
@@ -1204,7 +1625,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testProcessCLPatchDataLowCoverageBlocking_authorNotOptIn_noop(
+  def testLowCoverageBlocking_authorNotOptIn_noop(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
       mock_buildbucket_client, *_):
@@ -1291,7 +1712,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testProcessCLPatchDataLowCoverageBlocking_externalAuthor_noop(
+  def testLowCoverageBlocking_externalAuthor_noop(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
       mock_buildbucket_client, *_):
@@ -1379,7 +1800,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testProcessCLPatchDataLowCoverageBlocking_DirNotOptIn_allow(
+  def testLowCoverageBlocking_DirNotOptIn_allow(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
       mock_buildbucket_client, *_):
@@ -1455,6 +1876,12 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)
 
+    blocking_entity = LowCoverageBlocking.Get(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4)
+    self.assertEqual(blocking_entity.blocking_status,
+                     BlockingStatus.VERDICT_NOT_BLOCK)
     self.assertEqual(len(mock_http_client.call_args_list), 1)
     args, _ = mock_http_client.call_args_list[0]
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
@@ -1471,7 +1898,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testProcessCLPatchDataLowCoverageBlocking_notEnoughLines_allow(
+  def testLowCoverageBlocking_notEnoughLines_allow(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
       mock_buildbucket_client, *_):
@@ -1548,6 +1975,12 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)
 
+    blocking_entity = LowCoverageBlocking.Get(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4)
+    self.assertEqual(blocking_entity.blocking_status,
+                     BlockingStatus.VERDICT_NOT_BLOCK)
     self.assertEqual(len(mock_http_client.call_args_list), 1)
     args, _ = mock_http_client.call_args_list[0]
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
@@ -1564,7 +1997,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testProcessCLPatchDataLowCoverageBlocking_nonJavaFile_allow(
+  def testLowCoverageBlocking_nonJavaFile_allow(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
       mock_buildbucket_client, *_):
@@ -1640,6 +2073,12 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)
 
+    blocking_entity = LowCoverageBlocking.Get(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4)
+    self.assertEqual(blocking_entity.blocking_status,
+                     BlockingStatus.VERDICT_NOT_BLOCK)
     self.assertEqual(len(mock_http_client.call_args_list), 1)
     args, _ = mock_http_client.call_args_list[0]
     self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
@@ -1656,9 +2095,10 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testProcessCLPatchDataLowCoverageBlocking_ProjectNotAllowed_noop(
-      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
-      mock_http_client, *_):
+  def testLowCoverageBlocking_ProjectNotAllowed_noop(self, mocked_get_build,
+                                                     mocked_get_validated_data,
+                                                     mocked_inc_percentages,
+                                                     mock_http_client, *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
