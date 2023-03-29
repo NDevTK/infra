@@ -198,6 +198,9 @@ type InstallFirmwareImageRequest struct {
 	// Example: 0x18
 	GBBFlags string
 
+	// Custom image-name uses when specify image candidate for extracted file.
+	CandidateFirmwareTarget string
+
 	// Flash firmware via servo if true, otherwise flash firmware on DUT itself use chromeos-firmwareupdate.
 	FlashThroughServo bool
 
@@ -335,8 +338,8 @@ func InstallFirmwareImage(ctx context.Context, req *InstallFirmwareImageRequest,
 				break
 			}
 		}
+		log.Infof("Successful download tarbar %q from %q", tarballPath, req.DownloadImagePath)
 	}
-	log.Infof("Successful download tarbar %q from %q", tarballPath, req.DownloadImagePath)
 	if ecExemptedModels[req.Model] {
 		log.Debugf("Override UpdateEcAttemptCount to 0 as model %s doesn't have EC firmware", req.Model)
 		req.UpdateEcAttemptCount = 0
@@ -611,33 +614,41 @@ func getFirmwareManifestKeyFromDUT(ctx context.Context, run components.Runner, l
 // A ChromeOS device may use firmware image name other than its own board/model, a.k.a firmware target.
 // For extract firmware image, we're following below orders to decide firmware target on the DUT:
 //
-// (1) Use data in targetOverridebyHwid if the hwid_sku appears in the map.
-// (2) Use data in targetOverrideModels if a model appears in the map.
-// (3) Use response from `ec_board` control if available, except when it equal to board/model name.
-// (4) Use name parsed from DUT crossystem_fwid, except when it equal to board/model name.
-// (5) Use model name of the DUT.
-// (6) Use board name of the DUT.
+// (1) Use data CandidateFirmwareTarget from request if provided.
+// (2) Use data in targetOverridebyHwid if the hwid_sku appears in the map.
+// (3) Use data in targetOverrideModels if a model appears in the map.
+// (4) Use response from `ec_board` control if available, except when it equal to board/model name.
+// (5) Use name parsed from DUT crossystem_fwid, except when it equal to board/model name.
+// (6) Use model name of the DUT.
+// (7) Use board name of the DUT.
 //
 // If a candidate found in (1) or (2), then it will be the only candidate we returns.
 // Candidates generated based on (3)-(6) will be all included in a slice based above rule order.
 func getFirmwareImageCandidates(ctx context.Context, req *InstallFirmwareImageRequest, imageNamePatterns []string, log logger.Logger) []string {
 	run := req.targetHostRunner()
 	candidates := []string{}
-	// Handle special case where firmware target should be decided by hwid.
-	if m, ok := targetOverridebyHwid[req.Hwid]; ok {
-		log.Debugf("Firmware target override by hwid detected, DUT hwid: %s, new firmware target: %s", req.Hwid, m)
+	generateCandidateByImageNamePatterns := func(m string) {
 		for _, p := range imageNamePatterns {
 			candidates = append(candidates, fmt.Sprintf(p, m))
 		}
+	}
+	if req.CandidateFirmwareTarget != "" {
+		log.Debugf("Firmware target override by CandidateFirmwareTarget, new firmware target: %s", req.CandidateFirmwareTarget)
+		generateCandidateByImageNamePatterns(req.CandidateFirmwareTarget)
+		// We don't need to try other candidates if an override is detected.
+		return candidates
+	}
+	// Handle special case where firmware target should be decided by hwid.
+	if m, ok := targetOverridebyHwid[req.Hwid]; ok {
+		log.Debugf("Firmware target override by hwid detected, DUT hwid: %s, new firmware target: %s", req.Hwid, m)
+		generateCandidateByImageNamePatterns(m)
 		// We don't need to try other candidates if an override is detected.
 		return candidates
 	}
 	// Handle special case where some model use non-regular firmware mapping.
 	if m, ok := targetOverrideModels[req.Model]; ok {
 		log.Debugf("Firmware target override detected, DUT model: %s, new firmware target: %s", req.Model, m)
-		for _, p := range imageNamePatterns {
-			candidates = append(candidates, fmt.Sprintf(p, m))
-		}
+		generateCandidateByImageNamePatterns(m)
 		// We don't need to try other candidates if an override is detected.
 		return candidates
 	}
@@ -652,9 +663,7 @@ func getFirmwareImageCandidates(ctx context.Context, req *InstallFirmwareImageRe
 			execMetric.Observations = append(execMetric.Observations, metrics.NewStringObservation("servod_ec_board", fwTarget))
 		}
 		if fwTarget != "" && fwTarget != req.Model && fwTarget != req.Board {
-			for _, p := range imageNamePatterns {
-				candidates = append(candidates, fmt.Sprintf(p, fwTarget))
-			}
+			generateCandidateByImageNamePatterns(fwTarget)
 		}
 	}
 	if !req.FlashThroughServo {
@@ -663,17 +672,11 @@ func getFirmwareImageCandidates(ctx context.Context, req *InstallFirmwareImageRe
 			log.Debugf("Failed to get firmware target info from DUT.")
 		}
 		if fwTarget != "" && fwTarget != req.Model && fwTarget != req.Board {
-			for _, p := range imageNamePatterns {
-				candidates = append(candidates, fmt.Sprintf(p, fwTarget))
-			}
+			generateCandidateByImageNamePatterns(fwTarget)
 		}
 	}
-	for _, p := range imageNamePatterns {
-		candidates = append(candidates, fmt.Sprintf(p, req.Model))
-	}
-	for _, p := range imageNamePatterns {
-		candidates = append(candidates, fmt.Sprintf(p, req.Board))
-	}
+	generateCandidateByImageNamePatterns(req.Model)
+	generateCandidateByImageNamePatterns(req.Board)
 	return candidates
 }
 
