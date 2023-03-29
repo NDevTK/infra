@@ -330,7 +330,7 @@ export const ISSUE_WIZARD_QUESTIONS: IssueCategory[] = [
           "Blink>WebMIDI",
           "Blink>WebRTC",
           "Blink>WebShare",
-          "Blink>WebVR",
+          "Blink>WebXR",
           "Blink>WindowDialog",
           "Blink>Workers",
           "Blink>XML",
