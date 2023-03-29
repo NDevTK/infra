@@ -1998,7 +1998,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testLowCoverageBlocking_nonJavaFile_allow(
+  def testLowCoverageBlocking_FileNotOfBlockingFileType_allow(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
       mock_buildbucket_client, *_):
@@ -2007,7 +2007,106 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
             'block_low_coverage_changes_projects': ['chromium/src'],
             'block_low_coverage_changes_authors': ['john'],
-            'block_low_coverage_changes_directories': ['//dir']
+            'block_low_coverage_changes_directories': ['//dir'],
+            'block_low_coverage_file_types': ['.cc']
+        })
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'android-nougat-x86-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_is_presubmit', True),
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'presubmit/chromium-review.googlesource.com/138000/4/try/'
+            'android-nougat-x86-rel/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel'])
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+    # Mock get validated data from cloud storage.
+    coverage_data = {
+        'dirs': None,
+        'files': [{
+            'path':
+                '//dir/myfile.cc',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 10,
+            }, {
+                'count': 0,
+                'first': 11,
+                'last': 100,
+            }],
+        }],
+        'summaries': None,
+        'components': None,
+    }
+    mocked_get_validated_data.return_value = coverage_data
+    inc_percentages = [
+        CoveragePercentage(
+            path='//dir/myfile.cc', total_lines=90, covered_lines=9)
+    ]
+    mocked_inc_percentages.return_value = inc_percentages
+    # One coverage build was triggered and it succeeded
+    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
+        builds_service_pb2.SearchBuildsResponse(builds=[
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-nougat-x86-rel'),
+                status=common_pb2.Status.SUCCESS)
+        ]))
+    mocked_fetch_change_details.return_value = {
+        'owner': {
+            'email': 'john@google.com'
+        }
+    }
+    mocked_get_file_content.return_value = json.dumps(
+        {'john@chromium.org': 'john@google.com'})
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    self.test_app.post(request_url)
+
+    blocking_entity = LowCoverageBlocking.Get(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4)
+    self.assertEqual(blocking_entity.blocking_status,
+                     BlockingStatus.VERDICT_BLOCK)
+    tasks = self.taskqueue_stub.get_filtered_tasks(
+        queue_names='postreview-request-queue')
+    self.assertEqual(1, len(tasks))
+    payload = json.loads(tasks[0].payload)
+    self.assertDictEqual({'Code-Coverage': -1}, payload['data']['labels'])
+
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
+  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(utils, 'GetFileContentFromGs')
+  @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
+  @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  def testLowCoverageBlocking_FileOfBlockingFileType_block(
+      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
+      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
+      mock_buildbucket_client, *_):
+    self.UpdateUnitTestConfigSettings(
+        'code_coverage_settings', {
+            'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
+            'block_low_coverage_changes_projects': ['chromium/src'],
+            'block_low_coverage_changes_authors': ['john'],
+            'block_low_coverage_changes_directories': ['//dir'],
+            'block_low_coverage_file_types': ['.java']
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
