@@ -61,11 +61,16 @@ func devModeBootFromServoUSBDriveExec(ctx context.Context, info *execs.ExecInfo)
 // Install ChromeOS from servo USB drive when booted from it.
 func runChromeosInstallCommandWhenBootFromUSBDriveExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
+	actionArgs := info.GetActionArgs(ctx)
 	err := cros.RunInstallOSCommand(ctx, info.GetExecTimeout(), run)
 	if cros.StorageIssuesExist(ctx, err) {
 		info.GetDut().State = dutstate.NeedsReplacement
 		log.Debugf(ctx, "Setting DUT state: %s", dutstate.NeedsReplacement)
-		return errors.Annotate(err, "install from usb drive in recovery mode: storage needs replacement").Tag(retry.LoopBreakTag(), execs.PlanAbortTag).Err()
+		newAnnotator := errors.Annotate(err, "install from usb drive in recovery mode: storage needs replacement").Tag(retry.LoopBreakTag())
+		if actionArgs.AsBool(ctx, "allowed_abort_plan", true) {
+			newAnnotator = newAnnotator.Tag(execs.PlanAbortTag)
+		}
+		return newAnnotator.Err()
 	}
 	return errors.Annotate(err, "run install os after boot from USB-drive").Err()
 }
@@ -128,7 +133,11 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 				if cros.StorageIssuesExist(ctx, err) {
 					info.GetDut().State = dutstate.NeedsReplacement
 					log.Debugf(ctx, "Setting DUT state: %s", dutstate.NeedsReplacement)
-					return errors.Annotate(err, "install from usb drive in recovery mode: storage needs replacement").Tag(retry.LoopBreakTag(), execs.PlanAbortTag).Err()
+					newAnnotator := errors.Annotate(err, "install from usb drive in recovery mode: storage needs replacement").Tag(retry.LoopBreakTag())
+					if am.AsBool(ctx, "allowed_abort_plan", true) {
+						newAnnotator = newAnnotator.Tag(execs.PlanAbortTag)
+					}
+					return newAnnotator.Err()
 				}
 				log.Debugf(ctx, "Install from usb drive fail: %s", err)
 				log.Debugf(ctx, "Will try to check storage if that is bad!")
@@ -161,7 +170,11 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 						log.Debugf(ctx, "Setting the DUT state as %q", string(dutstate.NeedsReplacement))
 						info.GetDut().State = dutstate.NeedsReplacement
 					}
-					return errors.Annotate(err, "install from usb drive in recovery mode").Tag(retry.LoopBreakTag(), execs.PlanAbortTag).Err()
+					newAnnotator := errors.Annotate(err, "install from usb drive in recovery mode").Tag(retry.LoopBreakTag())
+					if am.AsBool(ctx, "allowed_abort_plan", true) {
+						newAnnotator = newAnnotator.Tag(execs.PlanAbortTag)
+					}
+					return newAnnotator.Err()
 				}
 			}
 			haltTimeout := am.AsDuration(ctx, "halt_timeout", 120, time.Second)
