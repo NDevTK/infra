@@ -241,7 +241,7 @@ class ServletRegistry(object):
     self._AppendUrlToRoutes(_PROJECT_REDIRECT_URL, '')
 
   def _RegisterCSPUrl(self):
-    self._AppendUrlToRoutes([('/csp.do/', csp_report.postCsp, ['POST'])], '')
+    self._AppendUrlToRoutes([('/csp.do', csp_report.postCsp, ['POST'])], '')
 
   def _RegisterProjectUrls(self, service, flaskapp_project):
     _PROJECT_URLS = [

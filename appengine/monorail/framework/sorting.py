@@ -22,7 +22,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-from functools import total_ordering
+import functools
 
 import settings
 from mrproto import tracker_pb2
@@ -31,7 +31,7 @@ from tracker import tracker_bizobj
 from tracker import tracker_constants
 
 
-@total_ordering
+@functools.total_ordering
 class DescendingValue(object):
   """A wrapper which reverses the sort order of values."""
 
@@ -148,7 +148,7 @@ def SortArtifacts(
     art_values_cache.CacheItem(art.issue_id, art_values)
     return sort_key
 
-  return sorted(artifacts, key=SortKey)
+  return sorted(artifacts, key=lambda x: Python2Key(SortKey(x)))
 
 
 def ComputeSortDirectives(config, group_by_spec, sort_spec, tie_breakers=None):
@@ -429,7 +429,7 @@ def _IndexListAccessor(wk_values, base_accessor):
       return [MAX_STRING]
 
     indexes = [well_known_value_indexes.get(val, MAX_STRING) for val in values]
-    return _SortedWithInts(indexes)
+    return sorted(indexes, key=Python2Key)
 
   return Accessor
 
@@ -465,7 +465,7 @@ def _IndexOrLexicalList(wk_values, full_fd_list, col_name, users_by_id):
           _SortableLabelValues(art, col_name, well_known_value_indexes))
       if not idx_or_lex_list:
         return [MAX_STRING]  # issues with no value sort to the end of the list.
-      return _SortedWithInts(idx_or_lex_list)
+      return sorted(idx_or_lex_list, key=Python2Key)
 
     return ApproverAccessor
 
@@ -494,7 +494,7 @@ def _IndexOrLexicalList(wk_values, full_fd_list, col_name, users_by_id):
         _SortableLabelValues(art, col_name, well_known_value_indexes))
     if not idx_or_lex_list:
       return [MAX_STRING]  # issues with no value sort to the end of the list.
-    return _SortedWithInts(idx_or_lex_list)
+    return sorted(idx_or_lex_list, key=Python2Key)
 
   return Accessor
 
@@ -574,11 +574,35 @@ def _SortableLabelValues(art, col_name, well_known_value_indexes):
   return sortable_value_list
 
 
-def _SortedWithInts(iterable):
-  """Sorts an iterable with ints preceding all other objects.
+def _Python2Cmp(a, b):
+  """Compares two objects in the Python 2 way.
 
-  For Python 3 compatibility with the way Python 2 sorted objects.
+  In Python 3, comparing two objects of different types raises a TypeError.
+  In Python 2, when you compare two objects of different types, they are
+  generally ordered by their type names, with a few special cases carved
+  out for int/float and str/unicode.
+
+  This comparison function also looks through lists and compares them pairwise.
+  It doesn't do the same for other iterables.
   """
-  ints = [item for item in iterable if isinstance(item, int)]
-  non_ints = [item for item in iterable if not isinstance(item, int)]
-  return sorted(ints) + sorted(non_ints)
+  try:
+    # First try comparing the objects directly.
+    # https://docs.python.org/3.0/whatsnew/3.0.html#ordering-comparisons
+    return (a > b) - (a < b)
+  except TypeError:
+    s1, s2 = type(a).__name__, type(b).__name__
+    if not (s1 == 'list' and s2 == 'list'):
+      # If they are different types, compare their type names.
+      return (s1 > s2) - (s1 < s2)
+
+    # If they are both lists, compare their elements pairwise.
+    for x, y in zip(a, b):
+      element_cmp = _Python2Cmp(x, y)
+      if element_cmp != 0:
+        return element_cmp
+
+    # If the lists start with the same elements, compare their lengths.
+    return (len(a) > len(b)) - (len(a) < len(b))
+
+
+Python2Key = functools.cmp_to_key(_Python2Cmp)

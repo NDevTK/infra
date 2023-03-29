@@ -777,7 +777,6 @@ def _AccumulateNonviewableIIDs(
       nonviewable_iids[sid] = set(issue_ids)
 
   if sid not in nonviewable_iids:
-    logging.info('nonviewable for %r not found', key)
     logging.info('starting backend call for nonviewable iids %r', key)
     rpc = _StartBackendNonviewableCall(
       pid, logged_in_user_id, sid, invalidation_timestep)

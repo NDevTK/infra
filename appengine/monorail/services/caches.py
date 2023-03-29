@@ -108,7 +108,6 @@ class RamCache(object):
 
   def LocalInvalidateAll(self):
     """Invalidate all keys locally: just start over with an empty dict."""
-    logging.info('Locally invalidating all in kind=%r', self.kind)
     self.cache = {}
 
   def InvalidateAll(self, cnxn):

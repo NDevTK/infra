@@ -1623,7 +1623,6 @@ class WorkEnv(object):
         related_iids.update(issue.blocking_iids)
         if issue.merged_into:
           related_iids.add(issue.merged_into)
-      logging.info('related_iids is %r', related_iids)
       return self.services.issue.LookupIssueRefs(self.mc.cnxn, related_iids)
 
   def GetIssueRefs(self, issue_ids):
