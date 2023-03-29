@@ -274,6 +274,6 @@ def CalcProjectAlert(project):
       project_alert = (
           'Scheduled for deletion in %d %s.' % (delay_days, days_word))
   elif project.state == project_pb2.ProjectState.ARCHIVED:
-    project_alert = 'Project is archived: read-only by members only.'
+    project_alert = 'Project is archived and read-only.'
 
   return project_alert

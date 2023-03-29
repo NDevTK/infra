@@ -394,9 +394,12 @@ class WorkEnv(object):
     # the results are filtered by permission to view each project.
 
     with self.mc.profiler.Phase('list projects for %r' % self.mc.auth.user_id):
-      project_ids = self.services.project.GetVisibleLiveProjects(
-          self.mc.cnxn, self.mc.auth.user_pb, self.mc.auth.effective_ids,
-          domain=domain, use_cache=use_cache)
+      project_ids = self.services.project.GetVisibleProjects(
+          self.mc.cnxn,
+          self.mc.auth.user_pb,
+          self.mc.auth.effective_ids,
+          domain=domain,
+          use_cache=use_cache)
 
     return project_ids
 

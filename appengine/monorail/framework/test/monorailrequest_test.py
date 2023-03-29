@@ -611,7 +611,7 @@ class TestPermissionLookup(unittest.TestCase):
 
   def testExternalUserPermissions_Archived(self):
     mr = self.MakeRequestAsUser('archived', 'user@gmail.com')
-    self.CheckPermissions(mr.perms, False, False, False)
+    self.CheckPermissions(mr.perms, True, False, False)
 
   def testExternalUserPermissions_MembersOnly(self):
     mr = self.MakeRequestAsUser('members-only', 'user@gmail.com')

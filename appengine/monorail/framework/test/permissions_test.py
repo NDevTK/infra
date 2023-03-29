@@ -963,8 +963,9 @@ class PermissionsTest(unittest.TestCase):
         None, None, self.live_project))
 
     self.archived_project.delete_time = self.NOW + 1
-    self.assertFalse(permissions.UserCanViewProject(
-        None, None, self.archived_project))
+    # Anonymous users may view an archived project.
+    self.assertTrue(
+        permissions.UserCanViewProject(None, None, self.archived_project))
     self.assertTrue(permissions.UserCanViewProject(
         self.owner, {self.OWNER_USER_ID}, self.archived_project))
     self.assertTrue(permissions.UserCanViewProject(

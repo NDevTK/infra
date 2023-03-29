@@ -297,7 +297,7 @@ class ProjectServiceTest(unittest.TestCase):
         project_dict[234].extra_perms)
 
 
-  def testGetVisibleLiveProjects_AnyoneAccessWithUser(self):
+  def testGetVisibleProjects_AnyoneAccessWithUser(self):
     project_rows = [
         (
             234, 'proj2', 'test proj 2', 'test project', 'live', 'anyone', '',
@@ -311,13 +311,13 @@ class ProjectServiceTest(unittest.TestCase):
     self.SetUpGetProjects()
     self.mox.ReplayAll()
     user_a = user_pb2.User(email='a@example.com')
-    project_ids = self.project_service.GetVisibleLiveProjects(
+    project_ids = self.project_service.GetVisibleProjects(
         self.cnxn, user_a, set([111]))
 
     self.mox.VerifyAll()
     six.assertCountEqual(self, [234], project_ids)
 
-  def testGetVisibleLiveProjects_AnyoneAccessWithAnon(self):
+  def testGetVisibleProjects_AnyoneAccessWithAnon(self):
     project_rows = [
         (
             234, 'proj2', 'test proj 2', 'test project', 'live', 'anyone', '',
@@ -330,13 +330,12 @@ class ProjectServiceTest(unittest.TestCase):
         state=project_pb2.ProjectState.LIVE).AndReturn(project_rows)
     self.SetUpGetProjects()
     self.mox.ReplayAll()
-    project_ids = self.project_service.GetVisibleLiveProjects(
-        self.cnxn, None, None)
+    project_ids = self.project_service.GetVisibleProjects(self.cnxn, None, None)
 
     self.mox.VerifyAll()
     six.assertCountEqual(self, [234], project_ids)
 
-  def testGetVisibleLiveProjects_RestrictedAccessWithMember(self):
+  def testGetVisibleProjects_RestrictedAccessWithMember(self):
     project_rows = [
         (
             234, 'proj2', 'test proj 2', 'test project', 'live', 'members_only',
@@ -352,13 +351,13 @@ class ProjectServiceTest(unittest.TestCase):
         state=project_pb2.ProjectState.LIVE).AndReturn(project_rows)
     self.mox.ReplayAll()
     user_a = user_pb2.User(email='a@example.com')
-    project_ids = self.project_service.GetVisibleLiveProjects(
+    project_ids = self.project_service.GetVisibleProjects(
         self.cnxn, user_a, set([111]))
 
     self.mox.VerifyAll()
     six.assertCountEqual(self, [234], project_ids)
 
-  def testGetVisibleLiveProjects_RestrictedAccessWithNonMember(self):
+  def testGetVisibleProjects_RestrictedAccessWithNonMember(self):
     project_rows = [
         (
             234, 'proj2', 'test proj 2', 'test project', 'live', 'members_only',
@@ -373,13 +372,13 @@ class ProjectServiceTest(unittest.TestCase):
         state=project_pb2.ProjectState.LIVE).AndReturn(project_rows)
     self.mox.ReplayAll()
     user_a = user_pb2.User(email='a@example.com')
-    project_ids = self.project_service.GetVisibleLiveProjects(
+    project_ids = self.project_service.GetVisibleProjects(
         self.cnxn, user_a, set([111]))
 
     self.mox.VerifyAll()
     six.assertCountEqual(self, [], project_ids)
 
-  def testGetVisibleLiveProjects_RestrictedAccessWithAnon(self):
+  def testGetVisibleProjects_RestrictedAccessWithAnon(self):
     project_rows = [
         (
             234, 'proj2', 'test proj 2', 'test project', 'live', 'members_only',
@@ -393,13 +392,12 @@ class ProjectServiceTest(unittest.TestCase):
         self.cnxn, cols=['project_id'],
         state=project_pb2.ProjectState.LIVE).AndReturn(project_rows)
     self.mox.ReplayAll()
-    project_ids = self.project_service.GetVisibleLiveProjects(
-        self.cnxn, None, None)
+    project_ids = self.project_service.GetVisibleProjects(self.cnxn, None, None)
 
     self.mox.VerifyAll()
     six.assertCountEqual(self, [], project_ids)
 
-  def testGetVisibleLiveProjects_RestrictedAccessWithSiteAdmin(self):
+  def testGetVisibleProjects_RestrictedAccessWithSiteAdmin(self):
     project_rows = [
         (
             234, 'proj2', 'test proj 2', 'test project', 'live', 'members_only',
@@ -415,13 +413,13 @@ class ProjectServiceTest(unittest.TestCase):
     self.mox.ReplayAll()
     user_a = user_pb2.User(email='a@example.com')
     user_a.is_site_admin = True
-    project_ids = self.project_service.GetVisibleLiveProjects(
+    project_ids = self.project_service.GetVisibleProjects(
         self.cnxn, user_a, set([111]))
 
     self.mox.VerifyAll()
     six.assertCountEqual(self, [234], project_ids)
 
-  def testGetVisibleLiveProjects_ArchivedProject(self):
+  def testGetVisibleProjects_ArchivedProject(self):
     project_rows = [
         (
             234, 'proj2', 'test proj 2', 'test project', 'archived', 'anyone',
@@ -436,11 +434,11 @@ class ProjectServiceTest(unittest.TestCase):
         state=project_pb2.ProjectState.LIVE).AndReturn(project_rows)
     self.mox.ReplayAll()
     user_a = user_pb2.User(email='a@example.com')
-    project_ids = self.project_service.GetVisibleLiveProjects(
+    project_ids = self.project_service.GetVisibleProjects(
         self.cnxn, user_a, set([111]))
 
     self.mox.VerifyAll()
-    six.assertCountEqual(self, [], project_ids)
+    six.assertCountEqual(self, [234], project_ids)
 
   def testGetProjectsByName(self):
     self.project_service.project_names_to_ids.CacheItem('proj1', 123)

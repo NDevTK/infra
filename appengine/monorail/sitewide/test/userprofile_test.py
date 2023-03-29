@@ -123,7 +123,8 @@ class UserProfileTest(unittest.TestCase):
                                 'other-owner-live')
     self.assertProjectsAnyOrder(page_data['committer_of_projects'],
                                 'other-member-live')
-    self.assertFalse(page_data['owner_of_archived_projects'])
+    self.assertProjectsAnyOrder(
+        page_data['owner_of_archived_projects'], 'other-owner-archived')
     self.assertEqual('ot...@xyz.com', page_data['viewed_user_display_name'])
     self.assertEqual(ezt.boolean(False), page_data['can_delete_user'])
     self.mock_guspd.assert_called_once_with(

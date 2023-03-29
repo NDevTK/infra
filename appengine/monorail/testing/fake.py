@@ -1040,7 +1040,7 @@ class ProjectService(object):
     return [project_dict[pid] for pid in project_id_list
             if pid in project_dict]
 
-  def GetVisibleLiveProjects(
+  def GetVisibleProjects(
       self, _cnxn, logged_in_user, effective_ids, domain=None, use_cache=True):
     project_ids = sorted(self.projects_by_id.keys())
     visible_project_ids = []

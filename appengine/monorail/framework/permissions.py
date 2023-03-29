@@ -332,40 +332,53 @@ _PERMISSIONS_TABLE = {
 
     # Project owners can view and edit artifacts in a LIVE project.
     (OWNER_ROLE, project_pb2.ProjectState.LIVE, WILDCARD_ACCESS):
-      OWNER_ACTIVE_PERMISSIONSET,
+        OWNER_ACTIVE_PERMISSIONSET,
 
     # Project owners can view, but not edit artifacts in ARCHIVED.
     # Note: EDIT_PROJECT is not enough permission to change an ARCHIVED project
     # back to LIVE if a delete_time was set.
     (OWNER_ROLE, project_pb2.ProjectState.ARCHIVED, WILDCARD_ACCESS):
-      OWNER_INACTIVE_PERMISSIONSET,
+        OWNER_INACTIVE_PERMISSIONSET,
 
     # Project members can view their own project, regardless of state.
     (COMMITTER_ROLE, project_pb2.ProjectState.LIVE, WILDCARD_ACCESS):
-      COMMITTER_ACTIVE_PERMISSIONSET,
+        COMMITTER_ACTIVE_PERMISSIONSET,
     (COMMITTER_ROLE, project_pb2.ProjectState.ARCHIVED, WILDCARD_ACCESS):
-      COMMITTER_INACTIVE_PERMISSIONSET,
+        COMMITTER_INACTIVE_PERMISSIONSET,
 
     # Project contributors can view their own project, regardless of state.
     (CONTRIBUTOR_ROLE, project_pb2.ProjectState.LIVE, WILDCARD_ACCESS):
-      CONTRIBUTOR_ACTIVE_PERMISSIONSET,
+        CONTRIBUTOR_ACTIVE_PERMISSIONSET,
     (CONTRIBUTOR_ROLE, project_pb2.ProjectState.ARCHIVED, WILDCARD_ACCESS):
-      CONTRIBUTOR_INACTIVE_PERMISSIONSET,
+        CONTRIBUTOR_INACTIVE_PERMISSIONSET,
 
-    # Non-members users can read and comment in projects with access == ANYONE
-    (USER_ROLE, project_pb2.ProjectState.LIVE,
-     project_pb2.ProjectAccess.ANYONE):
-      USER_PERMISSIONSET,
+    # Non-members users can read and comment in projects with access == ANYONE.
+    (
+        USER_ROLE, project_pb2.ProjectState.LIVE,
+        project_pb2.ProjectAccess.ANYONE):
+        USER_PERMISSIONSET,
 
-    # Anonymous users can only read projects with access == ANYONE.
-    (ANON_ROLE, project_pb2.ProjectState.LIVE,
-     project_pb2.ProjectAccess.ANYONE):
-      READ_ONLY_PERMISSIONSET,
+    # Non-members users can read archived projects with access == ANYONE.
+    (
+        USER_ROLE, project_pb2.ProjectState.ARCHIVED,
+        project_pb2.ProjectAccess.ANYONE):
+        READ_ONLY_PERMISSIONSET,
+
+    # Anonymous users can only read projects with access == ANYONE,
+    # regardless of state.
+    (
+        ANON_ROLE, project_pb2.ProjectState.LIVE,
+        project_pb2.ProjectAccess.ANYONE):
+        READ_ONLY_PERMISSIONSET,
+    (
+        ANON_ROLE, project_pb2.ProjectState.ARCHIVED,
+        project_pb2.ProjectAccess.ANYONE):
+        READ_ONLY_PERMISSIONSET,
 
     # Permissions for site pages, e.g., creating a new project
     (USER_ROLE, UNDEFINED_STATUS, UNDEFINED_ACCESS):
-      PermissionSet([CREATE_PROJECT, CREATE_GROUP, CREATE_HOTLIST]),
-    }
+        PermissionSet([CREATE_PROJECT, CREATE_GROUP, CREATE_HOTLIST]),
+}
 
 def GetPermissions(user, effective_ids, project):
   """Return a permission set appropriate for the user and project.

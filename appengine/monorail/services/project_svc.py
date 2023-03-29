@@ -320,9 +320,9 @@ class ProjectService(object):
 
     return projects_dict
 
-  def GetVisibleLiveProjects(
+  def GetVisibleProjects(
       self, cnxn, logged_in_user, effective_ids, domain=None, use_cache=True):
-    """Return all user visible live project ids.
+    """Return all user visible project ids.
 
     Args:
       cnxn: connection to SQL database.
@@ -333,7 +333,7 @@ class ProjectService(object):
                  buffers.
 
     Returns:
-      A list of project ids of user visible live projects sorted by the names
+      A list of project ids of user visible projects sorted by the names
       of the projects.  If host was provided, only projects with that host
       as their branded domain will be returned.
     """

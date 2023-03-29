@@ -23,7 +23,7 @@ class ProjectSearchTest(unittest.TestCase):
   def setUp(self):
     self.services = service_manager.Services(
         project=fake.ProjectService())
-    self.services.project.GetVisibleLiveProjects = mock.MagicMock()
+    self.services.project.GetVisibleProjects = mock.MagicMock()
 
     for idx, letter in enumerate('abcdefghijklmnopqrstuvwxyz'):
       self.services.project.TestAddProject(letter, project_id=idx + 1)
@@ -46,29 +46,28 @@ class ProjectSearchTest(unittest.TestCase):
     return pipeline
 
   def testZeroResults(self):
-    self.services.project.GetVisibleLiveProjects.return_value = []
+    self.services.project.GetVisibleProjects.return_value = []
 
     pipeline = self.TestPipeline(0, 0)
 
-    self.services.project.GetVisibleLiveProjects.assert_called_once()
+    self.services.project.GetVisibleProjects.assert_called_once()
     self.assertListEqual([], pipeline.visible_results)
 
   def testNonzeroResults(self):
-    self.services.project.GetVisibleLiveProjects.return_value = [1, 2, 3]
+    self.services.project.GetVisibleProjects.return_value = [1, 2, 3]
 
     pipeline = self.TestPipeline(3, 3)
 
-    self.services.project.GetVisibleLiveProjects.assert_called_once()
+    self.services.project.GetVisibleProjects.assert_called_once()
     self.assertListEqual(
         [1, 2, 3], [p.project_id for p in pipeline.visible_results])
 
   def testTwoPageResults(self):
     """Test more than one pagination page of results."""
-    self.services.project.GetVisibleLiveProjects.return_value = list(
-        range(1, 106))
+    self.services.project.GetVisibleProjects.return_value = list(range(1, 106))
 
     pipeline = self.TestPipeline(100, 100)
 
-    self.services.project.GetVisibleLiveProjects.assert_called_once()
+    self.services.project.GetVisibleProjects.assert_called_once()
     self.assertEqual(
         '/hosting/search?num=100&start=100', pipeline.pagination.next_url)

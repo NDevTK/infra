@@ -611,13 +611,13 @@ class WorkEnvTest(unittest.TestCase):
 
     by_name = lambda project: project.project_name
     self.assertEqual(
-        [projects['owner-live']],
+        [projects['owner-archived'], projects['owner-live']],
         sorted(list(owner.values()), key=by_name))
     self.assertEqual(
-        [projects['committer-live']],
+        [projects['committer-archived'], projects['committer-live']],
         sorted(list(member.values()), key=by_name))
     self.assertEqual(
-        [projects['contributor-live']],
+        [projects['contributor-archived'], projects['contributor-live']],
         sorted(list(contrib.values()), key=by_name))
 
   def testGetUserRolesInAllProjects_OwnUser(self):
@@ -663,7 +663,10 @@ class WorkEnvTest(unittest.TestCase):
         sorted(list(contrib.values()), key=by_name))
 
   def testGetUserProjects_OnlyLiveOfOtherUsers(self):
-    """Regular users should only see live projects of other users."""
+    """
+    Regular users should only see permitted projects of other users,
+    regardless of state.
+    """
     projects = self.AddUserProjects()
 
     self.SignIn()
@@ -671,7 +674,7 @@ class WorkEnvTest(unittest.TestCase):
       owner, archived, member, contrib = we.GetUserProjects({222})
 
     self.assertEqual([projects['owner-live']], owner)
-    self.assertEqual([], archived)
+    self.assertEqual([projects['owner-archived']], archived)
     self.assertEqual([projects['committer-live']], member)
     self.assertEqual([projects['contributor-live']], contrib)
 

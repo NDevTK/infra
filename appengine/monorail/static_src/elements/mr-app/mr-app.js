@@ -79,6 +79,13 @@ export class MrApp extends connectStore(LitElement) {
           position: static;
           margin-top: 0.5em;
         }
+        .project-alert {
+          background: var(--chops-orange-50);
+          color: var(--chops-field-error-color);
+          display: block;
+          font-weight: bold;
+          text-align: center;
+        }
       </style>
       <mr-header
         .userDisplayName=${this.userDisplayName}
@@ -87,6 +94,9 @@ export class MrApp extends connectStore(LitElement) {
       ></mr-header>
       <chops-announcement service="monorail"></chops-announcement>
       <mr-site-banner></mr-site-banner>
+      <div class="project-alert" ?hidden=${!this.projectAlert}>
+        ${this.projectAlert}
+      </div>
       <mr-cue
         cuePrefName=${cueNames.SWITCH_TO_PARENT_ACCOUNT}
         .loginUrl=${this.loginUrl}
@@ -190,6 +200,10 @@ export class MrApp extends connectStore(LitElement) {
        * App Engine ID for the current version being viewed.
        */
       versionBase: {type: String},
+      /**
+       * A string explaining the project state.
+       */
+      projectAlert: {type: String},
       /**
        * A String identifier for the page that the user is viewing.
        */
