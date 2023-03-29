@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "60e7a03a_e0811849",
+        "filename": "go/src/infra/build/siso/build/buildconfig/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-03-29T03:46:11Z",
+      "side": 1,
+      "message": "if user failed to set handlers (typo in handler name etc), it will be false.",
+      "parentUuid": "f8e01abc_5894ecc5",
+      "range": {
+        "startLine": 185,
+        "startChar": 13,
+        "endLine": 185,
+        "endChar": 29
+      },
+      "revId": "ae59c92758e48bf27b5cab2b0c64b476f6a84345",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7667c896_28f3a4e9",
@@ -37,6 +61,30 @@
       "writtenOn": "2023-03-29T03:32:20Z",
       "side": 1,
       "message": "`handler` may be better for the consistency?",
+      "range": {
+        "startLine": 202,
+        "startChar": 9,
+        "endLine": 202,
+        "endChar": 13
+      },
+      "revId": "ae59c92758e48bf27b5cab2b0c64b476f6a84345",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e2fee1f8_f3a04c87",
+        "filename": "go/src/infra/build/siso/build/buildconfig/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 202,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-03-29T03:46:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7667c896_28f3a4e9",
       "range": {
         "startLine": 202,
         "startChar": 9,
