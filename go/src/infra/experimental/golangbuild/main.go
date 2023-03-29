@@ -202,6 +202,7 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		tryResultAdapter := inputs.Project == "build"
 		if tryResultAdapter {
 			if err := runSingleSubrepoTestsWithResultAdapter(ctx, goroot, "targetrepo", inputs.RaceMode,
+				filepath.Join(toolsRoot, "bin", "rdb"),
 				filepath.Join(toolsRoot, "bin", "result_adapter")); err != nil {
 				return err
 			}
@@ -238,6 +239,7 @@ func scriptExt() string {
 var cipdDeps = `
 infra/3pp/tools/git/${platform} version:2@2.39.2.chromium.11
 @Subdir bin
+infra/tools/rdb/${platform} latest
 infra/tools/result_adapter/${platform} latest
 @Subdir go_bootstrap
 infra/3pp/tools/go/${platform} version:2@1.19.3
@@ -537,16 +539,18 @@ func runSingleSubrepoTests(ctx context.Context, goroot, dir string, race bool) e
 
 // runSingleSubrepoTestsWithResultAdapter runs tests for Go packages in the module at dir
 // using the Go toolchain at goroot. It uses the provided result_adapter (go/result-sink#result-adapter)
-// to upload test results to ResultSink.
-func runSingleSubrepoTestsWithResultAdapter(ctx context.Context, goroot, dir string, race bool, resultAdapter string) error {
-	args := []string{"go", "--", filepath.Join(goroot, "bin", "go"), "test", "-json"}
+// and rdb (go/result-sink#resultsink-on-ci) to stream test results to ResultSink.
+func runSingleSubrepoTestsWithResultAdapter(ctx context.Context, goroot, dir string, race bool, rdb, resultAdapter string) error {
+	args := []string{rdb, "stream", "--",
+		resultAdapter, "go", "--",
+		filepath.Join(goroot, "bin", "go"), "test", "-json"}
 	if race {
 		args = append(args, "-race")
 	}
 	args = append(args, "./...")
-	cmd := exec.CommandContext(ctx, resultAdapter, args...)
+	cmd := exec.CommandContext(ctx, args[0], args[1:]...)
 	cmd.Dir = dir
-	return runCommandAsStep(ctx, "go test -json [-race] ./... (with result_adapter)", cmd, false)
+	return runCommandAsStep(ctx, "go test -json [-race] ./... (with rdb+result_adapter)", cmd, false)
 }
 
 // runCommandAsStep runs the provided command as a build step.
