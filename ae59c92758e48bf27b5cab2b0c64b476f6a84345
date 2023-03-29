@@ -48,6 +48,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "23797671_ed5dad56",
+        "filename": "go/src/infra/build/siso/build/buildconfig/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-03-29T03:52:08Z",
+      "side": 1,
+      "message": "Ah, I assumed that there is early return at L183, but there isn\u0027t.",
+      "parentUuid": "60e7a03a_e0811849",
+      "range": {
+        "startLine": 185,
+        "startChar": 13,
+        "endLine": 185,
+        "endChar": 29
+      },
+      "revId": "ae59c92758e48bf27b5cab2b0c64b476f6a84345",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7667c896_28f3a4e9",
