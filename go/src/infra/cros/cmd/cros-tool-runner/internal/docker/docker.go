@@ -16,6 +16,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 	"time"
 
@@ -251,7 +252,7 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 	cmd := exec.Command("docker", args...)
 	if d.LogFileDir != "" {
 		log.Printf("Attempting to gather metrics")
-		go d.logRunTime(ctx, service)
+		go d.logRunTime(ctx, service, d.RequestedImageName)
 		log.Printf("\nfinished metrics \n")
 
 	} else {
@@ -280,7 +281,13 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 
 }
 
-func (d *Docker) logRunTime(ctx context.Context, service string) {
+func (d *Docker) logRunTime(ctx context.Context, service string, imageName string) {
+	// The runtime detection will not work for R108.
+	r := regexp.MustCompile(".*R108-.*")
+	if r.MatchString(imageName) {
+		log.Printf("METRICS: Skipping logRunTime for image %s\n", imageName)
+		return
+	}
 	startTime := time.Now()
 	err := common.Poll(ctx, func(ctx context.Context) error {
 		var err error
