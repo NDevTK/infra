@@ -113,6 +113,14 @@ queue:
   retry_parameters:
     task_retry_limit: 0
 
+# Queue for PostReview requests sent to gerrit.
+# These are created transactionally and performed asynchronously.
+- name: postreview-request-queue
+  rate: 5/s
+  max_concurrent_requests: 20
+  retry_parameters:
+    task_retry_limit: 0
+
 # Queue for auto-actions. These are created transactionally and performed
 # asynchronously. Retry for up to one hour, because sheriffs are likely to have
 # taken action by then.
