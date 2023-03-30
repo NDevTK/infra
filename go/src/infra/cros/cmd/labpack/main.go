@@ -243,26 +243,21 @@ func parallelUpload(ctx context.Context, lg logger.Logger, client lucigs.Client,
 	// TODO(crbug/1311842): Switch this bucket back to chromeos-autotest-results.
 	gsURL := fmt.Sprintf("gs://chrome-fleet-karte-autotest-results/swarming-%s", swarmingTaskID)
 	lg.Infof("Swarming task %q is non-empty. Uploading to %q", swarmingTaskID, gsURL)
-	status, err := callFuncWithTimeout(ctx, 5*time.Minute, func(ctxTimeout context.Context) error {
-		lg.Infof("Beginning upload attempt. Starting five minute timeout.")
-		lg.Infof("Writing upload marker.")
-		// TODO(b:227489086): Remove this file.
-		if wErr := os.WriteFile("_labpack_upload_marker", []byte("ca85a1f7-0de3-43c5-90ff-2e00b1041007"), 0o666); wErr != nil {
-			lg.Errorf("Failed to write upload marker file: %s", wErr)
-		}
-
-		lg.Infof("Calling upload.")
-		return upload.Upload(ctxTimeout, client, &upload.Params{
-			// TODO(gregorynisbet): Change this to the log root.
-			SourceDir:         ".",
-			GSURL:             gsURL,
-			MaxConcurrentJobs: 10,
-		})
-	})
-	lg.Infof("Upload log subtask status: %s", status)
-	if err != nil {
+	uploadTimeout := 5 * time.Minute
+	ctxTimeout, cancelHandle := context.WithTimeout(ctx, uploadTimeout)
+	defer cancelHandle()
+	lg.Infof("Beginning upload attempt. Starting with %v timeout.", uploadTimeout)
+	uploadParams := &upload.Params{
+		// TODO(gregorynisbet): Change this to the log root.
+		SourceDir:         ".",
+		GSURL:             gsURL,
+		MaxConcurrentJobs: 10,
+	}
+	if err := upload.Upload(ctxTimeout, client, uploadParams); err != nil {
 		// TODO: Register error to Karte.
 		lg.Errorf("Upload task error: %s", err)
+	} else {
+		lg.Infof("Upload task finished without erorrs.")
 	}
 	return gsURL, nil
 }

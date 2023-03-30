@@ -113,15 +113,23 @@ func (w *DirWriter) WriteDir(ctx context.Context, srcDir string, dstDir gs.Path)
 			// Create a loop-local variable for capture in the lambda.
 			f := f
 			item := func() error {
-				return w.writeOne(ctx, f)
+				// Check the context timeout when trying to upload.
+				select {
+				case <-ctx.Done():
+					terr = ctx.Err()
+					// Context error will be added separate.
+					return nil
+				default:
+					return w.writeOne(ctx, f)
+				}
 			}
+			// Check the context timeout when adding files to the stack.
 			select {
-			case items <- item:
-				continue
 			case <-ctx.Done():
-				// terr is captured.
 				terr = ctx.Err()
-				break
+				return
+			default:
+				items <- item
 			}
 		}
 	})
