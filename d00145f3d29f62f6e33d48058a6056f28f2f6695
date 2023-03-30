@@ -22,6 +22,30 @@
       },
       "revId": "d00145f3d29f62f6e33d48058a6056f28f2f6695",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6acfe49d_c7b78abb",
+        "filename": "go/src/infra/build/siso/build/builder.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-03-30T07:47:39Z",
+      "side": 1,
+      "message": "yes.\nsome step has many outputs (more than console size, e.g. generate_bindings)\nthe first output is enough to identify the step.\n\nninja just shows all outputs?",
+      "parentUuid": "9a5eef31_6494e3fe",
+      "range": {
+        "startLine": 282,
+        "startChar": 11,
+        "endLine": 282,
+        "endChar": 25
+      },
+      "revId": "d00145f3d29f62f6e33d48058a6056f28f2f6695",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
