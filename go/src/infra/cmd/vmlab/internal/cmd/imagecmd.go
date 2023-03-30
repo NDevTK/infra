@@ -56,13 +56,13 @@ func (c *imageRun) Run(a subcommands.Application, args []string, env subcommands
 
 	gceImage, err := imageApi.GetImage(c.imageFlags.buildPath, c.imageFlags.wait)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to import image: %v", err)
+		fmt.Fprintf(os.Stderr, "Failed to import image: %v\n", err)
 		return 1
 	}
 
 	if c.imageFlags.json {
 		if instanceJson, err := protojson.Marshal(gceImage); err != nil {
-			fmt.Fprintf(os.Stderr, "BUG! Cannot convert output to json: %v", err)
+			fmt.Fprintf(os.Stderr, "BUG! Cannot convert output to json: %v\n", err)
 		} else {
 			fmt.Println(string(instanceJson))
 		}

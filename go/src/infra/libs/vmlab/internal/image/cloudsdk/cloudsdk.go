@@ -103,7 +103,7 @@ func (c *cloudsdkImageApi) GetImage(buildPath string, wait bool) (*api.GceImage,
 	return c.describeImage(client, gceImage)
 }
 
-func (c *cloudsdkImageApi) ListImages(filter string) ([]api.GceImage, error) {
+func (c *cloudsdkImageApi) ListImages(filter string) ([]*api.GceImage, error) {
 	var ctx = context.Background()
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
@@ -234,14 +234,14 @@ func (c *cloudsdkImageApi) importImage(client computeImagesClient, buildInfo *bu
 }
 
 // listImages gets a list of images in the project, optionally with a filter.
-func (c *cloudsdkImageApi) listImages(client computeImagesClient, filter string) ([]api.GceImage, error) {
+func (c *cloudsdkImageApi) listImages(client computeImagesClient, filter string) ([]*api.GceImage, error) {
 	ctx := context.Background()
 
 	req := &computepb.ListImagesRequest{
 		Project: project,
 		Filter:  &filter,
 	}
-	var gceImages []api.GceImage
+	var gceImages []*api.GceImage
 
 	// The iterator goes through all matched images without paging.
 	it := client.List(ctx, req)
@@ -253,20 +253,16 @@ func (c *cloudsdkImageApi) listImages(client computeImagesClient, filter string)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to iterate image: %w", err)
 		}
-		creationTime, err := time.Parse(time.RFC3339, *image.CreationTimestamp)
+		creationTime, err := time.Parse(time.RFC3339, image.GetCreationTimestamp())
 		if err != nil {
-			return nil, fmt.Errorf("Failed to parse timestamp %s: %w", *image.CreationTimestamp, err)
+			return nil, fmt.Errorf("Failed to parse timestamp %s: %w", image.GetCreationTimestamp(), err)
 		}
-		description := ""
-		if image.Description != nil {
-			description = *image.Description
-		}
-		gceImages = append(gceImages, api.GceImage{
+		gceImages = append(gceImages, &api.GceImage{
 			Project:     project,
-			Name:        *image.Name,
-			Status:      parseImageStatus(*image.Status),
+			Name:        image.GetName(),
+			Status:      parseImageStatus(image.GetStatus()),
 			Labels:      image.Labels,
-			Description: description,
+			Description: image.GetDescription(),
 			TimeCreated: timestamppb.New(creationTime),
 		})
 	}

@@ -26,6 +26,7 @@ var application = &cli.Application{
 		cmd.LeaseCmd,
 		cmd.ReleaseCmd,
 		cmd.ImageCmd,
+		cmd.CleanImagesCmd,
 	},
 }
 

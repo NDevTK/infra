@@ -29,7 +29,7 @@ type ImageApi interface {
 	// cloudsdk.go. Pass empty string to `filter` to return all images. To
 	// filter results specify `filter` with format described in GCP API doc:
 	// https://cloud.google.com/compute/docs/reference/rest/v1/images/list
-	ListImages(filter string) ([]GceImage, error)
+	ListImages(filter string) ([]*GceImage, error)
 	// DeleteImage deletes a VM image with name `imageName` from the hard-coded
 	// GCP project in cloudsdk.go. When wait is true, it will wait until the
 	// delete operation is finished.
