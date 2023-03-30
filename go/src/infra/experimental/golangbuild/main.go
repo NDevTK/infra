@@ -223,17 +223,10 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		}
 
 		// Test this specific subrepo.
-		tryResultAdapter := inputs.Project == "build"
-		if tryResultAdapter {
-			if err := runSubrepoTestsWithResultAdapter(ctx, goroot, "targetrepo", inputs.RaceMode,
-				filepath.Join(toolsRoot, "bin", "rdb"),
-				filepath.Join(toolsRoot, "bin", "result_adapter")); err != nil {
-				return err
-			}
-		} else {
-			if err := runSubrepoTests(ctx, goroot, "targetrepo", inputs.RaceMode); err != nil {
-				return err
-			}
+		if err := runSubrepoTests(ctx, goroot, "targetrepo", inputs.RaceMode,
+			filepath.Join(toolsRoot, "bin", "rdb"),
+			filepath.Join(toolsRoot, "bin", "result_adapter")); err != nil {
+			return err
 		}
 	}
 	return nil
@@ -487,12 +480,10 @@ func runGoScript(ctx context.Context, goroot, script string) (err error) {
 	return runCommandAsStep(ctx, script, cmd, false)
 }
 
-// runGo runs the Go command from goroot in dir as a step.
+// runGo runs the go command from goroot in dir as a step.
 func runGo(ctx context.Context, stepName, goroot, dir string, args ...string) error {
-	// Add the Go binary we're about to execute to PATH. There are a whole bunch of cases
-	// like `go tool dist test` where the expectation is that the invoked `go` binary is
-	// the one found in PATH.
 	env := environ.FromCtx(ctx)
+	// Ensure the go binary found in PATH is the same as the one we're about to execute.
 	env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(goroot, "bin"), os.PathListSeparator, env.Get("PATH")))
 
 	// Run the command.
@@ -502,34 +493,34 @@ func runGo(ctx context.Context, stepName, goroot, dir string, args ...string) er
 	return runCommandAsStep(ctx, stepName, cmd, false)
 }
 
+// runGoWrapped runs the go command from goroot in dir as a step.
+// It wraps the go command invocation with the provided rdb (go/result-sink#resultsink-on-ci)
+// and result_adapter (go/result-sink#result-adapter) to stream test results to ResultSink.
+func runGoWrapped(ctx context.Context, stepName, goroot, dir, rdb, resultAdapter string, goArgs ...string) error {
+	env := environ.FromCtx(ctx)
+	// Ensure the go binary found in PATH is the same as the one we're about to execute.
+	env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(goroot, "bin"), os.PathListSeparator, env.Get("PATH")))
+
+	cmd := exec.CommandContext(ctx, rdb, append([]string{"stream", "--",
+		resultAdapter, "go", "--",
+		filepath.Join(goroot, "bin", "go")}, goArgs...)...)
+	cmd.Dir = dir
+	cmd.Env = env.Sorted()
+	return runCommandAsStep(ctx, stepName, cmd, false)
+}
+
 // runSubrepoTests runs tests for Go packages in the module at dir
-// using the Go toolchain at goroot. It prints test results to stdout/stderr.
+// using the Go toolchain at goroot.
 //
 // TODO(dmitshur): For final version, don't forget to also test packages in nested modules.
 // TODO(dmitshur): Improve coverage (at cost of setup complexity) by running tests outside their repositories. See go.dev/issue/34352.
-func runSubrepoTests(ctx context.Context, goroot, dir string, race bool) error {
-	args := []string{"test"}
+func runSubrepoTests(ctx context.Context, goroot, dir string, race bool, rdb, resultAdapter string) error {
+	goArgs := []string{"test", "-json"}
 	if race {
-		args = append(args, "-race")
+		goArgs = append(goArgs, "-race")
 	}
-	args = append(args, "./...")
-	return runGo(ctx, "go test", goroot, dir, args...)
-}
-
-// runSubrepoTestsWithResultAdapter runs tests for Go packages in the module at dir
-// using the Go toolchain at goroot. It uses the provided result_adapter (go/result-sink#result-adapter)
-// and rdb (go/result-sink#resultsink-on-ci) to stream test results to ResultSink.
-func runSubrepoTestsWithResultAdapter(ctx context.Context, goroot, dir string, race bool, rdb, resultAdapter string) error {
-	args := []string{rdb, "stream", "--",
-		resultAdapter, "go", "--",
-		filepath.Join(goroot, "bin", "go"), "test", "-json"}
-	if race {
-		args = append(args, "-race")
-	}
-	args = append(args, "./...")
-	cmd := exec.CommandContext(ctx, args[0], args[1:]...)
-	cmd.Dir = dir
-	return runCommandAsStep(ctx, "go test -json [-race] ./... (with rdb+result_adapter)", cmd, false)
+	goArgs = append(goArgs, "./...")
+	return runGoWrapped(ctx, "go test -json [-race] ./...", goroot, dir, rdb, resultAdapter, goArgs...)
 }
 
 // triggerBuilders triggers builds for downstream builders using the same commit
