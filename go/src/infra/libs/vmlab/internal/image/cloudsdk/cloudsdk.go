@@ -96,7 +96,7 @@ func (c *cloudsdkImageApi) GetImage(buildPath string, wait bool) (*api.GceImage,
 	if wait {
 		if op != nil {
 			_ = op.Wait(ctx)
-		} else {
+		} else if gceImage.GetStatus() != api.GceImage_READY {
 			return c.poll(ctx, client, buildInfo, gceImage)
 		}
 	}
