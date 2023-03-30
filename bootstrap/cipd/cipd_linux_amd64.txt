@@ -21,17 +21,14 @@ infra/adb/linux-amd64             adb_version:1.0.36
 infra/fastboot/linux-amd64        fastboot_version:5943271ace17
 
 # LogDog tool.
-infra/tools/luci/logdog/logdog/linux-amd64  git_revision:5cf65fdf804a9b3f3023f79d5b3cab2a88ccd09e
-
-# Crimson tool.
-infra/machine-db/crimson/linux-amd64 stable
+infra/tools/luci/logdog/logdog/linux-amd64  git_revision:fe9985447e6b95f4907774f05e9774f031700775
 
 # Helper for building Docker images and GAE tarballs.
-infra/tools/cloudbuildhelper/linux-amd64 git_revision:0015ff507c91871b14f613c06459d8ba3f019c03
+infra/tools/cloudbuildhelper/linux-amd64 git_revision:fe9985447e6b95f4907774f05e9774f031700775
 
 # Result adapter can wrap some test frameworks for `rdb stream` compatibility.
 @Subdir result_adapter
-infra/tools/result_adapter/linux-amd64 git_revision:d1c03082ecda0148d8096f1fd8bf5491eafc7323
+infra/tools/result_adapter/linux-amd64 git_revision:fe9985447e6b95f4907774f05e9774f031700775
 
 # Hosts legacy packages needed by the infra environment
 @Subdir legacy

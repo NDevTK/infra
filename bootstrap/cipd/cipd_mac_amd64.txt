@@ -15,17 +15,14 @@ infra/3pp/tools/nodejs/mac-amd64 version:2@16.13.0
 infra/3pp/tools/cloud-tasks-emulator/mac-amd64 version:2@1.1.1
 
 # LogDog tool.
-infra/tools/luci/logdog/logdog/mac-amd64  git_revision:5cf65fdf804a9b3f3023f79d5b3cab2a88ccd09e
-
-# Crimson tool.
-infra/machine-db/crimson/mac-amd64 stable
+infra/tools/luci/logdog/logdog/mac-amd64  git_revision:fe9985447e6b95f4907774f05e9774f031700775
 
 # Helper for building Docker images and GAE tarballs.
-infra/tools/cloudbuildhelper/mac-amd64 git_revision:0015ff507c91871b14f613c06459d8ba3f019c03
+infra/tools/cloudbuildhelper/mac-amd64 git_revision:fe9985447e6b95f4907774f05e9774f031700775
 
 # Result adapter can wrap some test frameworks for `rdb stream` compatibility.
 @Subdir result_adapter
-infra/tools/result_adapter/mac-amd64 git_revision:d1c03082ecda0148d8096f1fd8bf5491eafc7323
+infra/tools/result_adapter/mac-amd64 git_revision:fe9985447e6b95f4907774f05e9774f031700775
 
 # Hosts legacy packages needed by the infra environment
 @Subdir legacy

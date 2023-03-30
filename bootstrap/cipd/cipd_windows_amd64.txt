@@ -9,14 +9,11 @@
 infra/3pp/tools/protoc/${platform} version:2@21.7
 
 # LogDog tool.
-infra/tools/luci/logdog/logdog/windows-amd64  git_revision:5cf65fdf804a9b3f3023f79d5b3cab2a88ccd09e
-
-# Crimson tool.
-infra/machine-db/crimson/windows-amd64 stable
+infra/tools/luci/logdog/logdog/windows-amd64  git_revision:fe9985447e6b95f4907774f05e9774f031700775
 
 # Result adapter can wrap some test frameworks for `rdb stream` compatibility.
 @Subdir result_adapter
-infra/tools/result_adapter/windows-amd64 git_revision:d1c03082ecda0148d8096f1fd8bf5491eafc7323
+infra/tools/result_adapter/windows-amd64 git_revision:fe9985447e6b95f4907774f05e9774f031700775
 
 # Hosts legacy packages needed by the infra environment
 @Subdir legacy
