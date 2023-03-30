@@ -5,6 +5,8 @@
 
 from google.appengine.api import datastore_errors
 from google.appengine.ext import ndb
+from google.appengine.ext.ndb import msgprop
+from protorpc import messages
 
 
 class DependencyRepository(ndb.Model):
@@ -68,6 +70,81 @@ class CLPatchset(ndb.Model):
 
   # The Gerrit patchset number, e.g. "2".
   patchset = ndb.IntegerProperty(indexed=True, required=True)
+
+
+class BlockingStatus(messages.Enum):
+  """Represents the state machine for blocking low coverage cl logic."""
+
+  # Default. A CL will not be blocked if it has default blocking status
+  DEFAULT = 0
+  # At least one of the coverage builds failed. Do not block the
+  # corresponding CL.
+  DONT_BLOCK_BUILDER_FAILURE = 1
+  # All coverage builds' data has been processed.
+  # CL is awaiting a verdict from the blocking logic.
+  READY_FOR_VERDICT = 2
+  # Blocking logic has decided to not block the CL.
+  VERDICT_NOT_BLOCK = 3
+  # Blocking algorithm has decided to block the CL.
+  VERDICT_BLOCK = 4
+
+
+class LowCoverageBlocking(ndb.Model):
+  """Represents the state machine for blocking low coverage cl logic."""
+
+  # Key for the CL Patchset to which this entity belongs to
+  cl_patchset = ndb.StructuredProperty(CLPatchset, indexed=True, required=True)
+
+  # Determines if the corresponding patchset may be blocked or not
+  blocking_status = msgprop.EnumProperty(
+      BlockingStatus, indexed=True, default=BlockingStatus.DEFAULT)
+
+  # List of try builders from whom coverage data is expected to be received
+  expected_builders = ndb.StringProperty(repeated=True)
+
+  # List of coverage try builders which ended successfully.
+  successful_builders = ndb.StringProperty(repeated=True)
+
+  # List of coverage try builders which were processed successfully by
+  # coverage service.
+  processed_builders = ndb.StringProperty(repeated=True)
+
+  @classmethod
+  def _CreateKey(cls, server_host, change, patchset):
+    return ndb.Key(cls, '%s$%s$%s' % (server_host, change, patchset))
+
+  @classmethod
+  def Create(cls,
+             server_host,
+             change,
+             patchset,
+             blocking_status=BlockingStatus.DEFAULT,
+             expected_builders=None,
+             successful_builders=None,
+             processed_builders=None,
+             project=None):
+    key = cls._CreateKey(server_host, change, patchset)
+    cl_patchset = CLPatchset(
+        server_host=server_host,
+        project=project,
+        change=change,
+        patchset=patchset,
+    )
+    return cls(
+        key=key,
+        cl_patchset=cl_patchset,
+        blocking_status=blocking_status,
+        expected_builders=expected_builders or [],
+        successful_builders=successful_builders or [],
+        processed_builders=processed_builders or [])
+
+  @classmethod
+  def Get(cls, server_host, change, patchset):
+    return cls.GetAsync(server_host, change, patchset).get_result()
+
+  @classmethod
+  def GetAsync(cls, server_host, change, patchset):
+    return cls._CreateKey(server_host, change, patchset).get_async()
 
 
 class PresubmitCoverageData(ndb.Model):

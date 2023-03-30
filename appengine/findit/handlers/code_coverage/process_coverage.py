@@ -30,8 +30,10 @@ from gae_libs.handlers.base_handler import BaseHandler, Permission
 from gae_libs.gitiles.cached_gitiles_repository import CachedGitilesRepository
 from handlers.code_coverage import utils
 from libs.deps import chrome_dependency_fetcher
+from model.code_coverage import BlockingStatus
 from model.code_coverage import DependencyRepository
 from model.code_coverage import FileCoverageData
+from model.code_coverage import LowCoverageBlocking
 from model.code_coverage import PostsubmitReport
 from model.code_coverage import PresubmitCoverageData
 from model.code_coverage import SummaryCoverageData
@@ -313,6 +315,28 @@ def _IsReportSuspicious(report):
   return False
 
 
+def _FetchCoverageBuildsStatus(host, change, patchset):
+  predicate = {
+      'gerrit_changes': [{
+          'host': host,
+          'change': change,
+          'patchset': patchset
+      }]
+  }
+  req = builds_service_pb2.SearchBuildsRequest(predicate=predicate)
+  try_builders = _GetAllowedChromiumTryBuilders()
+  service_client = prpc_client.Client(
+      _BUILDBUCKET_HOST, builds_service_prpc_pb2.BuildsServiceDescription)
+  resp = service_client.SearchBuilds(
+      req, credentials=prpc_client.service_account_credentials())
+  builds_status = {}
+  for build in resp.builds:
+    if build.builder.builder not in try_builders:
+      continue
+    builds_status[build.builder.builder] = build.status
+  return builds_status
+
+
 class ProcessCodeCoverageData(BaseHandler):
   PERMISSION_LEVEL = Permission.APP_SELF
 
@@ -535,121 +559,6 @@ class ProcessCodeCoverageData(BaseHandler):
       coverage_data (list): A list of File in coverage proto.
     """
 
-    def _GetLowCoverageCulpritFiles(entity):
-      low_coverage_files = []
-      for inc_metrics in entity.incremental_percentages:
-        if not inc_metrics.path.endswith(".java"):
-          logging.info("%s is not a java file", inc_metrics.path)
-          continue
-        if not _IsFileInAllowlistForBlocking(inc_metrics.path):
-          logging.info("%s is not in allowed dirs", inc_metrics.path)
-          continue
-        # Do not block because of test/main files
-        if re.match(utils.TEST_FILE_REGEX, inc_metrics.path) or re.match(
-            utils.MAIN_FILE_REGEX, inc_metrics.path):
-          logging.info("%s is a test/main file", inc_metrics.path)
-          continue
-        if not _HaveEnoughLinesChangedForBlocking(inc_metrics):
-          logging.info("%s doesn't have enough lines changed", inc_metrics.path)
-          continue
-        if _HasLowCoverageForBlocking(inc_metrics):
-          logging.info("%s has low incremental coverage", inc_metrics.path)
-          for abs_metrics in entity.absolute_percentages:
-            if (abs_metrics.path == inc_metrics.path and
-                not _CanBeExemptFromBlocking(abs_metrics)):
-              logging.info("%s has low absolute coverate too", inc_metrics.path)
-              low_coverage_files.append(inc_metrics.path)
-      return low_coverage_files
-
-    # TODO(crbug/1412897): Cache this
-    def _GetChromiumToGooglerMapping():
-      content = utils.GetFileContentFromGs(_CHROMIUM_TO_GOOGLER_MAPPING_PATH)
-      assert content, ('Failed to fetch account mappings data from %s' %
-                       _CHROMIUM_TO_GOOGLER_MAPPING_PATH)
-      return json.loads(content)
-
-    def _AreAllCoverageBuildsSucessful(patch):
-      predicate = {
-          'gerrit_changes': [{
-              'host': patch.host,
-              'change': patch.change,
-              'patchset': patch.patchset
-          }]
-      }
-      req = builds_service_pb2.SearchBuildsRequest(predicate=predicate)
-      try_builders = _GetAllowedChromiumTryBuilders()
-      service_client = prpc_client.Client(
-          _BUILDBUCKET_HOST, builds_service_prpc_pb2.BuildsServiceDescription)
-      resp = service_client.SearchBuilds(
-          req, credentials=prpc_client.service_account_credentials())
-      for build in resp.builds:
-        if (build.builder.builder in try_builders and
-            build.status != common_pb2.Status.SUCCESS):
-          return False
-      return True
-
-    def _MayBeBlockCLForLowCoverage(entity):
-      # We block some CLs based on overall coverage metrics.
-      if _IsBlockingChangesAllowed(patch.project):
-        change_details = code_coverage_util.FetchChangeDetails(
-            patch.host, patch.project, patch.change, detailed_accounts=True)
-        if 'revert_of' in change_details:
-          logging.info("Bypassing the check as %d is a revert CL", patch.change)
-          return
-        if not _AreAllCoverageBuildsSucessful(patch):
-          logging.info("Bypassing the check" +
-                       " as there are pending/failed coverage builds")
-          return
-        author_email = change_details['owner']['email']
-        author_email = _GetChromiumToGooglerMapping().get(
-            author_email, author_email)
-        if not _IsAuthorInAllowlistForBlocking(author_email):
-          logging.info("Bypassing the check" + " as %s is not in allowlist",
-                       author_email)
-          return
-        url = 'https://%s/changes/%d/revisions/%d/review' % (
-            patch.host, patch.change, patch.patchset)
-        headers = {'Content-Type': 'application/json; charset=UTF-8'}
-        # Block CL only some files have low coverage
-        low_coverage_culprit_files = _GetLowCoverageCulpritFiles(entity)
-        if low_coverage_culprit_files:
-          msg_header = (
-              'This change will be blocked from submission as the following'
-              ' files have incremental coverage(all tests) < %d%%. ' %
-              waterfall_config.GetCodeCoverageSettings().get(
-                  'block_low_coverage_changes_trigger_threshold',
-                  _DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING))
-          file_names_with_bullets = [
-              "- %s" % x for x in low_coverage_culprit_files
-          ]
-          msg_body = "\n".join(file_names_with_bullets)
-          msg_footer = ('Please add tests for uncovered lines, '
-                        'or add Low-Coverage-Reason:<reason> in '
-                        'the change description. If you think coverage is '
-                        'underreported, file a bug to Infra>Test>CodeCoverage')
-          data = {
-              'labels': {
-                  'Code-Coverage': -1
-              },
-              'message': "\n".join([msg_header, msg_body, "", msg_footer])
-          }
-          logging.info(('Adding CodeCoverage-1 label for '
-                        'project %s, change %d,  patchset %d'), patch.project,
-                       patch.change, patch.patchset)
-          logging.info("low_coverage_culprit_files = %r",
-                       low_coverage_culprit_files)
-        else:
-          data = {
-              'labels': {
-                  'Code-Coverage': +1
-              },
-              'message': 'This change meets the code coverage requirements.'
-          }
-          logging.info(('Adding CodeCoverage+1 label for '
-                        'project %s, change %d,  patchset %d'), patch.project,
-                       patch.change, patch.patchset)
-        FinditHttpClient().Post(url, json.dumps(data), headers=headers)
-
     @ndb.tasklet
     @ndb.transactional
     def _UpdateCoverageDataAsync():
@@ -747,13 +656,148 @@ class ProcessCodeCoverageData(BaseHandler):
             PresubmitCoverageData.based_on == patch.patchset).fetch(
                 keys_only=True))
 
-    entity = update_future.get_result()
+    update_future.get_result()
     for f in delete_futures:
       f.get_result()
 
-    # TODO(crbug/1412897): Wait for ALL coverage builders before blocking
-    if mimic_builder == 'android-nougat-x86-rel':
-      _MayBeBlockCLForLowCoverage(entity)
+  def _GetLowCoverageCulpritFiles(self, entity):
+    low_coverage_files = []
+    for inc_metrics in entity.incremental_percentages:
+      if not inc_metrics.path.endswith(".java"):
+        logging.info("%s is not a java file", inc_metrics.path)
+        continue
+      if not _IsFileInAllowlistForBlocking(inc_metrics.path):
+        logging.info("%s is not in allowed dirs", inc_metrics.path)
+        continue
+      # Do not block because of test/main files
+      if re.match(utils.TEST_FILE_REGEX, inc_metrics.path) or re.match(
+          utils.MAIN_FILE_REGEX, inc_metrics.path):
+        logging.info("%s is a test/main file", inc_metrics.path)
+        continue
+      if not _HaveEnoughLinesChangedForBlocking(inc_metrics):
+        logging.info("%s doesn't have enough lines changed", inc_metrics.path)
+        continue
+      if _HasLowCoverageForBlocking(inc_metrics):
+        logging.info("%s has low incremental coverage", inc_metrics.path)
+        for abs_metrics in entity.absolute_percentages:
+          if (abs_metrics.path == inc_metrics.path and
+              not _CanBeExemptFromBlocking(abs_metrics)):
+            logging.info("%s has low absolute coverate too", inc_metrics.path)
+            low_coverage_files.append(inc_metrics.path)
+    return low_coverage_files
+
+  # TODO(crbug/1412897): Cache this
+  def _GetChromiumToGooglerMapping(self):
+    content = utils.GetFileContentFromGs(_CHROMIUM_TO_GOOGLER_MAPPING_PATH)
+    assert content, ('Failed to fetch account mappings data from %s' %
+                     _CHROMIUM_TO_GOOGLER_MAPPING_PATH)
+    return json.loads(content)
+
+  def _MayBeBlockCLForLowCoverage(self, patch):
+    assert LowCoverageBlocking.Get(
+        server_host=patch.host, change=patch.change, patchset=patch.patchset
+    ).blocking_status == BlockingStatus.READY_FOR_VERDICT, \
+      "Change %d, patchset %d for host %s is not ready for blocking" % (
+        patch.change, patch.project, patch.host)
+    entity = PresubmitCoverageData.Get(
+        server_host=patch.host, change=patch.change, patchset=patch.patchset)
+    # We block some CLs based on overall coverage metrics.
+    if _IsBlockingChangesAllowed(patch.project):
+      change_details = code_coverage_util.FetchChangeDetails(
+          patch.host, patch.project, patch.change, detailed_accounts=True)
+      if 'revert_of' in change_details:
+        logging.info("Bypassing the check as %d is a revert CL", patch.change)
+        return
+      author_email = change_details['owner']['email']
+      author_email = self._GetChromiumToGooglerMapping().get(
+          author_email, author_email)
+      if not _IsAuthorInAllowlistForBlocking(author_email):
+        logging.info("Bypassing the check" + " as %s is not in allowlist",
+                     author_email)
+        return
+      url = 'https://%s/changes/%d/revisions/%d/review' % (
+          patch.host, patch.change, patch.patchset)
+      headers = {'Content-Type': 'application/json; charset=UTF-8'}
+      # Block CL only some files have low coverage
+      low_coverage_culprit_files = self._GetLowCoverageCulpritFiles(entity)
+
+      @ndb.transactional
+      def _UpdateBlockingStatus(status):
+        blocking_entity = LowCoverageBlocking.Get(
+            server_host=patch.host,
+            change=patch.change,
+            patchset=patch.patchset)
+        blocking_entity.blocking_status = status
+        blocking_entity.put()
+
+      if low_coverage_culprit_files:
+        _UpdateBlockingStatus(BlockingStatus.VERDICT_BLOCK)
+        msg_header = (
+            'This change will be blocked from submission as the following'
+            ' files have incremental coverage(all tests) < %d%%. ' %
+            waterfall_config.GetCodeCoverageSettings().get(
+                'block_low_coverage_changes_trigger_threshold',
+                _DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING))
+        file_names_with_bullets = [
+            "- %s" % x for x in low_coverage_culprit_files
+        ]
+        msg_body = "\n".join(file_names_with_bullets)
+        msg_footer = ('Please add tests for uncovered lines, '
+                      'or add Low-Coverage-Reason:<reason> in '
+                      'the change description. If you think coverage is '
+                      'underreported, file a bug to Infra>Test>CodeCoverage')
+        data = {
+            'labels': {
+                'Code-Coverage': -1
+            },
+            'message': "\n".join([msg_header, msg_body, "", msg_footer])
+        }
+        logging.info(('Adding CodeCoverage-1 label for '
+                      'project %s, change %d,  patchset %d'), patch.project,
+                     patch.change, patch.patchset)
+        logging.info("low_coverage_culprit_files = %r",
+                     low_coverage_culprit_files)
+      else:
+        _UpdateBlockingStatus(BlockingStatus.VERDICT_NOT_BLOCK)
+        data = {
+            'labels': {
+                'Code-Coverage': +1
+            },
+            'message': 'This change meets the code coverage requirements.'
+        }
+        logging.info(('Adding CodeCoverage+1 label for '
+                      'project %s, change %d,  patchset %d'), patch.project,
+                     patch.change, patch.patchset)
+      FinditHttpClient().Post(url, json.dumps(data), headers=headers)
+
+  @ndb.transactional
+  def _UpdateBlockingLowCoverageTracker(self,
+                                        patch,
+                                        expected_builders=None,
+                                        successful_builders=None,
+                                        processed_builders=None,
+                                        has_builder_failure=False):
+    # Get tracking entity. Create one if it doesn't exist
+    tracking_entity = LowCoverageBlocking.Get(
+        server_host=patch.host, change=patch.change, patchset=patch.patchset)
+    if not tracking_entity:
+      tracking_entity = LowCoverageBlocking.Create(
+          server_host=patch.host, change=patch.change, patchset=patch.patchset)
+    # Update all builders' list
+    tracking_entity.expected_builders = set(expected_builders or []).union(
+        set(tracking_entity.expected_builders))
+    tracking_entity.successful_builders = set(successful_builders or []).union(
+        set(tracking_entity.successful_builders))
+    tracking_entity.processed_builders = set(processed_builders or []).union(
+        set(tracking_entity.processed_builders))
+    # Update blocking status
+    if has_builder_failure:
+      # pylint: disable=line-too-long
+      tracking_entity.blocking_status = BlockingStatus.DONT_BLOCK_BUILDER_FAILURE
+    elif set(tracking_entity.processed_builders) == set(
+        tracking_entity.expected_builders):
+      tracking_entity.blocking_status = BlockingStatus.READY_FOR_VERDICT
+    tracking_entity.put()
 
   def _ProcessCodeCoverageData(self, build_id):
     build = GetV2Build(
@@ -784,13 +828,41 @@ class ProcessCodeCoverageData(BaseHandler):
           'builder': build.builder.builder,
       })
 
+    if 'coverage_is_presubmit' not in properties:
+      logging.error('Expecting "coverage_is_presubmit" in output properties')
+      return
+
+    if properties['coverage_is_presubmit']:
+      patch = build.input.gerrit_changes[0]
+      builders_status = _FetchCoverageBuildsStatus(patch.host, patch.change,
+                                                   patch.patchset)
+      expected_builders = [x for x in builders_status]
+      successful_builders = []
+      has_builder_failure = False
+      for builder, status in builders_status.items():
+        if status in [
+            common_pb2.Status.SUCCESS, common_pb2.Status.FAILURE,
+            common_pb2.Status.INFRA_FAILURE, common_pb2.Status.CANCELED
+        ]:
+          if status == common_pb2.Status.SUCCESS:
+            successful_builders.append(builder)
+          else:
+            has_builder_failure = True
+      self._UpdateBlockingLowCoverageTracker(
+          patch,
+          expected_builders=expected_builders,
+          successful_builders=successful_builders,
+          has_builder_failure=has_builder_failure)
+
     # Ensure that the coverage data is ready.
     if not gs_bucket or not gs_metadata_dirs:
       logging.warn('coverage GS bucket info not available in %r', build.id)
-      return
-
-    if 'coverage_is_presubmit' not in properties:
-      logging.error('Expecting "coverage_is_presubmit" in output properties')
+      self._UpdateBlockingLowCoverageTracker(
+          patch, processed_builders=[build.builder.builder])
+      if LowCoverageBlocking.Get(
+          server_host=patch.host, change=patch.change, patchset=patch.patchset
+      ).blocking_status == BlockingStatus.READY_FOR_VERDICT:
+        self._MayBeBlockCLForLowCoverage(patch)
       return
 
     # Get mimic builder names from builder output properties. Multiple test
@@ -818,6 +890,13 @@ class ProcessCodeCoverageData(BaseHandler):
         is_rts = properties.get('rts_was_used', False)
         self._ProcessCLPatchData(mimic_builder_name, patch, data['files'],
                                  is_rts)
+      self._UpdateBlockingLowCoverageTracker(
+          patch=build.input.gerrit_changes[0],
+          processed_builders=[build.builder.builder])
+      if LowCoverageBlocking.Get(
+          server_host=patch.host, change=patch.change, patchset=patch.patchset
+      ).blocking_status == BlockingStatus.READY_FOR_VERDICT:
+        self._MayBeBlockCLForLowCoverage(patch)
     else:
       if (properties.get('coverage_override_gitiles_commit', False) or
           not self._IsGitilesCommitAvailable(build.input.gitiles_commit)):
