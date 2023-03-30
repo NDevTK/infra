@@ -988,7 +988,8 @@ func crosRepairActions() map[string]*Action {
 				//TODO(b:234761994, Flex device does not have charge_full file)
 				"Is not Flex device",
 			},
-			ExecName: "cros_audit_battery",
+			ExecName:               "cros_audit_battery",
+			AllowFailAfterRecovery: true,
 		},
 		"Battery is expected on device": {
 			Docs: []string{
