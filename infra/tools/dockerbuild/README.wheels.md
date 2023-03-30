@@ -11,7 +11,7 @@ For this example, we'll be adding 'scandir' at version 1.7.
 1. Determine what type of wheel it is (in order of preference):
    1. Universal
       1. Pure-python libraries already packaged as wheels.
-      1. These will have a `*-py2.py3-none-any.whl` file (may be just py2)
+      1. These will have a `*-py2.py3-none-any.whl` file (may be just py3)
       1. Example: https://pypi.org/project/requests/#files
    1. UniversalSource
       1. Pure-python libraries distributed as a tarball.
@@ -19,28 +19,35 @@ For this example, we'll be adding 'scandir' at version 1.7.
          and look to see if it contains any .c or .cc files. If it does, then
          this is either `Prebuilt` or `SourceOrPrebuilt`.
       1. Example: https://pypi.org/project/httplib2/#files
-   1. Prebuilt
-      1. Python libs with c extensions, pre-built for platforms we care about.
-      1. These will have many .whl files for various platforms. Look at the list
-         to see if it covers all the platforms your users care about. If not
-         then you may have to use `SourceOrPrebuilt.`
-      1. Example: https://pypi.org/project/pillow/#files
    1. SourceOrPrebuilt
-      1. Python libs with c extensions, pre-built for some platforms we care
-         about. These don't require extra C libraries though, just typical
-         system/python C libraries.
+      1. Python libs with c extensions. We prefer to build from source, but
+         if it's too complicated (lots of build-time dependencies, etc) then
+         we may use prebuilt wheels.
       1. They will include `*.tar.gz` with the library source, but may also
          contain `.whl` files for some platforms.
+      1. Use the `packaged` attribute to control which platforms use prebuilt
+         wheels. Prefer to set it to empty `()` to build all platforms from
+         source.
+      1. CIPD packages may be specified for build-time library or tool
+         dependencies. For details see the `tpp_libs` and `tpp_tools`
+         attributes.
       1. Example: https://pypi.org/project/scandir/#files
       1. Example (no .whl): https://pypi.org/project/wrapt/#files
+   1. Prebuilt
+      1. Python libs with c extensions, pre-built for platforms we care about.
+      1. This is more concise than `SourceOrPrebuilt` if we do not build from
+         source for any of the platforms.
+      1. Example: https://pypi.org/project/scipy/#files
    1. "Special" wheels
       1. These deviate from the wheels above in some way, usually by requiring
-         additional C libraries.
+         additional C libraries or build steps.
       1. We always prepare our wheels and their C extensions to be as static as
          possible. Generally this means building the additional C libraries as
          static ('.a') files, and adjusting the python setup.py to find this.
       1. See the various implementations referenced by wheels.py to get a feel
          for these.
+      1. Before implementing a custom wheel builder, check whether
+         `SourceOrPrebuilt` with `tpp_libs` and/or `tpp_tools` is sufficient.
       1. These are (fortunately) pretty rare (but they do come up occasionally).
    1. The "infra_libs" wheel
       1. This one is REALLY special, but essentially packages the
@@ -58,18 +65,9 @@ everything else we have to build it ourself.
 The wheels are built for linux platforms using Docker (hence "dockerbuild").
 Unfortunately this tool ONLY supports building for linux this way. For building
 mac and windows, this can use the ambient toolchain (i.e. have XCode or MSVS
-installed on your system).
-
-*** note
-I actually haven't ever run this on windows. Usually python wheels with
-C extensions that chromium may actually need have pre-built windows wheels.
-
-That said, this is essentially just doing `setup.py bdist_wheel` to generate the
-wheel contents, so if that process works with MSVS, it SHOULD work.
-***
-
-The upshot of this is that if you need to build for e.g. mac or windows, you
-need to run this from one of those platforms with an appropriate SDK installed.
+installed on your system). The 
+[build_wheels recipe](../../recipes/recipes/build_wheels.py) runs dockerbuild
+using hermetic versions of these toolchains which are fetched from CIPD.
 
 Back to our example, we'll be adding a new entry to the SourceOrPrebuilt
 section:
