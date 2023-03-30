@@ -152,7 +152,7 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	}
 	ctx = env.SetInCtx(ctx)
 
-	// Grab commit/change/presubmit state.
+	// Grab and validate commit/change/presubmit state.
 	isDryRun := false
 	if mode, err := cv.RunMode(ctx); err == nil {
 		isDryRun = strings.HasSuffix(mode, "DRY_RUN")
@@ -160,29 +160,64 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		return err
 	}
 	gitilesCommit := st.Build().GetInput().GetGitilesCommit()
-	gerritChanges := st.Build().GetInput().GetGerritChanges()
+	var gerritChange *bbpb.GerritChange
+	if changes := st.Build().GetInput().GetGerritChanges(); len(changes) > 1 {
+		return fmt.Errorf("no support for multiple GerritChanges")
+	} else if len(changes) != 0 {
+		gerritChange = changes[0]
+	}
+	var changedProject string
+	switch {
+	case gerritChange != nil && gitilesCommit != nil:
+		return fmt.Errorf("only a Gerrit change or a Gitiles commit is supported, not both")
+	case gerritChange == nil && gitilesCommit != nil:
+		if gitilesCommit.Host != goHost {
+			return fmt.Errorf("unsupported host %q, want %q", gitilesCommit.Host, goHost)
+		}
+		changedProject = gitilesCommit.Project
+	case gerritChange != nil && gitilesCommit == nil:
+		if gerritChange.Host != goReviewHost {
+			return fmt.Errorf("unsupported host %q, want %q", gerritChange.Host, goReviewHost)
+		}
+		changedProject = gerritChange.Project
+	default:
+		return fmt.Errorf("no commit or change specified for build and test")
+	}
+	if inputs.Project != "go" && changedProject != inputs.Project && changedProject != "go" {
+		// This case is something like a "build" commit for an "image" build, which
+		// doesn't make any sense.
+		return fmt.Errorf("unexpected change and project pairing: %s vs. %s", changedProject, inputs.Project)
+	}
+
+	// Fetch the main Go repository into goroot.
+	if changedProject == "go" {
+		if err := fetchRepo(ctx, httpClient, "go", inputs.GoBranch, goroot, gitilesCommit, gerritChange, isDryRun); err != nil {
+			return err
+		}
+	} else {
+		// We're fetching the Go repo for a subrepo build against a subrepo CL.
+		if err := fetchRepo(ctx, httpClient, "go", inputs.GoBranch, goroot, nil, nil, isDryRun); err != nil {
+			return err
+		}
+	}
+
+	// Build Go.
+	//
+	// TODO(mknyszek): Support cross-compile-only modes, perhaps by having CompileGOOS
+	// and CompileGOARCH repeated fields in the input proto to identify what to build.
+	// TODO(mknyszek): Grab a prebuilt copy available.
+	// TODO(mknyszek): Upload the result of make.bash somewhere that downstream builders can find.
+	if err := runGoScript(ctx, goroot, "make"+scriptExt()); err != nil {
+		return err
+	}
 
 	if inputs.Project == "go" {
-		// Fetch the main Go repository into goroot.
-		if err := fetchRepo(ctx, httpClient, "go", goroot, gitilesCommit, gerritChanges, isDryRun); err != nil {
-			return err
-		}
-
-		// Build Go.
-		//
-		// TODO(mknyszek): Support cross-compile-only modes, perhaps by having CompileGOOS
-		// and CompileGOARCH repeated fields in the input proto to identify what to build.
-		if err := runGoScript(ctx, goroot, "make"+scriptExt()); err != nil {
-			return err
-		}
-		// TODO(mknyszek): Upload the result of make.bash somewhere that downstream builders can find.
-
 		// Trigger downstream builders (subrepo builders) with the commit and/or Gerrit change we got.
 		if len(inputs.BuildersToTrigger) > 0 {
 			err := triggerBuilders(ctx,
 				filepath.Join(toolsRoot, "bin", "bb"),
 				gitilesCommit,
-				gerritChanges,
+				gerritChange,
 				inputs.BuildersToTrigger...,
 			)
 			if err != nil {
@@ -207,19 +242,16 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 			return fmt.Errorf("specified builders to trigger for unsupported project")
 		}
 
-		// Fetch the main and target repositories.
-		//
-		// TODO(mknyszek): Grab a prebuilt Go toolchain from a shared location instead.
-		if err := fetchGoRepoAtBranch(ctx, goroot, inputs.GoBranch); err != nil {
-			return err
-		}
-		if err := fetchRepo(ctx, httpClient, inputs.Project, "targetrepo", gitilesCommit, gerritChanges, isDryRun); err != nil {
-			return err
-		}
-
-		// Build (only) the Go toolchain to use.
-		if err := runGoScript(ctx, goroot, "make"+scriptExt()); err != nil {
-			return err
+		// Fetch the target repository into targetrepo.
+		if changedProject == "go" {
+			if err := fetchRepo(ctx, httpClient, inputs.Project, mainBranch, "targetrepo", nil, nil, isDryRun); err != nil {
+				return err
+			}
+		} else {
+			// We're testing the tip of inputs.Project against a Go commit.
+			if err := fetchRepo(ctx, httpClient, inputs.Project, mainBranch, "targetrepo", gitilesCommit, gerritChange, isDryRun); err != nil {
+				return err
+			}
 		}
 
 		// Test this specific subrepo.
@@ -296,47 +328,17 @@ const (
 	goHost       = "go.googlesource.com"
 	goReviewHost = "go-review.googlesource.com"
 	// N.B. Unfortunately Go still calls the main branch "master" due to technical issues.
-	tipBranch = "master" // nocheck
+	mainBranch = "master" // nocheck
 )
 
-func fetchRepo(ctx context.Context, hc *http.Client, project, dst string, commit *bbpb.GitilesCommit, changes []*bbpb.GerritChange, isDryRun bool) (err error) {
-	step, ctx := build.StartStep(ctx, "fetch repo")
+func fetchRepo(ctx context.Context, hc *http.Client, project, branch, dst string, commit *bbpb.GitilesCommit, change *bbpb.GerritChange, isDryRun bool) (err error) {
+	step, ctx := build.StartStep(ctx, "fetch "+project)
 	defer func() {
 		// Any failure in this function is an infrastructure failure.
 		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
 		step.End(err)
 	}()
 
-	// Get the GerritChange.
-	var change *bbpb.GerritChange
-	if len(changes) > 1 {
-		return fmt.Errorf("no support for multiple GerritChanges")
-	} else if len(changes) != 0 {
-		change = changes[0]
-	}
-
-	// Validate change and commit.
-	if change != nil {
-		if change.Host != goReviewHost {
-			return fmt.Errorf("unsupported host %q, want %q", change.Host, goReviewHost)
-		}
-		if change.Project != project {
-			return fmt.Errorf("subrepo tests do not support cross-project triggers for trybots: triggered by %q", project)
-		}
-	}
-	if commit != nil {
-		if commit.Host != goHost {
-			return fmt.Errorf("unsupported host %q, want %q", commit.Host, goHost)
-		}
-		if commit.Project != project {
-			if commit.Project != "go" {
-				return fmt.Errorf("unsupported trigger project for subrepo tests: %s", commit.Project)
-			}
-			// Subrepo test triggered by a change from a different project. Fetch at HEAD
-			// and download Go toolchain for this commit.
-			return fmt.Errorf("subrepo tests unimplemented")
-		}
-	}
 	switch {
 	case change != nil && isDryRun:
 		return fetchRepoChangeAsIs(ctx, hc, dst, change)
@@ -347,9 +349,8 @@ func fetchRepo(ctx context.Context, hc *http.Client, project, dst string, commit
 			return fmt.Errorf("DRY_RUN is unexpectedly set in the commit case")
 		}
 		return fetchRepoAtCommit(ctx, hc, dst, commit)
-	default:
-		return fmt.Errorf("no commit or change specified for build and test")
 	}
+	return fetchRepoAtBranch(ctx, project, dst, branch)
 }
 
 // fetchRepoChangeAsIs checks out a change to be tested as is, without rebasing.
@@ -425,12 +426,12 @@ func fetchRepoAtCommit(ctx context.Context, hc *http.Client, dst string, commit 
 	return nil
 }
 
-// fetchGoRepoAtBranch checks out the head of the specified branch of the main Go repository.
-func fetchGoRepoAtBranch(ctx context.Context, dst, branch string) error {
-	if err := runGit(ctx, "git clone", "-C", ".", "clone", "--depth", "1", "-b", branch, "https://"+goHost+"/go", dst); err != nil {
+// fetchRepoAtBranch checks out the head of the specified branch of the main Go repository.
+func fetchRepoAtBranch(ctx context.Context, project, dst, branch string) error {
+	if err := runGit(ctx, "git clone", "-C", ".", "clone", "--depth", "1", "-b", branch, "https://"+goHost+"/"+project, dst); err != nil {
 		return err
 	}
-	if branch == tipBranch {
+	if project == "go" && branch == mainBranch {
 		// Write a VERSION file when testing the main branch.
 		// Release branches have a checked-in VERSION file, reuse it as is for now.
 		if err := writeVersionFile(ctx, dst, "tip"); err != nil {
@@ -525,7 +526,7 @@ func runSubrepoTests(ctx context.Context, goroot, dir string, race bool, rdb, re
 
 // triggerBuilders triggers builds for downstream builders using the same commit
 // and/or changes. Note: commit or changes must be specified, but not both.
-func triggerBuilders(ctx context.Context, bbPath string, commit *bbpb.GitilesCommit, changes []*bbpb.GerritChange, builders ...string) (err error) {
+func triggerBuilders(ctx context.Context, bbPath string, commit *bbpb.GitilesCommit, change *bbpb.GerritChange, builders ...string) (err error) {
 	step, ctx := build.StartStep(ctx, "trigger downstream builders")
 	defer func() {
 		// Any failure in this function is an infrastructure failure.
@@ -542,15 +543,11 @@ func triggerBuilders(ctx context.Context, bbPath string, commit *bbpb.GitilesCom
 	// Figure out the arguments to bb.
 	bbArgs := []string{"add"}
 	switch {
-	case commit != nil && len(changes) == 0:
+	case commit != nil && change == nil:
 		bbArgs = append(bbArgs, "-commit", fmt.Sprintf("https://%s/%s/+/%s", commit.Host, commit.Project, commit.Id))
-	case commit == nil && len(changes) != 0:
-		if len(changes) > 1 {
-			return fmt.Errorf("specifying more than one Gerrit change is unsupported")
-		}
-		change := changes[0]
+	case commit == nil && change != nil:
 		bbArgs = append(bbArgs, "-cl", fmt.Sprintf("https://%s/c/%s/+/%d/%d", change.Host, change.Project, change.Change, change.Patchset))
-	case commit == nil && len(changes) == 0:
+	case commit == nil && change == nil:
 		return fmt.Errorf("no source information specified")
 	default:
 		return fmt.Errorf("specifying both a commit and a Gerrit change is unsupported")
