@@ -1665,6 +1665,8 @@ SPECS.update({
 # The following packages all require specialized compilation, and so have their
 # own custom builder types.
 
+# DEPRECATED. This is left only for keeping these wheels in the markdown.
+# See cryptography 3.3.2 for any new cryptography library.
 from .wheel_cryptography import CryptographyPyPI
 SPECS.update({
     s.spec.tag: s for s in assert_sorted(
@@ -1687,6 +1689,7 @@ SPECS.update({
             pyversions=['py2', 'py3'],
             packaged=['windows-x86-py3.8', 'windows-x64-py3.8'],
             patch_version='chromium.1',
+            default=False,
             skip_plat=build_platform.ALL_PY311,
         ),
         CryptographyPyPI(
@@ -1696,6 +1699,7 @@ SPECS.update({
             pyversions=['py2', 'py3'],
             packaged=['windows-x86-py3.8', 'windows-x64-py3.8'],
             patch_version='chromium.1',
+            default=False,
             skip_plat=build_platform.ALL_PY311,
         ),
     )
