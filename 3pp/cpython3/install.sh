@@ -26,6 +26,9 @@ LDFLAGS="-L$DEPS_PREFIX/lib"
 export CONFIG_ARGS="--host $CROSS_TRIPLE"
 
 SETUP_LOCAL_SKIP=(
+  # `crypt` module is deprecated in python3.11 and slated for removal.
+  # See peps.python.org/pep-0594/#crypt.
+  "_crypt"
   # These modules are broken, and seem to reference non-existent symbols
   # at compile time.
   "_testcapi"
@@ -107,11 +110,6 @@ else
 
   # sqlite3 requires -lm (log function).
   WITH_LIBS+=" -lm"
-
-  # The "crypt" module needs to link against glibc's "crypt" function. We link
-  # it statically because our docker environment uses libcrypt.so.2, which isn't
-  # available where we run the resulting binary.
-  WITH_LIBS+=" -l:libcrypt.a"
 
   # On Linux, we will statically compile OpenSSL into the binary, since we
   # want to be generally system/library agnostic.
