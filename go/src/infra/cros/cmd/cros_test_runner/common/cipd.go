@@ -19,7 +19,7 @@ func CreateAuthClient(
 	ctx context.Context,
 	authOpts auth.Options) (*http.Client, error) {
 
-	return auth.NewAuthenticator(ctx, auth.InteractiveLogin, authOpts).Client()
+	return auth.NewAuthenticator(ctx, auth.OptionalLogin, authOpts).Client()
 }
 
 // CreateCIPDClient creates new cipd client.
