@@ -41,6 +41,48 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d4eaa6b7_7b498565",
+        "filename": "go/src/infra/build/siso/build/check_trace.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-03-31T04:44:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bd62cce0_e08691bb",
+      "revId": "23fe3514e29175409b9257f46ebbcbea2d77996d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a64f78b2_7ec39e03",
+        "filename": "go/src/infra/build/siso/build/check_trace.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-03-31T04:44:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0510e7aa_13d6253c",
+      "range": {
+        "startLine": 26,
+        "startChar": 18,
+        "endLine": 26,
+        "endChar": 28
+      },
+      "revId": "23fe3514e29175409b9257f46ebbcbea2d77996d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f502a093_53d2cb40",
@@ -77,6 +119,54 @@
       "writtenOn": "2023-03-31T04:31:23Z",
       "side": 1,
       "message": "Shouldn\u0027t this be empty when `UseSystemInput \u003d false`? \nI wonder if it should check `UseSystemInput` to judge this is pure or not.",
+      "range": {
+        "startLine": 58,
+        "startChar": 89,
+        "endLine": 58,
+        "endChar": 100
+      },
+      "revId": "23fe3514e29175409b9257f46ebbcbea2d77996d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "194a820b_33c601a9",
+        "filename": "go/src/infra/build/siso/build/check_trace.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-03-31T04:44:44Z",
+      "side": 1,
+      "message": "some step may outputs some files in /tmp ?",
+      "parentUuid": "f502a093_53d2cb40",
+      "range": {
+        "startLine": 58,
+        "startChar": 123,
+        "endLine": 58,
+        "endChar": 135
+      },
+      "revId": "23fe3514e29175409b9257f46ebbcbea2d77996d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7db75866_f228ba33",
+        "filename": "go/src/infra/build/siso/build/check_trace.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-03-31T04:44:44Z",
+      "side": 1,
+      "message": "maybe, no.\n\nmost case, it will access /lib64/ld-linux-x86-64.so.2 etc/\n\nUseSystemInput needs when the step\u0027s inputs contain /usr/include/stdio.h or so.",
+      "parentUuid": "0195a513_16faf799",
       "range": {
         "startLine": 58,
         "startChar": 89,
