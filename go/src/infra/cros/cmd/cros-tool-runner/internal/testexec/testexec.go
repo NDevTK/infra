@@ -16,7 +16,6 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 
-	_go "go.chromium.org/chromiumos/config/go"
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 
@@ -178,13 +177,9 @@ func prepareTestResponse(resultRootDir string, testCaseResults []*api.TestCaseRe
 		// 		resultRootDir = "home/chromeos-test/skylab_bots/c6-r6-r4-h3.393573271/w/ir/x/w/output_dir/cros-test/artifact"
 		// Replace the `/tmp/test/results/` (from `t.ResultDirPath.Path`) with the `resultRootDir`, thus making the full resolved path to the logs for that test.
 		resultDir := strings.Replace(t.GetResultDirPath().GetPath(), services.CrosTestResultsDirInsideDocker, resultRootDir, 1)
-		results = append(results, &api.TestCaseResult{
-			TestCaseId:    t.TestCaseId,
-			ResultDirPath: &_go.StoragePath{Path: resultDir},
-			Verdict:       t.Verdict,
-			Reason:        t.Reason,
-			TestHarness:   t.TestHarness,
-		})
+
+		t.ResultDirPath.Path = resultDir
+		results = append(results, t)
 	}
 	return &api.CrosToolRunnerTestResponse{
 		TestCaseResults: results,
