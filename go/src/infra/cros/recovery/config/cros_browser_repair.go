@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ func CrosBrowserDUTRepairConfig() *Configuration {
 					"Device is SSHable",
 					"Ensure firmware is in good state",
 					"RO Firmware validations without servo",
-					"Match provision labels",
+					"Update provisioned info",
 					"Set state: ready",
 				},
 				Actions: CrOSBrowserDUTRepairActions(),

@@ -42,9 +42,9 @@ func crosRepairPlan() *Plan {
 			"Verify RO_VPD data on DUT",
 			"Verify system info",
 			"Update Servo NIC mac address",
-			"Match provision labels",
 			"Backup CBI",
 			"Check CBI",
+			"Update provisioned info",
 			"Set state: ready",
 			"Update special device labels",
 			"Collect dmesg logs from DUT",
@@ -1631,49 +1631,14 @@ func crosRepairActions() map[string]*Action {
 				"repair_failed_interval:10",
 			},
 		},
-		"Match provision labels": {
-			Docs: []string{
-				"Verify that provision labels is correct.",
-			},
-			Dependencies: []string{
-				"Match CrOS version with provision label",
-				"Match job_repo_url with provision label",
-			},
-			ExecName: "sample_pass",
-		},
-		"Match CrOS version with provision label": {
-			Docs: []string{
-				"Verify that cros-version match version on the host.",
-			},
-			Dependencies: []string{
-				"Device is SSHable",
-			},
-			ExecName: "cros_match_cros_version_to_inventory",
-			RecoveryActions: []string{
-				"Update provisioned info",
-			},
-		},
-		"Match job_repo_url with provision label": {
-			Docs: []string{
-				"Verify that job_repo_url matches the version on the host.",
-			},
-			Dependencies: []string{
-				"Device is SSHable",
-			},
-			ExecName: "cros_match_job_repo_url_version_to_inventory",
-			RecoveryActions: []string{
-				"Update provisioned info",
-			},
-		},
 		"Update provisioned info": {
 			Docs: []string{
-				"Read and update cros-provision labels.",
+				"Update cros_version and job_repo_url fields of provision info.",
 			},
-			Dependencies: []string{
-				"cros_update_provision_os_version",
-				"cros_update_job_repo_url",
+			ExecName: "cros_update_provision_info",
+			ExecExtraArgs: []string{
+				"update_job_repo_url:true",
 			},
-			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Switch to secure-mode and reboot": {

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,9 +72,9 @@ func LabstationDeployConfig() *Configuration {
 					},
 					"Update provisioned info": {
 						Docs: []string{
-							"Read and update cros-provision label.",
+							"Update OS version for provision info.",
 						},
-						ExecName: "cros_update_provision_os_version",
+						ExecName: "cros_update_provision_info",
 					},
 					"validate_rpm": {
 						Docs: []string{
