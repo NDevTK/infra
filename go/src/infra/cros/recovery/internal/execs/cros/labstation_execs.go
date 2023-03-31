@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,9 +90,13 @@ func filesystemIoNotBlockedExec(ctx context.Context, info *execs.ExecInfo) error
 	return nil
 }
 
-// logCleanupExec rotate and cleanup messages logs if they're large than the threshold.
+// logCleanupExec rotate and cleanup stale log files on labstation.
 func logCleanupExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
+
+	// Clean up stale(> 7 days) servod logs.
+	run(ctx, info.GetExecTimeout(), "find /var/log/servo* -type f -mtime +7 | xargs rm")
+
 	// First we want to check if the current messages log larger than the threshold, and if it is
 	// we need rotate logs before we can safely remove it as other process may still writing logs into it.
 	checkCurrentCmd := fmt.Sprintf("find /var/log/messages -size +%s", currentMessagesLogSizeThreshold)
@@ -102,6 +106,7 @@ func logCleanupExec(ctx context.Context, info *execs.ExecInfo) error {
 			log.Debugf(ctx, "Log cleanup: failed to execute chromeos-cleanup-logs, %v", err)
 		}
 	}
+
 	// Checking if there are any old logs that larger than the threshold, and if true remove all old logs.
 	checkOldCmd := fmt.Sprintf("find /var/log/messages.* -size +%s", oldMessagesLogSizeThreshold)
 	if out, _ := run(ctx, info.GetExecTimeout(), checkOldCmd); out != "" {
@@ -111,6 +116,10 @@ func logCleanupExec(ctx context.Context, info *execs.ExecInfo) error {
 		}
 		log.Debugf(ctx, "Log cleanup: successfully removed old messages log.")
 	}
+
+	// Remove anything in /var/log if large than 500M.
+	run(ctx, info.GetExecTimeout(), "find /var/log/ -type f -size +500M | xargs rm")
+
 	return nil
 }
 
