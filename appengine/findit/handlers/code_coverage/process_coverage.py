@@ -104,13 +104,17 @@ def _IsBlockingChangesAllowed(project):
 def _IsAuthorInAllowlistForBlocking(author_email):
   """Returns True if an author is in allowlist for blocking changes.
 
-  Returns False if the author doesn't belong to google.
+  Returns False if the author doesn't belong to google. If there's no
+  such allowlist, returns True for all googlers.
   """
   if not author_email.endswith("@google.com"):
     return False
   author = author_email[:author_email.find("@")]
-  return author in waterfall_config.GetCodeCoverageSettings().get(
+  blocked_authors = waterfall_config.GetCodeCoverageSettings().get(
       'block_low_coverage_changes_authors', [])
+  if not blocked_authors:
+    return True
+  return author in blocked_authors
 
 
 def _IsFileInAllowlistForBlocking(file_path):
