@@ -101,34 +101,31 @@ def _IsBlockingChangesAllowed(project):
       'block_low_coverage_changes_projects', [])
 
 
-def _IsAuthorInAllowlistForBlocking(author_email):
+def _IsAuthorInAllowlistForBlocking(config, author_email):
   """Returns True if an author is in allowlist for blocking changes.
 
   Returns False if the author doesn't belong to google. If there's no
   such allowlist, returns True for all googlers.
   """
   if not author_email.endswith("@google.com"):
-    return False
+    return
   author = author_email[:author_email.find("@")]
-  blocked_authors = waterfall_config.GetCodeCoverageSettings().get(
-      'block_low_coverage_changes_authors', [])
+  blocked_authors = config.get('monitored_authors', [])
   if not blocked_authors:
     return True
   return author in blocked_authors
 
 
-def _IsFileInAllowlistForBlocking(file_path):
+def _IsFileInAllowlistForBlocking(config, file_path):
   assert file_path.startswith('//')
-  for allowed_dir in waterfall_config.GetCodeCoverageSettings().get(
-      'block_low_coverage_changes_directories', []):
+  for allowed_dir in config.get('monitored_directories', []):
     if file_path.startswith(allowed_dir):
       return True
   return False
 
 
-def _IsFileTypeAllowedForBlocking(file_path):
-  blocking_file_types = waterfall_config.GetCodeCoverageSettings().get(
-      'block_low_coverage_file_types', [])
+def _IsFileTypeAllowedForBlocking(config, file_path):
+  blocking_file_types = config.get('monitored_file_types', [])
   # A CL may be blocked for any file type if no blocking
   # file types are specified.
   if not blocking_file_types:
@@ -139,24 +136,21 @@ def _IsFileTypeAllowedForBlocking(file_path):
   return False
 
 
-def _HaveEnoughLinesChangedForBlocking(inc_coverage):
-  return inc_coverage.total_lines >= waterfall_config.GetCodeCoverageSettings(
-  ).get('block_low_coverage_changes_minimum_loc',
-        _DEFAULT_MINIMUM_LINES_OF_CHANGE_FOR_BLOCKING)
+def _HaveEnoughLinesChangedForBlocking(config, inc_coverage):
+  return inc_coverage.total_lines >= config.get(
+      'minimum_loc', _DEFAULT_MINIMUM_LINES_OF_CHANGE_FOR_BLOCKING)
 
 
-def _CanBeExemptFromBlocking(abs_coverage):
+def _CanBeExemptFromBlocking(config, abs_coverage):
   coverage = (abs_coverage.covered_lines * 100.0) / abs_coverage.total_lines
-  return coverage >= waterfall_config.GetCodeCoverageSettings().get(
-      'block_low_coverage_changes_relax_threshold',
-      _DEFAULT_RELAX_ABS_COV_THRESHOLD_FOR_BLOCKING)
+  return coverage >= config.get('relax_threshold',
+                                _DEFAULT_RELAX_ABS_COV_THRESHOLD_FOR_BLOCKING)
 
 
-def _HasLowCoverageForBlocking(inc_coverage):
+def _HasLowCoverageForBlocking(config, inc_coverage):
   coverage = (inc_coverage.covered_lines * 100.0) / inc_coverage.total_lines
-  return coverage < waterfall_config.GetCodeCoverageSettings().get(
-      'block_low_coverage_changes_trigger_threshold',
-      _DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING)
+  return coverage < config.get('trigger_threshold',
+                               _DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING)
 
 
 def _RetrieveChromeManifest(repo_url, revision,
@@ -679,29 +673,35 @@ class ProcessCodeCoverageData(BaseHandler):
     for f in delete_futures:
       f.get_result()
 
-  def _GetLowCoverageCulpritFiles(self, entity):
+  def _GetLowCoverageFiles(self, cohort, config, entity):
     low_coverage_files = []
     for inc_metrics in entity.incremental_percentages:
-      if not _IsFileTypeAllowedForBlocking(inc_metrics.path):
-        logging.info("%s is not of allowed file type", inc_metrics.path)
+      if not _IsFileTypeAllowedForBlocking(config, inc_metrics.path):
+        logging.info("%s is not of allowed file type for cohort %s",
+                     inc_metrics.path, cohort)
         continue
-      if not _IsFileInAllowlistForBlocking(inc_metrics.path):
-        logging.info("%s is not in allowed dirs", inc_metrics.path)
+      if not _IsFileInAllowlistForBlocking(config, inc_metrics.path):
+        logging.info("%s is not in allowed dirs for cohort %s",
+                     inc_metrics.path, cohort)
         continue
       # Do not block because of test/main files
       if re.match(utils.TEST_FILE_REGEX, inc_metrics.path) or re.match(
           utils.MAIN_FILE_REGEX, inc_metrics.path):
-        logging.info("%s is a test/main file", inc_metrics.path)
+        logging.info("%s is a test/main file for cohort %s", inc_metrics.path,
+                     cohort)
         continue
-      if not _HaveEnoughLinesChangedForBlocking(inc_metrics):
-        logging.info("%s doesn't have enough lines changed", inc_metrics.path)
+      if not _HaveEnoughLinesChangedForBlocking(config, inc_metrics):
+        logging.info("%s doesn't have enough lines changed for cohort %s",
+                     inc_metrics.path, cohort)
         continue
-      if _HasLowCoverageForBlocking(inc_metrics):
-        logging.info("%s has low incremental coverage", inc_metrics.path)
+      if _HasLowCoverageForBlocking(config, inc_metrics):
+        logging.info("%s has low incremental coverage for cohort %s",
+                     inc_metrics.path, cohort)
         for abs_metrics in entity.absolute_percentages:
           if (abs_metrics.path == inc_metrics.path and
-              not _CanBeExemptFromBlocking(abs_metrics)):
-            logging.info("%s has low absolute coverate too", inc_metrics.path)
+              not _CanBeExemptFromBlocking(config, abs_metrics)):
+            logging.info("%s has low absolute coverate too for cohort %s",
+                         inc_metrics.path, cohort)
             low_coverage_files.append(inc_metrics.path)
     return low_coverage_files
 
@@ -727,15 +727,26 @@ class ProcessCodeCoverageData(BaseHandler):
       if 'revert_of' in change_details:
         logging.info("Bypassing the check as %d is a revert CL", patch.change)
         return
-      author_email = change_details['owner']['email']
-      author_email = self._GetChromiumToGooglerMapping().get(
-          author_email, author_email)
-      if not _IsAuthorInAllowlistForBlocking(author_email):
-        logging.info("Bypassing the check" + " as %s is not in allowlist",
-                     author_email)
-        return
-      # Block CL only some files have low coverage
-      low_coverage_culprit_files = self._GetLowCoverageCulpritFiles(entity)
+      low_coverage_threshold_with_violators = {}
+      any_config_author_match = False
+      for cohort, config in waterfall_config.GetCodeCoverageSettings().get(
+          'block_low_coverage_changes', {}).items():
+        author_email = change_details['owner']['email']
+        author_email = self._GetChromiumToGooglerMapping().get(
+            author_email, author_email)
+        if not _IsAuthorInAllowlistForBlocking(config, author_email):
+          logging.info(
+              "Bypassing the check for cohort %s" +
+              " as %s is not in allowlist", cohort, author_email)
+          continue
+        any_config_author_match = True
+        # Block CL only if some files have low coverage
+        low_coverage_files = self._GetLowCoverageFiles(cohort, config, entity)
+        if low_coverage_files:
+          low_coverage_threshold_with_violators[config.get(
+              'trigger_threshold',
+              _DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING
+          )] = low_coverage_files
 
       @ndb.transactional
       def _UpdateBlockingStatus(status):
@@ -760,18 +771,19 @@ class ProcessCodeCoverageData(BaseHandler):
             }),
             url='/coverage/task/low-coverage-blocking')
 
-      if low_coverage_culprit_files:
+      if low_coverage_threshold_with_violators:
         _UpdateBlockingStatus(BlockingStatus.VERDICT_BLOCK)
         msg_header = (
-            'This change will be blocked from submission as the following'
-            ' files have incremental coverage(all tests) < %d%%. ' %
-            waterfall_config.GetCodeCoverageSettings().get(
-                'block_low_coverage_changes_trigger_threshold',
-                _DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING))
-        file_names_with_bullets = [
-            "- %s" % x for x in low_coverage_culprit_files
-        ]
-        msg_body = "\n".join(file_names_with_bullets)
+            'This change will be blocked from submission as there are files '
+            'which do not meet the coverage criteria.')
+        for threshold, low_coverage_files in \
+          low_coverage_threshold_with_violators.items():
+          logging.info("low_coverage_files = %r", low_coverage_files)
+          msg_body = (
+              'Following files have incremental coverage(all tests) < %d%%. ' %
+              threshold)
+          file_names_with_bullets = ["- %s" % x for x in low_coverage_files]
+          msg_body += "\n" + "\n".join(file_names_with_bullets)
         msg_footer = ('Please add tests for uncovered lines, '
                       'or add Low-Coverage-Reason:<reason> in '
                       'the change description. If you think coverage is '
@@ -785,11 +797,10 @@ class ProcessCodeCoverageData(BaseHandler):
         logging.info(('Adding CodeCoverage-1 label for '
                       'project %s, change %d,  patchset %d'), patch.project,
                      patch.change, patch.patchset)
-        logging.info("low_coverage_culprit_files = %r",
-                     low_coverage_culprit_files)
         _PostReviewToGerrit(data)
-
-      else:
+      # Add a positive Code Coverage label only for authors in the allowlist.
+      # This is done to reduce noise.
+      elif any_config_author_match:
         _UpdateBlockingStatus(BlockingStatus.VERDICT_NOT_BLOCK)
         data = {
             'labels': {
@@ -936,8 +947,8 @@ class ProcessCodeCoverageData(BaseHandler):
       if LowCoverageBlocking.Get(
           server_host=patch.host, change=patch.change, patchset=patch.patchset
       ).blocking_status == BlockingStatus.READY_FOR_VERDICT:
-        logging.info("checking for low coverage for change%d, patch=%d",
-                     patch.change, patch.project)
+        logging.info("checking for low coverage for change=%d, patch=%d",
+                     patch.change, patch.patchset)
         self._MayBeBlockCLForLowCoverage(patch)
     else:
       if (properties.get('coverage_override_gitiles_commit', False) or

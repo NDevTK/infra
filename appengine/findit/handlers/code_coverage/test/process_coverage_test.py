@@ -1232,9 +1232,13 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                 'chromium/try/android-nougat-x86-rel',
                 'chromium/try/android-pie-x86-rel',
             ],
-            'block_low_coverage_changes_projects': ['chromium/src'],
-            'block_low_coverage_changes_authors': ['john'],
-            'block_low_coverage_changes_directories': ['//dir']
+            'block_low_coverage_changes': {
+                'clank': {
+                    'monitored_authors': ['john'],
+                    'monitored_directories': ['//dir']
+                }
+            },
+            'block_low_coverage_changes_projects': ['chromium/src']
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
@@ -1330,9 +1334,13 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
-            'block_low_coverage_changes_projects': ['chromium/src'],
-            'block_low_coverage_changes_authors': ['john'],
-            'block_low_coverage_changes_directories': ['//dir']
+            'block_low_coverage_changes': {
+                'clank': {
+                    'monitored_authors': ['john'],
+                    'monitored_directories': ['//dir']
+                }
+            },
+            'block_low_coverage_changes_projects': ['chromium/src']
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
@@ -1420,9 +1428,13 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
-            'block_low_coverage_changes_projects': ['chromium/src'],
-            'block_low_coverage_changes_authors': ['john'],
-            'block_low_coverage_changes_directories': ['//dir']
+            'block_low_coverage_changes': {
+                'clank': {
+                    'monitored_authors': ['john'],
+                    'monitored_directories': ['//dir']
+                }
+            },
+            'block_low_coverage_changes_projects': ['chromium/src']
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
@@ -1534,9 +1546,13 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
-            'block_low_coverage_changes_projects': ['chromium/src'],
-            'block_low_coverage_changes_authors': ['john'],
-            'block_low_coverage_changes_directories': ['//dir']
+            'block_low_coverage_changes': {
+                'clank': {
+                    'monitored_authors': ['john'],
+                    'monitored_directories': ['//dir']
+                }
+            },
+            'block_low_coverage_changes_projects': ['chromium/src']
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
@@ -1631,8 +1647,12 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
-            'block_low_coverage_changes_projects': ['chromium/src'],
-            'block_low_coverage_changes_directories': ['//dir']
+            'block_low_coverage_changes': {
+                'clank': {
+                    'monitored_directories': ['//dir']
+                }
+            },
+            'block_low_coverage_changes_projects': ['chromium/src']
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
@@ -1722,9 +1742,13 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
-            'block_low_coverage_changes_projects': ['chromium/src'],
-            'block_low_coverage_changes_authors': ['notjohn'],
-            'block_low_coverage_changes_directories': ['//dir']
+            'block_low_coverage_changes': {
+                'clank': {
+                    'monitored_authors': ['notjohn'],
+                    'monitored_directories': ['//dir']
+                }
+            },
+            'block_low_coverage_changes_projects': ['chromium/src']
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
@@ -1811,9 +1835,13 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
-            'block_low_coverage_changes_projects': ['chromium/src'],
-            'block_low_coverage_changes_authors': ['john'],
-            'block_low_coverage_changes_directories': ['//dir']
+            'block_low_coverage_changes': {
+                'clank': {
+                    'monitored_authors': ['john'],
+                    'monitored_directories': ['//dir']
+                }
+            },
+            'block_low_coverage_changes_projects': ['chromium/src']
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
@@ -1901,9 +1929,13 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
-            'block_low_coverage_changes_projects': ['chromium/src'],
-            'block_low_coverage_changes_authors': ['john'],
-            'block_low_coverage_changes_directories': []
+            'block_low_coverage_changes': {
+                'clank': {
+                    'monitored_authors': ['john'],
+                    'monitored_directories': []
+                }
+            },
+            'block_low_coverage_changes_projects': ['chromium/src']
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
@@ -1998,9 +2030,13 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
-            'block_low_coverage_changes_projects': ['chromium/src'],
-            'block_low_coverage_changes_authors': ['john'],
-            'block_low_coverage_changes_directories': ['//dir']
+            'block_low_coverage_changes': {
+                'clank': {
+                    'monitored_authors': ['john'],
+                    'monitored_directories': ['//dir']
+                }
+            },
+            'block_low_coverage_changes_projects': ['chromium/src']
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
@@ -2096,10 +2132,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
-            'block_low_coverage_changes_projects': ['chromium/src'],
-            'block_low_coverage_changes_authors': ['john'],
-            'block_low_coverage_changes_directories': ['//dir'],
-            'block_low_coverage_file_types': ['.cc']
+            'block_low_coverage_changes': {
+                'clank': {
+                    'monitored_authors': ['john'],
+                    'monitored_directories': ['//dir'],
+                    'monitored_file_types': ['.cc']
+                }
+            },
+            'block_low_coverage_changes_projects': ['chromium/src']
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
@@ -2194,10 +2234,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
-            'block_low_coverage_changes_projects': ['chromium/src'],
-            'block_low_coverage_changes_authors': ['john'],
-            'block_low_coverage_changes_directories': ['//dir'],
-            'block_low_coverage_file_types': ['.java']
+            'block_low_coverage_changes': {
+                'clank': {
+                    'monitored_authors': ['john'],
+                    'monitored_directories': ['//dir'],
+                    'monitored_file_types': ['.java']
+                }
+            },
+            'block_low_coverage_changes_projects': ['chromium/src']
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
@@ -2288,13 +2332,18 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   def testLowCoverageBlocking_ProjectNotAllowed_noop(self, mocked_get_build,
                                                      mocked_get_validated_data,
                                                      mocked_inc_percentages,
-                                                     mock_http_client, *_):
+                                                     *_):
     self.UpdateUnitTestConfigSettings(
         'code_coverage_settings', {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
-            'block_low_coverage_changes_projects': [],
-            'block_low_coverage_changes_authors': ['john'],
-            'block_low_coverage_changes_directories': ['//dir']
+            'block_low_coverage_changes': {
+                'clank': {
+                    'monitored_authors': ['john'],
+                    'monitored_directories': ['//dir'],
+                    'monitored_file_types': ['.cc']
+                }
+            },
+            'block_low_coverage_changes_projects': []
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
