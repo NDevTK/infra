@@ -6,6 +6,7 @@ package servo
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
@@ -37,7 +38,7 @@ func servoPowerCycleRootServoExec(ctx context.Context, info *execs.ExecInfo) err
 	}
 	log.Infof(ctx, "Servo usb devnum before reset: %s", preResetDevnum)
 	// Resetting servo.
-	if _, err := run(ctx, 10*time.Second, "test  -f /usr/local/bin/cambronix_power_cycle"); err == nil {
+	if _, err := run(ctx, 10*time.Second, "which cambronix_power_cycle"); err == nil {
 		log.Infof(ctx, "Resetting servo through Cambronix usbhub.")
 		if _, err := run(ctx, resetTimeout, "cambronix_power_cycle", servoSerial); err != nil {
 			log.Warningf(ctx, `Failed to reset servo with serial: %s. Please ignore this error if the DUT is not connected to a Cambronix usbhub`, servoSerial)
@@ -75,6 +76,24 @@ func servoPowerCycleRootServoExec(ctx context.Context, info *execs.ExecInfo) err
 	return nil
 }
 
+// allowsPowerCycleServoExec checks if power-cycle servo is allowed.
+func allowsPowerCycleServoExec(ctx context.Context, info *execs.ExecInfo) error {
+	const servoV4p1SerialPrefix = "SERVOV4P1"
+	run := info.DefaultRunner()
+	if strings.HasPrefix(info.GetChromeos().GetServo().GetSerialNumber(), servoV4p1SerialPrefix) {
+		// Servo_v4p1 is not allowed to power-cycle except setup with cambrionix.
+		if _, cErr := run(ctx, 30*time.Second, "which cambronix_power_cycle"); cErr == nil {
+			log.Debugf(ctx, "Power-cycle servo is allowed for setup with cambronix")
+			return nil
+		} else {
+			log.Debugf(ctx, "Fail to check cambrix script: %s", cErr)
+		}
+		return errors.Reason("allow power-cycle servo: not allowed").Err()
+	}
+	log.Debugf(ctx, "Power-cycle servo is allowed")
+	return nil
+}
+
 // servoV4P1NetResetExec reset servo_v4p1 network controller.
 func servoV4P1NetResetExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
@@ -89,4 +108,5 @@ func servoV4P1NetResetExec(ctx context.Context, info *execs.ExecInfo) error {
 func init() {
 	execs.Register("servo_power_cycle_root_servo", servoPowerCycleRootServoExec)
 	execs.Register("servo_v4p1_network_reset", servoV4P1NetResetExec)
+	execs.Register("servo_allows_power_cycle_servo", allowsPowerCycleServoExec)
 }

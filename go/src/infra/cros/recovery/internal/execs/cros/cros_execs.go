@@ -1,4 +1,4 @@
-// Copyright 2021 The ChromiumOS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -214,6 +214,7 @@ func runCommandExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	command := argsMap.AsString(ctx, "command", "")
 	deviceType := argsMap.AsString(ctx, "host", "")
+	reverse := argsMap.AsBool(ctx, "reverse", false)
 	inBackground := argsMap.AsBool(ctx, "background", false)
 	if command == "" {
 		return errors.Reason("run command: command not specified").Err()
@@ -223,10 +224,17 @@ func runCommandExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "run shell command").Err()
 	}
 	log.Debugf(ctx, "Run command: %q.", command)
-	if out, err := run(ctx, info.GetExecTimeout(), command); err != nil {
+	out, err := run(ctx, info.GetExecTimeout(), command)
+	log.Debugf(ctx, "Command output: %s", out)
+	if reverse {
+		if err != nil {
+			// Expected to fail in reverse case.
+			log.Debugf(ctx, "Fail with error: %s", err)
+		} else {
+			return errors.Reason("run command: expected to fail but succeed").Err()
+		}
+	} else if err != nil {
 		return errors.Annotate(err, "run command").Err()
-	} else {
-		log.Debugf(ctx, "Run command: output: %s", out)
 	}
 	return nil
 }

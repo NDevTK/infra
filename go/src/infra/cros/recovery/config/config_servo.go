@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -927,14 +927,15 @@ func servoRepairPlan() *Plan {
 				},
 				AllowFailAfterRecovery: true,
 			},
-			"Serial number is not servo_v4p1": {
+			"Allower power-cycle for servo": {
 				Docs: []string{
-					"Verify that the servo serial number is not a servo_v4p1 serial number",
+					"Verify that the power-cycle is allowed for servo in setup.",
+					"Disable power-cycle by usb-hub for servo_v4p1 due to b/243042046",
+					"Exception for Cambrionix usb-hub as part of NPI process testing. (b/273755199)",
 				},
-				Conditions: []string{
-					"is_servo_v4p1_by_serial_number",
-				},
-				ExecName: "sample_fail",
+				ExecName:      "servo_allows_power_cycle_servo",
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Is servo_v4(p1) with type-a connector": {
 				Docs: []string{
@@ -1623,10 +1624,7 @@ func servoRepairPlan() *Plan {
 					"Try to reset(power-cycle) the servo via smart usbhub.",
 				},
 				Conditions: []string{
-					// Disable power-cycle by smart hub for v4p1 due to b/243042046,
-					// The built-in reboot and ethernet power control in v4p1 also
-					// makes power-cycle the entire device unnecessary.
-					"Serial number is not servo_v4p1",
+					"Allower power-cycle for servo",
 					// We try restart only if we lost network to the dut.
 					"DUT is not SSHable",
 				},

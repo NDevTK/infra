@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,8 +70,14 @@ func servoVerifyV4p1Exec(ctx context.Context, info *execs.ExecInfo) error {
 // host is of type v4p1 based on its serial number.
 func servoVerifyV4p1BySerialNumberExec(ctx context.Context, info *execs.ExecInfo) error {
 	const servoV4p1SerialPrefix = "SERVOV4P1"
+	args := info.GetActionArgs(ctx)
+	reverse := args.AsBool(ctx, "reverse", false)
 	sn := info.GetChromeos().GetServo().GetSerialNumber()
-	if !strings.HasPrefix(sn, servoV4p1SerialPrefix) {
+	isServoV4p1 := strings.HasPrefix(sn, servoV4p1SerialPrefix)
+	if isServoV4p1 && reverse {
+		return errors.Reason("servo verify v4p1 by serial number (reverse): the serial number have expected prefix %s.", servoV4p1SerialPrefix).Err()
+	}
+	if !reverse && !isServoV4p1 {
 		return errors.Reason("servo verify v4p1 by serial number: the serial number %s does not have expected prefix %s.", sn, servoV4p1SerialPrefix).Err()
 	}
 	return nil
