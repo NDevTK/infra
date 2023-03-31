@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bd62cce0_e08691bb",
+        "filename": "go/src/infra/build/siso/build/check_trace.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-03-31T04:24:04Z",
+      "side": 1,
+      "message": "I filed http://b/276390237 to provide better messages for file trace errors.\nPlease add this link somewhere in this file.",
+      "revId": "23fe3514e29175409b9257f46ebbcbea2d77996d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0510e7aa_13d6253c",
+        "filename": "go/src/infra/build/siso/build/check_trace.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-03-31T04:24:04Z",
+      "side": 1,
+      "message": "Can you add what patterns are there?\n\n```\n- `pure`: there are no differences between the command dependencies and the traced files.\n- `can be pure`: ...\n- `impure`: there are differences between the command dependencies and the traced files.\n\nIt will return error with the following conditions\n- The file traced detected the command as `impure`.\n- The command is configured as `pure`.\n- `keep-going-impure` experiment flag is not set.\n- Not gcc, msvc, ts_library.\n```",
+      "range": {
+        "startLine": 26,
+        "startChar": 18,
+        "endLine": 26,
+        "endChar": 28
+      },
+      "revId": "23fe3514e29175409b9257f46ebbcbea2d77996d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
