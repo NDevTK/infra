@@ -14,6 +14,7 @@ from handlers.code_coverage import export_absolute_coverage
 from handlers.code_coverage import export_incremental_coverage
 from handlers.code_coverage import export_gerrit_filter_coverage
 from handlers.code_coverage import fetch_source_file
+from handlers.code_coverage import post_review_to_gerrit
 from handlers.code_coverage import process_coverage
 from handlers.code_coverage import serve_ci_coverage
 from handlers.code_coverage import serve_cq_coverage
@@ -37,6 +38,8 @@ referenced_coverage_worker_handler_mappings = [
      create_referenced_coverage.CreateReferencedCoverageMetrics),
     ('.*/coverage/task/incremental-coverage',
      export_incremental_coverage.ExportIncrementalCoverageMetrics),
+    ('.*/coverage/task/low-coverage-blocking',
+     post_review_to_gerrit.PostReviewToGerrit),
 ]
 referenced_coverage_worker_application = webapp2.WSGIApplication(
     referenced_coverage_worker_handler_mappings, debug=False)

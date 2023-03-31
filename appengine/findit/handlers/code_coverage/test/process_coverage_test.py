@@ -1307,13 +1307,12 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         patchset=4)
     self.assertEqual(blocking_entity.blocking_status,
                      BlockingStatus.VERDICT_BLOCK)
-    self.assertEqual(len(mock_http_client.call_args_list), 1)
-    args, _ = mock_http_client.call_args_list[0]
-    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
-                               '/changes/138000/revisions/4/review'))
-    data = json.loads(args[1])
-    self.assertDictEqual({'Code-Coverage': -1}, data['labels'])
-    self.assertTrue('50%' in data['message'])
+    tasks = self.taskqueue_stub.get_filtered_tasks(
+        queue_names='postreview-request-queue')
+    self.assertEqual(1, len(tasks))
+    payload = json.loads(tasks[0].payload)
+    self.assertDictEqual({'Code-Coverage': -1}, payload['data']['labels'])
+    self.assertTrue('50%' in payload['data']['message'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -1401,7 +1400,9 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)
 
-    self.assertEqual(len(mock_http_client.call_args_list), 0)
+    tasks = self.taskqueue_stub.get_filtered_tasks(
+        queue_names='postreview-request-queue')
+    self.assertEqual(0, len(tasks))
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -1511,12 +1512,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         patchset=4)
     self.assertEqual(blocking_entity.blocking_status,
                      BlockingStatus.VERDICT_NOT_BLOCK)
-    self.assertEqual(len(mock_http_client.call_args_list), 1)
-    args, _ = mock_http_client.call_args_list[0]
-    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
-                               '/changes/138000/revisions/4/review'))
-    data = json.loads(args[1])
-    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
+    tasks = self.taskqueue_stub.get_filtered_tasks(
+        queue_names='postreview-request-queue')
+    self.assertEqual(1, len(tasks))
+    payload = json.loads(tasks[0].payload)
+    self.assertDictEqual({'Code-Coverage': +1}, payload['data']['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -1609,12 +1609,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         patchset=4)
     self.assertEqual(blocking_entity.blocking_status,
                      BlockingStatus.VERDICT_NOT_BLOCK)
-    self.assertEqual(len(mock_http_client.call_args_list), 1)
-    args, _ = mock_http_client.call_args_list[0]
-    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
-                               '/changes/138000/revisions/4/review'))
-    data = json.loads(args[1])
-    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
+    tasks = self.taskqueue_stub.get_filtered_tasks(
+        queue_names='postreview-request-queue')
+    self.assertEqual(1, len(tasks))
+    payload = json.loads(tasks[0].payload)
+    self.assertDictEqual({'Code-Coverage': +1}, payload['data']['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -1701,7 +1700,9 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)
 
-    self.assertEqual(len(mock_http_client.call_args_list), 0)
+    tasks = self.taskqueue_stub.get_filtered_tasks(
+        queue_names='postreview-request-queue')
+    self.assertEqual(0, len(tasks))
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -1789,7 +1790,9 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)
 
-    self.assertEqual(len(mock_http_client.call_args_list), 0)
+    tasks = self.taskqueue_stub.get_filtered_tasks(
+        queue_names='postreview-request-queue')
+    self.assertEqual(0, len(tasks))
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -1882,12 +1885,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         patchset=4)
     self.assertEqual(blocking_entity.blocking_status,
                      BlockingStatus.VERDICT_NOT_BLOCK)
-    self.assertEqual(len(mock_http_client.call_args_list), 1)
-    args, _ = mock_http_client.call_args_list[0]
-    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
-                               '/changes/138000/revisions/4/review'))
-    data = json.loads(args[1])
-    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
+    tasks = self.taskqueue_stub.get_filtered_tasks(
+        queue_names='postreview-request-queue')
+    self.assertEqual(1, len(tasks))
+    payload = json.loads(tasks[0].payload)
+    self.assertDictEqual({'Code-Coverage': +1}, payload['data']['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -1981,12 +1983,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         patchset=4)
     self.assertEqual(blocking_entity.blocking_status,
                      BlockingStatus.VERDICT_NOT_BLOCK)
-    self.assertEqual(len(mock_http_client.call_args_list), 1)
-    args, _ = mock_http_client.call_args_list[0]
-    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
-                               '/changes/138000/revisions/4/review'))
-    data = json.loads(args[1])
-    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
+    tasks = self.taskqueue_stub.get_filtered_tasks(
+        queue_names='postreview-request-queue')
+    self.assertEqual(1, len(tasks))
+    payload = json.loads(tasks[0].payload)
+    self.assertDictEqual({'Code-Coverage': +1}, payload['data']['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -2079,12 +2080,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         patchset=4)
     self.assertEqual(blocking_entity.blocking_status,
                      BlockingStatus.VERDICT_NOT_BLOCK)
-    self.assertEqual(len(mock_http_client.call_args_list), 1)
-    args, _ = mock_http_client.call_args_list[0]
-    self.assertEqual(args[0], ('https://chromium-review.googlesource.com'
-                               '/changes/138000/revisions/4/review'))
-    data = json.loads(args[1])
-    self.assertDictEqual({'Code-Coverage': +1}, data['labels'])
+    tasks = self.taskqueue_stub.get_filtered_tasks(
+        queue_names='postreview-request-queue')
+    self.assertEqual(1, len(tasks))
+    payload = json.loads(tasks[0].payload)
+    self.assertDictEqual({'Code-Coverage': +1}, payload['data']['labels'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -2156,7 +2156,9 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     request_url = '/coverage/task/process-data/build/123456789'
     self.test_app.post(request_url)
 
-    self.assertEqual(len(mock_http_client.call_args_list), 0)
+    tasks = self.taskqueue_stub.get_filtered_tasks(
+        queue_names='postreview-request-queue')
+    self.assertEqual(0, len(tasks))
 
   @mock.patch.object(process_coverage.ProcessCodeCoverageData,
                      '_FetchAndSaveFileIfNecessary')

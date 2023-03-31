@@ -334,6 +334,8 @@ def _FetchCoverageBuildsStatus(host, change, patchset):
     if build.builder.builder not in try_builders:
       continue
     builds_status[build.builder.builder] = build.status
+  logging.info("build_status for host=%s, change=%d, patch=%d = %r", host,
+               change, patchset, builds_status)
   return builds_status
 
 
@@ -715,9 +717,6 @@ class ProcessCodeCoverageData(BaseHandler):
         logging.info("Bypassing the check" + " as %s is not in allowlist",
                      author_email)
         return
-      url = 'https://%s/changes/%d/revisions/%d/review' % (
-          patch.host, patch.change, patch.patchset)
-      headers = {'Content-Type': 'application/json; charset=UTF-8'}
       # Block CL only some files have low coverage
       low_coverage_culprit_files = self._GetLowCoverageCulpritFiles(entity)
 
@@ -729,6 +728,20 @@ class ProcessCodeCoverageData(BaseHandler):
             patchset=patch.patchset)
         blocking_entity.blocking_status = status
         blocking_entity.put()
+
+      def _PostReviewToGerrit(data):
+        taskqueue.add(
+            name='%s-%d-%d' %
+            (patch.host.replace('.', '_'), patch.change, patch.patchset),
+            queue_name=constants.POSTREVIEW_REQUEST_QUEUE,
+            target=constants.CODE_COVERAGE_REFERENCED_COVERAGE_WORKER,
+            payload=json.dumps({
+                'host': patch.host,
+                'change': patch.change,
+                'patchset': patch.patchset,
+                'data': data
+            }),
+            url='/coverage/task/low-coverage-blocking')
 
       if low_coverage_culprit_files:
         _UpdateBlockingStatus(BlockingStatus.VERDICT_BLOCK)
@@ -757,6 +770,8 @@ class ProcessCodeCoverageData(BaseHandler):
                      patch.change, patch.patchset)
         logging.info("low_coverage_culprit_files = %r",
                      low_coverage_culprit_files)
+        _PostReviewToGerrit(data)
+
       else:
         _UpdateBlockingStatus(BlockingStatus.VERDICT_NOT_BLOCK)
         data = {
@@ -768,7 +783,7 @@ class ProcessCodeCoverageData(BaseHandler):
         logging.info(('Adding CodeCoverage+1 label for '
                       'project %s, change %d,  patchset %d'), patch.project,
                      patch.change, patch.patchset)
-      FinditHttpClient().Post(url, json.dumps(data), headers=headers)
+        _PostReviewToGerrit(data)
 
   @ndb.transactional
   def _UpdateBlockingLowCoverageTracker(self,
@@ -781,6 +796,8 @@ class ProcessCodeCoverageData(BaseHandler):
     tracking_entity = LowCoverageBlocking.Get(
         server_host=patch.host, change=patch.change, patchset=patch.patchset)
     if not tracking_entity:
+      logging.info("Creating blocking entity for host=%s, change=%d, patch=%d",
+                   patch.host, patch.change, patch.patchset)
       tracking_entity = LowCoverageBlocking.Create(
           server_host=patch.host, change=patch.change, patchset=patch.patchset)
     # Update all builders' list
@@ -790,6 +807,7 @@ class ProcessCodeCoverageData(BaseHandler):
         set(tracking_entity.successful_builders))
     tracking_entity.processed_builders = set(processed_builders or []).union(
         set(tracking_entity.processed_builders))
+
     # Update blocking status
     if has_builder_failure:
       # pylint: disable=line-too-long
@@ -797,6 +815,11 @@ class ProcessCodeCoverageData(BaseHandler):
     elif set(tracking_entity.processed_builders) == set(
         tracking_entity.expected_builders):
       tracking_entity.blocking_status = BlockingStatus.READY_FOR_VERDICT
+    logging.info("Updating status for change %d, patch %d", patch.change,
+                 patch.patchset)
+    logging.info(tracking_entity.expected_builders)
+    logging.info(tracking_entity.successful_builders)
+    logging.info(tracking_entity.processed_builders)
     tracking_entity.put()
 
   def _ProcessCodeCoverageData(self, build_id):
@@ -896,6 +919,8 @@ class ProcessCodeCoverageData(BaseHandler):
       if LowCoverageBlocking.Get(
           server_host=patch.host, change=patch.change, patchset=patch.patchset
       ).blocking_status == BlockingStatus.READY_FOR_VERDICT:
+        logging.info("checking for low coverage for change%d, patch=%d",
+                     patch.change, patch.project)
         self._MayBeBlockCLForLowCoverage(patch)
     else:
       if (properties.get('coverage_override_gitiles_commit', False) or
