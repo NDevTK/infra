@@ -39,6 +39,52 @@
       },
       "revId": "23fe3514e29175409b9257f46ebbcbea2d77996d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f502a093_53d2cb40",
+        "filename": "go/src/infra/build/siso/build/check_trace.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-03-31T04:31:23Z",
+      "side": 1,
+      "message": "Have you observed any platform outputs before? \nIf there is any outplatforms, shouldn\u0027t this be `impure`?",
+      "range": {
+        "startLine": 58,
+        "startChar": 123,
+        "endLine": 58,
+        "endChar": 135
+      },
+      "revId": "23fe3514e29175409b9257f46ebbcbea2d77996d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0195a513_16faf799",
+        "filename": "go/src/infra/build/siso/build/check_trace.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-03-31T04:31:23Z",
+      "side": 1,
+      "message": "Shouldn\u0027t this be empty when `UseSystemInput \u003d false`? \nI wonder if it should check `UseSystemInput` to judge this is pure or not.",
+      "range": {
+        "startLine": 58,
+        "startChar": 89,
+        "endLine": 58,
+        "endChar": 100
+      },
+      "revId": "23fe3514e29175409b9257f46ebbcbea2d77996d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
