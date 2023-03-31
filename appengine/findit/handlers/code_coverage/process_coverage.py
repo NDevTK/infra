@@ -122,6 +122,19 @@ def _IsFileInAllowlistForBlocking(file_path):
   return False
 
 
+def _IsFileTypeAllowedForBlocking(file_path):
+  blocking_file_types = waterfall_config.GetCodeCoverageSettings().get(
+      'block_low_coverage_file_types', [])
+  # A CL may be blocked for any file type if no blocking
+  # file types are specified.
+  if not blocking_file_types:
+    return True
+  for file_type in blocking_file_types:
+    if file_path.endswith(file_type):
+      return True
+  return False
+
+
 def _HaveEnoughLinesChangedForBlocking(inc_coverage):
   return inc_coverage.total_lines >= waterfall_config.GetCodeCoverageSettings(
   ).get('block_low_coverage_changes_minimum_loc',
@@ -665,8 +678,8 @@ class ProcessCodeCoverageData(BaseHandler):
   def _GetLowCoverageCulpritFiles(self, entity):
     low_coverage_files = []
     for inc_metrics in entity.incremental_percentages:
-      if not inc_metrics.path.endswith(".java"):
-        logging.info("%s is not a java file", inc_metrics.path)
+      if not _IsFileTypeAllowedForBlocking(inc_metrics.path):
+        logging.info("%s is not of allowed file type", inc_metrics.path)
         continue
       if not _IsFileInAllowlistForBlocking(inc_metrics.path):
         logging.info("%s is not in allowed dirs", inc_metrics.path)
