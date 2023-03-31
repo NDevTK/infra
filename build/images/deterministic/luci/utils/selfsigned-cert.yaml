@@ -1,0 +1,12 @@
+name: luci/utils/selfsigned-cert
+extends: ../../../base.yaml
+
+contextdir: ../../../../../go/src/go.chromium.org/luci/server/cmd/selfsigned-cert/docker
+deterministic: true
+
+sources:
+  - ../../../../../go/src/go.chromium.org/luci/server/cmd/selfsigned-cert
+
+build:
+  - go_binary: go.chromium.org/luci/server/cmd/selfsigned-cert
+    dest: ${contextdir}/bin/selfsigned-cert
