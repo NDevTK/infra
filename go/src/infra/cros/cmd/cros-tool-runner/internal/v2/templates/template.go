@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,7 @@ var aCrosTkoPublishProcessor = newCrosTkoPublishProcessor()
 var aCrosRdbPublishProcessor = newCrosRdbPublishProcessor()
 var aCrosCpconPublishProcessor = newCrosRdbPublishProcessor()
 var aCacheServerProcessor = newCacheServerProcessor()
+var aCrosFwProvisionProcessor = newCrosFwProvisionProcessor()
 
 // TemplateProcessor converts a container-specific template into a valid generic
 // StartContainerRequest. Besides request conversions, a TemplateProcessor is
@@ -94,6 +95,8 @@ func (r *RequestRouter) getActualProcessor(request *api.StartTemplatedContainerR
 		return aCacheServerProcessor, nil
 	case *api.Template_CrosPublish:
 		return r.getActualPublishProcessor(t.CrosPublish.PublishType)
+	case *api.Template_CrosFwProvision:
+		return aCrosFwProvisionProcessor, nil
 	default:
 		return nil, status.Error(codes.Unimplemented, fmt.Sprintf("%v to be implemented", t))
 	}
