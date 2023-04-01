@@ -853,7 +853,8 @@ class ProcessCodeCoverageData(BaseHandler):
   def _ProcessCodeCoverageData(self, build_id):
     build = GetV2Build(
         build_id,
-        fields=FieldMask(paths=['id', 'output.properties', 'input', 'builder']))
+        fields=FieldMask(
+            paths=['id', 'output.properties', 'input', 'builder', 'status']))
 
     if not build:
       return BaseHandler.CreateError(
@@ -869,8 +870,11 @@ class ProcessCodeCoverageData(BaseHandler):
     # Convert the Struct to standard dict, to use .get, .iteritems etc.
     properties = dict(build.output.properties.items())
     gs_bucket = properties.get('coverage_gs_bucket')
-
-    gs_metadata_dirs = properties.get('coverage_metadata_gs_paths')
+    gs_metadata_dirs = properties.get('coverage_metadata_gs_paths') or []
+    # Get mimic builder names from builder output properties. Multiple test
+    # types' coverage data will be uploaded to separated folders, mimicking
+    # these come from different builders.
+    mimic_builder_names = properties.get('mimic_builder_names') or []
 
     if properties.get('process_coverage_data_failure'):
       monitoring.code_coverage_cq_errors.increment({
@@ -879,11 +883,10 @@ class ProcessCodeCoverageData(BaseHandler):
           'builder': build.builder.builder,
       })
 
-    if 'coverage_is_presubmit' not in properties:
-      logging.error('Expecting "coverage_is_presubmit" in output properties')
-      return
+    def _IsTryBuild():
+      return build.builder.bucket == 'try'
 
-    if properties['coverage_is_presubmit']:
+    if _IsTryBuild():
       patch = build.input.gerrit_changes[0]
       builders_status = _FetchCoverageBuildsStatus(patch.host, patch.change,
                                                    patch.patchset)
@@ -905,33 +908,12 @@ class ProcessCodeCoverageData(BaseHandler):
           successful_builders=successful_builders,
           has_builder_failure=has_builder_failure)
 
-    # Ensure that the coverage data is ready.
-    if not gs_bucket or not gs_metadata_dirs:
-      logging.warn('coverage GS bucket info not available in %r', build.id)
-      self._UpdateBlockingLowCoverageTracker(
-          patch, processed_builders=[build.builder.builder])
-      if LowCoverageBlocking.Get(
-          server_host=patch.host, change=patch.change, patchset=patch.patchset
-      ).blocking_status == BlockingStatus.READY_FOR_VERDICT:
-        self._MayBeBlockCLForLowCoverage(patch)
-      return
-
-    # Get mimic builder names from builder output properties. Multiple test
-    # types' coverage data will be uploaded to separated folders, mimicking
-    # these come from different builders.
-    mimic_builder_names = properties.get('mimic_builder_names')
-    if not mimic_builder_names:
-      logging.error('Couldn\'t find valid mimic_builder_names property from '
-                    'builder output properties.')
-      return
-
-    assert (len(mimic_builder_names) == len(gs_metadata_dirs)
-           ), 'mimic builder names and gs paths should be of the same length'
-
-    if properties['coverage_is_presubmit']:
+    if _IsTryBuild() and build.status == common_pb2.Status.SUCCESS:
       # For presubmit coverage, save the whole data in json.
       # Assume there is only 1 patch which is true in CQ.
       assert len(build.input.gerrit_changes) == 1, 'Expect only one patchset'
+      assert (len(mimic_builder_names) == len(gs_metadata_dirs)
+             ), 'mimic builder names and gs paths should be of the same length'
       for gs_metadata_dir, mimic_builder_name in zip(gs_metadata_dirs,
                                                      mimic_builder_names):
         full_gs_metadata_dir = '/%s/%s' % (gs_bucket, gs_metadata_dir)
@@ -950,7 +932,16 @@ class ProcessCodeCoverageData(BaseHandler):
         logging.info("checking for low coverage for change=%d, patch=%d",
                      patch.change, patch.patchset)
         self._MayBeBlockCLForLowCoverage(patch)
-    else:
+    elif not _IsTryBuild():  # CI builds are processed even with failures
+      if not gs_bucket or not gs_metadata_dirs:
+        logging.error('coverage GS bucket info not available in %r', build.id)
+        return
+      if not mimic_builder_names:
+        logging.error('Couldn\'t find valid mimic_builder_names property from '
+                      'builder output properties.')
+        return
+      assert (len(mimic_builder_names) == len(gs_metadata_dirs)
+             ), 'mimic builder names and gs paths should be of the same length'
       if (properties.get('coverage_override_gitiles_commit', False) or
           not self._IsGitilesCommitAvailable(build.input.gitiles_commit)):
         self._SetGitilesCommitFromOutputProperty(build, properties)

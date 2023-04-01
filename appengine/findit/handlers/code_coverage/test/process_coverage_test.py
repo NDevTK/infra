@@ -238,11 +238,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                              mocked_inc_percentages, *_):
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'linux-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -330,11 +330,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                                             mocked_inc_percentages, *_):
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'linux-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -420,11 +420,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                                         mocked_inc_percentages, *_):
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'linux-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -517,11 +517,12 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                                                  mocked_inc_percentages, *_):
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'linux-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -606,11 +607,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
       mocked_get_validated_data, mocked_inc_percentages, *_):
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'linux-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -743,11 +744,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'android-nougat-x86-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -845,14 +846,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'android-nougat-x86-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
-        # coverage_gs_bucket and coverage_metadata_gs_paths properties are
-        # missing indicating this build did not produce any coverage data
-        ('mimic_builder_names', ['android-nougat-x86-rel'])
+        # coverage_gs_bucket, coverage_metadata_gs_paths and
+        # mimic_builder_names properties are missing indicating
+        # this build did not produce any coverage data
     ]
     build.input.gerrit_changes = [
         mock.Mock(
@@ -923,11 +924,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'android-nougat-x86-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -1029,11 +1030,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'android-nougat-x86-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -1146,14 +1147,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'android-nougat-x86-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
-        # coverage_gs_bucket and coverage_metadata_gs_paths properties are
-        # missing indicating this build did not produce any coverage data
-        ('mimic_builder_names', ['android-nougat-x86-rel'])
+        # coverage_gs_bucket, coverage_metadata_gs_paths and
+        # mimic_builder_names properties are missing indicating
+        # this build did not produce any coverage data
     ]
     build.input.gerrit_changes = [
         mock.Mock(
@@ -1242,11 +1243,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'android-nougat-x86-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -1344,11 +1345,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'android-nougat-x86-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -1438,11 +1439,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'android-nougat-x86-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -1556,11 +1557,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'android-nougat-x86-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -1656,11 +1657,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'android-nougat-x86-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -1752,11 +1753,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'android-nougat-x86-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -1845,11 +1846,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'android-nougat-x86-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -1939,11 +1940,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'android-nougat-x86-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -2040,11 +2041,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'android-nougat-x86-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -2143,11 +2144,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'android-nougat-x86-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -2245,11 +2246,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'android-nougat-x86-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -2347,11 +2348,11 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         })
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chromium'
     build.builder.bucket = 'try'
     build.builder.builder = 'android-nougat-x86-rel'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', True),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'presubmit/chromium-review.googlesource.com/138000/4/try/'
@@ -2412,6 +2413,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                               mocked_fetch_file, *_):
     # Mock buildbucket v2 API.
     build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
     build.builder.project = 'chrome'
     build.builder.bucket = 'coverage'
     build.builder.builder = 'linux-code-coverage'
