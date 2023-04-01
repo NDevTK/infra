@@ -786,7 +786,10 @@ class ProcessCodeCoverageData(BaseHandler):
           msg_body += "\n" + "\n".join(file_names_with_bullets)
         msg_footer = ('Please add tests for uncovered lines, '
                       'or add Low-Coverage-Reason:<reason> in '
-                      'the change description. If you think coverage is '
+                      'the change description to bypass. '
+                      # TODO(crbug/1429772):Link to a external accessible doc.
+                      'See http://bit.ly/3G7GCfA to understand'
+                      ' when it is okay to bypass. If you think coverage is '
                       'underreported, file a bug to Infra>Test>CodeCoverage')
         data = {
             'labels': {
@@ -823,6 +826,9 @@ class ProcessCodeCoverageData(BaseHandler):
     # Get tracking entity. Create one if it doesn't exist
     tracking_entity = LowCoverageBlocking.Get(
         server_host=patch.host, change=patch.change, patchset=patch.patchset)
+    logging.info(expected_builders)
+    logging.info(successful_builders)
+    logging.info(processed_builders)
     if not tracking_entity:
       logging.info("Creating blocking entity for host=%s, change=%d, patch=%d",
                    patch.host, patch.change, patch.patchset)
