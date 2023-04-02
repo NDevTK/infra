@@ -181,6 +181,7 @@ func prepareTestResponse(resultRootDir string, testCaseResults []*api.TestCaseRe
 		t.ResultDirPath.Path = resultDir
 		results = append(results, t)
 	}
+	log.Printf("CTR: Cros-Test Results: %s", results)
 	return &api.CrosToolRunnerTestResponse{
 		TestCaseResults: results,
 	}, nil
