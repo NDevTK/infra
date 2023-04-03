@@ -18,21 +18,31 @@ message Inputs {
     MODE_CL = 3;  // build images from code in a Gerrit CL
   }
 
-  // Project describes what gclient solution to checkout and where to apply
-  // a patch to (when running in MODE_CL).
+  // Project describes what code to checkout and where to apply a patch to
+  // (when running in MODE_CL).
   enum Project {
     PROJECT_UNDEFINED = 0;
 
     PROJECT_INFRA = 1;           // checkout infra solution
     PROJECT_INFRA_INTERNAL = 2;  // checkout infra_internal solution
     PROJECT_LUCI_GO = 3;         // checkout infra solution, apply CL to luci-go
+
+    PROJECT_GIT_REPO = 4;        // checkout a standole git repository
   }
 
   // Mode of operation. Required.
   Mode mode = 1;
 
-  // Project with the source code. Required.
+  // Project with the source code to checkout. Required.
   Project project = 2;
+
+  // Describes a standalone git repo to checkout when using PROJECT_GIT_REPO.
+  message GitRepo {
+    string url = 1;              // https:// git repo URL
+    string go_version_file = 2;  // path to a file with Go version
+    string nodejs_version_file = 3;  // path to a file with Node.js version
+  }
+  GitRepo git_repo = 5;
 
   // What instance of image building infrastructure to use, e.g. dev or prod.
   //
@@ -42,7 +52,7 @@ message Inputs {
   // Required.
   string infra = 3;
 
-  // A path(s) within the gclient solution to a directory with *.yaml files to
+  // A path(s) within the checkout to a directory with *.yaml files to
   // discover and build, e.g. 'infra/build/images/deterministic'. Will be listed
   // recursively.
   //

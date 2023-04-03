@@ -19,9 +19,8 @@ DEPS = [
     'recipe_engine/properties',
     'recipe_engine/step',
     'recipe_engine/time',
-
     'depot_tools/gerrit',
-
+    'depot_tools/git',
     'cloudbuildhelper',
     'infra_checkout',
 ]
@@ -52,7 +51,9 @@ def RunSteps(api, properties):
   # Checkout either the committed code or a pending CL, depending on the mode.
   # This also calculates metadata (labels, tags) to apply to images built from
   # this code.
-  if properties.mode in (PROPERTIES.MODE_CI, PROPERTIES.MODE_TS):
+  if properties.project == PROPERTIES.PROJECT_GIT_REPO:
+    meta, build_env = _checkout_git(api, properties.git_repo, properties.mode)
+  elif properties.mode in (PROPERTIES.MODE_CI, PROPERTIES.MODE_TS):
     meta, build_env = _checkout_committed(
         api, properties.mode, properties.project)
   elif properties.mode == PROPERTIES.MODE_CL:
@@ -141,6 +142,14 @@ def _validate_props(p):  # pragma: no cover
   # of infra.git checkout.
   if p.project == PROPERTIES.PROJECT_LUCI_GO and p.mode != PROPERTIES.MODE_CL:
     raise ValueError('PROJECT_LUCI_GO can be used only together with MODE_CL')
+
+  if p.project == PROPERTIES.PROJECT_GIT_REPO:
+    if not p.HasField('git_repo'):
+      raise ValueError('"git_repo" is required when using PROJECT_GIT_REPO')
+    if p.mode == PROPERTIES.MODE_CL:
+      raise ValueError('PROJECT_GIT_REPO cannot be used together with MODE_CL')
+  elif p.HasField('git_repo'):
+    raise ValueError('"git_repo" can only be set when using PROJECT_GIT_REPO')
 
 
 def _checkout_committed(api, mode, project):
@@ -269,6 +278,58 @@ def _checkout_pending(api, project):
           root=co.path,
           repos=co.bot_update_step.json.output['manifest'],
       )), lambda api: _infra_checkout_build_environ(co, api)
+
+
+def _checkout_git(api, repo, mode):
+  """Checks out a standalone Git repository.
+  Checks out the commit passed via Buildbucket inputs or `refs/heads/main`.
+  Args:
+    api: recipes API.
+    repo: PROPERTIES.GitRepo proto.
+    version_label_template: a template for the version label string.
+  Returns:
+    (Metadata, build environment context manager).
+  """
+  path = api.path['cache'].join('builder', 'repo')
+  revision = api.git.checkout(
+      url=repo.url,
+      ref=api.buildbucket.gitiles_commit.id or 'refs/heads/main',
+      dir_path=path,
+      submodules=False)
+
+  @contextmanager
+  def build_environ(api):
+    with api.cloudbuildhelper.build_environment(path, repo.go_version_file,
+                                                repo.nodejs_version_file):
+      yield
+
+  canonical_tag = None
+  if mode == PROPERTIES.MODE_CI:
+    # E.g. "41861-d008a93".
+    commit_label = api.cloudbuildhelper.get_version_label(
+        path=path, revision=revision, ref=api.buildbucket.gitiles_commit.ref)
+    # E.g. "ci-2021.06.23-41861-d008a93".
+    canonical_tag = 'ci-%s-%s' % (_date(api), commit_label)
+  elif mode == PROPERTIES.MODE_TS:
+    # E.g. "ts-2021.06.23-113234"
+    canonical_tag = 'ts-%s-%d' % (_date(api), api.buildbucket.build.number)
+  else:
+    raise AssertionError('Impossible')  # pragma: no cover
+
+  return Metadata(
+      canonical_tag=canonical_tag,
+      labels={
+          'org.opencontainers.image.source': repo.url,
+          'org.opencontainers.image.revision': revision,
+      },
+      tags=['latest'],
+      checkout=api.cloudbuildhelper.CheckoutMetadata(
+          root=path,
+          repos={'.': {
+              'repository': repo.url,
+              'revision': revision
+          }},
+      )), build_environ
 
 
 @contextmanager
@@ -493,6 +554,15 @@ def GenTests(api):
       try_props('infra/infra_internal', 123456, 7)
   )
 
+  yield (api.test('ci-git') + api.properties(
+      mode=PROPERTIES.MODE_CI,
+      project=PROPERTIES.PROJECT_GIT_REPO,
+      infra='prod',
+      git_repo=PROPERTIES.GitRepo(
+          url='https://chromium.googlesource.com/infra/cop'),
+      manifests=['build/images'],
+  ))
+
   yield (
       api.test('ci-infra') +
       api.properties(
@@ -512,6 +582,15 @@ def GenTests(api):
           manifests=['infra_internal/build/images/deterministic'],
       )
   )
+
+  yield (api.test('ts-git') + api.properties(
+      mode=PROPERTIES.MODE_TS,
+      project=PROPERTIES.PROJECT_GIT_REPO,
+      infra='prod',
+      git_repo=PROPERTIES.GitRepo(
+          url='https://chromium.googlesource.com/infra/cop'),
+      manifests=['build/images'],
+  ))
 
   yield (
       api.test('ts-infra') +
