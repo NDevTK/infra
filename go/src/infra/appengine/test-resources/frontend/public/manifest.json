@@ -1,0 +1,15 @@
+{
+  "short_name": "Chromium Test Metrics",
+  "name": "Chromium test Metrics Dashboard",
+  "icons": [
+    {
+      "src": "logo48.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
