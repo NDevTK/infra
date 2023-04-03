@@ -140,7 +140,14 @@ def builder(
         short_name = short_name,
     )
 
-def chromium_genfiles(short_name, name, recipe_properties, os = None, cpu_cores = None, cpu = None):
+def chromium_genfiles(
+        short_name,
+        name,
+        recipe_properties,
+        os = None,
+        cpu_cores = None,
+        cpu = None,
+        xcode_build_version = None):
     """A builder for generating kzips for chromium/src.
 
       In recipe_properties, you can specify the following parameters:
@@ -158,6 +165,7 @@ def chromium_genfiles(short_name, name, recipe_properties, os = None, cpu_cores 
         executable = build.recipe("chromium_codesearch"),
         properties = {
             "recipe_properties": recipe_properties,
+            "xcode_build_version": xcode_build_version,
         },
         builder_group_property_name = "builder_group",
         os = os,
@@ -337,6 +345,7 @@ chromium_genfiles(
     os = "Mac-13",
     cpu_cores = "8",
     cpu = "arm64",
+    xcode_build_version = "14e5207e",
 )
 
 chromium_genfiles(
