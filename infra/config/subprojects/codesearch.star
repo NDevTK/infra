@@ -222,6 +222,7 @@ builder(
             "codesearch-gen-chromium-android",
             "codesearch-gen-chromium-chromiumos",
             "codesearch-gen-chromium-fuchsia",
+            "codesearch-gen-chromium-ios",
             "codesearch-gen-chromium-lacros",
             "codesearch-gen-chromium-linux",
             "codesearch-gen-chromium-mac",
