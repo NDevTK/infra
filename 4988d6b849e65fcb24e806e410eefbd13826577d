@@ -56,6 +56,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "8b3154fb_a06479bd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2023-04-03T22:07:19Z",
+      "side": 1,
+      "message": "Ok, did most of what you said. But how about we do it without a staging builder, so we have push to prod. Also please comment on the corresponding builder def I wrote in https://crrev.com/i/5699530.",
+      "parentUuid": "e1be3d27_326f820d",
+      "revId": "4988d6b849e65fcb24e806e410eefbd13826577d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "231cd123_76e0bad4",
         "filename": "go/src/infra/appengine/builder_health_indicators/app.yaml",
         "patchSetId": 2
@@ -279,6 +297,30 @@
       "side": 1,
       "message": "I think we want alerting on errors, but not necessarily CI/CD automation just yet. We\u0027re trying for a MVP, and I think the error alerting will give us enough time to fix potential issues, since it\u0027s not the end of the world for the health to be a few days stale, at this stage.",
       "parentUuid": "915bdb20_2387c4c3",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 13
+      },
+      "revId": "4988d6b849e65fcb24e806e410eefbd13826577d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f419985d_f0fcda4c",
+        "filename": "go/src/infra/appengine/builder_health_indicators/deploy.sh",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2023-04-03T22:07:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a7537a83_f01b0cd9",
       "range": {
         "startLine": 7,
         "startChar": 0,
