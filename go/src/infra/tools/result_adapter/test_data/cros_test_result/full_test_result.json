@@ -87,7 +87,8 @@
                 "display_name":"hatch-cq/R102-14632.0.0-62834-8818718496810023809/wificell-cq/tast.wificell-cq",
                 "branch":"main",
                 "main_builder_name":"main-release",
-                "contacts": ["user@google.com"]
+                "contacts": ["user@google.com"],
+                "suite":"arc-cts-vm"
             },
             "logs_info":[
                 {

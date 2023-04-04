@@ -255,6 +255,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("build", "R106-15048.0.0"),
 						pbutil.StringPair("contacts", "user@google.com"),
 						pbutil.StringPair("declared_name", "hatch-cq/R102-14632.0.0-62834-8818718496810023809/wificell-cq/tast.wificell-cq"),
+						pbutil.StringPair("suite", "arc-cts-vm"),
 						pbutil.StringPair("drone", "skylab-drone-deployment-prod-6dc79d4f9-czjlj"),
 						pbutil.StringPair("drone_server", "chromeos4-row4-rack1-drone8"),
 						pbutil.StringPair("hostname", "chromeos15-row4-rack5-host1"),

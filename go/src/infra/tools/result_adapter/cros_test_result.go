@@ -190,6 +190,7 @@ func genTestResultTags(testRun *artifactpb.TestRun, testInvocation *artifactpb.T
 			tags = AppendTags(tags, "branch", testCaseInfo.GetBranch())
 			tags = AppendTags(tags, "main_builder_name", testCaseInfo.GetMainBuilderName())
 			tags = AppendTags(tags, "contacts", strings.Join(testCaseInfo.GetContacts(), ","))
+			tags = AppendTags(tags, "suite", testCaseInfo.GetSuite())
 		}
 
 		timeInfo := testRun.GetTimeInfo()
