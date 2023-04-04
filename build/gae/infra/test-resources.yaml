@@ -1,0 +1,8 @@
+name: infra/test-resources
+extends: ../base.yaml
+
+inputsdir: ../../../go/src/infra/appengine/test-resources
+
+build:
+  - go_gae_bundle: ${inputsdir}/app.yaml
+    dest: ${contextdir}/appengine

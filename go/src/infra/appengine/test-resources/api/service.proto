@@ -1,0 +1,25 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_resources;
+
+option go_package = "infra/appengine/test-resources/api";
+
+service Stats {
+  rpc UpdateMetricsTable(UpdateMetricsTableRequest) returns (UpdateMetricsTableResponse);
+}
+
+message UpdateMetricsTableRequest {
+  // Inclusive start date to update
+  // Dates should be specified in YYYY-MM-DD format.
+  string from_date = 1;
+  // Inclusive end date to update
+  // Dates should be specified in YYYY-MM-DD format.
+  string to_date = 2;
+}
+
+message UpdateMetricsTableResponse {
+}
