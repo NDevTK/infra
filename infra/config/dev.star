@@ -171,6 +171,12 @@ luci.builder(
     },
 )
 
+luci.task_backend(
+    name = "swarming_task_backend_dev",
+    target = "swarming://chromium-swarm-dev",
+    config = {"bot_ping_tolerance": 120},
+)
+
 def adhoc_builder(
         name,
         os,
@@ -180,7 +186,8 @@ def adhoc_builder(
         experiments = None,
         schedule = None,
         triggered_by = None,
-        description_html = None):
+        description_html = None,
+        task_backend = None):
     dims = {"os": os, "cpu": "x86-64", "pool": "luci.chromium.ci"}
     if extra_dims:
         dims.update(**extra_dims)
@@ -196,6 +203,7 @@ def adhoc_builder(
         build_numbers = True,
         schedule = schedule,
         triggered_by = triggered_by,
+        task_backend = task_backend,
     )
 
 adhoc_builder(
@@ -245,6 +253,7 @@ adhoc_builder(
         cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
         use_python3 = True,
     ),
+    task_backend = "swarming_task_backend_dev",
     properties = {
         "status": "SUCCESS",
         "steps": [
@@ -294,6 +303,7 @@ adhoc_builder(
         cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
         use_python3 = True,
     ),
+    task_backend = "swarming_task_backend_dev",
     properties = {
         "status": "SUCCESS",
         "steps": [
@@ -307,42 +317,7 @@ adhoc_builder(
     },
 )
 
-def adhoc_task_backend_builder(
-        name,
-        os,
-        executable,
-        task_backend,
-        extra_dims = None,
-        properties = None,
-        experiments = None,
-        schedule = None,
-        triggered_by = None,
-        description_html = None):
-    dims = {"os": os, "cpu": "x86-64", "pool": "luci.chromium.ci"}
-    if extra_dims:
-        dims.update(**extra_dims)
-    luci.builder(
-        name = name,
-        bucket = "ci",
-        task_backend = task_backend,
-        executable = executable,
-        description_html = description_html,
-        dimensions = dims,
-        properties = properties,
-        experiments = experiments,
-        service_account = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
-        build_numbers = True,
-        schedule = schedule,
-        triggered_by = triggered_by,
-    )
-
-luci.task_backend(
-    name = "swarming_task_backend_dev",
-    target = "swarming://chromium-swarm-dev",
-    config = {"bot_ping_tolerance": 120},
-)
-
-adhoc_task_backend_builder(
+adhoc_builder(
     name = "linux-rel-buildbucket-noop",
     os = "Ubuntu-18.04",
     executable = luci.recipe(
@@ -366,7 +341,7 @@ adhoc_task_backend_builder(
     schedule = "with 10m interval",
 )
 
-adhoc_task_backend_builder(
+adhoc_builder(
     name = "linux-rel-buildbucket-swarming-task-backend",
     os = "Ubuntu-18.04",
     executable = luci.recipe(
