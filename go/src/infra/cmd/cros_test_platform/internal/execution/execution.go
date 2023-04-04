@@ -44,7 +44,8 @@ type Args struct {
 }
 
 const (
-	bufferSize = 1024
+	bufferSize        = 1024
+	loopSleepInterval = 30 * time.Second
 )
 
 // Run runs an execution until success.
@@ -242,7 +243,7 @@ func (r *runner) LaunchAndWait(ctx context.Context, c trservice.Client, workingD
 			// aborts when summarizing individual tests' results.
 			// The execute step completes without errors.
 			return nil
-		case <-clock.After(ctx, 15*time.Second):
+		case <-clock.After(ctx, loopSleepInterval):
 		}
 	}
 }
