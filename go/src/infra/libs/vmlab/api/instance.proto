@@ -39,9 +39,11 @@ message CreateVmInstanceRequest {
   map<string, string> tags = 2;
 }
 
-// Request for the InstanceApi.Cleanup endpoint.
-message CleanupVmInstancesRequest {
-  // Instances with matching tags will be cleaned up.
+// Request for the InstanceApi.List endpoint.
+message ListVmInstancesRequest {
+  // Configuration of the backend to list the instance.
+  Config config = 2;
+  // Instances with matching tags will be filtered.
   map<string, string> tag_filters = 1;
 }
 

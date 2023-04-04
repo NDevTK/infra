@@ -28,6 +28,6 @@ func (g *vmLeaserInstanceApi) Delete(ins *api.VmInstance) error {
 	return errors.New("not implemented")
 }
 
-func (g *vmLeaserInstanceApi) Cleanup(req *api.CleanupVmInstancesRequest) error {
-	return errors.New("not implemented")
+func (g *vmLeaserInstanceApi) List(req *api.ListVmInstancesRequest) ([]*api.VmInstance, error) {
+	return []*api.VmInstance{}, errors.New("not implemented")
 }

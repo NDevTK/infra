@@ -10,8 +10,8 @@ type InstanceApi interface {
 	Create(*CreateVmInstanceRequest) (*VmInstance, error)
 	// Delete releases an existing VM instance.
 	Delete(*VmInstance) error
-	// Cleanup releases existing VM instances that match the request.
-	Cleanup(*CleanupVmInstancesRequest) error
+	// List existing VM instances that match the request.
+	List(*ListVmInstancesRequest) ([]*VmInstance, error)
 }
 
 // ImageApi is the VM image management API that all providers implement. This is

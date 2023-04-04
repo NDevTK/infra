@@ -5,6 +5,7 @@
 package gcloud
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
@@ -20,11 +21,12 @@ func (c fakeRandomGenerator) GetRandHex(l int) (string, error) {
 	return "aaaaaa", nil
 }
 
-type instanceCreateSuccessCommander struct {
+type mockCommander struct {
 	Commands *[][]string
+	Outputs  *[][]byte
 }
 
-func (c instanceCreateSuccessCommander) GetCommandOutput(command string, args ...string) ([]byte, error) {
+func (c mockCommander) GetCommandOutput(command string, args ...string) ([]byte, error) {
 	// Unused field are deleted.
 	if c.Commands != nil {
 		thisCommand := []string{}
@@ -32,9 +34,16 @@ func (c instanceCreateSuccessCommander) GetCommandOutput(command string, args ..
 		thisCommand = append(thisCommand, args...)
 		*c.Commands = append(*c.Commands, thisCommand)
 	}
-	return []byte(`
-[
+	CurrentOutput := (*c.Outputs)[0]
+	(*c.Outputs) = (*c.Outputs)[1:]
+	return CurrentOutput, nil
+}
+
+var INSTNACE_WITH_PUBLIC_IP = []byte(`
   {
+    "name": "vmlab-1112312312",
+    "machineType": "https://www.googleapis.com/compute/v1/projects/vmlab-project/zones/us-west2-a/machineTypes/n2-standard-4",
+    "zone": "https://www.googleapis.com/compute/v1/projects/vmlab-project/zones/us-west-2",
     "networkInterfaces": [
       {
         "accessConfigs": [
@@ -46,14 +55,34 @@ func (c instanceCreateSuccessCommander) GetCommandOutput(command string, args ..
       }
     ]
   }
-]
-`), nil
-}
+`)
+
+var INSTNACE_WITHOUT_PUBLIC_IP = []byte(`
+  {
+    "name": "vmlab-1234123481",
+    "machineType": "https://www.googleapis.com/compute/v1/projects/vmlab-project/zones/us-west2-a/machineTypes/n2-standard-8",
+    "zone": "https://www.googleapis.com/compute/v1/projects/vmlab-project/zones/us-west-3",
+    "networkInterfaces": [
+      {
+        "networkIP": "192.168.0.2"
+      }
+    ]
+  }
+`)
+
+var CREATE_SUCCESS_OUTPUT = []byte(fmt.Sprintf("[\n%s\n]", string(INSTNACE_WITH_PUBLIC_IP)))
+
+var LIST_SUCCESS_OUTPUT = []byte(fmt.Sprintf("[\n%s,\n%s\n]", string(INSTNACE_WITH_PUBLIC_IP), string(INSTNACE_WITHOUT_PUBLIC_IP)))
+
+var EMPTY_OUTPUT = []byte(``)
 
 func TestCreateWithPublicIpAddress(t *testing.T) {
 	gcloud, _ := New()
-	mockExecCommand := instanceCreateSuccessCommander{
+	mockExecCommand := mockCommander{
 		Commands: &[][]string{},
+		Outputs: &[][]byte{
+			CREATE_SUCCESS_OUTPUT,
+		},
 	}
 	execCommand = mockExecCommand
 	random = fakeRandomGenerator{}
@@ -99,8 +128,11 @@ func TestCreateWithPublicIpAddress(t *testing.T) {
 
 func TestCreateWithInternalIpAddress(t *testing.T) {
 	gcloud, _ := New()
-	mockExecCommand := instanceCreateSuccessCommander{
+	mockExecCommand := mockCommander{
 		Commands: &[][]string{},
+		Outputs: &[][]byte{
+			CREATE_SUCCESS_OUTPUT,
+		},
 	}
 	execCommand = mockExecCommand
 	random = fakeRandomGenerator{}
@@ -147,8 +179,11 @@ func TestCreateWithInternalIpAddress(t *testing.T) {
 
 func TestCreateWithTags(t *testing.T) {
 	gcloud, _ := New()
-	mockExecCommand := instanceCreateSuccessCommander{
+	mockExecCommand := mockCommander{
 		Commands: &[][]string{},
+		Outputs: &[][]byte{
+			CREATE_SUCCESS_OUTPUT,
+		},
 	}
 	execCommand = mockExecCommand
 	random = fakeRandomGenerator{}
@@ -232,9 +267,9 @@ func TestDeleteMissingZone(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 	gcloud, _ := New()
-	// TODO(mingkong): consider to rename the mock
-	mockExecCommand := instanceCreateSuccessCommander{
+	mockExecCommand := mockCommander{
 		Commands: &[][]string{},
+		Outputs:  &[][]byte{EMPTY_OUTPUT},
 	}
 	execCommand = mockExecCommand
 	err := gcloud.Delete(
@@ -257,5 +292,84 @@ func TestDelete(t *testing.T) {
 		"--project=vmlab-project", "--zone=us-west-2", "--quiet"}
 	if diff := cmp.Diff(*mockExecCommand.Commands, [][]string{expectedCommand}); diff != "" {
 		t.Errorf("Executed wrong command: %v", diff)
+	}
+}
+
+func TestList(t *testing.T) {
+	gcloud, _ := New()
+	mockExecCommand := mockCommander{
+		Commands: &[][]string{},
+		Outputs: &[][]byte{
+			LIST_SUCCESS_OUTPUT,
+		},
+	}
+	execCommand = mockExecCommand
+	instances, err := gcloud.List(
+		&api.ListVmInstancesRequest{
+			Config: &api.Config{
+				Backend: &api.Config_GcloudBackend{
+					GcloudBackend: &api.Config_GCloudBackend{
+						Project:        "vmlab-project",
+						Zone:           "us-west-2",
+						MachineType:    "n2-standard-4",
+						InstancePrefix: "gcetest-",
+					},
+				},
+			},
+			TagFilters: map[string]string{
+				"swarming-bot": "vm-bot-1",
+				"label-model":  "betty",
+			},
+		})
+	if err != nil {
+		t.Errorf("Error: %v", err)
+	}
+	expectedCommands := [][]string{
+		// List Commands
+		{
+			"gcloud", "compute", "instances", "list",
+			"--project=vmlab-project", "--filter", "name~^gcetest-.* zone:us-west-2 labels.label-model=betty labels.swarming-bot=vm-bot-1", "--format", "json",
+		},
+	}
+	if diff := cmp.Diff(*mockExecCommand.Commands, expectedCommands); diff != "" {
+		t.Errorf("Executed wrong command: %v", diff)
+	}
+
+	expectedInstances := []*api.VmInstance{
+		{
+			Name: "vmlab-1112312312",
+			Config: &api.Config{
+				Backend: &api.Config_GcloudBackend{
+					GcloudBackend: &api.Config_GCloudBackend{
+						Project:     "vmlab-project",
+						MachineType: "n2-standard-4",
+						Zone:        "us-west-2",
+					},
+				},
+			},
+			Ssh: &api.AddressPort{
+				Address: "8.8.8.8",
+				Port:    22,
+			},
+		},
+		{
+			Name: "vmlab-1234123481",
+			Config: &api.Config{
+				Backend: &api.Config_GcloudBackend{
+					GcloudBackend: &api.Config_GCloudBackend{
+						Project:     "vmlab-project",
+						MachineType: "n2-standard-8",
+						Zone:        "us-west-3",
+					},
+				},
+			},
+			Ssh: &api.AddressPort{
+				Address: "192.168.0.2",
+				Port:    22,
+			},
+		},
+	}
+	if diff := cmp.Diff(instances, expectedInstances, protocmp.Transform()); diff != "" {
+		t.Errorf("Wrong instances returned: %v", diff)
 	}
 }

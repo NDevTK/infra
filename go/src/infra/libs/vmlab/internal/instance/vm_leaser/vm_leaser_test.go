@@ -37,13 +37,13 @@ func TestDelete(t *testing.T) {
 	}
 }
 
-func TestCleanup(t *testing.T) {
+func TestList(t *testing.T) {
 	vmLeaser, err := New()
 	if err != nil {
 		t.Errorf("Error: %v", err)
 	}
 
-	err = vmLeaser.Cleanup(&api.CleanupVmInstancesRequest{})
+	_, err = vmLeaser.List(&api.ListVmInstancesRequest{})
 	if err == nil {
 		t.Errorf("error should not be nil")
 	}

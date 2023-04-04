@@ -23,6 +23,9 @@ import (
 type gcloudInstanceApi struct{}
 
 type gcloudResponseInstance struct {
+	Name              string
+	Zone              string
+	MachineType       string
 	NetworkInterfaces []gcloudNetworkInterface
 }
 
@@ -74,23 +77,39 @@ func (c realRandomGenerator) GetRandHex(l int) (string, error) {
 var execCommand commander = realCommander{}
 var random randomGenerator = realRandomGenerator{}
 
+var TAG_KEY_FORMAT = regexp.MustCompile(`[a-z][a-z\-_0-9]*`)
+var TAG_VALUE_FORMAT = regexp.MustCompile(`[a-z\-_0-9]+`)
+
 // New constructs a new api.InstanceApi with gcloud backend.
 func New() (api.InstanceApi, error) {
 	return &gcloudInstanceApi{}, nil
 }
 
-func checkGCloudConfig(gcloudConfig *api.Config_GCloudBackend) error {
+func extractBaseNameFromGceResourceUri(uri string) string {
+	return uri[strings.LastIndex(uri, "/")+1:]
+}
+
+func checkGCloudConfigCommon(gcloudConfig *api.Config_GCloudBackend) error {
 	if gcloudConfig.GetProject() == "" {
 		return errors.New("project must be set")
 	}
+
+	if gcloudConfig.GetInstancePrefix() == "" {
+		return errors.New("instance prefix must be set")
+	}
+	return nil
+}
+
+func checkGCloudConfigForCreate(gcloudConfig *api.Config_GCloudBackend) error {
+	if err := checkGCloudConfigCommon(gcloudConfig); err != nil {
+		return err
+	}
+
 	if gcloudConfig.GetZone() == "" {
 		return errors.New("zone must be set")
 	}
 	if gcloudConfig.GetMachineType() == "" {
 		return errors.New("machine type must be set")
-	}
-	if gcloudConfig.GetInstancePrefix() == "" {
-		return errors.New("instance prefix must be set")
 	}
 	if gcloudConfig.GetImage().GetName() == "" {
 		return errors.New("image name must be set")
@@ -98,6 +117,7 @@ func checkGCloudConfig(gcloudConfig *api.Config_GCloudBackend) error {
 	if gcloudConfig.GetImage().GetProject() == "" {
 		return errors.New("image project must be set")
 	}
+
 	return nil
 }
 
@@ -106,17 +126,15 @@ func (g *gcloudInstanceApi) Create(req *api.CreateVmInstanceRequest) (*api.VmIns
 	if gcloudConfig == nil {
 		return nil, fmt.Errorf("invalid argument: bad backend: want gcloud, got %v", req.GetConfig())
 	}
-	if err := checkGCloudConfig(gcloudConfig); err != nil {
+	if err := checkGCloudConfigForCreate(gcloudConfig); err != nil {
 		return nil, fmt.Errorf("invalid config argument: %w", err)
 	}
-	tagKeyFormat := regexp.MustCompile(`[a-z][a-z\-_0-9]*`)
-	tagValueFormat := regexp.MustCompile(`[a-z\-_0-9]+`)
 	tagsToSet := []string{}
 	for tagKey, tagValue := range req.Tags {
-		if !tagKeyFormat.MatchString(tagKey) {
+		if !TAG_KEY_FORMAT.MatchString(tagKey) {
 			return nil, fmt.Errorf("Tag key doesn't match format: %v", tagKey)
 		}
-		if !tagValueFormat.MatchString(tagValue) {
+		if !TAG_VALUE_FORMAT.MatchString(tagValue) {
 			return nil, fmt.Errorf("Tag value doesn't match format: %v", tagValue)
 		}
 		tagsToSet = append(tagsToSet, tagKey+"="+tagValue)
@@ -206,6 +224,73 @@ func (g *gcloudInstanceApi) Delete(ins *api.VmInstance) error {
 	return nil
 }
 
-func (g *gcloudInstanceApi) Cleanup(req *api.CleanupVmInstancesRequest) error {
-	return errors.New("not implemented")
+func (g *gcloudInstanceApi) List(req *api.ListVmInstancesRequest) ([]*api.VmInstance, error) {
+	result := []*api.VmInstance{}
+
+	gcloudConfig := req.GetConfig().GetGcloudBackend()
+
+	if gcloudConfig == nil {
+		return result, fmt.Errorf("invalid argument: bad backend: want gcloud, got %v", req.GetConfig())
+	}
+	if err := checkGCloudConfigCommon(gcloudConfig); err != nil {
+		return result, fmt.Errorf("invalid config argument: %w", err)
+	}
+
+	filters := []string{}
+	for tagKey, tagValue := range req.TagFilters {
+		if !TAG_KEY_FORMAT.MatchString(tagKey) {
+			return result, fmt.Errorf("Tag key doesn't match format: %v", tagKey)
+		}
+		if !TAG_VALUE_FORMAT.MatchString(tagValue) {
+			return result, fmt.Errorf("Tag value doesn't match format: %v", tagValue)
+		}
+		filters = append(filters, fmt.Sprintf("labels.%s=%s", tagKey, tagValue))
+	}
+	sort.Strings(filters)
+	filters = append([]string{
+		"name~^" + gcloudConfig.GetInstancePrefix() + ".*",
+		"zone:" + gcloudConfig.GetZone(),
+	}, filters...)
+
+	gcloudListArgs := []string{}
+	gcloudListArgs = append(gcloudListArgs, "compute", "instances", "list",
+		"--project="+gcloudConfig.GetProject(),
+		"--filter", strings.Join(filters, " "), "--format", "json")
+	listOuts, err := execCommand.GetCommandOutput("gcloud", gcloudListArgs...)
+	if err != nil {
+		return result, fmt.Errorf("failed to search instances: %v", extractErrorMessage(err))
+	}
+
+	var gcloudResult []gcloudResponseInstance
+	if err := json.Unmarshal(listOuts, &gcloudResult); err != nil {
+		return result, fmt.Errorf("unable to parse gcloud result: %w\n output is: %v\n", err, string(listOuts))
+	}
+
+	for _, instanceJson := range gcloudResult {
+		ipAddress := instanceJson.NetworkInterfaces[0].NetworkIP
+		if len(instanceJson.NetworkInterfaces[0].AccessConfigs) > 0 {
+			ipAddress = gcloudResult[0].NetworkInterfaces[0].AccessConfigs[0].NatIP
+		}
+
+		instance := &api.VmInstance{
+			Name: instanceJson.Name,
+			Ssh: &api.AddressPort{
+				Address: ipAddress,
+				Port:    22,
+			},
+			Config: &api.Config{
+				Backend: &api.Config_GcloudBackend{
+					GcloudBackend: &api.Config_GCloudBackend{
+						Project:     gcloudConfig.GetProject(),
+						Zone:        extractBaseNameFromGceResourceUri(instanceJson.Zone),
+						MachineType: extractBaseNameFromGceResourceUri(instanceJson.MachineType),
+					},
+				},
+			},
+		}
+
+		result = append(result, instance)
+	}
+
+	return result, nil
 }
