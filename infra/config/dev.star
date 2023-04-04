@@ -126,6 +126,14 @@ luci.builder.defaults.experiments.set({
 })
 luci.builder.defaults.execution_timeout.set(30 * time.minute)
 
+luci.task_backend(
+    name = "swarming_task_backend_dev",
+    target = "swarming://chromium-swarm-dev",
+    config = {"bot_ping_tolerance": 120},
+)
+
+luci.builder.defaults.task_backend.set("swarming_task_backend_dev")
+
 def ci_builder(
         name,
         os,
@@ -171,12 +179,6 @@ luci.builder(
     },
 )
 
-luci.task_backend(
-    name = "swarming_task_backend_dev",
-    target = "swarming://chromium-swarm-dev",
-    config = {"bot_ping_tolerance": 120},
-)
-
 def adhoc_builder(
         name,
         os,
@@ -187,7 +189,7 @@ def adhoc_builder(
         schedule = None,
         triggered_by = None,
         description_html = None,
-        task_backend = None):
+        task_backend = "swarming_task_backend_dev"):
     dims = {"os": os, "cpu": "x86-64", "pool": "luci.chromium.ci"}
     if extra_dims:
         dims.update(**extra_dims)
@@ -253,7 +255,6 @@ adhoc_builder(
         cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
         use_python3 = True,
     ),
-    task_backend = "swarming_task_backend_dev",
     properties = {
         "status": "SUCCESS",
         "steps": [
@@ -303,7 +304,6 @@ adhoc_builder(
         cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
         use_python3 = True,
     ),
-    task_backend = "swarming_task_backend_dev",
     properties = {
         "status": "SUCCESS",
         "steps": [
@@ -326,7 +326,6 @@ adhoc_builder(
         use_python3 = True,
     ),
     description_html = "No-op builder to measure and monitor bbagent overhead",
-    task_backend = "swarming_task_backend_dev",
     properties = {
         "status": "SUCCESS",
         "steps": [
@@ -349,7 +348,6 @@ adhoc_builder(
         cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
         use_python3 = True,
     ),
-    task_backend = "swarming_task_backend_dev",
     properties = {
         "status": "SUCCESS",
         "steps": [
