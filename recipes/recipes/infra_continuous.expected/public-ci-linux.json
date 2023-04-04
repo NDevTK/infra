@@ -147,7 +147,7 @@
   },
   {
     "cmd": [
-      "python",
+      "python3",
       "test.py",
       "test"
     ],
@@ -238,7 +238,7 @@
       "rdb",
       "stream",
       "--",
-      "vpython",
+      "python3",
       "-u",
       "[CACHE]/builder/infra/go/test.py"
     ],

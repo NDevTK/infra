@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env python3
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -110,7 +110,7 @@ def run_tests(package_root):
   """
   if not check_go_available():
     print('Can\'t find Go executable in PATH.')
-    print('Use ./env.py python test.py')
+    print('Use python3 test.py')
     return 1
   clean_go_bin()
   command = ['go', 'test', '%s/...' % package_root]
