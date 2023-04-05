@@ -51,6 +51,24 @@
       "message": "this is done at L143 above.",
       "revId": "ae955c1021ced9a80d85df2575eea687bd84de1f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e5d5c430_1d05c9e1",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/ninja.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1158025
+      },
+      "writtenOn": "2023-04-05T23:48:17Z",
+      "side": 1,
+      "message": "lol - I wonder why these three lines yesterday showed up so clearly in the diff as missing, so I thought \"oh, then we must have forgotten to copy them\" without seeing the same code just above.\n\nBut it turns out: In the old Siso code, they were accidentally duplicated all the time, too 😄\n\nhttps://chrome-internal.googlesource.com/infra/infra_internal/+/refs/heads/main/go/src/infra_internal/experimental/siso/subcmd/ninja/ninja.go#247\n\nI\u0027ll remove it here then.",
+      "parentUuid": "317ed163_d4033a44",
+      "revId": "ae955c1021ced9a80d85df2575eea687bd84de1f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
