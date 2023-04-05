@@ -37,7 +37,6 @@ func servoRepairPlan() *Plan {
 			"Verify Cr50 detected",
 			"Servod detect all children components",
 			"Servo topology",
-			"Verify that USB drive is detectable",
 			"Update USB drive info",
 			"Initialize DUT part for servo",
 			"Verify cr50 console",
@@ -849,25 +848,10 @@ func servoRepairPlan() *Plan {
 					"Try to update the information of the servo usbkey in inventory and karte.",
 				},
 				Dependencies: []string{
-					"Device is SSHable",
-					"Set state:SERVO_HOST_ISSUE",
-					"Change USB drive direction to servo-host",
-					"Set state:BROKEN",
+					"Verify that USB drive is detectable",
 				},
 				ExecName:               "servo_update_usbkey_history",
 				AllowFailAfterRecovery: true,
-			},
-			"Change USB drive direction to servo-host": {
-				Docs: []string{
-					"Try to use servod command to point USB drive to servo host.",
-				},
-				Dependencies: []string{
-					"Read servo serial by servod harness",
-				},
-				ExecName: "servo_check_servod_control",
-				ExecExtraArgs: []string{
-					"command:image_usbkey_dev",
-				},
 			},
 			"Verify that USB drive is detectable": {
 				Docs: []string{
@@ -876,10 +860,11 @@ func servoRepairPlan() *Plan {
 				},
 				Dependencies: []string{
 					"Device is SSHable",
-					"Set state:BROKEN",
 				},
-				ExecName:               "servo_detect_usbkey",
-				ExecTimeout:            &durationpb.Duration{Seconds: 120},
+				ExecName: "servo_usbkey_is_detected",
+				ExecExtraArgs: []string{
+					"file_check:true",
+				},
 				AllowFailAfterRecovery: true,
 			},
 			"Audit of USB drive": {

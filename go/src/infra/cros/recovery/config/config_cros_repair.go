@@ -1553,6 +1553,7 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"retry_count:3",
 				"retry_interval:1",
+				"usb_file_check:true",
 			},
 		},
 		"Download stable version OS image to servo usbkey if necessary": {
@@ -1580,6 +1581,9 @@ func crosRepairActions() map[string]*Action {
 				"Is servod running",
 			},
 			ExecName: "servo_usbkey_is_detected",
+			ExecExtraArgs: []string{
+				"file_check:true",
+			},
 		},
 		"Download stable version OS image to servo usbkey if necessary (allow fail)": {
 			Docs: []string{

@@ -1,4 +1,4 @@
-// Copyright 2021 The ChromiumOS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -154,35 +154,6 @@ func servodCreateFlagToUseRecoveryModeExec(ctx context.Context, info *execs.Exec
 	flagPath := filepath.Join(logRoot, servodUseRecoveryModeFlag)
 	err := exec.CommandContext(ctx, "touch", flagPath).Run()
 	return errors.Annotate(err, "servod create flag to use recovery-mode").Err()
-}
-
-func servoDetectUSBKeyExec(ctx context.Context, info *execs.ExecInfo) error {
-	sh := info.GetChromeos().GetServo()
-	if sh.GetName() == "" {
-		return errors.Reason("servo detect usb key: servo is not present as part of dut info").Err()
-	}
-	servoUsbPath, err := servodGetString(ctx, info.NewServod(), "image_usbkey_dev")
-	if err != nil {
-		sh.UsbkeyState = tlw.HardwareState_HARDWARE_NOT_DETECTED
-		return errors.Annotate(err, "servo detect usb key exec: could not obtain usb path on servo: %q", err).Err()
-	} else if servoUsbPath == "" {
-		sh.UsbkeyState = tlw.HardwareState_HARDWARE_NOT_DETECTED
-		return errors.Reason("servo detect usb key exec: the path to usb drive is empty").Err()
-	}
-	log.Debugf(ctx, "Servo Detect USB-Key Exec: USB-key path: %s.", servoUsbPath)
-	run := info.NewRunner(sh.GetName())
-	if _, err := run(ctx, time.Minute, fmt.Sprintf("fdisk -l %s", servoUsbPath)); err != nil {
-		sh.UsbkeyState = tlw.HardwareState_HARDWARE_NOT_DETECTED
-		return errors.Annotate(err, "servo detect usb key exec: could not determine whether %q is a valid usb path", servoUsbPath).Err()
-	}
-	if sh.GetUsbkeyState() == tlw.HardwareState_HARDWARE_NEED_REPLACEMENT {
-		// This device has been marked for replacement. A further
-		// audit action is required to correct this.
-		log.Debugf(ctx, "Servo Detect USB-Key Exec: device marked for replacement.")
-	} else {
-		sh.UsbkeyState = tlw.HardwareState_HARDWARE_NORMAL
-	}
-	return nil
 }
 
 func runCheckOnHost(ctx context.Context, run execs.Runner, usbPath string, timeout time.Duration) (tlw.HardwareState, error) {
@@ -947,7 +918,6 @@ func init() {
 	execs.Register("servo_host_servod_init", servodInitActionExec)
 	execs.Register("servo_host_servod_stop", servodStopActionExec)
 	execs.Register("servo_create_flag_to_use_recovery_mode", servodCreateFlagToUseRecoveryModeExec)
-	execs.Register("servo_detect_usbkey", servoDetectUSBKeyExec)
 	execs.Register("servo_audit_usbkey", servoAuditUSBKeyExec)
 	execs.Register("servo_v4_root_present", isRootServoPresentExec)
 	execs.Register("servo_topology_update", servoTopologyUpdateExec)

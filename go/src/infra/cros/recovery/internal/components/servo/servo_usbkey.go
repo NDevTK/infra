@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,26 +16,29 @@ import (
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/components/linux"
 	"infra/cros/recovery/logger"
+	"infra/cros/recovery/tlw"
 )
 
 // USBDrivePath read usb-path from servod and check readability of the USB per request.
-func USBDrivePath(ctx context.Context, fileCheck bool, run components.Runner, servod components.Servod, log logger.Logger) (string, error) {
+//
+// The logic cannot set state NORMAL as method doesn't contains audit logic.
+func USBDrivePath(ctx context.Context, fileCheck bool, run components.Runner, servod components.Servod, log logger.Logger) (string, tlw.HardwareState, error) {
 	v, err := servod.Get(ctx, "image_usbkey_dev")
 	if err != nil {
-		return "", errors.Annotate(err, "usb-drive path").Err()
+		return "", tlw.HardwareState_HARDWARE_UNSPECIFIED, errors.Annotate(err, "usb-drive path").Err()
 	}
 	usbPath := v.GetString_()
 	if usbPath == "" {
-		return "", errors.Reason("usb-drive path: usb-path is empty").Err()
+		return "", tlw.HardwareState_HARDWARE_NOT_DETECTED, errors.Reason("usb-drive path: usb-path is empty").Err()
 	}
 	if fileCheck {
 		if out, err := run(ctx, time.Minute, "fdisk", "-l", usbPath); err != nil {
-			return "", errors.Annotate(err, "usb-drive path: file check by fdisk").Err()
+			return "", tlw.HardwareState_HARDWARE_NOT_DETECTED, errors.Annotate(err, "usb-drive path: file check by fdisk").Err()
 		} else {
 			log.Debugf("USB-key fdisk check results:\n%s", out)
 		}
 	}
-	return usbPath, nil
+	return usbPath, tlw.HardwareState_HARDWARE_UNSPECIFIED, nil
 }
 
 const (

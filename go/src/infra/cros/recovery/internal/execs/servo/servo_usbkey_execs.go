@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@ import (
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/retry"
 	"infra/cros/recovery/logger/metrics"
+	"infra/cros/recovery/tlw"
 
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -28,6 +29,7 @@ func servoUSBHasCROSStableImageExec(ctx context.Context, info *execs.ExecInfo) e
 	servodReadCROSImageRetryLimit := argsMap.AsInt(ctx, "retry_count", 1)
 	// retryInterval is the timeout between retries for reading the ChromeOS image
 	retryInterval := argsMap.AsDuration(ctx, "retry_interval", 1, time.Second)
+	usbFileCheck := argsMap.AsBool(ctx, "usb_file_check", false)
 	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
 	if err != nil {
 		return errors.Annotate(err, "servo usb-key has cros stable image").Err()
@@ -43,9 +45,14 @@ func servoUSBHasCROSStableImageExec(ctx context.Context, info *execs.ExecInfo) e
 	run := info.NewRunner(sh.GetName())
 	servod := info.NewServod()
 	logger := info.NewLogger()
-	usbPath, err := servo.USBDrivePath(ctx, false, run, servod, logger)
+	usbPath, newUSBState, err := servo.USBDrivePath(ctx, usbFileCheck, run, servod, logger)
 	if err != nil {
-		log.Debugf(ctx, "Servo USB Has CROS Stable Image: could not read usb key path\n")
+		log.Debugf(ctx, "Servo USB Has CROS Stable Image: could not read usb key path")
+		// Skip state if it is not specified.
+		if newUSBState != tlw.HardwareState_HARDWARE_UNSPECIFIED {
+			sh.UsbkeyState = newUSBState
+			log.Infof(ctx, "New Servo USB-key state: %s", sh.GetUsbkeyState().String())
+		}
 		return errors.Annotate(err, "servo usb-key has cros stable image").Err()
 	}
 	var imageName string
@@ -66,13 +73,13 @@ func servoUSBHasCROSStableImageExec(ctx context.Context, info *execs.ExecInfo) e
 func servoUSBKeyIsDetectedExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	fileCheck := argsMap.AsBool(ctx, "file_check", false)
-	servodHostname := info.GetChromeos().GetServo().GetName()
-	if servodHostname == "" {
+	servoHost := info.GetChromeos().GetServo()
+	if servoHost.GetName() == "" {
 		return errors.Reason("servo USB key is detected: servo host is not specified").Err()
 	}
-	servodRun := info.NewRunner(servodHostname)
+	servodRun := info.NewRunner(servoHost.GetName())
 	servod := info.NewServod()
-	usbPath, err := servo.USBDrivePath(ctx, fileCheck, servodRun, servod, info.NewLogger())
+	usbPath, newUSBState, err := servo.USBDrivePath(ctx, fileCheck, servodRun, servod, info.NewLogger())
 	var usbDetectionObservationValue string
 	defer func() {
 		if usbDetectionObservationValue != "" {
@@ -80,14 +87,18 @@ func servoUSBKeyIsDetectedExec(ctx context.Context, info *execs.ExecInfo) error 
 		}
 	}()
 	if err != nil {
+		// Skip state if it is not specified.
+		if newUSBState != tlw.HardwareState_HARDWARE_UNSPECIFIED {
+			servoHost.UsbkeyState = newUSBState
+			log.Infof(ctx, "New Servo USB-key state: %s", servoHost.GetUsbkeyState().String())
+		}
 		usbDetectionObservationValue = "usbkey_detection_failed"
 		log.Debugf(ctx, "Fail to detect path to USB key connected to the servo from servo-host.")
 		return errors.Annotate(err, "servo USB key is detected").Err()
 	}
-	if usbPath == "" {
-		usbDetectionObservationValue = "usbkey_not_detected"
-		log.Debugf(ctx, "USB key is not detected from servo-host.")
-		return errors.Reason("servo USB key is detected: usb drive is not detected").Err()
+	// The replacement state can be overwritten by the audit logic.
+	if servoHost.GetUsbkeyState() != tlw.HardwareState_HARDWARE_NEED_REPLACEMENT {
+		servoHost.UsbkeyState = tlw.HardwareState_HARDWARE_NORMAL
 	}
 	usbDetectionObservationValue = "usbkey_detected"
 	log.Debugf(ctx, "USB key is detected from servo-host as: %q.", usbPath)
