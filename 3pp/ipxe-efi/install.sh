@@ -8,36 +8,54 @@ set -x # Print commands and their arguments as they are executed.
 set -o pipefail
 
 PREFIX="$1"
-CONFIG="$(pwd)/src/config"
 
+. $(dirname $0)/cross_util.sh
+
+make --version
+gcc --version
+python3 --version
+
+if [[ "$_3PP_PLATFORM" == 'linux-amd64' ]]; then
+  build_path="bin-x86_64-efi"
+elif [[ "$_3PP_PLATFORM" == 'linux-arm64' ]]; then
+  build_path="bin-arm64-efi"
+fi
+
+config="$(pwd)/src/config"
 enable_config=(
-  NET_PROTO_LLDP
-  DOWNLOAD_PROTO_HTTPS
-  CONSOLE_FRAMEBUFFER
-  NSLOOKUP_CMD
-  TIME_CMD
-  REBOOT_CMD
-  POWEROFF_CMD
-  NEIGHBOUR_CMD
-  PING_CMD
-  CONSOLE_CMD
-  NTP_CMD
+    'NET_PROTO_LLDP'
+    'DOWNLOAD_PROTO_HTTPS'
+    'CONSOLE_FRAMEBUFFER'
+    'NSLOOKUP_CMD'
+    'TIME_CMD'
+    'REBOOT_CMD'
+    'POWEROFF_CMD'
+    'NEIGHBOUR_CMD'
+    'PING_CMD'
+    'CONSOLE_CMD'
+    'NTP_CMD'
 )
 
 enable_console=(
-    CONSOLE_FRAMEBUFFER
+    'CONSOLE_FRAMEBUFFER'
 )
 
 for setting in "${enable_config[@]}"; do
   sed -i "s/^.*${setting}.*$/#define ${setting}/" \
-      "${CONFIG}/general.h"
+      "${config}/general.h"
 done
 
 for setting in "${enable_console[@]}"; do
   sed -i "s/^.*${setting}.*$/#define ${setting}/" \
-      "${CONFIG}/console.h"
+      "${config}/console.h"
 done
 
+# Set HOST_CC if cross-compiling.
+MAKE_ARGS=
+if [[ $_3PP_PLATFORM != $_3PP_TOOL_PLATFORM ]]; then
+  MAKE_ARGS+=HOST_CC=$(3pp_toggle_host; echo $CC)
+fi
+
 cd src
-make bin-x86_64-efi/ipxe.efi
-cp bin-x86_64-efi/ipxe.efi "$PREFIX"
+make ${MAKE_ARGS} "${build_path}/ipxe.efi"
+cp "${build_path}/ipxe.efi" "$PREFIX"

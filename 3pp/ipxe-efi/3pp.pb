@@ -1,5 +1,5 @@
 create {
-  platform_re: "linux-amd64"
+  platform_re: "linux-amd64|linux-arm64"
   source {
     git {
       repo: "https://github.com/ipxe/ipxe.git"
