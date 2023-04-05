@@ -145,7 +145,10 @@ func (c *ninjaCmdRun) run(ctx context.Context) (err error) {
 	}
 	cfgrepos := map[string]fs.FS{
 		"config":           os.DirFS(c.configRepoDir),
-		"config_overrieds": os.DirFS(filepath.Join(wd, ".siso_remote")),
+		"config_overrides": os.DirFS(filepath.Join(wd, ".siso_remote")),
+	}
+	if !filepath.IsAbs(c.configRepoDir) {
+		c.configRepoDir = filepath.Join(wd, c.configRepoDir)
 	}
 	err = os.Chdir(c.dir)
 	if err != nil {
