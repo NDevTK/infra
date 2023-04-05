@@ -59,6 +59,14 @@ FROM img1@res1
 FROM imgZ@sha256:already_digest
 FROM scratch
 FROM img2@lat`)
+
+		// Use a previous stage as a new stage.
+		// https://docs.docker.com/build/building/multi-stage/#use-a-previous-stage-as-a-new-stage
+		So(call(`FROM img1:tag1 AS builder
+FROM builder AS build1
+FROM builder AS build2`), ShouldEqual, `FROM img1@res1 AS builder
+FROM builder AS build1
+FROM builder AS build2`)
 	})
 
 	Convey("Errors", t, func() {
