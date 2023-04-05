@@ -18,7 +18,7 @@ infra/3pp/tools/cloud-tasks-emulator/mac-amd64 version:2@1.1.1
 infra/tools/luci/logdog/logdog/mac-amd64  git_revision:fe9985447e6b95f4907774f05e9774f031700775
 
 # Helper for building Docker images and GAE tarballs.
-infra/tools/cloudbuildhelper/mac-amd64 git_revision:fe9985447e6b95f4907774f05e9774f031700775
+infra/tools/cloudbuildhelper/mac-amd64 git_revision:7088a6d730d06d978dfa0e9c5dd07e51aeb5916e
 
 # Result adapter can wrap some test frameworks for `rdb stream` compatibility.
 @Subdir result_adapter

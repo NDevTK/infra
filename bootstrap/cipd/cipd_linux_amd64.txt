@@ -24,7 +24,7 @@ infra/fastboot/linux-amd64        fastboot_version:5943271ace17
 infra/tools/luci/logdog/logdog/linux-amd64  git_revision:fe9985447e6b95f4907774f05e9774f031700775
 
 # Helper for building Docker images and GAE tarballs.
-infra/tools/cloudbuildhelper/linux-amd64 git_revision:fe9985447e6b95f4907774f05e9774f031700775
+infra/tools/cloudbuildhelper/linux-amd64 git_revision:7088a6d730d06d978dfa0e9c5dd07e51aeb5916e
 
 # Result adapter can wrap some test frameworks for `rdb stream` compatibility.
 @Subdir result_adapter
