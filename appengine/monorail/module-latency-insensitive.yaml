@@ -3,10 +3,9 @@
 # found in the LICENSE file.
 
 service: latency-insensitive
-runtime: python39
-app_engine_apis: true
-
-entrypoint: gunicorn -b :$PORT --timeout 60 --workers 8 --threads 1 main:app
+runtime: python27
+api_version: 1
+threadsafe: no
 
 default_expiration: "3600d"
 
@@ -60,5 +59,24 @@ inbound_services:
 - mail_bounce
 - warmup
 
+libraries:
+- name: endpoints
+  version: "1.0"
+- name: grpcio
+  version: "1.0.0"
+- name: MySQLdb
+  version: "latest"
+- name: ssl
+  version: latest
+
 includes:
 - gae_ts_mon
+
+skip_files:
+- ^(.*/)?#.*#$
+- ^(.*/)?.*~$
+- ^(.*/)?.*\.py[co]$
+- ^(.*/)?.*/RCS/.*$
+- ^(.*/)?\..*$
+- node_modules/
+- venv/
