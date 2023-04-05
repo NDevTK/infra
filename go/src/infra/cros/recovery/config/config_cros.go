@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -213,9 +213,6 @@ func crosClosePlan() *Plan {
 			"Update peripheral wifi state": {
 				Docs: []string{
 					"Update peripheral wifi state based on wifi router states",
-				},
-				Conditions: []string{
-					"wifi_router_host_present",
 				},
 				ExecName:               "update_peripheral_wifi_state",
 				AllowFailAfterRecovery: true,

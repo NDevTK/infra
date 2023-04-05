@@ -521,6 +521,8 @@ message ChromeOS {
     PERIPHERAL_WIFI_STATE_WORKING = 2;
     // Not all wifirouters are working as expected.
     PERIPHERAL_WIFI_STATE_BROKEN = 3;
+    // State is not applicable for setup.
+    PERIPHERAL_WIFI_STATE_NOT_APPLICABLE = 4;
   }
   // Peripehral Wifi state of testbed
   PeripheralWifiState peripheral_wifi_state = 20;

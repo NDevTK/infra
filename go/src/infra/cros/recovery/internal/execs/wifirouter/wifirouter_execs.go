@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,11 +60,15 @@ func updatePeripheralWifiStateExec(ctx context.Context, info *execs.ExecInfo) er
 	if chromeos == nil {
 		return errors.Reason("update peripheral wifi state: chromeos is not present").Err()
 	}
-	pws := tlw.ChromeOS_PERIPHERAL_WIFI_STATE_WORKING
-	for _, routerHost := range chromeos.GetWifiRouters() {
-		if routerHost.GetState() != tlw.WifiRouterHost_WORKING {
-			pws = tlw.ChromeOS_PERIPHERAL_WIFI_STATE_BROKEN
-			break
+	routers := chromeos.GetWifiRouters()
+	pws := tlw.ChromeOS_PERIPHERAL_WIFI_STATE_NOT_APPLICABLE
+	if len(routers) > 0 {
+		pws = tlw.ChromeOS_PERIPHERAL_WIFI_STATE_WORKING
+		for _, routerHost := range chromeos.GetWifiRouters() {
+			if routerHost.GetState() != tlw.WifiRouterHost_WORKING {
+				pws = tlw.ChromeOS_PERIPHERAL_WIFI_STATE_BROKEN
+				break
+			}
 		}
 	}
 	chromeos.PeripheralWifiState = pws

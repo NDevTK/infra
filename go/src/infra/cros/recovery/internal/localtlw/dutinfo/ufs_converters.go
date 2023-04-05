@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -166,8 +166,9 @@ func convertWifiRouterStateToUFS(s tlw.WifiRouterHost_State) ufslab.PeripheralSt
 
 // peripheralWifiStates maps the ufs peripheral state to tlw peripheral wifi state
 var peripheralWifiStates = map[ufslab.PeripheralState]tlw.ChromeOS_PeripheralWifiState{
-	ufslab.PeripheralState_WORKING: tlw.ChromeOS_PERIPHERAL_WIFI_STATE_WORKING,
-	ufslab.PeripheralState_BROKEN:  tlw.ChromeOS_PERIPHERAL_WIFI_STATE_BROKEN,
+	ufslab.PeripheralState_WORKING:        tlw.ChromeOS_PERIPHERAL_WIFI_STATE_WORKING,
+	ufslab.PeripheralState_BROKEN:         tlw.ChromeOS_PERIPHERAL_WIFI_STATE_BROKEN,
+	ufslab.PeripheralState_NOT_APPLICABLE: tlw.ChromeOS_PERIPHERAL_WIFI_STATE_NOT_APPLICABLE,
 }
 
 // convert wifiRouterState UFS state to TLW peripheralWifiState
