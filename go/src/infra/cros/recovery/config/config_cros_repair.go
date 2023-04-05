@@ -865,12 +865,9 @@ func crosRepairActions() map[string]*Action {
 				"lsusb -d 03eb:2042 |grep \"LUFA Keyboard Demo\"",
 			},
 		},
-		"servo_state_is_working": {
+		"Servo state is working": {
 			Docs: []string{
 				"check the servo's state is WORKING.",
-			},
-			Dependencies: []string{
-				"Setup has servo info",
 			},
 			ExecName: "servo_match_state",
 			ExecExtraArgs: []string{
@@ -1017,10 +1014,11 @@ func crosRepairActions() map[string]*Action {
 				"Timeout is 2 hours.",
 			},
 			Dependencies: []string{
-				"servo_state_is_working",
+				"Servo state is working",
 				"Is servod running",
 				"Device NOT booted from USB-drive",
 				"Print block devices of the DUT",
+				"Check if USB-key drop connection after sleep",
 			},
 			ExecName: "audit_usb_from_dut_side",
 			ExecExtraArgs: []string{
@@ -1576,6 +1574,7 @@ func crosRepairActions() map[string]*Action {
 		"Is servo USB key detected": {
 			Docs: []string{
 				"The action used as codiion.",
+				"The action verify that USB-key is detected and readable.",
 			},
 			Dependencies: []string{
 				"Is servod running",
@@ -1584,6 +1583,19 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"file_check:true",
 			},
+		},
+		"Check if USB-key drop connection after sleep": {
+			Docs: []string{
+				"The action verify that USB-key is detected and readable.",
+				"The check is performed with sleep for 2 minutes to verify that USB-key would stay and be able detected",
+			},
+			ExecName: "servo_usbkey_is_detected",
+			ExecExtraArgs: []string{
+				"file_check:true",
+				"check_drop_connection:true",
+				"check_drop_connection_timeout:120",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 200},
 		},
 		"Download stable version OS image to servo usbkey if necessary (allow fail)": {
 			Docs: []string{

@@ -102,6 +102,17 @@ func servoUSBKeyIsDetectedExec(ctx context.Context, info *execs.ExecInfo) error 
 	}
 	usbDetectionObservationValue = "usbkey_detected"
 	log.Debugf(ctx, "USB key is detected from servo-host as: %q.", usbPath)
+
+	if argsMap.AsBool(ctx, "check_drop_connection", false) {
+		timeout := argsMap.AsDuration(ctx, "check_drop_connection_timeout", 120, time.Second)
+		log.Debugf(ctx, "Prepare to check if USB-key would drop connection in %v.", timeout)
+		time.Sleep(timeout)
+		if err := servo.USBDriveReadable(ctx, usbPath, servodRun, info.NewLogger()); err != nil {
+			log.Infof(ctx, "USB key lost connection after timeout, so mark it for replacement.", timeout)
+			servoHost.UsbkeyState = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
+			return errors.Annotate(err, "servo USB key is detected: connection dropped").Err()
+		}
+	}
 	return nil
 }
 

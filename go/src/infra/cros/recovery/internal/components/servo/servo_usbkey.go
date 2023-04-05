@@ -32,13 +32,24 @@ func USBDrivePath(ctx context.Context, fileCheck bool, run components.Runner, se
 		return "", tlw.HardwareState_HARDWARE_NOT_DETECTED, errors.Reason("usb-drive path: usb-path is empty").Err()
 	}
 	if fileCheck {
-		if out, err := run(ctx, time.Minute, "fdisk", "-l", usbPath); err != nil {
+		if err := USBDriveReadable(ctx, usbPath, run, log); err != nil {
 			return "", tlw.HardwareState_HARDWARE_NOT_DETECTED, errors.Annotate(err, "usb-drive path: file check by fdisk").Err()
-		} else {
-			log.Debugf("USB-key fdisk check results:\n%s", out)
 		}
 	}
 	return usbPath, tlw.HardwareState_HARDWARE_UNSPECIFIED, nil
+}
+
+// USBDriveReadable checks if USB-key under specified path is readable.
+func USBDriveReadable(ctx context.Context, usbPath string, run components.Runner, log logger.Logger) error {
+	if usbPath == "" {
+		return errors.Reason("usb-drive readable: usb-path is empty").Err()
+	}
+	if out, err := run(ctx, time.Minute, "fdisk", "-l", usbPath); err != nil {
+		return errors.Annotate(err, "usb-drive path: file check by fdisk").Err()
+	} else {
+		log.Debugf("USB-key fdisk check results:\n%s", out)
+		return nil
+	}
 }
 
 const (
