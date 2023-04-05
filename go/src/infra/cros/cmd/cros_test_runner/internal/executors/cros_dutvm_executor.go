@@ -137,7 +137,7 @@ func (ex *CrosDutVmExecutor) vmLeaseCommandExecution(
 		return err
 	}
 
-	// TODO(mingkong): remove hard coded configs
+	// TODO(b/274006123): remove hard coded configs
 	tags := make(map[string]string, 0)
 	tags["swarming-bot-name"] = os.Getenv("SWARMING_BOT_ID")
 	request := &vmlabapi.CreateVmInstanceRequest{

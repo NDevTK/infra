@@ -11,6 +11,7 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
+	"infra/cros/cmd/cros_test_runner/common"
 	vmlabapi "infra/libs/vmlab/api"
 
 	"infra/cros/cmd/cros_test_runner/internal/data"
@@ -97,7 +98,7 @@ func (cmd *DutVmLeaseCmd) updateVmTestStateKeeper(
 
 	if cmd.DutVm.GetSsh() != nil {
 		duts := []*labapi.Dut{{
-			Id: &labapi.Dut_Id{Value: cmd.DutVm.GetName()},
+			Id: &labapi.Dut_Id{Value: common.VmLabDutHostName},
 			DutType: &labapi.Dut_Chromeos{
 				Chromeos: &labapi.Dut_ChromeOS{
 					Ssh: &labapi.IpEndpoint{

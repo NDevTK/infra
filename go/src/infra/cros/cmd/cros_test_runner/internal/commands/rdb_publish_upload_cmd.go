@@ -7,10 +7,11 @@ package commands
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/data"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
-	"strings"
 
 	_go "go.chromium.org/chromiumos/config/go"
 	testapipb "go.chromium.org/chromiumos/config/go/test/api"
@@ -382,7 +383,7 @@ func populateTestRunsInfo(
 	suite := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, "suite")
 	branch := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, "branch")
 	mainBuilderName := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, "master_build_config")
-	displayName := getSingleTagValue(botDims, "display_name")
+	displayName := getSingleTagValue(build.Tags, "display_name")
 	for _, testCaseResult := range sk.TestResponses.GetTestCaseResults() {
 		// - TestRun
 		testRun := &artifactpb.TestRun{}

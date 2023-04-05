@@ -13,6 +13,7 @@ const (
 	ContainerDefaultNetwork                = "host"
 	LabDockerKeyFileLocation               = "/creds/service_accounts/skylab-drone.json"
 	VmLabDockerKeyFileLocation             = "/creds/service_accounts/service-account-chromeos.json"
+	VmLabDutHostName                       = "vm"
 	DockerImageCacheServer                 = "us-docker.pkg.dev/cros-registry/test-services/cacheserver:cacheserver2"
 	LroSleepTime                           = 5 * time.Second
 	GcsPublishTestArtifactsDir             = "/tmp/gcs-publish-test-artifacts/"
