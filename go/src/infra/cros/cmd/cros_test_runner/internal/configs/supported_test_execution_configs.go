@@ -146,6 +146,9 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform comm
 
 	// Publish commands
 	if !cftHwStepsConfig.GetSkipAllResultPublish() {
+		// Re-auth as long test execution can expire previous auth
+		mainConfigs = append(mainConfigs, GcloudAuth_CtrExecutor)
+
 		// Rdb publish commands
 		if !cftHwStepsConfig.GetSkipRdbPublish() {
 			mainConfigs = append(mainConfigs,
