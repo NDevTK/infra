@@ -47,7 +47,7 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	logdogpb "go.chromium.org/luci/logdog/api/config/svcconfig"
 	notifypb "go.chromium.org/luci/luci_notify/api/config"
-	milopb "go.chromium.org/luci/milo/api/config"
+	milopb "go.chromium.org/luci/milo/proto/projectconfig"
 	schedulerpb "go.chromium.org/luci/scheduler/appengine/messages"
 )
 
