@@ -1,4 +1,4 @@
-// Copyright 2023 The ChromiumOS Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package gerrit
@@ -140,13 +140,13 @@ func fetchHostChanges(
 
 	changesBatches := batchSlice(changes)
 
-	ctx, cancel := context.WithTimeout(ctx, 2*time.Minute)
+	ctx, cancel := context.WithTimeout(ctx, 35*time.Minute)
 	defer cancel()
 
 	for _, batch := range changesBatches {
 		queryParams := changesToQueryParams(batch, options)
 		ch := make(chan []*gerrit.Change, 1)
-		err = shared.DoWithRetry(ctx, shared.DefaultOpts, func() error {
+		err = shared.DoWithRetry(ctx, shared.ExtremeOpts, func() error {
 			results, more, err := client.ChangeQuery(ctx, queryParams)
 			if err != nil {
 				return err
@@ -219,7 +219,7 @@ func MustFetchChanges(parentCtx context.Context, httpClient *http.Client, change
 	// Error management for parallel requests.
 	var hostErrors sync.Map
 	var wg sync.WaitGroup
-	ctx, cancel := context.WithTimeout(parentCtx, 5*time.Minute)
+	ctx, cancel := context.WithTimeout(parentCtx, 35*time.Minute)
 	defer cancel()
 
 	// Parallel request per host.

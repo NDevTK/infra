@@ -1,4 +1,4 @@
-// Copyright 2023 The ChromiumOS Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package shared
@@ -22,6 +22,9 @@ type Options struct {
 type DoFunc func() error
 
 var (
+	// ExtremeOpts gives an even longer timeout and more retries (~30 min).
+	ExtremeOpts = Options{BaseDelay: 120 * time.Second, BackoffBase: 2.0, Retries: 10}
+	// DefaultOpts is the default timeout (~5 minutes).
 	DefaultOpts = Options{BaseDelay: time.Second, BackoffBase: 2.0, Retries: 5}
 )
 
