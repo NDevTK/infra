@@ -22,7 +22,7 @@ import (
 	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
 )
 
-func LocalExecution(sk *data.LocalTestStateKeeper, ctrCipdVersion string, logPath string) (*skylab_test_runner.ExecuteResponse, error) {
+func LocalExecution(sk *data.LocalTestStateKeeper, ctrCipdVersion, pathToCipdBin, logPath string) (*skylab_test_runner.ExecuteResponse, error) {
 	common.GlobalTempDir = path.Join(logPath, common.CreateUniquePrefixedName("execution-logs"))
 	emptyBuild := &buildbucketpb.Build{}
 	build_state, ctx, err := build.Start(context.Background(), emptyBuild)
@@ -35,7 +35,7 @@ func LocalExecution(sk *data.LocalTestStateKeeper, ctrCipdVersion string, logPat
 	}()
 
 	sk.GcsPublishSrcDir = common.GlobalTempDir
-	result, err := executeLocalTests(ctx, sk, ctrCipdVersion)
+	result, err := executeLocalTests(ctx, sk, ctrCipdVersion, pathToCipdBin)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -48,7 +48,7 @@ func LocalExecution(sk *data.LocalTestStateKeeper, ctrCipdVersion string, logPat
 func executeLocalTests(
 	ctx context.Context,
 	sk *data.LocalTestStateKeeper,
-	ctrCipdVersion string) (*skylab_test_runner.Result, error) {
+	ctrCipdVersion, pathToCipdBin string) (*skylab_test_runner.Result, error) {
 
 	var err error
 	step, ctx := build.StartStep(ctx, "Execute Local Tests")
@@ -60,18 +60,25 @@ func executeLocalTests(
 	}()
 
 	// Validation
-	if ctrCipdVersion == "" {
-		err = fmt.Errorf("Cros-tool-runner cipd version cannot be empty for local test execution.")
+	if ctrCipdVersion == "" && pathToCipdBin == "" {
+		err = fmt.Errorf("Must provide ctrCipdVersion or pathToCipdBin, both cannot be empty for local test execution.")
 		return nil, err
 	}
 	if sk.CftTestRequest == nil {
 		err = fmt.Errorf("CftTestRequest is missing from local execution call.")
 	}
 
-	// Create ctr
-	ctrCipdInfo := crostoolrunner.CtrCipdInfo{
-		Version:        ctrCipdVersion,
-		CtrCipdPackage: common.CtrCipdPackage,
+	var ctrCipdInfo crostoolrunner.CtrCipdInfo
+	if pathToCipdBin != "" {
+		ctrCipdInfo = crostoolrunner.CtrCipdInfo{
+			IsInitialized: true,
+			CtrPath:       pathToCipdBin,
+		}
+	} else {
+		ctrCipdInfo = crostoolrunner.CtrCipdInfo{
+			Version:        ctrCipdVersion,
+			CtrCipdPackage: common.CtrCipdPackage,
+		}
 	}
 
 	ctr := &crostoolrunner.CrosToolRunner{

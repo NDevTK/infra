@@ -38,10 +38,17 @@ func (ctrCipd *CtrCipdInfo) Validate(ctx context.Context) error {
 
 // Initialize initializes Ctr.
 func (ctrCipd *CtrCipdInfo) Initialize(ctx context.Context) error {
+	// Create temp dir for ctr if necessary
+	if ctrCipd.CtrTempDirLoc == "" {
+		var err error
+		ctrCipd.CtrTempDirLoc, err = common.CreateTempDir(ctx, "ctr")
+		if err != nil {
+			return errors.Annotate(err, "Error while creating temp dir for ctr: ").Err()
+		}
+	}
 	if ctrCipd.IsInitialized {
 		return nil
 	}
-	var err error
 
 	// Validation
 	if err := ctrCipd.Validate(ctx); err != nil {
@@ -49,16 +56,8 @@ func (ctrCipd *CtrCipdInfo) Initialize(ctx context.Context) error {
 	}
 
 	// Ensure CTR
-	if err = ctrCipd.ensure(ctx); err != nil {
+	if err := ctrCipd.ensure(ctx); err != nil {
 		return errors.Annotate(err, "Ctr ensure error: ").Err()
-	}
-
-	// Create temp dir for ctr if necessary
-	if ctrCipd.CtrTempDirLoc == "" {
-		ctrCipd.CtrTempDirLoc, err = common.CreateTempDir(ctx, "ctr")
-		if err != nil {
-			return errors.Annotate(err, "Error while creating temp dir for ctr: ").Err()
-		}
 	}
 
 	logging.Infof(ctx, fmt.Sprintf("CTR initialization succeeded."))

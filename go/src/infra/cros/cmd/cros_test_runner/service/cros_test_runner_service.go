@@ -65,5 +65,5 @@ func (crs *CrosTestRunnerService) Execute(ctx context.Context, logPath string) (
 		crs.sk.TestArgs = testPlan.TestArgs
 	}
 
-	return executions.LocalExecution(crs.sk, crs.req.CtrCipdVersion, logPath)
+	return executions.LocalExecution(crs.sk, crs.req.CtrCipdVersion, crs.req.PathToCipdBin, logPath)
 }
