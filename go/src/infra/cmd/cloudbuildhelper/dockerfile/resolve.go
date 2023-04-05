@@ -44,6 +44,13 @@ func Resolve(in []byte, resolver Resolver) (out []byte, err error) {
 	r := bufio.NewReader(bytes.NewReader(in))
 	w := bytes.Buffer{}
 
+	// Map of locally resolvable images. Produced by "FROM <image> AS <name>".
+	locallyResolved := map[string]bool{
+		// "FROM scratch" is a magical line, it's not really a reference to an image,
+		// at least not in a modern Docker.
+		"scratch": true,
+	}
+
 	eof, lineno := false, 0
 	for !eof {
 		line, err := r.ReadString('\n')
@@ -57,7 +64,7 @@ func Resolve(in []byte, resolver Resolver) (out []byte, err error) {
 
 		terms := strings.Fields(line)
 		if len(terms) >= 1 && strings.ToLower(terms[0]) == "from" {
-			if err := resolveFromLine(terms, resolver); err != nil {
+			if err := resolveFromLine(terms, resolver, locallyResolved); err != nil {
 				return nil, errors.Annotate(err, "line %d", lineno).Err()
 			}
 			newLine := strings.Join(terms, " ")
@@ -77,7 +84,7 @@ func Resolve(in []byte, resolver Resolver) (out []byte, err error) {
 // resolveFromLine mutates 'terms' in place by resolving image tags there.
 //
 // 'terms' is ["FROM", "<image>", ...].
-func resolveFromLine(terms []string, r Resolver) error {
+func resolveFromLine(terms []string, r Resolver, locallyResolved map[string]bool) error {
 	if len(terms) < 2 {
 		return errors.Reason("expecting 'FROM <image>', got only FROM").Err()
 	}
@@ -102,16 +109,19 @@ func resolveFromLine(terms []string, r Resolver) error {
 		img, tag = imgRef, "latest"
 	}
 
-	// "FROM scratch" is a magical line, it's not really a reference to an image,
-	// at least not in a modern Docker.
-	if img == "scratch" {
-		terms[1] = "scratch"
+	// If img references images built in previous stages or "scratch", do not resolve it.
+	if locallyResolved[img] {
+		terms[1] = img
 		return nil
 	}
 
 	digest, err := r.ResolveTag(img, tag)
 	if err != nil {
 		return errors.Annotate(err, "resolving %q", img+":"+tag).Err()
+	}
+
+	if len(terms) == 4 && strings.EqualFold(terms[2], "AS") {
+		locallyResolved[terms[3]] = true
 	}
 
 	terms[1] = fmt.Sprintf("%s@%s", img, digest)
