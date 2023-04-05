@@ -16,6 +16,41 @@
       "message": "@ukai@google.com\n\nI noticed three differences between the old vs. the migrated Siso code that looked like they might be bugs - WDYT?\n\n1. We do not initialize the UI in the public Siso, don\u0027t we have to do that?\n2. There was a typo in the cfgrepos part of ninja.go: \"config_overrides\".\n3. We no longer convert the c.configRepoDir to an absolute path in the public Siso, was this left out on purpose?",
       "revId": "ae955c1021ced9a80d85df2575eea687bd84de1f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fbba12a8_21a4ca4b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-04-05T23:44:11Z",
+      "side": 1,
+      "message": "1. initialize the UI need for windows\n2. oops\n3. https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/build/siso/subcmd/ninja/ninja.go#143\n?",
+      "parentUuid": "772eb1e8_b6935902",
+      "revId": "ae955c1021ced9a80d85df2575eea687bd84de1f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "317ed163_d4033a44",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/ninja.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-04-05T23:44:11Z",
+      "side": 1,
+      "message": "this is done at L143 above.",
+      "revId": "ae955c1021ced9a80d85df2575eea687bd84de1f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
