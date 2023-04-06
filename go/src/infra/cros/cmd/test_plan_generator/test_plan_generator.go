@@ -59,6 +59,7 @@ type getTestPlanRun struct {
 	manifestFile               string
 	localConfigDir             string
 	targetTestReqsRepo         string
+	targetTestReqsBranch       string
 	stagingUsesProdConfig      bool
 }
 
@@ -87,6 +88,8 @@ func cmdGenTestPlan(authOpts auth.Options) *subcommands.Command {
 				"Path to src/config-internal checkout. If set, target test requirements will be generated from this directory using "+
 					"./board_config/generate_test_config instead of fetching an already-generated file from Gitiles. Takes precendent "+
 					"over all other flags (e.g. -target_test_requirements).")
+			c.Flags.StringVar(&c.targetTestReqsBranch, "target_test_requirements_branch", "",
+				"Branch to be passed into generate_test_config, ignored if -target_test_requirements_repo is not set.")
 			c.Flags.BoolVar(&c.stagingUsesProdConfig, "use_prod_config", false,
 				"Whether staging should use testing config from the corresponding production builder(s) instead of staging config. "+
 					"Used for tryjobs.")
@@ -306,14 +309,26 @@ func (c *getTestPlanRun) genTargetTestRequirements(builderNames []string) (*test
 	}
 
 	ctx := context.Background()
-	var stdoutBuf bytes.Buffer
-	var stderrBuf bytes.Buffer
 	if c.stagingUsesProdConfig {
 		for i, builderName := range builderNames {
 			builderNames[i] = strings.TrimPrefix(builderName, "staging-")
 		}
 	}
 	cmd := []string{strings.Join(builderNames, ",")}
+
+	if c.targetTestReqsBranch != "" {
+		// If --branch is supported on this branch, use it.
+		// TODO(b/262388770): Maybe in many years we can do this
+		// unconditionally.
+		var helpBuf bytes.Buffer
+		err := cmdRunner.RunCommand(ctx, &helpBuf, nil, c.targetTestReqsRepo, "./board_config/generate_test_config", "-h")
+		if err == nil && strings.Contains(helpBuf.String(), "--branch") {
+			cmd = append(cmd, "--branch", c.targetTestReqsBranch)
+		}
+	}
+
+	var stdoutBuf bytes.Buffer
+	var stderrBuf bytes.Buffer
 	if err := cmdRunner.RunCommand(ctx, &stdoutBuf, &stderrBuf, c.targetTestReqsRepo, "./board_config/generate_test_config", cmd...); err != nil {
 		return nil, fmt.Errorf("error running ./board_config/generate_test_config: %s", stderrBuf.String())
 	}
