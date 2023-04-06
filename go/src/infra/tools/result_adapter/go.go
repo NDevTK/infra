@@ -88,18 +88,7 @@ func goTestJsonToTestRecords(ctx context.Context, data []byte) ([]*TestRecord, m
 			ordered = append(ordered, currentRecord)
 			byID[currentRecord.TestID] = currentRecord
 		}
-
-		var parent *TestRecord = nil
-		if tEvt.Test != "" {
-			parent = byID[tEvt.Package]
-			if parent == nil {
-				parent = &TestRecord{TestID: tEvt.Package}
-				ordered = append(ordered, parent)
-				byID[parent.TestID] = parent
-			}
-		}
-
-		currentRecord.ingest(tEvt, parent)
+		currentRecord.ingest(tEvt)
 	}
 	return ordered, byID
 }
@@ -139,11 +128,10 @@ func testRecordsToTestProtos(ctx context.Context, ordered []*TestRecord, byID ma
 				tr.Status = resultpb.TestStatus_ABORT
 			}
 		}
-		parentRecord := byID[record.PackageName]
-		if parentRecord.Output.Len() > 0 {
+		if record.Output.Len() > 0 {
 			a := sinkpb.Artifact{}
 			a.Body = &sinkpb.Artifact_Contents{
-				Contents: []byte(parentRecord.Output.String()),
+				Contents: []byte(record.Output.String()),
 			}
 			tr.Artifacts = map[string]*sinkpb.Artifact{"output": &a}
 			tr.SummaryHtml = `<p><text-artifact artifact-id="output"></p>`
@@ -197,12 +185,12 @@ type TestRecord struct {
 
 // ingest updates the fields of the test record according to the contents of
 // the given test event.
-// Output events will be added to the package's test record (the test's "parent")
-// instead of the record for the specific test.
+// Output events from a specific test will be associated with the corresponding
+// test record.
 // Tests running in parallel may cause test2json to associate the output of one
 // with a different test as all simultaneous tests in the same package race for
 // access to stdout.
-func (tr *TestRecord) ingest(te *TestEvent, parent *TestRecord) {
+func (tr *TestRecord) ingest(te *TestEvent) {
 	if te.Test == "" {
 		tr.IsPackage = true
 	}
@@ -216,11 +204,7 @@ func (tr *TestRecord) ingest(te *TestEvent, parent *TestRecord) {
 	case "run":
 		tr.Started = te.Time
 	case "output":
-		if parent == nil {
-			tr.Output.WriteString(te.Output)
-		} else {
-			parent.Output.WriteString(te.Output)
-		}
+		tr.Output.WriteString(te.Output)
 	default:
 		tr.Result = te.Action
 		if te.Elapsed > 0 {
