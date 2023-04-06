@@ -209,7 +209,9 @@ func (a *Agent) reportLoop(ctx context.Context, s stateInterface) error {
 
 // reportDrone does one cycle of calling the ReportDrone queen RPC and
 // handling the response.
-func (a *Agent) reportDrone(ctx context.Context, s stateInterface) error {
+func (a *Agent) reportDrone(ctx context.Context, s stateInterface) (err error) {
+	ctx, span := otil.FuncSpan(ctx)
+	defer func() { otil.EndSpan(span, err) }()
 	res, err := a.Client.ReportDrone(ctx, a.reportRequest(ctx, s.UUID()))
 	if err != nil {
 		return errors.Annotate(err, "report to queen").Err()
