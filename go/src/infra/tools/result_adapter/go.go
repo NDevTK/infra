@@ -59,9 +59,11 @@ func (*goRun) generateTestResults(ctx context.Context, data []byte) ([]*sinkpb.T
 func goTestJsonToTestRecords(ctx context.Context, data []byte) map[string]*TestRecord {
 	records := make(map[string]*TestRecord)
 	// Ensure that the scanner below returns the last line in the output.
-	data = append(data, []byte("\n")...)
+	if !bytes.HasSuffix(data, []byte("\n")) {
+		data = append(data, []byte("\n")...)
+	}
 	lines := bufio.NewScanner(bytes.NewReader(data))
-	// iterate over output, parsing an event from each line and making the
+	// Iterate over output, parsing an event from each line and making the
 	// appropriate record ingest it.
 	for lines.Scan() {
 		l := lines.Bytes()
