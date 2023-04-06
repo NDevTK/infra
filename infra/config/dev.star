@@ -11,7 +11,7 @@ This is also enforced by PRESUBMIT.py script.
 
 load("//lib/infra.star", "infra")
 
-lucicfg.check_version("1.37.0", "Please update depot_tools")
+lucicfg.check_version("1.39.3", "Please update depot_tools")
 
 lucicfg.enable_experiment("crbug.com/1338648")
 
@@ -123,6 +123,7 @@ luci.bucket(
 
 luci.builder.defaults.experiments.set({
     "luci.buildbucket.bbagent_getbuild": 100,
+    "luci.buildbucket.backend_alt": 100,
 })
 luci.builder.defaults.execution_timeout.set(30 * time.minute)
 
@@ -132,7 +133,7 @@ luci.task_backend(
     config = {"bot_ping_tolerance": 120},
 )
 
-luci.builder.defaults.task_backend.set("swarming_task_backend_dev")
+luci.builder.defaults.backend_alt.set("swarming_task_backend_dev")
 
 def ci_builder(
         name,
@@ -188,8 +189,7 @@ def adhoc_builder(
         experiments = None,
         schedule = None,
         triggered_by = None,
-        description_html = None,
-        task_backend = "swarming_task_backend_dev"):
+        description_html = None):
     dims = {"os": os, "cpu": "x86-64", "pool": "luci.chromium.ci"}
     if extra_dims:
         dims.update(**extra_dims)
@@ -205,7 +205,6 @@ def adhoc_builder(
         build_numbers = True,
         schedule = schedule,
         triggered_by = triggered_by,
-        task_backend = task_backend,
     )
 
 adhoc_builder(
