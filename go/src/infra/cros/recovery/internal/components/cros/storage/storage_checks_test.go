@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -383,8 +383,8 @@ func TestDetectMMCState(t *testing.T) {
 		if err != nil {
 			t.Errorf("Expected no error")
 		}
-		if stateOfStorage != StorageStateCritical {
-			t.Errorf("Expected storage state: %q, got: %q", StorageStateCritical, stateOfStorage)
+		if stateOfStorage != StorageStateWarning {
+			t.Errorf("Expected storage state: %q, got: %q", StorageStateWarning, stateOfStorage)
 		}
 	})
 	Convey("StorageStateCritical, no error", t, func() {
@@ -397,8 +397,8 @@ func TestDetectMMCState(t *testing.T) {
 		if err != nil {
 			t.Errorf("Expected no error")
 		}
-		if stateOfStorage != StorageStateCritical {
-			t.Errorf("Expected storage state: %q, got: %q", StorageStateCritical, stateOfStorage)
+		if stateOfStorage != StorageStateWarning {
+			t.Errorf("Expected storage state: %q, got: %q", StorageStateWarning, stateOfStorage)
 		}
 	})
 }

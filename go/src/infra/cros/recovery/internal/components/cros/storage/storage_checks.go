@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -276,21 +276,17 @@ func detectJedecState(ctx context.Context, ifaceName, jedecFailLifeGlob, jedecFa
 			break
 		}
 	}
-	// set state based on end-of-life
+
+	metrics.DefaultActionAddObservations(ctx, metrics.NewInt64Observation("est_storage_life_used", int64(lifeValue)))
+	// There are two metrics we use to determine storage state, end-of-life signal and estimation of lifespan used.
+	// TODO(b:276998432), Add "lifeValue >= 100" as one of condition to set storage to CRITICAL state.
 	if eolValue == 3 {
 		return StorageStateCritical, nil
-	} else if eolValue == 2 {
+	} else if eolValue == 2 || lifeValue >= 90 {
 		return StorageStateWarning, nil
-	} else if eolValue == 1 {
+	} else {
 		return StorageStateNormal, nil
 	}
-	// set state based on life of estimates
-	if lifeValue < 90 {
-		return StorageStateNormal, nil
-	} else if lifeValue < 100 {
-		return StorageStateWarning, nil
-	}
-	return StorageStateCritical, nil
 }
 
 const (
