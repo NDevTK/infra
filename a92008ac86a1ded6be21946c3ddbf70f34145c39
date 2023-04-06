@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "955741b8_2e9926c7",
+        "filename": "go/src/infra/tools/result_adapter/go.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2023-04-06T21:30:20Z",
+      "side": 1,
+      "message": "Whoops, it\u0027s a strings.Builder here so needs a .String().\n\nAdded a test so it won\u0027t regress since I kinda wanted one anyway, and maybe it\u0027s not too bad despite some annoyance due to os.Stderr being an *os.File and not io.Reader.",
+      "revId": "a92008ac86a1ded6be21946c3ddbf70f34145c39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
