@@ -109,22 +109,32 @@ func (a *Agent) Run(ctx context.Context) {
 // If the assignment is lost or expired for whatever reason, this
 // function returns an error.
 func (a *Agent) runOnce(ctx context.Context) (err error) {
+	ctx, s, err := a.registerWithQueen(ctx)
+	if err != nil {
+		return err
+	}
+	return a.reportLoop(ctx, s)
+}
+
+// register does the initial registration with the queen, before the
+// core reporting loop.
+func (a *Agent) registerWithQueen(ctx context.Context) (_ context.Context, _ stateInterface, err error) {
 	ctx, span := otil.FuncSpan(ctx)
 	defer func() { otil.EndSpan(span, err) }()
 	a.log("Registering with queen")
 	res, err := a.Client.ReportDrone(ctx, a.reportRequest(ctx, ""))
 	if err != nil {
-		return errors.Annotate(err, "register with queen").Err()
+		return ctx, nil, errors.Annotate(err, "register with queen").Err()
 	}
 	if s := res.GetStatus(); s != api.ReportDroneResponse_OK {
 		// TODO(ayatane): We should handle the potential unknown UUID error specially.
-		return errors.Reason("register with queen: got unexpected status %v", s).Err()
+		return ctx, nil, errors.Reason("register with queen: got unexpected status %v", s).Err()
 	}
 
 	// Set up state.
 	uuid := res.GetDroneUuid()
 	if uuid == "" {
-		return errors.Reason("register with queen: got empty UUID").Err()
+		return ctx, nil, errors.Reason("register with queen: got empty UUID").Err()
 	}
 	a.log("UUID assigned: %s", uuid)
 	s := a.wrapState(state.New(uuid, hook{a: a, uuid: uuid}))
@@ -132,16 +142,15 @@ func (a *Agent) runOnce(ctx context.Context) (err error) {
 	// Set up expiration context.
 	t, err := ptypes.Timestamp(res.GetExpirationTime())
 	if err != nil {
-		return errors.Annotate(err, "register with queen: read expiration").Err()
+		return ctx, nil, errors.Annotate(err, "register with queen: read expiration").Err()
 	}
 	ctx = s.WithExpire(ctx, t)
 
 	// Do normal report update.
 	if err := applyUpdateToState(res, s); err != nil {
-		return errors.Annotate(err, "register with queen").Err()
+		return ctx, nil, errors.Annotate(err, "register with queen").Err()
 	}
-
-	return a.reportLoop(ctx, s)
+	return ctx, s, nil
 }
 
 // reportLoop implements the core reporting loop of the agent.
