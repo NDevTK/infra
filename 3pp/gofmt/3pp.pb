@@ -5,7 +5,7 @@
 create {
   source {
     script {
-      name: "../go/fetch.py"
+      name: "fetch.py"
       name: "prebuilt"
     }
     unpack_archive: true
