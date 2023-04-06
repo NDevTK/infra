@@ -5,6 +5,9 @@
 package main
 
 import (
+	"io"
+	"os"
+
 	"github.com/maruel/subcommands"
 
 	"go.chromium.org/luci/common/cli"
@@ -13,6 +16,10 @@ import (
 
 type goRun struct {
 	baseRun
+
+	// CopyTestOutput, if non-nil, specifies where test output
+	// is written to in addition to being uploaded to ResultDB.
+	CopyTestOutput io.StringWriter
 }
 
 func cmdGo() *subcommands.Command {
@@ -24,7 +31,11 @@ func cmdGo() *subcommands.Command {
 			test results to ResultSink native format and uploads them to ResultDB via ResultSink.
 		`),
 		CommandRun: func() subcommands.CommandRun {
-			r := &goRun{}
+			r := &goRun{
+				// Print the test output to stdout so that
+				// it's also available as a step log.
+				CopyTestOutput: os.Stdout,
+			}
 			r.captureOutput = true
 			// Ignore global flags, go tests are expected to only produce
 			// standard output.

@@ -10,6 +10,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"strings"
 	"time"
 
@@ -46,18 +47,19 @@ func (r *goRun) ensureArgsValid(args []string) ([]string, error) {
 	return args, nil
 }
 
-func (*goRun) generateTestResults(ctx context.Context, data []byte) ([]*sinkpb.TestResult, error) {
-	ordered, byID := goTestJsonToTestRecords(ctx, data)
+func (r *goRun) generateTestResults(ctx context.Context, data []byte) ([]*sinkpb.TestResult, error) {
+	ordered, byID := goTestJsonToTestRecords(ctx, data, r.CopyTestOutput)
 	return testRecordsToTestProtos(ctx, ordered, byID), nil
 }
 
 // goTestJsonToTestRecords parses one line at a time from the given output,
 // which is expected to be the one produced by `go test -json <package>`.
 // It converts each line to TestEvent and ingests it into a TestRecord.
+// copyTestOutput optionally specifies where to write a copy of test output.
 // The resulting TestRecord(s) are returned to the caller as a slice in the
 // same order as they were initially seen, and in a map where the test's id
 // maps to its TestRecord.
-func goTestJsonToTestRecords(ctx context.Context, data []byte) ([]*TestRecord, map[string]*TestRecord) {
+func goTestJsonToTestRecords(ctx context.Context, data []byte, copyTestOutput io.StringWriter) ([]*TestRecord, map[string]*TestRecord) {
 	var ordered []*TestRecord
 	var byID = make(map[string]*TestRecord)
 	// Ensure that the scanner below returns the last line in the output.
@@ -95,6 +97,10 @@ func goTestJsonToTestRecords(ctx context.Context, data []byte) ([]*TestRecord, m
 		}
 
 		currentRecord.ingest(tEvt, parent)
+
+		if copyTestOutput != nil {
+			copyTestOutput.WriteString(tEvt.Output)
+		}
 	}
 	return ordered, byID
 }
@@ -211,7 +217,6 @@ func (tr *TestRecord) ingest(te *TestEvent, parent *TestRecord) {
 	case "run":
 		tr.Started = te.Time
 	case "output":
-		fmt.Print(te.Output)
 		if parent == nil {
 			tr.Output.WriteString(te.Output)
 		} else {
