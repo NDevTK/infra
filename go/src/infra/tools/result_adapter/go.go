@@ -46,8 +46,13 @@ func (r *goRun) ensureArgsValid(args []string) ([]string, error) {
 	return args, nil
 }
 
-func (*goRun) generateTestResults(ctx context.Context, data []byte) ([]*sinkpb.TestResult, error) {
+func (r *goRun) generateTestResults(ctx context.Context, data []byte) ([]*sinkpb.TestResult, error) {
 	ordered, byID := goTestJsonToTestRecords(ctx, data)
+	if r.PrintTestOutputToStdout {
+		for _, e := range ordered {
+			fmt.Print(e.Output)
+		}
+	}
 	return testRecordsToTestProtos(ctx, ordered, byID), nil
 }
 
@@ -211,7 +216,6 @@ func (tr *TestRecord) ingest(te *TestEvent, parent *TestRecord) {
 	case "run":
 		tr.Started = te.Time
 	case "output":
-		fmt.Print(te.Output)
 		if parent == nil {
 			tr.Output.WriteString(te.Output)
 		} else {
