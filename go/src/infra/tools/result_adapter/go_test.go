@@ -15,7 +15,10 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"io"
+	"os"
 	"strings"
 	"testing"
 
@@ -93,4 +96,45 @@ func TestGenerateTestResults(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(trs, ShouldHaveLength, 0)
 	})
+}
+
+func TestPrintTestOutputToStdout(t *testing.T) {
+	f, err := os.CreateTemp("", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(f.Name()) // Clean up.
+	defer f.Close()
+
+	orig := os.Stdout
+	defer func() { os.Stdout = orig }()
+	os.Stdout = f
+	r := &goRun{PrintTestOutputToStdout: true}
+	_, err = r.generateTestResults(context.Background(),
+		[]byte(`{"Action":"start","Package":"example/pkg"}
+{"Action":"output","Package":"example/pkg","Test":"TestA","Output":"=== RUN   TestA\n"}
+{"Action":"output","Package":"example/pkg","Test":"TestA","Output":"--- PASS: TestA (0.00s)\n"}
+{"Action":"output","Package":"example/pkg","Output":"PASS\n"}
+{"Action":"output","Package":"example/pkg","Output":"ok  \texample/pkg\t0.123s\n"}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	os.Stdout = orig
+
+	_, err = f.Seek(0, io.SeekStart)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := io.ReadAll(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []byte(`=== RUN   TestA
+--- PASS: TestA (0.00s)
+PASS
+ok  	example/pkg	0.123s
+`)
+	if !bytes.Equal(got, want) {
+		t.Errorf("stdout doesn't match:\ngot  %q\nwant %q", got, want)
+	}
 }

@@ -13,6 +13,10 @@ import (
 
 type goRun struct {
 	baseRun
+
+	// PrintTestOutputToStdout controls whether test output
+	// is printed to stdout in addition to being uploaded to ResultDB.
+	PrintTestOutputToStdout bool
 }
 
 func cmdGo() *subcommands.Command {
@@ -24,7 +28,10 @@ func cmdGo() *subcommands.Command {
 			test results to ResultSink native format and uploads them to ResultDB via ResultSink.
 		`),
 		CommandRun: func() subcommands.CommandRun {
-			r := &goRun{}
+			r := &goRun{
+				// Make the test output also available as a step log.
+				PrintTestOutputToStdout: true,
+			}
 			r.captureOutput = true
 			// Ignore global flags, go tests are expected to only produce
 			// standard output.
