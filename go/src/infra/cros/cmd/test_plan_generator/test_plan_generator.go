@@ -318,7 +318,7 @@ func (c *getTestPlanRun) genTargetTestRequirements(builderNames []string) (*test
 
 	if c.targetTestReqsBranch != "" {
 		// If --branch is supported on this branch, use it.
-		// TODO(b/262388770): Maybe in many years we can do this
+		// TODO(b/262910381): Maybe in many years we can do this
 		// unconditionally.
 		var helpBuf bytes.Buffer
 		err := cmdRunner.RunCommand(ctx, &helpBuf, nil, c.targetTestReqsRepo, "./board_config/generate_test_config", "-h")
