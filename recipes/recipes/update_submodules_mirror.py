@@ -71,6 +71,8 @@ COMMIT_USERNAME = 'Submodules bot'
 COMMIT_EMAIL_ADDRESS = \
     'infra-codesearch@chops-service-accounts.iam.gserviceaccount.com'
 
+MAIN_REF = 'refs/heads/main'
+
 SHA1_RE = re.compile(r'[0-9a-fA-F]{40}')
 
 
@@ -123,6 +125,12 @@ def RunSteps(api, source_repo, target_repo, extra_submodules, overlays,
         refs_to_mirror_set.add(ref)
 
   refs_to_mirror = sorted(refs_to_mirror_set)
+
+  # Processing O(100) refs takes hours and is prone to failure. Process main
+  # branch first because other builders rely on this being up-to-date.
+  if MAIN_REF in refs_to_mirror:
+    refs_to_mirror.remove(MAIN_REF)
+    refs_to_mirror.insert(0, MAIN_REF)
 
   try:
     api.git('fetch', '-t' if with_tags else '-n')
