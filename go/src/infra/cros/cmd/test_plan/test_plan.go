@@ -1,12 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"time"
@@ -270,15 +272,15 @@ func (r *relevantPlansRun) run(ctx context.Context) error {
 
 func cmdValidate(authOpts auth.Options) *subcommands.Command {
 	return &subcommands.Command{
-		UsageLine: "validate DIR1 [DIR2...]",
+		UsageLine: "validate DIR",
 		ShortDesc: "validate metadata files",
 		LongDesc: text.Doc(`
 		Validate metadata files.
 
 		Validation logic on "DIR_METADATA" files specific to ChromeOS test planning.
 
-		Each positional argument should be a path to a directory to compute and validate
-		metadata for.
+		The positional argument should be a path to a directory to compute and validate
+		metadata for. All sub-directories will also be validated.
 
 		The subcommand returns a non-zero exit code if any of the files is invalid.
 	`),
@@ -298,18 +300,30 @@ func (r *validateRun) Run(a subcommands.Application, args []string, env subcomma
 	return errToCode(a, r.run(a, args, env))
 }
 
-func (r *validateRun) validateFlags(args []string) error {
-	if len(args) == 0 {
-		return fmt.Errorf("at least one directory must be specified as a positional argument")
+// findRepoRoot finds the absolute path to the root of the repo dir is in.
+func findRepoRoot(ctx context.Context, dir string) (string, error) {
+	stdout, err := exec.CommandContext(ctx, "git", "-C", dir, "rev-parse", "--show-toplevel").Output()
+	if err != nil {
+		return "", err
 	}
 
-	return nil
+	repoRoot := string(bytes.TrimSpace(stdout))
+	return repoRoot, nil
+}
+
+func (r *validateRun) validateFlagsAndGetDir(args []string) (string, error) {
+	if len(args) != 1 {
+		return "", fmt.Errorf("exactly one directory must be specified as a positional argument")
+	}
+
+	return args[0], nil
 }
 
 func (r *validateRun) run(a subcommands.Application, args []string, env subcommands.Env) error {
 	ctx := cli.GetContext(a, r, env)
 
-	if err := r.validateFlags(args); err != nil {
+	dir, err := r.validateFlagsAndGetDir(args)
+	if err != nil {
 		return err
 	}
 
@@ -328,12 +342,17 @@ func (r *validateRun) run(a subcommands.Application, args []string, env subcomma
 		return err
 	}
 
-	mapping, err := dirmd.ReadMapping(ctx, dirmdpb.MappingForm_ORIGINAL, true, args...)
+	mapping, err := dirmd.ReadMapping(ctx, dirmdpb.MappingForm_ORIGINAL, true, dir)
 	if err != nil {
 		return err
 	}
 
-	return testplan.ValidateMapping(ctx, gerritClient, mapping)
+	repoRoot, err := findRepoRoot(ctx, dir)
+	if err != nil {
+		return err
+	}
+
+	return testplan.ValidateMapping(ctx, gerritClient, mapping, repoRoot)
 }
 
 func cmdMigrationStatus(authOpts auth.Options) *subcommands.Command {

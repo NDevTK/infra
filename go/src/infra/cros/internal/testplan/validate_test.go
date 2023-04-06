@@ -1,3 +1,6 @@
+// Some expected error strings are filesystem-specific, skip on windows.
+//go:build !windows
+
 package testplan
 
 import (
@@ -163,17 +166,47 @@ func TestValidateMapping(t *testing.T) {
 				},
 			},
 		},
+		{
+			"regexp doesn't match file",
+			&dirmd.Mapping{
+				Dirs: map[string]*dirmdpb.Metadata{
+					"a/b": {
+						TeamEmail: "exampleteam@google.com",
+						Chromeos: &chromeos.ChromeOS{
+							Cq: &chromeos.ChromeOS_CQ{
+								SourceTestPlans: []*plan.SourceTestPlan{
+									{
+										TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
+											{
+												Host:    "chromium.googlesource.com",
+												Project: "test/repo",
+												Path:    "a/b/c/test.star",
+											},
+										},
+										// This doesn't match anything under
+										// ./testdata/good_dirmd. This isn't an
+										// error, but a warning is logged.
+										PathRegexps: []string{"a/b/c/d/nomatch.*"},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			assert.NilError(t, ValidateMapping(ctx, client, test.mapping))
+			assert.NilError(t, ValidateMapping(ctx, client, test.mapping, "./testdata/good_dirmd"))
 		})
 	}
 }
 
 func TestValidateMappingErrors(t *testing.T) {
 	ctx := context.Background()
+	testfileContents := "print('hello')"
 	client := &gerrit.MockClient{
 		T: t,
 		ExpectedDownloads: map[gerrit.ExpectedPathParams]*string{
@@ -181,7 +214,7 @@ func TestValidateMappingErrors(t *testing.T) {
 				Host:    "chromium.googlesource.com",
 				Project: "testrepo",
 				Ref:     "HEAD",
-				Path:    "testfile.star",
+				Path:    "missingtestfile.star",
 			}: nil,
 			{
 				Host:    "chromium.googlesource.com",
@@ -189,12 +222,19 @@ func TestValidateMappingErrors(t *testing.T) {
 				Ref:     "HEAD",
 				Path:    "testfile.txt",
 			}: nil,
+			{
+				Host:    "chromium.googlesource.com",
+				Project: "testrepo",
+				Ref:     "HEAD",
+				Path:    "testfile.star",
+			}: &testfileContents,
 		},
 	}
 
 	tests := []struct {
 		name           string
 		mapping        *dirmd.Mapping
+		repoRoot       string
 		errorSubstring string
 	}{
 		{
@@ -215,6 +255,7 @@ func TestValidateMappingErrors(t *testing.T) {
 					},
 				},
 			},
+			"./testdata/good_dirmd",
 			"at least one TestPlanStarlarkFile must be specified",
 		},
 		{
@@ -242,6 +283,7 @@ func TestValidateMappingErrors(t *testing.T) {
 					},
 				},
 			},
+			"./testdata/good_dirmd",
 			"failed to compile path regexp",
 		},
 		{
@@ -269,6 +311,7 @@ func TestValidateMappingErrors(t *testing.T) {
 					},
 				},
 			},
+			"./testdata/good_dirmd",
 			"path_regexp(_exclude)s defined in a directory that is not the root of the repo must have the sub-directory as a prefix",
 		},
 		{
@@ -293,6 +336,7 @@ func TestValidateMappingErrors(t *testing.T) {
 					},
 				},
 			},
+			"./testdata/good_dirmd",
 			"all TestPlanStarlarkFile must specify \".star\" files, got \"testfile.txt\" (and 1 other error)",
 		},
 		{
@@ -308,7 +352,7 @@ func TestValidateMappingErrors(t *testing.T) {
 											{
 												Host:    "chromium.googlesource.com",
 												Project: "testrepo",
-												Path:    "testfile.star",
+												Path:    "missingtestfile.star",
 											},
 										},
 									},
@@ -318,13 +362,41 @@ func TestValidateMappingErrors(t *testing.T) {
 					},
 				},
 			},
+			"./testdata/good_dirmd",
 			"failed downloading file",
+		},
+		{
+			"non-existant repo root",
+			&dirmd.Mapping{
+				Dirs: map[string]*dirmdpb.Metadata{
+					".": {
+						Chromeos: &chromeos.ChromeOS{
+							Cq: &chromeos.ChromeOS_CQ{
+								SourceTestPlans: []*plan.SourceTestPlan{
+									{
+										TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
+											{
+												Host:    "chromium.googlesource.com",
+												Project: "testrepo",
+												Path:    "testfile.star",
+											},
+										},
+										PathRegexps: []string{`a/b/e/.*\.txt`},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			"badreporoot",
+			"lstat badreporoot: no such file or directory",
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			err := ValidateMapping(ctx, client, test.mapping)
+			err := ValidateMapping(ctx, client, test.mapping, test.repoRoot)
 			assert.ErrorContains(t, err, test.errorSubstring)
 		})
 	}
