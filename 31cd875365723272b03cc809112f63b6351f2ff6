@@ -22,6 +22,30 @@
       },
       "revId": "31cd875365723272b03cc809112f63b6351f2ff6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "caca70bf_7b3aade1",
+        "filename": "go/src/infra/tools/result_adapter/go.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 192,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2023-04-06T19:40:13Z",
+      "side": 1,
+      "message": "I think it is still true in the general case.\n\nThat said, well-behaved parallel tests that use t.Log/t.Error don\u0027t run into this problem, but parallel tests that choose not to do that and instead write to stdout or stderr directly cannot be teased apart perfectly, so it\u0027s done with best effort.\n\nUpdated comment slightly.",
+      "parentUuid": "1402d569_095e22fc",
+      "range": {
+        "startLine": 190,
+        "startChar": 0,
+        "endLine": 192,
+        "endChar": 20
+      },
+      "revId": "31cd875365723272b03cc809112f63b6351f2ff6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
