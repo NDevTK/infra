@@ -23,7 +23,7 @@ const (
 )
 
 var (
-	fileAllowlist = []string{".c", ".cc", ".cpp", ".h", ".java", ".js", ".py", ".sh"}
+	fileAllowlist = []string{".c", ".cc", ".cpp", ".go", ".h", ".java", ".js", ".py", ".sh"}
 	// A comment is any amount of whitespace followed by any of the following
 	// character sets: #, //, /*, *, ;
 	commentRegexp    = regexp.MustCompile(`^[ \t\n\r\v\f]*[#|\/\/|\/\*|\*|;].*`)
