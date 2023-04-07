@@ -119,10 +119,12 @@ func (a *Agent) runOnce(ctx context.Context) (err error) {
 // register does the initial registration with the queen, before the
 // core reporting loop.
 func (a *Agent) registerWithQueen(ctx context.Context) (_ context.Context, _ stateInterface, err error) {
-	ctx, span := otil.FuncSpan(ctx)
+	// The tracing context is only used inside this function and
+	// should not be returned to the caller.
+	ctx2, span := otil.FuncSpan(ctx)
 	defer func() { otil.EndSpan(span, err) }()
 	a.log("Registering with queen")
-	res, err := a.Client.ReportDrone(ctx, a.reportRequest(ctx, ""))
+	res, err := a.Client.ReportDrone(ctx2, a.reportRequest(ctx2, ""))
 	if err != nil {
 		return ctx, nil, errors.Annotate(err, "register with queen").Err()
 	}
