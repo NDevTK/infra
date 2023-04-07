@@ -51,24 +51,47 @@ func (f *FakeBuildbucketClient) ScheduleCTPBuild(context.Context) (*buildbucketp
 	}, nil
 }
 
-// TestRunSuite tests the innerRun function of our command with fake Moblab and Buildbucket clients
+// TestRun tests the innerRun function of our command with fake Moblab and Buildbucket clients
 // It tests input entirely, partially, and not at all user given
-func TestRunSuite(t *testing.T) {
+func TestRun(t *testing.T) {
 	t.Parallel()
 
 	type test struct {
-		inputCommand *runSuite
+		inputCommand *run
 	}
 
 	tests := []test{
 		{
-			&runSuite{
-				runSuiteFlags: runSuiteFlags{
+			&run{
+				runFlags: runFlags{
 					suite:     "rlz",
 					board:     "zork",
 					model:     "gumboz",
 					milestone: "111",
 					build:     "15329.6.0"},
+			},
+		},
+		{
+			&run{
+				runFlags: runFlags{
+					test:      "rlz_CheckPing.should_send_rlz_ping_missing",
+					harness:   "tauto",
+					board:     "zork",
+					model:     "gumboz",
+					milestone: "111",
+					build:     "15329.6.0"},
+			},
+		},
+		{
+			&run{
+				runFlags: runFlags{
+					test:      "rlz_CheckPing.should_send_rlz_ping_missing",
+					harness:   "tauto",
+					board:     "zork",
+					model:     "gumboz",
+					milestone: "111",
+					build:     "15329.6.0",
+					satlabId:  "satlab-0wgatfqi21118003"},
 			},
 		},
 	}
@@ -80,6 +103,87 @@ func TestRunSuite(t *testing.T) {
 		err := tc.inputCommand.innerRunWithClients(context.Background(), &fakeMoblabClient, &fakeBuildbucketClient, bucket)
 		if err != nil {
 			t.Errorf("Unexpected err: %v", err)
+		}
+	}
+}
+
+func TestValidateArgs(t *testing.T) {
+	t.Parallel()
+
+	type test struct {
+		inputCommand *run
+	}
+	tests := []test{
+		{
+			&run{ // no test no suite
+				runFlags: runFlags{
+					board:     "zork",
+					model:     "gumboz",
+					milestone: "111",
+					build:     "15329.6.0",
+					satlabId:  "satlab-0wgatfqi21118003",
+					pool:      "pool"},
+			},
+		},
+		{
+			&run{ // test and suite
+				runFlags: runFlags{
+					test:      "rlz_CheckPing.should_send_rlz_ping_missing",
+					suite:     "rlz",
+					harness:   "tauto",
+					board:     "zork",
+					model:     "gumboz",
+					milestone: "111",
+					build:     "15329.6.0",
+					pool:      "pool"},
+			},
+		},
+		{
+			&run{ // test without harness
+				runFlags: runFlags{
+					test:      "rlz_CheckPing.should_send_rlz_ping_missing",
+					board:     "zork",
+					model:     "gumboz",
+					milestone: "111",
+					build:     "15329.6.0",
+					satlabId:  "satlab-0wgatfqi21118003",
+					pool:      "pool"},
+			},
+		},
+		{
+			&run{ // no board
+				runFlags: runFlags{
+					suite:     "rlz",
+					model:     "gumboz",
+					milestone: "111",
+					build:     "15329.6.0",
+					satlabId:  "satlab-0wgatfqi21118003",
+					pool:      "pool"},
+			},
+		},
+		{
+			&run{ // no pool, check that default pool is set
+				runFlags: runFlags{
+					suite:     "rlz",
+					board:     "zork",
+					model:     "gumboz",
+					milestone: "111",
+					build:     "15329.6.0",
+					satlabId:  "satlab-0wgatfqi21118003"},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		hasPool := tc.inputCommand.pool != ""
+		err := tc.inputCommand.validateArgs()
+
+		// check that default pool is set in the case of missing pool
+		if !hasPool && tc.inputCommand.pool == "xolabs-satlab" {
+			continue
+		}
+		if err == nil {
+			t.Errorf("Expected command to error")
 		}
 	}
 }

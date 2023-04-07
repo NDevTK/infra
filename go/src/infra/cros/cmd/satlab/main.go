@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 
+	"infra/cros/cmd/satlab/internal/components/run"
 	"infra/cros/cmd/satlab/internal/meta"
 	"infra/cros/cmd/satlab/internal/site"
 	"infra/cros/cmd/satlab/internal/stableversion"
@@ -42,7 +43,8 @@ func getApplication() *cli.Application {
 			subcmds.DeleteCmd,
 			subcmds.GetCmd,
 			subcmds.UpdateCmd,
-			subcmds.RunCmd,
+			subcommands.Section("Run"),
+			run.RunCmd,
 			subcommands.Section("Stable Version"),
 			stableversion.GetStableVersionCmd,
 			stableversion.SetStableVersionCmd,

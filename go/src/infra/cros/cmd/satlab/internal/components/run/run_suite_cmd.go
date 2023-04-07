@@ -12,6 +12,7 @@ import (
 
 	"github.com/googleapis/gax-go/v2"
 	"github.com/maruel/subcommands"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp/builder"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
@@ -24,24 +25,32 @@ import (
 	"infra/cros/cmd/satlab/internal/site"
 )
 
-// RunSuiteCmd is the implementation of the "satlab run suite" command.
-var RunSuiteCmd = &subcommands.Command{
-	UsageLine: "suite [options ...]",
-	ShortDesc: "execute a test suite",
+// RunCmd is the implementation of the "satlab run" command.
+var RunCmd = &subcommands.Command{
+	UsageLine: "run [options...]",
+	ShortDesc: "execute a test or suite",
 	CommandRun: func() subcommands.CommandRun {
-		c := &runSuite{}
-		registerRunSuiteFlags(c)
+		c := &run{}
+		registerRunFlags(c)
 		return c
 	},
 }
 
-// runSuite holds the arguments that are needed for the run suite command.
-type runSuite struct {
-	runSuiteFlags
+// run holds the arguments that are needed for the run command.
+type run struct {
+	runFlags
 }
 
-// Run attempts to run a suite and returns an exit status.
-func (c *runSuite) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+// Run attempts to run a test or suite and returns an exit status.
+func (c *run) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+	// Confirm required args are provided and no argument conflicts
+	if err := c.validateArgs(); err != nil {
+		fmt.Fprintln(a.GetErr(), err.Error())
+		c.Flags.Usage()
+		cmdlib.PrintError(a, err)
+		return 1
+	}
+
 	if err := c.innerRun(a, args, env); err != nil {
 		cmdlib.PrintError(a, err)
 		return 1
@@ -50,25 +59,23 @@ func (c *runSuite) Run(a subcommands.Application, args []string, env subcommands
 }
 
 // InnerRun is the implementation of the run command.
-func (c *runSuite) innerRun(a subcommands.Application, positionalArgs []string, env subcommands.Env) error {
+func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env subcommands.Env) error {
 	ctx := context.Background()
 
-	tp := builder.TestPlanForSuites([]string{c.suite})
+	// Create TestPlan for suite or test
+	var tp *test_platform.Request_TestPlan
+	if c.suite != "" {
+		tp = builder.TestPlanForSuites([]string{c.suite})
+	} else {
+		tp = builder.TestPlanForTests(c.testArgs, c.harness, []string{c.test})
+	}
 
-	// fetch droneId of local Satlab box and construct Dimensions
-	drone, err := commands.GetDockerHostBoxIdentifier()
+	// Set drone target based on user input
+	drone, err := c.setDroneTarget()
 	if err != nil {
-		return errors.Annotate(err, "satlab get docker host box identifier").Err()
+		return err
 	}
-	drone = fmt.Sprintf("satlab-%s", drone)
 	dims := map[string]string{"drone": drone}
-
-	image := fmt.Sprintf("%s-release/R%s-%s", c.board, c.milestone, c.build)
-
-	// Set default name of a pool if no information is given
-	if c.pool == "" {
-		c.pool = "xolabs-satlab"
-	}
 
 	builderId := &buildbucketpb.BuilderID{
 		Project: site.LUCIProject,
@@ -77,17 +84,17 @@ func (c *runSuite) innerRun(a subcommands.Application, positionalArgs []string, 
 	}
 
 	bbClient := &builder.CTPBuilder{
-		Image:       image,
+		Image:       fmt.Sprintf("%s-release/R%s-%s", c.board, c.milestone, c.build),
 		Board:       c.board,
 		Model:       c.model,
 		Pool:        c.pool,
 		CFT:         true,
-		TRV2:        true,
 		TestPlan:    tp,
 		BuilderID:   builderId,
 		Dimensions:  dims,
 		ImageBucket: site.GCSBucket,
 		AuthOptions: &site.DefaultAuthOptions,
+		// TRV2:        true,
 	}
 	// Create default client
 	err = bbClient.AddDefaultBBClient(ctx)
@@ -107,7 +114,7 @@ func (c *runSuite) innerRun(a subcommands.Application, positionalArgs []string, 
 	return nil
 }
 
-func (c *runSuite) innerRunWithClients(ctx context.Context, moblabClient MoblabClient, bbClient BuildbucketClient, gcsBucket string) error {
+func (c *run) innerRunWithClients(ctx context.Context, moblabClient MoblabClient, bbClient BuildbucketClient, gcsBucket string) error {
 	_, err := c.StageImageToBucket(ctx, moblabClient, gcsBucket)
 	if err != nil {
 		return errors.Annotate(err, "satlab stage image to bucket").Err()
@@ -119,9 +126,7 @@ func (c *runSuite) innerRunWithClients(ctx context.Context, moblabClient MoblabC
 	return nil
 }
 
-func (c *runSuite) StageImageToBucket(ctx context.Context, moblabClient MoblabClient, bucket string) (string, error) {
-	fmt.Println("staging to bucket...")
-
+func (c *run) StageImageToBucket(ctx context.Context, moblabClient MoblabClient, bucket string) (string, error) {
 	if bucket == "" {
 		fmt.Println("GCS_BUCKET not found")
 		return "", errors.New("GCS_BUCKET not found")
@@ -157,19 +162,58 @@ func (c *runSuite) StageImageToBucket(ctx context.Context, moblabClient MoblabCl
 	}
 	destPath := stageStatus.StagedBuildArtifact.Path
 
-	fmt.Printf("\nArtifacts staged to %s\n\n", path.Join(bucket, destPath))
+	fmt.Printf("Artifacts staged to %s", path.Join(bucket, destPath))
 	return destPath, nil
 }
 
 func ScheduleBuild(ctx context.Context, bbClient BuildbucketClient) (string, error) {
-	fmt.Println("scheduling build...")
-
 	ctpBuild, err := bbClient.ScheduleCTPBuild(ctx)
 	if err != nil {
 		return "", err
 	}
-	fmt.Printf("\n-- BUILD LINK --\nhttps://ci.chromium.org/ui/b/%s\n\n", strconv.Itoa(int(ctpBuild.Id)))
+	fmt.Printf("\n\n-- BUILD LINK --\nhttps://ci.chromium.org/ui/b/%s\n\n", strconv.Itoa(int(ctpBuild.Id)))
 	return "", nil
+}
+
+func (c *run) validateArgs() error {
+	if (c.suite == "" && c.test == "") || (c.suite != "" && c.test != "") {
+		return errors.Reason("Please specify either -suite or -test").Err()
+	}
+	if c.test != "" && c.harness == "" {
+		return errors.Reason("-harness is required for individual test execution").Err()
+	}
+	if c.board == "" {
+		return errors.Reason("-board not specified").Err()
+	}
+	if c.model == "" {
+		return errors.Reason("-model not specified").Err()
+	}
+	if c.milestone == "" {
+		return errors.Reason("-milestone not specified").Err()
+	}
+	if c.build == "" {
+		return errors.Reason("-build not specified").Err()
+	}
+	// Set default name of a pool if no information is given
+	if c.pool == "" {
+		c.pool = "xolabs-satlab"
+	}
+	return nil
+}
+
+// Set drone target to user-provided satlab or local satlab if one isn't provided
+func (c *run) setDroneTarget() (string, error) {
+	var satlabTarget string
+	if c.satlabId != "" {
+		satlabTarget = fmt.Sprintf(c.satlabId)
+	} else { // get id of local satlab if one is not provided
+		localSatlab, err := commands.GetDockerHostBoxIdentifier()
+		if err != nil {
+			return "", errors.Annotate(err, "satlab get docker host box identifier").Err()
+		}
+		satlabTarget = fmt.Sprintf("satlab-%s", localSatlab)
+	}
+	return satlabTarget, nil
 }
 
 func buildTargetParent(board string, model string) string {
