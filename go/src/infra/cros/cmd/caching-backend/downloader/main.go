@@ -157,7 +157,6 @@ func newGRPCExporter(ctx context.Context, target string) (sdktrace.SpanExporter,
 	conn, err := grpc.DialContext(ctx, target,
 		// Connection is not secured.
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock(),
 	)
 	if err != nil {
 		return nil, err
