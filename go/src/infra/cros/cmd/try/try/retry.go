@@ -284,6 +284,11 @@ func (r *retryRun) processRetry(ctx context.Context, buildData *bbpb.Build, prop
 		r.LogErr(err.Error())
 		return CmdError
 	}
+	signingSummary, err := r.getSigningSummary(ctx, r.originalBBID, originalBuildProps, true)
+	if err != nil {
+		r.LogErr(err.Error())
+		return CmdError
+	}
 
 	recipe := propsStruct.AsMap()["recipe"].(string)
 	if recipe != "orchestrator" && recipe != "build_release" {
@@ -298,9 +303,10 @@ func (r *retryRun) processRetry(ctx context.Context, buildData *bbpb.Build, prop
 
 	// Set exec_steps.
 	execStep, err := getExecStep(recipe, buildInfo{
-		bbid:         r.originalBBID,
-		status:       buildData.GetStatus(),
-		retrySummary: retrySummary,
+		bbid:           r.originalBBID,
+		status:         buildData.GetStatus(),
+		retrySummary:   retrySummary,
+		signingSummary: signingSummary,
 	})
 	if err != nil {
 		r.LogErr(err.Error())

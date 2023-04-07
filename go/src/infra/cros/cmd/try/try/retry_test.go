@@ -111,6 +111,36 @@ const (
 		}
 	}`
 
+	failedSigningChildJSON = `{
+		"id": "8794230068334833059",
+		"builder": {
+			"project": "chromeos",
+			"bucket": "staging",
+			"builder": "staging-zork-release-main"
+		},
+		"status": "FAILURE",
+		"input": {
+			"properties": {
+				"recipe": "build_release",
+				"input_prop": 102
+			}
+		},
+		"output": {
+			"properties": {
+				"retry_summary": {
+					"COLLECT_SIGNING": "FAILURE",
+					"DEBUG_SYMBOLS": "SUCCESS",
+					"PUSH_IMAGES": "SUCCESS",
+					"STAGE_ARTIFACTS": "SUCCESS"
+				},
+				"signing_summary": {
+					"gs://foo/bar1.bin": "FAILED",
+					"gs://foo/bar2.bin": "PASSED"
+				}
+			}
+		}
+	}`
+
 	emptyRetrySummaryJSON = `{
 		"id": "8794230068334833059",
 		"builder": {
@@ -342,6 +372,15 @@ func TestRetry_childBuilder_dryRun(t *testing.T) {
 		builderName:      "staging-zork-release-main",
 		builderJSON:      stripNewlines(failedChildJSON),
 		expectedExecStep: pb.RetryStep_DEBUG_SYMBOLS,
+	})
+}
+
+func TestRetry_childBuilder_collectSigning(t *testing.T) {
+	doChildRetryTestRun(t, &childRetryTestConfig{
+		bbid:             "8794230068334833059",
+		builderName:      "staging-zork-release-main",
+		builderJSON:      stripNewlines(failedSigningChildJSON),
+		expectedExecStep: pb.RetryStep_PUSH_IMAGES,
 	})
 }
 
