@@ -1,3 +1,8 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Package tracing implements internal tracing helpers for drone-agent.
 package tracing
 
 import (
@@ -46,7 +51,24 @@ func NewGRPCExporter(ctx context.Context, target string) (sdktrace.SpanExporter,
 	if err != nil {
 		return nil, err
 	}
-	return otlptracegrpc.New(ctx, otlptracegrpc.WithGRPCConn(conn))
+	exp, err := otlptracegrpc.New(ctx, otlptracegrpc.WithGRPCConn(conn))
+	if err != nil {
+		return nil, err
+	}
+	return loggingExporter{exp}, nil
+}
+
+// A loggingExporter wraps a SpanExporter and logs export calls.
+type loggingExporter struct {
+	sdktrace.SpanExporter
+}
+
+// ExportSpans implements SpanExporter.
+func (e loggingExporter) ExportSpans(ctx context.Context, spans []sdktrace.ReadOnlySpan) error {
+	log.Printf("Exporting %d trace spans", len(spans))
+	err := e.SpanExporter.ExportSpans(ctx, spans)
+	log.Printf("Export trace spans returned: %v", err)
+	return err
 }
 
 // newResource returns a resource describing this application.
