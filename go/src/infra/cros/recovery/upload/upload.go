@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,10 @@ type gsClient interface {
 	NewWriter(p lucigs.Path) (lucigs.Writer, error)
 }
 
+// Do not retry upload files if failed.
+// The uploader will try to upload files only once.
+const maxUploadsRetryLimit = 0
+
 // Upload a list of directories to Google Storage.
 func Upload(ctx context.Context, gsClient gsClient, params *Params) error {
 	if gsClient == nil {
@@ -44,7 +48,7 @@ func Upload(ctx context.Context, gsClient gsClient, params *Params) error {
 	if params.MaxConcurrentJobs <= 0 {
 		return errors.Reason("upload: max jobs must be positive").Err()
 	}
-	dirWriter := gs.NewDirWriter(gsClient, params.MaxConcurrentJobs)
+	dirWriter := gs.NewDirWriter(gsClient, params.MaxConcurrentJobs, maxUploadsRetryLimit)
 	if err := dirWriter.WriteDir(ctx, params.SourceDir, lucigs.Path(params.GSURL)); err != nil {
 		return errors.Annotate(err, "upload: upload main directory").Err()
 	}

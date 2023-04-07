@@ -44,13 +44,13 @@ type transientErrorRetryIterator struct {
 }
 
 // newTransientErrorRetryIterator creates a new transient error retry iterator.
-func newTransientErrorRetryIterator() *transientErrorRetryIterator {
+func newTransientErrorRetryIterator(retryLimit int) *transientErrorRetryIterator {
 	return &transientErrorRetryIterator{
 		impl: &concurrencySafeRetryIterator{
 			i: &retry.ExponentialBackoff{
 				Limited: retry.Limited{
 					Delay:   100 * time.Millisecond,
-					Retries: 100,
+					Retries: retryLimit,
 				},
 				MaxDelay:   30 * time.Second,
 				Multiplier: 2,
@@ -69,15 +69,20 @@ func (i *transientErrorRetryIterator) Next(ctx context.Context, e error) time.Du
 	if cloudErr, code := extractCloudErrorCode(e); cloudErr != nil && code == 403 {
 		return retry.Stop
 	}
-	return i.impl.Next(ctx, e)
+	select {
+	case <-ctx.Done():
+		return retry.Stop
+	default:
+		return i.impl.Next(ctx, e)
+	}
 }
 
-// NewDirWriter creates an object which can write a directory and its subdirectories to the given Google Storage path
-func NewDirWriter(client gsClient, maxConcurrentUploads int) *DirWriter {
+// NewDirWriter creates an object which can write a directory and its subdirectories to the given Google Storage path.
+func NewDirWriter(client gsClient, maxConcurrentUploads, retryLimit int) *DirWriter {
 	return &DirWriter{
 		client:               client,
 		maxConcurrentUploads: maxConcurrentUploads,
-		retryIterator:        newTransientErrorRetryIterator(),
+		retryIterator:        newTransientErrorRetryIterator(retryLimit),
 	}
 }
 

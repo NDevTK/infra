@@ -106,6 +106,9 @@ func validateUploadToGSRequest(r *phosphorus.UploadToGSRequest) error {
 // TODO(crbug.com/1133890): Replace with value from builder config.
 const maxConcurrentUploads = 10
 
+// Retry upload the logs 100 times.
+const maxUploadsRetryLimit = 100
+
 // runGSUploadStep uploads all files in the specified directory to GS.
 func runGSUploadStep(ctx context.Context, authFlags authcli.Flags, r *phosphorus.UploadToGSRequest) (string, error) {
 	localPath := r.GetLocalDirectory()
@@ -116,7 +119,7 @@ func runGSUploadStep(ctx context.Context, authFlags authcli.Flags, r *phosphorus
 		logging.Infof(ctx, "Creating new GS client failed: %s", err)
 		return "", err
 	}
-	w := gs.NewDirWriter(gsC, maxConcurrentUploads)
+	w := gs.NewDirWriter(gsC, maxConcurrentUploads, maxUploadsRetryLimit)
 
 	// TODO(crbug.com/1130071) Set timeout from the recipe.
 	// Hard-coded here to stop the bleeding fast.
