@@ -11,7 +11,6 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
-	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -181,21 +180,10 @@ func (ex *CrosDutVmExecutor) dutStartCommandExecution(
 	step, ctx := build.StartStep(ctx, "Dut service start")
 	defer func() { step.End(err) }()
 
-	// Cacheserver need to be called from the DUT, therefore we need the host IP
-	hostIp, err := common.GetHostIp()
-	if err != nil {
-		return err
-	}
-	cacheServerEndpoint := &labapi.IpEndpoint{
-		Address: hostIp,
-		Port:    cmd.CacheServerAddress.Port,
-	}
-	logging.Infof(ctx, "Converted cache server address to host IP: %v", cacheServerEndpoint)
-
 	template := &api.Template{
 		Container: &api.Template_CrosDut{
 			CrosDut: &testapi.CrosDutTemplate{
-				CacheServer: cacheServerEndpoint,
+				CacheServer: cmd.CacheServerAddress,
 				DutAddress:  cmd.DutSshAddress,
 			},
 		},

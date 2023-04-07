@@ -117,6 +117,15 @@ func (ex *CacheServerExecutor) vmCacheServerStartCommandExecution(
 		return errors.Annotate(err, "error while creating ip endpoint from server address: ").Err()
 	}
 
+	// Cacheserver need to be called from the DUT, therefore we need the host IP
+	if cacheServerAddress.Address == "localhost" {
+		hostIp, err := common.GetHostIp()
+		if err != nil {
+			return errors.Annotate(err, "error while getting host ip address: ").Err()
+		}
+		cacheServerAddress.Address = hostIp
+	}
+
 	logging.Infof(ctx, "Cacheserver started at address: %v", cacheServerAddress)
 	cmd.CacheServerAddress = cacheServerAddress
 	return err
