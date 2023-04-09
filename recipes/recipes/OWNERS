@@ -36,7 +36,6 @@ per-file recipe_simulation.py=iannucci@chromium.org
 per-file sheriff-o-matic-wct.py=seanmccullough@chromium.org
 
 per-file wpt*.py=jeffcarp@chromium.org
-per-file wpt*.py=qyearsley@chromium.org
 per-file wpt*.py=robertma@chromium.org
 
 per-file 3pp.py=bryner@google.com
