@@ -1712,11 +1712,11 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 
 PYTHON_VERSION_COMPATIBILITY: PY3
 
-&mdash; **def [RunSteps](/recipes/recipes/infra_continuous.py#171)(api):**
+&mdash; **def [RunSteps](/recipes/recipes/infra_continuous.py#159)(api):**
 
-&mdash; **def [build\_main](/recipes/recipes/infra_continuous.py#207)(api, checkout, buildername, project_name, repo_url, rev):**
+&mdash; **def [build\_main](/recipes/recipes/infra_continuous.py#195)(api, checkout, buildername, project_name, repo_url, rev):**
 
-&mdash; **def [run\_python\_tests](/recipes/recipes/infra_continuous.py#276)(api, project_name):**
+&mdash; **def [run\_python\_tests](/recipes/recipes/infra_continuous.py#264)(api, project_name):**
 ### *recipes* / [infra\_frontend\_tester](/recipes/recipes/infra_frontend_tester.py)
 
 [DEPS](/recipes/recipes/infra_frontend_tester.py#7): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step]

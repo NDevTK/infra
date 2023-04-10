@@ -83,6 +83,11 @@ ci_builder(name = "infra-continuous-focal-arm64", os = "Ubuntu-20.04", cpu = "ar
     "go_version_variant": "bleeding_edge",
 })
 
+# TODO(crbug.com/1412588): Make this tree-closing when stable.
+ci_builder(name = "infra-continuous-jammy-64", os = "Ubuntu-22.04", tree_closing = False, properties = {
+    "go_version_variant": "bleeding_edge",
+})
+
 # CI OSX.
 ci_builder(name = "infra-continuous-mac-10.13-64", os = "Mac-10.13", tree_closing = True, properties = {
     "go_version_variant": "legacy",
@@ -113,6 +118,9 @@ ci_builder(
 
 # All trybots.
 try_builder(name = "infra-try-bionic-64", os = "Ubuntu-18.04", properties = {
+    "go_version_variant": "bleeding_edge",
+})
+try_builder(name = "infra-try-jammy-64", os = "Ubuntu-22.04", properties = {
     "go_version_variant": "bleeding_edge",
 })
 

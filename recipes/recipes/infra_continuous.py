@@ -54,22 +54,14 @@ DEPS = [
 # TODO(iannucci): remove this dict and put this all configuration as explicit
 #    property inputs to the recipe :)
 CIPD_PACKAGE_BUILDERS = {
-    # trusty-64 is the primary builder for linux-amd64, and the rest just
+    # bionic-64 is the primary builder for linux-amd64, and the rest just
     # cross-compile to different platforms (to speed up the overall cycle time
     # by doing stuff in parallel).
-    'infra-continuous-trusty-64': [
-        'native:test',
-        'linux-386',
-    ],
-    'infra-continuous-xenial-64': [
-        'linux-arm64',
-        'linux-mips64',
-        'linux-mips64le',
-    ],
     'infra-continuous-bionic-64': [
-        'linux-mipsle',
-        'linux-ppc64',
-        'linux-s390x',
+        'native:test',
+    ],
+    'infra-continuous-jammy-64': [
+        'linux-arm64',
     ],
 
     # 10.13 is the primary builder for darwin-amd64.
@@ -89,13 +81,9 @@ CIPD_PACKAGE_BUILDERS = {
     ],
 
     # Internal builders, they use exact same recipe.
-    'infra-internal-continuous-trusty-64': [
-        'native:test',
-        'linux-arm',
-    ],
-    'infra-internal-continuous-xenial-64': [
-        'linux-arm64',
-        'darwin-arm64',  # note: can't do it on mac-10.15 since we need >=go1.16
+    'infra-internal-continuous-bionic-64': [
+       'native:test',
+       'linux-arm64',
     ],
     'infra-internal-continuous-win-64': [
         'native:test',
@@ -310,14 +298,14 @@ def GenTests(api):
             api.buildbucket.ci_build(
                 project, bucket, builder, git_repo=repo, build_number=123))
 
-  yield test('public-ci-linux', 'infra-continuous-trusty-64',
+  yield test('public-ci-linux', 'infra-continuous-bionic-64',
              PUBLIC_REPO, 'infra', 'ci', 'linux')
-  yield test('public-ci-linux-arm64', 'infra-continuous-trusty-64',
+  yield test('public-ci-linux-arm64', 'infra-continuous-bionic-64',
              PUBLIC_REPO, 'infra', 'ci', 'linux', arch='arm')
   yield test('public-ci-win', 'infra-continuous-win10-64',
              PUBLIC_REPO, 'infra', 'ci', 'win')
 
-  yield test('internal-ci-linux', 'infra-internal-continuous-trusty-64',
+  yield test('internal-ci-linux', 'infra-internal-continuous-bionic-64',
              INTERNAL_REPO, 'infra-internal', 'ci', 'linux')
   yield test('internal-ci-mac', 'infra-internal-continuous-mac-11-64',
              INTERNAL_REPO, 'infra-internal', 'ci', 'mac')

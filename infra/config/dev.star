@@ -162,7 +162,8 @@ luci.notifier_template(
     body = "{{ stepNames .MatchingFailedSteps }} on {{ buildUrl . }} {{ .Build.Builder.Builder }} from {{ .Build.Output.GitilesCommit.Id }}",
 )
 
-ci_builder(name = "infra-continuous-bionic-64", os = "Ubuntu-18.04", tree_closing = True)
+ci_builder(name = "infra-continuous-bionic-64", os = "Ubuntu-18.04")
+ci_builder(name = "infra-continuous-jammy-64", os = "Ubuntu-22.04")
 ci_builder(name = "infra-continuous-win10-64", os = "Windows-10")
 ci_builder(name = "infra-continuous-win11-64", os = "Windows-11")
 
