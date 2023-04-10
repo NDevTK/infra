@@ -18,12 +18,10 @@ import import_utils
 
 import_utils.FixImports()
 
-from components import endpoints_flask
 import gae_ts_mon
 
 import registerpages
 from framework import sorting
-from services import api_svc_v1
 from services import service_manager
 
 if six.PY3:
@@ -36,13 +34,9 @@ if six.PY3:
 services = service_manager.set_up_services()
 sorting.InitializeArtValues(services)
 
-flask_regist = registerpages.ServletRegistry()
-
 app = flask.Flask(__name__)
 
-flask_regist.Register(services, app)
+registerpages.ServletRegistry().Register(services, app)
+registerpages.RegisterEndpointsUrls(app)
 
 gae_ts_mon.initialize_prod(app)
-
-endpoints = endpoints_flask.api_server(
-    [api_svc_v1.MonorailApi, api_svc_v1.ClientConfigApi])

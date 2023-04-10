@@ -40,7 +40,7 @@ handlers:
   login: admin
 
 - url: /_ah/api/.*
-  script: main.endpoints
+  script: main.app
 
 - url: /_task/.*
   script: main.app

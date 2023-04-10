@@ -73,7 +73,7 @@ def SignAttachmentID(aid):
   """One-way hash of attachment ID to make it harder for people to scan."""
   digester = hmac.new(secrets_svc.GetXSRFKey(), digestmod=hashlib.md5)
   digester.update(six.ensure_binary(str(aid)))
-  return base64.urlsafe_b64encode(digester.digest())
+  return six.ensure_str(base64.urlsafe_b64encode(digester.digest()))
 
 
 def GetDownloadURL(attachment_id):

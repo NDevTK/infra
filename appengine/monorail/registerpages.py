@@ -5,6 +5,7 @@
 
 import flask
 
+from components import endpoints_flask
 from components import prpc
 
 from features import banspammer
@@ -30,6 +31,7 @@ from project import projectsummary
 from project import projectupdates
 from project import project_constants
 from project import redirects
+from services import api_svc_v1
 from services import cachemanager_svc
 from services import client_config_svc
 from sitewide import custom_404
@@ -819,3 +821,12 @@ class ServletRegistry(object):
             webcomponentspage.WebComponentsPage(
                 services=service).GetWebComponentsUser, ['GET']
         ])
+
+
+def RegisterEndpointsUrls(app):
+  api_classes = [api_svc_v1.MonorailApi, api_svc_v1.ClientConfigApi]
+  routes = endpoints_flask.api_routes(api_classes, '/_ah/api')
+  for rule, endpoint, view_func, methods in routes:
+    app.add_url_rule(
+        rule, endpoint=endpoint, view_func=view_func, methods=methods)
+  app.view_functions['cors_handler'] = endpoints_flask.cors_handler

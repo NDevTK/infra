@@ -39,7 +39,7 @@ env_variables:
 
 handlers:
 - url: /_ah/api/.*
-  script: main.endpoints
+  script: main.app
 
 - url: /robots.txt
   static_files: static/robots.txt

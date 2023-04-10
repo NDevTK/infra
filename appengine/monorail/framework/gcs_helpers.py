@@ -9,6 +9,7 @@ from __future__ import absolute_import
 
 import logging
 import os
+import six
 from six.moves import urllib
 import uuid
 
@@ -131,7 +132,7 @@ def _FetchSignedURL(url):
   """Request that devstorage API signs a GCS content URL."""
   resp = urlfetch.fetch(url, follow_redirects=False)
   redir = resp.headers["Location"]
-  return redir
+  return six.ensure_str(redir)
 
 
 def SignUrl(bucket, object_id):

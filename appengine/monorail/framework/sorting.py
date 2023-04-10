@@ -248,7 +248,7 @@ def _MakeCombinedSortKeyAccessor(
         key_part.extend(value)
       else:
         key_part.append(value)
-    return sorted(key_part)
+    return sorted(key_part, key=Python2Key)
 
   return _MaybeMakeDescending(CombinedAccessor, descending)
 

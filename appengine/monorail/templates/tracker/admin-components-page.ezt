@@ -5,7 +5,7 @@
 [else]
 
 <form action="adminComponents.do" id="adminComponents" method="POST">
- <input type="hidden" name="token" value="form_token]">
+ <input type="hidden" name="token" value="[form_token]">
 
  <h4>Issue components</h4>
  [if-any perms.EditProject]
