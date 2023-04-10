@@ -337,6 +337,7 @@ func (r *RequestTaskSet) CheckTasksAndRetry(ctx context.Context, c trservice.Cli
 		shouldRetry := retry.IsNeeded(task.Result()) && r.retryCounter.CanRetry(ctx, iid)
 		if !shouldRetry {
 			completedTests[iid] = true
+			r.getInvocationStep(iid).MarkCompleted()
 			delete(r.activeTasks, iid)
 			continue
 		}

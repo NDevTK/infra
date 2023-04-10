@@ -60,7 +60,9 @@ func (r *RequestStepUpdater) Close() error {
 		return errors.Reason("RequestStepUpdater: finalized called more than once").Err()
 	}
 	for _, i := range r.invocations {
-		i.close()
+		if !i.closed {
+			i.close()
+		}
 	}
 	closeStep(r.step)
 	return nil
@@ -69,8 +71,9 @@ func (r *RequestStepUpdater) Close() error {
 // InvocationStepUpdater provides methods to update a step corresponding to the
 // execution of an invocation.
 type InvocationStepUpdater struct {
-	step  *bbpb.Step
-	tasks []*testrunner.Build
+	step   *bbpb.Step
+	tasks  []*testrunner.Build
+	closed bool
 }
 
 // NotifyNewTask notifies the InvocationStepUpdater of the creation of a new
@@ -78,6 +81,11 @@ type InvocationStepUpdater struct {
 func (i *InvocationStepUpdater) NotifyNewTask(task *testrunner.Build) {
 	i.tasks = append(i.tasks, task)
 	i.step.SummaryMarkdown = i.summary()
+}
+
+// MarkCompleted closes the invocation step.
+func (i *InvocationStepUpdater) MarkCompleted() {
+	i.close()
 }
 
 const (
@@ -104,6 +112,7 @@ func (i *InvocationStepUpdater) summary() string {
 }
 
 func (i *InvocationStepUpdater) close() {
+	i.closed = true
 	closeStep(i.step)
 }
 
