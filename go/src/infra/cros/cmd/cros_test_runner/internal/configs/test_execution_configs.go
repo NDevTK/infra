@@ -186,7 +186,7 @@ func (tecfg *TestExecutionConfig) processCommandConfig(
 }
 
 // executeCommands executes given commands.
-// It will skip any commands that are already executed.
+// Assuming the given commands are correct, it will execute repeated ones.
 func (tecfg *TestExecutionConfig) executeCommands(
 	ctx context.Context,
 	cmds []interfaces.CommandInterface,
@@ -197,8 +197,7 @@ func (tecfg *TestExecutionConfig) executeCommands(
 		cmdType := cmd.GetCommandType()
 		logging.Infof(ctx, "Executing cmd: %T", cmd)
 		if _, ok := tecfg.executedCommands[cmdType]; ok {
-			logging.Infof(ctx, "Command type %s already executed as part of current config. Skipping...", cmdType)
-			continue
+			logging.Warningf(ctx, "Command type %s already executed as part of current config. Executing again...", cmdType)
 		}
 
 		if singleErr = cmd.ExtractDependencies(ctx, tecfg.stateKeeper); singleErr != nil {
