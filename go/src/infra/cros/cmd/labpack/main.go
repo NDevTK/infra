@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /*
-The labpack program allows to run repair tasks for ChromeOS devices in the lab.
+The labpack program allows to run repair tasks f5or ChromeOS devices in the lab.
 For more information please read go/paris-.
 Managed by Chrome Fleet Software (go/chrome-fleet-software).
 */
@@ -193,8 +193,12 @@ func uploadLogs(ctx context.Context, state *build.State, lg logger.Logger) (rErr
 	if err != nil {
 		return errors.Annotate(err, "authenticator.Transport(...): error").Err()
 	}
-
-	client, err := lucigs.NewProdClient(ctx, rt)
+	// The ProdClient will cache the context, which will be used later to upload files.
+	uploadTimeout := 5 * time.Minute
+	timeoutCtx, cancel := context.WithTimeout(ctx, uploadTimeout)
+	lg.Infof("Set %v timeout for uploading files.", uploadTimeout)
+	defer cancel()
+	client, err := lucigs.NewProdClient(timeoutCtx, rt)
 	if err != nil {
 		return errors.Annotate(err, "failed to create client(...)").Err()
 	}
@@ -202,7 +206,7 @@ func uploadLogs(ctx context.Context, state *build.State, lg logger.Logger) (rErr
 	lg.Infof("Persist the swarming logs")
 	// Actually persist the logs.
 	swarmingTaskID := state.Build().GetInfra().GetSwarming().GetTaskId()
-	gsURL, err := parallelUpload(ctx, lg, client, swarmingTaskID)
+	gsURL, err := parallelUpload(timeoutCtx, lg, client, swarmingTaskID)
 	if err != nil {
 		return errors.Annotate(err, "upload logs").Err()
 	}
@@ -243,17 +247,13 @@ func parallelUpload(ctx context.Context, lg logger.Logger, client lucigs.Client,
 	// TODO(crbug/1311842): Switch this bucket back to chromeos-autotest-results.
 	gsURL := fmt.Sprintf("gs://chrome-fleet-karte-autotest-results/swarming-%s", swarmingTaskID)
 	lg.Infof("Swarming task %q is non-empty. Uploading to %q", swarmingTaskID, gsURL)
-	uploadTimeout := 5 * time.Minute
-	ctxTimeout, cancelHandle := context.WithTimeout(ctx, uploadTimeout)
-	defer cancelHandle()
-	lg.Infof("Beginning upload attempt. Starting with %v timeout.", uploadTimeout)
 	uploadParams := &upload.Params{
 		// TODO(gregorynisbet): Change this to the log root.
 		SourceDir:         ".",
 		GSURL:             gsURL,
 		MaxConcurrentJobs: 10,
 	}
-	if err := upload.Upload(ctxTimeout, client, uploadParams); err != nil {
+	if err := upload.Upload(ctx, client, uploadParams); err != nil {
 		// TODO: Register error to Karte.
 		lg.Errorf("Upload task error: %s", err)
 	} else {
