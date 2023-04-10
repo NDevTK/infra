@@ -246,7 +246,7 @@
       "npm",
       "ci"
     ],
-    "cwd": "[CACHE]/builder/infra_internal/infra_internal/go/src/infra_internal/appengine/testhaus/frontend/ui",
+    "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal/appengine/testhaus/frontend/ui",
     "env": {
       "PATH": "[START_DIR]/packages/bin:<PATH>"
     },
@@ -270,7 +270,7 @@
       "run",
       "test"
     ],
-    "cwd": "[CACHE]/builder/infra_internal/infra_internal/go/src/infra_internal/appengine/testhaus/frontend/ui",
+    "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal/appengine/testhaus/frontend/ui",
     "env": {
       "PATH": "[START_DIR]/packages/bin:<PATH>"
     },
@@ -293,7 +293,7 @@
       "npm",
       "ci"
     ],
-    "cwd": "[CACHE]/builder/infra_internal/infra_internal/go/src/infra_internal/appengine/spike/appengine/frontend/ui",
+    "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal/appengine/spike/appengine/frontend/ui",
     "env": {
       "PATH": "[START_DIR]/packages/bin:<PATH>"
     },
@@ -317,7 +317,7 @@
       "run",
       "test"
     ],
-    "cwd": "[CACHE]/builder/infra_internal/infra_internal/go/src/infra_internal/appengine/spike/appengine/frontend/ui",
+    "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal/appengine/spike/appengine/frontend/ui",
     "env": {
       "PATH": "[START_DIR]/packages/bin:<PATH>"
     },

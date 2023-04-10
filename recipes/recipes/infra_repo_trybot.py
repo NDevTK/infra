@@ -40,15 +40,18 @@ PROPERTIES = {
 def RunSteps(api, go_version_variant, run_lint):
   cl = api.buildbucket.build.input.gerrit_changes[0]
   project = cl.project
-  assert project in ('infra/infra',
-                     'infra/infra_internal'), ('unknown project: "%s"' %
-                                               project)
+  assert project in ('infra/infra', 'infra/infra_internal',
+                     'infra/infra_superproject'), ('unknown project: "%s"' %
+                                                   project)
 
   patch_root = project.split('/')[-1]
   internal = (patch_root == 'infra_internal')
+  config_name = patch_root
+  if patch_root == 'infra_superproject':
+    patch_root = '.'
 
   co = api.infra_checkout.checkout(
-      gclient_config_name=patch_root,
+      gclient_config_name=config_name,
       patch_root=patch_root,
       internal=internal,
       generate_env_with_system_python=True,
@@ -77,8 +80,19 @@ def RunSteps(api, go_version_variant, run_lint):
   if not is_pure_go_change:
     with api.step.defer_results():
       if api.platform.arch != 'arm':
-        with api.context(cwd=co.path.join(patch_root)):
-          api.step('python tests', ['python3', 'test.py', 'test', '--verbose'])
+
+        if config_name == 'infra_superproject':
+          # Note: patch_root here is '.', so we just need to
+          # join 'infra' or 'infra_internal'
+          with api.context(cwd=co.path.join('infra')):
+            api.step('python tests (infra)',
+                     ['python3', 'test.py', 'test', '--verbose'])
+          # TODO(crbug.com/1421776): Add infra_internal tests
+          # when builders can checkout internal code.
+        else:
+          with api.context(cwd=co.path.join(patch_root)):
+            api.step('python tests',
+                     ['python3', 'test.py', 'test', '--verbose'])
 
         if internal and (api.platform.is_linux or api.platform.is_mac) and any(
             f.startswith('appengine/chromiumdash') for f in files):
@@ -179,6 +193,14 @@ def GenTests(api):
     api.platform.arch('arm') +
     diff('infra/stuff.py', 'go/src/infra/stuff.go')
   )
+
+  yield (test('basic_superproject_arm64') + api.platform.arch('arm') +
+         diff('infra/stuff.py', 'go/src/infra/stuff.go') +
+         api.buildbucket.try_build(project='infra/infra_superproject'))
+
+  yield (test('basic_superproject') +
+         diff('infra/stuff.py', 'go/src/infra/stuff.go') +
+         api.buildbucket.try_build(project='infra/infra_superproject'))
 
   yield (
     test('basic_internal', internal=True) +
