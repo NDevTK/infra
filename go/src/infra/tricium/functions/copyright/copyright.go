@@ -72,7 +72,7 @@ func main() {
 			log.Printf("Skipping file: %q.", file.Path)
 			continue
 		}
-		if c := checkCopyright(filepath.Join(*inputDir, file.Path)); c != nil {
+		if c := checkCopyright(*inputDir, file.Path); c != nil {
 			log.Printf("%s: %s", file.Path, c.Category)
 			output.Comments = append(output.Comments, c)
 		}
@@ -95,14 +95,15 @@ func isAllowed(path string) bool {
 	return false
 }
 
-func checkCopyright(path string) *tricium.Data_Comment {
-	file, err := os.Open(path)
+func checkCopyright(basePath, path string) *tricium.Data_Comment {
+	fullPath := filepath.Join(basePath, path)
+	file, err := os.Open(fullPath)
 	if err != nil {
-		log.Panicf("Failed to open file: %v, path: %s", err, path)
+		log.Panicf("Failed to open file: %v, path: %s", err, fullPath)
 	}
 	defer func() {
 		if err := file.Close(); err != nil {
-			log.Panicf("Failed to close file: %v, path: %s", err, path)
+			log.Panicf("Failed to close file: %v, path: %s", err, fullPath)
 		}
 	}()
 	header := getFileHeader(path, file)

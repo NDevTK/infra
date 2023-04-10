@@ -51,7 +51,7 @@ func main() {
 			log.Printf("Skipping file: %q.", file.Path)
 			continue
 		}
-		checkHTTPS(filepath.Join(*inputDir, file.Path), results)
+		checkHTTPS(*inputDir, file.Path, results)
 	}
 
 	// Write Tricium RESULTS data.
@@ -71,14 +71,15 @@ func isAllowed(path string) bool {
 	return false
 }
 
-func checkHTTPS(path string, results *tricium.Data_Results) {
-	file, err := os.Open(path)
+func checkHTTPS(basePath, path string, results *tricium.Data_Results) {
+	fullPath := filepath.Join(basePath, path)
+	file, err := os.Open(fullPath)
 	if err != nil {
-		log.Panicf("Failed to open file: %v, path: %s", err, path)
+		log.Panicf("Failed to open file: %v, path: %s", err, fullPath)
 	}
 	defer func() {
 		if err := file.Close(); err != nil {
-			log.Panicf("Failed to close file: %v, path: %s", err, path)
+			log.Panicf("Failed to close file: %v, path: %s", err, fullPath)
 		}
 	}()
 

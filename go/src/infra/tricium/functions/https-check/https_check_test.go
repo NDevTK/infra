@@ -16,36 +16,37 @@ import (
 // These tests read from files on the filesystem, so modifying the tests may
 // require modifying the example test files.
 const (
-	gLinks           string = "test/src/g_links.md"
-	goLinks          string = "test/src/go_links.md"
-	httpsURLs        string = "test/src/https_urls.md"
-	httpURL          string = "test/src/http_single_url.md"
-	multipleHTTPURLs string = "test/src/http_multiple_urls.md"
+	baseDir          = "test"
+	gLinks           = "src/g_links.md"
+	goLinks          = "src/go_links.md"
+	httpsURLs        = "src/https_urls.md"
+	httpURL          = "src/http_single_url.md"
+	multipleHTTPURLs = "src/http_multiple_urls.md"
 )
 
 func TestHTTPSChecker(t *testing.T) {
 
 	Convey("Produces no comment for g/ link", t, func() {
 		results := &tricium.Data_Results{}
-		checkHTTPS(gLinks, results)
+		checkHTTPS(baseDir, gLinks, results)
 		So(results.Comments, ShouldBeNil)
 	})
 
 	Convey("Produces no comment for file with go/ link", t, func() {
 		results := &tricium.Data_Results{}
-		checkHTTPS(goLinks, results)
+		checkHTTPS(baseDir, goLinks, results)
 		So(results.Comments, ShouldBeNil)
 	})
 
 	Convey("Produces no comment for file with httpsURLs", t, func() {
 		results := &tricium.Data_Results{}
-		checkHTTPS(httpsURLs, results)
+		checkHTTPS(baseDir, httpsURLs, results)
 		So(results.Comments, ShouldBeNil)
 	})
 
 	Convey("Flags a single http URL", t, func() {
 		results := &tricium.Data_Results{}
-		checkHTTPS(httpURL, results)
+		checkHTTPS(baseDir, httpURL, results)
 		So(results.Comments, ShouldNotBeNil)
 		So(results.Comments[0], ShouldResembleProto, &tricium.Data_Comment{
 			Category:  "HttpsCheck/Warning",
@@ -60,7 +61,7 @@ func TestHTTPSChecker(t *testing.T) {
 
 	Convey("Flags multiple http URLs", t, func() {
 		results := &tricium.Data_Results{}
-		checkHTTPS(multipleHTTPURLs, results)
+		checkHTTPS(baseDir, multipleHTTPURLs, results)
 		So(len(results.Comments), ShouldEqual, 2)
 		So(results.Comments[1], ShouldResembleProto, &tricium.Data_Comment{
 			Category:  "HttpsCheck/Warning",

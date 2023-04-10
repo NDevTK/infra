@@ -16,25 +16,26 @@ import (
 // These tests read from files on the filesystem, so modifying the tests may
 // require modifying the example test files.
 const (
-	goodBsd string = "test/src/good.cpp"
-	goodMit string = "test/src/good_mit.cpp"
-	badBsd  string = "test/src/bad.cpp"
-	missing string = "test/src/missing.cpp"
-	old     string = "test/src/old.cpp"
+	baseDir = "test"
+	goodBsd = "src/good.cpp"
+	goodMit = "src/good_mit.cpp"
+	badBsd  = "src/bad.cpp"
+	missing = "src/missing.cpp"
+	old     = "src/old.cpp"
 )
 
 func TestCopyrightChecker(t *testing.T) {
 
 	Convey("Produces no comment for file with correct BSD copyright", t, func() {
-		So(checkCopyright(goodBsd), ShouldBeNil)
+		So(checkCopyright(baseDir, goodBsd), ShouldBeNil)
 	})
 
 	Convey("Produces no comment for file with correct MIT copyright", t, func() {
-		So(checkCopyright(goodMit), ShouldBeNil)
+		So(checkCopyright(baseDir, goodMit), ShouldBeNil)
 	})
 
 	Convey("Finds an issue when copyright doesn't match expected pattern", t, func() {
-		c := checkCopyright(badBsd)
+		c := checkCopyright(baseDir, badBsd)
 		So(c, ShouldNotBeNil)
 		So(c, ShouldResembleProto, &tricium.Data_Comment{
 			Category: "Copyright/Incorrect",
@@ -57,7 +58,7 @@ func TestCopyrightChecker(t *testing.T) {
 	})
 
 	Convey("Makes a comment when there appears to be no copyright header", t, func() {
-		c := checkCopyright(missing)
+		c := checkCopyright(baseDir, missing)
 		So(c, ShouldNotBeNil)
 		So(c, ShouldResembleProto, &tricium.Data_Comment{
 			Category: "Copyright/Missing",
@@ -80,7 +81,7 @@ func TestCopyrightChecker(t *testing.T) {
 	})
 
 	Convey("Makes a comment when there is a copyright statement but the old style is used", t, func() {
-		c := checkCopyright(old)
+		c := checkCopyright(baseDir, old)
 		So(c, ShouldNotBeNil)
 		So(c, ShouldResembleProto, &tricium.Data_Comment{
 			Category: "Copyright/OutOfDate",
