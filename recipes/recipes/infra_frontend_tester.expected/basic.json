@@ -246,7 +246,7 @@
       "npm",
       "ci"
     ],
-    "cwd": "[CACHE]/builder/infra/appengine/monorail",
+    "cwd": "[CACHE]/builder/infra/infra/appengine/monorail",
     "env": {
       "PATH": "[START_DIR]/packages/bin:<PATH>"
     },
@@ -270,7 +270,7 @@
       "run",
       "test"
     ],
-    "cwd": "[CACHE]/builder/infra/appengine/monorail",
+    "cwd": "[CACHE]/builder/infra/infra/appengine/monorail",
     "env": {
       "PATH": "[START_DIR]/packages/bin:<PATH>"
     },
@@ -293,7 +293,7 @@
       "npm",
       "ci"
     ],
-    "cwd": "[CACHE]/builder/infra/go/src/infra/appengine/dashboard/frontend",
+    "cwd": "[CACHE]/builder/infra/infra/go/src/infra/appengine/dashboard/frontend",
     "env": {
       "PATH": "[START_DIR]/packages/bin:<PATH>"
     },
@@ -317,7 +317,7 @@
       "run",
       "test"
     ],
-    "cwd": "[CACHE]/builder/infra/go/src/infra/appengine/dashboard/frontend",
+    "cwd": "[CACHE]/builder/infra/infra/go/src/infra/appengine/dashboard/frontend",
     "env": {
       "PATH": "[START_DIR]/packages/bin:<PATH>"
     },
