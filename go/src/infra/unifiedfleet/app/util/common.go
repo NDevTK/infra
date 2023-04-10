@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,17 +22,23 @@ import (
 
 // message for filtering
 const (
-	ColonSeparator string = ":"
-	Lab            string = "lab"
-	ATL            string = "atl"
-	ACS            string = "acs"
-	Browser        string = "browser"
-	CrOS           string = "cros"
+	ColonSeparator      string = ":"
+	UnderscoreSeparator string = "_"
+	Lab                 string = "lab"
+	ATL                 string = "atl"
+	ACS                 string = "acs"
+	Browser             string = "browser"
+	CrOS                string = "cros"
 	// https://cloud.google.com/datastore/docs/concepts/limits
 	OperationPageSize int = 500
 
 	// Version Key format of inventory
 	TimestampBasedVersionKeyFormat string = "2006-01-02 15:04:05.000 UTC"
+
+	// Prefix before zone enum string vals
+	ZonePrefix string = "ZONE"
+	// Prefix before all Satlab for Partner associated zones
+	SfPPrefix string = "SFP"
 )
 
 // Key is a type for use in adding values to context. It is not recommended to use plain string as key.
@@ -75,6 +81,19 @@ func IsInBrowserZone(name string) bool {
 	default:
 		return false
 	}
+}
+
+// IsInSFPZone checks if a given zone name indicates it's a SfP zone. This check
+// looks for a string of format "ZONE_SFP_*"
+func IsSFPZone(zone string) bool {
+	s := strings.Split(zone, UnderscoreSeparator)
+
+	// not a zone string
+	if s[0] != ZonePrefix || len(s) < 3 {
+		return false
+	}
+
+	return s[1] == SfPPrefix
 }
 
 // GetIPName returns a formatted IP name

@@ -64,3 +64,52 @@ func TestCheckPermission(t *testing.T) {
 		check(writer, writePermission, "", true)
 	})
 }
+
+// TestToUFSRealm checks zone->UFS realm conversions
+func TestToUFSRealm(t *testing.T) {
+	tests := []struct {
+		name      string
+		inZone    string
+		wantRealm string
+	}{
+		{
+			name:      "unspecified",
+			inZone:    "",
+			wantRealm: "",
+		},
+		{
+			name:      "browser",
+			inZone:    "ZONE_ATLANTA",
+			wantRealm: "@internal:ufs/browser",
+		},
+		{
+			name:      "acs",
+			inZone:    "ZONE_CHROMEOS3",
+			wantRealm: "@internal:ufs/os-acs",
+		},
+		{
+			name:      "satlab",
+			inZone:    "ZONE_SATLAB",
+			wantRealm: "@internal:ufs/satlab-internal-users",
+		},
+		{
+			name:      "os-atl-chromium",
+			inZone:    "ZONE_SFO36_OS_CHROMIUM",
+			wantRealm: "@internal:ufs/os-atl-chromium",
+		},
+		{
+			name:      "sfp",
+			inZone:    "ZONE_SFP_SFPTEST",
+			wantRealm: "chromeos:ufs/sfp_sfptest",
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			if got := ToUFSRealm(tt.inZone); got != tt.wantRealm {
+				t.Errorf("ToUFSRealm() = %v, want %v", got, tt.wantRealm)
+			}
+		})
+	}
+}

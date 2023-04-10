@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,6 +99,9 @@ var (
 	ResourcesImport = realms.RegisterPermission("ufs.resources.import")
 )
 
+// ChromeOSLUCIProject where ChromeOS LUCI infra lives
+const ChromeOSLUCIProject = "chromeos"
+
 // CurrentUser returns the current user
 func CurrentUser(ctx context.Context) string {
 	return auth.CurrentUser(ctx).Email
@@ -153,8 +156,19 @@ func ToUFSRealm(zone string) string {
 		return SatLabInternalUserRealm
 	} else if ufsZone == ufspb.Zone_ZONE_SFO36_OS_CHROMIUM {
 		return AtlLabChromiumAdminRealm
+	} else if IsSFPZone(zone) {
+		return GetSatlabForPartnersRealm(zone)
 	}
 	return AtlLabAdminRealm
+}
+
+// GetSatlabForPartnersRealm determines the realm for zones that are formatted
+// in a manner consistent with SfP naming conventions
+func GetSatlabForPartnersRealm(zone string) string {
+	project := ChromeOSLUCIProject
+	realm_id := strings.ToLower(strings.TrimPrefix(zone, fmt.Sprintf("%s_", ZonePrefix)))
+
+	return fmt.Sprintf("%s:ufs/%s", project, realm_id)
 }
 
 // GetValidRealmName replaces the older Browser realm with newer realm

@@ -33,3 +33,14 @@ func TestAppendUnique(t *testing.T) {
 		So(AppendUniqueStrings([]string{"row", "row", "row", "your", "boat"}), ShouldHaveLength, 3)
 	})
 }
+
+func TestIsSFPZone(t *testing.T) {
+	t.Parallel()
+
+	Convey("Testing IsSFPZone", t, func() {
+		So(IsSFPZone("ZONE_SFP_TEST"), ShouldBeTrue)
+		So(IsSFPZone("ZONE_SFP"), ShouldBeFalse)
+		So(IsSFPZone("FAKE_SFP_TEST"), ShouldBeFalse)
+		So(IsSFPZone("ZONE_OTHER_TEST"), ShouldBeFalse)
+	})
+}
