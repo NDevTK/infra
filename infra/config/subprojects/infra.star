@@ -22,7 +22,8 @@ def ci_builder(
         extra_dimensions = None,
         schedule = None,
         infra_triggered = True,
-        tree_closing = False):
+        tree_closing = False,
+        **kwargs):
     infra.builder(
         name = name,
         bucket = "ci",
@@ -34,6 +35,7 @@ def ci_builder(
         properties = properties,
         extra_dimensions = extra_dimensions,
         notifies = infra.tree_closing_notifiers() if tree_closing else None,
+        **kwargs
     )
     luci.console_view_entry(
         builder = name,
@@ -77,7 +79,7 @@ def try_builder(
 ci_builder(name = "infra-continuous-bionic-64", os = "Ubuntu-18.04", tree_closing = True, properties = {
     "go_version_variant": "bleeding_edge",
 })
-ci_builder(name = "infra-continuous-focal-arm64", os = "Ubuntu-20.04", cpu = "arm64", console_category = "linux|20.04|ARM", properties = {
+ci_builder(name = "infra-continuous-focal-arm64", os = "Ubuntu-20.04", cpu = "arm64", console_category = "linux|20.04|ARM", pool = "luci.flex.ci", properties = {
     "go_version_variant": "bleeding_edge",
 })
 
