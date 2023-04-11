@@ -47,17 +47,19 @@ func (r *goRun) ensureArgsValid(args []string) ([]string, error) {
 }
 
 func (*goRun) generateTestResults(ctx context.Context, data []byte) ([]*sinkpb.TestResult, error) {
-	records := goTestJsonToTestRecords(ctx, data)
-	return testRecordsToTestProtos(ctx, records)
+	ordered, byID := goTestJsonToTestRecords(ctx, data)
+	return testRecordsToTestProtos(ctx, ordered, byID), nil
 }
 
 // goTestJsonToTestRecords parses one line at a time from the given output,
 // which is expected to be the one produced by `go test -json <package>`.
 // It converts each line to TestEvent and ingests it into a TestRecord.
-// The resulting TestRecord(s) are returned to the caller in a map where the
-// test's id maps to its TestRecord.
-func goTestJsonToTestRecords(ctx context.Context, data []byte) map[string]*TestRecord {
-	records := make(map[string]*TestRecord)
+// The resulting TestRecord(s) are returned to the caller as a slice in the
+// same order as they were initially seen, and in a map where the test's id
+// maps to its TestRecord.
+func goTestJsonToTestRecords(ctx context.Context, data []byte) ([]*TestRecord, map[string]*TestRecord) {
+	var ordered []*TestRecord
+	var byID = make(map[string]*TestRecord)
 	// Ensure that the scanner below returns the last line in the output.
 	if !bytes.HasSuffix(data, []byte("\n")) {
 		data = append(data, []byte("\n")...)
@@ -75,31 +77,33 @@ func goTestJsonToTestRecords(ctx context.Context, data []byte) map[string]*TestR
 			logging.Warningf(ctx, "cannot parse row %q, %s", string(l), err)
 			continue
 		}
-		currentRecord := records[tEvt.id()]
+		currentRecord := byID[tEvt.id()]
 		if currentRecord == nil {
-			currentRecord = &TestRecord{}
-			records[tEvt.id()] = currentRecord
+			currentRecord = &TestRecord{TestID: tEvt.id()}
+			ordered = append(ordered, currentRecord)
+			byID[currentRecord.TestID] = currentRecord
 		}
 
 		var parent *TestRecord = nil
 		if tEvt.Test != "" {
-			parent = records[tEvt.Package]
+			parent = byID[tEvt.Package]
 			if parent == nil {
-				parent = &TestRecord{}
-				records[tEvt.Package] = parent
+				parent = &TestRecord{TestID: tEvt.Package}
+				ordered = append(ordered, parent)
+				byID[parent.TestID] = parent
 			}
 		}
 
 		currentRecord.ingest(tEvt, parent)
 	}
-	return records
+	return ordered, byID
 }
 
 // testRecordsToTestProtos converts the TestRecords returned by the above into
 // a list of TestResult protos suitable for sending to result sink.
-func testRecordsToTestProtos(ctx context.Context, records map[string]*TestRecord) ([]*sinkpb.TestResult, error) {
+func testRecordsToTestProtos(ctx context.Context, ordered []*TestRecord, byID map[string]*TestRecord) []*sinkpb.TestResult {
 	ret := make([]*sinkpb.TestResult, 0, 8)
-	for testId, record := range records {
+	for _, record := range ordered {
 		if record.IsPackage {
 			continue
 		}
@@ -119,9 +123,9 @@ func testRecordsToTestProtos(ctx context.Context, records map[string]*TestRecord
 			// and produce certain output (such as goconvey output). In those
 			// cases it's okay to mark the tests as passing if the whole
 			// package passed.
-			if records[record.PackageName].Result == "pass" {
+			if byID[record.PackageName].Result == "pass" {
 				logging.Warningf(ctx,
-					"Status for test %s is missing from the list of test events. Setting to `pass` because package passed.", testId)
+					"Status for test %s is missing from the list of test events. Setting to `pass` because package passed.", record.TestID)
 				tr.Status = resultpb.TestStatus_PASS
 				tr.Expected = true
 			} else {
@@ -130,7 +134,7 @@ func testRecordsToTestProtos(ctx context.Context, records map[string]*TestRecord
 				tr.Status = resultpb.TestStatus_ABORT
 			}
 		}
-		parentRecord := records[record.PackageName]
+		parentRecord := byID[record.PackageName]
 		if parentRecord.Output.Len() > 0 {
 			a := sinkpb.Artifact{}
 			a.Body = &sinkpb.Artifact_Contents{
@@ -139,12 +143,12 @@ func testRecordsToTestProtos(ctx context.Context, records map[string]*TestRecord
 			tr.Artifacts = map[string]*sinkpb.Artifact{"output": &a}
 			tr.SummaryHtml = `<p><text-artifact artifact-id="output"></p>`
 		}
-		tr.TestId = testId
+		tr.TestId = record.TestID
 		tr.Duration = durationpb.New(time.Duration(int64(record.Elapsed * float64(time.Second))))
 		tr.StartTime = timestamppb.New(record.Started)
 		ret = append(ret, &tr)
 	}
-	return ret, nil
+	return ret
 }
 
 func parseRow(s []byte) (*TestEvent, error) {
@@ -177,8 +181,9 @@ func (te *TestEvent) id() string {
 // TestRecord represents the results of a single test or package.
 // Several test events will apply to each TestRecord.
 type TestRecord struct {
+	TestID      string // TestID is the ID of the test this TestRecord represents.
 	IsPackage   bool
-	PackageName string
+	PackageName string // Import path of the Go package that the test is a part of.
 	Result      string // Out of a subset of the values for TestEvent.Action as applicable.
 	Started     time.Time
 	Elapsed     float64 //seconds
