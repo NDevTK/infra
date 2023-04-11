@@ -129,6 +129,70 @@ deps = {
     ],
     'dep_type': 'cipd',
   },
+
+  "infra/cipd": {
+    'packages': [
+      {
+        'package': 'infra/3pp/tools/protoc/${{os}}-${{arch=amd64}}',
+        'version': 'version:2@21.7',
+      },
+
+      {
+        'package': 'infra/3pp/tools/nodejs/${{os=linux,mac}}-${{arch}}',
+        'version': 'version:2@16.13.0',
+      },
+
+      {
+        'package': 'infra/3pp/tools/cloud-tasks-emulator/${{platform=linux-amd64}}',
+        'version': 'version:2@1.1.1',
+      },
+
+      {
+        'package': 'infra/tools/luci/logdog/logdog/${{platform}}',
+        'version': 'git_revision:fe9985447e6b95f4907774f05e9774f031700775',
+      },
+
+      {
+        'package': 'infra/tools/cloudbuildhelper/${{os=mac,linux}}-${{arch}}',
+        'version': 'git_revision:7088a6d730d06d978dfa0e9c5dd07e51aeb5916e',
+      },
+
+      # TODO: These should be built via 3pp instead.
+      # See: docs/legacy/build_adb.md
+      {
+        'package': 'infra/adb/${{platform=linux-amd64}}',
+        'version': 'adb_version:1.0.36',
+      },
+      # See: docs/legacy/build_fastboot.md
+      {
+        'package': 'infra/fastboot/${{platform=linux-amd64}}',
+        'version': 'fastboot_version:5943271ace17',
+      },
+
+    ],
+    'dep_type': 'cipd',
+  },
+
+  # Hosts legacy packages needed by the infra environment
+  "infra/cipd/legacy": {
+    'packages': [
+      {
+        'package': 'infra/3pp/tools/protoc/${{os}}-${{arch=amd64}}',
+        'version': 'version:2@21.7',
+      },
+    ],
+    'dep_type': 'cipd',
+  },
+
+  "infra/cipd/result_adapter": {
+    'packages': [
+      {
+        'package': 'infra/tools/result_adapter/${{platform}}',
+        'version': 'git_revision:fe9985447e6b95f4907774f05e9774f031700775',
+      },
+    ],
+    'dep_type': 'cipd',
+  },
 }
 
 hooks = [
@@ -144,12 +208,6 @@ hooks = [
     "action": [
       Var("infra_env_python"), "-u", "./infra/bootstrap/bootstrap.py",
       "--deps_file", "infra/bootstrap/deps.pyl", "infra/ENV"
-    ],
-  },
-  {
-    "pattern": ".",
-    "action": [
-      "python3", "-u", "./infra/bootstrap/install_cipd_packages.py", "-v",
     ],
   },
   {

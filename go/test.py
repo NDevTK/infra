@@ -29,7 +29,7 @@ import sys
 # /path/to/infra
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Result adapter is deployed here by bootstrap.py.
+# Result adapter is deployed here by DEPS.
 ADAPTER_DIR = os.path.join(ROOT, "cipd", "result_adapter")
 
 
