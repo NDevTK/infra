@@ -84,12 +84,13 @@ def RunSteps(api, go_version_variant, run_lint):
 
         if internal and (api.platform.is_linux or api.platform.is_mac) and any(
             f.startswith('appengine/chromiumdash') for f in files):
-          cwd = api.path['checkout'].join('appengine', 'chromiumdash')
           gae_env = {
               'GAE_RUNTIME': 'python3',
               'GAE_APPLICATION': 'testbed-test',
           }
-          with api.context(cwd=cwd, env=gae_env):
+          with api.context(
+              cwd=co.path.join(patch_root, 'appengine', 'chromiumdash'),
+              env=gae_env):
             api.step('chromiumdash python3 tests', [
                 'vpython3', '-m', 'pytest', '--ignore=gae_ts_mon/',
                 '--ignore=go/'
@@ -97,8 +98,8 @@ def RunSteps(api, go_version_variant, run_lint):
 
         if (api.platform.is_linux or api.platform.is_mac) and any(
             f.startswith('appengine/monorail') for f in files):
-          cwd = api.path['checkout'].join('appengine', 'monorail')
-          with api.context(cwd=cwd):
+          with api.context(
+              cwd=co.path.join(patch_root, 'appengine', 'monorail')):
             api.step('monorail python3 tests', ['vpython3', 'test.py'])
 
       if not internal and api.platform.is_linux and api.platform.bits == 64:

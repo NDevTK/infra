@@ -299,7 +299,7 @@
       "--ignore=gae_ts_mon/",
       "--ignore=go/"
     ],
-    "cwd": "[CACHE]/builder/appengine/chromiumdash",
+    "cwd": "[CACHE]/builder/infra_internal/appengine/chromiumdash",
     "env": {
       "GAE_APPLICATION": "testbed-test",
       "GAE_RUNTIME": "python3"

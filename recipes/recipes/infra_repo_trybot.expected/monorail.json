@@ -296,7 +296,7 @@
       "vpython3",
       "test.py"
     ],
-    "cwd": "[CACHE]/builder/appengine/monorail",
+    "cwd": "[CACHE]/builder/infra/appengine/monorail",
     "luci_context": {
       "realm": {
         "name": "infra:try"
