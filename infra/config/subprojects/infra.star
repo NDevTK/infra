@@ -120,7 +120,7 @@ ci_builder(
 try_builder(name = "infra-try-bionic-64", os = "Ubuntu-18.04", properties = {
     "go_version_variant": "bleeding_edge",
 })
-try_builder(name = "infra-try-jammy-64", os = "Ubuntu-22.04", properties = {
+try_builder(name = "infra-try-jammy-64", os = "Ubuntu-22.04", in_cq = False, properties = {
     "go_version_variant": "bleeding_edge",
 })
 
