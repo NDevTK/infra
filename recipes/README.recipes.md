@@ -1723,19 +1723,19 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 
 PYTHON_VERSION_COMPATIBILITY: PY3
 
-&mdash; **def [RunFrontendTests](/recipes/recipes/infra_frontend_tester.py#111)(api, env, cwd, app_name):**
+&mdash; **def [RunFrontendTests](/recipes/recipes/infra_frontend_tester.py#109)(api, env, cwd, app_name):**
 
-&mdash; **def [RunInfraFrontendTests](/recipes/recipes/infra_frontend_tester.py#81)(api, env, root_path):**
+&mdash; **def [RunInfraFrontendTests](/recipes/recipes/infra_frontend_tester.py#79)(api, env, root_path):**
 
 This function runs the UI tests in `infra` project.
   
 
-&mdash; **def [RunInfraInternalFrontendTests](/recipes/recipes/infra_frontend_tester.py#63)(api, env, root_path):**
+&mdash; **def [RunInfraInternalFrontendTests](/recipes/recipes/infra_frontend_tester.py#61)(api, env, root_path):**
 
 This function runs UI tests in `infra_internal` project.
   
 
-&mdash; **def [RunLuciGoTests](/recipes/recipes/infra_frontend_tester.py#93)(api, env):**
+&mdash; **def [RunLuciGoTests](/recipes/recipes/infra_frontend_tester.py#91)(api, env):**
 
 This function runs UI tests in the `luci-go` project.
   
@@ -1750,11 +1750,11 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 &mdash; **def [RunSteps](/recipes/recipes/infra_repo_trybot.py#40)(api, go_version_variant, run_lint):**
 ### *recipes* / [infra\_superproject\_tester](/recipes/recipes/infra_superproject_tester.py)
 
-[DEPS](/recipes/recipes/infra_superproject_tester.py#7): [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket]
+[DEPS](/recipes/recipes/infra_superproject_tester.py#7): [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/swarming][recipe_engine/recipe_modules/swarming]
 
 PYTHON_VERSION_COMPATIBILITY: PY3
 
-&mdash; **def [RunSteps](/recipes/recipes/infra_superproject_tester.py#12)(api):**
+&mdash; **def [RunSteps](/recipes/recipes/infra_superproject_tester.py#13)(api):**
 
 Runs infra{_internal} builds for infra_superproject changes.
 ### *recipes* / [infra\_system:examples/full](/recipes/recipe_modules/infra_system/examples/full.py)
@@ -2110,6 +2110,7 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 [recipe_engine/recipe_modules/runtime]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/7933713c4c21a6cae0ff48184af016c04cf17f1a/README.recipes.md#recipe_modules-runtime
 [recipe_engine/recipe_modules/service_account]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/7933713c4c21a6cae0ff48184af016c04cf17f1a/README.recipes.md#recipe_modules-service_account
 [recipe_engine/recipe_modules/step]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/7933713c4c21a6cae0ff48184af016c04cf17f1a/README.recipes.md#recipe_modules-step
+[recipe_engine/recipe_modules/swarming]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/7933713c4c21a6cae0ff48184af016c04cf17f1a/README.recipes.md#recipe_modules-swarming
 [recipe_engine/recipe_modules/time]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/7933713c4c21a6cae0ff48184af016c04cf17f1a/README.recipes.md#recipe_modules-time
 [recipe_engine/recipe_modules/tricium]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/7933713c4c21a6cae0ff48184af016c04cf17f1a/README.recipes.md#recipe_modules-tricium
 [recipe_engine/recipe_modules/url]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/7933713c4c21a6cae0ff48184af016c04cf17f1a/README.recipes.md#recipe_modules-url

@@ -22,20 +22,20 @@ def RunSteps(api):
   cl = api.buildbucket.build.input.gerrit_changes[0]
   project_name = cl.project
   assert project_name in ('infra/infra', 'infra/infra_internal',
-                          'infra/infra_superproject',
                           'infra/luci/luci-go'), ('unknown project: "%s"' %
                                                   project_name)
   patch_root = project_name.split('/')[-1]
   config_name = patch_root.replace("-", "_")
-  if patch_root == 'infra_superproject':
-    patch_root = '.'
+  # TODO(crbug.com/1415507): Remove '_superproject' suffix when
+  # migration is complete and configs have been renamed.
+  if config_name in ('infra', 'infra_internal'):
+    config_name += '_superproject'
 
   path = api.path['cache'].join('builder')
   api.file.ensure_directory('ensure builder dir', path)
 
   with api.context(cwd=path):
     api.gclient.set_config(config_name)
-
     api.bot_update.ensure_checkout(patch_root=patch_root)
     api.gclient.runhooks()
 
@@ -50,12 +50,10 @@ def RunSteps(api):
       'PATH': api.path.pathsep.join([str(node_path), '%(PATH)s'])
   }
   if patch_root == 'infra':
-    RunInfraFrontendTests(api, env, api.path['checkout'])
-  elif patch_root == 'infra_internal':
-    RunInfraInternalFrontendTests(api, env, api.path['checkout'])
-  elif config_name == 'infra_superproject':
     RunInfraFrontendTests(api, env, api.path['checkout'].join('infra'))
-    # (TODO: crbug.com/1421776): add infra_internal
+  elif patch_root == 'infra_internal':
+    RunInfraInternalFrontendTests(api, env,
+                                  api.path['checkout'].join('infra_internal'))
   else:
     RunLuciGoTests(api, env)
 
@@ -121,7 +119,5 @@ def GenTests(api):
   yield (
       api.test('basic-internal') +
       api.buildbucket.try_build(project='infra/infra_internal'))
-  yield (api.test('basic-superproject') +
-         api.buildbucket.try_build(project='infra/infra_superproject'))
   yield (api.test('basic-luci-go') +
          api.buildbucket.try_build(project='infra/luci/luci-go'))
