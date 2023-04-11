@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,4 +16,5 @@ var CronJobNames = map[string]string{
 	"goldeneyeDevicesSyncCron":   "ufs.sync_goldeneye_devices.sync",
 	"SwarmingLabelsDiffCron":     "ufs.swarming_labels_diff",
 	"botConfigSyncCron":          "ufs.sync_bot_config.sync",
+	"deviceConfigSyncCron":       "ufs.device_config.sync",
 }

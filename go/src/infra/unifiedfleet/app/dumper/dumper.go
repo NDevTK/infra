@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,6 +98,12 @@ var Jobs = []*cron.CronTab{
 		Time:     1 * time.Hour, //TODO(gowriden) - Reduce time to every 5 minutes once completely implemented
 		TrigType: cron.EVERY,
 		Job:      getBotConfigs,
+	},
+	{
+		Name:     util.CronJobNames["deviceConfigSyncCron"],
+		Time:     1 * time.Hour,
+		TrigType: cron.EVERY,
+		Job:      syncDeviceConfigs,
 	},
 }
 
