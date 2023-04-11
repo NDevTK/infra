@@ -76,7 +76,7 @@ RACE_SUPPORTED_PLATFORMS = frozenset([
 ])
 
 # A package prefix => cwd to use when building this package.
-INFRA_MODULE_MAP = {
+MODULE_MAP = {
     # The luci-go module is checked out separately, use its go.mod.
     'go.chromium.org/luci/':
         os.path.join(ROOT, 'go', 'src', 'go.chromium.org', 'luci'),
@@ -1531,7 +1531,7 @@ def build_infra(pkg_defs, should_refresh_python):
             os.path.join(ROOT, 'ENV'),
         ])
   # Build all necessary go binaries.
-  build_go_code(os.path.join(ROOT, 'go'), INFRA_MODULE_MAP, pkg_defs)
+  build_go_code(os.path.join(ROOT, 'go'), MODULE_MAP, pkg_defs)
 
 
 def main(
@@ -1574,6 +1574,10 @@ def main(
         'infra_internal.git/build/out.'),
   )
   parser.add_argument(
+      '--map-go-module', metavar='MOD=PATH', action='append',
+      help='go package prefix = directory containing go.mod.',
+  )
+  parser.add_argument(
       '--builder', metavar='NAME', type=str,
       help='Name of the CI buildbot builder that invokes this script.')
   parser.add_argument(
@@ -1599,6 +1603,12 @@ def main(
   args = parser.parse_args(args)
   if not args.build and not args.upload:
     parser.error('--no-rebuild doesn\'t make sense without --upload')
+
+  for mapping in args.map_go_module:
+    mod, path = mapping.split('=')
+    print(f'I GOT {mod!r} - {path!r} from {mapping!r}')
+    MODULE_MAP[mod] = path
+
   return run(
       args.go_workspace,
       build_callback,
