@@ -83,8 +83,18 @@ func TestToUFSRealm(t *testing.T) {
 			wantRealm: "@internal:ufs/browser",
 		},
 		{
+			name:      "browser no prefix",
+			inZone:    "atlanta",
+			wantRealm: "@internal:ufs/browser",
+		},
+		{
 			name:      "acs",
 			inZone:    "ZONE_CHROMEOS3",
+			wantRealm: "@internal:ufs/os-acs",
+		},
+		{
+			name:      "acs no prefix",
+			inZone:    "chromeos3",
 			wantRealm: "@internal:ufs/os-acs",
 		},
 		{
@@ -93,13 +103,28 @@ func TestToUFSRealm(t *testing.T) {
 			wantRealm: "@internal:ufs/satlab-internal-users",
 		},
 		{
+			name:      "satlab no prefix",
+			inZone:    "satlab",
+			wantRealm: "@internal:ufs/satlab-internal-users",
+		},
+		{
 			name:      "os-atl-chromium",
 			inZone:    "ZONE_SFO36_OS_CHROMIUM",
 			wantRealm: "@internal:ufs/os-atl-chromium",
 		},
 		{
+			name:      "os-atl no prefix",
+			inZone:    "sfo36_os_chromium",
+			wantRealm: "@internal:ufs/os-atl-chromium",
+		},
+		{
 			name:      "sfp",
 			inZone:    "ZONE_SFP_SFPTEST",
+			wantRealm: "chromeos:ufs/sfp_sfptest",
+		},
+		{
+			name:      "sfp no prefix",
+			inZone:    "sfp_sfptest",
 			wantRealm: "chromeos:ufs/sfp_sfptest",
 		},
 	}

@@ -156,8 +156,8 @@ func ToUFSRealm(zone string) string {
 		return SatLabInternalUserRealm
 	} else if ufsZone == ufspb.Zone_ZONE_SFO36_OS_CHROMIUM {
 		return AtlLabChromiumAdminRealm
-	} else if IsSFPZone(zone) {
-		return GetSatlabForPartnersRealm(zone)
+	} else if IsSFPZone(ufsZone.String()) {
+		return GetSatlabForPartnersRealm(ufsZone.String())
 	}
 	return AtlLabAdminRealm
 }
