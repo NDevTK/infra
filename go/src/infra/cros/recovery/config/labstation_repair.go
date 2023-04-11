@@ -173,9 +173,6 @@ func LabstationRepairConfig() *Configuration {
 						Docs: []string{
 							"This verifier checks whether the host filesystem is writable.",
 						},
-						Dependencies: []string{
-							"Device is SSHable",
-						},
 						ExecName:               "cros_is_file_system_writable",
 						AllowFailAfterRecovery: true,
 					},
@@ -279,9 +276,6 @@ func LabstationRepairConfig() *Configuration {
 						Docs: []string{
 							"Check size of messages logs on labstation and cleanup if necessary.",
 						},
-						Dependencies: []string{
-							"Device is SSHable",
-						},
 						ExecName:               "cros_log_clean_up",
 						AllowFailAfterRecovery: true,
 					},
@@ -289,18 +283,12 @@ func LabstationRepairConfig() *Configuration {
 						Docs: []string{
 							"Attempt to remove bluetooth device from the labstation.",
 						},
-						Dependencies: []string{
-							"Device is SSHable",
-						},
 						ExecName:               "cros_remove_bt_devices",
 						AllowFailAfterRecovery: true,
 					},
 					"Attempt to power off bluetooth adapter": {
 						Docs: []string{
 							"Attempt to power off bluetooth adapter on the labstation.",
-						},
-						Dependencies: []string{
-							"Device is SSHable",
 						},
 						ExecName: "cros_run_shell_command",
 						ExecExtraArgs: []string{
@@ -324,9 +312,6 @@ func LabstationRepairConfig() *Configuration {
 						Docs: []string{
 							"Check if the current labstation OS image contains required GenesysLogic firmware",
 						},
-						Dependencies: []string{
-							"Device is SSHable",
-						},
 						ExecName: "cros_genesys_logic_firmware_image_exists",
 					},
 					"Update GenesysLogic Firmware for servos": {
@@ -336,9 +321,6 @@ func LabstationRepairConfig() *Configuration {
 						},
 						Conditions: []string{
 							"Labstation image contains target GenesysLogic firmware",
-						},
-						Dependencies: []string{
-							"Device is SSHable",
 						},
 						ExecName:               "cros_update_genesys_logic_firmware",
 						AllowFailAfterRecovery: true,
