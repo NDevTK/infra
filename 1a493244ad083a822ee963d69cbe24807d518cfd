@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b9e7ae3a_3ef28eda",
+        "filename": "go/src/infra/tools/result_adapter/go_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2023-04-11T15:38:09Z",
+      "side": 1,
+      "message": "Perhaps it\u0027ll work even better to make the goRun field an io.Writer that we can set to os.Stdout, and then to a bytes.Buffer here in the test. Done.",
+      "revId": "1a493244ad083a822ee963d69cbe24807d518cfd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
