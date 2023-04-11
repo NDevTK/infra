@@ -8,7 +8,7 @@ package ufs.config;
 
 option go_package = "infra/unifiedfleet/app/config";
 
-// Next Tag: 24
+// Next Tag: 25
 // Config is the configuration data served by luci-config for this app.
 message Config {
   string luci_config_service = 1;
@@ -52,6 +52,8 @@ message Config {
   repeated ACL acls = 22;
   // Float to limit pubsub calls to a specific amount of traffic.
   float send_messages_to_pubsub_ratio = 23;
+  // DeviceConfigs push configs
+  DeviceConfigPushConfigs device_configs_push_configs = 24;
 }
 
 message OSNetworkConfig {
@@ -116,4 +118,17 @@ message ACL {
   string match = 1;
   // groups is a list of groups that are allowed for this ACL
   repeated string groups = 2;
+}
+
+message DeviceConfigPushConfigs {
+  // if disabled, job will be a no-op
+  bool enabled = 1;
+  // hostname of target gitiles (ex. `chrome-internal.googlesource.com`)
+  string gitiles_host = 2;
+  // project/repo name to fetch from (ex. `chromeos/infra/config)
+  string project = 3;
+  // Commit hash or branch to check out (ex. `refs/head/main`)
+  string committish = 4;
+  // Path containing the configs file (ex. `path/configs.cfg`)
+  string configs_path = 5;
 }
