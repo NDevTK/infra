@@ -7,6 +7,7 @@ import {
   DataGrid,
   GridRowsProp,
   GridColDef,
+  GridComparatorFn,
   GridToolbarContainer,
   GridToolbarColumnsButton,
   GridToolbarDensitySelector,
@@ -49,6 +50,10 @@ export function ResourceList() {
   const rows: GridRowsProp = useAppSelector(
     (state) => state.resource.resources
   );
+
+  const dateComparator: GridComparatorFn<Date> = (v1, v2) =>
+    new Date(v1).valueOf() - new Date(v2).valueOf();
+
   const columns: GridColDef[] = [
     { field: 'resourceId', headerName: 'Id', flex: 0.4, hide: true },
     { field: 'name', headerName: 'Name', flex: 0.4 },
@@ -61,7 +66,9 @@ export function ResourceList() {
       field: 'createdAt',
       headerName: 'Created At',
       flex: 0.4,
+      type: 'date',
       valueGetter: getLocalTime,
+      sortComparator: dateComparator,
     },
     {
       field: 'Edit',
@@ -127,7 +134,7 @@ export function ResourceList() {
               }}
               xs={8}
             >
-              <Typography variant="h6">Resources</Typography>
+              <Typography variant="h6">Resources(Admin Only)</Typography>
             </Grid>
             <Grid
               item
@@ -179,6 +186,11 @@ export function ResourceList() {
                 event: MuiEvent<React.MouseEvent>
               ) => {
                 event.defaultMuiPrevented = true;
+              }}
+              initialState={{
+                sorting: {
+                  sortModel: [{ field: 'createdAt', sort: 'asc' }],
+                },
               }}
               disableVirtualization
             />

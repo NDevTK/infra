@@ -63,7 +63,7 @@ export function AssetInstanceList() {
 
   const ref = useRef<HTMLDivElement>(null);
 
-  const localeStringComparator: GridComparatorFn<Date> = (v1, v2) =>
+  const dateComparator: GridComparatorFn<Date> = (v1, v2) =>
     new Date(v1).valueOf() - new Date(v2).valueOf();
 
   const columns: GridColDef[] = [
@@ -82,7 +82,7 @@ export function AssetInstanceList() {
       flex: 1,
       type: 'date',
       valueGetter: getLocalTime,
-      sortComparator: localeStringComparator,
+      sortComparator: dateComparator,
     },
     {
       field: 'createdBy',

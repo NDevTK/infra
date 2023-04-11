@@ -7,6 +7,7 @@ import {
   DataGrid,
   GridRowsProp,
   GridColDef,
+  GridComparatorFn,
   GridToolbarContainer,
   GridToolbarColumnsButton,
   GridToolbarDensitySelector,
@@ -68,6 +69,10 @@ export function AssetList() {
     (state) => state.asset.assetSpinRecord
   );
   const rows: GridRowsProp = useAppSelector((state) => state.asset.assets);
+
+  const dateComparator: GridComparatorFn<Date> = (v1, v2) =>
+    new Date(v1).valueOf() - new Date(v2).valueOf();
+
   const columns: GridColDef[] = [
     { field: 'assetId', headerName: 'Id', flex: 0.5, hide: true },
     { field: 'name', headerName: 'Name', flex: 0.5 },
@@ -78,7 +83,9 @@ export function AssetList() {
       field: 'createdAt',
       headerName: 'Created At',
       flex: 0.5,
+      type: 'date',
       valueGetter: getLocalTime,
+      sortComparator: dateComparator,
     },
     {
       field: 'Edit',
@@ -254,6 +261,11 @@ export function AssetList() {
                 event: MuiEvent<React.MouseEvent>
               ) => {
                 event.defaultMuiPrevented = true;
+              }}
+              initialState={{
+                sorting: {
+                  sortModel: [{ field: 'createdAt', sort: 'asc' }],
+                },
               }}
             />
           </div>
