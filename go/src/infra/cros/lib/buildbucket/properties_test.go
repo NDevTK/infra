@@ -13,6 +13,7 @@ import (
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -188,6 +189,7 @@ func TestSetProperty_error(t *testing.T) {
 const (
 	buildUnmarshalErrorButInputPropsOK = `{
 		"id": "12345",
+		"createTime": "2023-04-10T04:00:03.884668293Z",
 		"builder": {
 			"project": "chromeos",
 			"bucket": "staging",
@@ -205,6 +207,7 @@ const (
 	}`
 	buildUnmarshalNoError = `{
 		"id": "12346",
+		"createTime": "2023-04-10T04:00:03.884668293Z",
 		"builder": {
 			"project": "chromeos",
 			"bucket": "staging",
@@ -215,6 +218,7 @@ const (
 	// "outputt" is misspelled.
 	buildUnmarshalErrorWithNoInputProperties = `{
 		"id": "8794230068334833057",
+		"createTime": "2023-04-10T04:00:03.884668293Z",
 		"builder": {
 			"project": "chromeos",
 			"bucket": "staging",
@@ -255,6 +259,10 @@ func TestGetBuild(t *testing.T) {
 	}
 	okBuild.Output = &bbpb.Build_Output{
 		Properties: outputProps,
+	}
+	okBuild.CreateTime = &timestamppb.Timestamp{
+		Seconds: 1681099203,
+		Nanos:   884668293,
 	}
 
 	for i, tc := range []struct {
@@ -313,8 +321,16 @@ func TestGetBuilds(t *testing.T) {
 	expectedBuilds[0].Output = &bbpb.Build_Output{
 		Properties: outputProps,
 	}
+	expectedBuilds[0].CreateTime = &timestamppb.Timestamp{
+		Seconds: 1681099203,
+		Nanos:   884668293,
+	}
 	expectedBuilds[1].Id = 12346
 	expectedBuilds[1].Status = bbpb.Status_FAILURE
+	expectedBuilds[1].CreateTime = &timestamppb.Timestamp{
+		Seconds: 1681099203,
+		Nanos:   884668293,
+	}
 
 	stdout := (stripNewlines(buildUnmarshalErrorButInputPropsOK) + "\n" +
 		stripNewlines(buildUnmarshalNoError))
@@ -323,6 +339,61 @@ func TestGetBuilds(t *testing.T) {
 		Stdout:      stdout,
 	}, nil, nil)
 	builds, err := c.GetBuilds(context.Background(), []string{"12345", "12346"})
+	if err != nil {
+		t.Errorf("Unexpected error running GetBuild: %+v", err)
+	}
+	for i := range expectedBuilds {
+		if builds[i].String() != expectedBuilds[i].String() {
+			t.Errorf("Unexpected build #%d:\ngot\n%+v\n\nwant\n%+v\n", i, builds[i].String(), expectedBuilds[i].String())
+		}
+	}
+}
+
+// TestListBuilds tests ListBuilds.
+func TestListBuilds(t *testing.T) {
+	t.Parallel()
+
+	outputProps, err := structpb.NewStruct(map[string]interface{}{
+		"$chromeos/my_module": map[string]interface{}{
+			"my_prop": 100,
+		},
+		"my_other_prop": 101,
+	})
+	if err != nil {
+		t.Fatal("Error constructing outputProps:", err)
+	}
+
+	var expectedBuild bbpb.Build
+	expectedBuild.Status = bbpb.Status_SUCCESS
+	expectedBuild.Builder = &bbpb.BuilderID{
+		Project: "chromeos",
+		Bucket:  "staging",
+		Builder: "staging-release-main-orchestrator",
+	}
+	expectedBuilds := []bbpb.Build{expectedBuild, expectedBuild}
+	expectedBuilds[0].Id = 12345
+	expectedBuilds[0].Output = &bbpb.Build_Output{
+		Properties: outputProps,
+	}
+	expectedBuilds[0].CreateTime = &timestamppb.Timestamp{
+		Seconds: 1681099203,
+		Nanos:   884668293,
+	}
+	expectedBuilds[1].Id = 12346
+	expectedBuilds[1].Status = bbpb.Status_FAILURE
+	expectedBuilds[1].CreateTime = &timestamppb.Timestamp{
+		Seconds: 1681099203,
+		Nanos:   884668293,
+	}
+
+	stdout := (stripNewlines(buildUnmarshalErrorButInputPropsOK) + "\n" +
+		stripNewlines(buildUnmarshalNoError))
+	predicate := `{"foo": "bar"}`
+	c := NewClient(cmd.FakeCommandRunner{
+		ExpectedCmd: []string{"bb", "ls", "-predicate", predicate, "-p", "-json"},
+		Stdout:      stdout,
+	}, nil, nil)
+	builds, err := c.ListBuildsWithPredicate(context.Background(), predicate)
 	if err != nil {
 		t.Errorf("Unexpected error running GetBuild: %+v", err)
 	}

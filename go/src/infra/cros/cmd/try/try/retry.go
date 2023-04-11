@@ -5,6 +5,7 @@ package try
 
 import (
 	"context"
+	"encoding/json"
 	gerr "errors"
 	"flag"
 	"fmt"
@@ -12,6 +13,7 @@ import (
 	"os"
 	"reflect"
 	"strings"
+	"time"
 
 	"infra/cros/internal/cmd"
 	bb "infra/cros/lib/buildbucket"
@@ -161,6 +163,62 @@ type buildInfo struct {
 	signingSummary map[string]string
 }
 
+// getRetryBBID will return the BBID of the retry build for the given BBID or
+// just the BBID if no retry exists.
+func (r *retryRun) getRetryBBID(ctx context.Context, bbid string) (string, error) {
+	buildData, err := r.bbClient.GetBuild(ctx, bbid)
+	if err != nil {
+		return "", err
+	}
+
+	builder := buildData.GetBuilder()
+	builderName := fmt.Sprintf("%s/%s/%s", builder.GetProject(), builder.GetBucket(), builder.GetBuilder())
+
+	// Limit search space to builds that were created after the original build.
+	createTime := time.Unix(buildData.GetCreateTime().Seconds, int64(buildData.GetCreateTime().Nanos)).UTC()
+	createTimestamp := createTime.Format(time.RFC3339)
+	builderPredicateJSON, err := json.Marshal(builder)
+	if err != nil {
+		return "", err
+	}
+	// Can't use BuildPredicate proto because it uses the wrong timestamp type.
+	predicate := fmt.Sprintf(`{"builder": %s, "create_time": {"start_time": "%s"}}`,
+		builderPredicateJSON, createTimestamp)
+
+	r.LogOut("Checking for previous retries...\n")
+	builds, err := r.bbClient.ListBuildsWithPredicate(ctx, predicate)
+	if err != nil {
+		return "", err
+	}
+	for {
+		var retryBuild string
+
+		r.LogOut("Checking for previous retries for %s (%s)...\n", bbid, builderName)
+		// Scan through all builds with the given name (there's no way to query by
+		// input property). Builds are returned ordered by time so we should be good.
+		for _, build := range builds {
+			inputProps := build.GetInput().GetProperties().AsMap()
+			if retryBBID, ok := bb.GetProp(inputProps, "$chromeos/checkpoint.original_build_bbid"); ok {
+				buildBBID := fmt.Sprintf("%v", build.GetId())
+				if retryBBID.(string) == bbid {
+					if retryBuild != "" {
+						return "", fmt.Errorf("Found multiple retries (%s, %s) for build %s. "+
+							"This should never happen, the build is likely corrupted. Please file a go/cros-rbs-bug.",
+							retryBuild, buildBBID, bbid)
+					}
+					retryBuild = buildBBID
+				}
+			}
+		}
+
+		if retryBuild == "" {
+			return bbid, nil
+		}
+		r.LogOut("Found retry %s.\n", retryBuild)
+		bbid = retryBuild
+	}
+}
+
 // getChildBuildInfo gets information about child builders. The map keys are the
 // builder name.
 func (r *retryRun) getChildBuildInfo(ctx context.Context, parentBuildOutputProps *structpb.Struct) (map[string]buildInfo, error) {
@@ -180,6 +238,18 @@ func (r *retryRun) getChildBuildInfo(ctx context.Context, parentBuildOutputProps
 		originalBuildInputProps := buildData.GetInput().GetProperties()
 		if originalBuildInputProps.AsMap()["recipe"] != "build_release" {
 			continue
+		}
+
+		// If the build wasn't successful, get the last build in retry chain.
+		if buildData.GetStatus() != bbpb.Status_SUCCESS {
+			bbid, err = r.getRetryBBID(ctx, v.(string))
+			if err != nil {
+				return nil, err
+			}
+			buildData, err = r.bbClient.GetBuild(ctx, bbid)
+			if err != nil {
+				return nil, errors.Annotate(err, "Could not get output props for %s", bbid).Err()
+			}
 		}
 		originalBuildOutputProps := buildData.GetOutput().GetProperties()
 
@@ -444,6 +514,30 @@ func (r *retryRun) innerRun() (string, int) {
 		r.LogErr(err.Error())
 		return "", CmdError
 	}
+	recipe := buildData.GetInput().GetProperties().AsMap()["recipe"].(string)
+	if recipe == "paygen_orchestrator" || recipe == "paygen" {
+		r.LogErr("paygen-orchestrator/paygen builds do not communicate directly with GoldenEye." +
+			" Please relaunch from the child builder/orchestrator.")
+		return "", CmdError
+	}
+
+	// Find the end of the retry chain.
+	retryBBID, err := r.getRetryBBID(ctx, r.originalBBID)
+	if err != nil {
+		r.LogErr(err.Error())
+		return "", CmdError
+	}
+	if retryBBID != r.originalBBID {
+		r.LogOut("Found retry build %s for build %s, retrying that instead.", retryBBID, r.originalBBID)
+	}
+	r.originalBBID = retryBBID
+
+	// BBID may have changed, get new build data.
+	buildData, err = r.bbClient.GetBuild(ctx, r.originalBBID)
+	if err != nil {
+		r.LogErr(err.Error())
+		return "", CmdError
+	}
 	propsStruct := buildData.GetInput().GetProperties()
 
 	// TODO(b/266850767): Remove in 2024.
@@ -457,12 +551,7 @@ func (r *retryRun) innerRun() (string, int) {
 		return "", CmdError
 	}
 
-	recipe := propsStruct.AsMap()["recipe"].(string)
-	if recipe == "paygen_orchestrator" || recipe == "paygen" {
-		r.LogErr("paygen-orchestrator/paygen builds do not communicate directly with GoldenEye." +
-			" Please relaunch from the child builder/orchestrator.")
-		return "", CmdError
-	} else if r.paygenRetry {
+	if r.paygenRetry {
 		if recipe != "build_release" {
 			r.LogErr("A --paygen retry can only be launched from a child builder " +
 				"(e.g. eve-release-main), please use the BBID for that builder.")

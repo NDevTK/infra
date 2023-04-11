@@ -31,6 +31,7 @@ func TestValidate_retryRim(t *testing.T) {
 const (
 	retryTestGoodJSON = `{
 	"id": "8794230068334833057",
+	"createTime": "2023-04-10T04:00:03.884668293Z",
 	"builder": {
 		"project": "chromeos",
 		"bucket": "staging",
@@ -59,6 +60,7 @@ const (
 
 	successfulChildJSON = `{
 		"id": "8794230068334833058",
+		"createTime": "2023-04-10T04:00:03.884668293Z",
 		"builder": {
 			"project": "chromeos",
 			"bucket": "staging",
@@ -87,6 +89,7 @@ const (
 
 	failedChildJSON = `{
 		"id": "8794230068334833059",
+		"createTime": "2023-04-10T04:00:03.884668293Z",
 		"builder": {
 			"project": "chromeos",
 			"bucket": "staging",
@@ -113,6 +116,7 @@ const (
 
 	failedSigningChildJSON = `{
 		"id": "8794230068334833059",
+		"createTime": "2023-04-10T04:00:03.884668293Z",
 		"builder": {
 			"project": "chromeos",
 			"bucket": "staging",
@@ -143,6 +147,7 @@ const (
 
 	emptyRetrySummaryJSON = `{
 		"id": "8794230068334833059",
+		"createTime": "2023-04-10T04:00:03.884668293Z",
 		"builder": {
 			"project": "chromeos",
 			"bucket": "staging",
@@ -172,6 +177,13 @@ type retryTestConfig struct {
 	dryrun bool
 }
 
+// getPredicate returns a `bb ls` predicate for the given builder.
+func getPredicate(builder string) string {
+	// We make assumptions on the bucket and createTime based on actual
+	// test data.
+	return fmt.Sprintf(`{"builder": {"project":"chromeos","bucket":"staging","builder":"%s"}, "create_time": {"start_time": "2023-04-10T04:00:03Z"}}`, builder)
+}
+
 func doOrchestratorRetryTestRun(t *testing.T, tc *retryTestConfig) {
 	t.Helper()
 	propsFile, err := os.CreateTemp("", "input_props")
@@ -179,6 +191,10 @@ func doOrchestratorRetryTestRun(t *testing.T, tc *retryTestConfig) {
 	assert.NilError(t, err)
 
 	bbid := "8794230068334833057"
+	expectedBucket := "chromeos/staging"
+	expectedBuilder := "staging-release-main-orchestrator"
+	expectedAddCmd := []string{"bb", "add", fmt.Sprintf("%s/%s", expectedBucket, expectedBuilder)}
+
 	f := &cmd.FakeCommandRunnerMulti{
 		CommandRunners: []cmd.FakeCommandRunner{
 			bb.FakeAuthInfoRunner("bb", 0),
@@ -189,6 +205,20 @@ func doOrchestratorRetryTestRun(t *testing.T, tc *retryTestConfig) {
 				},
 				Stdout: "Logged in as sundar@google.com.\n\nOAuth token details:\n...",
 			},
+			// Duplicate calls because of retry detection.
+			{
+				ExpectedCmd: []string{"bb", "get", bbid, "-p", "-json"},
+				Stdout:      stripNewlines(retryTestGoodJSON),
+			},
+			{
+				ExpectedCmd: []string{"bb", "get", bbid, "-p", "-json"},
+				Stdout:      stripNewlines(retryTestGoodJSON),
+			},
+			{
+				// For retry detection, don't return anything interesting.
+				ExpectedCmd: []string{"bb", "ls", "-predicate", getPredicate(expectedBuilder), "-p", "-json"},
+				Stdout:      stripNewlines(retryTestGoodJSON),
+			},
 			{
 				ExpectedCmd: []string{"bb", "get", bbid, "-p", "-json"},
 				Stdout:      stripNewlines(retryTestGoodJSON),
@@ -197,15 +227,26 @@ func doOrchestratorRetryTestRun(t *testing.T, tc *retryTestConfig) {
 				ExpectedCmd: []string{"bb", "get", "8794230068334833058", "-p", "-json"},
 				Stdout:      stripNewlines(successfulChildJSON),
 			},
+			// Duplicate calls because of retry detection.
+			{
+				ExpectedCmd: []string{"bb", "get", "8794230068334833059", "-p", "-json"},
+				Stdout:      stripNewlines(failedChildJSON),
+			},
+			{
+				ExpectedCmd: []string{"bb", "get", "8794230068334833059", "-p", "-json"},
+				Stdout:      stripNewlines(failedChildJSON),
+			},
+			{
+				// For retry detection, don't return anything interesting.
+				ExpectedCmd: []string{"bb", "ls", "-predicate", getPredicate("staging-zork-release-main"), "-p", "-json"},
+				Stdout:      stripNewlines(failedChildJSON),
+			},
 			{
 				ExpectedCmd: []string{"bb", "get", "8794230068334833059", "-p", "-json"},
 				Stdout:      stripNewlines(failedChildJSON),
 			},
 		},
 	}
-	expectedBucket := "chromeos/staging"
-	expectedBuilder := "staging-release-main-orchestrator"
-	expectedAddCmd := []string{"bb", "add", fmt.Sprintf("%s/%s", expectedBucket, expectedBuilder)}
 	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
 	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 	if !tc.dryrun {
@@ -287,6 +328,8 @@ func doChildRetryTestRun(t *testing.T, tc *childRetryTestConfig) {
 	defer os.Remove(propsFile.Name())
 	assert.NilError(t, err)
 
+	expectedBucket := "chromeos/staging"
+	expectedBuilder := tc.builderName
 	f := &cmd.FakeCommandRunnerMulti{
 		CommandRunners: []cmd.FakeCommandRunner{
 			bb.FakeAuthInfoRunner("bb", 0),
@@ -299,12 +342,22 @@ func doChildRetryTestRun(t *testing.T, tc *childRetryTestConfig) {
 			},
 			{
 				ExpectedCmd: []string{"bb", "get", tc.bbid, "-p", "-json"},
-				Stdout:      tc.builderJSON,
+				Stdout:      stripNewlines(tc.builderJSON),
+			},
+			{
+				ExpectedCmd: []string{"bb", "get", tc.bbid, "-p", "-json"},
+				Stdout:      stripNewlines(tc.builderJSON),
+			},
+			{
+				ExpectedCmd: []string{"bb", "ls", "-predicate", getPredicate(expectedBuilder), "-p", "-json"},
+				Stdout:      stripNewlines(tc.builderJSON),
+			},
+			{
+				ExpectedCmd: []string{"bb", "get", tc.bbid, "-p", "-json"},
+				Stdout:      stripNewlines(tc.builderJSON),
 			},
 		},
 	}
-	expectedBucket := "chromeos/staging"
-	expectedBuilder := tc.builderName
 	expectedAddCmd := []string{"bb", "add", fmt.Sprintf("%s/%s", expectedBucket, expectedBuilder)}
 	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
 	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
@@ -403,8 +456,138 @@ func TestRetry_childBuilder_failedNoRetrySummary(t *testing.T) {
 }
 
 const (
+	retryOriginalBuildJSON = `{
+		"id": "8794230068334833058",
+		"createTime": "2023-04-10T04:00:03.884668293Z",
+		"builder": {
+			"project": "chromeos",
+			"bucket": "staging",
+			"builder": "staging-zork-release-main"
+		},
+		"status": "FAILURE",
+		"input": {
+			"properties": {
+				"recipe": "build_release",
+				"input_prop": 102
+			}
+		},
+		"output": {
+			"properties": {
+				"retry_summary": {
+					"DEBUG_SYMBOLS": "FAILURE",
+					"PUSH_IMAGES": "SUCCESS",
+					"STAGE_ARTIFACTS": "SUCCESS"
+				}
+			}
+		}
+	}`
+
+	retryJSON = `{
+		"id": "8794230068334833059",
+		"createTime": "2023-04-10T04:00:03.884668293Z",
+		"builder": {
+			"project": "chromeos",
+			"bucket": "staging",
+			"builder": "staging-zork-release-main"
+		},
+		"status": "FAILURE",
+		"input": {
+			"properties": {
+				"recipe": "build_release",
+				"input_prop": 102,
+				"$chromeos/checkpoint": {
+					"retry": true,
+					"original_build_bbid": "8794230068334833058"
+				}
+			}
+		},
+		"output": {
+			"properties": {
+				"retry_summary": {
+					"COLLECT_SIGNING": "FAILURE",
+					"DEBUG_SYMBOLS": "SUCCESS",
+					"PUSH_IMAGES": "SUCCESS",
+					"STAGE_ARTIFACTS": "SUCCESS"
+				}
+			}
+		}
+	}`
+)
+
+func TestRetry_childBuilder_previousRetries(t *testing.T) {
+	t.Parallel()
+
+	propsFile, err := os.CreateTemp("", "input_props")
+	defer os.Remove(propsFile.Name())
+	assert.NilError(t, err)
+
+	originalBBID := "8794230068334833058"
+	previousRetryBBID := "8794230068334833059"
+	f := &cmd.FakeCommandRunnerMulti{
+		CommandRunners: []cmd.FakeCommandRunner{
+			bb.FakeAuthInfoRunner("bb", 0),
+			bb.FakeAuthInfoRunner("led", 0),
+			{
+				ExpectedCmd: []string{
+					"led", "auth-info",
+				},
+				Stdout: "Logged in as sundar@google.com.\n\nOAuth token details:\n...",
+			},
+			{
+				ExpectedCmd: []string{"bb", "get", originalBBID, "-p", "-json"},
+				Stdout:      stripNewlines(retryOriginalBuildJSON),
+			},
+			{
+				ExpectedCmd: []string{"bb", "get", originalBBID, "-p", "-json"},
+				Stdout:      stripNewlines(retryOriginalBuildJSON),
+			},
+			{
+				ExpectedCmd: []string{"bb", "ls", "-predicate", getPredicate("staging-zork-release-main"), "-p", "-json"},
+				Stdout:      stripNewlines(retryOriginalBuildJSON) + "\n" + stripNewlines(retryJSON),
+			},
+			{
+				ExpectedCmd: []string{"bb", "get", previousRetryBBID, "-p", "-json"},
+				Stdout:      stripNewlines(retryJSON),
+			},
+		},
+	}
+	expectedBuilder := "chromeos/staging/staging-zork-release-main"
+	expectedAddCmd := []string{"bb", "add", expectedBuilder}
+	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
+	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
+
+	f.CommandRunners = append(f.CommandRunners,
+		cmd.FakeCommandRunner{
+			ExpectedCmd: expectedAddCmd,
+			Stdout:      bbAddOutput("123"),
+		},
+	)
+
+	r := retryRun{
+		propsFile:    propsFile,
+		originalBBID: originalBBID,
+		tryRunBase: tryRunBase{
+			cmdRunner: f,
+		},
+	}
+	ret := r.Run(nil, nil, nil)
+	assert.IntsEqual(t, ret, Success)
+
+	properties, err := bb.ReadStructFromFile(propsFile.Name())
+	assert.NilError(t, err)
+
+	checkpointProps := properties.GetFields()["$chromeos/checkpoint"].GetStructValue()
+
+	assert.Assert(t, checkpointProps.GetFields()["retry"].GetBoolValue())
+
+	originalBuildBBID := checkpointProps.GetFields()["original_build_bbid"].GetStringValue()
+	assert.StringsEqual(t, originalBuildBBID, previousRetryBBID)
+}
+
+const (
 	noRetrySummaryJSON = `{
 	"id": "879423006833483308",
+	"createTime": "2023-04-10T04:00:03.884668293Z",
 	"builder": {
 		"project": "chromeos",
 		"bucket": "staging",
@@ -464,6 +647,7 @@ func TestRetry_orchestrator_paygen_fail(t *testing.T) {
 const (
 	failedEbuildTestJSON = `{
 		"id": "8794230068334833051",
+		"createTime": "2023-04-10T04:00:03.884668293Z",
 		"builder": {
 			"project": "chromeos",
 			"bucket": "staging",
@@ -649,6 +833,8 @@ func Test_DirectEntry(t *testing.T) {
 	assert.NilError(t, err)
 
 	bbid := "8794230068334833058"
+	expectedBucket := "chromeos/staging"
+	expectedBuilder := "staging-zork-release-main"
 
 	f := &cmd.FakeCommandRunnerMulti{
 		CommandRunners: []cmd.FakeCommandRunner{
@@ -664,10 +850,20 @@ func Test_DirectEntry(t *testing.T) {
 				ExpectedCmd: []string{"bb", "get", bbid, "-p", "-json"},
 				Stdout:      stripNewlines(failedChildJSON),
 			},
+			{
+				ExpectedCmd: []string{"bb", "get", bbid, "-p", "-json"},
+				Stdout:      stripNewlines(failedChildJSON),
+			},
+			{
+				ExpectedCmd: []string{"bb", "ls", "-predicate", getPredicate(expectedBuilder), "-p", "-json"},
+				Stdout:      stripNewlines(failedChildJSON),
+			},
+			{
+				ExpectedCmd: []string{"bb", "get", bbid, "-p", "-json"},
+				Stdout:      stripNewlines(failedChildJSON),
+			},
 		},
 	}
-	expectedBucket := "chromeos/staging"
-	expectedBuilder := "staging-zork-release-main"
 	expectedAddCmd := []string{"bb", "add", fmt.Sprintf("%s/%s", expectedBucket, expectedBuilder)}
 	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
 	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
@@ -707,6 +903,7 @@ func Test_DirectEntry(t *testing.T) {
 const (
 	paygenOrchJSON = `{
 	"id": "879423006833483308",
+	"createTime": "2023-04-10T04:00:03.884668293Z",
 	"builder": {
 		"project": "chromeos",
 		"bucket": "staging",
@@ -727,6 +924,7 @@ const (
 
 	paygenJSON = `{
 "id": "879423006833483308",
+"createTime": "2023-04-10T04:00:03.884668293Z",
 "builder": {
 	"project": "chromeos",
 	"bucket": "staging",

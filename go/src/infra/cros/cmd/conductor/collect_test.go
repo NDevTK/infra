@@ -115,12 +115,11 @@ func doTestRun(t *testing.T, tc *collectTestConfig) {
 		var stdout string
 		bbids := []string{}
 		for bbid, collectResult := range collectResults {
-			build := bbpb.Build{
-				Id:     bbid,
-				Status: collectResult.status,
-			}
-			buildJSON, err := json.Marshal(build)
-			assert.NilError(t, err)
+			// CreateTime doesn't marshal correctly, construct JSON manually.
+			buildJSON := fmt.Sprintf(`{"id":%d,"createTime":"%s", "status":%d}`,
+				bbid,
+				"2023-04-10T04:00:03.884668293Z",
+				collectResult.status)
 			bbids = append(bbids, fmt.Sprintf("%d", bbid))
 			stdout += string(buildJSON) + "\n"
 		}

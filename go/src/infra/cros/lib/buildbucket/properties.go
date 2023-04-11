@@ -12,12 +12,14 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/savaki/jq"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/led/job"
 	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // parseBuild parses the given JSON into a bbpb.Build object.
@@ -46,6 +48,21 @@ func parseBuild(buildJSON string) (*bbpb.Build, error) {
 	}
 	build.Id, _ = strconv.ParseInt(strings.Trim(string(id), "\""), 10, 64)
 
+	// Extract create time.
+	op, err = jq.Parse(".createTime")
+	if err != nil {
+		return nil, errors.Annotate(err, "error constructing createTime jq").Err()
+	}
+	createTimestamp, err := op.Apply([]byte(buildJSON))
+	if err != nil {
+		return nil, errors.Annotate(err, "error extracting createTime").Err()
+	}
+	createTime, err := time.Parse(time.RFC3339, strings.Trim(string(createTimestamp), "\""))
+	if err != nil {
+		return nil, errors.Annotate(err, "error parsing createTime").Err()
+	}
+	build.CreateTime = timestamppb.New(createTime)
+
 	if err := json.Unmarshal([]byte(buildJSON), &build); err != nil {
 		// `bb get` returns proto enum fields as strings instead of ints,
 		// like buildbucket.bbagent_args.infra.experiment_reasons.
@@ -71,8 +88,18 @@ func (c *Client) GetBuild(ctx context.Context, bbid string) (*bbpb.Build, error)
 
 // GetBuild gets the specified build using `bb get`.
 func (c *Client) GetBuilds(ctx context.Context, bbids []string) ([]*bbpb.Build, error) {
-	args := []string{"get"}
-	args = append(args, bbids...)
+	return c.getBuildsInner(ctx, "get", bbids)
+}
+
+// ListBuilds gets the specified build using `bb ls -predicate ...`.
+func (c *Client) ListBuildsWithPredicate(ctx context.Context, predicate string) ([]*bbpb.Build, error) {
+	return c.getBuildsInner(ctx, "ls", []string{"-predicate", predicate})
+}
+
+// getBuildsInner supports both GetBuilds and ListBuildsWithPredicate.
+func (c *Client) getBuildsInner(ctx context.Context, command string, terms []string) ([]*bbpb.Build, error) {
+	args := []string{command}
+	args = append(args, terms...)
 	args = append(args, "-p", "-json")
 	stdout, stderr, err := c.runCmd(ctx, "bb", args...)
 	if err != nil {
