@@ -34,7 +34,7 @@ func TestDUT_add(t *testing.T) {
 		{
 			name:     "tmp",
 			inputEnv: map[string]string{},
-			wantCall: "/usr/local/bin/shivas add dut -deploy-bucket labpack -deploy-project chromeos -name name -pools swimming -servo servo",
+			wantCall: "/usr/local/bin/shivas add dut -deploy-bucket labpack_runner -deploy-project chromeos -name name -pools swimming -servo servo",
 		},
 		{
 			name: "tmp",

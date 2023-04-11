@@ -63,7 +63,7 @@ const (
 	DefaultLUCIProject = "chromeos"
 	// DefaultDeployBuilderBucket is the bb bucket to specify if
 	// `DeployBuilderBucketEnv` is not specified.
-	DefaultDeployBuilderBucket = "labpack"
+	DefaultDeployBuilderBucket = "labpack_runner"
 	// DefaultNamespace is the default namespace to use for all operations.
 	DefaultNamespace = "os"
 )
