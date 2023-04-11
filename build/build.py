@@ -88,6 +88,12 @@ INFRA_MODULE_MAP = {
         os.path.join(ROOT, 'go', 'src', 'infra')
 }
 
+if PY2:
+  def check_output(*args, **kwargs):
+    return subprocess.check_output(*args, **kwargs)
+else:
+  def check_output(*args, **kwargs):
+    return subprocess.check_output(*args, text=True, **kwargs)
 
 class PackageDefException(Exception):
   """Raised if a package definition is invalid."""
@@ -685,11 +691,11 @@ def bootstrap_go_toolset(go_workspace):
   with workspace_env(GoEnviron.host_native()):
     print_go_step_title('Making sure Go toolset is installed')
     # env.py does the actual job of bootstrapping if the toolset is missing.
-    output = subprocess.check_output(
+    output = check_output(
         args=[
             sys.executable, '-u',
             os.path.join(go_workspace, get_env_dot_py()), 'go', 'env'
-        ]).decode()
+        ])
     # See https://github.com/golang/go/blob/master/src/cmd/go/env.go for format
     # of the output.
     print('Go environ:')
@@ -703,11 +709,11 @@ def bootstrap_go_toolset(go_workspace):
 
     # This would be something like "go version go1.15.8 darwin/amd64".
     print_go_step_title('Go version')
-    output = subprocess.check_output(
+    output = check_output(
         args=[
             sys.executable, '-u',
             os.path.join(go_workspace, get_env_dot_py()), 'go', 'version'
-        ]).decode()
+        ])
     print(output.strip())
 
     # We want only "go1.15.8" part.
@@ -1012,7 +1018,7 @@ def get_linux_host_arch():
   """
   try:
     # Query "dpkg" to identify the userspace architecture.
-    return subprocess.check_output(['dpkg', '--print-architecture']).strip()
+    return check_output(['dpkg', '--print-architecture']).strip()
   except OSError:
     # This Linux distribution doesn't use "dpkg".
     return None
@@ -1050,8 +1056,6 @@ def get_host_package_vars():
   # If we didn't override our system architecture, identify it using "platform".
   sys_arch = sys_arch or platform.machine()
   sys_arch_lower = sys_arch.lower()
-  if PY2:
-    sys_arch_lower = sys_arch_lower.decode()
 
   # amd64, 386, etc.
   platform_arch = {

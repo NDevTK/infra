@@ -66,7 +66,7 @@ class InfraCIPDApi(recipe_api.RecipeApi):
     Prevents build.py from refreshing the python ENV.
     """
     args = [
-        'vpython',
+        'vpython3',
         self._ctx_path_to_repo.join('build', 'build.py'),
         '--no-freshen-python-env',
         '--builder',
@@ -90,7 +90,7 @@ class InfraCIPDApi(recipe_api.RecipeApi):
   def upload(self, tags, step_test_data=None):
     """Uploads previously built packages."""
     args = [
-      'vpython',
+      'vpython3',
       self._ctx_path_to_repo.join('build', 'build.py'),
       '--no-rebuild',
       '--upload',

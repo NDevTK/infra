@@ -398,7 +398,7 @@
   },
   {
     "cmd": [
-      "vpython",
+      "vpython3",
       "[CACHE]\\builder\\infra\\build\\build.py"
     ],
     "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
@@ -468,7 +468,7 @@
   },
   {
     "cmd": [
-      "vpython",
+      "vpython3",
       "[CACHE]\\builder\\infra\\build\\build.py"
     ],
     "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
