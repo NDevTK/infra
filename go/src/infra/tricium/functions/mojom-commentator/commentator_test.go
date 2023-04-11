@@ -98,6 +98,12 @@ func TestMojomCommentator(t *testing.T) {
 				StartLine: 25,
 				Path:      path,
 			},
+			{
+				Category:  "MojomCommentator/interface",
+				Message:   `Interface "MultilineAttributeNoComment"` + interfaceErrorFragment,
+				StartLine: 32,
+				Path:      path,
+			},
 		})
 	})
 }

@@ -26,3 +26,10 @@ interface Bar {
   // The method is ok.
   Method();
 };
+
+[Stable,
+ ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
+interface MultilineAttributeNoComment {
+  // The method is ok.
+  Method();
+};

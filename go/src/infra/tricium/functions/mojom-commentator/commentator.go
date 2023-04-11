@@ -63,7 +63,8 @@ func main() {
 
 var (
 	interfacePattern = regexp.MustCompile(`interface\s+(\w+)\s*{`)
-	annotationLine   = regexp.MustCompile(`^\[.*\]$`)
+	// A single-line top-level annotation.
+	annotationLine = regexp.MustCompile(`^\[.*\]$`)
 )
 
 func analyzeFile(scanner *bufio.Scanner, path string) (results []*tricium.Data_Comment) {
@@ -74,6 +75,7 @@ func analyzeFile(scanner *bufio.Scanner, path string) (results []*tricium.Data_C
 	// Tracks whether the parser is in a meaningful context for analysis.
 	inInterface := false
 	inMethod := false
+	inAnnotation := false
 
 	// Starts at 0 so that the counter can be incremented at the top of the
 	// loop, for early continues.
@@ -90,6 +92,23 @@ func analyzeFile(scanner *bufio.Scanner, path string) (results []*tricium.Data_C
 		// the line to use the previous line's comment detection.
 		if !inInterface && annotationLine.MatchString(line) {
 			continue
+		}
+
+		// If the line starts, continues or ends a multi-line annotation skip to
+		// use the previous line's comment detection. Be careful not to skip
+		// `[Stable] interface {`.
+		if !inInterface {
+			if strings.HasPrefix(line, "[") && !strings.Contains(line, "]") {
+				inAnnotation = true
+				continue
+			}
+			if inAnnotation && strings.HasSuffix(line, "]") {
+				inAnnotation = false
+				continue
+			}
+			if inAnnotation {
+				continue
+			}
 		}
 
 		// Rotate the comment detector flags.

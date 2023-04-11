@@ -46,3 +46,13 @@ interface StableInterface {
   // Comment.
   Foo();
 };
+
+// This
+// stable
+// interface is also ok.
+[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox,
+ RestrictContext=sandbox.mojom.Context.kBrowser]
+interface AnotherInterface {
+  // Something.
+  DoSomething();
+};
