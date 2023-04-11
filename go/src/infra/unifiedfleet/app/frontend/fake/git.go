@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,6 +49,14 @@ func (gc *GitTilesClient) Log(ctx context.Context, req *gitiles.LogRequest, opts
 	}, nil
 }
 
+func (gc *GitTilesClient) DownloadFile(ctx context.Context, req *gitiles.DownloadFileRequest, opts ...grpc.CallOption) (*gitiles.DownloadFileResponse, error) {
+	if req.Path == "test_device_config" {
+		return GitilesData("../frontend/fake/device_config.cfg")
+	}
+
+	return nil, errors.Reason("unspecified mock path %s", req.Path).Err()
+}
+
 // GitData mocks a git file content based on a given filepath
 func GitData(path string) (string, error) {
 	b, err := ioutil.ReadFile(path)
@@ -56,4 +64,11 @@ func GitData(path string) (string, error) {
 		return "", err
 	}
 	return string(b), nil
+}
+
+func GitilesData(path string) (*gitiles.DownloadFileResponse, error) {
+	content, err := GitData(path)
+	return &gitiles.DownloadFileResponse{
+		Contents: content,
+	}, err
 }

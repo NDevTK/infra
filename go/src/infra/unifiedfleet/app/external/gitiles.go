@@ -18,6 +18,7 @@ import (
 // GitTilesClient exposes a subset of gitiles.GitilesClient
 type GitTilesClient interface {
 	Log(ctx context.Context, in *gitiles.LogRequest, opts ...grpc.CallOption) (*gitiles.LogResponse, error)
+	DownloadFile(ctx context.Context, in *gitiles.DownloadFileRequest, opts ...grpc.CallOption) (*gitiles.DownloadFileResponse, error)
 }
 
 type gitTilesClientImpl struct {
@@ -27,6 +28,11 @@ type gitTilesClientImpl struct {
 // Log implements gitiles.GitilesClient.Log()
 func (gc *gitTilesClientImpl) Log(ctx context.Context, req *gitiles.LogRequest) (*gitiles.LogResponse, error) {
 	return gc.client.Log(ctx, req)
+}
+
+// DownloadFile implements gitiles.GitilesClient.DownloadFile()
+func (gc *gitTilesClientImpl) DownloadFile(ctx context.Context, in *gitiles.DownloadFileRequest) (*gitiles.DownloadFileResponse, error) {
+	return gc.client.DownloadFile(ctx, in)
 }
 
 // GetGitilesClient returns the GitilesClient for the given host.
