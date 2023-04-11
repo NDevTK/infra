@@ -120,6 +120,6 @@ func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.En
 			"qs_account:unmanaged_p0",
 		},
 	}
-	url, _, err := buildbucket.ScheduleTask(ctx, bc, v, p)
+	url, _, err := buildbucket.ScheduleTask(ctx, bc, v, p, "shivas")
 	return url, err
 }

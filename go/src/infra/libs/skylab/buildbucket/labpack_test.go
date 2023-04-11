@@ -48,7 +48,7 @@ type FakeClient struct {
 	startID int64
 }
 
-func (c *FakeClient) ScheduleLabpackTask(ctx context.Context, params *ScheduleLabpackTaskParams) (string, int64, error) {
+func (c *FakeClient) ScheduleLabpackTask(ctx context.Context, params *ScheduleLabpackTaskParams, _ string) (string, int64, error) {
 	id := c.startID
 	c.startID++
 	return "", id, nil
@@ -64,14 +64,14 @@ func TestScheduleTask(t *testing.T) {
 	ctx := context.Background()
 	Convey("test schedule task", t, func() {
 		Convey("nil params", func() {
-			_, _, err := ScheduleTask(ctx, &FakeClient{}, CIPDProd, nil)
+			_, _, err := ScheduleTask(ctx, &FakeClient{}, CIPDProd, nil, "fake service")
 			So(err, ShouldNotBeNil)
 			So(err, ShouldErrLike, "schedule task")
 		})
 		Convey("audit-rpm", func() {
 			_, bbid, err := ScheduleTask(ctx, &FakeClient{}, CIPDProd, &Params{
 				BuilderName: "audit-rpm",
-			})
+			}, "fake service")
 			So(err, ShouldBeNil)
 			So(bbid, ShouldEqual, 0)
 		})

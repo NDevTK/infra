@@ -149,6 +149,7 @@ func (c *auditRun) innerRun(a subcommands.Application, args []string, env subcom
 						fmt.Sprintf("version:%s", v),
 					},
 				},
+				"mallet",
 			)
 			if err != nil {
 				return errors.Annotate(err, "create audit task").Err()

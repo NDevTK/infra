@@ -88,6 +88,7 @@ func (c *customProvisionRun) innerRun(a subcommands.Application, args []string, 
 				fmt.Sprintf("version:%s", v),
 			},
 		},
+		"mallet",
 	)
 	if err != nil {
 		return errors.Annotate(err, "create recovery task").Err()

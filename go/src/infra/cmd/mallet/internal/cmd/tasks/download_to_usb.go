@@ -91,6 +91,7 @@ func (c *downloadToUsbDriveRun) innerRun(a subcommands.Application, args []strin
 					fmt.Sprintf("version:%s", v),
 				},
 			},
+			"mallet",
 		)
 		if err != nil {
 			fmt.Fprintf(a.GetErr(), "Created recovery task for %q fail: %s\n", unit, err)

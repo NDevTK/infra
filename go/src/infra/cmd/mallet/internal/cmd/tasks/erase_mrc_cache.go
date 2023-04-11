@@ -101,6 +101,7 @@ func (c *EraseMRCCacheRun) innerRun(a subcommands.Application, args []string, en
 					sessionTag,
 				},
 			},
+			"mallet",
 		)
 		if err != nil {
 			fmt.Fprintf(a.GetErr(), "Created task for %q fail: %s\n", unit, err)

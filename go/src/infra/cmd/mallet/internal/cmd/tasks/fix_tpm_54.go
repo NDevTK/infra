@@ -102,6 +102,7 @@ func (c *FixTPM54Run) innerRun(a subcommands.Application, args []string, env sub
 					sessionTag,
 				},
 			},
+			"mallet",
 		)
 		if err != nil {
 			fmt.Fprintf(a.GetErr(), "Created task for %q fail: %s\n", unit, err)

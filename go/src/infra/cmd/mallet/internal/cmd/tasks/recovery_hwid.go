@@ -85,6 +85,7 @@ func (c *recoveryHWIDRun) innerRun(a subcommands.Application, args []string, env
 					fmt.Sprintf("version:%s", v),
 				},
 			},
+			"mallet",
 		)
 		if err != nil {
 			fmt.Fprintf(a.GetErr(), "Created task for %q fail: %s\n", unit, err)

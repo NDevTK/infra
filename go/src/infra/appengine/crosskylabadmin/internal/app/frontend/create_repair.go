@@ -267,7 +267,7 @@ func createBuildbucketTask(ctx context.Context, params createBuildbucketTaskRequ
 		// TODO(gregorynisbet): Pass config file to labpack task.
 		Configuration: "",
 	}
-	url, _, err := buildbucket.ScheduleTask(ctx, bc, params.taskType, p)
+	url, _, err := buildbucket.ScheduleTask(ctx, bc, params.taskType, p, "crosskylabadmin")
 	if err != nil {
 		logging.Errorf(ctx, "error scheduling task: %q", err)
 		return "", errors.Annotate(err, "create buildbucket repair task").Err()

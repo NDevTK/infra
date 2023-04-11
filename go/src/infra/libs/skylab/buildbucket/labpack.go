@@ -94,7 +94,7 @@ func (v CIPDVersion) Validate() error {
 }
 
 // ScheduleTask schedules a buildbucket task.
-func ScheduleTask(ctx context.Context, client Client, v CIPDVersion, params *Params) (string, int64, error) {
+func ScheduleTask(ctx context.Context, client Client, v CIPDVersion, params *Params, serviceName string) (string, int64, error) {
 	if client == nil {
 		return "", 0, errors.Reason("schedule task: client cannot be nil").Err()
 	}
@@ -117,6 +117,10 @@ func ScheduleTask(ctx context.Context, client Client, v CIPDVersion, params *Par
 	if err != nil {
 		return "", 0, err
 	}
+
+	extraTags := params.ExtraTags
+	extraTags = append(extraTags, fmt.Sprintf("service_name:%s", serviceName))
+
 	p := &ScheduleLabpackTaskParams{
 		BuilderName:      params.BuilderName,
 		BuilderBucket:    params.BuilderBucket,
@@ -124,7 +128,7 @@ func ScheduleTask(ctx context.Context, client Client, v CIPDVersion, params *Par
 		UnitName:         params.UnitName,
 		ExpectedDUTState: params.ExpectedState,
 		Props:            props,
-		ExtraTags:        params.ExtraTags,
+		ExtraTags:        extraTags,
 	}
 	switch v {
 	case CIPDProd:
@@ -137,7 +141,7 @@ func ScheduleTask(ctx context.Context, client Client, v CIPDVersion, params *Par
 	default:
 		return "", 0, errors.Reason("scheduling task: unsupported CIPD version %s", v).Err()
 	}
-	url, taskID, err := client.ScheduleLabpackTask(ctx, p)
+	url, taskID, err := client.ScheduleLabpackTask(ctx, p, serviceName)
 	if err != nil {
 		return "", 0, errors.Annotate(err, "scheduling task").Err()
 	}

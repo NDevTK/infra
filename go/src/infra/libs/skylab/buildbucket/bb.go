@@ -41,7 +41,7 @@ type ScheduleLabpackTaskParams struct {
 type Client interface {
 	// ScheduleLabpackTask schedules a labpack task.
 	// TODO(gregorynisbet): refactor this method to return a structured result.
-	ScheduleLabpackTask(ctx context.Context, params *ScheduleLabpackTaskParams) (string, int64, error)
+	ScheduleLabpackTask(ctx context.Context, params *ScheduleLabpackTaskParams, clientName string) (string, int64, error)
 }
 
 // ClientImpl is the implementation of the Client interface.
@@ -86,7 +86,7 @@ func NewHTTPClient(ctx context.Context, f *authcli.Flags) (*http.Client, error) 
 }
 
 // ScheduleLabpackTask creates new task in build bucket with labpack.
-func (c *clientImpl) ScheduleLabpackTask(ctx context.Context, params *ScheduleLabpackTaskParams) (string, int64, error) {
+func (c *clientImpl) ScheduleLabpackTask(ctx context.Context, params *ScheduleLabpackTaskParams, clientName string) (string, int64, error) {
 	if params == nil {
 		return "", 0, errors.Reason("ScheduleLabpackTask: params cannot be nil").Err()
 	}

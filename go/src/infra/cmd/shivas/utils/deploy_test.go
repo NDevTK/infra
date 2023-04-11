@@ -28,7 +28,7 @@ func newStubClient() stubClient {
 	return stubClient{LastCall: &buildbucket.ScheduleLabpackTaskParams{}}
 }
 
-func (c stubClient) ScheduleLabpackTask(ctx context.Context, params *buildbucket.ScheduleLabpackTaskParams) (string, int64, error) {
+func (c stubClient) ScheduleLabpackTask(ctx context.Context, params *buildbucket.ScheduleLabpackTaskParams, _ string) (string, int64, error) {
 	// Since this func is pass by value, we need to change the value at the
 	// address of the pointer (since the address remains constant b/t calls).
 	*c.LastCall = *params
@@ -63,7 +63,7 @@ func TestScheduleDeployTask(t *testing.T) {
 						"update_inventory":    structpb.NewBoolValue(true),
 					},
 				},
-				ExtraTags:      []string{"test-session", "task:deploy", "client:shivas", "inventory_namespace:os", "version:prod"},
+				ExtraTags:      []string{"test-session", "task:deploy", "client:shivas", "inventory_namespace:os", "version:prod", "service_name:shivas"},
 				BuilderName:    "deploy",
 				BuilderProject: "chromeos",
 				BuilderBucket:  "labpack_runner",
@@ -89,7 +89,7 @@ func TestScheduleDeployTask(t *testing.T) {
 						"update_inventory":    structpb.NewBoolValue(true),
 					},
 				},
-				ExtraTags:      []string{"test-session", "task:deploy", "client:shivas", "inventory_namespace:os-partner", "version:prod"},
+				ExtraTags:      []string{"test-session", "task:deploy", "client:shivas", "inventory_namespace:os-partner", "version:prod", "service_name:shivas"},
 				BuilderName:    "deploy",
 				BuilderProject: "chromeos",
 				BuilderBucket:  "labpack_runner",
@@ -118,7 +118,7 @@ func TestScheduleDeployTask(t *testing.T) {
 						"update_inventory":    structpb.NewBoolValue(true),
 					},
 				},
-				ExtraTags:      []string{"test-session", "task:deploy", "client:shivas", "inventory_namespace:os", "version:prod"},
+				ExtraTags:      []string{"test-session", "task:deploy", "client:shivas", "inventory_namespace:os", "version:prod", "service_name:shivas"},
 				BuilderName:    "deploy",
 				BuilderProject: "eli-project",
 				BuilderBucket:  "eli-bucket",

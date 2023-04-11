@@ -126,7 +126,7 @@ func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket
 			"qs_account:unmanaged_p0",
 		},
 	}
-	url, taskID, err := buildbucket.ScheduleTask(ctx, bc, v, p)
+	url, taskID, err := buildbucket.ScheduleTask(ctx, bc, v, p, "shivas")
 	return url, taskID, errors.Annotate(err, "scheduleReserveBuilder").Err()
 }
 

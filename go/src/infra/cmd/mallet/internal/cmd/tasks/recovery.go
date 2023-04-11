@@ -130,6 +130,7 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 					"qs_account:unmanaged_p0",
 				},
 			},
+			"mallet",
 		)
 		if err != nil {
 			return errors.Annotate(err, "create recovery task").Err()

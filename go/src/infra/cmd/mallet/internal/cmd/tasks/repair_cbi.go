@@ -86,6 +86,7 @@ func (command *cbiRepairCommandRun) innerRun(app subcommands.Application, args [
 					fmt.Sprintf("Buildbucket version: %s", buildbucket.CIPDLatest),
 				},
 			},
+			"mallet",
 		)
 		if err != nil {
 			fmt.Fprintf(app.GetErr(), "Failed to create task for %q: %s\n", hostName, err)
