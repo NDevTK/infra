@@ -1558,6 +1558,22 @@ def main(
       '--no-rebuild',  action='store_false', dest='build', default=True,
       help='when used with --upload means upload existing *.cipd files')
   parser.add_argument(
+      '--go-workspace', metavar='PATH', default=go_workspace,
+      help='points at either infra.git/go or infra_internal.git/go.',
+  )
+  parser.add_argument(
+      '--package-definition-dir', metavar='PATH', default=package_def_dir,
+      help=(
+        'points at either infra.git/build/packages or '
+        'infra_internal.git/build/packages.'),
+  )
+  parser.add_argument(
+      '--package-out-dir', metavar='PATH', default=package_out_dir,
+      help=(
+        'points at either infra.git/build/out or '
+        'infra_internal.git/build/out.'),
+  )
+  parser.add_argument(
       '--builder', metavar='NAME', type=str,
       help='Name of the CI buildbot builder that invokes this script.')
   parser.add_argument(
@@ -1584,11 +1600,11 @@ def main(
   if not args.build and not args.upload:
     parser.error('--no-rebuild doesn\'t make sense without --upload')
   return run(
-      go_workspace,
+      args.go_workspace,
       build_callback,
       args.builder,
-      package_def_dir,
-      package_out_dir,
+      args.package_definition_dir,
+      args.package_out_dir,
       [n + '.yaml' if not n.endswith('.yaml') else n for n in args.yamls],
       args.build,
       args.upload,
