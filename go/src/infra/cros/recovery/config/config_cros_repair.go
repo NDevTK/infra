@@ -18,6 +18,7 @@ func crosRepairPlan() *Plan {
 			"Collect logs and crashinfo",
 			"Verify internal storage",
 			"Set dev_boot_usb is enabled",
+			"Verify if booted from priority kernel",
 			"Check if last provision was good",
 			"Python is present",
 			"Verify that device is not enrolled",
@@ -3030,6 +3031,35 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:   "has_stable_version_service_path",
 			RunControl: RunControl_RUN_ONCE,
+		},
+		"Verify if booted from priority kernel": {
+			Docs: []string{
+				"Kernel can wait for reboot as the last provisioning waiting for some issue.",
+				"Verified if DUT's kernel doesn't waiting for update.",
+			},
+			Conditions: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_kernel_priority_has_not_changed",
+			RecoveryActions: []string{
+				"Simple reboot to right kernel",
+			},
+			// TODO(b/277654511): Remove if action is recoverable.
+			AllowFailAfterRecovery: true,
+		},
+		"Simple reboot to right kernel": {
+			Docs: []string{
+				"Simple reboot DUT to boot from right kernel.",
+				"Reboot initiated from DUT side.",
+			},
+			Conditions: []string{
+				"Device is SSHable",
+			},
+			Dependencies: []string{
+				"Simple reboot",
+				"Wait to be SSHable (normal boot)",
+			},
+			ExecName: "cros_kernel_priority_has_not_changed",
 		},
 	}
 }
