@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d4938c94_596b8b4d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2023-04-11T17:14:07Z",
+      "side": 1,
+      "message": "Rebased since the build was trying to cherry-pick all the CLs in the stack on top of main and not just this change (`git cherry-pick refs/remotes/origin/main..bb2b6f4d097f6cacf07a2d2e10f83cf11eaa5f38 --keep-redundant-commits`), and that fails with a merge conflict.",
+      "revId": "1aa5175cebe651c42a0b005d147e54bcc8b76633",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
