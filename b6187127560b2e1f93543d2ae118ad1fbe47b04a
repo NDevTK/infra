@@ -39,6 +39,30 @@
       },
       "revId": "b6187127560b2e1f93543d2ae118ad1fbe47b04a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6727cfea_8800ed8c",
+        "filename": "build/build.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 1609,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2023-04-11T22:57:17Z",
+      "side": 1,
+      "message": "er... #shamecube",
+      "parentUuid": "e51806ab_12145e05",
+      "range": {
+        "startLine": 1609,
+        "startChar": 4,
+        "endLine": 1609,
+        "endChar": 55
+      },
+      "revId": "b6187127560b2e1f93543d2ae118ad1fbe47b04a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
