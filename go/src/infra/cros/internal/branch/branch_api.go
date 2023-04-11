@@ -21,9 +21,10 @@ import (
 )
 
 const (
-	retriesTimeout = 5 * time.Minute
-	testRetries    = 1
-	testBaseDelay  = 1
+	retriesTimeout   = 5 * time.Minute
+	testRetries      = 1
+	testBaseDelay    = 1
+	readOnlyErrorMsg = "project state READ_ONLY does not permit write"
 )
 
 // GerritProjectBranch contains all the details for creating a new Gerrit branch
@@ -90,37 +91,52 @@ func (c *Client) CreateRemoteBranchesAPI(authedClient *http.Client, branches []G
 		logPrefix = "(Dry run) "
 	}
 
-	var createCount int64
+	var createCount, readOnlyCount int64
 	for _, b := range branches {
 		<-throttle
 		b := b
 		g.Go(func() error {
-			if skipRetries {
-				err := c.createRemoteBranch(authedClient, b, dryRun)
-				if err != nil {
-					return err
-				}
-			} else {
-				ctx, cancel := context.WithTimeout(context.Background(), retriesTimeout)
-				defer cancel()
-				opts := shared.DefaultOpts
-				if isTest {
-					opts.Retries = testRetries
-					opts.BaseDelay = testBaseDelay
-				}
-				err := shared.DoWithRetry(ctx, opts, func() error {
+			err := func() error {
+				if skipRetries {
 					err := c.createRemoteBranch(authedClient, b, dryRun)
-					return err
-				})
-				if err != nil {
+					if err != nil {
+						return err
+					}
+				} else {
+					ctx, cancel := context.WithTimeout(context.Background(), retriesTimeout)
+					defer cancel()
+					opts := shared.DefaultOpts
+					if isTest {
+						opts.Retries = testRetries
+						opts.BaseDelay = testBaseDelay
+					}
+					err := shared.DoWithRetry(ctx, opts, func() error {
+						err := c.createRemoteBranch(authedClient, b, dryRun)
+						return err
+					})
+					if err != nil {
+						return err
+					}
+				}
+				count := atomic.AddInt64(&createCount, 1)
+				if count%10 == 0 {
+					c.LogOut("%sCreated %v of %v remote branches", logPrefix, count, len(branches))
+				}
+				return nil
+			}()
+			if err != nil && strings.Contains(err.Error(), readOnlyErrorMsg) {
+				readOnlyCount := atomic.AddInt64(&readOnlyCount, 1)
+				// If the error is widespread we ought to fail.
+				if float64(readOnlyCount)/float64(len(branches)) > 0.05 {
+					err := errors.New(">5%% branches have failed with READ_ONLY error, failing.")
+					c.LogErr(err.Error())
 					return err
 				}
+				c.LogErr("Warning: Branch for %v failed with '%s' error. Continuing with best-effort branch creation.",
+					b, readOnlyErrorMsg)
+				return nil
 			}
-			count := atomic.AddInt64(&createCount, 1)
-			if count%10 == 0 {
-				c.LogOut("%sCreated %v of %v remote branches", logPrefix, count, len(branches))
-			}
-			return nil
+			return err
 		})
 	}
 	err := g.Wait()
