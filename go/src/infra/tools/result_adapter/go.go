@@ -52,9 +52,8 @@ func (*goRun) generateTestResults(ctx context.Context, data []byte) ([]*sinkpb.T
 }
 
 // goTestJsonToTestRecords parses one line at a time from the given output,
-// which is expected to be the one produced by `go test -json <package> -args
-// -convey-silent` converts each line to TestEvent and ingests it into a
-// TestRecord.
+// which is expected to be the one produced by `go test -json <package>`.
+// It converts each line to TestEvent and ingests it into a TestRecord.
 // The resulting TestRecord(s) are returned to the caller in a map where the
 // test's id maps to its TestRecord.
 func goTestJsonToTestRecords(ctx context.Context, data []byte) map[string]*TestRecord {
@@ -152,7 +151,7 @@ func parseRow(s []byte) (*TestEvent, error) {
 }
 
 // TestEvent represents each json object produced by `go test -json`.
-// Details at https://golang.org/cmd/test2json/
+// Details at https://go.dev/cmd/test2json.
 type TestEvent struct {
 	Time    time.Time // encodes as an RFC3339-format string
 	Action  string
@@ -184,7 +183,7 @@ type TestRecord struct {
 	Output      strings.Builder
 }
 
-// ingest uppdates the fields of the test record according to the contents of
+// ingest updates the fields of the test record according to the contents of
 // the given test event.
 // Output events will be added to the package's test record (the test's "parent")
 // instead of the record for the specific test.
@@ -199,7 +198,7 @@ func (tr *TestRecord) ingest(te *TestEvent, parent *TestRecord) {
 		tr.PackageName = te.Package
 	}
 	switch te.Action {
-	// Action string values from https://golang.org/cmd/test2json/
+	// Action string values from https://go.dev/cmd/test2json.
 	case "pause":
 	case "cont":
 	case "run":
