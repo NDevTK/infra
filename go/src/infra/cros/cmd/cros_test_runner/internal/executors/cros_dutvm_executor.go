@@ -165,6 +165,10 @@ func (ex *CrosDutVmExecutor) vmLeaseCommandExecution(
 	logging.Infof(ctx, "leased instance from VmLab %v", instance)
 	cmd.DutVm = instance
 
+	logging.Infof(ctx, "wait for SSH to become available")
+	common.WaitDutVmBoot(ctx, instance.GetSsh().GetAddress())
+
+	logging.Infof(ctx, "completed wait for SSH")
 	return err
 }
 

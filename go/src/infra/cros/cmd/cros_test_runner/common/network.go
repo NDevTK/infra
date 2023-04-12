@@ -61,3 +61,18 @@ func GetBotProvider() SwarmingBotProvider {
 	}
 	return BotProviderUnknown
 }
+
+// WaitDutVmBoot uses a blocking SSH call to wait for a DUT VM to become ready.
+// It doesn't care about the output. If the connection is successful, it
+// executes `true` that returns nothing. If permission denied, it means SSH is
+// ready. If timeout, we leave it to the following step to detect the error.
+func WaitDutVmBoot(ctx context.Context, ip string) {
+	cmd := exec.Command("/usr/bin/ssh",
+		"-o", "ConnectTimeout=120",
+		"-o", "StrictHostKeyChecking=no",
+		"-o", "UserKnownHostsFile=/dev/null",
+		"-o", "BatchMode=yes",
+		"root@"+ip,
+		"true")
+	_, _, _ = RunCommand(ctx, cmd, "ssh", nil, true)
+}
