@@ -268,7 +268,8 @@ def run_python_tests(api, project_name):
       if api.platform.is_linux or project_name == 'infra':
         api.step('infra python tests', ['python3', 'test.py', 'test'])
 
-      if api.platform.is_linux or api.platform.is_mac:
+      if ((api.platform.is_linux or api.platform.is_mac) and
+          project_name == 'infra'):
         cwd = api.path['checkout'].join('appengine', 'monorail')
         with api.context(cwd=cwd):
           api.step('monorail python tests', ['vpython3', 'test.py'])
