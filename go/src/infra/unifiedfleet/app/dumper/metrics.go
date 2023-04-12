@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,6 +57,12 @@ var (
 	getGoldenEyeDataTick = metric.NewCounter(
 		"chromeos/ufs/dumper/sync_goldeneye_data",
 		"getGoldenEyeData attempt every 12 hours",
+		nil,
+		field.Bool("success"),
+	)
+	syncDeviceConfigsTick = metric.NewCounter(
+		"chromeos/ufs/dumper/sync_device_configs",
+		"sync device configs hourly attempt",
 		nil,
 		field.Bool("success"),
 	)

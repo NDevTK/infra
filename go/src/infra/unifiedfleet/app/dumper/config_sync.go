@@ -26,6 +26,9 @@ var namespaceToRealmAssignerMap = map[string]configuration.RealmAssignerFunc{
 // syncDeviceConfigs fetches devices configs from a file checked into gerrit
 // and inserts to UFS datastore
 func syncDeviceConfigs(ctx context.Context) (err error) {
+	defer func() {
+		syncDeviceConfigsTick.Add(ctx, 1, err == nil)
+	}()
 	// get ufs-level config for this cron job
 	cronCfg := config.Get(ctx).GetDeviceConfigsPushConfigs()
 
