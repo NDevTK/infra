@@ -1303,7 +1303,6 @@ def get_build_out_file(package_out_dir, pkg_def):
 
 def run(
     go_workspace,
-    build_callback,
     builder,
     package_def_dir,
     package_out_dir,
@@ -1321,7 +1320,6 @@ def run(
 
   Args:
     go_workspace: path to 'infra/go' or 'infra_internal/go'.
-    build_callback: called to build binaries, virtual environment, etc.
     builder: name of CI buildbot builder that invoked the script.
     package_def_dir: path to build/packages dir to search for *.yaml.
     package_out_dir: where to put built packages.
@@ -1437,7 +1435,7 @@ def run(
         any(p.uses_python_env for p in packages_to_visit) and
         not is_cross_compiling())
 
-    build_callback(packages_to_visit, should_refresh_python)
+    build_infra(go_workspace, packages_to_visit, should_refresh_python)
 
   # Package it.
   failed = []
@@ -1515,7 +1513,7 @@ def run(
   return 1 if failed else 0
 
 
-def build_infra(pkg_defs, should_refresh_python):
+def build_infra(go_workspace, pkg_defs, should_refresh_python):
   """Builds infra.git multiverse.
 
   Args:
@@ -1531,12 +1529,11 @@ def build_infra(pkg_defs, should_refresh_python):
             os.path.join(ROOT, 'ENV'),
         ])
   # Build all necessary go binaries.
-  build_go_code(os.path.join(ROOT, 'go'), MODULE_MAP, pkg_defs)
+  build_go_code(go_workspace, MODULE_MAP, pkg_defs)
 
 
 def main(
     args,
-    build_callback=build_infra,
     go_workspace=os.path.join(ROOT, 'go'),
     package_def_dir=os.path.join(ROOT, 'build', 'packages'),
     package_out_dir=os.path.join(ROOT, 'build', 'out')):
@@ -1610,7 +1607,6 @@ def main(
 
   return run(
       args.go_workspace,
-      build_callback,
       args.builder,
       args.package_definition_dir,
       args.package_out_dir,
