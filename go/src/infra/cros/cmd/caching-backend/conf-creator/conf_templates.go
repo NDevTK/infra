@@ -43,6 +43,10 @@ worker_rlimit_nofile 65535;
 pid        /var/run/nginx.pid;
 error_log  /var/log/nginx/error.log error;
 
+{{ if .TraceEndpoint }}
+load_module /opt/opentelemetry-webserver-sdk/WebServerModule/Nginx/ngx_http_opentelemetry_module.so;
+{{ end }}
+
 events {
   accept_mutex on;
   accept_mutex_delay 500ms;
@@ -232,6 +236,15 @@ http {
       return 200 'The /list_image_dir RPC is not supported by GS Cache. Usage is discouraged.';
     }
   }
+{{ if .TraceEndpoint }}
+    NginxModuleEnabled ON;
+    NginxModuleOtelSpanExporter otlp;
+    NginxModuleOtelExporterEndpoint {{ .TraceEndpoint }};
+    NginxModuleServiceName CachingBackendNginx;
+    NginxModuleServiceNamespace CachingBackendNginx;
+    NginxModuleServiceInstanceId CachingBackendNginxId;
+    NginxModuleResolveBackends ON;
+{{ end }}
 }
 `
 

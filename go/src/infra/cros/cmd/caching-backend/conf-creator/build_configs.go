@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,12 +25,13 @@ const (
 // nginxConfData contains information about the node which is necessary to
 // create the nginx.conf file.
 type nginxConfData struct {
-	UpstreamHost   string
-	VirtualIP      string
-	WorkerCount    uint
-	CacheSizeInGB  int
-	GSAServerCount int
-	GSAInitialPort int
+	UpstreamHost      string
+	VirtualIP         string
+	WorkerCount       uint
+	CacheSizeInGB     int
+	GSAServerCount    int
+	GSAInitialPort    int
+	OtelTraceEndpoint string
 }
 
 // Ports returns a slice of ports for the gs_archive_server upstream or backup

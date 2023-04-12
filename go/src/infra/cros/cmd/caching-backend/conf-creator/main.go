@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,7 @@ var (
 	gsaServerCount           = flag.Uint("gsa-server-count", 1, "The number of upstream gs_archive_server instances to be added in nginx-conf.")
 	gsaInitialPort           = flag.Uint("gsa-initial-port", 18000, "The port number for the first instance of the gs_archive_server in nginx.conf. Port number will increase by 1 for all subsequent entries.")
 	keepalivedInterface      = flag.String("keepalived-interface", "bond0", "The interface keepalived listens on.")
+	otelTraceEndpoint        = flag.String("otel-trace-endpoint", "", "The OTel collector endpoint. e.g. http://127.0.0.1:4317")
 )
 
 var (
@@ -82,10 +83,11 @@ func innerMain() error {
 		WorkerCount: *nginxWorkerCount,
 		// TODO(sanikak): Define types to make the unit clearer.
 		// E.g.  type gigabyte int.
-		CacheSizeInGB:  int(*cacheSizeInGB),
-		GSAServerCount: int(*gsaServerCount),
-		GSAInitialPort: int(*gsaInitialPort),
-		VirtualIP:      vip,
+		CacheSizeInGB:     int(*cacheSizeInGB),
+		GSAServerCount:    int(*gsaServerCount),
+		GSAInitialPort:    int(*gsaInitialPort),
+		VirtualIP:         vip,
+		OtelTraceEndpoint: *otelTraceEndpoint,
 	}
 	k := keepalivedConfData{
 		VirtualIP: vip,
