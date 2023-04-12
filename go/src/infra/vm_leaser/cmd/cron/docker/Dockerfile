@@ -8,4 +8,4 @@ COPY cron-service /
 
 USER nobody
 
-ENTRYPOINT ["/cron"]
+ENTRYPOINT ["/cron-service"]
