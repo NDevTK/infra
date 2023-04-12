@@ -52,7 +52,10 @@ for the Go setup.
     mac_toolchain install -xcode-version XXXX -output-dir /path/to/root
 
 Add `-kind mac` or `-kind ios` argument to install a package for mac or ios
-tasks. iOS kind has iOS SDK and default iOS runtime installed additionally. If
+tasks. ~~iOS kind has iOS SDK and default iOS runtime installed additionally.~~
+(**As of 2023, Xcode is now uploaded as a whole to the "mac" package if you are on MacOS13+, so there is
+no difference between mac and ios kind -- both will install the entire Xcode.app
+with iOS runtime included**) If
 not specified, the tool installs a mac kind.
 
 This will install the requested version of `Xcode.app` in the `/path/to/root`
@@ -130,16 +133,20 @@ downloaded through Xcode to system library
 
 ### Installing an Xcode package without runtime
 
-Use following command to download an Xcode package without runtime
+~~Use following command to download an Xcode package without runtime~~
 
 ```
 mac_toolchain install -kind ios -xcode-version SOME_VERSION -output-dir path/to/Xcode.app -with-runtime=False
 ```
 
-This is specifically used in iOS tester machines across chromium infra where
+~~This is specifically used in iOS tester machines across chromium infra where
 mac_toolchain is invoked to download Xcode. iOS test runner further downloads
 the requested runtime in task and assembles a full Xcode package with runtime
-from multiple packages downloaded (or read from cache).
+from multiple packages downloaded (or read from cache).~~<br>
+**Update (2023)**: in MacOS13+, all Xcode.app contents will be bundled in the "mac" package,
+so the above command will still install the runtime to the output directory.
+
+
 
 ## Debugging packages
 

@@ -114,6 +114,7 @@ func makePackage(args MakePackageArgs) (packageDef cipd.PackageDef, err error) {
 // types.
 // Legacy iOS package contains all runtimes in Xcode (default before spring
 // 2021), while new iOS package contains no runtimes.
+// In 2023 MacOS13+, "mac" package will contain the entire Xcode.app contents.
 func makeXcodePackages(xcodeAppPath string, cipdPackagePrefix string, legacyIOSPackage bool) (p Packages, err error) {
 	absXcodeAppPath, err := filepath.Abs(xcodeAppPath)
 	if err != nil {
@@ -121,25 +122,24 @@ func makeXcodePackages(xcodeAppPath string, cipdPackagePrefix string, legacyIOSP
 		return
 	}
 
-	// Mac package exclude prefixes include prefixes in |defaultExcludePrefixes|
-	// and |iosPrefixes|. Use |make|, |copy| and |append| functions to ensure
-	// slices won't be accidentally changed.
-	excludePrefixesForMacPackage := make([]string, len(defaultExcludePrefixes))
-	copy(excludePrefixesForMacPackage, defaultExcludePrefixes)
-	excludePrefixesForMacPackage = append(excludePrefixesForMacPackage, iosPrefixes...)
-
 	macMakePackageArgs := MakePackageArgs{
 		cipdPackageName:   MacPackageName,
 		cipdPackagePrefix: cipdPackagePrefix,
 		rootPath:          absXcodeAppPath,
 		includePrefixes:   []string{},
-		excludePrefixes:   excludePrefixesForMacPackage,
+		// crbug/1420480: Xcode will be uploaded as a single package in MacOS13+.
+		// Therefore, no files will be excluded
+		excludePrefixes: []string{},
 	}
 	mac, err := makePackage(macMakePackageArgs)
 	if err != nil {
 		err = errors.Annotate(err, "failed to create mac cipd pakcage").Err()
 	}
 
+	// TODO(crbug/1420480): in MacOS13+, Xcode is being uploaded as a whole in
+	// the mac package as described above, so there's no need to upload iOS package anymore.
+	// Temporarily keeping this for MacOS12 backward compatibility. We can remove it after all
+	// bots are upgraded to MacOS13+
 	excludePrefixesForiOSPackage := make([]string, len(defaultExcludePrefixes))
 	copy(excludePrefixesForiOSPackage, defaultExcludePrefixes)
 	if !legacyIOSPackage {

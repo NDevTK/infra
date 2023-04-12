@@ -63,7 +63,16 @@ func installPackages(ctx context.Context, args InstallPackagesArgs) error {
 	case macKind:
 		ensureSpec += fmt.Sprintf("%s/%s %s\n", args.cipdPackagePrefix, MacPackageName, args.ref)
 	case iosKind:
-		ensureSpec += fmt.Sprintf("%s/%s %s\n%s/%s %s\n", args.cipdPackagePrefix, MacPackageName, args.ref, args.cipdPackagePrefix, IosPackageName, args.ref)
+		// TODO(crbug/1420480): on MacOS13+, Xcode is uploaded as one package in mac, so
+		// we only need to download the mac package and there's no difference between
+		// mac and ios kind. Clean up the if conditions below after all bots are upgraded
+		// to MacOS13.
+		onMacOS13OrLater, _ := isMacOS13OrLater(ctx)
+		if onMacOS13OrLater {
+			ensureSpec += fmt.Sprintf("%s/%s %s\n", args.cipdPackagePrefix, MacPackageName, args.ref)
+		} else {
+			ensureSpec += fmt.Sprintf("%s/%s %s\n%s/%s %s\n", args.cipdPackagePrefix, MacPackageName, args.ref, args.cipdPackagePrefix, IosPackageName, args.ref)
+		}
 	case iosRuntimeKind:
 		ensureSpec += fmt.Sprintf("%s/%s %s\n", args.cipdPackagePrefix, IosRuntimePackageName, args.ref)
 	default:

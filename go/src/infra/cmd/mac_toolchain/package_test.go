@@ -121,6 +121,8 @@ func TestMakePackages(t *testing.T) {
 			So(packages["ios"].Package, ShouldEqual, "test/prefix/ios")
 			So(packages["mac"].Data, ShouldResemble, []cipd.PackageChunkDef{
 				{VersionFile: ".xcode_versions/mac.cipd_version"},
+				{File: path("Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad.simdevicetype")},
+				{File: path("Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Info.plist")},
 				{File: path("Contents/Developer/usr/bin/xyz.txt")},
 				{File: path("Contents/Resources/LicenseInfo.plist")},
 				{File: path("Contents/version.plist")},
@@ -138,6 +140,8 @@ func TestMakePackages(t *testing.T) {
 			So(packages["ios"].Package, ShouldEqual, "test/prefix/ios")
 			So(packages["mac"].Data, ShouldResemble, []cipd.PackageChunkDef{
 				{VersionFile: ".xcode_versions/mac.cipd_version"},
+				{File: path("Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/DeviceTypes/iPad.simdevicetype")},
+				{File: path("Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS.simruntime/Contents/Info.plist")},
 				{File: path("Contents/Developer/usr/bin/xyz.txt")},
 				{File: path("Contents/Resources/LicenseInfo.plist")},
 				{File: path("Contents/version.plist")},

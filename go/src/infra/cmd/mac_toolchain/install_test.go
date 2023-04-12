@@ -45,39 +45,49 @@ func TestInstallXcode(t *testing.T) {
 				"Developer mode is currently enabled.\n",
 			}
 			err := installXcode(ctx, installArgs)
+			callCounter := 0
+			// skip MacOS version check calls
+			callCounter++
 			So(err, ShouldBeNil)
 			So(s.Calls, ShouldHaveLength, 9)
-			So(s.Calls[1].Executable, ShouldEqual, "cipd")
-			So(s.Calls[1].Args, ShouldResemble, []string{
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
 			})
-			So(s.Calls[1].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
+			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
 
-			So(s.Calls[2].Executable, ShouldEqual, "cipd")
-			So(s.Calls[2].Args, ShouldResemble, []string{
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"ensure", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
 			})
-			So(s.Calls[2].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
+			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
 
-			So(s.Calls[3].Executable, ShouldEqual, "chmod")
-			So(s.Calls[3].Args, ShouldResemble, []string{
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "chmod")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"-R", "u+w", "testdata/Xcode-old.app",
 			})
 
-			So(s.Calls[4].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[4].Args, ShouldResemble, []string{"-p"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
 
-			So(s.Calls[5].Executable, ShouldEqual, "sudo")
-			So(s.Calls[5].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
 
-			So(s.Calls[6].Executable, ShouldEqual, "sudo")
-			So(s.Calls[6].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
 
-			So(s.Calls[7].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[7].Args, ShouldResemble, []string{"simctl", "list"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
 
-			So(s.Calls[8].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
-			So(s.Calls[8].Args, ShouldResemble, []string{"-status"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-status"})
 		})
 
 		Convey("for already installed package with Developer mode enabled and -runFirstLaunch needs to run", func() {
@@ -98,30 +108,39 @@ func TestInstallXcode(t *testing.T) {
 			err := installXcode(ctx, installArgs)
 			So(err, ShouldBeNil)
 			So(s.Calls, ShouldHaveLength, 8)
-			So(s.Calls[1].Executable, ShouldEqual, "cipd")
-			So(s.Calls[1].Args, ShouldResemble, []string{
+			callCounter := 0
+			// skip MacOS version check calls
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
 			})
-			So(s.Calls[1].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
-			So(s.Calls[1].Env, ShouldResemble, []string(nil))
+			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
+			So(s.Calls[callCounter].Env, ShouldResemble, []string(nil))
 
-			So(s.Calls[2].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[2].Args, ShouldResemble, []string{"-p"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
 
-			So(s.Calls[3].Executable, ShouldEqual, "sudo")
-			So(s.Calls[3].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
 
-			So(s.Calls[4].Executable, ShouldEqual, "sudo")
-			So(s.Calls[4].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
 
-			So(s.Calls[5].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[5].Args, ShouldResemble, []string{"simctl", "list"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
 
-			So(s.Calls[6].Executable, ShouldEqual, "sudo")
-			So(s.Calls[6].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "original/Xcode.app"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "original/Xcode.app"})
 
-			So(s.Calls[7].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
-			So(s.Calls[7].Args, ShouldResemble, []string{"-status"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-status"})
 
 		})
 
@@ -142,29 +161,39 @@ func TestInstallXcode(t *testing.T) {
 			err := installXcode(ctx, installArgs)
 			So(err.Error(), ShouldContainSubstring, "Developer mode is currently disabled! Please use `sudo /usr/sbin/DevToolsSecurity -enable` to enable.")
 			So(s.Calls, ShouldHaveLength, 8)
-			So(s.Calls[1].Executable, ShouldEqual, "cipd")
-			So(s.Calls[1].Args, ShouldResemble, []string{
+
+			callCounter := 0
+			// skip MacOS version check calls
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
 			})
-			So(s.Calls[1].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
+			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
 
-			So(s.Calls[2].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[2].Args, ShouldResemble, []string{"-p"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
 
-			So(s.Calls[3].Executable, ShouldEqual, "sudo")
-			So(s.Calls[3].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
 
-			So(s.Calls[4].Executable, ShouldEqual, "sudo")
-			So(s.Calls[4].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
 
-			So(s.Calls[5].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[5].Args, ShouldResemble, []string{"simctl", "list"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
 
-			So(s.Calls[6].Executable, ShouldEqual, "sudo")
-			So(s.Calls[6].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "original/Xcode.app"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "original/Xcode.app"})
 
-			So(s.Calls[7].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
-			So(s.Calls[7].Args, ShouldResemble, []string{"-status"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-status"})
 		})
 
 		Convey("with a service account", func() {
@@ -183,47 +212,59 @@ func TestInstallXcode(t *testing.T) {
 			err := installXcode(ctx, installArgs)
 			So(err, ShouldBeNil)
 			So(s.Calls, ShouldHaveLength, 9)
-			So(s.Calls[1].Executable, ShouldEqual, "cipd")
-			So(s.Calls[1].Args, ShouldResemble, []string{
+			callCounter := 0
+			// skip MacOS version check calls
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
 				"-service-account-json", "test/service-account.json",
 			})
-			So(s.Calls[1].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
+			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
 
-			So(s.Calls[2].Executable, ShouldEqual, "cipd")
-			So(s.Calls[2].Args, ShouldResemble, []string{
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"ensure", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
 				"-service-account-json", "test/service-account.json",
 			})
-			So(s.Calls[2].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
+			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\n")
 
-			So(s.Calls[3].Executable, ShouldEqual, "chmod")
-			So(s.Calls[3].Args, ShouldResemble, []string{
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "chmod")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"-R", "u+w", "testdata/Xcode-old.app",
 			})
 
-			So(s.Calls[4].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[4].Args, ShouldResemble, []string{"-p"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
 
-			So(s.Calls[5].Executable, ShouldEqual, "sudo")
-			So(s.Calls[5].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
 
-			So(s.Calls[6].Executable, ShouldEqual, "sudo")
-			So(s.Calls[6].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
 
-			So(s.Calls[7].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[7].Args, ShouldResemble, []string{"simctl", "list"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
 
-			So(s.Calls[8].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
-			So(s.Calls[8].Args, ShouldResemble, []string{"-status"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-status"})
 		})
 
 		Convey("for new license, ios", func() {
 			s.ReturnError = []error{
 				errors.Reason("check OS version error").Err(),
+				errors.Reason("check OS version error").Err(),
 				errors.Reason("already installed").Err(),
 			}
 			s.ReturnOutput = []string{
+				"12.2.1", // MacOS Version
 				"12.2.1", // MacOS Version
 				"cipd dry run",
 				"old/xcode/path",
@@ -238,49 +279,63 @@ func TestInstallXcode(t *testing.T) {
 				"Developer mode is currently enabled.",
 			}
 
-			installArgs.xcodeAppPath = "testdata/Xcode-new.app"
-			installArgs.kind = iosKind
-			err := installXcode(ctx, installArgs)
+			installArgsForIOS := installArgs
+			installArgsForIOS.xcodeAppPath = "testdata/Xcode-new.app"
+			installArgsForIOS.kind = iosKind
+			err := installXcode(ctx, installArgsForIOS)
 			So(err, ShouldBeNil)
-			So(len(s.Calls), ShouldEqual, 12)
-
-			So(s.Calls[1].Executable, ShouldEqual, "cipd")
-			So(s.Calls[1].Args, ShouldResemble, []string{
+			So(len(s.Calls), ShouldEqual, 13)
+			callCounter := 0
+			// skip MacOS version check calls
+			callCounter++
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-new.app",
 			})
-			So(s.Calls[1].ConsumedStdin, ShouldEqual,
+			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual,
 				"test/prefix/mac testVersion\n"+
 					"test/prefix/ios testVersion\n")
 
-			So(s.Calls[2].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[2].Args, ShouldResemble, []string{"-p"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
 
-			So(s.Calls[3].Executable, ShouldEqual, "sudo")
-			So(s.Calls[3].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
 
-			So(s.Calls[4].Executable, ShouldEqual, "sudo")
-			So(s.Calls[4].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-license", "accept"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-license", "accept"})
 
-			So(s.Calls[5].Executable, ShouldEqual, "sudo")
-			So(s.Calls[5].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "old/xcode/path"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "old/xcode/path"})
 
-			So(s.Calls[6].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[6].Args, ShouldResemble, []string{"-p"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
 
-			So(s.Calls[7].Executable, ShouldEqual, "sudo")
-			So(s.Calls[7].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
 
-			So(s.Calls[8].Executable, ShouldEqual, "sudo")
-			So(s.Calls[8].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
 
-			So(s.Calls[9].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[9].Args, ShouldResemble, []string{"simctl", "list"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
 
-			So(s.Calls[10].Executable, ShouldEqual, "sudo")
-			So(s.Calls[10].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "old/xcode/path"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "old/xcode/path"})
 
-			So(s.Calls[11].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
-			So(s.Calls[11].Args, ShouldResemble, []string{"-status"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-status"})
 		})
 
 	})
@@ -302,6 +357,7 @@ func TestInstallXcode(t *testing.T) {
 		Convey("install with runtime", func() {
 			s.ReturnOutput = []string{
 				"12.2.1",                         // MacOS Version
+				"12.2.1",                         // MacOS Version
 				"cipd dry run",                   // 0 (index in s.Calls, same below)
 				"cipd ensures",                   // 1
 				"chomod prints nothing",          // 2
@@ -321,67 +377,83 @@ func TestInstallXcode(t *testing.T) {
 			defer os.RemoveAll("testdata/Xcode-old.app/Contents/Developer/Platforms")
 			err := installXcode(ctx, installArgsForTest)
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 13)
-			So(s.Calls[1].Executable, ShouldEqual, "cipd")
-			So(s.Calls[1].Args, ShouldResemble, []string{
+			So(s.Calls, ShouldHaveLength, 14)
+			callCounter := 0
+			// skip MacOS version check calls
+			callCounter++
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
 			})
-			So(s.Calls[1].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\ntest/prefix/ios testVersion\n")
+			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\ntest/prefix/ios testVersion\n")
 
-			So(s.Calls[2].Executable, ShouldEqual, "cipd")
-			So(s.Calls[2].Args, ShouldResemble, []string{
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"ensure", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
 			})
-			So(s.Calls[2].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\ntest/prefix/ios testVersion\n")
+			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\ntest/prefix/ios testVersion\n")
 
-			So(s.Calls[3].Executable, ShouldEqual, "chmod")
-			So(s.Calls[3].Args, ShouldResemble, []string{
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "chmod")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"-R", "u+w", "testdata/Xcode-old.app",
 			})
 
-			So(s.Calls[4].Executable, ShouldEqual, "cipd")
-			So(s.Calls[4].Args, ShouldResemble, []string{
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"resolve", "test/prefix/ios_runtime", "-version", "testVersion",
 			})
 
 			// Normalize for win builder tests.
 			runtimeInstallPath := filepath.FromSlash("testdata/Xcode-old.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes")
 
-			So(s.Calls[5].Executable, ShouldEqual, "cipd")
-			So(s.Calls[5].Args, ShouldResemble, []string{
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", runtimeInstallPath,
 			})
-			So(s.Calls[5].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime testVersion\n")
+			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime testVersion\n")
 
-			So(s.Calls[6].Executable, ShouldEqual, "cipd")
-			So(s.Calls[6].Args, ShouldResemble, []string{
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"ensure", "-ensure-file", "-", "-root", runtimeInstallPath,
 			})
-			So(s.Calls[6].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime testVersion\n")
+			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime testVersion\n")
 
-			So(s.Calls[7].Executable, ShouldEqual, "chmod")
-			So(s.Calls[7].Args, ShouldResemble, []string{
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "chmod")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"-R", "u+w", runtimeInstallPath,
 			})
 
-			So(s.Calls[8].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[8].Args, ShouldResemble, []string{"-p"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
 
-			So(s.Calls[9].Executable, ShouldEqual, "sudo")
-			So(s.Calls[9].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
 
-			So(s.Calls[10].Executable, ShouldEqual, "sudo")
-			So(s.Calls[10].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
 
-			So(s.Calls[11].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[11].Args, ShouldResemble, []string{"simctl", "list"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
 
-			So(s.Calls[12].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
-			So(s.Calls[12].Args, ShouldResemble, []string{"-status"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-status"})
 		})
 
 		Convey("with runtime but runtime already exist", func() {
 			s.ReturnOutput = []string{
+				"12.2.1",                         // MacOS Version
 				"12.2.1",                         // MacOS Version
 				"cipd dry run",                   // 0 (index in s.Calls, same below)
 				"cipd ensures",                   // 1
@@ -397,42 +469,54 @@ func TestInstallXcode(t *testing.T) {
 			installArgsForTest.xcodeAppPath = "testdata/Xcode-with-runtime.app"
 			err := installXcode(ctx, installArgsForTest)
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 9)
-			So(s.Calls[1].Executable, ShouldEqual, "cipd")
-			So(s.Calls[1].Args, ShouldResemble, []string{
+			So(s.Calls, ShouldHaveLength, 10)
+			callCounter := 0
+			// skip MacOS version check calls
+			callCounter++
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-with-runtime.app",
 			})
-			So(s.Calls[1].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\ntest/prefix/ios testVersion\n")
+			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\ntest/prefix/ios testVersion\n")
 
-			So(s.Calls[2].Executable, ShouldEqual, "cipd")
-			So(s.Calls[2].Args, ShouldResemble, []string{
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"ensure", "-ensure-file", "-", "-root", "testdata/Xcode-with-runtime.app",
 			})
-			So(s.Calls[2].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\ntest/prefix/ios testVersion\n")
+			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\ntest/prefix/ios testVersion\n")
 
-			So(s.Calls[3].Executable, ShouldEqual, "chmod")
-			So(s.Calls[3].Args, ShouldResemble, []string{
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "chmod")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"-R", "u+w", "testdata/Xcode-with-runtime.app",
 			})
 
-			So(s.Calls[4].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[4].Args, ShouldResemble, []string{"-p"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
 
-			So(s.Calls[5].Executable, ShouldEqual, "sudo")
-			So(s.Calls[5].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-with-runtime.app"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-with-runtime.app"})
 
-			So(s.Calls[6].Executable, ShouldEqual, "sudo")
-			So(s.Calls[6].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
 
-			So(s.Calls[7].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[7].Args, ShouldResemble, []string{"simctl", "list"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
 
-			So(s.Calls[8].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
-			So(s.Calls[8].Args, ShouldResemble, []string{"-status"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-status"})
 		})
 
 		Convey("without runtime", func() {
 			s.ReturnOutput = []string{
+				"12.2.1",                         // MacOS Version
 				"12.2.1",                         // MacOS Version
 				"cipd dry run",                   // 0 (index in s.Calls, same below)
 				"cipd ensures",                   // 1
@@ -448,38 +532,49 @@ func TestInstallXcode(t *testing.T) {
 			installArgsForTest.xcodeAppPath = "testdata/Xcode-old.app"
 			err := installXcode(ctx, installArgsForTest)
 			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 9)
-			So(s.Calls[1].Executable, ShouldEqual, "cipd")
-			So(s.Calls[1].Args, ShouldResemble, []string{
+			So(s.Calls, ShouldHaveLength, 10)
+			callCounter := 0
+			// skip MacOS version check calls
+			callCounter++
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
 			})
-			So(s.Calls[1].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\ntest/prefix/ios testVersion\n")
+			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\ntest/prefix/ios testVersion\n")
 
-			So(s.Calls[2].Executable, ShouldEqual, "cipd")
-			So(s.Calls[2].Args, ShouldResemble, []string{
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"ensure", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
 			})
-			So(s.Calls[2].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\ntest/prefix/ios testVersion\n")
+			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/mac testVersion\ntest/prefix/ios testVersion\n")
 
-			So(s.Calls[3].Executable, ShouldEqual, "chmod")
-			So(s.Calls[3].Args, ShouldResemble, []string{
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "chmod")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"-R", "u+w", "testdata/Xcode-old.app",
 			})
 
-			So(s.Calls[4].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[4].Args, ShouldResemble, []string{"-p"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
 
-			So(s.Calls[5].Executable, ShouldEqual, "sudo")
-			So(s.Calls[5].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
 
-			So(s.Calls[6].Executable, ShouldEqual, "sudo")
-			So(s.Calls[6].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
 
-			So(s.Calls[7].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[7].Args, ShouldResemble, []string{"simctl", "list"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
 
-			So(s.Calls[8].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
-			So(s.Calls[8].Args, ShouldResemble, []string{"-status"})
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-status"})
 		})
 	})
 
@@ -514,29 +609,49 @@ func TestInstallXcode(t *testing.T) {
 			err := installXcode(ctx, installArgs)
 			So(err, ShouldBeNil)
 			So(s.Calls, ShouldHaveLength, 11)
-
-			So(s.Calls[1].Executable, ShouldEqual, "cipd")
-			So(s.Calls[1].Args, ShouldResemble, []string{
+			callCounter := 0
+			// skip MacOS version check calls
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"describe", "test/prefix/mac", "-version", "testVersion",
 			})
-			So(s.Calls[2].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[2].Args, ShouldResemble, []string{"-p"})
-			So(s.Calls[3].Executable, ShouldEqual, "sudo")
-			So(s.Calls[3].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
-			So(s.Calls[4].Executable, ShouldEqual, "sudo")
-			So(s.Calls[4].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-license", "accept"})
-			So(s.Calls[5].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[5].Args, ShouldResemble, []string{"-p"})
-			So(s.Calls[6].Executable, ShouldEqual, "sudo")
-			So(s.Calls[6].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
-			So(s.Calls[7].Executable, ShouldEqual, "sudo")
-			So(s.Calls[7].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
-			So(s.Calls[8].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[8].Args, ShouldResemble, []string{"simctl", "list"})
-			So(s.Calls[9].Executable, ShouldEqual, "sudo")
-			So(s.Calls[9].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
-			So(s.Calls[10].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
-			So(s.Calls[10].Args, ShouldResemble, []string{"-status"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-license", "accept"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-status"})
 		})
 
 		Convey("current Xcode CFBundle version mismatch what's on cipd", func() {
@@ -561,41 +676,102 @@ func TestInstallXcode(t *testing.T) {
 			err := installXcode(ctx, installArgs)
 			So(err, ShouldBeNil)
 			So(s.Calls, ShouldHaveLength, 14)
-
-			So(s.Calls[1].Executable, ShouldEqual, "cipd")
-			So(s.Calls[1].Args, ShouldResemble, []string{
+			callCounter := 0
+			// skip MacOS version check calls
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"describe", "test/prefix/mac", "-version", "testVersion",
 			})
-			So(s.Calls[2].Executable, ShouldEqual, "cipd")
-			So(s.Calls[2].Args, ShouldResemble, []string{
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-new.app",
 			})
-			So(s.Calls[3].Executable, ShouldEqual, "cipd")
-			So(s.Calls[3].Args, ShouldResemble, []string{
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"ensure", "-ensure-file", "-", "-root", "testdata/Xcode-new.app",
 			})
-			So(s.Calls[4].Executable, ShouldEqual, "chmod")
-			So(s.Calls[4].Args, ShouldResemble, []string{
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "chmod")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"-R", "u+w", "testdata/Xcode-new.app",
 			})
-			So(s.Calls[5].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[5].Args, ShouldResemble, []string{"-p"})
-			So(s.Calls[6].Executable, ShouldEqual, "sudo")
-			So(s.Calls[6].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
-			So(s.Calls[7].Executable, ShouldEqual, "sudo")
-			So(s.Calls[7].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-license", "accept"})
-			So(s.Calls[8].Executable, ShouldEqual, "/usr/bin/xcode-select")
-			So(s.Calls[8].Args, ShouldResemble, []string{"-p"})
-			So(s.Calls[9].Executable, ShouldEqual, "sudo")
-			So(s.Calls[9].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
-			So(s.Calls[10].Executable, ShouldEqual, "sudo")
-			So(s.Calls[10].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
-			So(s.Calls[11].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[11].Args, ShouldResemble, []string{"simctl", "list"})
-			So(s.Calls[12].Executable, ShouldEqual, "sudo")
-			So(s.Calls[12].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
-			So(s.Calls[13].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
-			So(s.Calls[13].Args, ShouldResemble, []string{"-status"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-license", "accept"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-new.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/sbin/DevToolsSecurity")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-status"})
+		})
+
+		Convey("install iOS runtime on MacOS13+ should only install mac package", func() {
+			s.ReturnOutput = []string{
+				"13.2.1", // MacOS Version
+				// cipd describe returns nothing to ensure backward compatibility when CFBundleVersions tags
+				// don't exist on older packages
+				"",
+				"13.2.1", // MacOS Version
+				"cipd dry run",
+				"cipd ensures",
+				"chomod prints nothing",
+				"", // No original Xcode when running xcode-select -p
+				"xcode-select -s prints nothing",
+				"license accpet",
+				"testdata/Xcode-new.app",
+				"xcode-select -s prints nothing",
+				"xcodebuild -runFirstLaunch",
+				"xcrun simctl list prints a list of all simulators installed",
+				"xcode-select -s prints nothing",
+				"Developer mode is currently enabled.\n",
+			}
+			installArgsForIOS := installArgs
+			installArgsForIOS.kind = iosKind
+			err := installXcode(ctx, installArgsForIOS)
+			So(err, ShouldBeNil)
+			So(s.Calls, ShouldHaveLength, 15)
+			callCounter := 0
+			// skip MacOS version check calls
+			callCounter++
+
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+				"describe", "test/prefix/mac", "-version", "testVersion",
+			})
 		})
 	})
 
