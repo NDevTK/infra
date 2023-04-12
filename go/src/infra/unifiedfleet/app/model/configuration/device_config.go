@@ -6,6 +6,7 @@ package configuration
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -44,6 +45,12 @@ type RealmAssignerFunc func(*ufsdevice.Config) string
 // realm is not import, ex. fetching an entity.
 func BlankRealmAssigner(d *ufsdevice.Config) string {
 	return ""
+}
+
+// BoardModelRealmAssigner constructs the realm based on the board and model
+// of the deviceconfig
+func BoardModelRealmAssigner(d *ufsdevice.Config) string {
+	return fmt.Sprintf("chromeos:%s-%s", strings.ToLower(d.Id.PlatformId.Value), strings.ToLower(d.Id.ModelId.Value))
 }
 
 // newDeviceConfigEntityFunc generates a `datastore.NewFunc` that adds a realm
@@ -113,4 +120,13 @@ func GetDeviceConfigIDStr(cfgid *ufsdevice.ConfigId) string {
 		variantID = strings.ToLower(v.GetValue())
 	}
 	return strings.Join([]string{platformID, modelID, variantID}, ".")
+}
+
+// GetConfigID creates ConfigId from the board/model/variant strings.
+func GetConfigID(board, model, variant string) *ufsdevice.ConfigId {
+	return &ufsdevice.ConfigId{
+		PlatformId: &ufsdevice.PlatformId{Value: board},
+		ModelId:    &ufsdevice.ModelId{Value: model},
+		VariantId:  &ufsdevice.VariantId{Value: variant},
+	}
 }

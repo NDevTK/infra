@@ -23,17 +23,8 @@ import (
 // behavior.
 func makeDevCfgForTesting(board, model, variant string, tams []string) *ufsdevice.Config {
 	return &ufsdevice.Config{
-		Id:  makeCfgIDForTesting(board, model, variant),
+		Id:  GetConfigID(board, model, variant),
 		Tam: tams,
-	}
-}
-
-// makeCfgIdForTesting creates ConfigId from the board/model/variant strings.
-func makeCfgIDForTesting(board, model, variant string) *ufsdevice.ConfigId {
-	return &ufsdevice.ConfigId{
-		PlatformId: &ufsdevice.PlatformId{Value: board},
-		ModelId:    &ufsdevice.ModelId{Value: model},
-		VariantId:  &ufsdevice.VariantId{Value: variant},
 	}
 }
 
@@ -56,7 +47,7 @@ func TestBatchUpdateDeviceConfig(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(resp, ShouldResembleProto, []*ufsdevice.Config{cfgs[0]})
 		Convey("That config is written to datastore", func() {
-			cfg0, err := GetDeviceConfig(ctx, makeCfgIDForTesting("board-0", "model-0", "variant-0"))
+			cfg0, err := GetDeviceConfig(ctx, GetConfigID("board-0", "model-0", "variant-0"))
 			So(err, ShouldBeNil)
 			So(cfg0, ShouldResembleProto, cfgs[0])
 		})
@@ -65,10 +56,10 @@ func TestBatchUpdateDeviceConfig(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(resp, ShouldResembleProto, []*ufsdevice.Config{cfgs[0], cfgs[1]})
 			Convey("Both configs are accessible", func() {
-				cfg0, err := GetDeviceConfig(ctx, makeCfgIDForTesting("board-0", "model-0", "variant-0"))
+				cfg0, err := GetDeviceConfig(ctx, GetConfigID("board-0", "model-0", "variant-0"))
 				So(err, ShouldBeNil)
 				So(cfg0, ShouldResembleProto, cfgs[0])
-				cfg1, err := GetDeviceConfig(ctx, makeCfgIDForTesting("board-1", "model-1", "variant-1"))
+				cfg1, err := GetDeviceConfig(ctx, GetConfigID("board-1", "model-1", "variant-1"))
 				So(err, ShouldBeNil)
 				So(cfg1, ShouldResembleProto, cfgs[1])
 			})
@@ -83,7 +74,7 @@ func TestBatchUpdateDeviceConfig(t *testing.T) {
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)
 		Convey("No configs from that request are added", func() {
-			_, err := GetDeviceConfig(ctx, makeCfgIDForTesting("board", "model", "variant"))
+			_, err := GetDeviceConfig(ctx, GetConfigID("board", "model", "variant"))
 			So(err, ShouldNotBeNil)
 		})
 	})
@@ -97,7 +88,7 @@ func TestBatchUpdateDeviceConfig(t *testing.T) {
 		So(resp, ShouldResembleProto, []*ufsdevice.Config{cfg})
 		Convey("Entity in datastore has correct realm", func() {
 			entity := &DeviceConfigEntity{
-				ID: GetDeviceConfigIDStr(makeCfgIDForTesting("board", "model", "variant")),
+				ID: GetDeviceConfigIDStr(GetConfigID("board", "model", "variant")),
 			}
 			err := datastore.Get(ctx, entity)
 			So(err, ShouldBeNil)
@@ -116,12 +107,12 @@ func TestGetDeviceConfig(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(resp, ShouldResembleProto, []*ufsdevice.Config{cfg})
 		Convey("That config can be accessed", func() {
-			cfg_resp, err := GetDeviceConfig(ctx, makeCfgIDForTesting("board", "model", "variant"))
+			cfg_resp, err := GetDeviceConfig(ctx, GetConfigID("board", "model", "variant"))
 			So(err, ShouldBeNil)
 			So(cfg_resp, ShouldResembleProto, cfg)
 		})
 		Convey("Another config cannot be accessed", func() {
-			cfg_resp, err := GetDeviceConfig(ctx, makeCfgIDForTesting("board2", "model2", "variant2"))
+			cfg_resp, err := GetDeviceConfig(ctx, GetConfigID("board2", "model2", "variant2"))
 			So(cfg_resp, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, NotFound)
@@ -139,12 +130,12 @@ func TestGetDeviceConfigIDStr(t *testing.T) {
 	t.Parallel()
 
 	Convey("test full config", t, func() {
-		cfgID := makeCfgIDForTesting("board", "model", "variant")
+		cfgID := GetConfigID("board", "model", "variant")
 		id := GetDeviceConfigIDStr(cfgID)
 		So(id, ShouldEqual, "board.model.variant")
 	})
 	Convey("test board/model", t, func() {
-		cfgID := makeCfgIDForTesting("board", "model", "")
+		cfgID := GetConfigID("board", "model", "")
 		id := GetDeviceConfigIDStr(cfgID)
 		So(id, ShouldEqual, "board.model.")
 	})
