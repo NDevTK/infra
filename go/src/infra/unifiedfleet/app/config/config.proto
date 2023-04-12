@@ -8,7 +8,7 @@ package ufs.config;
 
 option go_package = "infra/unifiedfleet/app/config";
 
-// Next Tag: 25
+// Next Tag: 26
 // Config is the configuration data served by luci-config for this app.
 message Config {
   string luci_config_service = 1;
@@ -54,6 +54,8 @@ message Config {
   float send_messages_to_pubsub_ratio = 23;
   // DeviceConfigs push configs
   DeviceConfigPushConfigs device_configs_push_configs = 24;
+  // DNS resolved hostname to reach the ufs service
+  string hostname = 25;
 }
 
 message OSNetworkConfig {
