@@ -2975,12 +2975,34 @@ func crosRepairActions() map[string]*Action {
 			RunControl:  RunControl_RUN_ONCE,
 			ExecTimeout: &durationpb.Duration{Seconds: 1200},
 		},
+		"Battery cut-off by servo EC console": {
+			Docs: []string{
+				"Try to cut-off battery by servo EC console.",
+				"It will force to look only to PD on the servo.",
+			},
+			ExecName:   "servo_set_ec_uart_cmd",
+			RunControl: RunControl_ALWAYS_RUN,
+			ExecExtraArgs: []string{
+				"wait_timeout:1",
+				"value:cutoff",
+			},
+		},
 		"Sleep 60 seconds": {
 			ExecName: "sample_sleep",
 			ExecExtraArgs: []string{
 				"sleep:60",
 			},
 			ExecTimeout:            &durationpb.Duration{Seconds: 70},
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Sleep 10 seconds": {
+			ExecName: "sample_sleep",
+			ExecExtraArgs: []string{
+				"sleep:10",
+			},
+			ExecTimeout:            &durationpb.Duration{Seconds: 11},
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},

@@ -590,6 +590,12 @@ var customConfigurationTestCases = []struct {
 			return config.FixTPM54Config()
 		},
 	},
+	{
+		"Battery cut-off",
+		func() *config.Configuration {
+			return config.FixBatteryCutOffConfig()
+		},
+	},
 }
 
 // TestOtherConfigurations tests other known configurations used anywhere.

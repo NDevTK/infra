@@ -54,6 +54,7 @@ func getApplication() *cli.Application {
 			tasks.ParseStableVersion,
 			tasks.EraseMRCCache,
 			tasks.FixTPM54,
+			tasks.BatteryCutOff,
 		},
 	}
 }

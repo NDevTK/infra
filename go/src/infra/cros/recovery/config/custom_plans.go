@@ -150,3 +150,39 @@ func FixTPM54Config() *Configuration {
 		},
 	}
 }
+
+// FixBatteryCutOffConfig creates a custom configuration to recover by battery cut-off
+func FixBatteryCutOffConfig() *Configuration {
+	customFixPlan := "cros_battery_cut"
+	return &Configuration{
+		PlanNames: []string{
+			PlanServo,
+			customFixPlan,
+			PlanCrOS,
+			PlanChameleon,
+			PlanBluetoothPeer,
+			PlanWifiRouter,
+			PlanClosing,
+		},
+		Plans: map[string]*Plan{
+			// Not allowed to fail as servo is critical for the fix plan.
+			PlanServo: servoRepairPlan(),
+			// If fix didn't work then no need to run repair plans.
+			customFixPlan: {
+				CriticalActions: []string{
+					"Is servod running",
+					"Battery cut-off by servo EC console",
+					"Sleep 10 seconds",
+					"servo_fake_disconnect_dut",
+					"Sleep 60 seconds",
+				},
+				Actions: crosRepairActions(),
+			},
+			PlanCrOS:          setAllowFail(crosRepairPlan(), false),
+			PlanChameleon:     setAllowFail(chameleonPlan(), true),
+			PlanBluetoothPeer: setAllowFail(btpeerRepairPlan(), true),
+			PlanWifiRouter:    setAllowFail(wifiRouterRepairPlan(), true),
+			PlanClosing:       setAllowFail(crosClosePlan(), true),
+		},
+	}
+}
