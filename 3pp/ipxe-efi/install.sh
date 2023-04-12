@@ -16,8 +16,10 @@ gcc --version
 python3 --version
 
 if [[ "$_3PP_PLATFORM" == 'linux-amd64' ]]; then
+  binary='ipxe.efi'
   build_path="bin-x86_64-efi"
 elif [[ "$_3PP_PLATFORM" == 'linux-arm64' ]]; then
+  binary='ipxe-arm64.efi'
   build_path="bin-arm64-efi"
 fi
 
@@ -58,4 +60,4 @@ fi
 
 cd src
 make ${MAKE_ARGS} "${build_path}/ipxe.efi"
-cp "${build_path}/ipxe.efi" "$PREFIX"
+cp "${build_path}/ipxe.efi" "${PREFIX}/${binary}"
