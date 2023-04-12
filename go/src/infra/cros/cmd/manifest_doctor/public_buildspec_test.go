@@ -68,6 +68,30 @@ const (
   <project path="bar/" name="bar" revision="456" remote="cros"></project>
   <project path="baz/" name="baz" revision="789"></project>
 </manifest>`
+
+	internalManifestXMLFallbackRemotes = `<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <remote name="cros" fetch="https://chromium.googlesource.com"/>
+  <remote name="weave" fetch="https://weave.googlesource.com"/>
+  <default remote="cros" revision="refs/heads/main" sync-j="8"/>
+  <project remote="weave" name="foo" path="foo/" revision="123" />
+  <project remote="cros" name="bar" path="bar/" revision="456" />
+  <project name="baz" path="baz/" revision="789" />
+</manifest>`
+
+	externalManifestXMLFallbackRemotes = `<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <remote fetch="https://chromium.googlesource.com" name="cros">
+    <annotation name="public" value="true"></annotation>
+  </remote>
+  <remote fetch="https://weave.googlesource.com" name="weave">
+    <annotation name="public" value="true"></annotation>
+  </remote>
+  <default remote="cros" revision="refs/heads/main" sync-j="8"></default>
+  <project path="foo/" name="foo" revision="123" remote="weave"></project>
+  <project path="bar/" name="bar" revision="456" remote="cros"></project>
+  <project path="baz/" name="baz" revision="789"></project>
+</manifest>`
 )
 
 func TestPublicBuildspec(t *testing.T) {
@@ -181,6 +205,59 @@ func TestPublicBuildspecNoAnnotations(t *testing.T) {
 	}
 	assert.NilError(t, b.CreatePublicBuildspecs(context.Background(), f, gc))
 
+}
+
+func TestPublicBuildspecFallbackRemotes(t *testing.T) {
+	t.Parallel()
+	expectedLists := map[string]map[string][]string{
+		"chromeos-manifest-versions": {
+			"test/": {"test/foo.xml"},
+		},
+		"chromiumos-manifest-versions": {
+			"test/": {},
+		},
+	}
+	expectedReads := map[string][]byte{
+		"gs://chromeos-manifest-versions/test/foo.xml": []byte(internalManifestXMLFallbackRemotes),
+	}
+	expectedWrites := map[string][]byte{
+		"gs://chromiumos-manifest-versions/test/foo.xml": []byte(externalManifestXMLFallbackRemotes),
+	}
+	f := &gs.FakeClient{
+		T:              t,
+		ExpectedLists:  expectedLists,
+		ExpectedReads:  expectedReads,
+		ExpectedWrites: expectedWrites,
+	}
+
+	// Mock Gitiles controller
+	ctl := gomock.NewController(t)
+	t.Cleanup(ctl.Finish)
+	gitilesMock := mock_gitiles.NewMockGitilesClient(ctl)
+	reqLocalManifest := &gitilespb.DownloadFileRequest{
+		Project:    "chromeos/manifest-internal",
+		Path:       "default.xml",
+		Committish: "HEAD",
+	}
+	gitilesMock.EXPECT().DownloadFile(gomock.Any(), gerrit.DownloadFileRequestEq(reqLocalManifest)).Return(
+		&gitilespb.DownloadFileResponse{
+			Contents: internalManifestXML,
+		},
+		nil,
+	)
+
+	mockMap := map[string]gitilespb.GitilesClient{
+		chromeInternalHost: gitilesMock,
+	}
+	gc := gerrit.NewTestClient(mockMap)
+
+	b := publicBuildspec{
+		push:                       true,
+		watchPaths:                 []string{"test/"},
+		internalBuildspecsGSBucket: internalBuildspecsGSBucketDefault,
+		externalBuildspecsGSBucket: externalBuildspecsGSBucketDefault,
+	}
+	assert.NilError(t, b.CreatePublicBuildspecs(context.Background(), f, gc))
 }
 
 func TestPublicBuildspecNoAnnotations_missingAtToT(t *testing.T) {

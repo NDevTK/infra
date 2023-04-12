@@ -24,6 +24,25 @@ const (
 	externalBuildspecsGSBucketDefault = "chromiumos-manifest-versions"
 )
 
+// A list of remotes to be used when the ToT manifest lacks them.
+//
+// Add remotes to this list when you remove a remote from the ToT manifest while
+// old manifests without remote annotations still refer to them.
+//
+// See b/269194223 for an example where this hack was needed.
+var fallbackRemotes = []repo.Remote{
+	// weave remote was added in R47-7423.0.0 (crrev.com/i/229188), and removed in
+	// R60-9526.0.0 (crrev.com/i/369389).
+	{
+		Name:   "weave",
+		Fetch:  "https://weave.googlesource.com",
+		Review: "https://weave-review.googlesource.com",
+		Annotations: []repo.Annotation{
+			{Name: "public", Value: "true"},
+		},
+	},
+}
+
 // CreateProjectBuildspec creates a public buildspec as outlined in go/per-project-buildspecs.
 func createPublicBuildspec(gsClient gs.Client, gerritClient gerrit.Client, buildspec *repo.Manifest, uploadPath lgs.Path, push bool) error {
 	remoteReference := buildspec
@@ -44,6 +63,13 @@ func createPublicBuildspec(gsClient gs.Client, gerritClient gerrit.Client, build
 			"HEAD", "default.xml")
 		if err != nil {
 			return err
+		}
+
+		// Add fallback remotes if they're missing in the ToT manifest.
+		for _, fallbackRemote := range fallbackRemotes {
+			if remoteReference.GetRemoteByName(fallbackRemote.Name) == nil {
+				remoteReference.Remotes = append(remoteReference.Remotes, fallbackRemote)
+			}
 		}
 	}
 
