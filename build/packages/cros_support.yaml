@@ -8,7 +8,6 @@ go_packages:
   - infra/cros/support/git-test-submit
   - infra/cros/support/gitiles-fetch-file
   - infra/cros/support/gitiles-fetch-ref
-  - infra/cros/support/oauth2-get-token
   - infra/cros/support/publish-message
   - infra/cros/support/repo-log-trace
   - infra/cros/support/repo-manifest-diff-projects
@@ -19,7 +18,6 @@ data:
   - file: git-test-submit${exe_suffix}
   - file: gitiles-fetch-file${exe_suffix}
   - file: gitiles-fetch-ref${exe_suffix}
-  - file: oauth2-get-token${exe_suffix}
   - file: publish-message${exe_suffix}
   - file: repo-log-trace${exe_suffix}
   - file: repo-manifest-diff-projects${exe_suffix}
