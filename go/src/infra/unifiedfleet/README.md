@@ -22,6 +22,12 @@ luci-auth login -scopes "https://www.googleapis.com/auth/cloud-platform https://
 ```
 to setup local auth for the service.
 
+You might need to run
+```
+gcloud auth application-default login
+```
+for PubSub permissions.
+
 ## Debugging UFS service using VSCode
 
 If you're using VSCode, you can attach to your locally running service through
