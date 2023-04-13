@@ -1,4 +1,4 @@
-// Copyright 2022 All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,9 @@ import (
 	"go.chromium.org/luci/common/logging"
 )
 
-// createPubSubTopicClient returns back an instance of a Pub/Sub client for the
+// CreatePubSubTopicClient returns back an instance of a Pub/Sub client for the
 // given target.
-func createPubSubTopicClient(ctx context.Context, topicID string) (*pubsub.Topic, error) {
+func CreatePubSubTopicClient(ctx context.Context, topicID string) (*pubsub.Topic, error) {
 	logging.Debugf(ctx, "pubsub_stream: Creating topic %s for pubsub publishing.", topicID)
 	// Create client for Pub/Sub publishing.
 	client := external.GetPubSub(ctx)
@@ -46,7 +46,7 @@ func createPubSubTopicClient(ctx context.Context, topicID string) (*pubsub.Topic
 // publish wraps all the steps required to send a message to a Pub/Sub topic.
 func publish(ctx context.Context, topicId string, msgs [][]byte) error {
 	logging.Debugf(ctx, "pubsub_stream: attempting to publish %d messages.", len(msgs))
-	topic, err := createPubSubTopicClient(ctx, topicId)
+	topic, err := CreatePubSubTopicClient(ctx, topicId)
 	if err != nil {
 		return err
 	}

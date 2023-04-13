@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@ import (
 
 	api "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/acl"
+	"infra/unifiedfleet/app/untrusted"
 )
 
 // InstallServices installs ...
@@ -41,6 +42,7 @@ func InstallHandlers(r *router.Router, mc router.MiddlewareChain) {
 		next(ctx)
 	})
 	r.POST("/pubsub/hart", mc, HaRTPushHandler)
+	r.POST(untrusted.VerifierEndpoint, mc, untrusted.DeploymentVerifier)
 }
 
 // checkAccess verifies that the request is from an authorized user.
