@@ -33,13 +33,13 @@ func cmdParse() *subcommands.Command {
 			The format of its contents correspond to the base name.
 
 			The output format is JSON like below:
-      {
+			 {
 				// The content of file_1 is converted to chrome.dir_meta.Metadata protobuf
 				// in JSON format.
 				"file_1":{"json":{"monorail":{"component":"Internals\u003eNetwork\u003eDataProxy"}}},
 				// dirmd has issue parsing the file.
 				"file_2":{"error":"file_2 not exist"},
-			}
+			 }
 
 			If parsing data from stdin, by default the content should be in DIR_METADATA format.
 			Parsing content in OWNERS format, please specify the format, like "dirmd parse -format owners".
