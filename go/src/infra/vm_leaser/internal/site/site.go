@@ -7,7 +7,7 @@ package site
 // LocalVMLeaserServiceEndpoint is the local endpoint for VM Leaser.
 const LocalVMLeaserServiceEndpoint = "127.0.0.1:50051"
 
-// StagingVMLeaserServiceEndpoint is the st cloud project for VM Leaser.
+// StagingVMLeaserServiceEndpoint is the staging cloud project for VM Leaser.
 const StagingVMLeaserServiceEndpoint = "staging.vmleaser.api.cr.dev:443"
 
 // TODO(b/266128274): Replace endpoint with the deployed prod endpoint.
