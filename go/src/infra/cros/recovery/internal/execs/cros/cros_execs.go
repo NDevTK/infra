@@ -49,11 +49,6 @@ func sshExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err := cros.WaitUntilSSHable(ctx, info.GetExecTimeout(), cros.SSHRetryInterval, run, info.NewLogger()); err != nil {
 		return errors.Annotate(err, "ssh %q:", deviceType).Err()
 	}
-	if uptime, err := cros.Uptime(ctx, run); err != nil {
-		log.Debugf(ctx, "Fail to receive uptime: %s", err)
-	} else {
-		metrics.DefaultActionAddObservations(ctx, metrics.NewInt64Observation("uptime", int64(uptime.Seconds())))
-	}
 	return nil
 }
 
