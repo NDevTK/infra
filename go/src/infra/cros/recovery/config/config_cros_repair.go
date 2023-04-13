@@ -2463,6 +2463,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_install_in_recovery_mode",
 			ExecExtraArgs: []string{
+				"badblocks_mode:not",
 				"run_custom_commands:true",
 				"boot_timeout:480",
 				"boot_interval:10",
@@ -2481,6 +2482,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_install_in_recovery_mode",
 			ExecExtraArgs: []string{
+				"badblocks_mode:not",
 				"run_custom_commands:true",
 				"boot_timeout:480",
 				"boot_interval:10",
@@ -2499,6 +2501,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_install_in_recovery_mode",
 			ExecExtraArgs: []string{
+				"badblocks_mode:not",
 				"run_custom_commands:true",
 				"boot_timeout:480",
 				"boot_interval:10",
