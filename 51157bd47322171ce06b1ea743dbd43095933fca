@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7102bb43_e6426b17",
+        "filename": "build/packages/builder-health-indicators.yaml",
+        "patchSetId": 11
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2023-04-13T20:39:38Z",
+      "side": 1,
+      "message": "`generate` is not a very distinguished binary name (which is what go build will call it)",
+      "revId": "51157bd47322171ce06b1ea743dbd43095933fca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8c49156c_0f9d84e3",
+        "filename": "go/src/infra/builder_health_indicators/cmd/generate/generate.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2023-04-13T20:39:38Z",
+      "side": 1,
+      "message": "wow, I haven\u0027t seen `println` used... ever. Does it still work? This was an accidental API from before Go v1.\n\nMaybe fmt.Println instead?\n\nWe can integrate the luciexe bits in a future CL, but lets also chat a bit too",
+      "revId": "51157bd47322171ce06b1ea743dbd43095933fca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
