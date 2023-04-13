@@ -1318,6 +1318,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     payload = json.loads(tasks[0].payload)
     self.assertDictEqual({'Code-Coverage': -1}, payload['data']['labels'])
     self.assertTrue('50%' in payload['data']['message'])
+    self.assertTrue('clank' in payload['cohorts_matched'])
+    self.assertTrue('clank' in payload['cohorts_violated'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -1530,6 +1532,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(1, len(tasks))
     payload = json.loads(tasks[0].payload)
     self.assertDictEqual({'Code-Coverage': +1}, payload['data']['labels'])
+    self.assertTrue('clank' in payload['cohorts_matched'])
+    self.assertFalse('clank' in payload['cohorts_violated'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -1631,6 +1635,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(1, len(tasks))
     payload = json.loads(tasks[0].payload)
     self.assertDictEqual({'Code-Coverage': +1}, payload['data']['labels'])
+    self.assertTrue('clank' in payload['cohorts_matched'])
+    self.assertFalse('clank' in payload['cohorts_violated'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -1726,6 +1732,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     payload = json.loads(tasks[0].payload)
     self.assertDictEqual({'Code-Coverage': -1}, payload['data']['labels'])
     self.assertTrue('50%' in payload['data']['message'])
+    self.assertTrue('clank' in payload['cohorts_matched'])
+    self.assertTrue('clank' in payload['cohorts_violated'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -2014,6 +2022,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(1, len(tasks))
     payload = json.loads(tasks[0].payload)
     self.assertDictEqual({'Code-Coverage': +1}, payload['data']['labels'])
+    self.assertFalse('clank' in payload['cohorts_matched'])
+    self.assertFalse('clank' in payload['cohorts_violated'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -2116,6 +2126,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(1, len(tasks))
     payload = json.loads(tasks[0].payload)
     self.assertDictEqual({'Code-Coverage': +1}, payload['data']['labels'])
+    self.assertTrue('clank' in payload['cohorts_matched'])
+    self.assertFalse('clank' in payload['cohorts_violated'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -2137,7 +2149,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                 'clank': {
                     'monitored_authors': ['john'],
                     'monitored_directories': ['//dir'],
-                    'monitored_file_types': ['.cc']
+                    'monitored_file_types': ['.java']
                 }
             },
             'block_low_coverage_changes_projects': ['chromium/src']
@@ -2212,12 +2224,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         change=138000,
         patchset=4)
     self.assertEqual(blocking_entity.blocking_status,
-                     BlockingStatus.VERDICT_BLOCK)
+                     BlockingStatus.VERDICT_NOT_BLOCK)
     tasks = self.taskqueue_stub.get_filtered_tasks(
         queue_names='postreview-request-queue')
     self.assertEqual(1, len(tasks))
     payload = json.loads(tasks[0].payload)
-    self.assertDictEqual({'Code-Coverage': -1}, payload['data']['labels'])
+    self.assertDictEqual({'Code-Coverage': +1}, payload['data']['labels'])
+    self.assertTrue('clank' in payload['cohorts_matched'])
+    self.assertFalse('clank' in payload['cohorts_violated'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -2320,6 +2334,8 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(1, len(tasks))
     payload = json.loads(tasks[0].payload)
     self.assertDictEqual({'Code-Coverage': +1}, payload['data']['labels'])
+    self.assertTrue('clank' in payload['cohorts_matched'])
+    self.assertFalse('clank' in payload['cohorts_violated'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -2399,6 +2415,132 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     tasks = self.taskqueue_stub.get_filtered_tasks(
         queue_names='postreview-request-queue')
     self.assertEqual(0, len(tasks))
+
+  # This test tests for scenario where a CL makes changes which fall under
+  # multiple cohorts, out of which only for some coverage requirement may
+  # be getting violated.
+  @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
+  @mock.patch.object(prpc_client, 'service_account_credentials')
+  @mock.patch.object(prpc_client, 'Client')
+  @mock.patch.object(code_coverage_util.FinditHttpClient, 'Post')
+  @mock.patch.object(utils, 'GetFileContentFromGs')
+  @mock.patch.object(code_coverage_util, 'FetchChangeDetails')
+  @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
+  @mock.patch.object(process_coverage, '_GetValidatedData')
+  @mock.patch.object(process_coverage, 'GetV2Build')
+  # pylint: disable=line-too-long
+  def testLowCoverageBlocking_multipleCohorts_taskPayloadCreatedCorrectly(
+      self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
+      mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
+      mock_buildbucket_client, *_):
+    self.UpdateUnitTestConfigSettings(
+        'code_coverage_settings', {
+            'allowed_builders': [
+                'chromium/try/android-nougat-x86-rel',
+                'chromium/try/android-pie-x86-rel',
+            ],
+            'block_low_coverage_changes': {
+                'clank': {
+                    'monitored_authors': ['john'],
+                    'monitored_directories': ['//dir1']
+                },
+                'ios': {
+                    'monitored_directories': ['//dir2']
+                }
+            },
+            'block_low_coverage_changes_projects': ['chromium/src']
+        })
+    # Mock buildbucket v2 API.
+    build = mock.Mock()
+    build.status = common_pb2.Status.SUCCESS
+    build.builder.project = 'chromium'
+    build.builder.bucket = 'try'
+    build.builder.builder = 'android-nougat-x86-rel'
+    build.output.properties.items.return_value = [
+        ('coverage_gs_bucket', 'code-coverage-data'),
+        ('coverage_metadata_gs_paths', [
+            'presubmit/chromium-review.googlesource.com/138000/4/try/'
+            'android-nougat-x86-rel/123456789/metadata'
+        ]), ('mimic_builder_names', ['android-nougat-x86-rel'])
+    ]
+    build.input.gerrit_changes = [
+        mock.Mock(
+            host='chromium-review.googlesource.com',
+            project='chromium/src',
+            change=138000,
+            patchset=4)
+    ]
+    mocked_get_build.return_value = build
+    # Mock get validated data from cloud storage.
+    # coverage is low only for clank changes, and not for ios
+    coverage_data = {
+        'dirs': None,
+        'files': [{
+            'path':
+                '//dir1/myclankfile.cc',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 10,
+            }, {
+                'count': 0,
+                'first': 11,
+                'last': 100,
+            }],
+        }, {
+            'path': '//dir2/myiosfile.cc',
+            'lines': [{
+                'count': 100,
+                'first': 1,
+                'last': 100,
+            }],
+        }],
+        'summaries': None,
+        'components': None,
+    }
+    mocked_get_validated_data.return_value = coverage_data
+    inc_percentages = [
+        CoveragePercentage(
+            path='//dir1/myclankfile.cc', total_lines=90, covered_lines=9),
+        CoveragePercentage(
+            path='//dir2/myiosfile.cc', total_lines=100, covered_lines=100)
+    ]
+    mocked_inc_percentages.return_value = inc_percentages
+    # One coverage build, and it completed successfully
+    mock_buildbucket_client.return_value.SearchBuilds.return_value = (
+        builds_service_pb2.SearchBuildsResponse(builds=[
+            build_pb2.Build(
+                builder=builder_common_pb2.BuilderID(
+                    builder='android-nougat-x86-rel'),
+                status=common_pb2.Status.SUCCESS)
+        ]))
+    mocked_fetch_change_details.return_value = {
+        'owner': {
+            'email': 'john@chromium.org'
+        }
+    }
+    mocked_get_file_content.return_value = json.dumps(
+        {'john@chromium.org': 'john@google.com'})
+
+    request_url = '/coverage/task/process-data/build/123456789'
+    self.test_app.post(request_url)
+
+    blocking_entity = LowCoverageBlocking.Get(
+        server_host='chromium-review.googlesource.com',
+        change=138000,
+        patchset=4)
+    self.assertEqual(blocking_entity.blocking_status,
+                     BlockingStatus.VERDICT_BLOCK)
+    tasks = self.taskqueue_stub.get_filtered_tasks(
+        queue_names='postreview-request-queue')
+    self.assertEqual(1, len(tasks))
+    payload = json.loads(tasks[0].payload)
+    self.assertDictEqual({'Code-Coverage': -1}, payload['data']['labels'])
+    self.assertTrue('50%' in payload['data']['message'])
+    self.assertTrue('ios' in payload['cohorts_matched'])
+    self.assertTrue('clank' in payload['cohorts_matched'])
+    self.assertFalse('ios' in payload['cohorts_violated'])
+    self.assertTrue('clank' in payload['cohorts_violated'])
 
   @mock.patch.object(process_coverage.ProcessCodeCoverageData,
                      '_FetchAndSaveFileIfNecessary')

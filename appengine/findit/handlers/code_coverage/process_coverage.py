@@ -108,7 +108,7 @@ def _IsAuthorInAllowlistForBlocking(config, author_email):
   such allowlist, returns True for all googlers.
   """
   if not author_email.endswith("@google.com"):
-    return
+    return False
   author = author_email[:author_email.find("@")]
   blocked_authors = config.get('monitored_authors', [])
   if not blocked_authors:
@@ -674,21 +674,30 @@ class ProcessCodeCoverageData(BaseHandler):
       f.get_result()
 
   def _GetLowCoverageFiles(self, cohort, config, entity):
+    """Returns a list of low coverage files as per the configs.
+
+    Also returns a boolean, indicating if any of the files matched the
+    monitored directories scope of the cohort. If the low coverage
+    file list is non-empty, this is guaranteed to be True. This
+    is done to enable cohort based reporting."""
     low_coverage_files = []
+    is_cohort_dir_match = False
     for inc_metrics in entity.incremental_percentages:
-      if not _IsFileTypeAllowedForBlocking(config, inc_metrics.path):
-        logging.info("%s is not of allowed file type for cohort %s",
-                     inc_metrics.path, cohort)
-        continue
       if not _IsFileInAllowlistForBlocking(config, inc_metrics.path):
         logging.info("%s is not in allowed dirs for cohort %s",
                      inc_metrics.path, cohort)
         continue
+      else:
+        is_cohort_dir_match = True
       # Do not block because of test/main files
       if re.match(utils.TEST_FILE_REGEX, inc_metrics.path) or re.match(
           utils.MAIN_FILE_REGEX, inc_metrics.path):
         logging.info("%s is a test/main file for cohort %s", inc_metrics.path,
                      cohort)
+        continue
+      if not _IsFileTypeAllowedForBlocking(config, inc_metrics.path):
+        logging.info("%s is not of allowed file type for cohort %s",
+                     inc_metrics.path, cohort)
         continue
       if not _HaveEnoughLinesChangedForBlocking(config, inc_metrics):
         logging.info("%s doesn't have enough lines changed for cohort %s",
@@ -703,7 +712,7 @@ class ProcessCodeCoverageData(BaseHandler):
             logging.info("%s has low absolute coverate too for cohort %s",
                          inc_metrics.path, cohort)
             low_coverage_files.append(inc_metrics.path)
-    return low_coverage_files
+    return low_coverage_files, is_cohort_dir_match
 
   # TODO(crbug/1412897): Cache this
   def _GetChromiumToGooglerMapping(self):
@@ -728,6 +737,8 @@ class ProcessCodeCoverageData(BaseHandler):
         logging.info("Bypassing the check as %d is a revert CL", patch.change)
         return
       low_coverage_threshold_with_violators = {}
+      cohorts_matched = []
+      cohorts_violated = []
       any_config_author_match = False
       for cohort, config in waterfall_config.GetCodeCoverageSettings().get(
           'block_low_coverage_changes', {}).items():
@@ -741,12 +752,16 @@ class ProcessCodeCoverageData(BaseHandler):
           continue
         any_config_author_match = True
         # Block CL only if some files have low coverage
-        low_coverage_files = self._GetLowCoverageFiles(cohort, config, entity)
+        low_coverage_files, is_cohort_dir_match = self._GetLowCoverageFiles(
+            cohort, config, entity)
         if low_coverage_files:
           low_coverage_threshold_with_violators[config.get(
               'trigger_threshold',
               _DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING
           )] = low_coverage_files
+          cohorts_violated.append(cohort)
+        if is_cohort_dir_match:
+          cohorts_matched.append(cohort)
 
       @ndb.transactional
       def _UpdateBlockingStatus(status):
@@ -757,7 +772,7 @@ class ProcessCodeCoverageData(BaseHandler):
         blocking_entity.blocking_status = status
         blocking_entity.put()
 
-      def _PostReviewToGerrit(data):
+      def _PostReviewToGerrit(data, cohorts_matched, cohorts_violated):
         taskqueue.add(
             name='%s-%d-%d' %
             (patch.host.replace('.', '_'), patch.change, patch.patchset),
@@ -767,7 +782,9 @@ class ProcessCodeCoverageData(BaseHandler):
                 'host': patch.host,
                 'change': patch.change,
                 'patchset': patch.patchset,
-                'data': data
+                'data': data,
+                'cohorts_matched': cohorts_matched,
+                'cohorts_violated': cohorts_violated
             }),
             url='/coverage/task/low-coverage-blocking')
 
@@ -800,7 +817,7 @@ class ProcessCodeCoverageData(BaseHandler):
         logging.info(('Adding CodeCoverage-1 label for '
                       'project %s, change %d,  patchset %d'), patch.project,
                      patch.change, patch.patchset)
-        _PostReviewToGerrit(data)
+        _PostReviewToGerrit(data, cohorts_matched, cohorts_violated)
       # Add a positive Code Coverage label only for authors in the allowlist.
       # This is done to reduce noise.
       elif any_config_author_match:
@@ -814,7 +831,7 @@ class ProcessCodeCoverageData(BaseHandler):
         logging.info(('Adding CodeCoverage+1 label for '
                       'project %s, change %d,  patchset %d'), patch.project,
                      patch.change, patch.patchset)
-        _PostReviewToGerrit(data)
+        _PostReviewToGerrit(data, cohorts_matched, cohorts_violated)
 
   @ndb.transactional
   def _UpdateBlockingLowCoverageTracker(self,
