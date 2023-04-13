@@ -149,7 +149,7 @@ def SignUrl(bucket, object_id):
     cache_key = 'gcs-object-url-%s' % object_id
     cached = memcache.get(key=cache_key)
     if cached is not None:
-      return cached
+      return six.ensure_str(cached)
 
     if IS_DEV_APPSERVER:
       attachment_url = '/_ah/gcs/%s%s' % (bucket, object_id)
