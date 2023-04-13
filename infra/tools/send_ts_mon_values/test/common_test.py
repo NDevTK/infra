@@ -7,6 +7,8 @@ import base64
 import os
 import unittest
 
+import six
+
 from infra_libs import ts_mon
 from infra.tools.send_ts_mon_values import common
 
@@ -80,7 +82,11 @@ class JsonParsingTest(unittest.TestCase):
   def test_json_parsing_base64(self):
     json_str = ('{"name": "testname", "value": 13, '
                 '"myfield": "mystring", "otherfield": 42}')
+    if six.PY3:
+      json_str = json_str.encode('utf-8')  # pragma: no cover
     json_base64 = base64.b64encode(json_str)
+    if six.PY3:
+      json_base64 = json_base64.decode('utf-8')  # pragma: no cover
     md = common.json_to_metric_data(json_base64)
     self.assertIsInstance(md.name, str)
     self.assertEquals(md.name, "testname")

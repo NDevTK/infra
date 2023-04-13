@@ -12,6 +12,8 @@ import logging
 import json
 import textwrap
 
+import six
+
 from infra_libs import ts_mon
 import infra_libs.logs
 
@@ -22,22 +24,22 @@ MetricData = collections.namedtuple('MetricData',
 PointData = collections.namedtuple('PointData', ('value', 'fields'))
 
 FIELD_TYPE_MAP = {
-  str: ts_mon.StringField,
-  unicode: ts_mon.StringField,
-  int: ts_mon.IntegerField,
-  long: ts_mon.IntegerField,
-  bool: ts_mon.BooleanField,
+    six.binary_type: ts_mon.StringField,
+    six.text_type: ts_mon.StringField,
+    bool: ts_mon.BooleanField,
 }
+FIELD_TYPE_MAP.update({t: ts_mon.IntegerField for t in six.integer_types})
 
 
 def get_arguments(argv):
   parser = argparse.ArgumentParser(
-    formatter_class=argparse.RawDescriptionHelpFormatter,
-    description=textwrap.dedent("""
+      formatter_class=argparse.RawDescriptionHelpFormatter,
+      description=textwrap.dedent("""
     CLI to send data via ts_mon from outside infra.git.
     Example invocation:
 
-    run.py infra.tools.send_ts_mon_values \\
+    vpython3 -vpython-spec infra/tools/send_ts_mon_values/standalone.vpython3 \\
+        -m infra.tools.send_ts_mon_values \\
         --verbose
         --ts-mon-endpoint=file:///tmp/send_ts_mon_value.log \\
         --ts-mon-target-type task \\
@@ -163,7 +165,8 @@ def set_metrics(json_strs, metric_type):
   decoded_metrics = [json_to_metric_data(s) for s in json_strs]
   grouped_metrics = group_metrics(decoded_metrics)
   collapsed_metrics = [
-      collapse_metrics(m) for m in grouped_metrics.itervalues()]
+      collapse_metrics(m) for m in six.itervalues(grouped_metrics)
+  ]
   return [set_metric(md, metric_type) for md in collapsed_metrics if md]
 
 
@@ -217,7 +220,7 @@ def collapse_metrics(metrics):
 
   def get_fields_set(point):
     if point.fields:
-      return set(point.fields.iterkeys())
+      return set(six.iterkeys(point.fields))
     else:
       return set()
 
@@ -246,7 +249,7 @@ def set_metric(metric_data, metric_type):
   field_spec = []
   fields = metric_data.points[0].fields
   if fields is not None:
-    for name, value in metric_data.points[0].fields.iteritems():
+    for name, value in six.iteritems(metric_data.points[0].fields):
       field_ctor = FIELD_TYPE_MAP[type(value)]
       field_spec.append(field_ctor(name))
 
