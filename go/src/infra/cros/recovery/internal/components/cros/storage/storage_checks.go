@@ -393,6 +393,7 @@ func AuditStorageSMART(ctx context.Context, r components.Runner, storage *tlw.St
 		dut.State = dutstate.NeedsReplacement
 		return errors.Reason("audit storage smart: hardware state need replacement").Err()
 	default:
+		storage.State = convertedHardwareState
 		log.Debugf(ctx, "New storage state: %q", convertedHardwareState)
 		return nil
 	}
