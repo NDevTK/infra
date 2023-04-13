@@ -5,7 +5,7 @@
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 PROJECT_PATH := $(patsubst %/,%,$(dir $(MKFILE_PATH)))
 APP_PATH := $(PROJECT_PATH)
-GCP_PROJECT := chrome-fleet-vm-leaser-cr-exp
+GCP_PROJECT := chrome-fleet-vm-leaser-dev
 GCP_REGION := us-west1
 
 define help_message
@@ -70,10 +70,18 @@ push-image: build-docker
 # Run Docker service locally
 .PHONY: dev-docker
 dev-docker: build-docker
-	docker run --rm --interactive --tty \
-	--publish=50051:50051 \
-	--env=PORT=50051 \
-	gcr.io/${GCP_PROJECT}/vm-leaser-service:latest
+	docker run --rm --interactive --tty --user $(id -u):$(id -g) \
+	-p 50051:50051 \
+	-p 8800:8800 \
+	-p 8900:8900 \
+	-v ~/.config/chrome_infra/auth:/tokens \
+	gcr.io/${GCP_PROJECT}/vm-leaser-service:latest \
+		-cloud-project ${GCP_PROJECT} \
+		-auth-service-host="chrome-infra-auth-dev.appspot.com" \
+		-grpc-addr :50051 \
+		-http-addr :8800 \
+		-admin-addr :8900 \
+		-token-cache-dir /tokens
 
 # Deploy Docker service
 .PHONY: deploy-docker

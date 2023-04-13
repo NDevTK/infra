@@ -1,4 +1,4 @@
-// Copyright 2023 The ChromiumOS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	// TODO(justinsuen): Temporarily setting the auth group to CFS. Change to VM
-	// Lab group when it is known.
-	VMLabGroup = "mdb/chrome-fleet-software-team"
+	// TODO(justinsuen): Temporarily setting the auth group. Change to VM Lab
+	// group when it is known.
+	VMLabGroup = "mdb/peep-fleet-infra-sw"
 )
 
 var RPCAccessInterceptor = rpcacl.Interceptor(rpcacl.Map{

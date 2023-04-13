@@ -1,4 +1,4 @@
-// Copyright 2023 The ChromiumOS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,20 +15,8 @@ func (r *LeaseVMRequest) Validate() error {
 	if hostReqs == nil {
 		return status.Errorf(codes.InvalidArgument, "VM requirements must be set.")
 	}
-	if hostReqs.GetGceImage() == "" {
-		return status.Errorf(codes.InvalidArgument, "GCE image must be set.")
-	}
-	if hostReqs.GetGceRegion() == "" {
-		return status.Errorf(codes.InvalidArgument, "GCE region (zone) must be set.")
-	}
-	if hostReqs.GetGceProject() == "" {
-		return status.Errorf(codes.InvalidArgument, "GCE project must be set.")
-	}
-	if hostReqs.GetGceMachineType() == "" {
-		return status.Errorf(codes.InvalidArgument, "GCE machine type must be set.")
-	}
-	if hostReqs.GetGceDiskSize() == 0 {
-		return status.Errorf(codes.InvalidArgument, "GCE machine disk size must be set (in GB).")
+	if err := hostReqs.Validate(); err != nil {
+		return err
 	}
 	return nil
 }
@@ -43,6 +31,26 @@ func (r *ReleaseVMRequest) Validate() error {
 	}
 	if r.GetGceRegion() == "" {
 		return status.Errorf(codes.InvalidArgument, "GCE region (zone) must be set.")
+	}
+	return nil
+}
+
+// Validate validates the VMRequirements.
+func (r *VMRequirements) Validate() error {
+	if r.GetGceImage() == "" {
+		return status.Errorf(codes.InvalidArgument, "GCE image must be set.")
+	}
+	if r.GetGceRegion() == "" {
+		return status.Errorf(codes.InvalidArgument, "GCE region (zone) must be set.")
+	}
+	if r.GetGceProject() == "" {
+		return status.Errorf(codes.InvalidArgument, "GCE project must be set.")
+	}
+	if r.GetGceMachineType() == "" {
+		return status.Errorf(codes.InvalidArgument, "GCE machine type must be set.")
+	}
+	if r.GetGceDiskSize() == 0 {
+		return status.Errorf(codes.InvalidArgument, "GCE machine disk size must be set (in GB).")
 	}
 	return nil
 }

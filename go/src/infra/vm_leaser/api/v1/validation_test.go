@@ -1,4 +1,4 @@
-// Copyright 2023 The ChromiumOS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -136,6 +136,77 @@ func TestReleaseVMValidate(t *testing.T) {
 			err := req.Validate()
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "GCE region (zone) must be set.")
+		})
+	})
+}
+
+func TestVMRequirementsValidate(t *testing.T) {
+	Convey("VMRequirements Validate", t, func() {
+		Convey("Valid request - successful path", func() {
+			req := &VMRequirements{
+				GceImage:       "test-image",
+				GceRegion:      "test-region",
+				GceProject:     "test-project",
+				GceMachineType: "test-machine-type",
+				GceDiskSize:    100,
+			}
+			err := req.Validate()
+			So(err, ShouldBeNil)
+		})
+		Convey("Invalid request - missing image", func() {
+			req := &VMRequirements{
+				GceRegion:      "test-region",
+				GceProject:     "test-project",
+				GceMachineType: "test-machine-type",
+				GceDiskSize:    100,
+			}
+			err := req.Validate()
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "GCE image must be set.")
+		})
+		Convey("Invalid request - missing region", func() {
+			req := &VMRequirements{
+				GceImage:       "test-image",
+				GceProject:     "test-project",
+				GceMachineType: "test-machine-type",
+				GceDiskSize:    100,
+			}
+			err := req.Validate()
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "GCE region (zone) must be set.")
+		})
+		Convey("Invalid request - missing project", func() {
+			req := &VMRequirements{
+				GceImage:       "test-image",
+				GceRegion:      "test-region",
+				GceMachineType: "test-machine-type",
+				GceDiskSize:    100,
+			}
+			err := req.Validate()
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "GCE project must be set.")
+		})
+		Convey("Invalid request - missing machine type", func() {
+			req := &VMRequirements{
+				GceImage:    "test-image",
+				GceRegion:   "test-region",
+				GceProject:  "test-project",
+				GceDiskSize: 100,
+			}
+			err := req.Validate()
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "GCE machine type must be set.")
+		})
+		Convey("Invalid request - missing disk size", func() {
+			req := &VMRequirements{
+				GceImage:       "test-image",
+				GceRegion:      "test-region",
+				GceProject:     "test-project",
+				GceMachineType: "test-machine-type",
+			}
+			err := req.Validate()
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "GCE machine disk size must be set (in GB).")
 		})
 	})
 }
