@@ -21,6 +21,9 @@ import (
 // VerifierEndpoint is the POST endpoint for use by pubsub service.
 const VerifierEndpoint = "/pubsub/verify"
 
+// verifierSubscription is the name of the subscription
+const verifierSubscription = "ufs-verify"
+
 // EnsureVerifierSubscription ensures that the topic for verification is created
 // and the subscription is assigned.
 func EnsureVerifierSubscription(ctx context.Context) error {
@@ -28,14 +31,24 @@ func EnsureVerifierSubscription(ctx context.Context) error {
 	topic, err := controller.CreatePubSubTopicClient(ctx, "verify")
 	if err != nil {
 		logging.Errorf(ctx, "Cannot create topic. %v", err)
-		return err
+		return nil
 	}
 	client := external.GetPubSub(ctx)
 	if client == nil {
 		logging.Errorf(ctx, "Cannot get pubsub client")
 		return nil
 	}
-	_, err = client.CreateSubscription(ctx, "ufs-verify", pubsub.SubscriptionConfig{
+	sub := client.Subscription(verifierSubscription)
+	exists, err := sub.Exists(ctx)
+	if err != nil {
+		logging.Errorf(ctx, "Can't figure out if %s subscription exists. %v", verifierSubscription, err)
+		return nil
+	}
+	// Don't create one if it exists
+	if exists {
+		return nil
+	}
+	_, err = client.CreateSubscription(ctx, verifierSubscription, pubsub.SubscriptionConfig{
 		Topic:       topic,
 		AckDeadline: 600 * time.Second,
 		PushConfig: pubsub.PushConfig{
