@@ -2,13 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-runtime: python27
-api_version: 1
-threadsafe: no
+runtime: python39
+app_engine_apis: true
+
+entrypoint: gunicorn -b :$PORT --timeout 60 --workers 8 --threads 1 main:app
 
 default_expiration: "10d"
 
-instance_class: F4
+instance_class: F4_1G
 automatic_scaling:
   min_idle_instances: ${MIN_IDLE_INSTANCES}
   max_instances: ${MAX_INSTANCES}
@@ -84,26 +85,5 @@ inbound_services:
 - mail_bounce
 - warmup
 
-libraries:
-- name: endpoints
-  version: "1.0"
-- name: grpcio
-  version: "1.0.0"
-- name: markupsafe
-  version: "0.23"
-- name: MySQLdb
-  version: "latest"
-- name: ssl # needed for google.auth.transport and GAE_USE_SOCKETS_HTTPLIB
-  version: "2.7.11"
-
 includes:
 - gae_ts_mon
-
-skip_files:
-- ^(.*/)?#.*#$
-- ^(.*/)?.*~$
-- ^(.*/)?.*\.py[co]$
-- ^(.*/)?.*/RCS/.*$
-- ^(.*/)?\..*$
-- node_modules/
-- venv/
