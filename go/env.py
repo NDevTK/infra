@@ -5,7 +5,7 @@
 """Can be used to point environment variable to hermetic Go toolset.
 
 Usage (on linux and mac):
-$ eval `./env.py`
+$ eval "`./env.py`"
 $ go version
 
 Or it can be used to wrap a command:
@@ -101,7 +101,7 @@ def main():
       unset_env_var(key)
 
   # VIRTUAL_ENV is added by the vpython wrapper. It usually *does not* exist
-  # in os.environ of the outer shell that executes eval `./env.py`. Since we
+  # in os.environ of the outer shell that executes eval "`./env.py`". Since we
   # are about to replace the native python in PATH with virtualenv's one, we
   # must also make sure the new environment has VIRTUAL_ENV set. Otherwise
   # some virtualenv-aware tools (like gcloud) get confused.
@@ -110,7 +110,7 @@ def main():
   # vpython virtualenv directory, and it may eventually be garbage collected
   # (while the user is still inside a shell that references it). We assume it
   # is rare, and the users can manually recover (by reexecuting env.py). This
-  # won't be happening on bots, since they don't use eval `./env.py`.
+  # won't be happening on bots, since they don't use eval "`./env.py`".
   if 'VIRTUAL_ENV' in old:
     emit_env_var('VIRTUAL_ENV', old['VIRTUAL_ENV'])
 
@@ -119,7 +119,7 @@ def main():
     print()
     print('# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
     print('# WRAP THIS COMMAND IN "eval" TO HAVE AN EFFECT!')
-    print('#    eval `./env.py`')
+    print('#    eval "`./env.py`"')
     print('# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
 
 
