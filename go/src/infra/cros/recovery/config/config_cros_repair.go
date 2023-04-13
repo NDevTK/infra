@@ -197,6 +197,9 @@ func crosRepairActions() map[string]*Action {
 				"Use the badblocks command to audit the storage on the DUT",
 			},
 			ExecName: "cros_audit_storage_bad_blocks",
+			ExecTimeout: &durationpb.Duration{
+				Seconds: 6000,
+			},
 			ExecExtraArgs: []string{
 				"badblocks_mode:auto",
 				"rw_badblocks_timeout:5400",
