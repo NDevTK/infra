@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,4 +25,10 @@ const (
 	// USBDriveReplacedKind is the actionKind for query the
 	// record for DUT's old/replaced USB-drive.
 	USBDriveReplacedKind = "servo_usbdrive_replaced_detection"
+	// BadBlocksROExecutionKind is an actionKind that indicates the RO
+	// badblocks has been executed.
+	BadBlocksROExecutionKind = "backblocks_ro_execution"
+	// BadBlocksRWExecutionKind is an actionKind that indicates the RW
+	// badblocks has been executed.
+	BadBlocksRWExecutionKind = "backblocks_rw_execution"
 )

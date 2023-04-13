@@ -398,30 +398,56 @@ func AuditStorageSMART(ctx context.Context, r components.Runner, storage *tlw.St
 	}
 }
 
-// isItTimeToRunBadBlocksRO determines if it is time to run the RO
-// badblock again on this device.
-func isItTimeToRunBadBlocksRO(ctx context.Context, metrics metrics.Metrics) error {
-	// TODO(b/242584223): complete the implementation of this function using the
-	// information about when the last time RO bad-blocks was run for
-	// this device. This is captured by bug b/242584223. The default
-	// value of 'nil' returned here will cause the badblocks check to
-	// always be run. This does not have any affect on the correctness
-	// of badblocks audit, it just will execute the audit even when it
-	// is not required.
+// isItTimeToRunROBadblocks determines if it is time to run the RO badblock again on this device.
+//
+// A read-only check can be run no more than once every 6 days.
+func isItTimeToRunROBadblocks(ctx context.Context, metric metrics.Metrics, hostname string) error {
+	// RO badblocks should not be run if the previous run was done
+	// less than 6 days ago.
+	if err := isItTimeToRunBadBlocks(ctx, metric, hostname, metrics.BadBlocksROExecutionKind, 6); err != nil {
+		return errors.Annotate(err, "is it time to run ro badblocks").Err()
+	}
+	log.Debugf(ctx, "It is okay to run a read-only check, as the last check was performed a long time ago.")
 	return nil
 }
 
-// isItTimeToRunBadBlocksRW determines if it is time to run the RW
-// badblock again on this device.
-func isItTimeToRunBadBlocksRW(ctx context.Context, metrics metrics.Metrics) error {
-	// TODO(b/242584223): complete the implementation of this function using the
-	// information about when the last time RW bad-blocks was run for
-	// this device. This is captured by bug b/242584223. The default
-	// value of the "not-implemented" error returned here will cause
-	// the badblocks check to not be run. This will be changed once
-	// the logic to check whether it is time to execute the bad blocks
-	// is ready.
-	return errors.Reason("is it time to run bad blocks: not implemented").Err()
+// isItTimeToRunRWBadblocks determines if it is time to run the RW badblock again on this device.
+//
+// A read-write check can be run no more than once every 60 days.
+func isItTimeToRunRWBadblocks(ctx context.Context, metric metrics.Metrics, hostname string) error {
+	// RW badblocks should not be run if the previous run was done
+	// less than 60 days ago.
+	if err := isItTimeToRunBadBlocks(ctx, metric, hostname, metrics.BadBlocksRWExecutionKind, 60); err != nil {
+		return errors.Annotate(err, "is it time to run rw badblocks").Err()
+	}
+	log.Debugf(ctx, "It is okay to run a read-write check, as the last check was performed a long time ago.")
+	return nil
+}
+
+// isItTimeToRunBadBlocks determines whether it is time to execute the badblocks check.
+func isItTimeToRunBadBlocks(ctx context.Context, metric metrics.Metrics, hostname, metricsKind string, days int) error {
+	karteQuery := &metrics.Query{
+		Hostname:   hostname,
+		ActionKind: metricsKind,
+		Limit:      1,
+	}
+	queryRes, err := metric.Search(ctx, karteQuery)
+	if err != nil {
+		return errors.Annotate(err, "is it time to run badblocks").Err()
+	}
+	if len(queryRes.Actions) == 0 {
+		// If no records for a previous badblock execution are
+		// detected, we need to allow execution.
+		log.Debugf(ctx, "Is It Time To Run Badblocks: No match of the metrics kind %q found in karte.", metricsKind)
+		return nil
+	}
+	mostRecentExecutionTime := queryRes.Actions[0].StartTime
+	now := time.Now()
+	nextExecutionTime := mostRecentExecutionTime.AddDate(0, 0, days)
+	if now.After(nextExecutionTime) {
+		return nil
+	}
+	return errors.Reason("is it time to run badblocks: last run was on %v and we need wait %d days before run next one", mostRecentExecutionTime, days).Err()
 }
 
 // AuditMode represents the type of audit mode.
@@ -450,13 +476,29 @@ var badBlockCommands = map[AuditMode]string{
 }
 
 // runBadBlocksCheck executes the badblocks check on device.
-func runBadBlocksCheck(ctx context.Context, run components.Runner, timeout time.Duration, mainStorage string, badBlocksMode AuditMode) (string, error) {
-	if badBlockCommands[badBlocksMode] == "" {
-		return "", errors.Reason("run bad blocks check: unknown badblocks mode %q", badBlocksMode).Err()
+func runBadBlocksCheck(ctx context.Context, mainStorage string, bbArgs *BadBlocksArgs) (string, error) {
+	if badBlockCommands[bbArgs.AuditMode] == "" {
+		return "", errors.Reason("run bad blocks check: unknown badblocks mode %q", bbArgs.AuditMode).Err()
 	}
-	badBlocksCmd := fmt.Sprintf(badBlockCommands[badBlocksMode], mainStorage)
-	log.Debugf(ctx, "Run Bad Blocks Check: executing command %q", badBlocksCmd)
-	cmdResult, err := run(ctx, timeout, badBlocksCmd)
+	badBlocksCmd := fmt.Sprintf(badBlockCommands[bbArgs.AuditMode], mainStorage)
+	// Creating a metric is sufficient to create a record about this
+	// invocation of the badblocks. Further, if the badblocks
+	// invocation is for RW-mode, we need to create Karte records for
+	// RO as we RW kinds following the logic in legacy
+	// repair. Following this, the record for RO-mode is created here,
+	// and that for RW-mode will be created upon checking for RW-mode
+	// below.
+	bbArgs.NewMetric(metrics.BadBlocksROExecutionKind)
+	timeout := bbArgs.TimeoutRO
+	if bbArgs.AuditMode == auditModeRW {
+		timeout = bbArgs.TimeoutRW
+		// For RW-mode, we need to create Karte records for RO as well
+		// as RW modes. The RO-mode record has already been created
+		// above, and now we create that for RW-mode of badblocks.
+		bbArgs.NewMetric(metrics.BadBlocksRWExecutionKind)
+	}
+	log.Debugf(ctx, "Run Bad Blocks Check: executing command %q with timeout : %d", badBlocksCmd, timeout)
+	cmdResult, err := bbArgs.Run(ctx, timeout, badBlocksCmd)
 	if err != nil {
 		return "", errors.Annotate(err, "run bad blocks check").Err()
 	}
@@ -469,15 +511,6 @@ func runBadBlocksCheck(ctx context.Context, run components.Runner, timeout time.
 	return "", nil
 }
 
-// auditModes represents the possible modes for badblocks execution on
-// the DUT.
-var auditModes = map[AuditMode]bool{
-	auditModeAuto: true,
-	auditModeNot:  true,
-	auditModeRW:   true,
-	auditModeRO:   true,
-}
-
 // BadBlocksArgs collects together all the parameters that are
 // applicable for bad blocks execution.
 type BadBlocksArgs struct {
@@ -485,18 +518,24 @@ type BadBlocksArgs struct {
 	Run       components.Runner
 	Storage   *tlw.Storage
 	Dut       *tlw.Dut
+
 	Metrics   metrics.Metrics
+	NewMetric func(kind string) *metrics.Action
+
 	TimeoutRW time.Duration
 	TimeoutRO time.Duration
 }
 
 // CheckBadblocks executes the bad-blocks check on the storage device.
 //
-// It will also mark the DUT for replacement if required.
+// It will also mark the DUT for replacement if required. Any
+// execution of the badblocks command is recorded in Karte using
+// metric kinds backblocks_ro_execution for RO-mode and
+// backblocks_rw_execution for RW-mode check. These Karte metrics are
+// used to decide whether it is time to again run the badblocks
+// command.
 func CheckBadblocks(ctx context.Context, bbArgs *BadBlocksArgs) error {
-	if !auditModes[bbArgs.AuditMode] {
-		errors.Reason("check bad blocks: unknown audit mode %q", bbArgs.AuditMode).Err()
-	}
+	usbBootErr := cros.IsBootedFromExternalStorage(ctx, bbArgs.Run)
 	switch bbArgs.AuditMode {
 	case auditModeNot:
 		// As also mentioned in the comment that introduced this flag,
@@ -510,44 +549,54 @@ func CheckBadblocks(ctx context.Context, bbArgs *BadBlocksArgs) error {
 	case auditModeAuto:
 		// The mode "auto" means that we will determine the
 		// appropriate mode for badblocks ourselves.
-		if err := isItTimeToRunBadBlocksRO(ctx, bbArgs.Metrics); err == nil {
+		log.Debugf(ctx, "Determine if it's time to run a read-only badblocks check...")
+		if err := isItTimeToRunROBadblocks(ctx, bbArgs.Metrics, bbArgs.Dut.Name); err == nil {
 			bbArgs.AuditMode = auditModeRO
 		} else {
-			log.Debugf(ctx, "Check Bad Blocks: error while checking if it is time to run RO badblocks (non-critical): %s.", err)
+			log.Debugf(ctx, "Fail to assign RO mode (non-critical): %s.", err)
 		}
 		// Here we might end up overwriting the AuditMode after also
 		// setting it to "ro" above. This is intentional. The "rw"
 		// badblocks is a stronger check, and if it is the right time
 		// for it, it will supercede any "ro" checks.
-		if err := isItTimeToRunBadBlocksRW(ctx, bbArgs.Metrics); err == nil {
+		log.Debugf(ctx, "Determine if it's time to run a read-write badblocks check...")
+		if usbBootErr != nil {
+			log.Debugf(ctx, "Device is not booted from USB-stick, run RW impossible from the same storage.")
+		} else if err := isItTimeToRunRWBadblocks(ctx, bbArgs.Metrics, bbArgs.Dut.Name); err == nil {
 			bbArgs.AuditMode = auditModeRW
 		} else {
-			log.Debugf(ctx, "Check Bad Blocks: error while checking if it is time to run RW badblocks (non-critical): %s.", err)
+			log.Debugf(ctx, "Fail to assign RW mode (non-critical): %s.", err)
 		}
+		// Check if we finalized audit mode.
+		if bbArgs.AuditMode == auditModeAuto {
+			// The audit mode did not flip to either RO, or RW modes.
+			return nil
+		}
+		log.Debugf(ctx, "Check Bad Blocks: the finalized audit mode is :%q", bbArgs.AuditMode)
+	case auditModeRO:
+		// If user specifies the RO mode, we will accept it as-is and
+		// will execute RO-made down below.
+	case auditModeRW:
+		// If user specifies the RW mode for badblocks, we can execute
+		// it only if the device is booted from external device.
+		if usbBootErr != nil {
+			log.Debugf(ctx, "Device is not booted from USB-stick, run RW impossible from the same storage.")
+			return nil
+		}
+	default:
+		return errors.Reason("check bad blocks: unknown audit mode %q", bbArgs.AuditMode).Err()
 	}
-	log.Debugf(ctx, "Check Bad Blocks: the finalized audit mode is :%q", bbArgs.AuditMode)
 	mainStorage, err := cros.DeviceMainStoragePath(ctx, bbArgs.Run)
 	if err != nil {
 		return errors.Annotate(err, "check bad blocks").Err()
-	}
-	if mainStorage == "" {
+	} else if mainStorage == "" {
 		log.Debugf(ctx, "Check Bad Blocks: path to main storage is empty, hence cannot run any type of badblocks check (non-critical).")
 		// We return without error if the path of main storage device
 		// is empty. This following the logic in legacy repair.
 		return nil
 	}
-	// TODO(b/242570493): We shouldn't have to create a new logger to
-	// pass to IsBootedFromExternalStorage. The method should be able
-	// to obtain the logger from ctx. This will be addressed in
-	// b/242570493. This function currently does not make use of the
-	// logger. Hence we are passing a value of nil. When this bug is
-	// resolve, we will not pass the logger at all.
-	usbBootErr := cros.IsBootedFromExternalStorage(ctx, bbArgs.Run)
-	if usbBootErr != nil {
-		log.Debugf(ctx, "Check Bad Blocks: not booted from USB device, RW badblocks on main storage cannot be done even if selected (non-critical).")
-	}
-	if usbBootErr == nil && bbArgs.AuditMode == auditModeRW {
-		if out, err := runBadBlocksCheck(ctx, bbArgs.Run, bbArgs.TimeoutRW, mainStorage, bbArgs.AuditMode); err != nil {
+	if bbArgs.AuditMode == auditModeRW {
+		if out, err := runBadBlocksCheck(ctx, mainStorage, bbArgs); err != nil {
 			if out != "" {
 				if execs.SSHErrorInternal.In(err) {
 					log.Debugf(ctx, "Check Bad Blocks: RW bad blocks check command returned a negative error code, not setting needs replacement state for storage device.")
@@ -558,14 +607,8 @@ func CheckBadblocks(ctx context.Context, bbArgs *BadBlocksArgs) error {
 			}
 			return errors.Annotate(err, "audit storage badblocks").Err()
 		}
-		// TODO(b/242584223): record this execution of badblocks for RW
-		// as well as RO, since RO badblocks check is subset of RW
-		// badblocks check. This is being tracked in b/242584223. This
-		// does not have any affect on the correctness of badblocks
-		// audit, it will only avoid any unnecessary execution.
-	}
-	if bbArgs.AuditMode == auditModeRO {
-		if out, err := runBadBlocksCheck(ctx, bbArgs.Run, bbArgs.TimeoutRO, mainStorage, bbArgs.AuditMode); err != nil {
+	} else if bbArgs.AuditMode == auditModeRO {
+		if out, err := runBadBlocksCheck(ctx, mainStorage, bbArgs); err != nil {
 			if out != "" {
 				if execs.SSHErrorInternal.In(err) {
 					log.Debugf(ctx, "Check Bad Blocks: RO bad blocks check command returned a negative error code, not setting needs replacement state for storage device.")
@@ -576,10 +619,6 @@ func CheckBadblocks(ctx context.Context, bbArgs *BadBlocksArgs) error {
 			}
 			return errors.Annotate(err, "audit storage badblocks").Err()
 		}
-		// TODO(b/242584223): record this execution of badblocks for
-		// RO. This is being tracked in b/242584223. This does not
-		// have any affect on the correctness of badblocks audit, it
-		// will only avoid any unnecessary execution.
 	}
 	return nil
 }

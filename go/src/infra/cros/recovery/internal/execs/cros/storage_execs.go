@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,6 +41,7 @@ func auditStorageBadblocksExec(ctx context.Context, info *execs.ExecInfo) error 
 		Metrics:   info.GetMetrics(),
 		TimeoutRW: timeoutRW,
 		TimeoutRO: timeoutRO,
+		NewMetric: info.NewMetric,
 	}
 	if err := storage.CheckBadblocks(ctx, &bbArgs); err != nil {
 		return errors.Annotate(err, "audit storage bad blocks").Err()

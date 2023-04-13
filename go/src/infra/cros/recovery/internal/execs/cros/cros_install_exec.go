@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -162,6 +162,7 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 					Metrics:   info.GetMetrics(),
 					TimeoutRW: timeoutRW,
 					TimeoutRO: timeoutRO,
+					NewMetric: info.NewMetric,
 				}
 				if err := storage.CheckBadblocks(ctx, &bbArgs); err != nil {
 					if execs.SSHErrorInternal.In(err) {
