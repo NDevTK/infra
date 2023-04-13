@@ -265,7 +265,7 @@ func isFileSystemWritableExec(ctx context.Context, info *execs.ExecInfo) error {
 	testDirs := args.AsStringSlice(ctx, "paths", []string{"/mnt/stateful_partition", "/var/tmp"})
 	run := info.DefaultRunner()
 	for _, testDir := range testDirs {
-		log.Infof(ctx, "Verify dir %q is writable!")
+		log.Infof(ctx, "Verify dir %q is writable!", testDir)
 		if err := linux.IsPathWritable(ctx, run, testDir); err != nil {
 			info.AddObservation(metrics.NewStringObservation("fail_directory", testDir))
 			return errors.Annotate(err, "is file system writable").Err()

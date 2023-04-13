@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,9 +34,9 @@ func auditBatteryExec(ctx context.Context, info *execs.ExecInfo) error {
 	if hardwareState == tlw.HardwareState_HARDWARE_UNSPECIFIED {
 		return errors.Reason("audit battery: dut battery did not detected or state cannot extracted").Err()
 	}
+	batteryInfo.State = hardwareState
 	if hardwareState == tlw.HardwareState_HARDWARE_NEED_REPLACEMENT {
 		log.Infof(ctx, "Detected issue with battery on the DUT.")
-		batteryInfo.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
 		log.Debugf(ctx, "Audit Battery Exec: setting dut state to %s", string(dutstate.NeedsReplacement))
 		info.GetDut().State = dutstate.NeedsReplacement
 	}
