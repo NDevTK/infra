@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -113,7 +113,8 @@ func deployActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Device is SSHable",
-				"Collect HWID into inventory (allow fail)",
+				// Some model depends on hwid to differentiate firmware target, so we need collect this info before firmware update.
+				"Collect HWID into inventory",
 				"Disable software-controlled write-protect for 'host'",
 				"Disable software-controlled write-protect for 'ec'",
 				"Try to update FW from firmware image with factory mode",
@@ -131,7 +132,8 @@ func deployActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Device is SSHable",
-				"Collect HWID into inventory (allow fail)",
+				// Some model depends on hwid to differentiate firmware target, so we need collect this info before firmware update.
+				"Collect HWID into inventory",
 				"Disable software-controlled write-protect for 'host'",
 				"Disable software-controlled write-protect for 'ec'",
 				"Try to update FW from firmware image with factory mode",
@@ -335,8 +337,10 @@ func deployActions() map[string]*Action {
 				"Updating device info in inventory.",
 			},
 			Dependencies: []string{
-				"Read HWID from DUT",
-				"Read HWID from DUT (Satlab)",
+				// Collect HWID may not get tiggered before this if a DUT already have DEV signed firmware.
+				// Invoke it here to ensure we have fwid updated, and the action has RunControl_RUN_ONCE so
+				// the actual exectution won't happen twice.
+				"Collect HWID into inventory",
 				"Read DUT serial-number from DUT",
 				"Read DUT serial-number from DUT (Satlab)",
 				"Read device SKU",
@@ -376,20 +380,16 @@ func deployActions() map[string]*Action {
 			},
 			ExecName: "sample_fail",
 		},
-		//TODO(b:264478092): Merge this action with normal hwid collect action.
-		"Collect HWID into inventory (allow fail)": {
+		"Collect HWID into inventory": {
 			Docs: []string{
-				"Collect DUT hwid and update it into inventory info during middle of deployment as we may need it during update firmware step.",
-			},
-			Conditions: []string{
-				"Device is SSHable",
+				"Collect DUT hwid and update it into inventory info.",
 			},
 			Dependencies: []string{
 				"Read HWID from DUT",
 				"Read HWID from DUT (Satlab)",
 			},
-			ExecName:               "sample_pass",
-			AllowFailAfterRecovery: true,
+			RunControl: RunControl_RUN_ONCE,
+			ExecName:   "sample_pass",
 		},
 	}
 }
