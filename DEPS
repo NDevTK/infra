@@ -226,6 +226,13 @@ hooks = [
       "--upgrade",
     ],
   },
+  {
+    "pattern": ".",
+    "action": [
+      "python3", "./infra/migration_warning.py"
+    ],
+    "condition": "not infra_superproject_checkout",
+  },
 ]
 
 recursedeps = ['build', 'infra/luci']
