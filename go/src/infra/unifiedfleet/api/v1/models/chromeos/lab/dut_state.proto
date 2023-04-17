@@ -14,7 +14,7 @@ import "infra/unifiedfleet/api/v1/models/chromeos/lab/chromeos_device_id.proto";
 
 // This proto defines status labels in lab config of a DUT.
 
-// Next Tag: 18
+// Next Tag: 19
 message DutState {
   ChromeOSDeviceID id = 1;
   PeripheralState servo = 2;
@@ -68,6 +68,10 @@ message DutState {
 
   // Record the hostname at that time for further analysis.
   string hostname = 11;
+  // Explain why the DUT state was set.
+  // The value may not be available, and is used to indicate reason of a bad
+  // state.
+  string dut_state_reason = 18;
 }
 
 // Next Tag: 27
