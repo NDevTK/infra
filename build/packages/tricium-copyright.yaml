@@ -1,6 +1,5 @@
 package: infra/tricium/legacy_functions/copyright/${platform}
-description: Tricium analyzer checking for the appropriate copyright header in
-files.
+description: Tricium analyzer checking for the appropriate copyright header
 update_latest_ref: true
 platforms:
   - linux-amd64
