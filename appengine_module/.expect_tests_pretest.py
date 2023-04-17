@@ -9,6 +9,15 @@ import os
 import sys
 
 
+# NOTE: There's `expect_tests_pretest.py` file nearby. It serves different
+# purpose than this `.expect_tests_pretest.py`:
+#
+#  * `expect_tests_pretest.py` is symlinked into various appengine/<app> and
+#    used in tests there.
+#  * `.expect_tests_pretest.py` is used for tests in appengine_module
+#    specifically.
+
+
 def _fix_sys_path_for_appengine(pretest_filename):
   infra_base_dir = os.path.abspath(pretest_filename)
   pos = infra_base_dir.rfind('/infra/appengine')
@@ -27,6 +36,12 @@ def _fix_sys_path_for_appengine(pretest_filename):
 
   import dev_appserver as pretest_dev_appserver
   pretest_dev_appserver.fix_sys_path()
+
+  # For `endpoints` vendored into luci/appengine/....
+  sys.path.insert(
+      0, os.path.join(infra_base_dir, 'luci', 'appengine', 'components'))
+  from components import utils
+  utils.import_third_party()
 
 
 # Using pretest_filename is magic, because it is available in the locals() of

@@ -8,4 +8,5 @@ components_ereporter2_VIEWERS_AUTH_GROUP = 'buildbucket-ereporter2-viewers'
 components_auth_USE_PROJECT_IDENTITIES = True
 
 from components import utils
+utils.import_third_party()
 utils.fix_protobuf_package()

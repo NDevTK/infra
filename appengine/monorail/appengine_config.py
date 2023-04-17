@@ -32,4 +32,5 @@ if settings.local_mode:
   from google.rpc import status_pb2
 
 from components import utils
+utils.import_third_party()
 utils.fix_protobuf_package()

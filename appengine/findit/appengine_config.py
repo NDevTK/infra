@@ -20,3 +20,7 @@ vendor.add(
     os.path.join(os.path.dirname(os.path.realpath(__file__)), 'first_party'))
 vendor.add(
     os.path.join(os.path.dirname(os.path.realpath(__file__)), 'third_party'))
+
+# This imports `endpoints`.
+from components import utils
+utils.import_third_party()

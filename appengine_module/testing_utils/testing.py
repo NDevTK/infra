@@ -15,6 +15,9 @@ if six.PY2:
   import dev_appserver
   dev_appserver.fix_sys_path()
 
+  from components import utils
+  utils.import_third_party()
+
   import endpoints
 
 from google.appengine.api import oauth
