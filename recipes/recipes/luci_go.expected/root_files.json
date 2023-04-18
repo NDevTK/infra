@@ -193,6 +193,7 @@
       "-c",
       "user.name=The Commit Bot",
       "commit",
+      "--allow-empty",
       "-a",
       "-m",
       "Committed patch"

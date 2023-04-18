@@ -489,7 +489,7 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 
 Stateless API for using public infra gclient checkout.
 
-&mdash; **def [apply\_golangci\_lint](/recipes/recipe_modules/infra_checkout/api.py#212)(self, co, path_to_go_modules=''):**
+&mdash; **def [apply\_golangci\_lint](/recipes/recipe_modules/infra_checkout/api.py#223)(self, co, path_to_go_modules=''):**
 
 Apply goalngci-lint to existing diffs and emit lint warnings via tricium.
     

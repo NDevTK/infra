@@ -106,9 +106,15 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
         assert patch_root
         with self.m.context(cwd=path.join(patch_root)):
           self.m.git(
-              '-c', 'user.email=commit-bot@chromium.org',
-              '-c', 'user.name=The Commit Bot',
-              'commit', '-a', '-m', 'Committed patch',
+              '-c',
+              'user.email=commit-bot@chromium.org',
+              '-c',
+              'user.name=The Commit Bot',
+              'commit',
+              '--allow-empty',
+              '-a',
+              '-m',
+              'Committed patch',
               name='commit git patch')
         self._committed = True
 
@@ -164,12 +170,17 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
           where = 'infra_internal' if internal else 'infra'
           bootstrap = 'bootstrap_internal.py' if internal else 'bootstrap.py'
           step = self.m.step(
-              'init infra go env',
-              ['python3', path.join(where, 'go', bootstrap), self.m.json.output()],
+              'init infra go env', [
+                  'python3',
+                  path.join(where, 'go', bootstrap),
+                  self.m.json.output()
+              ],
               infra_step=True,
               step_test_data=lambda: self.m.json.test_api.output({
                   'go_version': '1.66.6',
-                  'env': {'GOROOT': str(path.join('golang', 'go'))},
+                  'env': {
+                      'GOROOT': str(path.join('golang', 'go'))
+                  },
                   'env_prefixes': {
                       'PATH': [str(path.join('golang', 'go'))],
                   },
