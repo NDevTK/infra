@@ -421,19 +421,30 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Read and print ppdut5_mv control value to logs.",
 				},
+				ExecName: "servo_check_servod_control",
 				ExecExtraArgs: []string{
 					"command:ppdut5_mv",
 				},
-				ExecName: "servo_check_servod_control",
 			},
 			"Read ppchg5_mv value": {
 				Docs: []string{
 					"Read and print ppchg5_mv control value to logs.",
 				},
+				ExecName: "servo_check_servod_control",
 				ExecExtraArgs: []string{
 					"command:ppchg5_mv",
 				},
-				ExecName: "servo_check_servod_control",
+				// TODO(b/278690937): Remove when fixed.
+				AllowFailAfterRecovery: true,
+			},
+			"Has ppchg5_mv control": {
+				Docs: []string{
+					"Read and print ppchg5_mv control value to logs.",
+				},
+				ExecName: "servod_has",
+				ExecExtraArgs: []string{
+					"command:ppchg5_mv",
+				},
 			},
 			"Charger connected": {
 				Docs: []string{
@@ -443,9 +454,11 @@ func servoRepairPlan() *Plan {
 				Conditions: []string{
 					"Is servo_v4(p1) used with type-c connector",
 					"has_rpm_info",
-					"Read ppchg5_mv value",
+					"Has ppchg5_mv control",
 				},
 				Dependencies: []string{
+					"Read ppdut5_mv value",
+					"Read ppchg5_mv value",
 					"Set state:SERVOD_ISSUE",
 				},
 				ExecName: "servo_control_min_double_value",
