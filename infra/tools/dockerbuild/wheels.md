@@ -546,6 +546,20 @@ wheel: <
 
 * *universal*
 
+## **aiocontextvars-py3**
+
+### 0.2.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/aiocontextvars-py3"
+  version: "version:0.2.2"
+>
+```
+
+
+* *universal*
+
 ## **aioquic**
 
 ### 0.9.15.chromium.1
@@ -1582,6 +1596,20 @@ wheel: <
 
 * *universal*
 
+## **contextvars-py3**
+
+### 2.4
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/contextvars-py3"
+  version: "version:2.4"
+>
+```
+
+
+* *universal*
+
 ## **coverage**
 
 ### 5.5.chromium.3
@@ -1718,6 +1746,20 @@ wheel: <
 * *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
+## **dataclasses-py3**
+
+### 0.8
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/dataclasses-py3"
+  version: "version:0.8"
+>
+```
+
+
+* *universal*
+
 ## **debugpy**
 
 ### 1.5.1
@@ -1770,6 +1812,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/decorator-py3"
   version: "version:5.0.9"
+>
+```
+
+
+* *universal*
+
+## **deprecated-py3**
+
+### 1.2.13
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/deprecated-py3"
+  version: "version:1.2.13"
 >
 ```
 
@@ -3676,6 +3732,25 @@ wheel: <
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
 
+## **immutables**
+
+### 0.19
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/immutables/${vpython_platform}"
+  version: "version:0.19"
+>
+```
+
+
+* *linux-arm64-py3.11*
+* *linux-arm64-py3.8*
+* *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
+* *windows-x64-py3.8*
+
 ## **importlab-py3**
 
 ### 0.6.1
@@ -4899,6 +4974,48 @@ wheel: <
 * *manylinux-x64-py3.8*
 * *windows-x64-py3.8*
 * *windows-x86-py3.8*
+
+## **opentelemetry-api-py3**
+
+### 1.12.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/opentelemetry-api-py3"
+  version: "version:1.12.0"
+>
+```
+
+
+* *universal*
+
+## **opentelemetry-sdk-py3**
+
+### 1.12.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/opentelemetry-sdk-py3"
+  version: "version:1.12.0"
+>
+```
+
+
+* *universal*
+
+## **opentelemetry-semantic-conventions-py3**
+
+### 0.33b0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/opentelemetry-semantic-conventions-py3"
+  version: "version:0.33b0"
+>
+```
+
+
+* *universal*
 
 ## **opt-einsum-py3**
 
@@ -8016,6 +8133,18 @@ wheel: <
 
 * *universal*
 
+### 3.10.0.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/typing-extensions-py3"
+  version: "version:3.10.0.2"
+>
+```
+
+
+* *universal*
+
 ### 4.0.1
 
 ```protobuf
@@ -8405,6 +8534,20 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.8*
 * *windows-x64-py3.8*
+
+## **wrapt-py3**
+
+### 1.15.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/wrapt-py3"
+  version: "version:1.15.0"
+>
+```
+
+
+* *universal*
 
 ## **wsproto-py3**
 
