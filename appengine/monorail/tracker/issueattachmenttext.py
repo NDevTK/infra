@@ -12,6 +12,7 @@ from __future__ import division
 from __future__ import absolute_import
 
 import logging
+import six
 
 import ezt
 from google.appengine.api import app_identity
@@ -78,7 +79,7 @@ class AttachmentText(servlet.Servlet):
       self.abort(400, 'not a text file')
 
     u_text, is_binary, too_large = filecontent.DecodeFileContents(content)
-    lines = prettify.PrepareSourceLinesForHighlighting(u_text.encode('utf8'))
+    lines = prettify.PrepareSourceLinesForHighlighting(six.ensure_str(u_text))
 
     config = self.services.config.GetProjectConfig(mr.cnxn, mr.project_id)
     granted_perms = tracker_bizobj.GetGrantedPerms(

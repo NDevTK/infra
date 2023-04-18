@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import cgi
+try:
+  import html
+except ImportError:
+  import cgi as html
 import json
 import logging
 import time
@@ -105,8 +108,7 @@ class TSMonJSFlaskHandler(object):
 
       if not metric:
         self.response.status_code = 400
-        self.response.data = ('Metric "%s" is not defined.' %
-                                  cgi.escape(name))
+        self.response.data = ('Metric "%s" is not defined.' % html.escape(name))
         logging.warning('gae_ts_mon error: Metric "%s" is not defined.', name)
         return self.response
 
@@ -117,8 +119,8 @@ class TSMonJSFlaskHandler(object):
         metric_field_keys = set(fs.name for fs in metric.field_spec)
         if set(fields.keys()) != metric_field_keys:
           self.response.status_code = 400
-          self.response.data = (
-              'Supplied fields do not match metric "%s".' % cgi.escape(name))
+          self.response.data = ('Supplied fields do not match metric "%s".' %
+                                html.escape(name))
           logging.warning(
               'gae_ts_mon error: Supplied fields do not match metric "%s".',
               name)
@@ -138,7 +140,7 @@ class TSMonJSFlaskHandler(object):
         if metric.is_cumulative() and not self._start_time_is_valid(start_time):
           self.response.status_code = 400
           self.response.data = ('Invalid start_time: %s.' %
-                                    cgi.escape(str(start_time)))
+                                html.escape(str(start_time)))
           logging.warning('gae_ts_mon error: Invalid start_time: %s.',
                           start_time)
           return self.response

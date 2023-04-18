@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import cgi
+try:
+  import html
+except ImportError:
+  import cgi as html
 import datetime
 import json
 import logging
@@ -166,8 +169,7 @@ class TSMonJSHandler(webapp2.RequestHandler):
 
       if not metric:
         self.response.set_status(400)
-        self.response.write('Metric "%s" is not defined.' %
-                            cgi.escape(name))
+        self.response.write('Metric "%s" is not defined.' % html.escape(name))
         logging.warning(
             'gae_ts_mon error: Metric "%s" is not defined.', name)
         return
@@ -180,7 +182,7 @@ class TSMonJSHandler(webapp2.RequestHandler):
         if set(fields.keys()) != metric_field_keys:
           self.response.set_status(400)
           self.response.write('Supplied fields do not match metric "%s".' %
-                              cgi.escape(name))
+                              html.escape(name))
           logging.warning(
               'gae_ts_mon error: Supplied fields do not match metric "%s".',
               name)
@@ -199,8 +201,8 @@ class TSMonJSHandler(webapp2.RequestHandler):
 
         if metric.is_cumulative() and not self._start_time_is_valid(start_time):
           self.response.set_status(400)
-          self.response.write(
-              'Invalid start_time: %s.' % cgi.escape(str(start_time)))
+          self.response.write('Invalid start_time: %s.' %
+                              html.escape(str(start_time)))
           logging.warning(
               'gae_ts_mon error: Invalid start_time: %s.', start_time)
           return
