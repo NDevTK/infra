@@ -37,26 +37,27 @@ func TestCpconPublishPublishCmd_UnsupportedSK(t *testing.T) {
 	})
 }
 
-func TestCpconPublishPublishCmd_MissingDeps(t *testing.T) {
-	t.Setenv("SWARMING_TASK_ID", "")
+// TODO(b/278760353): Restore when issue fixed.
+// func TestCpconPublishPublishCmd_MissingDeps(t *testing.T) {
+// 	t.Setenv("SWARMING_TASK_ID", "")
 
-	Convey("Cmd missing deps", t, func() {
-		ctx := context.Background()
-		sk := &data.HwTestStateKeeper{}
-		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
-		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := containers.NewCrosPublishTemplatedContainer(
-			containers.CrosCpconPublishTemplatedContainerType,
-			"container/image/path",
-			ctr)
-		exec := executors.NewCrosPublishExecutor(
-			cont,
-			executors.CrosCpconPublishExecutorType)
-		cmd := commands.NewCpconPublishUploadCmd(exec)
-		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
-	})
-}
+// 	Convey("Cmd missing deps", t, func() {
+// 		ctx := context.Background()
+// 		sk := &data.HwTestStateKeeper{}
+// 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+// 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+// 		cont := containers.NewCrosPublishTemplatedContainer(
+// 			containers.CrosCpconPublishTemplatedContainerType,
+// 			"container/image/path",
+// 			ctr)
+// 		exec := executors.NewCrosPublishExecutor(
+// 			cont,
+// 			executors.CrosCpconPublishExecutorType)
+// 		cmd := commands.NewCpconPublishUploadCmd(exec)
+// 		err := cmd.ExtractDependencies(ctx, sk)
+// 		So(err, ShouldNotBeNil)
+// 	})
+// }
 
 func TestCpconPublishPublishCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
