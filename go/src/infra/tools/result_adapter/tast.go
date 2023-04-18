@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"strings"
 	"time"
@@ -75,7 +76,7 @@ func (r *TastResults) ConvertFromJSON(reader io.Reader) error {
 }
 
 // ToProtos converts test results in r to []*sinkpb.TestResult.
-func (r *TastResults) ToProtos(ctx context.Context, testMetadataFile string, processArtifacts func(string) (map[string]string, error)) ([]*sinkpb.TestResult, error) {
+func (r *TastResults) ToProtos(ctx context.Context, testMetadataFile string, processArtifacts func(string) (map[string]string, error), testhausBaseUrl string) ([]*sinkpb.TestResult, error) {
 	metadata := map[string]*api.TestCaseMetadata{}
 	var err error
 	if testMetadataFile != "" {
@@ -150,6 +151,15 @@ func (r *TastResults) ToProtos(ctx context.Context, testMetadataFile string, pro
 		for f, p := range normPathToFullPath {
 			tr.Artifacts[f] = &sinkpb.Artifact{
 				Body: &sinkpb.Artifact_FilePath{FilePath: p},
+			}
+		}
+
+		if testhausBaseUrl != "" {
+			tr.Artifacts["testhaus_logs"] = &sinkpb.Artifact{
+				Body: &sinkpb.Artifact_Contents{
+					Contents: []byte(fmt.Sprintf("%s/cros-test/artifact/tast/tests/%s", strings.TrimSuffix(testhausBaseUrl, "/"), c.Name)),
+				},
+				ContentType: "text/x-uri",
 			}
 		}
 

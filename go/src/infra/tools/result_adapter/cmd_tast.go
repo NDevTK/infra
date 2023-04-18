@@ -29,6 +29,7 @@ func cmdTast() *subcommands.Command {
 		`),
 		CommandRun: func() subcommands.CommandRun {
 			r := &tastRun{}
+			r.registerTastFlags()
 			r.baseRun.RegisterGlobalFlags()
 			return r
 		},
@@ -37,6 +38,16 @@ func cmdTast() *subcommands.Command {
 
 type tastRun struct {
 	baseRun
+
+	// Flags.
+	testhausBaseUrl string
+}
+
+func (r *tastRun) registerTastFlags() {
+	r.Flags.StringVar(&r.testhausBaseUrl, "testhaus-base-url", "", text.Doc(`
+				Base URL to the logs of this invocation in Testhaus.  This will be used to emit a per-test link artifact
+				that is a deep link to the logs of each specific test in Testhaus.
+			`))
 }
 
 func (r *tastRun) validate() (err error) {
@@ -71,7 +82,7 @@ func (r *tastRun) generateTestResults(ctx context.Context, _ []byte) ([]*sinkpb.
 	if err = tastFormat.ConvertFromJSON(f); err != nil {
 		return nil, errors.Annotate(err, "did not recognize as Tast").Err()
 	}
-	trs, err := tastFormat.ToProtos(ctx, r.testMetadataFile, processArtifacts)
+	trs, err := tastFormat.ToProtos(ctx, r.testMetadataFile, processArtifacts, r.testhausBaseUrl)
 	if err != nil {
 		return nil, errors.Annotate(err, "converting as Tast results format").Err()
 	}

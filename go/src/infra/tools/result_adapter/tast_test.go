@@ -95,6 +95,7 @@ func TestTastConversions(t *testing.T) {
 	Convey(`ToProtos works`, t, func() {
 		ctx := context.Background()
 		Convey(`Basic`, func() {
+			testhausBaseUrl := "https://cros-test-analytics.appspot.com/p/chromeos/logs/browse/chromeos-test-logs/test-runner/prod/2023-04-17/417f"
 			jsonLine := genJSONLine(map[string]string{
 				"searchFlags": `[{"key":"testKey", "value":"testValue"}]`,
 			})
@@ -103,7 +104,7 @@ func TestTastConversions(t *testing.T) {
 			}
 			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
 			So(err, ShouldBeNil)
-			got, err := r.ToProtos(ctx, "", mockCollect)
+			got, err := r.ToProtos(ctx, "", mockCollect, testhausBaseUrl)
 			So(err, ShouldBeNil)
 			So(got[0], ShouldResembleProto, &sinkpb.TestResult{
 				TestId:   "tast.lacros.Basic",
@@ -112,6 +113,10 @@ func TestTastConversions(t *testing.T) {
 				Artifacts: map[string]*sinkpb.Artifact{
 					"foo": {
 						Body: &sinkpb.Artifact_FilePath{FilePath: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test/tast/results/tests/lacros.Basic/foo"},
+					},
+					"testhaus_logs": {
+						Body:        &sinkpb.Artifact_Contents{Contents: []byte(fmt.Sprintf("%s/cros-test/artifact/tast/tests/lacros.Basic", testhausBaseUrl))},
+						ContentType: "text/x-uri",
 					},
 				},
 				Tags: []*pb.StringPair{
@@ -134,7 +139,7 @@ func TestTastConversions(t *testing.T) {
 				"outDir": "/usr/local/autotest/results/lxc_job_folder/tast/results/tests/lacros.Migrate",
 			})))
 			So(err, ShouldBeNil)
-			got, err := r.ToProtos(ctx, "./test_data/tast/test_metadata.json", mockCollect)
+			got, err := r.ToProtos(ctx, "./test_data/tast/test_metadata.json", mockCollect, "")
 			So(err, ShouldBeNil)
 			expected := []*sinkpb.TestResult{
 				{
@@ -205,7 +210,7 @@ func TestTastConversions(t *testing.T) {
 			}
 			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
 			So(err, ShouldBeNil)
-			got, err := r.ToProtos(ctx, "", mockCollect)
+			got, err := r.ToProtos(ctx, "", mockCollect, "")
 			So(err, ShouldBeNil)
 			So(got[0], ShouldResembleProto, &sinkpb.TestResult{
 				TestId:      "tast.lacros.Basic",
@@ -237,7 +242,7 @@ func TestTastConversions(t *testing.T) {
 			}
 			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
 			So(err, ShouldBeNil)
-			got, err := r.ToProtos(ctx, "", mockCollect)
+			got, err := r.ToProtos(ctx, "", mockCollect, "")
 			So(err, ShouldBeNil)
 			So(got[0].Duration, ShouldResemble, &duration.Duration{Seconds: 1})
 			So(got[0], ShouldResembleProto, &sinkpb.TestResult{
