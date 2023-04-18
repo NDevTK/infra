@@ -73,7 +73,11 @@ To call an RPC, you can specify the proto and payload via `grpcurl`. Here is an 
 {
   "leaseId": "vm-12107b1b-52be-475f-bdd5-8b68306645d2",
   "vm": {
-    "id": "vm-12107b1b-52be-475f-bdd5-8b68306645d2"
+    "id": "vm-12107b1b-52be-475f-bdd5-8b68306645d2",
+    "address": {
+      "host": "10.128.0.44",
+      "port": 22
+    }
   }
 }
 ```
@@ -137,6 +141,13 @@ To call an RPC, you can specify the proto and payload via `grpcurl`. Here is an 
   vm_leaser.api.v1.VMLeaserService.LeaseVM
 
 {
-  "leaseId": "vm-30c69749-50a2-48c3-9218-d21e17108248"
+  "leaseId": "vm-12107b1b-52be-475f-bdd5-8b68306645d2",
+  "vm": {
+    "id": "vm-12107b1b-52be-475f-bdd5-8b68306645d2",
+    "address": {
+      "host": "10.128.0.44",
+      "port": 22
+    }
+  }
 }
 ```
