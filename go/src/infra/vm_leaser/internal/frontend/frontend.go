@@ -6,6 +6,7 @@ package frontend
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -13,6 +14,7 @@ import (
 	compute "cloud.google.com/go/compute/apiv1"
 	"cloud.google.com/go/compute/apiv1/computepb"
 	"github.com/google/uuid"
+	"github.com/googleapis/gax-go/v2"
 	"go.chromium.org/luci/common/logging"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -35,6 +37,12 @@ const (
 	// Default duration of lease (in minutes)
 	DefaultLeaseDuration int64 = 60
 )
+
+// computeInstancesClient interfaces the GCE instance client API.
+type computeInstancesClient interface {
+	Get(ctx context.Context, r *computepb.GetInstanceRequest, opts ...gax.CallOption) (*computepb.Instance, error)
+	Insert(ctx context.Context, r *computepb.InsertInstanceRequest, opts ...gax.CallOption) (*compute.Operation, error)
+}
 
 // Prove that Server implements pb.VMLeaserServiceServer by instantiating a Server
 var _ pb.VMLeaserServiceServer = (*Server)(nil)
@@ -70,7 +78,18 @@ func (s *Server) LeaseVM(ctx context.Context, r *pb.LeaseVMRequest) (*pb.LeaseVM
 		return nil, err
 	}
 
-	err = createInstance(ctx, leaseId, expirationTime, r.GetHostReqs())
+	instancesClient, err := compute.NewInstancesRESTClient(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("NewInstancesRESTClient error: %v", err)
+	}
+	defer instancesClient.Close()
+
+	err = createInstance(ctx, instancesClient, leaseId, expirationTime, r.GetHostReqs())
+	if err != nil {
+		return nil, err
+	}
+
+	ins, err := getInstance(ctx, instancesClient, leaseId, r.GetHostReqs())
 	if err != nil {
 		return nil, err
 	}
@@ -79,6 +98,10 @@ func (s *Server) LeaseVM(ctx context.Context, r *pb.LeaseVMRequest) (*pb.LeaseVM
 		LeaseId: leaseId,
 		Vm: &pb.VM{
 			Id: leaseId,
+			Address: &pb.VMAddress{
+				Host: ins.GetNetworkInterfaces()[0].GetNetworkIP(), // Only one NetworkInterface should be available
+				Port: 22,                                           // Temporarily hardcode as port 22
+			},
 		},
 	}, nil
 }
@@ -117,14 +140,32 @@ func (s *Server) ReleaseVM(ctx context.Context, r *pb.ReleaseVMRequest) (*pb.Rel
 	}, nil
 }
 
-// createInstance sends an instance creation request to the Compute Engine API and waits for it to complete.
-func createInstance(ctx context.Context, leaseId string, expirationTime int64, hostReqs *pb.VMRequirements) error {
-	instancesClient, err := compute.NewInstancesRESTClient(ctx)
-	if err != nil {
-		return fmt.Errorf("NewInstancesRESTClient error: %v", err)
+// getInstance gets a GCE instance based on lease id and GCE configs.
+//
+// getInstance returns a GCE instance with valid network interface and network
+// IP. If no network is available, it does not return the instance.
+func getInstance(ctx context.Context, client computeInstancesClient, leaseId string, hostReqs *pb.VMRequirements) (*computepb.Instance, error) {
+	getReq := &computepb.GetInstanceRequest{
+		Instance: leaseId,
+		Project:  hostReqs.GetGceProject(),
+		Zone:     hostReqs.GetGceRegion(),
 	}
-	defer instancesClient.Close()
+	ins, err := client.Get(ctx, getReq)
+	if err != nil {
+		return nil, fmt.Errorf("instance not found: %v", err)
+	}
 
+	if ins.GetNetworkInterfaces() == nil {
+		return nil, errors.New("instance does not have a network interface")
+	}
+	if ins.GetNetworkInterfaces()[0].GetNetworkIP() == "" {
+		return nil, errors.New("instance does not have a network IP")
+	}
+	return ins, nil
+}
+
+// createInstance sends an instance creation request to the Compute Engine API and waits for it to complete.
+func createInstance(ctx context.Context, client computeInstancesClient, leaseId string, expirationTime int64, hostReqs *pb.VMRequirements) error {
 	zone := hostReqs.GetGceRegion()
 	req := &computepb.InsertInstanceRequest{
 		Project: hostReqs.GetGceProject(),
@@ -160,9 +201,12 @@ func createInstance(ctx context.Context, leaseId string, expirationTime int64, h
 	}
 
 	logging.Debugf(ctx, "instance request params: %v", req)
-	op, err := instancesClient.Insert(ctx, req)
+	op, err := client.Insert(ctx, req)
 	if err != nil {
 		return fmt.Errorf("unable to create instance: %v", err)
+	}
+	if op == nil {
+		return errors.New("no operation returned for waiting")
 	}
 
 	if err = op.Wait(ctx); err != nil {
