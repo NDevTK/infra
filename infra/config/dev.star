@@ -123,7 +123,7 @@ luci.bucket(
 
 luci.builder.defaults.experiments.set({
     "luci.buildbucket.bbagent_getbuild": 100,
-    "luci.buildbucket.backend_alt": 100,
+    "luci.buildbucket.backend_alt": 0,
 })
 luci.builder.defaults.execution_timeout.set(30 * time.minute)
 
@@ -256,6 +256,9 @@ adhoc_builder(
         cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
         use_python3 = True,
     ),
+    experiments = {
+        "luci.buildbucket.backend_alt": 100,
+    },
     properties = {
         "status": "SUCCESS",
         "steps": [
@@ -305,6 +308,9 @@ adhoc_builder(
         cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
         use_python3 = True,
     ),
+    experiments = {
+        "luci.buildbucket.backend_alt": 100,
+    },
     properties = {
         "status": "SUCCESS",
         "steps": [
@@ -326,6 +332,9 @@ adhoc_builder(
         cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
         use_python3 = True,
     ),
+    experiments = {
+        "luci.buildbucket.backend_alt": 100,
+    },
     description_html = "No-op builder to measure and monitor bbagent overhead",
     properties = {
         "status": "SUCCESS",
@@ -349,6 +358,9 @@ adhoc_builder(
         cipd_package = "infra/recipe_bundles/chromium.googlesource.com/infra/luci/recipes-py",
         use_python3 = True,
     ),
+    experiments = {
+        "luci.buildbucket.backend_alt": 100,
+    },
     properties = {
         "status": "SUCCESS",
         "steps": [
