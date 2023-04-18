@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,6 +72,7 @@ func ConvertAttachedDeviceToTlw(data *ufsAPI.AttachedDeviceData) (dut *tlw.Dut, 
 		State:           dutstate.ConvertFromUFSState(machineLSE.GetResourceState()),
 		ExtraAttributes: map[string][]string{},
 		ProvisionedInfo: &tlw.ProvisionedInfo{},
+		// DutStateReason not supported.
 	}, nil
 }
 
@@ -186,6 +187,9 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 	if p.GetServo().GetServoSetup() == ufslab.ServoSetupType_SERVO_SETUP_DUAL_V4 {
 		d.ExtraAttributes[tlw.ExtraAttributeServoSetup] = []string{tlw.ExtraAttributeServoSetupDual}
 	}
+	if ds.GetDutStateReason() != "" {
+		d.DutStateReason = tlw.DutStateReason(ds.GetDutStateReason())
+	}
 	return d, nil
 }
 
@@ -248,6 +252,9 @@ func adaptUfsLabstationToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error
 			tlw.ExtraAttributePools: l.GetPools(),
 		},
 		ProvisionedInfo: &tlw.ProvisionedInfo{},
+	}
+	if ds.GetDutStateReason() != "" {
+		d.DutStateReason = tlw.DutStateReason(ds.GetDutStateReason())
 	}
 	return d, nil
 }
@@ -419,6 +426,7 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 	state.CellularModemState = ufslab.HardwareState_HARDWARE_UNKNOWN
 	state.Chameleon = ufslab.PeripheralState_UNKNOWN
 	state.WorkingBluetoothBtpeer = 0
+	state.DutStateReason = string(dut.DutStateReason)
 
 	// Update states for present components.
 	if chromeos := dut.GetChromeos(); chromeos != nil {

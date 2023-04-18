@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,6 +88,9 @@ const (
 	ExtraAttributeServoSetupDual = "SERVO_SETUP_DUAL"
 )
 
+// DutStateReason describes different reason for states.
+type DutStateReason string
+
 // Dut holds info about setup used as testbed.
 type Dut struct {
 	// Unique identifier in inventory.
@@ -101,6 +104,10 @@ type Dut struct {
 	State dutstate.State
 	// ProvisionedInfo tells provisioned info for the DUT.
 	ProvisionedInfo *ProvisionedInfo
+	// Explain why the DUT state was set.
+	// The value may not be available, and is used to indicate reason of a bad
+	// state.
+	DutStateReason DutStateReason
 	// Extra attrubes of the DUT.
 	// Used to provide any other mapping data which can be used for custom actions.
 	// All values has to be converted to string.
