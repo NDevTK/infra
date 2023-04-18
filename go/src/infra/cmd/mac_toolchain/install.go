@@ -118,9 +118,7 @@ func installPackages(ctx context.Context, args InstallPackagesArgs) error {
 	// TODO(sergeyberezin): remove this once crbug.com/803158 is resolved and all
 	// currently used Xcode versions are re-uploaded.
 	if err := RunCommand(ctx, "chmod", "-R", "u+w", args.rootPath); err != nil {
-		// Still proceeds to finish the installation if permission fails to update.
-		// In MacOS13+, permission might fail to update but there's no issue to run it.
-		logging.Warningf(ctx, "Failed to update Xcode package permission due to error %s", err.Error())
+		return errors.Annotate(err, "failed to update package permissions in %s for %s", args.rootPath, args.kind).Err()
 	}
 	return nil
 }
