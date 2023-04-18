@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/proto"
 )
 
 const configPath = "app/config/config.cfg"
@@ -46,7 +47,13 @@ func (l *Loader) Load() (*Config, error) {
 		return nil, errors.Annotate(err, "failed to open the config file").Err()
 	}
 	cfg := &Config{}
-	if err := proto.UnmarshalText(string(b), cfg); err != nil {
+	unmarshalOpts := prototext.UnmarshalOptions{
+		// Ignore those fields that you can't parse. This will avoid
+		// crashing the ufs service when someone accidentally merges a
+		// config change.
+		DiscardUnknown: true,
+	}
+	if err := unmarshalOpts.Unmarshal(b, cfg); err != nil {
 		return nil, errors.Annotate(err, "invalid Config proto message").Err()
 	}
 	l.lastGood.Store(cfg)
