@@ -5756,6 +5756,20 @@ wheel: <
 * *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
+## **ptyprocess**
+
+### 0.7.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/ptyprocess-py2_py3"
+  version: "version:0.7.0"
+>
+```
+
+
+* *universal*
+
 ## **py**
 
 ### 1.5.3

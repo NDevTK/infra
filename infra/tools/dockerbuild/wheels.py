@@ -1202,6 +1202,7 @@ SPECS.update({
         UniversalSource('proto-plus', '1.13.0', pyversions=['py3']),
         UniversalSource('protobuf-to-dict', '0.1.0'),
         UniversalSource('protorpc', '0.12.0'),
+        UniversalSource('ptyprocess', '0.7.0'),
         UniversalSource('pybind11', '2.10.3'),
         UniversalSource('pybrctl', '0.1.3'),
         UniversalSource('pycparser', '2.17'),
