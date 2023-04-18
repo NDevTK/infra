@@ -16,6 +16,24 @@
       "message": "Are we calling get after create to be able to get the IP address? I\u0027m surprised create method doesn\u0027t return this. Does the Operation field in the response of create have anything similar? A bit concerned if calling get right after create will always find the instance newly created.",
       "revId": "1c2bed2e5ddaa8a5049feafc5a10d5bd266a5019",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e0e3d83c_88aee83f",
+        "filename": "go/src/infra/vm_leaser/internal/frontend/frontend.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2023-04-18T17:53:35Z",
+      "side": 1,
+      "message": "Yeah we\u0027re calling get to get the instance back and expose the IP. The create response gives an `Operation` only, which does not give us any information on the instance created. However, once the operation is done, that should guarantee that the VM is discoverable.",
+      "parentUuid": "da6c2791_b2efef19",
+      "revId": "1c2bed2e5ddaa8a5049feafc5a10d5bd266a5019",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
