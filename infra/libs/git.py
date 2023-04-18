@@ -18,6 +18,9 @@ from types import MethodType
 
 LOGGER = logging.getLogger(__name__)
 
+# TODO(https://crbug.com/1413695): Remove six.
+import six
+
 
 class GitException(UserWarning):
   """Indicate that an error occured in the infra.libs.git module."""
@@ -49,7 +52,7 @@ class Git(object):
     LOGGER.debug('Running `%s` with %s', ' '.join(cmd), kwargs)
     out = subprocess.check_output(
         cmd, stderr=subprocess.STDOUT, **kwargs)
-    return out
+    return six.ensure_text(out)
 
   @property
   def bare(self):  # pragma: no cover

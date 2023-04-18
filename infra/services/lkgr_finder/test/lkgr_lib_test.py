@@ -24,6 +24,8 @@ from go.chromium.org.luci.buildbucket.proto import builds_service_pb2
 from infra.services.lkgr_finder import lkgr_lib
 from infra.services.lkgr_finder.status_generator import StatusGeneratorStub
 
+# TODO(https://crbug.com/1413695): Remove six.
+import six
 
 # Note that many parts of lkgr_lib are not tested due to insufficient mocks.
 
@@ -344,7 +346,7 @@ class LoadBuildsTest(unittest.TestCase):
     try:
       f = tempfile.NamedTemporaryFile(suffix='.json', delete=False)
       with f:
-        f.write(json.dumps({
+        f.write(six.ensure_binary(json.dumps({
           'builds': {
             'master1': {
               'builder1': [
@@ -353,7 +355,7 @@ class LoadBuildsTest(unittest.TestCase):
             },
           },
           'version': lkgr_lib._BUILD_DATA_VERSION,
-        }))
+        })))
 
       expected_builds = {
         'master1': {
@@ -372,7 +374,7 @@ class LoadBuildsTest(unittest.TestCase):
     try:
       f = tempfile.NamedTemporaryFile(suffix='.json', delete=False)
       with f:
-        f.write(json.dumps({
+        f.write(six.ensure_binary(json.dumps({
           'builds': {
             'master1': {
               'builder1': [
@@ -381,7 +383,7 @@ class LoadBuildsTest(unittest.TestCase):
             },
           },
           'version': lkgr_lib._BUILD_DATA_VERSION - 1,
-        }))
+        })))
 
       expected_builds = None
       actual_builds = lkgr_lib.LoadBuilds(f.name)
@@ -394,13 +396,13 @@ class LoadBuildsTest(unittest.TestCase):
     try:
       f = tempfile.NamedTemporaryFile(suffix='.json', delete=False)
       with f:
-        f.write(json.dumps({
+        f.write(six.ensure_binary(json.dumps({
           'master1': {
             'builder1': [
               [123, lkgr_lib.STATUS.SUCCESS, '01234567']
             ]
           },
-        }))
+        })))
 
       expected_builds = None
       actual_builds = lkgr_lib.LoadBuilds(f.name)

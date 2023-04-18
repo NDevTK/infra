@@ -270,8 +270,8 @@
   },
   'six': {
     'build': '0',
-    'gs': '30d480d2e352e8e4c2aae042cf1bf33368ff0920.tar.gz',
-    'version': '1.10.0',
+    'gs': '1957b44942be21822414f4dde936e6c40b687565.tar.gz',
+    'version': '1.12.0',
     'implicit': True,  # Required by python_dateutil, webtest, uritemplate, google_api_core.
   },
   # Uploaded by running "./ingest_pypi_wheels.py scipy 0.18.1"

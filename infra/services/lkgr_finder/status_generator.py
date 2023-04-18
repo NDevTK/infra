@@ -32,19 +32,19 @@ class StatusGeneratorStub(object):  # pragma: no cover
 class DebugStatusGenerator(StatusGeneratorStub):  # pragma: no cover
 
   def category_cb(self, category):
-    print category
+    print(category)
 
   def builder_cb(self, builder):
-    print '  %s' % builder
+    print('  %s' % builder)
 
   def revision_cb(self, revision):
-    print '    %s' % revision
+    print('    %s' % revision)
 
   def build_cb(self, category, builder, status, build_num=None):
-    print '%s : %s : %s : %s' % (category, builder, build_num, status)
+    print('%s : %s : %s : %s' % (category, builder, build_num, status))
 
   def lkgr_cb(self, revision):
-    print 'LKGR %s' % revision
+    print('LKGR %s' % revision)
 
 
 class HTMLStatusGenerator(StatusGeneratorStub):  # pragma: no cover

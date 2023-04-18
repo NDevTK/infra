@@ -7,7 +7,6 @@
 # pylint: disable=line-too-long
 # pylint: disable=unused-argument
 
-import Queue
 import ast
 import collections
 import datetime
@@ -33,6 +32,9 @@ from infra.libs import git
 from infra import init_python_pb2  # pylint: disable=unused-import
 from go.chromium.org.luci.buildbucket.proto import common_pb2
 from go.chromium.org.luci.buildbucket.proto import builds_service_pb2
+
+# TODO(https://crbug.com/1413695): Remove six.
+from six.moves import queue
 
 
 class RunLogger(logging.Filter):
@@ -254,7 +256,7 @@ def FetchBuildsWorker(fetch_q, fetch_fn):  # pragma: no cover
   while True:
     try:
       bucket, builder, service_account, output_builds = fetch_q.get(False)
-    except Queue.Empty:
+    except queue.Empty:
       return
 
     output_builds[builder] = fetch_fn(
@@ -283,15 +285,15 @@ def FetchBuildbucketBuilds(
 def _FetchBuilds(
     config, fetch_fn, max_threads=0, service_account=None):  # pragma: no cover
   build_data = {key: {} for key in config}
-  fetch_q = Queue.Queue()
-  for key, config_data in config.iteritems():
+  fetch_q = queue.Queue()
+  for key, config_data in config.items():
     builders = config_data['builders']
     for builder in builders:
       fetch_q.put((key, builder, service_account, build_data[key]))
   fetch_threads = set()
   if not max_threads:
     max_threads = fetch_q.qsize()
-  for _ in xrange(max_threads):
+  for _ in range(max_threads):
     th = threading.Thread(target=FetchBuildsWorker,
                           args=(fetch_q, fetch_fn))
     th.start()
@@ -300,8 +302,8 @@ def _FetchBuilds(
     th.join()
 
   failures = 0
-  for key, builders in build_data.iteritems():
-    for builder, builds in builders.iteritems():
+  for key, builders in build_data.items():
+    for builder, builds in builders.items():
       if builds is None:
         failures += 1
         LOGGER.error('Failed to fetch builds for %s:%s' % (key, builder))
@@ -322,8 +324,8 @@ def LoadBuilds(filename):
     return None
 
   builds = wrapped_builds.get('builds', {})
-  for key, val in builds.iteritems():
-    for builder, builder_data in val.iteritems():
+  for key, val in builds.items():
+    for builder, builder_data in val.items():
       builds[key][builder] = [Build(*b) for b in builder_data]
 
   return builds
@@ -386,10 +388,10 @@ def CollateRevisionHistory(builds, repo):
 
   build_history = {}
   revisions = set()
-  for category, category_data in builds.iteritems():
+  for category, category_data in builds.items():
     LOGGER.debug('Collating category %s', category)
     category_history = build_history.setdefault(category, {})
-    for builder, builder_data in category_data.iteritems():
+    for builder, builder_data in category_data.items():
       LOGGER.debug('Collating builder %s', builder)
       for build in builder_data:
         revisions.add(str(build.revision))
@@ -430,7 +432,7 @@ def FindLKGRCandidate(build_history, revisions, revkey, status_gen=None):
       gen = reversed(builder_history)
       prev = []
       try:
-        prev.append(gen.next())
+        prev.append(next(gen))
       except StopIteration:
         prev.append(Build(-1, STATUS.UNKNOWN, NOREV))
       builders.append((category, builder, gen, prev))
@@ -440,7 +442,7 @@ def FindLKGRCandidate(build_history, revisions, revkey, status_gen=None):
     for category, builder, gen, prev in builders:
       try:
         while revkey(revision) < revkey(prev[-1].revision):
-          prev.append(gen.next())
+          prev.append(next(gen))
       except StopIteration:  # pragma: no cover
         prev.append(Build(-1, STATUS.UNKNOWN, NOREV))
 
@@ -535,9 +537,9 @@ def SendMail(recipients, subject, message, dry):  # pragma: no cover
   except Exception as e:
     # If smtp fails, just dump the output. If running under cron, that will
     # capture the output and send its own (ugly, but better than nothing) email.
-    print message
-    print ('\n--------- Exception in %s -----------\n' %
-           os.path.basename(__file__))
+    print(message)
+    print('\n--------- Exception in %s -----------\n' %
+          os.path.basename(__file__))
     raise e
 
 
