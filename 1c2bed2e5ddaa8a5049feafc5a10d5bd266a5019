@@ -34,6 +34,24 @@
       "parentUuid": "da6c2791_b2efef19",
       "revId": "1c2bed2e5ddaa8a5049feafc5a10d5bd266a5019",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "907456fe_b0e720ff",
+        "filename": "go/src/infra/vm_leaser/internal/frontend/frontend.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1528167
+      },
+      "writtenOn": "2023-04-18T18:11:26Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "e0e3d83c_88aee83f",
+      "revId": "1c2bed2e5ddaa8a5049feafc5a10d5bd266a5019",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
