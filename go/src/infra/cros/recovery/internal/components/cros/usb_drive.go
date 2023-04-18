@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@ import (
 	"infra/cros/recovery/internal/retry"
 	"infra/cros/recovery/logger"
 	"infra/cros/recovery/logger/metrics"
+	"infra/cros/recovery/tlw"
 )
 
 // DeviceMainStoragePath returns the path of the main storage device
@@ -125,35 +126,35 @@ func RunInstallOSCommand(ctx context.Context, timeout time.Duration, run compone
 }
 
 // storageErrors are all the possible key parts of error messages that can be
-// generated if OS install process fails due to errors with the
+// generated if ChromeOS install process fails due to errors with the
 // storage device.
-var storageErrors = []string{
-	"No space left on device",
-	"I/O error when trying to write primary GPT",
-	"Input/output error while writing out",
-	"cannot read GPT header",
-	"can not determine destination device",
-	"wrong fs type",
-	"bad superblock on",
+var storageErrors = map[string]tlw.DutStateReason{
+	"No space left on device":                    tlw.DutStateReasonInternalStorageNoSpaceLeft,
+	"I/O error when trying to write primary GPT": tlw.DutStateReasonInternalStorageIOError,
+	"Input/output error while writing out":       tlw.DutStateReasonInternalStorageIOError,
+	"cannot read GPT header":                     tlw.DutStateReasonInternalStorageIOError,
+	"can not determine destination device":       tlw.DutStateReasonInternalStorageCannotDetected,
+	"wrong fs type":                              tlw.DutStateReasonInternalStorageIOError,
+	"bad superblock on":                          tlw.DutStateReasonInternalStorageUncategorizedError,
 }
 
 // StorageIssuesExist checks is error indicate issue with storage.
-func StorageIssuesExist(ctx context.Context, err error) bool {
+func StorageIssuesExist(ctx context.Context, err error) tlw.DutStateReason {
 	if err == nil {
-		return false
+		return tlw.DutStateReasonEmpty
 	}
 	stdErr, ok := errors.TagValueIn(execs.StdErrTag, err)
 	if !ok {
 		log.Debugf(ctx, "Check storage error: stderr not found.")
-		return false
+		return tlw.DutStateReasonEmpty
 	}
 	stdErrStr := stdErr.(string)
 	// Check if the error message contains any message indicating a problem with the storage.
-	for _, storageError := range storageErrors {
+	for storageError, reason := range storageErrors {
 		if strings.Contains(stdErrStr, storageError) {
 			log.Debugf(ctx, "Failed to install ChromeOS due to the specified storage error: %q", storageError)
-			return true
+			return reason
 		}
 	}
-	return false
+	return tlw.DutStateReasonEmpty
 }

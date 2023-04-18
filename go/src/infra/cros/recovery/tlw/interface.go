@@ -88,9 +88,6 @@ const (
 	ExtraAttributeServoSetupDual = "SERVO_SETUP_DUAL"
 )
 
-// DutStateReason describes different reason for states.
-type DutStateReason string
-
 // Dut holds info about setup used as testbed.
 type Dut struct {
 	// Unique identifier in inventory.

@@ -391,6 +391,7 @@ func AuditStorageSMART(ctx context.Context, r components.Runner, storage *tlw.St
 		storage.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
 		log.Debugf(ctx, "Setting the DUT state: %q", string(dutstate.NeedsReplacement))
 		dut.State = dutstate.NeedsReplacement
+		dut.DutStateReason = tlw.DutStateReasonInternalStorageFailureFromSMARTInfo
 		return errors.Reason("audit storage smart: hardware state need replacement").Err()
 	default:
 		storage.State = convertedHardwareState
@@ -604,6 +605,7 @@ func CheckBadblocks(ctx context.Context, bbArgs *BadBlocksArgs) error {
 				} else {
 					bbArgs.Storage.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
 					bbArgs.Dut.State = dutstate.NeedsReplacement
+					bbArgs.Dut.DutStateReason = tlw.DutStateReasonInternalStorageFailureFromBadblocksCheck
 				}
 			}
 			return errors.Annotate(err, "audit storage badblocks").Err()
@@ -616,6 +618,7 @@ func CheckBadblocks(ctx context.Context, bbArgs *BadBlocksArgs) error {
 				} else {
 					bbArgs.Storage.State = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
 					bbArgs.Dut.State = dutstate.NeedsReplacement
+					bbArgs.Dut.DutStateReason = tlw.DutStateReasonInternalStorageFailureFromBadblocksCheck
 				}
 			}
 			return errors.Annotate(err, "audit storage badblocks").Err()

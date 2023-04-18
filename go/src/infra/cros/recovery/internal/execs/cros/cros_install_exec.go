@@ -63,8 +63,9 @@ func runChromeosInstallCommandWhenBootFromUSBDriveExec(ctx context.Context, info
 	run := info.DefaultRunner()
 	actionArgs := info.GetActionArgs(ctx)
 	err := cros.RunInstallOSCommand(ctx, info.GetExecTimeout(), run)
-	if cros.StorageIssuesExist(ctx, err) {
+	if issueReason := cros.StorageIssuesExist(ctx, err); issueReason.NotEmpty() {
 		info.GetDut().State = dutstate.NeedsReplacement
+		info.GetDut().DutStateReason = issueReason
 		log.Debugf(ctx, "Setting DUT state: %s", dutstate.NeedsReplacement)
 		newAnnotator := errors.Annotate(err, "install from usb drive in recovery mode: storage needs replacement").Tag(retry.LoopBreakTag())
 		if actionArgs.AsBool(ctx, "allowed_abort_plan", true) {
@@ -130,8 +131,9 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 			installTimeout := am.AsDuration(ctx, "install_timeout", 600, time.Second)
 			if err := cros.RunInstallOSCommand(ctx, installTimeout, dutRun); err != nil {
 				finishedOSInstall = "failed"
-				if cros.StorageIssuesExist(ctx, err) {
+				if issueReason := cros.StorageIssuesExist(ctx, err); issueReason.NotEmpty() {
 					info.GetDut().State = dutstate.NeedsReplacement
+					info.GetDut().DutStateReason = issueReason
 					log.Debugf(ctx, "Setting DUT state: %s", dutstate.NeedsReplacement)
 					newAnnotator := errors.Annotate(err, "install from usb drive in recovery mode: storage needs replacement").Tag(retry.LoopBreakTag())
 					if am.AsBool(ctx, "allowed_abort_plan", true) {
@@ -168,8 +170,7 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 					if execs.SSHErrorInternal.In(err) {
 						log.Debugf(ctx, "Install from usb drive: bad blocks check command returned a negative error code, not setting needs replacement state for the DUT.")
 					} else {
-						log.Debugf(ctx, "Setting the DUT state as %q", string(dutstate.NeedsReplacement))
-						info.GetDut().State = dutstate.NeedsReplacement
+						log.Debugf(ctx, "The new DUT state: %q, reason: %q", info.GetDut().State, info.GetDut().DutStateReason)
 					}
 					newAnnotator := errors.Annotate(err, "install from usb drive in recovery mode").Tag(retry.LoopBreakTag())
 					if am.AsBool(ctx, "allowed_abort_plan", true) {

@@ -50,6 +50,7 @@ func crosRepairPlan() *Plan {
 			"Update special device labels",
 			"Collect dmesg logs from DUT",
 			"Record type C status",
+			"Reset DUT-state reason",
 		},
 		Actions: crosRepairActions(),
 	}
@@ -3088,6 +3089,12 @@ func crosRepairActions() map[string]*Action {
 				"Wait to be SSHable (normal boot)",
 			},
 			ExecName: "cros_kernel_priority_has_not_changed",
+		},
+		"Reset DUT-state reason": {
+			Docs: []string{
+				"Reset DUT-state-reason for good DUT as it becomes stale.",
+			},
+			ExecName: "dut_reset_state_reason",
 		},
 	}
 }

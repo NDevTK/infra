@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@ import (
 	"infra/cros/dutstate"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/tlw"
 	ufsProto "infra/unifiedfleet/api/v1/models"
 )
 
@@ -65,8 +66,19 @@ func setDutStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// resetDutStateReasonExec reset dut-state-reason for DUT.
+func resetDutStateReasonExec(ctx context.Context, info *execs.ExecInfo) error {
+	if info.GetDut() == nil {
+		log.Debugf(ctx, "DUT is not present")
+	} else {
+		info.GetDut().DutStateReason = tlw.DutStateReasonEmpty
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("dut_has_name", hasDutNameActionExec)
 	execs.Register("dut_regex_name_match", regexNameMatchExec)
 	execs.Register("dut_set_state", setDutStateExec)
+	execs.Register("dut_reset_state_reason", resetDutStateReasonExec)
 }
