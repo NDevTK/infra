@@ -21,20 +21,3 @@ Local testing:
 $ go build
 $ ./objective-c-style --input=test --output=output
 ```
-
-## Deployment
-
-Deploy a new version of the analyzer using CIPD:
-
-```
-$ make
-$ cipd create -pkg-def=cipd.yaml
-<outputs the VERSION>
-$ cipd set-ref infra/tricium/function/objective-c-style -ref live -version VERSION
-```
-
-The update.sh script automates the above steps:
-```
-$ cd ..
-$ update.sh objective-c-style
-```

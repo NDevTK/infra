@@ -2,10 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-.PHONY: build-for-deployment test unit-test clean
-
-build-for-deployment:
-	GOOS=linux GOARCH=amd64 go build -o metrics_analyzer
+.PHONY: test unit-test clean
 
 metrics_analyzer:
 	go build -o metrics_analyzer

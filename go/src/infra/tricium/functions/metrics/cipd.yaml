@@ -1,4 +1,0 @@
-package: infra/tricium/function/metrics
-install_mode: symlink
-data:
-  - file: metrics_analyzer

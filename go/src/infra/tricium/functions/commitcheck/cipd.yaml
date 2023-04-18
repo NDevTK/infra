@@ -1,4 +1,0 @@
-package: infra/tricium/function/commitcheck
-install_mode: symlink
-data:
-  - file: commitcheck

@@ -1,4 +1,0 @@
-package: infra/tricium/function/https-check
-install_mode: symlink
-data:
-- file: https-check

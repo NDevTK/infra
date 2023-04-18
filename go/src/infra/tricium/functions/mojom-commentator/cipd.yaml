@@ -1,4 +1,0 @@
-package: infra/tricium/function/mojom-commentator
-install_mode: symlink
-data:
-- file: mojom-commentator
