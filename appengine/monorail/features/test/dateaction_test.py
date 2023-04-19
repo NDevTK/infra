@@ -85,7 +85,7 @@ class DateActionCronTest(unittest.TestCase):
         'app_engine_http_request':
             {
                 'relative_uri': urls.ISSUE_DATE_ACTION_TASK + '.do',
-                'body': 'issue_id=78901',
+                'body': b'issue_id=78901',
                 'headers': {
                     'Content-type': 'application/x-www-form-urlencoded'
                 }
@@ -103,7 +103,7 @@ class DateActionCronTest(unittest.TestCase):
         'app_engine_http_request':
             {
                 'relative_uri': urls.ISSUE_DATE_ACTION_TASK + '.do',
-                'body': 'issue_id=78901',
+                'body': b'issue_id=78901',
                 'headers': {
                     'Content-type': 'application/x-www-form-urlencoded'
                 }

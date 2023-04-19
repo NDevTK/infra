@@ -66,7 +66,7 @@ class CloudTasksHelpersTest(unittest.TestCase):
         'app_engine_http_request':
             {
                 'relative_uri': '/alphabet/letters',
-                'body': 'a=a&b=b',
+                'body': b'a=a&b=b',
                 'headers': {
                     'Content-type': 'application/x-www-form-urlencoded'
                 }
@@ -79,7 +79,7 @@ class CloudTasksHelpersTest(unittest.TestCase):
         'app_engine_http_request':
             {
                 'relative_uri': '/alphabet/letters',
-                'body': '',
+                'body': b'',
                 'headers': {
                     'Content-type': 'application/x-www-form-urlencoded'
                 }

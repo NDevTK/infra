@@ -138,7 +138,7 @@ class RecomputeAllDerivedFieldsTest(unittest.TestCase):
           'app_engine_http_request':
               {
                   'relative_uri': urls.RECOMPUTE_DERIVED_FIELDS_TASK + '.do',
-                  'body': urllib.parse.urlencode(params),
+                  'body': six.ensure_binary(urllib.parse.urlencode(params)),
                   'headers':
                       {
                           'Content-type': 'application/x-www-form-urlencoded'
@@ -176,10 +176,13 @@ class RecomputeAllDerivedFieldsTest(unittest.TestCase):
     self.assertEqual(relative_uri, urls.RECOMPUTE_DERIVED_FIELDS_TASK + '.do')
     encoded_params = kwargs['task'].get('app_engine_http_request').get('body')
     params = {k: v[0] for k, v in urllib.parse.parse_qs(encoded_params).items()}
-    self.assertEqual(params['project_id'], str(self.project.project_id))
     self.assertEqual(
-        params['lower_bound'], str(12345 // self.BLOCK * self.BLOCK + 1))
-    self.assertEqual(params['upper_bound'], str(12345))
+        params[b'project_id'],
+        str(self.project.project_id).encode())
+    self.assertEqual(
+        params[b'lower_bound'],
+        str(12345 // self.BLOCK * self.BLOCK + 1).encode())
+    self.assertEqual(params[b'upper_bound'], b'12345')
 
     _, kwargs = get_client_mock().create_task.call_args
     relative_uri = kwargs['task'].get('app_engine_http_request').get(
@@ -187,9 +190,11 @@ class RecomputeAllDerivedFieldsTest(unittest.TestCase):
     self.assertEqual(relative_uri, urls.RECOMPUTE_DERIVED_FIELDS_TASK + '.do')
     encoded_params = kwargs['task'].get('app_engine_http_request').get('body')
     params = {k: v[0] for k, v in urllib.parse.parse_qs(encoded_params).items()}
-    self.assertEqual(params['project_id'], str(self.project.project_id))
-    self.assertEqual(params['lower_bound'], str(1))
-    self.assertEqual(params['upper_bound'], str(self.BLOCK + 1))
+    self.assertEqual(
+        params[b'project_id'],
+        str(self.project.project_id).encode())
+    self.assertEqual(params[b'lower_bound'], b'1')
+    self.assertEqual(params[b'upper_bound'], str(self.BLOCK + 1).encode())
 
     settings.recompute_derived_fields_in_worker = saved_flag
 

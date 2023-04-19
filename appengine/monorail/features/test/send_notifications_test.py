@@ -95,8 +95,8 @@ class SendNotificationTest(unittest.TestCase):
         create_task_mock, urls.NOTIFY_BULK_CHANGE_TASK + '.do')
     self.assertEqual(1, len(call_args_list))
     _path, params = self._get_create_task_path_and_params(call_args_list[0])
-    self.assertEqual(params['comment_text'], 'comment')
-    self.assertEqual(params['amendments'], '')
+    self.assertEqual(params[b'comment_text'], b'comment')
+    self.assertEqual(params[b'amendments'], b'')
 
   @mock.patch('framework.cloud_tasks_helpers.create_task')
   def testSendIssueBulkChangeNotification_Normal(self, create_task_mock):
@@ -118,10 +118,10 @@ class SendNotificationTest(unittest.TestCase):
         create_task_mock, urls.NOTIFY_BULK_CHANGE_TASK + '.do')
     self.assertEqual(1, len(call_args_list))
     _path, params = self._get_create_task_path_and_params(call_args_list[0])
-    self.assertEqual(params['comment_text'], 'comment')
+    self.assertEqual(params[b'comment_text'], b'comment')
     self.assertEqual(
-        params['amendments'].split('\n'),
-        ['    Status: New', '    Labels: -Removed Added'])
+        params[b'amendments'].split(b'\n'),
+        [b'    Status: New', b'    Labels: -Removed Added'])
 
   @mock.patch('framework.cloud_tasks_helpers.create_task')
   def testPrepareAndSendDeletedFilterRulesNotifications(self, create_task_mock):
@@ -133,6 +133,6 @@ class SendNotificationTest(unittest.TestCase):
         create_task_mock, urls.NOTIFY_RULES_DELETED_TASK + '.do')
     self.assertEqual(1, len(call_args_list))
     _path, params = self._get_create_task_path_and_params(call_args_list[0])
-    self.assertEqual(params['project_id'], '789')
+    self.assertEqual(params[b'project_id'], b'789')
     self.assertEqual(
-        params['filter_rules'], 'if yellow make orange,if orange make blue')
+        params[b'filter_rules'], b'if yellow make orange,if orange make blue')

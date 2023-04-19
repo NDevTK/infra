@@ -22,4 +22,4 @@ if __name__ == '__main__':
   import_utils.FixImports()
 
   args = ['--ignore', 'components', '--ignore', 'gae_ts_mon'] + sys.argv[1:]
-  pytest.main(args)
+  sys.exit(pytest.main(args))

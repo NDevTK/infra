@@ -173,7 +173,7 @@ class IssueAttachmentTextTest(unittest.TestCase):
     self.assertEqual(1, len(file_lines))
     self.assertEqual(1, file_lines[0].num)
     self.assertEqual(
-        b'/app_default_bucket/pid/attachments/abcdefg', file_lines[0].line)
+        '/app_default_bucket/pid/attachments/abcdefg', file_lines[0].line)
 
     self.assertEqual(None, page_data['code_reviews'])
 

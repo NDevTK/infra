@@ -9,6 +9,7 @@ from __future__ import absolute_import
 
 import json
 import mock
+import six
 import unittest
 from six.moves import urllib
 
@@ -71,7 +72,7 @@ class BanSpammerTest(unittest.TestCase):
         'app_engine_http_request':
             {
                 'relative_uri': urls.BAN_SPAMMER_TASK + '.do',
-                'body': urllib.parse.urlencode(params),
+                'body': six.ensure_binary(urllib.parse.urlencode(params)),
                 'headers': {
                     'Content-type': 'application/x-www-form-urlencoded'
                 }

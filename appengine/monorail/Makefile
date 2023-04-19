@@ -10,7 +10,7 @@ STAGEID= monorail-staging
 PRODID= monorail-prod
 
 GAE_PY?= vpython3 gae.py
-DEV_APPSERVER_FLAGS?= --python_virtualenv_path venv3 --watcher_ignore_re="(.*/lib|.*/node_modules|.*/venv)"
+DEV_APPSERVER_FLAGS?= --python_virtualenv_path venv --watcher_ignore_re="(.*/lib|.*/node_modules|.*/venv)"
 
 WEBPACK_PATH := ./node_modules/webpack-cli/bin/cli.js
 
@@ -69,7 +69,7 @@ business_proto:
 	--python_out=. --prpc-python_out=. mrproto/*.proto
 
 pytest:
-	python -m test
+	vpython3 test.py
 
 test:
 	../../test.py test appengine/monorail

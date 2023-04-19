@@ -9,6 +9,7 @@ from __future__ import absolute_import
 
 import logging
 import mock
+import six
 import unittest
 from six.moves import urllib
 
@@ -51,21 +52,21 @@ class TestWipeoutSyncCron(unittest.TestCase):
     self.assertEqual(get_client_mock().create_task.call_count, 3)
 
     expected_task = self.generate_simple_task(
-        urls.SEND_WIPEOUT_USER_LISTS_TASK + '.do', 'limit=2&offset=0')
+        urls.SEND_WIPEOUT_USER_LISTS_TASK + '.do', b'limit=2&offset=0')
     get_client_mock().create_task.assert_any_call(
         parent=get_client_mock().queue_path(),
         task=expected_task,
         retry=cloud_tasks_helpers._DEFAULT_RETRY)
 
     expected_task = self.generate_simple_task(
-        urls.SEND_WIPEOUT_USER_LISTS_TASK + '.do', 'limit=2&offset=2')
+        urls.SEND_WIPEOUT_USER_LISTS_TASK + '.do', b'limit=2&offset=2')
     get_client_mock().create_task.assert_any_call(
         parent=get_client_mock().queue_path(),
         task=expected_task,
         retry=cloud_tasks_helpers._DEFAULT_RETRY)
 
     expected_task = self.generate_simple_task(
-        urls.DELETE_WIPEOUT_USERS_TASK + '.do', '')
+        urls.DELETE_WIPEOUT_USERS_TASK + '.do', b'')
     get_client_mock().create_task.assert_any_call(
         parent=get_client_mock().queue_path(),
         task=expected_task,
@@ -78,7 +79,7 @@ class TestWipeoutSyncCron(unittest.TestCase):
 
     expected_task = self.generate_simple_task(
         urls.SEND_WIPEOUT_USER_LISTS_TASK + '.do',
-        'limit={}&offset=0'.format(deleteusers.MAX_BATCH_SIZE))
+        b'limit=%d&offset=0' % deleteusers.MAX_BATCH_SIZE)
     get_client_mock().create_task.assert_any_call(
         parent=get_client_mock().queue_path(),
         task=expected_task,
@@ -151,7 +152,7 @@ class DeleteWipeoutUsersTaskTest(unittest.TestCase):
         'app_engine_http_request':
             {
                 'relative_uri': url,
-                'body': body,
+                'body': six.ensure_binary(body),
                 'headers': {
                     'Content-type': 'application/x-www-form-urlencoded'
                 }
