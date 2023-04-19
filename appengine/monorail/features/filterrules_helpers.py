@@ -34,7 +34,7 @@ from tracker import tracker_helpers
 # Maximum number of filer rules that can be specified in a given
 # project.  This helps us bound the amount of time needed to
 # (re)compute derived fields.
-MAX_RULES = 200
+MAX_RULES = 250
 
 BLOCK = tracker_constants.RECOMPUTE_DERIVED_FIELDS_BLOCK_SIZE
 
