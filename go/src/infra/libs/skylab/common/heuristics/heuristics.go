@@ -50,7 +50,7 @@ func LooksLikeHeader(rec []string) bool {
 	return strings.EqualFold(rec[0], "name")
 }
 
-var HwSwarmingBotIdPrefixes = []string{"crossk-", "cros-"}
+var HwSwarmingBotIdPrefixes = []string{"crossk-", "cros-", "chrome-perf-"}
 
 // NormalizeBotNameToDeviceName takes a bot name or a DUT name and normalizes it to a DUT name.
 // The prefix "crossk-" or "cros-" is suspicious and should be removed. The suffix ".cros" is also suspicious and should be removed.
