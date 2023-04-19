@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,6 @@ import (
 	"go.chromium.org/luci/server/auth/realms"
 
 	"infra/unifiedfleet/app/config"
-	"infra/unifiedfleet/app/frontend/fake"
 )
 
 // error msgs used for testing
@@ -33,7 +32,6 @@ func testingContext() context.Context {
 	c = gologger.StdConfig.Use(c)
 	c = logging.SetLevel(c, logging.Error)
 	c = config.Use(c, &config.Config{})
-	c = fake.FakePubsubClientInterface(c)
 	datastore.GetTestable(c).Consistent(true)
 	return c
 }

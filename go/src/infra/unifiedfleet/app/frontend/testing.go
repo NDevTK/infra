@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,6 @@ import (
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/external"
-	"infra/unifiedfleet/app/frontend/fake"
 	"infra/unifiedfleet/app/model/configuration"
 	"infra/unifiedfleet/app/util"
 )
@@ -46,7 +45,6 @@ func testingContext() context.Context {
 	c := gaetesting.TestingContextWithAppID("dev~infra-unified-fleet-system")
 	c = gologger.StdConfig.Use(c)
 	c = logging.SetLevel(c, logging.Error)
-	c = fake.FakePubsubClientInterface(c)
 	c = config.Use(c, &config.Config{
 		CrosNetworkConfig: &config.OSNetworkConfig{
 			GitilesHost: "test_gitiles",
