@@ -24,6 +24,7 @@ from framework import exceptions
 from framework import framework_constants
 from framework import framework_views
 from framework import permissions
+from framework import sorting
 from mrproto import tracker_pb2
 from search import searchpipeline
 from tracker import field_helpers
@@ -587,12 +588,13 @@ class IssuesServicer(monorail_servicer.MonorailServicer):
       snapshot_counts = [
           issues_pb2.IssueSnapshotCount(
               dimension=self.services.user.GetUser(mc.cnxn, key).email,
-              count=result) for key, result in sorted(results.items())
+              count=result)
+          for key, result in sorted(results.items(), key=sorting.Python2Key)
       ]
     else:
       snapshot_counts = [
-        issues_pb2.IssueSnapshotCount(dimension=key, count=result)
-          for key, result in sorted(results.items())
+          issues_pb2.IssueSnapshotCount(dimension=key, count=result)
+          for key, result in sorted(results.items(), key=sorting.Python2Key)
       ]
     response = issues_pb2.IssueSnapshotResponse()
     response.snapshot_count.extend(snapshot_counts)
