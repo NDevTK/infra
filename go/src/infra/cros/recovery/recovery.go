@@ -242,6 +242,8 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 			return config.AndroidRepairConfig(), nil
 		case tlw.DUTSetupTypeCrosVM:
 			return config.CrosVMSuccessConfig(), nil
+		case tlw.DUTSetupTypeDevBoard:
+			return config.CrosDevBoardConfig(), nil
 		default:
 			return nil, errors.Reason("Setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
@@ -258,6 +260,8 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 			return config.AndroidRepairConfig(), nil
 		case tlw.DUTSetupTypeCrosVM:
 			return config.CrosVMSuccessConfig(), nil
+		case tlw.DUTSetupTypeDevBoard:
+			return config.CrosDevBoardConfig(), nil
 		default:
 			return nil, errors.Reason("Setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
@@ -271,6 +275,8 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 			return config.LabstationDeployConfig(), nil
 		case tlw.DUTSetupTypeAndroid:
 			return config.AndroidDeployConfig(), nil
+		case tlw.DUTSetupTypeDevBoard:
+			return config.CrosDevBoardConfig(), nil
 		default:
 			return nil, errors.Reason("Setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
@@ -513,8 +519,11 @@ func metricsApplyBoardModel(ctx context.Context, dut *tlw.Dut, metric *metrics.A
 	case dut.GetAndroid() != nil:
 		metric.Board = dut.GetAndroid().GetBoard()
 		metric.Model = dut.GetAndroid().GetModel()
+	case dut.GetDevBoard() != nil:
+		metric.Board = dut.GetDevBoard().GetBoard()
+		metric.Model = dut.GetDevBoard().GetModel()
 	default:
-		log.Warningf(ctx, "In plan %q, dut %q is neither CrOS nor Android", resource)
+		log.Warningf(ctx, "The dut %q is neither CrOS nor Android nor DevBoard", resource)
 	}
 }
 

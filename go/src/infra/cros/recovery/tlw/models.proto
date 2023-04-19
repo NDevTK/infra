@@ -550,6 +550,20 @@ message Android {
   string associated_hostname = 5;
 }
 
+// DevBoard specific DUT details.
+message DevBoard {
+  reserved 1;
+  // Board name of the DUT.
+  string board = 2;
+  // Model name of the DUT.
+  string model = 3;
+  // Serial number of the DUT.
+  string serial_number = 4;
+  // Peripheral devices.
+  // Servo setup of the DUT setup.
+  ServoHost servo = 5;
+}
+
 // CopyRequest represents data to perform copy data from/to resource.
 message CopyRequest {
   // Resource name

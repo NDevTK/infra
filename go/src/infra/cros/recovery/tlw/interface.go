@@ -79,6 +79,8 @@ const (
 	DUTSetupTypeIOS DUTSetupType = "IOS"
 	// Special setup for CrOSVM fake devices.
 	DUTSetupTypeCrosVM DUTSetupType = "CROSVM"
+	// Special setup for DevBoard devices.
+	DUTSetupTypeDevBoard DUTSetupType = "DEV_BOARD"
 )
 
 const (
@@ -114,6 +116,8 @@ type Dut struct {
 	Chromeos *ChromeOS
 	// Android hold specific data for Android device's data.
 	Android *Android
+	// DevBoard hold specific data for DevBoard device's data.
+	DevBoard *DevBoard
 }
 
 // GetAndroid returns Android device.
@@ -132,4 +136,13 @@ func (d *Dut) GetChromeos() *ChromeOS {
 		return nil
 	}
 	return d.Chromeos
+}
+
+// GetDevBoard returns DevBoard device.
+// The method created to mimic proto syntactic.
+func (d *Dut) GetDevBoard() *DevBoard {
+	if d == nil {
+		return nil
+	}
+	return d.DevBoard
 }

@@ -33,6 +33,8 @@ func ConvertDut(data *ufspb.ChromeOSDeviceData) (dut *tlw.Dut, err error) {
 		return adaptUfsDutToTLWDut(data)
 	} else if data.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetLabstation() != nil {
 		return adaptUfsLabstationToTLWDut(data)
+	} else if data.GetLabConfig().GetChromeosMachineLse().GetDeviceLse().GetDevboard() != nil {
+		return adaptUfsDevBoardToTLWDut(data)
 	}
 	return nil, errors.Reason("convert dut: unexpected case!").Err()
 }
@@ -97,13 +99,28 @@ func CreateUpdateDutRequest(dutID string, dut *tlw.Dut) (req *ufsAPI.UpdateDevic
 				},
 			},
 		}, nil
-	}
-	if dut.GetAndroid() != nil {
+	} else if dut.GetAndroid() != nil {
 		return &ufsAPI.UpdateDeviceRecoveryDataRequest{
 			DeviceId:      dutID,
 			Hostname:      dut.Name,
 			ResourceType:  ufsAPI.UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_ATTACHED_DEVICE,
 			ResourceState: dutstate.ConvertToUFSState(dut.State),
+		}, nil
+	} else if devboard := dut.GetDevBoard(); devboard != nil {
+		return &ufsAPI.UpdateDeviceRecoveryDataRequest{
+			DeviceId:      dutID,
+			Hostname:      dut.Name,
+			ResourceType:  ufsAPI.UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_CHROMEOS_DEVICE,
+			ResourceState: dutstate.ConvertToUFSState(dut.State),
+			DeviceRecoveryData: &ufsAPI.UpdateDeviceRecoveryDataRequest_Chromeos{
+				Chromeos: &ufsAPI.ChromeOsRecoveryData{
+					DutState: getUFSDutComponentStateFromSpecs(dutID, dut),
+					DutData: &ufsAPI.ChromeOsRecoveryData_DutData{
+						SerialNumber: devboard.GetSerialNumber(),
+					},
+					LabData: getUFSLabDataFromSpecs(dut),
+				},
+			},
 		}, nil
 	}
 	return nil, errors.Reason("Unknown DUT type: %+v", dut).Err()
@@ -162,7 +179,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			Phase:               make.GetDevicePhase().String()[len("PHASE_"):],
 			PowerSupplyType:     supplyType,
 			Audio:               audio,
-			Servo:               createServoHost(p, ds),
+			Servo:               createServoHost(p.GetServo(), p.GetSmartUsbhub(), ds),
 			Cr50Phase:           convertCr50Phase(ds.GetCr50Phase()),
 			Cr50KeyEnv:          convertCr50KeyEnv(ds.GetCr50KeyEnv()),
 			DeviceSku:           machine.GetChromeosMachine().GetSku(),
@@ -184,6 +201,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		},
 		ProvisionedInfo: &tlw.ProvisionedInfo{},
 	}
+
 	if p.GetServo().GetServoSetup() == ufslab.ServoSetupType_SERVO_SETUP_DUAL_V4 {
 		d.ExtraAttributes[tlw.ExtraAttributeServoSetup] = []string{tlw.ExtraAttributeServoSetupDual}
 	}
@@ -259,6 +277,41 @@ func adaptUfsLabstationToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error
 	return d, nil
 }
 
+func adaptUfsDevBoardToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
+	lc := data.GetLabConfig()
+	db := lc.GetChromeosMachineLse().GetDeviceLse().GetDevboard()
+	ds := data.GetDutState()
+	machine := data.GetMachine()
+	name := lc.GetName()
+	var board string
+	if andreiBoard := machine.GetDevboard().GetAndreiboard(); andreiBoard != nil {
+		board = "andreiboard"
+	} else if icetower := machine.GetDevboard().GetIcetower(); icetower != nil {
+		board = "icetower"
+	} else if dragonclaw := machine.GetDevboard().GetDragonclaw(); dragonclaw != nil {
+		board = "dragonclaw"
+	}
+	d := &tlw.Dut{
+		Id:        machine.GetName(),
+		Name:      name,
+		SetupType: tlw.DUTSetupTypeDevBoard,
+		DevBoard: &tlw.DevBoard{
+			Board:        board,
+			Model:        board,
+			SerialNumber: machine.GetSerialNumber(),
+			Servo:        createServoHost(db.GetServo(), false, ds),
+		},
+		ExtraAttributes: map[string][]string{
+			tlw.ExtraAttributePools: db.GetPools(),
+		},
+		ProvisionedInfo: &tlw.ProvisionedInfo{},
+	}
+	if db.GetServo().GetServoSetup() == ufslab.ServoSetupType_SERVO_SETUP_DUAL_V4 {
+		d.ExtraAttributes[tlw.ExtraAttributeServoSetup] = []string{tlw.ExtraAttributeServoSetupDual}
+	}
+	return d, nil
+}
+
 func createRPMOutlet(rpm *ufslab.OSRPM, ds *ufslab.DutState) *tlw.RPMOutlet {
 	if rpm == nil || rpm.GetPowerunitName() == "" || rpm.GetPowerunitOutlet() == "" {
 		return &tlw.RPMOutlet{
@@ -272,22 +325,22 @@ func createRPMOutlet(rpm *ufslab.OSRPM, ds *ufslab.DutState) *tlw.RPMOutlet {
 	}
 }
 
-func createServoHost(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.ServoHost {
-	if p.GetServo().GetServoHostname() == "" {
+func createServoHost(servo *ufslab.Servo, useSmartUsbhub bool, ds *ufslab.DutState) *tlw.ServoHost {
+	if servo.GetServoHostname() == "" {
 		return nil
 	}
 	return &tlw.ServoHost{
-		Name:               p.GetServo().GetServoHostname(),
+		Name:               servo.GetServoHostname(),
 		UsbkeyState:        convertHardwareState(ds.GetServoUsbState()),
-		ServodPort:         p.GetServo().GetServoPort(),
+		ServodPort:         servo.GetServoPort(),
 		State:              convertServoState(ds.GetServo()),
-		SerialNumber:       p.GetServo().GetServoSerial(),
-		FirmwareChannel:    convertFirmwareChannel(p.GetServo().GetServoFwChannel()),
-		ServodType:         p.GetServo().GetServoType(),
-		SmartUsbhubPresent: p.GetSmartUsbhub(),
-		ServoTopology:      convertServoTopologyFromUFS(p.GetServo().GetServoTopology()),
-		ContainerName:      p.GetServo().GetDockerContainerName(),
-		UsbDrive:           p.GetServo().GetUsbDrive(),
+		SerialNumber:       servo.GetServoSerial(),
+		FirmwareChannel:    convertFirmwareChannel(servo.GetServoFwChannel()),
+		ServodType:         servo.GetServoType(),
+		SmartUsbhubPresent: useSmartUsbhub,
+		ServoTopology:      convertServoTopologyFromUFS(servo.GetServoTopology()),
+		ContainerName:      servo.GetDockerContainerName(),
+		UsbDrive:           servo.GetUsbDrive(),
 	}
 }
 
@@ -404,6 +457,13 @@ func getUFSLabDataFromSpecs(dut *tlw.Dut) *ufsAPI.ChromeOsRecoveryData_LabData {
 		}
 		labData.RoVpdMap = ch.GetRoVpdMap()
 		labData.Cbi = ch.GetCbi()
+	} else if ch := dut.GetDevBoard(); ch != nil {
+		if s := ch.GetServo(); s != nil {
+			labData.ServoType = s.GetServodType()
+			labData.SmartUsbhub = s.GetSmartUsbhubPresent()
+			labData.ServoTopology = convertServoTopologyToUFS(s.GetServoTopology())
+			labData.ServoUsbDrive = s.GetUsbDrive()
+		}
 	}
 	return labData
 }
@@ -488,6 +548,16 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 			state.AudioLoopbackDongle = ufslab.PeripheralState_UNKNOWN
 		}
 		state.WifiPeripheralState = convertPeripheralWifiStateToUFS(chromeos.GetPeripheralWifiState())
+	} else if devboard := dut.GetDevBoard(); devboard != nil {
+		if s := devboard.GetServo(); s != nil {
+			for us, ls := range servoStates {
+				if ls == s.GetState() {
+					state.Servo = us
+					break
+				}
+			}
+			state.ServoUsbState = convertHardwareStateToUFS(s.GetUsbkeyState())
+		}
 	}
 	return state
 }
