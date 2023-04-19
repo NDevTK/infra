@@ -6,10 +6,11 @@
 
 
 import textwrap
-import urllib
 
 from infra.services.lkgr_finder.lkgr_lib import STATUS
 
+# TODO(https://crbug.com/1413695): Remove six.
+from six.moves.urllib.parse import quote
 
 class StatusGeneratorStub(object):  # pragma: no cover
 
@@ -65,7 +66,7 @@ class HTMLStatusGenerator(StatusGeneratorStub):  # pragma: no cover
     row = [
         revision,
         '<td class="revision"><a href="%s" target="_blank">%s</a></td>\n' % (
-            self.viewvc % urllib.quote(revision), revision)]
+            self.viewvc % quote(revision), revision)]
     self.rows.append(row)
 
   def _get_luci_location(self, category):
@@ -84,7 +85,7 @@ class HTMLStatusGenerator(StatusGeneratorStub):  # pragma: no cover
         build_url = 'build.chromium.org/p/%s/builders/%s/builds/%s' % (
             category, builder, build_num)
       cell += '<a href="http://%s" target="_blank">X</a>' % (
-          urllib.quote(build_url))
+          quote(build_url))
     cell += '</td>\n'
     self.rows[-1].append(cell)
 
@@ -131,7 +132,7 @@ class HTMLStatusGenerator(StatusGeneratorStub):  # pragma: no cover
           builder_url = 'build.chromium.org/p/%s/builders/%s' % (
               category, builder)
         hdr = '  <th><a href="%s" target="_blank">%s</a></th>\n' % (
-            'http://%s' % urllib.quote(builder_url), builder)
+            'http://%s' % quote(builder_url), builder)
         builder_headers.append(hdr)
     category_headers.append('</tr>\n')
     builder_headers.append('</tr>\n')
