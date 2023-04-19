@@ -6,19 +6,18 @@ package main
 
 import (
 	"bufio"
+	tricium "infra/tricium/api/v1"
 	"strings"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-
-	"infra/tricium/api/v1"
 )
 
 func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 	// These tests depend on both dictionary.txt and comment_formats.json.
 	// TODO(qyearsley): Make the tests not depend on these files.
-	cp := loadCommentsJSONFile()
-	dict = loadDictionaryFile()
+	cp := loadCommentFormats()
+	dict = loadDict()
 
 	Convey("Analyzing simple file with one misspelling generates one comment", t, func() {
 		fileContent := "/* coment */"
@@ -742,7 +741,7 @@ func TestSpellCheckerAnalyzeFiles(t *testing.T) {
 }
 
 func TestGettingCommentFormat(t *testing.T) {
-	cp := loadCommentsJSONFile()
+	cp := loadCommentFormats()
 
 	Convey("The appropriate comment formats are determined from the file extensions", t, func() {
 		So(cp[".py"], ShouldResemble, &commentFormat{

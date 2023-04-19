@@ -6,10 +6,10 @@ package main
 
 import (
 	"bufio"
+	"embed"
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -18,6 +18,8 @@ import (
 	"unicode"
 
 	tricium "infra/tricium/api/v1"
+
+	_ "embed"
 )
 
 // commentFormat is the expected format for the commentsJSONPath file.
@@ -33,11 +35,18 @@ type wordSegment struct {
 	startIndex int
 }
 
+//go:embed dictionary.txt
+//go:embed dictionary_extra.txt
+var dictFS embed.FS
+
+//go:embed comment_formats.json
+var commentsJSON []byte
+
 const (
-	commentsJSONPath = "comment_formats.json"
-	dictPath         = "dictionary.txt"
-	minWordLength    = 4
-	maxWordLength    = 39
+	dictPath      = "dictionary.txt"
+	extraDictPath = "dictionary_extra.txt"
+	minWordLength = 4
+	maxWordLength = 39
 )
 
 // state is the comment processing state machine.
@@ -146,8 +155,8 @@ func main() {
 	if flag.NArg() != 0 {
 		log.Panicf("Unexpected argument.")
 	}
-	cp := loadCommentsJSONFile()
-	dict = loadDictionaryFile()
+	cp := loadCommentFormats()
+	dict = loadDict()
 
 	// Read Tricium input FILES data.
 	input := &tricium.Data_Files{}
@@ -477,13 +486,25 @@ func fixesMessage(fixes []string) string {
 	}
 }
 
+// loadDict loads the standard dictionary and merges with extra dictionary words
+func loadDict() map[string][]string {
+	ret := loadDictionaryFile(dictPath)
+	for key, values := range loadDictionaryFile(extraDictPath) {
+		ret[key] = values
+	}
+	return ret
+}
+
 // loadDictionaryFile reads the dictionary file and constructs a map of
 // misspellings to slices of proposed fixes.
 //
 // All keys in the dictionary are lower-case.
-func loadDictionaryFile() map[string][]string {
-	f := openFileOrDie(dictPath)
-	defer closeFileOrDie(f)
+func loadDictionaryFile(path string) map[string][]string {
+	f, err := dictFS.Open(path)
+	if err != nil {
+		log.Panicf("Failed to open file: %v, path: %s", err, path)
+	}
+	defer func() { _ = f.Close() }()
 
 	dictMap := make(map[string][]string)
 	scanner := bufio.NewScanner(f)
@@ -509,28 +530,19 @@ func loadDictionaryFile() map[string][]string {
 		dictMap[strings.ToLower(parts[0])] = fixes
 	}
 	if err := scanner.Err(); err != nil {
-		log.Panicf("Failed to read file: %v, path: %s", err, dictPath)
+		log.Panicf("Failed to read file: %v, path: %s", err, path)
 	}
 
 	return dictMap
 }
 
-// loadCommentsJSONFile loads the JSON file containing the currently supported
-// file extensions and their respective comment formats.
-func loadCommentsJSONFile() map[string]*commentFormat {
+// loadCommentFormats returns the currently supported file extensions and their
+// respective comment formats.
+func loadCommentFormats() map[string]*commentFormat {
 	var commentsMap map[string]*commentFormat
-
-	f := openFileOrDie(commentsJSONPath)
-	defer closeFileOrDie(f)
-
-	jsonBytes, err := ioutil.ReadAll(f)
-	if err != nil {
+	if err := json.Unmarshal(commentsJSON, &commentsMap); err != nil {
 		log.Panicf("Failed to read JSON file: %v", err)
 	}
-	if err := json.Unmarshal(jsonBytes, &commentsMap); err != nil {
-		log.Panicf("Failed to read JSON file: %v", err)
-	}
-
 	return commentsMap
 }
 

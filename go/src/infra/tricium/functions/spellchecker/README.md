@@ -26,9 +26,10 @@ $ cipd set-ref infra/tricium/function/spellchecker -ref live -version VERSION
 
 ## Adding Terms to Dictionary
 
-The `dictionary.txt` file comes from the [`codespell`] repo. If you would like
-to add new terms to the dictionary you should submit a PR to the [`codespell`]
-repo since the Tricium Spellchecker `dictionary.txt` is periodically synced with
-that.
+The `dictionary.txt` file comes from the [`codespell`] repo. If you believe the
+new terms you are adding is universally applicable, consider submit a PR to the
+[`codespell`] repo and then sync the local copy using `make fetch-dict`.
+Otherwise, you can add the new terms to `dictionary_extra.txt` to append or
+override the terms in dictionary.
 
 [`codespell`]: https://github.com/codespell-project/codespell
