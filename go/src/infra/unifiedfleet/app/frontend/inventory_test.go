@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -921,6 +921,29 @@ func TestDeleteMachineLSE(t *testing.T) {
 			So(resp, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+		})
+	})
+}
+
+func TestRenameMachineLSE(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	tf, validate := newTestFixtureWithContext(ctx, t)
+	defer validate()
+	Convey("RenameMachineLSE", t, func() {
+		Convey("Rename an empty machineLSE name - returns error", func() {
+			_, err := tf.Fleet.RenameMachineLSE(tf.C, &ufsAPI.RenameMachineLSERequest{
+				Name: "",
+			})
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+		})
+		Convey("Rename a machineLSE to an empty name - returns error", func() {
+			_, err := tf.Fleet.RenameMachineLSE(tf.C, &ufsAPI.RenameMachineLSERequest{
+				Name:    "oldMachineLSE",
+				NewName: "",
+			})
+			So(err, ShouldNotBeNil)
 		})
 	})
 }

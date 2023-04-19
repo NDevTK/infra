@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -203,6 +203,9 @@ func (fs *FleetServerImpl) RenameMachineLSE(ctx context.Context, req *ufsAPI.Ren
 		return nil, err
 	}
 	lse, err = controller.RenameMachineLSE(ctx, util.RemovePrefix(req.Name), util.RemovePrefix(req.NewName))
+	if err != nil {
+		return nil, err
+	}
 	lse.Name = util.AddPrefix(util.MachineLSECollection, lse.Name)
 	return
 }
