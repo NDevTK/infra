@@ -43,10 +43,15 @@ var SkipRealmsCheck = false
 
 // Browser-related consts
 const (
-	ChromiumPool       = "chromium"
-	ChromePool         = "chrome"
-	ChromiumNamePrefix = "chromium-"
-	ChromeNamePrefix   = "chrome-"
+	ChromiumPool         = "chromium"
+	ChromePool           = "chrome"
+	ChromiumNamePrefix   = "chromium-"
+	ChromeNamePrefix     = "chrome-"
+	ChromePerfNamePrefix = "chrome-perf-"
+)
+
+var (
+	ChromePerfPools = []string{"chrome.tests.pinpoint", "chrome.tests.perf"}
 )
 
 // UFS registered permissions in process registry
@@ -197,6 +202,11 @@ func IsChromiumLegacyHost(name string) bool {
 	return strings.HasPrefix(name, ChromiumNamePrefix)
 }
 
+// IsChromePerfHost returns if a host is a legacy browser perf host used internally
+func IsChromePerfHost(name string) bool {
+	return strings.HasPrefix(name, ChromePerfNamePrefix)
+}
+
 // IsInChromiumPool checks if any chromium pool exist in the given pool labels.
 func IsInChromiumPool(pools []string) bool {
 	if len(pools) != 1 {
@@ -213,6 +223,20 @@ func IsInChromiumPool(pools []string) bool {
 func IsInChromePool(pools []string) bool {
 	for _, p := range pools {
 		if p == ChromePool {
+			return true
+		}
+	}
+	return false
+}
+
+// IsInChromePerfPool checks if any chrome perf pool exist in the given pool labels
+func IsInChromePerfPool(pools []string) bool {
+	if len(pools) != 1 {
+		// Hosts in perf pool cannot have multiple pools in case they're wrongly scheduled.
+		return false
+	}
+	for _, perfPool := range ChromePerfPools {
+		if pools[0] == perfPool {
 			return true
 		}
 	}

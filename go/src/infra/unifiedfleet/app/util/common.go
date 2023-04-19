@@ -204,6 +204,9 @@ const gtransitHive string = "cros-mtv1950-144"
 // chromiumHive hive value for a chromium-cq DUT.
 const chromiumHive string = "chromium-cq"
 
+// chromiumHive hive value for a chrome-perf DUT.
+const chromePerfHive string = "chrome-perf"
+
 // GetHiveForDut returns the hive value for a DUT.
 //
 // hive value is derived from the DUT hostname.
@@ -214,6 +217,9 @@ func GetHiveForDut(hostname string) string {
 	}
 	if IsChromiumLegacyHost(hostname) {
 		return chromiumHive
+	}
+	if IsChromePerfHost(hostname) {
+		return chromePerfHive
 	}
 	if sfo36OSRegex.MatchString(hostname) {
 		// 'e' is site site letter assigned to SFO36.

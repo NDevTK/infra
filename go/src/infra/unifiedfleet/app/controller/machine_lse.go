@@ -1109,6 +1109,9 @@ func validateCreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE,
 		if util.IsInChromiumPool(pools) != util.IsChromiumLegacyHost(machinelse.GetName()) {
 			return status.Errorf(codes.FailedPrecondition, "chromium DUTs has to have prefix of 'chromium-' and in pool 'chromium'\n")
 		}
+		if util.IsChromePerfHost(machinelse.GetName()) != util.IsInChromePerfPool(pools) {
+			return status.Errorf(codes.FailedPrecondition, "chrome perf DUTs has to have prefix 'chrome-perf-' and in pool 'chrome.tests.pinpoint' or 'chrome.tests.perf'")
+		}
 		if util.IsInChromePool(pools) != util.IsChromeLegacyHost(machinelse.GetName()) {
 			return status.Errorf(codes.FailedPrecondition, "chrome DUTs has to have prefix of 'chrome-' and in pool 'chrome'\n")
 		}

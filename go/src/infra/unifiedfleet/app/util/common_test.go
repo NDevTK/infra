@@ -21,6 +21,7 @@ func TestGetHiveForDut(t *testing.T) {
 		So(GetHiveForDut("chromeos8-foo"), ShouldEqual, "e")
 		So(GetHiveForDut(ChromiumNamePrefix), ShouldEqual, chromiumHive)
 		So(GetHiveForDut("chromium-bar"), ShouldEqual, "chromium-cq")
+		So(GetHiveForDut("chrome-perf-chromeos8-host2"), ShouldEqual, chromePerfHive)
 	})
 }
 

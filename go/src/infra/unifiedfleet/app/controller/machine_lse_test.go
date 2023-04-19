@@ -217,6 +217,22 @@ func TestCreateMachineLSE(t *testing.T) {
 			So(err.Error(), ShouldContainSubstring, "chrome DUTs has to have prefix")
 		})
 
+		Convey("Create new machineLSE ChromePerf DUT with mismatched pools", func() {
+			machine1 := &ufspb.Machine{
+				Name: "chrome-perf-asset3",
+			}
+			_, merr := registration.CreateMachine(ctx, machine1)
+			So(merr, ShouldBeNil)
+
+			dut := mockDutMachineLSE("chrome-perf-dut3")
+			dut.Machines = []string{"chrome-perf-asset3"}
+			dut.GetChromeosMachineLse().GetDeviceLse().GetDut().Pools = []string{"chrome"}
+			resp, err := CreateMachineLSE(ctx, dut, nil)
+			So(resp, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "chrome perf DUTs has to have prefix")
+		})
+
 		Convey("Create new machineLSE with existing machines, specify ip with wrong vlan name", func() {
 			_, err := registration.CreateNic(ctx, &ufspb.Nic{
 				Name:    "eth1",
