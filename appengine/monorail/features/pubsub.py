@@ -10,7 +10,6 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-import httplib2
 import logging
 import sys
 
@@ -76,8 +75,8 @@ class PublishPubsubIssueChangeTask(jsonfeed.InternalTask):
 def set_up_pubsub_api():
   """Attempts to build and return a pub/sub API client."""
   try:
-    return build('pubsub', 'v1', http=httplib2.Http(),
-        credentials=GoogleCredentials.get_application_default())
+    return build(
+        'pubsub', 'v1', credentials=GoogleCredentials.get_application_default())
   except (Oauth2ClientError, ApiClientError):
     logging.error("Error setting up Pub/Sub API: %s" % sys.exc_info()[0])
     return None
