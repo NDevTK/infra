@@ -6,10 +6,11 @@ package shared
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"math"
 	"time"
+
+	"go.chromium.org/luci/common/errors"
 )
 
 // Options wraps retry options.
@@ -40,6 +41,7 @@ var (
 // If retryOpts.Retries == 0, it will execute doFunc just once without any retries.
 // If retryOpts.Retries < 0, it retries an infinite number of times.
 func DoWithRetry(ctx context.Context, retryOpts Options, doFunc DoFunc) error {
+	var err error
 	for i := 0; retryOpts.Retries < 0 || i <= retryOpts.Retries; i++ {
 		var d time.Duration
 		if i > 0 {
@@ -50,12 +52,12 @@ func DoWithRetry(ctx context.Context, retryOpts Options, doFunc DoFunc) error {
 		case <-ctx.Done():
 			return ctx.Err()
 		case <-time.After(d):
-			err := doFunc()
+			err = doFunc()
 			if err == nil {
 				return nil
 			}
 			log.Printf("DoWithRetry [%d]: %v", i, err)
 		}
 	}
-	return fmt.Errorf("failed after %d retries", retryOpts.Retries)
+	return errors.Annotate(err, "failed after %d retries", retryOpts.Retries).Err()
 }
