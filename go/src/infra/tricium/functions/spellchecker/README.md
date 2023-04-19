@@ -13,17 +13,6 @@ $ go build
 $ ./spellchecker --input=test --output=out
 ```
 
-## Deployment
-
-Deploy a new version of the analyzer using CIPD:
-
-```
-$ make
-$ cipd create -pkg-def=cipd.yaml
-<outputs the VERSION>
-$ cipd set-ref infra/tricium/function/spellchecker -ref live -version VERSION
-```
-
 ## Adding Terms to Dictionary
 
 The `dictionary.txt` file comes from the [`codespell`] repo. If you believe the

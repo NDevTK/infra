@@ -2,10 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-.PHONY: build-for-deployment fetch-dict test clean
-
-build-for-deployment: fetch-dict
-	GOOS=linux GOARCH=amd64 go build
+.PHONY: fetch-dict test clean
 
 spellchecker: fetch-dict
 	go build
