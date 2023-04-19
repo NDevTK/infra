@@ -129,8 +129,13 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
           ctx = self.update_context(pinnable_cust, ctx)
           resolved_cust.extend(pinnable_cust)
         else:
+          unpinned_custs = ''
+          for cust in custs:
+            if cust not in resolved_cust:
+              unpinned_custs += cust.id + '<br>'
+          reason = 'Cannot pin custs [<br> {}].'.format(unpinned_custs)
           raise self.m.step.StepFailure(
-              'Cannot pin all configs. Cyclical dependency?')
+              'Cyclical dependency?: {}'.format(reason))
       return resolved_cust
 
   def pin_customizations(self, customizations, ctx):
