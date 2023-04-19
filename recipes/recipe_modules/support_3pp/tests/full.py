@@ -540,25 +540,20 @@ def GenTests(api):
       + api.post_process(post_process.DropExpectation)
   )
 
-  yield (api.test('empty-spec')
-      + api.properties(GOOS='linux', GOARCH='amd64')
-      + api.step_data('find package specs',
-                      api.file.glob_paths(['empty/3pp.pb']))
-      + api.post_process(post_process.StatusFailure)
-      + api.post_process(post_process.DropExpectation)
-  )
+  yield (api.test('empty-spec', status='FAILURE') +
+         api.properties(GOOS='linux', GOARCH='amd64') + api.step_data(
+             'find package specs', api.file.glob_paths(['empty/3pp.pb'])) +
+         api.post_process(post_process.StatusFailure) +
+         api.post_process(post_process.DropExpectation))
 
-  yield (api.test('bad-spec')
-      + api.properties(GOOS='linux', GOARCH='amd64')
-      + api.step_data(
-          'find package specs',
-          api.file.glob_paths(['bad/3pp.pb']))
-         + api.step_data(mk_name("load package specs", "read 'bad/3pp.pb'"),
-                      api.file.read_text('narwhal'))
-      + api.expect_exception('BadParse')
-      + api.post_process(post_process.StatusException)
-      + api.post_process(post_process.DropExpectation)
-  )
+  yield (api.test('bad-spec', status='FAILURE') +
+         api.properties(GOOS='linux', GOARCH='amd64') + api.step_data(
+             'find package specs', api.file.glob_paths(['bad/3pp.pb'])) +
+         api.step_data(
+             mk_name("load package specs", "read 'bad/3pp.pb'"),
+             api.file.read_text('narwhal')) + api.expect_exception('BadParse') +
+         api.post_process(post_process.StatusException) +
+         api.post_process(post_process.DropExpectation))
 
   yield (api.test('duplicate-load')
       + api.properties(GOOS='linux', GOARCH='amd64', load_dupe=True)
@@ -607,36 +602,31 @@ def GenTests(api):
   }
   upload { pkg_prefix: "build_tools" }
   '''
-  yield (api.test('building-package-failed')
-      + api.properties(GOOS='linux', GOARCH='amd64')
-      + api.properties(key_path=KEY_PATH)
-      + api.step_data(
+  yield (
+      api.test('building-package-failed', status='FAILURE') +
+      api.properties(GOOS='linux', GOARCH='amd64') +
+      api.properties(key_path=KEY_PATH) + api.step_data(
           'find package specs',
-          api.file.glob_paths(['%s/3pp.pb' % pkg for pkg in ['dep', 'tool']]))
-      + api.step_data(
+          api.file.glob_paths(['%s/3pp.pb' % pkg for pkg in ['dep', 'tool']])) +
+      api.step_data(
           mk_name("load package specs", "read 'dep/3pp.pb'"),
-          api.file.read_text(dep))
-      + api.step_data(
-          mk_name("load package specs", "read 'tool/3pp.pb'"),
-          api.file.read_text(tool))
-      + api.step_data(
+          api.file.read_text(dep)) + api.step_data(
+              mk_name("load package specs", "read 'tool/3pp.pb'"),
+              api.file.read_text(tool)) +
+      api.step_data(
           mk_name(
-              'building pkg/dep', 'run installation',
-              'install.sh '
+              'building pkg/dep', 'run installation', 'install.sh '
               '[START_DIR]/3pp/wd/pkg/dep/linux-amd64/1.5.0-rc1/out '
               '[START_DIR]/3pp/wd/pkg/dep/linux-amd64/1.5.0-rc1/deps_prefix'),
-          retcode=1)
-      + api.override_step_data(
-          mk_name('building build_tools/tool',
-                  'fetch sources',
-                  'installing tools',
-                  'building pkg/dep',
-                  'cipd describe 3pp/pkg/dep/linux-amd64'),
-          api.cipd.example_describe(
-          '3pp/pkg/dep/linux-amd64',
-          version='version:1.5.0-rc1', test_data_tags=['version:1.5.0-rc1']),
-      )
-  )
+          retcode=1) + api.override_step_data(
+              mk_name('building build_tools/tool', 'fetch sources',
+                      'installing tools', 'building pkg/dep',
+                      'cipd describe 3pp/pkg/dep/linux-amd64'),
+              api.cipd.example_describe(
+                  '3pp/pkg/dep/linux-amd64',
+                  version='version:1.5.0-rc1',
+                  test_data_tags=['version:1.5.0-rc1']),
+          ))
 
   # test for patch version
   tool1 = '''
@@ -1048,7 +1038,7 @@ def GenTests(api):
     upload { pkg_prefix: "prefix/deps" }
     ''',).items())
   test = (
-      api.test('missing-dep') + api.platform('linux', 64) +
+      api.test('missing-dep', status='FAILURE') + api.platform('linux', 64) +
       api.properties(GOOS='linux', GOARCH='amd64') +
       api.buildbucket.ci_build() +
       api.step_data('find package specs',
@@ -1072,7 +1062,7 @@ def GenTests(api):
     upload { pkg_prefix: "prefix/deps" }
     ''',).items())
   test = (
-      api.test('missing-tool') + api.platform('linux', 64) +
+      api.test('missing-tool', status='FAILURE') + api.platform('linux', 64) +
       api.properties(GOOS='linux', GOARCH='amd64') +
       api.buildbucket.ci_build() +
       api.step_data('find package specs',
@@ -1095,7 +1085,7 @@ def GenTests(api):
     upload { pkg_prefix: "prefix/deps" }
     ''',).items())
   test = (
-      api.test('missing-pkg') + api.platform('linux', 64) +
+      api.test('missing-pkg', status='FAILURE') + api.platform('linux', 64) +
       api.properties(GOOS='linux', GOARCH='amd64', to_build=['prefix/deps/b']) +
       api.buildbucket.ci_build() +
       api.step_data('find package specs',

@@ -279,14 +279,16 @@ def GenTests(api):
       api.post_process(
           post_process.ResultReasonRE,
           'Must specify either 32-bit or 64-bit windows platform.') +
-      api.post_process(post_process.DropExpectation))
+      api.post_process(post_process.DropExpectation),
+      status='FAILURE')
   # Must explicitly specify the platforms to build on Windows.
   yield api.test(
       'win-noplatforms',
       api.platform('win', 64) + api.post_process(
           post_process.ResultReasonRE,
           'Must specify either 32-bit or 64-bit windows platform.') +
-      api.post_process(post_process.DropExpectation))
+      api.post_process(post_process.DropExpectation),
+      status='FAILURE')
 
   yield api.test(
       'trybot non-wheels file CL',
