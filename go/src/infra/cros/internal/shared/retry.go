@@ -50,7 +50,7 @@ func DoWithRetry(ctx context.Context, retryOpts Options, doFunc DoFunc) error {
 		}
 		select {
 		case <-ctx.Done():
-			return ctx.Err()
+			return errors.Annotate(err, ctx.Err().Error()).Err()
 		case <-time.After(d):
 			err = doFunc()
 			if err == nil {
