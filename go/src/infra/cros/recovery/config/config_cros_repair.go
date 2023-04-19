@@ -46,6 +46,7 @@ func crosRepairPlan() *Plan {
 			"Backup CBI",
 			"Check CBI",
 			"Update provisioned info",
+			"Is crosid readbable",
 			"Set state: ready",
 			"Update special device labels",
 			"Collect dmesg logs from DUT",
@@ -3095,6 +3096,31 @@ func crosRepairActions() map[string]*Action {
 				"Reset DUT-state-reason for good DUT as it becomes stale.",
 			},
 			ExecName: "dut_reset_state_reason",
+		},
+		"Is crosid present": {
+			Docs: []string{
+				"Verify if crosid cli is present on the ChromeOS",
+			},
+			ExecName: "cros_run_command",
+			ExecExtraArgs: []string{
+				"host:",
+				"command:which crosid",
+			},
+		},
+		"Is crosid readbable": {
+			Docs: []string{
+				"Verify crosid cli is responsive.",
+			},
+			Conditions: []string{
+				"Device is SSHable",
+				"Is crosid present",
+			},
+			ExecName: "cros_run_command",
+			ExecExtraArgs: []string{
+				"host:",
+				"command:crosid",
+			},
+			AllowFailAfterRecovery: true,
 		},
 	}
 }
