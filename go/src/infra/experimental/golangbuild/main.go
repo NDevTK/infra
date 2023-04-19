@@ -70,6 +70,14 @@
 // to the golangbuild luciexe via the `--working-dir` flag. Be careful about where this working
 // directory lives; particularly, make sure it isn't a subdirectory of a Go module a directory
 // containing a go.mod file.
+//
+// ## Contributing
+//
+// To keep things organized and consistent, keep to the following guidelines:
+//   - Only functions generate steps. Methods never generate steps.
+//   - Keep step presentation and high-level ordering logic in main.go when possible.
+//   - Steps should be function-scoped. Steps should be created at the start of a function
+//     with the step end immediately deferred to function exit.
 package main
 
 import (
@@ -78,22 +86,15 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
 
-	"go.chromium.org/luci/auth"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
-	"go.chromium.org/luci/common/api/gerrit"
 	"go.chromium.org/luci/common/errors"
-	gerritpb "go.chromium.org/luci/common/proto/gerrit"
-	"go.chromium.org/luci/common/system/environ"
-	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"go.chromium.org/luci/luciexe/build"
-	"go.chromium.org/luci/luciexe/build/cv"
 
 	"infra/experimental/golangbuild/golangbuildpb"
 )
@@ -107,17 +108,6 @@ func main() {
 
 func run(ctx context.Context, args []string, st *build.State, inputs *golangbuildpb.Inputs) (err error) {
 	log.Printf("run starting")
-	authOpts := chromeinfra.SetDefaultAuthOptions(auth.Options{
-		Scopes: []string{
-			"https://www.googleapis.com/auth/userinfo.email",
-			"https://www.googleapis.com/auth/gerritcodereview",
-		},
-	})
-	httpClient, err := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts).Client()
-	if err != nil {
-		return err
-	}
-	log.Printf("auth created")
 
 	// Install some tools we'll need, including a bootstrap toolchain.
 	toolsRoot, err := installTools(ctx)
@@ -129,74 +119,25 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	// Define working directory.
 	cwd, err := os.Getwd()
 	if err != nil {
-		return errors.Annotate(err, "Get CWD").Err()
+		return build.AttachStatus(errors.Annotate(err, "Get CWD").Err(), bbpb.Status_INFRA_FAILURE, nil)
 	}
-	goroot := filepath.Join(cwd, "goroot")
-	gocacheDir := filepath.Join(cwd, "gocache")
+
+	spec, err := deriveBuildSpec(ctx, cwd, toolsRoot, st, inputs)
+	if err != nil {
+		return build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
+	}
 
 	// Set up environment.
-	env := environ.FromCtx(ctx)
-	env.Load(inputs.Env)
-	env.Set("GOROOT_BOOTSTRAP", filepath.Join(toolsRoot, "go_bootstrap"))
-	env.Set("GOPATH", filepath.Join(cwd, "gopath")) // Explicitly set to an empty per-build directory, to avoid reusing the implicit default one.
-	env.Set("GOBIN", "")
-	env.Set("GOROOT", "") // Clear GOROOT because it's likely someone has one set locally, e.g. for luci-go development.
-	env.Set("GOCACHE", gocacheDir)
-	env.Set("GO_BUILDER_NAME", st.Build().GetBuilder().GetBuilder()) // TODO(mknyszek): This is underspecified. We may need Project and Bucket.
-	// Use our tools before the system tools. Notably, use raw Git rather than the Chromium wrapper.
-	env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(toolsRoot, "bin"), os.PathListSeparator, env.Get("PATH")))
-
-	if runtime.GOOS == "windows" {
-		// TODO(heschi): select gcc32 for GOARCH=i386
-		env.Set("PATH", fmt.Sprintf("%v%c%v", env.Get("PATH"), os.PathListSeparator, filepath.Join(toolsRoot, "cc/windows/gcc64/bin")))
-	}
-	ctx = env.SetInCtx(ctx)
-
-	// Grab and validate commit/change/presubmit state.
-	isDryRun := false
-	if mode, err := cv.RunMode(ctx); err == nil {
-		isDryRun = strings.HasSuffix(mode, "DRY_RUN")
-	} else if err != cv.ErrNotActive {
-		return err
-	}
-	gitilesCommit := st.Build().GetInput().GetGitilesCommit()
-	var gerritChange *bbpb.GerritChange
-	if changes := st.Build().GetInput().GetGerritChanges(); len(changes) > 1 {
-		return fmt.Errorf("no support for multiple GerritChanges")
-	} else if len(changes) != 0 {
-		gerritChange = changes[0]
-	}
-	var changedProject string
-	switch {
-	case gerritChange != nil && gitilesCommit != nil:
-		return fmt.Errorf("only a Gerrit change or a Gitiles commit is supported, not both")
-	case gerritChange == nil && gitilesCommit != nil:
-		if gitilesCommit.Host != goHost {
-			return fmt.Errorf("unsupported host %q, want %q", gitilesCommit.Host, goHost)
-		}
-		changedProject = gitilesCommit.Project
-	case gerritChange != nil && gitilesCommit == nil:
-		if gerritChange.Host != goReviewHost {
-			return fmt.Errorf("unsupported host %q, want %q", gerritChange.Host, goReviewHost)
-		}
-		changedProject = gerritChange.Project
-	default:
-		return fmt.Errorf("no commit or change specified for build and test")
-	}
-	if inputs.Project != "go" && changedProject != inputs.Project && changedProject != "go" {
-		// This case is something like a "build" commit for an "image" build, which
-		// doesn't make any sense.
-		return fmt.Errorf("unexpected change and project pairing: %s vs. %s", changedProject, inputs.Project)
-	}
+	ctx = spec.setEnv(ctx)
 
 	// Fetch the main Go repository into goroot.
-	if changedProject == "go" {
-		if err := fetchRepo(ctx, httpClient, "go", inputs.GoBranch, goroot, gitilesCommit, gerritChange, isDryRun); err != nil {
+	if spec.invokedSrc.project == "go" {
+		if err := fetchRepo(ctx, spec.invokedSrc, spec.goroot); err != nil {
 			return err
 		}
 	} else {
 		// We're fetching the Go repo for a subrepo build against a subrepo CL.
-		if err := fetchRepo(ctx, httpClient, "go", inputs.GoBranch, goroot, nil, nil, isDryRun); err != nil {
+		if err := fetchRepo(ctx, &sourceSpec{project: "go", branch: inputs.GoBranch}, spec.goroot); err != nil {
 			return err
 		}
 	}
@@ -207,20 +148,14 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	// and CompileGOARCH repeated fields in the input proto to identify what to build.
 	// TODO(mknyszek): Grab a prebuilt copy available.
 	// TODO(mknyszek): Upload the result of make.bash somewhere that downstream builders can find.
-	if err := runGoScript(ctx, goroot, "make"+scriptExt()); err != nil {
+	if err := runCommandAsStep(ctx, "make"+scriptExt(), spec.goScriptCmd(ctx, "make"+scriptExt()), false); err != nil {
 		return err
 	}
 
-	if inputs.Project == "go" {
+	if spec.inputs.Project == "go" {
 		// Trigger downstream builders (subrepo builders) with the commit and/or Gerrit change we got.
-		if len(inputs.BuildersToTrigger) > 0 {
-			err := triggerBuilders(ctx,
-				filepath.Join(toolsRoot, "bin", "bb"),
-				gitilesCommit,
-				gerritChange,
-				inputs.BuildersToTrigger...,
-			)
-			if err != nil {
+		if len(spec.inputs.BuildersToTrigger) > 0 {
+			if err := triggerBuilders(ctx, spec); err != nil {
 				return err
 			}
 		}
@@ -231,50 +166,39 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		// triggering N test builders with a subset of those tests in their properties.
 		// Pass the newly-built toolchain via CAS.
 		distTestArgs := []string{"tool", "dist", "test", "-no-rebuild"}
-		if inputs.RaceMode {
+		if spec.inputs.RaceMode {
 			distTestArgs = append(distTestArgs, "-race")
 		}
-		if err := runGo(ctx, "go tool dist test", goroot, goroot, distTestArgs...); err != nil {
+		testCmd := spec.goCmd(ctx, spec.goroot, distTestArgs...)
+		if err := runCommandAsStep(ctx, "go tool dist test", testCmd, false); err != nil {
 			return err
 		}
 	} else {
-		if len(inputs.BuildersToTrigger) != 0 {
-			return fmt.Errorf("specified builders to trigger for unsupported project")
-		}
-
 		// Fetch the target repository into targetrepo.
-		if changedProject == "go" {
-			if err := fetchRepo(ctx, httpClient, inputs.Project, mainBranch, "targetrepo", nil, nil, isDryRun); err != nil {
+		if spec.invokedSrc.project == "go" {
+			if err := fetchRepo(ctx, &sourceSpec{project: inputs.Project, branch: mainBranch}, spec.subrepoDir); err != nil {
 				return err
 			}
 		} else {
-			// We're testing the tip of inputs.Project against a Go commit.
-			if err := fetchRepo(ctx, httpClient, inputs.Project, mainBranch, "targetrepo", gitilesCommit, gerritChange, isDryRun); err != nil {
+			// We're testing the tip of spec.inputs.Project against a Go commit.
+			if err := fetchRepo(ctx, spec.invokedSrc, spec.subrepoDir); err != nil {
 				return err
 			}
 		}
 
 		// Test this specific subrepo.
-		if err := runSubrepoTests(ctx, goroot, "targetrepo", inputs.RaceMode,
-			filepath.Join(toolsRoot, "bin", "rdb"),
-			filepath.Join(toolsRoot, "bin", "result_adapter")); err != nil {
+		goArgs := []string{"test", "-json"}
+		if spec.inputs.RaceMode {
+			goArgs = append(goArgs, "-race")
+		}
+		goArgs = append(goArgs, "./...")
+		testCmd := spec.goCmd(ctx, spec.subrepoDir, goArgs...)
+		spec.wrapTestCmd(testCmd)
+		if err := runCommandAsStep(ctx, "go test -json [-race] ./...", testCmd, false); err != nil {
 			return err
 		}
 	}
 	return nil
-}
-
-// scriptExt returns the extension to use for
-// GOROOT/src/{make,all} scripts on this GOOS.
-func scriptExt() string {
-	switch runtime.GOOS {
-	case "windows":
-		return ".bat"
-	case "plan9":
-		return ".rc"
-	default:
-		return ".bash"
-	}
 }
 
 // cipdDeps is an ensure file that describes all our CIPD dependencies.
@@ -324,209 +248,20 @@ func installTools(ctx context.Context) (toolsRoot string, err error) {
 	return toolsRoot, nil
 }
 
-const (
-	goHost       = "go.googlesource.com"
-	goReviewHost = "go-review.googlesource.com"
-	// N.B. Unfortunately Go still calls the main branch "master" due to technical issues.
-	mainBranch = "master" // nocheck
-)
-
-func fetchRepo(ctx context.Context, hc *http.Client, project, branch, dst string, commit *bbpb.GitilesCommit, change *bbpb.GerritChange, isDryRun bool) (err error) {
-	step, ctx := build.StartStep(ctx, "fetch "+project)
-	defer func() {
-		// Any failure in this function is an infrastructure failure.
-		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
-		step.End(err)
-	}()
-
-	switch {
-	case change != nil && isDryRun:
-		return fetchRepoChangeAsIs(ctx, hc, dst, change)
-	case change != nil && !isDryRun:
-		return fetchRepoChangeWithRebase(ctx, hc, dst, change)
-	case commit != nil:
-		if isDryRun {
-			return fmt.Errorf("DRY_RUN is unexpectedly set in the commit case")
-		}
-		return fetchRepoAtCommit(ctx, hc, dst, commit)
+// scriptExt returns the extension to use for
+// GOROOT/src/{make,all} scripts on this GOOS.
+func scriptExt() string {
+	switch runtime.GOOS {
+	case "windows":
+		return ".bat"
+	case "plan9":
+		return ".rc"
+	default:
+		return ".bash"
 	}
-	return fetchRepoAtBranch(ctx, project, dst, branch)
 }
 
-// fetchRepoChangeAsIs checks out a change to be tested as is, without rebasing.
-func fetchRepoChangeAsIs(ctx context.Context, hc *http.Client, dst string, change *bbpb.GerritChange) error {
-	// TODO(mknyszek): We're cloning tip here then fetching what we actually want because git doesn't
-	// provide a good way to clone at a specific ref or commit. Is there a way to speed this up?
-	// Maybe caching is sufficient?
-	if err := runGit(ctx, "git clone", "-C", ".", "clone", "--depth", "1", "https://"+change.Host+"/"+change.Project, dst); err != nil {
-		return err
-	}
-	ref := fmt.Sprintf("refs/changes/%d/%d/%d", change.Change%100, change.Change, change.Patchset)
-	if err := runGit(ctx, "git fetch", "-C", dst, "fetch", "https://"+change.Host+"/"+change.Project, ref); err != nil {
-		return err
-	}
-	if err := runGit(ctx, "git checkout", "-C", dst, "checkout", "FETCH_HEAD"); err != nil {
-		return err
-	}
-	if change.Project == "go" {
-		if err := writeVersionFile(ctx, dst, fmt.Sprintf("%d/%d", change.Change, change.Patchset)); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// fetchRepoChangeWithRebase checks out a change, rebasing it on top of its branch.
-func fetchRepoChangeWithRebase(ctx context.Context, hc *http.Client, dst string, change *bbpb.GerritChange) error {
-	// For submit, fetch HEAD for the branch this change is for, fetch the CL, and cherry-pick it.
-	gc, err := gerrit.NewRESTClient(hc, change.Host, true)
-	if err != nil {
-		return err
-	}
-	changeInfo, err := gc.GetChange(ctx, &gerritpb.GetChangeRequest{
-		Number:  change.Change,
-		Project: change.Project,
-	})
-	if err != nil {
-		return err
-	}
-	branch := changeInfo.Branch
-	if err := runGit(ctx, "git clone", "-C", ".", "clone", "--depth", "1", "-b", branch, "https://"+change.Host+"/"+change.Project, dst); err != nil {
-		return err
-	}
-	ref := fmt.Sprintf("refs/changes/%d/%d/%d", change.Change%100, change.Change, change.Patchset)
-	if err := runGit(ctx, "git fetch", "-C", dst, "fetch", "https://"+change.Host+"/"+change.Project, ref); err != nil {
-		return err
-	}
-	if err := runGit(ctx, "git cherry-pick", "-C", dst, "cherry-pick", "FETCH_HEAD"); err != nil {
-		return err
-	}
-	if change.Project == "go" {
-		if err := writeVersionFile(ctx, dst, fmt.Sprintf("%d/%d", change.Change, change.Patchset)); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// fetchRepoAtCommit checks out a commit to be tested as is.
-func fetchRepoAtCommit(ctx context.Context, hc *http.Client, dst string, commit *bbpb.GitilesCommit) error {
-	// TODO(mknyszek): This is a full git checkout, which is wasteful. Consider caching.
-	if err := runGit(ctx, "git clone", "-C", ".", "clone", "https://"+commit.Host+"/"+commit.Project, dst); err != nil {
-		return err
-	}
-	if err := runGit(ctx, "git checkout", "-C", dst, "checkout", commit.Id); err != nil {
-		return err
-	}
-	if commit.Project == "go" {
-		if err := writeVersionFile(ctx, dst, commit.Id); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// fetchRepoAtBranch checks out the head of the specified branch of the main Go repository.
-func fetchRepoAtBranch(ctx context.Context, project, dst, branch string) error {
-	if err := runGit(ctx, "git clone", "-C", ".", "clone", "--depth", "1", "-b", branch, "https://"+goHost+"/"+project, dst); err != nil {
-		return err
-	}
-	if project == "go" && branch == mainBranch {
-		// Write a VERSION file when testing the main branch.
-		// Release branches have a checked-in VERSION file, reuse it as is for now.
-		if err := writeVersionFile(ctx, dst, "tip"); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func writeVersionFile(ctx context.Context, dst, version string) error {
-	return writeFile(ctx, filepath.Join(dst, "VERSION"), "devel "+version)
-}
-
-func writeFile(ctx context.Context, path, data string) (err error) {
-	step, ctx := build.StartStep(ctx, fmt.Sprintf("write %s", filepath.Base(path)))
-	defer func() {
-		// Any failure in this function is an infrastructure failure.
-		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
-		step.End(err)
-	}()
-	contentsLog := step.Log("contents")
-
-	f, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		r := f.Close()
-		if err == nil {
-			err = r
-		} else {
-			io.WriteString(step.Log("close error"), r.Error())
-		}
-	}()
-	_, err = io.WriteString(io.MultiWriter(contentsLog, f), data)
-	return err
-}
-
-func runGit(ctx context.Context, stepName string, args ...string) (err error) {
-	return runCommandAsStep(ctx, stepName, exec.CommandContext(ctx, "git", args...), true)
-}
-
-func runGoScript(ctx context.Context, goroot, script string) (err error) {
-	dir := filepath.Join(goroot, "src")
-	cmd := exec.CommandContext(ctx, filepath.FromSlash("./"+script))
-	cmd.Dir = dir
-	return runCommandAsStep(ctx, script, cmd, false)
-}
-
-// runGo runs the go command from goroot in dir as a step.
-func runGo(ctx context.Context, stepName, goroot, dir string, args ...string) error {
-	env := environ.FromCtx(ctx)
-	// Ensure the go binary found in PATH is the same as the one we're about to execute.
-	env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(goroot, "bin"), os.PathListSeparator, env.Get("PATH")))
-
-	// Run the command.
-	cmd := exec.CommandContext(ctx, filepath.Join(goroot, "bin", "go"), args...)
-	cmd.Dir = dir
-	cmd.Env = env.Sorted()
-	return runCommandAsStep(ctx, stepName, cmd, false)
-}
-
-// runGoWrapped runs the go command from goroot in dir as a step.
-// It wraps the go command invocation with the provided rdb (go/result-sink#resultsink-on-ci)
-// and result_adapter (go/result-sink#result-adapter) to stream test results to ResultSink.
-func runGoWrapped(ctx context.Context, stepName, goroot, dir, rdb, resultAdapter string, goArgs ...string) error {
-	env := environ.FromCtx(ctx)
-	// Ensure the go binary found in PATH is the same as the one we're about to execute.
-	env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(goroot, "bin"), os.PathListSeparator, env.Get("PATH")))
-
-	cmd := exec.CommandContext(ctx, rdb, append([]string{"stream", "--",
-		resultAdapter, "go", "--",
-		filepath.Join(goroot, "bin", "go")}, goArgs...)...)
-	cmd.Dir = dir
-	cmd.Env = env.Sorted()
-	return runCommandAsStep(ctx, stepName, cmd, false)
-}
-
-// runSubrepoTests runs tests for Go packages in the module at dir
-// using the Go toolchain at goroot.
-//
-// TODO(dmitshur): For final version, don't forget to also test packages in nested modules.
-// TODO(dmitshur): Improve coverage (at cost of setup complexity) by running tests outside their repositories. See go.dev/issue/34352.
-func runSubrepoTests(ctx context.Context, goroot, dir string, race bool, rdb, resultAdapter string) error {
-	goArgs := []string{"test", "-json"}
-	if race {
-		goArgs = append(goArgs, "-race")
-	}
-	goArgs = append(goArgs, "./...")
-	return runGoWrapped(ctx, "go test -json [-race] ./...", goroot, dir, rdb, resultAdapter, goArgs...)
-}
-
-// triggerBuilders triggers builds for downstream builders using the same commit
-// and/or changes. Note: commit or changes must be specified, but not both.
-func triggerBuilders(ctx context.Context, bbPath string, commit *bbpb.GitilesCommit, change *bbpb.GerritChange, builders ...string) (err error) {
+func triggerBuilders(ctx context.Context, spec *buildSpec) (err error) {
 	step, ctx := build.StartStep(ctx, "trigger downstream builders")
 	defer func() {
 		// Any failure in this function is an infrastructure failure.
@@ -536,26 +271,23 @@ func triggerBuilders(ctx context.Context, bbPath string, commit *bbpb.GitilesCom
 
 	// Scribble down the builders we're triggering.
 	buildersLog := step.Log("builders")
-	if _, err := io.WriteString(buildersLog, strings.Join(builders, "\n")+"\n"); err != nil {
+	if _, err := io.WriteString(buildersLog, strings.Join(spec.inputs.BuildersToTrigger, "\n")+"\n"); err != nil {
 		return err
 	}
 
 	// Figure out the arguments to bb.
 	bbArgs := []string{"add"}
-	switch {
-	case commit != nil && change == nil:
+	if spec.invokedSrc.commit != nil {
+		commit := spec.invokedSrc.commit
 		bbArgs = append(bbArgs, "-commit", fmt.Sprintf("https://%s/%s/+/%s", commit.Host, commit.Project, commit.Id))
-	case commit == nil && change != nil:
-		bbArgs = append(bbArgs, "-cl", fmt.Sprintf("https://%s/c/%s/+/%d/%d", change.Host, change.Project, change.Change, change.Patchset))
-	case commit == nil && change == nil:
-		return fmt.Errorf("no source information specified")
-	default:
-		return fmt.Errorf("specifying both a commit and a Gerrit change is unsupported")
 	}
-	bbArgs = append(bbArgs, builders...)
+	if spec.invokedSrc.change != nil {
+		change := spec.invokedSrc.change
+		bbArgs = append(bbArgs, "-cl", fmt.Sprintf("https://%s/c/%s/+/%d/%d", change.Host, change.Project, change.Change, change.Patchset))
+	}
+	bbArgs = append(bbArgs, spec.inputs.BuildersToTrigger...)
 
-	// Run bb add.
-	return runCommandAsStep(ctx, "bb add", exec.CommandContext(ctx, bbPath, bbArgs...), true)
+	return runCommandAsStep(ctx, "bb add", spec.toolCmd(ctx, "bb", bbArgs...), true)
 }
 
 // runCommandAsStep runs the provided command as a build step.
@@ -574,36 +306,36 @@ func runCommandAsStep(ctx context.Context, stepName string, cmd *exec.Cmd, infra
 	}()
 
 	// Log the full command we're executing.
+	//
+	// Put each env var on its own line to actually make this readable.
+	envs := cmd.Env
+	if envs == nil {
+		envs = os.Environ()
+	}
 	var fullCmd bytes.Buffer
-	envs := environ.FromCtx(ctx).Sorted()
 	for _, env := range envs {
 		fullCmd.WriteString(env)
-		fullCmd.WriteString(" ")
+		fullCmd.WriteString("\n")
 	}
 	if cmd.Dir != "" {
 		fullCmd.WriteString("PWD=")
 		fullCmd.WriteString(cmd.Dir)
-		fullCmd.WriteString(" ")
+		fullCmd.WriteString("\n")
 	}
 	fullCmd.WriteString(cmd.String())
-	io.Copy(step.Log("commands"), &fullCmd)
+	if _, err := io.Copy(step.Log("command"), &fullCmd); err != nil {
+		return err
+	}
 
 	// Run the command.
-	stdout := step.Log("stdout")
-	stderr := step.Log("stderr")
-	cmd.Env = envs
-	cmd.Stdout = stdout
-	cmd.Stderr = stderr
+	//
+	// Combine output because it's annoying to pick one of stdout and stderr
+	// in the UI and be wrong.
+	output := step.Log("output")
+	cmd.Stdout = output
+	cmd.Stderr = output
 	if err := cmd.Run(); err != nil {
 		return errors.Annotate(err, "Failed to run %q", stepName).Err()
 	}
 	return nil
-}
-
-// Copied from go.googlesource.com/build/internal/untar/untar.go
-func validRelPath(p string) bool {
-	if p == "" || strings.Contains(p, `\`) || strings.HasPrefix(p, "/") || strings.Contains(p, "../") {
-		return false
-	}
-	return true
 }
