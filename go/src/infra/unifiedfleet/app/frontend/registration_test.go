@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -568,6 +568,37 @@ func TestDeleteMachine(t *testing.T) {
 	})
 }
 
+func TestRenameMachine(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	tf, validate := newTestFixtureWithContext(ctx, t)
+	defer validate()
+	Convey("RenameMachine", t, func() {
+		Convey("Rename an empty machine name", func() {
+			_, err := tf.Fleet.RenameMachine(tf.C, &ufsAPI.RenameMachineRequest{
+				Name: "",
+			})
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+		})
+		Convey("Rename a machine to an empty name", func() {
+			_, err := tf.Fleet.RenameMachine(tf.C, &ufsAPI.RenameMachineRequest{
+				Name:    "oldMachine",
+				NewName: "",
+			})
+			So(err, ShouldNotBeNil)
+		})
+		Convey("The new machine name after renaming doesn't follow machine name format", func() {
+			_, err := tf.Fleet.RenameMachine(tf.C, &ufsAPI.RenameMachineRequest{
+				Name:    "machines/oldMachine",
+				NewName: "newMachine",
+			})
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, ufsAPI.MachineNameFormat)
+		})
+	})
+}
+
 func TestUpdateRack(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
@@ -1091,6 +1122,37 @@ func TestDeleteNic(t *testing.T) {
 			So(resp, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, ufsAPI.InvalidCharacters)
+		})
+	})
+}
+
+func TestRenameNic(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	tf, validate := newTestFixtureWithContext(ctx, t)
+	defer validate()
+	Convey("RenameNic", t, func() {
+		Convey("Rename an empty nic name", func() {
+			_, err := tf.Fleet.RenameNic(tf.C, &ufsAPI.RenameNicRequest{
+				Name: "",
+			})
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+		})
+		Convey("Rename a nic to an empty name", func() {
+			_, err := tf.Fleet.RenameNic(tf.C, &ufsAPI.RenameNicRequest{
+				Name:    "oldNic",
+				NewName: "",
+			})
+			So(err, ShouldNotBeNil)
+		})
+		Convey("The new nic name after renaming doesn't follow nic name format", func() {
+			_, err := tf.Fleet.RenameNic(tf.C, &ufsAPI.RenameNicRequest{
+				Name:    "nics/oldNic",
+				NewName: "newNic",
+			})
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, ufsAPI.NicNameFormat)
 		})
 	})
 }
@@ -2302,6 +2364,37 @@ func TestDeleteSwitch(t *testing.T) {
 	})
 }
 
+func TestRenameSwitch(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	tf, validate := newTestFixtureWithContext(ctx, t)
+	defer validate()
+	Convey("RenameSwitch", t, func() {
+		Convey("Rename an empty switch name", func() {
+			_, err := tf.Fleet.RenameSwitch(tf.C, &ufsAPI.RenameSwitchRequest{
+				Name: "",
+			})
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+		})
+		Convey("Rename a switch to an empty name", func() {
+			_, err := tf.Fleet.RenameSwitch(tf.C, &ufsAPI.RenameSwitchRequest{
+				Name:    "oldSwitch",
+				NewName: "",
+			})
+			So(err, ShouldNotBeNil)
+		})
+		Convey("The new switch name after renaming doesn't follow switch name format", func() {
+			_, err := tf.Fleet.RenameSwitch(tf.C, &ufsAPI.RenameSwitchRequest{
+				Name:    "switches/oldSwitch",
+				NewName: "newSwitch",
+			})
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, ufsAPI.SwitchNameFormat)
+		})
+	})
+}
+
 func TestCreateAsset(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
@@ -2406,6 +2499,29 @@ func TestCreateAsset(t *testing.T) {
 				Asset: asset,
 			}
 			_, err := tf.Fleet.CreateAsset(tf.C, req)
+			So(err, ShouldNotBeNil)
+		})
+	})
+}
+
+func TestRenameAsset(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	tf, validate := newTestFixtureWithContext(ctx, t)
+	defer validate()
+	Convey("RenameAsset", t, func() {
+		Convey("Rename an empty asset name", func() {
+			_, err := tf.Fleet.RenameAsset(tf.C, &ufsAPI.RenameAssetRequest{
+				Name: "",
+			})
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, ufsAPI.EmptyName)
+		})
+		Convey("Rename an asset to an empty name", func() {
+			_, err := tf.Fleet.RenameAsset(tf.C, &ufsAPI.RenameAssetRequest{
+				Name:    "oldAsset",
+				NewName: "",
+			})
 			So(err, ShouldNotBeNil)
 		})
 	})

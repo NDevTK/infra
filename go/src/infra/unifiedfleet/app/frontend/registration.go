@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -155,16 +155,16 @@ func (fs *FleetServerImpl) RenameMachine(ctx context.Context, req *ufsAPI.Rename
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
-		return nil, err
+	if err = req.Validate(); err != nil {
+		return
 	}
-	machine, err := controller.RenameMachine(ctx, util.RemovePrefix(req.Name), util.RemovePrefix(req.NewName))
+	rsp, err = controller.RenameMachine(ctx, util.RemovePrefix(req.Name), util.RemovePrefix(req.NewName))
 	if err != nil {
-		return nil, err
+		return
 	}
 	// https://aip.dev/122 - as per AIP guideline
-	machine.Name = util.AddPrefix(util.MachineCollection, machine.Name)
-	return machine, err
+	rsp.Name = util.AddPrefix(util.MachineCollection, rsp.Name)
+	return
 }
 
 // UpdateRack updates the rack information in database.
@@ -268,16 +268,16 @@ func (fs *FleetServerImpl) RenameRack(ctx context.Context, req *ufsAPI.RenameRac
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
-		return nil, err
+	if err = req.Validate(); err != nil {
+		return
 	}
-	rack, err := controller.RenameRack(ctx, util.RemovePrefix(req.Name), util.RemovePrefix(req.NewName))
+	rsp, err = controller.RenameRack(ctx, util.RemovePrefix(req.Name), util.RemovePrefix(req.NewName))
 	if err != nil {
-		return nil, err
+		return
 	}
 	// https://aip.dev/122 - as per AIP guideline
-	rack.Name = util.AddPrefix(util.RackCollection, rack.Name)
-	return rack, err
+	rsp.Name = util.AddPrefix(util.RackCollection, rsp.Name)
+	return
 }
 
 // CreateNic creates nic entry in database.
@@ -393,16 +393,16 @@ func (fs *FleetServerImpl) RenameNic(ctx context.Context, req *ufsAPI.RenameNicR
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
-		return nil, err
+	if err = req.Validate(); err != nil {
+		return
 	}
-	nic, err := controller.RenameNic(ctx, util.RemovePrefix(req.Name), util.RemovePrefix(req.NewName))
+	rsp, err = controller.RenameNic(ctx, util.RemovePrefix(req.Name), util.RemovePrefix(req.NewName))
 	if err != nil {
-		return nil, err
+		return
 	}
 	// https://aip.dev/122 - as per AIP guideline
-	nic.Name = util.AddPrefix(util.NicCollection, nic.Name)
-	return nic, err
+	rsp.Name = util.AddPrefix(util.NicCollection, rsp.Name)
+	return
 }
 
 // CreateKVM creates kvm entry in database.
@@ -952,16 +952,16 @@ func (fs *FleetServerImpl) RenameSwitch(ctx context.Context, req *ufsAPI.RenameS
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
-		return nil, err
+	if err = req.Validate(); err != nil {
+		return
 	}
-	s, err := controller.RenameSwitch(ctx, util.RemovePrefix(req.Name), util.RemovePrefix(req.NewName))
+	rsp, err = controller.RenameSwitch(ctx, util.RemovePrefix(req.Name), util.RemovePrefix(req.NewName))
 	if err != nil {
-		return nil, err
+		return
 	}
 	// https://aip.dev/122 - as per AIP guideline
-	s.Name = util.AddPrefix(util.SwitchCollection, s.Name)
-	return nil, err
+	rsp.Name = util.AddPrefix(util.SwitchCollection, rsp.Name)
+	return
 }
 
 // CreateAsset creates an asset entry in database.
@@ -1062,8 +1062,8 @@ func (fs *FleetServerImpl) RenameAsset(ctx context.Context, req *ufsAPI.RenameAs
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()
-	if err := req.Validate(); err != nil {
-		return nil, err
+	if err = req.Validate(); err != nil {
+		return
 	}
 	name := util.RemovePrefix(req.Name)
 	newName := util.RemovePrefix(req.NewName)
