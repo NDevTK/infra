@@ -72,4 +72,5 @@ message ChromeBrowserRack {
 
 // ChromeOSRack refers to the rack in Chrome Browser lab
 message ChromeOSRack {
+    repeated Switch switch_objects = 1;
 }

@@ -32,9 +32,10 @@ func CreateNic(ctx context.Context, nic *ufspb.Nic) (*ufspb.Nic, error) {
 		hc := getNicHistoryClient(nic)
 
 		// Get browser machine to associate the nic
-		machine, err := getBrowserMachine(ctx, nic.GetMachine())
+		machineName := nic.GetMachine()
+		machine, err := registration.GetMachine(ctx, machineName)
 		if err != nil {
-			return errors.Annotate(err, "CreateNic - failed to get machine %s", nic.GetMachine()).Err()
+			return errors.Annotate(err, "CreateNic - machine %s doesn't exist", machineName).Err()
 		}
 
 		// Validate the input

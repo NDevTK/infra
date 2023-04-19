@@ -83,6 +83,22 @@ func IsInBrowserZone(name string) bool {
 	}
 }
 
+// IsInOSZone check if a given name(resource or zone name) indicates it's in OS zone.
+func IsInOSZone(name string) bool {
+	if strings.Contains(name, "ZONE_CHROMEOS") {
+		return true
+	}
+	switch name {
+	case "ZONE_SFO36_OS",
+		"ZONE_SFO36_OS_CHROMIUM",
+		"ZONE_CROS_GOOGLER_DESK",
+		"ZONE_SATLAB":
+		return true
+	default:
+		return false
+	}
+}
+
 // IsInSFPZone checks if a given zone name indicates it's a SfP zone. This check
 // looks for a string of format "ZONE_SFP_*"
 func IsSFPZone(zone string) bool {

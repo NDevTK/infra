@@ -194,10 +194,8 @@ func UpdateRack(ctx context.Context, rack *ufspb.Rack, mask *field_mask.FieldMas
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
 		return nil, errors.Annotate(err, "UpdateRack - failed to update rack %s in datastore", rack.Name).Err()
 	}
-	if oldRack.GetChromeBrowserRack() != nil {
-		// We fill the rack object with its switches/kvms/rpms from switch/kvm/rpm table
-		setRack(ctx, rack)
-	}
+	// We fill the rack object with its switches/kvms/rpms from switch/kvm/rpm table
+	setRack(ctx, rack)
 	return rack, nil
 }
 
@@ -863,14 +861,23 @@ func setSwitchesToRack(rack *ufspb.Rack, switches []*ufspb.Switch) {
 	if len(switches) <= 0 {
 		return
 	}
-	if rack.GetChromeBrowserRack() == nil {
+	if rack.GetChromeBrowserRack() != nil {
+		rack.GetChromeBrowserRack().SwitchObjects = switches
+	} else if ufsUtil.IsInBrowserZone(rack.GetLocation().GetZone().String()) {
 		rack.Rack = &ufspb.Rack_ChromeBrowserRack{
 			ChromeBrowserRack: &ufspb.ChromeBrowserRack{
 				SwitchObjects: switches,
 			},
 		}
-	} else {
-		rack.GetChromeBrowserRack().SwitchObjects = switches
+	}
+	if rack.GetChromeosRack() != nil {
+		rack.GetChromeosRack().SwitchObjects = switches
+	} else if ufsUtil.IsInOSZone(rack.GetLocation().GetZone().String()) {
+		rack.Rack = &ufspb.Rack_ChromeosRack{
+			ChromeosRack: &ufspb.ChromeOSRack{
+				SwitchObjects: switches,
+			},
+		}
 	}
 }
 
