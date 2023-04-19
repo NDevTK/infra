@@ -96,17 +96,17 @@ var (
 )
 
 func init() {
-	const desc = `Exporter for OTel traces. Valid options are "console", "grpc" and "none". Default is "none".
+	const desc = `Exporter for OTel traces. Valid options are "grpc" and "none".
 For values other than "none", -trace-target must be set.
 For "grpc", the format is "host:port" for an OTel collector service.
-For "console", -trace-target should be a path for the output file.`
+(default "none")`
 	flag.Func("trace-backend", desc, func(s string) error {
 		switch s {
-		case "console", "grpc", "none":
+		case "grpc", "none":
 			traceBackend = s
 			return nil
 		default:
-			return errors.Reason("invalid value %s. Allowed values are: %s", s, "console, grpc, none").Err()
+			return errors.Reason("invalid value %s. Allowed values are: %s", s, "grpc, none").Err()
 		}
 	})
 }
@@ -140,11 +140,10 @@ func innerMain() error {
 
 	if traceBackend != "" && traceBackend != "none" {
 		// Initialize tracing.
-		exp, err, close := initSpanExporter(ctx, traceBackend, *traceTarget)
+		exp, err := initSpanExporter(ctx, traceBackend, *traceTarget)
 		if err != nil {
 			return err
 		}
-		defer close()
 		cleanup := tracing.InitTracer(ctx, exp, version)
 		defer cleanup(ctx)
 	}
@@ -321,33 +320,21 @@ func newThrottleDevice(major, minor int64, rate uint64) *specs.LinuxThrottleDevi
 
 // initSpanExporter uses the traceBackend flag to instantiate the relevant span exporter.
 // initSpanExporter expects "target" to be specified and will error out if it is not.
-func initSpanExporter(ctx context.Context, traceBackend, target string) (_ trace.SpanExporter, _ error, close func() error) {
-	log.Printf("trace backend: %v", traceBackend)
+func initSpanExporter(ctx context.Context, traceBackend, target string) (trace.SpanExporter, error) {
+	log.Printf("trace export configuration: %v -> %v", traceBackend, target)
 	if target == "" {
-		return nil, errors.Reason("no trace target provided").Err(), nil
+		return nil, errors.Reason("no trace target provided").Err()
 	}
 	var exp trace.SpanExporter
 	var err error
-	var cleanup func() error
 	switch traceBackend {
-	case "console":
-		f, err := os.Create(target)
-		if err != nil {
-			return nil, err, nil
-		}
-		cleanup = f.Close
-		exp, err = tracing.NewConsoleExporter(f)
-		if err != nil {
-			cleanup()
-			return nil, err, nil
-		}
 	case "grpc":
 		exp, err = tracing.NewGRPCExporter(ctx, target)
 		if err != nil {
-			return nil, err, nil
+			return nil, err
 		}
 	default:
 		log.Panicf("unexpected value for trace backend: %v", traceBackend)
 	}
-	return exp, nil, cleanup
+	return exp, nil
 }

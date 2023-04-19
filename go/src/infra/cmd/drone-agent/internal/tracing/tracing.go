@@ -7,12 +7,10 @@ package tracing
 
 import (
 	"context"
-	"io"
 	"log"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
-	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
@@ -30,15 +28,6 @@ func InitTracer(ctx context.Context, exp sdktrace.SpanExporter, version string) 
 			log.Printf("Failed to shutdown tracer provider: %v", err)
 		}
 	}
-}
-
-// NewConsoleExporter returns a console exporter.
-func NewConsoleExporter(w io.Writer) (sdktrace.SpanExporter, error) {
-	return stdouttrace.New(
-		stdouttrace.WithWriter(w),
-		stdouttrace.WithPrettyPrint(),
-		stdouttrace.WithoutTimestamps(),
-	)
 }
 
 // NewGRPCExporter returns a gRPC exporter.
