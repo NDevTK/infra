@@ -90,9 +90,10 @@ def RunSteps(api, platforms, dry_run, rebuild, experimental,
     ref = api.tryserver.gerrit_change_fetch_ref
 
   with api.context(cwd=solution_path):
-    api.gclient.set_config('infra')
-    api.gclient.c.solutions[0].revision = ref
-    api.gclient.checkout(timeout=10 * 60)
+    api.gclient.set_config('infra_superproject')
+    api.gclient.checkout(
+        timeout=10 * 60, extra_sync_flags=['--revision',
+                                           'infra@%s' % ref])
     api.gclient.runhooks()
 
   # DISTUTILS_USE_SDK and MSSdk are necessary for distutils to correctly locate

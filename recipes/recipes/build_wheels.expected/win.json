@@ -37,7 +37,7 @@
       "RECIPE_REPO[depot_tools]\\gclient.py",
       "config",
       "--spec",
-      "cache_dir = '[CACHE]\\\\git'\nsolutions = [{'deps_file': '.DEPS.git', 'managed': True, 'name': 'infra', 'url': 'https://chromium.googlesource.com/infra/infra.git'}]"
+      "cache_dir = '[CACHE]\\\\git'\nsolutions = [{'deps_file': '.DEPS.git', 'managed': True, 'name': '.', 'url': 'https://chromium.googlesource.com/infra/infra_superproject.git'}]"
     ],
     "cwd": "[CACHE]\\builder\\build_wheels",
     "env_suffixes": {
@@ -64,9 +64,9 @@
       "--no-nag-max",
       "--with_branch_heads",
       "--with_tags",
-      "--delete_unversioned_trees",
       "--revision",
       "infra@origin/main",
+      "--delete_unversioned_trees",
       "--output-json",
       "/path/to/tmp/json"
     ],
@@ -82,6 +82,9 @@
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
       "@@@STEP_LOG_LINE@json.output@  \"solutions\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"./\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"revision\": \"3a52ce780950d4d969792a2559cd519d7ee8c727\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }, @@@",
       "@@@STEP_LOG_LINE@json.output@    \"infra/\": {@@@",
       "@@@STEP_LOG_LINE@json.output@      \"revision\": \"5e03a58dc0850e5137a8ebbce29610670c756aed\"@@@",
       "@@@STEP_LOG_LINE@json.output@    }@@@",
