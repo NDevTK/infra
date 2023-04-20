@@ -1511,6 +1511,20 @@ wheel: <
 
 * *universal*
 
+## **cloudevents-py3**
+
+### 1.9.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/cloudevents-py3"
+  version: "version:1.9.0"
+>
+```
+
+
+* *universal*
+
 ## **cloudpickle-py3**
 
 ### 1.6.0
