@@ -76,9 +76,26 @@ func resetDutStateReasonExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// setDutStateReasonExec set dut-state-reason for DUT.
+//
+// By default `allow_override` flag is set to true.
+func setDutStateReasonExec(ctx context.Context, info *execs.ExecInfo) error {
+	args := info.GetActionArgs(ctx)
+	allowOverride := args.AsBool(ctx, "allow_override", true)
+	reason := args.AsString(ctx, "reason", "")
+	if info.GetDut().DutStateReason.NotEmpty() && !allowOverride {
+		log.Debugf(ctx, "DUT state reason already specified")
+		return nil
+	} else {
+		info.GetDut().DutStateReason = tlw.DutStateReason(reason)
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("dut_has_name", hasDutNameActionExec)
 	execs.Register("dut_regex_name_match", regexNameMatchExec)
 	execs.Register("dut_set_state", setDutStateExec)
 	execs.Register("dut_reset_state_reason", resetDutStateReasonExec)
+	execs.Register("dut_set_state_reason", setDutStateReasonExec)
 }

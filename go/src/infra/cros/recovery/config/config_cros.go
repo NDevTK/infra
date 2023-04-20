@@ -89,8 +89,8 @@ func crosClosePlan() *Plan {
 		CriticalActions: []string{
 			"Update peripheral wifi state",
 			"Update chameleon state for chameleonless dut",
-			"Update DUT state for failures more than threshold",
 			"Update DUT state based on servo state",
+			"Update DUT state for failures more than threshold",
 			"Update cellular modem state for non-cellular pools",
 			"Close Servo-host",
 		},
@@ -101,15 +101,11 @@ func crosClosePlan() *Plan {
 				},
 				ExecName:      "servo_match_state",
 				ExecExtraArgs: []string{"state:WORKING"},
-				MetricsConfig: &MetricsConfig{
-					UploadPolicy: MetricsConfig_SKIP_ALL,
-				},
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Servo-host known": {
-				ExecName: "dut_servo_host_present",
-				MetricsConfig: &MetricsConfig{
-					UploadPolicy: MetricsConfig_SKIP_ALL,
-				},
+				ExecName:      "dut_servo_host_present",
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Remove request to reboot if servo is good": {
 				Conditions: []string{
@@ -134,10 +130,8 @@ func crosClosePlan() *Plan {
 					"Turn off servo usbkey power",
 					"Stop servod",
 				},
-				ExecName: "sample_pass",
-				MetricsConfig: &MetricsConfig{
-					UploadPolicy: MetricsConfig_SKIP_ALL,
-				},
+				ExecName:               "sample_pass",
+				MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 				AllowFailAfterRecovery: true,
 			},
 			"Remove in-use flag on servo-host": {
@@ -153,10 +147,8 @@ func crosClosePlan() *Plan {
 					"string_values:x1c",
 					"invert_result:true",
 				},
-				ExecName: "dut_check_model",
-				MetricsConfig: &MetricsConfig{
-					UploadPolicy: MetricsConfig_SKIP_ALL,
-				},
+				ExecName:      "dut_check_model",
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Try to collect servod logs": {
 				Docs: []string{
@@ -192,9 +184,7 @@ func crosClosePlan() *Plan {
 				ExecExtraArgs: []string{
 					"regex:(?i)^cellular",
 				},
-				MetricsConfig: &MetricsConfig{
-					UploadPolicy: MetricsConfig_SKIP_ALL,
-				},
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Update cellular modem state for non-cellular pools": {
 				Docs: []string{
@@ -209,6 +199,7 @@ func crosClosePlan() *Plan {
 					"state:hardware_not_detected",
 				},
 				AllowFailAfterRecovery: true,
+				MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 			},
 			"Update peripheral wifi state": {
 				Docs: []string{
@@ -216,6 +207,7 @@ func crosClosePlan() *Plan {
 				},
 				ExecName:               "update_peripheral_wifi_state",
 				AllowFailAfterRecovery: true,
+				MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 			},
 			"Update chameleon state for chameleonless dut": {
 				Docs: []string{
@@ -226,6 +218,7 @@ func crosClosePlan() *Plan {
 				},
 				ExecName:               "chameleon_state_not_applicable",
 				AllowFailAfterRecovery: true,
+				MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 			},
 			"Failure count above threshold": {
 				Docs: []string{
@@ -238,6 +231,7 @@ func crosClosePlan() *Plan {
 					"task_name:recovery",
 					"repair_failed_count:6",
 				},
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 			},
 			"Update DUT state for failures more than threshold": {
 				Docs: []string{
@@ -247,15 +241,14 @@ func crosClosePlan() *Plan {
 				Conditions: []string{
 					"DUT state is repair_failed",
 					"Failure count above threshold",
-					// Apply conditions in separate CL.
-					// "DUT state is not ready",
-					// "DUT state is not needs_replacement",
+					"Set state: needs_manual_repair",
 				},
-				ExecName: "dut_set_state",
+				ExecName: "dut_set_state_reason",
 				ExecExtraArgs: []string{
-					"state:needs_manual_repair",
+					"allow_override:false",
+					"reason:REPAIR_RETRY_REACHED_THRESHOLD",
 				},
-				AllowFailAfterRecovery: true,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Failure count are not above threshold": {
 				Docs: []string{
@@ -265,7 +258,8 @@ func crosClosePlan() *Plan {
 				Dependencies: []string{
 					"Failure count above threshold",
 				},
-				ExecName: "sample_fail",
+				ExecName:      "sample_fail",
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 			},
 			"DUT state is not ready": {
 				Docs: []string{
@@ -276,6 +270,7 @@ func crosClosePlan() *Plan {
 					"invert:true",
 					"state:ready",
 				},
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"DUT state is not needs_replacement": {
 				Docs: []string{
@@ -286,6 +281,7 @@ func crosClosePlan() *Plan {
 					"invert:true",
 					"state:needs_replacement",
 				},
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"DUT state is repair_failed": {
 				Docs: []string{
@@ -295,6 +291,7 @@ func crosClosePlan() *Plan {
 				ExecExtraArgs: []string{
 					"state:repair_failed",
 				},
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Servo state demands manual repair": {
 				Docs: []string{
@@ -305,6 +302,7 @@ func crosClosePlan() *Plan {
 				ExecExtraArgs: []string{
 					"servo_states:NEED_REPLACEMENT,DUT_NOT_CONNECTED",
 				},
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Update DUT state based on servo state": {
 				Docs: []string{
@@ -317,12 +315,14 @@ func crosClosePlan() *Plan {
 					"Failure count are not above threshold",
 					"Servo-host known",
 					"Servo state demands manual repair",
+					"Set state: needs_manual_repair",
 				},
-				ExecName: "dut_set_state",
+				ExecName: "dut_set_state_reason",
 				ExecExtraArgs: []string{
-					"state:needs_manual_repair",
+					"allow_override:false",
+					"reason:CRITICAL_SERVO_ISSUE",
 				},
-				AllowFailAfterRecovery: true,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Turn off servo usbkey power": {
 				Docs: []string{
@@ -375,6 +375,18 @@ func crosClosePlan() *Plan {
 			},
 			"Stop UART capture": {
 				ExecName:               "servod_stop_uart_capture",
+				AllowFailAfterRecovery: true,
+				MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			},
+			"Set state: needs_manual_repair": {
+				Docs: []string{
+					"Set DUT state as needs_manual_repair.",
+				},
+				ExecName: "dut_set_state",
+				ExecExtraArgs: []string{
+					"state:needs_manual_repair",
+				},
+				RunControl:             RunControl_ALWAYS_RUN,
 				AllowFailAfterRecovery: true,
 				MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
