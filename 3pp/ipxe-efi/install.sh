@@ -58,6 +58,17 @@ if [[ $_3PP_PLATFORM != $_3PP_TOOL_PLATFORM ]]; then
   MAKE_ARGS+=HOST_CC=$(3pp_toggle_host; echo $CC)
 fi
 
+# The build system tries to get the version from .git, but this won't
+# exist when building from a cached source.
+rm -rf .git
+IFS='.' read -ra VERSION_PARTS <<< "$_3PP_VERSION"
+MAKE_ARGS+="\
+  VERSION_MAJOR=${VERSION_PARTS[0]} \
+  VERSION_MINOR=${VERSION_PARTS[1]} \
+  VERSION_PATCH=${VERSION_PARTS[2]} \
+  EXTRAVERSION=
+"
+
 cd src
 make ${MAKE_ARGS} "${build_path}/ipxe.efi"
 cp "${build_path}/ipxe.efi" "${PREFIX}/${binary}"

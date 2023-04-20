@@ -5,7 +5,7 @@ create {
       repo: "https://github.com/ipxe/ipxe.git"
       tag_pattern: "v%s"
     }
-    patch_version: "chromium.1"
+    patch_version: "chromium.2"
   }
   build {
     tool: "tools/sed"
