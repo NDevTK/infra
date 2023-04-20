@@ -112,6 +112,12 @@ def builder(
         "use_luci_auth": True,
     }
 
+    properties["$build/reclient"] = {
+        "instance": "rbe-chromium-trusted",
+        "metrics_project": "chromium-reclient-metrics",
+        "scandeps_server": True,
+    }
+
     luci.builder(
         name = name,
         bucket = "codesearch",
