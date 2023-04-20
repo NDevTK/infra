@@ -83,6 +83,7 @@ type Client interface {
 type task struct {
 	bbID           int64
 	swarmingTaskID string
+	bbStatus       buildbucketpb.Status
 }
 
 // clientImpl is a concrete Client implementation to interact with
@@ -313,7 +314,8 @@ func (c *clientImpl) LaunchTask(ctx context.Context, args *request.Args) (TaskRe
 
 	tr := NewTaskReference()
 	c.knownTasks[tr] = &task{
-		bbID: resp.Id,
+		bbID:     resp.Id,
+		bbStatus: resp.Status,
 	}
 	return tr, nil
 }
@@ -370,17 +372,35 @@ func (c *clientImpl) FetchResults(ctx context.Context, t TaskReference) (*FetchR
 	if !ok {
 		return nil, errors.Reason("fetch results: could not find task among launched tasks").Err()
 	}
-	req := &buildbucketpb.GetBuildRequest{
-		Id:     task.bbID,
-		Fields: &field_mask.FieldMask{Paths: getBuildFieldMask},
+
+	// Check Build status.
+	statusReq := &buildbucketpb.GetBuildStatusRequest{
+		Id: task.bbID,
 	}
-	b, err := c.bbClient.GetBuild(ctx, req)
+	b, err := c.bbClient.GetBuildStatus(ctx, statusReq)
 	if err != nil {
 		return &FetchResultsResponse{
 			nil,
 			test_platform.TaskState_LIFE_CYCLE_ABORTED,
 			true,
 		}, errors.Annotate(err, "fetch results for build %d", task.bbID).Err()
+	}
+
+	// Build status changes, call GetBuild to get more info on the build.
+	if b.GetStatus() != task.bbStatus {
+		req := &buildbucketpb.GetBuildRequest{
+			Id:     task.bbID,
+			Fields: &field_mask.FieldMask{Paths: getBuildFieldMask},
+		}
+		b, err = c.bbClient.GetBuild(ctx, req)
+		if err != nil {
+			return &FetchResultsResponse{
+				nil,
+				test_platform.TaskState_LIFE_CYCLE_ABORTED,
+				true,
+			}, errors.Annotate(err, "fetch results for build %d", task.bbID).Err()
+		}
+		task.bbStatus = b.Status
 	}
 
 	task.swarmingTaskID = b.GetInfra().GetSwarming().GetTaskId()

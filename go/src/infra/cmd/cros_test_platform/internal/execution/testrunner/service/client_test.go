@@ -301,6 +301,14 @@ func TestFetchRequest(t *testing.T) {
 			gomock.Any(),
 		).Return(&buildbucket_pb.Build{Id: 42}, nil)
 
+		tf.bb.EXPECT().GetBuildStatus(
+			gomock.Any(),
+			gomock.Any(),
+		).Return(&buildbucket_pb.Build{
+			Id:     42,
+			Status: buildbucket_pb.Status_SUCCESS,
+		}, nil)
+
 		var gotRequest *buildbucket_pb.GetBuildRequest
 		tf.bb.EXPECT().GetBuild(
 			gomock.Any(),
@@ -326,9 +334,62 @@ func TestFetchRequest(t *testing.T) {
 			})
 		})
 	})
+
+	Convey("When a task is launched and still pending", t, func() {
+		tf, cleanup := newTestFixture(t)
+		defer cleanup()
+
+		tf.bb.EXPECT().ScheduleBuild(
+			gomock.Any(),
+			gomock.Any(),
+		).Return(&buildbucket_pb.Build{
+			Id:     42,
+			Status: buildbucket_pb.Status_SCHEDULED,
+		}, nil)
+
+		tf.bb.EXPECT().GetBuildStatus(
+			gomock.Any(),
+			gomock.Any(),
+		).Return(&buildbucket_pb.Build{
+			Id:     42,
+			Status: buildbucket_pb.Status_SCHEDULED,
+		}, nil)
+
+		// GetBuild is not called because the build status is not changed.
+
+		task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
+		So(err, ShouldBeNil)
+		Convey("as the results are fetched", func() {
+			_, err := tf.skylab.FetchResults(tf.ctx, task)
+			So(err, ShouldBeNil)
+		})
+	})
 }
 
-func TestFetchRequestBuildBuckerFailure(t *testing.T) {
+func TestFetchRequestBuildBucketFailure(t *testing.T) {
+	Convey("When a task is launched and BB GetBuildStatus Fails", t, func() {
+		tf, cleanup := newTestFixture(t)
+		defer cleanup()
+
+		tf.bb.EXPECT().ScheduleBuild(
+			gomock.Any(),
+			gomock.Any(),
+		).Return(&buildbucket_pb.Build{Id: 42}, nil)
+
+		tf.bb.EXPECT().GetBuildStatus(
+			gomock.Any(),
+			gomock.Any(),
+		).Return(nil, errors.Reason("Transient failure").Err())
+
+		task, err := tf.skylab.LaunchTask(tf.ctx, newArgs())
+		So(err, ShouldBeNil)
+		Convey("as the results are fetched", func() {
+			resp, err := tf.skylab.FetchResults(tf.ctx, task)
+			So(err, ShouldNotBeNil)
+			So(resp.BuildBucketTransientFailure, ShouldBeTrue)
+		})
+	})
+
 	Convey("When a task is launched and BB GetBuild Fails", t, func() {
 		tf, cleanup := newTestFixture(t)
 		defer cleanup()
@@ -337,6 +398,14 @@ func TestFetchRequestBuildBuckerFailure(t *testing.T) {
 			gomock.Any(),
 			gomock.Any(),
 		).Return(&buildbucket_pb.Build{Id: 42}, nil)
+
+		tf.bb.EXPECT().GetBuildStatus(
+			gomock.Any(),
+			gomock.Any(),
+		).Return(&buildbucket_pb.Build{
+			Id:     42,
+			Status: buildbucket_pb.Status_SUCCESS,
+		}, nil)
 
 		tf.bb.EXPECT().GetBuild(
 			gomock.Any(),
@@ -362,6 +431,14 @@ func TestCompletedTask(t *testing.T) {
 			gomock.Any(),
 			gomock.Any(),
 		).Return(&buildbucket_pb.Build{Id: 42}, nil)
+
+		tf.bb.EXPECT().GetBuildStatus(
+			gomock.Any(),
+			gomock.Any(),
+		).Return(&buildbucket_pb.Build{
+			Id:     42,
+			Status: buildbucket_pb.Status_SUCCESS,
+		}, nil)
 
 		tf.bb.EXPECT().GetBuild(
 			gomock.Any(),
@@ -402,6 +479,14 @@ func TestCompletedTaskMissingResults(t *testing.T) {
 			gomock.Any(),
 		).Return(&buildbucket_pb.Build{Id: 42}, nil)
 
+		tf.bb.EXPECT().GetBuildStatus(
+			gomock.Any(),
+			gomock.Any(),
+		).Return(&buildbucket_pb.Build{
+			Id:     42,
+			Status: buildbucket_pb.Status_INFRA_FAILURE,
+		}, nil)
+
 		tf.bb.EXPECT().GetBuild(
 			gomock.Any(),
 			gomock.Any(),
@@ -428,6 +513,14 @@ func TestAbortedTask(t *testing.T) {
 			gomock.Any(),
 			gomock.Any(),
 		).Return(&buildbucket_pb.Build{Id: 42}, nil)
+
+		tf.bb.EXPECT().GetBuildStatus(
+			gomock.Any(),
+			gomock.Any(),
+		).Return(&buildbucket_pb.Build{
+			Id:     42,
+			Status: buildbucket_pb.Status_INFRA_FAILURE,
+		}, nil)
 
 		tf.bb.EXPECT().GetBuild(
 			gomock.Any(),
