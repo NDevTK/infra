@@ -11,44 +11,42 @@ option go_package = "infra/appengine/crosskylabadmin/api/fleet/v1;fleet";
 // Tracker service exposes rpcs to summarize the state of ChromeOS Skylab
 // Swarming bot fleet.
 service Tracker {
-  // Filter out and queue the CrOS bots that require admin tasks Repair and Reset.
-  rpc PushBotsForAdminTasks(PushBotsForAdminTasksRequest) returns (PushBotsForAdminTasksResponse);
+  // Filter out and queue the CrOS bots that require admin tasks Repair and
+  // Reset.
+  rpc PushBotsForAdminTasks(PushBotsForAdminTasksRequest)
+      returns (PushBotsForAdminTasksResponse);
 
   // Filter out and queue the labstation bots that require admin tasks Repair.
-  rpc PushRepairJobsForLabstations(PushRepairJobsForLabstationsRequest) returns (PushRepairJobsForLabstationsResponse);
+  rpc PushRepairJobsForLabstations(PushRepairJobsForLabstationsRequest)
+      returns (PushRepairJobsForLabstationsResponse);
 
   // Report bots metrics.
   rpc ReportBots(ReportBotsRequest) returns (ReportBotsResponse);
 
   // Filter out and queue the CrOS bots to run admin tasks Audit.
-  rpc PushBotsForAdminAuditTasks(PushBotsForAdminAuditTasksRequest) returns (PushBotsForAdminAuditTasksResponse);
+  rpc PushBotsForAdminAuditTasks(PushBotsForAdminAuditTasksRequest)
+      returns (PushBotsForAdminAuditTasksResponse);
 }
 
 message PushBotsForAdminTasksRequest {
   DutState target_dut_state = 1;
 }
 
-message PushBotsForAdminTasksResponse {
-}
+message PushBotsForAdminTasksResponse {}
 
-message PushRepairJobsForLabstationsRequest {
-}
+message PushRepairJobsForLabstationsRequest {}
 
-message PushRepairJobsForLabstationsResponse {
-}
+message PushRepairJobsForLabstationsResponse {}
 
-message ReportBotsRequest {
-}
+message ReportBotsRequest {}
 
-message ReportBotsResponse {
-}
+message ReportBotsResponse {}
 
 message PushBotsForAdminAuditTasksRequest {
   AuditTask task = 1;
 }
 
-message PushBotsForAdminAuditTasksResponse {
-}
+message PushBotsForAdminAuditTasksResponse {}
 
 enum DutState {
   DutStateInvalid = 0;
@@ -67,26 +65,4 @@ enum AuditTask {
   ServoUSBKey = 1;
   DUTStorage = 2;
   RPMConfig = 3;
-}
-
-enum Health {
-  HealthInvalid = 0;
-
-  // A Healthy bot may be used for external workload.
-  Healthy = 1;
-
-  // An Unhealthy bot is not usable for external workload.
-  // Further classification of the problem is not available.
-  Unhealthy = 2;
-
-  // Coming soon ?...
-  //   UnhealthyStuckInProvisionRepairLoop
-  //   UnhealthyFailingProvisionFrequently
-}
-
-enum TaskType {
-    Invalid = 0;
-    Reset = 1;
-    Cleanup = 2;
-    Repair = 3;
 }
