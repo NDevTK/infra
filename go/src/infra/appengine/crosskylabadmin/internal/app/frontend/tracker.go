@@ -1,23 +1,12 @@
-// Copyright 2018 The LUCI Authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package frontend
 
 import (
 	"context"
 	"fmt"
-	"sync"
 	"time"
 
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
@@ -25,7 +14,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/retry"
-	"go.chromium.org/luci/common/sync/parallel"
 	"go.chromium.org/luci/grpc/grpcutil"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
@@ -204,68 +192,6 @@ func (tsi *TrackerServerImpl) ReportBots(ctx context.Context, req *fleet.ReportB
 	bots, err := sc.ListAliveBotsInPool(ctx, cfg.Swarming.BotPool, strpair.Map{})
 	utilization.ReportMetrics(ctx, flattenAndDedpulicateBots([][]*swarming.SwarmingRpcsBotInfo{bots}))
 	return &fleet.ReportBotsResponse{}, nil
-}
-
-// getBotsFromSwarming lists bots by calling the Swarming service.
-func getBotsFromSwarming(ctx context.Context, sc clients.SwarmingClient, pool string, sels []*fleet.BotSelector) ([]*swarming.SwarmingRpcsBotInfo, error) {
-	// No filters implies get all bots.
-	if len(sels) == 0 {
-		bots, err := sc.ListAliveBotsInPool(ctx, pool, strpair.Map{})
-		if err != nil {
-			return nil, errors.Annotate(err, "failed to get bots in pool %s", pool).Err()
-		}
-		return bots, nil
-	}
-
-	bots := make([][]*swarming.SwarmingRpcsBotInfo, 0, len(sels))
-	// Protects access to bots
-	m := &sync.Mutex{}
-	err := parallel.WorkPool(clients.MaxConcurrentSwarmingCalls, func(workC chan<- func() error) {
-		for i := range sels {
-			// In-scope variable for goroutine closure.
-			sel := sels[i]
-			workC <- func() error {
-				bs, ierr := getFilteredBotsFromSwarming(ctx, sc, pool, sel)
-				if ierr != nil {
-					return ierr
-				}
-				m.Lock()
-				defer m.Unlock()
-				bots = append(bots, bs)
-				return nil
-			}
-		}
-	})
-	return flattenAndDedpulicateBots(bots), err
-}
-
-// getFilteredBotsFromSwarming lists bots for a single selector by calling the
-// Swarming service.
-//
-// This function is intended to be used in a parallel.WorkPool().
-func getFilteredBotsFromSwarming(ctx context.Context, sc clients.SwarmingClient, pool string, sel *fleet.BotSelector) ([]*swarming.SwarmingRpcsBotInfo, error) {
-	dims := make(strpair.Map)
-	if id := sel.GetDutId(); id != "" {
-		dims[clients.DutIDDimensionKey] = []string{id}
-	}
-	if m := sel.GetDimensions().GetModel(); m != "" {
-		dims[clients.DutModelDimensionKey] = []string{m}
-	}
-	if p := sel.GetDimensions().GetPools(); len(p) > 0 {
-		dims[clients.DutPoolDimensionKey] = p
-	}
-	if n := sel.GetDimensions().GetDutName(); n != "" {
-		dims[clients.DutNameDimensionKey] = []string{n}
-	}
-
-	if len(dims) == 0 {
-		return nil, fmt.Errorf("empty selector %v", sel)
-	}
-	bs, err := sc.ListAliveBotsInPool(ctx, pool, dims)
-	if err != nil {
-		return nil, errors.Annotate(err, "failed to get bots in pool %s with dimensions %s", pool, dims).Err()
-	}
-	return bs, nil
 }
 
 func flattenAndDedpulicateBots(nb [][]*swarming.SwarmingRpcsBotInfo) []*swarming.SwarmingRpcsBotInfo {
