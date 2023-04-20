@@ -277,9 +277,10 @@ func detectJedecState(ctx context.Context, ifaceName, jedecFailLifeGlob, jedecFa
 		}
 	}
 
+	metrics.DefaultActionAddObservations(ctx, metrics.NewInt64Observation("storage_end_of_life_signal", int64(eolValue)))
 	metrics.DefaultActionAddObservations(ctx, metrics.NewInt64Observation("est_storage_life_used", int64(lifeValue)))
-	// There are two metrics we use to determine storage state, end-of-life signal and estimation of lifespan used.
-	// TODO(b:276998432), Add "lifeValue >= 100" as one of condition to set storage to CRITICAL state.
+	// We determine storage state Critical(require replacement) based on end-of-life signal only
+	// and estimation of lifespan only served as a supplemental information.
 	if eolValue == 3 {
 		return StorageStateCritical, nil
 	} else if eolValue == 2 || lifeValue >= 90 {
