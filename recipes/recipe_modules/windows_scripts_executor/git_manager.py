@@ -52,6 +52,8 @@ class GITManager:
     else:
       commits, _ = self.m.gitiles.log(git_src.repo,
                                       git_src.ref + '/' + git_src.src)
+      if len(commits) == 0:
+        raise Exception("No commits were found")
       # pin the file to the latest available commit
       git_src.ref = commits[0]['commit']
       self._pinning_cache[url] = git_src

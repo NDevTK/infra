@@ -238,7 +238,7 @@ def GIT_PIN_FILE(api, cust, refs, path, data, success=True):
           NEST_PIN_SRCS(cust),
           'gitiles log: ' + '{}/{}'.format(refs, path),
       ),
-      api.gitiles.make_log_test_data(data),
+      api.gitiles.make_log_test_data(data, n=3 if data else 0),
       retcode=retcode,
   )
 

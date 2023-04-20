@@ -106,9 +106,9 @@ def GenTests(api):
          api.properties(
              t.WPE_IMAGE(image, wib.ARCH_X86, customization,
                          'add_startnet_file', [ACTION_ADD_STARTNET])) +
-         # mock pin of the git src
+         # mock pin of the git src without any output
          t.GIT_PIN_FILE(api, customization, 'HEAD',
-                        'windows/artifacts/startnet.cmd', 'HEAD', False) +
+                        'windows/artifacts/startnet.cmd', '', True) +
          api.post_process(StatusException) +
          api.expect_exception('SourceException') +
          api.post_process(DropExpectation))
