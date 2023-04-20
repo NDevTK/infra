@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/util"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/common/heuristics"
 )
@@ -41,22 +39,6 @@ func CreateAuditTask(ctx context.Context, botID string, taskname string, actions
 
 	logging.Infof(ctx, "Successfully launched audit task %q for bot %q", bbURL, botID)
 	return bbURL, nil
-}
-
-// createLegacyAuditTask kicks off a legacy audit job.
-func createLegacyAuditTask(ctx context.Context, botID string, taskname string, actions string) (string, error) {
-	at := util.AuditTaskWithActions(ctx, taskname, actions)
-	sc, err := clients.NewSwarmingClient(ctx, config.Get(ctx).Swarming.Host)
-	if err != nil {
-		return "", errors.Annotate(err, "failed to obtain swarming client").Err()
-	}
-	expSec := int64(24 * 60 * 60)
-	execTimeoutSecs := int64(8 * 60 * 60)
-	taskURL, err := runTaskByBotID(ctx, at, sc, botID, "", expSec, execTimeoutSecs)
-	if err != nil {
-		return "", errors.Annotate(err, "fail to create audit task for %s", botID).Err()
-	}
-	return taskURL, nil
 }
 
 // routeAuditTaskImpl routes an audit task (storage, rpm, USB) based on the rollout config that's tied to that specific task.
