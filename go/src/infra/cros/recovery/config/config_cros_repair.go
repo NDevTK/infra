@@ -11,8 +11,8 @@ import (
 func crosRepairPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
-			"Collect logs and crashinfo",
 			"Set state: repair_failed",
+			"Collect logs and crashinfo",
 			"Device is pingable",
 			"Device is SSHable",
 			"Collect logs and crashinfo",
