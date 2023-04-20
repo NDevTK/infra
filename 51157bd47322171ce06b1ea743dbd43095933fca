@@ -54,6 +54,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "aa4f529b_5e25f7c7",
+        "filename": "build/packages/builder-health-indicators.yaml",
+        "patchSetId": 11
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2023-04-20T21:35:05Z",
+      "side": 1,
+      "message": "I think this comment may be obsolete now?",
+      "parentUuid": "a4318fc5_33ab0313",
+      "revId": "51157bd47322171ce06b1ea743dbd43095933fca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8c49156c_0f9d84e3",
