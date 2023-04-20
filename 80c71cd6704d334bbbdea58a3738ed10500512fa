@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c9841fbe_9a5d568c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2023-04-20T21:56:06Z",
+      "side": 1,
+      "message": "PTAL\n\nTricium has been complaining about the lack of \"All rights reserved.\" in the license header, but I thought that got removed from Chromium code.",
+      "revId": "80c71cd6704d334bbbdea58a3738ed10500512fa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
