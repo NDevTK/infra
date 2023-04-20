@@ -10,4 +10,6 @@ package recipes.infra.windows_image_builder.input;
 message Inputs {
   // config path for checkout, e.g. "configs/win10-image/generated/win10_2013_x64.cfg".
   string config_path = 1;
+  // refs to point to
+  string refs = 2;
 }
