@@ -208,12 +208,15 @@ def RunSteps(api, inputs):
   if not inputs.config_path:
     raise api.step.StepFailure("`config_path` is a required property")
 
+  refs = 'origin/main'
+  if inputs.refs:
+    refs = inputs.refs
   builder_named_cache = api.path['cache'].join('builder')
 
   with api.step.nest('read user config') as c:
     # download the configs repo
     api.gclient.set_config('infradata_config')
-    api.gclient.c.solutions[0].revision = 'origin/main'
+    api.gclient.c.solutions[0].revision = refs
     with api.context(cwd=builder_named_cache):
       api.bot_update.ensure_checkout()
       api.gclient.runhooks()
@@ -449,8 +452,8 @@ def GenTests(api):
   # first (Wim Customization Builder) followed by the Windows customization
   # builder (for the remaining 2 customizations).
   yield (
-      api.test('basic_scheduled', api.platform('win', 64)) +
-      api.properties(input_pb.Inputs(config_path="tests/basic")) +
+      api.test('basic_scheduled', api.platform('win', 64)) + api.properties(
+          input_pb.Inputs(config_path="tests/basic", refs='origin/main')) +
       t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/PSOverCom.ps1', 'HEAD') +
       t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/startnet.cmd', 'HEAD') +
       # Mock the check for output existence. Twice for wim (as output of
