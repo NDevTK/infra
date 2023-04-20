@@ -1,0 +1,11 @@
+package: chromium/infra/builder-health-indicators/${platform}
+description: Reports long-term health problems in Chromium's CI builders
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/builder_health_indicators
+install_mode: copy
+root: ../../go/bin
+data:
+  - file: generate-builder-health-indicators${exe_suffix}
+  - version_file: .versions/builder-health-indicators-generate${exe_suffix}.cipd_version
