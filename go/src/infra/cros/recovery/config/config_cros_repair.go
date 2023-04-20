@@ -2861,6 +2861,9 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Set dev_boot_usb=1 to enable booting from USB drive in DEV mode.",
 			},
+			Conditions: []string{
+				"Is not Flex device",
+			},
 			Dependencies: []string{
 				"Device is SSHable",
 			},
