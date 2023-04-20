@@ -33,6 +33,46 @@
       "message": "Well I mean I found the instructions here https://pkg.go.dev/go.chromium.org/luci/luciexe but surely there must be an easier way.",
       "revId": "064fb6bce7f24cba1270c225f9d2bb092753e37f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "55a742b8_ee5e2f7b",
+        "filename": "go/src/infra/builder_health_indicators/indicators_pb/request.proto",
+        "patchSetId": 17
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2023-04-20T19:44:42Z",
+      "side": 1,
+      "message": "maybe this should be a Timestamp? What is the format of this `day` field? \"wednesday\"?",
+      "range": {
+        "startLine": 12,
+        "startChar": 9,
+        "endLine": 12,
+        "endChar": 12
+      },
+      "revId": "064fb6bce7f24cba1270c225f9d2bb092753e37f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9ac30e29_a3407280",
+        "filename": "go/src/infra/builder_health_indicators/main.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2023-04-20T19:44:42Z",
+      "side": 1,
+      "message": "Should come immediately after StartStep",
+      "revId": "064fb6bce7f24cba1270c225f9d2bb092753e37f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

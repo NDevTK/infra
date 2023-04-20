@@ -1,0 +1,78 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "10db6507_20dfa471",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 22
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2023-04-20T19:44:42Z",
+      "side": 1,
+      "message": "lgtm w/ suggestions",
+      "revId": "f466732015079eb4edbbd45a455f673f2b9463ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3527a557_71adb8f5",
+        "filename": "go/src/infra/builder_health_indicators/main.go",
+        "patchSetId": 22
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2023-04-20T19:44:42Z",
+      "side": 1,
+      "message": "I would call this `cr_builder_health`; the `cr` is important because this is unlikely to apply outside of chromium, IIUC? (and the infra repo is used by non-browser teams as well)",
+      "revId": "f466732015079eb4edbbd45a455f673f2b9463ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "785d7e68_60678cab",
+        "filename": "go/src/infra/builder_health_indicators/main.go",
+        "patchSetId": 22
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2023-04-20T19:44:42Z",
+      "side": 1,
+      "message": "todo: add a description of what sort of outputs this makes and/or permissions the caller needs to upload to wherever",
+      "revId": "f466732015079eb4edbbd45a455f673f2b9463ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b90371e_5c00efb3",
+        "filename": "go/src/infra/builder_health_indicators/main.go",
+        "patchSetId": 22
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2023-04-20T19:44:42Z",
+      "side": 1,
+      "message": "this is a bit inverted from how I would do it:\n\n```\nfunc execute(ctx context.Context, *InputParams) error {\n  // ...\n}\n\nfunc (r *luciexeGenerateRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {\n  build.Main(\u0026input, nil, nil, func(ctx context.Context, userArgs []string, state *build.State) error {\n    return execute(ctx, input)\n  }\n}\n\n// Called by cmdline invocation\nfunc (r *generateRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {\n\tctx :\u003d r.logCfg.Use(cli.GetContext(a, r, env))\n\n\terr :\u003d execute(ctx, \u0026InputParams{Day: r.day})\n\tif err !\u003d nil {\n\t\treturn 1\n\t}\n\n\treturn 0\n}\n```",
+      "range": {
+        "startLine": 79,
+        "startChar": 10,
+        "endLine": 79,
+        "endChar": 15
+      },
+      "revId": "f466732015079eb4edbbd45a455f673f2b9463ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
