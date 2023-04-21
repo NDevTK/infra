@@ -20,7 +20,7 @@ _PAGE_SIZE = 100
 _CHROMIUM_SOURCE_BUILDERS = [
     'linux-code-coverage', 'win10-code-coverage', 'android-code-coverage',
     'ios-simulator-code-coverage', 'linux-chromeos-code-coverage',
-    'linux-lacros-code-coverage'
+    'linux-lacros-code-coverage', 'mac-code-coverage'
 ]
 
 
