@@ -19,6 +19,7 @@ func crosRepairPlan() *Plan {
 			"Verify internal storage",
 			"Set dev_boot_usb is enabled",
 			"Verify if booted from priority kernel",
+			"Verify rootfs is on fs-verity",
 			"Check if last provision was good",
 			"Python is present",
 			"Verify that device is not enrolled",
