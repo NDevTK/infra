@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components"
+	"infra/cros/recovery/internal/components/cros/usb"
 	"infra/cros/recovery/logger"
 )
 
@@ -53,11 +54,14 @@ func WaitForDeviceState(ctx context.Context, expectedState State, stateCount int
 				successCount = 0
 				if ds == Unauthorized {
 					failureCount += 1
-					// If device is in unauthorized state for more than 90 seconds, return error.
-					// The device either broken or public key is missing.
-					if failureCount >= 16 {
-						return errors.Reason("dut state is '%s': %s", ds, serialNumber).Err()
-					}
+				} else if ds == Offline {
+					failureCount += 1
+					_ = ResetUsbDevice(ctx, run, log, serialNumber)
+				}
+				// If device is in unauthorized or offline state for more than 90 seconds, return error.
+				// The device either broken or public key is missing.
+				if failureCount >= 16 {
+					return errors.Reason("dut state is '%s': %s", ds, serialNumber).Err()
 				}
 			}
 		}
@@ -98,5 +102,17 @@ func RebootDevice(ctx context.Context, run components.Runner, log logger.Logger,
 		return errors.Annotate(err, "reboot device").Err()
 	}
 	log.Debugf("Device is rebooted: %q", serialNumber)
+	return nil
+}
+
+// ResetUsbDevice resets USB device.
+func ResetUsbDevice(ctx context.Context, run components.Runner, log logger.Logger, serialNumber string) error {
+	fn, err := GetDeviceUSBFilename(ctx, run, log, serialNumber)
+	if err != nil {
+		return errors.Annotate(err, "reset usb device").Err()
+	}
+	if err := usb.UsbReset(ctx, run, log, fn[len("/dev/bus/usb/"):]); err != nil {
+		return errors.Annotate(err, "reset usb device").Err()
+	}
 	return nil
 }

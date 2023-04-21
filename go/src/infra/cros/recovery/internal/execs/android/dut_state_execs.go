@@ -23,6 +23,19 @@ func isDutAccessibleExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// isDutOfflineExec verifies that DUT is in offline state.
+func isDutOfflineExec(ctx context.Context, info *execs.ExecInfo) error {
+	serialNumber := info.GetAndroid().GetSerialNumber()
+	state, err := adb.GetDeviceState(ctx, newRunner(info), info.NewLogger(), serialNumber)
+	if err != nil {
+		return errors.Annotate(err, "is dut offline").Err()
+	}
+	if state != adb.Offline {
+		return errors.Reason("dut %q state: %q", serialNumber, state).Err()
+	}
+	return nil
+}
+
 // isDutRootedExec verifies that DUT is rooted.
 func isDutRootedExec(ctx context.Context, info *execs.ExecInfo) error {
 	serialNumber := info.GetAndroid().GetSerialNumber()
@@ -50,6 +63,7 @@ func isUserDebugBuildOnDutExec(ctx context.Context, info *execs.ExecInfo) error 
 
 func init() {
 	execs.Register("android_dut_is_accessible", isDutAccessibleExec)
+	execs.Register("android_dut_is_offline", isDutOfflineExec)
 	execs.Register("android_dut_is_rooted", isDutRootedExec)
 	execs.Register("android_dut_has_userdebug_build", isUserDebugBuildOnDutExec)
 }

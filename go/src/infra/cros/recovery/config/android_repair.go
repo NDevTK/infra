@@ -190,6 +190,7 @@ func androidRepairDeployActions() map[string]*Action {
 			RunControl: RunControl_ALWAYS_RUN,
 			RecoveryActions: []string{
 				"Reboot device if in fastboot mode",
+				"Reconnect device if in offline state",
 				"Schedule associated host reboot and fail",
 			},
 		},
@@ -367,6 +368,15 @@ func androidRepairDeployActions() map[string]*Action {
 			},
 			ExecName:    "sample_pass",
 			ExecTimeout: &durationpb.Duration{Seconds: 690},
+		},
+		"Reconnect device if in offline state": {
+			Docs: []string{
+				"Reconnect device if the device is in offline state.",
+			},
+			Conditions: []string{
+				"android_dut_is_offline",
+			},
+			ExecName: "android_reconnect_offline_dut",
 		},
 	}
 }

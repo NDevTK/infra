@@ -14,6 +14,16 @@ import (
 	"infra/cros/recovery/internal/execs"
 )
 
+// reconnectOfflineDutExec reconnects offline DUT.
+func reconnectOfflineDutExec(ctx context.Context, info *execs.ExecInfo) error {
+	serialNumber := info.GetAndroid().GetSerialNumber()
+	err := adb.ResetUsbDevice(ctx, newRunner(info), info.NewLogger(), serialNumber)
+	if err != nil {
+		return errors.Annotate(err, "reconnect offline dut").Err()
+	}
+	return nil
+}
+
 // restartADBDAsRoot restarts adbd as root on the device.
 func restartADBDAsRoot(ctx context.Context, info *execs.ExecInfo) error {
 	serialNumber := info.GetAndroid().GetSerialNumber()
@@ -145,6 +155,7 @@ func resetPublicKey(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 func init() {
+	execs.Register("android_reconnect_offline_dut", reconnectOfflineDutExec)
 	execs.Register("android_restart_adbd_as_root", restartADBDAsRoot)
 	execs.Register("android_unroot_adbd", unrootADBDExec)
 	execs.Register("android_remove_screen_lock", removeScreenLockExec)

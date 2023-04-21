@@ -78,6 +78,40 @@ func GetDevicePath(ctx context.Context, run components.Runner, log logger.Logger
 	return path, nil
 }
 
+// GetDeviceUSBPath returns device USB path (e.g. usb:1-6.1.1.3.3).
+func GetDeviceUSBPath(ctx context.Context, run components.Runner, log logger.Logger, serialNumber string) (string, error) {
+	const adbGetUsbPathCmd = "adb devices -l | grep %s | awk '{print $3}'"
+	cmd := fmt.Sprintf(adbGetUsbPathCmd, serialNumber)
+	path, err := run(ctx, 30*time.Second, cmd)
+	if err != nil {
+		return "", errors.Annotate(err, "get device usb path").Err()
+	}
+	if !strings.HasPrefix(path, "usb:") {
+		return "", errors.Reason("invalid attached device USB path: %q", path).Err()
+	}
+	log.Debugf("Attached device USB path: %q", path)
+	return path, nil
+}
+
+// GetDeviceUSBFilename returns device USB filename (e.g. /dev/bus/usb/001/030).
+func GetDeviceUSBFilename(ctx context.Context, run components.Runner, log logger.Logger, serialNumber string) (string, error) {
+	usbPath, err := GetDeviceUSBPath(ctx, run, log, serialNumber)
+	if err != nil {
+		return "", errors.Annotate(err, "get attached device USB filename").Err()
+	}
+	const adbGetDevUsbFilenameCmd = "lsusb -tvv | grep '%s' | head -1 | awk '{print $2}'"
+	cmd := fmt.Sprintf(adbGetDevUsbFilenameCmd, usbPath[len("usb:"):])
+	fn, err := run(ctx, 30*time.Second, cmd)
+	if err != nil {
+		return "", errors.Annotate(err, "get attached device USB filename").Err()
+	}
+	if !strings.HasPrefix(fn, "/dev/bus/usb/") {
+		return "", errors.Reason("invalid attached device USB filename: %s", fn).Err()
+	}
+	log.Debugf("Attached device USB filename: %q", fn)
+	return fn, nil
+}
+
 // IsDeviceAccessible verifies that DUT is accessible through the associated host.
 func IsDeviceAccessible(ctx context.Context, run components.Runner, log logger.Logger, serialNumber string) error {
 	state, err := GetDeviceState(ctx, run, log, serialNumber)
