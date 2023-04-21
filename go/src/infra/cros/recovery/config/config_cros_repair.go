@@ -2854,8 +2854,11 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Device is SSHable",
 			},
-			ExecName:               "cros_verify_rootfs_verity",
-			RunControl:             RunControl_RUN_ONCE,
+			ExecName:   "cros_verify_rootfs_verity",
+			RunControl: RunControl_ALWAYS_RUN,
+			RecoveryActions: []string{
+				"Install OS in recovery mode by booting from servo USB-drive",
+			},
 			AllowFailAfterRecovery: true,
 		},
 		"Set dev_boot_usb is enabled": {
@@ -2874,7 +2877,7 @@ func crosRepairActions() map[string]*Action {
 				"value:1",
 				"check_after_update:true",
 			},
-			RunControl:             RunControl_ALWAYS_RUN,
+			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
 		},
 		"Collect logs and crashinfo": {
@@ -3077,9 +3080,8 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_kernel_priority_has_not_changed",
 			RecoveryActions: []string{
 				"Simple reboot to right kernel",
+				"Cold reset by servo and wait for SSH",
 			},
-			// TODO(b/277654511): Remove if action is recoverable.
-			AllowFailAfterRecovery: true,
 		},
 		"Simple reboot to right kernel": {
 			Docs: []string{
