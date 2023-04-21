@@ -61,9 +61,11 @@ def RunSteps(api, image):
 
   # Execute customizations one by one
   built_custs = []
-  failed_custs = []
-  while len(built_custs) + len(failed_custs) != len(custs):
+  failed_custs_errs = []
+  while len(built_custs) + len(failed_custs_errs) != len(custs):
     to_build = []
+    # List of failed customizations without errors
+    failed_custs = [c for c, _ in failed_custs_errs]
     for cust in custs:
       if cust not in built_custs and cust not in failed_custs:
         if cust.executable():
@@ -81,13 +83,13 @@ def RunSteps(api, image):
           built_custs.extend([to_exec])
         except Exception as e:
           # Collect failed custs and attempt to execute others
-          failed_custs = [(to_exec, e)]
+          failed_custs_errs = [(to_exec, e)]
     else:
       # We are done building. We can't build anything else
       break  # pragma: nocover
   # Customizations that we couldn't execute
   couldnot_exec = []
-  f_custs = [cust for cust, _ in failed_custs]
+  f_custs = [cust for cust, _ in failed_custs_errs]
   for cust in custs:
     if (cust not in f_custs) and (cust not in built_custs):
       couldnot_exec.append(cust)
@@ -101,12 +103,12 @@ def RunSteps(api, image):
     summary += 'Did not build:\n'
     for cust in couldnot_exec:
       summary += '{}--{}\n'.format(cust.id, cust.get_key())
-  if failed_custs:
+  if failed_custs_errs:
     summary += 'Failed:\n'
-    for cust, err in failed_custs:
+    for cust, err in failed_custs_errs:
       summary += '{}--{}: {}\n'.format(cust.id, cust.get_key(), err)
   status = common.SUCCESS
-  if len(failed_custs) + len(couldnot_exec) > 0:
+  if len(failed_custs_errs) + len(couldnot_exec) > 0:
     status = common.FAILURE
   # looks like everything executed properly, return result
   return RawResult(status=status, summary_markdown=summary)
