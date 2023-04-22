@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "61e1fe7e_81f3d9a0",
+        "filename": "go/src/infra/cr_builder_health/main.go",
+        "patchSetId": 23
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2023-04-22T00:04:31Z",
+      "side": 1,
+      "message": "(Yiwei is fixing this in another CL)",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 38
+      },
+      "revId": "9d10ee45947b3ca3ddec55e33473dc12c270cf7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
