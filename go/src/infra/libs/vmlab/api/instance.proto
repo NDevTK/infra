@@ -89,7 +89,17 @@ message Config {
 
   // VM Leaser properties. The fields will be passed to VM Leaser service for
   // VM creation and deletion. Required fields must be passed.
+  //
+  // NEXT TAG: 4
   message VmLeaserBackend {
+    // The VM Leaser environment to connect to.
+    enum Environment {
+      ENV_LOCAL = 0;
+      ENV_STAGING = 1;
+      ENV_PRODUCTION = 2;
+    }
+    Environment env = 3;
+
     // The populated fields will specify the requirements for operations on a VM
     // lease. Required.
     vm_leaser.api.v1.VMRequirements vm_requirements = 1;
