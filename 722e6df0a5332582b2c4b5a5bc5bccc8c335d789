@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fbe50921_fe03793a",
+        "filename": "go/src/infra/appengine/test-resources/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1002539
+      },
+      "writtenOn": "2023-04-24T20:03:27Z",
+      "side": 1,
+      "message": "It is required because of this thing. `gaeemulation` is unfortunate name for a module that implements the datastore client (that pretends to be a GAE datastore, thus the unfortunate name).",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 67
+      },
+      "revId": "722e6df0a5332582b2c4b5a5bc5bccc8c335d789",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
