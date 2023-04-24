@@ -17,6 +17,7 @@ import (
 	"go.chromium.org/luci/server/auth/rpcacl"
 	"go.chromium.org/luci/server/cron"
 	"go.chromium.org/luci/server/encryptedcookies"
+	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/secrets"
 
@@ -50,6 +51,7 @@ func main() {
 	modules := []module.Module{
 		cron.NewModuleFromFlags(),
 		encryptedcookies.NewModuleFromFlags(), // Required for auth sessions.
+		gaeemulation.NewModuleFromFlags(),     // Required by encryptedcookies
 		secrets.NewModuleFromFlags(),          // Needed by encryptedcookies.
 	}
 	server.Main(nil, modules, func(srv *server.Server) error {
