@@ -192,7 +192,6 @@ If you found error in this site, please file a bug via
 <body>
 <h1>{{.Filename}}</h1>
 Platform: {{.Metadata.Platform}}
-Cmdline: {{.Metadata.Cmdline}}
 Exit:{{.Metadata.Exit}}
 {{if .Metadata.Error}}Error: {{.Metadata.Error}}
 {{.Metadata.Raw}}{{end}}

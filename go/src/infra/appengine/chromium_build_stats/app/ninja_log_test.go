@@ -5,6 +5,7 @@
 package main
 
 import (
+	"io"
 	"testing"
 
 	"infra/appengine/chromium_build_stats/ninjalog"
@@ -107,5 +108,15 @@ func TestTypeFromExt(t *testing.T) {
 		if got != tc.want {
 			t.Errorf("typeFromText(%q)=%s; want=%s", tc.step, got, tc.want)
 		}
+	}
+}
+
+func TestTableTempl(t *testing.T) {
+	t.Parallel()
+
+	if err := tableTmpl.Execute(io.Discard, tableData{
+		NinjaLog: &ninjalog.NinjaLog{},
+	}); err != nil {
+		t.Errorf("tableTmpl.Execute(...)=%v; want nil", err)
 	}
 }
