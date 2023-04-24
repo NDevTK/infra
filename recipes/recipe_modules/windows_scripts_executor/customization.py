@@ -128,6 +128,20 @@ class Customization(object):
         return False
     return True
 
+  def unpinnable(self, ctx):
+    """ unpinnable determines if the customization is pinnable. And returns
+    srcs that it cannot pin
+    Args:
+      * ctx: dict containing the context for pinning
+
+    Returns list of srcs that cannot be pinned. Empty list otherwise
+    """
+    unpins = []
+    for ip in self.inputs:
+      if ip.WhichOneof('src') == 'local_src' and ip.local_src not in ctx:
+        unpins.append(ip)
+    return unpins
+
   def set_key(self, key):
     """ set_key is used to set the identification keys for the customization
     Args:

@@ -133,7 +133,11 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
           for cust in custs:
             if cust not in resolved_cust:
               unpinned_custs += cust.id + '<br>'
-          reason = 'Cannot pin custs [<br> {}].'.format(unpinned_custs)
+              unpins = '<ul>'
+              for pin in cust.unpinnable(ctx):
+                unpins += '<li>{}</li>'.format(pin.local_src)
+              unpins += '</ul> <br>'
+          reason = 'Cannot pin custs [<br> {} <br>].'.format(unpinned_custs)
           raise self.m.step.StepFailure(
               'Cyclical dependency?: {}'.format(reason))
       return resolved_cust

@@ -646,7 +646,7 @@ Args:
               (bigger size used if required)
   * include: sequence of files and directories to copy to image
 
-&mdash; **def [create\_empty\_disk](/recipes/recipe_modules/qemu/api.py#125)(self, disk_name, fs_format, size):**
+&mdash; **def [create\_empty\_disk](/recipes/recipe_modules/qemu/api.py#127)(self, disk_name, fs_format, size):**
 
 create_empty_disk creates an empty disk image and formats it
 
@@ -668,7 +668,7 @@ Note:
 Args:
   * version: the cipd version tag for qemu
 
-&mdash; **def [mount\_disk\_image](/recipes/recipe_modules/qemu/api.py#174)(self, disk, partitions=[1]):**
+&mdash; **def [mount\_disk\_image](/recipes/recipe_modules/qemu/api.py#177)(self, disk, partitions=[1]):**
 
 mount_disk_image mounts the given image and returns the mount location
 and loop file used for mounting
@@ -682,7 +682,7 @@ Returns: loop file used for the disk and list of mount locations
 
 &emsp; **@property**<br>&mdash; **def [path](/recipes/recipe_modules/qemu/api.py#33)(self):**
 
-&mdash; **def [powerdown\_vm](/recipes/recipe_modules/qemu/api.py#320)(self, name):**
+&mdash; **def [powerdown\_vm](/recipes/recipe_modules/qemu/api.py#323)(self, name):**
 
 powerdown_vm sends a shutdown signal to the given VM. Similar to power
 button on a physical device
@@ -692,7 +692,7 @@ Args:
 
 Returns: True if powerdown signal was sent to VM. False otherwise
 
-&mdash; **def [quit\_vm](/recipes/recipe_modules/qemu/api.py#361)(self, name):**
+&mdash; **def [quit\_vm](/recipes/recipe_modules/qemu/api.py#364)(self, name):**
 
 quit_vm sends a quit signal to the qemu process. Use this if your VM
 doesn't respond to powerdown signal.
@@ -702,7 +702,7 @@ Args:
 
 Returns: True if quit signal was sent to VM. False otherwise
 
-&mdash; **def [start\_vm](/recipes/recipe_modules/qemu/api.py#248)(self, arch, qemu_vm, kvm=False):**
+&mdash; **def [start\_vm](/recipes/recipe_modules/qemu/api.py#251)(self, arch, qemu_vm, kvm=False):**
 
 start_vm starts a qemu vm
 
@@ -715,14 +715,14 @@ Args:
             the vm
  * kvm: If true then VM is run on hardware. It's emulated otherwise
 
-&mdash; **def [unmount\_disk\_image](/recipes/recipe_modules/qemu/api.py#225)(self, loop_file, partitions=[1]):**
+&mdash; **def [unmount\_disk\_image](/recipes/recipe_modules/qemu/api.py#228)(self, loop_file, partitions=[1]):**
 
 unmount_disk_image unmounts the disk mounted using the given loop_file
 
 Args:
   * loop_file: Loop device used to mount the image
 
-&mdash; **def [vm\_status](/recipes/recipe_modules/qemu/api.py#402)(self, name):**
+&mdash; **def [vm\_status](/recipes/recipe_modules/qemu/api.py#405)(self, name):**
 
 vm_status returns a dict describing the status of the vm. The return
 value is the QMP response to `query-status`
@@ -1182,7 +1182,7 @@ PYTHON_VERSION_COMPATIBILITY: PY3
 
 API for using Windows PowerShell scripts.
 
-&mdash; **def [download\_all\_packages](/recipes/recipe_modules/windows_scripts_executor/api.py#288)(self, custs):**
+&mdash; **def [download\_all\_packages](/recipes/recipe_modules/windows_scripts_executor/api.py#292)(self, custs):**
 
 download_all_packages downloads all the packages referenced by given
 custs.
@@ -1190,14 +1190,14 @@ custs.
 Args:
   * custs: List of Customizations object from customizations.py
 
-&mdash; **def [execute\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#299)(self, custs):**
+&mdash; **def [execute\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#303)(self, custs):**
 
 Executes the windows image builder user config.
 
 Args:
   * custs: List of Customizations object from customizations.py
 
-&mdash; **def [filter\_executable\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#275)(self, customizations):**
+&mdash; **def [filter\_executable\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#279)(self, customizations):**
 
 filter_executable_customizations generates a list of customizations
 that need to be executed.
@@ -1205,7 +1205,7 @@ that need to be executed.
 Args:
   * customizations: List of Customizations object from customizations.py
 
-&mdash; **def [gen\_canonical\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#166)(self, customizations):**
+&mdash; **def [gen\_canonical\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#170)(self, customizations):**
 
 gen_canonical_configs strips all the names in the config and returns
 individual configs containing one customization per image.
@@ -1290,7 +1290,7 @@ Example:
 Args:
   * customizations: List of Customizations object from customizations.py
 
-&mdash; **def [gen\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#334)(self, custs):**
+&mdash; **def [gen\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#338)(self, custs):**
 
 gen_executable_configs generates wib.Image configs that can be executed.
 
@@ -1307,7 +1307,7 @@ Args:
 Returns a list of tuples containing config and set of customization hash
 that can be executed at the time
 
-&mdash; **def [get\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#309)(self, custs):**
+&mdash; **def [get\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#313)(self, custs):**
 
 get_executable_configs returns a list of images that can be executed at
 this time.
@@ -1332,7 +1332,7 @@ list of customizations
 Args:
   * config: wib.Image proto config
 
-&mdash; **def [pin\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#141)(self, customizations, ctx):**
+&mdash; **def [pin\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#145)(self, customizations, ctx):**
 
 pin_customizations pins all the sources in the customizations
 
@@ -1352,7 +1352,7 @@ Args:
 
 Returns list of customizations in order that they were processed
 
-&mdash; **def [update\_context](/recipes/recipe_modules/windows_scripts_executor/api.py#152)(self, custs, ctx):**
+&mdash; **def [update\_context](/recipes/recipe_modules/windows_scripts_executor/api.py#156)(self, custs, ctx):**
 
 update_context returns an updated dict with all the contexts
 updated

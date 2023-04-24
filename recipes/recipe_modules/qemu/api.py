@@ -99,11 +99,13 @@ class QEMUAPI(recipe_api.RecipeApi):
           cmd=['du', '-scb'] + list(include.keys()),
           stdout=self.m.raw_io.output(),
           step_test_data=lambda: self.m.raw_io.test_api.stream_output(test_res))
+      # Add stdout back to output
+      res.presentation.logs['stdout'] = res.stdout
       # read total from last line of the output
       op = res.stdout.strip().splitlines()[-1]
       total_size = int(op.split()[0])
-      # bump up the size by 5% to ensure that all files can be copied
-      total_size += (total_size // 20)
+      # bump up the size by 25% to ensure that all files can be copied
+      total_size += (total_size // 4)
       min_size = max(total_size, min_size)
     # create an empty disk
     self.create_empty_disk(disk_name, fs_format, min_size)
@@ -135,6 +137,7 @@ class QEMUAPI(recipe_api.RecipeApi):
         name='Check free space on disk for {}'.format(disk_name),
         cmd=['df', '--output=avail', '-B', bs, self.disks],
         stdout=self.m.raw_io.output())
+    res.presentation.logs['stdout'] = res.stdout
     free_disk = int(res.stdout.splitlines()[-1].strip()) * bs
     if size > free_disk:
       raise self.m.step.StepFailure(

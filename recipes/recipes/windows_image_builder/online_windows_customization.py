@@ -96,17 +96,17 @@ def RunSteps(api, image):
   # Report back
   summary = ''
   if built_custs:
-    summary += 'Built:\n'
+    summary += 'Built: <br>'
     for cust in built_custs:
-      summary += '{}--{}\n'.format(cust.id, cust.get_key())
+      summary += '{}--{} <br>'.format(cust.id, cust.get_key())
   if couldnot_exec:
-    summary += 'Did not build:\n'
+    summary += 'Did not build: <br>'
     for cust in couldnot_exec:
-      summary += '{}--{}\n'.format(cust.id, cust.get_key())
+      summary += '{}--{} <br>'.format(cust.id, cust.get_key())
   if failed_custs_errs:
-    summary += 'Failed:\n'
+    summary += 'Failed: <br>'
     for cust, err in failed_custs_errs:
-      summary += '{}--{}: {}\n'.format(cust.id, cust.get_key(), err)
+      summary += '{}--{}: {} <br>'.format(cust.id, cust.get_key(), err)
   status = common.SUCCESS
   if len(failed_custs_errs) + len(couldnot_exec) > 0:
     status = common.FAILURE
