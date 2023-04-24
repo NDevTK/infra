@@ -1,0 +1,12 @@
+name: luci/resultdb/testmetadataupdator
+extends: ../../../base.yaml
+
+contextdir: ../../../../../go/src/go.chromium.org/luci/resultdb/cmd/testmetadataupdator/docker
+deterministic: true
+
+sources:
+  - ../../../../../go/src/go.chromium.org/luci/resultdb
+
+build:
+  - go_binary: go.chromium.org/luci/resultdb/cmd/testmetadataupdator
+    dest: ${contextdir}/bin/testmetadataupdator
