@@ -102,10 +102,6 @@ def roll_trybots(upstream, downstream, cq_group, os = "Ubuntu"):
                 "pool": pool,
             },
             service_account = infra.SERVICE_ACCOUNT_TRY,
-            experiments = {
-                # TODO(crbug.com/1393420): remove this.
-                "luci.buildbucket.omit_python2": 0,
-            },
         )
         luci.cq_tryjob_verifier(
             builder = name,
