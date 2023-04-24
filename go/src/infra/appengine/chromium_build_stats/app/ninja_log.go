@@ -176,6 +176,10 @@ document.addEventListener('DOMContentLoaded', () => {
  <li><button id="trace_view" disabled>open trace on ui.perfetto.dev</button> [<a href="{{.Filename}}/trace.json">trace.json</a>]
  <li><button id="trace_view_sort_by_end" disabled>open trace (sort by end) on ui.perfetto.dev</button> [<a href="{{.Filename}}/trace_sort_by_end.json">trace_sort_by_end.json</a>]
 </ul>
+
+If you found error in this site, please file a bug via
+<a href="https://bugs.chromium.org/p/chromium/issues/entry?components=Build&labels=Browser-Build-Troopers">this link</a>.
+
 </body>
 </html>
 `))
