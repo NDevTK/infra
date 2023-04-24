@@ -47,6 +47,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.7.0
 	github.com/googleapis/google-cloud-go-testing v0.0.0-20210719221736-1c9a4c676720
 	github.com/hashicorp/go-multierror v1.1.1
+	github.com/hashicorp/go-version v1.2.0
 	github.com/jdxcode/netrc v0.0.0-20210204082910-926c7f70242a
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/klauspost/compress v1.15.15
@@ -64,6 +65,7 @@ require (
 	github.com/savaki/jq v0.0.0-20161209013833-0e6baecebbf8
 	github.com/shirou/gopsutil/v3 v3.22.12
 	github.com/smartystreets/goconvey v1.7.2
+	github.com/stretchr/testify v1.8.2
 	github.com/ulikunitz/xz v0.5.10
 	github.com/waigani/diffparser v0.0.0-20190828052634-7391f219313d
 	go.chromium.org/chromiumos/config/go v0.0.0-20230102123018-be9aaedc3af8
@@ -189,6 +191,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/src-d/gcfg v1.4.0 // indirect
 	github.com/stoewer/go-strcase v1.2.0 // indirect
+	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/texttheater/golang-levenshtein v1.0.1 // indirect
 	github.com/tklauser/go-sysconf v0.3.11 // indirect
 	github.com/tklauser/numcpus v0.6.0 // indirect

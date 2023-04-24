@@ -1,0 +1,89 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+syntax = "proto3";
+
+package satlabrpcserver;
+
+option go_package = "infra/cros/satlab/satlabrpcserver"; // figure out what this should be
+
+service SatlabRpcService {
+  rpc list_build_targets (ListBuildTargetsRequest) returns (ListBuildTargetsResponse);
+  rpc list_milestones (ListMilestonesRequest) returns (ListMilestonesResponse);
+  rpc list_accessible_models (ListAccessibleModelsRequest) returns (ListAccessibleModelsResponse);
+  rpc list_build_versions (ListBuildVersionsRequest) returns (ListBuildVersionsResponse);
+  rpc stage_build (StageBuildRequest) returns (StageBuildResponse);
+}
+
+message ListBuildTargetsRequest {
+}
+
+// NEXT_TAG = 2
+message ListBuildTargetsResponse {
+  repeated string build_targets = 1;
+}
+
+// NEXT_TAG = 4
+message BuildItem {
+  // NEXT_TAG = 4
+  enum BuildStatus {
+    BUILD_STATUS_PASS = 0;
+    BUILD_STATUS_FAIL = 1;
+    BUILD_STATUS_RUNNING = 2;
+    BUILD_STATUS_ABORTED = 3;
+  }
+  string value = 1;
+  bool is_staged = 2;
+  BuildStatus status = 3;
+}
+
+// NEXT_TAG = 3
+message ListMilestonesRequest {
+  string board = 1;
+  string model = 2;
+}
+
+// NEXT_TAG = 3
+message ListMilestonesResponse {
+  repeated BuildItem milestones = 1;
+}
+
+// NEXT_TAG = 2
+message ListAccessibleModelsRequest {
+  string board = 1;
+}
+
+// NEXT_TAG = 3
+message Model {
+  string name = 1;
+  repeated string boards = 2;
+}
+
+// NEXT_TAG = 2
+message ListAccessibleModelsResponse {
+  repeated Model models = 1;
+}
+
+// NEXT_TAG = 4
+message ListBuildVersionsRequest {
+  string board = 1;
+  string model = 2;
+  int32 milestone = 3;
+}
+
+// NEXT_TAG = 2
+message ListBuildVersionsResponse {
+  repeated BuildItem build_versions = 1;
+}
+
+// NEXT_TAG = 4
+message StageBuildRequest {
+  string board = 1;
+  string model = 2;
+  string build_version = 3;
+}
+
+// NEXT_TAG = 2
+message StageBuildResponse {
+  string build_bucket = 1;
+}
