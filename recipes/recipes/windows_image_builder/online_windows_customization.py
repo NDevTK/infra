@@ -83,7 +83,7 @@ def RunSteps(api, image):
           built_custs.extend([to_exec])
         except Exception as e:
           # Collect failed custs and attempt to execute others
-          failed_custs_errs = [(to_exec, e)]
+          failed_custs_errs.append((to_exec, e))
     else:
       # We are done building. We can't build anything else
       break  # pragma: nocover
