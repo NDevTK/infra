@@ -42,6 +42,9 @@ def RunSteps(api, config):
   api.path.mock_add_paths(
       '[CACHE]/Pkgs/CIPDPkgs/resolved-instance_id-of-latest----------'
       '/infra/chrome/windows/wallpapers/windows-amd64', 'DIRECTORY')
+  api.path.mock_add_paths(
+      '[CACHE]/Pkgs/CIPDPkgs/resolved-instance_id-of-latest----------'
+      '/infra/chrome/nopompt_boot/windows-amd64', 'DIRECTORY')
   api.windows_scripts_executor.execute_customizations(custs)
 
 
@@ -67,6 +70,8 @@ def GenTests(api):
                           'gs://chrome-gce-images/WIN-ISO/win10_vanilla.iso') +
          t.MOUNT_DISK_ISO(api, image, cust,
                           'gs://chrome-gce-images/WIB-ONLINE-CACHE/st.zip') +
+         t.MOUNT_DISK_ISO(api, image, cust,
+                          'gs://chrome-gce-images/WIN-CACHE/win10_chrome.iso') +
          api.post_process(StatusSuccess) + api.post_process(DropExpectation))
 
   yield (api.test('Happy path with default bootloader') +
@@ -83,4 +88,6 @@ def GenTests(api):
                           'gs://chrome-gce-images/WIN-ISO/win10_vanilla.iso') +
          t.MOUNT_DISK_ISO(api, image, cust,
                           'gs://chrome-gce-images/WIB-ONLINE-CACHE/st.zip') +
+         t.MOUNT_DISK_ISO(api, image, cust,
+                          'gs://chrome-gce-images/WIN-CACHE/win10_chrome.iso') +
          api.post_process(StatusSuccess) + api.post_process(DropExpectation))

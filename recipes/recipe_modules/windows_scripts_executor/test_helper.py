@@ -772,6 +772,23 @@ def WIN_ISO(
                             refs='latest',
                             platform='windows-amd64')),
                     mount=False,
+                    dest='sources'),
+                winiso.CopyArtifact(
+                    artifact=sources.Src(
+                        cipd_src=sources.CIPDSrc(
+                            package='infra/chrome/nopompt_boot',
+                            refs='latest',
+                            platform='windows-amd64')),
+                    source='noprompt_boot.efi',
+                    mount=False,
+                    dest='sources'),
+                winiso.CopyArtifact(
+                    artifact=sources.Src(
+                        gcs_src=sources.GCSSrc(
+                            bucket='chrome-gce-images',
+                            source='WIN-CACHE/win10_chrome.iso')),
+                    source='media/sources/install.wim',
+                    mount=True,
                     dest='sources')),
     uploads=()):
   return wib.Image(

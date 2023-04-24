@@ -211,6 +211,7 @@ class WinISOCustomization(customization.Customization):
     dest = iso_staging.join(cf.dest)
     loop = ''
     with self.m.step.nest('Copy {} to staging'.format(src_url)) as n:
+      # If src is an archive of sorts
       if str(src).endswith('.zip') or str(src).endswith('.tar'):
         # If this is a archive. Extract the required file to scratchpad
         self.m.archive.extract(
@@ -230,25 +231,41 @@ class WinISOCustomization(customization.Customization):
           elif (len(contents) > 1):  #pragma: nocover
             raise self.m.step.StepFailure('Cannot determine what to mount')
           else:
-            src = contents[0]
+            image = contents[0]
+            partitions = None if str(image).endswith('iso') else [1]
+            return self.mount_copy(image, cf.source, dest, partitions)
         else:
           src = self._scratchpad.join(cf.source)
+          # Copy the given file as is to the target location
+          return self.copy(src, dest)
       if cf.mount:
         # If we are copying from an iso. There are no partitions
         partitions = None if str(src).endswith('iso') else [1]
-        loop, mount_loc = self.m.qemu.mount_disk_image(
-            src, partitions=partitions)
-        n.presentation.logs['mount_path'] = mount_loc[0]
-        n.presentation.logs['loop'] = loop
-        try:
-          # Copy the file from mounted location
-          src = mount_loc[0] + '/' + cf.source
-          self.copy(src, dest)
-        finally:
-          self.m.qemu.unmount_disk_image(loop, partitions=partitions)
-      else:
-        # Copy the given file as is to the target location
-        self.copy(src, dest)
+        return self.mount_copy(src, cf.source, dest, partitions)
+      # Append source if given
+      if cf.source:
+        src = src.join(cf.source)
+      # Copy the given file as is to the target location
+      return self.copy(src, dest)
+
+  def mount_copy(self, image, source, dest, partitions=None):
+    """ mount_copy mounts the give image[partition] and copies the file given
+    by source to dest
+
+    Args:
+      * image: path to the image
+      * source: file/dir to copy in the said image
+      * dest: location to copy source to
+      * partitions: If the image is a disk image then partitions to mount
+    """
+    loop, mount_loc = self.m.qemu.mount_disk_image(image, partitions=partitions)
+    try:
+      # Copy the file from mounted location
+      src = mount_loc[0] + '/' + source
+      self.copy(src, dest)
+    finally:
+      self.m.qemu.unmount_disk_image(loop, partitions=partitions)
+    return
 
   def copy(self, src, dest):
     """ copy is a helper function that unifies the action of copying dir or file
