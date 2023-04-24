@@ -51,6 +51,24 @@ func TestRead(t *testing.T) {
 							},
 						},
 					},
+					rootKey + "/subdir_with_files": {
+						Monorail: &dirmdpb.Monorail{
+							Project:   "chromium",
+							Component: "Some>Component",
+						},
+						Overrides: []*dirmdpb.MetadataOverride{
+							{
+								FilePatterns: []string{
+									"*.txt",
+								},
+								Metadata: &dirmdpb.Metadata{
+									Monorail: &dirmdpb.Monorail{
+										Component: "Some>Other>Component",
+									},
+								},
+							},
+						},
+					},
 					rootKey + "/subdir_with_owners": {
 						TeamEmail: "team-email@chromium.org",
 						// OS was not inherited
@@ -61,6 +79,13 @@ func TestRead(t *testing.T) {
 					},
 					// "subdir_with_owners/empty_subdir" is not present because it has
 					// no metadata.
+				},
+				Files: map[string]*dirmdpb.Metadata{
+					rootKey + "/subdir_with_files/dummy.txt": {
+						Monorail: &dirmdpb.Monorail{
+							Component: "Some>Other>Component",
+						},
+					},
 				},
 				Repos: dummyRepos,
 			})
@@ -104,6 +129,62 @@ func TestRead(t *testing.T) {
 			})
 		})
 
+		Convey(`Original with two dirs metadata`, func() {
+			m, err := ReadMapping(ctx, dirmdpb.MappingForm_ORIGINAL, false, "testdata/root/subdir", "testdata/root/subdir_with_files")
+			So(err, ShouldBeNil)
+			So(m.Proto(), ShouldResembleProto, &dirmdpb.Mapping{
+				Dirs: map[string]*dirmdpb.Metadata{
+					rootKey: {
+						TeamEmail: "chromium-review@chromium.org",
+						Os:        dirmdpb.OS_LINUX,
+					},
+					rootKey + "/subdir": {
+						TeamEmail: "team-email@chromium.org",
+						// OS was not inherited
+						Monorail: &dirmdpb.Monorail{
+							Project:   "chromium",
+							Component: "Some>Component",
+						},
+						Resultdb: &dirmdpb.ResultDB{
+							Tags: []string{
+								"feature:read-later",
+								"feature:another-one",
+							},
+						},
+					},
+					rootKey + "/subdir_with_files": {
+						// TeamEmail and OS were not inherited
+						Monorail: &dirmdpb.Monorail{
+							Project:   "chromium",
+							Component: "Some>Component",
+						},
+						Overrides: []*dirmdpb.MetadataOverride{
+							{
+								FilePatterns: []string{
+									"*.txt",
+								},
+								Metadata: &dirmdpb.Metadata{
+									Monorail: &dirmdpb.Monorail{
+										Component: "Some>Other>Component",
+									},
+								},
+							},
+						},
+					},
+					// "subdir_with_owners/nested_dir" is not present because it has
+					// no metadata.
+				},
+				Files: map[string]*dirmdpb.Metadata{
+					rootKey + "/subdir_with_files/dummy.txt": {
+						Monorail: &dirmdpb.Monorail{
+							Component: "Some>Other>Component",
+						},
+					},
+				},
+				Repos: dummyRepos,
+			})
+		})
+
 		Convey(`Full`, func() {
 			m, err := ReadMapping(ctx, dirmdpb.MappingForm_FULL, false, "testdata/root")
 			So(err, ShouldBeNil)
@@ -127,6 +208,22 @@ func TestRead(t *testing.T) {
 							},
 						},
 					},
+					rootKey + "/subdir_with_files": {
+						TeamEmail: "chromium-review@chromium.org",
+						Os:        dirmdpb.OS_LINUX,
+						Monorail: &dirmdpb.Monorail{
+							Project:   "chromium",
+							Component: "Some>Component",
+						},
+					},
+					rootKey + "/subdir_with_files/nested_dir": {
+						TeamEmail: "chromium-review@chromium.org",
+						Os:        dirmdpb.OS_LINUX,
+						Monorail: &dirmdpb.Monorail{
+							Project:   "chromium",
+							Component: "Some>Component",
+						},
+					},
 					rootKey + "/subdir_with_owners": {
 						TeamEmail: "team-email@chromium.org",
 						Os:        dirmdpb.OS_LINUX,
@@ -141,6 +238,13 @@ func TestRead(t *testing.T) {
 						Monorail: &dirmdpb.Monorail{
 							Project:   "chromium",
 							Component: "Some>Component",
+						},
+					},
+				},
+				Files: map[string]*dirmdpb.Metadata{
+					rootKey + "/subdir_with_files/dummy.txt": {
+						Monorail: &dirmdpb.Monorail{
+							Component: "Some>Other>Component",
 						},
 					},
 				},
@@ -171,12 +275,27 @@ func TestRead(t *testing.T) {
 							},
 						},
 					},
+					rootKey + "/subdir_with_files": {
+						TeamEmail: "chromium-review@chromium.org",
+						Os:        dirmdpb.OS_LINUX,
+						Monorail: &dirmdpb.Monorail{
+							Project:   "chromium",
+							Component: "Some>Component",
+						},
+					},
 					rootKey + "/subdir_with_owners": {
 						TeamEmail: "team-email@chromium.org",
 						Os:        dirmdpb.OS_LINUX,
 						Monorail: &dirmdpb.Monorail{
 							Project:   "chromium",
 							Component: "Some>Component",
+						},
+					},
+				},
+				Files: map[string]*dirmdpb.Metadata{
+					rootKey + "/subdir_with_files/dummy.txt": {
+						Monorail: &dirmdpb.Monorail{
+							Component: "Some>Other>Component",
 						},
 					},
 				},
@@ -235,6 +354,21 @@ func TestRead(t *testing.T) {
 							},
 						},
 					},
+					rootKey + "/subdir_with_files": {
+						TeamEmail: "chromium-review@chromium.org",
+						Os:        dirmdpb.OS_LINUX,
+						Monorail: &dirmdpb.Monorail{
+							Project:   "chromium",
+							Component: "Some>Component",
+						},
+					},
+				},
+				Files: map[string]*dirmdpb.Metadata{
+					rootKey + "/subdir_with_files/dummy.txt": {
+						Monorail: &dirmdpb.Monorail{
+							Component: "Some>Other>Component",
+						},
+					},
 				},
 				Repos: dummyRepos,
 			})
@@ -266,12 +400,27 @@ func TestRead(t *testing.T) {
 							},
 						},
 					},
+					rootKey + "/subdir_with_files": {
+						TeamEmail: "chromium-review@chromium.org",
+						Os:        dirmdpb.OS_LINUX,
+						Monorail: &dirmdpb.Monorail{
+							Project:   "chromium",
+							Component: "Some>Component",
+						},
+					},
 					rootKey + "/subdir_with_owners": {
 						TeamEmail: "team-email@chromium.org",
 						Os:        dirmdpb.OS_LINUX,
 						Monorail: &dirmdpb.Monorail{
 							Project:   "chromium",
 							Component: "Some>Component",
+						},
+					},
+				},
+				Files: map[string]*dirmdpb.Metadata{
+					rootKey + "/subdir_with_files/dummy.txt": {
+						Monorail: &dirmdpb.Monorail{
+							Component: "Some>Other>Component",
 						},
 					},
 				},
@@ -429,11 +578,36 @@ func TestRead(t *testing.T) {
 							},
 						},
 					},
+					rootKey + "/subdir_with_files": {
+						Monorail: &dirmdpb.Monorail{
+							Project:   "chromium",
+							Component: "Some>Component",
+						},
+						Overrides: []*dirmdpb.MetadataOverride{
+							{
+								FilePatterns: []string{
+									"*.txt",
+								},
+								Metadata: &dirmdpb.Metadata{
+									Monorail: &dirmdpb.Monorail{
+										Component: "Some>Other>Component",
+									},
+								},
+							},
+						},
+					},
 					rootKey + "/subdir_with_owners": {
 						TeamEmail: "team-email@chromium.org",
 						Monorail: &dirmdpb.Monorail{
 							Project:   "chromium",
 							Component: "Some>Component",
+						},
+					},
+				},
+				Files: map[string]*dirmdpb.Metadata{
+					rootKey + "/subdir_with_files/dummy.txt": {
+						Monorail: &dirmdpb.Monorail{
+							Component: "Some>Other>Component",
 						},
 					},
 				},

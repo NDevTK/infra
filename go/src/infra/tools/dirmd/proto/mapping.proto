@@ -23,6 +23,17 @@ message Mapping {
   // part of the this message.
   map<string, Metadata> dirs = 1;
 
+  // Files maps file paths to its metadata.
+  //
+  // The key is a path to the file, relatives to the root.
+  // The same rules for the key should apply here as defined by dirs, except
+  // that the key should point to a file.
+  //
+  // Unlike dirs, files will not have a guaranteed entry in FULL mapping form
+  // since it is required to have a DIR_METADATA file to define file overrides,
+  // and the file overrides are processed once the DIR_METADATA file is read in.
+  map<string, Metadata> files = 3;
+
   // Repos contains information about the repositories that Mapping.dirs were
   // read from. Repos can be used to tell which repository a given directory
   // came from. Also it contains loaded mixins, referred to by Mapping.mixins.

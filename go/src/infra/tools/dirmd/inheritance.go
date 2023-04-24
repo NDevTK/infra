@@ -79,6 +79,7 @@ func (m *Mapping) Reduce() error {
 		// descendants of this dir can pick it up in the next iterations of the loop.
 		Merge(mdComputed, md)
 		mdComputed.Mixins = nil
+		mdComputed.Overrides = nil
 		computed.Dirs[dir] = mdComputed
 	}
 	return nil
@@ -101,6 +102,10 @@ func (m *Mapping) apply(dst *dirmdpb.Metadata, dirKey string) error {
 	// Clear the mixin list after applying, to avoid accidental double importing.
 	// Do it only after merging src, otherwise it would be re-populated.
 	dst.Mixins = nil
+
+	// Clear the override definitions after applying to ensure that file overrides
+	// aren't inherited.
+	dst.Overrides = nil
 	return nil
 }
 

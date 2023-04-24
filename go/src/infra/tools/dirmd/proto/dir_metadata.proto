@@ -78,6 +78,17 @@ message Metadata {
 
   // ChromeOS specific metadata.
   chrome.dir_metadata.chromeos.ChromeOS chromeos = 9;
+
+  // Metadata Overrides
+  //
+  // Used for files that require different Metadata from the one specified in
+  // the same dir or inherited from levels above. Override metadata should only
+  // apply to files within the directory specified, and cannot be inherited,
+  // meaning that it only applies to the files directly specified in the
+  // directory. For example, overrides in a/*.txt will not apply to files in
+  // a/b/*.txt. Values for Metadata specified in these ovrrides should follow
+  // the same rules. Mixins defined under overrides are not supported.
+  repeated MetadataOverride overrides = 11;
 }
 
 // WPT is WebPlatformTest-specific metadata.
@@ -112,6 +123,22 @@ message Monorail {
 message Buganizer {
   // The component id. For example, 690873.
   int64 component_id = 1;
+}
+
+// Metadata override definition
+message MetadataOverride {
+  // a list of regex strings defining file_patterns.
+  //
+  // all file_patterns listed here are relative to the location of the
+  // DIR_METADATA file. file patterns listed here are directly passed to git
+  // ls-files to find all files associated with that pattern. for example, if
+  // DIR_METADATA is specified at a/b/DIR_METADATA, and file_pattern is
+  // \*.proto, `git ls-files --full-name a/b/\*.proto` will be run to identify
+  // files.
+  repeated string file_patterns = 1;
+
+  // Note that mixin imports are not supported for override definitions.
+  Metadata metadata = 2;
 }
 
 // Trinary is a tri-state boolean.

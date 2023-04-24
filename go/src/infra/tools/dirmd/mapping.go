@@ -19,6 +19,7 @@ type Mapping dirmdpb.Mapping
 func NewMapping(size int) *Mapping {
 	return &Mapping{
 		Dirs:  make(map[string]*dirmdpb.Metadata, size),
+		Files: make(map[string]*dirmdpb.Metadata, size),
 		Repos: make(map[string]*dirmdpb.Repo, 1),
 	}
 }

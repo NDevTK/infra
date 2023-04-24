@@ -1,0 +1,15 @@
+monorail {
+  project: "chromium"
+  component: "Some>Component"
+}
+
+overrides [
+  {
+    file_patterns: ["*.txt"]
+    metadata {
+      monorail {
+        component: "Some>Other>Component"
+      }
+    }
+  }
+]

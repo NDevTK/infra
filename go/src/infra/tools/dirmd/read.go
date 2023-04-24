@@ -159,7 +159,7 @@ func ReadMapping(ctx context.Context, form dirmdpb.MappingForm, onlyDirmd bool, 
 	}
 
 	// Wait for readUpMissing calls to finish before proceeding because
-	// readUpMissing assumes it is the only one populating r.Dirs.
+	// readUpMissing assumes it is the only one populating r.Dirs and r.Files.
 	wgReadUpMissing.Wait()
 
 	// If the form isn't sparse, then also read the descendants.
@@ -350,7 +350,6 @@ func (r *mappingReader) ReadGitFiles(ctx context.Context, repo *repoInfo, absTre
 
 	// Concurrently start `git ls-files`, read its output and read the discovered
 	// metadata files.
-
 	cmd := exec.CommandContext(ctx, gitBinary, "-C", repo.absRoot, "ls-files", "--full-name", absTreeRoot)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -412,6 +411,7 @@ func (r *mappingReader) goReadDir(ctx context.Context, repo *repoInfo, absDir, k
 		defer r.mu.Unlock()
 
 		r.Dirs[key] = md
+		r.processFiles(ctx, absDir, key, md)
 
 		// If the file imports mixins, read them too.
 		for _, mx := range md.Mixins {
@@ -450,6 +450,47 @@ func (r *mappingReader) goReadDir(ctx context.Context, repo *repoInfo, absDir, k
 
 		return nil
 	})
+}
+
+func (r *mappingReader) processFiles(ctx context.Context, absDir string, key string, md *dirmdpb.Metadata) error {
+	// walk through all Dirs that have already been processed to identify file based overrides.
+	if md == nil {
+		return nil
+	}
+	// metadata can be overridden for files that require a different metadata from its parent, whether the parent is
+	// inherited or the one specified in the same directory.
+	for _, omd := range md.Overrides {
+		absRoot, _ := filepath.Split(absDir)
+		for _, fp := range omd.FilePatterns {
+			regex_path := filepath.Join(absRoot, fp)
+			// use git ls-files to determine all files associated with for each regex defined.
+			cmd := exec.CommandContext(ctx, gitBinary, "-C", absRoot, "ls-files", "--full-name", regex_path)
+			stdout, err := cmd.StdoutPipe()
+			if err != nil {
+				return err
+			}
+			if err := cmd.Start(); err != nil {
+				return errors.Annotate(err, "failed to start `git ls-files`").Err()
+			}
+			defer cmd.Wait() // do not exit the func until the subprocess exits.
+
+			scan := bufio.NewScanner(stdout)
+			for scan.Scan() {
+				ffp := scan.Text()
+				fd, fileName := filepath.Split(ffp)
+				// git ls-files will also display files under nested directories, but we only want the overrides to apply
+				// to the folder in question, so we check this by matching the directory paths.
+				// for example, git ls-files may return both a/.txt and a/b/.txt, so we check that the key matches the
+				// remaining path returned by git-ls to ensure we exclude a/b/.txt.
+				cPath := filepath.ToSlash(filepath.Clean(fd))
+				if cPath == key {
+					fkey := path.Join(key, fileName)
+					r.Files[fkey] = omd.Metadata
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // readUpMissing reads metadata of the specified directory and its ancestors,

@@ -1,0 +1,1 @@
+A dummy file nested under a directory with file override defined, and with no DIR_METADATA in this location.
