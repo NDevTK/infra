@@ -811,13 +811,13 @@ class ServletRegistry(object):
         ])
     self.routes.append(
         [
-            '/hotlists<string:unused>',
+            '/hotlists/<path:subpath>',
             webcomponentspage.WebComponentsPage(
                 services=service).GetWebComponentsHotlist, ['GET']
         ])
     self.routes.append(
         [
-            '/users<string:unused>',
+            '/users/<path:subpath>',
             webcomponentspage.WebComponentsPage(
                 services=service).GetWebComponentsUser, ['GET']
         ])
