@@ -16,7 +16,12 @@ import (
 	"go.chromium.org/luci/server/auth/openid"
 	"go.chromium.org/luci/server/auth/rpcacl"
 	"go.chromium.org/luci/server/cron"
+	"go.chromium.org/luci/server/encryptedcookies"
 	"go.chromium.org/luci/server/module"
+	"go.chromium.org/luci/server/secrets"
+
+	// Store auth sessions in the datastore.
+	_ "go.chromium.org/luci/server/encryptedcookies/session/datastore"
 
 	"infra/appengine/test-resources/api"
 	"infra/appengine/test-resources/internal/testmetrics"
@@ -44,6 +49,8 @@ func main() {
 
 	modules := []module.Module{
 		cron.NewModuleFromFlags(),
+		encryptedcookies.NewModuleFromFlags(), // Required for auth sessions.
+		secrets.NewModuleFromFlags(),          // Needed by encryptedcookies.
 	}
 	server.Main(nil, modules, func(srv *server.Server) error {
 		client, err := setupClient(srv)
