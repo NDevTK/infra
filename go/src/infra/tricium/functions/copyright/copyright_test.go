@@ -16,18 +16,20 @@ import (
 // These tests read from files on the filesystem, so modifying the tests may
 // require modifying the example test files.
 const (
-	baseDir = "test"
-	goodBsd = "src/good.cpp"
-	goodMit = "src/good_mit.cpp"
-	badBsd  = "src/bad.cpp"
-	missing = "src/missing.cpp"
-	old     = "src/old.cpp"
+	baseDir                         = "test"
+	goodBsd                         = "src/good.cpp"
+	goodMit                         = "src/good_mit.cpp"
+	goodBsdWithoutAllRightsReserved = "src/good_wo_all_rights_reserved.cpp"
+	badBsd                          = "src/bad.cpp"
+	missing                         = "src/missing.cpp"
+	old                             = "src/old.cpp"
 )
 
 func TestCopyrightChecker(t *testing.T) {
 
 	Convey("Produces no comment for file with correct BSD copyright", t, func() {
 		So(checkCopyright(baseDir, goodBsd), ShouldBeNil)
+		So(checkCopyright(baseDir, goodBsdWithoutAllRightsReserved), ShouldBeNil)
 	})
 
 	Convey("Produces no comment for file with correct MIT copyright", t, func() {
@@ -44,7 +46,7 @@ func TestCopyrightChecker(t *testing.T) {
 				"Copyright <year> The <group> Authors. All rights reserved.\n" +
 				"Use of this source code is governed by a BSD-style license that can be\n" +
 				"found in the LICENSE file.\n\n" +
-				"See: https://chromium.googlesource.com/chromium/src/+/master/styleguide/c++/c++.md#file-headers\n\n" +
+				"See: https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md#file-headers\n\n" +
 				"Or the following for MIT: Copyright <year> The <group> Authors\n\n" +
 				"Use of this source code is governed by a MIT-style\n" +
 				"license that can be found in the LICENSE file or at\n" +
@@ -67,7 +69,7 @@ func TestCopyrightChecker(t *testing.T) {
 				"Copyright <year> The <group> Authors. All rights reserved.\n" +
 				"Use of this source code is governed by a BSD-style license that can be\n" +
 				"found in the LICENSE file.\n\n" +
-				"See: https://chromium.googlesource.com/chromium/src/+/master/styleguide/c++/c++.md#file-headers\n\n" +
+				"See: https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md#file-headers\n\n" +
 				"Or the following for MIT: Copyright <year> The <group> Authors\n\n" +
 				"Use of this source code is governed by a MIT-style\n" +
 				"license that can be found in the LICENSE file or at\n" +
@@ -86,7 +88,7 @@ func TestCopyrightChecker(t *testing.T) {
 		So(c, ShouldResembleProto, &tricium.Data_Comment{
 			Category: "Copyright/OutOfDate",
 			Message: "Out of date copyright statement (omit the (c) to update).\n\n" +
-				"See: https://chromium.googlesource.com/chromium/src/+/master/styleguide/c++/c++.md#file-headers",
+				"See: https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md#file-headers",
 			Path:      old,
 			StartLine: 1,
 			EndLine:   1,

@@ -30,7 +30,7 @@ var (
 	whitespaceRegexp = regexp.MustCompile(`^[ \t\n\r\v\f]*$`)
 	// Expected copyright statements (any year or author accepted).
 	bsdCopyrightRegexp = regexp.MustCompile(`Copyright 20[0-9][0-9] ` +
-		`The [A-Za-z]* Authors\. All rights reserved\. ` +
+		`The [A-Za-z]* Authors(\. All rights reserved\.)? ` +
 		`Use of this source code is governed by a BSD-style license ` +
 		`that can be found in the LICENSE file\.`)
 	mitCopyrightRegexp = regexp.MustCompile(`Copyright 20[0-9][0-9] ` +
@@ -154,7 +154,7 @@ func missingCopyrightComment(path string) *tricium.Data_Comment {
 			"Copyright <year> The <group> Authors. All rights reserved.\n" +
 			"Use of this source code is governed by a BSD-style license that can be\n" +
 			"found in the LICENSE file.\n\n" +
-			"See: https://chromium.googlesource.com/chromium/src/+/master/styleguide/c++/c++.md#file-headers\n\n" +
+			"See: https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md#file-headers\n\n" +
 			"Or the following for MIT: Copyright <year> The <group> Authors\n\n" +
 			"Use of this source code is governed by a MIT-style\n" +
 			"license that can be found in the LICENSE file or at\n" +
@@ -174,7 +174,7 @@ func incorrectCopyrightComment(path string) *tricium.Data_Comment {
 			"Copyright <year> The <group> Authors. All rights reserved.\n" +
 			"Use of this source code is governed by a BSD-style license that can be\n" +
 			"found in the LICENSE file.\n\n" +
-			"See: https://chromium.googlesource.com/chromium/src/+/master/styleguide/c++/c++.md#file-headers\n\n" +
+			"See: https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md#file-headers\n\n" +
 			"Or the following for MIT: Copyright <year> The <group> Authors\n\n" +
 			"Use of this source code is governed by a MIT-style\n" +
 			"license that can be found in the LICENSE file or at\n" +
@@ -190,7 +190,7 @@ func oldCopyrightComment(path string) *tricium.Data_Comment {
 	return &tricium.Data_Comment{
 		Category: fmt.Sprintf("%s/%s", category, "OutOfDate"),
 		Message: "Out of date copyright statement (omit the (c) to update).\n\n" +
-			"See: https://chromium.googlesource.com/chromium/src/+/master/styleguide/c++/c++.md#file-headers",
+			"See: https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md#file-headers",
 		Path:      path,
 		StartLine: int32(1),
 		EndLine:   int32(1),
