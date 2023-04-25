@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ type Bot interface {
 	// after a grace period.
 	// Swarming bots handle SIGTERM by aborting the currently running task and
 	// exiting, but it can be hours long.
-	// It rely on Wait() to be called to notify if the bot process has been
+	// It relies on Wait() to be called to notify if the bot process has been
 	// terminated.
 	TerminateOrKill() error
 }
