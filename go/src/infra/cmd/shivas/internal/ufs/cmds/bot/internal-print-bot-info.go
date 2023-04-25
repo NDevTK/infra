@@ -230,6 +230,7 @@ func getDUTBotState(deviceData *ufspb.ChromeOSDeviceData) botState {
 	s["rpm_state"] = []string{d.GetCommon().GetLabels().GetPeripherals().GetRpmState().String()}
 	s["lab_config_version_index"] = []string{deviceData.GetLabConfig().GetUpdateTime().AsTime().Format(ufsUtil.TimestampBasedVersionKeyFormat)}
 	s["dut_state_version_index"] = []string{deviceData.GetDutState().GetUpdateTime().AsTime().Format(ufsUtil.TimestampBasedVersionKeyFormat)}
+	s["dut_state_reason"] = []string{deviceData.GetDutState().GetDutStateReason()}
 	return s
 }
 
