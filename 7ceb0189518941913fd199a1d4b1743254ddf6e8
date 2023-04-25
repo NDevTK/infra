@@ -23,6 +23,30 @@
       },
       "revId": "7ceb0189518941913fd199a1d4b1743254ddf6e8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2e64d70a_46a948b4",
+        "filename": "go/src/infra/build/siso/build/step_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-04-25T02:02:19Z",
+      "side": 1,
+      "message": "https://bugs.chromium.org/p/chromium/issues/detail?id\u003d1439693",
+      "parentUuid": "957fb920_4efefb37",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "7ceb0189518941913fd199a1d4b1743254ddf6e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
