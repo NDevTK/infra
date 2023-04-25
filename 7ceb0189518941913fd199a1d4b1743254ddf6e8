@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "4ce78a16_1cedb5a9",
+        "filename": "go/src/infra/build/siso/build/step.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-04-25T02:09:13Z",
+      "side": 1,
+      "message": "Please add a comment to explain this is for Windows python actions to have meaningful step names.",
+      "revId": "7ceb0189518941913fd199a1d4b1743254ddf6e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "957fb920_4efefb37",
         "filename": "go/src/infra/build/siso/build/step_test.go",
         "patchSetId": 1
