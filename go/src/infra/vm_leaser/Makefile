@@ -6,7 +6,8 @@ MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 PROJECT_PATH := $(patsubst %/,%,$(dir $(MKFILE_PATH)))
 APP_PATH := $(PROJECT_PATH)
 GCP_PROJECT := chrome-fleet-vm-leaser-dev
-GCP_REGION := us-west1
+GCP_REGION := us-central1-a
+LUCI_AUTH_SERVICE := chrome-infra-auth-dev.appspot.com
 
 define help_message
 
@@ -52,7 +53,7 @@ build:
 .PHONY: dev
 dev: build
 	./vm-leaser-service \
-	--auth-service-host="chrome-infra-auth-dev.appspot.com" \
+	--auth-service-host=${LUCI_AUTH_SERVICE} \
 	--grpc-addr=":50051" \
 	--http-addr=":8800" \
 	--admin-addr=":8900"
@@ -77,7 +78,7 @@ dev-docker: build-docker
 	-v ~/.config/chrome_infra/auth:/tokens \
 	gcr.io/${GCP_PROJECT}/vm-leaser-service:latest \
 		-cloud-project ${GCP_PROJECT} \
-		-auth-service-host="chrome-infra-auth-dev.appspot.com" \
+		-auth-service-host=${LUCI_AUTH_SERVICE} \
 		-grpc-addr :50051 \
 		-http-addr :8800 \
 		-admin-addr :8900 \
@@ -104,4 +105,5 @@ dev-cron: build-cron
 	./cron-service \
 	--http-addr=":8801" \
 	--admin-addr=":8901" \
-	--auth-service-host="chrome-infra-auth-dev.appspot.com"
+	--auth-service-host=${LUCI_AUTH_SERVICE} \
+	--gcp-project=${GCP_PROJECT}

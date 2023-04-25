@@ -47,18 +47,18 @@ var waitFunc = func(ctx context.Context, ops []*compute.Operation) error {
 var wait = waitFunc
 
 // RegisterCronServer initializes the VM Leaser cron server.
-func RegisterCronServer(srv *server.Server) {
+func RegisterCronServer(srv *server.Server, gcpProject string) {
 	srv.RunInBackground("vm_leaser.cron", func(ctx context.Context) {
 		// releaseExpiredVMs every five minutes. GCP takes about 2 minutes to kill
 		// instances.
-		Run(ctx, 5*time.Minute, releaseExpiredVMs)
+		Run(ctx, 5*time.Minute, gcpProject, releaseExpiredVMs)
 	})
 }
 
 // Run runs f repeatedly, until the context is cancelled.
 //
 // This method runs f based on minInterval time interval.
-func Run(ctx context.Context, minInterval time.Duration, f func(context.Context) error) {
+func Run(ctx context.Context, minInterval time.Duration, gcpProject string, f func(context.Context, string) error) {
 	defer logging.Warningf(ctx, "Exiting cron")
 
 	// call calls the provided cron method f
@@ -69,7 +69,7 @@ func Run(ctx context.Context, minInterval time.Duration, f func(context.Context)
 		defer paniccatcher.Catch(func(p *paniccatcher.Panic) {
 			logging.Errorf(ctx, "Caught panic: %s\n%s", p.Reason, p.Stack)
 		})
-		return f(ctx)
+		return f(ctx, gcpProject)
 	}
 
 	for {
@@ -90,7 +90,7 @@ func Run(ctx context.Context, minInterval time.Duration, f func(context.Context)
 }
 
 // releaseExpiredVMs releases VMs based on their expiration times.
-func releaseExpiredVMs(ctx context.Context) error {
+func releaseExpiredVMs(ctx context.Context, gcpProject string) error {
 	logging.Debugf(ctx, "Releasing expired VMs")
 	instancesClient, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
@@ -101,7 +101,7 @@ func releaseExpiredVMs(ctx context.Context) error {
 	var ops []*compute.Operation
 	var errors *multierror.Error
 
-	it, err := listInstances(ctx, instancesClient, "chrome-fleet-vm-leaser-cr-exp", frontend.DefaultRegion)
+	it, err := listInstances(ctx, instancesClient, gcpProject, frontend.DefaultRegion)
 	if err != nil {
 		return err
 	}
@@ -122,7 +122,7 @@ func releaseExpiredVMs(ctx context.Context) error {
 		}
 		if expired {
 			logging.Infof(ctx, "Scheduling %s for deletion.\n", instance.GetName(), instance.GetMetadata().GetItems())
-			op, err := deleteInstance(ctx, instancesClient, instance.GetName(), "chrome-fleet-vm-leaser-cr-exp", frontend.DefaultRegion)
+			op, err := deleteInstance(ctx, instancesClient, instance.GetName(), gcpProject, frontend.DefaultRegion)
 			if err != nil {
 				errors = multierror.Append(errors, fmt.Errorf("failed deleting VM instance %s: %v", instance.GetName(), err))
 				continue

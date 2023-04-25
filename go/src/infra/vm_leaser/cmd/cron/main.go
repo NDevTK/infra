@@ -5,6 +5,8 @@
 package main
 
 import (
+	"flag"
+
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server"
 
@@ -12,9 +14,14 @@ import (
 )
 
 func main() {
+	gcpProject := flag.String(
+		"gcp-project",
+		"chrome-fleet-vm-leaser-dev",
+		"The GCP project where VMs are located.",
+	)
 	server.Main(nil, nil, func(srv *server.Server) error {
 		logging.Infof(srv.Context, "Registering cron server.")
-		cron.RegisterCronServer(srv)
+		cron.RegisterCronServer(srv, *gcpProject)
 		return nil
 	})
 }
