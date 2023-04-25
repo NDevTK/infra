@@ -46,7 +46,19 @@ def GenTests(api):
                  dedent('''Avail
                            20971530
                         ''')),
-             retcode=0) + api.post_process(DropExpectation))
+             retcode=0) + api.step_data(
+                 'Estimate size required for ext4_disk',
+                 api.raw_io.stream_output(
+                     dedent('''123456   /cache/disk/files/keys/cert.pem
+                           234565   /cache/disk/files/ap/wpa.conf
+                           324551   /cache/disk/files/keymaster/km
+
+                           /cache/disk/files/ssh:
+                           total 8
+                           435623   /cache/disk/files/ssh/authorized_users
+                           1230     /cache/disk/files/ssh/id_pub
+                        ''')),
+                 retcode=0) + api.post_process(DropExpectation))
 
   yield (api.test('Test create_disk fail (mount permission)') +
          api.post_process(StatusFailure) + api.step_data(
@@ -69,9 +81,22 @@ def GenTests(api):
                            20971530
                         ''')),
              retcode=0) + api.step_data(
-                 'Copy files to ext4_disk.Mount loop',
-                 api.raw_io.stream_output('Permission denied: /dev/loop6'),
-                 retcode=1) + api.post_process(DropExpectation))
+                 'Estimate size required for ext4_disk',
+                 api.raw_io.stream_output(
+                     dedent('''123456   chrome:primarygroup /cache/keys/cert.pem
+                           234565   chrome:primarygroup /cache/ap/wpa.conf
+                           324551   chrome:primarygroup /cache/keymaster/km
+
+                           /ssh:
+                           total 8
+                           435623   chrome:primarygroup /ssh/authorized_users
+                           1230     chrome:primarygroup /ssh/id_pub
+                           ERROR: failed to read path /ssh
+                        ''')),
+                 retcode=0) + api.step_data(
+                     'Copy files to ext4_disk.Mount loop',
+                     api.raw_io.stream_output('Permission denied: /dev/loop6'),
+                     retcode=1) + api.post_process(DropExpectation))
 
   yield (api.test('Test create_disk fail (out of disk)') +
          api.post_process(StatusFailure) +

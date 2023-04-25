@@ -646,7 +646,7 @@ Args:
               (bigger size used if required)
   * include: sequence of files and directories to copy to image
 
-&mdash; **def [create\_empty\_disk](/recipes/recipe_modules/qemu/api.py#127)(self, disk_name, fs_format, size):**
+&mdash; **def [create\_empty\_disk](/recipes/recipe_modules/qemu/api.py#172)(self, disk_name, fs_format, size):**
 
 create_empty_disk creates an empty disk image and formats it
 
@@ -668,7 +668,7 @@ Note:
 Args:
   * version: the cipd version tag for qemu
 
-&mdash; **def [mount\_disk\_image](/recipes/recipe_modules/qemu/api.py#177)(self, disk, partitions=[1]):**
+&mdash; **def [mount\_disk\_image](/recipes/recipe_modules/qemu/api.py#222)(self, disk, partitions=[1]):**
 
 mount_disk_image mounts the given image and returns the mount location
 and loop file used for mounting
@@ -682,7 +682,7 @@ Returns: loop file used for the disk and list of mount locations
 
 &emsp; **@property**<br>&mdash; **def [path](/recipes/recipe_modules/qemu/api.py#33)(self):**
 
-&mdash; **def [powerdown\_vm](/recipes/recipe_modules/qemu/api.py#323)(self, name):**
+&mdash; **def [powerdown\_vm](/recipes/recipe_modules/qemu/api.py#368)(self, name):**
 
 powerdown_vm sends a shutdown signal to the given VM. Similar to power
 button on a physical device
@@ -692,7 +692,7 @@ Args:
 
 Returns: True if powerdown signal was sent to VM. False otherwise
 
-&mdash; **def [quit\_vm](/recipes/recipe_modules/qemu/api.py#364)(self, name):**
+&mdash; **def [quit\_vm](/recipes/recipe_modules/qemu/api.py#409)(self, name):**
 
 quit_vm sends a quit signal to the qemu process. Use this if your VM
 doesn't respond to powerdown signal.
@@ -702,7 +702,7 @@ Args:
 
 Returns: True if quit signal was sent to VM. False otherwise
 
-&mdash; **def [start\_vm](/recipes/recipe_modules/qemu/api.py#251)(self, arch, qemu_vm, kvm=False):**
+&mdash; **def [start\_vm](/recipes/recipe_modules/qemu/api.py#296)(self, arch, qemu_vm, kvm=False):**
 
 start_vm starts a qemu vm
 
@@ -715,14 +715,14 @@ Args:
             the vm
  * kvm: If true then VM is run on hardware. It's emulated otherwise
 
-&mdash; **def [unmount\_disk\_image](/recipes/recipe_modules/qemu/api.py#228)(self, loop_file, partitions=[1]):**
+&mdash; **def [unmount\_disk\_image](/recipes/recipe_modules/qemu/api.py#273)(self, loop_file, partitions=[1]):**
 
 unmount_disk_image unmounts the disk mounted using the given loop_file
 
 Args:
   * loop_file: Loop device used to mount the image
 
-&mdash; **def [vm\_status](/recipes/recipe_modules/qemu/api.py#405)(self, name):**
+&mdash; **def [vm\_status](/recipes/recipe_modules/qemu/api.py#450)(self, name):**
 
 vm_status returns a dict describing the status of the vm. The return
 value is the QMP response to `query-status`

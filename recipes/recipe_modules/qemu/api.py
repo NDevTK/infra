@@ -93,20 +93,65 @@ class QEMUAPI(recipe_api.RecipeApi):
                             123565   /usr/local/lib/libs.so
                             13245243 total
                         ''')
-      # use du to estimate the size on disk
+      # use ls to estimate the size of all files
       res = self.m.step(
           name='Estimate size required for {}'.format(disk_name),
-          cmd=['du', '-scb'] + list(include.keys()),
+          # Use ls to get file size
+          # s: print allocated size for each file
+          # 1: list one file per line
+          # R: list sub directories recursively
+          # L: deference symbolic links
+          # A: list all files, except implied . and ..
+          # block-size: List size in bytes
+          cmd=['ls', '-s1RLA', '--block-size=1'] + list(include.keys()),
           stdout=self.m.raw_io.output(),
           step_test_data=lambda: self.m.raw_io.test_api.stream_output(test_res))
       # Add stdout back to output
       res.presentation.logs['stdout'] = res.stdout
-      # read total from last line of the output
-      op = res.stdout.strip().splitlines()[-1]
-      total_size = int(op.split()[0])
+      calculations = ''
+      failures = ''
+      # Get list of file sizes, Ignore total at the end
+      oplines = res.stdout.strip().splitlines()
+      # Max FAT32 sector size is 32KB. Assume this is the case. Align to 32KB
+      # https://support.microsoft.com/en-us/topic/default-cluster-size-for-ntfs-fat-and-exfat-9772e6f1-e31a-00d7-e18f-73169155af95
+      f32_sector = 32768
+      total_size = 0
+      for idx, op in enumerate(oplines):
+        op = op.strip()
+        # skip empty lines
+        if op == b'':
+          continue
+        # skip the total count
+        if op.startswith(b'total'):
+          continue
+        if op.endswith(b':'):
+          # can be the dir name followed by total
+          if (idx + 1) < len(oplines) and oplines[idx + 1]:
+            next_line = oplines[idx + 1].strip()
+            if next_line.startswith(b'total'):
+              continue
+        tokens = op.split()
+        if len(tokens) > 1:
+          try:
+            # must be a file listing of 'size name'
+            file_size, file_name = tokens[0], tokens[1]
+            f_size = int(file_size)
+            # Assign the required number of sectors
+            assigned_size = ((f_size // f32_sector) + 1) * f32_sector
+            total_size += assigned_size
+            calculations += '{}: {}\n'.format(
+                file_name.decode('utf-8'), assigned_size)
+          except Exception as err:
+            failures += 'Cannot parse {}: {}'.format(op.decode('utf-8'), err)
+        if len(tokens) != 2:
+          failures += 'Unsure about {}'.format(op.decode('utf-8'))
       # bump up the size by 25% to ensure that all files can be copied
       total_size += (total_size // 4)
       min_size = max(total_size, min_size)
+      # Write back the logs to the list step
+      calculations += 'Total size for disk: {}'.format(total_size)
+      res.presentation.logs['calculations'] = calculations
+      res.presentation.logs['failures'] = failures
     # create an empty disk
     self.create_empty_disk(disk_name, fs_format, min_size)
     if include:
