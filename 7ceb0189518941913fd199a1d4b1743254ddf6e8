@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e187e460_ffdf8912",
+        "filename": "go/src/infra/build/siso/build/step.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-04-25T02:15:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4ce78a16_1cedb5a9",
+      "revId": "7ceb0189518941913fd199a1d4b1743254ddf6e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "957fb920_4efefb37",
