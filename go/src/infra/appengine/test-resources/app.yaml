@@ -1,9 +1,21 @@
 runtime: go120
 
 handlers:
-- url: /.*
-  script: auto
+- url: /prpc/.*
   secure: always
+  script: auto
+
+- url: /internal/.*
+  secure: always
+  script: auto
+
+- url: /(.*\.(png|css|js|txt))$
+  static_files: static/\1
+  upload: static/(.*)
+
+- url: /(.*)
+  static_files: static/index.html
+  upload: static/index.html
 
 luci_gae_vars:
   chrome-resources-staging:
