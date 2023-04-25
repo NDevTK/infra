@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "957fb920_4efefb37",
+        "filename": "go/src/infra/build/siso/build/step_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-04-25T01:59:46Z",
+      "side": 1,
+      "message": "\u003e Incorrect copyright statement.\n\u003e Use the following for BSD:\n\u003e Copyright \u003cyear\u003e The \u003cgroup\u003e Authors. All rights reserved.\n\u003e Use of this source code is governed by a BSD-style license that can be\n\u003e found in the LICENSE file.\n\u003e \n\u003e See: https://chromium.googlesource.com/chromium/src/+/master/styleguide/c++/c++.md#file-headers\n\u003e \n\u003e Or the following for MIT: Copyright \u003cyear\u003e The \u003cgroup\u003e Authors\n\u003e \n\u003e Use of this source code is governed by a MIT-style\n\u003e license that can be found in the LICENSE file or at\n\u003e https://opensource.org/licenses/MIT.\n\nPlease fix.",
+      "parentUuid": "25ecef78_0bfbc49c",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "7ceb0189518941913fd199a1d4b1743254ddf6e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
