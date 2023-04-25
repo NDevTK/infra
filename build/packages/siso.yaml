@@ -16,7 +16,7 @@ go_build_environ:
   CGO_ENABLED:
     linux: 0
     windows: 0
-    darwin: 1  # native Go DNS resolver is buggy on OSX (crbug.com/803673)
+    darwin: 0
 root: ../../go/bin
 data:
   - file: siso${exe_suffix}
