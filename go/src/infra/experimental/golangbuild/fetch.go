@@ -54,9 +54,9 @@ func fetchRepo(ctx context.Context, src *sourceSpec, dst string) (err error) {
 	}()
 
 	switch {
-	case src.change != nil && src.rebase:
-		return fetchRepoChangeAsIs(ctx, dst, src.change)
 	case src.change != nil && !src.rebase:
+		return fetchRepoChangeAsIs(ctx, dst, src.change)
+	case src.change != nil && src.rebase:
 		return fetchRepoChangeWithRebase(ctx, src.branch, dst, src.change)
 	case src.commit != nil:
 		if src.rebase {
