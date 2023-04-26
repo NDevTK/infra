@@ -1,0 +1,19 @@
+package: infra/cros/satlab/satlabrpcserver/${platform}
+description: Satlab RPC Server to be run in the Satlab box.
+platforms:
+  - linux-amd64
+  - mac-amd64
+  - mac-arm64
+  - windows-amd64
+  - windows-arm64
+go_build_environ:
+  CGO_ENABLED:
+    darwin:  1  # Inherited from main/build/packages/cipd_client.yaml
+    linux:   0  # satlab, specifically, needs to build inside an alpine linux container.
+    windows: 0  # Inherited from main/build/packages/cipd_client.yaml
+go_packages:
+  - infra/cros/satlab/satlabrpcserver
+root: ../../go/bin
+data:
+  - file: satlabrpcserver${exe_suffix}
+  - version_file: .versions/satlabrpcserver${exe_suffix}.cipd_version
