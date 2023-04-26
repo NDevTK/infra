@@ -167,10 +167,11 @@ func innerMain() error {
 	if err != nil {
 		return err
 	}
+	otil.AddHTTP(h)
+
 	if err := os.MkdirAll(workingDirPath, 0777); err != nil {
 		return err
 	}
-	otil.AddHTTP(h)
 
 	a := agent.Agent{
 		Client: api.NewDronePRPCClient(&prpc.Client{
