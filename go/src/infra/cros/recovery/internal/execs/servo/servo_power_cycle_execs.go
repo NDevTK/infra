@@ -24,6 +24,7 @@ func servoPowerCycleRootServoExec(ctx context.Context, info *execs.ExecInfo) err
 	resetTimeout := argsMap.AsDuration(ctx, "reset_timeout", 30, time.Second)
 	// Timeout to wait after resetting the servo. Default to be 20s.
 	waitTimeout := argsMap.AsDuration(ctx, "wait_timeout", 20, time.Second)
+	resetAuthorizedFlag := argsMap.AsBool(ctx, "reset_authorized", false)
 	run := info.DefaultRunner()
 	servoInfo := info.GetChromeos().GetServo()
 	var smartUsbhubPresent = false
@@ -56,9 +57,11 @@ func servoPowerCycleRootServoExec(ctx context.Context, info *execs.ExecInfo) err
 	smartUsbhubPresent = true
 	log.Debugf(ctx, "Wait %v for servo to come back from reset.", waitTimeout)
 	time.Sleep(waitTimeout)
-	// Reset authorized flag fror servo-hub for servo v4p1 only.
-	if ResetUsbkeyAuthorized(ctx, run, servoSerial, info.GetChromeos().GetServo().ServodType) != nil {
-		return errors.Annotate(err, "servo power cycle root servo").Err()
+	if resetAuthorizedFlag {
+		// Reset authorized flag fror servo-hub for servo v4p1 only.
+		if err := ResetUsbkeyAuthorized(ctx, run, servoSerial, info.GetChromeos().GetServo().ServodType); err != nil {
+			return errors.Annotate(err, "servo power cycle root servo").Err()
+		}
 	}
 	// Get the usb devnum after the reset.
 	postResetDevnum, err := topology.GetServoUsbDevnum(ctx, run, servoSerial)

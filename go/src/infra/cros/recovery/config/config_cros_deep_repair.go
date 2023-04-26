@@ -98,6 +98,7 @@ func deepRepairServoPlan() *Plan {
 				ExecExtraArgs: []string{
 					"reset_timeout:60",
 					"wait_timeout:20",
+					"reset_authorized:false",
 				},
 				ExecTimeout:            &durationpb.Duration{Seconds: 120},
 				RunControl:             RunControl_RUN_ONCE,
