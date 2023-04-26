@@ -68,7 +68,8 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Verify if setup data has any data related to servo-host which mean servo is present in setup.",
 				},
-				ExecName: "dut_servo_host_present",
+				ExecName:   "dut_servo_host_present",
+				RunControl: RunControl_RUN_ONCE,
 			},
 			"Servo serial is specified": {
 				Docs: []string{
@@ -77,7 +78,8 @@ func servoRepairPlan() *Plan {
 				Dependencies: []string{
 					"Set state:WRONG_CONFIG",
 				},
-				ExecName: "dut_servo_has_serial",
+				ExecName:   "dut_servo_has_serial",
+				RunControl: RunControl_RUN_ONCE,
 			},
 			"Device is pingable": {
 				Docs: []string{
@@ -214,7 +216,8 @@ func servoRepairPlan() *Plan {
 				Dependencies: []string{
 					"Set state:WRONG_CONFIG",
 				},
-				ExecName: "servo_servod_port_present",
+				ExecName:   "servo_servod_port_present",
+				RunControl: RunControl_RUN_ONCE,
 			},
 			"is_labstation": {
 				Docs: []string{

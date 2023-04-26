@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,19 +56,22 @@ func deepRepairServoPlan() *Plan {
 				Docs: []string{
 					"Verify if setup data has any data related to servo-host which mean servo is present in setup.",
 				},
-				ExecName: "dut_servo_host_present",
+				ExecName:   "dut_servo_host_present",
+				RunControl: RunControl_RUN_ONCE,
 			},
 			"Servod port specified": {
 				Docs: []string{
 					"Verify that servod port is present in servo data.",
 				},
-				ExecName: "servo_servod_port_present",
+				ExecName:   "servo_servod_port_present",
+				RunControl: RunControl_RUN_ONCE,
 			},
 			"Servo serial is specified": {
 				Docs: []string{
 					"Check if root servo serial is present.",
 				},
-				ExecName: "dut_servo_has_serial",
+				ExecName:   "dut_servo_has_serial",
+				RunControl: RunControl_RUN_ONCE,
 			},
 			"Device is SSHable": {
 				Docs: []string{
