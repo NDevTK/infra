@@ -75,7 +75,7 @@ func fetchRepoChangeAsIs(ctx context.Context, dst string, change *bbpb.GerritCha
 	if err := runGit(ctx, "git clone", "-C", ".", "clone", "--depth", "1", "https://"+change.Host+"/"+change.Project, dst); err != nil {
 		return err
 	}
-	ref := fmt.Sprintf("refs/changes/%d/%d/%d", change.Change%100, change.Change, change.Patchset)
+	ref := refFromChange(change)
 	if err := runGit(ctx, "git fetch", "-C", dst, "fetch", "https://"+change.Host+"/"+change.Project, ref); err != nil {
 		return err
 	}
@@ -96,7 +96,7 @@ func fetchRepoChangeWithRebase(ctx context.Context, branch, dst string, change *
 	if err := runGit(ctx, "git clone", "-C", ".", "clone", "--depth", "1", "-b", branch, "https://"+change.Host+"/"+change.Project, dst); err != nil {
 		return err
 	}
-	ref := fmt.Sprintf("refs/changes/%d/%d/%d", change.Change%100, change.Change, change.Patchset)
+	ref := refFromChange(change)
 	if err := runGit(ctx, "git fetch", "-C", dst, "fetch", "https://"+change.Host+"/"+change.Project, ref); err != nil {
 		return err
 	}
@@ -172,6 +172,10 @@ func writeFile(ctx context.Context, path, data string) (err error) {
 	}()
 	_, err = io.WriteString(io.MultiWriter(contentsLog, f), data)
 	return err
+}
+
+func refFromChange(change *bbpb.GerritChange) string {
+	return fmt.Sprintf("refs/changes/%02d/%d/%d", change.Change%100, change.Change, change.Patchset)
 }
 
 func runGit(ctx context.Context, stepName string, args ...string) (err error) {
