@@ -65,6 +65,7 @@ class CompletedBuildPubsubIngestor(BaseHandler):
       logging.debug('Post body: %s', self.request.body)
       return
 
+    _HandlePossibleCodeCoverageBuild(int(build_id))
     if status == 'COMPLETED':
       # Checks if the build is accessable.
       bb_build = GetV2Build(build_id)
@@ -73,7 +74,6 @@ class CompletedBuildPubsubIngestor(BaseHandler):
                       build_id)
         return
 
-      _HandlePossibleCodeCoverageBuild(int(build_id))
       if project in _FINDIT_V2_INTERCEPT_PROJECTS:
         _HandlePossibleFailuresInBuild(project, bucket, builder_name,
                                        int(build_id), build_result)
