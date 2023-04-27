@@ -161,9 +161,10 @@ class QEMUAPI(recipe_api.RecipeApi):
         try:
           for src, dest in include.items():
             dest = mount_loc[0] + '/' + dest
-            src = src if self.m.path.isdir(src) else self.m.path.dirname(src)
-            dest = dest if self.m.path.isdir(dest) else self.m.path.dirname(
-                dest)
+            # Check if the path being copied is a dir
+            is_dir_path = self.m.path.isdir(src)
+            src = src if is_dir_path else self.m.path.dirname(src)
+            dest = dest if is_dir_path else self.m.path.dirname(dest)
             self.m.file.copytree(
                 name='Copy {}'.format(src), source=src, dest=dest)
         finally:
