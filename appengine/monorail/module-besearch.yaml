@@ -6,7 +6,7 @@ service: besearch
 runtime: python39
 app_engine_apis: true
 
-entrypoint: gunicorn -b :$PORT --timeout 60 --workers 8 --threads 1 main:app
+entrypoint: gunicorn -b :$PORT --timeout 60 --workers ${WORKERS} --threads 1 main:app
 
 instance_class: F4
 automatic_scaling:
@@ -20,14 +20,17 @@ automatic_scaling:
 
 luci_gae_vars:
   monorail-dev:
+    WORKERS: "1"
     MIN_IDLE_INSTANCES: "1"
     MAX_INSTANCES: "20"
     MAX_PENDING_LATENCY: "automatic"
   monorail-staging:
+    WORKERS: "1"
     MIN_IDLE_INSTANCES: "1"
     MAX_INSTANCES: "50"
     MAX_PENDING_LATENCY: "0.2s"
   monorail-prod:
+    WORKERS: "8"
     MIN_IDLE_INSTANCES: "25"
     MAX_INSTANCES: "800"
     MAX_PENDING_LATENCY: "0.2s"
