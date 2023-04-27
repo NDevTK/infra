@@ -13,9 +13,16 @@ Chromium's build.
 * It collects performance metrics for each action during a build and allows to
   analyze them using cloud trace/cloud profiler.
 
+## FAQ
+
+Please check [go/siso-faq](http://go/siso-faq).
+
 ## Status
 
 Siso is under development and not yet ready for general use.
+
+As of April 2023, we are dogfooding Siso with invited Chrome developers.
+Please check [go/chrome-build-dogfood](http://go/chrome-build-dogfood) for more inforamtion.
 
 ## Development
 
@@ -36,6 +43,8 @@ Passing the flag `--trace_file=<filename>` to Siso will cause it capture an
 execution trace with a wide range of events that can be interpreted by the
 `go tool trace` tool. The documentation of [go tool trace](https://pkg.go.dev/runtime/trace)
 is a good place to check for ideas how to use this data.
+
+See also [go/siso-development](http://go/siso-development).
 
 ## References
 
