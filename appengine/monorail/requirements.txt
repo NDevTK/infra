@@ -1,6 +1,6 @@
 # This file is generated from the .vpython3 spec file.
 # Use `make generate_requirements_txt` to update.
-appengine-python-standard==0.3.1
+appengine-python-standard==1.1.1
 attrs==21.4.0
 beautifulsoup4==4.9.0
 cachetools==4.2.1
@@ -44,7 +44,7 @@ pbr==5.9.0
 Pillow==8.3.1
 pluggy==0.13.1
 proto-plus==1.20.3
-protobuf==3.19.3
+protobuf==3.20.1
 protorpc==0.12.0
 py==1.10.0
 pyasn1==0.4.8

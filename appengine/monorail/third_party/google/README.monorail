@@ -1,6 +1,5 @@
 Name: Google App Engine SDK
 URL: https://github.com/GoogleCloudPlatform/appengine-python-standard
-URL: https://cloud.google.com/appengine/docs/legacy/standard/python/refdocs/google.appengine.api.search
 Version: May 18, 2022
 License: Apache 2.0
 License File: LICENSE
@@ -9,52 +8,30 @@ Description:
 Development tools for Google App Engine
 Local Modifications:
 While most App Engine APIs have been updated for Python 3 in the above GitHub
-repository, Search is not available. Therefore, we have copied the old Python 2
-Search API and are updating it ourselves for Python 3.
+repository, ProtocolBuffer is not available. Therefore, we have copied the file
+from the old Python 2 API and are updating it ourselves for Python 3.
 
 1. Install the Google Cloud SDK (https://cloud.google.com/sdk)
    The App Engine Python SDK is located in gcloud/platform/google_appengine/
 2. Retain only:
-   google/appengine/api/search/* except simple_search_stub.py and search/stub/
-   google/appengine/datastore/__init__.py
-   google/appengine/datastore/document_pb.py
    google/net/__init__.py
    google/net/proto/__init__.py
    google/net/proto/ProtocolBuffer.py
    LICENSE
 3. Strip trailing whitespace from all files.
-4. Rename `google.appengine._internal.antlr3` imports to just `antlr3`.
-5. Update files for Python 3.
+4. Update files for Python 3.
    Syntax changes:
-   * In __init__.py, relative imports --> absolute imports
-   * except Exception, e: --> except Exception as e:
    * raise Exception, s --> raise Exception(s)
-   * exception.message --> str(exception)
 
    Import moves:
-   * import cPickle --> from six.moves import cPickle
    * import httplib --> from six.moves import http_client
 
    String changes:
    * a.fromstring(s) --> a.fromstring(s) if hasattr(a, 'fromstring')
                          else a.frombytes(six.ensure_binary(s))
    * a.tostring() --> a.tostring() if hasattr(a, 'tostring') else a.tobytes()
-   * basestring --> six.string_types
-   * s.decode() --> six.ensure_text(s)
-   * s.encode() --> six.ensure_binary(s)
-   * unichr() --> six.unichr()
-   * unicode() --> six.ensure_text()
 
    Integer changes:
    * 1234L --> 1234
-   * (int, long) --> six.integer_types
-   * long() --> int()
-   * sys.maxint --> six.MAXSIZE
+   * long(1234) --> 1234
 
-   Iterator changes:
-   * iteritems() --> items()
-   * itervalues() --> values()
-   * xrange() --> range()
-
-   Other:
-   * In search.py:495, add `if value is not None`

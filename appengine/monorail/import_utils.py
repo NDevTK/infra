@@ -14,13 +14,13 @@ def FixImports():
   _AddThirdPartyToPath()
   _FixProtorpcPackage()
   _FixDefaultApiStub()
-  _ImportAppEngineSearchApi()
+  _ImportProtocolBuffer()
 
 
 def _AddThirdPartyToPath():
   """Adds third_party/ to sys.path.
 
-  This lets us find antlr3, which is a dependency of search, and endpoints."""
+  This lets us find endpoints."""
   sys.path.append(_ThirdPartyDir())
 
 
@@ -54,32 +54,18 @@ def _FixDefaultApiStub():
   default_api_stub.DefaultApiRPC = fixed_default_api_stub.DefaultApiRPC
 
 
-def _ImportAppEngineSearchApi():
-  """Adds google.appengine.api.search to the importable packages.
+def _ImportProtocolBuffer():
+  """Adds google.net.proto.ProtocolBuffer to the importable packages.
 
-  The appengine-python-standard package doesn't include search or
-  google.net.proto.ProtocolBuffer. So, we include local copies in
-  third_party/, and modify the package __path__ to use our local copies.
+  The appengine-python-standard package doesn't include
+  google.net.proto.ProtocolBuffer. So, we include a local copy in
+  third_party/, and modify the package __path__ to use our local copy.
   """
-  base_dir = _ThirdPartyDir()
-
   # Add third_party/google/ to the google namespace.
   # This makes Python look in this additional location for google.net.proto.
   import google
-  package_path = os.path.join(base_dir, 'google')
+  package_path = os.path.join(_ThirdPartyDir(), 'google')
   google.__path__.append(package_path)
-
-  # Add third_party/google/ to the google.appengine.api namespace. This makes
-  # Python look in this additional location for google.appengine.api.search.
-  import google.appengine.api
-  package_path = os.path.join(base_dir, 'google', 'appengine', 'api')
-  google.appengine.api.__path__.append(package_path)
-
-  # Add third_party/google/ to the google.appengine.datastore namespace.
-  # This makes Python look in this additional location for document_pb.py.
-  import google.appengine.datastore
-  package_path = os.path.join(base_dir, 'google', 'appengine', 'datastore')
-  google.appengine.datastore.__path__.append(package_path)
 
 
 def _ThirdPartyDir():
