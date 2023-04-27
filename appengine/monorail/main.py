@@ -48,5 +48,6 @@ app.wsgi_app = google.appengine.api.wrap_wsgi_app(app.wsgi_app)
 
 registerpages.ServletRegistry().Register(services, app)
 registerpages.RegisterEndpointsUrls(app)
+registerpages.RegisterTeardown(app)
 
 gae_ts_mon.initialize_prod(app)
