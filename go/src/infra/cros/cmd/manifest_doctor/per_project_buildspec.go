@@ -159,13 +159,8 @@ func (b *projectBuildspec) Run(a subcommands.Application, args []string, env sub
 	}
 
 	if err := b.CreateBuildspecs(gsClient, gerritClient); err != nil {
-		if multierr, ok := err.(errors.MultiError); ok {
-			for _, err := range []error(multierr) {
-				LogErr(err.Error())
-			}
-		} else {
-			LogErr(err.Error())
-		}
+		LogErr("Fatal Errors:")
+		LogErr(err.Error())
 		return 6
 	}
 
@@ -322,7 +317,7 @@ func (b *projectBuildspec) CreateBuildspecs(gsClient gs.Client, gerritClient ger
 		// projects were selected with a wildcard) we shouldn't fail if
 		// some project does not have a local manifest.
 		if errors.Contains(err, &MissingLocalManifestError{}) && hasWildcard {
-			LogErr(err.Error())
+			LogErr(errors.Annotate(err, "Project was specified using a wildcard so error is non-fatal").Err().Error())
 		} else {
 			errs = append(errs, err)
 		}
@@ -334,6 +329,7 @@ func (b *projectBuildspec) CreateBuildspecs(gsClient gs.Client, gerritClient ger
 		otherProjects[project] = projectBuildspecConfig{
 			uploadPath: gsBuildspecPath(project),
 			optional:   false,
+			logPrefix:  project,
 		}
 	}
 	if err := b.CreateProjectBuildspecs(otherProjects, buildspecs, b.push, b.force, b.ttl, gsClient, gerritClient); err != nil {
@@ -418,10 +414,10 @@ func (b *projectBuildspec) CreateProjectBuildspecs(projects map[string]projectBu
 				project, releaseBranch, "local_manifest.xml")
 			if err != nil {
 				if config.optional {
-					LogErr("%scouldn't load local_manifest.xml for %s, marked as optional so skipping...", config.logPrefix, project)
+					LogErr("%scouldn't load local_manifest.xml for %s (branch %s), marked as optional so skipping...", config.logPrefix, project, releaseBranch)
 					continue
 				} else {
-					LogErr("%scouldn't load local_manifest.xml for %s", config.logPrefix, project)
+					LogErr("%scouldn't load local_manifest.xml for %s (branch %s)", config.logPrefix, project, releaseBranch)
 				}
 				err = MissingLocalManifestError{
 					project: project,
