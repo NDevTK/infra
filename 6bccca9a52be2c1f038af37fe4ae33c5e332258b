@@ -1,0 +1,28 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c7f75156_1fab5b62",
+        "filename": "go/src/infra/build/siso/README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-04-27T06:06:16Z",
+      "side": 1,
+      "message": "\u003e \"inforamtion\" is a possible misspelling of \"information\".\n\nPlease fix.",
+      "parentUuid": "e7afa3cd_56f42d8d",
+      "range": {
+        "startLine": 25,
+        "startChar": 80,
+        "endLine": 25,
+        "endChar": 91
+      },
+      "revId": "6bccca9a52be2c1f038af37fe4ae33c5e332258b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
