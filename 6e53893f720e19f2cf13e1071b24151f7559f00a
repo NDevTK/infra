@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "220adf79_b087fdcf",
+        "filename": "go/src/infra/build/siso/README.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-04-27T06:05:31Z",
+      "side": 1,
+      "message": "put profiling and tracing in go/siso-development?\n\nit\u0027s more advanced topic than topic in current go/siso-development..",
+      "revId": "6e53893f720e19f2cf13e1071b24151f7559f00a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
