@@ -1069,6 +1069,43 @@ func TestInstallXcode(t *testing.T) {
 		})
 	})
 
+	Convey("installRuntimeDMG works", t, func() {
+		var s MockSession
+		ctx := useMockCmd(context.Background(), &s)
+
+		Convey("install runtime DMG", func() {
+			runtimeDMGInstallArgs := RuntimeDMGInstallArgs{
+				runtimeVersion:     "ios-test-runtime",
+				installPath:        "test/path/to/install/runtimes",
+				cipdPackagePrefix:  "test/prefix",
+				serviceAccountJSON: "",
+			}
+			err := installRuntimeDMG(ctx, runtimeDMGInstallArgs)
+			So(err, ShouldBeNil)
+			So(s.Calls, ShouldHaveLength, 3)
+
+			callCounter := 0
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+				"puppet-check-updates", "-ensure-file", "-", "-root", "test/path/to/install/runtimes",
+			})
+			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime_dmg ios-test-runtime\n")
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+				"ensure", "-ensure-file", "-", "-root", "test/path/to/install/runtimes",
+			})
+			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime_dmg ios-test-runtime\n")
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "chmod")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+				"-R", "u+w", "test/path/to/install/runtimes",
+			})
+		})
+	})
+
 	Convey("removeCipdFiles works", t, func() {
 		Convey("remove cipd files whether it exists or not", func() {
 			srcPath := "testdata/"

@@ -75,6 +75,8 @@ func installPackages(ctx context.Context, args InstallPackagesArgs) error {
 		}
 	case iosRuntimeKind:
 		ensureSpec += fmt.Sprintf("%s/%s %s\n", args.cipdPackagePrefix, IosRuntimePackageName, args.ref)
+	case iosRuntimeDMGKind:
+		ensureSpec += fmt.Sprintf("%s/%s %s\n", args.cipdPackagePrefix, IosRuntimeDMGPackageName, args.ref)
 	default:
 		return errors.Reason("unknown package kind: %s", args.kind).Err()
 	}
@@ -441,6 +443,33 @@ func installRuntime(ctx context.Context, args RuntimeInstallArgs) error {
 		rootPath:           args.installPath,
 		cipdPackagePrefix:  args.cipdPackagePrefix,
 		kind:               iosRuntimeKind,
+		serviceAccountJSON: args.serviceAccountJSON,
+	}
+	if err := installPackages(ctx, installPackagesArgs); err != nil {
+		return err
+	}
+	return nil
+}
+
+// RuntimeDMGInstallArgs are the parameters for installRuntimeDMG() to keep them manageable.
+type RuntimeDMGInstallArgs struct {
+	runtimeVersion     string
+	installPath        string
+	cipdPackagePrefix  string
+	serviceAccountJSON string
+}
+
+// Resolves and installs the suitable runtime dmg.
+func installRuntimeDMG(ctx context.Context, args RuntimeDMGInstallArgs) error {
+	if err := os.MkdirAll(args.installPath, 0700); err != nil {
+		return errors.Annotate(err, "failed to create a folder %s", args.installPath).Err()
+	}
+
+	installPackagesArgs := InstallPackagesArgs{
+		ref:                args.runtimeVersion,
+		rootPath:           args.installPath,
+		cipdPackagePrefix:  args.cipdPackagePrefix,
+		kind:               iosRuntimeDMGKind,
 		serviceAccountJSON: args.serviceAccountJSON,
 	}
 	if err := installPackages(ctx, installPackagesArgs); err != nil {

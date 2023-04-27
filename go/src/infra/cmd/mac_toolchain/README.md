@@ -90,7 +90,50 @@ macOS 13+, please don't change anything in `Xcode.app/Contents/version.plist`.
 By passing in `-skip-ref-tag` argument, the uploaded packages will have no CIPD
 `ref` or `tag` attached.
 
-## Working with iOS runtime packages
+
+## Working with iOS runtime packages (Current solution for MacOS13+)
+
+Each Xcode package comes with a default built-in iOS runtime (e.g. Xcode 14.3 has iOS 16.4 built-in).
+However, in our build process, we usually require building and testing chrome with n to n-2
+versions of iOS to ensure backward compatibility. For example, as of early 2023,
+we test chrome with iOS 16.4, 15.5 and 14.4.
+
+Therefore, we need to upload additional iOS runtimes to cipd in order for swarming jobs to
+download and install them to Xcode in order to support testing on those additional iOS versions.
+
+### Uploading a runtime package to cipd
+
+Runtime is currently being uploaded to cipd using dmg format. See crbug/1440179.
+
+1. Launch Xcode. If you have not downloaded one, please download the latest from go/xcode.
+2. Navigate to Xcode -> Settings -> Platforms -> + sign on the bottom left corner. Choose iOS,
+and download the desired iOS version (e.g. iOS 16.2 Simulator)
+3. After download is complete, it should show up on the list of platforms. Then right click
+on the downloaded iOS simulator, and select "Export Disk Image". **Important:** make sure
+you export to an empty folder, where the iOS disk image will be the
+only file in there.
+4. Upload the disk image file to cipd by running the below command:
+```
+mac_toolchain upload-runtime-dmg -runtime-path /Users/yueshe/Documents/ios16-2-runtime/ -runtime-version ios-16-2
+```
+For example:
+```
+mac_toolchain upload-runtime-dmg -runtime-path [path to your folder that contains the dmg file] -runtime-version [iOS version]
+```
+
+### Downloading a runtime dmg
+Use `mac_toolchain install-runtime-dmg`. Please read `mac_toolchain help install-runtime-dmg`
+to learn the logic of choosing an appropriate runtime with given input
+combinations.
+An example command:
+```
+mac_toolchain install-runtime-dmg -output-dir /Users/yueshe/Documents/ios16-2-runtime/ -runtime-version ios-16-2
+```
+
+
+## ~~Working with iOS runtime packages (Previous solution for MacOS12 or below)~~ 
+**Update: this solution is deprecated as of 2023, see above section for new instructions
+on how to work with iOS runtime for MacOS13+**
 
 mac_toolchain uploads the default iOS runtime and the rest of Xcode to different
 CIPD packages. It's also able to download an Xcode package without any iOS
@@ -148,17 +191,28 @@ so the above command will still install the runtime to the output directory.
 
 
 
-## Debugging packages
+## Test Xcode packaging commands locally
 
-To debug the packages locally (for e.g. uploading an Xcode), run:
+To debug Xcode packaging locally, run:
 
     mac_toolchain package -output-dir path/to/dir -xcode-path /path/to/Xcode.app
 
-This will drop `mac.cipd`, `ios.cipd`, `ios_runtime.cipd` files in `path/to/out`
+This will drop `mac.cipd`, `ios.cipd` (not required anymore in MacOS13+) files in `path/to/out`
 directory and will not try to upload the packages to CIPD server.
 
 You can then install Xcode from these local packages with:
 
     cipd pkg-deploy -root path/to/Xcode.app path/to/out/mac.cipd
-    cipd pkg-deploy -root path/to/Xcode.app path/to/out/ios.cipd
-    cipd pkg-deploy -root path/to/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes path/to/out/ios_runtime.cipd
+
+## Test iOS runtime packaging commands locally
+
+To debug iOS runtime packaging locally, run:
+
+    mac_toolchain package-runtime-dmg -output-dir path/to/dir -runtime-path parent/path/to/ios-runtime-dmg/ -runtime-version [e.g. ios-16-1]
+
+This will drop `ios_runtime_dmg.cipd` files in `path/to/out`
+directory and will not try to upload the packages to CIPD server.
+
+You can then install iOS runtime from this local package with:
+
+    cipd pkg-deploy -root path/to/ios-runtime-dmg/ path/to/out/ios_runtime_dmg.cipd

@@ -486,3 +486,98 @@ func TestPackageRuntime(t *testing.T) {
 		})
 	})
 }
+
+func TestPackageRuntimeDMG(t *testing.T) {
+	t.Parallel()
+
+	Convey("packageRuntimeDMG works", t, func() {
+		var s MockSession
+		ctx := useMockCmd(context.Background(), &s)
+
+		Convey("package a test runtime dmg", func() {
+			packageRuntimeDMGArgs := PackageRuntimeDMGArgs{
+				runtimePath:        filepath.Join("testdata", "runtime-dmg"),
+				runtimeVersion:     "test-ios-version",
+				cipdPackagePrefix:  "test/prefix",
+				serviceAccountJSON: "",
+				outputDir:          "",
+				skipRefTag:         false,
+			}
+			err := packageRuntimeDMG(ctx, packageRuntimeDMGArgs)
+			So(err, ShouldBeNil)
+			So(s.Calls, ShouldHaveLength, 1)
+
+			So(s.Calls[0].Executable, ShouldEqual, "cipd")
+			So(s.Calls[0].Args, ShouldContain, "create")
+			So(s.Calls[0].Args, ShouldContain, "-verification-timeout")
+			So(s.Calls[0].Args, ShouldContain, "60m")
+			So(s.Calls[0].Args, ShouldContain, "ios_runtime_version:test-ios-version")
+			So(s.Calls[0].Args, ShouldContain, "test-ios-version")
+
+			So(s.Calls[0].Args, ShouldNotContain, "-service-account-json")
+		})
+
+		Convey("package a test runtime dmg without refs & tags", func() {
+			packageRuntimeDMGArgs := PackageRuntimeDMGArgs{
+				runtimePath:        filepath.Join("testdata", "runtime-dmg"),
+				runtimeVersion:     "test-ios-version",
+				cipdPackagePrefix:  "test/prefix",
+				serviceAccountJSON: "",
+				outputDir:          "",
+				skipRefTag:         true,
+			}
+			err := packageRuntimeDMG(ctx, packageRuntimeDMGArgs)
+			So(err, ShouldBeNil)
+			So(s.Calls, ShouldHaveLength, 1)
+
+			So(s.Calls[0].Executable, ShouldEqual, "cipd")
+			So(s.Calls[0].Args, ShouldContain, "create")
+			So(s.Calls[0].Args, ShouldContain, "-verification-timeout")
+			So(s.Calls[0].Args, ShouldContain, "60m")
+			So(s.Calls[0].Args, ShouldNotContain, "-tag")
+			So(s.Calls[0].Args, ShouldNotContain, "-ref")
+			So(s.Calls[0].Args, ShouldNotContain, "-service-account-json")
+		})
+
+		Convey("package a test runtime dmg with wrong file path", func() {
+			packageRuntimeDMGArgs := PackageRuntimeDMGArgs{
+				runtimePath:        filepath.Join("testdata", "runtimes"),
+				runtimeVersion:     "test-ios-version",
+				cipdPackagePrefix:  "test/prefix",
+				serviceAccountJSON: "",
+				outputDir:          "",
+				skipRefTag:         false,
+			}
+			err := packageRuntimeDMG(ctx, packageRuntimeDMGArgs)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "the runtime-path should only contain exactly one runtime DMG file")
+		})
+
+		Convey("for local package creating", func() {
+			// Make sure `outputDir` actually exists in testdata; otherwise the test
+			// will needlessly create a directory and leave it behind.
+			packageRuntimeDMGArgs := PackageRuntimeDMGArgs{
+				runtimePath:        filepath.Join("testdata", "runtime-dmg"),
+				runtimeVersion:     "test-ios-version",
+				cipdPackagePrefix:  "test/prefix",
+				serviceAccountJSON: "",
+				outputDir:          "testdata/outdir",
+				skipRefTag:         false,
+			}
+			err := packageRuntimeDMG(ctx, packageRuntimeDMGArgs)
+			So(err, ShouldBeNil)
+			So(s.Calls, ShouldHaveLength, 1)
+
+			So(s.Calls[0].Args, ShouldContain, filepath.Join("testdata/outdir", "ios_runtime_dmg.cipd"))
+
+			So(s.Calls[0].Executable, ShouldEqual, "cipd")
+			So(s.Calls[0].Args, ShouldContain, "pkg-build")
+
+			So(s.Calls[0].Args, ShouldNotContain, "-service-account-json")
+			So(s.Calls[0].Args, ShouldNotContain, "-verification-timeout")
+			So(s.Calls[0].Args, ShouldNotContain, "60m")
+			So(s.Calls[0].Args, ShouldNotContain, "-tag")
+			So(s.Calls[0].Args, ShouldNotContain, "-ref")
+		})
+	})
+}

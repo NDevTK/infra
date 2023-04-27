@@ -415,3 +415,71 @@ func packageRuntime(ctx context.Context, args PackageRuntimeArgs) error {
 
 	return nil
 }
+
+type PackageRuntimeDMGArgs struct {
+	runtimePath        string
+	runtimeVersion     string
+	cipdPackagePrefix  string
+	serviceAccountJSON string
+	outputDir          string
+	skipRefTag         bool
+}
+
+func packageRuntimeDMG(ctx context.Context, args PackageRuntimeDMGArgs) error {
+	runtimeDir, err := filepath.Abs(args.runtimePath)
+	if err != nil {
+		err = errors.Annotate(err, "failed to create an absolute path from %s", runtimeDir).Err()
+		return err
+	}
+
+	// validate files in the runtime dir
+	entries, err := ioutil.ReadDir(runtimeDir)
+	if err != nil {
+		err = errors.Annotate(err, "unable to list files from %s", runtimeDir).Err()
+		return err
+	}
+	dmgFileCount := 0
+	for _, entry := range entries {
+		if strings.HasSuffix(entry.Name(), ".dmg") {
+			dmgFileCount++
+		}
+	}
+	if dmgFileCount != 1 {
+		return errors.Reason("the runtime-path should only contain exactly one runtime DMG file. Currently it contains %d", dmgFileCount).Err()
+	}
+
+	runtimeMakePackageArgs := MakePackageArgs{
+		cipdPackageName:   IosRuntimeDMGPackageName,
+		cipdPackagePrefix: args.cipdPackagePrefix,
+		rootPath:          runtimeDir,
+		includePrefixes:   []string{},
+		excludePrefixes:   []string{},
+	}
+	pkg, err := makePackage(runtimeMakePackageArgs)
+	if err != nil {
+		return errors.Annotate(err, "failed to create cipd package definition for %s/%s", runtimeDir, args.runtimeVersion).Err()
+	}
+
+	tags := []string{
+		"ios_runtime_version:" + args.runtimeVersion,
+	}
+	refs := []string{
+		args.runtimeVersion,
+	}
+
+	if args.skipRefTag {
+		tags = []string{}
+		refs = []string{}
+	}
+
+	buildFn := createBuilder(ctx, tags, refs, args.serviceAccountJSON, args.outputDir)
+
+	if err = buildCipdPackages(Packages{args.runtimeVersion: pkg}, buildFn); err != nil {
+		return err
+	}
+
+	fmt.Printf("\nCIPD package for simulator runtime:\n")
+	fmt.Printf("  %s  %s \n", pkg.Package, args.runtimeVersion)
+
+	return nil
+}

@@ -37,6 +37,9 @@ const XcodeIOSSimulatorRuntimeFilename = "iOS.simruntime"
 // Package name of iOS runtime in CIPD.
 const IosRuntimePackageName = "ios_runtime"
 
+// Package name of iOS runtime in DMG format in CIPD.
+const IosRuntimeDMGPackageName = "ios_runtime_dmg"
+
 // Package name of Mac package in CIPD. The package contains Xcode contents that
 // are both useful in Mac & iOS.
 const MacPackageName = "mac"
@@ -50,9 +53,10 @@ type KindType string
 var _ flag.Value = (*KindType)(nil)
 
 const (
-	macKind        = KindType(MacPackageName)
-	iosKind        = KindType(IosPackageName)
-	iosRuntimeKind = KindType(IosRuntimePackageName)
+	macKind           = KindType(MacPackageName)
+	iosKind           = KindType(IosPackageName)
+	iosRuntimeKind    = KindType(IosRuntimePackageName)
+	iosRuntimeDMGKind = KindType(IosRuntimeDMGPackageName)
 	// DefaultKind is the default value for the -kind flag.
 	DefaultKind = macKind
 )
@@ -109,16 +113,37 @@ type uploadRuntimeRun struct {
 	serviceAccountJSON string
 }
 
+type uploadRuntimeDMGRun struct {
+	commonFlags
+	runtimePath        string
+	runtimeVersion     string
+	serviceAccountJSON string
+}
+
 type packageRuntimeRun struct {
 	commonFlags
 	runtimePath string
 	outputDir   string
 }
 
+type packageRuntimeDMGRun struct {
+	commonFlags
+	runtimePath    string
+	runtimeVersion string
+	outputDir      string
+}
+
 type installRuntimeRun struct {
 	commonFlags
 	runtimeVersion     string
 	xcodeVersion       string
+	outputDir          string
+	serviceAccountJSON string
+}
+
+type installRuntimeDMGRun struct {
+	commonFlags
+	runtimeVersion     string
 	outputDir          string
 	serviceAccountJSON string
 }
@@ -245,6 +270,32 @@ func (c *uploadRuntimeRun) Run(a subcommands.Application, args []string, env sub
 	return 0
 }
 
+// Entrance function to upload a runtime dmg for upload-runtime-dmg cmd line switch.
+func (c *uploadRuntimeDMGRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+	ctx := cli.GetContext(a, c, env)
+	if c.runtimePath == "" {
+		errors.Log(ctx, errors.Reason("path to iOS runtime is not specified (-runtime-path)").Err())
+		return 1
+	}
+	if c.runtimeVersion == "" {
+		errors.Log(ctx, errors.Reason("iOS runtime version is not specified (-runtime-version)").Err())
+		return 1
+	}
+
+	packageRuntimeDMGArgs := PackageRuntimeDMGArgs{
+		runtimePath:        stripLastTrailingSlash(c.runtimePath),
+		runtimeVersion:     stripLastTrailingSlash(c.runtimeVersion),
+		cipdPackagePrefix:  stripLastTrailingSlash(c.cipdPackagePrefix),
+		serviceAccountJSON: c.serviceAccountJSON,
+		outputDir:          "",
+	}
+	if err := packageRuntimeDMG(ctx, packageRuntimeDMGArgs); err != nil {
+		errors.Log(ctx, err)
+		return 1
+	}
+	return 0
+}
+
 // Entrance function to package a runtime locally for package-runtime cmd line
 // switch.
 func (c *packageRuntimeRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -266,6 +317,37 @@ func (c *packageRuntimeRun) Run(a subcommands.Application, args []string, env su
 		outputDir:          c.outputDir,
 	}
 	if err := packageRuntime(ctx, packageRuntimeArgs); err != nil {
+		errors.Log(ctx, err)
+		return 1
+	}
+	return 0
+}
+
+// Entrance function to package a runtime dmg locally for package-runtime-dmg cmd line
+// switch.
+func (c *packageRuntimeDMGRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+	ctx := cli.GetContext(a, c, env)
+	if c.runtimePath == "" {
+		errors.Log(ctx, errors.Reason("path to iOS runtime is not specified (-runtime-path)").Err())
+		return 1
+	}
+	if c.outputDir == "" {
+		errors.Log(ctx, errors.Reason("output directory is not specified (-output-dir)").Err())
+		return 1
+	}
+	if c.runtimeVersion == "" {
+		errors.Log(ctx, errors.Reason("iOS runtime version is not specified (-runtime-version)").Err())
+		return 1
+	}
+
+	PackageRuntimeDMGArgs := PackageRuntimeDMGArgs{
+		runtimePath:        stripLastTrailingSlash(c.runtimePath),
+		runtimeVersion:     stripLastTrailingSlash(c.runtimeVersion),
+		cipdPackagePrefix:  stripLastTrailingSlash(c.cipdPackagePrefix),
+		serviceAccountJSON: "",
+		outputDir:          c.outputDir,
+	}
+	if err := packageRuntimeDMG(ctx, PackageRuntimeDMGArgs); err != nil {
 		errors.Log(ctx, err)
 		return 1
 	}
@@ -295,6 +377,34 @@ func (c *installRuntimeRun) Run(a subcommands.Application, args []string, env su
 		serviceAccountJSON: c.serviceAccountJSON,
 	}
 	if err := installRuntime(ctx, runtimeInstallArgs); err != nil {
+		errors.Log(ctx, err)
+		return 1
+	}
+	return 0
+}
+
+// Entrance function to install a runtime for install-runtime cmd line switch.
+func (c *installRuntimeDMGRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+	ctx := cli.GetContext(a, c, env)
+	if c.runtimeVersion == "" {
+		errors.Log(ctx, errors.Reason("no runtime version specified").Err())
+		return 1
+	}
+	if c.outputDir == "" {
+		errors.Log(ctx, errors.Reason("no output folder specified (-output-dir)").Err())
+		return 1
+	}
+	logging.Infof(ctx, "About to install runtime DMG %s to %s", c.runtimeVersion, c.outputDir)
+
+	c.cipdPackagePrefix = stripLastTrailingSlash(c.cipdPackagePrefix)
+
+	runtimeDMGInstallArgs := RuntimeDMGInstallArgs{
+		runtimeVersion:     c.runtimeVersion,
+		installPath:        c.outputDir,
+		cipdPackagePrefix:  c.cipdPackagePrefix,
+		serviceAccountJSON: c.serviceAccountJSON,
+	}
+	if err := installRuntimeDMG(ctx, runtimeDMGInstallArgs); err != nil {
 		errors.Log(ctx, err)
 		return 1
 	}
@@ -336,9 +446,23 @@ func uploadRuntimeFlagVars(c *uploadRuntimeRun) {
 	c.Flags.StringVar(&c.runtimePath, "runtime-path", "", "Path to iOS.simruntime to be uploaded. (required)")
 }
 
+func uploadRuntimeDMGFlagVars(c *uploadRuntimeDMGRun) {
+	commonFlagVars(&c.commonFlags)
+	c.Flags.StringVar(&c.serviceAccountJSON, "service-account-json", "", "Service account to use for authentication.")
+	c.Flags.StringVar(&c.runtimePath, "runtime-path", "", "Parent path of iOS dmg file to be uploaded. (required)")
+	c.Flags.StringVar(&c.runtimeVersion, "runtime-version", "", "the iOS runtime version to be upload. For example, ios-16-4 (required)")
+}
+
 func packageRuntimeFlagVars(c *packageRuntimeRun) {
 	commonFlagVars(&c.commonFlags)
 	c.Flags.StringVar(&c.runtimePath, "runtime-path", "", "Path to iOS.simruntime to be uploaded. (required)")
+	c.Flags.StringVar(&c.outputDir, "output-dir", "", "Path to drop created CIPD packages. (required)")
+}
+
+func packageRuntimeDMGFlagVars(c *packageRuntimeDMGRun) {
+	commonFlagVars(&c.commonFlags)
+	c.Flags.StringVar(&c.runtimePath, "runtime-path", "", "Parent path of iOS dmg file to be uploaded. (required)")
+	c.Flags.StringVar(&c.runtimeVersion, "runtime-version", "", "the iOS runtime version to be upload. For example, ios-16-4 (required)")
 	c.Flags.StringVar(&c.outputDir, "output-dir", "", "Path to drop created CIPD packages. (required)")
 }
 
@@ -347,6 +471,13 @@ func installRuntimeFlagVars(c *installRuntimeRun) {
 	c.Flags.StringVar(&c.runtimeVersion, "runtime-version", "", "iOS runtime version. Format e.g. \"ios-14-4\"")
 	c.Flags.StringVar(&c.xcodeVersion, "xcode-version", "", "Xcode version code.")
 	c.Flags.StringVar(&c.outputDir, "output-dir", "", "Path where to install the runtime (required).")
+	c.Flags.StringVar(&c.serviceAccountJSON, "service-account-json", "", "Service account to use for authentication.")
+}
+
+func installRuntimeDMGFlagVars(c *installRuntimeDMGRun) {
+	commonFlagVars(&c.commonFlags)
+	c.Flags.StringVar(&c.runtimeVersion, "runtime-version", "", "iOS runtime version. Format e.g. \"ios-14-4\"")
+	c.Flags.StringVar(&c.outputDir, "output-dir", "", "Path where to install the runtime DMG (required).")
 	c.Flags.StringVar(&c.serviceAccountJSON, "service-account-json", "", "Service account to use for authentication.")
 }
 
@@ -403,6 +534,17 @@ requested is uploaded with it's runtime separated from Xcode package.`,
 		},
 	}
 
+	cmdUploadRuntimeDMG = &subcommands.Command{
+		UsageLine: "upload-runtime-dmg <options>",
+		ShortDesc: "Uploads iOS runtime DMG package.",
+		LongDesc:  "Creates and uploads iOS runtime CIPD package, in DMG format.",
+		CommandRun: func() subcommands.CommandRun {
+			c := &uploadRuntimeDMGRun{}
+			uploadRuntimeDMGFlagVars(c)
+			return c
+		},
+	}
+
 	cmdPackageRuntime = &subcommands.Command{
 		UsageLine: "package-runtime <options>",
 		ShortDesc: "Creates iOS runtime CIPD package locally.",
@@ -410,6 +552,17 @@ requested is uploaded with it's runtime separated from Xcode package.`,
 		CommandRun: func() subcommands.CommandRun {
 			c := &packageRuntimeRun{}
 			packageRuntimeFlagVars(c)
+			return c
+		},
+	}
+
+	cmdPackageRuntimeDMG = &subcommands.Command{
+		UsageLine: "package-runtime-dmg <options>",
+		ShortDesc: "Creates iOS runtime DMG CIPD package locally.",
+		LongDesc:  "Packages iOS runtime DMG CIPD package locally (won't upload).",
+		CommandRun: func() subcommands.CommandRun {
+			c := &packageRuntimeDMGRun{}
+			packageRuntimeDMGFlagVars(c)
 			return c
 		},
 	}
@@ -430,6 +583,17 @@ and installs the package by the following priority:
 		CommandRun: func() subcommands.CommandRun {
 			c := &installRuntimeRun{}
 			installRuntimeFlagVars(c)
+			return c
+		},
+	}
+
+	cmdInstallRuntimeDMG = &subcommands.Command{
+		UsageLine: "install-runtime-dmg <options>",
+		ShortDesc: "Installs Runtime in DMG format.",
+		LongDesc:  "Installs the requested iOS runtime DMG package to -output-dir.",
+		CommandRun: func() subcommands.CommandRun {
+			c := &installRuntimeDMGRun{}
+			installRuntimeDMGFlagVars(c)
 			return c
 		},
 	}
@@ -454,8 +618,11 @@ func main() {
 			cmdUpload,
 			cmdPackage,
 			cmdUploadRuntime,
+			cmdUploadRuntimeDMG,
 			cmdPackageRuntime,
+			cmdPackageRuntimeDMG,
 			cmdInstallRuntime,
+			cmdInstallRuntimeDMG,
 		},
 	}
 	os.Exit(subcommands.Run(application, nil))
