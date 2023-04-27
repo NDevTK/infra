@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5c818b81_46bc6c66",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/cbi/cbi.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1545672
+      },
+      "writtenOn": "2023-04-27T22:42:21Z",
+      "side": 0,
+      "message": "I made the assumption previously that the output for a run command would contain both STDOUT and STDERR but it only contains STDOUT, which means we were never getting any error messages. As far as I can tell, there\u0027s no way to get the STDERR from a run command: This seems like an oversight? And or room for improvement? STDERR gets printed to the console, but isn\u0027t obtainable otherwise. @otabek@chromium.org",
+      "revId": "55b369a47801e6bb4067f757065c63b1abac3fd9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
