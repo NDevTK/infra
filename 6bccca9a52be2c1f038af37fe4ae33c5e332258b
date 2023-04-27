@@ -23,6 +23,30 @@
       },
       "revId": "6bccca9a52be2c1f038af37fe4ae33c5e332258b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "df2d5511_3c1ecf4a",
+        "filename": "go/src/infra/build/siso/README.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-04-27T06:41:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c7f75156_1fab5b62",
+      "range": {
+        "startLine": 25,
+        "startChar": 80,
+        "endLine": 25,
+        "endChar": 91
+      },
+      "revId": "6bccca9a52be2c1f038af37fe4ae33c5e332258b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
