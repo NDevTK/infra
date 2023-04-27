@@ -47,6 +47,11 @@ const (
 )
 
 var (
+	workingDirPath = filepath.Join(os.Getenv("HOME"), "skylab_bots")
+)
+
+// Configuration environment variables.
+var (
 	queenService = os.Getenv("DRONE_AGENT_QUEEN_SERVICE")
 	// DRONE_AGENT_SWARMING_URL is the URL of the Swarming
 	// instance.  Should be a full URL without the path,
@@ -59,7 +64,6 @@ var (
 		Method:                 auth.ServiceAccountMethod,
 		ServiceAccountJSONPath: os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"),
 	}
-	workingDirPath = filepath.Join(os.Getenv("HOME"), "skylab_bots")
 	// hive value of the drone agent.  This is used for DUT/drone affinity.
 	// A drone is assigned DUTs with same hive value.
 	hive = initializeHive(os.Getenv("DRONE_AGENT_HIVE"), os.Getenv("DOCKER_DRONE_SERVER_NAME"))
