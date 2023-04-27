@@ -22,7 +22,8 @@ import settings
 
 if not settings.unit_test_mode:
   import grpc
-  from google.cloud import tasks
+  from google.cloud import tasks_v2
+  from google.cloud.tasks_v2.services import cloud_tasks
 
 _client = None
 # Default exponential backoff retry config for enqueueing, not to be confused
@@ -36,8 +37,9 @@ def _get_client():
   global _client
   if not _client:
     if settings.local_mode:
-      _client = tasks.CloudTasksClient(
+      transport = cloud_tasks.transports.CloudTasksGrpcTransport(
           channel=grpc.insecure_channel(settings.CLOUD_TASKS_EMULATOR_ADDRESS))
+      _client = tasks_v2.CloudTasksClient(transport=transport)
     else:
       _client = tasks.CloudTasksClient()
   return _client

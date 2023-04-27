@@ -262,9 +262,14 @@ class SpamService(object):
   def RecordClassifierIssueVerdict(self, cnxn, issue, is_spam, confidence,
         fail_open):
     reason = REASON_FAIL_OPEN if fail_open else REASON_CLASSIFIER
-    self.verdict_tbl.InsertRow(cnxn, issue_id=issue.issue_id, is_spam=is_spam,
-        reason=reason, classifier_confidence=confidence,
-        project_id=issue.project_id)
+    self.verdict_tbl.InsertRow(
+        cnxn,
+        issue_id=issue.issue_id,
+        is_spam=is_spam,
+        reason=reason,
+        classifier_confidence=confidence,
+        project_id=issue.project_id,
+        overruled=False)
     if is_spam:
       issue_ref = '%s:%s' % (issue.project_name, issue.local_id)
       self.issue_actions.increment(
