@@ -137,6 +137,9 @@ func innerMain() error {
 	defer cancel()
 	ctx = notifySIGTERM(ctx)
 	ctx = notifyDraining(ctx, filepath.Join(workingDirPath, drainingFile))
+	if err := os.MkdirAll(workingDirPath, 0777); err != nil {
+		return err
+	}
 
 	version := readVersionFile(*versionFilePath)
 	log.Printf("version: %v\n", version)
@@ -145,7 +148,6 @@ func innerMain() error {
 	if err := metrics.Setup(ctx, tsmonEndpoint, tsmonCredentialPath); err != nil {
 		log.Printf("Skipping metrics setup: %s", err)
 	}
-
 	defer metrics.Shutdown(ctx)
 
 	if traceBackend != "" && traceBackend != "none" {
@@ -178,10 +180,6 @@ func innerMain() error {
 		return err
 	}
 	otil.AddHTTP(h)
-
-	if err := os.MkdirAll(workingDirPath, 0777); err != nil {
-		return err
-	}
 
 	a := agent.Agent{
 		Client: api.NewDronePRPCClient(&prpc.Client{
