@@ -20,6 +20,7 @@ from framework import warmup
 from framework import reap
 from framework import deleteusers
 from framework import excessiveactivity
+from framework import teardown
 from framework import ts_mon_js
 from framework import trimvisitedpages
 from project import peopledetail
@@ -830,3 +831,7 @@ def RegisterEndpointsUrls(app):
     app.add_url_rule(
         rule, endpoint=endpoint, view_func=view_func, methods=methods)
   app.view_functions['cors_handler'] = endpoints_flask.cors_handler
+
+
+def RegisterTeardown(app):
+  app.teardown_request(teardown.Teardown)
