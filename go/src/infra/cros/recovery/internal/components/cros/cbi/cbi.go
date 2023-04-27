@@ -204,8 +204,8 @@ func ContainsCBIMagic(cbi *labapi.Cbi) bool {
 // invalid or unable to be retrieved.
 func VerifyRequiredFields(ctx context.Context, run components.Runner) error {
 	for name, tag := range requiredFields {
-		getRequiredFieldOutput, err := run(ctx, cbiCommandTimeout, readCBIFieldCommand, strconv.Itoa(tag))
-		if strings.Contains(strings.ToLower(getRequiredFieldOutput), "error") {
+		_, err := run(ctx, cbiCommandTimeout, readCBIFieldCommand, strconv.Itoa(tag))
+		if err != nil && strings.Contains(strings.ToLower(err.Error()), "exit code 1") {
 			errorString := fmt.Sprintf("verify required fields: required field %s is undefined", name)
 			if err != nil {
 				errorString += fmt.Sprintf("\nerror: %s", err)
