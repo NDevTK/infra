@@ -13,6 +13,43 @@ DISABLED_PYLINT_WARNINGS = [
     'W0232',  # Class has no __init__ method
     'unused-argument',
     'attribute-defined-outside-init',
+
+    # TODO(crbug/1347377): Re-enable these checks.
+    'no-member',
+    'super-with-arguments',
+    'useless-object-inheritance',
+    'no-else-return',
+    'syntax-error',
+    'inconsistent-return-statements',
+    'unnecessary-pass',
+    'raise-missing-from',
+    'import-outside-toplevel',
+    'unnecessary-comprehension',
+    'arguments-differ',
+    'invalid-overridden-method',
+    'trailing-newlines',
+    'no-else-raise',
+    'consider-using-in',
+    'raising-format-tuple',
+    'consider-using-set-comprehension',
+    'assignment-from-none',
+    'use-a-generator',
+    'useless-super-delegation',
+    'subprocess-run-check',
+    'redefined-argument-from-local',
+    'no-else-continue',
+    'len-as-condition',
+    'keyword-arg-before-vararg',
+    'bad-option-value',
+    'no-value-for-parameter',
+    'implicit-str-concat',
+    'useless-return',
+    'useless-import-alias',
+    'simplifiable-if-expression',
+    'no-else-break',
+    'literal-comparison',
+    'consider-iterating-dictionary',
+    'arguments-out-of-order',
 ]
 
 DISABLED_PYLINT_FILES = [
@@ -142,7 +179,7 @@ def PylintFiles(input_api, output_api, files, pylint_root, disabled_warnings):
 
   pylint_args = ['-d', ','.join(disabled_warnings)]
 
-  pylint_path = input_api.os_path.join(depot_tools_path, 'pylint-1.5')
+  pylint_path = input_api.os_path.join(depot_tools_path, 'pylint-2.7')
 
   # Make paths relative to pylint_root
   for filename in files:
@@ -156,11 +193,9 @@ def PylintFiles(input_api, output_api, files, pylint_root, disabled_warnings):
 
   # Pass args via stdin, because windows (command line limit).
   return input_api.Command(
-      name=('Pylint (%s files%s)' % (
-            len(files), ' under %s' % pylint_root if pylint_root else '')),
-      cmd=['vpython',
-           pylint_path,
-           '--args-on-stdin'],
+      name=('Pylint (%s files%s)' %
+            (len(files), ' under %s' % pylint_root if pylint_root else '')),
+      cmd=['vpython3', pylint_path, '--args-on-stdin'],
       kwargs=kwargs,
       message=output_api.PresubmitError)
 

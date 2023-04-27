@@ -244,13 +244,13 @@ def PylintFiles(input_api, output_api, files, pylint_root, disabled_warnings,
 
   pylint_args = ['-d', ','.join(disabled_warnings)]
 
-  pytlint_path = input_api.os_path.join(depot_tools_path, 'pylint-1.5')
+  pytlint_path = input_api.os_path.join(depot_tools_path, 'pylint-2.7')
 
   # Pass args via stdin, because windows (command line limit).
   return input_api.Command(
       name=('Pylint (%s files%s)' %
             (len(files), ' under %s' % pylint_root if pylint_root else '')),
-      cmd=['vpython', pytlint_path, '--args-on-stdin'],
+      cmd=['vpython3', pytlint_path, '--args-on-stdin'],
       kwargs={
           'stdin': '\n'.join(pylint_args + files).encode(),
       },
