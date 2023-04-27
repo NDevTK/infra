@@ -119,8 +119,16 @@ func main() {
 }
 
 func innerMain() error {
+	// Set up and defer the WaitGroup before the context because
+	// the context cancellation needs to happen first to signal
+	// things to stop.  Otherwise we deadlock waiting for things
+	// to stop before signaling them to stop.
+	var wg sync.WaitGroup
+	defer wg.Wait()
+
 	// TODO(ayatane): Add environment validation.
 	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
 	version := readVersionFile(*versionFilePath)
 	log.Printf("version: %v\n", version)
@@ -133,9 +141,6 @@ func innerMain() error {
 		log.Printf("Skipping metrics setup: %s", err)
 	}
 
-	var wg sync.WaitGroup
-	defer wg.Wait()
-	defer cancel()
 	defer metrics.Shutdown(ctx)
 
 	if traceBackend != "" && traceBackend != "none" {
