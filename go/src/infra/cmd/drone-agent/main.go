@@ -127,15 +127,16 @@ func innerMain() error {
 	defer wg.Wait()
 
 	// TODO(ayatane): Add environment validation.
+
+	// Set up top level context and cancellation.
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+	ctx = notifySIGTERM(ctx)
+	ctx = notifyDraining(ctx, filepath.Join(workingDirPath, drainingFile))
 
 	version := readVersionFile(*versionFilePath)
 	log.Printf("version: %v\n", version)
 	ctx = metadata.AppendToOutgoingContext(ctx, "drone-agent-version", version)
-
-	ctx = notifySIGTERM(ctx)
-	ctx = notifyDraining(ctx, filepath.Join(workingDirPath, drainingFile))
 
 	if err := metrics.Setup(ctx, tsmonEndpoint, tsmonCredentialPath); err != nil {
 		log.Printf("Skipping metrics setup: %s", err)
