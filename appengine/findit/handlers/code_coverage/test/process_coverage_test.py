@@ -2143,12 +2143,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
       mock_buildbucket_client, *_):
     self.UpdateUnitTestConfigSettings(
-        'code_coverage_settings', {
+        'code_coverage_settings',
+        {
             'allowed_builders': ['chromium/try/android-nougat-x86-rel',],
             'block_low_coverage_changes': {
                 'clank': {
                     'monitored_authors': ['john'],
                     'monitored_directories': ['//dir'],
+                    # Blocking file type is different from the file in CL
                     'monitored_file_types': ['.java']
                 }
             },
@@ -2230,7 +2232,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     self.assertEqual(1, len(tasks))
     payload = json.loads(tasks[0].payload)
     self.assertDictEqual({'Code-Coverage': +1}, payload['data']['labels'])
-    self.assertTrue('clank' in payload['cohorts_matched'])
+    self.assertFalse('clank' in payload['cohorts_matched'])
     self.assertFalse('clank' in payload['cohorts_violated'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
@@ -2253,7 +2255,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
                 'clank': {
                     'monitored_authors': ['john'],
                     'monitored_directories': ['//dir'],
-                    'monitored_file_types': ['.java']
+                    'monitored_file_types': ['.cc']
                 }
             },
             'block_low_coverage_changes_projects': ['chromium/src']
@@ -2328,14 +2330,14 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         change=138000,
         patchset=4)
     self.assertEqual(blocking_entity.blocking_status,
-                     BlockingStatus.VERDICT_NOT_BLOCK)
+                     BlockingStatus.VERDICT_BLOCK)
     tasks = self.taskqueue_stub.get_filtered_tasks(
         queue_names='postreview-request-queue')
     self.assertEqual(1, len(tasks))
     payload = json.loads(tasks[0].payload)
-    self.assertDictEqual({'Code-Coverage': +1}, payload['data']['labels'])
+    self.assertDictEqual({'Code-Coverage': -1}, payload['data']['labels'])
     self.assertTrue('clank' in payload['cohorts_matched'])
-    self.assertFalse('clank' in payload['cohorts_violated'])
+    self.assertTrue('clank' in payload['cohorts_violated'])
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')

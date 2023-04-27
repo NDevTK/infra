@@ -677,27 +677,26 @@ class ProcessCodeCoverageData(BaseHandler):
     """Returns a list of low coverage files as per the configs.
 
     Also returns a boolean, indicating if any of the files matched the
-    monitored directories scope of the cohort. If the low coverage
-    file list is non-empty, this is guaranteed to be True. This
-    is done to enable cohort based reporting."""
+    monitored directories and monitored file type scope of the cohort.
+    If the low coverage file list is non-empty, this is guaranteed to be True.
+    This is done to enable cohort based reporting."""
     low_coverage_files = []
-    is_cohort_dir_match = False
+    is_cohort_file_match = False
     for inc_metrics in entity.incremental_percentages:
       if not _IsFileInAllowlistForBlocking(config, inc_metrics.path):
         logging.info("%s is not in allowed dirs for cohort %s",
                      inc_metrics.path, cohort)
         continue
-      else:
-        is_cohort_dir_match = True
+      if not _IsFileTypeAllowedForBlocking(config, inc_metrics.path):
+        logging.info("%s is not of allowed file type for cohort %s",
+                     inc_metrics.path, cohort)
+        continue
+      is_cohort_file_match = True
       # Do not block because of test/main files
       if re.match(utils.TEST_FILE_REGEX, inc_metrics.path) or re.match(
           utils.MAIN_FILE_REGEX, inc_metrics.path):
         logging.info("%s is a test/main file for cohort %s", inc_metrics.path,
                      cohort)
-        continue
-      if not _IsFileTypeAllowedForBlocking(config, inc_metrics.path):
-        logging.info("%s is not of allowed file type for cohort %s",
-                     inc_metrics.path, cohort)
         continue
       if not _HaveEnoughLinesChangedForBlocking(config, inc_metrics):
         logging.info("%s doesn't have enough lines changed for cohort %s",
@@ -712,7 +711,7 @@ class ProcessCodeCoverageData(BaseHandler):
             logging.info("%s has low absolute coverate too for cohort %s",
                          inc_metrics.path, cohort)
             low_coverage_files.append(inc_metrics.path)
-    return low_coverage_files, is_cohort_dir_match
+    return low_coverage_files, is_cohort_file_match
 
   # TODO(crbug/1412897): Cache this
   def _GetChromiumToGooglerMapping(self):
@@ -752,7 +751,7 @@ class ProcessCodeCoverageData(BaseHandler):
           continue
         any_config_author_match = True
         # Block CL only if some files have low coverage
-        low_coverage_files, is_cohort_dir_match = self._GetLowCoverageFiles(
+        low_coverage_files, is_cohort_file_match = self._GetLowCoverageFiles(
             cohort, config, entity)
         if low_coverage_files:
           low_coverage_threshold_with_violators[config.get(
@@ -760,7 +759,7 @@ class ProcessCodeCoverageData(BaseHandler):
               _DEFAULT_TRIGGER_INC_COV_THRESHOLD_FOR_BLOCKING
           )] = low_coverage_files
           cohorts_violated.append(cohort)
-        if is_cohort_dir_match:
+        if is_cohort_file_match:
           cohorts_matched.append(cohort)
 
       @ndb.transactional

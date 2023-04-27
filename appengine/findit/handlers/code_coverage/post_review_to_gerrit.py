@@ -41,7 +41,7 @@ class PostReviewToGerrit(BaseHandler):
     if bq_rows:
       bigquery_helper.ReportRowsToBigquery(bq_rows, 'findit-for-me',
                                            'code_coverage_summaries',
-                                           'low_coverage_blocking')
+                                           'low_coverage_blocking_raw')
       logging.info('%d rows added for change %d, patchset %d' %
                    (len(bq_rows), change, patchset))
 
