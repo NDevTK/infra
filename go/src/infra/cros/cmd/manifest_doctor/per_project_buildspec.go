@@ -159,7 +159,13 @@ func (b *projectBuildspec) Run(a subcommands.Application, args []string, env sub
 	}
 
 	if err := b.CreateBuildspecs(gsClient, gerritClient); err != nil {
-		LogErr(err.Error())
+		if multierr, ok := err.(errors.MultiError); ok {
+			for _, err := range []error(multierr) {
+				LogErr(err.Error())
+			}
+		} else {
+			LogErr(err.Error())
+		}
 		return 6
 	}
 
@@ -414,6 +420,8 @@ func (b *projectBuildspec) CreateProjectBuildspecs(projects map[string]projectBu
 				if config.optional {
 					LogErr("%scouldn't load local_manifest.xml for %s, marked as optional so skipping...", config.logPrefix, project)
 					continue
+				} else {
+					LogErr("%scouldn't load local_manifest.xml for %s", config.logPrefix, project)
 				}
 				err = MissingLocalManifestError{
 					project: project,
