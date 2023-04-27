@@ -41,7 +41,7 @@ def _get_client():
           channel=grpc.insecure_channel(settings.CLOUD_TASKS_EMULATOR_ADDRESS))
       _client = tasks_v2.CloudTasksClient(transport=transport)
     else:
-      _client = tasks.CloudTasksClient()
+      _client = tasks_v2.CloudTasksClient()
   return _client
 
 
