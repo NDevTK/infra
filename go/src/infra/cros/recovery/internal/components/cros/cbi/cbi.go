@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"infra/cros/recovery/internal/components"
+	"infra/cros/recovery/internal/execs"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
@@ -204,8 +205,9 @@ func ContainsCBIMagic(cbi *labapi.Cbi) bool {
 // invalid or unable to be retrieved.
 func VerifyRequiredFields(ctx context.Context, run components.Runner) error {
 	for name, tag := range requiredFields {
-		getRequiredFieldOutput, err := run(ctx, cbiCommandTimeout, readCBIFieldCommand, strconv.Itoa(tag))
-		if strings.Contains(strings.ToLower(getRequiredFieldOutput), "error") {
+		_, err := run(ctx, cbiCommandTimeout, readCBIFieldCommand, strconv.Itoa(tag))
+		stdErr, ok := errors.TagValueIn(execs.StdErrTag, err)
+		if ok && err != nil && strings.Contains(strings.ToLower(stdErr.(string)), "error") {
 			errorString := fmt.Sprintf("verify required fields: required field %s is undefined", name)
 			if err != nil {
 				errorString += fmt.Sprintf("\nerror: %s", err)
