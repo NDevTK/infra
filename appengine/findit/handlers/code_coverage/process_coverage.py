@@ -738,7 +738,7 @@ class ProcessCodeCoverageData(BaseHandler):
       low_coverage_threshold_with_violators = {}
       cohorts_matched = []
       cohorts_violated = []
-      any_config_author_match = False
+      any_cohort_author_match = False
       for cohort, config in waterfall_config.GetCodeCoverageSettings().get(
           'block_low_coverage_changes', {}).items():
         author_email = change_details['owner']['email']
@@ -749,7 +749,7 @@ class ProcessCodeCoverageData(BaseHandler):
               "Bypassing the check for cohort %s" +
               " as %s is not in allowlist", cohort, author_email)
           continue
-        any_config_author_match = True
+        any_cohort_author_match = True
         # Block CL only if some files have low coverage
         low_coverage_files, is_cohort_file_match = self._GetLowCoverageFiles(
             cohort, config, entity)
@@ -819,7 +819,7 @@ class ProcessCodeCoverageData(BaseHandler):
         _PostReviewToGerrit(data, cohorts_matched, cohorts_violated)
       # Add a positive Code Coverage label only for authors in the allowlist.
       # This is done to reduce noise.
-      elif any_config_author_match:
+      elif cohorts_matched and any_cohort_author_match:
         _UpdateBlockingStatus(BlockingStatus.VERDICT_NOT_BLOCK)
         data = {
             'labels': {

@@ -2016,14 +2016,10 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         change=138000,
         patchset=4)
     self.assertEqual(blocking_entity.blocking_status,
-                     BlockingStatus.VERDICT_NOT_BLOCK)
+                     BlockingStatus.READY_FOR_VERDICT)
     tasks = self.taskqueue_stub.get_filtered_tasks(
         queue_names='postreview-request-queue')
-    self.assertEqual(1, len(tasks))
-    payload = json.loads(tasks[0].payload)
-    self.assertDictEqual({'Code-Coverage': +1}, payload['data']['labels'])
-    self.assertFalse('clank' in payload['cohorts_matched'])
-    self.assertFalse('clank' in payload['cohorts_violated'])
+    self.assertEqual(0, len(tasks))
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
@@ -2226,14 +2222,10 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
         change=138000,
         patchset=4)
     self.assertEqual(blocking_entity.blocking_status,
-                     BlockingStatus.VERDICT_NOT_BLOCK)
+                     BlockingStatus.READY_FOR_VERDICT)
     tasks = self.taskqueue_stub.get_filtered_tasks(
         queue_names='postreview-request-queue')
-    self.assertEqual(1, len(tasks))
-    payload = json.loads(tasks[0].payload)
-    self.assertDictEqual({'Code-Coverage': +1}, payload['data']['labels'])
-    self.assertFalse('clank' in payload['cohorts_matched'])
-    self.assertFalse('clank' in payload['cohorts_violated'])
+    self.assertEqual(0, len(tasks))
 
   @mock.patch.object(BaseHandler, 'IsRequestFromAppSelf', return_value=True)
   @mock.patch.object(prpc_client, 'service_account_credentials')
