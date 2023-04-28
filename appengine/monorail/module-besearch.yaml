@@ -8,7 +8,7 @@ app_engine_apis: true
 
 entrypoint: gunicorn -b :$PORT --timeout 60 --workers ${WORKERS} --threads 1 main:app
 
-instance_class: F4
+instance_class: F4_1G
 automatic_scaling:
   min_idle_instances: ${MIN_IDLE_INSTANCES}
   max_instances: ${MAX_INSTANCES}
