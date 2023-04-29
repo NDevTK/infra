@@ -174,12 +174,23 @@ func isBootedInSecureModeExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err := cros.MatchCrossystemValueToExpectation(ctx, run, "devsw_boot", "0"); err != nil {
 		return errors.Annotate(err, "is booted in secure mode").Err()
 	}
-	out, err := run(ctx, time.Minute, "/usr/share/vboot/bin/get_gbb_flags.sh")
+	checkTimeout := 15 * time.Second
+	runTimeout := info.GetExecTimeout() - checkTimeout
+	const legacyGBBReadFilename = "/usr/share/vboot/bin/get_gbb_flags.sh"
+	// New CMD supported from R111-15306.0.0 of ChromeOS.
+	const readGbbCmd = "/usr/bin/futility gbb --get --flash --flags"
+	var out string
+	var err error
+	if _, err = run(ctx, checkTimeout, fmt.Sprintf("test -f %s", legacyGBBReadFilename)); err == nil {
+		out, err = run(ctx, runTimeout, legacyGBBReadFilename)
+	} else {
+		out, err = run(ctx, runTimeout, readGbbCmd)
+	}
 	if err != nil {
 		return errors.Annotate(err, "is booted in secure mode").Err()
 	}
 	// Check if GBB flags is set as 0x0 as expected for device booted in secure mode
-	if r, err := regexp.Compile(`Chrome OS GBB set flags:([0x ]*)$`); err != nil {
+	if r, err := regexp.Compile(`flags:([0x ]*)$`); err != nil {
 		return errors.Annotate(err, "is booted in secure mode").Err()
 	} else if !r.MatchString(out) {
 		return errors.Reason("is booted in secure mode: gbb flags are not set to 0(zero)").Err()
