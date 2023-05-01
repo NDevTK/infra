@@ -4,6 +4,7 @@
 """A handler run on Flask request teardown."""
 
 import logging
+import os
 
 from google.appengine.api import runtime
 from googleapiclient.discovery import build
