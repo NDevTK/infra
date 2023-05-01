@@ -201,7 +201,12 @@ func (r *Rule) matches(build *bbpb.Build) bool {
 
 	if r.rule.GetFailedCheckpoint() != pb.RetryStep_UNDEFINED {
 		checkpointStatus := extractCheckpointStatus(build, r.rule.GetFailedCheckpoint())
-		if checkpointStatus == nil || (checkpointStatus != nil && *checkpointStatus != "FAILED") {
+		if checkpointStatus == nil {
+			return false
+		} else if *checkpointStatus != "FAILED" && *checkpointStatus != "STARTED" {
+			// When builds fail particularly ungracefully they may not have a
+			// chance to update the retry summary. Consider "STARTED" a failed
+			// status (for a build that is no longer running).
 			return false
 		}
 	}

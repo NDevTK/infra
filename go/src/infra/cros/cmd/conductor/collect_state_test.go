@@ -194,6 +194,28 @@ func TestCollectState_BuildMatches(t *testing.T) {
 	}
 	assert.Assert(t, collectState.canRetry(failedBuild))
 
+	startedInputProperties, err := structpb.NewStruct(map[string]interface{}{})
+	assert.NilError(t, err)
+	err = bb.SetProperty(startedInputProperties,
+		"$chromeos/checkpoint.retry_summary.STAGE_ARTIFACTS",
+		"STARTED")
+	assert.NilError(t, err)
+
+	failedBuildStarted := &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_FAILURE,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "eve-release-main",
+		},
+		SummaryMarkdown: "wah, I have a bad source cache.",
+		Input: &bbpb.Build_Input{
+			Properties: startedInputProperties,
+		},
+	}
+	assert.Assert(t, collectState.canRetry(failedBuildStarted))
+
 	successfulBuild := &bbpb.Build{
 		Id:     12345,
 		Status: bbpb.Status_SUCCESS,
