@@ -92,6 +92,18 @@ func GetDeviceConfig(ctx context.Context, cfgID *ufsdevice.ConfigId) (*ufsdevice
 	return nil, err
 }
 
+// DeviceConfigsExist returns an array of bools. The ith value in this array
+// represents whether the ith entry in cfgIDs exists
+func DeviceConfigsExist(ctx context.Context, cfgIDs []*ufsdevice.ConfigId) ([]bool, error) {
+	entities := make([]ufsds.FleetEntity, len(cfgIDs))
+	for i, id := range cfgIDs {
+		idString := GetDeviceConfigIDStr(id)
+		entities[i] = &DeviceConfigEntity{ID: idString}
+	}
+
+	return ufsds.Exists(ctx, entities)
+}
+
 // BatchUpdateDeviceConfigs upserts all configs. The `realmAssigner` determines
 // the logic for adding realms to these configs, and can be different in
 // different namespaces.

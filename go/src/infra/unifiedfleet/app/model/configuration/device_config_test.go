@@ -126,6 +126,25 @@ func TestGetDeviceConfig(t *testing.T) {
 	})
 }
 
+func TestDeviceConfigsExist(t *testing.T) {
+	t.Parallel()
+	ctx := memory.UseWithAppID(context.Background(), ("gae-test"))
+	cfg := makeDevCfgForTesting("board", "model", "variant", []string{"email"})
+
+	Convey("When a config is added", t, func() {
+		resp, err := BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{cfg}, BlankRealmAssigner)
+		So(err, ShouldBeNil)
+		So(resp, ShouldResembleProto, []*ufsdevice.Config{cfg})
+		Convey("DeviceConfigsExist should correctly report that config exists, and other config does not", func() {
+			cfgIDs := []*ufsdevice.ConfigId{GetConfigID("board", "model", "variant"), GetConfigID("non", "existant", "config")}
+			exists, err := DeviceConfigsExist(ctx, cfgIDs)
+
+			So(err, ShouldBeNil)
+			So(exists, ShouldResemble, []bool{true, false})
+		})
+	})
+}
+
 func TestGetDeviceConfigIDStr(t *testing.T) {
 	t.Parallel()
 
