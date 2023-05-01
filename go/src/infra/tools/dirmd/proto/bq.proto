@@ -21,6 +21,7 @@ message DirBQRow {
   // - If the root repo is "~/chromium/src" and it contains subrepo
   //   "~/chromium/src/v8", then dir "foo/bar" will correspond to root repo,
   //   while "v8/baz" will correspond to sub repo "v8".
+  // Note that files and dirs are mutually exclusive. See file definition below.
   string dir = 2;
 
   // Monorail metadata. Its component field should always map to the same
@@ -46,6 +47,12 @@ message DirBQRow {
   // Partition_time is used to partition the table.
   // It is the time dirmd starts the BigQuery export process.
   google.protobuf.Timestamp partition_time = 9;
+
+  // File path, relative to the root.
+  // Directory metadata can be overridden with path information. The same rules
+  // apply as dir, except should end with a file name. Note that dirs and files
+  // are mutually exclusive.
+  string file = 10;
 }
 
 // Information about where the directory was read from.

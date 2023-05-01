@@ -35,6 +35,7 @@ func cmdChromiumUpdate(p *Params) *subcommands.Command {
 			r.Flags.StringVar(&r.bucket, "bucket", "", "Name of the bucket where to upload metadata")
 			r.Flags.StringVar(&r.bucketLegacy, "bucket-legacy", "", "Name of the bucket where to upload metadata in legacy format")
 			r.Flags.StringVar(&r.bqTable, "bigquery-table", "", `Name of the bigquery table (in the format of "<cloud_project>.<dataset>.<table>") where to upload metadata`)
+			r.Flags.BoolVar(&r.BqExportFiles, "bigquery-export-files", false, "Flag to enable exporting of file metadata to Bigquery. Only works with -bigquery-table.")
 			r.Flags.StringVar(&r.gitHost, "git-host", "", `Name of the git host`)
 			r.Flags.StringVar(&r.gitProject, "git-project", "", `Name of the git project`)
 			r.Flags.StringVar(&r.ref, "ref", "", `commit ref`)

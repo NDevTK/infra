@@ -56,7 +56,7 @@ func (u *Updater) bqWrite(ctx context.Context, mapping *dirmd.Mapping) error {
 	if err := bq.EnsureTable(ctx, u.BqTable, tblMD); err != nil {
 		return err
 	}
-	return writeToBQ(ctx, u.BqTable.Inserter(), mapping, u.Commit)
+	return writeToBQ(ctx, u.BqTable.Inserter(), mapping, u.Commit, u.BqExportFiles)
 }
 
 func generateSchema() (schema bigquery.Schema, err error) {
@@ -88,13 +88,13 @@ type inserter interface {
 }
 
 // writeToBQ writes rows to BigQuery in batches.
-func writeToBQ(ctx context.Context, ins inserter, mapping *dirmd.Mapping, commit *GitCommit) error {
+func writeToBQ(ctx context.Context, ins inserter, mapping *dirmd.Mapping, commit *GitCommit, bqExportFiles bool) error {
 	batchC := make(chan []*bq.Row)
 	eg, ctx := errgroup.WithContext(ctx)
 	eg.Go(func() error {
 		// prepare rows
 		defer close(batchC)
-		return generateRows(ctx, mapping, commit, batchC)
+		return generateRows(ctx, mapping, commit, batchC, bqExportFiles)
 	})
 
 	eg.Go(func() error {
@@ -121,31 +121,32 @@ func subRepo(dir string, mapping *dirmd.Mapping) string {
 	return ""
 }
 
-func generateRows(ctx context.Context, mapping *dirmd.Mapping, commit *GitCommit, batchC chan []*bq.Row) error {
+func commonDirBQRow(commit *GitCommit, md *dirmdpb.Metadata, partitionTime *timestamppb.Timestamp) *dirmdpb.DirBQRow {
+	row := &dirmdpb.DirBQRow{
+		Source: &dirmdpb.Source{
+			GitHost:  commit.Host,
+			RootRepo: commit.Project,
+			Ref:      commit.Ref,
+			Revision: commit.Revision,
+		},
+		Monorail:        md.Monorail,
+		TeamEmail:       md.TeamEmail,
+		Os:              md.Os,
+		Buganizer:       md.Buganizer,
+		BuganizerPublic: md.BuganizerPublic,
+		TeamSpecificMetadata: &dirmdpb.TeamSpecific{
+			Wpt: md.Wpt,
+		},
+		PartitionTime: partitionTime,
+	}
+	return row
+}
+
+func generateRows(ctx context.Context, mapping *dirmd.Mapping, commit *GitCommit, batchC chan []*bq.Row, bqExportFiles bool) error {
 	partitionTime := timestamppb.New(clock.Now(ctx))
 	rows := make([]*bq.Row, 0, maxBatchRowCount)
 
-	for dir, md := range mapping.Dirs {
-		row := &dirmdpb.DirBQRow{
-			Source: &dirmdpb.Source{
-				GitHost:  commit.Host,
-				RootRepo: commit.Project,
-				SubRepo:  subRepo(dir, mapping),
-				Ref:      commit.Ref,
-				Revision: commit.Revision,
-			},
-			Dir:             dir,
-			Monorail:        md.Monorail,
-			TeamEmail:       md.TeamEmail,
-			Os:              md.Os,
-			Buganizer:       md.Buganizer,
-			BuganizerPublic: md.BuganizerPublic,
-			TeamSpecificMetadata: &dirmdpb.TeamSpecific{
-				Wpt: md.Wpt,
-			},
-			PartitionTime: partitionTime,
-		}
-		rows = append(rows, &bq.Row{Message: row})
+	resetRows := func() error {
 		if len(rows) >= maxBatchRowCount {
 			select {
 			case <-ctx.Done():
@@ -154,7 +155,38 @@ func generateRows(ctx context.Context, mapping *dirmd.Mapping, commit *GitCommit
 			}
 			rows = make([]*bq.Row, 0, maxBatchRowCount)
 		}
+		return nil
 	}
+
+	for dir, md := range mapping.Dirs {
+		row := commonDirBQRow(commit, md, partitionTime)
+		row.Source.SubRepo = subRepo(dir, mapping)
+		row.Dir = dir
+
+		rows = append(rows, &bq.Row{Message: row})
+		err := resetRows()
+		if err != nil {
+			return err
+		}
+
+	}
+
+	// (crbug/1440474) uploading data for files may suggest that the dir column can be empty, which breaks assumptions for
+	// existing users so this is flagged to ensure dependencies have time to migrate before this becomes permanent.
+	if bqExportFiles {
+		for file, md := range mapping.Files {
+			row := commonDirBQRow(commit, md, partitionTime)
+			row.Source.SubRepo = subRepo(file, mapping)
+			row.File = file
+
+			rows = append(rows, &bq.Row{Message: row})
+			err := resetRows()
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	if len(rows) > 0 {
 		select {
 		case <-ctx.Done():

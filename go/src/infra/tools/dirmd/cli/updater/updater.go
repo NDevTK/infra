@@ -75,6 +75,9 @@ type Updater struct {
 	BqTable *bigquery.Table
 
 	Commit *GitCommit
+
+	// Flag indicating whether to export File data to BigQuery.
+	BqExportFiles bool
 }
 
 // Run updates the metadata stored in GCS.
