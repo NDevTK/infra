@@ -1,11 +1,7 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env python3
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
-# [VPYTHON:BEGIN]
-# python_version: "2.7"
-# [VPYTHON:END]
 """Convenience script for expect_tests"""
 
 from __future__ import absolute_import
