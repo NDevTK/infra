@@ -12,6 +12,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/waigani/diffparser"
@@ -47,9 +48,10 @@ func main() {
 	patchPath := flag.String("patch", "", "Path to patch of changed files")
 	// enumsPath is a relative path to the enums file.
 	enumsPath := flag.String("enums", "tools/metrics/histograms/enums.xml", "Path to enums file")
+	commitMessage := flag.String("message", "", "Commit message")
 	flag.Parse()
 	if *inputDir == "" || *outputDir == "" || *prevDir == "" || *patchPath == "" {
-		log.Fatalf("Please specify non-empty values for the following flags: -input, -output, -previous, -patch")
+		log.Fatalf("Please specify non-empty values for the following flags: -input, -output, -previous, -patch, -message")
 	}
 	filePaths := flag.Args()
 	filesChanged, err := getDiffsPerFile(filePaths, *patchPath)
@@ -57,6 +59,7 @@ func main() {
 		log.Panicf("Failed to get diffs per file: %v", err)
 	}
 	singletonEnums := getSingleElementEnums(filepath.Join(*inputDir, *enumsPath))
+	obsoletedHistograms := getObsoletedHistograms(*commitMessage)
 
 	results := &tricium.Data_Results{}
 	for _, filePath := range filePaths {
@@ -66,7 +69,7 @@ func main() {
 		if ext := filepath.Ext(filePath); ext == ".xml" {
 			switch strings.TrimSuffix(filepath.Base(filePath), ext) {
 			case "histograms":
-				results.Comments = append(results.Comments, analyzeHistogramFile(f, filePath, *prevDir, filesChanged, singletonEnums)...)
+				results.Comments = append(results.Comments, analyzeHistogramFile(f, filePath, *prevDir, filesChanged, singletonEnums, obsoletedHistograms)...)
 			case "histogram_suffixes_list":
 				results.Comments = append(results.Comments, analyzeHistogramSuffixesFile(f, filePath, filesChanged)...)
 			}
@@ -74,6 +77,9 @@ func main() {
 			results.Comments = append(results.Comments, analyzeFieldTrialTestingConfig(f, filePath)...)
 		}
 	}
+
+	// Check if all obsoletion messages has a corresponding removed histogram.
+	results.Comments = append(results.Comments, analyzeCommitMessage(obsoletedHistograms)...)
 
 	// Write Tricium RESULTS data.
 	path, err := tricium.WriteDataType(*outputDir, results)
@@ -147,4 +153,14 @@ func closeFileOrDie(f *os.File) {
 	if err := f.Close(); err != nil {
 		log.Panicf("Failed to close file: %v", err)
 	}
+}
+
+func getObsoletedHistograms(commitMessage string) map[string]bool {
+	re := regexp.MustCompile(`OBSOLETE_HISTOGRAM\[(.+?)\]`)
+	histograms := re.FindAllStringSubmatch(commitMessage, -1)
+	histogramsMap := make(map[string]bool)
+	for _, match := range histograms {
+		histogramsMap[match[1]] = true
+	}
+	return histogramsMap
 }

@@ -48,6 +48,8 @@ const (
 	singleElementEnumWarning     = `[WARNING] It looks like this is an enumerated histogram that contains only a single bucket. UMA metrics are difficult to interpret in isolation, so please either add one or more additional buckets that can serve as a baseline for comparison, or document what other metric should be used as a baseline during analysis. https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#enum-histograms.`
 	SuffixesDeprecationWarning   = `[WARNING]: The <histogram_suffixes> syntax is deprecated. If you're adding a new list of suffixes, please use patterned histograms instead. If you're modifying an existing list of suffixes, please consider migrating that list to use patterned histograms. See https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#patterned-histograms.`
 	osxNamespaceDeprecationError = `[ERROR] The namespace "OSX" is deprecated. Prefer adding new Mac histograms to the "Mac" namespace.`
+	removedHistogramInfo         = `[Info] The following histograms were removed without an obsoletion message: %s. You can add obsoletion messages by adding "OBSOLETE_HISTOGRAM[histogram name]=obsoletion message" tags in the CL description.`
+	obsoletionMessageError       = `[ERROR] An obsoletion message has been added to following histograms: %s, but they are not removed. Please double check if there're typos.`
 )
 
 var (
@@ -137,18 +139,20 @@ const (
 	MILESTONE
 )
 
-func analyzeHistogramFile(f io.Reader, filePath, prevDir string, filesChanged *diffsPerFile, singletonEnums stringset.Set) []*tricium.Data_Comment {
+func analyzeHistogramFile(f io.Reader, filePath, prevDir string, filesChanged *diffsPerFile, singletonEnums stringset.Set, obsoletedHistograms map[string]bool) []*tricium.Data_Comment {
 	log.Printf("ANALYZING File: %s", filePath)
 	var allComments []*tricium.Data_Comment
 	// Analyze added lines in file (if any).
-	comments, newNamespaces, namespaceLineNums := analyzeChangedLines(bufio.NewScanner(f), filePath, filesChanged.addedLines[filePath], singletonEnums, ADDED)
+	comments, newHistograms, newNamespaces, namespaceLineNums := analyzeChangedLines(bufio.NewScanner(f), filePath, filesChanged.addedLines[filePath], singletonEnums, ADDED)
 	allComments = append(allComments, comments...)
 	// Analyze removed lines in file (if any).
 	oldPath := filepath.Join(prevDir, filePath)
 	oldFile := openFileOrDie(oldPath)
 	defer closeFileOrDie(oldFile)
 	var emptySet stringset.Set
-	_, oldNamespaces, _ := analyzeChangedLines(bufio.NewScanner(oldFile), filePath, filesChanged.removedLines[filePath], emptySet, REMOVED)
+	_, oldHistograms, oldNamespaces, _ := analyzeChangedLines(bufio.NewScanner(oldFile), filePath, filesChanged.removedLines[filePath], emptySet, REMOVED)
+	// Identify if any histograms were removed.
+	allComments = append(allComments, generateCommentsForRemovedHistograms(filePath, newHistograms, oldHistograms, obsoletedHistograms)...)
 	allComments = append(allComments, generateCommentsForAddedNamespaces(filePath, newNamespaces, oldNamespaces, namespaceLineNums)...)
 	return showAllComments(allComments)
 }
@@ -164,11 +168,28 @@ func analyzeHistogramSuffixesFile(f io.Reader, filePath string, filesChanged *di
 	return showAllComments(comments)
 }
 
+func analyzeCommitMessage(obsoletedHistograms map[string]bool) []*tricium.Data_Comment {
+	var comments []*tricium.Data_Comment
+	var obsoletedWithoutRemovalHistograms []string
+	for histogram := range obsoletedHistograms {
+		obsoletedWithoutRemovalHistograms = append(obsoletedWithoutRemovalHistograms, histogram)
+	}
+	if len(obsoletedWithoutRemovalHistograms) > 0 {
+		comment := &tricium.Data_Comment{
+			Category: category + "/Obsolete",
+			Message:  fmt.Sprintf(obsoletionMessageError, strings.Join(obsoletedWithoutRemovalHistograms, ",")),
+		}
+		comments = append(comments, comment)
+	}
+	return comments
+}
+
 // analyzeChangedLines analyzes a version of the file and returns:
 // 1. A list of comments generated from analyzing changed histograms.
-// 2. A set containing all the names of namespaces in the file.
-// 3. A map from namespace to line number.
-func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int, singletonEnums stringset.Set, mode changeMode) ([]*tricium.Data_Comment, stringset.Set, map[string]int) {
+// 2. A set containing all the names of histograms in the file.
+// 3. A set containing all the names of namespaces in the file.
+// 4. A map from namespace to line number.
+func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int, singletonEnums stringset.Set, mode changeMode) ([]*tricium.Data_Comment, stringset.Set, stringset.Set, map[string]int) {
 	var comments []*tricium.Data_Comment
 	// meta is a struct that holds line numbers of different tags in histogram.
 	var meta *metadata
@@ -178,6 +199,7 @@ func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int
 	var histogramStart int
 	// If any line in the histogram showed up as an added or removed line in the diff.
 	var histogramChanged bool
+	allHistograms := make(stringset.Set)
 	namespaces := make(stringset.Set)
 	namespaceLineNums := make(map[string]int)
 	lineNum := 1
@@ -214,6 +236,7 @@ func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int
 			hist := bytesToHistogram(currHistogram, meta)
 			namespace := parseNamespaceFromHistogramName(hist.Name)
 			namespaces.Add(namespace)
+			allHistograms.Add(hist.Name)
 			if namespaceLineNums[namespace] == 0 {
 				namespaceLineNums[namespace] = histogramStart
 			}
@@ -242,7 +265,7 @@ func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int
 		}
 		lineNum++
 	}
-	return comments, namespaces, namespaceLineNums
+	return comments, allHistograms, namespaces, namespaceLineNums
 }
 
 func parseNamespaceFromHistogramName(histogramName string) string {
@@ -489,6 +512,29 @@ func checkEnums(path string, hist *histogram, meta *metadata, singletonEnums str
 		}
 	}
 	return nil
+}
+
+func generateCommentsForRemovedHistograms(path string, newHistograms stringset.Set, oldHistograms stringset.Set, obsoletedHistograms map[string]bool) []*tricium.Data_Comment {
+	var comments []*tricium.Data_Comment
+	var removedWithoutMessageHistograms []string
+	allRemovedHistograms := oldHistograms.Difference(newHistograms).ToSlice()
+	for _, removedHistogram := range allRemovedHistograms {
+		if _, present := obsoletedHistograms[removedHistogram]; present {
+			delete(obsoletedHistograms, removedHistogram)
+		} else {
+			removedWithoutMessageHistograms = append(removedWithoutMessageHistograms, removedHistogram)
+		}
+	}
+	if len(removedWithoutMessageHistograms) > 0 {
+		comment := &tricium.Data_Comment{
+			Category: category + "/Removed",
+			Message:  fmt.Sprintf(removedHistogramInfo, strings.Join(removedWithoutMessageHistograms, ",")),
+			Path:     path,
+		}
+		comments = append(comments, comment)
+		log.Printf("ADDING Comment: [Info]: Histogram(s) removed without an obsoletion message")
+	}
+	return comments
 }
 
 func generateCommentsForAddedNamespaces(path string, newNamespaces stringset.Set, oldNamespaces stringset.Set, namespaceLineNums map[string]int) []*tricium.Data_Comment {
