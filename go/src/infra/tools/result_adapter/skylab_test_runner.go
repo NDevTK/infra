@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"html"
 	"io"
-	"strings"
 	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -18,11 +17,6 @@ import (
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
-)
-
-const (
-	// Failure reason prefix for unexpected skip test result.
-	UnexpectedSkipFailureReasonPrefix = "[UNEXPECTED SKIP]"
 )
 
 // Following CrOS test_runner's convention, test_case represents a single test
@@ -72,8 +66,9 @@ func (r *TestRunnerResult) ToProtos(ctx context.Context, testMetadataFile string
 		status := genTestCaseStatus(c)
 		tr := &sinkpb.TestResult{
 			TestId: c.Name,
-			// The status is expected if the test passed or was skipped expectedly.
-			Expected:     status == pb.TestStatus_PASS || isExpectedSkipStatus(c),
+			// The status is expected if the test passed or was skipped. The
+			// expected skipped will be translated to TEST_NA in Testhaus.
+			Expected:     status == pb.TestStatus_PASS || status == pb.TestStatus_SKIP,
 			Status:       status,
 			TestMetadata: &pb.TestMetadata{},
 		}
@@ -123,14 +118,4 @@ func genTestCaseStatus(c TestRunnerTestCase) pb.TestStatus {
 		return pb.TestStatus_ABORT
 	}
 	return pb.TestStatus_FAIL
-}
-
-// Checks if the test was skipped expectedly. If a skip test is caused by an
-// incomplete test run of which the failure reason contains the specific error
-// message, it's regarded as skipped unexpectedly. Otherwise, it's skipped
-// expectedly.
-func isExpectedSkipStatus(c TestRunnerTestCase) bool {
-	status := genTestCaseStatus(c)
-	failureReason := c.HumanReadableSummary
-	return status == pb.TestStatus_SKIP && !strings.HasPrefix(strings.ToUpper(failureReason), UnexpectedSkipFailureReasonPrefix)
 }

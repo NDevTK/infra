@@ -302,33 +302,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 			So(len(testResults[0].FailureReason.PrimaryErrorMessage), ShouldBeLessThanOrEqualTo, maxPrimaryErrorBytes)
 		})
 
-		Convey(`check an unexpected skip test`, func() {
-			// Creates an unexpected skip test with specific failure reason.
-			str := `{
-				"autotest_result": {
-					"test_cases": [
-					{
-						"verdict": "VERDICT_NO_VERDICT",
-						"name": "test3",
-						"human_readable_summary": "[UNEXPECTED SKIP] Incomplete result caused by: Failed prejob"
-					}
-					]
-				}
-			}`
-
-			results := &TestRunnerResult{}
-			results.ConvertFromJSON(strings.NewReader(str))
-			testResults, err := results.ToProtos(ctx, "")
-
-			So(err, ShouldBeNil)
-			So(testResults, ShouldHaveLength, 1)
-			So(testResults[0].Status, ShouldResemble, pb.TestStatus_SKIP)
-			So(testResults[0].Expected, ShouldResemble, false)
-		})
-
 		Convey(`check an expected skip test`, func() {
-			// Creates an expected skip test that is neither an incomplete test
-			// run nor an initial result.
 			str := `{
 				"autotest_result": {
 					"test_cases": [
