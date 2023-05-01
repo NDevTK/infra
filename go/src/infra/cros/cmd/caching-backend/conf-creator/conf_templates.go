@@ -93,6 +93,7 @@ http {
     server 127.0.0.1:{{.}} backup;
     {{ end -}}
     {{ else }}
+    least_conn;
     {{ range .Ports -}}
     server 127.0.0.1:{{.}} fail_timeout=10s;
     {{ end -}}
