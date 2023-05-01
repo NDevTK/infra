@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,7 @@ type AssetEntity struct {
 	BuildTarget string   `gae:"build_target"`
 	Phase       string   `gae:"phase"`
 	Tags        []string `gae:"tags"`
+	Realm       string   `gae:"realm"`
 	Asset       []byte   `gae:",noindex"` // Marshalled Asset proto
 }
 
@@ -69,6 +70,7 @@ func newAssetEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, e
 		BuildTarget: a.GetInfo().GetBuildTarget(),
 		Phase:       a.GetInfo().GetPhase(),
 		Tags:        a.GetTags(),
+		Realm:       util.ToUFSRealm(a.GetLocation().GetZone().String()),
 		Asset:       asset,
 	}, nil
 }
