@@ -29,7 +29,6 @@ import (
 )
 
 var (
-	pprofAddr  string
 	cpuprofile string
 	memprofile string
 	traceFile  string
