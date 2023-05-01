@@ -47,6 +47,14 @@ func TestLocationTag(t *testing.T) {
 					},
 				},
 			},
+			Files: map[string]*dirmdpb.Metadata{
+				"subdir/test.txt": {
+					Monorail: &dirmdpb.Monorail{
+						Project:   "chromium",
+						Component: "Some>File>Component",
+					},
+				},
+			},
 		}
 		tags, err := ToLocationTags((*Mapping)(mapping))
 		for _, dir := range tags.Dirs {
@@ -71,6 +79,12 @@ func TestLocationTag(t *testing.T) {
 					Tags: pbutil.StringPairs(
 						"monorail_component", "Some>Component",
 						"team_email", "team-email@chromium.org"),
+				},
+			},
+			Files: map[string]*sinkpb.LocationTags_File{
+				"subdir/test.txt": {
+					Tags: pbutil.StringPairs(
+						"monorail_component", "Some>File>Component"),
 				},
 			},
 		}
