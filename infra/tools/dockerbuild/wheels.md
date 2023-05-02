@@ -4631,6 +4631,18 @@ wheel: <
 
 * *universal*
 
+### 1.0.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/mypy-extensions-py3"
+  version: "version:1.0.0"
+>
+```
+
+
+* *universal*
+
 ## **mysqlclient**
 
 ### 2.1.1
