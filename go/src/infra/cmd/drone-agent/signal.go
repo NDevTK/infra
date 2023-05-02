@@ -1,16 +1,13 @@
-// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 //go:build !windows
-// +build !windows
 
 package main
 
 import (
 	"context"
-	"log"
-	"os"
 	"os/signal"
 
 	"golang.org/x/sys/unix"
@@ -18,16 +15,6 @@ import (
 
 // notifySIGTERM returns a context which is canceled when SIGTERM is
 // received.
-func notifySIGTERM(ctx context.Context) context.Context {
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, unix.SIGTERM)
-	ctx, cancel := context.WithCancel(ctx)
-	go func() {
-		select {
-		case s := <-ch:
-			log.Printf("Receiving signal %d", s)
-			cancel()
-		}
-	}()
-	return ctx
+func notifySIGTERM(ctx context.Context) (_ context.Context, stop context.CancelFunc) {
+	return signal.NotifyContext(ctx, unix.SIGTERM)
 }

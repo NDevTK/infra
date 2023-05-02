@@ -135,7 +135,8 @@ func innerMain() error {
 	// Set up top level context and cancellation.
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	ctx = notifySIGTERM(ctx)
+	ctx, cancel = notifySIGTERM(ctx)
+	defer cancel()
 	ctx = notifyDraining(ctx, filepath.Join(workingDirPath, drainingFile))
 	if err := os.MkdirAll(workingDirPath, 0777); err != nil {
 		return err
