@@ -4603,6 +4603,20 @@ wheel: <
 
 * *universal*
 
+## **mypy-py3**
+
+### 1.2.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/mypy-py3"
+  version: "version:1.2.0"
+>
+```
+
+
+* *universal*
+
 ## **mypy-extensions-py3**
 
 ### 0.4.3
