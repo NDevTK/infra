@@ -111,9 +111,10 @@ Then you upload your CL and commit as usual.
 Once your CL is committed, the wheels will be automatically built and uploaded
 by the following builders:
 
-* [Linux](https://ci.chromium.org/p/infra-internal/builders/prod/Linux%20wheel%20builder)
-* [Mac](https://ci.chromium.org/p/infra-internal/builders/prod/Mac%20wheel%20builder)
-* [Windows](https://ci.chromium.org/p/infra-internal/builders/prod/Windows%20wheel%20builder)
+* [Universal](https://ci.chromium.org/p/infra-internal/builders/prod/Universal%20wheel%20builder)
+* Linux: [ARM](https://ci.chromium.org/p/infra-internal/builders/prod/Linux%20ARM%20wheel%20builder), [x64](https://ci.chromium.org/p/infra-internal/builders/prod/Linux%20x64%20wheel%20builder)
+* Mac: [ARM64](https://ci.chromium.org/p/infra-internal/builders/prod/Mac%20ARM64%20wheel%20builder), [x64](https://ci.chromium.org/p/infra-internal/builders/prod/Mac%20wheel%20builder)
+* Windows: [x64](https://ci.chromium.org/p/infra-internal/builders/prod/Windows-x64%20wheel%20builder), [x86](https://ci.chromium.org/p/infra-internal/builders/prod/Windows-x86%20wheel%20builder)
 
 ## Custom patches
 

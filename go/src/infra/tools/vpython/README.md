@@ -19,7 +19,7 @@ package deployment. For more information, see
 A user who wants to create a `vpython` spec for their project should:
 
 1. Determine which Python packages and versions are needed.
-1. [Check CIPD](https://chrome-infra-packages.appspot.com/#/?path=infra/python/wheels/)
+1. [Check CIPD](https://chrome-infra-packages.appspot.com/p/infra/python/wheels)
   to see which packages are available.
 1. Construct a spec protobuf referencing these packages.
 
