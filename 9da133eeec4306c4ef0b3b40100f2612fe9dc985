@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "61db0bc9_865ddc33",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2023-05-02T18:35:10Z",
+      "side": 1,
+      "message": "+fancl too\n\nThis lgtm w/ comment",
+      "revId": "9da133eeec4306c4ef0b3b40100f2612fe9dc985",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a43dd6bb_593a1beb",
+        "filename": "3pp/.vpython3",
+        "patchSetId": 11
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2023-05-02T18:35:10Z",
+      "side": 1,
+      "message": "certifi is already in this spec",
+      "revId": "9da133eeec4306c4ef0b3b40100f2612fe9dc985",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
