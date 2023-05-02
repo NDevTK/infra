@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { render } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import { store } from './app/store';
+import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders chromium text', () => {
-  const { getByText } = render(
-      <Provider store={store}>
-        <App />
-      </Provider>,
-  );
+jest.mock('./features/NavBar', () => {
+  const LandingPage = () => <div data-testid="Navbar" />;
+  return LandingPage;
+});
 
-  expect(getByText(/chromium/i)).toBeInTheDocument();
+describe('when rendering the application', () => {
+  it('should render the navbar component', () => {
+    render(<App />);
+    expect(screen.getByTestId('Navbar')).toBeInTheDocument();
+  });
 });

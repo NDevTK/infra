@@ -1,0 +1,27 @@
+/* Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+*/
+.componentTypography {
+  width: 200px;
+}
+
+.horizontalCenter {
+  display: flex;
+  align-items: center;
+}
+
+.coverageButton {
+  margin-right: 8px;
+  color: rgb(168, 218, 181);
+}
+
+.resourcesButton {
+  margin-right: 8px;
+  color: rgb(253, 214, 99);
+}
+
+.flakinessButton {
+  margin-right: 8px;
+  color:rgb(237 108 2);
+}
