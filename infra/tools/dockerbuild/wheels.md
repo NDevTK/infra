@@ -6788,6 +6788,18 @@ wheel: <
 
 * *universal*
 
+### 7.3.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-py3"
+  version: "version:7.3.1"
+>
+```
+
+
+* *universal*
+
 ## **pytest-asyncio-py3**
 
 ### 0.14.0
