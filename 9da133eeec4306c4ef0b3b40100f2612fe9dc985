@@ -33,6 +33,24 @@
       "message": "certifi is already in this spec",
       "revId": "9da133eeec4306c4ef0b3b40100f2612fe9dc985",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ad5a8505_9953ce4d",
+        "filename": "3pp/.vpython3",
+        "patchSetId": 11
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2023-05-02T18:44:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a43dd6bb_593a1beb",
+      "revId": "9da133eeec4306c4ef0b3b40100f2612fe9dc985",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
