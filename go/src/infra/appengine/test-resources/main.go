@@ -129,3 +129,15 @@ func (s *testResourcesServer) UpdateMetricsTable(ctx context.Context, req *api.U
 	}
 	return resp, nil
 }
+
+func (s *testResourcesServer) ListComponents(ctx context.Context, req *api.ListComponentsRequest) (*api.ListComponentsResponse, error) {
+	panic("Endpoint has not been implemented yet")
+}
+
+func (s *testResourcesServer) FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error) {
+	panic("Endpoint has not been implemented yet")
+}
+
+func (s *testResourcesServer) FetchTestMetrics(ctx context.Context, req *api.FetchTestMetricsRequest) (*api.FetchTestMetricsResponse, error) {
+	panic("Endpoint has not been implemented yet")
+}

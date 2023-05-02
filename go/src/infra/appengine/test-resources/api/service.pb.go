@@ -30,6 +30,218 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Metrics that can by retrieved for any view
+type MetricType int32
+
+const (
+	MetricType_NUM_RUNS      MetricType = 0
+	MetricType_NUM_FAILURES  MetricType = 1
+	MetricType_AVG_RUNTIME   MetricType = 2
+	MetricType_TOTAL_RUNTIME MetricType = 3
+	MetricType_AVG_CORES     MetricType = 4
+)
+
+// Enum value maps for MetricType.
+var (
+	MetricType_name = map[int32]string{
+		0: "NUM_RUNS",
+		1: "NUM_FAILURES",
+		2: "AVG_RUNTIME",
+		3: "TOTAL_RUNTIME",
+		4: "AVG_CORES",
+	}
+	MetricType_value = map[string]int32{
+		"NUM_RUNS":      0,
+		"NUM_FAILURES":  1,
+		"AVG_RUNTIME":   2,
+		"TOTAL_RUNTIME": 3,
+		"AVG_CORES":     4,
+	}
+)
+
+func (x MetricType) Enum() *MetricType {
+	p := new(MetricType)
+	*p = x
+	return p
+}
+
+func (x MetricType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (MetricType) Descriptor() protoreflect.EnumDescriptor {
+	return file_infra_appengine_test_resources_api_service_proto_enumTypes[0].Descriptor()
+}
+
+func (MetricType) Type() protoreflect.EnumType {
+	return &file_infra_appengine_test_resources_api_service_proto_enumTypes[0]
+}
+
+func (x MetricType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use MetricType.Descriptor instead.
+func (MetricType) EnumDescriptor() ([]byte, []int) {
+	return file_infra_appengine_test_resources_api_service_proto_rawDescGZIP(), []int{0}
+}
+
+// Sort types includes all metric types as well as the name (ie test name or
+// directory name to sort)
+type SortType int32
+
+const (
+	SortType_SORT_NAME          SortType = 0
+	SortType_SORT_NUM_RUNS      SortType = 1
+	SortType_SORT_NUM_FAILURES  SortType = 2
+	SortType_SORT_AVG_RUNTIME   SortType = 3
+	SortType_SORT_TOTAL_RUNTIME SortType = 4
+	SortType_SORT_AVG_CORES     SortType = 5
+)
+
+// Enum value maps for SortType.
+var (
+	SortType_name = map[int32]string{
+		0: "SORT_NAME",
+		1: "SORT_NUM_RUNS",
+		2: "SORT_NUM_FAILURES",
+		3: "SORT_AVG_RUNTIME",
+		4: "SORT_TOTAL_RUNTIME",
+		5: "SORT_AVG_CORES",
+	}
+	SortType_value = map[string]int32{
+		"SORT_NAME":          0,
+		"SORT_NUM_RUNS":      1,
+		"SORT_NUM_FAILURES":  2,
+		"SORT_AVG_RUNTIME":   3,
+		"SORT_TOTAL_RUNTIME": 4,
+		"SORT_AVG_CORES":     5,
+	}
+)
+
+func (x SortType) Enum() *SortType {
+	p := new(SortType)
+	*p = x
+	return p
+}
+
+func (x SortType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SortType) Descriptor() protoreflect.EnumDescriptor {
+	return file_infra_appengine_test_resources_api_service_proto_enumTypes[1].Descriptor()
+}
+
+func (SortType) Type() protoreflect.EnumType {
+	return &file_infra_appengine_test_resources_api_service_proto_enumTypes[1]
+}
+
+func (x SortType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SortType.Descriptor instead.
+func (SortType) EnumDescriptor() ([]byte, []int) {
+	return file_infra_appengine_test_resources_api_service_proto_rawDescGZIP(), []int{1}
+}
+
+// Enumeration to specify the time period to fetch
+type Period int32
+
+const (
+	Period_DAY   Period = 0
+	Period_WEEK  Period = 1
+	Period_MONTH Period = 2
+)
+
+// Enum value maps for Period.
+var (
+	Period_name = map[int32]string{
+		0: "DAY",
+		1: "WEEK",
+		2: "MONTH",
+	}
+	Period_value = map[string]int32{
+		"DAY":   0,
+		"WEEK":  1,
+		"MONTH": 2,
+	}
+)
+
+func (x Period) Enum() *Period {
+	p := new(Period)
+	*p = x
+	return p
+}
+
+func (x Period) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Period) Descriptor() protoreflect.EnumDescriptor {
+	return file_infra_appengine_test_resources_api_service_proto_enumTypes[2].Descriptor()
+}
+
+func (Period) Type() protoreflect.EnumType {
+	return &file_infra_appengine_test_resources_api_service_proto_enumTypes[2]
+}
+
+func (x Period) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Period.Descriptor instead.
+func (Period) EnumDescriptor() ([]byte, []int) {
+	return file_infra_appengine_test_resources_api_service_proto_rawDescGZIP(), []int{2}
+}
+
+type DirectoryNodeType int32
+
+const (
+	DirectoryNodeType_DIRECTORY DirectoryNodeType = 0
+	DirectoryNodeType_FILENAME  DirectoryNodeType = 1
+)
+
+// Enum value maps for DirectoryNodeType.
+var (
+	DirectoryNodeType_name = map[int32]string{
+		0: "DIRECTORY",
+		1: "FILENAME",
+	}
+	DirectoryNodeType_value = map[string]int32{
+		"DIRECTORY": 0,
+		"FILENAME":  1,
+	}
+)
+
+func (x DirectoryNodeType) Enum() *DirectoryNodeType {
+	p := new(DirectoryNodeType)
+	*p = x
+	return p
+}
+
+func (x DirectoryNodeType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DirectoryNodeType) Descriptor() protoreflect.EnumDescriptor {
+	return file_infra_appengine_test_resources_api_service_proto_enumTypes[3].Descriptor()
+}
+
+func (DirectoryNodeType) Type() protoreflect.EnumType {
+	return &file_infra_appengine_test_resources_api_service_proto_enumTypes[3]
+}
+
+func (x DirectoryNodeType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DirectoryNodeType.Descriptor instead.
+func (DirectoryNodeType) EnumDescriptor() ([]byte, []int) {
+	return file_infra_appengine_test_resources_api_service_proto_rawDescGZIP(), []int{3}
+}
+
 type UpdateMetricsTableRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -127,6 +339,820 @@ func (*UpdateMetricsTableResponse) Descriptor() ([]byte, []int) {
 	return file_infra_appengine_test_resources_api_service_proto_rawDescGZIP(), []int{1}
 }
 
+type ListComponentsRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *ListComponentsRequest) Reset() {
+	*x = ListComponentsRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ListComponentsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListComponentsRequest) ProtoMessage() {}
+
+func (x *ListComponentsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListComponentsRequest.ProtoReflect.Descriptor instead.
+func (*ListComponentsRequest) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_test_resources_api_service_proto_rawDescGZIP(), []int{2}
+}
+
+type ListComponentsResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// A list of component names that can be passed into other services to get
+	// test information about
+	Components []string `protobuf:"bytes,1,rep,name=components,proto3" json:"components,omitempty"`
+	// A list of components owned by the signed in user. For public or not
+	// signed in googlers, returns an empty list
+	OwnedComponents []string `protobuf:"bytes,2,rep,name=owned_components,json=ownedComponents,proto3" json:"owned_components,omitempty"`
+}
+
+func (x *ListComponentsResponse) Reset() {
+	*x = ListComponentsResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ListComponentsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListComponentsResponse) ProtoMessage() {}
+
+func (x *ListComponentsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListComponentsResponse.ProtoReflect.Descriptor instead.
+func (*ListComponentsResponse) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_test_resources_api_service_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ListComponentsResponse) GetComponents() []string {
+	if x != nil {
+		return x.Components
+	}
+	return nil
+}
+
+func (x *ListComponentsResponse) GetOwnedComponents() []string {
+	if x != nil {
+		return x.OwnedComponents
+	}
+	return nil
+}
+
+type SortBy struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// What to sort by
+	Metric SortType `protobuf:"varint,1,opt,name=metric,proto3,enum=test_resources.SortType" json:"metric,omitempty"`
+	// Ascending or Descending
+	Ascending bool `protobuf:"varint,2,opt,name=ascending,proto3" json:"ascending,omitempty"`
+}
+
+func (x *SortBy) Reset() {
+	*x = SortBy{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SortBy) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SortBy) ProtoMessage() {}
+
+func (x *SortBy) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SortBy.ProtoReflect.Descriptor instead.
+func (*SortBy) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_test_resources_api_service_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *SortBy) GetMetric() SortType {
+	if x != nil {
+		return x.Metric
+	}
+	return SortType_SORT_NAME
+}
+
+func (x *SortBy) GetAscending() bool {
+	if x != nil {
+		return x.Ascending
+	}
+	return false
+}
+
+type FetchTestMetricsRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The component to get metrics for. This is effectively a required filter.
+	Component string `protobuf:"bytes,1,opt,name=component,proto3" json:"component,omitempty"`
+	// Time period to fetch (e.g. DAY, WEEK)
+	Period Period `protobuf:"varint,2,opt,name=period,proto3,enum=test_resources.Period" json:"period,omitempty"`
+	// Dates to fetch.  This should align to the period.
+	// Dates should be specified in YYYY-MM-DD format.
+	Dates []string `protobuf:"bytes,3,rep,name=dates,proto3" json:"dates,omitempty"`
+	// Metrics to fetch.
+	// This is required.  If no metrics are specified an error is returned.
+	Metrics []MetricType `protobuf:"varint,4,rep,packed,name=metrics,proto3,enum=test_resources.MetricType" json:"metrics,omitempty"`
+	// A filter to use (e.g. builder = linux-rel)
+	// TODO(sshrimp): determine filter format
+	Filter string `protobuf:"bytes,5,opt,name=filter,proto3" json:"filter,omitempty"`
+	// The offset to start at for the next request
+	Page int64 `protobuf:"varint,6,opt,name=page,proto3" json:"page,omitempty"`
+	// The maximum number of tests to retrieve for this request
+	PageSize int64 `protobuf:"varint,7,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// The order in which to return the results
+	Sort *SortBy `protobuf:"bytes,8,opt,name=sort,proto3" json:"sort,omitempty"`
+}
+
+func (x *FetchTestMetricsRequest) Reset() {
+	*x = FetchTestMetricsRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *FetchTestMetricsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FetchTestMetricsRequest) ProtoMessage() {}
+
+func (x *FetchTestMetricsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FetchTestMetricsRequest.ProtoReflect.Descriptor instead.
+func (*FetchTestMetricsRequest) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_test_resources_api_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *FetchTestMetricsRequest) GetComponent() string {
+	if x != nil {
+		return x.Component
+	}
+	return ""
+}
+
+func (x *FetchTestMetricsRequest) GetPeriod() Period {
+	if x != nil {
+		return x.Period
+	}
+	return Period_DAY
+}
+
+func (x *FetchTestMetricsRequest) GetDates() []string {
+	if x != nil {
+		return x.Dates
+	}
+	return nil
+}
+
+func (x *FetchTestMetricsRequest) GetMetrics() []MetricType {
+	if x != nil {
+		return x.Metrics
+	}
+	return nil
+}
+
+func (x *FetchTestMetricsRequest) GetFilter() string {
+	if x != nil {
+		return x.Filter
+	}
+	return ""
+}
+
+func (x *FetchTestMetricsRequest) GetPage() int64 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *FetchTestMetricsRequest) GetPageSize() int64 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *FetchTestMetricsRequest) GetSort() *SortBy {
+	if x != nil {
+		return x.Sort
+	}
+	return nil
+}
+
+type FetchTestMetricsResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// An array of information about each test for each of the requested days
+	Tests []*TestDateMetricData `protobuf:"bytes,1,rep,name=tests,proto3" json:"tests,omitempty"`
+	// Indicates whether this is the last page or another can be
+	// requested
+	LastPage bool `protobuf:"varint,2,opt,name=last_page,json=lastPage,proto3" json:"last_page,omitempty"`
+}
+
+func (x *FetchTestMetricsResponse) Reset() {
+	*x = FetchTestMetricsResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *FetchTestMetricsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FetchTestMetricsResponse) ProtoMessage() {}
+
+func (x *FetchTestMetricsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FetchTestMetricsResponse.ProtoReflect.Descriptor instead.
+func (*FetchTestMetricsResponse) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_test_resources_api_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *FetchTestMetricsResponse) GetTests() []*TestDateMetricData {
+	if x != nil {
+		return x.Tests
+	}
+	return nil
+}
+
+func (x *FetchTestMetricsResponse) GetLastPage() bool {
+	if x != nil {
+		return x.LastPage
+	}
+	return false
+}
+
+type TestDateMetricData struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The test's unique id
+	TestId string `protobuf:"bytes,1,opt,name=test_id,json=testId,proto3" json:"test_id,omitempty"`
+	// The test's display name
+	TestName string `protobuf:"bytes,2,opt,name=test_name,json=testName,proto3" json:"test_name,omitempty"`
+	// The file in which the test is contained
+	FileName string `protobuf:"bytes,3,opt,name=file_name,json=fileName,proto3" json:"file_name,omitempty"`
+	// Rollup metrics for the test id (i.e. the rolled up variants). This is a map
+	// of dates (in YYYY-MM-DD format) to an array of measured metrics.
+	Metrics map[string]*TestMetricsArray `protobuf:"bytes,4,rep,name=metrics,proto3" json:"metrics,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	// Breakdown of the variants of this test
+	Variants []*TestVariantData `protobuf:"bytes,5,rep,name=variants,proto3" json:"variants,omitempty"`
+}
+
+func (x *TestDateMetricData) Reset() {
+	*x = TestDateMetricData{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TestDateMetricData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TestDateMetricData) ProtoMessage() {}
+
+func (x *TestDateMetricData) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TestDateMetricData.ProtoReflect.Descriptor instead.
+func (*TestDateMetricData) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_test_resources_api_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *TestDateMetricData) GetTestId() string {
+	if x != nil {
+		return x.TestId
+	}
+	return ""
+}
+
+func (x *TestDateMetricData) GetTestName() string {
+	if x != nil {
+		return x.TestName
+	}
+	return ""
+}
+
+func (x *TestDateMetricData) GetFileName() string {
+	if x != nil {
+		return x.FileName
+	}
+	return ""
+}
+
+func (x *TestDateMetricData) GetMetrics() map[string]*TestMetricsArray {
+	if x != nil {
+		return x.Metrics
+	}
+	return nil
+}
+
+func (x *TestDateMetricData) GetVariants() []*TestVariantData {
+	if x != nil {
+		return x.Variants
+	}
+	return nil
+}
+
+type TestVariantData struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The suite which this variant belongs to
+	Suite string `protobuf:"bytes,1,opt,name=suite,proto3" json:"suite,omitempty"`
+	// The builder which this variant was run on
+	Builder string `protobuf:"bytes,2,opt,name=builder,proto3" json:"builder,omitempty"`
+	// Rollup metrics for the variant. This is a map of dates (in YYYY-MM-DD
+	// format) to an array of measured metrics.
+	Metrics map[string]*TestMetricsArray `protobuf:"bytes,3,rep,name=metrics,proto3" json:"metrics,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+}
+
+func (x *TestVariantData) Reset() {
+	*x = TestVariantData{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TestVariantData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TestVariantData) ProtoMessage() {}
+
+func (x *TestVariantData) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TestVariantData.ProtoReflect.Descriptor instead.
+func (*TestVariantData) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_test_resources_api_service_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *TestVariantData) GetSuite() string {
+	if x != nil {
+		return x.Suite
+	}
+	return ""
+}
+
+func (x *TestVariantData) GetBuilder() string {
+	if x != nil {
+		return x.Builder
+	}
+	return ""
+}
+
+func (x *TestVariantData) GetMetrics() map[string]*TestMetricsArray {
+	if x != nil {
+		return x.Metrics
+	}
+	return nil
+}
+
+type TestMetricsArray struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The requested metric mapped to the value of that metric
+	Data []*TestMetricsData `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
+}
+
+func (x *TestMetricsArray) Reset() {
+	*x = TestMetricsArray{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TestMetricsArray) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TestMetricsArray) ProtoMessage() {}
+
+func (x *TestMetricsArray) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TestMetricsArray.ProtoReflect.Descriptor instead.
+func (*TestMetricsArray) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_test_resources_api_service_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *TestMetricsArray) GetData() []*TestMetricsData {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
+type TestMetricsData struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The metric being measured
+	MetricType MetricType `protobuf:"varint,1,opt,name=metric_type,json=metricType,proto3,enum=test_resources.MetricType" json:"metric_type,omitempty"`
+	// The value of the metric
+	MetricValue float64 `protobuf:"fixed64,2,opt,name=metric_value,json=metricValue,proto3" json:"metric_value,omitempty"`
+}
+
+func (x *TestMetricsData) Reset() {
+	*x = TestMetricsData{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *TestMetricsData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TestMetricsData) ProtoMessage() {}
+
+func (x *TestMetricsData) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TestMetricsData.ProtoReflect.Descriptor instead.
+func (*TestMetricsData) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_test_resources_api_service_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *TestMetricsData) GetMetricType() MetricType {
+	if x != nil {
+		return x.MetricType
+	}
+	return MetricType_NUM_RUNS
+}
+
+func (x *TestMetricsData) GetMetricValue() float64 {
+	if x != nil {
+		return x.MetricValue
+	}
+	return 0
+}
+
+type FetchDirectoryMetricsRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The component being rolled up for the given metrics
+	Component string `protobuf:"bytes,1,opt,name=component,proto3" json:"component,omitempty"`
+	// Time period to fetch (e.g. DAY, WEEK)
+	Period Period `protobuf:"varint,2,opt,name=period,proto3,enum=test_resources.Period" json:"period,omitempty"`
+	// Dates to fetch.  This should align to the period.
+	// Dates should be specified in YYYY-MM-DD format.
+	Dates []string `protobuf:"bytes,3,rep,name=dates,proto3" json:"dates,omitempty"`
+	// The optional parent node for this data (i.e. The directory to get the child
+	// metrics for)
+	ParentId string `protobuf:"bytes,4,opt,name=parentId,proto3" json:"parentId,omitempty"`
+	// A filter to use (e.g. builder = linux-rel)
+	// TODO(sshrimp): determine filter format
+	Filter string `protobuf:"bytes,5,opt,name=filter,proto3" json:"filter,omitempty"`
+	// The order in which to return the results
+	Sort *SortBy `protobuf:"bytes,6,opt,name=sort,proto3" json:"sort,omitempty"`
+	// Metrics to fetch.
+	// This is required.  If no metrics are specified an error is returned.
+	Metrics []MetricType `protobuf:"varint,7,rep,packed,name=metrics,proto3,enum=test_resources.MetricType" json:"metrics,omitempty"`
+}
+
+func (x *FetchDirectoryMetricsRequest) Reset() {
+	*x = FetchDirectoryMetricsRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *FetchDirectoryMetricsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FetchDirectoryMetricsRequest) ProtoMessage() {}
+
+func (x *FetchDirectoryMetricsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FetchDirectoryMetricsRequest.ProtoReflect.Descriptor instead.
+func (*FetchDirectoryMetricsRequest) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_test_resources_api_service_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *FetchDirectoryMetricsRequest) GetComponent() string {
+	if x != nil {
+		return x.Component
+	}
+	return ""
+}
+
+func (x *FetchDirectoryMetricsRequest) GetPeriod() Period {
+	if x != nil {
+		return x.Period
+	}
+	return Period_DAY
+}
+
+func (x *FetchDirectoryMetricsRequest) GetDates() []string {
+	if x != nil {
+		return x.Dates
+	}
+	return nil
+}
+
+func (x *FetchDirectoryMetricsRequest) GetParentId() string {
+	if x != nil {
+		return x.ParentId
+	}
+	return ""
+}
+
+func (x *FetchDirectoryMetricsRequest) GetFilter() string {
+	if x != nil {
+		return x.Filter
+	}
+	return ""
+}
+
+func (x *FetchDirectoryMetricsRequest) GetSort() *SortBy {
+	if x != nil {
+		return x.Sort
+	}
+	return nil
+}
+
+func (x *FetchDirectoryMetricsRequest) GetMetrics() []MetricType {
+	if x != nil {
+		return x.Metrics
+	}
+	return nil
+}
+
+type FetchDirectoryMetricsResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// An array of directories and files belonging to the requested parent
+	// directory
+	Node []*DirectoryNode `protobuf:"bytes,1,rep,name=node,proto3" json:"node,omitempty"`
+}
+
+func (x *FetchDirectoryMetricsResponse) Reset() {
+	*x = FetchDirectoryMetricsResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *FetchDirectoryMetricsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FetchDirectoryMetricsResponse) ProtoMessage() {}
+
+func (x *FetchDirectoryMetricsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FetchDirectoryMetricsResponse.ProtoReflect.Descriptor instead.
+func (*FetchDirectoryMetricsResponse) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_test_resources_api_service_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *FetchDirectoryMetricsResponse) GetNode() []*DirectoryNode {
+	if x != nil {
+		return x.Node
+	}
+	return nil
+}
+
+type DirectoryNode struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// The full path name of the directory or file
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Whether the node is a file or directory
+	Type DirectoryNodeType `protobuf:"varint,2,opt,name=type,proto3,enum=test_resources.DirectoryNodeType" json:"type,omitempty"`
+	// The display name of the node
+	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	// Rollup metrics for the directory node. This is a map of dates
+	// (in YYYY-MM-DD format) to an array of measured metrics.
+	Metrics map[string]*TestMetricsArray `protobuf:"bytes,4,rep,name=metrics,proto3" json:"metrics,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+}
+
+func (x *DirectoryNode) Reset() {
+	*x = DirectoryNode{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[13]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DirectoryNode) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DirectoryNode) ProtoMessage() {}
+
+func (x *DirectoryNode) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_test_resources_api_service_proto_msgTypes[13]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DirectoryNode.ProtoReflect.Descriptor instead.
+func (*DirectoryNode) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_test_resources_api_service_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *DirectoryNode) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *DirectoryNode) GetType() DirectoryNodeType {
+	if x != nil {
+		return x.Type
+	}
+	return DirectoryNodeType_DIRECTORY
+}
+
+func (x *DirectoryNode) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *DirectoryNode) GetMetrics() map[string]*TestMetricsArray {
+	if x != nil {
+		return x.Metrics
+	}
+	return nil
+}
+
 var File_infra_appengine_test_resources_api_service_proto protoreflect.FileDescriptor
 
 var file_infra_appengine_test_resources_api_service_proto_rawDesc = []byte{
@@ -141,17 +1167,184 @@ var file_infra_appengine_test_resources_api_service_proto_rawDesc = []byte{
 	0x74, 0x6f, 0x5f, 0x64, 0x61, 0x74, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x74,
 	0x6f, 0x44, 0x61, 0x74, 0x65, 0x22, 0x1c, 0x0a, 0x1a, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4d,
 	0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x32, 0x74, 0x0a, 0x05, 0x53, 0x74, 0x61, 0x74, 0x73, 0x12, 0x6b, 0x0a, 0x12,
+	0x6e, 0x73, 0x65, 0x22, 0x17, 0x0a, 0x15, 0x4c, 0x69, 0x73, 0x74, 0x43, 0x6f, 0x6d, 0x70, 0x6f,
+	0x6e, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x63, 0x0a, 0x16,
+	0x4c, 0x69, 0x73, 0x74, 0x43, 0x6f, 0x6d, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1e, 0x0a, 0x0a, 0x63, 0x6f, 0x6d, 0x70, 0x6f, 0x6e,
+	0x65, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0a, 0x63, 0x6f, 0x6d, 0x70,
+	0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x73, 0x12, 0x29, 0x0a, 0x10, 0x6f, 0x77, 0x6e, 0x65, 0x64, 0x5f,
+	0x63, 0x6f, 0x6d, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09,
+	0x52, 0x0f, 0x6f, 0x77, 0x6e, 0x65, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74,
+	0x73, 0x22, 0x58, 0x0a, 0x06, 0x53, 0x6f, 0x72, 0x74, 0x42, 0x79, 0x12, 0x30, 0x0a, 0x06, 0x6d,
+	0x65, 0x74, 0x72, 0x69, 0x63, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x18, 0x2e, 0x74, 0x65,
+	0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x53, 0x6f, 0x72,
+	0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x06, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x12, 0x1c, 0x0a,
+	0x09, 0x61, 0x73, 0x63, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08,
+	0x52, 0x09, 0x61, 0x73, 0x63, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x22, 0xa8, 0x02, 0x0a, 0x17,
+	0x46, 0x65, 0x74, 0x63, 0x68, 0x54, 0x65, 0x73, 0x74, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1c, 0x0a, 0x09, 0x63, 0x6f, 0x6d, 0x70, 0x6f,
+	0x6e, 0x65, 0x6e, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x6f, 0x6d, 0x70,
+	0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x12, 0x2e, 0x0a, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73,
+	0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x52, 0x06, 0x70,
+	0x65, 0x72, 0x69, 0x6f, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x64, 0x61, 0x74, 0x65, 0x73, 0x18, 0x03,
+	0x20, 0x03, 0x28, 0x09, 0x52, 0x05, 0x64, 0x61, 0x74, 0x65, 0x73, 0x12, 0x34, 0x0a, 0x07, 0x6d,
+	0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0e, 0x32, 0x1a, 0x2e, 0x74,
+	0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x4d, 0x65,
+	0x74, 0x72, 0x69, 0x63, 0x54, 0x79, 0x70, 0x65, 0x52, 0x07, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63,
+	0x73, 0x12, 0x16, 0x0a, 0x06, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18, 0x05, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x06, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x70, 0x61, 0x67,
+	0x65, 0x18, 0x06, 0x20, 0x01, 0x28, 0x03, 0x52, 0x04, 0x70, 0x61, 0x67, 0x65, 0x12, 0x1b, 0x0a,
+	0x09, 0x70, 0x61, 0x67, 0x65, 0x5f, 0x73, 0x69, 0x7a, 0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x03,
+	0x52, 0x08, 0x70, 0x61, 0x67, 0x65, 0x53, 0x69, 0x7a, 0x65, 0x12, 0x2a, 0x0a, 0x04, 0x73, 0x6f,
+	0x72, 0x74, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f,
+	0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x53, 0x6f, 0x72, 0x74, 0x42, 0x79,
+	0x52, 0x04, 0x73, 0x6f, 0x72, 0x74, 0x22, 0x71, 0x0a, 0x18, 0x46, 0x65, 0x74, 0x63, 0x68, 0x54,
+	0x65, 0x73, 0x74, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x38, 0x0a, 0x05, 0x74, 0x65, 0x73, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28,
+	0x0b, 0x32, 0x22, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63,
+	0x65, 0x73, 0x2e, 0x54, 0x65, 0x73, 0x74, 0x44, 0x61, 0x74, 0x65, 0x4d, 0x65, 0x74, 0x72, 0x69,
+	0x63, 0x44, 0x61, 0x74, 0x61, 0x52, 0x05, 0x74, 0x65, 0x73, 0x74, 0x73, 0x12, 0x1b, 0x0a, 0x09,
+	0x6c, 0x61, 0x73, 0x74, 0x5f, 0x70, 0x61, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52,
+	0x08, 0x6c, 0x61, 0x73, 0x74, 0x50, 0x61, 0x67, 0x65, 0x22, 0xcd, 0x02, 0x0a, 0x12, 0x54, 0x65,
+	0x73, 0x74, 0x44, 0x61, 0x74, 0x65, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x44, 0x61, 0x74, 0x61,
+	0x12, 0x17, 0x0a, 0x07, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x06, 0x74, 0x65, 0x73, 0x74, 0x49, 0x64, 0x12, 0x1b, 0x0a, 0x09, 0x74, 0x65, 0x73,
+	0x74, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x74, 0x65,
+	0x73, 0x74, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x1b, 0x0a, 0x09, 0x66, 0x69, 0x6c, 0x65, 0x5f, 0x6e,
+	0x61, 0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x66, 0x69, 0x6c, 0x65, 0x4e,
+	0x61, 0x6d, 0x65, 0x12, 0x49, 0x0a, 0x07, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x18, 0x04,
+	0x20, 0x03, 0x28, 0x0b, 0x32, 0x2f, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f,
+	0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x54, 0x65, 0x73, 0x74, 0x44, 0x61, 0x74, 0x65, 0x4d, 0x65,
+	0x74, 0x72, 0x69, 0x63, 0x44, 0x61, 0x74, 0x61, 0x2e, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73,
+	0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x07, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x12, 0x3b,
+	0x0a, 0x08, 0x76, 0x61, 0x72, 0x69, 0x61, 0x6e, 0x74, 0x73, 0x18, 0x05, 0x20, 0x03, 0x28, 0x0b,
+	0x32, 0x1f, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
+	0x73, 0x2e, 0x54, 0x65, 0x73, 0x74, 0x56, 0x61, 0x72, 0x69, 0x61, 0x6e, 0x74, 0x44, 0x61, 0x74,
+	0x61, 0x52, 0x08, 0x76, 0x61, 0x72, 0x69, 0x61, 0x6e, 0x74, 0x73, 0x1a, 0x5c, 0x0a, 0x0c, 0x4d,
+	0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b,
+	0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x36, 0x0a,
+	0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x74,
+	0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x54, 0x65,
+	0x73, 0x74, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x41, 0x72, 0x72, 0x61, 0x79, 0x52, 0x05,
+	0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0xe7, 0x01, 0x0a, 0x0f, 0x54, 0x65,
+	0x73, 0x74, 0x56, 0x61, 0x72, 0x69, 0x61, 0x6e, 0x74, 0x44, 0x61, 0x74, 0x61, 0x12, 0x14, 0x0a,
+	0x05, 0x73, 0x75, 0x69, 0x74, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x73, 0x75,
+	0x69, 0x74, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x65, 0x72, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x65, 0x72, 0x12, 0x46, 0x0a,
+	0x07, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x2c,
+	0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e,
+	0x54, 0x65, 0x73, 0x74, 0x56, 0x61, 0x72, 0x69, 0x61, 0x6e, 0x74, 0x44, 0x61, 0x74, 0x61, 0x2e,
+	0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x07, 0x6d, 0x65,
+	0x74, 0x72, 0x69, 0x63, 0x73, 0x1a, 0x5c, 0x0a, 0x0c, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73,
+	0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x36, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65,
+	0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x54, 0x65, 0x73, 0x74, 0x4d, 0x65, 0x74, 0x72,
+	0x69, 0x63, 0x73, 0x41, 0x72, 0x72, 0x61, 0x79, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a,
+	0x02, 0x38, 0x01, 0x22, 0x47, 0x0a, 0x10, 0x54, 0x65, 0x73, 0x74, 0x4d, 0x65, 0x74, 0x72, 0x69,
+	0x63, 0x73, 0x41, 0x72, 0x72, 0x61, 0x79, 0x12, 0x33, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18,
+	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73,
+	0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x54, 0x65, 0x73, 0x74, 0x4d, 0x65, 0x74, 0x72, 0x69,
+	0x63, 0x73, 0x44, 0x61, 0x74, 0x61, 0x52, 0x04, 0x64, 0x61, 0x74, 0x61, 0x22, 0x71, 0x0a, 0x0f,
+	0x54, 0x65, 0x73, 0x74, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x44, 0x61, 0x74, 0x61, 0x12,
+	0x3b, 0x0a, 0x0b, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0e, 0x32, 0x1a, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f,
+	0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x54, 0x79, 0x70, 0x65,
+	0x52, 0x0a, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x54, 0x79, 0x70, 0x65, 0x12, 0x21, 0x0a, 0x0c,
+	0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x5f, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x01, 0x52, 0x0b, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x22,
+	0x98, 0x02, 0x0a, 0x1c, 0x46, 0x65, 0x74, 0x63, 0x68, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x6f,
+	0x72, 0x79, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x12, 0x1c, 0x0a, 0x09, 0x63, 0x6f, 0x6d, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x6f, 0x6d, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x12, 0x2e,
+	0x0a, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16,
+	0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e,
+	0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x52, 0x06, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x12, 0x14,
+	0x0a, 0x05, 0x64, 0x61, 0x74, 0x65, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x09, 0x52, 0x05, 0x64,
+	0x61, 0x74, 0x65, 0x73, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x61, 0x72, 0x65, 0x6e, 0x74, 0x49, 0x64,
+	0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x61, 0x72, 0x65, 0x6e, 0x74, 0x49, 0x64,
+	0x12, 0x16, 0x0a, 0x06, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x06, 0x66, 0x69, 0x6c, 0x74, 0x65, 0x72, 0x12, 0x2a, 0x0a, 0x04, 0x73, 0x6f, 0x72, 0x74,
+	0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65,
+	0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x53, 0x6f, 0x72, 0x74, 0x42, 0x79, 0x52, 0x04,
+	0x73, 0x6f, 0x72, 0x74, 0x12, 0x34, 0x0a, 0x07, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x18,
+	0x07, 0x20, 0x03, 0x28, 0x0e, 0x32, 0x1a, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73,
+	0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x54, 0x79, 0x70,
+	0x65, 0x52, 0x07, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x22, 0x52, 0x0a, 0x1d, 0x46, 0x65,
+	0x74, 0x63, 0x68, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x4d, 0x65, 0x74, 0x72,
+	0x69, 0x63, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x31, 0x0a, 0x04, 0x6e,
+	0x6f, 0x64, 0x65, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x74, 0x65, 0x73, 0x74,
+	0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x44, 0x69, 0x72, 0x65, 0x63,
+	0x74, 0x6f, 0x72, 0x79, 0x4e, 0x6f, 0x64, 0x65, 0x52, 0x04, 0x6e, 0x6f, 0x64, 0x65, 0x22, 0x8e,
+	0x02, 0x0a, 0x0d, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x4e, 0x6f, 0x64, 0x65,
+	0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64,
+	0x12, 0x35, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x21,
+	0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e,
+	0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x4e, 0x6f, 0x64, 0x65, 0x54, 0x79, 0x70,
+	0x65, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x44, 0x0a, 0x07, 0x6d,
+	0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x2a, 0x2e, 0x74,
+	0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x44, 0x69,
+	0x72, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x4e, 0x6f, 0x64, 0x65, 0x2e, 0x4d, 0x65, 0x74, 0x72,
+	0x69, 0x63, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x07, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63,
+	0x73, 0x1a, 0x5c, 0x0a, 0x0c, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x45, 0x6e, 0x74, 0x72,
+	0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03,
+	0x6b, 0x65, 0x79, 0x12, 0x36, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x20, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72,
+	0x63, 0x65, 0x73, 0x2e, 0x54, 0x65, 0x73, 0x74, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x41,
+	0x72, 0x72, 0x61, 0x79, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x2a,
+	0x5f, 0x0a, 0x0a, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x54, 0x79, 0x70, 0x65, 0x12, 0x0c, 0x0a,
+	0x08, 0x4e, 0x55, 0x4d, 0x5f, 0x52, 0x55, 0x4e, 0x53, 0x10, 0x00, 0x12, 0x10, 0x0a, 0x0c, 0x4e,
+	0x55, 0x4d, 0x5f, 0x46, 0x41, 0x49, 0x4c, 0x55, 0x52, 0x45, 0x53, 0x10, 0x01, 0x12, 0x0f, 0x0a,
+	0x0b, 0x41, 0x56, 0x47, 0x5f, 0x52, 0x55, 0x4e, 0x54, 0x49, 0x4d, 0x45, 0x10, 0x02, 0x12, 0x11,
+	0x0a, 0x0d, 0x54, 0x4f, 0x54, 0x41, 0x4c, 0x5f, 0x52, 0x55, 0x4e, 0x54, 0x49, 0x4d, 0x45, 0x10,
+	0x03, 0x12, 0x0d, 0x0a, 0x09, 0x41, 0x56, 0x47, 0x5f, 0x43, 0x4f, 0x52, 0x45, 0x53, 0x10, 0x04,
+	0x2a, 0x85, 0x01, 0x0a, 0x08, 0x53, 0x6f, 0x72, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x0d, 0x0a,
+	0x09, 0x53, 0x4f, 0x52, 0x54, 0x5f, 0x4e, 0x41, 0x4d, 0x45, 0x10, 0x00, 0x12, 0x11, 0x0a, 0x0d,
+	0x53, 0x4f, 0x52, 0x54, 0x5f, 0x4e, 0x55, 0x4d, 0x5f, 0x52, 0x55, 0x4e, 0x53, 0x10, 0x01, 0x12,
+	0x15, 0x0a, 0x11, 0x53, 0x4f, 0x52, 0x54, 0x5f, 0x4e, 0x55, 0x4d, 0x5f, 0x46, 0x41, 0x49, 0x4c,
+	0x55, 0x52, 0x45, 0x53, 0x10, 0x02, 0x12, 0x14, 0x0a, 0x10, 0x53, 0x4f, 0x52, 0x54, 0x5f, 0x41,
+	0x56, 0x47, 0x5f, 0x52, 0x55, 0x4e, 0x54, 0x49, 0x4d, 0x45, 0x10, 0x03, 0x12, 0x16, 0x0a, 0x12,
+	0x53, 0x4f, 0x52, 0x54, 0x5f, 0x54, 0x4f, 0x54, 0x41, 0x4c, 0x5f, 0x52, 0x55, 0x4e, 0x54, 0x49,
+	0x4d, 0x45, 0x10, 0x04, 0x12, 0x12, 0x0a, 0x0e, 0x53, 0x4f, 0x52, 0x54, 0x5f, 0x41, 0x56, 0x47,
+	0x5f, 0x43, 0x4f, 0x52, 0x45, 0x53, 0x10, 0x05, 0x2a, 0x26, 0x0a, 0x06, 0x50, 0x65, 0x72, 0x69,
+	0x6f, 0x64, 0x12, 0x07, 0x0a, 0x03, 0x44, 0x41, 0x59, 0x10, 0x00, 0x12, 0x08, 0x0a, 0x04, 0x57,
+	0x45, 0x45, 0x4b, 0x10, 0x01, 0x12, 0x09, 0x0a, 0x05, 0x4d, 0x4f, 0x4e, 0x54, 0x48, 0x10, 0x02,
+	0x2a, 0x30, 0x0a, 0x11, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x4e, 0x6f, 0x64,
+	0x65, 0x54, 0x79, 0x70, 0x65, 0x12, 0x0d, 0x0a, 0x09, 0x44, 0x49, 0x52, 0x45, 0x43, 0x54, 0x4f,
+	0x52, 0x59, 0x10, 0x00, 0x12, 0x0c, 0x0a, 0x08, 0x46, 0x49, 0x4c, 0x45, 0x4e, 0x41, 0x4d, 0x45,
+	0x10, 0x01, 0x32, 0xb2, 0x03, 0x0a, 0x05, 0x53, 0x74, 0x61, 0x74, 0x73, 0x12, 0x6b, 0x0a, 0x12,
 	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x54, 0x61, 0x62,
 	0x6c, 0x65, 0x12, 0x29, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72,
 	0x63, 0x65, 0x73, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63,
 	0x73, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2a, 0x2e,
 	0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x55,
 	0x70, 0x64, 0x61, 0x74, 0x65, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x54, 0x61, 0x62, 0x6c,
-	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x24, 0x5a, 0x22, 0x69, 0x6e, 0x66,
-	0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x74, 0x65, 0x73,
-	0x74, 0x2d, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2f, 0x61, 0x70, 0x69, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5f, 0x0a, 0x0e, 0x4c, 0x69, 0x73,
+	0x74, 0x43, 0x6f, 0x6d, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x73, 0x12, 0x25, 0x2e, 0x74, 0x65,
+	0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x4c, 0x69, 0x73,
+	0x74, 0x43, 0x6f, 0x6d, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x26, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72,
+	0x63, 0x65, 0x73, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x43, 0x6f, 0x6d, 0x70, 0x6f, 0x6e, 0x65, 0x6e,
+	0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x65, 0x0a, 0x10, 0x46, 0x65,
+	0x74, 0x63, 0x68, 0x54, 0x65, 0x73, 0x74, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x12, 0x27,
+	0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e,
+	0x46, 0x65, 0x74, 0x63, 0x68, 0x54, 0x65, 0x73, 0x74, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72,
+	0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x46, 0x65, 0x74, 0x63, 0x68, 0x54, 0x65,
+	0x73, 0x74, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x74, 0x0a, 0x15, 0x46, 0x65, 0x74, 0x63, 0x68, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74,
+	0x6f, 0x72, 0x79, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x12, 0x2c, 0x2e, 0x74, 0x65, 0x73,
+	0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x46, 0x65, 0x74, 0x63,
+	0x68, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63,
+	0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2d, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f,
+	0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2e, 0x46, 0x65, 0x74, 0x63, 0x68, 0x44,
+	0x69, 0x72, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79, 0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x24, 0x5a, 0x22, 0x69, 0x6e, 0x66, 0x72, 0x61,
+	0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x74, 0x65, 0x73, 0x74, 0x2d,
+	0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x2f, 0x61, 0x70, 0x69, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -166,19 +1359,64 @@ func file_infra_appengine_test_resources_api_service_proto_rawDescGZIP() []byte 
 	return file_infra_appengine_test_resources_api_service_proto_rawDescData
 }
 
-var file_infra_appengine_test_resources_api_service_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_infra_appengine_test_resources_api_service_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_infra_appengine_test_resources_api_service_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_infra_appengine_test_resources_api_service_proto_goTypes = []interface{}{
-	(*UpdateMetricsTableRequest)(nil),  // 0: test_resources.UpdateMetricsTableRequest
-	(*UpdateMetricsTableResponse)(nil), // 1: test_resources.UpdateMetricsTableResponse
+	(MetricType)(0),                       // 0: test_resources.MetricType
+	(SortType)(0),                         // 1: test_resources.SortType
+	(Period)(0),                           // 2: test_resources.Period
+	(DirectoryNodeType)(0),                // 3: test_resources.DirectoryNodeType
+	(*UpdateMetricsTableRequest)(nil),     // 4: test_resources.UpdateMetricsTableRequest
+	(*UpdateMetricsTableResponse)(nil),    // 5: test_resources.UpdateMetricsTableResponse
+	(*ListComponentsRequest)(nil),         // 6: test_resources.ListComponentsRequest
+	(*ListComponentsResponse)(nil),        // 7: test_resources.ListComponentsResponse
+	(*SortBy)(nil),                        // 8: test_resources.SortBy
+	(*FetchTestMetricsRequest)(nil),       // 9: test_resources.FetchTestMetricsRequest
+	(*FetchTestMetricsResponse)(nil),      // 10: test_resources.FetchTestMetricsResponse
+	(*TestDateMetricData)(nil),            // 11: test_resources.TestDateMetricData
+	(*TestVariantData)(nil),               // 12: test_resources.TestVariantData
+	(*TestMetricsArray)(nil),              // 13: test_resources.TestMetricsArray
+	(*TestMetricsData)(nil),               // 14: test_resources.TestMetricsData
+	(*FetchDirectoryMetricsRequest)(nil),  // 15: test_resources.FetchDirectoryMetricsRequest
+	(*FetchDirectoryMetricsResponse)(nil), // 16: test_resources.FetchDirectoryMetricsResponse
+	(*DirectoryNode)(nil),                 // 17: test_resources.DirectoryNode
+	nil,                                   // 18: test_resources.TestDateMetricData.MetricsEntry
+	nil,                                   // 19: test_resources.TestVariantData.MetricsEntry
+	nil,                                   // 20: test_resources.DirectoryNode.MetricsEntry
 }
 var file_infra_appengine_test_resources_api_service_proto_depIdxs = []int32{
-	0, // 0: test_resources.Stats.UpdateMetricsTable:input_type -> test_resources.UpdateMetricsTableRequest
-	1, // 1: test_resources.Stats.UpdateMetricsTable:output_type -> test_resources.UpdateMetricsTableResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	1,  // 0: test_resources.SortBy.metric:type_name -> test_resources.SortType
+	2,  // 1: test_resources.FetchTestMetricsRequest.period:type_name -> test_resources.Period
+	0,  // 2: test_resources.FetchTestMetricsRequest.metrics:type_name -> test_resources.MetricType
+	8,  // 3: test_resources.FetchTestMetricsRequest.sort:type_name -> test_resources.SortBy
+	11, // 4: test_resources.FetchTestMetricsResponse.tests:type_name -> test_resources.TestDateMetricData
+	18, // 5: test_resources.TestDateMetricData.metrics:type_name -> test_resources.TestDateMetricData.MetricsEntry
+	12, // 6: test_resources.TestDateMetricData.variants:type_name -> test_resources.TestVariantData
+	19, // 7: test_resources.TestVariantData.metrics:type_name -> test_resources.TestVariantData.MetricsEntry
+	14, // 8: test_resources.TestMetricsArray.data:type_name -> test_resources.TestMetricsData
+	0,  // 9: test_resources.TestMetricsData.metric_type:type_name -> test_resources.MetricType
+	2,  // 10: test_resources.FetchDirectoryMetricsRequest.period:type_name -> test_resources.Period
+	8,  // 11: test_resources.FetchDirectoryMetricsRequest.sort:type_name -> test_resources.SortBy
+	0,  // 12: test_resources.FetchDirectoryMetricsRequest.metrics:type_name -> test_resources.MetricType
+	17, // 13: test_resources.FetchDirectoryMetricsResponse.node:type_name -> test_resources.DirectoryNode
+	3,  // 14: test_resources.DirectoryNode.type:type_name -> test_resources.DirectoryNodeType
+	20, // 15: test_resources.DirectoryNode.metrics:type_name -> test_resources.DirectoryNode.MetricsEntry
+	13, // 16: test_resources.TestDateMetricData.MetricsEntry.value:type_name -> test_resources.TestMetricsArray
+	13, // 17: test_resources.TestVariantData.MetricsEntry.value:type_name -> test_resources.TestMetricsArray
+	13, // 18: test_resources.DirectoryNode.MetricsEntry.value:type_name -> test_resources.TestMetricsArray
+	4,  // 19: test_resources.Stats.UpdateMetricsTable:input_type -> test_resources.UpdateMetricsTableRequest
+	6,  // 20: test_resources.Stats.ListComponents:input_type -> test_resources.ListComponentsRequest
+	9,  // 21: test_resources.Stats.FetchTestMetrics:input_type -> test_resources.FetchTestMetricsRequest
+	15, // 22: test_resources.Stats.FetchDirectoryMetrics:input_type -> test_resources.FetchDirectoryMetricsRequest
+	5,  // 23: test_resources.Stats.UpdateMetricsTable:output_type -> test_resources.UpdateMetricsTableResponse
+	7,  // 24: test_resources.Stats.ListComponents:output_type -> test_resources.ListComponentsResponse
+	10, // 25: test_resources.Stats.FetchTestMetrics:output_type -> test_resources.FetchTestMetricsResponse
+	16, // 26: test_resources.Stats.FetchDirectoryMetrics:output_type -> test_resources.FetchDirectoryMetricsResponse
+	23, // [23:27] is the sub-list for method output_type
+	19, // [19:23] is the sub-list for method input_type
+	19, // [19:19] is the sub-list for extension type_name
+	19, // [19:19] is the sub-list for extension extendee
+	0,  // [0:19] is the sub-list for field type_name
 }
 
 func init() { file_infra_appengine_test_resources_api_service_proto_init() }
@@ -211,19 +1449,164 @@ func file_infra_appengine_test_resources_api_service_proto_init() {
 				return nil
 			}
 		}
+		file_infra_appengine_test_resources_api_service_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListComponentsRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_test_resources_api_service_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListComponentsResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_test_resources_api_service_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SortBy); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_test_resources_api_service_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*FetchTestMetricsRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_test_resources_api_service_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*FetchTestMetricsResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_test_resources_api_service_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TestDateMetricData); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_test_resources_api_service_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TestVariantData); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_test_resources_api_service_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TestMetricsArray); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_test_resources_api_service_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*TestMetricsData); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_test_resources_api_service_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*FetchDirectoryMetricsRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_test_resources_api_service_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*FetchDirectoryMetricsResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_test_resources_api_service_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DirectoryNode); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_infra_appengine_test_resources_api_service_proto_rawDesc,
-			NumEnums:      0,
-			NumMessages:   2,
+			NumEnums:      4,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_infra_appengine_test_resources_api_service_proto_goTypes,
 		DependencyIndexes: file_infra_appengine_test_resources_api_service_proto_depIdxs,
+		EnumInfos:         file_infra_appengine_test_resources_api_service_proto_enumTypes,
 		MessageInfos:      file_infra_appengine_test_resources_api_service_proto_msgTypes,
 	}.Build()
 	File_infra_appengine_test_resources_api_service_proto = out.File
@@ -244,7 +1627,16 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type StatsClient interface {
+	// Updates metrics for the given time period. This will be used for
+	// backfilling when the cron job wasn't run
 	UpdateMetricsTable(ctx context.Context, in *UpdateMetricsTableRequest, opts ...grpc.CallOption) (*UpdateMetricsTableResponse, error)
+	// Gets all the components as well as a list of all the components the user's
+	// team is responsible for
+	ListComponents(ctx context.Context, in *ListComponentsRequest, opts ...grpc.CallOption) (*ListComponentsResponse, error)
+	// Gets information about a test. This includes all the variants of that test
+	FetchTestMetrics(ctx context.Context, in *FetchTestMetricsRequest, opts ...grpc.CallOption) (*FetchTestMetricsResponse, error)
+	// Gets information about a file or directory.
+	FetchDirectoryMetrics(ctx context.Context, in *FetchDirectoryMetricsRequest, opts ...grpc.CallOption) (*FetchDirectoryMetricsResponse, error)
 }
 type statsPRPCClient struct {
 	client *prpc.Client
@@ -257,6 +1649,33 @@ func NewStatsPRPCClient(client *prpc.Client) StatsClient {
 func (c *statsPRPCClient) UpdateMetricsTable(ctx context.Context, in *UpdateMetricsTableRequest, opts ...grpc.CallOption) (*UpdateMetricsTableResponse, error) {
 	out := new(UpdateMetricsTableResponse)
 	err := c.client.Call(ctx, "test_resources.Stats", "UpdateMetricsTable", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *statsPRPCClient) ListComponents(ctx context.Context, in *ListComponentsRequest, opts ...grpc.CallOption) (*ListComponentsResponse, error) {
+	out := new(ListComponentsResponse)
+	err := c.client.Call(ctx, "test_resources.Stats", "ListComponents", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *statsPRPCClient) FetchTestMetrics(ctx context.Context, in *FetchTestMetricsRequest, opts ...grpc.CallOption) (*FetchTestMetricsResponse, error) {
+	out := new(FetchTestMetricsResponse)
+	err := c.client.Call(ctx, "test_resources.Stats", "FetchTestMetrics", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *statsPRPCClient) FetchDirectoryMetrics(ctx context.Context, in *FetchDirectoryMetricsRequest, opts ...grpc.CallOption) (*FetchDirectoryMetricsResponse, error) {
+	out := new(FetchDirectoryMetricsResponse)
+	err := c.client.Call(ctx, "test_resources.Stats", "FetchDirectoryMetrics", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -280,9 +1699,45 @@ func (c *statsClient) UpdateMetricsTable(ctx context.Context, in *UpdateMetricsT
 	return out, nil
 }
 
+func (c *statsClient) ListComponents(ctx context.Context, in *ListComponentsRequest, opts ...grpc.CallOption) (*ListComponentsResponse, error) {
+	out := new(ListComponentsResponse)
+	err := c.cc.Invoke(ctx, "/test_resources.Stats/ListComponents", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *statsClient) FetchTestMetrics(ctx context.Context, in *FetchTestMetricsRequest, opts ...grpc.CallOption) (*FetchTestMetricsResponse, error) {
+	out := new(FetchTestMetricsResponse)
+	err := c.cc.Invoke(ctx, "/test_resources.Stats/FetchTestMetrics", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *statsClient) FetchDirectoryMetrics(ctx context.Context, in *FetchDirectoryMetricsRequest, opts ...grpc.CallOption) (*FetchDirectoryMetricsResponse, error) {
+	out := new(FetchDirectoryMetricsResponse)
+	err := c.cc.Invoke(ctx, "/test_resources.Stats/FetchDirectoryMetrics", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StatsServer is the server API for Stats service.
 type StatsServer interface {
+	// Updates metrics for the given time period. This will be used for
+	// backfilling when the cron job wasn't run
 	UpdateMetricsTable(context.Context, *UpdateMetricsTableRequest) (*UpdateMetricsTableResponse, error)
+	// Gets all the components as well as a list of all the components the user's
+	// team is responsible for
+	ListComponents(context.Context, *ListComponentsRequest) (*ListComponentsResponse, error)
+	// Gets information about a test. This includes all the variants of that test
+	FetchTestMetrics(context.Context, *FetchTestMetricsRequest) (*FetchTestMetricsResponse, error)
+	// Gets information about a file or directory.
+	FetchDirectoryMetrics(context.Context, *FetchDirectoryMetricsRequest) (*FetchDirectoryMetricsResponse, error)
 }
 
 // UnimplementedStatsServer can be embedded to have forward compatible implementations.
@@ -291,6 +1746,15 @@ type UnimplementedStatsServer struct {
 
 func (*UnimplementedStatsServer) UpdateMetricsTable(context.Context, *UpdateMetricsTableRequest) (*UpdateMetricsTableResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMetricsTable not implemented")
+}
+func (*UnimplementedStatsServer) ListComponents(context.Context, *ListComponentsRequest) (*ListComponentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListComponents not implemented")
+}
+func (*UnimplementedStatsServer) FetchTestMetrics(context.Context, *FetchTestMetricsRequest) (*FetchTestMetricsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchTestMetrics not implemented")
+}
+func (*UnimplementedStatsServer) FetchDirectoryMetrics(context.Context, *FetchDirectoryMetricsRequest) (*FetchDirectoryMetricsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchDirectoryMetrics not implemented")
 }
 
 func RegisterStatsServer(s prpc.Registrar, srv StatsServer) {
@@ -315,6 +1779,60 @@ func _Stats_UpdateMetricsTable_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Stats_ListComponents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListComponentsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StatsServer).ListComponents(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/test_resources.Stats/ListComponents",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StatsServer).ListComponents(ctx, req.(*ListComponentsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Stats_FetchTestMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FetchTestMetricsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StatsServer).FetchTestMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/test_resources.Stats/FetchTestMetrics",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StatsServer).FetchTestMetrics(ctx, req.(*FetchTestMetricsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Stats_FetchDirectoryMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FetchDirectoryMetricsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StatsServer).FetchDirectoryMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/test_resources.Stats/FetchDirectoryMetrics",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StatsServer).FetchDirectoryMetrics(ctx, req.(*FetchDirectoryMetricsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Stats_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "test_resources.Stats",
 	HandlerType: (*StatsServer)(nil),
@@ -322,6 +1840,18 @@ var _Stats_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateMetricsTable",
 			Handler:    _Stats_UpdateMetricsTable_Handler,
+		},
+		{
+			MethodName: "ListComponents",
+			Handler:    _Stats_ListComponents_Handler,
+		},
+		{
+			MethodName: "FetchTestMetrics",
+			Handler:    _Stats_FetchTestMetrics_Handler,
+		},
+		{
+			MethodName: "FetchDirectoryMetrics",
+			Handler:    _Stats_FetchDirectoryMetrics_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
