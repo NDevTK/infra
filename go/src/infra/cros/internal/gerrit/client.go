@@ -50,6 +50,15 @@ type commitLog struct {
 	NextCommit string   `json:"next"`
 }
 
+type Change struct {
+	// This does not include all fields
+	ChangeNumber int `json:"_change_number"`
+}
+
+type changeLog struct {
+	Changes []Change `json:"changes"`
+}
+
 type Client interface {
 	FetchFilesFromGitiles(ctx context.Context, host, project, ref string, paths []string, timeoutOpts shared.Options) (*map[string]string, error)
 	DownloadFileFromGitiles(ctx context.Context, host, project, ref, path string, timeoutOpts shared.Options) (string, error)
@@ -59,6 +68,7 @@ type Client interface {
 	ListFiles(ctx context.Context, host, project, ref, path string) ([]string, error)
 	GetFileLog(ctx context.Context, host, project, ref, filepath string) ([]Commit, error)
 	QueryChanges(ctx context.Context, host string, query gerrit.ChangeQueryParams) ([]*gerrit.Change, error)
+	GetRelatedChanges(ctx context.Context, host string, changeNumber int) ([]Change, error)
 	SetReview(ctx context.Context, host, changeID string, review *gerrit.ReviewInput) (*gerrit.ReviewResult, error)
 	SubmitChange(ctx context.Context, host, changeID string) error
 }
@@ -389,6 +399,15 @@ func (c *ProdClient) GetFileLog(ctx context.Context, host, project, ref, filepat
 
 // QueryChanges queries a gerrit host for changes matching the supplied query.
 func (c *ProdClient) QueryChanges(ctx context.Context, host string, query gerrit.ChangeQueryParams) ([]*gerrit.Change, error) {
+	if c.isTestClient {
+		// Test data for TestGetRelatedChanges in client_test.go.
+		if query.Query == "change:4279218" {
+			return []*gerrit.Change{{
+				ID:              "chromium%2fsrc~main~Ia201b3605faefcc65cfbded4cf933f5d8f00d661",
+				CurrentRevision: "1c0bdaf5d67a03046f78c8ffef6b697ff3458c6e",
+			}}, nil
+		}
+	}
 	gc, err := c.getGerritClientForHost(host)
 	if err != nil {
 		return nil, err
@@ -398,6 +417,49 @@ func (c *ProdClient) QueryChanges(ctx context.Context, host string, query gerrit
 		return nil, err
 	}
 	return changes, nil
+}
+
+// GetRelatedChanges queries a gerrit host for related changes.
+// It returns a list of Changes describing the related changes.
+// Sorted by git commit order, newest to oldest. Empty if there are no related changes.
+func (c *ProdClient) GetRelatedChanges(ctx context.Context, host string, changeNumber int) ([]Change, error) {
+	if !strings.HasPrefix(host, "http") {
+		if c.isTestClient {
+			host = "http://" + host
+		} else {
+			host = "https://" + host
+		}
+	}
+	opt := gerrit.ChangeQueryParams{}
+	opt.Query = fmt.Sprintf("change:%d", changeNumber)
+	opt.Options = []string{"CURRENT_REVISION"}
+	changes, err := c.QueryChanges(ctx, host, opt)
+	if err != nil {
+		return nil, err
+	}
+	var log changeLog
+	for _, change := range changes {
+		changeID := change.ID
+		revision := change.CurrentRevision
+		url := fmt.Sprintf("%s/a/changes/%s/revisions/%s/related", host, changeID, revision)
+		res, err := c.authedClient.Get(url)
+		if err != nil {
+			return nil, err
+		}
+		body, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			return nil, err
+		}
+		body = []byte(strings.TrimPrefix(string(body), ")]}'"))
+		if err := json.Unmarshal(body, &log); err != nil {
+			return nil, err
+		}
+		// There should only be one change per changeNumber passed to c.QueryChanges.
+		if err == nil {
+			break
+		}
+	}
+	return log.Changes, nil
 }
 
 // SetReview applies labels/performs other review operations on the specified CL.

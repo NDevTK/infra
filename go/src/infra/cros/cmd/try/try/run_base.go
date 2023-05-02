@@ -14,11 +14,15 @@ import (
 	"strings"
 
 	"infra/cros/internal/cmd"
+	"infra/cros/internal/gerrit"
 	"infra/cros/lib/buildbucket"
 
 	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
 )
+
+const PatchRegexpPattern = `^crrev\.com\/([ci])\/(\d{7,8})$`
 
 type list []string
 
@@ -34,11 +38,13 @@ func (l *list) String() string {
 // tryRunBase contains data for a single `try` command run.
 type tryRunBase struct {
 	subcommands.CommandRunBase
-	stdoutLog *log.Logger
-	stderrLog *log.Logger
-	bbAddArgs []string
-	cmdRunner cmd.CommandRunner
-	bbClient  *buildbucket.Client
+	stdoutLog    *log.Logger
+	stderrLog    *log.Logger
+	authOpts     auth.Options
+	bbAddArgs    []string
+	cmdRunner    cmd.CommandRunner
+	bbClient     *buildbucket.Client
+	gerritClient gerrit.Client
 	// Used for testing.
 	skipProductionPrompt bool
 
@@ -85,7 +91,7 @@ func (t *tryRunBase) addPublishFlag() {
 // validate validates base args for the command.
 func (t *tryRunBase) validate() error {
 	if len(t.patches) > 0 {
-		patchSpec := regexp.MustCompile(`^crrev\.com\/[ci]\/\d{7,8}$`)
+		patchSpec := regexp.MustCompile(PatchRegexpPattern)
 		for _, patch := range t.patches {
 			if !patchSpec.MatchString(patch) {
 				return fmt.Errorf(`invalid patch "%s". patches must be of the format crrev.com/[ci]/<number>.`, patch)
@@ -111,6 +117,20 @@ func (t *tryRunBase) run(ctx context.Context) (int, error) {
 		return CmdError, err
 	}
 	return Success, nil
+}
+
+// createGerritClient creates an authenticated gerrit client.
+func (t *tryRunBase) createGerritClient(authOpts auth.Options) error {
+	ctx := context.Background()
+	authedClient, err := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts).Client()
+	if err != nil {
+		return errors.Annotate(err, "Please run `%s auth-login` and sign in with your @google.com account", os.Args[0]).Err()
+	}
+	if t.gerritClient, err = gerrit.NewClient(authedClient); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // promptYes prompts the user yes or no and returns the response as a boolean.

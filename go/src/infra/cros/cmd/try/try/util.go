@@ -46,3 +46,8 @@ func patchListToBBAddArgs(patches []string) []string {
 	}
 	return bbAddArgs
 }
+
+// formatPatchURL formats a changeNumber and gerritInstance into a patch string like "crrev.com/c/1234567".
+func formatPatchURL(gerritInstance string, changeNumber int) string {
+	return fmt.Sprintf("crrev.com/%s/%d", gerritInstance, changeNumber)
+}

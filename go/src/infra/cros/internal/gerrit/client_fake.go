@@ -47,6 +47,8 @@ type MockClient struct {
 	ExpectedReview map[string]*gerrit.ReviewInput
 	// Indexed by change ID.
 	ExpectedSubmit map[string]bool
+	// Maps host and changeNumber to list of changes
+	ExpectedRelatedChanges map[string]map[int][]Change
 }
 
 func contains(arr []string, str string) bool {
@@ -180,6 +182,19 @@ func (c *MockClient) QueryChanges(ctx context.Context, host string, query gerrit
 		c.T.Fatalf("unexpected QueryChanges for %+v", query.Query)
 	}
 	return changes, nil
+}
+
+// GetRelatedChanges queries a gerrit host for changes related to the supplied change number
+func (c *MockClient) GetRelatedChanges(ctx context.Context, host string, changeNumber int) ([]Change, error) {
+	expectedChanges, ok := c.ExpectedRelatedChanges[host]
+	if !ok {
+		return []Change{}, fmt.Errorf("unexpected GetRelatedChange for host %s", host)
+	}
+	relatedChanges, ok := expectedChanges[changeNumber]
+	if !ok {
+		return []Change{}, fmt.Errorf("unexpected GetRelatedChange for change # %d and host %s", changeNumber, host)
+	}
+	return relatedChanges, nil
 }
 
 // SetReview applies labels/performs other review operations on the specified CL.

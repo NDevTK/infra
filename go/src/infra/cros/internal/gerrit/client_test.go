@@ -393,3 +393,49 @@ func TestGetFileLog(t *testing.T) {
 	}
 	assert.Assert(t, reflect.DeepEqual(commits, expectedCommits))
 }
+
+const relatedChangeJSON = `)]}'
+{
+	"changes": [
+	  {
+		"project": "chromiumos/third_party/kernel",
+		"change_id": "Ibba6f4419e959d123ade8d39b2392207b483ec4f",
+		"_change_number": 4279218,
+		"_revision_number": 1,
+		"_current_revision_number": 1,
+		"status": "NEW"
+	  },
+	  {
+		"project": "chromiumos/third_party/kernel",
+		"change_id": "I3d5850a72293ee30e0c8159be1b5e5781d6a9160",
+		"_change_number": 4279217,
+		"_revision_number": 1,
+		"_current_revision_number": 1,
+		"status": "NEW"
+	  }
+	]
+}`
+
+func TestGetRelatedChanges(t *testing.T) {
+	expectedPath := "/a/changes/chromium/src~main~Ia201b3605faefcc65cfbded4cf933f5d8f00d661/revisions/1c0bdaf5d67a03046f78c8ffef6b697ff3458c6e/related"
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != expectedPath {
+			t.Errorf("Expected to request '%s', got: %s", expectedPath, r.URL.Path)
+		}
+		w.WriteHeader(http.StatusOK)
+		_, err := w.Write([]byte(relatedChangeJSON))
+		assert.NilError(t, err)
+	}))
+	defer server.Close()
+
+	ctx := context.Background()
+	gc := &ProdClient{
+		isTestClient: true,
+		authedClient: &http.Client{},
+	}
+	changes, err := gc.GetRelatedChanges(ctx, server.URL, 4279218)
+	assert.NilError(t, err)
+
+	expectedChanges := []Change{{4279218}, {4279217}}
+	assert.Assert(t, reflect.DeepEqual(changes, expectedChanges))
+}

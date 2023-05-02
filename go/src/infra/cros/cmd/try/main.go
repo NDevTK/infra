@@ -12,23 +12,32 @@ import (
 	"infra/cros/cmd/try/try"
 
 	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/auth/client/authcli"
+	"go.chromium.org/luci/common/api/gerrit"
 	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
 
-func newApplication() *cli.Application {
+func newApplication(authOpts auth.Options) *cli.Application {
 	return &cli.Application{
 		Name:  "try",
 		Title: "cros try CLI",
 		Commands: []*subcommands.Command{
 			subcommands.CmdHelp,
-			try.GetCmdRelease(),
+			try.GetCmdRelease(authOpts),
 			try.GetCmdRetry(),
 			try.GetCmdFirmware(),
+			authcli.SubcommandInfo(authOpts, "auth-info", false),
+			authcli.SubcommandLogin(authOpts, "auth-login", false),
+			authcli.SubcommandLogout(authOpts, "auth-logout", false),
 		},
 	}
 }
 
 // Main is the main entrypoint to the application.
 func main() {
-	os.Exit(subcommands.Run(newApplication(), nil))
+	opts := chromeinfra.DefaultAuthOptions()
+	opts.Scopes = append(opts.Scopes, gerrit.OAuthScope)
+	os.Exit(subcommands.Run(newApplication(opts), nil))
 }
