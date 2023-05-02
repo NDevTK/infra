@@ -24,6 +24,7 @@ import_utils.FixImports()
 
 import gae_ts_mon
 
+import redirect
 import registerpages
 from framework import sorting
 from services import service_manager
@@ -45,6 +46,9 @@ sorting.InitializeArtValues(services)
 
 app = flask.Flask(__name__)
 app.wsgi_app = google.appengine.api.wrap_wsgi_app(app.wsgi_app)
+
+redirect_app = redirect.GenerateRedirectApp()
+app.wsgi_app = redirect.RedirectMiddleware(app.wsgi_app, redirect_app.wsgi_app)
 
 registerpages.ServletRegistry().Register(services, app)
 registerpages.RegisterEndpointsUrls(app)
