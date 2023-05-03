@@ -71,6 +71,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dff4b7bf_812523d6",
+        "filename": "3pp/intel_gen_6_to_12_drivers/3pp.pb",
+        "patchSetId": 12
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2023-05-03T23:47:23Z",
+      "side": 1,
+      "message": "I\u0027m happy to switch to not using `fetch_checkout_workflow` once checksum verification is better supported.",
+      "parentUuid": "22962fae_dae6f0f6",
+      "revId": "bfe9c349df80b8009c8fc9d71b0279aef8174949",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e53edb7a_2224deda",
