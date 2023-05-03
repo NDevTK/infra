@@ -58,6 +58,9 @@ type GitTilesInterfaceFactory func(ctx context.Context, gitilesHost string) (Git
 // HwidInterfaceFactory is a constructor for a HWIDClient
 type HwidInterfaceFactory func(ctx context.Context) (hwid.ClientInterface, error)
 
+// DeviceConfigFactory is a constructor for a DeviceConfigClient
+type DeviceConfigFactory func(ctx context.Context) (DeviceConfigClient, error)
+
 // InterfaceFactory provides a collection of interfaces to external clients.
 type InterfaceFactory struct {
 	cfgInterfaceFactory           CfgInterfaceFactory
@@ -66,6 +69,7 @@ type InterfaceFactory struct {
 	gitInterfaceFactory           GitInterfaceFactory
 	hwidInterfaceFactory          HwidInterfaceFactory
 	gitTilesInterfaceFactory      GitTilesInterfaceFactory
+	deviceConfigFactory           DeviceConfigFactory
 }
 
 // CrosInventoryClient refers to the fake inventory v2 client
@@ -93,6 +97,7 @@ func WithServerInterface(ctx context.Context) context.Context {
 		gitInterfaceFactory:           gitInterfaceFactoryImpl,
 		gitTilesInterfaceFactory:      gitTilesInterfaceFactoryImpl,
 		hwidInterfaceFactory:          hwidInterfaceFactoryImpl,
+		deviceConfigFactory:           deviceConfigFactoryImpl,
 	})
 }
 
@@ -210,4 +215,16 @@ func hwidInterfaceFactoryImpl(ctx context.Context) (hwid.ClientInterface, error)
 	return &hwid.Client{
 		Hc: &http.Client{Transport: t},
 	}, nil
+}
+
+// NewDeviceConfigInterfaceFactory creates a new device config client
+func (es *InterfaceFactory) NewDeviceConfigInterfaceFactory(ctx context.Context) (DeviceConfigClient, error) {
+	if es.deviceConfigFactory == nil {
+		es.deviceConfigFactory = deviceConfigFactoryImpl
+	}
+	return es.deviceConfigFactory(ctx)
+}
+
+func deviceConfigFactoryImpl(ctx context.Context) (DeviceConfigClient, error) {
+	return &DualDeviceConfigClient{}, nil
 }

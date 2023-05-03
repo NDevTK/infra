@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,7 @@ func WithTestingContext(ctx context.Context) context.Context {
 			gitInterfaceFactory:           fakeGitInterfaceFactory,
 			gitTilesInterfaceFactory:      fakeGitTilesInterfaceFactory,
 			hwidInterfaceFactory:          fakeHwidInterfaceFactory,
+			deviceConfigFactory:           fakeDeviceConfigFactory,
 		}
 		return context.WithValue(ctx, InterfaceFactoryKey, es)
 	}
@@ -54,4 +55,8 @@ func fakeGitTilesInterfaceFactory(ctx context.Context, gitilesHost string) (GitT
 
 func fakeHwidInterfaceFactory(ctx context.Context) (hwid.ClientInterface, error) {
 	return &fake.HwidClient{}, nil
+}
+
+func fakeDeviceConfigFactory(ctx context.Context) (DeviceConfigClient, error) {
+	return &fake.DeviceConfigClient{}, nil
 }
