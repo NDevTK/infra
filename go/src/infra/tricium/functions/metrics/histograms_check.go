@@ -48,7 +48,7 @@ const (
 	singleElementEnumWarning     = `[WARNING] It looks like this is an enumerated histogram that contains only a single bucket. UMA metrics are difficult to interpret in isolation, so please either add one or more additional buckets that can serve as a baseline for comparison, or document what other metric should be used as a baseline during analysis. https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#enum-histograms.`
 	SuffixesDeprecationWarning   = `[WARNING]: The <histogram_suffixes> syntax is deprecated. If you're adding a new list of suffixes, please use patterned histograms instead. If you're modifying an existing list of suffixes, please consider migrating that list to use patterned histograms. See https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#patterned-histograms.`
 	osxNamespaceDeprecationError = `[ERROR] The namespace "OSX" is deprecated. Prefer adding new Mac histograms to the "Mac" namespace.`
-	removedHistogramInfo         = `[Info] The following histograms were removed without an obsoletion message: %s. You can add obsoletion messages by adding "OBSOLETE_HISTOGRAM[histogram name]=obsoletion message" tags in the CL description.`
+	removedHistogramInfo         = `[INFO] The following histograms were removed without an obsoletion message: %s. You can add obsoletion messages by adding "OBSOLETE_HISTOGRAM[histogram name]=obsoletion message" tags in the CL description.`
 	obsoletionMessageError       = `[ERROR] An obsoletion message has been added to following histograms: %s, but they are not removed. Please double check if there're typos.`
 )
 
@@ -177,7 +177,7 @@ func analyzeCommitMessage(obsoletedHistograms map[string]bool) []*tricium.Data_C
 	if len(obsoletedWithoutRemovalHistograms) > 0 {
 		comment := &tricium.Data_Comment{
 			Category: category + "/Obsolete",
-			Message:  fmt.Sprintf(obsoletionMessageError, strings.Join(obsoletedWithoutRemovalHistograms, ",")),
+			Message:  fmt.Sprintf(obsoletionMessageError, strings.Join(obsoletedWithoutRemovalHistograms, ", ")),
 		}
 		comments = append(comments, comment)
 	}
@@ -528,7 +528,7 @@ func generateCommentsForRemovedHistograms(path string, newHistograms stringset.S
 	if len(removedWithoutMessageHistograms) > 0 {
 		comment := &tricium.Data_Comment{
 			Category: category + "/Removed",
-			Message:  fmt.Sprintf(removedHistogramInfo, strings.Join(removedWithoutMessageHistograms, ",")),
+			Message:  fmt.Sprintf(removedHistogramInfo, strings.Join(removedWithoutMessageHistograms, ", ")),
 			Path:     path,
 		}
 		comments = append(comments, comment)
