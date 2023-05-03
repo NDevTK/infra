@@ -80,6 +80,8 @@ http {
     '"upstream":"$upstream_addr",'
     '"upstream_cache_status":"$upstream_cache_status",'
     '"upstream_response_time":"$upstream_response_time",'
+    '"swarming_task_id": "$http_x_swarming_task_id",'
+    '"bbid": "$http_x_bbid",'
     '"x_forwarded_for":"$http_x_forwarded_for"'
   '}';
 
@@ -106,6 +108,9 @@ http {
     server_name           gs-cache;
     add_header            'Cache-Control' 'public, max-age=3153600';
     add_header            '{{ if .UpstreamHost }}X-Cache-Primary{{ else }}X-Cache-Secondary{{ end }}' '$upstream_cache_status';
+    add_header            'X-SWARMING-TASK-ID' '$http_x_swarming_task_id';
+    add_header            'X-BBID' '$http_x_bbid';
+    add_header            'X-CACHING-BACKEND' '$host';
     index  index.html index.htm index.php;
     access_log            /var/log/nginx/gs-cache.access.log main;
     access_log            /dev/stdout main_json;
@@ -130,6 +135,8 @@ http {
       proxy_redirect        off;
       proxy_http_version    1.1;
       proxy_set_header      Connection "";
+      proxy_set_header      X-SWARMING-TASK-ID $http_x_swarming_task_id;
+      proxy_set_header      X-BBID $http_x_bbid;
       proxy_set_header      X-Forwarded-Host {{ .VirtualIP }}:$server_port;
       proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_cache           google-storage;
@@ -150,6 +157,8 @@ http {
       proxy_redirect        off;
       proxy_http_version    1.1;
       proxy_set_header      Connection "";
+      proxy_set_header      X-SWARMING-TASK-ID $http_x_swarming_task_id;
+      proxy_set_header      X-BBID $http_x_bbid;
       proxy_set_header      X-Forwarded-Host {{ .VirtualIP }}:$server_port;
       proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_cache           google-storage;
@@ -169,6 +178,8 @@ http {
       proxy_redirect        off;
       proxy_http_version    1.1;
       proxy_set_header      Connection "";
+      proxy_set_header      X-SWARMING-TASK-ID $http_x_swarming_task_id;
+      proxy_set_header      X-BBID $http_x_bbid;
       proxy_set_header      X-Forwarded-Host {{ .VirtualIP }}:$server_port;
       proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_cache           google-storage;
@@ -188,6 +199,8 @@ http {
         proxy_redirect        off;
         proxy_http_version    1.1;
         proxy_set_header      Connection "";
+        proxy_set_header      X-SWARMING-TASK-ID $http_x_swarming_task_id;
+        proxy_set_header      X-BBID $http_x_bbid;
         proxy_set_header      X-Forwarded-Host {{ .VirtualIP }}:$server_port;
         proxy_set_header      X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_cache           google-storage;
