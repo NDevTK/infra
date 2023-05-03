@@ -16,6 +16,40 @@
       "message": "Seems upstream libzstd moved which block the try-job. I will take a look.",
       "revId": "bfe9c349df80b8009c8fc9d71b0279aef8174949",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5f06886b_802f7ff2",
+        "filename": "3pp/intel_gen_6_to_12_drivers/3pp.pb",
+        "patchSetId": 12
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2023-05-03T05:39:58Z",
+      "side": 1,
+      "message": "Is the use_fetch_checkout_workflow used for verifying checksum?",
+      "revId": "bfe9c349df80b8009c8fc9d71b0279aef8174949",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e53edb7a_2224deda",
+        "filename": "3pp/intel_gen_6_to_12_drivers/install.sh",
+        "patchSetId": 12
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2023-05-03T05:39:58Z",
+      "side": 1,
+      "message": "My understanding is if the build section in 3pp spec is omitted, the souece will be uploaded as the package and we don\u0027t need install.sh.\n\nhttps://source.chromium.org/chromium/infra/infra/+/main:recipes/recipe_modules/support_3pp/spec.proto;l\u003d304",
+      "revId": "bfe9c349df80b8009c8fc9d71b0279aef8174949",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
