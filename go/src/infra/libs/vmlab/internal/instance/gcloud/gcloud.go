@@ -182,7 +182,7 @@ func (g *gcloudInstanceApi) Create(req *api.CreateVmInstanceRequest) (*api.VmIns
 	}
 
 	ipAddress := gcloudResult[0].NetworkInterfaces[0].NetworkIP
-	if gcloudConfig.GetPublicIp() {
+	if gcloudConfig.GetPublicIp() && !gcloudConfig.GetAlwaysSshInternalIp() {
 		ipAddress = gcloudResult[0].NetworkInterfaces[0].AccessConfigs[0].NatIP
 	}
 

@@ -83,6 +83,11 @@ message Config {
     // If requested, ssh target will be the public IPv4 address, otherwise it
     // will be the GCE internal IP address.
     bool public_ip = 5;
+    // A boolean flag to determine what ip address to return in ssh target.
+    // Default is false and the public_ip flag is used for that decision.
+    // If true, ssh target will be the GCE internal IP address regardless of
+    // whether public_ip is requested.
+    bool always_ssh_internal_ip = 9;
     // GCE Image to be used to create instance. Mandatory.
     GceImage image = 6;
   }

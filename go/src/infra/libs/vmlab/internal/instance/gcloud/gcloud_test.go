@@ -126,6 +126,43 @@ func TestCreateWithPublicIpAddress(t *testing.T) {
 	}
 }
 
+func TestCreateWithPublicIpAddressAndSshInteralIp(t *testing.T) {
+	gcloud, _ := New()
+	mockExecCommand := mockCommander{
+		Commands: &[][]string{},
+		Outputs: &[][]byte{
+			CREATE_SUCCESS_OUTPUT,
+		},
+	}
+	execCommand = mockExecCommand
+	random = fakeRandomGenerator{}
+	instance, _ := gcloud.Create(
+		&api.CreateVmInstanceRequest{
+			Config: &api.Config{
+				Backend: &api.Config_GcloudBackend{
+					GcloudBackend: &api.Config_GCloudBackend{
+						Project:             "vmlab-project",
+						Zone:                "us-west-2",
+						MachineType:         "n2-standard-4",
+						InstancePrefix:      "vmlab-",
+						Network:             "default",
+						Subnet:              "default",
+						PublicIp:            true,
+						AlwaysSshInternalIp: true,
+						Image: &api.GceImage{
+							Project: "imagestorage-project",
+							Name:    "betty-arc-r-release-r110-111111111111",
+						},
+					},
+				},
+			},
+		})
+	expectedSshTarget := &api.AddressPort{Address: "192.168.0.1", Port: 22}
+	if diff := cmp.Diff(instance.GetSsh(), expectedSshTarget, protocmp.Transform()); diff != "" {
+		t.Errorf("Got wrong ssh target: %v Diff is:\n%v", instance.GetSsh(), diff)
+	}
+}
+
 func TestCreateWithInternalIpAddress(t *testing.T) {
 	gcloud, _ := New()
 	mockExecCommand := mockCommander{
