@@ -11,4 +11,21 @@ create {
   }
 }
 
+create {
+  platform_re: "windows-arm64"
+  source {
+    script { name: "fetch_win.py" }
+    unpack_archive: false
+    patch_version: "chromium.5"
+  }
+  build {
+    tool: "tools/cmake"
+    tool: "tools/perl"
+    tool: "tools/nasm"
+    tool: "build_support/mingw"
+    install: "install_win.py"
+  }
+}
+
+
 upload { pkg_prefix: "tools" }
