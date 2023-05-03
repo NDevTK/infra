@@ -25,6 +25,11 @@ func CrosBrowserDUTRepairConfig() *Configuration {
 				},
 				Actions: CrOSBrowserDUTRepairActions(),
 			},
+			PlanClosing: setAllowFail(&Plan{
+				CriticalActions: []string{
+					"Update DUT state for failures more than threshold",
+				},
+				Actions: crosRepairClosingActions()}, true),
 		},
 	}
 }
