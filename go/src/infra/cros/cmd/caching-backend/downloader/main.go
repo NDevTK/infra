@@ -715,12 +715,15 @@ func decompressWrite(ctx context.Context, w http.ResponseWriter, mem []byte) (in
 
 // generateTraceID gets the unique id of the request
 func generateTraceID(r *http.Request) string {
-	id := fmt.Sprintf("%s%s", r.Method, r.URL.RequestURI())
-	// Include range in ID if range exists
-	if headerRange := r.Header.Get("Range"); headerRange != "" {
-		id = fmt.Sprintf("%s, %s", id, headerRange)
+	id := []string{
+		fmt.Sprintf("%s%s", r.Method, r.URL.RequestURI()),
+		// The Range header starts with "bytes=", so no need to add a field name.
+		r.Header.Get("Range"),
+		fmt.Sprintf("swarming_task_id=%s", r.Header.Get("X-SWARMING-TASK-ID")),
+		fmt.Sprintf("bbid=%s", r.Header.Get("X-BBID")),
 	}
-	return id
+
+	return strings.Join(id, " ")
 }
 
 type metricData struct {

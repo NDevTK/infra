@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,7 @@ func TestDownloadHandler(t *testing.T) {
 			method:            "GET",
 			url:               "/download/wrong-bucket/path/to/file",
 			wantStatusCode:    404,
-			wantBody:          "GET/download/wrong-bucket/path/to/file Attrs error: storage: object doesn't exist\n",
+			wantBody:          "GET/download/wrong-bucket/path/to/file  swarming_task_id= bbid= Attrs error: storage: object doesn't exist\n",
 			wantContentLength: -1,
 			wantContentType:   "text/plain; charset=utf-8",
 		},
