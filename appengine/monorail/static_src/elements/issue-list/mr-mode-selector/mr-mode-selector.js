@@ -4,7 +4,7 @@
 import page from 'page';
 import {ChopsChoiceButtons} from
   'elements/chops/chops-choice-buttons/chops-choice-buttons.js';
-import {urlWithNewParams} from 'shared/helpers.js';
+import {urlWithNewParams, generateProjectIssueURL} from 'shared/helpers.js';
 
 /**
  * Component for showing the chips to switch between List, Grid, and Chart modes
@@ -45,7 +45,7 @@ export class MrModeSelector extends ChopsChoiceButtons {
   }
 
   _newListViewPath(mode) {
-    const basePath = `/p/${this.projectName}/issues/list`;
+    const basePath = generateProjectIssueURL(this.projectName, '/list',{});
     const deletedParams = mode ? undefined : ['mode'];
     return urlWithNewParams(basePath, this.queryParams, {mode}, deletedParams);
   }

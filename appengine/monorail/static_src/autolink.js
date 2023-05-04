@@ -4,6 +4,7 @@
 
 'use strict';
 import {prpcClient} from 'prpc-client-instance.js';
+import {generateProjectIssueURL} from 'shared/helpers.js'
 
 /* eslint-disable max-len */
 // When crbug links don't specify a project, the default project is Chromium.
@@ -325,10 +326,12 @@ function ReplaceRevisionRef(
 // Create custom textrun functions.
 function createIssueRefRun(projectName, localId, summary, isClosed, content,
     commentId) {
+  const params = {'id': localId};
+  const href = generateProjectIssueURL(projectName, '/detail', params)
   return {
     tag: 'a',
     css: isClosed ? 'strike-through' : '',
-    href: `/p/${projectName}/issues/detail?id=${localId}${commentId}`,
+    href: href + commentId,
     title: summary || '',
     content: content,
   };

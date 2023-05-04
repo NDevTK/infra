@@ -14,7 +14,7 @@
 
 import qs from 'qs';
 
-import {equalsIgnoreCase, capitalizeFirst} from './helpers.js';
+import {equalsIgnoreCase, capitalizeFirst, generateProjectIssueURL} from './helpers.js';
 import {fromShortlink} from 'shared/federated.js';
 import {UserInputError} from 'shared/errors.js';
 import './typedef.js';
@@ -522,14 +522,11 @@ export function issueRefToUrl(ref, queryParams = {}) {
     return extRef.toURL();
   }
 
-  let paramString = '';
   if (Object.keys(queryParamsCopy).length) {
     delete queryParamsCopy.id;
-
-    paramString = `&${qs.stringify(queryParamsCopy)}`;
   }
-
-  return `/p/${ref.projectName}/issues/detail?id=${ref.localId}${paramString}`;
+  const params = {'id': ref.localId, ...queryParamsCopy};
+  return generateProjectIssueURL(ref.projectName, '/detail', params);
 }
 
 /**

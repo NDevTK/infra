@@ -5,7 +5,7 @@
 import {LitElement, html, css} from 'lit-element';
 import 'elements/framework/mr-comment-content/mr-comment-content.js';
 import 'elements/chops/chops-timestamp/chops-timestamp.js';
-
+import {generateProjectIssueURL} from 'shared/helpers.js';
 /**
  * `<mr-comment-table>`
  *
@@ -51,6 +51,7 @@ export class MrCommentTable extends LitElement {
   /** @override */
   render() {
     const comments = this._displayedComments(this.selectedDate, this.comments);
+    const params = {'id': comments.localId};
     // TODO(zhangtiff): render deltas for comment changes.
     return html`
       <table cellspacing="0" cellpadding="0">
@@ -77,7 +78,7 @@ export class MrCommentTable extends LitElement {
                 ></mr-comment-content>
               </td>
               <td class="no-wrap">
-                <a href="/p/${comment.projectName}/issues/detail?id=${comment.localId}">
+                <a href="${generateProjectIssueURL(comment.projectName, '/detail', params)}">
                   Issue ${comment.localId}
                 </a>
               </td>

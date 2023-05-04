@@ -339,9 +339,9 @@ export class MrHeader extends connectStore(LitElement) {
     const mayBeRedirectedToWizard = role === projectRoles.NONE;
     if (!this.userDisplayName || !config || !config.customIssueEntryUrl ||
         !mayBeRedirectedToWizard) {
-      return `/p/${this.projectName}/issues/entry`;
+      return generateProjectIssueURL(this.projectName, '/entry');
     }
-
+    //TODO(monorail/12012) redirec to tracker once new chromium wizard is ready.
     return `/p/${this.projectName}/issues/wizard`;
   }
 

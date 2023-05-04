@@ -19,6 +19,7 @@ import * as userV0 from 'reducers/userV0.js';
 import * as sitewide from 'reducers/sitewide.js';
 
 import {ISSUE_DELETE_PERMISSION} from 'shared/consts/permissions.js';
+import {generateProjectIssueURL} from 'shared/helpers.js';
 
 // eslint-disable-next-line max-len
 import 'elements/framework/dialogs/mr-issue-hotlists-action/mr-update-issue-hotlists-dialog.js';
@@ -215,6 +216,7 @@ export class MrIssuePage extends connectStore(LitElement) {
     }
 
     if (movedToRef && movedToRef.localId) {
+      const params = {'id': movedToRef.localId};
       return html`
         <div class="container-no-issue" id="moved">
           <h2>Issue has moved.</h2>
@@ -222,7 +224,7 @@ export class MrIssuePage extends connectStore(LitElement) {
             This issue was moved to ${movedToRef.projectName}.
             <a
               class="new-location"
-              href="/p/${movedToRef.projectName}/issues/detail?id=${movedToRef.localId}"
+              href="${generateProjectIssueURL(movedToRef.projectName, '/detail', params)}"
             >
               Go to issue</a>.
           </p>

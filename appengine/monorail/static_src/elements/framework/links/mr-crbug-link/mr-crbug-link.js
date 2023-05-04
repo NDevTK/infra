@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {LitElement, html, css} from 'lit-element';
-
+import {generateProjectIssueURL} from 'shared/helpers.js';
 /**
  * `<mr-crbug-link>`
  *
@@ -75,8 +75,9 @@ export class MrCrbugLink extends LitElement {
         issue.projectName == 'chromium' ? '' : issue.projectName + '/');
       return `https://crbug.com/${projectPart}${issue.localId}`;
     }
-    const issueType = issue.approvalValues ? 'approval' : 'detail';
-    return `/p/${issue.projectName}/issues/${issueType}?id=${issue.localId}`;
+    const issueType = issue.approvalValues ? '/approval' : '/detail';
+    const params = {'id': issue.localId};
+    return generateProjectIssueURL(issue.projectName, issueType, params);
   }
 
   _getHost() {

@@ -10,6 +10,7 @@ import * as issueV0 from 'reducers/issueV0.js';
 import 'elements/framework/mr-autocomplete/mr-autocomplete.js';
 import 'elements/chops/chops-button/chops-button.js';
 import 'elements/chops/chops-dialog/chops-dialog.js';
+import {generateProjectIssueURL} from 'shared/helpers.js';
 import {SHARED_STYLES} from 'shared/shared-styles.js';
 import {prpcClient} from 'prpc-client-instance.js';
 
@@ -118,7 +119,8 @@ export class MrMoveCopyIssue extends connectStore(LitElement) {
     }).then((response) => {
       const projectName = response.newIssueRef.projectName;
       const localId = response.newIssueRef.localId;
-      page(`/p/${projectName}/issues/detail?id=${localId}`);
+      const params = {'id': localId};
+      page(generateProjectIssueURL(projectName, '/detail', params));
       this.cancel();
     }, (error) => {
       this._targetProjectError = error;
