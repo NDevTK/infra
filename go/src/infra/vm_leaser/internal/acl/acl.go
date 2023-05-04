@@ -11,7 +11,7 @@ import (
 const (
 	// TODO(justinsuen): Temporarily setting the auth group. Change to VM Lab
 	// group when it is known.
-	VMLabGroup = "mdb/peep-fleet-infra-sw"
+	VMLabGroup = "vm-leaser-access"
 )
 
 var RPCAccessInterceptor = rpcacl.Interceptor(rpcacl.Map{

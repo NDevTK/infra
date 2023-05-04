@@ -7,6 +7,7 @@ package client
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"go.chromium.org/luci/auth"
@@ -23,6 +24,8 @@ import (
 type Config struct {
 	// Endpoint of the VM Leaser service.
 	vmLeaserServiceEndpoint string
+	// Port of the VM Leaser service.
+	vmLeaserServicePort int
 	// Transport credentials
 	creds credentials.TransportCredentials
 }
@@ -44,6 +47,7 @@ func (c *Client) Close() {
 func LocalConfig() *Config {
 	return &Config{
 		vmLeaserServiceEndpoint: site.LocalVMLeaserServiceEndpoint,
+		vmLeaserServicePort:     site.LocalVMLeaserServicePort,
 		creds:                   insecure.NewCredentials(),
 	}
 }
@@ -54,6 +58,7 @@ func LocalConfig() *Config {
 func StagingConfig() *Config {
 	return &Config{
 		vmLeaserServiceEndpoint: site.StagingVMLeaserServiceEndpoint,
+		vmLeaserServicePort:     site.StagingVMLeaserServicePort,
 		creds:                   credentials.NewTLS(nil),
 	}
 }
@@ -64,6 +69,7 @@ func StagingConfig() *Config {
 func ProdConfig() *Config {
 	return &Config{
 		vmLeaserServiceEndpoint: site.ProdVMLeaserServiceEndpoint,
+		vmLeaserServicePort:     site.ProdVMLeaserServicePort,
 		creds:                   credentials.NewTLS(nil),
 	}
 }
@@ -81,7 +87,7 @@ func NewClient(ctx context.Context, c *Config) (*Client, error) {
 
 	creds, err := auth.NewAuthenticator(ctx, auth.SilentLogin, chromeinfra.SetDefaultAuthOptions(auth.Options{
 		UseIDTokens: true,
-		Audience:    c.vmLeaserServiceEndpoint,
+		Audience:    "https://" + c.vmLeaserServiceEndpoint,
 	})).PerRPCCredentials()
 	if err != nil {
 		return nil, err
@@ -92,7 +98,8 @@ func NewClient(ctx context.Context, c *Config) (*Client, error) {
 	dialCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 
-	conn, err := grpc.DialContext(dialCtx, c.vmLeaserServiceEndpoint, dialOpts...)
+	target := fmt.Sprintf("%s:%d", c.vmLeaserServiceEndpoint, c.vmLeaserServicePort)
+	conn, err := grpc.DialContext(dialCtx, target, dialOpts...)
 	if err != nil {
 		return nil, err
 	}
