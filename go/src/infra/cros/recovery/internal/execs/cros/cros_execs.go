@@ -176,12 +176,12 @@ func isBootedInSecureModeExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	checkTimeout := 15 * time.Second
 	runTimeout := info.GetExecTimeout() - checkTimeout
-	const legacyGBBReadFilename = "/usr/share/vboot/bin/get_gbb_flags.sh"
 	// New CMD supported from R111-15306.0.0 of ChromeOS.
 	const readGbbCmd = "/usr/bin/futility gbb --get --flash --flags"
 	var out string
 	var err error
 	if _, err = run(ctx, checkTimeout, fmt.Sprintf("test -f %s", legacyGBBReadFilename)); err == nil {
+		// TODO(b/280635852): Remove when stable versions upgraded.
 		out, err = run(ctx, runTimeout, legacyGBBReadFilename)
 	} else {
 		out, err = run(ctx, runTimeout, readGbbCmd)

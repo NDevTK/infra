@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,9 +59,7 @@ func RestoreHWIDFromInventoryConfig() *Configuration {
 				CriticalActions: []string{
 					"dut_has_hwid",
 					"cros_ssh",
-					"Disable software-controlled write-protect for 'host'",
-					"Disable software-controlled write-protect for 'ec'",
-					"cros_update_hwid_from_inventory_to_host",
+					"Set HWID of the DUT from inventory",
 					"Simple reboot",
 					"Sleep 1s",
 					"Wait to be SSHable (normal boot)",

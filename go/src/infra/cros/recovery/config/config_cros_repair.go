@@ -235,14 +235,24 @@ func crosRepairActions() map[string]*Action {
 				"Is not Flex device",
 				"Is HWID known",
 				"Device is SSHable",
-				"Disable software-controlled write-protect for 'host'",
-				"Disable software-controlled write-protect for 'ec'",
-				"cros_update_hwid_from_inventory_to_host",
+				"Set HWID of the DUT from inventory",
 				"Simple reboot",
 				"Sleep 1s",
 				"Wait to be SSHable (normal boot)",
 			},
 			ExecName: "cros_match_hwid_to_inventory",
+		},
+		"Set HWID of the DUT from inventory": {
+			Docs: []string{
+				"Update HWID on the DUT by inventory data.",
+				"The logic used update FW by futility can take time.",
+			},
+			Dependencies: []string{
+				"Disable software-controlled write-protect for 'host'",
+				"Disable software-controlled write-protect for 'ec'",
+			},
+			ExecName:    "cros_update_hwid_from_inventory_to_host",
+			ExecTimeout: &durationpb.Duration{Seconds: 240},
 		},
 		"Read OS version": {
 			Docs: []string{
