@@ -6,7 +6,9 @@ package cros
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"regexp"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
@@ -25,6 +27,105 @@ const (
 	readROVPDValuesCmd = "vpd -i RO_VPD -g %s"
 	writeVPDValuesCmd  = "vpd -s %s=%s"
 )
+
+type DSMVPD struct {
+	Rdc  []int32 `json:"r0"`
+	Temp []int32 `json:"temp"`
+}
+
+// isROVPDDSMCalibRequired confirms that this device is required to have sku_number in RO_VPD.
+func isROVPDDSMCalibRequired(ctx context.Context, info *execs.ExecInfo) error {
+	r := info.DefaultRunner()
+
+	speakerAmp, err := r(ctx, time.Minute, "cros_config /audio/main/ speaker-amp")
+	if err != nil {
+		return errors.Annotate(err, "is RO_VPD dsm_calib_r0 required").Err()
+	}
+	// If speaker-amp is unspecified, dsm_calib_r0 is not required.
+	if speakerAmp == "" {
+		return errors.Reason("dsm_calib_r0 is not required in RO_VPD.").Err()
+	}
+
+	soundCardInitConf, err := r(ctx, time.Minute, "cros_config /audio/main/ sound-card-init-conf")
+	if err != nil {
+		return errors.Annotate(err, "is RO_VPD dsm_calib_r0 required").Err()
+	}
+	// If sound-card-init-conf is unspecified, dsm_calib_r0 is not required.
+	if soundCardInitConf == "" {
+		return errors.Reason("dsm_calib_r0 is not required in RO_VPD.").Err()
+	}
+	return nil
+}
+
+func parseSoundCardID(dump string) (string, error) {
+	re := regexp.MustCompile(`card 0: ([a-z0-9]+) `)
+	m := re.FindStringSubmatch(dump)
+
+	if len(m) != 2 {
+		return "", errors.New("no sound card")
+	}
+	return m[1], nil
+}
+
+// verifyROVPDDSMCalib confirms that the key 'dsm_calib_r0_0' is present in RO_VPD.
+func verifyROVPDDSMCalib(ctx context.Context, info *execs.ExecInfo) error {
+	r := info.DefaultRunner()
+	if _, err := r(ctx, time.Minute, "vpd -i RO_VPD -g dsm_calib_r0_0"); err != nil {
+		return errors.Annotate(err, "verify dsm_calib_r0 in RO_VPD").Err()
+	}
+
+	log.Infof(ctx, "dsm_calib_r0_0 is present in RO_VPD")
+	return nil
+}
+
+// setFakeROVPDDSMCalib sets a fake dsm_calib_r{}, dsm_calib_temp{} in RO_VPD.
+func setFakeROVPDDSMCalib(ctx context.Context, info *execs.ExecInfo) error {
+	r := info.DefaultRunner()
+	speakerAmp, err := r(ctx, time.Minute, "cros_config /audio/main/ speaker-amp")
+	if err != nil {
+		return errors.Annotate(err, "cros_config /audio/main/ speaker-amp").Err()
+	}
+
+	soundCardInitConf, err := r(ctx, time.Minute, "cros_config /audio/main/ sound-card-init-conf")
+	if err != nil {
+		return errors.Annotate(err, "cros_config /audio/main/ sound-card-init-conf").Err()
+	}
+
+	dump, err := r(ctx, time.Minute, "aplay -l")
+	if err != nil {
+		return errors.Annotate(err, "aplay -l").Err()
+	}
+	soundCardID, err := parseSoundCardID(string(dump))
+	if err != nil {
+		return errors.Annotate(err, "Failed to parse sound card name").Err()
+	}
+
+	soundCardInitCmd := fmt.Sprintf("/usr/bin/sound_card_init fake_vpd --json --id %s --amp %s --conf %s", soundCardID, speakerAmp, soundCardInitConf)
+
+	fakeDSMVPDJson, err := r(ctx, time.Minute, soundCardInitCmd)
+	if err != nil {
+		return errors.Annotate(err, "cannot get fake DSM vpd").Err()
+	}
+
+	var fakeDSMVPD DSMVPD
+	if err = json.Unmarshal([]byte(fakeDSMVPDJson), &fakeDSMVPD); err != nil {
+		return errors.Annotate(err, "cannot parse fake DSM vpd json: "+string(fakeDSMVPDJson)).Err()
+	}
+
+	for ch := 0; ch < len(fakeDSMVPD.Rdc); ch++ {
+		cmd := fmt.Sprintf("vpd -s dsm_calib_r0_%d=%d", ch, fakeDSMVPD.Rdc[ch])
+		if _, err = r(ctx, time.Minute, cmd); err != nil {
+			return errors.Annotate(err, "cannot set fake dsm_calib_r0").Err()
+		}
+		cmd = fmt.Sprintf("vpd -s dsm_calib_temp_%d=%d", ch, fakeDSMVPD.Temp[ch])
+		if _, err := r(ctx, time.Minute, cmd); err != nil {
+			return errors.Annotate(err, "cannot set fake dsm_calib_temp").Err()
+		}
+	}
+
+	log.Infof(ctx, "set fake dsm_calib_r0 successfully")
+	return nil
+}
 
 // isROVPDSkuNumberRequired confirms that this device is required to have sku_number in RO_VPD.
 func isROVPDSkuNumberRequired(ctx context.Context, info *execs.ExecInfo) error {
@@ -120,6 +221,9 @@ func init() {
 	execs.Register("cros_is_ro_vpd_sku_number_required", isROVPDSkuNumberRequired)
 	execs.Register("cros_verify_ro_vpd_sku_number", verifyROVPDSkuNumber)
 	execs.Register("cros_set_fake_ro_vpd_sku_number", setFakeROVPDSkuNumber)
+	execs.Register("cros_is_ro_vpd_dsm_calib_required", isROVPDDSMCalibRequired)
+	execs.Register("cros_verify_ro_vpd_dsm_calib", verifyROVPDDSMCalib)
+	execs.Register("cros_set_fake_ro_vpd_dsm_calib", setFakeROVPDDSMCalib)
 	execs.Register("cros_update_ro_vpd_inventory", updateROVPDToInv)
 	execs.Register("cros_match_ro_vpd_inventory", matchROVPDToInv)
 	execs.Register("cros_set_ro_vpd", setROVPD)
