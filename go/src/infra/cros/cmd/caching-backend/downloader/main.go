@@ -252,7 +252,7 @@ func (c *archiveServer) downloadHandler(w http.ResponseWriter, r *http.Request) 
 	defer updateMetrics(ctx, "download", r.Method, &md, startTime)
 
 	id := generateTraceID(r)
-	defer func() { log.Printf("%s request completed in %vs", id, time.Since(startTime).Seconds()) }()
+	defer func() { log.Printf("%s request completed in %fs", id, time.Since(startTime).Seconds()) }()
 
 	bRange, err := parseRange(r.Header.Get("Range"))
 	if err != nil {
@@ -448,7 +448,7 @@ func (c *archiveServer) extractHandler(w http.ResponseWriter, r *http.Request) {
 
 	id := generateTraceID(r)
 	log.Printf("%s request started", id)
-	defer func() { log.Printf("%s request completed in %vs", id, time.Since(startTime).Seconds()) }()
+	defer func() { log.Printf("%s request completed in %fs", id, time.Since(startTime).Seconds()) }()
 
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Minute)
 	defer cancel()
@@ -597,7 +597,7 @@ func (c *archiveServer) decompressHandler(w http.ResponseWriter, r *http.Request
 
 	id := generateTraceID(r)
 	log.Printf("%s request started", id)
-	defer func() { log.Printf("%s request completed in %vs", id, time.Since(startTime).Seconds()) }()
+	defer func() { log.Printf("%s request completed in %fs", id, time.Since(startTime).Seconds()) }()
 
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Minute)
 	defer cancel()
