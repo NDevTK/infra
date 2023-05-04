@@ -5,8 +5,7 @@
 import {assert} from 'chai';
 import {arrayDifference, setHasAny, capitalizeFirst, hasPrefix, objectToMap,
   objectValuesForKeys, equalsIgnoreCase, immutableSplice, userIsMember,
-  urlWithNewParams, createObjectComparisonFunc} from './helpers.js';
-
+  urlWithNewParams, createObjectComparisonFunc, generateProjectIssueURL} from './helpers.js';
 
 describe('arrayDifference', () => {
   it('empty array stays empty', () => {
@@ -358,4 +357,16 @@ describe('createObjectComparisonFunc', () => {
       assert.isFalse(result);
     });
   });
+});
+
+describe('generateProjectIssueURL', () => {
+  it('no redirect required and no param', () => {
+    assert.equal(generateProjectIssueURL('project', '/list'), '/p/project/issues/list');
+  });
+
+  it('no redirect required and with param', () => {
+    assert.equal(generateProjectIssueURL('project', '/detail', {'id': 123}), '/p/project/issues/detail?id=123');
+  });
+
+  //TODO(crbug.com/monorail/12029): add more unit test.
 });

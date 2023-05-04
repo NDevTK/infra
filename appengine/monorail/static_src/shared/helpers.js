@@ -211,3 +211,29 @@ export function createObjectComparisonFunc(props) {
 export const shouldWaitForDefaultQuery = (queryParams) => {
   return !queryParams.hasOwnProperty('q');
 };
+
+// constant value for required redirect project
+const redirectProjects = Object.freeze([]);
+
+/**
+ * Generate the url link for issue in project.
+ * @param {string} projectName Name of the project.
+ * @param {string} subUrl the sub URL without query params.
+ * @param {Object} params the query params.
+ * @return {string} the new URL
+ */
+export function generateProjectIssueURL(projectName, subPath, params = {}) {
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const noRedirect = urlParams.has('no_tracker_redirect');
+  let baseUrl = '';
+  if (!noRedirect && redirectProjects.includes(projectName)) {
+    // Full url path will trigger backend service call to handle redirect.
+    baseUrl = 'https://bugs.chromium.org/p/' + projectName + '/issues' + subPath;
+    return urlWithNewParams(baseUrl, params, {}, undefined)
+  } else {
+    baseUrl = '/p/' + projectName + '/issues' + subPath;
+    const noRedirectParam = noRedirect ? {'no_tracker_redirect' : 1} : undefined
+    return urlWithNewParams(baseUrl, params, noRedirectParam, undefined)
+  }
+}

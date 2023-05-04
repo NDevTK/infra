@@ -13,7 +13,7 @@ import * as projects from 'reducers/projects.js';
 import {users} from 'reducers/users.js';
 import {stars} from 'reducers/stars.js';
 import {computeRoleByProjectName} from './helpers.js';
-
+import {generateProjectIssueURL} from 'shared/helpers.js';
 
 /**
  * `<mr-projects-page>`
@@ -246,7 +246,7 @@ export class MrProjectsPage extends connectStore(LitElement) {
    */
   _renderProject(project, role) {
     return html`
-      <a href="/p/${project.displayName}/issues/list" class="project">
+      <a href="${generateProjectIssueURL(project.displayName, '/list')}" class="project">
         <div class="project-header">
           <span class="project-title">
             <h3>${project.displayName}</h3>

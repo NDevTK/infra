@@ -15,6 +15,7 @@ import '../mr-dropdown/mr-dropdown.js';
 import '../mr-dropdown/mr-account-dropdown.js';
 import './mr-search-bar.js';
 
+import {generateProjectIssueURL} from 'shared/helpers.js';
 import {SHARED_STYLES} from 'shared/shared-styles.js';
 
 import {logEvent} from 'monitoring/client-logger.js';
@@ -147,7 +148,7 @@ export class MrHeader extends connectStore(LitElement) {
         .queryParams=${this.queryParams}
         .issueEntryUrl=${this.issueEntryUrl}
       ></mr-keystrokes>
-      <a href="/p/${this.projectName}/issues/list" class="home-link">
+      <a href="${generateProjectIssueURL(this.projectName, '/list')}" class="home-link">
         ${this.projectThumbnailUrl ? html`
           <img
             class="project-logo"
@@ -365,7 +366,7 @@ export class MrHeader extends connectStore(LitElement) {
       items.push({text: 'My Projects', separator: true});
 
       projects.forEach((project) => {
-        items.push({text: project, url: `/p/${project}/issues/list`});
+        items.push({text: project, url: generateProjectIssueURL(project, '/list')});
       });
     }
 
@@ -374,7 +375,7 @@ export class MrHeader extends connectStore(LitElement) {
       items.push({text: 'Starred Projects', separator: true});
 
       starredProjects.forEach((project) => {
-        items.push({text: project, url: `/p/${project}/issues/list`});
+        items.push({text: project, url: generateProjectIssueURL(project, '/list')});
       });
     }
 
