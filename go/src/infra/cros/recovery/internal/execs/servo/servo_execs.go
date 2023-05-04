@@ -856,15 +856,30 @@ func servoPowerStateResetExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "servo power state reset").Err()
 	}
 	time.Sleep(waitTimeout)
-	// Get the lid_open value which requires EC console.
-	lidOpen, err := servodGetString(ctx, info.NewServod(), "lid_open")
+	return nil
+}
+
+// servoPowerStateMatchExec matches powerstate received by servod to expected values.
+//
+// power_states can be S0, S3, S4, S5, G3.
+func servoECPowerStateMatchExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	expectedStates := argsMap.AsStringSlice(ctx, "power_states", nil)
+	if len(expectedStates) == 0 {
+		return errors.Reason("servo EC power state match: power states not specified").Err()
+	}
+	currentState, err := servodGetString(ctx, info.NewServod(), "ec_system_powerstate")
 	if err != nil {
 		return errors.Annotate(err, "servo power state reset").Err()
 	}
-	if lidOpen != "yes" && lidOpen != "not_applicable" {
-		return errors.Reason("servo power state reset: still fail to contact EC console after rebooting DUT").Err()
+	log.Debugf(ctx, "Current EC powerstate is %q.", currentState)
+	for _, expectedState := range expectedStates {
+		if expectedState == currentState {
+			log.Debugf(ctx, "EC powerstate match found!")
+			return nil
+		}
 	}
-	return nil
+	return errors.Reason("servo EC power state match: no match found").Err()
 }
 
 const (
@@ -936,5 +951,6 @@ func init() {
 	execs.Register("servo_servod_cc_toggle", servoServodCCToggleExec)
 	execs.Register("servo_set_ec_uart_cmd", servoSetEcUartCmdExec)
 	execs.Register("servo_power_state_reset", servoPowerStateResetExec)
+	execs.Register("servo_power_state_match", servoECPowerStateMatchExec)
 	execs.Register("servo_host_v3_reboot", servoHostV3RebootExec)
 }
