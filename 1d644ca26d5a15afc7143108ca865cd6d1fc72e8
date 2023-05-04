@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "374bb785_a975fc7c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1304443
+      },
+      "writtenOn": "2023-05-04T18:16:52Z",
+      "side": 1,
+      "message": "Removal acceptable due to the conditions specified for \"ownership\"",
+      "revId": "1d644ca26d5a15afc7143108ca865cd6d1fc72e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
