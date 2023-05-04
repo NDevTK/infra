@@ -40,6 +40,7 @@ const (
 	badExpiryError               = `[ERROR] Could not parse histogram expiry. Please format as YYYY-MM-DD or MXX: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`
 	pastExpiryWarning            = `[WARNING] This expiry date is in the past. Did you mean to set an expiry date in the future?`
 	farExpiryWarning             = `[WARNING] It's a best practice to choose an expiry that is at most one year out: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`
+	dataDiscontinuityWarning     = `[WARNING] This histogram is expired for more than a month. It might have already stopped reporting. If you're extending this histogram, please be careful of data discontinuity: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#extending.`
 	neverExpiryInfo              = `[INFO] The expiry should only be set to "never" in rare cases. Please double-check that this use of "never" is appropriate: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`
 	neverExpiryError             = `[ERROR] The expiry should only be set to "never" in rare cases. If you believe this use of "never" is appropriate, you must include an XML comment describing why, such as <!-- expires-never: "heartbeat" metric (internal: go/uma-heartbeats) -->: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`
 	milestoneFailure             = `[WARNING] Tricium failed to fetch milestone branch date. Please double-check that this milestone is correct, because the tool is currently not able to check for you.`
@@ -130,29 +131,22 @@ const (
 	REMOVED
 )
 
-type expiryDateType int
-
-const (
-	// REGULAR means the expiry date is formatted as YYYY-MM-DD
-	REGULAR expiryDateType = iota
-	// MILESTONE means the expiry date is in milestone format (M*)
-	MILESTONE
-)
-
 func analyzeHistogramFile(f io.Reader, filePath, prevDir string, filesChanged *diffsPerFile, singletonEnums stringset.Set, obsoletedHistograms map[string]bool) []*tricium.Data_Comment {
 	log.Printf("ANALYZING File: %s", filePath)
 	var allComments []*tricium.Data_Comment
-	// Analyze added lines in file (if any).
-	comments, newHistograms, newNamespaces, namespaceLineNums := analyzeChangedLines(bufio.NewScanner(f), filePath, filesChanged.addedLines[filePath], singletonEnums, ADDED)
-	allComments = append(allComments, comments...)
 	// Analyze removed lines in file (if any).
 	oldPath := filepath.Join(prevDir, filePath)
 	oldFile := openFileOrDie(oldPath)
 	defer closeFileOrDie(oldFile)
 	var emptySet stringset.Set
-	_, oldHistograms, oldNamespaces, _ := analyzeChangedLines(bufio.NewScanner(oldFile), filePath, filesChanged.removedLines[filePath], emptySet, REMOVED)
+	var emptyMap map[string]*histogram
+	_, oldHistograms, oldNamespaces, _ := analyzeChangedLines(bufio.NewScanner(oldFile), filePath, filesChanged.removedLines[filePath], emptySet, emptyMap, REMOVED)
+	// Analyze added lines in file (if any).
+	comments, newHistograms, newNamespaces, namespaceLineNums := analyzeChangedLines(bufio.NewScanner(f), filePath, filesChanged.addedLines[filePath], singletonEnums, oldHistograms, ADDED)
+	allComments = append(allComments, comments...)
 	// Identify if any histograms were removed.
 	allComments = append(allComments, generateCommentsForRemovedHistograms(filePath, newHistograms, oldHistograms, obsoletedHistograms)...)
+	// Identify if any new namespaces were added.
 	allComments = append(allComments, generateCommentsForAddedNamespaces(filePath, newNamespaces, oldNamespaces, namespaceLineNums)...)
 	return showAllComments(allComments)
 }
@@ -186,10 +180,10 @@ func analyzeCommitMessage(obsoletedHistograms map[string]bool) []*tricium.Data_C
 
 // analyzeChangedLines analyzes a version of the file and returns:
 // 1. A list of comments generated from analyzing changed histograms.
-// 2. A set containing all the names of histograms in the file.
+// 2. A map containing all histograms keyed by their names in the file.
 // 3. A set containing all the names of namespaces in the file.
 // 4. A map from namespace to line number.
-func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int, singletonEnums stringset.Set, mode changeMode) ([]*tricium.Data_Comment, stringset.Set, stringset.Set, map[string]int) {
+func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int, singletonEnums stringset.Set, oldHistograms map[string]*histogram, mode changeMode) ([]*tricium.Data_Comment, map[string]*histogram, stringset.Set, map[string]int) {
 	var comments []*tricium.Data_Comment
 	// meta is a struct that holds line numbers of different tags in histogram.
 	var meta *metadata
@@ -199,7 +193,7 @@ func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int
 	var histogramStart int
 	// If any line in the histogram showed up as an added or removed line in the diff.
 	var histogramChanged bool
-	allHistograms := make(stringset.Set)
+	allHistograms := make(map[string]*histogram)
 	namespaces := make(stringset.Set)
 	namespaceLineNums := make(map[string]int)
 	lineNum := 1
@@ -236,14 +230,14 @@ func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int
 			hist := bytesToHistogram(currHistogram, meta)
 			namespace := parseNamespaceFromHistogramName(hist.Name)
 			namespaces.Add(namespace)
-			allHistograms.Add(hist.Name)
+			allHistograms[hist.Name] = hist
 			if namespaceLineNums[namespace] == 0 {
 				namespaceLineNums[namespace] = histogramStart
 			}
 			if histogramChanged {
 				// Only check new (added) histograms are correct.
 				if mode == ADDED {
-					comments = append(comments, checkHistogram(path, hist, meta, singletonEnums)...)
+					comments = append(comments, checkHistogram(path, hist, meta, singletonEnums, oldHistograms)...)
 				}
 			}
 			currHistogram = nil
@@ -272,9 +266,9 @@ func parseNamespaceFromHistogramName(histogramName string) string {
 	return strings.SplitN(histogramName, ".", 2)[0]
 }
 
-func checkHistogram(path string, hist *histogram, meta *metadata, singletonEnums stringset.Set) []*tricium.Data_Comment {
+func checkHistogram(path string, hist *histogram, meta *metadata, singletonEnums stringset.Set, oldHistograms map[string]*histogram) []*tricium.Data_Comment {
 	var comments []*tricium.Data_Comment
-	comments = append(comments, checkExpiry(path, hist, meta)...)
+	comments = append(comments, checkExpiry(path, hist, meta, oldHistograms)...)
 	if comment := checkOwners(path, hist, meta); comment != nil {
 		comments = append(comments, comment)
 	}
@@ -372,10 +366,23 @@ func checkUnits(path string, hist *histogram, meta *metadata) *tricium.Data_Comm
 	return nil
 }
 
-func checkExpiry(path string, hist *histogram, meta *metadata) []*tricium.Data_Comment {
+func checkExpiry(path string, hist *histogram, meta *metadata, oldHistograms map[string]*histogram) []*tricium.Data_Comment {
 	var commentMessage string
 	var logMessage string
+	var expiryComments []*tricium.Data_Comment
 	expiry := hist.Expiry
+	// Check if there is any data discontinuity when |hist| already exists and is already
+	// expired for more than a month.
+	if oldHist, ok := oldHistograms[hist.Name]; ok {
+		if oldHist.Expiry != "" {
+			if inputDate, _, _, ok := getExpiryDate(oldHist.Expiry); ok {
+				dateDiff := int(inputDate.Sub(now()).Hours() / 24)
+				if dateDiff < -30 {
+					expiryComments = append(expiryComments, createExpiryComment(dataDiscontinuityWarning, path, meta))
+				}
+			}
+		}
+	}
 	if expiry == "" {
 		commentMessage = noExpiryError
 		logMessage = "[ERROR]: No Expiry"
@@ -388,44 +395,54 @@ func checkExpiry(path string, hist *histogram, meta *metadata) []*tricium.Data_C
 			logMessage = "[INFO]: Never Expiry"
 		}
 	} else if expiry != "" {
-		dateMatch := expiryDatePattern.MatchString(expiry)
-		milestoneMatch := expiryMilestonePattern.MatchString(expiry)
-		if dateMatch {
-			inputDate, err := time.Parse(dateFormat, expiry)
-			if err != nil {
-				log.Panicf("Failed to parse expiry date: %v", err)
-			}
-			processExpiryDateDiff(inputDate, REGULAR, &commentMessage, &logMessage)
-		} else if milestoneMatch {
-			milestone, err := strconv.Atoi(expiry[1:])
-			if err != nil {
-				log.Panicf("Failed to convert input milestone to integer: %v", err)
-			}
-			milestoneDate, err := getMilestoneDate(milestone)
-			if err != nil {
-				commentMessage = milestoneFailure
-				logMessage = fmt.Sprintf("[WARNING] Milestone Fetch Failure: %v", err)
-			} else {
-				processExpiryDateDiff(milestoneDate, MILESTONE, &commentMessage, &logMessage)
-			}
+		if inputDate, comment, log, ok := getExpiryDate(expiry); ok {
+			commentMessage, logMessage = processExpiryDateDiff(inputDate)
 		} else {
-			commentMessage = badExpiryError
-			logMessage = "[ERROR]: Expiry condition badly formatted"
+			commentMessage = comment
+			logMessage = log
 		}
 	}
-	var expiryComments []*tricium.Data_Comment
 	if commentMessage != "" {
-		expiryComments = []*tricium.Data_Comment{createExpiryComment(commentMessage, hist.Expiry, path, meta)}
+		expiryComments = append(expiryComments, createExpiryComment(commentMessage, path, meta))
 		log.Printf("ADDING Comment for %s at line %d: %s", hist.Name, meta.HistogramLineNum, logMessage)
 	}
 	return expiryComments
 }
 
-func processExpiryDateDiff(inputDate time.Time, dateType expiryDateType, commentMessage *string, logMessage *string) {
-	dateDiff := int(inputDate.Sub(now()).Hours()/24) + 1
-	if dateDiff <= 0 {
-		*commentMessage = pastExpiryWarning
-		*logMessage = "[WARNING]: Expiry in past"
+func getExpiryDate(expiry string) (inputDate time.Time, commentMessage string, logMessage string, ok bool) {
+	var err error
+	ok = true
+	dateMatch := expiryDatePattern.MatchString(expiry)
+	milestoneMatch := expiryMilestonePattern.MatchString(expiry)
+	if dateMatch {
+		if inputDate, err = time.Parse(dateFormat, expiry); err != nil {
+			ok = false
+			log.Panicf("Failed to parse expiry date: %v", err)
+		}
+	} else if milestoneMatch {
+		milestone, err := strconv.Atoi(expiry[1:])
+		if err != nil {
+			ok = false
+			log.Panicf("Failed to convert input milestone to integer: %v", err)
+		}
+		if inputDate, err = getMilestoneDate(milestone); err != nil {
+			ok = false
+			commentMessage = milestoneFailure
+			logMessage = fmt.Sprintf("[WARNING] Milestone Fetch Failure: %v", err)
+		}
+	} else {
+		ok = false
+		commentMessage = badExpiryError
+		logMessage = "[ERROR]: Expiry condition badly formatted"
+	}
+	return
+}
+
+func processExpiryDateDiff(inputDate time.Time) (commentMessage string, logMessage string) {
+	dateDiff := int(inputDate.Sub(now()).Hours() / 24)
+	if dateDiff < 0 {
+		commentMessage = pastExpiryWarning
+		logMessage = "[WARNING]: Expiry in past"
 	} else if dateDiff >= 420 {
 		// Use a threshold of 420 days to give users a 2-month grace period for
 		// expiry dates past 1 year. When a histogram is nearing expiry, an
@@ -434,9 +451,10 @@ func processExpiryDateDiff(inputDate time.Time, dateType expiryDateType, comment
 		// about a month or two before the histogram will expire, and it's common
 		// for developers to simply bump the expiry year, without changing the month
 		// nor day.
-		*commentMessage = farExpiryWarning
-		*logMessage = "[WARNING]: Expiry past one year"
+		commentMessage = farExpiryWarning
+		logMessage = "[WARNING]: Expiry past one year"
 	}
+	return
 }
 
 func getMilestoneDateImpl(milestone int) (time.Time, error) {
@@ -483,7 +501,7 @@ func milestoneRequest(url string) (milestones, error) {
 	return newMilestones, nil
 }
 
-func createExpiryComment(message, expiry, path string, meta *metadata) *tricium.Data_Comment {
+func createExpiryComment(message, path string, meta *metadata) *tricium.Data_Comment {
 	expiryLine := meta.attributeMap[expiryAttribute]
 	log.Printf("ADDING Comment at line %d: %s", expiryLine.LineNum, message)
 	return &tricium.Data_Comment{
@@ -514,10 +532,18 @@ func checkEnums(path string, hist *histogram, meta *metadata, singletonEnums str
 	return nil
 }
 
-func generateCommentsForRemovedHistograms(path string, newHistograms stringset.Set, oldHistograms stringset.Set, obsoletedHistograms map[string]bool) []*tricium.Data_Comment {
+func generateCommentsForRemovedHistograms(path string, newHistograms map[string]*histogram, oldHistograms map[string]*histogram, obsoletedHistograms map[string]bool) []*tricium.Data_Comment {
 	var comments []*tricium.Data_Comment
 	var removedWithoutMessageHistograms []string
-	allRemovedHistograms := oldHistograms.Difference(newHistograms).ToSlice()
+	newHistogramNames := make(stringset.Set)
+	oldHistogramNames := make(stringset.Set)
+	for name := range newHistograms {
+		newHistogramNames.Add(name)
+	}
+	for name := range oldHistograms {
+		oldHistogramNames.Add(name)
+	}
+	allRemovedHistograms := oldHistogramNames.Difference(newHistogramNames).ToSlice()
 	for _, removedHistogram := range allRemovedHistograms {
 		if _, present := obsoletedHistograms[removedHistogram]; present {
 			delete(obsoletedHistograms, removedHistogram)

@@ -34,8 +34,10 @@ func analyzeHistogramTestFileWithObsoletion(t *testing.T, filePath, patch, prevD
 		// Use 50 to simulate if server responds with error.
 		case 50:
 			err = errors.New("Bad milestone request")
+		case 60:
+			date, _ = time.Parse(dateMilestoneFormat, "2018-08-25T00:00:00")
 		case 77:
-			date, _ = time.Parse(dateMilestoneFormat, "2019-07-25T00:00:00")
+			date, _ = time.Parse(dateMilestoneFormat, "2019-08-25T00:00:00")
 		case 79:
 			date, _ = time.Parse(dateMilestoneFormat, "2019-10-17T00:00:00")
 		case 83:
@@ -244,6 +246,22 @@ func TestHistogramsCheck(t *testing.T) {
 		})
 	})
 
+	Convey("Analyze XML file with reviving an already expired date", t, func() {
+		results := analyzeHistogramTestFile(t, "expiry/good_date.xml", "prevdata/tricium_date_data_discontinuity.patch", "prevdata/src")
+		So(results, ShouldResemble, []*tricium.Data_Comment{
+			{
+				Category:             category + "/Expiry",
+				Message:              dataDiscontinuityWarning,
+				StartLine:            3,
+				EndLine:              3,
+				StartChar:            56,
+				EndChar:              82,
+				Path:                 "expiry/good_date.xml",
+				ShowOnUnchangedLines: true,
+			},
+		})
+	})
+
 	// EXPIRY MILESTONE tests
 
 	Convey("Analyze XML file with no errors: good milestone expiry", t, func() {
@@ -326,6 +344,22 @@ func TestHistogramsCheck(t *testing.T) {
 				StartChar:            56,
 				EndChar:              76,
 				Path:                 "expiry/milestone/unformatted_milestone.xml",
+				ShowOnUnchangedLines: true,
+			},
+		})
+	})
+
+	Convey("Analyze XML file with reviving an already expired milestone", t, func() {
+		results := analyzeHistogramTestFile(t, "expiry/milestone/good_milestone.xml", "prevdata/tricium_milestone_data_discontinuity.patch", "prevdata/src")
+		So(results, ShouldResemble, []*tricium.Data_Comment{
+			{
+				Category:             category + "/Expiry",
+				Message:              dataDiscontinuityWarning,
+				StartLine:            3,
+				EndLine:              3,
+				StartChar:            56,
+				EndChar:              75,
+				Path:                 "expiry/milestone/good_milestone.xml",
 				ShowOnUnchangedLines: true,
 			},
 		})
@@ -565,6 +599,16 @@ func TestHistogramsCheck(t *testing.T) {
 		obsoletedHistograms["Test.Histogram2"] = false
 		results := analyzeHistogramTestFileWithObsoletion(t, "rm/remove_histogram.xml", "prevdata/tricium_generated_diff.patch", "prevdata/src", obsoletedHistograms)
 		_, present := obsoletedHistograms["Test.Histogram2"]
+		So(results, ShouldBeNil)
+		So(present, ShouldBeFalse)
+	})
+
+	Convey("Analyze XML file with histogram(s) removed with an obsoletion message with data discontinuity", t, func() {
+		obsoletedHistograms := make(map[string]bool)
+		obsoletedHistograms["Test.Histogram2"] = false
+		results := analyzeHistogramTestFileWithObsoletion(t, "rm/remove_histogram_with_old_expiry.xml", "prevdata/tricium_remove_histogram_with_old_expiry.patch", "prevdata/src", obsoletedHistograms)
+		_, present := obsoletedHistograms["Test.Histogram2"]
+		// Remove an already deprecated histogram shouldn't show a Tricium warning.
 		So(results, ShouldBeNil)
 		So(present, ShouldBeFalse)
 	})
