@@ -132,3 +132,99 @@ func TestGetDeviceConfig(t *testing.T) {
 		})
 	}
 }
+
+// TestDeviceConfigExists tests functionality of dual reading inventory and UFS
+// for determining config existence. It populates a fake datastore with a
+// device config entry and allows the test to set the response from inventory.
+func TestDeviceConfigExists(t *testing.T) {
+	tests := []struct {
+		name    string
+		invResp *invV2Api.DeviceConfigsExistsResponse
+		invErr  bool
+		cfgIDs  []*ufsdevice.ConfigId
+		want    []bool
+		wantErr bool
+	}{
+		{
+			name:    "only UFS has some configs",
+			invResp: nil,
+			invErr:  true,
+			cfgIDs:  []*ufsdevice.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("zork", "gumboz", "")},
+			want:    []bool{false, true},
+			wantErr: false,
+		},
+		{
+			name:    "only inventory has some configs",
+			invResp: &invV2Api.DeviceConfigsExistsResponse{Exists: map[int32]bool{0: false, 1: true}},
+			invErr:  false,
+			cfgIDs:  []*ufsdevice.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("other", "device2", "")},
+			want:    []bool{false, true},
+			wantErr: false,
+		},
+		{
+			name:    "inventory has all configs",
+			invResp: &invV2Api.DeviceConfigsExistsResponse{Exists: map[int32]bool{0: true, 1: true}},
+			invErr:  false,
+			cfgIDs:  []*ufsdevice.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("other", "device2", "")},
+			want:    []bool{true, true},
+			wantErr: false,
+		},
+		{
+			name:    "UFS and inventory each have one config",
+			invResp: &invV2Api.DeviceConfigsExistsResponse{Exists: map[int32]bool{0: false, 1: true}},
+			invErr:  false,
+			cfgIDs:  []*ufsdevice.ConfigId{configuration.GetConfigID("zork", "gumboz", ""), configuration.GetConfigID("inventory", "device", "")},
+			want:    []bool{true, true},
+			wantErr: false,
+		},
+		{
+			name:    "neither have configs",
+			invResp: nil,
+			invErr:  true,
+			cfgIDs:  []*ufsdevice.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("other", "device2", "")},
+			want:    []bool{false, false},
+			wantErr: false,
+		},
+		{
+			name:    "different response lengths should cause error",
+			invResp: &invV2Api.DeviceConfigsExistsResponse{Exists: map[int32]bool{0: false}},
+			invErr:  false,
+			cfgIDs:  []*ufsdevice.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("other", "device2", "")},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			// setup datastore + populate it
+			ctx := memory.UseWithAppID(context.Background(), ("gae-test"))
+			datastore.GetTestable(ctx).Consistent(true)
+			devCfg := makeDevCfgForTesting("zork", "gumboz", "", []string{"test@google.com"})
+			_, err := configuration.BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{devCfg}, configuration.BlankRealmAssigner)
+			if err != nil {
+				t.Errorf("error setting up test data")
+			}
+
+			// setup inventory and dual read clients
+			ic := &fakeInventoryClient{
+				DeviceConfigExistsResp: tt.invResp,
+				DeviceConfigExistsErr:  tt.invErr,
+			}
+			c := &DualDeviceConfigClient{
+				inventoryClient: ic,
+			}
+
+			got, err := c.DeviceConfigsExists(ctx, tt.cfgIDs)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("DualDeviceConfigClient.DeviceConfigExists() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if diff := cmp.Diff(tt.want, got); diff != "" {
+				t.Errorf("unexpected diff: %s", diff)
+			}
+		})
+	}
+}

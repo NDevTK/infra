@@ -65,7 +65,46 @@ func (c *DualDeviceConfigClient) GetDeviceConfig(ctx context.Context, cfgID *ufs
 // is an array of booleans, where the ith boolean represents the existence of
 // the ith config.
 func (c *DualDeviceConfigClient) DeviceConfigsExists(ctx context.Context, cfgIDs []*ufsdevice.ConfigId) ([]bool, error) {
-	return nil, nil
+	crosCfgIDs := make([]*device.ConfigId, len(cfgIDs))
+	for i, cfgID := range cfgIDs {
+		crosCfgID, err := ufsToCrosCfgIDProto(cfgID)
+		if err != nil {
+			return nil, errors.Annotate(err, "failed to convert between ufs and inventory proto, likely proto versions are out of sync").Err()
+		}
+		crosCfgIDs[i] = crosCfgID
+	}
+
+	req := &invV2Api.DeviceConfigsExistsRequest{
+		ConfigIds: crosCfgIDs,
+	}
+	resp, err := c.inventoryClient.DeviceConfigsExists(ctx, req)
+
+	// if we cannot fetch from inventory, fall back to UFS datastore
+	if err != nil || resp == nil {
+		logging.Debugf(ctx, "request for cfg ids: %v was not found with error: %s. falling back to ufs datastore", cfgIDs, err)
+
+		return configuration.DeviceConfigsExist(ctx, cfgIDs)
+	}
+
+	// if inventory says all configs exists, can exit early
+	inventoryResultsArr := mapToSlice(resp.Exists)
+	if allTrue(inventoryResultsArr) {
+		return inventoryResultsArr, nil
+	}
+
+	// otherwise we need to fetch from UFS, and OR each result
+	ufsResultsArr, err := configuration.DeviceConfigsExist(ctx, cfgIDs)
+	if err != nil {
+		logging.Debugf(ctx, "request for cfg ids: %v was not found with error: %s in datastore", cfgIDs, err)
+		ufsResultsArr = make([]bool, len(req.ConfigIds)) // set to all false in that case
+	}
+
+	if len(ufsResultsArr) != len(inventoryResultsArr) {
+		return nil, errors.New("unexpected diff in return lengths between UFS and inventory device config exists")
+	}
+
+	return mergeOr(inventoryResultsArr, ufsResultsArr), nil
+
 }
 
 // ufsToCrosCfgIDProto naively marshalls then unmarshalls proto to convert
@@ -94,4 +133,38 @@ func crosToUFSDeviceConfigProto(crosCfgID *device.Config) (*ufsdevice.Config, er
 	err = proto.Unmarshal(s, &ufsCfgID)
 
 	return &ufsCfgID, err
+}
+
+// mapToSlice converts a map of bools to an array of bools.
+func mapToSlice(existsMap map[int32]bool) []bool {
+	existsArr := make([]bool, len(existsMap))
+
+	for i := range existsMap {
+		existsArr[i] = existsMap[i]
+	}
+
+	return existsArr
+}
+
+// allTrue returns whether or not the entire array is true.
+func allTrue(a []bool) bool {
+	for _, e := range a {
+		if !e {
+			return false
+		}
+	}
+
+	return true
+}
+
+// mergeOr returns the result of ORing each index in two arrays which are the
+// same size.
+func mergeOr(x []bool, y []bool) []bool {
+	newArr := make([]bool, len(x))
+
+	for i := range newArr {
+		newArr[i] = x[i] || y[i]
+	}
+
+	return newArr
 }
