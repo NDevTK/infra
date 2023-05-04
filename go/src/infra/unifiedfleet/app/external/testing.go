@@ -57,6 +57,6 @@ func fakeHwidInterfaceFactory(ctx context.Context) (hwid.ClientInterface, error)
 	return &fake.HwidClient{}, nil
 }
 
-func fakeDeviceConfigFactory(ctx context.Context) (DeviceConfigClient, error) {
+func fakeDeviceConfigFactory(ctx context.Context, invHost string) (DeviceConfigClient, error) {
 	return &fake.DeviceConfigClient{}, nil
 }
