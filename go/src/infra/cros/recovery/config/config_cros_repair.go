@@ -127,6 +127,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			RecoveryActions: []string{
 				"Cold reset by servo and wait for SSH",
+				"Battery cut-off by servo and wait for SSH",
 				"Power cycle DUT by RPM and wait",
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
 				"Restore AC detection by EC console and wait for ping",
@@ -3155,6 +3156,51 @@ func crosRepairActions() map[string]*Action {
 				"command:crosid",
 			},
 			AllowFailAfterRecovery: true,
+		},
+		"Battery cut-off by servo and wait for SSH": {
+			Docs: []string{
+				"This repair action will use EC console to cut battery power and then try to restore power which force to reset the board.",
+				"Logic establishe from b/277637455.",
+			},
+			Conditions: []string{
+				"Is servod running",
+				"is_servo_type_ccd",
+				"DUT is G3/S5 powerstate",
+			},
+			Dependencies: []string{
+				"Battery cut-off by servo EC console",
+				"Sleep 10 seconds",
+				"Try fake disconnect",
+				"Sleep 60 seconds",
+				"Wait to be SSHable (normal boot)",
+			},
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"DUT is G3/S5 powerstate": {
+			Docs: []string{
+				"Check if the DUT powerstate is S5 or G3 (device is off).",
+			},
+			ExecName: "servo_power_state_match",
+			ExecExtraArgs: []string{
+				"power_states:G3,S5",
+			},
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Try fake disconnect": {
+			Docs: []string{
+				"Run servo fake disconnect type-c connector from the DUT side.",
+				"The action mimic unplug-plug connection to the DUT.",
+			},
+			Conditions: []string{
+				"is_servo_type_ccd",
+			},
+			ExecName: "servo_fake_disconnect_dut",
+			ExecExtraArgs: []string{
+				"delay_in_ms:100",
+				"timeout_in_ms:2000",
+			},
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 	}
 }
