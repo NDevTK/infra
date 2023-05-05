@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,7 +49,7 @@ func WithTimeout(ctx context.Context, interval, duration time.Duration, f func()
 				log.Debugf(ctx, getSuccessMessage(opName, atomic.LoadInt32(&attempts), startTime))
 			}
 			spentTime := time.Since(startTime).Seconds()
-			log.Debugf(ctx, "Retry %q: attempt %d (used %0.2f of %0.2f seconds), error: %s", opName, attempts, spentTime, duration.Seconds(), err)
+			log.Infof(ctx, "Retry %q: attempt %d (used %0.2f of %0.2f seconds), error: %s", opName, attempts, spentTime, duration.Seconds(), err)
 			return err
 		},
 		hasNext: func(ctx context.Context) bool {
