@@ -33,7 +33,7 @@ PROPERTIES = {
 
 
 def RunSteps(api, arch_type):
-  api.gclient.set_config('infra')
+  api.gclient.set_config('infra_superproject')
   api.bot_update.ensure_checkout()
   api.gclient.runhooks()
   api.docker.ensure_installed()
