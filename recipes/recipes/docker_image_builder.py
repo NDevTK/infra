@@ -33,7 +33,7 @@ PROPERTIES = {
 
 
 def RunSteps(api, arch_type):
-  api.gclient.set_config('infra')
+  api.gclient.set_config('infra_superproject')
   api.bot_update.ensure_checkout()
   api.gclient.runhooks()
   api.docker.ensure_installed()
@@ -59,7 +59,7 @@ def RunSteps(api, arch_type):
       except api.step.StepFailure as f:
         f.result.presentation.status = api.step.WARNING
 
-  # Run the build script. It assign a name to the resulting image and tags it
+  # Run the build script. It assigns a name to the resulting image and tags it
   # with 'latest'.
   dir_name = api.properties.get('dir_name', container_name)
   if arch_type:
