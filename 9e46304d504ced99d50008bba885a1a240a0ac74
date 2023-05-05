@@ -16,6 +16,24 @@
       "message": "Can we use polling with intervals (say every second upto X seconds) rather than an arbitrary timeout?",
       "revId": "9e46304d504ced99d50008bba885a1a240a0ac74",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "98058d00_a8364cfc",
+        "filename": "go/src/infra/vm_leaser/internal/frontend/frontend.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1429712
+      },
+      "writtenOn": "2023-05-05T21:03:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c36e5b25_896d0a7e",
+      "revId": "9e46304d504ced99d50008bba885a1a240a0ac74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
