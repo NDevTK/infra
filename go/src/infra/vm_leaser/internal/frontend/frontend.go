@@ -89,6 +89,8 @@ func (s *Server) LeaseVM(ctx context.Context, r *pb.LeaseVMRequest) (*pb.LeaseVM
 		return nil, err
 	}
 
+	time.Sleep(5 * time.Second)
+
 	ins, err := getInstance(ctx, instancesClient, leaseId, r.GetHostReqs())
 	if err != nil {
 		return nil, err
