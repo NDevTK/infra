@@ -13,10 +13,13 @@ import (
 	"infra/cr_builder_health/healthpb"
 
 	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/flag/fixflagpos"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -27,12 +30,19 @@ type luciexeGenerateRun struct {
 
 type generateRun struct {
 	subcommands.CommandRunBase
-	logCfg gologger.LoggerConfig
+	logCfg   gologger.LoggerConfig
+	authOpts auth.Options
 
 	dateString string // cmdline input
 }
 
 func main() {
+	authOpts := chromeinfra.DefaultAuthOptions()
+	authOpts.Scopes = []string{
+		auth.OAuthScopeEmail,
+		"https://www.googleapis.com/auth/cloud-platform",
+	}
+
 	cliApp := &cli.Application{
 		Name:  "builder-health-indicators",
 		Title: "Builder Health Indicators track Chromium builders' long term health",
@@ -42,7 +52,11 @@ func main() {
 				ShortDesc: "Run as a luciexe and do what generate_indicators does",
 				LongDesc:  "Run as a luciexe and do what generate_indicators does",
 				CommandRun: func() subcommands.CommandRun {
-					r := &luciexeGenerateRun{}
+					r := &luciexeGenerateRun{
+						generateRun{
+							authOpts: authOpts,
+						},
+					}
 					r.logCfg = gologger.LoggerConfig{Out: os.Stderr}
 					return r
 				},
@@ -57,13 +71,21 @@ func main() {
 				Required ACLs: BigQuery read and write permissions in cr-builder-health-indicators.
 				`,
 				CommandRun: func() subcommands.CommandRun {
-					r := &generateRun{}
+					r := &generateRun{
+						authOpts: authOpts,
+					}
 					r.logCfg = gologger.LoggerConfig{Out: os.Stderr}
 					r.Flags.StringVar(&r.dateString, "date", "", "The date to generate for in ISO 8601 (YYYY-MM-DD). The default date is yesterday.")
 
 					return r
 				},
 			},
+
+			{}, // spacer
+
+			authcli.SubcommandLogin(authOpts, "auth-login", false),
+			authcli.SubcommandLogout(authOpts, "auth-logout", false),
+			authcli.SubcommandInfo(authOpts, "auth-info", false),
 		},
 	}
 
