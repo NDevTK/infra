@@ -434,7 +434,8 @@ func (r *retryRun) processRetry(ctx context.Context, buildData *bbpb.Build, prop
 func (r *retryRun) processPaygenRetry(ctx context.Context, buildData *bbpb.Build, propsStruct *structpb.Struct) int {
 	recipe := propsStruct.AsMap()["recipe"].(string)
 	if recipe != "build_release" {
-		r.LogErr("build is not a `build_release` build, can't retry with --paygen")
+		r.LogErr("A --paygen retry can only be launched from a child builder " +
+			"(e.g. eve-release-main), please use the BBID for that builder.")
 		return CmdError
 	}
 
@@ -514,23 +515,23 @@ func (r *retryRun) innerRun() (string, int) {
 		r.LogErr(err.Error())
 		return "", CmdError
 	}
+
 	recipe := buildData.GetInput().GetProperties().AsMap()["recipe"].(string)
-	if recipe == "paygen_orchestrator" || recipe == "paygen" {
-		r.LogErr("paygen-orchestrator/paygen builds do not communicate directly with GoldenEye." +
-			" Please relaunch from the child builder/orchestrator.")
-		return "", CmdError
-	}
 
 	// Find the end of the retry chain.
-	retryBBID, err := r.getRetryBBID(ctx, r.originalBBID)
-	if err != nil {
-		r.LogErr(err.Error())
-		return "", CmdError
+	// Doesn't apply to paygen / paygen_orchestrator as those recipes don't
+	// support partial retries.
+	if recipe != "paygen" && recipe != "paygen_orchestrator" {
+		retryBBID, err := r.getRetryBBID(ctx, r.originalBBID)
+		if err != nil {
+			r.LogErr(err.Error())
+			return "", CmdError
+		}
+		if retryBBID != r.originalBBID {
+			r.LogOut("Found retry build %s for build %s, retrying that instead.", retryBBID, r.originalBBID)
+		}
+		r.originalBBID = retryBBID
 	}
-	if retryBBID != r.originalBBID {
-		r.LogOut("Found retry build %s for build %s, retrying that instead.", retryBBID, r.originalBBID)
-	}
-	r.originalBBID = retryBBID
 
 	// BBID may have changed, get new build data.
 	buildData, err = r.bbClient.GetBuild(ctx, r.originalBBID)
@@ -551,12 +552,14 @@ func (r *retryRun) innerRun() (string, int) {
 		return "", CmdError
 	}
 
-	if r.paygenRetry {
-		if recipe != "build_release" {
-			r.LogErr("A --paygen retry can only be launched from a child builder " +
-				"(e.g. eve-release-main), please use the BBID for that builder.")
-			return "", CmdError
-		}
+	if recipe == "paygen_orchestrator" || recipe == "paygen" {
+		r.LogOut("Warning: paygen-orchestrator/paygen builds do not communicate directly with GoldenEye. " +
+			"This build will not be ingested unless a child builder reports its results -- this " +
+			"will happen if this build was relaunched with the conductor, but not if it was " +
+			"retried manually.")
+		// No partial retries for paygen-orchestrator but clobbering is allowed
+		// so just fire off a new one.
+	} else if r.paygenRetry {
 		ret := r.processPaygenRetry(ctx, buildData, propsStruct)
 		if ret != Success {
 			return "", ret

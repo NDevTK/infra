@@ -631,19 +631,6 @@ func TestRetry_childBuilder_paygen_fail_hasSummary(t *testing.T) {
 	})
 }
 
-func TestRetry_orchestrator_paygen_fail(t *testing.T) {
-	// --paygen is not supported for orchestrator builds.
-	// Can use the child test harness.
-	doChildRetryTestRun(t, &childRetryTestConfig{
-		dryrun:      false,
-		bbid:        "8794230068334833058",
-		builderName: "staging-release-main-orchestrator",
-		builderJSON: stripNewlines(retryTestGoodJSON),
-		expectError: true,
-		paygenRetry: true,
-	})
-}
-
 const (
 	failedEbuildTestJSON = `{
 		"id": "8794230068334833051",
@@ -970,6 +957,10 @@ func doPaygenTest(t *testing.T, tc *paygenTestConfig) {
 				ExpectedCmd: []string{"bb", "get", "879423006833483308", "-p", "-json"},
 				Stdout:      stripNewlines(tc.buildJSON),
 			},
+			{
+				ExpectedCmd: []string{"bb", "get", "879423006833483308", "-p", "-json"},
+				Stdout:      stripNewlines(tc.buildJSON),
+			},
 		},
 	}
 	expectedBuilder := fmt.Sprintf("chromeos/staging/%s", tc.expectedBuilder)
@@ -994,31 +985,42 @@ func doPaygenTest(t *testing.T, tc *paygenTestConfig) {
 		},
 	}
 	ret := r.Run(nil, nil, nil)
-	assert.IntsEqual(t, ret, CmdError)
+	assert.IntsEqual(t, ret, Success)
+
+	properties, err := bb.ReadStructFromFile(propsFile.Name())
+	assert.NilError(t, err)
+
+	// Check that we haven't set any checkpoint properties.
+	_, exists := properties.GetFields()["$chromeos/checkpoint"]
+	assert.Assert(t, !exists)
 }
 
 func TestRetry_paygenOrch(t *testing.T) {
 	doPaygenTest(t, &paygenTestConfig{
-		buildJSON: paygenOrchJSON,
+		expectedBuilder: "staging-paygen-orchestrator",
+		buildJSON:       paygenOrchJSON,
 	})
 }
 
 func TestRetry_paygen(t *testing.T) {
 	doPaygenTest(t, &paygenTestConfig{
-		buildJSON: paygenJSON,
+		expectedBuilder: "staging-paygen",
+		buildJSON:       paygenJSON,
 	})
 }
 
 func TestRetry_paygenOrch_dryrun(t *testing.T) {
 	doPaygenTest(t, &paygenTestConfig{
-		buildJSON: paygenOrchJSON,
-		dryrun:    true,
+		expectedBuilder: "staging-paygen-orchestrator",
+		buildJSON:       paygenOrchJSON,
+		dryrun:          true,
 	})
 }
 
 func TestRetry_paygen_dryrun(t *testing.T) {
 	doPaygenTest(t, &paygenTestConfig{
-		buildJSON: paygenJSON,
-		dryrun:    true,
+		expectedBuilder: "staging-paygen",
+		buildJSON:       paygenJSON,
+		dryrun:          true,
 	})
 }
