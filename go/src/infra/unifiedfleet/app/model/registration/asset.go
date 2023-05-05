@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
+	"go.chromium.org/luci/server/auth"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -180,6 +181,66 @@ func ListAssets(ctx context.Context, pageSize int32, pageToken string, filterMap
 	return
 }
 
+// ListAssetsACL lists the assets that are visible to the user.
+// Does a query over asset entities. Returns pageSize number of entities and a
+// non-nil cursor if there are more results. pageSize must be positive.
+func ListAssetsACL(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.Asset, nextPageToken string, err error) {
+	err = validateListAssetFilters(filterMap)
+	if err != nil {
+		return nil, "", errors.Annotate(err, "ListAssetsACL --- cannot validate query").Err()
+	}
+	userRealms, err := auth.QueryRealms(ctx, util.RegistrationsList, "", nil)
+	if err != nil {
+		return nil, "", err
+	}
+
+	q, err := ufsds.ListQuery(ctx, AssetKind, pageSize, "", filterMap, keysOnly)
+	if err != nil {
+		return nil, "", err
+	}
+
+	// Create a list of queries each checking for a realm assignment
+	queries := ufsds.AssignRealms(q, userRealms)
+
+	// Apply page token if necessary
+	if pageToken != "" {
+		queries, err = datastore.ApplyCursorString(ctx, queries, pageToken)
+	}
+
+	var nextCur datastore.Cursor
+	err = datastore.RunMulti(ctx, queries, func(ent *AssetEntity, cb datastore.CursorCB) error {
+		if keysOnly {
+			asset := &ufspb.Asset{
+				Name: ent.Name,
+			}
+			res = append(res, asset)
+		} else {
+			pm, err := ent.GetProto()
+			if err != nil {
+				logging.Errorf(ctx, "Failed to unmarshall asset: %s", err)
+				return nil
+			}
+			res = append(res, pm.(*ufspb.Asset))
+		}
+		if len(res) >= int(pageSize) {
+			if nextCur, err = cb(); err != nil {
+				return err
+			}
+			return datastore.Stop
+		}
+		return nil
+	})
+	if err != nil {
+		logging.Errorf(ctx, "Failed to list assets %s", err)
+		return nil, "", status.Errorf(codes.Internal, ufsds.InternalError)
+	}
+	if nextCur != nil {
+		nextPageToken = nextCur.String()
+	}
+	logging.Debugf(ctx, "ListAssetsACL --- filtering for %v", userRealms)
+	return
+}
+
 // BatchUpdateAssets updates the assets to the datastore
 func BatchUpdateAssets(ctx context.Context, assets []*ufspb.Asset) ([]*ufspb.Asset, error) {
 	protos := make([]proto.Message, len(assets))
@@ -251,4 +312,23 @@ func GetAssetIndexedFieldName(input string) (string, error) {
 		return "", status.Errorf(codes.InvalidArgument, "Invalid field name %s - field name for asset are zone/rack/model/buildtarget(board)/assettype/phase/tags", input)
 	}
 	return field, nil
+}
+
+// validateListAssetFilters validates that the given filter map is valid
+func validateListAssetFilters(filterMap map[string][]interface{}) error {
+	for field := range filterMap {
+		switch field {
+		case "zone":
+		case "rack":
+		case "model":
+		case "build_target":
+		case "type":
+		case "phase":
+		case "tags":
+			return nil
+		default:
+			return errors.Reason("Cannot filter on %s", field).Err()
+		}
+	}
+	return nil
 }
