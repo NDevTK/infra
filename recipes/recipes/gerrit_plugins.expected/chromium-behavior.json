@@ -398,7 +398,7 @@
       "RECIPE_REPO[depot_tools]/gsutil.py",
       "----",
       "cp",
-      "gs://bazel/5.0.0/release/bazel-5.0.0-linux-x86_64",
+      "gs://bazel/6.1.2/release/bazel-6.1.2-linux-x86_64",
       "[CLEANUP]/bazel_tmp_1/bazel"
     ],
     "infra_step": true,
