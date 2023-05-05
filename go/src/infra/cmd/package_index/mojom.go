@@ -6,6 +6,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -71,8 +72,15 @@ func newMojomTarget(ctx context.Context, gnTargetDict map[string]gnTargetInfo, t
 // features are removed from the AST directly by the parser tool.
 func (m *mojomTarget) mergeFeatureArgs(gnTargetDict map[string]gnTargetInfo) []string {
 	args := gnTargetDict[m.targetName].Args
-	if len(args) > 0 && strings.HasSuffix(args[0], mojomScript) {
-		args = args[1:]
+
+	if !strings.HasSuffix(gnTargetDict[m.targetName].Script, mojomScript) {
+		// mojom script uses some kind of wrapper, unwrap it
+		for i, arg := range args {
+			if strings.HasSuffix(arg, mojomScript) {
+				args = args[i+1:]
+				break
+			}
+		}
 	}
 	parserTarget := m.targetName[:len(m.targetName)-len("__generator")] + "__parser"
 	parserTargetDict := gnTargetDict[parserTarget]
@@ -238,15 +246,24 @@ func isMojomTarget(t *gnTarget) bool {
 		return false
 	}
 
-	script := t.targetInfo.Script
+	isMojom := strings.HasSuffix(t.targetInfo.Script, mojomScript)
 
 	// Determine if wrapper script is used. If it is, extract actual script
 	// which is located at the very first argument.
-	if strings.HasSuffix(script, "/python2_action.py") && len(t.targetInfo.Args) > 0 {
-		script = t.targetInfo.Args[0]
+	if !isMojom && strings.HasSuffix(t.targetInfo.Script, "/python2_action.py") && len(t.targetInfo.Args) > 0 {
+		isMojom = strings.HasSuffix(t.targetInfo.Args[0], mojomScript)
+	}
+	if !isMojom && strings.HasSuffix(t.targetInfo.Script, "/action_remote.py") && len(t.targetInfo.Args) > 0 {
+		// handle reclient
+		for _, arg := range t.targetInfo.Args[1:] {
+			if strings.HasSuffix(arg, mojomScript) {
+				isMojom = true
+				break
+			}
+		}
 	}
 
-	if !strings.HasSuffix(script, mojomScript) {
+	if !isMojom {
 		return false
 	}
 
@@ -275,6 +292,7 @@ func isMojomTarget(t *gnTarget) bool {
 	// https://crrev.com/cf22716b233ddaacea5c966df00db07b5c7b9102 adds
 	// cpp_templates.zip and mojolpm_templates.zip to //out to enable
 	// remote execution.
+	fmt.Println("adding: ", t.targetInfo.Sources[0])
 	for _, src := range t.targetInfo.Sources {
 		if !isMojomFile(src) {
 			continue
