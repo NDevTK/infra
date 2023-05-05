@@ -7,6 +7,7 @@ Handles traffic redirection before hitting main monorail app.
 """
 
 import flask
+from redirect_utils import GetRedirectURL
 
 class RedirectMiddleware(object):
 
@@ -38,8 +39,9 @@ def GenerateRedirectApp():
   redirect_app.before_request(PreCheckHandler)
 
   def IssueList(project_name):
-    del project_name
-    # TODO(crbug.com/monorail/12012): Add project redirect logic
+    redirect_url = GetRedirectURL(project_name)
+    if redirect_url:
+      return flask.redirect(redirect_url)
     flask.abort(404)
   redirect_app.route('/p/<string:project_name>/issues/')(IssueList)
   redirect_app.route('/p/<string:project_name>/issues/list')(IssueList)
@@ -51,8 +53,9 @@ def GenerateRedirectApp():
   redirect_app.route('/p/<string:project_name>/issues/detail')(IssueDetail)
 
   def IssueCreate(project_name):
-    del project_name
-    # TODO(crbug.com/monorail/12012): Add create new issue redirect logic
+    redirect_url = GetRedirectURL(project_name)
+    if redirect_url:
+      return flask.redirect(redirect_url + '/new')
     flask.abort(404)
   redirect_app.route('/p/<string:project_name>/issues/entry')(IssueCreate)
   redirect_app.route('/p/<string:project_name>/issues/entry_new')(IssueCreate)
