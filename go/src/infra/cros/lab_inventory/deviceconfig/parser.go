@@ -218,12 +218,7 @@ func parseHardwareFeatures(components []*api.Component, hf *api.HardwareFeatures
 			resMap[device.Config_HARDWARE_FEATURE_STYLUS] = true
 		}
 	}
-	// HARDWARE_FEATURE_FINGERPRINT: needs to be present
-	if fp := hf.GetFingerprint(); fp != nil {
-		if fp.GetLocation() != api.HardwareFeatures_Fingerprint_NOT_PRESENT {
-			resMap[device.Config_HARDWARE_FEATURE_FINGERPRINT] = true
-		}
-	}
+
 	// HARDWARE_FEATURE_DETACHABLE_KEYBOARD
 	if hf.GetKeyboard() != nil && hf.GetKeyboard().GetKeyboardType() == api.HardwareFeatures_Keyboard_DETACHABLE {
 		resMap[device.Config_HARDWARE_FEATURE_DETACHABLE_KEYBOARD] = true

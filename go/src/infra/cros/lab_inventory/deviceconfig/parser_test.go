@@ -54,7 +54,6 @@ func TestParseConfigBundle(t *testing.T) {
 						device.Config_HARDWARE_FEATURE_TOUCHPAD,
 						device.Config_HARDWARE_FEATURE_TOUCHSCREEN,
 						device.Config_HARDWARE_FEATURE_DETACHABLE_KEYBOARD,
-						device.Config_HARDWARE_FEATURE_FINGERPRINT,
 					})
 					So(dc.GetStorage(), ShouldEqual, device.Config_STORAGE_MMC)
 					So(dc.GetCpu(), ShouldEqual, device.Config_ARCHITECTURE_UNDEFINED)
@@ -85,7 +84,6 @@ func TestParseConfigBundle(t *testing.T) {
 						device.Config_HARDWARE_FEATURE_TOUCHPAD,
 						device.Config_HARDWARE_FEATURE_TOUCHSCREEN,
 						device.Config_HARDWARE_FEATURE_DETACHABLE_KEYBOARD,
-						device.Config_HARDWARE_FEATURE_FINGERPRINT,
 					})
 					So(dc.GetStorage(), ShouldEqual, device.Config_STORAGE_MMC)
 					So(dc.GetCpu(), ShouldEqual, device.Config_ARCHITECTURE_UNDEFINED)
