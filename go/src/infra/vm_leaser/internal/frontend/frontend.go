@@ -89,7 +89,7 @@ func (s *Server) LeaseVM(ctx context.Context, r *pb.LeaseVMRequest) (*pb.LeaseVM
 		return nil, err
 	}
 
-	ins, err := getInstance(ctx, instancesClient, leaseId, r.GetHostReqs())
+	ins, err := getInstance(ctx, instancesClient, leaseId, r.GetHostReqs(), true)
 	if err != nil {
 		return nil, err
 	}
@@ -144,15 +144,36 @@ func (s *Server) ReleaseVM(ctx context.Context, r *pb.ReleaseVMRequest) (*pb.Rel
 //
 // getInstance returns a GCE instance with valid network interface and network
 // IP. If no network is available, it does not return the instance.
-func getInstance(ctx context.Context, client computeInstancesClient, leaseId string, hostReqs *pb.VMRequirements) (*computepb.Instance, error) {
+func getInstance(ctx context.Context, client computeInstancesClient, leaseId string, hostReqs *pb.VMRequirements, shouldPoll bool) (*computepb.Instance, error) {
 	getReq := &computepb.GetInstanceRequest{
 		Instance: leaseId,
 		Project:  hostReqs.GetGceProject(),
 		Zone:     hostReqs.GetGceRegion(),
 	}
-	ins, err := client.Get(ctx, getReq)
-	if err != nil {
-		return nil, fmt.Errorf("instance not found: %v", err)
+
+	var ins *computepb.Instance
+	var err error
+	if shouldPoll {
+		// Implement a 30 second deadline for polling for the instance
+		d := time.Now().Add(30 * time.Second)
+		ctx, cancel := context.WithDeadline(ctx, d)
+		defer cancel()
+
+		err = poll(ctx, func(ctx context.Context) (bool, error) {
+			ins, err = client.Get(ctx, getReq)
+			if err != nil {
+				return false, err
+			}
+			return true, nil
+		}, 2*time.Second)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		ins, err = client.Get(ctx, getReq)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if ins.GetNetworkInterfaces() == nil {
@@ -290,4 +311,29 @@ func computeExpirationTime(ctx context.Context, leaseDuration *durationpb.Durati
 		return expirationTime + (DefaultLeaseDuration * 60), nil
 	}
 	return expirationTime + leaseDuration.GetSeconds(), nil
+}
+
+// poll is a generic polling function that polls by interval
+//
+// poll provides a generic implementation of calling f at interval, exits on
+// error or ctx timeout. f return true to end poll early.
+func poll(ctx context.Context, f func(context.Context) (bool, error), interval time.Duration) error {
+	if _, ok := ctx.Deadline(); !ok {
+		return errors.New("context must have a deadline to avoid infinite polling")
+	}
+	ticker := time.NewTicker(interval)
+	for {
+		select {
+		case <-ticker.C:
+			success, err := f(ctx)
+			if err != nil {
+				return err
+			}
+			if success {
+				return nil
+			}
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+	}
 }
