@@ -7,6 +7,7 @@ package controller
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"strings"
 
 	"github.com/golang/protobuf/proto"
@@ -18,6 +19,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/registration"
 	"infra/unifiedfleet/app/util"
@@ -143,6 +145,27 @@ func ListAssets(ctx context.Context, pageSize int32, pageToken, filter string, k
 	}
 	filterMap = resetZoneFilter(filterMap, registration.GetAssetIndexedFieldName)
 	filterMap = resetAssetTypeFilter(filterMap, registration.GetAssetIndexedFieldName)
+
+	if pageToken != "" {
+		if datastore.IsMultiCursorString(pageToken) {
+			logging.Infof(ctx, "ListAssets --- Continue Running in experimental API")
+			// If we have a multicursor in our hand. Then we got to do the ACLs
+			return registration.ListAssetsACL(ctx, pageSize, pageToken, filterMap, keysOnly)
+		} else {
+			return registration.ListAssets(ctx, pageSize, pageToken, filterMap, keysOnly)
+		}
+	}
+	cutoff := config.Get(ctx).GetExperimentalAPI().GetListAssetsACL()
+	// If cutoff is set attempt to divert the traffic to new API
+	if cutoff != 0 {
+		// Roll the dice to determine which one to use
+		roll := rand.Uint32() % 100
+		cutoff := cutoff % 100
+		if roll <= cutoff {
+			logging.Infof(ctx, "ListAssets --- Running in experimental API")
+			return registration.ListAssetsACL(ctx, pageSize, pageToken, filterMap, keysOnly)
+		}
+	}
 	return registration.ListAssets(ctx, pageSize, pageToken, filterMap, keysOnly)
 }
 
