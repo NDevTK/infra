@@ -126,7 +126,7 @@ func TestGetInstance(t *testing.T) {
 				GceMachineType: "test-machine-type",
 				GceDiskSize:    100,
 			}
-			ins, err := getInstance(ctx, client, "test-id", hostReqs)
+			ins, err := getInstance(ctx, client, "test-id", hostReqs, false)
 			So(ins, ShouldNotBeNil)
 			So(ins, ShouldResembleProto, &computepb.Instance{
 				Name: proto.String("test-id"),
@@ -138,7 +138,7 @@ func TestGetInstance(t *testing.T) {
 			})
 			So(err, ShouldBeNil)
 		})
-		Convey("getInstance - error: instance not found", func() {
+		Convey("getInstance - error: failed get", func() {
 			client := &mockComputeInstancesClient{
 				getFunc: func() (*computepb.Instance, error) {
 					return nil, errors.New("failed get")
@@ -151,10 +151,10 @@ func TestGetInstance(t *testing.T) {
 				GceMachineType: "test-machine-type",
 				GceDiskSize:    100,
 			}
-			ins, err := getInstance(ctx, client, "test-id", hostReqs)
+			ins, err := getInstance(ctx, client, "test-id", hostReqs, false)
 			So(ins, ShouldBeNil)
 			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "instance not found")
+			So(err.Error(), ShouldContainSubstring, "failed get")
 		})
 		Convey("getInstance - error: no network interface", func() {
 			client := &mockComputeInstancesClient{
@@ -169,7 +169,7 @@ func TestGetInstance(t *testing.T) {
 				GceMachineType: "test-machine-type",
 				GceDiskSize:    100,
 			}
-			ins, err := getInstance(ctx, client, "test-id", hostReqs)
+			ins, err := getInstance(ctx, client, "test-id", hostReqs, false)
 			So(ins, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "instance does not have a network interface")
@@ -191,10 +191,60 @@ func TestGetInstance(t *testing.T) {
 				GceMachineType: "test-machine-type",
 				GceDiskSize:    100,
 			}
-			ins, err := getInstance(ctx, client, "test-id", hostReqs)
+			ins, err := getInstance(ctx, client, "test-id", hostReqs, false)
 			So(ins, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "instance does not have a network IP")
+		})
+	})
+}
+
+func TestPoll(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	Convey("Test poll", t, func() {
+		Convey("poll - no context deadline", func() {
+			f := func(ctx context.Context) (bool, error) {
+				return false, nil
+			}
+			interval := time.Duration(1)
+			err := poll(ctx, f, interval)
+			So(err, ShouldNotBeNil)
+		})
+		Convey("poll - quit on error", func() {
+			expected := 2
+			count := 1
+			ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+			defer cancel()
+			f := func(ctx context.Context) (bool, error) {
+				count++
+				if count == 2 {
+					return false, errors.New("error on 2")
+				}
+				return false, nil
+			}
+			err := poll(ctx, f, 100*time.Millisecond)
+			actual := count
+			So(err, ShouldNotBeNil)
+			So(actual, ShouldEqual, expected)
+		})
+		Convey("poll - quit on success", func() {
+			expected := 3
+			count := 1
+			ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+			defer cancel()
+			f := func(ctx context.Context) (bool, error) {
+				count++
+				if count == 3 {
+					return true, nil
+				}
+				return false, nil
+			}
+			err := poll(ctx, f, 100*time.Millisecond)
+			actual := count
+
+			So(err, ShouldBeNil)
+			So(actual, ShouldEqual, expected)
 		})
 	})
 }
