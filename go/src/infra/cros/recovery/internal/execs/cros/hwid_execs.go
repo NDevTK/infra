@@ -22,6 +22,17 @@ const (
 // updateHWIDToInvExec read HWID from the resource and update DUT info.
 func updateHWIDToInvExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
+	actionArgs := info.GetActionArgs(ctx)
+	allowedOverride := actionArgs.AsBool(ctx, "allowed_override", false)
+	invHWID := info.GetChromeos().GetHwid()
+	if invHWID != "" {
+		if allowedOverride {
+			log.Debugf(ctx, "Inventory have HWID %q and override is allowed.", invHWID)
+		} else {
+			log.Debugf(ctx, "Inventory have HWID %q and it is not allowed to override it.", invHWID)
+			return nil
+		}
+	}
 	hwid, err := run(ctx, time.Minute, readHWIDCommand)
 	if err != nil {
 		return errors.Annotate(err, "update HWID in DUT-info").Err()
