@@ -24,6 +24,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+var iso8601Format = "2006-01-02"
+
 type luciexeGenerateRun struct {
 	generateRun
 }
@@ -40,6 +42,7 @@ func main() {
 	authOpts := chromeinfra.DefaultAuthOptions()
 	authOpts.Scopes = []string{
 		auth.OAuthScopeEmail,
+		"https://www.googleapis.com/auth/bigquery",
 		"https://www.googleapis.com/auth/cloud-platform",
 	}
 
@@ -93,10 +96,11 @@ func main() {
 }
 
 func Run(ctx context.Context, input *healthpb.InputParams) error {
-	var err error
-	step, ctx := build.StartStep(ctx, "Hello world")
-	defer func() { step.End(err) }()
-	logging.Infof(ctx, "date is %+v", input.Date)
+	logging.Infof(ctx, "Run (date is %+v)", input.Date)
+
+	if err := generate(ctx, input); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -106,7 +110,11 @@ func (r *luciexeGenerateRun) Run(a subcommands.Application, args []string, env s
 	input := healthpb.InputParams{}
 
 	build.Main(&input, nil, nil, func(ctx context.Context, userArgs []string, state *build.State) error {
-		return Run(ctx, &input)
+		input, err := r.generateRun.ParseFlags(ctx)
+		if err != nil {
+			return err
+		}
+		return Run(ctx, input)
 	})
 
 	return 0
@@ -121,7 +129,6 @@ func (r *generateRun) ParseFlags(ctx context.Context) (*healthpb.InputParams, er
 		return input, nil
 	}
 
-	iso8601Format := "2006-01-02"
 	t, err := time.Parse(iso8601Format, r.dateString)
 	if err != nil {
 		return input, errors.New("Error parsing -date flag. Please specify date like YYYY-MM-DD")
