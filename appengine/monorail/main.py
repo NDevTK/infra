@@ -24,9 +24,9 @@ import_utils.FixImports()
 
 import gae_ts_mon
 
-import redirect
 import registerpages
 from framework import sorting
+from redirect import redirect
 from services import service_manager
 
 if os.getenv('GAE_ENV') == 'standard':
