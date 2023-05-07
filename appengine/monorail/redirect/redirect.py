@@ -5,8 +5,13 @@
 
 Handles traffic redirection before hitting main monorail app.
 """
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
 
 import flask
+from redirect import redirect_utils
+
 
 class RedirectMiddleware(object):
 
@@ -32,15 +37,18 @@ def GenerateRedirectApp():
   def PreCheckHandler():
     # Should not redirect away from monorail if param set.
     r = flask.request
-    no_redirect = r.args.get('no_tracker_redirect', 0, type=int)
-    if no_redirect == 1:
+    no_redirect = r.args.get('no_tracker_redirect')
+    if not no_redirect:
       flask.abort(404)
+
   redirect_app.before_request(PreCheckHandler)
 
   def IssueList(project_name):
-    del project_name
-    # TODO(crbug.com/monorail/12012): Add project redirect logic
+    redirect_url = redirect_utils.GetRedirectURL(project_name)
+    if redirect_url:
+      return flask.redirect(redirect_url)
     flask.abort(404)
+
   redirect_app.route('/p/<string:project_name>/issues/')(IssueList)
   redirect_app.route('/p/<string:project_name>/issues/list')(IssueList)
 
@@ -48,12 +56,15 @@ def GenerateRedirectApp():
     del project_name
     # TODO(crbug.com/monorail/12012): Add issue redirect logic
     flask.abort(404)
+
   redirect_app.route('/p/<string:project_name>/issues/detail')(IssueDetail)
 
   def IssueCreate(project_name):
-    del project_name
-    # TODO(crbug.com/monorail/12012): Add create new issue redirect logic
+    redirect_url = redirect_utils.GetRedirectURL(project_name)
+    if redirect_url:
+      return flask.redirect(redirect_url + '/new')
     flask.abort(404)
+
   redirect_app.route('/p/<string:project_name>/issues/entry')(IssueCreate)
   redirect_app.route('/p/<string:project_name>/issues/entry_new')(IssueCreate)
 
