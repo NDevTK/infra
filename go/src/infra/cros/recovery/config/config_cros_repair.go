@@ -53,6 +53,7 @@ func crosRepairPlan() *Plan {
 			"Update special device labels",
 			"Collect dmesg logs from DUT",
 			"Record type C status",
+			"All repair-requests resolved",
 			"Reset DUT-state reason",
 		},
 		Actions: crosRepairActions(),
@@ -3211,6 +3212,12 @@ func crosRepairActions() map[string]*Action {
 				"timeout_in_ms:2000",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"All repair-requests resolved": {
+			Docs: []string{
+				"Checks if all repair requests are resolved",
+			},
+			ExecName: "dut_has_no_repair_requests",
 		},
 	}
 }
