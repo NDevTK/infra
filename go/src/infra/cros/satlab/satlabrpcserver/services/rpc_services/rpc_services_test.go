@@ -539,7 +539,7 @@ func TestListConnectedDUTsFirmwareShouldSuccess(t *testing.T) {
 		On("RunCommandOnIPs", ctx, mock.Anything, constants.ListFirmwareCommand).
 		Return([]*utils.SSHResult{
 			{IP: IP, Value: cmdOut},
-		}, nil)
+		})
 
 	req := &pb.ListConnectedDutsFirmwareRequest{}
 
@@ -576,7 +576,7 @@ func TestListConnectedDUTsFirmwareShouldGetEmptyListWhenCommandExecuteFailed(t *
 		On("RunCommandOnIPs", ctx, mock.Anything, constants.ListFirmwareCommand).
 		Return([]*utils.SSHResult{
 			{IP: "192.168.100.1", Error: expectedError},
-		}, nil)
+		})
 
 	req := &pb.ListConnectedDutsFirmwareRequest{}
 

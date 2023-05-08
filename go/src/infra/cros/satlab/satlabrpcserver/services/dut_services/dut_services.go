@@ -15,5 +15,5 @@ type IDUTServices interface {
 	RunCommandOnIP(ctx context.Context, IP, cmd string) (*utils.SSHResult, error)
 
 	// RunCommandOnIPs send the command to DUT devices and then get the result back
-	RunCommandOnIPs(ctx context.Context, IPs []string, cmd string) ([]*utils.SSHResult, error)
+	RunCommandOnIPs(ctx context.Context, IPs []string, cmd string) []*utils.SSHResult
 }

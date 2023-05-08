@@ -25,7 +25,7 @@ func (m *MockDUTServices) RunCommandOnIP(ctx context.Context, IP, cmd string) (*
 }
 
 // RunCommandOnIPs send the command to DUT devices and then get the result back
-func (m *MockDUTServices) RunCommandOnIPs(ctx context.Context, IPs []string, cmd string) ([]*utils.SSHResult, error) {
+func (m *MockDUTServices) RunCommandOnIPs(ctx context.Context, IPs []string, cmd string) []*utils.SSHResult {
 	args := m.Called(ctx, IPs, cmd)
-	return args.Get(0).([]*utils.SSHResult), args.Error(1)
+	return args.Get(0).([]*utils.SSHResult)
 }

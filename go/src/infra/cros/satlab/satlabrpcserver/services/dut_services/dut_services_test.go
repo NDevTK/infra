@@ -158,11 +158,7 @@ func TestRunCommandOnIpsShouldWork(t *testing.T) {
 		clientConnector: connector.New(0, time.Second),
 	}
 
-	res, err := dutServices.RunCommandOnIPs(ctx, []string{"127.0.0.1"}, "echo")
-
-	if err != nil {
-		t.Errorf("Got an error: {%v}", err)
-	}
+	res := dutServices.RunCommandOnIPs(ctx, []string{"127.0.0.1"}, "echo")
 
 	expected := []*utils.SSHResult{{IP: "127.0.0.1", Value: expectedResponse}}
 	if diff := cmp.Diff(expected, res); diff != "" {

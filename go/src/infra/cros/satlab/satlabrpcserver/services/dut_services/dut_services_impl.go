@@ -129,7 +129,7 @@ func (d *DUTServicesImpl) RunCommandOnIP(ctx context.Context, IP string, cmd str
 //
 // ips the list of ip which want to execute the command.
 // cmd which command want to be executed.
-func (d *DUTServicesImpl) RunCommandOnIPs(ctx context.Context, IPs []string, cmd string) ([]*utils.SSHResult, error) {
+func (d *DUTServicesImpl) RunCommandOnIPs(ctx context.Context, IPs []string, cmd string) []*utils.SSHResult {
 	ch := make(chan *utils.SSHResult)
 
 	var wg sync.WaitGroup
@@ -159,5 +159,5 @@ func (d *DUTServicesImpl) RunCommandOnIPs(ctx context.Context, IPs []string, cmd
 		res = append(res, data)
 	}
 
-	return res, nil
+	return res
 }

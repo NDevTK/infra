@@ -245,11 +245,7 @@ func (s *SatlabRpcServiceServer) ListConnectedDutsFirmware(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
-	res, err := s.dutService.RunCommandOnIPs(ctx, IPs, constants.ListFirmwareCommand)
-
-	if err != nil {
-		return nil, err
-	}
+	res := s.dutService.RunCommandOnIPs(ctx, IPs, constants.ListFirmwareCommand)
 
 	var DUTsResponse []*pb.ConnectedDutFirmwareInfo
 
