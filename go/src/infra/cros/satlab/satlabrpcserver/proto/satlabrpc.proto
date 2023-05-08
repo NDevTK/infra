@@ -13,6 +13,7 @@ service SatlabRpcService {
   rpc list_accessible_models (ListAccessibleModelsRequest) returns (ListAccessibleModelsResponse);
   rpc list_build_versions (ListBuildVersionsRequest) returns (ListBuildVersionsResponse);
   rpc stage_build (StageBuildRequest) returns (StageBuildResponse);
+  rpc list_connected_duts_firmware(ListConnectedDutsFirmwareRequest) returns (ListConnectedDutsFirmwareResponse);
 }
 
 message ListBuildTargetsRequest {
@@ -86,4 +87,20 @@ message StageBuildRequest {
 // NEXT_TAG = 2
 message StageBuildResponse {
   string build_bucket = 1;
+}
+
+// NEXT_TAG = 1
+message ListConnectedDutsFirmwareRequest {
+}
+
+// NEXT_TAG = 4
+message ConnectedDutFirmwareInfo {
+  string ip = 1;
+  string current_firmware = 2;
+  string update_firmware = 3;
+}
+
+// NEXT_TAG = 2
+message ListConnectedDutsFirmwareResponse {
+  repeated ConnectedDutFirmwareInfo duts = 1;
 }

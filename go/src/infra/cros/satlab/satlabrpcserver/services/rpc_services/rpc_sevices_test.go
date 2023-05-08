@@ -12,19 +12,14 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/stretchr/testify/mock"
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
-
+	mk "infra/cros/satlab/satlabrpcserver/mocks"
 	pb "infra/cros/satlab/satlabrpcserver/proto"
 	"infra/cros/satlab/satlabrpcserver/services/build_services"
-	"infra/cros/satlab/satlabrpcserver/services/mocks"
 	"infra/cros/satlab/satlabrpcserver/utils"
+	"infra/cros/satlab/satlabrpcserver/utils/constants"
 )
-
-// Create a Mock `IBuildService`
-var mockBuildService = new(mocks.MockBuildServices)
-
-// Create a Mock `IBucketService`
-var mockBucketService = new(mocks.MockBucketServices)
 
 // checkShouldRaiseError it is a helper function to check the response should raise error.
 func checkShouldRaiseError(t *testing.T, err error, expectedErr error) {
@@ -37,24 +32,39 @@ func checkShouldRaiseError(t *testing.T, err error, expectedErr error) {
 	}
 }
 
-// TestListBuildTargetsShouldSuccess test `ListBuildTargets` function.
-//
-// It should return some data without error.
-func TestListBuildTargetsShouldSuccess(t *testing.T) {
+func createMockServer(t *testing.T) *SatlabRpcServiceServer {
+	// Create a Mock `IBuildService`
+	var mockBuildService = new(mk.MockBuildServices)
+
+	// Create a Mock `IBucketService`
+	var mockBucketService = new(mk.MockBucketServices)
+
+	// Create a Mock `IDUTService`
+	var mockDUTService = new(mk.MockDUTServices)
+
 	// Create a `LabelParser`
 	var labelParser, err = utils.NewLabelParser()
 	if err != nil {
 		t.Fatalf("Failed to create a label parser %v", err)
 	}
 	// Create a SATLab Server
-	s := New(mockBuildService, mockBucketService, labelParser)
+	return New(mockBuildService, mockBucketService, mockDUTService, labelParser)
+}
+
+// TestListBuildTargetsShouldSuccess test `ListBuildTargets` function.
+//
+// It should return some data without error.
+func TestListBuildTargetsShouldSuccess(t *testing.T) {
+	t.Parallel()
+	// Create a SATLab Server
+	s := createMockServer(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
 	// Setup some data to Mock
 	expected := []string{"zork"}
-	mockBuildService.On("ListBuildTargets", ctx).Return(
+	s.buildService.(*mk.MockBuildServices).On("ListBuildTargets", ctx).Return(
 		expected, nil)
 
 	req := &pb.ListBuildTargetsRequest{}
@@ -76,25 +86,21 @@ func TestListBuildTargetsShouldSuccess(t *testing.T) {
 // It should return error because it mocks some network error on calling
 // `BuildClient` to fetch the data.
 func TestListBuildTargetsShouldFailWhenMakeARequestToBuildClientFailed(t *testing.T) {
-	// Create a `LabelParser`
-	var labelParser, err = utils.NewLabelParser()
-	if err != nil {
-		t.Fatalf("Failed to create a label parser %v", err)
-	}
+	t.Parallel()
 	// Create a SATLab Server
-	s := New(mockBuildService, mockBucketService, labelParser)
+	s := createMockServer(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
 	// Setup some data to Mock
 	expectedErr := errors.New("network error")
-	mockBuildService.On("ListBuildTargets", ctx).Return(
+	s.buildService.(*mk.MockBuildServices).On("ListBuildTargets", ctx).Return(
 		[]string{}, expectedErr)
 
 	req := &pb.ListBuildTargetsRequest{}
 
-	_, err = s.ListBuildTargets(ctx, req)
+	_, err := s.ListBuildTargets(ctx, req)
 
 	// Assert
 	checkShouldRaiseError(t, err, expectedErr)
@@ -104,13 +110,9 @@ func TestListBuildTargetsShouldFailWhenMakeARequestToBuildClientFailed(t *testin
 //
 // It should return some data without error.
 func TestListMilestonesShouldSuccess(t *testing.T) {
-	// Create a `LabelParser`
-	var labelParser, err = utils.NewLabelParser()
-	if err != nil {
-		t.Fatalf("Failed to create a label parser %v", err)
-	}
+	t.Parallel()
 	// Create a SATLab Server
-	s := New(mockBuildService, mockBucketService, labelParser)
+	s := createMockServer(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
@@ -119,13 +121,13 @@ func TestListMilestonesShouldSuccess(t *testing.T) {
 	board := "zork"
 	model := "dirinboz"
 	expectedMilestones := []string{"114", "113"}
-	mockBuildService.On("ListAvailableMilestones", ctx, board, model).Return(
+	s.buildService.(*mk.MockBuildServices).On("ListAvailableMilestones", ctx, board, model).Return(
 		expectedMilestones, nil)
 
 	localBucketMilestones := []string{"113"}
-	mockBucketService.On("GetMilestones", ctx, board).Return(
+	s.bucketService.(*mk.MockBucketServices).On("GetMilestones", ctx, board).Return(
 		localBucketMilestones, nil)
-	mockBucketService.On("IsBucketInAsia", ctx).Return(
+	s.bucketService.(*mk.MockBucketServices).On("IsBucketInAsia", ctx).Return(
 		false, nil)
 
 	req := &pb.ListMilestonesRequest{
@@ -163,13 +165,9 @@ func TestListMilestonesShouldSuccess(t *testing.T) {
 
 // TestListMilestonesShouldSuccessWhenBucketInAsia test `ListMilestones` function.
 func TestListMilestonesShouldSuccessWhenBucketInAsia(t *testing.T) {
-	// Create a `LabelParser`
-	var labelParser, err = utils.NewLabelParser()
-	if err != nil {
-		t.Fatalf("Failed to create a label parser %v", err)
-	}
+	t.Parallel()
 	// Create a SATLab Server
-	s := New(mockBuildService, mockBucketService, labelParser)
+	s := createMockServer(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
@@ -178,13 +176,13 @@ func TestListMilestonesShouldSuccessWhenBucketInAsia(t *testing.T) {
 	board := "zork"
 	model := "dirinboz"
 	expectedMilestones := []string{"114", "113"}
-	mockBuildService.On("ListAvailableMilestones", ctx, board, model).Return(
+	s.buildService.(*mk.MockBuildServices).On("ListAvailableMilestones", ctx, board, model).Return(
 		expectedMilestones, nil)
 
 	localBucketMilestones := []string{"113"}
-	mockBucketService.On("GetMilestones", ctx, board).Return(
+	s.bucketService.(*mk.MockBucketServices).On("GetMilestones", ctx, board).Return(
 		localBucketMilestones, nil)
-	mockBucketService.On("IsBucketInAsia", ctx).Return(
+	s.bucketService.(*mk.MockBucketServices).On("IsBucketInAsia", ctx).Return(
 		true, nil)
 
 	req := &pb.ListMilestonesRequest{
@@ -218,13 +216,9 @@ func TestListMilestonesShouldSuccessWhenBucketInAsia(t *testing.T) {
 
 // TestListMilestonesShouldSuccessWhenBucketInAsia test `ListMilestones` function.
 func TestListMilestonesShouldFailWhenMakeARequestToBucketFailed(t *testing.T) {
-	// Create a `LabelParser`
-	var labelParser, err = utils.NewLabelParser()
-	if err != nil {
-		t.Fatalf("Failed to create a label parser %v", err)
-	}
+	t.Parallel()
 	// Create a SATLab Server
-	s := New(mockBuildService, mockBucketService, labelParser)
+	s := createMockServer(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
@@ -234,13 +228,13 @@ func TestListMilestonesShouldFailWhenMakeARequestToBucketFailed(t *testing.T) {
 	model := "dirinboz"
 	expectedMilestones := []string{"114", "113"}
 	expectedErr := errors.New("can't make a request")
-	mockBuildService.On("ListAvailableMilestones", ctx, board, model).Return(
+	s.buildService.(*mk.MockBuildServices).On("ListAvailableMilestones", ctx, board, model).Return(
 		expectedMilestones, nil)
 
 	localBucketMilestones := []string{"113"}
-	mockBucketService.On("GetMilestones", ctx, board).Return(
+	s.bucketService.(*mk.MockBucketServices).On("GetMilestones", ctx, board).Return(
 		localBucketMilestones, nil)
-	mockBucketService.On("IsBucketInAsia", ctx).Return(
+	s.bucketService.(*mk.MockBucketServices).On("IsBucketInAsia", ctx).Return(
 		false, expectedErr)
 
 	req := &pb.ListMilestonesRequest{
@@ -248,7 +242,7 @@ func TestListMilestonesShouldFailWhenMakeARequestToBucketFailed(t *testing.T) {
 		Model: model,
 	}
 
-	_, err = s.ListMilestones(ctx, req)
+	_, err := s.ListMilestones(ctx, req)
 
 	// Assert
 	checkShouldRaiseError(t, err, expectedErr)
@@ -256,13 +250,9 @@ func TestListMilestonesShouldFailWhenMakeARequestToBucketFailed(t *testing.T) {
 
 // TestListAccessibleModelShouldSuccess test `ListAccessibleModel` function.
 func TestListAccessibleModelShouldSuccess(t *testing.T) {
-	// Create a `LabelParser`
-	var labelParser, err = utils.NewLabelParser()
-	if err != nil {
-		t.Fatalf("Failed to create a label parser %v", err)
-	}
+	t.Parallel()
 	// Create a SATLab Server
-	s := New(mockBuildService, mockBucketService, labelParser)
+	s := createMockServer(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
@@ -270,7 +260,7 @@ func TestListAccessibleModelShouldSuccess(t *testing.T) {
 	// Setup some data to Mock
 	board := "zork"
 	in := []string{"buildTargets/zork/models/model1", "buildTargets/zork/models/model2", "buildTargets/zork/models/dirinboz"}
-	mockBuildService.On("ListModels", ctx, board).Return(
+	s.buildService.(*mk.MockBuildServices).On("ListModels", ctx, board).Return(
 		in, nil)
 
 	req := &pb.ListAccessibleModelsRequest{
@@ -321,13 +311,9 @@ func TestListAccessibleModelShouldSuccess(t *testing.T) {
 
 // TestListAccessibleModelShouldSuccess test `ListAccessibleModel` function.
 func TestListAccessibleModelShouldFailWhenMakeARequestToBucketFailed(t *testing.T) {
-	// Create a `LabelParser`
-	var labelParser, err = utils.NewLabelParser()
-	if err != nil {
-		t.Fatalf("Failed to create a label parser %v", err)
-	}
+	t.Parallel()
 	// Create a SATLab Server
-	s := New(mockBuildService, mockBucketService, labelParser)
+	s := createMockServer(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
@@ -336,14 +322,14 @@ func TestListAccessibleModelShouldFailWhenMakeARequestToBucketFailed(t *testing.
 	board := "zork"
 	in := []string{"buildTargets/zork/models/model1", "buildTargets/zork/models/model2", "buildTargets/zork/models/dirinboz"}
 	expectedErr := errors.New("can't make a request to bucket")
-	mockBuildService.On("ListModels", ctx, board).Return(
+	s.buildService.(*mk.MockBuildServices).On("ListModels", ctx, board).Return(
 		in, expectedErr)
 
 	req := &pb.ListAccessibleModelsRequest{
 		Board: board,
 	}
 
-	_, err = s.ListAccessibleModels(ctx, req)
+	_, err := s.ListAccessibleModels(ctx, req)
 
 	// Assert
 	checkShouldRaiseError(t, err, expectedErr)
@@ -351,13 +337,9 @@ func TestListAccessibleModelShouldFailWhenMakeARequestToBucketFailed(t *testing.
 
 // TestListBuildVersionsShouldSuccess test `ListBuildVersions` function.
 func TestListBuildVersionsShouldSuccess(t *testing.T) {
-	// Create a `LabelParser`
-	var labelParser, err = utils.NewLabelParser()
-	if err != nil {
-		t.Fatalf("Failed to create a label parser %v", err)
-	}
+	t.Parallel()
 	// Create a SATLab Server
-	s := New(mockBuildService, mockBucketService, labelParser)
+	s := createMockServer(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
@@ -366,11 +348,11 @@ func TestListBuildVersionsShouldSuccess(t *testing.T) {
 	board := "zork1"
 	model := "dirinboz1"
 	var milestone int32 = 105
-	mockBucketService.
+	s.bucketService.(*mk.MockBucketServices).
 		On("GetBuilds", ctx, board, milestone).
 		Return([]string{"14820.8.0"}, nil)
 
-	mockBuildService.
+	s.buildService.(*mk.MockBuildServices).
 		On("ListBuildsForMilestone", ctx, board, model, milestone).
 		Return([]*build_services.BuildVersion{
 			{
@@ -387,7 +369,7 @@ func TestListBuildVersionsShouldSuccess(t *testing.T) {
 			},
 		}, nil)
 
-	mockBucketService.On("IsBucketInAsia", ctx).Return(
+	s.bucketService.(*mk.MockBucketServices).On("IsBucketInAsia", ctx).Return(
 		false, nil)
 
 	req := &pb.ListBuildVersionsRequest{Board: board, Model: model, Milestone: milestone}
@@ -429,13 +411,9 @@ func TestListBuildVersionsShouldSuccess(t *testing.T) {
 
 // TestListBuildVersionsShouldSuccess test `ListBuildVersions` function.
 func TestListBuildVersionsShouldFailWhenMakeARequestToBuildClientFailed(t *testing.T) {
-	// Create a `LabelParser`
-	var labelParser, err = utils.NewLabelParser()
-	if err != nil {
-		t.Fatalf("Failed to create a label parser %v", err)
-	}
+	t.Parallel()
 	// Create a SATLab Server
-	s := New(mockBuildService, mockBucketService, labelParser)
+	s := createMockServer(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
@@ -445,20 +423,20 @@ func TestListBuildVersionsShouldFailWhenMakeARequestToBuildClientFailed(t *testi
 	model := "dirinboz"
 	var milestone int32 = 105
 	expectedErr := errors.New("can't make a request to bucket")
-	mockBucketService.
+	s.bucketService.(*mk.MockBucketServices).
 		On("GetBuilds", ctx, board, milestone).
 		Return([]string{"14826.0.0"}, nil)
 
-	mockBucketService.On("IsBucketInAsia", ctx).Return(
+	s.bucketService.(*mk.MockBucketServices).On("IsBucketInAsia", ctx).Return(
 		false, nil)
 
-	mockBuildService.
+	s.buildService.(*mk.MockBuildServices).
 		On("ListBuildsForMilestone", ctx, board, model, milestone).
 		Return([]*build_services.BuildVersion{}, expectedErr)
 
 	req := &pb.ListBuildVersionsRequest{Board: board, Model: model, Milestone: milestone}
 
-	_, err = s.ListBuildVersions(ctx, req)
+	_, err := s.ListBuildVersions(ctx, req)
 
 	// Assert
 	checkShouldRaiseError(t, err, expectedErr)
@@ -466,13 +444,9 @@ func TestListBuildVersionsShouldFailWhenMakeARequestToBuildClientFailed(t *testi
 
 // TestStageBuildShouldSuccess test `StageBuild` function.
 func TestStageBuildShouldSuccess(t *testing.T) {
-	// Create a `LabelParser`
-	var labelParser, err = utils.NewLabelParser()
-	if err != nil {
-		t.Fatalf("Failed to create a label parser %v", err)
-	}
+	t.Parallel()
 	// Create a SATLab Server
-	s := New(mockBuildService, mockBucketService, labelParser)
+	s := createMockServer(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
@@ -489,7 +463,7 @@ func TestStageBuildShouldSuccess(t *testing.T) {
 		Path:   "buildTargets/zork/models/dirinboz/builds/1234.0.0/artifacts/chromeos-moblab-cienet-dev",
 	}
 
-	mockBuildService.
+	s.buildService.(*mk.MockBuildServices).
 		On("StageBuild", ctx, board, model, build, bucketName).
 		Return(expectedArtifact, nil)
 
@@ -513,13 +487,9 @@ func TestStageBuildShouldSuccess(t *testing.T) {
 
 // TestStageBuildShouldSuccess test `StageBuild` function.
 func TestStageBuildShouldFailWhenMakeARequestToBuildClientFailed(t *testing.T) {
-	// Create a `LabelParser`
-	var labelParser, err = utils.NewLabelParser()
-	if err != nil {
-		t.Fatalf("Failed to create a label parser %v", err)
-	}
+	t.Parallel()
 	// Create a SATLab Server
-	s := New(mockBuildService, mockBucketService, labelParser)
+	s := createMockServer(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
@@ -537,7 +507,7 @@ func TestStageBuildShouldFailWhenMakeARequestToBuildClientFailed(t *testing.T) {
 	}
 	expectedErr := errors.New("can't make a request")
 
-	mockBuildService.
+	s.buildService.(*mk.MockBuildServices).
 		On("StageBuild", ctx, board, model, build, bucketName).
 		Return(expectedArtifact, expectedErr)
 
@@ -547,8 +517,77 @@ func TestStageBuildShouldFailWhenMakeARequestToBuildClientFailed(t *testing.T) {
 		BuildVersion: build,
 	}
 
-	_, err = s.StageBuild(ctx, req)
+	_, err := s.StageBuild(ctx, req)
 
 	// Assert
 	checkShouldRaiseError(t, err, expectedErr)
+}
+
+func TestListConnectedDUTsFirmwareShouldSuccess(t *testing.T) {
+	t.Parallel()
+	// Create a mock server
+	s := createMockServer(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	cmdOut := "{\n  \"fwid\": \"Google_Lindar.13672.291.0\",\n  \"model\": \"lillipup\",\n  \"fw_update\": {\n    \"lillipup\": {\n      \"host\": {\n        \"versions\": {\n          \"ro\": \"Google_Lindar.13672.207.0\",\n          \"rw\": \"Google_Lindar.13672.291.0\"\n        },\n        \"keys\": {\n          \"root\": \"b11d74edd286c144e1135b49e7f0bc20cf041f10\",\n          \"recovery\": \"c14bd720b70d97394257e3e826bd8f43de48d4ed\"\n        },\n        \"image\": \"images/bios-lindar.ro-13672-207-0.rw-13672-291-0.bin\"\n      },\n      \"ec\": {\n        \"versions\": {\n          \"ro\": \"lindar_v2.0.7573-4cf04a534f\",\n          \"rw\": \"lindar_v2.0.10133-063f551128\"\n        },\n        \"image\": \"images/ec-lindar.ro-2-0-7573.rw-2-0-10133.bin\"\n      },\n      \"signature_id\": \"lillipup\"\n    }\n  }\n}\n"
+
+	// Mock some data
+	IP := "192.168.100.1"
+	s.dutService.(*mk.MockDUTServices).
+		On("RunCommandOnIPs", ctx, mock.Anything, constants.ListFirmwareCommand).
+		Return([]*utils.SSHResult{
+			{IP: IP, Value: cmdOut},
+		}, nil)
+
+	req := &pb.ListConnectedDutsFirmwareRequest{}
+
+	res, err := s.ListConnectedDutsFirmware(ctx, req)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Should not return error, but got an error: %v", err)
+	}
+
+	expected := []*pb.ConnectedDutFirmwareInfo{{
+		Ip:              IP,
+		CurrentFirmware: "Google_Lindar.13672.291.0",
+		UpdateFirmware:  "Google_Lindar.13672.291.0",
+	}}
+
+	if !reflect.DeepEqual(expected, res.Duts) {
+		t.Errorf("Expected: %v, got :%v", expected, res.Duts)
+	}
+}
+
+func TestListConnectedDUTsFirmwareShouldGetEmptyListWhenCommandExecuteFailed(t *testing.T) {
+	t.Parallel()
+	// Create a mock server
+	s := createMockServer(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	expectedError := errors.New("command execute failed")
+
+	// Mock some data
+	s.dutService.(*mk.MockDUTServices).
+		On("RunCommandOnIPs", ctx, mock.Anything, constants.ListFirmwareCommand).
+		Return([]*utils.SSHResult{
+			{IP: "192.168.100.1", Error: expectedError},
+		}, nil)
+
+	req := &pb.ListConnectedDutsFirmwareRequest{}
+
+	res, err := s.ListConnectedDutsFirmware(ctx, req)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Should not return error, but got an error: %v", err)
+	}
+
+	if len(res.Duts) != 0 {
+		t.Errorf("Expected zero dut")
+	}
 }

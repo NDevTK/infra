@@ -5,15 +5,16 @@ package rpc_services
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"sort"
 	"strconv"
 
 	"github.com/hashicorp/go-version"
-
 	pb "infra/cros/satlab/satlabrpcserver/proto"
 	"infra/cros/satlab/satlabrpcserver/services/bucket_services"
 	"infra/cros/satlab/satlabrpcserver/services/build_services"
+	"infra/cros/satlab/satlabrpcserver/services/dut_services"
 	"infra/cros/satlab/satlabrpcserver/utils"
 	"infra/cros/satlab/satlabrpcserver/utils/constants"
 )
@@ -25,6 +26,8 @@ type SatlabRpcServiceServer struct {
 	buildService build_services.IBuildServices
 	// bucketService the connector to partner bucket
 	bucketService bucket_services.IBucketServices
+	// dutService the service to connect to DUTs
+	dutService dut_services.IDUTServices
 	// labelParser the parser for parsing label
 	labelParser *utils.LabelParser
 }
@@ -32,11 +35,13 @@ type SatlabRpcServiceServer struct {
 func New(
 	buildService build_services.IBuildServices,
 	bucketService bucket_services.IBucketServices,
+	dutService dut_services.IDUTServices,
 	labelParser *utils.LabelParser,
 ) *SatlabRpcServiceServer {
 	return &SatlabRpcServiceServer{
 		bucketService: bucketService,
 		buildService:  buildService,
+		dutService:    dutService,
 		labelParser:   labelParser,
 	}
 }
@@ -232,6 +237,45 @@ func (s *SatlabRpcServiceServer) StageBuild(ctx context.Context, in *pb.StageBui
 		BuildBucket: res.GetBucket(),
 	}, nil
 
+}
+
+// ListConnectedDutsFirmware get current and firmware update on each DUT
+func (s *SatlabRpcServiceServer) ListConnectedDutsFirmware(ctx context.Context, _ *pb.ListConnectedDutsFirmwareRequest) (*pb.ListConnectedDutsFirmwareResponse, error) {
+	IPs, err := utils.GetConnectedDUTIPs()
+	if err != nil {
+		return nil, err
+	}
+	res, err := s.dutService.RunCommandOnIPs(ctx, IPs, constants.ListFirmwareCommand)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var DUTsResponse []*pb.ConnectedDutFirmwareInfo
+
+	for _, cmdRes := range res {
+		if cmdRes.Error != nil {
+			// If we execute the command failed, we can just continue others. Don't block.
+			log.Printf("Got an error when execute command: %v", cmdRes.Error)
+			continue
+		}
+		var cmdResponse dut_services.ListFirmwareCommandResponse
+		err = json.Unmarshal([]byte(cmdRes.Value), &cmdResponse)
+		if err != nil {
+			// If something wrong, we can continue to decode another ip result.
+			log.Printf("Json decode error: %v", err)
+			continue
+		}
+
+		model := cmdResponse.Model
+		currentFirmware := cmdResponse.FwId
+		updateFirmware := cmdResponse.FwUpdate[model].Host.Versions.RW
+		DUTsResponse = append(DUTsResponse, &pb.ConnectedDutFirmwareInfo{
+			Ip: cmdRes.IP, CurrentFirmware: currentFirmware, UpdateFirmware: updateFirmware,
+		})
+	}
+
+	return &pb.ListConnectedDutsFirmwareResponse{Duts: DUTsResponse}, nil
 }
 
 // Close clean up

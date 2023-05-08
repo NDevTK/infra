@@ -86,3 +86,9 @@ func ReadSSHKey(path string) (ssh.Signer, error) {
 	}
 	return signer, nil
 }
+
+// GetConnectedDUTIPs get all active DUTs IP
+// TODO we are waiting for the /leases/dnsmasq.leases to find all the connected DUTs
+func GetConnectedDUTIPs() ([]string, error) {
+	return []string{}, nil
+}

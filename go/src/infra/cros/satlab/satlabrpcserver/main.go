@@ -15,6 +15,7 @@ import (
 	pb "infra/cros/satlab/satlabrpcserver/proto"
 	"infra/cros/satlab/satlabrpcserver/services/bucket_services"
 	"infra/cros/satlab/satlabrpcserver/services/build_services"
+	"infra/cros/satlab/satlabrpcserver/services/dut_services"
 	"infra/cros/satlab/satlabrpcserver/services/rpc_services"
 	"infra/cros/satlab/satlabrpcserver/utils"
 	"infra/cros/satlab/satlabrpcserver/utils/constants"
@@ -50,8 +51,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to create a label parser %v", err)
 	}
+	dutService, err := dut_services.New()
+	if err != nil {
+		log.Fatalf("Failed to create a DUT service")
+	}
 
-	server := rpc_services.New(buildService, bucketService, labelParser)
+	server := rpc_services.New(buildService, bucketService, dutService, labelParser)
 	pb.RegisterSatlabRpcServiceServer(s, server)
 
 	// Register reflection service on gRPC server.
