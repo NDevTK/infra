@@ -5,7 +5,9 @@ package utils
 
 import (
 	"log"
+	"os"
 
+	"golang.org/x/crypto/ssh"
 	"google.golang.org/api/iterator"
 )
 
@@ -17,6 +19,12 @@ type Pair[T, U any] struct {
 type BoardAndModelPair struct {
 	Board string
 	Model string
+}
+
+type SSHResult struct {
+	IP    string
+	Value string
+	Error error
 }
 
 func Subtract[T, U any](sliceA []T, sliceB []U, compare func(a T, b U) bool) []T {
@@ -62,4 +70,19 @@ func Collect[T, U any](nextFunc func() (T, error), parser func(T) (U, error)) ([
 	}
 
 	return res, nil
+}
+
+// ReadSSHKey read a ssh private key file and then parse it to `ssh.Signer`
+func ReadSSHKey(path string) (ssh.Signer, error) {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		log.Printf("Can't read the ssh private key from %v", path)
+		return nil, err
+	}
+	signer, err := ssh.ParsePrivateKey(b)
+	if err != nil {
+		log.Printf("Parse private key error, got %v", err)
+		return nil, err
+	}
+	return signer, nil
 }

@@ -6,5 +6,6 @@ package utils
 import "errors"
 
 var (
-	NotMatch = errors.New("can't match the value")
+	NotMatch      = errors.New("can't match the value")
+	ReachMaxRetry = errors.New("reach the max retry")
 )
