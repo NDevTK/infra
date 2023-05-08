@@ -8,7 +8,7 @@ package ufs.config;
 
 option go_package = "infra/unifiedfleet/app/config";
 
-// Next Tag: 26
+// Next Tag: 27
 // Config is the configuration data served by luci-config for this app.
 message Config {
   string luci_config_service = 1;
@@ -56,6 +56,8 @@ message Config {
   DeviceConfigPushConfigs device_configs_push_configs = 24;
   // DNS resolved hostname to reach the ufs service
   string hostname = 25;
+  // ExperimentalAPI is for determining the experimental percentage for new API
+  ExperimentalAPI experimentalAPI = 26;
 }
 
 message OSNetworkConfig {
@@ -133,4 +135,12 @@ message DeviceConfigPushConfigs {
   string committish = 4;
   // Path containing the configs file (ex. `path/configs.cfg`)
   string configs_path = 5;
+}
+
+// ExperimentalAPI is to be used to set the experimental percentages for the API
+// Each entry should be of uint32 type. Please deprecate the field once your API
+// is fully released.
+message ExperimentalAPI {
+  // ListAssetsACL determines the experimental percentage for the experiment
+  uint32 ListAssetsACL = 1;
 }

@@ -104,6 +104,10 @@ var (
 	ResourcesImport = realms.RegisterPermission("ufs.resources.import")
 )
 
+func init() {
+	RegistrationsList.AddFlags(realms.UsedInQueryRealms)
+}
+
 // ChromeOSLUCIProject where ChromeOS LUCI infra lives
 const ChromeOSLUCIProject = "chromeos"
 
