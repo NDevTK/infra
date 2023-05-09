@@ -19,6 +19,7 @@ require (
 	cloud.google.com/go/storage v1.29.0
 	cloud.google.com/go/trace v1.8.0
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.11.2
+	github.com/Microsoft/go-winio v0.6.0
 	github.com/PaesslerAG/jsonpath v0.1.1
 	github.com/StackExchange/wmi v1.2.1
 	github.com/VividCortex/godaemon v1.0.0
@@ -122,7 +123,6 @@ require (
 	contrib.go.opencensus.io/exporter/stackdriver v0.13.12 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v0.33.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.35.2 // indirect
-	github.com/Microsoft/go-winio v0.6.0 // indirect
 	github.com/PaesslerAG/gval v1.0.0 // indirect
 	github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be // indirect
 	github.com/antlr/antlr4/runtime/Go/antlr v0.0.0-20210907221601-4f80a5e09cd0 // indirect
