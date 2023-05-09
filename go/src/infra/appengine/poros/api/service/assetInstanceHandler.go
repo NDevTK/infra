@@ -281,18 +281,12 @@ func (e *AssetInstanceHandler) FetchLogs(ctx context.Context, req *proto.FetchLo
 }
 
 func gcpProjectList() []string {
-	return []string{
-		"celab-poros-001",
-		"celab-poros-002",
-		"celab-poros-003",
-		"celab-poros-004",
-		"celab-poros-005",
-		"celab-poros-006",
-		"celab-poros-007",
-		"celab-poros-008",
-		"celab-poros-009",
-		"celab-poros-010",
+	projectList := []string{}
+	// Increase the number once more GCP project created and configured
+	for i := 1; i <= 30; i++ {
+		projectList = append(projectList, fmt.Sprintf("celab-poros-%03d", i))
 	}
+	return projectList
 }
 
 func getAssetInstanceById(ctx context.Context, id string) (*AssetInstanceEntity, error) {
