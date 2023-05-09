@@ -6,7 +6,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -101,8 +100,15 @@ func (m *mojomTarget) mergeFeatureArgs(gnTargetDict map[string]gnTargetInfo) []s
 // includes way more files than it actually includes.
 func (m *mojomTarget) findMojomImports() ([]string, error) {
 	var importPaths []string
-	args := m.target.Args
 
+	// Mojom imports may contain generated imports.
+	imp, err := filepath.Abs(filepath.Join(m.rootDir, m.outDir, "gen"))
+	if err != nil {
+		return nil, err
+	}
+	importPaths = append(importPaths, imp)
+
+	args := m.target.Args
 	for i := 0; i < len(args)-1; i++ {
 		if args[i] == "-I" {
 			imp, err := filepath.Abs(filepath.Join(m.rootDir, m.outDir, args[i+1]))
@@ -288,18 +294,10 @@ func isMojomTarget(t *gnTarget) bool {
 		return false
 	}
 
-	// TODO(crbug.com/1057746): Fix cross reference support for auto-generated files.
-	// https://crrev.com/cf22716b233ddaacea5c966df00db07b5c7b9102 adds
-	// cpp_templates.zip and mojolpm_templates.zip to //out to enable
-	// remote execution.
-	fmt.Println("adding: ", t.targetInfo.Sources[0])
 	for _, src := range t.targetInfo.Sources {
-		if !isMojomFile(src) {
-			continue
-		}
-		if strings.HasPrefix(src, "//out") {
-			return false
+		if isMojomFile(src) {
+			return true
 		}
 	}
-	return true
+	return false
 }

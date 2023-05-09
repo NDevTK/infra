@@ -1,0 +1,44 @@
+unit {
+  v_name: {
+    corpus: "chromium-test"
+    language: "mojom"
+  }
+  required_input: {
+    v_name: {
+      corpus: "chromium-test"
+      path: "out/Debug/gen/third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom"
+    }
+    info: {
+      path: "gen/third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom"
+      digest: "ebd13a3a6483abdc636a282f9bb238b7dc1f840b2de4fef0216e0c1609929501"
+    }
+  }
+  argument: "--use_bundled_pylibs"
+  argument: "-o"
+  argument: "gen"
+  argument: "generate"
+  argument: "-d"
+  argument: "../../"
+  argument: "-I"
+  argument: "../../"
+  argument: "--bytecode_path"
+  argument: "gen/mojo/public/tools/bindings"
+  argument: "--export_attribute"
+  argument: "BLINK_COMMON_EXPORT"
+  argument: "--export_header"
+  argument: "third_party/blink/public/common/common_export.h"
+  argument: "-g"
+  argument: "c++"
+  argument: "--typemap"
+  argument: "gen/third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state__type_mappings"
+  argument: "--enable_kythe_annotations"
+  argument: "--scrambled_message_id_salt_path"
+  argument: "../../chrome/VERSION"
+  argument: "gen/third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom"
+  source_file: "gen/third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom"
+  details: {
+    [kythe.io/proto/kythe.proto.BuildDetails]: {
+      build_config: "linux"
+    }
+  }
+}
