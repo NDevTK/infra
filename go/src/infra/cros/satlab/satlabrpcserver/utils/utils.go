@@ -5,10 +5,13 @@ package utils
 
 import (
 	"log"
+	"math"
 	"os"
 
 	"golang.org/x/crypto/ssh"
 	"google.golang.org/api/iterator"
+
+	"infra/cros/satlab/satlabrpcserver/utils/constants"
 )
 
 type Pair[T, U any] struct {
@@ -91,4 +94,9 @@ func ReadSSHKey(path string) (ssh.Signer, error) {
 // TODO we are waiting for the /leases/dnsmasq.leases to find all the connected DUTs
 func GetConnectedDUTIPs() ([]string, error) {
 	return []string{}, nil
+}
+
+// NearlyEqual check two float points are nearly equal.
+func NearlyEqual(a, b float64) bool {
+	return math.Abs(a-b) <= constants.F64Epsilon*(math.Abs(a)+math.Abs(b))
 }

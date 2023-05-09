@@ -14,11 +14,14 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stretchr/testify/mock"
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
+
 	mk "infra/cros/satlab/satlabrpcserver/mocks"
+	cpu "infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
 	pb "infra/cros/satlab/satlabrpcserver/proto"
 	"infra/cros/satlab/satlabrpcserver/services/build_services"
 	"infra/cros/satlab/satlabrpcserver/utils"
 	"infra/cros/satlab/satlabrpcserver/utils/constants"
+	mon "infra/cros/satlab/satlabrpcserver/utils/monitor"
 )
 
 // checkShouldRaiseError it is a helper function to check the response should raise error.
@@ -48,7 +51,7 @@ func createMockServer(t *testing.T) *SatlabRpcServiceServer {
 		t.Fatalf("Failed to create a label parser %v", err)
 	}
 	// Create a SATLab Server
-	return New(mockBuildService, mockBucketService, mockDUTService, labelParser)
+	return New(mockBuildService, mockBucketService, mockDUTService, labelParser, nil)
 }
 
 // TestListBuildTargetsShouldSuccess test `ListBuildTargets` function.
@@ -589,5 +592,37 @@ func TestListConnectedDUTsFirmwareShouldGetEmptyListWhenCommandExecuteFailed(t *
 
 	if len(res.Duts) != 0 {
 		t.Errorf("Expected zero dut")
+	}
+}
+
+func TestGetSystemInfoShouldWork(t *testing.T) {
+	t.Parallel()
+	// Create a mock server
+	s := createMockServer(t)
+	var mockCPUTemperature = new(mk.MockCPUTemperature)
+	var cpuOrchestrator = cpu.NewOrchestrator(mockCPUTemperature, 5)
+	s.cpuTemperatureOrchestrator = cpuOrchestrator
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	// Make some data
+	m := mon.New()
+	m.Register(cpuOrchestrator, time.Second)
+	mockCPUTemperature.On("GetCurrentCPUTemperature").Return(float32(1.0), nil)
+	time.Sleep(time.Second * 2)
+
+	req := pb.GetSystemInfoRequest{}
+
+	res, err := s.GetSystemInfo(ctx, &req)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Should not return error, but got an error: %v", err)
+	}
+
+	expected := 1.0
+	if !utils.NearlyEqual(float64(res.GetCpuTemperature()), expected) {
+		t.Errorf("Expected %v, got %v", expected, res.GetCpuTemperature())
 	}
 }
