@@ -67,7 +67,8 @@ def RunSteps(api, arch_type):
   dir_name = api.properties.get('dir_name', container_name)
   if arch_type:
     dir_name = dir_name + '_' + arch_type
-  build_script = api.path['checkout'].join('docker', dir_name, 'build.sh')
+  build_script = api.path['checkout'].join('infra', 'docker', dir_name,
+                                           'build.sh')
   api.step('build image', ['/bin/bash', build_script])
 
   api.docker.login(server='gcr.io', project='chromium-container-registry')

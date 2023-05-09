@@ -145,7 +145,7 @@
   {
     "cmd": [
       "/bin/bash",
-      "[CACHE]/builder/docker/android_devices_ARM/build.sh"
+      "[CACHE]/builder/infra/docker/android_devices_ARM/build.sh"
     ],
     "name": "build image"
   },

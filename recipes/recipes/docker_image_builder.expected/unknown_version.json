@@ -145,7 +145,7 @@
   {
     "cmd": [
       "/bin/bash",
-      "[CACHE]/builder/docker/swarm_docker/build.sh"
+      "[CACHE]/builder/infra/docker/swarm_docker/build.sh"
     ],
     "name": "build image"
   },
