@@ -17,6 +17,7 @@
       "--revision",
       ".@HEAD"
     ],
+    "cwd": "[CACHE]/builder",
     "env": {
       "DEPOT_TOOLS_COLLECT_METRICS": "0",
       "GIT_HTTP_LOW_SPEED_LIMIT": "102400",
@@ -87,7 +88,7 @@
       "RECIPE_REPO[depot_tools]/gclient.py",
       "runhooks"
     ],
-    "cwd": "[START_DIR]",
+    "cwd": "[CACHE]/builder",
     "env_suffixes": {
       "PATH": [
         "RECIPE_REPO[depot_tools]"
@@ -144,7 +145,7 @@
   {
     "cmd": [
       "/bin/bash",
-      "[START_DIR]/docker/android_devices_ARM/build.sh"
+      "[CACHE]/builder/docker/android_devices_ARM/build.sh"
     ],
     "name": "build image"
   },

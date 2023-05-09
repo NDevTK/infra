@@ -11,6 +11,7 @@ DEPS = [
     'depot_tools/bot_update',
     'depot_tools/gclient',
     'docker',
+    'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/path',
     'recipe_engine/properties',
@@ -34,8 +35,10 @@ PROPERTIES = {
 
 def RunSteps(api, arch_type):
   api.gclient.set_config('infra_superproject')
-  api.bot_update.ensure_checkout()
-  api.gclient.runhooks()
+  cache_dir = api.path['cache'].join('builder')
+  with api.context(cwd=cache_dir):
+    api.bot_update.ensure_checkout()
+    api.gclient.runhooks()
   api.docker.ensure_installed()
   api.docker.get_version()
 
