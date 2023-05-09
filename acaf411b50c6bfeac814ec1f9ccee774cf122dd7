@@ -72,6 +72,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "884089db_50243404",
+        "filename": "go/src/infra/unifiedfleet/app/controller/asset.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2023-05-09T20:31:52Z",
+      "side": 1,
+      "message": "Ok. Thanks for the clarification. Can you please add a comment in the code to indicate that isMultiCursor identifies the correct function to use.",
+      "parentUuid": "80a32009_c194e573",
+      "revId": "acaf411b50c6bfeac814ec1f9ccee774cf122dd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "7bbde80e_e4e80589",
         "filename": "go/src/infra/unifiedfleet/app/model/registration/asset_test.go",
         "patchSetId": 3
