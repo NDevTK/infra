@@ -90,6 +90,19 @@ const (
 	ExtraAttributeServoSetupDual = "SERVO_SETUP_DUAL"
 )
 
+// RepairRequest describes different repair-requests.
+type RepairRequest string
+
+const (
+	RepairRequestUnknown RepairRequest = "REPAIR_REQUEST_UNKNOWN"
+	// Request to re-provision DUT to stable-version.
+	RepairRequestProvision RepairRequest = "PROVISION"
+	// Request to reimage from USB-key after booting from it.
+	RepairRequestReimageByUSBKey RepairRequest = "REIMAGE_BY_USBKEY"
+	// Force re-download image to USB-key.
+	RepairRequestUpdateUSBKeyImage RepairRequest = "UPDATE_USBKEY_IMAGE"
+)
+
 // Dut holds info about setup used as testbed.
 type Dut struct {
 	// Unique identifier in inventory.
@@ -112,6 +125,8 @@ type Dut struct {
 	// All values has to be converted to string.
 	// Example: pools, force_flashing, restrictions and special abilities.
 	ExtraAttributes map[string][]string
+	// List of repair-requestes specified by external services.
+	RepairRequests []RepairRequest
 	// Chromeos hold specific data for ChromeOS device's data.
 	Chromeos *ChromeOS
 	// Android hold specific data for Android device's data.
