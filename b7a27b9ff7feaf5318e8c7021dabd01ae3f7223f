@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "34cdd2f8_79536578",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-05-09T23:25:52Z",
+      "side": 1,
+      "message": "Waiting for other CL to merge before testing on DUTs in the lab.",
+      "revId": "b7a27b9ff7feaf5318e8c7021dabd01ae3f7223f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
