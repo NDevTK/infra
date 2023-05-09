@@ -43,6 +43,7 @@ type collectRun struct {
 	pollingIntervalSeconds int
 	bbids                  list
 	dryrun                 bool
+	initialRetry           bool
 }
 
 type list []string
@@ -69,6 +70,7 @@ func cmdCollect() *subcommands.Command {
 			c.Flags.IntVar(&c.pollingIntervalSeconds, "polling_interval", 60, "Seconds to wait between polling builders")
 			c.Flags.Var(&c.bbids, "bbids", "(comma-separated) initial set of BBIDs to watch.")
 			c.Flags.BoolVar(&c.dryrun, "dryrun", false, "Dry run (i.e. don't actually retry builds).")
+			c.Flags.BoolVar(&c.initialRetry, "initial_retry", false, "If set, will retry any already failed builds at the beginning of execution.")
 			return c
 		}}
 }
@@ -149,7 +151,7 @@ func (c *collectRun) Run(a subcommands.Application, args []string, env subcomman
 		return 3
 	}
 
-	output, err := c.Collect(ctx, collectConfig)
+	output, err := c.Collect(ctx, collectConfig, c.initialRetry)
 	if err != nil {
 		c.LogErr(err.Error())
 		c.LogOut("Working set of builds: %s", strings.Join(output.BBIDs, ","))

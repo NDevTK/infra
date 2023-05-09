@@ -58,7 +58,7 @@ func getOriginalBBID(previousBBID map[string]string, BBID string) string {
 // Collect collects on the specified BBIDs, retrying as configured.
 // It returns the final set of BBIDs (the last retry for each build) and any
 // errors.
-func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) (*CollectOutput, error) {
+func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig, initialRetry bool) (*CollectOutput, error) {
 	state := initCollectState(&collectStateOpts{
 		config:            config,
 		initialBuildCount: len(c.bbids),
@@ -141,7 +141,7 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) (*Co
 				}
 				report.recordBuild(build, getOriginalBBID(previousBuild, bbid), isRetry)
 				if build.GetStatus() != bbpb.Status_SUCCESS {
-					if state.canRetry(build) {
+					if initialRetry || state.canRetry(build) {
 						if c.dryrun {
 							c.LogOut("(Dryrun) Would have retried %d", build.GetId())
 						} else {
@@ -160,6 +160,7 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig) (*Co
 			}
 		}
 		watchSet = newWatchSet
+		initialRetry = false
 	}
 	output := &CollectOutput{
 		BBIDs:  filterReturnSet(returnSet),

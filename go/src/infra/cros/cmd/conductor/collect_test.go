@@ -85,6 +85,7 @@ func (c *FakeTryClient) DoRetry(opts *try.RetryRunOpts) (string, error) {
 type collectTestConfig struct {
 	configJSON          string
 	bbids               []int64
+	initialRetry        bool
 	collectResults      []map[int64]collectResult
 	originalToRetryBBID map[string]string
 	expectedBBIDS       []int64
@@ -147,6 +148,7 @@ func doTestRun(t *testing.T, tc *collectTestConfig) {
 		outputJSON:             outputFile.Name(),
 		pollingIntervalSeconds: 0,
 		bbids:                  initialBBIDs,
+		initialRetry:           tc.initialRetry,
 	}
 	ret := c.Run(nil, nil, nil)
 	assert.IntsEqual(t, ret, tc.expectedReturnCode)
@@ -245,6 +247,80 @@ func TestCollect_RetryFailure(t *testing.T) {
 			{
 				12346: {
 					bbpb.Status_FAILURE,
+				},
+			},
+		},
+	})
+}
+
+func TestCollect_Retry(t *testing.T) {
+	t.Parallel()
+	doTestRun(t, &collectTestConfig{
+		configJSON:    basicRetryConfig,
+		bbids:         []int64{12345, 12346},
+		expectedBBIDS: []int64{12345, 12347},
+		originalToRetryBBID: map[string]string{
+			"12346": "12347",
+		},
+		collectResults: []map[int64]collectResult{
+			{
+				12345: {
+					bbpb.Status_SCHEDULED,
+				},
+				12346: {
+					bbpb.Status_STARTED,
+				},
+			},
+			{
+				12345: {
+					bbpb.Status_SUCCESS,
+				},
+				12346: {
+					bbpb.Status_STARTED,
+				},
+			},
+			{
+				12346: {
+					bbpb.Status_FAILURE,
+				},
+			},
+			{
+				12347: {
+					bbpb.Status_SUCCESS,
+				},
+			},
+		},
+	})
+}
+
+// No retries but initialRetry is true so we should get one retry for free.
+func TestCollect_NoRetries_InitialRetry(t *testing.T) {
+	t.Parallel()
+	doTestRun(t, &collectTestConfig{
+		configJSON:    "{}",
+		bbids:         []int64{12345, 12346},
+		expectedBBIDS: []int64{12345, 12347},
+		initialRetry:  true,
+		originalToRetryBBID: map[string]string{
+			"12346": "12347",
+		},
+		collectResults: []map[int64]collectResult{
+			{
+				12345: {
+					bbpb.Status_SUCCESS,
+				},
+				12346: {
+					bbpb.Status_FAILURE,
+				},
+			},
+			{
+				12347: {
+					bbpb.Status_STARTED,
+				},
+			},
+			{
+				12347: {
+					bbpb.Status_INFRA_FAILURE,
 				},
 			},
 		},
