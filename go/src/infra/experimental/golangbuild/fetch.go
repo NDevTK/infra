@@ -13,7 +13,10 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	"go.chromium.org/luci/auth"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/api/gitiles"
+	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 	"go.chromium.org/luci/luciexe/build"
 )
 
@@ -25,11 +28,13 @@ const (
 )
 
 // sourceSpec indicates a repository to fetch and what state to fetch it at.
+//
+// One of commit and change must be non-nil.
 type sourceSpec struct {
-	// project is the go.googlesource.com project.
+	// project is a go.googlesource.com project. Must not be empty.
 	project string
 
-	// branch is the branch for project to fetch.
+	// branch is the branch of project that change and/or commit are on. Must not be empty.
 	// branch is derived from and lines up with commit.Ref if commit != nil.
 	branch string
 
@@ -64,7 +69,7 @@ func fetchRepo(ctx context.Context, src *sourceSpec, dst string) (err error) {
 		}
 		return fetchRepoAtCommit(ctx, dst, src.commit)
 	}
-	return fetchRepoAtBranch(ctx, src.project, dst, src.branch)
+	return fmt.Errorf("one of change or commit must be non-nil")
 }
 
 // fetchRepoChangeAsIs checks out a change to be tested as is, without rebasing.
@@ -128,21 +133,6 @@ func fetchRepoAtCommit(ctx context.Context, dst string, commit *bbpb.GitilesComm
 	return nil
 }
 
-// fetchRepoAtBranch checks out the head of the specified branch of the specified repository.
-func fetchRepoAtBranch(ctx context.Context, project, dst, branch string) error {
-	if err := runGit(ctx, "git clone", "-C", ".", "clone", "--depth", "1", "-b", branch, "https://"+goHost+"/"+project, dst); err != nil {
-		return err
-	}
-	if project == "go" && branch == mainBranch {
-		// Write a VERSION file when testing the main branch.
-		// Release branches have a checked-in VERSION file, reuse it as is for now.
-		if err := writeVersionFile(ctx, dst, "tip"); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func writeVersionFile(ctx context.Context, dst, version string) error {
 	return writeFile(ctx, filepath.Join(dst, "VERSION"), "devel "+version)
 }
@@ -180,4 +170,53 @@ func refFromChange(change *bbpb.GerritChange) string {
 
 func runGit(ctx context.Context, stepName string, args ...string) (err error) {
 	return runCommandAsStep(ctx, stepName, exec.CommandContext(ctx, "git", args...), true)
+}
+
+// sourceForBranch produces a sourceSpec representing the tip of a branch for a project.
+func sourceForBranch(ctx context.Context, auth *auth.Authenticator, project, branch string) (*sourceSpec, error) {
+	hc, err := auth.Client()
+	if err != nil {
+		return nil, err
+	}
+	gc, err := gitiles.NewRESTClient(hc, goHost, true)
+	if err != nil {
+		return nil, err
+	}
+	ref := fmt.Sprintf("refs/heads/%s", branch)
+	log, err := gc.Log(ctx, &gitilespb.LogRequest{
+		Project:    project,
+		Committish: ref,
+		PageSize:   1,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(log.Log) == 0 {
+		return nil, fmt.Errorf("no commits found for project %s on branch %s", project, branch)
+	}
+	return &sourceSpec{
+		project: project,
+		branch:  branch,
+		commit: &bbpb.GitilesCommit{
+			Host:    goHost,
+			Project: project,
+			Id:      log.Log[0].Id,
+			Ref:     ref,
+		},
+	}, nil
+}
+
+func (s *sourceSpec) prebuiltID() (string, error) {
+	if s.project != "go" {
+		return "", fmt.Errorf("prebuilt Go ID only applies if project is 'go'; project is %q", s.project)
+	}
+	var rev string
+	if s.commit != nil {
+		rev = s.commit.Id
+	} else if s.change != nil {
+		rev = fmt.Sprintf("%d-%d", s.change.Change, s.change.Patchset)
+	} else {
+		return "", fmt.Errorf("source for (%s, %s) has no change or commit", s.project, s.branch)
+	}
+	return fmt.Sprintf("%s-%s-%s", hostGOOS, hostGOARCH, rev), nil
 }

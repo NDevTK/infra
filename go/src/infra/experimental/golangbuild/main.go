@@ -29,6 +29,7 @@
 //		}
 //	}
 //	EOF
+//	export SWARMING_SERVER=https://chromium-swarm.appspot.com
 //	LUCIEXE_FAKEBUILD=./build.jsonpb golangbuild
 //
 // Modify `build.jsonpb` as needed in order to try different paths. The format of
@@ -78,6 +79,28 @@
 //   - Keep step presentation and high-level ordering logic in main.go when possible.
 //   - Steps should be function-scoped. Steps should be created at the start of a function
 //     with the step end immediately deferred to function exit.
+//
+// ## Experiments
+//
+// When adding new functionality, consider putting it behind an experiment. Experiments are
+// made available in the buildSpec and are propagated from the builder definition.
+// Experiments in the builder definition are given a probability of being enabled on any given
+// build, but always manifest in the current build as either "on" or "off."
+// Experiments should have a name like "golang.my_specific_new_functionality" and should
+// be checked for via spec.experiment("golang.my_specific_new_functionality").
+//
+// Experiments can be disabled at first (no work needs to be done on the builder definition),
+// rolled out, and then tested in a real build environment via `led`
+//
+//	led get-build ... | \
+//	led edit \
+//	  -experiment golang.my_specific_new_functionality=true | \
+//	led launch
+//
+// or via `bb add -ex "+golang.my_specific_new_functionality" ...`.
+//
+// Experiments can be enabled on LUCIEXE_FAKEBUILD runs through the "experiments" property (array
+// of strings) on "input."
 package main
 
 import (
@@ -89,7 +112,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strings"
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
@@ -129,26 +151,13 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 
 	// Set up environment.
 	ctx = spec.setEnv(ctx)
-
-	// Fetch the main Go repository into goroot.
-	if spec.invokedSrc.project == "go" {
-		if err := fetchRepo(ctx, spec.invokedSrc, spec.goroot); err != nil {
-			return err
-		}
-	} else {
-		// We're fetching the Go repo for a subrepo build against a subrepo CL.
-		if err := fetchRepo(ctx, &sourceSpec{project: "go", branch: inputs.GoBranch}, spec.goroot); err != nil {
-			return err
-		}
+	ctx, err = spec.installDatastoreClient(ctx)
+	if err != nil {
+		return err
 	}
 
-	// Build Go.
-	//
-	// TODO(mknyszek): Support cross-compile-only modes, perhaps by having CompileGOOS
-	// and CompileGOARCH repeated fields in the input proto to identify what to build.
-	// TODO(mknyszek): Grab a prebuilt copy available.
-	// TODO(mknyszek): Upload the result of make.bash somewhere that downstream builders can find.
-	if err := runCommandAsStep(ctx, "make"+scriptExt(), spec.goScriptCmd(ctx, "make"+scriptExt()), false); err != nil {
+	// Get a built Go toolchain.
+	if err := getGo(ctx, spec); err != nil {
 		return err
 	}
 
@@ -175,15 +184,8 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		}
 	} else {
 		// Fetch the target repository into targetrepo.
-		if spec.invokedSrc.project == "go" {
-			if err := fetchRepo(ctx, &sourceSpec{project: inputs.Project, branch: mainBranch}, spec.subrepoDir); err != nil {
-				return err
-			}
-		} else {
-			// We're testing the tip of spec.inputs.Project against a Go commit.
-			if err := fetchRepo(ctx, spec.invokedSrc, spec.subrepoDir); err != nil {
-				return err
-			}
+		if err := fetchRepo(ctx, spec.subrepoSrc, spec.subrepoDir); err != nil {
+			return err
 		}
 
 		// Test this specific subrepo.
@@ -214,6 +216,7 @@ infra/3pp/tools/git/${platform} version:2@2.39.2.chromium.11
 @Subdir bin
 infra/tools/bb/${platform} latest
 infra/tools/rdb/${platform} latest
+infra/tools/luci/cas/${platform} latest
 infra/tools/result_adapter/${platform} latest
 @Subdir go_bootstrap
 infra/3pp/tools/go/${platform} version:2@1.19.3
@@ -251,7 +254,7 @@ func installTools(ctx context.Context) (toolsRoot string, err error) {
 // scriptExt returns the extension to use for
 // GOROOT/src/{make,all} scripts on this GOOS.
 func scriptExt() string {
-	switch runtime.GOOS {
+	switch hostGOOS {
 	case "windows":
 		return ".bat"
 	case "plan9":
@@ -259,6 +262,47 @@ func scriptExt() string {
 	default:
 		return ".bash"
 	}
+}
+
+func getGo(ctx context.Context, spec *buildSpec) (err error) {
+	step, ctx := build.StartStep(ctx, "get go")
+	defer step.End(err)
+
+	if spec.experiment("golang.build_result_sharing") {
+		// Check to see if we might have a prebuilt Go in CAS.
+		digest, err := checkForPrebuiltGo(ctx, spec.goSrc)
+		if err != nil {
+			return err
+		}
+		if digest != "" {
+			// Try to fetch from CAS. Note this might fail if the digest is stale enough.
+			ok, err := fetchGoFromCAS(ctx, spec, digest, spec.goroot)
+			if err != nil {
+				return err
+			}
+			if ok {
+				return nil
+			}
+		}
+	}
+
+	// There was no prebuilt toolchain we could grab. Fetch Go and build it.
+
+	// Fetch the main Go repository into goroot.
+	if err := fetchRepo(ctx, spec.goSrc, spec.goroot); err != nil {
+		return err
+	}
+
+	// Build Go.
+	if err := runCommandAsStep(ctx, "make"+scriptExt(), spec.goScriptCmd(ctx, "make"+scriptExt()), false); err != nil {
+		return err
+	}
+
+	if spec.experiment("golang.build_result_sharing") {
+		// Upload to CAS.
+		return uploadGoToCAS(ctx, spec, spec.goSrc, spec.goroot)
+	}
+	return nil
 }
 
 func triggerBuilders(ctx context.Context, spec *buildSpec) (err error) {

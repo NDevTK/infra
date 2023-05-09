@@ -14,14 +14,20 @@ import (
 	"runtime"
 	"strings"
 
+	clouddatastore "cloud.google.com/go/datastore"
+	"google.golang.org/api/option"
+
 	"go.chromium.org/luci/auth"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/api/gerrit"
+	"go.chromium.org/luci/common/errors"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
 	"go.chromium.org/luci/common/system/environ"
+	"go.chromium.org/luci/gae/impl/cloud"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"go.chromium.org/luci/luciexe/build"
 	"go.chromium.org/luci/luciexe/build/cv"
+	sauth "go.chromium.org/luci/server/auth"
 )
 
 type buildSpec struct {
@@ -33,18 +39,23 @@ type buildSpec struct {
 	gopath      string
 	gocacheDir  string
 	toolsRoot   string
+	casInstance string
 
 	inputs *golangbuildpb.Inputs
 
-	invokedSrc *sourceSpec
+	goSrc      *sourceSpec
+	subrepoSrc *sourceSpec // nil if inputs.Project == "go"
+	invokedSrc *sourceSpec // the commit/change we were invoked with
+
+	experiments map[string]struct{}
 }
 
 func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, st *build.State, inputs *golangbuildpb.Inputs) (*buildSpec, error) {
 	authOpts := chromeinfra.SetDefaultAuthOptions(auth.Options{
-		Scopes: []string{
+		Scopes: append([]string{
 			"https://www.googleapis.com/auth/userinfo.email",
 			"https://www.googleapis.com/auth/gerritcodereview",
-		},
+		}, sauth.CloudOAuthScopes...),
 	})
 	authenticator := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts)
 
@@ -101,12 +112,34 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, st *build.State
 		// doesn't make any sense.
 		return nil, fmt.Errorf("unexpected change and project pairing: %s vs. %s", changedProject, inputs.Project)
 	}
-	src := &sourceSpec{
+
+	// Figure out what our Go and subrepo commits are, but retain
+	// which one we were invoked with.
+	invokedSrc := &sourceSpec{
 		project: changedProject,
 		branch:  changedBranch,
 		commit:  gitilesCommit,
 		change:  gerritChange,
 		rebase:  !isDryRun && gerritChange != nil, // Rebase change onto branch if it's not a dry run.
+	}
+	var goSrc, subrepoSrc *sourceSpec
+	var err error
+	if invokedSrc.project == "go" {
+		goSrc = invokedSrc
+		if inputs.Project != "go" {
+			// We're testing the tip of inputs.Project's main branch against a Go commit.
+			subrepoSrc, err = sourceForBranch(ctx, authenticator, inputs.Project, mainBranch)
+			if err != nil {
+				return nil, err
+			}
+		}
+	} else {
+		// We're testing the tip of inputs.GoBranch against a commit to inputs.Project.
+		subrepoSrc = invokedSrc
+		goSrc, err = sourceForBranch(ctx, authenticator, "go", inputs.GoBranch)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Validate BuildersToTrigger invariant.
@@ -114,10 +147,23 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, st *build.State
 		return nil, fmt.Errorf("specified builders to trigger for unsupported project")
 	}
 
+	// Get the CAS instance.
+	casInst, err := casInstanceFromEnv()
+	if err != nil {
+		return nil, err
+	}
+
 	var subrepoDir string
 	if inputs.Project != "go" {
 		subrepoDir = filepath.Join(cwd, "targetrepo")
 	}
+
+	// Collect enabled experiments.
+	experiments := make(map[string]struct{})
+	for _, ex := range st.Build().GetInput().GetExperiments() {
+		experiments[ex] = struct{}{}
+	}
+
 	return &buildSpec{
 		auth:        authenticator,
 		builderName: st.Build().GetBuilder().GetBuilder(),
@@ -126,8 +172,12 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, st *build.State
 		gocacheDir:  filepath.Join(cwd, "gocache"),
 		subrepoDir:  subrepoDir,
 		toolsRoot:   toolsRoot,
+		casInstance: casInst,
 		inputs:      inputs,
-		invokedSrc:  src,
+		goSrc:       goSrc,
+		subrepoSrc:  subrepoSrc,
+		invokedSrc:  invokedSrc,
+		experiments: experiments,
 	}, nil
 }
 
@@ -143,13 +193,57 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 	// Use our tools before the system tools. Notably, use raw Git rather than the Chromium wrapper.
 	env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.toolsRoot, "bin"), os.PathListSeparator, env.Get("PATH")))
 
-	if runtime.GOOS == "windows" {
+	if b.targetGOOS() != hostGOOS {
+		env.Set("GOHOSTOS", hostGOOS)
+	}
+	if b.targetGOARCH() != hostGOARCH {
+		env.Set("GOHOSTARCH", hostGOARCH)
+	}
+	if hostGOOS == "windows" {
 		env.Set("GOBUILDEXIT", "1") // On Windows, emit exit codes from .bat scripts. See go.dev/issue/9799.
 		// TODO(heschi): select gcc32 for GOARCH=i386
 		env.Set("PATH", fmt.Sprintf("%v%c%v", env.Get("PATH"), os.PathListSeparator, filepath.Join(b.toolsRoot, "cc/windows/gcc64/bin")))
 	}
 	return env.SetInCtx(ctx)
 }
+
+const cloudProject = "golang-ci-luci"
+
+func (b *buildSpec) installDatastoreClient(ctx context.Context) (context.Context, error) {
+	// TODO(mknyszek): Enable auth only when not in a fake build.
+	ts, err := b.auth.TokenSource()
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to initialize the token source").Err()
+	}
+	client, err := clouddatastore.NewClient(ctx, cloudProject, option.WithTokenSource(ts))
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to instantiate the datastore client").Err()
+	}
+	cfg := &cloud.ConfigLite{
+		ProjectID: cloudProject,
+		DS:        client,
+	}
+	return cfg.Use(ctx), nil
+}
+
+func (b *buildSpec) targetGOOS() string {
+	if goos, ok := b.inputs.Env["GOOS"]; ok {
+		return goos
+	}
+	return hostGOOS
+}
+
+func (b *buildSpec) targetGOARCH() string {
+	if goarch, ok := b.inputs.Env["GOARCH"]; ok {
+		return goarch
+	}
+	return hostGOARCH
+}
+
+const (
+	hostGOOS   = runtime.GOOS
+	hostGOARCH = runtime.GOARCH
+)
 
 func (b *buildSpec) toolPath(tool string) string {
 	return filepath.Join(b.toolsRoot, "bin", tool)
@@ -181,6 +275,11 @@ func (b *buildSpec) goCmd(ctx context.Context, dir string, args ...string) *exec
 	cmd := command(env.SetInCtx(ctx), filepath.Join(b.goroot, "bin", "go"), args...)
 	cmd.Dir = dir
 	return cmd
+}
+
+func (b *buildSpec) experiment(ex string) bool {
+	_, ok := b.experiments[ex]
+	return ok
 }
 
 func command(ctx context.Context, bin string, args ...string) *exec.Cmd {
