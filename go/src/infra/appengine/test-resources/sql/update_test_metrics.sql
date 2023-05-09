@@ -15,12 +15,12 @@ USING (
         (SELECT v.value FROM tr.variant AS v WHERE v.key = 'test_suite' LIMIT 1) AS test_suite,
         (SELECT t.value FROM tr.tags AS t WHERE t.key = 'target_platform' LIMIT 1) AS target_platform,
         variant_hash,
-        (SELECT t.value FROM tr.tags t WHERE t.key = 'monorail_component' LIMIT 1) AS team,
+        (SELECT t.value FROM tr.tags t WHERE t.key = 'monorail_component' LIMIT 1) AS component,
         expected,
         exonerated,
         duration,
       FROM chrome-luci-data.chromium.try_test_results as tr
-      WHERE DATE(partition_time) = @run_date
+      WHERE DATE(partition_time) BETWEEN @from_date AND @to_date
     ), tests AS (
       SELECT
         DATE(tr.partition_time) AS date,
@@ -34,11 +34,11 @@ USING (
         test_suite,
         target_platform,
         variant_hash,
-        ANY_VALUE(team) AS team,
-        COUNT(*) AS run_count,
-        COUNTIF(tr.expected AND NOT tr.exonerated) AS fail_count,
-        AVG(tr.duration) AS avg_duration,
-        SUM(tr.duration) AS total_duration,
+        ANY_VALUE(component) AS component,
+        COUNT(*) AS num_runs,
+        COUNTIF(NOT tr.expected AND NOT tr.exonerated) AS num_failures,
+        AVG(tr.duration) AS avg_runtime,
+        SUM(tr.duration) AS total_runtime,
       FROM
         raw_results_tables AS tr
       GROUP BY
@@ -52,7 +52,7 @@ USING (
         ps.earliest_equivalent_patchset AS patchset,
         partition_time AS ps_approx_timestamp,
       FROM `commit-queue`.chromium.attempts a, a.gerrit_changes ps, a.builds b
-      WHERE DATE(partition_time) = @run_date
+      WHERE DATE(partition_time) BETWEEN @from_date AND @to_date
     ), patchset_flakes AS (
       SELECT
         date,
@@ -69,51 +69,77 @@ USING (
         date,
         test_id,
         variant_hash,
-        COUNTIF(undetected_flake OR detected_flake) AS flake_count,
+        COUNTIF(undetected_flake OR detected_flake) AS num_flake,
       FROM patchset_flakes
       GROUP BY variant_hash, test_id, date
+    ), variant_summaries AS (
+      SELECT
+        t.date,
+        t.test_id,
+        t.test_name,
+        t.repo,
+        t.file_name,
+        t.`project`,
+        t.bucket,
+        t.component,
+        t.num_runs,
+        t.num_failures,
+        f.num_flake,
+        t.avg_runtime,
+        t.total_runtime,
+        t.variant_hash,
+        t.builder,
+        t.test_suite,
+        t.target_platform,
+      FROM tests AS t
+      INNER JOIN flakes AS f
+        USING (variant_hash, test_id, date)
     )
   SELECT
-    t.date,
-    t.test_id,
-    t.variant_hash,
-    t.test_name,
-    t.repo,
-    t.file_name,
-    t.`project`,
-    t.bucket,
-    t.builder,
-    t.test_suite,
-    t.target_platform,
-    t.team,
-    t.run_count,
-    t.fail_count,
-    f.flake_count,
-    t.avg_duration,
-    t.total_duration,
-  FROM tests AS t
-  INNER JOIN flakes AS f
-    USING (variant_hash, test_id, date)
+    v.date,
+    v.test_id,
+    ANY_VALUE(v.test_name) AS test_name,
+    ANY_VALUE(v.repo) AS repo,
+    ANY_VALUE(v.file_name) AS file_name,
+    ANY_VALUE(v.`project`) AS `project`,
+    ANY_VALUE(v.bucket) AS bucket,
+    ANY_VALUE(v.component) AS component,
+    # Test level metrics
+    SUM(num_runs) AS num_runs,
+    SUM(num_failures) AS num_failures,
+    SUM(num_flake) AS num_flake,
+    SUM(avg_runtime) AS avg_runtime,
+    SUM(total_runtime) AS total_runtime,
+    ARRAY_AGG(STRUCT(
+      v.variant_hash AS variant_hash,
+      v.target_platform AS target_platform,
+      v.builder AS builder,
+      v.test_suite AS test_suite,
+      v.num_runs AS num_runs,
+      v.num_failures AS num_failures,
+      v.num_flake AS num_flake,
+      v.avg_runtime AS avg_runtime,
+      v.total_runtime AS total_runtime
+    )) AS variant_summaries
+  FROM variant_summaries v
+  GROUP BY date, test_id
   ) AS S
 ON
   T.date = S.date
   AND T.test_name = S.test_name
   AND T.test_id = S.test_id
-  AND T.variant_hash = S.variant_hash
   AND T.repo = S.repo
   AND T.file_name = S.file_name
   AND T.`project` = S.`project`
   AND T.bucket = S.bucket
-  AND T.builder = S.builder
-  AND T.test_suite = S.test_suite
-  AND T.target_platform = S.target_platform
-  AND T.team = S.team
+  AND T.component = S.component
 WHEN MATCHED THEN
   UPDATE SET
-    run_count = S.run_count,
-    fail_count = S.fail_count,
-    flake_count = S.flake_count,
-    avg_duration = S.avg_duration,
-    total_duration = S.total_duration
+    num_runs = S.num_runs,
+    num_failures = S.num_failures,
+    num_flake = S.num_flake,
+    avg_runtime = S.avg_runtime,
+    total_runtime = S.total_runtime,
+    variant_summaries = S.variant_summaries
 WHEN NOT MATCHED THEN
   INSERT ROW
