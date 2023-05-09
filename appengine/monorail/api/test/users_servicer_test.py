@@ -556,11 +556,13 @@ class UsersServicerTest(unittest.TestCase):
       self.services.project.TestAddProject(
           'owner-%s-%s' % (name, user_id), state=state, owner_ids=[user_id])
       self.services.project.TestAddProject(
-          'committer-%s-%s' % (name, user_id), state=state,\
+          'committer-%s-%s' % (name, user_id),
+          state=state,
           committer_ids=[user_id])
-      contributor = self.services.project.TestAddProject(
-          'contributor-%s-%s' % (name, user_id), state=state)
-      contributor.contributor_ids = [user_id]
+      self.services.project.TestAddProject(
+          'contributor-%s-%s' % (name, user_id),
+          state=state,
+          contrib_ids=[user_id])
 
     members_only = self.services.project.TestAddProject(
         'members-only-' + str(user_id), owner_ids=[user_id])
