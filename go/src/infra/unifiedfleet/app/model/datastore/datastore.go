@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -445,4 +445,14 @@ func (rs OpResults) Failed() OpResults {
 	return rs.filter(func(result *OpResult) bool {
 		return result.Err != nil
 	})
+}
+
+// AssignRealms assigns the realms to the query, and returns a list of queries
+// such that each query has an equality condition for one realm
+func AssignRealms(query *datastore.Query, realms []string) []*datastore.Query {
+	var queries []*datastore.Query
+	for _, realm := range realms {
+		queries = append(queries, query.Eq("realm", realm))
+	}
+	return queries
 }
