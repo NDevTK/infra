@@ -380,6 +380,25 @@ func TestSchedulingUnitDimensions(t *testing.T) {
 		}
 		So(SchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
 	})
+	Convey("Test schedulingunit with wificell label.", t, func() {
+		su := &ufspb.SchedulingUnit{
+			Name:       "schedulingunit/test-unit1",
+			Pools:      []string{"nearby_sharing"},
+			ExposeType: ufspb.SchedulingUnit_DEFAULT,
+			Wificell:   true,
+		}
+		var dims []swarming.Dimensions
+		expectedResult := map[string][]string{
+			"dut_name":        {"test-unit1"},
+			"dut_id":          {"test-unit1"},
+			"label-pool":      {"nearby_sharing"},
+			"label-dut_count": {"0"},
+			"label-multiduts": {"True"},
+			"label-wificell":  {"True"},
+			"dut_state":       {"unknown"},
+		}
+		So(SchedulingUnitDimensions(su, dims), ShouldResemble, expectedResult)
+	})
 }
 
 func TestSchedulingUnitBotState(t *testing.T) {

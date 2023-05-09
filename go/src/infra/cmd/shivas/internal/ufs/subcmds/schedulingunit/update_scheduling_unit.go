@@ -53,6 +53,7 @@ var UpdateSchedulingUnitCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.description, "desc", "", "description for the SchedulingUnit")
 		c.Flags.StringVar(&c.primaryDut, "primary-dut", "", "set primary dut. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.exposeType, "expose-type", "", "set type of labels to expose. "+cmdhelp.SchedulingUnitExposeTypesHelpText+" "+cmdhelp.ClearFieldHelpText)
+		c.Flags.BoolVar(&c.wificell, "wificell", false, "adding this flag will specify if the scheduling unit is hosted in a wificell.")
 		return c
 	},
 }
@@ -76,6 +77,7 @@ type updateSchedulingUnit struct {
 	description        string
 	primaryDut         string
 	exposeType         string
+	wificell           bool
 }
 
 func (c *updateSchedulingUnit) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -90,6 +92,25 @@ func (c *updateSchedulingUnit) innerRun(a subcommands.Application, args []string
 	if err := c.validateArgs(); err != nil {
 		return err
 	}
+
+	mask := utils.GetUpdateMask(&c.Flags, map[string]string{
+		"duts":            "machinelses",
+		"pools":           "pools",
+		"tags":            "tags",
+		"duts-to-remove":  "machinelses.remove",
+		"pools-to-remove": "pools.remove",
+		"tags-to-remove":  "tags.remove",
+		"type":            "type",
+		"desc":            "description",
+		"primary-dut":     "primary-dut",
+		"expose-type":     "expose-type",
+		"wificell":        "wificell",
+	})
+	// Check if nothing is being updated. Updating with an empty mask overwrites everything.
+	if len(mask.Paths) == 0 {
+		return cmdlib.NewQuietUsageError(c.Flags, "Nothing to update")
+	}
+
 	ctx := cli.GetContext(a, c, env)
 	ctx = utils.SetupContext(ctx, ufsUtil.OSNamespace)
 	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
@@ -117,20 +138,10 @@ func (c *updateSchedulingUnit) innerRun(a subcommands.Application, args []string
 		return err
 	}
 	su.Name = ufsUtil.AddPrefix(ufsUtil.SchedulingUnitCollection, su.Name)
+
 	res, err := ic.UpdateSchedulingUnit(ctx, &ufsAPI.UpdateSchedulingUnitRequest{
 		SchedulingUnit: &su,
-		UpdateMask: utils.GetUpdateMask(&c.Flags, map[string]string{
-			"duts":            "machinelses",
-			"pools":           "pools",
-			"tags":            "tags",
-			"duts-to-remove":  "machinelses.remove",
-			"pools-to-remove": "pools.remove",
-			"tags-to-remove":  "tags.remove",
-			"type":            "type",
-			"desc":            "description",
-			"primary-dut":     "primary-dut",
-			"expose-type":     "expose-type",
-		}),
+		UpdateMask:     mask,
 	})
 	if err != nil {
 		return err
@@ -181,6 +192,7 @@ func (c *updateSchedulingUnit) parseArgs(su *ufspb.SchedulingUnit) {
 	if c.exposeType != "" {
 		su.ExposeType = ufsUtil.ToSchedulingUnitExposeType(c.exposeType)
 	}
+	su.Wificell = c.wificell
 }
 
 func (c *updateSchedulingUnit) validateArgs() error {
@@ -231,10 +243,6 @@ func (c *updateSchedulingUnit) validateArgs() error {
 		}
 		if len(c.tags) != 0 && len(c.removeTags) != 0 {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n'-tag' and '-tag-to-remove' cannot be specified at the same time.")
-		}
-		if c.name == "" && c.schedulingUnitType == "" && c.description == "" && len(c.duts) == 0 && len(c.removeDuts) == 0 &&
-			len(c.tags) == 0 && len(c.removeTags) == 0 && len(c.pools) == 0 && len(c.removePools) == 0 {
-			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nNothing to update. Please provide any field to update")
 		}
 		if c.exposeType != "" && !ufsUtil.IsSchedulingUnitExposeType(c.exposeType) {
 			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\n%s is not valid exposeType name, please check help info for 'expose-type'.", c.exposeType)

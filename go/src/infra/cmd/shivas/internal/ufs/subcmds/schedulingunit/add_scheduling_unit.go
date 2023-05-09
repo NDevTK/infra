@@ -52,6 +52,7 @@ var AddSchedulingUnitCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.description, "desc", "", "description for the SchedulingUnit")
 		c.Flags.StringVar(&c.primaryDut, "primary-dut", "", "primary dut hostname")
 		c.Flags.StringVar(&c.exposeType, "expose-type", defaultSchedulingUnitExposeType, "type of labels to expose to scheduling unit"+cmdhelp.SchedulingUnitExposeTypesHelpText)
+		c.Flags.BoolVar(&c.wificell, "wificell", false, "adding this flag will specify if the scheduling unit is hosted in a wificell.")
 		return c
 	},
 }
@@ -72,6 +73,7 @@ type addSchedulingUnit struct {
 	description        string
 	primaryDut         string
 	exposeType         string
+	wificell           bool
 }
 
 var mcsvFields = []string{
@@ -154,6 +156,7 @@ func (c *addSchedulingUnit) parseArgs(su *ufspb.SchedulingUnit) {
 	su.PrimaryDut = c.primaryDut
 	val := ufspb.SchedulingUnit_ExposeType_value[c.exposeType]
 	su.ExposeType = ufspb.SchedulingUnit_ExposeType(val)
+	su.Wificell = c.wificell
 }
 
 func (c *addSchedulingUnit) validateArgs() error {

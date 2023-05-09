@@ -132,6 +132,9 @@ func SchedulingUnitDimensions(su *ufspb.SchedulingUnit, dutsDims []swarming.Dime
 	if su.GetPrimaryDut() != "" {
 		suDims["label-primary_dut"] = []string{su.GetPrimaryDut()}
 	}
+	if su.GetWificell() {
+		suDims["label-wificell"] = []string{"True"}
+	}
 	var dutLabels, conjunctionLabels []string
 	var detailedLabelDut string
 	switch su.GetExposeType() {
