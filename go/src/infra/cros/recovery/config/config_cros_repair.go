@@ -20,6 +20,7 @@ func crosRepairPlan() *Plan {
 			"Set dev_boot_usb is enabled",
 			"Verify if booted from priority kernel",
 			"Verify rootfs is on fs-verity",
+			"Has repair-request for re-provision",
 			"Check if last provision was good",
 			"Python is present",
 			"Verify that device is not enrolled",
@@ -299,6 +300,42 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive",
 			},
+		},
+		"Has repair-request for re-provision": {
+			Docs: []string{
+				"Check if PROVISION repair-request is present.",
+			},
+			ExecName: "dut_has_any_repair_requests",
+			ExecExtraArgs: []string{
+				"requests:PROVISION",
+			},
+			RecoveryActions: []string{
+				"Quick provision OS",
+				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive",
+			},
+		},
+		"Remove PROVISION repair-request": {
+			Docs: []string{
+				"Remove a PROVISION repair-request.",
+			},
+			ExecName: "dut_remove_repair_requests",
+			ExecExtraArgs: []string{
+				"requests:PROVISION",
+			},
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Remove REIMAGE_BY_USBKEY repair-request": {
+			Docs: []string{
+				"Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.",
+			},
+			ExecName: "dut_remove_repair_requests",
+			ExecExtraArgs: []string{
+				"requests:PROVISION,REIMAGE_BY_USBKEY",
+			},
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Verify that device is not enrolled": {
 			Docs: []string{
@@ -953,6 +990,14 @@ func crosRepairActions() map[string]*Action {
 			// Allowed to fail as part of b/236417969 to check affect of it.
 			AllowFailAfterRecovery: true,
 		},
+		"Call provision for DUT": {
+			Docs: []string{
+				"Call provision OS of the DUT.",
+			},
+			ExecName:    "cros_provision",
+			ExecTimeout: &durationpb.Duration{Seconds: 3600},
+			RunControl:  RunControl_ALWAYS_RUN,
+		},
 		"Provision OS if needed": {
 			Docs: []string{
 				"Perform provision OS if device is not running on it.",
@@ -963,9 +1008,10 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Device is SSHable",
+				"Call provision for DUT",
+				"Remove PROVISION repair-request",
 			},
-			ExecName:    "cros_provision",
-			ExecTimeout: &durationpb.Duration{Seconds: 3600},
+			ExecName: "sample_pass",
 		},
 		"Verify present of gsctool": {
 			Docs: []string{
@@ -1736,8 +1782,11 @@ func crosRepairActions() map[string]*Action {
 				"Device is SSHable",
 				"Internal storage is responsive",
 			},
-			ExecName:    "cros_provision",
-			ExecTimeout: &durationpb.Duration{Seconds: 3600},
+			Dependencies: []string{
+				"Call provision for DUT",
+				"Remove PROVISION repair-request",
+			},
+			ExecName: "sample_pass",
 		},
 		"Wait to be SSHable (normal boot)": {
 			// No recovery actions as that is help action.
@@ -2048,6 +2097,7 @@ func crosRepairActions() map[string]*Action {
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
 				"Boot DUT in recovery and install from USB-drive",
 				"Wait to be SSHable (normal boot)",
+				"Remove REIMAGE_BY_USBKEY repair-request",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
@@ -2067,6 +2117,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Boot DUT in recovery and install from USB-drive",
 				"Wait to be SSHable (normal boot)",
+				"Remove REIMAGE_BY_USBKEY repair-request",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
@@ -2100,6 +2151,7 @@ func crosRepairActions() map[string]*Action {
 				"Run install after boot from USB-drive",
 				"Cold reset DUT by servo and wait to boot",
 				"Wait to be SSHable (normal boot)",
+				"Remove REIMAGE_BY_USBKEY repair-request",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
@@ -2324,9 +2376,10 @@ func crosRepairActions() map[string]*Action {
 				"Write factory-install-reset to file system",
 				"Simple reboot",
 				"Wait to be SSHable (normal boot)",
+				"Call provision for DUT",
+				"Remove PROVISION repair-request",
 			},
-			ExecName:    "cros_provision",
-			ExecTimeout: &durationpb.Duration{Seconds: 3600},
+			ExecName: "sample_pass",
 		},
 		"Flash AP (FW) with GBB 0x18 by servo": {
 			Docs: []string{
