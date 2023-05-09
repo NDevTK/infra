@@ -22,38 +22,29 @@ See also: [Common Development Problems](doc/development-problems.md)
 
 To set up FLT/Approvals in Monorail:
 1. Visit the gear > Development Process > Labels and fields
-1. Add at least one custom field with type "Approval" (this will be your approval
+1. Add at least one custom field with type "Approval" (this will be your approval)
 1. Visit gear > Development Process > Templates
 1. Check "Include Gates and Approval Tasks in issue"
 1. Fill out the chart - The top row is the gates/phases on your FLT issue and you can select radio buttons for which gate each approval goes
 
 ## Testing
 
-To run all Python unit tests, in the `appengine/monorail` directory run:
+### Python backend testing
 
 ```
-make test
+make pytest
 ```
 
-For quick debugging, if you need to run just one test you can do the following. For instance for the test
-`IssueServiceTest.testUpdateIssues_Normal` in `services/test/issue_svc_test.py`:
+To run a single test:
 
 ```
-../../test.py test appengine/monorail:services.test.issue_svc_test.IssueServiceTest.testUpdateIssues_Normal --no-coverage
+vpython3 test.py services/test/issue_svc_test.py::IssueServiceTest::testUpdateIssues_Normal
 ```
 
-### Frontend testing
-
-To run the frontend tests for Monorail, you first need to set up your Go environment. From the Monorail directory, run:
+### JavaScript frontend testing
 
 ```
-eval `../../go/env.py`
-```
-
-Then, to run the frontend tests, run:
-
-```
-make karma
+make jstest
 ```
 
 If you want to skip the coverage for karma, run:

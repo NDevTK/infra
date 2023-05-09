@@ -38,15 +38,6 @@ machine:
     1. `docker exec -it mysql -- mysql --user=root monorail < schema/tracker.sql`
     1. `docker exec -it mysql -- mysql --user=root monorail -e "UPDATE User SET is_site_admin = TRUE WHERE email LIKE '%@example.com';"`
 
-1. Install Monorail backend (python) prerequisites:
-    1. `sudo apt install python2.7 python2.7-dev python-is-python2` (Googlers
-       will need to run `sudo apt-mark hold python2 python-is-python2
-       python2-dev` to prevent these from being uninstalled.)
-    1. `curl -o /tmp/get-pip.py https://bootstrap.pypa.io/pip/2.7/get-pip.py`
-    1. `sudo python2.7 /tmp/get-pip.py`
-    1. `pip install virtualenv`
-    1. `python2.7 -m virtualenv venv`
-
 1. Install Monorail frontend (node) prerequisites:
     1. `curl https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash`
     1. `source "$HOME/.nvm/nvm.sh"`
@@ -59,9 +50,7 @@ These steps will need to be repeated regularly when developing Monorail:
     1. `source ./venv/bin/activate`
 
 1. Install per-language dependencies (every few days to ensure you're up to date):
-    1. `make dev_deps`
-    1. `make js_deps`
-    1. `npm install`
+    1. `make jsdeps`
 
 1. Launch the Monorail server (once per machine/per reboot):
     1. `make serve`

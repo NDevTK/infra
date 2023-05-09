@@ -213,22 +213,6 @@ hooks = [
   {
     "pattern": ".",
     "action": [
-      "python3", "-c",
-      "import shutil; shutil.rmtree('./infra/appengine/monorail/lib', True)",
-    ],
-  },
-  {
-    "pattern": ".",
-    "action": [
-      "python", "-u", "-m", "pip", "install", "--no-deps", "--require-hashes",
-      "-t", "./infra/appengine/monorail/lib",
-      "-r", "./infra/appengine/monorail/requirements.py2.txt",
-      "--upgrade",
-    ],
-  },
-  {
-    "pattern": ".",
-    "action": [
       "python3", "./infra/migration_warning.py"
     ],
     "condition": "not infra_superproject_checkout",

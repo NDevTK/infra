@@ -40,11 +40,6 @@ RUN_CLOUD_TASKS := ../../cipd/cloud-tasks-emulator \
 
 default: help
 
-check:
-ifndef NPM_VERSION
-	$(error npm not found. Install from nodejs.org or see README)
-endif
-
 help:
 	@echo "Available commands:"
 	@sed -n '/^[a-zA-Z0-9_.]*:/s/:.*//p' <Makefile
@@ -67,25 +62,6 @@ business_proto:
 	PATH=../../luci/appengine/components/tools:$(PATH) \
 	../../cipd/protoc \
 	--python_out=. --prpc-python_out=. mrproto/*.proto
-
-pytest:
-	vpython3 test.py
-
-test:
-	../../test.py test appengine/monorail
-
-test_no_coverage:
-	../../test.py test appengine/monorail --no-coverage
-
-coverage:
-	@echo "Running tests + HTML coverage report in ~/monorail-coverage:"
-	../../test.py test appengine/monorail --html-report ~/monorail-coverage --coveragerc appengine/monorail/.coveragerc
-
-# Shows coverage on the tests themselves, helps illuminate when we have test
-# methods that aren't used.
-test_coverage:
-	@echo "Running tests + HTML coverage report (for tests) in ~/monorail-test-coverage:"
-	../../test.py test appengine/monorail --html-report ~/monorail-test-coverage --coveragerc appengine/monorail/.testcoveragerc
 
 # Commands for running locally using dev_appserver.
 # devserver requires an application ID (-A) to be specified.
@@ -117,43 +93,30 @@ serve_remote_email:
 	& $(WEBPACK_PATH) --watch\
 	& $(RUN_CLOUD_TASKS)
 
-run: serve
-
-pydeps:
-	pip install -r requirements.txt
-
-jsdeps: deps
-
-deps: node_deps
-	rm -f static/dist/*
-
-build_js:
-	$(WEBPACK_PATH) --mode=production
-
-clean_deps:
+jsdeps:
 	rm -rf node_modules
-
-node_deps:
 	npm ci --no-save
 
-dev_deps:
-	python -m pip install --no-deps -r requirements.dev.txt
+jsbuild:
+	rm -f static/dist/*
+	rm -f templates/webpack-out/*
+	$(WEBPACK_PATH) --mode=production
+
+jstest:
+	npx karma start --debug
+
+jstest_coverage:
+	npx karma start --debug --coverage
+
+pytest:
+	vpython3 test.py
+
+pylint:
+	pylint --py3k *py {$(PY_DIRS)}{/,/test/}*py
 
 generate_requirements_txt:
 	vpython3 -m pip freeze > requirements.txt
 	printf "# This file is generated from the .vpython3 spec file.\n# Use \`make generate_requirements_txt\` to update.\n$$(cat requirements.txt)" > requirements.txt
-
-karma:
-	npx karma start --debug --coverage
-
-karma_debug:
-	npx karma start --debug
-
-pylint:
-	pylint -f parseable *py {$(PY_DIRS)}{/,/test/}*py
-
-py3lint:
-	pylint --py3k *py {$(PY_DIRS)}{/,/test/}*py
 
 deploy_dev: build_frontend
 	$(eval BRANCH_NAME := $(shell git rev-parse --abbrev-ref HEAD))
@@ -161,13 +124,7 @@ deploy_dev: build_frontend
 	$(GAE_PY) upload --tag $(BRANCH_NAME) -A $(DEVID) $(FRONTEND_MODULES) $(BACKEND_MODULES)
 
 # Build target used by LUCI CD and manual process to build frontend.
-build_frontend: clean_deps deps build_js
-
-package_release:
-	rsync -aLK . $(TARDIR)/package
-
-lsbuilds:
-	gcloud builds list --filter="tags='monorail'"
+build_frontend: jsdeps jsbuild
 
 # AppEngine apps can be tested locally and in non-default versions upload to
 # the main app-id, but it is still sometimes useful to have a completely
