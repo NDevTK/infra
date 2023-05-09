@@ -54,6 +54,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "80a32009_c194e573",
+        "filename": "go/src/infra/unifiedfleet/app/controller/asset.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2023-05-09T18:46:24Z",
+      "side": 1,
+      "message": "See registration/asset.go. \n\nListAssetsACL runs a different API to compared to ListAssets. This results in ListAssetsACL getting a different type of page token (a multicursor) compared to ListAssets. The function IsMultiCursor is used here to tell which API to use.\n\nThis is required because this function gets called repeatedly (due to limitations in RPC size) by clients (like shivas). The first time there is no page token so we choose which rpc to use at random. But if there is more data to be returned after the first run, datastore returns a page token. As the token is different based on which API was used, we use it to do the remaining transactions.\n\nNote: We can\u0027t use token from ListAssetsACL on ListAssets, this doesn\u0027t always throw an error but the results are undefined. We do get an error(with high accuracy) if we use token from ListAssets on ListAssetsACL\n\nPS: crrev/c/4367485 crrev/c/4499668",
+      "parentUuid": "471783b5_c84b36ee",
+      "revId": "acaf411b50c6bfeac814ec1f9ccee774cf122dd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "7bbde80e_e4e80589",
         "filename": "go/src/infra/unifiedfleet/app/model/registration/asset_test.go",
         "patchSetId": 3
@@ -65,6 +83,24 @@
       "writtenOn": "2023-05-09T18:25:41Z",
       "side": 1,
       "message": "Should this be no error, as err is expected to be nil below?",
+      "revId": "acaf411b50c6bfeac814ec1f9ccee774cf122dd7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c1ae580e_540680bd",
+        "filename": "go/src/infra/unifiedfleet/app/model/registration/asset_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1333207
+      },
+      "writtenOn": "2023-05-09T18:46:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7bbde80e_e4e80589",
       "revId": "acaf411b50c6bfeac814ec1f9ccee774cf122dd7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
