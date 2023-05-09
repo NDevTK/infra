@@ -7618,6 +7618,20 @@ wheel: <
 
 * *universal*
 
+## **spdx-tools**
+
+### 0.7.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/spdx-tools-py2_py3"
+  version: "version:0.7.1"
+>
+```
+
+
+* *universal*
+
 ## **tabulate-py3**
 
 ### 0.8.9

@@ -1219,6 +1219,7 @@ SPECS.update({
         UniversalSource('requests-unixsocket', '0.1.5'),
         UniversalSource('retrying', '1.3.3'),
         UniversalSource('selenium', '2.29.0'),
+        UniversalSource('spdx-tools', '0.7.1'),
         UniversalSource('termcolor', '1.1.0'),
         UniversalSource('tlslite', '0.4.9'),
         UniversalSource('tlslite-ng', '0.7.6'),
