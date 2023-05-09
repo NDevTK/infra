@@ -25,7 +25,7 @@ func (i *S) Observe() {
 }
 
 func TestMonitorShouldWork(t *testing.T) {
-  t.Parallel()
+	t.Parallel()
 	// Create a mock object
 	r := NewMock(20)
 	// Create a monitor
@@ -41,7 +41,7 @@ func TestMonitorShouldWork(t *testing.T) {
 }
 
 func TestMonitorObserveMultipleShouldWork(t *testing.T) {
-  t.Parallel()
+	t.Parallel()
 	// Create a mock object
 	r1 := NewMock(20)
 	r2 := NewMock(10)
