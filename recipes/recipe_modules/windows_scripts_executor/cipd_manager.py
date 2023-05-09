@@ -47,7 +47,13 @@ class CIPDManager:
       cipd_src.refs = desc.pin.instance_id
       self._pinning_cache[unpinned_url] = cipd_src
       self._existence.add(self.get_cipd_url(cipd_src))
-    return self._pinning_cache[unpinned_url]
+    # update the refs to the given src. This might be a different src from the
+    # one that did the pinning (filename might be included/not included)
+    pinned_ref = self._pinning_cache[unpinned_url].refs
+    # update the ref
+    cipd_src.refs = pinned_ref
+    # return the updated cipd_src
+    return cipd_src
 
   def download_package(self, cipd_src):
     """ download_package downloads the given package to disk if required.
