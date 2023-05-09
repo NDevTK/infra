@@ -7,6 +7,7 @@ package controller
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"strings"
 
 	"github.com/golang/protobuf/proto"
@@ -18,6 +19,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/registration"
 	"infra/unifiedfleet/app/util"
@@ -143,6 +145,45 @@ func ListAssets(ctx context.Context, pageSize int32, pageToken, filter string, k
 	}
 	filterMap = resetZoneFilter(filterMap, registration.GetAssetIndexedFieldName)
 	filterMap = resetAssetTypeFilter(filterMap, registration.GetAssetIndexedFieldName)
+
+	if pageToken != "" {
+		// See registration/asset.go.
+		// ListAssetsACL runs a different API to compared to ListAssets.
+		// This results in ListAssetsACL getting a different type of page
+		// token (a multicursor) compared to ListAssets. The function
+		// IsMultiCursor is used here to tell which API to use.
+		// This is required because this function gets called repeatedly
+		// (due to limitations in RPC size) by clients (like shivas).
+		//
+		// The first time there is no page token so we choose which rpc
+		// to use at random. But if there is more data to be returned
+		// after the first run, datastore returns a page token. As the
+		// token is different based on which API was used, we use it to
+		// do the remaining transactions.
+		//
+		// Note: We can't use token from ListAssetsACL on ListAssets,
+		// this doesn't always throw an error but the results are
+		// undefined. We do get an error(with high accuracy) if we use
+		// token from ListAssets on ListAssetsACL
+		if datastore.IsMultiCursorString(pageToken) {
+			logging.Infof(ctx, "ListAssets --- Continue Running in experimental API")
+			// If we have a multicursor in our hand. Then we got to do the ACLs
+			return registration.ListAssetsACL(ctx, pageSize, pageToken, filterMap, keysOnly)
+		} else {
+			return registration.ListAssets(ctx, pageSize, pageToken, filterMap, keysOnly)
+		}
+	}
+	cutoff := config.Get(ctx).GetExperimentalAPI().GetListAssetsACL()
+	// If cutoff is set attempt to divert the traffic to new API
+	if cutoff != 0 {
+		// Roll the dice to determine which one to use
+		roll := rand.Uint32() % 100
+		cutoff := cutoff % 100
+		if roll <= cutoff {
+			logging.Infof(ctx, "ListAssets --- Running in experimental API")
+			return registration.ListAssetsACL(ctx, pageSize, pageToken, filterMap, keysOnly)
+		}
+	}
 	return registration.ListAssets(ctx, pageSize, pageToken, filterMap, keysOnly)
 }
 
