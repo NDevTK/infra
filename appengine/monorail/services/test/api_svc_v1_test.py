@@ -574,6 +574,36 @@ class MonorailApiTest(testing.EndpointsTestCase):
     with self.call_should_fail(403):
       self.call_api('issues_comments_insert', self.request)
 
+  def testIssuesCommentsInsert_ArchivedProject(self):
+    """No permission to comment in an archived project."""
+    self.services.project.TestAddProject(
+        'test-project',
+        owner_ids=[111],
+        state=project_pb2.ProjectState.ARCHIVED,
+        project_id=12345)
+    issue1 = fake.MakeTestIssue(12345, 1, 'Issue 1', 'New', 2)
+    self.services.issue.TestAddIssue(issue1)
+
+    self.services.project.TestAddProject(
+        'archived-project', owner_ids=[222], project_id=6789)
+    issue2 = fake.MakeTestIssue(
+        6789, 2, 'Issue 2', 'New', 222, project_name='archived-project')
+    self.services.issue.TestAddIssue(issue2)
+
+    self.request['updates'] = {
+        'blockedOn': ['archived-project:2'],
+        'mergedInto': '',
+    }
+    with self.call_should_fail(403):
+      self.call_api('issues_comments_insert', self.request)
+
+    self.request['updates'] = {
+        'blockedOn': [],
+        'mergedInto': 'archived-project:2',
+    }
+    with self.call_should_fail(403):
+      self.call_api('issues_comments_insert', self.request)
+
   def testIssuesCommentsInsert_CommentPermissionOnly(self):
     """User has permission to comment, even though they cannot edit."""
     self.services.project.TestAddProject(

@@ -175,7 +175,8 @@ class WorkEnv(object):
     permitted = self._UserCanUsePermInIssue(issue, perm)
     if not permitted:
       raise permissions.PermissionException(
-        'User lacks permission %r in issue' % perm)
+          'User lacks permission %r in issue %s %d', perm, issue.project_name,
+          issue.local_id)
 
   def _AssertUserCanModifyIssues(
       self, issue_delta_pairs, is_description_change, comment_content=None):
@@ -214,6 +215,15 @@ class WorkEnv(object):
           merged_into_issue = self.GetIssue(
               delta.merged_into, use_cache=False, allow_viewing_deleted=True)
           self._AssertPermInIssue(merged_into_issue, permissions.EDIT_ISSUE)
+
+        # User cannot modify blocking issues on issues they cannot edit.
+        all_block = (
+            delta.blocked_on_add + delta.blocking_add +
+            delta.blocked_on_remove + delta.blocking_remove)
+        for block_iid in all_block:
+          blocked_issue = self.GetIssue(
+              block_iid, use_cache=False, allow_viewing_deleted=True)
+          self._AssertPermInIssue(blocked_issue, permissions.EDIT_ISSUE)
 
         # User cannot change values for restricted fields they cannot edit.
         field_ids = [fv.field_id for fv in delta.field_vals_add]
@@ -1866,6 +1876,7 @@ class WorkEnv(object):
       # Reject attempts to merge an issue into an issue we cannot view and edit.
       merged_into_issue = self.GetIssue(
           delta.merged_into, use_cache=False, allow_viewing_deleted=True)
+      self._AssertPermInIssue(merged_into_issue, permissions.EDIT_ISSUE)
       self._AssertPermInIssue(issue, permissions.EDIT_ISSUE)
       # Reject attempts to merge an issue into itself.
       if issue.issue_id == delta.merged_into:
@@ -1876,6 +1887,15 @@ class WorkEnv(object):
     if comment_content and len(
         comment_content) > tracker_constants.MAX_COMMENT_CHARS:
       raise exceptions.InputException('Comment is too long')
+
+    # Reject attempts to modifying blocking issues we cannot edit.
+    all_block = (
+        delta.blocked_on_add + delta.blocking_add + delta.blocked_on_remove +
+        delta.blocking_remove)
+    for block_iid in all_block:
+      blocked_issue = self.GetIssue(
+          block_iid, use_cache=False, allow_viewing_deleted=True)
+      self._AssertPermInIssue(blocked_issue, permissions.EDIT_ISSUE)
 
     # Reject attempts to block on issue on itself.
     if (issue.issue_id in delta.blocked_on_add

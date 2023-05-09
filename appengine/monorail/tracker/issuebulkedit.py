@@ -329,6 +329,35 @@ class IssueBulkEdit(servlet.Servlet):
             issue for issue in editable_issues
             if not permissions.GetRestrictions(issue)]
 
+      # Check that we can modify issues we want to block with.
+      if post_data.get('blocked_on'):
+        for issue_ref in post_data.get('blocked_on').split(','):
+          if not issue_ref:
+            continue
+          project_name, iid = tracker_bizobj.ParseIssueRef(issue_ref)
+          project_name = project_name or mr.project_name
+          project = self.services.project.GetProjectByName(
+              mr.cnxn, project_name)
+          issue = self.services.issue.GetIssueByLocalID(
+              mr.cnxn, project.project_id, iid, use_cache=False)
+          if not self._CheckEditIssuePermissions(mr, project, issue):
+            mr.errors.blocked_on = 'Target issue %s cannot be modified' % (iid)
+            break
+
+      if post_data.get('blocking'):
+        for issue_ref in post_data.get('blocking').split(','):
+          if not issue_ref:
+            continue
+          project_name, iid = tracker_bizobj.ParseIssueRef(issue_ref)
+          project_name = project_name or mr.project_name
+          project = self.services.project.GetProjectByName(
+              mr.cnxn, project_name)
+          issue = self.services.issue.GetIssueByLocalID(
+              mr.cnxn, project.project_id, iid, use_cache=False)
+          if not self._CheckEditIssuePermissions(mr, project, issue):
+            mr.errors.blocking = 'Target issue %s cannot be modified' % (iid)
+            break
+
       # If 'Duplicate' status is specified ensure there are no permission issues
       # with the issue we want to merge with.
       if post_data.get('merge_into'):
@@ -337,9 +366,10 @@ class IssueBulkEdit(servlet.Servlet):
               mr.cnxn, self.services, mr.project_name, post_data, parsed.status,
               config, issue, mr.errors)
           if merge_into_issue:
-            merge_allowed = tracker_helpers.IsMergeAllowed(
-                merge_into_issue, mr, self.services)
-            if not merge_allowed:
+            project = self.services.project.GetProjectByName(
+                mr.cnxn, issue.project_name)
+            if not self._CheckEditIssuePermissions(mr, project,
+                                                   merge_into_issue):
               mr.errors.merge_into_id = 'Target issue %s cannot be modified' % (
                                             merge_into_issue.local_id)
               break
@@ -476,3 +506,10 @@ class IssueBulkEdit(servlet.Servlet):
 
   def PostIssueBulkEdit(self, **kwargs):
     return self.handler(**kwargs)
+
+  def _CheckEditIssuePermissions(self, mr, project, issue):
+    config = self.services.config.GetProjectConfig(mr.cnxn, project.project_id)
+    granted_perms = tracker_bizobj.GetGrantedPerms(
+        issue, mr.auth.effective_ids, config)
+    return tracker_helpers.CanEditProjectIssue(
+        mr, project, issue, granted_perms)

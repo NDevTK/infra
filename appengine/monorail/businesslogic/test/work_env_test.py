@@ -2968,6 +2968,20 @@ class WorkEnvTest(unittest.TestCase):
       with self.assertRaises(permissions.PermissionException):
         we.UpdateIssue(issue, delta, '')
 
+    # Archived project only editable by Owner 111.
+    self.services.project.TestAddProject(
+        'proj',
+        project_id=779,
+        owner_ids=[111],
+        state=project_pb2.ProjectState.ARCHIVED)
+    issue3 = fake.MakeTestIssue(
+        779, 1, 'issue in archived project', 'Available', 111)
+    delta = tracker_pb2.IssueDelta(
+        merged_into=issue3.issue_id, status='Duplicate')
+    with self.work_env as we:
+      with self.assertRaises(permissions.PermissionException):
+        we.UpdateIssue(issue, delta, '')
+
     # Original issue still available.
     self.assertEqual('Available', issue.status)
     # Target issue was not modified.
@@ -3006,6 +3020,7 @@ class WorkEnvTest(unittest.TestCase):
     issue = fake.MakeTestIssue(789, 1, 'summary', 'Available', 111)
     upstream_issue = fake.MakeTestIssue(789, 2, 'umbrella', 'Available', 111)
     self.services.issue.TestAddIssue(issue)
+    self.services.issue.TestAddIssue(upstream_issue)
 
     delta = tracker_pb2.IssueDelta(blocked_on_add=[upstream_issue.issue_id])
     with self.work_env as we:
@@ -3020,6 +3035,60 @@ class WorkEnvTest(unittest.TestCase):
     fake_pasibn.assert_called_with(
         issue.issue_id, 'testing-app.appspot.com', [upstream_issue.issue_id],
         111, send_email=True)
+
+  @mock.patch(
+      'features.send_notifications.PrepareAndSendIssueBlockingNotification')
+  @mock.patch(
+      'features.send_notifications.PrepareAndSendIssueChangeNotification')
+  def testUpdateIssue_BlockOnRestrictedIssue(self, fake_pasicn, fake_pasibn):
+    """We cannot block an issue on an issue we cannot view and edit."""
+    self.SignIn(user_id=self.user_3.user_id)
+    issue = fake.MakeTestIssue(789, 1, 'summary', 'Available', 111)
+    issue2 = fake.MakeTestIssue(789, 2, 'summary2', 'Available', 111)
+    self.services.issue.TestAddIssue(issue)
+    self.services.issue.TestAddIssue(issue2)
+
+    issue2.labels = ['Restrict-View-Foo']
+    delta = tracker_pb2.IssueDelta(blocked_on_add=[issue2.issue_id])
+    with self.work_env as we:
+      with self.assertRaises(permissions.PermissionException):
+        we.UpdateIssue(issue, delta, '')
+    issue2.labels = ['Restrict-EditIssue-Foo']
+    with self.work_env as we:
+      with self.assertRaises(permissions.PermissionException):
+        we.UpdateIssue(issue, delta, '')
+
+    delta = tracker_pb2.IssueDelta(blocking_add=[issue2.issue_id])
+    issue2.labels = ['Restrict-View-Bar']
+    with self.work_env as we:
+      with self.assertRaises(permissions.PermissionException):
+        we.UpdateIssue(issue, delta, '')
+    issue2.labels = ['Restrict-EditIssue-Bar']
+    with self.work_env as we:
+      with self.assertRaises(permissions.PermissionException):
+        we.UpdateIssue(issue, delta, '')
+
+    # Archived project only editable by Owner 111.
+    self.services.project.TestAddProject(
+        'proj',
+        project_id=779,
+        owner_ids=[111],
+        state=project_pb2.ProjectState.ARCHIVED)
+    issue3 = fake.MakeTestIssue(
+        779, 1, 'issue in archived project', 'Available', 111)
+    delta = tracker_pb2.IssueDelta(blocking_add=[issue3.issue_id])
+    with self.work_env as we:
+      with self.assertRaises(permissions.PermissionException):
+        we.UpdateIssue(issue, delta, '')
+
+    # Original issue was not modified.
+    self.assertEqual(0, len(issue.blocked_on_iids))
+    self.assertEqual(0, len(issue.blocking_iids))
+    # No comment was added.
+    comments = self.services.issue.GetCommentsForIssue('cnxn', issue.issue_id)
+    self.assertEqual(1, len(comments))
+    fake_pasicn.assert_not_called()
+    fake_pasibn.assert_not_called()
 
   @mock.patch(
       'features.send_notifications.PrepareAndSendIssueBlockingNotification')

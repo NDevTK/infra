@@ -915,7 +915,7 @@ class HelpersTest(unittest.TestCase):
 
   # ParseMergeFields is tested in IssueMergeTest.
   # AddIssueStarrers is tested in IssueMergeTest.testMergeIssueStars().
-  # IsMergeAllowed is tested in IssueMergeTest.
+  # CanEditProjectIssue is tested in IssueMergeTest.
 
   def testPairDerivedValuesWithRuleExplanations_Nothing(self):
     """Test we return nothing for an issue with no derived values."""
@@ -1251,19 +1251,34 @@ class IssueMergeTest(unittest.TestCase):
     self.assertEqual(str(mergee_issue.local_id), text)
     self.assertEqual(mergee_issue, merge_into_issue)
 
-  def testIsMergeAllowed(self):
+  def testCanEditProjectIssue(self):
     mr = testing_helpers.MakeMonorailRequest()
-    issue = fake.MakeTestIssue(987, 1, 'summary', 'New', 111)
+    issue = fake.MakeTestIssue(
+        self.project.project_id, 1, 'summary', 'New', 111)
     issue.project_name = self.project.project_name
 
-    for (perm_set, expected_merge_allowed) in (
-            (permissions.READ_ONLY_PERMISSIONSET, False),
-            (permissions.COMMITTER_INACTIVE_PERMISSIONSET, False),
-            (permissions.COMMITTER_ACTIVE_PERMISSIONSET, True),
-            (permissions.OWNER_ACTIVE_PERMISSIONSET, True)):
-      mr.perms = perm_set
-      merge_allowed = tracker_helpers.IsMergeAllowed(issue, mr, self.services)
-      self.assertEqual(expected_merge_allowed, merge_allowed)
+    non_member_not_allowed = tracker_helpers.CanEditProjectIssue(
+        mr, self.project, issue, None)
+    self.assertEqual(False, non_member_not_allowed)
+
+    committer_id = 3
+    self.project.committer_ids.extend([committer_id])
+    mr.auth.effective_ids.add(committer_id)
+    committer_allowed = tracker_helpers.CanEditProjectIssue(
+        mr, self.project, issue, None)
+    self.assertEqual(True, committer_allowed)
+
+    self.project.state = project_pb2.ProjectState.ARCHIVED
+    committer_read_only_not_allowed = tracker_helpers.CanEditProjectIssue(
+        mr, self.project, issue, None)
+    self.assertEqual(False, committer_read_only_not_allowed)
+
+    owner_id = 1
+    self.project.owner_ids.extend([owner_id])
+    mr.auth.effective_ids.add(owner_id)
+    owner_read_only_not_allowed = tracker_helpers.CanEditProjectIssue(
+        mr, self.project, issue, None)
+    self.assertEqual(False, owner_read_only_not_allowed)
 
   def testMergeIssueStars(self):
     mr = testing_helpers.MakeMonorailRequest()

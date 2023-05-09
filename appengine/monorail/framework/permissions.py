@@ -440,7 +440,7 @@ def GetPermissions(user, effective_ids, project):
 
 def UpdateIssuePermissions(
     perms, project, issue, effective_ids, granted_perms=None, config=None):
-  """Update the PermissionSet for an specific issue.
+  """Update the PermissionSet for a specific issue.
 
   Take into account granted permissions and label restrictions to filter the
   permissions, and updates the VIEW and EDIT_ISSUE permissions depending on the
@@ -500,7 +500,7 @@ def UpdateIssuePermissions(
   filtered_perms.update(granted_perms)
 
   # The VIEW perm might have been removed due to restrictions, but the issue
-  # owner, reporter, cc and approvers can always be an issue.
+  # owner, reporter, cc and approvers can always view an issue.
   allowed_ids = set(
       tracker_bizobj.GetCcIds(issue)
       + tracker_bizobj.GetApproverIds(issue)
@@ -519,7 +519,8 @@ def UpdateIssuePermissions(
 
   # The EDIT_ISSUE permission might have been removed due to restrictions, but
   # the owner always has permission to edit it.
-  if effective_ids and tracker_bizobj.GetOwnerId(issue) in effective_ids:
+  if (effective_ids and tracker_bizobj.GetOwnerId(issue) in effective_ids and
+      project.state != project_pb2.ProjectState.ARCHIVED):
     filtered_perms.add(EDIT_ISSUE.lower())
 
   return PermissionSet(filtered_perms, perms.consider_restrictions)

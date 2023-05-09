@@ -485,20 +485,33 @@ class MonorailApi(remote.Service):
           api_pb2_v1_helpers.split_remove_add(request.updates.labels))
       blocked_on_add_strs, blocked_on_remove_strs = (
           api_pb2_v1_helpers.split_remove_add(request.updates.blockedOn))
-      updates_dict['blocked_on_add'] = api_pb2_v1_helpers.issue_global_ids(
-          blocked_on_add_strs, issue.project_id, mar,
-          self._services)
-      updates_dict['blocked_on_remove'] = api_pb2_v1_helpers.issue_global_ids(
-          blocked_on_remove_strs, issue.project_id, mar,
-          self._services)
       blocking_add_strs, blocking_remove_strs = (
           api_pb2_v1_helpers.split_remove_add(request.updates.blocking))
-      updates_dict['blocking_add'] = api_pb2_v1_helpers.issue_global_ids(
-          blocking_add_strs, issue.project_id, mar,
-          self._services)
-      updates_dict['blocking_remove'] = api_pb2_v1_helpers.issue_global_ids(
-          blocking_remove_strs, issue.project_id, mar,
-          self._services)
+      blocked_on_add_iids = api_pb2_v1_helpers.issue_global_ids(
+          blocked_on_add_strs, issue.project_id, mar, self._services)
+      blocked_on_remove_iids = api_pb2_v1_helpers.issue_global_ids(
+          blocked_on_remove_strs, issue.project_id, mar, self._services)
+      blocking_add_iids = api_pb2_v1_helpers.issue_global_ids(
+          blocking_add_strs, issue.project_id, mar, self._services)
+      blocking_remove_iids = api_pb2_v1_helpers.issue_global_ids(
+          blocking_remove_strs, issue.project_id, mar, self._services)
+      all_block = (
+          blocked_on_add_iids + blocked_on_remove_iids + blocking_add_iids +
+          blocking_remove_iids)
+      for iid in all_block:
+        # Because we will modify issues, load from DB rather than cache.
+        issue = self._services.issue.GetIssue(mar.cnxn, iid, use_cache=False)
+        project = self._services.project.GetProjectByName(
+            mar.cnxn, issue.project_name)
+        if not tracker_helpers.CanEditProjectIssue(mar, project, issue,
+                                                   mar.granted_perms):
+          raise permissions.PermissionException(
+              'User is not allowed to block with issue (%s, %d)' %
+              (issue.project_name, issue.local_id))
+      updates_dict['blocked_on_add'] = blocked_on_add_iids
+      updates_dict['blocked_on_remove'] = blocked_on_remove_iids
+      updates_dict['blocking_add'] = blocking_add_iids
+      updates_dict['blocking_remove'] = blocking_remove_iids
       components_add_strs, components_remove_strs = (
           api_pb2_v1_helpers.split_remove_add(request.updates.components))
       updates_dict['components_add'] = (
@@ -516,12 +529,11 @@ class MonorailApi(remote.Service):
         merge_into_issue = self._services.issue.GetIssueByLocalID(
             mar.cnxn, merge_into_project.project_id, merge_local_id,
             use_cache=False)
-        merge_allowed = tracker_helpers.IsMergeAllowed(
-            merge_into_issue, mar, self._services)
-        if not merge_allowed:
+        if not tracker_helpers.CanEditProjectIssue(
+            mar, merge_into_project, merge_into_issue, mar.granted_perms):
           raise permissions.PermissionException(
-            'User is not allowed to merge into issue %s:%s' %
-            (merge_into_issue.project_name, merge_into_issue.local_id))
+              'User is not allowed to merge into issue %s:%s' %
+              (merge_into_issue.project_name, merge_into_issue.local_id))
         updates_dict['merged_into'] = merge_into_issue.issue_id
       (updates_dict['field_vals_add'], updates_dict['field_vals_remove'],
        updates_dict['fields_clear'], updates_dict['fields_labels_add'],
@@ -802,7 +814,6 @@ class MonorailApi(remote.Service):
           raise permissions.PermissionException(
               'User is not allowed to make this status change')
         updates_dict['status'] = status
-    logging.info(time.time)
     approval_delta = tracker_bizobj.MakeApprovalDelta(
         updates_dict.get('status'), mar.auth.user_id,
         updates_dict.get('approver_ids_add', []),

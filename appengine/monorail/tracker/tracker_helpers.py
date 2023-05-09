@@ -1017,25 +1017,19 @@ def AddIssueStarrers(
       cnxn, services, config, merge_into_iid, new_starrers, True)
 
 
-def IsMergeAllowed(merge_into_issue, mr, services):
-  """Check to see if user has permission to merge with specified issue."""
-  merge_into_project = services.project.GetProjectByName(
-      mr.cnxn, merge_into_issue.project_name)
-  merge_into_config = services.config.GetProjectConfig(
-      mr.cnxn, merge_into_project.project_id)
-  merge_granted_perms = tracker_bizobj.GetGrantedPerms(
-      merge_into_issue, mr.auth.effective_ids, merge_into_config)
+def CanEditProjectIssue(mr, project, issue, granted_perms):
+  """Check if user permissions in another project allow editing.
 
-  merge_view_allowed = mr.perms.CanUsePerm(
-      permissions.VIEW, mr.auth.effective_ids,
-      merge_into_project, permissions.GetRestrictions(merge_into_issue),
-      granted_perms=merge_granted_perms)
-  merge_edit_allowed = mr.perms.CanUsePerm(
-      permissions.EDIT_ISSUE, mr.auth.effective_ids,
-      merge_into_project, permissions.GetRestrictions(merge_into_issue),
-      granted_perms=merge_granted_perms)
+  Wraps CanEditIssue with a call to get user permissions in given project.
 
-  return merge_view_allowed and merge_edit_allowed
+  We deviate from using CanUsePerm because that method does not calculate
+  Project state as part of the permissions. This seems to have deviated in
+  2018. CanEditIssue uses Project state to authorize user actions.
+  """
+  project_perms = permissions.GetPermissions(
+      mr.auth.user_pb, mr.auth.effective_ids, project)
+  return permissions.CanEditIssue(
+      mr.auth.effective_ids, project_perms, project, issue, granted_perms)
 
 
 def GetVisibleMembers(mr, project, services):

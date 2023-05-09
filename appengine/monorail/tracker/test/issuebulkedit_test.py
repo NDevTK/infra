@@ -17,6 +17,7 @@ from google.appengine.ext import testbed
 
 from framework import exceptions
 from framework import permissions
+from mrproto import project_pb2
 from mrproto import tracker_pb2
 from services import service_manager
 from services import tracker_fulltext
@@ -798,7 +799,7 @@ class IssueBulkEditTest(unittest.TestCase):
     self.assertEqual('Invalid issue ID 54321', mr.errors.blocking)
 
   def testProcessFormData_BlockIssuesOnItself(self):
-    """Test PFD processes invalid blocked_on and blocking values."""
+    """Test PFD processes same issue blocked_on and blocking values."""
     created_issue_1 = fake.MakeTestIssue(
         789, 1, 'issue summary', 'New', 111, reporter_id=111)
     self.services.issue.TestAddIssue(created_issue_1)
@@ -824,6 +825,49 @@ class IssueBulkEditTest(unittest.TestCase):
 
     self.assertEqual('Cannot block an issue on itself.', mr.errors.blocked_on)
     self.assertEqual('Cannot block an issue on itself.', mr.errors.blocking)
+
+  def testProcessFormData_BlockIssuesOnArchivedProject(self):
+    """Test PFD processes blocked_on and blocking issues without permissions."""
+    created_issue_1 = fake.MakeTestIssue(
+        789, 1, 'issue summary', 'New', 111, reporter_id=111)
+    self.services.issue.TestAddIssue(created_issue_1)
+    local_id_1 = created_issue_1.local_id
+    # Add issue to archived project.
+    archived_proj = self.services.project.TestAddProject(
+        name='archived-proj', project_id=789987, owner_ids=[111])
+    archived_proj.state = project_pb2.ProjectState.ARCHIVED
+    archived_iid = 2
+    created_issue_2 = fake.MakeTestIssue(
+        789987, archived_iid, 'issue summary', 'New', 111, reporter_id=111)
+    self.services.issue.TestAddIssue(created_issue_2)
+    mr = testing_helpers.MakeMonorailRequest(
+        project=self.project,
+        perms=permissions.OWNER_ACTIVE_PERMISSIONSET,
+        user_info={'user_id': 111})
+    mr.project_name = 'proj'
+    mr.local_id_list = [local_id_1]
+
+    global_id = 'archived-proj:2'
+    self._MockMethods()
+    post_data = fake.PostData(
+        op_blockedonenter=['append'],
+        blocked_on=[global_id],
+        op_blockingenter=['append'],
+        blocking=[global_id],
+        can=[1],
+        q=[''],
+        colspec=[''],
+        sort=[''],
+        groupby=[''],
+        start=[0],
+        num=[100])
+    self.servlet.ProcessFormData(mr, post_data)
+
+    self.assertEqual(
+        'Target issue %s cannot be modified' % archived_iid,
+        mr.errors.blocked_on)
+    self.assertEqual(
+        'Target issue %s cannot be modified' % archived_iid, mr.errors.blocking)
 
   @mock.patch('framework.cloud_tasks_helpers.create_task')
   def testProcessFormData_NormalBlockIssues(self, _create_task_mock):

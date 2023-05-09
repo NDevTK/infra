@@ -1377,6 +1377,14 @@ class IssuePermissionsTest(unittest.TestCase):
         self.RESTRICTED_ISSUE3, {OWNER_ID})
     self.assertIn('editissue', perms.perm_names)
 
+  def testUpdateIssuePermissions_OwnerRespectsArchivedProject(self):
+    project = project_pb2.Project()
+    project.state = project_pb2.ProjectState.ARCHIVED
+    perms = permissions.UpdateIssuePermissions(
+        permissions.COMMITTER_ACTIVE_PERMISSIONSET, project,
+        self.RESTRICTED_ISSUE3, {OWNER_ID})
+    self.assertNotIn('editissue', perms.perm_names)
+
   def testUpdateIssuePermissions_CustomPermissionGrantsEditPermission(self):
     project = project_pb2.Project()
     project.committer_ids.append(999)
