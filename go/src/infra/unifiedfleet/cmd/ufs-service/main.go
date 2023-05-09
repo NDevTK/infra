@@ -46,7 +46,7 @@ func main() {
 	server.Main(nil, modules, func(srv *server.Server) error {
 		// Load service config form a local file (deployed via GKE),
 		// periodically reread it to pick up changes without full restart.
-		if _, err := cfgLoader.Load(); err != nil {
+		if _, err := cfgLoader.Load(srv.Context); err != nil {
 			return err
 		}
 		srv.RunInBackground("ufs.config", cfgLoader.ReloadLoop)

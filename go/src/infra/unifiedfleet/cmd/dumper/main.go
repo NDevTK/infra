@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ func main() {
 	server.Main(nil, modules, func(srv *server.Server) error {
 		// Load service config form a local file (deployed via GKE),
 		// periodically reread it to pick up changes without full restart.
-		if _, err := cfgLoader.Load(); err != nil {
+		if _, err := cfgLoader.Load(srv.Context); err != nil {
 			return err
 		}
 		srv.RunInBackground("ufs.config", cfgLoader.ReloadLoop)

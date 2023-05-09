@@ -37,7 +37,7 @@ func (l *Loader) RegisterFlags(fs *flag.FlagSet) {
 }
 
 // Load loads the config from local static config file.
-func (l *Loader) Load() (*Config, error) {
+func (l *Loader) Load(ctx context.Context) (*Config, error) {
 	if l.ConfigPath == "" {
 		return nil, errors.Reason("-config-path is required").Err()
 	}
@@ -48,13 +48,19 @@ func (l *Loader) Load() (*Config, error) {
 	}
 	cfg := &Config{}
 	unmarshalOpts := prototext.UnmarshalOptions{
+		// Attempt to load the config with all the fields given. This
+		// should succeed if the config wasn't pushed before UFS
+		DiscardUnknown: false,
+	}
+	if err := unmarshalOpts.Unmarshal(b, cfg); err != nil {
+		logging.Errorf(ctx, "Error loading the configs, Trying to ignore fields. %v", err)
 		// Ignore those fields that you can't parse. This will avoid
 		// crashing the ufs service when someone accidentally merges a
 		// config change.
-		DiscardUnknown: true,
-	}
-	if err := unmarshalOpts.Unmarshal(b, cfg); err != nil {
-		return nil, errors.Annotate(err, "invalid Config proto message").Err()
+		unmarshalOpts.DiscardUnknown = true
+		if err = unmarshalOpts.Unmarshal(b, cfg); err != nil {
+			return nil, errors.Annotate(err, "invalid Config proto message").Err()
+		}
 	}
 	l.lastGood.Store(cfg)
 	return cfg, nil
@@ -74,7 +80,7 @@ func (l *Loader) ReloadLoop(c context.Context) {
 			return // the context is canceled, the server is closing
 		}
 		prevCfg := l.Config()
-		newCfg, err := l.Load()
+		newCfg, err := l.Load(c)
 		if err != nil {
 			logging.WithError(err).Errorf(c, "Failed to reload the config, using the cached one")
 		} else if prevCfg != nil && !proto.Equal(prevCfg, newCfg) {
