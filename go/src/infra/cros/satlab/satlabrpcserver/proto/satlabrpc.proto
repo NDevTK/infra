@@ -14,6 +14,7 @@ service SatlabRpcService {
   rpc list_build_versions (ListBuildVersionsRequest) returns (ListBuildVersionsResponse);
   rpc stage_build (StageBuildRequest) returns (StageBuildResponse);
   rpc list_connected_duts_firmware(ListConnectedDutsFirmwareRequest) returns (ListConnectedDutsFirmwareResponse);
+  rpc get_system_info(GetSystemInfoRequest) returns (GetSystemInfoResponse);
 }
 
 message ListBuildTargetsRequest {
@@ -103,4 +104,13 @@ message ConnectedDutFirmwareInfo {
 // NEXT_TAG = 2
 message ListConnectedDutsFirmwareResponse {
   repeated ConnectedDutFirmwareInfo duts = 1;
+}
+
+// NEXT_TAG = 1
+message GetSystemInfoRequest {
+}
+
+// NEXT_TAG = 2
+message GetSystemInfoResponse {
+  float cpu_temperature = 1;
 }

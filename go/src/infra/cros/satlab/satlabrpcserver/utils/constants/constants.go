@@ -9,6 +9,9 @@ import "time"
 // TODO we need to parse the service account to get the partner bucket
 const BucketName = "chromeos-moblab-cienet-dev"
 
+// F64Epsilon Machine epsilon value for f64
+const F64Epsilon = 2.2204460492503131e-16
+
 // SSHKeyPath the path where ssh key
 const SSHKeyPath = "/usr/src/satlab_rpcserver/server/testing_rsa"
 
