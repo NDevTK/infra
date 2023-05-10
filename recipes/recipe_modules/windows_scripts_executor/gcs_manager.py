@@ -46,10 +46,10 @@ class GCSManager:
         b, s = self.get_bucket_source(pin_url)
         gcs_src.bucket = b
         gcs_src.source = s
+        # Add pkg_url as that's the only one we know that exists. Not the
+        # resolved pin
+        self._existence.add(pkg_url)
       self._pinned_srcs[pkg_url] = gcs_src
-      # Add pkg_url as that's the only one we know that exists. Not the resolved
-      # pin
-      self._existence.add(pkg_url)
       return gcs_src
 
   def get_orig(self, url):
