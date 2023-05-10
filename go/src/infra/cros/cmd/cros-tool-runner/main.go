@@ -44,6 +44,7 @@ func getApplication(authOpts auth.Options) *cli.Application {
 			tasks.Provision(authOpts),
 			tasks.Test(authOpts),
 			tasks.TestFinder(authOpts),
+			tasks.PreProcess(authOpts),
 			tasks.Serve(authOpts),
 		},
 	}
