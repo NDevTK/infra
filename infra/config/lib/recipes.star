@@ -60,10 +60,6 @@ def simulation_tester(
         build_numbers = True,
         triggered_by = [triggered_by],
         notifies = infra.tree_closing_notifiers(),
-        experiments = {
-            # TODO(crbug.com/1393420): remove this.
-            "luci.buildbucket.omit_python2": 0,
-        },
     )
     if console_view:
         luci.console_view_entry(
