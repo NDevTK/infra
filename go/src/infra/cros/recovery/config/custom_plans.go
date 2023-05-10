@@ -88,26 +88,6 @@ func RecoverCBIFromInventoryConfig() *Configuration {
 	}
 }
 
-func EraseMRCCacheConfig() *Configuration {
-	return &Configuration{
-		PlanNames: []string{
-			PlanServo,
-			PlanCrOS,
-			PlanClosing,
-		},
-		Plans: map[string]*Plan{
-			PlanServo: setAllowFail(servoRepairPlan(), false),
-			PlanCrOS: {
-				CriticalActions: []string{
-					"Erase DUT MRC cache via servo",
-				},
-				Actions: crosRepairActions(),
-			},
-			PlanClosing: setAllowFail(crosClosePlan(), true),
-		},
-	}
-}
-
 // FixTPM54Config creates a custom configuration to address issue reported by b/271040435
 //
 // Implementatio based on b/272310645#comment33 and b/272310645#comment39.

@@ -274,24 +274,13 @@ func validateInstallFirmwareImageRequest(req *InstallFirmwareImageRequest) error
 	return nil
 }
 
-// EraseMRCCache erases MRC cache through a provided flash device.
-func EraseMRCCache(ctx context.Context, run components.Runner, serial string) error {
+// DisableSoftwareWriteProtection disable software write protection through servo.
+func DisableSoftwareWriteProtectionByServo(ctx context.Context, run components.Runner, servoPort int, runTimeout time.Duration) error {
 	const (
-		eraseMRCCacheCmd = "flashrom -E -i UNIFIED_MRC_CACHE -p raiden_debug_spi:target=AP,custom_rst=true,serial=%s"
+		disableWPCmd = "futility flash --wp-disable --servo_port=%d"
 	)
-	if _, err := run(ctx, time.Minute*20, fmt.Sprintf(eraseMRCCacheCmd, serial)); err != nil {
-		return errors.Annotate(err, "erase MRC cache").Err()
-	}
-	return nil
-}
-
-// DisableSoftwareWriteProtection disable software write protection through a provided flash device.
-func DisableSoftwareWriteProtection(ctx context.Context, run components.Runner, serial string, runTimeout time.Duration) error {
-	const (
-		disableWPCmd = "flashrom -p raiden_debug_spi:target=AP,custom_rst=true,serial=%s --wp-disable --wp-range=0,0"
-	)
-	if _, err := run(ctx, runTimeout, fmt.Sprintf(disableWPCmd, serial)); err != nil {
-		return errors.Annotate(err, "disable software write protection").Err()
+	if _, err := run(ctx, runTimeout, fmt.Sprintf(disableWPCmd, servoPort)); err != nil {
+		return errors.Annotate(err, "disable software write protection by servo").Err()
 	}
 	return nil
 }

@@ -2414,8 +2414,8 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Flash EC (FW) by servo",
 				"Sleep 60 seconds",
+				"Disable software write protection via servo",
 				"Flash AP (FW) with GBB 0x18 by servo",
-				// TODO(b:267549690) close the bug if we determine cold reset is not needed after flash AP.
 				"Wait to be SSHable (normal boot)",
 			},
 			ExecName: "sample_pass",
@@ -3019,17 +3019,6 @@ func crosRepairActions() map[string]*Action {
 				"target_file:log_collection_info",
 			},
 		},
-		"Erase DUT MRC cache via servo": {
-			Docs: []string{
-				"This action erases MRC cache of the DUT via applicable flash device(servo_micro, CCD) of its servo.",
-			},
-			Dependencies: []string{
-				"Is servod running",
-			},
-			ExecName:    "cros_erase_mrc_cache_by_servo",
-			RunControl:  RunControl_RUN_ONCE,
-			ExecTimeout: &durationpb.Duration{Seconds: 1200},
-		},
 		"Battery cut-off by servo EC console": {
 			Docs: []string{
 				"Try to cut-off battery by servo EC console.",
@@ -3062,9 +3051,6 @@ func crosRepairActions() map[string]*Action {
 			AllowFailAfterRecovery: true,
 			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
-		// This action is intended to be served as an temporary solution for b/255617349,
-		// and it should not to be added as part of formal auto-repair task.
-		// TODO(xianuowang@) remove this action once a permanent solution is in place.
 		"Disable software write protection via servo": {
 			Docs: []string{
 				"Disable software write protection(for flash firmware) via servo.",
@@ -3072,34 +3058,8 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Is servod running",
 			},
-			ExecName:               "cros_disable_software_write_protection",
-			ExecTimeout:            &durationpb.Duration{Seconds: 180},
-			AllowFailAfterRecovery: true,
-		},
-		// This action is intended to be served as an temporary solution for b/255617349,
-		// and it should not to be added as part of formal auto-repair task.
-		// TODO(xianuowang@) remove this action once a permanent solution is in place.
-		"Enable SPI mode via servo": {
-			Docs: []string{
-				"Enable SPI mode for flashing CPU firmware over servo.",
-			},
-			Dependencies: []string{
-				"Is servod running",
-			},
-			ExecName:               "cros_enable_cpu_fw_spi",
-			AllowFailAfterRecovery: true,
-		},
-		// This action is intended to be served as an temporary solution for b/255617349,
-		// and it should not to be added as part of formal auto-repair task.
-		// TODO(xianuowang@) remove this action once a permanent solution is in place.
-		"Disable SPI mode via servo": {
-			Docs: []string{
-				"Disable SPI mode via servo",
-			},
-			Dependencies: []string{
-				"Is servod running",
-			},
-			ExecName:               "cros_disable_cpu_fw_spi",
+			ExecName:               "cros_disable_software_write_protection_by_servo",
+			ExecTimeout:            &durationpb.Duration{Seconds: 60},
 			AllowFailAfterRecovery: true,
 		},
 		"Has a stable-version service": {

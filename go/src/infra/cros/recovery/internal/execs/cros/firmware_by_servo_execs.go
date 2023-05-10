@@ -12,7 +12,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components/cros/firmware"
-	"infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
@@ -172,61 +171,12 @@ func defaultFwFolderPath(d *tlw.Dut) string {
 	return fmt.Sprintf("/mnt/stateful_partition/tmp/fw_%v", d.Name)
 }
 
-// getFlashDevice is a helper function to get applicable flash device from servo topology.
-func getFlashDevice(ctx context.Context, info *execs.ExecInfo) (*tlw.ServoTopologyItem, error) {
-	targetDeviceTypes := map[string]bool{
-		"servo_micro": true,
-		"ccd_gsc":     true,
-		"ccd_cr50":    true,
-	}
-	devices := info.GetChromeos().GetServo().GetServoTopology().GetChildren()
-	for _, d := range devices {
-		if _, ok := targetDeviceTypes[d.GetType()]; ok {
-			log.Debugf(ctx, "Detected flash device %s with serial number %s", d.GetType(), d.GetSerial())
-			return d, nil
-		}
-	}
-	return nil, errors.Reason("get flash device: failed to find applicable flash device from servo topology.").Err()
-}
-
-// eraseMRCCache erases MRC cache of the DUT via servo.
-func eraseMRCCache(ctx context.Context, info *execs.ExecInfo) error {
-	device, err := getFlashDevice(ctx, info)
-	if err != nil {
-		return errors.Annotate(err, "erase MRC cache").Err()
-	}
-	err = firmware.EraseMRCCache(ctx, info.NewRunner(info.GetChromeos().GetServo().GetName()), device.GetSerial())
-	return errors.Annotate(err, "erase MRC cache").Err()
-}
-
-// disableSoftwareWriteProtection disable software write protection via servo.
-func disableSoftwareWriteProtection(ctx context.Context, info *execs.ExecInfo) error {
-	device, err := getFlashDevice(ctx, info)
-	if err != nil {
-		return errors.Annotate(err, "disable software write protection").Err()
-	}
-	err = firmware.DisableSoftwareWriteProtection(ctx, info.NewRunner(info.GetChromeos().GetServo().GetName()), device.GetSerial(), info.GetExecTimeout())
+// disableSoftwareWriteProtection disable software write protection by servo.
+func disableSoftwareWriteProtectionByServo(ctx context.Context, info *execs.ExecInfo) error {
+	runner := info.NewRunner(info.GetChromeos().GetServo().GetName())
+	servodPort := int(info.GetChromeos().GetServo().GetServodPort())
+	err := firmware.DisableSoftwareWriteProtectionByServo(ctx, runner, servodPort, info.GetExecTimeout())
 	return errors.Annotate(err, "disable software write protection").Err()
-}
-
-// enableCpuFwSpi enable SPI mode for flashing CPU firmware over servo.
-func enableCpuFwSpi(ctx context.Context, info *execs.ExecInfo) error {
-	device, err := getFlashDevice(ctx, info)
-	if err != nil {
-		return errors.Annotate(err, "enable cpu fw spi").Err()
-	}
-	err = servo.SetCpuFwSpiState(ctx, info.NewServod(), device.GetType(), servo.CpuFwSpiValueON)
-	return errors.Annotate(err, "enable cpu fw spi").Err()
-}
-
-// disableCpuFwSpi disable SPI mode over servo.
-func disableCpuFwSpi(ctx context.Context, info *execs.ExecInfo) error {
-	device, err := getFlashDevice(ctx, info)
-	if err != nil {
-		return errors.Annotate(err, "disable cpu fw spi").Err()
-	}
-	err = servo.SetCpuFwSpiState(ctx, info.NewServod(), device.GetType(), servo.CpuFwSpiValueOFF)
-	return errors.Annotate(err, "disable cpu fw spi").Err()
 }
 
 func init() {
@@ -235,8 +185,5 @@ func init() {
 	execs.Register("cros_set_gbb_by_servo", setGbbFlagsByServoExec)
 	execs.Register("cros_remove_default_ap_file_servo_host", removeAPFileFromServoHostExec)
 	execs.Register("cros_update_fw_with_fw_image_by_servo", updateFwWithFwImageByServo)
-	execs.Register("cros_erase_mrc_cache_by_servo", eraseMRCCache)
-	execs.Register("cros_disable_software_write_protection", disableSoftwareWriteProtection)
-	execs.Register("cros_enable_cpu_fw_spi", enableCpuFwSpi)
-	execs.Register("cros_disable_cpu_fw_spi", disableCpuFwSpi)
+	execs.Register("cros_disable_software_write_protection_by_servo", disableSoftwareWriteProtectionByServo)
 }
