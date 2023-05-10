@@ -11,22 +11,22 @@ import (
 	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	vmlabpb "infra/libs/vmlab/api"
-	vmleaserpb "infra/vm_leaser/api/v1"
 )
 
 // mockVMLeaserClient mocks vmLeaserServiceClient for testing.
 type mockVMLeaserClient struct {
-	leaseVM func() (*vmleaserpb.LeaseVMResponse, error)
+	leaseVM func() (*api.LeaseVMResponse, error)
 }
 
 // LeaseVM mocks the LeaseVM method of the VM Leaser Client.
-func (m *mockVMLeaserClient) LeaseVM(context.Context, *vmleaserpb.LeaseVMRequest, ...grpc.CallOption) (*vmleaserpb.LeaseVMResponse, error) {
+func (m *mockVMLeaserClient) LeaseVM(context.Context, *api.LeaseVMRequest, ...grpc.CallOption) (*api.LeaseVMResponse, error) {
 	return m.leaseVM()
 }
 
@@ -52,16 +52,16 @@ func TestLeaseVM(t *testing.T) {
 	Convey("Test leaseVM", t, func() {
 		Convey("leaseVM - success", func() {
 			client := &mockVMLeaserClient{
-				leaseVM: func() (*vmleaserpb.LeaseVMResponse, error) {
-					return &vmleaserpb.LeaseVMResponse{
+				leaseVM: func() (*api.LeaseVMResponse, error) {
+					return &api.LeaseVMResponse{
 						LeaseId: "vm-test-id",
-						Vm: &vmleaserpb.VM{
+						Vm: &api.VM{
 							Id: "vm-test-id",
-							Address: &vmleaserpb.VMAddress{
+							Address: &api.VMAddress{
 								Host: "1.2.3.4",
 								Port: 99,
 							},
-							Type: vmleaserpb.VMType_VM_TYPE_DUT,
+							Type: api.VMType_VM_TYPE_DUT,
 						},
 						ExpirationTime: timestamppb.Now(),
 					}, nil
@@ -76,7 +76,7 @@ func TestLeaseVM(t *testing.T) {
 				Backend: &vmlabpb.Config_VmLeaserBackend_{
 					VmLeaserBackend: &vmlabpb.Config_VmLeaserBackend{
 						Env: vmlabpb.Config_VmLeaserBackend_ENV_LOCAL,
-						VmRequirements: &vmleaserpb.VMRequirements{
+						VmRequirements: &api.VMRequirements{
 							GceImage:       "test-image",
 							GceRegion:      "test-region",
 							GceProject:     "test-project",
@@ -102,7 +102,7 @@ func TestLeaseVM(t *testing.T) {
 		})
 		Convey("leaseVM - error: failed to lease VM", func() {
 			client := &mockVMLeaserClient{
-				leaseVM: func() (*vmleaserpb.LeaseVMResponse, error) {
+				leaseVM: func() (*api.LeaseVMResponse, error) {
 					return nil, errors.New("leasing error")
 				},
 			}
@@ -115,7 +115,7 @@ func TestLeaseVM(t *testing.T) {
 				Backend: &vmlabpb.Config_VmLeaserBackend_{
 					VmLeaserBackend: &vmlabpb.Config_VmLeaserBackend{
 						Env: vmlabpb.Config_VmLeaserBackend_ENV_LOCAL,
-						VmRequirements: &vmleaserpb.VMRequirements{
+						VmRequirements: &api.VMRequirements{
 							GceImage:       "test-image",
 							GceRegion:      "test-region",
 							GceProject:     "test-project",

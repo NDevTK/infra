@@ -8,7 +8,7 @@ package vmlab.api;
 
 import "google/protobuf/duration.proto";
 import "infra/libs/vmlab/api/image.proto";
-import "infra/vm_leaser/api/v1/vm_leaser.proto";
+import "go.chromium.org/chromiumos/config/proto/chromiumos/test/api/vm_leaser.proto";
 
 option go_package = "infra/libs/vmlab/api";
 
@@ -107,7 +107,7 @@ message Config {
 
     // The populated fields will specify the requirements for operations on a VM
     // lease. Required.
-    vm_leaser.api.v1.VMRequirements vm_requirements = 1;
+    chromiumos.test.api.VMRequirements vm_requirements = 1;
 
     // Duration of a VM lease. Optional, fallback to service default.
     // This will put a ceiling on time wasted if the client dies.

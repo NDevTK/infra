@@ -10,13 +10,13 @@ import (
 	"fmt"
 	"time"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 
-	pb "infra/vm_leaser/api/v1"
 	"infra/vm_leaser/internal/site"
 )
 
@@ -33,7 +33,7 @@ type Config struct {
 // Client is a VM Leaser client.
 type Client struct {
 	conn           *grpc.ClientConn
-	VMLeaserClient pb.VMLeaserServiceClient
+	VMLeaserClient api.VMLeaserServiceClient
 }
 
 // Close closes the client.
@@ -105,6 +105,6 @@ func NewClient(ctx context.Context, c *Config) (*Client, error) {
 	}
 	return &Client{
 		conn:           conn,
-		VMLeaserClient: pb.NewVMLeaserServiceClient(conn),
+		VMLeaserClient: api.NewVMLeaserServiceClient(conn),
 	}, nil
 }

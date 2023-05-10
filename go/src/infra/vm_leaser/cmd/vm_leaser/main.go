@@ -5,13 +5,13 @@
 package main
 
 import (
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/openid"
 	"google.golang.org/grpc"
 
-	pb "infra/vm_leaser/api/v1"
 	"infra/vm_leaser/internal/acl"
 	"infra/vm_leaser/internal/frontend"
 )
@@ -19,7 +19,7 @@ import (
 // InstallServices takes a VM Leaser service server and exposes it to a
 // LUCI prpc.Server.
 func InstallServices(s *frontend.Server, srv grpc.ServiceRegistrar) {
-	pb.RegisterVMLeaserServiceServer(srv, s)
+	api.RegisterVMLeaserServiceServer(srv, s)
 }
 
 func main() {

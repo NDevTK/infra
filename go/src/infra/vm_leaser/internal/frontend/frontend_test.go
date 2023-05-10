@@ -14,12 +14,11 @@ import (
 	"cloud.google.com/go/compute/apiv1/computepb"
 	"github.com/googleapis/gax-go/v2"
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
-
-	pb "infra/vm_leaser/api/v1"
 )
 
 // mockComputeInstancesClient mocks compute.NewInstancesRESTClient for testing.
@@ -71,7 +70,7 @@ func TestCreateInstance(t *testing.T) {
 					return nil, errors.New("failed insert")
 				},
 			}
-			hostReqs := &pb.VMRequirements{
+			hostReqs := &api.VMRequirements{
 				GceImage:       "test-image",
 				GceRegion:      "test-region",
 				GceProject:     "test-project",
@@ -88,7 +87,7 @@ func TestCreateInstance(t *testing.T) {
 					return nil, nil
 				},
 			}
-			hostReqs := &pb.VMRequirements{
+			hostReqs := &api.VMRequirements{
 				GceImage:       "test-image",
 				GceRegion:      "test-region",
 				GceProject:     "test-project",
@@ -119,7 +118,7 @@ func TestGetInstance(t *testing.T) {
 					}, nil
 				},
 			}
-			hostReqs := &pb.VMRequirements{
+			hostReqs := &api.VMRequirements{
 				GceImage:       "test-image",
 				GceRegion:      "test-region",
 				GceProject:     "test-project",
@@ -144,7 +143,7 @@ func TestGetInstance(t *testing.T) {
 					return nil, errors.New("failed get")
 				},
 			}
-			hostReqs := &pb.VMRequirements{
+			hostReqs := &api.VMRequirements{
 				GceImage:       "test-image",
 				GceRegion:      "test-region",
 				GceProject:     "test-project",
@@ -162,7 +161,7 @@ func TestGetInstance(t *testing.T) {
 					return &computepb.Instance{}, nil
 				},
 			}
-			hostReqs := &pb.VMRequirements{
+			hostReqs := &api.VMRequirements{
 				GceImage:       "test-image",
 				GceRegion:      "test-region",
 				GceProject:     "test-project",
@@ -184,7 +183,7 @@ func TestGetInstance(t *testing.T) {
 					}, nil
 				},
 			}
-			hostReqs := &pb.VMRequirements{
+			hostReqs := &api.VMRequirements{
 				GceImage:       "test-image",
 				GceRegion:      "test-region",
 				GceProject:     "test-project",

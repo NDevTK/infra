@@ -15,13 +15,14 @@ import (
 	"cloud.google.com/go/compute/apiv1/computepb"
 	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
 
-	pb "infra/vm_leaser/api/v1"
+	vmleaserpb "infra/vm_leaser/api/v1"
 )
 
 // Default VM Leaser parameters
@@ -47,11 +48,11 @@ type computeInstancesClient interface {
 }
 
 // Prove that Server implements pb.VMLeaserServiceServer by instantiating a Server
-var _ pb.VMLeaserServiceServer = (*Server)(nil)
+var _ api.VMLeaserServiceServer = (*Server)(nil)
 
 // Server is a struct implements the pb.VMLeaserServiceServer
 type Server struct {
-	pb.UnimplementedVMLeaserServiceServer
+	api.UnimplementedVMLeaserServiceServer
 }
 
 // NewServer returns a new Server
@@ -60,21 +61,21 @@ func NewServer() *Server {
 }
 
 // LeaseVM leases a VM defined by LeaseVMRequest
-func (s *Server) LeaseVM(ctx context.Context, r *pb.LeaseVMRequest) (*pb.LeaseVMResponse, error) {
+func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.LeaseVMResponse, error) {
 	logging.Infof(ctx, "[server:LeaseVM] Started")
 	if ctx.Err() == context.Canceled {
-		return &pb.LeaseVMResponse{}, status.Errorf(codes.Internal, "context canceled")
+		return &api.LeaseVMResponse{}, status.Errorf(codes.Internal, "context canceled")
 	}
 
 	// Set defaults for LeaseVMRequest if needed.
 	r = setDefaultLeaseVMRequest(r)
 
-	if err := r.Validate(); err != nil {
+	if err := vmleaserpb.ValidateLeaseVMRequest(r); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to validate lease request: %s", err)
 	}
 
 	// Appending "vm-" to satisfy GCE regex
-	leaseId := fmt.Sprintf("vm-%s", uuid.New().String())
+	leaseID := fmt.Sprintf("vm-%s", uuid.New().String())
 	expirationTime, err := computeExpirationTime(ctx, r.GetLeaseDuration())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to compute expiration time: %s", err)
@@ -86,21 +87,21 @@ func (s *Server) LeaseVM(ctx context.Context, r *pb.LeaseVMRequest) (*pb.LeaseVM
 	}
 	defer instancesClient.Close()
 
-	err = createInstance(ctx, instancesClient, leaseId, expirationTime, r.GetHostReqs())
+	err = createInstance(ctx, instancesClient, leaseID, expirationTime, r.GetHostReqs())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create instance: %s", err)
 	}
 
-	ins, err := getInstance(ctx, instancesClient, leaseId, r.GetHostReqs(), true)
+	ins, err := getInstance(ctx, instancesClient, leaseID, r.GetHostReqs(), true)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get instance: %s", err)
 	}
 
-	return &pb.LeaseVMResponse{
-		LeaseId: leaseId,
-		Vm: &pb.VM{
-			Id: leaseId,
-			Address: &pb.VMAddress{
+	return &api.LeaseVMResponse{
+		LeaseId: leaseID,
+		Vm: &api.VM{
+			Id: leaseID,
+			Address: &api.VMAddress{
 				Host: ins.GetNetworkInterfaces()[0].GetNetworkIP(), // Only one NetworkInterface should be available
 				Port: 22,                                           // Temporarily hardcode as port 22
 			},
@@ -109,26 +110,26 @@ func (s *Server) LeaseVM(ctx context.Context, r *pb.LeaseVMRequest) (*pb.LeaseVM
 }
 
 // ExtendLease extends a VM lease
-func (s *Server) ExtendLease(ctx context.Context, r *pb.ExtendLeaseRequest) (*pb.ExtendLeaseResponse, error) {
+func (s *Server) ExtendLease(ctx context.Context, r *api.ExtendLeaseRequest) (*api.ExtendLeaseResponse, error) {
 	logging.Infof(ctx, "[server:ExtendLease] Started")
 	if ctx.Err() == context.Canceled {
-		return &pb.ExtendLeaseResponse{}, status.Errorf(codes.Internal, "context canceled")
+		return &api.ExtendLeaseResponse{}, status.Errorf(codes.Internal, "context canceled")
 	}
 
-	return &pb.ExtendLeaseResponse{}, nil
+	return &api.ExtendLeaseResponse{}, nil
 }
 
 // ReleaseVM releases a VM lease
-func (s *Server) ReleaseVM(ctx context.Context, r *pb.ReleaseVMRequest) (*pb.ReleaseVMResponse, error) {
+func (s *Server) ReleaseVM(ctx context.Context, r *api.ReleaseVMRequest) (*api.ReleaseVMResponse, error) {
 	logging.Infof(ctx, "[server:ReleaseVM] Started")
 	if ctx.Err() == context.Canceled {
-		return &pb.ReleaseVMResponse{}, status.Errorf(codes.Internal, "context canceled")
+		return &api.ReleaseVMResponse{}, status.Errorf(codes.Internal, "context canceled")
 	}
 
 	// Set default values for ReleaseVMRequest if needed.
 	r = setDefaultReleaseVMRequest(r)
 
-	if err := r.Validate(); err != nil {
+	if err := vmleaserpb.ValidateReleaseVMRequest(r); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to validate release request: %s", err)
 	}
 
@@ -137,7 +138,7 @@ func (s *Server) ReleaseVM(ctx context.Context, r *pb.ReleaseVMRequest) (*pb.Rel
 		return nil, status.Errorf(codes.Internal, "failed to delete instance: %s", err)
 	}
 
-	return &pb.ReleaseVMResponse{
+	return &api.ReleaseVMResponse{
 		LeaseId: r.GetLeaseId(),
 	}, nil
 }
@@ -146,9 +147,9 @@ func (s *Server) ReleaseVM(ctx context.Context, r *pb.ReleaseVMRequest) (*pb.Rel
 //
 // getInstance returns a GCE instance with valid network interface and network
 // IP. If no network is available, it does not return the instance.
-func getInstance(ctx context.Context, client computeInstancesClient, leaseId string, hostReqs *pb.VMRequirements, shouldPoll bool) (*computepb.Instance, error) {
+func getInstance(ctx context.Context, client computeInstancesClient, leaseID string, hostReqs *api.VMRequirements, shouldPoll bool) (*computepb.Instance, error) {
 	getReq := &computepb.GetInstanceRequest{
-		Instance: leaseId,
+		Instance: leaseID,
 		Project:  hostReqs.GetGceProject(),
 		Zone:     hostReqs.GetGceRegion(),
 	}
@@ -188,13 +189,13 @@ func getInstance(ctx context.Context, client computeInstancesClient, leaseId str
 }
 
 // createInstance sends an instance creation request to the Compute Engine API and waits for it to complete.
-func createInstance(ctx context.Context, client computeInstancesClient, leaseId string, expirationTime int64, hostReqs *pb.VMRequirements) error {
+func createInstance(ctx context.Context, client computeInstancesClient, leaseID string, expirationTime int64, hostReqs *api.VMRequirements) error {
 	zone := hostReqs.GetGceRegion()
 	req := &computepb.InsertInstanceRequest{
 		Project: hostReqs.GetGceProject(),
 		Zone:    zone,
 		InstanceResource: &computepb.Instance{
-			Name: proto.String(leaseId),
+			Name: proto.String(leaseID),
 			Disks: []*computepb.AttachedDisk{
 				{
 					InitializeParams: &computepb.AttachedDiskInitializeParams{
@@ -241,7 +242,7 @@ func createInstance(ctx context.Context, client computeInstancesClient, leaseId 
 }
 
 // deleteInstance sends an instance deletion request to the Compute Engine API and waits for it to complete.
-func deleteInstance(ctx context.Context, r *pb.ReleaseVMRequest) error {
+func deleteInstance(ctx context.Context, r *api.ReleaseVMRequest) error {
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		return fmt.Errorf("NewInstancesRESTClient error: %v", err)
@@ -272,7 +273,7 @@ func deleteInstance(ctx context.Context, r *pb.ReleaseVMRequest) error {
 }
 
 // setDefaultLeaseVMRequest sets default values for VMRequirements.
-func setDefaultLeaseVMRequest(r *pb.LeaseVMRequest) *pb.LeaseVMRequest {
+func setDefaultLeaseVMRequest(r *api.LeaseVMRequest) *api.LeaseVMRequest {
 	hostReqs := r.GetHostReqs()
 	if hostReqs.GetGceDiskSize() == 0 {
 		hostReqs.GceDiskSize = DefaultDiskSize
@@ -293,7 +294,7 @@ func setDefaultLeaseVMRequest(r *pb.LeaseVMRequest) *pb.LeaseVMRequest {
 }
 
 // setDefaultReleaseVMRequest sets default values for ReleaseVMRequest.
-func setDefaultReleaseVMRequest(r *pb.ReleaseVMRequest) *pb.ReleaseVMRequest {
+func setDefaultReleaseVMRequest(r *api.ReleaseVMRequest) *api.ReleaseVMRequest {
 	if r.GetGceProject() == "" {
 		r.GceProject = DefaultProject
 	}

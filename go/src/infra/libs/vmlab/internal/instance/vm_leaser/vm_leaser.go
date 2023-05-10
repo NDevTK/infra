@@ -9,10 +9,10 @@ import (
 	"errors"
 	"fmt"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc"
 
 	vmlabpb "infra/libs/vmlab/api"
-	vmleaserpb "infra/vm_leaser/api/v1"
 	"infra/vm_leaser/client"
 )
 
@@ -28,7 +28,7 @@ func New() (vmlabpb.InstanceApi, error) {
 
 // vmLeaserServiceClient interfaces the VM Leaser service client.
 type vmLeaserServiceClient interface {
-	LeaseVM(ctx context.Context, r *vmleaserpb.LeaseVMRequest, opts ...grpc.CallOption) (*vmleaserpb.LeaseVMResponse, error)
+	LeaseVM(ctx context.Context, r *api.LeaseVMRequest, opts ...grpc.CallOption) (*api.LeaseVMResponse, error)
 }
 
 // envConfig returns a VM Leaser client config.
@@ -78,7 +78,7 @@ func (g *vmLeaserInstanceApi) List(req *vmlabpb.ListVmInstancesRequest) ([]*vmla
 // leaseVM calls LeaseVM using the VM Leaser service client.
 func (g *vmLeaserInstanceApi) leaseVM(ctx context.Context, client vmLeaserServiceClient, req *vmlabpb.CreateVmInstanceRequest) (*vmlabpb.VmInstance, error) {
 	vmLeaserBackend := req.GetConfig().GetVmLeaserBackend()
-	rsp, err := client.LeaseVM(ctx, &vmleaserpb.LeaseVMRequest{
+	rsp, err := client.LeaseVM(ctx, &api.LeaseVMRequest{
 		LeaseDuration: vmLeaserBackend.GetLeaseDuration(),
 		HostReqs:      vmLeaserBackend.GetVmRequirements(),
 	})

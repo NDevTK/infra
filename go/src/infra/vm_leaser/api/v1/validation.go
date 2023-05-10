@@ -5,24 +5,25 @@
 package vmleaserpb
 
 import (
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-// Validate validates input requests of LeaseVMRequest.
-func (r *LeaseVMRequest) Validate() error {
+// ValidateLeaseVMRequest validates input requests of LeaseVMRequest.
+func ValidateLeaseVMRequest(r *api.LeaseVMRequest) error {
 	hostReqs := r.GetHostReqs()
 	if hostReqs == nil {
 		return status.Errorf(codes.InvalidArgument, "VM requirements must be set.")
 	}
-	if err := hostReqs.Validate(); err != nil {
+	if err := ValidateVMRequirements(hostReqs); err != nil {
 		return err
 	}
 	return nil
 }
 
-// Validate validates input requests of ReleaseVMRequest.
-func (r *ReleaseVMRequest) Validate() error {
+// ValidateReleaseVMRequest validates input requests of ReleaseVMRequest.
+func ValidateReleaseVMRequest(r *api.ReleaseVMRequest) error {
 	if r.GetLeaseId() == "" {
 		return status.Errorf(codes.InvalidArgument, "Lease ID must be set.")
 	}
@@ -35,8 +36,8 @@ func (r *ReleaseVMRequest) Validate() error {
 	return nil
 }
 
-// Validate validates the VMRequirements.
-func (r *VMRequirements) Validate() error {
+// ValidateVMRequirements validates the VMRequirements.
+func ValidateVMRequirements(r *api.VMRequirements) error {
 	if r.GetGceImage() == "" {
 		return status.Errorf(codes.InvalidArgument, "GCE image must be set.")
 	}

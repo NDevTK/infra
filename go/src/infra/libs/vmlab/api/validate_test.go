@@ -9,10 +9,9 @@ import (
 	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"google.golang.org/protobuf/types/known/durationpb"
-
-	vmleaserpb "infra/vm_leaser/api/v1"
 )
 
 func TestValidateVmLeaserBackend(t *testing.T) {
@@ -26,7 +25,7 @@ func TestValidateVmLeaserBackend(t *testing.T) {
 					Backend: &Config_VmLeaserBackend_{
 						VmLeaserBackend: &Config_VmLeaserBackend{
 							Env: Config_VmLeaserBackend_ENV_LOCAL,
-							VmRequirements: &vmleaserpb.VMRequirements{
+							VmRequirements: &api.VMRequirements{
 								GceImage:       "test-image",
 								GceRegion:      "test-region",
 								GceProject:     "test-project",
