@@ -16,6 +16,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2"
 	"go.chromium.org/luci/common/logging"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
 
@@ -61,37 +63,37 @@ func NewServer() *Server {
 func (s *Server) LeaseVM(ctx context.Context, r *pb.LeaseVMRequest) (*pb.LeaseVMResponse, error) {
 	logging.Infof(ctx, "[server:LeaseVM] Started")
 	if ctx.Err() == context.Canceled {
-		return &pb.LeaseVMResponse{}, fmt.Errorf("client cancelled: abandoning")
+		return &pb.LeaseVMResponse{}, status.Errorf(codes.Internal, "context canceled")
 	}
 
 	// Set defaults for LeaseVMRequest if needed.
 	r = setDefaultLeaseVMRequest(r)
 
 	if err := r.Validate(); err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to validate lease request: %s", err)
 	}
 
 	// Appending "vm-" to satisfy GCE regex
 	leaseId := fmt.Sprintf("vm-%s", uuid.New().String())
 	expirationTime, err := computeExpirationTime(ctx, r.GetLeaseDuration())
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to compute expiration time: %s", err)
 	}
 
 	instancesClient, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("NewInstancesRESTClient error: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to create NewInstancesRESTClient: %s", err)
 	}
 	defer instancesClient.Close()
 
 	err = createInstance(ctx, instancesClient, leaseId, expirationTime, r.GetHostReqs())
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to create instance: %s", err)
 	}
 
 	ins, err := getInstance(ctx, instancesClient, leaseId, r.GetHostReqs(), true)
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to get instance: %s", err)
 	}
 
 	return &pb.LeaseVMResponse{
@@ -110,7 +112,7 @@ func (s *Server) LeaseVM(ctx context.Context, r *pb.LeaseVMRequest) (*pb.LeaseVM
 func (s *Server) ExtendLease(ctx context.Context, r *pb.ExtendLeaseRequest) (*pb.ExtendLeaseResponse, error) {
 	logging.Infof(ctx, "[server:ExtendLease] Started")
 	if ctx.Err() == context.Canceled {
-		return &pb.ExtendLeaseResponse{}, fmt.Errorf("client cancelled: abandoning")
+		return &pb.ExtendLeaseResponse{}, status.Errorf(codes.Internal, "context canceled")
 	}
 
 	return &pb.ExtendLeaseResponse{}, nil
@@ -120,19 +122,19 @@ func (s *Server) ExtendLease(ctx context.Context, r *pb.ExtendLeaseRequest) (*pb
 func (s *Server) ReleaseVM(ctx context.Context, r *pb.ReleaseVMRequest) (*pb.ReleaseVMResponse, error) {
 	logging.Infof(ctx, "[server:ReleaseVM] Started")
 	if ctx.Err() == context.Canceled {
-		return &pb.ReleaseVMResponse{}, fmt.Errorf("client cancelled: abandoning")
+		return &pb.ReleaseVMResponse{}, status.Errorf(codes.Internal, "context canceled")
 	}
 
 	// Set default values for ReleaseVMRequest if needed.
 	r = setDefaultReleaseVMRequest(r)
 
 	if err := r.Validate(); err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to validate release request: %s", err)
 	}
 
 	err := deleteInstance(ctx, r)
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to delete instance: %s", err)
 	}
 
 	return &pb.ReleaseVMResponse{
