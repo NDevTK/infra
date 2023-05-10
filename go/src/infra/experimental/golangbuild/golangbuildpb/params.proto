@@ -18,15 +18,18 @@ message Inputs {
   // (the "refs/heads/" prefix is omitted).
   string go_branch = 2;
 
-  // Indicates that this build should run with the race detector enabled.
-  bool race_mode = 3;
+  // LongTest controls whether this build should run in long test mode.
+  bool long_test = 3;
+
+  // RaceMode controls whether this build should run with the race detector enabled.
+  bool race_mode = 4;
 
   // Extra environment variables to set for building and testing.
-  map<string, string> env = 4;
+  map<string, string> env = 5;
 
   // List of builders to trigger builds for once make.bash is done.
   // Must be empty if project is not "go." The builds are triggered
   // with the same gerrit and gitiles build data this build was
   // triggered with.
-  repeated string builders_to_trigger = 5;
+  repeated string builders_to_trigger = 6;
 }

@@ -190,6 +190,9 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 	env.Set("GOROOT", "") // Clear GOROOT because it's likely someone has one set locally, e.g. for luci-go development.
 	env.Set("GOCACHE", b.gocacheDir)
 	env.Set("GO_BUILDER_NAME", b.builderName)
+	if b.inputs.LongTest {
+		env.Set("GO_TEST_SHORT", "0") // Tell 'dist test' to operate in longtest mode. See go.dev/issue/12508.
+	}
 	// Use our tools before the system tools. Notably, use raw Git rather than the Chromium wrapper.
 	env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.toolsRoot, "bin"), os.PathListSeparator, env.Get("PATH")))
 
@@ -205,6 +208,37 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 		env.Set("PATH", fmt.Sprintf("%v%c%v", env.Get("PATH"), os.PathListSeparator, filepath.Join(b.toolsRoot, "cc/windows/gcc64/bin")))
 	}
 	return env.SetInCtx(ctx)
+}
+
+// goTestArgs returns go command arguments that test the specified import path patterns.
+func (b *buildSpec) goTestArgs(patterns ...string) []string {
+	args := []string{"test", "-json"}
+	if !b.inputs.LongTest {
+		args = append(args, "-short")
+	}
+	if b.inputs.RaceMode {
+		args = append(args, "-race")
+	}
+	return append(args, patterns...)
+}
+
+// distTestArgs returns go tool dist arguments that run tests in the main Go repository
+// using the provided build specification. run controls which dist tests are run, using
+// dist test's interface for controlling which tests run:
+//
+//	-run string
+//	  	run only those tests matching the regular expression; empty means to run all.
+//	  	Special exception: if the string begins with '!', the match is inverted.
+func (b *buildSpec) distTestArgs(run string) []string {
+	args := []string{"tool", "dist", "test"}
+	if b.inputs.LongTest {
+		// dist test doesn't have a flag to control longtest mode,
+		// so this is handled in buildSpec.setEnv instead of here.
+	}
+	if b.inputs.RaceMode {
+		args = append(args, "-race")
+	}
+	return append(args, "-run="+run)
 }
 
 const cloudProject = "golang-ci-luci"

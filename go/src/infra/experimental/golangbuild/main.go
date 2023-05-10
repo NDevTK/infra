@@ -171,15 +171,22 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 
 		// Test Go.
 		//
-		// TODO(mknyszek): Support sharding by running `go tool dist test -list` and
+		// To have structured all.bash output sooner, we divide Go tests into two parts:
+		//   - a small set of unstructured tests (this part will continue to shrink and then disappear)
+		//   - the large remaining set with structured output support (uploaded to ResultDB)
+		// While maintaining the property that their union doesn't fall short of all.bash.
+		//
+		// TODO(mknyszek): Support sharding by running `go tool dist test -list` and/or `go list std cmd` and
 		// triggering N test builders with a subset of those tests in their properties.
 		// Pass the newly-built toolchain via CAS.
-		distTestArgs := []string{"tool", "dist", "test", "-no-rebuild"}
-		if spec.inputs.RaceMode {
-			distTestArgs = append(distTestArgs, "-race")
+		const allButStdCmd = "!^go_test:.+$"
+		jsonOffPart := spec.goCmd(ctx, spec.goroot, spec.distTestArgs(allButStdCmd)...)
+		if err := runCommandAsStep(ctx, "run various dist tests", jsonOffPart, false); err != nil {
+			return err
 		}
-		testCmd := spec.goCmd(ctx, spec.goroot, distTestArgs...)
-		if err := runCommandAsStep(ctx, "go tool dist test", testCmd, false); err != nil {
+		jsonOnPart := spec.goCmd(ctx, spec.goroot, spec.goTestArgs("std", "cmd")...)
+		spec.wrapTestCmd(jsonOnPart)
+		if err := runCommandAsStep(ctx, "run std and cmd tests", jsonOnPart, false); err != nil {
 			return err
 		}
 	} else {
@@ -189,14 +196,10 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		}
 
 		// Test this specific subrepo.
-		goArgs := []string{"test", "-json"}
-		if spec.inputs.RaceMode {
-			goArgs = append(goArgs, "-race")
-		}
-		goArgs = append(goArgs, "./...")
-		testCmd := spec.goCmd(ctx, spec.subrepoDir, goArgs...)
+		// TODO: Also test packages in nested modules.
+		testCmd := spec.goCmd(ctx, spec.subrepoDir, spec.goTestArgs("./...")...)
 		spec.wrapTestCmd(testCmd)
-		if err := runCommandAsStep(ctx, "go test -json [-race] ./...", testCmd, false); err != nil {
+		if err := runCommandAsStep(ctx, "go test -json [-short] [-race] ./...", testCmd, false); err != nil {
 			return err
 		}
 	}
