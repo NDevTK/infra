@@ -10,7 +10,7 @@ vars = {
   #
   # This package is an awful way to distribute software, so if you see an
   # opportunity to kill it, please do so.
-  "infra_env_python": "python",
+  "infra_env_python": "disabled",
   #
   # This is used during the transition phase of moving infra repos to git
   # submodules. To add new deps here check with the Chrome Source Team.
@@ -205,6 +205,7 @@ hooks = [
 
   {
     "pattern": ".",
+    "condition": "'{infra_env_python}' != 'disabled'",
     "action": [
       Var("infra_env_python"), "-u", "./infra/bootstrap/bootstrap.py",
       "--deps_file", "infra/bootstrap/deps.pyl", "infra/ENV"
