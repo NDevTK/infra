@@ -537,9 +537,10 @@ class WorkEnvTest(unittest.TestCase):
 
   def AddUserProjects(self):
     project_states = {
-        'live': project_pb2.ProjectState.LIVE,
         'archived': project_pb2.ProjectState.ARCHIVED,
-        'deletable': project_pb2.ProjectState.DELETABLE}
+        'live': project_pb2.ProjectState.LIVE,
+        'deletable': project_pb2.ProjectState.DELETABLE
+    }
 
     projects = {}
     for name, state in project_states.items():
@@ -608,16 +609,15 @@ class WorkEnvTest(unittest.TestCase):
     with self.work_env as we:
       owner, member, contrib = we.GetUserRolesInAllProjects({222})
 
-    by_name = lambda project: project.project_name
-    self.assertEqual(
+    self.assertCountEqual(
         [projects['owner-archived'], projects['owner-live']],
-        sorted(list(owner.values()), key=by_name))
-    self.assertEqual(
+        list(owner.values()))
+    self.assertCountEqual(
         [projects['committer-archived'], projects['committer-live']],
-        sorted(list(member.values()), key=by_name))
-    self.assertEqual(
+        list(member.values()))
+    self.assertCountEqual(
         [projects['contributor-archived'], projects['contributor-live']],
-        sorted(list(contrib.values()), key=by_name))
+        list(contrib.values()))
 
   def testGetUserRolesInAllProjects_OwnUser(self):
     """We can get the projects in which the user has a role."""
@@ -627,17 +627,17 @@ class WorkEnvTest(unittest.TestCase):
     with self.work_env as we:
       owner, member, contrib = we.GetUserRolesInAllProjects({222})
 
-    by_name = lambda project: project.project_name
-    self.assertEqual(
-        [projects['members-only'], projects['owner-archived'],
-         projects['owner-live']],
-        sorted(list(owner.values()), key=by_name))
-    self.assertEqual(
+    self.assertCountEqual(
+        [
+            projects['members-only'], projects['owner-archived'],
+            projects['owner-live']
+        ], list(owner.values()))
+    self.assertCountEqual(
         [projects['committer-archived'], projects['committer-live']],
-        sorted(list(member.values()), key=by_name))
-    self.assertEqual(
+        list(member.values()))
+    self.assertCountEqual(
         [projects['contributor-archived'], projects['contributor-live']],
-        sorted(list(contrib.values()), key=by_name))
+        list(contrib.values()))
 
   def testGetUserRolesInAllProjects_Admin(self):
     """We can get the projects in which the user has a role."""
@@ -647,19 +647,21 @@ class WorkEnvTest(unittest.TestCase):
     with self.work_env as we:
       owner, member, contrib = we.GetUserRolesInAllProjects({222})
 
-    by_name = lambda project: project.project_name
-    self.assertEqual(
-        [projects['members-only'], projects['owner-archived'],
-         projects['owner-deletable'], projects['owner-live']],
-        sorted(list(owner.values()), key=by_name))
-    self.assertEqual(
-        [projects['committer-archived'], projects['committer-deletable'],
-         projects['committer-live']],
-        sorted(list(member.values()), key=by_name))
-    self.assertEqual(
-        [projects['contributor-archived'], projects['contributor-deletable'],
-         projects['contributor-live']],
-        sorted(list(contrib.values()), key=by_name))
+    self.assertCountEqual(
+        [
+            projects['members-only'], projects['owner-archived'],
+            projects['owner-deletable'], projects['owner-live']
+        ], list(owner.values()))
+    self.assertCountEqual(
+        [
+            projects['committer-archived'], projects['committer-deletable'],
+            projects['committer-live']
+        ], list(member.values()))
+    self.assertCountEqual(
+        [
+            projects['contributor-archived'], projects['contributor-deletable'],
+            projects['contributor-live']
+        ], list(contrib.values()))
 
   def testGetUserProjects_OnlyLiveOfOtherUsers(self):
     """
