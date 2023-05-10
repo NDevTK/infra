@@ -20,9 +20,6 @@ luci.builder(
     },
     execution_timeout = 4 * time.hour,
     schedule = "with 3000s interval",
-    # TODO(https://crbug.com/1411314): Remove this once lkgr-finder is fully on
-    # Python3.
-    experiments = {"luci.buildbucket.omit_python2": 10},
 )
 
 luci.list_view_entry(
