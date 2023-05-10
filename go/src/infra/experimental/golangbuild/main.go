@@ -185,7 +185,11 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 			return err
 		}
 		jsonOnPart := spec.goCmd(ctx, spec.goroot, spec.goTestArgs("std", "cmd")...)
-		spec.wrapTestCmd(jsonOnPart)
+		if spec.experiment("golang.structured_std_cmd_tests") {
+			spec.wrapTestCmd(jsonOnPart)
+		} else {
+			jsonOnPart = spec.goCmd(ctx, spec.goroot, spec.goTestNoJSONArgs("std", "cmd")...)
+		}
 		if err := runCommandAsStep(ctx, "run std and cmd tests", jsonOnPart, false); err != nil {
 			return err
 		}

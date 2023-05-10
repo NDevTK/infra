@@ -222,6 +222,19 @@ func (b *buildSpec) goTestArgs(patterns ...string) []string {
 	return append(args, patterns...)
 }
 
+// goTestNoJSONArgs is like goTestArgs, but doesn't include -json flag.
+// TODO(go.dev/issue/59990): Delete when it becomes unused.
+func (b *buildSpec) goTestNoJSONArgs(patterns ...string) []string {
+	args := []string{"test"}
+	if !b.inputs.LongTest {
+		args = append(args, "-short")
+	}
+	if b.inputs.RaceMode {
+		args = append(args, "-race")
+	}
+	return append(args, patterns...)
+}
+
 // distTestArgs returns go tool dist arguments that run tests in the main Go repository
 // using the provided build specification. run controls which dist tests are run, using
 // dist test's interface for controlling which tests run:
