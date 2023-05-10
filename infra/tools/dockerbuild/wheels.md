@@ -3852,6 +3852,20 @@ wheel: <
 
 * *universal*
 
+## **isodate**
+
+### 0.6.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/isodate-py2_py3"
+  version: "version:0.6.1"
+>
+```
+
+
+* *universal*
+
 ## **isort-py3**
 
 ### 4.3.4
@@ -7107,6 +7121,20 @@ wheel: <
 
 * *universal*
 
+## **rdflib-py3**
+
+### 6.3.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/rdflib-py3"
+  version: "version:6.3.2"
+>
+```
+
+
+* *universal*
+
 ## **requests**
 
 ### 2.13.0
@@ -8228,6 +8256,20 @@ wheel: <
 
 * *universal*
 
+## **uritools-py3**
+
+### 4.0.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/uritools-py3"
+  version: "version:4.0.1"
+>
+```
+
+
+* *universal*
+
 ## **urllib3**
 
 ### 1.22
@@ -8574,6 +8616,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/wsproto-py3"
   version: "version:1.1.0"
+>
+```
+
+
+* *universal*
+
+## **xmltodict**
+
+### 0.13.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/xmltodict-py2_py3"
+  version: "version:0.13.0"
 >
 ```
 
