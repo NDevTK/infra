@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"infra/cmd/drone-agent/internal/bot"
+	"infra/cmd/drone-agent/internal/botman"
 	"infra/cmd/drone-agent/internal/delay"
 )
 
@@ -18,15 +19,15 @@ import (
 // assignment.
 type State struct {
 	uuid string
-	*Controller
+	*botman.Botman
 	expireTimer *delay.Timer
 }
 
 // New creates a new instance of agent state.
-func New(uuid string, h ControllerHook) *State {
+func New(uuid string, h botman.WorldHook) *State {
 	return &State{
-		uuid:       uuid,
-		Controller: NewController(h),
+		uuid:   uuid,
+		Botman: botman.NewBotman(h),
 	}
 }
 

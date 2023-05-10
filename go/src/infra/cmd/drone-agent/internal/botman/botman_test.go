@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package state
+package botman
 
 import (
 	"errors"
@@ -15,7 +15,7 @@ import (
 	"infra/cmd/drone-agent/internal/bot"
 )
 
-func TestController(t *testing.T) {
+func TestBotman(t *testing.T) {
 	t.Parallel()
 	t.Run("happy path", func(t *testing.T) {
 		t.Parallel()
@@ -23,26 +23,26 @@ func TestController(t *testing.T) {
 		started := make(chan string, 1)
 		released := make(chan string, 1)
 		h := stubHook{
-			start: func(dutID string) (bot.Bot, error) {
-				started <- dutID
+			start: func(id string) (bot.Bot, error) {
+				started <- id
 				return b, nil
 			},
-			release: func(dutID string) { released <- dutID },
+			release: func(id string) { released <- id },
 		}
-		c := NewController(h)
+		c := NewBotman(h)
 
 		const d = "some-dut"
-		c.AddDUT(d)
+		c.AddBot(d)
 		select {
 		case got := <-started:
 			if got != d {
 				t.Errorf("Got started bot %v; want %v", got, d)
 			}
 		case <-time.After(time.Second):
-			t.Fatalf("bot not started after adding DUT")
+			t.Fatalf("bot not started after adding ID")
 		}
 
-		c.DrainDUT(d)
+		c.DrainBot(d)
 		c.Wait()
 		select {
 		case got := <-released:
@@ -50,49 +50,49 @@ func TestController(t *testing.T) {
 				t.Errorf("Got released bot %v; want %v", got, d)
 			}
 		default:
-			t.Fatalf("bot not released after draining DUT")
+			t.Fatalf("bot not released after draining ID")
 		}
 	})
-	t.Run("active DUTs", func(t *testing.T) {
+	t.Run("active bots", func(t *testing.T) {
 		t.Parallel()
 		released := make(chan string, 1)
 		h := stubHook{
-			release: func(dutID string) { released <- dutID },
+			release: func(id string) { released <- id },
 		}
-		c := NewController(h)
+		c := NewBotman(h)
 		t.Run("empty before adding", func(t *testing.T) {
-			if got := c.ActiveDUTs(); len(got) != 0 {
-				t.Errorf("ActiveDUTs() = %v; want empty", got)
+			if got := c.ActiveBots(); len(got) != 0 {
+				t.Errorf("ActiveBots() = %v; want empty", got)
 			}
 		})
 		const d = "some-dut"
-		c.AddDUT(d)
-		t.Run("added DUT is present", func(t *testing.T) {
+		c.AddBot(d)
+		t.Run("added bot is present", func(t *testing.T) {
 			want := []string{d}
-			got := c.ActiveDUTs()
+			got := c.ActiveBots()
 			if diff := cmp.Diff(want, got); diff != "" {
-				t.Errorf("ActiveDUTs() mismatch (-want +got):\n%s", diff)
+				t.Errorf("ActiveBots() mismatch (-want +got):\n%s", diff)
 			}
 		})
 		t.Run("empty after draining", func(t *testing.T) {
-			c.DrainDUT(d)
+			c.DrainBot(d)
 			c.Wait()
-			if got := c.ActiveDUTs(); len(got) != 0 {
-				t.Errorf("ActiveDUTs() = %v; want empty", got)
+			if got := c.ActiveBots(); len(got) != 0 {
+				t.Errorf("ActiveBots() = %v; want empty", got)
 			}
 		})
 	})
-	t.Run("draining missing DUT still releases", func(t *testing.T) {
+	t.Run("draining missing ID still releases", func(t *testing.T) {
 		t.Parallel()
 		released := make(chan string, 1)
 		h := stubHook{
-			release: func(dutID string) { released <- dutID },
+			release: func(id string) { released <- id },
 		}
-		c := NewController(h)
+		c := NewBotman(h)
 
 		const d = "some-dut"
 		t.Run("drain", func(t *testing.T) {
-			c.DrainDUT(d)
+			c.DrainBot(d)
 			c.Wait()
 			select {
 			case got := <-released:
@@ -100,12 +100,12 @@ func TestController(t *testing.T) {
 					t.Errorf("Got released bot %v; want %v", got, d)
 				}
 			default:
-				t.Fatalf("bot not released after draining DUT")
+				t.Fatalf("bot not released after draining")
 			}
 
 		})
 		t.Run("terminate", func(t *testing.T) {
-			c.TerminateDUT(d)
+			c.TerminateBot(d)
 			c.Wait()
 			select {
 			case got := <-released:
@@ -113,7 +113,7 @@ func TestController(t *testing.T) {
 					t.Errorf("Got released bot %v; want %v", got, d)
 				}
 			default:
-				t.Fatalf("bot not released after draining DUT")
+				t.Fatalf("bot not released after draining")
 			}
 
 		})
@@ -122,18 +122,18 @@ func TestController(t *testing.T) {
 		t.Parallel()
 		started := make(chan *bot.FakeBot, 1)
 		h := stubHook{
-			start: func(dutID string) (bot.Bot, error) {
+			start: func(id string) (bot.Bot, error) {
 				b := bot.NewFakeBot()
 				started <- b
 				return b, nil
 			},
 		}
-		c := NewController(h)
+		c := NewBotman(h)
 		defer c.Wait()
 
 		const d = "some-dut"
-		c.AddDUT(d)
-		defer c.TerminateDUT(d)
+		c.AddBot(d)
+		defer c.TerminateBot(d)
 		b := <-started
 		b.Stop()
 		select {
@@ -142,45 +142,45 @@ func TestController(t *testing.T) {
 			t.Fatalf("bot not restarted after stopping")
 		}
 	})
-	t.Run("can drain DUT even if starting errors", func(t *testing.T) {
+	t.Run("can drain ID even if starting errors", func(t *testing.T) {
 		t.Parallel()
 		h := stubHook{
-			start: func(dutID string) (bot.Bot, error) {
+			start: func(id string) (bot.Bot, error) {
 				return nil, errors.New("some error")
 			},
 		}
-		c := NewController(h)
+		c := NewBotman(h)
 		const d = "some-dut"
-		c.AddDUT(d)
-		c.DrainDUT(d)
+		c.AddBot(d)
+		c.DrainBot(d)
 		assertDontHang(t, c.Wait, "Wait hanged")
 	})
-	t.Run("can terminate DUT even if starting errors", func(t *testing.T) {
+	t.Run("can terminate ID even if starting errors", func(t *testing.T) {
 		t.Parallel()
 		h := stubHook{
-			start: func(dutID string) (bot.Bot, error) {
+			start: func(id string) (bot.Bot, error) {
 				return nil, errors.New("some error")
 			},
 		}
-		c := NewController(h)
+		c := NewBotman(h)
 		const d = "some-dut"
-		c.AddDUT(d)
-		c.TerminateDUT(d)
+		c.AddBot(d)
+		c.TerminateBot(d)
 		assertDontHang(t, c.Wait, "Wait hanged")
 	})
 	t.Run("drain crashlooping bot still releases", func(t *testing.T) {
 		t.Parallel()
 		released := make(chan string, 1)
 		h := stubHook{
-			start: func(dutID string) (bot.Bot, error) {
+			start: func(id string) (bot.Bot, error) {
 				return nil, errors.New("some error")
 			},
-			release: func(dutID string) { released <- dutID },
+			release: func(id string) { released <- id },
 		}
-		c := NewController(h)
+		c := NewBotman(h)
 		const d = "some-dut"
-		c.AddDUT(d)
-		c.DrainDUT(d)
+		c.AddBot(d)
+		c.DrainBot(d)
 		c.Wait()
 		select {
 		case got := <-released:
@@ -188,22 +188,22 @@ func TestController(t *testing.T) {
 				t.Errorf("Got released bot %v; want %v", got, d)
 			}
 		case <-time.After(time.Second):
-			t.Errorf("Did not release DUT")
+			t.Errorf("Did not release ID")
 		}
 	})
 	t.Run("terminate crashlooping bot still releases", func(t *testing.T) {
 		t.Parallel()
 		released := make(chan string, 1)
 		h := stubHook{
-			start: func(dutID string) (bot.Bot, error) {
+			start: func(id string) (bot.Bot, error) {
 				return nil, errors.New("some error")
 			},
-			release: func(dutID string) { released <- dutID },
+			release: func(id string) { released <- id },
 		}
-		c := NewController(h)
+		c := NewBotman(h)
 		const d = "some-dut"
-		c.AddDUT(d)
-		c.TerminateDUT(d)
+		c.AddBot(d)
+		c.TerminateBot(d)
 		c.Wait()
 		select {
 		case got := <-released:
@@ -211,54 +211,54 @@ func TestController(t *testing.T) {
 				t.Errorf("Got released bot %v; want %v", got, d)
 			}
 		case <-time.After(time.Second):
-			t.Errorf("Did not release DUT")
+			t.Errorf("Did not release ID")
 		}
 	})
-	t.Run("stopped DUTs are removed", func(t *testing.T) {
+	t.Run("stopped IDs are removed", func(t *testing.T) {
 		t.Parallel()
-		c := NewController(stubHook{})
-		c.AddDUT("ionasal")
-		c.DrainDUT("ionasal")
+		c := NewBotman(stubHook{})
+		c.AddBot("ionasal")
+		c.DrainBot("ionasal")
 		c.Wait()
-		got := c.duts
+		got := c.bots
 		if len(got) > 0 {
-			t.Errorf("Got running DUTs %v; want none", got)
+			t.Errorf("Got running IDs %v; want none", got)
 		}
 	})
 	t.Run("drain all does not hang", func(t *testing.T) {
 		t.Parallel()
-		c := NewController(stubHook{})
-		c.AddDUT("ionasal")
-		c.AddDUT("nero")
+		c := NewBotman(stubHook{})
+		c.AddBot("ionasal")
+		c.AddBot("nero")
 		assertDontHang(t, c.DrainAll, "DrainAll hanged")
 		c.Wait()
 	})
 	t.Run("terminate all does not hang", func(t *testing.T) {
 		t.Parallel()
-		c := NewController(stubHook{})
-		c.AddDUT("ionasal")
-		c.AddDUT("nero")
+		c := NewBotman(stubHook{})
+		c.AddBot("ionasal")
+		c.AddBot("nero")
 		assertDontHang(t, c.TerminateAll, "TerminateAll hanged")
 		c.Wait()
 	})
-	t.Run("block DUTs stops add new DUT", func(t *testing.T) {
+	t.Run("block bots stops add new bot", func(t *testing.T) {
 		t.Parallel()
 		b := bot.NewFakeBot()
 		var m sync.Mutex
 		var started int
 		h := stubHook{
-			start: func(dutID string) (bot.Bot, error) {
+			start: func(id string) (bot.Bot, error) {
 				m.Lock()
 				started++
 				m.Unlock()
 				return b, nil
 			},
 		}
-		c := NewController(h)
+		c := NewBotman(h)
 
-		c.BlockDUTs()
+		c.BlockBots()
 		const d = "some-dut"
-		c.AddDUT(d)
+		c.AddBot(d)
 		m.Lock()
 		got := started
 		m.Unlock()
@@ -282,21 +282,21 @@ func assertDontHang(t *testing.T, f func(), msg string) {
 	}
 }
 
-// stubHook is an implementation of ControllerHook for tests.
+// stubHook is an implementation of WorldHook for tests.
 type stubHook struct {
 	start   func(string) (bot.Bot, error)
 	release func(string)
 }
 
-func (h stubHook) StartBot(dutID string) (bot.Bot, error) {
+func (h stubHook) StartBot(id string) (bot.Bot, error) {
 	if f := h.start; f != nil {
-		return f(dutID)
+		return f(id)
 	}
 	return bot.NewFakeBot(), nil
 }
 
-func (h stubHook) ReleaseDUT(dutID string) {
+func (h stubHook) ReleaseResources(id string) {
 	if f := h.release; f != nil {
-		f(dutID)
+		f(id)
 	}
 }

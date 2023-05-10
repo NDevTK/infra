@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,26 +80,26 @@ type stateSpy struct {
 	blocked        chan struct{}
 }
 
-func (s *stateSpy) AddDUT(dutID string) {
-	s.State.AddDUT(dutID)
+func (s *stateSpy) AddBot(id string) {
+	s.State.AddBot(id)
 	select {
-	case s.addedDUTs <- dutID:
+	case s.addedDUTs <- id:
 	default:
 	}
 }
 
-func (s *stateSpy) TerminateDUT(dutID string) {
-	s.State.TerminateDUT(dutID)
+func (s *stateSpy) TerminateBot(id string) {
+	s.State.TerminateBot(id)
 	select {
-	case s.terminatedDUTs <- dutID:
+	case s.terminatedDUTs <- id:
 	default:
 	}
 }
 
-func (s *stateSpy) DrainDUT(dutID string) {
-	s.State.DrainDUT(dutID)
+func (s *stateSpy) DrainBot(id string) {
+	s.State.DrainBot(id)
 	select {
-	case s.drainedDUTs <- dutID:
+	case s.drainedDUTs <- id:
 	default:
 	}
 }
@@ -120,8 +120,8 @@ func (s *stateSpy) DrainAll() {
 	}
 }
 
-func (s *stateSpy) BlockDUTs() {
-	s.State.BlockDUTs()
+func (s *stateSpy) BlockBots() {
+	s.State.BlockBots()
 	select {
 	case s.blocked <- struct{}{}:
 	default:

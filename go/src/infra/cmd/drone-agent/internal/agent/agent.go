@@ -74,14 +74,14 @@ type stateInterface interface {
 	UUID() string
 	WithExpire(ctx context.Context, t time.Time) context.Context
 	SetExpiration(t time.Time)
-	AddDUT(dutID string)
-	DrainDUT(dutID string)
-	TerminateDUT(dutID string)
+	AddBot(dutID string)
+	DrainBot(dutID string)
+	TerminateBot(dutID string)
 	DrainAll()
 	TerminateAll()
 	Wait()
-	BlockDUTs()
-	ActiveDUTs() []string
+	BlockBots()
+	ActiveBots() []string
 }
 
 // Run runs the agent until it is canceled via the context.
@@ -170,7 +170,7 @@ func (a *Agent) reportLoop(ctx context.Context, s stateInterface) error {
 		select {
 		case <-ctx.Done():
 			a.log("Terminating all DUTs due to expired context")
-			s.BlockDUTs()
+			s.BlockBots()
 			s.TerminateAll()
 		case <-readyToExit:
 		}
@@ -182,7 +182,7 @@ func (a *Agent) reportLoop(ctx context.Context, s stateInterface) error {
 		select {
 		case <-draining.C(ctx):
 			a.log("Draining all DUTs")
-			s.BlockDUTs()
+			s.BlockBots()
 			s.DrainAll()
 		case <-readyToExit:
 		}
@@ -195,7 +195,7 @@ func (a *Agent) reportLoop(ctx context.Context, s stateInterface) error {
 		case <-draining.C(ctx):
 		case <-ctx.Done():
 		}
-		s.BlockDUTs()
+		s.BlockBots()
 		s.Wait()
 		close(readyToExit)
 	}()
@@ -250,19 +250,19 @@ func applyUpdateToState(res *api.ReportDroneResponse, s stateInterface) error {
 	s.SetExpiration(t)
 	draining := make(map[string]bool)
 	for _, d := range res.GetDrainingDuts() {
-		s.DrainDUT(d)
+		s.DrainBot(d)
 		draining[d] = true
 	}
 	assigned := make(map[string]bool)
 	for _, d := range res.GetAssignedDuts() {
 		assigned[d] = true
 		if !draining[d] {
-			s.AddDUT(d)
+			s.AddBot(d)
 		}
 	}
-	for _, d := range s.ActiveDUTs() {
+	for _, d := range s.ActiveBots() {
 		if !assigned[d] {
-			s.TerminateDUT(d)
+			s.TerminateBot(d)
 		}
 	}
 	return nil
@@ -397,7 +397,7 @@ func (h hook) botConfig(dutID string, workDir string) bot.Config {
 }
 
 // ReleaseDUT implements state.ControllerHook.
-func (h hook) ReleaseDUT(dutID string) {
+func (h hook) ReleaseResources(dutID string) {
 	const releaseDUTsTimeout = time.Minute
 	ctx := context.Background()
 	ctx, f := context.WithTimeout(ctx, releaseDUTsTimeout)
