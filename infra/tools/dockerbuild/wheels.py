@@ -1387,6 +1387,7 @@ SPECS.update({
         Universal('google-cloud-logging', '1.4.0'),
         Universal('google-cloud-logging', '3.0.0', pyversions=['py3']),
         Universal('google-cloud-monitoring', '0.28.0'),
+        Universal('google-cloud-ndb', '2.1.1', pyversions=['py3']),
         Universal('google-cloud-pubsub', '0.29.0'),
         Universal('google-cloud-pubsub', '2.9.0', pyversions=['py3']),
         Universal('google-cloud-resource-manager', '0.28.0'),

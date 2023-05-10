@@ -2850,6 +2850,20 @@ wheel: <
 
 * *universal*
 
+## **google-cloud-ndb-py3**
+
+### 2.1.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-cloud-ndb-py3"
+  version: "version:2.1.1"
+>
+```
+
+
+* *universal*
+
 ## **google-cloud-pubsub**
 
 ### 0.29.0
