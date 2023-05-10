@@ -547,9 +547,8 @@ class WorkEnvTest(unittest.TestCase):
           'owner-' + name, state=state, owner_ids=[222])
       projects['committer-'+name] = self.services.project.TestAddProject(
           'committer-' + name, state=state, committer_ids=[222])
-      projects['contributor-'+name] = self.services.project.TestAddProject(
-          'contributor-' + name, state=state)
-      projects['contributor-'+name].contributor_ids = [222]
+      projects['contributor-' + name] = self.services.project.TestAddProject(
+          'contributor-' + name, state=state, contrib_ids=[222])
 
     projects['members-only'] = self.services.project.TestAddProject(
         'members-only', owner_ids=[222])

@@ -208,9 +208,8 @@ class FrontendServicerTest(unittest.TestCase):
         'owner_proj', project_id=777, owner_ids=[111])
     self.services.project.TestAddProject(
         'committer_proj', project_id=888, committer_ids=[111])
-    contributor_proj = self.services.project.TestAddProject(
-        'contributor_proj', project_id=999)
-    contributor_proj.contributor_ids = [111]
+    self.services.project.TestAddProject(
+        'contributor_proj', project_id=999, contrib_ids=[111])
 
     request = frontend_pb2.GatherProjectMembershipsForUserRequest(
         user=self.user_1_resource_name)
