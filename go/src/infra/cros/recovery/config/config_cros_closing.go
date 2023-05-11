@@ -59,10 +59,10 @@ func crosRepairClosingActions() map[string]*Action {
 		"Is not Flex device": {
 			Docs: []string{"Verify that device is belong Reven models"},
 			ExecExtraArgs: []string{
-				"string_values:x1c",
+				"string_values:aurora-borealis,reven",
 				"invert_result:true",
 			},
-			ExecName:      "dut_check_model",
+			ExecName:      "dut_check_board",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Try to collect servod logs": {
