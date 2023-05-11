@@ -1,3 +1,7 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package handler
 
 import (
@@ -7,7 +11,7 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
-	gfipb "go.chromium.org/luci/bisection/proto"
+	bisectionpb "go.chromium.org/luci/bisection/proto/v1"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/gae/impl/dummy"
@@ -37,12 +41,12 @@ func (gi giMock) AccessToken(scopes ...string) (token string, expiry time.Time, 
 	return gi.token, gi.expiry, gi.err
 }
 
-type mockGoFindit struct {
-	res *gfipb.QueryAnalysisResponse
+type mockBisectionClient struct {
+	res *bisectionpb.QueryAnalysisResponse
 }
 
-func (mgfi *mockGoFindit) QueryGoFinditResults(c context.Context, bbid int64, stepName string) (*gfipb.QueryAnalysisResponse, error) {
-	return mgfi.res, nil
+func (mbc *mockBisectionClient) QueryBisectionResults(c context.Context, bbid int64, stepName string) (*bisectionpb.QueryAnalysisResponse, error) {
+	return mbc.res, nil
 }
 
 func TestAttachLuciBisectionResults(t *testing.T) {
@@ -63,16 +67,17 @@ func TestAttachLuciBisectionResults(t *testing.T) {
 				},
 			},
 		}
-		mockGfi := &mockGoFindit{
-			res: &gfipb.QueryAnalysisResponse{
-				Analyses: []*gfipb.Analysis{
+		mockClient := &mockBisectionClient{
+			res: &bisectionpb.QueryAnalysisResponse{
+				Analyses: []*bisectionpb.Analysis{
 					{
 						AnalysisId: 12345,
 					},
 				},
 			},
 		}
-		attachLuciBisectionResults(c, bf, mockGfi)
+		err := attachLuciBisectionResults(c, bf, mockClient)
+		So(err, ShouldBeNil)
 		So(bf[0].LuciBisectionResult, ShouldBeNil)
 	})
 
@@ -92,16 +97,17 @@ func TestAttachLuciBisectionResults(t *testing.T) {
 				},
 			},
 		}
-		mockGfi := &mockGoFindit{
-			res: &gfipb.QueryAnalysisResponse{
-				Analyses: []*gfipb.Analysis{
+		mockClient := &mockBisectionClient{
+			res: &bisectionpb.QueryAnalysisResponse{
+				Analyses: []*bisectionpb.Analysis{
 					{
 						AnalysisId: 12345,
 					},
 				},
 			},
 		}
-		attachLuciBisectionResults(c, bf, mockGfi)
+		err := attachLuciBisectionResults(c, bf, mockClient)
+		So(err, ShouldBeNil)
 		So(bf[0].LuciBisectionResult.IsSupported, ShouldEqual, false)
 		So(bf[0].LuciBisectionResult.Analysis, ShouldBeNil)
 	})
@@ -122,16 +128,17 @@ func TestAttachLuciBisectionResults(t *testing.T) {
 				},
 			},
 		}
-		mockGfi := &mockGoFindit{
-			res: &gfipb.QueryAnalysisResponse{
-				Analyses: []*gfipb.Analysis{
+		mockClient := &mockBisectionClient{
+			res: &bisectionpb.QueryAnalysisResponse{
+				Analyses: []*bisectionpb.Analysis{
 					{
 						AnalysisId: 12345,
 					},
 				},
 			},
 		}
-		attachLuciBisectionResults(c, bf, mockGfi)
+		err := attachLuciBisectionResults(c, bf, mockClient)
+		So(err, ShouldBeNil)
 		So(bf[0].LuciBisectionResult.IsSupported, ShouldEqual, true)
 		So(bf[0].LuciBisectionResult.Analysis.AnalysisId, ShouldEqual, 12345)
 	})

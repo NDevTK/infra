@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,21 +8,21 @@ import (
 	"context"
 	"net/http"
 
-	gfipb "go.chromium.org/luci/bisection/proto"
+	bisectionpb "go.chromium.org/luci/bisection/proto/v1"
 
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
 )
 
-type GoFinditClient struct {
-	ServiceClient gfipb.GoFinditServiceClient
+type BisectionClient struct {
+	ServiceClient bisectionpb.AnalysesClient
 }
 
-func (cl *GoFinditClient) QueryGoFinditResults(c context.Context, bbid int64, stepName string) (*gfipb.QueryAnalysisResponse, error) {
-	logging.Infof(c, "Querying GoFindit result for build %d", bbid)
-	req := &gfipb.QueryAnalysisRequest{
-		BuildFailure: &gfipb.BuildFailure{
+func (cl *BisectionClient) QueryBisectionResults(c context.Context, bbid int64, stepName string) (*bisectionpb.QueryAnalysisResponse, error) {
+	logging.Infof(c, "Querying LUCI Bisection results for build %d", bbid)
+	req := &bisectionpb.QueryAnalysisRequest{
+		BuildFailure: &bisectionpb.BuildFailure{
 			Bbid:           bbid,
 			FailedStepName: stepName,
 		},
@@ -36,12 +36,12 @@ func (cl *GoFinditClient) QueryGoFinditResults(c context.Context, bbid int64, st
 	return res, nil
 }
 
-func NewGoFinditServiceClient(c context.Context, host string) (gfipb.GoFinditServiceClient, error) {
+func NewBisectionServiceClient(c context.Context, host string) (bisectionpb.AnalysesClient, error) {
 	t, err := auth.GetRPCTransport(c, auth.AsSelf)
 	if err != nil {
 		return nil, err
 	}
-	return gfipb.NewGoFinditServicePRPCClient(
+	return bisectionpb.NewAnalysesPRPCClient(
 		&prpc.Client{
 			C:       &http.Client{Transport: t},
 			Host:    host,

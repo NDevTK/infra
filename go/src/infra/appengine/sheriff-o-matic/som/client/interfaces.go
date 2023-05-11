@@ -1,9 +1,13 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package client
 
 import (
 	"context"
 
-	gfipb "go.chromium.org/luci/bisection/proto"
+	bisectionpb "go.chromium.org/luci/bisection/proto/v1"
 
 	"infra/monitoring/messages"
 )
@@ -14,9 +18,9 @@ type CrBug interface {
 	CrbugItems(ctx context.Context, label string) ([]messages.CrbugItem, error)
 }
 
-// GoFindit returns information about failures that GoFindit analyzes
-type GoFindit interface {
-	QueryGoFinditResults(c context.Context, bbid int64, stepName string) (*gfipb.QueryAnalysisResponse, error)
+// Bisection returns information about failures that LUCI Bisection analyzes
+type Bisection interface {
+	QueryBisectionResults(c context.Context, bbid int64, stepName string) (*bisectionpb.QueryAnalysisResponse, error)
 }
 
 // CrRev returns redirects for commit positions.

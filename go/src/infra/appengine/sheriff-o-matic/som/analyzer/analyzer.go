@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Package analyzer defines and runs the steps to check builder groups,
+// builders, test results and so on, in order to produce alerts.
 package analyzer
 
 import (
@@ -52,8 +54,8 @@ type Analyzer struct {
 	Now func() time.Time
 
 	// Mock these out in tests.
-	CrBug    client.CrBug
-	GoFindit client.GoFindit
+	CrBug     client.CrBug
+	Bisection client.Bisection
 }
 
 // New returns a new Analyzer. If client is nil, it assigns a default implementation.
@@ -98,12 +100,12 @@ func CreateAnalyzer(c context.Context) *Analyzer {
 
 func setServiceClients(c context.Context, a *Analyzer) {
 	if info.AppID(c) == prodAppID {
-		crBug, _, goFindit := client.ProdClients(c)
+		crBug, _, bisection := client.ProdClients(c)
 		a.CrBug = crBug
-		a.GoFindit = goFindit
+		a.Bisection = bisection
 	} else {
-		crBug, _, goFindit := client.StagingClients(c)
+		crBug, _, bisection := client.StagingClients(c)
 		a.CrBug = crBug
-		a.GoFindit = goFindit
+		a.Bisection = bisection
 	}
 }

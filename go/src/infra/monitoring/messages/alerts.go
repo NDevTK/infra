@@ -14,6 +14,7 @@ import (
 	"time"
 
 	gfipb "go.chromium.org/luci/bisection/proto"
+	bisectionpb "go.chromium.org/luci/bisection/proto/v1"
 )
 
 var (
@@ -170,7 +171,7 @@ type BuildFailure struct {
 
 type LuciBisectionResult struct {
 	// Analysis result from LUCI Bisection
-	Analysis *gfipb.Analysis `json:"analysis"`
+	Analysis *bisectionpb.Analysis `json:"analysis"`
 	// Whether this failure is supported by LUCI Bisection
 	IsSupported bool `json:"is_supported"`
 	// The failed build bucket ID.

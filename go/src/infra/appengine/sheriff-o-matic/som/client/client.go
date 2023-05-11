@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Package client is for the external clients that Sheriff-o-Matic needs.
 package client
 
 import (
@@ -264,38 +265,42 @@ func NewMonorailV3Client(c context.Context) (*prpc.Client, error) {
 }
 
 // ProdClients returns a set of service clients pointed at production.
-func ProdClients(ctx context.Context) (CrBug, monorail.MonorailClient, GoFindit) {
+func ProdClients(ctx context.Context) (CrBug, monorail.MonorailClient, Bisection) {
 	monorailClient := NewMonorail(ctx, "https://monorail-prod.appspot.com")
 	crBugs := &CrBugs{}
 
-	var goFinditClient *GoFinditClient
-	goFinditServiceClient, err := NewGoFinditServiceClient(ctx, "luci-bisection.appspot.com")
-	// As goFindit client is not mission-critical, we just log the error
+	var bisectionClient *BisectionClient
+	bisectionServiceClient, err := NewBisectionServiceClient(ctx, "luci-bisection.appspot.com")
+	// As LUCI Bisection client is not mission-critical, we just log the error
 	// if some error occurs.
 	if err != nil {
-		logging.Errorf(ctx, "Cannot create GoFindit Client %s", err)
+		logging.Errorf(ctx, "Cannot create LUCI Bisection client %s", err)
 	} else {
-		goFinditClient = &GoFinditClient{ServiceClient: goFinditServiceClient}
+		bisectionClient = &BisectionClient{
+			ServiceClient: bisectionServiceClient,
+		}
 	}
 
-	return crBugs, monorailClient, goFinditClient
+	return crBugs, monorailClient, bisectionClient
 }
 
 // StagingClients returns a set of service clients pointed at instances suitable for a
 // staging environment.
-func StagingClients(ctx context.Context) (CrBug, monorail.MonorailClient, GoFindit) {
+func StagingClients(ctx context.Context) (CrBug, monorail.MonorailClient, Bisection) {
 	monorailClient := NewMonorail(ctx, "https://monorail-staging.appspot.com")
 	crBugs := &CrBugs{}
 
-	var goFinditClient *GoFinditClient
-	goFinditServiceClient, err := NewGoFinditServiceClient(ctx, "luci-bisection-dev.appspot.com")
-	// As goFindit client is not mission-critical, we just log the error
+	var bisectionClient *BisectionClient
+	bisectionServiceClient, err := NewBisectionServiceClient(ctx, "luci-bisection-dev.appspot.com")
+	// As LUCI Bisection client is not mission-critical, we just log the error
 	// if some error occurs.
 	if err != nil {
-		logging.Errorf(ctx, "Cannot create GoFindit Client %s", err)
+		logging.Errorf(ctx, "Cannot create LUCI Bisection client %s", err)
 	} else {
-		goFinditClient = &GoFinditClient{ServiceClient: goFinditServiceClient}
+		bisectionClient = &BisectionClient{
+			ServiceClient: bisectionServiceClient,
+		}
 	}
 
-	return crBugs, monorailClient, goFinditClient
+	return crBugs, monorailClient, bisectionClient
 }

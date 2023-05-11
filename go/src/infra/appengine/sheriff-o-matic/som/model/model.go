@@ -18,9 +18,8 @@ import (
 	"infra/appengine/sheriff-o-matic/som/model/gen"
 
 	"cloud.google.com/go/bigquery"
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/appengine"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/bq"
 	"go.chromium.org/luci/common/clock"
@@ -283,8 +282,8 @@ func (a *Annotation) Add(c context.Context, r io.Reader) (bool, error) {
 
 	evt.GroupId = change.GroupID
 
-	var ct *timestamp.Timestamp
-	if ct, err = ptypes.TimestampProto(commentTime); err != nil {
+	ct := timestamppb.New(commentTime)
+	if err := ct.CheckValid(); err != nil {
 		logging.Errorf(c, "error getting timestamp proto: %v", err)
 	}
 
@@ -303,13 +302,13 @@ func (a *Annotation) Add(c context.Context, r io.Reader) (bool, error) {
 	return needRefresh, nil
 }
 
-func intToTimestamp(s int) (*timestamp.Timestamp, error) {
+func intToTimestamp(s int) (*timestamppb.Timestamp, error) {
 	if s == 0 {
 		return nil, fmt.Errorf("cannot convert 0 to timestamp.Timestamp")
 	}
 
-	ret, err := ptypes.TimestampProto(time.Unix(int64(s/1000), 0))
-	return ret, err
+	ret := timestamppb.New(time.Unix(int64(s/1000), 0))
+	return ret, ret.CheckValid()
 }
 
 // Remove removes some data to an annotation. Returns if a refreshe of annotation
@@ -373,7 +372,8 @@ func (a *Annotation) Remove(c context.Context, r io.Reader) (bool, error) {
 
 	evt.GroupId = a.GroupID
 	for _, comment := range deletedComments {
-		if ct, err := ptypes.TimestampProto(comment.Time); err == nil {
+		ct := timestamppb.New(comment.Time)
+		if err := ct.CheckValid(); err == nil {
 			evt.Comments = append(evt.Comments, &gen.SOMAnnotationEvent_Comment{
 				Text: comment.Text,
 				Time: ct,
@@ -400,13 +400,15 @@ func createAnnotationEvent(ctx context.Context, a *Annotation, operation gen.SOM
 		Operation:      operation,
 	}
 
-	if mt, err := ptypes.TimestampProto(a.ModificationTime); err == nil {
+	mt := timestamppb.New(a.ModificationTime)
+	if err := mt.CheckValid(); err == nil {
 		evt.Timestamp = mt
 		evt.ModificationTime = mt
 	}
 
 	for _, c := range a.Comments {
-		if ct, err := ptypes.TimestampProto(c.Time); err == nil {
+		ct := timestamppb.New(c.Time)
+		if err := ct.CheckValid(); err == nil {
 			evt.Comments = append(evt.Comments, &gen.SOMAnnotationEvent_Comment{
 				Text: c.Text,
 				Time: ct,

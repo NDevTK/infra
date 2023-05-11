@@ -1,3 +1,7 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package handler
 
 import (
@@ -10,14 +14,14 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
-	"github.com/golang/protobuf/ptypes"
-	gofindit "go.chromium.org/luci/bisection/proto"
+	bisectionpb "go.chromium.org/luci/bisection/proto/v1"
 	"go.chromium.org/luci/common/bq"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/server/router"
 	"google.golang.org/appengine"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/appengine/sheriff-o-matic/som/analyzer"
 	"infra/appengine/sheriff-o-matic/som/client"
@@ -132,10 +136,10 @@ func generateBigQueryAlerts(c context.Context, a *analyzer.Analyzer, tree string
 		}
 	}
 	logging.Infof(c, "filtered alerts, before: %d after: %d", len(builderAlerts), len(filteredBuilderAlerts))
-	err = attachLuciBisectionResults(c, filteredBuilderAlerts, a.GoFindit)
+	err = attachLuciBisectionResults(c, filteredBuilderAlerts, a.Bisection)
 	if err != nil {
 		// It is not critical, so log and continue
-		logging.Errorf(c, "Failure getting GoFindit results %v", err)
+		logging.Errorf(c, "Failure getting LUCI Bisection results %v", err)
 	}
 
 	alerts := []*messages.Alert{}
@@ -204,28 +208,28 @@ func getKeyForAlert(ctx context.Context, bf *messages.BuildFailure, tree string)
 	return strings.Join(strs, model.AlertKeySeparator)
 }
 
-func attachLuciBisectionResults(c context.Context, failures []*messages.BuildFailure, goFinditClient client.GoFindit) error {
+func attachLuciBisectionResults(c context.Context, failures []*messages.BuildFailure, bisectionClient client.Bisection) error {
 	// TODO (nqmtuan): supports queries for a list of bbids.
-	if goFinditClient == nil {
-		return fmt.Errorf("goFinditClient is nil")
+	if bisectionClient == nil {
+		return fmt.Errorf("bisectionClient is nil")
 	}
 	var errs []error
 	for _, bf := range failures {
 		stepName := bf.StepAtFault.Step.Name
-		// Currently GoFind only supports compile failures
+		// Currently LUCI Bisection only supports compile failures.
 		if stepName != "compile" {
 			continue
 		}
 		// bf.Builders exists for historical reasons, since SoM used to do autogrouping of failures
 		// of the same step name in the past.
-		// Now, in can only contain 1 builder.
+		// Now, it can only contain 1 builder.
 		if len(bf.Builders) == 0 {
 			continue
 		}
 
 		builder := bf.Builders[0]
 
-		// Currently LuciBisection only supports "chromium"/"ci" failures
+		// Currently LUCI Bisection only supports "chromium"/"ci" failures
 		// Check here as we don't want to waste an RPC call.
 		if !(builder.Project == "chromium" && builder.Bucket == "ci") {
 			bf.LuciBisectionResult = &messages.LuciBisectionResult{
@@ -235,9 +239,9 @@ func attachLuciBisectionResults(c context.Context, failures []*messages.BuildFai
 		}
 
 		bbid := builder.LatestFailure
-		res, err := goFinditClient.QueryGoFinditResults(c, bbid, stepName)
+		res, err := bisectionClient.QueryBisectionResults(c, bbid, stepName)
 		if err != nil {
-			errs = append(errs, errors.Annotate(err, "failed getting GoFindit result for build %d", bbid).Err())
+			errs = append(errs, errors.Annotate(err, "failed getting LUCI Bisection results for build %d", bbid).Err())
 			continue
 		}
 
@@ -251,7 +255,7 @@ func attachLuciBisectionResults(c context.Context, failures []*messages.BuildFai
 			if len(res.Analyses[0].Culprits) > 0 {
 				logging.Infof(c, "Found LUCI Bisection culprit for build %d", bbid)
 			}
-			if res.Analyses[0].HeuristicResult != nil && res.Analyses[0].HeuristicResult.Status == gofindit.AnalysisStatus_FOUND {
+			if res.Analyses[0].HeuristicResult != nil && res.Analyses[0].HeuristicResult.Status == bisectionpb.AnalysisStatus_FOUND {
 				logging.Infof(c, "Found LUCI Bisection heuristic result for build %d", bbid)
 			}
 		}
@@ -294,8 +298,8 @@ func putAlertsBigQuery(c context.Context, tree string, alertsSummary *messages.A
 	up.SkipInvalidRows = true
 	up.IgnoreUnknownValues = true
 
-	ts, err := ptypes.TimestampProto(alertsSummary.Timestamp.Time())
-	if err != nil {
+	ts := timestamppb.New(alertsSummary.Timestamp.Time())
+	if err := ts.CheckValid(); err != nil {
 		return err
 	}
 
