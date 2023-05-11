@@ -63,22 +63,19 @@ func NewServer() *Server {
 // LeaseVM leases a VM defined by LeaseVMRequest
 func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.LeaseVMResponse, error) {
 	logging.Infof(ctx, "[server:LeaseVM] Started")
-	if ctx.Err() == context.Canceled {
-		return &api.LeaseVMResponse{}, status.Errorf(codes.Internal, "context canceled")
-	}
 
 	// Set defaults for LeaseVMRequest if needed.
 	r = setDefaultLeaseVMRequest(r)
 
 	if err := vmleaserpb.ValidateLeaseVMRequest(r); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to validate lease request: %s", err)
+		return nil, status.Errorf(codes.InvalidArgument, "failed to validate lease request: %s", err)
 	}
 
 	// Appending "vm-" to satisfy GCE regex
 	leaseID := fmt.Sprintf("vm-%s", uuid.New().String())
 	expirationTime, err := computeExpirationTime(ctx, r.GetLeaseDuration())
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to compute expiration time: %s", err)
+		return nil, status.Errorf(codes.InvalidArgument, "failed to compute expiration time: %s", err)
 	}
 
 	instancesClient, err := compute.NewInstancesRESTClient(ctx)
@@ -89,11 +86,17 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 
 	err = createInstance(ctx, instancesClient, leaseID, expirationTime, r.GetHostReqs())
 	if err != nil {
+		if ctx.Err() != nil {
+			return nil, status.Errorf(codes.DeadlineExceeded, "when creating instance: %s", ctx.Err())
+		}
 		return nil, status.Errorf(codes.Internal, "failed to create instance: %s", err)
 	}
 
 	ins, err := getInstance(ctx, instancesClient, leaseID, r.GetHostReqs(), true)
 	if err != nil {
+		if ctx.Err() != nil {
+			return nil, status.Errorf(codes.DeadlineExceeded, "when getting instance: %s", ctx.Err())
+		}
 		return nil, status.Errorf(codes.Internal, "failed to get instance: %s", err)
 	}
 
@@ -114,29 +117,25 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 // ExtendLease extends a VM lease
 func (s *Server) ExtendLease(ctx context.Context, r *api.ExtendLeaseRequest) (*api.ExtendLeaseResponse, error) {
 	logging.Infof(ctx, "[server:ExtendLease] Started")
-	if ctx.Err() == context.Canceled {
-		return &api.ExtendLeaseResponse{}, status.Errorf(codes.Internal, "context canceled")
-	}
-
-	return &api.ExtendLeaseResponse{}, nil
+	return nil, status.Errorf(codes.Unimplemented, "ExtendLease is not implemented")
 }
 
 // ReleaseVM releases a VM lease
 func (s *Server) ReleaseVM(ctx context.Context, r *api.ReleaseVMRequest) (*api.ReleaseVMResponse, error) {
 	logging.Infof(ctx, "[server:ReleaseVM] Started")
-	if ctx.Err() == context.Canceled {
-		return &api.ReleaseVMResponse{}, status.Errorf(codes.Internal, "context canceled")
-	}
 
 	// Set default values for ReleaseVMRequest if needed.
 	r = setDefaultReleaseVMRequest(r)
 
 	if err := vmleaserpb.ValidateReleaseVMRequest(r); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to validate release request: %s", err)
+		return nil, status.Errorf(codes.InvalidArgument, "failed to validate release request: %s", err)
 	}
 
 	err := deleteInstance(ctx, r)
 	if err != nil {
+		if ctx.Err() != nil {
+			return nil, status.Errorf(codes.DeadlineExceeded, "when deleting instance: %s", ctx.Err())
+		}
 		return nil, status.Errorf(codes.Internal, "failed to delete instance: %s", err)
 	}
 
@@ -164,6 +163,7 @@ func getInstance(ctx context.Context, client computeInstancesClient, leaseID str
 		ctx, cancel := context.WithDeadline(ctx, d)
 		defer cancel()
 
+		logging.Debugf(ctx, "polling for instance")
 		err = poll(ctx, func(ctx context.Context) (bool, error) {
 			ins, err = client.Get(ctx, getReq)
 			if err != nil {
@@ -175,6 +175,7 @@ func getInstance(ctx context.Context, client computeInstancesClient, leaseID str
 			return nil, err
 		}
 	} else {
+		logging.Debugf(ctx, "getting instance without polling")
 		ins, err = client.Get(ctx, getReq)
 		if err != nil {
 			return nil, err
@@ -247,7 +248,7 @@ func createInstance(ctx context.Context, client computeInstancesClient, leaseID 
 		return fmt.Errorf("unable to wait for the operation: %v", err)
 	}
 
-	logging.Infof(ctx, "instance created")
+	logging.Infof(ctx, "instance created: %s", leaseID)
 	return nil
 }
 
@@ -340,12 +341,15 @@ func poll(ctx context.Context, f func(context.Context) (bool, error), interval t
 		case <-ticker.C:
 			success, err := f(ctx)
 			if err != nil {
+				logging.Debugf(ctx, "poll: error")
 				return err
 			}
 			if success {
+				logging.Debugf(ctx, "poll: success")
 				return nil
 			}
 		case <-ctx.Done():
+			logging.Debugf(ctx, "poll: context done")
 			return ctx.Err()
 		}
 	}

@@ -66,7 +66,7 @@ To call an RPC, you can specify the proto and payload via `grpcurl`. Here is an 
       "gce_machine_type": "e2-medium",
       "gce_disk_size": "20"
     },
-    "lease_duration": "1"
+    "lease_duration": "1m"
   }' \
   localhost:50051 \
   vm_leaser.api.v1.VMLeaserService.LeaseVM
