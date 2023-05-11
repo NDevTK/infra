@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,8 @@ var targetOverrideModels = map[string]string{
 	// Brya board.
 	"zavala":   "volmar",
 	"crota360": "crota",
+	// Trogdor board.
+	"pazquel360": "pazquel",
 }
 
 // targetOverrideHwidSkus holds a map of hwid that need to override its firmware target.
