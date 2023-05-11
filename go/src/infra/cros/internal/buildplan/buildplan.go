@@ -22,6 +22,7 @@ import (
 )
 
 var manifestFilePattern = testplans.FilePattern{Pattern: "{manifest,manifest-internal}/*.xml"}
+var kernelUpstreamManifestFilePattern = testplans.FilePattern{Pattern: "manifest-internal/_kernel_upstream.xml"}
 
 // CheckBuildersInput is the input for a CheckBuilders call.
 type CheckBuildersInput struct {
@@ -49,12 +50,12 @@ func (c *CheckBuildersInput) CheckBuilders() (*cros_pb.GenerateBuildPlanResponse
 
 	// TODO(crbug/1169870): Be more selective once we have a way to know what source paths are
 	// relevant for each builder.
-	hasXMLChange, err := hasManifestXMLChange(affectedFiles)
+	testsAllBuilders, err := hasTestAllManifestXMLChange(affectedFiles)
 	if err != nil {
-		return nil, fmt.Errorf("error in hasManifestXMLChange: %+v", err)
+		return nil, fmt.Errorf("error in hasTestAllManifestXMLChange: %+v", err)
 	}
-	if hasXMLChange {
-		log.Printf("Manifest change modifies XML file, running all children builds.")
+	if testsAllBuilders {
+		log.Printf("Running all children builds in order to test all Manifest XML change.")
 		for _, b := range c.Builders {
 			log.Printf("Must run builder %v", b.GetId().GetName())
 			response.BuildsToRun = append(response.BuildsToRun, b.GetId())
@@ -239,7 +240,18 @@ func stringInSlice(a string, list []string) bool {
 	return false
 }
 
-func hasManifestXMLChange(files []string) (bool, error) {
+func hasTestAllManifestXMLChange(files []string) (bool, error) {
+	// TODO(b/187795897): If there is only changes to the _kernel_upstream.xml
+	// do not report it.
+	if len(files) == 1 {
+		match, err := match.FilePatternMatches(&kernelUpstreamManifestFilePattern, files[0])
+		if err != nil {
+			log.Fatalf("Failed to match pattern %s against file %s: %v", &kernelUpstreamManifestFilePattern, files[0], err)
+		}
+		if match {
+			return false, nil
+		}
+	}
 	for _, f := range files {
 		match, err := match.FilePatternMatches(&manifestFilePattern, f)
 		if err != nil {
