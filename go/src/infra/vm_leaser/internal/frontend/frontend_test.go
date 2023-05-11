@@ -112,7 +112,11 @@ func TestGetInstance(t *testing.T) {
 						Name: proto.String("test-id"),
 						NetworkInterfaces: []*computepb.NetworkInterface{
 							{
-								NetworkIP: proto.String("1.2.3.4"),
+								AccessConfigs: []*computepb.AccessConfig{
+									{
+										NatIP: proto.String("1.2.3.4"),
+									},
+								},
 							},
 						},
 					}, nil
@@ -131,7 +135,11 @@ func TestGetInstance(t *testing.T) {
 				Name: proto.String("test-id"),
 				NetworkInterfaces: []*computepb.NetworkInterface{
 					{
-						NetworkIP: proto.String("1.2.3.4"),
+						AccessConfigs: []*computepb.AccessConfig{
+							{
+								NatIP: proto.String("1.2.3.4"),
+							},
+						},
 					},
 				},
 			})
@@ -173,7 +181,7 @@ func TestGetInstance(t *testing.T) {
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "instance does not have a network interface")
 		})
-		Convey("getInstance - error: no network ip", func() {
+		Convey("getInstance - error: no access config", func() {
 			client := &mockComputeInstancesClient{
 				getFunc: func() (*computepb.Instance, error) {
 					return &computepb.Instance{
@@ -193,7 +201,33 @@ func TestGetInstance(t *testing.T) {
 			ins, err := getInstance(ctx, client, "test-id", hostReqs, false)
 			So(ins, ShouldBeNil)
 			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldContainSubstring, "instance does not have a network IP")
+			So(err.Error(), ShouldContainSubstring, "instance does not have an access config")
+		})
+		Convey("getInstance - error: no nat ip", func() {
+			client := &mockComputeInstancesClient{
+				getFunc: func() (*computepb.Instance, error) {
+					return &computepb.Instance{
+						NetworkInterfaces: []*computepb.NetworkInterface{
+							{
+								AccessConfigs: []*computepb.AccessConfig{
+									{},
+								},
+							},
+						},
+					}, nil
+				},
+			}
+			hostReqs := &api.VMRequirements{
+				GceImage:       "test-image",
+				GceRegion:      "test-region",
+				GceProject:     "test-project",
+				GceMachineType: "test-machine-type",
+				GceDiskSize:    100,
+			}
+			ins, err := getInstance(ctx, client, "test-id", hostReqs, false)
+			So(ins, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "instance does not have a nat ip")
 		})
 	})
 }

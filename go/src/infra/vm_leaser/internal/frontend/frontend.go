@@ -102,8 +102,10 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 		Vm: &api.VM{
 			Id: leaseID,
 			Address: &api.VMAddress{
-				Host: ins.GetNetworkInterfaces()[0].GetNetworkIP(), // Only one NetworkInterface should be available
-				Port: 22,                                           // Temporarily hardcode as port 22
+				// Only one NetworkInterface and AccessConfig should be available
+				Host: ins.GetNetworkInterfaces()[0].GetAccessConfigs()[0].GetNatIP(),
+				// Temporarily hardcode as port 22
+				Port: 22,
 			},
 		},
 	}, nil
@@ -179,11 +181,14 @@ func getInstance(ctx context.Context, client computeInstancesClient, leaseID str
 		}
 	}
 
-	if ins.GetNetworkInterfaces() == nil {
+	if ins.GetNetworkInterfaces() == nil || ins.GetNetworkInterfaces()[0] == nil {
 		return nil, errors.New("instance does not have a network interface")
 	}
-	if ins.GetNetworkInterfaces()[0].GetNetworkIP() == "" {
-		return nil, errors.New("instance does not have a network IP")
+	if ins.GetNetworkInterfaces()[0].GetAccessConfigs() == nil || ins.GetNetworkInterfaces()[0].GetAccessConfigs()[0] == nil {
+		return nil, errors.New("instance does not have an access config")
+	}
+	if ins.GetNetworkInterfaces()[0].GetAccessConfigs()[0].GetNatIP() == "" {
+		return nil, errors.New("instance does not have a nat ip")
 	}
 	return ins, nil
 }
@@ -218,7 +223,12 @@ func createInstance(ctx context.Context, client computeInstancesClient, leaseID 
 			},
 			NetworkInterfaces: []*computepb.NetworkInterface{
 				{
-					Name: proto.String(hostReqs.GetGceNetwork()),
+					AccessConfigs: []*computepb.AccessConfig{
+						{
+							Name: proto.String("External NAT"),
+						},
+					},
+					Network: proto.String(hostReqs.GetGceNetwork()),
 				},
 			},
 		},
