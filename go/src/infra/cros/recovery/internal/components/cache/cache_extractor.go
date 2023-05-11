@@ -1,4 +1,4 @@
-// Copyright (c) 2022 The Chromium Authors. All rights reserved.
+// Copyright (c) 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@ import (
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger/metrics"
+	"infra/cros/recovery/scopes"
 )
 
 // ExtractRequest holds all data required to extract file from file on cache service.
@@ -60,7 +61,14 @@ func Extract(ctx context.Context, req *ExtractRequest, run components.Runner) er
 
 // CurlFile downloads file by using curl util.
 func CurlFile(ctx context.Context, run components.Runner, sourcePath, destinationPath string, timeout time.Duration) (int, error) {
-	out, err := run(ctx, timeout, "curl", sourcePath, "--output", destinationPath, "--fail")
+	curlParams := []string{sourcePath, "--output", destinationPath, "--fail"}
+	if v, ok := scopes.GetParam(ctx, scopes.ParamKeySwarmingTaskID); ok {
+		curlParams = append(curlParams, "-H", fmt.Sprintf("X-SWARMING-TASK-ID:%s", v))
+	}
+	if v, ok := scopes.GetParam(ctx, scopes.ParamKeyBuildbucketID); ok {
+		curlParams = append(curlParams, "-H", fmt.Sprintf("X-BBID:%s", v))
+	}
+	out, err := run(ctx, timeout, "curl", curlParams...)
 	if err == nil {
 		log.Debugf(ctx, "Successfully download %q from %q", destinationPath, sourcePath)
 		return 0, nil
