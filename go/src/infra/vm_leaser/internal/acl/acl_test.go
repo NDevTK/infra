@@ -1,4 +1,4 @@
-// Copyright 2023 The ChromiumOS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,12 @@ import (
 	"fmt"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/server/auth"
+	"go.chromium.org/luci/server/auth/authtest"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	"go.chromium.org/luci/server/auth"
-	"go.chromium.org/luci/server/auth/authtest"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestRPCAccessInterceptor(t *testing.T) {
@@ -39,7 +37,7 @@ func TestRPCAccessInterceptor(t *testing.T) {
 
 		So(check(ctx, "unknown.API", "Something"), ShouldEqual, codes.PermissionDenied)
 		So(check(ctx, "grpc.reflection.v1alpha.ServerReflection", "Something"), ShouldEqual, codes.PermissionDenied)
-		So(check(ctx, "vm_leaser.api.v1.VMLeaserService", "Something"), ShouldEqual, codes.PermissionDenied)
+		So(check(ctx, "chromiumos.test.api.VMLeaserService", "Something"), ShouldEqual, codes.PermissionDenied)
 	})
 
 	Convey("Authenticated, but not authorized", t, func() {
@@ -50,7 +48,7 @@ func TestRPCAccessInterceptor(t *testing.T) {
 
 		So(check(ctx, "unknown.API", "Something"), ShouldEqual, codes.PermissionDenied)
 		So(check(ctx, "grpc.reflection.v1alpha.ServerReflection", "Something"), ShouldEqual, codes.PermissionDenied)
-		So(check(ctx, "vm_leaser.api.v1.VMLeaserService", "Something"), ShouldEqual, codes.PermissionDenied)
+		So(check(ctx, "chromiumos.test.api.VMLeaserService", "Something"), ShouldEqual, codes.PermissionDenied)
 	})
 
 	Convey("Authorized", t, func() {
@@ -61,6 +59,6 @@ func TestRPCAccessInterceptor(t *testing.T) {
 
 		So(check(ctx, "unknown.API", "Something"), ShouldEqual, codes.PermissionDenied)
 		So(check(ctx, "grpc.reflection.v1alpha.ServerReflection", "Something"), ShouldEqual, codes.OK)
-		So(check(ctx, "vm_leaser.api.v1.VMLeaserService", "Something"), ShouldEqual, codes.OK)
+		So(check(ctx, "chromiumos.test.api.VMLeaserService", "Something"), ShouldEqual, codes.OK)
 	})
 }

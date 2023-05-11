@@ -37,7 +37,7 @@ To list all services available at the endpoint:
   list
 
 grpc.reflection.v1alpha.ServerReflection
-vm_leaser.api.v1.VMLeaserService
+chromiumos.test.api.VMLeaserService
 ```
 
 To list all APIs available for a given service:
@@ -45,18 +45,18 @@ To list all APIs available for a given service:
 > grpcurl -plaintext \
   -H "Authorization: Bearer $(gcloud auth print-identity-token)" \
   localhost:50051 \
-  list vm_leaser.api.v1.VMLeaserService
+  list chromiumos.test.api.VMLeaserService
 
-vm_leaser.api.v1.VMLeaserService.ExtendLease
-vm_leaser.api.v1.VMLeaserService.LeaseVM
-vm_leaser.api.v1.VMLeaserService.ReleaseVM
+chromiumos.test.api.VMLeaserService.ExtendLease
+chromiumos.test.api.VMLeaserService.LeaseVM
+chromiumos.test.api.VMLeaserService.ReleaseVM
 ```
 
 To call an RPC, you can specify the proto and payload via `grpcurl`. Here is an example of how to lease a VM:
 ```bash
 > grpcurl -plaintext \
   -H "Authorization: Bearer $(gcloud auth print-identity-token)" \
-  -proto api/v1/vm_leaser.proto \
+  -proto ../../go.chromium.org/chromiumos/config/proto/chromiumos/test/api/vm_leaser.proto \
   -d '{
     "host_reqs": {
       "gce_image": "projects/chrome-fleet-vm-leaser-dev/global/images/betty-arc-r-release",
@@ -69,7 +69,7 @@ To call an RPC, you can specify the proto and payload via `grpcurl`. Here is an 
     "lease_duration": "1m"
   }' \
   localhost:50051 \
-  vm_leaser.api.v1.VMLeaserService.LeaseVM
+  chromiumos.test.api.VMLeaserService.LeaseVM
 
 {
   "leaseId": "vm-12107b1b-52be-475f-bdd5-8b68306645d2",
@@ -87,14 +87,14 @@ An example to release a VM:
 ```bash
 > grpcurl -plaintext \
   -H "Authorization: Bearer $(gcloud auth print-identity-token)" \
-  -proto api/v1/vm_leaser.proto \
+  -proto ../../go.chromium.org/chromiumos/config/proto/chromiumos/test/api/vm_leaser.proto \
   -d '{
     "lease_id": "vm-bcb29756-ff94-4da9-a531-2cd20bad9771",
     "gce_project": "chrome-fleet-vm-leaser-dev",
     "gce_region": "us-central1-a"
   }' \
   localhost:50051 \
-  vm_leaser.api.v1.VMLeaserService.ReleaseVM
+  chromiumos.test.api.VMLeaserService.ReleaseVM
 
 {
   "leaseId": "vm-bcb29756-ff94-4da9-a531-2cd20bad9771"
@@ -116,18 +116,18 @@ To list the RPCs available for our service:
 > grpcurl \
   -H "Authorization: Bearer $(gcloud auth print-identity-token)" \
   staging.vmleaser.api.cr.dev:443 \
-  list vm_leaser.api.v1.VMLeaserService
+  list chromiumos.test.api.VMLeaserService
 
-vm_leaser.api.v1.VMLeaserService.ExtendLease
-vm_leaser.api.v1.VMLeaserService.LeaseVM
-vm_leaser.api.v1.VMLeaserService.ReleaseVM
+chromiumos.test.api.VMLeaserService.ExtendLease
+chromiumos.test.api.VMLeaserService.LeaseVM
+chromiumos.test.api.VMLeaserService.ReleaseVM
 ```
 
 To call an RPC, you can specify the proto and payload via `grpcurl`. Here is an example of how to lease a VM:
 ```bash
 > grpcurl \
   -H "Authorization: Bearer $(gcloud auth print-identity-token)" \
-  -proto api/v1/vm_leaser.proto \
+  -proto ../../go.chromium.org/chromiumos/config/proto/chromiumos/test/api/vm_leaser.proto \
     -d '{
     "host_reqs": {
       "gce_image": "projects/chrome-fleet-vm-leaser-dev/global/images/betty-arc-r-release",
@@ -139,7 +139,7 @@ To call an RPC, you can specify the proto and payload via `grpcurl`. Here is an 
     }
   }' \
   staging.vmleaser.api.cr.dev:443 \
-  vm_leaser.api.v1.VMLeaserService.LeaseVM
+  chromiumos.test.api.VMLeaserService.LeaseVM
 
 {
   "leaseId": "vm-12107b1b-52be-475f-bdd5-8b68306645d2",

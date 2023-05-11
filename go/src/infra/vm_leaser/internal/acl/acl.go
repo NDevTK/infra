@@ -21,5 +21,5 @@ var RPCAccessInterceptor = rpcacl.Interceptor(rpcacl.Map{
 
 	// Using the VM Leaser service requires the user or service to be part of the
 	// VM Lab group.
-	"/vm_leaser.api.v1.VMLeaserService/*": VMLabGroup,
+	"/chromiumos.test.api.VMLeaserService/*": VMLabGroup,
 })
