@@ -205,7 +205,7 @@ func metadataToTags(metadata *api.TestCaseMetadata) []*pb.StringPair {
 		tags = AppendTags(tags, "requirements", strings.Join(requirements, ","))
 	}
 
-	if info.BugComponent != nil {
+	if info.BugComponent != nil && strings.TrimSpace(info.BugComponent.Value) != "" {
 		tags = AppendTags(tags, "bug_component", info.BugComponent.Value)
 	}
 
@@ -228,7 +228,12 @@ func parseBugComponentMetadata(metadata *api.TestCaseMetadata) (*pb.BugComponent
 		return nil, nil
 	}
 
-	bugComponent := metadata.TestCaseInfo.BugComponent.GetValue()
+	return parseBugComponent(metadata.TestCaseInfo.BugComponent.GetValue())
+}
+
+// parseBugComponent parses a bugComponent string (e.g. "b:12345") to a
+// ResultDB pb.BugComponent. Returns nil if the provided string is empty.
+func parseBugComponent(bugComponent string) (*pb.BugComponent, error) {
 	lowerCasedBugComponent := strings.ToLower(bugComponent)
 
 	// IssueTracker (aka Buganizer) component.

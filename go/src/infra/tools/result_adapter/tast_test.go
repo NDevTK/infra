@@ -33,12 +33,13 @@ func mockCollect(s string) (map[string]string, error) {
 
 func genJSONLine(m map[string]string) string {
 	base := map[string]string{
-		"name":     "lacros.Basic",
-		"contacts": `["user1@google.com", "user2@google.com"]`,
-		"bundle":   "cros",
-		"start":    "2021-07-26T18:53:33.983328614Z",
-		"end":      "2021-07-26T18:53:34.983328614Z",
-		"outDir":   "/usr/local/autotest/results/lxc_job_folder/tast/results/tests/lacros.Basic",
+		"name":         "lacros.Basic",
+		"contacts":     `["user1@google.com", "user2@google.com"]`,
+		"bugComponent": "b:1234",
+		"bundle":       "cros",
+		"start":        "2021-07-26T18:53:33.983328614Z",
+		"end":          "2021-07-26T18:53:34.983328614Z",
+		"outDir":       "/usr/local/autotest/results/lxc_job_folder/tast/results/tests/lacros.Basic",
 	}
 	for k, v := range m {
 		base[k] = v
@@ -67,14 +68,15 @@ func TestTastConversions(t *testing.T) {
 			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
 			So(err, ShouldBeNil)
 			So(r.Cases[0], ShouldResemble, TastCase{
-				Name:        "lacros.Basic",
-				Contacts:    []string{"user1@google.com", "user2@google.com"},
-				OutDir:      "/usr/local/autotest/results/lxc_job_folder/tast/results/tests/lacros.Basic",
-				SkipReason:  "dummy skipped",
-				Errors:      nil,
-				Start:       parseTime("2021-07-26T18:53:33.983328614Z"),
-				End:         parseTime("2021-07-26T18:53:34.983328614Z"),
-				SearchFlags: []*pb.StringPair{{Key: "testKey", Value: "testValue"}},
+				Name:         "lacros.Basic",
+				Contacts:     []string{"user1@google.com", "user2@google.com"},
+				BugComponent: "b:1234",
+				OutDir:       "/usr/local/autotest/results/lxc_job_folder/tast/results/tests/lacros.Basic",
+				SkipReason:   "dummy skipped",
+				Errors:       nil,
+				Start:        parseTime("2021-07-26T18:53:33.983328614Z"),
+				End:          parseTime("2021-07-26T18:53:34.983328614Z"),
+				SearchFlags:  []*pb.StringPair{{Key: "testKey", Value: "testValue"}},
 			})
 		})
 		Convey(`Errors`, func() {
@@ -122,9 +124,17 @@ func TestTastConversions(t *testing.T) {
 				Tags: []*pb.StringPair{
 					pbutil.StringPair("contacts", "user1@google.com,user2@google.com"),
 					pbutil.StringPair("testKey", "testValue"),
+					pbutil.StringPair("bug_component", "b:1234"),
 				},
 				TestMetadata: &pb.TestMetadata{
 					Name: "tast.lacros.Basic",
+					BugComponent: &pb.BugComponent{
+						System: &pb.BugComponent_IssueTracker{
+							IssueTracker: &pb.IssueTrackerComponent{
+								ComponentId: 1234,
+							},
+						},
+					},
 				},
 				StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 				Duration:  &duration.Duration{Seconds: 1},
@@ -225,9 +235,19 @@ func TestTastConversions(t *testing.T) {
 						ContentType: "text/plain",
 					},
 				},
-				Tags: []*pb.StringPair{pbutil.StringPair("contacts", "user1@google.com,user2@google.com")},
+				Tags: []*pb.StringPair{
+					pbutil.StringPair("contacts", "user1@google.com,user2@google.com"),
+					pbutil.StringPair("bug_component", "b:1234"),
+				},
 				TestMetadata: &pb.TestMetadata{
 					Name: "tast.lacros.Basic",
+					BugComponent: &pb.BugComponent{
+						System: &pb.BugComponent_IssueTracker{
+							IssueTracker: &pb.IssueTrackerComponent{
+								ComponentId: 1234,
+							},
+						},
+					},
 				},
 				StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 				Duration:  &duration.Duration{Seconds: 1},
@@ -261,9 +281,19 @@ func TestTastConversions(t *testing.T) {
 						ContentType: "text/plain",
 					},
 				},
-				Tags: []*pb.StringPair{pbutil.StringPair("contacts", "user1@google.com,user2@google.com")},
+				Tags: []*pb.StringPair{
+					pbutil.StringPair("contacts", "user1@google.com,user2@google.com"),
+					pbutil.StringPair("bug_component", "b:1234"),
+				},
 				TestMetadata: &pb.TestMetadata{
 					Name: "tast.lacros.Basic",
+					BugComponent: &pb.BugComponent{
+						System: &pb.BugComponent_IssueTracker{
+							IssueTracker: &pb.IssueTrackerComponent{
+								ComponentId: 1234,
+							},
+						},
+					},
 				},
 				FailureReason: &pb.FailureReason{
 					PrimaryErrorMessage: "Failed due to dummy error",

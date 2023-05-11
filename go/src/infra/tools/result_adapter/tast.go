@@ -41,14 +41,15 @@ type TastResults struct {
 //
 // Fields not used by Test Results are omitted.
 type TastCase struct {
-	Name        string           `json:"name"`
-	Contacts    []string         `json:"contacts"`
-	OutDir      string           `json:"outDir"`
-	SkipReason  string           `json:"skipReason"`
-	Errors      []TastError      `json:"errors"`
-	Start       time.Time        `json:"start"`
-	End         time.Time        `json:"end"`
-	SearchFlags []*pb.StringPair `json:"searchFlags,omitempty"`
+	Name         string           `json:"name"`
+	Contacts     []string         `json:"contacts"`
+	BugComponent string           `json:"bugComponent,omitempty"`
+	OutDir       string           `json:"outDir"`
+	SkipReason   string           `json:"skipReason"`
+	Errors       []TastError      `json:"errors"`
+	Start        time.Time        `json:"start"`
+	End          time.Time        `json:"end"`
+	SearchFlags  []*pb.StringPair `json:"searchFlags,omitempty"`
 }
 
 type TastError struct {
@@ -116,11 +117,28 @@ func (r *TastResults) ToProtos(ctx context.Context, testMetadataFile string, pro
 			tr.Tags = append(tr.Tags, metadataToTags(testMetadata)...)
 			tr.TestMetadata.BugComponent, err = parseBugComponentMetadata(testMetadata)
 			if err != nil {
-				logging.Errorf(
+				logging.Warningf(
 					ctx,
 					"could not parse bug component metadata from: %v due to: %v",
 					testMetadata,
 					err)
+			}
+		}
+
+		// Fallback to the bugComponent field of the results file if it is
+		// missing from the test metadata.
+		if tr.TestMetadata.BugComponent == nil {
+			tr.TestMetadata.BugComponent, err = parseBugComponent(c.BugComponent)
+			if err != nil {
+				logging.Warningf(
+					ctx,
+					"could not parse bug component from: %v due to: %v",
+					c,
+					err)
+			}
+
+			if tr.TestMetadata.BugComponent != nil {
+				tr.Tags = AppendTags(tr.Tags, "bug_component", c.BugComponent)
 			}
 		}
 
