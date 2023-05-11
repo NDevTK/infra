@@ -142,6 +142,7 @@ func (r *collectRun) doRun(ctx context.Context, args []string) error {
 			MaxDelay:   5 * time.Minute,
 		}
 	}
+	opts.Debug = true
 
 	buildsClient := bbpb.NewBuildsPRPCClient(&prpc.Client{
 		C:       httpClient,

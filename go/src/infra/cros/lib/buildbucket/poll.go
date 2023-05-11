@@ -7,6 +7,9 @@ import (
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/grpc/grpcutil"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
@@ -85,6 +88,17 @@ func PollForOutputProp(
 			case *bbpb.BatchResponse_Response_GetBuild:
 				build = resp.GetGetBuild()
 			case *bbpb.BatchResponse_Response_Error:
+				// One of the responses in the batch is an error. If the error
+				// is transient (we also consider DeadlineExceeded transient),
+				// just skip doing any updates to the build on this iteration;
+				// the build status will be requested again next iteration. If
+				// the error is non-transient, return an error to exit the loop.
+				code := status.FromProto(resp.GetError()).Code()
+				if grpcutil.IsTransientCode(code) || code == codes.DeadlineExceeded {
+					logging.Warningf(ctx, "got transient error in BatchResponse, will retry next iteration: %q", resp.GetError())
+					continue
+				}
+
 				return nil, fmt.Errorf("got error in BatchResponse: %q", resp.GetError())
 			default:
 				return nil, fmt.Errorf("got unexpected response type: %q", resp)

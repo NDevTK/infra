@@ -10,6 +10,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/genproto/googleapis/rpc/status"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -179,7 +180,7 @@ func TestPollForOutputPropError(t *testing.T) {
 			Responses: []*bbpb.BatchResponse_Response{
 				{
 					Response: &bbpb.BatchResponse_Response_Error{Error: &status.Status{
-						Code:    3,
+						Code:    int32(codes.InvalidArgument),
 						Message: "error in request",
 					}},
 				},
@@ -189,4 +190,70 @@ func TestPollForOutputPropError(t *testing.T) {
 	_, err := buildbucket.PollForOutputProp(ctx, client, []int64{1}, "testprop", time.Millisecond*10)
 
 	assert.ErrorContains(t, err, "got error in BatchResponse")
+}
+
+func TestPollForOutputPropRetriesTransientError(t *testing.T) {
+	ctx := context.Background()
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	client := bbpb.NewMockBuildsClient(ctrl)
+
+	req := &bbpb.BatchRequest{Requests: []*bbpb.BatchRequest_Request{
+		{Request: &bbpb.BatchRequest_Request_GetBuild{
+			GetBuild: &bbpb.GetBuildRequest{Id: 1, Fields: expectedFieldMask},
+		}},
+	}}
+
+	firstResp := &bbpb.BatchResponse{
+		Responses: []*bbpb.BatchResponse_Response{
+			{
+				Response: &bbpb.BatchResponse_Response_Error{Error: &status.Status{
+					Code:    int32(codes.Internal),
+					Message: "internal error",
+				}},
+			},
+		},
+	}
+
+	secondResp := &bbpb.BatchResponse{
+		Responses: []*bbpb.BatchResponse_Response{
+			{
+				Response: &bbpb.BatchResponse_Response_Error{Error: &status.Status{
+					Code:    int32(codes.DeadlineExceeded),
+					Message: "deadline exceeded",
+				}},
+			},
+		},
+	}
+
+	thirdResp := &bbpb.BatchResponse{
+		Responses: []*bbpb.BatchResponse_Response{
+			{
+				Response: &bbpb.BatchResponse_Response_GetBuild{
+					GetBuild: &bbpb.Build{Id: 1, Status: bbpb.Status_SUCCESS},
+				},
+			},
+		},
+	}
+
+	gomock.InOrder(
+		client.EXPECT().Batch(gomock.AssignableToTypeOf(ctx), req).Return(firstResp, nil),
+		client.EXPECT().Batch(gomock.AssignableToTypeOf(ctx), req).Return(secondResp, nil),
+		client.EXPECT().Batch(gomock.AssignableToTypeOf(ctx), req).Return(thirdResp, nil),
+	)
+
+	builds, err := buildbucket.PollForOutputProp(ctx, client, []int64{1}, "testprop", time.Millisecond*10)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	expectedBuilds := map[int64]*bbpb.Build{
+		1: {Id: 1, Status: bbpb.Status_SUCCESS},
+	}
+
+	if diff := cmp.Diff(expectedBuilds, builds, protocmp.Transform()); diff != "" {
+		t.Errorf("PollForOutputProp diff (-want +got):\n%s", diff)
+	}
 }
