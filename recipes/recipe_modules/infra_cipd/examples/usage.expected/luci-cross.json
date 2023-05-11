@@ -27,7 +27,7 @@
   },
   {
     "cmd": [
-      "vpython",
+      "vpython3",
       "[CACHE]/builder/assume/infra/build/test_packages.py"
     ],
     "env": {

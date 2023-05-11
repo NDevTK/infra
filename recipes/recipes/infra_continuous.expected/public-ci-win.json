@@ -321,7 +321,7 @@
   },
   {
     "cmd": [
-      "vpython",
+      "vpython3",
       "[CACHE]\\builder\\infra\\build\\test_packages.py"
     ],
     "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",
@@ -398,7 +398,7 @@
   },
   {
     "cmd": [
-      "vpython",
+      "vpython3",
       "[CACHE]\\builder\\infra\\build\\test_packages.py"
     ],
     "cwd": "[CACHE]\\builder\\infra\\go\\src\\infra",

@@ -84,7 +84,7 @@ class InfraCIPDApi(recipe_api.RecipeApi):
     """Tests previously built packages integrity."""
     return self.m.step(
         self._ctx_name_prefix+'cipd - test packages integrity',
-        ['vpython', self._ctx_path_to_repo.join('build', 'test_packages.py')],
+        ['vpython3', self._ctx_path_to_repo.join('build', 'test_packages.py')],
     )
 
   def upload(self, tags, step_test_data=None):

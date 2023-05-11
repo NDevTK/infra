@@ -319,7 +319,7 @@
   },
   {
     "cmd": [
-      "vpython",
+      "vpython3",
       "[CACHE]/builder/infra_internal/build/test_packages.py"
     ],
     "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal",
