@@ -229,7 +229,9 @@ func LabstationRepairConfig() *Configuration {
 						Docs: []string{
 							"Try to wait device to be sshable during after the device being rebooted.",
 						},
-						ExecTimeout: &durationpb.Duration{Seconds: 300},
+						// Labstation may take some time to fully up(e.g. network service ready) after an update.
+						// So giving it 10 minutes in here to allow more buffer.
+						ExecTimeout: &durationpb.Duration{Seconds: 600},
 						ExecName:    "cros_ssh",
 						RunControl:  RunControl_ALWAYS_RUN,
 					},
