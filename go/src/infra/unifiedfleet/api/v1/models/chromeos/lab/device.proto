@@ -36,7 +36,7 @@ message ChromeOSDevice {
   };
 }
 
-// Next Tag: 8
+// Next Tag: 11
 message DeviceUnderTest{
   string hostname = 1;
   Peripherals peripherals = 2;
@@ -70,6 +70,9 @@ message DeviceUnderTest{
 
   // CBI contents on the DUT
   chromiumos.test.lab.api.Cbi cbi = 9;
+
+  // Capability to support Chromebook X features
+  bool cbx = 10;
 }
 
 // Next Tag: 5
