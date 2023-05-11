@@ -108,8 +108,6 @@ http {
     server_name           gs-cache;
     add_header            'Cache-Control' 'public, max-age=3153600';
     add_header            '{{ if .UpstreamHost }}X-Cache-Primary{{ else }}X-Cache-Secondary{{ end }}' '$upstream_cache_status';
-    add_header            'X-SWARMING-TASK-ID' '$http_x_swarming_task_id';
-    add_header            'X-BBID' '$http_x_bbid';
     add_header            'X-CACHING-BACKEND' '$host';
     index  index.html index.htm index.php;
     access_log            /var/log/nginx/gs-cache.access.log main;
@@ -123,6 +121,12 @@ http {
     # "proxy_cache_valid" which is much shorter than a release build.
     # A CQ build URL is like "/download/chromeos-image-archive/coral-cq/R92-13913.0.0-46943-8850024658050820208/...".
     location ~ ^/download/[^/]+/[^/]+\S+-cq/ {
+      # The two headers added below must be added in each location, instead of
+      # in the "server" directive as it may not come as the request headers.
+      # Instead, it may be set as variables in this configuration file, which
+      # can only be seen after setting.
+      add_header            'X-SWARMING-TASK-ID' '$http_x_swarming_task_id';
+      add_header            'X-BBID' '$http_x_bbid';
       slice 30m;
       proxy_cache_lock on;
       proxy_cache_lock_age 900s;
@@ -146,6 +150,8 @@ http {
       proxy_force_ranges    on;
     }
     location ~ ^/[^/]+/[^/]+/\S+-cq/ {
+      add_header            'X-SWARMING-TASK-ID' '$http_x_swarming_task_id';
+      add_header            'X-BBID' '$http_x_bbid';
       proxy_cache_lock on;
       proxy_cache_lock_age 3600s;
       proxy_cache_lock_timeout 3600s;
@@ -167,6 +173,8 @@ http {
     }
 
     location / {
+      add_header            'X-SWARMING-TASK-ID' '$http_x_swarming_task_id';
+      add_header            'X-BBID' '$http_x_bbid';
       proxy_cache_lock on;
       proxy_cache_lock_age 3600s;
       proxy_cache_lock_timeout 3600s;
@@ -187,6 +195,8 @@ http {
       proxy_cache_key       $request_method$uri$is_args$args;
     }
     location ~ ^/download/ {
+        add_header            'X-SWARMING-TASK-ID' '$http_x_swarming_task_id';
+        add_header            'X-BBID' '$http_x_bbid';
         slice 30m;
         proxy_cache_lock on;
         proxy_cache_lock_age 900s;
@@ -209,6 +219,13 @@ http {
         proxy_set_header      Range $slice_range;
         proxy_force_ranges    on;
       }
+
+    # b/281868022: A location dedicated for AU tests.
+    location ~ ^/swarming/(?<swarming>[^/]+)/bbid/(?<bbid>[^/]+)/(?<end>.*)$ {
+        set $http_x_swarming_task_id "$swarming";
+        set $http_x_bbid "$bbid";
+        rewrite .* "/$end" last;
+    }
 
     # Rewrite rules converting devserver client requests to gs_cache.
     location @gs_cache {
