@@ -237,7 +237,7 @@ def main():
   res = handshake(sock, retries=retries, cont=True)
   if not res['Success']:
     logging.error('Failed to ping client; PONG: %s', res)
-    json.dump(res)
+    json.dump(res, sys.stdout)
     return
 
   # add given context to the session
