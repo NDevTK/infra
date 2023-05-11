@@ -33,6 +33,8 @@ _FINDIT_V2_INTERCEPT_PROJECTS = []
 
 class CompletedBuildPubsubIngestor(BaseHandler):
   """Adds isolate targets to the index when pubsub notifies of completed build.
+
+  This handler is invoked at every status change of a build
   """
 
   PERMISSION_LEVEL = Permission.ANYONE  # Protected with login:admin.
@@ -65,6 +67,8 @@ class CompletedBuildPubsubIngestor(BaseHandler):
       logging.debug('Post body: %s', self.request.body)
       return
 
+    # Legacy Buildbucket Status
+    # Visit https://bit.ly/3nnra8P to understand the mapping to new status enum
     if status == 'COMPLETED':
       # Checks if the build is accessable.
       bb_build = GetV2Build(build_id)
