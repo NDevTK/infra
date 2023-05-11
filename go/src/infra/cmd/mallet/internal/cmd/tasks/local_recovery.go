@@ -178,6 +178,8 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 	if ic != nil {
 		params[scopes.ParamKeyInventoryServicePath] = e.UFSService
 	}
+	params[scopes.ParamKeySwarmingTaskID] = ""
+	params[scopes.ParamKeyBuildbucketID] = ""
 	ctx = scopes.WithParams(ctx, params)
 	ctx = setDevOptions(ctx)
 	access, err := recovery.NewLocalTLWAccess(ic, csac, []string{c.dutSSHKeyPath})
