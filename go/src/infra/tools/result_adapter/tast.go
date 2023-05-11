@@ -37,7 +37,7 @@ type TastResults struct {
 
 // Follow CrOS test platform's convention, use case to represents the single test
 // executed in a Tast run. Described in
-// https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/cmd/tast/internal/run/resultsjson
+// https://pkg.go.dev/go.chromium.org/tast/src/go.chromium.org/tast/core/internal/run/resultsjson
 //
 // Fields not used by Test Results are omitted.
 type TastCase struct {
