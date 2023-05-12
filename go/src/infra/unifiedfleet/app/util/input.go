@@ -133,6 +133,7 @@ var (
 	MemoryFilterName               string = "memory"
 	StorageFilterName              string = "storage"
 	LogicalZoneFilterName          string = "logicalzone"
+	GPNFilterName                  string = "gpn"
 	AssetType                      string = "assettype"
 )
 

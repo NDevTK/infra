@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,6 +51,7 @@ type MachineEntity struct {
 	Customer         string   `gae:"customer"`
 	SecurityLevel    string   `gae:"security_level"`
 	MibaRealm        string   `gae:"miba_realm,noindex"` // deprecated
+	GPN              string   `gae:"gpn"`
 	// ufspb.Machine cannot be directly used as it contains pointer.
 	Machine []byte `gae:",noindex"`
 }
@@ -121,6 +122,7 @@ func newMachineEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity,
 		SwarmingServer:   swarmingInstance,
 		Customer:         customer,
 		SecurityLevel:    securityLevel,
+		GPN:              p.GetChromeosMachine().GetGpn(),
 	}, nil
 }
 
@@ -435,8 +437,10 @@ func GetMachineIndexedFieldName(input string) (string, error) {
 		field = "device_type"
 	case util.PhaseFilterName:
 		field = "phase"
+	case util.GPNFilterName:
+		field = "gpn"
 	default:
-		return "", status.Errorf(codes.InvalidArgument, "Invalid field name %s - field name for machine are serialnumber/kvm/kvmport/rpm/zone/rack/platform/tag/state/model/buildtarget(target)/devicetype/phase", input)
+		return "", status.Errorf(codes.InvalidArgument, "Invalid field name %s - field name for machine are serialnumber/kvm/kvmport/rpm/zone/rack/platform/tag/state/model/buildtarget(target)/devicetype/phase/gpn", input)
 	}
 	return field, nil
 }
