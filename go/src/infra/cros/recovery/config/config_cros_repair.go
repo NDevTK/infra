@@ -20,6 +20,7 @@ func crosRepairPlan() *Plan {
 			"Set dev_boot_usb is enabled",
 			"Verify if booted from priority kernel",
 			"Verify rootfs is on fs-verity",
+			"Has repair-request for re-image USB-key",
 			"Has repair-request for re-image by USB-key",
 			"Has repair-request for re-provision",
 			"Check if last provision was good",
@@ -316,6 +317,19 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in DEV mode, with force to DEV-mode",
 			},
 		},
+		"Has repair-request for re-image USB-key": {
+			Docs: []string{
+				"Check if UPDATE_USBKEY_IMAGE repair-request is present.",
+			},
+			ExecName: "dut_has_any_repair_requests",
+			ExecExtraArgs: []string{
+				"requests:UPDATE_USBKEY_IMAGE",
+			},
+			RecoveryActions: []string{
+				"Download stable image to USB-key",
+				"Call servod to download image to USB-key",
+			},
+		},
 		"Has repair-request for re-image by USB-key": {
 			Docs: []string{
 				"Check if REIMAGE_BY_USBKEY repair-request is present.",
@@ -347,6 +361,17 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "dut_remove_repair_requests",
 			ExecExtraArgs: []string{
 				"requests:PROVISION,REIMAGE_BY_USBKEY",
+			},
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Remove UPDATE_USBKEY_IMAGE repair-request": {
+			Docs: []string{
+				"Remove UPDATE_USBKEY_IMAGE from repair-requests.",
+			},
+			ExecName: "dut_remove_repair_requests",
+			ExecExtraArgs: []string{
+				"requests:UPDATE_USBKEY_IMAGE",
 			},
 			RunControl:    RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
@@ -1647,9 +1672,18 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"servo_servod_echo_host",
 				"Is servo USB key detected",
+				"Call servod to download image to USB-key",
+				"Remove UPDATE_USBKEY_IMAGE repair-request",
+			},
+			ExecName: "sample_pass",
+		},
+		"Call servod to download image to USB-key": {
+			Docs: []string{
+				"This action calls servod to download stable version OS image to servo USB-key.",
 			},
 			ExecName:    "servo_download_image_to_usb",
 			ExecTimeout: &durationpb.Duration{Seconds: 3000},
+			RunControl:  RunControl_ALWAYS_RUN,
 		},
 		"Is servo USB key detected": {
 			Docs: []string{
@@ -1690,9 +1724,10 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"servo_servod_echo_host",
 				"Is servo USB key detected",
+				"Call servod to download image to USB-key",
+				"Remove UPDATE_USBKEY_IMAGE repair-request",
 			},
-			ExecName:               "servo_download_image_to_usb",
-			ExecTimeout:            &durationpb.Duration{Seconds: 3000},
+			ExecName:               "sample_pass",
 			AllowFailAfterRecovery: true,
 			RunControl:             RunControl_RUN_ONCE,
 		},
@@ -1706,13 +1741,11 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Setup has servo info",
-				// If servo is responsive then probably we can download image to USB drive.
-				// Present of DUT connection is not critical.
-				"servo_servod_echo_host",
 				"Is servo USB key detected",
+				"Call servod to download image to USB-key",
+				"Remove UPDATE_USBKEY_IMAGE repair-request",
 			},
-			ExecName:               "servo_download_image_to_usb",
-			ExecTimeout:            &durationpb.Duration{Seconds: 3000},
+			ExecName:               "sample_pass",
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
