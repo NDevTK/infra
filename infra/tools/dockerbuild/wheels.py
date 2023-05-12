@@ -1326,6 +1326,7 @@ SPECS.update({
         Universal('decorator', '5.0.7', pyversions=['py3']),
         Universal('decorator', '5.0.9', pyversions=['py3']),
         Universal('deprecated', '1.2.13', pyversions=['py3']),
+        Universal('deprecation', '2.1.0'),
         Universal('dill', '0.3.4', pyversions=['py3']),
         Universal('docker', '2.7.0'),
         Universal('docker', '5.0.0'),
