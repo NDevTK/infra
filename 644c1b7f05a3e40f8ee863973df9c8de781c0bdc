@@ -25,6 +25,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c7fff15e_594a33fc",
+        "filename": "go/src/infra/cros/recovery/internal/components/cache/cache_extractor.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-05-12T17:17:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3014fed1_5c30df35",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "644c1b7f05a3e40f8ee863973df9c8de781c0bdc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5c136e8b_2d0fd3f0",
@@ -62,6 +86,30 @@
       "side": 1,
       "message": "Sorry, I just noticed that there\u0027s a dependent CL. But my concern is still the same that I want to confirm how do we get the values of those IDs from the environment.",
       "parentUuid": "5c136e8b_2d0fd3f0",
+      "range": {
+        "startLine": 68,
+        "startChar": 41,
+        "endLine": 68,
+        "endChar": 62
+      },
+      "revId": "644c1b7f05a3e40f8ee863973df9c8de781c0bdc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2a89b165_1d3c7c5a",
+        "filename": "go/src/infra/cros/recovery/internal/components/cache/cache_extractor.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-05-12T17:17:14Z",
+      "side": 1,
+      "message": "we read them from task metadata http://cs/chromium_infra/go/src/infra/cros/cmd/labpack/main.go?l\u003d310",
+      "parentUuid": "e0a144b1_14648d6a",
       "range": {
         "startLine": 68,
         "startChar": 41,
