@@ -969,6 +969,72 @@ func (x *KarteConfig) GetHost() string {
 	return ""
 }
 
+// SmartSchedulingConfig controls whether the smart scheduling feature is enabled or disabled and controls its rollout.
+type SmartSchedulingConfig struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Enabled bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	// rollout permille is an amount out of 1000 that controls.
+	RolloutPermille int32 `protobuf:"varint,2,opt,name=rollout_permille,json=rolloutPermille,proto3" json:"rollout_permille,omitempty"`
+	// maximum devices controls how many devices total can use the new flow to limit the rollout.
+	MaximumDevices int32 `protobuf:"varint,3,opt,name=maximum_devices,json=maximumDevices,proto3" json:"maximum_devices,omitempty"`
+}
+
+func (x *SmartSchedulingConfig) Reset() {
+	*x = SmartSchedulingConfig{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SmartSchedulingConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SmartSchedulingConfig) ProtoMessage() {}
+
+func (x *SmartSchedulingConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SmartSchedulingConfig.ProtoReflect.Descriptor instead.
+func (*SmartSchedulingConfig) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *SmartSchedulingConfig) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+func (x *SmartSchedulingConfig) GetRolloutPermille() int32 {
+	if x != nil {
+		return x.RolloutPermille
+	}
+	return 0
+}
+
+func (x *SmartSchedulingConfig) GetMaximumDevices() int32 {
+	if x != nil {
+		return x.MaximumDevices
+	}
+	return 0
+}
+
 // A Pattern associates a regex identifier to a prod_permille and
 // latest_permille.
 type RolloutConfig_Pattern struct {
@@ -990,7 +1056,7 @@ type RolloutConfig_Pattern struct {
 func (x *RolloutConfig_Pattern) Reset() {
 	*x = RolloutConfig_Pattern{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_msgTypes[10]
+		mi := &file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1003,7 +1069,7 @@ func (x *RolloutConfig_Pattern) String() string {
 func (*RolloutConfig_Pattern) ProtoMessage() {}
 
 func (x *RolloutConfig_Pattern) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_msgTypes[10]
+	mi := &file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1276,11 +1342,19 @@ var file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_rawDes
 	0x6f, 0x73, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x68, 0x6f, 0x73, 0x74, 0x22,
 	0x21, 0x0a, 0x0b, 0x4b, 0x61, 0x72, 0x74, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x12,
 	0x0a, 0x04, 0x68, 0x6f, 0x73, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x68, 0x6f,
-	0x73, 0x74, 0x42, 0x35, 0x5a, 0x33, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65,
-	0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x73, 0x6b, 0x79, 0x6c, 0x61, 0x62,
-	0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x61,
-	0x70, 0x70, 0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x73, 0x74, 0x22, 0x85, 0x01, 0x0a, 0x15, 0x53, 0x6d, 0x61, 0x72, 0x74, 0x53, 0x63, 0x68, 0x65,
+	0x64, 0x75, 0x6c, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x18, 0x0a, 0x07,
+	0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x65,
+	0x6e, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x12, 0x29, 0x0a, 0x10, 0x72, 0x6f, 0x6c, 0x6c, 0x6f, 0x75,
+	0x74, 0x5f, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x6c, 0x6c, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05,
+	0x52, 0x0f, 0x72, 0x6f, 0x6c, 0x6c, 0x6f, 0x75, 0x74, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x6c, 0x6c,
+	0x65, 0x12, 0x27, 0x0a, 0x0f, 0x6d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x5f, 0x64, 0x65, 0x76,
+	0x69, 0x63, 0x65, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0e, 0x6d, 0x61, 0x78, 0x69,
+	0x6d, 0x75, 0x6d, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x73, 0x42, 0x35, 0x5a, 0x33, 0x69, 0x6e,
+	0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x63, 0x72,
+	0x6f, 0x73, 0x73, 0x6b, 0x79, 0x6c, 0x61, 0x62, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2f, 0x69, 0x6e,
+	0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x61, 0x70, 0x70, 0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69,
+	0x67, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1295,7 +1369,7 @@ func file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_rawDe
 	return file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_rawDescData
 }
 
-var file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_goTypes = []interface{}{
 	(*Config)(nil),                // 0: crosskylabadmin.config.Config
 	(*Swarming)(nil),              // 1: crosskylabadmin.config.Swarming
@@ -1307,8 +1381,9 @@ var file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_goType
 	(*RolloutConfig)(nil),         // 7: crosskylabadmin.config.RolloutConfig
 	(*UFSConfig)(nil),             // 8: crosskylabadmin.config.UFSConfig
 	(*KarteConfig)(nil),           // 9: crosskylabadmin.config.KarteConfig
-	(*RolloutConfig_Pattern)(nil), // 10: crosskylabadmin.config.RolloutConfig.Pattern
-	(*durationpb.Duration)(nil),   // 11: google.protobuf.Duration
+	(*SmartSchedulingConfig)(nil), // 10: crosskylabadmin.config.SmartSchedulingConfig
+	(*RolloutConfig_Pattern)(nil), // 11: crosskylabadmin.config.RolloutConfig.Pattern
+	(*durationpb.Duration)(nil),   // 12: google.protobuf.Duration
 }
 var file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_depIdxs = []int32{
 	1,  // 0: crosskylabadmin.config.Config.swarming:type_name -> crosskylabadmin.config.Swarming
@@ -1319,8 +1394,8 @@ var file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_depIdx
 	6,  // 5: crosskylabadmin.config.Config.paris:type_name -> crosskylabadmin.config.Paris
 	8,  // 6: crosskylabadmin.config.Config.UFS:type_name -> crosskylabadmin.config.UFSConfig
 	9,  // 7: crosskylabadmin.config.Config.karte:type_name -> crosskylabadmin.config.KarteConfig
-	11, // 8: crosskylabadmin.config.Cron.repair_idle_duration:type_name -> google.protobuf.Duration
-	11, // 9: crosskylabadmin.config.Cron.repair_attempt_delay_duration:type_name -> google.protobuf.Duration
+	12, // 8: crosskylabadmin.config.Cron.repair_idle_duration:type_name -> google.protobuf.Duration
+	12, // 9: crosskylabadmin.config.Cron.repair_attempt_delay_duration:type_name -> google.protobuf.Duration
 	7,  // 10: crosskylabadmin.config.Paris.dut_repair:type_name -> crosskylabadmin.config.RolloutConfig
 	7,  // 11: crosskylabadmin.config.Paris.dut_repair_on_repair_failed:type_name -> crosskylabadmin.config.RolloutConfig
 	7,  // 12: crosskylabadmin.config.Paris.dut_repair_on_needs_manual_repair:type_name -> crosskylabadmin.config.RolloutConfig
@@ -1329,7 +1404,7 @@ var file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_depIdx
 	7,  // 15: crosskylabadmin.config.Paris.audit_usb:type_name -> crosskylabadmin.config.RolloutConfig
 	7,  // 16: crosskylabadmin.config.Paris.dut_verify:type_name -> crosskylabadmin.config.RolloutConfig
 	7,  // 17: crosskylabadmin.config.Paris.labstation_repair:type_name -> crosskylabadmin.config.RolloutConfig
-	10, // 18: crosskylabadmin.config.RolloutConfig.pattern:type_name -> crosskylabadmin.config.RolloutConfig.Pattern
+	11, // 18: crosskylabadmin.config.RolloutConfig.pattern:type_name -> crosskylabadmin.config.RolloutConfig.Pattern
 	19, // [19:19] is the sub-list for method output_type
 	19, // [19:19] is the sub-list for method input_type
 	19, // [19:19] is the sub-list for extension type_name
@@ -1464,6 +1539,18 @@ func file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_init(
 			}
 		}
 		file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SmartSchedulingConfig); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*RolloutConfig_Pattern); i {
 			case 0:
 				return &v.state
@@ -1482,7 +1569,7 @@ func file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_init(
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_infra_appengine_crosskylabadmin_internal_app_config_config_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

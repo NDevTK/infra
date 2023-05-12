@@ -279,3 +279,14 @@ message KarteConfig {
   //  - chrome-fleet-karte-dev.appspot.com
   string host = 1;
 }
+
+// SmartSchedulingConfig controls whether the smart scheduling feature is enabled or disabled and controls its rollout.
+message SmartSchedulingConfig {
+  bool enabled = 1;
+
+  // rollout permille is an amount out of 1000 that controls.
+  int32 rollout_permille = 2;
+
+  // maximum devices controls how many devices total can use the new flow to limit the rollout.
+  int32 maximum_devices = 3;
+}
