@@ -313,7 +313,7 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"Quick provision OS",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive",
+				"Install OS in DEV mode, with force to DEV-mode",
 			},
 		},
 		"Has repair-request for re-image by USB-key": {
@@ -326,7 +326,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			RecoveryActions: []string{
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive",
+				"Install OS in DEV mode, with force to DEV-mode",
 			},
 		},
 		"Remove PROVISION repair-request": {
@@ -2155,6 +2155,19 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Install OS in DEV mode, with force to DEV-mode": {
+			Docs: []string{
+				"Install OS on the device from USB-key when device is in DEV-mode.",
+			},
+			Conditions: []string{
+				"Is servod running",
+			},
+			Dependencies: []string{
+				"Set GBB flags to 0x18 by servo",
+				"Install OS in DEV mode by USB-drive",
+			},
+			ExecName: "sample_pass",
 		},
 		"Cold reset DUT by servo and wait to boot": {
 			Docs: []string{

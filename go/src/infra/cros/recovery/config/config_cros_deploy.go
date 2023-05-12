@@ -280,19 +280,6 @@ func deployActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
-		"Install OS in DEV mode, with force to DEV-mode": {
-			Docs: []string{
-				"Install OS on the device from USB-key when device is in DEV-mode.",
-			},
-			Conditions: []string{
-				"Is servod running",
-			},
-			Dependencies: []string{
-				"Set GBB flags to 0x18 by servo",
-				"Install OS in DEV mode by USB-drive",
-			},
-			ExecName: "sample_pass",
-		},
 		"Install OS in DEV mode, with force to DEV-mode with test firmware": {
 			Docs: []string{
 				"Second attempt to install image in DEV mode",
