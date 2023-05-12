@@ -1751,7 +1751,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Reset GBB flags by host",
-				"cros_switch_to_secure_mode",
+				"Disables booting into DEV-mode",
 				"Simple reboot",
 				"Wait to be pingable (normal boot)",
 				"Wait to be SSHable (normal boot)",
@@ -1766,15 +1766,18 @@ func crosRepairActions() map[string]*Action {
 				"Disable software-controlled write-protect for 'host'",
 				"Disable software-controlled write-protect for 'ec'",
 			},
-			ExecName:               "cros_set_gbb_flags",
-			ExecTimeout:            &durationpb.Duration{Seconds: 3600},
+			ExecName: "cros_set_gbb_flags",
+			ExecExtraArgs: []string{
+				"gbb_flags:0x0",
+			},
+			ExecTimeout:            &durationpb.Duration{Seconds: 180},
 			AllowFailAfterRecovery: true,
 		},
-		"cros_switch_to_secure_mode": {
+		"Disables booting into DEV-mode": {
 			Docs: []string{
 				"This action disables booting into dev-mode.",
 			},
-			ExecTimeout:            &durationpb.Duration{Seconds: 3600},
+			ExecName:               "cros_switch_to_secure_mode",
 			AllowFailAfterRecovery: true,
 		},
 		"Is not Flex device": {
@@ -2572,6 +2575,7 @@ func crosRepairActions() map[string]*Action {
 				"halt_timeout:120",
 				"custom_command_allowed_to_fail:true",
 				"custom_command_timeout:60",
+				// TODO(b/280635852): Remove when stable versions upgraded.
 				"custom_commands:/usr/share/vboot/bin/set_gbb_flags.sh 0 ## chromeos-firmwareupdate --mode=recovery",
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 1000},

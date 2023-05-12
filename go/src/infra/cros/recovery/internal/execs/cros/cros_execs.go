@@ -381,11 +381,21 @@ func isToolPresentExec(ctx context.Context, info *execs.ExecInfo) error {
 // crosSetGbbFlagsExec sets the GBB flags on the DUT.
 func crosSetGbbFlagsExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.NewRunner(info.GetDut().Name)
-	if _, err := run(ctx, info.GetExecTimeout(), "/usr/share/vboot/bin/set_gbb_flags.sh 0"); err != nil {
-		log.Debugf(ctx, "Cros Set Gbb Flags: %s", err)
-		return errors.Annotate(err, "cros set gbb flags").Err()
+	actionArgs := info.GetActionArgs(ctx)
+	// The expected value in hex format. (eg. 0x18)
+	gbbHex := actionArgs.AsString(ctx, "gbb_flags", "0x0")
+	checkTimeout := 15 * time.Second
+	runTimeout := info.GetExecTimeout() - checkTimeout
+	// New CMD supported from R111-15306.0.0 of ChromeOS.
+	const readGbbCmd = "/usr/bin/futility gbb --set --flash --flags %s"
+	var err error
+	if _, err = run(ctx, checkTimeout, fmt.Sprintf("test -f %s", legacyGBBSetFilename)); err == nil {
+		// TODO(b/280635852): Remove when stable versions upgraded.
+		_, err = run(ctx, runTimeout, legacyGBBReadFilename)
+	} else {
+		_, err = run(ctx, runTimeout, fmt.Sprintf(readGbbCmd, gbbHex))
 	}
-	return nil
+	return errors.Annotate(err, "cros set GBB flags").Err()
 }
 
 // crosSwitchToSecureModeExec disables booting into dev-mode on the DUT.

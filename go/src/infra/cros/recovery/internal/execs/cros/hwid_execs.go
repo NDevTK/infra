@@ -60,8 +60,11 @@ func matchHWIDToInvExec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 // TODO(b/280635852): Remove when stable versions upgraded.
-// Special script to read and update GBB removed in favore of futility.
-const legacyGBBReadFilename = "/usr/share/vboot/bin/get_gbb_flags.sh"
+// Special script to read and set GBB removed in favore of futility.
+const (
+	legacyGBBReadFilename = "/usr/share/vboot/bin/get_gbb_flags.sh"
+	legacyGBBSetFilename  = "/usr/share/vboot/bin/set_gbb_flags.sh"
+)
 
 // updateHWIDFromInvExec updates HWID from inventory to host.
 //
