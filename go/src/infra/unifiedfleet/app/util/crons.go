@@ -18,4 +18,5 @@ var CronJobNames = map[string]string{
 	"botConfigSyncCron":          "ufs.sync_bot_config.sync",
 	"deviceConfigSyncCron":       "ufs.device_config.sync",
 	"indexAssets":                "ufs.indexer.asset",
+	"indexMachines":              "ufs.indexer.machine",
 }
