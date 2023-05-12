@@ -26,6 +26,7 @@ import (
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger"
 	"infra/cros/recovery/logger/metrics"
+	"infra/cros/recovery/scopes"
 	"infra/cros/recovery/tlw"
 	"infra/libs/skylab/buildbucket"
 )
@@ -137,6 +138,8 @@ func runResource(ctx context.Context, resource string, runMetric *metrics.Action
 	if err != nil {
 		return errors.Annotate(err, "run resource %q", args.UnitName).Err()
 	}
+	// Create common scope each configuration as shared map.
+	ctx = scopes.WithConfigScope(ctx)
 	// In any case update inventory to update data back, even execution failed.
 	var errs []error
 	if err := runDUTPlans(ctx, dut, config, args); err != nil {
