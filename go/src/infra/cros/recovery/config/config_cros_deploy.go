@@ -42,19 +42,6 @@ func deployActions() map[string]*Action {
 	}
 
 	return map[string]*Action{
-		"DUT is in dev-mode and allowed to boot from USB-key": {
-			Docs:        []string{"Verify that device is set to boot in DEV mode and enabled to boot from USB-drive."},
-			ExecTimeout: &durationpb.Duration{Seconds: 2000},
-			ExecName:    "cros_read_gbb_by_servo",
-			ExecExtraArgs: []string{
-				"validate_in_dev_mode:true",
-				"validate_usb_boot_enabled:true",
-				"remove_file:false",
-			},
-			RecoveryActions: []string{
-				"Switch DUT to dev mode by servo",
-			},
-		},
 		"Device is pingable before deploy": {
 			Docs: []string{
 				"Verify that device is present in setup.",

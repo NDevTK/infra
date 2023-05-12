@@ -1948,18 +1948,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 2400},
 		},
-		"Switch DUT to dev mode by servo": {
-			Docs: []string{
-				"Force to set GBB flags to 0x18 to boot in DEV mode and enable to boot from USB-drive.",
-				"Reboot and wait for device to be back.",
-			},
-			Dependencies: []string{
-				"Set GBB flags to 0x18 by servo",
-				"Wait to be pingable (normal boot)",
-			},
-			ExecName:   "sample_pass",
-			RunControl: RunControl_ALWAYS_RUN,
-		},
 		"Set GBB flags to 0x18 by servo": {
 			Docs: []string{
 				"Force to set GBB flags to 0x18 to boot in DEV mode and enable to boot from USB-drive.",
