@@ -25,8 +25,8 @@ require (
 	github.com/VividCortex/godaemon v1.0.0
 	github.com/aclements/go-moremath v0.0.0-20210112150236-f10218a38794
 	github.com/andygrunwald/go-gerrit v0.0.0-20210726065827-cc4e14e40b5b
-	github.com/bazelbuild/remote-apis v0.0.0-20220510175640-3b4b64021035
-	github.com/bazelbuild/remote-apis-sdks v0.0.0-20230303145537-3a73c5ed0419
+	github.com/bazelbuild/remote-apis v0.0.0-20230411132548-35aee1c4a425
+	github.com/bazelbuild/remote-apis-sdks v0.0.0-20230511173731-022d76cc3978
 	github.com/bmatcuk/doublestar v1.3.4
 	github.com/containerd/cgroups v1.0.4
 	github.com/danjacques/gofslock v0.0.0-20220131014315-6e321f4509c8
