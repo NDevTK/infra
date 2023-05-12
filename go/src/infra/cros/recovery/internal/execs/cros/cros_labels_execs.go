@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,20 +17,40 @@ import (
 
 const (
 	// moSysSkuCmd will retrieve the SKU label of the DUT.
-	moSysSkuCmd = "mosys platform sku"
+	moSysSkuCmd  = "mosys platform sku"
+	crosIdSkuCmd = "crosid -f SKU"
 )
 
 // updateDeviceSKUExec updates device's SKU label if not present in inventory
 // or keep it the same if the info.GetDut() already has the value for SKU label.
 func updateDeviceSKUExec(ctx context.Context, info *execs.ExecInfo) error {
-	r := info.DefaultRunner()
-	skuLabelOutput, err := r(ctx, time.Minute, moSysSkuCmd)
-	if err != nil {
-		log.Debugf(ctx, "Device sku label not found in the DUT.")
-		return errors.Annotate(err, "update device sku label").Err()
+	// If sku is present, skip
+	if info.GetChromeos().DeviceSku != "" {
+		log.Debugf(ctx, "Device sku already present. Skipping update.")
+		return nil
 	}
-	info.GetChromeos().DeviceSku = skuLabelOutput
-	return nil
+
+	r := info.DefaultRunner()
+	// Try crosid
+	skuLabelOutput, err := r(ctx, time.Minute, crosIdSkuCmd)
+	if err == nil {
+		log.Debugf(ctx, "Device sku found with crosid.")
+		info.GetChromeos().DeviceSku = skuLabelOutput
+		return nil
+	}
+	log.Debugf(ctx, "Error when reading device sku with crosid: %s", err)
+
+	// Else, try mosys
+	skuLabelOutput, err = r(ctx, time.Minute, moSysSkuCmd)
+	if err == nil {
+		log.Debugf(ctx, "Device sku found with mosys.")
+		info.GetChromeos().DeviceSku = skuLabelOutput
+		return nil
+	}
+	log.Debugf(ctx, "Error when reading device sku with mosys: %s", err)
+
+	log.Debugf(ctx, "Device sku label not found in the DUT.")
+	return errors.Annotate(err, "update device sku label").Err()
 }
 
 // isAudioLoopBackStateWorkingExec checks if the DUT's audio loop back state has already been in the working state.
