@@ -1,0 +1,51 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3014fed1_5c30df35",
+        "filename": "go/src/infra/cros/recovery/internal/components/cache/cache_extractor.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2023-05-12T17:03:30Z",
+      "side": 1,
+      "message": "\u003e Incorrect copyright statement.\n\u003e Use the following for BSD:\n\u003e Copyright \u003cyear\u003e The \u003cgroup\u003e Authors. All rights reserved.\n\u003e Use of this source code is governed by a BSD-style license that can be\n\u003e found in the LICENSE file.\n\u003e \n\u003e See: https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md#file-headers\n\u003e \n\u003e Or the following for MIT: Copyright \u003cyear\u003e The \u003cgroup\u003e Authors\n\u003e \n\u003e Use of this source code is governed by a MIT-style\n\u003e license that can be found in the LICENSE file or at\n\u003e https://opensource.org/licenses/MIT.\n\nPlease fix.",
+      "parentUuid": "f76eb567_85e289b7",
+      "range": {
+        "startLine": 1,
+        "startChar": 0,
+        "endLine": 1,
+        "endChar": 1
+      },
+      "revId": "644c1b7f05a3e40f8ee863973df9c8de781c0bdc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5c136e8b_2d0fd3f0",
+        "filename": "go/src/infra/cros/recovery/internal/components/cache/cache_extractor.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1258805
+      },
+      "writtenOn": "2023-05-12T17:03:30Z",
+      "side": 1,
+      "message": "Where can I find the definition of this field?\n\nAlso, I\u0027d like to highlight that, if the code is called by phosphorus directly, there may be no env vars named BUILD_BUCKET_ID or similar. The only env vars to get BBID is `LOGDOG_STREAM_PREFIX`. I am not sure if this is a case.",
+      "range": {
+        "startLine": 68,
+        "startChar": 41,
+        "endLine": 68,
+        "endChar": 62
+      },
+      "revId": "644c1b7f05a3e40f8ee863973df9c8de781c0bdc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
