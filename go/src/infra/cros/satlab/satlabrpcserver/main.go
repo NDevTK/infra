@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
+	"infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
 	pb "infra/cros/satlab/satlabrpcserver/proto"
 	"infra/cros/satlab/satlabrpcserver/services/bucket_services"
 	"infra/cros/satlab/satlabrpcserver/services/build_services"
@@ -19,6 +20,7 @@ import (
 	"infra/cros/satlab/satlabrpcserver/services/rpc_services"
 	"infra/cros/satlab/satlabrpcserver/utils"
 	"infra/cros/satlab/satlabrpcserver/utils/constants"
+	m "infra/cros/satlab/satlabrpcserver/utils/monitor"
 )
 
 const (
@@ -55,8 +57,17 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to create a DUT service")
 	}
+	cpuTemperature, err := cpu_temperature.NewCPUTemperature()
+	if err != nil {
+		log.Fatalf("Can't create a cpu temperature, got an error: %v", err)
+	}
+	cpuTemperatureOrchestrator := cpu_temperature.NewOrchestrator(cpuTemperature, 30)
+	monitor := m.New()
+	monitor.Register(cpuTemperatureOrchestrator, time.Minute)
+	defer monitor.Stop()
 
-	server := rpc_services.New(buildService, bucketService, dutService, labelParser)
+	server := rpc_services.New(buildService, bucketService, dutService, labelParser, cpuTemperatureOrchestrator)
+	defer server.Close()
 	pb.RegisterSatlabRpcServiceServer(s, server)
 
 	// Register reflection service on gRPC server.
@@ -67,6 +78,4 @@ func main() {
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to server: %v", err)
 	}
-
-	defer server.Close()
 }

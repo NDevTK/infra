@@ -11,6 +11,8 @@ import (
 	"strconv"
 
 	"github.com/hashicorp/go-version"
+
+	"infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
 	pb "infra/cros/satlab/satlabrpcserver/proto"
 	"infra/cros/satlab/satlabrpcserver/services/bucket_services"
 	"infra/cros/satlab/satlabrpcserver/services/build_services"
@@ -30,6 +32,8 @@ type SatlabRpcServiceServer struct {
 	dutService dut_services.IDUTServices
 	// labelParser the parser for parsing label
 	labelParser *utils.LabelParser
+	// cpuTemperatureOrchestrator the CPU temperature orchestrator
+	cpuTemperatureOrchestrator *cpu_temperature.CPUTemperatureOrchestrator
 }
 
 func New(
@@ -37,12 +41,14 @@ func New(
 	bucketService bucket_services.IBucketServices,
 	dutService dut_services.IDUTServices,
 	labelParser *utils.LabelParser,
+	cpuTemperatureOrchestrator *cpu_temperature.CPUTemperatureOrchestrator,
 ) *SatlabRpcServiceServer {
 	return &SatlabRpcServiceServer{
-		bucketService: bucketService,
-		buildService:  buildService,
-		dutService:    dutService,
-		labelParser:   labelParser,
+		bucketService:              bucketService,
+		buildService:               buildService,
+		dutService:                 dutService,
+		labelParser:                labelParser,
+		cpuTemperatureOrchestrator: cpuTemperatureOrchestrator,
 	}
 }
 
@@ -272,6 +278,15 @@ func (s *SatlabRpcServiceServer) ListConnectedDutsFirmware(ctx context.Context, 
 	}
 
 	return &pb.ListConnectedDutsFirmwareResponse{Duts: DUTsResponse}, nil
+}
+
+// GetSystemInfo get the system information
+func (s *SatlabRpcServiceServer) GetSystemInfo(_ context.Context, _ *pb.GetSystemInfoRequest) (*pb.GetSystemInfoResponse, error) {
+	averageTemperature := s.cpuTemperatureOrchestrator.GetAverageCPUTemperature()
+
+	return &pb.GetSystemInfoResponse{
+		CpuTemperature: averageTemperature,
+	}, nil
 }
 
 // Close clean up
