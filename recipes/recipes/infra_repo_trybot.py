@@ -144,7 +144,7 @@ def RunSteps(api, go_version_variant, run_lint):
           ['vpython3', co.path.join(patch_root, 'build', 'build.py')])
       api.step(
           'cipd - test packages integrity',
-          ['vpython',
+          ['vpython3',
            co.path.join(patch_root, 'build', 'test_packages.py')])
       if api.platform.is_win:
         with api.context(env={'GOOS': 'windows', 'GOARCH': 'arm64'}):
