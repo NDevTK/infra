@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@ import (
 const (
 	ParamKeyStableVersionServicePath = "stable_version_service_path"
 	ParamKeyInventoryServicePath     = "inventory_service_path"
+	ParamKeySwarmingTaskID           = "swarming_task_id"
+	ParamKeyBuildbucketID            = "buildbucket_id"
 )
 
 // ParamsMap is a special type to describe mapping of params of context

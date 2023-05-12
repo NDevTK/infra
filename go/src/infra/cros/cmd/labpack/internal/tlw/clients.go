@@ -52,6 +52,8 @@ func NewAccess(ctx context.Context, in *lab.LabpackInput) (context.Context, tlw.
 	if ic != nil {
 		params[scopes.ParamKeyInventoryServicePath] = in.InventoryService
 	}
+	params[scopes.ParamKeySwarmingTaskID] = in.SwarmingTaskId
+	params[scopes.ParamKeyBuildbucketID] = in.Bbid
 	ctx = scopes.WithParams(ctx, params)
 	// TODO(otabek@): Replace with access to F20 services.
 	access, err := recovery.NewLocalTLWAccess(ic, csac, []string{defaultPartnerKeyPathInDrone})
