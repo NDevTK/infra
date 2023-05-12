@@ -186,7 +186,8 @@ class FieldDetail(servlet.Servlet):
 
       if parsed.approvers_str:
         approver_ids_dict = self.services.user.LookupUserIDs(
-            mr.cnxn, re.split('[,;\s]+', parsed.approvers_str),
+            mr.cnxn,
+            re.split(r'[,;\s]+', parsed.approvers_str),
             autocreate=True)
         approver_ids = list(set(approver_ids_dict.values()))
       else:

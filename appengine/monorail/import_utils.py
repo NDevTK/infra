@@ -15,6 +15,7 @@ def FixImports():
   _FixProtorpcPackage()
   _FixDefaultApiStub()
   _ImportProtocolBuffer()
+  _FixMox3()
 
 
 def _AddThirdPartyToPath():
@@ -68,5 +69,61 @@ def _ImportProtocolBuffer():
   google.__path__.append(package_path)
 
 
+def _FixMox3():
+  """Fixes a Python 3 warning with the mox3 library.
+
+  mox3 uses `inspect.getargspec()`, which is deprecated since Python 3.0.
+  This throws a warning when running unit tests. Update the method to use
+  `inspect.getfullargspec()` instead.
+  """
+  from mox3 import mox
+  mox.MethodSignatureChecker.__init__ = _MethodSignatureChecker
+
+
 def _ThirdPartyDir():
   return os.path.join(os.path.dirname(__file__), 'third_party')
+
+
+def _MethodSignatureChecker(self, method, class_to_bind=None):
+  """Creates a checker.
+
+  Args:
+      # method: A method to check.
+      # class_to_bind: optionally, a class used to type check first
+      #                method parameter, only used with unbound methods
+      method: function
+      class_to_bind: type or None
+
+  Raises:
+      ValueError: method could not be inspected, so checks aren't
+                  possible. Some methods and functions like built-ins
+                  can't be inspected.
+  """
+  import inspect
+  try:
+    self._args, varargs, varkw, defaults, _, _, _ = inspect.getfullargspec(
+        method)
+  except TypeError:
+    raise ValueError('Could not get argument specification for %r' % (method,))
+  if (inspect.ismethod(method) or class_to_bind or
+      (hasattr(self, '_args') and len(self._args) > 0 and
+       self._args[0] == 'self')):
+    self._args = self._args[1:]  # Skip 'self'.
+  self._method = method
+  self._instance = None  # May contain the instance this is bound to.
+  self._instance = getattr(method, "__self__", None)
+
+  # _bounded_to determines whether the method is bound or not
+  if self._instance:
+    self._bounded_to = self._instance.__class__
+  else:
+    self._bounded_to = class_to_bind or getattr(method, "im_class", None)
+
+  self._has_varargs = varargs is not None
+  self._has_varkw = varkw is not None
+  if defaults is None:
+    self._required_args = self._args
+    self._default_args = []
+  else:
+    self._required_args = self._args[:-len(defaults)]
+    self._default_args = self._args[-len(defaults):]

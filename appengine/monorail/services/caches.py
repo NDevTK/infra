@@ -53,7 +53,7 @@ class RamCache(object):
   def CacheAll(self, new_item_dict):
     """Cache all items in the given dict, dropping old items if needed."""
     if len(new_item_dict) >= self.max_size:
-      logging.warn('Dumping the entire cache! %s', self.kind)
+      logging.warning('Dumping the entire cache! %s', self.kind)
       self.cache = {}
     else:
       while len(self.cache) + len(new_item_dict) > self.max_size:

@@ -945,16 +945,19 @@ WHERE_COND_RE_LIST = [
     _MakeRE(r'^LOWER\({tab_col}\) NOT IN \({multi_placeholder}\)$'),
     _MakeRE(r'^LOWER\({tab_col}\) LIKE {placeholder}$'),
     _MakeRE(r'^LOWER\({tab_col}\) NOT LIKE {placeholder}$'),
-    _MakeRE(r'^timestep < \(SELECT MAX\(j.timestep\) FROM Invalidate AS j '
-            r'WHERE j.kind = %s '
-            r'AND j.cache_key = Invalidate.cache_key\)$'),
-    _MakeRE(r'^\({tab_col} IS NULL OR {tab_col} {compare_op} {placeholder}\) '
-             'AND \({tab_col} IS NULL OR {tab_col} {compare_op} {placeholder}'
-             '\)$'),
-    _MakeRE(r'^\({tab_col} IS NOT NULL AND {tab_col} {compare_op} '
-             '{placeholder}\) OR \({tab_col} IS NOT NULL AND {tab_col} '
-             '{compare_op} {placeholder}\)$'),
-    ]
+    _MakeRE(
+        r'^timestep < \(SELECT MAX\(j.timestep\) FROM Invalidate AS j '
+        r'WHERE j.kind = %s '
+        r'AND j.cache_key = Invalidate.cache_key\)$'),
+    _MakeRE(
+        r'^\({tab_col} IS NULL OR {tab_col} {compare_op} {placeholder}\) '
+        r'AND \({tab_col} IS NULL OR {tab_col} {compare_op} {placeholder}'
+        r'\)$'),
+    _MakeRE(
+        r'^\({tab_col} IS NOT NULL AND {tab_col} {compare_op} '
+        r'{placeholder}\) OR \({tab_col} IS NOT NULL AND {tab_col} '
+        r'{compare_op} {placeholder}\)$'),
+]
 
 # Note: We never use ';' for multiple statements, '@' for SQL variables, or
 # any quoted strings in stmt_str (quotes are put in my MySQLdb for args).

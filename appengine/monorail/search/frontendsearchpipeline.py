@@ -1119,7 +1119,7 @@ def _HandleBackendNonviewableResponse(
       logging.exception(e)
 
     if not remaining_retries:
-      logging.warn('Used all retries, so give up on shard %r', shard_id)
+      logging.warning('Used all retries, so give up on shard %r', shard_id)
       return
 
     if duration_sec >= settings.backend_deadline:

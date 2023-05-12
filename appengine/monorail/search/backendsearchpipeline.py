@@ -202,9 +202,9 @@ def SearchProjectCan(
 
   issue_ids, db_capped = services.issue.RunIssueQuery(
       cnxn, left_joins + sort_left_joins, where, order_by, shard_id=shard_id)
-  logging.warn('executed "%s" query %r for %d issues in %dms',
-               query_desc, query_ast, len(issue_ids),
-               int((time.time() - start_time) * 1000))
+  logging.warning(
+      'executed "%s" query %r for %d issues in %dms', query_desc, query_ast,
+      len(issue_ids), int((time.time() - start_time) * 1000))
   capped = fts_capped or db_capped
   return issue_ids, capped, None
 
@@ -279,7 +279,7 @@ def _GetQueryResultIIDs(
       query_desc='getting query issue IDs')
   logging.info('Found %d result_iids', len(result_iids))
   if error:
-    logging.warn('Got error %r', error)
+    logging.warning('Got error %r', error)
 
   projects_str = ','.join(str(pid) for pid in sorted(query_project_ids))
   projects_str = projects_str or 'all'

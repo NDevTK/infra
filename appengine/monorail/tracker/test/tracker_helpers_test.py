@@ -1654,26 +1654,26 @@ class CreateIssueHelpersTest(unittest.TestCase):
   def testAssertValidIssueForCreate_ValidatesOwner(self):
     input_issue = tracker_pb2.Issue(
         summary='sum', status='New', owner_id=222, project_id=789)
-    with self.assertRaisesRegexp(exceptions.InputException,
-                                 'Issue owner must be a project member'):
+    with self.assertRaisesRegex(exceptions.InputException,
+                                'Issue owner must be a project member'):
       tracker_helpers.AssertValidIssueForCreate(
           self.cnxn, self.services, input_issue, 'nonempty description')
     input_issue.owner_id = 333
-    with self.assertRaisesRegexp(exceptions.InputException,
-                                 'Issue owner user ID not found'):
+    with self.assertRaisesRegex(exceptions.InputException,
+                                'Issue owner user ID not found'):
       tracker_helpers.AssertValidIssueForCreate(
           self.cnxn, self.services, input_issue, 'nonempty description')
     input_issue.owner_id = 999
-    with self.assertRaisesRegexp(exceptions.InputException,
-                                 'Issue owner cannot be a user group'):
+    with self.assertRaisesRegex(exceptions.InputException,
+                                'Issue owner cannot be a user group'):
       tracker_helpers.AssertValidIssueForCreate(
           self.cnxn, self.services, input_issue, 'nonempty description')
 
   def testAssertValidIssueForCreate_ValidatesSummary(self):
     input_issue = tracker_pb2.Issue(
         summary='', status='New', owner_id=111, project_id=789)
-    with self.assertRaisesRegexp(exceptions.InputException,
-                                 'Summary is required'):
+    with self.assertRaisesRegex(exceptions.InputException,
+                                'Summary is required'):
       tracker_helpers.AssertValidIssueForCreate(
           self.cnxn, self.services, input_issue, 'nonempty description')
       input_issue.summary = '   '
@@ -1683,8 +1683,8 @@ class CreateIssueHelpersTest(unittest.TestCase):
   def testAssertValidIssueForCreate_ValidatesDescription(self):
     input_issue = tracker_pb2.Issue(
         summary='sum', status='New', owner_id=111, project_id=789)
-    with self.assertRaisesRegexp(exceptions.InputException,
-                                 'Description is required'):
+    with self.assertRaisesRegex(exceptions.InputException,
+                                'Description is required'):
       tracker_helpers.AssertValidIssueForCreate(
           self.cnxn, self.services, input_issue, '')
       tracker_helpers.AssertValidIssueForCreate(
@@ -1711,8 +1711,8 @@ class CreateIssueHelpersTest(unittest.TestCase):
       return None
 
     self.services.config.LookupStatusID = mock_status_lookup
-    with self.assertRaisesRegexp(exceptions.InputException,
-                                 'Undefined status: DNE_status'):
+    with self.assertRaisesRegex(exceptions.InputException,
+                                'Undefined status: DNE_status'):
       tracker_helpers.AssertValidIssueForCreate(
           self.cnxn, self.services, input_issue, 'nonempty description')
 
@@ -1724,9 +1724,8 @@ class CreateIssueHelpersTest(unittest.TestCase):
         owner_id=111,
         project_id=789,
         component_ids=[3])
-    with self.assertRaisesRegexp(
-        exceptions.InputException,
-        'Undefined or deprecated component with id: 3'):
+    with self.assertRaisesRegex(exceptions.InputException,
+                                'Undefined or deprecated component with id: 3'):
       tracker_helpers.AssertValidIssueForCreate(
           self.cnxn, self.services, input_issue, 'nonempty description')
 
@@ -1737,9 +1736,8 @@ class CreateIssueHelpersTest(unittest.TestCase):
         owner_id=111,
         project_id=789,
         component_ids=[self.component_def_2.component_id])
-    with self.assertRaisesRegexp(
-        exceptions.InputException,
-        'Undefined or deprecated component with id: 2'):
+    with self.assertRaisesRegex(exceptions.InputException,
+                                'Undefined or deprecated component with id: 2'):
       tracker_helpers.AssertValidIssueForCreate(
           self.cnxn, self.services, input_issue, 'nonempty description')
 
@@ -1761,8 +1759,8 @@ class CreateIssueHelpersTest(unittest.TestCase):
                 user_fd.field_id, None, None, 124, None, None, False)
         ])
     copied_issue = copy.deepcopy(input_issue)
-    with self.assertRaisesRegexp(exceptions.InputException,
-                                 r'users/123: .+\nusers/124: .+'):
+    with self.assertRaisesRegex(exceptions.InputException,
+                                r'users/123: .+\nusers/124: .+'):
       tracker_helpers.AssertValidIssueForCreate(
           self.cnxn, self.services, input_issue, 'nonempty description')
     self.assertEqual(input_issue, copied_issue)
@@ -2156,8 +2154,8 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
         'snake', b'ooooo\n', 'text/plain')
     attachment_uploads = [upload_1, upload_2]
 
-    with self.assertRaisesRegexp(exceptions.OverAttachmentQuota,
-                                 r'.+ project Patroclus\n.+ project Circe'):
+    with self.assertRaisesRegex(exceptions.OverAttachmentQuota,
+                                r'.+ project Patroclus\n.+ project Circe'):
       tracker_helpers._EnforceAttachmentQuotaLimits(
           self.cnxn, issue_delta_pairs, self.services, attachment_uploads)
 
@@ -2356,8 +2354,8 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
         '%s: MERGED type statuses must accompany mergedInto values.' %
         issue_3_ref)
 
-    with self.assertRaisesRegexp(exceptions.InputException,
-                                 '\n'.join(expected_err_msgs)):
+    with self.assertRaisesRegex(exceptions.InputException,
+                                '\n'.join(expected_err_msgs)):
       tracker_helpers._AssertIssueChangesValid(
           self.cnxn, issue_delta_pairs, self.services, comment_content=comment)
 
@@ -2423,8 +2421,8 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
         (issue_7, delta_7),
     ]
 
-    with self.assertRaisesRegexp(exceptions.InputException,
-                                 '\n'.join(expected_err_msgs)):
+    with self.assertRaisesRegex(exceptions.InputException,
+                                '\n'.join(expected_err_msgs)):
       tracker_helpers._AssertIssueChangesValid(
           self.cnxn, issue_delta_pairs, self.services)
 
@@ -2800,7 +2798,7 @@ class AssertUsersExistTest(unittest.TestCase):
     dne_users = [2, 3]
     existing = [1, 1001, 1002, 1003, 2001, 2002, 3002]
     all_users = existing + dne_users
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         exceptions.InputException,
         'users/2: User does not exist.\nusers/3: User does not exist.'):
       with exceptions.ErrorAggregator(exceptions.InputException) as err_agg:

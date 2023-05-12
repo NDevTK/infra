@@ -2657,8 +2657,9 @@ class FeaturesService(object):
         hotlist = self.test_hotlists.get((name, owner_id))
         if hotlist:
           if not hotlist.owner_ids:  # Should never happen.
-            logging.warn('Unowned Hotlist: id:%r, name:%r',
-                         hotlist.hotlist_id, hotlist.name)
+            logging.warning(
+                'Unowned Hotlist: id:%r, name:%r', hotlist.hotlist_id,
+                hotlist.name)
             continue
           id_dict[(name.lower(), owner_id)] = hotlist.hotlist_id
     return id_dict

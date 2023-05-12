@@ -244,9 +244,10 @@ class Servlet(object):
         try:
           browser_major_version = int(ua['browser']['version'].split('.')[0])
         except ValueError:
-          logging.warn('Could not parse version: %r', ua['browser']['version'])
+          logging.warning(
+              'Could not parse version: %r', ua['browser']['version'])
         except KeyError:
-          logging.warn('No browser version defined in user agent.')
+          logging.warning('No browser version defined in user agent.')
       csp_supports_report_sample = (
           (browser == 'Chrome' and browser_major_version >= 59) or
           (browser == 'Opera' and browser_major_version >= 46))

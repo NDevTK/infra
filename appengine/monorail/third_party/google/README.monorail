@@ -27,11 +27,9 @@ from the old Python 2 API and are updating it ourselves for Python 3.
    * import httplib --> from six.moves import http_client
 
    String changes:
-   * a.fromstring(s) --> a.fromstring(s) if hasattr(a, 'fromstring')
-                         else a.frombytes(six.ensure_binary(s))
-   * a.tostring() --> a.tostring() if hasattr(a, 'tostring') else a.tobytes()
+   * a.fromstring(s) --> a.frombytes(six.ensure_binary(s))
+   * a.tostring() --> a.tobytes()
 
    Integer changes:
    * 1234L --> 1234
    * long(1234) --> 1234
-

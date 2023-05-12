@@ -21,7 +21,7 @@ class ErrorsManagerTest(unittest.TestCase):
 
     err_aggregator.AddErrorMessage('The chickens are missing.')
     err_aggregator.AddErrorMessage('The foxes are free.')
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         exceptions.InputException,
         'The chickens are missing.\nThe foxes are free.'):
       err_aggregator.RaiseIfErrors()
@@ -34,16 +34,16 @@ class ErrorsManagerTest(unittest.TestCase):
   def testWithinContext_ExceptionPassedIn(self):
     """We do not suppress exceptions raised within wrapped code."""
 
-    with self.assertRaisesRegexp(exceptions.InputException,
-                                 'We should raise this'):
+    with self.assertRaisesRegex(exceptions.InputException,
+                                'We should raise this'):
       with exceptions.ErrorAggregator(exceptions.InputException) as errors:
         errors.AddErrorMessage('We should ignore this error.')
         raise exceptions.InputException('We should raise this')
 
   def testWithinContext_NoExceptionPassedIn(self):
     """We raise an exception for any errors if no exceptions are passed in."""
-    with self.assertRaisesRegexp(exceptions.InputException,
-                                 'We can raise this now.'):
+    with self.assertRaisesRegex(exceptions.InputException,
+                                'We can raise this now.'):
       with exceptions.ErrorAggregator(exceptions.InputException) as errors:
         errors.AddErrorMessage('We can raise this now.')
         return True

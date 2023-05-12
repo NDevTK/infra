@@ -29,7 +29,7 @@ from services import client_config_svc
 RE_COLUMN_NAME = r'\w+[\w+-.]*\w+'
 
 # Compiled regexp to match a valid column specification.
-RE_COLUMN_SPEC = re.compile('(%s(\s%s)*)*$' % (RE_COLUMN_NAME, RE_COLUMN_NAME))
+RE_COLUMN_SPEC = re.compile(r'(%s(\s%s)*)*$' % (RE_COLUMN_NAME, RE_COLUMN_NAME))
 
 
 def WhichUsersShareAProject(cnxn, services, user_effective_ids, other_users):

@@ -362,7 +362,7 @@ class IssueTwoLevelCache(caches.AbstractTwoLevelCache):
       elif kind == 'mergedinto':
         src_issue.merged_into_external = ext_id
       else:
-        logging.warn('unhandled danging relation kind %r', kind)
+        logging.warning('unhandled danging relation kind %r', kind)
         continue
 
     return results_dict

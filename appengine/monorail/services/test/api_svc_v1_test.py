@@ -1683,7 +1683,8 @@ class MonorailApiTest(testing.EndpointsTestCase):
     cd_dict = {
       'componentPath': 'API'}
     self.request.update(cd_dict)
-    _ = self.call_api('components_delete', self.request)
+    with self.assertWarns(webtest.lint.WSGIWarning):
+      _ = self.call_api('components_delete', self.request)
     self.assertEqual(0, len(self.config.component_defs))
 
   def testComponentsUpdate_Invalid(self):
@@ -1739,7 +1740,8 @@ class MonorailApiTest(testing.EndpointsTestCase):
               'requester@example.com', 'user@example.com', '', ' ']},
           {'field': 'DEPRECATED', 'deprecated': True}]}
     self.request.update(cd_dict)
-    _ = self.call_api('components_update', self.request)
+    with self.assertWarns(webtest.lint.WSGIWarning):
+      _ = self.call_api('components_update', self.request)
     component_def = tracker_bizobj.FindComponentDef(
         'API', self.config)
     self.assertIsNotNone(component_def)
@@ -1752,7 +1754,8 @@ class MonorailApiTest(testing.EndpointsTestCase):
       'updates': [
           {'field': 'LEAF_NAME', 'leafName': 'NewParent'}]}
     self.request.update(cd_dict)
-    _ = self.call_api('components_update', self.request)
+    with self.assertWarns(webtest.lint.WSGIWarning):
+      _ = self.call_api('components_update', self.request)
     cd_parent = tracker_bizobj.FindComponentDef(
         'NewParent', self.config)
     cd_child = tracker_bizobj.FindComponentDef(

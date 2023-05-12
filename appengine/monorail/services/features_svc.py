@@ -108,12 +108,12 @@ class HotlistTwoLevelCache(caches.AbstractTwoLevelCache):
                                          adder_id=adder_id , date_added=added,
                                          note=note))
       else:
-        logging.warn('hotlist %d not found', hotlist_id)
+        logging.warning('hotlist %d not found', hotlist_id)
 
     for (hotlist_id, user_id, role_name) in role_rows:
       hotlist = hotlist_dict.get(hotlist_id)
       if not hotlist:
-        logging.warn('hotlist %d not found', hotlist_id)
+        logging.warning('hotlist %d not found', hotlist_id)
       elif role_name == 'owner':
         hotlist.owner_ids.append(user_id)
       elif role_name == 'editor':
@@ -198,9 +198,9 @@ class HotlistIDTwoLevelCache(caches.AbstractTwoLevelCache):
     for (hotlist_id, user_id) in owner_rows:
       found_owner_id = hotlist_to_owner_id.get(hotlist_id)
       if found_owner_id:
-        logging.warn(
-            'hotlist %d has more than one owner: %d, %d',
-            hotlist_id, user_id, found_owner_id)
+        logging.warning(
+            'hotlist %d has more than one owner: %d, %d', hotlist_id, user_id,
+            found_owner_id)
       hotlist_to_owner_id[hotlist_id] = user_id
 
     # Note: hotlist_rows hotlists found in the owner_rows that have names
@@ -797,8 +797,8 @@ class FeaturesService(object):
 
     self.hotlist_2lc.InvalidateKeys(cnxn, [hotlist_id])
     if not hotlist.owner_ids:  # Should never happen.
-      logging.warn('Modifying unowned Hotlist: id:%r, name:%r',
-        hotlist_id, hotlist.name)
+      logging.warning(
+          'Modifying unowned Hotlist: id:%r, name:%r', hotlist_id, hotlist.name)
     elif hotlist.name:
       self.hotlist_id_2lc.InvalidateKeys(
           cnxn, [(hotlist.name.lower(), owner_id) for
@@ -1271,8 +1271,9 @@ class FeaturesService(object):
     self.hotlist_user_to_ids.InvalidateKeys(cnxn, hotlist.owner_ids)
     self.hotlist_user_to_ids.InvalidateKeys(cnxn, hotlist.editor_ids)
     if not hotlist.owner_ids:  # Should never happen.
-      logging.warn('Soft-deleting unowned Hotlist: id:%r, name:%r',
-        hotlist_id, hotlist.name)
+      logging.warning(
+          'Soft-deleting unowned Hotlist: id:%r, name:%r', hotlist_id,
+          hotlist.name)
     elif hotlist.name:
       self.hotlist_id_2lc.InvalidateKeys(
           cnxn, [(hotlist.name.lower(), owner_id) for

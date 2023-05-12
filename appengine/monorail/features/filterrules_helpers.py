@@ -729,7 +729,7 @@ def _ParseOneRule(
 
   elif action_type == 'add_ccs':
     cc_ids = []
-    for email in re.split('[,;\s]+', action_value):
+    for email in re.split(r'[,;\s]+', action_value):
       if not email.strip():
         continue
       try:
@@ -748,7 +748,7 @@ def _ParseOneRule(
 
   elif action_type == 'also_notify':
     add_notify = []
-    for addr in re.split('[,;\s]+', action_value):
+    for addr in re.split(r'[,;\s]+', action_value):
       if validate.IsValidEmail(addr.strip()):
         add_notify.append(addr.strip())
       else:

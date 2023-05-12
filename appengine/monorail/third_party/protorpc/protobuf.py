@@ -270,8 +270,6 @@ def encode_message(message):
       field_encoder(encoder, next)
 
   buffer = encoder.buffer()
-  if hasattr(buffer, 'tostring'):
-    return buffer.tostring()
   return buffer.tobytes()
 
 
@@ -292,10 +290,7 @@ def decode_message(message_type, encoded_message):
   """
   message = message_type()
   message_array = array.array('B')
-  if hasattr(message_array, 'fromstring'):
-    message_array.fromstring(encoded_message)
-  else:
-    message_array.frombytes(encoded_message)
+  message_array.frombytes(encoded_message)
   try:
     decoder = _Decoder(message_array, 0, len(message_array))
 

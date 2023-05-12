@@ -141,10 +141,10 @@ class ShardedRamCacheTest(unittest.TestCase):
     self.assertEqual(3, len(self.sharded_ram_cache.cache))
 
 
-class TestableTwoLevelCache(caches.AbstractTwoLevelCache):
+class _TestableTwoLevelCache(caches.AbstractTwoLevelCache):
 
   def __init__(self, cache_manager, kind, max_size=None):
-    super(TestableTwoLevelCache, self).__init__(
+    super(_TestableTwoLevelCache, self).__init__(
         cache_manager, kind, 'testable:', None, max_size=max_size)
 
   # pylint: disable=unused-argument
@@ -162,7 +162,7 @@ class AbstractTwoLevelCacheTest_Memcache(unittest.TestCase):
 
     self.cnxn = 'fake connection'
     self.cache_manager = fake.CacheManager()
-    self.testable_2lc = TestableTwoLevelCache(self.cache_manager, 'issue')
+    self.testable_2lc = _TestableTwoLevelCache(self.cache_manager, 'issue')
 
   def tearDown(self):
     self.testbed.deactivate()

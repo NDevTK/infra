@@ -452,19 +452,19 @@ class AST2ASTTest(unittest.TestCase):
         ast_pb2.QueryOp.IS_DEFINED, [BUILTIN_ISSUE_FIELDS['label']],
         ['Priority', 'Severity'], [])
     regex = ast2ast._MakePrefixRegex(cond)
-    self.assertRegexpMatches('Priority-1', regex)
-    self.assertRegexpMatches('Severity-3', regex)
-    self.assertNotRegexpMatches('My-Priority', regex)
+    self.assertRegex('Priority-1', regex)
+    self.assertRegex('Severity-3', regex)
+    self.assertNotRegex('My-Priority', regex)
 
   def testKeyValueRegex(self):
     cond = ast_pb2.MakeCond(
         ast_pb2.QueryOp.KEY_HAS, [BUILTIN_ISSUE_FIELDS['label']],
         ['Type-Feature', 'Type-Security'], [])
     regex = ast2ast._MakeKeyValueRegex(cond)
-    self.assertRegexpMatches('Type-Feature', regex)
-    self.assertRegexpMatches('Type-Bug-Security', regex)
-    self.assertNotRegexpMatches('Type-Bug', regex)
-    self.assertNotRegexpMatches('Security-Feature', regex)
+    self.assertRegex('Type-Feature', regex)
+    self.assertRegex('Type-Bug-Security', regex)
+    self.assertNotRegex('Type-Bug', regex)
+    self.assertNotRegex('Security-Feature', regex)
 
   def testKeyValueRegex_multipleKeys(self):
     cond = ast_pb2.MakeCond(
@@ -478,8 +478,8 @@ class AST2ASTTest(unittest.TestCase):
         ast_pb2.QueryOp.TEXT_HAS, [BUILTIN_ISSUE_FIELDS['label']],
         ['Type-Bug'], [])
     regex = ast2ast._MakeKeyValueRegex(cond)
-    self.assertRegexpMatches('Type-Bug-Security', regex)
-    self.assertNotRegexpMatches('Type-BugSecurity', regex)
+    self.assertRegex('Type-Bug-Security', regex)
+    self.assertNotRegex('Type-BugSecurity', regex)
 
   def testPreprocessLabelCond(self):
     label_field = BUILTIN_ISSUE_FIELDS['label']

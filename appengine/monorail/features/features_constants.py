@@ -15,7 +15,7 @@ DEFAULT_RESULTS_PER_PAGE = 100
 OTHER_BUILT_IN_COLS = (
     tracker_constants.OTHER_BUILT_IN_COLS + ['Adder', 'Added', 'Note'])
 # pylint: disable=line-too-long
-ISSUE_INPUT_REGEX = '%s:\d+(([,]|\s)+%s:\d+)*' % (
+ISSUE_INPUT_REGEX = r'%s:\d+(([,]|\s)+%s:\d+)*' % (
     project_constants.PROJECT_NAME_PATTERN,
     project_constants.PROJECT_NAME_PATTERN)
 FIELD_DEF_NAME_PATTERN = '[a-zA-Z]([_-]?[a-zA-Z0-9])*'

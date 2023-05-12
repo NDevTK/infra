@@ -159,7 +159,7 @@ def ParseIssueRequest(cnxn, post_data, services, errors, default_project_name):
     comment = MarkupDescriptionOnInput(comment, tmpl_txt)
 
   comp_paths, comp_paths_remove = _ClassifyPlusMinusItems(
-      re.split('[,;\s]+', component_str))
+      re.split(r'[,;\s]+', component_str))
   parsed_components = ParsedComponents(
       component_str, comp_paths, comp_paths_remove)
   labels, labels_remove = _ClassifyPlusMinusItems(label_strs)
@@ -231,7 +231,7 @@ def _ClassifyPlusMinusItems(add_remove_list):
 def _ParseHotlists(post_data):
   entered_str = post_data.get('hotlists', '').strip()
   hotlist_refs = []
-  for ref_str in re.split('[,;\s]+', entered_str):
+  for ref_str in re.split(r'[,;\s]+', entered_str):
     if not ref_str:
       continue
     if ':' in ref_str:
@@ -353,7 +353,7 @@ def _ParseIssueRequestUsers(cnxn, post_data, services):
   owner_email = post_data.get('owner', '').strip().lower()
 
   cc_usernames, cc_usernames_remove = _ClassifyPlusMinusItems(
-      re.split('[,;\s]+', cc_username_str))
+      re.split(r'[,;\s]+', cc_username_str))
 
   # Figure out the email addresses to lookup and do the lookup.
   emails_to_lookup = cc_usernames + cc_usernames_remove
@@ -395,7 +395,7 @@ def _ParseBlockers(cnxn, post_data, services, errors, default_project_name,
   federated_ref_strings = []
 
   issue_ref = None
-  for ref_str in re.split('[,;\s]+', entered_str):
+  for ref_str in re.split(r'[,;\s]+', entered_str):
     # Handle federated references.
     if federated.IsShortlinkValid(ref_str):
       federated_ref_strings.append(ref_str)
@@ -934,7 +934,7 @@ def LookupComponentIDs(component_paths, config, errors=None):
 
 def ParsePostDataUsers(cnxn, pd_users_str, user_service):
   """Parse all the usernames from a users string found in a post data."""
-  emails, _remove = _ClassifyPlusMinusItems(re.split('[,;\s]+', pd_users_str))
+  emails, _remove = _ClassifyPlusMinusItems(re.split(r'[,;\s]+', pd_users_str))
   users_ids_by_email = user_service.LookupUserIDs(cnxn, emails, autocreate=True)
   user_ids = [users_ids_by_email[username] for username in emails if username]
   return user_ids, pd_users_str

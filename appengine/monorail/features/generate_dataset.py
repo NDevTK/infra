@@ -1,3 +1,6 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 """This module is used to go from raw data to a csv dataset to build models for
    component prediction.
 """
@@ -116,7 +119,7 @@ def CleanText(text):
   pretty_issue = text.lower().strip()
 
   quoteless_issue = re.sub('\'', '', pretty_issue)
-  no_punctuation_issue = re.sub('[^\w\s]|_+', ' ', quoteless_issue)
+  no_punctuation_issue = re.sub(r'[^\w\s]|_+', ' ', quoteless_issue)
   one_space_issue = ' '.join(no_punctuation_issue.split())
 
   return one_space_issue

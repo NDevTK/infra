@@ -31,9 +31,9 @@ import re
 import six
 import time
 from six.moves import urllib
-from collections import Container as _Container
-from collections import Iterable as _Iterable
-from collections import Mapping as _Mapping
+from collections.abc import Container as _Container
+from collections.abc import Iterable as _Iterable
+from collections.abc import Mapping as _Mapping
 
 from google.appengine.api import memcache
 from google.appengine.api import oauth
@@ -776,11 +776,10 @@ def get_verified_jwt(
   cache - In testing, override the certificate cache
   """
   if not (check_authorization_header or check_query_arg):
-      raise ValueError(
-          'Either check_authorization_header or check_query_arg must be True.')
+    raise ValueError(
+        'Either check_authorization_header or check_query_arg must be True.')
   if check_query_arg and request is None:
-      raise ValueError(
-          'Cannot check query arg without request object.')
+    raise ValueError('Cannot check query arg without request object.')
   schemes = ('Bearer',) if check_authorization_header else ()
   keys = ('access_token',) if check_query_arg else ()
   token = _get_token(

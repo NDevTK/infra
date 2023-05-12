@@ -44,18 +44,18 @@ class DescendingValueTest(unittest.TestCase):
     """The point of DescendingValue is to reverse the sort order."""
     anti_a = sorting.DescendingValue.MakeDescendingValue('a')
     anti_b = sorting.DescendingValue.MakeDescendingValue('b')
-    self.assertTrue(anti_a > anti_b)
+    self.assertGreater(anti_a, anti_b)
 
   def testMaybeMakeDescending(self):
     """It returns an accessor that makes DescendingValue iff arg is True."""
     asc_accessor = sorting._MaybeMakeDescending(lambda issue: 'a', False)
     asc_value = asc_accessor('fake issue')
-    self.assertTrue(asc_value is 'a')
+    self.assertEqual(asc_value, 'a')
 
     desc_accessor = sorting._MaybeMakeDescending(lambda issue: 'a', True)
     print(desc_accessor)
     desc_value = desc_accessor('fake issue')
-    self.assertTrue(isinstance(desc_value, sorting.DescendingValue))
+    self.assertIsInstance(desc_value, sorting.DescendingValue)
 
 
 class SortingTest(unittest.TestCase):

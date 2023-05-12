@@ -410,13 +410,13 @@ class FLTConvertTask(unittest.TestCase):
   def testFetchAndAssertProjectInfo(self):
 
     # test no 'launch' in request
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         AssertionError, r'bad launch type:',
         self.task.FetchAndAssertProjectInfo, self.mr)
 
     # test bad 'launch' in request
     mr = testing_helpers.MakeMonorailRequest(path='url/url?launch=bad')
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         AssertionError, r'bad launch type: bad',
         self.task.FetchAndAssertProjectInfo, mr)
 
@@ -428,7 +428,7 @@ class FLTConvertTask(unittest.TestCase):
     # test no template
     self.task.services.template.GetTemplateByName = mock.Mock(
         return_value=None)
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         AssertionError, r'not found in chromium project',
         self.task.FetchAndAssertProjectInfo, mr)
 
@@ -437,14 +437,14 @@ class FLTConvertTask(unittest.TestCase):
         'template', 'sum', 'New', 111, 'content', [], [], [], [])
     self.task.services.template.GetTemplateByName = mock.Mock(
         return_value=template)
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         AssertionError, 'no approvals or phases in',
         self.task.FetchAndAssertProjectInfo, mr)
 
     # test phases not recognized
     template.phases = [tracker_pb2.Phase(name='WeirdPhase')]
     template.approval_values = [tracker_pb2.ApprovalValue()]
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         AssertionError, 'one or more phases not recognized',
         self.task.FetchAndAssertProjectInfo, mr)
 
@@ -456,7 +456,7 @@ class FLTConvertTask(unittest.TestCase):
         tracker_pb2.ApprovalValue(approval_id=3)]
 
     # test approvals not recognized
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         AssertionError, 'one or more approvals not recognized',
         self.task.FetchAndAssertProjectInfo, mr)
 
@@ -470,7 +470,7 @@ class FLTConvertTask(unittest.TestCase):
     ]
 
     # test approvals not in config's approval_defs
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         AssertionError, 'one or more approvals not in config.approval_defs',
         self.task.FetchAndAssertProjectInfo, mr)
 
@@ -480,7 +480,7 @@ class FLTConvertTask(unittest.TestCase):
         tracker_pb2.ApprovalDef(approval_id=3)]
 
     # test no pm field exists in project
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         AssertionError, 'project has no FieldDef %s' % fltconversion.PM_FIELD,
         self.task.FetchAndAssertProjectInfo, mr)
 
@@ -495,7 +495,7 @@ class FLTConvertTask(unittest.TestCase):
     ])
 
     # test no USER_TYPE te field exists in project
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         AssertionError, 'project has no FieldDef %s' % fltconversion.TE_FIELD,
         self.task.FetchAndAssertProjectInfo, mr)
 
@@ -509,7 +509,7 @@ class FLTConvertTask(unittest.TestCase):
         ])
 
     # test no M-Target INT_TYPE multivalued Phase FieldDefs
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         AssertionError,
         'project has no FieldDef %s' % fltconversion.MTARGET_FIELD,
         self.task.FetchAndAssertProjectInfo, mr)
@@ -518,7 +518,7 @@ class FLTConvertTask(unittest.TestCase):
     self.config.field_defs[-2].is_multivalued = True
 
     # test no M-Approved INT_TYPE multivalued Phase FieldDefs
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         AssertionError,
         'project has no FieldDef %s' % fltconversion.MAPPROVED_FIELD,
         self.task.FetchAndAssertProjectInfo, mr)
@@ -537,7 +537,7 @@ class FLTConvertTask(unittest.TestCase):
     # FINCH special case
     # test approvals for Finch not required
     mr = testing_helpers.MakeMonorailRequest(path='url/url?launch=finch')
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         AssertionError, 'finch template not set up correctly',
         self.task.FetchAndAssertProjectInfo, mr)
 
@@ -567,7 +567,7 @@ class FLTConvertTask(unittest.TestCase):
     # test phases not recognized
     template.phases = [tracker_pb2.Phase(name='Chrome-Test')]
     template.approval_values = [tracker_pb2.ApprovalValue()]
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         AssertionError, 'one or more phases not recognized',
         self.task.FetchAndAssertProjectInfo, mr)
 
@@ -579,7 +579,7 @@ class FLTConvertTask(unittest.TestCase):
         tracker_pb2.ApprovalValue(approval_id=1),
         tracker_pb2.ApprovalValue(approval_id=2),
         tracker_pb2.ApprovalValue(approval_id=3)]
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         AssertionError, 'os template not set up correctly',
         self.task.FetchAndAssertProjectInfo, mr)
 
@@ -587,7 +587,7 @@ class FLTConvertTask(unittest.TestCase):
       av.status = tracker_pb2.ApprovalStatus.NEEDS_REVIEW
 
     # test approvals not recognized
-    self.assertRaisesRegexp(
+    self.assertRaisesRegex(
         AssertionError, 'one or more approvals not recognized',
         self.task.FetchAndAssertProjectInfo, mr)
 

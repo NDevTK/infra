@@ -118,13 +118,13 @@ class SendWipeoutUserListsTaskTest(unittest.TestCase):
   def testHandleRequest_NoLimit(self):
     mr = testing_helpers.MakeMonorailRequest()
     self.services.user.users_by_id = {}
-    with self.assertRaisesRegexp(AssertionError, 'Missing param limit'):
+    with self.assertRaisesRegex(AssertionError, 'Missing param limit'):
       self.task.HandleRequest(mr)
 
   def testHandleRequest_NoOffset(self):
     mr = testing_helpers.MakeMonorailRequest(path='url/url?limit=3')
     self.services.user.users_by_id = {}
-    with self.assertRaisesRegexp(AssertionError, 'Missing param offset'):
+    with self.assertRaisesRegex(AssertionError, 'Missing param offset'):
       self.task.HandleRequest(mr)
 
   def testHandleRequest_ZeroOffset(self):

@@ -150,8 +150,8 @@ class WorkEnvTest(unittest.TestCase):
     issue_delta_pairs = [(issue, delta)]
 
     self.SignIn(user_id=self.user_1.user_id)
-    with self.assertRaisesRegexp(permissions.PermissionException,
-                                 r'.+int_field\n.+enum_field'):
+    with self.assertRaisesRegex(permissions.PermissionException,
+                                r'.+int_field\n.+enum_field'):
       with self.work_env as we:
         we._AssertUserCanModifyIssues(issue_delta_pairs, True)
 
@@ -244,8 +244,8 @@ class WorkEnvTest(unittest.TestCase):
         (issue_4, tracker_pb2.IssueDelta(owner_id=self.user_2.user_id)))
 
     self.SignIn(user_id=self.user_1.user_id)
-    with self.assertRaisesRegexp(permissions.PermissionException,
-                                 '\n'.join(error_messages_re)):
+    with self.assertRaisesRegex(permissions.PermissionException,
+                                '\n'.join(error_messages_re)):
       with self.work_env as we:
         we._AssertUserCanModifyIssues(
             issue_delta_pairs, False, comment_content='ping')
@@ -1314,8 +1314,8 @@ class WorkEnvTest(unittest.TestCase):
   def testCreateIssue_OnwerValidation(self, _fake_pasicn, _fake_pasibn):
     """We validate the owner."""
     self.SignIn(user_id=111)
-    with self.assertRaisesRegexp(exceptions.InputException,
-                                 'Issue owner must be a project member'):
+    with self.assertRaisesRegex(exceptions.InputException,
+                                'Issue owner must be a project member'):
       with self.work_env as we:
         # user_id 222 is not a project member
         we.CreateIssue(789, 'sum', 'New', 222, [333], ['Hot'], [], [], 'desc')
@@ -1885,7 +1885,7 @@ class WorkEnvTest(unittest.TestCase):
     issue_3.labels = ['Restrict-View-CoreTeam']
     issue_3.project_name = 'farm-proj'
     self.services.issue.TestAddIssue(issue_3)
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         permissions.PermissionException,
         'User is not allowed to view issue: farm-proj:1.\n' +
         'User is not allowed to view issue: farm-proj:3.'):
@@ -1896,8 +1896,8 @@ class WorkEnvTest(unittest.TestCase):
     """We reject attempts to get a non-existent issue."""
     issue_1 = fake.MakeTestIssue(789, 1, 'sum', 'New', 111, issue_id=78901)
     self.services.issue.TestAddIssue(issue_1)
-    with self.assertRaisesRegexp(exceptions.NoSuchIssueException,
-                                 'No such issue: 78902\nNo such issue: 78903'):
+    with self.assertRaisesRegex(exceptions.NoSuchIssueException,
+                                'No such issue: 78902\nNo such issue: 78903'):
       with self.work_env as we:
         _actual = we.GetIssuesDict([78901, 78902, 78903])
 
@@ -2393,8 +2393,8 @@ class WorkEnvTest(unittest.TestCase):
         set_on=2345,
         approver_ids_add=[9876])
 
-    with self.assertRaisesRegexp(exceptions.InputException,
-                                 'users/9876: User does not exist.'):
+    with self.assertRaisesRegex(exceptions.InputException,
+                                'users/9876: User does not exist.'):
       comment = 'stuff'
       self.work_env.UpdateIssueApproval(78901, 24, delta, comment, False)
 

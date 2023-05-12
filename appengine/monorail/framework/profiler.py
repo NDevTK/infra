@@ -155,7 +155,7 @@ class _Phase(object):
     self.ms = int(self.elapsed_seconds * 1000)
     for sub in self.subphases:
       if sub.elapsed_seconds is None:
-        logging.warn('issue3182: subphase is %r', sub and sub.name)
+        logging.warning('issue3182: subphase is %r', sub and sub.name)
     categorized = sum(sub.elapsed_seconds or 0.0 for sub in self.subphases)
     self.uncategorized_ms = int((self.elapsed_seconds - categorized) * 1000)
     return self.parent

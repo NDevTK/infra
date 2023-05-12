@@ -74,7 +74,7 @@ COMPONENT_NAME_RE = re.compile(r'^%s$' % (COMPONENT_LEAF_PATTERN))
 
 # Pattern for matching a full component name, not just a single leaf.
 # Allows any number of repeating valid leaf names separated by ">" characters.
-COMPONENT_PATH_PATTERN = '%s(\>%s)*' % (
+COMPONENT_PATH_PATTERN = r'%s(\>%s)*' % (
     COMPONENT_LEAF_PATTERN, COMPONENT_LEAF_PATTERN)
 
 # Regular expression used to validate new field names.

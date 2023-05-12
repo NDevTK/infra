@@ -103,10 +103,7 @@ class ProtocolMessage:
     except (NotImplementedError, AttributeError):
       e = Encoder()
       self.Output(e)
-      if hasattr(e.buffer(), 'tostring'):
-        return e.buffer().tostring()
-      else:
-        return e.buffer().tobytes()
+      return e.buffer().tobytes()
 
   def SerializeToString(self):
 
@@ -121,10 +118,7 @@ class ProtocolMessage:
     except (NotImplementedError, AttributeError):
       e = Encoder()
       self.OutputPartial(e)
-      if hasattr(e.buffer(), 'tostring'):
-        return e.buffer().tostring()
-      else:
-        return e.buffer().tobytes()
+      return e.buffer().tobytes()
 
   def _CEncode(self):
 
@@ -171,10 +165,7 @@ class ProtocolMessage:
 
 
       a = array.array('B')
-      if hasattr(a, 'fromstring'):
-        a.fromstring(s)
-      else:
-        a.frombytes(six.ensure_binary(s))
+      a.frombytes(six.ensure_binary(s))
       d = Decoder(a, 0, len(a))
       self.TryMerge(d)
 
@@ -582,19 +573,13 @@ class Encoder:
 
   def putFloat(self, v):
     a = array.array('B')
-    if hasattr(a, 'fromstring'):
-      a.fromstring(struct.pack("<f", v))
-    else:
-      a.frombytes(struct.pack("<f", v))
+    a.frombytes(struct.pack("<f", v))
     self.buf.extend(a)
     return
 
   def putDouble(self, v):
     a = array.array('B')
-    if hasattr(a, 'fromstring'):
-      a.fromstring(struct.pack("<d", v))
-    else:
-      a.frombytes(struct.pack("<d", v))
+    a.frombytes(struct.pack("<d", v))
     self.buf.extend(a)
     return
 
@@ -611,17 +596,10 @@ class Encoder:
 
     v = six.ensure_binary(v)
     self.putVarInt32(len(v))
-    if hasattr(self.buf, 'fromstring'):
-      self.buf.fromstring(v)
-    else:
-      self.buf.frombytes(v)
-    return
+    self.buf.frombytes(v)
 
   def putRawString(self, v):
-    if hasattr(self.buf, 'fromstring'):
-      self.buf.fromstring(v)
-    else:
-      self.buf.frombytes(six.ensure_binary(v))
+    self.buf.frombytes(six.ensure_binary(v))
 
   _TYPE_TO_METHOD = {
       TYPE_DOUBLE:   putDouble,
@@ -793,18 +771,12 @@ class Decoder:
       raise ProtocolBufferDecodeError("truncated")
     r = self.buf[self.idx : self.idx + length]
     self.idx += length
-    if hasattr(r, 'tostring'):
-      return r.tostring()
-    else:
-      return r.tobytes()
+    return r.tobytes()
 
   def getRawString(self):
     r = self.buf[self.idx:self.limit]
     self.idx = self.limit
-    if hasattr(r, 'tostring'):
-      return r.tostring()
-    else:
-      return r.tobytes()
+    return r.tobytes()
 
   _TYPE_TO_METHOD = {
       TYPE_DOUBLE:   getDouble,

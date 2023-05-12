@@ -15,6 +15,7 @@ Local Modifications:
    * except Exception, e: --> except Exception as e:
 
    Import moves:
+   * from collections import Foo -> from collections.abc import Foo
    * import cStringIO --> from six.moves import cStringIO
    * import httplib --> from six.moves import http_client
    * import urllib --> from six.moves import urllib

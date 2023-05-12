@@ -172,9 +172,9 @@ class ResourceNameConverterTest(unittest.TestCase):
         'hotlists/78909/items/proj.1', 'hotlists/78909/items/chicken.2',
         'hotlists/78909/items/cow.3'
     ]
-    with self.assertRaisesRegexp(exceptions.NoSuchProjectException,
-                                 'Project chicken not found.\n' +
-                                 'Project cow not found.'):
+    with self.assertRaisesRegex(exceptions.NoSuchProjectException,
+                                'Project chicken not found.\n' +
+                                'Project cow not found.'):
       rnc.IngestHotlistItemNames(self.cnxn, names, self.services)
 
   def testIngestHotlistItems_IssueNotFound(self):
@@ -182,7 +182,7 @@ class ResourceNameConverterTest(unittest.TestCase):
     names = [
         'hotlists/78909/items/proj.1',
         'hotlists/78909/items/goose.5']
-    with self.assertRaisesRegexp(exceptions.NoSuchIssueException, '%r' % names):
+    with self.assertRaisesRegex(exceptions.NoSuchIssueException, '%r' % names):
       rnc.IngestHotlistItemNames(self.cnxn, names, self.services)
 
   def testConvertHotlistName(self):
@@ -215,8 +215,8 @@ class ResourceNameConverterTest(unittest.TestCase):
           self.cnxn, 'projects/noproj/issues/1/approvalValues/1', self.services)
 
   def testIngestApprovalValueName_IssueDoesNotExist(self):
-    with self.assertRaisesRegexp(exceptions.NoSuchIssueException,
-                                 'projects/proj/issues/404'):
+    with self.assertRaisesRegex(exceptions.NoSuchIssueException,
+                                'projects/proj/issues/404'):
       rnc.IngestApprovalValueName(
           self.cnxn, 'projects/proj/issues/404/approvalValues/1', self.services)
 
@@ -293,7 +293,7 @@ class ResourceNameConverterTest(unittest.TestCase):
 
   def testIngestIssueNames_WithBadInputs(self):
     """We aggregate input exceptions."""
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         exceptions.InputException,
         'Invalid resource name: projects/proj/badformat/1.\n' +
         'Invalid resource name: badformat/proj/issues/1.'):
@@ -313,15 +313,15 @@ class ResourceNameConverterTest(unittest.TestCase):
   def testIngestIssueNames_ManyDoNotExist(self):
     """We get an exception if one issue name provided does not exist."""
     dne_issues = ['projects/proj/issues/2', 'projects/proj/issues/3']
-    with self.assertRaisesRegexp(exceptions.NoSuchIssueException,
-                                 '%r' % dne_issues):
+    with self.assertRaisesRegex(exceptions.NoSuchIssueException,
+                                '%r' % dne_issues):
       rnc.IngestIssueNames(self.cnxn, dne_issues, self.services)
 
   def testIngestIssueNames_ProjectsNotExist(self):
     """Aggregated exceptions raised if projects are not found."""
-    with self.assertRaisesRegexp(exceptions.NoSuchProjectException,
-                                 'Project chicken not found.\n' +
-                                 'Project cow not found.'):
+    with self.assertRaisesRegex(exceptions.NoSuchProjectException,
+                                'Project chicken not found.\n' +
+                                'Project cow not found.'):
       rnc.IngestIssueNames(
           self.cnxn, [
               'projects/chicken/issues/2', 'projects/cow/issues/3',
@@ -355,8 +355,8 @@ class ResourceNameConverterTest(unittest.TestCase):
           self.cnxn, 'projects/doesnotexist/issues/1/comments/0', self.services)
 
   def testIngestCommentName_NoSuchIssue(self):
-    with self.assertRaisesRegexp(exceptions.NoSuchIssueException,
-                                 "['projects/proj/issues/404']"):
+    with self.assertRaisesRegex(exceptions.NoSuchIssueException,
+                                "['projects/proj/issues/404']"):
       rnc.IngestCommentName(
           self.cnxn, 'projects/proj/issues/404/comments/0', self.services)
 
@@ -642,8 +642,8 @@ class ResourceNameConverterTest(unittest.TestCase):
 
     names = ['projects/xyz/componentDefs/1', 'projects/zyz/componentDefs/1']
     expected_error = 'Project not found: xyz.\nProject not found: zyz.'
-    with self.assertRaisesRegexp(exceptions.NoSuchProjectException,
-                                 expected_error):
+    with self.assertRaisesRegex(exceptions.NoSuchProjectException,
+                                expected_error):
       rnc.IngestComponentDefNames(self.cnxn, names, self.services)
 
   def testIngestComponentDefNames_NoSuchComponentException(self):
@@ -655,8 +655,8 @@ class ResourceNameConverterTest(unittest.TestCase):
         'projects/proj/componentDefs/999', 'projects/proj/componentDefs/cow'
     ]
     expected_error = 'Component not found: 999.\nComponent not found: \'cow\'.'
-    with self.assertRaisesRegexp(exceptions.NoSuchComponentException,
-                                 expected_error):
+    with self.assertRaisesRegex(exceptions.NoSuchComponentException,
+                                expected_error):
       rnc.IngestComponentDefNames(self.cnxn, names, self.services)
 
   def testIngestComponentDefNames_InvalidNames(self):

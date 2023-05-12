@@ -696,8 +696,8 @@ class TableCellCustom(TableCell):
       if not fd:
         # TODO(jrobbins): This can happen if an issue with a custom
         # field value is moved to a different project.
-        logging.warn('Issue ID %r has undefined field value %r',
-                     art.issue_id, fv)
+        logging.warning(
+            'Issue ID %r has undefined field value %r', art.issue_id, fv)
       elif fd.field_name.lower() == col and (
           phase_names_by_id.get(fv.phase_id) == phase_name):
         if fd.field_type == tracker_pb2.FieldTypes.URL_TYPE:
@@ -725,8 +725,8 @@ class TableCellApprovalStatus(TableCell):
       fd = tracker_bizobj.FindFieldDef(col, config)
       ad = tracker_bizobj.FindApprovalDef(col, config)
       if not (ad and fd):
-        logging.warn('Issue ID %r has undefined field value %r',
-                     art.issue_id, av)
+        logging.warning(
+            'Issue ID %r has undefined field value %r', art.issue_id, av)
       elif av.approval_id == fd.field_id:
         explicit_values.append(av.status.name)
         break
@@ -744,8 +744,8 @@ class TableCellApprovalApprover(TableCell):
       fd = tracker_bizobj.FindFieldDef(approval_name, config)
       ad = tracker_bizobj.FindApprovalDef(approval_name, config)
       if not (ad and fd):
-        logging.warn('Issue ID %r has undefined field value %r',
-                     art.issue_id, av)
+        logging.warning(
+            'Issue ID %r has undefined field value %r', art.issue_id, av)
       elif av.approval_id == fd.field_id:
         explicit_values = [users_by_id.get(approver_id).display_name
                            for approver_id in av.approver_ids

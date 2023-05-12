@@ -74,11 +74,11 @@ class ListSomethingRequest(testing_helpers.Blank):
   pass
 
 
-class TestableServicer(monorail_servicer.MonorailServicer):
+class _TestableServicer(monorail_servicer.MonorailServicer):
   """Fake servicer class."""
 
   def __init__(self, services):
-    super(TestableServicer, self).__init__(services)
+    super(_TestableServicer, self).__init__(services)
     self.was_called = False
     self.seen_mc = None
     self.seen_request = None
@@ -120,7 +120,7 @@ class MonorailServicerTest(unittest.TestCase):
     self.non_member = self.services.user.TestAddUser(
         'nonmember@example.com', 222)
     self.test_user = self.services.user.TestAddUser('test@example.com', 420)
-    self.svcr = TestableServicer(self.services)
+    self.svcr = _TestableServicer(self.services)
     self.nonmember_token = xsrf.GenerateToken(222, xsrf.XHR_SERVLET_PATH)
     self.request = UpdateSomethingRequest(exc_class=None)
     self.prpc_context = context.ServicerContext()
@@ -335,8 +335,8 @@ class MonorailServicerTest(unittest.TestCase):
         'email': 'bigbadwolf@gserviceaccount.com',
     }
 
-    with self.assertRaisesRegexp(
-        permissions.PermissionException, r'Account .+ is not allowlisted'):
+    with self.assertRaisesRegex(permissions.PermissionException,
+                                r'Account .+ is not allowlisted'):
       self.svcr.GetAndAssertRequesterAuth(self.cnxn, metadata, self.services)
 
   @mock.patch('google.oauth2.id_token.verify_oauth2_token')
@@ -354,8 +354,8 @@ class MonorailServicerTest(unittest.TestCase):
         'email': allowlisted_service_account_email.email,
     }
 
-    with self.assertRaisesRegexp(
-        permissions.PermissionException, r'Invalid token audience: .+'):
+    with self.assertRaisesRegex(permissions.PermissionException,
+                                r'Invalid token audience: .+'):
       self.svcr.GetAndAssertRequesterAuth(self.cnxn, metadata, self.services)
 
   @mock.patch('google.oauth2.id_token.verify_oauth2_token')
@@ -372,8 +372,8 @@ class MonorailServicerTest(unittest.TestCase):
         'email': 'some-other-site-user@test.com',
     }
 
-    with self.assertRaisesRegexp(
-        permissions.PermissionException, r'Client .+ is not allowlisted'):
+    with self.assertRaisesRegex(permissions.PermissionException,
+                                r'Client .+ is not allowlisted'):
       self.svcr.GetAndAssertRequesterAuth(self.cnxn, metadata, self.services)
 
     # Assert some-other-site-user was not auto-created.

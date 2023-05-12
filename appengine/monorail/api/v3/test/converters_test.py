@@ -912,8 +912,8 @@ class ConverterFunctionsTest(unittest.TestCase):
     up_1 = issues_pb2.AttachmentUpload(filename='clown.gif')
     up_2 = issues_pb2.AttachmentUpload(content=b'cutest dog')
 
-    with self.assertRaisesRegexp(
-        exceptions.InputException, 'Uploaded .+\nUploaded .+'):
+    with self.assertRaisesRegex(exceptions.InputException,
+                                'Uploaded .+\nUploaded .+'):
       self.converter.IngestAttachmentUploads([up_1, up_2])
 
   def testIngestIssueDeltas(self):
@@ -1264,8 +1264,7 @@ class ConverterFunctionsTest(unittest.TestCase):
     err_msgs.append(
         'Invalid `update_mask` for projects/proj-780/issues/3 delta.')
 
-    with self.assertRaisesRegexp(exceptions.InputException,
-                                 '\n'.join(err_msgs)):
+    with self.assertRaisesRegex(exceptions.InputException, '\n'.join(err_msgs)):
       self.converter.IngestIssueDeltas(api_deltas)
 
   def testIngestIssueDeltas_OutputOnlyIgnored(self):
@@ -1384,7 +1383,7 @@ class ConverterFunctionsTest(unittest.TestCase):
         r'eldDefs/2\): Could not parse NoDate',
     ]
     error_messages_re = '\n'.join(error_messages)
-    with self.assertRaisesRegexp(exceptions.InputException, error_messages_re):
+    with self.assertRaisesRegex(exceptions.InputException, error_messages_re):
       self.converter.IngestIssueDeltas([api_delta])
 
   @mock.patch('time.time', mock.MagicMock(return_value=CURRENT_TIME))
@@ -1451,7 +1450,7 @@ class ConverterFunctionsTest(unittest.TestCase):
         approval_value=issue_objects_pb2.ApprovalValue(name=av_name),
         update_mask=field_mask_pb2.FieldMask(paths=['chicken']))
     expected_err = 'Invalid `update_mask` for %s delta' % av_name
-    with self.assertRaisesRegexp(exceptions.InputException, expected_err):
+    with self.assertRaisesRegex(exceptions.InputException, expected_err):
       self.converter.IngestApprovalDeltas([approval_delta], self.user_1.user_id)
 
   def testIngestApprovalDeltas_FilterFieldValues(self):
@@ -1484,8 +1483,8 @@ class ConverterFunctionsTest(unittest.TestCase):
         field_vals_remove=[approval_enum_fv, approval_2_fv],
         approvers_remove=['users/222'],
     )
-    with self.assertRaisesRegexp(exceptions.InputException,
-                                 'Field .* does not belong to approval .*'):
+    with self.assertRaisesRegex(exceptions.InputException,
+                                'Field .* does not belong to approval .*'):
       self.converter.IngestApprovalDeltas([approval_delta], self.user_1.user_id)
 
   def testIngestApprovalDeltas_InvalidFieldValues(self):
@@ -1512,7 +1511,7 @@ class ConverterFunctionsTest(unittest.TestCase):
         approval_value=av,
         approvers_remove=['users/222'],
     )
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         exceptions.InputException,
         'Field projects/proj/fieldDefs/404 is not in this project'):
       self.converter.IngestApprovalDeltas([approval_delta], self.user_1.user_id)
@@ -1740,7 +1739,7 @@ class ConverterFunctionsTest(unittest.TestCase):
             name=project1_av_name, field_values=[project1_fv, project2_fv]),
         update_mask=field_mask_pb2.FieldMask(paths=['field_values']))
 
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         exceptions.InputException,
         'Field projects/proj/fieldDefs/%d is not in this project' %
         self.field_def_6):
@@ -2029,7 +2028,7 @@ class ConverterFunctionsTest(unittest.TestCase):
         r'.+issue:.+[\n\r]+: Issue.+404.+not found'
     ]
     error_messages_re = '\n'.join(error_messages)
-    with self.assertRaisesRegexp(exceptions.InputException, error_messages_re):
+    with self.assertRaisesRegex(exceptions.InputException, error_messages_re):
       self.converter.IngestIssue(ingest, self.project_1.project_id)
 
   def testIngestIssuesListColumns(self):

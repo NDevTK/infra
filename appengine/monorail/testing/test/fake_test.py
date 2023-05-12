@@ -48,8 +48,8 @@ class FakeMetaTest(unittest.TestCase):
           assert inspect.ismethod(real_attr)
         else:
           assert inspect.isfunction(real_attr)
-        real_spec = inspect.getargspec(real_attr)
-        fake_spec = inspect.getargspec(getattr(fake_cls, name))
+        real_spec = inspect.getfullargspec(real_attr)
+        fake_spec = inspect.getfullargspec(getattr(fake_cls, name))
         # check same number of args and kwargs
         real_kw_len = len(real_spec[3]) if real_spec[3] else 0
         fake_kw_len = len(fake_spec[3]) if fake_spec[3] else 0

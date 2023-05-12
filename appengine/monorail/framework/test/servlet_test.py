@@ -25,11 +25,11 @@ from testing import fake
 from testing import testing_helpers
 
 
-class TestableServlet(servlet.Servlet):
+class _TestableServlet(servlet.Servlet):
   """A tiny concrete subclass of abstract class Servlet."""
 
   def __init__(self, services=None, do_post_redirect=True):
-    super(TestableServlet, self).__init__(services=services)
+    super(_TestableServlet, self).__init__(services=services)
     self.do_post_redirect = do_post_redirect
     self.seen_post_data = None
 

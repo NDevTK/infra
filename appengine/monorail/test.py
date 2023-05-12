@@ -21,5 +21,5 @@ if __name__ == '__main__':
 
   import_utils.FixImports()
 
-  args = ['--ignore', 'components', '--ignore', 'gae_ts_mon'] + sys.argv[1:]
-  sys.exit(pytest.main(args))
+  args = ['-Werror', '--ignore', 'components', '--ignore', 'gae_ts_mon']
+  sys.exit(pytest.main(args + sys.argv[1:]))

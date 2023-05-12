@@ -171,7 +171,7 @@ class IssuesServicerTest(unittest.TestCase):
     request = issues_pb2.BatchGetIssuesRequest(
         parent='projects/cow',
         names=['projects/cow/issues/1235', 'projects/chicken/issues/1234'])
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         exceptions.InputException,
         'projects/chicken/issues/1234 is not a child issue of projects/cow.'):
       self.CallWrapped(self.issues_svcr.BatchGetIssues, mc, request)
@@ -179,7 +179,7 @@ class IssuesServicerTest(unittest.TestCase):
     request = issues_pb2.BatchGetIssuesRequest(
         parent='projects/sheep',
         names=['projects/cow/issues/1235', 'projects/chicken/issues/1234'])
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         exceptions.InputException,
         'projects/cow/issues/1235 is not a child issue of projects/sheep.\n' +
         'projects/chicken/issues/1234 is not a child issue of projects/sheep.'):
@@ -188,7 +188,7 @@ class IssuesServicerTest(unittest.TestCase):
     request = issues_pb2.BatchGetIssuesRequest(
         parent='projects/cow',
         names=['projects/cow/badformat/1235', 'projects/chicken/issues/1234'])
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         exceptions.InputException,
         'Invalid resource name: projects/cow/badformat/1235.'):
       self.CallWrapped(self.issues_svcr.BatchGetIssues, mc, request)
@@ -200,10 +200,10 @@ class IssuesServicerTest(unittest.TestCase):
     request = issues_pb2.BatchGetIssuesRequest(
         parent='projects/chicken',
         names=['projects/chicken/issues/1', 'projects/chicken/issues/2'])
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         exceptions.NoSuchIssueException,
-        "\['projects/chicken/issues/1', 'projects/chicken/issues/2'\] not found"
-    ):
+        r"\['projects/chicken/issues/1', 'projects/chicken/issues/2'\] "
+        'not found'):
       self.CallWrapped(self.issues_svcr.BatchGetIssues, mc, request)
 
   @mock.patch('api.v3.api_constants.MAX_BATCH_ISSUES', 2)
@@ -513,9 +513,9 @@ class IssuesServicerTest(unittest.TestCase):
         uploads=[issues_pb2.AttachmentUpload(
             filename='mowgli.gif')],
     )
-    with self.assertRaisesRegexp(
-      exceptions.InputException,
-      'Uploaded atachment missing filename or content'):
+    with self.assertRaisesRegex(
+        exceptions.InputException,
+        'Uploaded atachment missing filename or content'):
       self.CallWrapped(self.issues_svcr.MakeIssue, mc, unValid_request)
 
 
@@ -601,7 +601,7 @@ class IssuesServicerTest(unittest.TestCase):
             issues_pb2.IssueDelta(),
             issues_pb2.IssueDelta()
         ])
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         exceptions.InputException,
         'Requesting 3 updates when the allowed maximum is 2 updates.'):
       self.CallWrapped(self.issues_svcr.ModifyIssues, mc, request)
@@ -620,7 +620,7 @@ class IssuesServicerTest(unittest.TestCase):
                     blocking_issue_refs=issue_ref_list),
                 blocking_issues_remove=issue_ref_list)
         ])
-    with self.assertRaisesRegexp(
+    with self.assertRaisesRegex(
         exceptions.InputException,
         'Updates include 5 impacted issues when the allowed maximum is 4.'):
       self.CallWrapped(self.issues_svcr.ModifyIssues, mc, request)

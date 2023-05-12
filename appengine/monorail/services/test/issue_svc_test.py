@@ -63,12 +63,12 @@ def MakeIssueService(project_service, config_service, cache_manager,
   return issue_service
 
 
-class TestableIssueTwoLevelCache(issue_svc.IssueTwoLevelCache):
+class _TestableIssueTwoLevelCache(issue_svc.IssueTwoLevelCache):
 
   def __init__(self, issue_list):
     cache_manager = fake.CacheManager()
-    super(TestableIssueTwoLevelCache, self).__init__(
-        cache_manager, None, None, None)
+    super(_TestableIssueTwoLevelCache,
+          self).__init__(cache_manager, None, None, None)
     self.cache = caches.RamCache(cache_manager, 'issue')
     self.memcache_prefix = 'issue:'
     self.pb_class = tracker_pb2.Issue
@@ -750,7 +750,7 @@ class IssueServiceTest(unittest.TestCase):
   def testGetIssuesDict(self):
     issue_ids = [78901, 78902, 78903]
     issue_1, issue_2 = self.SetUpGetIssues()
-    self.services.issue.issue_2lc = TestableIssueTwoLevelCache(
+    self.services.issue.issue_2lc = _TestableIssueTwoLevelCache(
         [issue_1, issue_2])
     issues_dict, missed_iids = self.services.issue.GetIssuesDict(
         self.cnxn, issue_ids)
@@ -1639,7 +1639,7 @@ class IssueServiceTest(unittest.TestCase):
   def testSoftDeleteIssue(self):
     project = fake.Project(project_id=789)
     issue_1, issue_2 = self.SetUpGetIssues()
-    self.services.issue.issue_2lc = TestableIssueTwoLevelCache(
+    self.services.issue.issue_2lc = _TestableIssueTwoLevelCache(
         [issue_1, issue_2])
     self.services.issue.issue_id_2lc.CacheItem((789, 1), 78901)
     delta = {'deleted': True}
@@ -2239,7 +2239,7 @@ class IssueServiceTest(unittest.TestCase):
   def testSoftDeleteComment(self):
     """Deleting a comment with an attachment marks it and updates count."""
     issue_1, issue_2 = self.SetUpGetIssues()
-    self.services.issue.issue_2lc = TestableIssueTwoLevelCache(
+    self.services.issue.issue_2lc = _TestableIssueTwoLevelCache(
         [issue_1, issue_2])
     issue_1.attachment_count = 1
     issue_1.assume_stale = False

@@ -598,7 +598,7 @@ class ProjectService(object):
       elif role_name == 'contributor':
         contrib_project_ids.add(project_id)
       else:
-        logging.warn('Unexpected role name %r', role_name)
+        logging.warning('Unexpected role name %r', role_name)
 
     return owned_project_ids, membered_project_ids, contrib_project_ids
 

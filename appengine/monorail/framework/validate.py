@@ -30,7 +30,7 @@ import re
 # <tld>: the top-level domain after the last dot (but not including that
 #   final dot)
 #
-_RFC_2821_EMAIL_REGEX = r"""(?x)
+_RFC_2821_EMAIL_REGEX = r"""
   (?P<user>
     # Part of the username that comes before any dots that may occur in it.
     # At least one of the listed non-dot characters is required before the
@@ -70,11 +70,11 @@ _RFC_2821_EMAIL_REGEX = r"""(?x)
 # within a string (or with <re>.match() to find email addresses at the
 # beginning of a string that may be followed by trailing characters,
 # since <re>.match() implicitly anchors at the beginning of the string)
-RE_EMAIL_SEARCH = re.compile(_RFC_2821_EMAIL_REGEX)
+RE_EMAIL_SEARCH = re.compile(_RFC_2821_EMAIL_REGEX, re.X)
 
 # object used with <re>.match to find strings that contain *only* a single
 # email address (by adding the end-of-string anchor $)
-RE_EMAIL_ONLY = re.compile('^%s$' % _RFC_2821_EMAIL_REGEX)
+RE_EMAIL_ONLY = re.compile('^%s$' % _RFC_2821_EMAIL_REGEX, re.X)
 
 _SCHEME_PATTERN = r'(?:https?|ftp)://'
 _SHORT_HOST_PATTERN = (

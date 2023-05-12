@@ -42,7 +42,7 @@ from tracker import tracker_bizobj
 from tracker import tracker_constants
 
 
-_HOSTPORT_RE = re.compile('^[-a-z0-9.]+(:\d+)?$', re.I)
+_HOSTPORT_RE = re.compile(r'^[-a-z0-9.]+(:\d+)?$', re.I)
 
 
 # TODO(jrobbins): Stop extending MonorailContext and change whole servlet

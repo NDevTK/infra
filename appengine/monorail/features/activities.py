@@ -92,7 +92,7 @@ class ActivityView(template_helpers.PBProxy):
       self.project = project_views.ProjectView(project)
 
     else:
-      logging.warn('unknown activity object %r', pb)
+      logging.warning('unknown activity object %r', pb)
 
     nested_page_data = {
         'activity_type': activity_type,

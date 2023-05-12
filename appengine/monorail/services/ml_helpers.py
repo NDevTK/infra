@@ -29,7 +29,7 @@ from oauth2client.client import Error as Oauth2ClientError
 
 SPAM_COLUMNS = ['verdict', 'subject', 'content', 'email']
 LEGACY_CSV_COLUMNS = ['verdict', 'subject', 'content']
-DELIMITERS = ['\s', '\,', '\.', '\?', '!', '\:', '\(', '\)']
+DELIMITERS = [r'\s', r'\,', r'\.', r'\?', '!', r'\:', r'\(', r'\)']
 
 # Must be identical to settings.spam_feature_hashes.
 SPAM_FEATURE_HASHES = 500

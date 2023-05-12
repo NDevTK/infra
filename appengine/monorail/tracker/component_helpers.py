@@ -32,11 +32,15 @@ def ParseComponentRequest(mr, post_data, services):
   deprecated = 'deprecated' in post_data
 
   admin_usernames = [
-      uname.strip() for uname in re.split('[,;\s]+', post_data['admins'])
-      if uname.strip()]
+      uname.strip()
+      for uname in re.split(r'[,;\s]+', post_data['admins'])
+      if uname.strip()
+  ]
   cc_usernames = [
-      uname.strip() for uname in re.split('[,;\s]+', post_data['cc'])
-      if uname.strip()]
+      uname.strip()
+      for uname in re.split(r'[,;\s]+', post_data['cc'])
+      if uname.strip()
+  ]
   all_user_ids = services.user.LookupUserIDs(
       mr.cnxn, admin_usernames + cc_usernames, autocreate=True)
 
@@ -59,8 +63,10 @@ def ParseComponentRequest(mr, post_data, services):
       cc_ids.append(cc_id)
 
   label_strs = [
-    lab.strip() for lab in re.split('[,;\s]+', post_data['labels'])
-    if lab.strip()]
+      lab.strip()
+      for lab in re.split(r'[,;\s]+', post_data['labels'])
+      if lab.strip()
+  ]
 
   label_ids = services.config.LookupLabelIDs(
       mr.cnxn, mr.project_id, label_strs, autocreate=True)

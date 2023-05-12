@@ -26,7 +26,7 @@ class JsonFeedTest(unittest.TestCase):
 
   def testGet(self):
     """Tests handling of GET requests."""
-    feed = TestableJsonFeed()
+    feed = _TestableJsonFeed()
 
     # all expected args are present + a bonus arg that should be ignored
     feed.mr = testing_helpers.MakeMonorailRequest(
@@ -39,7 +39,7 @@ class JsonFeedTest(unittest.TestCase):
 
   def testPost(self):
     """Tests handling of POST requests."""
-    feed = TestableJsonFeed()
+    feed = _TestableJsonFeed()
     feed.mr = testing_helpers.MakeMonorailRequest(
         path='/foo/bar/wee?sna=foo', method='POST',
         params={'a': '123', 'z': 'zebra'})
@@ -50,7 +50,7 @@ class JsonFeedTest(unittest.TestCase):
     self.assertEqual(1, len(feed.json_data))
 
   def testSecurityTokenChecked_BadToken(self):
-    feed = TestableJsonFeed()
+    feed = _TestableJsonFeed()
     feed.mr = testing_helpers.MakeMonorailRequest(
         user_info={'user_id': 555})
     # Note that feed.mr has no token set.
@@ -62,7 +62,7 @@ class JsonFeedTest(unittest.TestCase):
     self.assertRaises(xsrf.TokenIncorrect, feed.post)
 
   def testSecurityTokenChecked_HandlerDoesNotNeedToken(self):
-    feed = TestableJsonFeed()
+    feed = _TestableJsonFeed()
     feed.mr = testing_helpers.MakeMonorailRequest(
         user_info={'user_id': 555})
     # Note that feed.mr has no token set.
@@ -71,21 +71,21 @@ class JsonFeedTest(unittest.TestCase):
     feed.post()
 
   def testSecurityTokenChecked_AnonUserDoesNotNeedToken(self):
-    feed = TestableJsonFeed()
+    feed = _TestableJsonFeed()
     feed.mr = testing_helpers.MakeMonorailRequest()
     # Note that feed.mr has no token set, but also no auth.user_id.
     feed.get()
     feed.post()
 
   def testSameAppOnly_ExternallyAccessible(self):
-    feed = TestableJsonFeed()
+    feed = _TestableJsonFeed()
     feed.mr = testing_helpers.MakeMonorailRequest()
     # Note that request has no X-Appengine-Inbound-Appid set.
     feed.get()
     feed.post()
 
   def testSameAppOnly_InternalOnlyCalledFromSameApp(self):
-    feed = TestableJsonFeed()
+    feed = _TestableJsonFeed()
     feed.CHECK_SAME_APP = True
     feed.mr = testing_helpers.MakeMonorailRequest()
     app_id = app_identity.get_application_id()
@@ -94,7 +94,7 @@ class JsonFeedTest(unittest.TestCase):
     feed.post()
 
   def testSameAppOnly_InternalOnlyCalledExternally(self):
-    feed = TestableJsonFeed()
+    feed = _TestableJsonFeed()
     feed.CHECK_SAME_APP = True
     feed.mr = testing_helpers.MakeMonorailRequest()
     # Note that request has no X-Appengine-Inbound-Appid set.
@@ -107,7 +107,7 @@ class JsonFeedTest(unittest.TestCase):
     self.assertEqual(http_client.FORBIDDEN, feed.response.status_code)
 
   def testSameAppOnly_InternalOnlyCalledFromWrongApp(self):
-    feed = TestableJsonFeed()
+    feed = _TestableJsonFeed()
     feed.CHECK_SAME_APP = True
     feed.mr = testing_helpers.MakeMonorailRequest()
     feed.mr.request.headers['X-Appengine-Inbound-Appid'] = 'wrong'
@@ -120,10 +120,10 @@ class JsonFeedTest(unittest.TestCase):
     self.assertEqual(http_client.FORBIDDEN, feed.response.status_code)
 
 
-class TestableJsonFeed(jsonfeed.JsonFeed):
+class _TestableJsonFeed(jsonfeed.JsonFeed):
 
   def __init__(self):
-    super(TestableJsonFeed, self).__init__(services=service_manager.Services())
+    super(_TestableJsonFeed, self).__init__(services=service_manager.Services())
 
     self.response_data = None
     self.handle_request_called = False

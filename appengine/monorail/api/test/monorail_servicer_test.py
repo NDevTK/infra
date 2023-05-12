@@ -74,11 +74,11 @@ class ListSomethingRequest(testing_helpers.Blank):
   pass
 
 
-class TestableServicer(monorail_servicer.MonorailServicer):
+class _TestableServicer(monorail_servicer.MonorailServicer):
   """Fake servicer class."""
 
   def __init__(self, services):
-    super(TestableServicer, self).__init__(services)
+    super(_TestableServicer, self).__init__(services)
     self.was_called = False
     self.seen_mc = None
     self.seen_request = None
@@ -127,7 +127,7 @@ class MonorailServicerTest(unittest.TestCase):
     self.allowed_domain_user = self.services.user.TestAddUser(
         'chickenchicken@google.com', 333)
     self.test_user = self.services.user.TestAddUser('test@example.com', 420)
-    self.svcr = TestableServicer(self.services)
+    self.svcr = _TestableServicer(self.services)
     self.nonmember_token = xsrf.GenerateToken(222, xsrf.XHR_SERVLET_PATH)
     self.request = UpdateSomethingRequest(exc_class=None)
     self.prpc_context = context.ServicerContext()
