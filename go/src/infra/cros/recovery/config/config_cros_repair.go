@@ -1936,7 +1936,6 @@ func crosRepairActions() map[string]*Action {
 		"Read BIOS from DUT by servo": {
 			Docs: []string{
 				"Read GBB flags from the DUT by servo.",
-				"Set 40 minutes as some FW BIOS is too big and take time to flash it.",
 			},
 			Dependencies: []string{
 				"Setup has servo info",
@@ -1946,12 +1945,11 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"remove_file:false",
 			},
-			ExecTimeout: &durationpb.Duration{Seconds: 2400},
+			ExecTimeout: &durationpb.Duration{Seconds: 600},
 		},
 		"Set GBB flags to 0x18 by servo": {
 			Docs: []string{
 				"Force to set GBB flags to 0x18 to boot in DEV mode and enable to boot from USB-drive.",
-				"Set 40 minutes as some FW BIOS is too big and take time to flash it.",
 				"Allowed to fail as flags can applied but fail by some reason",
 			},
 			Dependencies: []string{
@@ -1962,7 +1960,7 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"gbb_flags:0x18",
 			},
-			ExecTimeout:            &durationpb.Duration{Seconds: 2400},
+			ExecTimeout:            &durationpb.Duration{Seconds: 300},
 			AllowFailAfterRecovery: true,
 		},
 		"Power cycle DUT by RPM and wait": {

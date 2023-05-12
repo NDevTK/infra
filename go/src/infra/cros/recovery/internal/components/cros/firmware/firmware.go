@@ -21,82 +21,12 @@ import (
 	"infra/cros/recovery/logger/metrics"
 )
 
-// ReadAPInfoRequest holds request date to read AP info.
-type ReadAPInfoRequest struct {
-	FilePath string
-	// Force extract AP from the DUT.
-	ForceExtractAPFile bool
-	GBBFlags           bool
-	Keys               bool
-}
-
-// ReadAPInfoResponse holds response of AP info.
-type ReadAPInfoResponse struct {
-	GBBFlagsRaw string
-	GBBFlags    int
-	Keys        []string
-}
-
 // Regexp that match to output of `crosid` from a given DUT.
 // Below is an example output of `crosid`:
 // SKU='163840'
 // CONFIG_INDEX='88'
 // FIRMWARE_MANIFEST_KEY='nirwen_ufs'
 var firmwareManifestRegexp = regexp.MustCompile("FIRMWARE_MANIFEST_KEY='(.*)'")
-
-// ReadAPInfoByServo read AP info from DUT.
-//
-// AP will be extracted from the DUT to flash back with changes.
-func ReadAPInfoByServo(ctx context.Context, req *ReadAPInfoRequest, run components.Runner, servod components.Servod, log logger.Logger) (*ReadAPInfoResponse, error) {
-	if run == nil || servod == nil || log == nil {
-		return nil, errors.Reason("read ap info: run, servod or logger is not provided").Err()
-	}
-	p, err := NewProgrammer(ctx, run, servod, log)
-	if err != nil {
-		return nil, errors.Annotate(err, "read ap info").Err()
-	}
-	defer func() {
-		if cerr := p.Close(ctx); cerr != nil {
-			log.Debugf("Close programmer fail: %s", cerr)
-		}
-	}()
-	p.Prepare(ctx)
-	if err := p.ExtractAP(ctx, req.FilePath, req.ForceExtractAPFile); err != nil {
-		return nil, errors.Annotate(err, "read ap info").Err()
-	}
-	res := &ReadAPInfoResponse{}
-	if req.GBBFlags {
-		cmd := fmt.Sprintf("gbb_utility --get --flags %s", req.FilePath)
-		gbbOut, err := run(ctx, 30*time.Second, cmd)
-		if err != nil {
-			return nil, errors.Annotate(err, "read ap info: read flags").Err()
-		}
-		// Parsing output to extract real GBB value.
-		parts := strings.Split(gbbOut, ":")
-		if len(parts) < 2 {
-			return nil, errors.Annotate(err, "read ap info: gbb not found").Err()
-		} else if raw := strings.TrimSpace(parts[1]); raw == "" {
-			return nil, errors.Annotate(err, "read ap info: gbb not found").Err()
-		} else {
-			log.Infof("Read GBB raw: %v", raw)
-			res.GBBFlagsRaw = raw
-		}
-		gbb, err := gbbToInt(res.GBBFlagsRaw)
-		if err != nil {
-			return nil, errors.Annotate(err, "read ap info").Err()
-		}
-		log.Debugf("Read GBB flags: %v", gbb)
-		res.GBBFlags = gbb
-	}
-	if req.Keys {
-		if keys, err := readAPKeysFromFile(ctx, req.FilePath, run, log); err != nil {
-			return nil, errors.Annotate(err, "read ap info").Err()
-		} else {
-			res.Keys = keys
-		}
-	}
-	return res, nil
-}
 
 const (
 	DevSignedFirmwareKeyPrefix = "b11d"
@@ -122,44 +52,6 @@ func readAPKeysFromFile(ctx context.Context, filePath string, run components.Run
 	}
 	log.Debugf("Read firmware keys: %v", out)
 	return strings.Split(out, "\n"), nil
-}
-
-// SetApInfoByServoRequest holds and provides info to update AP.
-type SetApInfoByServoRequest struct {
-	// Path to where AP used or will be extracted
-	FilePath string
-	// Force extract AP from the DUT.
-	ForceExtractAPFile bool
-	// Indicates if --force flag should be specified when invoke AP programmer.
-	ForceUpdate bool
-	// GBB flags value need to be set to AP.
-	// Example: 0x18
-	GBBFlags string
-}
-
-// SetApInfoByServo sets info to AP on the DUT by servo.
-//
-// AP will be extracted from the DUT to flash back with changes.
-func SetApInfoByServo(ctx context.Context, req *SetApInfoByServoRequest, run components.Runner, servod components.Servod, log logger.Logger) error {
-	if run == nil || servod == nil || log == nil {
-		return errors.Reason("set ap info: run, servod or logger is not provided").Err()
-	}
-	p, err := NewProgrammer(ctx, run, servod, log)
-	if err != nil {
-		return errors.Annotate(err, "set ap info").Err()
-	}
-	defer func() {
-		if cerr := p.Close(ctx); cerr != nil {
-			log.Debugf("Close programmer fail: %s", cerr)
-		}
-	}()
-	p.Prepare(ctx)
-	if err := p.ExtractAP(ctx, req.FilePath, req.ForceExtractAPFile); err != nil {
-		return errors.Annotate(err, "set ap info").Err()
-	}
-	log.Debugf("Set AP info: starting flashing AP to the DUT")
-	err = p.ProgramAP(ctx, req.FilePath, req.GBBFlags, req.ForceUpdate)
-	return errors.Annotate(err, "set ap info: read flags").Err()
 }
 
 const (

@@ -15,7 +15,6 @@ func crosDeployPlan() *Plan {
 		CriticalActions: []string{
 			"Set state: needs_deploy",
 			"Check stable versions exist",
-			"Clean up",
 			"Download stable version OS image to servo usbkey if necessary",
 			"Device is pingable before deploy",
 			"DUT is on test channel OS",
@@ -304,18 +303,6 @@ func deployActions() map[string]*Action {
 			Dependencies: []string{
 				"Update FW from fw-image by servo and set GBB to 0x18",
 				"Install OS in DEV mode by USB-drive",
-			},
-			ExecName: "sample_pass",
-		},
-		"Clean up": {
-			Docs: []string{
-				"Verify that device is set to boot in DEV mode and enabled to boot from USB-drive.",
-			},
-			Conditions: []string{
-				"Setup has servo info",
-			},
-			Dependencies: []string{
-				"cros_remove_default_ap_file_servo_host",
 			},
 			ExecName: "sample_pass",
 		},

@@ -20,92 +20,24 @@ import (
 func readGbbFlagsByServoExec(ctx context.Context, info *execs.ExecInfo) error {
 	servod := info.NewServod()
 	run := info.NewRunner(info.GetChromeos().GetServo().GetName())
-	req := &firmware.ReadAPInfoRequest{
-		FilePath: defaultAPFilePath(info.GetDut()),
-		GBBFlags: true,
-	}
-	res, err := firmware.ReadAPInfoByServo(ctx, req, run, servod, info.NewLogger())
+	rawGBB, err := firmware.ReadGBBByServo(ctx, info.GetExecTimeout(), run, servod)
 	if err != nil {
 		return errors.Annotate(err, "read gbb flags").Err()
 	}
-	log.Debugf(ctx, "Device has GBB flags: %v (%v)", res.GBBFlags, res.GBBFlagsRaw)
-	am := info.GetActionArgs(ctx)
-	// FORCE_DEV_SWITCH_ON 0x00000008 -> 8
-	if am.AsBool(ctx, "validate_in_dev_mode", false) {
-		if res.GBBFlags&8 != 8 {
-			return errors.Reason("read gbb flags: device is not forced to boot to dev mode").Err()
-		}
-	} else {
-		log.Infof(ctx, "Not expected GBB flags for dev-mode")
-	}
-	// FORCE_DEV_BOOT_USB 0x00000010 -> 16
-	if am.AsBool(ctx, "validate_usb_boot_enabled", false) {
-		if res.GBBFlags&16 != 16 {
-			return errors.Reason("read gbb flags: usb boot in dev mode is not enabled").Err()
-		}
-	} else {
-		log.Infof(ctx, "Not expected GBB flags for usb boot")
-	}
-	if am.AsBool(ctx, "remove_file", true) {
-		log.Debugf(ctx, "Remove AP image from host")
-		if _, err := run(ctx, 30*time.Second, "rm", "-f", req.FilePath); err != nil {
-			return errors.Annotate(err, "set gbb flags").Err()
-		}
-	}
-	return nil
-}
-
-func checkIfApHasDevSignedImageExec(ctx context.Context, info *execs.ExecInfo) error {
-	servod := info.NewServod()
-	run := info.NewRunner(info.GetChromeos().GetServo().GetName())
-	req := &firmware.ReadAPInfoRequest{
-		FilePath: defaultAPFilePath(info.GetDut()),
-		Keys:     true,
-	}
-	res, err := firmware.ReadAPInfoByServo(ctx, req, run, servod, info.NewLogger())
-	if err != nil {
-		return errors.Annotate(err, "ap dev signed").Err()
-	}
-	log.Debugf(ctx, "Device has keys: %v", res.Keys)
-	if firmware.IsDevKeys(res.Keys, info.NewLogger()) {
-		return nil
-	}
-	return errors.Reason("ap dev signed: device is not dev signed").Err()
-}
-
-// Please be sure that.
-func removeAPFileFromServoHostExec(ctx context.Context, info *execs.ExecInfo) error {
-	run := info.NewRunner(info.GetChromeos().GetServo().GetName())
-	p := defaultAPFilePath(info.GetDut())
-	if _, err := run(ctx, 30*time.Second, "rm", "-f", p); err != nil {
-		// Do not fail if we cannot remove the file.
-		log.Infof(ctx, "Fail to remove AP file %q from servo-host: %s", p, err)
-	}
+	log.Debugf(ctx, "Device has GBB flags: %v", rawGBB)
 	return nil
 }
 
 func setGbbFlagsByServoExec(ctx context.Context, info *execs.ExecInfo) error {
-	am := info.GetActionArgs(ctx)
-	req := &firmware.SetApInfoByServoRequest{
-		FilePath: defaultAPFilePath(info.GetDut()),
-		// Set gbb flags to 0x18 to force dev boot and enable boot from USB.
-		GBBFlags:           am.AsString(ctx, "gbb_flags", ""),
-		ForceExtractAPFile: am.AsBool(ctx, "force_extract_ap", false),
-		ForceUpdate:        am.AsBool(ctx, "force_update", false),
-	}
+	actionArgs := info.GetActionArgs(ctx)
 	servod := info.NewServod()
 	run := info.NewRunner(info.GetChromeos().GetServo().GetName())
-	if err := firmware.SetApInfoByServo(ctx, req, run, servod, info.NewLogger()); err != nil {
+	gbbHex := actionArgs.AsString(ctx, "gbb_flags", "")
+	if err := firmware.SetGBBByServo(ctx, gbbHex, info.GetExecTimeout(), run, servod); err != nil {
 		return errors.Annotate(err, "set gbb flags").Err()
 	}
-	if am.AsBool(ctx, "remove_file", true) {
-		log.Debugf(ctx, "Remove AP image from host")
-		if _, err := run(ctx, 30*time.Second, "rm", "-f", req.FilePath); err != nil {
-			// Do not fail if we cannot remove the file.
-			log.Infof(ctx, "Fail to remove AP file %q from servo-host: %s", req.FilePath, err)
-		}
-	}
-	if !am.AsBool(ctx, "prevent_reboot", false) {
+	if actionArgs.AsBool(ctx, "force_reboot", false) {
+		log.Debugf(ctx, "Proceed to reboot by servo")
 		if err := servod.Set(ctx, "power_state", "reset"); err != nil {
 			return errors.Annotate(err, "set gbb flags").Err()
 		}
@@ -160,12 +92,6 @@ func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error
 	return errors.Annotate(err, mn).Err()
 }
 
-// DefaultAPFilePath provides default path to AP file.
-// Path used to minimize cycle to read AP from the DUT and other operation over it.
-func defaultAPFilePath(d *tlw.Dut) string {
-	return fmt.Sprintf("/tmp/bios_%v.bin", d.Name)
-}
-
 // defaultFwFolderPath provides default path to directory used for firmware extraction.
 func defaultFwFolderPath(d *tlw.Dut) string {
 	return fmt.Sprintf("/mnt/stateful_partition/tmp/fw_%v", d.Name)
@@ -181,9 +107,7 @@ func disableSoftwareWriteProtectionByServo(ctx context.Context, info *execs.Exec
 
 func init() {
 	execs.Register("cros_read_gbb_by_servo", readGbbFlagsByServoExec)
-	execs.Register("cros_ap_is_dev_signed_by_servo", checkIfApHasDevSignedImageExec)
 	execs.Register("cros_set_gbb_by_servo", setGbbFlagsByServoExec)
-	execs.Register("cros_remove_default_ap_file_servo_host", removeAPFileFromServoHostExec)
 	execs.Register("cros_update_fw_with_fw_image_by_servo", updateFwWithFwImageByServo)
 	execs.Register("cros_disable_software_write_protection_by_servo", disableSoftwareWriteProtectionByServo)
 }
