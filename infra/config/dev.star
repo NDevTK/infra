@@ -569,6 +569,9 @@ def fakebuild_builder(name, steps, sleep_min_sec, sleep_max_sec, build_numbers, 
         service_account = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
         execution_timeout = sleep_max_sec * steps * time.second + 10 * time.minute,
         build_numbers = build_numbers,
+        experiments = {
+            "luci.buildbucket.omit_default_packages": 100,
+        },
         caches = [
             swarming.cache(
                 path = "missing1",
@@ -632,6 +635,9 @@ def fakebuild_tree_builder(name, children, batch_size, builder, sleep_min_sec, s
         },
         service_account = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
         build_numbers = build_numbers,
+        experiments = {
+            "luci.buildbucket.omit_default_packages": 100,
+        },
         schedule = schedule,
     )
 
@@ -670,6 +676,9 @@ def fakebuild_search_builder(name, steps, search_steps, sleep_min_sec, sleep_max
         },
         service_account = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
         build_numbers = build_numbers,
+        experiments = {
+            "luci.buildbucket.omit_default_packages": 100,
+        },
     )
 
 # Builders run 100 sleep steps then do 10 search builds.

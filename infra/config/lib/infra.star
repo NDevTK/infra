@@ -155,6 +155,8 @@ def builder(
         ),
         experiments = {
             "luci.buildbucket.backend_go": 100,
+            # TODO(crbug.com/1393420): remove this.
+            "luci.buildbucket.omit_python2": 20,
         },
     )
 
