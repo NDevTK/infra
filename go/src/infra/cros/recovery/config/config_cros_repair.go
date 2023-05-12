@@ -20,6 +20,7 @@ func crosRepairPlan() *Plan {
 			"Set dev_boot_usb is enabled",
 			"Verify if booted from priority kernel",
 			"Verify rootfs is on fs-verity",
+			"Has repair-request for re-image by USB-key",
 			"Has repair-request for re-provision",
 			"Check if last provision was good",
 			"Python is present",
@@ -311,6 +312,19 @@ func crosRepairActions() map[string]*Action {
 			},
 			RecoveryActions: []string{
 				"Quick provision OS",
+				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode by USB-drive",
+			},
+		},
+		"Has repair-request for re-image by USB-key": {
+			Docs: []string{
+				"Check if REIMAGE_BY_USBKEY repair-request is present.",
+			},
+			ExecName: "dut_has_any_repair_requests",
+			ExecExtraArgs: []string{
+				"requests:REIMAGE_BY_USBKEY",
+			},
+			RecoveryActions: []string{
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode by USB-drive",
 			},
