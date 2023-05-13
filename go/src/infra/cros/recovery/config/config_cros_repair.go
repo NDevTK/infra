@@ -16,6 +16,7 @@ func crosRepairPlan() *Plan {
 			"Device is pingable",
 			"Device is SSHable",
 			"Collect logs and crashinfo",
+			"Read bootId",
 			"Verify internal storage",
 			"Set dev_boot_usb is enabled",
 			"Verify if booted from priority kernel",
@@ -55,6 +56,7 @@ func crosRepairPlan() *Plan {
 			"Set state: ready",
 			"Update special device labels",
 			"Collect dmesg logs from DUT",
+			"Verify bootId and compare",
 			"Record type C status",
 			"All repair-requests resolved",
 			"Reset DUT-state reason",
@@ -3281,6 +3283,28 @@ func crosRepairActions() map[string]*Action {
 				"Checks if all repair requests are resolved",
 			},
 			ExecName: "dut_has_no_repair_requests",
+		},
+		"Read bootId": {
+			Docs: []string{
+				"Read bootid and public to config scope.",
+			},
+			ExecName: "cros_read_bootid",
+			ExecExtraArgs: []string{
+				"skip_empty:true",
+				"publish:true",
+			},
+		},
+		"Verify bootId and compare": {
+			Docs: []string{
+				"Read bootid and compare with bootId when we started this plan.",
+			},
+			ExecName: "cros_read_bootid",
+			ExecExtraArgs: []string{
+				"skip_empty:true",
+				"compare:true",
+			},
+			// TODO(b/270760403): Make action critical and apply recovery actions.
+			AllowFailAfterRecovery: true,
 		},
 	}
 }

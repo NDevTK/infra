@@ -14,6 +14,7 @@ import (
 	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/scopes"
 )
 
@@ -40,6 +41,7 @@ func readBootIdExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	log.Debugf(ctx, "Host has bootID: %q", bootId)
 	if skipEmpty && bootId == "" {
+		info.AddObservation(metrics.NewStringObservation("boot_id_empty", "skipped"))
 		log.Debugf(ctx, "BootId is empty!")
 		return nil
 	}
