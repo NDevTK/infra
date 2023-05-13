@@ -21,7 +21,6 @@ import (
 	"infra/cros/recovery/internal/components/servo"
 	components_topology "infra/cros/recovery/internal/components/servo/topology"
 	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/execs/cros"
 	"infra/cros/recovery/internal/execs/cros/battery"
 	"infra/cros/recovery/internal/execs/servo/topology"
 	"infra/cros/recovery/internal/log"
@@ -882,53 +881,6 @@ func servoECPowerStateMatchExec(ctx context.Context, info *execs.ExecInfo) error
 	return errors.Reason("servo EC power state match: no match found").Err()
 }
 
-const (
-	// rebootCmd is the reboot command that is used to restart the servo v3.
-	rebootCmd = "sync & sleep 5; reboot & sleep 60; reboot -f & sleep 10; reboot -nf & sleep 10; telinit 6"
-	// runCmdInBackgroundCmd will run the cmd in the background and return immediately returns immediately without waiting for the command's completion.
-	runCmdInBackgroundCmd = `( %s ) </dev/null >/dev/null 2>&1 & echo -n $!`
-)
-
-// servoHostV3RebootExec will reboot the servo host v3 and check
-// whether the reboot succeed by comparing the old reboot id and the
-// new reboot id after restart.
-//
-// @params: actionArgs should be in the format of:
-// Ex: ["reboot_timeout:x"]
-func servoHostV3RebootExec(ctx context.Context, info *execs.ExecInfo) error {
-	argsMap := info.GetActionArgs(ctx)
-	// Timeout to for executing the reboot command on the labstation.
-	rebootTimeout := argsMap.AsDuration(ctx, "reboot_timeout", 10, time.Second)
-	run := info.DefaultRunner()
-	oldBootId, err := cros.BootID(ctx, run)
-	if err != nil {
-		log.Debugf(ctx, "Servo Host V3 Reboot: (non-critical) could not determine the old boot id, err :%q. Continuing with reboot action.", err)
-	}
-	log.Debugf(ctx, "Servo Host V3 Reboot: Old boot id: %q", oldBootId)
-	// Restart the device using the reboot command.
-	if _, err := run(ctx, rebootTimeout, fmt.Sprintf(runCmdInBackgroundCmd, rebootCmd)); err != nil {
-		return errors.Annotate(err, "servo host v3 reboot").Err()
-	}
-	// Wait for the complete restart, i.e. wait for the device to go
-	// down and come up again.
-	if restartErr := cros.WaitForRestart(ctx, info); restartErr != nil {
-		return errors.Annotate(restartErr, "servo host v3 reboot").Err()
-	}
-	// We will compare the old and new boot IDs only when the old boot
-	// ID is known.
-	if oldBootId != "" {
-		newBootId, err := cros.BootID(ctx, run)
-		if err != nil {
-			return errors.Annotate(err, "servo host v3 reboot").Err()
-		}
-		if newBootId == oldBootId {
-			return errors.Reason("servo host v3 reboot: reboot fail as new boot id: %s equal to old boot id: %s", newBootId, oldBootId).Err()
-		}
-	}
-	log.Debugf(ctx, "Servo Host V3 Reboot: reboot is successful")
-	return nil
-}
-
 func init() {
 	execs.Register("servo_host_servod_init", servodInitActionExec)
 	execs.Register("servo_host_servod_stop", servodStopActionExec)
@@ -952,5 +904,4 @@ func init() {
 	execs.Register("servo_set_ec_uart_cmd", servoSetEcUartCmdExec)
 	execs.Register("servo_power_state_reset", servoPowerStateResetExec)
 	execs.Register("servo_power_state_match", servoECPowerStateMatchExec)
-	execs.Register("servo_host_v3_reboot", servoHostV3RebootExec)
 }
