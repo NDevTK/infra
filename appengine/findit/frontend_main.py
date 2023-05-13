@@ -8,10 +8,8 @@ import gae_ts_mon
 
 from gae_libs import appengine_util
 from gae_libs.pipelines import pipeline_status_ui
-from handlers import auto_revert_metrics
 from handlers import check_duplicate_failures
 from handlers import config
-from handlers import failure_log
 from handlers import home
 from handlers import list_analyses
 from handlers import pipeline_errors_dashboard
@@ -33,11 +31,9 @@ if appengine_util.IsInProductionApp():
 # waterfall frontend.
 waterfall_frontend_web_pages_handler_mappings = [
     ('/', home.Home),
-    ('/waterfall/auto-revert-metrics', auto_revert_metrics.AutoRevertMetrics),
     ('/waterfall/check-duplicate-failures',
      check_duplicate_failures.CheckDuplicateFailures),
     ('/waterfall/config', config.Configuration),
-    ('/waterfall/failure-log', failure_log.FailureLog),
     ('/waterfall/list-failures', list_analyses.ListAnalyses),
     ('/waterfall/pipeline-errors-dashboard',
      pipeline_errors_dashboard.PipelineErrorsDashboard),
