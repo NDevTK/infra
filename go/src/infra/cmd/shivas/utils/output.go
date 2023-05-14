@@ -2113,3 +2113,9 @@ func (sRes *SummaryResultsTable) PrintResultsTable(out *os.File, fitWidth bool) 
 	// Print legend for easy reference.
 	fmt.Fprintf(out, "\n\nLegend:\n\tSuccess\t%s\n\tFail\t%s\n\tSkip\t%s\n", SummaryResultsLegendPass, SummaryResultsLegendFail, SummaryResultsLegendSkip)
 }
+
+func GetSingleMachineLSE(ctx context.Context, ic ufsAPI.FleetClient, name string) (proto.Message, error) {
+	return ic.GetMachineLSE(ctx, &ufsAPI.GetMachineLSERequest{
+		Name: ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, name),
+	})
+}

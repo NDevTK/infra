@@ -143,7 +143,7 @@ func (c *getDut) innerRun(a subcommands.Application, args []string, env subcomma
 	full := utils.FullMode(c.outputFlags.Full())
 	var res []proto.Message
 	if len(args) > 0 {
-		res = utils.ConcurrentGet(ctx, ic, args, c.getSingle)
+		res = utils.ConcurrentGet(ctx, ic, args, utils.GetSingleMachineLSE)
 	} else {
 		res, err = utils.BatchList(ctx, ic, host.ListHosts, c.formatFilters(), c.pageSize, c.keysOnly, full)
 	}
@@ -173,12 +173,6 @@ func (c *getDut) getHostInfoStore(ctx context.Context, a subcommands.Application
 		fmt.Printf("%s\n", contents)
 	}
 	return nil
-}
-
-func (c *getDut) getSingle(ctx context.Context, ic ufsAPI.FleetClient, name string) (proto.Message, error) {
-	return ic.GetMachineLSE(ctx, &ufsAPI.GetMachineLSERequest{
-		Name: ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, name),
-	})
 }
 
 func (c *getDut) formatFilters() []string {
