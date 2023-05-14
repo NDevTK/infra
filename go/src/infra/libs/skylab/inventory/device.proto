@@ -313,7 +313,7 @@ message SchedulableLabels {
 
 // Keep sorted by field name.
 //
-// NEXT TAG: 21
+// NEXT TAG: 22
 message HardwareCapabilities {
   optional bool atrus = 17;
   optional bool bluetooth = 7;
@@ -347,6 +347,17 @@ message HardwareCapabilities {
     CARRIER_CMX500 = 24;
   }
   optional Carrier carrier = 16;
+
+  // Next tag: 3
+  // We care about the both true/false cases, so we need a default value to
+  // avoid "false" getting added to an empty struct
+  enum CbxState {
+    CBX_STATE_UNSPECIFIED = 0;
+    CBX_STATE_TRUE = 1;
+    CBX_STATE_FALSE = 2;
+  }
+  // Whether this device has Chromebook X capabilities
+  optional CbxState cbx = 21;
 
   // Mapping between starfish slot_id and carrier name.
   optional string starfish_slot_mapping = 20;

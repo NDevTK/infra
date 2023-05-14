@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -113,6 +113,7 @@ capabilities {
   carrier: 2
   bluetooth: true
   atrus: true
+  cbx: 0
 }
 board: "boardval"
 arc: true
@@ -264,6 +265,7 @@ capabilities {
   carrier: 2
   bluetooth: true
   atrus: true
+  cbx: 0
 }
 board: "boardval"
 arc: true

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -130,6 +130,7 @@ capabilities {
   starfish_slot_mapping: "1_verizon,2_tmobile,4_att"
   bluetooth: true
   atrus: true
+  cbx: 0
 }
 board: "boardval"
 arc: true
@@ -728,6 +729,7 @@ capabilities {
   starfish_slot_mapping: "1_verizon,2_tmobile,4_att"
   bluetooth: true
   atrus: true
+  cbx: 0
 }
 board: "boardval"
 arc: true

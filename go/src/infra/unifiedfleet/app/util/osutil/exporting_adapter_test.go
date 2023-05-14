@@ -436,6 +436,7 @@ common {
 			atrus: true
 			bluetooth: true
 			carrier: CARRIER_ATT
+			cbx: CBX_STATE_FALSE
 			detachablebase: true
 			fingerprint: true
 			gpu_family: "test_gpu"

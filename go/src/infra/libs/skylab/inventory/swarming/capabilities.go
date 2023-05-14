@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -113,6 +113,13 @@ func otherCapabilitiesConverter(dims Dimensions, ls *inventory.SchedulableLabels
 	if v := c.GetCarrier(); v != inventory.HardwareCapabilities_CARRIER_INVALID {
 		dims["label-carrier"] = []string{v.String()}
 	}
+	if v := c.GetCbx(); v != inventory.HardwareCapabilities_CBX_STATE_UNSPECIFIED {
+		if v == inventory.HardwareCapabilities_CBX_STATE_TRUE {
+			dims["label-cbx"] = []string{"True"}
+		} else {
+			dims["label-cbx"] = []string{"False"}
+		}
+	}
 	for _, v := range c.GetVideoAcceleration() {
 		appendDim(dims, "label-video_acceleration", v.String())
 	}
@@ -125,6 +132,14 @@ func otherCapabilitiesReverter(ls *inventory.SchedulableLabels, d Dimensions) Di
 			*c.Carrier = inventory.HardwareCapabilities_Carrier(p)
 		}
 		delete(d, "label-carrier")
+	}
+	if v, ok := getLastStringValue(d, "label-cbx"); ok {
+		if v == "True" {
+			*c.Cbx = inventory.HardwareCapabilities_CBX_STATE_TRUE
+		} else {
+			*c.Cbx = inventory.HardwareCapabilities_CBX_STATE_FALSE
+		}
+		delete(d, "label-cbx")
 	}
 	c.VideoAcceleration = make([]inventory.HardwareCapabilities_VideoAcceleration, len(d["label-video_acceleration"]))
 	for i, v := range d["label-video_acceleration"] {

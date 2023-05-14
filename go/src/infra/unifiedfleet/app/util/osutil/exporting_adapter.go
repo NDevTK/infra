@@ -503,6 +503,17 @@ func setDutState(l *inventory.SchedulableLabels, s *chromeosLab.DutState) {
 	setCr50Configs(l, s)
 }
 
+func setCbx(l *inventory.SchedulableLabels, d *chromeosLab.DeviceUnderTest) {
+	c := l.Capabilities
+	var cbx inventory.HardwareCapabilities_CbxState
+	if d.GetCbx() {
+		cbx = inventory.HardwareCapabilities_CBX_STATE_TRUE
+	} else {
+		cbx = inventory.HardwareCapabilities_CBX_STATE_FALSE
+	}
+	c.Cbx = &cbx
+}
+
 func createDutLabels(machine *ufspb.Machine, devConfig *device.Config, osType *inventory.SchedulableLabels_OSType) *inventory.SchedulableLabels {
 	// Use GetXXX in case any object is nil.
 	platform := machine.GetChromeosMachine().GetBuildTarget()
@@ -601,6 +612,7 @@ func adaptV2DutToV1DutSpec(data *ufspb.ChromeOSDeviceData) (*inventory.DeviceUnd
 	setDeviceConfig(labels, devConfig)
 	setManufacturingConfig(labels, data.GetManufacturingConfig())
 	setHwidData(labels, data.GetHwidData())
+	setCbx(labels, dut)
 
 	id := machine.GetName()
 	hostname := lse.GetName()
