@@ -11,8 +11,6 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/civil"
-
-	"infra/appengine/test-resources/api"
 )
 
 // Client is used to fetch metrics from a given data source.
@@ -33,33 +31,13 @@ func (c *Client) Init(project_id string) error {
 
 // Updates the summary tables between the days in the provided
 // UpdateMetricsTableRequest. All rollups (e.g. weekly/monthly) will be updated
-// as well
-func (c *Client) UpdateSummary(ctx context.Context, req *api.UpdateMetricsTableRequest) (*api.UpdateMetricsTableResponse, error) {
-	fromDate, err := civil.ParseDate(req.FromDate)
-	if err != nil {
-		return nil, err
-	}
-	toDate, err := civil.ParseDate(req.ToDate)
-	if err != nil {
-		return nil, err
-	}
-	// toDate should be inclusive
-	for date := fromDate; !toDate.Before(date); date = date.AddDays(1) {
-		err := c.UpdateDateSummary(ctx, date)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return &api.UpdateMetricsTableResponse{}, nil
-}
-
-// Updates the summary tables for a single date. All rollups
-// (e.g. weekly/monthly) will be updated as well
-func (c *Client) UpdateDateSummary(ctx context.Context, date civil.Date) error {
+// as well. The dates are inclusive
+func (c *Client) UpdateSummary(ctx context.Context, fromDate civil.Date, toDate civil.Date) error {
 	q := c.BqClient.Query(c.updateDailySummarySql)
 
 	q.Parameters = []bigquery.QueryParameter{
-		{Name: "run_date", Value: date},
+		{Name: "from_date", Value: fromDate},
+		{Name: "to_date", Value: toDate},
 	}
 
 	job, err := q.Run(ctx)
@@ -75,5 +53,5 @@ func (c *Client) UpdateDateSummary(ctx context.Context, date civil.Date) error {
 		return err
 	}
 
-	return err
+	return nil
 }

@@ -11,6 +11,7 @@ import (
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/civil"
 
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/openid"
@@ -36,8 +37,7 @@ var (
 )
 
 type Client interface {
-	UpdateSummary(context.Context, *api.UpdateMetricsTableRequest) (*api.UpdateMetricsTableResponse, error)
-	UpdateDateSummary(context.Context, civil.Date) error
+	UpdateSummary(ctx context.Context, fromDate civil.Date, toDate civil.Date) error
 }
 
 func main() {
@@ -84,11 +84,13 @@ func updateDailySummary(ctx context.Context) error {
 
 	cDate, err := civil.ParseDate(date)
 	if err != nil {
+		logging.Errorf(ctx, "Failed parsing current date: %s", err)
 		return err
 	}
 
-	err = stats.Client.UpdateDateSummary(ctx, cDate)
+	err = stats.Client.UpdateSummary(ctx, cDate, cDate)
 	if err != nil {
+		logging.Errorf(ctx, "Failed updating current date: %s", err)
 		return err
 	}
 	return nil
@@ -114,11 +116,21 @@ type testResourcesServer struct {
 }
 
 func (s *testResourcesServer) UpdateMetricsTable(ctx context.Context, req *api.UpdateMetricsTableRequest) (*api.UpdateMetricsTableResponse, error) {
-	resp, err := s.Client.UpdateSummary(ctx, req)
+	fromDate, err := civil.ParseDate(req.FromDate)
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	toDate, err := civil.ParseDate(req.ToDate)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.Client.UpdateSummary(ctx, fromDate, toDate)
+
+	if err != nil {
+		return nil, err
+	}
+	return &api.UpdateMetricsTableResponse{}, nil
 }
 
 func (s *testResourcesServer) ListComponents(ctx context.Context, req *api.ListComponentsRequest) (*api.ListComponentsResponse, error) {

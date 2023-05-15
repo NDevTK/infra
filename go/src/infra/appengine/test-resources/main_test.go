@@ -13,38 +13,52 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-type clientMock struct {
-	lastUpdateReq *api.UpdateMetricsTableRequest
-}
+type clientMock struct{}
 
-func (cm *clientMock) UpdateSummary(_ context.Context, req *api.UpdateMetricsTableRequest) (*api.UpdateMetricsTableResponse, error) {
-	cm.lastUpdateReq = req
-	return &api.UpdateMetricsTableResponse{}, nil
-}
-
-func (cm *clientMock) UpdateDateSummary(context.Context, civil.Date) error {
-	panic("must not be called")
+func (cm *clientMock) UpdateSummary(_ context.Context, fromDate civil.Date, toDate civil.Date) error {
+	return nil
 }
 
 func TestUpdateDailySummary(t *testing.T) {
 	t.Parallel()
 
 	ctx := context.Background()
-
-	Convey("Valid request", t, func() {
+	Convey("DailySummary", t, func() {
 		mock := &clientMock{}
 
 		srv := &testResourcesServer{
 			Client: mock,
 		}
-		request := &api.UpdateMetricsTableRequest{
-			FromDate: "2023-01-01",
-			ToDate:   "2023-01-02",
-		}
-		resp, err := srv.UpdateMetricsTable(ctx, request)
+		Convey("Valid request", func() {
+			request := &api.UpdateMetricsTableRequest{
+				FromDate: "2023-01-01",
+				ToDate:   "2023-01-02",
+			}
+			resp, err := srv.UpdateMetricsTable(ctx, request)
 
-		So(err, ShouldBeNil)
-		So(resp, ShouldNotBeNil)
-		So(mock.lastUpdateReq, ShouldResemble, request)
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+		})
+		Convey("Bad from date request", func() {
+			request := &api.UpdateMetricsTableRequest{
+				FromDate: "asdf",
+				ToDate:   "2023-01-02",
+			}
+			resp, err := srv.UpdateMetricsTable(ctx, request)
+
+			So(err, ShouldNotBeNil)
+			So(resp, ShouldBeNil)
+		})
+		Convey("Bad to date request", func() {
+			request := &api.UpdateMetricsTableRequest{
+				FromDate: "2023-01-01",
+				ToDate:   "asdf",
+			}
+			resp, err := srv.UpdateMetricsTable(ctx, request)
+
+			So(err, ShouldNotBeNil)
+			So(resp, ShouldBeNil)
+		})
 	})
+
 }
