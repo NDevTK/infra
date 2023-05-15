@@ -29,12 +29,12 @@ RUN echo 'msttcorefonts msttcorefonts/defoma select note' \
 
 RUN /bin/mkdir /tmp/setup-deps
 RUN /usr/bin/wget -O- \
-      "https://chromium.googlesource.com/chromium/src/+/HEAD/build/install-build-deps.sh?format=TEXT" \
+      "https://chromium.googlesource.com/chromium/src/+/HEAD/build/install-build-deps.py?format=TEXT" \
         | /usr/bin/base64 -d \
-        > /tmp/setup-deps/install-build-deps.sh
-RUN /bin/chmod a+x /tmp/setup-deps/install-build-deps.sh
+        > /tmp/setup-deps/install-build-deps.py
+RUN /bin/chmod a+x /tmp/setup-deps/install-build-deps.py
 # This will also install the Android dependencies.
-RUN /bin/bash -x /tmp/setup-deps/install-build-deps.sh --android --no-chromeos-fonts
+RUN /tmp/setup-deps/install-build-deps.py --android --no-chromeos-fonts
 
 # Cleanup to shrink image sizes.
 RUN /usr/bin/find /var/lib/apt/lists /tmp /var/tmp /usr/share/info \
