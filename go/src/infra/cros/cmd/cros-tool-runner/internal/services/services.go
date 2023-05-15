@@ -51,6 +51,9 @@ const (
 	// Root directory for the cros-test-finder artifacts inside docker.
 	CrosTestFinderRootDirInsideDocker = "/tmp/test"
 
+	// Root directory for the pre-process artifacts inside docker.
+	PreProcessRootDirInsideDocker = "/tmp/test"
+
 	// Directories inside root dir
 	CrosTestDirInsideDocker        = "/tmp/test/cros-test"
 	CrosTestResultsDirInsideDocker = "/tmp/test/results"
@@ -392,6 +395,9 @@ func RunPreProcessCLI(ctx context.Context, image *build_api.ContainerImageInfo, 
 	credsFile := "/creds/"
 	volumes := []string{}
 	volumes = append(volumes, fmt.Sprintf("%s:%s", credsFile, credsFile))
+
+	// TODO: fix this being test-finder dir.
+	volumes = append(volumes, fmt.Sprintf("%s:%s", preProcessDir, filepath.Join(PreProcessRootDirInsideDocker, "pre-process")))
 
 	d := &docker.Docker{
 		Name:               fmt.Sprintf(preProcessContainerNameTemplate, os.Getpid(), time.Now().Unix()),
