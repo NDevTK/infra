@@ -399,6 +399,18 @@ message Chameleon {
   State state = 2;
   // RPMOutlet of the Chameleon.
   RPMOutlet RPMOutlet = 3;
+  // AudioBoxJackPluggerState describes the state of AudioboxJackplugger
+  enum AudioBoxJackPluggerState {
+    AUDIOBOX_JACKPLUGGER_UNSPECIFIED = 0;
+    // Device and software on it is working as expected.
+    AUDIOBOX_JACKPLUGGER_WORKING = 1;
+    // Device is broken or not working as expected.
+    AUDIOBOX_JACKPLUGGER_BROKEN = 2;
+    // Device is not applicable to this testbed
+    AUDIOBOX_JACKPLUGGER_NOT_APPLICABLE = 3;
+  }
+  // State of the AudioBoxJackPlugger
+  AudioBoxJackPluggerState audioboxjackpluggerstate = 4;
 }
 
 // BluetoothPeer models a Bluetooth peer device and its state as used by
