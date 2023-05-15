@@ -413,7 +413,7 @@ func RunPreProcessCLI(ctx context.Context, image *build_api.ContainerImageInfo, 
 		Detach:  false,
 		Network: networkName,
 	}
-	_, err = startService(ctx, d, false, true, "pre-process")
+	_, err = startService(ctx, d, true, true, "pre-process")
 	return err
 
 }
