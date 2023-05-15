@@ -676,3 +676,12 @@ func GetHwidClient(ctx context.Context) (hwid.ClientInterface, error) {
 	}
 	return es.NewHwidClientInterface(ctx)
 }
+
+// GetDeviceConfigClient returns a client for reading DeviceConfigs.
+func GetDeviceConfigClient(ctx context.Context) (external.DeviceConfigClient, error) {
+	es, err := external.GetServerInterface(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return es.NewDeviceConfigInterfaceFactory(ctx, config.Get(ctx).GetCrosInventoryHost())
+}
