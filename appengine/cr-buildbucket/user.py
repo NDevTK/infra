@@ -33,6 +33,8 @@ def _permission(name):
 
 # See all information about a build.
 PERM_BUILDS_GET = _permission('buildbucket.builds.get')
+# See a limited set of information about a build.
+PERM_BUILDS_GET_LIMITED = _permission('buildbucket.builds.getLimited')
 # List and search builds in a bucket.
 PERM_BUILDS_LIST = _permission('buildbucket.builds.list')
 # Schedule new builds in the bucket.
