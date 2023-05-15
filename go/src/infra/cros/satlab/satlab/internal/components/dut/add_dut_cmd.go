@@ -99,7 +99,7 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 	c.setupServoArguments(dockerHostBoxIdentifier)
 
 	if c.zone == "" {
-		c.zone = site.DefaultZone
+		c.zone = site.GetUFSZone()
 	}
 
 	// Update the DNS entry first. This step must run before we deploy the DUT.

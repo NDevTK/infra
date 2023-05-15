@@ -28,7 +28,11 @@ func makeAddShivasFlags(c *addDUT) flagmap {
 		// using a spec file.
 	}
 	if c.zone != "" {
-		// Do not pass the zone.
+		//NOTE: Do not pass the zone.
+		// If you add dut with a zone field, it tries to update the asset's zone.
+		// This feature was added to make it easier for the labops for machine
+		// migration from on zone to another. if want to you pass zone, then also
+		// pass the rack information below.
 	}
 	if c.rack != "" {
 		// Do nothing.
@@ -216,7 +220,7 @@ func registerAddShivasFlags(c *addDUT) {
 	c.Flags.StringVar(&c.newSpecsFile, "f", "", cmdhelp.DUTRegistrationFileText)
 
 	// Asset location fields
-	c.Flags.StringVar(&c.zone, "zone", site.DefaultZone, "Zone that the asset is in. "+cmdhelp.ZoneFilterHelpText)
+	c.Flags.StringVar(&c.zone, "zone", site.GetUFSZone(), "Zone that the asset is in. "+cmdhelp.ZoneFilterHelpText)
 	c.Flags.StringVar(&c.rack, "rack", "", "Rack that the asset is in.")
 
 	// DUT/MachineLSE common fields

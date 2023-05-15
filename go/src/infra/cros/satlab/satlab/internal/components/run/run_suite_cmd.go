@@ -78,9 +78,9 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 	dims := map[string]string{"drone": drone}
 
 	builderId := &buildbucketpb.BuilderID{
-		Project: site.LUCIProject,
-		Bucket:  site.BuilderBucket,
-		Builder: site.CTPBuilder,
+		Project: site.GetLUCIProject(),
+		Bucket:  site.GetCTPBucket(),
+		Builder: site.GetCTPBuilder(),
 	}
 
 	bbClient := &builder.CTPBuilder{
@@ -92,7 +92,7 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 		TestPlan:    tp,
 		BuilderID:   builderId,
 		Dimensions:  dims,
-		ImageBucket: site.GCSBucket,
+		ImageBucket: site.GetGCSImageBucket(),
 		AuthOptions: &site.DefaultAuthOptions,
 		// TRV2:        true,
 	}
@@ -102,12 +102,12 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 		return err
 	}
 
-	moblabClient, err := moblab.NewBuildClient(ctx, option.WithCredentialsFile("/home/satlab/keys/service_account.json"))
+	moblabClient, err := moblab.NewBuildClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
 	if err != nil {
 		return errors.Annotate(err, "satlab new moblab api build client").Err()
 	}
 
-	err = c.innerRunWithClients(ctx, moblabClient, bbClient, site.GCSBucket)
+	err = c.innerRunWithClients(ctx, moblabClient, bbClient, site.GetGCSImageBucket())
 	if err != nil {
 		return errors.Annotate(err, "innerRunWithClients").Err()
 	}

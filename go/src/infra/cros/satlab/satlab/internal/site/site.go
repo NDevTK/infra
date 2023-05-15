@@ -21,16 +21,6 @@ import (
 // AppPrefix is the prefix to use the satlab CLI.
 var AppPrefix = "satlab"
 
-// Buildbucket builder ID
-var (
-	LUCIProject   = os.Getenv("LUCI_PROJECT")
-	BuilderBucket = os.Getenv("BUILDER_BUCKET")
-	CTPBuilder    = os.Getenv("CTP_BUILDER")
-)
-
-// GCSBucket is the partner bucket for staging images.
-var GCSBucket = os.Getenv("GCS_BUCKET")
-
 // DevCrosAdmService is the dev CrOSSkylabAdmin service.
 const DevCrosAdmService = "staging-skylab-bot-fleet.appspot.com"
 
@@ -48,24 +38,50 @@ const ProdUFSService = "ufs.api.cr.dev"
 const Satlab = "satlab"
 
 const (
-	// LUCIProjectEnv is the env var used to determine what LUCI project bb
-	// tasks should run in.
-	LUCIProjectEnv = "LUCI_PROJECT"
+	// CTPBuilderBucketEnv is the env var used to determine what bucket the
+	// ctp task should run in.
+	CTPBuilderBucketEnv = "CTP_BUILDER_BUCKET"
+	// CTPBuilderNameEnv is the env var used to determine what CTP builder
+	// name be used to schedule CTP builds.
+	CTPBuilderNameEnv = "CTP_BUILDER_NAME"
 	// DeployBuilderBucketEnv is the env var used to determine what bucket the
 	// deploy task should run in.
 	DeployBuilderBucketEnv = "DEPLOY_BUILDER_BUCKET"
+	// GCSBucket is the partner bucket for staging images.
+	GCSImageBucketEnv = "GCS_IMAGE_BUCKET"
+	// LUCIProjectEnv is the env var used to determine what LUCI project bb
+	// tasks should run in.
+	LUCIProjectEnv = "LUCI_PROJECT"
 	// UFSNamespaceEnv is the env var used to determine what namespace should
-	// be used to interface with UFS
+	// be used to interface with UFS.
 	UFSNamespaceEnv = "UFS_NAMESPACE"
+	// UFSZoneEnv is the env var used to determine what zone should
+	// be used to interface with UFS.
+	UFSZoneEnv = "UFS_ZONE"
+
+	// ServiceAccountKeyPathEnv defines the Service account key path to be used by
+	// moblab api.
+	ServiceAccountKeyPathEnv = "SERVICE_ACCOUNT_KEY_PATH"
 
 	// DefaultLUCIProject is the LUCI project to specify if `LUCIProjectEnv` is
-	// not present
+	// not present.
 	DefaultLUCIProject = "chromeos"
 	// DefaultDeployBuilderBucket is the bb bucket to specify if
 	// `DeployBuilderBucketEnv` is not specified.
 	DefaultDeployBuilderBucket = "labpack_runner"
+	// DefaultDeployBuilderBucket is the bb bucket to specify if
+	// `CTPBuilderBucketEnv` is not specified.
+	DefaultCTPBuilderBucket = "cros_test_platform"
+	// DefaultCTPBuilderName is the bb bucket to specify if
+	// `CTPBuilderNameEnv` is not specified.
+	DefaultCTPBuilderName = "cros_test_platform"
+	// DefaultGCSImageBucket is the GCS bucket to specify if
+	// `GCSImageBucketEnv` is not specified.
+	DefaultGCSImageBucket = "chromeos-image-archive"
 	// DefaultNamespace is the default namespace to use for all operations.
 	DefaultNamespace = "os"
+	// DefaultZone is the default value for the zone command line flag.
+	DefaultZone = "satlab"
 )
 
 // CommonFlags controls some commonly-used CLI flags.
@@ -180,8 +196,55 @@ func GetDeployBucket() string {
 	return bucket
 }
 
-// DefaultZone is the default value for the zone command line flag.
-const DefaultZone = "satlab"
+// GetCTPBucket determines which bucket we expect any ctp tasks
+// to run in, based on the environment.
+func GetCTPBucket() string {
+	bucket := os.Getenv(CTPBuilderBucketEnv)
+	if bucket == "" {
+		return DefaultCTPBuilderBucket
+	}
+	return bucket
+}
+
+// GetCTPBuilder determines which builder we expect any ctp build
+// to run in, based on the environment.
+func GetCTPBuilder() string {
+	builder := os.Getenv(CTPBuilderNameEnv)
+	if builder == "" {
+		return DefaultCTPBuilderName
+	}
+	return builder
+}
+
+// GetGCSImageBucket determines which Google storage image bucket
+// to use, based on the environment.
+func GetGCSImageBucket() string {
+	imageBucket := os.Getenv(GCSImageBucketEnv)
+	if imageBucket == "" {
+		return DefaultGCSImageBucket
+	}
+	return imageBucket
+}
+
+// GetUFSZone determines which ZONE the DUTs belongs to,
+// based on the environment.
+func GetUFSZone() string {
+	zone := os.Getenv(UFSZoneEnv)
+	if zone == "" {
+		return DefaultZone
+	}
+	return zone
+}
+
+// GetServiceAccountPath specifies the service account key path
+// to be used with moblab api
+func GetServiceAccountPath() string {
+	project := os.Getenv(ServiceAccountKeyPathEnv)
+	if project == "" {
+		return ""
+	}
+	return project
+}
 
 // MaybePrepend adds a prefix with a leading dash unless the string already
 // begins with the prefix in question.
