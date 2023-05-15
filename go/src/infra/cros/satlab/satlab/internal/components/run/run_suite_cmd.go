@@ -194,9 +194,8 @@ func (c *run) validateArgs() error {
 	if c.build == "" {
 		return errors.Reason("-build not specified").Err()
 	}
-	// Set default name of a pool if no information is given
 	if c.pool == "" {
-		c.pool = "xolabs-satlab"
+		return errors.Reason("-pool not specified").Err()
 	}
 	return nil
 }

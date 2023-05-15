@@ -162,7 +162,7 @@ func TestValidateArgs(t *testing.T) {
 			},
 		},
 		{
-			&run{ // no pool, check that default pool is set
+			&run{ // no pool
 				runFlags: runFlags{
 					suite:     "rlz",
 					board:     "zork",
@@ -175,13 +175,7 @@ func TestValidateArgs(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		hasPool := tc.inputCommand.pool != ""
 		err := tc.inputCommand.validateArgs()
-
-		// check that default pool is set in the case of missing pool
-		if !hasPool && tc.inputCommand.pool == "xolabs-satlab" {
-			continue
-		}
 		if err == nil {
 			t.Errorf("Expected command to error")
 		}
