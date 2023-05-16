@@ -105,8 +105,8 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 		Vm: &api.VM{
 			Id: leaseID,
 			Address: &api.VMAddress{
-				// Only one NetworkInterface and AccessConfig should be available
-				Host: ins.GetNetworkInterfaces()[0].GetAccessConfigs()[0].GetNatIP(),
+				// Internal IP. Only one NetworkInterface should be available.
+				Host: ins.GetNetworkInterfaces()[0].GetNetworkIP(),
 				// Temporarily hardcode as port 22
 				Port: 22,
 			},
