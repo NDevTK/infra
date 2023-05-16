@@ -5,6 +5,7 @@
 package cmd
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -60,6 +61,7 @@ func generateInstanceToDelete(releaseConfig *config.BuiltinConfig, c *releaseRun
 }
 
 func (c *releaseRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+	ctx := context.Background()
 	if c.releaseFlags.configName == "" {
 		fmt.Fprintln(os.Stderr, "Config name must be set.")
 		return 1
@@ -81,7 +83,7 @@ func (c *releaseRun) Run(a subcommands.Application, args []string, env subcomman
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Cannot delete instance: %v", err)
 	}
-	err = ins.Delete(instance)
+	err = ins.Delete(ctx, instance)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to delete instance: %v", err)
 		return 1

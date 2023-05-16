@@ -1,10 +1,11 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package gcloud
 
 import (
+	"context"
 	"crypto/rand"
 	"encoding/json"
 	"errors"
@@ -121,7 +122,7 @@ func checkGCloudConfigForCreate(gcloudConfig *api.Config_GCloudBackend) error {
 	return nil
 }
 
-func (g *gcloudInstanceApi) Create(req *api.CreateVmInstanceRequest) (*api.VmInstance, error) {
+func (g *gcloudInstanceApi) Create(ctx context.Context, req *api.CreateVmInstanceRequest) (*api.VmInstance, error) {
 	gcloudConfig := req.GetConfig().GetGcloudBackend()
 	if gcloudConfig == nil {
 		return nil, fmt.Errorf("invalid argument: bad backend: want gcloud, got %v", req.GetConfig())
@@ -196,7 +197,7 @@ func (g *gcloudInstanceApi) Create(req *api.CreateVmInstanceRequest) (*api.VmIns
 	}, nil
 }
 
-func (g *gcloudInstanceApi) Delete(ins *api.VmInstance) error {
+func (g *gcloudInstanceApi) Delete(ctx context.Context, ins *api.VmInstance) error {
 	gcloudConfig := ins.GetConfig().GetGcloudBackend()
 	if gcloudConfig == nil {
 		return fmt.Errorf("invalid argument: bad backend: want gcloud, got %v", ins.GetConfig())
@@ -224,7 +225,7 @@ func (g *gcloudInstanceApi) Delete(ins *api.VmInstance) error {
 	return nil
 }
 
-func (g *gcloudInstanceApi) List(req *api.ListVmInstancesRequest) ([]*api.VmInstance, error) {
+func (g *gcloudInstanceApi) List(ctx context.Context, req *api.ListVmInstancesRequest) ([]*api.VmInstance, error) {
 	result := []*api.VmInstance{}
 
 	gcloudConfig := req.GetConfig().GetGcloudBackend()

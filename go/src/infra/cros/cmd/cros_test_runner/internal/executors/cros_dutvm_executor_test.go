@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/containers"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
@@ -84,11 +85,11 @@ type mockInstanceApi struct {
 	delete func(*vmlabapi.VmInstance) error
 }
 
-func (m *mockInstanceApi) Create(req *vmlabapi.CreateVmInstanceRequest) (*vmlabapi.VmInstance, error) {
+func (m *mockInstanceApi) Create(ctx context.Context, req *vmlabapi.CreateVmInstanceRequest) (*vmlabapi.VmInstance, error) {
 	return m.create(req)
 }
 
-func (m *mockInstanceApi) Delete(ins *vmlabapi.VmInstance) error {
+func (m *mockInstanceApi) Delete(ctx context.Context, ins *vmlabapi.VmInstance) error {
 	return m.delete(ins)
 }
 

@@ -5,6 +5,7 @@
 package cmd
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -15,10 +16,9 @@ import (
 
 	"github.com/maruel/subcommands"
 
+	"infra/cmd/vmlab/internal/config"
 	"infra/libs/vmlab"
 	"infra/libs/vmlab/api"
-
-	"infra/cmd/vmlab/internal/config"
 )
 
 var CleanupInstancesCmd = &subcommands.Command{
@@ -59,6 +59,7 @@ type cleanupInstancesResult struct {
 }
 
 func (c *cleanupInstancesRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+	ctx := context.Background()
 	if c.cleanupInstancesFlags.configName == "" {
 		fmt.Fprintln(os.Stderr, "Config name must be set.")
 		return 1
@@ -75,7 +76,7 @@ func (c *cleanupInstancesRun) Run(a subcommands.Application, args []string, env 
 		return 1
 	}
 
-	result, err := cleanupInstances(insApi, cleanupConfig, c.cleanupInstancesFlags.swarmingBotName, c.cleanupInstancesFlags.rate, c.cleanupInstancesFlags.dryRun)
+	result, err := cleanupInstances(ctx, insApi, cleanupConfig, c.cleanupInstancesFlags.swarmingBotName, c.cleanupInstancesFlags.rate, c.cleanupInstancesFlags.dryRun)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to clean up instances: %v\n", err)
 		return 1
@@ -130,7 +131,7 @@ func generateListVmRequest(cleanupConfig *config.BuiltinConfig, swarmingBotName 
 // sets a limit on the number of delete instance API requests per second. When
 // `dryRun` is true it doesn't call instance delete API. Returns deleted,
 // failed to delete instances in `cleanupInstancesResult`.
-func cleanupInstances(insApi api.InstanceApi, config *config.BuiltinConfig, swarmingBotName string, rate int, dryRun bool) (cleanupInstancesResult, error) {
+func cleanupInstances(ctx context.Context, insApi api.InstanceApi, config *config.BuiltinConfig, swarmingBotName string, rate int, dryRun bool) (cleanupInstancesResult, error) {
 	result := cleanupInstancesResult{
 		Total:   0,
 		Deleted: []string{},
@@ -141,7 +142,7 @@ func cleanupInstances(insApi api.InstanceApi, config *config.BuiltinConfig, swar
 	if err != nil {
 		return result, fmt.Errorf("Cannot generate list request: %v", err)
 	}
-	instances, err := insApi.List(req)
+	instances, err := insApi.List(ctx, req)
 	if err != nil {
 		return result, fmt.Errorf("Failed to list instances: %v", err)
 	}
@@ -161,7 +162,7 @@ func cleanupInstances(insApi api.InstanceApi, config *config.BuiltinConfig, swar
 		wg.Add(1)
 		go func(instance *api.VmInstance) {
 			defer wg.Done()
-			if err := insApi.Delete(instance); err != nil {
+			if err := insApi.Delete(ctx, instance); err != nil {
 				fmt.Fprintf(os.Stderr, "Failed to delete instances%s: %v\n", instance.Name, err)
 				mu.Lock()
 				result.Failed = append(result.Failed, instance.Name)

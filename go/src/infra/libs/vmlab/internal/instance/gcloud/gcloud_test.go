@@ -1,10 +1,11 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package gcloud
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"testing"
@@ -87,6 +88,7 @@ func TestCreateWithPublicIpAddress(t *testing.T) {
 	execCommand = mockExecCommand
 	random = fakeRandomGenerator{}
 	instance, err := gcloud.Create(
+		context.Background(),
 		&api.CreateVmInstanceRequest{
 			Config: &api.Config{
 				Backend: &api.Config_GcloudBackend{
@@ -137,6 +139,7 @@ func TestCreateWithPublicIpAddressAndSshInteralIp(t *testing.T) {
 	execCommand = mockExecCommand
 	random = fakeRandomGenerator{}
 	instance, _ := gcloud.Create(
+		context.Background(),
 		&api.CreateVmInstanceRequest{
 			Config: &api.Config{
 				Backend: &api.Config_GcloudBackend{
@@ -174,6 +177,7 @@ func TestCreateWithInternalIpAddress(t *testing.T) {
 	execCommand = mockExecCommand
 	random = fakeRandomGenerator{}
 	instance, err := gcloud.Create(
+		context.Background(),
 		&api.CreateVmInstanceRequest{
 			Config: &api.Config{
 				Backend: &api.Config_GcloudBackend{
@@ -225,6 +229,7 @@ func TestCreateWithTags(t *testing.T) {
 	execCommand = mockExecCommand
 	random = fakeRandomGenerator{}
 	instance, err := gcloud.Create(
+		context.Background(),
 		&api.CreateVmInstanceRequest{
 			Config: &api.Config{
 				Backend: &api.Config_GcloudBackend{
@@ -272,6 +277,7 @@ func TestCreateWithTags(t *testing.T) {
 func TestCreateMissingProject(t *testing.T) {
 	gcloud, _ := New()
 	_, err := gcloud.Create(
+		context.Background(),
 		&api.CreateVmInstanceRequest{
 			Config: &api.Config{
 				Backend: &api.Config_GcloudBackend{
@@ -287,6 +293,7 @@ func TestCreateMissingProject(t *testing.T) {
 func TestDeleteMissingZone(t *testing.T) {
 	gcloud, _ := New()
 	err := gcloud.Delete(
+		context.Background(),
 		&api.VmInstance{
 			Name: "instance1",
 			Config: &api.Config{
@@ -310,6 +317,7 @@ func TestDelete(t *testing.T) {
 	}
 	execCommand = mockExecCommand
 	err := gcloud.Delete(
+		context.Background(),
 		&api.VmInstance{
 			Name: "instance1",
 			Config: &api.Config{
@@ -342,6 +350,7 @@ func TestList(t *testing.T) {
 	}
 	execCommand = mockExecCommand
 	instances, err := gcloud.List(
+		context.Background(),
 		&api.ListVmInstancesRequest{
 			Config: &api.Config{
 				Backend: &api.Config_GcloudBackend{

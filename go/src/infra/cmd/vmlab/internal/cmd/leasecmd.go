@@ -1,10 +1,11 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package cmd
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -14,10 +15,9 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
+	"infra/cmd/vmlab/internal/config"
 	"infra/libs/vmlab"
 	"infra/libs/vmlab/api"
-
-	"infra/cmd/vmlab/internal/config"
 )
 
 var LeaseCmd = &subcommands.Command{
@@ -89,6 +89,7 @@ func generateCreateRequest(createConfig *config.BuiltinConfig, c *leaseRun, tags
 }
 
 func (c *leaseRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+	ctx := context.Background()
 	if c.leaseFlags.configName == "" {
 		fmt.Fprintln(os.Stderr, "Config name must be set.")
 		return 1
@@ -112,7 +113,7 @@ func (c *leaseRun) Run(a subcommands.Application, args []string, env subcommands
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Cannot create instance: %v", err)
 	}
-	createdInstance, err := ins.Create(request)
+	createdInstance, err := ins.Create(ctx, request)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed to create instance: %v", err)
 		return 1

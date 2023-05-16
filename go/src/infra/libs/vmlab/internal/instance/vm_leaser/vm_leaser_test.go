@@ -22,12 +22,18 @@ import (
 
 // mockVMLeaserClient mocks vmLeaserServiceClient for testing.
 type mockVMLeaserClient struct {
-	leaseVM func() (*api.LeaseVMResponse, error)
+	leaseVM   func() (*api.LeaseVMResponse, error)
+	releaseVM func() (*api.ReleaseVMResponse, error)
 }
 
 // LeaseVM mocks the LeaseVM method of the VM Leaser Client.
 func (m *mockVMLeaserClient) LeaseVM(context.Context, *api.LeaseVMRequest, ...grpc.CallOption) (*api.LeaseVMResponse, error) {
 	return m.leaseVM()
+}
+
+// ReleaseVM mocks the ReleaseVM method of the VM Leaser Client.
+func (m *mockVMLeaserClient) ReleaseVM(context.Context, *api.ReleaseVMRequest, ...grpc.CallOption) (*api.ReleaseVMResponse, error) {
+	return m.releaseVM()
 }
 
 func TestCreate(t *testing.T) {
@@ -37,7 +43,7 @@ func TestCreate(t *testing.T) {
 			vmLeaser, err := New()
 			So(err, ShouldBeNil)
 
-			ins, err := vmLeaser.Create(&vmlabpb.CreateVmInstanceRequest{})
+			ins, err := vmLeaser.Create(context.Background(), &vmlabpb.CreateVmInstanceRequest{})
 			So(ins, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err, ShouldErrLike, "no config found")
@@ -142,7 +148,7 @@ func TestDelete(t *testing.T) {
 		t.Errorf("Error: %v", err)
 	}
 
-	err = vmLeaser.Delete(&vmlabpb.VmInstance{})
+	err = vmLeaser.Delete(context.Background(), &vmlabpb.VmInstance{})
 	if err == nil {
 		t.Errorf("error should not be nil")
 	}
@@ -154,7 +160,7 @@ func TestList(t *testing.T) {
 		t.Errorf("Error: %v", err)
 	}
 
-	_, err = vmLeaser.List(&vmlabpb.ListVmInstancesRequest{})
+	_, err = vmLeaser.List(context.Background(), &vmlabpb.ListVmInstancesRequest{})
 	if err == nil {
 		t.Errorf("error should not be nil")
 	}

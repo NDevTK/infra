@@ -5,17 +5,17 @@
 package cmd
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"testing"
 
-	"infra/libs/vmlab/api"
-
-	"infra/cmd/vmlab/internal/config"
-
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/protobuf/testing/protocmp"
+
+	"infra/cmd/vmlab/internal/config"
+	"infra/libs/vmlab/api"
 )
 
 type mockInstanceApi struct {
@@ -23,15 +23,15 @@ type mockInstanceApi struct {
 	deleteInstanceFunc func(ins *api.VmInstance) error
 }
 
-func (m *mockInstanceApi) List(req *api.ListVmInstancesRequest) ([]*api.VmInstance, error) {
+func (m *mockInstanceApi) List(ctx context.Context, req *api.ListVmInstancesRequest) ([]*api.VmInstance, error) {
 	return m.listInstancesFunc(req)
 }
 
-func (m *mockInstanceApi) Delete(ins *api.VmInstance) error {
+func (m *mockInstanceApi) Delete(ctx context.Context, ins *api.VmInstance) error {
 	return m.deleteInstanceFunc(ins)
 }
 
-func (m *mockInstanceApi) Create(req *api.CreateVmInstanceRequest) (*api.VmInstance, error) {
+func (m *mockInstanceApi) Create(ctx context.Context, req *api.CreateVmInstanceRequest) (*api.VmInstance, error) {
 	return nil, errors.New("not supported")
 }
 
@@ -83,6 +83,7 @@ var EXPECTED_REQUEST = &api.ListVmInstancesRequest{
 }
 
 func TestCleanup(t *testing.T) {
+	ctx := context.Background()
 	insApi := &mockInstanceApi{
 		listInstancesFunc: func(req *api.ListVmInstancesRequest) ([]*api.VmInstance, error) {
 			if diff := cmp.Diff(req, EXPECTED_REQUEST, protocmp.Transform()); diff != "" {
@@ -95,7 +96,7 @@ func TestCleanup(t *testing.T) {
 		},
 	}
 
-	result, err := cleanupInstances(insApi, CONFIG, "test-bot", 1000, false)
+	result, err := cleanupInstances(ctx, insApi, CONFIG, "test-bot", 1000, false)
 
 	if err != nil {
 		t.Fatalf("cleanupInstances() returned error: %v", err)
@@ -113,6 +114,7 @@ func TestCleanup(t *testing.T) {
 }
 
 func TestCleanupPartialSuccess(t *testing.T) {
+	ctx := context.Background()
 	insApi := &mockInstanceApi{
 		listInstancesFunc: func(req *api.ListVmInstancesRequest) ([]*api.VmInstance, error) {
 			if diff := cmp.Diff(req, EXPECTED_REQUEST, protocmp.Transform()); diff != "" {
@@ -128,7 +130,7 @@ func TestCleanupPartialSuccess(t *testing.T) {
 		},
 	}
 
-	result, err := cleanupInstances(insApi, CONFIG, "test-bot", 1000, false)
+	result, err := cleanupInstances(ctx, insApi, CONFIG, "test-bot", 1000, false)
 
 	if err != nil {
 		t.Fatalf("cleanupInstances() returned error: %v", err)
@@ -146,6 +148,7 @@ func TestCleanupPartialSuccess(t *testing.T) {
 }
 
 func TestCleanupDryRun(t *testing.T) {
+	ctx := context.Background()
 	insApi := &mockInstanceApi{
 		listInstancesFunc: func(req *api.ListVmInstancesRequest) ([]*api.VmInstance, error) {
 			if diff := cmp.Diff(req, EXPECTED_REQUEST, protocmp.Transform()); diff != "" {
@@ -158,7 +161,7 @@ func TestCleanupDryRun(t *testing.T) {
 		},
 	}
 
-	result, err := cleanupInstances(insApi, CONFIG, "test-bot", 1000, true)
+	result, err := cleanupInstances(ctx, insApi, CONFIG, "test-bot", 1000, true)
 
 	if err != nil {
 		t.Fatalf("cleanupInstances() returned error: %v", err)

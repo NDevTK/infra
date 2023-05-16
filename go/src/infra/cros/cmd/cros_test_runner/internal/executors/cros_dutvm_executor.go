@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
+
 	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
@@ -114,7 +115,7 @@ func (ex *CrosDutVmExecutor) vmReleaseCommandExecution(
 		return nil
 	}
 
-	err = instanceApi.Delete(cmd.DutVm)
+	err = instanceApi.Delete(ctx, cmd.DutVm)
 	if err == nil {
 		logging.Infof(ctx, "successfully released Dut VM: %s", cmd.DutVm.Name)
 	} else {
@@ -159,7 +160,7 @@ func (ex *CrosDutVmExecutor) vmLeaseCommandExecution(
 	}
 
 	logging.Infof(ctx, "call VmLab to lease an instance with request %v", request)
-	instance, err := instanceApi.Create(request)
+	instance, err := instanceApi.Create(ctx, request)
 	if err != nil {
 		return errors.Annotate(err, "Lease dut vm err: ").Err()
 	}

@@ -1,17 +1,21 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package api
 
+import (
+	"context"
+)
+
 // InstanceApi is the VM instance management API that all providers implement.
 type InstanceApi interface {
 	// Create leases a new VM instance.
-	Create(*CreateVmInstanceRequest) (*VmInstance, error)
+	Create(context.Context, *CreateVmInstanceRequest) (*VmInstance, error)
 	// Delete releases an existing VM instance.
-	Delete(*VmInstance) error
+	Delete(context.Context, *VmInstance) error
 	// List existing VM instances that match the request.
-	List(*ListVmInstancesRequest) ([]*VmInstance, error)
+	List(context.Context, *ListVmInstancesRequest) ([]*VmInstance, error)
 }
 
 // ImageApi is the VM image management API that all providers implement. This is
