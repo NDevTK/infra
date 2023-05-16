@@ -32,9 +32,10 @@ const (
 
 var (
 	// ManifestProjects contains information about the manifest projects.
+	// Indexed by project path.
 	ManifestProjects = map[string]bool{
-		"chromiumos/manifest":        true,
-		"chromeos/manifest-internal": true,
+		"manifest":          true,
+		"manifest-internal": true,
 	}
 	// BranchPrefix is a regex matching a Chrome OS branch name as a prefix
 	// to a string, starting with a dash (e.g. -release-R77-12371.B).
@@ -265,10 +266,11 @@ func (c *Client) GerritProjectBranches(pbs []ProjectBranch) ([]GerritProjectBran
 		remoteStr = strings.ReplaceAll(remoteStr,
 			"chrome-internal.googlesource.com", "chrome-internal-review.googlesource.com")
 		result = append(result, GerritProjectBranch{
-			GerritURL: remoteStr,
-			Project:   pb.Project.Name,
-			Branch:    pb.BranchName,
-			SrcRef:    pb.Project.Revision,
+			GerritURL:   remoteStr,
+			Project:     pb.Project.Name,
+			ProjectPath: pb.Project.Path,
+			Branch:      pb.BranchName,
+			SrcRef:      pb.Project.Revision,
 		})
 	}
 	return result, nil
@@ -298,7 +300,7 @@ func getOriginRef(ref string) string {
 func GetNonManifestBranches(branches []GerritProjectBranch) []GerritProjectBranch {
 	var result []GerritProjectBranch
 	for _, pb := range branches {
-		if _, ok := ManifestProjects[pb.Project]; ok {
+		if _, ok := ManifestProjects[pb.ProjectPath]; ok {
 			continue
 		}
 		result = append(result, pb)
@@ -314,13 +316,13 @@ func (c *Client) RepairManifestRepositories(branches []ProjectBranch, dryRun, fo
 	var stdoutBuf, stderrBuf bytes.Buffer
 	// Find names of manifest project branches so that we can push changes.
 	for _, projectBranch := range branches {
-		if _, ok := ManifestProjects[projectBranch.Project.Name]; ok {
+		if _, ok := ManifestProjects[projectBranch.Project.Path]; ok {
 			manifestBranchNames[projectBranch.Project.Name] = projectBranch.BranchName
 		}
 	}
 
-	for projectName := range ManifestProjects {
-		manifestProject, err := c.WorkingManifest.GetUniqueProject(projectName)
+	for projectPath := range ManifestProjects {
+		manifestProject, err := c.WorkingManifest.GetProjectByPath(projectPath)
 		if err != nil {
 			return err
 		}
@@ -338,10 +340,10 @@ func (c *Client) RepairManifestRepositories(branches []ProjectBranch, dryRun, fo
 
 		manifestRepo := &ManifestRepo{
 			ProjectCheckout: manifestCheckout,
-			Project:         manifestProject,
+			Project:         *manifestProject,
 		}
 		if err := c.RepairManifestsOnDisk(manifestRepo, getBranchesByPath(branches)); err != nil {
-			return errors.Annotate(err, "failed to repair manifest project %s", projectName).Err()
+			return errors.Annotate(err, "failed to repair manifest project %s", projectPath).Err()
 		}
 
 		// b/179312445: Format manifest files
@@ -443,7 +445,7 @@ func (c *Client) CreateRemoteBranches(branches []ProjectBranch, dryRun, force bo
 	// Push the local git branches to remote.
 	for _, projectBranch := range branches {
 		// Don't push the manifest repos because that already happened in RepairManifestRepositories.
-		if _, ok := ManifestProjects[projectBranch.Project.Name]; ok {
+		if _, ok := ManifestProjects[projectBranch.Project.Path]; ok {
 			continue
 		}
 

@@ -30,10 +30,11 @@ const (
 // GerritProjectBranch contains all the details for creating a new Gerrit branch
 // based on an existing one.
 type GerritProjectBranch struct {
-	GerritURL string
-	Project   string
-	Branch    string
-	SrcRef    string
+	GerritURL   string
+	Project     string
+	ProjectPath string
+	Branch      string
+	SrcRef      string
 }
 
 func qpsToPeriod(qps float64) time.Duration {
