@@ -206,9 +206,9 @@ func (c *createBranch) innerRun(ctx context.Context, bc *branch.Client, authedCl
 	// Use manifest-internal as a sentinel repository to get the appropriate branch name.
 	// We know that manifest-internal is a single-checkout so its revision should be
 	// main or the name of the Chrome OS branch.
-	manifestInternal, err := bc.WorkingManifest.GetUniqueProject("chromeos/manifest-internal")
+	manifestInternal, err := bc.WorkingManifest.GetProjectByPath("manifest-internal")
 	if err != nil {
-		bc.LogErr(errors.Annotate(err, "Could not get chromeos/manifest-internal project.").Err().Error())
+		bc.LogErr(errors.Annotate(err, "Could not get manifest-internal project.").Err().Error())
 		return 1
 	}
 	sourceRevision := manifestInternal.Revision
@@ -280,7 +280,7 @@ func (c *createBranch) innerRun(ctx context.Context, bc *branch.Client, authedCl
 		return 1
 	}
 
-	if err = bc.CheckIfAlreadyBranched(vinfo, manifestInternal, c.Force, branchType, branchName); err != nil {
+	if err = bc.CheckIfAlreadyBranched(vinfo, *manifestInternal, c.Force, branchType, branchName); err != nil {
 		bc.LogErr("%v", err)
 		return 1
 	}
