@@ -75,6 +75,7 @@ func TestCreateInstance(t *testing.T) {
 				GceRegion:      "test-region",
 				GceProject:     "test-project",
 				GceMachineType: "test-machine-type",
+				GceNetwork:     "test-network",
 				GceDiskSize:    100,
 			}
 			err := createInstance(ctx, client, "test-id", 100, hostReqs)
@@ -92,11 +93,29 @@ func TestCreateInstance(t *testing.T) {
 				GceRegion:      "test-region",
 				GceProject:     "test-project",
 				GceMachineType: "test-machine-type",
+				GceNetwork:     "test-network",
 				GceDiskSize:    100,
 			}
 			err := createInstance(ctx, client, "test-id", 100, hostReqs)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "no operation returned for waiting")
+		})
+		Convey("createInstance - error: failed to get network interface", func() {
+			client := &mockComputeInstancesClient{
+				insertFunc: func() (*compute.Operation, error) {
+					return nil, nil
+				},
+			}
+			hostReqs := &api.VMRequirements{
+				GceImage:       "test-image",
+				GceRegion:      "test-region",
+				GceProject:     "test-project",
+				GceMachineType: "test-machine-type",
+				GceDiskSize:    100,
+			}
+			err := createInstance(ctx, client, "test-id", 100, hostReqs)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "failed to get network interface")
 		})
 	})
 }
@@ -228,6 +247,55 @@ func TestGetInstance(t *testing.T) {
 			So(ins, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "instance does not have a nat ip")
+		})
+	})
+}
+
+func TestGetInstanceNetworkInterfaces(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	Convey("Test getInstanceNetworkInterfaces", t, func() {
+		Convey("getInstanceNetworkInterfaces - happy path", func() {
+			hostReqs := &api.VMRequirements{
+				GceNetwork: "test-network",
+				GceSubnet:  "test-subnet",
+			}
+			n, err := getInstanceNetworkInterfaces(ctx, hostReqs)
+			So(n, ShouldResembleProto, []*computepb.NetworkInterface{
+				{
+					AccessConfigs: []*computepb.AccessConfig{
+						{
+							Name: proto.String("External NAT"),
+						},
+					},
+					Network:    proto.String("test-network"),
+					Subnetwork: proto.String("test-subnet"),
+				},
+			})
+			So(err, ShouldBeNil)
+		})
+		Convey("getInstanceNetworkInterfaces - error: no network", func() {
+			hostReqs := &api.VMRequirements{}
+			n, err := getInstanceNetworkInterfaces(ctx, hostReqs)
+			So(n, ShouldBeNil)
+			So(err.Error(), ShouldContainSubstring, "gce network cannot be empty")
+		})
+		Convey("getInstanceNetworkInterfaces - no subnet", func() {
+			hostReqs := &api.VMRequirements{
+				GceNetwork: "test-network",
+			}
+			n, err := getInstanceNetworkInterfaces(ctx, hostReqs)
+			So(n, ShouldResembleProto, []*computepb.NetworkInterface{
+				{
+					AccessConfigs: []*computepb.AccessConfig{
+						{
+							Name: proto.String("External NAT"),
+						},
+					},
+					Network: proto.String("test-network"),
+				},
+			})
+			So(err, ShouldBeNil)
 		})
 	})
 }

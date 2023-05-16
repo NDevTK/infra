@@ -196,6 +196,10 @@ func getInstance(ctx context.Context, client computeInstancesClient, leaseID str
 
 // createInstance sends an instance creation request to the Compute Engine API and waits for it to complete.
 func createInstance(ctx context.Context, client computeInstancesClient, leaseID string, expirationTime int64, hostReqs *api.VMRequirements) error {
+	networkInterfaces, err := getInstanceNetworkInterfaces(ctx, hostReqs)
+	if err != nil {
+		return fmt.Errorf("failed to get network interfaces: %v", err)
+	}
 	zone := hostReqs.GetGceRegion()
 	req := &computepb.InsertInstanceRequest{
 		Project: hostReqs.GetGceProject(),
@@ -222,16 +226,7 @@ func createInstance(ctx context.Context, client computeInstancesClient, leaseID 
 					},
 				},
 			},
-			NetworkInterfaces: []*computepb.NetworkInterface{
-				{
-					AccessConfigs: []*computepb.AccessConfig{
-						{
-							Name: proto.String("External NAT"),
-						},
-					},
-					Network: proto.String(hostReqs.GetGceNetwork()),
-				},
-			},
+			NetworkInterfaces: networkInterfaces,
 		},
 	}
 
@@ -313,6 +308,29 @@ func setDefaultReleaseVMRequest(r *api.ReleaseVMRequest) *api.ReleaseVMRequest {
 		r.GceRegion = DefaultRegion
 	}
 	return r
+}
+
+// getInstanceNetworkInterfaces gets the NetworkInterfaces based on VM reqs.
+func getInstanceNetworkInterfaces(ctx context.Context, hostReqs *api.VMRequirements) ([]*computepb.NetworkInterface, error) {
+	if hostReqs.GetGceNetwork() == "" {
+		return nil, errors.New("gce network cannot be empty")
+	}
+
+	netInts := []*computepb.NetworkInterface{
+		{
+			AccessConfigs: []*computepb.AccessConfig{
+				{
+					Name: proto.String("External NAT"),
+				},
+			},
+			Network: proto.String(hostReqs.GetGceNetwork()),
+		},
+	}
+	if hostReqs.GetGceSubnet() != "" {
+		netInts[0].Subnetwork = proto.String(hostReqs.GetGceSubnet())
+	}
+
+	return netInts, nil
 }
 
 // computeExpirationTime calculates the expiration time of a VM
