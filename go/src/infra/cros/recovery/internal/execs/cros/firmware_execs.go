@@ -189,6 +189,7 @@ func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) 
 		UpdateApAttemptCount:        actionArgs.AsInt(ctx, "update_ap_attempt_count", 0),
 		GBBFlags:                    actionArgs.AsString(ctx, "gbb_flags", ""),
 		CandidateFirmwareTarget:     actionArgs.AsString(ctx, "candidate_fw_target", ""),
+		UseSerialTargets:            actionArgs.AsBool(ctx, "use_serial_fw_target", false),
 		UpdaterMode:                 actionArgs.AsString(ctx, "mode", defaultFirmwareImageUpdateMode),
 		UpdaterTimeout:              actionArgs.AsDuration(ctx, "updater_timeout", 600, time.Second),
 		UseCacheToExtractor:         actionArgs.AsBool(ctx, "use_cache_extractor", false),

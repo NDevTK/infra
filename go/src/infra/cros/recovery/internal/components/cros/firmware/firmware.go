@@ -92,6 +92,8 @@ type InstallFirmwareImageRequest struct {
 
 	// Custom image-name uses when specify image candidate for extracted file.
 	CandidateFirmwareTarget string
+	// Use serial targets when specify image candidates.
+	UseSerialTargets bool
 
 	// Flash firmware via servo if true, otherwise flash firmware on DUT itself use chromeos-firmwareupdate.
 	FlashThroughServo bool
@@ -381,12 +383,18 @@ func extractAPImage(ctx context.Context, req *InstallFirmwareImageRequest, tarba
 	// Candidate files contains new and old format names.
 	// New: image-fw_target.bin
 	// Old: ./image-fw_target.bin
-	candidatesFiles := getFirmwareImageCandidates(ctx, req, []string{"image-%s.bin", "./image-%s.bin"}, log)
+	imageNamePatterns := []string{"image-%s.bin", "./image-%s.bin"}
+	candidatesFiles := getFirmwareImageCandidates(ctx, req, imageNamePatterns, log)
 	// Some old boards has only one image with vanilla naming in their firmware artifacts.
 	candidatesFiles = append(candidatesFiles, "image.bin", "./image.bin")
 	// TODO(b/269342655) Remove this temporary fix for brya model once the bug closed.
 	if req.Model == "brya" {
 		candidatesFiles = []string{"image-brya0.bin", "./image-brya0.bin"}
+	}
+	if req.UseSerialTargets {
+		for i, candidate := range candidatesFiles {
+			candidatesFiles[i] = strings.Replace(candidate, ".bin", ".serial.bin", 1)
+		}
 	}
 
 	var imagePath string

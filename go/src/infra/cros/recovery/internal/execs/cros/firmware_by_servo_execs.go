@@ -81,6 +81,7 @@ func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error
 		UpdateApAttemptCount:        am.AsInt(ctx, "update_ap_attempt_count", 0),
 		GBBFlags:                    am.AsString(ctx, "gbb_flags", ""),
 		CandidateFirmwareTarget:     am.AsString(ctx, "candidate_fw_target", ""),
+		UseSerialTargets:            am.AsBool(ctx, "use_serial_fw_target", false),
 		FlashThroughServo:           true,
 		Servod:                      servod,
 		ServoHostRunner:             info.NewRunner(info.GetChromeos().GetServo().GetName()),

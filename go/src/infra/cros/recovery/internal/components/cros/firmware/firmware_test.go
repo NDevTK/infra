@@ -1,7 +1,7 @@
 //go:build linux
 // +build linux
 
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -153,6 +153,23 @@ image-my-model.bin`,
 		image, err := extractAPImage(ctx, req, tarballPath, logger)
 		So(err, ShouldBeNil)
 		So(image, ShouldEqual, "/some/folder/my_folder/AP/image-my-model.bin")
+	})
+	Convey("Happy path with serial", t, func() {
+		req := getBaseTestRequest(true)
+		req.UseSerialTargets = true
+		runRequest := map[string]string{
+			"mkdir -p /some/folder/my_folder/AP": "",
+			"tar tf /some/folder/my_folder/tarbar2.tr image-s-board.serial.bin ./image-s-board.serial.bin image-my-model.serial.bin ./image-my-model.serial.bin image-my-board.serial.bin ./image-my-board.serial.bin image.serial.bin ./image.serial.bin": `image-my.serial.bin
+image-my-model.serial.bin`,
+			"tar xf /some/folder/my_folder/tarbar2.tr -C /some/folder/my_folder/AP image-my-model.serial.bin": "",
+		}
+		servod := mocks.NewMockServod(ctrl)
+		servod.EXPECT().Get(ctx, "ec_board").Return(stringValue("S-board"), nil).Times(1)
+		req.Servod = servod
+		req.ServoHostRunner = mockRunner(runRequest)
+		image, err := extractAPImage(ctx, req, tarballPath, logger)
+		So(err, ShouldBeNil)
+		So(image, ShouldEqual, "/some/folder/my_folder/AP/image-my-model.serial.bin")
 	})
 	Convey("Happy path without servod", t, func() {
 		req := getBaseTestRequest(true)
