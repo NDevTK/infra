@@ -372,8 +372,6 @@ def PylintChecks(input_api, output_api, only_changed):  # pragma: no cover
       r'^build/.*\.py$',
       r'^infra/libs/git2/.*\.py$',
       r'^infra/libs/state_machine/.*\.py$',
-      r'^infra/services/git_cookie_daemon/.*\.py$',
-      r'^infra/tools/bot_setup/.*\.py$',
       r'^infra/tools/bucket/.*\.py$',
       r'^infra/tools/dockerbuild/.*\.py$',
       r'^infra/tools/log/.*\.py$',

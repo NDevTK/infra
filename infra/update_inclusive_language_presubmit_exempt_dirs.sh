@@ -28,7 +28,7 @@
 # instance, you should run this from the parent of the current directory
 # rather than from this directory.
 
-NON_INCLUSIVE_TERMS='\b((black|white)list|master|slave)\b' # // nocheck
+NON_INCLUSIVE_TERMS='[[:<:]]((black|white)list|master|slave)[[:>:]]' # // nocheck
 
 git grep -c -E $NON_INCLUSIVE_TERMS | \
   awk -F ":" 'NF {cmd=sprintf("dirname %s",$1);cmd | getline dirname; \
