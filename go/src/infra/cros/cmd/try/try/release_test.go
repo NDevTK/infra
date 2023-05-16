@@ -285,6 +285,9 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 
 	supportedBuild, exists := properties.GetFields()["$chromeos/cros_try"].GetStructValue().GetFields()["supported_build"]
 	assert.Assert(t, exists && supportedBuild.GetBoolValue())
+
+	buildFailuresFatal, exists := properties.GetFields()["build_failures_fatal"]
+	assert.Assert(t, exists && buildFailuresFatal.GetBoolValue())
 }
 
 func TestRun_dryrun(t *testing.T) {

@@ -220,6 +220,11 @@ func (r *releaseRun) innerRun(_ subcommands.Application, _ []string, _ subcomman
 		return CmdError
 	}
 
+	if err := bb.SetProperty(propsStruct, "build_failures_fatal", true); err != nil {
+		r.LogErr(err.Error())
+		return CmdError
+	}
+
 	if len(r.patches) > 0 {
 		// If gerrit patches are set, we include the ancestors in order to avoid conflicts.
 		patchListBBArgs, err := includeAllAncestors(ctx, r.gerritClient, r.patches)
