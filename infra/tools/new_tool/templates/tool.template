@@ -1,7 +1,0 @@
-"""Testable functions for {Toolname}."""
-
-import logging
-
-
-# https://chromium.googlesource.com/infra/infra/+/master/infra_libs/logs/README.md
-LOGGER = logging.getLogger(__name__)
