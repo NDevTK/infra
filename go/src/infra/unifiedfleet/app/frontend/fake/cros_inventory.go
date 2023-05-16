@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -169,6 +169,23 @@ func (ic *InventoryClient) ListCrosDevicesLabConfig(ctx context.Context, in *inv
 	}, nil
 }
 
+// DeviceConfigsExists mock the device config exists request.
+func (ic *InventoryClient) DeviceConfigsExists(ctx context.Context, in *invV2Api.DeviceConfigsExistsRequest, opts ...grpc.CallOption) (*invV2Api.DeviceConfigsExistsResponse, error) {
+	resp := make(map[int32]bool)
+	for idx, config := range in.GetConfigIds() {
+		if pid := config.GetPlatformId(); pid != nil && pid.GetValue() == "test" {
+			if mid := config.GetModelId(); mid != nil && mid.GetValue() == "test" {
+				resp[int32(idx)] = true
+			}
+		} else {
+			resp[int32(idx)] = false
+		}
+	}
+	return &invV2Api.DeviceConfigsExistsResponse{
+		Exists: resp,
+	}, nil
+}
+
 // GetManufacturingConfig mocks the GetManufaturingConfig api from InvV2.
 func (ic *InventoryClient) GetManufacturingConfig(ctx context.Context, in *invV2Api.GetManufacturingConfigRequest, opts ...grpc.CallOption) (*manufacturing.Config, error) {
 	if in.GetName() == "test" || in.GetName() == "test-no-server" {
@@ -177,6 +194,19 @@ func (ic *InventoryClient) GetManufacturingConfig(ctx context.Context, in *invV2
 		}, nil
 	}
 	return nil, errors.New("No manufacturing config found")
+}
+
+// GetDeviceConfig mocks the GetDeviceConfig api from InvV2.
+func (ic *InventoryClient) GetDeviceConfig(ctx context.Context, in *invV2Api.GetDeviceConfigRequest, opts ...grpc.CallOption) (*device.Config, error) {
+	if in.GetConfigId().GetPlatformId().GetValue() == "test" && in.GetConfigId().GetModelId().GetValue() == "test" {
+		return &device.Config{
+			Id: &device.ConfigId{
+				PlatformId: &device.PlatformId{Value: "test"},
+				ModelId:    &device.ModelId{Value: "test"},
+			},
+		}, nil
+	}
+	return nil, errors.New("No device config found")
 }
 
 // GetHwidData mocks the GetHwidData api from InvV2.

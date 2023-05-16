@@ -11,6 +11,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/config/go/test/dut"
+	"go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
@@ -18,6 +19,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	iv2api "infra/appengine/cros/lab_inventory/api/v1"
 	"infra/libs/fleet/boxster/swarming"
 	"infra/libs/skylab/common/heuristics"
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -366,7 +368,7 @@ func assignServoPortIfMissing(labstation *ufspb.MachineLSE, newServo *chromeosLa
 //
 // Checks if the device configuration is known by querying IV2. Returns error if the device config doesn't exist.
 func validateDeviceConfig(ctx context.Context, dut *ufspb.Machine) error {
-	var devCfgIds []*ufsdevice.ConfigId
+	var devCfgIds []*device.ConfigId
 	devConfigID, err := extractDeviceConfigID(dut)
 	if err != nil {
 		return err
@@ -376,18 +378,20 @@ func validateDeviceConfig(ctx context.Context, dut *ufspb.Machine) error {
 		devCfgIds = append(devCfgIds, fallBackDevConfigID)
 	}
 
-	devCfgClient, err := GetDeviceConfigClient(ctx)
+	invV2Client, err := GetInventoryV2Client(ctx)
 	if err != nil {
 		return err
 	}
 
-	resp, err := devCfgClient.DeviceConfigsExists(ctx, devCfgIds)
+	resp, err := invV2Client.DeviceConfigsExists(ctx, &iv2api.DeviceConfigsExistsRequest{
+		ConfigIds: devCfgIds,
+	})
 
 	if err != nil {
 		return errors.Annotate(err, "Device config validation failed").Err()
 	}
-	for i := range resp {
-		if resp[i] {
+	for i := range resp.GetExists() {
+		if resp.GetExists()[i] {
 			return nil
 		}
 	}
@@ -396,7 +400,7 @@ func validateDeviceConfig(ctx context.Context, dut *ufspb.Machine) error {
 }
 
 // extractDeviceConfigID returns a corresponding ConfigID object from machine.
-func extractDeviceConfigID(dut *ufspb.Machine) (*ufsdevice.ConfigId, error) {
+func extractDeviceConfigID(dut *ufspb.Machine) (*device.ConfigId, error) {
 	crosMachine := dut.GetChromeosMachine()
 	if crosMachine == nil {
 		return nil, errors.Reason("Invalid machine type. Not a chrome OS machine").Err()
@@ -404,26 +408,26 @@ func extractDeviceConfigID(dut *ufspb.Machine) (*ufsdevice.ConfigId, error) {
 	// Convert the build target and model to lower case to avoid mismatch due to case.
 	buildTarget := strings.ToLower(crosMachine.GetBuildTarget())
 	model := strings.ToLower(crosMachine.GetModel())
-	devConfigID := &ufsdevice.ConfigId{
-		PlatformId: &ufsdevice.PlatformId{
+	devConfigID := &device.ConfigId{
+		PlatformId: &device.PlatformId{
 			Value: buildTarget,
 		},
-		ModelId: &ufsdevice.ModelId{
+		ModelId: &device.ModelId{
 			Value: model,
 		},
 	}
 	sku := strings.ToLower(crosMachine.GetSku())
 	if sku != "" {
-		devConfigID.VariantId = &ufsdevice.VariantId{
+		devConfigID.VariantId = &device.VariantId{
 			Value: sku,
 		}
 	}
 	return devConfigID, nil
 }
 
-func getFallbackDeviceConfigID(oldConfigID *ufsdevice.ConfigId) *ufsdevice.ConfigId {
+func getFallbackDeviceConfigID(oldConfigID *device.ConfigId) *device.ConfigId {
 	if oldConfigID.GetVariantId().GetValue() != "" {
-		fallbackID := proto.Clone(oldConfigID).(*ufsdevice.ConfigId)
+		fallbackID := proto.Clone(oldConfigID).(*device.ConfigId)
 		fallbackID.VariantId = nil
 		return fallbackID
 	}
@@ -868,14 +872,14 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 			LabConfig: lse,
 		}, nil
 	}
-	devCfgClient, err := GetDeviceConfigClient(ctx)
+	invV2Client, err := GetInventoryV2Client(ctx)
 	if err != nil {
-		logging.Errorf(ctx, "Failed to create DeviceConfigClient. Error: %s", err)
+		logging.Errorf(ctx, "Failed to InvV2Client. Error: %s", err)
 		return &ufspb.ChromeOSDeviceData{
 			LabConfig: lse,
 		}, nil
 	}
-	devConfig, err := getDeviceConfig(ctx, devCfgClient, machine)
+	devConfig, err := getDeviceConfig(ctx, invV2Client, machine)
 	if err != nil {
 		logging.Warningf(ctx, "DeviceConfig for %s not found. Error: %s", id, err)
 	}
@@ -936,12 +940,22 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 }
 
 // getDeviceConfig get device config form InvV2
-func getDeviceConfig(ctx context.Context, devCfgClient external.DeviceConfigClient, machine *ufspb.Machine) (*ufsdevice.Config, error) {
+func getDeviceConfig(ctx context.Context, inv2Client external.CrosInventoryClient, machine *ufspb.Machine) (*ufsdevice.Config, error) {
 	devConfigID, err := extractDeviceConfigID(machine)
 	if err != nil {
 		return nil, err
 	}
-	return devCfgClient.GetDeviceConfig(ctx, devConfigID)
+	resp, err := inv2Client.GetDeviceConfig(ctx, &iv2api.GetDeviceConfigRequest{
+		ConfigId: devConfigID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	s := proto.MarshalTextString(resp)
+	var devConfig ufsdevice.Config
+	proto.UnmarshalText(s, &devConfig)
+	logging.Debugf(ctx, "InvV2 device config:\n %+v\nUFS device config:\n %+v ", resp, &devConfig)
+	return &devConfig, err
 }
 
 func getStability(ctx context.Context, model string) (bool, error) {
