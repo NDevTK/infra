@@ -81,18 +81,13 @@ func PrintToLog(cmd string, stdout string, stderr string) {
 
 // SetUpLog sets up the logging for CTR within /var/tmp/bbid/ctrlog.txt
 func SetUpLog() error {
-	basedir := "/var/tmp/"
-	out := os.Getenv("LOGDOG_STREAM_PREFIX")
-
-	bbid := ""
-	if out == "" {
+	bbid := BuildBucketID()
+	if bbid == "" {
 		// Not found? Use random time.
 		bbid = fmt.Sprint(rand.New(rand.NewSource(time.Now().UnixNano())).Int())
-	} else {
-		bbidArr := strings.Split(out, "/")
-		bbid = bbidArr[len(bbidArr)-1]
 	}
 
+	basedir := "/var/tmp/"
 	logPath := path.Join(basedir, bbid)
 	if err := os.MkdirAll(logPath, 0755); err != nil {
 		return fmt.Errorf("failed to create directory %v: %v", basedir, err)
@@ -164,4 +159,9 @@ func StreamScanner(stream io.Reader, logtag string) {
 	if scanner.Err() != nil {
 		log.Println("Failed to read pipe: ", scanner.Err())
 	}
+}
+
+func BuildBucketID() string {
+	bbidArr := strings.Split(os.Getenv("LOGDOG_STREAM_PREFIX"), "/")
+	return bbidArr[len(bbidArr)-1]
 }

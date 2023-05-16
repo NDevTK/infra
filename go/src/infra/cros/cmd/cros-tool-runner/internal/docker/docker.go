@@ -217,6 +217,7 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 	}
 
 	args := []string{"run"}
+	args = append(args, envvars()...)
 	if d.Detach {
 		// PRE-pend the log-level log for detached containers.
 		args = append([]string{"--log-level=debug"}, args...)
@@ -279,6 +280,22 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 
 	}
 
+}
+
+// envvars sets the needed environment variables for the container.
+func envvars() []string {
+	bbid := common.BuildBucketID()
+	if bbid == "" {
+		bbid = "none"
+	}
+	swarmingTaskID := os.Getenv("SWARMING_TASK_ID")
+	if swarmingTaskID == "" {
+		swarmingTaskID = "none"
+	}
+	return []string{
+		"--env", fmt.Sprintf("BUILD_BUCKET_ID=%s", bbid),
+		"--env", fmt.Sprintf("SWARMING_TASK_ID=%s", swarmingTaskID),
+	}
 }
 
 func (d *Docker) logRunTime(ctx context.Context, service string, imageName string) {
