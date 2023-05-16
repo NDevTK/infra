@@ -33,15 +33,16 @@ var (
 	rpcACL = rpcacl.Map{
 		"/discovery.Discovery/*":                   rpcacl.All,
 		"/test_resources.Stats/UpdateMetricsTable": dataOwnersGroup,
+		"/test_resources.Stats/FetchTestMetrics":   rpcacl.All,
 	}
 )
 
 type Client interface {
 	UpdateSummary(ctx context.Context, fromDate civil.Date, toDate civil.Date) error
+	FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequest) (*api.FetchTestMetricsResponse, error)
 }
 
 func main() {
-
 	modules := []module.Module{
 		cron.NewModuleFromFlags(),
 	}
@@ -102,9 +103,10 @@ func setupClient(srv *server.Server) (*testmetrics.Client, error) {
 		return nil, err
 	}
 	var client = &testmetrics.Client{
-		BqClient: bqClient,
+		BqClient:  bqClient,
+		ProjectId: srv.Options.CloudProject,
 	}
-	err = client.Init(srv.Options.CloudProject)
+	err = client.Init()
 	if err != nil {
 		return nil, err
 	}
@@ -142,5 +144,9 @@ func (s *testResourcesServer) FetchDirectoryMetrics(ctx context.Context, req *ap
 }
 
 func (s *testResourcesServer) FetchTestMetrics(ctx context.Context, req *api.FetchTestMetricsRequest) (*api.FetchTestMetricsResponse, error) {
-	panic("Endpoint has not been implemented yet")
+	resp, err := s.Client.FetchMetrics(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
