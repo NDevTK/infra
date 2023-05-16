@@ -9,7 +9,6 @@ import mock
 from go.chromium.org.luci.buildbucket.proto.build_pb2 import Build
 from go.chromium.org.luci.buildbucket.proto.builder_common_pb2 import BuilderID
 
-from findit_v2.services.context import Context
 from gae_libs.gitiles.cached_gitiles_repository import CachedGitilesRepository
 from libs.gitiles.gitiles_repository import GitilesRepository
 from libs.gitiles.change_log import ChangeLog
@@ -392,25 +391,3 @@ class GitTest(wf_testcase.WaterfallTestCase):
         'rev_98',
         git.GetRevisionForCommitPositionByAnotherCommit('rev_100', 100, 98))
 
-  def testGetRepoUrlFromContext(self):
-    context = Context(
-        luci_project_name='chromium',
-        gitiles_host='gitiles.host.com',
-        gitiles_project='project/name',
-        gitiles_ref='ref/heads/master',
-        gitiles_id='git_sha')
-
-    self.assertEqual('https://gitiles.host.com/project/name.git',
-                     git.GetRepoUrlFromContext(context))
-
-  def testGetRepoUrlFromV2Build(self):
-    build = Build(
-        builder=BuilderID(
-            project='chromium', bucket='try', builder='linux-rel'))
-    build.input.gitiles_commit.host = 'gitiles.host.com'
-    build.input.gitiles_commit.project = 'project/name'
-    build.input.gitiles_commit.ref = 'ref/heads/master'
-    build.input.gitiles_commit.id = 'git_sha_123'
-
-    self.assertEqual('https://gitiles.host.com/project/name.git',
-                     git.GetRepoUrlFromV2Build(build))

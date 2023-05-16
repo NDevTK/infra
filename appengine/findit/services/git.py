@@ -18,7 +18,6 @@ import logging
 
 from common import constants
 from common.findit_http_client import FinditHttpClient
-from findit_v2.services.context import Context
 from gae_libs.caches import PickledMemCache
 from gae_libs.gitiles.cached_gitiles_repository import CachedGitilesRepository
 from libs.cache_decorator import Cached
@@ -279,51 +278,3 @@ def GetRevisionForCommitPositionByAnotherCommit(
                                             ref)
 
   return revisions.get(requested_commit_position)
-
-
-def GetRepoUrlFromContext(context):
-  """Constructs repo url using context.
-
-  Args:
-    context (findit_v2.services.context.Context): Scope of the analysis.
-
-  Returns:
-    (str): repo url.
-  """
-  return 'https://{host}/{project}.git'.format(
-      host=context.gitiles_host, project=context.gitiles_project)
-
-
-def GetRepoUrlFromCommit(gitiles_commit):
-  """Constructs repo url from a gitiles_commit.
-
-  Args:
-    gitiles_commit (findit_v2.model.gitiles_commit.GitilesCommit): A commit.
-
-  Returns:
-    (str): repo url.
-  """
-  context = Context(
-      gitiles_host=gitiles_commit.gitiles_host,
-      gitiles_project=gitiles_commit.gitiles_project,
-      gitiles_ref=gitiles_commit.gitiles_ref,
-      gitiles_id=gitiles_commit.gitiles_id)
-  return GetRepoUrlFromContext(context)
-
-
-def GetRepoUrlFromV2Build(build):
-  """Constructs repo url from a build's info.
-
-  Args:
-    build (build_pb2.Build): Info of a build.
-
-  Returns:
-    (str): repo url.
-  """
-  context = Context(
-      luci_project_name=build.builder.project,
-      gitiles_host=build.input.gitiles_commit.host,
-      gitiles_project=build.input.gitiles_commit.project,
-      gitiles_ref=build.input.gitiles_commit.ref,
-      gitiles_id=build.input.gitiles_commit.id)
-  return GetRepoUrlFromContext(context)
