@@ -26,16 +26,12 @@ data:
       - lib/.*/site-packages/.*\.dist-info/RECORD
       - pip-selfcheck.json
 
-  # Main infra code, except "path_hacks" and stuff that depends on it.
-  # path_hacks are used to access code outside of infra.git repo, it is not
-  # included in the package anyway. Excluding it makes tests pass.
   - dir: "infra"
     exclude:
       - .*\.pyc
       # Unused and is always changing due to recipe_roller, creating new
       # packages.
       - config
-      - path_hacks
 
   # Compiled protos.
   - file: infra/init_python_pb2.py

@@ -25,10 +25,6 @@ The rest of this page is specific to this repo.
 
 * [bootstrap/](bootstrap): utilities to set up a proper Python virtual
   environment.
-* [infra/path\_hacks](infra/path_hacks): submodules of this modules give access
-  to modules in the build/ repository. `from infra.path_hacks.common import
-  <stg>` is actually getting `<stg>` from
-  [build/scripts/common](https://chromium.googlesource.com/chromium/tools/build/+/HEAD/scripts/common).
 * [utils/](utils): purpose? utils?
 * Need to bump infra/deployed to pick up changes?
     * `git push origin <updated hash>:deployed`
