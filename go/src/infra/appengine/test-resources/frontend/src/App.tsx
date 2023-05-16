@@ -4,7 +4,7 @@
 
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import NavBar from './features/NavBar';
-import ComponentPage from './pages/resources/ComponentPage';
+import ResourcesPage from './pages/resources/ResourcesPage';
 
 const App = () => {
   return (
@@ -12,7 +12,7 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<NavBar/>}>
-            <Route path="/resources/component/:component" element={<ComponentPage/>}/>
+            <Route path="/resources/component/:component" element={<ResourcesPage/>}/>
           </Route>
         </Routes>
       </BrowserRouter>

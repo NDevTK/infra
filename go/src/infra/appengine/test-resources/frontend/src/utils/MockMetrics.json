@@ -1,0 +1,90 @@
+[
+    {
+        "test_id" : "0",
+        "test_name" : "test_name_1",
+        "file_name" : "file_name_1",
+        "metrics" :
+            {
+                "01-02-12": {
+                    "data" : [
+                        {
+                            "metric_type" : "NUM_RUNS",
+                            "metric_value" : 2
+                        },
+                        {
+                            "metric_type" : "NUM_FAILURES",
+                            "metric_value" : 2
+                        },
+                        {
+                            "metric_type" : "AVG_RUNTIME",
+                            "metric_value" : 2
+                        },
+                        {
+                            "metric_type" : "TOTAL_RUNTIME",
+                            "metric_value" : 2
+                        },
+                        {
+                            "metric_type" : "AVG_CORES",
+                            "metric_value" : 2
+                        }
+                    ]
+                },
+                "01-03-13": {
+                    "data" : [
+                        {
+                            "metric_type" : "NUM_RUNS",
+                            "metric_value" : 2
+                        },
+                        {
+                            "metric_type" : "NUM_FAILURES",
+                            "metric_value" : 2
+                        },
+                        {
+                            "metric_type" : "AVG_RUNTIME",
+                            "metric_value" : 2
+                        },
+                        {
+                            "metric_type" : "TOTAL_RUNTIME",
+                            "metric_value" : 2
+                        },
+                        {
+                            "metric_type" : "AVG_CORES",
+                            "metric_value" : 2
+                        }
+                    ]
+                }
+            }
+    },
+    {
+        "test_id" : "1",
+        "test_name" : "test_name_1",
+        "file_name" : "file_name_1",
+        "metrics" :
+            {
+                "01-02-12": {
+                    "data" : [
+                        {
+                            "metric_type" : "NUM_RUNS",
+                            "metric_value" : 2
+                        },
+                        {
+                            "metric_type" : "NUM_FAILURES",
+                            "metric_value" : 2
+                        },
+                        {
+                            "metric_type" : "AVG_RUNTIME",
+                            "metric_value" : 2
+                        },
+                        {
+                            "metric_type" : "TOTAL_RUNTIME",
+                            "metric_value" : 2
+                        },
+                        {
+                            "metric_type" : "AVG_CORES",
+                            "metric_value" : 2
+                        }
+                    ]
+                }
+            }
+    }
+]

@@ -9,27 +9,18 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-
-
-function createData(
-    testName: string,
-    testSuite: string,
-    numRuns: number,
-    numFailures: number,
-    avgRuntime: number,
-    totalRuntime: number,
-    avgCores: number,
-) {
-  return {
-    testName, testSuite, numRuns, numFailures, avgRuntime, totalRuntime, avgCores,
-  };
-}
-
-const rows = [
-  createData('Fake Test Name', 'Fake test suite', 24, 4.0, 2, 2, 2),
-];
+import { useContext, useEffect } from 'react';
+import MetricContext from '../../context/MetricContext';
+import { fetchTestDateMetricData } from '../../api/resources';
+import ComponentRow from './ResourcesRow';
 
 function ResourcesTable() {
+  const metricsCtx = useContext(MetricContext);
+  useEffect(() => {
+    fetchTestDateMetricData().then((fetchedMetric) => {
+      metricsCtx?.setMetrics(fetchedMetric);
+    });
+  }, [JSON.stringify(metricsCtx)]);
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -44,23 +35,13 @@ function ResourcesTable() {
             <TableCell align="right">Avg Cores</TableCell>
           </TableRow>
         </TableHead>
+        {metricsCtx?.testDateMetricData ?
         <TableBody>
-          {rows.map((row) => (
-            <TableRow
-              key={row.testName}
-            >
-              <TableCell component="th" scope="row">
-                {row.testName}
-              </TableCell>
-              <TableCell align="right">{row.testSuite}</TableCell>
-              <TableCell align="right">{row.numRuns}</TableCell>
-              <TableCell align="right">{row.numFailures}</TableCell>
-              <TableCell align="right">{row.avgRuntime}</TableCell>
-              <TableCell align="right">{row.numRuns}</TableCell>
-              <TableCell align="right">{row.avgCores}</TableCell>
-            </TableRow>
+          {metricsCtx.testDateMetricData.map((row) => (
+            <ComponentRow key={row.test_id} {...row}/>
           ))}
-        </TableBody>
+        </TableBody> : null
+        }
       </Table>
     </TableContainer>
   );
