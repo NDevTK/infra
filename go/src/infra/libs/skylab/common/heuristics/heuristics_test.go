@@ -6,7 +6,9 @@ package heuristics
 
 import (
 	"fmt"
+	"strings"
 	"testing"
+	"testing/quick"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -238,4 +240,91 @@ func TestNormalizeBotNameToDeviceName(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestRuncateErrorStringSmokeTest(t *testing.T) {
+	t.Parallel()
+
+	const truncatedString = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA...AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+
+	cases := []struct {
+		name   string
+		input  string
+		output string
+	}{
+		{
+			name:   "empty string",
+			input:  "",
+			output: "",
+		},
+		{
+			name:   "singleton string",
+			input:  "A",
+			output: "A",
+		},
+		{
+			name:   "singleton string",
+			input:  strings.Repeat("A", 1400),
+			output: truncatedString,
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			expected := tt.output
+			actual := TruncateErrorString(tt.input)
+			if diff := cmp.Diff(expected, actual); diff != "" {
+				t.Errorf("unexpected diff (-want +got): %s", diff)
+			}
+		})
+	}
+}
+
+// TestTruncateErrorStringAlwaysShort tests that the string in question always has a length shorter than 1400 characters.
+func TestTruncateErrorStringAlwaysShort(t *testing.T) {
+	t.Parallel()
+
+	cases := []string{
+		"",
+		"A",
+		strings.Repeat("A", 100),
+		strings.Repeat("A", 1000),
+		strings.Repeat("A", 10000),
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(fmt.Sprintf("prefix of length %d", len(tt)), func(t *testing.T) {
+			t.Parallel()
+
+			hasRightLength := func(msg string) bool {
+				return len(TruncateErrorString(msg)) < 1400
+			}
+
+			if err := quick.Check(hasRightLength, nil); err != nil {
+				t.Errorf("unexpected error: %s", err)
+			}
+		})
+	}
+}
+
+// TestTruncateErrorStringIsIdempotent tests that TruncateErrorString is idempotent.
+// This high-level property checks that the logic for shortening the string is correct and checks that utf-8 sanitization logic is also correct.
+func TestTruncateErrorStringIsIdempotent(t *testing.T) {
+	t.Parallel()
+
+	once := func(msg []byte) string {
+		return TruncateErrorString(string(msg))
+	}
+
+	twice := func(msg []byte) string {
+		return TruncateErrorString(TruncateErrorString(string(msg)))
+	}
+
+	if err := quick.CheckEqual(once, twice, nil); err != nil {
+		t.Errorf("unexpected error: %s", err)
+	}
+
 }

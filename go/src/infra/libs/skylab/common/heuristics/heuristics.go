@@ -5,6 +5,7 @@
 package heuristics
 
 import (
+	"fmt"
 	"io/fs"
 	"os"
 	"regexp"
@@ -88,3 +89,21 @@ const (
 	// LatestTaskType refers to the paris task on the latest cipd label.
 	LatestTaskType TaskType = 200
 )
+
+// TruncateErrorString truncates a string to 1400 characters, a number that can safely be stored in both datastore
+// and bigquery.
+// Returns the truncated string.
+func TruncateErrorString(msg string) string {
+	// We take 3 characters for "...".
+	// Characters at the end of the string tend to be more informative than those at the beginning,
+	// so of our (1400-3) character budget, we spend 20% on the prefix and 80% on the suffix.
+	fPrefixLen := (1400 - 3) * 0.2
+	prefixLen := int(fPrefixLen)
+	suffixLen := 1400 - 3 - prefixLen
+	if len(msg)+3 < 1400 {
+		return msg
+	}
+	prefix := msg[0:prefixLen]
+	suffix := msg[(len(msg) - suffixLen):]
+	return strings.ToValidUTF8(fmt.Sprintf("%s...%s", prefix, suffix), "")
+}
