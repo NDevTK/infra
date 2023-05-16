@@ -5,9 +5,10 @@ package monitor
 
 import (
 	"context"
-	"log"
 	"sync"
 	"time"
+
+	"go.chromium.org/luci/common/clock"
 )
 
 // Observable provides the ability that Monitor want to observe.
@@ -40,13 +41,14 @@ func New() Monitor {
 func (m *Monitor) Register(obj Observable, interval time.Duration) {
 	m.wg.Add(1)
 	go func(ctx context.Context, wg *sync.WaitGroup) {
+		defer wg.Done()
 		for {
 			obj.Observe()
 			select {
 			case <-ctx.Done():
-				wg.Done()
-			default:
-				time.Sleep(interval)
+				return
+			case <-clock.After(ctx, interval):
+				continue
 			}
 		}
 	}(m.ctx, &m.wg)
@@ -54,7 +56,6 @@ func (m *Monitor) Register(obj Observable, interval time.Duration) {
 
 // Stop the monitor.
 func (m *Monitor) Stop() {
-	log.Printf("Shutdown now")
 	m.cancelFunc()
 	m.wg.Wait()
 }

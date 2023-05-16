@@ -4,24 +4,23 @@
 package monitor
 
 import (
+	"context"
 	"testing"
 	"time"
-
-	"infra/cros/satlab/satlabrpcserver/utils/sized_queue"
 )
 
-type S struct {
-	data sized_queue.SizedQueue[int]
+type Counter struct {
+	count int
 }
 
-func NewMock(capacity int) S {
-	return S{
-		data: sized_queue.New[int](capacity),
+func NewMock(capacity int) Counter {
+	return Counter{
+		count: 0,
 	}
 }
 
-func (i *S) Observe() {
-	i.data.Push(1)
+func (c *Counter) Observe() {
+	c.count += 1
 }
 
 func TestMonitorShouldWork(t *testing.T) {
@@ -32,15 +31,18 @@ func TestMonitorShouldWork(t *testing.T) {
 
 	// Create a monitor
 	m := New()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer cancel()
+	m.ctx = ctx
 
 	// Observe the obj every 2 sec
 	m.Register(&r, time.Second*2)
 
 	// Sleep 5 sec
-	time.Sleep(time.Second * 5)
+	time.Sleep(time.Second * 3)
 
 	// Assert
-	if r.data.Size() != 3 {
+	if r.count != 2 {
 		t.Errorf("Observe isn't expected")
 	}
 }
@@ -54,20 +56,23 @@ func TestMonitorObserveMultipleShouldWork(t *testing.T) {
 
 	// Create a monitor
 	m := New()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+	m.ctx = ctx
 
 	// Observe the obj every 2 sec
 	m.Register(&r1, time.Second*2)
-	m.Register(&r2, time.Second)
+	m.Register(&r2, time.Second*3)
 
 	// Sleep 5 sec
 	time.Sleep(time.Second * 5)
 
 	// Assert
-	if r1.data.Size() != 3 {
+	if r1.count != 3 {
 		t.Errorf("Observe isn't expected")
 	}
 
-	if r2.data.Size() != 5 {
+	if r2.count != 2 {
 		t.Errorf("Observe isn't expected")
 	}
 }
