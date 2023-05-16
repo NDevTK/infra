@@ -36,7 +36,6 @@ data:
       # packages.
       - config
       - path_hacks
-      - tools/bucket
 
   # Compiled protos.
   - file: infra/init_python_pb2.py
