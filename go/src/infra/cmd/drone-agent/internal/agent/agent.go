@@ -354,7 +354,8 @@ func (h hook) StartBot(dutID string) (bot.Bot, error) {
 		// may cause higher I/O.
 		h.a.log("Bot %v will use its own CIPD cache: %s", dutID, err)
 	}
-	b, err := h.a.StartBotFunc(h.botConfig(dutID, dir))
+	botID := h.a.BotPrefix + dutID
+	b, err := h.a.StartBotFunc(h.botConfig(botID, dir))
 	if err != nil {
 		_ = os.RemoveAll(dir)
 		return nil, errors.Annotate(err, "start bot %v", dutID).Err()
@@ -386,8 +387,7 @@ func (h hook) shareCIPDCacheWithBot(botDir string) error {
 }
 
 // botConfig returns a bot config for starting a Swarming bot.
-func (h hook) botConfig(dutID string, workDir string) bot.Config {
-	botID := h.a.BotPrefix + dutID
+func (h hook) botConfig(botID string, workDir string) bot.Config {
 	return bot.Config{
 		SwarmingURL:   h.a.SwarmingURL,
 		BotID:         botID,
