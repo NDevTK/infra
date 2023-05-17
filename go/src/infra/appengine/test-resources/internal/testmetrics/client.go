@@ -20,9 +20,10 @@ import (
 
 // Client is used to fetch metrics from a given data source.
 type Client struct {
-	BqClient              *bigquery.Client
-	ProjectId             string
-	updateDailySummarySql string
+	BqClient               *bigquery.Client
+	ProjectId              string
+	updateDailySummarySql  string
+	updateWeeklySummarySql string
 }
 
 // Initializes the testmetric client
@@ -35,6 +36,11 @@ func (c *Client) Init() error {
 		return err
 	}
 	c.updateDailySummarySql = fmt.Sprintf(string(bytes), c.ProjectId)
+	bytes, err = os.ReadFile("sql/update_weekly_test_metrics.sql")
+	if err != nil {
+		return err
+	}
+	c.updateWeeklySummarySql = fmt.Sprintf(string(bytes), c.ProjectId)
 	return nil
 }
 
@@ -196,7 +202,16 @@ func (c *Client) FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequ
 // UpdateMetricsTableRequest. All rollups (e.g. weekly/monthly) will be updated
 // as well. The dates are inclusive
 func (c *Client) UpdateSummary(ctx context.Context, fromDate civil.Date, toDate civil.Date) error {
-	q := c.BqClient.Query(c.updateDailySummarySql)
+	err := c.runUpdateSummary(ctx, fromDate, toDate, c.updateDailySummarySql)
+	if err != nil {
+		return err
+	}
+	err = c.runUpdateSummary(ctx, fromDate, toDate, c.updateWeeklySummarySql)
+	return err
+}
+
+func (c *Client) runUpdateSummary(ctx context.Context, fromDate civil.Date, toDate civil.Date, query string) error {
+	q := c.BqClient.Query(query)
 
 	q.Parameters = []bigquery.QueryParameter{
 		{Name: "from_date", Value: fromDate},
@@ -212,9 +227,5 @@ func (c *Client) UpdateSummary(ctx context.Context, fromDate civil.Date, toDate 
 	if err != nil {
 		return err
 	}
-	if err := job_status.Err(); err != nil {
-		return err
-	}
-
-	return nil
+	return job_status.Err()
 }
