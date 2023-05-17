@@ -5,6 +5,8 @@
 
 import flask
 
+import urllib
+
 from components import endpoints_flask
 from components import prpc
 
@@ -538,7 +540,7 @@ class ServletRegistry(object):
     def ProjectRedirectToIssueList(project_name):
       host_url = flask.request.host_url
       url = host_url + 'p/' + project_name + '/issues/list'
-      query_string = flask.request.query_string
+      query_string = urllib.parse.urlencode(flask.request.args)
       if query_string:
         url = '%s?%s' % (url, query_string)
       return flask.redirect(url)
