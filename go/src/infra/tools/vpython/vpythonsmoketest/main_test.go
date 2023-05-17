@@ -12,6 +12,8 @@ import (
 // Running go test runs the smoke test.
 
 func Test(t *testing.T) {
+	t.Skip("vpythonsmoketest only works with python2")
+
 	// TODO(maruel): Redirect child task output to log.
 	if err := mainImpl(context.Background()); err != nil {
 		t.Fatal(err)

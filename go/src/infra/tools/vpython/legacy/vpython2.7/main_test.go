@@ -47,6 +47,8 @@ func init() {
 }
 
 func TestMainFunc(t *testing.T) {
+	t.Skip("requires python2")
+
 	self, err := os.Executable()
 	if err != nil {
 		t.Fatalf("could not get executable path: %s", err)
