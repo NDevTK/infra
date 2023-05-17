@@ -1652,6 +1652,7 @@ SPECS.update({
         Universal('urllib3', '1.24.3'),
         Universal('urllib3', '1.26.4'),
         Universal('urllib3', '1.26.6'),
+        Universal('virt-firmware', '23.5', pyversions=['py3']),
         Universal('virtualenv', '20.0.20'),
         Universal('virtualenv-clone', '0.5.4'),
         Universal('vulture', '2.3', pyversions=['py3']),

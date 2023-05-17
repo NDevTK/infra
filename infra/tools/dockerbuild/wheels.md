@@ -8388,6 +8388,20 @@ wheel: <
 
 * *universal*
 
+## **virt-firmware-py3**
+
+### 23.5
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/virt-firmware-py3"
+  version: "version:23.5"
+>
+```
+
+
+* *universal*
+
 ## **virtualenv**
 
 ### 20.0.20
