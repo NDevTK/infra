@@ -310,7 +310,7 @@ func (a *Agent) wrapState(s *state.State) stateInterface {
 	return a.wrapStateFunc(s)
 }
 
-// hook implements state.ControllerHook.
+// hook implements botman.WorldHook.
 type hook struct {
 	a    *Agent
 	uuid string
@@ -396,7 +396,7 @@ func (h hook) botConfig(dutID string, workDir string) bot.Config {
 	}
 }
 
-// ReleaseDUT implements state.ControllerHook.
+// ReleaseDUT implements botman.WorldHook.
 func (h hook) ReleaseResources(dutID string) {
 	const releaseDUTsTimeout = time.Minute
 	ctx := context.Background()
