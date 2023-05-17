@@ -11,6 +11,8 @@ from __future__ import absolute_import
 
 import flask
 from redirect import redirect_utils
+from redirect import redirectissue
+
 
 class RedirectMiddleware(object):
 
@@ -50,8 +52,14 @@ def GenerateRedirectApp():
   redirect_app.route('/p/<string:project_name>/issues/list')(IssueList)
 
   def IssueDetail(project_name):
-    del project_name
-    # TODO(crbug.com/monorail/12012): Add issue redirect logic
+    local_id = flask.request.values.get('id', type=int)
+    if not local_id:
+      flask.abort(404)
+
+    redirect_url = _GenerateIssueDetailRedirectURL(local_id, project_name)
+    if redirect_url:
+      # TODO(crbug.com/monorail/12012): Add redirect logic for comment
+      return flask.redirect(redirect_url)
     flask.abort(404)
   redirect_app.route('/p/<string:project_name>/issues/detail')(IssueDetail)
 
@@ -64,3 +72,14 @@ def GenerateRedirectApp():
   redirect_app.route('/p/<string:project_name>/issues/entry_new')(IssueCreate)
 
   return redirect_app
+
+
+def _GenerateIssueDetailRedirectURL(local_id, project_name):
+  redirect_base_url = redirect_utils.GetRedirectURL(project_name)
+  if not redirect_base_url:
+    return None
+
+  tracker_id = redirectissue.RedirectIssue.Get(project_name, local_id)
+  if tracker_id:
+    return redirect_base_url + '/' + tracker_id
+  return None

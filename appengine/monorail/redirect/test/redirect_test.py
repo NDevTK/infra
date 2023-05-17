@@ -33,3 +33,17 @@ class TestRedirectApp(unittest.TestCase):
     client = self.app.test_client()
     response = client.get('/p/project1/issues/entry')
     self.assertEqual(response.status_code, 302)
+
+  def testNoRedirectIssueDetail(self):
+    client = self.app.test_client()
+    response = client.get('/p/project1/issues/detail?id=1')
+    self.assertEqual(response.status_code, 404)
+
+  @patch("redirect.redirect_utils.GetRedirectURL")
+  @patch("redirect.redirectissue.RedirectIssue.Get")
+  def testRedirectIssueDetail(self, fake_get_url, fake_redirectIssue):
+    fake_get_url.return_value = "test"
+    fake_redirectIssue.return_value = "1"
+    client = self.app.test_client()
+    response = client.get('/p/project1/issues/detail?id=1')
+    self.assertEqual(response.status_code, 302)
