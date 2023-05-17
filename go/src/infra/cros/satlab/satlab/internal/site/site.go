@@ -13,7 +13,6 @@ import (
 	"strings"
 
 	"go.chromium.org/luci/auth"
-	"go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
@@ -274,7 +273,7 @@ func GetFullyQualifiedHostname(specifiedSatlabID string, fetchedSatlabID, prefix
 // DefaultAuthOptions is an auth.Options struct prefilled with chrome-infra
 // defaults.
 var DefaultAuthOptions = chromeinfra.SetDefaultAuthOptions(auth.Options{
-	Scopes:     append(gs.ReadWriteScopes, auth.OAuthScopeEmail),
+	Scopes:     []string{auth.OAuthScopeEmail},
 	SecretsDir: SecretsDir(),
 })
 
