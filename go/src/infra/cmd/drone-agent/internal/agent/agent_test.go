@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -638,7 +638,6 @@ func newTestAgent(t *testing.T) (a *Agent, cleanup func()) {
 	}
 	cleanup = func() { os.RemoveAll(workDir) }
 	a = &Agent{
-		SwarmingURL:       "https://swarming.example.com",
 		WorkingDir:        workDir,
 		ReportingInterval: time.Nanosecond,
 		DUTCapacity:       99999,

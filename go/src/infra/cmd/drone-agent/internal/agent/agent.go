@@ -35,9 +35,6 @@ import (
 // dynamic state is stored in state.State.
 type Agent struct {
 	Client api.DroneClient
-	// SwarmingURL is the URL of the Swarming instance.  Should be
-	// a full URL without the path, e.g. https://host.example.com
-	SwarmingURL string
 	// WorkingDir is used for Swarming bot working dirs.  It is
 	// the caller's responsibility to create this.
 	WorkingDir        string
@@ -389,7 +386,6 @@ func (h hook) shareCIPDCacheWithBot(botDir string) error {
 // botConfig returns a bot config for starting a Swarming bot.
 func (h hook) botConfig(botID string, workDir string) bot.Config {
 	return bot.Config{
-		SwarmingURL:   h.a.SwarmingURL,
 		BotID:         botID,
 		WorkDirectory: workDir,
 		Resources:     h.a.BotResources,

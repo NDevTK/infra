@@ -76,12 +76,18 @@ func (b realBot) Drain() error {
 // Starter has a Start method for starting Swarming bots.
 type Starter struct {
 	client *http.Client
+	// swarmingURL is the URL of the Swarming instance.  Should be
+	// a full URL without the path, e.g. https://host.example.com
+	swarmingURL string
 }
 
 // NewStarter returns a new Starter.
-func NewStarter(c *http.Client) Starter {
+// swarmingURL is the URL of the Swarming instance.  Should be
+// a full URL without the path, e.g. https://host.example.com
+func NewStarter(c *http.Client, swarmingURL string) Starter {
 	return Starter{
-		client: c,
+		client:      c,
+		swarmingURL: swarmingURL,
 	}
 }
 
@@ -130,7 +136,7 @@ func (s Starter) downloadBotCode(c Config) error {
 	}
 	defer f.Close()
 
-	resp, err := s.client.Get(c.botCodeURL())
+	resp, err := s.client.Get(s.botCodeURL(c.BotID))
 	if err != nil {
 		return errors.Annotate(err, "download bot code for %+v", c).Err()
 	}
@@ -148,12 +154,13 @@ func (s Starter) downloadBotCode(c Config) error {
 	return nil
 }
 
+func (s Starter) botCodeURL(botID string) string {
+	return fmt.Sprintf("%s/bot_code?bot_id=%s", s.swarmingURL, botID)
+}
+
 // Config is the configuration needed for starting a generic Swarming bot.
 type Config struct {
-	// SwarmingURL is the URL of the Swarming instance.  Should be
-	// a full URL without the path, e.g. https://host.example.com
-	SwarmingURL string
-	BotID       string
+	BotID string
 	// WorkDirectory is the Swarming bot's work directory.
 	// The caller should create this.
 	// The parent directory should be writable to allow creation
@@ -173,10 +180,6 @@ func (c Config) logFilePath() string {
 
 func (c Config) botZipPath() string {
 	return filepath.Join(c.WorkDirectory, "swarming_bot.zip")
-}
-
-func (c Config) botCodeURL() string {
-	return fmt.Sprintf("%s/bot_code?bot_id=%s", c.SwarmingURL, c.BotID)
 }
 
 func (c Config) env() []string {
