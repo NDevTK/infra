@@ -387,13 +387,13 @@ func crosSetGbbFlagsExec(ctx context.Context, info *execs.ExecInfo) error {
 	checkTimeout := 15 * time.Second
 	runTimeout := info.GetExecTimeout() - checkTimeout
 	// New CMD supported from R111-15306.0.0 of ChromeOS.
-	const readGbbCmd = "/usr/bin/futility gbb --set --flash --flags %s"
+	const setGbbCmd = "/usr/bin/futility gbb --set --flash --flags %s"
 	var err error
 	if _, err = run(ctx, checkTimeout, fmt.Sprintf("test -f %s", legacyGBBSetFilename)); err == nil {
 		// TODO(b/280635852): Remove when stable versions upgraded.
-		_, err = run(ctx, runTimeout, legacyGBBReadFilename)
+		_, err = run(ctx, runTimeout, fmt.Sprintf("%s %s", legacyGBBSetFilename, gbbHex))
 	} else {
-		_, err = run(ctx, runTimeout, fmt.Sprintf(readGbbCmd, gbbHex))
+		_, err = run(ctx, runTimeout, fmt.Sprintf(setGbbCmd, gbbHex))
 	}
 	return errors.Annotate(err, "cros set GBB flags").Err()
 }
