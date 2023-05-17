@@ -43,13 +43,6 @@ type Agent struct {
 	// StartBotFunc is used to start Swarming bots.
 	// This must be set.
 	StartBotFunc func(bot.Config) (bot.Bot, error)
-
-	// logger is used for Agent logging.  If nil, use the log package.
-	logger logger
-	// wrapStateFunc is called to wrap the agent state.  This is
-	// used for instrumenting the state for testing.  If nil, this
-	// is a no-op.
-	wrapStateFunc func(*state.State) stateInterface
 	// hive value of the drone agent.  This is used for DUT/drone affinity.
 	// A drone is assigned DUTs with same hive value.
 	Hive string
@@ -58,6 +51,13 @@ type Agent struct {
 	// BotResources is the compute resources (CPU, RAM, disk I/O etc.) assigned
 	// to each bot.
 	BotResources *specs.LinuxResources
+
+	// logger is used for Agent logging.  If nil, use the log package.
+	logger logger
+	// wrapStateFunc is called to wrap the agent state.  This is
+	// used for instrumenting the state for testing.  If nil, this
+	// is a no-op.
+	wrapStateFunc func(*state.State) stateInterface
 }
 
 // logger defines the logging interface used by Agent.
