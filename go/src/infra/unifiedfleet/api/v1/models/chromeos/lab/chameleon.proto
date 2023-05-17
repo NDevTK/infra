@@ -11,7 +11,7 @@ option go_package = "infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
 
 
-// NEXT TAG: 6
+// Next Tag: 7
 message Chameleon {
   reserved 1;
   repeated ChameleonType chameleon_peripherals = 3;
@@ -22,9 +22,19 @@ message Chameleon {
 
   // Remote Power Management for chameleon device.
   OSRPM rpm = 5;
+
+  // Indicate the audio box jack plugger state
+  // Next Tag: 4
+  enum AudioBoxJackPlugger {
+    AUDIOBOX_JACKPLUGGER_UNSPECIFIED = 0;
+    AUDIOBOX_JACKPLUGGER_WORKING = 1;
+    AUDIOBOX_JACKPLUGGER_BROKEN = 2;
+    AUDIOBOX_JACKPLUGGER_NOT_APPLICABLE = 3;
+  }
+  AudioBoxJackPlugger audiobox_jackplugger = 6;
 }
 
-// NEXT TAG: 12
+// Next Tag: 12
 enum ChameleonType {
   reserved 1, 6 to 8;
   CHAMELEON_TYPE_INVALID = 0;
