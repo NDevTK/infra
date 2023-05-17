@@ -58,8 +58,7 @@ def GenerateRedirectApp():
 
     redirect_url = _GenerateIssueDetailRedirectURL(local_id, project_name)
     if redirect_url:
-      # TODO(crbug.com/monorail/12012): Add redirect logic for comment
-      return flask.redirect(redirect_url)
+      return flask.render_template('redirect.html', base_url=redirect_url)
     flask.abort(404)
   redirect_app.route('/p/<string:project_name>/issues/detail')(IssueDetail)
 

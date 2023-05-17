@@ -46,4 +46,4 @@ class TestRedirectApp(unittest.TestCase):
     fake_redirectIssue.return_value = "1"
     client = self.app.test_client()
     response = client.get('/p/project1/issues/detail?id=1')
-    self.assertEqual(response.status_code, 302)
+    self.assertEqual(response.status_code, 200)

@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+<script>
+  const newHash = window.location.hash.replace("#c", "#comment");
+  const url = {{ base_url|tojson }}
+  window.location = url + newHash;
+</script>
