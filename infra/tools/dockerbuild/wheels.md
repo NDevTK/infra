@@ -7026,6 +7026,20 @@ wheel: <
 
 * *universal*
 
+## **pytrie-py3**
+
+### 0.4.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytrie-py3"
+  version: "version:0.4.0"
+>
+```
+
+
+* *universal*
+
 ## **pytype**
 
 ### 2021.2.9
