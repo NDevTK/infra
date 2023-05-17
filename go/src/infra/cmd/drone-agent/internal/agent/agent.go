@@ -307,6 +307,15 @@ func (a *Agent) wrapState(s *state.State) stateInterface {
 	return a.wrapStateFunc(s)
 }
 
+// botConfig returns a bot config for starting a Swarming bot.
+func (a *Agent) botConfig(botID string, workDir string) bot.Config {
+	return bot.Config{
+		BotID:         botID,
+		WorkDirectory: workDir,
+		Resources:     a.BotResources,
+	}
+}
+
 // hook implements botman.WorldHook.
 type hook struct {
 	a    *Agent
@@ -352,7 +361,7 @@ func (h hook) StartBot(dutID string) (bot.Bot, error) {
 		h.a.log("Bot %v will use its own CIPD cache: %s", dutID, err)
 	}
 	botID := h.a.BotPrefix + dutID
-	b, err := h.a.StartBotFunc(h.botConfig(botID, dir))
+	b, err := h.a.StartBotFunc(h.a.botConfig(botID, dir))
 	if err != nil {
 		_ = os.RemoveAll(dir)
 		return nil, errors.Annotate(err, "start bot %v", dutID).Err()
@@ -381,15 +390,6 @@ func (h hook) shareCIPDCacheWithBot(botDir string) error {
 		return fmt.Errorf("setup bot CIPD cache %q: %s", cacheDir, err)
 	}
 	return nil
-}
-
-// botConfig returns a bot config for starting a Swarming bot.
-func (h hook) botConfig(botID string, workDir string) bot.Config {
-	return bot.Config{
-		BotID:         botID,
-		WorkDirectory: workDir,
-		Resources:     h.a.BotResources,
-	}
 }
 
 // ReleaseDUT implements botman.WorldHook.
