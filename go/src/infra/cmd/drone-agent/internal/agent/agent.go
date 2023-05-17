@@ -404,7 +404,6 @@ func (h hook) ReleaseResources(dutID string) {
 	}
 	// Releasing DUTs is best-effort.  Ignore any errors since
 	// there's no way to handle them.
-	//
 	h.a.log("Releasing %s", dutID)
 	_, _ = h.a.Client.ReleaseDuts(ctx, &req)
 }
