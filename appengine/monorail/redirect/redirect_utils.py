@@ -4,7 +4,7 @@
 """Utils for redirect."""
 
 PROJECT_REDIRECT_MAP = {
-    'pigweed': 'https://issues.pigweed.dev/',
+    'pigweed': 'https://issues.pigweed.dev',
     'git': 'https://git.issues.gerritcodereview.com',
 }
 
