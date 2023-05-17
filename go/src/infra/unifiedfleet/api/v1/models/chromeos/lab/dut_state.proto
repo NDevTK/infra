@@ -20,16 +20,17 @@ message DutState {
   PeripheralState servo = 2;
   PeripheralState chameleon = 3;
   PeripheralState audio_loopback_dongle = 4;
-  // wifi_peripheral_state is used for swarming scheduling. It represent the state for wifi peripheral devices.
+  // wifi_peripheral_state is used for swarming scheduling. It represent the
+  // state for wifi peripheral devices.
   PeripheralState wifi_peripheral_state = 16;
   // Indicate how many working bluetooth btpeer for a device.
   int32 working_bluetooth_btpeer = 5;
 
-  // CR50-related configs by definition shouldn't be a state config, but a build config.
-  // However, we don't have a way to source it from any external configuration system,
-  // and it's changed frequently enough to handle cr50 tests, which makes
-  // it basically impossible for manual updatings: See crbug.com/1057145 for the
-  // troubles it causes.
+  // CR50-related configs by definition shouldn't be a state config, but a build
+  // config. However, we don't have a way to source it from any external
+  // configuration system, and it's changed frequently enough to handle cr50
+  // tests, which makes it basically impossible for manual updatings: See
+  // crbug.com/1057145 for the troubles it causes.
   //
   // So we temporarily set it in state config so that repair job can update it.
   // For further changes of it, please see tracking bug crbug.com/1057719.
@@ -63,8 +64,8 @@ message DutState {
   PeripheralState rpm_state = 12;
 
   // Record the last update timestamp of this MachineLSE (In UTC timezone)
-  google.protobuf.Timestamp update_time = 10 [
-    (google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp update_time = 10
+      [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Record the hostname at that time for further analysis.
   string hostname = 11;
@@ -88,7 +89,8 @@ enum PeripheralState {
   NOT_CONNECTED = 2;
   // Device is not reachable over ssh.
   NO_SSH = 6;
-  // Device is broken or not working as expected. the state used if no specified state for the issue.
+  // Device is broken or not working as expected. the state used if no specified
+  // state for the issue.
   BROKEN = 3;
   // Device cannot be repaired or required manual attention to fix/replace it.
   NEED_REPLACEMENT = 7;
@@ -114,15 +116,18 @@ enum PeripheralState {
   SBU_LOW_VOLTAGE = 16;
   // CR50 SBU voltage detected but device was not enumerated.
   CR50_NOT_ENUMERATED = 17;
-  // Servo serial mismatch, when servo not detected and another serial detected on previous used port.
+  // Servo serial mismatch, when servo not detected and another serial detected
+  // on previous used port.
   SERVO_SERIAL_MISMATCH = 18;
   // Issue to connect to servod by XMLRPC proxy.
   SERVOD_PROXY_ISSUE = 19;
-  // Issue related to servo-host. Timeout to start servod or issue with detecting devices.
+  // Issue related to servo-host. Timeout to start servod or issue with
+  // detecting devices.
   SERVO_HOST_ISSUE = 20;
   // Issue related to servo_updater.
   SERVO_UPDATER_ISSUE = 21;
-  // Issue detected in servod and reported by dut_controller_missing_fault control.
+  // Issue detected in servod and reported by dut_controller_missing_fault
+  // control.
   SERVOD_DUT_CONTROLLER_MISSING = 22;
   // Issue related to cold reset pin on the DUT.
   COLD_RESET_PIN_ISSUE = 23;
@@ -141,8 +146,8 @@ enum HardwareState {
   HARDWARE_UNKNOWN = 0;
   // Hardware is in good shape and pass all verifiers.
   HARDWARE_NORMAL = 1;
-  // Hardware is still good but some not critical verifiers did not pass or provided border values.
-  // (used for DUT storage when usage reached 98%)
+  // Hardware is still good but some not critical verifiers did not pass or
+  // provided border values. (used for DUT storage when usage reached 98%)
   HARDWARE_ACCEPTABLE = 2;
   // Hardware is broken or bad (did not pass verifiers).
   HARDWARE_NEED_REPLACEMENT = 3;

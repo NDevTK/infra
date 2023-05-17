@@ -24,7 +24,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// NEXT TAG: 12
+// Next Tag: 12
 type ChameleonType int32
 
 const (
@@ -145,7 +145,7 @@ func (Chameleon_AudioBoxJackPlugger) EnumDescriptor() ([]byte, []int) {
 	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescGZIP(), []int{0, 0}
 }
 
-// NEXT TAG: 7
+// Next Tag: 7
 type Chameleon struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

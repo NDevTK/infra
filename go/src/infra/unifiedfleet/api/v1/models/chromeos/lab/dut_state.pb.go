@@ -42,7 +42,8 @@ const (
 	PeripheralState_NOT_CONNECTED PeripheralState = 2
 	// Device is not reachable over ssh.
 	PeripheralState_NO_SSH PeripheralState = 6
-	// Device is broken or not working as expected. the state used if no specified state for the issue.
+	// Device is broken or not working as expected. the state used if no specified
+	// state for the issue.
 	PeripheralState_BROKEN PeripheralState = 3
 	// Device cannot be repaired or required manual attention to fix/replace it.
 	PeripheralState_NEED_REPLACEMENT PeripheralState = 7
@@ -67,15 +68,18 @@ const (
 	PeripheralState_SBU_LOW_VOLTAGE PeripheralState = 16
 	// CR50 SBU voltage detected but device was not enumerated.
 	PeripheralState_CR50_NOT_ENUMERATED PeripheralState = 17
-	// Servo serial mismatch, when servo not detected and another serial detected on previous used port.
+	// Servo serial mismatch, when servo not detected and another serial detected
+	// on previous used port.
 	PeripheralState_SERVO_SERIAL_MISMATCH PeripheralState = 18
 	// Issue to connect to servod by XMLRPC proxy.
 	PeripheralState_SERVOD_PROXY_ISSUE PeripheralState = 19
-	// Issue related to servo-host. Timeout to start servod or issue with detecting devices.
+	// Issue related to servo-host. Timeout to start servod or issue with
+	// detecting devices.
 	PeripheralState_SERVO_HOST_ISSUE PeripheralState = 20
 	// Issue related to servo_updater.
 	PeripheralState_SERVO_UPDATER_ISSUE PeripheralState = 21
-	// Issue detected in servod and reported by dut_controller_missing_fault control.
+	// Issue detected in servod and reported by dut_controller_missing_fault
+	// control.
 	PeripheralState_SERVOD_DUT_CONTROLLER_MISSING PeripheralState = 22
 	// Issue related to cold reset pin on the DUT.
 	PeripheralState_COLD_RESET_PIN_ISSUE PeripheralState = 23
@@ -185,8 +189,8 @@ const (
 	HardwareState_HARDWARE_UNKNOWN HardwareState = 0
 	// Hardware is in good shape and pass all verifiers.
 	HardwareState_HARDWARE_NORMAL HardwareState = 1
-	// Hardware is still good but some not critical verifiers did not pass or provided border values.
-	// (used for DUT storage when usage reached 98%)
+	// Hardware is still good but some not critical verifiers did not pass or
+	// provided border values. (used for DUT storage when usage reached 98%)
 	HardwareState_HARDWARE_ACCEPTABLE HardwareState = 2
 	// Hardware is broken or bad (did not pass verifiers).
 	HardwareState_HARDWARE_NEED_REPLACEMENT HardwareState = 3
@@ -240,11 +244,11 @@ func (HardwareState) EnumDescriptor() ([]byte, []int) {
 	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescGZIP(), []int{1}
 }
 
-// CR50-related configs by definition shouldn't be a state config, but a build config.
-// However, we don't have a way to source it from any external configuration system,
-// and it's changed frequently enough to handle cr50 tests, which makes
-// it basically impossible for manual updatings: See crbug.com/1057145 for the
-// troubles it causes.
+// CR50-related configs by definition shouldn't be a state config, but a build
+// config. However, we don't have a way to source it from any external
+// configuration system, and it's changed frequently enough to handle cr50
+// tests, which makes it basically impossible for manual updatings: See
+// crbug.com/1057145 for the troubles it causes.
 //
 // So we temporarily set it in state config so that repair job can update it.
 // For further changes of it, please see tracking bug crbug.com/1057719.
@@ -359,7 +363,8 @@ type DutState struct {
 	Servo               PeripheralState   `protobuf:"varint,2,opt,name=servo,proto3,enum=unifiedfleet.api.v1.models.chromeos.lab.PeripheralState" json:"servo,omitempty"`
 	Chameleon           PeripheralState   `protobuf:"varint,3,opt,name=chameleon,proto3,enum=unifiedfleet.api.v1.models.chromeos.lab.PeripheralState" json:"chameleon,omitempty"`
 	AudioLoopbackDongle PeripheralState   `protobuf:"varint,4,opt,name=audio_loopback_dongle,json=audioLoopbackDongle,proto3,enum=unifiedfleet.api.v1.models.chromeos.lab.PeripheralState" json:"audio_loopback_dongle,omitempty"`
-	// wifi_peripheral_state is used for swarming scheduling. It represent the state for wifi peripheral devices.
+	// wifi_peripheral_state is used for swarming scheduling. It represent the
+	// state for wifi peripheral devices.
 	WifiPeripheralState PeripheralState `protobuf:"varint,16,opt,name=wifi_peripheral_state,json=wifiPeripheralState,proto3,enum=unifiedfleet.api.v1.models.chromeos.lab.PeripheralState" json:"wifi_peripheral_state,omitempty"`
 	// Indicate how many working bluetooth btpeer for a device.
 	WorkingBluetoothBtpeer int32              `protobuf:"varint,5,opt,name=working_bluetooth_btpeer,json=workingBluetoothBtpeer,proto3" json:"working_bluetooth_btpeer,omitempty"`

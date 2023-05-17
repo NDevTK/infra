@@ -10,7 +10,6 @@ option go_package = "infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
 
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
 
-
 // Next Tag: 7
 message Chameleon {
   reserved 1;
