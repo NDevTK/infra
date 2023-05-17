@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 """Utils for redirect."""
 
-PROJECT_REDIRECT_MAP = {}
+PROJECT_REDIRECT_MAP = {
+    'pigweed': 'https://issues.pigweed.dev/',
+    'git': 'https://git.issues.gerritcodereview.com',
+}
 
 
 def GetRedirectURL(project_name):

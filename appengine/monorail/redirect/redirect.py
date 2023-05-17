@@ -38,7 +38,7 @@ def GenerateRedirectApp():
   def PreCheckHandler():
     # Should not redirect away from monorail if param set.
     r = flask.request
-    no_redirect = r.args.get('no_tracker_redirect')
+    no_redirect = 'no_tracker_redirect' in r.values
     if no_redirect:
       flask.abort(404)
   redirect_app.before_request(PreCheckHandler)
@@ -48,8 +48,11 @@ def GenerateRedirectApp():
     if redirect_url:
       return flask.redirect(redirect_url)
     flask.abort(404)
+
+  redirect_app.route('/p/<string:project_name>/')(IssueList)
   redirect_app.route('/p/<string:project_name>/issues/')(IssueList)
   redirect_app.route('/p/<string:project_name>/issues/list')(IssueList)
+  redirect_app.route('/p/<string:project_name>/issues/list_new')(IssueList)
 
   def IssueDetail(project_name):
     local_id = flask.request.values.get('id', type=int)
