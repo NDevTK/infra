@@ -43,10 +43,10 @@ type Agent struct {
 	// StartBotFunc is used to start Swarming bots.
 	// This must be set.
 	StartBotFunc func(bot.Config) (bot.Bot, error)
-	// hive value of the drone agent.  This is used for DUT/drone affinity.
+	// Hive value of the drone agent.  This is used for DUT/drone affinity.
 	// A drone is assigned DUTs with same hive value.
 	Hive string
-	// botPrefix is used to prefix hostnames for bots.
+	// BotPrefix is used to prefix hostnames for bots.
 	BotPrefix string
 	// BotResources is the compute resources (CPU, RAM, disk I/O etc.) assigned
 	// to each bot.
