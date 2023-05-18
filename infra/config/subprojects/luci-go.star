@@ -31,8 +31,6 @@ def ci_builder(name, os, tree_closing = False, properties = None, use_python3 = 
             ),
         ],
         notifies = infra.tree_closing_notifiers() if tree_closing else None,
-        # TODO(crbug.com/1393420): remove this.
-        omit_python2 = False,
     )
     luci.console_view_entry(
         builder = name,
@@ -56,8 +54,6 @@ def try_builder(
         executable = infra.recipe(recipe or "luci_go", use_python3 = use_python3),
         os = os,
         properties = properties,
-        # TODO(crbug.com/1393420): remove this.
-        omit_python2 = False,
     )
     if in_cq:
         luci.cq_tryjob_verifier(
