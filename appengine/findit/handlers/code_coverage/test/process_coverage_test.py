@@ -220,7 +220,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     super(ProcessCodeCoverageDataTest, self).tearDown()
 
   def testPermissionInProcessCodeCoverageData(self):
-    self.mock_current_user(user_email='test@google.com', is_admin=True)
+    self.mock_current_user(user_email='test@google.com', is_admin=False)
     response = self.test_app.post(
         '/coverage/task/process-data/123?format=json', status=401)
     self.assertEqual(('Either not log in yet or no permission. '

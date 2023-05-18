@@ -32,6 +32,7 @@ JINJA_ENVIRONMENT.filters['tojson'] = ToJson
 class Permission(object):
   APP_SELF = 0x1
   ADMIN = 0x10
+  ADMIN_OR_APP_SELF = 0x11
   CORP_USER = 0x20
   ANYONE = 0x40
 
@@ -70,6 +71,8 @@ class BaseHandler(webapp2.RequestHandler):
       # For internal endpoints for task queues and cron jobs, they are
       # accessible to the app itself only.
       return self.IsRequestFromAppSelf()
+    elif self.PERMISSION_LEVEL == Permission.ADMIN_OR_APP_SELF:
+      return self.IsRequestFromAppSelf() or auth_util.IsCurrentUserAdmin()
     else:
       logging.error('Unknown permission level: %s' % self.PERMISSION_LEVEL)
       return False
