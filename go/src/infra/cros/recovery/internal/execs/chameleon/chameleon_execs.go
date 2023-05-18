@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@ package chameleon
 
 import (
 	"context"
+	"time"
 
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 )
 
@@ -40,9 +42,28 @@ func chameleonNotPresentExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// chameleonCheckAudioboxJackpluggerExec checks the state of AudioBoxJackPlugger
+// this function will set the state according to the result executed by runner
+// it will always return nil to prevent affecting chameleon state
+func chameleonCheckAudioboxJackpluggerExec(ctx context.Context, info *execs.ExecInfo) error {
+	runner := info.NewRunner(info.GetChromeos().GetChameleon().GetName())
+	output, err := runner(ctx, time.Minute, "check_audiobox_jackplugger")
+
+	if output == "WORKING" {
+		info.GetChromeos().GetChameleon().Audioboxjackpluggerstate = tlw.Chameleon_AUDIOBOX_JACKPLUGGER_WORKING
+	} else {
+		info.GetChromeos().GetChameleon().Audioboxjackpluggerstate = tlw.Chameleon_AUDIOBOX_JACKPLUGGER_BROKEN
+	}
+	if err != nil {
+		log.Debugf(ctx, "Error while interpreting AudioBoxJackPlugger status: %s", err)
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("chameleon_state_broken", setStateBrokenExec)
 	execs.Register("chameleon_state_working", setStateWorkingExec)
 	execs.Register("chameleon_state_not_applicable", setStateNotApplicableExec)
 	execs.Register("chameleon_not_present", chameleonNotPresentExec)
+	execs.Register("chameleon_check_audiobox_jackplugger", chameleonCheckAudioboxJackpluggerExec)
 }
