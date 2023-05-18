@@ -35,8 +35,6 @@ def ci_builder(
         properties = properties,
         extra_dimensions = extra_dimensions,
         notifies = infra.tree_closing_notifiers() if tree_closing else None,
-        # TODO(crbug.com/1393420): remove this.
-        omit_python2 = False,
         **kwargs
     )
     luci.console_view_entry(
@@ -61,8 +59,6 @@ def try_builder(
         os = os,
         cpu = cpu,
         properties = properties,
-        # TODO(crbug.com/1393420): remove this.
-        omit_python2 = False,
     )
     if in_cq:
         luci.cq_tryjob_verifier(
@@ -262,6 +258,4 @@ infra.builder(
     properties = {
         "status": "SUCCESS",
     },
-    # TODO(crbug.com/1393420): remove this.
-    omit_python2 = False,
 )
