@@ -38,7 +38,7 @@ def GenerateRedirectApp():
   def PreCheckHandler():
     # Should not redirect away from monorail if param set.
     r = flask.request
-    no_redirect = 'no_tracker_redirect' in r.values
+    no_redirect = 'no_tracker_redirect' in r.args
     if no_redirect:
       flask.abort(404)
   redirect_app.before_request(PreCheckHandler)
