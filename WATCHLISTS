@@ -18,6 +18,9 @@
     'sheriff_o_matic': {
       'filepath': 'go/src/infra/appengine/sheriff-o-matic',
     },
+    'siso': {
+      'filepath': 'go/src/infra/build/siso'
+    },
     'tree_status': {
       'filepath': 'go/src/infra/appengine/tree-status',
     },
@@ -30,6 +33,7 @@
     'rotang': ['chops-tfs-team+reviews@google.com'],
     'rotation_proxy': ['chops-tfs-team+reviews@google.com'],
     'sheriff_o_matic': ['chops-tfs-team+reviews@google.com'],
+    'siso': ['chrome-build-team@google.com'],
     'tree_status': ['chops-tfs-team+reviews@google.com'],
   },
 }
