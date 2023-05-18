@@ -350,46 +350,14 @@ const workingDirPrefixLength = 20
 
 // StartBot implements state.ControllerHook.
 func (h hook) StartBot(dutID string) (bot.Bot, error) {
-	workingDirPrefix := abbreviate(dutID, workingDirPrefixLength)
-	dir, err := ioutil.TempDir(h.a.WorkingDir, workingDirPrefix+".")
-	if err != nil {
-		return nil, errors.Annotate(err, "start bot %v", dutID).Err()
+	s := droneBotStarter{
+		workingDir:    h.a.WorkingDir,
+		botPrefix:     h.a.BotPrefix,
+		startBotFunc:  h.a.StartBotFunc,
+		botConfigFunc: h.a.botConfig,
+		logFunc:       h.a.log,
 	}
-	if err := h.shareCIPDCacheWithBot(dir); err != nil {
-		// The bot can run without problem with its own CIPD cache, though it
-		// may cause higher I/O.
-		h.a.log("Bot %v will use its own CIPD cache: %s", dutID, err)
-	}
-	botID := h.a.BotPrefix + dutID
-	b, err := h.a.StartBotFunc(h.a.botConfig(botID, dir))
-	if err != nil {
-		_ = os.RemoveAll(dir)
-		return nil, errors.Annotate(err, "start bot %v", dutID).Err()
-	}
-	return b, nil
-}
-
-// shareCIPDCacheWithBot try to setup a common CIPD cache directory on the
-// agent level and share with all bots for better caching.
-// We create a common cache dir and symlink to each bot's CIPD cache dir.
-// We cannot use the common dir to replace the whole {BotDir}/cipd_cache dir
-// since Swarming bots may remove/recreate files in subdirectories like
-// {BotDir}/cipd_cache/bin. Thus we can only symlink the common cache dir to
-// {BotDir}/cipd_cache/cache.
-func (h hook) shareCIPDCacheWithBot(botDir string) error {
-	agentCIPDCache := filepath.Join(h.a.WorkingDir, "cipd_cache")
-	botCIPDCache := filepath.Join(botDir, "cipd_cache")
-	if err := os.MkdirAll(agentCIPDCache, 0777); err != nil && !os.IsExist(err) {
-		return fmt.Errorf("setup bot CIPD cache: cannot create common CIPD cache dir %q: %s", agentCIPDCache, err)
-	}
-	if err := os.MkdirAll(botCIPDCache, 0777); err != nil && !os.IsExist(err) {
-		return fmt.Errorf("setup bot CIPD cache: cannot create bot CIPD cache dir %q: %s", botCIPDCache, err)
-	}
-	cacheDir := filepath.Join(botCIPDCache, "cache")
-	if err := os.Symlink(agentCIPDCache, cacheDir); err != nil {
-		return fmt.Errorf("setup bot CIPD cache %q: %s", cacheDir, err)
-	}
-	return nil
+	return s.startBot(dutID)
 }
 
 // ReleaseDUT implements botman.WorldHook.
@@ -406,6 +374,66 @@ func (h hook) ReleaseResources(dutID string) {
 	// there's no way to handle them.
 	h.a.log("Releasing %s", dutID)
 	_, _ = h.a.Client.ReleaseDuts(ctx, &req)
+}
+
+// A droneBotStarter starts a bot for a drone.
+// It handles setting up the working dir, etc.
+// Low level process execution is handled by a separate function
+// however (for testing and abstraction).
+// All fields must be set.
+// In particular, the function fields must not be nil.
+type droneBotStarter struct {
+	workingDir string
+	botPrefix  string
+	// startBotFunc is used to start Swarming bots.
+	startBotFunc func(bot.Config) (bot.Bot, error)
+	// botConfigFunc is used to make a bot config.
+	botConfigFunc func(botID string, workDir string) bot.Config
+	// logFunc is used for logging messages.
+	logFunc func(string, ...interface{})
+}
+
+func (s droneBotStarter) startBot(dutID string) (bot.Bot, error) {
+	workingDirPrefix := abbreviate(dutID, workingDirPrefixLength)
+	dir, err := ioutil.TempDir(s.workingDir, workingDirPrefix+".")
+	if err != nil {
+		return nil, errors.Annotate(err, "start bot %v", dutID).Err()
+	}
+	if err := s.shareCIPDCacheWithBot(dir); err != nil {
+		// The bot can run without problem with its own CIPD cache, though it
+		// may cause higher I/O.
+		s.logFunc("Bot %v will use its own CIPD cache: %s", dutID, err)
+	}
+	botID := s.botPrefix + dutID
+	b, err := s.startBotFunc(s.botConfigFunc(botID, dir))
+	if err != nil {
+		_ = os.RemoveAll(dir)
+		return nil, errors.Annotate(err, "start bot %v", dutID).Err()
+	}
+	return b, nil
+}
+
+// shareCIPDCacheWithBot try to setup a common CIPD cache directory on the
+// agent level and share with all bots for better caching.
+// We create a common cache dir and symlink to each bot's CIPD cache dir.
+// We cannot use the common dir to replace the whole {BotDir}/cipd_cache dir
+// since Swarming bots may remove/recreate files in subdirectories like
+// {BotDir}/cipd_cache/bin. Thus we can only symlink the common cache dir to
+// {BotDir}/cipd_cache/cache.
+func (s droneBotStarter) shareCIPDCacheWithBot(botDir string) error {
+	agentCIPDCache := filepath.Join(s.workingDir, "cipd_cache")
+	botCIPDCache := filepath.Join(botDir, "cipd_cache")
+	if err := os.MkdirAll(agentCIPDCache, 0777); err != nil && !os.IsExist(err) {
+		return fmt.Errorf("setup bot CIPD cache: cannot create common CIPD cache dir %q: %s", agentCIPDCache, err)
+	}
+	if err := os.MkdirAll(botCIPDCache, 0777); err != nil && !os.IsExist(err) {
+		return fmt.Errorf("setup bot CIPD cache: cannot create bot CIPD cache dir %q: %s", botCIPDCache, err)
+	}
+	cacheDir := filepath.Join(botCIPDCache, "cache")
+	if err := os.Symlink(agentCIPDCache, cacheDir); err != nil {
+		return fmt.Errorf("setup bot CIPD cache %q: %s", cacheDir, err)
+	}
+	return nil
 }
 
 // truncate returns a suffix of a string of length at most n.
