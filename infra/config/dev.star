@@ -151,8 +151,6 @@ def ci_builder(
         service_account = "adhoc-testing@luci-token-server-dev.iam.gserviceaccount.com",
         triggered_by = [infra.poller()],
         notifies = ["dev tree closer"] if tree_closing else None,
-        # TODO(crbug.com/1393420): remove this.
-        omit_python2 = False,
     )
 
 luci.tree_closer(
