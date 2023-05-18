@@ -9,13 +9,9 @@ package agent
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math"
 	"os"
-	"path/filepath"
-	"regexp"
-	"strings"
 	"sync"
 	"time"
 
@@ -322,42 +318,16 @@ type hook struct {
 	uuid string
 }
 
-// workingDirPrefixLength determines the number of trailing bytes of a dash-abbreviated DUT name to use
-// as a suffix.
-//
-// A non-positive DUT suffix directs drone agent to take the entire DUT name as the suffix.
-// See b:218349208 for details.
-//
-// The length is currently set to 20 conservatively. Values higher than 37 WILL cause tasks to start failing
-// because some generated paths to unix domain sockets within this directory will be too long.
-//
-// The LUCI libraries used by swarming and bbagent impose a maximum length of 104 bytes on the maximum length of a
-// unix domain socket. This limit does not change depending on the operating system, although the underlying length
-// of the unix domain socket does.
-//
-// Current working directories have the following form, where X is a disambiguation suffix and Y is a hostname.
-//
-//	/home/chromeos-test/skylab_bots/YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY.XXXXXXXXX
-//
-// The following is a hostname, appended by the swarming bot.
-//
-//	/w/ir/x/ld/sock.ZZZZZZZZZ
-//
-// This means that 67 bytes total are used for parts of the path that we do not control, leaving 37 for the hostname.
-// All of these details are implementation details though, so let's conservatively pick a lower bound of 20 character,
-// which should be sufficient in practice.
-const workingDirPrefixLength = 20
-
 // StartBot implements state.ControllerHook.
 func (h hook) StartBot(dutID string) (bot.Bot, error) {
-	s := droneBotStarter{
-		workingDir:    h.a.WorkingDir,
-		botPrefix:     h.a.BotPrefix,
-		startBotFunc:  h.a.StartBotFunc,
-		botConfigFunc: h.a.botConfig,
-		logFunc:       h.a.log,
+	s := bot.DroneStarter{
+		WorkingDir:    h.a.WorkingDir,
+		BotPrefix:     h.a.BotPrefix,
+		StartBotFunc:  h.a.StartBotFunc,
+		BotConfigFunc: h.a.botConfig,
+		LogFunc:       h.a.log,
 	}
-	return s.startBot(dutID)
+	return s.Start(dutID)
 }
 
 // ReleaseDUT implements botman.WorldHook.
@@ -374,121 +344,6 @@ func (h hook) ReleaseResources(dutID string) {
 	// there's no way to handle them.
 	h.a.log("Releasing %s", dutID)
 	_, _ = h.a.Client.ReleaseDuts(ctx, &req)
-}
-
-// A droneBotStarter starts a bot for a drone.
-// It handles setting up the working dir, etc.
-// Low level process execution is handled by a separate function
-// however (for testing and abstraction).
-// All fields must be set.
-// In particular, the function fields must not be nil.
-type droneBotStarter struct {
-	workingDir string
-	botPrefix  string
-	// startBotFunc is used to start Swarming bots.
-	startBotFunc func(bot.Config) (bot.Bot, error)
-	// botConfigFunc is used to make a bot config.
-	botConfigFunc func(botID string, workDir string) bot.Config
-	// logFunc is used for logging messages.
-	logFunc func(string, ...interface{})
-}
-
-func (s droneBotStarter) startBot(dutID string) (bot.Bot, error) {
-	workingDirPrefix := abbreviate(dutID, workingDirPrefixLength)
-	dir, err := ioutil.TempDir(s.workingDir, workingDirPrefix+".")
-	if err != nil {
-		return nil, errors.Annotate(err, "start bot %v", dutID).Err()
-	}
-	if err := s.shareCIPDCacheWithBot(dir); err != nil {
-		// The bot can run without problem with its own CIPD cache, though it
-		// may cause higher I/O.
-		s.logFunc("Bot %v will use its own CIPD cache: %s", dutID, err)
-	}
-	botID := s.botPrefix + dutID
-	b, err := s.startBotFunc(s.botConfigFunc(botID, dir))
-	if err != nil {
-		_ = os.RemoveAll(dir)
-		return nil, errors.Annotate(err, "start bot %v", dutID).Err()
-	}
-	return b, nil
-}
-
-// shareCIPDCacheWithBot try to setup a common CIPD cache directory on the
-// agent level and share with all bots for better caching.
-// We create a common cache dir and symlink to each bot's CIPD cache dir.
-// We cannot use the common dir to replace the whole {BotDir}/cipd_cache dir
-// since Swarming bots may remove/recreate files in subdirectories like
-// {BotDir}/cipd_cache/bin. Thus we can only symlink the common cache dir to
-// {BotDir}/cipd_cache/cache.
-func (s droneBotStarter) shareCIPDCacheWithBot(botDir string) error {
-	agentCIPDCache := filepath.Join(s.workingDir, "cipd_cache")
-	botCIPDCache := filepath.Join(botDir, "cipd_cache")
-	if err := os.MkdirAll(agentCIPDCache, 0777); err != nil && !os.IsExist(err) {
-		return fmt.Errorf("setup bot CIPD cache: cannot create common CIPD cache dir %q: %s", agentCIPDCache, err)
-	}
-	if err := os.MkdirAll(botCIPDCache, 0777); err != nil && !os.IsExist(err) {
-		return fmt.Errorf("setup bot CIPD cache: cannot create bot CIPD cache dir %q: %s", botCIPDCache, err)
-	}
-	cacheDir := filepath.Join(botCIPDCache, "cache")
-	if err := os.Symlink(agentCIPDCache, cacheDir); err != nil {
-		return fmt.Errorf("setup bot CIPD cache %q: %s", cacheDir, err)
-	}
-	return nil
-}
-
-// truncate returns a suffix of a string of length at most n.
-// truncate returns the entire string if given a non-positive value for n.
-func truncate(str string, n int) string {
-	if n <= 0 {
-		return str
-	}
-	stop := len(str)
-	if n < stop {
-		stop = n
-	}
-	return str[:stop]
-}
-
-// NumericalSuffixes include numbers like 12 and pseudo-numbers like 14a.
-var numericalSuffix = regexp.MustCompile(`[0-9]+[a-z]?\z`)
-
-// abbreviateWord takes a word and unconditionally takes the first character and takes any
-// numeric suffix.
-//
-// E.g. "chromeos4478" --> "c4478"
-func abbreviateWord(word string) string {
-	if len(word) == 0 {
-		return ""
-	}
-	first := word[0]
-	suffix := numericalSuffix.FindString(word)
-	// The suffix and first character might overlap.
-	if len(suffix) == len(word) {
-		return word
-	}
-	return string(first) + suffix
-}
-
-// abbreviate takes a hostname that is dash-delimited and abbreviates each dash-delimited word.
-// If the hostname contains no dashes at all, we abbreviate the raw hostname.
-// dashAbbrev will never return a string longer than n.
-//
-// E.g. abbreviate("abc123-def456", ...) === "a123-d456"
-//
-//	abbreviate("aaaaaaaa", ...) === "aaaaaaaa"
-//
-// See b:218349208 for details. Hostnames that are too long cause the generated names of unix domain sockets
-// to exceed the current 104-byte limit.
-func abbreviate(str string, n int) string {
-	if !strings.Contains(str, "-") {
-		return truncate(str, n)
-	}
-	words := strings.Split(str, "-")
-	for i := range words {
-		words[i] = abbreviateWord(words[i])
-	}
-	out := strings.Join(words, "-")
-	return truncate(out, n)
 }
 
 // fatalError indicates that the agent should terminate its current
