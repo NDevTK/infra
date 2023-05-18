@@ -14,7 +14,6 @@ import "infra/unifiedfleet/api/v1/models/chromeos/lab/chromeos_device_id.proto";
 
 // This proto defines status labels in lab config of a DUT.
 
-// Next Tag: 19
 message DutState {
   ChromeOSDeviceID id = 1;
   PeripheralState servo = 2;
@@ -73,6 +72,18 @@ message DutState {
   // The value may not be available, and is used to indicate reason of a bad
   // state.
   string dut_state_reason = 18;
+
+  enum RepairRequest {
+    REPAIR_REQUEST_UNKNOWN = 0;
+    // Request to re-provision DUT.
+    REPAIR_REQUEST_PROVISION = 1;
+    // Request to reimage DUT by USB-key.
+    REPAIR_REQUEST_REIMAGE_BY_USBKEY = 2;
+    // Request to re-download image to USB-key.
+    REPAIR_REQUEST_UPDATE_USBKEY_IMAGE = 3;
+  }
+  // List of repair-requestes specified by external services for AutoRepair.
+  repeated RepairRequest repair_requests = 19;
 }
 
 // Next Tag: 27
