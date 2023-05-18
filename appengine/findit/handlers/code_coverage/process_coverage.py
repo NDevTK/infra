@@ -372,6 +372,7 @@ class ProcessCodeCoverageData(BaseHandler):
       manifest = []
       _AddDependencyToManifest('//', repo_url, commit.id, manifest)
 
+    manifest = [x for x in manifest if x.revision]
     report = PostsubmitReport.Create(
         server_host=commit.host,
         project=commit.project,
