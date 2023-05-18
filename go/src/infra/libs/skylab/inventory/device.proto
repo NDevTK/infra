@@ -406,7 +406,7 @@ message HardwareCapabilities {
 //
 // Keep sorted by field names.
 //
-// NEXT TAG: 35
+// NEXT TAG: 36
 message Peripherals {
   optional bool audio_board = 6;
   // The DUT is housed in an audio box to record / replay audio for audio
@@ -432,6 +432,15 @@ message Peripherals {
   }
   repeated ChameleonType chameleon_type = 10;
   optional PeripheralState chameleon_state = 33;
+  // copy from chameleon.proto
+  // NEXT TAG: 4
+  enum AudioBoxJackPlugger {
+    AUDIOBOX_JACKPLUGGER_UNSPECIFIED = 0;
+    AUDIOBOX_JACKPLUGGER_WORKING = 1;
+    AUDIOBOX_JACKPLUGGER_BROKEN = 2;
+    AUDIOBOX_JACKPLUGGER_NOT_APPLICABLE = 3;
+  }
+  optional AudioBoxJackPlugger audiobox_jackplugger_state = 35;
 
   // Whether DUT WiFi antenna is connected conductively or OTA.
   optional bool conductive = 11;
