@@ -13,6 +13,8 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	bbpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/containers"
@@ -144,9 +146,8 @@ func TestCrosDutVmExecutor_ReleaseVm(t *testing.T) {
 	})
 }
 
-func TestCrosDutVmExecutor_LeaseVm(t *testing.T) {
+func TestCrosDutVmExecutor_LeaseVm_GcloudBackend(t *testing.T) {
 	t.Parallel()
-
 	getCmd := func(exec interfaces.ExecutorInterface) *commands.DutVmLeaseCmd {
 		cmd := commands.NewDutVmLeaseCmd(exec)
 		cmd.DutVmGceImage = &vmlabapi.GceImage{
@@ -171,9 +172,7 @@ func TestCrosDutVmExecutor_LeaseVm(t *testing.T) {
 				return expected, nil
 			},
 		}
-
 		err := exec.ExecuteCommand(ctx, cmd)
-
 		So(err, ShouldBeNil)
 		So(cmd.DutVm, ShouldResemble, expected)
 	})
@@ -187,10 +186,131 @@ func TestCrosDutVmExecutor_LeaseVm(t *testing.T) {
 			},
 		}
 		cmd := getCmd(exec)
-
 		err := exec.ExecuteCommand(ctx, cmd)
-
 		So(err, ShouldNotBeNil)
+		So(err.Error(), ShouldContainSubstring, "vmlab lib error")
+	})
+}
+
+func TestCrosDutVmExecutor_LeaseVm_VmLeaserBackend(t *testing.T) {
+	t.Parallel()
+
+	Convey("LeaseVm VmLeaserBackend tests", t, func() {
+		Convey("LeaseVm VmLeaserBackend - success", func() {
+			ctx := context.Background()
+			initialBuild := &bbpb.Build{
+				Input: &bbpb.Build_Input{
+					Experiments: []string{
+						"chromeos.cros_infra_config.vmleaser.launch",
+					},
+				},
+			}
+			state, ctx, err := build.Start(ctx, initialBuild)
+			defer func() { state.End(err) }()
+
+			getCmd := func(exec interfaces.ExecutorInterface) *commands.DutVmLeaseCmd {
+				cmd := commands.NewDutVmLeaseCmd(exec)
+				cmd.DutVmGceImage = &vmlabapi.GceImage{
+					Name:    "image-1",
+					Project: "project-1",
+				}
+				cmd.BuildState = state
+				return cmd
+			}
+
+			expected := &vmlabapi.VmInstance{
+				Name: "instance-1",
+				Ssh:  &vmlabapi.AddressPort{Address: "1.2.3.4", Port: 22},
+			}
+			exec := buildCrosDutVmExecutor()
+			cmd := getCmd(exec)
+			exec.InstanceApi = &mockInstanceApi{
+				create: func(req *vmlabapi.CreateVmInstanceRequest) (*vmlabapi.VmInstance, error) {
+					So(req, ShouldNotBeNil)
+					So(req.GetConfig().GetVmLeaserBackend().GetVmRequirements().GetGceImage(), ShouldEqual, fmt.Sprintf("projects/%v/global/images/%v", cmd.DutVmGceImage.GetProject(), cmd.DutVmGceImage.GetName()))
+					return expected, nil
+				},
+			}
+			err = exec.ExecuteCommand(ctx, cmd)
+			So(err, ShouldBeNil)
+			So(cmd.DutVm, ShouldResemble, expected)
+		})
+
+		Convey("LeaseVm VmLeaserBackend - error", func() {
+			ctx := context.Background()
+			initialBuild := &bbpb.Build{
+				Input: &bbpb.Build_Input{
+					Experiments: []string{
+						"chromeos.cros_infra_config.vmleaser.launch",
+					},
+				},
+			}
+			state, ctx, err := build.Start(ctx, initialBuild)
+			defer func() { state.End(err) }()
+
+			getCmd := func(exec interfaces.ExecutorInterface) *commands.DutVmLeaseCmd {
+				cmd := commands.NewDutVmLeaseCmd(exec)
+				cmd.DutVmGceImage = &vmlabapi.GceImage{
+					Name:    "image-1",
+					Project: "project-1",
+				}
+				cmd.BuildState = state
+				return cmd
+			}
+
+			exec := buildCrosDutVmExecutor()
+			exec.InstanceApi = &mockInstanceApi{
+				create: func(req *vmlabapi.CreateVmInstanceRequest) (*vmlabapi.VmInstance, error) {
+					return nil, fmt.Errorf("vmlab lib error")
+				},
+			}
+			cmd := getCmd(exec)
+			err = exec.ExecuteCommand(ctx, cmd)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "vmlab lib error")
+		})
+	})
+}
+func TestCrosDutVmExecutor_LeaseVm_Experiment(t *testing.T) {
+	t.Parallel()
+
+	Convey("LeaseVm experiment - different experiment success", t, func() {
+		ctx := context.Background()
+		initialBuild := &bbpb.Build{
+			Input: &bbpb.Build_Input{
+				Experiments: []string{
+					"random-experiment-1",
+				},
+			},
+		}
+		state, ctx, err := build.Start(ctx, initialBuild)
+		defer func() { state.End(err) }()
+
+		getCmd := func(exec interfaces.ExecutorInterface) *commands.DutVmLeaseCmd {
+			cmd := commands.NewDutVmLeaseCmd(exec)
+			cmd.DutVmGceImage = &vmlabapi.GceImage{
+				Name:    "image-1",
+				Project: "project-1",
+			}
+			return cmd
+		}
+
+		expected := &vmlabapi.VmInstance{
+			Name: "instance-2",
+			Ssh:  &vmlabapi.AddressPort{Address: "2.2.2.2", Port: 11},
+		}
+		exec := buildCrosDutVmExecutor()
+		cmd := getCmd(exec)
+		exec.InstanceApi = &mockInstanceApi{
+			create: func(req *vmlabapi.CreateVmInstanceRequest) (*vmlabapi.VmInstance, error) {
+				So(req, ShouldNotBeNil)
+				So(req.GetConfig().GetGcloudBackend().GetImage(), ShouldEqual, cmd.DutVmGceImage)
+				return expected, nil
+			},
+		}
+		err = exec.ExecuteCommand(ctx, cmd)
+		So(err, ShouldBeNil)
+		So(cmd.DutVm, ShouldResemble, expected)
 	})
 }
 

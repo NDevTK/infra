@@ -70,7 +70,7 @@ func (g *vmLeaserInstanceApi) Create(ctx context.Context, req *vmlabpb.CreateVmI
 func (g *vmLeaserInstanceApi) Delete(ctx context.Context, ins *vmlabpb.VmInstance) error {
 	vmLeaserBackend := ins.GetConfig().GetVmLeaserBackend()
 	if vmLeaserBackend == nil {
-		return fmt.Errorf("invalid argument: bad backend: want gcloud, got %v", ins.GetConfig())
+		return fmt.Errorf("invalid argument: bad backend: want vm leaser, got %v", ins.GetConfig())
 	}
 	if ins.GetName() == "" {
 		return errors.New("instance name must be set")

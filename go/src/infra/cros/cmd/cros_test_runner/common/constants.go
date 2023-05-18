@@ -31,6 +31,7 @@ const (
 	UfsServiceUrl                          = "ufs.api.cr.dev"
 	TkoParseScriptPath                     = "/usr/local/autotest/tko/parse"
 	DutConnectionPort                      = 22
+	VmLeaserExperimentStr                  = "chromeos.cros_infra_config.vmleaser.launch"
 	// OS file constants
 	// OWNER: Execute, Read, Write
 	// GROUP: Execute, Read

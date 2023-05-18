@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,19 @@ import (
 	"context"
 	"fmt"
 
-	vmlabapi "infra/libs/vmlab/api"
+	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/cros_test_runner/internal/data"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
+	vmlabapi "infra/libs/vmlab/api"
 )
 
 // DutVmReleaseCmd defines the step I/O of releasing a DUT VM on GCE.
 type DutVmReleaseCmd struct {
 	*interfaces.SingleCmdByExecutor
 	// Deps
-	DutVm *vmlabapi.VmInstance
+	DutVm      *vmlabapi.VmInstance
+	BuildState *build.State
 
 	// Updates
 	// Only reset DutTopology to nil
@@ -31,20 +33,38 @@ func (cmd *DutVmReleaseCmd) ExtractDependencies(
 
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
+		// BuildState is used for experiment flags. If missing, will use defaults.
+		cmd.BuildState = sk.BuildState
 		if sk.DutVm == nil {
 			return fmt.Errorf("cmd %q missing dependency: DutVm", cmd.GetCommandType())
 		}
 		if sk.DutVm.GetName() == "" {
 			return fmt.Errorf("cmd %q missing dependency: DutVm.Name", cmd.GetCommandType())
 		}
-		if sk.DutVm.GetConfig().GetGcloudBackend() == nil {
+		if sk.DutVm.GetConfig() == nil {
 			return fmt.Errorf("cmd %q missing dependency: DutVm.Config", cmd.GetCommandType())
 		}
-		if sk.DutVm.GetConfig().GetGcloudBackend().GetProject() == "" {
-			return fmt.Errorf("cmd %q missing dependency: DutVm.Config.Project", cmd.GetCommandType())
-		}
-		if sk.DutVm.GetConfig().GetGcloudBackend().GetZone() == "" {
-			return fmt.Errorf("cmd %q missing dependency: DutVm.Config.Zone", cmd.GetCommandType())
+
+		switch sk.DutVm.GetConfig().GetBackend().(type) {
+		case *vmlabapi.Config_GcloudBackend:
+			if sk.DutVm.GetConfig().GetGcloudBackend().GetProject() == "" {
+				return fmt.Errorf("cmd %q missing dependency: DutVm.Config.GcloudBackend.Project", cmd.GetCommandType())
+			}
+			if sk.DutVm.GetConfig().GetGcloudBackend().GetZone() == "" {
+				return fmt.Errorf("cmd %q missing dependency: DutVm.Config.GcloudBackend.Zone", cmd.GetCommandType())
+			}
+		case *vmlabapi.Config_VmLeaserBackend_:
+			if sk.DutVm.GetConfig().GetVmLeaserBackend().GetVmRequirements() == nil {
+				return fmt.Errorf("cmd %q missing dependency: DutVm.Config.VmLeaserBackend.VmRequirements", cmd.GetCommandType())
+			}
+			if sk.DutVm.GetConfig().GetVmLeaserBackend().GetVmRequirements().GetGceProject() == "" {
+				return fmt.Errorf("cmd %q missing dependency: DutVm.Config.VmLeaserBackend.GceProject", cmd.GetCommandType())
+			}
+			if sk.DutVm.GetConfig().GetVmLeaserBackend().GetVmRequirements().GetGceRegion() == "" {
+				return fmt.Errorf("cmd %q missing dependency: DutVm.Config.VmLeaserBackend.GceRegion", cmd.GetCommandType())
+			}
+		default:
+			return fmt.Errorf("DutVm config backend type %q is not supported", sk.DutVm.GetConfig().GetBackend())
 		}
 		cmd.DutVm = sk.DutVm
 	default:

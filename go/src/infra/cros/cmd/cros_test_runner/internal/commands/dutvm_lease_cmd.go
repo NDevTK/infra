@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,12 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
-	"infra/cros/cmd/cros_test_runner/common"
-	vmlabapi "infra/libs/vmlab/api"
+	"go.chromium.org/luci/luciexe/build"
 
+	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/data"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
+	vmlabapi "infra/libs/vmlab/api"
 )
 
 // DutVmLeaseCmd defines the step I/O of leasing a DUT VM on GCE.
@@ -25,6 +26,7 @@ type DutVmLeaseCmd struct {
 	// Deps
 	DutVmGceImage  *vmlabapi.GceImage
 	CftTestRequest *skylab_test_runner.CFTTestRequest
+	BuildState     *build.State
 
 	// Updates
 	DutVm *vmlabapi.VmInstance
@@ -37,6 +39,8 @@ func (cmd *DutVmLeaseCmd) ExtractDependencies(
 
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
+		// BuildState is used for experiment flags. If missing, will use defaults.
+		cmd.BuildState = sk.BuildState
 		if sk.DutVmGceImage == nil {
 			return fmt.Errorf("cmd %q missing dependency: DutVmGceImage", cmd.GetCommandType())
 		}
