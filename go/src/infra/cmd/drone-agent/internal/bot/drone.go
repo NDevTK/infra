@@ -37,22 +37,22 @@ type DroneStarter struct {
 
 // Start starts a Swarming bot.  The returned Bot object can be used
 // to interact with the bot.
-func (s DroneStarter) Start(dutID string) (Bot, error) {
-	workingDirPrefix := abbreviate(dutID, workingDirPrefixLength)
+func (s DroneStarter) Start(botID string) (Bot, error) {
+	workingDirPrefix := abbreviate(botID, workingDirPrefixLength)
 	dir, err := ioutil.TempDir(s.WorkingDir, workingDirPrefix+".")
 	if err != nil {
-		return nil, errors.Annotate(err, "start bot %v", dutID).Err()
+		return nil, errors.Annotate(err, "start bot %v", botID).Err()
 	}
 	if err := s.shareCIPDCacheWithBot(dir); err != nil {
 		// The bot can run without problem with its own CIPD cache, though it
 		// may cause higher I/O.
-		s.LogFunc("Bot %v will use its own CIPD cache: %s", dutID, err)
+		s.LogFunc("Bot %v will use its own CIPD cache: %s", botID, err)
 	}
-	botID := s.BotPrefix + dutID
+	botID = s.BotPrefix + botID
 	b, err := s.StartBotFunc(s.BotConfigFunc(botID, dir))
 	if err != nil {
 		_ = os.RemoveAll(dir)
-		return nil, errors.Annotate(err, "start bot %v", dutID).Err()
+		return nil, errors.Annotate(err, "start bot %v", botID).Err()
 	}
 	return b, nil
 }
