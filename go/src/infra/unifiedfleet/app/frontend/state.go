@@ -7,7 +7,6 @@ package frontend
 import (
 	"context"
 
-	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
 
@@ -84,7 +83,11 @@ func (s *FleetServerImpl) UpdateTestData(ctx context.Context, req *api.UpdateTes
 		logging.Errorf(ctx, "UpdateTestData request validate fail - %s", err.Error())
 		return nil, err
 	}
-	return nil, errors.Reason("UpdateTestData method not implemented").Err()
+	if err := controller.UpdateTestData(ctx, req); err != nil {
+		logging.Errorf(ctx, "fail to update test data: %s", err.Error())
+		return nil, err
+	}
+	return &api.UpdateTestDataResponse{}, nil
 }
 
 // GetDutState gets the ChromeOS device DutState.

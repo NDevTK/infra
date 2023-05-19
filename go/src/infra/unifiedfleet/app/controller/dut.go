@@ -1127,6 +1127,35 @@ func UpdateRecoveryData(ctx context.Context, req *ufsAPI.UpdateDeviceRecoveryDat
 	return nil
 }
 
+// UpdateTestData updates data from test data.
+// It updates only different type of states.
+func UpdateTestData(ctx context.Context, req *ufsAPI.UpdateTestDataRequest) error {
+	if err := checkDutIdAndHostnameAreAssociated(ctx, req.GetDeviceId(), req.GetHostname()); err != nil {
+		logging.Errorf(ctx, "UpdateTestData chrome device id and hostname are not associated: %s", err.Error())
+	}
+	maskSet := make(map[string]bool) // Set of all the masks
+	for _, path := range req.GetUpdateMask().GetPaths() {
+		maskSet[path] = true
+	}
+	if maskSet["dut.state"] {
+		if err := updateRecoveryResourceState(ctx, req.GetHostname(), req.GetResourceState()); err != nil {
+			logging.Errorf(ctx, "updateRecoveryData unable to update resource state", err.Error())
+			return err
+		}
+	}
+	if chromeos := req.GetChromeosData(); chromeos != nil {
+		if _, err := UpdateDutStateWithMasks(ctx, maskSet, chromeos.GetDutState()); err != nil {
+			logging.Errorf(ctx, "updateRecoveryData unable to update dut state", err.Error())
+			return err
+		}
+	} else if android := req.GetAndroidData(); android != nil {
+		// Do nothing as no states for that case.
+	} else {
+		return errors.Reason("UpdateTestData: unexpected device type").Err()
+	}
+	return nil
+}
+
 func checkDutIdAndHostnameAreAssociated(ctx context.Context, dutId string, hostname string) error {
 	lses, err := inventory.QueryMachineLSEByPropertyName(ctx, "machine_ids", dutId, true)
 	if err != nil {

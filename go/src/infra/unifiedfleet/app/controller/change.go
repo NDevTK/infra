@@ -622,6 +622,7 @@ func (hc *HistoryClient) LogDutStateChanges(oldData, newData *chromeosLab.DutSta
 	}
 
 	hc.changes = append(hc.changes, logCommon(resourceName, "dut_state.servo", oldData.GetServo(), newData.GetServo())...)
+	hc.changes = append(hc.changes, logCommon(resourceName, "dut_state.reason", oldData.GetDutStateReason(), newData.GetDutStateReason())...)
 	hc.changes = append(hc.changes, logCommon(resourceName, "dut_state.chameleon", oldData.GetChameleon(), newData.GetChameleon())...)
 	hc.changes = append(hc.changes, logCommon(resourceName, "dut_state.audio_loopback_dongle", oldData.GetAudioLoopbackDongle(), newData.GetAudioLoopbackDongle())...)
 	hc.changes = append(hc.changes, logCommon(resourceName, "dut_state.working_bluetooth_btpeer", oldData.GetWorkingBluetoothBtpeer(), newData.GetWorkingBluetoothBtpeer())...)
@@ -631,6 +632,7 @@ func (hc *HistoryClient) LogDutStateChanges(oldData, newData *chromeosLab.DutSta
 	hc.changes = append(hc.changes, logCommon(resourceName, "dut_state.wifi_state", oldData.GetWifiState(), newData.GetWifiState())...)
 	hc.changes = append(hc.changes, logCommon(resourceName, "dut_state.bluetooth_state", oldData.GetBluetoothState(), newData.GetBluetoothState())...)
 	hc.changes = append(hc.changes, logCommon(resourceName, "dut_state.rpm_state", oldData.GetRpmState(), newData.GetRpmState())...)
+	hc.changes = append(hc.changes, logCommon(resourceName, "dut_state.repair_requests", oldData.GetRepairRequests(), newData.GetRepairRequests())...)
 	hc.logMsgEntity(resourceName, false, newData)
 }
 
