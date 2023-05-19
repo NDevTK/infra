@@ -31,15 +31,17 @@ var (
 	stats *testResourcesServer
 	// RPC-level ACLs.
 	rpcACL = rpcacl.Map{
-		"/discovery.Discovery/*":                   rpcacl.All,
-		"/test_resources.Stats/UpdateMetricsTable": dataOwnersGroup,
-		"/test_resources.Stats/FetchTestMetrics":   rpcacl.All,
+		"/discovery.Discovery/*":                      rpcacl.All,
+		"/test_resources.Stats/UpdateMetricsTable":    dataOwnersGroup,
+		"/test_resources.Stats/FetchTestMetrics":      rpcacl.All,
+		"/test_resources.Stats/FetchDirectoryMetrics": rpcacl.All,
 	}
 )
 
 type Client interface {
 	UpdateSummary(ctx context.Context, fromDate civil.Date, toDate civil.Date) error
 	FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequest) (*api.FetchTestMetricsResponse, error)
+	FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error)
 }
 
 func main() {
@@ -140,7 +142,11 @@ func (s *testResourcesServer) ListComponents(ctx context.Context, req *api.ListC
 }
 
 func (s *testResourcesServer) FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error) {
-	panic("Endpoint has not been implemented yet")
+	resp, err := s.Client.FetchDirectoryMetrics(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (s *testResourcesServer) FetchTestMetrics(ctx context.Context, req *api.FetchTestMetricsRequest) (*api.FetchTestMetricsResponse, error) {

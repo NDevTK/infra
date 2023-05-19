@@ -18,12 +18,24 @@ import (
 	"infra/appengine/test-resources/api"
 )
 
+var (
+	periodToTestMetricTable = map[api.Period]string{
+		api.Period_DAY:  "test_metrics",
+		api.Period_WEEK: "weekly_test_metrics",
+	}
+	periodToFileMetricTable = map[api.Period]string{
+		api.Period_DAY:  "file_metrics",
+		api.Period_WEEK: "weekly_file_metrics",
+	}
+)
+
 // Client is used to fetch metrics from a given data source.
 type Client struct {
 	BqClient               *bigquery.Client
 	ProjectId              string
 	updateDailySummarySql  string
 	updateWeeklySummarySql string
+	updateFileSummarySql   string
 }
 
 // Initializes the testmetric client
@@ -41,6 +53,14 @@ func (c *Client) Init() error {
 		return err
 	}
 	c.updateWeeklySummarySql = fmt.Sprintf(string(bytes), c.ProjectId)
+	if err != nil {
+		return err
+	}
+	bytes, err = os.ReadFile("sql/update_file_metrics.sql")
+	if err != nil {
+		return err
+	}
+	c.updateFileSummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.ProjectId)
 	return nil
 }
 
@@ -69,6 +89,11 @@ func (c *Client) FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequ
 		metricNames[i] = MetricSqlName(req.Metrics[i])
 	}
 
+	table, ok := periodToTestMetricTable[req.Period]
+	if !ok {
+		return nil, errors.Reason("Received unsupported period request: '%s'", req.Period).Err()
+	}
+
 	query := `
 	SELECT
 		m.date,
@@ -84,7 +109,7 @@ func (c *Client) FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequ
 			` + strings.Join(metricNames, ",\n") + `
 		)) FROM m.variant_summaries v)) AS variants
 	FROM
-		` + c.ProjectId + `.test_results.test_metrics AS m
+		` + c.ProjectId + `.test_results.` + table + `AS m
 	WHERE
 		DATE(date) IN UNNEST(@dates)
 	LIMIT @page_size OFFSET @page`
@@ -198,6 +223,105 @@ func (c *Client) FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequ
 	return response, nil
 }
 
+// Fetches requested metrics for the provided days and filters for a given
+// directory node. A directory node represents a directory or file and the
+// metrics are the combined metrics of the tests in these locations
+func (c *Client) FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error) {
+	dates, err := bqToDateArray(req.GetDates())
+	if err != nil {
+		return nil, err
+	}
+
+	metricNames := make([]string, len(req.Metrics))
+	for i := 0; i < len(req.Metrics); i++ {
+		// Our column names aren't quite the metric type string
+		metricNames[i] = MetricSqlName(req.Metrics[i])
+	}
+
+	table, ok := periodToFileMetricTable[req.Period]
+	if !ok {
+		return nil, errors.Reason("Received unsupported period request: '%s'", req.Period).Err()
+	}
+
+	query := `
+	SELECT
+		date,
+		node_name,
+		ARRAY_REVERSE(SPLIT(node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
+		is_file,
+		` + strings.Join(metricNames, ",\n") + `,
+	FROM ` + c.ProjectId + `.test_results.` + table + `
+	WHERE
+		STARTS_WITH(node_name, @parent || "/") AND
+		-- The child folders and files can't have a / after the parent's name
+		REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(@parent) + 2), "^[^/]*$")
+		AND DATE(date) IN UNNEST(@dates)
+		AND component = @component`
+
+	q := c.BqClient.Query(query)
+
+	q.Parameters = []bigquery.QueryParameter{
+		{Name: "dates", Value: dates},
+		{Name: "component", Value: req.Component},
+		{Name: "parent", Value: req.ParentId},
+	}
+
+	job, err := q.Run(ctx)
+	if err != nil {
+		return nil, err
+	}
+	it, err := job.Read(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// maps for quick lookup of the node id
+	filenameToTestDateMetricData := make(map[string]*api.DirectoryNode)
+
+	response := &api.FetchDirectoryMetricsResponse{}
+	for {
+		var rowVals rowLoader
+		err = it.Next(&rowVals)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, errors.Annotate(err, "obtain next test summary row").Err()
+		}
+		nodeName := rowVals.String("node_name")
+		dirNode, ok := filenameToTestDateMetricData[nodeName]
+		if !ok {
+			nodeType := api.DirectoryNodeType_DIRECTORY
+			if rowVals.Bool("is_file") {
+				nodeType = api.DirectoryNodeType_FILENAME
+			}
+			dirNode = &api.DirectoryNode{
+				Id:      nodeName,
+				Metrics: make(map[string]*api.TestMetricsArray),
+				Name:    rowVals.String("display_name"),
+				Type:    nodeType,
+			}
+			filenameToTestDateMetricData[nodeName] = dirNode
+			// Add to the actual struct being returned
+			response.Node = append(response.Node, dirNode)
+		}
+
+		// Each row is the summary of a node for a day
+		date := rowVals.Date("date").String()
+
+		// Handle the metric rollup metrics
+		dirNode.Metrics[date] = &api.TestMetricsArray{
+			Data: rowVals.Metrics(req.Metrics),
+		}
+
+		if err := rowVals.Error(); err != nil {
+			return nil, err
+		}
+	}
+
+	return response, nil
+}
+
 // Updates the summary tables between the days in the provided
 // UpdateMetricsTableRequest. All rollups (e.g. weekly/monthly) will be updated
 // as well. The dates are inclusive
@@ -207,6 +331,10 @@ func (c *Client) UpdateSummary(ctx context.Context, fromDate civil.Date, toDate 
 		return err
 	}
 	err = c.runUpdateSummary(ctx, fromDate, toDate, c.updateWeeklySummarySql)
+	if err != nil {
+		return err
+	}
+	err = c.runUpdateSummary(ctx, fromDate, toDate, c.updateFileSummarySql)
 	return err
 }
 
