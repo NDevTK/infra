@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/grpc"
 
 	"infra/cros/recovery/docker"
 	"infra/cros/satlab/satlab/internal/site"
@@ -69,6 +70,13 @@ func (f *FakeUFSClient) GetMachine(context.Context, *ufsApi.GetMachineRequest) (
 	return &ufsModels.Machine{
 		Device: &m,
 	}, nil
+}
+
+func (c *FakeUFSClient) GetMachineLSE(ctx context.Context, req *ufsApi.GetMachineLSERequest, opts ...grpc.CallOption) (*ufsModels.MachineLSE, error) {
+	return nil, nil
+}
+func (c *FakeUFSClient) UpdateMachineLSE(ctx context.Context, req *ufsApi.UpdateMachineLSERequest, opts ...grpc.CallOption) (*ufsModels.MachineLSE, error) {
+	return nil, nil
 }
 
 // TestStartServodCmd tests the innerRun function of our command with fake UFS and docker clients, comparing the args we use to actually launch docker w/what is expected

@@ -10,6 +10,7 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
+	"google.golang.org/grpc"
 
 	"infra/cmd/shivas/site"
 	"infra/cmdsupport/cmdlib"
@@ -23,6 +24,8 @@ import (
 type UFSClient interface {
 	GetDut(context.Context, *ufsApi.GetMachineLSERequest) (*ufsModels.MachineLSE, error)
 	GetMachine(context.Context, *ufsApi.GetMachineRequest) (*ufsModels.Machine, error)
+	GetMachineLSE(context.Context, *ufsApi.GetMachineLSERequest, ...grpc.CallOption) (*ufsModels.MachineLSE, error)
+	UpdateMachineLSE(context.Context, *ufsApi.UpdateMachineLSERequest, ...grpc.CallOption) (*ufsModels.MachineLSE, error)
 }
 
 //  implementation of UFS client
@@ -38,6 +41,16 @@ func (c *clientImpl) GetDut(ctx context.Context, req *ufsApi.GetMachineLSEReques
 // GetMachine fetches information about the machine we request.
 func (c *clientImpl) GetMachine(ctx context.Context, req *ufsApi.GetMachineRequest) (*ufsModels.Machine, error) {
 	return c.client.GetMachine(ctx, req)
+}
+
+// GetMachine fetches information about the machine we request.
+func (c *clientImpl) GetMachineLSE(ctx context.Context, req *ufsApi.GetMachineLSERequest, opts ...grpc.CallOption) (*ufsModels.MachineLSE, error) {
+	return c.client.GetMachineLSE(ctx, req)
+}
+
+// GetMachine fetches information about the machine we request.
+func (c *clientImpl) UpdateMachineLSE(ctx context.Context, req *ufsApi.UpdateMachineLSERequest, opts ...grpc.CallOption) (*ufsModels.MachineLSE, error) {
+	return c.client.UpdateMachineLSE(ctx, req)
 }
 
 // NewUFSClient creates a new client to access UFS, but only exposing specific methods needed for Satlab CLI
