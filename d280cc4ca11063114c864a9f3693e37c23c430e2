@@ -94,6 +94,30 @@
       },
       "revId": "d280cc4ca11063114c864a9f3693e37c23c430e2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1bbff4a3_6f8fe102",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-05-19T05:14:17Z",
+      "side": 1,
+      "message": "Why not write that in description then?",
+      "parentUuid": "8cae09a7_67edc1f2",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 2
+      },
+      "revId": "d280cc4ca11063114c864a9f3693e37c23c430e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
