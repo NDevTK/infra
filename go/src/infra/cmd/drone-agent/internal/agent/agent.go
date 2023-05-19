@@ -141,8 +141,9 @@ func (a *Agent) registerWithQueen(ctx context.Context) (_ context.Context, _ sta
 	}
 	a.log("UUID assigned: %s", uuid)
 	s := a.wrapState(state.New(uuid, hook{
-		a:          a,
 		botStarter: a.droneStarter(),
+		c:          a.Client,
+		logFunc:    a.log,
 		uuid:       uuid,
 	}))
 
@@ -335,11 +336,12 @@ func (a *Agent) droneStarter() bot.DroneStarter {
 
 // hook implements botman.WorldHook.
 type hook struct {
-	a          *Agent
 	botStarter interface {
 		Start(botID string) (bot.Bot, error)
 	}
-	uuid string
+	c       api.DroneClient
+	logFunc func(string, ...interface{})
+	uuid    string
 }
 
 // StartBot implements state.ControllerHook.
@@ -359,8 +361,8 @@ func (h hook) ReleaseResources(dutID string) {
 	}
 	// Releasing DUTs is best-effort.  Ignore any errors since
 	// there's no way to handle them.
-	h.a.log("Releasing %s", dutID)
-	_, _ = h.a.Client.ReleaseDuts(ctx, &req)
+	h.logFunc("Releasing %s", dutID)
+	_, _ = h.c.ReleaseDuts(ctx, &req)
 }
 
 // fatalError indicates that the agent should terminate its current
