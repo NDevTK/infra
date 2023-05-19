@@ -147,13 +147,15 @@ deps = {
         'version': 'version:2@1.1.1',
       },
 
+      # TODO: Remove the arch pinning for the following two packages below when
+      # they're rolled forward to a version that includes linux-arm64.
       {
-        'package': 'infra/tools/luci/logdog/logdog/${{platform}}',
+        'package': 'infra/tools/luci/logdog/logdog/${{os}}-${{arch=amd64}}',
         'version': 'git_revision:fe9985447e6b95f4907774f05e9774f031700775',
       },
 
       {
-        'package': 'infra/tools/cloudbuildhelper/${{os=mac,linux}}-${{arch}}',
+        'package': 'infra/tools/cloudbuildhelper/${{os=mac,linux}}-${{arch=amd64}}',
         'version': 'git_revision:7088a6d730d06d978dfa0e9c5dd07e51aeb5916e',
       },
 
