@@ -167,6 +167,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3c323f51_3700e616",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-05-19T05:21:40Z",
+      "side": 1,
+      "message": "\u003e fewer mutaable fields in entry\n\nI see. It looks a reasonable refactoring.",
+      "parentUuid": "609f0935_3a99e593",
+      "revId": "fe910937105587ad1a74c8cb449d500fe9a506de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "231ea063_7aea37d2",
