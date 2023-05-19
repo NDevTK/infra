@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@ package frontend
 import (
 	"context"
 
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
 
@@ -75,6 +76,11 @@ func (fs *FleetServerImpl) UpdateDeviceRecoveryData(ctx context.Context, req *ap
 		return nil, err
 	}
 	return &api.UpdateDeviceRecoveryDataResponse{}, nil
+}
+
+// UpdateTestData updates the device date provide by Test runner.
+func (s *FleetServerImpl) UpdateTestData(ctx context.Context, req *api.UpdateTestDataRequest) (rsp *api.UpdateTestDataResponse, err error) {
+	return nil, errors.Reason("UpdateTestData method not implemented").Err()
 }
 
 // GetDutState gets the ChromeOS device DutState.

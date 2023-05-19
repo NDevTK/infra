@@ -272,6 +272,9 @@ service Fleet {
   // UpdateDeviceRecoveryData updates the device configs for a DUT
   rpc UpdateDeviceRecoveryData(UpdateDeviceRecoveryDataRequest) returns (UpdateDeviceRecoveryDataResponse);
 
+  // UpdateTestData updates the device date provide by Test runner.
+  rpc UpdateTestData(UpdateTestDataRequest) returns (UpdateTestDataResponse);
+
   // GetDHCPConfig retrieves a dhcp record.
   rpc GetDHCPConfig(GetDHCPConfigRequest) returns (models.DHCPConfig);
 
@@ -1808,8 +1811,7 @@ message UpdateDeviceRecoveryDataRequest {
   }
   ResourceType resource_type = 8 [(google.api.field_behavior) = REQUIRED];
   // The hostname of the device.
-  // Optional field but strongly recommended. If empty, hostname will be derived from device_id.
-  string hostname = 2;
+  string hostname = 2 [(google.api.field_behavior) = REQUIRED];
   // The DUT state to update.
   models.State resource_state = 3 [(google.api.field_behavior) = REQUIRED];
   // All device specific recovery data.
@@ -1822,6 +1824,32 @@ message UpdateDeviceRecoveryDataResponse {
   // Reserved for response to UpdateDeviceRecoveryDataRequest
 }
 
+message UpdateTestDataRequest {
+  string device_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string hostname = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The DUT state to update.
+  models.State resource_state = 3 [(google.api.field_behavior) = REQUIRED];
+
+  message ChromeOs {
+    // The state record to update.
+    // DutState.Id is required and its value should be equal to UpdateTestDataRequest.DeviceId
+    models.chromeos.lab.DutState dut_state = 1 [(google.api.field_behavior) = REQUIRED];
+  }
+  message Android {
+    // Reserved for Android details of UpdateTestDataRequest
+  }
+  // Specified device data for update.
+  oneof device_data {
+    ChromeOs chromeos_data = 4;
+    Android android_data = 5;
+  }
+  google.protobuf.FieldMask update_mask = 6  [(google.api.field_behavior) = REQUIRED];
+}
+
+message UpdateTestDataResponse {
+// Reserved for response to UpdateTestDataRequest
+}
 
 message RackRegistrationRequest {
   // The rack to create.

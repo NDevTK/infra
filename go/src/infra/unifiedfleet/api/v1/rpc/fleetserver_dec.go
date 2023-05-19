@@ -1371,6 +1371,23 @@ func (s *DecoratedFleet) UpdateDeviceRecoveryData(ctx context.Context, req *Upda
 	return
 }
 
+func (s *DecoratedFleet) UpdateTestData(ctx context.Context, req *UpdateTestDataRequest) (rsp *UpdateTestDataResponse, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "UpdateTestData", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.UpdateTestData(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "UpdateTestData", rsp, err)
+	}
+	return
+}
+
 func (s *DecoratedFleet) GetDHCPConfig(ctx context.Context, req *GetDHCPConfigRequest) (rsp *models.DHCPConfig, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context
