@@ -155,7 +155,7 @@ func TestDeviceConfigExists(t *testing.T) {
 		},
 		{
 			name:    "only inventory has some configs",
-			invResp: &invV2Api.DeviceConfigsExistsResponse{Exists: map[int32]bool{0: false, 1: true}},
+			invResp: &invV2Api.DeviceConfigsExistsResponse{Exists: map[int32]bool{1: true}},
 			invErr:  false,
 			cfgIDs:  []*ufsdevice.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("other", "device2", "")},
 			want:    []bool{false, true},
@@ -171,7 +171,7 @@ func TestDeviceConfigExists(t *testing.T) {
 		},
 		{
 			name:    "UFS and inventory each have one config",
-			invResp: &invV2Api.DeviceConfigsExistsResponse{Exists: map[int32]bool{0: false, 1: true}},
+			invResp: &invV2Api.DeviceConfigsExistsResponse{Exists: map[int32]bool{1: true}},
 			invErr:  false,
 			cfgIDs:  []*ufsdevice.ConfigId{configuration.GetConfigID("zork", "gumboz", ""), configuration.GetConfigID("inventory", "device", "")},
 			want:    []bool{true, true},
@@ -184,14 +184,6 @@ func TestDeviceConfigExists(t *testing.T) {
 			cfgIDs:  []*ufsdevice.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("other", "device2", "")},
 			want:    []bool{false, false},
 			wantErr: false,
-		},
-		{
-			name:    "different response lengths should cause error",
-			invResp: &invV2Api.DeviceConfigsExistsResponse{Exists: map[int32]bool{0: false}},
-			invErr:  false,
-			cfgIDs:  []*ufsdevice.ConfigId{configuration.GetConfigID("other", "device", ""), configuration.GetConfigID("other", "device2", "")},
-			want:    nil,
-			wantErr: true,
 		},
 	}
 	for _, tt := range tests {

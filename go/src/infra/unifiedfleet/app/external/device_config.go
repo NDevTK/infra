@@ -87,7 +87,7 @@ func (c *DualDeviceConfigClient) DeviceConfigsExists(ctx context.Context, cfgIDs
 	}
 
 	// if inventory says all configs exists, can exit early
-	inventoryResultsArr := mapToSlice(resp.Exists)
+	inventoryResultsArr := mapToSlice(len(req.ConfigIds), resp.Exists)
 	if allTrue(inventoryResultsArr) {
 		return inventoryResultsArr, nil
 	}
@@ -136,8 +136,8 @@ func crosToUFSDeviceConfigProto(crosCfgID *device.Config) (*ufsdevice.Config, er
 }
 
 // mapToSlice converts a map of bools to an array of bools.
-func mapToSlice(existsMap map[int32]bool) []bool {
-	existsArr := make([]bool, len(existsMap))
+func mapToSlice(numCfgs int, existsMap map[int32]bool) []bool {
+	existsArr := make([]bool, numCfgs)
 
 	for i := range existsMap {
 		existsArr[i] = existsMap[i]
