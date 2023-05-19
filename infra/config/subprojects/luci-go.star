@@ -145,3 +145,10 @@ try_builder(
     os = "Ubuntu-18.04",
     recipe = "infra_frontend_tester",
 )
+
+try_builder(
+    name = "luci-go-try-frontend-jammy",
+    os = "Ubuntu-22.04",
+    recipe = "infra_frontend_tester",
+    in_cq = False,
+)

@@ -137,7 +137,17 @@ try_builder(name = "infra-try-mac-10.14", os = "Mac-10.14", properties = {
 
 try_builder(name = "infra-try-win", os = "Windows-10")
 
-try_builder(name = "infra-try-frontend", os = "Ubuntu-18.04", recipe = "infra_frontend_tester")
+try_builder(
+    name = "infra-try-frontend",
+    os = "Ubuntu-18.04",
+    recipe = "infra_frontend_tester",
+)
+try_builder(
+    name = "luci-try-frontend-jammy",
+    os = "Ubuntu-22.04",
+    recipe = "infra_frontend_tester",
+    in_cq = False,
+)
 
 try_builder(
     name = "infra-analysis",
