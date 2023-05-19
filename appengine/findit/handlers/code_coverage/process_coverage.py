@@ -101,6 +101,10 @@ def _IsBlockingChangesAllowed(project):
       'block_low_coverage_changes_projects', [])
 
 
+def _IsBlockingOperational(config):
+  return config.get('is_operational', False)
+
+
 def _IsAuthorInAllowlistForBlocking(config, author_email):
   """Returns True if an author is in allowlist for blocking changes.
 
@@ -742,6 +746,8 @@ class ProcessCodeCoverageData(BaseHandler):
       any_cohort_author_match = False
       for cohort, config in waterfall_config.GetCodeCoverageSettings().get(
           'block_low_coverage_changes', {}).items():
+        if not _IsBlockingOperational(config):
+          continue
         author_email = change_details['owner']['email']
         author_email = self._GetChromiumToGooglerMapping().get(
             author_email, author_email)
