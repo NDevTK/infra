@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e5afa591_9801ffac",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115868
+      },
+      "writtenOn": "2023-05-19T01:45:49Z",
+      "side": 1,
+      "message": "I believe this CL may be causing flaky test failures, see https://ci.chromium.org/ui/p/infra/builders/ci/infra-continuous-bionic-64/21910/test-results?sortby\u003d\u0026groupby\u003d\n\nMy hypothesis would be that the cpu temperature monitor triggers during a test when there is no mock expectation set.\n\nCould you please fix or revert this?\n\nThanks,",
+      "revId": "c754d41af3928e3e22b13c81873d0deb1a4e3d9a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
