@@ -1,3 +1,7 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package analyzer
 
 import (
@@ -242,13 +246,13 @@ func GetBigQueryAlerts(ctx context.Context, tree string) ([]*messages.BuildFailu
 }
 
 func shouldUseCache(tree string) bool {
-	trees := []string{"android", "chromium", "chromium.gpu", "ios", "chromium.perf", "chrome_browser_release", "chromium.clang"}
+	trees := []string{"android", "chromium", "chromium.gpu", "ios", "chromium.perf", "chrome_browser_release", "chromium.clang", "dawn"}
 	return sliceContains(trees, tree)
 }
 
 func getFilterFuncForTree(tree string) (func(failureRow) bool, error) {
 	switch tree {
-	case "android", "chrome_browser_release", "chromium", "chromium.clang", "chromium.gpu", "chromium.perf", "ios":
+	case "android", "chrome_browser_release", "chromium", "chromium.clang", "chromium.gpu", "chromium.perf", "ios", "dawn":
 		return chromeBrowserFilterFunc(tree), nil
 	default:
 		return nil, fmt.Errorf("could not find filter function for tree %s", tree)

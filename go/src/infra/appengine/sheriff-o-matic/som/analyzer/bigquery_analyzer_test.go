@@ -1,3 +1,7 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package analyzer
 
 import (
@@ -1445,6 +1449,8 @@ func TestGetFilterFuncForTree(t *testing.T) {
 		_, err = getFilterFuncForTree("chrome_browser_release")
 		So(err, ShouldBeNil)
 		_, err = getFilterFuncForTree("chromium.clang")
+		So(err, ShouldBeNil)
+		_, err = getFilterFuncForTree("dawn")
 		So(err, ShouldBeNil)
 		_, err = getFilterFuncForTree("another")
 		So(err, ShouldNotBeNil)

@@ -89,3 +89,8 @@ cron:
   url: /_cron/bq_query/chrome
   schedule: every 5 minutes
   target: analyzer
+
+- description: Update Dawn alerts
+  url: /_cron/analyze/dawn
+  schedule: every 5 minutes
+  target: analyzer
