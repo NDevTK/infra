@@ -98,6 +98,12 @@ func otherPeripheralsConverter(ls *inventory.SchedulableLabels) []string {
 		}
 	}
 
+	if invJackPluggerState := p.GetAudioboxJackpluggerState(); invJackPluggerState != inventory.Peripherals_AUDIOBOX_JACKPLUGGER_UNSPECIFIED {
+		labJackPluggerState := invJackPluggerState.String() // AUDIOBOX_JACKPLUGGER_{ UNSPECIFIED, WORKING ... }
+		const plen = len("AUDIOBOX_JACKPLUGGER_")
+		labels = append(labels, fmt.Sprintf("audiobox_jackplugger_state:%s", labJackPluggerState[plen:]))
+	}
+
 	if servoType := p.GetServoType(); servoType != "" {
 		labels = append(labels, fmt.Sprintf("servo_type:%s", servoType))
 	}
@@ -260,6 +266,15 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, labels []string) 
 			if labCStateVal, ok := lab.PeripheralState_value[strings.ToUpper(v)]; ok {
 				cState := inventory.PeripheralState(labCStateVal)
 				p.ChameleonState = &cState
+			}
+		case "audiobox_jackplugger_state":
+			if v == "" {
+				continue
+			}
+			labJackPluggerState := "AUDIOBOX_JACKPLUGGER_" + v
+			if invJackPluggerVal, ok := inventory.Peripherals_AudioBoxJackPlugger_value[labJackPluggerState]; ok {
+				invJackPluggerState := inventory.Peripherals_AudioBoxJackPlugger(invJackPluggerVal)
+				p.AudioboxJackpluggerState = &invJackPluggerState
 			}
 		case "rpm_state":
 			if labRpmState, ok := lab.PeripheralState_value[strings.ToUpper(v)]; ok {

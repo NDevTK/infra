@@ -100,6 +100,12 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 		}
 	}
 
+	if invJackPluggerState := p.GetAudioboxJackpluggerState(); invJackPluggerState != inventory.Peripherals_AUDIOBOX_JACKPLUGGER_UNSPECIFIED {
+		labJackPluggerState := invJackPluggerState.String() // AUDIOBOX_JACKPLUGGER_{ UNSPECIFIED, WORKING, ... }
+		const plen = len("AUDIOBOX_JACKPLUGGER_")
+		dims["label-audiobox_jackplugger_state"] = []string{labJackPluggerState[plen:]}
+	}
+
 	n := p.GetWorkingBluetoothBtpeer()
 	btpeers := make([]string, n)
 	for i := range btpeers {
@@ -174,6 +180,15 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 		}
 		p.ChameleonState = &chamState
 		delete(d, "label-chameleon_state")
+	}
+
+	if labJackPluggerName, ok := getLastStringValue(d, "label-audiobox_jackplugger_state"); ok {
+		labJackPluggerState := "AUDIOBOX_JACKPLUGGER_" + labJackPluggerName
+		if invJackPluggerVal, ok := inventory.Peripherals_AudioBoxJackPlugger_value[labJackPluggerState]; ok {
+			invJackPluggerState := inventory.Peripherals_AudioBoxJackPlugger(invJackPluggerVal)
+			p.AudioboxJackpluggerState = &invJackPluggerState
+		}
+		delete(d, "label-audiobox_jackplugger_state")
 	}
 
 	if labSStateName, ok := getLastStringValue(d, "label-servo_state"); ok {

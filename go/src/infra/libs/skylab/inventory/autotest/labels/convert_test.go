@@ -81,6 +81,7 @@ peripherals: {
   chameleon_type: 5
   chameleon: true
   chameleon_state: 1
+  audiobox_jackplugger_state: 1
   camerabox: true
   camerabox_facing: 1
   camerabox_light: 1
@@ -191,6 +192,7 @@ var fullLabels = []string{
 	"audio_box",
 	"audio_cable",
 	"audio_loopback_dongle",
+	"audiobox_jackplugger_state:WORKING",
 	"battery_state:NEED_REPLACEMENT",
 	"bluetooth",
 	"bluetooth_state:NEED_REPLACEMENT",
@@ -680,6 +682,7 @@ peripherals: {
   chameleon_type: 5
   chameleon: true
   chameleon_state: 1
+  audiobox_jackplugger_state: 1
   camerabox: true
   camerabox_facing: 1
   camerabox_light: 1
@@ -806,6 +809,7 @@ var fullLabelsSpecial = []string{
 	"chameleon:dp",
 	"chameleon:hdmi",
 	"chameleon_state:WORKING",
+	"audiobox_jackplugger_state:WORKING",
 	"chaos_dut",
 	"chaos_nightly",
 	"chromesign",
