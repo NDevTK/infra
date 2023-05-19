@@ -22,6 +22,30 @@
       },
       "revId": "d280cc4ca11063114c864a9f3693e37c23c430e2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "08341ab6_3813467f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-05-19T04:59:18Z",
+      "side": 1,
+      "message": "what do you mean?\n\nsiso shows the following line.",
+      "parentUuid": "7aeb9849_c329452a",
+      "range": {
+        "startLine": 31,
+        "startChar": 0,
+        "endLine": 31,
+        "endChar": 2
+      },
+      "revId": "d280cc4ca11063114c864a9f3693e37c23c430e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
