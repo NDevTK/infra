@@ -214,17 +214,48 @@
   },
   {
     "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]/builder/infra/build/NODEJS_VERSION",
+      "/path/to/tmp/"
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra/infra:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "read NODEJS_VERSION",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@NODEJS_VERSION@6.6.6@@@",
+      "@@@STEP_LOG_END@NODEJS_VERSION@@@"
+    ]
+  },
+  {
+    "cmd": [
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/packages",
+      "[CACHE]/nodejs",
       "-ensure-file",
-      "infra/3pp/tools/nodejs/${platform} version:2@16.13.0",
+      "infra/3pp/tools/nodejs/${platform} version:2@6.6.6",
       "-max-threads",
       "0",
       "-json-output",
       "/path/to/tmp/json"
     ],
+    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "infra/infra:try"
@@ -243,7 +274,7 @@
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@16.13.\", @@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@6.6.6-\", @@@",
       "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/nodejs/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
@@ -259,7 +290,14 @@
     ],
     "cwd": "[CACHE]/builder/infra/appengine/monorail",
     "env": {
-      "PATH": "[START_DIR]/packages/bin:<PATH>"
+      "npm_config_cache": "[CACHE]/npmcache/npm",
+      "npm_config_prefix": "[CACHE]/npmcache/pfx"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/npmcache/pfx/bin",
+        "[CACHE]/nodejs/bin"
+      ]
     },
     "luci_context": {
       "realm": {
@@ -283,7 +321,14 @@
     ],
     "cwd": "[CACHE]/builder/infra/appengine/monorail",
     "env": {
-      "PATH": "[START_DIR]/packages/bin:<PATH>"
+      "npm_config_cache": "[CACHE]/npmcache/npm",
+      "npm_config_prefix": "[CACHE]/npmcache/pfx"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/npmcache/pfx/bin",
+        "[CACHE]/nodejs/bin"
+      ]
     },
     "luci_context": {
       "realm": {
@@ -306,7 +351,14 @@
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra/appengine/dashboard/frontend",
     "env": {
-      "PATH": "[START_DIR]/packages/bin:<PATH>"
+      "npm_config_cache": "[CACHE]/npmcache/npm",
+      "npm_config_prefix": "[CACHE]/npmcache/pfx"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/npmcache/pfx/bin",
+        "[CACHE]/nodejs/bin"
+      ]
     },
     "luci_context": {
       "realm": {
@@ -330,7 +382,14 @@
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra/appengine/dashboard/frontend",
     "env": {
-      "PATH": "[START_DIR]/packages/bin:<PATH>"
+      "npm_config_cache": "[CACHE]/npmcache/npm",
+      "npm_config_prefix": "[CACHE]/npmcache/pfx"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/npmcache/pfx/bin",
+        "[CACHE]/nodejs/bin"
+      ]
     },
     "luci_context": {
       "realm": {

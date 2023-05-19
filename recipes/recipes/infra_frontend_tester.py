@@ -8,11 +8,12 @@ DEPS = [
     'recipe_engine/buildbucket',
     'recipe_engine/cipd',
     'recipe_engine/context',
+    'recipe_engine/file',
+    'recipe_engine/nodejs',
     'recipe_engine/path',
     'recipe_engine/platform',
     'recipe_engine/properties',
     'recipe_engine/step',
-    'recipe_engine/file',
     'depot_tools/bot_update',
     'depot_tools/gclient',
 ]
@@ -39,26 +40,27 @@ def RunSteps(api):
     api.bot_update.ensure_checkout(patch_root=patch_root)
     api.gclient.runhooks()
 
-  packages_dir = api.path['start_dir'].join('packages')
-  ensure_file = api.cipd.EnsureFile()
-  ensure_file.add_package('infra/3pp/tools/nodejs/${platform}',
-                          'version:2@16.13.0')
-  api.cipd.ensure(packages_dir, ensure_file)
+  # Project => (where to find it, how to run its tests).
+  checkout_path, runner = {
+      'infra/infra': ('infra', RunInfraFrontendTests),
+      'infra/infra_internal': ('infra_internal', RunInfraInternalFrontendTests),
+      'infra/luci/luci-go': ('go/src/go.chromium.org/luci', RunLuciGoTests),
+  }[project_name]
+  repo_checkout_root = api.path['checkout'].join(checkout_path)
 
-  node_path = api.path['start_dir'].join('packages', 'bin')
-  env = {
-      'PATH': api.path.pathsep.join([str(node_path), '%(PATH)s'])
-  }
-  if patch_root == 'infra':
-    RunInfraFrontendTests(api, env, api.path['checkout'].join('infra'))
-  elif patch_root == 'infra_internal':
-    RunInfraInternalFrontendTests(api, env,
-                                  api.path['checkout'].join('infra_internal'))
-  else:
-    RunLuciGoTests(api, env)
+  # Read the desired nodejs version from <repo>/build/NODEJS_VERSION.
+  version = api.file.read_text(
+      'read NODEJS_VERSION',
+      repo_checkout_root.join('build', 'NODEJS_VERSION'),
+      test_data='6.6.6\n',
+  ).strip().lower()
+
+  # Bootstrap nodejs at that version and run tests.
+  with api.nodejs(version):
+    runner(api, repo_checkout_root)
 
 
-def RunInfraInternalFrontendTests(api, env, root_path):
+def RunInfraInternalFrontendTests(api, root_path):
   """This function runs UI tests in `infra_internal` project.
   """
 
@@ -69,45 +71,41 @@ def RunInfraInternalFrontendTests(api, env, root_path):
 
   testhaus = root_path.join('go', 'src', 'infra_internal', 'appengine',
                             'testhaus')
-  RunFrontendTests(api, env, testhaus.join('frontend', 'ui'), 'testhaus')
+  RunFrontendTests(api, testhaus.join('frontend', 'ui'), 'testhaus')
 
   cwd = root_path.join('go', 'src', 'infra_internal', 'appengine', 'spike',
                        'appengine', 'frontend', 'ui')
-  RunFrontendTests(api, env, cwd, 'spike')
+  RunFrontendTests(api, cwd, 'spike')
 
 
-def RunInfraFrontendTests(api, env, root_path):
+def RunInfraFrontendTests(api, root_path):
   """This function runs the UI tests in `infra` project.
   """
 
   cwd = root_path.join('appengine', 'monorail')
-  RunFrontendTests(api, env, cwd, 'monorail')
+  RunFrontendTests(api, cwd, 'monorail')
 
   cwd = root_path.join('go', 'src', 'infra', 'appengine', 'dashboard',
                        'frontend')
-  RunFrontendTests(api, env, cwd, 'chopsdash')
+  RunFrontendTests(api, cwd, 'chopsdash')
 
 
-def RunLuciGoTests(api, env):
+def RunLuciGoTests(api, root_path):
   """This function runs UI tests in the `luci-go` project.
   """
-  # This variable defnies the base directory for luci-go project under infra
-  luci_go_directory = 'go/src/go.chromium.org/luci'
 
-  cwd = api.path['checkout'].join(luci_go_directory, 'analysis', 'frontend',
-                                  'ui')
-  RunFrontendTests(api, env, cwd, 'analysis')
+  cwd = root_path.join('analysis', 'frontend', 'ui')
+  RunFrontendTests(api, cwd, 'analysis')
 
-  cwd = api.path['checkout'].join(luci_go_directory, 'bisection', 'frontend',
-                                  'ui')
-  RunFrontendTests(api, env, cwd, 'bisection')
+  cwd = root_path.join('bisection', 'frontend', 'ui')
+  RunFrontendTests(api, cwd, 'bisection')
 
-  cwd = api.path['checkout'].join(luci_go_directory, 'milo', 'ui')
-  RunFrontendTests(api, env, cwd, 'milo')
+  cwd = root_path.join('milo', 'ui')
+  RunFrontendTests(api, cwd, 'milo')
 
 
-def RunFrontendTests(api, env, cwd, app_name):
-  with api.context(env=env, cwd=cwd):
+def RunFrontendTests(api, cwd, app_name):
+  with api.context(cwd=cwd):
     api.step(('%s npm install' % app_name), ['npm', 'ci'])
     api.step(('%s test' % app_name), ['npm', 'run', 'test'])
 
@@ -119,5 +117,6 @@ def GenTests(api):
   yield (
       api.test('basic-internal') +
       api.buildbucket.try_build(project='infra/infra_internal'))
-  yield (api.test('basic-luci-go') +
-         api.buildbucket.try_build(project='infra/luci/luci-go'))
+  yield (
+      api.test('basic-luci-go') +
+      api.buildbucket.try_build(project='infra/luci/luci-go'))
