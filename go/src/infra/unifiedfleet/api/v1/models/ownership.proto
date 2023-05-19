@@ -8,14 +8,15 @@ package unifiedfleet.api.v1.models;
 
 option go_package = "infra/unifiedfleet/api/v1/models;ufspb";
 
-// Next ID: 8
+// Next ID: 9
 message OwnershipData {
    // resource group to which this bot belongs to - deprecated
    repeated string resource_group = 1 [deprecated=true];
    // security level of the bot ex:trusted, untrusted etc
    string security_level = 2;
-   // security pool to which this bot belongs to
-   string pool_name = 3;
+   // security pool to which this bot belongs to - deprecated to support 
+   // array of pools
+   string pool_name = 3 [deprecated=true];
    // swarming instance to which this bot will communicate
    string swarming_instance = 4;
    // custom miba realm for this bot - deprecated
@@ -24,4 +25,6 @@ message OwnershipData {
    string customer = 6;
    // builders for this bot, if any
    repeated string builders = 7;
+   // security pool(s) to which this bot belongs to
+   repeated string pools = 8;
 }
