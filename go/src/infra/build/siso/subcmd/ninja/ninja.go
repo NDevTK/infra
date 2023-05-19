@@ -334,6 +334,12 @@ func (c *ninjaCmdRun) run(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
+	defer func() {
+		err := hashFS.Close(ctx)
+		if err != nil {
+			clog.Errorf(ctx, "close hashfs: %v", err)
+		}
+	}()
 	var localexecLogWriter io.Writer
 	if c.localexecLogFile != "" {
 		f, err := os.Create(c.localexecLogFile)
