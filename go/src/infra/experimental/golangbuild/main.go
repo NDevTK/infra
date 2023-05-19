@@ -172,18 +172,13 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		// Test Go.
 		//
 		// To have structured all.bash output sooner, we divide Go tests into two parts:
-		//   - a small set of unstructured tests (this part will continue to shrink and then disappear)
 		//   - the large remaining set with structured output support (uploaded to ResultDB)
+		//   - a small set of unstructured tests (this part will continue to shrink and then disappear)
 		// While maintaining the property that their union doesn't fall short of all.bash.
 		//
 		// TODO(mknyszek): Support sharding by running `go tool dist test -list` and/or `go list std cmd` and
 		// triggering N test builders with a subset of those tests in their properties.
 		// Pass the newly-built toolchain via CAS.
-		const allButStdCmd = "!^go_test:.+$"
-		jsonOffPart := spec.goCmd(ctx, spec.goroot, spec.distTestArgs(allButStdCmd)...)
-		if err := runCommandAsStep(ctx, "run various dist tests", jsonOffPart, false); err != nil {
-			return err
-		}
 		jsonOnPart := spec.goCmd(ctx, spec.goroot, spec.goTestArgs("std", "cmd")...)
 		if spec.experiment("golang.structured_std_cmd_tests") {
 			spec.wrapTestCmd(jsonOnPart)
@@ -191,6 +186,11 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 			jsonOnPart = spec.goCmd(ctx, spec.goroot, spec.goTestNoJSONArgs("std", "cmd")...)
 		}
 		if err := runCommandAsStep(ctx, "run std and cmd tests", jsonOnPart, false); err != nil {
+			return err
+		}
+		const allButStdCmd = "!^go_test:.+$"
+		jsonOffPart := spec.goCmd(ctx, spec.goroot, spec.distTestArgs(allButStdCmd)...)
+		if err := runCommandAsStep(ctx, "run various dist tests", jsonOffPart, false); err != nil {
 			return err
 		}
 	} else {
