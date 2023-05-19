@@ -83,9 +83,7 @@ def builder(
         triggered_by = None,
 
         # LUCI-Notify config.
-        notifies = None,
-        # TODO(crbug.com/1393420): remove this.
-        omit_python2 = True):
+        notifies = None):
     """Defines a basic infra builder (CI or Try).
 
     It is a builder that needs an infra.git checkout to do stuff.
@@ -107,7 +105,6 @@ def builder(
       extra_dimensions: a dict with additional Swarming dimensions.
       triggered_by: builders that trigger this one.
       notifies: what luci.notifier(...) to notify when its done.
-      omit_python2: remove python2 deterministically if this is set.
     """
     if bucket == "ci":
         if os.startswith("Mac"):
@@ -137,12 +134,6 @@ def builder(
             fail("specify 'cpu', 'os', or 'pool' directly")
         dimensions.update(extra_dimensions)
 
-    experiments = {
-        "luci.buildbucket.backend_go": 100,
-    }
-    if not omit_python2:
-        experiments["luci.buildbucket.omit_python2"] = 20
-
     luci.builder(
         name = name,
         bucket = bucket,
@@ -162,7 +153,9 @@ def builder(
                 by_timestamp = True,
             ),
         ),
-        experiments = experiments,
+        experiments = {
+            "luci.buildbucket.backend_go": 100,
+        },
     )
 
 def _tree_closing_notifiers():
