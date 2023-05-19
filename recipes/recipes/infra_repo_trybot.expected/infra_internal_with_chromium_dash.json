@@ -102,9 +102,7 @@
       "--patch_ref",
       "https://chrome-internal.googlesource.com/infra/infra_internal@refs/heads/main:refs/changes/56/123456/7",
       "--revision",
-      ".@refs/heads/main",
-      "--refs",
-      "refs/heads/main"
+      ".@HEAD"
     ],
     "cwd": "[CACHE]/builder",
     "env": {
