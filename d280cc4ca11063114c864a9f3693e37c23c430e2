@@ -167,6 +167,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3cc207a8_6c7339d5",
+        "filename": "go/src/infra/build/siso/build/builder.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 326,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-05-19T05:44:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d9dc7f50_b04edcd5",
+      "range": {
+        "startLine": 326,
+        "startChar": 18,
+        "endLine": 326,
+        "endChar": 23
+      },
+      "revId": "d280cc4ca11063114c864a9f3693e37c23c430e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dfb27a14_a0f7f8d5",
@@ -180,6 +204,30 @@
       "writtenOn": "2023-05-19T05:19:23Z",
       "side": 1,
       "message": "Is it better to have a function that take lock and return the digest to avoid `mu.Lock`, `mu.Unlock` every time it accesses digest?\n\nBtw, how do you know if the computation is done or still waiting?",
+      "range": {
+        "startLine": 525,
+        "startChar": 2,
+        "endLine": 528,
+        "endChar": 0
+      },
+      "revId": "d280cc4ca11063114c864a9f3693e37c23c430e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e53f7dbd_9891506f",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 528,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-05-19T05:44:44Z",
+      "side": 1,
+      "message": "Done\n\nif digest is zero, digest is calculating. otherwise done.",
+      "parentUuid": "dfb27a14_a0f7f8d5",
       "range": {
         "startLine": 525,
         "startChar": 2,
@@ -213,6 +261,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "408f4157_2eef905c",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 832,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-05-19T05:44:44Z",
+      "side": 1,
+      "message": "yes.\n\ncompute may be invoked via lazyCompute (when first access) or compute (when needed) in digester.\n\nwhen needed, digest may have been calculated by lazyCompute (!e.d.IsZero()) or not (e.d.IsZero())\n\nor in lazy compute, digest may have been calculated by compute, or not.",
+      "parentUuid": "5c414f6c_44ba0b2c",
+      "range": {
+        "startLine": 832,
+        "startChar": 1,
+        "endLine": 832,
+        "endChar": 19
+      },
+      "revId": "d280cc4ca11063114c864a9f3693e37c23c430e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "81ef95b9_f1d829c6",
@@ -226,6 +298,30 @@
       "writtenOn": "2023-05-19T05:19:23Z",
       "side": 1,
       "message": "Does this require taking mutex?",
+      "range": {
+        "startLine": 1058,
+        "startChar": 15,
+        "endLine": 1058,
+        "endChar": 88
+      },
+      "revId": "d280cc4ca11063114c864a9f3693e37c23c430e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1490708e_56607782",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 1058,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-05-19T05:44:44Z",
+      "side": 1,
+      "message": "ah, no need to take mutex for e, but need for ee.",
+      "parentUuid": "81ef95b9_f1d829c6",
       "range": {
         "startLine": 1058,
         "startChar": 15,
