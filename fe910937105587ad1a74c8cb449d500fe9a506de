@@ -72,6 +72,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a82d7572_52d4cb20",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-05-19T04:47:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "58567bae_7b887d0c",
+      "range": {
+        "startLine": 31,
+        "startChar": 12,
+        "endLine": 31,
+        "endChar": 17
+      },
+      "revId": "fe910937105587ad1a74c8cb449d500fe9a506de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6b1973d3_be9db5cb",
@@ -127,6 +151,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "609f0935_3a99e593",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-05-19T04:47:29Z",
+      "side": 1,
+      "message": "it would make somehow simplify (fewer mutaable fields in entry), not add complexity.",
+      "parentUuid": "b4db6c15_70a50590",
+      "revId": "fe910937105587ad1a74c8cb449d500fe9a506de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "231ea063_7aea37d2",
         "filename": "/COMMIT_MSG",
         "patchSetId": 3
@@ -138,6 +180,30 @@
       "writtenOn": "2023-05-19T04:38:31Z",
       "side": 1,
       "message": "This bug is not correct.",
+      "range": {
+        "startLine": 37,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 16
+      },
+      "revId": "fe910937105587ad1a74c8cb449d500fe9a506de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8a69064b_d2b91ea3",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-05-19T04:47:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "231ea063_7aea37d2",
       "range": {
         "startLine": 37,
         "startChar": 0,
@@ -161,6 +227,30 @@
       "writtenOn": "2023-05-19T04:38:31Z",
       "side": 1,
       "message": "You can move digest/digester to another file. e.g. hashfs/digester.go",
+      "range": {
+        "startLine": 746,
+        "startChar": 0,
+        "endLine": 746,
+        "endChar": 23
+      },
+      "revId": "fe910937105587ad1a74c8cb449d500fe9a506de",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8b1a077d_ade34c0c",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 746,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-05-19T04:47:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "44d8f204_77b2db4e",
       "range": {
         "startLine": 746,
         "startChar": 0,
