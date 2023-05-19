@@ -10,6 +10,7 @@ export interface TestDateMetricData {
   file_name: string,
   // Note that string represent date in "XX-XX-XXXX format"
   metrics: Map<string, TestMetricsArray>,
+  variants: TestVariantData[],
 }
 
 export interface TestMetricsArray {
@@ -27,6 +28,12 @@ export enum MetricType {
   AVG_RUNTIME = 'AVG_RUNTIME',
   TOTAL_RUNTIME = 'TOTAL_RUNTIME',
   AVG_CORES = 'AVG_CORES',
+}
+
+export interface TestVariantData {
+  suite: string,
+  builder: string,
+  metrics: Map<string, TestMetricsArray>
 }
 
 export async function fetchTestDateMetricData(
@@ -54,6 +61,7 @@ export async function fetchTestDateMetricData(
       test_name: metric.test_name,
       file_name: metric.file_name,
       metrics: fixedMap,
+      variants: metric.variants ? metric.variants : new Array(0),
     });
   });
   return mockDataArray;
