@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:jammy
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -9,7 +9,7 @@ ENV KVM_PACKAGES ${KVM_PACKAGES:-}
 
 RUN /usr/bin/apt-get update
 RUN /usr/bin/apt-get -y dist-upgrade
-RUN /usr/bin/apt-get -y install curl jq lsof openssh-client psmisc python sudo
+RUN /usr/bin/apt-get -y install curl jq lsof openssh-client psmisc python3 sudo
 RUN /usr/bin/apt-get -y install $ARCH_PACKAGES
 RUN /usr/bin/apt-get -y install $KVM_PACKAGES
 
