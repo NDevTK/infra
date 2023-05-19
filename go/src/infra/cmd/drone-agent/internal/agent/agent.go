@@ -67,6 +67,14 @@ type stateInterface interface {
 	UUID() string
 	WithExpire(ctx context.Context, t time.Time) context.Context
 	SetExpiration(t time.Time)
+	botmanInterface
+}
+
+// botmanInterface is the bot management interface used by the agent.
+// The usual implementation is in the botman package.
+// This is only used as embedded in stateInterface, but we separate it
+// for ease of searching/reading.
+type botmanInterface interface {
 	AddBot(dutID string)
 	DrainBot(dutID string)
 	TerminateBot(dutID string)
