@@ -25,8 +25,6 @@ type DroneStarter struct {
 	// WorkingDir is used for Swarming bot working dirs.  It is
 	// the caller's responsibility to create this.
 	WorkingDir string
-	// BotPrefix is used to prefix hostnames for bots.
-	BotPrefix string
 	// StartBotFunc is used to start Swarming bots.
 	StartBotFunc func(Config) (Bot, error)
 	// BotConfigFunc is used to make a bot config.
@@ -48,7 +46,6 @@ func (s DroneStarter) Start(botID string) (Bot, error) {
 		// may cause higher I/O.
 		s.LogFunc("Bot %v will use its own CIPD cache: %s", botID, err)
 	}
-	botID = s.BotPrefix + botID
 	b, err := s.StartBotFunc(s.BotConfigFunc(botID, dir))
 	if err != nil {
 		_ = os.RemoveAll(dir)

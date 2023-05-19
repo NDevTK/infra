@@ -314,7 +314,7 @@ func (a *Agent) wrapState(s *state.State) stateInterface {
 // botConfig returns a bot config for starting a Swarming bot.
 func (a *Agent) botConfig(botID string, workDir string) bot.Config {
 	return bot.Config{
-		BotID:         botID,
+		BotID:         a.BotPrefix + botID,
 		WorkDirectory: workDir,
 		Resources:     a.BotResources,
 	}
@@ -330,7 +330,6 @@ type hook struct {
 func (h hook) StartBot(dutID string) (bot.Bot, error) {
 	s := bot.DroneStarter{
 		WorkingDir:    h.a.WorkingDir,
-		BotPrefix:     h.a.BotPrefix,
 		StartBotFunc:  h.a.StartBotFunc,
 		BotConfigFunc: h.a.botConfig,
 		LogFunc:       h.a.log,
