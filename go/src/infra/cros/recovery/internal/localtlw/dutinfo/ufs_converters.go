@@ -281,3 +281,35 @@ func convertServoTopologyToUFS(st *tlw.ServoTopology) *ufslab.ServoTopology {
 	}
 	return t
 }
+
+var repairRequests = map[ufslab.DutState_RepairRequest]tlw.RepairRequest{
+	ufslab.DutState_REPAIR_REQUEST_PROVISION:           tlw.RepairRequestProvision,
+	ufslab.DutState_REPAIR_REQUEST_REIMAGE_BY_USBKEY:   tlw.RepairRequestReimageByUSBKey,
+	ufslab.DutState_REPAIR_REQUEST_UPDATE_USBKEY_IMAGE: tlw.RepairRequestUpdateUSBKeyImage,
+}
+
+func convertRepairRequestsFromUFS(s []ufslab.DutState_RepairRequest) []tlw.RepairRequest {
+	var r []tlw.RepairRequest
+	for _, rr := range s {
+		if v, ok := repairRequests[rr]; ok {
+			r = append(r, v)
+		}
+	}
+	return r
+}
+func convertRepairRequestsToUFS(s []tlw.RepairRequest) []ufslab.DutState_RepairRequest {
+	var r []ufslab.DutState_RepairRequest
+	if len(s) == 0 {
+		return r
+	}
+	var rmap map[tlw.RepairRequest]ufslab.DutState_RepairRequest
+	for k, v := range repairRequests {
+		rmap[v] = k
+	}
+	for _, rr := range s {
+		if v, ok := rmap[rr]; ok {
+			r = append(r, v)
+		}
+	}
+	return r
+}

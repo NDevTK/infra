@@ -167,10 +167,11 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		StaticCable:   p.GetAudio().GetAudioCable(),
 	}
 	d := &tlw.Dut{
-		Id:        machine.GetName(),
-		Name:      name,
-		SetupType: setup,
-		State:     dutstate.ConvertFromUFSState(lc.GetResourceState()),
+		Id:             machine.GetName(),
+		Name:           name,
+		SetupType:      setup,
+		State:          dutstate.ConvertFromUFSState(lc.GetResourceState()),
+		RepairRequests: convertRepairRequestsFromUFS(ds.GetRepairRequests()),
 		Chromeos: &tlw.ChromeOS{
 			Board:               machine.GetChromeosMachine().GetBuildTarget(),
 			Model:               machine.GetChromeosMachine().GetModel(),
@@ -487,6 +488,7 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 	state.Chameleon = ufslab.PeripheralState_UNKNOWN
 	state.WorkingBluetoothBtpeer = 0
 	state.DutStateReason = string(dut.DutStateReason)
+	state.RepairRequests = convertRepairRequestsToUFS(dut.RepairRequests)
 
 	// Update states for present components.
 	if chromeos := dut.GetChromeos(); chromeos != nil {
