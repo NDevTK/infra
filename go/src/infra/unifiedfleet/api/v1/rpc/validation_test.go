@@ -37,7 +37,7 @@ func TestValidateHostnames(t *testing.T) {
 	})
 }
 
-func TestValidateDutId(t *testing.T) {
+func TestValidateUpdateDeviceRecoveryDataRequest(t *testing.T) {
 	Convey("ValidateDutId", t, func() {
 		Convey("ChromeOS device - successful path", func() {
 			req := &UpdateDeviceRecoveryDataRequest{
@@ -133,6 +133,68 @@ func TestValidateDutId(t *testing.T) {
 			}
 			err := req.validateDutId()
 			So(err, ShouldNotBeNil)
+		})
+	})
+}
+func TestValidateUpdateTestDataRequest(t *testing.T) {
+	Convey("ValidateDutId", t, func() {
+		Convey("ChromeOS device - successful path", func() {
+			req := &UpdateTestDataRequest{
+				DeviceId: "deviceId-1",
+				Hostname: "hostname_1",
+				DeviceData: &UpdateTestDataRequest_ChromeosData{
+					ChromeosData: &UpdateTestDataRequest_ChromeOs{
+						DutState: &chromeosLab.DutState{
+							Id: &chromeosLab.ChromeOSDeviceID{
+								Value: "deviceId-2",
+							},
+						},
+					},
+				},
+			}
+			err := req.Validate()
+			So(err, ShouldBeNil)
+			So(req.GetDeviceId(), ShouldEqual, req.GetChromeosData().GetDutState().GetId().GetValue())
+			So(req.GetHostname(), ShouldEqual, req.GetChromeosData().GetDutState().GetHostname())
+
+		})
+		Convey("ChromeOS device - empty device Id - returns error", func() {
+			req := &UpdateTestDataRequest{
+				DeviceId: "",
+				Hostname: "",
+			}
+			err := req.Validate()
+			So(err, ShouldNotBeNil)
+		})
+		Convey("ChromeOS device - empty hostname - returns error", func() {
+			req := &UpdateTestDataRequest{
+				DeviceId: "device-1",
+				Hostname: "",
+			}
+			err := req.Validate()
+			So(err, ShouldNotBeNil)
+		})
+		Convey("ChromeOS device - missing dut state - returns error", func() {
+			req := &UpdateTestDataRequest{
+				DeviceId: "device-1",
+				Hostname: "hostname-1",
+				DeviceData: &UpdateTestDataRequest_ChromeosData{
+					ChromeosData: &UpdateTestDataRequest_ChromeOs{},
+				},
+			}
+			err := req.Validate()
+			So(err, ShouldNotBeNil)
+		})
+		Convey("Android device - successful path", func() {
+			req := &UpdateTestDataRequest{
+				DeviceId: "device-1",
+				Hostname: "hostname-1",
+				DeviceData: &UpdateTestDataRequest_AndroidData{
+					AndroidData: &UpdateTestDataRequest_Android{},
+				},
+			}
+			err := req.Validate()
+			So(err, ShouldBeNil)
 		})
 	})
 }

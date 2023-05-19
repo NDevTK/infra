@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,15 @@ import (
 	"regexp"
 	"strings"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/util"
-
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/config/go/payload"
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	ufspb "infra/unifiedfleet/api/v1/models"
+	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"infra/unifiedfleet/app/util"
 )
 
 // Error messages for input validation
@@ -869,6 +870,48 @@ func (r *GetDutStateRequest) Validate() error {
 	}
 	if r.ChromeosDeviceId == "" && r.Hostname == "" {
 		return status.Errorf(codes.InvalidArgument, "Both Id and hostname are empty")
+	}
+	return nil
+}
+
+// Validate validates input requests of UpdateTestData
+func (r *UpdateTestDataRequest) Validate() error {
+	if err := r.validateDutId(); err != nil {
+		return err
+	}
+	if err := r.validateHostname(); err != nil {
+		return err
+	}
+	if chromeos := r.GetChromeosData(); chromeos != nil {
+		if chromeos.GetDutState() == nil {
+			return status.Errorf(codes.InvalidArgument, NilEntity)
+		}
+		// Always use ID and hostname from request for DutStates.
+		if chromeos.GetDutState().GetId() == nil {
+			chromeos.GetDutState().Id = &chromeosLab.ChromeOSDeviceID{
+				Value: r.GetDeviceId(),
+			}
+		} else {
+			chromeos.GetDutState().GetId().Value = r.GetDeviceId()
+		}
+		chromeos.GetDutState().Hostname = r.GetHostname()
+	}
+	return nil
+}
+
+func (r *UpdateTestDataRequest) validateDutId() error {
+	if r.GetDeviceId() == "" {
+		return status.Errorf(codes.InvalidArgument, EmptyID)
+	}
+	if !IDRegex.MatchString(r.GetDeviceId()) {
+		return status.Errorf(codes.InvalidArgument, "Invalid dut id(%q). %s", r.GetDeviceId(), InvalidCharacters)
+	}
+	return nil
+}
+
+func (r *UpdateTestDataRequest) validateHostname() error {
+	if r.GetHostname() == "" {
+		return status.Errorf(codes.InvalidArgument, EmptyHostName)
 	}
 	return nil
 }
