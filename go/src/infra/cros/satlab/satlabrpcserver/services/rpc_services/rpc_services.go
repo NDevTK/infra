@@ -289,6 +289,22 @@ func (s *SatlabRpcServiceServer) GetSystemInfo(_ context.Context, _ *pb.GetSyste
 	}, nil
 }
 
+// GetPeripheralInformation get peripheral inforamtion by given DUT IP.
+func (s *SatlabRpcServiceServer) GetPeripheralInformation(ctx context.Context, in *pb.GetPeripheralInformationRequest) (*pb.GetPeripheralInformationResponse, error) {
+	res, err := s.dutService.RunCommandOnIP(ctx, in.GetDutHostname(), constants.GetPeripheralInfoCommand)
+	if err != nil {
+		return nil, err
+	}
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return &pb.GetPeripheralInformationResponse{
+		JsonInfo: res.Value,
+	}, nil
+}
+
 // Close clean up
 func (s *SatlabRpcServiceServer) Close() {
 	var err error

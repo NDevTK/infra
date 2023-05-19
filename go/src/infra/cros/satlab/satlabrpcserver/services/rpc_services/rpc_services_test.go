@@ -626,3 +626,61 @@ func TestGetSystemInfoShouldWork(t *testing.T) {
 		t.Errorf("Expected %v, got %v", expected, res.GetCpuTemperature())
 	}
 }
+
+func TestGetPeripheralInformationShouldSuccess(t *testing.T) {
+	t.Parallel()
+	// Create a mock server
+	s := createMockServer(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	expectedResult := &utils.SSHResult{
+		Value: "<json data>",
+		IP:    "192.168.231.100",
+	}
+
+	// Mock some data
+	s.dutService.(*mk.MockDUTServices).
+		On("RunCommandOnIP", ctx, mock.Anything, constants.GetPeripheralInfoCommand).
+		Return(expectedResult, nil)
+
+	req := &pb.GetPeripheralInformationRequest{}
+	res, err := s.GetPeripheralInformation(ctx, req)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Should not return error, but got an error: %v", err)
+	}
+
+	if diff := cmp.Diff(expectedResult.Value, res.JsonInfo); diff != "" {
+		t.Errorf("Return difference result. Expected %v, got %v", expectedResult.Value, res.JsonInfo)
+	}
+}
+
+func TestGetPeripheralInformationShouldFailWhenExecuteCommandFailed(t *testing.T) {
+	t.Parallel()
+	// Create a mock server
+	s := createMockServer(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	expectedResult := &utils.SSHResult{
+		Error: errors.New("execute cmd failed"),
+		IP:    "192.168.231.100",
+	}
+
+	// Mock some data
+	s.dutService.(*mk.MockDUTServices).
+		On("RunCommandOnIP", ctx, mock.Anything, constants.GetPeripheralInfoCommand).
+		Return(expectedResult, nil)
+
+	req := &pb.GetPeripheralInformationRequest{}
+	_, err := s.GetPeripheralInformation(ctx, req)
+
+	// Assert
+	if diff := cmp.Diff(expectedResult.Error.Error(), err.Error()); diff != "" {
+		t.Errorf("Return difference result. Expected %v, got %v", expectedResult.Error, err)
+	}
+}

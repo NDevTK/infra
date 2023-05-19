@@ -15,6 +15,7 @@ service SatlabRpcService {
   rpc stage_build (StageBuildRequest) returns (StageBuildResponse);
   rpc list_connected_duts_firmware(ListConnectedDutsFirmwareRequest) returns (ListConnectedDutsFirmwareResponse);
   rpc get_system_info(GetSystemInfoRequest) returns (GetSystemInfoResponse);
+  rpc get_peripheral_information (GetPeripheralInformationRequest) returns (GetPeripheralInformationResponse);
 }
 
 message ListBuildTargetsRequest {
@@ -113,4 +114,14 @@ message GetSystemInfoRequest {
 // NEXT_TAG = 2
 message GetSystemInfoResponse {
   float cpu_temperature = 1;
+}
+
+// NEXT_TAG = 2
+message GetPeripheralInformationRequest {
+  string dut_hostname = 1;
+}
+
+// NEXT_TAG = 2
+message GetPeripheralInformationResponse {
+  string json_info = 1;
 }
