@@ -28,8 +28,6 @@ def try_builder(
         executable = infra.recipe(recipe or "luci_py", use_python3 = use_python3),
         os = os,
         properties = properties,
-        # TODO(crbug.com/1393420): remove this.
-        omit_python2 = False,
     )
     if in_cq:
         luci.cq_tryjob_verifier(
