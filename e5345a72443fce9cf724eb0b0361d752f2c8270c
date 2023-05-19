@@ -16,6 +16,24 @@
       "message": "FWIU, this wait ensures all entries have computed the digests.\nCan you add a comment before the loop or here?",
       "revId": "e5345a72443fce9cf724eb0b0361d752f2c8270c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "199668e7_bd6b76e6",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 519,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-05-19T06:12:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f41afb99_a3ca02e7",
+      "revId": "e5345a72443fce9cf724eb0b0361d752f2c8270c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
