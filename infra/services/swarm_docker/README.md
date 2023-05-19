@@ -6,7 +6,7 @@ mode every 5 minutes via cron.
 
 It's intended to be run in conjucture with the swarm_docker container image.
 More information on the image can be found
-[here](https://chromium.googlesource.com/infra/infra/+/master/docker/swarm_docker/README.md).
+[here](https://chromium.googlesource.com/infra/infra/+/HEAD/docker/swarm_docker/README.md).
 
 
 Launching the containers
@@ -52,16 +52,14 @@ via a flock. Each container has its own lock file.
 Deploying the script
 --------------------------
 The script and its dependencies are deployed as a CIPD package via puppet. The
-package (infra/swarm_docker/$platform) is continously built on this
+package (infra/swarm_docker_tools/$platform) is continously built on this
 [bot](https://ci.chromium.org/p/infra-internal/builders/luci.infra-internal.prod/infra-packager-linux-64).
-Puppet deploys it to the relevant bots at [these revisions](https://chrome-internal.googlesource.com/infra/puppet/+/68e440335c27aaf092df437c78fefa363c7ea19c/puppetm/etc/puppet/hieradata/cipd.yaml#479).
-The canary pin, which tracks latest version in the repository, affects a single
-[bot on chromium-swarm-dev](https://chromium-swarm-dev.appspot.com/botlist?f=pool%3AMultibot),
-which is not used by any builders, but can be used for manual testing before
-updating stable pin. Please trigger a build on this bot by manually editing a
-normal swarmbucket request sent to a multibot and making it execute on
-[chromium-swarm-dev](https://chromium-swarm-dev.appspot.com). If the build looks
-fine, you can proceed to update the stable pin.
+Puppet deploys it to the relevant bots at
+[these revisions](https://chrome-internal.googlesource.com/infra/puppet/+/94c1a63589e03a543035937b586dbf86ba5b2d3e/puppetm/etc/puppet/hieradata/cipd.yaml#417).
+The canary pin, which tracks latest version in the repository, currently
+affects no bots on
+[chromium-swarm-dev](https://chromium-swarm-dev.appspot.com).
+So you can proceed to update the stable pin immediately after making a change.
 
 The call site of the script is also defined in
-[puppet](https://chrome-internal.googlesource.com/infra/puppet/+/c9a06caeac7e236ac9e20e4f97c267faf53bf7ab/puppetm/etc/puppet/modules/chrome_infra/templates/setup/docker/swarm/swarm_docker_cron.sh.erb).
+[puppet](https://chrome-internal.googlesource.com/infra/puppet/+/94c1a63589e03a543035937b586dbf86ba5b2d3e/puppetm/etc/puppet/modules/chrome_infra/templates/setup/docker/swarm/swarm_docker_cron.sh.erb).

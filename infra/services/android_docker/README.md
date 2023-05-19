@@ -6,7 +6,7 @@ By design, it's stateless and event-driven. It has two modes of execution:
               time a device appears/reappears on the system via udev.
 
 It's intended to be run in conjucture with the android_docker container image.
-More information on the image can be found [here](https://chromium.googlesource.com/infra/infra/+/master/docker/docker_devices/README.md).
+More information on the image can be found [here](https://chromium.googlesource.com/infra/infra/+/HEAD/docker/docker_devices/README.md).
 
 
 Launching the containers
@@ -57,9 +57,9 @@ file.
 Fetching the docker image
 --------------------------
 When a new container is launched with an image that is missing
-on a bot's local cache, it pulls it from the specified container registry. By
-default, this is the gcloud registry
-[chops-public-images-prod](https://console.cloud.google.com/gcr/images/chops-public-images-prod/global/swarm_docker).
+on a bot's local cache, it pulls it from the specified container registry. For
+all bots, this is the gcloud registry
+[chops-public-images-prod](https://pantheon.corp.google.com/gcr/images/chops-public-images-prod/global).
 These images are world-readable, so no authentication with the registry is
 required. Additionally, when new images are fetched, any old and unused images
 still present on the machine will be deleted.
@@ -78,7 +78,8 @@ via a flock. The logic that's protected includes:
 Getting device list
 --------------------------
 py-libusb is used to fetch a list of locally connected devices, which is part
-of infra's [virtual env](https://chromium.googlesource.com/infra/infra/+/6446cbcd46452cf657e67bd7a45e9f0a97b0f5c8/bootstrap/deps.pyl#209).
+of this service's
+[vpython spec](https://chromium.googlesource.com/infra/infra/+/beef78d6298a5b1b896dd801ce1c9fce775e8451/infra/services/android_docker/vpython_main.py#60).
 This library wraps the [libusb system lib](http://www.libusb.org/) and provides
 methods for fetching information about USB devices.
 
@@ -86,15 +87,15 @@ methods for fetching information about USB devices.
 Deploying the script
 --------------------------
 The script and its dependencies are deployed as a CIPD package via puppet. The
-package (infra/docker_devices/$platform) is continously built on this
+package (infra/swarm_docker_tools/$platform) is continously built on this
 [bot](https://ci.chromium.org/p/infra-internal/builders/luci.infra-internal.prod/infra-packager-linux-64).
 Puppet deploys it to the relevant bots at
-[these revisions](https://chrome-internal.googlesource.com/infra/puppet/+/abab6a79a69671288c6be4c87dfc053a11a46b4b/puppetm/etc/puppet/hieradata/cipd.yaml#469).
+[these revisions](https://chrome-internal.googlesource.com/infra/puppet/+/94c1a63589e03a543035937b586dbf86ba5b2d3e/puppetm/etc/puppet/hieradata/cipd.yaml#417).
 The canary pin affects bots on [chromium-swarm-dev](https://chromium-swarm-dev.appspot.com),
-which the android testers on the [chromium.swarm](https://luci-milo-dev.appspot.com/p/chromium/g/chromium.swarm/builders)
+which the android testers on the [chromium.dev](https://luci-milo-dev.appspot.com/p/chromium/g/chromium.dev/console)
 waterfall run tests against. If the canary has been updated, the bots look fine,
 and the tests haven't regressed, you can proceed to update the stable pin.
 
 The call sites of the script are also defined in puppet:
-* [cron](https://chrome-internal.googlesource.com/infra/puppet/+/78f1ba25470edf4256e5862d7b9c3eb1fba9dcad/puppetm/etc/puppet/modules/chrome_infra/templates/setup/docker/android/android_docker_cron.sh.erb)
-* [udev](https://chrome-internal.googlesource.com/infra/puppet/+/78f1ba25470edf4256e5862d7b9c3eb1fba9dcad/puppetm/etc/puppet/modules/chrome_infra/files/setup/docker/android/android_docker_udev)
+* [cron](https://chrome-internal.googlesource.com/infra/puppet/+/94c1a63589e03a543035937b586dbf86ba5b2d3e/puppetm/etc/puppet/modules/chrome_infra/templates/setup/docker/android/android_docker_cron.sh.erb)
+* [udev](https://chrome-internal.googlesource.com/infra/puppet/+/94c1a63589e03a543035937b586dbf86ba5b2d3e/puppetm/etc/puppet/modules/chrome_infra/files/setup/docker/android_docker_udev)
