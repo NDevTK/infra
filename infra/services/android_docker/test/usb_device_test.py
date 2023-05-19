@@ -135,27 +135,34 @@ class TestGetDevices(TestDevice):
 
     self.usb_context = FakeUSBContext(self.all_devices)
 
+  @mock.patch('devil.utils.find_usb_devices.GetAllPhysicalPortToSerialMaps')
   @mock.patch('usb1.USBContext')
-  def test_get_android_devices(self, mock_usb_context):
+  def test_get_android_devices(self, mock_usb_context, mock_physical_ports):
     mock_usb_context.return_value = self.usb_context
+    mock_physical_ports.return_value = []
     devices = usb_device.get_android_devices(None)
     self.assertEqual(len(devices), 2)
     self.assertEqual(devices[0].serial, self.libusb_device.serial)
     self.assertEqual(devices[1].serial,
                      self.libusb_device_long_port_list.serial)
 
+  @mock.patch('devil.utils.find_usb_devices.GetAllPhysicalPortToSerialMaps')
   @mock.patch('usb1.USBContext')
-  def test_no_android_devices(self, mock_usb_context):
+  def test_no_android_devices(self, mock_usb_context, mock_physical_ports):
     self.usb_context = FakeUSBContext([])
     mock_usb_context.return_value = self.usb_context
+    mock_physical_ports.return_value = []
     devices = usb_device.get_android_devices(None)
     self.assertEqual(len(devices), 0)
 
+  @mock.patch('devil.utils.find_usb_devices.GetAllPhysicalPortToSerialMaps')
   @mock.patch('os.stat')
   @mock.patch('usb1.USBContext')
-  def test_get_android_devices_os_error(self, mock_usb_context, mock_os_stat):
+  def test_get_android_devices_os_error(self, mock_usb_context, mock_os_stat,
+                                        mock_physical_ports):
     self.usb_context = FakeUSBContext([self.libusb_device])
     mock_usb_context.return_value = self.usb_context
+    mock_physical_ports.return_value = []
     mock_os_stat.side_effect = OSError('omg can\'t stat')
     devices = usb_device.get_android_devices(None)
     self.assertEqual(len(devices), 1)
@@ -163,8 +170,9 @@ class TestGetDevices(TestDevice):
     self.assertEqual(devices[0].major, None)
     self.assertEqual(devices[0].minor, None)
 
+  @mock.patch('devil.utils.find_usb_devices.GetAllPhysicalPortToSerialMaps')
   @mock.patch('usb1.USBContext')
-  def test_filter_devices(self, mock_usb_context):
+  def test_filter_devices(self, mock_usb_context, mock_physical_ports):
     d1 = self.libusb_device
     d2 = copy.copy(self.libusb_device)
     d2.serial = 'serial2'
@@ -172,13 +180,16 @@ class TestGetDevices(TestDevice):
     d3.serial = 'serial3'
     self.usb_context = FakeUSBContext([d1, d2, d3])
     mock_usb_context.return_value = self.usb_context
+    mock_physical_ports.return_value = []
     devices = usb_device.get_android_devices(['serial2', 'serial3'])
     self.assertEqual(len(devices), 2)
     self.assertEqual(devices[0].serial, 'serial2')
     self.assertEqual(devices[1].serial, 'serial3')
 
+  @mock.patch('devil.utils.find_usb_devices.GetAllPhysicalPortToSerialMaps')
   @mock.patch('usb1.USBContext')
-  def test_get_devices_repeated_serials(self, mock_usb_context):
+  def test_get_devices_repeated_serials(self, mock_usb_context,
+                                        mock_physical_ports):
     d1_copy1 = self.libusb_device
     d1_copy2 = copy.copy(self.libusb_device)
     d1_copy3 = copy.copy(self.libusb_device)
@@ -188,6 +199,7 @@ class TestGetDevices(TestDevice):
     d3.serial = 'serial3'
     self.usb_context = FakeUSBContext([d1_copy1, d1_copy2, d1_copy3, d2, d3])
     mock_usb_context.return_value = self.usb_context
+    mock_physical_ports.return_value = []
     devices = usb_device.get_android_devices(None)
     self.assertEqual(len(devices), 2)
     self.assertEqual(devices[0].serial, 'serial2')

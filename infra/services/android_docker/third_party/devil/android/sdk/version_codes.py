@@ -21,3 +21,6 @@ OREO_MR1 = 27
 PIE = 28
 Q = 29
 R = 30
+S = 31
+S_V2 = 32
+TIRAMISU = 33

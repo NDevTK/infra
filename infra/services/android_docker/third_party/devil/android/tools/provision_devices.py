@@ -98,7 +98,7 @@ def ProvisionDevices(devices,
     if denylist:
       logging.error('Local device denylist: %s', denylist.Read())
     raise
-  devices = [d for d in devices if not emulators or d.adb.is_emulator]
+  devices = [d for d in devices if not emulators or d.is_emulator]
   parallel_devices = device_utils.DeviceUtils.parallel(devices)
 
   steps = []
@@ -132,17 +132,19 @@ def ProvisionDevices(devices,
         ProvisionStep(lambda d: RemoveSystemApps(d, system_app_remove_list,
                                                  system_package_remove_list)))
 
+  steps.append(ProvisionStep(RebootDevice))
   steps.append(ProvisionStep(SetDate))
+  steps.append(ProvisionStep(LogDeviceProperties))
   steps.append(ProvisionStep(CheckExternalStorage))
   steps.append(ProvisionStep(StandaloneVrDeviceSetup))
 
   parallel_devices.pMap(ProvisionDevice, steps, denylist, reboot_timeout)
 
-  denylisted_devices = denylist.Read() if denylist else []
+  denylisted_devices = denylist.Read() if denylist else dict()
   if output_device_denylist:
     with open(output_device_denylist, 'w') as f:
       json.dump(denylisted_devices, f)
-  if all(d in denylisted_devices for d in devices):
+  if all(str(d) in denylisted_devices for d in devices):
     raise device_errors.NoDevicesError
   return 0
 
@@ -472,6 +474,9 @@ def SetDate(device):
       set_date_command = ['date', '-s']
       get_date_command = ['date']
 
+    # Android version O does not allow to set date without root enabled.
+    device.EnableRoot()
+
     # TODO(jbudorick): This is wrong on pre-M devices -- get/set are
     # dealing in local time, but we're setting based on GMT.
     strgmtime = time.strftime(date_format, time.gmtime())
@@ -484,14 +489,13 @@ def SetDate(device):
         single_line=True).replace('"', '')
     device_time = datetime.datetime.strptime(device_time, "%Y%m%d.%H%M%S")
     correct_time = datetime.datetime.strptime(strgmtime, date_format)
-    tdelta = (correct_time - device_time).seconds
+    tdelta = abs(correct_time - device_time).seconds
     if tdelta <= 1:
       logger.info('Date/time successfully set on %s', device)
       return True
-    else:
-      logger.error('Date mismatch. Device: %s Correct: %s',
-                   device_time.isoformat(), correct_time.isoformat())
-      return False
+    logger.error('Date mismatch. Device: %s Correct: %s',
+                 device_time.isoformat(), correct_time.isoformat())
+    return False
 
   # Sometimes the date is not set correctly on the devices. Retry on failure.
   if device.IsUserBuild():
@@ -513,6 +517,11 @@ def LogDeviceProperties(device):
   props = device.RunShellCommand(['getprop'], check_return=True)
   for prop in props:
     logger.info('  %s', prop)
+
+
+def RebootDevice(device):
+  device.Reboot(False, retries=0)
+  device.adb.WaitForDevice()
 
 
 # TODO(jbudorick): Relocate this either to device_utils or a separate

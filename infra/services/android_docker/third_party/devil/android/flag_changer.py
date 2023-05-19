@@ -24,7 +24,7 @@ def CustomCommandLineFlags(device, cmdline_name, flags):
 
   Example:
 
-      with flag_changer.TemporaryCommandLineFlags(device, name, flags):
+      with flag_changer.CustomCommandLineFlags(device, name, flags):
         # Launching Chrome will use the provided flags.
 
       # Previous set of flags on the device is now restored.
@@ -271,7 +271,7 @@ def _ParseFlags(line):
 
   if current_flag is not None:
     if current_quote is not None:
-      logger.warning('Unterminated quoted argument: ' + current_flag)
+      logger.warning('Unterminated quoted argument: %s', current_flag)
     flags.append(current_flag)
 
   # Return everything but the program name.
@@ -294,8 +294,8 @@ def _SerializeFlags(flags):
     args = ['_']
     args.extend(_QuoteFlag(f) for f in flags)
     return ' '.join(args)
-  else:
-    return None
+
+  return None
 
 
 def _QuoteFlag(flag):

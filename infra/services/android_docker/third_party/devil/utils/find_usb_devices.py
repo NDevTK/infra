@@ -37,7 +37,13 @@ def _GetParsedLSUSBOutput():
 
 
 def _GetUSBDevicesOutput():
-  return cmd_helper.GetCmdOutput(['usb-devices'])
+  try:
+    with open('/sys/kernel/debug/usb/devices') as f:
+      return f.read()
+  except PermissionError:
+    logger.error('Re-run this script with sudo (or root), or rewrite it to '
+                 'parse lsusb output.')
+    raise
 
 
 def _GetTtyUSBInfo(tty_string):
@@ -113,8 +119,7 @@ class USBNode(object):
     """
     if self.HasPort(port):
       raise ValueError('Duplicate port number')
-    else:
-      self._port_to_node[port] = device
+    self._port_to_node[port] = device
 
   def AllNodes(self):
     """Generator that yields this node and all of its descendants.
@@ -337,7 +342,11 @@ def GetPhysicalPortToNodeMap(hub, hub_type):
     Dict of {physical port: node}
   """
   port_device = hub_type.GetPhysicalPortToNodeTuples(hub)
+  # TODO (https://crbug.com/1338109): Confirm if we can get
+  # rid of this dict comprehension
+  # pylint: disable=unnecessary-comprehension
   return {port: device for (port, device) in port_device}
+  # pylint: enable=unnecessary-comprehension
 
 
 def GetPhysicalPortToBusDeviceMap(hub, hub_type):

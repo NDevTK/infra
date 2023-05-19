@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -29,6 +29,9 @@ def main():
   parser.add_argument('build_path', help='Path to android build.')
   parser.add_argument(
       '-w', '--wipe', action='store_true', help='If set, wipes user data')
+  parser.add_argument('--wait',
+                      action='store_true',
+                      help='If set, wait for device to be online after flash')
   logging_common.AddLoggingArguments(parser)
   script_common.AddDeviceArguments(parser)
   args = parser.parse_args()
@@ -47,7 +50,9 @@ def main():
 
   def flash(device):
     try:
-      device.FlashDevice(args.build_path, wipe=args.wipe)
+      device.FlashDevice(args.build_path,
+                         wipe=args.wipe,
+                         wait_for_reboot=args.wait)
       flashed_devices.append(device)
     except Exception:  # pylint: disable=broad-except
       logger.exception('Device %s failed to flash.', str(device))

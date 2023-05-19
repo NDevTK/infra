@@ -25,7 +25,8 @@ _logger = logging.getLogger(__name__)
 _MANIFEST_ATTRIBUTE_RE = re.compile(r'\s*A: ([^\(\)= ]*)(?:\([^\(\)= ]*\))?='
                                     r'(?:"(.*)" \(Raw: .*\)|\(type.*?\)(.*))$')
 _MANIFEST_ELEMENT_RE = re.compile(r'\s*(?:E|N): (\S*) .*$')
-_BASE_APK_APKS_RE = re.compile(r'^splits/base-master.*\.apk$')
+_BASE_APK_APKS_RE = re.compile(
+    r'^splits/base-master.*\.apk$|^standalones/standalone.*\.apex$')
 
 
 class ApkHelperError(base_error.BaseError):
@@ -73,14 +74,34 @@ def ToHelper(path_or_helper):
   """Creates an ApkHelper unless one is already given."""
   if not isinstance(path_or_helper, six.string_types):
     return path_or_helper
-  elif path_or_helper.endswith('.apk'):
+  if path_or_helper.endswith('.apk'):
     return ApkHelper(path_or_helper)
-  elif path_or_helper.endswith('.apks'):
+  if path_or_helper.endswith('.apks'):
     return ApksHelper(path_or_helper)
-  elif path_or_helper.endswith('_bundle'):
+  if path_or_helper.endswith('.apex'):
+    return ApexHelper(path_or_helper)
+  if path_or_helper.endswith('_bundle'):
     return BundleScriptHelper(path_or_helper)
 
   raise ApkHelperError('Unrecognized APK format %s' % path_or_helper)
+
+
+def ToIncrementalHelper(path_or_helper):
+  """Creates an IncrementalApkHelper unless one is already given.
+
+  Currently supports IncrementalApkHelper and ApkHelper instances as well as
+  string paths ending in .apk.
+  """
+  if isinstance(path_or_helper, IncrementalApkHelper):
+    return path_or_helper
+  if isinstance(path_or_helper, ApkHelper):
+    return IncrementalApkHelper(path_or_helper.path)
+  if (isinstance(path_or_helper, six.string_types)
+      and path_or_helper.endswith('.apk')):
+    return IncrementalApkHelper(path_or_helper)
+
+  raise ApkHelperError('Unrecognized Incremental APK format %s' %
+                       path_or_helper)
 
 
 def ToSplitHelper(path_or_helper, split_apks):
@@ -88,8 +109,8 @@ def ToSplitHelper(path_or_helper, split_apks):
     if sorted(path_or_helper.split_apk_paths) != sorted(split_apks):
       raise ApkHelperError('Helper has different split APKs')
     return path_or_helper
-  elif (isinstance(path_or_helper, six.string_types)
-        and path_or_helper.endswith('.apk')):
+  if (isinstance(path_or_helper, six.string_types)
+      and path_or_helper.endswith('.apk')):
     return SplitApkHelper(path_or_helper, split_apks)
 
   raise ApkHelperError(
@@ -158,8 +179,7 @@ def _ParseManifestFromApk(apk_path):
         raise ApkHelperError(
             "A single attribute should have one key and one value: {}".format(
                 line))
-      else:
-        node[manifest_key] = m.group(2) or m.group(3)
+      node[manifest_key] = m.group(2) or m.group(3)
       continue
 
   return parsed_manifest
@@ -255,8 +275,7 @@ class BaseApkHelper(object):
     if len(all_instrumentations) != 1:
       raise ApkHelperError(
           'There is more than one instrumentation. Expected one.')
-    else:
-      return self._ResolveName(all_instrumentations[0]['android:name'])
+    return self._ResolveName(all_instrumentations[0]['android:name'])
 
   def GetAllInstrumentations(self,
                              default='android.test.InstrumentationTestRunner'):
@@ -312,6 +331,15 @@ class BaseApkHelper(object):
       return [(x.get('android:name'), x.get('android:value')) for x in metadata]
     except KeyError:
       return []
+
+  def GetLibraryVersion(self):
+    """Returns the version of the <static-library> or None if not applicable."""
+    manifest_info = self._GetManifest()
+    try:
+      application = manifest_info['manifest'][0]['application'][0]
+      return int(application['static-library'][0]['android:version'], 16)
+    except KeyError:
+      return None
 
   def GetVersionCode(self):
     """Returns the versionCode as an integer, or None if not available."""
@@ -461,6 +489,50 @@ class ApkHelper(BaseApkHelper):
     if modules:
       raise ApkHelperError('Cannot install modules when installing single APK')
     return _NoopFileHelper([self._apk_path])
+
+
+class ApexHelper(BaseApkHelper):
+  """Represents a single APEX mainline module."""
+
+  def __init__(self, apex_path):
+    super(ApexHelper, self).__init__()
+    self._apex_path = apex_path
+
+  @property
+  def path(self):
+    return self._apex_path
+
+  def _GetBaseApkPath(self):
+    return _NoopFileHelper(self._apex_path)
+
+  def GetApkPaths(self,
+                  device,
+                  modules=None,
+                  allow_cached_props=False,
+                  additional_locales=None):
+    if modules:
+      raise ApkHelperError('Cannot install modules when installing an APEX')
+    return _NoopFileHelper([self._apex_path])
+
+
+class IncrementalApkHelper(ApkHelper):
+  """Extends ApkHelper for incremental install."""
+
+  def __init__(self, apk_path):
+    super(IncrementalApkHelper, self).__init__(apk_path)
+    self._extra_apk_paths = []
+
+  def SetExtraApkPaths(self, extra_apk_paths):
+    self._extra_apk_paths = extra_apk_paths
+
+  def GetApkPaths(self,
+                  device,
+                  modules=None,
+                  allow_cached_props=False,
+                  additional_locales=None):
+    if modules:
+      raise ApkHelperError('Cannot install modules when installing single APK')
+    return _NoopFileHelper([self._apk_path] + self._extra_apk_paths)
 
 
 class SplitApkHelper(BaseApkHelper):
