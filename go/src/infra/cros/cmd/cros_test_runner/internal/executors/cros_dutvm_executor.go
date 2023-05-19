@@ -231,14 +231,15 @@ func constructGcloudPayload(ctx context.Context, cmd *commands.DutVmLeaseCmd) *v
 		Config: &vmlabapi.Config{
 			Backend: &vmlabapi.Config_GcloudBackend{
 				GcloudBackend: &vmlabapi.Config_GCloudBackend{
-					Project:        "chromeos-gce-tests",
-					Zone:           "us-central1-a",
-					MachineType:    "n2-standard-4",
-					InstancePrefix: "ctsprototype-",
-					PublicIp:       false,
-					Image:          cmd.DutVmGceImage,
-					Network:        "chromeos-gce-tests",
-					Subnet:         "us-central1",
+					Project:             "chromeos-gce-tests",
+					Zone:                "us-central1-a",
+					MachineType:         "n2-standard-4",
+					InstancePrefix:      "ctsprototype-",
+					PublicIp:            true,
+					AlwaysSshInternalIp: true,
+					Image:               cmd.DutVmGceImage,
+					Network:             "chromeos-gce-tests",
+					Subnet:              "us-central1",
 				},
 			},
 		},
