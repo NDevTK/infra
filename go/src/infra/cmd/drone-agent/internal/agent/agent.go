@@ -36,7 +36,7 @@ type Agent struct {
 	WorkingDir        string
 	ReportingInterval time.Duration
 	DUTCapacity       int
-	// StartBotFunc is used to start Swarming bots.
+	// StartBotFunc is used to start Swarming bot processes.
 	// This must be set.
 	StartBotFunc func(bot.Config) (bot.Bot, error)
 	// Hive value of the drone agent.  This is used for DUT/drone affinity.
@@ -140,7 +140,11 @@ func (a *Agent) registerWithQueen(ctx context.Context) (_ context.Context, _ sta
 		return ctx, nil, errors.Reason("register with queen: got empty UUID").Err()
 	}
 	a.log("UUID assigned: %s", uuid)
-	s := a.wrapState(state.New(uuid, hook{a: a, uuid: uuid}))
+	s := a.wrapState(state.New(uuid, hook{
+		a:          a,
+		botStarter: a.droneStarter(),
+		uuid:       uuid,
+	}))
 
 	// Set up expiration context.
 	t, err := ptypes.Timestamp(res.GetExpirationTime())
@@ -320,21 +324,27 @@ func (a *Agent) botConfig(botID string, workDir string) bot.Config {
 	}
 }
 
+func (a *Agent) droneStarter() bot.DroneStarter {
+	return bot.DroneStarter{
+		WorkingDir:    a.WorkingDir,
+		StartBotFunc:  a.StartBotFunc,
+		BotConfigFunc: a.botConfig,
+		LogFunc:       a.log,
+	}
+}
+
 // hook implements botman.WorldHook.
 type hook struct {
-	a    *Agent
+	a          *Agent
+	botStarter interface {
+		Start(botID string) (bot.Bot, error)
+	}
 	uuid string
 }
 
 // StartBot implements state.ControllerHook.
 func (h hook) StartBot(dutID string) (bot.Bot, error) {
-	s := bot.DroneStarter{
-		WorkingDir:    h.a.WorkingDir,
-		StartBotFunc:  h.a.StartBotFunc,
-		BotConfigFunc: h.a.botConfig,
-		LogFunc:       h.a.log,
-	}
-	return s.Start(dutID)
+	return h.botStarter.Start(dutID)
 }
 
 // ReleaseDUT implements botman.WorldHook.
