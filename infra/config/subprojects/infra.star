@@ -50,6 +50,7 @@ def try_builder(
         recipe = None,
         experiment_percentage = None,
         properties = None,
+        caches = None,
         in_cq = True,
         use_python3 = True):
     infra.builder(
@@ -59,6 +60,7 @@ def try_builder(
         os = os,
         cpu = cpu,
         properties = properties,
+        caches = caches,
     )
     if in_cq:
         luci.cq_tryjob_verifier(
@@ -141,12 +143,20 @@ try_builder(
     name = "infra-try-frontend",
     os = "Ubuntu-18.04",
     recipe = "infra_frontend_tester",
+    caches = [
+        swarming.cache("nodejs"),
+        swarming.cache("npmcache"),
+    ],
 )
 try_builder(
     name = "luci-try-frontend-jammy",
     os = "Ubuntu-22.04",
     recipe = "infra_frontend_tester",
     in_cq = False,
+    caches = [
+        swarming.cache("nodejs"),
+        swarming.cache("npmcache"),
+    ],
 )
 
 try_builder(

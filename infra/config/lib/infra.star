@@ -78,6 +78,7 @@ def builder(
         properties = None,
         schedule = None,
         extra_dimensions = None,
+        caches = None,
 
         # Triggering relations.
         triggered_by = None,
@@ -103,6 +104,7 @@ def builder(
       properties: a dict with properties to pass to the builder.
       schedule: a string with builder schedule for cron-like builders.
       extra_dimensions: a dict with additional Swarming dimensions.
+      caches: a list with swarming.cache(...) to use.
       triggered_by: builders that trigger this one.
       notifies: what luci.notifier(...) to notify when its done.
     """
@@ -123,7 +125,7 @@ def builder(
     else:
         fail("unknown bucket")
 
-    caches = []
+    caches = list(caches or [])
     if os.startswith("Mac"):
         caches.append(infra.cache_osx_sdk)
 
