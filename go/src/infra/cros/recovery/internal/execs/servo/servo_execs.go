@@ -437,100 +437,6 @@ func servoControlMinDoubleValueExec(ctx context.Context, info *execs.ExecInfo) e
 	return nil
 }
 
-// servoCheckServodControlExec verifies that servod supports the
-// control mentioned in action args. Additionally, if actionArgs
-// includes the expected value, this function will verify that the
-// value returned by servod for this control matches the expected
-// value.
-func servoCheckServodControlExec(ctx context.Context, info *execs.ExecInfo) error {
-	argsMap := info.GetActionArgs(ctx)
-	command := argsMap.AsString(ctx, "command", "")
-	if len(command) == 0 {
-		return errors.Reason("servo check servod control exec: command not provided").Err()
-	}
-	info.AddObservation(metrics.NewStringObservation("command", command))
-	var compare func(ctx context.Context) error
-	// TODO(vkjoshi@): revisit the logic of implementations of the
-	// function 'compare', e.g., will it make sense to use a helper
-	// function for this?
-	const expectedStringKey = "expected_string_value"
-	const expectedIntKey = "expected_int_value"
-	const expectedFloatKey = "expected_float_value"
-	const expectedBoolKey = "expected_bool_value"
-	if argsMap.Has(expectedStringKey) {
-		expectedValue := argsMap.AsString(ctx, expectedStringKey, "")
-		controlValue, err := servodGetString(ctx, info.NewServod(), command)
-		if err != nil {
-			return errors.Annotate(err, "servo check servod control exec").Err()
-		}
-		info.AddObservation(metrics.NewStringObservation("received", controlValue))
-		compare = func(ctx context.Context) error {
-			log.Infof(ctx, "Compare (String), expected value %q, actual value %q", expectedValue, controlValue)
-			if controlValue != expectedValue {
-				return errors.Reason("compare (string): expected value %q, actual value %q do not match.", expectedValue, controlValue).Err()
-			}
-			return nil
-		}
-	} else if argsMap.Has(expectedIntKey) {
-		expectedValue := argsMap.AsInt(ctx, expectedIntKey, 0)
-		controlValue, err := servodGetInt(ctx, info.NewServod(), command)
-		if err != nil {
-			return errors.Annotate(err, "servo check servod control exec").Err()
-		}
-		info.AddObservation(metrics.NewInt64Observation("received", int64(controlValue)))
-		compare = func(ctx context.Context) error {
-			log.Debugf(ctx, "Compare (Int), expected value %s, actual value %d", expectedValue, controlValue)
-			if controlValue != int32(expectedValue) {
-				return errors.Reason("compare: expected value %d, actual value %d do not match", int32(expectedValue), controlValue).Err()
-			}
-			return nil
-		}
-	} else if argsMap.Has(expectedFloatKey) {
-		expectedValue := argsMap.AsFloat64(ctx, expectedFloatKey, 0)
-		controlValue, err := servodGetDouble(ctx, info.NewServod(), command)
-		if err != nil {
-			return errors.Annotate(err, "servo check servod control exec").Err()
-		}
-		info.AddObservation(metrics.NewFloat64Observation("received", controlValue))
-		compare = func(ctx context.Context) error {
-			log.Debugf(ctx, "Compare (Double), expected value %s, actual value %f", expectedValue, controlValue)
-			if controlValue != expectedValue {
-				return errors.Reason("compare: expected value %f, actual value %f do not match", expectedValue, controlValue).Err()
-			}
-			return nil
-		}
-	} else if argsMap.Has(expectedBoolKey) {
-		expectedValue := argsMap.AsBool(ctx, expectedBoolKey, false)
-		controlValue, err := servodGetBool(ctx, info.NewServod(), command)
-		if err != nil {
-			return errors.Annotate(err, "servo check servod control exec").Err()
-		}
-		info.AddObservation(metrics.NewStringObservation("received", fmt.Sprintf("%v", controlValue)))
-		compare = func(ctx context.Context) error {
-			log.Debugf(ctx, "Compare (Bool), expected value %s, actual value %t", expectedValue, controlValue)
-			if controlValue != expectedValue {
-				return errors.Reason("compare: expected value %t, actual value %t do not match", expectedValue, controlValue).Err()
-			}
-			return nil
-		}
-	}
-	if compare == nil {
-		log.Infof(ctx, "Servo Check Servod Control Exec: expected value type not specified in config, or did not match any known types.")
-		res, err := info.NewServod().Get(ctx, command)
-		if err != nil {
-			return errors.Annotate(err, "servo check servod control exec").Err()
-		}
-		// The value can contain different value types.
-		// Ex.: "double:xxxx.xx"
-		resRawString := strings.TrimSpace(res.String())
-		info.AddObservation(metrics.NewStringObservation("received", resRawString))
-		log.Infof(ctx, "Servo Check Servod Control Exec: for command %q, received %q.", command, resRawString)
-	} else if err := compare(ctx); err != nil {
-		return errors.Annotate(err, "servo check servod control exec").Err()
-	}
-	return nil
-}
-
 const (
 	// removeFileCmd is the linux file removal command that used to remove files in the filesToRemoveSlice.
 	removeFileCmd = `rm %s`
@@ -649,7 +555,7 @@ func initDutForServoExec(ctx context.Context, info *execs.ExecInfo) error {
 			return errors.Annotate(err, "init dut for servo exec").Err()
 		}
 		if err := s.Set(ctx, "image_usbkey_pwr", "off"); err != nil {
-			return errors.Annotate(err, "init dut for servo exec").Err()
+			log.Debugf(ctx, "Fail to set USB power off: %s", err)
 		}
 	} else {
 		log.Debugf(ctx, "Init Dut For Servo Exec: servod control %q is not available.", usbMuxControl)
@@ -893,7 +799,6 @@ func init() {
 	execs.Register("servo_set", servoSetExec)
 	execs.Register("servo_low_ppdut5", servoLowPPDut5Exec)
 	execs.Register("servo_control_min_double_value", servoControlMinDoubleValueExec)
-	execs.Register("servo_check_servod_control", servoCheckServodControlExec)
 	execs.Register("servo_labstation_disk_cleanup", servoLabstationDiskCleanUpExec)
 	execs.Register("servo_servod_old_logs_cleanup", servoServodOldLogsCleanupExec)
 	execs.Register("servo_battery_charging", servoValidateBatteryChargingExec)
