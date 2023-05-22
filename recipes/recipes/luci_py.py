@@ -106,6 +106,7 @@ def _step_run_py_tests(api, cwd, python3=False, timeout=None):
   with api.context(cwd=cwd):
     cfg = api.context.cwd.join('unittest.cfg')
     testpy_args = ['-v', '--conf', cfg]
+    env_path_prefix = []
 
     if python3:
       venv = luci_dir.join('.vpython3')
@@ -116,13 +117,15 @@ def _step_run_py_tests(api, cwd, python3=False, timeout=None):
       py = 'python2'
       # Install vpython2.7 to run these tests.
       vpython_path = api.path['cache'].join('builder', 'vpython2.7')
+      env_path_prefix = [vpython_path]
       ensure_file = api.cipd.EnsureFile().add_package(
           'infra/tools/luci/vpython2.7/${platform}', 'latest')
       api.cipd.ensure(vpython_path, ensure_file)
       cmd = [vpython_path.join('vpython')]
 
     cmd += ['-vpython-spec', venv, '-u', 'test.py'] + testpy_args
-    api.step('run tests %s' % py, cmd, timeout=timeout)
+    with api.context(env_prefixes={'PATH': env_path_prefix}):
+      api.step('run tests %s' % py, cmd, timeout=timeout)
 
 
 def _step_auth_tests(api, changes):
