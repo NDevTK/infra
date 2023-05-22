@@ -11,6 +11,9 @@ create {
     unpack_archive: true
     cpe_base_address: "cpe:/a:nodejs:nodejs"
   }
+  package {
+    disable_latest_ref: true
+  }
 }
 
 upload {
