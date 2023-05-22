@@ -147,11 +147,7 @@ func matchesAny(term string, res []*regexp.Regexp) bool {
 }
 
 func extractCheckpointStatus(build *bbpb.Build, checkpoint pb.RetryStep) *string {
-	properties, ok := build.GetInput().GetProperties().GetFields()["$chromeos/checkpoint"]
-	if !ok {
-		return nil
-	}
-	prop, ok := properties.GetStructValue().GetFields()["retry_summary"]
+	prop, ok := build.GetOutput().GetProperties().GetFields()["retry_summary"]
 	if !ok {
 		return nil
 	}

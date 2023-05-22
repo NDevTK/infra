@@ -172,10 +172,10 @@ func TestCollectState_BuildMatches(t *testing.T) {
 			},
 		}})
 
-	inputProperties, err := structpb.NewStruct(map[string]interface{}{})
+	outputProperties, err := structpb.NewStruct(map[string]interface{}{})
 	assert.NilError(t, err)
-	err = bb.SetProperty(inputProperties,
-		"$chromeos/checkpoint.retry_summary.STAGE_ARTIFACTS",
+	err = bb.SetProperty(outputProperties,
+		"retry_summary.STAGE_ARTIFACTS",
 		"FAILED")
 	assert.NilError(t, err)
 
@@ -188,16 +188,16 @@ func TestCollectState_BuildMatches(t *testing.T) {
 			Builder: "eve-release-main",
 		},
 		SummaryMarkdown: "wah, I have a bad source cache.",
-		Input: &bbpb.Build_Input{
-			Properties: inputProperties,
+		Output: &bbpb.Build_Output{
+			Properties: outputProperties,
 		},
 	}
 	assert.Assert(t, collectState.canRetry(failedBuild))
 
-	startedInputProperties, err := structpb.NewStruct(map[string]interface{}{})
+	startedOutputProperties, err := structpb.NewStruct(map[string]interface{}{})
 	assert.NilError(t, err)
-	err = bb.SetProperty(startedInputProperties,
-		"$chromeos/checkpoint.retry_summary.STAGE_ARTIFACTS",
+	err = bb.SetProperty(startedOutputProperties,
+		"retry_summary.STAGE_ARTIFACTS",
 		"STARTED")
 	assert.NilError(t, err)
 
@@ -210,8 +210,8 @@ func TestCollectState_BuildMatches(t *testing.T) {
 			Builder: "eve-release-main",
 		},
 		SummaryMarkdown: "wah, I have a bad source cache.",
-		Input: &bbpb.Build_Input{
-			Properties: startedInputProperties,
+		Output: &bbpb.Build_Output{
+			Properties: startedOutputProperties,
 		},
 	}
 	assert.Assert(t, collectState.canRetry(failedBuildStarted))
@@ -360,10 +360,10 @@ func TestCollectState_FailedCheckpoint(t *testing.T) {
 			},
 		}})
 
-	inputProperties, err := structpb.NewStruct(map[string]interface{}{})
+	outputProperties, err := structpb.NewStruct(map[string]interface{}{})
 	assert.NilError(t, err)
-	err = bb.SetProperty(inputProperties,
-		"$chromeos/checkpoint.retry_summary.STAGE_ARTIFACTS",
+	err = bb.SetProperty(outputProperties,
+		"retry_summary.STAGE_ARTIFACTS",
 		"FAILED")
 	assert.NilError(t, err)
 
@@ -376,8 +376,8 @@ func TestCollectState_FailedCheckpoint(t *testing.T) {
 			Builder: "eve-release-main",
 		},
 		SummaryMarkdown: "wah, I have a bad source cache.",
-		Input: &bbpb.Build_Input{
-			Properties: inputProperties,
+		Output: &bbpb.Build_Output{
+			Properties: outputProperties,
 		},
 	}
 	assert.Assert(t, collectState.canRetry(failedBuild))
