@@ -5,7 +5,11 @@
 package cli
 
 import (
+	"bufio"
 	"fmt"
+	"infra/rts/filegraph"
+	"infra/rts/filegraph/git"
+	"os"
 
 	"github.com/maruel/subcommands"
 
@@ -27,10 +31,15 @@ var cmdPath = &subcommands.Command{
 			1.00 (+1.00) //intermediate_file.cc
 			3.00 (+2.00) //target_file.cc
 
-		Both files must be in the same git repository.
+		Both files must be in the same git repository. When a filegraph is
+		provided these files need to be in the filegraph name and present in
+		the filegraph itself.
 	`),
 	CommandRun: func() subcommands.CommandRun {
 		r := &pathRun{}
+		r.Flags.StringVar(&r.filegraph, "filegraph", "", text.Doc(`
+			Path to a pre generated filegraph. When set this will use files
+			within the provided filegraph, not files in the repo.`))
 		r.gitGraph.RegisterFlags(&r.Flags)
 		return r
 	},
@@ -39,6 +48,7 @@ var cmdPath = &subcommands.Command{
 type pathRun struct {
 	baseCommandRun
 	gitGraph
+	filegraph string
 }
 
 func (r *pathRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -48,18 +58,40 @@ func (r *pathRun) Run(a subcommands.Application, args []string, env subcommands.
 		return r.done(errors.Reason("usage: filegraph path SOURCE_FILE TARGET_FILE").Err())
 	}
 
-	nodes, err := r.loadSyncedNodes(ctx, args[0], args[1])
-	if err != nil {
-		return r.done(err)
+	var startNode filegraph.Node
+	var endNode filegraph.Node
+	if r.filegraph == "" {
+		nodes, err := r.loadSyncedNodes(ctx, args[0], args[1])
+		if err != nil {
+			return r.done(err)
+		}
+		startNode = nodes[0]
+		endNode = nodes[1]
+	} else {
+		f, err := os.Open(r.filegraph)
+		if err != nil {
+			return r.done(err)
+		}
+		defer f.Close()
+		r.Graph = &git.Graph{}
+		r.Read(bufio.NewReader(f))
+		startNode = r.Graph.Node(args[0])
+		if startNode == nil {
+			return r.done(errors.Reason("source file not found in the filegraph").Err())
+		}
+		endNode = r.Graph.Node(args[1])
+		if endNode == nil {
+			return r.done(errors.Reason("target file not found in the filegraph").Err())
+		}
 	}
 
-	shorest := r.query(nodes[0]).ShortestPath(nodes[1])
-	if shorest == nil {
+	shortest := r.query(startNode).ShortestPath(endNode)
+	if shortest == nil {
 		return r.done(errors.New("not reachable"))
 	}
 
 	prevDist := 0.0
-	for _, sp := range shorest.Path() {
+	for _, sp := range shortest.Path() {
 		fmt.Printf("%.2f (+%.2f) %s\n", sp.Distance, sp.Distance-prevDist, sp.Node.Name())
 		prevDist = sp.Distance
 	}
