@@ -210,7 +210,7 @@ func (r *Rule) matches(build *bbpb.Build) bool {
 }
 
 // canRetry evaluates whether a retry is permitted by all matching rules.
-func (c *CollectState) canRetry(build *bbpb.Build) bool {
+func (c *CollectState) canRetry(build *bbpb.Build, originalBBID string) bool {
 	buildName := build.GetBuilder().GetBuilder()
 	currentTime := c.clock.Now()
 	matchesRules := []string{}
@@ -247,7 +247,7 @@ func (c *CollectState) canRetry(build *bbpb.Build) bool {
 			}
 		}
 		if rule.rule.GetMaxRetriesPerBuild() > 0 {
-			buildRetries, ok := rule.retriesByBuild[buildName]
+			buildRetries, ok := rule.retriesByBuild[originalBBID]
 			if ok && buildRetries >= uint32(rule.rule.GetMaxRetriesPerBuild()) {
 				c.LogOut("Rule %d has used %d/%d total retries for build %s, not retrying.",
 					i, buildRetries, rule.rule.GetMaxRetriesPerBuild(), buildName)
@@ -284,15 +284,14 @@ func (c *CollectState) canRetry(build *bbpb.Build) bool {
 }
 
 // recordRetry records that the build was retried.
-func (c *CollectState) recordRetry(build *bbpb.Build) {
-	buildName := build.GetBuilder().GetBuilder()
+func (c *CollectState) recordRetry(build *bbpb.Build, originalBBID string) {
 	for _, rule := range c.rules {
 		if rule.matches(build) {
 			rule.totalRetries += 1
-			if _, ok := rule.retriesByBuild[buildName]; ok {
-				rule.retriesByBuild[buildName] += 1
+			if _, ok := rule.retriesByBuild[originalBBID]; ok {
+				rule.retriesByBuild[originalBBID] += 1
 			} else {
-				rule.retriesByBuild[buildName] = 1
+				rule.retriesByBuild[originalBBID] = 1
 			}
 		}
 	}

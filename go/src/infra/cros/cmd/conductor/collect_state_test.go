@@ -38,8 +38,8 @@ func TestCollectState_MaxRetries(t *testing.T) {
 	}
 
 	retries := 0
-	for collectState.canRetry(build) {
-		collectState.recordRetry(build)
+	for collectState.canRetry(build, "12345") {
+		collectState.recordRetry(build, "12345")
 		retries += 1
 	}
 	assert.IntsEqual(t, retries, 3)
@@ -63,16 +63,34 @@ func TestCollectState_MaxRetriesPerBuild(t *testing.T) {
 		Builder: &bbpb.BuilderID{
 			Project: "chromeos",
 			Bucket:  "release",
-			Builder: "eve-release-main",
+			Builder: "paygen",
 		},
 	}
 
 	retries := 0
-	for collectState.canRetry(build) {
-		collectState.recordRetry(build)
+	for collectState.canRetry(build, "12345") {
+		collectState.recordRetry(build, "12345")
 		retries += 1
+		build.Id = build.Id + 1
 	}
 	assert.IntsEqual(t, retries, 2)
+
+	otherBuild := &bbpb.Build{
+		Id:     22345,
+		Status: bbpb.Status_FAILURE,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "eve-release-main",
+		},
+	}
+	retries = 0
+	for collectState.canRetry(otherBuild, "22345") {
+		collectState.recordRetry(otherBuild, "22345")
+		retries += 1
+		otherBuild.Id = otherBuild.Id + 1
+	}
+	assert.IntsEqual(t, retries, 1)
 }
 
 type fakeClock struct {
@@ -108,13 +126,13 @@ func TestCollectState_CutoffSeconds(t *testing.T) {
 		},
 	}
 
-	assert.Assert(t, collectState.canRetry(build))
+	assert.Assert(t, collectState.canRetry(build, "12345"))
 	fakeClock.currentTime = 200
-	assert.Assert(t, collectState.canRetry(build))
+	assert.Assert(t, collectState.canRetry(build, "12345"))
 	fakeClock.currentTime = 300
-	assert.Assert(t, collectState.canRetry(build))
+	assert.Assert(t, collectState.canRetry(build, "12345"))
 	fakeClock.currentTime = 500
-	assert.Assert(t, !collectState.canRetry(build))
+	assert.Assert(t, !collectState.canRetry(build, "12345"))
 }
 
 func TestCollectState_CutoffPercent(t *testing.T) {
@@ -140,8 +158,8 @@ func TestCollectState_CutoffPercent(t *testing.T) {
 	}
 
 	retries := 0
-	for collectState.canRetry(build) {
-		collectState.recordRetry(build)
+	for collectState.canRetry(build, "12345") {
+		collectState.recordRetry(build, "12345")
 		retries += 1
 	}
 	// Should only retry 0.5 * 4 = 2 builds.
@@ -192,7 +210,7 @@ func TestCollectState_BuildMatches(t *testing.T) {
 			Properties: outputProperties,
 		},
 	}
-	assert.Assert(t, collectState.canRetry(failedBuild))
+	assert.Assert(t, collectState.canRetry(failedBuild, "12345"))
 
 	startedOutputProperties, err := structpb.NewStruct(map[string]interface{}{})
 	assert.NilError(t, err)
@@ -214,7 +232,7 @@ func TestCollectState_BuildMatches(t *testing.T) {
 			Properties: startedOutputProperties,
 		},
 	}
-	assert.Assert(t, collectState.canRetry(failedBuildStarted))
+	assert.Assert(t, collectState.canRetry(failedBuildStarted, "12345"))
 
 	successfulBuild := &bbpb.Build{
 		Id:     12345,
@@ -226,7 +244,7 @@ func TestCollectState_BuildMatches(t *testing.T) {
 		},
 		SummaryMarkdown: "gclient error",
 	}
-	assert.Assert(t, !collectState.canRetry(successfulBuild))
+	assert.Assert(t, !collectState.canRetry(successfulBuild, "12345"))
 	otherBuild := &bbpb.Build{
 		Id:     12345,
 		Status: bbpb.Status_FAILURE,
@@ -237,7 +255,7 @@ func TestCollectState_BuildMatches(t *testing.T) {
 		},
 		SummaryMarkdown: "unknown error",
 	}
-	assert.Assert(t, !collectState.canRetry(otherBuild))
+	assert.Assert(t, !collectState.canRetry(otherBuild, "12345"))
 }
 
 func TestCollectState_Status(t *testing.T) {
@@ -265,7 +283,7 @@ func TestCollectState_Status(t *testing.T) {
 		},
 		SummaryMarkdown: "gclient error",
 	}
-	assert.Assert(t, !collectState.canRetry(successfulBuild))
+	assert.Assert(t, !collectState.canRetry(successfulBuild, "12345"))
 }
 
 func TestCollectState_BuilderNameRe(t *testing.T) {
@@ -293,7 +311,7 @@ func TestCollectState_BuilderNameRe(t *testing.T) {
 		},
 		SummaryMarkdown: "wah, I have a bad source cache.",
 	}
-	assert.Assert(t, collectState.canRetry(failedBuild))
+	assert.Assert(t, collectState.canRetry(failedBuild, "12345"))
 
 	successfulBuild := &bbpb.Build{
 		Id:     12345,
@@ -305,7 +323,7 @@ func TestCollectState_BuilderNameRe(t *testing.T) {
 		},
 		SummaryMarkdown: "gclient error",
 	}
-	assert.Assert(t, collectState.canRetry(successfulBuild))
+	assert.Assert(t, collectState.canRetry(successfulBuild, "12345"))
 }
 
 func TestCollectState_SummaryMarkdown(t *testing.T) {
@@ -333,7 +351,7 @@ func TestCollectState_SummaryMarkdown(t *testing.T) {
 		},
 		SummaryMarkdown: "wah, I have a bad source cache.",
 	}
-	assert.Assert(t, collectState.canRetry(failedBuild))
+	assert.Assert(t, collectState.canRetry(failedBuild, "12345"))
 
 	successfulBuild := &bbpb.Build{
 		Id:     12345,
@@ -345,7 +363,7 @@ func TestCollectState_SummaryMarkdown(t *testing.T) {
 		},
 		SummaryMarkdown: "random error",
 	}
-	assert.Assert(t, !collectState.canRetry(successfulBuild))
+	assert.Assert(t, !collectState.canRetry(successfulBuild, "12345"))
 }
 
 func TestCollectState_FailedCheckpoint(t *testing.T) {
@@ -380,7 +398,7 @@ func TestCollectState_FailedCheckpoint(t *testing.T) {
 			Properties: outputProperties,
 		},
 	}
-	assert.Assert(t, collectState.canRetry(failedBuild))
+	assert.Assert(t, collectState.canRetry(failedBuild, "12345"))
 
 	successfulBuild := &bbpb.Build{
 		Id:     12345,
@@ -392,7 +410,7 @@ func TestCollectState_FailedCheckpoint(t *testing.T) {
 		},
 		SummaryMarkdown: "gclient error",
 	}
-	assert.Assert(t, !collectState.canRetry(successfulBuild))
+	assert.Assert(t, !collectState.canRetry(successfulBuild, "12345"))
 }
 
 func TestCollectState_Insufficient(t *testing.T) {
@@ -429,7 +447,7 @@ func TestCollectState_Insufficient(t *testing.T) {
 		SummaryMarkdown: "gclient error",
 	}
 	// Only matches insufficient rules.
-	assert.Assert(t, !collectState.canRetry(atlasBuild))
+	assert.Assert(t, !collectState.canRetry(atlasBuild, "12345"))
 
 	eveBuild := &bbpb.Build{
 		Id:     12346,
@@ -441,11 +459,11 @@ func TestCollectState_Insufficient(t *testing.T) {
 		},
 		SummaryMarkdown: "wah, I have a bad source cache.",
 	}
-	assert.Assert(t, collectState.canRetry(eveBuild))
+	assert.Assert(t, collectState.canRetry(eveBuild, "12346"))
 
 	retries := 0
-	for collectState.canRetry(eveBuild) {
-		collectState.recordRetry(eveBuild)
+	for collectState.canRetry(eveBuild, "12345") {
+		collectState.recordRetry(eveBuild, "12345")
 		retries += 1
 	}
 	assert.IntsEqual(t, retries, 3)
@@ -477,5 +495,5 @@ func TestCollectState_BuildRuntimeCutoff(t *testing.T) {
 		StartTime: timestamppb.New(startTime),
 		EndTime:   timestamppb.New(endTime),
 	}
-	assert.Assert(t, !collectState.canRetry(build))
+	assert.Assert(t, !collectState.canRetry(build, "12345"))
 }

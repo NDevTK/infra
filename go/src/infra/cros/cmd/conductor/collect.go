@@ -139,9 +139,10 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig, init
 				if isRetry {
 					returnSet[previousBBID] = false
 				}
-				report.recordBuild(build, getOriginalBBID(previousBuild, bbid), isRetry)
+				originalBBID := getOriginalBBID(previousBuild, bbid)
+				report.recordBuild(build, originalBBID, isRetry)
 				if build.GetStatus() != bbpb.Status_SUCCESS {
-					if initialRetry || state.canRetry(build) {
+					if initialRetry || state.canRetry(build, originalBBID) {
 						if c.dryrun {
 							c.LogOut("(Dryrun) Would have retried %d", build.GetId())
 						} else {
@@ -152,7 +153,7 @@ func (c *collectRun) Collect(ctx context.Context, config *pb.CollectConfig, init
 							} else {
 								newWatchSet = append(newWatchSet, newBBID)
 								previousBuild[newBBID] = bbid
-								state.recordRetry(build)
+								state.recordRetry(build, originalBBID)
 							}
 						}
 					}
