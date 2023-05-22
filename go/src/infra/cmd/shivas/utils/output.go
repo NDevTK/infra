@@ -1038,7 +1038,7 @@ func PrintMachinesJSON(res []proto.Message, emit bool) {
 func ownershipOutputStrs(pm proto.Message) []string {
 	o := pm.(*ufspb.OwnershipData)
 	return []string{
-		o.GetPoolName(),
+		strings.Join(o.GetPools(), ","),
 		o.GetSecurityLevel(),
 		o.GetSwarmingInstance(),
 		o.GetMibaRealm(),
@@ -1050,7 +1050,7 @@ func ownershipByHostOutputStrs(pm proto.Message) []string {
 	o := pm.(*ufsAPI.OwnershipByHost)
 	return []string{
 		o.GetHostname(),
-		o.Ownership.GetPoolName(),
+		strings.Join(o.Ownership.GetPools(), ","),
 		o.Ownership.GetSecurityLevel(),
 		o.Ownership.GetSwarmingInstance(),
 		o.Ownership.GetMibaRealm(),
