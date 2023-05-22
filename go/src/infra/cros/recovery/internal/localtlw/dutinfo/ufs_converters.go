@@ -119,6 +119,19 @@ func convertChameleonState(s ufslab.PeripheralState) tlw.Chameleon_State {
 	return tlw.Chameleon_STATE_UNSPECIFIED
 }
 
+var audioBoxJackPluggerStates = map[ufslab.Chameleon_AudioBoxJackPlugger]tlw.Chameleon_AudioBoxJackPluggerState{
+	ufslab.Chameleon_AUDIOBOX_JACKPLUGGER_WORKING:        tlw.Chameleon_AUDIOBOX_JACKPLUGGER_WORKING,
+	ufslab.Chameleon_AUDIOBOX_JACKPLUGGER_BROKEN:         tlw.Chameleon_AUDIOBOX_JACKPLUGGER_BROKEN,
+	ufslab.Chameleon_AUDIOBOX_JACKPLUGGER_NOT_APPLICABLE: tlw.Chameleon_AUDIOBOX_JACKPLUGGER_NOT_APPLICABLE,
+}
+
+func convertAudioBoxJackPluggerState(s ufslab.Chameleon_AudioBoxJackPlugger) tlw.Chameleon_AudioBoxJackPluggerState {
+	if ns, ok := audioBoxJackPluggerStates[s]; ok {
+		return ns
+	}
+	return tlw.Chameleon_AUDIOBOX_JACKPLUGGER_UNSPECIFIED
+}
+
 var bluetoothPeerStates = map[ufslab.PeripheralState]tlw.BluetoothPeer_State{
 	ufslab.PeripheralState_WORKING: tlw.BluetoothPeer_WORKING,
 	ufslab.PeripheralState_BROKEN:  tlw.BluetoothPeer_BROKEN,

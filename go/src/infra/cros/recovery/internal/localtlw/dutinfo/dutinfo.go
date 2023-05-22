@@ -348,8 +348,9 @@ func createServoHost(servo *ufslab.Servo, useSmartUsbhub bool, ds *ufslab.DutSta
 func createChameleon(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.Chameleon {
 	pCham := p.GetChameleon()
 	cham := &tlw.Chameleon{
-		Name:  pCham.GetHostname(),
-		State: convertChameleonState(ds.GetChameleon()),
+		Name:                     pCham.GetHostname(),
+		State:                    convertChameleonState(ds.GetChameleon()),
+		Audioboxjackpluggerstate: convertAudioBoxJackPluggerState(pCham.GetAudioboxJackplugger()),
 	}
 
 	if rpm := pCham.GetRpm(); rpm != nil {
