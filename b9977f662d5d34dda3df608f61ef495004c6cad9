@@ -39,6 +39,30 @@
       },
       "revId": "b9977f662d5d34dda3df608f61ef495004c6cad9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "23ab4dc7_92cfab7a",
+        "filename": "recipes/recipes/luci_py.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1551397
+      },
+      "writtenOn": "2023-05-22T21:11:53Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "4584d510_4da381b9",
+      "range": {
+        "startLine": 109,
+        "startChar": 4,
+        "endLine": 109,
+        "endChar": 23
+      },
+      "revId": "b9977f662d5d34dda3df608f61ef495004c6cad9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
