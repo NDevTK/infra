@@ -92,6 +92,35 @@ func (r *rowLoader) Date(fieldName string) civil.Date {
 	return val.Date
 }
 
+// NullBool returns the value of a field of type bigquery.NullBool.
+// If the field does not exist or is of an incorrect type, the default
+// bigquery.NullBool is returned and an error will be available from
+// rowLoader.Error().
+func (r *rowLoader) NullBool(fieldName string) bigquery.NullBool {
+	repeated := false
+	val, err := r.valueWithType(fieldName, bigquery.BooleanFieldType, repeated)
+	if err != nil {
+		r.reportError(err)
+		return bigquery.NullBool{}
+	}
+	if val == nil {
+		return bigquery.NullBool{}
+	}
+	return bigquery.NullBool{Valid: true, Bool: val.(bool)}
+}
+
+// Bool returns the value of a field of type bool.
+// If the field does not exist or is of an incorrect type, false
+// is returned and an error will be available from rowLoader.Error().
+func (r *rowLoader) Bool(fieldName string) bool {
+	val := r.NullBool(fieldName)
+	if !val.Valid {
+		r.reportError(errors.Reason("field %s value is NULL, expected non-null string", fieldName).Err())
+		return false
+	}
+	return val.Bool
+}
+
 // NullString returns the value of a field of type bigquery.NullString.
 // If the field does not exist or is of an incorrect type, the default
 // bigquery.NullString is returned and an error will be available from

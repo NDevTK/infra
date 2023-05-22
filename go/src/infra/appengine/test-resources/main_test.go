@@ -14,7 +14,8 @@ import (
 )
 
 type clientMock struct {
-	lastFetchReq *api.FetchTestMetricsRequest
+	lastFetchReq    *api.FetchTestMetricsRequest
+	lastFetchDirReq *api.FetchDirectoryMetricsRequest
 }
 
 func (cm *clientMock) UpdateSummary(_ context.Context, fromDate civil.Date, toDate civil.Date) error {
@@ -24,6 +25,11 @@ func (cm *clientMock) UpdateSummary(_ context.Context, fromDate civil.Date, toDa
 func (cm *clientMock) FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequest) (*api.FetchTestMetricsResponse, error) {
 	cm.lastFetchReq = req
 	return &api.FetchTestMetricsResponse{}, nil
+}
+
+func (cm *clientMock) FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error) {
+	cm.lastFetchDirReq = req
+	return &api.FetchDirectoryMetricsResponse{}, nil
 }
 
 func TestUpdateDailySummary(t *testing.T) {
@@ -99,5 +105,35 @@ func TestFetchMetrics(t *testing.T) {
 		So(err, ShouldBeNil)
 		So(resp, ShouldNotBeNil)
 		So(mock.lastFetchReq, ShouldResemble, request)
+	})
+}
+
+func TestFetchFileMetrics(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	Convey("Valid request", t, func() {
+		mock := &clientMock{}
+
+		srv := &testResourcesServer{
+			Client: mock,
+		}
+		request := &api.FetchDirectoryMetricsRequest{
+			Component: "some>component",
+			Period:    api.Period_DAY,
+			Dates:     []string{"2023-01-01"},
+			Metrics:   []api.MetricType{api.MetricType_NUM_RUNS},
+			Filter:    "filter:this",
+			Sort: &api.SortBy{
+				Metric:    api.SortType_SORT_NUM_RUNS,
+				Ascending: true,
+			},
+		}
+		resp, err := srv.FetchDirectoryMetrics(ctx, request)
+
+		So(err, ShouldBeNil)
+		So(resp, ShouldNotBeNil)
+		So(mock.lastFetchDirReq, ShouldResemble, request)
 	})
 }
