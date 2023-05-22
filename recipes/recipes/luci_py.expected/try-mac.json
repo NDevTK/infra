@@ -531,6 +531,11 @@
       "[CACHE]/builder/infra/luci/client/unittest.cfg"
     ],
     "cwd": "[CACHE]/builder/infra/luci/client",
+    "env_prefixes": {
+      "PATH": [
+        "None"
+      ]
+    },
     "luci_context": {
       "realm": {
         "name": "infra:try"
@@ -564,6 +569,11 @@
       "[CACHE]/builder/infra/luci/appengine/swarming/swarming_bot/unittest.cfg"
     ],
     "cwd": "[CACHE]/builder/infra/luci/appengine/swarming/swarming_bot",
+    "env_prefixes": {
+      "PATH": [
+        "None"
+      ]
+    },
     "luci_context": {
       "realm": {
         "name": "infra:try"

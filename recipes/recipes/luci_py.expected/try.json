@@ -578,6 +578,11 @@
       "[CACHE]/builder/infra/luci/appengine/auth_service/unittest.cfg"
     ],
     "cwd": "[CACHE]/builder/infra/luci/appengine/auth_service",
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/vpython2.7"
+      ]
+    },
     "luci_context": {
       "realm": {
         "name": "infra:try"
@@ -653,6 +658,11 @@
       "[CACHE]/builder/infra/luci/appengine/config_service/unittest.cfg"
     ],
     "cwd": "[CACHE]/builder/infra/luci/appengine/config_service",
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/vpython2.7"
+      ]
+    },
     "luci_context": {
       "realm": {
         "name": "infra:try"
@@ -728,6 +738,11 @@
       "[CACHE]/builder/infra/luci/appengine/components/unittest.cfg"
     ],
     "cwd": "[CACHE]/builder/infra/luci/appengine/components",
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/vpython2.7"
+      ]
+    },
     "luci_context": {
       "realm": {
         "name": "infra:try"
@@ -757,6 +772,11 @@
       "[CACHE]/builder/infra/luci/appengine/components/unittest.cfg"
     ],
     "cwd": "[CACHE]/builder/infra/luci/appengine/components",
+    "env_prefixes": {
+      "PATH": [
+        "None"
+      ]
+    },
     "luci_context": {
       "realm": {
         "name": "infra:try"
@@ -790,6 +810,11 @@
       "[CACHE]/builder/infra/luci/client/unittest.cfg"
     ],
     "cwd": "[CACHE]/builder/infra/luci/client",
+    "env_prefixes": {
+      "PATH": [
+        "None"
+      ]
+    },
     "luci_context": {
       "realm": {
         "name": "infra:try"
@@ -823,6 +848,11 @@
       "[CACHE]/builder/infra/luci/appengine/swarming/swarming_bot/unittest.cfg"
     ],
     "cwd": "[CACHE]/builder/infra/luci/appengine/swarming/swarming_bot",
+    "env_prefixes": {
+      "PATH": [
+        "None"
+      ]
+    },
     "luci_context": {
       "realm": {
         "name": "infra:try"
@@ -898,6 +928,11 @@
       "[CACHE]/builder/infra/luci/appengine/swarming/unittest.cfg"
     ],
     "cwd": "[CACHE]/builder/infra/luci/appengine/swarming",
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/vpython2.7"
+      ]
+    },
     "luci_context": {
       "realm": {
         "name": "infra:try"
