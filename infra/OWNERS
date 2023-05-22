@@ -1,2 +1,1 @@
 # Specific OWNERS to review changes to the non-inclusive terms PRESUBMIT checks
-per-file update_inclusive_language_presubmit_exempt_dirs.sh=seanmccullough@chromium.org
