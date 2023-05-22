@@ -30,7 +30,7 @@ type DroneStarter struct {
 	// BotConfigFunc is used to make a bot config.
 	BotConfigFunc func(botID string, workDir string) Config
 	// LogFunc is used for logging messages.
-	LogFunc func(string, ...interface{})
+	LogFunc func(string, ...any)
 }
 
 // Start starts a Swarming bot.  The returned Bot object can be used

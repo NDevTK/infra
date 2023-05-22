@@ -516,7 +516,7 @@ type testLogger struct {
 	t *testing.T
 }
 
-func (t testLogger) Printf(format string, args ...interface{}) {
+func (t testLogger) Printf(format string, args ...any) {
 	// Since we loop at nanosecond interval in tests, this message
 	// is very noisy.
 	if format == "Reporting to queen" {

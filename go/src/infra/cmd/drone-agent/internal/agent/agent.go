@@ -58,7 +58,7 @@ type Agent struct {
 
 // logger defines the logging interface used by Agent.
 type logger interface {
-	Printf(string, ...interface{})
+	Printf(string, ...any)
 }
 
 // stateInterface is the state interface used by the agent.  The usual
@@ -301,7 +301,7 @@ func shouldRefuseNewDUTs(ctx context.Context) bool {
 	return draining.IsDraining(ctx) || ctx.Err() != nil
 }
 
-func (a *Agent) log(format string, args ...interface{}) {
+func (a *Agent) log(format string, args ...any) {
 	if v := a.logger; v != nil {
 		v.Printf(format, args...)
 	} else {
@@ -340,7 +340,7 @@ type hook struct {
 		Start(botID string) (bot.Bot, error)
 	}
 	c       api.DroneClient
-	logFunc func(string, ...interface{})
+	logFunc func(string, ...any)
 	uuid    string
 }
 
