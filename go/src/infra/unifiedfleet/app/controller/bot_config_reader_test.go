@@ -49,12 +49,6 @@ func mockOwnershipConfig() *config.Config {
 			GitilesHost: "test_gitiles",
 			Project:     "test_project",
 			Branch:      fmt.Sprintf("test_branch_%d", atomic.AddUint32(&branchNumber, 1)),
-			EncConfig: []*config.OwnershipConfig_ConfigFile{
-				{
-					Name:       "test_name",
-					RemotePath: "test_enc_git_path",
-				},
-			},
 			SecurityConfig: []*config.OwnershipConfig_ConfigFile{
 				{
 					Name:       "test_name",
@@ -236,6 +230,26 @@ func TestImportSecurityConfig(t *testing.T) {
 			So(err, ShouldBeNil)
 			pm := p.(*ufspb.OwnershipData)
 			So(pm, ShouldResembleProto, resp.Ownership)
+			So(pm.GetPools(), ShouldResemble, []string{"abc"})
+
+			// Update ownership and Import Again, should update the ownership to the original value
+			pm.Pools = []string{"dummy"}
+			registration.UpdateMachineOwnership(ctx, "test1-1", pm)
+			entity, err := inventory.PutOwnershipData(ctx, pm, "test1-1", inventory.AssetTypeMachine)
+			So(err, ShouldBeNil)
+			p, err = entity.GetProto()
+			So(err, ShouldBeNil)
+			pm = p.(*ufspb.OwnershipData)
+			So(pm.Pools, ShouldNotResemble, resp.Ownership.Pools)
+
+			err = ImportSecurityConfig(ctx, ownershipConfig, gitClient)
+			So(err, ShouldBeNil)
+			resp2, err := registration.GetMachine(ctx, "test1-1")
+
+			So(resp2, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp2.Ownership, ShouldNotBeNil)
+			So(resp2.Ownership, ShouldResembleProto, resp.Ownership)
 		})
 		Convey("happy path - Bot ID Prefix", func() {
 			ctx := encTestingContext()
@@ -338,7 +352,7 @@ func TestParseSecurityConfig(t *testing.T) {
 			So(resp, ShouldNotBeNil)
 			So(err, ShouldBeNil)
 			So(resp.Ownership, ShouldNotBeNil)
-			So(resp.Ownership.PoolName, ShouldEqual, "abc")
+			So(resp.Ownership.Pools, ShouldContain, "abc")
 			So(resp.Ownership.SwarmingInstance, ShouldEqual, "testSwarming")
 			So(resp.Ownership.Customer, ShouldEqual, "customer")
 			So(resp.Ownership.SecurityLevel, ShouldEqual, "trusted")
@@ -400,7 +414,7 @@ func TestGetOwnershipData(t *testing.T) {
 
 			So(err, ShouldBeNil)
 			So(ownership, ShouldNotBeNil)
-			So(ownership.PoolName, ShouldEqual, "test")
+			So(ownership.Pools, ShouldContain, "test")
 			So(ownership.SwarmingInstance, ShouldEqual, "testSwarming")
 		})
 		Convey("happy path - vm", func() {
@@ -418,7 +432,7 @@ func TestGetOwnershipData(t *testing.T) {
 
 			So(ownership, ShouldNotBeNil)
 			So(err, ShouldBeNil)
-			So(ownership.PoolName, ShouldEqual, "test")
+			So(ownership.Pools, ShouldContain, "test")
 			So(ownership.SwarmingInstance, ShouldEqual, "testSwarming")
 		})
 		Convey("happy path - machineLSE", func() {
@@ -434,7 +448,7 @@ func TestGetOwnershipData(t *testing.T) {
 
 			So(ownership, ShouldNotBeNil)
 			So(err, ShouldBeNil)
-			So(ownership.PoolName, ShouldEqual, "test")
+			So(ownership.Pools, ShouldContain, "test")
 			So(ownership.SwarmingInstance, ShouldEqual, "testSwarming")
 		})
 		Convey("missing host in inventory", func() {

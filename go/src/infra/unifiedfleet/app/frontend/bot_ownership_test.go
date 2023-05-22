@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package frontend
@@ -78,7 +78,7 @@ func TestGetOwnershipData(t *testing.T) {
 
 			So(err, ShouldBeNil)
 			So(res, ShouldNotBeNil)
-			So(res.PoolName, ShouldEqual, "test")
+			So(res.Pools, ShouldContain, "test")
 			So(res.SwarmingInstance, ShouldEqual, "testSwarming")
 		})
 		Convey("Missing host - returns error", func() {

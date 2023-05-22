@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -107,12 +107,16 @@ func ImportSecurityConfig(ctx context.Context, ownershipConfig *config.Ownership
 	return nil
 }
 
-// ParseSecurityConfig parses the Security Config files and stores the security data in the DataStore for every bot in the config.
+// ParseSecurityConfig parses the Security Config files and stores the security
+// data in the DataStore for every bot in the config.
 func ParseSecurityConfig(ctx context.Context, config *ufspb.SecurityInfos) {
+	var botsMap = map[string]*ufspb.OwnershipData{}
+	var botPrefixesMap = map[string]*ufspb.OwnershipData{}
 	for _, pool := range config.Pools {
 		if len(pool.Hosts) == 0 && len(pool.HostPrefixes) == 0 {
 			continue
 		}
+
 		hosts := []string{}
 		for _, host := range pool.Hosts {
 			if strings.Contains(host, "{") {
@@ -123,25 +127,52 @@ func ParseSecurityConfig(ctx context.Context, config *ufspb.SecurityInfos) {
 			}
 		}
 
-		ownershipData := &ufspb.OwnershipData{
-			SecurityLevel:    pool.SecurityLevel,
-			PoolName:         pool.PoolName,
-			SwarmingInstance: pool.SwarmingServerId,
-			Customer:         pool.Customer,
-			Builders:         pool.Builders,
+		// Collecting all the pools for each bot.
+		for _, host := range hosts {
+			val, ok := botsMap[host]
+			if ok {
+				if !existsInList(val.GetPools(), pool.GetPoolName()) {
+					val.Pools = append(val.Pools, pool.GetPoolName())
+					botsMap[host] = val
+				}
+			} else {
+				botsMap[host] = &ufspb.OwnershipData{
+					SecurityLevel:    pool.SecurityLevel,
+					Pools:            []string{pool.PoolName},
+					SwarmingInstance: pool.SwarmingServerId,
+					Customer:         pool.Customer,
+					Builders:         pool.Builders,
+				}
+			}
 		}
 
-		// Update the ownership for the botIdPrefixes (ie. HostPrefixes)
-		err := updateBotConfigForBotIdPrefix(ctx, pool.HostPrefixes, ownershipData)
-		if err != nil {
-			logging.Debugf(ctx, "Got errors while parsing bot id prefix config for %s - %v", pool.SwarmingServerId, err)
+		// Collecting all the pools for each bot prefix.
+		for _, prefix := range pool.HostPrefixes {
+			val, ok := botPrefixesMap[prefix]
+			if ok {
+				if !existsInList(val.GetPools(), pool.GetPoolName()) {
+					val.Pools = append(val.Pools, pool.GetPoolName())
+					botPrefixesMap[prefix] = val
+				}
+			} else {
+				botPrefixesMap[prefix] = &ufspb.OwnershipData{
+					SecurityLevel:    pool.SecurityLevel,
+					Pools:            []string{pool.PoolName},
+					SwarmingInstance: pool.SwarmingServerId,
+					Customer:         pool.Customer,
+					Builders:         pool.Builders,
+				}
+			}
 		}
+	}
+	// Updating the ownership for the botIdPrefixes (ie. HostPrefixes).
+	if err := updateBotConfigForBotIdPrefix(ctx, botPrefixesMap); err != nil {
+		logging.Debugf(ctx, "Got errors while parsing bot id prefixes config %v", err)
+	}
 
-		// Update the ownership data for the botIds (ie. Hosts) collected so far.
-		err = updateBotConfigForBotIds(ctx, hosts, ownershipData)
-		if err != nil {
-			logging.Debugf(ctx, "Got errors while parsing bot id config for %s - %v", pool.SwarmingServerId, err)
-		}
+	// Updating the ownership data for the botIds (ie. Hosts) collected so far.
+	if err := updateBotConfigForBotIds(ctx, botsMap); err != nil {
+		logging.Debugf(ctx, "Got errors while parsing bot id config %v", err)
 	}
 }
 
@@ -178,9 +209,9 @@ func ListOwnershipConfigs(ctx context.Context, pageSize int32, pageToken, filter
 }
 
 // Updates the Ownership config for the bot ids collected from the config.
-func updateBotConfigForBotIds(ctx context.Context, botIds []string, ownershipData *ufspb.OwnershipData) error {
+func updateBotConfigForBotIds(ctx context.Context, botsMap map[string]*ufspb.OwnershipData) error {
 	var errs errors.MultiError
-	for _, botId := range botIds {
+	for botId, ownershipData := range botsMap {
 		updated, assetType, err := isBotOwnershipUpdated(ctx, botId, ownershipData)
 		if err != nil && status.Code(err) != codes.NotFound {
 			logging.Debugf(ctx, "Failed to check if ownership is updated %s - %v", botId, err)
@@ -218,7 +249,8 @@ func isBotOwnershipUpdated(ctx context.Context, botId string, newOwnership *ufsp
 		isOwnershipFieldUpdated(pm.GetSecurityLevel(), newOwnership.GetSecurityLevel()) ||
 		isOwnershipFieldUpdated(pm.GetPoolName(), newOwnership.GetPoolName()) ||
 		isOwnershipFieldUpdated(pm.GetSwarmingInstance(), newOwnership.GetSwarmingInstance()) ||
-		isOwnershipBuildersFieldUpdated(pm.GetBuilders(), newOwnership.GetBuilders()) {
+		isOwnershipArrayFieldUpdated(pm.GetPools(), newOwnership.GetPools()) ||
+		isOwnershipArrayFieldUpdated(pm.GetBuilders(), newOwnership.GetBuilders()) {
 		diff := cmp.Diff(pm, newOwnership, protocmp.Transform())
 		logging.Debugf(ctx, "Found ownership diff for bot  %s - %s", botId, diff)
 		return true, entity.AssetType, nil
@@ -227,7 +259,7 @@ func isBotOwnershipUpdated(ctx context.Context, botId string, newOwnership *ufsp
 }
 
 // Checks if the Ownership.Builder field was updated, ignoring an empty slice
-func isOwnershipBuildersFieldUpdated(oldVal []string, newVal []string) bool {
+func isOwnershipArrayFieldUpdated(oldVal []string, newVal []string) bool {
 	if len(newVal) != 0 && len(oldVal) != len(newVal) {
 		return true
 	}
@@ -302,9 +334,9 @@ func findAndUpdateOwnershipForAsset(ctx context.Context, botId string, ownership
 }
 
 // Update the Ownership config for the bot id prefixes collected from the config.
-func updateBotConfigForBotIdPrefix(ctx context.Context, botIdPrefixes []string, ownershipData *ufspb.OwnershipData) error {
+func updateBotConfigForBotIdPrefix(ctx context.Context, botIdPrefixesMap map[string]*ufspb.OwnershipData) error {
 	var errs errors.MultiError
-	for _, prefix := range botIdPrefixes {
+	for prefix, ownershipData := range botIdPrefixesMap {
 		updated, assetType, err := isBotOwnershipUpdated(ctx, prefix, ownershipData)
 		if err != nil && status.Code(err) != codes.NotFound {
 			logging.Debugf(ctx, "Failed to check if ownership is updated for prefix %s - %v", prefix, err)
@@ -389,11 +421,11 @@ func findAndUpdateMachineOwnershipForPrefix(ctx context.Context, prefix string, 
 		return false, err
 	}
 	logging.Infof(ctx, "Found %d machines with id prefix %s", len(entities), prefix)
-	botsIds := []string{}
+	botsIds := map[string]*ufspb.OwnershipData{}
 	for _, machine := range entities {
-		botsIds = append(botsIds, machine.GetName())
+		botsIds[machine.GetName()] = ownershipData
 	}
-	err = updateBotConfigForBotIds(ctx, botsIds, ownershipData)
+	err = updateBotConfigForBotIds(ctx, botsIds)
 	return true, err
 }
 
@@ -405,11 +437,11 @@ func findAndUpdateMachineLSEOwnershipForPrefix(ctx context.Context, prefix strin
 		return false, err
 	}
 	logging.Infof(ctx, "Found %d machineLSEs with id prefix %s", len(entities), prefix)
-	botsIds := []string{}
+	botsIds := map[string]*ufspb.OwnershipData{}
 	for _, machineLSE := range entities {
-		botsIds = append(botsIds, machineLSE.GetName())
+		botsIds[machineLSE.GetName()] = ownershipData
 	}
-	err = updateBotConfigForBotIds(ctx, botsIds, ownershipData)
+	err = updateBotConfigForBotIds(ctx, botsIds)
 	return true, err
 }
 
@@ -421,11 +453,11 @@ func findAndUpdateVMOwnershipForPrefix(ctx context.Context, prefix string, owner
 		return false, err
 	}
 	logging.Infof(ctx, "Found %d VMs with id prefix %s", len(entities), prefix)
-	var botIds []string
+	botsIds := map[string]*ufspb.OwnershipData{}
 	for _, vm := range entities {
-		botIds = append(botIds, vm.GetName())
+		botsIds[vm.GetName()] = ownershipData
 	}
-	err = updateBotConfigForBotIds(ctx, botIds, ownershipData)
+	err = updateBotConfigForBotIds(ctx, botsIds)
 	return true, err
 }
 
@@ -505,4 +537,15 @@ func fetchLatestSHA1(ctx context.Context, gitilesC external.GitTilesClient, proj
 		return "", fmt.Errorf("fetch sha1 for %s branch of %s: empty git-log", branch, project)
 	}
 	return resp.Log[0].GetId(), nil
+}
+
+// Checks if value already exists in the array
+func existsInList(list []string, name string) bool {
+	for i := range list {
+		// Already exists in the pools list
+		if name == list[i] {
+			return true
+		}
+	}
+	return false
 }
