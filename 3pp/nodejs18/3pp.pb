@@ -18,5 +18,6 @@ create {
 
 upload {
   pkg_prefix: "tools"
+  pkg_name_override: "nodejs"
 }
 
