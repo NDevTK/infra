@@ -30,7 +30,7 @@ const (
 	// project name will be hard-coded by then anyway.
 	// Additionally, GCE images can be used across projects. There is no much
 	// benefit making it configurable here.
-	project      = "betty-cloud-prototype"
+	project      = "chromeos-gce-tests"
 	license      = "https://www.googleapis.com/compute/v1/projects/vm-options/global/licenses/enable-vmx"
 	timeout      = 10 * time.Minute
 	pollInterval = 30 * time.Second
