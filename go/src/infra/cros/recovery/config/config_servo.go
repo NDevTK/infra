@@ -456,7 +456,6 @@ func servoRepairPlan() *Plan {
 				},
 				Conditions: []string{
 					"Is servo_v4(p1) used with type-c connector",
-					"has_rpm_info",
 					"Has ppchg5_mv control",
 				},
 				Dependencies: []string{
@@ -478,6 +477,9 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Power ON the RPM outlet.",
 				},
+				Conditions: []string{
+					"has_rpm_info",
+				},
 				ExecName: "rpm_power_on",
 			},
 			"Check if PD is src state": {
@@ -487,11 +489,13 @@ func servoRepairPlan() *Plan {
 				},
 				Conditions: []string{
 					"Is servo_v4(p1) used with type-c connector",
+					"Has ppchg5_mv control",
 				},
 				Dependencies: []string{
 					"Set state:SERVOD_ISSUE",
 					"Read ppdut5_mv value",
 					"Read ppchg5_mv value",
+					"Charger connected",
 				},
 				ExecName: "servo_check_servod_control",
 				ExecExtraArgs: []string{
