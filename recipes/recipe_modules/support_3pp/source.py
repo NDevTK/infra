@@ -383,6 +383,7 @@ def _generate_download_manifest(api, spec, checkout_dir,
               'name': ['test_source']
           }))
       source_uri, ext = result.stdout['url'], result.stdout['ext']
+      assert isinstance(source_uri, list), 'url must be a list of urls.'
       # Setting source artifact name is optional, used by `pip_bootstrap`.
       artifact_names = result.stdout.get('name')
       # Verify source_uri and artifact_names are equal length, if present.
