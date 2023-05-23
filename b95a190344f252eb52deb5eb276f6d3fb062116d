@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b6f1fe4e_baaed62f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-05-23T16:40:37Z",
+      "side": 1,
+      "message": "LGTM % nit",
+      "revId": "b95a190344f252eb52deb5eb276f6d3fb062116d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cf547cbb_c71f9967",
+        "filename": "go/src/infra/cros/recovery/internal/execs/chameleon/chameleon_execs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-05-23T16:40:37Z",
+      "side": 1,
+      "message": "nit: probably add check to verify that info.GetChromeos().GetChameleon() is not nil",
+      "revId": "b95a190344f252eb52deb5eb276f6d3fb062116d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
