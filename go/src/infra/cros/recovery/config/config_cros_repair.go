@@ -1992,7 +1992,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Is servod running",
-				"Read BIOS from DUT by servo",
 			},
 			ExecName: "cros_set_gbb_by_servo",
 			ExecExtraArgs: []string{

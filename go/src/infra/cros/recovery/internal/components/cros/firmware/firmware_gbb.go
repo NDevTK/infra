@@ -20,7 +20,7 @@ func ReadGBBByServo(ctx context.Context, timeout time.Duration, run components.R
 	if run == nil || servod == nil {
 		return "", errors.Reason("read GBB by servo: run or servod is not provided").Err()
 	}
-	r, err := regexp.Compile(`flags:([0x ]*)$`)
+	r, err := regexp.Compile(`flags: ([0-9x]*)$`)
 	if err != nil {
 		return "", errors.Annotate(err, "read GBB by servo").Err()
 	}
