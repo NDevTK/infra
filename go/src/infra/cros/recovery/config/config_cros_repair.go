@@ -1820,7 +1820,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify that device is belong Reven models",
 			},
 			ExecExtraArgs: []string{
-				"string_values:aurora-borealis,reven",
+				"string_values:aurora,reven",
 				"invert_result:true",
 			},
 			ExecName: "dut_check_board",
