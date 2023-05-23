@@ -152,14 +152,13 @@ luci.bucket(
 
 luci.bucket(
     name = "try",
-    acls = [
-        acl.entry(
-            roles = acl.BUILDBUCKET_TRIGGERER,
+    bindings = [
+        luci.binding(
+            roles = "role/buildbucket.triggerer",
             users = [
                 # Allow Tricium dev and prod to trigger analyzer tryjobs.
                 "tricium-dev@appspot.gserviceaccount.com",
                 "tricium-prod@appspot.gserviceaccount.com",
-
                 # For b/211053378 allow direct buildbucket triggers for github
                 # integration experimentation.
                 #
@@ -167,6 +166,7 @@ luci.bucket(
                 # project & builders by then).
                 "github-integration@cobalt-tools.iam.gserviceaccount.com",
             ],
+            projects = "infra-internal",
             groups = [
                 "project-infra-tryjob-access",
                 "service-account-cq",
