@@ -80,9 +80,9 @@ enum Zone {
   ZONE_UNSPECIFIED = 0;
   ZONE_ATLANTA = 1;             // "atl" Building ? Room ?
   ZONE_CHROMEOS1 = 2;           // "chromeos1" // US-MTV-1600 // Santiam
-  ZONE_CHROMEOS2 = 3;           // "chromeos2" // US-MTV-2081 // Atlantis
+  ZONE_CHROMEOS2 = 3 [deprecated = true]; // DEPRECATED "chromeos2" // US-MTV-2081 // Atlantis
   ZONE_CHROMEOS3 = 4;           // "chromeos3" // US-MTV-946 // Lindavista
-  ZONE_CHROMEOS4 = 5;           // "chromeos4" // US-MTV-2081 // Destiny
+  ZONE_CHROMEOS4 = 5 [deprecated = true]; // DEPRECATED "chromeos4" // US-MTV-2081 // Destiny
   ZONE_CHROMEOS5 = 6;           // "chromeos5" // US-MTV-946 // Lindavista
   ZONE_CHROMEOS6 = 7;           // "chromeos6" // US-MTV-2081 // Prometheus
   ZONE_CHROMEOS7 = 8;           // "chromeos7" // US-MTV-946 // Lindavista
