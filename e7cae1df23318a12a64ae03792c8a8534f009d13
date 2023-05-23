@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "89aaeb3e_31ad32cd",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-05-23T04:39:10Z",
+      "side": 1,
+      "message": "Why does deps scanning require reapiclient?\nWe may want to use the results of scandeps with Reproxy.\nIs it possible?",
+      "range": {
+        "startLine": 7,
+        "startChar": 46,
+        "endLine": 7,
+        "endChar": 69
+      },
+      "revId": "e7cae1df23318a12a64ae03792c8a8534f009d13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
