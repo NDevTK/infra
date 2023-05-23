@@ -70,6 +70,30 @@
       },
       "revId": "e7cae1df23318a12a64ae03792c8a8534f009d13",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "449ba632_beec1906",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-05-23T04:53:11Z",
+      "side": 1,
+      "message": "I see. We need to think about authentication when fully enabling scandeps. \nLet\u0027s think about it later.\n\nCurrently, Reclient integration with rewrapper doesn\u0027t need deps scanning. \nSo, you can keep `step.def.Binding(\"use_remote_exec_wrapper\")` for now.",
+      "parentUuid": "0518d1d5_4bba302b",
+      "range": {
+        "startLine": 7,
+        "startChar": 46,
+        "endLine": 7,
+        "endChar": 69
+      },
+      "revId": "e7cae1df23318a12a64ae03792c8a8534f009d13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
