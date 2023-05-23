@@ -596,6 +596,12 @@ var customConfigurationTestCases = []struct {
 			return config.FixBatteryCutOffConfig()
 		},
 	},
+	{
+		"Serial console enable plan",
+		func() *config.Configuration {
+			return config.EnableSerialConsoleConfig()
+		},
+	},
 }
 
 // TestOtherConfigurations tests other known configurations used anywhere.

@@ -164,3 +164,29 @@ func FixBatteryCutOffConfig() *Configuration {
 		},
 	}
 }
+
+// EnableSerialConsoleConfig creates a custom configuration to flash serial firmware to DUT.
+func EnableSerialConsoleConfig() *Configuration {
+	return &Configuration{
+		PlanNames: []string{
+			PlanServo,
+			PlanCrOS,
+			PlanClosing,
+		},
+		Plans: map[string]*Plan{
+			// Not allowed to fail as servo is critical for the fix plan.
+			PlanServo: setAllowFail(servoRepairPlan(), false),
+			PlanCrOS: {
+				CriticalActions: []string{
+					"Is servod running",
+					"Set GBB flags to 0x18 by servo",
+					"Flash AP (FW) with enabled serial console",
+					"Cold reset DUT by servo",
+					"Sleep 10 seconds",
+				},
+				Actions: crosRepairActions(),
+			},
+			PlanClosing: setAllowFail(crosClosePlan(), true),
+		},
+	}
+}

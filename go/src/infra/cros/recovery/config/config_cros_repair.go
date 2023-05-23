@@ -2456,6 +2456,31 @@ func crosRepairActions() map[string]*Action {
 			},
 			AllowFailAfterRecovery: true,
 		},
+		"Flash AP (FW) with enabled serial console": {
+			Docs: []string{
+				"Download fw-image specified in stable version and flash AP to the DUT by servo",
+				"Set timeout for 90 minutes for now as = 10m(download)+2*20m(find/extract file)+40m(ap-update with retry).",
+				"We will retry up to 3 times since there may be flakiness on flash AP via servo.",
+			},
+			Conditions: []string{
+				"Is servod running",
+			},
+			Dependencies: []string{
+				"Recovery version has firmware image path",
+			},
+			ExecName: "cros_update_fw_with_fw_image_by_servo",
+			ExecExtraArgs: []string{
+				"update_ap_attempt_count:3",
+				"download_timeout:600",
+				"gbb_flags:0x18",
+				"use_cache_extractor:true",
+				"use_serial_fw_target:true",
+			},
+			ExecTimeout: &durationpb.Duration{
+				Seconds: 5400,
+			},
+			AllowFailAfterRecovery: true,
+		},
 		"Flash EC (FW) by servo": {
 			Docs: []string{
 				"Download fw-image specified in stable version and flash EC to the DUT by servo",
