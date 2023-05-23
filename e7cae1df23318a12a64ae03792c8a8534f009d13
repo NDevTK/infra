@@ -46,6 +46,30 @@
       },
       "revId": "e7cae1df23318a12a64ae03792c8a8534f009d13",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0518d1d5_4bba302b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-05-23T04:45:55Z",
+      "side": 1,
+      "message": "scandeps initialize subtree and make sure all blobs in subtree are stored in RBE CAS.\n\nmaybe, skip this when reapi is not configured?",
+      "parentUuid": "89aaeb3e_31ad32cd",
+      "range": {
+        "startLine": 7,
+        "startChar": 46,
+        "endLine": 7,
+        "endChar": 69
+      },
+      "revId": "e7cae1df23318a12a64ae03792c8a8534f009d13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
