@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from PB.go.chromium.org.luci.buildbucket.proto.common import GerritChange
+
 PYTHON_VERSION_COMPATIBILITY = "PY2+3"
 
 DEPS = [
@@ -22,10 +24,26 @@ def RunSteps(api):
   assert api.platform.is_linux, 'Unsupported platform, only Linux is supported.'
   cl = api.buildbucket.build.input.gerrit_changes[0]
   project_name = cl.project
-  assert project_name in ('infra/infra', 'infra/infra_internal',
-                          'infra/luci/luci-go'), ('unknown project: "%s"' %
-                                                  project_name)
-  patch_root = project_name.split('/')[-1]
+
+  # For builds scheduled for an infra/infra_superproject change,
+  # the cl project is infra_superproject, but the builder project
+  # should be one of 'infra' or 'infra_internal'.
+  if project_name == 'infra/infra_superproject':
+    builder_project = api.buildbucket.build.builder.project
+    assert builder_project in ('infra', 'infra-internal'), (
+        'unknown builder project: "%s" for infra_superproject change' %
+        builder_project)
+    project_name = project_name[:-len('_superproject')]
+    if builder_project == 'infra':
+      patch_root = 'infra'
+    else:
+      patch_root = 'infra_internal'
+  else:
+    assert project_name in ('infra/infra', 'infra/infra_internal',
+                            'infra/luci/luci-go'), ('unknown project: "%s"' %
+                                                    project_name)
+    patch_root = project_name.split('/')[-1]
+
   config_name = patch_root.replace("-", "_")
   # TODO(crbug.com/1415507): Remove '_superproject' suffix when
   # migration is complete and configs have been renamed.
@@ -117,6 +135,18 @@ def GenTests(api):
   yield (
       api.test('basic-internal') +
       api.buildbucket.try_build(project='infra/infra_internal'))
+
+  superproject_change = GerritChange(
+      host='chromium-review.googlesource.com',
+      project='infra/infra_superproject',
+      change=456789,
+      patchset=12,
+  )
+  yield (api.test('basic-superproject') + api.buildbucket.try_build(
+      gerrit_changes=[superproject_change], project='infra'))
+  yield (api.test('basic-superproject-internal') + api.buildbucket.try_build(
+      gerrit_changes=[superproject_change], project='infra-internal'))
+
   yield (
       api.test('basic-luci-go') +
       api.buildbucket.try_build(project='infra/luci/luci-go'))

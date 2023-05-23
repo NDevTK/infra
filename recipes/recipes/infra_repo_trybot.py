@@ -42,13 +42,13 @@ PROPERTIES = {
 def RunSteps(api, go_version_variant, run_lint):
   cl = api.buildbucket.build.input.gerrit_changes[0]
   project = cl.project
-  # For for builds scheduled for an infra/infra_superproject change,
+  # For builds scheduled for an infra/infra_superproject change,
   # the cl project is infra_superproject, but the builder project
   # should be one of 'infra' or 'infra_internal'.
   if project == 'infra/infra_superproject':
     builder_project = api.buildbucket.build.builder.project
     assert builder_project in ('infra', 'infra-internal'), (
-        'unknown builder "%s" project for infra_superproject change' %
+        'unknown builder project: "%s" for infra_superproject change' %
         builder_project)
     if builder_project == 'infra':
       patch_root = 'infra'
