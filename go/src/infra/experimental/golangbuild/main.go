@@ -188,7 +188,10 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		if err := runCommandAsStep(ctx, "run std and cmd tests", jsonOnPart, false); err != nil {
 			return err
 		}
-		const allButStdCmd = "!^go_test:.+$"
+		allButStdCmd := ":" // Pattern for Go 1.21+ (go.dev/cl/496181).
+		if go121 := spec.inputs.GoBranch != "release-branch.go1.20" && spec.inputs.GoBranch != "release-branch.go1.19"; !go121 {
+			allButStdCmd = "!^go_test:.+$" // Pattern for Go 1.20 and older.
+		}
 		jsonOffPart := spec.goCmd(ctx, spec.goroot, spec.distTestArgs(allButStdCmd)...)
 		if err := runCommandAsStep(ctx, "run various dist tests", jsonOffPart, false); err != nil {
 			return err
