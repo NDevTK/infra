@@ -1,0 +1,8 @@
+name: luci/utils/envoy-cloudrun
+extends: ../../../base.yaml
+
+contextdir: ../../../../../go/src/go.chromium.org/luci/server/cmd/envoy-cloudrun
+deterministic: true
+
+sources:
+  - ../../../../../go/src/go.chromium.org/luci/server/cmd/envoy-cloudrun

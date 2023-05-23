@@ -15,6 +15,9 @@
 # an explanation why it is frozen.
 
 pins:
+- image: docker.io/envoyproxy/envoy
+  tag: v1.26-latest
+  digest: sha256:5d17b613824732465c64a44ecc4ece631a0054db3ff5f5e3aeedfd095173ab05
 - image: docker.io/library/ubuntu
   tag: "14.04"
   digest: sha256:64483f3496c1373bfd55348e88694d1c4d0c9b660dee6bfef5e12f43b9933b30
