@@ -513,6 +513,7 @@ common {
 			chameleon: true
 			chameleon_type: CHAMELEON_TYPE_DP
 			chameleon_type: CHAMELEON_TYPE_HDMI
+			audiobox_jackplugger_state: AUDIOBOX_JACKPLUGGER_UNSPECIFIED
 			conductive: true
 			huddly: true
 			mimo: true

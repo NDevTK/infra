@@ -107,6 +107,7 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *chromeosLab.Perip
 			}
 		}
 		p.AudioBoard = &chameleon.AudioBoard
+		p.AudioboxJackpluggerState = setAudioboxJackpluggerState(chameleon.GetAudioboxJackplugger())
 	}
 
 	p.Huddly = &falseValue
@@ -512,6 +513,14 @@ func setCbx(l *inventory.SchedulableLabels, d *chromeosLab.DeviceUnderTest) {
 		cbx = inventory.HardwareCapabilities_CBX_STATE_FALSE
 	}
 	c.Cbx = &cbx
+}
+
+func setAudioboxJackpluggerState(s chromeosLab.Chameleon_AudioBoxJackPlugger) *inventory.Peripherals_AudioBoxJackPlugger {
+	target := inventory.Peripherals_AUDIOBOX_JACKPLUGGER_UNSPECIFIED
+	if s != chromeosLab.Chameleon_AUDIOBOX_JACKPLUGGER_UNSPECIFIED {
+		target = inventory.Peripherals_AudioBoxJackPlugger(s)
+	}
+	return &target
 }
 
 func createDutLabels(machine *ufspb.Machine, devConfig *device.Config, osType *inventory.SchedulableLabels_OSType) *inventory.SchedulableLabels {
