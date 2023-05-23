@@ -171,30 +171,44 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 
 		// Test Go.
 		//
-		// To have structured all.bash output sooner, we divide Go tests into two parts:
-		//   - the large remaining set with structured output support (uploaded to ResultDB)
-		//   - a small set of unstructured tests (this part will continue to shrink and then disappear)
-		// While maintaining the property that their union doesn't fall short of all.bash.
+		// We have two paths, unfortunately: a simple one for Go 1.21+ that uses dist test -json,
+		// and a two-step path for Go 1.20 and older that uses go test -json and dist test (without JSON).
+		// TODO(when Go 1.20 stops being supported): Delete the latter path.
 		//
 		// TODO(mknyszek): Support sharding by running `go tool dist test -list` and/or `go list std cmd` and
 		// triggering N test builders with a subset of those tests in their properties.
 		// Pass the newly-built toolchain via CAS.
-		jsonOnPart := spec.goCmd(ctx, spec.goroot, spec.goTestArgs("std", "cmd")...)
-		if spec.experiment("golang.structured_std_cmd_tests") {
-			spec.wrapTestCmd(jsonOnPart)
+		go121 := spec.inputs.GoBranch != "release-branch.go1.20" && spec.inputs.GoBranch != "release-branch.go1.19"
+		if go121 && spec.experiment("golang.structured_allbash_tests") {
+			testCmd := spec.goCmd(ctx, spec.subrepoDir, spec.distTestArgs()...)
+			spec.wrapTestCmd(testCmd)
+			if err := runCommandAsStep(ctx, "all"+scriptExt()+" -json", testCmd, false); err != nil {
+				return err
+			}
 		} else {
-			jsonOnPart = spec.goCmd(ctx, spec.goroot, spec.goTestNoJSONArgs("std", "cmd")...)
-		}
-		if err := runCommandAsStep(ctx, "run std and cmd tests", jsonOnPart, false); err != nil {
-			return err
-		}
-		allButStdCmd := ":" // Pattern for Go 1.21+ (go.dev/cl/496181).
-		if go121 := spec.inputs.GoBranch != "release-branch.go1.20" && spec.inputs.GoBranch != "release-branch.go1.19"; !go121 {
-			allButStdCmd = "!^go_test:.+$" // Pattern for Go 1.20 and older.
-		}
-		jsonOffPart := spec.goCmd(ctx, spec.goroot, spec.distTestArgs(allButStdCmd)...)
-		if err := runCommandAsStep(ctx, "run various dist tests", jsonOffPart, false); err != nil {
-			return err
+			// To have structured all.bash output on release branches without dist test -json,
+			// we divide Go tests into two parts:
+			//   - the large remaining set with structured output support (uploaded to ResultDB)
+			//   - a small set of unstructured tests (this part is fully eliminated in Go 1.21!)
+			// While maintaining the property that their union doesn't fall short of all.bash.
+			var jsonMaybePart *exec.Cmd
+			if spec.experiment("golang.structured_std_cmd_tests") {
+				jsonMaybePart = spec.goCmd(ctx, spec.goroot, spec.goTestArgs("std", "cmd")...)
+				spec.wrapTestCmd(jsonMaybePart)
+			} else {
+				jsonMaybePart = spec.goCmd(ctx, spec.goroot, spec.goTestNoJSONArgs("std", "cmd")...)
+			}
+			if err := runCommandAsStep(ctx, "run std and cmd tests", jsonMaybePart, false); err != nil {
+				return err
+			}
+			allButStdCmd := ":" // Pattern for Go 1.21+ (go.dev/cl/496181).
+			if !go121 {
+				allButStdCmd = "!^go_test:.+$" // Pattern for Go 1.20 and older.
+			}
+			jsonOffPart := spec.goCmd(ctx, spec.goroot, spec.distTestNoJSONArgs(allButStdCmd)...)
+			if err := runCommandAsStep(ctx, "run various dist tests", jsonOffPart, false); err != nil {
+				return err
+			}
 		}
 	} else {
 		// Fetch the target repository into targetrepo.

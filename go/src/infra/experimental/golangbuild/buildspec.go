@@ -236,13 +236,31 @@ func (b *buildSpec) goTestNoJSONArgs(patterns ...string) []string {
 }
 
 // distTestArgs returns go tool dist arguments that run tests in the main Go repository
+// using the provided build specification.
+func (b *buildSpec) distTestArgs() []string {
+	args := []string{"tool", "dist", "test", "-json"}
+	if b.inputs.LongTest {
+		// dist test doesn't have a flag to control longtest mode,
+		// so this is handled in buildSpec.setEnv instead of here.
+	}
+	if b.inputs.RaceMode {
+		args = append(args, "-race")
+	}
+	return args
+}
+
+// distTestNoJSONArgs returns go tool dist arguments that run tests in the main Go repository
 // using the provided build specification. run controls which dist tests are run, using
 // dist test's interface for controlling which tests run:
 //
 //	-run string
 //	  	run only those tests matching the regular expression; empty means to run all.
 //	  	Special exception: if the string begins with '!', the match is inverted.
-func (b *buildSpec) distTestArgs(run string) []string {
+//
+// distTestNoJSONArgs is like distTestArgs, but doesn't include -json flag and supports
+// setting dist's -run flag.
+// TODO(go.dev/issue/59990): Delete when it becomes unused.
+func (b *buildSpec) distTestNoJSONArgs(run string) []string {
 	args := []string{"tool", "dist", "test"}
 	if b.inputs.LongTest {
 		// dist test doesn't have a flag to control longtest mode,
