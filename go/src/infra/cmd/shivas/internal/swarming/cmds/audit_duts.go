@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cmd/shivas/site"
+	"infra/cmd/shivas/utils"
 	"infra/libs/skylab/buildbucket"
 	"infra/libs/skylab/common/heuristics"
 )
@@ -91,6 +92,7 @@ func (c *auditRun) innerRun(a subcommands.Application, args []string, env subcom
 			}
 		}
 	}
+	utils.PrintTasksBatchLink(a.GetOut(), e.SwarmingService, sessionTag)
 	return nil
 }
 
@@ -127,7 +129,7 @@ func scheduleAuditBuilder(ctx context.Context, bc buildbucket.Client, e site.Env
 		BuilderName:    tn.BuilderName(),
 		UnitName:       host,
 		TaskName:       tn.String(),
-		EnableRecovery: false,
+		EnableRecovery: true,
 		AdminService:   e.AdminService,
 		// Note: UFS service is inventory service for fleet.
 		InventoryService: e.UnifiedFleetService,
