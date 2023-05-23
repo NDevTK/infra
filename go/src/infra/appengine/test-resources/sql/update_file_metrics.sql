@@ -50,7 +50,6 @@ USING (
     date,
     component,
     node_name,
-    ARRAY_REVERSE(SPLIT(node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
     ANY_VALUE(n.is_file) AS is_file,
     SUM(num_runs) AS num_runs,
     SUM(num_failures) AS num_failures,
