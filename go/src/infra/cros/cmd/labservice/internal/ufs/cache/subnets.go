@@ -82,9 +82,6 @@ func fetchCachingSubnets(client ufsapi.FleetClient) ([]Subnet, error) {
 	var result []Subnet
 	m := make(map[string][]address)
 	for _, s := range cachingServices {
-		if state := s.GetState(); state != ufsmodels.State_STATE_SERVING {
-			continue
-		}
 		addr, err := cachingServiceAddr(s)
 		if err != nil {
 			return nil, fmt.Errorf("fetch caching subnets: %s", err)
@@ -115,7 +112,9 @@ func fetchCachingServicesFromUFS(c ufsapi.FleetClient) ([]*ufsmodels.CachingServ
 	md := metadata.Pairs("namespace", "os")
 	ctx = metadata.NewOutgoingContext(ctx, md)
 
-	resp, err := c.ListCachingServices(ctx, &ufsapi.ListCachingServicesRequest{})
+	resp, err := c.ListCachingServices(ctx, &ufsapi.ListCachingServicesRequest{
+		Filter: "state=serving",
+	})
 	if err != nil {
 		return nil, fmt.Errorf("fetch caching service from UFS: %s", err)
 	}
