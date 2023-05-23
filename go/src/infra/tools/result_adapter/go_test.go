@@ -17,6 +17,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -215,5 +216,46 @@ ok  	example/pkg	0.123s
 `
 	if got != want {
 		t.Errorf("test output copy doesn't match:\ngot  %q\nwant %q", got, want)
+	}
+}
+
+// Test that test IDs are escaped such that
+// ResultDB doesn't reject them as invalid. (See crbug.com/1446084.)
+//
+// After ResultDB starts accepting Unicode printable runes in test IDs,
+// the escaping and this test will stop being needed and should be removed.
+func TestTestID(t *testing.T) {
+	// resultDBTestIDRE is testIDRe copied from https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/pbutil/test_result.go;l=46;drc=a451504a113a97b75c0f490df0e3850720568ef2.
+	resultDBTestIDRE := regexp.MustCompile(`^[[:print:]]{1,512}$`)
+
+	for _, tc := range [...]struct {
+		name string
+		in   TestEvent
+		want string
+	}{
+		{
+			name: "ASCII only",
+			in:   TestEvent{Package: "example/pkg", Test: "TestASCIIOnly"},
+			want: "example/pkg.TestASCIIOnly",
+		},
+		{
+			name: "one printable Unicode rune",
+			in:   TestEvent{Package: "os", Test: "TestVariousDeadlines/5µs"},
+			want: "os.TestVariousDeadlines/5(U+00B5)s",
+		},
+		{
+			name: "multiple printable Unicode runes",
+			in:   TestEvent{Package: "testing", Test: "TestTempDir/äöüéè"},
+			want: "testing.TestTempDir/(U+00E4)(U+00F6)(U+00FC)(U+00E9)(U+00E8)",
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			got := tc.in.id()
+			if !resultDBTestIDRE.MatchString(got) {
+				t.Errorf("got %q, doesn't match %q", got, resultDBTestIDRE)
+			} else if got != tc.want {
+				t.Errorf("got %q, want %q", got, tc.want)
+			}
+		})
 	}
 }

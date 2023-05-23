@@ -13,6 +13,7 @@ import (
 	"io"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -168,7 +169,36 @@ func (te *TestEvent) id() string {
 	if te.Test == "" {
 		return te.Package
 	}
-	return fmt.Sprintf("%s.%s", te.Package, te.Test)
+	// Test names in Go may contain Unicode printable runes, but
+	// ResultDB currently only allows ASCII printable runes. See crbug.com/1446084.
+	// Work around that by temporarily escaping non-ASCII test names to ASCII.
+	// TODO(crbug.com/1446084): Drop maybeEscape after the ResultDB fix rolls out.
+	return fmt.Sprintf("%s.%s", te.Package, maybeEscape(te.Test))
+}
+
+// maybeEscape returns s unmodified if it consists entirely of ASCII runes,
+// or else with each non-ASCII rune replaced by its hex Unicode code point
+// inside round brackets. For example, "TestNameIsASCII" is returned as is,
+// but "TestSeeሴLater" is escaped to "TestSee(U+1234)Later".
+func maybeEscape(s string) string {
+	for i, r := range s {
+		if r < utf8.RuneSelf {
+			continue
+		}
+		// Rare case: at least one non-ASCII rune, so need to escape.
+		var b strings.Builder
+		b.WriteString(s[:i]) // Fast-forward to first non-ASCII rune.
+		for _, r := range s[i:] {
+			if r < utf8.RuneSelf {
+				b.WriteByte(byte(r))
+			} else {
+				b.WriteString(fmt.Sprintf("(%U)", r))
+			}
+		}
+		return b.String()
+	}
+	// Common case.
+	return s
 }
 
 // TestRecord represents the results of a single test or package.
