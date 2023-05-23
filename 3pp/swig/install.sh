@@ -18,4 +18,4 @@ LDFLAGS="$LDFLAGS -L$DEPS/lib" ./configure \
   "--host=$CROSS_TRIPLE"
 
 make -j $(nproc)
-DESTDIR="$PREFIX" make install -j $(nproc)
+make install -j $(nproc)

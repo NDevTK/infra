@@ -1,4 +1,10 @@
 create {
+  source {
+    patch_version: "chromium.2"
+  }
+}
+
+create {
   platform_re: "linux-.*|mac-.*"
   source {
     git {
@@ -6,7 +12,6 @@ create {
       tag_pattern: "rel-%s"
     }
     patch_dir: "patches"
-    patch_version: "chromium.1"
   }
   build {
     tool: "tools/autoconf"
@@ -14,6 +19,18 @@ create {
     tool: "tools/sed"
 
     dep: "static_libs/pcre"
+  }
+}
+
+create {
+  platform_re: "windows-amd64"
+  source {
+    script { name: "fetch_win.py" }
+    unpack_archive: true
+  }
+  build {
+    install: "install_win.sh"
+    no_toolchain: true
   }
 }
 
