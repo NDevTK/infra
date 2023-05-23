@@ -116,8 +116,9 @@ func (gcc depsGCC) DepsCmd(ctx context.Context, b *Builder, step *Step) ([]strin
 	if err != nil {
 		return nil, err
 	}
-	if step.def.Binding("use_remote_exec_wrapper") == "" {
-		// no need to fix inputs when using remote exec wrapper
+	if b.reapiclient != nil {
+		// no need to upload precomputed subtree in inputs
+		// when not using reapi.
 		// b/283867642
 		inputs, err := gcc.fixCmdInputs(ctx, b, step.cmd)
 		if err != nil {
