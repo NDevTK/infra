@@ -27,6 +27,12 @@ var (
 		api.Period_DAY:  "file_metrics",
 		api.Period_WEEK: "weekly_file_metrics",
 	}
+	sortTypeSqlLookup = map[api.SortType]string{
+		api.SortType_SORT_NUM_RUNS:      "num_runs",
+		api.SortType_SORT_NUM_FAILURES:  "num_failures",
+		api.SortType_SORT_AVG_RUNTIME:   "avg_runtime",
+		api.SortType_SORT_TOTAL_RUNTIME: "total_runtime",
+	}
 )
 
 // Client is used to fetch metrics from a given data source.
@@ -94,6 +100,17 @@ func (c *Client) FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequ
 		return nil, errors.Reason("Received unsupported period request: '%s'", req.Period).Err()
 	}
 
+	sortMetric := "test_id"
+	// A default value of 0 maps to the name which for test based fetches is
+	// test_id. Other values map to metrics in both file and directory tables
+	if req.Sort != nil && req.Sort.Metric != api.SortType_SORT_NAME {
+		sortMetric = sortTypeSqlLookup[req.Sort.Metric]
+	}
+	sortDirection := "ASC"
+	if req.Sort != nil && !req.Sort.Ascending {
+		sortDirection = "DESC"
+	}
+
 	query := `
 	SELECT
 		m.date,
@@ -101,17 +118,21 @@ func (c *Client) FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequ
 		m.test_name,
 		m.file_name,
 		` + strings.Join(metricNames, ",\n") + `,
-		((SELECT ARRAY_AGG(STRUCT(
-			v.variant_hash AS variant_hash,
-			v.target_platform AS target_platform,
-			v.builder AS builder,
-			v.test_suite AS test_suite,
-			` + strings.Join(metricNames, ",\n") + `
-		)) FROM m.variant_summaries v)) AS variants
+		((
+			SELECT ARRAY_AGG(STRUCT(
+				v.variant_hash AS variant_hash,
+				v.target_platform AS target_platform,
+				v.builder AS builder,
+				v.test_suite AS test_suite,
+				` + strings.Join(metricNames, ",\n") + `
+			)
+			ORDER BY @sortType ` + sortDirection + `
+		) FROM m.variant_summaries v)) AS variants
 	FROM
-		` + c.ProjectId + `.test_results.` + table + `AS m
+		` + c.ProjectId + `.test_results.` + table + ` AS m
 	WHERE
 		DATE(date) IN UNNEST(@dates)
+	ORDER BY @sortType ` + sortDirection + `
 	LIMIT @page_size OFFSET @page`
 
 	q := c.BqClient.Query(query)
@@ -120,6 +141,7 @@ func (c *Client) FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequ
 		{Name: "dates", Value: dates},
 		{Name: "page_size", Value: req.PageSize},
 		{Name: "page", Value: req.Page},
+		{Name: "sortType", Value: sortMetric},
 	}
 
 	job, err := q.Run(ctx)
@@ -243,6 +265,17 @@ func (c *Client) FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirect
 		return nil, errors.Reason("Received unsupported period request: '%s'", req.Period).Err()
 	}
 
+	sortMetric := "node_name"
+	// A default value of 0 maps to the name which for file based fetches is
+	// node_name. Other values map to metrics in both file and directory tables
+	if req.Sort != nil && req.Sort.Metric != api.SortType_SORT_NAME {
+		sortMetric = sortTypeSqlLookup[req.Sort.Metric]
+	}
+	sortDirection := "ASC"
+	if req.Sort != nil && !req.Sort.Ascending {
+		sortDirection = "DESC"
+	}
+
 	query := `
 	SELECT
 		date,
@@ -256,7 +289,8 @@ func (c *Client) FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirect
 		-- The child folders and files can't have a / after the parent's name
 		REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(@parent) + 2), "^[^/]*$")
 		AND DATE(date) IN UNNEST(@dates)
-		AND component = @component`
+		AND component = @component
+	ORDER BY @sortType ` + sortDirection
 
 	q := c.BqClient.Query(query)
 
@@ -264,6 +298,7 @@ func (c *Client) FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirect
 		{Name: "dates", Value: dates},
 		{Name: "component", Value: req.Component},
 		{Name: "parent", Value: req.ParentId},
+		{Name: "sortType", Value: sortMetric},
 	}
 
 	job, err := q.Run(ctx)
