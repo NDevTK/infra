@@ -1,0 +1,10 @@
+package: chromiumos/infra/gerrit_related_changes/${platform}
+description: Utility for finding related changes for a Gerrit CL.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/gerrit_related_changes
+root: ../../go/bin
+data:
+  - file: gerrit_related_changes${exe_suffix}
+  - version_file: .versions/gerrit_related_changes${exe_suffix}.cipd_version

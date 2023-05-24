@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -421,7 +421,8 @@ func (c *ProdClient) QueryChanges(ctx context.Context, host string, query gerrit
 
 // GetRelatedChanges queries a gerrit host for related changes.
 // It returns a list of Changes describing the related changes.
-// Sorted by git commit order, newest to oldest. Empty if there are no related changes.
+// Sorted by git commit order, newest to oldest. Empty if there are no related
+// changes. Requires OAuthScope. See https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-related-changes.
 func (c *ProdClient) GetRelatedChanges(ctx context.Context, host string, changeNumber int) ([]Change, error) {
 	if !strings.HasPrefix(host, "http") {
 		if c.isTestClient {
