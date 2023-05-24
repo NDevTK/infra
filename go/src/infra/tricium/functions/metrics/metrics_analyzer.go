@@ -60,6 +60,7 @@ func main() {
 	}
 	singletonEnums := getSingleElementEnums(filepath.Join(*inputDir, *enumsPath))
 	obsoletedHistograms := getObsoletedHistograms(*commitMessage)
+	removedHistograms := make(map[string]bool)
 
 	results := &tricium.Data_Results{}
 	for _, filePath := range filePaths {
@@ -69,7 +70,7 @@ func main() {
 		if ext := filepath.Ext(filePath); ext == ".xml" {
 			switch strings.TrimSuffix(filepath.Base(filePath), ext) {
 			case "histograms":
-				results.Comments = append(results.Comments, analyzeHistogramFile(f, filePath, *prevDir, filesChanged, singletonEnums, obsoletedHistograms)...)
+				results.Comments = append(results.Comments, analyzeHistogramFile(f, filePath, *prevDir, filesChanged, singletonEnums, obsoletedHistograms, removedHistograms)...)
 			case "histogram_suffixes_list":
 				results.Comments = append(results.Comments, analyzeHistogramSuffixesFile(f, filePath, filesChanged)...)
 			}
