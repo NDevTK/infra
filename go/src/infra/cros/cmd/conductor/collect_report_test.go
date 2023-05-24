@@ -50,12 +50,12 @@ func TestCollectReport(t *testing.T) {
 				{
 					Builds: []*BuildInfo{
 						{
-							BBID:   12345,
+							BBID:   "12345",
 							Status: "FAILURE",
 							Retry:  false,
 						},
 						{
-							BBID:   12346,
+							BBID:   "12346",
 							Status: "SUCCESS",
 							Retry:  true,
 						},
@@ -68,7 +68,7 @@ func TestCollectReport(t *testing.T) {
 				{
 					Builds: []*BuildInfo{
 						{
-							BBID:   12347,
+							BBID:   "12347",
 							Status: "SUCCESS",
 							Retry:  false,
 						},

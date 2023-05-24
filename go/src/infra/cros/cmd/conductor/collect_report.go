@@ -10,7 +10,7 @@ import (
 )
 
 type BuildInfo struct {
-	BBID   int64  `json:"bbid"`
+	BBID   string `json:"bbid"`
 	Status string `json:"status"`
 	Retry  bool   `json:"retry"`
 }
@@ -42,7 +42,7 @@ func (r *CollectReport) recordBuild(build *bbpb.Build, originalBBID string, isRe
 
 	status := build.GetStatus().String()
 	buildInfo := &BuildInfo{
-		BBID:   build.GetId(),
+		BBID:   fmt.Sprintf("%d", build.GetId()),
 		Status: status,
 		Retry:  isRetry,
 	}
@@ -52,7 +52,7 @@ func (r *CollectReport) recordBuild(build *bbpb.Build, originalBBID string, isRe
 	if len(originalBBID) > 0 {
 		for i := range r.BuilderInfo[builderName] {
 			builds := r.BuilderInfo[builderName][i].Builds
-			if len(builds) > 0 && fmt.Sprintf("%d", builds[0].BBID) == originalBBID {
+			if len(builds) > 0 && builds[0].BBID == originalBBID {
 				builderRun = r.BuilderInfo[builderName][i]
 			}
 		}
