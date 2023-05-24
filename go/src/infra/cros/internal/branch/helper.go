@@ -95,12 +95,18 @@ func (c *Client) projectBranchName(br string, project repo.Project, original str
 		return br
 	}
 
-	// Otherwise, the project name needs a suffix. We append its upstream or
+	// Otherwise, the project name needs a suffix.
+
+	// If the suffix is not explicitly set, we append its upstream or
 	// revision to distinguish it from other checkouts. We grab the suffix
 	// from git using the Upstream or Revision. We then trim and replace
 	// any unneeded info from the suffix.
 	suffix := "-"
-	if project.Upstream != "" {
+
+	branchSuffix, hasSuffix := project.GetAnnotation("branch-suffix")
+	if hasSuffix {
+		suffix += branchSuffix
+	} else if project.Upstream != "" {
 		suffix += git.StripRefs(project.Upstream)
 	} else {
 		suffix += git.StripRefs(project.Revision)
