@@ -6,12 +6,17 @@ package main
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/civil"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/proto/protowalk"
+	"go.chromium.org/luci/grpc/appstatus"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/openid"
@@ -120,13 +125,16 @@ type testResourcesServer struct {
 }
 
 func (s *testResourcesServer) UpdateMetricsTable(ctx context.Context, req *api.UpdateMetricsTableRequest) (*api.UpdateMetricsTableResponse, error) {
+	if err := validateRequest(ctx, req); err != nil {
+		return nil, appstatus.Errorf(codes.InvalidArgument, "%s", err.Error())
+	}
 	fromDate, err := civil.ParseDate(req.FromDate)
 	if err != nil {
-		return nil, err
+		return nil, appstatus.Errorf(codes.InvalidArgument, "%s", err.Error())
 	}
 	toDate, err := civil.ParseDate(req.ToDate)
 	if err != nil {
-		return nil, err
+		return nil, appstatus.Errorf(codes.InvalidArgument, "%s", err.Error())
 	}
 
 	err = s.Client.UpdateSummary(ctx, fromDate, toDate)
@@ -142,6 +150,9 @@ func (s *testResourcesServer) ListComponents(ctx context.Context, req *api.ListC
 }
 
 func (s *testResourcesServer) FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error) {
+	if err := validateRequest(ctx, req); err != nil {
+		return nil, appstatus.Errorf(codes.InvalidArgument, "%s", err.Error())
+	}
 	resp, err := s.Client.FetchDirectoryMetrics(ctx, req)
 	if err != nil {
 		return nil, err
@@ -150,9 +161,24 @@ func (s *testResourcesServer) FetchDirectoryMetrics(ctx context.Context, req *ap
 }
 
 func (s *testResourcesServer) FetchTestMetrics(ctx context.Context, req *api.FetchTestMetricsRequest) (*api.FetchTestMetricsResponse, error) {
+	if err := validateRequest(ctx, req); err != nil {
+		return nil, appstatus.Errorf(codes.InvalidArgument, "%s", err.Error())
+	}
 	resp, err := s.Client.FetchMetrics(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
+}
+
+func validateRequest(ctx context.Context, req proto.Message) error {
+	if procRes := protowalk.Fields(req, &protowalk.RequiredProcessor{}); procRes != nil {
+		if resStrs := procRes.Strings(); len(resStrs) > 0 {
+			logging.Infof(ctx, strings.Join(resStrs, ". "))
+		}
+		if err := procRes.Err(); err != nil {
+			return err
+		}
+	}
+	return nil
 }

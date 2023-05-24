@@ -11,6 +11,7 @@ import (
 
 	"cloud.google.com/go/civil"
 	. "github.com/smartystreets/goconvey/convey"
+	. "go.chromium.org/luci/common/testing/assertions"
 )
 
 type clientMock struct {
@@ -72,6 +73,24 @@ func TestUpdateDailySummary(t *testing.T) {
 			So(err, ShouldNotBeNil)
 			So(resp, ShouldBeNil)
 		})
+		Convey("Missing from date", func() {
+			request := &api.UpdateMetricsTableRequest{
+				ToDate: "2023-01-01",
+			}
+			resp, err := srv.UpdateMetricsTable(ctx, request)
+
+			So(err, ShouldErrLike, "from_date")
+			So(resp, ShouldBeNil)
+		})
+		Convey("Missing to date", func() {
+			request := &api.UpdateMetricsTableRequest{
+				FromDate: "2023-01-01",
+			}
+			resp, err := srv.UpdateMetricsTable(ctx, request)
+
+			So(err, ShouldErrLike, "to_date")
+			So(resp, ShouldBeNil)
+		})
 	})
 
 }
@@ -81,30 +100,86 @@ func TestFetchMetrics(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("Valid request", t, func() {
+	Convey("FetchMetrics", t, func() {
 		mock := &clientMock{}
 
 		srv := &testResourcesServer{
 			Client: mock,
 		}
-		request := &api.FetchTestMetricsRequest{
-			Component: "some>component",
-			Period:    api.Period_DAY,
-			Dates:     []string{"2023-01-01"},
-			Metrics:   []api.MetricType{api.MetricType_NUM_RUNS},
-			Filter:    "filter:this",
-			Page:      1,
-			PageSize:  10,
-			Sort: &api.SortBy{
-				Metric:    api.SortType_SORT_NUM_RUNS,
-				Ascending: true,
-			},
-		}
-		resp, err := srv.FetchTestMetrics(ctx, request)
+		Convey("Valid request", func() {
+			request := &api.FetchTestMetricsRequest{
+				Component: "some>component",
+				Period:    api.Period_DAY,
+				Dates:     []string{"2023-01-01"},
+				Metrics:   []api.MetricType{api.MetricType_NUM_RUNS},
+				Filter:    "filter:this",
+				Page:      1,
+				PageSize:  10,
+				Sort: &api.SortBy{
+					Metric:    api.SortType_SORT_NUM_RUNS,
+					Ascending: true,
+				},
+			}
+			resp, err := srv.FetchTestMetrics(ctx, request)
 
-		So(err, ShouldBeNil)
-		So(resp, ShouldNotBeNil)
-		So(mock.lastFetchReq, ShouldResemble, request)
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(mock.lastFetchReq, ShouldResemble, request)
+		})
+		Convey("Missing component", func() {
+			request := &api.FetchTestMetricsRequest{
+				Period:   api.Period_DAY,
+				Dates:    []string{"2023-01-01"},
+				Metrics:  []api.MetricType{api.MetricType_NUM_RUNS},
+				Filter:   "filter:this",
+				Page:     1,
+				PageSize: 10,
+				Sort: &api.SortBy{
+					Metric:    api.SortType_SORT_NUM_RUNS,
+					Ascending: true,
+				},
+			}
+			resp, err := srv.FetchTestMetrics(ctx, request)
+
+			So(err, ShouldErrLike, "component")
+			So(resp, ShouldBeNil)
+		})
+		Convey("Missing dates", func() {
+			request := &api.FetchTestMetricsRequest{
+				Component: "some>component",
+				Period:    api.Period_DAY,
+				Metrics:   []api.MetricType{api.MetricType_NUM_RUNS},
+				Filter:    "filter:this",
+				Page:      1,
+				PageSize:  10,
+				Sort: &api.SortBy{
+					Metric:    api.SortType_SORT_NUM_RUNS,
+					Ascending: true,
+				},
+			}
+			resp, err := srv.FetchTestMetrics(ctx, request)
+
+			So(err, ShouldErrLike, "dates")
+			So(resp, ShouldBeNil)
+		})
+		Convey("Missing metrics", func() {
+			request := &api.FetchTestMetricsRequest{
+				Component: "some>component",
+				Period:    api.Period_DAY,
+				Dates:     []string{"2023-01-01"},
+				Filter:    "filter:this",
+				Page:      1,
+				PageSize:  10,
+				Sort: &api.SortBy{
+					Metric:    api.SortType_SORT_NUM_RUNS,
+					Ascending: true,
+				},
+			}
+			resp, err := srv.FetchTestMetrics(ctx, request)
+
+			So(err, ShouldErrLike, "metrics")
+			So(resp, ShouldBeNil)
+		})
 	})
 }
 
@@ -113,27 +188,98 @@ func TestFetchFileMetrics(t *testing.T) {
 
 	ctx := context.Background()
 
-	Convey("Valid request", t, func() {
+	Convey("FetchFileMetrics", t, func() {
 		mock := &clientMock{}
 
 		srv := &testResourcesServer{
 			Client: mock,
 		}
-		request := &api.FetchDirectoryMetricsRequest{
-			Component: "some>component",
-			Period:    api.Period_DAY,
-			Dates:     []string{"2023-01-01"},
-			Metrics:   []api.MetricType{api.MetricType_NUM_RUNS},
-			Filter:    "filter:this",
-			Sort: &api.SortBy{
-				Metric:    api.SortType_SORT_NUM_RUNS,
-				Ascending: true,
-			},
-		}
-		resp, err := srv.FetchDirectoryMetrics(ctx, request)
+		Convey("Valid request", func() {
+			request := &api.FetchDirectoryMetricsRequest{
+				Component: "some>component",
+				Period:    api.Period_DAY,
+				Dates:     []string{"2023-01-01"},
+				Metrics:   []api.MetricType{api.MetricType_NUM_RUNS},
+				Filter:    "filter:this",
+				ParentId:  "/",
+				Sort: &api.SortBy{
+					Metric:    api.SortType_SORT_NUM_RUNS,
+					Ascending: true,
+				},
+			}
+			resp, err := srv.FetchDirectoryMetrics(ctx, request)
 
-		So(err, ShouldBeNil)
-		So(resp, ShouldNotBeNil)
-		So(mock.lastFetchDirReq, ShouldResemble, request)
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(mock.lastFetchDirReq, ShouldResemble, request)
+		})
+		Convey("Missing component", func() {
+			request := &api.FetchDirectoryMetricsRequest{
+				Period:   api.Period_DAY,
+				Dates:    []string{"2023-01-01"},
+				Metrics:  []api.MetricType{api.MetricType_NUM_RUNS},
+				Filter:   "filter:this",
+				ParentId: "/",
+				Sort: &api.SortBy{
+					Metric:    api.SortType_SORT_NUM_RUNS,
+					Ascending: true,
+				},
+			}
+			resp, err := srv.FetchDirectoryMetrics(ctx, request)
+
+			So(err, ShouldErrLike, "component")
+			So(resp, ShouldBeNil)
+		})
+		Convey("Missing dates", func() {
+			request := &api.FetchDirectoryMetricsRequest{
+				Component: "some>component",
+				Period:    api.Period_DAY,
+				Metrics:   []api.MetricType{api.MetricType_NUM_RUNS},
+				Filter:    "filter:this",
+				ParentId:  "/",
+				Sort: &api.SortBy{
+					Metric:    api.SortType_SORT_NUM_RUNS,
+					Ascending: true,
+				},
+			}
+			resp, err := srv.FetchDirectoryMetrics(ctx, request)
+
+			So(err, ShouldErrLike, "dates")
+			So(resp, ShouldBeNil)
+		})
+		Convey("Missing parentId", func() {
+			request := &api.FetchDirectoryMetricsRequest{
+				Component: "some>component",
+				Period:    api.Period_DAY,
+				Dates:     []string{"2023-01-01"},
+				Metrics:   []api.MetricType{api.MetricType_NUM_RUNS},
+				Filter:    "filter:this",
+				Sort: &api.SortBy{
+					Metric:    api.SortType_SORT_NUM_RUNS,
+					Ascending: true,
+				},
+			}
+			resp, err := srv.FetchDirectoryMetrics(ctx, request)
+
+			So(err, ShouldErrLike, "parent_id")
+			So(resp, ShouldBeNil)
+		})
+		Convey("Missing metrics", func() {
+			request := &api.FetchDirectoryMetricsRequest{
+				Component: "some>component",
+				Period:    api.Period_DAY,
+				Dates:     []string{"2023-01-01"},
+				Filter:    "filter:this",
+				ParentId:  "/",
+				Sort: &api.SortBy{
+					Metric:    api.SortType_SORT_NUM_RUNS,
+					Ascending: true,
+				},
+			}
+			resp, err := srv.FetchDirectoryMetrics(ctx, request)
+
+			So(err, ShouldErrLike, "metrics")
+			So(resp, ShouldBeNil)
+		})
 	})
 }

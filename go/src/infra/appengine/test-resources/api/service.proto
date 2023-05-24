@@ -8,6 +8,9 @@ package test_resources;
 
 option go_package = "infra/appengine/test-resources/api";
 
+import "google/protobuf/descriptor.proto";
+import "google/api/field_behavior.proto";
+
 service Stats {
   // Updates metrics for the given time period. This will be used for
   // backfilling when the cron job wasn't run
@@ -27,10 +30,10 @@ service Stats {
 message UpdateMetricsTableRequest {
   // Inclusive start date to update
   // Dates should be specified in YYYY-MM-DD format.
-  string from_date = 1;
+  string from_date = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Inclusive end date to update
   // Dates should be specified in YYYY-MM-DD format.
-  string to_date = 2;
+  string to_date = 2 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 message UpdateMetricsTableResponse {
@@ -85,15 +88,15 @@ message SortBy {
 
 message FetchTestMetricsRequest {
   // The component to get metrics for. This is effectively a required filter.
-  string component = 1;
+  string component = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Time period to fetch (e.g. DAY, WEEK)
   Period period = 2;
   // Dates to fetch.  This should align to the period.
   // Dates should be specified in YYYY-MM-DD format.
-  repeated string dates = 3;
+  repeated string dates = 3 [ (google.api.field_behavior) = REQUIRED ];
   // Metrics to fetch.
   // This is required.  If no metrics are specified an error is returned.
-  repeated MetricType metrics = 4;
+  repeated MetricType metrics = 4 [ (google.api.field_behavior) = REQUIRED ];
   // A filter to use (e.g. builder = linux-rel)
   // TODO(sshrimp): determine filter format
   string filter = 5;
@@ -151,15 +154,15 @@ message TestMetricsData {
 
 message FetchDirectoryMetricsRequest {
   // The component being rolled up for the given metrics
-  string component = 1;
+  string component = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Time period to fetch (e.g. DAY, WEEK)
   Period period = 2;
   // Dates to fetch.  This should align to the period.
   // Dates should be specified in YYYY-MM-DD format.
-  repeated string dates = 3;
+  repeated string dates = 3 [ (google.api.field_behavior) = REQUIRED ];
   // The optional parent node for this data (i.e. The directory to get the child
   // metrics for)
-  string parentId = 4;
+  string parent_id = 4 [ (google.api.field_behavior) = REQUIRED ];
   // A filter to use (e.g. builder = linux-rel)
   // TODO(sshrimp): determine filter format
   string filter = 5;
@@ -167,7 +170,7 @@ message FetchDirectoryMetricsRequest {
   SortBy sort = 6;
   // Metrics to fetch.
   // This is required.  If no metrics are specified an error is returned.
-  repeated MetricType metrics = 7;
+  repeated MetricType metrics = 7 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 message FetchDirectoryMetricsResponse {
