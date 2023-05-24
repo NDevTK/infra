@@ -70,11 +70,47 @@ func parseSoundCardID(dump string) (string, error) {
 // verifyROVPDDSMCalib confirms that the key 'dsm_calib_r0_0' is present in RO_VPD.
 func verifyROVPDDSMCalib(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
-	if _, err := r(ctx, time.Minute, "vpd -i RO_VPD -g dsm_calib_r0_0"); err != nil {
-		return errors.Annotate(err, "verify dsm_calib_r0 in RO_VPD").Err()
+	speakerAmp, err := r(ctx, time.Minute, "cros_config /audio/main/ speaker-amp")
+	if err != nil {
+		return errors.Annotate(err, "cros_config /audio/main/ speaker-amp").Err()
 	}
 
-	log.Infof(ctx, "dsm_calib_r0_0 is present in RO_VPD")
+	soundCardInitConf, err := r(ctx, time.Minute, "cros_config /audio/main/ sound-card-init-conf")
+	if err != nil {
+		return errors.Annotate(err, "cros_config /audio/main/ sound-card-init-conf").Err()
+	}
+
+	dump, err := r(ctx, time.Minute, "aplay -l")
+	if err != nil {
+		return errors.Annotate(err, "aplay -l").Err()
+	}
+	soundCardID, err := parseSoundCardID(string(dump))
+	if err != nil {
+		return errors.Annotate(err, "Failed to parse sound card name").Err()
+	}
+
+	soundCardInitCmd := fmt.Sprintf("/usr/bin/sound_card_init fake_vpd --json --id %s --amp %s --conf %s", soundCardID, speakerAmp, soundCardInitConf)
+
+	fakeDSMVPDJson, err := r(ctx, time.Minute, soundCardInitCmd)
+	if err != nil {
+		return errors.Annotate(err, "cannot get fake DSM vpd").Err()
+	}
+
+	var fakeDSMVPD DSMVPD
+	if err = json.Unmarshal([]byte(fakeDSMVPDJson), &fakeDSMVPD); err != nil {
+		return errors.Annotate(err, "cannot parse fake DSM vpd json: "+string(fakeDSMVPDJson)).Err()
+	}
+
+	for ch := 0; ch < len(fakeDSMVPD.Rdc); ch++ {
+		cmd := fmt.Sprintf("vpd -i RO_VPD -g dsm_calib_r0_%d", ch)
+		if _, err := r(ctx, time.Minute, cmd); err != nil {
+			return errors.Annotate(err, cmd).Err()
+		}
+		cmd = fmt.Sprintf("vpd -i RO_VPD -g dsm_calib_temp_%d", ch)
+		if _, err := r(ctx, time.Minute, cmd); err != nil {
+			return errors.Annotate(err, cmd).Err()
+		}
+	}
 	return nil
 }
 
