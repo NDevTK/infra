@@ -37,11 +37,12 @@ var (
 
 // Client is used to fetch metrics from a given data source.
 type Client struct {
-	BqClient               *bigquery.Client
-	ProjectId              string
-	updateDailySummarySql  string
-	updateWeeklySummarySql string
-	updateFileSummarySql   string
+	BqClient                   *bigquery.Client
+	ProjectId                  string
+	updateDailySummarySql      string
+	updateWeeklySummarySql     string
+	updateFileSummarySql       string
+	updateWeeklyFileSummarySql string
 }
 
 // Initializes the testmetric client
@@ -59,14 +60,16 @@ func (c *Client) Init() error {
 		return err
 	}
 	c.updateWeeklySummarySql = fmt.Sprintf(string(bytes), c.ProjectId)
-	if err != nil {
-		return err
-	}
 	bytes, err = os.ReadFile("sql/update_file_metrics.sql")
 	if err != nil {
 		return err
 	}
 	c.updateFileSummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.ProjectId)
+	bytes, err = os.ReadFile("sql/update_weekly_file_metrics.sql")
+	if err != nil {
+		return err
+	}
+	c.updateWeeklyFileSummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.ProjectId)
 	return nil
 }
 
@@ -370,6 +373,10 @@ func (c *Client) UpdateSummary(ctx context.Context, fromDate civil.Date, toDate 
 		return err
 	}
 	err = c.runUpdateSummary(ctx, fromDate, toDate, c.updateFileSummarySql)
+	if err != nil {
+		return err
+	}
+	err = c.runUpdateSummary(ctx, fromDate, toDate, c.updateWeeklyFileSummarySql)
 	return err
 }
 
