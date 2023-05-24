@@ -52,6 +52,7 @@ type MachineEntity struct {
 	SecurityLevel    string   `gae:"security_level"`
 	MibaRealm        string   `gae:"miba_realm,noindex"` // deprecated
 	GPN              string   `gae:"gpn"`
+	Realm            string   `gae:"realm"`
 	// ufspb.Machine cannot be directly used as it contains pointer.
 	Machine []byte `gae:",noindex"`
 }
@@ -123,6 +124,7 @@ func newMachineEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity,
 		Customer:         customer,
 		SecurityLevel:    securityLevel,
 		GPN:              p.GetChromeosMachine().GetGpn(),
+		Realm:            util.ToUFSRealm(p.GetLocation().GetZone().String()),
 	}, nil
 }
 
