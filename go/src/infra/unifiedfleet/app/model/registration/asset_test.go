@@ -204,7 +204,7 @@ func TestListAssetsACL(t *testing.T) {
 		assets = append(assets, resp)
 	}
 	for i := 0; i < 10; i++ {
-		asset := mockAsset(fmt.Sprintf("C00001%d", i), "eve", fmt.Sprintf("chromeos5-row3-rack5-host%d", i), ufspb.AssetType_DUT, ufspb.Zone_ZONE_CHROMEOS5)
+		asset := mockAsset(fmt.Sprintf("C0000	1%d", i), "eve", fmt.Sprintf("chromeos5-row3-rack5-host%d", i), ufspb.AssetType_DUT, ufspb.Zone_ZONE_CHROMEOS5)
 		resp, _ := CreateAsset(ctx, asset)
 		assets = append(assets, resp)
 	}
