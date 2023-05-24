@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,15 @@ import (
 	"go.chromium.org/luci/appengine/gaetesting"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/gae/service/datastore"
+	"go.chromium.org/luci/server/auth"
+	"go.chromium.org/luci/server/auth/authtest"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	. "infra/unifiedfleet/app/model/datastore"
+	ufsutil "infra/unifiedfleet/app/util"
 )
 
-func mockChromeOSMachine(id, lab, board string) *ufspb.Machine {
+func mockChromeOSMachine(id, lab, board string, zone ufspb.Zone) *ufspb.Machine {
 	return &ufspb.Machine{
 		Name: id,
 		Device: &ufspb.Machine_ChromeosMachine{
@@ -25,10 +28,13 @@ func mockChromeOSMachine(id, lab, board string) *ufspb.Machine {
 				ReferenceBoard: board,
 			},
 		},
+		Location: &ufspb.Location{
+			Zone: zone,
+		},
 	}
 }
 
-func mockChromeBrowserMachine(id, lab, name string) *ufspb.Machine {
+func mockChromeBrowserMachine(id, lab, name string, zone ufspb.Zone) *ufspb.Machine {
 	return &ufspb.Machine{
 		Name: id,
 		Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -36,11 +42,14 @@ func mockChromeBrowserMachine(id, lab, name string) *ufspb.Machine {
 				Description: name,
 			},
 		},
+		Location: &ufspb.Location{
+			Zone: zone,
+		},
 	}
 }
 
 func mockChromeBrowserMachineWithOwnership(id, lab, name string, ownership *ufspb.OwnershipData) *ufspb.Machine {
-	machine := mockChromeBrowserMachine(id, lab, name)
+	machine := mockChromeBrowserMachine(id, lab, name, ufspb.Zone_ZONE_SFO36_BROWSER)
 	machine.Ownership = ownership
 	return machine
 }
@@ -89,10 +98,10 @@ func TestCreateMachine(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
-	chromeOSMachine1 := mockChromeOSMachine("chromeos-asset-1", "chromeoslab", "samus")
-	chromeOSMachine2 := mockChromeOSMachine("", "chromeoslab", "samus")
+	chromeOSMachine1 := mockChromeOSMachine("chromeos-asset-1", "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS4)
+	chromeOSMachine2 := mockChromeOSMachine("", "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS6)
 	attchedDevice1 := mockAttachedDevice("attached-device-1", "chromeoslab", "goldfish")
-	chromeBrowserMachine1 := mockChromeBrowserMachine("chrome-asset-1", "chromelab", "machine-1")
+	chromeBrowserMachine1 := mockChromeBrowserMachine("chrome-asset-1", "chromelab", "machine-1", ufspb.Zone_ZONE_SFO36_BROWSER)
 
 	ownershipData := &ufspb.OwnershipData{
 		PoolName:         "pool1",
@@ -135,9 +144,9 @@ func TestCreateMachine(t *testing.T) {
 func TestUpdateMachine(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
-	chromeOSMachine1 := mockChromeOSMachine("chromeos-asset-1", "chromeoslab", "samus")
-	chromeOSMachine2 := mockChromeOSMachine("chromeos-asset-1", "chromeoslab", "veyron")
-	chromeBrowserMachine1 := mockChromeBrowserMachine("chrome-asset-1", "chromelab", "machine-1")
+	chromeOSMachine1 := mockChromeOSMachine("chromeos-asset-1", "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS4)
+	chromeOSMachine2 := mockChromeOSMachine("chromeos-asset-1", "chromeoslab", "veyron", ufspb.Zone_ZONE_CHROMEOS6)
+	chromeBrowserMachine1 := mockChromeBrowserMachine("chrome-asset-1", "chromelab", "machine-1", ufspb.Zone_ZONE_SFO36_BROWSER)
 
 	ownershipData := &ufspb.OwnershipData{
 		PoolName:         "pool1",
@@ -146,7 +155,7 @@ func TestUpdateMachine(t *testing.T) {
 		SecurityLevel:    "test-security-level",
 	}
 	chromeBrowserMachineWithOwnership := mockChromeBrowserMachineWithOwnership("chrome-asset-1", "chromelab", "machine-1", ownershipData)
-	chromeOSMachine3 := mockChromeOSMachine("", "chromeoslab", "samus")
+	chromeOSMachine3 := mockChromeOSMachine("", "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS4)
 	Convey("UpdateMachine", t, func() {
 		Convey("Update existing machine", func() {
 			resp, err := CreateMachine(ctx, chromeOSMachine1)
@@ -241,7 +250,7 @@ func TestUpdateMachineOwnership(t *testing.T) {
 func TestGetMachine(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
-	chromeOSMachine1 := mockChromeOSMachine("chromeos-asset-3", "chromeoslab", "samus")
+	chromeOSMachine1 := mockChromeOSMachine("chromeos-asset-3", "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS4)
 
 	ownershipData := &ufspb.OwnershipData{
 		PoolName:         "pool1",
@@ -296,7 +305,7 @@ func TestListMachines(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 	machines := make([]*ufspb.Machine, 0, 4)
 	for i := 0; i < 4; i++ {
-		chromeOSMachine1 := mockChromeOSMachine(fmt.Sprintf("chromeos-%d", i), "chromeoslab", "samus")
+		chromeOSMachine1 := mockChromeOSMachine(fmt.Sprintf("chromeos-%d", i), "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS4)
 		resp, _ := CreateMachine(ctx, chromeOSMachine1)
 		machines = append(machines, resp)
 	}
@@ -332,6 +341,124 @@ func TestListMachines(t *testing.T) {
 	})
 }
 
+func TestListMachinesACL(t *testing.T) {
+	t.Parallel()
+	ctx := gaetesting.TestingContextWithAppID("go-test")
+	datastore.GetTestable(ctx).Consistent(true)
+	machines := make([]*ufspb.Machine, 0, 20)
+	for i := 0; i < 10; i++ {
+		chromeOSMachine := mockChromeOSMachine(fmt.Sprintf("chromeos-0%d", i), "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS5)
+		resp, _ := CreateMachine(ctx, chromeOSMachine)
+		machines = append(machines, resp)
+	}
+	for i := 0; i < 10; i++ {
+		chromeOSMachine := mockChromeOSMachine(fmt.Sprintf("chromeos-1%d", i), "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS4)
+		resp, _ := CreateMachine(ctx, chromeOSMachine)
+		machines = append(machines, resp)
+	}
+
+	// superuser has permissions in two realms.
+	ctxSuperuser := auth.WithState(ctx, &authtest.FakeState{
+		Identity: "user:root@lab.com",
+		IdentityPermissions: []authtest.RealmPermission{
+			{
+				Realm:      ufsutil.AtlLabAdminRealm,
+				Permission: ufsutil.RegistrationsList,
+			},
+			{
+				Realm:      ufsutil.AcsLabAdminRealm,
+				Permission: ufsutil.RegistrationsList,
+			},
+		},
+	})
+
+	// atl lab permissions only
+	ctxATLLab := auth.WithState(ctx, &authtest.FakeState{
+		Identity: "user:atl@lab.com",
+		IdentityPermissions: []authtest.RealmPermission{
+			{
+				Realm:      ufsutil.AcsLabAdminRealm,
+				Permission: ufsutil.RegistrationsList,
+			},
+		},
+	})
+
+	// no perms
+	ctxNoPerms := auth.WithState(ctx, &authtest.FakeState{
+		Identity:            "user:bad@lab.com",
+		IdentityPermissions: []authtest.RealmPermission{},
+	})
+
+	Convey("ListMachinesACL", t, func() {
+		Convey("List machines - anonymous", func() {
+			// User anonymous sees nothing
+			resp, nextPageToken, err := ListMachinesACL(ctx, 100, "", nil, false)
+			So(err, ShouldNotBeNil)
+			So(resp, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+		})
+		Convey("List machines - reject realm filter", func() {
+			// Can't filter on realm
+			resp, nextPageToken, err := ListMachinesACL(ctxSuperuser, 100, "", map[string][]interface{}{"realm": {"woah..."}}, false)
+			So(err, ShouldNotBeNil)
+			So(resp, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+		})
+		Convey("List machines - happy path, no perms", func() {
+			// Can't filter on realm
+			resp, nextPageToken, err := ListMachinesACL(ctxNoPerms, 100, "", nil, false)
+			So(err, ShouldBeNil)
+			So(resp, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+
+		})
+		Convey("List machines - happy path, one realm", func() {
+			// test pagination
+			resp, nextPageToken, err := ListMachinesACL(ctxATLLab, 3, "", nil, false)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, machines[0:3])
+			So(nextPageToken, ShouldNotBeEmpty)
+
+			resp, nextPageToken, err = ListMachinesACL(ctxATLLab, 100, nextPageToken, nil, false)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, machines[3:10])
+			So(nextPageToken, ShouldBeEmpty)
+
+		})
+		Convey("List machines - happy path, all realms", func() {
+			// test pagination
+			resp, nextPageToken, err := ListMachinesACL(ctxSuperuser, 3, "", nil, false)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, machines[0:3])
+			So(nextPageToken, ShouldNotBeEmpty)
+
+			resp, nextPageToken, err = ListMachinesACL(ctxSuperuser, 100, nextPageToken, nil, false)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, machines[3:20])
+			So(nextPageToken, ShouldBeEmpty)
+
+		})
+		Convey("List machines - happy path, two realms, filter", func() {
+			// test pagination
+			resp, nextPageToken, err := ListMachinesACL(ctxSuperuser, 3, "", map[string][]interface{}{"zone": {"ZONE_CHROMEOS5"}}, false)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, machines[0:3])
+			So(nextPageToken, ShouldNotBeEmpty)
+
+			resp, nextPageToken, err = ListMachinesACL(ctxSuperuser, 100, nextPageToken, map[string][]interface{}{"zone": {"ZONE_CHROMEOS5"}}, false)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, machines[3:10])
+			So(nextPageToken, ShouldBeEmpty)
+		})
+		Convey("List machines - happy path, filter out all machines", func() {
+			resp, nextPageToken, err := ListMachinesACL(ctxSuperuser, 3, "", map[string][]interface{}{"zone": {"ZONE_CHROMEOS3"}}, false)
+			So(err, ShouldBeNil)
+			So(resp, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+		})
+	})
+}
+
 // TestListMachinesByIdPrefixSearch tests the functionality for listing
 // machines by seraching for name/id prefix
 func TestListMachinesByIdPrefixSearch(t *testing.T) {
@@ -340,7 +467,7 @@ func TestListMachinesByIdPrefixSearch(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 	machines := make([]*ufspb.Machine, 0, 4)
 	for i := 0; i < 4; i++ {
-		chromeOSMachine1 := mockChromeOSMachine(fmt.Sprintf("chromeos-%d", i), "chromeoslab", "samus")
+		chromeOSMachine1 := mockChromeOSMachine(fmt.Sprintf("chromeos-%d", i), "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS4)
 		resp, _ := CreateMachine(ctx, chromeOSMachine1)
 		machines = append(machines, resp)
 	}
@@ -386,7 +513,7 @@ func TestListMachinesByIdPrefixSearch(t *testing.T) {
 func TestDeleteMachine(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
-	chromeOSMachine2 := mockChromeOSMachine("chromeos-asset-2", "chromeoslab", "samus")
+	chromeOSMachine2 := mockChromeOSMachine("chromeos-asset-2", "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS4)
 
 	ownershipData := &ufspb.OwnershipData{
 		PoolName:         "pool1",
@@ -441,7 +568,7 @@ func TestBatchUpdateMachines(t *testing.T) {
 		datastore.GetTestable(ctx).Consistent(true)
 		machines := make([]*ufspb.Machine, 0, 4)
 		for i := 0; i < 4; i++ {
-			chromeOSMachine1 := mockChromeOSMachine(fmt.Sprintf("chromeos-%d", i), "chromeoslab", "samus")
+			chromeOSMachine1 := mockChromeOSMachine(fmt.Sprintf("chromeos-%d", i), "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS4)
 			resp, err := CreateMachine(ctx, chromeOSMachine1)
 			So(err, ShouldBeNil)
 			So(resp, ShouldResembleProto, chromeOSMachine1)
@@ -453,7 +580,7 @@ func TestBatchUpdateMachines(t *testing.T) {
 			So(resp, ShouldResembleProto, machines)
 		})
 		Convey("BatchUpdate existing and non-existing machines", func() {
-			chromeOSMachine5 := mockChromeOSMachine("", "chromeoslab", "samus")
+			chromeOSMachine5 := mockChromeOSMachine("", "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS4)
 			machines = append(machines, chromeOSMachine5)
 			resp, err := BatchUpdateMachines(ctx, machines)
 			So(resp, ShouldBeNil)
