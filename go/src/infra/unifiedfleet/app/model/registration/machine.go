@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
+	"go.chromium.org/luci/server/auth"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -217,6 +218,31 @@ func ListMachines(ctx context.Context, pageSize int32, pageToken string, filterM
 	return runListQuery(ctx, q, pageSize, pageToken, keysOnly)
 }
 
+// ListMachines lists the machines
+// Does a query over Machine entities. Returns up to pageSize entities, plus non-nil cursor (if
+// there are more results). pageSize must be positive.
+func ListMachinesACL(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.Machine, nextPageToken string, err error) {
+	err = validateListMachineFilters(filterMap)
+	if err != nil {
+		return nil, "", errors.Annotate(err, "ListMachinesACL --- cannot validate query").Err()
+	}
+
+	userRealms, err := auth.QueryRealms(ctx, util.RegistrationsList, "", nil)
+	if err != nil {
+		return nil, "", err
+	}
+
+	q, err := ufsds.ListQuery(ctx, MachineKind, pageSize, "", filterMap, keysOnly)
+	if err != nil {
+		return nil, "", err
+	}
+
+	// Create a list of queries each checking for a realm assignment
+	queries := ufsds.AssignRealms(q, userRealms)
+
+	return runListQueries(ctx, queries, pageSize, pageToken, keysOnly)
+}
+
 // ListMachinesByIdPrefixSearch lists the machines
 // Does a query over Machine entities using ID prefix. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). PageSize must be positive.
@@ -231,6 +257,47 @@ func ListMachinesByIdPrefixSearch(ctx context.Context, pageSize int32, pageToken
 func runListQuery(ctx context.Context, query *datastore.Query, pageSize int32, pageToken string, keysOnly bool) (res []*ufspb.Machine, nextPageToken string, err error) {
 	var nextCur datastore.Cursor
 	err = datastore.Run(ctx, query, func(ent *MachineEntity, cb datastore.CursorCB) error {
+		if keysOnly {
+			machine := &ufspb.Machine{
+				Name: ent.ID,
+			}
+			res = append(res, machine)
+		} else {
+			pm, err := ent.GetProto()
+			if err != nil {
+				logging.Errorf(ctx, "Failed to UnMarshal: %s", err)
+				return nil
+			}
+			res = append(res, pm.(*ufspb.Machine))
+		}
+		if len(res) >= int(pageSize) {
+			if nextCur, err = cb(); err != nil {
+				return err
+			}
+			return datastore.Stop
+		}
+		return nil
+	})
+	if err != nil {
+		logging.Errorf(ctx, "Failed to List Machines %s", err)
+		return nil, "", status.Errorf(codes.Internal, ufsds.InternalError)
+	}
+	if nextCur != nil {
+		nextPageToken = nextCur.String()
+	}
+	return
+}
+
+func runListQueries(ctx context.Context, queries []*datastore.Query, pageSize int32, pageToken string, keysOnly bool) (res []*ufspb.Machine, nextPageToken string, err error) {
+	if pageToken != "" {
+		queries, err = datastore.ApplyCursorString(ctx, queries, pageToken)
+		if err != nil {
+			return nil, "", err
+		}
+	}
+
+	var nextCur datastore.Cursor
+	err = datastore.RunMulti(ctx, queries, func(ent *MachineEntity, cb datastore.CursorCB) error {
 		if keysOnly {
 			machine := &ufspb.Machine{
 				Name: ent.ID,
@@ -445,4 +512,14 @@ func GetMachineIndexedFieldName(input string) (string, error) {
 		return "", status.Errorf(codes.InvalidArgument, "Invalid field name %s - field name for machine are serialnumber/kvm/kvmport/rpm/zone/rack/platform/tag/state/model/buildtarget(target)/devicetype/phase/gpn", input)
 	}
 	return field, nil
+}
+
+// validateListAssetFilters validates that the given filter map is valid
+func validateListMachineFilters(filterMap map[string][]interface{}) error {
+	for field := range filterMap {
+		if field == "realm" {
+			return errors.Reason("cannot filter on %s", field).Err()
+		}
+	}
+	return nil
 }

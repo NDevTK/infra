@@ -143,4 +143,6 @@ message DeviceConfigPushConfigs {
 message ExperimentalAPI {
   // ListAssetsACL determines the experimental percentage for the experiment
   uint32 ListAssetsACL = 1;
+  // ListMachinesACL determines the experimental percentage for the experiment
+  uint32 ListMachinesACL = 2;
 }
