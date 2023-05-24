@@ -2,7 +2,7 @@
     <histograms>
         <variants name="TestVariants">
             <owner>ltina@google.com</owner>
-            <variant name="TestVaraint">
-        </histogram>
+            <variant name="TestVaraint" />
+        </variants>
     </histograms>
 </histogram-configuration>

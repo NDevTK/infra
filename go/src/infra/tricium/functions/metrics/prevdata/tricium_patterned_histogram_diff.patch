@@ -1,0 +1,24 @@
+diff --git a/rm/histograms.xml b/rm/histograms.xml
+index e8f007a..d469b1b 100644
+--- a/rm/histograms.xml
++++ b/rm/histograms.xml
+@@ -1,7 +1,6 @@
+ <histogram-configuration>
+     <histograms>
+         <variants name="Character">
+-            <variant name="Bulbasaur"/>
+             <variant name="Charizard"/>
+         </variants>
+         <histogram name="Test.Histogram1" units="units" expires_after="2019-12-30">
+@@ -25,10 +24,5 @@
+             <summary> This is a summary </summary>
+             <token key="Character" variants="Character"/>
+         </histogram>
+-        <histogram name="Test.Histogram3" units="units" expires_after="2019-12-30">
+-            <owner>ltina@google.com</owner>
+-            <owner>chrome-metrics-team@google.com</owner>
+-            <summary> This is a summary </summary>
+-        </histogram>
+     </histograms>
+ </histogram-configuration>
+\ No newline at end of file
