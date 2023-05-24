@@ -46,6 +46,15 @@ func chameleonNotPresentExec(ctx context.Context, info *execs.ExecInfo) error {
 // this function will set the state according to the result executed by runner
 // it will always return nil to prevent affecting chameleon state
 func chameleonCheckAudioboxJackpluggerExec(ctx context.Context, info *execs.ExecInfo) error {
+	if info.GetChromeos().GetChameleon() == nil {
+		log.Debugf(ctx, "Chameleon is not found!")
+		return nil
+	}
+	if !info.GetChromeos().GetAudio().GetInBox() {
+		log.Debugf(ctx, "Chameleon not in AudioBox - Not Applicable to jack plugger.")
+		info.GetChromeos().GetChameleon().Audioboxjackpluggerstate = tlw.Chameleon_AUDIOBOX_JACKPLUGGER_NOT_APPLICABLE
+		return nil
+	}
 	runner := info.NewRunner(info.GetChromeos().GetChameleon().GetName())
 	output, err := runner(ctx, time.Minute, "check_audiobox_jackplugger")
 
