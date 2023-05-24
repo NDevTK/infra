@@ -83,14 +83,14 @@ require (
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.14.0
 	go.opentelemetry.io/otel/sdk v1.14.0
 	go.opentelemetry.io/otel/trace v1.14.0
-	go.skia.org/infra v0.0.0-20230327134932-711c1ecd47c0
+	go.skia.org/infra v0.0.0-20230524042348-e1356ea7576d
 	go.starlark.net v0.0.0-20230122040757-066229b0515d
 	golang.org/x/build v0.0.0-20210913192547-14e3e09d6b10
 	golang.org/x/crypto v0.5.0
 	golang.org/x/mobile v0.0.0-20191031020345-0945064e013a
 	golang.org/x/net v0.7.0
 	golang.org/x/oauth2 v0.4.0
-	golang.org/x/sync v0.1.0
+	golang.org/x/sync v0.2.0
 	golang.org/x/sys v0.5.0
 	golang.org/x/term v0.5.0
 	golang.org/x/time v0.3.0
