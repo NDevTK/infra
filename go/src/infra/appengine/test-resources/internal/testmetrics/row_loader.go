@@ -155,7 +155,7 @@ func (r *rowLoader) String(fieldName string) string {
 // NullFloat64 is returned and an error will be available from rowLoader.Error()
 func (r *rowLoader) NullFloat64(fieldName string) bigquery.NullFloat64 {
 	repeated := false
-	val, err := r.valueWithType(fieldName, bigquery.IntegerFieldType, repeated)
+	val, err := r.valueWithType(fieldName, bigquery.FloatFieldType, repeated)
 	if err != nil {
 		r.reportError(err)
 		return bigquery.NullFloat64{}
