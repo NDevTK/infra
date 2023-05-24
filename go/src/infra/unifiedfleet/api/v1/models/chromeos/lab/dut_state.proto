@@ -13,7 +13,7 @@ import "google/api/field_behavior.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/chromeos_device_id.proto";
 
 // This proto defines status labels in lab config of a DUT.
-
+// Next Tag: 21
 message DutState {
   ChromeOSDeviceID id = 1;
   PeripheralState servo = 2;
@@ -24,6 +24,8 @@ message DutState {
   PeripheralState wifi_peripheral_state = 16;
   // Indicate how many working bluetooth btpeer for a device.
   int32 working_bluetooth_btpeer = 5;
+  // State for the human motion robot system.
+  PeripheralState hmr_state = 20;
 
   // CR50-related configs by definition shouldn't be a state config, but a build
   // config. However, we don't have a way to source it from any external

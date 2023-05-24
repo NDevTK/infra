@@ -16,7 +16,7 @@ import "infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
 
 // This proto defines setup labels in lab config of a DUT.
 
-// Peripherals of device. Next Tag: 18
+// Peripherals of device. Next Tag: 19
 message Peripherals {
   Servo servo = 1;
   Chameleon chameleon = 2;
@@ -48,6 +48,7 @@ message Peripherals {
   // Deprecated.
   bool camera_roi_front = 15 [deprecated=true];
   repeated BluetoothPeer bluetooth_peers = 16;
+  HumanMotionRobot human_motion_robot = 18;
 }
 
 
@@ -190,4 +191,16 @@ message BluetoothPeer {
   oneof device {
     RaspberryPi raspberry_pi = 1;
   }
+}
+
+// HumanMotionRobot models the whole HMR system
+// including touchhost, Pi, HMR fixture, etc.
+message HumanMotionRobot {
+  string hostname = 1;
+
+  // model of the HMR
+  string hmr_model = 2;
+
+  // gateway raspberry pi (eg. IP)
+  string gateway_hostname = 3;
 }
