@@ -51,6 +51,24 @@
       "parentUuid": "ab27aa08_4d5e5f15",
       "revId": "72f4b72438c32574d811285c9d1e527a74921644",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cc6ece1a_ee4eb237",
+        "filename": "go/src/infra/cros/recovery/config/config_chameleon.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1557599
+      },
+      "writtenOn": "2023-05-24T02:06:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5b9b8a7f_9c112da0",
+      "revId": "72f4b72438c32574d811285c9d1e527a74921644",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
