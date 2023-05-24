@@ -62,7 +62,7 @@ func TestTastConversions(t *testing.T) {
 		r := &TastResults{}
 		Convey(`Basic`, func() {
 			jsonLine := genJSONLine(map[string]string{
-				"skipReason":  "dummy skipped",
+				"skipReason":  "skipped",
 				"searchFlags": `[{"key":"testKey", "value":"testValue"}]`,
 			})
 			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
@@ -72,7 +72,7 @@ func TestTastConversions(t *testing.T) {
 				Contacts:     []string{"user1@google.com", "user2@google.com"},
 				BugComponent: "b:1234",
 				OutDir:       "/usr/local/autotest/results/lxc_job_folder/tast/results/tests/lacros.Basic",
-				SkipReason:   "dummy skipped",
+				SkipReason:   "skipped",
 				Errors:       nil,
 				Start:        parseTime("2021-07-26T18:53:33.983328614Z"),
 				End:          parseTime("2021-07-26T18:53:34.983328614Z"),
@@ -212,7 +212,7 @@ func TestTastConversions(t *testing.T) {
 		})
 		Convey(`Skipped`, func() {
 			jsonLine := genJSONLine(map[string]string{
-				"skipReason": "dummy skipped",
+				"skipReason": "skipped",
 				"outDir":     "",
 			})
 			r := &TastResults{
@@ -230,7 +230,7 @@ func TestTastConversions(t *testing.T) {
 				Artifacts: map[string]*sinkpb.Artifact{
 					"Skip Reason": {
 						Body: &sinkpb.Artifact_Contents{
-							Contents: []byte("dummy skipped"),
+							Contents: []byte("skipped"),
 						},
 						ContentType: "text/plain",
 					},
@@ -248,6 +248,9 @@ func TestTastConversions(t *testing.T) {
 							},
 						},
 					},
+				},
+				FailureReason: &pb.FailureReason{
+					PrimaryErrorMessage: "skipped",
 				},
 				StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 				Duration:  &duration.Duration{Seconds: 1},

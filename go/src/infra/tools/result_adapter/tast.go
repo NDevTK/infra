@@ -149,6 +149,12 @@ func (r *TastResults) ToProtos(ctx context.Context, testMetadataFile string, pro
 					Body:        &sinkpb.Artifact_Contents{Contents: []byte(c.SkipReason)},
 					ContentType: "text/plain",
 				}}
+
+			// Use the SkipReason as the primary FailureReason.
+			// See: b/281910436.
+			tr.FailureReason = &pb.FailureReason{
+				PrimaryErrorMessage: truncateString(c.SkipReason, maxPrimaryErrorBytes),
+			}
 			ret = append(ret, tr)
 			continue
 		}
