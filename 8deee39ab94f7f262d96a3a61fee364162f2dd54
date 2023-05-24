@@ -16,6 +16,24 @@
       "message": "this test fails",
       "revId": "8deee39ab94f7f262d96a3a61fee364162f2dd54",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1c6b9c67_5a898687",
+        "filename": "go/src/infra/unifiedfleet/app/model/registration/machine_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 428,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-05-24T20:20:29Z",
+      "side": 1,
+      "message": "because the first query gets\n\nchromeos-machine0\nchromeos-machine1\nchromeos-machine10\n\nbut we expect\n\nchromeos-machine0\nchromeos-machine1\nchromeos-machine2",
+      "parentUuid": "91356f23_8a21137e",
+      "revId": "8deee39ab94f7f262d96a3a61fee364162f2dd54",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
