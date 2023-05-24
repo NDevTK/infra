@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "143fc05e_4336da25",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-05-24T16:37:01Z",
+      "side": 1,
+      "message": "LGTM \n\nis the reason to avoid return error to avoid stop the plan? if so can allowed it to fail and return error so we can see if something went wrong and at the same time achieve want unblocking exec.",
+      "revId": "4935ce3cfc474ca827b237e62e6ea8af9de2b2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
