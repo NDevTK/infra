@@ -34,6 +34,24 @@
       "parentUuid": "91356f23_8a21137e",
       "revId": "8deee39ab94f7f262d96a3a61fee364162f2dd54",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "871d92bf_c2420324",
+        "filename": "go/src/infra/unifiedfleet/app/model/registration/machine_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 428,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-05-25T15:44:28Z",
+      "side": 1,
+      "message": "was going to send this to someone to discuss, but figured out the issue. seemed to be around sorting",
+      "parentUuid": "1c6b9c67_5a898687",
+      "revId": "8deee39ab94f7f262d96a3a61fee364162f2dd54",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
