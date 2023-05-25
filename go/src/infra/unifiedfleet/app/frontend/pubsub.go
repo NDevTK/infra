@@ -215,6 +215,31 @@ func updateAssetInfoFromHart(ufsAssetInfo, hartAssetInfo *ufspb.AssetInfo) *ufsp
 		// Update sku if it's changed
 		ufsAssetInfo.Sku = hartAssetInfo.GetSku()
 	}
+	if ufsAssetInfo.GetReferenceDesign() != hartAssetInfo.GetReferenceDesign() {
+		updated = true
+		// Update reference design if it's changed
+		ufsAssetInfo.ReferenceDesign = hartAssetInfo.GetReferenceDesign()
+	}
+	if ufsAssetInfo.GetProductStatus() != hartAssetInfo.GetProductStatus() {
+		updated = true
+		// Update product status if it's changed
+		ufsAssetInfo.ProductStatus = hartAssetInfo.GetProductStatus()
+	}
+	if ufsAssetInfo.GetFingerprintSensor() != hartAssetInfo.GetFingerprintSensor() {
+		updated = true
+		// Update product status if it's changed
+		ufsAssetInfo.FingerprintSensor = hartAssetInfo.GetFingerprintSensor()
+	}
+	if ufsAssetInfo.GetHwXComplianceVersion() != hartAssetInfo.GetHwXComplianceVersion() {
+		updated = true
+		// Update product status if it's changed
+		ufsAssetInfo.HwXComplianceVersion = hartAssetInfo.GetHwXComplianceVersion()
+	}
+	if ufsAssetInfo.GetTouchScreen() != hartAssetInfo.GetTouchScreen() {
+		updated = true
+		// Update product status if it's changed
+		ufsAssetInfo.TouchScreen = hartAssetInfo.GetTouchScreen()
+	}
 	// Avoid write to DB if nothing was updated
 	if updated {
 		return ufsAssetInfo
