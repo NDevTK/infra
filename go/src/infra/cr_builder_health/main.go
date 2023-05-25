@@ -96,8 +96,6 @@ func main() {
 }
 
 func Run(ctx context.Context, input *healthpb.InputParams) error {
-	logging.Infof(ctx, "Run (date is %+v)", input.Date)
-
 	if err := generate(ctx, input); err != nil {
 		return err
 	}

@@ -6,6 +6,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"infra/cr_builder_health/healthpb"
 
@@ -20,47 +21,60 @@ import (
 )
 
 type Row struct {
-	Date           civil.Date `bigquery:"date"`
-	Project        string     `bigquery:"project"`
-	Bucket         string     `bigquery:"bucket"`
-	Builder        string     `bigquery:"builder"`
-	Rotation       string     `bigquery:"rotation"`
-	N              int        `bigquery:"n"`
-	FailRate       float32    `bigquery:"fail_rate"`
-	InfraFailRate  float32    `bigquery:"infra_fail_rate"`
-	PendingMinsP50 float32    `bigquery:"pending_mins_p50"`
-	PendingMinsP95 float32    `bigquery:"pending_mins_p95"`
-	BuildMinsP50   float32    `bigquery:"build_mins_p50"`
-	BuildMinsP95   float32    `bigquery:"build_mins_p95"`
+	HealthScore      int        `bigquery:"health_score"`
+	ScoreExplanation string     `bigquery:"score_explanation"`
+	Date             civil.Date `bigquery:"date"`
+	Project          string     `bigquery:"project"`
+	Bucket           string     `bigquery:"bucket"`
+	Builder          string     `bigquery:"builder"`
+	Rotation         string     `bigquery:"rotation"`
+	N                int        `bigquery:"n"`
+	FailRate         float32    `bigquery:"fail_rate"`
+	InfraFailRate    float32    `bigquery:"infra_fail_rate"`
+	PendingMinsP50   float32    `bigquery:"pending_mins_p50"`
+	PendingMinsP95   float32    `bigquery:"pending_mins_p95"`
+	BuildMinsP50     float32    `bigquery:"build_mins_p50"`
+	BuildMinsP95     float32    `bigquery:"build_mins_p95"`
 }
 
 func generate(ctx context.Context, input *healthpb.InputParams) error {
-	bqClient, err := setup(ctx)
+	bqClient, err := setup(ctx, input)
 	if err != nil {
 		return errors.Annotate(err, "Setup").Err()
 	}
 	defer bqClient.Close()
+
+	thresholds, err := getThresholds(ctx)
+	if err != nil {
+		return errors.Annotate(err, "Get Thresholds").Err()
+	}
 
 	rows, err := getMetrics(ctx, bqClient, input)
 	if err != nil {
 		return errors.Annotate(err, "Get metrics").Err()
 	}
 
+	rowsWithIndicators, err := calculateIndicators(ctx, rows, *thresholds)
+	if err != nil {
+		return errors.Annotate(err, "Calculate indicators").Err()
+	}
+
 	// TODO write to Buildbucket
 
 	// Write out to BQ
-	err = writeIndicators(ctx, bqClient, rows)
-	if err != nil {
+	if err = writeIndicators(ctx, bqClient, rowsWithIndicators); err != nil {
 		return errors.Annotate(err, "Write indicators").Err()
 	}
 
 	return nil
 }
 
-func setup(buildCtx context.Context) (*bigquery.Client, error) {
+func setup(buildCtx context.Context, input *healthpb.InputParams) (*bigquery.Client, error) {
 	var err error
 	step, _ := build.StartStep(buildCtx, "Setup")
 	defer func() { step.End(err) }()
+
+	step.SetSummaryMarkdown(fmt.Sprintf("Date is %+v", input.Date))
 
 	bqClient, err := bigquery.NewClient(buildCtx, "cr-builder-health-indicators")
 	if err != nil {
@@ -132,13 +146,68 @@ func getMetrics(buildCtx context.Context, bqClient *bigquery.Client, input *heal
 		rows = append(rows, row)
 	}
 
+	step.SetSummaryMarkdown(fmt.Sprintf("Queried %d builders", len(rows)))
+
 	return rows, nil
+}
+
+func calculateIndicators(buildCtx context.Context, rows []Row, thresholds Thresholds) ([]Row, error) {
+	var err error
+	step, ctx := build.StartStep(buildCtx, "Calculate indicators")
+	defer func() { step.End(err) }()
+
+	failedBuilders := 0
+	for i, row := range rows {
+		if bucketThresholds, ok := thresholds.Thresholds[row.Bucket]; !ok {
+			rows[i].HealthScore = 0
+			continue
+		} else if builderThresholds, ok := bucketThresholds[row.Builder]; !ok {
+			rows[i].HealthScore = 0
+			continue
+		} else {
+			if builderThresholds.Default == "_default" {
+				if (builderThresholds.BuildTime != PercentileThresholds{} ||
+					builderThresholds.TestPendingTime != PercentileThresholds{} ||
+					builderThresholds.PendingTime != PercentileThresholds{} ||
+					builderThresholds.FailRate != AverageThresholds{} ||
+					builderThresholds.InfraFailRate != AverageThresholds{}) {
+					rows[i].HealthScore = 0
+					rows[i].ScoreExplanation = "Threshold config error: default sentinel and custom thresholds cannot both be set."
+					logging.Errorf(ctx, "%s Bucket: %s. Builder: %s.", rows[i].ScoreExplanation, row.Bucket, row.Builder)
+					failedBuilders += 1
+					continue
+				}
+				builderThresholds = thresholds.Default
+			} else if builderThresholds.Default != "" {
+				rows[i].HealthScore = 0
+				rows[i].ScoreExplanation = fmt.Sprintf("Threshold config error: Default set to unknown sentinel value: %s.", builderThresholds.Default)
+				logging.Errorf(ctx, "%s Bucket: %s. Builder %s.", rows[i].ScoreExplanation, row.Bucket, row.Builder)
+				failedBuilders += 1
+				continue
+			}
+			if healthy, explanation := belowThresholds(row, builderThresholds); healthy {
+				rows[i].HealthScore = 10
+				rows[i].ScoreExplanation = explanation
+			} else {
+				rows[i].HealthScore = 1
+				rows[i].ScoreExplanation = explanation
+			}
+		}
+	}
+
+	if failedBuilders > 0 {
+		err = fmt.Errorf("Indicator calculation failed for %d builders", failedBuilders)
+	}
+
+	return rows, err
 }
 
 func writeIndicators(buildCtx context.Context, bqClient *bigquery.Client, rows []Row) error {
 	var err error
 	step, ctx := build.StartStep(buildCtx, "Write indicators")
 	defer func() { step.End(err) }()
+
+	step.SetSummaryMarkdown("Writing to BQ table cr-builder-health-indicators.builder_health_indicators.builder-health-indicators")
 
 	inserter := bqClient.Dataset("builder_health_indicators").Table("builder-health-indicators").Inserter()
 	if err := inserter.Put(ctx, rows); err != nil {
