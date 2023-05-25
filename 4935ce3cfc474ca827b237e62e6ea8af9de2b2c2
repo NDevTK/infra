@@ -16,6 +16,24 @@
       "message": "LGTM \n\nis the reason to avoid return error to avoid stop the plan? if so can allowed it to fail and return error so we can see if something went wrong and at the same time achieve want unblocking exec.",
       "revId": "4935ce3cfc474ca827b237e62e6ea8af9de2b2c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dacd1e97_2e2ee9be",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1551857
+      },
+      "writtenOn": "2023-05-25T06:16:38Z",
+      "side": 1,
+      "message": "We want to keep the chameleon\u0027s state unaffected, in other words, identify those cases where the chameleon itself is good but the jackplugger is wonky.\n\nSince only some chameleons are attached with jackpluggers, and all that we want is to check the status of jackplugger under the current existing chameleon repair plan, if we stop the whole plan then chameleon\u0027s status will also be affected (Won\u0027t be Marked as Good). Does this make sense?",
+      "parentUuid": "143fc05e_4336da25",
+      "revId": "4935ce3cfc474ca827b237e62e6ea8af9de2b2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
