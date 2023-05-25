@@ -6,6 +6,8 @@ the expected results of removing a specific test suite from a specific builder.
 Before attempting to build, env.py should be run as described in
 infra/go/README.md
 
+You will also need IAM permissions for the chrome-rts project.
+
 1. Fetch a sample of rejections, e.g. for the previous month of all builders:
    ```bash
    go run ./cmd/rts-suite-analysis fetch-rejections \
@@ -47,8 +49,8 @@ infra/go/README.md
    Output will look somthing like:
    ```ChangeRecall | Savings
    ----------------------
-    99.78%      |  14.45% 
-   
+    99.78%      |  14.45%
+
    based on 6878 rejections, 8066798 test failures, 913690h51m52.584049s testing time
    ```
    The ChangeRecall being the expected number of failed CLs in the given time
