@@ -17,6 +17,7 @@ DEPS = [
     'recipe_engine/tricium',
     'depot_tools/bot_update',
     'depot_tools/gclient',
+    'depot_tools/gerrit',
     'depot_tools/git',
     'depot_tools/presubmit',
     'infra_system',

@@ -4,6 +4,8 @@
 
 from recipe_engine.post_process import DropExpectation
 
+from PB.go.chromium.org.luci.buildbucket.proto.common import GerritChange
+
 PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
 
 DEPS = [
@@ -11,6 +13,7 @@ DEPS = [
     'recipe_engine/buildbucket',
     'recipe_engine/platform',
     'recipe_engine/raw_io',
+    'depot_tools/gerrit',
 ]
 
 def RunSteps(api):
@@ -23,6 +26,16 @@ def RunSteps(api):
     with co.go_env():
       co.run_presubmit()
       api.infra_checkout.apply_golangci_lint(co)
+
+  change = GerritChange(
+      host='host', project='infra/infra', change=1234, patchset=5)
+  overrides = api.infra_checkout.get_footer_infra_deps_overrides(
+      change,
+      step_test_data='chickens\ntry-infra-tot:true\n'
+      'try-infra_internal-tot:true\n'
+      'try-.-tot:true\n'
+      'try-third_party-tot:true')
+  assert overrides == {'infra': 'HEAD', 'infra_internal': 'HEAD', '.': 'HEAD'}
 
 
 def GenTests(api):

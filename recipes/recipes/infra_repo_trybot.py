@@ -61,6 +61,7 @@ def RunSteps(api, go_version_variant, run_lint):
     patch_root = project.split('/')[-1]
 
   internal = (patch_root == 'infra_internal')
+  override_revisions = api.infra_checkout.get_footer_infra_deps_overrides(cl)
   co = api.infra_checkout.checkout(
       # TODO(crbug.com/1415507): Remove '_superproject' suffix when
       # migration is complete and configs have been renamed.
@@ -68,7 +69,8 @@ def RunSteps(api, go_version_variant, run_lint):
       patch_root=patch_root,
       internal=internal,
       generate_env_with_system_python=True,
-      go_version_variant=go_version_variant)
+      go_version_variant=go_version_variant,
+      recipe_revision_overrides=override_revisions)
   co.commit_change()
   co.gclient_runhooks()
 

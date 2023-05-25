@@ -477,19 +477,19 @@ Args:
       docker host. Read more https://docs.docker.com/network/host/.
 ### *recipe_modules* / [infra\_checkout](/recipes/recipe_modules/infra_checkout)
 
-[DEPS](/recipes/recipe_modules/infra_checkout/__init__.py#7): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/presubmit][depot_tools/recipe_modules/presubmit], [infra\_system](#recipe_modules-infra_system), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/tricium][recipe_engine/recipe_modules/tricium]
+[DEPS](/recipes/recipe_modules/infra_checkout/__init__.py#7): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/gerrit][depot_tools/recipe_modules/gerrit], [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/presubmit][depot_tools/recipe_modules/presubmit], [infra\_system](#recipe_modules-infra_system), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/tricium][recipe_engine/recipe_modules/tricium]
 
 
-#### **class [InfraCheckoutApi](/recipes/recipe_modules/infra_checkout/api.py#10)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
+#### **class [InfraCheckoutApi](/recipes/recipe_modules/infra_checkout/api.py#11)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
 
 Stateless API for using public infra gclient checkout.
 
-&mdash; **def [apply\_golangci\_lint](/recipes/recipe_modules/infra_checkout/api.py#223)(self, co, path_to_go_modules=''):**
+&mdash; **def [apply\_golangci\_lint](/recipes/recipe_modules/infra_checkout/api.py#250)(self, co, path_to_go_modules=''):**
 
 Apply goalngci-lint to existing diffs and emit lint warnings via tricium.
     
 
-&mdash; **def [checkout](/recipes/recipe_modules/infra_checkout/api.py#13)(self, gclient_config_name, patch_root=None, path=None, internal=False, generate_env_with_system_python=False, go_version_variant=None, \*\*kwargs):**
+&mdash; **def [checkout](/recipes/recipe_modules/infra_checkout/api.py#14)(self, gclient_config_name, patch_root=None, path=None, internal=False, generate_env_with_system_python=False, go_version_variant=None, \*\*kwargs):**
 
 Fetches infra gclient checkout into a given path OR named_cache.
 
@@ -520,6 +520,20 @@ Arguments:
 
 Returns:
   a Checkout object with commands for common actions on infra checkout.
+
+&mdash; **def [get\_footer\_infra\_deps\_overrides](/recipes/recipe_modules/infra_checkout/api.py#224)(self, gerrit_change, step_test_data=None):**
+
+Returns revision overrides for infra repos parsed from the gerrit footer.
+
+Checks the commit message for lines like: Try-<deps_name>-ToT: True.
+e.g. 'Try-infra-ToT: True'
+
+Allowed values for <deps_name> are:
+'infra' for infra/infra,
+'infra_internal' for infra/infra_internal,
+'.' for infra/infra_superproject
+
+These deps names are based what's found in infra/infra_superproject/DEPS
 ### *recipe_modules* / [infra\_cipd](/recipes/recipe_modules/infra_cipd)
 
 [DEPS](/recipes/recipe_modules/infra_cipd/__init__.py#7): [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step]
@@ -1650,10 +1664,10 @@ Pushes a trivial CL to Gerrit to verify git authentication works on LUCI.
 &mdash; **def [RunSteps](/recipes/recipe_modules/infra_checkout/examples/ci.py#18)(api):**
 ### *recipes* / [infra\_checkout:examples/try](/recipes/recipe_modules/infra_checkout/examples/try.py)
 
-[DEPS](/recipes/recipe_modules/infra_checkout/examples/try.py#9): [infra\_checkout](#recipe_modules-infra_checkout), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
+[DEPS](/recipes/recipe_modules/infra_checkout/examples/try.py#11): [depot\_tools/gerrit][depot_tools/recipe_modules/gerrit], [infra\_checkout](#recipe_modules-infra_checkout), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
 
 
-&mdash; **def [RunSteps](/recipes/recipe_modules/infra_checkout/examples/try.py#16)(api):**
+&mdash; **def [RunSteps](/recipes/recipe_modules/infra_checkout/examples/try.py#19)(api):**
 ### *recipes* / [infra\_cipd:examples/usage](/recipes/recipe_modules/infra_cipd/examples/usage.py)
 
 [DEPS](/recipes/recipe_modules/infra_cipd/examples/usage.py#11): [infra\_cipd](#recipe_modules-infra_cipd), [recipe\_engine/assertions][recipe_engine/recipe_modules/assertions], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step]

@@ -4,6 +4,7 @@
 
 import collections
 import contextlib
+import re
 
 from recipe_engine import recipe_api
 
@@ -219,6 +220,32 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
               ])
 
     return Checkout(self.m)
+
+  def get_footer_infra_deps_overrides(self, gerrit_change, step_test_data=None):
+    """Returns revision overrides for infra repos parsed from the gerrit footer.
+
+    Checks the commit message for lines like: Try-<deps_name>-ToT: True.
+    e.g. 'Try-infra-ToT: True'
+
+    Allowed values for <deps_name> are:
+    'infra' for infra/infra,
+    'infra_internal' for infra/infra_internal,
+    '.' for infra/infra_superproject
+
+    These deps names are based what's found in infra/infra_superproject/DEPS
+    """
+    overrides = {}
+    description = step_test_data or self.m.gerrit.get_change_description(
+        'https://%s' % gerrit_change.host, gerrit_change.change,
+        gerrit_change.patchset)
+
+    for line in description.splitlines():
+      override_match = re.match(
+          r'try-(?P<dep>infra|infra_internal|\.)-tot\:\s*True', line,
+          re.IGNORECASE)
+      if override_match:
+        overrides[override_match.group('dep')] = 'HEAD'
+    return overrides
 
   def apply_golangci_lint(self, co, path_to_go_modules=''):
     """Apply goalngci-lint to existing diffs and emit lint warnings via tricium.
