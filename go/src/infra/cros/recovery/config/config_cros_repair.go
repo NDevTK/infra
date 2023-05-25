@@ -57,6 +57,7 @@ func crosRepairPlan() *Plan {
 			"Update special device labels",
 			"Collect dmesg logs from DUT",
 			"Verify bootId and compare",
+			"Validate chromebook X label",
 			"Record type C status",
 			"All repair-requests resolved",
 			"Reset DUT-state reason",
@@ -1624,6 +1625,31 @@ func crosRepairActions() map[string]*Action {
 				"dut_has_device_sku",
 			},
 			ExecName: "sample_fail",
+		},
+		"Validate chromebook X label": {
+			Docs: []string{
+				"Verify if DUT chromebook X state matches UFS data.",
+			},
+			Conditions: []string{
+				"Is Chromebook X supported",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName:               "cros_verify_cbx_matches_ufs",
+			AllowFailAfterRecovery: true,
+		},
+		"Is Chromebook X supported": {
+			Docs: []string{
+				"Chromebook X features are available starting from R115 version of ChromeOS on the DUT.",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_is_on_expected_version",
+			ExecExtraArgs: []string{
+				"min_version:115",
+			},
 		},
 		"Servo USB-Key needs to be reflashed": {
 			Docs: []string{

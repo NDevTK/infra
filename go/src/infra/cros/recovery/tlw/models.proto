@@ -547,6 +547,9 @@ message ChromeOS {
 
   // Cellular info.
   Cellular cellular = 24;
+
+  // Capability to support Chromebook X features
+  bool cbx = 25;
 }
 
 // Android specific DUT details

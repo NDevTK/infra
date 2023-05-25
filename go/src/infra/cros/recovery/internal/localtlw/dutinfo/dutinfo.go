@@ -196,6 +196,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			RpmOutlet:           createRPMOutlet(p.GetRpm(), ds),
 			RoVpdMap:            dut.GetRoVpdMap(),
 			Cbi:                 dut.GetCbi(),
+			Cbx:                 dut.GetCbx(),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
