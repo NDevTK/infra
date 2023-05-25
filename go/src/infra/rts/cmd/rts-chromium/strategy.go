@@ -53,6 +53,9 @@ var (
 
 		// MB CLs change the way tests run or their configurations.
 		"//tools/mb/.+",
+
+		// Sandbox changes can have widesweeping affects unrelated to the tests
+		"//sandbox/.+",
 	}
 	requireAllTestsRegexp = regexp.MustCompile(fmt.Sprintf("^(%s)$", strings.Join(requireAllTests, "|")))
 
