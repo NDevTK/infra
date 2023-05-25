@@ -82,11 +82,12 @@ def RunSteps(api, go_version_variant, run_lint):
 
   # Analyze the CL to skip unnecessary tests.
   files = co.get_changed_files()
-  is_deps_roll = bool(files.intersection([
-      'DEPS',
-      api.path.join('bootstrap', 'deps.pyl'),
-      api.path.join('go', 'deps.lock')
-  ]))
+  is_deps_roll = (project == 'infra/infra_superproject') or bool(
+      files.intersection([
+          'DEPS',
+          api.path.join('bootstrap', 'deps.pyl'),
+          api.path.join('go', 'deps.lock')
+      ]))
   is_build_change = any(f.startswith('build/') for f in files)
   is_go_change = any(f.startswith('go/') for f in files)
   is_pure_go_change = all(f.startswith('go/') for f in files)

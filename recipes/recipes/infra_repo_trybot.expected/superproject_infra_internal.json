@@ -448,8 +448,75 @@
     ]
   },
   {
-    "cmd": [],
-    "name": "skipping slow CIPD packaging tests"
+    "cmd": [
+      "vpython3",
+      "[CACHE]/builder/infra_internal/build/build.py",
+      "--no-freshen-python-env"
+    ],
+    "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal",
+    "env": {
+      "GOFLAGS": "-mod=readonly",
+      "GOROOT": "[CACHE]/builder/golang/go",
+      "INFRA_GO_SKIP_TOOLS_INSTALL": "1"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/golang/go"
+      ]
+    },
+    "env_suffixes": {
+      "PATH": [
+        "[CACHE]/builder/infra_internal/go/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra-internal:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "cipd - build packages"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "[CACHE]/builder/infra_internal/build/test_packages.py"
+    ],
+    "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal",
+    "env": {
+      "GOFLAGS": "-mod=readonly",
+      "GOROOT": "[CACHE]/builder/golang/go",
+      "INFRA_GO_SKIP_TOOLS_INSTALL": "1"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/builder/golang/go"
+      ]
+    },
+    "env_suffixes": {
+      "PATH": [
+        "[CACHE]/builder/infra_internal/go/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra-internal:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "cipd - test packages integrity"
   },
   {
     "name": "$result"
