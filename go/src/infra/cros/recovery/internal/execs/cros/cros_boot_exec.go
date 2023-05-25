@@ -48,6 +48,7 @@ func readBootIdExec(ctx context.Context, info *execs.ExecInfo) error {
 	scopeKey := fmt.Sprintf("boot_id_%s", info.GetActiveResource())
 	if compareBootId {
 		if oldBootId, ok := scopes.ReadConfigParam(ctx, scopeKey); ok {
+			log.Debugf(ctx, "Previous BootId: %q", oldBootId)
 			if oldBootId != bootId {
 				return errors.Reason("read bootId: expected %q but got %q", oldBootId, bootId).Err()
 			}
