@@ -34,6 +34,24 @@
       "parentUuid": "143fc05e_4336da25",
       "revId": "4935ce3cfc474ca827b237e62e6ea8af9de2b2c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ef565171_81eaae47",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-05-25T17:37:06Z",
+      "side": 1,
+      "message": "acton can be failed but still not block the plan if AllowFailAfterRecovery\u003dtrue (example: http://cs/h/chromium/infra/infra/+/main:go/src/infra/cros/recovery/config/config_servo.go?l\u003d127) even it fail the plan will continue but we can see http://screen/AHnCmAot2jNG95T when it fail and analysis of issues if requires.",
+      "parentUuid": "dacd1e97_2e2ee9be",
+      "revId": "4935ce3cfc474ca827b237e62e6ea8af9de2b2c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
