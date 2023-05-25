@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"io"
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -236,8 +237,8 @@ var dutPlansCases = []struct {
 		"cros post test",
 		tlw.DUTSetupTypeCros,
 		buildbucket.PostTest,
-		nil,
-		false,
+		strings.Fields("servo cros chameleon bluetooth_peer wifi_router close"),
+		true,
 	},
 	{
 		"cros browser lightweight verifier",
