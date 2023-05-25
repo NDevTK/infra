@@ -197,7 +197,7 @@ try_builder(
 )
 
 # Presubmit trybot.
-build.presubmit(name = "infra-try-presubmit", cq_group = "infra", repo_name = "infra")
+build.presubmit(name = "infra-try-presubmit", cq_group = "infra", repo_name = "infra_superproject")
 
 # Recipes ecosystem.
 recipes.simulation_tester(
