@@ -22,7 +22,7 @@ import (
 
 // RecoveryConfig subcommand: For now, print the config file content to terminal/file.
 var RecoveryConfig = &subcommands.Command{
-	UsageLine: "config [-task-name TASK] [-device DEV] [-plan] [-tree]",
+	UsageLine: "config [-task-name TASK] [-device DEV] [-plan PLAN] [-tree]",
 	ShortDesc: "print the JSON plan configuration file",
 	LongDesc:  "print the JSON plan configuration file.",
 	CommandRun: func() subcommands.CommandRun {
