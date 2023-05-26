@@ -16,6 +16,69 @@
       "message": "Updated the CL to:\na) add error handling for two edge cases\nb) improve some log format",
       "revId": "9a02f6d92a334f443cf11f49855f4ad6e7c11536",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7a3eb2a0_e5c5f563",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-05-26T18:49:57Z",
+      "side": 1,
+      "message": "a few comments",
+      "revId": "9a02f6d92a334f443cf11f49855f4ad6e7c11536",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c4a0965f_1289b57b",
+        "filename": "go/src/infra/cros/recovery/config/config_chameleon.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-05-26T18:49:57Z",
+      "side": 1,
+      "message": "why do we need this dependency if the action is running after ssh check? \n\n(include dependency which run always will cause extra time to execute the action)\n(simple ssh check takes a few seconds and it is a lot compare how many devices and task we run over the day)",
+      "range": {
+        "startLine": 76,
+        "startChar": 4,
+        "endLine": 78,
+        "endChar": 6
+      },
+      "revId": "9a02f6d92a334f443cf11f49855f4ad6e7c11536",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dcb61209_d1e1eee3",
+        "filename": "go/src/infra/cros/recovery/internal/execs/chameleon/chameleon_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-05-26T18:49:57Z",
+      "side": 1,
+      "message": "i think err need to be handled later as set state will not be reached. \n\nanother option to set state broken first and then update to good after error.",
+      "range": {
+        "startLine": 60,
+        "startChar": 1,
+        "endLine": 63,
+        "endChar": 2
+      },
+      "revId": "9a02f6d92a334f443cf11f49855f4ad6e7c11536",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
