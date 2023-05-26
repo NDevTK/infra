@@ -273,7 +273,7 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
-				"Install OS in DEV mode by USB-drive",
+				"Install OS in DEV mode, with force to DEV-mode",
 			},
 		},
 		"Python is present": {
@@ -3053,8 +3053,8 @@ func crosRepairActions() map[string]*Action {
 			RunControl: RunControl_ALWAYS_RUN,
 			RecoveryActions: []string{
 				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode, with force to DEV-mode",
 			},
-			AllowFailAfterRecovery: true,
 		},
 		"Set dev_boot_usb is enabled": {
 			Docs: []string{
