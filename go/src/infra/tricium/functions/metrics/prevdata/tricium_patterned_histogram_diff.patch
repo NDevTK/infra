@@ -1,0 +1,35 @@
+diff --git a/rm/histograms.xml b/rm/histograms.xml
+index fe8aba4..9cfad2d 100644
+--- a/rm/histograms.xml
++++ b/rm/histograms.xml
+@@ -1,7 +1,6 @@
+ <histogram-configuration>
+     <histograms>
+         <variants name="Character">
+-            <variant name="Bulbasaur"/>
+             <variant name="Charizard"/>
+         </variants>
+         <histogram name="Test.Histogram1" units="units" expires_after="M150">
+@@ -15,13 +14,7 @@
+             <summary> This is a summary </summary>
+             <token key="Character" variants="Character"/>
+             <token key="OpponentType">
+-                <variant name="Dragon" summary="dragon"/>
+                 <variant name="Flying" summary="flappity-flap"/>
+-                <variant name="Psychic" summary="psychic">
+-                    <obsolete>
+-                        Removed 2023/09.
+-                    </obsolete>
+-                </variant>
+             </token>
+         </histogram>
+         <histogram name="Test.{Character}.Histogram" units="units" expires_after="M150">
+@@ -30,7 +23,7 @@
+             <summary> This is a summary </summary>
+             <token key="Character" variants="Character"/>
+         </histogram>
+-        <histogram name="Test.Histogram3" units="units" expires_after="M150">
++        <histogram name="Test.Histogram4" units="units" expires_after="M150">
+             <owner>ltina@google.com</owner>
+             <owner>chrome-metrics-team@google.com</owner>
+             <summary> This is a summary </summary>

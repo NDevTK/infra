@@ -1,0 +1,32 @@
+<histogram-configuration>
+    <histograms>
+        <variants name="Character">
+            <variant name="Charizard"/>
+        </variants>
+        <histogram name="Test.Histogram1" units="units" expires_after="M150">
+            <owner>ltina@google.com</owner>
+            <owner>chrome-metrics-team@google.com</owner>
+            <summary> This is a summary </summary>
+        </histogram>
+        <histogram name="Test{OpponentType}.Histogram2.{Character}" units="units" expires_after="M150">
+            <owner>ltina@google.com</owner>
+            <owner>chrome-metrics-team@google.com</owner>
+            <summary> This is a summary </summary>
+            <token key="Character" variants="Character"/>
+            <token key="OpponentType">
+                <variant name="Flying" summary="flappity-flap"/>
+            </token>
+        </histogram>
+        <histogram name="Test.{Character}.Histogram" units="units" expires_after="M150">
+            <owner>ltina@google.com</owner>
+            <owner>chrome-metrics-team@google.com</owner>
+            <summary> This is a summary </summary>
+            <token key="Character" variants="Character"/>
+        </histogram>
+        <histogram name="Test.Histogram4" units="units" expires_after="M150">
+            <owner>ltina@google.com</owner>
+            <owner>chrome-metrics-team@google.com</owner>
+            <summary> This is a summary </summary>
+        </histogram>
+    </histograms>
+</histogram-configuration>
