@@ -3353,6 +3353,11 @@ func crosRepairActions() map[string]*Action {
 				"skip_empty:true",
 				"compare:true",
 			},
+			RecoveryActions: []string{
+				"Quick provision OS",
+				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in DEV mode, with force to DEV-mode",
+			},
 			// TODO(b/270760403): Make action critical and apply recovery actions.
 			AllowFailAfterRecovery: true,
 		},
