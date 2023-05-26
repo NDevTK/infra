@@ -224,8 +224,8 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
   def get_footer_infra_deps_overrides(self, gerrit_change, step_test_data=None):
     """Returns revision overrides for infra repos parsed from the gerrit footer.
 
-    Checks the commit message for lines like: Try-<deps_name>-ToT: True.
-    e.g. 'Try-infra-ToT: True'
+    Checks the commit message for lines like: Try-<deps_name>: <revision>.
+    e.g. 'Try-infra: 123abc456def'
 
     Allowed values for <deps_name> are:
     'infra' for infra/infra,
@@ -241,10 +241,11 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
 
     for line in description.splitlines():
       override_match = re.match(
-          r'try-(?P<dep>infra|infra_internal|\.)-tot\:\s*True', line,
-          re.IGNORECASE)
+          r'try-(?P<dep>infra|infra_internal|\.)\:'
+          '\s*(?P<revision>[a-f0-9]+|HEAD)', line, re.IGNORECASE)
       if override_match:
-        overrides[override_match.group('dep')] = 'HEAD'
+        overrides[override_match.group('dep')] = override_match.group(
+            'revision')
     return overrides
 
   def apply_golangci_lint(self, co, path_to_go_modules=''):

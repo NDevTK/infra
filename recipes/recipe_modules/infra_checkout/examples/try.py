@@ -31,11 +31,11 @@ def RunSteps(api):
       host='host', project='infra/infra', change=1234, patchset=5)
   overrides = api.infra_checkout.get_footer_infra_deps_overrides(
       change,
-      step_test_data='chickens\ntry-infra-tot:true\n'
-      'try-infra_internal-tot:true\n'
-      'try-.-tot:true\n'
-      'try-third_party-tot:true')
-  assert overrides == {'infra': 'HEAD', 'infra_internal': 'HEAD', '.': 'HEAD'}
+      step_test_data='chickens\ntry-infra: 987f\n'
+      'try-infra_internal: 123abc\n'
+      'try-.: HEAD\n'
+      'try-third_party: lkj123')
+  assert overrides == {'infra': '987f', 'infra_internal': '123abc', '.': 'HEAD'}
 
 
 def GenTests(api):

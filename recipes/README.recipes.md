@@ -484,7 +484,7 @@ Args:
 
 Stateless API for using public infra gclient checkout.
 
-&mdash; **def [apply\_golangci\_lint](/recipes/recipe_modules/infra_checkout/api.py#250)(self, co, path_to_go_modules=''):**
+&mdash; **def [apply\_golangci\_lint](/recipes/recipe_modules/infra_checkout/api.py#251)(self, co, path_to_go_modules=''):**
 
 Apply goalngci-lint to existing diffs and emit lint warnings via tricium.
     
@@ -525,8 +525,8 @@ Returns:
 
 Returns revision overrides for infra repos parsed from the gerrit footer.
 
-Checks the commit message for lines like: Try-<deps_name>-ToT: True.
-e.g. 'Try-infra-ToT: True'
+Checks the commit message for lines like: Try-<deps_name>: <revision>.
+e.g. 'Try-infra: 123abc456def'
 
 Allowed values for <deps_name> are:
 'infra' for infra/infra,
