@@ -1,8 +1,8 @@
 diff --git a/rm/remove_histogram.xml b/rm/remove_histogram.xml
-index ba751d6..c173b8a 100644
+index ddd1fb0..c173b8a 100644
 --- a/rm/remove_histogram.xml
 +++ b/rm/remove_histogram.xml
-@@ -5,10 +5,5 @@
+@@ -5,18 +5,5 @@
              <owner>chrome-metrics-team@google.com</owner>
              <summary> This is a summary </summary>
          </histogram>
@@ -10,6 +10,14 @@ index ba751d6..c173b8a 100644
 -            <owner>ltina@google.com</owner>
 -            <owner>chrome-metrics-team@google.com</owner>
 -            <summary> This is a summary </summary>
+-        </histogram>
+-        <histogram name="Test.Histogram100" units="units" expires_after="2019-12-30">
+-            <owner>ltina@google.com</owner>
+-            <owner>chrome-metrics-team@google.com</owner>
+-            <summary> This is a summary </summary>
+-            <obsolete>
+-                Typo, replaced by Test.Histogram10.
+-            </obsolete>
 -        </histogram>
      </histograms>
  </histogram-configuration>
