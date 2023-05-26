@@ -3046,6 +3046,9 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Run rootdev to check rootfs",
 			},
+			Conditions: []string{
+				"Is not Flex device",
+			},
 			Dependencies: []string{
 				"Device is SSHable",
 			},
