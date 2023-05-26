@@ -97,8 +97,8 @@ message FetchTestMetricsRequest {
   // Metrics to fetch.
   // This is required.  If no metrics are specified an error is returned.
   repeated MetricType metrics = 4 [ (google.api.field_behavior) = REQUIRED ];
-  // A filter to use (e.g. builder = linux-rel)
-  // TODO(sshrimp): determine filter format
+  // A string filter. This will return metrics for tests that have parts
+  // of the tokenized filter
   string filter = 5;
   // The offset to start at for the next request
   int64 page = 6;
@@ -161,10 +161,12 @@ message FetchDirectoryMetricsRequest {
   // Dates should be specified in YYYY-MM-DD format.
   repeated string dates = 3 [ (google.api.field_behavior) = REQUIRED ];
   // The optional parent node for this data (i.e. The directory to get the child
-  // metrics for)
+  // metrics for). The root parent_id is '/'.
   string parent_id = 4 [ (google.api.field_behavior) = REQUIRED ];
-  // A filter to use (e.g. builder = linux-rel)
-  // TODO(sshrimp): determine filter format
+  // A string filter. This will return metrics for directories that have parts
+  // of the tokenized filter. This does not change the metric values of the
+  // rolled up parent (filtering a file out does not remove its runtime from
+  // the directory)
   string filter = 5;
   // The order in which to return the results
   SortBy sort = 6;

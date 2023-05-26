@@ -99,11 +99,11 @@ USING (
     v.date,
     v.test_id,
     ANY_VALUE(v.test_name) AS test_name,
-    ANY_VALUE(v.repo) AS repo,
-    ANY_VALUE(v.file_name) AS file_name,
-    ANY_VALUE(v.`project`) AS `project`,
-    ANY_VALUE(v.bucket) AS bucket,
-    ANY_VALUE(v.component) AS component,
+    IFNULL(ANY_VALUE(v.repo), "Unknown") AS repo,
+    IFNULL(ANY_VALUE(v.file_name), "Unknown") AS file_name,
+    IFNULL(ANY_VALUE(v.`project`), "Unknown") AS `project`,
+    IFNULL(ANY_VALUE(v.bucket), "Unknown") AS bucket,
+    IFNULL(ANY_VALUE(v.component), "Unknown") AS component,
     # Test level metrics
     SUM(num_runs) AS num_runs,
     SUM(num_failures) AS num_failures,
@@ -126,15 +126,15 @@ USING (
   ) AS S
 ON
   T.date = S.date
-  AND T.test_name = S.test_name
   AND T.test_id = S.test_id
   AND T.repo = S.repo
-  AND T.file_name = S.file_name
-  AND T.`project` = S.`project`
-  AND T.bucket = S.bucket
-  AND T.component = S.component
 WHEN MATCHED THEN
   UPDATE SET
+    test_name = S.test_name,
+    file_name = S.file_name,
+    `project` = S.`project`,
+    bucket = S.bucket,
+    component = S.component,
     num_runs = S.num_runs,
     num_failures = S.num_failures,
     num_flake = S.num_flake,

@@ -114,37 +114,54 @@ func (c *Client) FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequ
 		sortDirection = "DESC"
 	}
 
+	string_filter := strings.Join(strings.Split(req.Filter, " "), "|")
+
 	query := `
+WITH raw AS (
 	SELECT
 		m.date,
 		m.test_id,
 		m.test_name,
 		m.file_name,
-		` + strings.Join(metricNames, ",\n") + `,
+		` + strings.Join(metricNames, ",\n\t\t") + `,
 		((
 			SELECT ARRAY_AGG(STRUCT(
 				v.variant_hash AS variant_hash,
 				v.target_platform AS target_platform,
 				v.builder AS builder,
 				v.test_suite AS test_suite,
-				` + strings.Join(metricNames, ",\n") + `
+				` + strings.Join(metricNames, ",\n\t\t\t\t") + `
 			)
 			ORDER BY @sortType ` + sortDirection + `
-		) FROM m.variant_summaries v)) AS variants
+		)
+		FROM m.variant_summaries v
+		WHERE (@string_filter = "" OR
+			# If it matches the parent ID display everything
+			REGEXP_CONTAINS(test_name, @string_filter) OR
+			REGEXP_CONTAINS(file_name, @string_filter) OR
+			# Only display variant matches if the variant is what matches
+			REGEXP_CONTAINS(target_platform, @string_filter) OR
+			REGEXP_CONTAINS(builder, @string_filter) OR
+			REGEXP_CONTAINS(test_suite, @string_filter)))) AS variants
 	FROM
 		` + c.ProjectId + `.test_results.` + table + ` AS m
 	WHERE
 		DATE(date) IN UNNEST(@dates)
+		AND component = @component
 	ORDER BY @sortType ` + sortDirection + `
-	LIMIT @page_size OFFSET @page`
+	LIMIT @page_size OFFSET @page
+)
+SELECT * FROM raw WHERE ARRAY_LENGTH(raw.variants) > 0 LIMIT @page_size OFFSET @page`
 
 	q := c.BqClient.Query(query)
 
 	q.Parameters = []bigquery.QueryParameter{
 		{Name: "dates", Value: dates},
-		{Name: "page_size", Value: req.PageSize},
+		{Name: "page_size", Value: req.PageSize + 1},
 		{Name: "page", Value: req.Page},
 		{Name: "sortType", Value: sortMetric},
+		{Name: "component", Value: req.Component},
+		{Name: "string_filter", Value: string_filter},
 	}
 
 	job, err := q.Run(ctx)
@@ -160,8 +177,10 @@ func (c *Client) FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequ
 	testIdToTestDateMetricData := make(map[string]*api.TestDateMetricData)
 	variantHashToTestDateMetricData := make(map[string]map[string]*api.TestVariantData)
 
-	response := &api.FetchTestMetricsResponse{}
-	for {
+	response := &api.FetchTestMetricsResponse{
+		LastPage: int64(it.TotalRows) != req.PageSize+1,
+	}
+	for i := int64(0); i < req.PageSize; i++ {
 		var rowVals rowLoader
 		err = it.Next(&rowVals)
 		if err == iterator.Done {
@@ -279,21 +298,24 @@ func (c *Client) FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirect
 		sortDirection = "DESC"
 	}
 
+	string_filter := strings.Join(strings.Split(req.Filter, " "), "|")
+
 	query := `
-	SELECT
-		date,
-		node_name,
-		ARRAY_REVERSE(SPLIT(node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
-		is_file,
-		` + strings.Join(metricNames, ",\n") + `,
-	FROM ` + c.ProjectId + `.test_results.` + table + `
-	WHERE
-		STARTS_WITH(node_name, @parent || "/") AND
-		-- The child folders and files can't have a / after the parent's name
-		REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(@parent) + 2), "^[^/]*$")
-		AND DATE(date) IN UNNEST(@dates)
-		AND component = @component
-	ORDER BY @sortType ` + sortDirection
+SELECT
+	date,
+	node_name,
+	ARRAY_REVERSE(SPLIT(node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
+	is_file,
+	` + strings.Join(metricNames, ",\n") + `,
+FROM ` + c.ProjectId + `.test_results.` + table + `
+WHERE
+	STARTS_WITH(node_name, @parent || "/") AND
+	-- The child folders and files can't have a / after the parent's name
+	REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(@parent) + 2), "^[^/]*$")
+	AND DATE(date) IN UNNEST(@dates)
+	AND component = @component
+	AND (@string_filter = "" OR EXISTS(SELECT 0 FROM UNNEST(file_names) AS f WHERE REGEXP_CONTAINS(f, @string_filter)))
+ORDER BY @sortType ` + sortDirection
 
 	q := c.BqClient.Query(query)
 
@@ -302,6 +324,7 @@ func (c *Client) FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirect
 		{Name: "component", Value: req.Component},
 		{Name: "parent", Value: req.ParentId},
 		{Name: "sortType", Value: sortMetric},
+		{Name: "string_filter", Value: string_filter},
 	}
 
 	job, err := q.Run(ctx)

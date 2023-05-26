@@ -230,10 +230,10 @@ func (r *rowLoader) Metrics(metrics []api.MetricType) []*api.TestMetricsData {
 		} else {
 			val = float64(r.NullInt64(columnName).Int64)
 		}
-		retMetrics = append(retMetrics, &api.TestMetricsData{
+		retMetrics[metricIndex] = &api.TestMetricsData{
 			MetricType:  metrics[metricIndex],
 			MetricValue: val,
-		})
+		}
 	}
 	return retMetrics
 }

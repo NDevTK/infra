@@ -56,6 +56,7 @@ USING (
     SUM(num_flake) AS num_flake,
     SUM(avg_runtime)	AS avg_runtime,
     SUM(total_runtime) AS total_runtime,
+    ARRAY_AGG(file_name IGNORE NULLS) AS file_names,
   FROM dir_nodes n
   GROUP BY date, component, node_name
   ) AS S
@@ -69,6 +70,7 @@ WHEN MATCHED THEN
     num_failures = S.num_failures,
     num_flake = S.num_flake,
     avg_runtime = S.avg_runtime,
-    total_runtime = S.total_runtime
+    total_runtime = S.total_runtime,
+    file_names = S.file_names
 WHEN NOT MATCHED THEN
   INSERT ROW

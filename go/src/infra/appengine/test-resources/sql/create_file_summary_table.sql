@@ -1,4 +1,4 @@
-CREATE OR REPLACE TABLE %s.test_results.weekly_file_metrics (
+CREATE OR REPLACE TABLE %s.test_results.file_metrics (
   date DATE,
   component STRING,
   node_name STRING,
