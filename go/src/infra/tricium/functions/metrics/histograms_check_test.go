@@ -67,7 +67,8 @@ func analyzeHistogramTestFileWithObsoletion(t *testing.T, filePath, patch, prevD
 	inputPath := filepath.Join(inputDir, filePath)
 	f := openFileOrDie(inputPath)
 	defer closeFileOrDie(f)
-	return analyzeHistogramFile(f, filePath, prevDir, filesChanged, singletonEnums, obsoletedHistograms)
+	removedHistograms := make(map[string]histogramStatus)
+	return analyzeHistogramFile(f, filePath, prevDir, filesChanged, singletonEnums, obsoletedHistograms, removedHistograms)
 }
 
 func analyzeHistogramTestFile(t *testing.T, filePath, patch, prevDir string) []*tricium.Data_Comment {
@@ -589,6 +590,30 @@ func TestHistogramsCheck(t *testing.T) {
 				Category:             category + "/Removed",
 				Message:              fmt.Sprintf(removedHistogramInfo, "Test.Histogram2"),
 				Path:                 "rm/remove_histogram.xml",
+				ShowOnUnchangedLines: true,
+			},
+		})
+	})
+
+	Convey("Analyze XML file with patterned histogram(s) removed without an obsoletion message", t, func() {
+		results := analyzeHistogramTestFile(t, "rm/remove_patterned_histogram.xml", "prevdata/tricium_remove_patterned_histogram_diff.patch", "prevdata/src")
+		So(results, ShouldResemble, []*tricium.Data_Comment{
+			{
+				Category:             category + "/Removed",
+				Message:              fmt.Sprintf(removedHistogramInfo, "TestDragon.Histogram2.Bulbasaur, TestDragon.Histogram2.Charizard, TestFlying.Histogram2.Bulbasaur, TestFlying.Histogram2.Charizard"),
+				Path:                 "rm/remove_patterned_histogram.xml",
+				ShowOnUnchangedLines: true,
+			},
+		})
+	})
+
+	Convey("Analyze XML file with variants modified", t, func() {
+		results := analyzeHistogramTestFile(t, "rm/modify_variants.xml", "prevdata/tricium_modify_variants_diff.patch", "prevdata/src")
+		So(results, ShouldResemble, []*tricium.Data_Comment{
+			{
+				Category:             category + "/Removed",
+				Message:              fmt.Sprintf(removedHistogramInfo, "TestDragon.Histogram2.Charizard, TestFlying.Histogram2.Charizard"),
+				Path:                 "rm/modify_variants.xml",
 				ShowOnUnchangedLines: true,
 			},
 		})
