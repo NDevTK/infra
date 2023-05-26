@@ -128,6 +128,7 @@ deps = {
       }
     ],
     'dep_type': 'cipd',
+    'condition': 'not infra_superproject_checkout',
   },
 
   "infra/cipd": {
