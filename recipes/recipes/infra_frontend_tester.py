@@ -7,6 +7,7 @@ from PB.go.chromium.org.luci.buildbucket.proto.common import GerritChange
 PYTHON_VERSION_COMPATIBILITY = "PY2+3"
 
 DEPS = [
+    'infra_checkout',
     'recipe_engine/buildbucket',
     'recipe_engine/cipd',
     'recipe_engine/context',
@@ -53,9 +54,11 @@ def RunSteps(api):
   path = api.path['cache'].join('builder')
   api.file.ensure_directory('ensure builder dir', path)
 
+  override_revisions = api.infra_checkout.get_footer_infra_deps_overrides(cl)
   with api.context(cwd=path):
     api.gclient.set_config(config_name)
-    api.bot_update.ensure_checkout(patch_root=patch_root)
+    api.bot_update.ensure_checkout(
+        patch_root=patch_root, recipe_revision_overrides=override_revisions)
     api.gclient.runhooks()
 
   # Project => (where to find it, how to run its tests).
