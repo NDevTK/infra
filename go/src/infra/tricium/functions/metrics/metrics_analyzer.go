@@ -7,6 +7,7 @@ package main
 import (
 	"encoding/xml"
 	"flag"
+	"fmt"
 	tricium "infra/tricium/api/v1"
 	"io/ioutil"
 	"log"
@@ -60,6 +61,9 @@ func main() {
 	}
 	singletonEnums := getSingleElementEnums(filepath.Join(*inputDir, *enumsPath))
 	obsoletedHistograms := getObsoletedHistograms(*commitMessage)
+	histogramStatus := make(map[string]histogramStatus)
+	globalObsoleteMessagePattern := regexp.MustCompile(`OBSOLETE_HISTOGRAM=(.+)`)
+	globalMessageExists := globalObsoleteMessagePattern.Match([]byte(*commitMessage))
 
 	results := &tricium.Data_Results{}
 	for _, filePath := range filePaths {
@@ -69,7 +73,7 @@ func main() {
 		if ext := filepath.Ext(filePath); ext == ".xml" {
 			switch strings.TrimSuffix(filepath.Base(filePath), ext) {
 			case "histograms":
-				results.Comments = append(results.Comments, analyzeHistogramFile(f, filePath, *prevDir, filesChanged, singletonEnums, obsoletedHistograms)...)
+				results.Comments = append(results.Comments, analyzeHistogramFile(f, filePath, *prevDir, filesChanged, singletonEnums, obsoletedHistograms, histogramStatus, globalMessageExists)...)
 			case "histogram_suffixes_list":
 				results.Comments = append(results.Comments, analyzeHistogramSuffixesFile(f, filePath, filesChanged)...)
 			}
@@ -80,6 +84,21 @@ func main() {
 
 	// Check if all obsoletion messages has a corresponding removed histogram.
 	results.Comments = append(results.Comments, analyzeCommitMessage(obsoletedHistograms)...)
+
+	removedHistograms := make([]string, 0, len(histogramStatus))
+	for hist := range histogramStatus {
+		if histogramStatus[hist] == REMOVE {
+			removedHistograms = append(removedHistograms, hist)
+		}
+	}
+
+	if len(removedHistograms) > 0 {
+		comment := &tricium.Data_Comment{
+			Category: category + "/Removed",
+			Message:  fmt.Sprintf(allRemovedHistogramInfo, strings.Join(removedHistograms, ", ")),
+		}
+		results.Comments = append(results.Comments, comment)
+	}
 
 	// Write Tricium RESULTS data.
 	path, err := tricium.WriteDataType(*outputDir, results)
