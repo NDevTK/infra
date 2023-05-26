@@ -124,6 +124,7 @@ func TestTastConversions(t *testing.T) {
 				Tags: []*pb.StringPair{
 					pbutil.StringPair("contacts", "user1@google.com,user2@google.com"),
 					pbutil.StringPair("testKey", "testValue"),
+					pbutil.StringPair(executionOrderTag, "1"),
 					pbutil.StringPair("bug_component", "b:1234"),
 				},
 				TestMetadata: &pb.TestMetadata{
@@ -163,6 +164,7 @@ func TestTastConversions(t *testing.T) {
 					},
 					Tags: []*pb.StringPair{
 						pbutil.StringPair("contacts", "user1@google.com,user2@google.com"),
+						pbutil.StringPair(executionOrderTag, "1"),
 						pbutil.StringPair("owners", "owner1@test.com,owner2@test.com"),
 						pbutil.StringPair("bug_component", "b:1234"),
 					},
@@ -190,6 +192,7 @@ func TestTastConversions(t *testing.T) {
 					},
 					Tags: []*pb.StringPair{
 						pbutil.StringPair("contacts", "user1@google.com,user2@google.com"),
+						pbutil.StringPair(executionOrderTag, "2"),
 						pbutil.StringPair("bug_component", "crbug:OS>LaCrOS"),
 					},
 					TestMetadata: &pb.TestMetadata{
@@ -237,6 +240,7 @@ func TestTastConversions(t *testing.T) {
 				},
 				Tags: []*pb.StringPair{
 					pbutil.StringPair("contacts", "user1@google.com,user2@google.com"),
+					pbutil.StringPair(executionOrderTag, "1"),
 					pbutil.StringPair("bug_component", "b:1234"),
 				},
 				TestMetadata: &pb.TestMetadata{
@@ -286,6 +290,7 @@ func TestTastConversions(t *testing.T) {
 				},
 				Tags: []*pb.StringPair{
 					pbutil.StringPair("contacts", "user1@google.com,user2@google.com"),
+					pbutil.StringPair(executionOrderTag, "1"),
 					pbutil.StringPair("bug_component", "b:1234"),
 				},
 				TestMetadata: &pb.TestMetadata{

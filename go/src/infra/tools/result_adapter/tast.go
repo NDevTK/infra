@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 	"time"
 
@@ -89,7 +90,7 @@ func (r *TastResults) ToProtos(ctx context.Context, testMetadataFile string, pro
 
 	// Convert all tast cases to TestResult.
 	var ret []*sinkpb.TestResult
-	for _, c := range r.Cases {
+	for i, c := range r.Cases {
 		testName := addTastPrefix(c.Name)
 		status := genCaseStatus(c)
 		tr := &sinkpb.TestResult{
@@ -111,6 +112,8 @@ func (r *TastResults) ToProtos(ctx context.Context, testMetadataFile string, pro
 		contacts := strings.Join(c.Contacts[:], ",")
 		tr.Tags = append(tr.Tags, pbutil.StringPair("contacts", contacts))
 		tr.Tags = append(tr.Tags, c.SearchFlags...)
+		tr.Tags = append(tr.Tags, pbutil.StringPair(executionOrderTag,
+			strconv.Itoa(i+1)))
 
 		testMetadata, ok := metadata[testName]
 		if ok {

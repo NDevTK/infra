@@ -115,18 +115,24 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 
 			expected := []*sinkpb.TestResult{
 				{
-					TestId:       "test1",
-					Expected:     true,
-					Status:       pb.TestStatus_PASS,
-					StartTime:    timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
-					Duration:     &duration.Duration{Seconds: 4},
+					TestId:    "test1",
+					Expected:  true,
+					Status:    pb.TestStatus_PASS,
+					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
+					Duration:  &duration.Duration{Seconds: 4},
+					Tags: []*pb.StringPair{
+						pbutil.StringPair(executionOrderTag, "1"),
+					},
 					TestMetadata: &pb.TestMetadata{},
 				},
 				{
-					TestId:       "test2",
-					Expected:     true,
-					Status:       pb.TestStatus_SKIP,
-					StartTime:    timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
+					TestId:    "test2",
+					Expected:  true,
+					Status:    pb.TestStatus_SKIP,
+					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
+					Tags: []*pb.StringPair{
+						pbutil.StringPair(executionOrderTag, "2"),
+					},
 					TestMetadata: &pb.TestMetadata{},
 				},
 				{
@@ -136,6 +142,9 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					SummaryHtml: "<pre>test failure</pre>",
 					FailureReason: &pb.FailureReason{
 						PrimaryErrorMessage: "test failure",
+					},
+					Tags: []*pb.StringPair{
+						pbutil.StringPair(executionOrderTag, "3"),
 					},
 					TestMetadata: &pb.TestMetadata{},
 				},
@@ -147,8 +156,11 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					FailureReason: &pb.FailureReason{
 						PrimaryErrorMessage: "test error",
 					},
-					StartTime:    timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
-					Duration:     &duration.Duration{Seconds: 4},
+					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
+					Duration:  &duration.Duration{Seconds: 4},
+					Tags: []*pb.StringPair{
+						pbutil.StringPair(executionOrderTag, "4"),
+					},
 					TestMetadata: &pb.TestMetadata{},
 				},
 				{
@@ -159,8 +171,11 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					FailureReason: &pb.FailureReason{
 						PrimaryErrorMessage: "test abort",
 					},
-					StartTime:    timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
-					Duration:     &duration.Duration{Seconds: 4},
+					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
+					Duration:  &duration.Duration{Seconds: 4},
+					Tags: []*pb.StringPair{
+						pbutil.StringPair(executionOrderTag, "5"),
+					},
 					TestMetadata: &pb.TestMetadata{},
 				},
 			}
@@ -191,6 +206,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 4},
 					Tags: []*pb.StringPair{
+						pbutil.StringPair(executionOrderTag, "1"),
 						pbutil.StringPair("owners", "owner1@test.com"),
 						pbutil.StringPair("requirements", "requirement 1"),
 						pbutil.StringPair("bug_component", "b:1234"),
@@ -213,6 +229,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					Status:    pb.TestStatus_SKIP,
 					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 					Tags: []*pb.StringPair{
+						pbutil.StringPair(executionOrderTag, "2"),
 						pbutil.StringPair("owners", "owner1@test.com,owner2@test.com"),
 					},
 					TestMetadata: &pb.TestMetadata{},
@@ -226,6 +243,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 						PrimaryErrorMessage: "test failure",
 					},
 					Tags: []*pb.StringPair{
+						pbutil.StringPair(executionOrderTag, "3"),
 						pbutil.StringPair("requirements", "requirement a,requirement b"),
 					},
 					TestMetadata: &pb.TestMetadata{},
@@ -241,6 +259,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 4},
 					Tags: []*pb.StringPair{
+						pbutil.StringPair(executionOrderTag, "4"),
 						pbutil.StringPair("bug_component", "crbug:Blink>JavaScript>WebAssembly"),
 					},
 					TestMetadata: &pb.TestMetadata{
@@ -262,8 +281,11 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					FailureReason: &pb.FailureReason{
 						PrimaryErrorMessage: "test abort",
 					},
-					StartTime:    timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
-					Duration:     &duration.Duration{Seconds: 4},
+					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
+					Duration:  &duration.Duration{Seconds: 4},
+					Tags: []*pb.StringPair{
+						pbutil.StringPair(executionOrderTag, "5"),
+					},
 					TestMetadata: &pb.TestMetadata{},
 				},
 			}

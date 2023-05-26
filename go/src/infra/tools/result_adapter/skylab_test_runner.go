@@ -10,10 +10,12 @@ import (
 	"fmt"
 	"html"
 	"io"
+	"strconv"
 	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -62,7 +64,7 @@ func (r *TestRunnerResult) ToProtos(ctx context.Context, testMetadataFile string
 	}
 
 	var ret []*sinkpb.TestResult
-	for _, c := range r.Autotest.TestCases {
+	for i, c := range r.Autotest.TestCases {
 		status := genTestCaseStatus(c)
 		tr := &sinkpb.TestResult{
 			TestId: c.Name,
@@ -88,9 +90,13 @@ func (r *TestRunnerResult) ToProtos(ctx context.Context, testMetadataFile string
 			}
 		}
 
+		// Add Tags to test results.
+		tr.Tags = append(tr.Tags, pbutil.StringPair(executionOrderTag,
+			strconv.Itoa(i+1)))
+
 		testMetadata, ok := metadata[c.Name]
 		if ok {
-			tr.Tags = metadataToTags(testMetadata)
+			tr.Tags = append(tr.Tags, metadataToTags(testMetadata)...)
 			tr.TestMetadata.BugComponent, err = parseBugComponentMetadata(testMetadata)
 			if err != nil {
 				logging.Errorf(

@@ -48,6 +48,11 @@ const (
 
 	// Prefix of Monorail components.
 	monorailBugComponentPrefix = "crbug:"
+
+	// Common tags
+	// Test execution order within a single build / invocation.
+	// Starts from 1.
+	executionOrderTag = "execution_order"
 )
 
 // summaryTmpl is used to generate SummaryHTML in GTest and JTR-based test
