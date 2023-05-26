@@ -1,6 +1,11 @@
 <histogram-configuration>
     <histograms>
-        <histogram name="Test.Histogram1" units="units" expires_after="2019-12-30">
+        <histogram name="Test.Histogram1" units="units" expires_after="M150">
+            <owner>ltina@google.com</owner>
+            <owner>chrome-metrics-team@google.com</owner>
+            <summary> This is a summary </summary>
+        </histogram>
+        <histogram name="Test.Histogram3" units="units" expires_after="M150">
             <owner>ltina@google.com</owner>
             <owner>chrome-metrics-team@google.com</owner>
             <summary> This is a summary </summary>

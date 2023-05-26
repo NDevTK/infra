@@ -1,0 +1,38 @@
+diff --git a/rm/histograms.xml b/rm/histograms.xml
+index 63509fb..aed048a 100644
+--- a/rm/histograms.xml
++++ b/rm/histograms.xml
+@@ -1,7 +1,6 @@
+ <histogram-configuration>
+     <histograms>
+         <variants name="Character">
+-            <variant name="Bulbasaur"/>
+             <variant name="Charizard"/>
+         </variants>
+         <histogram name="Test.Histogram1" units="units" expires_after="2019-12-30">
+@@ -15,13 +14,7 @@
+             <summary> This is a summary </summary>
+             <token key="Character" variants="Character"/>
+             <token key="OpponentType">
+-                <variant name="Dragon" summary="dragon"/>
+                 <variant name="Flying" summary="flappity-flap"/>
+-                <variant name="Psychic" summary="psychic">
+-                    <obsolete>
+-                        Removed 2023/09.
+-                    </obsolete>
+-                </variant>
+             </token>
+         </histogram>
+         <histogram name="Test.{Character}.Histogram" units="units" expires_after="2019-12-30">
+@@ -30,10 +23,5 @@
+             <summary> This is a summary </summary>
+             <token key="Character" variants="Character"/>
+         </histogram>
+-        <histogram name="Test.Histogram3" units="units" expires_after="2019-12-30">
+-            <owner>ltina@google.com</owner>
+-            <owner>chrome-metrics-team@google.com</owner>
+-            <summary> This is a summary </summary>
+-        </histogram>
+     </histograms>
+ </histogram-configuration>
+\ No newline at end of file
