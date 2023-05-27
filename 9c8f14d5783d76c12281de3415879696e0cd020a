@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "de209705_70168426",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-05-27T01:12:15Z",
+      "side": 1,
+      "message": "I think it\u0027d be clear if we mention in a comment that one is a list of inline variants and the other is the out-of-line variants name.",
+      "range": {
+        "startLine": 102,
+        "startChar": 1,
+        "endLine": 104,
+        "endChar": 1
+      },
+      "revId": "9c8f14d5783d76c12281de3415879696e0cd020a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "054e5e21_94725888",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 597,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-05-27T01:12:15Z",
+      "side": 1,
+      "message": "I don\u0027t get it. Nothing is filled at this point. Why bother expanding all the histograms we\u0027re going to return an empty list when globalMessage is set to true?",
+      "range": {
+        "startLine": 595,
+        "startChar": 1,
+        "endLine": 597,
+        "endChar": 2
+      },
+      "revId": "9c8f14d5783d76c12281de3415879696e0cd020a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2ebec7ba_245ac8e0",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 669,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-05-27T01:12:15Z",
+      "side": 1,
+      "message": "Why check discontinuity here?",
+      "range": {
+        "startLine": 667,
+        "startChar": 2,
+        "endLine": 669,
+        "endChar": 3
+      },
+      "revId": "9c8f14d5783d76c12281de3415879696e0cd020a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0e36bab8_57ce5c8d",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check_test.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 624,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-05-27T01:12:15Z",
+      "side": 1,
+      "message": "Data discontinuity doesn\u0027t mean the histogram is expired. It\u0027s technically the same as users add a new histogram whose name used to exist. But the point is, it\u0027s a newly added histogram so it should definitely be checked.",
+      "range": {
+        "startLine": 624,
+        "startChar": 78,
+        "endLine": 624,
+        "endChar": 119
+      },
+      "revId": "9c8f14d5783d76c12281de3415879696e0cd020a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dac22f93_7ff6bbf2",
+        "filename": "go/src/infra/tricium/functions/metrics/metrics_analyzer.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-05-27T01:12:15Z",
+      "side": 1,
+      "message": "I\u0027m still not quite understand what the global obsolete message mean but I would suggest we spilt it into two different cls as I feel it has nothing to do with the patterned histograms support here and you don\u0027t have a unit test for it.",
+      "range": {
+        "startLine": 65,
+        "startChar": 1,
+        "endLine": 65,
+        "endChar": 29
+      },
+      "revId": "9c8f14d5783d76c12281de3415879696e0cd020a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
