@@ -60,6 +60,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "53acf6de_21df9584",
+        "filename": "go/src/infra/cros/recovery/config/config_chameleon.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1551857
+      },
+      "writtenOn": "2023-05-27T13:30:40Z",
+      "side": 1,
+      "message": "Thanks for the suggestion! Earlier I added this dependency based on our discussion on google doc code-snippet, and now I\u0027m also feeling comfortable to remove this, considering that this exec is unlikely to be called outside of the chameleon repair plan. Will remove this dependency",
+      "parentUuid": "c4a0965f_1289b57b",
+      "range": {
+        "startLine": 76,
+        "startChar": 4,
+        "endLine": 78,
+        "endChar": 6
+      },
+      "revId": "9a02f6d92a334f443cf11f49855f4ad6e7c11536",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "dcb61209_d1e1eee3",
         "filename": "go/src/infra/cros/recovery/internal/execs/chameleon/chameleon_execs.go",
         "patchSetId": 4
@@ -71,6 +95,30 @@
       "writtenOn": "2023-05-26T18:49:57Z",
       "side": 1,
       "message": "i think err need to be handled later as set state will not be reached. \n\nanother option to set state broken first and then update to good after error.",
+      "range": {
+        "startLine": 60,
+        "startChar": 1,
+        "endLine": 63,
+        "endChar": 2
+      },
+      "revId": "9a02f6d92a334f443cf11f49855f4ad6e7c11536",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2e4a30e0_e02dc633",
+        "filename": "go/src/infra/cros/recovery/internal/execs/chameleon/chameleon_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1551857
+      },
+      "writtenOn": "2023-05-27T13:30:40Z",
+      "side": 1,
+      "message": "Thanks for the call-out! will handle this after setting state.",
+      "parentUuid": "dcb61209_d1e1eee3",
       "range": {
         "startLine": 60,
         "startChar": 1,
