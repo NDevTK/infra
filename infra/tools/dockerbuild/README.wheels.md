@@ -1,120 +1,148 @@
 # Adding a new wheel for vpython
 
-For this example, we'll be adding 'scandir' at version 1.7.
+Adding a new vpython wheel is often just a single line of code, but
+in some cases may be more complicated. This doc provides a step-by-step
+flow for common and less-common situations.
 
-1. Go to pypi and find the wheel at the appropriate version in question.
-   1. Project: https://pypi.org/project/scandir
-   1. Versions: https://pypi.org/project/scandir/#history
-   1. Version 1.7: https://pypi.org/project/scandir/1.7/
-   1. Files for 1.7: https://pypi.org/project/scandir/1.7/#files
+1. First, go to https://pypi.org/ and find the wheel at the version you will be adding.
+   Click "Download files" to see how the wheel is distributed.
 
-1. Determine what type of wheel it is (in order of preference):
-   1. Universal
-      1. Pure-python libraries already packaged as wheels.
-      1. These will have a `*-py2.py3-none-any.whl` file (may be just py3)
-      1. Example: https://pypi.org/project/requests/#files
-   1. UniversalSource
-      1. Pure-python libraries distributed as a tarball.
-      1. These will have a `*.tar.gz` file. You'll have to fetch this tarball
-         and look to see if it contains any .c or .cc files. If it does, then
-         this is either `Prebuilt` or `SourceOrPrebuilt`.
-      1. Example: https://pypi.org/project/httplib2/#files
-   1. SourceOrPrebuilt
-      1. Python libs with c extensions. We prefer to build from source, but
-         if it's too complicated (lots of build-time dependencies, etc) then
-         we may use prebuilt wheels.
-      1. They will include `*.tar.gz` with the library source, but may also
-         contain `.whl` files for some platforms.
-      1. Use the `packaged` attribute to control which platforms use prebuilt
-         wheels. Prefer to set it to empty `()` to build all platforms from
-         source.
-      1. CIPD packages may be specified for build-time library or tool
-         dependencies. For details see the `tpp_libs` and `tpp_tools`
-         attributes.
-      1. Example: https://pypi.org/project/scandir/#files
-      1. Example (no .whl): https://pypi.org/project/wrapt/#files
-   1. Prebuilt
-      1. Python libs with c extensions, pre-built for platforms we care about.
-      1. This is more concise than `SourceOrPrebuilt` if we do not build from
-         source for any of the platforms.
-      1. Example: https://pypi.org/project/scipy/#files
-   1. "Special" wheels
-      1. These deviate from the wheels above in some way, usually by requiring
-         additional C libraries or build steps.
-      1. We always prepare our wheels and their C extensions to be as static as
-         possible. Generally this means building the additional C libraries as
-         static ('.a') files, and adjusting the python setup.py to find this.
-      1. See the various implementations referenced by wheels.py to get a feel
-         for these.
-      1. Before implementing a custom wheel builder, check whether
-         `SourceOrPrebuilt` with `tpp_libs` and/or `tpp_tools` is sufficient.
-      1. These are (fortunately) pretty rare (but they do come up occasionally).
-   1. The "infra_libs" wheel
-      1. This one is REALLY special, but essentially packages the
-         [packages/infra_libs](/packages/infra_libs) wheel. Check
-         wheel_infra.py.
+1. Determine what type of wheel it is:
+   1. Universal (prebuilt)
+      * Pure-python libraries already packaged as wheels.
+      * These will have a `*-py2.py3-none-any.whl` file (may be just py3)
+      * Example: https://pypi.org/project/requests/#files
+      * See instructions in [Adding A Universal Wheel](#adding-a-universal-wheel).
+   1. Source archives
+      * These will have a `*.tar.gz` file or rarely another type of archive.
+         You'll have to fetch this tarball and look to see if it contains any
+         .c or .cc files. If it does not, then follow the instructions
+         in
+         [Adding A Universal Source Wheel](#adding-a-universalsource-wheel).
+      * If there are .c or .cc files, instead follow the instructions
+         in [Adding A SourceOrPrebuilt Wheel](#adding-a-sourceorprebuilt-wheel).
+   1. Special wheels
+      * Occasionally a wheel will require custom build steps beyond what the
+        standard classes provide. An example of this is [mpi4py](./wheel_mpi4py.py).
+        By implementing a custom build_fn, arbitrary steps can be executed.
+        This should be last resort; please ask for help in a bug before
+        implementing a wheel this way.
 
+1. If you are adding a new version of an existing wheel, please leave the old versions
+   and add a new entry for the new version. This helps keep [wheels.md](./wheels.md)
+   as a catalog of available wheels.
+1. Once you are done adding the wheel, run `vpython3 -m infra.tools.dockerbuild wheel-dump` to update `wheels.md` before creating your CL.
+1. The CL tryjobs will verify that the wheel builds on all of the platforms.
+1. Once the CL is committed, the production builders will build and upload the wheel to CIPD.
 
-Once you've identified the wheel type, open [wheels.py](./wheels.py) and find
-the relevant section. Each section is ordered by wheel name and then by symver.
-If you put the wheel definition in the wrong place, dockerbuild will tell you :)
+# Adding A Universal Wheel
 
-So for `scandir`, we see that there are prebuilts for windows, but for
-everything else we have to build it ourself.
+For Universal wheels, add a line like the following to the appropriate
+section of [wheels.py](./wheels.py) (for the `attrs` wheel):
 
-The wheels are built for linux platforms using Docker (hence "dockerbuild").
-Unfortunately this tool ONLY supports building for linux this way. For building
-mac and windows, this can use the ambient toolchain (i.e. have XCode or MSVS
-installed on your system). The 
-[build_wheels recipe](../../recipes/recipes/build_wheels.py) runs dockerbuild
-using hermetic versions of these toolchains which are fetched from CIPD.
+        Universal('attrs', '21.4.0'),
 
-Back to our example, we'll be adding a new entry to the SourceOrPrebuilt
-section:
+If the wheel file is named with `-py3-none-any` (rather than
+`py2.py3-none-any`), include a `pyversions` attribute:
 
-    SourceOrPrebuilt('scandir', '1.9.0',
-        packaged=[
-          'windows-x86',
-          'windows-x64',
-        ],
-    ),
+        Universal('cachetools', '4.2.2', pyversions=['py3']),
 
-This says the wheel `scandir-1.9.0` is either built from source (.tar.gz) or is
-prebuilt (for the following `packaged` platforms).
+dockerbuild will simply download and package the prebuilt universal wheel.
 
-*** note
-When adding a new version of an existing wheel, please only ADD it
-(don't replace an existing version). This is because existing .vpython specs
-will likely still reference the old version, and it's good to keep wheels.md
-as a full registry of available versions.
-***
+In the uncommon case that we need to patch the wheel source, the wheel
+must be added as a [UniversalSource](#adding-a-universalsource-wheel)
+wheel instead.
 
-And update the wheel.md documentation:
+# Adding A UniversalSource Wheel
 
-    vpython3 -m infra.tools.dockerbuild \
-       wheel-dump
+UniversalSource wheels can typically be added to the appropriate
+section of [wheels.py](./wheels.py) as follows, using the `httplib2`
+wheel as an example:
 
-Now, test that your wheel builds successfully using the following:
+        UniversalSource('httplib2', '0.13.1'),
 
-    vpython3 -m infra.tools.dockerbuild \
-       --logs-debug                     \
-       wheel-build                      \
-       --wheel 'scandir-1.9.0'          \
+In the uncommon case that we need to patch the wheel source, patch names
+can be listed after the wheel version:
 
-Notable options (check `--help` for details):
-  * `--wheel_re` - Use in place of `--wheel` to run for multiple wheels or
-    versions.
-  * `--platform` - Specify a specific platform to build for.
+        UniversalSource(
+            'clusterfuzz',
+            '2.5.6',
+            patches=('no-deps-install',),
+        ),
 
-Then you upload your CL and commit as usual.
+See the footnotes on [Custom Patches](#custom-patches) for more information.
 
-Once your CL is committed, the wheels will be automatically built and uploaded
-by the following builders:
+# Adding A SourceOrPrebuilt Wheel
 
-* [Universal](https://ci.chromium.org/p/infra-internal/builders/prod/Universal%20wheel%20builder)
-* Linux: [ARM](https://ci.chromium.org/p/infra-internal/builders/prod/Linux%20ARM%20wheel%20builder), [x64](https://ci.chromium.org/p/infra-internal/builders/prod/Linux%20x64%20wheel%20builder)
-* Mac: [ARM64](https://ci.chromium.org/p/infra-internal/builders/prod/Mac%20ARM64%20wheel%20builder), [x64](https://ci.chromium.org/p/infra-internal/builders/prod/Mac%20wheel%20builder)
-* Windows: [x64](https://ci.chromium.org/p/infra-internal/builders/prod/Windows-x64%20wheel%20builder), [x86](https://ci.chromium.org/p/infra-internal/builders/prod/Windows-x86%20wheel%20builder)
+SourceOrPrebuilt is used for wheels with compiled code, which we can either
+build from source (preferably), or use a prebuilt wheel from pypi.org.
+
+The simplest example looks like this:
+
+        SourceOrPrebuilt(
+            'zstandard', '0.16.0', packaged=(), pyversions=['py3']),
+    )
+
+The `packaged` attribute is a list of wheel platforms for which a prebuilt
+wheel should be used. Prefer to set it to an empty tuple `()`, to build from source on all
+platforms. If a given platform is too difficult to build from source, it can
+be specified as follows, using the platform names from
+[build_platform.py](./build_platform.py):
+
+            packaged=(
+                'windows-x86-py3.8',
+                'windows-x86-py3.11',
+                'windows-x64-py3.8',
+                'windows-x64-py3.11',
+            ),
+
+This would use prebuilt wheels for all of the Windows platforms.
+
+`pyversions` should typically be set to ['py3'] for newly-added wheels.
+It contains 'py2' for some older wheels so as to keep the naming consistent.
+
+Other useful attributes include:
+
+* `only_plat` specifies that the wheel should only be built on the given
+platforms.
+* `skip_plat` is the reverse of only_plat: the given platforms will not
+have the wheel built.
+* `patches` gives a list of patches to be applied, see
+[Custom Patches](#custom-patches).
+* `patch_version` is a patch version to be appended to the wheel version.
+It should be incremented whenever patches are changed, or if the build
+environment is changed and we want to trigger the wheel to rebuild.
+* `tpp_libs` (3pp-libs) is a list of prebuilt library packages to install
+from CIPD into the wheel build environment. For example:
+
+            tpp_libs=[('infra/3pp/static_libs/re2',
+                       'version:2@2022-12-01.chromium.1')],
+
+When cross-compiling, `tpp_libs` packages are installed for the target
+platform.
+
+* `tpp_tools` (3pp-tools) is a list of prebuilt build-time tool packages
+to install from CIPD into the wheel build environment. For example:
+
+            tpp_tools=[
+                ('infra/3pp/tools/cmake', 'version:2@3.26.0.chromium.7'),
+            ],
+
+When cross-compiling, `tpp_tools` packages are installed for the host
+platform.
+
+* `arch_map` can be used if the prebuilt wheels do not precisely match
+our usual wheel ABI. For example:
+
+            arch_map={'mac-x64-py3.8': ['macosx_10_14_x86_64']},
+
+allows the prebuilt wheel to use the macOS 10.14 ABI, whereas we typically
+target 10.13. You'll know that you need to use this if the build fails
+because pip is unable to find the prebuilt wheel. Be cautious when overriding
+the ABI to a newer OS version, as it means the packaged wheel may not work on
+all of the machines in our fleet.
+
+* TODO: describe build_deps
 
 ## Custom patches
 
@@ -123,14 +151,15 @@ or local fix for our system.
 
 Here's the quick overview:
 
-* Patches are only supported with `UniversalSource` since we need to unpack
-  the source & patch it directly before building the wheel.
+* Patches are only supported with `UniversalSource` and `SourceOrPrebuilt` since
+  we need to unpack the source & patch it directly before building the wheel.
 * All patches live under `patches/`.
 * All patches must be in the `-p1` format.
 * The filenames must start with the respective package name & version and end
   in `.patch`.  e.g. `UniversalSource('scandir', '1.9.0')` will have a prefix
   of `scandir-1.9.0-` and a suffix of `.patch`.
-* Add the shortnames into the `patches=(...)` tuple to `UniversalSource`.
+* Add the shortnames into the `patches=(...)` tuple to `UniversalSource` or
+  `SourceOrPrebuilt`.
 * All patches should be well documented in the file header itself.
 
 A short example:
