@@ -234,6 +234,11 @@ def wheel_tryjob(builder):
         cq_group = "infra",
         location_filters = [
             cq.location_filter(path_regexp = "infra/tools/dockerbuild/.+"),
+            # Exclude doc-only changes.
+            cq.location_filter(
+                path_regexp = "infra/tools/dockerbuild/.*README.*",
+                exclude = True,
+            ),
         ],
     )
 
