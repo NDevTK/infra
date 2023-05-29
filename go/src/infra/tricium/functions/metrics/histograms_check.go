@@ -32,6 +32,7 @@ const (
 	histogramEndTag     = "</histogram>"
 	ownerStartTag       = "<owner"
 	ownerEndTag         = "</owner"
+	variantsEndTag      = "</variants>"
 
 	oneOwnerError                = `[WARNING] It's preferred to list at least two owners, where the second is often a team mailing list or a src/path/to/OWNERS reference: https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Owners.`
 	firstOwnerTeamError          = `[WARNING] Please list an individual as the primary owner for this metric: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Owners.`
@@ -47,7 +48,7 @@ const (
 	unitsHighResolutionWarning   = `[WARNING] Histograms using microseconds should document whether the metric is reported for all clients or only clients with high-resolution clocks. If your histogram logging macro or function calls HistogramBase::AddTimeMicrosecondsGranularity() under the hood, then the metric is reported for only clients with high-resolution clocks. Separately, samples from clients with low-resolution clocks (e.g. on Windows, see TimeTicks::IsHighResolution()) may be as coarse as ~15.6ms.`
 	addedNamespaceWarning        = `[WARNING] Are you sure you want to add the namespace %s to histograms.xml? For most new histograms, it's appropriate to re-use one of the existing top-level histogram namespaces. For histogram names, the namespace is defined as everything preceding the first dot '.' in the name.`
 	singleElementEnumWarning     = `[WARNING] It looks like this is an enumerated histogram that contains only a single bucket. UMA metrics are difficult to interpret in isolation, so please either add one or more additional buckets that can serve as a baseline for comparison, or document what other metric should be used as a baseline during analysis. https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#enum-histograms.`
-	SuffixesDeprecationWarning   = `[WARNING]: The <histogram_suffixes> syntax is deprecated. If you're adding a new list of suffixes, please use patterned histograms instead. If you're modifying an existing list of suffixes, please consider migrating that list to use patterned histograms. See https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#patterned-histograms.`
+	SuffixesDeprecationWarning   = `[WARNING] The <histogram_suffixes> syntax is deprecated. If you're adding a new list of suffixes, please use patterned histograms instead. If you're modifying an existing list of suffixes, please consider migrating that list to use patterned histograms. See https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#patterned-histograms.`
 	osxNamespaceDeprecationError = `[ERROR] The namespace "OSX" is deprecated. Prefer adding new Mac histograms to the "Mac" namespace.`
 	removedHistogramInfo         = `[INFO] The following histograms were removed without an obsoletion message: %s. You can add obsoletion messages by adding "OBSOLETE_HISTOGRAM[histogram name]=obsoletion message" tags in the CL description.`
 	obsoletionMessageError       = `[ERROR] An obsoletion message has been added to following histograms: %s, but they are not removed. Please double check if there're typos.`
@@ -57,6 +58,7 @@ var (
 	// We need a pattern for matching the histogram start tag because
 	// there are other tags that share the "histogram" prefix like "histogram-suffixes"
 	histogramStartPattern     = regexp.MustCompile(`^<histogram($|\s|>)`)
+	variantsStartPattern      = regexp.MustCompile(`^<variants($|\s|>)`)
 	neverExpiryCommentPattern = regexp.MustCompile(`^<!--\s?expires-never`)
 	// Match date patterns of format YYYY-MM-DD.
 	expiryDatePattern      = regexp.MustCompile(`^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$`)
@@ -79,12 +81,33 @@ var (
 
 // histogram contains all info about a UMA histogram.
 type histogram struct {
-	Name    string   `xml:"name,attr"`
-	Enum    string   `xml:"enum,attr"`
-	Units   string   `xml:"units,attr"`
-	Expiry  string   `xml:"expires_after,attr"`
-	Owners  []string `xml:"owner"`
-	Summary string   `xml:"summary"`
+	Name     string   `xml:"name,attr"`
+	Enum     string   `xml:"enum,attr"`
+	Units    string   `xml:"units,attr"`
+	Expiry   string   `xml:"expires_after,attr"`
+	Owners   []string `xml:"owner"`
+	Summary  string   `xml:"summary"`
+	Tokens   []token  `xml:"token"`
+	Obsolete string   `xml:"obsolete"`
+}
+
+type variant struct {
+	Name     string `xml:"name,attr"`
+	Obsolete string `xml:"obsolete"`
+}
+
+type token struct {
+	Key string `xml:"key,attr"`
+	// Variants contains a list of inline <variant>s.
+	Variants []variant `xml:"variant"`
+	// VariantsName contains the name of the out-of-line <variants>.
+	VariantsName string `xml:"variants,attr"`
+}
+
+// variants contains info about a <variants>.
+type variants struct {
+	Name     string    `xml:"name,attr"`
+	Variants []variant `xml:"variant"`
 }
 
 // metadata contains metadata about histogram tags and required comments.
@@ -140,12 +163,12 @@ func analyzeHistogramFile(f io.Reader, filePath, prevDir string, filesChanged *d
 	defer closeFileOrDie(oldFile)
 	var emptySet stringset.Set
 	var emptyMap map[string]*histogram
-	_, oldHistograms, oldNamespaces, _ := analyzeChangedLines(bufio.NewScanner(oldFile), filePath, filesChanged.removedLines[filePath], emptySet, emptyMap, REMOVED)
+	_, oldHistograms, oldNamespaces, _, oldVariants := analyzeChangedLines(bufio.NewScanner(oldFile), filePath, filesChanged.removedLines[filePath], emptySet, emptyMap, REMOVED)
 	// Analyze added lines in file (if any).
-	comments, newHistograms, newNamespaces, namespaceLineNums := analyzeChangedLines(bufio.NewScanner(f), filePath, filesChanged.addedLines[filePath], singletonEnums, oldHistograms, ADDED)
+	comments, newHistograms, newNamespaces, namespaceLineNums, newVariants := analyzeChangedLines(bufio.NewScanner(f), filePath, filesChanged.addedLines[filePath], singletonEnums, oldHistograms, ADDED)
 	allComments = append(allComments, comments...)
 	// Identify if any histograms were removed.
-	allComments = append(allComments, generateCommentsForRemovedHistograms(filePath, newHistograms, oldHistograms, obsoletedHistograms)...)
+	allComments = append(allComments, generateCommentsForRemovedHistograms(filePath, newHistograms, oldHistograms, newVariants, oldVariants, obsoletedHistograms)...)
 	// Identify if any new namespaces were added.
 	allComments = append(allComments, generateCommentsForAddedNamespaces(filePath, newNamespaces, oldNamespaces, namespaceLineNums)...)
 	return showAllComments(allComments)
@@ -183,7 +206,8 @@ func analyzeCommitMessage(obsoletedHistograms map[string]bool) []*tricium.Data_C
 // 2. A map containing all histograms keyed by their names in the file.
 // 3. A set containing all the names of namespaces in the file.
 // 4. A map from namespace to line number.
-func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int, singletonEnums stringset.Set, oldHistograms map[string]*histogram, mode changeMode) ([]*tricium.Data_Comment, map[string]*histogram, stringset.Set, map[string]int) {
+// 5. A map containing all variants keyed by their names in the file.
+func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int, singletonEnums stringset.Set, oldHistograms map[string]*histogram, mode changeMode) ([]*tricium.Data_Comment, map[string]*histogram, stringset.Set, map[string]int, map[string]*variants) {
 	var comments []*tricium.Data_Comment
 	// meta is a struct that holds line numbers of different tags in histogram.
 	var meta *metadata
@@ -191,9 +215,14 @@ func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int
 	var currHistogram []byte
 	// histogramStart is the starting line number for the current histogram.
 	var histogramStart int
+	// currVariants is a buffer that holds the current variants.
+	var currVariants []byte
+	// variantsStart is the starting line number for the current variants.
+	var variantsStart int
 	// If any line in the histogram showed up as an added or removed line in the diff.
 	var histogramChanged bool
 	allHistograms := make(map[string]*histogram)
+	allVariants := make(map[string]*variants)
 	namespaces := make(stringset.Set)
 	namespaceLineNums := make(map[string]int)
 	lineNum := 1
@@ -206,6 +235,9 @@ func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int
 		if currHistogram != nil {
 			// Add line to currHistogram if currently between some histogram tags.
 			currHistogram = append(currHistogram, newBytes...)
+		} else if currVariants != nil {
+			// Add line to currVariants if currently between some variants tags.
+			currVariants = append(currVariants, newBytes...)
 		}
 		line := strings.TrimSpace(scanner.Text())
 		if histogramStartPattern.MatchString(line) {
@@ -214,13 +246,23 @@ func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int
 			currHistogram = newBytes
 			meta = newMetadata(lineNum)
 			histogramChanged = false
+		} else if variantsStartPattern.MatchString(line) {
+			// Initialize currVariants and record the starting line number when a new variants is encountered.
+			currVariants = newBytes
+			variantsStart = lineNum
 		}
 		if changedIndex < len(linesChanged) && lineNum == linesChanged[changedIndex] {
 			histogramChanged = true
 			changedIndex++
 		}
-		// Only analyze lines if it's inside the <histogram> block. e.g. we don't need to
-		// check <variants> (for now), top level comments, etc.
+		if strings.HasPrefix(line, variantsEndTag) {
+			// Analyze entire variants after variants end tag is encountered.
+			variants := bytesToVariants(currVariants, variantsStart)
+			allVariants[variants.Name] = variants
+			currVariants = nil
+		}
+		// We've already checked <variants>, so only analyze lines if it's inside the <histogram> block.
+		// e.g. we don't need to check top level comments, etc.
 		if currHistogram == nil {
 			lineNum++
 			continue
@@ -259,7 +301,7 @@ func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int
 		}
 		lineNum++
 	}
-	return comments, allHistograms, namespaces, namespaceLineNums
+	return comments, allHistograms, namespaces, namespaceLineNums, allVariants
 }
 
 func parseNamespaceFromHistogramName(histogramName string) string {
@@ -306,6 +348,14 @@ func bytesToHistogram(histBytes []byte, meta *metadata) *histogram {
 		log.Panicf("WARNING: Failed to unmarshal histogram at line %d", meta.HistogramLineNum)
 	}
 	return hist
+}
+
+func bytesToVariants(variantsBytes []byte, variantsStart int) *variants {
+	var variants *variants
+	if err := xml.Unmarshal(variantsBytes, &variants); err != nil {
+		log.Panicf("WARNING: Failed to unmarshal variants at line %s", string(variantsBytes))
+	}
+	return variants
 }
 
 func checkOwners(path string, hist *histogram, meta *metadata) *tricium.Data_Comment {
@@ -374,13 +424,8 @@ func checkExpiry(path string, hist *histogram, meta *metadata, oldHistograms map
 	// Check if there is any data discontinuity when |hist| already exists and is already
 	// expired for more than a month.
 	if oldHist, ok := oldHistograms[hist.Name]; ok {
-		if oldHist.Expiry != "" {
-			if inputDate, _, _, ok := getExpiryDate(oldHist.Expiry); ok {
-				dateDiff := int(inputDate.Sub(now()).Hours() / 24)
-				if dateDiff < -30 {
-					expiryComments = append(expiryComments, createExpiryComment(dataDiscontinuityWarning, path, meta))
-				}
-			}
+		if checkDiscontinuity(oldHist) {
+			expiryComments = append(expiryComments, createExpiryComment(dataDiscontinuityWarning, path, meta))
 		}
 	}
 	if expiry == "" {
@@ -532,17 +577,11 @@ func checkEnums(path string, hist *histogram, meta *metadata, singletonEnums str
 	return nil
 }
 
-func generateCommentsForRemovedHistograms(path string, newHistograms map[string]*histogram, oldHistograms map[string]*histogram, obsoletedHistograms map[string]bool) []*tricium.Data_Comment {
+func generateCommentsForRemovedHistograms(path string, newHistograms map[string]*histogram, oldHistograms map[string]*histogram, newVariants map[string]*variants, oldVariants map[string]*variants, obsoletedHistograms map[string]bool) []*tricium.Data_Comment {
 	var comments []*tricium.Data_Comment
 	var removedWithoutMessageHistograms []string
-	newHistogramNames := make(stringset.Set)
-	oldHistogramNames := make(stringset.Set)
-	for name := range newHistograms {
-		newHistogramNames.Add(name)
-	}
-	for name := range oldHistograms {
-		oldHistogramNames.Add(name)
-	}
+	newHistogramNames := expandHistograms(newHistograms, newVariants)
+	oldHistogramNames := expandHistograms(oldHistograms, oldVariants)
 	allRemovedHistograms := oldHistogramNames.Difference(newHistogramNames).ToSlice()
 	for _, removedHistogram := range allRemovedHistograms {
 		if _, present := obsoletedHistograms[removedHistogram]; present {
@@ -552,6 +591,7 @@ func generateCommentsForRemovedHistograms(path string, newHistograms map[string]
 		}
 	}
 	if len(removedWithoutMessageHistograms) > 0 {
+		sort.Strings(removedWithoutMessageHistograms)
 		comment := &tricium.Data_Comment{
 			Category: category + "/Removed",
 			Message:  fmt.Sprintf(removedHistogramInfo, strings.Join(removedWithoutMessageHistograms, ", ")),
@@ -604,4 +644,50 @@ func showAllComments(comments []*tricium.Data_Comment) []*tricium.Data_Comment {
 		comment.ShowOnUnchangedLines = true
 	}
 	return comments
+}
+
+// expandHistograms generates a map containing all histograms that are not obsolete, keyed by their
+// names after expansion.
+func expandHistograms(hists map[string]*histogram, variants map[string]*variants) stringset.Set {
+	histogramNames := make(stringset.Set)
+	for name := range hists {
+		hist := hists[name]
+		if hist.Obsolete != "" || checkDiscontinuity(hist) {
+			continue
+		}
+		if hist.Tokens == nil {
+			histogramNames.Add(name)
+		} else {
+			currHistogramNames := make(stringset.Set)
+			currHistogramNames.Add(name)
+			for _, token := range hist.Tokens {
+				newHistogramNames := make(stringset.Set)
+				for patternedName := range currHistogramNames {
+					currVariants := token.Variants
+					if currVariants == nil {
+						currVariants = variants[token.Key].Variants
+					}
+					for _, variant := range currVariants {
+						if variant.Obsolete != "" {
+							continue
+						}
+						newHistogramNames.Add(strings.ReplaceAll(patternedName, "{"+token.Key+"}", variant.Name))
+					}
+				}
+				currHistogramNames = newHistogramNames
+			}
+			histogramNames = histogramNames.Union(currHistogramNames)
+		}
+	}
+	return histogramNames
+}
+
+func checkDiscontinuity(hist *histogram) bool {
+	if hist.Expiry != "" {
+		if inputDate, _, _, ok := getExpiryDate(hist.Expiry); ok {
+			dateDiff := int(inputDate.Sub(now()).Hours() / 24)
+			return dateDiff < -30
+		}
+	}
+	return false
 }
