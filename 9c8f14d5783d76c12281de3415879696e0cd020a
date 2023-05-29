@@ -234,6 +234,30 @@
       },
       "revId": "9c8f14d5783d76c12281de3415879696e0cd020a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "100808b1_fd64db64",
+        "filename": "go/src/infra/tricium/functions/metrics/metrics_analyzer.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1554177
+      },
+      "writtenOn": "2023-05-29T22:25:07Z",
+      "side": 1,
+      "message": "Just realize I forgot to add, global obsoletion message is a message that applies to all histograms removed in the CL, it will be overridden by explicit obsoletion messages and will ignore obsolete or deprecated histograms (can be easily changed if it\u0027s not a good idea).",
+      "parentUuid": "63db491d_882d9ac7",
+      "range": {
+        "startLine": 65,
+        "startChar": 1,
+        "endLine": 65,
+        "endChar": 29
+      },
+      "revId": "9c8f14d5783d76c12281de3415879696e0cd020a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
