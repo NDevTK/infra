@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1c7b0c11_67d44859",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1554177
+      },
+      "writtenOn": "2023-05-29T18:55:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "de209705_70168426",
+      "range": {
+        "startLine": 102,
+        "startChar": 1,
+        "endLine": 104,
+        "endChar": 1
+      },
+      "revId": "9c8f14d5783d76c12281de3415879696e0cd020a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "054e5e21_94725888",
@@ -37,6 +61,30 @@
       "writtenOn": "2023-05-27T01:12:15Z",
       "side": 1,
       "message": "I don\u0027t get it. Nothing is filled at this point. Why bother expanding all the histograms we\u0027re going to return an empty list when globalMessage is set to true?",
+      "range": {
+        "startLine": 595,
+        "startChar": 1,
+        "endLine": 597,
+        "endChar": 2
+      },
+      "revId": "9c8f14d5783d76c12281de3415879696e0cd020a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c151324f_b04ece51",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 597,
+      "author": {
+        "id": 1554177
+      },
+      "writtenOn": "2023-05-29T18:55:01Z",
+      "side": 1,
+      "message": "updateHistogramStatus will update histogramStatus, so we still need the expansions. I\u0027ll remove CL-level obsoletion message code to a separate CL to make it less confusing :)",
+      "parentUuid": "054e5e21_94725888",
       "range": {
         "startLine": 595,
         "startChar": 1,
@@ -72,6 +120,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c733dbae_83ac1d95",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 669,
+      "author": {
+        "id": 1554177
+      },
+      "writtenOn": "2023-05-29T18:55:01Z",
+      "side": 1,
+      "message": "so I see you added a test in https://chromium-review.googlesource.com/c/infra/infra/+/4494283 with a test including a comment \"Remove an already deprecated histogram shouldn\u0027t show a Tricium warning.\", it was passing but it\u0027s because the test itself is flawed (sorry the test set-up wasn\u0027t super clear).\n\nSo what was happening was when removing a deprecated histogram without a obsoletion message there would be a Tricium warning, which based on the comment I thought you didn\u0027t want.\n\nI guess I\u0027m not entirely sure what deprecated means here, so I just decided to check discontinuity, but now I think about it maybe I should just check if the histogram has already expired?",
+      "parentUuid": "2ebec7ba_245ac8e0",
+      "range": {
+        "startLine": 667,
+        "startChar": 2,
+        "endLine": 669,
+        "endChar": 3
+      },
+      "revId": "9c8f14d5783d76c12281de3415879696e0cd020a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0e36bab8_57ce5c8d",
         "filename": "go/src/infra/tricium/functions/metrics/histograms_check_test.go",
         "patchSetId": 12
@@ -95,6 +167,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "36abe1a8_79f688b1",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check_test.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 624,
+      "author": {
+        "id": 1554177
+      },
+      "writtenOn": "2023-05-29T18:55:01Z",
+      "side": 1,
+      "message": "sorry for the confusion, I guess I messed these two terms up and wasn\u0027t being clear in the test description. We do still check the newly added histogram (in analyzeChangedLines). We just don\u0027t show an info to add an obsoletion message if a histogram with discontinuity was removed, for details see my reply to the previous comment.",
+      "parentUuid": "0e36bab8_57ce5c8d",
+      "range": {
+        "startLine": 624,
+        "startChar": 78,
+        "endLine": 624,
+        "endChar": 119
+      },
+      "revId": "9c8f14d5783d76c12281de3415879696e0cd020a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "dac22f93_7ff6bbf2",
         "filename": "go/src/infra/tricium/functions/metrics/metrics_analyzer.go",
         "patchSetId": 12
@@ -106,6 +202,30 @@
       "writtenOn": "2023-05-27T01:12:15Z",
       "side": 1,
       "message": "I\u0027m still not quite understand what the global obsolete message mean but I would suggest we spilt it into two different cls as I feel it has nothing to do with the patterned histograms support here and you don\u0027t have a unit test for it.",
+      "range": {
+        "startLine": 65,
+        "startChar": 1,
+        "endLine": 65,
+        "endChar": 29
+      },
+      "revId": "9c8f14d5783d76c12281de3415879696e0cd020a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "63db491d_882d9ac7",
+        "filename": "go/src/infra/tricium/functions/metrics/metrics_analyzer.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1554177
+      },
+      "writtenOn": "2023-05-29T18:55:01Z",
+      "side": 1,
+      "message": "I\u0027ll move the changes to a separate CL.\n\nWe do have unit test for it, the description is \"Analyze XML file with histogram(s) removed with a global message\"",
+      "parentUuid": "dac22f93_7ff6bbf2",
       "range": {
         "startLine": 65,
         "startChar": 1,
