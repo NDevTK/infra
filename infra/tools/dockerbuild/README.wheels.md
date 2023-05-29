@@ -142,7 +142,32 @@ because pip is unable to find the prebuilt wheel. Be cautious when overriding
 the ABI to a newer OS version, as it means the packaged wheel may not work on
 all of the machines in our fleet.
 
-* TODO: describe build_deps
+* `build_deps` provides a mechanism to override the wheel's `pyproject.toml`
+file so that dependencies are built and installed locally, rather than from
+pypi.org. This can be necessary if we want to pin to a known-good version of
+the dependency, or if the wheels from pypi.org are insufficient for some
+reason.
+
+Here is an example from the `cryptography` wheel:
+
+            build_deps=BuildDependencies(
+                remote=[
+                    'setuptools >= 40.6.0',
+                    'wheel',
+                ],
+                local=[
+                    SourceOrPrebuilt(
+                        'cffi',
+                        '1.15.1',
+                        packaged=(),
+                    ),
+                ],
+            ),
+
+This allows the specified `remote` wheels to be fetched from pypi.org, while
+the `cffi` wheel is always built locally. When using this mechanism, you must
+ensure that all of the dependencies from the upstream pyproject.toml are
+satisfied in some way.
 
 ## Custom patches
 
