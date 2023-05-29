@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@ func chameleonPlan() *Plan {
 			"Mark as bad",
 			"Device is pingable",
 			"cros_ssh",
+			"Update AudioBox JackPlugger State",
 			"Mark as good",
 		},
 		Actions: map[string]*Action{
@@ -67,6 +68,13 @@ func chameleonPlan() *Plan {
 				ExecName:    "cros_ssh",
 				ExecTimeout: &durationpb.Duration{Seconds: 150},
 				RunControl:  RunControl_ALWAYS_RUN,
+			},
+			"Update AudioBox JackPlugger State": {
+				Docs: []string{
+					"Update the status of AudioBox JackPlugger.",
+				},
+				ExecName:               "chameleon_check_audiobox_jackplugger",
+				AllowFailAfterRecovery: true,
 			},
 		},
 	}

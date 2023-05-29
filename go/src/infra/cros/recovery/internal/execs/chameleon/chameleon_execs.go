@@ -46,6 +46,15 @@ func chameleonNotPresentExec(ctx context.Context, info *execs.ExecInfo) error {
 // this function will set the state according to the result executed by runner
 // it will always return nil to prevent affecting chameleon state
 func chameleonCheckAudioboxJackpluggerExec(ctx context.Context, info *execs.ExecInfo) error {
+	if info.GetChromeos().GetChameleon() == nil {
+		log.Debugf(ctx, "chameleon is not found.")
+		return errors.Reason("chameleon is not found.").Err()
+	}
+	if !info.GetChromeos().GetAudio().GetInBox() {
+		log.Debugf(ctx, "chameleon is not in AudioBox - Not Applicable to jack plugger.")
+		info.GetChromeos().GetChameleon().Audioboxjackpluggerstate = tlw.Chameleon_AUDIOBOX_JACKPLUGGER_NOT_APPLICABLE
+		return nil
+	}
 	runner := info.NewRunner(info.GetChromeos().GetChameleon().GetName())
 	output, err := runner(ctx, time.Minute, "check_audiobox_jackplugger")
 
@@ -55,8 +64,10 @@ func chameleonCheckAudioboxJackpluggerExec(ctx context.Context, info *execs.Exec
 		info.GetChromeos().GetChameleon().Audioboxjackpluggerstate = tlw.Chameleon_AUDIOBOX_JACKPLUGGER_BROKEN
 	}
 	if err != nil {
-		log.Debugf(ctx, "Error while interpreting AudioBoxJackPlugger status: %s", err)
+		log.Debugf(ctx, "unable interpret AudioBoxJackPlugger status: %s", err)
+		return errors.Reason("unable to interpret AudioBoxJackPlugger status: %s", err).Err()
 	}
+
 	return nil
 }
 
