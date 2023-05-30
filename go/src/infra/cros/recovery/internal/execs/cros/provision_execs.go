@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import (
 	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/tlw"
 )
 
@@ -64,6 +65,8 @@ func downloadImageToUSBExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err != nil {
 		return errors.Annotate(err, "download image to usb-drive").Err()
 	}
+	info.AddObservation(metrics.NewStringObservation("usbkey_model", info.GetChromeos().GetServo().GetUsbDrive().GetManufacturer()))
+	info.AddObservation(metrics.NewStringObservation("usbkey_state", info.GetChromeos().GetServo().GetUsbkeyState().String()))
 	argsMap := info.GetActionArgs(ctx)
 	osImageName := argsMap.AsString(ctx, "os_name", sv.OSImage)
 	log.Debugf(ctx, "Used OS image name: %s", osImageName)
