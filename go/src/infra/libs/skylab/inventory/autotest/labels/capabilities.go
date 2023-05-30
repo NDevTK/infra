@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -106,6 +106,13 @@ func otherCapabilitiesConverter(ls *inventory.SchedulableLabels) []string {
 		lv := "hw_video_acc_" + strings.ToLower(v.String()[plen:])
 		labels = append(labels, lv)
 	}
+	if v := c.GetCbx(); v != inventory.HardwareCapabilities_CBX_STATE_UNSPECIFIED {
+		if v == inventory.HardwareCapabilities_CBX_STATE_TRUE {
+			labels = append(labels, "cbx:True")
+		} else {
+			labels = append(labels, "cbx:False")
+		}
+	}
 	return labels
 }
 
@@ -183,6 +190,12 @@ func otherCapabilitiesReverter(ls *inventory.SchedulableLabels, labels []string)
 			type t = inventory.HardwareCapabilities_Carrier
 			vals := inventory.HardwareCapabilities_Carrier_value
 			*c.Carrier = t(vals[vn])
+		case "cbx":
+			if v == "True" {
+				*c.Cbx = inventory.HardwareCapabilities_CBX_STATE_TRUE
+			} else {
+				*c.Cbx = inventory.HardwareCapabilities_CBX_STATE_FALSE
+			}
 		default:
 			switch {
 			case strings.HasPrefix(k, "hw_video_acc_"):

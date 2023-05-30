@@ -131,7 +131,7 @@ capabilities {
   starfish_slot_mapping: "1_verizon,2_tmobile,4_att"
   bluetooth: true
   atrus: true
-  cbx: 0
+  cbx: 1
 }
 board: "boardval"
 arc: true
@@ -203,6 +203,7 @@ var fullLabels = []string{
 	"camerabox_facing:back",
 	"camerabox_light:led",
 	"carrier:tmobile",
+	"cbx:True",
 	"cellular_modem_state:NEED_REPLACEMENT",
 	"chameleon",
 	"chameleon:dp",
