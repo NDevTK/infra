@@ -6,6 +6,7 @@ package config
 
 import (
 	"context"
+	"regexp"
 
 	"go.chromium.org/luci/config"
 	"go.chromium.org/luci/config/server/cfgcache"
@@ -38,4 +39,24 @@ func Get(c context.Context) (*Config, error) {
 // SetTestConfig set test configs in the cachedCfg.
 func SetTestConfig(ctx context.Context, cfg *Config) error {
 	return cachedCfg.Set(ctx, cfg, &config.Meta{})
+}
+
+// RetrieveRepoRegexpConfig retrieves a RepoConfig from a given
+// RepoRegexpConfig lists, where the given repository's name should be matched
+// with the RepoRegexpConfig's Key.
+//
+// When there are multiple matches, the first match, which is decided by their
+// locations in the config, will be selected.
+//
+// Returns a RepoConfig (the RepoRegexpConfig's Value) when a match is found.
+// Otherwise, return nil.
+func RetrieveRepoRegexpConfig(ctx context.Context, repo string, rrcfgs []*HostConfig_RepoRegexpConfigPair) *RepoConfig {
+	for _, rrcfg := range rrcfgs {
+		repoRegexp := rrcfg.GetKey()
+		matched, _ := regexp.MatchString(repoRegexp, repo)
+		if matched {
+			return rrcfg.GetValue()
+		}
+	}
+	return nil
 }

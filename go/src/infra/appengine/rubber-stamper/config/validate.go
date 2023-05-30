@@ -5,6 +5,7 @@
 package config
 
 import (
+	"regexp"
 	"strconv"
 
 	"go.chromium.org/luci/config/validation"
@@ -36,6 +37,21 @@ func validateHostConfig(c *validation.Context, hostConfig *HostConfig) {
 	if hostConfig.CleanRevertTimeWindow != "" {
 		validateTimeWindow(c, hostConfig.CleanRevertTimeWindow)
 	}
+
+	for _, rrcfg := range hostConfig.GetRepoRegexpConfigs() {
+		c.Enter("repo_regexp_config %s", rrcfg.GetKey())
+		validateRepoRegexpConfig(c, rrcfg)
+		c.Exit()
+	}
+}
+
+func validateRepoRegexpConfig(c *validation.Context, rrcfg *HostConfig_RepoRegexpConfigPair) {
+	_, err := regexp.Compile(rrcfg.GetKey())
+	if err != nil {
+		c.Errorf("invalid repo_regexp %s: %v", rrcfg.GetKey(), err)
+	}
+
+	validateRepoConfig(c, rrcfg.GetValue())
 }
 
 func validateRepoConfig(c *validation.Context, repoConfig *RepoConfig) {

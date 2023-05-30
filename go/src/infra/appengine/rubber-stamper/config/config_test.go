@@ -38,3 +38,35 @@ func TestConfig(t *testing.T) {
 		So(ok, ShouldEqual, true)
 	})
 }
+
+func TestIsRepoRegexpConfigMatch(t *testing.T) {
+	Convey("Works", t, func() {
+		sampleCfg := &RepoConfig{
+			BenignFilePattern: &BenignFilePattern{
+				Paths: []string{"whitespace.txt", "a/*.txt"},
+			},
+		}
+		Convey("Should return the matched config when there is one", func() {
+			rrcfgs := []*HostConfig_RepoRegexpConfigPair{
+				{
+					Key:   "dummy/dummy-*",
+					Value: sampleCfg,
+				},
+				{
+					Key:   "invalid/*",
+					Value: nil,
+				},
+			}
+			So(RetrieveRepoRegexpConfig(context.Background(), "dummy/dummy-valid", rrcfgs), ShouldEqual, sampleCfg)
+		})
+		Convey("Should return nil when no matched config", func() {
+			rrcfgs := []*HostConfig_RepoRegexpConfigPair{
+				{
+					Key:   "dummy/dummy-*",
+					Value: sampleCfg,
+				},
+			}
+			So(RetrieveRepoRegexpConfig(context.Background(), "dummy-valid", rrcfgs), ShouldEqual, nil)
+		})
+	})
+}

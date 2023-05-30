@@ -1,3 +1,4 @@
+// Copyright 2023 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +35,14 @@ var sampleConfigStr = `
 					clean_cherry_pick_pattern {
 						time_window: "12m"
 						excluded_paths: "*.xtb"
+					}
+				}
+			}
+			repo_regexp_configs {
+				key: "dummy-*-123"
+				value: {
+					clean_cherry_pick_pattern {
+						time_window: "10d"
 					}
 				}
 			}
@@ -85,6 +94,17 @@ func TestConfigValidator(t *testing.T) {
 			Convey("invalid time window unit", func() {
 				ccpp.TimeWindow = "12t"
 				So(validate(cfg), ShouldErrLike, "invalid time_window 12t")
+			})
+		})
+		Convey("validateRepoRegexpConfig catches errors", func() {
+			rrcfgs := cfg.HostConfigs["test-host"].GetRepoRegexpConfigs()
+			Convey("invalid repo regexp", func() {
+				rrcfgs[0].Key = `dummy-(ac`
+				So(validate(cfg), ShouldErrLike, "invalid repo_regexp dummy-(ac")
+			})
+			Convey("invalid repo config", func() {
+				rrcfgs[0].Value.CleanCherryPickPattern.TimeWindow = "abc"
+				So(validate(cfg), ShouldErrLike, "invalid time_window abc")
 			})
 		})
 	})

@@ -34,6 +34,27 @@ message HostConfig {
   // configs will override this one. The format is the same as that of
   // CleanCherryPickPattern.time_window.
   string clean_cherry_pick_time_window = 3;
+
+  // RepoRegexpConfigPair is a pair of repository name's regular expression
+  // and the corresponding RepoConfig. It makes maintenance work easier, as
+  // there are repositories which have some sort of naming pattern that should
+  // share the same RepoConfig.
+  //
+  // When a repository can be matched by both the exact match and regular
+  // expression, Rubber Stamper will use the result from the exact match.
+  //
+  // When there are multiple regular expression matches, the first match, which
+  // is decided by their locations in the config, will be selected.
+  message RepoRegexpConfigPair {
+    // The key is a regular expression of repository names.
+    string key = 1;
+    // The value is the corresponding RepoConfig that should be applied to
+    // those repos.
+    RepoConfig value = 2;
+  }
+  // An array stores configs for repositories whose names are contained in
+  // regular expressions.
+  repeated RepoRegexpConfigPair repo_regexp_configs = 4;
 }
 
 // RepoConfig describes the config to be used for a Gerrit repository.
