@@ -30,7 +30,8 @@ func InstallCronServices(apiServer *server.Server) {
 func checkCronAccess(ctx context.Context, rpcName string, _ proto.Message) (context.Context, error) {
 	logging.Debugf(ctx, "Check access for %s", rpcName)
 	// Only we trigger the cron jobs.
-	group := []string{"mdb/chrome-fleet-software-team"}
+	// Distributed fleet temporarily allowed during read realms rollout.
+	group := []string{"mdb/chrome-fleet-software-team", "mdb/chromeos-distributed-fleet-platform"}
 	allow, err := auth.IsMember(ctx, group...)
 	if err != nil {
 		logging.Errorf(ctx, "Check group '%s' membership failed: %s", group, err.Error())
