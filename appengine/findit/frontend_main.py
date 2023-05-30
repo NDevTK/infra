@@ -13,7 +13,6 @@ from handlers import config
 from handlers import home
 from handlers import list_analyses
 from handlers import pipeline_errors_dashboard
-from handlers import trooper
 from handlers import url_redirect
 
 # App Engine pipeline status pages.
@@ -37,7 +36,6 @@ waterfall_frontend_web_pages_handler_mappings = [
     ('/waterfall/list-failures', list_analyses.ListAnalyses),
     ('/waterfall/pipeline-errors-dashboard',
      pipeline_errors_dashboard.PipelineErrorsDashboard),
-    ('/waterfall/trooper', trooper.Trooper),
     (r'/.*', url_redirect.URLRedirect),
 ]
 waterfall_frontend_web_application = webapp2.WSGIApplication(

@@ -61,53 +61,8 @@
   <form id="config-form" action="/waterfall/config" method="post">
     <input type="hidden" name="xsrf_token" value="{{xsrf_token}}"/>
     <div>
-      Steps for Masters Rules:<br>
-      <textarea id="steps-for-masters-rules" name="steps_for_masters_rules" rows="20" cols="80" format="json" required>{{masters | tojson }}</textarea>
-    </div>
-    <br>
-    <div>
-      DEPRECATED--Waterfall Builders to Try-server trybots:<br>
-      <textarea id="builders-to-trybots" name="builders_to_trybots" rows="20" cols="80" format="json" required>{{ builders | tojson }}</textarea>
-    </div>
-    <br>
-    <div>
-      Try Job Settings:<br>
-      <textarea id="try-job-settings" name="try_job_settings" rows="10" cols="80" format="json" required>{{ try_job_settings | tojson }}</textarea>
-    </div>
-    <br>
-    <div>
-      Swarming Task Settings:<br>
-      <textarea id="swarming-settings" name="swarming_settings" rows="10" cols="80" format="json" required>{{ swarming_settings | tojson }}</textarea>
-    </div>
-    <br>
-    <div>
-      Download Build Data Settings:<br>
-      <textarea id="download-build-data-settings" name="download_build_data_settings" rows="10" cols="80" format="json" required>{{ download_build_data_settings | tojson }}</textarea>
-    </div>
-    <br>
-    <div>
-      Action Settings for identified culprits or suspects:<br>
-      <textarea id="action-settings" name="action_settings" rows="10" cols="80" format="json" required>{{ action_settings | tojson }}</textarea>
-    </div>
-    <br>
-    <div>
-      Check Test Flakiness Settings:<br>
-      <textarea id="check-flake-settings" name="check_flake_settings" rows="10" cols="80" format="json" required>{{ check_flake_settings | tojson }}</textarea>
-    </div>
-    <br>
-    <div>
-      Flake Detection Settings:<br>
-      <textarea id="flake-detection-settings" name="flake_detection_settings" rows="10" cols="80" format="json" required>{{ flake_detection_settings | tojson }}</textarea>
-    </div>
-    <br>
-    <div>
       Code Coverage Settings:<br>
       <textarea id="code-coverage-settings" name="code_coverage_settings" rows="10" cols="80" format="json" required>{{ code_coverage_settings | tojson }}</textarea>
-    </div>
-    <br>
-    <div>
-      CodeReview Settings:<br>
-      <textarea id="code-review-settings" name="code_review_settings" rows="10" cols="80" format="json" required>{{ code_review_settings | tojson }}</textarea>
     </div>
     <br>
     <div>
