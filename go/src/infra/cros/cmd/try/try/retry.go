@@ -299,7 +299,7 @@ func getExecStep(recipe string, buildData buildInfo) (pb.RetryStep, error) {
 		} else if missingStep {
 			return pb.RetryStep_UNDEFINED, fmt.Errorf("retry summary is missing step %v but has later ones. Can't retry.", step)
 		}
-		if status != "SUCCESS" {
+		if status != "SUCCESS" && status != "SKIPPED" {
 			foundFailedStep = step
 		} else if foundFailedStep != pb.RetryStep_UNDEFINED {
 			return pb.RetryStep_UNDEFINED, fmt.Errorf("step %v failed but a subsequent step (%v) succeeded. Can't retry.", foundFailedStep, step)
@@ -331,7 +331,7 @@ func getExecStep(recipe string, buildData buildInfo) (pb.RetryStep, error) {
 
 	// Return the earliest failed step, or the first one that didn't run.
 	for _, step := range steps {
-		if status, stepRan := buildData.retrySummary[step]; !stepRan || status != "SUCCESS" {
+		if status, stepRan := buildData.retrySummary[step]; !stepRan || (status != "SUCCESS" && status != "SKIPPED") {
 			return step, nil
 		}
 	}

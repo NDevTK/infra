@@ -748,6 +748,16 @@ func TestGetExecStep(t *testing.T) {
 			expectedExecStep: pb.RetryStep_DEBUG_SYMBOLS,
 		},
 		{
+			// This build is a retry.
+			recipe: "build_release",
+			retrySummary: map[pb.RetryStep]string{
+				pb.RetryStep_STAGE_ARTIFACTS: "SKIPPED",
+				pb.RetryStep_PUSH_IMAGES:     "SUCCESS",
+				pb.RetryStep_DEBUG_SYMBOLS:   "FAILURE",
+			},
+			expectedExecStep: pb.RetryStep_DEBUG_SYMBOLS,
+		},
+		{
 			recipe:           "build_release",
 			retrySummary:     map[pb.RetryStep]string{},
 			expectedExecStep: pb.RetryStep_STAGE_ARTIFACTS,
