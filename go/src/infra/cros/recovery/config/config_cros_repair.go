@@ -1796,6 +1796,10 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"update_job_repo_url:true",
 			},
+			RecoveryActions: []string{
+				// Sleep works as retry.
+				"Sleep 1s",
+			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Switch to secure-mode and reboot": {
