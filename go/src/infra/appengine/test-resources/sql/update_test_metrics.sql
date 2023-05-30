@@ -108,7 +108,7 @@ USING (
     SUM(num_runs) AS num_runs,
     SUM(num_failures) AS num_failures,
     SUM(num_flake) AS num_flake,
-    SUM(avg_runtime) AS avg_runtime,
+    AVG(avg_runtime) AS avg_runtime,
     SUM(total_runtime) AS total_runtime,
     ARRAY_AGG(STRUCT(
       v.variant_hash AS variant_hash,
