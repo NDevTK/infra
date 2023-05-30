@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "23ca7c5d_236b9307",
+        "filename": "go/src/infra/cros/recovery/config/config_cros_repair.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 1801,
+      "author": {
+        "id": 1526722
+      },
+      "writtenOn": "2023-05-30T22:01:01Z",
+      "side": 1,
+      "message": "How did we come up with this 1s number? Do we need to wait for some time or is retrying right away sufficient?",
+      "revId": "bb7feeeba7aed7aee0b396ab520ea3d9e362eec0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
