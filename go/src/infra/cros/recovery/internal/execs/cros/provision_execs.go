@@ -14,6 +14,7 @@ import (
 
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/components/cros"
+	"infra/cros/recovery/internal/components/urlpath"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger/metrics"
@@ -84,7 +85,11 @@ func downloadImageToUSBExec(ctx context.Context, info *execs.ExecInfo) error {
 	// But we can utilize the address of caching service and apply some string manipulation to construct the URL that can be used for this.
 	// Example: `http://Addr:8082/extract/chromeos-image-archive/board-release/R99-XXXXX.XX.0/chromiumos_test_image.tar.xz?file=chromiumos_test_image.bin`
 	extractPath := strings.Replace(downloadPath, "/download/", "/extract/", 1)
-	image := fmt.Sprintf("%s/chromiumos_test_image.tar.xz?file=chromiumos_test_image.bin", extractPath)
+	pathWithIds, err := urlpath.EnrichWithTrackingIds(ctx, extractPath)
+	if err != nil {
+		return errors.Annotate(err, "download image to usb-drive").Err()
+	}
+	image := fmt.Sprintf("%s/chromiumos_test_image.tar.xz?file=chromiumos_test_image.bin", pathWithIds)
 	log.Debugf(ctx, "Download image for USB-drive: %s", image)
 	val, err := info.NewServod().Call(ctx, "set", info.GetExecTimeout(), "download_image_to_usb_dev", image)
 	log.Debugf(ctx, "Received reponse: %v", val)
