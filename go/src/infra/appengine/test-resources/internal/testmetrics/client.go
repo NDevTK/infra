@@ -39,6 +39,7 @@ var (
 type Client struct {
 	BqClient                   *bigquery.Client
 	ProjectId                  string
+	dataSet                    string
 	updateDailySummarySql      string
 	updateWeeklySummarySql     string
 	updateFileSummarySql       string
@@ -50,26 +51,27 @@ func (c *Client) Init() error {
 	if c.ProjectId == "" {
 		c.ProjectId = "chrome-resources-staging"
 	}
+	c.dataSet = "test_results"
 	bytes, err := os.ReadFile("sql/update_test_metrics.sql")
 	if err != nil {
 		return err
 	}
-	c.updateDailySummarySql = fmt.Sprintf(string(bytes), c.ProjectId)
+	c.updateDailySummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.dataSet)
 	bytes, err = os.ReadFile("sql/update_weekly_test_metrics.sql")
 	if err != nil {
 		return err
 	}
-	c.updateWeeklySummarySql = fmt.Sprintf(string(bytes), c.ProjectId)
+	c.updateWeeklySummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.dataSet, c.ProjectId, c.dataSet)
 	bytes, err = os.ReadFile("sql/update_file_metrics.sql")
 	if err != nil {
 		return err
 	}
-	c.updateFileSummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.ProjectId)
+	c.updateFileSummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.dataSet, c.ProjectId, c.dataSet)
 	bytes, err = os.ReadFile("sql/update_weekly_file_metrics.sql")
 	if err != nil {
 		return err
 	}
-	c.updateWeeklyFileSummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.ProjectId)
+	c.updateWeeklyFileSummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.dataSet, c.ProjectId, c.dataSet)
 	return nil
 }
 
@@ -132,7 +134,7 @@ WITH raw AS (
 				v.test_suite AS test_suite,
 				` + strings.Join(metricNames, ",\n\t\t\t\t") + `
 			)
-			ORDER BY @sortType ` + sortDirection + `
+			ORDER BY ` + sortMetric + ` ` + sortDirection + `
 		)
 		FROM m.variant_summaries v
 		WHERE (@string_filter = "" OR
@@ -144,22 +146,21 @@ WITH raw AS (
 			REGEXP_CONTAINS(builder, @string_filter) OR
 			REGEXP_CONTAINS(test_suite, @string_filter)))) AS variants
 	FROM
-		` + c.ProjectId + `.test_results.` + table + ` AS m
+		` + c.ProjectId + `.` + c.dataSet + `.` + table + ` AS m
 	WHERE
 		DATE(date) IN UNNEST(@dates)
 		AND component = @component
-	ORDER BY @sortType ` + sortDirection + `
-	LIMIT @page_size OFFSET @page
 )
-SELECT * FROM raw WHERE ARRAY_LENGTH(raw.variants) > 0 LIMIT @page_size OFFSET @page`
+SELECT * FROM raw WHERE ARRAY_LENGTH(raw.variants) > 0
+ORDER BY ` + sortMetric + ` ` + sortDirection + `
+LIMIT @page_size OFFSET @page_offset`
 
 	q := c.BqClient.Query(query)
 
 	q.Parameters = []bigquery.QueryParameter{
 		{Name: "dates", Value: dates},
 		{Name: "page_size", Value: req.PageSize + 1},
-		{Name: "page", Value: req.Page},
-		{Name: "sortType", Value: sortMetric},
+		{Name: "page_offset", Value: req.PageOffset},
 		{Name: "component", Value: req.Component},
 		{Name: "string_filter", Value: string_filter},
 	}
@@ -307,7 +308,7 @@ SELECT
 	ARRAY_REVERSE(SPLIT(node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
 	is_file,
 	` + strings.Join(metricNames, ",\n") + `,
-FROM ` + c.ProjectId + `.test_results.` + table + `
+FROM ` + c.ProjectId + `.` + c.dataSet + `.` + table + `
 WHERE
 	STARTS_WITH(node_name, @parent || "/") AND
 	-- The child folders and files can't have a / after the parent's name
@@ -315,7 +316,7 @@ WHERE
 	AND DATE(date) IN UNNEST(@dates)
 	AND component = @component
 	AND (@string_filter = "" OR EXISTS(SELECT 0 FROM UNNEST(file_names) AS f WHERE REGEXP_CONTAINS(f, @string_filter)))
-ORDER BY @sortType ` + sortDirection
+ORDER BY ` + sortMetric + ` ` + sortDirection
 
 	q := c.BqClient.Query(query)
 
@@ -323,7 +324,6 @@ ORDER BY @sortType ` + sortDirection
 		{Name: "dates", Value: dates},
 		{Name: "component", Value: req.Component},
 		{Name: "parent", Value: req.ParentId},
-		{Name: "sortType", Value: sortMetric},
 		{Name: "string_filter", Value: string_filter},
 	}
 

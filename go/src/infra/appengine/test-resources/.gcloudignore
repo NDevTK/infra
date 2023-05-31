@@ -13,5 +13,8 @@
 .git
 .gitignore
 
+create_table.sh
+sql/create_*
+
 # Source for the frontend
 /frontend

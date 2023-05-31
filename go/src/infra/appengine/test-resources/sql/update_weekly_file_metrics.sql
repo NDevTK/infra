@@ -6,11 +6,12 @@ AS r"""
   Array.from(new Set(file_names));
 """;
 
-MERGE INTO %s.test_results.weekly_file_metrics AS T
+MERGE INTO %s.%s.weekly_file_metrics AS T
 USING (
   SELECT
-    DATE_TRUNC(date, WEEK(SUNDAY)) AS date,
+    DATE_TRUNC(date, WEEK(SUNDAY)) AS `date`,
     component,
+    repo,
     node_name,
     ANY_VALUE(is_file) AS is_file,
     SUM(num_runs) AS num_runs,
@@ -19,17 +20,18 @@ USING (
     AVG(avg_runtime)	AS avg_runtime,
     SUM(total_runtime) AS total_runtime,
     dedupe(ARRAY_CONCAT_AGG(file_names)) AS file_names,
-  FROM %s.test_results.file_metrics
-  WHERE date BETWEEN
+  FROM %s.%s.file_metrics
+  WHERE `date` BETWEEN
     -- The date range is inclusive so only go up to the Saturday
     DATE_TRUNC(DATE(@from_date), WEEK) AND
     DATE_ADD(DATE_TRUNC(DATE(@to_date), WEEK), INTERVAL 6 DAY)
-  GROUP BY DATE_TRUNC(date, WEEK(SUNDAY)), component, node_name
+  GROUP BY DATE_TRUNC(date, WEEK(SUNDAY)), component, node_name, repo
   ) AS S
 ON
   T.date = S.date
   AND T.component = S.component
   AND T.node_name = S.node_name
+  AND T.repo = S.repo
 WHEN MATCHED THEN
   UPDATE SET
     num_runs = S.num_runs,

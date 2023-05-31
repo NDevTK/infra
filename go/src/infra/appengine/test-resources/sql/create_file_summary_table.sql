@@ -1,5 +1,6 @@
-CREATE OR REPLACE TABLE %s.test_results.file_metrics (
-  date DATE,
+CREATE OR REPLACE TABLE APP_ID.DATASET.file_metrics (
+  `date` DATE,
+  repo STRING,
   component STRING,
   node_name STRING,
   is_file BOOL,

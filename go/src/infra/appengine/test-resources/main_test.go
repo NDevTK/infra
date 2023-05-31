@@ -108,13 +108,13 @@ func TestFetchMetrics(t *testing.T) {
 		}
 		Convey("Valid request", func() {
 			request := &api.FetchTestMetricsRequest{
-				Component: "some>component",
-				Period:    api.Period_DAY,
-				Dates:     []string{"2023-01-01"},
-				Metrics:   []api.MetricType{api.MetricType_NUM_RUNS},
-				Filter:    "filter:this",
-				Page:      1,
-				PageSize:  10,
+				Component:  "some>component",
+				Period:     api.Period_DAY,
+				Dates:      []string{"2023-01-01"},
+				Metrics:    []api.MetricType{api.MetricType_NUM_RUNS},
+				Filter:     "filter:this",
+				PageOffset: 1,
+				PageSize:   10,
 				Sort: &api.SortBy{
 					Metric:    api.SortType_SORT_NUM_RUNS,
 					Ascending: true,
@@ -128,12 +128,12 @@ func TestFetchMetrics(t *testing.T) {
 		})
 		Convey("Missing component", func() {
 			request := &api.FetchTestMetricsRequest{
-				Period:   api.Period_DAY,
-				Dates:    []string{"2023-01-01"},
-				Metrics:  []api.MetricType{api.MetricType_NUM_RUNS},
-				Filter:   "filter:this",
-				Page:     1,
-				PageSize: 10,
+				Period:     api.Period_DAY,
+				Dates:      []string{"2023-01-01"},
+				Metrics:    []api.MetricType{api.MetricType_NUM_RUNS},
+				Filter:     "filter:this",
+				PageOffset: 1,
+				PageSize:   10,
 				Sort: &api.SortBy{
 					Metric:    api.SortType_SORT_NUM_RUNS,
 					Ascending: true,
@@ -146,12 +146,12 @@ func TestFetchMetrics(t *testing.T) {
 		})
 		Convey("Missing dates", func() {
 			request := &api.FetchTestMetricsRequest{
-				Component: "some>component",
-				Period:    api.Period_DAY,
-				Metrics:   []api.MetricType{api.MetricType_NUM_RUNS},
-				Filter:    "filter:this",
-				Page:      1,
-				PageSize:  10,
+				Component:  "some>component",
+				Period:     api.Period_DAY,
+				Metrics:    []api.MetricType{api.MetricType_NUM_RUNS},
+				Filter:     "filter:this",
+				PageOffset: 1,
+				PageSize:   10,
 				Sort: &api.SortBy{
 					Metric:    api.SortType_SORT_NUM_RUNS,
 					Ascending: true,
@@ -164,12 +164,12 @@ func TestFetchMetrics(t *testing.T) {
 		})
 		Convey("Missing metrics", func() {
 			request := &api.FetchTestMetricsRequest{
-				Component: "some>component",
-				Period:    api.Period_DAY,
-				Dates:     []string{"2023-01-01"},
-				Filter:    "filter:this",
-				Page:      1,
-				PageSize:  10,
+				Component:  "some>component",
+				Period:     api.Period_DAY,
+				Dates:      []string{"2023-01-01"},
+				Filter:     "filter:this",
+				PageOffset: 1,
+				PageSize:   10,
 				Sort: &api.SortBy{
 					Metric:    api.SortType_SORT_NUM_RUNS,
 					Ascending: true,

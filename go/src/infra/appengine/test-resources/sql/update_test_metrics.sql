@@ -1,4 +1,4 @@
-MERGE INTO %s.test_results.test_metrics AS T
+MERGE INTO %s.%s.test_metrics AS T
 USING (
   WITH
     raw_results_tables AS (
@@ -99,10 +99,8 @@ USING (
     v.date,
     v.test_id,
     ANY_VALUE(v.test_name) AS test_name,
-    IFNULL(ANY_VALUE(v.repo), "Unknown") AS repo,
+    IFNULL(v.repo, "Unknown") AS repo,
     IFNULL(ANY_VALUE(v.file_name), "Unknown") AS file_name,
-    IFNULL(ANY_VALUE(v.`project`), "Unknown") AS `project`,
-    IFNULL(ANY_VALUE(v.bucket), "Unknown") AS bucket,
     IFNULL(ANY_VALUE(v.component), "Unknown") AS component,
     # Test level metrics
     SUM(num_runs) AS num_runs,
@@ -112,6 +110,8 @@ USING (
     SUM(total_runtime) AS total_runtime,
     ARRAY_AGG(STRUCT(
       v.variant_hash AS variant_hash,
+      v.`project` AS `project`,
+      v.bucket AS bucket,
       v.target_platform AS target_platform,
       v.builder AS builder,
       v.test_suite AS test_suite,
@@ -122,7 +122,7 @@ USING (
       v.total_runtime AS total_runtime
     )) AS variant_summaries
   FROM variant_summaries v
-  GROUP BY date, test_id
+  GROUP BY date, test_id, repo
   ) AS S
 ON
   T.date = S.date
@@ -132,8 +132,6 @@ WHEN MATCHED THEN
   UPDATE SET
     test_name = S.test_name,
     file_name = S.file_name,
-    `project` = S.`project`,
-    bucket = S.bucket,
     component = S.component,
     num_runs = S.num_runs,
     num_failures = S.num_failures,

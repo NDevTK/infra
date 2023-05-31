@@ -1,11 +1,9 @@
-CREATE OR REPLACE TABLE %s.test_results.weekly_test_metrics (
+CREATE OR REPLACE TABLE APP_ID.DATASET.weekly_test_metrics (
   date DATE,
   test_id STRING,
   test_name STRING,
   repo STRING,
   file_name STRING,
-  `project` STRING,
-  bucket STRING,
   component STRING,
   # Test id summaries
   num_runs INTEGER,
@@ -16,6 +14,8 @@ CREATE OR REPLACE TABLE %s.test_results.weekly_test_metrics (
   # Variants breakdown
   variant_summaries ARRAY<STRUCT<
     variant_hash STRING,
+    `project` STRING,
+    bucket STRING,
     target_platform STRING,
     builder STRING,
     test_suite STRING,

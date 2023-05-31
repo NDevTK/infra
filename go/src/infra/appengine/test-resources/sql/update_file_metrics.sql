@@ -18,7 +18,7 @@ AS r"""
   return dirs;
 """;
 
-MERGE INTO %s.test_results.file_metrics AS T
+MERGE INTO %s.%s.file_metrics AS T
 USING (
   WITH file_summaries AS (
     SELECT
@@ -26,18 +26,17 @@ USING (
       file_name,
       component,
       ARRAY_AGG(test_id) AS test_ids,
-      ANY_VALUE(repo) AS repo,
-      ANY_VALUE(project) AS project,
+      repo AS repo,
       SUM(num_runs) AS num_runs,
       SUM(num_failures) AS num_failures,
       SUM(num_flake) AS num_flake,
       AVG(avg_runtime)	AS avg_runtime,
       SUM(total_runtime) AS total_runtime,
     FROM
-      %s.test_results.test_metrics AS day_metrics
+      %s.%s.test_metrics AS day_metrics
     WHERE DATE(date) BETWEEN @from_date AND @to_date
     GROUP BY
-      file_name, date, component
+      file_name, date, component, repo
   ), dir_nodes AS (
     SELECT
       node_name,
@@ -48,6 +47,7 @@ USING (
 
   SELECT
     date,
+    repo,
     component,
     node_name,
     ANY_VALUE(n.is_file) AS is_file,
@@ -58,12 +58,13 @@ USING (
     SUM(total_runtime) AS total_runtime,
     ARRAY_AGG(file_name IGNORE NULLS) AS file_names,
   FROM dir_nodes n
-  GROUP BY date, component, node_name
+  GROUP BY date, component, node_name, repo
   ) AS S
 ON
   T.date = S.date
   AND T.component = S.component
   AND T.node_name = S.node_name
+  AND T.repo = S.repo
 WHEN MATCHED THEN
   UPDATE SET
     num_runs = S.num_runs,
