@@ -108,6 +108,48 @@ func TestReviewCleanRevert(t *testing.T) {
 			So(msg, ShouldEqual, "")
 			So(err, ShouldBeNil)
 		})
+		Convey("clean revert with repo exp config is valid", func() {
+			cfg.HostConfigs["test-host"].RepoRegexpConfigs = []*config.HostConfig_RepoRegexpConfigPair{
+				{
+					Key: ".*my",
+					Value: &config.RepoConfig{
+						CleanRevertPattern: &config.CleanRevertPattern{
+							TimeWindow:    "5m",
+							ExcludedPaths: []string{"a/b/c.txt", "a/**/*.md"},
+						},
+					},
+				},
+			}
+			gerritMock.EXPECT().GetPureRevert(gomock.Any(), proto.MatcherEqual(&gerritpb.GetPureRevertRequest{
+				Number:  t.Number,
+				Project: t.Repo,
+			})).Return(&gerritpb.PureRevertInfo{
+				IsPureRevert: true,
+			}, nil)
+			gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
+				Number:  t.RevertOf,
+				Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
+			})).Return(&gerritpb.ChangeInfo{
+				CurrentRevision: "456def",
+				Revisions: map[string]*gerritpb.RevisionInfo{
+					"456def": {
+						Created: timestamppb.New(time.Now().Add(-time.Minute)),
+					},
+				},
+			}, nil)
+			gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
+				Number:     t.Number,
+				RevisionId: t.Revision,
+			})).Return(&gerritpb.ListFilesResponse{
+				Files: map[string]*gerritpb.FileInfo{
+					"a/d/c.txt": nil,
+					"a/valid.c": nil,
+				},
+			}, nil)
+			msg, err := reviewCleanRevert(ctx, cfg, gerritMock, t)
+			So(msg, ShouldEqual, "")
+			So(err, ShouldBeNil)
+		})
 		Convey("invalid when gerrit GetPureRevert api returns false", func() {
 			gerritMock.EXPECT().GetPureRevert(gomock.Any(), proto.MatcherEqual(&gerritpb.GetPureRevertRequest{
 				Number:  t.Number,
@@ -181,43 +223,114 @@ func TestReviewCleanRevert(t *testing.T) {
 				So(err, ShouldBeNil)
 				So(msg, ShouldEqual, "The change is not in the configured time window. Rubber Stamper is only allowed to review reverts within 5 minute(s).")
 			})
+			Convey("repo-level time window from regexp config works", func() {
+				cfg.HostConfigs["test-host"].CleanRevertTimeWindow = "5d"
+				cfg.HostConfigs["test-host"].RepoRegexpConfigs = []*config.HostConfig_RepoRegexpConfigPair{
+					{
+						Key: ".*ummy",
+						Value: &config.RepoConfig{
+							CleanRevertPattern: &config.CleanRevertPattern{
+								TimeWindow: "12m",
+							},
+						},
+					},
+				}
+				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
+					Number:  t.RevertOf,
+					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
+				})).Return(&gerritpb.ChangeInfo{
+					CurrentRevision: "456def",
+					Revisions: map[string]*gerritpb.RevisionInfo{
+						"456def": {
+							Created: timestamppb.New(time.Now().Add(-time.Hour)),
+						},
+					},
+				}, nil)
+				msg, err := reviewCleanRevert(ctx, cfg, gerritMock, t)
+				So(err, ShouldBeNil)
+				So(msg, ShouldEqual, "The change is not in the configured time window. Rubber Stamper is only allowed to review reverts within 12 minute(s).")
+			})
 		})
 		Convey("invalid when contains excluded files", func() {
-			cfg.HostConfigs["test-host"].RepoConfigs["dummy"] = &config.RepoConfig{
-				CleanRevertPattern: &config.CleanRevertPattern{
-					ExcludedPaths: []string{"a/b/c.txt", "a/**/*.md"},
-				},
-			}
-			gerritMock.EXPECT().GetPureRevert(gomock.Any(), proto.MatcherEqual(&gerritpb.GetPureRevertRequest{
-				Number:  t.Number,
-				Project: t.Repo,
-			})).Return(&gerritpb.PureRevertInfo{
-				IsPureRevert: true,
-			}, nil)
-			gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
-				Number:  t.RevertOf,
-				Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
-			})).Return(&gerritpb.ChangeInfo{
-				CurrentRevision: "456def",
-				Revisions: map[string]*gerritpb.RevisionInfo{
-					"456def": {
-						Created: timestamppb.New(time.Now().Add(-2 * 24 * time.Hour)),
+			Convey("repo-level excluded files works", func() {
+				cfg.HostConfigs["test-host"].RepoConfigs["dummy"] = &config.RepoConfig{
+					CleanRevertPattern: &config.CleanRevertPattern{
+						ExcludedPaths: []string{"a/b/c.txt", "a/**/*.md"},
 					},
-				},
-			}, nil)
-			gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
-				Number:     t.Number,
-				RevisionId: t.Revision,
-			})).Return(&gerritpb.ListFilesResponse{
-				Files: map[string]*gerritpb.FileInfo{
-					"a/b/c.txt":  nil,
-					"a/a/c/a.md": nil,
-					"a/valid.c":  nil,
-				},
-			}, nil)
-			msg, err := reviewCleanRevert(ctx, cfg, gerritMock, t)
-			So(err, ShouldBeNil)
-			So(msg, ShouldEqual, "The change contains the following files which require a human reviewer: a/a/c/a.md, a/b/c.txt.")
+				}
+				gerritMock.EXPECT().GetPureRevert(gomock.Any(), proto.MatcherEqual(&gerritpb.GetPureRevertRequest{
+					Number:  t.Number,
+					Project: t.Repo,
+				})).Return(&gerritpb.PureRevertInfo{
+					IsPureRevert: true,
+				}, nil)
+				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
+					Number:  t.RevertOf,
+					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
+				})).Return(&gerritpb.ChangeInfo{
+					CurrentRevision: "456def",
+					Revisions: map[string]*gerritpb.RevisionInfo{
+						"456def": {
+							Created: timestamppb.New(time.Now().Add(-2 * 24 * time.Hour)),
+						},
+					},
+				}, nil)
+				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
+					Number:     t.Number,
+					RevisionId: t.Revision,
+				})).Return(&gerritpb.ListFilesResponse{
+					Files: map[string]*gerritpb.FileInfo{
+						"a/b/c.txt":  nil,
+						"a/a/c/a.md": nil,
+						"a/valid.c":  nil,
+					},
+				}, nil)
+				msg, err := reviewCleanRevert(ctx, cfg, gerritMock, t)
+				So(err, ShouldBeNil)
+				So(msg, ShouldEqual, "The change contains the following files which require a human reviewer: a/a/c/a.md, a/b/c.txt.")
+			})
+			Convey("repo-level excluded files from regexp config works", func() {
+				cfg.HostConfigs["test-host"].RepoRegexpConfigs = []*config.HostConfig_RepoRegexpConfigPair{
+					{
+						Key: ".*ummy",
+						Value: &config.RepoConfig{
+							CleanRevertPattern: &config.CleanRevertPattern{
+								ExcludedPaths: []string{"well.txt"},
+							},
+						},
+					},
+				}
+				gerritMock.EXPECT().GetPureRevert(gomock.Any(), proto.MatcherEqual(&gerritpb.GetPureRevertRequest{
+					Number:  t.Number,
+					Project: t.Repo,
+				})).Return(&gerritpb.PureRevertInfo{
+					IsPureRevert: true,
+				}, nil)
+				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
+					Number:  t.RevertOf,
+					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
+				})).Return(&gerritpb.ChangeInfo{
+					CurrentRevision: "456def",
+					Revisions: map[string]*gerritpb.RevisionInfo{
+						"456def": {
+							Created: timestamppb.New(time.Now().Add(-2 * 24 * time.Hour)),
+						},
+					},
+				}, nil)
+				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
+					Number:     t.Number,
+					RevisionId: t.Revision,
+				})).Return(&gerritpb.ListFilesResponse{
+					Files: map[string]*gerritpb.FileInfo{
+						"well.txt":   nil,
+						"a/a/c/a.md": nil,
+						"a/valid.c":  nil,
+					},
+				}, nil)
+				msg, err := reviewCleanRevert(ctx, cfg, gerritMock, t)
+				So(err, ShouldBeNil)
+				So(msg, ShouldEqual, "The change contains the following files which require a human reviewer: well.txt.")
+			})
 		})
 		Convey("returns error", func() {
 			Convey("GetPureRevert API error", func() {

@@ -44,6 +44,8 @@ func reviewCleanRevert(ctx context.Context, cfg *config.Config, gc gerrit.Client
 	var crp *config.CleanRevertPattern
 	if hostCfg.RepoConfigs != nil && hostCfg.RepoConfigs[t.Repo] != nil {
 		crp = hostCfg.RepoConfigs[t.Repo].CleanRevertPattern
+	} else if repoCfg := config.RetrieveRepoRegexpConfig(ctx, t.Repo, hostCfg.GetRepoRegexpConfigs()); repoCfg != nil {
+		crp = repoCfg.GetCleanRevertPattern()
 	}
 
 	// Check gerrit GetPureRevert api.
