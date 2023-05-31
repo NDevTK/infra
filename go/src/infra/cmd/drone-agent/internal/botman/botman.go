@@ -40,37 +40,37 @@ type Botman struct {
 
 // NewBotman creates a new Botman.
 func NewBotman(h WorldHook) *Botman {
-	c := &Botman{
+	b := &Botman{
 		hook: h,
 		bots: make(map[string]botSignals),
 	}
-	return c
+	return b
 }
 
 // AddBot adds a bot to the Botman.
 // The controller ensures that an instance Swarming bot is running for the given resource ID.
 // If the bot was already added or if the controller is blocked, do nothing.
 // This method is concurrency safe.
-func (c *Botman) AddBot(id string) {
-	c.m.Lock()
-	defer c.m.Unlock()
-	if c.blocked {
+func (b *Botman) AddBot(id string) {
+	b.m.Lock()
+	defer b.m.Unlock()
+	if b.blocked {
 		return
 	}
-	if _, ok := c.bots[id]; ok {
+	if _, ok := b.bots[id]; ok {
 		// ID already has bot running.
 		return
 	}
 	log.Printf("Starting new bot for ID %v", id)
 	s := newBotSignals()
-	c.bots[id] = s
-	c.wg.Add(1)
+	b.bots[id] = s
+	b.wg.Add(1)
 	go func() {
-		defer c.wg.Done()
-		runBotForID(c.hook, id, s)
-		c.m.Lock()
-		delete(c.bots, id)
-		c.m.Unlock()
+		defer b.wg.Done()
+		runBotForID(b.hook, id, s)
+		b.m.Lock()
+		delete(b.bots, id)
+		b.m.Unlock()
 	}()
 }
 
@@ -125,15 +125,15 @@ func runBotForID(h WorldHook, id string, s botSignals) {
 // If the controller does not have the ID, just call ReleaseResources on
 // the controller's hook.
 // This method is concurrency safe.
-func (c *Botman) DrainBot(id string) {
-	c.m.Lock()
-	s, ok := c.bots[id]
-	c.m.Unlock()
+func (b *Botman) DrainBot(id string) {
+	b.m.Lock()
+	s, ok := b.bots[id]
+	b.m.Unlock()
 	if ok {
 		log.Printf("Draining Bot with ID %v", id)
 		s.sendDrain()
 	} else {
-		c.hook.ReleaseResources(id)
+		b.hook.ReleaseResources(id)
 	}
 }
 
@@ -143,66 +143,66 @@ func (c *Botman) DrainBot(id string) {
 // If the controller does not have the ID, just call ReleaseResources on
 // the controller's hook.
 // This method is concurrency safe.
-func (c *Botman) TerminateBot(id string) {
-	c.m.Lock()
-	s, ok := c.bots[id]
-	c.m.Unlock()
+func (b *Botman) TerminateBot(id string) {
+	b.m.Lock()
+	s, ok := b.bots[id]
+	b.m.Unlock()
 	if ok {
 		log.Printf("Terminating Bot with ID %v", id)
 		s.sendTerminate()
 	} else {
-		c.hook.ReleaseResources(id)
+		b.hook.ReleaseResources(id)
 	}
 }
 
 // DrainAll drains all Bots.
 // You almost certainly want to call BlockBots first to make sure Bots
 // don't get added right after calling this.
-func (c *Botman) DrainAll() {
-	c.m.Lock()
-	for _, s := range c.bots {
+func (b *Botman) DrainAll() {
+	b.m.Lock()
+	for _, s := range b.bots {
 		s.sendDrain()
 	}
-	c.m.Unlock()
+	b.m.Unlock()
 }
 
 // TerminateAll terminates all Bots.
 // You almost certainly want to call BlockBots first to make sure Bots
 // don't get added right after calling this.
-func (c *Botman) TerminateAll() {
-	c.m.Lock()
-	for _, s := range c.bots {
+func (b *Botman) TerminateAll() {
+	b.m.Lock()
+	for _, s := range b.bots {
 		s.sendTerminate()
 	}
-	c.m.Unlock()
+	b.m.Unlock()
 }
 
 // BlockBots marks the controller to not accept new Bots.
 // This method is safe to call concurrently.
-func (c *Botman) BlockBots() {
-	c.m.Lock()
-	c.blocked = true
-	c.m.Unlock()
+func (b *Botman) BlockBots() {
+	b.m.Lock()
+	b.blocked = true
+	b.m.Unlock()
 }
 
 // ActiveBots returns a slice of all Bots the controller is keeping alive.
 // This includes Bots that are draining or terminated but not exited yet.
 // This method is safe to call concurrently.
-func (c *Botman) ActiveBots() []string {
+func (b *Botman) ActiveBots() []string {
 	var ds []string
-	c.m.Lock()
-	for d := range c.bots {
+	b.m.Lock()
+	for d := range b.bots {
 		ds = append(ds, d)
 	}
-	c.m.Unlock()
+	b.m.Unlock()
 	return ds
 }
 
 // Wait for all Swarming bots to finish.  It is the caller's
 // responsibility to make sure all bots are terminated or drained,
 // else this call will hang.
-func (c *Botman) Wait() {
-	c.wg.Wait()
+func (b *Botman) Wait() {
+	b.wg.Wait()
 }
 
 type botSignals struct {
