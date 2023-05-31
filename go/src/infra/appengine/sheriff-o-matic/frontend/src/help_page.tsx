@@ -11,7 +11,7 @@ export const HelpPage = () => {
                 perform some basic actions on them.
             </p>
             <p>
-                <strong>To start looking at alerts, click on any of the trees to the left.  </strong>
+                <strong>To start looking at alerts, click on any of the trees to the left.</strong>
             </p>
 
             <p>
@@ -32,7 +32,7 @@ export const HelpPage = () => {
                 filing bugs to address root causes, or potentially disabling tests.
             </p>
             <p>
-                For more information about sheriffing, see:
+                For more information about sheriffing, see:&nbsp;
                 <a href="https://www.chromium.org/developers/tree-sheriffs" target="_blank">https://www.chromium.org/developers/tree-sheriffs</a>
             </p>
 
@@ -44,9 +44,9 @@ export const HelpPage = () => {
                 checkboxes next to alert titles.
             </p>
             <ul>
-                <li><strong>Examine</strong> failures to see detailed information on related revisions. </li>
-                <li><strong>Comment</strong> on alerts to leave notes for other sheriffs to see. </li>
-                <li><strong>Snooze</strong> an alert to temporarily move a failure outside of your view. </li>
+                <li><strong>Examine</strong> failures to see detailed information on related revisions.</li>
+                <li><strong>Comment</strong> on alerts to leave notes for other sheriffs to see.</li>
+                <li><strong>Snooze</strong> an alert to temporarily move a failure outside of your view.</li>
                 <li><strong>Link a Bug</strong> to an alert to keep track of which bug caused the failure.
                     <ul>
                         <li>Find bugs to link from the <a href="http://crbug.com" target="_blank">Chromium Issue Tracker</a>.</li>
@@ -72,14 +72,27 @@ export const HelpPage = () => {
 
             <h3>FAQs</h3>
             <ul>
-                <li><strong>Q:</strong> Why does Sheriff-o-matic show multiple alerts for one build failure?</li>
-                <ul><li><strong>A:</strong> Sheriff-o-matic does not know which step failure causes a build to fail.
-                    Instead, when a build fails, it creates an alert for each step that failed in the failed build, even if
-                    a step is not the "direct" reason for the failure.</li></ul>
-                <li><strong>Q:</strong> Why does Sheriff-o-matic show that a builder has failed for the last thousand builds
-                    while actually it only failed the last 3 times?</li>
-                <ul><li><strong>A:</strong> Similarly to the previous question. SoM creates step-based alerts, so it is likely that
-                    the step in the alert did fail the last thousand build, although it did not cause the build to fail.</li></ul>
+                <li>
+                    <strong>Q:</strong> Why does Sheriff-o-matic show multiple alerts for one build failure?
+                </li>
+                <ul>
+                    <li>
+                        <strong>A:</strong> Sheriff-o-matic does not know which step failure causes a build to fail.
+                        Instead, when a build fails, it creates an alert for each step that failed in the failed build,
+                        even if a step is not the "direct" reason for the failure.
+                    </li>
+                </ul>
+                <li>
+                    <strong>Q:</strong> Why does Sheriff-o-matic show that a builder has failed for the last thousand
+                    builds while actually it only failed the last 3 times?
+                </li>
+                <ul>
+                    <li>
+                        <strong>A:</strong> Similarly to the previous question. SoM creates step-based alerts, so it is
+                        likely that the step in the alert did fail the last thousand build, although it did not cause
+                        the build to fail.
+                    </li>
+                </ul>
             </ul>
 
             <h2>Useful Links</h2>
@@ -103,14 +116,12 @@ export const HelpPage = () => {
 
             <h2>Contributing</h2>
             <p>
-                If you'd like to contribute to infrastructure systems, please see the
-                <a href="http://goto.google.com/chrome-infra-services">list of services</a>
-                with pointers to their source code, configs and owners. If you are planning
-                to make any non-trivial changes, please make sure to contact the owners
-                before writing any code to check if your idea fits with the overall service
-                design. Please also have a look at the
-                <a href="https://goto.google.com/chrome-infra-contribute">chrome-infra
-                    developer documentation</a>.
+                If you'd like to contribute to infrastructure systems, please see the&nbsp;
+                <a href="http://goto.google.com/chrome-infra-services">list of services</a> with pointers to their
+                source code, configs and owners. If you are planning to make any non-trivial changes, please make sure
+                to contact the owners before writing any code to check if your idea fits with the overall service
+                design. Please also have a look at the&nbsp;
+                <a href="http://goto.google.com/chrome-infra-developers-doc">chrome-infra developer documentation</a>.
             </p>
         </article>
     </>
