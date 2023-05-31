@@ -27,6 +27,8 @@ func reviewCleanCherryPick(ctx context.Context, cfg *config.Config, gc gerrit.Cl
 	var ccpp *config.CleanCherryPickPattern
 	if hostCfg.RepoConfigs != nil && hostCfg.RepoConfigs[t.Repo] != nil {
 		ccpp = hostCfg.RepoConfigs[t.Repo].CleanCherryPickPattern
+	} else if repoCfg := config.RetrieveRepoRegexpConfig(ctx, t.Repo, hostCfg.GetRepoRegexpConfigs()); repoCfg != nil {
+		ccpp = repoCfg.GetCleanCherryPickPattern()
 	}
 
 	// Check whether the current revision made any file changes compared with

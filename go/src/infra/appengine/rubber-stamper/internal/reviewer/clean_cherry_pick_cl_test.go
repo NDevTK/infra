@@ -54,7 +54,7 @@ func TestReviewCleanCherryPick(t *testing.T) {
 		}
 
 		Convey("approve", func() {
-			Convey("general", func() {
+			Convey("approves when the change is valid", func() {
 				t.RevisionsCount = 2
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
 					Number:  t.CherryPickOfChange,
@@ -224,6 +224,37 @@ func TestReviewCleanCherryPick(t *testing.T) {
 				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, t)
 				So(err, ShouldBeNil)
 				So(msg, ShouldEqual, "The change is not in the configured time window. Rubber Stamper is only allowed to review cherry-picks within 58 minute(s).")
+			})
+			Convey("repo-level time window from repo_regexp_configs works", func() {
+				cfg.HostConfigs["test-host"].CleanCherryPickTimeWindow = "5d"
+				cfg.HostConfigs["test-host"].RepoRegexpConfigs = []*config.HostConfig_RepoRegexpConfigPair{
+					{
+						Key: ".*mmy",
+						Value: &config.RepoConfig{
+							CleanCherryPickPattern: &config.CleanCherryPickPattern{
+								TimeWindow: "10m",
+							},
+						},
+					},
+				}
+				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
+					Number:  t.CherryPickOfChange,
+					Options: []gerritpb.QueryOption{gerritpb.QueryOption_CURRENT_REVISION},
+				})).Return(&gerritpb.ChangeInfo{
+					Status:          gerritpb.ChangeStatus_MERGED,
+					CurrentRevision: "456def",
+					Revisions: map[string]*gerritpb.RevisionInfo{
+						"456def": {
+							Created: timestamppb.New(time.Now().Add(-time.Hour)),
+						},
+						"789aaa": {
+							Created: timestamppb.New(time.Now().Add(-9 * 24 * time.Hour)),
+						},
+					},
+				}, nil)
+				msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, t)
+				So(err, ShouldBeNil)
+				So(msg, ShouldEqual, "The change is not in the configured time window. Rubber Stamper is only allowed to review cherry-picks within 10 minute(s).")
 			})
 		})
 		Convey("decline when the change wasn't cherry-picked after the original CL has been merged.", func() {
