@@ -25,10 +25,16 @@ const (
 	// The execution path for tests in Skylab envrionemnt. As of 2021Q3, all tests
 	// are run inside a lxc container.
 	SkylabLxcJobFolder = "/usr/local/autotest/results/lxc_job_folder"
+
 	// The execution path for tests in CFT (F20) containers.
 	CFTJobFolder = "/tmp/test/results"
+
 	// The common name prefix for Tast test results.
 	TastNamePrefix = "tast."
+
+	// Magic error for failed tast tests that should be marked as unexpectedly
+	// skipped in order to be mapped to NOSTATUS in Testhaus.
+	TestDidNotRunErr = "Test did not run"
 )
 
 type TastResults struct {
@@ -92,10 +98,10 @@ func (r *TastResults) ToProtos(ctx context.Context, testMetadataFile string, pro
 	var ret []*sinkpb.TestResult
 	for i, c := range r.Cases {
 		testName := addTastPrefix(c.Name)
-		status := genCaseStatus(c)
+		status, expected := genCaseStatus(c)
 		tr := &sinkpb.TestResult{
 			TestId:       testName,
-			Expected:     status == pb.TestStatus_SKIP || status == pb.TestStatus_PASS,
+			Expected:     expected,
 			Status:       status,
 			Tags:         []*pb.StringPair{},
 			TestMetadata: &pb.TestMetadata{Name: testName},
@@ -145,7 +151,7 @@ func (r *TastResults) ToProtos(ctx context.Context, testMetadataFile string, pro
 			}
 		}
 
-		if status == pb.TestStatus_SKIP {
+		if status == pb.TestStatus_SKIP && expected {
 			tr.SummaryHtml = "<text-artifact artifact-id=\"Skip Reason\" />"
 			tr.Artifacts = map[string]*sinkpb.Artifact{
 				"Skip Reason": {
@@ -217,12 +223,24 @@ func addTastPrefix(testName string) string {
 	return TastNamePrefix + testName
 }
 
-func genCaseStatus(c TastCase) pb.TestStatus {
+// genCaseStatus returns the ResultDB test status and whether it is expected.
+func genCaseStatus(c TastCase) (status pb.TestStatus, expected bool) {
+	// Expectedly skipped (TEST_NA in Testhaus).
 	if c.SkipReason != "" {
-		return pb.TestStatus_SKIP
+		return pb.TestStatus_SKIP, true
 	}
+
+	// Map TestDidNotRunErr to unexpectedly skipped (NOSTATUS in Testhaus).
+	// See: b/275382856.
+	for _, err := range c.Errors {
+		if strings.Contains(err.Reason, TestDidNotRunErr) {
+			return pb.TestStatus_SKIP, false
+		}
+	}
+
 	if len(c.Errors) > 0 {
-		return pb.TestStatus_FAIL
+		return pb.TestStatus_FAIL, false
 	}
-	return pb.TestStatus_PASS
+
+	return pb.TestStatus_PASS, true
 }

@@ -260,6 +260,56 @@ func TestTastConversions(t *testing.T) {
 				Duration:  &duration.Duration{Seconds: 1},
 			})
 		})
+		Convey(`Unexpectedly Skipped`, func() {
+			jsonLine := genJSONLine(map[string]string{
+				"skipReason": "",
+				"errors":     `[{ "time": "2021-07-26T18:54:38.153491776Z", "file": "dummy.go", "reason": "Test did not run", "stack": "Dummy Failure" }]`,
+			})
+			r := &TastResults{
+				BaseDir: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test",
+			}
+			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
+			So(err, ShouldBeNil)
+			got, err := r.ToProtos(ctx, "", mockCollect, "")
+			So(err, ShouldBeNil)
+			So(got[0], ShouldResembleProto, &sinkpb.TestResult{
+				TestId:      "tast.lacros.Basic",
+				Expected:    false,
+				Status:      pb.TestStatus_SKIP,
+				SummaryHtml: "<text-artifact artifact-id=\"Test Log\" />",
+				Artifacts: map[string]*sinkpb.Artifact{
+					"foo": {
+						Body: &sinkpb.Artifact_FilePath{FilePath: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test/tast/results/tests/lacros.Basic/foo"},
+					},
+					"Test Log": {
+						Body: &sinkpb.Artifact_Contents{
+							Contents: []byte("Dummy Failure\n"),
+						},
+						ContentType: "text/plain",
+					},
+				},
+				Tags: []*pb.StringPair{
+					pbutil.StringPair("contacts", "user1@google.com,user2@google.com"),
+					pbutil.StringPair(executionOrderTag, "1"),
+					pbutil.StringPair("bug_component", "b:1234"),
+				},
+				TestMetadata: &pb.TestMetadata{
+					Name: "tast.lacros.Basic",
+					BugComponent: &pb.BugComponent{
+						System: &pb.BugComponent_IssueTracker{
+							IssueTracker: &pb.IssueTrackerComponent{
+								ComponentId: 1234,
+							},
+						},
+					},
+				},
+				FailureReason: &pb.FailureReason{
+					PrimaryErrorMessage: TestDidNotRunErr,
+				},
+				StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
+				Duration:  &duration.Duration{Seconds: 1},
+			})
+		})
 		Convey(`Errors`, func() {
 			jsonLine := genJSONLine(map[string]string{
 				"errors": `[{ "time": "2021-07-26T18:54:38.153491776Z", "file": "dummy.go", "reason": "Failed due to dummy error", "stack": "Dummy Failure" }]`,
