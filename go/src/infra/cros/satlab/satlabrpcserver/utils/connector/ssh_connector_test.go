@@ -122,9 +122,8 @@ func TestSSHConnectionShouldFailWhenReachContextTimeout(t *testing.T) {
 	// Wait for ssh server bring up
 	time.Sleep(time.Second * 2)
 
-	// We set the context to Nanosecond for testing the context deadline
-	// We need a shorter context timeout to prevent the connection's success.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Nanosecond)
+	// We use expired context for testing the context deadline
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(-500*time.Millisecond))
 	defer cancel()
 
 	config := cssh.ClientConfig{
