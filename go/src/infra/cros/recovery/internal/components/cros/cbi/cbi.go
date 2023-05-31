@@ -75,7 +75,6 @@ var locateCBIRegex = regexp.MustCompile(`Port:\s(\d+).*Address:\s(0x\w+)`)
 var requiredFields = map[string]int{
 	"BOARD_VERSION": 0,
 	"SKU_ID":        2,
-	"FW_CONFIG":     6,
 }
 
 // GetCBILocation uses the `ectool locatechip` utility to get the CBILocation
