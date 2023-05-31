@@ -5022,6 +5022,32 @@ wheel: <
 
 * *universal*
 
+### 1.18.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/opentelemetry-api-py3"
+  version: "version:1.18.0"
+>
+```
+
+
+* *universal*
+
+## **opentelemetry-exporter-gcp-monitoring-py3**
+
+### 1.5.0a0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/opentelemetry-exporter-gcp-monitoring-py3"
+  version: "version:1.5.0a0"
+>
+```
+
+
+* *universal*
+
 ## **opentelemetry-sdk-py3**
 
 ### 1.12.0
@@ -5036,6 +5062,18 @@ wheel: <
 
 * *universal*
 
+### 1.18.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/opentelemetry-sdk-py3"
+  version: "version:1.18.0"
+>
+```
+
+
+* *universal*
+
 ## **opentelemetry-semantic-conventions-py3**
 
 ### 0.33b0
@@ -5044,6 +5082,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/opentelemetry-semantic-conventions-py3"
   version: "version:0.33b0"
+>
+```
+
+
+* *universal*
+
+### 0.39b0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/opentelemetry-semantic-conventions-py3"
+  version: "version:0.39b0"
 >
 ```
 
