@@ -1596,6 +1596,7 @@ SPECS.update({
         Universal('requests', '2.21.0'),
         Universal('requests', '2.25.1'),
         Universal('requests', '2.26.0'),
+        Universal('requests', '2.31.0', pyversions=['py3']),
         Universal('requests-oauthlib', '1.2.0'),
         Universal('requests-oauthlib', '1.3.0'),
         Universal('rich', '13.2.0', pyversions=['py3']),

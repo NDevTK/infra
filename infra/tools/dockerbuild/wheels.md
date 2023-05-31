@@ -7277,6 +7277,20 @@ wheel: <
 
 * *universal*
 
+## **requests-py3**
+
+### 2.31.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/requests-py3"
+  version: "version:2.31.0"
+>
+```
+
+
+* *universal*
+
 ## **requests-mock-py3**
 
 ### 1.10.0
