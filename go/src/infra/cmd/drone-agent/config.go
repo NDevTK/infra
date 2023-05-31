@@ -29,6 +29,12 @@ type config struct {
 	// A drone is assigned DUTs with same hive value.
 	Hive string
 
+	// TSMonEndpoint is the URL for posting monitoring metrics.
+	// If empty, we will try to load configuration from LUCI TSMon default
+	// configuration file /etc/chrome-infra/ts-mon.json.
+	TSMonEndpoint       string `yaml:"tsMonEndpoint"`
+	TSMonCredentialPath string `yaml:"tsMonCredentialPath"`
+
 	// TraceBackend denotes the backend used for OTel traces.
 	// Valid options are:
 	//   - grpc
@@ -87,6 +93,8 @@ func addBackwardCompatConfig(cfg *config) {
 	cfg.DUTCapacity = dutCapacity
 	cfg.ReportingIntervalMins = int(reportingInterval / time.Minute)
 	cfg.Hive = hive
+	cfg.TSMonEndpoint = tsmonEndpoint
+	cfg.TSMonCredentialPath = tsmonCredentialPath
 
 	// Flags.
 	cfg.TraceBackend = traceBackend
