@@ -222,19 +222,6 @@ func (b *buildSpec) goTestArgs(patterns ...string) []string {
 	return append(args, patterns...)
 }
 
-// goTestNoJSONArgs is like goTestArgs, but doesn't include -json flag.
-// TODO(go.dev/issue/59990): Delete when it becomes unused.
-func (b *buildSpec) goTestNoJSONArgs(patterns ...string) []string {
-	args := []string{"test"}
-	if !b.inputs.LongTest {
-		args = append(args, "-short")
-	}
-	if b.inputs.RaceMode {
-		args = append(args, "-race")
-	}
-	return append(args, patterns...)
-}
-
 // distTestArgs returns go tool dist arguments that run tests in the main Go repository
 // using the provided build specification.
 func (b *buildSpec) distTestArgs() []string {
@@ -318,12 +305,15 @@ func (b *buildSpec) toolCmd(ctx context.Context, tool string, args ...string) *e
 	return command(ctx, b.toolPath(tool), args...)
 }
 
-func (b *buildSpec) wrapTestCmd(cmd *exec.Cmd) {
+// wrapTestCmd rewrites cmd to become 'rdb stream -- result_adapter go -- {cmd}'.
+// It edits cmd in place but for convenience also returns cmd back to its caller.
+func (b *buildSpec) wrapTestCmd(cmd *exec.Cmd) *exec.Cmd {
 	cmd.Path = b.toolPath("rdb")
 	cmd.Args = append([]string{
 		cmd.Path, "stream", "--",
 		b.toolPath("result_adapter"), "go", "--",
 	}, cmd.Args...)
+	return cmd
 }
 
 func (b *buildSpec) goScriptCmd(ctx context.Context, script string) *exec.Cmd {
