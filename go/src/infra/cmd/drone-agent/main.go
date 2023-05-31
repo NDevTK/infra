@@ -155,7 +155,7 @@ func innerMain() error {
 	log.Printf("version: %v\n", version)
 	ctx = metadata.AppendToOutgoingContext(ctx, "drone-agent-version", version)
 
-	if err := metrics.Setup(ctx, tsmonEndpoint, tsmonCredentialPath); err != nil {
+	if err := metrics.Setup(ctx, cfg.TSMonEndpoint, cfg.TSMonCredentialPath); err != nil {
 		log.Printf("Skipping metrics setup: %s", err)
 	}
 	defer metrics.Shutdown(ctx)
