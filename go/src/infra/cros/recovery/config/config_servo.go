@@ -1485,12 +1485,16 @@ func servoRepairPlan() *Plan {
 			"Create request to reboot labstation": {
 				Docs: []string{
 					"Try to create reboot flag file request.",
+					"The action always fails as Servo will be fixed after reboot.",
 				},
 				Conditions: []string{
 					"Device is SSHable",
 					"is_labstation",
 				},
-				ExecName:   "cros_create_reboot_request",
+				Dependencies: []string{
+					"cros_create_reboot_request",
+				},
+				ExecName:   "sample_fail",
 				RunControl: RunControl_ALWAYS_RUN,
 			},
 			"Reflash Cr50 fw and stop": {
