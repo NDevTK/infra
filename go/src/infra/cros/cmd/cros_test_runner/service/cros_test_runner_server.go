@@ -114,7 +114,7 @@ func (server *CrosTestRunnerServer) Execute(ctx context.Context, req *skylab_tes
 
 	logPath := path.Join(server.metadata.LogPath, req.ArtifactsPath)
 
-	out, err = service.Execute(ctx, logPath)
+	out, err = service.Execute(ctx, logPath, server.metadata.NoSudo)
 	if err != nil {
 		log.Printf("execution failed: %s", err)
 		return out, fmt.Errorf("execution failed: %s", err)

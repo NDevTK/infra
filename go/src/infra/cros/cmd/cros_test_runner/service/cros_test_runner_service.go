@@ -57,7 +57,7 @@ func NewCrosTestRunnerService(execReq *skylab_test_runner.ExecuteRequest, server
 	}, nil
 }
 
-func (crs *CrosTestRunnerService) Execute(ctx context.Context, logPath string) (*skylab_test_runner.ExecuteResponse, error) {
+func (crs *CrosTestRunnerService) Execute(ctx context.Context, logPath string, noSudo bool) (*skylab_test_runner.ExecuteResponse, error) {
 	crs.sk.CftTestRequest = crs.req.GetCftTestRequest()
 
 	testPlan := crs.req.GetTestPlan()
@@ -65,5 +65,5 @@ func (crs *CrosTestRunnerService) Execute(ctx context.Context, logPath string) (
 		crs.sk.TestArgs = testPlan.TestArgs
 	}
 
-	return executions.LocalExecution(crs.sk, crs.req.CtrCipdVersion, crs.req.PathToCipdBin, logPath)
+	return executions.LocalExecution(crs.sk, crs.req.CtrCipdVersion, crs.req.PathToCipdBin, logPath, noSudo)
 }

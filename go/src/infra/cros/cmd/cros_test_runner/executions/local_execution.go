@@ -22,7 +22,7 @@ import (
 	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
 )
 
-func LocalExecution(sk *data.LocalTestStateKeeper, ctrCipdVersion, pathToCipdBin, logPath string) (*skylab_test_runner.ExecuteResponse, error) {
+func LocalExecution(sk *data.LocalTestStateKeeper, ctrCipdVersion, pathToCipdBin, logPath string, noSudo bool) (*skylab_test_runner.ExecuteResponse, error) {
 	common.GlobalTempDir = path.Join(logPath, common.CreateUniquePrefixedName("execution-logs"))
 	emptyBuild := &buildbucketpb.Build{}
 	build_state, ctx, err := build.Start(context.Background(), emptyBuild)
@@ -35,7 +35,7 @@ func LocalExecution(sk *data.LocalTestStateKeeper, ctrCipdVersion, pathToCipdBin
 	}()
 
 	sk.GcsPublishSrcDir = common.GlobalTempDir
-	result, err := executeLocalTests(ctx, sk, ctrCipdVersion, pathToCipdBin)
+	result, err := executeLocalTests(ctx, sk, ctrCipdVersion, pathToCipdBin, noSudo)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -48,7 +48,7 @@ func LocalExecution(sk *data.LocalTestStateKeeper, ctrCipdVersion, pathToCipdBin
 func executeLocalTests(
 	ctx context.Context,
 	sk *data.LocalTestStateKeeper,
-	ctrCipdVersion, pathToCipdBin string) (*skylab_test_runner.Result, error) {
+	ctrCipdVersion, pathToCipdBin string, noSudo bool) (*skylab_test_runner.Result, error) {
 
 	var err error
 	step, ctx := build.StartStep(ctx, "Execute Local Tests")
@@ -84,6 +84,7 @@ func executeLocalTests(
 	ctr := &crostoolrunner.CrosToolRunner{
 		CtrCipdInfo:       ctrCipdInfo,
 		EnvVarsToPreserve: configs.GetHwConfigsEnvVars(),
+		NoSudo:            noSudo,
 	}
 
 	// Create configs

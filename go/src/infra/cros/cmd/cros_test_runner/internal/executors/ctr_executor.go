@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@ import (
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 
+	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
@@ -64,7 +65,11 @@ func (ex *CtrExecutor) startAsyncCommandExecution(
 	step, ctx := build.StartStep(ctx, "Ctr service start")
 	defer func() { step.End(err) }()
 
-	err = ex.StartAsync(ctx)
+	// We have to create a detached context here because when startAsyncCommandExecution returns,
+	// step.End will be called which cancels the context returned from StartStep. If we do not
+	// detach the context, then this call to step.End will kill the async operation before it completes.
+	detachedCtx := common.IgnoreCancel(ctx)
+	err = ex.StartAsync(detachedCtx)
 	if err != nil {
 		return errors.Annotate(err, "Start ctr cmd err: ").Err()
 	}

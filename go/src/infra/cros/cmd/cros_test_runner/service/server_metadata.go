@@ -12,5 +12,6 @@ type ServerMetadata struct {
 	Port                      int
 	ServiceMetadataExportPath string
 	LogPath                   string
+	NoSudo                    bool
 	InputProto                *skylab_test_runner.CrosTestRunnerServerStartRequest
 }

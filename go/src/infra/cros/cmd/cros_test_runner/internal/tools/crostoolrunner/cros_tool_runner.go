@@ -38,6 +38,7 @@ type CrosToolRunner struct {
 
 	wg              *sync.WaitGroup
 	isServerRunning bool
+	NoSudo          bool
 }
 
 // -- CTR server related methods --
@@ -58,17 +59,8 @@ func (ctr *CrosToolRunner) StartCTRServer(ctx context.Context) error {
 
 	// Start the server preserving provided environment vars.
 	writer := step.Log("CTR Stdout")
-	cmdArgs := []string{}
-	if len(ctr.EnvVarsToPreserve) > 0 {
-		cmdArgs = append(cmdArgs, fmt.Sprintf(
-			"--preserve-env=%s",
-			strings.Join(ctr.EnvVarsToPreserve, ","),
-		))
-	}
-	cmdArgs = append(cmdArgs, ctr.CtrPath, "server", "--port", "0", "--export-metadata", ctr.CtrTempDirLoc)
 	logging.Infof(ctx, "Starting CTR server...")
-
-	cmd := exec.CommandContext(ctx, "sudo", cmdArgs...)
+	cmd := ctr.sudoCommand(ctx, ctr.EnvVarsToPreserve, ctr.CtrPath, "server", "--port", "0", "--export-metadata", ctr.CtrTempDirLoc)
 	err = common.RunCommandWithCustomWriter(ctx, cmd, "ctr-start", writer)
 	if err != nil {
 		if strings.Contains(err.Error(), common.CtrCancelingCmdErrString) {
@@ -274,7 +266,7 @@ func (ctr *CrosToolRunner) StopContainer(ctx context.Context, containerName stri
 	defer func() { step.End(err) }()
 
 	// Stop container
-	cmd := exec.CommandContext(ctx, "sudo", "docker", "stop", containerName)
+	cmd := ctr.sudoCommand(ctx, nil, "docker", "stop", containerName)
 	common.LogExecutionDetails(ctx, step, cmd.Args)
 	_, _, err = common.RunCommand(ctx, cmd, "docker-stop-container", nil, false)
 	if err != nil {
@@ -363,4 +355,19 @@ func (ctr *CrosToolRunner) GcloudAuth(
 	common.WriteProtoToStepLog(ctx, step, resp, "LoginRegistryResponse")
 	log.Printf("Successfully logged in!")
 	return resp, nil
+}
+
+func (ctr *CrosToolRunner) sudoCommand(ctx context.Context, envVarsToPreserve []string, cmd string, args ...string) *exec.Cmd {
+	if ctr.NoSudo {
+		return exec.CommandContext(ctx, cmd, args...)
+	}
+
+	args = append([]string{cmd}, args...)
+	if len(envVarsToPreserve) > 0 {
+		args = append(
+			[]string{fmt.Sprintf("--preserve-env=%s", strings.Join(envVarsToPreserve, ","))},
+			args...,
+		)
+	}
+	return exec.CommandContext(ctx, "sudo", args...)
 }

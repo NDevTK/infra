@@ -31,6 +31,7 @@ func NewServerCommand() *ServerCommand {
 	sc.flagSet.StringVar(&sc.metadata.ServiceMetadataExportPath, "export-metadata", ".", fmt.Sprintf("folder path to export cros test runner server metadata into. Default value is %s", "./"))
 	sc.flagSet.StringVar(&sc.inputFile, "input", "", "Specify the request jsonproto input file. Must provide local artifact directory path.")
 	sc.flagSet.StringVar(&sc.metadata.LogPath, "log-path", ".", fmt.Sprintf("Path to record execution logs. Default value is %s", "./"))
+	sc.flagSet.BoolVar(&sc.metadata.NoSudo, "no-sudo", false, "If present, CTRR will not call internal commands with root privileges")
 	return sc
 }
 
