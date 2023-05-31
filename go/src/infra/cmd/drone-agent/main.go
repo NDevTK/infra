@@ -197,10 +197,10 @@ func innerMain() error {
 			Host: cfg.QueenService,
 		}),
 		WorkingDir:        workingDirPath,
-		ReportingInterval: reportingInterval,
-		DUTCapacity:       dutCapacity,
+		ReportingInterval: cfg.ReportingInterval(),
+		DUTCapacity:       cfg.DUTCapacity,
 		StartBotFunc:      bot.NewStarter(h, cfg.SwarmingURL).Start,
-		Hive:              hive,
+		Hive:              cfg.Hive,
 		BotPrefix:         botPrefix,
 		BotResources:      makeBotResources(),
 	}
