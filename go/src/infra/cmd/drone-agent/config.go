@@ -7,6 +7,7 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
 	"gopkg.in/yaml.v2"
 )
@@ -21,7 +22,12 @@ type config struct {
 	// SwarmingURL is the URL of the Swarming instance to use.
 	// Should be a full URL without the path, e.g.,
 	// https://host.example.com
-	SwarmingURL string
+	SwarmingURL           string
+	DUTCapacity           int `yaml:"dutCapacity"`
+	ReportingIntervalMins int
+	// Hive value of the drone agent.  This is used for DUT/drone affinity.
+	// A drone is assigned DUTs with same hive value.
+	Hive string
 
 	// TraceBackend denotes the backend used for OTel traces.
 	// Valid options are:
@@ -40,6 +46,10 @@ type config struct {
 	NumBots string
 }
 
+func (c *config) ReportingInterval() time.Duration {
+	return time.Duration(c.ReportingIntervalMins) * time.Minute
+}
+
 // parseConfigFile parses the config file for drone-agent.
 // This function always returns a valid config object.
 // Errors are logged.
@@ -47,7 +57,10 @@ type config struct {
 // This function also parses the environment and global flag vars to
 // implement backward compatibility.
 func parseConfigFile(path string) *config {
-	var cfg config
+	cfg := config{
+		DUTCapacity:           10,
+		ReportingIntervalMins: 1,
+	}
 	addBackwardCompatConfig(&cfg)
 	if path == "" {
 		return &cfg
@@ -71,6 +84,9 @@ func addBackwardCompatConfig(cfg *config) {
 	// Environment variables.
 	cfg.QueenService = queenService
 	cfg.SwarmingURL = swarmingURL
+	cfg.DUTCapacity = dutCapacity
+	cfg.ReportingIntervalMins = int(reportingInterval / time.Minute)
+	cfg.Hive = hive
 
 	// Flags.
 	cfg.TraceBackend = traceBackend
