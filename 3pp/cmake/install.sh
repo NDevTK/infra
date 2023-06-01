@@ -56,6 +56,7 @@ if [[ "$_3PP_PLATFORM" == "$_3PP_TOOL_PLATFORM" && "$_3PP_PLATFORM" != windows-*
   # CTestLimitDashJ doesn't work well with parallel.
   # FileDownload can be flaky in parallel because it relies on execution order.
   # CTestTimeoutAfterMatch also appears to be flaky in parallel.
+  # curl test hits the internet and is flaky.
   #
   # Unset CMAKE_TOOLCHAIN_FILE to avoid using host cmake libraries in tests
   env -u CMAKE_TOOLCHAIN_FILE \
@@ -63,7 +64,7 @@ if [[ "$_3PP_PLATFORM" == "$_3PP_TOOL_PLATFORM" && "$_3PP_PLATFORM" != windows-*
     --force-new-ctest-process \
     --stop-on-failure \
     --output-on-failure \
-    --exclude-regex '(CMake.CheckSourceTree|RunCMake.CPack_STGZ|CTestLimitDashJ|FileDownload|BootstrapTest|CTestTimeoutAfterMatch)'
+    --exclude-regex '(CMake.CheckSourceTree|RunCMake.CPack_STGZ|CTestLimitDashJ|FileDownload|BootstrapTest|CTestTimeoutAfterMatch|curl)'
 
   env -u CMAKE_TOOLCHAIN_FILE \
     ./bin/ctest \
