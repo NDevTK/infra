@@ -58,20 +58,22 @@ class PathHandler:
     # |path_util.ChrootPathResolver._ConvertPath| resolves symlinks outside
     # of chroot which don't exist inside chroot. E.g. /bin/ln becomes
     # /chroot/usr/bin/ln if /bin is linked as /usr/bin outside of chroot.
-    # Use |_GetHostPath| directly.
-    return path_util.ChrootPathResolver(
-        chroot_path=self.setup.chroot_dir)._GetHostPath(chroot_path)
+    # Use |_GetHostPath| directly and resolve symlinks outside of chroot.
+    return os.path.realpath(
+        path_util.ChrootPathResolver(
+            chroot_path=self.setup.chroot_dir)._GetHostPath(chroot_path))
 
   def ToChroot(self, path: str):
     # Unlike |FromChroot|, here it is useful to resolve symlinks before
     # converting path to inside chroot.
     return path_util.ToChrootPath(path, chroot_path=self.setup.chroot_dir)
 
-  def _NormalizePath(self,
-                     chroot_path: str,
-                     *,
-                     chroot_base_dir: str = None,
-                     base_dir: str = None) -> str:
+  def _GetPathOutsideOfChroot(self,
+                              chroot_path: str,
+                              package: Package,
+                              *,
+                              chroot_base_dir: str = None,
+                              base_dir: str = None) -> str:
     """
     Returns path outside of chroot for given |chroot_path| inside chroot.
 
@@ -81,66 +83,60 @@ class PathHandler:
     Either |chroot_base_dir| or |base_dir| shall be specified. If
     |chroot_base_dir| is given, |base_dir| is ignored. If |base_dir| is given,
     it is resolved to chroot path and used as |chroot_base_dir|.
+
+    Args:
+      chroot_path: a path inside chroot.
+      package: a package that path belongs to.
+      chroot_base_dir: base dir for relative |chroot_path| inside chroot.
+      base_dir: base dir for relative |chroot_path| outside of chroot.
+
+    Returns:
+      Path outside of chroot if able to move.
+      None, otherwise.
     """
+    chroot_path = PathHandler.SanitizePath(chroot_path)
+
     assert chroot_base_dir or base_dir, \
       'Either chroot_base_dir or base_dir must be set'
-
-    chroot_path = PathHandler.SanitizePath(chroot_path)
-
-    if chroot_base_dir is None:
+    if not chroot_base_dir:
       chroot_base_dir = self.ToChroot(base_dir)
 
-    if not chroot_path.startswith(os.sep):
-      chroot_path = os.path.join(chroot_base_dir, chroot_path)
-      chroot_path = os.path.realpath(chroot_path)
-
-    return self.FromChroot(chroot_path)
-
-  def FixPath(self,
-              chroot_path: str,
-              package: Package,
-              *,
-              conflicting_paths={}) -> 'PathHandler.FixedPath':
-    """
-    Returns an original and actual path outside of chroot for given
-    |chroot_path| inside chroot.
-
-    A path outside of |package.temp_dir| is considered as actual path and
-    returned as is.
-
-    If |chroot_path| is resolved to a path which is present in
-    |conflicting_paths| dict, returns a path from corresponding entry.
-
-    Arguments:
-      * |chroot_path|: a path inside chroot to resolve.
-      * |package|: a package it path belongs to.
-      * |conflicting_paths|: dict of paths outside of chroot that have conflicts
-        between packages.
-
-    Raises:
-      * PathNotFixedException if cannot resolve |path| to actual path.
-      * PathNotFixedException if actual path does not exist.
-      """
-    chroot_path = PathHandler.SanitizePath(chroot_path)
-
-    path = None
     if chroot_path.startswith('//'):
       # Special case. '//' indicates source dir.
       for match_dirs in package.src_dir_matches:
         path_attempt = os.path.join(match_dirs.temp, chroot_path[2:])
         if os.path.exists(path_attempt):
-          path = path_attempt
-          break
-    else:
-      path = self._NormalizePath(chroot_path, base_dir=package.build_dir)
+          return path_attempt
+      return None
 
+    if not os.path.isabs(chroot_path):
+      chroot_path = os.path.join(chroot_base_dir, chroot_path)
+
+    # Only remove dotted paths elements, do not resolve chroot's symlinks.
+    chroot_path = os.path.normpath(chroot_path)
+
+    return self.FromChroot(chroot_path)
+
+  def _FixPath(self, path: str, package: Package, *,
+               conflicting_paths) -> FixedPath:
+    """
+    Maps given |path| outside of chroot to its actual path. E.g. maps temporary
+    copied source file to an actual source file.
+
+    Returns:
+      Pair of |path| and corresponding actual path.
+
+    Raises:
+      PathNotFixedException if original path does not exist.
+      PathNotFixedException if cannot resolve |path| to actual path.
+      PathNotFixedException if actual path does not exist.
+    """
     if not path or not os.path.exists(path):
       raise PathHandler.PathNotFixedException(package,
                                               'Given path does not exist', path,
                                               path)
 
-    def Fix():
-
+    def Fix() -> str:
       if path in conflicting_paths:
         return conflicting_paths[path]
 
@@ -162,7 +158,7 @@ class PathHandler:
       raise PathHandler.PathNotFixedException(
           package, 'Could not find path in any of source dirs', path)
 
-    def Check(actual_path):
+    def Check(actual_path: str) -> None:
       if not os.path.exists(actual_path):
         raise PathHandler.PathNotFixedException(package,
                                                 'Found path does not exist',
@@ -233,6 +229,38 @@ class PathHandler:
                                             "Failed for fix from base dir",
                                             chroot_path, chroot_path)
 
+  def FixPath(self,
+              chroot_path: str,
+              package: Package,
+              *,
+              conflicting_paths={}) -> FixedPath:
+    """
+    Calculate an original and actual path outside of chroot for given
+    |chroot_path| inside chroot.
+
+    A path outside of |package.temp_dir| is considered as actual path and
+    returned as is.
+
+    If |chroot_path| is resolved to a path which is present in
+    |conflicting_paths| dict, return a path from corresponding entry.
+
+    Arguments:
+      chroot_path: a path inside chroot to resolve.
+      package: a package that path belongs to.
+      conflicting_paths: dict of paths outside of chroot that have conflicts
+        between packages.
+
+    Returns:
+      Fixed chroot path.
+
+    Raises:
+      PathNotFixedException if cannot resolve |path| to actual path.
+      PathNotFixedException if actual path does not exist.
+    """
+    path = self._GetPathOutsideOfChroot(
+        chroot_path, package, base_dir=package.build_dir)
+    return self._FixPath(path, package, conflicting_paths=conflicting_paths)
+
   def FixPathWithIgnores(
       self,
       chroot_path: str,
@@ -275,58 +303,59 @@ class PathHandler:
       * PathNotFixedException if cannot resolve |path| to actual path.
       * PathNotFixedException if actual path does not exist.
     """
-    chroot_path = PathHandler.SanitizePath(chroot_path)
+    path = self._GetPathOutsideOfChroot(
+        chroot_path, package, base_dir=package.build_dir)
 
     try:
-      return self.FixPath(chroot_path,
-                          package,
-                          conflicting_paths=conflicting_paths)
+      return self._FixPath(path, package, conflicting_paths=conflicting_paths)
     except PathHandler.PathNotFixedException as e:
       # Failed to fix as is. Check if error can be ignored and try to fix from
-      # parent dir.
-      path = self._NormalizePath(chroot_path, base_dir=package.build_dir)
+      # parent dir. Note that |path| can be None.
 
-      if ignore_generated and path.startswith(package.build_dir):
+      if ignore_generated and path and path.startswith(package.build_dir):
         # Path inside build dir and ignorable, return as is.
         g_logger.debug('%s: Failed to fix generated path: %s',
                        package.full_name, path)
         return PathHandler.FixedPath(path, path)
 
-      can_ignore = False
-      if ignore_highly_volatile and package.is_highly_volatile:
-        g_logger.debug('%s: Failed to fix path for highly volatile package: %s',
-                       package.full_name, path)
-        can_ignore = True
-      if ignore_stable and not package.is_built_from_actual_sources:
-        g_logger.debug('%s: Failed to fix path for stable package: %s',
-                       package.full_name, path)
-        can_ignore = True
-      elif ignorable_dirs:
-        g_logger.debug('%s: Failed to fix path in ignorable dir: %s',
-                       package.full_name, path)
-        can_ignore = True
-      elif ignorable_extensions and any(
-          path.endswith(ignorable_ext)
-          for ignorable_ext in ignorable_extensions):
-        g_logger.debug('%s: Failed to fix path with ignorable extension: %s',
-                       package.full_name, path)
-        can_ignore = True
+      def CanIgnoreFailure() -> bool:
+        if ignore_highly_volatile and package.is_highly_volatile:
+          g_logger.debug(
+              '%s: Failed to fix path '
+              'for highly volatile package: %s', package.full_name, chroot_path)
+          return True
+        if ignore_stable and not package.is_built_from_actual_sources:
+          g_logger.debug('%s: Failed to fix path for stable package: %s',
+                         package.full_name, chroot_path)
+          return True
+        if ignorable_dirs:
+          g_logger.debug('%s: Failed to fix path in ignorable dir: %s',
+                         package.full_name, chroot_path)
+          return True
+        if ignorable_extensions and any(
+            chroot_path.endswith(ignorable_ext)
+            for ignorable_ext in ignorable_extensions):
+          g_logger.debug('%s: Failed to fix path with ignorable extension: %s',
+                         package.full_name, chroot_path)
+          return True
 
-      if can_ignore:
-        # Try to find matching ignorable dir containing path.
-        ignorable_parent_dirs = [
-            ignorable_dir for ignorable_dir in ignorable_dirs
-            if path.startswith(ignorable_dir)
-        ]
-        assert len(ignorable_parent_dirs) <= 1, "Expecting one match at most"
-        ignorable_parent_dir = ignorable_parent_dirs[
-            0] if ignorable_parent_dirs else None
-        return self._FixPathFromBasedir(chroot_path,
-                                        package,
-                                        conflicting_paths=conflicting_paths,
-                                        ignorable_dir=ignorable_parent_dir)
-      # Issue cannot be ignored. Report failure.
-      raise e
+      if not CanIgnoreFailure():
+        # Issue cannot be ignored. Report failure.
+        raise e
+
+      # Try to find matching ignorable dir containing path.
+      ignorable_parent_dirs = [
+          ignorable_dir for ignorable_dir in ignorable_dirs
+          if path and path.startswith(ignorable_dir)
+      ]
+      assert len(ignorable_parent_dirs) <= 1, "Expecting one match at most"
+      ignorable_parent_dir = ignorable_parent_dirs[
+          0] if ignorable_parent_dirs else None
+      return self._FixPathFromBasedir(
+          chroot_path,
+          package,
+          conflicting_paths=conflicting_paths,
+          ignorable_dir=ignorable_parent_dir)
 
   g_common_name_regex = '(?:\w[\w\d\-_\.]*)'
   # Matches:
