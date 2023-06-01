@@ -57,6 +57,7 @@ func NewSchedulableLabels() *SchedulableLabels {
 			ChameleonState:           new(PeripheralState),
 			Conductive:               new(bool),
 			Huddly:                   new(bool),
+			HmrState:                 new(PeripheralState),
 			Mimo:                     new(bool),
 			Servo:                    new(bool),
 			ServoState:               new(PeripheralState),
