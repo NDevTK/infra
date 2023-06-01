@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -102,6 +102,13 @@ func otherPeripheralsConverter(ls *inventory.SchedulableLabels) []string {
 		labJackPluggerState := invJackPluggerState.String() // AUDIOBOX_JACKPLUGGER_{ UNSPECIFIED, WORKING ... }
 		const plen = len("AUDIOBOX_JACKPLUGGER_")
 		labels = append(labels, fmt.Sprintf("audiobox_jackplugger_state:%s", labJackPluggerState[plen:]))
+	}
+
+	if invHmrState := p.GetHmrState(); invHmrState != inventory.PeripheralState_UNKNOWN {
+		if labHmrState, ok := lab.PeripheralState_name[int32(invHmrState)]; ok {
+			lv := "hmr_state:" + labHmrState
+			labels = append(labels, lv)
+		}
 	}
 
 	if servoType := p.GetServoType(); servoType != "" {
@@ -275,6 +282,14 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, labels []string) 
 			if invJackPluggerVal, ok := inventory.Peripherals_AudioBoxJackPlugger_value[labJackPluggerState]; ok {
 				invJackPluggerState := inventory.Peripherals_AudioBoxJackPlugger(invJackPluggerVal)
 				p.AudioboxJackpluggerState = &invJackPluggerState
+			}
+		case "hmr_state":
+			if v == "" {
+				continue
+			}
+			if labHmrState, ok := lab.PeripheralState_value[strings.ToUpper(v)]; ok {
+				hmrState := inventory.PeripheralState(labHmrState)
+				p.HmrState = &hmrState
 			}
 		case "rpm_state":
 			if labRpmState, ok := lab.PeripheralState_value[strings.ToUpper(v)]; ok {

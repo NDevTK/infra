@@ -91,6 +91,7 @@ peripherals: {
   audio_cable: true
   router_802_11ax: true
   working_bluetooth_btpeer: 3
+  hmr_state: 1
 }
 os_type: 2
 model: "modelval"
@@ -230,6 +231,7 @@ var fullLabels = []string{
 	"gpu_family:gpufamilyval",
 	"graphics:graphicsval",
 	"hangout_app",
+	"hmr_state:WORKING",
 	"hotwording",
 	"huddly",
 	"hw_video_acc_enc_vp9",
@@ -693,6 +695,7 @@ peripherals: {
   audio_cable: true
   router_802_11ax: true
   working_bluetooth_btpeer: 3
+  hmr_state: 1
 }
 os_type: 2
 model: "modelval"
@@ -832,6 +835,7 @@ var fullLabelsSpecial = []string{
 	"gpu_family:gpufamilyval",
 	"graphics:graphicsval",
 	"hangout_app",
+	"hmr_state:WORKING",
 	"hotwording",
 	"huddly",
 	"hw_video_acc_enc_vp9",
