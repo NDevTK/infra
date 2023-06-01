@@ -39,6 +39,11 @@ type config struct {
 	// Default value is 'crossk-'
 	BotPrefix string
 
+	// Block IO throttle settings. 0 means no throttling. Only /dev/sda (device
+	// number 8:0) is supported.
+	BotBlockIOReadBPS  int
+	BotBlockIOWriteBPS int
+
 	// TraceBackend denotes the backend used for OTel traces.
 	// Valid options are:
 	//   - grpc
@@ -101,6 +106,8 @@ func addBackwardCompatConfig(cfg *config) {
 	cfg.TSMonEndpoint = tsmonEndpoint
 	cfg.TSMonCredentialPath = tsmonCredentialPath
 	cfg.BotPrefix = botPrefix
+	cfg.BotBlockIOReadBPS = botBlkIOReadBPS
+	cfg.BotBlockIOWriteBPS = botBlkIOWriteBPS
 
 	// Flags.
 	cfg.TraceBackend = traceBackend
