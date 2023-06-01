@@ -55,7 +55,7 @@ def GenerateRedirectApp():
   redirect_app.route('/p/<string:project_name>/issues/list_new')(IssueList)
 
   def IssueDetail(project_name):
-    local_id = flask.request.values.get('id', type=int)
+    local_id = flask.request.args.get('id', type=int)
     if not local_id:
       flask.abort(404)
 
@@ -68,7 +68,8 @@ def GenerateRedirectApp():
   def IssueCreate(project_name):
     redirect_url = redirect_utils.GetRedirectURL(project_name)
     if redirect_url:
-      return flask.redirect(redirect_url + '/new')
+      query_string = redirect_utils.GetNewIssueParams(flask.request.args)
+      return flask.redirect(redirect_url + '/new?' + query_string)
     flask.abort(404)
   redirect_app.route('/p/<string:project_name>/issues/entry')(IssueCreate)
   redirect_app.route('/p/<string:project_name>/issues/entry_new')(IssueCreate)
