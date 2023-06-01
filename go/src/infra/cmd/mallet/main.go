@@ -51,6 +51,7 @@ func getApplication() *cli.Application {
 			tasks.FixTPM54,
 			tasks.BatteryCutOff,
 			tasks.SerialConsole,
+			tasks.TestStateChange,
 		},
 	}
 }
