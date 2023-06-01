@@ -201,7 +201,7 @@ func innerMain() error {
 		DUTCapacity:       cfg.DUTCapacity,
 		StartBotFunc:      bot.NewStarter(h, cfg.SwarmingURL).Start,
 		Hive:              cfg.Hive,
-		BotPrefix:         botPrefix,
+		BotPrefix:         cfg.BotPrefix,
 		BotResources:      makeBotResources(),
 	}
 	a.Run(ctx)
