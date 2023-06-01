@@ -204,7 +204,7 @@ func innerMain() error {
 		StartBotFunc:      bot.NewStarter(h, cfg.SwarmingURL).Start,
 		Hive:              cfg.Hive,
 		BotPrefix:         cfg.BotPrefix,
-		BotResources:      makeBotResources(),
+		BotResources:      makeBotResources(cfg),
 	}
 	a.Run(ctx)
 	return nil
@@ -305,17 +305,17 @@ func initializeHive(explicitHive, hostname string) string {
 
 // makeBotResources returns a struct which defines the resources assigned to
 // each bot.
-func makeBotResources() *specs.LinuxResources {
+func makeBotResources(cfg *config) *specs.LinuxResources {
 	// 8 and 0 is major/minor device number of /dev/sda mounted to
 	// drone containers. So far I don't see any other number than it.
 	var diskMajor int64 = 8
 	var diskMinor int64 = 0
 
 	var spec specs.LinuxBlockIO
-	if rate := uint64(botBlkIOReadBPS); rate > 0 {
+	if rate := uint64(cfg.BotBlockIOReadBPS); rate > 0 {
 		spec.ThrottleReadBpsDevice = []specs.LinuxThrottleDevice{*newThrottleDevice(diskMajor, diskMinor, rate)}
 	}
-	if rate := uint64(botBlkIOWriteBPS); rate > 0 {
+	if rate := uint64(cfg.BotBlockIOWriteBPS); rate > 0 {
 		spec.ThrottleWriteBpsDevice = []specs.LinuxThrottleDevice{*newThrottleDevice(diskMajor, diskMinor, rate)}
 	}
 	return &specs.LinuxResources{
