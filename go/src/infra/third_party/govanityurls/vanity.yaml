@@ -64,3 +64,11 @@ paths:
       https://chromium.googlesource.com/chromiumos/platform/tast
       https://chromium.googlesource.com/chromiumos/platform/tast/+/main{/dir}
       https://chromium.googlesource.com/chromiumos/platform/tast/+/main{/dir}/{file}#{line}
+
+  /tast-tests:
+    repo: https://chromium.googlesource.com/chromiumos/platform/tast-tests
+    vcs: git
+    display: >
+      https://chromium.googlesource.com/chromiumos/platform/tast-tests
+      https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main{/dir}
+      https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main{/dir}/{file}#{line}
