@@ -35,6 +35,10 @@ type config struct {
 	TSMonEndpoint       string `yaml:"tsMonEndpoint"`
 	TSMonCredentialPath string `yaml:"tsMonCredentialPath"`
 
+	// BotPrefix is used as the prefix for the bot ID.
+	// Default value is 'crossk-'
+	BotPrefix string
+
 	// TraceBackend denotes the backend used for OTel traces.
 	// Valid options are:
 	//   - grpc
@@ -66,6 +70,7 @@ func parseConfigFile(path string) *config {
 	cfg := config{
 		DUTCapacity:           10,
 		ReportingIntervalMins: 1,
+		BotPrefix:             "crossk-",
 	}
 	addBackwardCompatConfig(&cfg)
 	if path == "" {
@@ -95,6 +100,7 @@ func addBackwardCompatConfig(cfg *config) {
 	cfg.Hive = hive
 	cfg.TSMonEndpoint = tsmonEndpoint
 	cfg.TSMonCredentialPath = tsmonCredentialPath
+	cfg.BotPrefix = botPrefix
 
 	// Flags.
 	cfg.TraceBackend = traceBackend
