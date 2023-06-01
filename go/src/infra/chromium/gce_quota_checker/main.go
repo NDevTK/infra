@@ -10,11 +10,17 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
+	"time"
 
 	"google.golang.org/api/iterator"
 
 	compute "cloud.google.com/go/compute/apiv1"
 	"cloud.google.com/go/compute/apiv1/computepb"
+
+	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
+	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const USAGE = `
@@ -76,11 +82,32 @@ func parseFlags() (string, bool, []string) {
 	return *gcpProject, *isVerbose, paths
 }
 
+func queryTimeSeriesQuota(ctx context.Context, client *monitoring.MetricClient, quotaName string, project string) *monitoring.TimeSeriesIterator {
+	// Get all points in the metric in the past 1 day. Some of the metrics
+	// don't seem to get updated very often, so need a big window.
+	startTime := time.Now().UTC().Add(time.Hour * -24)
+	endTime := time.Now().UTC()
+	monitoringRequest := &monitoringpb.ListTimeSeriesRequest{
+		Name:   "projects/" + project,
+		Filter: fmt.Sprintf(`metric.type = "compute.googleapis.com/quota/%s"`, quotaName),
+		Interval: &monitoringpb.TimeInterval{
+			StartTime: &timestamppb.Timestamp{
+				Seconds: startTime.Unix(),
+			},
+			EndTime: &timestamppb.Timestamp{
+				Seconds: endTime.Unix(),
+			},
+		},
+	}
+	return client.ListTimeSeries(ctx, monitoringRequest)
+}
+
 func main() {
 	ctx := context.Background()
 	project, _, _ := parseFlags()
 
 	quotasPerRegion := make(map[string]*regionQuotas)
+	quotaPerNetwork := make(map[string]*quotaVals)
 
 	// Get regions and their quotas. Simply calling ListRegion will get
 	// a variety of quota info for each region, which includes most of
@@ -120,6 +147,76 @@ func main() {
 			}
 		}
 		quotasPerRegion[*resp.Name] = &quotas
+	}
+
+	// Get local-SSD per region per vm-family quotas. Need to query a quota
+	// metric for this. Note: we query the "limit" here and then calculate
+	// the expected "usage" later on by reading gce-provider vms.cfg files.
+	client, err := monitoring.NewMetricClient(ctx)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer client.Close()
+	timeSeriesIterator := queryTimeSeriesQuota(ctx, client, "local_ssd_total_storage_per_vm_family/limit", project)
+	for {
+		timeSeriesResp, err := timeSeriesIterator.Next()
+		if err == iterator.Done {
+			break
+		} else if err != nil {
+			log.Fatalln(err)
+		}
+		var machineFamily string
+		var region string
+		if value, ok := timeSeriesResp.Metric.Labels["vm_family"]; ok {
+			machineFamily = strings.ToLower(value)
+		}
+		if value, ok := timeSeriesResp.Resource.Labels["location"]; ok {
+			region = value
+		}
+		regionQuota, ok := quotasPerRegion[region]
+		if !ok {
+			continue
+		}
+		// Points[0] should correspond to the most recent value for the
+		// quota, useful in case the quota limit gets bumped for the
+		// project.
+		regionQuota.localSSDPerFamilyQuota[machineFamily] = &quotaVals{max: timeSeriesResp.Points[0].Value.GetInt64Value()}
+	}
+
+	// Get the number of instances per network. Also need to query a quota
+	// metric for this.
+	timeSeriesIterator = queryTimeSeriesQuota(ctx, client, "instances_per_vpc_network/limit", project)
+	for {
+		timeSeriesResp, err := timeSeriesIterator.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatalln(err)
+		}
+		var networkName string
+		for labelKey, labelVal := range timeSeriesResp.Resource.Labels {
+			// Need to map network ID to network name since GCE's
+			// monitoring API uses the former while gce-provider
+			// uses the latter.
+			// FIXME: Get this mapping by querying the project?
+			if labelKey == "network_id" {
+				switch labelVal {
+				case "655963314494161580":
+					networkName = "c10"
+				case "2688805488330601365":
+					networkName = "c4"
+				case "13012605346896030474":
+					networkName = "default"
+				case "2893051718470468954":
+					networkName = "crbug1320004-test-network"
+				default:
+					log.Fatalln("Unknown network id: ", labelVal)
+				}
+				break
+			}
+		}
+		quotaPerNetwork[networkName] = &quotaVals{max: timeSeriesResp.Points[0].Value.GetInt64Value()}
 	}
 
 	// TODO: Finish the rest.
