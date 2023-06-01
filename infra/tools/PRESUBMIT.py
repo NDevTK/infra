@@ -4,8 +4,6 @@
 """infra.tools specific presubmit.
 """
 
-USE_PYTHON3 = True
-
 
 def CheckChangeOnUpload(input_api, output_api):
   output = []

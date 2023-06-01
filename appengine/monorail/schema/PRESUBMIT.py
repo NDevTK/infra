@@ -7,8 +7,6 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
-USE_PYTHON3 = True
-
 
 def AlterTableCheck(input_api, output_api):  # pragma: no cover
   this_dir = input_api.PresubmitLocalPath()

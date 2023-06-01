@@ -10,8 +10,6 @@ details on the presubmit API built into gcl.
 
 import os
 
-USE_PYTHON3 = True
-
 DISABLED_TESTS = [
     '.*appengine/chromium_status/tests/main_test.py',
     '.*appengine/chromium_build/app_test.py',

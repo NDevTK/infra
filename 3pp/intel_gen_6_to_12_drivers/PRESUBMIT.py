@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-USE_PYTHON3 = True
-
 PRESUBMIT_VERSION = '2.0.0'
 
 
@@ -26,7 +24,4 @@ def CheckScriptsUnittests(input_api, output_api):
       input_api.PresubmitLocalPath(),
       [r'^.+_unittest\.py$'],
       env=_GetPCIDEnv(input_api),
-      run_on_python2=False,
-      run_on_python3=True,
-      skip_shebang_check=True,
   )

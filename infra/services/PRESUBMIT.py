@@ -6,14 +6,12 @@
 See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts for
 details on the presubmit API built into depot_tools.
 
-Note: this file is mostly used for py3 tests since we can't use infra's root
+Note: this file is used for py3 tests since we can't use infra's root
 test.py for python3.
 """
 
 import os
 import sys
-
-USE_PYTHON3 = True
 
 
 def CommonChecks(input_api, output_api):
@@ -40,10 +38,7 @@ def CommonChecks(input_api, output_api):
               input_api,
               output_api,
               os.path.join(service, 'test'), [r'^.+_test\.py$'],
-              env=test_env,
-              skip_shebang_check=True,
-              run_on_python2=False,
-              run_on_python3=True))
+              env=test_env))
 
   results += input_api.RunTests(tests)
   return results

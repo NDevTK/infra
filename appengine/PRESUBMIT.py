@@ -5,8 +5,6 @@
 """appengine-specific presubmit for running pylint.
 """
 
-USE_PYTHON3 = True
-
 # LGTM FROM iannucci@ REQUIRED TO EDIT THIS LIST:
 DISABLED_PYLINT_WARNINGS = [
     'W0231',  # __init__ method from base class is not called
