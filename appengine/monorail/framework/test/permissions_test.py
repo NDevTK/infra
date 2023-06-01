@@ -1377,6 +1377,13 @@ class IssuePermissionsTest(unittest.TestCase):
         self.RESTRICTED_ISSUE3, {OWNER_ID})
     self.assertIn('editissue', perms.perm_names)
 
+  def testUpdateIssuePermissions_DefaultPermsDoNotIncludeEdit(self):
+    # Permissions can be checked from the homepage without a project context.
+    perms = permissions.UpdateIssuePermissions(
+        permissions.COMMITTER_ACTIVE_PERMISSIONSET, None,
+        self.RESTRICTED_ISSUE3, {OWNER_ID})
+    self.assertNotIn('editissue', perms.perm_names)
+
   def testUpdateIssuePermissions_OwnerRespectsArchivedProject(self):
     project = project_pb2.Project()
     project.state = project_pb2.ProjectState.ARCHIVED
