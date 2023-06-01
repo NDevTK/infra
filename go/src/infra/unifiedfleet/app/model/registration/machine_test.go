@@ -16,7 +16,9 @@ import (
 	"go.chromium.org/luci/server/auth/authtest"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	"infra/unifiedfleet/app/config"
 	. "infra/unifiedfleet/app/model/datastore"
+	"infra/unifiedfleet/app/util"
 	ufsutil "infra/unifiedfleet/app/util"
 )
 
@@ -31,6 +33,7 @@ func mockChromeOSMachine(id, lab, board string, zone ufspb.Zone) *ufspb.Machine 
 		Location: &ufspb.Location{
 			Zone: zone,
 		},
+		Realm: util.ToUFSRealm(zone.String()),
 	}
 }
 
@@ -295,6 +298,98 @@ func TestGetMachine(t *testing.T) {
 			resp, err = GetMachine(ctx, "chrome-asset-1")
 			So(err, ShouldBeNil)
 			assertMachineWithOwnershipEqual(resp, chromeBrowserMachinecopy)
+		})
+	})
+}
+
+// Tests GetMachineACL, primarily focused on realm use cases
+func TestGetMachineACL(t *testing.T) {
+	t.Parallel()
+
+	// manually turn on config
+	alwaysUseACLConfig := config.Config{
+		ExperimentalAPI: &config.ExperimentalAPI{
+			GetMachineACL: 99,
+		},
+	}
+
+	ctx := gaetesting.TestingContextWithAppID("go-test")
+	ctx = config.Use(ctx, &alwaysUseACLConfig)
+	chromeOSMachineZone4, err := CreateMachine(
+		ctx,
+		mockChromeOSMachine("chromeos-asset-zone4", "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS4),
+	)
+	if err != nil {
+		t.Errorf("failed to create machine data: %s", err)
+	}
+
+	chromeOSMachineZone5, err := CreateMachine(
+		ctx,
+		mockChromeOSMachine("chromeos-asset-zone5", "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS5),
+	)
+	if err != nil {
+		t.Errorf("failed to create machine data: %s", err)
+	}
+
+	// superuser has permissions in two realms.
+	ctxSuperuser := auth.WithState(ctx, &authtest.FakeState{
+		Identity: "user:root@lab.com",
+		IdentityPermissions: []authtest.RealmPermission{
+			{
+				Realm:      ufsutil.AtlLabAdminRealm,
+				Permission: ufsutil.RegistrationsGet,
+			},
+			{
+				Realm:      ufsutil.AcsLabAdminRealm,
+				Permission: ufsutil.RegistrationsGet,
+			},
+		},
+	})
+
+	// atl lab permissions only
+	ctxATLLab := auth.WithState(ctx, &authtest.FakeState{
+		Identity: "user:atl@lab.com",
+		IdentityPermissions: []authtest.RealmPermission{
+			{
+				Realm:      ufsutil.AcsLabAdminRealm,
+				Permission: ufsutil.RegistrationsGet,
+			},
+		},
+	})
+
+	// no perms
+	ctxNoPerms := auth.WithState(ctx, &authtest.FakeState{
+		Identity:            "user:bad@lab.com",
+		IdentityPermissions: []authtest.RealmPermission{},
+	})
+
+	Convey("GetMachine", t, func() {
+		Convey("User with correct perms sees both", func() {
+			resp, err := GetMachineACL(ctxSuperuser, "chromeos-asset-zone4")
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp, ShouldResembleProto, chromeOSMachineZone4)
+			resp, err = GetMachineACL(ctxSuperuser, "chromeos-asset-zone5")
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp, ShouldResembleProto, chromeOSMachineZone5)
+		})
+		Convey("User only sees realm they should access", func() {
+			resp, err := GetMachineACL(ctxATLLab, "chromeos-asset-zone4")
+			So(err, ShouldNotBeNil)
+			So(resp, ShouldBeNil)
+			resp, err = GetMachineACL(ctxATLLab, "chromeos-asset-zone5")
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp, ShouldResembleProto, chromeOSMachineZone5)
+		})
+		Convey("User with no realms sees nothing", func() {
+			resp, err := GetMachineACL(ctxNoPerms, "chromeos-asset-zone4")
+			So(err, ShouldNotBeNil)
+			So(resp, ShouldBeNil)
+			resp, err = GetMachineACL(ctxNoPerms, "chromeos-asset-zone5")
+			So(err, ShouldNotBeNil)
+			So(resp, ShouldBeNil)
 		})
 	})
 }

@@ -9,6 +9,8 @@ import (
 	"fmt"
 
 	"go.chromium.org/luci/grpc/grpcutil"
+	"go.chromium.org/luci/server/auth"
+	"go.chromium.org/luci/server/auth/realms"
 
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/errors"
@@ -34,8 +36,18 @@ type FleetEntity interface {
 	GetProto() (proto.Message, error)
 }
 
+// RealmEntity represents the interface of an entity with a way to associate
+// with LUCI realms.
+type RealmEntity interface {
+	FleetEntity
+	GetRealm() string
+}
+
 // NewFunc creates a new fleet entity.
 type NewFunc func(context.Context, proto.Message) (FleetEntity, error)
+
+// NewRealmEntityFunc creates a new realmed fleet entity
+type NewRealmEntityFunc func(context.Context, proto.Message) (RealmEntity, error)
 
 // QueryAllFunc queries all entities for a given table.
 type QueryAllFunc func(context.Context) ([]FleetEntity, error)
@@ -139,6 +151,41 @@ func Get(ctx context.Context, pm proto.Message, nf NewFunc) (proto.Message, erro
 		logging.Errorf(ctx, "Failed to get entity from datastore: %s", err)
 		return nil, status.Errorf(codes.Internal, InternalError)
 	}
+	pm, perr := entity.GetProto()
+	if perr != nil {
+		logging.Errorf(ctx, "Failed to unmarshal proto: %s", perr)
+		return nil, status.Errorf(codes.Internal, InternalError)
+	}
+	return pm, nil
+}
+
+// GetACL retrieves entity from the datastore and applies a realm check before
+// returning the entity to a user.
+func GetACL(ctx context.Context, pm proto.Message, nf NewRealmEntityFunc, neededPerm realms.Permission) (proto.Message, error) {
+	entity, err := nf(ctx, pm)
+	if err != nil {
+		logging.Errorf(ctx, "Failed to marshal new entity: %s", err)
+		return nil, status.Errorf(codes.Internal, "%s Failed to marshal new entity: %s", InternalError, err)
+	}
+	if err = datastore.Get(ctx, entity); err != nil {
+		if datastore.IsErrNoSuchEntity(err) {
+			errorMsg := fmt.Sprintf("Entity not found %+v", entity)
+			return nil, status.Errorf(codes.NotFound, errorMsg)
+		}
+		logging.Errorf(ctx, "Failed to get entity from datastore: %s", err)
+		return nil, status.Errorf(codes.Internal, InternalError)
+	}
+
+	has, err := auth.HasPermission(ctx, neededPerm, entity.GetRealm(), nil)
+	if err != nil {
+		logging.Errorf(ctx, "Failed to fetch auth permissions: %s", err)
+		return nil, status.Errorf(codes.Internal, InternalError)
+	}
+	if !has {
+		errorMsg := fmt.Sprintf("Permission denied")
+		return nil, status.Errorf(codes.PermissionDenied, errorMsg)
+	}
+
 	pm, perr := entity.GetProto()
 	if perr != nil {
 		logging.Errorf(ctx, "Failed to unmarshal proto: %s", perr)

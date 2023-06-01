@@ -106,6 +106,7 @@ var (
 
 func init() {
 	RegistrationsList.AddFlags(realms.UsedInQueryRealms)
+	RegistrationsGet.AddFlags(realms.UsedInQueryRealms)
 }
 
 // ChromeOSLUCIProject where ChromeOS LUCI infra lives

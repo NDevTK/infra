@@ -6,6 +6,7 @@ package registration
 
 import (
 	"context"
+	"math/rand"
 	"strings"
 
 	"github.com/golang/protobuf/proto"
@@ -18,6 +19,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	"infra/unifiedfleet/app/config"
 	ufsds "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/util"
 )
@@ -67,7 +69,11 @@ func (e *MachineEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
-func newMachineEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
+func (e *MachineEntity) GetRealm() string {
+	return e.Realm
+}
+
+func newMachineEntityRealm(ctx context.Context, pm proto.Message) (ufsds.RealmEntity, error) {
 	p := pm.(*ufspb.Machine)
 	if p.GetName() == "" {
 		return nil, errors.Reason("Empty Machine ID").Err()
@@ -129,6 +135,10 @@ func newMachineEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity,
 	}, nil
 }
 
+func newMachineEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
+	return newMachineEntityRealm(ctx, pm)
+}
+
 // QueryMachineByPropertyName queries Machine Entity in the datastore
 // If keysOnly is true, then only key field is populated in returned machines
 func QueryMachineByPropertyName(ctx context.Context, propertyName, id string, keysOnly bool) ([]*ufspb.Machine, error) {
@@ -179,6 +189,34 @@ func UpdateMachineOwnership(ctx context.Context, id string, ownership *ufspb.Own
 // GetMachine returns machine for the given id from datastore.
 func GetMachine(ctx context.Context, id string) (*ufspb.Machine, error) {
 	pm, err := ufsds.Get(ctx, &ufspb.Machine{Name: id}, newMachineEntity)
+	if err == nil {
+		return pm.(*ufspb.Machine), err
+	}
+	return nil, err
+}
+
+// GetMachineACL routes the request to either the ACLed or
+// unACLed method depending on the rollout status.
+func GetMachineACL(ctx context.Context, id string) (*ufspb.Machine, error) {
+	cutoff := config.Get(ctx).GetExperimentalAPI().GetGetMachineACL()
+	// If cutoff is set attempt to divert the traffic to new API
+	if cutoff != 0 {
+		// Roll the dice to determine which one to use
+		roll := rand.Uint32() % 100
+		cutoff := cutoff % 100
+		if roll <= cutoff {
+			logging.Infof(ctx, "GetMachine --- Running in experimental API")
+			return getMachineACL(ctx, id)
+		}
+	}
+
+	return GetMachine(ctx, id)
+}
+
+// GetMachineACL returns a machine for the given ID after verifying the user
+// has permission.
+func getMachineACL(ctx context.Context, id string) (*ufspb.Machine, error) {
+	pm, err := ufsds.GetACL(ctx, &ufspb.Machine{Name: id}, newMachineEntityRealm, util.RegistrationsGet)
 	if err == nil {
 		return pm.(*ufspb.Machine), err
 	}
