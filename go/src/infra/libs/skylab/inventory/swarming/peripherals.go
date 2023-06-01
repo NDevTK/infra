@@ -106,6 +106,12 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 		dims["label-audiobox_jackplugger_state"] = []string{labJackPluggerState[plen:]}
 	}
 
+	if hmrState := p.GetHmrState(); hmrState != inventory.PeripheralState_UNKNOWN {
+		if labSState, ok := lab.PeripheralState_name[int32(hmrState)]; ok {
+			dims["label-hmr_state"] = []string{labSState}
+		}
+	}
+
 	n := p.GetWorkingBluetoothBtpeer()
 	btpeers := make([]string, n)
 	for i := range btpeers {
@@ -189,6 +195,15 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 			p.AudioboxJackpluggerState = &invJackPluggerState
 		}
 		delete(d, "label-audiobox_jackplugger_state")
+	}
+
+	if hmrStateName, ok := getLastStringValue(d, "label-hmr_state"); ok {
+		hmrState := inventory.PeripheralState_UNKNOWN
+		if ssIndex, ok := lab.PeripheralState_value[strings.ToUpper(hmrStateName)]; ok {
+			hmrState = inventory.PeripheralState(ssIndex)
+		}
+		p.HmrState = &hmrState
+		delete(d, "label-hmr_state")
 	}
 
 	if labSStateName, ok := getLastStringValue(d, "label-servo_state"); ok {

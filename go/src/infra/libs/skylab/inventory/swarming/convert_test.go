@@ -74,6 +74,7 @@ peripherals: {
   working_bluetooth_btpeer: 3
   peripheral_wifi_state: 1
   peripheral_wifi_features: [0]
+  hmr_state: 1
 }
 os_type: 2
 model: "modelval"
@@ -227,6 +228,7 @@ peripherals: {
   working_bluetooth_btpeer: 3
   peripheral_wifi_state: 1
   peripheral_wifi_features: [0]
+  hmr_state: 1
 }
 os_type: 2
 model: "modelval"
@@ -358,6 +360,7 @@ var fullDimensions = Dimensions{
 	"label-graphics":                {"graphicsval"},
 	"label-hangout_app":             {"True"},
 	"label-hwid_sku":                {"eve_IntelR_CoreTM_i7_7Y75_CPU_1_30GHz_16GB"},
+	"label-hmr_state":               {"WORKING"},
 	"label-hotwording":              {"True"},
 	"label-huddly":                  {"True"},
 	"label-internal_display":        {"True"},
