@@ -27,10 +27,19 @@ const (
 	// See https://crrev.com/i/5266273. Note that the staging pool is shared.
 	swarmingBotPrefixGce = "chromeos-"
 
+	// dockerConfigEnvName is the env variable name for docker config directory
+	// it is used to determine when the tests are running in PVS
+	dockerConfigEnvName = "DOCKER_CONFIG"
+
+	// dockerConfigMatchPVS is a substring that if found in dockerConfigEnvName
+	// indicates the tests are running in PVS
+	dockerConfigMatchPVS = ".pvs"
+
 	// List of supported SwarmingBotProvider types.
 	// TODO(mingkong): consider moving these values to a proto enum
 	BotProviderGce     SwarmingBotProvider = "GCE"
 	BotProviderDrone   SwarmingBotProvider = "Drone"
+	BotProviderPVS     SwarmingBotProvider = "PVS"
 	BotProviderUnknown SwarmingBotProvider = "Unknown"
 )
 
@@ -49,6 +58,11 @@ func GetHostIp() (string, error) {
 
 // GetBotProvider detects the SwarmingBotProvider by examining env variable.
 func GetBotProvider() SwarmingBotProvider {
+	if lookup, found := os.LookupEnv(dockerConfigEnvName); found {
+		if strings.Contains(lookup, dockerConfigMatchPVS) {
+			return BotProviderPVS
+		}
+	}
 	if lookup, found := os.LookupEnv(swarmingBotIdEnvName); found {
 		for _, p := range heuristics.HwSwarmingBotIdPrefixes {
 			if strings.HasPrefix(lookup, p) {

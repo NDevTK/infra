@@ -8,12 +8,15 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/user"
 	"path"
+
+	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
+	"infra/cros/cmd/cros_test_runner/common"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
 type crosTestProcessor struct {
@@ -61,6 +64,13 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 	if _, err := os.Stat(autotestResultsFolder); err == nil {
 		volumes = append(volumes, fmt.Sprintf("%s:%s", autotestResultsFolder, autotestResultsFolder))
 	}
+	// Mount docker socket file if it exists this allows tests to orchestrate servod containers if needed
+	if botProvider := common.GetBotProvider(); botProvider == common.BotProviderPVS {
+		const dockerSock = "/var/run/docker.sock"
+		if _, err := os.Stat(dockerSock); err == nil {
+			volumes = append(volumes, fmt.Sprintf("%s:%s", dockerSock, dockerSock))
+		}
+	}
 	additionalOptions := &api.StartContainerRequest_Options{
 		Network: request.Network,
 		Expose:  expose,
@@ -72,6 +82,23 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 	// permission in /tmp/test. Therefore, we need to change the owner of the directory.
 	cmd := fmt.Sprintf("sudo --non-interactive chown -R chromeos-test:chromeos-test %s && cros-test server -port %s", "/tmp/test", port)
 	startCommand := []string{"bash", "-c", cmd}
+	if botProvider := common.GetBotProvider(); botProvider == common.BotProviderPVS {
+		if localDockerGID, err := user.LookupGroup("docker"); err == nil {
+			log.Printf("gid found for docker %+v, updating GID in container", localDockerGID)
+			// modify the docker group GID to match inside the container
+			// this allows chromeos-test to have permissions on dockerSock
+			// we must start a new shell with su after changing group ID for it to be recognized
+			altCmd := fmt.Sprintf("sudo --non-interactive groupadd -g %s docker && "+
+				"sudo --non-interactive usermod -a -G docker chromeos-test && "+
+				"sudo --non-interactive su - chromeos-test -c '%s'",
+				localDockerGID.Gid,
+				cmd,
+			)
+			startCommand = []string{"bash", "-c", altCmd}
+		} else {
+			log.Printf("no gid found for docker: %+v, skipping docker GID update", err)
+		}
+	}
 	return &api.StartContainerRequest{Name: request.Name, ContainerImage: request.ContainerImage, AdditionalOptions: additionalOptions, StartCommand: startCommand}, nil
 }
 
