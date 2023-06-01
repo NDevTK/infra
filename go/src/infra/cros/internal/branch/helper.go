@@ -103,13 +103,17 @@ func (c *Client) projectBranchName(br string, project repo.Project, original str
 	// any unneeded info from the suffix.
 	suffix := "-"
 
-	branchSuffix, hasSuffix := project.GetAnnotation("branch-suffix")
-	if hasSuffix {
-		suffix += branchSuffix
-	} else if project.Upstream != "" {
-		suffix += git.StripRefs(project.Upstream)
+	if noBranchSuffix, _ := project.GetAnnotation("no-branch-suffix"); strings.ToLower(noBranchSuffix) == "true" {
+		suffix = ""
 	} else {
-		suffix += git.StripRefs(project.Revision)
+		branchSuffix, hasSuffix := project.GetAnnotation("branch-suffix")
+		if hasSuffix {
+			suffix += branchSuffix
+		} else if project.Upstream != "" {
+			suffix += git.StripRefs(project.Upstream)
+		} else {
+			suffix += git.StripRefs(project.Revision)
+		}
 	}
 
 	// If the revision is itself a branch, we need to strip the old branch name

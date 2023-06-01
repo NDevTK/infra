@@ -46,6 +46,9 @@ var branchNameTestManifest = repo.Manifest{
 		{Path: "quz2/", Name: "quz", Upstream: "refs/heads/quz2", Annotations: []repo.Annotation{
 			{Name: "branch-suffix", Value: "quz200"},
 		}},
+		{Path: "quz3/", Name: "quz", Upstream: "refs/heads/quz3", Annotations: []repo.Annotation{
+			{Name: "no-branch-suffix", Value: "true"},
+		}},
 	},
 }
 
@@ -117,6 +120,7 @@ func TestProjectBranchName(t *testing.T) {
 	assert.StringsEqual(t, c.projectBranchName("mybranch", manifest.Projects[7], ""), "mybranch")
 	assert.StringsEqual(t, c.projectBranchName("mybranch", manifest.Projects[11], ""), "mybranch-quz100")
 	assert.StringsEqual(t, c.projectBranchName("mybranch", manifest.Projects[12], ""), "mybranch-quz200")
+	assert.StringsEqual(t, c.projectBranchName("mybranch", manifest.Projects[13], ""), "mybranch")
 }
 
 func TestProjectBranchName_MappingFunctionality(t *testing.T) {
