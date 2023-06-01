@@ -9,4 +9,8 @@ set -o pipefail
 
 PREFIX="$1"
 
+if [[ $_3PP_PLATFORM == $_3PP_TOOL_PLATFORM ]]; then # not cross-compiling
+  make test
+fi
 make install PREFIX="$PREFIX"
+
