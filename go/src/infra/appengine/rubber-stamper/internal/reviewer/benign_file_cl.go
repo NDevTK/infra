@@ -34,7 +34,8 @@ func reviewBenignFileChange(ctx context.Context, hostCfg *config.HostConfig, gc 
 		return nil, fmt.Errorf("gerrit ListFiles rpc call failed with error: request %+v, error %v", listReq, err)
 	}
 
-	if hostCfg == nil || hostCfg.RepoConfigs[t.Repo] == nil || hostCfg.RepoConfigs[t.Repo].BenignFilePattern == nil {
+	bfp := retrieveBenignFilePattern(ctx, hostCfg, t.Repo)
+	if bfp == nil {
 		logging.Debugf(ctx, "there's no BenignFilePattern config for host %s, cl %d, revision %s: %v", t.Host, t.Number, t.Revision)
 		invalidFiles := make([]string, 0, len(resp.Files))
 		for file := range resp.Files {
@@ -48,7 +49,7 @@ func reviewBenignFileChange(ctx context.Context, hostCfg *config.HostConfig, gc 
 	}
 
 	var patterns []gitignore.Pattern
-	for _, path := range hostCfg.RepoConfigs[t.Repo].BenignFilePattern.Paths {
+	for _, path := range bfp.Paths {
 		patterns = append(patterns, gitignore.ParsePattern(path, nil))
 	}
 	matcher := gitignore.NewMatcher(patterns)
@@ -71,4 +72,25 @@ func reviewBenignFileChange(ctx context.Context, hostCfg *config.HostConfig, gc 
 // splitPath splits a path into components, as weird go-git.v4 API wants it.
 func splitPath(p string) []string {
 	return strings.Split(filepath.Clean(p), string(filepath.Separator))
+}
+
+// retrieveBenignFilePattern retrieves the corresponding BenignFilePattern
+// config for the given repository.
+//
+// Return the BenignFilePattern when there is one. Return nil when it doesn't
+// exist.
+func retrieveBenignFilePattern(ctx context.Context, hostCfg *config.HostConfig, repo string) *config.BenignFilePattern {
+	if hostCfg == nil {
+		return nil
+	}
+	if hostCfg.GetRepoConfigs()[repo] != nil {
+		return hostCfg.RepoConfigs[repo].BenignFilePattern
+	}
+	if hostCfg.GetRepoRegexpConfigs() != nil {
+		rrcfg := config.RetrieveRepoRegexpConfig(ctx, repo, hostCfg.GetRepoRegexpConfigs())
+		if rrcfg != nil {
+			return rrcfg.BenignFilePattern
+		}
+	}
+	return nil
 }
