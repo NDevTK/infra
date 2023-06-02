@@ -499,9 +499,9 @@ func pickBuilderToTest(buildIDs []buildID, buildIDToBuild map[buildID]*bbproto.B
 		return nil, nil
 	}
 	for _, bt := range buildIDs {
-		// Find and return the first relevant, successful build.
+		// Find and return the first relevant non-failed build.
 		result, found := relevantReports[bt]
-		if found && result.Status == bbproto.Status_SUCCESS {
+		if found && (result.Status == bbproto.Status_SUCCESS || result.Status == bbproto.Status_STARTED) {
 			return &bt, nil
 		}
 	}
