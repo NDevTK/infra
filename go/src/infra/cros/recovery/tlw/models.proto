@@ -458,6 +458,25 @@ message Battery {
   HardwareState state = 1;
 }
 
+// HumanMotionRobot holds info about human motion robot of the DUT
+message HumanMotionRobot {
+  string name = 1;
+
+  // State describes the state of device.
+  enum State {
+    STATE_UNSPECIFIED = 0;
+    // Device and software on it is working as expected.
+    WORKING = 1;
+    // Device is broken or not working as expected.
+    BROKEN = 2;
+    // Device State is not applicable.
+    NOT_APPLICABLE = 3;
+  }
+
+  // State of the device.
+  State state = 2;
+}
+
 // Chrome OS specific DUT details
 message ChromeOS {
   reserved 1;
@@ -550,6 +569,9 @@ message ChromeOS {
 
   // Capability to support Chromebook X features
   bool cbx = 25;
+
+  // Human Motion Robot info.
+  HumanMotionRobot human_motion_robot = 26;
 }
 
 // Android specific DUT details
