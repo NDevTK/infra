@@ -10,6 +10,8 @@ PROJECT_REDIRECT_MAP = {
     'git': 'https://git.issues.gerritcodereview.com',
 }
 
+MAX_MONORAIL_ISSUE_ID = 10000000
+
 
 def GetRedirectURL(project_name):
   return PROJECT_REDIRECT_MAP.get(project_name, None)

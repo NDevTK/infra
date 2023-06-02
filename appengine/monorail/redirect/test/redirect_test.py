@@ -47,3 +47,10 @@ class TestRedirectApp(unittest.TestCase):
     client = self.app.test_client()
     response = client.get('/p/project1/issues/detail?id=1')
     self.assertEqual(response.status_code, 200)
+
+  @patch("redirect.redirect_utils.GetRedirectURL")
+  def testRedirectIssueDetail(self, fake_get_url):
+    fake_get_url.return_value = "test"
+    client = self.app.test_client()
+    response = client.get('/p/project1/issues/detail?id=10000001')
+    self.assertEqual(response.status_code, 200)
