@@ -151,9 +151,7 @@ CIPD_PACKAGE_BUILDERS = {
     ],
 }
 
-
-INTERNAL_REPO = 'https://chrome-internal.googlesource.com/infra/infra_internal'
-PUBLIC_REPO = 'https://chromium.googlesource.com/infra/infra'
+REPO = 'https://chromium.googlesource.com/infra/infra_superproject'
 
 
 def RunSteps(api):
@@ -162,11 +160,9 @@ def RunSteps(api):
   if (buildername.startswith('infra-internal-continuous') or
       buildername.startswith('infra-internal-packager')):
     project_name = 'infra_internal'
-    repo_url = INTERNAL_REPO
   elif (buildername.startswith('infra-continuous') or
       buildername.startswith('infra-packager')):
     project_name = 'infra'
-    repo_url = PUBLIC_REPO
   else:  # pragma: no cover
     raise ValueError(
         'This recipe is not intended for builder %s. ' % buildername)
@@ -178,8 +174,10 @@ def RunSteps(api):
       go_version_variant = 'legacy'
       break
 
+  # TODO(crbug.com/1415507): Remove '_superproject' suffix when
+  # migration is complete and configs have been renamed.
   co = api.infra_checkout.checkout(
-      gclient_config_name=project_name,
+      gclient_config_name=project_name + '_superproject',
       internal=(project_name == 'infra_internal'),
       generate_env_with_system_python=True,
       go_version_variant=go_version_variant)
@@ -188,11 +186,11 @@ def RunSteps(api):
   # Whatever is checked out by bot_update. It is usually equal to
   # api.buildbucket.gitiles_commit.id except when the build was triggered
   # manually (commit id is empty in that case).
-  rev = co.bot_update_step.presentation.properties['got_revision']
-  return build_main(api, co, buildername, project_name, repo_url, rev)
+  rev = co.bot_update_step.presentation.properties['got_revision_superproject']
+  return build_main(api, co, buildername, project_name, rev)
 
 
-def build_main(api, checkout, buildername, project_name, repo_url, rev):
+def build_main(api, checkout, buildername, project_name, rev):
   is_packager = 'packager' in buildername
 
   # Do not run python tests on packager builders, since most of them are
@@ -200,7 +198,7 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
   # from api.infra_cipd.test() below, when testing packages that pack python
   # code.
   if api.platform.arch != 'arm' and not is_packager:
-    run_python_tests(api, project_name)
+    run_python_tests(api, checkout, project_name)
 
   # Some third_party go packages on OSX rely on cgo and thus a configured
   # clang toolchain.
@@ -211,8 +209,10 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
         # depot_tools on the path.
         api.step(
             'infra go tests',
-            api.resultdb.wrap(
-                ['python3', '-u', api.path['checkout'].join('go', 'test.py')]))
+            api.resultdb.wrap([
+                'python3', '-u',
+                checkout.path.join(project_name, 'go', 'test.py')
+            ]))
 
     fails = []
     for plat in CIPD_PACKAGE_BUILDERS.get(buildername, []):
@@ -236,7 +236,8 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
         goos, goarch = plat.split('-', 1)
 
       try:
-        with api.infra_cipd.context(api.path['checkout'], goos, goarch):
+        with api.infra_cipd.context(
+            checkout.path.join(project_name), goos, goarch):
           if api.platform.is_mac:
             api.infra_cipd.build_without_env_refresh(
                 api.properties.get('signing_identity'))
@@ -248,7 +249,7 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
             if api.runtime.is_experimental:
               api.step('no CIPD package upload in experimental mode', cmd=None)
             else:
-              api.infra_cipd.upload(api.infra_cipd.tags(repo_url, rev))
+              api.infra_cipd.upload(api.infra_cipd.tags(REPO, rev))
       except api.step.StepFailure:
         fails.append(plat)
 
@@ -261,23 +262,23 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
   return RawResult(status=status, summary_markdown='\n'.join(summary))
 
 
-def run_python_tests(api, project_name):
+def run_python_tests(api, checkout, project_name):
   with api.step.defer_results():
-    with api.context(cwd=api.path['checkout']):
+    with api.context(cwd=checkout.path.join(project_name)):
       # Run Linux tests everywhere, Windows tests only on public CI.
       if api.platform.is_linux or project_name == 'infra':
         api.step('infra python tests', ['python3', 'test.py', 'test'])
 
       if ((api.platform.is_linux or api.platform.is_mac) and
           project_name == 'infra'):
-        cwd = api.path['checkout'].join('appengine', 'monorail')
+        cwd = checkout.path.join(project_name, 'appengine', 'monorail')
         with api.context(cwd=cwd):
           api.step('monorail python tests', ['vpython3', 'test.py'])
 
       # Validate ccompute configs.
       if api.platform.is_linux and project_name == 'infra_internal':
-        ccompute_config = api.path['checkout'].join(
-            'ccompute', 'scripts', 'ccompute_config.py')
+        ccompute_config = checkout.path.join(project_name, 'ccompute',
+                                             'scripts', 'ccompute_config.py')
         api.step('ccompute config test', ['python3', ccompute_config, 'test'])
 
 
@@ -292,51 +293,63 @@ def GenTests(api):
     'darwin-arm64',
   ]
 
-  def test(name, builder, repo, project, bucket, plat, is_experimental=False,
+  def test(name,
+           builder,
+           project,
+           bucket,
+           plat,
+           is_experimental=False,
            arch='intel'):
     return (api.test(name) + api.platform(plat, 64, arch) +
             api.runtime(is_experimental=is_experimental) +
             api.buildbucket.ci_build(
-                project, bucket, builder, git_repo=repo, build_number=123))
+                project, bucket, builder, git_repo=REPO, build_number=123))
 
-  yield test('public-ci-linux', 'infra-continuous-bionic-64',
-             PUBLIC_REPO, 'infra', 'ci', 'linux')
-  yield test('public-ci-linux-arm64', 'infra-continuous-bionic-64',
-             PUBLIC_REPO, 'infra', 'ci', 'linux', arch='arm')
-  yield test('public-ci-win', 'infra-continuous-win10-64',
-             PUBLIC_REPO, 'infra', 'ci', 'win')
+  yield test('public-ci-linux', 'infra-continuous-bionic-64', 'infra', 'ci',
+             'linux')
+  yield test(
+      'public-ci-linux-arm64',
+      'infra-continuous-bionic-64',
+      'infra',
+      'ci',
+      'linux',
+      arch='arm')
+  yield test('public-ci-win', 'infra-continuous-win10-64', 'infra', 'ci', 'win')
 
   yield test('internal-ci-linux', 'infra-internal-continuous-bionic-64',
-             INTERNAL_REPO, 'infra-internal', 'ci', 'linux')
+             'infra-internal', 'ci', 'linux')
   yield test('internal-ci-mac', 'infra-internal-continuous-mac-11-64',
-             INTERNAL_REPO, 'infra-internal', 'ci', 'mac')
+             'infra-internal', 'ci', 'mac')
 
-  yield test('public-packager-mac', 'infra-packager-mac-64',
-             PUBLIC_REPO, 'infra', 'prod', 'mac')
-  yield test('public-packager-mac_experimental', 'infra-packager-mac-64',
-             PUBLIC_REPO, 'infra', 'prod', 'mac',
-             is_experimental=True)
-  yield test('public-packager-mac_codesign', 'infra-packager-mac-64',
-             PUBLIC_REPO, 'infra', 'prod', 'mac') + api.properties(
+  yield test('public-packager-mac', 'infra-packager-mac-64', 'infra', 'prod',
+             'mac')
+  yield test(
+      'public-packager-mac_experimental',
+      'infra-packager-mac-64',
+      'infra',
+      'prod',
+      'mac',
+      is_experimental=True)
+  yield test('public-packager-mac_codesign', 'infra-packager-mac-64', 'infra',
+             'prod', 'mac') + api.properties(
                  signing_identity='AAAAAAAAAAAAABBBBBBBBBBBBBXXXXXXXXXXXXXX')
   yield test('public-packager-mac-arm64_codesign', 'infra-packager-mac-arm64',
-             PUBLIC_REPO, 'infra', 'prod', 'mac') + api.properties(
+             'infra', 'prod', 'mac') + api.properties(
                  signing_identity='AAAAAAAAAAAAABBBBBBBBBBBBBXXXXXXXXXXXXXX')
-  yield test('public-packager-win', 'infra-packager-win-64', PUBLIC_REPO,
-             'infra', 'prod', 'win')
+  yield test('public-packager-win', 'infra-packager-win-64', 'infra', 'prod',
+             'win')
 
   yield test('internal-packager-linux', 'infra-internal-packager-linux-64',
-             INTERNAL_REPO, 'infra-internal', 'prod', 'linux')
+             'infra-internal', 'prod', 'linux')
   yield test('internal-packager-mac-arm64_codesign',
-             'infra-internal-packager-mac-arm64', PUBLIC_REPO, 'infra', 'prod',
+             'infra-internal-packager-mac-arm64', 'infra', 'prod',
              'mac') + api.properties(
                  signing_identity='AAAAAAAAAAAAABBBBBBBBBBBBBXXXXXXXXXXXXXX')
 
   yield (
-      test('packager-cipd-fail', 'infra-packager-linux-xc1',
-             PUBLIC_REPO, 'infra', 'prod', 'linux') +
-      api.step_data('[GOOS:linux GOARCH:arm]cipd - build packages', retcode=1)
-  )
+      test('packager-cipd-fail', 'infra-packager-linux-xc1', 'infra', 'prod',
+           'linux') +
+      api.step_data('[GOOS:linux GOARCH:arm]cipd - build packages', retcode=1))
 
   yield test('cross-packager-mac-fail', 'infra-packager-TEST-linux-xcMac',
-             PUBLIC_REPO, 'infra', 'prod', 'linux')
+             'infra', 'prod', 'linux')
