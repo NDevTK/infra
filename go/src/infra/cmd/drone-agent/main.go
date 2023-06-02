@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//go:build !windows
-
 // Command drone-agent is the client that talks to the drone queen
 // service to provide Swarming bots for running tasks against test
 // devices.  See the README.
@@ -28,7 +26,6 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/trace"
-
 	"google.golang.org/grpc/metadata"
 
 	"infra/appengine/drone-queen/api"
@@ -46,11 +43,18 @@ const (
 	oauthTokenPath = "/var/lib/swarming/oauth_bot_token.json"
 )
 
+// Derived from standard environment variables.
+// Don't add new settings as environment variables; use the config file.
 var (
 	workingDirPath = filepath.Join(os.Getenv("HOME"), "skylab_bots")
+	authOptions    = auth.Options{
+		Method:                 auth.ServiceAccountMethod,
+		ServiceAccountJSONPath: os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"),
+	}
 )
 
-// Configuration environment variables.
+// Deprecated configuration environment variables for backward compatibility.
+// Add new settings to the config file.
 var (
 	queenService = os.Getenv("DRONE_AGENT_QUEEN_SERVICE")
 	// DRONE_AGENT_SWARMING_URL is the URL of the Swarming
@@ -60,10 +64,6 @@ var (
 	dutCapacity       = getIntEnv("DRONE_AGENT_DUT_CAPACITY", 10)
 	reportingInterval = time.Duration(getIntEnv("DRONE_AGENT_REPORTING_INTERVAL_MINS", 1)) * time.Minute
 
-	authOptions = auth.Options{
-		Method:                 auth.ServiceAccountMethod,
-		ServiceAccountJSONPath: os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"),
-	}
 	// hive value of the drone agent.  This is used for DUT/drone affinity.
 	// A drone is assigned DUTs with same hive value.
 	hive = initializeHive(os.Getenv("DRONE_AGENT_HIVE"), os.Getenv("DOCKER_DRONE_SERVER_NAME"))
@@ -87,11 +87,19 @@ var (
 )
 
 // Flag options.
+// Only add flags for settings that would be hard coded into the drone image.
+// Other settings should go into the config file.
 var (
+	// configPath is the path to the drone-agent config file.
+	configPath = flag.String("config-path", "", "Path for config file.")
 	// versionFilePath is the path to a drone-agent version file.
 	// This file should only contain the version i.e. 12345.
 	versionFilePath = flag.String("version-file", "", "Path for drone-agent version file."+
 		" This is reported to drone queen for analytics.")
+)
+
+// Deprecated flag options for backward compatibility.
+var (
 	// traceBackend denotes the backend used for OTel traces.
 	traceBackend string
 	// traceTarget is the destination for traces.
@@ -123,6 +131,7 @@ func main() {
 }
 
 func innerMain() error {
+	cfg := parseConfigFile(*configPath)
 	// Set up and defer the WaitGroup before the context because
 	// the context cancellation needs to happen first to signal
 	// things to stop.  Otherwise we deadlock waiting for things
@@ -151,9 +160,9 @@ func innerMain() error {
 	}
 	defer metrics.Shutdown(ctx)
 
-	if traceBackend != "" && traceBackend != "none" {
+	if cfg.TraceBackend != "" && cfg.TraceBackend != "none" {
 		// Initialize tracing.
-		exp, err := initSpanExporter(ctx, traceBackend, *traceTarget)
+		exp, err := initSpanExporter(ctx, cfg.TraceBackend, cfg.TraceTarget)
 		if err != nil {
 			return err
 		}
@@ -185,12 +194,12 @@ func innerMain() error {
 	a := agent.Agent{
 		Client: api.NewDronePRPCClient(&prpc.Client{
 			C:    h,
-			Host: queenService,
+			Host: cfg.QueenService,
 		}),
 		WorkingDir:        workingDirPath,
 		ReportingInterval: reportingInterval,
 		DUTCapacity:       dutCapacity,
-		StartBotFunc:      bot.NewStarter(h, swarmingURL).Start,
+		StartBotFunc:      bot.NewStarter(h, cfg.SwarmingURL).Start,
 		Hive:              hive,
 		BotPrefix:         botPrefix,
 		BotResources:      makeBotResources(),
