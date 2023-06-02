@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,7 +85,8 @@ func swarmingLabelsDiffHandler(ctx context.Context) error {
 			logging.Warningf(ctx, "DutState not found for dut %s", lse.GetHostname())
 		}
 
-		// Get first machine attached to the LSE
+		// Get first machine attached to the LSE. Intentially dont use
+		// GetMachineACL here since this is an automated process.
 		m, err := registration.GetMachine(ctx, lse.GetMachines()[0])
 		if err != nil {
 			return err

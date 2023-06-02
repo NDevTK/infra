@@ -124,7 +124,8 @@ func updateAssetHelper(ctx context.Context, iv2assetinfo *ufspb.AssetInfo) (*ufs
 func updateMachineHelper(ctx context.Context, asset *ufspb.Asset) error {
 	if t := asset.GetType(); t == ufspb.AssetType_DUT || t == ufspb.AssetType_LABSTATION {
 		logging.Debugf(ctx, "updateMachineHelper - Updating %v", asset.GetName())
-		// For DUT and labstation assets update the machine
+		// For DUT and labstation assets update the machine. Doesn't make a
+		// realm check since this is an automated process.
 		machine, err := registration.GetMachine(ctx, asset.GetName())
 		if err != nil {
 			return errors.Annotate(err, "updateMachineHelper - Cannot update machine %s", asset.GetName()).Err()

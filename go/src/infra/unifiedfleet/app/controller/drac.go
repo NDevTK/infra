@@ -440,7 +440,7 @@ func validateCreateDrac(ctx context.Context, drac *ufspb.Drac, machine *ufspb.Ma
 //
 // checks if drac, machine and resources referecned by the drac does not exist
 func validateUpdateDrac(ctx context.Context, oldDrac *ufspb.Drac, drac *ufspb.Drac, mask *field_mask.FieldMask) error {
-	machine, err := registration.GetMachine(ctx, oldDrac.GetMachine())
+	machine, err := registration.GetMachineACL(ctx, oldDrac.GetMachine())
 	if err != nil {
 		return status.Errorf(codes.InvalidArgument, "machine %s not found", oldDrac.GetMachine())
 	}
@@ -485,7 +485,7 @@ func validateUpdateDracHost(ctx context.Context, drac *ufspb.Drac, vlanName, ipv
 	if err != nil {
 		return err
 	}
-	machine, err := registration.GetMachine(ctx, oldDrac.GetMachine())
+	machine, err := registration.GetMachineACL(ctx, oldDrac.GetMachine())
 	if err != nil {
 		return errors.Annotate(err, "unable to get machine %s", oldDrac.GetMachine()).Err()
 	}
@@ -555,7 +555,7 @@ func getDracHistoryClient(m *ufspb.Drac) *HistoryClient {
 
 // validateDeleteDrac validates if a drac can be deleted
 func validateDeleteDrac(ctx context.Context, drac *ufspb.Drac) error {
-	machine, err := registration.GetMachine(ctx, drac.GetMachine())
+	machine, err := registration.GetMachineACL(ctx, drac.GetMachine())
 	if err != nil {
 		return errors.Annotate(err, "validateDeleteDrac - unable to get machine %s", drac.GetMachine()).Err()
 	}

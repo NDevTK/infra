@@ -147,7 +147,7 @@ func UpdateMachine(ctx context.Context, machine *ufspb.Machine, mask *field_mask
 		hc := GetMachineHistoryClient(machine)
 
 		// Get the existing/old machine
-		oldMachine, err = registration.GetMachine(ctx, machine.GetName())
+		oldMachine, err = registration.GetMachineACL(ctx, machine.GetName())
 		if err != nil {
 			return errors.Annotate(err, "get machine %s failed", machine.GetName()).Err()
 		}
@@ -301,7 +301,7 @@ func UpdateDutMeta(ctx context.Context, meta *ufspb.DutMeta) error {
 		return nil
 	}
 	f := func(ctx context.Context) error {
-		machine, err := registration.GetMachine(ctx, meta.GetChromeosDeviceId())
+		machine, err := registration.GetMachineACL(ctx, meta.GetChromeosDeviceId())
 		if err != nil {
 			return err
 		}
@@ -353,7 +353,7 @@ func updateRecoveryDutData(ctx context.Context, dutId string, dutData *ufsAPI.Ch
 		return nil
 	}
 	f := func(ctx context.Context) error {
-		machine, err := registration.GetMachine(ctx, dutId)
+		machine, err := registration.GetMachineACL(ctx, dutId)
 		if err != nil {
 			logging.Errorf(ctx, "updateRecoveryMachineHelper machine not found(%s) - %s", dutId, err.Error())
 			return err
@@ -651,7 +651,7 @@ func updateIndexInMachine(ctx context.Context, indexName, oldValue, newValue str
 
 // GetMachine returns machine for the given id from datastore.
 func GetMachine(ctx context.Context, id string) (*ufspb.Machine, error) {
-	machine, err := registration.GetMachine(ctx, id)
+	machine, err := registration.GetMachineACL(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -783,11 +783,11 @@ func GetAllMachines(ctx context.Context) (*ufsds.OpResults, error) {
 // If there are any references, delete will be rejected and an error will be returned.
 func DeleteMachine(ctx context.Context, id string) error {
 	// Used for logging the deletion of a MachineLSE.
-	existingMachine, _ := registration.GetMachine(ctx, id)
+	existingMachine, _ := registration.GetMachineACL(ctx, id)
 
 	f := func(ctx context.Context) error {
 		// 1. Get the machine
-		machine, err := registration.GetMachine(ctx, id)
+		machine, err := registration.GetMachineACL(ctx, id)
 		if status.Code(err) == codes.Internal {
 			return errors.Annotate(err, "failed to get machine %s", id).Err()
 		}
@@ -922,7 +922,7 @@ func RenameMachine(ctx context.Context, oldMachineName, newMachineName string) (
 // renameMachineInner renames the machine to the given name. Use inside a transaction
 func renameMachineInner(ctx context.Context, oldMachineName, newMachineName string) (machine *ufspb.Machine, err error) {
 	// Get the old machine
-	machine, err = registration.GetMachine(ctx, oldMachineName)
+	machine, err = registration.GetMachineACL(ctx, oldMachineName)
 	if err != nil {
 		return
 	}
@@ -1129,7 +1129,7 @@ func validateDeleteMachine(ctx context.Context, machine *ufspb.Machine) error {
 
 // getBrowserMachine gets the browser machine
 func getBrowserMachine(ctx context.Context, machineName string) (*ufspb.Machine, error) {
-	machine, err := registration.GetMachine(ctx, machineName)
+	machine, err := registration.GetMachineACL(ctx, machineName)
 	if err != nil {
 		return nil, errors.Annotate(err, "getBrowserMachine - unable to get browser machine %s", machineName).Err()
 	}
