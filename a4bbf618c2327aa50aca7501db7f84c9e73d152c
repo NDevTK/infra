@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c3f67f97_c7db85f0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000093
+      },
+      "writtenOn": "2023-06-02T21:05:23Z",
+      "side": 1,
+      "message": "Duplicate of https://crrev.com/c/4572904",
+      "revId": "a4bbf618c2327aa50aca7501db7f84c9e73d152c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
