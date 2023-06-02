@@ -879,6 +879,7 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 	if err != nil {
 		logging.Warningf(ctx, "DeviceConfig for %s not found. Error: %s", id, err)
 	}
+	updateDeviceConfigWithAssetInfo(ctx, id, devConfig)
 	isStable, err := getStability(ctx, machine.GetChromeosMachine().GetModel())
 	if err != nil {
 		logging.Warningf(ctx, "stability cannot be set. Error: %s", err)
@@ -951,6 +952,32 @@ func getStability(ctx context.Context, model string) (bool, error) {
 	}
 	// Return true for any failed case to make sure no models are false negative.
 	return true, err
+}
+
+func updateDeviceConfigWithAssetInfo(ctx context.Context, id string, devConfig *ufsdevice.Config) {
+	asset, err := GetAsset(ctx, id)
+	if err != nil {
+		logging.Warningf(ctx, "Asset for %s not found. Error: %s", id, err)
+	}
+	if asset != nil {
+		var features []ufsdevice.Config_HardwareFeature
+		if asset.GetInfo().GetTouchScreen() {
+			features = append(features, ufsdevice.Config_HARDWARE_FEATURE_TOUCHSCREEN)
+		}
+		if asset.GetInfo().GetFingerprintSensor() {
+			features = append(features, ufsdevice.Config_HARDWARE_FEATURE_FINGERPRINT)
+		}
+		for _, f := range devConfig.HardwareFeatures {
+			if f == ufsdevice.Config_HARDWARE_FEATURE_TOUCHSCREEN {
+				continue
+			}
+			if f == ufsdevice.Config_HARDWARE_FEATURE_FINGERPRINT {
+				continue
+			}
+			features = append(features, f)
+		}
+		devConfig.HardwareFeatures = features
+	}
 }
 
 // getSchedulableLabels gets Swarming schedulable labels based on DutAttributes.
