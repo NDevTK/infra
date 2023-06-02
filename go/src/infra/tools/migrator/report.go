@@ -26,7 +26,11 @@ type ReportID struct {
 //
 // e.g. "projects/${Project}"
 func (r ReportID) ConfigSet() config.Set {
-	return config.ProjectSet(r.Project)
+	cfg, err := config.ProjectSet(r.Project)
+	if err != nil {
+		panic(err)
+	}
+	return cfg
 }
 
 func (r ReportID) String() string {

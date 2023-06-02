@@ -141,7 +141,10 @@ func fetchProjectConfigRevisions(c context.Context) (map[string]string, error) {
 
 // fetchProjectConfig fetches a single project config.
 func fetchProjectConfig(c context.Context, name string) (*tricium.ProjectConfig, string, error) {
-	set := luciConfig.ProjectSet(name)
+	set, err := luciConfig.ProjectSet(name)
+	if err != nil {
+		return nil, "", errors.Annotate(err, "getting ProjectSet; name %q", name).Err()
+	}
 	cfg, err := fetchConfig(c, set, common.AppID(c)+".cfg", false)
 	if err != nil {
 		return nil, "", errors.Annotate(err, "fetching config; set %q", set).Err()
@@ -155,7 +158,10 @@ func fetchProjectConfig(c context.Context, name string) (*tricium.ProjectConfig,
 }
 
 func fetchServiceConfigRevision(c context.Context) (string, error) {
-	set := luciConfig.ServiceSet(common.AppID(c))
+	set, err := luciConfig.ServiceSet(common.AppID(c))
+	if err != nil {
+		return "", errors.Annotate(err, "getting ServiceSet").Err()
+	}
 	cfg, err := fetchConfig(c, set, "service.cfg", true)
 	if err != nil {
 		return "", errors.Annotate(err, "fetching config revision; set %q", set).Err()
@@ -164,7 +170,10 @@ func fetchServiceConfigRevision(c context.Context) (string, error) {
 }
 
 func fetchServiceConfig(c context.Context) (*tricium.ServiceConfig, string, error) {
-	set := luciConfig.ServiceSet(common.AppID(c))
+	set, err := luciConfig.ServiceSet(common.AppID(c))
+	if err != nil {
+		return nil, "", errors.Annotate(err, "getting ServiceSet").Err()
+	}
 	cfg, err := fetchConfig(c, set, "service.cfg", false)
 	if err != nil {
 		return nil, "", errors.Annotate(err, "fetching config; set %q", set).Err()
