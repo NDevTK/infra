@@ -144,6 +144,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "0b8f4ae1_51c8d53d",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 669,
+      "author": {
+        "id": 1554177
+      },
+      "writtenOn": "2023-06-02T00:15:05Z",
+      "side": 1,
+      "message": "Actually now I think about this, did you mean a warning for data discontinuity won\u0027t show? I think I understood wrong o_O",
+      "parentUuid": "c733dbae_83ac1d95",
+      "range": {
+        "startLine": 667,
+        "startChar": 2,
+        "endLine": 669,
+        "endChar": 3
+      },
+      "revId": "9c8f14d5783d76c12281de3415879696e0cd020a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0e36bab8_57ce5c8d",
         "filename": "go/src/infra/tricium/functions/metrics/histograms_check_test.go",
         "patchSetId": 12
