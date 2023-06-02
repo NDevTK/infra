@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d09d4839_5051a332",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 25
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-02T01:47:24Z",
+      "side": 1,
+      "message": "Lets be explicit that these are out-of-line variants.",
+      "range": {
+        "startLine": 209,
+        "startChar": 27,
+        "endLine": 209,
+        "endChar": 35
+      },
+      "revId": "8cdba8382a51b0b7ac5c913a1939f627ef42c423",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a9f95d15_6ab187cd",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 25
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-02T01:47:24Z",
+      "side": 1,
+      "message": "Let\u0027s remove this comment and move the \"we don\u0027t need to check top level comments, etc\" to upper part of this function.",
+      "range": {
+        "startLine": 264,
+        "startChar": 2,
+        "endLine": 265,
+        "endChar": 57
+      },
+      "revId": "8cdba8382a51b0b7ac5c913a1939f627ef42c423",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "094f0964_45f1d2d0",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 25
+      },
+      "lineNbr": 588,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-02T01:47:24Z",
+      "side": 1,
+      "message": "Why is this needed?",
+      "range": {
+        "startLine": 588,
+        "startChar": 3,
+        "endLine": 588,
+        "endChar": 48
+      },
+      "revId": "8cdba8382a51b0b7ac5c913a1939f627ef42c423",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ca89c767_c4fceaed",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 25
+      },
+      "lineNbr": 685,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-02T01:47:24Z",
+      "side": 1,
+      "message": "Please add a comment for what this is doing.",
+      "range": {
+        "startLine": 685,
+        "startChar": 0,
+        "endLine": 685,
+        "endChar": 47
+      },
+      "revId": "8cdba8382a51b0b7ac5c913a1939f627ef42c423",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

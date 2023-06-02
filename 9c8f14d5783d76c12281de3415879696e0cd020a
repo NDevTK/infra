@@ -95,6 +95,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a55c9ed5_1b763961",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 597,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-02T01:47:24Z",
+      "side": 1,
+      "message": "Acknowledged",
+      "parentUuid": "c151324f_b04ece51",
+      "range": {
+        "startLine": 595,
+        "startChar": 1,
+        "endLine": 597,
+        "endChar": 2
+      },
+      "revId": "9c8f14d5783d76c12281de3415879696e0cd020a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2ebec7ba_245ac8e0",
@@ -168,6 +192,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "060543c9_63f5f9a2",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 669,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-02T01:47:24Z",
+      "side": 1,
+      "message": "\u003e So what was happening was when removing a deprecated histogram without a obsoletion message there would be a Tricium warning, which based on the comment I thought you didn\u0027t want.\n\n\nActually, I was wrong in the name of the test. There should be *no* Data discontinuity Tricium warning at all when removing an already expired histogram regardless of the obsolete message. (The obsolete message means an \u003cobsolete\u003e tag in the histogram entry).\n\nSo a data discontinuity message should be shown when an already long expired histogram is revived. Removing a histogram (regardless of the obsolete) / Adding a new histogram / Extending an about to expire histogram should not see this warning.\n\nSo, let\u0027s do it step by step here: What exactly do you want to achieve?\n\nAssuming you don\u0027t skip any expired histograms:\n\n1. You\u0027re expanding the histogram here both the new ones and the old ones. \n2. You get the difference between the old histograms and the new histograms to get all histograms that were removed from this cl (including generated ones).\n3. For each of them, check if they are in the |obsoleteHistograms| set (I don\u0027t know what this is but I assume you know)\n4. If a histogram is removed but it\u0027s not in the |obsoleteHistograms|, show a file level Tricium message for each of them.\n\nI didn\u0027t look at the code detail just yet but can you confirm with the above?\n\nIf so, now, let\u0027s consider obsolete patterned histograms.\n\nIf a patterned histogram is already expired or already marked as obsolete and a user just want to clean them up in the cl, what do you want them to do? Do you require them to put an obsolete message? Do you want to show the warning?\n\n------------------------------------------\n\nNow, let\u0027s come back to why checking discontinuity is inappropriate here. When checkDiscontinuity is true, that means a histogram is expired by 30 days. But why should we stop expanding them? Or what if a histogram is expired for just 2 days (so it\u0027s technically expired but just expired), do you want to expand it?",
+      "parentUuid": "0b8f4ae1_51c8d53d",
+      "range": {
+        "startLine": 667,
+        "startChar": 2,
+        "endLine": 669,
+        "endChar": 3
+      },
+      "revId": "9c8f14d5783d76c12281de3415879696e0cd020a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0e36bab8_57ce5c8d",
         "filename": "go/src/infra/tricium/functions/metrics/histograms_check_test.go",
         "patchSetId": 12
@@ -203,6 +251,30 @@
       "side": 1,
       "message": "sorry for the confusion, I guess I messed these two terms up and wasn\u0027t being clear in the test description. We do still check the newly added histogram (in analyzeChangedLines). We just don\u0027t show an info to add an obsoletion message if a histogram with discontinuity was removed, for details see my reply to the previous comment.",
       "parentUuid": "0e36bab8_57ce5c8d",
+      "range": {
+        "startLine": 624,
+        "startChar": 78,
+        "endLine": 624,
+        "endChar": 119
+      },
+      "revId": "9c8f14d5783d76c12281de3415879696e0cd020a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9c467036_f397df81",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check_test.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 624,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-02T01:47:24Z",
+      "side": 1,
+      "message": "Replied in the other thread. I\u0027ll take another look at this cl once I understand what you\u0027re trying to achieve here.",
+      "parentUuid": "36abe1a8_79f688b1",
       "range": {
         "startLine": 624,
         "startChar": 78,
