@@ -1,11 +1,10 @@
-// Copyright 2022 The ChromiumOS Authors.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package try
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"reflect"
@@ -17,36 +16,6 @@ import (
 	"infra/cros/internal/gerrit"
 	bb "infra/cros/lib/buildbucket"
 )
-
-const (
-	validJSON = `{
-		"buildbucket": {
-			"bbagent_args": {
-				"build": {
-					"input": {
-						"properties": {
-							"$chromeos/my_module": {
-								"my_prop": 100
-							},
-							"my_other_prop": 101
-						}
-					},
-					"infra": {
-						"buildbucket": {
-							"experiment_reasons": {
-								"chromeos.cros_artifacts.use_gcloud_storage": 1
-							}
-						}
-					}
-				}
-			}
-		}
-	}`
-)
-
-func bbAddOutput(bbid string) string {
-	return fmt.Sprintf("http://ci.chromium.org/b/%s SCHEDULED ...\n", bbid)
-}
 
 // TestGetReleaseOrchestratorName tests getReleaseOrchestratorName.
 func TestGetReleaseOrchestratorName(t *testing.T) {
@@ -169,44 +138,23 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 		CommandRunners: []cmd.FakeCommandRunner{
 			bb.FakeAuthInfoRunner("bb", 0),
 			bb.FakeAuthInfoRunner("led", 0),
-			{
-				ExpectedCmd: []string{
-					"led", "auth-info",
-				},
-				Stdout: "Logged in as sundar@google.com.\n\nOAuth token details:\n...",
-			},
+			bb.FakeAuthInfoRunnerSuccessStdout("led", "sundar@google.com"),
 		},
 	}
 	for _, childBuilder := range tc.expectedChildren {
-		expectedCmd := []string{
-			"led",
-			"get-builder",
-			fmt.Sprintf("%s:%s", expectedBucket, childBuilder),
-		}
-		if tc.failChildCheck {
-			f.CommandRunners = append(f.CommandRunners,
-				cmd.FakeCommandRunner{
-					ExpectedCmd: expectedCmd,
-					FailCommand: true,
-					FailError:   errors.New("return code 1"),
-					Stderr:      ("... not found ..."),
-				})
-		} else {
-			f.CommandRunners = append(f.CommandRunners,
-				cmd.FakeCommandRunner{
-					ExpectedCmd: expectedCmd,
-				})
-		}
+		f.CommandRunners = append(
+			f.CommandRunners,
+			*fakeLEDGetBuilderRunner(
+				expectedBucket,
+				childBuilder,
+				!tc.failChildCheck,
+			),
+		)
 	}
-	f.CommandRunners = append(f.CommandRunners,
-		cmd.FakeCommandRunner{
-			ExpectedCmd: []string{
-				"led",
-				"get-builder",
-				fmt.Sprintf("%s:%s", expectedBucket, expectedBuilder),
-			},
-			Stdout: validJSON,
-		})
+	f.CommandRunners = append(
+		f.CommandRunners,
+		*fakeLEDGetBuilderRunner(expectedBucket, expectedBuilder, true),
+	)
 	expectedAddCmd := []string{"bb", "add", fmt.Sprintf("%s/%s", expectedBucket, expectedBuilder)}
 	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
 	if tc.expectedPatches == nil || len(tc.expectedPatches) == 0 {
@@ -217,12 +165,7 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 	}
 	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 	if !tc.dryrun {
-		f.CommandRunners = append(f.CommandRunners,
-			cmd.FakeCommandRunner{
-				ExpectedCmd: expectedAddCmd,
-				Stdout:      bbAddOutput("12345"),
-			},
-		)
+		f.CommandRunners = append(f.CommandRunners, bb.FakeBBAddRunner(expectedAddCmd, "12345"))
 	}
 
 	r := releaseRun{

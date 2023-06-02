@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package try
@@ -7,7 +7,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 	"testing"
 
 	"infra/cros/internal/assert"
@@ -26,10 +25,7 @@ func TestDoesFWBranchHaveBuilder(t *testing.T) {
 		gruntBuilder = "chromeos/firmware/firmware-grunt-11031.B-branch"
 		namiBuilder  = "chromeos/firmware/firmware-nami-10775.B-branch"
 	)
-	cmdRunner := &cmd.FakeCommandRunner{
-		ExpectedCmd: []string{"bb", "builders", "chromeos/firmware"},
-		Stdout:      strings.Join([]string{eveBuilder, gruntBuilder}, "\n"),
-	}
+	cmdRunner := fakeBBBuildersRunner("chromeos/firmware", []string{eveBuilder, gruntBuilder})
 	f := firmwareRun{
 		tryRunBase: tryRunBase{
 			cmdRunner: cmdRunner,
@@ -78,10 +74,7 @@ func TestValidate_firmwareRun(t *testing.T) {
 	ctx := context.Background()
 
 	// Test the good workflow
-	cmdRunner := &cmd.FakeCommandRunner{
-		ExpectedCmd: []string{"bb", "builders", "chromeos/firmware"},
-		Stdout:      eveFWBuilder,
-	}
+	cmdRunner := fakeBBBuildersRunner("chromeos/firmware", []string{eveFWBuilder})
 	f := firmwareRun{
 		tryRunBase: tryRunBase{
 			branch:     eveFWBranch,
@@ -111,10 +104,7 @@ func TestValidate_firmwareRun(t *testing.T) {
 
 	// Patch set provided for staging builder
 	f.tryRunBase.production = false
-	f.cmdRunner = cmd.FakeCommandRunner{
-		ExpectedCmd: []string{"bb", "builders", "chromeos/staging"},
-		Stdout:      "chromeos/staging/staging-firmware-eve-9584.B-branch",
-	}
+	f.cmdRunner = fakeBBBuildersRunner("chromeos/staging", []string{"chromeos/staging/staging-firmware-eve-9584.B-branch"})
 	f.bbClient = bb.NewClient(f.cmdRunner, nil, nil)
 	assert.NilError(t, f.validate(ctx))
 }
@@ -150,29 +140,17 @@ func doFirmwareTest(t *testing.T, tc *firmwareTestConfig) {
 		CommandRunners: []cmd.FakeCommandRunner{
 			bb.FakeAuthInfoRunner("bb", 0),
 			bb.FakeAuthInfoRunner("led", 0),
-			{
-				ExpectedCmd: []string{
-					"led", "auth-info",
-				},
-				Stdout: "Logged in as sundar@google.com.\n\nOAuth token details:\n...",
-			},
-			{
-				ExpectedCmd: []string{
-					"bb", "builders", expectedBucket,
-				},
-				Stdout: fmt.Sprintf("foo\n%s/%s\nbar\n", expectedBucket, tc.expectedBuilder),
-			},
+			bb.FakeAuthInfoRunnerSuccessStdout("led", "sundar@google.com"),
+			*fakeBBBuildersRunner(
+				expectedBucket,
+				[]string{"foo", fmt.Sprintf("%s/%s", expectedBucket, tc.expectedBuilder), "bar"},
+			),
 		},
 	}
-	f.CommandRunners = append(f.CommandRunners,
-		cmd.FakeCommandRunner{
-			ExpectedCmd: []string{
-				"led",
-				"get-builder",
-				fmt.Sprintf("%s:%s", expectedBucket, expectedBuilder),
-			},
-			Stdout: validJSON,
-		})
+	f.CommandRunners = append(
+		f.CommandRunners,
+		*fakeLEDGetBuilderRunner(expectedBucket, expectedBuilder, true),
+	)
 	expectedAddCmd := []string{"bb", "add", fmt.Sprintf("%s/%s", expectedBucket, expectedBuilder)}
 	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
 	for _, patch := range tc.patches {
@@ -180,12 +158,7 @@ func doFirmwareTest(t *testing.T, tc *firmwareTestConfig) {
 	}
 	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 	if !tc.dryrun {
-		f.CommandRunners = append(f.CommandRunners,
-			cmd.FakeCommandRunner{
-				ExpectedCmd: expectedAddCmd,
-				Stdout:      bbAddOutput("12345"),
-			},
-		)
+		f.CommandRunners = append(f.CommandRunners, bb.FakeBBAddRunner(expectedAddCmd, "12345"))
 	}
 
 	r := firmwareRun{

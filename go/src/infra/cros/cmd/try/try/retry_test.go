@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package try
@@ -199,12 +199,7 @@ func doOrchestratorRetryTestRun(t *testing.T, tc *retryTestConfig) {
 		CommandRunners: []cmd.FakeCommandRunner{
 			bb.FakeAuthInfoRunner("bb", 0),
 			bb.FakeAuthInfoRunner("led", 0),
-			{
-				ExpectedCmd: []string{
-					"led", "auth-info",
-				},
-				Stdout: "Logged in as sundar@google.com.\n\nOAuth token details:\n...",
-			},
+			bb.FakeAuthInfoRunnerSuccessStdout("led", "sundar@google.com"),
 			// Duplicate calls because of retry detection.
 			{
 				ExpectedCmd: []string{"bb", "get", bbid, "-p", "-json"},
@@ -250,12 +245,7 @@ func doOrchestratorRetryTestRun(t *testing.T, tc *retryTestConfig) {
 	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
 	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 	if !tc.dryrun {
-		f.CommandRunners = append(f.CommandRunners,
-			cmd.FakeCommandRunner{
-				ExpectedCmd: expectedAddCmd,
-				Stdout:      bbAddOutput(bbid),
-			},
-		)
+		f.CommandRunners = append(f.CommandRunners, bb.FakeBBAddRunner(expectedAddCmd, bbid))
 	}
 
 	r := retryRun{
@@ -334,12 +324,7 @@ func doChildRetryTestRun(t *testing.T, tc *childRetryTestConfig) {
 		CommandRunners: []cmd.FakeCommandRunner{
 			bb.FakeAuthInfoRunner("bb", 0),
 			bb.FakeAuthInfoRunner("led", 0),
-			{
-				ExpectedCmd: []string{
-					"led", "auth-info",
-				},
-				Stdout: "Logged in as sundar@google.com.\n\nOAuth token details:\n...",
-			},
+			bb.FakeAuthInfoRunnerSuccessStdout("led", "sundar@google.com"),
 			{
 				ExpectedCmd: []string{"bb", "get", tc.bbid, "-p", "-json"},
 				Stdout:      stripNewlines(tc.builderJSON),
@@ -362,12 +347,7 @@ func doChildRetryTestRun(t *testing.T, tc *childRetryTestConfig) {
 	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
 	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 	if !tc.dryrun && !tc.testNoRun {
-		f.CommandRunners = append(f.CommandRunners,
-			cmd.FakeCommandRunner{
-				ExpectedCmd: expectedAddCmd,
-				Stdout:      bbAddOutput(tc.bbid),
-			},
-		)
+		f.CommandRunners = append(f.CommandRunners, bb.FakeBBAddRunner(expectedAddCmd, tc.bbid))
 	}
 
 	r := retryRun{
@@ -421,7 +401,7 @@ func TestRetry_childBuilder_fullRun(t *testing.T) {
 func TestRetry_childBuilder_dryRun(t *testing.T) {
 	doChildRetryTestRun(t, &childRetryTestConfig{
 		dryrun:           true,
-		bbid:             "8794230068334833050",
+		bbid:             "8794230068334833051",
 		builderName:      "staging-zork-release-main",
 		builderJSON:      stripNewlines(failedChildJSON),
 		expectedExecStep: pb.RetryStep_DEBUG_SYMBOLS,
@@ -527,12 +507,7 @@ func TestRetry_childBuilder_previousRetries(t *testing.T) {
 		CommandRunners: []cmd.FakeCommandRunner{
 			bb.FakeAuthInfoRunner("bb", 0),
 			bb.FakeAuthInfoRunner("led", 0),
-			{
-				ExpectedCmd: []string{
-					"led", "auth-info",
-				},
-				Stdout: "Logged in as sundar@google.com.\n\nOAuth token details:\n...",
-			},
+			bb.FakeAuthInfoRunnerSuccessStdout("led", "sundar@google.com"),
 			{
 				ExpectedCmd: []string{"bb", "get", originalBBID, "-p", "-json"},
 				Stdout:      stripNewlines(retryOriginalBuildJSON),
@@ -556,12 +531,7 @@ func TestRetry_childBuilder_previousRetries(t *testing.T) {
 	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
 	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 
-	f.CommandRunners = append(f.CommandRunners,
-		cmd.FakeCommandRunner{
-			ExpectedCmd: expectedAddCmd,
-			Stdout:      bbAddOutput("123"),
-		},
-	)
+	f.CommandRunners = append(f.CommandRunners, bb.FakeBBAddRunner(expectedAddCmd, "123"))
 
 	r := retryRun{
 		propsFile:    propsFile,
@@ -837,12 +807,7 @@ func Test_DirectEntry(t *testing.T) {
 		CommandRunners: []cmd.FakeCommandRunner{
 			bb.FakeAuthInfoRunner("bb", 0),
 			bb.FakeAuthInfoRunner("led", 0),
-			{
-				ExpectedCmd: []string{
-					"led", "auth-info",
-				},
-				Stdout: "Logged in as sundar@google.com.\n\nOAuth token details:\n...",
-			},
+			bb.FakeAuthInfoRunnerSuccessStdout("led", "sundar@google.com"),
 			{
 				ExpectedCmd: []string{"bb", "get", bbid, "-p", "-json"},
 				Stdout:      stripNewlines(failedChildJSON),
@@ -864,12 +829,7 @@ func Test_DirectEntry(t *testing.T) {
 	expectedAddCmd := []string{"bb", "add", fmt.Sprintf("%s/%s", expectedBucket, expectedBuilder)}
 	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
 	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
-	f.CommandRunners = append(f.CommandRunners,
-		cmd.FakeCommandRunner{
-			ExpectedCmd: expectedAddCmd,
-			Stdout:      bbAddOutput("12345679"),
-		},
-	)
+	f.CommandRunners = append(f.CommandRunners, bb.FakeBBAddRunner(expectedAddCmd, "123456789"))
 
 	retryOpts := &RetryRunOpts{
 		CmdRunner: f,
@@ -880,7 +840,7 @@ func Test_DirectEntry(t *testing.T) {
 	retryClient := &Client{}
 	newBBID, err := retryClient.DoRetry(retryOpts)
 	assert.NilError(t, err)
-	assert.StringsEqual(t, newBBID, "12345679")
+	assert.StringsEqual(t, newBBID, "123456789")
 
 	properties, err := bb.ReadStructFromFile(propsFile.Name())
 	assert.NilError(t, err)
@@ -957,12 +917,7 @@ func doPaygenTest(t *testing.T, tc *paygenTestConfig) {
 		CommandRunners: []cmd.FakeCommandRunner{
 			bb.FakeAuthInfoRunner("bb", 0),
 			bb.FakeAuthInfoRunner("led", 0),
-			{
-				ExpectedCmd: []string{
-					"led", "auth-info",
-				},
-				Stdout: "Logged in as sundar@google.com.\n\nOAuth token details:\n...",
-			},
+			bb.FakeAuthInfoRunnerSuccessStdout("led", "sundar@google.com"),
 			{
 				ExpectedCmd: []string{"bb", "get", "879423006833483308", "-p", "-json"},
 				Stdout:      stripNewlines(tc.buildJSON),
@@ -978,12 +933,7 @@ func doPaygenTest(t *testing.T, tc *paygenTestConfig) {
 	expectedAddCmd = append(expectedAddCmd, "-t", "tryjob-launcher:sundar@google.com")
 	expectedAddCmd = append(expectedAddCmd, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 	if !tc.dryrun {
-		f.CommandRunners = append(f.CommandRunners,
-			cmd.FakeCommandRunner{
-				ExpectedCmd: expectedAddCmd,
-				Stdout:      bbAddOutput("12345679"),
-			},
-		)
+		f.CommandRunners = append(f.CommandRunners, bb.FakeBBAddRunner(expectedAddCmd, "123456789"))
 	}
 
 	r := retryRun{

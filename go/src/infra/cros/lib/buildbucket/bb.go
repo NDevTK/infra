@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package buildbucket
@@ -53,6 +53,16 @@ func FakeAuthInfoRunner(tool string, exitCode int) cmd.FakeCommandRunner {
 		ExpectedCmd: []string{tool, "auth-info"},
 		FailCommand: exitCode != 0,
 		FailError:   createCmdFailError(exitCode),
+	}
+}
+
+// FakeAuthInfoRunnerSuccessStdout is like FakeAuthInfoRunner with exitCode=0, plus stdout about the logged-in user.
+// user should normally be an email address, such as "sundar@google.com".
+// For now it doesn't mock OAuth token details.
+func FakeAuthInfoRunnerSuccessStdout(tool string, user string) cmd.FakeCommandRunner {
+	return cmd.FakeCommandRunner{
+		ExpectedCmd: []string{tool, "auth-info"},
+		Stdout:      fmt.Sprintf("Logged in as %s.\n\nOAuth token details:\n...", user),
 	}
 }
 
@@ -138,6 +148,16 @@ func (c *Client) BBAdd(ctx context.Context, dryRun bool, args ...string) (string
 		return "", gerr.New("could not parse BBID from `bb add` stdout.")
 	}
 	return matches[1], nil
+}
+
+// FakeBBAddRunner creates a FakeCommandRunner for `bb add`.
+// args should be a list of command args, including ["bb", "add"].
+func FakeBBAddRunner(args []string, bbid string) cmd.FakeCommandRunner {
+	stdout := fmt.Sprintf("http://ci.chromium.org/b/%s SCHEDULED ...\n", bbid)
+	return cmd.FakeCommandRunner{
+		ExpectedCmd: args,
+		Stdout:      stdout,
+	}
 }
 
 // getBuilders runs the `bb builders` command to get all builders in the given bucket.

@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,7 @@ func newApplication(authOpts auth.Options) *cli.Application {
 			try.GetCmdRelease(authOpts),
 			try.GetCmdRetry(),
 			try.GetCmdFirmware(),
+			try.GetCmdChromiumOSSDK(),
 			authcli.SubcommandInfo(authOpts, "auth-info", false),
 			authcli.SubcommandLogin(authOpts, "auth-login", false),
 			authcli.SubcommandLogout(authOpts, "auth-logout", false),
