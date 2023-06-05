@@ -9,8 +9,9 @@ Standalone binary and appengine app to serve Go vanity URLs.
 Local Modifications:
   * Modified vanity.yaml to contain URL mappings for go.chromium.org.
   * Removed go.mod, go.sum and vendor/...
-  * Switched to go1.16.
+  * Switched to go1.20.
   * Formatted handler_test.go to pass presubmit gofmt check.
+  * Modified README.md
 
-To upload a new instance:
-gae.py upload -A chromium-go-url-redirector
+This application is deployed via LUCI CD.
+See https://chrome-internal.googlesource.com/infradata/gae/+/main/apps/chromium-go-url-redirector

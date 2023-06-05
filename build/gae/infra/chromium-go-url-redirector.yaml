@@ -1,0 +1,9 @@
+name: infra/chromium-go-url-redirector
+extends: ../base.yaml
+
+inputsdir: ../../../go/src/infra/third_party/govanityurls
+
+build:
+  - go_gae_bundle: ${inputsdir}/app.yaml
+    dest: ${contextdir}/govanityurls
+

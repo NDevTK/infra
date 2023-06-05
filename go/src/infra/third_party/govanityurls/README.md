@@ -16,7 +16,20 @@ $ # open http://localhost:8080
 ```
 
 
-### Google App Engine
+### chromium-go-url-redirector deployment
+
+This application is deployed via the LUCI CD pipeline.
+
+It's built into a tarball using `//build/gae/infra/chromium-go-url-redirector.yaml`.
+
+These tarballs are then rolled into https://chrome-internal.googlesource.com/infradata/gae automatically,
+and releases can be made via the `scripts/promote.py` script there.
+
+
+### LEGACY: Google App Engine
+
+NOTE: This section *does not* apply to the `chromium-go-url-redirector`
+deployment.
 
 Install [gcloud](https://cloud.google.com/sdk/downloads) and install Go App Engine component:
 
