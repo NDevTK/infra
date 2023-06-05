@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -386,6 +386,7 @@ func androidClosePlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
 			"Unlock associated host",
+			"Update DUT state for failures more than threshold",
 		},
 		Actions: map[string]*Action{
 			"Unlock associated host": {
@@ -401,6 +402,57 @@ func androidClosePlan() *Plan {
 				},
 				ExecName:   "android_associated_host_unlock",
 				RunControl: RunControl_ALWAYS_RUN,
+			},
+			"Update DUT state for failures more than threshold": {
+				Docs: []string{
+					"Set the DUT state to the value passed in the extra args.",
+				},
+				Conditions: []string{
+					"DUT state is repair_failed",
+					"Failure count above threshold",
+				},
+				Dependencies: []string{
+					"Set state: needs_manual_repair",
+				},
+				ExecName: "dut_set_state_reason",
+				ExecExtraArgs: []string{
+					"allow_override:false",
+					"reason:REPAIR_RETRY_REACHED_THRESHOLD",
+				},
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			},
+			"DUT state is repair_failed": {
+				Docs: []string{
+					"Check if the DUT's state is in repair_failed state, if not then fail.",
+				},
+				ExecName: "dut_state_match",
+				ExecExtraArgs: []string{
+					"state:repair_failed",
+				},
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			},
+			"Failure count above threshold": {
+				Docs: []string{
+					"Check if the number of continuously recovery task failures are greater than a threshold value.",
+				},
+				ExecName: "metrics_check_task_failures",
+				ExecExtraArgs: []string{
+					"task_name:recovery",
+					"repair_failed_count:6",
+				},
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
+			},
+			"Set state: needs_manual_repair": {
+				Docs: []string{
+					"Set DUT state as needs_manual_repair.",
+				},
+				ExecName: "dut_set_state",
+				ExecExtraArgs: []string{
+					"state:needs_manual_repair",
+				},
+				RunControl:             RunControl_ALWAYS_RUN,
+				AllowFailAfterRecovery: true,
+				MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 		},
 	}
