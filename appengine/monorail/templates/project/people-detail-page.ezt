@@ -157,7 +157,7 @@ runOnLoad(function() {
       return confirm('Remove yourself?\nYou will be locked out of making further changes.');
     [end]
   [else]
-    return confirm('Remove member [format "js"][member.user.email][end]?');
+    return confirm('Remove member [format "js"][member.user.display_name][end]?');
   [end]
  }
 
