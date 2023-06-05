@@ -5048,6 +5048,20 @@ wheel: <
 
 * *universal*
 
+## **opentelemetry-resourcedetector-gcp-py3**
+
+### 1.5.0a0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/opentelemetry-resourcedetector-gcp-py3"
+  version: "version:1.5.0a0"
+>
+```
+
+
+* *universal*
+
 ## **opentelemetry-sdk-py3**
 
 ### 1.12.0
