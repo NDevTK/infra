@@ -169,6 +169,7 @@ func (hc *HistoryClient) LogAssetInfoChanges(resName string, oldInfo, newInfo *u
 	hc.changes = append(hc.changes, logCommon(resName, "asset.info.sku", oldInfo.GetSku(), newInfo.GetSku())...)
 	hc.changes = append(hc.changes, logCommon(resName, "asset.info.phase", oldInfo.GetPhase(), newInfo.GetPhase())...)
 	hc.changes = append(hc.changes, logCommon(resName, "asset.info.gpn", oldInfo.GetGpn(), newInfo.GetGpn())...)
+	hc.changes = append(hc.changes, logCommon(resName, "asset.info.hw_x_compliance_version", oldInfo.GetHwXComplianceVersion(), newInfo.GetHwXComplianceVersion())...)
 }
 
 // LogMachineChanges logs the change of the given machine.
@@ -875,6 +876,8 @@ func logChromeOSMachine(resourceName string, oldData, newData *ufspb.ChromeOSMac
 	changes = append(changes, logCommon(resourceName, "machine.chrome_os_machine.cost_center", oldData.GetCostCenter(), newData.GetCostCenter())...)
 	changes = append(changes, logCommon(resourceName, "machine.chrome_os_machine.hwid", oldData.GetHwid(), newData.GetHwid())...)
 	changes = append(changes, logCommon(resourceName, "machine.chrome_os_machine.device_type", oldData.GetDeviceType(), newData.GetDeviceType())...)
+	changes = append(changes, logCommon(resourceName, "machine.chrome_os_machine.gpn", oldData.GetGpn(), newData.GetGpn())...)
+	changes = append(changes, logCommon(resourceName, "machine.chrome_os_machine.hw_x_compliance_version", oldData.GetHwXComplianceVersion(), newData.GetHwXComplianceVersion())...)
 	return changes
 }
 
