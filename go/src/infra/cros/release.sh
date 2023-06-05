@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2022 The Chromium OS Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -44,8 +44,23 @@ function check_bb_auth() {
 
 # Get the git revision associated with a cipd version (dereference it).
 cipd_version_to_githash() {
-  cipd describe -json-output /proc/self/fd/2 -version "$2" "$1" 2>&1 > /dev/null |
-    jq -r '.result.tags|map(.tag|select(startswith("git_revision:")))[0]|sub(".*:";"")'
+  githash=$(cipd describe -json-output /proc/self/fd/2 -version "$2" "$1" 2>&1 > /dev/null |
+    jq -r '.result.tags|map(.tag|select(startswith("git_revision:")))[0]|sub(".*:";"")')
+
+  # Older CIPD packages use tags with revisions in
+  # https://chromium.googlesource.com/infra/infra, while newer CIPD packges use
+  # tags with revisions in
+  # https://chromium.googlesource.com/infra/infra_superproject. Check if the
+  # revision is in this repo (infra/infra) and if not lookup the revision
+  # pinned in infra/infra_superproject.
+  #
+  # TODO(b/285908152): Always use the superproject branch when all packages have
+  # migrated to use superproject tags.
+  if git rev-list --quiet "${githash}" &> /dev/null; then
+    echo "${githash}"
+  else
+    gob-curl --silent "https://chromium.googlesource.com/infra/infra_superproject/+/${githash}/infra?format=TEXT" | base64 --decode
+  fi
 }
 
 # Get the paths of directories associated with the relevant packages.
