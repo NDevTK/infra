@@ -1,9 +1,14 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 package application
 
 import (
+	"os"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/common/logging"
 )
 
@@ -46,6 +51,19 @@ func TestParseArguments(t *testing.T) {
 			// Stop parsing arguments when seen --
 			err = parseArgs("--", "-vpython-test")
 			So(err, ShouldBeNil)
+		})
+
+		Convey("Test cipd cache dir", func() {
+			err := os.Unsetenv(cipd.EnvCacheDir)
+			So(err, ShouldBeNil)
+			err = parseArgs("-vpython-root", "root", "vpython-test")
+			So(err, ShouldBeNil)
+			So(os.Getenv(cipd.EnvCacheDir), ShouldStartWith, "root")
+
+			// Don't set cipd cache dir if env provides one
+			err = parseArgs("-vpython-root", "somethingelse", "vpython-test")
+			So(err, ShouldBeNil)
+			So(os.Getenv(cipd.EnvCacheDir), ShouldStartWith, "root")
 		})
 	})
 }

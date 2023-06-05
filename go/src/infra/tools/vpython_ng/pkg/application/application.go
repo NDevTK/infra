@@ -19,6 +19,7 @@ import (
 	"infra/libs/cipkg/utilities"
 	"infra/tools/vpython_ng/pkg/common"
 
+	"go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
@@ -216,6 +217,13 @@ func (a *Application) ParseArgs() (err error) {
 	}
 	if err := fs.Parse(vpythonArgs); err != nil {
 		return errors.Annotate(err, "failed to parse flags").Err()
+	}
+
+	// Setup CIPD CacheDIR
+	if os.Getenv(cipd.EnvCacheDir) == "" {
+		if err := os.Setenv(cipd.EnvCacheDir, filepath.Join(a.VpythonRoot, "cipd")); err != nil {
+			return errors.Annotate(err, "failed to set cipd cache dir").Err()
+		}
 	}
 
 	// Set log level
