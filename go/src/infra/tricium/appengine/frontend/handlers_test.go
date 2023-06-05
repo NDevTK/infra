@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/server/auth/authtest"
 	"go.chromium.org/luci/server/router"
 
-	"infra/tricium/api/v1"
+	tricium "infra/tricium/api/v1"
 	"infra/tricium/appengine/common/triciumtest"
 )
 
@@ -30,9 +30,8 @@ func TestMainPageHandler(t *testing.T) {
 
 		Convey("Basic request to main page handler", func() {
 			mainPageHandler(&router.Context{
-				Context: ctx,
 				Writer:  w,
-				Request: triciumtest.MakeGetRequest(nil),
+				Request: triciumtest.MakeGetRequest(nil).WithContext(ctx),
 				Params:  triciumtest.MakeParams(),
 			})
 			So(w.Code, ShouldEqual, 200)
@@ -75,9 +74,8 @@ func TestAnalyzeQueueHandler(t *testing.T) {
 			}
 			bytes, err := proto.Marshal(ar)
 			analyzeHandler(&router.Context{
-				Context: ctx,
 				Writer:  w,
-				Request: triciumtest.MakeGetRequest(bytes),
+				Request: triciumtest.MakeGetRequest(bytes).WithContext(ctx),
 				Params:  triciumtest.MakeParams(),
 			})
 			So(w.Code, ShouldEqual, 400)

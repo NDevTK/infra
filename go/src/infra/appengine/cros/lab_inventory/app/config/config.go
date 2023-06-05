@@ -67,12 +67,12 @@ func Interceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInf
 
 // Middleware is to be used to append config to context in cron handlers.
 func Middleware(c *router.Context, next router.Handler) {
-	ctx, err := appendConfigToContext(c.Context)
+	ctx, err := appendConfigToContext(c.Request.Context())
 	if err != nil {
 		http.Error(c.Writer, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-	c.Context = ctx
+	c.Request = c.Request.WithContext(ctx)
 	next(c)
 }
 

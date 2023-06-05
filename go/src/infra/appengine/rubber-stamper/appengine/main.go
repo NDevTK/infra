@@ -34,7 +34,7 @@ func main() {
 
 		basemw := router.NewMiddlewareChain()
 		srv.Routes.GET("/hello-world", router.MiddlewareChain{}, func(c *router.Context) {
-			logging.Debugf(c.Context, "Hello world")
+			logging.Debugf(c.Request.Context(), "Hello world")
 			c.Writer.Write([]byte("Hello, world. This is Rubber-Stamper."))
 		})
 

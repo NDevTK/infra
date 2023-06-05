@@ -7,6 +7,7 @@ package config
 import (
 	"context"
 	"io/ioutil"
+	"net/http"
 	"testing"
 
 	"github.com/golang/protobuf/proto"
@@ -57,9 +58,9 @@ func TestMiddleware(t *testing.T) {
 			},
 		}))
 
-		Middleware(&router.Context{Context: c}, func(c *router.Context) {
-			So(Get(c.Context).AccessGroup, ShouldEqual, "trooper")
-			So(GetConfigRevision(c.Context), ShouldNotEqual, "")
+		Middleware(&router.Context{Request: (&http.Request{}).WithContext(c)}, func(c *router.Context) {
+			So(Get(c.Request.Context()).AccessGroup, ShouldEqual, "trooper")
+			So(GetConfigRevision(c.Request.Context()), ShouldNotEqual, "")
 		})
 	})
 }

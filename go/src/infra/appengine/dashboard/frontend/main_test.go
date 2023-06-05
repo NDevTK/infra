@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -41,9 +42,8 @@ func TestDashboard(t *testing.T) {
 			Convey("anonymous", func() {
 				c = auth.WithState(c, &authtest.FakeState{})
 				dashboard(&router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makeGetRequest(),
+					Request: makeGetRequest(c),
 					Params:  makeParams("path", "/"),
 				})
 				r, err := ioutil.ReadAll(w.Body)
@@ -61,9 +61,8 @@ func TestDashboard(t *testing.T) {
 			Convey("not-googler", func() {
 				c = auth.WithState(c, authState)
 				dashboard(&router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makeGetRequest(),
+					Request: makeGetRequest(c),
 					Params:  makeParams("path", "/"),
 				})
 
@@ -80,9 +79,8 @@ func TestDashboard(t *testing.T) {
 				authState.IdentityGroups = []string{authGroup}
 				c = auth.WithState(c, authState)
 				dashboard(&router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makeGetRequest(),
+					Request: makeGetRequest(c),
 					Params:  makeParams("path", "/"),
 				})
 
@@ -98,8 +96,8 @@ func TestDashboard(t *testing.T) {
 	})
 }
 
-func makeGetRequest() *http.Request {
-	req, _ := http.NewRequest("GET", "/doesntmatter", nil)
+func makeGetRequest(ctx context.Context) *http.Request {
+	req, _ := http.NewRequestWithContext(ctx, "GET", "/doesntmatter", nil)
 	return req
 }
 

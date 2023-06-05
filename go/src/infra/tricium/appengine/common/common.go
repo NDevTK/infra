@@ -47,7 +47,7 @@ func AppID(c context.Context) string {
 
 // ReportServerError reports back a server error (http code 500).
 func ReportServerError(c *router.Context, err error) {
-	logging.WithError(err).Errorf(c.Context, "HTTP 500")
+	logging.WithError(err).Errorf(c.Request.Context(), "HTTP 500")
 	http.Error(c.Writer, "An internal server error occurred. We are working on it ;)",
 		http.StatusInternalServerError)
 }

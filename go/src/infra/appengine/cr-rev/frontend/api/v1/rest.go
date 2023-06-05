@@ -37,7 +37,7 @@ func (s *restAPIServer) handleRedirect(c *router.Context) {
 	req := &RedirectRequest{
 		Query: q,
 	}
-	resp, err := s.grpcServer.Redirect(c.Context, req)
+	resp, err := s.grpcServer.Redirect(c.Request.Context(), req)
 	if err != nil {
 		handleError(c, err)
 	}
@@ -76,7 +76,7 @@ func (s *restAPIServer) handleNumbering(c *router.Context) {
 		PositionRef:    ref,
 		PositionNumber: int64(n),
 	}
-	resp, err := s.grpcServer.Numbering(c.Context, req)
+	resp, err := s.grpcServer.Numbering(c.Request.Context(), req)
 	if err != nil {
 		handleError(c, err)
 		return
@@ -88,7 +88,7 @@ func (s *restAPIServer) handleCommit(c *router.Context) {
 	req := &CommitRequest{
 		GitHash: c.Params.ByName("hash"),
 	}
-	resp, err := s.grpcServer.Commit(c.Context, req)
+	resp, err := s.grpcServer.Commit(c.Request.Context(), req)
 	if err != nil {
 		handleError(c, err)
 		return
@@ -100,7 +100,7 @@ func handleError(c *router.Context, err error) {
 	if err, ok := status.FromError(err); ok {
 		http.NotFound(c.Writer, c.Request)
 	} else {
-		logging.Errorf(c.Context, "Error in API while handling redirect: %w", err)
+		logging.Errorf(c.Request.Context(), "Error in API while handling redirect: %w", err)
 		http.Error(c.Writer, "Internal server errror", http.StatusInternalServerError)
 	}
 }

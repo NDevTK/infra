@@ -40,7 +40,7 @@ func GetTrees(c context.Context) ([]byte, error) {
 
 // GetTreeLogoHandler returns a signed URL to an image asset hosted on GCS.
 func GetTreeLogoHandler(ctx *router.Context) {
-	c, w := ctx.Context, ctx.Writer
+	c, w := ctx.Request.Context(), ctx.Writer
 
 	sa, err := info.ServiceAccount(c)
 	if err != nil {
@@ -57,7 +57,7 @@ type signer interface {
 }
 
 func getTreeLogo(ctx *router.Context, sa string, sign signer) {
-	c, w, r, p := ctx.Context, ctx.Writer, ctx.Request, ctx.Params
+	c, w, r, p := ctx.Request.Context(), ctx.Writer, ctx.Request, ctx.Params
 	tree := p.ByName("tree")
 	resource := fmt.Sprintf("/%s.appspot.com/logos/%s.png", info.AppID(c), tree)
 	expStr := fmt.Sprintf("%d", time.Now().Add(10*time.Minute).Unix())

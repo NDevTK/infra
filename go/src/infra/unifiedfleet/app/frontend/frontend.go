@@ -33,10 +33,10 @@ func InstallServices(apiServer *server.Server) {
 // InstallHandlers installs non PRPC handlers
 func InstallHandlers(r *router.Router, mc router.MiddlewareChain) {
 	mc = mc.Extend(func(ctx *router.Context, next router.Handler) {
-		context, err := checkAccess(ctx.Context, ctx.HandlerPath, nil)
-		ctx.Context = context
+		context, err := checkAccess(ctx.Request.Context(), ctx.HandlerPath, nil)
+		ctx.Request = ctx.Request.WithContext(context)
 		if err != nil {
-			logging.Errorf(ctx.Context, "Failed authorization %v", err)
+			logging.Errorf(ctx.Request.Context(), "Failed authorization %v", err)
 			return
 		}
 		next(ctx)

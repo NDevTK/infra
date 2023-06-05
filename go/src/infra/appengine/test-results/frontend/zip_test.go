@@ -27,8 +27,8 @@ func sha256hash(s string) string {
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
-func makeGetRequest() *http.Request {
-	req, err := http.NewRequest("GET", "/doesntmatter", nil)
+func makeGetRequest(ctx context.Context) *http.Request {
+	req, err := http.NewRequestWithContext(ctx, "GET", "/doesntmatter", nil)
 	if err != nil {
 		panic(err)
 	}
@@ -64,9 +64,8 @@ func TestGetZipHandler(t *testing.T) {
 		w := httptest.NewRecorder()
 
 		ctx := &router.Context{
-			Context: c,
 			Writer:  w,
-			Request: makeGetRequest(),
+			Request: makeGetRequest(c),
 			Params:  makeParams("builder", "test_builder", "buildnum", "123", "filepath", "a/b/c"),
 		}
 

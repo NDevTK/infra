@@ -31,8 +31,8 @@ func base() router.MiddlewareChain {
 }
 
 func withServiceClients(ctx *router.Context, next router.Handler) {
-	a := analyzer.CreateAnalyzer(ctx.Context)
-	ctx.Context = handler.WithAnalyzer(ctx.Context, a)
+	a := analyzer.CreateAnalyzer(ctx.Request.Context())
+	ctx.Request = ctx.Request.WithContext(handler.WithAnalyzer(ctx.Request.Context(), a))
 	next(ctx)
 }
 

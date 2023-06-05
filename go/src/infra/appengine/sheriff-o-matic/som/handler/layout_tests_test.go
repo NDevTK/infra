@@ -44,9 +44,8 @@ func TestGetLayoutTestsHandler(t *testing.T) {
 		w := httptest.NewRecorder()
 
 		ctx := &router.Context{
-			Context: c,
 			Writer:  w,
-			Request: makeGetRequest(),
+			Request: makeGetRequest(c),
 		}
 
 		Convey("load all, error", func() {
@@ -83,9 +82,8 @@ func TestPostLayoutTestExpectationChangeHandler(t *testing.T) {
 		Convey("empty body, error", func() {
 			w := httptest.NewRecorder()
 			ctx := &router.Context{
-				Context: c,
 				Writer:  w,
-				Request: makePostRequest(""),
+				Request: makePostRequest(c, ""),
 			}
 
 			PostLayoutTestExpectationChangeHandler(ctx)
@@ -99,9 +97,8 @@ func TestPostLayoutTestExpectationChangeHandler(t *testing.T) {
 			})
 			So(err, ShouldBeNil)
 			ctx := &router.Context{
-				Context: c,
 				Writer:  w,
-				Request: makePostRequest(string(body)),
+				Request: makePostRequest(c, string(body)),
 			}
 
 			PostLayoutTestExpectationChangeHandler(ctx)

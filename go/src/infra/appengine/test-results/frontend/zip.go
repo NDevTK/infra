@@ -26,7 +26,7 @@ var builderNameReplacedStrings = []string{".", "(", ")", " "}
 // This saves content etags in memcache, to save round trip time on fetching
 // zip files over the network, so that clients can cache the data.
 func getZipHandler(ctx *router.Context) {
-	c, w, r, p := ctx.Context, ctx.Writer, ctx.Request, ctx.Params
+	c, w, r, p := ctx.Request.Context(), ctx.Writer, ctx.Request, ctx.Params
 
 	builder := p.ByName("builder")
 	for _, s := range builderNameReplacedStrings {

@@ -19,7 +19,7 @@ import (
 // configuration update requests.
 func UpdateHandler(ctx *router.Context) {
 	h := ctx.Writer
-	c, cancel := context.WithTimeout(ctx.Context, 9*time.Minute)
+	c, cancel := context.WithTimeout(ctx.Request.Context(), 9*time.Minute)
 	defer cancel()
 	if err := config.UpdateAllConfigs(c); err != nil {
 		logging.WithError(err).Errorf(c, "Failed to update configs.")

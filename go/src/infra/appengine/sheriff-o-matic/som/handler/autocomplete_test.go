@@ -14,11 +14,10 @@ import (
 func TestGetUserAutocompleteHandler(t *testing.T) {
 	Convey("basic", t, func() {
 		c := gaetesting.TestingContext()
-		r := makeGetRequest()
+		r := makeGetRequest(c)
 		w := httptest.NewRecorder()
 
 		ctx := &router.Context{
-			Context: c,
 			Writer:  w,
 			Request: r,
 			Params:  makeParams("query", "def"),

@@ -24,7 +24,7 @@ const templatePath = "templates"
 // handleIndex serves homepage of cr-rev
 func handleIndex(c *router.Context) {
 	templates.MustRender(
-		c.Context, c.Writer, "pages/index.html", templates.Args{})
+		c.Request.Context(), c.Writer, "pages/index.html", templates.Args{})
 }
 
 // handlePublicGerritRedirect redirects user to a CL on chromium-review
@@ -48,7 +48,7 @@ func handleInternalGerritRedirect(c *router.Context) {
 // redirect handler (e.g. crrev.com/3, crrev.com/{commit hash}). To add more
 // rules, look at redirect package.
 func handleRedirect(redirectRules *redirect.Rules, c *router.Context) {
-	url, _, err := redirectRules.FindRedirectURL(c.Context, c.Request.RequestURI)
+	url, _, err := redirectRules.FindRedirectURL(c.Request.Context(), c.Request.RequestURI)
 	switch err {
 	case nil:
 		http.Redirect(

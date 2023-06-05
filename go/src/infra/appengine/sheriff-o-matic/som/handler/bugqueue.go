@@ -123,7 +123,7 @@ func getAlternateEmail(email string) string {
 
 // GetBugQueueHandler returns a set of bugs for the current user and tree.
 func (bqh *BugQueueHandler) GetBugQueueHandler(ctx *router.Context) {
-	c, w, p := ctx.Context, ctx.Writer, ctx.Params
+	c, w, p := ctx.Request.Context(), ctx.Writer, ctx.Params
 
 	label := p.ByName("label")
 	key := fmt.Sprintf(bugQueueCacheFormat, label)
@@ -149,7 +149,7 @@ func (bqh *BugQueueHandler) GetBugQueueHandler(ctx *router.Context) {
 // GetUncachedBugsHandler bypasses the cache to return the bug queue for current user and tree.
 // TODO (nqmtuan): This is not used. We should remove it.
 func (bqh *BugQueueHandler) GetUncachedBugsHandler(ctx *router.Context) {
-	c, w, p := ctx.Context, ctx.Writer, ctx.Params
+	c, w, p := ctx.Request.Context(), ctx.Writer, ctx.Params
 
 	label := p.ByName("label")
 
@@ -198,7 +198,7 @@ func (bqh *BugQueueHandler) refreshBugQueue(c context.Context, label string, pro
 
 // RefreshBugQueueHandler updates the cached bug queue for current tree.
 func (bqh *BugQueueHandler) RefreshBugQueueHandler(ctx *router.Context) {
-	c, w, p := ctx.Context, ctx.Writer, ctx.Params
+	c, w, p := ctx.Request.Context(), ctx.Writer, ctx.Params
 	label := p.ByName("label")
 	item, err := bqh.refreshBugQueue(c, label, bqh.GetMonorailProjectNameFromLabel(c, label))
 

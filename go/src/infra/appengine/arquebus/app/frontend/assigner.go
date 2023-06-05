@@ -56,14 +56,14 @@ func assignerPage(c *router.Context) {
 
 	assigner, tasks, err := backend.GetAssignerWithTasks(
 		// TODO(crbug/967527): add a param for alternating includeNoopSuccess
-		c.Context, assignerID, taskFetchLimit, true,
+		c.Request.Context(), assignerID, taskFetchLimit, true,
 	)
 	if err == datastore.ErrNoSuchEntity {
 		e := http.StatusNotFound
 		util.ErrStatus(c, e, "Assigner(%s) was not found", assignerID)
 		return
 	} else if err != nil {
-		logging.Errorf(c.Context, "%s", err)
+		logging.Errorf(c.Request.Context(), "%s", err)
 		e := http.StatusInternalServerError
 		util.ErrStatus(c, e, "Failed to load Assigner (%s)", assignerID)
 		return
@@ -72,7 +72,7 @@ func assignerPage(c *router.Context) {
 		panic(err)
 	}
 	templates.MustRender(
-		c.Context,
+		c.Request.Context(),
 		c.Writer,
 		"pages/assigner.html",
 		map[string]interface{}{
@@ -81,7 +81,7 @@ func assignerPage(c *router.Context) {
 			"ConfigLink": fmt.Sprintf(
 				"https://%s/infradata/config/+/%s/configs/%s/config.cfg",
 				chromeInternalRepoHostName, assigner.ConfigRevision,
-				info.AppID(c.Context),
+				info.AppID(c.Request.Context()),
 			),
 		},
 	)

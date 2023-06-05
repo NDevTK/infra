@@ -80,10 +80,10 @@ func init() {
 
 // withRemoteConfigService changes the context c to use configs from luci-config.
 func withRemoteConfigService(c *router.Context, next router.Handler) {
-	s, err := gaeconfig.FetchCachedSettings(c.Context)
+	s, err := gaeconfig.FetchCachedSettings(c.Request.Context())
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
-		logging.WithError(err).Errorf(c.Context, "Failed to retrieve cached settings")
+		logging.WithError(err).Errorf(c.Request.Context(), "Failed to retrieve cached settings")
 		return
 	}
 	iface := remote.New(s.ConfigServiceHost, false, func(c context.Context) (*http.Client, error) {
@@ -93,7 +93,7 @@ func withRemoteConfigService(c *router.Context, next router.Handler) {
 		}
 		return &http.Client{Transport: t}, nil
 	})
-	c.Context = config.WithConfigService(c.Context, iface)
+	c.Request = c.Request.WithContext(config.WithConfigService(c.Request.Context(), iface))
 	next(c)
 }
 
@@ -102,10 +102,10 @@ func withFilesystemConfigService(c *router.Context, next router.Handler) {
 	iface, err := filesystem.New("../devcfg")
 	if err != nil {
 		c.Writer.WriteHeader(http.StatusInternalServerError)
-		logging.WithError(err).Errorf(c.Context, "Failed to load local config files.")
+		logging.WithError(err).Errorf(c.Request.Context(), "Failed to load local config files.")
 		return
 	}
-	c.Context = config.WithConfigService(c.Context, iface)
+	c.Request = c.Request.WithContext(config.WithConfigService(c.Request.Context(), iface))
 	next(c)
 }
 
@@ -114,11 +114,11 @@ func bqFlushHandler(c *router.Context) {
 	// in parallel.
 	err := parallel.FanOutIn(func(ch chan<- func() error) {
 		ch <- func() error {
-			_, err := common.ResultsLog.Flush(c.Context)
+			_, err := common.ResultsLog.Flush(c.Request.Context())
 			return err
 		}
 		ch <- func() error {
-			_, err := common.EventsLog.Flush(c.Context)
+			_, err := common.EventsLog.Flush(c.Request.Context())
 			return err
 		}
 	})

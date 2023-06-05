@@ -17,7 +17,7 @@ import (
 // ScheduleReviews add tasks into Cloud Tasks queue, where each task handles
 // one CL's review.
 func ScheduleReviews(rc *router.Context) {
-	ctx, resp := rc.Context, rc.Writer
+	ctx, resp := rc.Request.Context(), rc.Writer
 	if err := scheduler.ScheduleReviews(ctx); err != nil {
 		logging.WithError(err).Errorf(ctx, "failed to schedule reviews")
 		http.Error(resp, err.Error(), 500)
@@ -26,7 +26,7 @@ func ScheduleReviews(rc *router.Context) {
 
 // UpdateConfig retrieves updated config from LUCI-config service.
 func UpdateConfig(rc *router.Context) {
-	ctx, resp := rc.Context, rc.Writer
+	ctx, resp := rc.Request.Context(), rc.Writer
 	if err := config.Update(ctx); err != nil {
 		logging.WithError(err).Errorf(ctx, "failed to update config")
 		http.Error(resp, err.Error(), 500)

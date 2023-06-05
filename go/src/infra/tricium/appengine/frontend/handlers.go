@@ -25,7 +25,7 @@ import (
 )
 
 func mainPageHandler(ctx *router.Context) {
-	c, r, w := ctx.Context, ctx.Request, ctx.Writer
+	c, r, w := ctx.Request.Context(), ctx.Request, ctx.Writer
 	args, err := templateArgs(c, r)
 	if err != nil {
 		logging.WithError(err).Errorf(c, "Failed to get template args.")
@@ -68,7 +68,7 @@ func templateArgs(c context.Context, r *http.Request) (map[string]interface{}, e
 // This queue is intended as a service extension point for modules
 // running within the Tricium GAE app, such as the Gerrit poller.
 func analyzeHandler(ctx *router.Context) {
-	c, r, w := ctx.Context, ctx.Request, ctx.Writer
+	c, r, w := ctx.Request.Context(), ctx.Request, ctx.Writer
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {

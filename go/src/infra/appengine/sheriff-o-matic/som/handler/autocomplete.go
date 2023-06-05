@@ -116,7 +116,7 @@ func getAutocompleter(c context.Context) (*autocompleter, error) {
 // GetUserAutocompleteHandler returns chromium developer email addresses
 // that match the query string.
 func GetUserAutocompleteHandler(ctx *router.Context) {
-	c, w, r, p := ctx.Context, ctx.Writer, ctx.Request, ctx.Params
+	c, w, r, p := ctx.Request.Context(), ctx.Writer, ctx.Request, ctx.Params
 
 	aec := c
 	if info.AppID(c) != "" && info.AppID(c) != "app" {

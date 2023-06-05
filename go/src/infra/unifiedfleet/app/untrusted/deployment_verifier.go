@@ -66,13 +66,13 @@ func EnsureVerifierSubscription(ctx context.Context) error {
 func DeploymentVerifier(routerCtx *router.Context) {
 	res, err := util.NewPSRequest(routerCtx.Request)
 	if err != nil {
-		logging.Errorf(routerCtx.Context, "DeploymentVerifier - Failed to read push req %v", err)
+		logging.Errorf(routerCtx.Request.Context(), "DeploymentVerifier - Failed to read push req %v", err)
 		return
 	}
 	data, err := res.DecodeMessage()
 	if err != nil {
-		logging.Errorf(routerCtx.Context, "DeploymentVerifier - Failed to read data %v", err)
+		logging.Errorf(routerCtx.Request.Context(), "DeploymentVerifier - Failed to read data %v", err)
 		return
 	}
-	logging.Debugf(routerCtx.Context, "Got data %x", data)
+	logging.Debugf(routerCtx.Request.Context(), "Got data %x", data)
 }

@@ -51,7 +51,7 @@ var errStatus = func(c context.Context, w http.ResponseWriter, status int, msg s
 }
 
 func indexPage(ctx *router.Context) {
-	c, w, r, p := ctx.Context, ctx.Writer, ctx.Request, ctx.Params
+	c, w, r, p := ctx.Request.Context(), ctx.Writer, ctx.Request, ctx.Params
 	if p.ByName("path") == "" {
 		http.Redirect(w, r, "/chromium", http.StatusFound)
 		return
@@ -147,31 +147,31 @@ func base(includeCookie bool) router.MiddlewareChain {
 func withServiceClients(ctx *router.Context, next router.Handler) {
 	a := analyzer.New(5, 100)
 	setServiceClients(ctx, a)
-	ctx.Context = handler.WithAnalyzer(ctx.Context, a)
+	ctx.Request = ctx.Request.WithContext(handler.WithAnalyzer(ctx.Request.Context(), a))
 	next(ctx)
 }
 
 func setServiceClients(ctx *router.Context, a *analyzer.Analyzer) {
 	// TODO: audit this code to make sure frontend module actually uses
 	// Analyzer and/or any of these clients besides milo and crbug.
-	if info.AppID(ctx.Context) == prodAppID {
-		crBug, _, bisection := client.ProdClients(ctx.Context)
+	if info.AppID(ctx.Request.Context()) == prodAppID {
+		crBug, _, bisection := client.ProdClients(ctx.Request.Context())
 		a.CrBug = crBug
 		a.Bisection = bisection
 	} else {
-		crBug, _, bisection := client.StagingClients(ctx.Context)
+		crBug, _, bisection := client.StagingClients(ctx.Request.Context())
 		a.CrBug = crBug
 		a.Bisection = bisection
 	}
 }
 
 func requireGoogler(c *router.Context, next router.Handler) {
-	isGoogler, err := auth.IsMember(c.Context, authGroup)
+	isGoogler, err := auth.IsMember(c.Request.Context(), authGroup)
 	switch {
 	case err != nil:
-		errStatus(c.Context, c.Writer, http.StatusInternalServerError, err.Error())
+		errStatus(c.Request.Context(), c.Writer, http.StatusInternalServerError, err.Error())
 	case !isGoogler:
-		errStatus(c.Context, c.Writer, http.StatusForbidden, "Access denied")
+		errStatus(c.Request.Context(), c.Writer, http.StatusForbidden, "Access denied")
 	default:
 		next(c)
 	}
@@ -180,7 +180,7 @@ func requireGoogler(c *router.Context, next router.Handler) {
 func noopHandler(ctx *router.Context) {}
 
 func getXSRFToken(ctx *router.Context) {
-	c, w := ctx.Context, ctx.Writer
+	c, w := ctx.Request.Context(), ctx.Writer
 
 	tok, err := xsrf.Token(c)
 	if err != nil {
@@ -218,24 +218,24 @@ func newBugQueueHandler(c context.Context) *handler.BugQueueHandler {
 }
 
 func refreshBugQueueHandler(ctx *router.Context) {
-	bqh := newBugQueueHandler(ctx.Context)
+	bqh := newBugQueueHandler(ctx.Request.Context())
 	bqh.RefreshBugQueueHandler(ctx)
 }
 
 func getBugQueueHandler(ctx *router.Context) {
-	bqh := newBugQueueHandler(ctx.Context)
+	bqh := newBugQueueHandler(ctx.Request.Context())
 	bqh.GetBugQueueHandler(ctx)
 }
 
 func getUncachedBugsHandler(ctx *router.Context) {
-	bqh := newBugQueueHandler(ctx.Context)
+	bqh := newBugQueueHandler(ctx.Request.Context())
 	bqh.GetUncachedBugsHandler(ctx)
 }
 
 func newAnnotationHandler(ctx *router.Context) *handler.AnnotationHandler {
-	bqh := newBugQueueHandler(ctx.Context)
+	bqh := newBugQueueHandler(ctx.Request.Context())
 	// TODO (nqmtuan): Handle error here
-	monorailV3Client, _ := client.NewMonorailV3Client(ctx.Context)
+	monorailV3Client, _ := client.NewMonorailV3Client(ctx.Request.Context())
 	return &handler.AnnotationHandler{
 		Bqh:                 bqh,
 		MonorailIssueClient: monorailv3.NewIssuesPRPCClient(monorailV3Client),

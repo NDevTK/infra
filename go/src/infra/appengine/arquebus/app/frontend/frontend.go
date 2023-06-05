@@ -84,7 +84,7 @@ func prepareTemplates(templatesPath string) *templates.Bundle {
 
 // hasAccess checks whether the user is allowed to access Arquebus UI.
 func hasAccess(rc *router.Context, next router.Handler) {
-	c := rc.Context
+	c := rc.Request.Context()
 	isMember, err := auth.IsMember(c, config.Get(c).AccessGroup)
 	if err != nil {
 		util.ErrStatus(rc, http.StatusInternalServerError, err.Error())

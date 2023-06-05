@@ -104,9 +104,9 @@ func InstallHandlers(r *router.Router, dispatcher *tq.Dispatcher, m router.Middl
 	// install the dispatcher and RPC clients into the context so that
 	// they can be accessed via the context and overwritten in unit tests.
 	m = m.Extend(func(rc *router.Context, next router.Handler) {
-		rc.Context = util.SetDispatcher(rc.Context, dispatcher)
+		rc.Request = rc.Request.WithContext(util.SetDispatcher(rc.Request.Context(), dispatcher))
 
-		monorailClient, err := createMonorailClient(rc.Context)
+		monorailClient, err := createMonorailClient(rc.Request.Context())
 		if err != nil {
 			util.ErrStatus(
 				rc, http.StatusInternalServerError,
@@ -114,9 +114,9 @@ func InstallHandlers(r *router.Router, dispatcher *tq.Dispatcher, m router.Middl
 			)
 			return
 		}
-		rc.Context = setMonorailClient(rc.Context, monorailClient)
+		rc.Request = rc.Request.WithContext(setMonorailClient(rc.Request.Context(), monorailClient))
 
-		rotationProxyClient, err := createRotationProxyClient(rc.Context)
+		rotationProxyClient, err := createRotationProxyClient(rc.Request.Context())
 		if err != nil {
 			util.ErrStatus(
 				rc, http.StatusInternalServerError,
@@ -124,7 +124,7 @@ func InstallHandlers(r *router.Router, dispatcher *tq.Dispatcher, m router.Middl
 			)
 			return
 		}
-		rc.Context = setRotationProxyClient(rc.Context, rotationProxyClient)
+		rc.Request = rc.Request.WithContext(setRotationProxyClient(rc.Request.Context(), rotationProxyClient))
 		next(rc)
 	})
 	dispatcher.InstallRoutes(r, m)

@@ -26,14 +26,14 @@ import (
 )
 
 func indexPage(c *router.Context) {
-	assigners, err := backend.GetAllAssigners(c.Context)
+	assigners, err := backend.GetAllAssigners(c.Request.Context())
 	if err != nil {
-		logging.Errorf(c.Context, "%s", err)
+		logging.Errorf(c.Request.Context(), "%s", err)
 		util.ErrStatus(c, http.StatusInternalServerError, "Internal error.")
 		return
 	}
 	templates.MustRender(
-		c.Context,
+		c.Request.Context(),
 		c.Writer,
 		"pages/index.html",
 		map[string]interface{}{

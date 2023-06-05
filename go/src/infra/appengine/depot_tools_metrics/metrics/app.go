@@ -55,7 +55,7 @@ func main() {
 // for "is a Googler") or from a service account. Exits with a 403 status code
 // otherwise.
 func CheckUploadAllowed(c *router.Context, next router.Handler) {
-	id := auth.CurrentIdentity(c.Context)
+	id := auth.CurrentIdentity(c.Request.Context())
 	switch {
 	// The request comes from a service account.
 	case isServiceAccount(id):
@@ -85,26 +85,26 @@ func shouldUploadHandler(c *router.Context) {
 func uploadHandler(c *router.Context) {
 	var metrics schema.Metrics
 	if err := jsonpb.Unmarshal(c.Request.Body, &metrics); err != nil {
-		logging.Errorf(c.Context, "Could not extract metrics: %v", err)
+		logging.Errorf(c.Request.Context(), "Could not extract metrics: %v", err)
 		http.Error(c.Writer, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	// Ignore metrics.BotMetrics values from non-service-accounts.
-	if !isServiceAccount(auth.CurrentIdentity(c.Context)) {
+	if !isServiceAccount(auth.CurrentIdentity(c.Request.Context())) {
 		metrics.BotMetrics = nil
 	}
 
 	if err := checkConstraints(&metrics); err != nil {
-		logging.Errorf(c.Context, "The metrics don't obey constraints: %v", err)
+		logging.Errorf(c.Request.Context(), "The metrics don't obey constraints: %v", err)
 		http.Error(c.Writer, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	reportDepotToolsMetrics(c.Context, &metrics)
+	reportDepotToolsMetrics(c.Request.Context(), &metrics)
 
-	if err := putMetrics(c.Context, &metrics); err != nil {
-		logging.Errorf(c.Context, "Could not write to BQ: %v", err)
+	if err := putMetrics(c.Request.Context(), &metrics); err != nil {
+		logging.Errorf(c.Request.Context(), "Could not write to BQ: %v", err)
 		http.Error(c.Writer, err.Error(), http.StatusInternalServerError)
 		return
 	}

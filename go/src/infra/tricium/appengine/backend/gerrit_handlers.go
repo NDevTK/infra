@@ -27,7 +27,7 @@ var reporter = gerritReporterServer{}
 //
 // This handler should be called periodically by a cron job.
 func pollHandler(ctx *router.Context) {
-	c, w := ctx.Context, ctx.Writer
+	c, w := ctx.Request.Context(), ctx.Writer
 	if err := poll(c, config.LuciConfigServer); err != nil {
 		logging.WithError(err).Errorf(c, "Failed to poll.")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -40,7 +40,7 @@ func pollHandler(ctx *router.Context) {
 //
 // This handler should handle tasks on a push task queue.
 func pollProjectHandler(ctx *router.Context) {
-	c, r, w := ctx.Context, ctx.Request, ctx.Writer
+	c, r, w := ctx.Request.Context(), ctx.Request, ctx.Writer
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -63,7 +63,7 @@ func pollProjectHandler(ctx *router.Context) {
 }
 
 func reportResultsHandler(ctx *router.Context) {
-	c, r, w := ctx.Context, ctx.Request, ctx.Writer
+	c, r, w := ctx.Request.Context(), ctx.Request, ctx.Writer
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {

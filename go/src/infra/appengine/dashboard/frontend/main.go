@@ -130,5 +130,5 @@ func main() {
 }
 
 func dashboard(ctx *router.Context) {
-	templates.MustRender(ctx.Context, ctx.Writer, "pages/home.html", nil)
+	templates.MustRender(ctx.Request.Context(), ctx.Writer, "pages/home.html", nil)
 }

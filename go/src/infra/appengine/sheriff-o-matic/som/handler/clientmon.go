@@ -26,7 +26,7 @@ type eCatcherReq struct {
 
 // PostClientMonHandler handles uncaught javascript errors reported by the client.
 func PostClientMonHandler(ctx *router.Context) {
-	c, w, r := ctx.Context, ctx.Writer, ctx.Request
+	c, w, r := ctx.Request.Context(), ctx.Writer, ctx.Request
 
 	req := &eCatcherReq{}
 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {

@@ -102,7 +102,7 @@ func CreateTestContext() context.Context {
 
 // ErrStatus sends an HTTP response with the error status and message.
 func ErrStatus(rc *router.Context, status int, format string, args ...interface{}) {
-	c := rc.Context
+	c := rc.Request.Context()
 	msg := fmt.Sprintf(format, args...)
 	logging.Errorf(c, "Status %d msg %s", status, msg)
 	rc.Writer.WriteHeader(status)

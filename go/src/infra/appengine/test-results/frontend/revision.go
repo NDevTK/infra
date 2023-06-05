@@ -50,7 +50,7 @@ func (c *crRevClient) commitHash(pos string) (string, error) {
 
 func revisionHandler(c *router.Context) {
 	client := crRevClient{
-		HTTPClient: &http.Client{Transport: urlfetch.Get(c.Context)},
+		HTTPClient: &http.Client{Transport: urlfetch.Get(c.Request.Context())},
 		BaseURL:    crRevURL,
 	}
 	type result struct {

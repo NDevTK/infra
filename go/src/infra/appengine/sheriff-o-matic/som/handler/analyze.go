@@ -61,7 +61,7 @@ func WithAnalyzer(ctx context.Context, a *analyzer.Analyzer) context.Context {
 // GetAnalyzeHandler enqueues a request to run an analysis on a particular tree.
 // This is usually hit by appengine cron rather than manually.
 func GetAnalyzeHandler(ctx *router.Context) {
-	c, w, r, p := ctx.Context, ctx.Writer, ctx.Request, ctx.Params
+	c, w, r, p := ctx.Request.Context(), ctx.Writer, ctx.Request, ctx.Params
 
 	tree := p.ByName("tree")
 	a, ok := c.Value(analyzerCtxKey).(*analyzer.Analyzer)
@@ -93,7 +93,7 @@ func GetAnalyzeHandler(ctx *router.Context) {
 // GetBQQueryHandler queries BQ sheriffable_failures for a particular project, and caches the result.
 // This is usually hit by appengine cron rather than manually.
 func GetBQQueryHandler(ctx *router.Context) {
-	c, w, r, p := ctx.Context, ctx.Writer, ctx.Request, ctx.Params
+	c, w, r, p := ctx.Request.Context(), ctx.Writer, ctx.Request, ctx.Params
 	c = appengine.WithContext(c, r)
 	project := p.ByName("project")
 	err := analyzer.QueryBQForProject(c, project)

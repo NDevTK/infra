@@ -34,7 +34,7 @@ func GetRevRangeHandler(ctx *router.Context) {
 }
 
 func getRevRangeHandler(ctx *router.Context, crRev client.CrRev) {
-	c, w, r, p := ctx.Context, ctx.Writer, ctx.Request, ctx.Params
+	c, w, r, p := ctx.Request.Context(), ctx.Writer, ctx.Request, ctx.Params
 
 	host := p.ByName("host")
 	repo := p.ByName("repo")

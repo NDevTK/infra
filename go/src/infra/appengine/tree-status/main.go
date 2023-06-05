@@ -49,7 +49,7 @@ func base(includeCookie bool) router.MiddlewareChain {
 }
 
 func indexPage(ctx *router.Context) {
-	c, w, r, _ := ctx.Context, ctx.Writer, ctx.Request, ctx.Params
+	c, w, r, _ := ctx.Request.Context(), ctx.Writer, ctx.Request, ctx.Params
 
 	user := auth.CurrentIdentity(c)
 
@@ -118,7 +118,7 @@ func indexPage(ctx *router.Context) {
 }
 
 func getXSRFToken(ctx *router.Context) {
-	c, w := ctx.Context, ctx.Writer
+	c, w := ctx.Request.Context(), ctx.Writer
 
 	tok, err := xsrf.Token(c)
 	if err != nil {

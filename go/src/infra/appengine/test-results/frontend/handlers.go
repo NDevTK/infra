@@ -45,9 +45,9 @@ func init() {
 
 func timeoutMiddleware(timeoutMs time.Duration) func(*router.Context, router.Handler) {
 	return func(c *router.Context, next router.Handler) {
-		newCtx, cancelFunc := context.WithTimeout(c.Context, timeoutMs)
+		newCtx, cancelFunc := context.WithTimeout(c.Request.Context(), timeoutMs)
 		defer cancelFunc()
-		c.Context = newCtx
+		c.Request = c.Request.WithContext(newCtx)
 		next(c)
 	}
 }

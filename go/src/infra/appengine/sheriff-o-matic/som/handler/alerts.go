@@ -39,7 +39,7 @@ var (
 
 // GetAlerts handles API requests for alerts.
 func GetAlerts(ctx *router.Context, unresolved bool, resolved bool) *messages.AlertsSummary {
-	c, w, p := ctx.Context, ctx.Writer, ctx.Params
+	c, w, p := ctx.Request.Context(), ctx.Writer, ctx.Params
 
 	tree := p.ByName("tree")
 
@@ -126,7 +126,7 @@ func GetAlerts(ctx *router.Context, unresolved bool, resolved bool) *messages.Al
 }
 
 func getAlerts(ctx *router.Context, unresolved bool, resolved bool) {
-	c, w := ctx.Context, ctx.Writer
+	c, w := ctx.Request.Context(), ctx.Writer
 	alertsSummary := GetAlerts(ctx, unresolved, resolved)
 	data, err := json.MarshalIndent(alertsSummary, "", "\t")
 	if err != nil {
@@ -294,7 +294,7 @@ func putAlertsDatastore(c context.Context, tree string, alertsSummary *messages.
 
 // FlushOldAlertsHandler deletes old resolved alerts from datastore.
 func FlushOldAlertsHandler(ctx *router.Context) {
-	c, w := ctx.Context, ctx.Writer
+	c, w := ctx.Request.Context(), ctx.Writer
 
 	numDeleted, err := flushOldAlerts(c)
 	if err != nil {

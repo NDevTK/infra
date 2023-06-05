@@ -29,9 +29,8 @@ func TestRevRangeHandler(t *testing.T) {
 			c = authtest.MockAuthConfig(c)
 			w := httptest.NewRecorder()
 			getRevRangeHandler(&router.Context{
-				Context: c,
-				Writer:  w,
-				Request: makeGetRequest(
+				Writer: w,
+				Request: makeGetRequest(c,
 					"startPos", "123", "endPos", "456",
 					"endRev", "1a2b3c4d"),
 				Params: makeParams(
@@ -44,9 +43,8 @@ func TestRevRangeHandler(t *testing.T) {
 			c = authtest.MockAuthConfig(c)
 			w := httptest.NewRecorder()
 			getRevRangeHandler(&router.Context{
-				Context: c,
-				Writer:  w,
-				Request: makeGetRequest(
+				Writer: w,
+				Request: makeGetRequest(c,
 					"startRev", "2a2b3c4d", "endRev", "1a2b3c4d"),
 				Params: makeParams(
 					"host", "chromium", "repo", "chromium.src"),
@@ -57,9 +55,8 @@ func TestRevRangeHandler(t *testing.T) {
 		Convey("bad oauth", func() {
 			w := httptest.NewRecorder()
 			getRevRangeHandler(&router.Context{
-				Context: c,
-				Writer:  w,
-				Request: makeGetRequest(
+				Writer: w,
+				Request: makeGetRequest(c,
 					"startPos", "123", "endPos", "456",
 					"endRev", "1a2b3c4d"),
 				Params: makeParams(
@@ -71,9 +68,8 @@ func TestRevRangeHandler(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			getRevRangeHandler(&router.Context{
-				Context: c,
 				Writer:  w,
-				Request: makeGetRequest(),
+				Request: makeGetRequest(c),
 			}, crRev)
 
 			So(w.Code, ShouldEqual, 400)
@@ -82,9 +78,8 @@ func TestRevRangeHandler(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			getRevRangeHandler(&router.Context{
-				Context: c,
-				Writer:  w,
-				Request: makeGetRequest(
+				Writer: w,
+				Request: makeGetRequest(c,
 					"startPos", "123", "endRev", "1a2b3c4d"),
 				Params: makeParams(
 					"host", "chromium", "repo", "chromium.src"),
@@ -95,9 +90,8 @@ func TestRevRangeHandler(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			getRevRangeHandler(&router.Context{
-				Context: c,
-				Writer:  w,
-				Request: makeGetRequest(
+				Writer: w,
+				Request: makeGetRequest(c,
 					"startPos", "123", "endPos", "234",
 					"startRev", "2a2b3c4d", "endRev", "1a2b3c4d"),
 				Params: makeParams(),

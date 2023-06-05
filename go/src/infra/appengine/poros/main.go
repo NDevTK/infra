@@ -63,12 +63,12 @@ func prepareTemplates(opts *server.Options) *templates.Bundle {
 // displayed that allows the user to logout and login again with new
 // credentials.
 func requireAuth(ctx *router.Context, next router.Handler) {
-	user := auth.CurrentIdentity(ctx.Context)
+	user := auth.CurrentIdentity(ctx.Request.Context())
 	if user.Kind() == identity.Anonymous {
 		// User is not logged in.
-		url, err := auth.LoginURL(ctx.Context, ctx.Request.URL.RequestURI())
+		url, err := auth.LoginURL(ctx.Request.Context(), ctx.Request.URL.RequestURI())
 		if err != nil {
-			logging.Errorf(ctx.Context, "Fetching LoginURL: %s", err.Error())
+			logging.Errorf(ctx.Request.Context(), "Fetching LoginURL: %s", err.Error())
 			http.Error(ctx.Writer, "Internal server error while fetching Login URL.", http.StatusInternalServerError)
 		} else {
 			http.Redirect(ctx.Writer, ctx.Request, url, http.StatusFound)
@@ -76,14 +76,14 @@ func requireAuth(ctx *router.Context, next router.Handler) {
 		return
 	}
 
-	isAuthorized, err := auth.IsMember(ctx.Context, authGroup)
+	isAuthorized, err := auth.IsMember(ctx.Request.Context(), authGroup)
 	switch {
 	case err != nil:
-		logging.Errorf(ctx.Context, "Checking Auth Membership: %s", err.Error())
+		logging.Errorf(ctx.Request.Context(), "Checking Auth Membership: %s", err.Error())
 		http.Error(ctx.Writer, "Internal server error while checking authorization.", http.StatusInternalServerError)
 	case !isAuthorized:
 		ctx.Writer.WriteHeader(http.StatusForbidden)
-		templates.MustRender(ctx.Context, ctx.Writer, "pages/access-denied.html", nil)
+		templates.MustRender(ctx.Request.Context(), ctx.Writer, "pages/access-denied.html", nil)
 	default:
 		next(ctx)
 	}

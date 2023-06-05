@@ -177,7 +177,7 @@ func filterAnnotations(annotations []*model.Annotation, activeKeys map[string]in
 
 // GetAnnotationsHandler retrieves a set of annotations.
 func (ah *AnnotationHandler) GetAnnotationsHandler(ctx *router.Context, activeKeys map[string]interface{}) {
-	c, w, p := ctx.Context, ctx.Writer, ctx.Params
+	c, w, p := ctx.Request.Context(), ctx.Writer, ctx.Params
 
 	tree := p.ByName("tree")
 
@@ -219,7 +219,7 @@ func (ah *AnnotationHandler) GetAnnotationsHandler(ctx *router.Context, activeKe
 }
 
 func (ah *AnnotationHandler) getAnnotationsMetaData(ctx *router.Context) (map[string]*monorailv3.Issue, error) {
-	c := ctx.Context
+	c := ctx.Request.Context()
 	item, err := memcache.GetKey(c, annotationsCacheKey)
 	val := make(map[string]*monorailv3.Issue)
 
@@ -241,7 +241,7 @@ func (ah *AnnotationHandler) getAnnotationsMetaData(ctx *router.Context) (map[st
 
 // RefreshAnnotationsHandler refreshes the set of annotations.
 func (ah *AnnotationHandler) RefreshAnnotationsHandler(ctx *router.Context) {
-	c, w := ctx.Context, ctx.Writer
+	c, w := ctx.Request.Context(), ctx.Writer
 
 	bugMap, err := ah.refreshAnnotations(ctx, nil)
 	if err != nil {
@@ -341,7 +341,7 @@ func (ah *AnnotationHandler) searchIssues(c context.Context, req *monorailv3.Sea
 
 // Update the cache for annotation bug data.
 func (ah *AnnotationHandler) refreshAnnotations(ctx *router.Context, a *model.Annotation) (map[string]*monorailv3.Issue, error) {
-	c := ctx.Context
+	c := ctx.Request.Context()
 	q := datastoreCreateAnnotationQuery()
 	results := []*model.Annotation{}
 	datastoreGetAnnotationsByQuery(c, &results, q)
@@ -419,7 +419,7 @@ type postRequest struct {
 
 // PostAnnotationsHandler handles updates to annotations.
 func (ah *AnnotationHandler) PostAnnotationsHandler(ctx *router.Context) {
-	c, w, r, p := ctx.Context, ctx.Writer, ctx.Request, ctx.Params
+	c, w, r, p := ctx.Request.Context(), ctx.Writer, ctx.Request, ctx.Params
 
 	tree := p.ByName("tree")
 	action := p.ByName("action")
@@ -525,7 +525,7 @@ func (ah *AnnotationHandler) PostAnnotationsHandler(ctx *router.Context) {
 // FlushOldAnnotationsHandler culls obsolete annotations from the datastore.
 // TODO (crbug.com/1079068): Perhaps we want to revisit flush annotation logic.
 func FlushOldAnnotationsHandler(ctx *router.Context) {
-	c, w := ctx.Context, ctx.Writer
+	c, w := ctx.Request.Context(), ctx.Writer
 
 	numDeleted, err := flushOldAnnotations(c)
 	if err != nil {
@@ -564,7 +564,7 @@ func flushOldAnnotations(c context.Context) (int, error) {
 
 // FileBugHandler files a new bug in monorail.
 func (ah *AnnotationHandler) FileBugHandler(ctx *router.Context) {
-	c, w, r := ctx.Context, ctx.Writer, ctx.Request
+	c, w, r := ctx.Request.Context(), ctx.Writer, ctx.Request
 
 	req := &postRequest{}
 	err := json.NewDecoder(r.Body).Decode(req)

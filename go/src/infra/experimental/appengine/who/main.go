@@ -51,19 +51,19 @@ var errStatus = func(c context.Context, w http.ResponseWriter, status int, msg s
 }
 
 func requireGoogler(c *router.Context, next router.Handler) {
-	isGoogler, err := auth.IsMember(c.Context, authGroup)
+	isGoogler, err := auth.IsMember(c.Request.Context(), authGroup)
 	switch {
 	case err != nil:
-		errStatus(c.Context, c.Writer, http.StatusInternalServerError, err.Error())
+		errStatus(c.Request.Context(), c.Writer, http.StatusInternalServerError, err.Error())
 	case !isGoogler:
-		errStatus(c.Context, c.Writer, http.StatusForbidden, "Access denied")
+		errStatus(c.Request.Context(), c.Writer, http.StatusForbidden, "Access denied")
 	default:
 		next(c)
 	}
 }
 
 func indexPage(ctx *router.Context) {
-	c, w, r, _ := ctx.Context, ctx.Writer, ctx.Request, ctx.Params
+	c, w, r, _ := ctx.Request.Context(), ctx.Writer, ctx.Request, ctx.Params
 
 	user := auth.CurrentIdentity(c)
 
@@ -146,7 +146,7 @@ type ActivityHistory struct {
 }
 
 func historyHandler(ctx *router.Context) {
-	c, w, _, p := ctx.Context, ctx.Writer, ctx.Request, ctx.Params
+	c, w, _, p := ctx.Request.Context(), ctx.Writer, ctx.Request, ctx.Params
 	encoder := json.NewEncoder(w)
 
 	h := ActivityHistory{
@@ -234,7 +234,7 @@ func (a byUpdated) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a byUpdated) Less(i, j int) bool { return a[i].Day.After(a[j].Day) }
 
 func detailHandler(ctx *router.Context) {
-	c, w, _, p := ctx.Context, ctx.Writer, ctx.Request, ctx.Params
+	c, w, _, p := ctx.Request.Context(), ctx.Writer, ctx.Request, ctx.Params
 	encoder := json.NewEncoder(w)
 
 	//user := auth.CurrentIdentity(c)

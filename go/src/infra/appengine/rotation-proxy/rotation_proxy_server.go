@@ -20,6 +20,7 @@ import (
 	"go.chromium.org/luci/server/router"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
 	rpb "infra/appengine/rotation-proxy/proto"
 )
 
@@ -153,7 +154,7 @@ func errStatus(c context.Context, w http.ResponseWriter, status int, msg string)
 // GetCurrentShiftHandler handles API requests for current shift.
 // Note that this is a JSON endpoint (NOT pRPC) to handle HTTP requests.
 func GetCurrentShiftHandler(ctx *router.Context) {
-	c, w, p := ctx.Context, ctx.Writer, ctx.Params
+	c, w, p := ctx.Request.Context(), ctx.Writer, ctx.Params
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	rotationName := p.ByName("name")

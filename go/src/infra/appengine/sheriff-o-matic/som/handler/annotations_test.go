@@ -302,9 +302,8 @@ func TestAnnotations(t *testing.T) {
 		Convey("GET", func() {
 			Convey("no annotations yet", func() {
 				ah.GetAnnotationsHandler(&router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makeGetRequest(),
+					Request: makeGetRequest(c),
 				}, nil)
 
 				r, err := ioutil.ReadAll(w.Body)
@@ -327,9 +326,8 @@ func TestAnnotations(t *testing.T) {
 
 			Convey("basic annotation", func() {
 				ah.GetAnnotationsHandler(&router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makeGetRequest(),
+					Request: makeGetRequest(c),
 				}, map[string]interface{}{ann.Key: nil})
 
 				r, err := ioutil.ReadAll(w.Body)
@@ -344,9 +342,8 @@ func TestAnnotations(t *testing.T) {
 
 			Convey("basic annotation, alert no longer active", func() {
 				ah.GetAnnotationsHandler(&router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makeGetRequest(),
+					Request: makeGetRequest(c),
 				}, nil)
 
 				r, err := ioutil.ReadAll(w.Body)
@@ -371,9 +368,8 @@ func TestAnnotations(t *testing.T) {
 		Convey("POST", func() {
 			Convey("invalid action", func() {
 				ah.PostAnnotationsHandler(&router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makePostRequest(""),
+					Request: makePostRequest(c, ""),
 					Params:  makeParams("action", "lolwut"),
 				})
 
@@ -382,9 +378,8 @@ func TestAnnotations(t *testing.T) {
 
 			Convey("invalid json", func() {
 				ah.PostAnnotationsHandler(&router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makePostRequest("invalid json"),
+					Request: makePostRequest(c, "invalid json"),
 					Params:  makeParams("annKey", "foobar", "action", "add"),
 				})
 
@@ -401,9 +396,8 @@ func TestAnnotations(t *testing.T) {
 
 			Convey("add, bad xsrf token", func() {
 				ah.PostAnnotationsHandler(&router.Context{
-					Context: c,
-					Writer:  w,
-					Request: makePostRequest(addXSRFToken(map[string]interface{}{
+					Writer: w,
+					Request: makePostRequest(c, addXSRFToken(map[string]interface{}{
 						"snoozeTime": 123123,
 					}, "no good token")),
 					Params: makeParams("annKey", "foobar", "action", "add"),
@@ -422,9 +416,8 @@ func TestAnnotations(t *testing.T) {
 				change := map[string]interface{}{}
 				Convey("snoozeTime", func() {
 					ah.PostAnnotationsHandler(&router.Context{
-						Context: c,
-						Writer:  w,
-						Request: makePostRequest(addXSRFToken(map[string]interface{}{
+						Writer: w,
+						Request: makePostRequest(c, addXSRFToken(map[string]interface{}{
 							"snoozeTime": 123123,
 							"key":        "foobar",
 						}, tok)),
@@ -440,9 +433,8 @@ func TestAnnotations(t *testing.T) {
 					change["bugs"] = []model.MonorailBug{{BugID: "123123", ProjectID: "chromium"}}
 					change["key"] = "foobar"
 					ah.PostAnnotationsHandler(&router.Context{
-						Context: c,
 						Writer:  w,
-						Request: makePostRequest(addXSRFToken(change, tok)),
+						Request: makePostRequest(c, addXSRFToken(change, tok)),
 						Params:  makeParams("action", "add", "tree", "tree.unknown"),
 					})
 
@@ -456,9 +448,8 @@ func TestAnnotations(t *testing.T) {
 			Convey("remove", func() {
 				Convey("can't remove non-existent annotation", func() {
 					ah.PostAnnotationsHandler(&router.Context{
-						Context: c,
 						Writer:  w,
-						Request: makePostRequest(addXSRFToken(map[string]interface{}{"key": "foobar"}, tok)),
+						Request: makePostRequest(c, addXSRFToken(map[string]interface{}{"key": "foobar"}, tok)),
 						Params:  makeParams("action", "remove", "tree", "tree.unknown"),
 					})
 
@@ -472,9 +463,8 @@ func TestAnnotations(t *testing.T) {
 					So(ann.SnoozeTime, ShouldEqual, 123)
 
 					ah.PostAnnotationsHandler(&router.Context{
-						Context: c,
-						Writer:  w,
-						Request: makePostRequest(addXSRFToken(map[string]interface{}{
+						Writer: w,
+						Request: makePostRequest(c, addXSRFToken(map[string]interface{}{
 							"key":        "foobar",
 							"snoozeTime": true,
 						}, tok)),
@@ -493,9 +483,8 @@ func TestAnnotations(t *testing.T) {
 				c, _ := newContext()
 
 				ah.RefreshAnnotationsHandler(&router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makeGetRequest(),
+					Request: makeGetRequest(c),
 				})
 
 				b, err := ioutil.ReadAll(w.Body)
@@ -522,9 +511,8 @@ func TestAnnotations(t *testing.T) {
 
 			Convey("query alerts which have multiple bugs", func() {
 				ah.RefreshAnnotationsHandler(&router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makeGetRequest(),
+					Request: makeGetRequest(c),
 				})
 
 				b, err := ioutil.ReadAll(w.Body)
@@ -557,9 +545,8 @@ func TestAnnotations(t *testing.T) {
 		Convey("file bug", func() {
 			c, _ := newContext()
 			ah.FileBugHandler(&router.Context{
-				Context: c,
-				Writer:  w,
-				Request: makePostRequest(addXSRFToken(map[string]interface{}{
+				Writer: w,
+				Request: makePostRequest(c, addXSRFToken(map[string]interface{}{
 					"ProjectId":   "chromium",
 					"Description": "des",
 					"Labels":      []string{"label1"},

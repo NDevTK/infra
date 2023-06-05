@@ -77,30 +77,30 @@ func InstallHandlers(r *router.Router, mwBase router.MiddlewareChain) {
 const pageSize = 500
 
 func importServiceConfig(c *router.Context) error {
-	return config.Import(c.Context)
+	return config.Import(c.Request.Context())
 }
 
 func dumpToBQCronHandler(c *router.Context) (err error) {
-	logging.Infof(c.Context, "not implemented yet")
+	logging.Infof(c.Request.Context(), "not implemented yet")
 	return nil
 }
 
 func syncDevConfigHandler(c *router.Context) error {
-	logging.Infof(c.Context, "Start syncing device_config repo")
-	cfg := config.Get(c.Context)
+	logging.Infof(c.Request.Context(), "Start syncing device_config repo")
+	cfg := config.Get(c.Request.Context())
 	dCcfg := cfg.GetDeviceConfigSource()
-	cli, err := cfg2datastore.NewGitilesClient(c.Context, dCcfg.GetHost())
+	cli, err := cfg2datastore.NewGitilesClient(c.Request.Context(), dCcfg.GetHost())
 	if err != nil {
 		return err
 	}
 	if cfg.GetProjectConfigSource().GetEnableProjectConfig() {
-		t, err := auth.GetRPCTransport(c.Context, auth.AsSelf, auth.WithScopes(authclient.OAuthScopeEmail, gitilesapi.OAuthScope))
+		t, err := auth.GetRPCTransport(c.Request.Context(), auth.AsSelf, auth.WithScopes(authclient.OAuthScopeEmail, gitilesapi.OAuthScope))
 		if err != nil {
 			return err
 		}
 		bsCfg := cfg.GetProjectConfigSource()
-		logging.Infof(c.Context, "boxster configs: %q, %q, %q", bsCfg.GetGitilesHost(), bsCfg.GetProject(), bsCfg.GetBranch())
-		gitClient, err := git.NewClient(c.Context, &http.Client{Transport: t}, "", bsCfg.GetGitilesHost(), bsCfg.GetProject(), bsCfg.GetBranch())
+		logging.Infof(c.Request.Context(), "boxster configs: %q, %q, %q", bsCfg.GetGitilesHost(), bsCfg.GetProject(), bsCfg.GetBranch())
+		gitClient, err := git.NewClient(c.Request.Context(), &http.Client{Transport: t}, "", bsCfg.GetGitilesHost(), bsCfg.GetProject(), bsCfg.GetBranch())
 		if err != nil {
 			return err
 		}
@@ -108,13 +108,13 @@ func syncDevConfigHandler(c *router.Context) error {
 		if err != nil {
 			return err
 		}
-		return deviceconfig.UpdateDatastoreFromBoxster(c.Context, gitClient, bsCfg.GetJoinedConfigPath(), cli, dCcfg.GetProject(), dCcfg.GetCommittish(), dCcfg.GetPath())
+		return deviceconfig.UpdateDatastoreFromBoxster(c.Request.Context(), gitClient, bsCfg.GetJoinedConfigPath(), cli, dCcfg.GetProject(), dCcfg.GetCommittish(), dCcfg.GetPath())
 	}
-	return deviceconfig.UpdateDatastore(c.Context, cli, dCcfg.GetProject(), dCcfg.GetCommittish(), dCcfg.GetPath())
+	return deviceconfig.UpdateDatastore(c.Request.Context(), cli, dCcfg.GetProject(), dCcfg.GetCommittish(), dCcfg.GetPath())
 }
 
 func dumpRegisteredAssetsCronHandler(c *router.Context) error {
-	ctx := c.Context
+	ctx := c.Request.Context()
 	if !config.Get(ctx).GetRouting().GetDumpAssetsBq() {
 		logging.Infof(ctx, "Start to dump registered assets to bigquery")
 
@@ -134,7 +134,7 @@ func dumpRegisteredAssetsCronHandler(c *router.Context) error {
 }
 
 func dumpAssetInfoToBQHandler(c *router.Context) error {
-	ctx := c.Context
+	ctx := c.Request.Context()
 	if !config.Get(ctx).GetRouting().GetDumpAssetsBq() {
 		logging.Infof(ctx, "Starting to dump asset info to BQ")
 
@@ -165,7 +165,7 @@ func dumpAssetInfoToBQHandler(c *router.Context) error {
 }
 
 func dumpOtherConfigsCronHandler(c *router.Context) error {
-	ctx := c.Context
+	ctx := c.Request.Context()
 	logging.Infof(ctx, "Start to dump related configs in inventory to bigquery")
 
 	curTime := time.Now()
@@ -187,8 +187,8 @@ func dumpOtherConfigsCronHandler(c *router.Context) error {
 }
 
 func dumpChangeHistoryToBQCronHandler(c *router.Context) error {
-	ctx := c.Context
-	logging.Infof(c.Context, "Start to dump change history to bigquery")
+	ctx := c.Request.Context()
+	logging.Infof(c.Request.Context(), "Start to dump change history to bigquery")
 	project := info.AppID(ctx)
 	dataset := "inventory"
 	table := "changehistory"
@@ -234,10 +234,10 @@ func dumpChangeHistoryToBQCronHandler(c *router.Context) error {
 // dumpInventorySnapshot takes a snapshot of the inventory at the current time and
 // uploads it to bigquery.
 func dumpInventorySnapshot(c *router.Context) (err error) {
-	ctx := c.Context
+	ctx := c.Request.Context()
 	// UFS migration, skip this job
 	if config.Get(ctx).GetRouting().GetDumpDevicesBq() {
-		logging.Infof(c.Context, "UFS migration done: skipping InvV2 dumping inventory snapshot")
+		logging.Infof(c.Request.Context(), "UFS migration done: skipping InvV2 dumping inventory snapshot")
 		return nil
 	}
 
@@ -245,7 +245,7 @@ func dumpInventorySnapshot(c *router.Context) (err error) {
 		dumpInventorySnapshotTick.Add(ctx, 1, err == nil)
 	}()
 
-	logging.Infof(c.Context, "Start dumping inventory snapshot")
+	logging.Infof(c.Request.Context(), "Start dumping inventory snapshot")
 	project := info.AppID(ctx)
 	dataset := "inventory"
 	curTimeStr := bqlib.GetPSTTimeStamp(time.Now())
@@ -313,13 +313,13 @@ func GetHiveForDut(d string) string {
 }
 
 func syncDeviceListToDroneConfigHandler(c *router.Context) error {
-	ctx := c.Context
-	logging.Infof(c.Context, "start to sync device list to drone config")
+	ctx := c.Request.Context()
+	logging.Infof(c.Request.Context(), "start to sync device list to drone config")
 	return dronecfg.SyncDeviceList(ctx, dronecfg.QueenDroneName(config.Get(ctx).Environment))
 }
 
 func syncAssetInfoFromHaRT(c *router.Context) error {
-	ctx := c.Context
+	ctx := c.Request.Context()
 
 	logging.Infof(ctx, "Sync AssetInfo from HaRT")
 
@@ -385,7 +385,7 @@ func isDUT(googleCodeName string) bool {
 // This job is run every hour and the 'rate per hour'/'batch size' can
 // can be configured in the project configs.
 func backfillAssetTagsToDevicesHandler(c *router.Context) error {
-	ctx := c.Context
+	ctx := c.Request.Context()
 
 	cfg := config.Get(ctx).GetBackfillingConfig()
 
@@ -455,8 +455,8 @@ func backfillAssetTagsToDevicesHandler(c *router.Context) error {
 }
 
 func syncManualRepairRecordsToBQCronHandler(c *router.Context) error {
-	ctx := c.Context
-	logging.Infof(c.Context, "Start to sync manual repair records to bigquery")
+	ctx := c.Request.Context()
+	logging.Infof(c.Request.Context(), "Start to sync manual repair records to bigquery")
 	project := info.AppID(ctx)
 	dataset := "inventory"
 	table := "manual_repair_records"
@@ -516,15 +516,15 @@ func syncManualRepairRecordsToBQCronHandler(c *router.Context) error {
 func logAndSetHTTPErr(f func(c *router.Context) error) func(*router.Context) {
 	return func(c *router.Context) {
 		if err := f(c); err != nil {
-			logging.Errorf(c.Context, err.Error())
+			logging.Errorf(c.Request.Context(), err.Error())
 			http.Error(c.Writer, "Internal server error", http.StatusInternalServerError)
 		}
 	}
 }
 
 func backfillMRIndexesCronHandler(c *router.Context) error {
-	ctx := c.Context
-	logging.Infof(c.Context, "Start to backfill manual repair records indexes")
+	ctx := c.Request.Context()
+	logging.Infof(c.Request.Context(), "Start to backfill manual repair records indexes")
 
 	var batchSize int32 = 100
 	var counter int32 = 0
@@ -536,7 +536,7 @@ func backfillMRIndexesCronHandler(c *router.Context) error {
 	}
 
 	for len(entities) > 0 {
-		logging.Debugf(c.Context, "Processing manual repair entities %s to %s", counter*batchSize, (counter+1)*batchSize)
+		logging.Debugf(c.Request.Context(), "Processing manual repair entities %s to %s", counter*batchSize, (counter+1)*batchSize)
 		for _, e := range entities {
 			var content invprotos.DeviceManualRepairRecord
 			if err := proto.Unmarshal(e.Content, &content); err != nil {

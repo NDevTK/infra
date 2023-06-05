@@ -76,9 +76,8 @@ func TestBugQueue(t *testing.T) {
 		Convey("mock getBugsFromMonorail", func() {
 			Convey("get bug queue handler", func() {
 				bqh.GetBugQueueHandler(&router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makeGetRequest(),
+					Request: makeGetRequest(c),
 				})
 
 				b, err := ioutil.ReadAll(w.Body)
@@ -89,9 +88,8 @@ func TestBugQueue(t *testing.T) {
 
 			Convey("refresh bug queue handler", func() {
 				bqh.RefreshBugQueueHandler(&router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makeGetRequest(),
+					Request: makeGetRequest(c),
 				})
 
 				b, err := ioutil.ReadAll(w.Body)
@@ -114,9 +112,8 @@ func TestBugQueue(t *testing.T) {
 
 			Convey("get uncached bugs", func() {
 				bqh.GetUncachedBugsHandler(&router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makeGetRequest(),
+					Request: makeGetRequest(c),
 					Params:  makeParams("label", "infra-troopers"),
 				})
 

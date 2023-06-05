@@ -13,7 +13,7 @@ import (
 // polymerHandler is the HTTP handler for requests to pages that are part of the
 // Polymer app.
 func polymerHandler(ctx *router.Context) {
-	templates.MustRender(ctx.Context, ctx.Writer, "pages/index.html", templates.Args{
-		"IsDevAppServer": info.IsDevAppServer(ctx.Context),
+	templates.MustRender(ctx.Request.Context(), ctx.Writer, "pages/index.html", templates.Args{
+		"IsDevAppServer": info.IsDevAppServer(ctx.Request.Context()),
 	})
 }

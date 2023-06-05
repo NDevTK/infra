@@ -53,7 +53,7 @@ func InstallHandlers(r *router.Router, mwBase router.MiddlewareChain) {
 
 func runRepairQueueHandler(c *router.Context) (err error) {
 	defer func() {
-		runRepairTick.Add(c.Context, 1, err == nil)
+		runRepairTick.Add(c.Request.Context(), 1, err == nil)
 	}()
 	// Create a UFS client at the beginning of repair and log the result, but do NOT stop execution
 	// because of problems. We are not yet ready to make UFS a hard dependency of CSA, so at this point
@@ -61,51 +61,51 @@ func runRepairQueueHandler(c *router.Context) (err error) {
 	//
 	// We are going to use the pools associated with a device as an input to decide which implementation
 	// of repair to use.
-	cfg := config.Get(c.Context)
-	hc, err := ufs.NewHTTPClient(c.Context)
+	cfg := config.Get(c.Request.Context())
+	hc, err := ufs.NewHTTPClient(c.Request.Context())
 	if err != nil {
-		logging.Infof(c.Context, "run repair queue handler: %s", err)
+		logging.Infof(c.Request.Context(), "run repair queue handler: %s", err)
 	}
-	ufsClient, err := ufs.NewClient(c.Context, hc, cfg.GetUFS().GetHost())
+	ufsClient, err := ufs.NewClient(c.Request.Context(), hc, cfg.GetUFS().GetHost())
 	if err == nil {
-		logging.Infof(c.Context, "run repair queue handler: UFS client created successfully")
+		logging.Infof(c.Request.Context(), "run repair queue handler: UFS client created successfully")
 	} else {
-		logging.Infof(c.Context, "run repair queue handler: %s", err)
+		logging.Infof(c.Request.Context(), "run repair queue handler: %s", err)
 	}
 	botID := c.Request.FormValue("botID")
 	expectedState := c.Request.FormValue("expectedState")
 	// RandFloat is guaranteed to be in the half-open interval [0,1).
 	randFloat := rand.Float64()
-	pools, err := ufs.GetPools(c.Context, ufsClient, botID)
+	pools, err := ufs.GetPools(c.Request.Context(), ufsClient, botID)
 	// Failure to look up the pools associated with a device is non-fatal.
 	// We will take a safe action inside CreateRepairTask. Log and move on.
 	if err != nil {
-		logging.Infof(c.Context, "run repair queue handler: %s", err)
+		logging.Infof(c.Request.Context(), "run repair queue handler: %s", err)
 	}
-	taskURL, err := frontend.CreateRepairTask(c.Context, botID, expectedState, pools, randFloat)
+	taskURL, err := frontend.CreateRepairTask(c.Request.Context(), botID, expectedState, pools, randFloat)
 	if err != nil {
-		logging.Infof(c.Context, "fail to run repair job in queue for %s: %s", botID, err.Error())
+		logging.Infof(c.Request.Context(), "fail to run repair job in queue for %s: %s", botID, err.Error())
 		return err
 	}
 
-	logging.Infof(c.Context, "Successfully run repair job for %s: %s", botID, taskURL)
+	logging.Infof(c.Request.Context(), "Successfully run repair job for %s: %s", botID, taskURL)
 	return nil
 }
 
 func runAuditQueueHandler(c *router.Context) (err error) {
 	defer func() {
-		runAuditTick.Add(c.Context, 1, err == nil)
+		runAuditTick.Add(c.Request.Context(), 1, err == nil)
 	}()
 
 	botID := c.Request.FormValue("botID")
 	actions := c.Request.FormValue("actions")
 	taskname := c.Request.FormValue("taskname")
 	randFloat := rand.Float64()
-	taskURL, err := frontend.CreateAuditTask(c.Context, botID, taskname, actions, randFloat)
+	taskURL, err := frontend.CreateAuditTask(c.Request.Context(), botID, taskname, actions, randFloat)
 	if err != nil {
 		return err
 	}
-	logging.Infof(c.Context, "Successfully run audit job for %s: %s", botID, taskURL)
+	logging.Infof(c.Request.Context(), "Successfully run audit job for %s: %s", botID, taskURL)
 	return nil
 }
 

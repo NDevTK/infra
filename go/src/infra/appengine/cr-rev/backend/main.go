@@ -36,8 +36,8 @@ func main() {
 		setupImport(srv.Context, cfg)
 
 		srv.Routes.GET("/internal/cron/import-config", cron, func(c *router.Context) {
-			if err := config.Set(c.Context); err != nil {
-				errors.Log(c.Context, err)
+			if err := config.Set(c.Request.Context()); err != nil {
+				errors.Log(c.Request.Context(), err)
 			}
 			c.Writer.WriteHeader(http.StatusOK)
 		})

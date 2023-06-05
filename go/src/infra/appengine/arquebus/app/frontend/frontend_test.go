@@ -89,8 +89,8 @@ func TestFrontend(t *testing.T) {
 	Convey("frontend", t, func() {
 		w := httptest.NewRecorder()
 		c := &router.Context{
-			Context: testContext(),
 			Writer:  w,
+			Request: (&http.Request{}).WithContext(testContext()),
 		}
 
 		Convey("index", func() {
@@ -99,7 +99,7 @@ func TestFrontend(t *testing.T) {
 		})
 
 		Convey("assigner", func() {
-			createAssigner(c.Context, assignerID)
+			createAssigner(c.Request.Context(), assignerID)
 
 			Convey("found", func() {
 				c.Params = makeParams("AssignerID", assignerID)
@@ -120,8 +120,8 @@ func TestFrontend(t *testing.T) {
 		})
 
 		Convey("task", func() {
-			assigner := createAssigner(c.Context, assignerID)
-			task := createScheduledTask(c.Context, assigner)
+			assigner := createAssigner(c.Request.Context(), assignerID)
+			task := createScheduledTask(c.Request.Context(), assigner)
 
 			Convey("found", func() {
 				c.Params = makeParams(

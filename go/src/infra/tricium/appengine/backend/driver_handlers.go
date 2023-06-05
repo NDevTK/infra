@@ -31,7 +31,7 @@ import (
 var driver = driverServer{}
 
 func triggerHandler(ctx *router.Context) {
-	c, r, w := ctx.Context, ctx.Request, ctx.Writer
+	c, r, w := ctx.Request.Context(), ctx.Request, ctx.Writer
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -63,7 +63,7 @@ func triggerHandler(ctx *router.Context) {
 }
 
 func collectHandler(ctx *router.Context) {
-	c, r, w := ctx.Context, ctx.Request, ctx.Writer
+	c, r, w := ctx.Request.Context(), ctx.Request, ctx.Writer
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -95,7 +95,7 @@ func collectHandler(ctx *router.Context) {
 }
 
 func pubsubPushHandler(ctx *router.Context) {
-	c, r, w := ctx.Context, ctx.Request, ctx.Writer
+	c, r, w := ctx.Request.Context(), ctx.Request, ctx.Writer
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		logging.WithError(err).Errorf(c, "Failed to read PubSub message body.")
@@ -120,7 +120,7 @@ func pubsubPushHandler(ctx *router.Context) {
 }
 
 func pubsubPullHandler(ctx *router.Context) {
-	c, w := ctx.Context, ctx.Writer
+	c, w := ctx.Request.Context(), ctx.Writer
 	// Only run pull on the dev server.
 	if !appengine.IsDevAppServer() {
 		logging.Errorf(c, "PubSub pull only supported on devserver.")

@@ -20,7 +20,7 @@ import (
 var launcher = &launcherServer{}
 
 func launchHandler(ctx *router.Context) {
-	c, r, w := ctx.Context, ctx.Request, ctx.Writer
+	c, r, w := ctx.Request.Context(), ctx.Request, ctx.Writer
 	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {

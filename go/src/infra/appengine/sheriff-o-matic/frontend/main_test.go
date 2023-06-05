@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -41,9 +42,8 @@ func TestMain(t *testing.T) {
 		Convey("index", func() {
 			Convey("pathless", func() {
 				indexPage(&router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makeGetRequest(),
+					Request: makeGetRequest(c),
 					Params:  makeParams("path", ""),
 				})
 
@@ -52,9 +52,8 @@ func TestMain(t *testing.T) {
 
 			Convey("anonymous", func() {
 				indexPage(&router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makeGetRequest(),
+					Request: makeGetRequest(c),
 					Params:  makeParams("path", "chromium"),
 				})
 
@@ -73,9 +72,8 @@ func TestMain(t *testing.T) {
 
 			Convey("No access", func() {
 				indexPage(&router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makeGetRequest(),
+					Request: makeGetRequest(c),
 					Params:  makeParams("path", "chromium"),
 				})
 
@@ -90,9 +88,8 @@ func TestMain(t *testing.T) {
 
 			Convey("good path", func() {
 				indexPage(&router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makeGetRequest(),
+					Request: makeGetRequest(c),
 					Params:  makeParams("path", "chromium"),
 				})
 				r, err := ioutil.ReadAll(w.Body)
@@ -109,8 +106,8 @@ func TestMain(t *testing.T) {
 	})
 }
 
-func makeGetRequest() *http.Request {
-	req, _ := http.NewRequest("GET", "/doesntmatter", nil)
+func makeGetRequest(ctx context.Context) *http.Request {
+	req, _ := http.NewRequestWithContext(ctx, "GET", "/doesntmatter", nil)
 	return req
 }
 

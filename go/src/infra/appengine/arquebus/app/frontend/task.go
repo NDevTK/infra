@@ -36,13 +36,13 @@ func taskPage(c *router.Context) {
 		return
 	}
 
-	assigner, task, err := backend.GetTask(c.Context, assignerID, taskID)
+	assigner, task, err := backend.GetTask(c.Request.Context(), assignerID, taskID)
 	if err == datastore.ErrNoSuchEntity {
 		e := http.StatusNotFound
 		util.ErrStatus(c, e, "Task(%s,%d) was not found", assignerID, taskID)
 		return
 	} else if err != nil {
-		logging.Errorf(c.Context, "%s", err)
+		logging.Errorf(c.Request.Context(), "%s", err)
 		e := http.StatusInternalServerError
 		util.ErrStatus(c, e, "Failed to load Task(%s,%d)", assignerID, taskID)
 		return
@@ -50,7 +50,7 @@ func taskPage(c *router.Context) {
 
 	// render
 	templates.MustRender(
-		c.Context,
+		c.Request.Context(),
 		c.Writer,
 		"pages/task.html",
 		map[string]interface{}{

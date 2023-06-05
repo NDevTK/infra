@@ -65,13 +65,13 @@ func Get(c context.Context) *Config {
 // Middleware loads the service config and installs it into the context.
 func Middleware(c *router.Context, next router.Handler) {
 	var meta config.Meta
-	cfg, err := cachedCfg.Get(c.Context, &meta)
+	cfg, err := cachedCfg.Get(c.Request.Context(), &meta)
 	if err != nil {
-		logging.WithError(err).Errorf(c.Context, "could not load application config")
+		logging.WithError(err).Errorf(c.Request.Context(), "could not load application config")
 		http.Error(c.Writer, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-	c.Context = SetConfig(c.Context, cfg.(*Config), meta.Revision)
+	c.Request = c.Request.WithContext(SetConfig(c.Request.Context(), cfg.(*Config), meta.Revision))
 	next(c)
 }
 

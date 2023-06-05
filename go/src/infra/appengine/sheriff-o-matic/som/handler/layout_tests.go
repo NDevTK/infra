@@ -32,7 +32,7 @@ func (a byTestName) Less(i, j int) bool { return a[i].TestName < a[j].TestName }
 // GetLayoutTestsHandler returns a JSON summary of webkit layout tests and
 // their expected results.
 func GetLayoutTestsHandler(ctx *router.Context) {
-	c, w := ctx.Context, ctx.Writer
+	c, w := ctx.Request.Context(), ctx.Writer
 	c, cancelFunc := context.WithTimeout(c, 60*time.Second)
 	defer cancelFunc()
 
@@ -73,7 +73,7 @@ func GetLayoutTestsHandler(ctx *router.Context) {
 // create a Gerrit changelist to change test expectations based on the fields
 // POSTed to it.
 func PostLayoutTestExpectationChangeHandler(ctx *router.Context) {
-	c, w, r := ctx.Context, ctx.Writer, ctx.Request
+	c, w, r := ctx.Request.Context(), ctx.Writer, ctx.Request
 
 	c, cancelFunc := context.WithTimeout(c, 60*time.Second)
 	defer cancelFunc()

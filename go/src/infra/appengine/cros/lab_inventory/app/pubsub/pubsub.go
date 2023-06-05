@@ -18,9 +18,9 @@ const (
 // InstallHandlers installs the handlers implemented by the pubsub package.
 func InstallHandlers(r *router.Router, mwBase router.MiddlewareChain) {
 	r.POST(hartPushEndpoint, mwBase, func(c *router.Context) {
-		logging.Infof(c.Context, "PubSub push by %s", auth.CurrentIdentity(c.Context))
-		if validate(c.Context, hartPushEndpoint) {
-			hart.PushHandler(c.Context, c.Request)
+		logging.Infof(c.Request.Context(), "PubSub push by %s", auth.CurrentIdentity(c.Request.Context()))
+		if validate(c.Request.Context(), hartPushEndpoint) {
+			hart.PushHandler(c.Request.Context(), c.Request)
 		}
 	})
 }

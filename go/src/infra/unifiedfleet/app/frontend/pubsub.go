@@ -30,7 +30,7 @@ var macAddress = regexp.MustCompile(`^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$`)
 // It does return a http error if the datastore update fails.
 func HaRTPushHandler(routerContext *router.Context) {
 	// Add namespace as the response from HaRT doesn't have namespace.
-	ctx, err := util.SetupDatastoreNamespace(routerContext.Context, util.OSNamespace)
+	ctx, err := util.SetupDatastoreNamespace(routerContext.Request.Context(), util.OSNamespace)
 	if err != nil {
 		logging.Errorf(ctx, "HaRTPushHandler - Failed to add namespace to context")
 		return

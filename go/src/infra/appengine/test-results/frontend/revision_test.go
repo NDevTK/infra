@@ -56,7 +56,7 @@ func TestRevisionHandler(t *testing.T) {
 
 	ctx := memory.Use(context.Background())
 	withTestingContext := func(c *router.Context, next router.Handler) {
-		c.Context = ctx
+		c.Request = c.Request.WithContext(ctx)
 		next(c)
 	}
 

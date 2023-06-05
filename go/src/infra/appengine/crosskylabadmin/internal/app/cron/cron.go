@@ -64,7 +64,7 @@ func InstallHandlers(r *router.Router, mwBase router.MiddlewareChain) {
 }
 
 func importServiceConfig(c *router.Context) error {
-	return config.Import(c.Context)
+	return config.Import(c.Request.Context())
 }
 
 // pushBotsForAdminTasksHandler high-order for pushBotsForAdminTasksCronHandler.
@@ -77,52 +77,52 @@ func pushBotsForAdminTasksHandler(dutStates []fleet.DutState) (err func(c *route
 // pushBotsForAdminTasksCronHandler pushes bots that require admin tasks to bot queue.
 func pushBotsForAdminTasksCronHandler(c *router.Context, dutStates []fleet.DutState) (err error) {
 	defer func() {
-		pushBotsForAdminTasksCronHandlerTick.Add(c.Context, 1, err == nil)
+		pushBotsForAdminTasksCronHandlerTick.Add(c.Request.Context(), 1, err == nil)
 	}()
 
-	cfg := config.Get(c.Context)
+	cfg := config.Get(c.Request.Context())
 	if cfg.RpcControl != nil && cfg.RpcControl.GetDisablePushBotsForAdminTasks() {
-		logging.Infof(c.Context, "PushBotsForAdminTasks is disabled via config.")
+		logging.Infof(c.Request.Context(), "PushBotsForAdminTasks is disabled via config.")
 		return nil
 	}
 	dutStateNames := make([]string, len(dutStates))
 	for ind, dutState := range dutStates {
 		dutStateNames[ind] = dutState.String()
 	}
-	logging.Infof(c.Context, fmt.Sprintf("PushBotsForAdminTasks for states: %v", strings.Join(dutStateNames, ", ")))
+	logging.Infof(c.Request.Context(), fmt.Sprintf("PushBotsForAdminTasks for states: %v", strings.Join(dutStateNames, ", ")))
 
 	tsi := frontend.TrackerServerImpl{}
 
 	for _, dutState := range dutStates {
-		logging.Infof(c.Context, fmt.Sprintf("Started push AdminTasks for state %#v", dutState.String()))
-		if _, err := tsi.PushBotsForAdminTasks(c.Context, &fleet.PushBotsForAdminTasksRequest{
+		logging.Infof(c.Request.Context(), fmt.Sprintf("Started push AdminTasks for state %#v", dutState.String()))
+		if _, err := tsi.PushBotsForAdminTasks(c.Request.Context(), &fleet.PushBotsForAdminTasksRequest{
 			TargetDutState: dutState,
 		}); err != nil {
 			return err
 		}
-		logging.Infof(c.Context, fmt.Sprintf("Finished push AdminTasks for state %#v", dutState.String()))
+		logging.Infof(c.Request.Context(), fmt.Sprintf("Finished push AdminTasks for state %#v", dutState.String()))
 	}
-	logging.Infof(c.Context, "Successfully finished")
+	logging.Infof(c.Request.Context(), "Successfully finished")
 	return nil
 }
 
 // pushLabstationsForRepairCronHandler pushes bots that require admin tasks to bot queue.
 func pushRepairJobsForLabstationsCronHandler(c *router.Context) (err error) {
 	defer func() {
-		pushRepairJobsForLabstationsCronHandlerTick.Add(c.Context, 1, err == nil)
+		pushRepairJobsForLabstationsCronHandlerTick.Add(c.Request.Context(), 1, err == nil)
 	}()
 
-	cfg := config.Get(c.Context)
+	cfg := config.Get(c.Request.Context())
 	if cfg.RpcControl != nil && cfg.RpcControl.GetDisablePushLabstationsForRepair() {
-		logging.Infof(c.Context, "PushLabstationsForRepair is disabled via config.")
+		logging.Infof(c.Request.Context(), "PushLabstationsForRepair is disabled via config.")
 		return nil
 	}
 
 	tsi := frontend.TrackerServerImpl{}
-	if _, err := tsi.PushRepairJobsForLabstations(c.Context, &fleet.PushRepairJobsForLabstationsRequest{}); err != nil {
+	if _, err := tsi.PushRepairJobsForLabstations(c.Request.Context(), &fleet.PushRepairJobsForLabstationsRequest{}); err != nil {
 		return err
 	}
-	logging.Infof(c.Context, "Successfully finished")
+	logging.Infof(c.Request.Context(), "Successfully finished")
 	return nil
 }
 
@@ -136,35 +136,35 @@ func pushAdminAuditActionHandler(auditTask fleet.AuditTask) (err func(c *router.
 // pushAdminAuditJobsCronHandler pushes bots that will run audit tasks to bot queue.
 func pushAdminAuditJobsCronHandler(c *router.Context, auditTask fleet.AuditTask) (err error) {
 	defer func() {
-		pushAdminAuditTasksCronHandlerTick.Add(c.Context, 1, err == nil)
+		pushAdminAuditTasksCronHandlerTick.Add(c.Request.Context(), 1, err == nil)
 	}()
 
-	cfg := config.Get(c.Context)
+	cfg := config.Get(c.Request.Context())
 	if cfg.RpcControl != nil && cfg.RpcControl.GetDisablePushDutsForAdminAudit() {
-		logging.Infof(c.Context, "PushDutsForAdminAudit is disabled via config.")
+		logging.Infof(c.Request.Context(), "PushDutsForAdminAudit is disabled via config.")
 		return nil
 	}
 
 	tsi := frontend.TrackerServerImpl{}
-	if _, err := tsi.PushBotsForAdminAuditTasks(c.Context, &fleet.PushBotsForAdminAuditTasksRequest{
+	if _, err := tsi.PushBotsForAdminAuditTasks(c.Request.Context(), &fleet.PushBotsForAdminAuditTasksRequest{
 		Task: auditTask,
 	}); err != nil {
 		return err
 	}
-	logging.Infof(c.Context, "Successfully finished")
+	logging.Infof(c.Request.Context(), "Successfully finished")
 	return nil
 }
 
 func reportBotsCronHandler(c *router.Context) (err error) {
 	defer func() {
-		reportBotsCronHandlerTick.Add(c.Context, 1, err == nil)
+		reportBotsCronHandlerTick.Add(c.Request.Context(), 1, err == nil)
 	}()
 
 	tsi := frontend.TrackerServerImpl{}
-	if _, err := tsi.ReportBots(c.Context, &fleet.ReportBotsRequest{}); err != nil {
+	if _, err := tsi.ReportBots(c.Request.Context(), &fleet.ReportBotsRequest{}); err != nil {
 		return err
 	}
-	logging.Infof(c.Context, "Successfully report bot metrics")
+	logging.Infof(c.Request.Context(), "Successfully report bot metrics")
 	return nil
 }
 
@@ -177,22 +177,22 @@ func logAndSetHTTPErr(f func(c *router.Context) error) func(*router.Context) {
 }
 
 func dumpStableVersionToDatastoreHandler(c *router.Context) error {
-	logging.Infof(c.Context, "begin dumpStableVersionToDatastoreHandler")
-	cfg := config.Get(c.Context)
+	logging.Infof(c.Request.Context(), "begin dumpStableVersionToDatastoreHandler")
+	cfg := config.Get(c.Request.Context())
 	if cfg.RpcControl != nil && cfg.RpcControl.GetDisableDumpStableVersionToDatastore() {
 		if cfg.RpcControl == nil {
-			logging.Infof(c.Context, "end dumpStableVersionToDatastoreHandler immediately because RpcControl is nil")
+			logging.Infof(c.Request.Context(), "end dumpStableVersionToDatastoreHandler immediately because RpcControl is nil")
 		} else {
-			logging.Infof(c.Context, "end dumpStableVersionToDatastoreHandler immediately because task is disabled")
+			logging.Infof(c.Request.Context(), "end dumpStableVersionToDatastoreHandler immediately because task is disabled")
 		}
 		return nil
 	}
 	inv := &frontend.ServerImpl{}
-	_, err := inv.DumpStableVersionToDatastore(c.Context, &fleet.DumpStableVersionToDatastoreRequest{})
+	_, err := inv.DumpStableVersionToDatastore(c.Request.Context(), &fleet.DumpStableVersionToDatastoreRequest{})
 	if err != nil {
-		logging.Infof(c.Context, "end dumpStableVersionToDatastoreHandler with err (%s)", err)
+		logging.Infof(c.Request.Context(), "end dumpStableVersionToDatastoreHandler with err (%s)", err)
 	} else {
-		logging.Infof(c.Context, "end dumpStableVersionToDatastoreHandler successfully")
+		logging.Infof(c.Request.Context(), "end dumpStableVersionToDatastoreHandler successfully")
 	}
 	return err
 }

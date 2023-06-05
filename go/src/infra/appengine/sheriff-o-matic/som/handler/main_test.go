@@ -148,9 +148,8 @@ func TestMain(t *testing.T) {
 				Convey("GET", func() {
 					Convey("no alerts yet", func() {
 						GetAlertsHandler(&router.Context{
-							Context: c,
 							Writer:  w,
-							Request: makeGetRequest(),
+							Request: makeGetRequest(c),
 							Params:  makeParams("tree", "chromeos"),
 						})
 
@@ -166,9 +165,8 @@ func TestMain(t *testing.T) {
 
 					Convey("basic alerts", func() {
 						GetAlertsHandler(&router.Context{
-							Context: c,
 							Writer:  w,
-							Request: makeGetRequest(),
+							Request: makeGetRequest(c),
 							Params:  makeParams("tree", "chromeos"),
 						})
 
@@ -190,9 +188,8 @@ func TestMain(t *testing.T) {
 
 					Convey("resolved alerts", func() {
 						GetAlertsHandler(&router.Context{
-							Context: c,
 							Writer:  w,
-							Request: makeGetRequest(),
+							Request: makeGetRequest(c),
 							Params:  makeParams("tree", "chromeos"),
 						})
 
@@ -259,9 +256,8 @@ func TestMain(t *testing.T) {
 				Convey("GET", func() {
 					Convey("no alerts yet", func() {
 						GetUnresolvedAlertsHandler(&router.Context{
-							Context: c,
 							Writer:  w,
-							Request: makeGetRequest(),
+							Request: makeGetRequest(c),
 							Params:  makeParams("tree", "chromeos"),
 						})
 
@@ -279,9 +275,8 @@ func TestMain(t *testing.T) {
 
 					Convey("basic alerts", func() {
 						GetUnresolvedAlertsHandler(&router.Context{
-							Context: c,
 							Writer:  w,
-							Request: makeGetRequest(),
+							Request: makeGetRequest(c),
 							Params:  makeParams("tree", "chromeos"),
 						})
 
@@ -345,9 +340,8 @@ func TestMain(t *testing.T) {
 				Convey("GET", func() {
 					Convey("no alerts yet", func() {
 						GetResolvedAlertsHandler(&router.Context{
-							Context: c,
 							Writer:  w,
-							Request: makeGetRequest(),
+							Request: makeGetRequest(c),
 							Params:  makeParams("tree", "chromeos"),
 						})
 
@@ -365,9 +359,8 @@ func TestMain(t *testing.T) {
 
 					Convey("resolved alerts", func() {
 						GetResolvedAlertsHandler(&router.Context{
-							Context: c,
 							Writer:  w,
-							Request: makeGetRequest(),
+							Request: makeGetRequest(c),
 							Params:  makeParams("tree", "chromeos"),
 						})
 
@@ -452,9 +445,8 @@ func TestMain(t *testing.T) {
 
 				Convey("handler", func() {
 					ctx := &router.Context{
-						Context: c,
 						Writer:  w,
-						Request: makePostRequest(""),
+						Request: makePostRequest(c, ""),
 						Params:  makeParams("annKey", "foobar", "action", "add"),
 					}
 
@@ -467,9 +459,8 @@ func TestMain(t *testing.T) {
 				bodyBytes, err := json.Marshal(body)
 				So(err, ShouldBeNil)
 				ctx := &router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makePostRequest(string(bodyBytes)),
+					Request: makePostRequest(c, string(bodyBytes)),
 					Params:  makeParams("xsrf_token", tok),
 				}
 
@@ -479,9 +470,8 @@ func TestMain(t *testing.T) {
 
 			Convey("treelogo", func() {
 				ctx := &router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makeGetRequest(),
+					Request: makeGetRequest(c),
 					Params:  makeParams("tree", "chromium"),
 				}
 
@@ -491,9 +481,8 @@ func TestMain(t *testing.T) {
 
 			Convey("treelogo fail", func() {
 				ctx := &router.Context{
-					Context: c,
 					Writer:  w,
-					Request: makeGetRequest(),
+					Request: makeGetRequest(c),
 					Params:  makeParams("tree", "chromium"),
 				}
 
@@ -512,7 +501,7 @@ func (n *noopSigner) SignBytes(c context.Context, b []byte) (string, []byte, err
 	return string(b), b, n.err
 }
 
-func makeGetRequest(queryParams ...string) *http.Request {
+func makeGetRequest(ctx context.Context, queryParams ...string) *http.Request {
 	if len(queryParams)%2 != 0 {
 		return nil
 	}
@@ -522,12 +511,12 @@ func makeGetRequest(queryParams ...string) *http.Request {
 	}
 	paramsStr := strings.Join(params, "&")
 	url := fmt.Sprintf("/doesntmatter?%s", paramsStr)
-	req, _ := http.NewRequest("GET", url, nil)
+	req, _ := http.NewRequestWithContext(ctx, "GET", url, nil)
 	return req
 }
 
-func makePostRequest(body string) *http.Request {
-	req, _ := http.NewRequest("POST", "/doesntmatter", strings.NewReader(body))
+func makePostRequest(ctx context.Context, body string) *http.Request {
+	req, _ := http.NewRequestWithContext(ctx, "POST", "/doesntmatter", strings.NewReader(body))
 	return req
 }
 

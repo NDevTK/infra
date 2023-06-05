@@ -32,7 +32,7 @@ import (
 func http500res(c *router.Context, e error, msg string, args ...interface{}) {
 	args = append(args, e)
 	body := fmt.Sprintf(msg, args...)
-	logging.Errorf(c.Context, "HTTP %d: %s", 500, body)
+	logging.Errorf(c.Request.Context(), "HTTP %d: %s", 500, body)
 	http.Error(c.Writer, body, 500)
 }
 
@@ -44,7 +44,7 @@ func http200res(c *router.Context) {
 }
 
 func updateConfig(c *router.Context) {
-	ctx := c.Context
+	ctx := c.Request.Context()
 	if err := config.Update(ctx); err != nil {
 		http500res(c, err, "failed to update config")
 		return
@@ -53,7 +53,7 @@ func updateConfig(c *router.Context) {
 }
 
 func updateAssigners(c *router.Context) {
-	ctx := c.Context
+	ctx := c.Request.Context()
 	cfgs := config.Get(ctx).Assigners
 	rev := config.GetConfigRevision(ctx)
 
@@ -66,7 +66,7 @@ func updateAssigners(c *router.Context) {
 }
 
 func scheduleAssigners(c *router.Context) {
-	ctx := c.Context
+	ctx := c.Request.Context()
 	aes, err := backend.GetAllAssigners(ctx)
 	if err != nil {
 		http500res(c, err, "failed to retrieve assigners.")
@@ -89,7 +89,7 @@ func scheduleAssigners(c *router.Context) {
 }
 
 func removeNoopLogs(c *router.Context) {
-	ctx := c.Context
+	ctx := c.Request.Context()
 
 	aes, err := backend.GetAllAssigners(ctx)
 	if err != nil {
@@ -113,7 +113,7 @@ func removeNoopLogs(c *router.Context) {
 func InstallHandlers(r *router.Router, dispatcher *tq.Dispatcher, mwBase router.MiddlewareChain) {
 	m := mwBase.Extend(gaemiddleware.RequireCron)
 	m = m.Extend(func(rc *router.Context, next router.Handler) {
-		rc.Context = util.SetDispatcher(rc.Context, dispatcher)
+		rc.Request = rc.Request.WithContext(util.SetDispatcher(rc.Request.Context(), dispatcher))
 		next(rc)
 	})
 	r.GET("/internal/cron/update-config", m, updateConfig)
