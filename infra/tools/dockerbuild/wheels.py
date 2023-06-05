@@ -376,6 +376,20 @@ SPECS.update({
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
+            'debugpy',
+            '1.6.7',
+            only_plat=[
+                'mac-x64-py3.8',
+                'mac-arm64-py3.8',
+                'manylinux-x64-py3.8',
+                'linux-arm64-py3.8',
+                'linux-armv6-py3.8',
+                'windows-x86-py3.8',
+                'windows-x64-py3.8',
+            ],
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
             'freetype-py',
             '2.2.0',
             # The bundled freetype build script seems to not work for building
@@ -785,6 +799,13 @@ SPECS.update({
             '3.10.1',
             packaged=(),
             only_plat=['manylinux-x64-py3.8', 'manylinux-x64-py3.11'],
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
+            'pydevd-pycharm',
+            '232.6734.4',
+            packaged=(),
+            skip_auditwheel=True,
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(

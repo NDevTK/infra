@@ -1764,6 +1764,24 @@ wheel: <
 * *windows-x64-py3.8*
 * *windows-x86-py3.8*
 
+### 1.6.7
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/debugpy/${vpython_platform}"
+  version: "version:1.6.7"
+>
+```
+
+
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
+
 ## **decorator-py3**
 
 ### 4.4.2
@@ -6245,6 +6263,33 @@ wheel: <
 
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+
+## **pydevd-pycharm**
+
+### 232.6734.4
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pydevd-pycharm/${vpython_platform}"
+  version: "version:232.6734.4"
+>
+```
+
+
+* *linux-arm64-py3.11*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.11*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.11*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
+* *windows-x64-py3.8*
+* *windows-x86-py3.11*
+* *windows-x86-py3.8*
 
 ## **pydot**
 
