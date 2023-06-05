@@ -496,4 +496,29 @@ func TestCollectState_BuildRuntimeCutoff(t *testing.T) {
 		EndTime:   timestamppb.New(endTime),
 	}
 	assert.Assert(t, !collectState.canRetry(build, "12345"))
+
+	// If the build never started, we're not past the runtime cutoff.
+	build = &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_FAILURE,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "eve-release-main",
+		},
+	}
+	assert.Assert(t, collectState.canRetry(build, "12345"))
+
+	// Malformatted build should not be retried.
+	build = &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_FAILURE,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "eve-release-main",
+		},
+		StartTime: timestamppb.New(startTime),
+	}
+	assert.Assert(t, !collectState.canRetry(build, "12345"))
 }
