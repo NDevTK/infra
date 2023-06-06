@@ -22,6 +22,30 @@
       },
       "revId": "a0292cd30d630083cd060a8c78784b19831d083f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4585f447_25f5b9c8",
+        "filename": "go/src/infra/build/siso/execute/reproxyexec/reproxyexec.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2023-06-06T08:16:49Z",
+      "side": 1,
+      "message": "run_cmd does basic checks to check if a command can be handled by remoteexec or reproxyexec in order to determine which to use, and if it fails will still allow fallback to local unless allow-localfallback is disabled.\n\nSo I think it\u0027s fine because both remoteexec and reproxyexec can perform further validation to ensure commands are correctly filled?",
+      "parentUuid": "5fca1c86_d7ae1fc5",
+      "range": {
+        "startLine": 74,
+        "startChar": 1,
+        "endLine": 83,
+        "endChar": 0
+      },
+      "revId": "a0292cd30d630083cd060a8c78784b19831d083f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
