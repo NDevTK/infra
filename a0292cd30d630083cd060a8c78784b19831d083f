@@ -46,6 +46,30 @@
       },
       "revId": "a0292cd30d630083cd060a8c78784b19831d083f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "21ba79ac_919f7d96",
+        "filename": "go/src/infra/build/siso/execute/reproxyexec/reproxyexec.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-06-06T08:35:31Z",
+      "side": 1,
+      "message": "If it relies on local fallback, I don\u0027t see a value of doing basic checks on `runCmd()`, though. \n\nMaybe, you want to check if the config struct is zero value (\u003d REProxyConfig{}) or not in runCmd()?",
+      "parentUuid": "4585f447_25f5b9c8",
+      "range": {
+        "startLine": 74,
+        "startChar": 1,
+        "endLine": 83,
+        "endChar": 0
+      },
+      "revId": "a0292cd30d630083cd060a8c78784b19831d083f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
