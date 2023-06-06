@@ -139,16 +139,12 @@ func innerMain() error {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
-	// Set up top level context and cancellation.
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	ctx, cancel = notifySIGTERM(ctx)
-	defer cancel()
-	ctx = notifyDraining(ctx, filepath.Join(workingDirPath, drainingFile))
-	if err := os.MkdirAll(workingDirPath, 0777); err != nil {
+	ctx, err, cf := setupContext()
+	defer cf()
+	if err != nil {
 		return err
 	}
-
+	// Add drone-agent-version metadata.
 	version := readVersionFile(*versionFilePath)
 	log.Printf("drone-agent-version from file: %v", version)
 	ctx = metadata.AppendToOutgoingContext(ctx, "drone-agent-version", version)
@@ -210,6 +206,24 @@ func innerMain() error {
 	}
 	a.Run(ctx)
 	return nil
+}
+
+// setupContext sets up global context for main.
+// The caller must defer/call the cleanup even if an error is returned.
+func setupContext() (_ context.Context, _ error, cleanup func()) {
+	var ds deferStack
+
+	// Set up top level context and cancellation.
+	ctx, cancel := context.WithCancel(context.Background())
+	ds.add(cancel)
+	ctx, cancel = notifySIGTERM(ctx)
+	ds.add(cancel)
+	ctx = notifyDraining(ctx, filepath.Join(workingDirPath, drainingFile))
+	if err := os.MkdirAll(workingDirPath, 0777); err != nil {
+		return ctx, err, ds.run
+	}
+
+	return ctx, nil, ds.run
 }
 
 // readVersionFile reads drone agent version from a given version file.
@@ -338,4 +352,22 @@ func newThrottleDevice(major, minor int64, rate uint64) *specs.LinuxThrottleDevi
 	dev.Major = major
 	dev.Minor = minor
 	return &dev
+}
+
+// A deferStack reifies a stack of defers to pass around.
+// Not concurrency safe (intended for a single goroutine).
+type deferStack struct {
+	// Stack of deferred funcs.
+	// Newer funcs are added to the end.
+	f []func()
+}
+
+func (s deferStack) add(f func()) {
+	s.f = append(s.f, f)
+}
+
+func (s deferStack) run() {
+	for i := len(s.f) - 1; i >= 0; i-- {
+		s.f[i]()
+	}
 }
