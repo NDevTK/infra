@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5bd763aa_5ca18ba7",
+        "filename": "go/src/infra/build/siso/execute/reproxyexec/reproxyexec.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1158025
+      },
+      "writtenOn": "2023-06-06T06:08:59Z",
+      "side": 1,
+      "message": "nit: otherwise\n\n@tikuta@chromium.org Didn\u0027t we want to setup a spell-check robot for this repo? I can\u0027t remember I\u0027ve ever seen it show up - do you know if it\u0027s supposed to be working already?",
+      "range": {
+        "startLine": 143,
+        "startChar": 32,
+        "endLine": 143,
+        "endChar": 42
+      },
+      "revId": "a6e37df2969cfa55b4532ac4e405049d90c0bc48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
