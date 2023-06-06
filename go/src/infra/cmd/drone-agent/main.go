@@ -139,8 +139,6 @@ func innerMain() error {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
-	// TODO(ayatane): Add environment validation.
-
 	// Set up top level context and cancellation.
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
