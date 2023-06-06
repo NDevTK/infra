@@ -49,7 +49,7 @@ func (e loggingExporter) ExportSpans(ctx context.Context, spans []sdktrace.ReadO
 
 // newResource returns a resource describing this application.
 // OpenTelemetry uses resource to represent the entity instrumented.
-func newResource(ctx context.Context, version string) *resource.Resource {
+func newResource(version string) *resource.Resource {
 	r, _ := resource.Merge(
 		resource.Default(),
 		resource.NewWithAttributes(
@@ -61,8 +61,8 @@ func newResource(ctx context.Context, version string) *resource.Resource {
 	return r
 }
 
-func NewTracerProvider(ctx context.Context, version string) *sdktrace.TracerProvider {
-	r := newResource(ctx, version)
+func NewTracerProvider(version string) *sdktrace.TracerProvider {
+	r := newResource(version)
 	return sdktrace.NewTracerProvider(
 		sdktrace.WithResource(r),
 		sdktrace.WithSampler(sdktrace.ParentBased(sdktrace.TraceIDRatioBased(0.5))),

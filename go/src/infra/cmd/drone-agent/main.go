@@ -158,7 +158,7 @@ func innerMain() error {
 	}
 	defer metrics.Shutdown(ctx)
 
-	tp := tracing.NewTracerProvider(ctx, version)
+	tp := tracing.NewTracerProvider(version)
 	otel.SetTracerProvider(tp)
 	p := propagation.NewCompositeTextMapPropagator(
 		propagation.TraceContext{}, propagation.Baggage{})
