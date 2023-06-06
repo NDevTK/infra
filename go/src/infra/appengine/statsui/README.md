@@ -8,6 +8,7 @@ Running the server:
 
 ```sh
 # Needs to be run the first time to set up BigQuery credentials
+# This may also occasionally expire and need to be refreshed.
 gcloud auth application-default login
 go run main.go
 ```
