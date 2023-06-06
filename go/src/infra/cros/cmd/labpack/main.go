@@ -115,6 +115,12 @@ func mainRunInternal(ctx context.Context, input *lab.LabpackInput, state *build.
 		lg.Debugf("main run internal: failed to marshal proto. Error: %s", err)
 		return err
 	}
+	// Update input with default values.
+	// If any identifier is provided by the client, we use it as is.
+	if input.GetSwarmingTaskId() == "" && input.GetBbid() == "" {
+		input.SwarmingTaskId = state.Build().GetInfra().GetSwarming().GetTaskId()
+		input.Bbid = state.Build().GetInfra().GetBackend().GetTask().GetId().GetId()
+	}
 	var metrics metrics.Metrics
 	if !input.GetNoMetrics() {
 		lg.Infof("Prepare create Karte client...")
@@ -128,14 +134,14 @@ func mainRunInternal(ctx context.Context, input *lab.LabpackInput, state *build.
 		}
 	}
 	lg.Infof("Starting task execution...")
-	if err := internalRun(ctx, input, state, metrics, lg, logRoot); err != nil {
+	if err := internalRun(ctx, input, metrics, lg, logRoot); err != nil {
 		res.Success = false
 		res.FailReason = err.Error()
 		resultErrors = append(resultErrors, err)
 	}
 	lg.Infof("Finished task execution.")
 	lg.Infof("Starting uploading logs...")
-	if err := uploadLogs(ctx, state, lg); err != nil {
+	if err := uploadLogs(ctx, input, lg); err != nil {
 		res.Success = false
 		if len(resultErrors) == 0 {
 			// We should not override runerror reason as it more important.
@@ -156,7 +162,7 @@ func mainRunInternal(ctx context.Context, input *lab.LabpackInput, state *build.
 }
 
 // Upload logs to google cloud.
-func uploadLogs(ctx context.Context, state *build.State, lg logger.Logger) (rErr error) {
+func uploadLogs(ctx context.Context, input *lab.LabpackInput, lg logger.Logger) (rErr error) {
 	step, ctx := build.StartStep(ctx, "Upload logs")
 	lg.Infof("Beginning to upload logs")
 	defer func() {
@@ -205,8 +211,7 @@ func uploadLogs(ctx context.Context, state *build.State, lg logger.Logger) (rErr
 
 	lg.Infof("Persist the swarming logs")
 	// Actually persist the logs.
-	swarmingTaskID := state.Build().GetInfra().GetSwarming().GetTaskId()
-	gsURL, err := parallelUpload(timeoutCtx, lg, client, swarmingTaskID)
+	gsURL, err := parallelUpload(timeoutCtx, lg, client, input.GetSwarmingTaskId())
 	if err != nil {
 		return errors.Annotate(err, "upload logs").Err()
 	}
@@ -263,7 +268,7 @@ func parallelUpload(ctx context.Context, lg logger.Logger, client lucigs.Client,
 }
 
 // internalRun main entry point to execution received request.
-func internalRun(ctx context.Context, in *lab.LabpackInput, state *build.State, metrics metrics.Metrics, lg logger.Logger, logRoot string) (err error) {
+func internalRun(ctx context.Context, in *lab.LabpackInput, metrics metrics.Metrics, lg logger.Logger, logRoot string) (err error) {
 	defer func() {
 		// Catching the panic here as luciexe just set a step as fail and but not exit execution.
 		lg.Debugf("Checking if there is a panic!")
@@ -296,8 +301,6 @@ func internalRun(ctx context.Context, in *lab.LabpackInput, state *build.State, 
 	if !ok {
 		return errors.Reason("task name %q is invalid", in.TaskName).Err()
 	}
-	infraPb := state.Build().GetInfra()
-
 	runArgs := &recovery.RunArgs{
 		UnitName:              in.GetUnitName(),
 		TaskName:              task,
@@ -307,8 +310,8 @@ func internalRun(ctx context.Context, in *lab.LabpackInput, state *build.State, 
 		Metrics:               metrics,
 		EnableRecovery:        in.GetEnableRecovery(),
 		EnableUpdateInventory: in.GetUpdateInventory(),
-		SwarmingTaskID:        infraPb.GetSwarming().GetTaskId(),
-		BuildbucketID:         infraPb.GetBackend().GetTask().GetId().GetId(),
+		SwarmingTaskID:        in.SwarmingTaskId,
+		BuildbucketID:         in.Bbid,
 		LogRoot:               logRoot,
 	}
 	if uErr := runArgs.UseConfigBase64(in.GetConfiguration()); uErr != nil {
