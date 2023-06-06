@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9c8aeff3_0ac97650",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2023-06-06T00:25:43Z",
+      "side": 1,
+      "message": "done",
+      "parentUuid": "860b8e19_ca9ba819",
+      "revId": "112200ae221fa5a1a3a3743316776bf99f99e331",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d35c030f_89b4bb77",
@@ -31,6 +49,24 @@
       "writtenOn": "2023-06-06T00:19:37Z",
       "side": 1,
       "message": "this means the test is busted 😋",
+      "revId": "112200ae221fa5a1a3a3743316776bf99f99e331",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "be86c782_2e150e78",
+        "filename": "recipes/recipes/gae_tarball_uploader.expected/ci-infra.json",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1237795
+      },
+      "writtenOn": "2023-06-06T00:25:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d35c030f_89b4bb77",
       "revId": "112200ae221fa5a1a3a3743316776bf99f99e331",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
