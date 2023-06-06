@@ -216,6 +216,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "93af4f50_2148b74e",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 669,
+      "author": {
+        "id": 1554177
+      },
+      "writtenOn": "2023-06-06T03:13:03Z",
+      "side": 1,
+      "message": "\u003e I didn\u0027t look at the code detail just yet but can you confirm with the above?\n\nIt\u0027s mostly right except a few details (assuming we don\u0027t skip any expired histograms):\n1. The returned list of histograms after the expansion doesn\u0027t include those that are already obsolete. Because it doesn\u0027t make sense to ask people to add another obsoletion message in that case.\n2. If the histogram is removed and present in |obsoleteHistograms|, it will be removed from |obsoleteHistograms|. I explained why we do it in another thread.\n\n\n\u003e If a patterned histogram is already expired or already marked as obsolete and a user just want to clean them up in the cl, what do you want them to do? Do you require them to put an obsolete message? Do you want to show the warning?\n\nI think I don\u0027t want to ask them to add an obsoletion message if the histogram is already expired, because the obvious reason would be \"the histogram expired\". So I think I want expired histograms to have the same treatment as obsolete histograms, we just ignore them when we are analyzing for obsoletion message related issues.\n\n\u003e Or what if a histogram is expired for just 2 days (so it\u0027s technically expired but just expired), do you want to expand it?\n\nNo, I think for all expired histograms we shouldn\u0027t expand them. I agree using checkDiscontinuity() isn\u0027t appropriate in this case. I\u0027ll modify checkDiscontinuity to take a parameter and rename it.",
+      "parentUuid": "060543c9_63f5f9a2",
+      "range": {
+        "startLine": 667,
+        "startChar": 2,
+        "endLine": 669,
+        "endChar": 3
+      },
+      "revId": "9c8f14d5783d76c12281de3415879696e0cd020a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "0e36bab8_57ce5c8d",
         "filename": "go/src/infra/tricium/functions/metrics/histograms_check_test.go",
         "patchSetId": 12

@@ -72,6 +72,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1f7d88ca_21b53b80",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 25
+      },
+      "lineNbr": 588,
+      "author": {
+        "id": 1554177
+      },
+      "writtenOn": "2023-06-06T03:13:03Z",
+      "side": 1,
+      "message": "We don\u0027t want people to add an obsoletion message (via CL description) to a histogram that\u0027s not removed in the CL. |obsoletedHistograms| contains all histograms mentioned in the CL description and if there\u0027s still any histogram left in there after we analyze all the files, then those are the histograms that weren\u0027t removed in the CL but the author was trying to add an obsoletion message to.\n\nFor those histograms, we want to show a warning to tell the author they might\u0027ve had a typo, etc.",
+      "parentUuid": "094f0964_45f1d2d0",
+      "range": {
+        "startLine": 588,
+        "startChar": 3,
+        "endLine": 588,
+        "endChar": 48
+      },
+      "revId": "8cdba8382a51b0b7ac5c913a1939f627ef42c423",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ca89c767_c4fceaed",
         "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
         "patchSetId": 25
