@@ -25,7 +25,6 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
-	"go.opentelemetry.io/otel/sdk/trace"
 	"google.golang.org/grpc/metadata"
 
 	"infra/appengine/drone-queen/api"
@@ -101,6 +100,7 @@ var (
 // Deprecated flag options for backward compatibility.
 var (
 	// traceBackend denotes the backend used for OTel traces.
+	// Deprecated, delete after drone image is migrated off of it.
 	traceBackend string
 	// traceTarget is the destination for traces.
 	traceTarget = flag.String("trace-target", "", "Traces destination. "+
@@ -158,9 +158,8 @@ func innerMain() error {
 	}
 	defer metrics.Shutdown(ctx)
 
-	if cfg.TraceBackend != "" && cfg.TraceBackend != "none" {
-		// Initialize tracing.
-		exp, err := initSpanExporter(ctx, cfg.TraceBackend, cfg.TraceTarget)
+	if cfg.OTLPExporterAddr != "" {
+		exp, err := tracing.NewGRPCExporter(ctx, cfg.OTLPExporterAddr)
 		if err != nil {
 			return err
 		}
@@ -332,25 +331,4 @@ func newThrottleDevice(major, minor int64, rate uint64) *specs.LinuxThrottleDevi
 	dev.Major = major
 	dev.Minor = minor
 	return &dev
-}
-
-// initSpanExporter uses the traceBackend flag to instantiate the relevant span exporter.
-// initSpanExporter expects "target" to be specified and will error out if it is not.
-func initSpanExporter(ctx context.Context, traceBackend, target string) (trace.SpanExporter, error) {
-	log.Printf("trace export configuration: %v -> %v", traceBackend, target)
-	if target == "" {
-		return nil, errors.Reason("no trace target provided").Err()
-	}
-	var exp trace.SpanExporter
-	var err error
-	switch traceBackend {
-	case "grpc":
-		exp, err = tracing.NewGRPCExporter(ctx, target)
-		if err != nil {
-			return nil, err
-		}
-	default:
-		log.Panicf("unexpected value for trace backend: %v", traceBackend)
-	}
-	return exp, nil
 }

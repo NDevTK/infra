@@ -44,13 +44,8 @@ type config struct {
 	BotBlockIOReadBPS  int
 	BotBlockIOWriteBPS int
 
-	// TraceBackend denotes the backend used for OTel traces.
-	// Valid options are:
-	//   - grpc
-	//   - none
-	TraceBackend string
-	// TraceTarget is the destination for traces.
-	TraceTarget string
+	// OTLPExporterAddr is the destination for traces.
+	OTLPExporterAddr string
 
 	// Megadrone config settings
 
@@ -110,6 +105,5 @@ func addBackwardCompatConfig(cfg *config) {
 	cfg.BotBlockIOWriteBPS = botBlkIOWriteBPS
 
 	// Flags.
-	cfg.TraceBackend = traceBackend
-	cfg.TraceTarget = *traceTarget
+	cfg.OTLPExporterAddr = *traceTarget
 }
