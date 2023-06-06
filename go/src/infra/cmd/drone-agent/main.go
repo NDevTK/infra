@@ -158,13 +158,16 @@ func innerMain() error {
 	}
 	defer metrics.Shutdown(ctx)
 
+	tp := tracing.NewTracerProvider(ctx, version)
+	otel.SetTracerProvider(tp)
+	p := propagation.NewCompositeTextMapPropagator(
+		propagation.TraceContext{}, propagation.Baggage{})
+	otel.SetTextMapPropagator(p)
 	if cfg.OTLPExporterAddr != "" {
 		exp, err := tracing.NewGRPCExporter(ctx, cfg.OTLPExporterAddr)
 		if err != nil {
 			return err
 		}
-		tp := tracing.NewTracerProvider(ctx, version)
-		otel.SetTracerProvider(tp)
 		b := sdktrace.NewBatchSpanProcessor(exp)
 		tp.RegisterSpanProcessor(b)
 		defer func(ctx context.Context) {
@@ -173,9 +176,6 @@ func innerMain() error {
 			}
 		}(ctx)
 	}
-	p := propagation.NewCompositeTextMapPropagator(
-		propagation.TraceContext{}, propagation.Baggage{})
-	otel.SetTextMapPropagator(p)
 
 	authn := auth.NewAuthenticator(ctx, auth.SilentLogin, authOptions)
 
