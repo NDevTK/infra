@@ -22,6 +22,30 @@
       },
       "revId": "a6e37df2969cfa55b4532ac4e405049d90c0bc48",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "54cbb04b_4389b3ea",
+        "filename": "go/src/infra/build/siso/execute/reproxyexec/reproxyexec.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2023-06-06T06:40:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5bd763aa_5ca18ba7",
+      "range": {
+        "startLine": 143,
+        "startChar": 32,
+        "endLine": 143,
+        "endChar": 42
+      },
+      "revId": "a6e37df2969cfa55b4532ac4e405049d90c0bc48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
