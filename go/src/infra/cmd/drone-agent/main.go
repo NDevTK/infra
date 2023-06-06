@@ -19,12 +19,12 @@ import (
 	"time"
 
 	specs "github.com/opencontainers/runtime-spec/specs-go"
-
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"google.golang.org/grpc/metadata"
 
 	"infra/appengine/drone-queen/api"
@@ -163,8 +163,15 @@ func innerMain() error {
 		if err != nil {
 			return err
 		}
-		cleanup := tracing.InitTracer(ctx, exp, version)
-		defer cleanup(ctx)
+		tp := tracing.NewTracerProvider(ctx, version)
+		otel.SetTracerProvider(tp)
+		b := sdktrace.NewBatchSpanProcessor(exp)
+		tp.RegisterSpanProcessor(b)
+		defer func(ctx context.Context) {
+			if err := tp.Shutdown(context.Background()); err != nil {
+				log.Printf("Failed to shutdown tracer provider: %v", err)
+			}
+		}(ctx)
 	}
 	p := propagation.NewCompositeTextMapPropagator(
 		propagation.TraceContext{}, propagation.Baggage{})
