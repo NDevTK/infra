@@ -1,0 +1,182 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0bc0e5c0_66058ce6",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-06T05:28:10Z",
+      "side": 1,
+      "message": "Why could you merge these two blocks and drop the obsoletedWithoutRemovalHistograms function?",
+      "range": {
+        "startLine": 191,
+        "startChar": 0,
+        "endLine": 194,
+        "endChar": 48
+      },
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "625e6a83_93839706",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 426,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-06T05:28:10Z",
+      "side": 1,
+      "message": "Maybe hasExpiredBy is a better name?",
+      "range": {
+        "startLine": 426,
+        "startChar": 5,
+        "endLine": 426,
+        "endChar": 15
+      },
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bbbb9bc4_b426dda6",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 426,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-06T05:28:10Z",
+      "side": 1,
+      "message": "Now, the reason to have this check is not so obvious. Please add a comment here saying why we want to add a comment when the histogram has expired by 30 days.",
+      "range": {
+        "startLine": 426,
+        "startChar": 2,
+        "endLine": 426,
+        "endChar": 30
+      },
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c0909bcc_9099523a",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 656,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-06T05:28:10Z",
+      "side": 1,
+      "message": "I think this is not obvious for readers. Please add comment why you want to skip them.",
+      "range": {
+        "startLine": 654,
+        "startChar": 2,
+        "endLine": 656,
+        "endChar": 3
+      },
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f672b118_37990cee",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 666,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-06T05:28:10Z",
+      "side": 1,
+      "message": "Please add comment what this is doing.",
+      "range": {
+        "startLine": 666,
+        "startChar": 5,
+        "endLine": 666,
+        "endChar": 29
+      },
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "db0ff1b9_bf94da3e",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 671,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-06T05:28:10Z",
+      "side": 1,
+      "message": "This is also related",
+      "range": {
+        "startLine": 671,
+        "startChar": 7,
+        "endLine": 671,
+        "endChar": 15
+      },
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "11e7bd40_99370732",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 684,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-06T05:28:10Z",
+      "side": 1,
+      "message": "I\u0027m not sure calling it the \"grace period\" is really appropriate.. grace period is like it\u0027s still ok until some day but what we\u0027re doing here is just to check how many days the expiry date has passed.\n\nPast days maybe or elapsed days?",
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "999d9a15_3a0377e9",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check_test.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 615,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-06T05:28:10Z",
+      "side": 1,
+      "message": "The test name doesn\u0027t make sense to me. Are you trying to say with variants removed?",
+      "range": {
+        "startLine": 615,
+        "startChar": 9,
+        "endLine": 615,
+        "endChar": 48
+      },
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

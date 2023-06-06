@@ -95,6 +95,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef206d53_49104f43",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 25
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-06T05:28:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b58669ee_c722313e",
+      "range": {
+        "startLine": 264,
+        "startChar": 2,
+        "endLine": 265,
+        "endChar": 57
+      },
+      "revId": "8cdba8382a51b0b7ac5c913a1939f627ef42c423",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "094f0964_45f1d2d0",
@@ -132,6 +156,30 @@
       "side": 1,
       "message": "We don\u0027t want people to add an obsoletion message (via CL description) to a histogram that\u0027s not removed in the CL. |obsoletedHistograms| contains all histograms mentioned in the CL description and if there\u0027s still any histogram left in there after we analyze all the files, then those are the histograms that weren\u0027t removed in the CL but the author was trying to add an obsoletion message to.\n\nFor those histograms, we want to show a warning to tell the author they might\u0027ve had a typo, etc.",
       "parentUuid": "094f0964_45f1d2d0",
+      "range": {
+        "startLine": 588,
+        "startChar": 3,
+        "endLine": 588,
+        "endChar": 48
+      },
+      "revId": "8cdba8382a51b0b7ac5c913a1939f627ef42c423",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7020f16d_ee272fd7",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 25
+      },
+      "lineNbr": 588,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-06T05:28:10Z",
+      "side": 1,
+      "message": "I don\u0027t like the workflow here actually. The reason why you added this call here is not clear.\n\nYou\u0027re trying to modify an object that you\u0027re not going to use in this function. The object is not even created by your parent function... The life cycle of the object would cause a lot of confusions and will create a significant tech debt for the future.\n\nMy recommendation is to return the allRemovedHistogram() and send it to the function where obsoletedHistograms is generated and use it there.\n\nIf you don\u0027t want to do it in this cl, please add some comments and make a TODO to clean that up in a follow up cl.",
+      "parentUuid": "1f7d88ca_21b53b80",
       "range": {
         "startLine": 588,
         "startChar": 3,
