@@ -562,6 +562,7 @@ common {
 			wificell: true
 			router_802_11ax: true
 			working_bluetooth_btpeer: 3
+			hmr_state: UNKNOWN
 		}
 		phase: PHASE_DVT
 		platform: "coral"
@@ -665,6 +666,7 @@ common {
           rpm_state: WORKING
           peripheral_wifi_state: WORKING
 		  chameleon_state: WORKING
+		  hmr_state: UNKNOWN
 		}
 		platform:""
         test_coverage_hints {
