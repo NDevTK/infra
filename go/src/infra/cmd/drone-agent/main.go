@@ -150,7 +150,7 @@ func innerMain() error {
 	}
 
 	version := readVersionFile(*versionFilePath)
-	log.Printf("version: %v\n", version)
+	log.Printf("drone-agent-version from file: %v", version)
 	ctx = metadata.AppendToOutgoingContext(ctx, "drone-agent-version", version)
 
 	if err := metrics.Setup(ctx, cfg.TSMonEndpoint, cfg.TSMonCredentialPath); err != nil {
