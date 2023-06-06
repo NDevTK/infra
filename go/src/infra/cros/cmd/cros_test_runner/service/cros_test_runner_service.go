@@ -47,7 +47,8 @@ func NewCrosTestRunnerService(execReq *skylab_test_runner.ExecuteRequest, server
 			// TODO: Support test finder for server execution.
 			// Skipped for initial implementation.
 			executeSK.Args.SkipTestFinder = true
-			executeSK.Args.SkipTest = stepConfig.GetSkipTestExecution()
+			executeSK.Args.RunCpconPublish = stepConfig.GetRunCpconPublish()
+
 		}
 	}
 

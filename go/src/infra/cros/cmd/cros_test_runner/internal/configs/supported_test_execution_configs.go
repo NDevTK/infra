@@ -269,6 +269,13 @@ func GenerateLocalConfigs(ctx context.Context, sk *data.LocalTestStateKeeper) *C
 			TestsExecution_CrosTestExecutor)
 	}
 
+	// Cpcon publish commands
+	if sk.Args.RunCpconPublish {
+		mainConfigs = append(mainConfigs,
+			CpconPublishStart_CrosCpconPublishExecutor,
+			CpconPublishUpload_CrosCpconPublishExecutor)
+	}
+
 	mainConfigs = append(mainConfigs,
 		CtrStop_CtrExecutor,
 		SshStopTunnels_SshTunnelExecutor,
@@ -298,5 +305,6 @@ func GetHwConfigsEnvVars() []string {
 		"CONTAINER_CACHE_SERVICE_HOST",
 		"DRONE_AGENT_BOT_BLKIO_READ_BPS",
 		"DRONE_AGENT_BOT_BLKIO_WRITE_BPS",
+		"SWARMING_TASK_ID",
 		"DOCKER_CONFIG"}
 }

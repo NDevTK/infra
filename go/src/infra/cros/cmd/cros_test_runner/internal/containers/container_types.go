@@ -36,7 +36,7 @@ func GetContainerImageKeyFromContainerType(containerType interfaces.ContainerTyp
 		return "cros-test"
 	case CrosTestFinderTemplatedContainerType:
 		return "cros-test-finder"
-	case CrosGcsPublishTemplatedContainerType, CrosTkoPublishTemplatedContainerType, CrosRdbPublishTemplatedContainerType:
+	case CrosGcsPublishTemplatedContainerType, CrosTkoPublishTemplatedContainerType, CrosRdbPublishTemplatedContainerType, CrosCpconPublishTemplatedContainerType:
 		return "cros-publish"
 	default:
 		return ""

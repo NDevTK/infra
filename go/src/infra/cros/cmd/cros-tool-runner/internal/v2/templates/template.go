@@ -33,7 +33,7 @@ var aCrosTestProcessor = newCrosTestProcessor()
 var aCrosGcsPublishProcessor = newCrosGcsPublishProcessor()
 var aCrosTkoPublishProcessor = newCrosTkoPublishProcessor()
 var aCrosRdbPublishProcessor = newCrosRdbPublishProcessor()
-var aCrosCpconPublishProcessor = newCrosRdbPublishProcessor()
+var aCrosCpconPublishProcessor = newCrosCpconPublishProcessor()
 var aCacheServerProcessor = newCacheServerProcessor()
 var aCrosFwProvisionProcessor = newCrosFwProvisionProcessor()
 

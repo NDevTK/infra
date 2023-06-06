@@ -14,6 +14,7 @@ import (
 	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 )
 
 // CpconPublishUploadCmd represents cpcon publish upload cmd.
@@ -33,6 +34,8 @@ func (cmd *CpconPublishUploadCmd) ExtractDependencies(
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
 		err = cmd.extractDepsFromHwTestStateKeeper(ctx, sk)
+	case *data.LocalTestStateKeeper:
+		err = cmd.extractDepsFromHwTestStateKeeper(ctx, &sk.HwTestStateKeeper)
 
 	default:
 		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
@@ -51,7 +54,8 @@ func (cmd *CpconPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 
 	swarmingTaskId := os.Getenv("SWARMING_TASK_ID")
 	if swarmingTaskId == "" {
-		return fmt.Errorf("Cmd %q missing dependency: SWARMING_TASK_ID in env to construct CpconJobName", cmd.GetCommandType())
+		logging.Warningf(ctx, "SWARMING_TASK_ID not set, setting to default %s", "local_run")
+		swarmingTaskId = "local_run"
 	}
 	formattedSwarmingTaskId := common.FormatSwarmingTaskId(swarmingTaskId)
 	jobName := fmt.Sprintf("swarming-%s0", formattedSwarmingTaskId)

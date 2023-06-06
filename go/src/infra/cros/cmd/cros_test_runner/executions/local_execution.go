@@ -35,6 +35,7 @@ func LocalExecution(sk *data.LocalTestStateKeeper, ctrCipdVersion, pathToCipdBin
 	}()
 
 	sk.GcsPublishSrcDir = common.GlobalTempDir
+	sk.CpconPublishSrcDir = common.GlobalTempDir
 	result, err := executeLocalTests(ctx, sk, ctrCipdVersion, pathToCipdBin, noSudo)
 	if err != nil {
 		fmt.Println(err)

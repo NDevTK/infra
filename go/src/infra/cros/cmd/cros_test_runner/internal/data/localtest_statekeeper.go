@@ -57,4 +57,5 @@ type LocalArgs struct {
 	SkipCacheServer      bool
 	SkipSshTunnel        bool
 	SkipSshReverseTunnel bool
+	RunCpconPublish      bool
 }
