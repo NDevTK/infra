@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a27e4e55_432ce8aa",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2023-06-06T22:28:25Z",
+      "side": 1,
+      "message": "Nit: perhaps \"form\" --\u003e \"from\"?\n\nPlease ignore if it does not apply.",
+      "range": {
+        "startLine": 9,
+        "startChar": 35,
+        "endLine": 9,
+        "endChar": 39
+      },
+      "revId": "cecc8b596bf969783b89825fd4bff8b20d538e1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6f2f6425_3eac2100",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1505705
+      },
+      "writtenOn": "2023-06-06T22:28:25Z",
+      "side": 1,
+      "message": "LGTM with a minor suggestion.",
+      "revId": "cecc8b596bf969783b89825fd4bff8b20d538e1b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
