@@ -142,6 +142,30 @@
       },
       "revId": "a0292cd30d630083cd060a8c78784b19831d083f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bc85b9ca_fa2bc27b",
+        "filename": "go/src/infra/build/siso/execute/reproxyexec/reproxyexec.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-06-06T09:34:15Z",
+      "side": 1,
+      "message": "No, comment is necessary.\nI thought you just forgot to update the check in runCmd to have the same checks.\nand it\u0027s just extracting these lines as a method.\n\nI\u0027m fine since it\u0027s a nit, anyway.",
+      "parentUuid": "23ccd38e_9bef61d4",
+      "range": {
+        "startLine": 74,
+        "startChar": 1,
+        "endLine": 83,
+        "endChar": 0
+      },
+      "revId": "a0292cd30d630083cd060a8c78784b19831d083f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
