@@ -20,4 +20,5 @@ var CronJobNames = map[string]string{
 	"dutDlmBqSyncCron":           "ufs.dut_dlm_bq.sync",
 	"indexAssets":                "ufs.indexer.asset",
 	"indexMachines":              "ufs.indexer.machine",
+	"indexRacks":                 "ufs.indexer.rack",
 }

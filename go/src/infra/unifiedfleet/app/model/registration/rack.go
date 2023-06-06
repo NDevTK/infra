@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,7 @@ type RackEntity struct {
 	Zone      string   `gae:"zone"`
 	Tags      []string `gae:"tags"`
 	State     string   `gae:"state"`
+	Realm     string   `gae:"realm"`
 	// ufspb.Rack cannot be directly used as it contains pointer.
 	Rack []byte `gae:",noindex"`
 }
@@ -65,6 +66,7 @@ func newRackEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, er
 		Tags:  p.GetTags(),
 		Rack:  rack,
 		State: p.GetResourceState().String(),
+		Realm: util.ToUFSRealm(p.GetLocation().GetZone().String()),
 	}, nil
 }
 

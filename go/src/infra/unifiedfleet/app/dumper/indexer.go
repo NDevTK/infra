@@ -61,6 +61,28 @@ func IndexMachines(ctx context.Context) error {
 	return indexTable(ctx, "machines", f)
 }
 
+// indexRacks updates the rack table thereby reindexing any new indexes that
+// might be added to it. It is meant to be run during low-traffic/maintenance
+// times as it attempts to index the entire table.
+func indexRacks(ctx context.Context) error {
+	f := func(newCtx context.Context, namespace string, startToken *string) error {
+		var err error
+		var res []*ufspb.Rack
+		res, *startToken, err = registration.ListRacks(newCtx, pageSize, *startToken, nil, false)
+		if err != nil {
+			return errors.Annotate(err, "indexRacks[%s] -- Failed to list", namespace).Err()
+		}
+		logging.Infof(ctx, "indexRacks -- Indexing %v racks in %s", len(res), namespace)
+		// Update the rack back to datastore
+		_, err = registration.BatchUpdateRacks(newCtx, res)
+		if err != nil {
+			return errors.Annotate(err, "indexRacks[%s] -- Failed to update", namespace).Err()
+		}
+		return nil
+	}
+	return indexTable(ctx, "racks", f)
+}
+
 func indexTable(ctx context.Context, tableName string, fn indexTableFn) error {
 	logging.Infof(ctx, "indexTable -- Starting to index the %s table", tableName)
 	for _, ns := range util.ClientToDatastoreNamespace {
