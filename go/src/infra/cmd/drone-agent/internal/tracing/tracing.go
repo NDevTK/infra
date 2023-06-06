@@ -21,8 +21,10 @@ import (
 // InitTracer initializes the tracer Provider and registers it globally.
 // InitTracer returns a cleanup function.
 func InitTracer(ctx context.Context, exp sdktrace.SpanExporter, version string) func(context.Context) {
-	tp := newTracerProvider(ctx, exp, version)
+	tp := newTracerProvider(ctx, version)
 	otel.SetTracerProvider(tp)
+	b := sdktrace.NewBatchSpanProcessor(exp)
+	tp.RegisterSpanProcessor(b)
 	return func(ctx context.Context) {
 		if err := tp.Shutdown(context.Background()); err != nil {
 			log.Printf("Failed to shutdown tracer provider: %v", err)
@@ -74,10 +76,9 @@ func newResource(ctx context.Context, version string) *resource.Resource {
 	return r
 }
 
-func newTracerProvider(ctx context.Context, exp sdktrace.SpanExporter, version string) *sdktrace.TracerProvider {
+func newTracerProvider(ctx context.Context, version string) *sdktrace.TracerProvider {
 	r := newResource(ctx, version)
 	return sdktrace.NewTracerProvider(
-		sdktrace.WithBatcher(exp),
 		sdktrace.WithResource(r),
 		sdktrace.WithSampler(sdktrace.ParentBased(sdktrace.TraceIDRatioBased(0.5))),
 	)
