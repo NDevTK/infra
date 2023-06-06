@@ -955,6 +955,10 @@ func getStability(ctx context.Context, model string) (bool, error) {
 }
 
 func updateDeviceConfigWithAssetInfo(ctx context.Context, id string, devConfig *ufsdevice.Config) {
+	// Device config can be nil, do a check here to avoid nil pointer panic later.
+	if devConfig == nil {
+		return
+	}
 	asset, err := GetAsset(ctx, id)
 	if err != nil {
 		logging.Warningf(ctx, "Asset for %s not found. Error: %s", id, err)
