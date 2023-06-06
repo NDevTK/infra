@@ -70,6 +70,30 @@
       },
       "revId": "a0292cd30d630083cd060a8c78784b19831d083f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "82824c4c_df69430c",
+        "filename": "go/src/infra/build/siso/execute/reproxyexec/reproxyexec.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1429892
+      },
+      "writtenOn": "2023-06-06T08:38:01Z",
+      "side": 1,
+      "message": "Can\u0027t do zero value check since labels is map[string]string? So a minimal check for whether reproxyconfig is set is to either check an arbitrary field (labels here), or don\u0027t do a minimal check at all and have a full validator?",
+      "parentUuid": "21ba79ac_919f7d96",
+      "range": {
+        "startLine": 74,
+        "startChar": 1,
+        "endLine": 83,
+        "endChar": 0
+      },
+      "revId": "a0292cd30d630083cd060a8c78784b19831d083f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
