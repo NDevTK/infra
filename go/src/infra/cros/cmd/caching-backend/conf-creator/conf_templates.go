@@ -120,7 +120,7 @@ http {
     # The configuration is exactly same with the "location /" except
     # "proxy_cache_valid" which is much shorter than a release build.
     # A CQ build URL is like "/download/chromeos-image-archive/coral-cq/R92-13913.0.0-46943-8850024658050820208/...".
-    location ~ ^/download/[^/]+/[^/]+\S+-cq/ {
+    location ~ ^/download/[^/]+/[^/]+-cq/ {
       # The two headers added below must be added in each location, instead of
       # in the "server" directive as it may not come as the request headers.
       # Instead, it may be set as variables in this configuration file, which
@@ -149,7 +149,7 @@ http {
       proxy_set_header      Range $slice_range;
       proxy_force_ranges    on;
     }
-    location ~ ^/[^/]+/[^/]+/\S+-cq/ {
+    location ~ ^/[^/]+/[^/]+/[^/]+-cq/ {
       add_header            'X-SWARMING-TASK-ID' '$http_x_swarming_task_id';
       add_header            'X-BBID' '$http_x_bbid';
       proxy_cache_lock on;
