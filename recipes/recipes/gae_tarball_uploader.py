@@ -136,10 +136,9 @@ def _validate_input_commit(commit, p):
   """Checks input buildbucket.v2.GitilesCommit matches the config."""
   if commit.host or commit.project:
     got = 'https://%s/%s' % (commit.host, commit.project)
-    if p.project == PROPERTIES.PROJECT_INFRA:
-      want = 'https://chromium.googlesource.com/infra/infra'
-    elif p.project == PROPERTIES.PROJECT_INFRA_INTERNAL:
-      want = 'https://chrome-internal.googlesource.com/infra/infra_internal'
+    if p.project in (PROPERTIES.PROJECT_INFRA,
+                     PROPERTIES.PROJECT_INFRA_INTERNAL):
+      want = 'https://chromium.googlesource.com/infra/infra_superproject'
     elif p.project == PROPERTIES.PROJECT_GIT_REPO:
       want = p.git_repo.url
     else:  # pragma: no cover
