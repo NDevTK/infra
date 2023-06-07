@@ -219,7 +219,7 @@ func servoRepairPlan() *Plan {
 				ExecName:   "servo_servod_port_present",
 				RunControl: RunControl_RUN_ONCE,
 			},
-			"is_labstation": {
+			"Is labstation": {
 				Docs: []string{
 					"Condition to check if the servohost is a labstation.",
 				},
@@ -236,7 +236,7 @@ func servoRepairPlan() *Plan {
 					"Create lock file is_in_use.",
 				},
 				Conditions: []string{
-					"is_labstation",
+					"Is labstation",
 				},
 				Dependencies: []string{
 					"Device is SSHable",
@@ -273,7 +273,7 @@ func servoRepairPlan() *Plan {
 					"Clean up the old servod files as well as labstation.",
 				},
 				Conditions: []string{
-					"Device is SSHable",
+					"Is labstation",
 				},
 				Dependencies: []string{
 					"servo_labstation_disk_cleanup",
@@ -284,9 +284,6 @@ func servoRepairPlan() *Plan {
 			"Remove logs older 5 days": {
 				Docs: []string{
 					"Clean up the old servod logs which older than 5 days.",
-				},
-				Conditions: []string{
-					"Device is SSHable",
 				},
 				ExecName: "servo_servod_old_logs_cleanup",
 				ExecExtraArgs: []string{
@@ -766,7 +763,7 @@ func servoRepairPlan() *Plan {
 					"Working only for labstation with servo_micro.",
 				},
 				Conditions: []string{
-					"is_labstation",
+					"Is labstation",
 					"is_servo_micro",
 					"DUT has CrOS EC",
 					// Followed is condition to check if voltage is low means servo_micro is not connected.
@@ -1005,7 +1002,7 @@ func servoRepairPlan() *Plan {
 					"Try to update servo micro firmware",
 				},
 				Conditions: []string{
-					"is_labstation",
+					"Is labstation",
 					"is_servo_micro",
 					"Is ok to force update servo_micro firmware",
 				},
@@ -1020,7 +1017,7 @@ func servoRepairPlan() *Plan {
 					"Try to update servo micro firmware",
 				},
 				Conditions: []string{
-					"is_labstation",
+					"Is labstation",
 					"is_servo_micro",
 					"Is ok to force update servo_micro firmware",
 				},
@@ -1488,8 +1485,7 @@ func servoRepairPlan() *Plan {
 					"The action always fails as Servo will be fixed after reboot.",
 				},
 				Conditions: []string{
-					"Device is SSHable",
-					"is_labstation",
+					"Is labstation",
 				},
 				Dependencies: []string{
 					"cros_create_reboot_request",
