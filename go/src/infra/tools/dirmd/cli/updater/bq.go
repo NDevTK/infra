@@ -17,6 +17,8 @@ import (
 	"google.golang.org/api/googleapi"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	testapipb "go.chromium.org/chromiumos/config/go/test/api"
+	planpb "go.chromium.org/chromiumos/config/go/test/plan"
 	"go.chromium.org/luci/common/bq"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/errors"
@@ -26,6 +28,7 @@ import (
 
 	"infra/tools/dirmd"
 	dirmdpb "infra/tools/dirmd/proto"
+	"infra/tools/dirmd/proto/chromeos"
 )
 
 // Recommended rows per stream insert request.
@@ -64,8 +67,13 @@ func generateSchema() (schema bigquery.Schema, err error) {
 	fdmr, _ := descriptor.MessageDescriptorProto(&dirmdpb.Monorail{})
 	fdwpt, _ := descriptor.MessageDescriptorProto(&dirmdpb.WPT{})
 	fdbug, _ := descriptor.MessageDescriptorProto(&dirmdpb.Buganizer{})
+	fdcros, _ := descriptor.MessageDescriptorProto(&chromeos.ChromeOS{})
+	fdstp, _ := descriptor.MessageDescriptorProto(&planpb.SourceTestPlan{})
+	fdtc, _ := descriptor.MessageDescriptorProto(&testapipb.TestSuite_TestCaseTagCriteria{})
 
-	fdset := &desc.FileDescriptorSet{File: []*desc.FileDescriptorProto{fd, fdmr, fdwpt, fdbug}}
+	fdset := &desc.FileDescriptorSet{
+		File: []*desc.FileDescriptorProto{fd, fdmr, fdwpt, fdbug, fdcros, fdstp, fdtc},
+	}
 	conv := bq.SchemaConverter{
 		Desc:           fdset,
 		SourceCodeInfo: make(map[*desc.FileDescriptorProto]bq.SourceCodeInfoMap, len(fdset.File)),
@@ -135,7 +143,8 @@ func commonDirBQRow(commit *GitCommit, md *dirmdpb.Metadata, partitionTime *time
 		Buganizer:       md.Buganizer,
 		BuganizerPublic: md.BuganizerPublic,
 		TeamSpecificMetadata: &dirmdpb.TeamSpecific{
-			Wpt: md.Wpt,
+			Wpt:      md.Wpt,
+			Chromeos: md.Chromeos,
 		},
 		PartitionTime: partitionTime,
 	}
