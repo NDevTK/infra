@@ -56,6 +56,7 @@ var (
 
 // Deprecated configuration environment variables for backward compatibility.
 // Add new settings to the config file.
+// TODO(ayatane): Remove these.
 var (
 	queenService = os.Getenv("DRONE_AGENT_QUEEN_SERVICE")
 	// DRONE_AGENT_SWARMING_URL is the URL of the Swarming
@@ -100,9 +101,9 @@ var (
 )
 
 // Deprecated flag options for backward compatibility.
+// TODO(ayatane): Remove these.
 var (
 	// traceBackend denotes the backend used for OTel traces.
-	// Deprecated, delete after drone image is migrated off of it.
 	traceBackend string
 	// traceTarget is the destination for traces.
 	traceTarget = flag.String("trace-target", "", "Traces destination. "+
