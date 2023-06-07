@@ -220,10 +220,10 @@ func calculateIndicators(buildCtx context.Context, rows []Row, thresholds Thresh
 
 func bbClient(buildCtx context.Context) (buildbucketpb.BuildersClient, error) {
 	var err error
-	step, ctx := build.StartStep(buildCtx, "Make BB client")
+	step, _ := build.StartStep(buildCtx, "Make BB client")
 	defer func() { step.End(err) }()
 
-	authenticator := auth.NewAuthenticator(ctx, auth.SilentLogin, auth.Options{})
+	authenticator := auth.NewAuthenticator(buildCtx, auth.SilentLogin, auth.Options{})
 	httpClient, err := authenticator.Client()
 	if err != nil {
 		return nil, errors.Annotate(err, "Initializing Auth").Err()
