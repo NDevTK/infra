@@ -131,6 +131,8 @@ message ChromeOSMachine {
     string hwid = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
     // GPN stands for Google Part Number, unique identifier for the device
     string gpn = 11;
+    // Capability to support Chromebook X features
+    double hw_x_compliance_version = 12;
 }
 
 // ChromeOSDeviceType refers to the different types of
