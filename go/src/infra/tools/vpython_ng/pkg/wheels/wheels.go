@@ -47,11 +47,18 @@ func FromSpec(spec *vpython.Spec, tags cipkg.Generator) (cipkg.Generator, error)
 	}, nil
 }
 
-func init() {
-	builtins.RegisterUserDefinedFunction("ensureWheels", ensureWheels)
+type wheels struct {
+	CIPDCacheDir string
 }
 
-func ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
+func Init(cipdCache string) {
+	w := &wheels{
+		CIPDCacheDir: cipdCache,
+	}
+	builtins.RegisterUserDefinedFunction("ensureWheels", w.ensureWheels)
+}
+
+func (w *wheels) ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
 	// cmd.Args = ["builtin:udf:ensureWheels", Version, Spec]
 
 	// Parse spec file
@@ -102,7 +109,7 @@ func ensureWheels(ctx context.Context, cmd *exec.Cmd) error {
 	}
 
 	// Construct CIPD command and execute
-	export := builtins.CIPDCommand("export", "--root", builtins.GetEnv("out", cmd.Env), "--ensure-file", "-")
+	export := builtins.CIPDCommand("export", "--cache-dir", w.CIPDCacheDir, "--root", builtins.GetEnv("out", cmd.Env), "--ensure-file", "-")
 	export.Env = os.Environ() // Pass host environment variables to cipd.
 	export.Dir = cmd.Dir
 	export.Stdin = strings.NewReader(efs.String())

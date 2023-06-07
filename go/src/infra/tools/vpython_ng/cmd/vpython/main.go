@@ -82,6 +82,8 @@ func main() {
 	app.Must(app.ParseEnvs())
 	app.Must(app.ParseArgs())
 
+	wheels.Init(app.CIPDCacheDir)
+
 	if app.Bypass {
 		// no-op for tool mode if we are bypassing vpython
 		if app.ToolMode != "" {
