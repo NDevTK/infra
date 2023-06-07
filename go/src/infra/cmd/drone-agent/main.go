@@ -11,6 +11,7 @@ import (
 	"context"
 	"flag"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -163,23 +164,10 @@ func innerMain() error {
 		tp.RegisterSpanProcessor(sdktrace.NewBatchSpanProcessor(exp))
 	}
 
-	authn := auth.NewAuthenticator(ctx, auth.SilentLogin, authOptions)
-
-	r, err := tokman.Make(authn, oauthTokenPath, time.Minute)
+	h, err := setupAuthClient(ctx, &wg)
 	if err != nil {
 		return err
 	}
-	wg.Add(1)
-	go func() {
-		r.KeepNew(ctx)
-		wg.Done()
-	}()
-
-	h, err := authn.Client()
-	if err != nil {
-		return err
-	}
-	otil.AddHTTP(h)
 
 	a := agent.Agent{
 		Client: api.NewDronePRPCClient(&prpc.Client{
@@ -232,6 +220,25 @@ func setupTracing(version string) (_ *sdktrace.TracerProvider, cleanup func()) {
 			log.Printf("Failed to shutdown tracer provider: %v", err)
 		}
 	}
+}
+
+func setupAuthClient(ctx context.Context, wg *sync.WaitGroup) (*http.Client, error) {
+	authn := auth.NewAuthenticator(ctx, auth.SilentLogin, authOptions)
+	r, err := tokman.Make(authn, oauthTokenPath, time.Minute)
+	if err != nil {
+		return nil, err
+	}
+	wg.Add(1)
+	go func() {
+		r.KeepNew(ctx)
+		wg.Done()
+	}()
+	h, err := authn.Client()
+	if err != nil {
+		return nil, err
+	}
+	otil.AddHTTP(h)
+	return h, nil
 }
 
 // readVersionFile reads drone agent version from a given version file.
