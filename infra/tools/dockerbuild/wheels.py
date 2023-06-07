@@ -897,6 +897,17 @@ SPECS.update({
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
+            'pytype',
+            '2023.6.2',
+            packaged=(),
+            only_plat=[
+                'manylinux-x64-py3.8',
+                'mac-x64-py3.8',
+                'mac-arm64-py3.8',
+            ],
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
             'ruamel.yaml.clib',
             '0.2.6',
             packaged=(),
