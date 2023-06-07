@@ -153,23 +153,14 @@ func innerMain() error {
 	}
 	defer metrics.Shutdown(ctx)
 
-	tp := tracing.NewTracerProvider(version)
-	defer func(ctx context.Context) {
-		if err := tp.Shutdown(context.Background()); err != nil {
-			log.Printf("Failed to shutdown tracer provider: %v", err)
-		}
-	}(ctx)
-	otel.SetTracerProvider(tp)
-	p := propagation.NewCompositeTextMapPropagator(
-		propagation.TraceContext{}, propagation.Baggage{})
-	otel.SetTextMapPropagator(p)
+	tp, cf := setupTracing(version)
+	defer cf()
 	if cfg.OTLPExporterAddr != "" {
 		exp, err := tracing.NewGRPCExporter(ctx, cfg.OTLPExporterAddr)
 		if err != nil {
 			return err
 		}
-		b := sdktrace.NewBatchSpanProcessor(exp)
-		tp.RegisterSpanProcessor(b)
+		tp.RegisterSpanProcessor(sdktrace.NewBatchSpanProcessor(exp))
 	}
 
 	authn := auth.NewAuthenticator(ctx, auth.SilentLogin, authOptions)
@@ -225,6 +216,22 @@ func setupContext(version string) (_ context.Context, _ error, cleanup func()) {
 
 	ctx = metadata.AppendToOutgoingContext(ctx, "drone-agent-version", version)
 	return ctx, nil, ds.run
+}
+
+func setupTracing(version string) (_ *sdktrace.TracerProvider, cleanup func()) {
+	p := propagation.NewCompositeTextMapPropagator(
+		propagation.TraceContext{}, propagation.Baggage{})
+	otel.SetTextMapPropagator(p)
+	tp := tracing.NewTracerProvider(version)
+	otel.SetTracerProvider(tp)
+	return tp, func() {
+		// Use a separate context as the main context would
+		// already be canceled to trigger drone-agent
+		// shutdown.
+		if err := tp.Shutdown(context.Background()); err != nil {
+			log.Printf("Failed to shutdown tracer provider: %v", err)
+		}
+	}
 }
 
 // readVersionFile reads drone agent version from a given version file.
