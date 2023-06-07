@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2ca87d9b_f75e1d7d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2023-06-07T07:51:18Z",
+      "side": 1,
+      "message": "This is still a temporary solution before we removes udf.",
+      "revId": "cbaaa8dab5b0050f1ed614c67089a7c01f9755b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
