@@ -258,6 +258,77 @@ func TestCollectState_BuildMatches(t *testing.T) {
 	assert.Assert(t, !collectState.canRetry(otherBuild, "12345"))
 }
 
+func TestCollectState_BuildMatches_BeforeCheckpoint(t *testing.T) {
+	t.Parallel()
+
+	collectState := initCollectState(&collectStateOpts{
+		config: &pb.CollectConfig{
+			Rules: []*pb.RetryRule{
+				{
+					Status: []int32{
+						int32(bbpb.Status_FAILURE),
+						int32(bbpb.Status_INFRA_FAILURE),
+					},
+					BeforeCheckpoint: pb.RetryStep_STAGE_ARTIFACTS,
+				},
+			},
+		}})
+
+	noRetrySummary := &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_FAILURE,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "eve-release-main",
+		},
+		SummaryMarkdown: "wah, I have a bad source cache.",
+	}
+	assert.Assert(t, collectState.canRetry(noRetrySummary, "12345"))
+
+	outputProperties, err := structpb.NewStruct(map[string]interface{}{})
+	assert.NilError(t, err)
+	err = bb.SetProperty(outputProperties,
+		"retry_summary", map[string]interface{}{})
+	assert.NilError(t, err)
+	hasSummary := &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_FAILURE,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "eve-release-main",
+		},
+		SummaryMarkdown: "wah, I have a bad source cache.",
+		Output: &bbpb.Build_Output{
+			Properties: outputProperties,
+		},
+	}
+	assert.Assert(t, collectState.canRetry(hasSummary, "12345"))
+
+	startedOutputProperties, err := structpb.NewStruct(map[string]interface{}{})
+	assert.NilError(t, err)
+	err = bb.SetProperty(startedOutputProperties,
+		"retry_summary.STAGE_ARTIFACTS",
+		"STARTED")
+	assert.NilError(t, err)
+
+	hasStep := &bbpb.Build{
+		Id:     12345,
+		Status: bbpb.Status_FAILURE,
+		Builder: &bbpb.BuilderID{
+			Project: "chromeos",
+			Bucket:  "release",
+			Builder: "eve-release-main",
+		},
+		SummaryMarkdown: "wah, I have a bad source cache.",
+		Output: &bbpb.Build_Output{
+			Properties: startedOutputProperties,
+		},
+	}
+	assert.Assert(t, !collectState.canRetry(hasStep, "12345"))
+}
+
 func TestCollectState_Status(t *testing.T) {
 	t.Parallel()
 

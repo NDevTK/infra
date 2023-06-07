@@ -206,6 +206,13 @@ func (r *Rule) matches(build *bbpb.Build) bool {
 			return false
 		}
 	}
+
+	if r.rule.GetBeforeCheckpoint() != pb.RetryStep_UNDEFINED {
+		checkpointStatus := extractCheckpointStatus(build, r.rule.GetBeforeCheckpoint())
+		if checkpointStatus != nil {
+			return false
+		}
+	}
 	return true
 }
 
