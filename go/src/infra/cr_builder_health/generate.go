@@ -13,11 +13,15 @@ import (
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/civil"
 
+	"go.chromium.org/luci/auth"
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/luciexe/build"
 
 	"google.golang.org/api/iterator"
+	"google.golang.org/grpc"
 )
 
 type Row struct {
@@ -35,6 +39,10 @@ type Row struct {
 	PendingMinsP95   float32    `bigquery:"pending_mins_p95"`
 	BuildMinsP50     float32    `bigquery:"build_mins_p50"`
 	BuildMinsP95     float32    `bigquery:"build_mins_p95"`
+}
+
+type BBClient interface {
+	SetBuilderHealth(ctx context.Context, in *buildbucketpb.SetBuilderHealthRequest, opts ...grpc.CallOption) (*buildbucketpb.SetBuilderHealthResponse, error)
 }
 
 func generate(ctx context.Context, input *healthpb.InputParams) error {
@@ -59,7 +67,15 @@ func generate(ctx context.Context, input *healthpb.InputParams) error {
 		return errors.Annotate(err, "Calculate indicators").Err()
 	}
 
-	// TODO write to Buildbucket
+	client, err := bbClient(ctx)
+	if err != nil {
+		return errors.Annotate(err, "Make BB client").Err()
+	}
+
+	err = rpcBuildbucket(ctx, rows, client)
+	if err != nil {
+		return errors.Annotate(err, "RPC buildbucket").Err()
+	}
 
 	// Write out to BQ
 	if err = writeIndicators(ctx, bqClient, rowsWithIndicators); err != nil {
@@ -200,6 +216,75 @@ func calculateIndicators(buildCtx context.Context, rows []Row, thresholds Thresh
 	}
 
 	return rows, err
+}
+
+func bbClient(buildCtx context.Context) (buildbucketpb.BuildersClient, error) {
+	var err error
+	step, ctx := build.StartStep(buildCtx, "Make BB client")
+	defer func() { step.End(err) }()
+
+	authenticator := auth.NewAuthenticator(ctx, auth.SilentLogin, auth.Options{})
+	httpClient, err := authenticator.Client()
+	if err != nil {
+		return nil, errors.Annotate(err, "Initializing Auth").Err()
+	}
+
+	return buildbucketpb.NewBuildersPRPCClient(&prpc.Client{
+		C:    httpClient,
+		Host: "cr-buildbucket.appspot.com",
+	}), nil
+}
+
+func rpcBuildbucket(buildCtx context.Context, rows []Row, client BBClient) error {
+	var err error
+	step, ctx := build.StartStep(buildCtx, "RPC Buildbucket")
+	defer func() { step.End(err) }()
+
+	healthProtos := make([]*buildbucketpb.SetBuilderHealthRequest_BuilderHealth, len(rows), len(rows))
+	for i, row := range rows {
+		constituentMetrics := map[string]float32{
+			"FailRate":       row.FailRate,
+			"InfraFailRate":  row.InfraFailRate,
+			"PendingMinsP50": row.PendingMinsP50,
+			"PendingMinsP95": row.PendingMinsP95,
+			"BuildMinsP50":   row.BuildMinsP50,
+			"BuildMinsP95":   row.BuildMinsP95,
+		}
+
+		healthProtos[i] = &buildbucketpb.SetBuilderHealthRequest_BuilderHealth{
+			Id: &buildbucketpb.BuilderID{Project: row.Project, Bucket: row.Bucket, Builder: row.Builder},
+			Health: &buildbucketpb.HealthStatus{
+				HealthScore:   int64(row.HealthScore),
+				HealthMetrics: constituentMetrics,
+				Description:   row.ScoreExplanation,
+				DocLinks:      map[string]string{"google.com": "go/builder-health-metrics-design"},
+				DataLinks:     nil, // TODO add dashboard link for historical data
+			},
+		}
+	}
+	req := &buildbucketpb.SetBuilderHealthRequest{
+		Health: healthProtos,
+	}
+	res, err := client.SetBuilderHealth(ctx, req)
+	if err != nil {
+		return errors.Annotate(err, "Set builder health").Err()
+	}
+
+	nErrors := 0
+	for _, resp := range res.Responses {
+		if resp.GetError() == nil {
+			continue
+		}
+
+		nErrors += 1
+		logging.Errorf(ctx, resp.String())
+	}
+
+	if nErrors > 0 {
+		return fmt.Errorf("%d set builder health requests failed", nErrors)
+	}
+
+	return nil
 }
 
 func writeIndicators(buildCtx context.Context, bqClient *bigquery.Client, rows []Row) error {
