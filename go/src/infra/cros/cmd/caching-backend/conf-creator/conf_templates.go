@@ -106,9 +106,6 @@ http {
     # TODO(guocb) Remove this after removing provision branch using gs_cache.
     listen *:8888;
     server_name           gs-cache;
-    add_header            'Cache-Control' 'public, max-age=3153600';
-    add_header            '{{ if .UpstreamHost }}X-Cache-Primary{{ else }}X-Cache-Secondary{{ end }}' '$upstream_cache_status';
-    add_header            'X-CACHING-BACKEND' '$host';
     index  index.html index.htm index.php;
     access_log            /var/log/nginx/gs-cache.access.log main;
     access_log            /dev/stdout main_json;
@@ -121,6 +118,9 @@ http {
     # "proxy_cache_valid" which is much shorter than a release build.
     # A CQ build URL is like "/download/chromeos-image-archive/coral-cq/R92-13913.0.0-46943-8850024658050820208/...".
     location ~ ^/download/[^/]+/[^/]+-cq/ {
+      add_header            'Cache-Control' 'public, max-age=3153600';
+      add_header            '{{ if .UpstreamHost }}X-Cache-Primary{{ else }}X-Cache-Secondary{{ end }}' '$upstream_cache_status';
+      add_header            'X-CACHING-BACKEND' '$host';
       # The two headers added below must be added in each location, instead of
       # in the "server" directive as it may not come as the request headers.
       # Instead, it may be set as variables in this configuration file, which
@@ -150,6 +150,9 @@ http {
       proxy_force_ranges    on;
     }
     location ~ ^/[^/]+/[^/]+/[^/]+-cq/ {
+      add_header            'Cache-Control' 'public, max-age=3153600';
+      add_header            '{{ if .UpstreamHost }}X-Cache-Primary{{ else }}X-Cache-Secondary{{ end }}' '$upstream_cache_status';
+      add_header            'X-CACHING-BACKEND' '$host';
       add_header            'X-SWARMING-TASK-ID' '$http_x_swarming_task_id';
       add_header            'X-BBID' '$http_x_bbid';
       proxy_cache_lock on;
@@ -173,6 +176,9 @@ http {
     }
 
     location / {
+      add_header            'Cache-Control' 'public, max-age=3153600';
+      add_header            '{{ if .UpstreamHost }}X-Cache-Primary{{ else }}X-Cache-Secondary{{ end }}' '$upstream_cache_status';
+      add_header            'X-CACHING-BACKEND' '$host';
       add_header            'X-SWARMING-TASK-ID' '$http_x_swarming_task_id';
       add_header            'X-BBID' '$http_x_bbid';
       proxy_cache_lock on;
@@ -195,6 +201,9 @@ http {
       proxy_cache_key       $request_method$uri$is_args$args;
     }
     location ~ ^/download/ {
+        add_header            'Cache-Control' 'public, max-age=3153600';
+        add_header            '{{ if .UpstreamHost }}X-Cache-Primary{{ else }}X-Cache-Secondary{{ end }}' '$upstream_cache_status';
+        add_header            'X-CACHING-BACKEND' '$host';
         add_header            'X-SWARMING-TASK-ID' '$http_x_swarming_task_id';
         add_header            'X-BBID' '$http_x_bbid';
         slice 30m;
