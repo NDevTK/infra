@@ -51,6 +51,7 @@ var (
 		Method:                 auth.ServiceAccountMethod,
 		ServiceAccountJSONPath: os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"),
 	}
+	hostname = os.Getenv("DOCKER_DRONE_SERVER_NAME")
 )
 
 // Deprecated configuration environment variables for backward compatibility.
@@ -66,7 +67,7 @@ var (
 
 	// hive value of the drone agent.  This is used for DUT/drone affinity.
 	// A drone is assigned DUTs with same hive value.
-	hive = initializeHive(os.Getenv("DRONE_AGENT_HIVE"), os.Getenv("DOCKER_DRONE_SERVER_NAME"))
+	hive = initializeHive(os.Getenv("DRONE_AGENT_HIVE"), hostname)
 
 	// tsmonEndpoint is the URL (including file://, https://,
 	// pubsub://project/topic) to post monitoring metrics to.
