@@ -155,6 +155,11 @@ func innerMain() error {
 	defer metrics.Shutdown(ctx)
 
 	tp := tracing.NewTracerProvider(version)
+	defer func(ctx context.Context) {
+		if err := tp.Shutdown(context.Background()); err != nil {
+			log.Printf("Failed to shutdown tracer provider: %v", err)
+		}
+	}(ctx)
 	otel.SetTracerProvider(tp)
 	p := propagation.NewCompositeTextMapPropagator(
 		propagation.TraceContext{}, propagation.Baggage{})
@@ -166,11 +171,6 @@ func innerMain() error {
 		}
 		b := sdktrace.NewBatchSpanProcessor(exp)
 		tp.RegisterSpanProcessor(b)
-		defer func(ctx context.Context) {
-			if err := tp.Shutdown(context.Background()); err != nil {
-				log.Printf("Failed to shutdown tracer provider: %v", err)
-			}
-		}(ctx)
 	}
 
 	authn := auth.NewAuthenticator(ctx, auth.SilentLogin, authOptions)
