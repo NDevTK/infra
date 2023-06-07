@@ -197,6 +197,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			RoVpdMap:            dut.GetRoVpdMap(),
 			Cbi:                 dut.GetCbi(),
 			Cbx:                 dut.GetCbx(),
+			HumanMotionRobot:    createDUTHumanMotionRobot(p, ds),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
@@ -363,6 +364,17 @@ func createChameleon(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.Chameleon 
 	return cham
 }
 
+// createDUTHumanMotionRobot convert ufslab.Peripherals.HumanMotionRobot to tlw.HumanMotionRobot
+// It includes hostname and state, and will be used for recovery
+func createDUTHumanMotionRobot(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.HumanMotionRobot {
+	pHmr := p.GetHumanMotionRobot()
+	tlwHmr := &tlw.HumanMotionRobot{
+		Name:  pHmr.GetHostname(),
+		State: convertHumanMotionRobotStateToTLW(ds.GetHmrState()),
+	}
+	return tlwHmr
+}
+
 func createDUTStorage(dc *ufsdevice.Config, ds *ufslab.DutState) *tlw.Storage {
 	return &tlw.Storage{
 		Type:  convertStorageType(dc.GetStorage()),
@@ -488,6 +500,7 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 	state.BluetoothState = ufslab.HardwareState_HARDWARE_UNKNOWN
 	state.CellularModemState = ufslab.HardwareState_HARDWARE_UNKNOWN
 	state.Chameleon = ufslab.PeripheralState_UNKNOWN
+	state.HmrState = ufslab.PeripheralState_UNKNOWN
 	state.WorkingBluetoothBtpeer = 0
 	state.DutStateReason = string(dut.DutStateReason)
 	state.RepairRequests = convertRepairRequestsToUFS(dut.RepairRequests)
@@ -540,6 +553,9 @@ func getUFSDutComponentStateFromSpecs(dutID string, dut *tlw.Dut) *ufslab.DutSta
 					state.Chameleon = us
 				}
 			}
+		}
+		if hmr := chromeos.GetHumanMotionRobot(); hmr != nil {
+			state.HmrState = convertHumanMotionRobotStateToUFS(hmr.GetState())
 		}
 		for _, btph := range chromeos.GetBluetoothPeers() {
 			if btph.GetState() == tlw.BluetoothPeer_WORKING {

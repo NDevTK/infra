@@ -132,6 +132,30 @@ func convertAudioBoxJackPluggerState(s ufslab.Chameleon_AudioBoxJackPlugger) tlw
 	return tlw.Chameleon_AUDIOBOX_JACKPLUGGER_UNSPECIFIED
 }
 
+var hmrStates = map[ufslab.PeripheralState]tlw.HumanMotionRobot_State{
+	ufslab.PeripheralState_WORKING:        tlw.HumanMotionRobot_WORKING,
+	ufslab.PeripheralState_BROKEN:         tlw.HumanMotionRobot_BROKEN,
+	ufslab.PeripheralState_NOT_APPLICABLE: tlw.HumanMotionRobot_NOT_APPLICABLE,
+}
+
+// converts HumanMotionRobot UFS state to TLW state
+func convertHumanMotionRobotStateToTLW(s ufslab.PeripheralState) tlw.HumanMotionRobot_State {
+	if ns, ok := hmrStates[s]; ok {
+		return ns
+	}
+	return tlw.HumanMotionRobot_STATE_UNSPECIFIED
+}
+
+// converts HumanMotionRobot TLW state to UFS state
+func convertHumanMotionRobotStateToUFS(ts tlw.HumanMotionRobot_State) ufslab.PeripheralState {
+	for ufsState, tlwState := range hmrStates {
+		if ts == tlwState {
+			return ufsState
+		}
+	}
+	return ufslab.PeripheralState_UNKNOWN
+}
+
 var bluetoothPeerStates = map[ufslab.PeripheralState]tlw.BluetoothPeer_State{
 	ufslab.PeripheralState_WORKING: tlw.BluetoothPeer_WORKING,
 	ufslab.PeripheralState_BROKEN:  tlw.BluetoothPeer_BROKEN,
