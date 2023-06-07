@@ -139,15 +139,14 @@ func innerMain() error {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
-	ctx, err, cf := setupContext()
+	version := readVersionFile(*versionFilePath)
+	log.Printf("drone-agent-version from file: %v", version)
+
+	ctx, err, cf := setupContext(version)
 	defer cf()
 	if err != nil {
 		return err
 	}
-	// Add drone-agent-version metadata.
-	version := readVersionFile(*versionFilePath)
-	log.Printf("drone-agent-version from file: %v", version)
-	ctx = metadata.AppendToOutgoingContext(ctx, "drone-agent-version", version)
 
 	if err := metrics.Setup(ctx, cfg.TSMonEndpoint, cfg.TSMonCredentialPath); err != nil {
 		log.Printf("Skipping metrics setup: %s", err)
@@ -209,8 +208,9 @@ func innerMain() error {
 }
 
 // setupContext sets up global context for main.
+//
 // The caller must defer/call the cleanup even if an error is returned.
-func setupContext() (_ context.Context, _ error, cleanup func()) {
+func setupContext(version string) (_ context.Context, _ error, cleanup func()) {
 	var ds deferStack
 
 	// Set up top level context and cancellation.
@@ -223,6 +223,7 @@ func setupContext() (_ context.Context, _ error, cleanup func()) {
 		return ctx, err, ds.run
 	}
 
+	ctx = metadata.AppendToOutgoingContext(ctx, "drone-agent-version", version)
 	return ctx, nil, ds.run
 }
 
