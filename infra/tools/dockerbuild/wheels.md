@@ -2192,6 +2192,20 @@ wheel: <
 
 * *universal*
 
+## **functions-framework-py3**
+
+### 3.4.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/functions-framework-py3"
+  version: "version:3.4.0"
+>
+```
+
+
+* *universal*
+
 ## **future**
 
 ### 0.16.0

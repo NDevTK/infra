@@ -1364,6 +1364,7 @@ SPECS.update({
         Universal('flatbuffers', '2.0', pyversions=['py3']),
         Universal('frozendict', '2.0.6', pyversions=['py3']),
         Universal('funcsigs', '1.0.2'),
+        Universal('functions-framework', '3.4.0', pyversions=['py3']),
         Universal('futures', '3.1.1', pyversions=['py3']),
         Universal('gast', '0.3.3'),
         Universal('gast', '0.4.0', pyversions=['py3']),
