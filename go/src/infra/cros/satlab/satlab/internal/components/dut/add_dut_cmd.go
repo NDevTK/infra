@@ -7,6 +7,7 @@ package dut
 import (
 	"fmt"
 	"os"
+	"regexp"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/errors"
@@ -72,6 +73,10 @@ func (c *addDUT) Run(a subcommands.Application, args []string, env subcommands.E
 
 // InnerRun is the implementation of run.
 func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcommands.Env) (err error) {
+	if err := validateHostname(c.hostname); err != nil {
+		return errors.Annotate(err, "bad hostname").Err()
+	}
+
 	// This function has a single defer block that inspects the return value err to see if it
 	// is nil. This defer block does *not* set the err back to nil if it succeeds in cleaning up
 	// the dut_hosts file. Instead, it creates a multierror with whatever errors it encountered.
@@ -212,4 +217,22 @@ func (c *addDUT) setupServoArguments(dockerHostBoxIdentifier string) bool {
 		c.qualifiedServo = site.MaybePrepend(site.Satlab, dockerHostBoxIdentifier, c.servo)
 	}
 	return true
+}
+
+// hostnameIDRegex is a regex all new DUTs must satisfy
+var hostnameIDRegex = regexp.MustCompile(`^([a-z0-9-])*$`)
+
+// validate verifies command has valid params.
+func validateHostname(host string) error {
+	// only contains a-z, 0-9, and `-`
+	if !hostnameIDRegex.MatchString(host) {
+		return errors.New("hostname must only contain a-z, 0-9, and -")
+	}
+
+	// enforce arbitrary cap for DUT length
+	if len(host) > 32 {
+		return errors.New("hostname must be 32 characters or less")
+	}
+
+	return nil
 }
