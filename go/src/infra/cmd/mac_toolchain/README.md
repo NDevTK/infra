@@ -55,10 +55,13 @@ Add `-kind mac` or `-kind ios` argument to install a package for mac or ios
 tasks. ~~iOS kind has iOS SDK and default iOS runtime installed additionally.~~
 (**As of 2023, Xcode is now uploaded as a whole to the "mac" package if you are on MacOS13+, so there is
 no difference between mac and ios kind -- both will install the entire Xcode.app
-with iOS runtime included**) If
-not specified, the tool installs a mac kind.
+with ~~iOS runtime included~~**)
+(**As of Xcode 15, runtime is no longer bundled within Xcode**)
+ If
+not specified, the tool installs a mac kind. Additional, you can use `-withRuntime=False`, to exclude installing
+runtime dmg with the Xcode. By default, the flag is True
 
-This will install the requested version of `Xcode.app` in the `/path/to/root`
+This command will install the requested version of `Xcode.app` in the `/path/to/root`
 folder.  Run `mac_toolchain help install` for more information.
 
 _Note:_ to access the Xcode packages, you may need to run:
@@ -93,7 +96,9 @@ By passing in `-skip-ref-tag` argument, the uploaded packages will have no CIPD
 
 ## Working with iOS runtime packages (Current solution for MacOS13+)
 
-Each Xcode package comes with a default built-in iOS runtime (e.g. Xcode 14.3 has iOS 16.4 built-in).
+Each Xcode package comes with ~~a default built-in iOS runtime (e.g. Xcode 14.3 has iOS 16.4 built-in)~~.
+(**Update**: as of Xcode 15+, it no longer comes with an iOS runtime. All runtimes need to be installed
+separately)
 However, in our build process, we usually require building and testing chrome with n to n-2
 versions of iOS to ensure backward compatibility. For example, as of early 2023,
 we test chrome with iOS 16.4, 15.5 and 14.4.

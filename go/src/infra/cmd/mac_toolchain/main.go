@@ -34,6 +34,8 @@ const XcodeIOSSimulatorRuntimeRelPath = "Contents/Developer/Platforms/iPhoneOS.p
 // Filename of default simulator runtime in Xcode package.
 const XcodeIOSSimulatorRuntimeFilename = "iOS.simruntime"
 
+const XcodeIOSSimulatorRuntimeVersionRelPath = "Contents/Developer/Platforms/iPhoneOS.platform/version.plist"
+
 // Package name of iOS runtime in CIPD.
 const IosRuntimePackageName = "ios_runtime"
 
