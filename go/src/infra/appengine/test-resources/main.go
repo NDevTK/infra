@@ -38,6 +38,7 @@ var (
 	rpcACL = rpcacl.Map{
 		"/discovery.Discovery/*":                      rpcacl.All,
 		"/test_resources.Stats/UpdateMetricsTable":    dataOwnersGroup,
+		"/test_resources.Stats/ListComponents":        rpcacl.All,
 		"/test_resources.Stats/FetchTestMetrics":      rpcacl.All,
 		"/test_resources.Stats/FetchDirectoryMetrics": rpcacl.All,
 	}
@@ -45,6 +46,7 @@ var (
 
 type Client interface {
 	UpdateSummary(ctx context.Context, fromDate civil.Date, toDate civil.Date) error
+	ListComponents(ctx context.Context, req *api.ListComponentsRequest) (*api.ListComponentsResponse, error)
 	FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequest) (*api.FetchTestMetricsResponse, error)
 	FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error)
 }
@@ -146,7 +148,11 @@ func (s *testResourcesServer) UpdateMetricsTable(ctx context.Context, req *api.U
 }
 
 func (s *testResourcesServer) ListComponents(ctx context.Context, req *api.ListComponentsRequest) (*api.ListComponentsResponse, error) {
-	panic("Endpoint has not been implemented yet")
+	resp, err := s.Client.ListComponents(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (s *testResourcesServer) FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error) {

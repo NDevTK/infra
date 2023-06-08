@@ -15,12 +15,18 @@ import (
 )
 
 type clientMock struct {
+	lastListReq     *api.ListComponentsRequest
 	lastFetchReq    *api.FetchTestMetricsRequest
 	lastFetchDirReq *api.FetchDirectoryMetricsRequest
 }
 
 func (cm *clientMock) UpdateSummary(_ context.Context, fromDate civil.Date, toDate civil.Date) error {
 	return nil
+}
+
+func (cm *clientMock) ListComponents(ctx context.Context, req *api.ListComponentsRequest) (*api.ListComponentsResponse, error) {
+	cm.lastListReq = req
+	return &api.ListComponentsResponse{}, nil
 }
 
 func (cm *clientMock) FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequest) (*api.FetchTestMetricsResponse, error) {
@@ -93,6 +99,23 @@ func TestUpdateDailySummary(t *testing.T) {
 		})
 	})
 
+}
+
+func TestListComponents(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	Convey("ListComponents", t, func() {
+		mock := &clientMock{}
+
+		srv := &testResourcesServer{
+			Client: mock,
+		}
+		request := &api.ListComponentsRequest{}
+		srv.ListComponents(ctx, request)
+
+		So(request, ShouldResemble, mock.lastListReq)
+	})
 }
 
 func TestFetchMetrics(t *testing.T) {

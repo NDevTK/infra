@@ -87,6 +87,36 @@ func bqToDateArray(dates []string) ([]civil.Date, error) {
 	return ret, nil
 }
 
+func (c *Client) ListComponents(ctx context.Context, req *api.ListComponentsRequest) (*api.ListComponentsResponse, error) {
+	query := "SELECT DISTINCT component FROM chrome-metadata.chrome.monorail_component_owners ORDER BY component"
+	q := c.BqClient.Query(query)
+
+	job, err := q.Run(ctx)
+	if err != nil {
+		return nil, err
+	}
+	it, err := job.Read(ctx)
+	if err != nil {
+		return nil, err
+	}
+	response := &api.ListComponentsResponse{}
+	type row struct {
+		Component string `bigquery:"component"`
+	}
+	for {
+		var rowVals row
+		err = it.Next(&rowVals)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, errors.Annotate(err, "obtain next component row").Err()
+		}
+		response.Components = append(response.Components, rowVals.Component)
+	}
+	return response, nil
+}
+
 // Fetches requested metrics for the provided days and filters
 func (c *Client) FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequest) (*api.FetchTestMetricsResponse, error) {
 	dates, err := bqToDateArray(req.GetDates())
