@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "03e6bac5_67455018",
+        "filename": "go/src/infra/tools/vpython_ng/pkg/application/application_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2023-06-08T23:58:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5ee8d5d8_c21f6f9d",
+      "revId": "cbaaa8dab5b0050f1ed614c67089a7c01f9755b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "296c1daf_1d4e2148",
@@ -48,6 +66,24 @@
       "writtenOn": "2023-06-07T08:18:25Z",
       "side": 1,
       "message": "nit; this is a go command so `-cache-dir`, `-root`, `-ensure-file` are more-correct",
+      "revId": "cbaaa8dab5b0050f1ed614c67089a7c01f9755b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "65cbe0be_fe210b43",
+        "filename": "go/src/infra/tools/vpython_ng/pkg/wheels/wheels.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2023-06-08T23:58:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "296c1daf_1d4e2148",
       "revId": "cbaaa8dab5b0050f1ed614c67089a7c01f9755b8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
