@@ -108,6 +108,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/fs"
 	"log"
 	"os"
 	"os/exec"
@@ -232,8 +233,24 @@ func repoToModules(ctx context.Context, repoDir string) (modRoots []string, err 
 		step.End(err)
 	}()
 
-	// TODO: Also test packages in nested modules. See go.dev/issue/32528.
-	return []string{repoDir}, nil
+	// Discover all modules that we wish to test. See go.dev/issue/32528.
+	if err := filepath.WalkDir(repoDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() && (strings.HasPrefix(d.Name(), ".") || strings.HasPrefix(d.Name(), "_") || d.Name() == "testdata") {
+			// Skip directories that we're not looking to support having testable modules in.
+			return fs.SkipDir
+		}
+		if goModFile := d.Name() == "go.mod" && !d.IsDir(); goModFile {
+			modRoots = append(modRoots, filepath.Dir(path))
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	return modRoots, nil
 }
 
 // cipdDeps is an ensure file that describes all our CIPD dependencies.
