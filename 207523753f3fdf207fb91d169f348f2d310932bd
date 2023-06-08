@@ -48,6 +48,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b9e0ba31_1abc7b16",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-08T04:48:33Z",
+      "side": 1,
+      "message": "Acknowledged, thanks for the explanation! 😊",
+      "parentUuid": "ccfcf90d_52f8c7f7",
+      "range": {
+        "startLine": 191,
+        "startChar": 0,
+        "endLine": 194,
+        "endChar": 48
+      },
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "625e6a83_93839706",
@@ -355,6 +379,30 @@
       "side": 1,
       "message": "no I meant \u003cvariants\u003e is modified (e.g. adding a variant). added `\u003c\u003e` to be clearer",
       "parentUuid": "999d9a15_3a0377e9",
+      "range": {
+        "startLine": 615,
+        "startChar": 9,
+        "endLine": 615,
+        "endChar": 48
+      },
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "54e562fe_9c9dce98",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check_test.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 615,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-08T04:48:33Z",
+      "side": 1,
+      "message": "Are you sure? You\u0027re going to show warnings when a \u003cvariants\u003e is removed because that leads to removing histograms. Isn\u0027t that right?\n\nWhy would I get a warning (with some removal message) when I add a variant?",
+      "parentUuid": "fbbec415_1f49a54a",
       "range": {
         "startLine": 615,
         "startChar": 9,
