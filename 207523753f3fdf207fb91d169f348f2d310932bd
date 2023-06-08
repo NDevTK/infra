@@ -411,6 +411,30 @@
       },
       "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "62fbabfe_b1334629",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check_test.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 615,
+      "author": {
+        "id": 1554177
+      },
+      "writtenOn": "2023-06-08T04:58:55Z",
+      "side": 1,
+      "message": "oops, my example\u0027s wrong. I meant when a \u003cvariants\u003e is modified and results in histogram(s) being removed. So more like a \u003cvariant\u003e inside a \u003cvariants\u003e is removed or renamed, etc. Will update the test name to be clearer before submitting!",
+      "parentUuid": "54e562fe_9c9dce98",
+      "range": {
+        "startLine": 615,
+        "startChar": 9,
+        "endLine": 615,
+        "endChar": 48
+      },
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
