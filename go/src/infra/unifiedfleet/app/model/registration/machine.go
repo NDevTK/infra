@@ -228,13 +228,49 @@ func getMachineID(pm proto.Message) string {
 	return p.GetName()
 }
 
-// BatchGetMachines returns a batch of machines from datastore.
-func BatchGetMachines(ctx context.Context, ids []string) ([]*ufspb.Machine, error) {
+// batchGetMachines returns a batch of machines from datastore.
+func batchGetMachines(ctx context.Context, ids []string) ([]*ufspb.Machine, error) {
 	protos := make([]proto.Message, len(ids))
 	for i, n := range ids {
 		protos[i] = &ufspb.Machine{Name: n}
 	}
 	pms, err := ufsds.BatchGet(ctx, protos, newMachineEntity, getMachineID)
+	if err != nil {
+		return nil, err
+	}
+	res := make([]*ufspb.Machine, len(pms))
+	for i, pm := range pms {
+		res[i] = pm.(*ufspb.Machine)
+	}
+	return res, nil
+}
+
+// BatchGetMachineACL routes the request to either the ACLed or
+// unACLed method depending on the rollout status.
+func BatchGetMachinesACL(ctx context.Context, ids []string) ([]*ufspb.Machine, error) {
+	cutoff := config.Get(ctx).GetExperimentalAPI().GetGetMachineACL()
+	// If cutoff is set attempt to divert the traffic to new API
+	if cutoff != 0 {
+		// Roll the dice to determine which one to use
+		roll := rand.Uint32() % 100
+		cutoff := cutoff % 100
+		if roll <= cutoff {
+			logging.Infof(ctx, "GetMachine --- Running in experimental API")
+			return batchGetMachinesACL(ctx, ids)
+		}
+	}
+
+	return batchGetMachines(ctx, ids)
+}
+
+// batchGetMachines returns a batch of machines from datastore after making an
+// ACL check.
+func batchGetMachinesACL(ctx context.Context, ids []string) ([]*ufspb.Machine, error) {
+	protos := make([]proto.Message, len(ids))
+	for i, n := range ids {
+		protos[i] = &ufspb.Machine{Name: n}
+	}
+	pms, err := ufsds.BatchGetACL(ctx, protos, newMachineEntityRealm, getMachineID, util.RegistrationsGet)
 	if err != nil {
 		return nil, err
 	}

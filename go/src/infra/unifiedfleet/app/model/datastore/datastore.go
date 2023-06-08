@@ -407,6 +407,54 @@ func BatchGet(ctx context.Context, es []proto.Message, nf NewFunc, getID GetIDFu
 	return res, nil
 }
 
+// BatchGetACL returns all entities in table for given IDs after ensuring the
+// user can access them. If any entity is not accessible to the user, this will
+// return no data and an error.
+func BatchGetACL(ctx context.Context, es []proto.Message, nf NewRealmEntityFunc, getID GetIDFunc, neededPerm realms.Permission) ([]proto.Message, error) {
+	if len(es) == 0 {
+		return nil, nil
+	}
+	res := make([]proto.Message, 0)
+	entities := make([]RealmEntity, len(es))
+	ids := make([]string, len(es))
+	for i, e := range es {
+		entity, err := nf(ctx, e)
+		if err != nil {
+			return nil, err
+		}
+		entities[i] = entity
+		ids[i] = getID(e)
+	}
+
+	if err := datastore.Get(ctx, entities); err != nil {
+		for i, e := range err.(errors.MultiError) {
+			if e != nil {
+				logging.Debugf(ctx, "BatchGet for %s: %s", ids[i], e.Error())
+				return nil, errors.Annotate(e, "Fail to get asset %q", ids[i]).Tag(grpcutil.FailedPreconditionTag).Err()
+			}
+		}
+	}
+
+	for _, e := range entities {
+		has, err := auth.HasPermission(ctx, neededPerm, e.GetRealm(), nil)
+		if err != nil {
+			logging.Errorf(ctx, "Failed to fetch auth permissions: %s", err)
+			return nil, status.Errorf(codes.Internal, InternalError)
+		}
+		if !has {
+			errorMsg := fmt.Sprintf("Permission denied")
+			return nil, status.Errorf(codes.PermissionDenied, errorMsg)
+		}
+
+		pm, err := e.GetProto()
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, pm)
+	}
+	return res, nil
+}
+
 // BatchDelete removes the entities from the datastore
 //
 // This is a non-atomic operation

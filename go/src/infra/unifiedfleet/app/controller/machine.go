@@ -664,7 +664,7 @@ func GetMachine(ctx context.Context, id string) (*ufspb.Machine, error) {
 
 // BatchGetMachines returns a batch of machines from datastore.
 func BatchGetMachines(ctx context.Context, ids []string) ([]*ufspb.Machine, error) {
-	return registration.BatchGetMachines(ctx, ids)
+	return registration.BatchGetMachinesACL(ctx, ids)
 }
 
 // ListMachines lists the machines

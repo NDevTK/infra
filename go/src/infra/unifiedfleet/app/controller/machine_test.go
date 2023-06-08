@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import (
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/model/configuration"
 	. "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/model/history"
@@ -1530,34 +1531,54 @@ func TestListMachines(t *testing.T) {
 func TestBatchGetMachines(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
+	// manually turn on config
+	alwaysUseACLConfig := config.Config{
+		ExperimentalAPI: &config.ExperimentalAPI{
+			GetMachineACL: 99,
+		},
+	}
+	ctx = config.Use(ctx, &alwaysUseACLConfig)
+	ctx = auth.WithState(ctx, &authtest.FakeState{
+		Identity: "user:atl@lab.com",
+		IdentityPermissions: []authtest.RealmPermission{
+			{
+				Realm:      util.AcsLabAdminRealm,
+				Permission: util.RegistrationsGet,
+			},
+		},
+	})
+
 	Convey("BatchGetMachines", t, func() {
 		Convey("Batch get machine - happy path", func() {
 			entities := make([]*ufspb.Machine, 4)
 			for i := 0; i < 4; i++ {
 				entities[i] = &ufspb.Machine{
 					Name: fmt.Sprintf("machine-batchGet-%d", i),
+					Location: &ufspb.Location{
+						Zone: ufspb.Zone_ZONE_CHROMEOS5,
+					},
 				}
 			}
 			_, err := registration.BatchUpdateMachines(ctx, entities)
 			So(err, ShouldBeNil)
-			resp, err := registration.BatchGetMachines(ctx, []string{"machine-batchGet-0", "machine-batchGet-1", "machine-batchGet-2", "machine-batchGet-3"})
+			resp, err := BatchGetMachines(ctx, []string{"machine-batchGet-0", "machine-batchGet-1", "machine-batchGet-2", "machine-batchGet-3"})
 			So(err, ShouldBeNil)
 			So(resp, ShouldHaveLength, 4)
 			So(resp, ShouldResembleProto, entities)
 		})
 		Convey("Batch get machines  - missing id", func() {
-			resp, err := registration.BatchGetMachines(ctx, []string{"machine-batchGet-non-existing"})
+			resp, err := BatchGetMachines(ctx, []string{"machine-batchGet-non-existing"})
 			So(err, ShouldNotBeNil)
 			So(resp, ShouldBeNil)
 			So(err.Error(), ShouldContainSubstring, "machine-batchGet-non-existing")
 		})
 		Convey("Batch get machines  - empty input", func() {
-			resp, err := registration.BatchGetMachines(ctx, nil)
+			resp, err := BatchGetMachines(ctx, nil)
 			So(err, ShouldBeNil)
 			So(resp, ShouldHaveLength, 0)
 
 			input := make([]string, 0)
-			resp, err = registration.BatchGetMachines(ctx, input)
+			resp, err = BatchGetMachines(ctx, input)
 			So(err, ShouldBeNil)
 			So(resp, ShouldHaveLength, 0)
 		})
