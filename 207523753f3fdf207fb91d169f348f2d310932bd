@@ -435,6 +435,30 @@
       },
       "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9ab5b2f1_f5e0a588",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check_test.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 615,
+      "author": {
+        "id": 1294186
+      },
+      "writtenOn": "2023-06-08T05:23:18Z",
+      "side": 1,
+      "message": "I think that\u0027s the same as removed. Rename technically is nothing but remove and add.",
+      "parentUuid": "62fbabfe_b1334629",
+      "range": {
+        "startLine": 615,
+        "startChar": 9,
+        "endLine": 615,
+        "endChar": 48
+      },
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
