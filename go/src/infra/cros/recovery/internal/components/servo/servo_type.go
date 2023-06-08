@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -95,18 +95,6 @@ func (s *ServoType) IsMicro() bool {
 // IsDualSetup checks whether the servo has a dual setup.
 func (s *ServoType) IsDualSetup() bool {
 	return s.IsV4() && (s.IsMicro() || s.IsC2D2()) && s.IsCCD()
-}
-
-// SerialnameOption returns servod control string that query serial number
-// of servo component connected to the DUT directly.
-func (s *ServoType) SerialnameOption() string {
-	if s.IsV4() && s.IsMicro() {
-		return "servo_micro_serialname"
-	}
-	if s.IsV4() && s.IsCCD() {
-		return "ccd_serialname"
-	}
-	return "serialname"
 }
 
 // IsMultipleServos checks whether the servo has more than one component.

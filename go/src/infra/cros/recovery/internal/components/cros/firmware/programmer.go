@@ -22,8 +22,6 @@ type Programmer interface {
 	ProgramEC(ctx context.Context, imagePath string) error
 	// ProgramAP programs AP firmware to devices by servo.
 	ProgramAP(ctx context.Context, imagePath, gbbHex string, force bool) error
-	// ExtractAP extracts AP firmware from device.
-	ExtractAP(ctx context.Context, imagePath string, force bool) error
 	// Close closes programming resources.
 	Close(ctx context.Context) error
 }

@@ -87,7 +87,6 @@ func (p *v3Programmer) programEC(ctx context.Context, imagePath string) error {
 // To set/update GBB flags please provide value in hex representation.
 // E.g. 0x18 to set force boot in DEV-mode and allow to boot from USB-drive in DEV-mode.
 // When force enabled, programmer will do force update (skip checking contents).
-// When externalFlashrom enabled, programmer will use external flashrom instead of libflashrom.
 func (p *v3Programmer) ProgramAP(ctx context.Context, imagePath, gbbHex string, force bool) error {
 	if err := isFileExist(ctx, imagePath, p.run); err != nil {
 		return errors.Annotate(err, "program ap").Err()
@@ -113,47 +112,6 @@ func (p *v3Programmer) programAP(ctx context.Context, imagePath, gbbHex string, 
 	out, err := p.run(ctx, firmwareProgramTimeout, strings.Join(cmd, " "))
 	p.log.Debugf("Program AP output:\n%s", out)
 	return errors.Annotate(err, "program ap").Err()
-}
-
-// ExtractAP extracts AP firmware from device.
-func (p *v3Programmer) ExtractAP(ctx context.Context, imagePath string, force bool) error {
-	if imagePath == "" {
-		return errors.Reason("extract ap from dut: path for extracting file is not provided").Err()
-	}
-	if force || isFileExist(ctx, imagePath, p.run) != nil {
-		p.log.Infof("Proceed to extract AP from the DUT to %q path", imagePath)
-		pn, err := p.name(ctx)
-		if err != nil {
-			return errors.Annotate(err, "extract ap from dut").Err()
-		}
-		p.log.Debugf("Using programmer %q", pn)
-		// Reading AP from the DUT.
-		args := []string{"-p", pn, "-f", "-r", imagePath}
-		if out, err := p.run(ctx, firmwareProgramTimeout, "flashrom", args...); err != nil {
-			return errors.Annotate(err, "extract ap from dut: read ap").Err()
-		} else {
-			p.log.Debugf("Extract AP: %v", out)
-		}
-	} else {
-		p.log.Infof("AP file is present by %q and not need to extract it again", imagePath)
-	}
-	return nil
-}
-
-// name provides the name of programmer need to be used.
-func (p *v3Programmer) name(ctx context.Context) (string, error) {
-	var serialname string
-	if res, err := p.servod.Get(ctx, p.st.SerialnameOption()); err != nil {
-		return "", errors.Annotate(err, "name").Err()
-	} else {
-		serialname = res.GetString_()
-	}
-	if p.st.IsMicro() || p.st.IsC2D2() {
-		return fmt.Sprintf("raiden_debug_spi:serial=%s", serialname), nil
-	} else if p.st.IsCCD() {
-		return fmt.Sprintf("raiden_debug_spi:target=AP,serial=%s", serialname), nil
-	}
-	return "", errors.Reason("name: Not supported servo type").Err()
 }
 
 // Prepare programmer for actions.
