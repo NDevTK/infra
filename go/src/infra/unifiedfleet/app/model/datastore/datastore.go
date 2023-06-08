@@ -64,6 +64,37 @@ func Exists(ctx context.Context, entities []FleetEntity) ([]bool, error) {
 	return res.List(0), nil
 }
 
+// Exists checks if a list of fleet entities exist in datastore and is visible
+// to the user with their current permissions.
+func ExistsACL(ctx context.Context, entities []RealmEntity, neededPerm realms.Permission) ([]bool, error) {
+	existsArr := make([]bool, len(entities))
+	dsErr := datastore.Get(ctx, entities)
+
+	for i := range entities {
+		switch {
+		// If no datastore error at all, or no datastore error for the i-th
+		// element, it exists and we just need to make a realm check.
+		case dsErr == nil || dsErr.(errors.MultiError)[i] == nil:
+			has, authErr := auth.HasPermission(ctx, neededPerm, entities[i].GetRealm(), nil)
+			if authErr != nil {
+				logging.Errorf(ctx, "Failed to fetch auth permissions: %s", authErr)
+				return nil, status.Errorf(codes.Internal, InternalError)
+			}
+			if has {
+				// Object exists and user has permission to view it.
+				existsArr[i] = true
+			}
+		case datastore.IsErrNoSuchEntity(dsErr.(errors.MultiError)[i]):
+			continue
+		// We got a non-DNE error, which means we should just fail.
+		default:
+			return nil, dsErr
+		}
+	}
+
+	return existsArr, nil
+}
+
 // Put either creates or updates an entity in the datastore
 func Put(ctx context.Context, pm proto.Message, nf NewFunc, update bool) (proto.Message, error) {
 	entity, err := nf(ctx, pm)
