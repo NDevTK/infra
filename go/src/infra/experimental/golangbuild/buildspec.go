@@ -324,6 +324,7 @@ func (b *buildSpec) goScriptCmd(ctx context.Context, script string) *exec.Cmd {
 	return cmd
 }
 
+// goCmd creates a command for running 'go {args}' in dir.
 func (b *buildSpec) goCmd(ctx context.Context, dir string, args ...string) *exec.Cmd {
 	env := environ.FromCtx(ctx)
 	// Ensure the go binary found in PATH is the same as the one we're about to execute.

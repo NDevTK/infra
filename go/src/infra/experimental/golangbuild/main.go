@@ -178,9 +178,10 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		// TODO(mknyszek): Support sharding by running `go tool dist test -list` and/or `go list std cmd` and
 		// triggering N test builders with a subset of those tests in their properties.
 		// Pass the newly-built toolchain via CAS.
+		gorootSrc := filepath.Join(spec.goroot, "src")
 		hasDistTestJSON := spec.inputs.GoBranch != "release-branch.go1.20" && spec.inputs.GoBranch != "release-branch.go1.19"
 		if hasDistTestJSON {
-			testCmd := spec.wrapTestCmd(spec.goCmd(ctx, spec.subrepoDir, spec.distTestArgs()...))
+			testCmd := spec.wrapTestCmd(spec.goCmd(ctx, gorootSrc, spec.distTestArgs()...))
 			if err := runCommandAsStep(ctx, "all"+scriptExt()+" -json", testCmd, false); err != nil {
 				return err
 			}
@@ -190,12 +191,12 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 			//   - the large remaining set with structured output support (uploaded to ResultDB)
 			//   - a small set of unstructured tests (this part is fully eliminated in Go 1.21!)
 			// While maintaining the property that their union doesn't fall short of all.bash.
-			jsonOnPart := spec.wrapTestCmd(spec.goCmd(ctx, spec.goroot, spec.goTestArgs("std", "cmd")...))
+			jsonOnPart := spec.wrapTestCmd(spec.goCmd(ctx, gorootSrc, spec.goTestArgs("std", "cmd")...))
 			if err := runCommandAsStep(ctx, "run std and cmd tests", jsonOnPart, false); err != nil {
 				return err
 			}
 			const allButStdCmd = "!^go_test:.+$" // Pattern that works in Go 1.20 and 1.19.
-			jsonOffPart := spec.goCmd(ctx, spec.goroot, spec.distTestNoJSONArgs(allButStdCmd)...)
+			jsonOffPart := spec.goCmd(ctx, gorootSrc, spec.distTestNoJSONArgs(allButStdCmd)...)
 			if err := runCommandAsStep(ctx, "run various dist tests", jsonOffPart, false); err != nil {
 				return err
 			}
