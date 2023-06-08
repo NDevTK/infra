@@ -64,7 +64,7 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, st *build.State
 	if mode, err := cv.RunMode(ctx); err == nil {
 		isDryRun = strings.HasSuffix(mode, "DRY_RUN")
 	} else if err != cv.ErrNotActive {
-		return nil, err
+		return nil, fmt.Errorf("cv.RunMode: %w", err)
 	}
 	gitilesCommit := st.Build().GetInput().GetGitilesCommit()
 	var gerritChange *bbpb.GerritChange
@@ -90,18 +90,18 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, st *build.State
 		changedProject = gerritChange.Project
 		hc, err := authenticator.Client()
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("authenticator.Client: %w", err)
 		}
 		gc, err := gerrit.NewRESTClient(hc, gerritChange.Host, true)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("gerrit.NewRESTClient: %w", err)
 		}
 		changeInfo, err := gc.GetChange(ctx, &gerritpb.GetChangeRequest{
 			Number:  gerritChange.Change,
 			Project: gerritChange.Project,
 		})
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("gc.GetChange: %w", err)
 		}
 		changedBranch = changeInfo.Branch
 	default:
@@ -130,7 +130,7 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, st *build.State
 			// We're testing the tip of inputs.Project's main branch against a Go commit.
 			subrepoSrc, err = sourceForBranch(ctx, authenticator, inputs.Project, mainBranch)
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("sourceForBranch: %w", err)
 			}
 		}
 	} else {
@@ -138,7 +138,7 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, st *build.State
 		subrepoSrc = invokedSrc
 		goSrc, err = sourceForBranch(ctx, authenticator, "go", inputs.GoBranch)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("sourceForBranch: %w", err)
 		}
 	}
 
@@ -150,7 +150,7 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, st *build.State
 	// Get the CAS instance.
 	casInst, err := casInstanceFromEnv()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("casInstanceFromEnv: %w", err)
 	}
 
 	var subrepoDir string

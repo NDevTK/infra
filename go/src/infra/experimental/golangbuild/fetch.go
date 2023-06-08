@@ -176,11 +176,11 @@ func runGit(ctx context.Context, stepName string, args ...string) (err error) {
 func sourceForBranch(ctx context.Context, auth *auth.Authenticator, project, branch string) (*sourceSpec, error) {
 	hc, err := auth.Client()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("auth.Client: %w", err)
 	}
 	gc, err := gitiles.NewRESTClient(hc, goHost, true)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("gitiles.NewRESTClient: %w", err)
 	}
 	ref := fmt.Sprintf("refs/heads/%s", branch)
 	log, err := gc.Log(ctx, &gitilespb.LogRequest{
@@ -189,7 +189,7 @@ func sourceForBranch(ctx context.Context, auth *auth.Authenticator, project, bra
 		PageSize:   1,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("gc.Log: %w", err)
 	}
 	if len(log.Log) == 0 {
 		return nil, fmt.Errorf("no commits found for project %s on branch %s", project, branch)

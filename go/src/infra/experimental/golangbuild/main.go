@@ -8,7 +8,7 @@
 //
 // To build and run this locally end-to-end, follow these steps:
 //
-//	luci-auth login -scopes "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/gerritcodereview"
+//	luci-auth login -scopes "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/gerritcodereview https://www.googleapis.com/auth/cloud-platform"
 //	cat > build.jsonpb <<EOF
 //	{
 //		"builder": {
