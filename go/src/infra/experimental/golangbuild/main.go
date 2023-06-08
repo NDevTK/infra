@@ -118,6 +118,7 @@ import (
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/luciexe/build"
+	"golang.org/x/exp/slices"
 
 	"infra/experimental/golangbuild/golangbuildpb"
 )
@@ -210,7 +211,7 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		}
 
 		// Test this specific subrepo.
-		modRoots, err := repoToModules(ctx, repoDir)
+		modRoots, err := repoToModules(ctx, spec, cwd, repoDir)
 		if err != nil {
 			return err
 		}
@@ -225,7 +226,7 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 }
 
 // repoToModules discovers and reports modules in repoDir to be tested.
-func repoToModules(ctx context.Context, repoDir string) (modRoots []string, err error) {
+func repoToModules(ctx context.Context, spec *buildSpec, cwd, repoDir string) (modRoots []string, err error) {
 	step, ctx := build.StartStep(ctx, "discover modules")
 	defer func() {
 		// Any failure in this function is an infrastructure failure.
@@ -248,6 +249,33 @@ func repoToModules(ctx context.Context, repoDir string) (modRoots []string, err 
 		return nil
 	}); err != nil {
 		return nil, err
+	}
+
+	keepNestedModsInsideRepo := map[string]bool{
+		"tools":     true, // A local replace directive in x/tools/gopls as of 2023-06-08.
+		"telemetry": true, // A local replace directive in x/telemetry/godev as of 2023-06-08.
+		"exp":       true, // A local replace directive in x/exp/slog/benchmarks/{zap,zerolog}_benchmarks as of 2023-06-08.
+	}
+	if !keepNestedModsInsideRepo[spec.inputs.Project] || spec.experiment("golang.force_test_outside_repository") {
+		// Move nested modules to directories that aren't predictably-relative to each other
+		// to catch accidental reads across nested module boundaries. See go.dev/issue/34352.
+		//
+		// Sort modRoots by increasing nested-ness, and do this
+		// in reverse order for all but the first (root) module.
+		slices.SortFunc(modRoots, func(a, b string) bool {
+			return strings.Count(a, string(filepath.Separator)) < strings.Count(b, string(filepath.Separator))
+		})
+		for i := len(modRoots) - 1; i >= 1; i-- {
+			randomDir, err := os.MkdirTemp(cwd, "nestedmod")
+			if err != nil {
+				return nil, err
+			}
+			newDir := filepath.Join(randomDir, filepath.Base(modRoots[i]))
+			if err := os.Rename(modRoots[i], newDir); err != nil {
+				return nil, err
+			}
+			modRoots[i] = newDir
+		}
 	}
 
 	return modRoots, nil

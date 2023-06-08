@@ -87,6 +87,7 @@ require (
 	go.starlark.net v0.0.0-20230122040757-066229b0515d
 	golang.org/x/build v0.0.0-20210913192547-14e3e09d6b10
 	golang.org/x/crypto v0.5.0
+	golang.org/x/exp v0.0.0-20221031165847-c99f073a8326
 	golang.org/x/mobile v0.0.0-20191031020345-0945064e013a
 	golang.org/x/net v0.7.0
 	golang.org/x/oauth2 v0.4.0
@@ -205,7 +206,6 @@ require (
 	go.opentelemetry.io/proto/otlp v0.19.0 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
-	golang.org/x/exp v0.0.0-20221031165847-c99f073a8326 // indirect
 	golang.org/x/mod v0.7.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
