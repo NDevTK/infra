@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package try
@@ -38,6 +38,8 @@ func GetCmdRelease(authOpts auth.Options) *subcommands.Command {
 			c.Flags.BoolVar(&c.useProdTests, "prod_tests", false, "Run (production) HW tests even if in staging. "+
 				"By default, HW tests are disabled in staging.")
 			c.Flags.BoolVar(&c.skipPaygen, "skip_paygen", false, "Skip payload generation. Only supported for staging builds.")
+			// TODO(b/286279619): Support string channel names.
+			c.Flags.StringVar(&c.channelOverride, "channels", "", "Specify comma-separated channel(s) to sign on. E.g. --channels 3,4")
 			if flag.NArg() > 1 && flag.Args()[1] == "help" {
 				fmt.Printf("Run `cros try help` or `cros try help ${subcomand}` for help.")
 				os.Exit(0)
@@ -125,8 +127,9 @@ func includeAllAncestors(ctx context.Context, client gerrit.Client, patches []st
 // releaseRun tracks relevant info for a given `try release` run.
 type releaseRun struct {
 	tryRunBase
-	useProdTests bool
-	skipPaygen   bool
+	useProdTests    bool
+	skipPaygen      bool
+	channelOverride string
 	// Used for testing purposes. If set, props will be written to this file
 	// rather than a temporary one.
 	propsFile *os.File
@@ -256,6 +259,18 @@ func (r *releaseRun) innerRun(_ subcommands.Application, _ []string, _ subcomman
 
 	if r.skipPaygen {
 		if err := bb.SetProperty(propsStruct, "$chromeos/orch_menu.skip_paygen", true); err != nil {
+			r.LogErr(err.Error())
+			return CmdError
+		}
+	}
+
+	if r.channelOverride != "" {
+		channelList := strings.Split(r.channelOverride, ",")
+		if err := bb.SetProperty(propsStruct, "$chromeos/cros_infra_config.override_release_channels", channelList); err != nil {
+			r.LogErr(err.Error())
+			return CmdError
+		}
+		if err := bb.SetProperty(propsStruct, "$chromeos/cros_infra_config.should_override_release_channels", true); err != nil {
 			r.LogErr(err.Error())
 			return CmdError
 		}

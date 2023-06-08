@@ -113,11 +113,13 @@ type runTestConfig struct {
 	// e.g. staging-release-R106.15054.B-orchestrator
 	expectedOrch string
 	// e.g. "staging-eve-release-R106.15054.B"
-	expectedChildren []string
-	skipPaygen       bool
-	production       bool
-	dryrun           bool
-	branch           string
+	expectedChildren        []string
+	skipPaygen              bool
+	production              bool
+	dryrun                  bool
+	branch                  string
+	channelOverride         string
+	expectedChannelOverride []string
 }
 
 func doTestRun(t *testing.T, tc *runTestConfig) {
@@ -182,7 +184,8 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 			buildTargets:         tc.buildTargets,
 			skipProductionPrompt: true,
 		},
-		useProdTests: true,
+		useProdTests:    true,
+		channelOverride: tc.channelOverride,
 	}
 	ret := r.Run(nil, nil, nil)
 	if tc.failChildCheck {
@@ -211,6 +214,21 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 		assert.Assert(t, !exists)
 	} else {
 		assert.Assert(t, exists && skipPaygen.GetBoolValue())
+	}
+
+	shouldOverrideChannels, exists := properties.GetFields()["$chromeos/cros_infra_config"].GetStructValue().GetFields()["should_override_release_channels"]
+
+	overrideChannels := properties.GetFields()["$chromeos/cros_infra_config"].GetStructValue().GetFields()["override_release_channels"].GetListValue().AsSlice()
+
+	if len(tc.channelOverride) > 0 {
+		channelOverrideList := strings.Split(tc.channelOverride, ",")
+		if len(channelOverrideList) != len(tc.expectedChannelOverride) {
+			t.Fatalf("len(channelOverride) != len(expectedChannelOverride), invalid test")
+		}
+		assert.Assert(t, exists && shouldOverrideChannels.GetBoolValue())
+		assert.StringArrsEqual(t, interfaceSliceToStr(overrideChannels), tc.expectedChannelOverride)
+	} else {
+		assert.Assert(t, !exists)
 	}
 
 	noPublicBuild, exists := properties.GetFields()["$chromeos/orch_menu"].GetStructValue().GetFields()["schedule_public_build"]
@@ -482,5 +500,18 @@ func TestIncludeAllAncestors(t *testing.T) {
 		}
 		assert.Assert(t, expectSingleInternal)
 		assert.Assert(t, expectSingleExternal)
+	})
+}
+
+func TestRun_channelOverride(t *testing.T) {
+	t.Parallel()
+	doTestRun(t, &runTestConfig{
+		branch:                  "release-R106.15054.B",
+		production:              true,
+		buildTargets:            []string{"eve", "kevin-kernelnext"},
+		expectedOrch:            "release-R106.15054.B-orchestrator",
+		expectedChildren:        []string{"eve-release-R106.15054.B", "kevin-kernelnext-release-R106.15054.B"},
+		channelOverride:         "dev,beta",
+		expectedChannelOverride: []string{"dev", "beta"},
 	})
 }
