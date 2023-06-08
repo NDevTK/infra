@@ -594,21 +594,41 @@ func TestHistogramsCheck(t *testing.T) {
 		})
 	})
 
-	Convey("Analyze XML file with histogram(s) removed with an obsoletion message", t, func() {
-		obsoletedHistograms := make(map[string]bool)
-		obsoletedHistograms["Test.Histogram2"] = false
-		results := analyzeHistogramTestFileWithObsoletion(t, "rm/remove_histogram.xml", "prevdata/tricium_generated_diff.patch", "prevdata/src", obsoletedHistograms)
-		_, present := obsoletedHistograms["Test.Histogram2"]
-		So(results, ShouldBeNil)
-		So(present, ShouldBeFalse)
+	Convey("Analyze XML file with patterned histogram(s) removed without an obsoletion message", t, func() {
+		results := analyzeHistogramTestFile(t, "rm/remove_patterned_histogram.xml", "prevdata/tricium_remove_patterned_histogram_diff.patch", "prevdata/src")
+		So(results, ShouldResemble, []*tricium.Data_Comment{
+			{
+				Category:             category + "/Removed",
+				Message:              fmt.Sprintf(removedHistogramInfo, "TestDragon.Histogram2.Bulbasaur, TestDragon.Histogram2.Charizard, TestFlying.Histogram2.Bulbasaur, TestFlying.Histogram2.Charizard"),
+				Path:                 "rm/remove_patterned_histogram.xml",
+				ShowOnUnchangedLines: true,
+			},
+		})
 	})
 
-	Convey("Analyze XML file with histogram(s) removed with an obsoletion message with data discontinuity", t, func() {
-		obsoletedHistograms := make(map[string]bool)
-		obsoletedHistograms["Test.Histogram2"] = false
-		results := analyzeHistogramTestFileWithObsoletion(t, "rm/remove_histogram_with_old_expiry.xml", "prevdata/tricium_remove_histogram_with_old_expiry.patch", "prevdata/src", obsoletedHistograms)
-		_, present := obsoletedHistograms["Test.Histogram2"]
+	Convey("Analyze XML file with histogram(s) removed without an obsoletion message with data discontinuity", t, func() {
+		results := analyzeHistogramTestFile(t, "rm/remove_histogram_with_old_expiry.xml", "prevdata/tricium_remove_histogram_with_old_expiry.patch", "prevdata/src")
 		// Remove an already deprecated histogram shouldn't show a Tricium warning.
+		So(results, ShouldBeNil)
+	})
+
+	Convey("Analyze XML file with <variants> modified", t, func() {
+		results := analyzeHistogramTestFile(t, "rm/modify_variants.xml", "prevdata/tricium_modify_variants_diff.patch", "prevdata/src")
+		So(results, ShouldResemble, []*tricium.Data_Comment{
+			{
+				Category:             category + "/Removed",
+				Message:              fmt.Sprintf(removedHistogramInfo, "TestDragon.Histogram2.Charizard, TestFlying.Histogram2.Charizard"),
+				Path:                 "rm/modify_variants.xml",
+				ShowOnUnchangedLines: true,
+			},
+		})
+	})
+
+	Convey("Analyze XML file with histogram(s) removed with an obsoletion message", t, func() {
+		obsoletedHistograms := make(map[string]bool)
+		obsoletedHistograms["Test.Histogram2"] = true
+		results := analyzeHistogramTestFileWithObsoletion(t, "rm/remove_histogram.xml", "prevdata/tricium_generated_diff.patch", "prevdata/src", obsoletedHistograms)
+		_, present := obsoletedHistograms["Test.Histogram2"]
 		So(results, ShouldBeNil)
 		So(present, ShouldBeFalse)
 	})
