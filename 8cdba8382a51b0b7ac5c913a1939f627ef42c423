@@ -190,6 +190,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "73337f4a_6aa249d1",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 25
+      },
+      "lineNbr": 588,
+      "author": {
+        "id": 1554177
+      },
+      "writtenOn": "2023-06-08T00:13:59Z",
+      "side": 1,
+      "message": "comment \u0026 TODO added.",
+      "parentUuid": "7020f16d_ee272fd7",
+      "range": {
+        "startLine": 588,
+        "startChar": 3,
+        "endLine": 588,
+        "endChar": 48
+      },
+      "revId": "8cdba8382a51b0b7ac5c913a1939f627ef42c423",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ca89c767_c4fceaed",

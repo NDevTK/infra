@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ccfcf90d_52f8c7f7",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 1554177
+      },
+      "writtenOn": "2023-06-08T00:13:59Z",
+      "side": 1,
+      "message": "I don\u0027t think I can merge them because we only show one message for all the histograms that are obsoleted without removal",
+      "parentUuid": "0bc0e5c0_66058ce6",
+      "range": {
+        "startLine": 191,
+        "startChar": 0,
+        "endLine": 194,
+        "endChar": 48
+      },
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "625e6a83_93839706",
         "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
         "patchSetId": 26
@@ -70,6 +94,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4fcc86e8_4b2194e2",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 426,
+      "author": {
+        "id": 1554177
+      },
+      "writtenOn": "2023-06-08T00:13:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bbbb9bc4_b426dda6",
+      "range": {
+        "startLine": 426,
+        "startChar": 2,
+        "endLine": 426,
+        "endChar": 30
+      },
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1e835b85_91226f6b",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 426,
+      "author": {
+        "id": 1554177
+      },
+      "writtenOn": "2023-06-08T00:13:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "625e6a83_93839706",
+      "range": {
+        "startLine": 426,
+        "startChar": 5,
+        "endLine": 426,
+        "endChar": 15
+      },
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c0909bcc_9099523a",
@@ -83,6 +155,30 @@
       "writtenOn": "2023-06-06T05:28:10Z",
       "side": 1,
       "message": "I think this is not obvious for readers. Please add comment why you want to skip them.",
+      "range": {
+        "startLine": 654,
+        "startChar": 2,
+        "endLine": 656,
+        "endChar": 3
+      },
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c3822e44_8263f69f",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 656,
+      "author": {
+        "id": 1554177
+      },
+      "writtenOn": "2023-06-08T00:13:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c0909bcc_9099523a",
       "range": {
         "startLine": 654,
         "startChar": 2,
@@ -116,6 +212,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "85990d35_475165b5",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 666,
+      "author": {
+        "id": 1554177
+      },
+      "writtenOn": "2023-06-08T00:13:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f672b118_37990cee",
+      "range": {
+        "startLine": 666,
+        "startChar": 5,
+        "endLine": 666,
+        "endChar": 29
+      },
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "db0ff1b9_bf94da3e",
@@ -129,6 +249,30 @@
       "writtenOn": "2023-06-06T05:28:10Z",
       "side": 1,
       "message": "This is also related",
+      "range": {
+        "startLine": 671,
+        "startChar": 7,
+        "endLine": 671,
+        "endChar": 15
+      },
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cbdbcbc3_fb234c21",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 671,
+      "author": {
+        "id": 1554177
+      },
+      "writtenOn": "2023-06-08T00:13:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "db0ff1b9_bf94da3e",
       "range": {
         "startLine": 671,
         "startChar": 7,
@@ -156,6 +300,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2312dbe0_77debafc",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 684,
+      "author": {
+        "id": 1554177
+      },
+      "writtenOn": "2023-06-08T00:13:59Z",
+      "side": 1,
+      "message": "I changed it to numDays :)",
+      "parentUuid": "11e7bd40_99370732",
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "999d9a15_3a0377e9",
@@ -169,6 +331,30 @@
       "writtenOn": "2023-06-06T05:28:10Z",
       "side": 1,
       "message": "The test name doesn\u0027t make sense to me. Are you trying to say with variants removed?",
+      "range": {
+        "startLine": 615,
+        "startChar": 9,
+        "endLine": 615,
+        "endChar": 48
+      },
+      "revId": "207523753f3fdf207fb91d169f348f2d310932bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fbbec415_1f49a54a",
+        "filename": "go/src/infra/tricium/functions/metrics/histograms_check_test.go",
+        "patchSetId": 26
+      },
+      "lineNbr": 615,
+      "author": {
+        "id": 1554177
+      },
+      "writtenOn": "2023-06-08T00:13:59Z",
+      "side": 1,
+      "message": "no I meant \u003cvariants\u003e is modified (e.g. adding a variant). added `\u003c\u003e` to be clearer",
+      "parentUuid": "999d9a15_3a0377e9",
       "range": {
         "startLine": 615,
         "startChar": 9,
