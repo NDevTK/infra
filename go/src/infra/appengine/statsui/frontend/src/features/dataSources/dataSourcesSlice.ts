@@ -257,6 +257,24 @@ const initialState: DataSourcesState = populateMaps({
             emptyValue: 0,
           }),
         },
+        {
+          name: 'P50 Total Suite Runtime',
+          unit: Unit.Duration,
+          hasSubsections: true,
+          description: `P50 total runtime test suites. This is the total
+          swarming time used on a builder suite combination including
+          overhead`,
+          color: colorGradient(MetricOptionColorType.DeltaPercentage, 0.1),
+        },
+        {
+          name: 'P90 Total Suite Runtime',
+          unit: Unit.Duration,
+          hasSubsections: true,
+          description: `P90 total runtime test suites. This is the total
+          swarming time used on a builder suite combination including
+          overhead`,
+          color: colorGradient(MetricOptionColorType.DeltaPercentage, 0.1),
+        },
       ],
       periods: [
         {
