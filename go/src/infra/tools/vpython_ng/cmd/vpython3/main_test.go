@@ -99,6 +99,7 @@ func TestMain(m *testing.M) {
 	if testStorageDir, err = os.MkdirTemp("", "vpython-test-"); err != nil {
 		panic(err)
 	}
+	wheels.Init(filepath.Join(testStorageDir, "cipd"))
 
 	rc := m.Run()
 
