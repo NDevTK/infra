@@ -187,7 +187,8 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 	env.Set("GOROOT_BOOTSTRAP", filepath.Join(b.toolsRoot, "go_bootstrap"))
 	env.Set("GOPATH", b.gopath) // Explicitly set to an empty per-build directory, to avoid reusing the implicit default one.
 	env.Set("GOBIN", "")
-	env.Set("GOROOT", "") // Clear GOROOT because it's likely someone has one set locally, e.g. for luci-go development.
+	env.Set("GOROOT", "")           // Clear GOROOT because it's possible someone has one set locally, e.g. for luci-go development.
+	env.Set("GOTOOLCHAIN", "local") // golangbuild scope includes selecting the exact Go toolchain version, so always use that local one.
 	env.Set("GOCACHE", b.gocacheDir)
 	env.Set("GO_BUILDER_NAME", b.builderName)
 	if b.inputs.LongTest {
