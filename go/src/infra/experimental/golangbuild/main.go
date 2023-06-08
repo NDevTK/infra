@@ -203,18 +203,37 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		}
 	} else {
 		// Fetch the target repository into targetrepo.
-		if err := fetchRepo(ctx, spec.subrepoSrc, spec.subrepoDir); err != nil {
+		repoDir := filepath.Join(cwd, "targetrepo")
+		if err := fetchRepo(ctx, spec.subrepoSrc, repoDir); err != nil {
 			return err
 		}
 
 		// Test this specific subrepo.
-		// TODO: Also test packages in nested modules.
-		testCmd := spec.wrapTestCmd(spec.goCmd(ctx, spec.subrepoDir, spec.goTestArgs("./...")...))
-		if err := runCommandAsStep(ctx, "go test -json [-short] [-race] ./...", testCmd, false); err != nil {
+		modRoots, err := repoToModules(ctx, repoDir)
+		if err != nil {
 			return err
+		}
+		for _, modRoot := range modRoots {
+			testCmd := spec.wrapTestCmd(spec.goCmd(ctx, modRoot, spec.goTestArgs("./...")...))
+			if err := runCommandAsStep(ctx, "go test -json [-short] [-race] ./...", testCmd, false); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
+}
+
+// repoToModules discovers and reports modules in repoDir to be tested.
+func repoToModules(ctx context.Context, repoDir string) (modRoots []string, err error) {
+	step, ctx := build.StartStep(ctx, "discover modules")
+	defer func() {
+		// Any failure in this function is an infrastructure failure.
+		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
+		step.End(err)
+	}()
+
+	// TODO: Also test packages in nested modules. See go.dev/issue/32528.
+	return []string{repoDir}, nil
 }
 
 // cipdDeps is an ensure file that describes all our CIPD dependencies.

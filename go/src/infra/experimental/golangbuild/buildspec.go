@@ -30,12 +30,12 @@ import (
 	sauth "go.chromium.org/luci/server/auth"
 )
 
+// buildSpec specifies what a single build will begin doing.
 type buildSpec struct {
 	auth *auth.Authenticator
 
 	builderName string
 	goroot      string
-	subrepoDir  string
 	gopath      string
 	gocacheDir  string
 	toolsRoot   string
@@ -153,11 +153,6 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, st *build.State
 		return nil, fmt.Errorf("casInstanceFromEnv: %w", err)
 	}
 
-	var subrepoDir string
-	if inputs.Project != "go" {
-		subrepoDir = filepath.Join(cwd, "targetrepo")
-	}
-
 	// Collect enabled experiments.
 	experiments := make(map[string]struct{})
 	for _, ex := range st.Build().GetInput().GetExperiments() {
@@ -170,7 +165,6 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, st *build.State
 		goroot:      filepath.Join(cwd, "goroot"),
 		gopath:      filepath.Join(cwd, "gopath"),
 		gocacheDir:  filepath.Join(cwd, "gocache"),
-		subrepoDir:  subrepoDir,
 		toolsRoot:   toolsRoot,
 		casInstance: casInst,
 		inputs:      inputs,
