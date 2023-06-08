@@ -174,19 +174,46 @@ func ParseSecurityConfig(ctx context.Context, config *ufspb.SecurityInfos) {
 	if err := updateBotConfigForBotIds(ctx, botsMap); err != nil {
 		logging.Debugf(ctx, "Got errors while parsing bot id config %v", err)
 	}
+
+	// Delete stale configs
+	deleteStaleConfigs(ctx, botPrefixesMap, botsMap)
+}
+
+// Cleanup ownership data that is no longer present in the starlark configs
+func deleteStaleConfigs(ctx context.Context, botPrefixesMap map[string]*ufspb.OwnershipData, botsMap map[string]*ufspb.OwnershipData) {
+	var pageToken string
+	staleEntries := make([]string, 0)
+	for {
+		entries, token, err := listOwnershipEntities(ctx, 1000, pageToken, "", true)
+		if err != nil {
+			logging.Warningf(ctx, "List ownership configs failed during cleanup : %s", err)
+		}
+		for _, entry := range entries {
+			// check if this key exists in the bots map or the botIdPrefixes map
+			// otherwise mark it as stale
+			hostName := entry.Name
+			_, ok := botsMap[hostName]
+			if !ok {
+				_, ok = botPrefixesMap[hostName]
+				if !ok && !mapContainsPrefix(botPrefixesMap, hostName) {
+					updateOwnership(ctx, hostName, nil, entry.AssetType)
+					staleEntries = append(staleEntries, hostName)
+					logging.Warningf(ctx, "found stale entry during cleanup : %s", hostName)
+				}
+			}
+		}
+		if token == "" {
+			break
+		}
+		pageToken = token
+	}
+
+	inventory.BatchDeleteOwnerships(ctx, staleEntries)
 }
 
 // ListOwnershipConfigs lists the ownerships based on the specified parameters.
 func ListOwnershipConfigs(ctx context.Context, pageSize int32, pageToken, filter string, keysOnly bool) ([]*api.OwnershipByHost, string, error) {
-	var filterMap map[string][]interface{}
-	var err error
-	if filter != "" {
-		filterMap, err = getFilterMap(filter, inventory.GetOwnershipIndexedFieldName)
-		if err != nil {
-			return nil, "", errors.Annotate(err, "failed to read filter for listing Ownerships").Err()
-		}
-	}
-	res, pageToken, err := inventory.ListOwnerships(ctx, pageSize, pageToken, filterMap, keysOnly)
+	res, pageToken, err := listOwnershipEntities(ctx, pageSize, pageToken, filter, keysOnly)
 	if err != nil {
 		return nil, "", err
 	}
@@ -206,6 +233,25 @@ func ListOwnershipConfigs(ctx context.Context, pageSize int32, pageToken, filter
 		}
 	}
 	return entities, pageToken, nil
+}
+
+// listOwnershipEntities lists the ownership datastore entities,
+// based on the specified parameters.
+func listOwnershipEntities(ctx context.Context, pageSize int32, pageToken,
+	filter string, keysOnly bool) ([]inventory.OwnershipDataEntity, string, error) {
+	var filterMap map[string][]interface{}
+	var err error
+	if filter != "" {
+		filterMap, err = getFilterMap(filter, inventory.GetOwnershipIndexedFieldName)
+		if err != nil {
+			return nil, "", errors.Annotate(err, "failed to read filter for listing Ownerships").Err()
+		}
+	}
+	res, pageToken, err := inventory.ListOwnerships(ctx, pageSize, pageToken, filterMap, keysOnly)
+	if err != nil {
+		return nil, "", err
+	}
+	return res, pageToken, nil
 }
 
 // Updates the Ownership config for the bot ids collected from the config.
@@ -544,6 +590,16 @@ func existsInList(list []string, name string) bool {
 	for i := range list {
 		// Already exists in the pools list
 		if name == list[i] {
+			return true
+		}
+	}
+	return false
+}
+
+// Checks if the hostname prefix exists in the map
+func mapContainsPrefix(botPrefixesMap map[string]*ufspb.OwnershipData, hostName string) bool {
+	for key := range botPrefixesMap {
+		if strings.HasPrefix(hostName, key) {
 			return true
 		}
 	}

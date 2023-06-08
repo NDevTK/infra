@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -145,4 +145,17 @@ func GetOwnershipIndexedFieldName(input string) (string, error) {
 		return "", status.Errorf(codes.InvalidArgument, "Invalid field name %s - field name for host are assettype", input)
 	}
 	return field, nil
+}
+
+// BatchDeleteOwnerships deletes a batch of entities with the given ids
+func BatchDeleteOwnerships(ctx context.Context, ids []string) error {
+	entities := make([]ufsds.FleetEntity, len(ids))
+	for i, id := range ids {
+		entities[i] = &OwnershipDataEntity{Name: id}
+	}
+	if err := datastore.Delete(ctx, entities); err != nil {
+		logging.Errorf(ctx, "Failed to delete entities from datastore: %s", err)
+		return status.Errorf(codes.Internal, fmt.Sprintf("%s: %s", "Internal Error", err.Error()))
+	}
+	return nil
 }

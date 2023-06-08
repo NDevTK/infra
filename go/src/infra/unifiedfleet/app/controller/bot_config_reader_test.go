@@ -366,6 +366,32 @@ func TestParseSecurityConfig(t *testing.T) {
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "NotFound")
 		})
+		Convey("Cleans up stale configs", func() {
+			ownership := &ufspb.OwnershipData{PoolName: "pool1"}
+			resp, err := registration.CreateMachine(ctx, mockChromeBrowserMachine("test10-1", "test1"))
+			So(resp, ShouldNotBeNil)
+			So(resp.Ownership, ShouldBeNil)
+			So(err, ShouldBeNil)
+
+			resp, err = registration.UpdateMachineOwnership(ctx, "test10-1", ownership)
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp.Ownership, ShouldNotBeNil)
+
+			_, err = inventory.PutOwnershipData(ctx, ownership, "test10-1", inventory.AssetTypeMachine)
+			So(err, ShouldBeNil)
+
+			ParseSecurityConfig(ctx, mockSecurityConfig("test{5,6}-1", "abc", "testSwarming", "customer", "trusted", "builder"))
+
+			configResp, err := inventory.GetOwnershipData(ctx, "test10-1")
+			So(configResp, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "NotFound")
+			resp, err = registration.GetMachine(ctx, "test10-1")
+			So(resp, ShouldNotBeNil)
+			So(err, ShouldBeNil)
+			So(resp.Ownership, ShouldBeNil)
+		})
 	})
 }
 
