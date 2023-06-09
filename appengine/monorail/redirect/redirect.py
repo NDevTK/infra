@@ -70,7 +70,8 @@ def GenerateRedirectApp():
   def IssueCreate(project_name):
     redirect_url = redirect_utils.GetRedirectURL(project_name)
     if redirect_url:
-      query_string = redirect_utils.GetNewIssueParams(flask.request.args)
+      query_string = redirect_utils.GetNewIssueParams(
+          flask.request.args, project_name)
       return flask.redirect(redirect_url + '/new?' + query_string)
     flask.abort(404)
   redirect_app.route('/p/<string:project_name>/issues/entry')(IssueCreate)

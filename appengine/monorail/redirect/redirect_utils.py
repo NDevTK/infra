@@ -4,6 +4,7 @@
 """Utils for redirect."""
 import urllib
 from werkzeug.datastructures import MultiDict
+from redirect import redirect_project_template
 
 from tracker import tracker_constants
 from tracker import tracker_bizobj
@@ -31,8 +32,18 @@ def GetRedirectURL(project_name):
   return PROJECT_REDIRECT_MAP.get(project_name, None)
 
 
-def GetNewIssueParams(params: MultiDict):
+def GetNewIssueParams(params: MultiDict, project_name: str):
   new_issue_params = {}
+
+  # Get component and template id.
+  template_name = params.get('template', type=str, default='default')
+  redirect_component_id, redirect_template_id = (
+    redirect_project_template.RedirectProjectTemplate.Get(
+    project_name, template_name))
+  if redirect_component_id:
+    new_issue_params['component'] = redirect_component_id
+  if redirect_template_id:
+    new_issue_params['template'] = redirect_template_id
 
   if params.get('summary', type=str):
     new_issue_params['title'] = params.get('summary', type=str)

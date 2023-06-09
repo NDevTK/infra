@@ -5,13 +5,17 @@
 import unittest
 import werkzeug
 
+from mock import patch
+
 from redirect import redirect_utils
 from mock import patch
 
 
 class TestRedirectUtils(unittest.TestCase):
 
-  def testNewIssueParams(self):
+  @patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
+  def testNewIssueParams(self, fake_redirectProjectTemplate):
+    fake_redirectProjectTemplate.return_value = None, None
     params = werkzeug.datastructures.MultiDict(
         [
             ('summary', 'this is a summary'),
@@ -22,13 +26,25 @@ class TestRedirectUtils(unittest.TestCase):
     expected = ('title=this+is+a+summary&description=task&'
                 'cc=c1%40google.com%2Cc2%40google.com&assignee=test')
 
-    get = redirect_utils.GetNewIssueParams(params)
+    get = redirect_utils.GetNewIssueParams(params, 'project')
     self.assertEqual(expected, get)
 
-  def testNewIssueParamsWithNoValidValue(self):
+  @patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
+  def testNewIssueParamsWithComponent(self, fake_redirectProjectTemplate):
+    fake_redirectProjectTemplate.return_value = '1', '2'
+    params = werkzeug.datastructures.MultiDict(
+        [('summary', 'this is a summary'), ('owner', 'test@google.com')])
+    expected = 'component=1&template=2&title=this+is+a+summary&assignee=test'
+
+    get = redirect_utils.GetNewIssueParams(params, 'project')
+    self.assertEqual(expected, get)
+
+  @patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
+  def testNewIssueParamsWithNoValidValue(self, fake_redirectProjectTemplate):
+    fake_redirectProjectTemplate.return_value = None, None
     params = werkzeug.datastructures.MultiDict([('test', 'this is a test')])
     expected = ''
-    get = redirect_utils.GetNewIssueParams(params)
+    get = redirect_utils.GetNewIssueParams(params, 'project')
     self.assertEqual(expected, get)
 
   @patch("redirect.redirect_custom_value.RedirectCustomValue.Get")
