@@ -40,7 +40,7 @@ func TestBqExport(t *testing.T) {
 
 	Convey("BqExport", t, func() {
 		Convey("generateSchema", func() {
-			_, err := generateSchema()
+			_, err := GenerateDirBQRowSchema()
 			So(err, ShouldBeNil)
 		})
 		mapping := &dirmd.Mapping{

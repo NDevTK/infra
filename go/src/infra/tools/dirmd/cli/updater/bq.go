@@ -45,7 +45,7 @@ func (u *Updater) bqWrite(ctx context.Context, mapping *dirmd.Mapping) error {
 	if u.BqTable == nil {
 		return nil
 	}
-	schema, err := generateSchema()
+	schema, err := GenerateDirBQRowSchema()
 	if err != nil {
 		return err
 	}
@@ -62,7 +62,8 @@ func (u *Updater) bqWrite(ctx context.Context, mapping *dirmd.Mapping) error {
 	return writeToBQ(ctx, u.BqTable.Inserter(), mapping, u.Commit, u.BqExportFiles)
 }
 
-func generateSchema() (schema bigquery.Schema, err error) {
+// GenerateDirBQRowSchema generates a Schema based off DirBQRow.
+func GenerateDirBQRowSchema() (schema bigquery.Schema, err error) {
 	fd, _ := descriptor.MessageDescriptorProto(&dirmdpb.DirBQRow{})
 	fdmr, _ := descriptor.MessageDescriptorProto(&dirmdpb.Monorail{})
 	fdwpt, _ := descriptor.MessageDescriptorProto(&dirmdpb.WPT{})
@@ -129,7 +130,9 @@ func subRepo(dir string, mapping *dirmd.Mapping) string {
 	return ""
 }
 
-func commonDirBQRow(commit *GitCommit, md *dirmdpb.Metadata, partitionTime *timestamppb.Timestamp) *dirmdpb.DirBQRow {
+// CommonDirBQRow returns a DirBQRow based off commit, md, and partitionTime.
+// Note that Dir, File, and Source.SubRepo are not populated.
+func CommonDirBQRow(commit *GitCommit, md *dirmdpb.Metadata, partitionTime *timestamppb.Timestamp) *dirmdpb.DirBQRow {
 	row := &dirmdpb.DirBQRow{
 		Source: &dirmdpb.Source{
 			GitHost:  commit.Host,
@@ -168,7 +171,7 @@ func generateRows(ctx context.Context, mapping *dirmd.Mapping, commit *GitCommit
 	}
 
 	for dir, md := range mapping.Dirs {
-		row := commonDirBQRow(commit, md, partitionTime)
+		row := CommonDirBQRow(commit, md, partitionTime)
 		row.Source.SubRepo = subRepo(dir, mapping)
 		row.Dir = dir
 
@@ -184,7 +187,7 @@ func generateRows(ctx context.Context, mapping *dirmd.Mapping, commit *GitCommit
 	// existing users so this is flagged to ensure dependencies have time to migrate before this becomes permanent.
 	if bqExportFiles {
 		for file, md := range mapping.Files {
-			row := commonDirBQRow(commit, md, partitionTime)
+			row := CommonDirBQRow(commit, md, partitionTime)
 			row.Source.SubRepo = subRepo(file, mapping)
 			row.File = file
 
