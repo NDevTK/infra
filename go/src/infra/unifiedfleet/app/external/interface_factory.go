@@ -223,7 +223,7 @@ func (es *InterfaceFactory) NewDeviceConfigInterfaceFactory(ctx context.Context,
 }
 
 func deviceConfigFactoryImpl(ctx context.Context, inventoryHost string) (DeviceConfigClient, error) {
-	t, err := auth.GetRPCTransport(ctx, auth.AsSelf)
+	t, err := auth.GetRPCTransport(ctx, auth.AsCredentialsForwarder)
 	if err != nil {
 		return nil, err
 	}
