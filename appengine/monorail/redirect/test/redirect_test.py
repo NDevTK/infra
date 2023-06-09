@@ -17,7 +17,8 @@ class TestRedirectApp(unittest.TestCase):
     self.assertEqual(response.status_code, 404)
 
   @patch("redirect.redirect_utils.GetRedirectURL")
-  def testRedirectIssueList(self, fake_get_url):
+  @patch("redirect.redirect_utils.GetSearchQuery")
+  def testRedirectIssueList(self, fake_get_url, fake_get_search_query):
     client = self.app.test_client()
     response = client.get('/p/project1/issues/list')
     self.assertEqual(response.status_code, 302)

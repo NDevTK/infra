@@ -46,7 +46,9 @@ def GenerateRedirectApp():
   def IssueList(project_name):
     redirect_url = redirect_utils.GetRedirectURL(project_name)
     if redirect_url:
-      return flask.redirect(redirect_url)
+      query_string = redirect_utils.GetSearchQuery(
+          project_name, flask.request.args)
+      return flask.redirect(redirect_url + '/issues?' + query_string)
     flask.abort(404)
 
   redirect_app.route('/p/<string:project_name>/')(IssueList)
