@@ -403,24 +403,6 @@ func runListQueries(ctx context.Context, queries []*datastore.Query, pageSize in
 	return
 }
 
-func queryAllMachine(ctx context.Context) ([]ufsds.FleetEntity, error) {
-	var entities []*MachineEntity
-	q := datastore.NewQuery(MachineKind)
-	if err := datastore.GetAll(ctx, q, &entities); err != nil {
-		return nil, err
-	}
-	fe := make([]ufsds.FleetEntity, len(entities))
-	for i, e := range entities {
-		fe[i] = e
-	}
-	return fe, nil
-}
-
-// GetAllMachines returns all machines in datastore.
-func GetAllMachines(ctx context.Context) (*ufsds.OpResults, error) {
-	return ufsds.GetAll(ctx, queryAllMachine)
-}
-
 // DeleteMachines deletes a batch of machines
 func DeleteMachines(ctx context.Context, resourceNames []string) *ufsds.OpResults {
 	protos := make([]proto.Message, len(resourceNames))

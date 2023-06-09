@@ -771,11 +771,6 @@ func listMachinesWithExperimentalACL(ctx context.Context, pageSize int32, pageTo
 	return registration.ListMachines(ctx, pageSize, pageToken, filterMap, keysOnly)
 }
 
-// GetAllMachines returns all machines in datastore.
-func GetAllMachines(ctx context.Context) (*ufsds.OpResults, error) {
-	return registration.GetAllMachines(ctx)
-}
-
 // DeleteMachine deletes the machine and its associated nics and drac in datastore
 //
 // For referential data intergrity,
@@ -860,46 +855,6 @@ func DeleteMachine(ctx context.Context, id string) error {
 	}
 
 	return nil
-}
-
-// ImportMachines creates or updates a batch of machines in datastore
-func ImportMachines(ctx context.Context, machines []*ufspb.Machine, pageSize int) (*ufsds.OpResults, error) {
-	deleteNonExistingMachines(ctx, machines, pageSize)
-	allRes := make(ufsds.OpResults, 0)
-	for i := 0; ; i += pageSize {
-		end := util.Min(i+pageSize, len(machines))
-		res, err := registration.ImportMachines(ctx, machines[i:end])
-		allRes = append(allRes, *res...)
-		if err != nil {
-			return &allRes, err
-		}
-		if i+pageSize >= len(machines) {
-			break
-		}
-	}
-	return &allRes, nil
-}
-
-func deleteNonExistingMachines(ctx context.Context, machines []*ufspb.Machine, pageSize int) (*ufsds.OpResults, error) {
-	resMap := make(map[string]bool)
-	for _, r := range machines {
-		resMap[r.GetName()] = true
-	}
-	resp, err := registration.GetAllMachines(ctx)
-	if err != nil {
-		return nil, err
-	}
-	var toDelete []string
-	for _, sr := range resp.Passed() {
-		s := sr.Data.(*ufspb.Machine)
-		if s.GetChromeBrowserMachine() != nil {
-			if _, ok := resMap[s.GetName()]; !ok {
-				toDelete = append(toDelete, s.GetName())
-			}
-		}
-	}
-	logging.Infof(ctx, "Deleting %d non-existing machines", len(toDelete))
-	return deleteByPage(ctx, toDelete, pageSize, registration.DeleteMachines), nil
 }
 
 // RenameMachine renames the machine and updates the associated nics, drac and machinelse in datastore
