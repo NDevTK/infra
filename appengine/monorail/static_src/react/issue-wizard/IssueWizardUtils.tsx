@@ -131,7 +131,7 @@ export function buildIssueLabels(category: string, osName: string, chromeVersion
   ];
 
   const os = osName.split(' ')[0];
-  if (os !== 'Unknown/Other') {
+  if (os !== 'Unknown/Other' && category !== 'Security') {
     labels.push({
       label: 'OS-'+os
     })
