@@ -55,7 +55,7 @@ func (c *DualDeviceConfigClient) GetDeviceConfig(ctx context.Context, cfgID *ufs
 	if err != nil || resp == nil {
 		logging.Debugf(ctx, "request for cfg: %v was not found with error: %s. falling back to ufs datastore", cfgID, err)
 
-		return configuration.GetDeviceConfig(ctx, cfgID)
+		return configuration.GetDeviceConfigACL(ctx, cfgID)
 	}
 
 	return crosToUFSDeviceConfigProto(resp)
@@ -83,7 +83,7 @@ func (c *DualDeviceConfigClient) DeviceConfigsExists(ctx context.Context, cfgIDs
 	if err != nil || resp == nil {
 		logging.Debugf(ctx, "request for cfg ids: %v was not found with error: %s. falling back to ufs datastore", cfgIDs, err)
 
-		return configuration.DeviceConfigsExist(ctx, cfgIDs)
+		return configuration.DeviceConfigsExistACL(ctx, cfgIDs)
 	}
 
 	// if inventory says all configs exists, can exit early
@@ -93,7 +93,7 @@ func (c *DualDeviceConfigClient) DeviceConfigsExists(ctx context.Context, cfgIDs
 	}
 
 	// otherwise we need to fetch from UFS, and OR each result
-	ufsResultsArr, err := configuration.DeviceConfigsExist(ctx, cfgIDs)
+	ufsResultsArr, err := configuration.DeviceConfigsExistACL(ctx, cfgIDs)
 	if err != nil {
 		logging.Debugf(ctx, "request for cfg ids: %v was not found with error: %s in datastore", cfgIDs, err)
 		ufsResultsArr = make([]bool, len(req.ConfigIds)) // set to all false in that case

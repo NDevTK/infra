@@ -15,6 +15,7 @@ import (
 
 	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
 	ufsds "infra/unifiedfleet/app/model/datastore"
+	"infra/unifiedfleet/app/util"
 )
 
 // DeviceConfigKind is the name of the device config entity kind in datastore.
@@ -36,6 +37,11 @@ func (e *DeviceConfigEntity) GetProto() (proto.Message, error) {
 		return nil, err
 	}
 	return &p, nil
+}
+
+// GetRealm returns the realm of the device config.
+func (e *DeviceConfigEntity) GetRealm() string {
+	return e.Realm
 }
 
 // RealmAssignerFunc holds logic for associating a `DeviceConfig` with a realm.
@@ -60,48 +66,67 @@ func BoardModelRealmAssigner(d *ufsdevice.Config) string {
 // `realm` field, but we need it in the entity. Because each namespace may
 // desire a separate realm mapping, we can't hardcode this logic.
 func newDeviceConfigEntityFunc(realmAssigner RealmAssignerFunc) ufsds.NewFunc {
-	return func(context context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
-		p := pm.(*ufsdevice.Config)
-
-		// configs must have model and platform
-		if p.Id.GetModelId().GetValue() == "" || p.Id.GetPlatformId().GetValue() == "" {
-			return nil, errors.Reason("invalid device config, platform id and model id must be populated").Err()
-		}
-
-		idString := GetDeviceConfigIDStr(p.GetId())
-
-		dc, err := proto.Marshal(p)
-		if err != nil {
-			return nil, errors.Annotate(err, "failed to marshal proto: %s", p).Err()
-		}
-		return &DeviceConfigEntity{
-			ID:           idString,
-			DeviceConfig: dc,
-			Realm:        realmAssigner(p),
-			Updated:      time.Now().UTC(),
-		}, nil
+	return func(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
+		return newDeviceConfig(ctx, pm, realmAssigner)
 	}
 }
 
-// GetDeviceConfig fetches a single device config.
-func GetDeviceConfig(ctx context.Context, cfgID *ufsdevice.ConfigId) (*ufsdevice.Config, error) {
-	pm, err := ufsds.Get(ctx, &ufsdevice.Config{Id: cfgID}, newDeviceConfigEntityFunc(BlankRealmAssigner))
+// newDeviceConfigEntityFunc generates a `datastore.NewFunc` that adds a realm
+// to the entity based on the `realmAssigner` passed in
+//
+// This pattern is necessary as the upstream DeviceConfig proto won't have a
+// `realm` field, but we need it in the entity. Because each namespace may
+// desire a separate realm mapping, we can't hardcode this logic.
+func newDeviceConfigRealmEntityFunc(realmAssigner RealmAssignerFunc) ufsds.NewRealmEntityFunc {
+	return func(ctx context.Context, pm proto.Message) (ufsds.RealmEntity, error) {
+		return newDeviceConfig(ctx, pm, realmAssigner)
+	}
+}
+
+// newDeviceConfig creates a DeviceConfig entity, with realms assigned via
+// realmAssigner.
+func newDeviceConfig(ctx context.Context, pm proto.Message, realmAssigner RealmAssignerFunc) (*DeviceConfigEntity, error) {
+	p := pm.(*ufsdevice.Config)
+
+	// configs must have model and platform
+	if p.Id.GetModelId().GetValue() == "" || p.Id.GetPlatformId().GetValue() == "" {
+		return nil, errors.Reason("invalid device config, platform id and model id must be populated").Err()
+	}
+
+	idString := GetDeviceConfigIDStr(p.GetId())
+
+	dc, err := proto.Marshal(p)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to marshal proto: %s", p).Err()
+	}
+	return &DeviceConfigEntity{
+		ID:           idString,
+		DeviceConfig: dc,
+		Realm:        realmAssigner(p),
+		Updated:      time.Now().UTC(),
+	}, nil
+}
+
+// GetDeviceConfigACL fetches a single device config if it is visible to the
+// user.
+func GetDeviceConfigACL(ctx context.Context, cfgID *ufsdevice.ConfigId) (*ufsdevice.Config, error) {
+	pm, err := ufsds.GetACL(ctx, &ufsdevice.Config{Id: cfgID}, newDeviceConfigRealmEntityFunc(BlankRealmAssigner), util.ConfigurationsGet)
 	if err == nil {
 		return pm.(*ufsdevice.Config), err
 	}
 	return nil, err
 }
 
-// DeviceConfigsExist returns an array of bools. The ith value in this array
-// represents whether the ith entry in cfgIDs exists
-func DeviceConfigsExist(ctx context.Context, cfgIDs []*ufsdevice.ConfigId) ([]bool, error) {
-	entities := make([]ufsds.FleetEntity, len(cfgIDs))
+// DeviceConfigsExistACL returns an array of bools. The ith value in this array
+// represents whether the ith entry in cfgIDs exists and is visible to the user
+func DeviceConfigsExistACL(ctx context.Context, cfgIDs []*ufsdevice.ConfigId) ([]bool, error) {
+	entities := make([]ufsds.RealmEntity, len(cfgIDs))
 	for i, id := range cfgIDs {
 		idString := GetDeviceConfigIDStr(id)
 		entities[i] = &DeviceConfigEntity{ID: idString}
 	}
 
-	return ufsds.Exists(ctx, entities)
+	return ufsds.ExistsACL(ctx, entities, util.ConfigurationsGet)
 }
 
 // BatchUpdateDeviceConfigs upserts all configs. The `realmAssigner` determines

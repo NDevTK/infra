@@ -14,11 +14,14 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
+	"go.chromium.org/luci/server/auth"
+	"go.chromium.org/luci/server/auth/authtest"
 	"google.golang.org/grpc"
 
 	invV2Api "infra/appengine/cros/lab_inventory/api/v1"
 	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
 	"infra/unifiedfleet/app/model/configuration"
+	"infra/unifiedfleet/app/util"
 )
 
 type fakeInventoryClient struct {
@@ -104,9 +107,19 @@ func TestGetDeviceConfig(t *testing.T) {
 
 			// setup datastore + populate it
 			ctx := memory.UseWithAppID(context.Background(), ("gae-test"))
+			// grant user permission in the appropriate realm
+			ctx = auth.WithState(ctx, &authtest.FakeState{
+				Identity: "user:root@lab.com",
+				IdentityPermissions: []authtest.RealmPermission{
+					{
+						Realm:      "chromeos:zork-gumboz",
+						Permission: util.ConfigurationsGet,
+					},
+				},
+			})
 			datastore.GetTestable(ctx).Consistent(true)
 			devCfg := makeDevCfgForTesting("zork", "gumboz", "", []string{"test@google.com"})
-			_, err := configuration.BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{devCfg}, configuration.BlankRealmAssigner)
+			_, err := configuration.BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{devCfg}, configuration.BoardModelRealmAssigner)
 			if err != nil {
 				t.Errorf("error setting up test data")
 			}
@@ -193,9 +206,19 @@ func TestDeviceConfigExists(t *testing.T) {
 
 			// setup datastore + populate it
 			ctx := memory.UseWithAppID(context.Background(), ("gae-test"))
+			// grant user appropriate realm permission
+			ctx = auth.WithState(ctx, &authtest.FakeState{
+				Identity: "user:root@lab.com",
+				IdentityPermissions: []authtest.RealmPermission{
+					{
+						Realm:      "chromeos:zork-gumboz",
+						Permission: util.ConfigurationsGet,
+					},
+				},
+			})
 			datastore.GetTestable(ctx).Consistent(true)
 			devCfg := makeDevCfgForTesting("zork", "gumboz", "", []string{"test@google.com"})
-			_, err := configuration.BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{devCfg}, configuration.BlankRealmAssigner)
+			_, err := configuration.BatchUpdateDeviceConfigs(ctx, []*ufsdevice.Config{devCfg}, configuration.BoardModelRealmAssigner)
 			if err != nil {
 				t.Errorf("error setting up test data")
 			}
