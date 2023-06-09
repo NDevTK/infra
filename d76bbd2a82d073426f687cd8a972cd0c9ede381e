@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d7a74ccc_ea1730ba",
+        "filename": "go/src/infra/cros/cmd/cros-tool-runner/internal/v2/templates/template_generic.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1313390
+      },
+      "writtenOn": "2023-06-09T18:11:24Z",
+      "side": 1,
+      "message": "nit, adding the ability to use docker Args as well as binary args would be vry helpful",
+      "revId": "d76bbd2a82d073426f687cd8a972cd0c9ede381e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
