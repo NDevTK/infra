@@ -19,6 +19,7 @@ import (
 	"infra/libs/cipkg/utilities"
 	"infra/tools/vpython_ng/pkg/common"
 
+	"go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
@@ -101,6 +102,9 @@ type Application struct {
 	// If explicitly set to empty string, a temporary directory will be used and
 	// cleaned up on completion.
 	VpythonRoot string
+
+	// Path to cipd cache directory.
+	CIPDCacheDir string
 
 	// Tool mode, if it's not empty, vpython will execute the tool instead of
 	// python.
@@ -185,6 +189,10 @@ func (a *Application) ParseEnvs() (err error) {
 	if e.Get(BypassENV) == BypassSentinel {
 		a.Bypass = true
 	}
+
+	// Get CIPD cache directory
+	a.CIPDCacheDir = e.Get(cipd.EnvCacheDir)
+
 	return nil
 }
 
@@ -216,6 +224,11 @@ func (a *Application) ParseArgs() (err error) {
 	}
 	if err := fs.Parse(vpythonArgs); err != nil {
 		return errors.Annotate(err, "failed to parse flags").Err()
+	}
+
+	// Set CIPD CacheDIR
+	if a.CIPDCacheDir == "" {
+		a.CIPDCacheDir = filepath.Join(a.VpythonRoot, "cipd")
 	}
 
 	// Set log level

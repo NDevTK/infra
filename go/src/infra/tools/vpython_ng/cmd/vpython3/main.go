@@ -56,6 +56,8 @@ func main() {
 	app.Must(app.ParseEnvs())
 	app.Must(app.ParseArgs())
 
+	wheels.Init(app.CIPDCacheDir)
+
 	app.PythonExecutable = "python3"
 	if app.Bypass {
 		// no-op for tool mode if we are bypassing vpython
