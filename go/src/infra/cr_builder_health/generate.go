@@ -267,6 +267,7 @@ func rpcBuildbucket(buildCtx context.Context, rows []Row, client BBClient) error
 	}
 	res, err := client.SetBuilderHealth(ctx, req)
 	if err != nil {
+		logging.Errorf(ctx, "Result: %+v. Error: %s", res, err)
 		return errors.Annotate(err, "Set builder health").Err()
 	}
 
@@ -277,7 +278,12 @@ func rpcBuildbucket(buildCtx context.Context, rows []Row, client BBClient) error
 		}
 
 		nErrors += 1
-		logging.Errorf(ctx, resp.String())
+
+		result := ""
+		if resp.GetResult() != nil {
+			result = resp.GetResult().String()
+		}
+		logging.Errorf(ctx, "Result: %s. Error: %s", result, resp.GetError().String())
 	}
 
 	if nErrors > 0 {
