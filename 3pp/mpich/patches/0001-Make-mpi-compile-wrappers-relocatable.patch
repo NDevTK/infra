@@ -1,0 +1,96 @@
+diff -ur mpich-3.4.1.orig/src/env/mpicc.bash.in mpich-3.4.1/src/env/mpicc.bash.in
+--- mpich-3.4.1.orig/src/env/mpicc.bash.in	2021-01-21 05:04:56.000000000 +1100
++++ mpich-3.4.1/src/env/mpicc.bash.in	2023-06-10 15:37:23.955399121 +1000
+@@ -25,13 +25,13 @@
+ # --------------------------------------------------------------------------
+ # Set the default values of all variables.
+ #
+-# Directory locations: Fixed for any MPI implementation.
+-# Set from the directory arguments to configure (e.g., --prefix=/usr/local)
+-prefix=__PREFIX_TO_BE_FILLED_AT_INSTALL_TIME__
+-exec_prefix=__EXEC_PREFIX_TO_BE_FILLED_AT_INSTALL_TIME__
+-sysconfdir=__SYSCONFDIR_TO_BE_FILLED_AT_INSTALL_TIME__
+-includedir=__INCLUDEDIR_TO_BE_FILLED_AT_INSTALL_TIME__
+-libdir=__LIBDIR_TO_BE_FILLED_AT_INSTALL_TIME__
++# Find all install directories relative to the location of this script.
++this_path=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
++prefix="$this_path/.."
++exec_prefix="$prefix"
++sysconfdir="$prefix/etc"
++includedir="$prefix/include"
++libdir="$prefix/lib"
+ 
+ # Default settings for compiler, flags, and libraries.
+ # Determined by a combination of environment variables and tests within
+diff -ur mpich-3.4.1.orig/src/env/mpicxx.bash.in mpich-3.4.1/src/env/mpicxx.bash.in
+--- mpich-3.4.1.orig/src/env/mpicxx.bash.in	2021-01-21 05:04:56.000000000 +1100
++++ mpich-3.4.1/src/env/mpicxx.bash.in	2023-06-10 15:37:23.955399121 +1000
+@@ -25,12 +25,13 @@
+ # --------------------------------------------------------------------------
+ # Set the default values of all variables.
+ #
+-# Directory locations: Fixed for any MPI implementation
+-prefix=__PREFIX_TO_BE_FILLED_AT_INSTALL_TIME__
+-exec_prefix=__EXEC_PREFIX_TO_BE_FILLED_AT_INSTALL_TIME__
+-sysconfdir=__SYSCONFDIR_TO_BE_FILLED_AT_INSTALL_TIME__
+-includedir=__INCLUDEDIR_TO_BE_FILLED_AT_INSTALL_TIME__
+-libdir=__LIBDIR_TO_BE_FILLED_AT_INSTALL_TIME__
++# Find all install directories relative to the location of this script.
++this_path=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
++prefix="$this_path/.."
++exec_prefix="$prefix"
++sysconfdir="$prefix/etc"
++includedir="$prefix/include"
++libdir="$prefix/lib"
+ 
+ # Default settings for compiler, flags, and libraries
+ CXX="@CXX@"
+diff -ur mpich-3.4.1.orig/src/env/mpif77.bash.in mpich-3.4.1/src/env/mpif77.bash.in
+--- mpich-3.4.1.orig/src/env/mpif77.bash.in	2021-01-21 05:04:56.000000000 +1100
++++ mpich-3.4.1/src/env/mpif77.bash.in	2023-06-10 15:37:23.955399121 +1000
+@@ -27,13 +27,13 @@
+ # --------------------------------------------------------------------------
+ # Set the default values of all variables.
+ #
+-# Directory locations: Fixed for any MPI implementation.
+-# Set from the directory arguments to configure (e.g., --prefix=/usr/local)
+-prefix=__PREFIX_TO_BE_FILLED_AT_INSTALL_TIME__
+-exec_prefix=__EXEC_PREFIX_TO_BE_FILLED_AT_INSTALL_TIME__
+-sysconfdir=__SYSCONFDIR_TO_BE_FILLED_AT_INSTALL_TIME__
+-includedir=__INCLUDEDIR_TO_BE_FILLED_AT_INSTALL_TIME__
+-libdir=__LIBDIR_TO_BE_FILLED_AT_INSTALL_TIME__
++# Find all install directories relative to the location of this script.
++this_path=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
++prefix="$this_path/.."
++exec_prefix="$prefix"
++sysconfdir="$prefix/etc"
++includedir="$prefix/include"
++libdir="$prefix/lib"
+ 
+ # Default settings for compiler, flags, and libraries
+ # Determined by a combination of environment variables and tests within
+diff -ur mpich-3.4.1.orig/src/env/mpifort.bash.in mpich-3.4.1/src/env/mpifort.bash.in
+--- mpich-3.4.1.orig/src/env/mpifort.bash.in	2021-01-21 05:04:56.000000000 +1100
++++ mpich-3.4.1/src/env/mpifort.bash.in	2023-06-10 15:37:23.955399121 +1000
+@@ -26,14 +26,13 @@
+ # --------------------------------------------------------------------------
+ # Set the default values of all variables.
+ #
+-# Directory locations: Fixed for any MPI implementation.
+-# Set from the directory arguments to configure (e.g., --prefix=/usr/local)
+-prefix=__PREFIX_TO_BE_FILLED_AT_INSTALL_TIME__
+-exec_prefix=__EXEC_PREFIX_TO_BE_FILLED_AT_INSTALL_TIME__
+-sysconfdir=__SYSCONFDIR_TO_BE_FILLED_AT_INSTALL_TIME__
+-includedir=__INCLUDEDIR_TO_BE_FILLED_AT_INSTALL_TIME__
+-libdir=__LIBDIR_TO_BE_FILLED_AT_INSTALL_TIME__
+-modincdir=@modincdir@
++# Find all install directories relative to the location of this script.
++this_path=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
++prefix="$this_path/.."
++exec_prefix="$prefix"
++sysconfdir="$prefix/etc"
++includedir="$prefix/include"
++libdir="$prefix/lib"
+ 
+ # Default settings for compiler, flags, and libraries
+ # Determined by a combination of environment variables and tests within

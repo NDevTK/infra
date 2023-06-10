@@ -6,7 +6,8 @@ create {
       version: "3.4.1"
     }
     unpack_archive: true
-    patch_version: "chromium.5"
+    patch_version: "chromium.6"
+    patch_dir: "patches"
   }
   build {
     tool: "tools/sed"
