@@ -50,8 +50,9 @@ const (
 	singleElementEnumWarning     = `[WARNING] It looks like this is an enumerated histogram that contains only a single bucket. UMA metrics are difficult to interpret in isolation, so please either add one or more additional buckets that can serve as a baseline for comparison, or document what other metric should be used as a baseline during analysis. https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#enum-histograms.`
 	SuffixesDeprecationWarning   = `[WARNING] The <histogram_suffixes> syntax is deprecated. If you're adding a new list of suffixes, please use patterned histograms instead. If you're modifying an existing list of suffixes, please consider migrating that list to use patterned histograms. See https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#patterned-histograms.`
 	osxNamespaceDeprecationError = `[ERROR] The namespace "OSX" is deprecated. Prefer adding new Mac histograms to the "Mac" namespace.`
-	removedHistogramInfo         = `[INFO] The following histograms were removed without an obsoletion message: %s. You can add obsoletion messages by adding "OBSOLETE_HISTOGRAM[histogram name]=obsoletion message" tags in the CL description.`
+	removedHistogramInfo         = `[INFO] The following histograms were removed without an obsoletion message: %s. If you want to add the same obsoletion message to all the histograms removed in the CL, you can add "OBSOLETE_HISTOGRAMS=message" in the CL description. You can also add obsoletion messages to specific histograms by adding "OBSOLETE_HISTOGRAM[histogram name]=obsoletion message" tags in the CL description, these will override the CL-level obsoletion message if there is one.`
 	obsoletionMessageError       = `[ERROR] An obsoletion message has been added to following histograms: %s, but they are not removed. Please double check if there're typos.`
+	allRemovedHistogramInfo      = `[INFO] The following histograms have been removed and obsoleted in this CL: %s.`
 )
 
 var (
@@ -154,7 +155,15 @@ const (
 	REMOVED
 )
 
-func analyzeHistogramFile(f io.Reader, filePath, prevDir string, filesChanged *diffsPerFile, singletonEnums stringset.Set, obsoletedHistograms map[string]bool) []*tricium.Data_Comment {
+type histogramStatus int
+
+const (
+	ADD histogramStatus = iota
+	UNCHANGE
+	REMOVE
+)
+
+func analyzeHistogramFile(f io.Reader, filePath, prevDir string, filesChanged *diffsPerFile, singletonEnums stringset.Set, obsoletedHistograms map[string]bool, histogramStatus map[string]histogramStatus, globalMessage bool) []*tricium.Data_Comment {
 	log.Printf("ANALYZING File: %s", filePath)
 	var allComments []*tricium.Data_Comment
 	// Analyze removed lines in file (if any).
@@ -168,7 +177,7 @@ func analyzeHistogramFile(f io.Reader, filePath, prevDir string, filesChanged *d
 	comments, newHistograms, newNamespaces, namespaceLineNums, newVariants := analyzeChangedLines(bufio.NewScanner(f), filePath, filesChanged.addedLines[filePath], singletonEnums, oldHistograms, ADDED)
 	allComments = append(allComments, comments...)
 	// Identify if any histograms were removed.
-	allComments = append(allComments, generateCommentsForRemovedHistograms(filePath, newHistograms, oldHistograms, newVariants, oldVariants, obsoletedHistograms)...)
+	allComments = append(allComments, generateCommentsForRemovedHistograms(filePath, newHistograms, oldHistograms, newVariants, oldVariants, obsoletedHistograms, histogramStatus, globalMessage)...)
 	// Identify if any new namespaces were added.
 	allComments = append(allComments, generateCommentsForAddedNamespaces(filePath, newNamespaces, oldNamespaces, namespaceLineNums)...)
 	return showAllComments(allComments)
@@ -577,12 +586,15 @@ func checkEnums(path string, hist *histogram, meta *metadata, singletonEnums str
 	return nil
 }
 
-func generateCommentsForRemovedHistograms(path string, newHistograms map[string]*histogram, oldHistograms map[string]*histogram, newVariants map[string]*variants, oldVariants map[string]*variants, obsoletedHistograms map[string]bool) []*tricium.Data_Comment {
+func generateCommentsForRemovedHistograms(path string, newHistograms map[string]*histogram, oldHistograms map[string]*histogram, newVariants map[string]*variants, oldVariants map[string]*variants, obsoletedHistograms map[string]bool, histogramStatus map[string]histogramStatus, globalMessage bool) []*tricium.Data_Comment {
 	var comments []*tricium.Data_Comment
 	var removedWithoutMessageHistograms []string
 	newHistogramNames := expandHistograms(newHistograms, newVariants)
 	oldHistogramNames := expandHistograms(oldHistograms, oldVariants)
 	allRemovedHistograms := oldHistogramNames.Difference(newHistogramNames).ToSlice()
+	allAddedHistograms := newHistogramNames.Difference(oldHistogramNames).ToSlice()
+	updateHistogramStatus(histogramStatus, allRemovedHistograms, REMOVE)
+	updateHistogramStatus(histogramStatus, allAddedHistograms, ADD)
 	for _, removedHistogram := range allRemovedHistograms {
 		if _, present := obsoletedHistograms[removedHistogram]; present {
 			// Delete the histogram from obsoletedHistograms to show the obsoleted histogram is
@@ -593,6 +605,9 @@ func generateCommentsForRemovedHistograms(path string, newHistograms map[string]
 		} else {
 			removedWithoutMessageHistograms = append(removedWithoutMessageHistograms, removedHistogram)
 		}
+	}
+	if globalMessage {
+		return comments
 	}
 	if len(removedWithoutMessageHistograms) > 0 {
 		sort.Strings(removedWithoutMessageHistograms)
@@ -699,4 +714,14 @@ func hasExpiredBy(hist *histogram, numDays int) bool {
 		}
 	}
 	return false
+}
+
+func updateHistogramStatus(histogramStatus map[string]histogramStatus, hists []string, status histogramStatus) {
+	for _, hist := range hists {
+		if _, present := histogramStatus[hist]; present {
+			histogramStatus[hist] += (status - UNCHANGE)
+		} else {
+			histogramStatus[hist] = status
+		}
+	}
 }
