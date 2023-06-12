@@ -140,7 +140,7 @@ export function AssetInstanceLogs() {
                 whiteSpace: 'pre',
                 textAlign: 'left',
                 display: 'flex',
-                flexDirection: 'column-reverse'
+                flexDirection: 'column-reverse',
               }}
             >
               {logs}

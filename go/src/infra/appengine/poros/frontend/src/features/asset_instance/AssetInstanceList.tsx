@@ -100,7 +100,11 @@ export function AssetInstanceList() {
       headerName: 'Project',
       flex: 2,
       renderCell: (cellValues) => {
-        return <Link target={'_blank'} href={`${getProject(cellValues)}`}>{getProject(cellValues)}</Link>;
+        return (
+          <Link target={'_blank'} href={`${getProject(cellValues)}`}>
+            {getProject(cellValues)}
+          </Link>
+        );
       },
     },
     {
@@ -188,7 +192,7 @@ export function AssetInstanceList() {
   function getProject(params: GridValueGetterParams) {
     if (params.row.projectId == '') return '';
 
-    return `https://console.cloud.google.com/compute/instances?project=${params.row.projectId}`
+    return `https://console.cloud.google.com/compute/instances?project=${params.row.projectId}`;
   }
 
   function getAssetName(params: GridValueGetterParams) {
@@ -260,7 +264,17 @@ export function AssetInstanceList() {
                 },
                 filter: {
                   filterModel: {
-                    items: [{ columnField: 'status', operatorValue: 'isAnyOf', value: ['STATUS_PENDING', 'STATUS_RUNNING', 'STATUS_COMPLETED'] }],
+                    items: [
+                      {
+                        columnField: 'status',
+                        operatorValue: 'isAnyOf',
+                        value: [
+                          'STATUS_PENDING',
+                          'STATUS_RUNNING',
+                          'STATUS_COMPLETED',
+                        ],
+                      },
+                    ],
                   },
                 },
               }}

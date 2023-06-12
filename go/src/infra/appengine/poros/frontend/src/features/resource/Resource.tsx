@@ -50,7 +50,9 @@ import {
 } from '../utility/utilitySlice';
 
 export const Resource = () => {
-  const [activeResourceType, setActiveResourceType] = React.useState('ad_joined_machine');
+  const [activeResourceType, setActiveResourceType] = React.useState(
+    'ad_joined_machine'
+  );
   const name: string = useAppSelector((state) => state.resource.record.name);
   const type: string = useAppSelector((state) => state.resource.record.type);
   const operatingSystem: string = useAppSelector(
@@ -133,15 +135,24 @@ export const Resource = () => {
       dispatch(setDescriptionValidFalse());
       valid = false;
     }
-    if ((type === 'ad_joined_machine' || type === 'machine') && operatingSystem === '') {
+    if (
+      (type === 'ad_joined_machine' || type === 'machine') &&
+      operatingSystem === ''
+    ) {
       dispatch(setOperatingSystemValidFalse());
       valid = false;
     }
-    if ((type === 'ad_joined_machine' || type === 'machine') && imageProject === '') {
+    if (
+      (type === 'ad_joined_machine' || type === 'machine') &&
+      imageProject === ''
+    ) {
       dispatch(setImageProjectValidFalse());
       valid = false;
     }
-    if ((type === 'ad_joined_machine' || type === 'machine') && imageFamily === '') {
+    if (
+      (type === 'ad_joined_machine' || type === 'machine') &&
+      imageFamily === ''
+    ) {
       dispatch(setImageFamilyValidFalse());
       valid = false;
     }
@@ -198,7 +209,9 @@ export const Resource = () => {
             >
               <MenuItem value={'ad_joined_machine'}>AD Joined Machine</MenuItem>
               <MenuItem value={'machine'}>Machine</MenuItem>
-              <MenuItem value={'custom_image_machine'}>Custom Image Machine</MenuItem>
+              <MenuItem value={'custom_image_machine'}>
+                Custom Image Machine
+              </MenuItem>
               {/* <MenuItem value={'domain'}>Domain</MenuItem> */}
             </Select>
             {!recordValidation.typeValid && (
@@ -470,15 +483,25 @@ export const Resource = () => {
 
         {renderTypeDropdown()}
 
-        {(activeResourceType == 'ad_joined_machine' || activeResourceType == 'machine' || activeResourceType == 'custom_image_machine')
+        {activeResourceType == 'ad_joined_machine' ||
+        activeResourceType == 'machine' ||
+        activeResourceType == 'custom_image_machine'
           ? renderOperatingSystemDropdown()
           : null}
 
-        {(activeResourceType == 'ad_joined_machine' || activeResourceType == 'machine') ? renderImageProjectInput() : null}
+        {activeResourceType == 'ad_joined_machine' ||
+        activeResourceType == 'machine'
+          ? renderImageProjectInput()
+          : null}
 
-        {(activeResourceType == 'ad_joined_machine' || activeResourceType == 'machine') ? renderImageFamilyInput() : null}
+        {activeResourceType == 'ad_joined_machine' ||
+        activeResourceType == 'machine'
+          ? renderImageFamilyInput()
+          : null}
 
-        {(activeResourceType == 'custom_image_machine') ? renderImageSourceInput() : null}
+        {activeResourceType == 'custom_image_machine'
+          ? renderImageSourceInput()
+          : null}
 
         <Grid container spacing={2} padding={1} paddingTop={6}>
           <Grid item xs={12}>
