@@ -113,6 +113,14 @@ func withAuthorizedAtlUser(c context.Context) context.Context {
 			},
 			{
 				Realm:      util.AtlLabAdminRealm,
+				Permission: util.RegistrationsUpdate,
+			},
+			{
+				Realm:      util.AtlLabAdminRealm,
+				Permission: util.RegistrationsDelete,
+			},
+			{
+				Realm:      util.AtlLabAdminRealm,
 				Permission: util.InventoriesCreate,
 			},
 			{

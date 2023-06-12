@@ -166,6 +166,8 @@ func TestUpdateAsset(t *testing.T) {
 		})
 
 		Convey("Move asset to non-existent rack", func() {
+			// Give the user update permissions
+			ctx = initializeFakeAuthDB(ctx, "user:tes@ter.com", util.RegistrationsUpdate, util.AtlLabAdminRealm)
 			a := mockAsset("C001001", "eve", "2", "chromeos6-row2-rack3", "1", "chromeos6-row2-rack3-host1", ufspb.AssetType_DUT, ufspb.Zone_ZONE_CHROMEOS6)
 			_, err := AssetRegistration(ctx, a)
 			So(err, ShouldBeNil)
@@ -178,6 +180,8 @@ func TestUpdateAsset(t *testing.T) {
 		})
 
 		Convey("Move Asset to existing rack", func() {
+			// Give the user update permissions
+			ctx = initializeFakeAuthDB(ctx, "user:tes@ter.com", util.RegistrationsUpdate, util.AtlLabAdminRealm)
 			r := mockRack("chromeos6-row2-rack5", "2", ufspb.Zone_ZONE_CHROMEOS6)
 			_, err := registration.CreateRack(ctx, r)
 			So(err, ShouldBeNil)
@@ -301,6 +305,8 @@ func TestUpdateAsset(t *testing.T) {
 		})
 
 		Convey("Update Asset from DUT to servo", func() {
+			// Give the user update permissions
+			ctx = withAuthorizedAtlUser(ctx)
 			r := mockRack("chromeos6-row2-rack9", "2", ufspb.Zone_ZONE_CHROMEOS6)
 			_, err := registration.CreateRack(ctx, r)
 			So(err, ShouldBeNil)
@@ -459,6 +465,8 @@ func TestDeleteAsset(t *testing.T) {
 	ctx := testingContext()
 	Convey("Testing DeleteAsset", t, func() {
 		Convey("Delete existing assets", func() {
+			// Give the user update permissions
+			ctx = initializeFakeAuthDB(ctx, "user:tes@ter.com", util.RegistrationsDelete, util.AtlLabAdminRealm)
 			r := mockRack("chromeos6-row2-rack3", "2", ufspb.Zone_ZONE_CHROMEOS6)
 			_, err := RackRegistration(ctx, r)
 			So(err, ShouldBeNil)
@@ -650,6 +658,7 @@ func TestRenameAsset(t *testing.T) {
 			So(err.Error(), ShouldContainSubstring, codes.FailedPrecondition.String())
 		})
 		Convey("Rename asset to an existing asset", func() {
+			ctx = withAuthorizedAtlUser(ctx)
 			r := mockRack("chromeos6-row3-rack3", "3", ufspb.Zone_ZONE_CHROMEOS2)
 			RackRegistration(ctx, r)
 			// Create EVE6000 and EVE6001 assets
@@ -663,7 +672,7 @@ func TestRenameAsset(t *testing.T) {
 			So(err.Error(), ShouldContainSubstring, codes.FailedPrecondition.String())
 		})
 		Convey("Rename asset - happy path", func() {
-			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AtlLabAdminRealm)
+			ctx = withAuthorizedAtlUser(ctx)
 			r := mockRack("chromeos6-row3-rack3", "3", ufspb.Zone_ZONE_CHROMEOS2)
 			RackRegistration(ctx, r)
 			// Create EVE6000 and EVE6001 assets

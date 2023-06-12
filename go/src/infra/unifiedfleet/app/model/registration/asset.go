@@ -46,6 +46,8 @@ func (a *AssetEntity) GetProto() (proto.Message, error) {
 	if err := proto.Unmarshal(a.Asset, &p); err != nil {
 		return nil, err
 	}
+	// Assign the realm and return the proto
+	p.Realm = a.Realm
 	return &p, nil
 }
 
@@ -58,6 +60,8 @@ func newAssetEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, e
 	if a.GetName() == "" {
 		return nil, errors.Reason("Empty Asset ID").Err()
 	}
+	// Assign realm to the proto. This will allow us to use BQ data with realms
+	a.Realm = util.ToUFSRealm(a.GetLocation().GetZone().String())
 	asset, err := proto.Marshal(a)
 	if err != nil {
 		return nil, errors.Annotate(err, "Failed to marshal asset %s", a).Err()
@@ -71,7 +75,7 @@ func newAssetEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, e
 		BuildTarget: a.GetInfo().GetBuildTarget(),
 		Phase:       a.GetInfo().GetPhase(),
 		Tags:        a.GetTags(),
-		Realm:       util.ToUFSRealm(a.GetLocation().GetZone().String()),
+		Realm:       a.GetRealm(),
 		Asset:       asset,
 	}, nil
 }
