@@ -53,7 +53,7 @@ type config struct {
 	// Most config settings like QueenService are ignored in megadrone mode.
 	EnableMegadrone bool
 	// NumBots sets the number of bots to run in megadrone mode.
-	NumBots string
+	NumBots int
 }
 
 func (c *config) ReportingInterval() time.Duration {
@@ -67,10 +67,12 @@ func (c *config) ReportingInterval() time.Duration {
 // This function also parses the environment and global flag vars to
 // implement backward compatibility.
 func parseConfigFile(path string) *config {
+	// Default values
 	cfg := config{
 		DUTCapacity:           10,
 		ReportingIntervalMins: 1,
 		BotPrefix:             "crossk-",
+		NumBots:               1,
 	}
 	addBackwardCompatConfig(&cfg)
 	if path == "" {

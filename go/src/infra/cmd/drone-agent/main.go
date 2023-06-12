@@ -32,6 +32,7 @@ import (
 	"infra/cmd/drone-agent/internal/agent"
 	"infra/cmd/drone-agent/internal/bot"
 	"infra/cmd/drone-agent/internal/draining"
+	"infra/cmd/drone-agent/internal/megadrone"
 	"infra/cmd/drone-agent/internal/metrics"
 	"infra/cmd/drone-agent/internal/tokman"
 	"infra/cmd/drone-agent/internal/tracing"
@@ -51,7 +52,8 @@ var (
 		Method:                 auth.ServiceAccountMethod,
 		ServiceAccountJSONPath: os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"),
 	}
-	hostname = os.Getenv("DOCKER_DRONE_SERVER_NAME")
+	hostname         = os.Getenv("HOSTNAME")
+	physicalHostname = os.Getenv("DOCKER_DRONE_SERVER_NAME")
 )
 
 // Deprecated configuration environment variables for backward compatibility.
@@ -68,7 +70,7 @@ var (
 
 	// hive value of the drone agent.  This is used for DUT/drone affinity.
 	// A drone is assigned DUTs with same hive value.
-	hive = initializeHive(os.Getenv("DRONE_AGENT_HIVE"), hostname)
+	hive = initializeHive(os.Getenv("DRONE_AGENT_HIVE"), physicalHostname)
 
 	// tsmonEndpoint is the URL (including file://, https://,
 	// pubsub://project/topic) to post monitoring metrics to.
@@ -171,20 +173,30 @@ func innerMain() error {
 		return err
 	}
 
-	a := agent.Agent{
-		Client: api.NewDronePRPCClient(&prpc.Client{
-			C:    h,
-			Host: cfg.QueenService,
-		}),
-		WorkingDir:        workingDirPath,
-		ReportingInterval: cfg.ReportingInterval(),
-		DUTCapacity:       cfg.DUTCapacity,
-		StartBotFunc:      bot.NewStarter(h, cfg.SwarmingURL).Start,
-		Hive:              cfg.Hive,
-		BotPrefix:         cfg.BotPrefix,
-		BotResources:      makeBotResources(cfg),
+	if cfg.EnableMegadrone {
+		a := megadrone.Agent{
+			WorkingDir:   workingDirPath,
+			StartBotFunc: bot.NewStarter(h, cfg.SwarmingURL).Start,
+			BotPrefix:    megadronePrefix(cfg, hostname),
+			NumBots:      cfg.NumBots,
+		}
+		a.Run(ctx)
+	} else {
+		a := agent.Agent{
+			Client: api.NewDronePRPCClient(&prpc.Client{
+				C:    h,
+				Host: cfg.QueenService,
+			}),
+			WorkingDir:        workingDirPath,
+			ReportingInterval: cfg.ReportingInterval(),
+			DUTCapacity:       cfg.DUTCapacity,
+			StartBotFunc:      bot.NewStarter(h, cfg.SwarmingURL).Start,
+			Hive:              cfg.Hive,
+			BotPrefix:         cfg.BotPrefix,
+			BotResources:      makeBotResources(cfg),
+		}
+		a.Run(ctx)
 	}
-	a.Run(ctx)
 	return nil
 }
 
@@ -369,6 +381,10 @@ func newThrottleDevice(major, minor int64, rate uint64) *specs.LinuxThrottleDevi
 	dev.Major = major
 	dev.Minor = minor
 	return &dev
+}
+
+func megadronePrefix(cfg *config, hostname string) string {
+	return "crossk-megadrone-" + hostname + "-"
 }
 
 // A deferStack reifies a stack of defers to pass around.
