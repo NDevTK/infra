@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,12 +30,14 @@ func TestCreateVM(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	Convey("CreateVM", t, func() {
+		ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsCreate, util.AcsLabAdminRealm)
 		registration.CreateMachine(ctx, &ufspb.Machine{
 			Name: "update-machine",
 			Location: &ufspb.Location{
 				Zone: ufspb.Zone_ZONE_CHROMEOS3,
 			},
 		})
+		ctx = initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesCreate, util.AcsLabAdminRealm)
 		inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 			Name:     "create-host",
 			Zone:     ufspb.Zone_ZONE_CHROMEOS3.String(),
@@ -664,8 +666,10 @@ func TestRealmPermissionForVM(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	registration.CreateMachine(ctx, &ufspb.Machine{
-		Name:  "machine-browser-1",
-		Realm: util.BrowserLabAdminRealm,
+		Name: "machine-browser-1",
+		Location: &ufspb.Location{
+			Zone: ufspb.Zone_ZONE_ATL97,
+		},
 	})
 	inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 		Name:     "lse-browser-1",
@@ -678,8 +682,10 @@ func TestRealmPermissionForVM(t *testing.T) {
 		Hostname: "lse-browser-1.1",
 	})
 	registration.CreateMachine(ctx, &ufspb.Machine{
-		Name:  "machine-osatl-2",
-		Realm: util.AtlLabAdminRealm,
+		Name: "machine-osatl-2",
+		Location: &ufspb.Location{
+			Zone: ufspb.Zone_ZONE_CHROMEOS1,
+		},
 	})
 	inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 		Name:     "lse-browser-2",

@@ -595,6 +595,7 @@ func TestCreateMachineLSELabstation(t *testing.T) {
 func TestUpdateMachineLSEDUT(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
+	ctx = withAuthorizedAtlUser(ctx)
 	machine10 := &ufspb.Machine{
 		Name: "machine-10",
 	}
@@ -2657,8 +2658,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 	Convey("TestRealmPermissionForMachineLSE", t, func() {
 		Convey("CreateMachineLSE with permission - pass", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-1",
-				Realm: util.BrowserLabAdminRealm,
+				Name: "machine-1",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -2677,8 +2680,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 		Convey("CreateMachineLSE without permission - fail", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-2",
-				Realm: util.BrowserLabAdminRealm,
+				Name: "machine-2",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -2695,8 +2700,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 		Convey("DeleteMachineLSE with permission - pass", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-3",
-				Realm: util.BrowserLabAdminRealm,
+				Name: "machine-3",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -2714,8 +2721,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 		Convey("DeleteMachineLSE without permission - fail", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-4",
-				Realm: util.BrowserLabAdminRealm,
+				Name: "machine-4",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -2734,8 +2743,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 		Convey("UpdateMachineLSE with permission - pass", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-5",
-				Realm: util.BrowserLabAdminRealm,
+				Name: "machine-5",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -2756,8 +2767,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 		Convey("UpdateMachineLSE without permission - fail", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-6",
-				Realm: util.BrowserLabAdminRealm,
+				Name: "machine-6",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -2777,8 +2790,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 		Convey("UpdateMachineLSE(new machine and same realm) with permission - pass", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-7",
-				Realm: util.BrowserLabAdminRealm,
+				Name: "machine-7",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -2790,8 +2805,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			_, err = registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-7.1",
-				Realm: util.BrowserLabAdminRealm,
+				Name: "machine-7.1",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -2805,8 +2822,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 		Convey("UpdateMachineLSE(new machine and different realm) without permission - fail", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-8",
-				Realm: util.BrowserLabAdminRealm,
+				Name: "machine-8",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -2818,8 +2837,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			_, err = registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-8.1",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-8.1",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -2832,8 +2853,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 		Convey("UpdateMachineLSE(new machine and different realm) with permission - pass", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-9",
-				Realm: util.BrowserLabAdminRealm,
+				Name: "machine-9",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -2845,8 +2868,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			_, err = registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-9.1",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-9.1",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -2867,8 +2892,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 		Convey("Partial UpdateMachineLSE with permission - pass", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-10",
-				Realm: util.BrowserLabAdminRealm,
+				Name: "machine-10",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -2889,8 +2916,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 		Convey("Partial UpdateMachineLSE without permission - fail", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-11",
-				Realm: util.BrowserLabAdminRealm,
+				Name: "machine-11",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -2910,8 +2939,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 		Convey("Partial UpdateMachineLSE(new machine and same realm) with permission - pass", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-12",
-				Realm: util.BrowserLabAdminRealm,
+				Name: "machine-12",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -2923,8 +2954,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			_, err = registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-12.1",
-				Realm: util.BrowserLabAdminRealm,
+				Name: "machine-12.1",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -2938,8 +2971,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 		Convey("Partial UpdateMachineLSE(new machine and different realm) without permission - fail", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-13",
-				Realm: util.BrowserLabAdminRealm,
+				Name: "machine-13",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -2951,8 +2986,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			_, err = registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-13.1",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-13.1",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -2965,8 +3002,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 
 		Convey("Partial UpdateMachineLSE(new machine and different realm) with permission - pass", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-14",
-				Realm: util.BrowserLabAdminRealm,
+				Name: "machine-14",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -2978,8 +3017,10 @@ func TestRealmPermissionForMachineLSE(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			_, err = registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-14.1",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-14.1",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -3012,14 +3053,18 @@ func TestRenameMachineLSE(t *testing.T) {
 		})
 		Convey("Rename to existing machineLSE", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-15",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-15",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			})
 			So(err, ShouldBeNil)
 
 			_, err = registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-16",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-16",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -3069,8 +3114,10 @@ func TestRenameMachineLSE(t *testing.T) {
 		})
 		Convey("Rename non os machineLSE", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-21",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-21",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -3097,8 +3144,10 @@ func TestRenameMachineLSE(t *testing.T) {
 		})
 		Convey("Rename machineLSE with out create permission", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-17",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-17",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -3138,8 +3187,10 @@ func TestRenameMachineLSE(t *testing.T) {
 		})
 		Convey("Rename machineLSE with out delete permission", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-18",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-18",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			})
 			So(err, ShouldBeNil)
 
@@ -3178,8 +3229,10 @@ func TestRenameMachineLSE(t *testing.T) {
 		})
 		Convey("Rename machineLSE happy path", func() {
 			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
-				Name:  "machine-19",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-19",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			})
 			So(err, ShouldBeNil)
 

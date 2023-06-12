@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -130,7 +130,9 @@ func TestCreateNic(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
 			So(err, ShouldBeNil)
@@ -205,7 +207,9 @@ func TestCreateNic(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
 			So(err, ShouldBeNil)
@@ -226,7 +230,9 @@ func TestCreateNic(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
 			So(err, ShouldBeNil)
@@ -303,7 +309,9 @@ func TestUpdateNic(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine3)
 			So(err, ShouldBeNil)
@@ -313,7 +321,9 @@ func TestUpdateNic(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err = registration.CreateMachine(ctx, machine4)
 			So(err, ShouldBeNil)
@@ -338,7 +348,7 @@ func TestUpdateNic(t *testing.T) {
 			// Verify the changes
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "nics/nic-3")
 			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
+			So(changes, ShouldHaveLength, 2)
 		})
 
 		Convey("Update nic with non existing machine", func() {
@@ -441,7 +451,9 @@ func TestUpdateNic(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			registration.CreateMachine(ctx, machine1)
 
@@ -482,7 +494,9 @@ func TestUpdateNic(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			registration.CreateMachine(ctx, machine1)
 
@@ -702,8 +716,10 @@ func TestUpdateNic(t *testing.T) {
 
 		Convey("Update nic - permission denied: same realm and no update permission", func() {
 			machine1 := &ufspb.Machine{
-				Name:  "machine-12",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-12",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			registration.CreateMachine(ctx, machine1)
 
@@ -727,8 +743,10 @@ func TestUpdateNic(t *testing.T) {
 
 		Convey("Update nic - permission denied: different realm", func() {
 			machine1 := &ufspb.Machine{
-				Name:  "machine-13",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-13",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_OS_CHROMIUM,
+				},
 			}
 			registration.CreateMachine(ctx, machine1)
 
@@ -756,7 +774,9 @@ func TestUpdateNic(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine3)
 			So(err, ShouldBeNil)
@@ -766,7 +786,9 @@ func TestUpdateNic(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.AtlLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_OS_CHROMIUM,
+				},
 			}
 			_, err = registration.CreateMachine(ctx, machine4)
 			So(err, ShouldBeNil)
@@ -794,7 +816,9 @@ func TestUpdateNic(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			registration.CreateMachine(ctx, machine1)
 
@@ -810,7 +834,9 @@ func TestUpdateNic(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.AtlLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_OS_CHROMIUM,
+				},
 			}
 			registration.CreateMachine(ctx, machine2)
 
@@ -830,7 +856,9 @@ func TestUpdateNic(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine3)
 			So(err, ShouldBeNil)
@@ -840,7 +868,9 @@ func TestUpdateNic(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.AtlLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err = registration.CreateMachine(ctx, machine4)
 			So(err, ShouldBeNil)
@@ -872,7 +902,9 @@ func TestUpdateNic(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			registration.CreateMachine(ctx, machine1)
 
@@ -888,7 +920,9 @@ func TestUpdateNic(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.AtlLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			registration.CreateMachine(ctx, machine2)
 
@@ -925,8 +959,10 @@ func TestDeleteNic(t *testing.T) {
 		Convey("Delete nic successfully by existing ID", func() {
 			nic := mockNic("nic-1")
 			machine1 := &ufspb.Machine{
-				Name:  "machine-1",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-1",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			}
 			registration.CreateMachine(ctx, machine1)
 			nic.Machine = "machine-1"
@@ -985,8 +1021,10 @@ func TestDeleteNic(t *testing.T) {
 		Convey("Delete nic - permission denied: same realm and no delete permission", func() {
 			nic := mockNic("nic-3")
 			machine1 := &ufspb.Machine{
-				Name:  "machine-3",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-3",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			registration.CreateMachine(ctx, machine1)
 			nic.Machine = "machine-3"
@@ -1003,8 +1041,10 @@ func TestDeleteNic(t *testing.T) {
 		Convey("Delete nic - permission denied: different realm", func() {
 			nic := mockNic("nic-4")
 			machine1 := &ufspb.Machine{
-				Name:  "machine-4",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-4",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			}
 			registration.CreateMachine(ctx, machine1)
 			nic.Machine = "machine-4"
@@ -1102,7 +1142,9 @@ func TestRenameNic(t *testing.T) {
 		Device: &ufspb.Machine_ChromeBrowserMachine{
 			ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 		},
-		Realm: util.BrowserLabAdminRealm,
+		Location: &ufspb.Location{
+			Zone: ufspb.Zone_ZONE_ATL97,
+		},
 	})
 	Convey("RenameNic", t, func() {
 

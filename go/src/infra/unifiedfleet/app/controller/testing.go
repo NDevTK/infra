@@ -20,6 +20,7 @@ import (
 	"go.chromium.org/luci/server/auth/realms"
 
 	"infra/unifiedfleet/app/config"
+	"infra/unifiedfleet/app/util"
 )
 
 // error msgs used for testing
@@ -73,4 +74,56 @@ func useTestingCfg(ctx context.Context) context.Context {
 	}
 
 	return config.Use(ctx, &configList)
+}
+
+func withAuthorizedAcsUser(c context.Context) context.Context {
+	// Add a tester user to the context
+	c = auth.WithState(c, &authtest.FakeState{
+		Identity: "user:tes@ter.com",
+		IdentityPermissions: []authtest.RealmPermission{
+			{
+				Realm:      util.AcsLabAdminRealm,
+				Permission: util.RegistrationsList,
+			},
+			{
+				Realm:      util.AcsLabAdminRealm,
+				Permission: util.RegistrationsCreate,
+			},
+			{
+				Realm:      util.AcsLabAdminRealm,
+				Permission: util.InventoriesCreate,
+			},
+		},
+	})
+	return c
+}
+
+func withAuthorizedAtlUser(c context.Context) context.Context {
+	// Add a tester user to the context
+	c = auth.WithState(c, &authtest.FakeState{
+		Identity: "user:tes@ter.com",
+		IdentityPermissions: []authtest.RealmPermission{
+			{
+				Realm:      util.AtlLabAdminRealm,
+				Permission: util.RegistrationsList,
+			},
+			{
+				Realm:      util.AtlLabAdminRealm,
+				Permission: util.RegistrationsCreate,
+			},
+			{
+				Realm:      util.AtlLabAdminRealm,
+				Permission: util.InventoriesCreate,
+			},
+			{
+				Realm:      util.AtlLabAdminRealm,
+				Permission: util.InventoriesUpdate,
+			},
+			{
+				Realm:      util.AtlLabAdminRealm,
+				Permission: util.InventoriesDelete,
+			},
+		},
+	})
+	return c
 }

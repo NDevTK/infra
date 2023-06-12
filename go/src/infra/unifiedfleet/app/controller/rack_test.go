@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -827,7 +827,7 @@ func TestRenameRack(t *testing.T) {
 				Name: "rename-asset-0",
 				Location: &ufspb.Location{
 					Rack: "rename-rack-0-old",
-					Zone: ufspb.Zone_ZONE_ATL97,
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
 				},
 				Realm: util.AtlLabAdminRealm,
 			})
@@ -836,7 +836,7 @@ func TestRenameRack(t *testing.T) {
 				Name: "rename-machine-0",
 				Location: &ufspb.Location{
 					Rack: "rename-rack-0-old",
-					Zone: ufspb.Zone_ZONE_ATL97,
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
 				},
 				Realm: util.AtlLabAdminRealm,
 			})

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,7 +90,9 @@ func TestCreateDrac(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
 			So(err, ShouldBeNil)
@@ -188,7 +190,9 @@ func TestCreateDrac(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
 			So(err, ShouldBeNil)
@@ -209,7 +213,9 @@ func TestCreateDrac(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
 			So(err, ShouldBeNil)
@@ -327,7 +333,9 @@ func TestUpdateDrac(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
 			So(err, ShouldBeNil)
@@ -422,7 +430,9 @@ func TestUpdateDrac(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			registration.CreateMachine(ctx, machine1)
 			drac := &ufspb.Drac{
@@ -442,7 +452,9 @@ func TestUpdateDrac(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			registration.CreateMachine(ctx, machine1)
 			drac1 := &ufspb.Drac{
@@ -563,7 +575,9 @@ func TestUpdateDrac(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
 			So(err, ShouldBeNil)
@@ -592,7 +606,9 @@ func TestUpdateDrac(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
 			So(err, ShouldBeNil)
@@ -621,7 +637,9 @@ func TestUpdateDrac(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine3)
 			So(err, ShouldBeNil)
@@ -631,7 +649,9 @@ func TestUpdateDrac(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err = registration.CreateMachine(ctx, machine4)
 			So(err, ShouldBeNil)
@@ -652,7 +672,7 @@ func TestUpdateDrac(t *testing.T) {
 			// Verify the changes
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "dracs/drac-14")
 			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
+			So(changes, ShouldHaveLength, 2)
 			So(changes[0].GetOldValue(), ShouldEqual, "machine-14")
 			So(changes[0].GetNewValue(), ShouldEqual, "machine-15")
 			So(changes[0].GetEventLabel(), ShouldEqual, "drac.machine")
@@ -664,7 +684,9 @@ func TestUpdateDrac(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine3)
 			So(err, ShouldBeNil)
@@ -674,7 +696,9 @@ func TestUpdateDrac(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.AtlLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err = registration.CreateMachine(ctx, machine4)
 			So(err, ShouldBeNil)
@@ -704,7 +728,9 @@ func TestUpdateDrac(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			registration.CreateMachine(ctx, machine1)
 			drac := &ufspb.Drac{
@@ -719,7 +745,9 @@ func TestUpdateDrac(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.AtlLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			}
 			registration.CreateMachine(ctx, machine1)
 			drac1 := &ufspb.Drac{
@@ -738,7 +766,9 @@ func TestUpdateDrac(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine3)
 			So(err, ShouldBeNil)
@@ -748,7 +778,9 @@ func TestUpdateDrac(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.AtlLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			}
 			_, err = registration.CreateMachine(ctx, machine4)
 			So(err, ShouldBeNil)
@@ -780,7 +812,9 @@ func TestUpdateDrac(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			registration.CreateMachine(ctx, machine1)
 			drac := &ufspb.Drac{
@@ -795,7 +829,9 @@ func TestUpdateDrac(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.AtlLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			}
 			registration.CreateMachine(ctx, machine1)
 
@@ -889,8 +925,10 @@ func TestDeleteDrac(t *testing.T) {
 
 		Convey("Delete drac successfully by existing ID without references", func() {
 			machine1 := &ufspb.Machine{
-				Name:  "machine-2",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-2",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			}
 			registration.CreateMachine(ctx, machine1)
 
@@ -986,8 +1024,10 @@ func TestDeleteDrac(t *testing.T) {
 
 		Convey("Delete drac - permission denied: same realm and no delete permission", func() {
 			machine1 := &ufspb.Machine{
-				Name:  "machine-4",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-4",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			}
 			registration.CreateMachine(ctx, machine1)
 
@@ -1004,8 +1044,10 @@ func TestDeleteDrac(t *testing.T) {
 
 		Convey("Delete drac - permission denied: different realm", func() {
 			machine1 := &ufspb.Machine{
-				Name:  "machine-5",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-5",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			}
 			registration.CreateMachine(ctx, machine1)
 

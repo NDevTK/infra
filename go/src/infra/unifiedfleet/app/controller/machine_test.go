@@ -442,7 +442,6 @@ func TestUpdateMachine(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
 			}
 			_, err := registration.CreateMachine(ctx, machine)
 			registration.CreateNic(ctx, &ufspb.Nic{
@@ -489,9 +488,8 @@ func TestUpdateMachine(t *testing.T) {
 						ChromePlatform: "chromePlatform-2",
 					},
 				},
-				Realm: util.BrowserLabAdminRealm,
 			}
-			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.BrowserLabAdminRealm)
+			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AcsLabAdminRealm)
 			resp, err := UpdateMachine(ctx, machine, nil)
 			So(err, ShouldBeNil)
 			So(resp, ShouldResembleProto, machine)
@@ -540,6 +538,7 @@ func TestUpdateMachine(t *testing.T) {
 					},
 				},
 			}
+			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AcsLabAdminRealm)
 			resp, err := UpdateMachine(ctx, machine, nil)
 			So(err, ShouldBeNil)
 			So(resp, ShouldResembleProto, machine)
@@ -783,7 +782,9 @@ func TestUpdateMachine(t *testing.T) {
 				Device: &ufspb.Machine_ChromeosMachine{
 					ChromeosMachine: &ufspb.ChromeOSMachine{},
 				},
-				Realm: util.AtlLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
 			So(err, ShouldBeNil)
@@ -800,7 +801,9 @@ func TestUpdateMachine(t *testing.T) {
 				Device: &ufspb.Machine_ChromeosMachine{
 					ChromeosMachine: &ufspb.ChromeOSMachine{},
 				},
-				Realm: util.AtlLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
 			So(err, ShouldBeNil)
@@ -1170,8 +1173,10 @@ func TestDeleteMachine(t *testing.T) {
 
 		Convey("Delete machine - Permission denied: same realm with no delete permission", func() {
 			machine2 := &ufspb.Machine{
-				Name:  "machine-6",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-6",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine2)
 			So(err, ShouldBeNil)
@@ -1185,8 +1190,10 @@ func TestDeleteMachine(t *testing.T) {
 
 		Convey("Delete machine - Permission denied: different realm", func() {
 			machine2 := &ufspb.Machine{
-				Name:  "machine-7",
-				Realm: util.AtlLabAdminRealm,
+				Name: "machine-7",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS1,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine2)
 			So(err, ShouldBeNil)
@@ -1457,7 +1464,9 @@ func TestRenameMachine(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
 			So(err, ShouldBeNil)
@@ -1473,7 +1482,9 @@ func TestRenameMachine(t *testing.T) {
 				Device: &ufspb.Machine_ChromeBrowserMachine{
 					ChromeBrowserMachine: &ufspb.ChromeBrowserMachine{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_ATL97,
+				},
 			}
 			_, err := registration.CreateMachine(ctx, machine)
 			So(err, ShouldBeNil)

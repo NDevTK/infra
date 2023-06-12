@@ -13,6 +13,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/gae/service/datastore"
+	"go.chromium.org/luci/server/auth"
+	"go.chromium.org/luci/server/auth/authtest"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/config"
@@ -61,6 +63,36 @@ func testingContext() context.Context {
 	})
 	c = external.WithTestingContext(c)
 	datastore.GetTestable(c).Consistent(true)
+	// User tester has all the prems
+	c = auth.WithState(c, &authtest.FakeState{
+		Identity: "user:tes@ter.com",
+		IdentityPermissions: []authtest.RealmPermission{
+			{
+				Realm:      util.AtlLabAdminRealm,
+				Permission: util.RegistrationsList,
+			},
+			{
+				Realm:      util.AcsLabAdminRealm,
+				Permission: util.RegistrationsList,
+			},
+			{
+				Realm:      util.AcsLabAdminRealm,
+				Permission: util.RegistrationsCreate,
+			},
+			{
+				Realm:      util.AcsLabAdminRealm,
+				Permission: util.InventoriesCreate,
+			},
+			{
+				Realm:      util.AcsLabAdminRealm,
+				Permission: util.InventoriesDelete,
+			},
+			{
+				Realm:      util.AcsLabAdminRealm,
+				Permission: util.InventoriesUpdate,
+			},
+		},
+	})
 	return c
 }
 

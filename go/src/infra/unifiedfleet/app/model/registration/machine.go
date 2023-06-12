@@ -66,6 +66,8 @@ func (e *MachineEntity) GetProto() (proto.Message, error) {
 	if err := proto.Unmarshal(e.Machine, &p); err != nil {
 		return nil, err
 	}
+	// Assign read only realm field
+	p.Realm = e.Realm
 	return &p, nil
 }
 
@@ -78,6 +80,10 @@ func newMachineEntityRealm(ctx context.Context, pm proto.Message) (ufsds.RealmEn
 	if p.GetName() == "" {
 		return nil, errors.Reason("Empty Machine ID").Err()
 	}
+	// Assign the realm to the proto. This will help us use this with BQ
+	realm := util.ToUFSRealm(p.GetLocation().GetZone().String())
+	p.Realm = realm
+
 	machine, err := proto.Marshal(p)
 	if err != nil {
 		return nil, errors.Annotate(err, "fail to marshal Machine %s", p).Err()
@@ -131,7 +137,7 @@ func newMachineEntityRealm(ctx context.Context, pm proto.Message) (ufsds.RealmEn
 		Customer:         customer,
 		SecurityLevel:    securityLevel,
 		GPN:              p.GetChromeosMachine().GetGpn(),
-		Realm:            util.ToUFSRealm(p.GetLocation().GetZone().String()),
+		Realm:            realm,
 	}, nil
 }
 

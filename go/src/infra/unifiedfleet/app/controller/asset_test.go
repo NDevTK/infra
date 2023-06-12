@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -663,6 +663,7 @@ func TestRenameAsset(t *testing.T) {
 			So(err.Error(), ShouldContainSubstring, codes.FailedPrecondition.String())
 		})
 		Convey("Rename asset - happy path", func() {
+			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AtlLabAdminRealm)
 			r := mockRack("chromeos6-row3-rack3", "3", ufspb.Zone_ZONE_CHROMEOS2)
 			RackRegistration(ctx, r)
 			// Create EVE6000 and EVE6001 assets
