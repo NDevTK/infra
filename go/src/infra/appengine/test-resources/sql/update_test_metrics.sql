@@ -99,9 +99,9 @@ USING (
     v.date,
     v.test_id,
     ANY_VALUE(v.test_name) AS test_name,
-    IFNULL(v.repo, "Unknown") AS repo,
-    IFNULL(ANY_VALUE(v.file_name), "Unknown") AS file_name,
-    IFNULL(ANY_VALUE(v.component), "Unknown") AS component,
+    v.repo AS repo,
+    ANY_VALUE(v.file_name) AS file_name,
+    ANY_VALUE(v.component) AS component,
     # Test level metrics
     SUM(num_runs) AS num_runs,
     SUM(num_failures) AS num_failures,
@@ -127,7 +127,7 @@ USING (
 ON
   T.date = S.date
   AND T.test_id = S.test_id
-  AND T.repo = S.repo
+  AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
 WHEN MATCHED THEN
   UPDATE SET
     test_name = S.test_name,

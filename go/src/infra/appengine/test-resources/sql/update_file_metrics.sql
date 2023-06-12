@@ -62,9 +62,8 @@ USING (
   ) AS S
 ON
   T.date = S.date
-  AND T.component = S.component
   AND T.node_name = S.node_name
-  AND T.repo = S.repo
+  AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
 WHEN MATCHED THEN
   UPDATE SET
     num_runs = S.num_runs,
