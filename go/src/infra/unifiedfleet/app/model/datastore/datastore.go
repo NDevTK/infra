@@ -213,8 +213,8 @@ func GetACL(ctx context.Context, pm proto.Message, nf NewRealmEntityFunc, needed
 		return nil, status.Errorf(codes.Internal, InternalError)
 	}
 	if !has {
-		errorMsg := fmt.Sprintf("Permission denied")
-		return nil, status.Errorf(codes.PermissionDenied, errorMsg)
+		logging.Infof(ctx, "User %s does not have permission %s in realm %s", auth.CurrentIdentity(ctx), neededPerm.String(), entity.GetRealm())
+		return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
 	}
 
 	pm, perr := entity.GetProto()
@@ -442,8 +442,8 @@ func BatchGetACL(ctx context.Context, es []proto.Message, nf NewRealmEntityFunc,
 			return nil, status.Errorf(codes.Internal, InternalError)
 		}
 		if !has {
-			errorMsg := fmt.Sprintf("Permission denied")
-			return nil, status.Errorf(codes.PermissionDenied, errorMsg)
+			logging.Infof(ctx, "User %s does not have permission %s in realm %s", auth.CurrentIdentity(ctx), neededPerm.String(), e.GetRealm())
+			return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
 		}
 
 		pm, err := e.GetProto()
