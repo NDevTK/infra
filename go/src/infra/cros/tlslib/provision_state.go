@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,7 @@ type provisionState struct {
 	targetLsb         string
 	forceProvisionOs  bool
 	preventReboot     bool
+	preserveStateful  bool
 }
 
 func newProvisionState(s *Server, req *tls.ProvisionDutRequest) (*provisionState, error) {
@@ -36,6 +37,7 @@ func newProvisionState(s *Server, req *tls.ProvisionDutRequest) (*provisionState
 		dutName:          req.Name,
 		forceProvisionOs: req.ForceProvisionOs,
 		preventReboot:    req.PreventReboot,
+		preserveStateful: req.PreserveStateful,
 	}
 
 	// Verify the incoming request path oneof is valid.
@@ -105,6 +107,68 @@ func (p *provisionState) shouldProvisionOS() bool {
 	return false
 }
 
+// swapStatefulPartition will swap the stateful partition with a minimal filesystem to trigger powerwash.
+func (p *provisionState) swapStatefulPartition(ctx context.Context) error {
+	if p.preserveStateful || p.preventReboot {
+		log.Printf("swapStatefulPartition: skipping stateful partition swap.")
+		return nil
+	}
+
+	tmpMnt, err := runCmdOutput(p.c, "mktemp -d")
+	if err != nil {
+		return fmt.Errorf("swapStatefulPartition: failed to create temporary directory, %s", err)
+	}
+	tmpMnt = strings.TrimSpace(tmpMnt)
+
+	err = runCmd(p.c, fmt.Sprintf("/bin/dd if=/dev/zero of=%s/fs bs=512M count=1", tmpMnt))
+	if err != nil {
+		return fmt.Errorf("swapStatefulPartition: failed to create zero file, %s", err)
+	}
+
+	err = runCmd(p.c, fmt.Sprintf("/sbin/mkfs.ext4 -O none %s/fs", tmpMnt))
+	if err != nil {
+		return fmt.Errorf("swapStatefulPartition: failed to create powerwash filesystem, %s", err)
+	}
+
+	err = runCmd(p.c, fmt.Sprintf("/bin/mkdir %s/mnt", tmpMnt))
+	if err != nil {
+		return fmt.Errorf("swapStatefulPartition: failed to create mount directory, %s", err)
+	}
+
+	err = runCmd(p.c, fmt.Sprintf("mount %[1]s/fs %[1]s/mnt", tmpMnt))
+	if err != nil {
+		return fmt.Errorf("swapStatefulPartition: failed to mount powerwash filesystem, %s", err)
+	}
+
+	err = runCmd(p.c, fmt.Sprintf("/bin/echo -n \"fast safe keepimg\" > %s/mnt/factory_install_reset", tmpMnt))
+	if err != nil {
+		return fmt.Errorf("swapStatefulPartition: failed to write reset file, %s", err)
+	}
+
+	err = runCmd(p.c, fmt.Sprintf("/bin/umount %s/mnt", tmpMnt))
+	if err != nil {
+		return fmt.Errorf("swapStatefulPartition: failed to unmount powerwash filesystem, %s", err)
+	}
+
+	err = runCmd(p.c, "/sbin/fsfreeze -f /mnt/stateful_partition")
+	if err != nil {
+		return fmt.Errorf("swapStatefulPartition: failed to freeze stateful filesystem, %s", err)
+	}
+
+	r, err := getRootDev(p.c)
+	if err != nil {
+		return fmt.Errorf("swapStatefulPartition: failed to get root device from DUT, %s", err)
+	}
+	pi := getPartitionInfo(r)
+
+	err = runCmd(p.c, fmt.Sprintf("/bin/dd if=%s/fs of=%s bs=1M", tmpMnt, pi.stateful))
+	if err != nil {
+		return fmt.Errorf("swapStatefulPartition: failed to unmount powerwash filesystem, %s", err)
+	}
+
+	return nil
+}
+
 // provisionOS will provision the OS, but on failure it will set op.Result to longrunning.Operation_Error
 // and return the same error message
 func (p *provisionState) provisionOS(ctx context.Context) error {
@@ -140,6 +204,10 @@ func (p *provisionState) provisionOS(ctx context.Context) error {
 	} else if err := clearTPM(p.c); err != nil {
 		// TODO(b/241184939): Return error once flashrom doesn't have failures.
 		log.Printf("provisionOS: failed to clear TPM owner, %s", err)
+	}
+
+	if err := p.swapStatefulPartition(ctx); err != nil {
+		log.Printf("provisionOS: failed to force powerwash, %s", err)
 	}
 
 	if p.preventReboot {

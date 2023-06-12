@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,18 @@ import (
 )
 
 const (
-	partitionNumKernelA = "2"
-	partitionNumKernelB = "4"
-	partitionNumRootA   = "3"
-	partitionNumRootB   = "5"
-	partitionNumMiniOSA = "9"
-	partitionNumMiniOSB = "10"
+	partitionNumStateful = "1"
+	partitionNumKernelA  = "2"
+	partitionNumKernelB  = "4"
+	partitionNumRootA    = "3"
+	partitionNumRootB    = "5"
+	partitionNumMiniOSA  = "9"
+	partitionNumMiniOSB  = "10"
 )
 
 // partitionsInfo holds active/inactive root + kernel partition information.
 type partitionInfo struct {
+	stateful string
 	// The active + inactive kernel device partitions (e.g. /dev/nvme0n1p2).
 	activeKernel      string
 	activeKernelNum   string
@@ -39,6 +41,7 @@ func getPartitionInfo(r rootDev) partitionInfo {
 	switch r.partNum {
 	case partitionNumRootA:
 		return partitionInfo{
+			stateful:          rootDiskPartDelim + partitionNumStateful,
 			activeKernel:      rootDiskPartDelim + partitionNumKernelA,
 			activeKernelNum:   partitionNumKernelA,
 			inactiveKernel:    rootDiskPartDelim + partitionNumKernelB,
@@ -50,6 +53,7 @@ func getPartitionInfo(r rootDev) partitionInfo {
 		}
 	case partitionNumRootB:
 		return partitionInfo{
+			stateful:          rootDiskPartDelim + partitionNumStateful,
 			activeKernel:      rootDiskPartDelim + partitionNumKernelB,
 			activeKernelNum:   partitionNumKernelB,
 			inactiveKernel:    rootDiskPartDelim + partitionNumKernelA,

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -238,31 +238,6 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 			return
 		}
 		log.Printf("provision: time to wait for sticky kernel %v", time.Since(t))
-
-		t = time.Now()
-		if !req.GetPreserveStateful() && !req.PreventReboot {
-			if err := p.wipeStateful(ctx); err != nil {
-				setError(newOperationError(
-					codes.Aborted,
-					fmt.Sprintf("provision: failed to wipe stateful, %s", err),
-					tls.ProvisionDutResponse_REASON_PROVISIONING_FAILED.String()))
-				return
-			}
-			// After a reboot, need a new client connection.
-			sshCtx, cancel := context.WithTimeout(ctx, rebootTimeout)
-			defer cancel()
-
-			disconnect, err := p.connect(sshCtx, addr)
-			if err != nil {
-				setError(newOperationError(
-					codes.Aborted,
-					fmt.Sprintf("provision: failed to connect to DUT after wipe reboot, %s", err),
-					tls.ProvisionDutResponse_REASON_PROVISIONING_FAILED.String()))
-				return
-			}
-			defer disconnect()
-		}
-		log.Printf("provision: time to wipe stateful took %v", time.Since(t))
 
 		t = time.Now()
 		if err := p.provisionStateful(ctx); err != nil {
