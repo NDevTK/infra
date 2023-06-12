@@ -54,6 +54,7 @@ type MachineLSEEntity struct {
 	SecurityLevel         string   `gae:"security_level"`
 	MibaRealm             string   `gae:"miba_realm,noindex"` // deprecated
 	LogicalZone           string   `gae:"logical_zone"`
+	Realm                 string   `gae:"realm"`
 	// ufspb.MachineLSE cannot be directly used as it contains pointer.
 	MachineLSE []byte `gae:",noindex"`
 }
@@ -137,6 +138,7 @@ func newMachineLSEEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEnti
 		SecurityLevel:         securityLevel,
 		MachineLSE:            machineLSE,
 		LogicalZone:           p.GetLogicalZone().String(),
+		Realm:                 p.GetRealm(),
 	}, nil
 }
 
