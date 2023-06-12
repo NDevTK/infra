@@ -150,6 +150,19 @@ var Jobs = []*cron.CronTab{
 		TrigType: cron.EVERY,
 		Job:      indexRacks,
 	},
+	{
+		// This job is not meant to be run by the cron. This will
+		// be triggered by shivas at whatever time oncall deems
+		// appropriate. There is a potential for this to block
+		// other jobs as it updates ~500 rows every time. Only run
+		// during low-traffic non-critical times. The long wait time
+		// ensures that this will not be run under normal circumstances
+		// (unless we manage to not update/reboot UFS for 200 years)
+		Name:     util.CronJobNames["indexMachineLSEs"],
+		Time:     200 * 365 * 24 * time.Hour, // Wake me up when September ends
+		TrigType: cron.EVERY,
+		Job:      indexMachineLSEs,
+	},
 }
 
 // InitServer initializes a cron server.

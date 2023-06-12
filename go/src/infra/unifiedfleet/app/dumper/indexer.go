@@ -11,6 +11,7 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/registration"
 	"infra/unifiedfleet/app/util"
 )
@@ -106,4 +107,43 @@ func indexTable(ctx context.Context, tableName string, fn indexTableFn) error {
 	}
 	logging.Infof(ctx, "indexTable -- Done indexing the %s table", tableName)
 	return nil
+}
+
+// indexMachineLSEs reads the entire machineLSE table in all namespaces, updates the realm
+// field for the table by reading the corresponding machines. And writes the updated
+// table back to datastore
+func indexMachineLSEs(ctx context.Context) error {
+	f := func(ctx context.Context, ns string, token *string) error {
+		var err error
+		var lses []*ufspb.MachineLSE
+		lses, *token, err = inventory.ListMachineLSEs(ctx, pageSize, *token, nil, false)
+		if err != nil {
+			return errors.Annotate(err, "indexMachineLSEs[%s] -- Failed to list", ns).Err()
+		}
+		logging.Infof(ctx, "indexMachineLSEs -- Indexing %v MachineLSEs in %s", len(lses), ns)
+		for _, lse := range lses {
+			machines := lse.GetMachines()
+			if len(machines) == 1 && machines[0] != "" {
+				machine, err := registration.GetMachine(ctx, machines[0])
+				if err != nil {
+					logging.Errorf(ctx, "indexMachineLSEs[%s] -- Failed to get %s", lse.GetName(), machines[0])
+					continue
+				}
+				if machine.GetRealm() == "" {
+					logging.Errorf(ctx, "indexMachineLSEs[%s] -- Failed to add realm. Missing realm %s", lse.GetName(), machines[0])
+					continue
+				}
+				lse.Realm = machine.GetRealm()
+			} else {
+				logging.Errorf(ctx, "indexMachineLSEs[%s] -- Failed to update realms. Need exactly one machine [%v]", lse.GetName(), machines)
+			}
+		}
+		// Update the MachineLSEs back to datastore
+		_, err = inventory.BatchUpdateMachineLSEs(ctx, lses)
+		if err != nil {
+			return errors.Annotate(err, "indexMachineLSEs[%s] -- Failed to update", ns).Err()
+		}
+		return nil
+	}
+	return indexTable(ctx, "machineLSEs", f)
 }
