@@ -316,6 +316,7 @@ func (hc *HistoryClient) LogMachineLSEChanges(oldData *ufspb.MachineLSE, newData
 	hc.changes = append(hc.changes, logCommon(resourceName, "machine_lse.vlan", oldData.GetVlan(), newData.GetVlan())...)
 	hc.changes = append(hc.changes, logCommon(resourceName, "machine_lse.ip", oldData.GetIp(), newData.GetIp())...)
 	hc.changes = append(hc.changes, logCommon(resourceName, "machine_lse.zone", approxZone(oldData.GetZone()), approxZone(newData.GetZone()))...)
+	hc.changes = append(hc.changes, logCommon(resourceName, "machine_lse.realm", approxZone(oldData.GetRealm()), approxZone(newData.GetRealm()))...)
 	hc.changes = append(hc.changes, logCommon(resourceName, "machine_lse.rack", oldData.GetRack(), newData.GetRack())...)
 	hc.changes = append(hc.changes, logCommon(resourceName, "machine_lse.manufacturer", oldData.GetManufacturer(), newData.GetManufacturer())...)
 	hc.changes = append(hc.changes, logCommon(resourceName, "machine_lse.deployment_ticket", oldData.GetDeploymentTicket(), newData.GetDeploymentTicket())...)

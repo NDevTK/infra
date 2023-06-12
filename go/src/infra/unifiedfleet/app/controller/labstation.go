@@ -103,6 +103,7 @@ func UpdateLabstation(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 		// Copy output only fields.
 		machinelse.Zone = oldMachinelse.GetZone()
 		machinelse.Rack = oldMachinelse.GetRack()
+		machinelse.Realm = oldMachinelse.GetRealm()
 
 		var machine *ufspb.Machine
 

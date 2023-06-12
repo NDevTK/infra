@@ -251,6 +251,8 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 		machinelse.Manufacturer = oldMachinelse.GetManufacturer()
 		machinelse.Nic = oldMachinelse.GetNic()
 		machinelse.Vlan = oldMachinelse.GetVlan()
+		// Copy the realms from old instance
+		machinelse.Realm = oldMachinelse.GetRealm()
 
 		// Do not let updating from browser to os or vice versa change for MachineLSE.
 		if oldMachinelse.GetChromeBrowserMachineLse() != nil && machinelse.GetChromeosMachineLse() != nil {
@@ -1623,6 +1625,13 @@ func setNicIfNeeded(ctx context.Context, lse *ufspb.MachineLSE, machine *ufspb.M
 func setOutputField(ctx context.Context, machine *ufspb.Machine, lse *ufspb.MachineLSE) error {
 	lse.Rack = machine.GetLocation().GetRack()
 	lse.Zone = machine.GetLocation().GetZone().String()
+
+	// Assign the realms
+	err := assignRealmFromMachine(machine, lse)
+	if err != nil {
+		return err
+	}
+
 	for _, vm := range lse.GetChromeBrowserMachineLse().GetVms() {
 		vm.Zone = machine.GetLocation().GetZone().String()
 		vm.MachineLseId = lse.GetName()
@@ -2120,4 +2129,18 @@ func processUpdateMachineLSEDevboardUpdateMask(ctx context.Context, oldMachineLs
 	}
 	// return existing/old machinelse with new updated values.
 	return oldMachineLse, nil
+}
+
+// assignRealmFromMachine assigns the realm given to the machine to machine_lse
+// Ensure that the machine used here is retrieved from datastore. This will ensure
+// that the realm assigned to the machine_lse tracks with the physical machine.
+func assignRealmFromMachine(machine *ufspb.Machine, lse *ufspb.MachineLSE) error {
+	if machine == nil {
+		return status.Error(codes.Internal, "assignRealmFromMachine - Machine is nil")
+	}
+	if lse == nil {
+		return status.Error(codes.Internal, "assignRealmFromMachine - MachineLSE is nil")
+	}
+	lse.Realm = machine.Realm
+	return nil
 }

@@ -65,6 +65,7 @@ func mockDUT(hostname, machine, servoHost, servoSerial, rpm, rpmOutlet string, s
 		},
 		// Output only fields. Set defaults for use in comparision.
 		Zone:          "ZONE_CHROMEOS6",
+		Realm:         "@internal:ufs/os-atl",
 		ResourceState: ufspb.State_STATE_REGISTERED,
 	}
 }
