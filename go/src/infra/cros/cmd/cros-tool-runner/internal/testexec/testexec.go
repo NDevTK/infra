@@ -102,7 +102,7 @@ func Run(ctx context.Context, req *api.CrosToolRunnerTestRequest, crosTestContai
 	wg := new(sync.WaitGroup)
 	wg.Add(1)
 	go func() {
-		if err = libsServer.Serve(wg); err != nil {
+		if err := libsServer.Serve(wg); err != nil {
 			log.Printf("libsserver error: %v", err)
 		}
 	}()
