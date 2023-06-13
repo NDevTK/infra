@@ -687,7 +687,7 @@ func expandHistograms(hists map[string]*histogram, variants map[string]*variants
 					// If there's no inline variants defined, we'll get the variants from
 					// out-of-line <variants>.
 					if currVariants == nil {
-						currVariants = variants[token.Key].Variants
+						currVariants = variants[token.VariantsName].Variants
 					}
 					for _, variant := range currVariants {
 						// Skip obsolete variants.

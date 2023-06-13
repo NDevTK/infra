@@ -1,13 +1,13 @@
 <histogram-configuration>
     <histograms>
-        <variants name="Character">
+        <variants name="Characters">
             <variant name="Charizard"/>
         </variants>
         <histogram name="Test{OpponentType}.Histogram2.{Character}" units="units" expires_after="M150">
             <owner>ltina@google.com</owner>
             <owner>chrome-metrics-team@google.com</owner>
             <summary> This is a summary </summary>
-            <token key="Character" variants="Character"/>
+            <token key="Character" variants="Characters"/>
             <token key="OpponentType">
                 <variant name="Flying" summary="flappity-flap"/>
             </token>
@@ -16,7 +16,7 @@
             <owner>ltina@google.com</owner>
             <owner>chrome-metrics-team@google.com</owner>
             <summary> This is a summary </summary>
-            <token key="Character" variants="Character"/>
+            <token key="Character" variants="Characters"/>
         </histogram>
         <histogram name="Test.Histogram4" units="units" expires_after="M150">
             <owner>ltina@google.com</owner>
