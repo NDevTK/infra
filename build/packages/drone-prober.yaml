@@ -1,0 +1,10 @@
+package: chromiumos/infra/drone-prober/${platform}
+description: Skylab drone prober.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cmd/drone-prober
+root: ../../go/bin
+data:
+  - file: drone-prober${exe_suffix}
+  - version_file: .versions/drone-prober${exe_suffix}.cipd_version
