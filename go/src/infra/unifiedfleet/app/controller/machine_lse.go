@@ -540,7 +540,47 @@ func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken, filter stri
 		}
 		return res, "", nil
 	}
-	lses, nextPageToken, err := inventory.ListMachineLSEs(ctx, pageSize, pageToken, filterMap, keysOnly)
+	var lses []*ufspb.MachineLSE
+	var nextPageToken string
+	if pageToken != "" {
+		// See inventory/machine_lse.go.
+		// ListMachineLSEsACL runs a different API to compared to
+		// ListMachineLSEs. This results in ListMachineLSEsACL getting
+		// a different type of page token (a multicursor) compared to
+		// ListMachineLSEs. The function IsMultiCursor is used here to
+		// tell which API to use. This is required because this
+		// function gets called repeatedly (due to limitations in RPC
+		// size) by clients (like shivas).
+		//
+		// The first time there is no page token so we choose which rpc
+		// to use at random. But if there is more data to be returned
+		// after the first run, datastore returns a page token. As the
+		// token is different based on which API was used, we use it to
+		// do the remaining transactions.
+		//
+		// Note: We can't use token from ListMachineLSEsACL on
+		// ListMachineLSEs, this doesn't always throw an error but the
+		// results are undefined. We do get an error(with high
+		// accuracy) if we use token from ListMachineLSEs on
+		// ListMachineLSEsACL
+		if datastore.IsMultiCursorString(pageToken) {
+			logging.Infof(ctx, "ListMachineLSEs --- Continue Running in experimental API")
+			// If we have a multicursor in our hand. Then we got to do the ACLs
+			lses, nextPageToken, err = inventory.ListMachineLSEsACL(ctx, pageSize, pageToken, filterMap, keysOnly)
+		} else {
+			lses, nextPageToken, err = inventory.ListMachineLSEs(ctx, pageSize, pageToken, filterMap, keysOnly)
+		}
+	}
+	cutoff := config.Get(ctx).GetExperimentalAPI().GetListMachineLSEsACL()
+	// Roll the dice to determine which one to use
+	roll := rand.Uint32() % 100
+	cutoff = cutoff % 100
+	if cutoff != 0 && roll <= cutoff {
+		logging.Infof(ctx, "ListMachineLSEsACL --- Running in experimental API")
+		lses, nextPageToken, err = inventory.ListMachineLSEsACL(ctx, pageSize, pageToken, filterMap, keysOnly)
+	} else {
+		lses, nextPageToken, err = inventory.ListMachineLSEs(ctx, pageSize, pageToken, filterMap, keysOnly)
+	}
 	if full && !keysOnly {
 		for _, lse := range lses {
 			// VM info not associated with CrOS machinelses.

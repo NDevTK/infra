@@ -12,9 +12,12 @@ import (
 	"go.chromium.org/luci/appengine/gaetesting"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/gae/service/datastore"
+	"go.chromium.org/luci/server/auth"
+	"go.chromium.org/luci/server/auth/authtest"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	. "infra/unifiedfleet/app/model/datastore"
+	"infra/unifiedfleet/app/util"
 )
 
 func mockMachineLSE(id string) *ufspb.MachineLSE {
@@ -27,6 +30,13 @@ func mockMachineLSEWithOwnership(id string, ownership *ufspb.OwnershipData) *ufs
 	machine := mockMachineLSE(id)
 	machine.Ownership = ownership
 	return machine
+}
+
+func mockMachineLSEWithRealm(id, realm string) *ufspb.MachineLSE {
+	return &ufspb.MachineLSE{
+		Name:  id,
+		Realm: realm,
+	}
 }
 
 func TestCreateMachineLSE(t *testing.T) {
@@ -224,6 +234,100 @@ func TestListMachineLSEs(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(resp, ShouldResembleProto, machineLSEs[3:])
 		})
+	})
+}
+
+func TestListMachineLSEsACL(t *testing.T) {
+	t.Parallel()
+	ctx := gaetesting.TestingContextWithAppID("go-test")
+	datastore.GetTestable(ctx).Consistent(true)
+	browserMachineLSEs := make([]*ufspb.MachineLSE, 0, 4)
+	acsMachineLSEs := make([]*ufspb.MachineLSE, 0, 4)
+	for i := 0; i < 4; i++ {
+		machineLSE1 := mockMachineLSEWithRealm(fmt.Sprintf("machineLSE-%d", i), util.BrowserLabAdminRealm)
+		resp, _ := CreateMachineLSE(ctx, machineLSE1)
+		browserMachineLSEs = append(browserMachineLSEs, resp)
+	}
+	for i := 0; i < 4; i++ {
+		machineLSE1 := mockMachineLSEWithRealm(fmt.Sprintf("machineLSE-%d", i+4), util.AcsLabAdminRealm)
+		resp, _ := CreateMachineLSE(ctx, machineLSE1)
+		acsMachineLSEs = append(acsMachineLSEs, resp)
+	}
+	// User bat has permissions in browser lab
+	ctxBat := auth.WithState(ctx, &authtest.FakeState{
+		Identity: "user:bat@man.com",
+		IdentityPermissions: []authtest.RealmPermission{
+			{
+				Realm:      util.BrowserLabAdminRealm,
+				Permission: util.InventoriesList,
+			},
+		},
+	})
+	// User spider has permissions in both browser and acs lab
+	ctxSpider := auth.WithState(ctx, &authtest.FakeState{
+		Identity: "user:spider@man.com",
+		IdentityPermissions: []authtest.RealmPermission{
+			{
+				Realm:      util.BrowserLabAdminRealm,
+				Permission: util.InventoriesList,
+			},
+			{
+				Realm:      util.AcsLabAdminRealm,
+				Permission: util.InventoriesList,
+			},
+		},
+	})
+	// User mermaid has no permissions
+	ctxMermaid := auth.WithState(ctx, &authtest.FakeState{
+		Identity: "user:mermaid@man.com",
+	})
+	// Anonymous User has no permissions
+	ctx = auth.WithState(ctx, &authtest.FakeState{})
+	Convey("ListMachineLSEsACL", t, func() {
+		Convey("List machineLSEs ACLed - anonymous user", func() {
+			resp, nextPageToken, err := ListMachineLSEsACL(ctx, 5, "", nil, false)
+			So(resp, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(err, ShouldBeNil)
+		})
+
+		Convey("List machineLSEs ACLed - Filter on realm", func() {
+			resp, nextPageToken, err := ListMachineLSEsACL(ctxBat, 4, "", map[string][]interface{}{"realm": {"test"}}, false)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Cannot filter on realm")
+			So(resp, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+		})
+
+		Convey("List machineLSEs ACLed - Happy path, no permissions", func() {
+			resp, nextPageToken, err := ListMachineLSEsACL(ctxMermaid, 4, "", nil, false)
+			So(err, ShouldBeNil)
+			So(resp, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+		})
+
+		Convey("List machineLSEs ACLed - Happy path, single realm", func() {
+			resp, nextPageToken, err := ListMachineLSEsACL(ctxBat, 10, "", nil, false)
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(resp, ShouldResembleProto, browserMachineLSEs)
+		})
+
+		Convey("List machineLSEs ACLed - Happy path, two realms", func() {
+			resp, nextPageToken, err := ListMachineLSEsACL(ctxSpider, 4, "", nil, false)
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(nextPageToken, ShouldNotBeEmpty)
+			So(resp, ShouldResembleProto, browserMachineLSEs)
+			// Get the remaining machineLSEs
+			resp, nextPageToken, err = ListMachineLSEsACL(ctxSpider, 10, nextPageToken, nil, false)
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+			So(resp, ShouldResembleProto, acsMachineLSEs)
+		})
+
 	})
 }
 

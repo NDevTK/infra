@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
+	"go.chromium.org/luci/server/auth"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -301,6 +302,31 @@ func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken string, filt
 	return runListQuery(ctx, q, pageSize, pageToken, keysOnly)
 }
 
+// ListMachineLSEsACL lists the machine lses that user has access to
+// Does a query over MachineLSE entities. Returns up to pageSize entities, plus non-nil cursor (if
+// there are more results). pageSize must be positive.
+func ListMachineLSEsACL(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.MachineLSE, nextPageToken string, err error) {
+	err = validateListMachineLSEFilters(filterMap)
+	if err != nil {
+		return nil, "", errors.Annotate(err, "ListMachineLSEsACL -- cannot validate query").Err()
+	}
+
+	userRealms, err := auth.QueryRealms(ctx, util.InventoriesList, "", nil)
+	if err != nil {
+		return nil, "", err
+	}
+
+	q, err := ufsds.ListQuery(ctx, MachineLSEKind, pageSize, "", filterMap, keysOnly)
+	if err != nil {
+		return nil, "", err
+	}
+
+	// Create a list of queries each checking for a realm assignment
+	queries := ufsds.AssignRealms(q, userRealms)
+
+	return runListQueries(ctx, queries, pageSize, pageToken, keysOnly)
+}
+
 // ListMachineLSEsByIdPrefixSearch lists the machineLSEs
 // Does a query over MachineLSE entities using Name/ID prefix. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). PageSize must be positive.
@@ -315,6 +341,46 @@ func ListMachineLSEsByIdPrefixSearch(ctx context.Context, pageSize int32, pageTo
 func runListQuery(ctx context.Context, query *datastore.Query, pageSize int32, pageToken string, keysOnly bool) (res []*ufspb.MachineLSE, nextPageToken string, err error) {
 	var nextCur datastore.Cursor
 	err = datastore.Run(ctx, query, func(ent *MachineLSEEntity, cb datastore.CursorCB) error {
+		if keysOnly {
+			res = append(res, &ufspb.MachineLSE{
+				Name: ent.ID,
+			})
+		} else {
+			pm, err := ent.GetProto()
+			if err != nil {
+				logging.Errorf(ctx, "Failed to UnMarshal: %s", err)
+				return nil
+			}
+			machineLSE := pm.(*ufspb.MachineLSE)
+			res = append(res, machineLSE)
+		}
+		if len(res) >= int(pageSize) {
+			if nextCur, err = cb(); err != nil {
+				return err
+			}
+			return datastore.Stop
+		}
+		return nil
+	})
+	if err != nil {
+		logging.Errorf(ctx, "Failed to List MachineLSEs %s", err)
+		return nil, "", status.Errorf(codes.Internal, err.Error())
+	}
+	if nextCur != nil {
+		nextPageToken = nextCur.String()
+	}
+	return
+}
+
+func runListQueries(ctx context.Context, queries []*datastore.Query, pageSize int32, pageToken string, keysOnly bool) (res []*ufspb.MachineLSE, nextPageToken string, err error) {
+	if pageToken != "" {
+		queries, err = datastore.ApplyCursorString(ctx, queries, pageToken)
+		if err != nil {
+			return nil, "", err
+		}
+	}
+	var nextCur datastore.Cursor
+	err = datastore.RunMulti(ctx, queries, func(ent *MachineLSEEntity, cb datastore.CursorCB) error {
 		if keysOnly {
 			res = append(res, &ufspb.MachineLSE{
 				Name: ent.ID,
@@ -574,4 +640,34 @@ func GetMachineLSEIndexedFieldName(input string) (string, error) {
 		return "", status.Errorf(codes.InvalidArgument, "Invalid field name %s - field name for host are nic/machine/machineprototype/rpm/rpmport/vlan/servo/servotype/zone/rack/switch/man/free/tag/state/os/vdc(virtualdatacenter)/pools/logicalzone", input)
 	}
 	return field, nil
+}
+
+// validateListMachineLSEFilters validates that the given filter map is valid
+func validateListMachineLSEFilters(filterMap map[string][]interface{}) error {
+	for field := range filterMap {
+		switch field {
+		case "zone":
+		case "rack":
+		case "switch_id":
+		case "rpm_id":
+		case "rpm_port":
+		case "vlan_id":
+		case "servo_id":
+		case "servo_type":
+		case "machine_ids":
+		case "machinelse_prototype_id":
+		case "manufacturer":
+		case "tags":
+		case "state":
+		case "os":
+		case "virtualdatacenter":
+		case "nic":
+		case "pools":
+		case "logical_zone":
+			continue
+		default:
+			return errors.Reason("Cannot filter on %s", field).Err()
+		}
+	}
+	return nil
 }
