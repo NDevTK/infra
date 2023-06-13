@@ -5407,12 +5407,12 @@ wheel: <
 * *windows-x64-py3.8*
 * *windows-x86-py3.8*
 
-### 0.3.0
+### 0.3.0.chromium.1
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/pathos/${vpython_platform}"
-  version: "version:0.3.0"
+  version: "version:0.3.0.chromium.1"
 >
 ```
 
