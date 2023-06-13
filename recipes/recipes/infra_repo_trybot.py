@@ -36,10 +36,16 @@ PROPERTIES = {
             help='A go version variant to bootstrap, see bootstrap.py'),
     'run_lint':
         Property(default=False, kind=bool, help='Whether to run linter'),
+    'skip_python_tests':
+        Property(
+            default=False,
+            kind=bool,
+            help=('If true, skip running python tests even if Python files '
+                  'were changed.')),
 }
 
 
-def RunSteps(api, go_version_variant, run_lint):
+def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
   cl = api.buildbucket.build.input.gerrit_changes[0]
   project = cl.project
   # For builds scheduled for an infra/infra_superproject change,
@@ -97,7 +103,9 @@ def RunSteps(api, go_version_variant, run_lint):
     with api.step.defer_results():
       if api.platform.arch != 'arm':
         with api.context(cwd=co.path.join(patch_root)):
-          api.step('python tests', ['python3', 'test.py', 'test', '--verbose'])
+          if not skip_python_tests:
+            api.step('python tests',
+                     ['python3', 'test.py', 'test', '--verbose'])
 
         if internal and (api.platform.is_linux or api.platform.is_mac) and any(
             f.startswith('appengine/chromiumdash') for f in files):
@@ -272,3 +280,6 @@ def GenTests(api):
           textwrap.dedent("""\
       go/src/infra/cmd/tools.go
       """))))
+
+  yield (test('skip_python') + api.properties(skip_python_tests=True) +
+         diff('infra/stuff.py', 'go/src/infra/stuff.go'))

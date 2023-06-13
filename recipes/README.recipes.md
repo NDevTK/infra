@@ -1712,7 +1712,7 @@ This function runs UI tests in the `luci-go` project.
 [DEPS](/recipes/recipes/infra_repo_trybot.py#13): [depot\_tools/depot\_tools][depot_tools/recipe_modules/depot_tools], [depot\_tools/osx\_sdk][depot_tools/recipe_modules/osx_sdk], [infra\_checkout](#recipe_modules-infra_checkout), [infra\_system](#recipe_modules-infra_system), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/resultdb][recipe_engine/recipe_modules/resultdb], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 
-&mdash; **def [RunSteps](/recipes/recipes/infra_repo_trybot.py#42)(api, go_version_variant, run_lint):**
+&mdash; **def [RunSteps](/recipes/recipes/infra_repo_trybot.py#48)(api, go_version_variant, run_lint, skip_python_tests):**
 ### *recipes* / [infra\_superproject\_tester](/recipes/recipes/infra_superproject_tester.py)
 
 [DEPS](/recipes/recipes/infra_superproject_tester.py#7): [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/swarming][recipe_engine/recipe_modules/swarming]
