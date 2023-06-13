@@ -95,6 +95,7 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 	logData := getLogData(cmd.TesthausUrl, cmd.StainlessUrl, cmd.GcsUrl)
 
 	// Parse provision info
+	var prejob *skylab_test_runner.Result_Prejob = nil
 	if cmd.ProvisionResp != nil {
 		if cmd.ProvisionResp.GetStatus() == api.InstallResponse_STATUS_SUCCESS {
 			prejobVerdict = skylab_test_runner.Result_Prejob_Step_VERDICT_PASS
@@ -102,6 +103,15 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 			prejobVerdict = skylab_test_runner.Result_Prejob_Step_VERDICT_FAIL
 		}
 		prejobReason = cmd.ProvisionResp.GetStatus().String()
+		prejob = &skylab_test_runner.Result_Prejob{
+			Step: []*skylab_test_runner.Result_Prejob_Step{
+				{
+					Name:                 "provision",
+					Verdict:              prejobVerdict,
+					HumanReadableSummary: prejobReason,
+				},
+			},
+		}
 		_ = common.CreateStepWithStatus(ctx, "Provision", cmd.ProvisionResp.GetStatus().String(), cmd.ProvisionResp.GetStatus() != api.InstallResponse_STATUS_SUCCESS, false)
 	}
 
@@ -137,15 +147,7 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 		Harness: &skylab_test_runner.Result_AutotestResult{
 			AutotestResult: autotestResult,
 		},
-		Prejob: &skylab_test_runner.Result_Prejob{
-			Step: []*skylab_test_runner.Result_Prejob_Step{
-				{
-					Name:                 "provision",
-					Verdict:              prejobVerdict,
-					HumanReadableSummary: prejobReason,
-				},
-			},
-		},
+		Prejob: prejob,
 		AutotestResults: map[string]*skylab_test_runner.Result_Autotest{
 			"original_test": autotestResult,
 		},
