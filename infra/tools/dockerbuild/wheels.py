@@ -1802,6 +1802,9 @@ SPECS.update({
             pyversions=['py3'],
             skip_plat=build_platform.ALL_PY311,  # TODO: version 3.1.4+
         ),
+        # This should actually be 0.3.0, but the version needs to change in
+        # order to pick up dependencies that weren't included when the
+        # MultiWheel was originally added.
         MultiWheel(
             'pathos',
             '0.3.0',
@@ -1820,6 +1823,7 @@ SPECS.update({
                         'MPICC': 'mpicc',  # provided by mpich package
                     },
                 ),
+                Universal('mpmath', '1.3.0'),
                 SourceOrPrebuilt(
                     'multiprocess',
                     '0.70.14',
