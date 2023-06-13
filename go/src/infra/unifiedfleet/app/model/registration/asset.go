@@ -329,7 +329,7 @@ func validateListAssetFilters(filterMap map[string][]interface{}) error {
 		case "type":
 		case "phase":
 		case "tags":
-			return nil
+			continue
 		default:
 			return errors.Reason("Cannot filter on %s", field).Err()
 		}
