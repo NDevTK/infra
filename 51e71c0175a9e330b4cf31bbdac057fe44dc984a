@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "215986a4_ccf61df6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1163549
+      },
+      "writtenOn": "2023-06-13T18:02:08Z",
+      "side": 1,
+      "message": "PTAL\n\nWould it be possible to have a test on the trybots that tries to start up vpython3 with the built wheels in order to help avoid issues like this?",
+      "revId": "51e71c0175a9e330b4cf31bbdac057fe44dc984a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
