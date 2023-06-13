@@ -1337,6 +1337,7 @@ SPECS.update({
         Universal('beautifulsoup4', '4.9.0', pyversions=['py3']),
         Universal('black', '22.3.0', pyversions=['py3']),
         Universal('black', '23.1.0', pyversions=['py3']),
+        Universal('blessed', '1.20.0'),
         Universal('blessings', '1.7', pyversions=['py3']),
         Universal('boto', '2.48.0'),
         Universal('boto3', '1.18.56', pyversions=['py3']),

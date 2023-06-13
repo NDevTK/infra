@@ -1193,6 +1193,20 @@ wheel: <
 
 * *universal*
 
+## **blessed**
+
+### 1.20.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/blessed-py2_py3"
+  version: "version:1.20.0"
+>
+```
+
+
+* *universal*
+
 ## **blessings-py3**
 
 ### 1.7
