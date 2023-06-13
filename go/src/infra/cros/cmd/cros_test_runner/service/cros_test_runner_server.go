@@ -98,6 +98,7 @@ func (server *CrosTestRunnerServer) ConstructStateKeeper() *data.LocalTestStateK
 	}
 
 	sk.GcsPublishSrcDir = server.metadata.LogPath
+	sk.UseDockerKeyDirectly = req.GetUseDockerKeyDirectly()
 
 	return sk
 }

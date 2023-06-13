@@ -103,7 +103,7 @@ func (ex *CtrExecutor) gcloudAuthCommandExecution(
 	step, ctx := build.StartStep(ctx, "Gcloud Auth")
 	defer func() { step.End(err) }()
 
-	err = ex.GcloudAuth(ctx, cmd.DockerKeyFileLocation)
+	err = ex.GcloudAuth(ctx, cmd.DockerKeyFileLocation, cmd.UseDockerKeyDirectly)
 	if err != nil {
 		return errors.Annotate(err, "gcloud auth cmd err: ").Err()
 	}
@@ -145,8 +145,8 @@ func (ex *CtrExecutor) StartAsync(ctx context.Context) error {
 }
 
 // GcloudAuth does the gcloud auth through ctr.
-func (ex *CtrExecutor) GcloudAuth(ctx context.Context, dockerKeyFileLocation string) error {
-	_, err := ex.Ctr.GcloudAuth(ctx, dockerKeyFileLocation)
+func (ex *CtrExecutor) GcloudAuth(ctx context.Context, dockerKeyFileLocation string, useDockerKeyDirectly bool) error {
+	_, err := ex.Ctr.GcloudAuth(ctx, dockerKeyFileLocation, useDockerKeyDirectly)
 	if err != nil {
 		return errors.Annotate(err, "error during gcloud cmd: ").Err()
 	}

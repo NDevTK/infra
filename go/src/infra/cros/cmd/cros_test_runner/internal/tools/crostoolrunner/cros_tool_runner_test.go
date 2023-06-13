@@ -347,7 +347,7 @@ func TestGcloudAuth(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
-		resp, err := ctr.GcloudAuth(ctx, "")
+		resp, err := ctr.GcloudAuth(ctx, "", false)
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)
 	})
@@ -361,7 +361,7 @@ func TestGcloudAuth(t *testing.T) {
 		ctr.CtrClient = mocked_client
 
 		getMockedLoginRegistry(mocked_client).Return(nil, fmt.Errorf("some error"))
-		resp, err := ctr.GcloudAuth(ctx, "")
+		resp, err := ctr.GcloudAuth(ctx, "", false)
 		So(err, ShouldNotBeNil)
 		So(resp, ShouldBeNil)
 	})
@@ -375,7 +375,7 @@ func TestGcloudAuth(t *testing.T) {
 		ctr.CtrClient = mocked_client
 
 		getMockedLoginRegistry(mocked_client).Return(&testapi.LoginRegistryResponse{}, nil)
-		resp, err := ctr.GcloudAuth(ctx, "docker/file/location")
+		resp, err := ctr.GcloudAuth(ctx, "docker/file/location", false)
 		So(err, ShouldBeNil)
 		So(resp, ShouldNotBeNil)
 	})

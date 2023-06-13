@@ -24,9 +24,9 @@ import (
 )
 
 const (
-	Username      = "oauth2accesstoken"
-	Password      = "$(gcloud auth print-access-token)"
-	ImageRegistry = "us-docker.pkg.dev"
+	Oauth2Username = "oauth2accesstoken"
+	Oauth2Password = "$(gcloud auth print-access-token)"
+	ImageRegistry  = "us-docker.pkg.dev"
 )
 
 // CrosToolRunner represents the tool that enables communicating with CTRv2.
@@ -327,8 +327,15 @@ func (ctr *CrosToolRunner) GetContainer(
 // GcloudAuth does auth to the registry.
 func (ctr *CrosToolRunner) GcloudAuth(
 	ctx context.Context,
-	dockerFileLocation string) (*testapi.LoginRegistryResponse, error) {
-	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Auth Gcloud with user %s", Username))
+	dockerFileLocation string,
+	useDockerKeyDirectly bool) (*testapi.LoginRegistryResponse, error) {
+	username := Oauth2Username
+	password := Oauth2Password
+	if useDockerKeyDirectly {
+		username = "_json_key"
+		password = dockerFileLocation
+	}
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Auth Gcloud with user %s", username))
 	var err error
 	defer func() { step.End(err) }()
 
@@ -337,13 +344,13 @@ func (ctr *CrosToolRunner) GcloudAuth(
 	}
 
 	extension := testapi.LoginRegistryExtensions{}
-	if dockerFileLocation != "" {
+	if dockerFileLocation != "" && !useDockerKeyDirectly {
 		extension = testapi.LoginRegistryExtensions{
 			GcloudAuthServiceAccountArgs: []string{"--key-file",
 				dockerFileLocation}}
 	}
 
-	loginReq := testapi.LoginRegistryRequest{Username: Username, Password: Password, Registry: ImageRegistry, Extensions: &extension}
+	loginReq := testapi.LoginRegistryRequest{Username: username, Password: password, Registry: ImageRegistry, Extensions: &extension}
 	common.WriteProtoToStepLog(ctx, step, &loginReq, "LoginRegistryRequest")
 
 	// Login

@@ -10,6 +10,7 @@ package commands
 import (
 	"context"
 	"os/exec"
+	"strings"
 	"time"
 
 	"infra/cros/cmd/cros-tool-runner/internal/common"
@@ -43,6 +44,13 @@ type argumentsComposer interface {
 func execute(ctx context.Context, name string, args []string) (string, string, error) {
 	cmd := exec.CommandContext(ctx, name, args...)
 	// TODO(mingkong) update RunWithTimeout since timeout is part of ctx
+	return common.RunWithTimeout(ctx, cmd, time.Minute, true)
+}
+
+// executeWithStdin accepts a censored string for logging to protect secrets, and a stdin input
+func executeWithStdin(ctx context.Context, name string, args []string, stdin string) (string, string, error) {
+	cmd := exec.CommandContext(ctx, name, args...)
+	cmd.Stdin = strings.NewReader(stdin)
 	return common.RunWithTimeout(ctx, cmd, time.Minute, true)
 }
 

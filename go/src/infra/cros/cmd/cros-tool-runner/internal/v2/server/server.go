@@ -11,12 +11,13 @@ import (
 	"os"
 	"strings"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/common/errors"
-	"google.golang.org/grpc/codes"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/state"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/templates"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/errors"
+	"google.golang.org/grpc/codes"
 )
 
 // ContainerServerImpl implements the gRPC services by running commands and
@@ -111,6 +112,13 @@ func (s *ContainerServerImpl) LoginRegistry(ctx context.Context, request *api.Lo
 			return nil, errors.Annotate(err, stderr).Err()
 		}
 		request.Password = password
+	}
+	if request.Username == "_json_key" {
+		dockerAuthConfigBytes, err := os.ReadFile(request.Password)
+		if err != nil {
+			return nil, err
+		}
+		request.Password = string(dockerAuthConfigBytes)
 	}
 	cmd := commands.DockerLogin{LoginRegistryRequest: request}
 	stdout, stderr, err := s.executor.Execute(ctx, &cmd)

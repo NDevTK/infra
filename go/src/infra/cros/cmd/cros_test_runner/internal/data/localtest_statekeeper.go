@@ -30,6 +30,10 @@ type LocalTestStateKeeper struct {
 
 	// Replacement values for CftTestRequest
 	ImagePath string
+
+	// Use the persistent key directly for docker login
+	// instead of the gcloud auth flow
+	UseDockerKeyDirectly bool
 }
 
 type LocalArgs struct {

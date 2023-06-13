@@ -35,7 +35,7 @@ func TestGcloudAuth(t *testing.T) {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		exec := NewCtrExecutor(ctr)
-		err := exec.GcloudAuth(ctx, "")
+		err := exec.GcloudAuth(ctx, "", false)
 		So(err, ShouldNotBeNil)
 	})
 }

@@ -7,7 +7,6 @@ package commands
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/gofrs/flock"
@@ -106,9 +105,8 @@ type DockerLogin struct {
 }
 
 func (c *DockerLogin) Execute(ctx context.Context) (string, string, error) {
-	args := []string{"login", "-u", c.Username, "-p", c.Password, c.Registry}
-	censored := fmt.Sprintf("%s login -u %s -p %s %s", dockerCmd, c.Username, "<redacted from logs token>", c.Registry)
-	return sensitiveExecute(ctx, dockerCmd, args, censored)
+	args := []string{"login", "-u", c.Username, "--password-stdin", c.Registry}
+	return executeWithStdin(ctx, dockerCmd, args, c.Password)
 }
 
 // GcloudAuthTokenPrint represents `gcloud auth print-access-token`

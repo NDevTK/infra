@@ -21,6 +21,9 @@ type GcloudAuthCmd struct {
 
 	// Deps
 	DockerKeyFileLocation string
+
+	// Config auth mode
+	UseDockerKeyDirectly bool
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -63,6 +66,10 @@ func (cmd *GcloudAuthCmd) extractDepsFromLocalTestStateKeeper(
 		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: DockerKeyFileLocation", cmd.GetCommandType())
 	}
 	cmd.DockerKeyFileLocation = sk.DockerKeyFileLocation
+	cmd.UseDockerKeyDirectly = sk.UseDockerKeyDirectly
+	if sk.UseDockerKeyDirectly {
+		logging.Infof(ctx, "Info: using service account key directly for docker login")
+	}
 
 	return nil
 }
