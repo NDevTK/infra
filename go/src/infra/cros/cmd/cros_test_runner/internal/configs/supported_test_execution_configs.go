@@ -156,18 +156,6 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform comm
 				RdbPublishUpload_CrosRdbPublishExecutor)
 		}
 
-		// TKO publish commands
-		if !cftHwStepsConfig.GetSkipTkoPublish() {
-			// TODO (b/241155482): Enable TKO publish after tko publish issues are fixed.
-			// mainConfigs = append(mainConfigs,
-			// 	TkoPublishStart_CrosTkoPublishExecutor,
-			// 	TkoPublishUpload_CrosTkoPublishExecutor)
-
-			// Meanwhile, we will invoke the script directly
-			mainConfigs = append(mainConfigs,
-				TkoDirectUpload_NoExecutor)
-		}
-
 		// Gcs publish commands
 		if !cftHwStepsConfig.GetSkipGcsPublish() {
 			mainConfigs = append(mainConfigs,
