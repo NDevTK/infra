@@ -33,6 +33,23 @@
       "message": "Yeah I think there needs to be some integration testing here; The Software Deployment medium term goals include getting this all into a shape where we can validate all the released software.\n\nI\u0027ll think about how we could automatically generate tests for some of this stuff in the interim too, though.",
       "revId": "51e71c0175a9e330b4cf31bbdac057fe44dc984a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b948877_c24114b6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2023-06-13T19:20:46Z",
+      "side": 1,
+      "message": "+other folks FYI",
+      "revId": "51e71c0175a9e330b4cf31bbdac057fe44dc984a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
