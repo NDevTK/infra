@@ -23,7 +23,7 @@ flow for common and less-common situations.
          in [Adding A SourceOrPrebuilt Wheel](#adding-a-sourceorprebuilt-wheel).
    1. Special wheels
       * Occasionally a wheel will require custom build steps beyond what the
-        standard classes provide. An example of this is [mpi4py](./wheel_mpi4py.py).
+        standard classes provide. An example of this is [infra](./wheel_infra.py).
         By implementing a custom build_fn, arbitrary steps can be executed.
         This should be last resort; please ask for help in a bug before
         implementing a wheel this way.

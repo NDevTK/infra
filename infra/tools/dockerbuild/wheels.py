@@ -1772,7 +1772,6 @@ SPECS.update({
 })
 
 from .wheel_wheel import MultiWheel
-from .wheel_mpi4py import Mpi4py
 SPECS.update({
     s.spec.tag: s for s in assert_sorted(
         'MultiWheel',
@@ -1781,18 +1780,22 @@ SPECS.update({
         # MultiWheel was originally added.
         MultiWheel(
             'pathos',
-            '0.2.7.chromium.5',
+            '0.2.7.chromium.6',
             ([
                 Universal('dill', '0.3.3'),
                 Universal('klepto', '0.2.0', default=False),
-                Mpi4py(
+                SourceOrPrebuilt(
                     'mpi4py',
                     '3.0.3',
-                    'version:2@3.4.1.chromium.4',
                     packaged=[
                         'windows-x86-py3.8',
                         'windows-x64-py3.8',
                     ],
+                    tpp_libs=[('infra/3pp/static_libs/mpich',
+                               'version:2@3.4.1.chromium.6')],
+                    env_cb=lambda w: {
+                        'MPICC': 'mpicc',  # provided by mpich package
+                    },
                 ),
                 SourceOrPrebuilt(
                     'multiprocess',
@@ -1809,6 +1812,40 @@ SPECS.update({
             ]),
             pyversions=['py3'],
             skip_plat=build_platform.ALL_PY311,  # TODO: version 3.1.4+
+        ),
+        MultiWheel(
+            'pathos',
+            '0.3.0',
+            ([
+                Universal('dill', '0.3.6'),
+                SourceOrPrebuilt(
+                    'mpi4py',
+                    '3.1.4',
+                    packaged=[
+                        'windows-x86-py3.8',
+                        'windows-x64-py3.8',
+                    ],
+                    tpp_libs=[('infra/3pp/static_libs/mpich',
+                               'version:2@3.4.1.chromium.6')],
+                    env_cb=lambda w: {
+                        'MPICC': 'mpicc',  # provided by mpich package
+                    },
+                ),
+                SourceOrPrebuilt(
+                    'multiprocess',
+                    '0.70.14',
+                    pyversions=['py3'],
+                    skip_auditwheel=True,
+                    packaged=(),
+                ),
+                Universal('mystic', '0.4.0'),
+                Universal('pathos', '0.3.0'),
+                Universal('pox', '0.3.2'),
+                Universal('ppft', '1.7.6.6', pyversions=['py3']),
+                Universal('pyina', '0.2.7'),
+            ]),
+            pyversions=['py3'],
+            skip_plat=build_platform.ALL_PY311,  # TODO
         ),
         # This should actually be 4.8.0, but the version needs to change in
         # order to pick up dependencies that weren't included when the

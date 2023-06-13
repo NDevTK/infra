@@ -5375,12 +5375,30 @@ wheel: <
 
 ## **pathos**
 
-### 0.2.7.chromium.5
+### 0.2.7.chromium.6
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/pathos/${vpython_platform}"
-  version: "version:0.2.7.chromium.5"
+  version: "version:0.2.7.chromium.6"
+>
+```
+
+
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+* *windows-x86-py3.8*
+
+### 0.3.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pathos/${vpython_platform}"
+  version: "version:0.3.0"
 >
 ```
 
