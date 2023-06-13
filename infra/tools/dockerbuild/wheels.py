@@ -339,6 +339,34 @@ SPECS.update({
             patch_version='chromium.4',  # Rebuild for https://crbug.com/1233745
             packaged=(),
         ),
+        # Old cryptography versions are not guaranteed to build, and are left
+        # here to keep these wheels in the markdown.
+        SourceOrPrebuilt(
+            'cryptography',
+            '2.6.1',
+            pyversions=['py2', 'py3'],
+            packaged=(),
+            default=False,
+            only_plat=['manylinux-x64-py3.8'],
+        ),
+        SourceOrPrebuilt(
+            'cryptography',
+            '2.9.2',
+            pyversions=['py2', 'py3'],
+            packaged=['windows-x86-py3.8', 'windows-x64-py3.8'],
+            patch_version='chromium.1',
+            default=False,
+            skip_plat=build_platform.ALL_PY311,
+        ),
+        SourceOrPrebuilt(
+            'cryptography',
+            '3.3.1',
+            pyversions=['py2', 'py3'],
+            packaged=['windows-x86-py3.8', 'windows-x64-py3.8'],
+            patch_version='chromium.1',
+            default=False,
+            skip_plat=build_platform.ALL_PY311,
+        ),
         SourceOrPrebuilt(
             'cryptography',
             '3.3.2',
@@ -1731,46 +1759,6 @@ SPECS.update({
 #
 # The following packages all require specialized compilation, and so have their
 # own custom builder types.
-
-# DEPRECATED. This is left only for keeping these wheels in the markdown.
-# See cryptography 3.3.2 for any new cryptography library.
-from .wheel_cryptography import CryptographyPyPI
-SPECS.update({
-    s.spec.tag: s for s in assert_sorted(
-        'CryptographyPyPI',
-        CryptographyPyPI(
-            'cryptography',
-            '2.6.1',
-            openssl='1.1.0f',
-            pyversions=['py2', 'py3'],
-            packaged=(),
-            # This wheel currently doesn't build at HEAD.
-            # TODO(crbug.com/1218659): Get it working again.
-            default=False,
-            only_plat=['manylinux-x64-py3.8'],
-        ),
-        CryptographyPyPI(
-            'cryptography',
-            '2.9.2',
-            openssl='1.1.1i',
-            pyversions=['py2', 'py3'],
-            packaged=['windows-x86-py3.8', 'windows-x64-py3.8'],
-            patch_version='chromium.1',
-            default=False,
-            skip_plat=build_platform.ALL_PY311,
-        ),
-        CryptographyPyPI(
-            'cryptography',
-            '3.3.1',
-            openssl='1.1.1i',
-            pyversions=['py2', 'py3'],
-            packaged=['windows-x86-py3.8', 'windows-x64-py3.8'],
-            patch_version='chromium.1',
-            default=False,
-            skip_plat=build_platform.ALL_PY311,
-        ),
-    )
-})
 
 from .wheel_wheel import MultiWheel
 SPECS.update({
