@@ -138,6 +138,11 @@ def RunSteps(api, platforms, dry_run, rebuild, experimental,
         for wheel in new_wheels:
           if wheel not in old_wheels:
             spec = wheel['spec']
+            # default=False is used to annotate wheels that no longer build
+            # correctly, but we want to keep in wheels.md. Skip them when
+            # computing the changed wheels for tryjobs.
+            if not spec.get('default', True):
+              continue
 
             # Compute the tag in the same way as in dockerbuild's Spec.tag.
             tag = '%s-%s' % (spec['name'], spec['version'])
@@ -350,3 +355,65 @@ def GenTests(api):
               }
           }])) + api.override_step_data(
               'compute new wheels.json', stdout=api.json.output([])))
+
+  yield api.test(
+      'trybot wheel changed to disabled',
+      api.properties(dry_run=True, rebuild=True) +
+      api.buildbucket.try_build('infra') +
+      api.tryserver.gerrit_change_target_ref('refs/branch-heads/foo') +
+      api.override_step_data(
+          'git diff to find changed files',
+          stdout=api.raw_io.output_text('infra/tools/dockerbuild/wheels.py')) +
+      api.override_step_data(
+          'compute old wheels.json',
+          stdout=api.json.output([{
+              "spec": {
+                  "name": "old-wheel",
+                  "patch_version": None,
+                  "pyversions": ["py3"],
+                  "version": "3.2.0",
+                  "version_suffix": None,
+              }
+          }])) + api.override_step_data(
+              'compute new wheels.json',
+              stdout=api.json.output([{
+                  "spec": {
+                      "name": "old-wheel",
+                      "patch_version": None,
+                      "pyversions": ["py3"],
+                      "version": "3.2.0",
+                      "version_suffix": None,
+                      "default": False,
+                  }
+              }])))
+
+  yield api.test(
+      'trybot add a new disabled wheel',
+      api.properties(dry_run=True, rebuild=True) +
+      api.buildbucket.try_build('infra') +
+      api.tryserver.gerrit_change_target_ref('refs/branch-heads/foo') +
+      api.override_step_data(
+          'git diff to find changed files',
+          stdout=api.raw_io.output_text('infra/tools/dockerbuild/wheels.py')) +
+      api.override_step_data(
+          'compute old wheels.json', stdout=api.json.output([{}])) +
+      api.override_step_data(
+          'compute new wheels.json',
+          stdout=api.json.output([{
+              "spec": {
+                  "name": "disabled-wheel",
+                  "patch_version": None,
+                  "pyversions": ["py3"],
+                  "version": "3.2.0",
+                  "version_suffix": None,
+                  "default": False,
+              },
+          }, {
+              "spec": {
+                  "name": "other-new-wheel",
+                  "patch_version": None,
+                  "pyversions": ["py3"],
+                  "version": "1.0.0",
+                  "version_suffix": None,
+              },
+          }])))
