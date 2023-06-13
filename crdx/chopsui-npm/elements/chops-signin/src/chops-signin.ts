@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { LitElement, html, svg, css } from 'lit-element';
+import {LitElement, html, svg, css} from 'lit-element';
 
 export interface AuthorizationHeader {
   Authorization?: string;
@@ -70,21 +70,21 @@ export class ChopsSignin extends LitElement {
   render() {
     const profile = getUserProfileSync();
     return html`
-      ${this.errorMsg
-        ? html`
+      ${this.errorMsg ?
+        html`
             <div class="error">Error: ${this.errorMsg}</div>
-          `
-        : html`
-            ${!profile
-              ? this._icon
-              : profile.getImageUrl()
-              ? html`
+          ` :
+        html`
+            ${!profile ?
+              this._icon :
+              profile.getImageUrl() ?
+              html`
                   <img
                     title="Sign out of ${profile.getEmail()}"
                     src="${profile.getImageUrl()}"
                   />
-                `
-              : this._icon}
+                ` :
+              this._icon}
           `}
     `;
   }
@@ -111,9 +111,9 @@ export class ChopsSignin extends LitElement {
   }
 
   attributeChangedCallback(
-    name: string,
-    oldval: string | null,
-    newval: string | null
+      name: string,
+      oldval: string | null,
+      newval: string | null,
   ) {
     super.attributeChangedCallback(name, oldval, newval);
     if (name === 'client-id') {
@@ -142,17 +142,17 @@ export class ChopsSignin extends LitElement {
 
   _onClick() {
     return authInitializedPromise
-      .then(() => {
-        const auth = gapi.auth2.getAuthInstance();
-        if (auth.currentUser.get().isSignedIn()) {
-          return auth.signOut();
-        } else {
-          return auth.signIn();
-        }
-      })
-      .catch(err => {
-        window.console.error(err);
-      });
+        .then(() => {
+          const auth = gapi.auth2.getAuthInstance();
+          if (auth.currentUser.get().isSignedIn()) {
+            return auth.signOut();
+          } else {
+            return auth.signIn();
+          }
+        })
+        .catch((err) => {
+          window.console.error(err);
+        });
   }
 }
 
@@ -165,7 +165,7 @@ if (!customElements.get('chops-signin')) {
 export function getAuthInstanceAsync(): Promise<gapi.auth2.GoogleAuth> {
   return authInitializedPromise.then(() => {
     return gapi.auth2.getAuthInstance();
-  });
+  }) as Promise<gapi.auth2.GoogleAuth>;
 }
 
 export function getAuthInstanceSync(): gapi.auth2.GoogleAuth | undefined {
@@ -197,7 +197,7 @@ export function getUserProfileSync(): gapi.auth2.BasicProfile | undefined {
 // getting the profile.
 export function getUserProfileAsync(): Promise<
   gapi.auth2.BasicProfile | undefined
-> {
+  > {
   return authInitializedPromise.then(getUserProfileSync);
 }
 
@@ -206,54 +206,54 @@ let reloadTimerId: number | undefined;
 
 export function getAuthorizationHeaders(): Promise<AuthorizationHeader> {
   return getAuthInstanceAsync()
-    .then(auth => {
-      if (!auth) return undefined;
-      const user = auth.currentUser.get();
-      const response = user.getAuthResponse();
-      if (response.expires_at === undefined) {
+      .then((auth) => {
+        if (!auth) return undefined;
+        const user = auth.currentUser.get();
+        const response = user.getAuthResponse();
+        if (response.expires_at === undefined) {
         // The user is not signed in.
-        return undefined;
-      }
-      if (response.expires_at - RELOAD_EARLY_MS < new Date().valueOf()) {
+          return undefined;
+        }
+        if (response.expires_at - RELOAD_EARLY_MS < new Date().valueOf()) {
         // The token has expired or is about to expire, so reload it.
-        return user.reloadAuthResponse();
-      }
-      return response;
-    })
-    .then(response => {
-      if (!response) return {};
-      if (!reloadTimerId) {
+          return user.reloadAuthResponse();
+        }
+        return response;
+      })
+      .then((response) => {
+        if (!response) return {};
+        if (!reloadTimerId) {
         // Automatically reload when the token is about to expire.
-        const delayMs =
+          const delayMs =
           response.expires_at - RELOAD_EARLY_MS + 1 - new Date().valueOf();
-        reloadTimerId = window.setTimeout(reloadAuthorizationHeaders, delayMs);
-      }
-      return {
-        Authorization: response['token_type'] + ' ' + response.access_token,
-      };
-    });
+          reloadTimerId = window.setTimeout(reloadAuthorizationHeaders, delayMs);
+        }
+        return {
+          Authorization: response['token_type'] + ' ' + response.access_token,
+        };
+      });
 }
 
 export function reloadAuthorizationHeaders() {
   reloadTimerId = undefined;
-  getAuthorizationHeaders().then(headers => {
+  getAuthorizationHeaders().then((headers) => {
     window.dispatchEvent(
-      new CustomEvent('authorization-headers-reloaded', { detail: { headers } })
+        new CustomEvent('authorization-headers-reloaded', {detail: {headers}}),
     );
   });
 }
 
 let resolveAuthInitializedPromise: () => void;
-export const authInitializedPromise = new Promise<void>(resolve => {
+export const authInitializedPromise = new Promise<void>((resolve) => {
   resolveAuthInitializedPromise = resolve;
 });
 
 let gapi: typeof window.gapi;
 
 export function init(
-  clientId: string,
-  loadLibraries?: string[],
-  extraScopes?: string[]
+    clientId: string,
+    loadLibraries?: string[],
+    extraScopes?: string[],
 ) {
   const callbackName = 'gapi' + clientId;
   const gapiScript = document.createElement('script');
@@ -291,20 +291,20 @@ export function init(
       client_id: clientId,
       scope: scopes,
     });
-    auth.currentUser.listen(user => {
+    auth.currentUser.listen((user) => {
       window.dispatchEvent(
-        new CustomEvent('user-update', { detail: { user } })
+          new CustomEvent('user-update', {detail: {user}}),
       );
       // Start the cycle of setting the reload timer.
       getAuthorizationHeaders();
     });
     auth.then(
-      function onFulfilled() {
-        resolveAuthInitializedPromise();
-      },
-      function onRejected(error) {
-        window.console.error(error);
-      }
+        function onFulfilled() {
+          resolveAuthInitializedPromise();
+        },
+        function onRejected(error) {
+          window.console.error(error);
+        },
     );
   }
 }
