@@ -37,7 +37,7 @@ func (ctrCipd *CtrCipdInfo) Validate(ctx context.Context) error {
 }
 
 // Initialize initializes Ctr.
-func (ctrCipd *CtrCipdInfo) CipdInitialize(ctx context.Context) error {
+func (ctrCipd *CtrCipdInfo) Initialize(ctx context.Context) error {
 	// Create temp dir for ctr if necessary
 	if ctrCipd.CtrTempDirLoc == "" {
 		var err error

@@ -17,10 +17,11 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
-func Execute(inputPath string) (*api.TestSuite, error) {
+func Execute(inputPath string, cloud bool) (*api.TestSuite, error) {
 	request, err := parsers.ReadInput(inputPath)
 	if err != nil {
-		return nil, fmt.Errorf("unable to parse request: %s", err)
+		fmt.Printf("Unable to parse: %s", err)
+		// return nil, fmt.Errorf("unable to parse request: %s", err)
 	}
 	resp := &api.TestSuite{}
 
@@ -28,12 +29,19 @@ func Execute(inputPath string) (*api.TestSuite, error) {
 
 	// Build Exectors. Right now do CTRv2 + Both filters.
 	// Note: the filter impls are currently nil.
-	executors, _ := buildExecutors(ctx, request, resp)
+	executors, _ := buildExecutors(ctx, request, resp, cloud)
 
 	// Run the same commands for each
 	for _, executor := range executors {
 		// For CTR, init = start Server async. For services it will be pull/prep container/launch
 		err := executor.Execute(ctx, "init")
+		fmt.Println("Executing Executor Init.")
+		if err != nil {
+			fmt.Println("Error")
+		}
+	}
+	// Run the same commands for each
+	for _, executor := range executors {
 		// Gcloud auth for CTR (kinda odd...). For services, it will be `call the service.`
 		err = executor.Execute(ctx, "run")
 		if err != nil {
@@ -52,31 +60,34 @@ func Execute(inputPath string) (*api.TestSuite, error) {
 
 }
 
-func createContainerManagerExecutor(ctx context.Context, kind string) (managers.ContainerManager, executor.Executor) {
+func createContainerManagerExecutor(ctx context.Context, cloud bool) (managers.ContainerManager, executor.Executor) {
 	var containerMgr managers.ContainerManager
 	var e executor.Executor
-	if kind == "ctr" {
-		containerMgr = managers.NewCTRDummy()
-		e = executor.NewCtrExecutor(containerMgr)
-	} else {
+	if cloud {
 		containerMgr = managers.NewCloudDummy()
 		e = executor.NewCloudContainerExecutor(containerMgr)
+	} else {
+		containerMgr = managers.NewCtrManager()
+		e = executor.NewCtrExecutor(containerMgr)
 	}
 
 	return containerMgr, e
 }
 
-func buildExecutors(ctx context.Context, req *api.CTPRequest2, resp *api.TestSuite) ([]executor.Executor, error) {
+func buildExecutors(ctx context.Context, req *api.CTPRequest2, resp *api.TestSuite, cloud bool) ([]executor.Executor, error) {
 	execs := []executor.Executor{}
 
 	// First must always be the container Manager. All further executors will require the manager.
-	contMang, contExec := createContainerManagerExecutor(ctx, "ctr")
+	contMang, contExec := createContainerManagerExecutor(ctx, cloud)
 	execs = append(execs, contExec)
-	// Actual Filters
-	// TODO, change this to a loop. The request contains a list of filters, so check that, and build the Executor from that.
-	// the executors should not need the full resp, but rather info from the resp, like name, build.
-	execs = append(execs, executor.NewKarbonExecutor(contMang, resp))
-	execs = append(execs, executor.NewKoffeeExecutor(contMang, resp))
+
+	for _, filter := range req.KarbonFilters {
+		execs = append(execs, executor.NewKarbonExecutor(contMang, resp, filter))
+
+	}
+	for _, filter := range req.KoffeeFilters {
+		execs = append(execs, executor.NewKoffeeExecutor(contMang, resp, filter))
+	}
 
 	//Can expand to more as needed.
 	return execs, nil

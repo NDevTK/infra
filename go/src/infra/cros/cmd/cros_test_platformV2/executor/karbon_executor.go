@@ -10,7 +10,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
-func NewKarbonExecutor(ctr managers.ContainerManager, resp *api.TestSuite) *FilterExecutor {
+func NewKarbonExecutor(ctr managers.ContainerManager, resp *api.TestSuite, req *api.Filter) *FilterExecutor {
 	// TODO, Given the request, make the correct filter.
-	return &FilterExecutor{Ctr: ctr, resp: resp}
+	return &FilterExecutor{Ctr: ctr, resp: resp, binaryName: req.Container.ServiceName, containerPath: req.Container.ContainerPath}
 }

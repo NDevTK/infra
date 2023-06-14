@@ -30,10 +30,8 @@ const (
 func NewContainer(
 	namePrefix string,
 	containerImage string,
-	ctr managers.ContainerManager,
-	isTemplated bool) ContainerInterface {
-
-	return NewNonTemplatedContainer(namePrefix, containerImage, ctr)
+	ctr managers.ContainerManager) ContainerInterface {
+	return NewGenericContainer(namePrefix, containerImage, ctr)
 }
 
 // AbstractContainer represents abstract container.
@@ -45,6 +43,7 @@ type AbstractContainer struct {
 	ctr            managers.ContainerManager
 	state          ContainerState
 
+	StartCmd      []string
 	Name          string
 	TempDirLoc    string
 	containerType ContainerType
@@ -167,7 +166,7 @@ func (cont *AbstractContainer) ProcessContainer(
 	if err != nil {
 		return "", errors.Annotate(err, "error during getting container: ").Err()
 	}
-	fmt.Println("Got container")
+	fmt.Printf("Got container: %s\n", getContResp)
 
 	serverAddress, err := common.GetServerAddressFromGetContResponse(getContResp)
 	if err != nil {

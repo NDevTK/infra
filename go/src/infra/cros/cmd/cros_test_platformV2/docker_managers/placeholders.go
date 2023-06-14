@@ -18,7 +18,7 @@ func NewCTRDummy() *CTRDummy {
 	return &CTRDummy{}
 }
 
-func (ex *CTRDummy) StartContainer(ctx context.Context, req *api.StartContainerRequest) (*api.StartContainerResponse, error) {
+func (ex *CTRDummy) StartContainer(ctx context.Context, req *api.StartTemplatedContainerRequest) (*api.StartContainerResponse, error) {
 	return nil, nil
 }
 func (ex *CTRDummy) StopContainer(ctx context.Context, foo string) error {
@@ -51,7 +51,7 @@ func NewCloudDummy() *CloudDummy {
 	return &CloudDummy{}
 }
 
-func (ex *CloudDummy) StartContainer(ctx context.Context, req *api.StartContainerRequest) (*api.StartContainerResponse, error) {
+func (ex *CloudDummy) StartContainer(ctx context.Context, req *api.StartTemplatedContainerRequest) (*api.StartContainerResponse, error) {
 	return nil, nil
 }
 func (ex *CloudDummy) StopContainer(ctx context.Context, foo string) error {

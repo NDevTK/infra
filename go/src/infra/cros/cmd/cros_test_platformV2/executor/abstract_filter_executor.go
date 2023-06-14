@@ -7,9 +7,13 @@ package executor
 import (
 	"context"
 	"fmt"
+	"infra/cros/cmd/cros_test_platformV2/containers"
 	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
+	"infra/cros/cmd/cros_test_runner/common"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/errors"
 	"google.golang.org/grpc"
 )
 
@@ -18,12 +22,17 @@ type FilterExecutor struct {
 	resp *api.TestSuite
 
 	conn *grpc.ClientConn
+
+	binaryName    string
+	containerPath string
 }
 
 func (ex *FilterExecutor) Execute(ctx context.Context, cmd string) error {
 	if cmd == "run" {
 		return nil // Call the (running) binary inside the executing container.
 	} else if cmd == "init" {
+		fmt.Println("FILTER INIT!")
+		ex.init()
 		// TODO, consider moving this to "process", and adjusting process to meet our needs.
 		return nil
 	} else if cmd == "stop" {
@@ -37,8 +46,50 @@ func (ex *FilterExecutor) run() error {
 }
 
 // init starts the container, creates a client.
-func (ex *FilterExecutor) init(binary_name string, container_path string) error {
+func (ex *FilterExecutor) init() error {
 	fmt.Println("Starting container")
+	ctx := context.Background()
 	// Call build the genericTempaltedContainer interface.
+	container := containers.NewContainer(ex.binaryName, ex.containerPath, ex.Ctr)
+	template := &api.Template{Container: &api.Template_Generic{
+		Generic: &testapi.GenericTemplate{
+			DockerArtifactDir: fmt.Sprintf("/tmp/%s", ex.binaryName),
+			BinaryArgs: []string{
+				"server", "-port", "0",
+			},
+			BinaryName: ex.binaryName,
+		},
+	}}
+
+	// Process does the init, run, getServer.
+	serverAddress, err := container.ProcessContainer(ctx, template)
+	if err != nil {
+		fmt.Printf("error processing container:%s \n", err)
+
+		return errors.Annotate(err, "error processing container: ").Err()
+	}
+	fmt.Println("Started container")
+
+	// Connect with the service.
+	conn, err := common.ConnectWithService(ctx, serverAddress)
+	if err != nil {
+		fmt.Printf(
+			"error during connecting with %s server at %s: %s",
+			ex.binaryName,
+			serverAddress,
+			err.Error())
+		return err
+	}
+	ex.conn = conn
+
+	// Current question: How do we know how to make a connection to the client?
+	// Abstract client interface? Has to be...
+	// Below is an example of making a conn to TestFinder...
+	testClient := api.NewTestFinderServiceClient(conn)
+	if testClient == nil {
+		return fmt.Errorf("testFinderServiceClient is nil")
+	}
+
 	return nil
+
 }

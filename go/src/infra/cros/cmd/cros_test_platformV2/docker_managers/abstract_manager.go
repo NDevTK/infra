@@ -14,7 +14,7 @@ type ContainerManager interface {
 
 	// Execute runs the exector
 	// NOTE: these are for _once_ the manager is started/ready.
-	StartContainer(context.Context, *api.StartContainerRequest) (*api.StartContainerResponse, error)
+	StartContainer(context.Context, *api.StartTemplatedContainerRequest) (*api.StartContainerResponse, error)
 	StopContainer(context.Context, string) error
 	GetContainer(context.Context, string) (*api.GetContainerResponse, error)
 	StartManager(context.Context, string) error

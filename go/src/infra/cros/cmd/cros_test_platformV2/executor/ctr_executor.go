@@ -27,7 +27,7 @@ func NewCtrExecutor(ctr managers.ContainerManager) *CtrExecutor {
 
 func (ex *CtrExecutor) Execute(ctx context.Context, cmd string) error {
 	if cmd == "run" {
-		fmt.Println("CTR noop currently.")
+		fmt.Println("CTR Run.")
 		return nil //ex.gcloudAuthCommandExecution(ctx)
 	} else if cmd == "init" {
 		fmt.Println("CTR init")

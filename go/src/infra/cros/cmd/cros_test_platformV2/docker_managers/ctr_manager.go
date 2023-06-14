@@ -14,8 +14,8 @@ import (
 	"path"
 	"strings"
 	"sync"
+	"time"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc"
 
@@ -45,48 +45,63 @@ func NewCtrManager() *CtrManager {
 	return &CtrManager{}
 }
 
-func (ex *CtrManager) StartContainer(ctx context.Context, req *testapi.StartContainerRequest) (*testapi.StartContainerResponse, error) {
-	return nil, nil
+func (ex *CtrManager) StartContainer(ctx context.Context, req *testapi.StartTemplatedContainerRequest) (*testapi.StartContainerResponse, error) {
+	//	startContainerReq *testapi.StartTemplatedContainerRequest) (*testapi.StartContainerResponse, error) {
+
+	if req == nil {
+		return nil, fmt.Errorf("start templated container request cannot be nil for start templated container command.")
+	}
+
+	var err error
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Start templated container %s", req.Name))
+	defer func() { step.End(err) }()
+
+	if ex.CtrClient == nil {
+		return nil, fmt.Errorf("Ctr client not found. Please start the server if not done already.")
+	}
+
+	// Start the container
+	common.WriteProtoToStepLog(ctx, step, req, "StartTemplatedContainerRequest")
+	resp, err := ex.CtrClient.StartTemplatedContainer(ctx, req, grpc.EmptyCallOption{})
+	if err != nil {
+		return nil, errors.Annotate(err, "error during starting templated container").Err()
+	}
+
+	common.WriteProtoToStepLog(ctx, step, resp, "StartTemplatedContainerResponse")
+	logging.Infof(ctx, "Successfully started templated container %s!", req.Name)
+
+	return resp, nil
 }
+
 func (ex *CtrManager) StopContainer(ctx context.Context, foo string) error {
 	return nil
 }
-func (ex *CtrManager) GetContainer(ctx context.Context, foo string) (*api.GetContainerResponse, error) {
-	return nil, nil
-}
 
-// Mmight not be required.
+// Might not be required?
 func (ex *CtrManager) StartManager(ctx context.Context, foo string) (err error) {
-	// err = ex.CipdInitialize(ctx)
-	// if err != nil {
-	// 	logging.Infof(ctx, fmt.Sprintf("cros-tool-runner initialization error: %s", err.Error()))
-	// 	return errors.Annotate(err, "cros-tool-runner initialization error: ").Err()
-	// } else {
-	// 	logging.Infof(ctx, "CTR initialization succeeded!")
-	// }
+	fmt.Println("Starting CTR Server")
 	ctrCipd := crostoolrunner.CtrCipdInfo{
-		Version:        "latest",
+		Version:        "dbeckett-test",
 		CtrCipdPackage: common.CtrCipdPackage,
 	}
 	ex.CtrCipdInfo = ctrCipd
-	// Step 2.
+	ex.Initialize(ctx)
+
 	if ex.wg != nil {
 		return fmt.Errorf("Stop existing server connection before starting a new one!")
 	}
-	ex.wg = &sync.WaitGroup{}
-	ex.wg.Add(1)
+	err = ex.startCTRServer(ctx)
+	if err != nil {
+		fmt.Printf("error during starting ctr server: %s", err.Error())
 
-	go func() {
-		err = ex.startCTRServer(ctx)
-		if err != nil {
-			logging.Infof(ctx, "error during starting ctr server: %s", err.Error())
-		}
-		ex.wg.Done()
-	}()
+		logging.Infof(ctx, "error during starting ctr server: %s", err.Error())
+	}
 
 	// Step 3. Get the address
 	serverAddress, err := ex.getServerAddressFromServiceMetadata(ctx)
 	if err != nil {
+		fmt.Printf("error during coonect ctr server: %s\n", err.Error())
+
 		return errors.Annotate(err, "cros-tool-runner retrieve server address error: ").Err()
 	}
 
@@ -105,16 +120,36 @@ func (ex *CtrManager) StartManager(ctx context.Context, foo string) (err error) 
 	return err
 
 }
-func (ex *CtrManager) Initialize(ctx context.Context) error {
 
-	return nil
+// func (ex *CtrManager) Initialize(ctx context.Context) error {
+// 	ex.CtrCipdInfo.Initialize()
+// 	return nil
+// }
+
+func (ex *CtrManager) startCTRServer(ctx context.Context) (err error) {
+	if ex.wg != nil {
+		return fmt.Errorf("Stop existing server connection before starting a new one!")
+	}
+
+	ex.wg = &sync.WaitGroup{}
+	ex.wg.Add(1)
+
+	go func() {
+		err := ex.startCTRServerlower(ctx)
+		if err != nil {
+			fmt.Println("Error starting")
+
+			logging.Infof(ctx, "error during starting ctr server: %s", err.Error())
+		}
+		ex.wg.Done()
+	}()
+	return err
 }
 
 // StartCTRServer starts the server and exports service metadata to
 // already created temp dir.
-func (ex *CtrManager) startCTRServer(ctx context.Context) error {
+func (ex *CtrManager) startCTRServerlower(ctx context.Context) error {
 	var err error
-	fmt.Println("Starting CTR")
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Start cros-tool-runner server"))
 	defer func() { step.End(err) }()
 
@@ -282,36 +317,6 @@ func (ctr *CtrManager) StopManager(ctx context.Context, foo string) error {
 // 	return resp, nil
 // }
 
-// // StartContainer starts a templated container using ctr client.
-// func (ctr *CrosToolRunner) StartTemplatedContainer(
-// 	ctx context.Context,
-// 	startContainerReq *testapi.StartTemplatedContainerRequest) (*testapi.StartContainerResponse, error) {
-
-// 	if startContainerReq == nil {
-// 		return nil, fmt.Errorf("start templated container request cannot be nil for start templated container command.")
-// 	}
-
-// 	var err error
-// 	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Start templated container %s", startContainerReq.Name))
-// 	defer func() { step.End(err) }()
-
-// 	if ctr.CtrClient == nil {
-// 		return nil, fmt.Errorf("Ctr client not found. Please start the server if not done already.")
-// 	}
-
-// 	// Start the container
-// 	common.WriteProtoToStepLog(ctx, step, startContainerReq, "StartTemplatedContainerRequest")
-// 	resp, err := ctr.CtrClient.StartTemplatedContainer(ctx, startContainerReq, grpc.EmptyCallOption{})
-// 	if err != nil {
-// 		return nil, errors.Annotate(err, "error during starting templated container").Err()
-// 	}
-
-// 	common.WriteProtoToStepLog(ctx, step, resp, "StartTemplatedContainerResponse")
-// 	logging.Infof(ctx, "Successfully started templated container %s!", startContainerReq.Name)
-
-// 	return resp, nil
-// }
-
 // // StopContainer stops the container with provided name.
 // func (ctr *CrosToolRunner) StopContainer(ctx context.Context, containerName string) error {
 // 	if containerName == "" {
@@ -334,59 +339,60 @@ func (ctr *CtrManager) StopManager(ctx context.Context, foo string) error {
 // 	return nil
 // }
 
-// // GetContainer gets the container with provided name.
-// func (ctr *CrosToolRunner) GetContainer(
-// 	ctx context.Context,
-// 	containerName string) (*testapi.GetContainerResponse, error) {
+// GetContainer gets the container with provided name.
+func (ctr *CtrManager) GetContainer(
+	ctx context.Context,
+	containerName string) (*testapi.GetContainerResponse, error) {
 
-// 	if containerName == "" {
-// 		return nil, fmt.Errorf("Cannot execute get container with empty container name.")
-// 	}
+	if containerName == "" {
+		return nil, fmt.Errorf("Cannot execute get container with empty container name.")
+	}
 
-// 	var err error
-// 	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Get container %s", containerName))
-// 	defer func() { step.End(err) }()
+	var err error
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Get container %s", containerName))
+	defer func() { step.End(err) }()
 
-// 	if ctr.CtrClient == nil {
-// 		return nil, fmt.Errorf("Ctr client not found. Please start the server if not done already.")
-// 	}
+	if ctr.CtrClient == nil {
+		return nil, fmt.Errorf("Ctr client not found. Please start the server if not done already.")
+	}
 
-// 	// Get container info
-// 	getContainerReq := &testapi.GetContainerRequest{Name: containerName}
-// 	common.WriteProtoToStepLog(ctx, step, getContainerReq, "GetContainerRequest")
+	// Get container info
+	getContainerReq := &testapi.GetContainerRequest{Name: containerName}
+	common.WriteProtoToStepLog(ctx, step, getContainerReq, "GetContainerRequest")
 
-// 	// TODO (azrahman): use exponential backoff retry
-// 	portFound := false
-// 	retryCount := 15 // This number is currently a bit high due to drone's lower than expected performance
-// 	timeout := 5 * time.Second
+	// TODO (azrahman): use exponential backoff retry
+	portFound := false
+	retryCount := 15 // This number is currently a bit high due to drone's lower than expected performance
+	timeout := 5 * time.Second
 
-// 	resp := &testapi.GetContainerResponse{}
-// 	for !portFound && retryCount > 0 {
-// 		fmt.Println("Calling Get container")
-// 		resp, err = ctr.CtrClient.GetContainer(ctx, getContainerReq, grpc.EmptyCallOption{})
-// 		if err != nil {
-// 			return nil, errors.Annotate(err, "error during getting container: ").Err()
-// 		}
+	resp := &testapi.GetContainerResponse{}
+	for !portFound && retryCount > 0 {
+		fmt.Println("Calling Get container")
+		resp, err = ctr.CtrClient.GetContainer(ctx, getContainerReq, grpc.EmptyCallOption{})
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting container: ").Err()
+		}
 
-// 		if resp.GetContainer().GetPortBindings() != nil && len(resp.Container.GetPortBindings()) > 0 {
-// 			portFound = true
-// 		}
-// 		retryCount = retryCount - 1
-// 		time.Sleep(timeout)
-// 	}
-// 	fmt.Println("Finished calling Get container")
+		if resp.GetContainer().GetPortBindings() != nil && len(resp.Container.GetPortBindings()) > 0 {
+			portFound = true
+		}
+		retryCount = retryCount - 1
+		time.Sleep(timeout)
+	}
+	fmt.Println("Finished calling Get container")
 
-// 	fmt.Printf("portfound: %v, remainingretrycount: %v, timeout: %v", portFound, retryCount, timeout)
+	fmt.Printf("portfound: %v, remainingretrycount: %v, timeout: %v", portFound, retryCount, timeout)
 
-// 	common.WriteProtoToStepLog(ctx, step, resp, "GetContainerResponse")
-// 	logging.Infof(ctx, "Successfully got container %s.", getContainerReq.GetName())
-// 	return resp, nil
-// }
+	common.WriteProtoToStepLog(ctx, step, resp, "GetContainerResponse")
+	logging.Infof(ctx, "Successfully got container %s.", getContainerReq.GetName())
+	return resp, nil
+}
 
 // GcloudAuth does auth to the registry.
 func (ex *CtrManager) gcloudAuth(
 	ctx context.Context,
 	dockerFileLocation string) (*testapi.LoginRegistryResponse, error) {
+	fmt.Println("Authing")
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Auth Gcloud with user %s", Username))
 	var err error
 	defer func() { step.End(err) }()

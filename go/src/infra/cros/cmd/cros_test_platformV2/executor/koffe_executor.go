@@ -10,6 +10,6 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
-func NewKoffeeExecutor(ctr managers.ContainerManager, resp *api.TestSuite) *FilterExecutor {
-	return &FilterExecutor{Ctr: ctr, resp: resp}
+func NewKoffeeExecutor(ctr managers.ContainerManager, resp *api.TestSuite, req *api.Filter) *FilterExecutor {
+	return &FilterExecutor{Ctr: ctr, resp: resp, binaryName: req.Container.ServiceName, containerPath: req.Container.ContainerPath}
 }
