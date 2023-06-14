@@ -472,6 +472,7 @@ func getUFSLabDataFromSpecs(dut *tlw.Dut) *ufsAPI.ChromeOsRecoveryData_LabData {
 		}
 		labData.RoVpdMap = ch.GetRoVpdMap()
 		labData.Cbi = ch.GetCbi()
+		labData.AudioboxJackpluggerState = convertAudioBoxJackPluggerStateToUFS(ch.GetChameleon().GetAudioboxjackpluggerstate())
 	} else if ch := dut.GetDevBoard(); ch != nil {
 		if s := ch.GetServo(); s != nil {
 			labData.ServoType = s.GetServodType()

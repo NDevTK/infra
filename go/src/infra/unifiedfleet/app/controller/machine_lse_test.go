@@ -1848,6 +1848,7 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 					Manufacturer:  "usb-drive-make",
 					FirstSeenTime: timestamppb.Now(),
 				},
+				AudioboxJackpluggerState: chromeosLab.Chameleon_AUDIOBOX_JACKPLUGGER_WORKING,
 			}
 			machineLSE1 := mockDutMachineLSE(machineName)
 			machineLSE1.GetChromeosMachineLse().GetDeviceLse().GetDut().Peripherals = &chromeosLab.Peripherals{
@@ -1863,6 +1864,10 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 							State:    chromeosLab.PeripheralState_BROKEN,
 						},
 					},
+				},
+				Chameleon: &chromeosLab.Chameleon{
+					Hostname:            machineName + "-chameleon",
+					AudioboxJackplugger: chromeosLab.Chameleon_AUDIOBOX_JACKPLUGGER_BROKEN,
 				},
 			}
 			req, err := inventory.CreateMachineLSE(ctx, machineLSE1)
@@ -1887,6 +1892,8 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			So(peri.GetWifi().GetWifiRouters()[1].GetState(), ShouldEqual, chromeosLab.PeripheralState_WORKING)
 			So(peri.Servo.GetUsbDrive().GetSerial(), ShouldEqual, "usb-drive serial")
 			So(peri.Servo.GetUsbDrive().GetManufacturer(), ShouldEqual, "usb-drive-make")
+			So(peri.Chameleon.GetHostname(), ShouldEqual, machineName+"-chameleon")
+			So(peri.Chameleon.GetAudioboxJackplugger(), ShouldEqual, chromeosLab.Chameleon_AUDIOBOX_JACKPLUGGER_WORKING)
 		})
 		Convey("Update a OS machine LSE - empty servo topology and multiple wifi routers", func() {
 			const machineName = "machine-labdata-3"
@@ -3424,6 +3431,33 @@ func TestUpdateBluetoothPeerStates(t *testing.T) {
 	})
 }
 
+func TestUpdateAudioboxJackpluggerStates(t *testing.T) {
+	ctx := testingContext()
+	Convey("Update audiobox jackplugger states", t, func() {
+		Convey("audiobox jackplugger is unspecified, successful path", func() {
+			p := &chromeosLab.Peripherals{
+				Chameleon: &chromeosLab.Chameleon{
+					AudioboxJackplugger: chromeosLab.Chameleon_AUDIOBOX_JACKPLUGGER_WORKING,
+				},
+			}
+			updateRecoveryPeripheralAudioboxJackplugger(ctx, p, &ufsAPI.ChromeOsRecoveryData_LabData{AudioboxJackpluggerState: chromeosLab.Chameleon_AUDIOBOX_JACKPLUGGER_UNSPECIFIED})
+			So(p.GetChameleon().GetAudioboxJackplugger(), ShouldEqual, chromeosLab.Chameleon_AUDIOBOX_JACKPLUGGER_WORKING)
+		})
+		Convey("audiobox jackplugger is specified", func() {
+			Convey("Chameleon is present in peripherals, successful path", func() {
+				p := &chromeosLab.Peripherals{
+					Chameleon: &chromeosLab.Chameleon{
+						AudioboxJackplugger: chromeosLab.Chameleon_AUDIOBOX_JACKPLUGGER_BROKEN,
+					},
+				}
+
+				So(p.GetChameleon().GetAudioboxJackplugger(), ShouldEqual, chromeosLab.Chameleon_AUDIOBOX_JACKPLUGGER_BROKEN)
+				updateRecoveryPeripheralAudioboxJackplugger(ctx, p, &ufsAPI.ChromeOsRecoveryData_LabData{AudioboxJackpluggerState: chromeosLab.Chameleon_AUDIOBOX_JACKPLUGGER_WORKING})
+				So(p.GetChameleon().GetAudioboxJackplugger(), ShouldEqual, chromeosLab.Chameleon_AUDIOBOX_JACKPLUGGER_WORKING)
+			})
+		})
+	})
+}
 func TestUpdateMachineLSEDevboard(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()

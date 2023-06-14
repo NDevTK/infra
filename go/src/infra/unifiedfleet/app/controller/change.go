@@ -757,6 +757,7 @@ func logDut(resourceName string, oldData, newData *chromeosLab.DeviceUnderTest) 
 		}
 		changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.chameleon.type", oldChameleon.GetChameleonPeripherals(), newChameleon.GetChameleonPeripherals())...)
 		changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.chameleon.audioboard", oldChameleon.GetAudioBoard(), newChameleon.GetAudioBoard())...)
+		changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.chameleon.audiobox_jackplugger", oldChameleon.GetAudioboxJackplugger(), newChameleon.GetAudioboxJackplugger())...)
 	}
 	// Log wifi if either of them contains one.
 	if oldData.GetPeripherals().GetWifi() != nil || newData.GetPeripherals().GetWifi() != nil {

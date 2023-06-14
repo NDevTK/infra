@@ -132,6 +132,15 @@ func convertAudioBoxJackPluggerState(s ufslab.Chameleon_AudioBoxJackPlugger) tlw
 	return tlw.Chameleon_AUDIOBOX_JACKPLUGGER_UNSPECIFIED
 }
 
+func convertAudioBoxJackPluggerStateToUFS(s tlw.Chameleon_AudioBoxJackPluggerState) ufslab.Chameleon_AudioBoxJackPlugger {
+	for us, ls := range audioBoxJackPluggerStates {
+		if ls == s {
+			return us
+		}
+	}
+	return ufslab.Chameleon_AUDIOBOX_JACKPLUGGER_UNSPECIFIED
+}
+
 var hmrStates = map[ufslab.PeripheralState]tlw.HumanMotionRobot_State{
 	ufslab.PeripheralState_WORKING:        tlw.HumanMotionRobot_WORKING,
 	ufslab.PeripheralState_BROKEN:         tlw.HumanMotionRobot_BROKEN,

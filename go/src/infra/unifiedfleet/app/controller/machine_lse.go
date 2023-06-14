@@ -1903,6 +1903,7 @@ func updateRecoveryLabData(ctx context.Context, hostname string, resourceState u
 				if err = updateBluetoothPeerStates(peri, labData.GetBluetoothPeers()); err != nil {
 					return err
 				}
+				updateRecoveryPeripheralAudioboxJackplugger(ctx, peri, labData)
 				dut.RoVpdMap = labData.GetRoVpdMap()
 				dut.Cbi = labData.GetCbi()
 			}
@@ -1992,6 +1993,18 @@ func updateRecoveryPeripheralWifi(ctx context.Context, p *chromeosLab.Peripheral
 	}
 	// assign updated routers to Wifi
 	wifi.WifiRouters = newRouters
+}
+
+// updateRecoveryPeripheralAudioboxJackplugger updates AudioboxJackplugger in Chameleon
+func updateRecoveryPeripheralAudioboxJackplugger(ctx context.Context, p *chromeosLab.Peripherals, labData *ufsAPI.ChromeOsRecoveryData_LabData) {
+	if labData.GetAudioboxJackpluggerState() != chromeosLab.Chameleon_AUDIOBOX_JACKPLUGGER_UNSPECIFIED {
+		if p.GetChameleon() == nil {
+			logging.Warningf(ctx, "Chameleon cannot be nil when audiobox jackplugger is not UNSPECIFIED")
+			return
+		}
+		cham := p.GetChameleon()
+		cham.AudioboxJackplugger = labData.GetAudioboxJackpluggerState()
+	}
 }
 
 // extractServoComponents extracts servo components based on servo_type.

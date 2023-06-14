@@ -24,6 +24,7 @@ import "infra/unifiedfleet/api/v1/models/network.proto";
 import "infra/unifiedfleet/api/v1/models/peripherals.proto";
 import "infra/unifiedfleet/api/v1/models/lse_prototype.proto";
 import "infra/unifiedfleet/api/v1/models/state.proto";
+import "infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/servo.proto";
 import "infra/unifiedfleet/api/v1/models/machine_lse_deployment.proto";
@@ -1792,6 +1793,8 @@ message ChromeOsRecoveryData {
     map<string, string> ro_vpd_map = 8;
     // CBI contents on the DUT
     chromiumos.test.lab.api.Cbi cbi = 9;
+    // Audio Box Jack Plugger is a part of chameleon
+    models.chromeos.lab.Chameleon.AudioBoxJackPlugger audiobox_jackplugger_state = 10;
   }
 
   // Used for updating back essential configs from repair/deploy task.
