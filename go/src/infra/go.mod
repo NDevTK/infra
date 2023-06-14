@@ -87,16 +87,16 @@ require (
 	go.skia.org/infra v0.0.0-20230524042348-e1356ea7576d
 	go.starlark.net v0.0.0-20230122040757-066229b0515d
 	golang.org/x/build v0.0.0-20210913192547-14e3e09d6b10
-	golang.org/x/crypto v0.5.0
+	golang.org/x/crypto v0.9.0
 	golang.org/x/exp v0.0.0-20221031165847-c99f073a8326
 	golang.org/x/mobile v0.0.0-20191031020345-0945064e013a
-	golang.org/x/net v0.7.0
+	golang.org/x/net v0.10.0
 	golang.org/x/oauth2 v0.4.0
 	golang.org/x/sync v0.2.0
-	golang.org/x/sys v0.5.0
-	golang.org/x/term v0.5.0
+	golang.org/x/sys v0.8.0
+	golang.org/x/term v0.8.0
 	golang.org/x/time v0.3.0
-	golang.org/x/tools v0.5.0
+	golang.org/x/tools v0.6.0
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 	gonum.org/v1/gonum v0.12.0
 	google.golang.org/api v0.108.0
@@ -206,8 +206,8 @@ require (
 	go.opentelemetry.io/proto/otlp v0.19.0 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
-	golang.org/x/mod v0.7.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
+	golang.org/x/mod v0.8.0 // indirect
+	golang.org/x/text v0.9.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/src-d/go-billy.v4 v4.3.2 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
