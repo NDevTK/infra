@@ -11,10 +11,13 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"strings"
 	"time"
 
+	"cloud.google.com/go/bigquery"
 	"github.com/golang/protobuf/proto"
 	"github.com/maruel/subcommands"
+	"google.golang.org/api/option"
 	"google.golang.org/protobuf/encoding/prototext"
 	protov2 "google.golang.org/protobuf/proto"
 
@@ -22,8 +25,10 @@ import (
 	"infra/cros/internal/manifestutil"
 	"infra/cros/internal/shared"
 	"infra/cros/internal/testplan"
+	"infra/cros/internal/testplan/computemapping"
 	"infra/cros/internal/testplan/migrationstatus"
 	"infra/tools/dirmd"
+	"infra/tools/dirmd/cli/updater"
 	dirmdpb "infra/tools/dirmd/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/plan"
@@ -31,6 +36,7 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/api/gerrit"
+	lucibq "go.chromium.org/luci/common/bq"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/data/text"
 	luciflag "go.chromium.org/luci/common/flag"
@@ -97,6 +103,7 @@ func app(authOpts auth.Options) *cli.Application {
 			cmdRelevantPlans(authOpts),
 			cmdValidate(authOpts),
 			cmdMigrationStatus(authOpts),
+			cmdChromeosDirmdUpdateRun(authOpts),
 
 			authcli.SubcommandInfo(authOpts, "auth-info", false),
 			authcli.SubcommandLogin(authOpts, "auth-login", false),
@@ -479,8 +486,161 @@ func (r *migrationStatusRun) run(ctx context.Context, args []string) error {
 	return nil
 }
 
+func cmdChromeosDirmdUpdateRun(authOpts auth.Options) *subcommands.Command {
+	return &subcommands.Command{
+		UsageLine: "chromeos-dirmd-update -table project.dataset.table -crossrcroot ~/chromiumos",
+		ShortDesc: text.Doc(`
+			Computes all DIR_METADATA mappings in a ChromeOS checkout and
+			uploads them to a BigQuery table.
+		`),
+		LongDesc: text.Doc(`
+			Computes all DIR_METADATA mappings in a ChromeOS checkout and
+			uploads them to a BigQuery table.
+
+			Each mapping is converted to a DirBQRow proto for upload to
+			BigQuery. Mappings are computed using the local ChromeOS manifest
+			and checkout, i.e. any local changes will be reflected in the
+			uploaded rows.
+
+			Note that previous rows for a given directory are not deleted, but
+			each execution uses the same partition_time field in every row.
+			Thus, queries will often want to use a view of the table that only
+			shows rows from the most recent partition.
+		`),
+		CommandRun: func() subcommands.CommandRun {
+			r := &chromeosDirmdUpdateRun{}
+			r.addSharedFlags(authOpts)
+
+			r.Flags.StringVar(
+				&r.crosSrcRoot,
+				"crossrcroot",
+				"",
+				text.Doc(`
+					Path to the root of a ChromeOS checkout to use. The manifest
+					and DIR_METADATA in the checkout will be used to compute the
+					uploaded rows. Required.
+				`),
+			)
+			r.Flags.StringVar(
+				&r.tableRef,
+				"table",
+				"",
+				text.Doc(`
+					BigQuery table to upload to, in the form
+					<project>.<dataset>.<table>. Required. The table will be
+					created if it doesn't already exist, and the schema will be
+					updated if it doesn't match the DirBQRow schema.
+				`),
+			)
+			r.Flags.DurationVar(
+				&r.expiration,
+				"expiration",
+				time.Hour*24*90,
+				text.Doc(`
+					The expiration on the rows uploaded during execution,
+					see https://cloud.google.com/bigquery/docs/managing-partitioned-tables#partition-expiration.
+					Defaults to 90 days.
+				`),
+			)
+
+			return r
+		},
+		Advanced: true,
+	}
+}
+
+type chromeosDirmdUpdateRun struct {
+	baseTestPlanRun
+	crosSrcRoot string
+	expiration  time.Duration
+	tableRef    string
+}
+
+func (r *chromeosDirmdUpdateRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+	ctx := cli.GetContext(a, r, env)
+	return errToCode(a, r.run(ctx))
+}
+
+// validateFlagsAndGetClientAndTable validates flags and parses tableRef to
+// build a bigquery Client and Table.
+func (r *chromeosDirmdUpdateRun) validateFlagsAndGetClientAndTable(ctx context.Context) (*bigquery.Client, *bigquery.Table, error) {
+	if r.crosSrcRoot == "" {
+		return nil, nil, errors.New("-crossrcroot must be set")
+	}
+
+	components := strings.Split(r.tableRef, ".")
+	if len(components) != 3 {
+		return nil, nil, fmt.Errorf("-table must be in the form <project>.<dataset>.<table>, got %q", r.tableRef)
+	}
+
+	authOpts, err := r.authFlags.Options()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	tokenSource, err := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts).TokenSource()
+	if err != nil {
+		return nil, nil, err
+	}
+
+	client, err := bigquery.NewClient(ctx, components[0], option.WithTokenSource(tokenSource))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	table := client.Dataset(components[1]).Table(components[2])
+	return client, table, nil
+}
+
+func (r *chromeosDirmdUpdateRun) run(ctx context.Context) error {
+	client, table, err := r.validateFlagsAndGetClientAndTable(ctx)
+	if err != nil {
+		return err
+	}
+
+	manifestPath := filepath.Join(r.crosSrcRoot, "manifest-internal", "default.xml")
+	logging.Infof(ctx, "reading manifest from %q", manifestPath)
+	manifest, err := manifestutil.LoadManifestFromFileWithIncludes(manifestPath)
+	if err != nil {
+		return err
+	}
+
+	logging.Infof(ctx, "computing mappings for all repos in the manifest")
+	rows, err := computemapping.ToDirBQRows(ctx, r.crosSrcRoot, manifest)
+	if err != nil {
+		return err
+	}
+
+	schema, err := updater.GenerateDirBQRowSchema()
+	if err != nil {
+		return err
+	}
+
+	logging.Infof(ctx, "ensuring table exists and updating schema")
+	tableMetadata := &bigquery.TableMetadata{
+		Schema: schema,
+		TimePartitioning: &bigquery.TimePartitioning{
+			Field:      "partition_time",
+			Expiration: r.expiration,
+		},
+	}
+	if err := lucibq.EnsureTable(ctx, table, tableMetadata); err != nil {
+		return err
+	}
+
+	logging.Infof(ctx, "uploading rows to BigQuery.")
+	uploader := lucibq.NewUploader(ctx, client, table.DatasetID, table.TableID)
+	// Uploader takes v1 proto rows, so we need to convert DirBQRow to
+	// MessageV1.
+	v1Rows := make([]proto.Message, len(rows))
+	for i, row := range rows {
+		v1Rows[i] = proto.MessageV1(row)
+	}
+	return uploader.Put(ctx, v1Rows...)
+}
+
 func main() {
 	opts := chromeinfra.DefaultAuthOptions()
-	opts.Scopes = append(opts.Scopes, gerrit.OAuthScope)
+	opts.Scopes = append(opts.Scopes, gerrit.OAuthScope, bigquery.Scope)
 	os.Exit(subcommands.Run(app(opts), nil))
 }
