@@ -13,6 +13,7 @@ from redirect import redirect_custom_value
 PROJECT_REDIRECT_MAP = {
     'pigweed': 'https://issues.pigweed.dev',
     'git': 'https://git.issues.gerritcodereview.com',
+    'gerrit': 'https://issues.gerritcodereview.com',
 }
 
 MAX_MONORAIL_ISSUE_ID = 10000000

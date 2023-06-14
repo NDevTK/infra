@@ -161,12 +161,13 @@ describe('mr-header', () => {
     });
   });
 
+  // TODO(b/283983843): Prefix project names with "mock".
   it('_projectDropdownItems computes projects for user', () => {
     element.userProjects = {
       ownerOf: ['chromium'],
       memberOf: ['v8'],
       contributorTo: ['skia'],
-      starredProjects: ['gerrit'],
+      starredProjects: ['mockgerrit'],
     };
     element.userDisplayName = 'test@example.com';
 
@@ -183,7 +184,7 @@ describe('mr-header', () => {
     assert.equal(items[3].url, '/p/v8/issues/list');
 
     // Starred Projects
-    assert.equal(items[5].text, 'gerrit');
-    assert.equal(items[5].url, '/p/gerrit/issues/list');
+    assert.equal(items[5].text, 'mockgerrit');
+    assert.equal(items[5].url, '/p/mockgerrit/issues/list');
   });
 });
