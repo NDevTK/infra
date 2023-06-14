@@ -36,6 +36,7 @@ var aCrosRdbPublishProcessor = newCrosRdbPublishProcessor()
 var aCrosCpconPublishProcessor = newCrosCpconPublishProcessor()
 var aCacheServerProcessor = newCacheServerProcessor()
 var aCrosFwProvisionProcessor = newCrosFwProvisionProcessor()
+var aGenericProcessor = newGenericProcessor()
 
 // TemplateProcessor converts a container-specific template into a valid generic
 // StartContainerRequest. Besides request conversions, a TemplateProcessor is
@@ -85,6 +86,8 @@ func (r *RequestRouter) getActualProcessor(request *api.StartTemplatedContainerR
 		return nil, status.Error(codes.InvalidArgument, "No template set in the request")
 	}
 	switch t := request.GetTemplate().Container.(type) {
+	case *api.Template_Generic:
+		return aGenericProcessor, nil
 	case *api.Template_CrosDut:
 		return aCrosDutProcessor, nil
 	case *api.Template_CrosProvision:
