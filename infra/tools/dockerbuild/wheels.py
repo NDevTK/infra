@@ -1803,27 +1803,13 @@ SPECS.update({
             skip_plat=build_platform.ALL_PY311,  # TODO: version 3.1.4+
         ),
         # This should actually be 0.3.0, but the version needs to change in
-        # order to pick up dependencies that weren't included when the
-        # MultiWheel was originally added.
+        # order to remove dependencies that were erroneously included when
+        # the MultiWheel was originally added.
         MultiWheel(
             'pathos',
-            '0.3.0.chromium.1',
+            '0.3.0.chromium.2',
             ([
                 Universal('dill', '0.3.6'),
-                SourceOrPrebuilt(
-                    'mpi4py',
-                    '3.1.4',
-                    packaged=[
-                        'windows-x86-py3.8',
-                        'windows-x64-py3.8',
-                    ],
-                    tpp_libs=[('infra/3pp/static_libs/mpich',
-                               'version:2@3.4.1.chromium.6')],
-                    env_cb=lambda w: {
-                        'MPICC': 'mpicc',  # provided by mpich package
-                    },
-                ),
-                Universal('mpmath', '1.3.0'),
                 SourceOrPrebuilt(
                     'multiprocess',
                     '0.70.14',
@@ -1831,11 +1817,9 @@ SPECS.update({
                     skip_auditwheel=True,
                     packaged=(),
                 ),
-                Universal('mystic', '0.4.0'),
                 Universal('pathos', '0.3.0'),
                 Universal('pox', '0.3.2'),
                 Universal('ppft', '1.7.6.6', pyversions=['py3']),
-                Universal('pyina', '0.2.7'),
             ]),
             pyversions=['py3'],
             skip_plat=build_platform.ALL_PY311,  # TODO
