@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -414,6 +414,23 @@ func TestGetHwidData(t *testing.T) {
 		got, err := GetHwidData(trafficCtx, client, "test-no-data")
 		if err != nil {
 			t.Fatalf("GetHwidData unknown error: %s", err)
+		}
+		if got != nil {
+			t.Errorf("GetHwidData is not nil: %s", got)
+		}
+	})
+
+	t.Run("making request from partner namespace", func(t *testing.T) {
+		const id = "test"
+
+		partnerCtx, err := util.SetupDatastoreNamespace(ctx, util.OSPartnerNamespace)
+		if err != nil {
+			t.Errorf("error setting up context")
+		}
+
+		got, err := GetHwidData(partnerCtx, client, id)
+		if err == nil {
+			t.Fatalf("GetHwidData was expecting error: %s", err)
 		}
 		if got != nil {
 			t.Errorf("GetHwidData is not nil: %s", got)

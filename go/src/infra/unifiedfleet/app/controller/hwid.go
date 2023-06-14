@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,11 @@ func GetHwidData(ctx context.Context, c hwid.ClientInterface, hwid string) (data
 			err = errors.Reason("Recovered from %v\n%s", r, debug.Stack()).Err()
 		}
 	}()
+
+	// TODO(b/286921043): allow partners to access ACLed HWID Data
+	if util.GetDatastoreNamespace(ctx) == util.OSPartnerNamespace {
+		return nil, errors.New("hwid not available for partners")
+	}
 
 	hwidEnt, err := configuration.GetHwidData(ctx, hwid)
 	if err != nil && !util.IsNotFoundError(err) {
