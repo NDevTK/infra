@@ -117,3 +117,17 @@ func TestBBAdd(t *testing.T) {
 	assert.NilError(t, err)
 	assert.StringsEqual(t, bbid, "8792234052127739409")
 }
+
+func TestBBAddDryrun(t *testing.T) {
+	t.Parallel()
+	c := &Client{
+		cmdRunner: &cmd.FakeCommandRunner{
+			ExpectedCmd: []string{"bb", "add", "chromeos/infra/mybuilder", "--dryrun"},
+			Stdout:      bbAddOuput,
+		},
+	}
+	ctx := context.Background()
+	bbid, err := c.BBAdd(ctx, true, "chromeos/infra/mybuilder")
+	assert.NilError(t, err)
+	assert.StringsEqual(t, bbid, "dry_run_bbid")
+}

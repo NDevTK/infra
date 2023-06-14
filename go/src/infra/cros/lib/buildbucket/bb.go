@@ -124,7 +124,7 @@ func (c *Client) EnsureLUCIToolsAuthed(ctx context.Context, tools ...string) err
 // runBBCmd runs a `bb` subcommand.
 func (c *Client) runBBCmd(ctx context.Context, dryRun bool, subcommand string, args ...string) (stdout, stderr string, err error) {
 	if dryRun {
-		c.LogOut("would have run `bb %s`", strings.Join(args, " "))
+		c.LogOut("would have run `bb %s %s`", subcommand, strings.Join(args, " "))
 		return "", "", nil
 	}
 	return c.runCmd(ctx, "bb", util.PrependString(subcommand, args)...)
