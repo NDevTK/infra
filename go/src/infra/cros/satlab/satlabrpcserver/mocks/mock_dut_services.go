@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	"infra/cros/satlab/satlabrpcserver/utils"
+	"infra/cros/satlab/satlabrpcserver/models"
 )
 
 // MockDUTServices This object is only for testing
@@ -19,13 +19,13 @@ type MockDUTServices struct {
 }
 
 // RunCommandOnIP send the command to the DUT device and then get the result back
-func (m *MockDUTServices) RunCommandOnIP(ctx context.Context, IP, cmd string) (*utils.SSHResult, error) {
+func (m *MockDUTServices) RunCommandOnIP(ctx context.Context, IP, cmd string) (*models.SSHResult, error) {
 	args := m.Called(ctx, IP, cmd)
-	return args.Get(0).(*utils.SSHResult), args.Error(1)
+	return args.Get(0).(*models.SSHResult), args.Error(1)
 }
 
 // RunCommandOnIPs send the command to DUT devices and then get the result back
-func (m *MockDUTServices) RunCommandOnIPs(ctx context.Context, IPs []string, cmd string) []*utils.SSHResult {
+func (m *MockDUTServices) RunCommandOnIPs(ctx context.Context, IPs []string, cmd string) []*models.SSHResult {
 	args := m.Called(ctx, IPs, cmd)
-	return args.Get(0).([]*utils.SSHResult)
+	return args.Get(0).([]*models.SSHResult)
 }

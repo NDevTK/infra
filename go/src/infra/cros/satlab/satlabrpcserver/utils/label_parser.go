@@ -3,7 +3,11 @@
 // found in the LICENSE file.
 package utils
 
-import "regexp"
+import (
+	"regexp"
+
+	"infra/cros/satlab/satlabrpcserver/models"
+)
 
 // LabelParser a parser for parsing the label string.
 //
@@ -37,16 +41,16 @@ func NewLabelParser() (*LabelParser, error) {
 // ExtractBoardAndModelFrom extract board and model information from the given string.
 //
 // string s the string we want to get the information from.
-func (l *LabelParser) ExtractBoardAndModelFrom(s string) (BoardAndModelPair, error) {
+func (l *LabelParser) ExtractBoardAndModelFrom(s string) (models.BoardAndModelPair, error) {
 	if !l.BoardAndModelPattern.MatchString(s) {
-		return BoardAndModelPair{}, NotMatch
+		return models.BoardAndModelPair{}, NotMatch
 	}
 
 	matches := l.BoardAndModelPattern.FindStringSubmatch(s)
 	boardIndex := l.BoardAndModelPattern.SubexpIndex("Board")
 	modelIndex := l.BoardAndModelPattern.SubexpIndex("Model")
 
-	return BoardAndModelPair{Board: matches[boardIndex], Model: matches[modelIndex]}, nil
+	return models.BoardAndModelPair{Board: matches[boardIndex], Model: matches[modelIndex]}, nil
 }
 
 // ExtractMilestone extract the milestone information from the given string.

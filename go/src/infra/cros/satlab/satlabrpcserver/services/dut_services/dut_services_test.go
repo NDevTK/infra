@@ -16,7 +16,7 @@ import (
 
 	cssh "golang.org/x/crypto/ssh"
 	"infra/cros/satlab/satlabrpcserver/fake"
-	"infra/cros/satlab/satlabrpcserver/utils"
+	"infra/cros/satlab/satlabrpcserver/models"
 	"infra/cros/satlab/satlabrpcserver/utils/connector"
 	"infra/cros/satlab/satlabrpcserver/utils/constants"
 )
@@ -90,7 +90,7 @@ func TestRunCommandOnIpShouldWork(t *testing.T) {
 		t.Errorf("Run command failed")
 	}
 
-	expected := &utils.SSHResult{IP: "127.0.0.1", Value: expectedResponse}
+	expected := &models.SSHResult{IP: "127.0.0.1", Value: expectedResponse}
 	if diff := cmp.Diff(expected, res); diff != "" {
 		t.Errorf("Got diff response, Expected %v, Got %v", expected, res)
 	}
@@ -160,7 +160,7 @@ func TestRunCommandOnIpsShouldWork(t *testing.T) {
 
 	res := dutServices.RunCommandOnIPs(ctx, []string{"127.0.0.1"}, "echo")
 
-	expected := []*utils.SSHResult{{IP: "127.0.0.1", Value: expectedResponse}}
+	expected := []*models.SSHResult{{IP: "127.0.0.1", Value: expectedResponse}}
 	if diff := cmp.Diff(expected, res); diff != "" {
 		t.Errorf("Got diff response, Expected %v, Got %v", expected, res)
 	}

@@ -16,6 +16,7 @@ import (
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
 	mk "infra/cros/satlab/satlabrpcserver/mocks"
+	"infra/cros/satlab/satlabrpcserver/models"
 	cpu "infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
 	pb "infra/cros/satlab/satlabrpcserver/proto"
 	"infra/cros/satlab/satlabrpcserver/services/build_services"
@@ -540,7 +541,7 @@ func TestListConnectedDUTsFirmwareShouldSuccess(t *testing.T) {
 	IP := "192.168.100.1"
 	s.dutService.(*mk.MockDUTServices).
 		On("RunCommandOnIPs", ctx, mock.Anything, constants.ListFirmwareCommand).
-		Return([]*utils.SSHResult{
+		Return([]*models.SSHResult{
 			{IP: IP, Value: cmdOut},
 		})
 
@@ -577,7 +578,7 @@ func TestListConnectedDUTsFirmwareShouldGetEmptyListWhenCommandExecuteFailed(t *
 	// Mock some data
 	s.dutService.(*mk.MockDUTServices).
 		On("RunCommandOnIPs", ctx, mock.Anything, constants.ListFirmwareCommand).
-		Return([]*utils.SSHResult{
+		Return([]*models.SSHResult{
 			{IP: "192.168.100.1", Error: expectedError},
 		})
 
@@ -635,7 +636,7 @@ func TestGetPeripheralInformationShouldSuccess(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	expectedResult := &utils.SSHResult{
+	expectedResult := &models.SSHResult{
 		Value: "<json data>",
 		IP:    "192.168.231.100",
 	}
@@ -666,7 +667,7 @@ func TestGetPeripheralInformationShouldFailWhenExecuteCommandFailed(t *testing.T
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	expectedResult := &utils.SSHResult{
+	expectedResult := &models.SSHResult{
 		Error: errors.New("execute cmd failed"),
 		IP:    "192.168.231.100",
 	}

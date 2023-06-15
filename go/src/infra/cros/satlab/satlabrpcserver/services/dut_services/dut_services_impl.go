@@ -13,6 +13,7 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
+	"infra/cros/satlab/satlabrpcserver/models"
 	"infra/cros/satlab/satlabrpcserver/utils"
 	"infra/cros/satlab/satlabrpcserver/utils/connector"
 	"infra/cros/satlab/satlabrpcserver/utils/constants"
@@ -78,7 +79,7 @@ func New() (*DUTServicesImpl, error) {
 // ip which device ip want to execute the command.
 // cmd which command want to be executed.
 // TODO: consider one thing if the command was executed failed should be an error?
-func (d *DUTServicesImpl) RunCommandOnIP(ctx context.Context, IP string, cmd string) (*utils.SSHResult, error) {
+func (d *DUTServicesImpl) RunCommandOnIP(ctx context.Context, IP string, cmd string) (*models.SSHResult, error) {
 	client, err := d.clientConnector.Connect(ctx, IP+":"+d.port, &d.config)
 	if err != nil {
 		log.Printf("Can't create a ssh client %v", err)
@@ -112,7 +113,7 @@ func (d *DUTServicesImpl) RunCommandOnIP(ctx context.Context, IP string, cmd str
 		var outErr bytes.Buffer
 		session.Stdout = &out
 		session.Stderr = &outErr
-		result := &utils.SSHResult{IP: IP}
+		result := &models.SSHResult{IP: IP}
 
 		err = session.Run(cmd)
 		if err != nil {
@@ -129,8 +130,8 @@ func (d *DUTServicesImpl) RunCommandOnIP(ctx context.Context, IP string, cmd str
 //
 // ips the list of ip which want to execute the command.
 // cmd which command want to be executed.
-func (d *DUTServicesImpl) RunCommandOnIPs(ctx context.Context, IPs []string, cmd string) []*utils.SSHResult {
-	ch := make(chan *utils.SSHResult)
+func (d *DUTServicesImpl) RunCommandOnIPs(ctx context.Context, IPs []string, cmd string) []*models.SSHResult {
+	ch := make(chan *models.SSHResult)
 
 	var wg sync.WaitGroup
 
@@ -154,7 +155,7 @@ func (d *DUTServicesImpl) RunCommandOnIPs(ctx context.Context, IPs []string, cmd
 		close(ch)
 	}()
 
-	var res []*utils.SSHResult
+	var res []*models.SSHResult
 	for data := range ch {
 		res = append(res, data)
 	}

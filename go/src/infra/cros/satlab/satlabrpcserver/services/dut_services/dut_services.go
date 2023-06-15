@@ -6,14 +6,14 @@ package dut_services
 import (
 	"context"
 
-	"infra/cros/satlab/satlabrpcserver/utils"
+	"infra/cros/satlab/satlabrpcserver/models"
 )
 
 // IDUTServices provides the services that regulate the DUTs.
 type IDUTServices interface {
 	// RunCommandOnIP send the command to the DUT device and then get the result back
-	RunCommandOnIP(ctx context.Context, IP, cmd string) (*utils.SSHResult, error)
+	RunCommandOnIP(ctx context.Context, IP, cmd string) (*models.SSHResult, error)
 
 	// RunCommandOnIPs send the command to DUT devices and then get the result back
-	RunCommandOnIPs(ctx context.Context, IPs []string, cmd string) []*utils.SSHResult
+	RunCommandOnIPs(ctx context.Context, IPs []string, cmd string) []*models.SSHResult
 }

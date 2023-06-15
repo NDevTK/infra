@@ -14,22 +14,6 @@ import (
 	"infra/cros/satlab/satlabrpcserver/utils/constants"
 )
 
-type Pair[T, U any] struct {
-	First  T
-	Second U
-}
-
-type BoardAndModelPair struct {
-	Board string
-	Model string
-}
-
-type SSHResult struct {
-	IP    string
-	Value string
-	Error error
-}
-
 func Subtract[T, U any](sliceA []T, sliceB []U, compare func(a T, b U) bool) []T {
 	var acc []T
 
