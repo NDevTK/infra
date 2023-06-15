@@ -5,6 +5,8 @@
 package wifirouter
 
 import (
+	"context"
+
 	"go.chromium.org/luci/common/errors"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/execs/wifirouter/controller"
@@ -26,10 +28,22 @@ func activeHost(info *execs.ExecInfo) (*tlw.WifiRouterHost, error) {
 	return nil, errors.Reason("router: router not found").Err()
 }
 
-func activeHostRouterController(info *execs.ExecInfo) (controller.RouterController, error) {
+func activeHostRouterController(ctx context.Context, info *execs.ExecInfo) (controller.RouterController, error) {
 	wifiRouterHost, err := activeHost(info)
 	if err != nil {
 		return nil, err
 	}
-	return controller.NewRouterDeviceController(info.GetAccess(), info.GetActiveResource(), wifiRouterHost)
+	return controller.NewRouterDeviceController(ctx, info.GetAccess(), info.GetActiveResource(), wifiRouterHost)
+}
+
+func activeHostAsusWrtRouterController(ctx context.Context, info *execs.ExecInfo) (*controller.AsusWrtRouterController, error) {
+	genericController, err := activeHostRouterController(ctx, info)
+	if err != nil {
+		return nil, err
+	}
+	asusWrtController, ok := genericController.(*controller.AsusWrtRouterController)
+	if !ok {
+		return nil, errors.Reason("active host is not an AsusWrt test router").Err()
+	}
+	return asusWrtController, nil
 }
