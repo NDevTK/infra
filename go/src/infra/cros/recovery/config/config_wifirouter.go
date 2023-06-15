@@ -23,6 +23,7 @@ func wifiRouterRepairPlan() *Plan {
 
 			// Actions only executed for specific device types.
 			"Check ChromeOS Gale device",
+			"Check OpenWrt device",
 			"Check AsusWrt device",
 
 			// General final actions done for all device types.
@@ -67,6 +68,12 @@ func wifiRouterRepairPlan() *Plan {
 				ExecName: "wifi_router_device_type_in_list",
 				ExecExtraArgs: []string{
 					buildWifiRouterDeviceTypesArg(labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_CHROMEOS_GALE),
+				},
+			},
+			"Is OpenWrt": {
+				ExecName: "wifi_router_device_type_in_list",
+				ExecExtraArgs: []string{
+					buildWifiRouterDeviceTypesArg(labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_OPENWRT),
 				},
 			},
 			"Is AsusWrt": {
@@ -178,6 +185,47 @@ func wifiRouterRepairPlan() *Plan {
 				ExecExtraArgs: []string{
 					"rm -Rf /mnt/stateful_partition/home/.shadow /mnt/stateful_partition/dev_image/telemetry",
 				},
+			},
+
+			// OpenWrt actions.
+			"Check OpenWrt device": {
+				Conditions: []string{
+					"Is OpenWrt",
+				},
+				Dependencies: []string{
+					"Fetch OpenWrt OS image build info from device",
+					"Fetch OpenWrt image config from GCS",
+					"Identify expected OS image for this OpenWrt device",
+					"Device has expected OpenWrt OS image",
+					"Set WifiRouter model and features based on this OpenWrt device",
+				},
+				ExecName: "sample_pass",
+			},
+			"Device has expected OpenWrt OS image": {
+				RecoveryActions: []string{
+					"Update OpenWrt OS image with expected image",
+				},
+				ExecName: "wifi_router_openwrt_has_expected_image",
+			},
+			"Set WifiRouter model and features based on this OpenWrt device": {
+				Docs: []string{
+					"The model and features are retrieved from the image build info file ",
+					"included on every OpenWrt OS image built for ChromeOS testing.",
+				},
+				ExecName: "wifi_router_update_model_and_features",
+			},
+			"Identify expected OS image for this OpenWrt device": {
+				ExecName: "wifi_router_openwrt_identify_expected_image",
+			},
+			"Fetch OpenWrt OS image build info from device": {
+				ExecName: "wifi_router_openwrt_fetch_build_info",
+			},
+			"Fetch OpenWrt image config from GCS": {
+				ExecName: "wifi_router_openwrt_fetch_config",
+			},
+			"Update OpenWrt OS image with expected image": {
+				ExecName:    "wifi_router_openwrt_update_to_expected_image",
+				ExecTimeout: &durationpb.Duration{Seconds: 600},
 			},
 
 			// AsusWrt actions.
