@@ -64,3 +64,10 @@ func Reboot(ctx context.Context, sshRunner Runner) error {
 	log.Debugf(ctx, "Attempting to reconnect to host after reboot")
 	return cros.WaitUntilSSHable(ctx, 3*time.Minute, 10*time.Second, sshRunner.Run, log.Get(ctx))
 }
+
+// TryAccess will attempt to run a simple bash command, `true`, on the host over
+// ssh to validate that it can connect to the device and run a command.
+func TryAccess(ctx context.Context, sshRunner Runner) error {
+	_, err := sshRunner.Run(ctx, 0, "true")
+	return err
+}
