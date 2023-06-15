@@ -6,6 +6,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -202,7 +203,7 @@ func finalizeInstall(ctx context.Context, xcodeAppPath, xcodeVersion, packageIns
 		// This command is needed to avoid a potential compile time issue.
 		_, err = RunOutput(ctx, "xcrun", "simctl", "list")
 		if err != nil {
-			return errors.Annotate(err, "failed when invoking `xcrun simctl list`").Err()
+			return err
 		}
 		return nil
 	})
@@ -217,6 +218,18 @@ func checkDeveloperMode(ctx context.Context) error {
 		return errors.Reason("Developer mode is currently disabled! Please use `sudo /usr/sbin/DevToolsSecurity -enable` to enable.").Err()
 	}
 	return nil
+}
+
+func deleteUnusedIOSRuntime(ctx context.Context, xcodeAppPath string) error {
+	return RunWithXcodeSelect(ctx, xcodeAppPath, func() error {
+		// replace days with a constant
+		output, err := RunOutput(ctx, "xcrun", "simctl", "runtime", "delete", "-d", MaxIOSRuntimeKeepDays)
+		logging.Warningf(ctx, "Unused runtimes delete command output: %s", output)
+		if err != nil {
+			return errors.Annotate(err, "failed when trying to delete unused runtimes.").Err()
+		}
+		return nil
+	})
 }
 
 // RuntimeDMGInstallArgs are the parameters for installRuntimeDMG() to keep them manageable.
@@ -335,23 +348,38 @@ func shouldReInstallXcode(ctx context.Context, cipdPackagePrefix, xcodeAppPath, 
 	return false, nil
 }
 
+type IOSRuntime struct {
+	Build   string `json:"build"`
+	Version string `json:"version"`
+}
+
 // The function takes in an iosVersion, e.g. 17.0, and check whether it has already existed
 // by running `xcrun simctl runtime list`
-func shouldInstallRuntime(ctx context.Context, iosVersion, xcodeAppPath string) (bool, error) {
-	shouldInstallRuntime := false
+func shouldInstallRuntime(ctx context.Context, iosVersion, productBuildVersion, xcodeAppPath string) (bool, error) {
+	shouldInstallRuntime := true
 	err := RunWithXcodeSelect(ctx, xcodeAppPath, func() error {
-		output, err := RunOutput(ctx, "xcrun", "simctl", "runtime", "list")
-		versionToCheck := "iOS " + iosVersion
+		output, err := RunOutput(ctx, "xcrun", "simctl", "runtime", "list", "-j")
 		if err != nil {
-			shouldInstallRuntime = false
-			return errors.Annotate(err, "failed when invoking `xcrun simctl runtime list`").Err()
-		}
-		if !strings.Contains(output, versionToCheck) {
 			shouldInstallRuntime = true
-			return nil
+			return errors.Annotate(err, "failed when invoking `xcrun simctl runtime list -j`").Err()
 		}
-		logging.Warningf(ctx, "Runtime %s should not be installed because it already exists", versionToCheck)
-		shouldInstallRuntime = false
+
+		var runtimes map[string]IOSRuntime
+		err = json.Unmarshal([]byte(output), &runtimes)
+		if err != nil {
+			shouldInstallRuntime = true
+			return errors.Annotate(err, "failed when parsing `xcrun simctl runtime list -j` output").Err()
+		}
+		// TODO: check if we should delete duplicate runtimes
+		for _, runtime := range runtimes {
+			// check whether runtime already exists
+			if iosVersion == runtime.Version && productBuildVersion == runtime.Build {
+				logging.Warningf(ctx, "Runtime %s Build %s should not be installed because it already exists", iosVersion, productBuildVersion)
+				shouldInstallRuntime = false
+				return nil
+			}
+		}
+		shouldInstallRuntime = true
 		return nil
 	})
 	return shouldInstallRuntime, err
@@ -421,11 +449,11 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 		// they are installed on /Volumes. Therefore, they will persist and take up disk spaces even when Xcode cache is purged.
 		// we need to implement a mechanism to automatically cleanup unused installed runtimes
 		if onMacOS13OrLater {
-			cfBundleVersion, err := getiOSRuntimeVersion(filepath.Join(args.xcodeAppPath, XcodeIOSSimulatorRuntimeVersionRelPath))
+			cfBundleVersion, productBuildVersion, err := getiOSRuntimeVersion(filepath.Join(args.xcodeAppPath, XcodeIOSSimulatorRuntimeVersionRelPath))
 			if err != nil {
 				return err
 			}
-			shouldInstallRuntime, err := shouldInstallRuntime(ctx, cfBundleVersion, args.xcodeAppPath)
+			shouldInstallRuntime, err := shouldInstallRuntime(ctx, cfBundleVersion, productBuildVersion, args.xcodeAppPath)
 			if err != nil {
 				return err
 			}
@@ -447,6 +475,10 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 				if err := installAndAddRuntimeDMG(ctx, runtimeDMGInstallArgs, args.xcodeAppPath); err != nil {
 					return err
 				}
+			}
+			logging.Warningf(ctx, "Deleting unused runtimes (if there are any) to free up disk spaces...")
+			if err := deleteUnusedIOSRuntime(ctx, args.xcodeAppPath); err != nil {
+				logging.Warningf(ctx, "error: %s. There are probably no runtimes to delete", err)
 			}
 		} else {
 			runtimeInstallArgs := RuntimeInstallArgs{
