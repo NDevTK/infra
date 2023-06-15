@@ -6,7 +6,7 @@
 -- cq_builder_metrics_day_total_suite_runtime.sql.
 
 -- The lines below are used by the deploy tool.
---name: Populate cq_builder_metrics_day total suite metrics
+--name: Populate cq_builder_metrics_week total suite runtime
 --schedule: every 8 hours synchronized
 
 DECLARE start_date DATE DEFAULT DATE_SUB(CURRENT_DATE('PST8PDT'), INTERVAL 8 DAY);
@@ -67,8 +67,11 @@ USING
         AND b.task_id = t.request.parent_task_id
         -- Exclude compilator tasks
         AND t.request.name not like '%-compilator-%'
+        AND t.end_time IS NOT NULL
+        AND t.start_time IS NOT NULL
       GROUP BY
         b.date, b.id, t.task_id, test_suite
+      HAVING test_suite IS NOT NULL
     ),
     -- Combine the swarming task times by the test suite for each build
     test_tasks AS (
@@ -95,7 +98,7 @@ USING
     FROM test_tasks t
     WHERE t.test_suite is not null
     GROUP BY t.date, t.builder, t.test_suite
-    HAVING num_runs > 50
+    HAVING num_runs > 50 AND CAST(total_suite_time_quantiles[OFFSET(50)] AS NUMERIC) >= 120
     )
   SELECT
     date,
