@@ -54,11 +54,12 @@ message ListComponentsResponse {
 
 // Metrics that can by retrieved for any view
 enum MetricType {
-  NUM_RUNS = 0;
-  NUM_FAILURES = 1;
-  AVG_RUNTIME = 2;
-  TOTAL_RUNTIME = 3;
-  AVG_CORES = 4;
+  UNKNOWN_METRIC = 0;
+  NUM_RUNS = 1;
+  NUM_FAILURES = 2;
+  AVG_RUNTIME = 3;
+  TOTAL_RUNTIME = 4;
+  AVG_CORES = 5;
 }
 
 // Sort types includes all metric types as well as the name (ie test name or
