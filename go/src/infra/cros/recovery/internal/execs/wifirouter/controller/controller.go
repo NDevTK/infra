@@ -12,6 +12,8 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
+	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/scopes"
 	"infra/cros/recovery/tlw"
 )
 
@@ -22,15 +24,37 @@ func IdentifyRouterDeviceType(ctx context.Context, sshAccess ssh.Access, resourc
 		return 0, errors.Reason("sshAccess must not be nil").Err()
 	}
 
-	sshRunner := newRouterSshRunner(sshAccess, resource)
-	isChromeOSGale, err := hostIsChromeOSGaleRouter(ctx, sshRunner)
-	if err != nil {
-		return 0, errors.Annotate(err, "failed to check if host has the device type of %s", labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_CHROMEOS_GALE).Err()
-	}
-	if isChromeOSGale {
-		return labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_CHROMEOS_GALE, nil
+	// Check if it's a Gale device.
+	deviceType := labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_CHROMEOS_GALE
+	log.Infof(ctx, "Checking if router host has the device type of %q", deviceType)
+	sshRunner := newRouterSshRunner(sshAccess, resource, deviceType)
+	if err := ssh.TryAccess(ctx, sshRunner); err != nil {
+		log.Debugf(ctx, "Failed to ssh into router host when treating it as the device type of %q: %v", deviceType, err)
+	} else {
+		isChromeOSGale, err := hostIsChromeOSGaleRouter(ctx, sshRunner)
+		if err != nil {
+			return 0, errors.Annotate(err, "failed to check if host has the device type %s", deviceType).Err()
+		}
+		if isChromeOSGale {
+			return deviceType, nil
+		}
 	}
 
+	// Check if it's an AsusWrt device.
+	deviceType = labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_ASUSWRT
+	log.Infof(ctx, "Checking if router host has the device type of %q", deviceType)
+	sshRunner = newRouterSshRunner(sshAccess, resource, deviceType)
+	if err := ssh.TryAccess(ctx, sshRunner); err != nil {
+		log.Debugf(ctx, "Failed to ssh into router host when treating it as the device type %q: %v", deviceType, err)
+	} else {
+		isAsusWrt, err := hostIsAsusWrtRouter(ctx, sshRunner)
+		if err != nil {
+			return 0, errors.Annotate(err, "failed to check if host has the device type of %s", deviceType).Err()
+		}
+		if isAsusWrt {
+			return deviceType, nil
+		}
+	}
 	return labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_INVALID, nil
 }
 
@@ -60,14 +84,15 @@ type RouterController interface {
 // NewRouterDeviceController creates a new router controller instance for the
 // specified router host. The controller implementation used is dependent upon
 // the wifiRouter.DeviceType, so this must be populated.
-func NewRouterDeviceController(sshAccess ssh.Access, resource string, wifiRouter *tlw.WifiRouterHost) (RouterController, error) {
+func NewRouterDeviceController(ctx context.Context, sshAccess ssh.Access, resource string, wifiRouter *tlw.WifiRouterHost) (RouterController, error) {
 	if sshAccess == nil {
 		return nil, errors.Reason("sshAccess must not be nil").Err()
 	}
 	if wifiRouter == nil {
 		return nil, errors.Reason("wifiRouter must not be nil").Err()
 	}
-	sshRunner := newRouterSshRunner(sshAccess, resource)
+	sshRunner := newRouterSshRunner(sshAccess, resource, wifiRouter.DeviceType)
+	routerControllerStateKey := "wifirouter_controller_state/" + resource
 	switch wifiRouter.DeviceType {
 	case labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_UNKNOWN:
 		return nil, errors.Reason("cannot control unknown router; it must be analyzed first").Err()
@@ -75,6 +100,19 @@ func NewRouterDeviceController(sshAccess ssh.Access, resource string, wifiRouter
 		return nil, errors.Reason("cannot control invalid router").Err()
 	case labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_CHROMEOS_GALE:
 		return newChromeOSGaleRouterController(sshRunner, wifiRouter), nil
+	case labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_ASUSWRT:
+		var controllerState *tlw.AsusWrtRouterControllerState
+		if state, ok := scopes.ReadConfigParam(ctx, routerControllerStateKey); !ok {
+			controllerState = &tlw.AsusWrtRouterControllerState{}
+			scopes.PutConfigParam(ctx, routerControllerStateKey, controllerState)
+		} else {
+			controllerState, ok = state.(*tlw.AsusWrtRouterControllerState)
+			if !ok {
+				return nil, errors.Reason("stored controller state does not match device type %q: %v", wifiRouter.DeviceType.String(), state).Err()
+			}
+		}
+		return newAsusWrtRouterController(sshRunner, wifiRouter, controllerState), nil
+
 	}
 	return nil, errors.Reason("unsupported DeviceType %q", wifiRouter.DeviceType).Err()
 }
