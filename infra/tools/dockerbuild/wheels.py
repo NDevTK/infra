@@ -1324,6 +1324,7 @@ SPECS.update({
         Universal('absl-py', '0.11.0', pyversions=['py3']),
         Universal('aenum', '2.1.2', pyversions=['py3']),
         Universal('altgraph', '0.16.1'),
+        Universal('ansicon', '1.89.0'),
         Universal('anytree', '2.8.0'),
         Universal('apipkg', '1.5'),
         Universal('appdirs', '1.4.3'),
@@ -1493,6 +1494,7 @@ SPECS.update({
         Universal('isort', '4.3.4', pyversions=['py3']),
         Universal('isort', '5.8.0', pyversions=['py3']),
         Universal('isort', '5.10.1', pyversions=['py3']),
+        Universal('jinxed', '1.2.0'),
         Universal('json5', '0.6.0'),
         Universal('jsonlines', '1.2.0'),
         Universal('jsonschema', '3.2.0'),  # py2 + py3

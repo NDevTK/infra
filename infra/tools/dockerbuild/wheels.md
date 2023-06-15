@@ -612,6 +612,20 @@ wheel: <
 
 * *universal*
 
+## **ansicon**
+
+### 1.89.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/ansicon-py2_py3"
+  version: "version:1.89.0"
+>
+```
+
+
+* *universal*
+
 ## **anytree**
 
 ### 2.8.0
@@ -4000,6 +4014,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/itsdangerous-py3"
   version: "version:2.0.1"
+>
+```
+
+
+* *universal*
+
+## **jinxed**
+
+### 1.2.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/jinxed-py2_py3"
+  version: "version:1.2.0"
 >
 ```
 
