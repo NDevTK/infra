@@ -83,6 +83,19 @@ func Test_remoteFileContentsMatch(t *testing.T) {
 			true,
 			false,
 		},
+		{
+			"openwrt match regex",
+			args{
+				deviceInfoFilePath,
+				deviceInfoMatchIfOpenWrt,
+				true,
+				true,
+				true,
+				"SOME_VALUE=\nDEVICE_MANUFACTURER='OpenWrt'\nOTHER_VALUE=asd\n",
+			},
+			true,
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
