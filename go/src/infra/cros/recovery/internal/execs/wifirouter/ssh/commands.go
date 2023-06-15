@@ -56,7 +56,9 @@ func CatFile(ctx context.Context, sshRunner Runner, remoteFilePath string) (stri
 func Reboot(ctx context.Context, sshRunner Runner) error {
 	// Start reboot over ssh.
 	log.Debugf(ctx, "Rebooting host over ssh")
-	sshRunner.RunInBackground(ctx, 0, "reboot")
+	if err := sshRunner.RunInBackground(ctx, 0, "reboot"); err != nil {
+		return err
+	}
 
 	// Wait to give it time to shut down ssh until verifying it is back up.
 	log.Debugf(ctx, "Waiting 10s for host to start rebooting before reconnecting")
