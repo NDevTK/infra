@@ -6,14 +6,30 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"regexp"
 	"sort"
+	"strings"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
 	"infra/cros/recovery/tlw"
 )
+
+// invalidDeviceNameCharacterRegex matches one or more invalid device name
+// characters and underscores so that they may be replaced with a single
+// underscore.
+var invalidDeviceNameCharacterRegex = regexp.MustCompile(`([^a-zA-Z0-9\-]|_)+`)
+
+// buildModelName builds a tlw.WifiRouterHost.model name that is a combination
+// of the deviceType name and a sanitized deviceName. The deviceName is expected
+// to be a unique model identifier of the device for the given deviceType.
+func buildModelName(deviceType labapi.WifiRouterDeviceType, deviceName string) string {
+	shortDeviceTypeName := strings.TrimPrefix(deviceType.String(), "WIFI_ROUTER_DEVICE_TYPE_")
+	deviceName = invalidDeviceNameCharacterRegex.ReplaceAllString(deviceName, "_")
+	return fmt.Sprintf("%s[%s]", shortDeviceTypeName, deviceName)
+}
 
 // CleanWifiRouterFeatures removes duplicate router features, sorts them by
 // name, and replaces invalid router features with
