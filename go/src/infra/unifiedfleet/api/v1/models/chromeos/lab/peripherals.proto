@@ -196,11 +196,15 @@ message BluetoothPeer {
 // HumanMotionRobot models the whole HMR system
 // including touchhost, Pi, HMR fixture, etc.
 message HumanMotionRobot {
+  // hostname for HMR pi
   string hostname = 1;
 
   // model of the HMR
   string hmr_model = 2;
 
-  // gateway raspberry pi (eg. IP)
+  // hostname for touch-host pi
   string gateway_hostname = 3;
+
+  // Remote Power Management for HMR device.
+  OSRPM rpm = 4;
 }

@@ -2163,6 +2163,20 @@ shivas add chameleon -dut {d} -hostname {h1} -type {t1} -type {t2} -rpm {rh1} -r
 shivas delete chameleon -dut {d} -hostname {h1}
 shivas replace chameleon -dut {d} -hostname {h2} -type {t3}
 `
+
+	// ManagePeripheralHMRLongDesc is a long description for Peripheral HMR management subcommands.
+	ManagePeripheralHMRLongDesc string = `Manage Peripheral HMR Connected to a DUT.
+
+This cmd always runs in the OS namespace.
+The command requires specifying an action which is either add, delete, or replace.
+Only one HMR system is allowed per DUT.
+
+Add adds specified HMR to the DUT.
+
+Examples:
+shivas add peripheral-hmr -dut {DUT name} -touch-host-pi {touchhost hostname} -hmr-pi {hmrpi hostname} -hmr-model {hmrpi model}
+`
+
 	// ManagePeripheralWifiLongDesc is a long description for peripheral wifi management subcommands.
 	ManagePeripheralWifiLongDesc string = `Manage peripheral wifi associated to a DUT.
 

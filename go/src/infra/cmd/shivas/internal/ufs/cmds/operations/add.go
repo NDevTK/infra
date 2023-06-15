@@ -47,6 +47,7 @@ var AddCmd = &subcommands.Command{
 	machine-prototype/rack-prototype/chromeplatform/vlan
 	attached-device-machine (aliased as adm/attached-device-machine)
 	attached-device-host (aliased as adh/attached-device-host)
+	peripheral-hmr
 	peripheral-wifi
 	bluetooth-peers`,
 	CommandRun: func() subcommands.CommandRun {
@@ -98,6 +99,7 @@ func (c addApp) GetCommands() []*subcommands.Command {
 		chromeplatform.AddChromePlatformCmd,
 		vlan.AddVlanCmd,
 		peripherals.AddBluetoothPeersCmd,
+		peripherals.AddPeripheralHMRCmd,
 		peripherals.AddPeripheralWifiCmd,
 		peripherals.AddChameleonCmd,
 	}
