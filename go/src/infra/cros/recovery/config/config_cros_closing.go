@@ -124,6 +124,14 @@ func crosRepairClosingActions() map[string]*Action {
 			AllowFailAfterRecovery: true,
 			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},
+		"Update wifi router features": {
+			Docs: []string{
+				"Update wifi router features based on the features of all wifi routers",
+			},
+			ExecName:               "update_wifi_router_features",
+			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
+		},
 		"Update chameleon state for chameleonless dut": {
 			Docs: []string{
 				"Update chameleon state to not applicable for chameleonless dut",
