@@ -40,6 +40,22 @@ func IdentifyRouterDeviceType(ctx context.Context, sshAccess ssh.Access, resourc
 		}
 	}
 
+	// Check if it's an OpenWrt device.
+	deviceType = labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_OPENWRT
+	log.Infof(ctx, "Checking if router host has the device type of %q", deviceType)
+	sshRunner = newRouterSshRunner(sshAccess, resource, deviceType)
+	if err := ssh.TryAccess(ctx, sshRunner); err != nil {
+		log.Debugf(ctx, "Failed to ssh into router host when treating it as the device type %q: %v", deviceType, err)
+	} else {
+		isOpenWrt, err := hostIsOpenWrtRouter(ctx, sshRunner)
+		if err != nil {
+			return 0, errors.Annotate(err, "failed to check if host has the device type of %s", deviceType).Err()
+		}
+		if isOpenWrt {
+			return deviceType, nil
+		}
+	}
+
 	// Check if it's an AsusWrt device.
 	deviceType = labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_ASUSWRT
 	log.Infof(ctx, "Checking if router host has the device type of %q", deviceType)
@@ -84,7 +100,7 @@ type RouterController interface {
 // NewRouterDeviceController creates a new router controller instance for the
 // specified router host. The controller implementation used is dependent upon
 // the wifiRouter.DeviceType, so this must be populated.
-func NewRouterDeviceController(ctx context.Context, sshAccess ssh.Access, resource string, wifiRouter *tlw.WifiRouterHost) (RouterController, error) {
+func NewRouterDeviceController(ctx context.Context, sshAccess ssh.Access, cacheAccess CacheAccess, resource string, wifiRouter *tlw.WifiRouterHost) (RouterController, error) {
 	if sshAccess == nil {
 		return nil, errors.Reason("sshAccess must not be nil").Err()
 	}
@@ -100,6 +116,18 @@ func NewRouterDeviceController(ctx context.Context, sshAccess ssh.Access, resour
 		return nil, errors.Reason("cannot control invalid router").Err()
 	case labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_CHROMEOS_GALE:
 		return newChromeOSGaleRouterController(sshRunner, wifiRouter), nil
+	case labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_OPENWRT:
+		var controllerState *tlw.OpenWrtRouterControllerState
+		if state, ok := scopes.ReadConfigParam(ctx, routerControllerStateKey); !ok {
+			controllerState = &tlw.OpenWrtRouterControllerState{}
+			scopes.PutConfigParam(ctx, routerControllerStateKey, controllerState)
+		} else {
+			controllerState, ok = state.(*tlw.OpenWrtRouterControllerState)
+			if !ok {
+				return nil, errors.Reason("stored controller state does not match device type %q: %v", wifiRouter.DeviceType.String(), state).Err()
+			}
+		}
+		return newOpenWrtRouterController(sshRunner, wifiRouter, controllerState, cacheAccess, resource), nil
 	case labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_ASUSWRT:
 		var controllerState *tlw.AsusWrtRouterControllerState
 		if state, ok := scopes.ReadConfigParam(ctx, routerControllerStateKey); !ok {

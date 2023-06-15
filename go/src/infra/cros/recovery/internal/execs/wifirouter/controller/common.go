@@ -10,12 +10,18 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
+	"google.golang.org/protobuf/encoding/protojson"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
+	"infra/cros/recovery/internal/retry"
 	"infra/cros/recovery/tlw"
 )
+
+const wifiRouterArtifactsGCSBasePath = "gs://chromeos-connectivity-test-artifacts/wifi_router"
+const wifiRouterConfigFileGCSPath = wifiRouterArtifactsGCSBasePath + "/wifi_router_config_prod.json"
 
 func cleanDeviceName(deviceName string) string {
 	replaceRegex := regexp.MustCompile(`([^a-zA-Z0-9\-]|_)+`)
@@ -219,4 +225,103 @@ func RemoteFileContentsMatch(ctx context.Context, sshRunner ssh.Runner, remoteFi
 		return false, err
 	}
 	return matcher.MatchString(fileContents), nil
+}
+
+// CacheAccess is a subset of tlw.Access that just has the ability to access the
+// cache server.
+type CacheAccess interface {
+	// GetCacheUrl provides URL to download requested path to file.
+	// URL will use to download image to USB-drive and provisioning.
+	GetCacheUrl(ctx context.Context, resourceName, filePath string) (string, error)
+}
+
+// fetchWifiRouterConfig downloads the production WifiRouterConfig JSON file
+// from GCS via the cache server through the router and returns its unmarshalled
+// contents.
+func fetchWifiRouterConfig(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, hostResource string) (*labapi.WifiRouterConfig, error) {
+	wifiRouterConfigJSON, err := ReadFileFromCacheServer(ctx, sshRunner, cacheAccess, hostResource, 5, 30*time.Second, wifiRouterConfigFileGCSPath)
+	if err != nil {
+		return nil, err
+	}
+	config := &labapi.WifiRouterConfig{}
+	if err := protojson.Unmarshal([]byte(wifiRouterConfigJSON), config); err != nil {
+		return nil, errors.Annotate(err, "failed to unmarshal WifiRouterConfig from %q", wifiRouterConfigFileGCSPath).Err()
+	}
+	return config, nil
+}
+
+// WgetURL will run "wget <downloadURL> [additionalWgetArgs...]" on the router
+// host. If the wget command fails, it will retry in 1 second intervals until
+// the maxAttempts or timeout has been reached.
+func WgetURL(ctx context.Context, sshRunner ssh.Runner, maxAttempts int, timeout time.Duration, downloadURL string, additionalWgetArgs ...string) (*tlw.RunResult, error) {
+	wgetArgs := append([]string{downloadURL}, additionalWgetArgs...)
+	var wgetResult *tlw.RunResult
+	currentAttempt := 1
+	if err := retry.WithTimeout(ctx, time.Second, timeout, func() error {
+		if currentAttempt > maxAttempts {
+			return errors.Reason("max attempts (%d) reached", maxAttempts).Err()
+		}
+		if _, err := sshRunner.Run(ctx, 0, "wget", wgetArgs...); err != nil {
+			return err
+		}
+		currentAttempt += 1
+		return nil
+	}, fmt.Sprintf("router host wget %s", strings.Join(wgetArgs, " "))); err != nil {
+		return nil, errors.Annotate(err, "failed to download file from %q on router host", downloadURL).Err()
+	}
+	return wgetResult, nil
+}
+
+// ReadFileFromCacheServer downloads a file from the cache server through
+// the router host and then returns its contents as a string. No temporary file
+// is used on the router host, as its contents are taken from the stdout of wget.
+//
+// The cache server will download the file from GCS if it is not already cached.
+func ReadFileFromCacheServer(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, hostResource string, maxDownloadAttempts int, downloadTimeout time.Duration, srcFilePath string) (string, error) {
+	// Prepare file for download from cache server.
+	downloadURL, err := cacheAccess.GetCacheUrl(ctx, hostResource, srcFilePath)
+	if err != nil {
+		return "", errors.Annotate(err, "failed to get download URL from cache server for file path %q", srcFilePath).Err()
+	}
+	// Download file from cache server to router with wget to stdout.
+	wgetResult, err := WgetURL(ctx, sshRunner, maxDownloadAttempts, downloadTimeout, downloadURL, "-q", "-O", "-")
+	if err != nil {
+		return "", err
+	}
+	return wgetResult.Stdout, nil
+}
+
+// DownloadFileFromCacheServer downloads a file from the cache server to the
+// router host.
+//
+// The cache server will download the file from GCS if it is not already cached.
+func DownloadFileFromCacheServer(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, hostResource string, maxDownloadAttempts int, downloadTimeout time.Duration, srcFilePath, dstFilePath string) error {
+	// Prepare file for download from cache server.
+	downloadURL, err := cacheAccess.GetCacheUrl(ctx, hostResource, srcFilePath)
+	if err != nil {
+		return errors.Annotate(err, "failed to get download URL from cache server for file path %q", srcFilePath).Err()
+	}
+	// Download file from cache server to router with wget to dstFilePath.
+	if _, err := WgetURL(ctx, sshRunner, maxDownloadAttempts, downloadTimeout, downloadURL, "-O", dstFilePath); err != nil {
+		return err
+	}
+	return nil
+}
+
+// PrepareCleanDir will delete (if it exists) and then recreate the directory
+// at remoteDirPath on the remote host.
+func PrepareCleanDir(ctx context.Context, sshRunner ssh.Runner, remoteDirPath string) error {
+	exists, err := ssh.TestPath(ctx, sshRunner, "-d", remoteDirPath)
+	if err != nil {
+		return errors.Annotate(err, "failed to check if remote dir %q exists", remoteDirPath).Err()
+	}
+	if exists {
+		if _, err := sshRunner.Run(ctx, 0, "rm", "-r", remoteDirPath); err != nil {
+			return errors.Annotate(err, "failed to remove existing remote dir %q", remoteDirPath).Err()
+		}
+	}
+	if _, err := sshRunner.Run(ctx, 0, "mkdir", "-p", remoteDirPath); err != nil {
+		return errors.Reason("failed to create new remote dir %q", remoteDirPath).Err()
+	}
+	return nil
 }
