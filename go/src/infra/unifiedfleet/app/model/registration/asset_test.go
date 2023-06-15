@@ -18,6 +18,7 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	"infra/unifiedfleet/app/config"
 	ufsutil "infra/unifiedfleet/app/util"
 )
 
@@ -123,6 +124,61 @@ func TestGetAsset(t *testing.T) {
 		Convey("Get asset by invalid name", func() {
 			resp, err := GetAsset(ctx, "")
 			So(err, ShouldNotBeNil)
+			So(resp, ShouldBeNil)
+		})
+	})
+}
+
+func TestGetAssetACL(t *testing.T) {
+	t.Parallel()
+	ctx := gaetesting.TestingContextWithAppID("go-test")
+	ctx = config.Use(ctx, &config.Config{
+		ExperimentalAPI: &config.ExperimentalAPI{
+			GetAssetACL: 99,
+		},
+	})
+	asset1 := mockAsset("C002002", "krane", "cros4-row3-rack5-host4", ufspb.AssetType_DUT, ufspb.Zone_ZONE_CHROMEOS4)
+	CreateAsset(ctx, asset1)
+	Convey("GetAssetACL", t, func() {
+		Convey("GetAssetACL - Happy path", func() {
+			userCtx := mockUser(ctx, "chromo@chromium.org")
+			mockRealmPerms(userCtx, ufsutil.AtlLabAdminRealm, ufsutil.RegistrationsGet)
+			resp, err := GetAssetACL(userCtx, asset1.GetName())
+			So(err, ShouldBeNil)
+			assertAssetEqual(resp, asset1)
+		})
+		Convey("GetAssetACL - No user", func() {
+			resp, err := GetAssetACL(ctx, asset1.GetName())
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "Internal")
+			So(resp, ShouldBeNil)
+		})
+		Convey("GetAssetACL - No perms", func() {
+			userCtx := mockUser(ctx, "chromo@chromium.org")
+			resp, err := GetAssetACL(userCtx, asset1.GetName())
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "PermissionDenied")
+			So(resp, ShouldBeNil)
+		})
+		Convey("GetAssetACL - Missing perms", func() {
+			userCtx := mockUser(ctx, "chromo@chromium.org")
+			mockRealmPerms(userCtx, ufsutil.AtlLabAdminRealm, ufsutil.RegistrationsList)
+			mockRealmPerms(userCtx, ufsutil.AtlLabAdminRealm, ufsutil.InventoriesList)
+			mockRealmPerms(userCtx, ufsutil.AtlLabAdminRealm, ufsutil.InventoriesGet)
+			resp, err := GetAssetACL(userCtx, asset1.GetName())
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "PermissionDenied")
+			So(resp, ShouldBeNil)
+		})
+		Convey("GetAssetACL - Missing realms", func() {
+			userCtx := mockUser(ctx, "chromo@chromium.org")
+			mockRealmPerms(userCtx, ufsutil.BrowserLabAdminRealm, ufsutil.RegistrationsGet)
+			mockRealmPerms(userCtx, ufsutil.AcsLabAdminRealm, ufsutil.RegistrationsGet)
+			mockRealmPerms(userCtx, ufsutil.SatLabInternalUserRealm, ufsutil.RegistrationsGet)
+			mockRealmPerms(userCtx, ufsutil.AtlLabChromiumAdminRealm, ufsutil.RegistrationsGet)
+			resp, err := GetAssetACL(userCtx, asset1.GetName())
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "PermissionDenied")
 			So(resp, ShouldBeNil)
 		})
 	})

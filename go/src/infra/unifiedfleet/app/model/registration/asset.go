@@ -6,6 +6,7 @@ package registration
 
 import (
 	"context"
+	"math/rand"
 	"strings"
 
 	"github.com/golang/protobuf/proto"
@@ -18,6 +19,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	"infra/unifiedfleet/app/config"
 	ufsds "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/util"
 )
@@ -49,6 +51,19 @@ func (a *AssetEntity) GetProto() (proto.Message, error) {
 	// Assign the realm and return the proto
 	p.Realm = a.Realm
 	return &p, nil
+}
+
+func (a *AssetEntity) GetRealm() string {
+	return a.Realm
+}
+
+// newAssetRealmEntity creates a new Realm entity object from proto message.
+func newAssetRealmEntity(ctx context.Context, pm proto.Message) (ufsds.RealmEntity, error) {
+	asset, err := newAssetEntity(ctx, pm)
+	if err != nil {
+		return nil, err
+	}
+	return asset.(*AssetEntity), nil
 }
 
 // newAssetEntity creates a new asset entity object from proto message.
@@ -87,6 +102,34 @@ func GetAsset(ctx context.Context, name string) (*ufspb.Asset, error) {
 		return nil, err
 	}
 	return pm.(*ufspb.Asset), err
+}
+
+// GetAssetACL routes the request to either the ACLed or
+// unACLed method depending on the rollout status.
+func GetAssetACL(ctx context.Context, id string) (*ufspb.Asset, error) {
+	cutoff := config.Get(ctx).GetExperimentalAPI().GetGetAssetACL()
+	// If cutoff is set attempt to divert the traffic to new API
+	if cutoff != 0 {
+		// Roll the dice to determine which one to use
+		roll := rand.Uint32() % 100
+		cutoff := cutoff % 100
+		if roll <= cutoff {
+			logging.Infof(ctx, "GetAsset --- Running in experimental API")
+			return getAssetACL(ctx, id)
+		}
+	}
+
+	return GetAsset(ctx, id)
+}
+
+// getAssetACL returns a machine for the given ID after verifying the user
+// has permission.
+func getAssetACL(ctx context.Context, id string) (*ufspb.Asset, error) {
+	pm, err := ufsds.GetACL(ctx, &ufspb.Asset{Name: id}, newAssetRealmEntity, util.RegistrationsGet)
+	if err == nil {
+		return pm.(*ufspb.Asset), err
+	}
+	return nil, err
 }
 
 // GetAllAssets returns all assets currently in the datastore.

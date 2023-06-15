@@ -149,4 +149,6 @@ message ExperimentalAPI {
   uint32 GetMachineACL = 3;
   // ListMachineLSEsACL determines the experimental percentage for the API
   uint32 ListMachineLSEsACL = 4;
+  // GetAssetACL determines the experimental percentage for the API
+  uint32 GetAssetACL = 5;
 }
