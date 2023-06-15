@@ -207,27 +207,3 @@ def check_run(system, dx, work_root, cmd, cwd=None, env=None, **kwargs):
   if dx is None:
     return system.check_run(cmd, cwd=cwd or work_root, env=env, **kwargs)
   return dx.check_run(work_root, cmd, cwd=cwd, env=env, **kwargs)
-
-
-def check_run_script(system, dx, work_root, script, args=None, cwd=None,
-                     env=None):
-  """Runs a script, |script|.
-
-  An anonymous file will be created under |work_root| holding the specified
-  script.
-
-  Args:
-    script (list): A list of script lines to execute.
-    See "check_run" for full argument definition.
-  """
-  with anonfile(work_root, text=True) as fd:
-    for line in script:
-      fd.write(line)
-      fd.write('\n')
-  os.chmod(fd.name, 0o755)
-
-  LOGGER.debug('Running script (path=%s): %s', fd.name, script)
-  cmd = [fd.name]
-  if args:
-    cmd.extend(args)
-  return check_run(system, dx, work_root, cmd, cwd=cwd, env=env)
