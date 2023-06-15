@@ -8,6 +8,7 @@ import (
 	"context"
 	"time"
 
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
@@ -20,10 +21,13 @@ type routerSshRunner struct {
 	sshUsernameOverride string
 }
 
-func newRouterSshRunner(sshAccess ssh.Access, resource string) ssh.Runner {
+func newRouterSshRunner(sshAccess ssh.Access, resource string, deviceType labapi.WifiRouterDeviceType) ssh.Runner {
 	r := &routerSshRunner{
 		sshAccess: sshAccess,
 		resource:  resource,
+	}
+	if deviceType == labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_ASUSWRT {
+		r.sshUsernameOverride = asusWrtSshUser
 	}
 	return r
 }
