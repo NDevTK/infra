@@ -600,6 +600,7 @@ func TestGetSystemInfoShouldWork(t *testing.T) {
 	// Create a mock server
 	s := createMockServer(t)
 	var mockCPUTemperature = new(mk.MockCPUTemperature)
+	mockCPUTemperature.On("GetCurrentCPUTemperature").Return(float32(1.0), nil)
 	var cpuOrchestrator = cpu.NewOrchestrator(mockCPUTemperature, 5)
 	s.cpuTemperatureOrchestrator = cpuOrchestrator
 
@@ -609,7 +610,6 @@ func TestGetSystemInfoShouldWork(t *testing.T) {
 	// Make some data
 	m := mon.New()
 	m.Register(cpuOrchestrator, time.Second)
-	mockCPUTemperature.On("GetCurrentCPUTemperature").Return(float32(1.0), nil)
 	time.Sleep(time.Second * 2)
 
 	req := pb.GetSystemInfoRequest{}
