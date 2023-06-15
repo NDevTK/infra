@@ -18,43 +18,6 @@ import (
 	"infra/cros/recovery/tlw"
 )
 
-// setStateBrokenExec sets state as BROKEN.
-// Deprecated. Usage to be replaced by updatePeripheralWifiStateExec.
-func setStateBrokenExec(ctx context.Context, info *execs.ExecInfo) error {
-	if h, err := activeHost(info); err != nil {
-		return errors.Annotate(err, "set state broken").Err()
-	} else {
-		h.State = tlw.WifiRouterHost_BROKEN
-	}
-	return nil
-}
-
-// setStateWorkingExec sets state as WORKING.
-// Deprecated. Usage to be replaced by updatePeripheralWifiStateExec.
-func setStateWorkingExec(ctx context.Context, info *execs.ExecInfo) error {
-	if h, err := activeHost(info); err != nil {
-		return errors.Annotate(err, "set state working").Err()
-	} else {
-		h.State = tlw.WifiRouterHost_WORKING
-	}
-	return nil
-}
-
-// Deprecated. Usage to be replaced by deviceTypeInListExec.
-func matchWifirouterBoardAndModelExec(ctx context.Context, info *execs.ExecInfo) error {
-	if wifiRouterHost, err := activeHost(info); err != nil {
-		return errors.Annotate(err, "match wifirouter board and model").Err()
-	} else {
-		argsMap := info.GetActionArgs(ctx)
-		board := argsMap.AsString(ctx, "board", "")
-		model := argsMap.AsString(ctx, "model", "")
-		if (board == "" || board == wifiRouterHost.GetBoard()) && (model == "" || model == wifiRouterHost.GetModel()) {
-			return nil
-		}
-	}
-	return errors.Reason("wifirouter %q board model not matching %q", info.GetActiveResource(), info.GetExecArgs()).Err()
-}
-
 func setStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	const stateArgName = "state"
 	stateArgValue := info.GetActionArgs(ctx).AsInt(ctx, stateArgName, -1)
@@ -247,11 +210,6 @@ func updateModelAndFeaturesExec(ctx context.Context, info *execs.ExecInfo) error
 }
 
 func init() {
-	// TODO(jaredbennett): Remove these deprecated execs once prod config no longer uses them.
-	execs.Register("wifirouter_state_broken", setStateBrokenExec)
-	execs.Register("wifirouter_state_working", setStateWorkingExec)
-	execs.Register("is_wifirouter_board_model_matching", matchWifirouterBoardAndModelExec)
-
 	execs.Register("update_peripheral_wifi_state", updatePeripheralWifiStateExec)
 	execs.Register("update_wifi_router_features", updateWifiRouterFeaturesExec)
 	execs.Register("wifi_router_set_state", setStateExec)
