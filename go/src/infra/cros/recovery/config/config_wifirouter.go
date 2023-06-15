@@ -23,6 +23,7 @@ func wifiRouterRepairPlan() *Plan {
 
 			// Actions only executed for specific device types.
 			"Check ChromeOS Gale device",
+			"Check AsusWrt device",
 
 			// General final actions done for all device types.
 			"Reboot device",
@@ -66,6 +67,12 @@ func wifiRouterRepairPlan() *Plan {
 				ExecName: "wifi_router_device_type_in_list",
 				ExecExtraArgs: []string{
 					buildWifiRouterDeviceTypesArg(labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_CHROMEOS_GALE),
+				},
+			},
+			"Is AsusWrt": {
+				ExecName: "wifi_router_device_type_in_list",
+				ExecExtraArgs: []string{
+					buildWifiRouterDeviceTypesArg(labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_ASUSWRT),
 				},
 			},
 
@@ -171,6 +178,28 @@ func wifiRouterRepairPlan() *Plan {
 				ExecExtraArgs: []string{
 					"rm -Rf /mnt/stateful_partition/home/.shadow /mnt/stateful_partition/dev_image/telemetry",
 				},
+			},
+
+			// AsusWrt actions.
+			"Check AsusWrt device": {
+				Conditions: []string{
+					"Is AsusWrt",
+				},
+				Dependencies: []string{
+					"Fetch model from AsusWrt device",
+					"Update model and features based on this AsusWrt device",
+				},
+				ExecName: "sample_pass",
+			},
+			"Update model and features based on this AsusWrt device": {
+				Docs: []string{
+					"Sets model based on data read from the AsusWrt device and sets the ",
+					"features based on known, hardcoded values based on model.",
+				},
+				ExecName: "wifi_router_update_model_and_features",
+			},
+			"Fetch model from AsusWrt device": {
+				ExecName: "wifi_router_asuswrt_fetch_model",
 			},
 		},
 	}
