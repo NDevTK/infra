@@ -90,6 +90,7 @@ func crosClosePlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
 			"Update peripheral wifi state",
+			"Update wifi router features",
 			"Update chameleon state for chameleonless dut",
 			"Update DUT state based on servo state",
 			"Update DUT state for failures more than threshold",
