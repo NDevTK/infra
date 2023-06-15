@@ -131,7 +131,7 @@ func identifyDeviceTypeExec(ctx context.Context, info *execs.ExecInfo) error {
 	if host.DeviceType == labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_INVALID {
 		return errors.Reason("router not identified as a valid device type").Err()
 	}
-	log.Debugf(ctx, "WifiRouter %q device type identified as $q", host.Name, host.DeviceType)
+	log.Debugf(ctx, "WifiRouter %q device type identified as %q", host.Name, host.DeviceType)
 	return nil
 }
 
@@ -176,7 +176,7 @@ func deviceTypeInListExec(ctx context.Context, info *execs.ExecInfo) error {
 // rebootDeviceExec reboots the router host. Can take up to 4 minutes, as it
 // waits for the host to come back up before completing.
 func rebootDeviceExec(ctx context.Context, info *execs.ExecInfo) error {
-	c, err := activeHostRouterController(info)
+	c, err := activeHostRouterController(ctx, info)
 	if err != nil {
 		return err
 	}
@@ -187,7 +187,7 @@ func rebootDeviceExec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 func updateModelAndFeaturesExec(ctx context.Context, info *execs.ExecInfo) error {
-	c, err := activeHostRouterController(info)
+	c, err := activeHostRouterController(ctx, info)
 	if err != nil {
 		return err
 	}

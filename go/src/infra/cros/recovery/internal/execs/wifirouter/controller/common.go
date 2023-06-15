@@ -6,13 +6,24 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"regexp"
 	"sort"
+	"strings"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
 )
+
+func cleanDeviceName(deviceName string) string {
+	replaceRegex := regexp.MustCompile(`([^a-zA-Z0-9\-]|_)+`)
+	return replaceRegex.ReplaceAllString(deviceName, "_")
+}
+
+func buildModelName(deviceType labapi.WifiRouterDeviceType, deviceName string) string {
+	return fmt.Sprintf("%s[%s]", strings.TrimPrefix(deviceType.String(), "WIFI_ROUTER_DEVICE_TYPE_"), cleanDeviceName(deviceName))
+}
 
 // CleanWifiRouterFeatures removes duplicate router features, sorts them by
 // name, and replaces invalid router features with
