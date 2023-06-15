@@ -367,7 +367,7 @@ func updateRecoveryDutData(ctx context.Context, dutId string, dutData *ufsAPI.Ch
 			logging.Errorf(ctx, "updateRecoveryDutData fail update machine(%s) - %s", dutId, err.Error())
 			return err
 		}
-		asset, err := registration.GetAsset(ctx, dutId)
+		asset, err := registration.GetAssetACL(ctx, dutId)
 		if err != nil {
 			logging.Errorf(ctx, "updateRecoveryAssetData Asset not found", dutId)
 			return err

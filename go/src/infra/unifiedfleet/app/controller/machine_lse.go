@@ -843,7 +843,7 @@ func createNonExistingAssetAndMachineForLSE(ctx context.Context, mp map[*ufspb.M
 			if err != nil && util.IsNotFoundError(err) {
 				logging.Infof(ctx, "Failed to get machine %s", lse.GetMachines()[0])
 				// check and create asset
-				asset, err := registration.GetAsset(ctx, lse.GetMachines()[0])
+				asset, err := registration.GetAssetACL(ctx, lse.GetMachines()[0])
 				if err != nil && util.IsNotFoundError(err) {
 					logging.Infof(ctx, "Failed to get asset %s", lse.GetMachines()[0])
 					assetTag := lc.GetConfig().GetId().GetValue()

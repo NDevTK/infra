@@ -66,7 +66,7 @@ func UpdateAsset(ctx context.Context, asset *ufspb.Asset, mask *field_mask.Field
 	var err error
 	hc := &HistoryClient{}
 	f := func(ctx context.Context) error {
-		// TODO(anshruth): Support validation of DUT/Labstation/Servo
+		// TODO(anushruth): Support validation of DUT/Labstation/Servo
 		// created using this asset. And update them accordingly or fail.
 		oldAsset, err = registration.GetAsset(ctx, asset.GetName())
 		if err != nil {
@@ -126,7 +126,7 @@ func GetAsset(ctx context.Context, name string) (*ufspb.Asset, error) {
 	if name == "" {
 		return nil, status.Error(codes.InvalidArgument, "GetAsset - missing asset name")
 	}
-	asset, err := registration.GetAsset(ctx, name)
+	asset, err := registration.GetAssetACL(ctx, name)
 	if err != nil {
 		return nil, errors.Annotate(err, "GetAsset - unable to get asset %s", name).Err()
 	}
