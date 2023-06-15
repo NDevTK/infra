@@ -6,8 +6,9 @@ package utils
 import "errors"
 
 var (
-	NotMatch      = errors.New("can't match the value")
-	ReachMaxRetry = errors.New("reach the max retry")
-	NotFound      = errors.New("can't find the value")
-	EmptyQueue    = errors.New("the queue is empty")
+	NotMatch               = errors.New("can't match the value")
+	ReachMaxRetry          = errors.New("reach the max retry")
+	NotFound               = errors.New("can't find the value")
+	EmptyQueue             = errors.New("the queue is empty")
+	HostIdentifierNotFound = errors.New("can't get the host identifier")
 )

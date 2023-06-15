@@ -27,6 +27,12 @@ const SSHConnectionTimeout = time.Second * 20
 // SSHMaxRetry the retry time
 const SSHMaxRetry = 2
 
+// VPDKeySerialNumber VPD key for serial number
+const VPDKeySerialNumber = "serial_number"
+
+// VPDKeyEthernetMAC VPD key for ethernet mac
+const VPDKeyEthernetMAC = "ethernet_mac"
+
 // GetPeripheralInfoCommand the command of get peripheral information
 const GetPeripheralInfoCommand = "fwupdmgr get-devices --json"
 
