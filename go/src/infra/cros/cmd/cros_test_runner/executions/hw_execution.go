@@ -107,8 +107,9 @@ func executeHwTests(
 	if err != nil {
 		return nil, fmt.Errorf("unable to locate dockerKeyFile during initialization: %w", err)
 	}
+	cqRun := common.IsCqRun(req.TestSuites)
 	containerImagesMap := metadataMap.GetImages()
-	containerCfg := configs.NewCftContainerConfig(ctr, containerImagesMap)
+	containerCfg := configs.NewCftContainerConfig(ctr, containerImagesMap, cqRun)
 	executorCfg := configs.NewExecutorConfig(ctr, containerCfg)
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 

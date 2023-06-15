@@ -19,7 +19,7 @@ func TestGetCommand_UnsupportedCmdType(t *testing.T) {
 	Convey("Unsupported command type", t, func() {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := NewCftContainerConfig(ctr, nil)
+		contConfig := NewCftContainerConfig(ctr, nil, false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		cmd, err := cmdConfig.GetCommand(commands.UnSupportedCmdType, executors.NoExecutorType)
@@ -34,7 +34,7 @@ func TestGetCommand_SupportedCmdType(t *testing.T) {
 	Convey("Supported command type", t, func() {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := NewCftContainerConfig(ctr, getMockContainerImagesInfo())
+		contConfig := NewCftContainerConfig(ctr, getMockContainerImagesInfo(), false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 

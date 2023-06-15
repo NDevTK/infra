@@ -18,7 +18,7 @@ func TestGetExecutor_UnsupportedExecutorType(t *testing.T) {
 	Convey("Unsupported executor type", t, func() {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := NewCftContainerConfig(ctr, nil)
+		contConfig := NewCftContainerConfig(ctr, nil, false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		executor, err := execConfig.GetExecutor(executors.NoExecutorType)
 		So(executor, ShouldBeNil)
@@ -31,7 +31,7 @@ func TestGetExecutor_SupportedExecutorType(t *testing.T) {
 	Convey("Supported executor type", t, func() {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := NewCftContainerConfig(ctr, getMockContainerImagesInfo())
+		contConfig := NewCftContainerConfig(ctr, getMockContainerImagesInfo(), false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 
 		executor, err := execConfig.GetExecutor(executors.NoExecutorType)

@@ -20,7 +20,7 @@ func TestGenerateConfig_UnSupportedConfig(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := NewCftContainerConfig(ctr, nil)
+		contConfig := NewCftContainerConfig(ctr, nil, false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
@@ -36,7 +36,7 @@ func TestGenerateConfig_SupportedConfig(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := NewCftContainerConfig(ctr, nil)
+		contConfig := NewCftContainerConfig(ctr, nil, false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
@@ -52,7 +52,7 @@ func TestExecute_WithoutGeneratedConfig(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := NewCftContainerConfig(ctr, nil)
+		contConfig := NewCftContainerConfig(ctr, nil, false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
@@ -68,7 +68,7 @@ func TestExecute_UnsuccesfulHwTestsExecution(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := NewCftContainerConfig(ctr, nil)
+		contConfig := NewCftContainerConfig(ctr, nil, false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
@@ -90,7 +90,7 @@ func TestExecute_SuccesfulHwTestsExecution(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := NewCftContainerConfig(ctr, getMockContainerImagesInfo())
+		contConfig := NewCftContainerConfig(ctr, getMockContainerImagesInfo(), false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{

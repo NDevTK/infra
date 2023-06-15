@@ -19,7 +19,7 @@ func TestGetContainer_UnsupportedContainerType(t *testing.T) {
 	Convey("Unsupported container type", t, func() {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := NewCftContainerConfig(ctr, nil)
+		contConfig := NewCftContainerConfig(ctr, nil, false)
 		container, err := contConfig.GetContainer(containers.UnsupportedContainerType)
 		So(container, ShouldBeNil)
 		So(err, ShouldNotBeNil)
@@ -31,7 +31,7 @@ func TestGetContainer_SupportedContainerType(t *testing.T) {
 	Convey("Supported container type", t, func() {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := NewCftContainerConfig(ctr, getMockContainerImagesInfo())
+		contConfig := NewCftContainerConfig(ctr, getMockContainerImagesInfo(), false)
 
 		container, err := contConfig.GetContainer(containers.CrosDutTemplatedContainerType)
 		So(container, ShouldNotBeNil)

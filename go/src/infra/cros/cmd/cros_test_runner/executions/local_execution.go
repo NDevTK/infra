@@ -99,7 +99,7 @@ func executeLocalTests(
 	}
 	// TODO: Add cacheserver to container image map. Ignored for server implementation.
 	containerImagesMap := metadataMap.GetImages()
-	containerCfg := configs.NewCftContainerConfig(ctr, containerImagesMap)
+	containerCfg := configs.NewCftContainerConfig(ctr, containerImagesMap, false)
 	executorCfg := configs.NewExecutorConfig(ctr, containerCfg)
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 

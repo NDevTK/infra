@@ -9,10 +9,12 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
@@ -94,4 +96,18 @@ func GetFreePort() uint16 {
 	}
 
 	return uint16(l.Addr().(*net.TCPAddr).Port)
+}
+
+// IsCqRun determines if the current execution is a CQ run
+func IsCqRun(testSuite []*api.TestSuite) bool {
+	for _, suite := range testSuite {
+		match, err := regexp.MatchString(`^bvt-tast-cq.*|^cq-.*`, suite.Name)
+		if err != nil {
+			log.Printf("Error while matching testSuite value during IsCqRun")
+		}
+		if match {
+			return true
+		}
+	}
+	return false
 }

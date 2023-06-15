@@ -22,17 +22,19 @@ type CftContainerConfig struct {
 	ContainerImagesMap map[string]*api.ContainerImageInfo
 
 	containersMap map[interfaces.ContainerType]interfaces.ContainerInterface
+	cqRun         bool
 }
 
 func NewCftContainerConfig(
 	ctr *crostoolrunner.CrosToolRunner,
-	containerImagesMap map[string]*api.ContainerImageInfo) interfaces.ContainerConfigInterface {
+	containerImagesMap map[string]*api.ContainerImageInfo, cqRun bool) interfaces.ContainerConfigInterface {
 
 	contMap := make(map[interfaces.ContainerType]interfaces.ContainerInterface)
 	return &CftContainerConfig{
 		Ctr:                ctr,
 		ContainerImagesMap: containerImagesMap,
 		containersMap:      contMap,
+		cqRun:              cqRun,
 	}
 }
 
@@ -69,6 +71,10 @@ func (cfg *CftContainerConfig) GetContainer(contType interfaces.ContainerType) (
 		cont = containers.NewCrosProvisionTemplatedContainer(containerImage, cfg.Ctr)
 
 	case containers.CrosTestTemplatedContainerType:
+		platform := common.GetBotProvider()
+		if platform == common.BotProviderGce && cfg.cqRun {
+			key = "cros-test-cq-light"
+		}
 		containerImage, err := common.GetContainerImageFromMap(key, cfg.ContainerImagesMap)
 		if err != nil {
 			return nil, errors.Annotate(err, "error during getting container image from map for %s container type", contType).Err()
