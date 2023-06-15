@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,21 @@ package wifirouter
 
 import (
 	"context"
+	"strings"
 
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
+	"infra/cros/recovery/internal/execs/wifirouter/controller"
+	"infra/cros/recovery/internal/log"
 
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/tlw"
 )
 
 // setStateBrokenExec sets state as BROKEN.
+// Deprecated. Usage to be replaced by updatePeripheralWifiStateExec.
 func setStateBrokenExec(ctx context.Context, info *execs.ExecInfo) error {
-	if h, err := activeHost(info.GetActiveResource(), info.GetChromeos()); err != nil {
+	if h, err := activeHost(info); err != nil {
 		return errors.Annotate(err, "set state broken").Err()
 	} else {
 		h.State = tlw.WifiRouterHost_BROKEN
@@ -24,8 +29,9 @@ func setStateBrokenExec(ctx context.Context, info *execs.ExecInfo) error {
 }
 
 // setStateWorkingExec sets state as WORKING.
+// Deprecated. Usage to be replaced by updatePeripheralWifiStateExec.
 func setStateWorkingExec(ctx context.Context, info *execs.ExecInfo) error {
-	if h, err := activeHost(info.GetActiveResource(), info.GetChromeos()); err != nil {
+	if h, err := activeHost(info); err != nil {
 		return errors.Annotate(err, "set state working").Err()
 	} else {
 		h.State = tlw.WifiRouterHost_WORKING
@@ -33,8 +39,9 @@ func setStateWorkingExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// Deprecated. Usage to be replaced by deviceTypeInListExec.
 func matchWifirouterBoardAndModelExec(ctx context.Context, info *execs.ExecInfo) error {
-	if wifiRouterHost, err := activeHost(info.GetActiveResource(), info.GetChromeos()); err != nil {
+	if wifiRouterHost, err := activeHost(info); err != nil {
 		return errors.Annotate(err, "match wifirouter board and model").Err()
 	} else {
 		argsMap := info.GetActionArgs(ctx)
@@ -47,11 +54,22 @@ func matchWifirouterBoardAndModelExec(ctx context.Context, info *execs.ExecInfo)
 	return errors.Reason("wifirouter %q board model not matching %q", info.GetActiveResource(), info.GetExecArgs()).Err()
 }
 
-// wifirouterPresentExec check if wifi router hosts exists
-func wifirouterPresentExec(ctx context.Context, info *execs.ExecInfo) error {
-	if len(info.GetChromeos().GetWifiRouters()) == 0 {
-		return errors.Reason("wifirouter host present: data is not present").Err()
+func setStateExec(ctx context.Context, info *execs.ExecInfo) error {
+	const stateArgKey = "state"
+	actionArgs := info.GetActionArgs(ctx)
+	if !actionArgs.Has(stateArgKey) {
+		return errors.Reason("missing required action argument %q", stateArgKey).Err()
 	}
+	stateName := actionArgs.AsString(ctx, stateArgKey, "")
+	stateValue, ok := tlw.WifiRouterHost_State_value[stateName]
+	if !ok {
+		return errors.Reason("action argument %q (%s) does not match a known state", stateArgKey, stateName).Err()
+	}
+	wifiRouterHost, err := activeHost(info)
+	if err != nil {
+		return err
+	}
+	wifiRouterHost.State = tlw.WifiRouterHost_State(stateValue)
 	return nil
 }
 
@@ -75,10 +93,120 @@ func updatePeripheralWifiStateExec(ctx context.Context, info *execs.ExecInfo) er
 	return nil
 }
 
+// updateWifiRouterFeaturesExec updates the overall testbed WifiRouterFeatures
+// to only include features that are common among all routers in the testbed.
+func updateWifiRouterFeaturesExec(ctx context.Context, info *execs.ExecInfo) error {
+	chromeos := info.GetChromeos()
+	if chromeos == nil {
+		return errors.Reason("update peripheral wifi state: chromeos is not present").Err()
+	}
+	commonFeatures := controller.CollectOverallTestbedWifiRouterFeatures(chromeos.WifiRouters)
+	controller.SortWifiRouterFeaturesByName(commonFeatures)
+	chromeos.WifiRouterFeatures = commonFeatures
+	return nil
+}
+
+func identifyDeviceTypeExec(ctx context.Context, info *execs.ExecInfo) error {
+	host, err := activeHost(info)
+	if err != nil {
+		return errors.Annotate(err, "failed to get active wifi router host").Err()
+	}
+	deviceType, err := controller.IdentifyRouterDeviceType(ctx, info.GetAccess(), info.GetActiveResource())
+	if err != nil {
+		return errors.Annotate(err, "failed to analyze device type of wifirouter").Err()
+	}
+	host.DeviceType = deviceType
+	if host.DeviceType == labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_INVALID {
+		return errors.Reason("router not identified as a valid device type").Err()
+	}
+	log.Debugf(ctx, "WifiRouter %q device type identified as $q", host.Name, host.DeviceType)
+	return nil
+}
+
+func deviceTypeInListExec(ctx context.Context, info *execs.ExecInfo) error {
+	host, err := activeHost(info)
+	if err != nil {
+		return errors.Annotate(err, "failed to get active wifi router host").Err()
+	}
+	const deviceTypesArgKey = "device_types"
+	actionArgs := info.GetActionArgs(ctx)
+	if !actionArgs.Has(deviceTypesArgKey) {
+		return errors.Reason("missing required action argument %q", deviceTypesArgKey).Err()
+	}
+	deviceTypesArg := actionArgs.AsStringSlice(ctx, deviceTypesArgKey, nil)
+	if len(deviceTypesArg) == 0 {
+		return errors.Reason("action argument %q must not be empty", deviceTypesArgKey).Err()
+	}
+	var deviceTypes []labapi.WifiRouterDeviceType
+	hostHasMatchingDeviceType := false
+	for i, deviceTypeName := range deviceTypesArg {
+		deviceTypeValue, ok := labapi.WifiRouterDeviceType_value[deviceTypeName]
+		if !ok {
+			return errors.Reason("action argument %q[%d] %q does not match a known device type", deviceTypesArgKey, i, deviceTypeName).Err()
+		}
+		dt := labapi.WifiRouterDeviceType(deviceTypeValue)
+		deviceTypes = append(deviceTypes, dt)
+		if host.DeviceType == dt {
+			hostHasMatchingDeviceType = true
+		}
+	}
+	if !hostHasMatchingDeviceType {
+		var deviceTypeNames []string
+		for _, deviceType := range deviceTypes {
+			deviceTypeNames = append(deviceTypeNames, deviceType.String())
+		}
+		return errors.Reason("wifi router type %q does match any of the desired device types [%s]", host.DeviceType.String(), strings.Join(deviceTypeNames, ",")).Err()
+	}
+	return nil
+}
+
+// rebootDeviceExec reboots the router host. Can take up to 4 minutes, as it
+// waits for the host to come back up before completing.
+func rebootDeviceExec(ctx context.Context, info *execs.ExecInfo) error {
+	c, err := activeHostRouterController(info)
+	if err != nil {
+		return err
+	}
+	if err := c.Reboot(ctx); err != nil {
+		return errors.Annotate(err, "failed to reboot device").Err()
+	}
+	return nil
+}
+
+func updateModelAndFeaturesExec(ctx context.Context, info *execs.ExecInfo) error {
+	c, err := activeHostRouterController(info)
+	if err != nil {
+		return err
+	}
+
+	model, err := c.Model()
+	if err != nil {
+		return errors.Annotate(err, "failed to get device model").Err()
+	}
+	features, err := c.Features()
+	if err != nil {
+		return errors.Annotate(err, "failed to get device features").Err()
+	}
+	features = controller.CleanWifiRouterFeatures(features)
+
+	wifiRouterHost := c.WifiRouterHost()
+	wifiRouterHost.Model = model
+	wifiRouterHost.Features = features
+
+	return nil
+}
+
 func init() {
+	// TODO(jaredbennett): Remove these deprecated execs once prod config no longer uses them.
 	execs.Register("wifirouter_state_broken", setStateBrokenExec)
 	execs.Register("wifirouter_state_working", setStateWorkingExec)
 	execs.Register("is_wifirouter_board_model_matching", matchWifirouterBoardAndModelExec)
-	execs.Register("wifi_router_host_present", wifirouterPresentExec)
+
 	execs.Register("update_peripheral_wifi_state", updatePeripheralWifiStateExec)
+	execs.Register("update_wifi_router_features", updateWifiRouterFeaturesExec)
+	execs.Register("wifi_router_set_state", setStateExec)
+	execs.Register("wifi_router_identify_device_type", identifyDeviceTypeExec)
+	execs.Register("wifi_router_device_type_in_list", deviceTypeInListExec)
+	execs.Register("wifi_router_update_model_and_features", updateModelAndFeaturesExec)
+	execs.Register("wifi_router_reboot", rebootDeviceExec)
 }
