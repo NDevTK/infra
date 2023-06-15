@@ -49,6 +49,9 @@ const MacPackageName = "mac"
 // Package name of iOS package in CIPD. The package contains iOS SDK.
 const IosPackageName = "ios"
 
+// Maximum number of days to keep an iOS runtime within Xcode since last used
+const MaxIOSRuntimeKeepDays = "7"
+
 // KindType is the type for enum values for the -kind argument.
 type KindType string
 

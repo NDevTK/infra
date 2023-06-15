@@ -35,6 +35,28 @@ func TestPlistReading(t *testing.T) {
 		})
 	})
 
+	Convey("getiOSRuntimeVersion works", t, func() {
+		Convey("for valid plist", func() {
+			cfbv, xv, bv, err := getXcodeVersion("testdata/version.plist")
+			So(err, ShouldBeNil)
+			So(cfbv, ShouldEqual, "12345")
+			So(xv, ShouldEqual, "TESTXCODEVERSION")
+			So(bv, ShouldEqual, "TESTBUILDVERSION")
+		})
+		Convey("when version is missing", func() {
+			_, _, err := getiOSRuntimeVersion("testdata/badKeys.plist")
+			So(err, ShouldNotBeNil)
+		})
+		Convey("when version file is broken", func() {
+			_, _, err := getiOSRuntimeVersion("testdata/broken.plist")
+			So(err, ShouldNotBeNil)
+		})
+		Convey("when version file is missing", func() {
+			_, _, err := getiOSRuntimeVersion("testdata/nonexistent")
+			So(err, ShouldNotBeNil)
+		})
+	})
+
 	Convey("getXcodeLicenseInfo works", t, func() {
 		Convey("for valid plist", func() {
 			lid, lt, err := getXcodeLicenseInfo("testdata/licenseInfoGood.plist")
