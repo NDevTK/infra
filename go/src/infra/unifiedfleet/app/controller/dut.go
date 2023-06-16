@@ -1182,7 +1182,7 @@ func UpdateTestData(ctx context.Context, req *ufsAPI.UpdateTestDataRequest) erro
 	} else if android := req.GetAndroidData(); android != nil {
 		// Do nothing as no states for that case.
 	} else {
-		return errors.Reason("UpdateTestData: unexpected device type").Err()
+		logging.Debugf(ctx, "updateRecoveryData not device type specific data to update!")
 	}
 	return nil
 }
