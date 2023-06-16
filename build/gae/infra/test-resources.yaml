@@ -1,12 +1,14 @@
 name: infra/test-resources
 extends: ../base.yaml
 
-inputsdir: ../../../go/src/infra/appengine/test-resources
+contextdir: ../../../go/src/infra/appengine/test-resources
 
 build:
   # This builds the frontend code, updating ${inputsdir}/frontend/build.
   - run: ['make', 'build']
-    cwd: ${inputsdir}
+    cwd: ${contextdir}
+    outputs:
+      - ${contextdir}/static
 
-  - go_gae_bundle: ${inputsdir}/app.yaml
+  - go_gae_bundle: ${contextdir}/app.yaml
     dest: ${contextdir}/appengine
