@@ -283,11 +283,8 @@ func addMachineHelper(ctx context.Context, asset *ufspb.Asset) error {
 //
 // This should be run inside a transaction.
 func updateMachineHelper(ctx context.Context, asset *ufspb.Asset) error {
-	// Get the existing machine. Different behavior on errors:
-	// - NOT_FOUND: create the machine
-	// - PERMISSION_DENIED: error out- the machine might exist and not be
-	//   to the user
-	machine, err := registration.GetMachineACL(ctx, asset.GetName())
+	// Get the existing machine.
+	machine, err := registration.GetMachine(ctx, asset.GetName())
 	if err != nil {
 		if util.IsNotFoundError(err) {
 			// Create a new machine if the updated asset is a
@@ -327,9 +324,7 @@ func updateMachineHelper(ctx context.Context, asset *ufspb.Asset) error {
 // This should be run inside a transaction.
 func deleteMachineHelper(ctx context.Context, id string) error {
 	hc := GetMachineHistoryClient(&ufspb.Machine{Name: id})
-	// If user somehow has access to the Asset but not machine, the error
-	// will be PERMISSION_DENIED and we will error out.
-	machine, err := registration.GetMachineACL(ctx, id)
+	machine, err := registration.GetMachine(ctx, id)
 	if err != nil {
 		if status.Code(err) == codes.NotFound {
 			return nil

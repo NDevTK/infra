@@ -33,7 +33,7 @@ func CreateNic(ctx context.Context, nic *ufspb.Nic) (*ufspb.Nic, error) {
 
 		// Get browser machine to associate the nic
 		machineName := nic.GetMachine()
-		machine, err := registration.GetMachineACL(ctx, machineName)
+		machine, err := registration.GetMachine(ctx, machineName)
 		if err != nil {
 			return errors.Annotate(err, "CreateNic - machine %s doesn't exist", machineName).Err()
 		}
@@ -365,7 +365,7 @@ func ReplaceNic(ctx context.Context, oldNic *ufspb.Nic, newNic *ufspb.Nic) (*ufs
 
 // validateDeleteNic validates if a nic can be deleted
 func validateDeleteNic(ctx context.Context, nic *ufspb.Nic) error {
-	machine, err := registration.GetMachineACL(ctx, nic.GetMachine())
+	machine, err := registration.GetMachine(ctx, nic.GetMachine())
 	if err != nil {
 		return errors.Annotate(err, "validateDeleteNic - unable to get machine %s", nic.GetMachine()).Err()
 	}
@@ -419,7 +419,7 @@ func validateCreateNic(ctx context.Context, nic *ufspb.Nic, machine *ufspb.Machi
 //
 // checks if nic, machine and resources referecned by the nic does not exist
 func validateUpdateNic(ctx context.Context, oldNic *ufspb.Nic, nic *ufspb.Nic, mask *field_mask.FieldMask) error {
-	machine, err := registration.GetMachineACL(ctx, oldNic.GetMachine())
+	machine, err := registration.GetMachine(ctx, oldNic.GetMachine())
 	if err != nil {
 		return status.Errorf(codes.InvalidArgument, "machine %s not found", oldNic.GetMachine())
 	}
@@ -550,7 +550,7 @@ func RenameNic(ctx context.Context, oldNicName, newNicName string) (*ufspb.Nic, 
 
 // validateRenameNic validates if a Nic can be renamed
 func validateRenameNic(ctx context.Context, oldNic *ufspb.Nic, newNicName string) error {
-	machine, err := registration.GetMachineACL(ctx, oldNic.GetMachine())
+	machine, err := registration.GetMachine(ctx, oldNic.GetMachine())
 	if err != nil {
 		return status.Errorf(codes.InvalidArgument, "machine %s not found", oldNic.GetMachine())
 	}

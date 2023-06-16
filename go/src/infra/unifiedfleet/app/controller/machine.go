@@ -147,7 +147,7 @@ func UpdateMachine(ctx context.Context, machine *ufspb.Machine, mask *field_mask
 		hc := GetMachineHistoryClient(machine)
 
 		// Get the existing/old machine
-		oldMachine, err = registration.GetMachineACL(ctx, machine.GetName())
+		oldMachine, err = registration.GetMachine(ctx, machine.GetName())
 		if err != nil {
 			return errors.Annotate(err, "get machine %s failed", machine.GetName()).Err()
 		}
@@ -778,11 +778,11 @@ func listMachinesWithExperimentalACL(ctx context.Context, pageSize int32, pageTo
 // If there are any references, delete will be rejected and an error will be returned.
 func DeleteMachine(ctx context.Context, id string) error {
 	// Used for logging the deletion of a MachineLSE.
-	existingMachine, _ := registration.GetMachineACL(ctx, id)
+	existingMachine, _ := registration.GetMachine(ctx, id)
 
 	f := func(ctx context.Context) error {
 		// 1. Get the machine
-		machine, err := registration.GetMachineACL(ctx, id)
+		machine, err := registration.GetMachine(ctx, id)
 		if status.Code(err) == codes.Internal {
 			return errors.Annotate(err, "failed to get machine %s", id).Err()
 		}
@@ -877,7 +877,7 @@ func RenameMachine(ctx context.Context, oldMachineName, newMachineName string) (
 // renameMachineInner renames the machine to the given name. Use inside a transaction
 func renameMachineInner(ctx context.Context, oldMachineName, newMachineName string) (machine *ufspb.Machine, err error) {
 	// Get the old machine
-	machine, err = registration.GetMachineACL(ctx, oldMachineName)
+	machine, err = registration.GetMachine(ctx, oldMachineName)
 	if err != nil {
 		return
 	}
@@ -1084,7 +1084,7 @@ func validateDeleteMachine(ctx context.Context, machine *ufspb.Machine) error {
 
 // getBrowserMachine gets the browser machine
 func getBrowserMachine(ctx context.Context, machineName string) (*ufspb.Machine, error) {
-	machine, err := registration.GetMachineACL(ctx, machineName)
+	machine, err := registration.GetMachine(ctx, machineName)
 	if err != nil {
 		return nil, errors.Annotate(err, "getBrowserMachine - unable to get browser machine %s", machineName).Err()
 	}

@@ -401,7 +401,7 @@ func getDUTsConnectedToLabstation(ctx context.Context, labstation string) ([]*uf
 // validateRenameLabstation checks if we have the correct permissions to update the duts connected to the labstation.
 func validateRenameLabstation(ctx context.Context, labstation *ufspb.MachineLSE, duts []*ufspb.MachineLSE) error {
 	for _, dut := range duts {
-		machine, err := registration.GetMachineACL(ctx, dut.GetMachines()[0])
+		machine, err := registration.GetMachine(ctx, dut.GetMachines()[0])
 		if err != nil {
 			return errors.Annotate(err, "unable to get machine %s. Misconfigured host?", dut.GetMachines()[0]).Err()
 		}

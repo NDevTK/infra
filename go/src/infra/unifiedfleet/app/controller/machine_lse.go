@@ -824,7 +824,7 @@ func ImportOSMachineLSEs(ctx context.Context, labConfigs []*invV2Api.ListCrosDev
 func populateRackForMachineLSEs(ctx context.Context, lses []*ufspb.MachineLSE) {
 	for _, lse := range lses {
 		if len(lse.GetMachines()) != 0 {
-			machine, err := registration.GetMachineACL(ctx, lse.GetMachines()[0])
+			machine, err := registration.GetMachine(ctx, lse.GetMachines()[0])
 			if err != nil {
 				logging.Infof(ctx, "Failed to get machine %s", lse.GetMachines()[0])
 				continue
@@ -837,9 +837,7 @@ func populateRackForMachineLSEs(ctx context.Context, lses []*ufspb.MachineLSE) {
 func createNonExistingAssetAndMachineForLSE(ctx context.Context, mp map[*ufspb.MachineLSE]*invV2Api.ListCrosDevicesLabConfigResponse_LabConfig) {
 	for lse, lc := range mp {
 		if len(lse.GetMachines()) != 0 {
-			_, err := registration.GetMachineACL(ctx, lse.GetMachines()[0])
-			// If user doesn't have permission to see the machine, the error
-			// will be PERMISSION_DENIED and the machine won't be created.
+			_, err := registration.GetMachine(ctx, lse.GetMachines()[0])
 			if err != nil && util.IsNotFoundError(err) {
 				logging.Infof(ctx, "Failed to get machine %s", lse.GetMachines()[0])
 				// check and create asset
@@ -1340,7 +1338,7 @@ func UpdateMachineLSEHost(ctx context.Context, machinelseName string, nwOpt *ufs
 
 // validateUpdateMachineLSEHost validates if an ip can be assigned to the MachineLSE
 func validateUpdateMachineLSEHost(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *ufsAPI.NetworkOption) error {
-	machine, err := registration.GetMachineACL(ctx, machinelse.GetMachines()[0])
+	machine, err := registration.GetMachine(ctx, machinelse.GetMachines()[0])
 	if err != nil {
 		return errors.Annotate(err, "unable to get machine %s", machinelse.GetMachines()[0]).Err()
 	}
@@ -1426,7 +1424,7 @@ func DeleteMachineLSEHost(ctx context.Context, machinelseName string) error {
 
 // validateUpdateMachineLSE validates if a machinelse can be updated in the datastore.
 func validateUpdateMachineLSE(ctx context.Context, oldMachinelse *ufspb.MachineLSE, machinelse *ufspb.MachineLSE, mask *field_mask.FieldMask) error {
-	machine, err := registration.GetMachineACL(ctx, oldMachinelse.GetMachines()[0])
+	machine, err := registration.GetMachine(ctx, oldMachinelse.GetMachines()[0])
 	if err != nil {
 		return errors.Annotate(err, "unable to get machine %s", oldMachinelse.GetMachines()[0]).Err()
 	}
@@ -1591,7 +1589,7 @@ func validateDeleteMachineLSE(ctx context.Context, existingMachinelse *ufspb.Mac
 	if err != nil {
 		return err
 	}
-	machine, err := registration.GetMachineACL(ctx, existingMachinelse.GetMachines()[0])
+	machine, err := registration.GetMachine(ctx, existingMachinelse.GetMachines()[0])
 	if err != nil {
 		return errors.Annotate(err, "unable to get machine %s", existingMachinelse.GetMachines()[0]).Err()
 	}
@@ -1724,7 +1722,7 @@ func getHostHistoryClient(m *ufspb.MachineLSE) *HistoryClient {
 
 // validateDeleteMachineLSEHost validates if a lse host can be deleted
 func validateDeleteMachineLSEHost(ctx context.Context, lse *ufspb.MachineLSE) error {
-	machine, err := registration.GetMachineACL(ctx, lse.GetMachines()[0])
+	machine, err := registration.GetMachine(ctx, lse.GetMachines()[0])
 	if err != nil {
 		return errors.Annotate(err, "unable to get machine %s", lse.GetMachines()[0]).Err()
 	}
@@ -2034,7 +2032,7 @@ func RenameMachineLSE(ctx context.Context, oldName, newName string) (*ufspb.Mach
 		if lse.GetChromeBrowserMachineLse() != nil {
 			return status.Errorf(codes.Unimplemented, fmt.Sprintf("Renaming %s [browser host] is not supported yet", oldName))
 		}
-		machine, err := registration.GetMachineACL(ctx, lse.GetMachines()[0])
+		machine, err := registration.GetMachine(ctx, lse.GetMachines()[0])
 		if err != nil {
 			return errors.Annotate(err, "unable to get machine %s. Misconfigured host?", lse.GetMachines()[0]).Err()
 		}
