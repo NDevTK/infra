@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,9 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"google.golang.org/genproto/protobuf/field_mask"
+
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
 // Allowlist of DUT states that are safe to overwrite.
@@ -25,37 +28,25 @@ var dutStatesSafeForOverwrite = map[dutstate.State]bool{
 // given value in UFS. States other than Ready and NeedsRepair are
 // ignored.
 func SafeUpdateUFSDUTState(ctx context.Context, authFlags *authcli.Flags, dutName, dutState, ufsService string) error {
-	currentDUTState, err := dutStateFromUFS(ctx, authFlags, ufsService, dutName)
+	c, err := NewClient(ctx, ufsService, authFlags)
 	if err != nil {
-		return err
+		return errors.Annotate(err, "save update ufs state").Err()
 	}
-	if dutStatesSafeForOverwrite[currentDUTState] {
-		return updateDUTStateToUFS(ctx, authFlags, ufsService, dutName, dutState)
-	}
-	logging.Warningf(ctx, "Not saving requested DUT state %s, since current DUT state is %s, which should never be overwritten", dutState, currentDUTState)
-	return nil
-}
-
-// updateDUTStateToUFS send DUT state to the UFS service.
-func updateDUTStateToUFS(ctx context.Context, authFlags *authcli.Flags, crosUfsService, dutName, dutState string) error {
-	ufsClient, err := NewClient(ctx, crosUfsService, authFlags)
-	if err != nil {
-		return errors.Annotate(err, "save local state").Err()
-	}
-	err = dutstate.Update(ctx, ufsClient, dutName, dutstate.State(dutState))
-	if err != nil {
-		return errors.Annotate(err, "save local state").Err()
-	}
-	return nil
-}
-
-// dutStateFromUFS read DUT state from the UFS service.
-func dutStateFromUFS(ctx context.Context, authFlags *authcli.Flags, crosUfsService, dutName string) (dutstate.State, error) {
-	ufsClient, err := NewClient(ctx, crosUfsService, authFlags)
-	if err != nil {
-		return "", errors.Annotate(err, "read local state").Err()
-	}
-	info := dutstate.Read(ctx, ufsClient, dutName)
+	info := dutstate.Read(ctx, c, dutName)
 	logging.Infof(ctx, "Receive DUT state from UFS: %s", info.State)
-	return info.State, nil
+	if info.DeviceId == "" {
+		return errors.Reason("save update ufs state: deviceId not found").Err()
+	}
+	if dutStatesSafeForOverwrite[info.State] {
+		req := &ufsAPI.UpdateTestDataRequest{
+			DeviceId:      info.DeviceId,
+			Hostname:      dutName,
+			ResourceState: dutstate.ConvertToUFSState(dutstate.State(dutState)),
+			UpdateMask:    &field_mask.FieldMask{Paths: []string{"dut.state"}},
+		}
+		_, err = c.UpdateTestData(ctx, req)
+		return errors.Annotate(err, "save update ufs state").Err()
+	}
+	logging.Warningf(ctx, "Not saving requested DUT state %s, since current DUT state is %s, which should never be overwritten!", dutState, info.State)
+	return nil
 }

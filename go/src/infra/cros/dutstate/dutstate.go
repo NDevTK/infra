@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,6 +54,8 @@ const (
 
 // Info represent information of the state and last updated time.
 type Info struct {
+	// Device identifier in inventory system.
+	DeviceId string
 	// State represents the state of the DUT from Swarming.
 	State State
 	// Time represents in Unix time of the last updated DUT state recorded.
@@ -92,8 +94,9 @@ func Read(ctx context.Context, c UFSClient, host string) Info {
 		}
 	}
 	return Info{
-		State: ConvertFromUFSState(res.GetResourceState()),
-		Time:  res.GetUpdateTime().Seconds,
+		State:    ConvertFromUFSState(res.GetResourceState()),
+		Time:     res.GetUpdateTime().Seconds,
+		DeviceId: res.GetMachines()[0],
 	}
 }
 
