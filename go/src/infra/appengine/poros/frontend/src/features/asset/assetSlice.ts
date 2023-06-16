@@ -474,9 +474,7 @@ export const assetSlice = createSlice({
       })
       .addCase(getDefaultResources.fulfilled, (state, action) => {
         state.fetchResourceStatus = 'idle';
-        action.payload.assetResources.forEach(function (
-          assetRes: AssetResourceModel
-        ) {
+        action.payload.assetResources.forEach(function (assetRes: AssetResourceModel) {
           const assetResource: AssetResourceModel = AssetResourceModel.defaultEntity();
           assetResource.resourceId = assetRes.resourceId;
           assetResource.aliasName = assetRes.aliasName;

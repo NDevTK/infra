@@ -190,8 +190,7 @@ export const resourceSlice = createSlice({
     setOperatingSystem: (state, action) => {
       state.record.operatingSystem = action.payload;
       if (
-        (state.record.type === 'ad_joined_machine' ||
-          state.record.type === 'machine') &&
+        (state.record.type === 'ad_joined_machine' || state.record.type === 'machine') &&
         state.record.operatingSystem === ''
       ) {
         state.recordValidation.operatingSystemValid = false;
@@ -209,11 +208,7 @@ export const resourceSlice = createSlice({
     },
     setImageProject: (state, action) => {
       state.record.imageProject = action.payload;
-      if (
-        (state.record.type === 'ad_joined_machine' ||
-          state.record.type === 'machine') &&
-        state.record.imageProject === ''
-      ) {
+      if ((state.record.type === 'ad_joined_machine' || state.record.type === 'machine') && state.record.imageProject === '') {
         state.recordValidation.imageProjectValid = false;
       } else {
         state.recordValidation.imageProjectValid = true;
@@ -221,11 +216,7 @@ export const resourceSlice = createSlice({
     },
     setImageFamily: (state, action) => {
       state.record.imageFamily = action.payload;
-      if (
-        (state.record.type === 'ad_joined_machine' ||
-          state.record.type === 'machine') &&
-        state.record.imageFamily === ''
-      ) {
+      if ((state.record.type === 'ad_joined_machine' || state.record.type === 'machine') && state.record.imageFamily === '') {
         state.recordValidation.imageFamilyValid = false;
       } else {
         state.recordValidation.imageFamilyValid = true;
@@ -233,10 +224,7 @@ export const resourceSlice = createSlice({
     },
     setImageSource: (state, action) => {
       state.record.imageSource = action.payload;
-      if (
-        state.record.type === 'custom_image_machine' &&
-        state.record.imageSource === ''
-      ) {
+      if (state.record.type === 'custom_image_machine' && state.record.imageSource === '') {
         state.recordValidation.imageSourceValid = false;
       } else {
         state.recordValidation.imageSourceValid = true;

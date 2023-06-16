@@ -323,8 +323,7 @@ export default function SideDrawerWithAppBar() {
               justifyContent: drawerOpen ? 'initial' : 'center',
               px: 2.5,
             }}
-            component="a"
-            href="https://g3doc.corp.google.com/googleclient/chrome/enterprise/g3doc/celab/Poros/user_manual.md"
+            component="a" href="https://g3doc.corp.google.com/googleclient/chrome/enterprise/g3doc/celab/Poros/user_manual.md"
             rel="noopener"
             target="_blank"
           >
