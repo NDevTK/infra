@@ -3,36 +3,32 @@
 // found in the LICENSE file.
 
 import { render } from '@testing-library/react';
-import { MetricType, TestMetricsArray, TestVariantData } from '../../api/resources';
+import { MetricType } from '../../api/resources';
 import VariantRow from './VariantRow';
 
-const variantRowProps: TestVariantData = {
-  metrics: new Map<string, TestMetricsArray>(
-      Object.entries(
-          {
-            '01-02-2012': {
-              'data': [
-                {
-                  metric_type: MetricType.NUM_RUNS,
-                  metric_value: 2,
-                },
-              ],
-            },
-          },
-      ),
-  ),
-  builder: 'builder',
+const mockMetrics: Map<MetricType, number> = new Map<MetricType, number>(
+    [
+      [MetricType.NUM_RUNS, 1],
+      [MetricType.NUM_FAILURES, 2],
+      [MetricType.AVG_RUNTIME, 3],
+      [MetricType.TOTAL_RUNTIME, 4],
+      [MetricType.AVG_CORES, 5],
+    ],
+);
+
+const mockTestVariant = {
   suite: 'suite',
+  builder: 'builder',
+  metrics: mockMetrics,
 };
+
 
 describe('when rendering the VariantRow', () => {
   it('should render the TableCell with variantRowCellTest id', () => {
     const { getByTestId } = render(
         <table>
           <tbody>
-            <tr>
-              <VariantRow {...variantRowProps}/>
-            </tr>
+            <VariantRow {...{ variant: mockTestVariant, tableKey: 1 }}/>
           </tbody>
         </table>,
     );

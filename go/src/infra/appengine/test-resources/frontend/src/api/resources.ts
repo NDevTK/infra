@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import MockMetrics from '../utils/MockMetrics.json';
 
 export interface TestDateMetricData {
-  test_id: string,
-  test_name: string,
-  file_name: string,
-  // Note that string represent date in "XX-XX-XXXX format"
+  testId: string,
+  testName: string,
+  fileName: string,
+  // Note that string represent date in "YYYY-MM-DD format"
   metrics: Map<string, TestMetricsArray>,
   variants: TestVariantData[],
 }
@@ -18,8 +17,8 @@ export interface TestMetricsArray {
 }
 
 interface TestMetricsData {
-  metric_type: MetricType,
-  metric_value: number
+  metricType: MetricType,
+  metricValue: number
 }
 
 export enum MetricType {
@@ -36,33 +35,73 @@ export interface TestVariantData {
   metrics: Map<string, TestMetricsArray>
 }
 
-export async function fetchTestDateMetricData(
-): Promise<TestDateMetricData[]> {
-  const mockDataArray: TestDateMetricData[] = [];
-  MockMetrics.forEach((metric) => {
-    const dateToTestMetricsArrayMap = new Map<string, TestMetricsArray>(
-        Object.entries(metric.metrics),
-    );
-    const fixedMap = new Map<string, TestMetricsArray>();
-    dateToTestMetricsArrayMap.forEach((data, date)=> {
-      const testMetricsDataArray: TestMetricsData[] = [];
-      data.data.forEach((testMetricsData) => {
-        testMetricsDataArray.push(
-            {
-              metric_type: testMetricsData.metric_type as MetricType,
-              metric_value: testMetricsData.metric_value,
-            },
-        );
-      });
-      fixedMap.set(date, { data: testMetricsDataArray });
+export enum Period {
+  DAY = 0,
+  WEEK = 1,
+  MONTH = 2,
+}
+
+export interface FetchTestMetricsResponse {
+  tests: TestDateMetricData[],
+  last_page: boolean,
+}
+
+export enum SortType {
+  SORT_NAME = 0,
+  SORT_NUM_RUNS = 1,
+  SORT_NUM_FAILURES = 2,
+  SORT_AVG_RUNTIME = 3,
+  SORT_TOTAL_RUNTIME = 4,
+  SORT_AVG_CORES = 5,
+ }
+
+export interface SortBy {
+  metric: SortType,
+  ascending: boolean,
+}
+
+export interface FetchTestMetricsRequest {
+  component: string,
+  period: Period,
+  dates: string[],
+  metrics: number[],
+  filter?: string,
+  page: number,
+  page_size: number,
+  sort: SortBy,
+}
+
+export const prpcClient = {
+  call: async function <Type>(
+      service: string,
+      method: string,
+      message: unknown,
+  ): Promise<Type> {
+    const url = `/prpc/${service}/${method}`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify(message),
     });
-    mockDataArray.push({
-      test_id: metric.test_id,
-      test_name: metric.test_name,
-      file_name: metric.file_name,
-      metrics: fixedMap,
-      variants: metric.variants ? metric.variants : new Array(0),
-    });
-  });
-  return mockDataArray;
+    const text = await response.text();
+    if (text.startsWith(')]}\'')) {
+      return JSON.parse(text.substr(4));
+    } else {
+      return JSON.parse(text);
+    }
+  },
+};
+
+export async function fetchTestMetrics(
+    fetchTestMetricsRequest,
+): Promise<FetchTestMetricsResponse> {
+  const resp: FetchTestMetricsResponse = await prpcClient.call(
+      'test_resources.Stats',
+      'FetchTestMetrics',
+      fetchTestMetricsRequest,
+  );
+  return resp;
 }

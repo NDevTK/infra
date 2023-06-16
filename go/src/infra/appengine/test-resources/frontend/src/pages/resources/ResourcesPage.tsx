@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 import ResourcesTable from '../../features/resources/ResourcesTable';
-import { MetricContextProvider } from '../../context/MetricContext';
+import { MetricsContextProvider } from '../../features/context/MetricsContext';
 
 function ResourcesPage() {
   return (
-    <MetricContextProvider>
+    <MetricsContextProvider>
       <ResourcesTable/>
-    </MetricContextProvider>
+    </MetricsContextProvider>
   );
 }
 

@@ -4,104 +4,64 @@
 import { useState } from 'react';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { Button, TableCell, TableRow } from '@mui/material';
-import { TestDateMetricData, MetricType, TestMetricsArray } from '../../api/resources';
+import { formatNumber, formatTime } from '../../utils/formatUtils';
+import { MetricType } from '../../api/resources';
+import { Api, Test } from '../context/MetricsContext';
 import styles from './ResourcesRow.module.css';
 import VariantRow from './VariantRow';
 
-export type AggregatedMetrics = {
-  numRuns: number,
-  numFailures: number,
-  avgRuntime: number,
-  totalRuntime: number,
-  avgCores: number,
+export interface ResourcesRowProps {
+  test: Test,
+  lastPage: boolean,
+  api: Api,
 }
 
-export function aggregateMetrics(metric : Map<string, TestMetricsArray>) : AggregatedMetrics {
-  let numRuns = 0;
-  let numFailures = 0;
-  let avgRuntime = 0;
-  let totalRuntime = 0;
-  let avgCores = 0;
-  let runTimeCount = 0;
-  let coresCount = 0;
-  metric.forEach((data) => {
-    data.data.forEach((metric) => {
-      switch (metric.metric_type) {
-        case MetricType.NUM_RUNS:
-          numRuns += metric.metric_value;
-          break;
-        case MetricType.NUM_FAILURES:
-          numFailures += metric.metric_value;
-          break;
-        case MetricType.AVG_RUNTIME:
-          avgRuntime += metric.metric_value;
-          runTimeCount ++;
-          break;
-        case MetricType.TOTAL_RUNTIME:
-          totalRuntime += metric.metric_value;
-          break;
-        case MetricType.AVG_CORES:
-          avgCores += metric.metric_value;
-          coresCount ++;
-          break;
-      }
-    });
-  });
-  avgRuntime = avgRuntime / runTimeCount;
-  avgCores = avgCores / coresCount;
-  return {
-    numRuns: numRuns,
-    numFailures: numFailures,
-    avgRuntime: avgRuntime,
-    totalRuntime: totalRuntime,
-    avgCores: avgCores,
-  };
+// Display the metrics in TableCell Format
+export function displayMetrics(metrics: Map<MetricType, number>) {
+  return (
+    <>
+      <TableCell component="td" data-testid="tableCell" align="right">{formatNumber(metrics.get(MetricType.NUM_RUNS) || 0)}</TableCell>
+      <TableCell component="td" data-testid="tableCell" align="right">{formatNumber(metrics.get(MetricType.NUM_FAILURES) || 0)}</TableCell>
+      <TableCell component="td" data-testid="tableCell" align="right">{formatTime(metrics.get(MetricType.AVG_RUNTIME) || 0)}</TableCell>
+      <TableCell component="td" data-testid="tableCell" align="right">{formatTime(metrics.get(MetricType.TOTAL_RUNTIME) || 0)}</TableCell>
+      <TableCell component="td" data-testid="tableCell" align="right">{formatNumber(metrics.get(MetricType.AVG_CORES) || 0)}</TableCell>
+    </>
+  );
 }
 
-function ResourcesRow(testDateMetricData : TestDateMetricData) {
+function ResourcesRow(resourcesRowParams: ResourcesRowProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const aggregatedMetrics: AggregatedMetrics = aggregateMetrics(testDateMetricData.metrics);
   const rotate = isOpen ? 'rotate(0deg)' : 'rotate(270deg)';
   return (
     <>
       <TableRow
-        className={styles.slimRows}
         data-testid="tableRowTest"
-        key={testDateMetricData.test_id}
+        key={resourcesRowParams.test.testId}
+        className={styles.tableRow}
       >
-        <>
-          <TableCell component="th" scope="row" className={styles.noPadding}>
-            {
-            testDateMetricData.variants.length != 0 ? (
-              <Button
-                data-testid="clickButton"
-                onClick={() => setIsOpen(!isOpen)}
-                className={styles.noPadding}
-                style={{ transform: rotate }}
-              >
-                <ArrowDropDownIcon></ArrowDropDownIcon>
-              </Button>
-            ) : null
-            }
-            {testDateMetricData.test_name}
-          </TableCell>
-          <TableCell align="right"></TableCell>
-          <TableCell align="right">{aggregatedMetrics.numRuns}</TableCell>
-          <TableCell align="right">{aggregatedMetrics.numFailures}</TableCell>
-          <TableCell align="right">{aggregatedMetrics.avgRuntime}s</TableCell>
-          <TableCell align="right">{aggregatedMetrics.totalRuntime}s</TableCell>
-          <TableCell align="right">{aggregatedMetrics.avgCores}</TableCell>
-        </>
+        <TableCell component="td" scope="row" className={styles.titleCell}>
+          {
+          resourcesRowParams.test.variants.length != 0 ? (
+            <Button
+              data-testid="clickButton"
+              onClick={() => setIsOpen(!isOpen)}
+              style={{ transform: rotate }}
+              className={styles.btn}
+            >
+              <ArrowDropDownIcon/>
+            </Button>
+          ) : null
+          }
+          {resourcesRowParams.test.testName}
+        </TableCell>
+        <TableCell component="td" align="right"></TableCell>
+        {displayMetrics(resourcesRowParams.test.metrics)}
       </TableRow>
       {
         isOpen ? (
-        testDateMetricData.variants.map((variant, idx) =>
-          <TableRow
-            key={idx}
-            data-testid="variantRowTest"
-          >
-            <VariantRow {...variant}/>
-          </TableRow>) ) : null
+        resourcesRowParams.test.variants.map((variant, idx) =>
+          <VariantRow {...{ variant: variant, tableKey: idx }} key={idx}/>,
+        ) ) : null
       }
     </>
   );

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import NavBar from './features/NavBar';
+import NavBar from './components/NavBar';
 import ResourcesPage from './pages/resources/ResourcesPage';
 
 const App = () => {

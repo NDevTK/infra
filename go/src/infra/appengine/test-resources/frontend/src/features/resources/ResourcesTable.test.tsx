@@ -2,12 +2,77 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import { Api, Test } from '../context/MetricsContext';
+import { MetricType } from '../../api/resources';
+import { renderWithContext } from '../../utils/testUtils';
 import ResourcesTable from './ResourcesTable';
+
+const mockMetrics: Map<MetricType, number> = new Map<MetricType, number>(
+    [
+      [MetricType.NUM_RUNS, 1],
+      [MetricType.NUM_FAILURES, 2],
+      [MetricType.AVG_RUNTIME, 3],
+      [MetricType.TOTAL_RUNTIME, 4],
+      [MetricType.AVG_CORES, 5],
+    ],
+);
+
+const test: Test = {
+  testId: 'testId',
+  testName: 'testName',
+  fileName: 'fileName',
+  metrics: mockMetrics,
+  variants: [
+    {
+      suite: 'suite',
+      builder: 'builder',
+      metrics: mockMetrics,
+    },
+    {
+      suite: 'suite',
+      builder: 'builder',
+      metrics: mockMetrics,
+    },
+  ],
+};
+
+const tests: Test[] = [
+  test,
+];
+
+// Mock api. We will just test if they are called.
+const mockApi : Api = {
+  nextPage: () => {
+    // do nothing.
+  },
+  prevPage: () => {
+    // do nothing.
+  },
+  firstPage: () => {
+    // do nothing.
+  },
+  updateFilter: () => {
+    // do nothing.
+  },
+  updateDate: () => {
+    // do nothing.
+  },
+  updatePeriod: () => {
+    // do nothing.
+  },
+  updateRowsPerPage: () => {
+    // do nothing.
+  },
+  updateComponent: () => {
+    // do nothing.
+  },
+};
 
 describe('when rendering the ResourcesTable', () => {
   it('should render the TableContainer', () => {
-    render(<ResourcesTable />);
+    renderWithContext(<ResourcesTable/>, tests, false, mockApi);
+    expect(screen.getByTestId('tableBody')).toBeInTheDocument();
     expect(screen.getByText('Test Suite')).toBeInTheDocument();
     expect(screen.getByText('# Runs')).toBeInTheDocument();
     expect(screen.getByText('# Failures')).toBeInTheDocument();

@@ -6,11 +6,6 @@
 .tableRow {
 }
 
-.tableRow .titleCell {
-    padding: 0px;
-}
-
-.tableRow .titleCell .btn{
-    padding: 0px;
-    min-width: 0px;
+.tableRow .variantRow {
+    padding: 0px 35px;
 }

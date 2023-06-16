@@ -22,7 +22,7 @@ function NavBar() {
 
   return (
     <Container maxWidth={false}>
-      <AppBar>
+      <AppBar className={styles.scroll}>
         <Toolbar>
           <div className={styles.horizontalCenter}>
             <IconButton color="inherit">

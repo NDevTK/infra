@@ -5,7 +5,7 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-jest.mock('./features/NavBar', () => {
+jest.mock('./components/NavBar', () => {
   const LandingPage = () => <div data-testid="Navbar" />;
   return LandingPage;
 });
