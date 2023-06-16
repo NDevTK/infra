@@ -112,7 +112,7 @@ func runProbe(ctx context.Context) error {
 // pullImage runs docker pull to download container image.
 func pullImage(ctx context.Context, image string) error {
 	// docker pull requires root access for Docker socket.
-	cmd := exec.Command("sudo", "--non-interactive", "--preserve-env", "docker", "pull", image)
+	cmd := exec.Command("sudo", "--non-interactive", "docker", "pull", image)
 	err := runExec(ctx, cmd)
 	if err != nil {
 		return err
