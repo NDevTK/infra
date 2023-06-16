@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import rewire from 'rewire';
+const rewire = require('rewire');
 const defaults = rewire('react-scripts/scripts/build.js');
-const config = defaults.__get__('config');
+let config = defaults.__get__('config');
 
 config.optimization.splitChunks = {
   cacheGroups: {
