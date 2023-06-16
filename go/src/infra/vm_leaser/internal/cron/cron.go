@@ -20,7 +20,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/protobuf/proto"
 
-	"infra/vm_leaser/internal/frontend"
+	"infra/vm_leaser/internal/constants"
 )
 
 // Default VM Leaser cron parameters
@@ -101,7 +101,9 @@ func releaseExpiredVMs(ctx context.Context, gcpProject string) error {
 	var ops []*compute.Operation
 	var errors *multierror.Error
 
-	it, err := listInstances(ctx, instancesClient, gcpProject, frontend.DefaultRegion)
+	defaultParams := constants.DevDefaultParams
+
+	it, err := listInstances(ctx, instancesClient, gcpProject, defaultParams.DefaultRegion)
 	if err != nil {
 		return err
 	}
@@ -122,7 +124,7 @@ func releaseExpiredVMs(ctx context.Context, gcpProject string) error {
 		}
 		if expired {
 			logging.Infof(ctx, "Scheduling %s for deletion.\n", instance.GetName(), instance.GetMetadata().GetItems())
-			op, err := deleteInstance(ctx, instancesClient, instance.GetName(), gcpProject, frontend.DefaultRegion)
+			op, err := deleteInstance(ctx, instancesClient, instance.GetName(), gcpProject, defaultParams.DefaultRegion)
 			if err != nil {
 				errors = multierror.Append(errors, fmt.Errorf("failed deleting VM instance %s: %v", instance.GetName(), err))
 				continue

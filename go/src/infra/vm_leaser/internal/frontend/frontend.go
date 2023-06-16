@@ -23,22 +23,7 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 
 	vmleaserpb "infra/vm_leaser/api/v1"
-)
-
-// Default VM Leaser parameters
-const (
-	// Default disk size to use for VM creation
-	DefaultDiskSize int64 = 20
-	// Default machine type to use for VM creation
-	DefaultMachineType string = "e2-medium"
-	// Default network to use for VM creation
-	DefaultNetwork string = "global/networks/default"
-	// Default GCP Project to use
-	DefaultProject string = "chrome-fleet-vm-leaser-dev"
-	// Default region (zone) to use
-	DefaultRegion string = "us-central1-a"
-	// Default duration of lease (in minutes)
-	DefaultLeaseDuration int64 = 60
+	"infra/vm_leaser/internal/constants"
 )
 
 // computeInstancesClient interfaces the GCE instance client API.
@@ -53,11 +38,14 @@ var _ api.VMLeaserServiceServer = (*Server)(nil)
 // Server is a struct implements the pb.VMLeaserServiceServer
 type Server struct {
 	api.UnimplementedVMLeaserServiceServer
+	Env string
 }
 
 // NewServer returns a new Server
-func NewServer() *Server {
-	return &Server{}
+func NewServer(env string) *Server {
+	return &Server{
+		Env: env,
+	}
 }
 
 // LeaseVM leases a VM defined by LeaseVMRequest
@@ -65,7 +53,7 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 	logging.Infof(ctx, "[server:LeaseVM] Started")
 
 	// Set defaults for LeaseVMRequest if needed.
-	r = setDefaultLeaseVMRequest(r)
+	r = setDefaultLeaseVMRequest(r, s.Env)
 
 	if err := vmleaserpb.ValidateLeaseVMRequest(r); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "failed to validate lease request: %s", err)
@@ -73,7 +61,7 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 
 	// Appending "vm-" to satisfy GCE regex
 	leaseID := fmt.Sprintf("vm-%s", uuid.New().String())
-	expirationTime, err := computeExpirationTime(ctx, r.GetLeaseDuration())
+	expirationTime, err := computeExpirationTime(ctx, r.GetLeaseDuration(), s.Env)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "failed to compute expiration time: %s", err)
 	}
@@ -125,7 +113,7 @@ func (s *Server) ReleaseVM(ctx context.Context, r *api.ReleaseVMRequest) (*api.R
 	logging.Infof(ctx, "[server:ReleaseVM] Started")
 
 	// Set default values for ReleaseVMRequest if needed.
-	r = setDefaultReleaseVMRequest(r)
+	r = setDefaultReleaseVMRequest(r, s.Env)
 
 	if err := vmleaserpb.ValidateReleaseVMRequest(r); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "failed to validate release request: %s", err)
@@ -278,34 +266,48 @@ func deleteInstance(ctx context.Context, r *api.ReleaseVMRequest) error {
 	return nil
 }
 
+// getDefaultParams returns the default params of a prod/dev environment
+func getDefaultParams(env string) constants.DefaultLeaseParams {
+	switch env {
+	case "dev":
+		return constants.DevDefaultParams
+	case "prod":
+		return constants.ProdDefaultParams
+	default:
+		return constants.DevDefaultParams
+	}
+}
+
 // setDefaultLeaseVMRequest sets default values for VMRequirements.
-func setDefaultLeaseVMRequest(r *api.LeaseVMRequest) *api.LeaseVMRequest {
+func setDefaultLeaseVMRequest(r *api.LeaseVMRequest, env string) *api.LeaseVMRequest {
+	defaultParams := getDefaultParams(env)
 	hostReqs := r.GetHostReqs()
 	if hostReqs.GetGceDiskSize() == 0 {
-		hostReqs.GceDiskSize = DefaultDiskSize
+		hostReqs.GceDiskSize = defaultParams.DefaultDiskSize
 	}
 	if hostReqs.GetGceMachineType() == "" {
-		hostReqs.GceMachineType = DefaultMachineType
+		hostReqs.GceMachineType = defaultParams.DefaultMachineType
 	}
 	if hostReqs.GetGceNetwork() == "" {
-		hostReqs.GceNetwork = DefaultNetwork
+		hostReqs.GceNetwork = defaultParams.DefaultNetwork
 	}
 	if hostReqs.GetGceProject() == "" {
-		hostReqs.GceProject = DefaultProject
+		hostReqs.GceProject = defaultParams.DefaultProject
 	}
 	if hostReqs.GetGceRegion() == "" {
-		hostReqs.GceRegion = DefaultRegion
+		hostReqs.GceRegion = defaultParams.DefaultRegion
 	}
 	return r
 }
 
 // setDefaultReleaseVMRequest sets default values for ReleaseVMRequest.
-func setDefaultReleaseVMRequest(r *api.ReleaseVMRequest) *api.ReleaseVMRequest {
+func setDefaultReleaseVMRequest(r *api.ReleaseVMRequest, env string) *api.ReleaseVMRequest {
+	defaultParams := getDefaultParams(env)
 	if r.GetGceProject() == "" {
-		r.GceProject = DefaultProject
+		r.GceProject = defaultParams.DefaultProject
 	}
 	if r.GetGceRegion() == "" {
-		r.GceRegion = DefaultRegion
+		r.GceRegion = defaultParams.DefaultRegion
 	}
 	return r
 }
@@ -337,10 +339,11 @@ func getInstanceNetworkInterfaces(ctx context.Context, hostReqs *api.VMRequireme
 //
 // computeExpirationTime return a future Unix time as an int64. The calculation
 // is based on the specified lease duration.
-func computeExpirationTime(ctx context.Context, leaseDuration *durationpb.Duration) (int64, error) {
+func computeExpirationTime(ctx context.Context, leaseDuration *durationpb.Duration, env string) (int64, error) {
+	defaultParams := getDefaultParams(env)
 	expirationTime := time.Now().Unix()
 	if leaseDuration == nil {
-		return expirationTime + (DefaultLeaseDuration * 60), nil
+		return expirationTime + (defaultParams.DefaultLeaseDuration * 60), nil
 	}
 	return expirationTime + leaseDuration.GetSeconds(), nil
 }

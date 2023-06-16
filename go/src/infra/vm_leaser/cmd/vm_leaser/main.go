@@ -5,6 +5,8 @@
 package main
 
 import (
+	"flag"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server"
@@ -23,6 +25,12 @@ func InstallServices(s *frontend.Server, srv grpc.ServiceRegistrar) {
 }
 
 func main() {
+	srvEnv := flag.String(
+		"service-env",
+		"dev",
+		"The service deployment environment (dev/prod).",
+	)
+
 	server.Main(nil, nil, func(srv *server.Server) error {
 		logging.Infof(srv.Context, "Starting server.")
 
@@ -43,7 +51,7 @@ func main() {
 		srv.RegisterUnifiedServerInterceptors(acl.RPCAccessInterceptor)
 
 		logging.Infof(srv.Context, "Installing Services.")
-		InstallServices(frontend.NewServer(), srv)
+		InstallServices(frontend.NewServer(*srvEnv), srv)
 
 		logging.Infof(srv.Context, "Initialization finished.")
 		return nil

@@ -42,8 +42,8 @@ func TestComputeExpirationTime(t *testing.T) {
 	ctx := context.Background()
 	Convey("Test computeExpirationTime", t, func() {
 		Convey("Compute expiration time - no lease duration passed", func() {
-			defaultExpTime := time.Now().Unix() + (DefaultLeaseDuration * 60)
-			res, err := computeExpirationTime(ctx, nil)
+			defaultExpTime := time.Now().Unix() + (600 * 60)
+			res, err := computeExpirationTime(ctx, nil, "dev")
 			So(err, ShouldBeNil)
 			So(res, ShouldBeBetweenOrEqual, defaultExpTime, defaultExpTime+1)
 		})
@@ -53,7 +53,7 @@ func TestComputeExpirationTime(t *testing.T) {
 
 			expTime := time.Now().Add(leaseDuration).Unix()
 			logging.Errorf(ctx, "%s", durationpb.New(leaseDuration))
-			res, err := computeExpirationTime(ctx, durationpb.New(leaseDuration))
+			res, err := computeExpirationTime(ctx, durationpb.New(leaseDuration), "dev")
 			So(err, ShouldBeNil)
 			So(res, ShouldBeBetweenOrEqual, expTime, expTime+1)
 		})
