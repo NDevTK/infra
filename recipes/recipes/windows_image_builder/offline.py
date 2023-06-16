@@ -454,6 +454,7 @@ def GenTests(api):
   yield (
       api.test('basic_scheduled', api.platform('win', 64)) + api.properties(
           input_pb.Inputs(config_path="tests/basic", refs='origin/main')) +
+      api.properties.environ(input_pb.EnvProperties(MAX_CUST_BATCH_SIZE="5")) +
       t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/PSOverCom.ps1', 'HEAD') +
       t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/startnet.cmd', 'HEAD') +
       # Mock the check for output existence. Twice for wim (as output of
@@ -497,6 +498,7 @@ def GenTests(api):
   # Test failure on one of the cust. This should fail the recipe
   yield (
       api.test('basic_partial_failure', api.platform('win', 64)) +
+      api.properties.environ(input_pb.EnvProperties(MAX_CUST_BATCH_SIZE="5")) +
       api.properties(input_pb.Inputs(config_path="tests/basic")) +
       t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/PSOverCom.ps1', 'HEAD') +
       t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/startnet.cmd', 'HEAD') +

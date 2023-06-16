@@ -279,6 +279,7 @@ def GenTests(api):
       api.test('nothing scheduled', api.platform('linux', 64)) +
       # Run the test with basic images
       api.properties(input_pb.Inputs(config_path="tests/basic")) +
+      api.properties.environ(input_pb.EnvProperties(MAX_CUST_BATCH_SIZE="5")) +
       # Scheduler gets exists response for all the queries. It doesn't have to
       # execute anything
       mock_gsutil(
@@ -301,6 +302,7 @@ def GenTests(api):
       api.test('schedule_online_cust', api.platform('linux', 64)) +
       # Run the test with basic images
       api.properties(input_pb.Inputs(config_path="tests/basic")) +
+      api.properties.environ(input_pb.EnvProperties(MAX_CUST_BATCH_SIZE="5")) +
       # Scheduler only needs to schedule online builder
       mock_gsutil(
           api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key_wim_1), 1) +
@@ -323,6 +325,7 @@ def GenTests(api):
       # Run the test with basic images
       api.properties(input_pb.Inputs(config_path="tests/basic")) + mock_gsutil(
           api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key_wim_1), 1) +
+      api.properties.environ(input_pb.EnvProperties(MAX_CUST_BATCH_SIZE="5")) +
       mock_gsutil(
           api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key_wim_2), 1) +
       mock_gsutil(
@@ -339,6 +342,7 @@ def GenTests(api):
 
   yield (
       api.test('schedule_wim_cust', api.platform('linux', 64)) +
+      api.properties.environ(input_pb.EnvProperties(MAX_CUST_BATCH_SIZE="5")) +
       # Run the test with basic images
       api.properties(input_pb.Inputs(config_path="tests/basic")) + mock_gsutil(
           api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key_wim_1), 2) +
@@ -358,6 +362,7 @@ def GenTests(api):
 
   yield (
       api.test('happy path', api.platform('linux', 64)) +
+      api.properties.environ(input_pb.EnvProperties(MAX_CUST_BATCH_SIZE="5")) +
       # Run the test with basic images
       api.properties(input_pb.Inputs(config_path="tests/basic")) + mock_gsutil(
           api, 'gs://chrome-gce-images/WIB-WIM/{}.zip'.format(key_wim_1), 2) +

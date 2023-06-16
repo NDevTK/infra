@@ -13,3 +13,8 @@ message Inputs {
   // refs to point to
   string refs = 2;
 }
+
+message EnvProperties {
+  // Maxium number of custs to batch in a build
+  string MAX_CUST_BATCH_SIZE = 1;
+}

@@ -1,6 +1,7 @@
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+from PB.recipes.infra.windows_image_builder import input as input_pb
 
 DEPS = [
     'depot_tools/gclient', 'depot_tools/bot_update', 'depot_tools/git',
@@ -12,3 +13,5 @@ DEPS = [
 ]
 
 PYTHON_VERSION_COMPATIBILITY = 'PY3'
+
+ENV_PROPERTIES = input_pb.EnvProperties
