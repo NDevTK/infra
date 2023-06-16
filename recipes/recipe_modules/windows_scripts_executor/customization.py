@@ -14,7 +14,8 @@ class Customization(object):
       recipes.
   """
 
-  def __init__(self, image, cust, arch, scripts, configs, module, source):
+  def __init__(self, image, cust, arch, scripts, configs, module, source,
+               try_job):
     """ __init__ copies common module objects to class references. These are
     commonly used for all customizations
 
@@ -43,6 +44,7 @@ class Customization(object):
     self._key = ''
     self._configs = configs
     self._name = ''
+    self._try_job = try_job
 
   def name(self):
     """ name returns the name of the customization object. This needs to be
@@ -72,6 +74,11 @@ class Customization(object):
   def arch(self):
     """ arch returns the targeted arch for the self (customization) """
     return self.image().arch
+
+  @property
+  def tryrun(self):
+    """ tryrun returns true if we are running in try mode """
+    return self._try_job
 
   @property
   def needs_build(self):

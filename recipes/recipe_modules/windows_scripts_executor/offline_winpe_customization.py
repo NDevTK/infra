@@ -54,6 +54,8 @@ class OfflineWinPECustomization(customization.Customization):
     for off_action in wpec.offline_customization:
       for action in off_action.actions:
         helper.pin_src_from_action(action, self._source, ctx)
+    if self.tryrun:
+      wpec.image_dests.clear()  # pragma: nocover
 
   def download_sources(self):
     """ download_sources downloads the sources in the given config to disk"""

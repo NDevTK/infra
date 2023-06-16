@@ -39,6 +39,8 @@ class WinISOCustomization(customization.Customization):
       wic.boot_image.CopyFrom(self._source.pin(wic.boot_image, ctx))
     for x in wic.copy_files:
       x.artifact.CopyFrom(self._source.pin(x.artifact, ctx))
+    if self.tryrun:
+      wic.uploads.clear()  # pragma: nocover
 
   def download_sources(self):
     """ download_sources downloads the sources in the given config to the

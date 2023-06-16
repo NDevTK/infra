@@ -37,14 +37,16 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
     self._customizations = []
     self._executable_cust = []
     self._config = wib.Image()
+    self._try_job = False
     if envvars.MAX_CUST_BATCH_SIZE:
       self._max_cust_batch_size = int(envvars.MAX_CUST_BATCH_SIZE)
     else:
       # Batch 1 cust per job by default
       self._max_cust_batch_size = 1
 
-  def init(self):
+  def init(self, try_job=False):
     """ init initializes all the dirs and sub modules required."""
+    self._try_job = try_job
     with self.m.step.nest('Initialize the config engine'):
       self._sources = sources.Source(self.m.path['cache'].join('Pkgs'), self.m)
 
@@ -76,7 +78,9 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
                 scripts=self._scripts,
                 configs=self._configs_dir,
                 module=self.m,
-                source=self._sources))
+                source=self._sources,
+                try_job=self._try_job,
+            ))
       if cust.WhichOneof('customization') == 'online_windows_customization':
         custs.append(
             onwincust.OnlineWindowsCustomization(
@@ -86,7 +90,9 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
                 scripts=self._scripts,
                 configs=self._configs_dir,
                 module=self.m,
-                source=self._sources))
+                source=self._sources,
+                try_job=self._try_job,
+            ))
       if cust.WhichOneof('customization') == 'windows_iso_customization':
         custs.append(
             winiso.WinISOCustomization(
@@ -96,7 +102,9 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
                 scripts=self._scripts,
                 configs=self._configs_dir,
                 module=self.m,
-                source=self._sources))
+                source=self._sources,
+                try_job=self._try_job,
+            ))
 
     return custs
 

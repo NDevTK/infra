@@ -1182,7 +1182,7 @@ Ensures that the WinPE add-on is available.
 
 API for using Windows PowerShell scripts.
 
-&mdash; **def [download\_all\_packages](/recipes/recipe_modules/windows_scripts_executor/api.py#294)(self, custs):**
+&mdash; **def [download\_all\_packages](/recipes/recipe_modules/windows_scripts_executor/api.py#302)(self, custs):**
 
 download_all_packages downloads all the packages referenced by given
 custs.
@@ -1190,14 +1190,14 @@ custs.
 Args:
   * custs: List of Customizations object from customizations.py
 
-&mdash; **def [execute\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#305)(self, custs):**
+&mdash; **def [execute\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#313)(self, custs):**
 
 Executes the windows image builder user config.
 
 Args:
   * custs: List of Customizations object from customizations.py
 
-&mdash; **def [filter\_executable\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#281)(self, customizations):**
+&mdash; **def [filter\_executable\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#289)(self, customizations):**
 
 filter_executable_customizations generates a list of customizations
 that need to be executed.
@@ -1205,7 +1205,7 @@ that need to be executed.
 Args:
   * customizations: List of Customizations object from customizations.py
 
-&mdash; **def [gen\_canonical\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#172)(self, customizations):**
+&mdash; **def [gen\_canonical\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#180)(self, customizations):**
 
 gen_canonical_configs strips all the names in the config and returns
 individual configs containing one customization per image.
@@ -1290,7 +1290,7 @@ Example:
 Args:
   * customizations: List of Customizations object from customizations.py
 
-&mdash; **def [gen\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#340)(self, custs):**
+&mdash; **def [gen\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#348)(self, custs):**
 
 gen_executable_configs generates wib.Image configs that can be executed.
 
@@ -1307,7 +1307,7 @@ Args:
 Returns a list of tuples containing config and set of customization hash
 that can be executed at the time
 
-&mdash; **def [get\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#315)(self, custs):**
+&mdash; **def [get\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#323)(self, custs):**
 
 get_executable_configs returns a list of images that can be executed at
 this time.
@@ -1320,11 +1320,11 @@ Args:
   * custs: List of customizations to be processed.
 Returns a dict mapping builder name to the image-key_list tuple
 
-&mdash; **def [init](/recipes/recipe_modules/windows_scripts_executor/api.py#46)(self):**
+&mdash; **def [init](/recipes/recipe_modules/windows_scripts_executor/api.py#47)(self, try_job=False):**
 
 init initializes all the dirs and sub modules required.
 
-&mdash; **def [init\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#54)(self, config):**
+&mdash; **def [init\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#56)(self, config):**
 
 init_customizations initializes the given config and returns
 list of customizations
@@ -1332,7 +1332,7 @@ list of customizations
 Args:
   * config: wib.Image proto config
 
-&mdash; **def [pin\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#147)(self, customizations, ctx):**
+&mdash; **def [pin\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#155)(self, customizations, ctx):**
 
 pin_customizations pins all the sources in the customizations
 
@@ -1340,7 +1340,7 @@ Args:
   * customizations: List of Customizations object from customizations.py
   * ctx: dict containing the context for the customization
 
-&mdash; **def [process\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#103)(self, custs, ctx, inputs=()):**
+&mdash; **def [process\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#111)(self, custs, ctx, inputs=()):**
 
 process_customizations pins all the volatile srcs and generates
 canonnical configs.
@@ -1352,7 +1352,7 @@ Args:
 
 Returns list of customizations in order that they were processed
 
-&mdash; **def [update\_context](/recipes/recipe_modules/windows_scripts_executor/api.py#158)(self, custs, ctx):**
+&mdash; **def [update\_context](/recipes/recipe_modules/windows_scripts_executor/api.py#166)(self, custs, ctx):**
 
 update_context returns an updated dict with all the contexts
 updated
@@ -1859,18 +1859,18 @@ This recipe runs legacy analyzers for the infra repo.
 &mdash; **def [RunSteps](/recipes/recipe_modules/windows_adk/examples/ensure.py#16)(api):**
 ### *recipes* / [windows\_image\_builder/offline](/recipes/recipes/windows_image_builder/offline.py)
 
-[DEPS](/recipes/recipes/windows_image_builder/offline.py#34): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [windows\_adk](#recipe_modules-windows_adk), [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/proto][recipe_engine/recipe_modules/proto], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+[DEPS](/recipes/recipes/windows_image_builder/offline.py#34): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [depot\_tools/tryserver][depot_tools/recipe_modules/tryserver], [windows\_adk](#recipe_modules-windows_adk), [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/proto][recipe_engine/recipe_modules/proto], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/runtime][recipe_engine/recipe_modules/runtime], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 
-&mdash; **def [RunSteps](/recipes/recipes/windows_image_builder/offline.py#203)(api, inputs):**
+&mdash; **def [RunSteps](/recipes/recipes/windows_image_builder/offline.py#204)(api, inputs):**
 
 This recipe runs image builder for a given user config.
 
-&mdash; **def [mock\_lsdir](/recipes/recipes/windows_image_builder/offline.py#185)(path):**
+&mdash; **def [mock\_lsdir](/recipes/recipes/windows_image_builder/offline.py#186)(path):**
 
-&mdash; **def [mock\_tests](/recipes/recipes/windows_image_builder/offline.py#179)(config):**
+&mdash; **def [mock\_tests](/recipes/recipes/windows_image_builder/offline.py#180)(config):**
 
-&mdash; **def [url\_title](/recipes/recipes/windows_image_builder/offline.py#194)(build):**
+&mdash; **def [url\_title](/recipes/recipes/windows_image_builder/offline.py#195)(build):**
 
 url_title is a helper function to display the customization
 name over the build link in schedule process.

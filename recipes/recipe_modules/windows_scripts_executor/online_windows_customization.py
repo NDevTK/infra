@@ -46,6 +46,8 @@ class OnlineWindowsCustomization(customization.Customization):
       for drive in boot.vm_config.qemu_vm.drives:
         if drive.input_src.WhichOneof('src'):
           drive.input_src.CopyFrom(self._source.pin(drive.input_src, ctx))
+        if self.tryrun:
+          drive.output_dests.clear()  # pragma: nocover
       # pin the refs in the actions
       for online_action in boot.online_actions:
         for action in online_action.actions:

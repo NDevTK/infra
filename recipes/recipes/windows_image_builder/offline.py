@@ -35,6 +35,7 @@ DEPS = [
     'depot_tools/bot_update',
     'depot_tools/gclient',
     'depot_tools/gitiles',
+    'depot_tools/tryserver',
     'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/json',
@@ -204,7 +205,7 @@ def RunSteps(api, inputs):
   """This recipe runs image builder for a given user config."""
 
   configs = []
-
+  try_job = False
   if not inputs.config_path:
     raise api.step.StepFailure("`config_path` is a required property")
 
@@ -214,9 +215,15 @@ def RunSteps(api, inputs):
   builder_named_cache = api.path['cache'].join('builder')
 
   with api.step.nest('read user config') as c:
+    # check if it is a try build
+    cl_ref = api.tryserver.gerrit_change_fetch_ref
     # download the configs repo
     api.gclient.set_config('infradata_config')
-    api.gclient.c.solutions[0].revision = refs
+    if cl_ref:
+      try_job = True
+      api.gclient.c.solutions[0].revision = cl_ref
+    else:
+      api.gclient.c.solutions[0].revision = refs
     with api.context(cwd=builder_named_cache):
       api.bot_update.ensure_checkout()
       api.gclient.runhooks()
@@ -252,7 +259,7 @@ def RunSteps(api, inputs):
     return  #pragma: no cover
 
   # initialize the recipe_module
-  api.windows_scripts_executor.init()
+  api.windows_scripts_executor.init(try_job)
 
   # collect all the customizations from all the configs
   custs = []
@@ -495,9 +502,44 @@ def GenTests(api):
       + api.post_process(post_process.StatusSuccess) +
       api.post_process(post_process.DropExpectation))
 
+  yield (
+      api.test(
+          'basic_scheduled_try_job',
+          api.buildbucket.try_build(
+              'infradata-config',
+              'linux',
+              git_repo='https://chromium.googlesource.com/chromium/src',
+              change_number=91827,
+              patch_set=1), api.platform('win', 64)) +
+      api.properties(
+          input_pb.Inputs(config_path="tests/basic", refs='origin/main')) +
+      api.properties.environ(input_pb.EnvProperties(MAX_CUST_BATCH_SIZE="5")) +
+      t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/PSOverCom.ps1', 'HEAD') +
+      t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/startnet.cmd', 'HEAD') +
+      # Mock the check for output existence. Twice for wim (as output of
+      # test_cust and input for bimage), twice for iso and once for system.img
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip'.format(key_wim), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso'.format(key_iso), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (2)'.format(key_iso), True) +
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip (2)'.format(key_wim), False) +
+      # mock schedule output to test builds scheduled
+      api.buildbucket.simulated_schedule_output(
+          BATCH_RESPONSE_WIM,
+          step_name='Execute customizations.buildbucket.schedule') +
+      # mock collecting the build status
+      api.buildbucket.simulated_collect_output(
+          [
+              api.buildbucket.ci_build_message(
+                  build_id=1234567890123456789, status='SUCCESS'),
+          ],
+          step_name='Execute customizations.waiting for builds to complete') +
+      api.post_process(post_process.StatusSuccess) +
+      api.post_process(post_process.DropExpectation))
+
   # Test failure on one of the cust. This should fail the recipe
   yield (
-      api.test('basic_partial_failure', api.platform('win', 64)) +
+      api.test(
+          'basic_partial_failure', api.platform('win', 64), status="FAILURE") +
       api.properties.environ(input_pb.EnvProperties(MAX_CUST_BATCH_SIZE="5")) +
       api.properties(input_pb.Inputs(config_path="tests/basic")) +
       t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/PSOverCom.ps1', 'HEAD') +
@@ -570,8 +612,9 @@ def GenTests(api):
 
   # Test failure of a build that was scheduled.
   yield (
-      api.test('basic_scheduled_failure', api.platform('win', 64)) +
-      api.properties(input_pb.Inputs(config_path="tests/basic")) +
+      api.test(
+          'basic_scheduled_failure', api.platform('win', 64), status="FAILURE")
+      + api.properties(input_pb.Inputs(config_path="tests/basic")) +
       t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/PSOverCom.ps1', 'HEAD') +
       t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/startnet.cmd', 'HEAD') +
       MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip'.format(key_wim), False) +
@@ -600,7 +643,10 @@ def GenTests(api):
 
   # Test cancellation of a build that was scheduled.
   yield (
-      api.test('basic_scheduled_cancellation', api.platform('win', 64)) +
+      api.test(
+          'basic_scheduled_cancellation',
+          api.platform('win', 64),
+          status="FAILURE") +
       api.properties(input_pb.Inputs(config_path="tests/basic")) +
       t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/PSOverCom.ps1', 'HEAD') +
       t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/startnet.cmd', 'HEAD') +
@@ -630,7 +676,10 @@ def GenTests(api):
 
   # Test failure of a build that was scheduled.
   yield (
-      api.test('basic_scheduled_infra_failure', api.platform('win', 64)) +
+      api.test(
+          'basic_scheduled_infra_failure',
+          api.platform('win', 64),
+          status="FAILURE") +
       api.properties(input_pb.Inputs(config_path="tests/basic")) +
       t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/PSOverCom.ps1', 'HEAD') +
       t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/startnet.cmd', 'HEAD') +
@@ -659,7 +708,8 @@ def GenTests(api):
       api.post_process(post_process.DropExpectation))
 
   # test failure when run without a config file path.
-  yield (api.test('run_without_config_path', api.platform('win', 64)) +
+  yield (api.test(
+      'run_without_config_path', api.platform('win', 64), status="FAILURE") +
          api.properties(input_pb.Inputs(config_path="",),) +
          api.post_process(post_process.StatusFailure) +
          api.post_process(post_process.DropExpectation))
