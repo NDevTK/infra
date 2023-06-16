@@ -235,7 +235,7 @@ func createInstance(ctx context.Context, client computeInstancesClient, leaseID 
 	return nil
 }
 
-// deleteInstance sends an instance deletion request to the Compute Engine API and waits for it to complete.
+// deleteInstance sends an instance deletion request to the Compute Engine API.
 func deleteInstance(ctx context.Context, r *api.ReleaseVMRequest) error {
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
@@ -248,21 +248,17 @@ func deleteInstance(ctx context.Context, r *api.ReleaseVMRequest) error {
 		Project:  r.GetGceProject(),
 		Zone:     r.GetGceRegion(),
 	}
-
 	logging.Debugf(ctx, "instance request params: %v", req)
-	op, err := c.Delete(ctx, req)
+
+	// We omit checking the returned operation or calling Wait so that this call
+	// becomes non-blocking. This saves callers time and lets the clean up cron
+	// job take care of any stale instances instead. See b/287524018.
+	_, err = c.Delete(ctx, req)
 	if err != nil {
 		return fmt.Errorf("unable to delete instance: %v", err)
 	}
 
-	// Duplicate requests will not error. Both requests will receive its own
-	// response.
-	err = op.Wait(ctx)
-	if err != nil {
-		return fmt.Errorf("unable to wait for the operation: %v", err)
-	}
-
-	logging.Infof(ctx, "instance deleted")
+	logging.Infof(ctx, "instance delete request received by GCP")
 	return nil
 }
 
