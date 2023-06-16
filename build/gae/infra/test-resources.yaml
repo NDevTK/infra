@@ -4,5 +4,9 @@ extends: ../base.yaml
 inputsdir: ../../../go/src/infra/appengine/test-resources
 
 build:
+  # This builds the frontend code, updating ${inputsdir}/frontend/build.
+  - run: ['make', 'build']
+    cwd: ${inputsdir}
+
   - go_gae_bundle: ${inputsdir}/app.yaml
     dest: ${contextdir}/appengine
