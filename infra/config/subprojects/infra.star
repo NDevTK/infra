@@ -239,6 +239,10 @@ def wheel_tryjob(builder):
                 path_regexp = "infra/tools/dockerbuild/.*README.*",
                 exclude = True,
             ),
+            cq.location_filter(
+                path_regexp = "infra/tools/dockerbuild/OWNERS",
+                exclude = True,
+            ),
         ],
     )
 
