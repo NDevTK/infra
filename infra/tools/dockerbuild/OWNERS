@@ -1,6 +1,3 @@
 bryner@google.com
 fancl@google.com
-
-# PDT bonus reviewer for wheel additions.
-per-file wheels.py=iannucci@google.com
-per-file wheels.md=iannucci@google.com
+iannucci@google.com

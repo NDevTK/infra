@@ -33,7 +33,13 @@ flow for common and less-common situations.
    as a catalog of available wheels.
 1. Once you are done adding the wheel, run `vpython3 -m infra.tools.dockerbuild wheel-dump` to update `wheels.md` before creating your CL.
 1. The CL tryjobs will verify that the wheel builds on all of the platforms.
-1. Once the CL is committed, the production builders will build and upload the wheel to CIPD.
+1. Request a review from one of the [OWNERS](https://source.chromium.org/chromium/infra/infra/+/main:infra/tools/dockerbuild/OWNERS)
+1. Once the CL is committed, the [production builders](https://ci.chromium.org/p/infra-internal/g/wheel_builders/builders) will build and upload the wheel to [CIPD](https://chrome-infra-packages.appspot.com/p/infra/python/wheels).
+
+**Can't get the wheel to build using these instructions?**
+
+Some wheels have complex requirements that are beyond the scope of these
+instructions. Please [file a bug](https://bugs.chromium.org/p/chromium/issues/entry?template=%20Vpython%20Wheel%20Request) and we will help.
 
 # Adding A Universal Wheel
 
