@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,11 @@ import (
 type SSHProvider interface {
 	Get(addr string) (SSHClient, error)
 	Close() error
+	Config() *ssh.ClientConfig
+
+	// WithUser returns a new SSHProvider with an updated config.User as username.
+	// This SSHProvider instance remains unchanged.
+	WithUser(username string) SSHProvider
 }
 
 // Implementation of SSHProvider.
@@ -36,4 +41,16 @@ func (c *sshProviderImpl) Get(addr string) (SSHClient, error) {
 // Close closing used resource of the provider.
 func (c *sshProviderImpl) Close() error {
 	return nil
+}
+
+func (c *sshProviderImpl) Config() *ssh.ClientConfig {
+	return c.config
+}
+
+// WithUser returns a new SSHProvider with an updated config.User as username.
+// This SSHProvider instance remains unchanged.
+func (c *sshProviderImpl) WithUser(username string) SSHProvider {
+	newConfig := cloneSSHConfig(c.config)
+	newConfig.User = username
+	return NewProvider(newConfig)
 }

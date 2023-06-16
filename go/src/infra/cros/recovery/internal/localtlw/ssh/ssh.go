@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,17 @@ func SSHConfig(sshKeyPaths []string) *ssh.ClientConfig {
 		// The timeout specified to established connection only.
 		// That is not an execution timeout.
 		Timeout: 2 * time.Second,
+	}
+}
+
+// cloneSSHConfig creates a new ssh config instance with all the values set
+// by SSHConfig copied (shallowly).
+func cloneSSHConfig(config *ssh.ClientConfig) *ssh.ClientConfig {
+	return &ssh.ClientConfig{
+		User:            config.User,
+		HostKeyCallback: config.HostKeyCallback,
+		Auth:            config.Auth,
+		Timeout:         config.Timeout,
 	}
 }
 

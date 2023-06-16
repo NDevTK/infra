@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -216,12 +216,16 @@ func (c *tlwClient) Run(ctx context.Context, req *tlw.RunRequest) *tlw.RunResult
 		defer cancel()
 		cr := make(chan bool, 1)
 		var runResult *tlw.RunResult
+		sshProvider := c.sshProvider
+		if req.SshUsername != "" {
+			sshProvider = sshProvider.WithUser(req.SshUsername)
+		}
 		go func() {
 			addr := localproxy.BuildAddr(req.GetResource())
 			if req.GetInBackground() {
-				runResult = ssh.RunBackground(ctx, c.sshProvider, addr, fullCmd)
+				runResult = ssh.RunBackground(ctx, sshProvider, addr, fullCmd)
 			} else {
-				runResult = ssh.Run(ctx, c.sshProvider, addr, fullCmd)
+				runResult = ssh.Run(ctx, sshProvider, addr, fullCmd)
 			}
 			cr <- true
 		}()

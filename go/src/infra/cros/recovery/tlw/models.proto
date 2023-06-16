@@ -25,6 +25,8 @@ message RunRequest {
   google.protobuf.Duration timeout = 4;
   // Run command in background.
   bool in_background = 5;
+  // SSH username to use. Leave unset to use default (root).
+  string ssh_username = 6;
 }
 
 // RunResult represents result of executed command.
