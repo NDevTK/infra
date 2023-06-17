@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4bedc19a_1c332bcf",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/skylab_local_state/ufs/save.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-06-17T04:41:11Z",
+      "side": 1,
+      "message": "nit: Received",
+      "range": {
+        "startLine": 36,
+        "startChar": 21,
+        "endLine": 36,
+        "endChar": 28
+      },
+      "revId": "f4d9bf648e89d95b81e8ef313adfcedebf9fe3ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "80bef1b5_115b37fd",
+        "filename": "go/src/infra/cros/cmd/phosphorus/internal/skylab_local_state/ufs/save.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-06-17T04:41:11Z",
+      "side": 1,
+      "message": "Not seeing any provision failure specific logic here. Will that be done in another cl?",
+      "range": {
+        "startLine": 41,
+        "startChar": 2,
+        "endLine": 46,
+        "endChar": 3
+      },
+      "revId": "f4d9bf648e89d95b81e8ef313adfcedebf9fe3ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
