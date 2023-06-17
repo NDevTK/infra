@@ -19,6 +19,7 @@ func CrosRepairConfig() *Configuration {
 			PlanChameleon,
 			PlanBluetoothPeer,
 			PlanWifiRouter,
+			PlanHMR,
 			PlanClosing,
 		},
 		Plans: map[string]*Plan{
@@ -27,6 +28,7 @@ func CrosRepairConfig() *Configuration {
 			PlanChameleon:     setAllowFail(chameleonPlan(), true),
 			PlanBluetoothPeer: setAllowFail(btpeerRepairPlan(), true),
 			PlanWifiRouter:    setAllowFail(wifiRouterRepairPlan(), true),
+			PlanHMR:           setAllowFail(hmrRepairPlan(), true),
 			PlanClosing:       setAllowFail(crosClosePlan(), true),
 		}}
 }
@@ -42,6 +44,7 @@ func CrosRepairWithDeepRepairConfig() *Configuration {
 			PlanChameleon,
 			PlanBluetoothPeer,
 			PlanWifiRouter,
+			PlanHMR,
 			PlanClosing,
 		},
 		Plans: map[string]*Plan{
@@ -53,6 +56,7 @@ func CrosRepairWithDeepRepairConfig() *Configuration {
 			PlanChameleon:      setAllowFail(chameleonPlan(), true),
 			PlanBluetoothPeer:  setAllowFail(btpeerRepairPlan(), true),
 			PlanWifiRouter:     setAllowFail(wifiRouterRepairPlan(), true),
+			PlanHMR:            setAllowFail(hmrRepairPlan(), true),
 			PlanClosing:        setAllowFail(crosClosePlan(), true),
 		}}
 }
@@ -66,6 +70,7 @@ func CrosDeployConfig() *Configuration {
 			PlanChameleon,
 			PlanBluetoothPeer,
 			PlanWifiRouter,
+			PlanHMR,
 			PlanClosing,
 		},
 		Plans: map[string]*Plan{
@@ -74,6 +79,7 @@ func CrosDeployConfig() *Configuration {
 			PlanChameleon:     setAllowFail(chameleonPlan(), true),
 			PlanBluetoothPeer: setAllowFail(btpeerRepairPlan(), true),
 			PlanWifiRouter:    setAllowFail(wifiRouterRepairPlan(), true),
+			PlanHMR:           setAllowFail(hmrRepairPlan(), true),
 			PlanClosing:       setAllowFail(crosClosePlan(), true),
 		},
 	}

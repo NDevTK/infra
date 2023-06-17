@@ -574,6 +574,10 @@ func collectResourcesForPlan(planName string, dut *tlw.Dut) []string {
 			resources = append(resources, router.GetName())
 		}
 		return resources
+	case matchPlanName(planName, config.PlanHMR):
+		if c := dut.GetChromeos().GetHumanMotionRobot(); c.GetName() != "" {
+			return []string{c.GetName()}
+		}
 	}
 	return nil
 }

@@ -9,7 +9,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"io"
-	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -69,14 +68,19 @@ var dutPlansCases = []struct {
 		"cros recovery",
 		tlw.DUTSetupTypeCros,
 		buildbucket.Recovery,
-		[]string{"servo", "cros", "chameleon", "bluetooth_peer", "wifi_router", "close"},
+		[]string{
+			config.PlanServo, config.PlanCrOS, config.PlanChameleon,
+			config.PlanBluetoothPeer, config.PlanWifiRouter, config.PlanHMR,
+			config.PlanClosing},
 		true,
 	},
 	{
 		"cros deploy",
 		tlw.DUTSetupTypeCros,
 		buildbucket.Deploy,
-		[]string{"servo", "cros", "chameleon", "bluetooth_peer", "wifi_router", "close"},
+		[]string{config.PlanServo, config.PlanCrOS, config.PlanChameleon,
+			config.PlanBluetoothPeer, config.PlanWifiRouter, config.PlanHMR,
+			config.PlanClosing},
 		true,
 	},
 	{
@@ -97,14 +101,14 @@ var dutPlansCases = []struct {
 		"labstation recovery",
 		tlw.DUTSetupTypeLabstation,
 		buildbucket.Recovery,
-		[]string{"cros"},
+		[]string{config.PlanCrOS},
 		true,
 	},
 	{
 		"labstation deploy",
 		tlw.DUTSetupTypeLabstation,
 		buildbucket.Deploy,
-		[]string{"cros"},
+		[]string{config.PlanCrOS},
 		true,
 	},
 	{
@@ -125,14 +129,14 @@ var dutPlansCases = []struct {
 		"android recovery",
 		tlw.DUTSetupTypeAndroid,
 		buildbucket.Recovery,
-		[]string{"android", "close"},
+		[]string{config.PlanAndroid, config.PlanClosing},
 		true,
 	},
 	{
 		"android deploy",
 		tlw.DUTSetupTypeAndroid,
 		buildbucket.Deploy,
-		[]string{"android", "close"},
+		[]string{config.PlanAndroid, config.PlanClosing},
 		true,
 	},
 	{
@@ -153,14 +157,14 @@ var dutPlansCases = []struct {
 		"chromeos audit RPM",
 		tlw.DUTSetupTypeCros,
 		buildbucket.AuditRPM,
-		[]string{"servo", "cros", "close"},
+		[]string{config.PlanServo, config.PlanCrOS, config.PlanClosing},
 		true,
 	},
 	{
 		"chromeos audit USB-key",
 		tlw.DUTSetupTypeCros,
 		buildbucket.AuditUSB,
-		[]string{"servo", "cros", "close"},
+		[]string{config.PlanServo, config.PlanCrOS, config.PlanClosing},
 		true,
 	},
 	{
@@ -181,35 +185,39 @@ var dutPlansCases = []struct {
 		"cros deep recovery",
 		tlw.DUTSetupTypeCros,
 		buildbucket.DeepRecovery,
-		[]string{"servo_deep_repair", "cros_deep_repair", "servo", "cros", "chameleon", "bluetooth_peer", "wifi_router", "close"},
+		[]string{
+			config.PlanServoDeepRepair, config.PlanCrOSDeepRepair,
+			config.PlanServo, config.PlanCrOS, config.PlanChameleon,
+			config.PlanBluetoothPeer, config.PlanWifiRouter, config.PlanHMR,
+			config.PlanClosing},
 		true,
 	},
 	{
 		"cros deep recovery",
 		tlw.DUTSetupTypeLabstation,
 		buildbucket.DeepRecovery,
-		[]string{"cros"},
+		[]string{config.PlanCrOS},
 		true,
 	},
 	{
 		"cros browser DUT recovery",
 		tlw.DUTSetupTypeCrosBrowser,
 		buildbucket.Recovery,
-		[]string{"cros"},
+		[]string{config.PlanCrOS},
 		true,
 	},
 	{
 		"cros browser DUT deep recovery",
 		tlw.DUTSetupTypeCrosBrowser,
 		buildbucket.DeepRecovery,
-		[]string{"cros"},
+		[]string{config.PlanCrOS},
 		true,
 	},
 	{
 		"cros browser DUT deploy",
 		tlw.DUTSetupTypeCrosBrowser,
 		buildbucket.Deploy,
-		[]string{"cros"},
+		[]string{config.PlanCrOS},
 		true,
 	},
 	{
@@ -237,7 +245,10 @@ var dutPlansCases = []struct {
 		"cros post test",
 		tlw.DUTSetupTypeCros,
 		buildbucket.PostTest,
-		strings.Fields("servo cros chameleon bluetooth_peer wifi_router close"),
+		[]string{
+			config.PlanServo, config.PlanCrOS, config.PlanChameleon,
+			config.PlanBluetoothPeer, config.PlanWifiRouter, config.PlanHMR,
+			config.PlanClosing},
 		true,
 	},
 	{

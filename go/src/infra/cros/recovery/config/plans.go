@@ -17,6 +17,7 @@ const (
 	PlanChameleon       = "chameleon"
 	PlanBluetoothPeer   = "bluetooth_peer"
 	PlanWifiRouter      = "wifi_router"
+	PlanHMR             = "human_motion_robot"
 	// That is final plan which will run always if present in configuration.
 	// The goal is execution final step to clean up stages if something left
 	// over in the devices.

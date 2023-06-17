@@ -101,6 +101,7 @@ func FixTPM54Config() *Configuration {
 			PlanChameleon,
 			PlanBluetoothPeer,
 			PlanWifiRouter,
+			PlanHMR,
 			PlanClosing,
 		},
 		Plans: map[string]*Plan{
@@ -124,6 +125,7 @@ func FixTPM54Config() *Configuration {
 			PlanChameleon:     setAllowFail(chameleonPlan(), true),
 			PlanBluetoothPeer: setAllowFail(btpeerRepairPlan(), true),
 			PlanWifiRouter:    setAllowFail(wifiRouterRepairPlan(), true),
+			PlanHMR:           setAllowFail(hmrRepairPlan(), true),
 			PlanClosing:       setAllowFail(crosClosePlan(), true),
 		},
 	}
@@ -140,6 +142,7 @@ func FixBatteryCutOffConfig() *Configuration {
 			PlanChameleon,
 			PlanBluetoothPeer,
 			PlanWifiRouter,
+			PlanHMR,
 			PlanClosing,
 		},
 		Plans: map[string]*Plan{
@@ -160,6 +163,7 @@ func FixBatteryCutOffConfig() *Configuration {
 			PlanChameleon:     setAllowFail(chameleonPlan(), true),
 			PlanBluetoothPeer: setAllowFail(btpeerRepairPlan(), true),
 			PlanWifiRouter:    setAllowFail(wifiRouterRepairPlan(), true),
+			PlanHMR:           setAllowFail(hmrRepairPlan(), true),
 			PlanClosing:       setAllowFail(crosClosePlan(), true),
 		},
 	}
