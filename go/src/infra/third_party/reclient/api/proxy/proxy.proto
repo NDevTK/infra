@@ -138,6 +138,9 @@ message ProxyExecutionOptions {
 
   // If set, include a full LogRecord in the RunResponse.
   bool include_action_log = 9;
+
+  // The amount of time reclient should wait for the action to finish remotely.
+  int32 reclient_timeout = 10;
 }
 
 message ExecutionStrategy {
