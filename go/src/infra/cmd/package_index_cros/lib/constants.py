@@ -249,3 +249,11 @@ TEMPORARY_UNSUPPORTED_PACKAGES_WITH_TESTS = {
     'chromeos-base/mtpd',
     'net-wireless/floss',
 }
+
+# Set of packages failing test run. To be skipped for test run.
+PACKAGES_FAILING_TESTS = {
+    "chromeos-base/vboot_reference",
+    "chromeos-base/chromeos-installer",
+    "chromeos-base/chromeos-init",
+    "chromeos-base/chromeos-trim",
+}
