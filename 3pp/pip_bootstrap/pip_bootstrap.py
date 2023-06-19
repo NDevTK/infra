@@ -31,7 +31,7 @@ def main():
   # pip, setuptools and wheel.
   # pylint: disable=no-name-in-module
   # pylint: disable=no-member
-  import pip.__main__
+  from pip._internal.cli.main import main as _main
 
   if sys.platform == 'win32':
     # HACK - We change sys.executable here so that pip generates e.g. pip.exe
@@ -50,18 +50,27 @@ def main():
     # python.exe on %PATH%, instead of python.bat.
     sys.executable = 'python.exe'
 
-  sys.exit(pip.__main__._main([
-    # obliterate whatever is there
-    'install', '--upgrade', '--force-reinstall', '--ignore-installed',
-    # don't talk to the internet
-    '--no-index', '--find-links', SCRIPT_DIR,
-    # install to this python installation
-    '--prefix', PREFIX,
-    # log everything we can,
-    '-vvv',
-    # Which wheels to install
-    'pip', 'setuptools', 'wheel'
-  ]))
+  sys.exit(
+      _main([
+          # obliterate whatever is there
+          'install',
+          '--upgrade',
+          '--force-reinstall',
+          '--ignore-installed',
+          # don't talk to the internet
+          '--no-index',
+          '--find-links',
+          SCRIPT_DIR,
+          # install to this python installation
+          '--prefix',
+          PREFIX,
+          # log everything we can,
+          '-vvv',
+          # Which wheels to install
+          'pip',
+          'setuptools',
+          'wheel'
+      ]))
 
 
 if __name__ == '__main__':

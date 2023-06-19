@@ -31,7 +31,6 @@ def _get_wheel_url(pkgname, version):
 
 
 def _get_version(pkgname, bad_versions=()):
-  # Find the latest python2-compatible version.
   releases = json.load(
       urllib.request.urlopen('https://pypi.org/pypi/%s/json' %
                              pkgname))['releases']
@@ -40,8 +39,7 @@ def _get_version(pkgname, bad_versions=()):
     version_str = str(version)
     for filedata in releases[version_str]:
       if (version_str not in bad_versions and
-          filedata['packagetype'] == 'bdist_wheel' and
-          not filedata['yanked'] and filedata['python_version'] != 'py3'):
+          filedata['packagetype'] == 'bdist_wheel' and not filedata['yanked']):
         return version_str
   raise AssertionError('could not find a compatible version for %s' % pkgname)
 
