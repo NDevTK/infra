@@ -40,6 +40,30 @@
       },
       "revId": "48ef452289e527941038e401cff139e5026d35a3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9c4a0eaf_9748f462",
+        "filename": "go/src/infra/cmd/package_index_cros/lib/cros_sdk.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1380654
+      },
+      "writtenOn": "2023-06-19T09:00:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2c845667_4c16fedf",
+      "range": {
+        "startLine": 123,
+        "startChar": 67,
+        "endLine": 123,
+        "endChar": 76
+      },
+      "revId": "48ef452289e527941038e401cff139e5026d35a3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
