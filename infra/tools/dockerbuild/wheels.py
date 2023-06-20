@@ -1529,6 +1529,7 @@ SPECS.update({
         Universal('mypy', '1.2.0', pyversions=['py3']),
         Universal('mypy-extensions', '0.4.3', pyversions=['py3']),
         Universal('mypy-extensions', '1.0.0', pyversions=['py3']),
+        Universal('natsort', '8.3.1', pyversions=['py3']),
         Universal('networkx', '2.5', pyversions=['py3']),
         Universal('nose', '1.3.7', pyversions=['py3']),
         Universal('nose2', '0.9.1'),

@@ -4787,6 +4787,20 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.8*
 
+## **natsort-py3**
+
+### 8.3.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/natsort-py3"
+  version: "version:8.3.1"
+>
+```
+
+
+* *universal*
+
 ## **networkx-py3**
 
 ### 2.5
