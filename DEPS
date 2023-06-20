@@ -104,15 +104,6 @@ deps = {
      "{chromium_git}/external/code.launchpad.net/dateutil/@" +
      "8c6026ba09716a4e164f5420120bfe2ebb2d9d82",
 
-  ## For ease of development. These are pulled in as wheels for run.py/test.py
-  "infra/packages/expect_tests":
-     "{chromium_git}/infra/testing/expect_tests.git@" +
-     "823c363d418baab7dc2dbdf184136dcfac532f64",
-  "testing_support": {
-     "url": "{chromium_git}/infra/testing/testing_support.git",
-     "condition": "not infra_superproject_checkout",
-  },
-
   "infra/appengine/third_party/npm_modules": {
      "url":
         "{chromium_git}/infra/third_party/npm_modules.git@" +
