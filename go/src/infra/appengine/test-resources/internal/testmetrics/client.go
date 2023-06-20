@@ -39,7 +39,7 @@ var (
 type Client struct {
 	BqClient                   *bigquery.Client
 	ProjectId                  string
-	dataSet                    string
+	DataSet                    string
 	updateDailySummarySql      string
 	updateWeeklySummarySql     string
 	updateFileSummarySql       string
@@ -51,27 +51,29 @@ func (c *Client) Init() error {
 	if c.ProjectId == "" {
 		c.ProjectId = "chrome-resources-staging"
 	}
-	c.dataSet = "test_results"
+	if c.DataSet == "" {
+		c.DataSet = "test_results"
+	}
 	bytes, err := os.ReadFile("sql/update_test_metrics.sql")
 	if err != nil {
 		return err
 	}
-	c.updateDailySummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.dataSet)
+	c.updateDailySummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.DataSet)
 	bytes, err = os.ReadFile("sql/update_weekly_test_metrics.sql")
 	if err != nil {
 		return err
 	}
-	c.updateWeeklySummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.dataSet, c.ProjectId, c.dataSet)
+	c.updateWeeklySummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.DataSet, c.ProjectId, c.DataSet)
 	bytes, err = os.ReadFile("sql/update_file_metrics.sql")
 	if err != nil {
 		return err
 	}
-	c.updateFileSummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.dataSet, c.ProjectId, c.dataSet)
+	c.updateFileSummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.DataSet, c.ProjectId, c.DataSet)
 	bytes, err = os.ReadFile("sql/update_weekly_file_metrics.sql")
 	if err != nil {
 		return err
 	}
-	c.updateWeeklyFileSummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.dataSet, c.ProjectId, c.dataSet)
+	c.updateWeeklyFileSummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.DataSet, c.ProjectId, c.DataSet)
 	return nil
 }
 
@@ -176,7 +178,7 @@ WITH raw AS (
 			REGEXP_CONTAINS(builder, @string_filter) OR
 			REGEXP_CONTAINS(test_suite, @string_filter)))) AS variants
 	FROM
-		` + c.ProjectId + `.` + c.dataSet + `.` + table + ` AS m
+		` + c.ProjectId + `.` + c.DataSet + `.` + table + ` AS m
 	WHERE
 		DATE(date) IN UNNEST(@dates)
 		AND component = @component
@@ -307,10 +309,16 @@ func (c *Client) FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirect
 		return nil, err
 	}
 
+	// If there's a filter we have to aggregate it now, otherwise use the
+	// pre-aggregated metric
 	metricNames := make([]string, len(req.Metrics))
 	for i := 0; i < len(req.Metrics); i++ {
-		// Our column names aren't quite the metric type string
-		metricNames[i] = MetricSqlName(req.Metrics[i])
+		name := MetricSqlName(req.Metrics[i])
+		if req.Filter == "" {
+			metricNames[i] = name
+		} else {
+			metricNames[i] = `(SELECT SUM(f.` + name + `) FROM UNNEST(child_file_summaries) f WHERE REGEXP_CONTAINS(f.file_name, @string_filter) LIMIT 1) AS ` + name
+		}
 	}
 
 	table, ok := periodToFileMetricTable[req.Period]
@@ -337,15 +345,15 @@ SELECT
 	node_name,
 	ARRAY_REVERSE(SPLIT(node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
 	is_file,
-	` + strings.Join(metricNames, ",\n") + `,
-FROM ` + c.ProjectId + `.` + c.dataSet + `.` + table + `
+	` + strings.Join(metricNames, ",\n\t") + `,
+FROM ` + c.ProjectId + `.` + c.DataSet + `.` + table + `
 WHERE
 	STARTS_WITH(node_name, @parent || "/") AND
 	-- The child folders and files can't have a / after the parent's name
 	REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(@parent) + 2), "^[^/]*$")
 	AND DATE(date) IN UNNEST(@dates)
 	AND component = @component
-	AND (@string_filter = "" OR EXISTS(SELECT 0 FROM UNNEST(file_names) AS f WHERE REGEXP_CONTAINS(f, @string_filter)))
+	AND (@string_filter = "" OR EXISTS(SELECT 0 FROM UNNEST(child_file_summaries) AS f WHERE REGEXP_CONTAINS(f.file_name, @string_filter)))
 ORDER BY ` + sortMetric + ` ` + sortDirection
 
 	q := c.BqClient.Query(query)

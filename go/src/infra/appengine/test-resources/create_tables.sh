@@ -7,6 +7,15 @@
 APP_ID=chrome-resources-staging
 DATASET=test_results
 
+if ! [ -z "$1" ]
+  then
+    APP_ID=$1
+fi
+if ! [  -z "$2" ]
+  then
+    DATASET=$2
+fi
+
 echo "creating tables for project $project_name"
 bq --project_id $APP_ID mk -d "$DATASET"
 sed -e s/APP_ID/$APP_ID/g -e s/DATASET/$DATASET/g \

@@ -6,6 +6,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"strings"
 	"time"
 
@@ -42,6 +43,12 @@ var (
 		"/test_resources.Stats/FetchTestMetrics":      rpcacl.All,
 		"/test_resources.Stats/FetchDirectoryMetrics": rpcacl.All,
 	}
+	// Data set to work with
+	dataSet = flag.String(
+		"data-set",
+		"test_results",
+		"The data set to use (e.g. test_results_test for testing).",
+	)
 )
 
 type Client interface {
@@ -114,6 +121,7 @@ func setupClient(srv *server.Server) (*testmetrics.Client, error) {
 	var client = &testmetrics.Client{
 		BqClient:  bqClient,
 		ProjectId: srv.Options.CloudProject,
+		DataSet:   *dataSet,
 	}
 	err = client.Init()
 	if err != nil {
