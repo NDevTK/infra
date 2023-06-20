@@ -165,12 +165,12 @@ def _checkout_committed(api, mode, project):
   """
   conf, internal, repo_url = {
     PROPERTIES.PROJECT_INFRA: (
-        'infra',
+        'infra_superproject',
         False,
         'https://chromium.googlesource.com/infra/infra',
     ),
     PROPERTIES.PROJECT_INFRA_INTERNAL: (
-        'infra_internal',
+        'infra_internal_superproject',
         True,
         'https://chrome-internal.googlesource.com/infra/infra_internal',
     ),
