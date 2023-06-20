@@ -349,7 +349,7 @@ func (h hook) StartBot(dutID string) (bot.Bot, error) {
 	return h.botStarter.Start(dutID)
 }
 
-// ReleaseDUT implements botman.WorldHook.
+// ReleaseResources implements botman.WorldHook.
 func (h hook) ReleaseResources(dutID string) {
 	const releaseDUTsTimeout = time.Minute
 	ctx := context.Background()
