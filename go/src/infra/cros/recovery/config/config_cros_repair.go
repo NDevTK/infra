@@ -560,9 +560,11 @@ func crosRepairActions() map[string]*Action {
 			// take the maximum allotted time, we could timeout with
 			// the default 1 minute timeout.
 			ExecTimeout: &durationpb.Duration{Seconds: 180},
-			// TODO(b/268499406): Remove this after we've verified it works as intended on actual lab devices.
+			// Allow fail as reads to EEPROM may sporadically fail.
 			AllowFailAfterRecovery: true,
-			// TODO(b/268499406): Add "Recover CBI" as a recovery action
+			RecoveryActions: []string{
+				"Recover and Validate CBI",
+			},
 		},
 		"Recover and Validate CBI": {
 			Docs: []string{
