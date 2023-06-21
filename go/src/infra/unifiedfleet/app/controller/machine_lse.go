@@ -469,7 +469,7 @@ func processMachineLSEUpdateMask(ctx context.Context, oldMachinelse *ufspb.Machi
 
 // GetMachineLSE returns machinelse for the given id from datastore.
 func GetMachineLSE(ctx context.Context, id string) (*ufspb.MachineLSE, error) {
-	lse, err := inventory.GetMachineLSE(ctx, id)
+	lse, err := inventory.GetMachineLSEACL(ctx, id)
 	if err != nil {
 		return nil, err
 	}
