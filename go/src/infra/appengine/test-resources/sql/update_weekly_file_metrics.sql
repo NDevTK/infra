@@ -49,7 +49,7 @@ USING (
 ON
   T.date = S.date
   AND T.node_name = S.node_name
-  AND T.component = S.component
+  AND (T.component = S.component OR (T.component IS NULL AND S.component IS NULL))
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
 WHEN MATCHED THEN
   UPDATE SET
