@@ -111,7 +111,7 @@ deps = {
      "condition": "checkout_linux or checkout_mac",
   },
 
-  "gcloud": {
+  "infra/cipd/gcloud": {
     'packages': [
       {
         'package': 'infra/3pp/tools/gcloud/${{os=mac,linux}}-${{arch=amd64}}',
@@ -119,7 +119,6 @@ deps = {
       }
     ],
     'dep_type': 'cipd',
-    'condition': 'not infra_superproject_checkout',
   },
 
   "infra/cipd": {

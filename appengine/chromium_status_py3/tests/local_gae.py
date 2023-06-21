@@ -21,7 +21,10 @@ import sys
 import urllib
 import urllib2
 
+# //appengine/chromium_status_py3
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT_DIR = os.path.dirname(os.path.dirname(BASE_DIR))
+
 GAE_SDK = None
 
 
@@ -33,20 +36,16 @@ def _load_modules():
   global GAE_SDK
   if GAE_SDK:
     return
-  root_dir = BASE_DIR
   # First, verify the Google AppEngine SDK is available.
-  while True:
-    candidate = os.path.join(root_dir, 'gcloud', 'platform', 'google_appengine',
-                             'VERSION')
-    if os.path.isfile(candidate):
-      break
-    next_root = os.path.dirname(root_dir)
-    if next_root == root_dir:
-      raise Failure('Install google_appengine sdk in %s' %
-                    os.path.dirname(BASE_DIR))
-    root_dir = next_root
-  GAE_SDK = os.path.realpath(
-      os.path.join(root_dir, 'gcloud', 'platform', 'google_appengine'))
+  #
+  # This is installed as a gclient cipd dependency in infra.git/cipd/gcloud.
+  gae_path = os.path.join(REPO_ROOT_DIR, 'cipd', 'gcloud', 'platform',
+                          'google_appengine')
+  version_path = os.path.join(gae_path, 'VERSION')
+  if not os.path.isfile(version_path):
+    raise Failure('google_appengine sdk missing in %r (run `gclient sync`)' %
+                  (gae_path,))
+  GAE_SDK = gae_path
   # Need yaml later.
   gae_sdk_lib = os.path.realpath(os.path.join(GAE_SDK, 'lib'))
   sys.path.insert(0, os.path.realpath(os.path.join(gae_sdk_lib, 'yaml', 'lib')))

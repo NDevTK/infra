@@ -8,7 +8,7 @@ on port 8080, you can run `kill $(lsof -ti:8080)`.
 
 *   `gcloud: command not found`
 
-Add the following to your `~/.zshrc` file: `alias gcloud='/Users/username/google-cloud-sdk/bin/gcloud'`. Replace `username` with your Google username.
+Add the following to your `~/.zshrc` file: `alias gcloud='/path/to/infra.git/cipd/gcloud/bin/gcloud'`. Replace `username` with your Google username.
 
 *   `TypeError: connect() argument 6 must be string, not None`
 

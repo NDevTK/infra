@@ -14,8 +14,9 @@ machine:
     1. `cd infra/appengine/monorail`
 
 1. Install and configure the gcloud CLI:
-    1. It should be fetched for you by `fetch infra` above under `~/src/gcloud/bin`. Add it to your `PATH` in `.bashrc`.
+    1. It should be fetched for you by `fetch infra` above under `~/src/infra/cipd/gcloud/bin`. Add it to your `PATH` in `.bashrc`.
     1. Otherwise, follow https://cloud.google.com/sdk/docs/install (Googlers on Linux may use `sudo apt-get install -y google-cloud-sdk`)
+
 1. Configure gcloud:
     1. `gcloud auth login`
     1. `gcloud config set project monorail-dev`

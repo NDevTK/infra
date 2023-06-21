@@ -33,9 +33,6 @@ INFRA_GO_VERSION_VARIANT = 'INFRA_GO_VERSION_VARIANT'
 # /path/to/infra
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Directory with .gclient file.
-GCLIENT_ROOT = os.path.dirname(ROOT)
-
 # The current overarching Infra version. If this changes, everything will be
 # updated regardless of its version.
 INFRA_VERSION = 1
@@ -355,7 +352,7 @@ def get_go_environ_diff(layout):
       os.path.join(ROOT, 'cipd'),
       os.path.join(ROOT, 'cipd', 'bin'),
       os.path.join(ROOT, 'luci', 'appengine', 'components', 'tools'),
-      os.path.join(GCLIENT_ROOT, 'gcloud', 'bin'),
+      os.path.join(ROOT, 'cipd', 'gcloud', 'bin'),
   ]
 
   # GOBIN often contain "WIP" variant of system binaries, pick them up last.
@@ -372,8 +369,8 @@ def get_go_environ_diff(layout):
       'GOPRIVATE': '*.googlesource.com,*.google.com',
 
       # Don't use default cache in '~'.
-      'GOCACHE': os.path.join(GCLIENT_ROOT, '.gocache'),
-      'GOMODCACHE': os.path.join(GCLIENT_ROOT, '.modcache'),
+      'GOCACHE': os.path.join(layout.workspace, '.gocache'),
+      'GOMODCACHE': os.path.join(layout.workspace, '.modcache'),
 
       # Infra Go workspace doesn't use advanced build systems,
       # which inject custom `gopackagesdriver` binary. See also
@@ -422,12 +419,14 @@ def get_go_environ(layout):
   # Remove preexisting bin/ paths pointing to infra or infra_internal Go
   # workspaces. It's important when switching from infra_internal to infra
   # environments: infra_internal bin paths should be removed.
+  # TODO(vadimsh,iannucci): This code knows about gclient checkout layout.
+  gclient_root = os.path.dirname(ROOT)
+
   def should_keep(p):
     if p in path_prefixes or p in path_suffixes:
       return False  # we'll insert this entry in the correct position below
-    # TODO(vadimsh): This code knows about gclient checkout layout.
     for d in ['infra', 'infra_internal']:
-      if p.startswith(os.path.join(GCLIENT_ROOT, d, 'go')):
+      if p.startswith(os.path.join(gclient_root, d, 'go')):
         return False
     return True
   path = list(filter(should_keep, path))

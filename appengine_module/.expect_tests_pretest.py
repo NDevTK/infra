@@ -30,9 +30,10 @@ def _fix_sys_path_for_appengine(pretest_filename):
   sys.path.remove(infra_base_dir)
 
   # Add the google_appengine directory.
-  sys.path.insert(0,
-      os.path.join(os.path.dirname(infra_base_dir),
-          'gcloud', 'platform', 'google_appengine'))
+  sys.path.insert(
+      0,
+      os.path.join(infra_base_dir, 'cipd', 'gcloud', 'platform',
+                   'google_appengine'))
 
   import dev_appserver as pretest_dev_appserver
   pretest_dev_appserver.fix_sys_path()

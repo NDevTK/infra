@@ -10,7 +10,7 @@ import os
 import sys
 
 ROOT = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..')
-GAE_SDK = os.path.join(ROOT, '..', 'gcloud', 'platform', 'google_appengine')
+GAE_SDK = os.path.join(ROOT, 'cipd', 'gcloud', 'platform', 'google_appengine')
 LIB = os.path.join(GAE_SDK, 'lib')
 sys.path.insert(0, GAE_SDK)
 sys.path.append(os.path.join(LIB, 'yaml', 'lib'))
