@@ -40,3 +40,5 @@ const ListFirmwareCommand = "fwid=`timeout 5 crossystem fwid`;" +
 	"model=`timeout 5 cros_config / name`;" +
 	"fw_update=`timeout 5 chromeos-firmwareupdate --manifest`;" +
 	"printf \"{\\\"fwid\\\": \\\"%s\\\",\\\"model\\\": \\\"%s\\\", \\\"fw_update\\\":%s}\" $fwid $model \"$fw_update\""
+
+const UpdateFirmwareCommand = "/usr/sbin/chromeos-firmwareupdate --mode autoupdate --force"

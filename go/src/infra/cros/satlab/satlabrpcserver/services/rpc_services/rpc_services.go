@@ -305,6 +305,36 @@ func (s *SatlabRpcServiceServer) GetPeripheralInformation(ctx context.Context, i
 	}, nil
 }
 
+// UpdateDutsFirmware update Duts by given IPs
+func (s *SatlabRpcServiceServer) UpdateDutsFirmware(ctx context.Context, in *pb.UpdateDutsFirmwareRequest) (*pb.UpdateDutsFirmwareResponse, error) {
+	// Run command on given IPs
+	rawData := s.dutService.RunCommandOnIPs(ctx, in.GetIps(), constants.UpdateFirmwareCommand)
+
+	// Create a response variable
+	var resp = make([]*pb.FirmwareUpdateCommandOutput, len(rawData))
+
+	// Loop over the raw data and then map to `FirmwareUpdateCommandOutput`
+	for idx, cmdResp := range rawData {
+		// Create a `FirmwareUpdateCommandOutput` object.
+		out := &pb.FirmwareUpdateCommandOutput{
+			Ip: cmdResp.IP,
+		}
+		// If the cmd response is an error,
+		// we can show the error message to user.
+		// Otherwise, we show the command output
+		if cmdResp.Error != nil {
+			out.CommandOutput = cmdResp.Error.Error()
+		} else {
+			out.CommandOutput = cmdResp.Value
+		}
+
+		resp[idx] = out
+	}
+
+	// Response the result to client
+	return &pb.UpdateDutsFirmwareResponse{Outputs: resp}, nil
+}
+
 // Close clean up
 func (s *SatlabRpcServiceServer) Close() {
 	var err error

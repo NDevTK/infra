@@ -16,6 +16,7 @@ service SatlabRpcService {
   rpc list_connected_duts_firmware(ListConnectedDutsFirmwareRequest) returns (ListConnectedDutsFirmwareResponse);
   rpc get_system_info(GetSystemInfoRequest) returns (GetSystemInfoResponse);
   rpc get_peripheral_information (GetPeripheralInformationRequest) returns (GetPeripheralInformationResponse);
+  rpc update_duts_firmware (UpdateDutsFirmwareRequest)  returns (UpdateDutsFirmwareResponse);
 }
 
 message ListBuildTargetsRequest {
@@ -124,4 +125,20 @@ message GetPeripheralInformationRequest {
 // NEXT_TAG = 2
 message GetPeripheralInformationResponse {
   string json_info = 1;
+}
+
+// NEXT_TAG = 2
+message UpdateDutsFirmwareRequest {
+  repeated string ips = 1;
+}
+
+// NEXT_TAG = 3
+message FirmwareUpdateCommandOutput {
+  string ip = 1;
+  string command_output = 2;
+}
+
+// NEXT_TAG = 2
+message UpdateDutsFirmwareResponse {
+  repeated FirmwareUpdateCommandOutput outputs = 1;
 }

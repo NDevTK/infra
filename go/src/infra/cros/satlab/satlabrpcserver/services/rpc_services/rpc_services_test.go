@@ -685,3 +685,50 @@ func TestGetPeripheralInformationShouldFailWhenExecuteCommandFailed(t *testing.T
 		t.Errorf("Return difference result. Expected %v, got %v", expectedResult.Error, err)
 	}
 }
+
+func TestUpdateDUTsFirmwareShouldSuccess(t *testing.T) {
+	// Run this testcase parallel
+	t.Parallel()
+	// Create a mock server
+	s := createMockServer(t)
+
+	// Create a context with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	// Create a mockData data
+	mockData := []*models.SSHResult{
+		{IP: "192.168.231.1", Value: "execute command success"},
+		{IP: "192.168.231.2", Error: errors.New("failed to execute command")},
+	}
+	s.dutService.(*mk.MockDUTServices).
+		On("RunCommandOnIPs", ctx, mock.Anything, constants.UpdateFirmwareCommand).
+		Return(mockData, nil)
+
+	// Act
+	req := &pb.UpdateDutsFirmwareRequest{Ips: []string{"192.168.231.1", "192.168.231.2"}}
+	resp, err := s.UpdateDutsFirmware(ctx, req)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Should not return error, but got and error: {%v}", err)
+	}
+
+	// Create a expected result
+	expected := []*pb.FirmwareUpdateCommandOutput{
+		{Ip: "192.168.231.1", CommandOutput: "execute command success"},
+		{Ip: "192.168.231.2", CommandOutput: "failed to execute command"},
+	}
+	// ignore pb fields in `FirmwareUpdateCommandOutput`
+	ignorePBFieldOpts := cmpopts.IgnoreUnexported(pb.FirmwareUpdateCommandOutput{})
+	// sort the response and expected result when comparasion
+	sortOpts := cmpopts.SortSlices(
+		func(x, y *pb.FirmwareUpdateCommandOutput) bool {
+			return x.GetIp() > y.GetIp()
+		},
+	)
+
+	if diff := cmp.Diff(expected, resp.Outputs, ignorePBFieldOpts, sortOpts); diff != "" {
+		t.Errorf("Expected: {%v}, got: {%v}", expected, resp.Outputs)
+	}
+}

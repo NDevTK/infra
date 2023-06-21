@@ -31,6 +31,7 @@ const (
 	SatlabRpcService_ListConnectedDutsFirmware_FullMethodName = "/satlabrpcserver.SatlabRpcService/list_connected_duts_firmware"
 	SatlabRpcService_GetSystemInfo_FullMethodName             = "/satlabrpcserver.SatlabRpcService/get_system_info"
 	SatlabRpcService_GetPeripheralInformation_FullMethodName  = "/satlabrpcserver.SatlabRpcService/get_peripheral_information"
+	SatlabRpcService_UpdateDutsFirmware_FullMethodName        = "/satlabrpcserver.SatlabRpcService/update_duts_firmware"
 )
 
 // SatlabRpcServiceClient is the client API for SatlabRpcService service.
@@ -45,6 +46,7 @@ type SatlabRpcServiceClient interface {
 	ListConnectedDutsFirmware(ctx context.Context, in *ListConnectedDutsFirmwareRequest, opts ...grpc.CallOption) (*ListConnectedDutsFirmwareResponse, error)
 	GetSystemInfo(ctx context.Context, in *GetSystemInfoRequest, opts ...grpc.CallOption) (*GetSystemInfoResponse, error)
 	GetPeripheralInformation(ctx context.Context, in *GetPeripheralInformationRequest, opts ...grpc.CallOption) (*GetPeripheralInformationResponse, error)
+	UpdateDutsFirmware(ctx context.Context, in *UpdateDutsFirmwareRequest, opts ...grpc.CallOption) (*UpdateDutsFirmwareResponse, error)
 }
 
 type satlabRpcServiceClient struct {
@@ -127,6 +129,15 @@ func (c *satlabRpcServiceClient) GetPeripheralInformation(ctx context.Context, i
 	return out, nil
 }
 
+func (c *satlabRpcServiceClient) UpdateDutsFirmware(ctx context.Context, in *UpdateDutsFirmwareRequest, opts ...grpc.CallOption) (*UpdateDutsFirmwareResponse, error) {
+	out := new(UpdateDutsFirmwareResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_UpdateDutsFirmware_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SatlabRpcServiceServer is the server API for SatlabRpcService service.
 // All implementations must embed UnimplementedSatlabRpcServiceServer
 // for forward compatibility
@@ -139,6 +150,7 @@ type SatlabRpcServiceServer interface {
 	ListConnectedDutsFirmware(context.Context, *ListConnectedDutsFirmwareRequest) (*ListConnectedDutsFirmwareResponse, error)
 	GetSystemInfo(context.Context, *GetSystemInfoRequest) (*GetSystemInfoResponse, error)
 	GetPeripheralInformation(context.Context, *GetPeripheralInformationRequest) (*GetPeripheralInformationResponse, error)
+	UpdateDutsFirmware(context.Context, *UpdateDutsFirmwareRequest) (*UpdateDutsFirmwareResponse, error)
 	mustEmbedUnimplementedSatlabRpcServiceServer()
 }
 
@@ -169,6 +181,9 @@ func (UnimplementedSatlabRpcServiceServer) GetSystemInfo(context.Context, *GetSy
 }
 func (UnimplementedSatlabRpcServiceServer) GetPeripheralInformation(context.Context, *GetPeripheralInformationRequest) (*GetPeripheralInformationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPeripheralInformation not implemented")
+}
+func (UnimplementedSatlabRpcServiceServer) UpdateDutsFirmware(context.Context, *UpdateDutsFirmwareRequest) (*UpdateDutsFirmwareResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateDutsFirmware not implemented")
 }
 func (UnimplementedSatlabRpcServiceServer) mustEmbedUnimplementedSatlabRpcServiceServer() {}
 
@@ -327,6 +342,24 @@ func _SatlabRpcService_GetPeripheralInformation_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SatlabRpcService_UpdateDutsFirmware_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateDutsFirmwareRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SatlabRpcServiceServer).UpdateDutsFirmware(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SatlabRpcService_UpdateDutsFirmware_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SatlabRpcServiceServer).UpdateDutsFirmware(ctx, req.(*UpdateDutsFirmwareRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SatlabRpcService_ServiceDesc is the grpc.ServiceDesc for SatlabRpcService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -365,6 +398,10 @@ var SatlabRpcService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "get_peripheral_information",
 			Handler:    _SatlabRpcService_GetPeripheralInformation_Handler,
+		},
+		{
+			MethodName: "update_duts_firmware",
+			Handler:    _SatlabRpcService_UpdateDutsFirmware_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
