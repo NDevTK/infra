@@ -16,6 +16,7 @@ import (
 	"go.chromium.org/luci/server/auth/authtest"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	"infra/unifiedfleet/app/config"
 	. "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/util"
 )
@@ -191,6 +192,67 @@ func TestGetMachineLSE(t *testing.T) {
 			So(resp, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, InternalError)
+		})
+	})
+}
+
+func TestGetMachineLSEACL(t *testing.T) {
+	t.Parallel()
+	ctx := gaetesting.TestingContextWithAppID("go-test")
+	ctx = config.Use(ctx, &config.Config{
+		ExperimentalAPI: &config.ExperimentalAPI{
+			GetMachineLSEACL: 99,
+		},
+	})
+	machineLSE1 := mockMachineLSEWithRealm("machineLSE-1", util.BrowserLabAdminRealm)
+	CreateMachineLSE(ctx, machineLSE1)
+	Convey("GetMachineLSEACL", t, func() {
+		Convey("GetMachineLSEACL - no user", func() {
+			resp, err := GetMachineLSEACL(ctx, "machineLSE-1")
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Internal")
+			So(resp, ShouldBeNil)
+		})
+		Convey("GetMachineLSEACL - no perms", func() {
+			userCtx := mockUser(ctx, "nombre@chromium.org")
+			resp, err := GetMachineLSEACL(userCtx, "machineLSE-1")
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "PermissionDenied")
+			So(resp, ShouldBeNil)
+		})
+		Convey("GetMachineLSEACL - missing perms", func() {
+			userCtx := mockUser(ctx, "nombre@chromium.org")
+			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.RegistrationsList)
+			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.RegistrationsGet)
+			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.RegistrationsDelete)
+			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.RegistrationsCreate)
+			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.InventoriesList)
+			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.InventoriesDelete)
+			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.InventoriesCreate)
+			resp, err := GetMachineLSEACL(userCtx, "machineLSE-1")
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "PermissionDenied")
+			So(resp, ShouldBeNil)
+		})
+		Convey("GetMachineLSEACL - missing realms", func() {
+			userCtx := mockUser(ctx, "nombre@chromium.org")
+			mockRealmPerms(userCtx, util.AtlLabAdminRealm, util.InventoriesGet)
+			mockRealmPerms(userCtx, util.AtlLabChromiumAdminRealm, util.InventoriesGet)
+			mockRealmPerms(userCtx, util.AcsLabAdminRealm, util.InventoriesGet)
+			mockRealmPerms(userCtx, util.AtlLabAdminRealm, util.InventoriesGet)
+			mockRealmPerms(userCtx, util.SatLabInternalUserRealm, util.InventoriesGet)
+			resp, err := GetMachineLSEACL(userCtx, "machineLSE-1")
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "PermissionDenied")
+			So(resp, ShouldBeNil)
+		})
+		Convey("GetMachineLSEACL - happy path", func() {
+			userCtx := mockUser(ctx, "nombre@chromium.org")
+			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.InventoriesGet)
+			resp, err := GetMachineLSEACL(userCtx, "machineLSE-1")
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp, ShouldResembleProto, machineLSE1)
 		})
 	})
 }

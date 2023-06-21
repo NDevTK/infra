@@ -6,6 +6,7 @@ package inventory
 
 import (
 	"context"
+	"math/rand"
 	"strings"
 
 	"github.com/golang/protobuf/proto"
@@ -18,6 +19,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	"infra/unifiedfleet/app/config"
 	ufsds "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/util"
 )
@@ -67,6 +69,19 @@ func (e *MachineLSEEntity) GetProto() (proto.Message, error) {
 		return nil, err
 	}
 	return &p, nil
+}
+
+// GetRealm returns the realm for the MachineLSE.
+func (e *MachineLSEEntity) GetRealm() string {
+	return e.Realm
+}
+
+func newMachineLSERealmEntity(ctx context.Context, pm proto.Message) (ufsds.RealmEntity, error) {
+	mlse, err := newMachineLSEEntity(ctx, pm)
+	if err != nil {
+		return nil, err
+	}
+	return mlse.(*MachineLSEEntity), nil
 }
 
 func newMachineLSEEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
@@ -267,6 +282,36 @@ func GetMachineLSE(ctx context.Context, id string) (*ufspb.MachineLSE, error) {
 		return pm.(*ufspb.MachineLSE), err
 	}
 	return nil, err
+}
+
+// GetMachineLSEACL returns the machineLSE for the requested id if the user
+// has permissions to do so.
+func GetMachineLSEACL(ctx context.Context, id string) (*ufspb.MachineLSE, error) {
+	// TODO(b/285603337): Remove the cutoff logic once we migrate to using
+	// ACLs everywhere
+	cutoff := config.Get(ctx).GetExperimentalAPI().GetGetMachineLSEACL()
+	// If cutoff is set attempt to divert the traffic to new API
+	if cutoff != 0 {
+		// Roll the dice to determine which one to use
+		roll := rand.Uint32() % 100
+		cutoff := cutoff % 100
+		if roll <= cutoff {
+			logging.Infof(ctx, "GetAsset --- Running in experimental API")
+			return getMachineLSEACL(ctx, id)
+		}
+	}
+
+	return GetMachineLSE(ctx, id)
+}
+
+// getMachineLSEACL returns the machineLSE for the requested id if the user has
+// permissions to do so.
+func getMachineLSEACL(ctx context.Context, id string) (*ufspb.MachineLSE, error) {
+	pm, err := ufsds.GetACL(ctx, &ufspb.MachineLSE{Name: id}, newMachineLSERealmEntity, util.InventoriesGet)
+	if err != nil {
+		return nil, err
+	}
+	return pm.(*ufspb.MachineLSE), nil
 }
 
 func getLSEID(pm proto.Message) string {
