@@ -109,13 +109,15 @@ func (c *testStateChangeRun) innerRun(a subcommands.Application, args []string, 
 			Hostname:      dut.Name,
 			ResourceState: state,
 			UpdateMask:    &field_mask.FieldMask{Paths: maskPaths},
-			DeviceData: &ufsAPI.UpdateTestDataRequest_ChromeosData{
+		}
+		if len(repairRequests) > 0 {
+			req.DeviceData = &ufsAPI.UpdateTestDataRequest_ChromeosData{
 				ChromeosData: &ufsAPI.UpdateTestDataRequest_ChromeOs{
 					DutState: &ufslab.DutState{
 						RepairRequests: repairRequests,
 					},
 				},
-			},
+			}
 		}
 		if _, err := ic.UpdateTestData(ctx, req); err != nil {
 			failDuts = append(failDuts, dut.Name)
