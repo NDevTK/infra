@@ -81,6 +81,8 @@ const (
 	DefaultNamespace = "os"
 	// DefaultZone is the default value for the zone command line flag.
 	DefaultZone = "satlab"
+	// DefaultServiceAccountKeyPathEnv is the default path for for service account.
+	DefaultServiceAccountKeyPathEnv = "/home/satlab/keys/pubsub-key-do-not-delete.json"
 )
 
 // CommonFlags controls some commonly-used CLI flags.
@@ -238,11 +240,11 @@ func GetUFSZone() string {
 // GetServiceAccountPath specifies the service account key path
 // to be used with moblab api
 func GetServiceAccountPath() string {
-	project := os.Getenv(ServiceAccountKeyPathEnv)
-	if project == "" {
-		return ""
+	saPath := os.Getenv(ServiceAccountKeyPathEnv)
+	if saPath == "" {
+		return DefaultServiceAccountKeyPathEnv
 	}
-	return project
+	return saPath
 }
 
 // MaybePrepend adds a prefix with a leading dash unless the string already
