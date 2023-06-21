@@ -548,7 +548,9 @@ SPECS.update({
             '1.44.0',
             pyversions=['py3'],
             env_cb=_GrpcEnv,
-            skip_plat=build_platform.ALL_PY311),  # TODO: update to v1.50+
+            skip_plat=build_platform.ALL_PY311),
+        SourceOrPrebuilt(
+            'grpcio', '1.54.2', pyversions=['py3'], env_cb=_GrpcEnv),
         SourceOrPrebuilt(
             'grpcio-tools',
             '1.32.0',
