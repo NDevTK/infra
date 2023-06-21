@@ -43,7 +43,7 @@ import (
 )
 
 const (
-	userAgent = "bqupload v1.3"
+	userAgent = "bqupload v1.4"
 	// The bigquery API imposes a hard limit of 50,000 rows. We use a much lower
 	// default limit to also make it less likely that the total payload size
 	// exceeds the maximum, and to limit the blast radius when a batch fails to
@@ -85,6 +85,7 @@ type uploadOpts struct {
 
 	ignoreUnknownValues bool
 	skipInvalidRows     bool
+	jsonList            bool
 	batchSize           int
 }
 
@@ -97,6 +98,8 @@ func run(ctx context.Context) error {
 		"Attempt to insert any valid rows, even if invalid rows are present.")
 	flag.IntVar(&bqOpts.batchSize, "batch-size", defaultBatchSize,
 		"Number of rows per insert batch.")
+	flag.BoolVar(&bqOpts.jsonList, "json-list", false,
+		"Instead of looking for newline delimited rows, looks for a JSON list of rows.")
 
 	// Auth options.
 	defaults := chromeinfra.DefaultAuthOptions()
@@ -192,7 +195,7 @@ func upload(ctx context.Context, opts *uploadOpts) error {
 	// time for true streaming uploads in case 'input' is stdin and it's produced
 	// on the fly. This is not trivial though and isn't needed yet, so we read
 	// everything at once.
-	rows, err := readInput(opts.input, opts.insertIDBase)
+	rows, err := readInput(opts.input, opts.insertIDBase, opts.jsonList)
 	if err != nil {
 		return err
 	}
@@ -255,7 +258,19 @@ func doInsert(ctx context.Context, stderr io.Writer, opts *uploadOpts, inserter 
 	return nil
 }
 
-func readInput(r io.Reader, insertIDBase string) (rows []*tableRow, err error) {
+func readInput(r io.Reader, insertIDBase string, jsonList bool) (rows []*tableRow, err error) {
+	if jsonList {
+		var target []map[string]bigquery.Value
+		if err := json.NewDecoder(r).Decode(&target); err != nil {
+			return nil, err
+		}
+		rows = make([]*tableRow, len(target))
+		for i, row := range target {
+			rows[i] = &tableRow{row, fmt.Sprintf("%s:%d", insertIDBase, i)}
+		}
+		return
+	}
+
 	buf := bufio.NewReaderSize(r, 32768)
 
 	lineNo := 0
