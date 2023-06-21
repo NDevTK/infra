@@ -1,5 +1,5 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.  Use
-// of this source code is governed by a BSD-style license that can be
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package cros
@@ -85,16 +85,18 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 		log.Debugf("Boot in recovery mode: recover servo states...")
 		// Register turn off for the DUT if at the end.
 		// All errors just logging as the action to clean up the state.
+		if needSink {
+			if err := servo.SetPDRole(ctx, servod, servo.PD_ON, false); err != nil {
+				log.Debugf("Restore PD for DUT failed: %s", err)
+			}
+		}
+		// Waiting 10 seconds for USB re-enumerate after PD role switch.
+		time.Sleep(10 * time.Second)
 		if err := servo.SetPowerState(ctx, servod, servo.PowerStateValueOFF); err != nil {
 			return errors.Annotate(err, "boot in recovery mode").Err()
 		}
 		if err := servo.UpdateUSBVisibility(ctx, servo.USBVisibleOff, servod); err != nil {
 			log.Debugf("Turn off USB drive on servo failed: %s", err)
-		}
-		if needSink {
-			if err := servo.SetPDRole(ctx, servod, servo.PD_ON, false); err != nil {
-				log.Debugf("Restore PD for DUT failed: %s", err)
-			}
 		}
 		// Waiting 10 seconds before turn it on as the device can be still in transition to off.
 		time.Sleep(10 * time.Second)
