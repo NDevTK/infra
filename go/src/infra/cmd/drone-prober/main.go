@@ -100,7 +100,8 @@ func runProbe(ctx context.Context) error {
 	timer := prometheus.NewTimer(prometheus.ObserverFunc(dockerRunDuration.Set))
 	defer timer.ObserveDuration()
 	log.Println("Running probe")
-	cmd := exec.Command("docker", "run", "--rm", dockerImage)
+	// docker run requires root access for Docker socket.
+	cmd := exec.Command("sudo", "docker", "run", "--rm", dockerImage)
 	err := runExec(ctx, cmd)
 	if err != nil {
 		return fmt.Errorf("run probe docker run failed: err=%q", err)
