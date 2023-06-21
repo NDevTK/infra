@@ -1,6 +1,6 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.package utils
+// found in the LICENSE file.
 
 package dutstate
 
@@ -256,6 +256,7 @@ func (c *FakeUFSClient) GetMachineLSE(ctx context.Context, req *ufsAPI.GetMachin
 						},
 					},
 				},
+				Machines: []string{"1"},
 			}, nil
 		}
 		if ns_and_name == "os:machineLSEs/host2" {
@@ -274,6 +275,7 @@ func (c *FakeUFSClient) GetMachineLSE(ctx context.Context, req *ufsAPI.GetMachin
 						},
 					},
 				},
+				Machines: []string{"2"},
 			}, nil
 		}
 		// note this is the same hostname as above case, with a different namespace
@@ -293,6 +295,7 @@ func (c *FakeUFSClient) GetMachineLSE(ctx context.Context, req *ufsAPI.GetMachin
 						},
 					},
 				},
+				Machines: []string{"p1"},
 			}, nil
 		}
 	}
