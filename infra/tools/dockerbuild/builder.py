@@ -351,7 +351,7 @@ def _InstallCipdPythonPackage(system, cipd_platform, wheel, base_dir,
                               work_root):
   PY_CIPD_VERSION_MAP = {
       '38': 'version:2@3.8.10.chromium.28',
-      '311': 'version:2@3.11.2.chromium.28',
+      '311': 'version:2@3.11.4.chromium.30',
   }
 
   package_ident = 'py_%s_%s' % (wheel.pyversion, cipd_platform)
