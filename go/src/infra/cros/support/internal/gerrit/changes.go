@@ -46,6 +46,7 @@ type Options struct {
 	IncludeFiles          bool `json:"include_files"`
 	IncludeCommitInfo     bool `json:"include_commit_info"`
 	IncludeMessages       bool `json:"include_messages"`
+	IncludeSubmittable    bool `json:"include_submittable"`
 }
 
 func changesToQueryParams(changes Changes, options Options) gerrit.ChangeQueryParams {
@@ -82,6 +83,9 @@ func changesToQueryParams(changes Changes, options Options) gerrit.ChangeQueryPa
 	}
 	if options.IncludeMessages {
 		queryOpts = append(queryOpts, "MESSAGES")
+	}
+	if options.IncludeSubmittable {
+		queryOpts = append(queryOpts, "SUBMITTABLE")
 	}
 	return gerrit.ChangeQueryParams{
 		Query:   strings.Join(queryOrs, " OR "),
