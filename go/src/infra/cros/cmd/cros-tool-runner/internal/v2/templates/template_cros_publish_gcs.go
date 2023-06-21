@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,20 +8,16 @@ import (
 	"fmt"
 	"os"
 
+	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
-
-const GceMetadataHost = "GCE_METADATA_HOST"
-const GceMetadataIp = "GCE_METADATA_IP"
-const GceMetadataRoot = "GCE_METADATA_ROOT"
 
 const DockerGcsPublishLogsDir = "/tmp/gcs-publish/"
 const DockerGcsPublishServiceAcctsCredsDir = "/tmp/gcs-publish-service-creds/"
 const DockerGcsPublishTestArtifactsDir = "/tmp/gcs-publish-test-artifacts/"
-const HostServiceAcctCredsDir = "/creds/service_accounts"
 const DockerGcsPublishPort = "43147"
 
 type crosGcsPublishProcessor struct {
@@ -56,16 +52,7 @@ func (p *crosGcsPublishProcessor) Process(request *api.StartTemplatedContainerRe
 	}
 
 	// Get GCE Metadata Server env vars
-	envVars := []string{}
-	if host, present := os.LookupEnv(GceMetadataHost); present == true {
-		envVars = append(envVars, fmt.Sprintf("%s=%s", GceMetadataHost, host))
-	}
-	if ip, present := os.LookupEnv(GceMetadataIp); present == true {
-		envVars = append(envVars, fmt.Sprintf("%s=%s", GceMetadataIp, ip))
-	}
-	if root, present := os.LookupEnv(GceMetadataRoot); present == true {
-		envVars = append(envVars, fmt.Sprintf("%s=%s", GceMetadataRoot, root))
-	}
+	envVars := gceMetadataEnvVars()
 
 	port := portZero
 	expose := make([]string, 0)

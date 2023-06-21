@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,16 @@ import (
 	"os"
 	"path/filepath"
 
+	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
 const DockerRdbPublishLogsDir = "/tmp/rdb-publish/"
 const DockerRdbPublishLuciContextDir = "/tmp/rdb-luci-context/"
+const DockerRdbPublishServiceAcctsCredsDir = "/tmp/rdb-publish-service-creds/"
 const DockerRdbLuciContextDir = "/tmp/rdb-luci-context/"
 const DockerRdbPublishPort = "43149"
 
@@ -24,26 +26,26 @@ const LuciContext = "LUCI_CONTEXT"
 
 type crosRdbPublishProcessor struct {
 	TemplateProcessor
-	cmdExecutor              cmdExecutor
-	defaultServerPort        string // Default port used
-	dockerArtifactDirName    string // Path on the docker where service put the logs by default
-	dockerPublishLuciDirName string // Path on the docker where publish src dir will be mounted to
-
+	cmdExecutor                   cmdExecutor
+	defaultServerPort             string // Default port used
+	dockerArtifactDirName         string // Path on the docker where service put the logs by default
+	dockerPublishLuciDirName      string // Path on the docker where publish src dir will be mounted to
+	dockerServiceAcctCredsDirName string // Path on the docker where service accts dir will be mounted to
 }
 
 func newCrosRdbPublishProcessor() *crosRdbPublishProcessor {
 	return &crosRdbPublishProcessor{
-		cmdExecutor:              &commands.ContextualExecutor{},
-		defaultServerPort:        DockerRdbPublishPort,
-		dockerArtifactDirName:    DockerRdbPublishLogsDir,
-		dockerPublishLuciDirName: DockerRdbLuciContextDir,
+		cmdExecutor:                   &commands.ContextualExecutor{},
+		defaultServerPort:             DockerRdbPublishPort,
+		dockerArtifactDirName:         DockerRdbPublishLogsDir,
+		dockerPublishLuciDirName:      DockerRdbLuciContextDir,
+		dockerServiceAcctCredsDirName: DockerRdbPublishServiceAcctsCredsDir,
 	}
 }
 
 func (p *crosRdbPublishProcessor) Process(request *api.StartTemplatedContainerRequest) (*api.StartContainerRequest, error) {
 	t := request.GetTemplate().GetCrosPublish()
 	if t == nil {
-
 		return nil, status.Error(codes.Internal, "unable to process")
 	}
 
@@ -58,6 +60,12 @@ func (p *crosRdbPublishProcessor) Process(request *api.StartTemplatedContainerRe
 		envVars = append(envVars, fmt.Sprintf("%s=%s", LuciContext, filepath.Join(p.dockerPublishLuciDirName, luciContextBase)))
 		volumes = append(volumes, fmt.Sprintf("%s:%s", luciContextParentDir, p.dockerPublishLuciDirName))
 	}
+	if _, err := os.Stat(HostServiceAcctCredsDir); err == nil {
+		volumes = append(volumes, fmt.Sprintf("%s:%s", HostServiceAcctCredsDir, p.dockerServiceAcctCredsDirName))
+	}
+
+	// Add GCE Metadata Server env vars.
+	envVars = append(envVars, gceMetadataEnvVars()...)
 
 	port := portZero
 	expose := make([]string, 0)
