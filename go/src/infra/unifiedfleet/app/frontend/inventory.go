@@ -736,6 +736,11 @@ func (fs *FleetServerImpl) GetDeviceData(ctx context.Context, req *ufsAPI.GetDev
 	return nil, grpcStatus.Error(codes.NotFound, "no valid device found")
 }
 
+// GetDUTsForLabstation gets the duts associated with a specific labstation in UFS.
+func (_ *FleetServerImpl) GetDUTsForLabstation(ctx context.Context, req *ufsAPI.GetDUTsForLabstationRequest) (*ufsAPI.GetDUTsForLabstationResponse, error) {
+	return nil, errors.New("not yet implemented")
+}
+
 func getBrowserVMDataIfExists(ctx context.Context, hostname string) (*ufsAPI.GetDeviceDataResponse, error) {
 	vm, err := controller.GetVM(ctx, hostname)
 	if err != nil {

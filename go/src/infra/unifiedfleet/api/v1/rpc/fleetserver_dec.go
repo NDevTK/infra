@@ -2186,3 +2186,20 @@ func (s *DecoratedFleet) ListOwnershipData(ctx context.Context, req *ListOwnersh
 	}
 	return
 }
+
+func (s *DecoratedFleet) GetDUTsForLabstation(ctx context.Context, req *GetDUTsForLabstationRequest) (rsp *GetDUTsForLabstationResponse, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "GetDUTsForLabstation", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.GetDUTsForLabstation(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "GetDUTsForLabstation", rsp, err)
+	}
+	return
+}
