@@ -19,6 +19,7 @@ type runFlags struct {
 	pool      string
 	suite     string
 	test      string
+	testplan  string
 	harness   string
 	testArgs  string
 	satlabId  string
@@ -28,6 +29,7 @@ type runFlags struct {
 func registerRunFlags(c *run) {
 	c.Flags.StringVar(&c.suite, "suite", "", "test suite to execute")
 	c.Flags.StringVar(&c.test, "test", "", "individual test to execute")
+	c.Flags.StringVar(&c.testplan, "testplan", "", "testplan to execute")
 	c.Flags.StringVar(&c.model, "model", "", "model specifies what model a test should run on")
 	c.Flags.StringVar(&c.board, "board", "", "board is the board to run against")
 	c.Flags.StringVar(&c.milestone, "milestone", "", "milestone of the ChromeOS image")
