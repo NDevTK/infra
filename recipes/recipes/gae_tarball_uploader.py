@@ -186,19 +186,17 @@ def _checkout_gclient(api, project, version_label_template):
   Returns:
     (Metadata, build environment context manager).
   """
-  # TODO(crbug.com/1415507): Remove '_superproject' suffix when
-  # migration is complete and configs have been renamed.
   conf, internal, repo_url = {
-      PROPERTIES.PROJECT_INFRA: (
-          'infra_superproject',
-          False,
-          'https://chromium.googlesource.com/infra/infra_superproject',
-      ),
-      PROPERTIES.PROJECT_INFRA_INTERNAL: (
-          'infra_internal_superproject',
-          True,
-          'https://chromium.googlesource.com/infra/infra_superproject',
-      ),
+    PROPERTIES.PROJECT_INFRA: (
+        'infra',
+        False,
+        'https://chromium.googlesource.com/infra/infra',
+    ),
+    PROPERTIES.PROJECT_INFRA_INTERNAL: (
+        'infra_internal',
+        True,
+        'https://chrome-internal.googlesource.com/infra/infra_internal',
+    ),
   }[project]
 
   co = api.infra_checkout.checkout(
@@ -217,15 +215,14 @@ def _checkout_gclient(api, project, version_label_template):
       api.cloudbuildhelper.command = 'cloudbuildhelper'
       yield
 
-  got_revision_key = 'got_revision_superproject'
   return Metadata(
       repo_url=repo_url,
-      revision=props[got_revision_key],
+      revision=props['got_revision'],
       canonical_tag=api.cloudbuildhelper.get_version_label(
-          path=co.path,
-          revision=props[got_revision_key],
+          path=co.path.join('infra_internal' if internal else 'infra'),
+          revision=props['got_revision'],
           ref=api.buildbucket.gitiles_commit.ref,
-          commit_position=props.get('%s_cp' % got_revision_key),
+          commit_position=props.get('got_revision_cp'),
           template=version_label_template,
       ),
       checkout=api.cloudbuildhelper.CheckoutMetadata(
