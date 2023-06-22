@@ -16,6 +16,10 @@ vars = {
   # This is used during the transition phase of moving infra repos to git
   # submodules. To add new deps here check with the Chrome Source Team.
   "infra_superproject_checkout": False,
+
+  # 'magic' text to tell depot_tools that git submodules should be accepted but
+  # but parity with DEPS file is expected.
+  'SUBMODULE_MIGRATION': 'True'
 }
 
 deps = {
