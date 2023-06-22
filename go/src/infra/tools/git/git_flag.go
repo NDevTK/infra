@@ -177,7 +177,13 @@ func (ga *BaseGitArgs) MayBeRemote() bool {
 	case "clone", "fetch", "ls-remote", "pull", "push", "fetch-pack", "http-fetch",
 		"http-push", "send-pack", "upload-archive", "upload-pack":
 		return true
-
+	case "submodule":
+		switch ga.SubcommandArgs[0] {
+		case "update":
+			return true
+		default:
+			return false
+		}
 	default:
 		return false
 	}

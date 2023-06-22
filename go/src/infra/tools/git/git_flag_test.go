@@ -24,6 +24,14 @@ func TestGitFlags(t *testing.T) {
 			{nil, &BaseGitArgs{}},
 
 			{
+				[]string{"submodule", "update"},
+				&BaseGitArgs{
+					Subcommand:     "submodule",
+					SubcommandArgs: []string{"update"},
+				},
+			},
+
+			{
 				[]string{"version"},
 				&BaseGitArgs{
 					Subcommand:     "version",
