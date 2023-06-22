@@ -19,13 +19,6 @@ vars = {
 }
 
 deps = {
-  # TODO(crbug.com/1415507): remove this once infra_superproject is in
-  # OSS codesearch
-  "../build": {
-    "url": "{chromium_git}/chromium/tools/build.git",
-    "condition": "not infra_superproject_checkout",
-  },
-
   # Used to initiate bootstrapping.
   #
   # This commit resolves to tag "16.7.12".
