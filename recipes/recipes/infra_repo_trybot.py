@@ -6,8 +6,6 @@ import textwrap
 
 from recipe_engine.recipe_api import Property
 
-from PB.go.chromium.org.luci.buildbucket.proto.common import GerritChange
-
 PYTHON_VERSION_COMPATIBILITY = "PY2+3"
 
 DEPS = [
@@ -48,35 +46,16 @@ PROPERTIES = {
 def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
   cl = api.buildbucket.build.input.gerrit_changes[0]
   project = cl.project
-  # For builds scheduled for an infra/infra_superproject change,
-  # the cl project is infra_superproject, but the builder project
-  # should be one of 'infra' or 'infra_internal'.
-  if project == 'infra/infra_superproject':
-    builder_project = api.buildbucket.build.builder.project
-    assert builder_project in ('infra', 'infra-internal'), (
-        'unknown builder project: "%s" for infra_superproject change' %
-        builder_project)
-    if builder_project == 'infra':
-      patch_root = 'infra'
-    else:
-      patch_root = 'infra_internal'
-  else:
-    assert project in ('infra/infra', 'infra/infra_internal',
-                       'infra/infra_superproject'), ('unknown project: "%s"' %
-                                                     project)
-    patch_root = project.split('/')[-1]
-
+  assert project in ('infra/infra', 'infra/infra_internal',
+                     'infra/infra_superproject'), ('unknown project: "%s"' %
+                                                   project)
+  patch_root = project.split('/')[-1]
   internal = (patch_root == 'infra_internal')
-  override_revisions = api.infra_checkout.get_footer_infra_deps_overrides(cl)
   co = api.infra_checkout.checkout(
-      # TODO(crbug.com/1415507): Remove '_superproject' suffix when
-      # migration is complete and configs have been renamed.
-      gclient_config_name=patch_root + '_superproject',
-      patch_root=patch_root,
+      gclient_config_name=patch_root, patch_root=patch_root,
       internal=internal,
       generate_env_with_system_python=True,
-      go_version_variant=go_version_variant,
-      recipe_revision_overrides=override_revisions)
+      go_version_variant=go_version_variant)
   co.commit_change()
   co.gclient_runhooks()
 
@@ -88,12 +67,11 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
 
   # Analyze the CL to skip unnecessary tests.
   files = co.get_changed_files()
-  is_deps_roll = (project == 'infra/infra_superproject') or bool(
-      files.intersection([
-          'DEPS',
-          api.path.join('bootstrap', 'deps.pyl'),
-          api.path.join('go', 'deps.lock')
-      ]))
+  is_deps_roll = bool(files.intersection([
+      'DEPS',
+      api.path.join('bootstrap', 'deps.pyl'),
+      api.path.join('go', 'deps.lock')
+  ]))
   is_build_change = any(f.startswith('build/') for f in files)
   is_go_change = any(f.startswith('go/') for f in files)
   is_pure_go_change = all(f.startswith('go/') for f in files)
@@ -102,20 +80,17 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
   if not is_pure_go_change:
     with api.step.defer_results():
       if api.platform.arch != 'arm':
-        with api.context(cwd=co.path.join(patch_root)):
-          if not skip_python_tests:
-            api.step('python tests',
-                     ['python3', 'test.py', 'test', '--verbose'])
+         with api.context(cwd=co.path.join(patch_root)):
+           api.step('python tests', ['python3', 'test.py', 'test', '--verbose'])
 
         if internal and (api.platform.is_linux or api.platform.is_mac) and any(
             f.startswith('appengine/chromiumdash') for f in files):
+          cwd = api.path['checkout'].join('appengine', 'chromiumdash')
           gae_env = {
               'GAE_RUNTIME': 'python3',
               'GAE_APPLICATION': 'testbed-test',
           }
-          with api.context(
-              cwd=co.path.join(patch_root, 'appengine', 'chromiumdash'),
-              env=gae_env):
+          with api.context(cwd=cwd, env=gae_env):
             api.step('chromiumdash python3 tests', [
                 'vpython3', '-m', 'pytest', '--ignore=gae_ts_mon/',
                 '--ignore=go/'
@@ -123,8 +98,8 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
 
         if (api.platform.is_linux or api.platform.is_mac) and any(
             f.startswith('appengine/monorail') for f in files):
-          with api.context(
-              cwd=co.path.join(patch_root, 'appengine', 'monorail')):
+          cwd = api.path['checkout'].join('appengine', 'monorail')
+          with api.context(cwd=cwd):
             api.step('monorail python3 tests', ['vpython3', 'test.py'])
 
       if not internal and api.platform.is_linux and api.platform.bits == 64:
@@ -187,30 +162,6 @@ def GenTests(api):
   def diff(*files):
     return api.step_data('get change list',
                          api.raw_io.stream_output_text('\n'.join(files)))
-
-  def test_superproject(name, internal=False):
-    change = GerritChange(
-        host='chromium-review.googlesource.com',
-        project='infra/infra_superproject',
-        change=456789,
-        patchset=12,
-    )
-    return (
-        api.test(name) + api.runtime(is_experimental=True) +
-        api.buildbucket.try_build(
-            gerrit_changes=[change],
-            project='infra-internal' if internal else 'infra',
-            builder='buildername',
-            git_repo=(
-                'https://chrome-internal.googlesource.com/infra/infra_internal'
-                if internal else
-                'https://chromium.googlesorce.com/infra/infra')))
-
-  yield (test_superproject('superproject_infra') +
-         diff('infra/stuff.py', 'go/src/infra/stuff.go'))
-
-  yield (test_superproject('superproject_infra_internal', internal=True) +
-         diff('infra/stuff.py', 'go/src/infra/stuff.go'))
 
   def test(name, internal=False, buildername='generic tester'):
     return (
