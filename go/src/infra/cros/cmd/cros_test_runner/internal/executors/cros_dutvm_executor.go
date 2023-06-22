@@ -266,7 +266,7 @@ func constructVmLeaserPayload(ctx context.Context, cmd *commands.DutVmLeaseCmd) 
 						GceMachineType: "n2-standard-4",
 						GceNetwork:     "global/networks/chromeos-gce-tests",
 						GceSubnet:      "regions/us-central1/subnetworks/us-central1",
-						GceDiskSize:    20,
+						GceDiskSize:    13,
 					},
 					LeaseDuration: durationpb.New(d),
 				},
