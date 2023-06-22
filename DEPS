@@ -16,6 +16,10 @@ vars = {
   # This is used during the transition phase of moving infra repos to git
   # submodules. To add new deps here check with the Chrome Source Team.
   "infra_superproject_checkout": False,
+
+  # 'magic' text to tell depot_tools that git submodules should be accepted but
+  # but parity with DEPS file is expected.
+  'SUBMODULE_MIGRATION': 'True'
 }
 
 deps = {
@@ -31,7 +35,7 @@ deps = {
      "49b5163df81d0e0c1f3c01837ee15e78ad070fd2",
 
   # TODO(crbug.com/1415507): remove this once infra_superproject is in
-  # OSS codesearch
+  # OSS codesearch. In the meantime, no need to add a gitlink for this.
   # This unpinned dependency is present because it is used by the trybots for
   # the recipes-py repo; They check out infra with this at HEAD, and then apply
   # the patch to it and run verifications within that copy of the repo. They
