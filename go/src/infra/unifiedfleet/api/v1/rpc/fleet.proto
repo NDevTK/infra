@@ -416,6 +416,25 @@ service Fleet {
 
   // ListOwnershipData lists all the ownership/security_info data
   rpc ListOwnershipData(ListOwnershipDataRequest) returns (ListOwnershipDataResponse);
+
+  // GetDUTsForLabstation gets the DUTs associated with a labstation.
+  rpc GetDUTsForLabstation(GetDUTsForLabstationRequest) returns (GetDUTsForLabstationResponse);
+}
+
+message GetDUTsForLabstationRequest {
+  // hostname is the hostname of a labstation
+  repeated string hostname = 1;
+}
+
+message GetDUTsForLabstationResponse {
+  message LabstationMapping {
+    // hostname is the hostname of the labstation.
+    string hostname = 1;
+    // dutName is the name of the dut or scheduling unit.
+    // For the moment 2023-06-XX, only non-multidut units are supported.
+    repeated string dutName = 2;
+  }
+  repeated LabstationMapping items = 1;
 }
 
 message UpdateMachineLSEDeploymentRequest {
