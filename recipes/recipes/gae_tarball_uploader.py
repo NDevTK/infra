@@ -136,9 +136,10 @@ def _validate_input_commit(commit, p):
   """Checks input buildbucket.v2.GitilesCommit matches the config."""
   if commit.host or commit.project:
     got = 'https://%s/%s' % (commit.host, commit.project)
-    if p.project in (PROPERTIES.PROJECT_INFRA,
-                     PROPERTIES.PROJECT_INFRA_INTERNAL):
-      want = 'https://chromium.googlesource.com/infra/infra_superproject'
+    if p.project == PROPERTIES.PROJECT_INFRA:
+      want = 'https://chromium.googlesource.com/infra/infra'
+    elif p.project == PROPERTIES.PROJECT_INFRA_INTERNAL:
+      want = 'https://chrome-internal.googlesource.com/infra/infra_internal'
     elif p.project == PROPERTIES.PROJECT_GIT_REPO:
       want = p.git_repo.url
     else:  # pragma: no cover
@@ -401,12 +402,17 @@ def _roll_tarballs_test_data(versions):
 
 
 def GenTests(api):
-  yield (api.test('ci-infra') + api.properties(
-      project=PROPERTIES.PROJECT_INFRA,
-      infra='prod',
-      manifests=['infra/build/gae'],
-  ) + api.buildbucket.ci_build(
-      git_repo='https://chromium.googlesource.com/infra/infra_superproject'))
+  yield (
+      api.test('ci-infra') +
+      api.properties(
+          project=PROPERTIES.PROJECT_INFRA,
+          infra='prod',
+          manifests=['infra/build/gae'],
+      ) +
+      api.buildbucket.ci_build(
+          git_repo='https://chromium.googlesource.com/infra/infra'
+      )
+  )
 
   yield (
       api.test('ci-infra-bad-repo') +
@@ -418,12 +424,18 @@ def GenTests(api):
       api.buildbucket.ci_build(git_repo='https://example.com/wat')
   )
 
-  yield (api.test('ci-infra-internal') + api.properties(
-      project=PROPERTIES.PROJECT_INFRA_INTERNAL,
-      infra='prod',
-      manifests=['infra_internal/build/gae'],
-  ) + api.buildbucket.ci_build(git_repo='https://chromium.googlesource.com/'
-                               'infra/infra_superproject'))
+  yield (
+      api.test('ci-infra-internal') +
+      api.properties(
+          project=PROPERTIES.PROJECT_INFRA_INTERNAL,
+          infra='prod',
+          manifests=['infra_internal/build/gae'],
+      ) +
+      api.buildbucket.ci_build(
+          git_repo='https://chrome-internal.googlesource.com/'
+                   'infra/infra_internal'
+      )
+  )
 
   yield (
       api.test('ci-infra-internal-bad-repo') +
