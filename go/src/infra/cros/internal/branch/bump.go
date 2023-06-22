@@ -52,8 +52,8 @@ func (c *Client) bumpVersionIfNeeded(
 		if err != nil {
 			return errors.Annotate(err, "failed to get %v for dest version", component).Err()
 		}
-		if toBump > bumpFrom+1 {
-			c.LogOut("branch %s has %v greater than %d + 1, no need to bump",
+		if toBump >= bumpFrom+1 {
+			c.LogOut("branch %s has %v >= %d + 1, no need to bump",
 				br, component, bumpFrom)
 			return nil
 		}
