@@ -1,3 +1,4 @@
+use_relative_paths = True
 vars = {
   "chromium_git": "https://chromium.googlesource.com",
   "external_github": "https://chromium.googlesource.com/external/github.com",
@@ -18,7 +19,9 @@ vars = {
 }
 
 deps = {
-  "build": {
+  # TODO(crbug.com/1415507): remove this once infra_superproject is in
+  # OSS codesearch
+  "../build": {
     "url": "{chromium_git}/chromium/tools/build.git",
     "condition": "not infra_superproject_checkout",
   },
@@ -26,92 +29,93 @@ deps = {
   # Used to initiate bootstrapping.
   #
   # This commit resolves to tag "16.7.12".
-  "infra/bootstrap/virtualenv-ext":
+  "bootstrap/virtualenv-ext":
      "{external_github}/pypa/virtualenv@" +
      "fdfec65ff031997503fb409f365ee3aeb4c2c89f",
 
-  "infra/luci":
+  "luci":
      "{chromium_git}/infra/luci/luci-py@" +
      "49b5163df81d0e0c1f3c01837ee15e78ad070fd2",
 
+  # TODO(crbug.com/1415507): remove this once infra_superproject is in
+  # OSS codesearch
   # This unpinned dependency is present because it is used by the trybots for
   # the recipes-py repo; They check out infra with this at HEAD, and then apply
   # the patch to it and run verifications within that copy of the repo. They
   # piggyback on top of infra in order to take advantage of it's precompiled
   # version of python-coverage.
-  "infra/recipes-py":
-     "{chromium_git}/infra/luci/recipes-py@" +
-     "refs/heads/main",
+  "recipes-py":
+     "{chromium_git}/infra/luci/recipes-py@" + "refs/heads/main",
 
-  "infra/go/src/go.chromium.org/luci":
+  "go/src/go.chromium.org/luci":
      "{chromium_git}/infra/luci/luci-go@" +
      "18849583050af8cc95d8cebdaada7fe5bc368c0e",
 
-  "infra/go/src/go.chromium.org/chromiumos/config":
+  "go/src/go.chromium.org/chromiumos/config":
      "{chromium_git}/chromiumos/config@" +
      "77a1042475fc50a2c79e7c1fd93cbfc4f3a3401d",
 
-  "infra/go/src/go.chromium.org/chromiumos/infra/proto":
+  "go/src/go.chromium.org/chromiumos/infra/proto":
      "{chromium_git}/chromiumos/infra/proto@" +
      "0209c48f320c70d37d1b09994ba48bcb1238fbfa",
 
   # Appengine third_party DEPS
-  "infra/appengine/third_party/bootstrap":
+  "appengine/third_party/bootstrap":
      "{external_github}/twbs/bootstrap.git@" +
      "b4895a0d6dc493f17fe9092db4debe44182d42ac",
 
-  "infra/appengine/third_party/cloudstorage":
+  "appengine/third_party/cloudstorage":
      "{external_github}/GoogleCloudPlatform/appengine-gcs-client.git@" +
      "76162a98044f2a481e2ef34d32b7e8196e534b78",
 
-  "infra/appengine/third_party/six":
+  "appengine/third_party/six":
      "{external_github}/benjaminp/six.git@" +
      "65486e4383f9f411da95937451205d3c7b61b9e1",
 
-  "infra/appengine/third_party/oauth2client":
+  "appengine/third_party/oauth2client":
      "{external_github}/google/oauth2client.git@" +
      "e8b1e794d28f2117dd3e2b8feeb506b4c199c533",
 
-  "infra/appengine/third_party/uritemplate":
+  "appengine/third_party/uritemplate":
      "{external_github}/uri-templates/uritemplate-py.git@" +
      "1e780a49412cdbb273e9421974cb91845c124f3f",
 
-  "infra/appengine/third_party/httplib2":
+  "appengine/third_party/httplib2":
      "{external_github}/jcgregorio/httplib2.git@" +
      "058a1f9448d5c27c23772796f83a596caf9188e6",
 
-  "infra/appengine/third_party/endpoints-proto-datastore":
+  "appengine/third_party/endpoints-proto-datastore":
      "{external_github}/GoogleCloudPlatform/endpoints-proto-datastore.git@" +
      "971bca8e31a4ab0ec78b823add5a47394d78965a",
 
-  "infra/appengine/third_party/difflibjs":
+  "appengine/third_party/difflibjs":
      "{external_github}/qiao/difflib.js.git@"
      "e11553ba3e303e2db206d04c95f8e51c5692ca28",
 
-  "infra/appengine/third_party/pipeline":
+  "appengine/third_party/pipeline":
      "{external_github}/GoogleCloudPlatform/appengine-pipelines.git@" +
      "58cf59907f67db359fe626ee06b6d3ac448c9e15",
 
-  "infra/appengine/third_party/google-api-python-client":
+  "appengine/third_party/google-api-python-client":
      "{external_github}/google/google-api-python-client.git@" +
      "49d45a6c3318b75e551c3022020f46c78655f365",
 
-  "infra/appengine/third_party/gae-pytz":
+  "appengine/third_party/gae-pytz":
      "{chromium_git}/external/code.google.com/p/gae-pytz/@" +
      "4d72fd095c91f874aaafb892859acbe3f927b3cd",
 
-  "infra/appengine/third_party/dateutil":
+  "appengine/third_party/dateutil":
      "{chromium_git}/external/code.launchpad.net/dateutil/@" +
      "8c6026ba09716a4e164f5420120bfe2ebb2d9d82",
 
-  "infra/appengine/third_party/npm_modules": {
+  "appengine/third_party/npm_modules": {
      "url":
         "{chromium_git}/infra/third_party/npm_modules.git@" +
         "f83fafaa22f5ff396cf5306285ca3806d1b2cf1b",
      "condition": "checkout_linux or checkout_mac",
   },
 
-  "infra/cipd/gcloud": {
+  "cipd/gcloud": {
     'packages': [
       {
         'package': 'infra/3pp/tools/gcloud/${{os=mac,linux}}-${{arch=amd64}}',
@@ -121,7 +125,7 @@ deps = {
     'dep_type': 'cipd',
   },
 
-  "infra/cipd": {
+  "cipd": {
     'packages': [
       {
         'package': 'infra/3pp/tools/protoc/${{os}}-${{arch=amd64}}',
@@ -167,7 +171,7 @@ deps = {
   },
 
   # Hosts legacy packages needed by the infra environment
-  "infra/cipd/legacy": {
+  "cipd/legacy": {
     'packages': [
       {
         'package': 'infra/3pp/tools/protoc/${{os}}-${{arch=amd64}}',
@@ -177,7 +181,7 @@ deps = {
     'dep_type': 'cipd',
   },
 
-  "infra/cipd/result_adapter": {
+  "cipd/result_adapter": {
     'packages': [
       {
         'package': 'infra/tools/result_adapter/${{platform}}',
@@ -191,26 +195,19 @@ deps = {
 hooks = [
   {
     "pattern": ".",
-    "action": [
-      "python3", "-u", "./infra/bootstrap/remove_orphaned_pycs.py",
-    ],
-  },
-
-  {
-    "pattern": ".",
     "condition": "'{infra_env_python}' != 'disabled'",
     "action": [
-      Var("infra_env_python"), "-u", "./infra/bootstrap/bootstrap.py",
-      "--deps_file", "infra/bootstrap/deps.pyl", "infra/ENV"
+      Var("infra_env_python"), "-u", "./bootstrap/bootstrap.py",
+      "--deps_file", "bootstrap/deps.pyl", "ENV"
     ],
   },
   {
     "pattern": ".",
     "action": [
-      "python3", "./infra/migration_warning.py"
+      "python3", "./migration_warning.py"
     ],
     "condition": "not infra_superproject_checkout",
   },
 ]
 
-recursedeps = ['build', 'infra/luci']
+recursedeps = ['luci']
