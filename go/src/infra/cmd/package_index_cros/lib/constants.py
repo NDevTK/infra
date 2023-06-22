@@ -27,7 +27,12 @@ TEMPORARY_UNSUPPORTED_PACKAGES = {
 TEMPORARY_UNSUPPORTED_PACKAGES_WITH_BUILD = {}
 
 # Set of packages that are not currently supported when building with tests.
-TEMPORARY_UNSUPPORTED_PACKAGES_WITH_TESTS = {}
+TEMPORARY_UNSUPPORTED_PACKAGES_WITH_TESTS = {
+    'chromeos-base/screen-capture-utils',
+    'chromeos-base/update_engine',
+    'chromeos-base/mtpd',
+    'net-wireless/floss',
+}
 
 # Set of packages failing test run. To be skipped for test run.
 PACKAGES_FAILING_TESTS = {

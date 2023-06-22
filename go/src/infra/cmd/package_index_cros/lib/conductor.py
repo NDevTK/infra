@@ -74,12 +74,10 @@ class Conductor:
     self.packages = Conductor._GetSortedPackages(packages_list)
 
     if self.setup.with_build:
-      retrieved_package_names = [p.full_name for p in self.packages]
+      package_names = [p.full_name for p in self.packages]
       with self.cros_sdk.StartWorkonPackagesSafe(
-          retrieved_package_names) as workon_handler:
-        self.cros_sdk.BuildPackages(retrieved_package_names)
-        if self.setup.with_tests:
-          self.cros_sdk.RunTests()
+          package_names) as workon_handler:
+        self.cros_sdk.BuildPackages(package_names)
 
   def DoMagic(self,
               *,
