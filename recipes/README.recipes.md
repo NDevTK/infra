@@ -54,7 +54,6 @@
   * [infra_continuous](#recipes-infra_continuous)
   * [infra_frontend_tester](#recipes-infra_frontend_tester)
   * [infra_repo_trybot](#recipes-infra_repo_trybot)
-  * [infra_superproject_tester](#recipes-infra_superproject_tester)
   * [infra_system:examples/full](#recipes-infra_system_examples_full)
   * [luci_go](#recipes-luci_go)
   * [luci_py](#recipes-luci_py)
@@ -1713,14 +1712,6 @@ This function runs UI tests in the `luci-go` project.
 
 
 &mdash; **def [RunSteps](/recipes/recipes/infra_repo_trybot.py#48)(api, go_version_variant, run_lint, skip_python_tests):**
-### *recipes* / [infra\_superproject\_tester](/recipes/recipes/infra_superproject_tester.py)
-
-[DEPS](/recipes/recipes/infra_superproject_tester.py#7): [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/swarming][recipe_engine/recipe_modules/swarming]
-
-
-&mdash; **def [RunSteps](/recipes/recipes/infra_superproject_tester.py#13)(api):**
-
-Runs infra{_internal} builds for infra_superproject changes.
 ### *recipes* / [infra\_system:examples/full](/recipes/recipe_modules/infra_system/examples/full.py)
 
 [DEPS](/recipes/recipe_modules/infra_system/examples/full.py#7): [infra\_system](#recipe_modules-infra_system), [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/step][recipe_engine/recipe_modules/step]
@@ -2033,7 +2024,6 @@ This recipe executes offline_winpe_customization.
 [recipe_engine/recipe_modules/runtime]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/bd754c98beabe90fd6132301ae549b57fba76ff1/README.recipes.md#recipe_modules-runtime
 [recipe_engine/recipe_modules/service_account]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/bd754c98beabe90fd6132301ae549b57fba76ff1/README.recipes.md#recipe_modules-service_account
 [recipe_engine/recipe_modules/step]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/bd754c98beabe90fd6132301ae549b57fba76ff1/README.recipes.md#recipe_modules-step
-[recipe_engine/recipe_modules/swarming]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/bd754c98beabe90fd6132301ae549b57fba76ff1/README.recipes.md#recipe_modules-swarming
 [recipe_engine/recipe_modules/time]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/bd754c98beabe90fd6132301ae549b57fba76ff1/README.recipes.md#recipe_modules-time
 [recipe_engine/recipe_modules/tricium]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/bd754c98beabe90fd6132301ae549b57fba76ff1/README.recipes.md#recipe_modules-tricium
 [recipe_engine/recipe_modules/url]: https://chromium.googlesource.com/infra/luci/recipes-py.git/+/bd754c98beabe90fd6132301ae549b57fba76ff1/README.recipes.md#recipe_modules-url
