@@ -32,7 +32,7 @@ var (
 
 // Flag options.
 var (
-	address       = flag.String("address", "127.0.0.1:9091", "Address of Prometheus metrics HTTP API server exposed by this daemon.")
+	address       = flag.String("address", ":9091", "Address of Prometheus metrics HTTP API server exposed by this daemon.")
 	probeInterval = flag.Duration("probe-interval", 1*time.Minute, "The time period between each probe.")
 )
 
