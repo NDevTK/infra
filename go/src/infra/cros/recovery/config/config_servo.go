@@ -137,6 +137,7 @@ func servoRepairPlan() *Plan {
 				ExecName:    "servo_host_servod_init",
 				ExecTimeout: &durationpb.Duration{Seconds: 120},
 				RecoveryActions: []string{
+					"Reboot servo device",
 					"Stop servod and request to use recovery-mode for servod",
 					"Stop servod",
 					"Reset EC from DUT and stop",
@@ -1672,6 +1673,22 @@ func servoRepairPlan() *Plan {
 				},
 				RunControl:             RunControl_RUN_ONCE,
 				AllowFailAfterRecovery: true,
+			},
+			"Reboot servo device": {
+				Docs: []string{
+					"Reboot servo device via servodtool",
+				},
+				Dependencies: []string{
+					"Device is SSHable",
+					"Stop servod",
+				},
+				ExecName: "servo_reboot",
+				ExecExtraArgs: []string{
+					"reboot_timeout:30",
+					"wait_timeout:30",
+				},
+				ExecTimeout: &durationpb.Duration{Seconds: 70},
+				RunControl:  RunControl_RUN_ONCE,
 			},
 		},
 	}

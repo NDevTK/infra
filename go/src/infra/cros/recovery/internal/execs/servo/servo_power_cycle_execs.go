@@ -108,8 +108,26 @@ func servoV4P1NetResetExec(ctx context.Context, info *execs.ExecInfo) error {
 	return errors.Annotate(err, "servo_v4p1 net reset").Err()
 }
 
+// servoRebootExec use servodtool to reboot servo device.
+func servoRebootExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	rebootTimeout := argsMap.AsDuration(ctx, "reboot_timeout", 30, time.Second)
+	waitTimeout := argsMap.AsDuration(ctx, "wait_timeout", 30, time.Second)
+	run := info.DefaultRunner()
+	servoInfo := info.GetChromeos().GetServo()
+	servoSerial := servoInfo.SerialNumber
+	if _, err := run(ctx, rebootTimeout, "servodtool", "device", "-s", servoSerial, "reboot"); err != nil {
+		log.Warningf(ctx, "Failed to reboot servo with serial: %s.", servoSerial)
+		return errors.Annotate(err, "servo reboot").Err()
+	}
+	log.Debugf(ctx, "Wait %v for servo to re-enumerate after reboot.", waitTimeout)
+	time.Sleep(waitTimeout)
+	return nil
+}
+
 func init() {
 	execs.Register("servo_power_cycle_root_servo", servoPowerCycleRootServoExec)
 	execs.Register("servo_v4p1_network_reset", servoV4P1NetResetExec)
 	execs.Register("servo_allows_power_cycle_servo", allowsPowerCycleServoExec)
+	execs.Register("servo_reboot", servoRebootExec)
 }
