@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6e837906_6d8e0147",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-06-22T17:53:50Z",
+      "side": 1,
+      "message": "only comments are nits",
+      "revId": "841b16c21f5d5f4aeaa11bfc43f9a7389be5e0d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f2da0ecb_b42e8410",
+        "filename": "go/src/infra/cros/satlab/satlab/internal/components/run/run_suite_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-06-22T17:53:50Z",
+      "side": 1,
+      "message": "i dont think we ever use this string, should we just return an `error`?",
+      "revId": "841b16c21f5d5f4aeaa11bfc43f9a7389be5e0d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bd04654b_e343acae",
+        "filename": "go/src/infra/cros/satlab/satlab/internal/components/run/run_suite_flags.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-06-22T17:53:50Z",
+      "side": 1,
+      "message": "maybe indicate its a file path (vs test, suite, which are strings)",
+      "revId": "841b16c21f5d5f4aeaa11bfc43f9a7389be5e0d0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
