@@ -7,9 +7,11 @@ package run
 import (
 	"context"
 	"fmt"
+	"os"
 	"path"
 	"strconv"
 
+	"github.com/golang/protobuf/jsonpb"
 	"github.com/googleapis/gax-go/v2"
 	"github.com/maruel/subcommands"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
@@ -64,10 +66,16 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 
 	// Create TestPlan for suite or test
 	var tp *test_platform.Request_TestPlan
+	var err error
 	if c.suite != "" {
 		tp = builder.TestPlanForSuites([]string{c.suite})
-	} else {
+	} else if c.test != "" {
 		tp = builder.TestPlanForTests(c.testArgs, c.harness, []string{c.test})
+	} else {
+		tp, err = readTestPlan(c.testplan)
+		if err != nil {
+			return err
+		}
 	}
 
 	// Set drone target based on user input
@@ -176,8 +184,18 @@ func ScheduleBuild(ctx context.Context, bbClient BuildbucketClient) (string, err
 }
 
 func (c *run) validateArgs() error {
-	if (c.suite == "" && c.test == "") || (c.suite != "" && c.test != "") {
-		return errors.Reason("Please specify either -suite or -test").Err()
+	executionTarget := 0
+	if c.testplan != "" {
+		executionTarget++
+	}
+	if c.suite != "" {
+		executionTarget++
+	}
+	if c.test != "" {
+		executionTarget++
+	}
+	if executionTarget != 1 {
+		return errors.Reason("Please specify only one of the following: -suite, -test, -testplan").Err()
 	}
 	if c.test != "" && c.harness == "" {
 		return errors.Reason("-harness is required for individual test execution").Err()
@@ -229,4 +247,21 @@ type BuildbucketClient interface {
 type MoblabClient interface {
 	StageBuild(ctx context.Context, req *moblabpb.StageBuildRequest, opts ...gax.CallOption) (*moblab.StageBuildOperation, error)
 	CheckBuildStageStatus(ctx context.Context, req *moblabpb.CheckBuildStageStatusRequest, opts ...gax.CallOption) (*moblabpb.CheckBuildStageStatusResponse, error)
+}
+
+// JSONPBUnmarshaler unmarshals JSON into proto messages.
+var JSONPBUnmarshaler = jsonpb.Unmarshaler{AllowUnknownFields: true}
+
+func readTestPlan(path string) (*test_platform.Request_TestPlan, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, fmt.Errorf("error reading test plan: %v", err)
+	}
+	defer file.Close()
+
+	testPlan := &test_platform.Request_TestPlan{}
+	if err := JSONPBUnmarshaler.Unmarshal(file, testPlan); err != nil {
+		return nil, fmt.Errorf("error reading test plan: %v", err)
+	}
+	return testPlan, nil
 }
