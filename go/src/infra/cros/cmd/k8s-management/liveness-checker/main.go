@@ -42,6 +42,7 @@ func innerMain() error {
 		expectedContentMD5  = flag.String("expected-content-md5", "", "The exptected response content MD5 hash value.")
 		tsmonEndpoint       = flag.String("tsmon-endpoint", "", "URL (including file://, https://, // pubsub://project/topic) to post monitoring metrics to. No metrics to report when skip the option.")
 		tsmonCredentialPath = flag.String("tsmon-credential", "", "The credential file for tsmon client.")
+		tsmonTaskHostname   = flag.String("tsmon-task-hostname", "", "Name of the host on which this checker is running. (default is the hostname)")
 		timeout             = flag.Int("timeout-second", 30, "Total timeout (in seconds) for the checking.")
 	)
 	flag.Parse()
@@ -52,7 +53,7 @@ func innerMain() error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(*timeout)*time.Second)
 	defer cancel()
 
-	if err := metricsInit(ctx, *serviceName, *tsmonEndpoint, *tsmonCredentialPath); err != nil {
+	if err := metricsInit(ctx, *serviceName, *tsmonEndpoint, *tsmonCredentialPath, *tsmonTaskHostname); err != nil {
 		return err
 	}
 	defer metricsShutdown(ctx)
@@ -70,16 +71,17 @@ func innerMain() error {
 }
 
 // metricsInit sets up the tsmon metrics.
-func metricsInit(ctx context.Context, serviceName, tsmonEndpoint, tsmonCredentialPath string) error {
+func metricsInit(ctx context.Context, serviceName, tsmonEndpoint, tsmonCredentialPath, tsmonTaskHostname string) error {
 	log.Printf("Setting up metrics...")
 	fl := tsmon.NewFlags()
 	fl.Endpoint = tsmonEndpoint
 	fl.Credentials = tsmonCredentialPath
 	fl.Flush = tsmon.FlushManual
-	fl.Target.SetDefaultsFromHostname()
 	fl.Target.TargetType = target.TaskType
 	fl.Target.TaskServiceName = serviceName
 	fl.Target.TaskJobName = serviceName
+	fl.Target.TaskHostname = tsmonTaskHostname
+	fl.Target.SetDefaultsFromHostname()
 
 	if err := tsmon.InitializeFromFlags(ctx, &fl); err != nil {
 		return fmt.Errorf("metrics init: %s", err)
