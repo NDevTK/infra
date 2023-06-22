@@ -7,12 +7,15 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"strings"
 
 	"infra/libs/git"
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 )
 
@@ -39,6 +42,9 @@ type PercentileThresholds struct {
 type AverageThresholds struct {
 	Average float32 `json:"average"`
 }
+
+const explanationPrefix = "Builder was above the"
+const explanationSuffix = "threshold for the last 7 days of builds."
 
 func getThresholds(buildCtx context.Context) (*Thresholds, error) {
 	var err error
@@ -72,35 +78,45 @@ func getThresholds(buildCtx context.Context) (*Thresholds, error) {
 	return &thresholds, nil
 }
 
-func belowThresholds(row Row, thresholds BuilderThresholds) (bool, string) {
-	const suffix = " for the last 7 days of builds. "
-	explanation := ""
-	healthy := true
-	if row.BuildMinsP50 > thresholds.BuildTime.P50Mins {
-		healthy = false
-		explanation += "Builder was above the P50 build time threshold" + suffix
-	}
-	if row.BuildMinsP95 > thresholds.BuildTime.P95Mins {
-		healthy = false
-		explanation += "Builder was above the P95 build time threshold" + suffix
-	}
-	if row.FailRate > thresholds.FailRate.Average {
-		healthy = false
-		explanation += "Builder was above the average fail rate threshold" + suffix
-	}
-	if row.InfraFailRate > thresholds.InfraFailRate.Average {
-		healthy = false
-		explanation += "Builder was above the average infra fail rate threshold" + suffix
-	}
-	if row.PendingMinsP50 > thresholds.PendingTime.P50Mins {
-		healthy = false
-		explanation += "Builder was above the P50 pending time threshold" + suffix
-	}
-	if row.PendingMinsP95 > thresholds.PendingTime.P95Mins {
-		healthy = false
-		explanation += "Builder was above the P95 pending time threshold" + suffix
-	}
-	// TODO: add checks for Test Pending Time once the data is added to the DB query
+func compareThresholds(ctx context.Context, row *Row, thresholds *BuilderThresholds) error {
+	row.HealthScore = 10
+	var stepErr error
+	for _, metric := range row.Metrics {
+		switch metric.Type {
+		case "build_mins_p50":
+			metric.Threshold = thresholds.BuildTime.P50Mins
+		case "build_mins_p95":
+			metric.Threshold = thresholds.BuildTime.P95Mins
+		case "fail_rate":
+			metric.Threshold = thresholds.FailRate.Average
+		case "infra_fail_rate":
+			metric.Threshold = thresholds.InfraFailRate.Average
+		case "pending_mins_p50":
+			metric.Threshold = thresholds.PendingTime.P50Mins
+		case "pending_mins_p95":
+			metric.Threshold = thresholds.PendingTime.P95Mins
+		// TODO: add checks for Test Pending Time once the data is added to the DB query
+		default:
+			metric.HealthScore = 0
+			err := fmt.Errorf("Found unknown metric type %s in BigQuery", metric.Type)
 
-	return healthy, explanation
+			// Log all, return just the last
+			logging.Errorf(ctx, "%s", err)
+			stepErr = err
+			continue
+		}
+		compareThresholdsHelper(row, metric)
+	}
+	row.ScoreExplanation = strings.TrimRight(row.ScoreExplanation, " ")
+
+	return stepErr
+}
+
+func compareThresholdsHelper(row *Row, metric *Metric) {
+	metric.HealthScore = 10
+	if metric.Value > metric.Threshold {
+		metric.HealthScore = 1
+		row.HealthScore = 1
+		row.ScoreExplanation += fmt.Sprintf("%s %s %s ", explanationPrefix, metric.Type, explanationSuffix)
+	}
 }

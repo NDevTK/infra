@@ -33,12 +33,14 @@ type Row struct {
 	Builder          string     `bigquery:"builder"`
 	Rotation         string     `bigquery:"rotation"`
 	N                int        `bigquery:"n"`
-	FailRate         float32    `bigquery:"fail_rate"`
-	InfraFailRate    float32    `bigquery:"infra_fail_rate"`
-	PendingMinsP50   float32    `bigquery:"pending_mins_p50"`
-	PendingMinsP95   float32    `bigquery:"pending_mins_p95"`
-	BuildMinsP50     float32    `bigquery:"build_mins_p50"`
-	BuildMinsP95     float32    `bigquery:"build_mins_p95"`
+	Metrics          []*Metric  `bigquery:"metrics"`
+}
+
+type Metric struct {
+	Type        string  `bigquery:"type"`
+	Value       float32 `bigquery:"value"`
+	Threshold   float32 `bigquery:"threshold"`
+	HealthScore int     `bigquery:"health_score"`
 }
 
 type BBClient interface {
@@ -90,7 +92,7 @@ func setup(buildCtx context.Context, input *healthpb.InputParams) (*bigquery.Cli
 	step, _ := build.StartStep(buildCtx, "Setup")
 	defer func() { step.End(err) }()
 
-	step.SetSummaryMarkdown(fmt.Sprintf("Date is %+v", input.Date))
+	step.SetSummaryMarkdown(fmt.Sprintf("Date is %s", input.Date.AsTime().String()))
 
 	bqClient, err := bigquery.NewClient(buildCtx, "cr-builder-health-indicators")
 	if err != nil {
@@ -113,12 +115,14 @@ func getMetrics(buildCtx context.Context, bqClient *bigquery.Client, input *heal
 	  b.builder.builder,
 	  JSON_VALUE_ARRAY(ANY_VALUE(b.input.properties), '$.sheriff_rotations')[OFFSET(0)] as rotation,
 	  COUNT(*) as n,
-	  COUNTIF(b.status = 'FAILURE') / COUNT(*) as fail_rate,
-	  COUNTIF(b.status = 'INFRA_FAILURE') / COUNT(*) as infra_fail_rate,
-	  IFNULL(APPROX_QUANTILES(TIMESTAMP_DIFF(start_time, create_time, SECOND), 100)[OFFSET(50)]/60, 0) as pending_mins_p50,
-	  IFNULL(APPROX_QUANTILES(TIMESTAMP_DIFF(start_time, create_time, SECOND), 100)[OFFSET(95)]/60, 0) as pending_mins_p95,
-	  IFNULL(APPROX_QUANTILES(TIMESTAMP_DIFF(end_time, start_time, SECOND), 100)[OFFSET(50)]/60, 0) as build_mins_p50,
-	  IFNULL(APPROX_QUANTILES(TIMESTAMP_DIFF(end_time, start_time, SECOND), 100)[OFFSET(95)]/60, 0) as build_mins_p95
+	  [
+		STRUCT('fail_rate' as type, COUNTIF(b.status = 'FAILURE') / COUNT(*) as value),
+		STRUCT('infra_fail_rate' as type, COUNTIF(b.status = 'INFRA_FAILURE') / COUNT(*) as value),
+		STRUCT('pending_mins_p50' as type, IFNULL(APPROX_QUANTILES(TIMESTAMP_DIFF(start_time, create_time, SECOND), 100)[OFFSET(50)]/60, 0) as value),
+		STRUCT('pending_mins_p95' as type, IFNULL(APPROX_QUANTILES(TIMESTAMP_DIFF(start_time, create_time, SECOND), 100)[OFFSET(95)]/60, 0) as value),
+		STRUCT('build_mins_p50' as type, IFNULL(APPROX_QUANTILES(TIMESTAMP_DIFF(end_time, start_time, SECOND), 100)[OFFSET(50)]/60, 0) as value),
+		STRUCT('build_mins_p95' as type, IFNULL(APPROX_QUANTILES(TIMESTAMP_DIFF(end_time, start_time, SECOND), 100)[OFFSET(95)]/60, 0) as value)
+	  ] as metrics
     ` +
 		"FROM `cr-buildbucket.chrome.builds` as b" + `
 	WHERE
@@ -168,9 +172,9 @@ func getMetrics(buildCtx context.Context, bqClient *bigquery.Client, input *heal
 }
 
 func calculateIndicators(buildCtx context.Context, rows []Row, thresholds Thresholds) ([]Row, error) {
-	var err error
+	var stepErr error
 	step, ctx := build.StartStep(buildCtx, "Calculate indicators")
-	defer func() { step.End(err) }()
+	defer func() { step.End(stepErr) }()
 
 	failedBuilders := 0
 	for i, row := range rows {
@@ -201,21 +205,17 @@ func calculateIndicators(buildCtx context.Context, rows []Row, thresholds Thresh
 				failedBuilders += 1
 				continue
 			}
-			if healthy, explanation := belowThresholds(row, builderThresholds); healthy {
-				rows[i].HealthScore = 10
-				rows[i].ScoreExplanation = explanation
-			} else {
-				rows[i].HealthScore = 1
-				rows[i].ScoreExplanation = explanation
-			}
+
+			stepErr = errors.Join(stepErr, compareThresholds(ctx, &row, &builderThresholds))
+			rows[i] = row
 		}
 	}
 
 	if failedBuilders > 0 {
-		err = fmt.Errorf("Indicator calculation failed for %d builders", failedBuilders)
+		stepErr = errors.Join(stepErr, fmt.Errorf("Indicator calculation failed for %d builders", failedBuilders))
 	}
 
-	return rows, err
+	return rows, stepErr
 }
 
 func bbClient(buildCtx context.Context) (buildbucketpb.BuildersClient, error) {
@@ -242,23 +242,19 @@ func rpcBuildbucket(buildCtx context.Context, rows []Row, client BBClient) error
 
 	healthProtos := make([]*buildbucketpb.SetBuilderHealthRequest_BuilderHealth, len(rows), len(rows))
 	for i, row := range rows {
-		constituentMetrics := map[string]float32{
-			"FailRate":       row.FailRate,
-			"InfraFailRate":  row.InfraFailRate,
-			"PendingMinsP50": row.PendingMinsP50,
-			"PendingMinsP95": row.PendingMinsP95,
-			"BuildMinsP50":   row.BuildMinsP50,
-			"BuildMinsP95":   row.BuildMinsP95,
+		simplifiedMetrics := map[string]float32{}
+		for _, metric := range row.Metrics {
+			simplifiedMetrics[metric.Type] = metric.Value
 		}
 
 		healthProtos[i] = &buildbucketpb.SetBuilderHealthRequest_BuilderHealth{
 			Id: &buildbucketpb.BuilderID{Project: row.Project, Bucket: row.Bucket, Builder: row.Builder},
 			Health: &buildbucketpb.HealthStatus{
 				HealthScore:   int64(row.HealthScore),
-				HealthMetrics: constituentMetrics,
+				HealthMetrics: simplifiedMetrics,
 				Description:   row.ScoreExplanation,
 				DocLinks:      map[string]string{"google.com": "go/builder-health-metrics-design"},
-				DataLinks:     nil, // TODO add dashboard link for historical data
+				DataLinks:     map[string]string{"google.com": "go/builder-health-indicators"},
 			},
 		}
 	}
@@ -267,7 +263,7 @@ func rpcBuildbucket(buildCtx context.Context, rows []Row, client BBClient) error
 	}
 	res, err := client.SetBuilderHealth(ctx, req)
 	if err != nil {
-		logging.Errorf(ctx, "Result: %+v. Error: %s", res, err)
+		logging.Errorf(ctx, "Set builder health error result: %+v. Error: %s", res, err)
 		return errors.Annotate(err, "Set builder health").Err()
 	}
 
@@ -278,12 +274,7 @@ func rpcBuildbucket(buildCtx context.Context, rows []Row, client BBClient) error
 		}
 
 		nErrors += 1
-
-		result := ""
-		if resp.GetResult() != nil {
-			result = resp.GetResult().String()
-		}
-		logging.Errorf(ctx, "Result: %s. Error: %s", result, resp.GetError().String())
+		logging.Errorf(ctx, "Set builder health error: %s.", resp.GetError().String())
 	}
 
 	if nErrors > 0 {

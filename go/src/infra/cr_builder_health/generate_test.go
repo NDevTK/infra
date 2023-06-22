@@ -56,14 +56,16 @@ func TestGenerate(t *testing.T) {
 		ctx := context.Background()
 		client := &bbClientMock{}
 		rows := []Row{{
-			Bucket:         "bucket",
-			Builder:        existantBuilder,
-			BuildMinsP50:   59,
-			BuildMinsP95:   119,
-			PendingMinsP50: 59,
-			PendingMinsP95: 119,
-			FailRate:       0.05,
-			InfraFailRate:  0,
+			Bucket:  "bucket",
+			Builder: existantBuilder,
+			Metrics: []*Metric{
+				{Type: "build_mins_p50", Value: 59},
+				{Type: "build_mins_p95", Value: 119},
+				{Type: "pending_mins_p50", Value: 59},
+				{Type: "pending_mins_p95", Value: 119},
+				{Type: "fail_rate", Value: 0.05},
+				{Type: "infra_fail_rate", Value: 0},
+			},
 		}}
 		err := rpcBuildbucket(ctx, rows, client)
 		So(client.setHealthCalls, ShouldEqual, 1)
@@ -76,24 +78,28 @@ func TestGenerate(t *testing.T) {
 		client := &bbClientMock{}
 		rows := []Row{
 			{
-				Bucket:         "bucket",
-				Builder:        nonExistantBuilder,
-				BuildMinsP50:   59,
-				BuildMinsP95:   119,
-				PendingMinsP50: 59,
-				PendingMinsP95: 119,
-				FailRate:       0.05,
-				InfraFailRate:  0,
+				Bucket:  "bucket",
+				Builder: nonExistantBuilder,
+				Metrics: []*Metric{
+					{Type: "build_mins_p50", Value: 59},
+					{Type: "build_mins_p95", Value: 119},
+					{Type: "pending_mins_p50", Value: 59},
+					{Type: "pending_mins_p95", Value: 119},
+					{Type: "fail_rate", Value: 0.05},
+					{Type: "infra_fail_rate", Value: 0},
+				},
 			},
 			{
-				Bucket:         "bucket",
-				Builder:        existantBuilder,
-				BuildMinsP50:   59,
-				BuildMinsP95:   119,
-				PendingMinsP50: 59,
-				PendingMinsP95: 119,
-				FailRate:       0.05,
-				InfraFailRate:  0,
+				Bucket:  "bucket",
+				Builder: existantBuilder,
+				Metrics: []*Metric{
+					{Type: "build_mins_p50", Value: 59},
+					{Type: "build_mins_p95", Value: 119},
+					{Type: "pending_mins_p50", Value: 59},
+					{Type: "pending_mins_p95", Value: 119},
+					{Type: "fail_rate", Value: 0.05},
+					{Type: "infra_fail_rate", Value: 0},
+				},
 			},
 		}
 		err := rpcBuildbucket(ctx, rows, client)

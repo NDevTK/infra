@@ -61,14 +61,16 @@ func TestThresholds(t *testing.T) {
 	Convey("Healthy builder is healthy, default thresholds", t, func() {
 		ctx := context.Background()
 		rows := []Row{{
-			Bucket:         "bucket",
-			Builder:        "builder",
-			BuildMinsP50:   59,
-			BuildMinsP95:   119,
-			PendingMinsP50: 59,
-			PendingMinsP95: 119,
-			FailRate:       0.05,
-			InfraFailRate:  0,
+			Bucket:  "bucket",
+			Builder: "builder",
+			Metrics: []*Metric{
+				{Type: "build_mins_p50", Value: 59},
+				{Type: "build_mins_p95", Value: 119},
+				{Type: "pending_mins_p50", Value: 59},
+				{Type: "pending_mins_p95", Value: 119},
+				{Type: "fail_rate", Value: 0.05},
+				{Type: "infra_fail_rate", Value: 0},
+			},
 		}}
 		savedThresholds := testThresholds
 		outputRows, err := calculateIndicators(ctx, rows, testThresholds)
@@ -81,54 +83,62 @@ func TestThresholds(t *testing.T) {
 	Convey("P50 percentile above threshold, default thresholds", t, func() {
 		ctx := context.Background()
 		rows := []Row{{
-			Bucket:       "bucket",
-			Builder:      "builder",
-			BuildMinsP50: 61,
+			Bucket:  "bucket",
+			Builder: "builder",
+			Metrics: []*Metric{
+				{Type: "build_mins_p50", Value: 61},
+			},
 		}}
 		savedThresholds := testThresholds
 		outputRows, err := calculateIndicators(ctx, rows, testThresholds)
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].HealthScore, ShouldEqual, 1)
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "P50 build time")
+		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "build_mins_p50")
 		So(savedThresholds, ShouldResemble, testThresholds)
 	})
 	Convey("P95 percentile above thresholds, default thresholds", t, func() {
 		ctx := context.Background()
 		rows := []Row{{
-			Bucket:         "bucket",
-			Builder:        "builder",
-			PendingMinsP95: 121,
+			Bucket:  "bucket",
+			Builder: "builder",
+			Metrics: []*Metric{
+				{Type: "pending_mins_p95", Value: 121},
+			},
 		}}
 		savedThresholds := testThresholds
 		outputRows, err := calculateIndicators(ctx, rows, testThresholds)
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].HealthScore, ShouldEqual, 1)
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "P95 pending time")
+		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "pending_mins_p95")
 		So(savedThresholds, ShouldResemble, testThresholds)
 	})
 	Convey("Fail rate above thresholds, default thresholds", t, func() {
 		ctx := context.Background()
 		rows := []Row{{
-			Bucket:   "bucket",
-			Builder:  "builder",
-			FailRate: 0.3,
+			Bucket:  "bucket",
+			Builder: "builder",
+			Metrics: []*Metric{
+				{Type: "fail_rate", Value: 0.3},
+			},
 		}}
 		savedThresholds := testThresholds
 		outputRows, err := calculateIndicators(ctx, rows, testThresholds)
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].HealthScore, ShouldEqual, 1)
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "fail rate")
+		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "fail_rate")
 		So(savedThresholds, ShouldResemble, testThresholds)
 	})
 	Convey("P50 build time below thresholds, slow builder", t, func() {
 		ctx := context.Background()
 		rows := []Row{{
-			Bucket:       "slow-bucket",
-			Builder:      "slow-builder",
-			BuildMinsP50: 200,
+			Bucket:  "slow-bucket",
+			Builder: "slow-builder",
+			Metrics: []*Metric{
+				{Type: "build_mins_p50", Value: 200},
+			},
 		}}
 		savedThresholds := testThresholds
 		outputRows, err := calculateIndicators(ctx, rows, testThresholds)
@@ -141,55 +151,63 @@ func TestThresholds(t *testing.T) {
 	Convey("Infra fail rate above thresholds, slow builder", t, func() {
 		ctx := context.Background()
 		rows := []Row{{
-			Bucket:        "slow-bucket",
-			Builder:       "slow-builder",
-			InfraFailRate: 0.5,
+			Bucket:  "slow-bucket",
+			Builder: "slow-builder",
+			Metrics: []*Metric{
+				{Type: "infra_fail_rate", Value: 0.5},
+			},
 		}}
 		savedThresholds := testThresholds
 		outputRows, err := calculateIndicators(ctx, rows, testThresholds)
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].HealthScore, ShouldEqual, 1)
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "infra fail rate")
+		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "infra_fail_rate")
 		So(savedThresholds, ShouldResemble, testThresholds)
 	})
 	Convey("Default thresholds with custom thresholds error", t, func() {
 		ctx := context.Background()
 		rows := []Row{{
-			Bucket:        "slow-bucket",
-			Builder:       "slow-builder",
-			InfraFailRate: 0.5,
+			Bucket:  "slow-bucket",
+			Builder: "slow-builder",
+			Metrics: []*Metric{
+				{Type: "infra_fail_rate", Value: 0.5},
+			},
 		}}
 		savedThresholds := testThresholds
 		outputRows, err := calculateIndicators(ctx, rows, testThresholds)
 		So(err, ShouldBeNil)
 		So(len(outputRows), ShouldEqual, 1)
 		So(outputRows[0].HealthScore, ShouldEqual, 1)
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "infra fail rate")
+		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "infra_fail_rate")
 		So(savedThresholds, ShouldResemble, testThresholds)
 	})
 	Convey("Multiple healthy builders", t, func() {
 		ctx := context.Background()
 		rows := []Row{
 			{
-				Bucket:         "bucket",
-				Builder:        "builder",
-				BuildMinsP50:   59,
-				BuildMinsP95:   119,
-				PendingMinsP50: 59,
-				PendingMinsP95: 119,
-				FailRate:       0.05,
-				InfraFailRate:  0,
+				Bucket:  "bucket",
+				Builder: "builder",
+				Metrics: []*Metric{
+					{Type: "build_mins_p50", Value: 59},
+					{Type: "build_mins_p95", Value: 119},
+					{Type: "pending_mins_p50", Value: 59},
+					{Type: "pending_mins_p95", Value: 119},
+					{Type: "fail_rate", Value: 0.05},
+					{Type: "infra_fail_rate", Value: 0},
+				},
 			},
 			{
-				Bucket:         "slow-bucket",
-				Builder:        "slow-builder",
-				BuildMinsP50:   59,
-				BuildMinsP95:   119,
-				PendingMinsP50: 59,
-				PendingMinsP95: 119,
-				FailRate:       0.05,
-				InfraFailRate:  0,
+				Bucket:  "slow-bucket",
+				Builder: "slow-builder",
+				Metrics: []*Metric{
+					{Type: "build_mins_p50", Value: 59},
+					{Type: "build_mins_p95", Value: 119},
+					{Type: "pending_mins_p50", Value: 59},
+					{Type: "pending_mins_p95", Value: 119},
+					{Type: "fail_rate", Value: 0.05},
+					{Type: "infra_fail_rate", Value: 0},
+				},
 			},
 		}
 		savedThresholds := testThresholds
@@ -206,24 +224,28 @@ func TestThresholds(t *testing.T) {
 		ctx := context.Background()
 		rows := []Row{
 			{
-				Bucket:         "bucket",
-				Builder:        "builder",
-				BuildMinsP50:   61,
-				BuildMinsP95:   121,
-				PendingMinsP50: 61,
-				PendingMinsP95: 121,
-				FailRate:       0.3,
-				InfraFailRate:  0.2,
+				Bucket:  "bucket",
+				Builder: "builder",
+				Metrics: []*Metric{
+					{Type: "build_mins_p50", Value: 61},
+					{Type: "build_mins_p95", Value: 121},
+					{Type: "pending_mins_p50", Value: 61},
+					{Type: "pending_mins_p95", Value: 121},
+					{Type: "fail_rate", Value: 0.3},
+					{Type: "infra_fail_rate", Value: 0.2},
+				},
 			},
 			{
-				Bucket:         "slow-bucket",
-				Builder:        "slow-builder",
-				BuildMinsP50:   59,
-				BuildMinsP95:   119,
-				PendingMinsP50: 59,
-				PendingMinsP95: 119,
-				FailRate:       0.05,
-				InfraFailRate:  0,
+				Bucket:  "slow-bucket",
+				Builder: "slow-builder",
+				Metrics: []*Metric{
+					{Type: "build_mins_p50", Value: 59},
+					{Type: "build_mins_p95", Value: 119},
+					{Type: "pending_mins_p50", Value: 59},
+					{Type: "pending_mins_p95", Value: 119},
+					{Type: "fail_rate", Value: 0.05},
+					{Type: "infra_fail_rate", Value: 0},
+				},
 			},
 		}
 		savedThresholds := testThresholds
@@ -232,8 +254,8 @@ func TestThresholds(t *testing.T) {
 		So(len(outputRows), ShouldEqual, 2)
 		So(savedThresholds, ShouldResemble, testThresholds)
 		So(outputRows[0].HealthScore, ShouldEqual, 1)
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "build time")
-		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "infra fail rate")
+		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "build_mins")
+		So(outputRows[0].ScoreExplanation, ShouldContainSubstring, "infra_fail_rate")
 		So(outputRows[1].HealthScore, ShouldEqual, 10)
 		So(outputRows[1].ScoreExplanation, ShouldBeEmpty)
 	})
