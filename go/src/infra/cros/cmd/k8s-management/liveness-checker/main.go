@@ -41,7 +41,7 @@ func innerMain() error {
 		expectedStatusCode  = flag.Int("expected-status-code", 200, "The expected response HTTP status code.")
 		expectedContentMD5  = flag.String("expected-content-md5", "", "The exptected response content MD5 hash value.")
 		tsmonEndpoint       = flag.String("tsmon-endpoint", "", "URL (including file://, https://, // pubsub://project/topic) to post monitoring metrics to. No metrics to report when skip the option.")
-		tsmonCredentialPath = flag.String("tsmon-credential", "", "The credential file for tsmon client")
+		tsmonCredentialPath = flag.String("tsmon-credential", "", "The credential file for tsmon client.")
 		timeout             = flag.Int("timeout-second", 30, "Total timeout (in seconds) for the checking.")
 	)
 	flag.Parse()
@@ -49,7 +49,7 @@ func innerMain() error {
 		return fmt.Errorf("service name must be specified.")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), (time.Duration)(*timeout)*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(*timeout)*time.Second)
 	defer cancel()
 
 	if err := metricsInit(ctx, *serviceName, *tsmonEndpoint, *tsmonCredentialPath); err != nil {
@@ -75,7 +75,7 @@ func metricsInit(ctx context.Context, serviceName, tsmonEndpoint, tsmonCredentia
 	fl := tsmon.NewFlags()
 	fl.Endpoint = tsmonEndpoint
 	fl.Credentials = tsmonCredentialPath
-	fl.Flush = tsmon.FlushAuto
+	fl.Flush = tsmon.FlushManual
 	fl.Target.SetDefaultsFromHostname()
 	fl.Target.TargetType = target.TaskType
 	fl.Target.TaskServiceName = serviceName
@@ -99,6 +99,9 @@ func metricsShutdown(ctx context.Context) {
 func createRequests(ctx context.Context, endpoints []string, uri, extraHeaders string) ([]*http.Request, error) {
 	var reqs []*http.Request
 	for _, e := range endpoints {
+		if e == "" {
+			return nil, fmt.Errorf("create requests: got an empty endpoint: %v", endpoints)
+		}
 		u, err := url.JoinPath(e, uri)
 		if err != nil {
 			return nil, fmt.Errorf("create requests for (%q, %q): %s", e, uri, err)

@@ -15,6 +15,7 @@ import (
 )
 
 func TestHTTPStatusCodeChecker(t *testing.T) {
+	t.Parallel()
 	code := 200
 	resp := &http.Response{StatusCode: code}
 	chk := httpStatusChecker(code)
@@ -29,6 +30,7 @@ func TestHTTPStatusCodeChecker(t *testing.T) {
 }
 
 func TestHTTPContentChecker(t *testing.T) {
+	t.Parallel()
 	content := "hello world"
 	contentMD5 := "5eb63bbbe01eeed093cb22bb8f5acdc3"
 	resp := &http.Response{Body: io.NopCloser(strings.NewReader(content))}
@@ -74,6 +76,7 @@ func TestCreateRequests(t *testing.T) {
 	for _, c := range cases {
 		c := c
 		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
 			reqs, err := createRequests(ctx, c.endpoints, c.uri, c.headers)
 			if err != nil {
 				t.Errorf("createRequests(%v, %q, %q) err=%s, want nil", c.endpoints, c.uri, c.headers, err)
@@ -93,11 +96,18 @@ func TestCreateRequestsErrors(t *testing.T) {
 	cases := []string{"x-header", "x-header:", "x-header:1,x-foo", "x-header:1,x-foo:"}
 	for _, c := range cases {
 		c := c
-		t.Run("", func(t *testing.T) {
-			_, err := createRequests(context.Background(), []string{"http://1.1.1.1"}, "/", c)
-			if err == nil {
+		t.Run("bad headers", func(t *testing.T) {
+			t.Parallel()
+			if _, err := createRequests(context.Background(), []string{"http://1.1.1.1"}, "/", c); err == nil {
 				t.Errorf("createRequests(%q) succeeded, want error", c)
 			}
 		})
 	}
+
+	t.Run("bad endpoints", func(t *testing.T) {
+		t.Parallel()
+		if _, err := createRequests(context.Background(), []string{""}, "", ""); err == nil {
+			t.Errorf("createRequests(endpoints={''}) succeeded, want error")
+		}
+	})
 }
