@@ -27,6 +27,13 @@ TEMPORARY_UNSUPPORTED_PACKAGES = {
 TEMPORARY_UNSUPPORTED_PACKAGES_WITH_BUILD = {}
 
 # Set of packages that are not currently supported when building with tests.
+<<<<<<< PATCH SET (5fe6b2 Revert "[package_index_cros] Use cros_run_unit_tests for tes)
+TEMPORARY_UNSUPPORTED_PACKAGES_WITH_TESTS = {
+    'chromeos-base/screen-capture-utils',
+    'chromeos-base/update_engine',
+    'chromeos-base/mtpd',
+    'net-wireless/floss',
+=======
 TEMPORARY_UNSUPPORTED_PACKAGES_WITH_TESTS = {}
 
 # Set of packages failing test run. To be skipped for test run.
@@ -35,4 +42,5 @@ PACKAGES_FAILING_TESTS = {
     "chromeos-base/chromeos-installer",
     "chromeos-base/chromeos-init",
     "chromeos-base/chromeos-trim",
+>>>>>>> BASE      (51cf4d Remove ../build deps.)
 }
