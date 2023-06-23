@@ -6,7 +6,10 @@ package zone_selector
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"math/rand"
+	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
@@ -38,4 +41,22 @@ func getRandomZone(ctx context.Context, zones [][]string) string {
 	subIdx := rand.Intn(len(zones[mainIdx]))
 	logging.Infof(ctx, "selected zone for VM creation: %v", zones[mainIdx][subIdx])
 	return zones[mainIdx][subIdx]
+}
+
+// GetZoneSubnet uses the selected zone to return the correct subnet.
+//
+// GetZoneSubnet expects zone to be in the format `xxx-yyy-zzz`. `xxx-yyy`
+// represents the main zone while `zzz` represents the subzone. For example,
+// `us-central1-a` means the main zone is `us-central1` and the subzone is `a`.
+func GetZoneSubnet(ctx context.Context, zone string) (string, error) {
+	splitZone := strings.Split(zone, "-")
+	if len(splitZone) != 3 {
+		return "", errors.New("zone is malformed; needs to be xxx-yyy-zzz")
+	}
+
+	network := strings.Join(strings.Split(zone, "-")[:2], "-")
+	subnet := fmt.Sprintf("regions/%s/subnetworks/%s", network, network)
+
+	logging.Debugf(ctx, "zone: %s - subnet: %s", zone, subnet)
+	return subnet, nil
 }

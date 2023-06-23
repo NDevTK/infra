@@ -54,7 +54,10 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 	logging.Infof(ctx, "[server:LeaseVM] Started")
 
 	// Set defaults for LeaseVMRequest if needed.
-	r = setDefaultLeaseVMRequest(ctx, r, s.Env)
+	r, err := setDefaultLeaseVMRequest(ctx, r, s.Env)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "failed to set lease request: %s", err)
+	}
 
 	if err := vmleaserpb.ValidateLeaseVMRequest(r); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "failed to validate lease request: %s", err)
@@ -277,7 +280,7 @@ func getDefaultParams(env string) constants.DefaultLeaseParams {
 }
 
 // setDefaultLeaseVMRequest sets default values for VMRequirements.
-func setDefaultLeaseVMRequest(ctx context.Context, r *api.LeaseVMRequest, env string) *api.LeaseVMRequest {
+func setDefaultLeaseVMRequest(ctx context.Context, r *api.LeaseVMRequest, env string) (*api.LeaseVMRequest, error) {
 	defaultParams := getDefaultParams(env)
 	hostReqs := r.GetHostReqs()
 	if hostReqs.GetGceDiskSize() == 0 {
@@ -295,7 +298,14 @@ func setDefaultLeaseVMRequest(ctx context.Context, r *api.LeaseVMRequest, env st
 	if hostReqs.GetGceRegion() == "" {
 		hostReqs.GceRegion = zone_selector.SelectZone(ctx, r, time.Now().UnixNano())
 	}
-	return r
+	if hostReqs.GetSubnetModeNetworkEnabled() {
+		var err error
+		hostReqs.GceSubnet, err = zone_selector.GetZoneSubnet(ctx, hostReqs.GetGceRegion())
+		if err != nil {
+			return nil, err
+		}
+	}
+	return r, nil
 }
 
 // setDefaultReleaseVMRequest sets default values for ReleaseVMRequest.

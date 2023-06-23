@@ -79,3 +79,22 @@ func TestSelectZone(t *testing.T) {
 		})
 	})
 }
+
+func TestGetZoneSubnet(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	Convey("Test GetZoneSubnet", t, func() {
+		Convey("GetZoneSubnet - happy path", func() {
+			z, err := GetZoneSubnet(ctx, "test-region-1")
+			So(err, ShouldBeNil)
+			So(z, ShouldEqual, "regions/test-region/subnetworks/test-region")
+		})
+		Convey("GetZoneSubnet - bad zone", func() {
+			z, err := GetZoneSubnet(ctx, "test-region")
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "zone is malformed; needs to be xxx-yyy-zzz")
+			So(z, ShouldEqual, "")
+		})
+	})
+}
