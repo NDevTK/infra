@@ -5,15 +5,19 @@
 package frontend
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
 	"google.golang.org/grpc/codes"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/gae/impl/memory"
+	"go.chromium.org/luci/gae/service/datastore"
 	code "google.golang.org/genproto/googleapis/rpc/code"
 	"google.golang.org/grpc/status"
 
@@ -1867,5 +1871,120 @@ func TestGetDeviceData(t *testing.T) {
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "no valid device found")
 		})
+	})
+}
+
+func mustParseMachineLSE(input string) *ufspb.MachineLSE {
+	out := &ufspb.MachineLSE{}
+	err := protojson.Unmarshal([]byte(input), out)
+	if err != nil {
+		panic(err.Error())
+	}
+	return out
+}
+
+// TestGetDUTsForLabstation tests extracting DUT names from servo names on a labstation object.
+func TestGetDUTsForLabstation(t *testing.T) {
+	t.Parallel()
+	ctx := memory.Use(context.Background())
+	datastore.GetTestable(ctx).Consistent(true)
+	ctx = logging.SetLevel(ctx, logging.Debug)
+	ctx, _ = util.SetupDatastoreNamespace(ctx, util.OSNamespace)
+	tf, validate := newTestFixtureWithContext(ctx, t)
+	defer validate()
+
+	const labstation = `
+{
+        "name": "fake-labstation",
+        "hostname": "fake-labstation",
+        "chromeosMachineLse": {
+                "deviceLse": {
+                        "networkDeviceInterface": null,
+                        "labstation": {
+                                "hostname": "fake-labstation",
+                                "servos": [
+                                        {
+                                                "servoHostname": "fake-labstation",
+                                                "servoPort": 9999,
+                                                "servoSerial": "XXXXXXXXXXX"
+                                        }
+                                ],
+                                "rpm": {
+                                        "powerunitName": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+                                        "powerunitOutlet": "XXX"
+                                },
+                                "pools": [
+                                        "labstation_main"
+                                ]
+                        }
+                }
+        },
+        "machines": [
+                "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+        ]
+}
+`
+
+	const dut = `
+{
+        "name":  "fake-dut",
+        "machineLsePrototype":  "atl:standard",
+        "hostname":  "fake-dut",
+        "chromeosMachineLse":  {
+                "deviceLse":  {
+                        "dut":  {
+                                "hostname":  "fake-dut",
+                                "peripherals":  {
+                                        "servo":  {
+                                                "servoHostname":  "fake-labstation",
+                                                "servoPort":  9999
+                                        }
+                                }
+                        }
+                }
+        },
+        "machines":  [
+                "XXXXXXX"
+        ]
+}
+`
+
+	Convey("smoke test", t, func() {
+		_, err := inventory.CreateMachineLSE(ctx, mustParseMachineLSE(labstation))
+		if err != nil {
+			panic(err.Error())
+		}
+
+		req := &ufsAPI.GetDUTsForLabstationRequest{
+			Hostname: []string{"fake-labstation"},
+		}
+
+		resp, err := tf.Fleet.GetDUTsForLabstation(tf.C, req)
+		So(err, ShouldBeNil)
+		So(resp, ShouldResembleProto, &ufsAPI.GetDUTsForLabstationResponse{
+			Items: []*ufsAPI.GetDUTsForLabstationResponse_LabstationMapping{
+				{
+					Hostname: "fake-labstation",
+					DutName:  []string{},
+				},
+			},
+		})
+
+		_, err = inventory.CreateMachineLSE(ctx, mustParseMachineLSE(dut))
+		if err != nil {
+			panic(err.Error())
+		}
+
+		resp, err = tf.Fleet.GetDUTsForLabstation(tf.C, req)
+		So(err, ShouldBeNil)
+		So(resp, ShouldResembleProto, &ufsAPI.GetDUTsForLabstationResponse{
+			Items: []*ufsAPI.GetDUTsForLabstationResponse_LabstationMapping{
+				{
+					Hostname: "fake-labstation",
+					DutName:  []string{"fake-dut"},
+				},
+			},
+		})
+
 	})
 }
