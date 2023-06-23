@@ -14,6 +14,49 @@ DECLARE end_date DATE DEFAULT DATE_ADD(CURRENT_DATE('PST8PDT'), INTERVAL 1 DAY);
 DECLARE start_ts TIMESTAMP DEFAULT TIMESTAMP(start_date, 'PST8PDT');
 DECLARE end_ts TIMESTAMP DEFAULT TIMESTAMP(end_date, 'PST8PDT');
 
+CREATE TEMP FUNCTION chromium_recipe_phase(name STRING, test_end TIMESTAMP)
+RETURNS STRUCT<section STRING, phase STRING, test STRING>
+LANGUAGE js
+AS r"""
+var res = {};
+  // Android recipe allows "(with patch, experimental)"
+  name = name.replace(', experimental)', ')');
+
+  if (name.includes(' (with patch)')) {
+    name = name.replaceAll(' (with patch)', '');
+    res.section = 'patch';
+  } else if (name.includes(' (retry shards with patch)')) {
+    name = name.replaceAll(' (retry shards with patch)', '');
+    res.section = 'retry';
+  } else if (name.includes(' (without patch)')) {
+    name = name.replaceAll(' (without patch)', '');
+    res.section = 'nopatch';
+  }
+
+  'compilator steps (with patch)|compile (with patch)'
+  if (name === 'compilator steps') {
+    // The compilator steps step includes the pending time and is better described as compilator
+    name = 'compilator'
+  }
+
+  // Builds using the Orchestrator recipe have its compile step nested under "compilator steps"
+  if (name.includes('compilator steps|')) {
+      name = name.replace('compilator steps|', '');
+  }
+
+  if (name === 'compilator' ||name === 'compile' || name === 'bot_update' || name === 'gclient runhooks' || name === 'analyze' || name === 'isolate tests' || name === 'derive test results') {
+    if (!('section' in res)) {
+      res.section = 'patch';
+    }
+    res.phase = name;
+  } else if (test_end !== null) {
+    res.phase = 'test';
+    res.test = name.split(' ')[0];
+  }
+
+  return res;
+""";
+
 -- Merge statement
 MERGE INTO
   `chrome-trooper-analytics.metrics.cq_builder_metrics_day` AS T
@@ -24,7 +67,7 @@ USING
       id,
       b.builder.builder builder,
       b.start_time,
-      cq.chromium_recipe_phase(s.name, st.start_time).*,
+      chromium_recipe_phase(s.name, st.start_time).*,
       TIMESTAMP_DIFF(s.end_time, s.start_time, SECOND) duration,
       TIMESTAMP_DIFF(s.end_time, st.start_time, SECOND) test_duration
     FROM
@@ -55,7 +98,7 @@ USING
     FROM
       steps
     WHERE
-      section = 'patch' AND phase IN ('bot_update','gclient runhooks', 'compile', 'test')
+      section = 'patch' AND phase IN ('compilator', 'bot_update','gclient runhooks', 'compile', 'test')
     GROUP BY id, section, phase
     ),
     phase_metrics AS (
