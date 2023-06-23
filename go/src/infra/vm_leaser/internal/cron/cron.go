@@ -31,21 +31,6 @@ const (
 	expiredVMFilter string = "(name eq ^vm-.*) (status eq RUNNING)"
 )
 
-// waitFunc takes a list of GCE operations and executes them.
-//
-// waitFunc blocks until the operations are complete, polling regularly and
-// returns the statuses.
-var waitFunc = func(ctx context.Context, ops []*compute.Operation) error {
-	var resultErr *multierror.Error
-	for _, op := range ops {
-		if err := op.Wait(ctx); err != nil {
-			resultErr = multierror.Append(resultErr, err)
-		}
-	}
-	return resultErr.ErrorOrNil()
-}
-var wait = waitFunc
-
 // RegisterCronServer initializes the VM Leaser cron server.
 func RegisterCronServer(srv *server.Server, gcpProject string) {
 	srv.RunInBackground("vm_leaser.cron", func(ctx context.Context) {
@@ -91,16 +76,14 @@ func Run(ctx context.Context, minInterval time.Duration, gcpProject string, f fu
 
 // releaseExpiredVMs releases VMs based on their expiration times.
 func releaseExpiredVMs(ctx context.Context, gcpProject string) error {
-	logging.Debugf(ctx, "Releasing expired VMs")
+	logging.Debugf(ctx, "Releasing expired VMs in %s", gcpProject)
 	instancesClient, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		return fmt.Errorf("NewInstancesRESTClient: %v", err)
 	}
 	defer instancesClient.Close()
 
-	var ops []*compute.Operation
 	var errors *multierror.Error
-
 	defaultParams := constants.DevDefaultParams
 
 	it, err := listInstances(ctx, instancesClient, gcpProject, defaultParams.DefaultRegion)
@@ -124,17 +107,12 @@ func releaseExpiredVMs(ctx context.Context, gcpProject string) error {
 		}
 		if expired {
 			logging.Infof(ctx, "Scheduling %s for deletion.\n", instance.GetName(), instance.GetMetadata().GetItems())
-			op, err := deleteInstance(ctx, instancesClient, instance.GetName(), gcpProject, defaultParams.DefaultRegion)
+			err := deleteInstance(ctx, instancesClient, instance.GetName(), gcpProject, defaultParams.DefaultRegion)
 			if err != nil {
-				errors = multierror.Append(errors, fmt.Errorf("failed deleting VM instance %s: %v", instance.GetName(), err))
+				errors = multierror.Append(errors, fmt.Errorf("failed to schedule VM instance for deletion %s: %v", instance.GetName(), err))
 				continue
 			}
-			ops = append(ops, op)
 		}
-	}
-
-	if err := wait(ctx, ops); err != nil {
-		errors = multierror.Append(errors, fmt.Errorf("failed waiting for VM instance to be deleted: %v", err))
 	}
 
 	logging.Infof(ctx, "Done.")
@@ -152,17 +130,17 @@ func listInstances(ctx context.Context, c *compute.InstancesClient, project, zon
 }
 
 // deleteInstance creates a delete operation for a given instance name.
-func deleteInstance(ctx context.Context, c *compute.InstancesClient, instanceName, project, zone string) (*compute.Operation, error) {
+func deleteInstance(ctx context.Context, c *compute.InstancesClient, instanceName, project, zone string) error {
 	req := &computepb.DeleteInstanceRequest{
 		Project:  project,
 		Zone:     zone,
 		Instance: instanceName,
 	}
-	op, err := c.Delete(ctx, req)
+	_, err := c.Delete(ctx, req)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return op, nil
+	return nil
 }
 
 // TODO(justinsuen): This implementation is a workaround since b/35164571 and
