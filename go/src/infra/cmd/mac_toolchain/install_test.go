@@ -6,6 +6,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -14,6 +15,42 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 )
+
+const ListRuntimeJson = `{
+  "1111111" : {
+    "build" : "21A5248u",
+    "deletable" : true,
+    "identifier" : "11111111",
+    "kind" : "Disk Image",
+    "mountPath" : "\/Library\/Developer\/CoreSimulator\/Volumes\/iOS_21A5248u",
+    "path" : "\/Library\/Developer\/CoreSimulator\/Images\/11111111.dmg",
+    "platformIdentifier" : "com.apple.platform.iphonesimulator",
+    "runtimeBundlePath" : "\/Library\/Developer\/CoreSimulator\/Volumes\/iOS_21A5248u\/Library\/Developer\/CoreSimulator\/Profiles\/Runtimes\/iOS 17.0.simruntime",
+    "runtimeIdentifier" : "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+    "signatureState" : "Verified",
+    "sizeBytes" : 7534187147,
+    "state" : "Ready",
+    "version" : "17.0"
+  }
+}`
+
+const ListRuntimeDiffBuildJson = `{
+  "1111111" : {
+    "build" : "21A51234",
+    "deletable" : true,
+    "identifier" : "11111111",
+    "kind" : "Disk Image",
+    "mountPath" : "\/Library\/Developer\/CoreSimulator\/Volumes\/iOS_21A5248u",
+    "path" : "\/Library\/Developer\/CoreSimulator\/Images\/11111111.dmg",
+    "platformIdentifier" : "com.apple.platform.iphonesimulator",
+    "runtimeBundlePath" : "\/Library\/Developer\/CoreSimulator\/Volumes\/iOS_21A5248u\/Library\/Developer\/CoreSimulator\/Profiles\/Runtimes\/iOS 17.0.simruntime",
+    "runtimeIdentifier" : "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+    "signatureState" : "Verified",
+    "sizeBytes" : 7534187147,
+    "state" : "Ready",
+    "version" : "17.0"
+  }
+}`
 
 func TestInstallXcode(t *testing.T) {
 	t.Parallel()
@@ -774,7 +811,7 @@ func TestInstallXcode(t *testing.T) {
 			})
 		})
 
-		Convey("install Xcode with runtime dmg when already exists", func() {
+		Convey("install Xcode with runtime dmg when not already exists", func() {
 			s.ReturnOutput = []string{
 				"13.2.1", // MacOS Version
 				"cf_bundle_version:12345",
@@ -788,16 +825,22 @@ func TestInstallXcode(t *testing.T) {
 				"xcode-select -s prints nothing",
 				"testdata/Xcode-without-runtime.app",
 				"xcode-select -s prints nothing",
-				"iOS 17.0 (21A5248u) - 85E8B3AD-0465-42AE-ACC8-626F6DEBE435 (Ready)",
+				ListRuntimeDiffBuildJson,
 				"xcode-select -s prints nothing",
-				"Developer mode is currently enabled.\n",
+				"cipd dry run",
+				"cipd ensures",
+				"chomod prints nothing",
 			}
 			installArgsForTest := installArgs
 			installArgsForTest.withRuntime = true
 			installArgsForTest.xcodeAppPath = "testdata/Xcode-without-runtime.app"
 			err := installXcode(ctx, installArgsForTest)
-			So(err, ShouldBeNil)
-			So(s.Calls, ShouldHaveLength, 15)
+			for _, c := range s.Calls {
+				fmt.Printf("Executable: %s\n", c.Executable)
+				fmt.Printf("Args: %s\n", c.Args)
+			}
+			So(err, ShouldNotBeNil)
+			So(s.Calls, ShouldHaveLength, 17)
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
@@ -848,7 +891,108 @@ func TestInstallXcode(t *testing.T) {
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
-			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "list"})
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "list", "-j"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+		})
+
+		Convey("install Xcode with runtime dmg when already exists", func() {
+			s.ReturnOutput = []string{
+				"13.2.1", // MacOS Version
+				"cf_bundle_version:12345",
+				"", // No original Xcode when running xcode-select -p
+				"xcode-select -s prints nothing",
+				"license accpet",
+				"testdata/Xcode-without-runtime.app",
+				"xcode-select -s prints nothing",
+				"xcodebuild -runFirstLaunch",
+				"xcrun simctl list prints a list of all simulators installed",
+				"xcode-select -s prints nothing",
+				"testdata/Xcode-without-runtime.app",
+				"xcode-select -s prints nothing",
+				ListRuntimeJson,
+				"xcode-select -s prints nothing",
+				"testdata/Xcode-without-runtime.app",
+				"xcode-select -s prints nothing",
+				"deleting unused runtime prints nothing",
+				"xcode-select -s prints nothing",
+				"Developer mode is currently enabled.\n",
+			}
+			installArgsForTest := installArgs
+			installArgsForTest.withRuntime = true
+			installArgsForTest.xcodeAppPath = "testdata/Xcode-without-runtime.app"
+			err := installXcode(ctx, installArgsForTest)
+			So(err, ShouldBeNil)
+			So(s.Calls, ShouldHaveLength, 19)
+			callCounter := 0
+			// skip MacOS version check calls
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+				"describe", "test/prefix/mac", "-version", "testVersion",
+			})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-license", "accept"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcodebuild", "-runFirstLaunch"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "list"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "list", "-j"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-without-runtime.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "delete", "-d", "7"})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
