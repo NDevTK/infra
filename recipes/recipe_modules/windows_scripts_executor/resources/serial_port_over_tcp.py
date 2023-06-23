@@ -27,7 +27,8 @@ BUFFER_FLUSH_MAX = 10
 class ParseDict(argparse.Action):
 
   def __call__(self, parser, namespace, values, option_string=None):
-    setattr(namespace, self.dest, dict())
+    if not getattr(namespace, self.dest):
+      setattr(namespace, self.dest, dict())
     for element in values:
       k, v = element.split('=')
       getattr(namespace, self.dest)[k] = v
@@ -243,7 +244,11 @@ def main():
   # add given context to the session
   if args.let:
     for k, v in args.let.items():
-      cmd = {'Type': 'Expr', 'Expr': '${} = {}'.format(k, v), 'Cont': True}
+      cmd = {
+          'Type': 'Expr',
+          'Expr': 'New-Variable -Name {} -Value {} -Force'.format(k, v),
+          'Cont': True
+      }
       response = send_expr(sock, cmd, timeout=args.timeout)
 
   if args.expr:
