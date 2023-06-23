@@ -114,7 +114,7 @@ func (p *provisionState) swapStatefulPartition(ctx context.Context) error {
 		return nil
 	}
 
-	tmpMnt, err := runCmdOutput(p.c, "mktemp -d")
+	tmpMnt, err := runCmdOutput(p.c, "/usr/bin/mktemp -d")
 	if err != nil {
 		return fmt.Errorf("swapStatefulPartition: failed to create temporary directory, %s", err)
 	}
@@ -125,7 +125,7 @@ func (p *provisionState) swapStatefulPartition(ctx context.Context) error {
 		return fmt.Errorf("swapStatefulPartition: failed to create zero file, %s", err)
 	}
 
-	err = runCmd(p.c, fmt.Sprintf("/sbin/mkfs.ext4 -O none %s/fs", tmpMnt))
+	err = runCmd(p.c, fmt.Sprintf("/sbin/mkfs.ext4 -O none,has_journal %s/fs", tmpMnt))
 	if err != nil {
 		return fmt.Errorf("swapStatefulPartition: failed to create powerwash filesystem, %s", err)
 	}
@@ -135,7 +135,7 @@ func (p *provisionState) swapStatefulPartition(ctx context.Context) error {
 		return fmt.Errorf("swapStatefulPartition: failed to create mount directory, %s", err)
 	}
 
-	err = runCmd(p.c, fmt.Sprintf("mount %[1]s/fs %[1]s/mnt", tmpMnt))
+	err = runCmd(p.c, fmt.Sprintf("/bin/mount %[1]s/fs %[1]s/mnt", tmpMnt))
 	if err != nil {
 		return fmt.Errorf("swapStatefulPartition: failed to mount powerwash filesystem, %s", err)
 	}
@@ -161,7 +161,7 @@ func (p *provisionState) swapStatefulPartition(ctx context.Context) error {
 	}
 	pi := getPartitionInfo(r)
 
-	err = runCmd(p.c, fmt.Sprintf("/bin/dd if=%s/fs of=%s bs=1M", tmpMnt, pi.stateful))
+	err = runCmd(p.c, fmt.Sprintf("/bin/dd if=%s/fs of=%s bs=1M conv=sync", tmpMnt, pi.stateful))
 	if err != nil {
 		return fmt.Errorf("swapStatefulPartition: failed to unmount powerwash filesystem, %s", err)
 	}
@@ -212,7 +212,7 @@ func (p *provisionState) provisionOS(ctx context.Context) error {
 
 	if p.preventReboot {
 		log.Printf("provisionOS: reboot prevented by request")
-	} else if err := rebootDUT(ctx, p.c); err != nil {
+	} else if err := hardRebootDUT(ctx, p.c); err != nil {
 		return fmt.Errorf("provisionOS: failed to reboot DUT, %s", err)
 	}
 	return nil
