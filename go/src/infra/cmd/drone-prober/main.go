@@ -28,6 +28,10 @@ var (
 		Name: "drone_docker_invocation_latency",
 		Help: "measures docker run latency",
 	})
+	dockerRunErrorCount = prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "drone_docker_invocation_error_count",
+		Help: "Number of docker run errors",
+	})
 )
 
 // Flag options.
@@ -104,6 +108,7 @@ func runProbe(ctx context.Context) error {
 	cmd := exec.Command("sudo", "docker", "run", "--rm", dockerImage)
 	err := runExec(ctx, cmd)
 	if err != nil {
+		dockerRunErrorCount.Inc()
 		return fmt.Errorf("run probe docker run failed: err=%q", err)
 	}
 	log.Println("Run probe docker run completed succesfully")
