@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,7 +63,7 @@ func (c *saveRun) innerRun(ctx context.Context, env subcommands.Env) error {
 	if err := validateSaveRequest(r); err != nil {
 		return err
 	}
-	if err := ufs.SafeUpdateUFSDUTState(ctx, &c.AuthFlags, r.DutName, r.DutState, r.Config.CrosUfsService); err != nil {
+	if err := ufs.SafeUpdateUFSDUTState(ctx, &c.AuthFlags, r.GetDutName(), r.GetDutState(), r.GetConfig().GetCrosUfsService(), nil); err != nil {
 		return err
 	}
 	return nil

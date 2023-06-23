@@ -60,6 +60,8 @@ type Info struct {
 	State State
 	// Time represents in Unix time of the last updated DUT state recorded.
 	Time int64
+	// Time represents name of device type assosiated with host
+	DeviceType string
 }
 
 // UFSClient represents short set of method of ufsAPI.FleetClient.
@@ -92,6 +94,17 @@ func Read(ctx context.Context, c UFSClient, host string) Info {
 		return Info{
 			State: Unknown,
 		}
+	}
+	i := Info{
+		State:      ConvertFromUFSState(res.GetResourceState()),
+		Time:       res.GetUpdateTime().Seconds,
+		DeviceId:   res.GetMachines()[0],
+		DeviceType: "",
+	}
+	if res.GetChromeosMachineLse() != nil {
+		i.DeviceType = "chromeos"
+	} else if res.GetAttachedDeviceLse() != nil {
+		i.DeviceType = "attached_device"
 	}
 	return Info{
 		State:    ConvertFromUFSState(res.GetResourceState()),

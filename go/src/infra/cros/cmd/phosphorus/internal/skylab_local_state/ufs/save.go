@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"google.golang.org/genproto/protobuf/field_mask"
 
+	ufslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
@@ -27,7 +28,7 @@ var dutStatesSafeForOverwrite = map[dutstate.State]bool{
 // SafeUpdateUFSDUTState attempts to safely update the DUT state to the
 // given value in UFS. States other than Ready and NeedsRepair are
 // ignored.
-func SafeUpdateUFSDUTState(ctx context.Context, authFlags *authcli.Flags, dutName, dutState, ufsService string) error {
+func SafeUpdateUFSDUTState(ctx context.Context, authFlags *authcli.Flags, dutName, dutState, ufsService string, repairRequests []string) error {
 	c, err := NewClient(ctx, ufsService, authFlags)
 	if err != nil {
 		return errors.Annotate(err, "save update ufs state").Err()
@@ -42,8 +43,31 @@ func SafeUpdateUFSDUTState(ctx context.Context, authFlags *authcli.Flags, dutNam
 			DeviceId:      info.DeviceId,
 			Hostname:      dutName,
 			ResourceState: dutstate.ConvertToUFSState(dutstate.State(dutState)),
-			UpdateMask:    &field_mask.FieldMask{Paths: []string{"dut.state"}},
 		}
+		maskPaths := []string{"dut.state"}
+		// ReapirRequests are supported only for ChromeOS devices.
+		if info.DeviceType == "chromeos" {
+			// Convert repair-requests to UFS enum.
+			var ufsRepairRequests []ufslab.DutState_RepairRequest
+			for _, rr := range repairRequests {
+				if v, ok := ufslab.DutState_RepairRequest_value[rr]; ok {
+					ufsRepairRequests = append(ufsRepairRequests, ufslab.DutState_RepairRequest(v))
+				} else {
+					logging.Debugf(ctx, "Repair-request %q is incorrect and skipped!", rr)
+				}
+			}
+			if len(ufsRepairRequests) > 0 {
+				maskPaths = append(maskPaths, "dut_state.repair_requests")
+				req.DeviceData = &ufsAPI.UpdateTestDataRequest_ChromeosData{
+					ChromeosData: &ufsAPI.UpdateTestDataRequest_ChromeOs{
+						DutState: &ufslab.DutState{
+							RepairRequests: ufsRepairRequests,
+						},
+					},
+				}
+			}
+		}
+		req.UpdateMask = &field_mask.FieldMask{Paths: maskPaths}
 		_, err = c.UpdateTestData(ctx, req)
 		return errors.Annotate(err, "save update ufs state").Err()
 	}

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,21 +90,21 @@ func (c *saveRun) innerRun(a subcommands.Application, env subcommands.Env) error
 	}
 
 	// Ensure save applies to all DUTs in a multi-DUTs task.
-	targets := append(request.PeerDuts, request.DutName)
+	targets := append(request.GetPeerDuts(), request.GetDutName())
 
 	ctx := cli.GetContext(a, c, env)
-	ctx = ufs.SetupContext(ctx, request.Config.UfsNamespace)
+	ctx = ufs.SetupContext(ctx, request.GetConfig().GetUfsNamespace())
 
 	for _, hostname := range targets {
 		bcs := botcache.Store{
-			CacheDir: request.Config.AutotestDir,
+			CacheDir: request.GetConfig().GetAutotestDir(),
 			Name:     hostname,
 		}
 		s, err := bcs.Load()
 		if err != nil {
 			return err
 		}
-		i, err := getHostInfo(request.ResultsDir, hostname)
+		i, err := getHostInfo(request.GetResultsDir(), hostname)
 		if err != nil {
 			return err
 		}
@@ -114,7 +114,7 @@ func (c *saveRun) innerRun(a subcommands.Application, env subcommands.Env) error
 		}
 
 		// Update the DUT state in UFS (if the current state is safe to update).
-		ufs.SafeUpdateUFSDUTState(ctx, &c.authFlags, hostname, request.DutState, request.Config.CrosUfsService)
+		ufs.SafeUpdateUFSDUTState(ctx, &c.authFlags, hostname, request.GetDutState(), request.GetConfig().GetCrosUfsService(), request.GetRepairRequests())
 	}
 
 	if request.GetSealResultsDir() {
