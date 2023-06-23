@@ -1659,7 +1659,7 @@ func crosRepairActions() map[string]*Action {
 				"If so, then download the stable image to usbkey.",
 			},
 			Conditions: []string{
-				"cros_is_time_to_force_download_image_to_usbkey",
+				"It is time to update USB-drive image",
 			},
 			Dependencies: []string{
 				"Download stable image to USB-key",
@@ -1779,11 +1779,12 @@ func crosRepairActions() map[string]*Action {
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
-		"cros_is_time_to_force_download_image_to_usbkey": {
+		"It is time to update USB-drive image": {
 			Docs: []string{
 				"Check if it is time to force download image to usbkey",
 				"from the number of failed recoveries since last successful PARIS repair task.",
 			},
+			ExecName: "cros_is_time_to_force_download_image_to_usbkey",
 			ExecExtraArgs: []string{
 				"task_name:recovery",
 				"repair_failed_count:1",

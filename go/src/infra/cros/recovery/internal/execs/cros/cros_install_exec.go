@@ -279,6 +279,7 @@ func isTimeToForceDownloadImageToUsbKeyExec(ctx context.Context, info *execs.Exe
 	if err != nil {
 		return errors.Annotate(err, "is time to force download image to usbkey").Err()
 	}
+	log.Debugf(ctx, "Total failed repairs: %d", repairFailedCount)
 	// The previous repair task was successful, and the user didn't specify
 	// when repair_failed_count == 0 to flash usbkey image.
 	if repairFailedCount == 0 && repairFailedCountTarget != 0 {
