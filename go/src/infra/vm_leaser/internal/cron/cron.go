@@ -23,6 +23,12 @@ import (
 	"infra/vm_leaser/internal/constants"
 )
 
+// Options are server options for the cron server
+type Options struct {
+	GcpProjects []string
+	ServiceEnv  *string
+}
+
 // Default VM Leaser cron parameters
 const (
 	// TODO(justinsuen): See isInstanceExpired comment.
@@ -32,8 +38,8 @@ const (
 )
 
 // RegisterCronServer initializes the VM Leaser cron server.
-func RegisterCronServer(srv *server.Server, gcpProjects []string) {
-	for _, p := range gcpProjects {
+func RegisterCronServer(srv *server.Server, opts Options) {
+	for _, p := range opts.GcpProjects {
 		projName := p // variable scoping
 		cronName := fmt.Sprint("vm_leaser.vm_cleanup:", projName)
 		srv.RunInBackground(cronName, func(ctx context.Context) {

@@ -34,10 +34,21 @@ func main() {
 		"The GCP projects where VMs should be managed",
 	)
 
+	srvEnv := flag.String(
+		"service-env",
+		"dev",
+		"The service deployment environment (dev/prod).",
+	)
+
 	server.Main(nil, nil, func(srv *server.Server) error {
 		logging.Infof(srv.Context, "Registering cron server.")
 		logging.Infof(srv.Context, "Starting VM lifecycle management for %v GCP projects", gcpProjects)
-		cron.RegisterCronServer(srv, gcpProjects)
+
+		opts := cron.Options{
+			GcpProjects: gcpProjects,
+			ServiceEnv:  srvEnv,
+		}
+		cron.RegisterCronServer(srv, opts)
 		return nil
 	})
 }
