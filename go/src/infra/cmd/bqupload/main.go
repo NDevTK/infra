@@ -36,6 +36,8 @@ import (
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/flag/stringmapflag"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 
@@ -43,7 +45,7 @@ import (
 )
 
 const (
-	userAgent = "bqupload v1.4"
+	userAgent = "bqupload v1.5"
 	// The bigquery API imposes a hard limit of 50,000 rows. We use a much lower
 	// default limit to also make it less likely that the total payload size
 	// exceeds the maximum, and to limit the blast radius when a batch fails to
@@ -78,6 +80,7 @@ type uploadOpts struct {
 	project string
 	dataset string
 	table   string
+	columns stringmapflag.Value
 
 	input        io.Reader
 	auth         oauth2.TokenSource
@@ -100,6 +103,9 @@ func run(ctx context.Context) error {
 		"Number of rows per insert batch.")
 	flag.BoolVar(&bqOpts.jsonList, "json-list", false,
 		"Instead of looking for newline delimited rows, looks for a JSON list of rows.")
+	flag.Var(&bqOpts.columns, "column",
+		`Parse all the rows as usual, but add or replace these columns in each row. The
+		value is parsed as JSON. Can be specified multiple times to set/replace multiple columns.`)
 
 	// Auth options.
 	defaults := chromeinfra.DefaultAuthOptions()
@@ -191,11 +197,21 @@ func upload(ctx context.Context, opts *uploadOpts) error {
 	inserter.IgnoreUnknownValues = opts.ignoreUnknownValues
 	inserter.SkipInvalidRows = opts.skipInvalidRows
 
+	// Prepare column overrides.
+	overrides := make(map[string]bigquery.Value, len(opts.columns))
+	for key, value := range opts.columns {
+		var val bigquery.Value
+		if err := json.Unmarshal([]byte(value), &val); err != nil {
+			return errors.Annotate(err, "parsing -column %q value", key).Err()
+		}
+		overrides[key] = val
+	}
+
 	// Note: we may potentially read rows from 'input' and upload them at the same
 	// time for true streaming uploads in case 'input' is stdin and it's produced
 	// on the fly. This is not trivial though and isn't needed yet, so we read
 	// everything at once.
-	rows, err := readInput(opts.input, opts.insertIDBase, opts.jsonList)
+	rows, err := readInput(opts.input, opts.insertIDBase, opts.jsonList, overrides)
 	if err != nil {
 		return err
 	}
@@ -258,7 +274,14 @@ func doInsert(ctx context.Context, stderr io.Writer, opts *uploadOpts, inserter 
 	return nil
 }
 
-func readInput(r io.Reader, insertIDBase string, jsonList bool) (rows []*tableRow, err error) {
+func overrideColumns(row map[string]bigquery.Value, columns map[string]bigquery.Value) map[string]bigquery.Value {
+	for k, v := range columns {
+		row[k] = v
+	}
+	return row
+}
+
+func readInput(r io.Reader, insertIDBase string, jsonList bool, overrides map[string]bigquery.Value) (rows []*tableRow, err error) {
 	if jsonList {
 		var target []map[string]bigquery.Value
 		if err := json.NewDecoder(r).Decode(&target); err != nil {
@@ -266,7 +289,7 @@ func readInput(r io.Reader, insertIDBase string, jsonList bool) (rows []*tableRo
 		}
 		rows = make([]*tableRow, len(target))
 		for i, row := range target {
-			rows[i] = &tableRow{row, fmt.Sprintf("%s:%d", insertIDBase, i)}
+			rows[i] = &tableRow{overrideColumns(row, overrides), fmt.Sprintf("%s:%d", insertIDBase, i)}
 		}
 		return
 	}
@@ -290,6 +313,7 @@ func readInput(r io.Reader, insertIDBase string, jsonList bool) (rows []*tableRo
 			if err != nil {
 				return nil, fmt.Errorf("bad input line %d: %s", lineNo, err)
 			}
+			row.data = overrideColumns(row.data, overrides)
 			rows = append(rows, row)
 		}
 	}

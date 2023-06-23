@@ -31,8 +31,16 @@ func value(insertID, jsonVal string) savedValue {
 	return v
 }
 
-func doReadInput(data string, jsonList bool) ([]savedValue, error) {
-	savers, err := readInput(strings.NewReader(data), "seed", jsonList)
+func doReadInput(data string, jsonList bool, extraColumns string) ([]savedValue, error) {
+	var cols map[string]bigquery.Value
+	if extraColumns != "" {
+		err := json.Unmarshal([]byte(extraColumns), &cols)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	savers, err := readInput(strings.NewReader(data), "seed", jsonList, cols)
 	if err != nil {
 		return nil, err
 	}
@@ -49,19 +57,19 @@ func TestReadInput(t *testing.T) {
 	t.Parallel()
 
 	Convey("Empty", t, func() {
-		vals, err := doReadInput("", false)
+		vals, err := doReadInput("", false, "")
 		So(err, ShouldBeNil)
 		So(vals, ShouldHaveLength, 0)
 	})
 
 	Convey("Whitespace only", t, func() {
-		vals, err := doReadInput("\n  \n\n  \n  ", false)
+		vals, err := doReadInput("\n  \n\n  \n  ", false, "")
 		So(err, ShouldBeNil)
 		So(vals, ShouldHaveLength, 0)
 	})
 
 	Convey("One line", t, func() {
-		vals, err := doReadInput(`{"k": "v"}`, false)
+		vals, err := doReadInput(`{"k": "v"}`, false, "")
 		So(err, ShouldBeNil)
 		So(vals, ShouldResemble, []savedValue{
 			value("seed:0", `{"k": "v"}`),
@@ -75,7 +83,7 @@ func TestReadInput(t *testing.T) {
 			{"k": "v2"}
 			{"k": "v3"}
 
-		`, false)
+		`, false, "")
 		So(err, ShouldBeNil)
 		So(vals, ShouldResemble, []savedValue{
 			value("seed:0", `{"k": "v1"}`),
@@ -90,7 +98,7 @@ func TestReadInput(t *testing.T) {
 
 			{"k": "v2
 			{"k": "v2"}
-		`, false)
+		`, false, "")
 		So(err, ShouldErrLike, `bad input line 4: bad JSON - unexpected end of JSON input`)
 	})
 
@@ -99,7 +107,7 @@ func TestReadInput(t *testing.T) {
 			{"k": "v1"},
 			{"k": "v2"},
 			{"k": "v2"}
-		]`, true)
+		]`, true, "")
 		So(err, ShouldBeNil)
 		So(out, ShouldResemble, []savedValue{
 			value("seed:0", `{"k": "v1"}`),
@@ -108,10 +116,38 @@ func TestReadInput(t *testing.T) {
 		})
 	})
 
+	Convey("JSON List (with extra columns)", t, func() {
+		out, err := doReadInput(`[
+			{"k1": "v1", "k3": "v1"},
+			{"k1": "v2"},
+			{"k1": "v2", "k4":"v5"}
+		]`, true, `{"k1": "v3", "k3": "v4"}`)
+		So(err, ShouldBeNil)
+		So(out, ShouldResemble, []savedValue{
+			value("seed:0", `{"k1": "v3", "k3": "v4"}`),
+			value("seed:1", `{"k1": "v3", "k3": "v4"}`),
+			value("seed:2", `{"k1": "v3", "k3": "v4", "k4":"v5"}`),
+		})
+	})
+
+	Convey("lines (with extra columns)", t, func() {
+		out, err := doReadInput(`
+			{"k1": "v1", "k3": "v1"}
+			{"k1": "v2"}
+			{"k1": "v2", "k4":"v5"}
+		`, false, `{"k1": "v3", "k3": "v4"}`)
+		So(err, ShouldBeNil)
+		So(out, ShouldResemble, []savedValue{
+			value("seed:0", `{"k1": "v3", "k3": "v4"}`),
+			value("seed:1", `{"k1": "v3", "k3": "v4"}`),
+			value("seed:2", `{"k1": "v3", "k3": "v4", "k4":"v5"}`),
+		})
+	})
+
 	Convey("Huge line", t, func() {
 		// Note: this breaks bufio.Scanner with "token too long" error.
 		huge := fmt.Sprintf(`{"k": %q}`, strings.Repeat("x", 100000))
-		vals, err := doReadInput(huge, false)
+		vals, err := doReadInput(huge, false, "")
 		So(err, ShouldBeNil)
 		So(vals, ShouldResemble, []savedValue{
 			value("seed:0", huge),
