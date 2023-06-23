@@ -29,6 +29,8 @@ message VmInstance {
   AddressPort ssh = 2;
   // Configuration used to create the instance.
   Config config = 3;
+  // GceRegion is the region that the VM was instantiated in.
+  string gce_region = 4;
 }
 
 // Request for the InstanceApi.Create endpoint.

@@ -7,8 +7,6 @@ package api
 import (
 	"errors"
 	"fmt"
-
-	vmleaserpb "infra/vm_leaser/api/v1"
 )
 
 // ValidateVmLeaserBackend validates inputs of CreateVmInstanceRequest to be
@@ -20,9 +18,6 @@ func (r *CreateVmInstanceRequest) ValidateVmLeaserBackend() error {
 	vmLeaserBackend := r.GetConfig().GetVmLeaserBackend()
 	if vmLeaserBackend == nil {
 		return fmt.Errorf("invalid argument: bad backend: want vmleaser, got %v", r.GetConfig())
-	}
-	if err := vmleaserpb.ValidateVMRequirements(vmLeaserBackend.GetVmRequirements()); err != nil {
-		return fmt.Errorf("invalid config argument: %w", err)
 	}
 	return nil
 }

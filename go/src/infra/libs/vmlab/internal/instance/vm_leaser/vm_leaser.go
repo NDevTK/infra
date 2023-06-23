@@ -78,9 +78,6 @@ func (g *vmLeaserInstanceApi) Delete(ctx context.Context, ins *vmlabpb.VmInstanc
 	if vmLeaserBackend.GetVmRequirements().GetGceProject() == "" {
 		return errors.New("project must be set")
 	}
-	if vmLeaserBackend.GetVmRequirements().GetGceRegion() == "" {
-		return errors.New("zone must be set")
-	}
 
 	vmLeaser, err := client.NewClient(ctx, envConfig(vmLeaserBackend.GetEnv()))
 	if err != nil {
@@ -112,7 +109,8 @@ func (g *vmLeaserInstanceApi) leaseVM(ctx context.Context, client vmLeaserServic
 			Address: rsp.GetVm().GetAddress().GetHost(),
 			Port:    rsp.GetVm().GetAddress().GetPort(),
 		},
-		Config: req.GetConfig(),
+		Config:    req.GetConfig(),
+		GceRegion: rsp.GetVm().GetGceRegion(),
 	}, nil
 }
 
@@ -121,7 +119,7 @@ func (g *vmLeaserInstanceApi) releaseVM(ctx context.Context, client vmLeaserServ
 	_, err := client.ReleaseVM(ctx, &api.ReleaseVMRequest{
 		LeaseId:    ins.GetName(),
 		GceProject: vmLeaserBackend.GetVmRequirements().GetGceProject(),
-		GceRegion:  vmLeaserBackend.GetVmRequirements().GetGceRegion(),
+		GceRegion:  ins.GetGceRegion(),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to release VM: %w", err)
