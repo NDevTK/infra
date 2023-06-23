@@ -126,7 +126,8 @@ class IssuesServicer(monorail_servicer.MonorailServicer):
 
     with work_env.WorkEnv(mc, self.services) as we:
       related_refs = we.GetRelatedIssueRefs([issue])
-
+      migrated_id = we.GetIssueMigratedID(
+        issue_ref.project_name, issue_ref.local_id)
     with mc.profiler.Phase('making user views'):
       users_involved_in_issue = tracker_bizobj.UsersInvolvedInIssues([issue])
       users_by_id = framework_views.MakeAllUserViews(
@@ -137,7 +138,7 @@ class IssuesServicer(monorail_servicer.MonorailServicer):
     with mc.profiler.Phase('converting to response objects'):
       response = issues_pb2.IssueResponse()
       response.issue.CopyFrom(converters.ConvertIssue(
-          issue, users_by_id, related_refs, config))
+          issue, users_by_id, related_refs, config, migrated_id))
 
     return response
 

@@ -39,7 +39,6 @@ from tracker import tracker_bizobj
 from services import service_manager
 from mrproto import tracker_pb2
 
-
 class IssuesServicerTest(unittest.TestCase):
 
   NOW = 1234567890
@@ -160,8 +159,10 @@ class IssuesServicerTest(unittest.TestCase):
 
     self.assertEqual('proj', response.project_name)
 
-  def testGetIssue_Normal(self):
+  @patch('businesslogic.work_env.WorkEnv.GetIssueMigratedID')
+  def testGetIssue_Normal(self, mockGetIssueMigratedID):
     """We can get an issue."""
+    mockGetIssueMigratedID.return_value = None
     request = issues_pb2.GetIssueRequest()
     request.issue_ref.project_name = 'proj'
     request.issue_ref.local_id = 1
@@ -177,6 +178,27 @@ class IssuesServicerTest(unittest.TestCase):
     self.assertEqual(1, len(actual.blocked_on_issue_refs))
     self.assertEqual('proj', actual.blocked_on_issue_refs[0].project_name)
     self.assertEqual(2, actual.blocked_on_issue_refs[0].local_id)
+
+  @patch('businesslogic.work_env.WorkEnv.GetIssueMigratedID')
+  def testGetIssue_WithMigratedID(self, mockGetIssueMigratedID):
+    """We can get an issue."""
+    mockGetIssueMigratedID.return_value = '123'
+    request = issues_pb2.GetIssueRequest()
+    request.issue_ref.project_name = 'proj'
+    request.issue_ref.local_id = 1
+    mc = monorailcontext.MonorailContext(
+        self.services, cnxn=self.cnxn, requester='owner@example.com')
+    mc.LookupLoggedInUserPerms(self.project)
+
+    response = self.CallWrapped(self.issues_svcr.GetIssue, mc, request)
+
+    actual = response.issue
+    self.assertEqual('proj', actual.project_name)
+    self.assertEqual(1, actual.local_id)
+    self.assertEqual(1, len(actual.blocked_on_issue_refs))
+    self.assertEqual('proj', actual.blocked_on_issue_refs[0].project_name)
+    self.assertEqual(2, actual.blocked_on_issue_refs[0].local_id)
+    self.assertEqual('123', actual.migrated_id)
 
   def testGetIssue_Moved(self):
     """We can get a moved issue."""

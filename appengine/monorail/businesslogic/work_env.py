@@ -67,6 +67,7 @@ from framework import framework_constants
 from framework import framework_helpers
 from framework import framework_views
 from framework import permissions
+from redirect import redirectissue
 from search import frontendsearchpipeline
 from services import features_svc
 from services import tracker_fulltext
@@ -1623,6 +1624,13 @@ class WorkEnv(object):
     self._AssertUserCanViewIssue(
         issue, allow_viewing_deleted=allow_viewing_deleted)
     return issue
+
+  def GetIssueMigratedID(self, project_name, local_id):
+    """Return the redirect id for a specific issue."""
+    if project_name is None or local_id is None:
+      logging.warning('No project name or local id: %r:%r', project_name, local_id)
+      return None
+    return redirectissue.RedirectIssue.Get(project_name, local_id)
 
   def GetRelatedIssueRefs(self, issues):
     """Return a dict {iid: (project_name, local_id)} for all related issues."""

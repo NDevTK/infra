@@ -331,7 +331,7 @@ def ConvertFieldValues(
   return fvs
 
 
-def ConvertIssue(issue, users_by_id, related_refs, config):
+def ConvertIssue(issue, users_by_id, related_refs, config, migrated_id=None):
   """Convert our protorpc Issue to a protoc Issue.
 
   Args:
@@ -404,7 +404,8 @@ def ConvertIssue(issue, users_by_id, related_refs, config):
   # resolved and database has been repaired.
   if issue.attachment_count >= 0:
     result.attachment_count = issue.attachment_count
-
+  if migrated_id is not None:
+    result.migrated_id = migrated_id
   return result
 
 

@@ -731,8 +731,10 @@ function extractIdFromLabels(labelRefs, validPrefixes) {
 
 // Gets the Issue Tracker or Launch ID of a moved issue.
 export const migratedId = createSelector(
+  viewedIssue,
   labelRefs,
-  (labelRefs) => {
+  (issue, labelRefs) => {
+    if (issue && issue.migratedId) return issue.migratedId;
     if (!labelRefs) return '';
 
     const launchIssue = extractIdFromLabels(labelRefs, MIGRATED_LAUNCH_ISSUE_PREFIXES);
@@ -747,8 +749,10 @@ export const migratedId = createSelector(
 
 // Gets the Issue Migrated Type of a moved issue.
 export const migratedType = createSelector(
+  viewedIssue,
   labelRefs,
-  (labelRefs) => {
+  (issue, labelRefs) => {
+    if (issue && issue.migratedId) return migratedTypes.BUGANIZER_TYPE;
     if (!labelRefs) return migratedTypes.NONE;
 
     const launchIssue = extractIdFromLabels(labelRefs, MIGRATED_LAUNCH_ISSUE_PREFIXES);

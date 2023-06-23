@@ -46,7 +46,7 @@ from testing import fake
 from testing import testing_helpers
 from tracker import tracker_bizobj
 from tracker import tracker_constants
-
+from redirect import redirectissue
 
 def _Issue(project_id, local_id):
   # TODO(crbug.com/monorail/8124): Many parts of monorail's codebase
@@ -2005,6 +2005,23 @@ class WorkEnvTest(unittest.TestCase):
     with self.assertRaises(exceptions.NoSuchIssueException):
       with self.work_env as we:
         _actual = we.GetIssueByLocalID(789, 1)
+
+  @mock.patch("redirect.redirectissue.RedirectIssue.Get")
+  def testGetIssueMigratedID(self, mockRedirect):
+    mockRedirect.return_value = '123'
+    with self.work_env as we:
+      actual = we.GetIssueMigratedID('test', '1')
+    self.assertEqual('123', actual)
+
+  def testGetIssueMigratedID_NoProject(self):
+    with self.work_env as we:
+      actual = we.GetIssueMigratedID(None, 1)
+    self.assertEqual(None, actual)
+
+  def testGetIssueMigratedID_NoLocalID(self):
+    with self.work_env as we:
+      actual = we.GetIssueMigratedID('test', None)
+    self.assertEqual(None, actual)
 
   def testGetRelatedIssueRefs_None(self):
     """We handle issues that have no related issues."""
