@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+	"time"
 
 	clouddatastore "cloud.google.com/go/datastore"
 	"google.golang.org/api/option"
@@ -210,6 +211,13 @@ func (b *buildSpec) goTestArgs(patterns ...string) []string {
 	args := []string{"test", "-json"}
 	if !b.inputs.LongTest {
 		args = append(args, "-short")
+	}
+	if b.inputs.LongTest && b.inputs.Project == "go" { // TODO(dmitshur): Delete after 1.20 drops off.
+		const (
+			goTestDefaultTimeout = 10 * time.Minute // Default value taken from Go 1.20.
+			scale                = 5                // An approximation of GO_TEST_TIMEOUT_SCALE.
+		)
+		args = append(args, "-timeout="+(goTestDefaultTimeout*scale).String())
 	}
 	if b.inputs.RaceMode {
 		args = append(args, "-race")
