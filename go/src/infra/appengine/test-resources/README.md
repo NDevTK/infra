@@ -6,10 +6,11 @@ Running the server:
 eval `../../../../env.py`
 # Needs to be run the first time to set up BigQuery credentials
 gcloud auth application-default login
-go run main.go
+go run main.go -cloud-project chrome-resources-staging
 ```
 
-This will set up the backend server running on port `8800`
+This will set up the backend server running on port `8800` and using the
+chrome-resources-staging GCP project for its data.
 
 ## Frontend
 
