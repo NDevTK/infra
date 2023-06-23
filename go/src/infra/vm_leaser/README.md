@@ -78,7 +78,8 @@ To call an RPC, you can specify the proto and payload via `grpcurl`. Here is an 
     "address": {
       "host": "10.128.0.44",
       "port": 22
-    }
+    },
+    "gceRegion": "us-central1-a"
   }
 }
 ```

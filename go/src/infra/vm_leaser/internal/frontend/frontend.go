@@ -24,6 +24,7 @@ import (
 
 	vmleaserpb "infra/vm_leaser/api/v1"
 	"infra/vm_leaser/internal/constants"
+	"infra/vm_leaser/internal/zone_selector"
 )
 
 // computeInstancesClient interfaces the GCE instance client API.
@@ -53,7 +54,7 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 	logging.Infof(ctx, "[server:LeaseVM] Started")
 
 	// Set defaults for LeaseVMRequest if needed.
-	r = setDefaultLeaseVMRequest(r, s.Env)
+	r = setDefaultLeaseVMRequest(ctx, r, s.Env)
 
 	if err := vmleaserpb.ValidateLeaseVMRequest(r); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "failed to validate lease request: %s", err)
@@ -98,6 +99,7 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 				// Temporarily hardcode as port 22
 				Port: 22,
 			},
+			GceRegion: r.GetHostReqs().GetGceRegion(),
 		},
 	}, nil
 }
@@ -113,7 +115,7 @@ func (s *Server) ReleaseVM(ctx context.Context, r *api.ReleaseVMRequest) (*api.R
 	logging.Infof(ctx, "[server:ReleaseVM] Started")
 
 	// Set default values for ReleaseVMRequest if needed.
-	r = setDefaultReleaseVMRequest(r, s.Env)
+	r = setDefaultReleaseVMRequest(ctx, r, s.Env)
 
 	if err := vmleaserpb.ValidateReleaseVMRequest(r); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "failed to validate release request: %s", err)
@@ -275,7 +277,7 @@ func getDefaultParams(env string) constants.DefaultLeaseParams {
 }
 
 // setDefaultLeaseVMRequest sets default values for VMRequirements.
-func setDefaultLeaseVMRequest(r *api.LeaseVMRequest, env string) *api.LeaseVMRequest {
+func setDefaultLeaseVMRequest(ctx context.Context, r *api.LeaseVMRequest, env string) *api.LeaseVMRequest {
 	defaultParams := getDefaultParams(env)
 	hostReqs := r.GetHostReqs()
 	if hostReqs.GetGceDiskSize() == 0 {
@@ -291,19 +293,16 @@ func setDefaultLeaseVMRequest(r *api.LeaseVMRequest, env string) *api.LeaseVMReq
 		hostReqs.GceProject = defaultParams.DefaultProject
 	}
 	if hostReqs.GetGceRegion() == "" {
-		hostReqs.GceRegion = defaultParams.DefaultRegion
+		hostReqs.GceRegion = zone_selector.SelectZone(ctx, r, time.Now().UnixNano())
 	}
 	return r
 }
 
 // setDefaultReleaseVMRequest sets default values for ReleaseVMRequest.
-func setDefaultReleaseVMRequest(r *api.ReleaseVMRequest, env string) *api.ReleaseVMRequest {
+func setDefaultReleaseVMRequest(ctx context.Context, r *api.ReleaseVMRequest, env string) *api.ReleaseVMRequest {
 	defaultParams := getDefaultParams(env)
 	if r.GetGceProject() == "" {
 		r.GceProject = defaultParams.DefaultProject
-	}
-	if r.GetGceRegion() == "" {
-		r.GceRegion = defaultParams.DefaultRegion
 	}
 	return r
 }

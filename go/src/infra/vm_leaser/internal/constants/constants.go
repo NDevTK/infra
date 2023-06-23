@@ -4,6 +4,7 @@
 
 package constants
 
+// A list of default parameters for VM Leaser
 type DefaultLeaseParams struct {
 	// Default disk size to use for VM creation
 	DefaultDiskSize int64
@@ -50,5 +51,43 @@ var (
 		DefaultRegion: "us-central1-a",
 		// Default duration of lease (in minutes)
 		DefaultLeaseDuration: 600,
+	}
+)
+
+// A list of GCP zones for VM Leaser service to manage VMs in
+var (
+	UsCentral1 = []string{
+		"us-central1-a",
+		"us-central1-b",
+		"us-central1-c",
+		"us-central1-f",
+	}
+
+	UsEast1 = []string{
+		"us-east1-b",
+		"us-east1-c",
+		"us-east1-d",
+	}
+
+	UsEast4 = []string{
+		"us-east4-a",
+		"us-east4-b",
+		"us-east4-c",
+	}
+
+	UsWest1 = []string{
+		"us-west1-a",
+		"us-west1-b",
+		"us-west1-c",
+	}
+)
+
+// Different zonal configurations for different products
+var (
+	ChromeOSZones = [][]string{
+		UsCentral1,
+		UsEast1,
+		UsEast4,
+		UsWest1,
 	}
 )
