@@ -61,12 +61,10 @@ func CreateImagePath(i *buildapi.ContainerImageInfo) (string, error) {
 	if r.GetHostname() == "" || r.GetProject() == "" {
 		return "", errors.Reason("create image path: repository info is missing").Err()
 	}
-	if len(i.GetTags()) == 0 {
-		return "", errors.Reason("create image path: no tags found").Err()
+	if len(i.GetDigest()) == 0 {
+		return "", errors.Reason("create image path: no digest found").Err()
 	}
-	// TODO: update logic ow to choose tags.
-	tag := i.GetTags()[0]
-	path := fmt.Sprintf("%s/%s/%s:%s", r.GetHostname(), r.GetProject(), i.GetName(), tag)
+	path := fmt.Sprintf("%s/%s/%s@%s", r.GetHostname(), r.GetProject(), i.GetName(), i.GetDigest())
 	return path, nil
 }
 
