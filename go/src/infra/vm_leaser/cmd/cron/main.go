@@ -13,15 +13,31 @@ import (
 	"infra/vm_leaser/internal/cron"
 )
 
+// stringListFlags is binded as an array flag usable in command line
+type stringListFlags []string
+
+func (i *stringListFlags) String() string {
+	return "string"
+}
+
+func (i *stringListFlags) Set(value string) error {
+	*i = append(*i, value)
+	return nil
+}
+
+var gcpProjects stringListFlags
+
 func main() {
-	gcpProject := flag.String(
-		"gcp-project",
-		"chrome-fleet-vm-leaser-dev",
-		"The GCP project where VMs are located.",
+	flag.Var(
+		&gcpProjects,
+		"gcp-projects",
+		"The GCP projects where VMs should be managed",
 	)
+
 	server.Main(nil, nil, func(srv *server.Server) error {
 		logging.Infof(srv.Context, "Registering cron server.")
-		cron.RegisterCronServer(srv, *gcpProject)
+		logging.Infof(srv.Context, "Starting VM lifecycle management for %v GCP projects", gcpProjects)
+		cron.RegisterCronServer(srv, gcpProjects)
 		return nil
 	})
 }

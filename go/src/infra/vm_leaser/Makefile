@@ -106,4 +106,4 @@ dev-cron: build-cron
 	--http-addr=":8801" \
 	--admin-addr=":8901" \
 	--auth-service-host=${LUCI_AUTH_SERVICE} \
-	--gcp-project=${GCP_PROJECT}
+	--gcp-projects=${GCP_PROJECT}

@@ -32,19 +32,23 @@ const (
 )
 
 // RegisterCronServer initializes the VM Leaser cron server.
-func RegisterCronServer(srv *server.Server, gcpProject string) {
-	srv.RunInBackground("vm_leaser.cron", func(ctx context.Context) {
-		// releaseExpiredVMs every five minutes. GCP takes about 2 minutes to kill
-		// instances.
-		Run(ctx, 5*time.Minute, gcpProject, releaseExpiredVMs)
-	})
+func RegisterCronServer(srv *server.Server, gcpProjects []string) {
+	for _, p := range gcpProjects {
+		projName := p // variable scoping
+		cronName := fmt.Sprint("vm_leaser.vm_cleanup:", projName)
+		srv.RunInBackground(cronName, func(ctx context.Context) {
+			// releaseExpiredVMs every five minutes. GCP takes about 2 minutes to kill
+			// instances.
+			Run(ctx, 5*time.Minute, projName, releaseExpiredVMs)
+		})
+	}
 }
 
 // Run runs f repeatedly, until the context is cancelled.
 //
 // This method runs f based on minInterval time interval.
 func Run(ctx context.Context, minInterval time.Duration, gcpProject string, f func(context.Context, string) error) {
-	defer logging.Warningf(ctx, "Exiting cron")
+	defer logging.Warningf(ctx, "exiting cron")
 
 	// call calls the provided cron method f
 	//
@@ -52,7 +56,7 @@ func Run(ctx context.Context, minInterval time.Duration, gcpProject string, f fu
 	// cancelled.
 	call := func(ctx context.Context) error {
 		defer paniccatcher.Catch(func(p *paniccatcher.Panic) {
-			logging.Errorf(ctx, "Caught panic: %s\n%s", p.Reason, p.Stack)
+			logging.Errorf(ctx, "caught panic: %s\n%s", p.Reason, p.Stack)
 		})
 		return f(ctx, gcpProject)
 	}
@@ -60,7 +64,7 @@ func Run(ctx context.Context, minInterval time.Duration, gcpProject string, f fu
 	for {
 		start := clock.Now(ctx)
 		if err := call(ctx); err != nil {
-			logging.Errorf(ctx, "Iteration failed: %s", err)
+			logging.Errorf(ctx, "iteration failed: %s", err)
 		}
 
 		// Ensure minInterval between iterations.
@@ -76,7 +80,7 @@ func Run(ctx context.Context, minInterval time.Duration, gcpProject string, f fu
 
 // releaseExpiredVMs releases VMs based on their expiration times.
 func releaseExpiredVMs(ctx context.Context, gcpProject string) error {
-	logging.Debugf(ctx, "Releasing expired VMs in %s", gcpProject)
+	logging.Debugf(ctx, "releasing expired VMs for GCP project: %v", gcpProject)
 	instancesClient, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		return fmt.Errorf("NewInstancesRESTClient: %v", err)
@@ -84,38 +88,48 @@ func releaseExpiredVMs(ctx context.Context, gcpProject string) error {
 	defer instancesClient.Close()
 
 	var errors *multierror.Error
-	defaultParams := constants.DevDefaultParams
 
-	it, err := listInstances(ctx, instancesClient, gcpProject, defaultParams.DefaultRegion)
-	if err != nil {
-		return err
+	allZones := []string{}
+	for _, subZones := range constants.AllQuotaZones {
+		for _, subZone := range subZones {
+			allZones = append(allZones, subZone)
+		}
 	}
 
-	// Iterate through each instance and check the expiry for deletion.
-	for {
-		instance, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
+	// Loop through all quota zones for expired instances.
+	for _, zone := range allZones {
+		logging.Debugf(ctx, "processing zone %v", zone)
+		it, err := listInstances(ctx, instancesClient, gcpProject, zone)
 		if err != nil {
 			return err
 		}
 
-		expired, err := isInstanceExpired(ctx, instance, time.Now().Unix())
-		if err != nil {
-			break
-		}
-		if expired {
-			logging.Infof(ctx, "Scheduling %s for deletion.\n", instance.GetName(), instance.GetMetadata().GetItems())
-			err := deleteInstance(ctx, instancesClient, instance.GetName(), gcpProject, defaultParams.DefaultRegion)
+		// Iterate through each instance and check the expiry for deletion.
+		for {
+			instance, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
 			if err != nil {
-				errors = multierror.Append(errors, fmt.Errorf("failed to schedule VM instance for deletion %s: %v", instance.GetName(), err))
-				continue
+				return err
+			}
+
+			expired, err := isInstanceExpired(ctx, instance, time.Now().Unix())
+			if err != nil {
+				break
+			}
+			if expired {
+				logging.Infof(ctx, "scheduling %s in zone %s for deletion", instance.GetName(), zone, instance.GetMetadata().GetItems())
+				err := deleteInstance(ctx, instancesClient, instance.GetName(), gcpProject, zone)
+				if err != nil {
+					errors = multierror.Append(errors, fmt.Errorf("failed to schedule VM instance for deletion %s: %v", instance.GetName(), err))
+					continue
+				}
 			}
 		}
 	}
 
-	logging.Infof(ctx, "Done.")
+	logging.Infof(ctx, "done")
 	return errors.ErrorOrNil()
 }
 

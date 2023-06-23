@@ -83,11 +83,22 @@ var (
 )
 
 // Different zonal configurations for different products
+//
+// AllQuotaZones is the list of zones where quota for VMs has been given. All
+// other zonal configurations are defined using AllQuotaZones. Each key in
+// AllQuotaZones represents a main zone and is defined in the GCP region format.
 var (
+	AllQuotaZones = map[string][]string{
+		"us-central1": UsCentral1,
+		"us-east1":    UsEast1,
+		"us-east4":    UsEast4,
+		"us-west1":    UsWest1,
+	}
+
 	ChromeOSZones = [][]string{
-		UsCentral1,
-		UsEast1,
-		UsEast4,
-		UsWest1,
+		AllQuotaZones["us-central1"],
+		AllQuotaZones["us-east1"],
+		AllQuotaZones["us-east4"],
+		AllQuotaZones["us-west1"],
 	}
 )
