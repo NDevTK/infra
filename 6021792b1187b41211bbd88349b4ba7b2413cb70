@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8e8685c7_5076d514",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1560543
+      },
+      "writtenOn": "2023-06-23T19:47:35Z",
+      "side": 1,
+      "message": "We changed DEPS (removed entries), but I believe this will be just fine since I couldn\u0027t find usages of removed entries.",
+      "revId": "6021792b1187b41211bbd88349b4ba7b2413cb70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
