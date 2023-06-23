@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"google.golang.org/grpc/codes"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/logging"
@@ -1866,6 +1867,141 @@ func TestGetDeviceData(t *testing.T) {
 			So(resp, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "no valid device found")
+		})
+	})
+}
+
+func mustParseMachineLSE(input string) *ufspb.MachineLSE {
+	out := &ufspb.MachineLSE{}
+	err := protojson.Unmarshal([]byte(input), out)
+	if err != nil {
+		panic(err.Error())
+	}
+	return out
+}
+
+// TestGetDUTsForLabstation tests extracting DUT names from servo names on a labstation object.
+func TestGetDUTsForLabstation(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	ctx = gologger.StdConfig.Use(ctx)
+	ctx = logging.SetLevel(ctx, logging.Debug)
+	osCtx, _ := util.SetupDatastoreNamespace(ctx, util.OSNamespace)
+	tf, validate := newTestFixtureWithContext(ctx, t)
+	defer validate()
+
+	const labstation = `
+{
+        "name": "fake-labstation",
+        "machineLsePrototype": "atl:labstation",
+        "hostname": "fake-labstation",
+        "chromeosMachineLse": {
+                "deviceLse": {
+                        "config": null,
+                        "rpmInterface": null,
+                        "networkDeviceInterface": null,
+                        "labstation": {
+                                "hostname": "fake-labstation",
+                                "servos": [
+                                        {
+                                                "servoHostname": "fake-labstation",
+                                                "servoPort": 9999,
+                                                "servoSerial": "C1903142810",
+                                                "servoType": "servo_v4_with_ccd_cr50",
+                                                "servoSetup": "SERVO_SETUP_REGULAR",
+                                                "servoTopology": null,
+                                                "servoFwChannel": "SERVO_FW_STABLE",
+                                                "servoComponent": [],
+                                                "dockerContainerName": "",
+                                                "usbDrive": null
+                                        },
+                                        {
+                                                "servoHostname": "fake-labstation",
+                                                "servoPort": 9998,
+                                                "servoSerial": "C1903141304",
+                                                "servoType": "servo_v4_with_ccd_cr50",
+                                                "servoSetup": "SERVO_SETUP_REGULAR",
+                                                "servoTopology": null,
+                                                "servoFwChannel": "SERVO_FW_STABLE",
+                                                "servoComponent": [],
+                                                "dockerContainerName": "",
+                                                "usbDrive": null
+                                        },
+                                        {
+                                                "servoHostname": "fake-labstation",
+                                                "servoPort": 9997,
+                                                "servoSerial": "C1903142830",
+                                                "servoType": "servo_v4_with_ccd_cr50",
+                                                "servoSetup": "SERVO_SETUP_REGULAR",
+                                                "servoTopology": null,
+                                                "servoFwChannel": "SERVO_FW_STABLE",
+                                                "servoComponent": [],
+                                                "dockerContainerName": "",
+                                                "usbDrive": null
+                                        },
+                                        {
+                                                "servoHostname": "fake-labstation",
+                                                "servoPort": 9996,
+                                                "servoSerial": "C1903140158",
+                                                "servoType": "servo_v4_with_ccd_cr50",
+                                                "servoSetup": "SERVO_SETUP_REGULAR",
+                                                "servoTopology": null,
+                                                "servoFwChannel": "SERVO_FW_STABLE",
+                                                "servoComponent": [],
+                                                "dockerContainerName": "",
+                                                "usbDrive": null
+                                        }
+                                ],
+                                "rpm": {
+                                        "powerunitName": "chromeos6-row13_14-rack6-rpm3",
+                                        "powerunitOutlet": "AA4"
+                                },
+                                "pools": [
+                                        "labstation_main"
+                                ]
+                        }
+                }
+        },
+        "machines": [
+                "0dd25c5a-3230-4d05-9554-4846dee85df8"
+        ],
+        "updateTime": "2023-06-27T18:17:12.907351534Z",
+        "nic": "",
+        "vlan": "",
+        "ip": "",
+        "rack": "chromeos6-row14-rack6",
+        "manufacturer": "",
+        "tags": [],
+        "zone": "ZONE_CHROMEOS6",
+        "deploymentTicket": "",
+        "description": "",
+        "resourceState": "STATE_SERVING",
+        "schedulable": false,
+        "ownership": null,
+        "logicalZone": "LOGICAL_ZONE_UNSPECIFIED",
+        "realm": "@internal:ufs/os-atl"
+}
+`
+
+	Convey("smoke test", t, func() {
+		_, err := inventory.CreateMachineLSE(osCtx, mustParseMachineLSE(labstation))
+		if err != nil {
+			panic(err.Error())
+		}
+
+		req := &ufsAPI.GetDUTsForLabstationRequest{
+			Hostname: []string{"fake-labstation"},
+		}
+
+		resp, err := tf.Fleet.GetDUTsForLabstation(tf.C, req)
+		So(err, ShouldBeNil)
+		So(resp, ShouldResembleProto, &ufsAPI.GetDUTsForLabstationResponse{
+			Items: []*ufsAPI.GetDUTsForLabstationResponse_LabstationMapping{
+				{
+					Hostname: "fake-labstation",
+					DutName:  []string{},
+				},
+			},
 		})
 	})
 }
