@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@ import (
 	"net"
 	"net/url"
 	"os"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -39,7 +38,7 @@ var (
 	// TLW_CACHING_PREFERRED_SERVICES is a comma separated list of caching
 	// services (each in format of 'http://<server name or IP>:<port>'). When
 	// specified, it bypasses the normal cache server selection.
-	preferredCachingServices = parseCSVAndSort(os.Getenv("TLW_CACHING_PREFERRED_SERVICES"))
+	preferredCachingServices = os.Getenv("TLW_CACHING_PREFERRED_SERVICES")
 )
 
 type tlwServer struct {
@@ -57,11 +56,11 @@ func newTLWServer(ufsService string, dutSSHSigner ssh.Signer, proxySSHSigner ssh
 	if err != nil {
 		return nil, errors.Reason("newTLWServer: %s", err).Err()
 	}
-	ce, err := cache.NewUFSEnv(ufsClient)
+
+	ce, err := cache.NewEnv(preferredCachingServices, ufsClient)
 	if err != nil {
 		return nil, errors.Reason("newTLWServer: %s", err).Err()
 	}
-
 	dutSSHSigners := []ssh.Signer{defaultSSHSigner}
 	if dutSSHSigner != nil {
 		dutSSHSigners = append(dutSSHSigners, dutSSHSigner)
@@ -74,7 +73,6 @@ func newTLWServer(ufsService string, dutSSHSigner ssh.Signer, proxySSHSigner ssh
 		cFrontend: cache.NewFrontend(ce),
 		ufsClient: ufsClient,
 	}
-	s.cFrontend.PreferredServices = preferredCachingServices
 	return s, nil
 }
 
@@ -291,15 +289,4 @@ func (s *tlwServer) GetDut(ctx context.Context, req *tls.GetDutRequest) (*tls.Du
 func setupUFSContext(ctx context.Context) context.Context {
 	md := metadata.Pairs(ufsUtil.Namespace, ufsUtil.OSNamespace)
 	return metadata.NewOutgoingContext(ctx, md)
-}
-
-// parseCSVAndSort parse input comma separated string into a string slice and
-// sort it.
-func parseCSVAndSort(value string) []string {
-	if value == "" {
-		return nil
-	}
-	ss := strings.Split(value, ",")
-	sort.Strings(ss)
-	return ss
 }

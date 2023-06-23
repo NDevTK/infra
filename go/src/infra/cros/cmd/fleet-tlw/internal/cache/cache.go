@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import (
 	"net"
 
 	ufsmodels "infra/unifiedfleet/api/v1/models"
+	ufsapi "infra/unifiedfleet/api/v1/rpc"
 )
 
 // Environment is the runtime dependencies, e.g. networking, etc. of the
@@ -42,12 +43,24 @@ type Subnet struct {
 	Backends []string
 }
 
+// NewEnv creates new instance of Environment according to inputs.
+func NewEnv(preferredCachingServices string, ufsClient ufsapi.FleetClient) (Environment, error) {
+	env, err := NewPreferredEnv(preferredCachingServices)
+	if err == nil {
+		log.Printf("new cache env: created preferred env using %q", preferredCachingServices)
+		return env, nil
+	}
+
+	log.Printf("new cache env: no preferred services specified, try to load from UFS")
+	env, err = NewUFSEnv(ufsClient)
+	if err != nil {
+		return nil, fmt.Errorf("new env: %s", err)
+	}
+	return env, nil
+}
+
 // Frontend manages caching backends and assigns backends for client requests.
 type Frontend struct {
-	// PreferredServices is the services preferred to use. When set, the
-	// services fetched from UFS will be ignored.
-	PreferredServices []string
-
 	env Environment
 }
 
@@ -60,14 +73,8 @@ func NewFrontend(env Environment) *Frontend {
 // `filename`.
 // This function is concurrency safe.
 func (f *Frontend) AssignBackend(dutName, filename string) (string, error) {
-	log.Printf("Assign caching backend: try preferred services")
-	b, err := f.assignPreferredBackend(dutName, filename)
-	if err == nil {
-		return b, nil
-	}
-
-	log.Printf("Assign caching backend: try UFS zone based: %s", err)
-	b, err = f.assignBackendByZone(dutName, filename)
+	log.Printf("Assign caching backend: try UFS zone based")
+	b, err := f.assignBackendByZone(dutName, filename)
 	if err == nil {
 		return b, nil
 	}
@@ -77,13 +84,6 @@ func (f *Frontend) AssignBackend(dutName, filename string) (string, error) {
 		return "", fmt.Errorf("assign backend: %s", err)
 	}
 	return b, nil
-}
-
-func (f *Frontend) assignPreferredBackend(dutName, filename string) (string, error) {
-	if len(f.PreferredServices) == 0 {
-		return "", fmt.Errorf("assign preferred backend for %q: no preferred services", dutName)
-	}
-	return findOneBackend(filename, f.PreferredServices), nil
 }
 
 func (f *Frontend) assignBackendByZone(dutName, filename string) (string, error) {

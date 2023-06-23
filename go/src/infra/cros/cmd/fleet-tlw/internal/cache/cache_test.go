@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -188,10 +188,9 @@ func TestAssignBackend_dutNotInZoneOrSubnet(t *testing.T) {
 
 func TestAssignBackend_preferred(t *testing.T) {
 	t.Parallel()
-	env := mockEnv{}
 	want := "http://1.1.1.1:8000"
+	env, _ := NewEnv(want, nil)
 	fe := NewFrontend(env)
-	fe.PreferredServices = []string{want}
 	got, err := fe.AssignBackend("2.2.2.2", "path/to/file")
 	if err != nil {
 		t.Errorf("AssignBackend() err %v, want %v", err, nil)
