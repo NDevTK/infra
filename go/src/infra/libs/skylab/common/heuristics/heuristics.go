@@ -76,6 +76,12 @@ func NormalizeTextualData(data string) string {
 	return strings.ToLower(strings.TrimSpace(data))
 }
 
+// NormalizeServoNameToDeviceName converts a servo name (ending in "-servo") to a device name by stripping
+// the "-servo" suffix, which is a longstanding convention.
+func NormalizeServoNameToDeviceName(servo string) string {
+	return strings.TrimSuffix(servo, "-servo")
+}
+
 // LooksLikeFieldMask checks whether a given string looks like a field mask.
 var LooksLikeFieldMask = regexp.MustCompile(`\A[a-z][A-Za-z0-9\.]*\z`).MatchString
 

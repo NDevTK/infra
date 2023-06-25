@@ -328,3 +328,38 @@ func TestTruncateErrorStringIsIdempotent(t *testing.T) {
 	}
 
 }
+
+// TestNormalizeServoNameToDeviceName tests normalizing a servo name
+// to a device name.
+func TestNormalizeServoNameToDeviceName(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		name   string
+		input  string
+		output string
+	}{
+		{
+			name:   "empty string",
+			input:  "",
+			output: "",
+		},
+		{
+			name:   "basic string",
+			input:  "some-long-dut-name-servo",
+			output: "some-long-dut-name",
+		},
+	}
+
+	for _, tt := range cases {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			expected := tt.output
+			actual := NormalizeServoNameToDeviceName(tt.input)
+			if diff := cmp.Diff(expected, actual); diff != "" {
+				t.Errorf("unexpected diff (-want +got): %s", diff)
+			}
+		})
+	}
+}
