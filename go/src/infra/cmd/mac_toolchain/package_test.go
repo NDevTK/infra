@@ -498,6 +498,8 @@ func TestPackageRuntimeDMG(t *testing.T) {
 			packageRuntimeDMGArgs := PackageRuntimeDMGArgs{
 				runtimePath:        filepath.Join("testdata", "runtime-dmg"),
 				runtimeVersion:     "test-ios-version",
+				runtimeBuild:       "test-ios-build",
+				xcodeVersion:       "test-xcode-version",
 				cipdPackagePrefix:  "test/prefix",
 				serviceAccountJSON: "",
 				outputDir:          "",
@@ -512,6 +514,8 @@ func TestPackageRuntimeDMG(t *testing.T) {
 			So(s.Calls[0].Args, ShouldContain, "-verification-timeout")
 			So(s.Calls[0].Args, ShouldContain, "60m")
 			So(s.Calls[0].Args, ShouldContain, "ios_runtime_version:test-ios-version")
+			So(s.Calls[0].Args, ShouldContain, "ios_runtime_build:test-ios-build")
+			So(s.Calls[0].Args, ShouldContain, "test-xcode-version")
 			So(s.Calls[0].Args, ShouldContain, "test-ios-version")
 
 			So(s.Calls[0].Args, ShouldNotContain, "-service-account-json")
@@ -521,6 +525,8 @@ func TestPackageRuntimeDMG(t *testing.T) {
 			packageRuntimeDMGArgs := PackageRuntimeDMGArgs{
 				runtimePath:        filepath.Join("testdata", "runtime-dmg"),
 				runtimeVersion:     "test-ios-version",
+				runtimeBuild:       "test-ios-build",
+				xcodeVersion:       "test-xcode-version",
 				cipdPackagePrefix:  "test/prefix",
 				serviceAccountJSON: "",
 				outputDir:          "",
@@ -543,6 +549,8 @@ func TestPackageRuntimeDMG(t *testing.T) {
 			packageRuntimeDMGArgs := PackageRuntimeDMGArgs{
 				runtimePath:        filepath.Join("testdata", "runtimes"),
 				runtimeVersion:     "test-ios-version",
+				runtimeBuild:       "test-ios-build",
+				xcodeVersion:       "test-xcode-version",
 				cipdPackagePrefix:  "test/prefix",
 				serviceAccountJSON: "",
 				outputDir:          "",
@@ -559,6 +567,8 @@ func TestPackageRuntimeDMG(t *testing.T) {
 			packageRuntimeDMGArgs := PackageRuntimeDMGArgs{
 				runtimePath:        filepath.Join("testdata", "runtime-dmg"),
 				runtimeVersion:     "test-ios-version",
+				runtimeBuild:       "test-ios-build",
+				xcodeVersion:       "test-xcode-version",
 				cipdPackagePrefix:  "test/prefix",
 				serviceAccountJSON: "",
 				outputDir:          "testdata/outdir",
