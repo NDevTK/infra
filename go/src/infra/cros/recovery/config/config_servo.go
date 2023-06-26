@@ -301,6 +301,9 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Make sure the servo has the required number of servo components.",
 				},
+				Conditions: []string{
+					"Is not Flex device",
+				},
 				Dependencies: []string{
 					"Servo topology min one child",
 					"Servo topology min two children",
@@ -512,6 +515,9 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Run basic cr50/ti50 detections checks.",
 				},
+				Conditions: []string{
+					"Is not Flex device",
+				},
 				Dependencies: []string{
 					"Set state:SBU_LOW_VOLTAGE",
 					"Servo SBU voltage is good",
@@ -614,6 +620,7 @@ func servoRepairPlan() *Plan {
 					"Verify that Cr50 console is responsive.",
 				},
 				Conditions: []string{
+					"Is not Flex device",
 					"Servo main device is GSC chip",
 				},
 				Dependencies: []string{
@@ -644,6 +651,7 @@ func servoRepairPlan() *Plan {
 					"Expect that cr50/GSC will required to set cr50 testlab is enabled.",
 				},
 				Conditions: []string{
+					"Is not Flex device",
 					"Servo main device is CCD",
 				},
 				Dependencies: []string{
@@ -740,6 +748,7 @@ func servoRepairPlan() *Plan {
 					"Verify if servo connected to the DUTand received required voltage from it.",
 				},
 				Conditions: []string{
+					"Is not Flex device",
 					"Is servo_v4(p1) with type-a connector",
 					"DUT has CrOS EC",
 				},
@@ -798,6 +807,7 @@ func servoRepairPlan() *Plan {
 			},
 			"Verify EC": {
 				Conditions: []string{
+					"Is not Flex device",
 					"DUT has CrOS EC",
 				},
 				Dependencies: []string{
@@ -1066,6 +1076,7 @@ func servoRepairPlan() *Plan {
 					"If pin is not present then issue can be related to incorrect connected servo or issue with connector.",
 				},
 				Conditions: []string{
+					"Is not Flex device",
 					"is_servo_micro",
 					"Warm reset control known by servo",
 				},
@@ -1082,6 +1093,7 @@ func servoRepairPlan() *Plan {
 			},
 			"Cold reset pin is detected": {
 				Conditions: []string{
+					"Is not Flex device",
 					"Is servo_v4(p1) with type-a connector",
 				},
 				Dependencies: []string{
@@ -1121,15 +1133,19 @@ func servoRepairPlan() *Plan {
 			"Record good servo type": {
 				Docs: []string{
 					"Record servo type information.",
+					"The action need always work if not then we have issue.",
 				},
 				Dependencies: []string{
-					"Set state:SERVO_HOST_ISSUE",
+					"Set state:BROKEN",
 				},
 				ExecName: "servo_update_servo_type_label",
 			},
 			"Servod detect all children components": {
 				Docs: []string{
 					"Check if servod detected all required children components.",
+				},
+				Conditions: []string{
+					"Is not Flex device",
 				},
 				Dependencies: []string{
 					"Set state:SERVOD_DUT_CONTROLLER_MISSING",
@@ -1689,6 +1705,16 @@ func servoRepairPlan() *Plan {
 				},
 				ExecTimeout: &durationpb.Duration{Seconds: 70},
 				RunControl:  RunControl_RUN_ONCE,
+			},
+			"Is not Flex device": {
+				Docs: []string{
+					"Verify that device is belong Reven models",
+				},
+				ExecExtraArgs: []string{
+					"string_values:aurora,reven",
+					"invert_result:true",
+				},
+				ExecName: "dut_check_board",
 			},
 		},
 	}
