@@ -18,21 +18,6 @@ const mockApi : Api = {
   firstPage: () => {
     // do nothing.
   },
-  updateFilter: () => {
-    // do nothing.
-  },
-  updateDate: () => {
-    // do nothing.
-  },
-  updatePeriod: () => {
-    // do nothing.
-  },
-  updateRowsPerPage: () => {
-    // do nothing.
-  },
-  updateComponent: () => {
-    // do nothing.
-  },
 };
 
 const mockMetrics: Map<MetricType, number> = new Map<MetricType, number>(

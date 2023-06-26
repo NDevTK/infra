@@ -7,6 +7,7 @@
     "eject": "react-scripts eject",
     "fix": "npx eslint --fix .",
     "start": "react-scripts start",
+    "start-stg": "PROXY='https://chrome-resources-staging.uc.r.appspot.com' react-scripts start",
     "test": "react-scripts test"
   },
   "browserslist": {

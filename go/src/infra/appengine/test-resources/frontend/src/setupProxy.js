@@ -5,12 +5,14 @@
 /* eslint-disable */
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
+const target = process.env.PROXY || 'http://localhost:8800'
+
 // Proxy all /api methods
 module.exports = function (app) {
   app.use(
     '/prpc',
     createProxyMiddleware({
-      target: 'http://localhost:8800',
+      target: target,
       changeOrigin: true,
     })
   );

@@ -23,8 +23,9 @@ export interface TestVariant {
   metrics: Map<MetricType, number>
 }
 
-interface MetricsContextValue {
+export interface MetricsContextValue {
   tests: Test[],
+  page: number,
   lastPage: boolean,
   api: Api
 }
@@ -34,19 +35,13 @@ export interface Api {
   nextPage: () => void,
   prevPage: () => void,
   firstPage: () => void,
-  updateRowsPerPage: (rowsPerPage: number) => void,
-
-  // Filter related Apis
-  updateFilter: (filter: string) => void,
-  updateDate: (date: string) => void,
-  updatePeriod: (period: Period) => void,
-  updateComponent: (component: string) => void,
 }
 
 export const MetricsContext = createContext<MetricsContextValue>(
     {
       tests: [],
       lastPage: true,
+      page: 0,
       api: {
         nextPage: () => {
           // Do nothing
@@ -55,21 +50,6 @@ export const MetricsContext = createContext<MetricsContextValue>(
           // Do nothing
         },
         firstPage: () => {
-          // Do nothing
-        },
-        updateFilter: () => {
-          // Do nothing
-        },
-        updateDate: () => {
-          // Do nothing
-        },
-        updatePeriod: () => {
-          // Do nothing
-        },
-        updateRowsPerPage: () => {
-          // Do nothing
-        },
-        updateComponent: () => {
           // Do nothing
         },
       },
@@ -138,23 +118,20 @@ export function createMetricsMap(metrics: Map<string, TestMetricsArray>): Map<Me
 export const MetricsContextProvider = ({ children } : MetricsContextProviderProps) => {
   const [tests, setTests] = useState<Test[]>([]);
   const [lastPage, setLastPage] = useState(false);
-  const [page, setPage] = useState(0);
-  const [filter, setFilter] = useState('');
-  const [period, setPeriod] = useState(Period.DAY);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [date, setDate] = useState('2023-05-30');
-  const [component, setComponent] = useState('Blink');
+  let [page, setPage] = useState(0);
 
   useEffect(() => {
     // Initialize MetricContextValue on mount
     fetchTestMetricsHelper();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // TODO: Figure out how to fix the lint error
   }, []);
 
   function fetchTestMetricsHelper() {
     return fetchTestMetrics({
-      'component': component,
-      'period': period,
-      'dates': [date],
+      'component': 'Blink',
+      'period': Period.DAY,
+      'dates': ['2023-05-30'],
       'metrics': [
         MetricType.NUM_RUNS,
         MetricType.AVG_RUNTIME,
@@ -162,9 +139,8 @@ export const MetricsContextProvider = ({ children } : MetricsContextProviderProp
         MetricType.NUM_FAILURES,
         // MetricType.AVG_CORES,
       ],
-      'filter': filter,
-      'page_offset': page,
-      'page_size': rowsPerPage,
+      'page_offset': page * 25,
+      'page_size': 25,
       'sort': { metric: SortType.SORT_NAME, ascending: true },
     }).then((resp) => {
       const tests: Test[] = [];
@@ -198,44 +174,26 @@ export const MetricsContextProvider = ({ children } : MetricsContextProviderProp
 
   const api: Api = {
     nextPage: () => {
-      setPage(page + 1);
+      page++;
+      setPage(page);
       fetchTestMetricsHelper();
     },
     prevPage: () => {
-      setPage(page - 1);
-      fetchTestMetricsHelper();
+      if (page > 0) {
+        page--;
+        setPage(page);
+        fetchTestMetricsHelper();
+      }
     },
     firstPage: () => {
+      page = 0;
       setPage(0);
-      fetchTestMetricsHelper();
-    },
-    updateFilter: (newFilter: string) => {
-      setFilter(newFilter);
-      setPage(0);
-      fetchTestMetricsHelper();
-    },
-    updateDate: (newDate: string) => {
-      setDate(newDate);
-      setPage(0);
-      fetchTestMetricsHelper();
-    },
-    updatePeriod: (newPeriod: Period) => {
-      setPeriod(newPeriod);
-      setPage(0);
-      fetchTestMetricsHelper();
-    },
-    updateRowsPerPage: (newRowsPerPage: number) => {
-      setRowsPerPage(newRowsPerPage),
-      fetchTestMetricsHelper();
-    },
-    updateComponent: (newComponent: string) => {
-      setComponent(newComponent),
       fetchTestMetricsHelper();
     },
   };
 
   return (
-    <MetricsContext.Provider value={{ tests, lastPage, api }}>
+    <MetricsContext.Provider value={{ tests, page, lastPage, api }}>
       { children }
     </MetricsContext.Provider>
   );

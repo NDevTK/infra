@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import { screen } from '@testing-library/react';
-import { Api, Test } from '../context/MetricsContext';
+import { Test } from '../context/MetricsContext';
 import { MetricType } from '../../api/resources';
 import { renderWithContext } from '../../utils/testUtils';
 import ResourcesTable from './ResourcesTable';
@@ -41,37 +41,9 @@ const tests: Test[] = [
   test,
 ];
 
-// Mock api. We will just test if they are called.
-const mockApi : Api = {
-  nextPage: () => {
-    // do nothing.
-  },
-  prevPage: () => {
-    // do nothing.
-  },
-  firstPage: () => {
-    // do nothing.
-  },
-  updateFilter: () => {
-    // do nothing.
-  },
-  updateDate: () => {
-    // do nothing.
-  },
-  updatePeriod: () => {
-    // do nothing.
-  },
-  updateRowsPerPage: () => {
-    // do nothing.
-  },
-  updateComponent: () => {
-    // do nothing.
-  },
-};
-
 describe('when rendering the ResourcesTable', () => {
   it('should render the TableContainer', () => {
-    renderWithContext(<ResourcesTable/>, tests, false, mockApi);
+    renderWithContext(<ResourcesTable/>, { tests });
     expect(screen.getByTestId('tableBody')).toBeInTheDocument();
     expect(screen.getByText('Test Suite')).toBeInTheDocument();
     expect(screen.getByText('# Runs')).toBeInTheDocument();
