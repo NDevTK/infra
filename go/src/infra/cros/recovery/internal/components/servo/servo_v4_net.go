@@ -1,5 +1,5 @@
-// Copyright 2022 The ChromiumOS Authors. All rights reserved.  Use
-// of this source code is governed by a BSD-style license that can be
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package servo
@@ -34,7 +34,7 @@ func ResetServoV4p1EthernetController(ctx context.Context, servod components.Ser
 	}()
 	if err := servod.Set(ctx, servoV4p1NetResetControl, "off"); err != nil {
 		log.Debugf("Reset servo_v4p1 network controller: fail to set 'off' value. Error: %q", err.Error())
-		return errors.Annotate(err, "set PD role").Err()
+		return errors.Annotate(err, "set servo_v4.1 ethernet power").Err()
 	}
 	time.Sleep(timeout)
 	return nil

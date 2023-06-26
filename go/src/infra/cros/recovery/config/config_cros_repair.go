@@ -135,6 +135,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			RecoveryActions: []string{
 				"Cold reset by servo and wait for SSH",
+				"Reset servo_v4.1 ethernet and wait for SSH",
 				"Battery cut-off by servo and wait for SSH",
 				"Power cycle DUT by RPM and wait",
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
@@ -3373,6 +3374,34 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode, with force to DEV-mode",
 			},
+		},
+		"Reset servo_v4.1 ethernet and wait for SSH": {
+			Docs: []string{
+				"This repair action will reset servo ethernet power and wait for ssh, applicable to servo_v4.1 only",
+			},
+			Conditions: []string{
+				"Is servod running",
+				"is_servo_v4p1_by_serial_number",
+			},
+			Dependencies: []string{
+				"Reset servo_v4.1 ethernet power",
+				"Wait to be SSHable (normal boot)",
+			},
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Reset servo_v4.1 ethernet power": {
+			Docs: []string{
+				"Reset servo_v4.1 ethernet power via built-in control",
+			},
+			Dependencies: []string{
+				"Is servod running",
+			},
+			ExecExtraArgs: []string{
+				"reset_timeout:1",
+			},
+			ExecName:   "servo_v4p1_network_reset",
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 	}
 }
