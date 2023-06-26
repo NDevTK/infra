@@ -49,6 +49,9 @@ const MacPackageName = "mac"
 // Package name of iOS package in CIPD. The package contains iOS SDK.
 const IosPackageName = "ios"
 
+// Maximum number of days to keep an iOS runtime within Xcode since last used
+const MaxIOSRuntimeKeepDays = "14"
+
 // KindType is the type for enum values for the -kind argument.
 type KindType string
 
@@ -119,6 +122,8 @@ type uploadRuntimeDMGRun struct {
 	commonFlags
 	runtimePath        string
 	runtimeVersion     string
+	runtimeBuild       string
+	xcodeVersion       string
 	serviceAccountJSON string
 }
 
@@ -132,6 +137,8 @@ type packageRuntimeDMGRun struct {
 	commonFlags
 	runtimePath    string
 	runtimeVersion string
+	runtimeBuild   string
+	xcodeVersion   string
 	outputDir      string
 }
 
@@ -146,6 +153,7 @@ type installRuntimeRun struct {
 type installRuntimeDMGRun struct {
 	commonFlags
 	runtimeVersion     string
+	xcodeVersion       string
 	outputDir          string
 	serviceAccountJSON string
 }
@@ -283,10 +291,20 @@ func (c *uploadRuntimeDMGRun) Run(a subcommands.Application, args []string, env 
 		errors.Log(ctx, errors.Reason("iOS runtime version is not specified (-runtime-version)").Err())
 		return 1
 	}
+	if c.runtimeBuild == "" {
+		errors.Log(ctx, errors.Reason("iOS runtime build is not specified (-runtime-build)").Err())
+		return 1
+	}
+	if c.xcodeVersion == "" {
+		errors.Log(ctx, errors.Reason("iOS runtime xcode version is not specified (-xcode-version)").Err())
+		return 1
+	}
 
 	packageRuntimeDMGArgs := PackageRuntimeDMGArgs{
 		runtimePath:        stripLastTrailingSlash(c.runtimePath),
 		runtimeVersion:     stripLastTrailingSlash(c.runtimeVersion),
+		runtimeBuild:       stripLastTrailingSlash(c.runtimeBuild),
+		xcodeVersion:       stripLastTrailingSlash(c.xcodeVersion),
 		cipdPackagePrefix:  stripLastTrailingSlash(c.cipdPackagePrefix),
 		serviceAccountJSON: c.serviceAccountJSON,
 		outputDir:          "",
@@ -341,10 +359,20 @@ func (c *packageRuntimeDMGRun) Run(a subcommands.Application, args []string, env
 		errors.Log(ctx, errors.Reason("iOS runtime version is not specified (-runtime-version)").Err())
 		return 1
 	}
+	if c.runtimeBuild == "" {
+		errors.Log(ctx, errors.Reason("iOS runtime build is not specified (-runtime-build)").Err())
+		return 1
+	}
+	if c.xcodeVersion == "" {
+		errors.Log(ctx, errors.Reason("iOS runtime xcode version is not specified (-xcode-version)").Err())
+		return 1
+	}
 
 	PackageRuntimeDMGArgs := PackageRuntimeDMGArgs{
 		runtimePath:        stripLastTrailingSlash(c.runtimePath),
 		runtimeVersion:     stripLastTrailingSlash(c.runtimeVersion),
+		runtimeBuild:       stripLastTrailingSlash(c.runtimeBuild),
+		xcodeVersion:       stripLastTrailingSlash(c.xcodeVersion),
 		cipdPackagePrefix:  stripLastTrailingSlash(c.cipdPackagePrefix),
 		serviceAccountJSON: "",
 		outputDir:          c.outputDir,
@@ -402,6 +430,7 @@ func (c *installRuntimeDMGRun) Run(a subcommands.Application, args []string, env
 
 	runtimeDMGInstallArgs := RuntimeDMGInstallArgs{
 		runtimeVersion:     c.runtimeVersion,
+		xcodeVersion:       c.xcodeVersion,
 		installPath:        c.outputDir,
 		cipdPackagePrefix:  c.cipdPackagePrefix,
 		serviceAccountJSON: c.serviceAccountJSON,
@@ -453,6 +482,8 @@ func uploadRuntimeDMGFlagVars(c *uploadRuntimeDMGRun) {
 	c.Flags.StringVar(&c.serviceAccountJSON, "service-account-json", "", "Service account to use for authentication.")
 	c.Flags.StringVar(&c.runtimePath, "runtime-path", "", "Parent path of iOS dmg file to be uploaded. (required)")
 	c.Flags.StringVar(&c.runtimeVersion, "runtime-version", "", "the iOS runtime version to be upload. For example, ios-16-4 (required)")
+	c.Flags.StringVar(&c.runtimeBuild, "runtime-build", "", "the iOS runtime build to be upload. For example, 21A5268h (required)")
+	c.Flags.StringVar(&c.xcodeVersion, "xcode-version", "", "the corresponding Xcode version. For example, 15a5161b (required)")
 }
 
 func packageRuntimeFlagVars(c *packageRuntimeRun) {
@@ -465,6 +496,8 @@ func packageRuntimeDMGFlagVars(c *packageRuntimeDMGRun) {
 	commonFlagVars(&c.commonFlags)
 	c.Flags.StringVar(&c.runtimePath, "runtime-path", "", "Parent path of iOS dmg file to be uploaded. (required)")
 	c.Flags.StringVar(&c.runtimeVersion, "runtime-version", "", "the iOS runtime version to be upload. For example, ios-16-4 (required)")
+	c.Flags.StringVar(&c.runtimeVersion, "runtime-build", "", "the iOS runtime build to be upload. For example, 21A5268h (required)")
+	c.Flags.StringVar(&c.xcodeVersion, "xcode-version", "", "the corresponding Xcode version. For example, 15A5161b (required)")
 	c.Flags.StringVar(&c.outputDir, "output-dir", "", "Path to drop created CIPD packages. (required)")
 }
 
@@ -478,7 +511,8 @@ func installRuntimeFlagVars(c *installRuntimeRun) {
 
 func installRuntimeDMGFlagVars(c *installRuntimeDMGRun) {
 	commonFlagVars(&c.commonFlags)
-	c.Flags.StringVar(&c.runtimeVersion, "runtime-version", "", "iOS runtime version. Format e.g. \"ios-14-4\"")
+	c.Flags.StringVar(&c.runtimeVersion, "runtime-version", "", "iOS runtime version. Format e.g. \"ios-14-4\" (required)")
+	c.Flags.StringVar(&c.xcodeVersion, "xcode-version", "", "the corresponding Xcode version. Format e.g. \"15a5161b\"")
 	c.Flags.StringVar(&c.outputDir, "output-dir", "", "Path where to install the runtime DMG (required).")
 	c.Flags.StringVar(&c.serviceAccountJSON, "service-account-json", "", "Service account to use for authentication.")
 }

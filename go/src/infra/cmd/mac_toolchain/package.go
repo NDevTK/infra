@@ -419,6 +419,8 @@ func packageRuntime(ctx context.Context, args PackageRuntimeArgs) error {
 type PackageRuntimeDMGArgs struct {
 	runtimePath        string
 	runtimeVersion     string
+	runtimeBuild       string
+	xcodeVersion       string
 	cipdPackagePrefix  string
 	serviceAccountJSON string
 	outputDir          string
@@ -462,9 +464,12 @@ func packageRuntimeDMG(ctx context.Context, args PackageRuntimeDMGArgs) error {
 
 	tags := []string{
 		"ios_runtime_version:" + args.runtimeVersion,
+		"ios_runtime_build:" + args.runtimeBuild,
 	}
+	xcodeBuildVersion := strings.ToLower(args.xcodeVersion)
 	refs := []string{
 		args.runtimeVersion,
+		xcodeBuildVersion,
 	}
 
 	if args.skipRefTag {
