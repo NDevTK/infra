@@ -52,14 +52,8 @@ for the Go setup.
     mac_toolchain install -xcode-version XXXX -output-dir /path/to/root
 
 Add `-kind mac` or `-kind ios` argument to install a package for mac or ios
-tasks. ~~iOS kind has iOS SDK and default iOS runtime installed additionally.~~
-(**As of 2023, Xcode is now uploaded as a whole to the "mac" package if you are on MacOS13+, so there is
-no difference between mac and ios kind -- both will install the entire Xcode.app
-with ~~iOS runtime included~~**)
-(**As of Xcode 15, runtime is no longer bundled within Xcode**)
- If
-not specified, the tool installs a mac kind. Additional, you can use `-withRuntime=False`, to exclude installing
-runtime dmg with the Xcode. By default, the flag is True
+tasks. iOS kind has iOS SDK and default iOS runtime installed additionally.
+If not specified, the tool installs a mac kind. Additionally, you can use `-withRuntime=False`, to exclude installing runtime dmg with the Xcode. By default, the flag is True
 
 This command will install the requested version of `Xcode.app` in the `/path/to/root`
 folder.  Run `mac_toolchain help install` for more information.
@@ -110,20 +104,21 @@ download and install them to Xcode in order to support testing on those addition
 
 Runtime is currently being uploaded to cipd using dmg format. See crbug/1440179.
 
-1. Launch Xcode. If you have not downloaded one, please download the latest from go/xcode.
-2. Navigate to Xcode -> Settings -> Platforms -> + sign on the bottom left corner. Choose iOS,
-and download the desired iOS version (e.g. iOS 16.2 Simulator)
-3. After download is complete, it should show up on the list of platforms. Then right click
-on the downloaded iOS simulator, and select "Export Disk Image". **Important:** make sure
-you export to an empty folder, where the iOS disk image will be the
+1. Download the newest iOS runtime dmg and Xcode (if haven't already) from go/xcode.
+2. After download is complete, put the dmg into an empty folder. **Important:** it can be in any folder, but just make sure the iOS disk image will be the
 only file in there.
-4. Upload the disk image file to cipd by running the below command:
+3. There are 3 main args in the upload-runtime-dmg command:<br>
+***runtime-version***: this is usually in the format of "ios-xx-x", for example "ios-16-2"<br>
+***runtime-build***: this is the build number of the iOS runtime, which can be found in xcodereleases.com. For example iOS 16.2 beta 2 has a build number of 20c52.<br>
+***xcode-version***: this is the first Xcode version that supports the uploaded runtime. For example 14c18 for ios-16-2.<br>
+
+Upload the disk image file to cipd by running the below command:
 ```
-mac_toolchain upload-runtime-dmg -runtime-path /Users/yueshe/Documents/ios16-2-runtime/ -runtime-version ios-16-2
+mac_toolchain upload-runtime-dmg -runtime-path [path to your folder that contains the dmg file] -runtime-version [iOS version] -runtime-build [runtime build] -xcode-version [xcode version]
 ```
 For example:
 ```
-mac_toolchain upload-runtime-dmg -runtime-path [path to your folder that contains the dmg file] -runtime-version [iOS version]
+mac_toolchain upload-runtime-dmg -runtime-path /Users/yueshe/Documents/ios16-2-runtime/ -runtime-version ios-16-2 -runtime-build 20c52 -xcode-version 14c18
 ```
 
 ### Downloading a runtime dmg
@@ -133,6 +128,12 @@ combinations.
 An example command:
 ```
 mac_toolchain install-runtime-dmg -output-dir /Users/yueshe/Documents/ios16-2-runtime/ -runtime-version ios-16-2
+```
+
+Sometimes there could be multiple ios-16-2 on cipd, for example multiple beta versions of a runtime, so only the latest uploaded will be downloaded. To download a specific version of ios runtime, please also specify the xcode version that's first compatible with the runtime.
+For example:
+```
+mac_toolchain install-runtime-dmg -output-dir /Users/yueshe/Documents/ios16-2-runtime/ -runtime-version ios-16-2 -xcode-version 14c18
 ```
 
 
@@ -187,12 +188,14 @@ downloaded through Xcode to system library
 mac_toolchain install -kind ios -xcode-version SOME_VERSION -output-dir path/to/Xcode.app -with-runtime=False
 ```
 
-~~This is specifically used in iOS tester machines across chromium infra where
+This is specifically used in iOS tester machines across chromium infra where
 mac_toolchain is invoked to download Xcode. iOS test runner further downloads
 the requested runtime in task and assembles a full Xcode package with runtime
-from multiple packages downloaded (or read from cache).~~<br>
+from multiple packages downloaded (or read from cache).<br>
 **Update (2023)**: in MacOS13+, all Xcode.app contents will be bundled in the "mac" package,
 so the above command will still install the runtime to the output directory.
+**Update (2023 Jun)**: For Xcode15+, Xcode no longer bundles runtime within xcode.app, so installing
+runtime with this command will indeed not install the runtime.
 
 
 
@@ -213,7 +216,7 @@ You can then install Xcode from these local packages with:
 
 To debug iOS runtime packaging locally, run:
 
-    mac_toolchain package-runtime-dmg -output-dir path/to/dir -runtime-path parent/path/to/ios-runtime-dmg/ -runtime-version [e.g. ios-16-1]
+    mac_toolchain package-runtime-dmg -output-dir path/to/dir -runtime-path parent/path/to/ios-runtime-dmg/ -runtime-version [e.g. ios-16-1] -runtime-build [e.g. 20b71] -xcode-version [e.g 14b47b]
 
 This will drop `ios_runtime_dmg.cipd` files in `path/to/out`
 directory and will not try to upload the packages to CIPD server.
