@@ -1,6 +1,8 @@
+# ChromeOS CI Team
+include chromiumos/owners:v1:/infra/OWNERS.ci
+
+# FTE Contributors
 fqj@chromium.org
 shaochuan@chromium.org
 mingkong@google.com
-
-# ChromeOS CI Team
-include chromiumos/owners:v1:/infra/OWNERS.ci
+justinsuen@google.com
