@@ -60,8 +60,8 @@ func (cmd *DutVmReleaseCmd) ExtractDependencies(
 			if sk.DutVm.GetConfig().GetVmLeaserBackend().GetVmRequirements().GetGceProject() == "" {
 				return fmt.Errorf("cmd %q missing dependency: DutVm.Config.VmLeaserBackend.GceProject", cmd.GetCommandType())
 			}
-			if sk.DutVm.GetConfig().GetVmLeaserBackend().GetVmRequirements().GetGceRegion() == "" {
-				return fmt.Errorf("cmd %q missing dependency: DutVm.Config.VmLeaserBackend.GceRegion", cmd.GetCommandType())
+			if sk.DutVm.GetGceRegion() == "" {
+				return fmt.Errorf("cmd %q missing dependency: DutVm.GceRegion", cmd.GetCommandType())
 			}
 		default:
 			return fmt.Errorf("DutVm config backend type %q is not supported", sk.DutVm.GetConfig().GetBackend())
