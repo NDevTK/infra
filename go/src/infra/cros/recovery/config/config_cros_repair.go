@@ -110,6 +110,7 @@ func crosRepairActions() map[string]*Action {
 				"state:needs_deploy",
 			},
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			RunControl:    RunControl_RUN_ONCE,
 		},
 		"DUT has board info": {
 			ExecName:   "dut_has_board_name",

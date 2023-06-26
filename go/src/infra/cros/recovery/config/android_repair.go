@@ -52,6 +52,7 @@ func androidRepairDeployActions() map[string]*Action {
 				"state:needs_deploy",
 			},
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			RunControl:    RunControl_RUN_ONCE,
 		},
 		"Set state: repair_failed": {
 			Docs: []string{
