@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -24,11 +25,11 @@ const (
 )
 
 var (
-	dockerRunDuration = prometheus.NewGauge(prometheus.GaugeOpts{
+	dockerRunDuration = promauto.NewGauge(prometheus.GaugeOpts{
 		Name: "drone_docker_invocation_latency",
 		Help: "measures docker run latency",
 	})
-	dockerRunErrorCount = prometheus.NewCounter(prometheus.CounterOpts{
+	dockerRunErrorCount = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "drone_docker_invocation_error_count",
 		Help: "Number of docker run errors",
 	})
