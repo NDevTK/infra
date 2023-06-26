@@ -20,7 +20,6 @@ func crosDeployPlan() *Plan {
 			"DUT is on test channel OS",
 			"Set dev_boot_usb is enabled",
 			"DUT has expected dev firmware",
-			"Switch to secure-mode and reboot",
 			"Deployment checks",
 			"Collect DUT labels",
 			"DUT verify",
