@@ -96,7 +96,7 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 		Board:       c.board,
 		Model:       c.model,
 		Pool:        c.pool,
-		CFT:         true,
+		CFT:         c.cft,
 		TestPlan:    tp,
 		BuilderID:   builderId,
 		Dimensions:  dims,

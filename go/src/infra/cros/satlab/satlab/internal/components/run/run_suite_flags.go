@@ -23,6 +23,7 @@ type runFlags struct {
 	harness   string
 	testArgs  string
 	satlabId  string
+	cft       bool
 }
 
 // registerRunFlags registers the test execution flags.
@@ -38,4 +39,5 @@ func registerRunFlags(c *run) {
 	c.Flags.StringVar(&c.harness, "harness", "", "test harness to use for test execution")
 	c.Flags.StringVar(&c.testArgs, "testArgs", "", "test args to use for test execution")
 	c.Flags.StringVar(&c.satlabId, "satlabId", "", "id of satlab box to execute tests on (e.g. 'satlab-XXXXXXXXX')")
+	c.Flags.BoolVar(&c.cft, "cft", false, "whether to use CFT execution framework")
 }
