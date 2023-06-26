@@ -31,6 +31,8 @@ type ServodContainerOptions struct {
 	servoSerial   string
 	withServod    bool
 	servoSetup    ufspb.ServoSetupType
+	useRecMode    bool
+	dockerTag     string
 }
 
 func (opts *ServodContainerOptions) Validate() error {
@@ -69,8 +71,8 @@ func buildServodContainerArgs(opts ServodContainerOptions) *docker.ContainerArgs
 
 	return &docker.ContainerArgs{
 		Detached:   true,
-		ImageName:  dockerServodImageName(),
-		EnvVar:     generateEnvVars(opts.board, opts.model, opts.servoSerial, opts.servoSetup),
+		ImageName:  dockerServodImageName(opts.dockerTag),
+		EnvVar:     generateEnvVars(opts.board, opts.model, opts.servoSerial, opts.servoSetup, opts.useRecMode),
 		Volumes:    generateVols(opts.servoSerial),
 		Network:    "default_satlab",
 		Privileged: true,
@@ -79,7 +81,7 @@ func buildServodContainerArgs(opts ServodContainerOptions) *docker.ContainerArgs
 }
 
 // generateEnvVars builds a string array of env vars needed to launch servod in docker
-func generateEnvVars(board string, model string, servoSerial string, servoSetup ufspb.ServoSetupType) []string {
+func generateEnvVars(board string, model string, servoSerial string, servoSetup ufspb.ServoSetupType, useRecMode bool) []string {
 	port := 9999
 	var envVars []string
 
@@ -90,6 +92,9 @@ func generateEnvVars(board string, model string, servoSerial string, servoSetup 
 
 	if servoSetup == ufspb.ServoSetupType_SERVO_SETUP_DUAL_V4 {
 		envVars = append(envVars, "DUAL_V4=1")
+	}
+	if useRecMode {
+		envVars = append(envVars, "REC_MODE=1")
 	}
 
 	return envVars
@@ -107,11 +112,13 @@ func generateVols(servoContainerName string) []string {
 
 // dockerServodImageName builds the appropriate image name for servod based on env vars
 // duplicates logic in TLW client
-func dockerServodImageName() string {
-	// TODO(elijahtrexler) add these variables to SATLAB_REMOTE_ACCESS
-	label := getEnv("SERVOD_CONTAINER_LABEL", "release")
+func dockerServodImageName(tag string) string {
+	if tag == "" {
+		// TODO(elijahtrexler) add these variables to SATLAB_REMOTE_ACCESS
+		tag = getEnv("SERVOD_CONTAINER_LABEL", "release")
+	}
 	registry := getEnv("REGISTRY_URI", "us-docker.pkg.dev/chromeos-partner-moblab/common-core")
-	return fmt.Sprintf("%s/servod:%s", registry, label)
+	return fmt.Sprintf("%s/servod:%s", registry, tag)
 }
 
 // getEnv is helper to get env variables and falling back if not set

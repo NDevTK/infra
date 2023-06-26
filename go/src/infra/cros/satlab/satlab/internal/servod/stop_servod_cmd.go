@@ -108,8 +108,8 @@ func (c *stopServodRun) validate(dhbSatlabID string, positionalArgs []string) er
 		return errors.Reason("Got unexpected positional args, for usage see: satlab servo help stop").Err()
 	}
 
-	// ensures the host in the stopServoCommand is not empty
-	if c.host == "" {
+	// Ensures the host or required field is provided.
+	if c.host == "" && c.servodContainerName == "" {
 		return errors.Reason(fmt.Sprintf("-host <hostname> is required")).Err()
 	}
 

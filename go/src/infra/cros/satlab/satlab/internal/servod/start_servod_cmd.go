@@ -39,6 +39,8 @@ var StartServodCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.servodContainerName, "servod-container-name", "", "Container name to run servod in; likely <host>-docker_servod")
 		c.Flags.BoolVar(&c.noServodProcess, "no-servod", false, "Start container without the servod process running")
 		c.Flags.StringVar(&c.servoSetup, "servo-setup", "", "Servo setup of DUT; Should not have 'SERVO_SETUP' prefix (ex. use 'dual_v4' rather than 'SERVO_SETUP_DUAL_V4'")
+		c.Flags.BoolVar(&c.useRecMode, "rec-mode", false, "Start servod with REC_MODE=1 which allowed to sart servod without CCD/OCD.")
+		c.Flags.StringVar(&c.dockerTag, "docker-tag", "", "Specify custom servod tag when start container. Default read from SERVOD_CONTAINER_LABEL env or use 'release'.")
 
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
@@ -64,6 +66,8 @@ type startServodRun struct {
 	servodContainerName string
 	noServodProcess     bool
 	servoSetup          string
+	useRecMode          bool
+	dockerTag           string
 }
 
 // Run is what is called when a user inputs the startServodRun command
@@ -127,6 +131,8 @@ func (c *startServodRun) runOrchestratedCommand(ctx context.Context, d DockerCli
 		servoSerial:   c.servoSerial,
 		withServod:    !c.noServodProcess, // notice negation here
 		servoSetup:    servoSetupEnum,
+		useRecMode:    c.useRecMode,
+		dockerTag:     c.dockerTag,
 	}
 
 	// If user provides all needed data, we can skip the UFS fetch entirely which has utility for a DUT not deployed in UFS or when UFS is unreachable
@@ -228,8 +234,8 @@ func (c *startServodRun) validate(dhbSatlabID string, positionalArgs []string) e
 		return errors.Reason("Got unexpected positional args, for usage see: satlab servo help start").Err()
 	}
 
-	// ensures the host in the startServoCommand is not empty
-	if c.host == "" {
+	// Ensures the host or required field is provided.
+	if c.host == "" && (c.board == "" || c.servoSerial == "" || c.servodContainerName == "") {
 		return errors.Reason(fmt.Sprintf("-host <hostname> is required")).Err()
 	}
 
