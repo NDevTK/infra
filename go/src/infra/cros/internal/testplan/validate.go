@@ -1,3 +1,6 @@
+// Copyright 2023 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 package testplan
 
 import (
@@ -14,6 +17,7 @@ import (
 	"infra/tools/dirmd"
 
 	planpb "go.chromium.org/chromiumos/config/go/test/plan"
+	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 )
@@ -29,6 +33,7 @@ func ValidateMapping(
 		validateAtLeastOneTestPlanStarlarkFile,
 		validatePathRegexps,
 		validateStarlarkFileExists,
+		validateTemplateParameters,
 	}
 
 	// Iterate the mappings in lexicographical order.
@@ -116,6 +121,44 @@ func validateStarlarkFileExists(ctx context.Context, client gerrit.Client, _, _ 
 		_, err := client.DownloadFileFromGitiles(ctx, file.GetHost(), file.GetProject(), "HEAD", file.GetPath(), shared.LongerOpts)
 		if err != nil {
 			return fmt.Errorf("failed downloading file %q", file)
+		}
+	}
+
+	return nil
+}
+
+func validateTemplateParameters(ctx context.Context, client gerrit.Client, _, _ string, plan *planpb.SourceTestPlan) error {
+	// Get the FieldDescriptor for template_parameters to check whether
+	// TemplateParameters has been set for a given TestPlanStarlarkFile.
+	templateParametersDesc := (&planpb.SourceTestPlan_TestPlanStarlarkFile{}).
+		ProtoReflect().Descriptor().Fields().ByName("template_parameters")
+	if templateParametersDesc == nil {
+		panic("failed to find template_parameters descriptor")
+	}
+
+	for _, file := range plan.GetTestPlanStarlarkFiles() {
+		if !file.ProtoReflect().Has(templateParametersDesc) {
+			continue
+		}
+
+		templateParameters := file.GetTemplateParameters()
+		if templateParameters.GetSuiteName() == "" {
+			return errors.New("suite_name must not be empty")
+		}
+
+		tagExcludes := templateParameters.GetTagCriteria().GetTagExcludes()
+		if !stringset.NewFromSlice(tagExcludes...).Has("informational") {
+			return fmt.Errorf(`tag_excludes must exclude "informational", got %q`, tagExcludes)
+		}
+
+		starlarkContent, err := client.DownloadFileFromGitiles(ctx, file.GetHost(), file.GetProject(), "HEAD", file.GetPath(), shared.LongerOpts)
+		if err != nil {
+			return fmt.Errorf("failed downloading file %q", file)
+		}
+
+		if !(strings.Contains(starlarkContent, "testplan.get_suite_name()") ||
+			strings.Contains(starlarkContent, "testplan.get_tag_criteria()")) {
+			return fmt.Errorf("file %q is not templated, setting TemplateParameters has no effect", file)
 		}
 	}
 

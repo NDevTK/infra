@@ -1,3 +1,7 @@
+// Copyright 2023 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 // Some expected error strings are filesystem-specific, skip on windows.
 //go:build !windows
 
@@ -13,12 +17,14 @@ import (
 	dirmdpb "infra/tools/dirmd/proto"
 	"infra/tools/dirmd/proto/chromeos"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/plan"
 )
 
 func TestValidateMapping(t *testing.T) {
 	ctx := context.Background()
 	testStarlarkContent := "testcontent"
+	templatedStarlarkContent := `testplan.get_suite_name()`
 	client := &gerrit.MockClient{
 		T: t,
 		ExpectedDownloads: map[gerrit.ExpectedPathParams]*string{
@@ -40,6 +46,12 @@ func TestValidateMapping(t *testing.T) {
 				Ref:     "HEAD",
 				Path:    "test2.star",
 			}: &testStarlarkContent,
+			{
+				Host:    "chromium.googlesource.com",
+				Project: "test/repo",
+				Ref:     "HEAD",
+				Path:    "templated.star",
+			}: &templatedStarlarkContent,
 		},
 	}
 
@@ -195,6 +207,37 @@ func TestValidateMapping(t *testing.T) {
 				},
 			},
 		},
+		{
+			"template parameters",
+			&dirmd.Mapping{
+				Dirs: map[string]*dirmdpb.Metadata{
+					"a/b": {
+						Chromeos: &chromeos.ChromeOS{
+							Cq: &chromeos.ChromeOS_CQ{
+								SourceTestPlans: []*plan.SourceTestPlan{
+									{
+										TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
+											{
+												Host:    "chromium.googlesource.com",
+												Project: "test/repo",
+												Path:    "templated.star",
+												TemplateParameters: &plan.SourceTestPlan_TestPlanStarlarkFile_TemplateParameters{
+													SuiteName: "mysuiteA",
+													TagCriteria: &api.TestSuite_TestCaseTagCriteria{
+														Tags:        []string{"group:mygroupA"},
+														TagExcludes: []string{"informational"},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
@@ -227,6 +270,12 @@ func TestValidateMappingErrors(t *testing.T) {
 				Project: "testrepo",
 				Ref:     "HEAD",
 				Path:    "testfile.star",
+			}: &testfileContents,
+			{
+				Host:    "chromium.googlesource.com",
+				Project: "test/repo",
+				Ref:     "HEAD",
+				Path:    "templated.star",
 			}: &testfileContents,
 		},
 	}
@@ -391,6 +440,103 @@ func TestValidateMappingErrors(t *testing.T) {
 			},
 			"badreporoot",
 			"lstat badreporoot: no such file or directory",
+		},
+		{
+			"suite name missing",
+			&dirmd.Mapping{
+				Dirs: map[string]*dirmdpb.Metadata{
+					"a/b": {
+						Chromeos: &chromeos.ChromeOS{
+							Cq: &chromeos.ChromeOS_CQ{
+								SourceTestPlans: []*plan.SourceTestPlan{
+									{
+										TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
+											{
+												Host:    "chromium.googlesource.com",
+												Project: "test/repo",
+												Path:    "templated.star",
+												TemplateParameters: &plan.SourceTestPlan_TestPlanStarlarkFile_TemplateParameters{
+													TagCriteria: &api.TestSuite_TestCaseTagCriteria{
+														Tags:        []string{"group:mygroupA"},
+														TagExcludes: []string{"informational"},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			"./testdata/good_dirmd",
+			"suite_name must not be empty",
+		},
+		{
+			"informational not excluded",
+			&dirmd.Mapping{
+				Dirs: map[string]*dirmdpb.Metadata{
+					"a/b": {
+						Chromeos: &chromeos.ChromeOS{
+							Cq: &chromeos.ChromeOS_CQ{
+								SourceTestPlans: []*plan.SourceTestPlan{
+									{
+										TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
+											{
+												Host:    "chromium.googlesource.com",
+												Project: "test/repo",
+												Path:    "templated.star",
+												TemplateParameters: &plan.SourceTestPlan_TestPlanStarlarkFile_TemplateParameters{
+													SuiteName: "mysuiteA",
+													TagCriteria: &api.TestSuite_TestCaseTagCriteria{
+														Tags: []string{"group:mygroupA"},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			"./testdata/good_dirmd",
+			`tag_excludes must exclude "informational"`,
+		},
+		{
+			"not templated file",
+			&dirmd.Mapping{
+				Dirs: map[string]*dirmdpb.Metadata{
+					"a/b": {
+						Chromeos: &chromeos.ChromeOS{
+							Cq: &chromeos.ChromeOS_CQ{
+								SourceTestPlans: []*plan.SourceTestPlan{
+									{
+										TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
+											{
+												Host:    "chromium.googlesource.com",
+												Project: "test/repo",
+												Path:    "templated.star",
+												TemplateParameters: &plan.SourceTestPlan_TestPlanStarlarkFile_TemplateParameters{
+													SuiteName: "mysuiteA",
+													TagCriteria: &api.TestSuite_TestCaseTagCriteria{
+														Tags:        []string{"group:mygroupA"},
+														TagExcludes: []string{"informational"},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			"./testdata/good_dirmd",
+			"setting TemplateParameters has no effect",
 		},
 	}
 
