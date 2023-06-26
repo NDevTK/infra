@@ -211,15 +211,20 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		}
 
 		// Test this specific subrepo.
+		// If testing any one nested module fails, keep going and report all the end.
 		modRoots, err := repoToModules(ctx, spec, cwd, repoDir)
 		if err != nil {
 			return err
 		}
+		var testErrors []error
 		for _, modRoot := range modRoots {
 			testCmd := spec.wrapTestCmd(spec.goCmd(ctx, modRoot, spec.goTestArgs("./...")...))
 			if err := runCommandAsStep(ctx, "go test -json [-short] [-race] ./...", testCmd, false); err != nil {
-				return err
+				testErrors = append(testErrors, err)
 			}
+		}
+		if len(testErrors) > 0 {
+			return errors.Join(testErrors...)
 		}
 	}
 	return nil
