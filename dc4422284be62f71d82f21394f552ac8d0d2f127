@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "76cfa80e_073e6e38",
+        "filename": "go/src/infra/cmd/mac_toolchain/README.md",
+        "patchSetId": 7
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1540893
+      },
+      "writtenOn": "2023-06-26T17:15:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cb54d90c_edcd1b1f",
+      "range": {
+        "startLine": 56,
+        "startChar": 48,
+        "endLine": 56,
+        "endChar": 58
+      },
+      "revId": "dc4422284be62f71d82f21394f552ac8d0d2f127",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "afac7f9a_f6bf4141",
@@ -54,6 +78,30 @@
       "writtenOn": "2023-06-26T16:17:40Z",
       "side": 1,
       "message": "Just curious: Would you mind sharding how / where you found the switch?",
+      "range": {
+        "startLine": 227,
+        "startChar": 72,
+        "endLine": 227,
+        "endChar": 76
+      },
+      "revId": "dc4422284be62f71d82f21394f552ac8d0d2f127",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c3b87f64_b4baefdf",
+        "filename": "go/src/infra/cmd/mac_toolchain/install.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1540893
+      },
+      "writtenOn": "2023-06-26T17:15:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "afac7f9a_f6bf4141",
       "range": {
         "startLine": 227,
         "startChar": 72,
@@ -87,6 +135,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bb212793_0632aa41",
+        "filename": "go/src/infra/cmd/mac_toolchain/install.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 249,
+      "author": {
+        "id": 1540893
+      },
+      "writtenOn": "2023-06-26T17:15:50Z",
+      "side": 1,
+      "message": "There won\u0027t be any consequences that I have tested -- you can still add additional runtime while others are being deleted.\nI haven\u0027t seen when deletion would fail, but if it does happen, then hopefully the next run would delete it. If it never succeeds, then it would be left stale and potentially occupy disk spaces.\n\nUpdated to 30 seconds to be safe...",
+      "parentUuid": "f8532f34_00234391",
+      "range": {
+        "startLine": 249,
+        "startChar": 2,
+        "endLine": 249,
+        "endChar": 3
+      },
+      "revId": "dc4422284be62f71d82f21394f552ac8d0d2f127",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4ef45383_b7475cd6",
@@ -100,6 +172,30 @@
       "writtenOn": "2023-06-26T16:17:40Z",
       "side": 1,
       "message": "Would it be possible to read this from the dmg file?",
+      "range": {
+        "startLine": 469,
+        "startChar": 1,
+        "endLine": 469,
+        "endChar": 18
+      },
+      "revId": "dc4422284be62f71d82f21394f552ac8d0d2f127",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "acde32bb_b03d0954",
+        "filename": "go/src/infra/cmd/mac_toolchain/package.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 469,
+      "author": {
+        "id": 1540893
+      },
+      "writtenOn": "2023-06-26T17:15:50Z",
+      "side": 1,
+      "message": "unfortunately this info can\u0027t be extracted from runtime. I think Apple is trying to make Xcode and iOS SDKs two separately things",
+      "parentUuid": "4ef45383_b7475cd6",
       "range": {
         "startLine": 469,
         "startChar": 1,
