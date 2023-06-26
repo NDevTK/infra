@@ -58,7 +58,7 @@ var res = {};
   return res;
 """;
 
-Merge statement
+--Merge statement
 MERGE INTO
   `chrome-trooper-analytics.metrics.cq_builder_metrics_week` AS T
 USING
