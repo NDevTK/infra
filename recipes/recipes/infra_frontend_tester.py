@@ -25,49 +25,27 @@ def RunSteps(api):
   assert api.platform.is_linux, 'Unsupported platform, only Linux is supported.'
   cl = api.buildbucket.build.input.gerrit_changes[0]
   project_name = cl.project
-
-  # For builds scheduled for an infra/infra_superproject change,
-  # the cl project is infra_superproject, but the builder project
-  # should be one of 'infra' or 'infra_internal'.
-  if project_name == 'infra/infra_superproject':
-    builder_project = api.buildbucket.build.builder.project
-    assert builder_project in ('infra', 'infra-internal'), (
-        'unknown builder project: "%s" for infra_superproject change' %
-        builder_project)
-    project_name = project_name[:-len('_superproject')]
-    if builder_project == 'infra':
-      patch_root = 'infra'
-    else:
-      patch_root = 'infra_internal'
-  else:
-    assert project_name in ('infra/infra', 'infra/infra_internal',
-                            'infra/luci/luci-go'), ('unknown project: "%s"' %
-                                                    project_name)
-    patch_root = project_name.split('/')[-1]
-
-  config_name = patch_root.replace("-", "_")
-  # TODO(crbug.com/1415507): Remove '_superproject' suffix when
-  # migration is complete and configs have been renamed.
-  if config_name in ('infra', 'infra_internal'):
-    config_name += '_superproject'
-
+  assert project_name in ('infra/infra', 'infra/infra_internal',
+                          'infra/luci/luci-go'), ('unknown project: "%s"' %
+                                                  project_name)
   path = api.path['cache'].join('builder')
   api.file.ensure_directory('ensure builder dir', path)
 
-  override_revisions = api.infra_checkout.get_footer_infra_deps_overrides(cl)
+  patch_root = project_name.split('/')[-1]
   with api.context(cwd=path):
-    api.gclient.set_config(config_name)
-    api.bot_update.ensure_checkout(
-        patch_root=patch_root, recipe_revision_overrides=override_revisions)
+    api.gclient.set_config(patch_root.replace("-", "_"))
+    api.bot_update.ensure_checkout(patch_root=patch_root)
     api.gclient.runhooks()
 
-  # Project => (where to find it, how to run its tests).
-  checkout_path, runner = {
-      'infra/infra': ('infra', RunInfraFrontendTests),
-      'infra/infra_internal': ('infra_internal', RunInfraInternalFrontendTests),
-      'infra/luci/luci-go': ('go/src/go.chromium.org/luci', RunLuciGoTests),
+  # Project => how to run its tests.
+  runner = {
+      'infra/infra': RunInfraFrontendTests,
+      'infra/infra_internal': RunInfraInternalFrontendTests,
+      'infra/luci/luci-go': RunLuciGoTests,
   }[project_name]
-  repo_checkout_root = api.path['checkout'].join(checkout_path)
+  repo_checkout_root = api.path['checkout']
+  if project_name == 'infra/luci/luci-go':
+    repo_checkout_root = api.path['checkout'].join('go/src/go.chromium.org/luci')
 
   # Read the desired nodejs version from <repo>/build/NODEJS_VERSION.
   version = api.file.read_text(
@@ -138,18 +116,6 @@ def GenTests(api):
   yield (
       api.test('basic-internal') +
       api.buildbucket.try_build(project='infra/infra_internal'))
-
-  superproject_change = GerritChange(
-      host='chromium-review.googlesource.com',
-      project='infra/infra_superproject',
-      change=456789,
-      patchset=12,
-  )
-  yield (api.test('basic-superproject') + api.buildbucket.try_build(
-      gerrit_changes=[superproject_change], project='infra'))
-  yield (api.test('basic-superproject-internal') + api.buildbucket.try_build(
-      gerrit_changes=[superproject_change], project='infra-internal'))
-
   yield (
       api.test('basic-luci-go') +
       api.buildbucket.try_build(project='infra/luci/luci-go'))
