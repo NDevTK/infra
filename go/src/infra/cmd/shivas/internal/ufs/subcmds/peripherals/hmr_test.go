@@ -5,6 +5,7 @@
 package peripherals
 
 import (
+	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	"testing"
 )
 
@@ -20,19 +21,23 @@ func TestHmrCleanAndValidateFlags(t *testing.T) {
 		},
 		{
 			cmd:  &manageHmrCmd{dutName: "d"},
-			want: []string{errEmptyHostname, errEmptyHmrModel},
+			want: []string{errEmptyHmrPiHostname, errEmptyTouchHostPiHostname, errEmptyHmrModel},
 		},
 		{
 			cmd:  &manageHmrCmd{dutName: "d", touchHostPi: "touch-host-pi"},
-			want: []string{errEmptyHostname, errEmptyHmrModel},
+			want: []string{errEmptyHmrPiHostname, errEmptyHmrModel},
 		},
 		{
 			cmd:  &manageHmrCmd{dutName: "d", hmrPi: "hmr-pi"},
-			want: []string{errEmptyHostname, errEmptyHmrModel},
+			want: []string{errEmptyTouchHostPiHostname, errEmptyHmrModel},
 		},
 		{
 			cmd:  &manageHmrCmd{dutName: "d", touchHostPi: "touch-host-pi", hmrPi: "hmr-pi"},
 			want: []string{errEmptyHmrModel},
+		},
+		{
+			cmd:  &manageHmrCmd{mode: actionDelete},
+			want: []string{errDUTMissing},
 		},
 	}
 
@@ -62,5 +67,25 @@ func TestAddHmr(t *testing.T) {
 	// Valid case: create HMR
 	if _, err := c.createHmr(); err != nil {
 		t.Errorf("unable to create HMR: %v; want nil", err)
+	}
+}
+
+func TestDeleteHmr(t *testing.T) {
+	// Valid case
+	c := &manageHmrCmd{
+		dutName: "d",
+		mode:    actionDelete,
+	}
+	if err := c.cleanAndValidateFlags(); err != nil {
+		t.Errorf("cleanAndValidateFlags = %v; want nil", err)
+	}
+	// Valid case: delete HMR
+	current := &lab.HumanMotionRobot{
+		Hostname:        "hmr-pi",
+		HmrModel:        "hmr-model",
+		GatewayHostname: "touch-host-pi",
+	}
+	if _, err := c.runHmrAction(current); err != nil {
+		t.Errorf("unable to delete HMR: %v; want nil", err)
 	}
 }

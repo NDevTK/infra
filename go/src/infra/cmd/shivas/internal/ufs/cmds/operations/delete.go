@@ -46,6 +46,7 @@ var DeleteCmd = &subcommands.Command{
 	machine-prototype/rack-prototype/chromeplatform/vlan
 	attached-device-machine (aliased as adm/attached-device-machine)
 	attached-device-host (aliased as adh/attached-device-host)
+	peripheral-hmr
 	peripheral-wifi
 	bluetooth-peers`,
 	CommandRun: func() subcommands.CommandRun {
@@ -97,6 +98,7 @@ func (c deleteApp) GetCommands() []*subcommands.Command {
 		cachingservice.DeleteCachingServiceCmd,
 		vlan.DeleteVlanCmd,
 		peripherals.DeleteBluetoothPeersCmd,
+		peripherals.DeletePeripheralHMRCmd,
 		peripherals.DeletePeripheralWifiCmd,
 		peripherals.DeleteChameleonCmd,
 	}

@@ -2171,10 +2171,12 @@ This cmd always runs in the OS namespace.
 The command requires specifying an action which is either add, delete, or replace.
 Only one HMR system is allowed per DUT.
 
-Add adds specified HMR to the DUT.
+Add adds the specified HMR to the DUT.
+Delete deletes the HMR attached to the DUT.
 
 Examples:
 shivas add peripheral-hmr -dut {DUT name} -touch-host-pi {touchhost hostname} -hmr-pi {hmrpi hostname} -hmr-model {hmrpi model}
+shivas delete peripheral-hmr -dut {DUT name}
 `
 
 	// ManagePeripheralWifiLongDesc is a long description for peripheral wifi management subcommands.

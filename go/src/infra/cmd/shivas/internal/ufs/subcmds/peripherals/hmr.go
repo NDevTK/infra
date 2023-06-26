@@ -23,7 +23,8 @@ import (
 )
 
 var (
-	AddPeripheralHMRCmd = hmrCmd(actionAdd)
+	AddPeripheralHMRCmd    = hmrCmd(actionAdd)
+	DeletePeripheralHMRCmd = hmrCmd(actionDelete)
 )
 
 // hmrCmd creates command for adding, removing, or replacing HMR on a DUT.
@@ -134,6 +135,8 @@ func (c *manageHmrCmd) runHmrAction(current *lab.HumanMotionRobot) (*lab.HumanMo
 	switch c.mode {
 	case actionAdd:
 		return c.createHmr()
+	case actionDelete:
+		return nil, nil
 	default:
 		return nil, errors.Reason("unknown action: %d", c.mode).Err()
 	}
@@ -156,7 +159,9 @@ func (c *manageHmrCmd) createHmr() (*lab.HumanMotionRobot, error) {
 }
 
 const (
-	errEmptyHmrModel = "empty hmr model"
+	errEmptyHmrModel            = "empty hmr model"
+	errEmptyHmrPiHostname       = "empty hmr-pi hostname"
+	errEmptyTouchHostPiHostname = "empty touch-host-pi hostname"
 )
 
 // cleanAndValidateFlags returns an error with the result of all validations. It strips whitespaces
@@ -167,25 +172,48 @@ func (c *manageHmrCmd) cleanAndValidateFlags() error {
 		errStrs = append(errStrs, errDUTMissing)
 	}
 
-	hostnames := []string{c.touchHostPi, c.hmrPi}
-	for _, hostname := range hostnames {
-		hostname = strings.TrimSpace(hostname)
-		if hostname == "" {
-			errStrs = append(errStrs, errNoHostname)
-		}
+	if c.mode == actionDelete {
+		return checkErrStr(c, errStrs)
 	}
 
+	checkHmrPiHostname(c, &errStrs)
+	checkTouchHostPiHostname(c, &errStrs)
+	checkHmrModel(c, &errStrs)
+	checkRPM(c, &errStrs)
+
+	return checkErrStr(c, errStrs)
+}
+
+func checkHmrPiHostname(c *manageHmrCmd, errStrs *[]string) {
+	c.hmrPi = strings.TrimSpace(c.hmrPi)
+	if c.hmrPi == "" {
+		*errStrs = append(*errStrs, errEmptyHmrPiHostname)
+	}
+}
+
+func checkTouchHostPiHostname(c *manageHmrCmd, errStrs *[]string) {
+	c.touchHostPi = strings.TrimSpace(c.touchHostPi)
+	if c.touchHostPi == "" {
+		*errStrs = append(*errStrs, errEmptyTouchHostPiHostname)
+	}
+}
+
+func checkHmrModel(c *manageHmrCmd, errStrs *[]string) {
 	c.hmrModel = strings.TrimSpace(c.hmrModel)
 	if c.hmrModel == "" {
-		errStrs = append(errStrs, errEmptyHmrModel)
+		*errStrs = append(*errStrs, errEmptyHmrModel)
 	}
+}
 
+func checkRPM(c *manageHmrCmd, errStrs *[]string) {
 	if (c.rpmHostname != "" && c.rpmOutlet == "") || (c.rpmHostname == "" && c.rpmOutlet != "") {
-		errStrs = append(errStrs, fmt.Sprintf("Need both rpm and its outlet. %s:%s is invalid", c.rpmHostname, c.rpmOutlet))
+		*errStrs = append(*errStrs, fmt.Sprintf("Need both rpm and its outlet. %s:%s is invalid", c.rpmHostname, c.rpmOutlet))
 	}
+}
+
+func checkErrStr(c *manageHmrCmd, errStrs []string) error {
 	if len(errStrs) == 0 {
 		return nil
 	}
-
 	return cmdlib.NewQuietUsageError(c.Flags, fmt.Sprintf("Wrong usage!!\n%s", strings.Join(errStrs, "\n")))
 }

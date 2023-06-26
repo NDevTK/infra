@@ -31,12 +31,6 @@ var (
 
 type action int
 
-const (
-	actionAdd action = iota
-	actionReplace
-	actionDelete
-)
-
 // btpsCmd creates command for adding, removing, or completely replacing Bluetooth peers on a DUT.
 func btpsCmd(mode action) *subcommands.Command {
 	return &subcommands.Command{
