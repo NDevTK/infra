@@ -253,7 +253,7 @@ func constructGcloudPayload(ctx context.Context, cmd *commands.DutVmLeaseCmd) *v
 // TODO(b/274006123): remove hardcoded configs
 func constructVmLeaserPayload(ctx context.Context, cmd *commands.DutVmLeaseCmd) *vmlabapi.CreateVmInstanceRequest {
 	img := fmt.Sprintf("projects/%v/global/images/%v", cmd.DutVmGceImage.GetProject(), cmd.DutVmGceImage.GetName())
-	d, _ := time.ParseDuration("1d")
+	d, _ := time.ParseDuration("24h")
 	return &vmlabapi.CreateVmInstanceRequest{
 		Config: &vmlabapi.Config{
 			Backend: &vmlabapi.Config_VmLeaserBackend_{
