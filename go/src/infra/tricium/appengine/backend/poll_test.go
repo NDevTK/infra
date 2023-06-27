@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"sort"
 	"sync"
 	"testing"
@@ -298,7 +299,8 @@ func TestPollProjectBasicBehavior(t *testing.T) {
 				}
 				api.addChanges(gd.Host, gd.Project, []gr.ChangeInfo{
 					{
-						ID:              "project~branch~Ideadc0de",
+						ChangeID:        "Ideadc0de",
+						Branch:          "branch",
 						Project:         gd.Project,
 						Status:          "NEW",
 						CurrentRevision: "abcdef",
@@ -340,7 +342,7 @@ func TestPollProjectBasicBehavior(t *testing.T) {
 			Convey("Adds change tracking entities", func() {
 				for _, gd := range gerritProjects {
 					So(ds.Get(ctx, &Change{
-						ID:     "project~branch~Ideadc0de",
+						ID:     fmt.Sprintf("%s~branch~Ideadc0de", url.PathEscape(gd.Project)),
 						Parent: ds.NewKey(ctx, "GerritProject", gerritProjectID(gd.Host, gd.Project), 0, nil),
 					}), ShouldBeNil)
 				}
@@ -364,7 +366,8 @@ func TestPollProjectBasicBehavior(t *testing.T) {
 				}
 				api.addChanges(gd.Host, gd.Project, []gr.ChangeInfo{
 					{
-						ID:              "project~branch~Ideadc0de",
+						ChangeID:        "Ideadc0de",
+						Branch:          "branch",
 						Project:         gd.Project,
 						Status:          "NEW",
 						CurrentRevision: "abcdef",
@@ -419,7 +422,8 @@ func TestPollProjectBasicBehavior(t *testing.T) {
 				}
 				api.addChanges(gd.Host, gd.Project, []gr.ChangeInfo{
 					{
-						ID:              "project~branch~Ideadc0de",
+						ChangeID:        "Ideadc0de",
+						Branch:          "branch",
 						Project:         gd.Project,
 						Status:          "NEW",
 						CurrentRevision: "abcdef",
@@ -455,7 +459,8 @@ func TestPollProjectBasicBehavior(t *testing.T) {
 				}
 				api.addChanges(gd.Host, gd.Project, []gr.ChangeInfo{
 					{
-						ID:              "project~branch~Ideadc0de",
+						ChangeID:        "Ideadc0de",
+						Branch:          "branch",
 						Project:         gd.Project,
 						Status:          "NEW",
 						CurrentRevision: "abcdef",
@@ -488,7 +493,6 @@ func TestPollProjectBasicBehavior(t *testing.T) {
 				var changes []gr.ChangeInfo
 				for i := 0; i < numChanges; i++ {
 					tc.Add(time.Second)
-					changeID := fmt.Sprintf("%s~%s~%s%d", gd.Project, branch, changeIDFooter, i)
 					rev := fmt.Sprintf("%s%d", revBase, i)
 					files := map[string]*gr.FileInfo{"README.md": {}}
 					revisions := make(map[string]gr.RevisionInfo)
@@ -497,7 +501,8 @@ func TestPollProjectBasicBehavior(t *testing.T) {
 						Files: files,
 					}
 					changes = append(changes, gr.ChangeInfo{
-						ID:              changeID,
+						ChangeID:        fmt.Sprintf("%s%d", changeIDFooter, i),
+						Branch:          branch,
 						Project:         gd.Project,
 						Status:          "NEW",
 						CurrentRevision: rev,
@@ -519,7 +524,7 @@ func TestPollProjectBasicBehavior(t *testing.T) {
 				for _, gd := range gerritProjects {
 					for i := 0; i < numChanges; i++ {
 						So(ds.Get(ctx, &Change{
-							ID:     fmt.Sprintf("%s~%s~%s%d", gd.Project, branch, changeIDFooter, i),
+							ID:     fmt.Sprintf("%s~%s~%s%d", url.PathEscape(gd.Project), branch, changeIDFooter, i),
 							Parent: ds.NewKey(ctx, "GerritProject", gerritProjectID(gd.Host, gd.Project), 0, nil),
 						}), ShouldBeNil)
 					}
@@ -559,7 +564,8 @@ func TestPollProjectDescriptionFlagBehavior(t *testing.T) {
 		revisions map[string]gr.RevisionInfo) []gr.ChangeInfo {
 		return []gr.ChangeInfo{
 			{
-				ID:              "project~branch~Ideadc0de",
+				ChangeID:        "Ideadc0de",
+				Branch:          "branch",
 				Project:         project,
 				Status:          "NEW",
 				CurrentRevision: "curRev",
@@ -801,7 +807,8 @@ func TestPollProjectWhitelistBehavior(t *testing.T) {
 			}
 			api.addChanges(host, noWhitelistProject, []gr.ChangeInfo{
 				{
-					ID:              "project~branch~Ideadc0de",
+					ChangeID:        "Ideadc0de",
+					Branch:          "branch",
 					Project:         noWhitelistProject,
 					Status:          "NEW",
 					CurrentRevision: "abcdef",
@@ -829,7 +836,8 @@ func TestPollProjectWhitelistBehavior(t *testing.T) {
 			}
 			api.addChanges(host, whitelistProject, []gr.ChangeInfo{
 				{
-					ID:              "project~branch~Ideadc0de",
+					ChangeID:        "Ideadc0de",
+					Branch:          "branch",
 					Project:         whitelistProject,
 					Status:          "NEW",
 					CurrentRevision: "abcdef",
@@ -857,7 +865,8 @@ func TestPollProjectWhitelistBehavior(t *testing.T) {
 			}
 			api.addChanges(host, whitelistProject, []gr.ChangeInfo{
 				{
-					ID:              "project~branch~Ideadc0de",
+					ChangeID:        "Ideadc0de",
+					Branch:          "branch",
 					Project:         whitelistProject,
 					Status:          "NEW",
 					CurrentRevision: "abcdef",

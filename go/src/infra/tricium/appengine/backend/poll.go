@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"regexp"
 	"sort"
 	"strings"
@@ -304,7 +305,10 @@ func extractUpdates(c context.Context, p *Project, pollChanges []gr.ChangeInfo) 
 	pkey := ds.NewKey(c, "GerritProject", p.ID, 0, nil)
 	var trackedChanges []*Change
 	for _, change := range pollChanges {
-		trackedChanges = append(trackedChanges, &Change{ID: change.ID, Parent: pkey})
+		trackedChanges = append(trackedChanges, &Change{
+			ID:     synthesizeLegacyChangeID(change),
+			Parent: pkey,
+		})
 	}
 	if err := ds.Get(c, trackedChanges); err != nil {
 		if me, ok := err.(errors.MultiError); ok {
@@ -332,34 +336,35 @@ func extractUpdates(c context.Context, p *Project, pollChanges []gr.ChangeInfo) 
 	// Compare polled changes to tracked changes, update tracking and add to the
 	// diff list when there is an updated revision change.
 	for _, change := range pollChanges {
-		tc, ok := t[change.ID]
+		legacyChangeID := synthesizeLegacyChangeID(change)
+		tc, ok := t[legacyChangeID]
 		switch {
 		// Untracked open change; start tracking and add to diff list.
 		case !ok && isOpen(change):
-			logging.Debugf(c, "Found untracked %s change (%s); tracking.", change.Status, change.ID)
-			tc.ID = change.ID
+			logging.Debugf(c, "Found untracked %s change (%s); tracking.", change.Status, legacyChangeID)
+			tc.ID = legacyChangeID
 			tc.LastRevision = change.CurrentRevision
 			uchanges = append(uchanges, &tc)
 			diff = append(diff, change)
 		// Untracked closed change; move on to the next change.
 		case !ok:
-			logging.Debugf(c, "Found untracked %s change (%s); leaving untracked.", change.Status, change.ID)
+			logging.Debugf(c, "Found untracked %s change (%s); leaving untracked.", change.Status, legacyChangeID)
 		// Tracked closed change; stop tracking (clean up).
 		case !isOpen(change):
-			logging.Debugf(c, "Found tracked %s change (%s); removing.", change.Status, change.ID)
+			logging.Debugf(c, "Found tracked %s change (%s); removing.", change.Status, legacyChangeID)
 			// Because we are only adding keys found by the query,
 			// we should not get any NoSuchEntity errors.
 			dchanges = append(dchanges, &tc)
 		// Open tracked changes with a new revision: update tracking and add
 		// to diff list.
 		case tc.LastRevision != change.CurrentRevision:
-			logging.Debugf(c, "Found tracked %s change (%s) with new revision; updating.", change.Status, change.ID)
+			logging.Debugf(c, "Found tracked %s change (%s) with new revision; updating.", change.Status, legacyChangeID)
 			tc.LastRevision = change.CurrentRevision
 			uchanges = append(uchanges, &tc)
 			diff = append(diff, change)
 		// Open tracked change with no new revision: Leave as is.
 		default:
-			logging.Debugf(c, "Found tracked %s change (%s) with no update; leaving as is.", change.Status, change.ID)
+			logging.Debugf(c, "Found tracked %s change (%s) with no update; leaving as is.", change.Status, legacyChangeID)
 		}
 	}
 	return diff, uchanges, dchanges, nil
@@ -387,10 +392,11 @@ func isOpen(change gr.ChangeInfo) bool {
 func filterChanges(c context.Context, repo *tricium.RepoDetails, changes []gr.ChangeInfo) []gr.ChangeInfo {
 	var toProcess []gr.ChangeInfo
 	for _, change := range changes {
+		legacyChangeID := synthesizeLegacyChangeID(change)
 		curRev := change.Revisions[change.CurrentRevision]
 		if hasSkipCommand(&curRev) {
 			logging.Fields{
-				"changeID": change.ID,
+				"changeID": legacyChangeID,
 			}.Infof(c, "Skipping change with skip footer.")
 			continue
 		}
@@ -399,7 +405,7 @@ func filterChanges(c context.Context, repo *tricium.RepoDetails, changes []gr.Ch
 			// For other possible values of Kind, see:
 			// https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#revision-info
 			logging.Fields{
-				"changeID": change.ID,
+				"changeID": legacyChangeID,
 				"revision": change.CurrentRevision,
 				"kind":     curRev.Kind,
 			}.Infof(c, "Skipping revision with no code change.")
@@ -407,7 +413,7 @@ func filterChanges(c context.Context, repo *tricium.RepoDetails, changes []gr.Ch
 		}
 		if !isAuthorAllowed(c, change, repo.WhitelistedGroup) {
 			logging.Fields{
-				"changeID": change.ID,
+				"changeID": legacyChangeID,
 			}.Infof(c, "Skipping change with non-whitelisted author.")
 			continue
 		}
@@ -427,11 +433,12 @@ func enqueueAnalyzeRequests(c context.Context, luciProject string, repo *tricium
 
 	var tasks []*tq.Task
 	for _, change := range changes {
+		legacyChangeID := synthesizeLegacyChangeID(change)
 		curRev := change.Revisions[change.CurrentRevision]
 		files := triciumFiles(c, curRev.Files)
 		if len(files) == 0 {
 			logging.Fields{
-				"changeID": change.ID,
+				"changeID": legacyChangeID,
 			}.Infof(c, "Skipping change with no files.")
 			continue
 		}
@@ -446,7 +453,7 @@ func enqueueAnalyzeRequests(c context.Context, luciProject string, repo *tricium
 				GerritRevision: &tricium.GerritRevision{
 					Host:          gerritProject.Host,
 					Project:       gerritProject.Project,
-					Change:        change.ID,
+					Change:        legacyChangeID,
 					GitRef:        curRev.Ref,
 					GitUrl:        gerritProject.GitUrl,
 					CommitMessage: commitMessage,
@@ -615,4 +622,8 @@ func statusFromCode(c context.Context, status string) tricium.Data_Status {
 		logging.Warningf(c, "Received unrecognized status %q.", status)
 		return tricium.Data_MODIFIED
 	}
+}
+
+func synthesizeLegacyChangeID(ci gr.ChangeInfo) string {
+	return fmt.Sprintf("%s~%s~%s", url.PathEscape(ci.Project), url.PathEscape(ci.Branch), ci.ChangeID)
 }
