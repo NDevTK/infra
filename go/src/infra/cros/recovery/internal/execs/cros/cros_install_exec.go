@@ -218,6 +218,10 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 		Callback:            callback,
 		AddObservation:      info.AddObservation,
 		IgnoreRebootFailure: am.AsBool(ctx, "ignore_reboot_failure", false),
+		// After reboot action settings.
+		AfterRebootVerify:             am.AsBool(ctx, "after_reboot_check", false),
+		AfterRebootTimeout:            am.AsDuration(ctx, "after_reboot_timeout", 150, time.Second),
+		AfterRebootAllowUseServoReset: am.AsBool(ctx, "after_reboot_allow_use_servo_reset", false),
 	}
 	if err := cros.BootInRecoveryMode(ctx, req, dutRun, dutBackgroundRun, dutPing, servod, logger); err != nil {
 		return errors.Annotate(err, "install from usb drive in recovery mode").Err()
@@ -226,43 +230,6 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 	postInstallationBootTime := am.AsDuration(ctx, "post_install_boot_time", 60, time.Second)
 	logger.Debugf("Wait %s post installation for DUT to boot up.", postInstallationBootTime)
 	time.Sleep(postInstallationBootTime)
-	return nil
-}
-
-// verifyBootInRecoveryModeExec verify that device can boot in recovery mode and reboot to normal mode again.
-func verifyBootInRecoveryModeExec(ctx context.Context, info *execs.ExecInfo) error {
-	am := info.GetActionArgs(ctx)
-	dut := info.GetDut()
-	dutRun := info.NewRunner(dut.Name)
-	dutBackgroundRun := info.NewBackgroundRunner(dut.Name)
-	dutPing := info.NewPinger(dut.Name)
-	servod := info.NewServod()
-	// Flag to notice when device booted and sshable.
-	var successBooted bool
-	callback := func(_ context.Context) error {
-		successBooted = true
-		return nil
-	}
-	req := &cros.BootInRecoveryRequest{
-		DUT:          dut,
-		BootRetry:    am.AsInt(ctx, "boot_retry", 1),
-		BootTimeout:  am.AsDuration(ctx, "boot_timeout", 480, time.Second),
-		BootInterval: am.AsDuration(ctx, "boot_interval", 10, time.Second),
-		// Register that device booted and sshable.
-		Callback:            callback,
-		AddObservation:      info.AddObservation,
-		IgnoreRebootFailure: am.AsBool(ctx, "ignore_reboot_failure", false),
-		// After reboot action settings.
-		AfterRebootVerify:             am.AsBool(ctx, "after_reboot_check", false),
-		AfterRebootTimeout:            am.AsDuration(ctx, "after_reboot_timeout", 150, time.Second),
-		AfterRebootAllowUseServoReset: am.AsBool(ctx, "after_reboot_allow_use_servo_reset", false),
-	}
-	if err := cros.BootInRecoveryMode(ctx, req, dutRun, dutBackgroundRun, dutPing, servod, info.NewLogger()); err != nil {
-		return errors.Annotate(err, "verify boot in recovery mode").Err()
-	}
-	if !successBooted {
-		return errors.Reason("verify boot in recovery mode: did not booted").Err()
-	}
 	return nil
 }
 
@@ -296,6 +263,5 @@ func init() {
 	execs.Register("cros_dev_mode_boot_from_servo_usb_drive", devModeBootFromServoUSBDriveExec)
 	execs.Register("cros_run_chromeos_install_command_after_boot_usbdrive", runChromeosInstallCommandWhenBootFromUSBDriveExec)
 	execs.Register("cros_install_in_recovery_mode", installFromUSBDriveInRecoveryModeExec)
-	execs.Register("cros_verify_boot_in_recovery_mode", verifyBootInRecoveryModeExec)
 	execs.Register("cros_is_time_to_force_download_image_to_usbkey", isTimeToForceDownloadImageToUsbKeyExec)
 }
