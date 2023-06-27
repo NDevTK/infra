@@ -204,8 +204,11 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 			}
 		}
 	} else {
-		// Fetch the target repository into targetrepo.
-		repoDir := filepath.Join(cwd, "targetrepo")
+		// Fetch the target repository.
+		repoDir, err := os.MkdirTemp(cwd, "targetrepo") // Use a non-predictable base directory name.
+		if err != nil {
+			return err
+		}
 		if err := fetchRepo(ctx, spec.subrepoSrc, repoDir); err != nil {
 			return err
 		}
@@ -275,7 +278,7 @@ func repoToModules(ctx context.Context, spec *buildSpec, cwd, repoDir string) (m
 			if err != nil {
 				return nil, err
 			}
-			newDir := filepath.Join(randomDir, filepath.Base(modRoots[i]))
+			newDir := filepath.Join(randomDir, filepath.Base(randomDir)) // Use a non-predictable base directory name.
 			if err := os.Rename(modRoots[i], newDir); err != nil {
 				return nil, err
 			}
