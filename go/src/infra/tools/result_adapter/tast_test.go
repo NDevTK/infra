@@ -388,7 +388,8 @@ func TestTastConversions(t *testing.T) {
 				BaseDir: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test",
 			}
 
-			r.ConvertFromJSON(strings.NewReader(jsonLine))
+			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
+			So(err, ShouldBeNil)
 			got, err := r.ToProtos(ctx, "", mockCollect, "")
 
 			// Only 3 errors are stored while 1 error is truncated.
