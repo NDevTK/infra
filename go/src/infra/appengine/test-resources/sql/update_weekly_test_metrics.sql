@@ -12,8 +12,11 @@ USING (
       SUM(m.num_runs) AS num_runs,
       SUM(m.num_failures) AS num_failures,
       SUM(m.num_flake) AS num_flake,
-      SUM(m.avg_runtime) AS avg_runtime,
       SUM(m.total_runtime) AS total_runtime,
+      -- Use weighted averages for aggregate quantiles
+      SUM(m.avg_runtime * m.num_runs) / SUM(m.num_runs) avg_runtime,
+      SUM(m.p50_runtime * m.num_runs) / SUM(m.num_runs) p50_runtime,
+      SUM(m.p90_runtime * m.num_runs) / SUM(m.num_runs) p90_runtime,
       ARRAY_CONCAT_AGG(m.variant_summaries) AS aggregate_variants,
     FROM %s.%s.test_metrics m
     WHERE m.date BETWEEN
@@ -38,7 +41,9 @@ USING (
             SUM(v.num_failures) AS num_failures,
             SUM(v.num_flake) AS num_flake,
             AVG(v.avg_runtime) AS avg_runtime,
-            SUM(v.total_runtime) AS total_runtime
+            SUM(v.total_runtime) AS total_runtime,
+            AVG(v.p50_runtime) AS p50_runtime,
+            AVG(v.p90_runtime) AS p90_runtime
           ) AS variant_summary
         FROM a.aggregate_variants v
         -- bucket and project are not part of the variant hash

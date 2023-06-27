@@ -9,8 +9,10 @@ CREATE OR REPLACE TABLE APP_ID.DATASET.weekly_test_metrics (
   num_runs INTEGER OPTIONS (description = 'How many times a test was run'),
   num_failures INTEGER OPTIONS (description = 'How often a test failed'),
   num_flake INTEGER OPTIONS (description = 'How often a test provided conflicting statuses for an equivalent patchset'),
-  avg_runtime FLOAT64 OPTIONS (description = 'The average runtime for a single run of the test'),
   total_runtime FLOAT64 OPTIONS (description = 'The total time spent running this test throughout the week'),
+  avg_runtime FLOAT64 OPTIONS (description = 'The average runtime for a single run of the test'),
+  p50_runtime FLOAT64 OPTIONS (description = 'The p50 runtime for the test from that day. Aggregated as an average of the p50 runtimes of variants that ran this test'),
+  p90_runtime FLOAT64 OPTIONS (description = 'The p90 runtime for the test from that day. Aggregated as an average of the p90 runtimes of variants that ran this test'),
   # Variants breakdown
   variant_summaries ARRAY<STRUCT<
     variant_hash STRING OPTIONS (description = 'Hash that identifies the variant'),
@@ -22,8 +24,10 @@ CREATE OR REPLACE TABLE APP_ID.DATASET.weekly_test_metrics (
     num_runs INTEGER OPTIONS (description = 'How many times a test was run'),
     num_failures INTEGER OPTIONS (description = 'How many times the test failed'),
     num_flake INTEGER OPTIONS (description = 'How often a test provided conflicting statuses for an equivalent patchset'),
+    total_runtime FLOAT64 OPTIONS (description = 'The total time spent running this test throughout the week'),
     avg_runtime FLOAT64 OPTIONS (description = 'The average runtime for a single run of the test'),
-    total_runtime FLOAT64 OPTIONS (description = 'The total time spent running this test throughout the week')
+    p50_runtime FLOAT64 OPTIONS (description = 'The p50 runtime for the test'),
+    p90_runtime FLOAT64 OPTIONS (description = 'The p90 runtime for the test')
     >> OPTIONS (description = 'Summaries of the variants of this test')
     )
 PARTITION BY `date`

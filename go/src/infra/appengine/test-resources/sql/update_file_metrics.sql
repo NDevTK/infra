@@ -30,8 +30,11 @@ USING (
       SUM(num_runs) AS num_runs,
       SUM(num_failures) AS num_failures,
       SUM(num_flake) AS num_flake,
-      AVG(avg_runtime)	AS avg_runtime,
       SUM(total_runtime) AS total_runtime,
+      -- The average for the file is still the sum of the tests contained within
+      SUM(avg_runtime) AS avg_runtime,
+      SUM(p50_runtime) AS p50_runtime,
+      SUM(p90_runtime) AS p90_runtime,
     FROM
       %s.%s.test_metrics AS day_metrics
     WHERE DATE(date) BETWEEN @from_date AND @to_date
@@ -44,7 +47,8 @@ USING (
       f.*,
     FROM file_summaries AS f, UNNEST(directories(f.file_name)) AS node_name
   )
-
+  -- Combine the file metrics into the directory metrics (treating files as
+  -- a single file directory)
   SELECT
     date,
     repo,
@@ -54,15 +58,19 @@ USING (
     SUM(num_runs) AS num_runs,
     SUM(num_failures) AS num_failures,
     SUM(num_flake) AS num_flake,
-    SUM(avg_runtime)	AS avg_runtime,
     SUM(total_runtime) AS total_runtime,
+    SUM(avg_runtime) AS avg_runtime,
+    SUM(p50_runtime) AS p50_runtime,
+    SUM(p90_runtime) AS p90_runtime,
     ARRAY_AGG(STRUCT(
       file_name AS file_name,
       num_runs AS num_runs,
       num_failures AS num_failures,
       num_flake AS num_flake,
       avg_runtime AS avg_runtime,
-      total_runtime AS total_runtime) IGNORE NULLS) AS child_file_summaries,
+      total_runtime AS total_runtime,
+      p50_runtime AS p50_runtime,
+      p90_runtime AS p90_runtime) IGNORE NULLS) AS child_file_summaries,
   FROM dir_nodes n
   GROUP BY date, component, node_name, repo
   ) AS S

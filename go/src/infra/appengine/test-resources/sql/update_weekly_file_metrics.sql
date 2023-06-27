@@ -19,8 +19,11 @@ USING (
       SUM(num_runs) AS num_runs,
       SUM(num_failures) AS num_failures,
       SUM(num_flake) AS num_flake,
-      AVG(avg_runtime)	AS avg_runtime,
       SUM(total_runtime) AS total_runtime,
+      -- Use weighted averages for aggregate quantiles
+      SUM(avg_runtime * num_runs) / SUM(num_runs) avg_runtime,
+      SUM(p50_runtime * num_runs) / SUM(num_runs) p50_runtime,
+      SUM(p90_runtime * num_runs) / SUM(num_runs) p90_runtime,
       ARRAY_CONCAT_AGG(child_file_summaries) all_child_file_summaries
     FROM %s.%s.file_metrics
     WHERE `date` BETWEEN
@@ -39,8 +42,11 @@ USING (
           SUM(c.num_runs) AS num_runs,
           SUM(c.num_failures) AS num_failures,
           SUM(c.num_flake) AS num_flake,
-          AVG(c.avg_runtime)	AS avg_runtime,
-          SUM(c.total_runtime) AS total_runtime
+          SUM(c.total_runtime) AS total_runtime,
+          -- Use weighted averages for aggregate quantiles
+          SUM(c.avg_runtime * c.num_runs) / SUM(c.num_runs) avg_runtime,
+          SUM(c.p50_runtime * c.num_runs) / SUM(c.num_runs) p50_runtime,
+          SUM(c.p90_runtime * c.num_runs) / SUM(c.num_runs) p90_runtime,
         FROM UNNEST(all_child_file_summaries) c
         GROUP BY file_name
     ) AS file_summary) AS child_file_summaries

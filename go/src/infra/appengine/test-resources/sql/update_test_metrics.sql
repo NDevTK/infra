@@ -21,7 +21,7 @@ USING (
         duration,
       FROM chrome-luci-data.chromium.try_test_results as tr
       WHERE DATE(partition_time) BETWEEN @from_date AND @to_date
-    ), tests AS (
+    ), test_simple_metrics AS (
       SELECT
         DATE(tr.partition_time) AS date,
         test_name,
@@ -39,6 +39,7 @@ USING (
         COUNTIF(NOT tr.expected AND NOT tr.exonerated) AS num_failures,
         AVG(tr.duration) AS avg_runtime,
         SUM(tr.duration) AS total_runtime,
+        APPROX_QUANTILES(tr.duration, 1000) AS runtime_quantiles
       FROM
         raw_results_tables AS tr
       GROUP BY
@@ -91,7 +92,9 @@ USING (
         t.builder,
         t.test_suite,
         t.target_platform,
-      FROM tests AS t
+        t.runtime_quantiles[500] p50_runtime,
+        t.runtime_quantiles[900] p90_runtime,
+      FROM test_simple_metrics AS t
       INNER JOIN flakes AS f
         USING (variant_hash, test_id, date)
     )
@@ -106,8 +109,11 @@ USING (
     SUM(num_runs) AS num_runs,
     SUM(num_failures) AS num_failures,
     SUM(num_flake) AS num_flake,
-    AVG(avg_runtime) AS avg_runtime,
     SUM(total_runtime) AS total_runtime,
+    -- Use weighted averages for aggregates
+    SUM(avg_runtime * num_runs) / SUM(num_runs) avg_runtime,
+    SUM(p50_runtime * num_runs) / SUM(num_runs) p50_runtime,
+    SUM(p90_runtime * num_runs) / SUM(num_runs) p90_runtime,
     ARRAY_AGG(STRUCT(
       v.variant_hash AS variant_hash,
       v.`project` AS `project`,
@@ -119,7 +125,9 @@ USING (
       v.num_failures AS num_failures,
       v.num_flake AS num_flake,
       v.avg_runtime AS avg_runtime,
-      v.total_runtime AS total_runtime
+      v.total_runtime AS total_runtime,
+      v.p50_runtime AS p50_runtime,
+      v.p90_runtime AS p90_runtime
     )) AS variant_summaries
   FROM variant_summaries v
   GROUP BY date, test_id, repo
