@@ -146,14 +146,20 @@ func TestGTestJsonConversions(t *testing.T) {
 						},
 					},
 				})
-				So(tr.FailureReason.PrimaryErrorMessage, ShouldEqual, `This is a failure message.`)
+				So(tr.FailureReason, ShouldResemble,
+					&pb.FailureReason{
+						PrimaryErrorMessage: `This is a failure message.`,
+						Errors: []*pb.FailureReason_Error{
+							{Message: `This is a failure message.`},
+						},
+					})
 			})
 			Convey("empty", func() {
 				tr := convert(&GTestJsonTestSuite{
 					Result:   "COMPLETED",
 					Failures: []*GTestJsonFailures{},
 				})
-				So(tr.FailureReason, ShouldEqual, nil)
+				So(tr.FailureReason, ShouldBeNil)
 			})
 		})
 	})
@@ -229,6 +235,9 @@ func TestGTestJsonConversions(t *testing.T) {
 					},
 					FailureReason: &pb.FailureReason{
 						PrimaryErrorMessage: "file.cc:5\nThis is a failure message.",
+						Errors: []*pb.FailureReason_Error{
+							{Message: "file.cc:5\nThis is a failure message."},
+						},
 					},
 					SummaryHtml: "<p>file.cc:5\nThis is a failure message.</p>",
 				},

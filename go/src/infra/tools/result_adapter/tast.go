@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gogo/protobuf/proto"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/resultdb/pbutil"
@@ -161,8 +162,12 @@ func (r *TastResults) ToProtos(ctx context.Context, testMetadataFile string, pro
 
 			// Use the SkipReason as the primary FailureReason.
 			// See: b/281910436.
+			skipReason := truncateString(c.SkipReason, maxErrorMessageBytes)
 			tr.FailureReason = &pb.FailureReason{
-				PrimaryErrorMessage: truncateString(c.SkipReason, maxPrimaryErrorBytes),
+				PrimaryErrorMessage: skipReason,
+				Errors: []*pb.FailureReason_Error{
+					{Message: skipReason},
+				},
 			}
 			ret = append(ret, tr)
 			continue
@@ -196,17 +201,34 @@ func (r *TastResults) ToProtos(ctx context.Context, testMetadataFile string, pro
 			}
 		}
 
-		if len(c.Errors) > 0 {
-			tr.FailureReason = &pb.FailureReason{
-				PrimaryErrorMessage: truncateString(c.Errors[0].Reason, maxPrimaryErrorBytes),
+		errorsSize := len(c.Errors)
+		if errorsSize > 0 {
+			stacks := make([]string, 0, errorsSize)
+			errors := make([]*pb.FailureReason_Error, 0, errorsSize)
+			currentErrorsBytes := 0
+			for _, e := range c.Errors {
+				stacks = append(stacks, e.Stack)
+
+				// Append the error only if the total size of the error list
+				// remains within the limit.
+				error := &pb.FailureReason_Error{
+					Message: truncateString(e.Reason, maxErrorMessageBytes),
+				}
+				if currentErrorsBytes+proto.Size(error) <= maxErrorsBytes {
+					errors = append(errors, error)
+					currentErrorsBytes += proto.Size(error)
+				}
 			}
-			errLog := ""
-			for _, err := range c.Errors {
-				errLog += err.Stack
-				errLog += "\n"
+
+			tr.FailureReason = &pb.FailureReason{
+				PrimaryErrorMessage:  errors[0].Message,
+				Errors:               errors,
+				TruncatedErrorsCount: int32(errorsSize - len(errors)),
 			}
 			tr.Artifacts["Test Log"] = &sinkpb.Artifact{
-				Body:        &sinkpb.Artifact_Contents{Contents: []byte(errLog)},
+				Body: &sinkpb.Artifact_Contents{
+					Contents: []byte(strings.Join(stacks, "\n")),
+				},
 				ContentType: "text/plain",
 			}
 			tr.SummaryHtml = "<text-artifact artifact-id=\"Test Log\" />"

@@ -78,8 +78,12 @@ func (r *TestRunnerResult) ToProtos(ctx context.Context, testMetadataFile string
 			// Limits the maximum size of the summary html message with an offset for the additional html tags.
 			summaryHtmlFormat := "<pre>%s</pre>"
 			tr.SummaryHtml = fmt.Sprintf(summaryHtmlFormat, truncateString(html.EscapeString(c.HumanReadableSummary), maxSummaryHtmlBytes-len(summaryHtmlFormat)))
+			errorMessage := truncateString(c.HumanReadableSummary, maxErrorMessageBytes)
 			tr.FailureReason = &pb.FailureReason{
-				PrimaryErrorMessage: truncateString(c.HumanReadableSummary, maxPrimaryErrorBytes),
+				PrimaryErrorMessage: errorMessage,
+				Errors: []*pb.FailureReason_Error{
+					{Message: errorMessage},
+				},
 			}
 		}
 

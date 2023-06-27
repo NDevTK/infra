@@ -42,6 +42,13 @@ const (
 	// ResultSink limits the summary html message to 4096 bytes in UTF-8.
 	maxSummaryHtmlBytes = 4096
 
+	// ResultSink limits the failure reason primary error message to 1024 bytes
+	// in UTF-8.
+	maxErrorMessageBytes = 1024
+
+	// ResultDB limits the total size of the error protos to 3172 bytes.
+	maxErrorsBytes = 3*1024 + 100
+
 	// Prefix of IssueTracker (internally known as Buganizer) components.
 	// See https://developers.google.com/issue-tracker for disambiguation.
 	issueTrackerBugComponentPrefix = "b:"

@@ -107,7 +107,15 @@ func fromGTestJsonStatus(s string, failed bool) (status pb.TestStatus, expected 
 func (r *GTestJsonResults) convertTestResult(ctx context.Context, buf *bytes.Buffer, testID string, result *GTestJsonTestSuite) (*sinkpb.TestResult, error) {
 	var failure *pb.FailureReason
 	if len(result.Failures) > 0 {
-		failure = &pb.FailureReason{PrimaryErrorMessage: result.Failures[0].Failure}
+		errorMessage := truncateString(
+			result.Failures[0].Failure,
+			maxErrorMessageBytes)
+		failure = &pb.FailureReason{
+			PrimaryErrorMessage: errorMessage,
+			Errors: []*pb.FailureReason_Error{
+				{Message: errorMessage},
+			},
+		}
 	}
 	status, expected, err := fromGTestJsonStatus(result.Result, failure != nil)
 	if err != nil {

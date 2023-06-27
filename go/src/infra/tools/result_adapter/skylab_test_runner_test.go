@@ -142,6 +142,9 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					SummaryHtml: "<pre>test failure</pre>",
 					FailureReason: &pb.FailureReason{
 						PrimaryErrorMessage: "test failure",
+						Errors: []*pb.FailureReason_Error{
+							{Message: "test failure"},
+						},
 					},
 					Tags: []*pb.StringPair{
 						pbutil.StringPair(executionOrderTag, "3"),
@@ -155,6 +158,9 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					SummaryHtml: "<pre>test error</pre>",
 					FailureReason: &pb.FailureReason{
 						PrimaryErrorMessage: "test error",
+						Errors: []*pb.FailureReason_Error{
+							{Message: "test error"},
+						},
 					},
 					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 4},
@@ -170,6 +176,9 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					SummaryHtml: "<pre>test abort</pre>",
 					FailureReason: &pb.FailureReason{
 						PrimaryErrorMessage: "test abort",
+						Errors: []*pb.FailureReason_Error{
+							{Message: "test abort"},
+						},
 					},
 					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 4},
@@ -241,6 +250,9 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					SummaryHtml: "<pre>test failure</pre>",
 					FailureReason: &pb.FailureReason{
 						PrimaryErrorMessage: "test failure",
+						Errors: []*pb.FailureReason_Error{
+							{Message: "test failure"},
+						},
 					},
 					Tags: []*pb.StringPair{
 						pbutil.StringPair(executionOrderTag, "3"),
@@ -255,6 +267,9 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					SummaryHtml: "<pre>test error</pre>",
 					FailureReason: &pb.FailureReason{
 						PrimaryErrorMessage: "test error",
+						Errors: []*pb.FailureReason_Error{
+							{Message: "test error"},
+						},
 					},
 					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 4},
@@ -280,6 +295,9 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 					SummaryHtml: "<pre>test abort</pre>",
 					FailureReason: &pb.FailureReason{
 						PrimaryErrorMessage: "test abort",
+						Errors: []*pb.FailureReason_Error{
+							{Message: "test abort"},
+						},
 					},
 					StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 4},
@@ -321,7 +339,7 @@ func TestSkylabTestRunnerConversions(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(testResults, ShouldHaveLength, 1)
 			So(len(testResults[0].SummaryHtml), ShouldBeLessThanOrEqualTo, maxSummaryHtmlBytes)
-			So(len(testResults[0].FailureReason.PrimaryErrorMessage), ShouldBeLessThanOrEqualTo, maxPrimaryErrorBytes)
+			So(len(testResults[0].FailureReason.PrimaryErrorMessage), ShouldBeLessThanOrEqualTo, maxErrorMessageBytes)
 		})
 
 		Convey(`check an expected skip test`, func() {

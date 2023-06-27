@@ -167,6 +167,9 @@ func TestCrosTestResultConversions(t *testing.T) {
 					Status:   pb.TestStatus_FAIL,
 					FailureReason: &pb.FailureReason{
 						PrimaryErrorMessage: "Test failed",
+						Errors: []*pb.FailureReason_Error{
+							{Message: "Test failed"},
+						},
 					},
 					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:34.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 120, Nanos: 100000000},
@@ -207,6 +210,9 @@ func TestCrosTestResultConversions(t *testing.T) {
 					Status:   pb.TestStatus_SKIP,
 					FailureReason: &pb.FailureReason{
 						PrimaryErrorMessage: "Test was skipped expectedly",
+						Errors: []*pb.FailureReason_Error{
+							{Message: "Test was skipped expectedly"},
+						},
 					},
 					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 60},
@@ -217,6 +223,9 @@ func TestCrosTestResultConversions(t *testing.T) {
 					Status:   pb.TestStatus_SKIP,
 					FailureReason: &pb.FailureReason{
 						PrimaryErrorMessage: "Test has not run yet",
+						Errors: []*pb.FailureReason_Error{
+							{Message: "Test has not run yet"},
+						},
 					},
 					StartTime: timestamppb.New(parseTime("2022-09-07T18:53:34.983328614Z")),
 					Duration:  &duration.Duration{Seconds: 120, Nanos: 100000000},

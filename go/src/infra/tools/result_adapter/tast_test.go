@@ -255,6 +255,9 @@ func TestTastConversions(t *testing.T) {
 				},
 				FailureReason: &pb.FailureReason{
 					PrimaryErrorMessage: "skipped",
+					Errors: []*pb.FailureReason_Error{
+						{Message: "skipped"},
+					},
 				},
 				StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 				Duration:  &duration.Duration{Seconds: 1},
@@ -283,7 +286,7 @@ func TestTastConversions(t *testing.T) {
 					},
 					"Test Log": {
 						Body: &sinkpb.Artifact_Contents{
-							Contents: []byte("Dummy Failure\n"),
+							Contents: []byte("Dummy Failure"),
 						},
 						ContentType: "text/plain",
 					},
@@ -305,6 +308,9 @@ func TestTastConversions(t *testing.T) {
 				},
 				FailureReason: &pb.FailureReason{
 					PrimaryErrorMessage: TestDidNotRunErr,
+					Errors: []*pb.FailureReason_Error{
+						{Message: TestDidNotRunErr},
+					},
 				},
 				StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 				Duration:  &duration.Duration{Seconds: 1},
@@ -312,7 +318,10 @@ func TestTastConversions(t *testing.T) {
 		})
 		Convey(`Errors`, func() {
 			jsonLine := genJSONLine(map[string]string{
-				"errors": `[{ "time": "2021-07-26T18:54:38.153491776Z", "file": "dummy.go", "reason": "Failed due to dummy error", "stack": "Dummy Failure" }]`,
+				"errors": `[
+					{ "time": "2021-07-26T18:54:38.153491776Z", "file": "dummy.go", "reason": "Failed due to dummy error", "stack": "Dummy Failure" },
+					{ "time": "2021-07-26T18:55:48.153491787Z", "file": "dummy.go", "reason": "Failed due to dummy error (2)", "stack": "Dummy Failure (2)" }
+				]`,
 			})
 			r := &TastResults{
 				BaseDir: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test",
@@ -333,7 +342,7 @@ func TestTastConversions(t *testing.T) {
 					},
 					"Test Log": {
 						Body: &sinkpb.Artifact_Contents{
-							Contents: []byte("Dummy Failure\n"),
+							Contents: []byte("Dummy Failure\nDummy Failure (2)"),
 						},
 						ContentType: "text/plain",
 					},
@@ -355,9 +364,43 @@ func TestTastConversions(t *testing.T) {
 				},
 				FailureReason: &pb.FailureReason{
 					PrimaryErrorMessage: "Failed due to dummy error",
+					Errors: []*pb.FailureReason_Error{
+						{Message: "Failed due to dummy error"},
+						{Message: "Failed due to dummy error (2)"},
+					},
 				},
 				StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 				Duration:  &duration.Duration{Seconds: 1},
+			})
+		})
+		Convey(`Truncate errors for failed tests`, func() {
+			maxErrorMessage := strings.Repeat(".", 1024)
+			jsonLine := genJSONLine(map[string]string{
+				"errors": fmt.Sprintf(`[
+					{ "time": "2021-07-26T18:54:38.153491776Z", "file": "dummy.go", "reason": "%s", "stack": "Dummy Failure" },
+					{ "time": "2021-07-26T18:55:48.153491787Z", "file": "dummy.go", "reason": "%s", "stack": "Dummy Failure (2)" },
+					{ "time": "2021-07-26T18:55:48.153491787Z", "file": "dummy.go", "reason": "%s", "stack": "Dummy Failure (3)" },
+					{ "time": "2021-07-26T18:55:48.153491787Z", "file": "dummy.go", "reason": "%s", "stack": "Dummy Failure (4)" }
+				]`, maxErrorMessage, maxErrorMessage, maxErrorMessage,
+					maxErrorMessage),
+			})
+			r := &TastResults{
+				BaseDir: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test",
+			}
+
+			r.ConvertFromJSON(strings.NewReader(jsonLine))
+			got, err := r.ToProtos(ctx, "", mockCollect, "")
+
+			// Only 3 errors are stored while 1 error is truncated.
+			So(err, ShouldBeNil)
+			So(got[0].FailureReason, ShouldResemble, &pb.FailureReason{
+				PrimaryErrorMessage: maxErrorMessage,
+				Errors: []*pb.FailureReason_Error{
+					{Message: maxErrorMessage},
+					{Message: maxErrorMessage},
+					{Message: maxErrorMessage},
+				},
+				TruncatedErrorsCount: 1,
 			})
 		})
 	})

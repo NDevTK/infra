@@ -370,8 +370,15 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				So(tr.FailureReason.PrimaryErrorMessage, ShouldEqual,
-					`first_failure.cc(123): This is a failure message.`)
+				So(tr.FailureReason, ShouldResemble,
+					&pb.FailureReason{
+						PrimaryErrorMessage: `first_failure.cc(123): ` +
+							`This is a failure message.`,
+						Errors: []*pb.FailureReason_Error{
+							{Message: `first_failure.cc(123): ` +
+								`This is a failure message.`},
+						},
+					})
 			})
 			Convey("first fatal failure takes precedence", func() {
 				tr := convert(&GTestRunResult{
@@ -400,8 +407,15 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				So(tr.FailureReason.PrimaryErrorMessage, ShouldEqual,
-					`first_fatal.cc(456): This is a fatal failure message.`)
+				So(tr.FailureReason, ShouldResemble,
+					&pb.FailureReason{
+						PrimaryErrorMessage: `first_fatal.cc(456): This is a ` +
+							`fatal failure message.`,
+						Errors: []*pb.FailureReason_Error{
+							{Message: `first_fatal.cc(456): This is a fatal ` +
+								`failure message.`},
+						},
+					})
 			})
 			Convey("failure result parts take precedence over snippet", func() {
 				tr := convert(&GTestRunResult{
@@ -418,8 +432,15 @@ func TestGTestConversions(t *testing.T) {
 					// [FATAL:file_name.cc(123)] Error message.
 					OutputSnippetBase64: "W0ZBVEFMOmZpbGVfbmFtZS5jYygxMjMpXSBFcnJvciBtZXNzYWdlLg==",
 				})
-				So(tr.FailureReason.PrimaryErrorMessage, ShouldEqual,
-					`failure_parts.cc(456): This is a failure message.`)
+				So(tr.FailureReason, ShouldResemble,
+					&pb.FailureReason{
+						PrimaryErrorMessage: `failure_parts.cc(456): This is ` +
+							`a failure message.`,
+						Errors: []*pb.FailureReason_Error{
+							{Message: `failure_parts.cc(456): This is a ` +
+								`failure message.`},
+						},
+					})
 			})
 			Convey("Google Test trace is removed from failure reason", func() {
 				input := "error message\nGoogle Test trace:\nRandom tracing output\n"
@@ -434,8 +455,13 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				So(tr.FailureReason.PrimaryErrorMessage, ShouldEqual,
-					"file_name.cc(123): error message")
+				So(tr.FailureReason, ShouldResemble,
+					&pb.FailureReason{
+						PrimaryErrorMessage: "file_name.cc(123): error message",
+						Errors: []*pb.FailureReason_Error{
+							{Message: "file_name.cc(123): error message"},
+						},
+					})
 			})
 			Convey("Leading and trailing spaces are removed from failure reason", func() {
 				input := "  error\n message\n  "
@@ -450,8 +476,14 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				So(tr.FailureReason.PrimaryErrorMessage, ShouldEqual,
-					"file_name.cc(123): error\n message")
+				So(tr.FailureReason, ShouldResemble,
+					&pb.FailureReason{
+						PrimaryErrorMessage: "file_name.cc(123): error\n " +
+							"message",
+						Errors: []*pb.FailureReason_Error{
+							{Message: "file_name.cc(123): error\n message"},
+						},
+					})
 			})
 			Convey("empty", func() {
 				tr := convert(&GTestRunResult{
@@ -495,7 +527,13 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				So(tr.FailureReason.PrimaryErrorMessage, ShouldEqual, expected.String())
+				So(tr.FailureReason, ShouldResemble,
+					&pb.FailureReason{
+						PrimaryErrorMessage: expected.String(),
+						Errors: []*pb.FailureReason_Error{
+							{Message: expected.String()},
+						},
+					})
 			})
 			Convey("invalid type does not cause a fatal error", func() {
 				tr := convert(&GTestRunResult{
@@ -510,7 +548,7 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				So(tr.FailureReason, ShouldEqual, nil)
+				So(tr.FailureReason, ShouldBeNil)
 			})
 			Convey("invalid UTF-8 does not cause a fatal error", func() {
 				tr := convert(&GTestRunResult{
@@ -526,7 +564,7 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				So(tr.FailureReason, ShouldEqual, nil)
+				So(tr.FailureReason, ShouldBeNil)
 			})
 			Convey("invalid base64 does not cause a fatal error", func() {
 				tr := convert(&GTestRunResult{
@@ -540,7 +578,7 @@ func TestGTestConversions(t *testing.T) {
 						},
 					},
 				})
-				So(tr.FailureReason, ShouldEqual, nil)
+				So(tr.FailureReason, ShouldBeNil)
 			})
 			Convey("extracted from snippet", func() {
 				tr := convert(&GTestRunResult{
@@ -548,9 +586,13 @@ func TestGTestConversions(t *testing.T) {
 					// [FATAL:file_name.cc(123)] Error message.
 					OutputSnippetBase64: "W0ZBVEFMOmZpbGVfbmFtZS5jYygxMjMpXSBFcnJvciBtZXNzYWdlLg==",
 				})
-				So(tr.FailureReason, ShouldNotEqual, nil)
-				So(tr.FailureReason.PrimaryErrorMessage, ShouldEqual,
-					`file_name.cc(123): Error message.`)
+				So(tr.FailureReason, ShouldResemble,
+					&pb.FailureReason{
+						PrimaryErrorMessage: `file_name.cc(123): Error message.`,
+						Errors: []*pb.FailureReason_Error{
+							{Message: `file_name.cc(123): Error message.`},
+						},
+					})
 			})
 		})
 	})

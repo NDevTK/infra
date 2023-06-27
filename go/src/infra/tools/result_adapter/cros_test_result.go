@@ -68,8 +68,13 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 		}
 
 		if testCaseResult.GetReason() != "" {
+			reason := truncateString(
+				testCaseResult.GetReason(), maxErrorMessageBytes)
 			tr.FailureReason = &pb.FailureReason{
-				PrimaryErrorMessage: truncateString(testCaseResult.GetReason(), maxPrimaryErrorBytes),
+				PrimaryErrorMessage: reason,
+				Errors: []*pb.FailureReason_Error{
+					{Message: reason},
+				},
 			}
 		}
 

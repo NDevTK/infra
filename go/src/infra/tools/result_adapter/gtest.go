@@ -126,9 +126,6 @@ var (
 	// googleTestTraceRE identifies output from SCOPED_TRACE calls in GTest
 	// so that they can be removed from the primary error message.
 	googleTestTraceRE = regexp.MustCompile(`(?s)Google Test trace:.*$`)
-
-	// ResultSink limits the failure reason primary error message to 1024 bytes in UTF-8.
-	maxPrimaryErrorBytes = 1024
 )
 
 // GTestResults represents the structure as described to be generated in
@@ -448,9 +445,14 @@ func extractFailureReasonFromResultParts(ctx context.Context, parts []*GTestRunR
 	// Contextualise the assertion failure with the file name and line number.
 	// This avoids coming up with failure reasons which are too generic,
 	// e.g. "Expected equality of these values:\n true\n false".
-	primaryError := fmt.Sprintf("%v(%v): %v", fileName, f.Line, summary)
+	primaryError := truncateString(
+		fmt.Sprintf("%v(%v): %v", fileName, f.Line, summary),
+		maxErrorMessageBytes)
 	return &pb.FailureReason{
-		PrimaryErrorMessage: truncateString(primaryError, maxPrimaryErrorBytes),
+		PrimaryErrorMessage: primaryError,
+		Errors: []*pb.FailureReason_Error{
+			{Message: primaryError},
+		},
 	}
 }
 
@@ -480,9 +482,14 @@ func extractFailureReasonFromSnippet(ctx context.Context, snippet string) *pb.Fa
 
 		// Include the location of the fatal error as sometimes "Check failed: "
 		// errors are non specific. E.g. "Check failed: false".
-		primaryError := fmt.Sprintf("%v: %v", fileNameAndLine, message)
+		primaryError := truncateString(
+			fmt.Sprintf("%v: %v", fileNameAndLine, message),
+			maxErrorMessageBytes)
 		return &pb.FailureReason{
-			PrimaryErrorMessage: truncateString(primaryError, maxPrimaryErrorBytes),
+			PrimaryErrorMessage: primaryError,
+			Errors: []*pb.FailureReason_Error{
+				{Message: primaryError},
+			},
 		}
 	}
 	// As a second approach, we will try to extract GTest expectation failures.
@@ -504,9 +511,14 @@ func extractFailureReasonFromSnippet(ctx context.Context, snippet string) *pb.Fa
 	lineNumber := snippet[match[4]:match[5]]
 	message := trimGoogleTestTrace(snippet[match[6]:match[7]])
 	message = strings.TrimSpace(message)
-	primaryError := fmt.Sprintf("%v(%v): %v", fileName, lineNumber, message)
+	primaryError := truncateString(
+		fmt.Sprintf("%v(%v): %v", fileName, lineNumber, message),
+		maxErrorMessageBytes)
 	return &pb.FailureReason{
-		PrimaryErrorMessage: truncateString(primaryError, maxPrimaryErrorBytes),
+		PrimaryErrorMessage: primaryError,
+		Errors: []*pb.FailureReason_Error{
+			{Message: primaryError},
+		},
 	}
 }
 
