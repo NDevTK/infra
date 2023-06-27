@@ -235,7 +235,7 @@ def fetch_source(api,
       _ensure_installed(
           workdir.tools_prefix,
           [ensure_built(tool, 'latest') for tool in spec.unpinned_tools] + [
-              spec_lookup(tool, spec.tool_platform).cipd_spec(tool_version)
+              spec_lookup(tool, spec.tool_platform).pinned_cipd_spec(tool_version)
               for tool, tool_version in spec.pinned_tool_info
           ] + spec.external_tool_specs)
 

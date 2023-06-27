@@ -543,19 +543,19 @@ class Support3ppApi(recipe_api.RecipeApi):
         unpinned_tools.append(self._resolve_for(tool_cipd_pkg_name, tool_plat))
 
     # Parse external CIPD package specs.
-    def parse_name_version_with_epoch(pkg, tool_plat=tool_plat):
-      name, version = pkg.split('@', 1)  # version may contain '@'
+    def parse_external_package(pkg, tool_plat=tool_plat):
+      name, version = parse_name_version(pkg)
       name = name.replace('${platform}', tool_plat)
       return name, version
 
     external_tools = []
     for tool in create_pb.build.external_tool:
-      name, version = parse_name_version_with_epoch(tool)
+      name, version = parse_external_package(tool)
       external_tools.append(self._cipd_spec_pool.get(name, version))
 
     external_deps = []
     for dep in create_pb.build.external_dep:
-      name, version = parse_name_version_with_epoch(dep)
+      name, version = parse_external_package(dep)
       external_deps.append(self._cipd_spec_pool.get(name, version))
 
     ret = ResolvedSpec(self.m, self._cipd_spec_pool,

@@ -19,7 +19,7 @@ def parse_name_version(name_version):
   'latest'.
   """
   if '@' in name_version:
-    name, version = name_version.split('@')
+    name, version = name_version.split('@', maxsplit=1)
   else:
     name, version = name_version, 'latest'
   return name, version
@@ -269,6 +269,21 @@ class ResolvedSpec(object):
     symver = '%s@%s%s' % (PACKAGE_EPOCH, version,
                           '.' + patch_ver if patch_ver else '')
     return self._cipd_spec_pool.get(full_cipd_pkg_name, symver)
+
+  def pinned_cipd_spec(self, pinned_version):
+    """Returns a CIPDSpec object for the result of building this ResolvedSpec's
+    package/platform/version with a pinned version.
+
+    Args:
+      * pinned_version (str) - The symver with patch version of this package to
+        get the CIPDSpec for.
+    """
+    cipd_pieces = [self._package_prefix, self._cipd_pkg_name_with_override]
+    if not self._spec_pb.upload.universal:
+      cipd_pieces.append(self.platform)
+    full_cipd_pkg_name = get_cipd_pkg_name(cipd_pieces)
+
+    return self._cipd_spec_pool.get(full_cipd_pkg_name, pinned_version)
 
   def source_cipd_spec(self, version):
     """Returns a CIPDSpec object for the result of building this ResolvedSpec's
