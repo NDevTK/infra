@@ -69,6 +69,7 @@ Full documentation http://go/shivas-cli`,
 			experimental_cmds.RepairProfileCmd,
 			experimental_cmds.ModelAnalysisCmd,
 			experimental_cmds.DUTAvailabilityDiffCmd,
+			experimental_cmds.GetDutsForLabstationCmd,
 		},
 	}
 }
