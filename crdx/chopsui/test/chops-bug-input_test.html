@@ -51,9 +51,9 @@
       assert.equal('monorail', element.bugProject);
 
       element.shadowRoot.querySelector('paper-input').value =
-         'https://bugs.chromium.org/p/gerrit/issues/detail?id=1543';
+         'https://issues.gerritcodereview.com/issues/40001673';
       assert.equal(element.value,
-          'https://bugs.chromium.org/p/gerrit/issues/detail?id=1543');
+          'https://issues.gerritcodereview.com/issues/40001673');
       assert.isFalse(element.invalidBug);
       assert.equal('1543', element.bugId);
       assert.equal('gerrit', element.bugProject);
