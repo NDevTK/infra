@@ -10,9 +10,15 @@ import (
 	"github.com/maruel/subcommands"
 
 	"go.chromium.org/luci/auth/client/authcli"
-	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/grpc/prpc"
 
 	"infra/cmd/shivas/site"
+	"infra/cmd/shivas/utils"
+	"infra/cmdsupport/cmdlib"
+	"infra/libs/skylab/common/heuristics"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 // GetDutsForLabstationCmd gets the DUTs associated with a labstation.
@@ -32,8 +38,16 @@ var GetDutsForLabstationCmd = &subcommands.Command{
 
 type getDutsForLabstationRun struct {
 	subcommands.CommandRunBase
-	authFlags authcli.Flags
-	envFlags  site.EnvFlags
+	authFlags   authcli.Flags
+	envFlags    site.EnvFlags
+	commonFlags site.CommonFlags
+}
+
+// getNamespace returns the namespace used to call UFS with appropriate
+// validation and default behavior. It is primarily separated from the main
+// function for testing purposes
+func (c *getDutsForLabstationRun) getNamespace() (string, error) {
+	return c.envFlags.Namespace(site.OSLikeNamespaces, ufsUtil.OSNamespace)
 }
 
 func (c *getDutsForLabstationRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -45,5 +59,38 @@ func (c *getDutsForLabstationRun) Run(a subcommands.Application, args []string, 
 }
 
 func (c *getDutsForLabstationRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) (err error) {
-	return errors.New("not yet implemented")
+	ctx := cli.GetContext(a, c, env)
+	ns, err := c.getNamespace()
+	if err != nil {
+		return err
+	}
+	ctx = utils.SetupContext(ctx, ns)
+	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
+	if err != nil {
+		return err
+	}
+	e := c.envFlags.Env()
+	if c.commonFlags.Verbose() {
+		fmt.Printf("Using UFS service %s\n", e.UnifiedFleetService)
+	}
+	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
+		C:       hc,
+		Host:    e.UnifiedFleetService,
+		Options: site.DefaultPRPCOptions,
+	})
+	for i, arg := range args {
+		args[i] = heuristics.NormalizeBotNameToDeviceName(arg)
+	}
+	resp, err := ic.GetDUTsForLabstation(ctx, &ufsAPI.GetDUTsForLabstationRequest{
+		Hostname: args,
+	})
+	if err != nil {
+		return err
+	}
+	for _, labstationMapping := range resp.GetItems() {
+		for _, dutName := range labstationMapping.GetDutName() {
+			fmt.Printf("%q -> %q\n", labstationMapping.GetHostname(), dutName)
+		}
+	}
+	return err
 }
