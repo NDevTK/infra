@@ -57,9 +57,11 @@ enum MetricType {
   UNKNOWN_METRIC = 0;
   NUM_RUNS = 1;
   NUM_FAILURES = 2;
-  AVG_RUNTIME = 3;
-  TOTAL_RUNTIME = 4;
-  AVG_CORES = 5;
+  TOTAL_RUNTIME = 3;
+  AVG_CORES = 4;
+  AVG_RUNTIME = 5;
+  P50_RUNTIME = 6;
+  P90_RUNTIME = 7;
 }
 
 // Sort types includes all metric types as well as the name (ie test name or
