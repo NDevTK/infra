@@ -126,10 +126,38 @@ func (c *Client) FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequ
 		return nil, err
 	}
 
+	// If there's a filter we have to aggregate it now, otherwise use the
+	// pre-aggregated metric
 	metricNames := make([]string, len(req.Metrics))
 	for i := 0; i < len(req.Metrics); i++ {
-		// Our column names aren't quite the metric type string
-		metricNames[i] = MetricSqlName(req.Metrics[i])
+		name := MetricSqlName(req.Metrics[i])
+		if req.Filter == "" {
+			metricNames[i] = name
+		} else {
+			aggFunc := "SUM"
+			if req.Metrics[i] == api.MetricType_AVG_RUNTIME {
+				aggFunc = "AVG"
+			}
+			metricNames[i] = `(SELECT ` + aggFunc + `(f.` + name + `) FROM UNNEST(m.variant_summaries) f
+		WHERE
+			REGEXP_CONTAINS(test_name, @string_filter) OR
+			REGEXP_CONTAINS(file_name, @string_filter) OR
+			# Only display variant matches if the variant is what matches
+			REGEXP_CONTAINS(builder, @string_filter) OR
+			REGEXP_CONTAINS(test_suite, @string_filter) LIMIT 1) AS ` + name
+		}
+	}
+
+	// Terms for converting the rolled up variants (including thing like
+	// project, bucket etc) into the builder and suite variant
+	metricAggregations := make([]string, len(req.Metrics))
+	for i := 0; i < len(req.Metrics); i++ {
+		name := MetricSqlName(req.Metrics[i])
+		if req.Metrics[i] == api.MetricType_AVG_RUNTIME {
+			metricAggregations[i] = `AVG(` + name + `) AS ` + name
+		} else {
+			metricAggregations[i] = `SUM(` + name + `) AS ` + name
+		}
 	}
 
 	table, ok := periodToTestMetricTable[req.Period]
@@ -158,25 +186,24 @@ WITH raw AS (
 		m.test_name,
 		m.file_name,
 		` + strings.Join(metricNames, ",\n\t\t") + `,
-		((
-			SELECT ARRAY_AGG(STRUCT(
-				v.variant_hash AS variant_hash,
-				v.target_platform AS target_platform,
-				v.builder AS builder,
-				v.test_suite AS test_suite,
-				` + strings.Join(metricNames, ",\n\t\t\t\t") + `
-			)
-			ORDER BY ` + sortMetric + ` ` + sortDirection + `
-		)
-		FROM m.variant_summaries v
-		WHERE (@string_filter = "" OR
-			# If it matches the parent ID display everything
-			REGEXP_CONTAINS(test_name, @string_filter) OR
-			REGEXP_CONTAINS(file_name, @string_filter) OR
-			# Only display variant matches if the variant is what matches
-			REGEXP_CONTAINS(target_platform, @string_filter) OR
-			REGEXP_CONTAINS(builder, @string_filter) OR
-			REGEXP_CONTAINS(test_suite, @string_filter)))) AS variants
+		(
+			SELECT ARRAY_AGG(builder_suite_summary) FROM (
+				SELECT STRUCT(
+					v.builder AS builder,
+					v.test_suite AS test_suite,
+					` + strings.Join(metricAggregations, ",\n\t\t\t\t\t") + `
+				) AS builder_suite_summary
+				FROM m.variant_summaries v
+				WHERE (@string_filter = "" OR
+					# If it matches the parent ID display everything
+					REGEXP_CONTAINS(test_name, @string_filter) OR
+					REGEXP_CONTAINS(file_name, @string_filter) OR
+					# Only display variant matches if the variant is what matches
+					REGEXP_CONTAINS(builder, @string_filter) OR
+					REGEXP_CONTAINS(test_suite, @string_filter))
+				GROUP BY builder, test_suite
+				)
+			) AS variants
 	FROM
 		` + c.ProjectId + `.` + c.DataSet + `.` + table + ` AS m
 	WHERE
@@ -269,22 +296,24 @@ LIMIT @page_size OFFSET @page_offset`
 				return nil, errors.Annotate(err, "obtain next variant summary row").Err()
 			}
 
-			variantHash := variantRowVals.String("variant_hash")
-			variantData, ok := variantHashToTestDateMetricData[testId][variantHash]
+			builder := variantRowVals.NullString("builder").StringVal
+			suite := variantRowVals.NullString("test_suite").StringVal
+			builderSuite := builder + ":" + suite
+			builderSuiteData, ok := variantHashToTestDateMetricData[testId][builderSuite]
 			if !ok {
 				fields := ""
 				for _, field := range rowSchema {
 					fields += field.Name
 				}
-				variantData = &api.TestVariantData{
+				builderSuiteData = &api.TestVariantData{
 					Builder: variantRowVals.NullString("builder").StringVal,
 					Suite:   variantRowVals.NullString("test_suite").StringVal,
 					Metrics: make(map[string]*api.TestMetricsArray),
 				}
-				variantHashToTestDateMetricData[testId][variantHash] = variantData
-				testIdData.Variants = append(testIdData.Variants, variantData)
+				variantHashToTestDateMetricData[testId][builderSuite] = builderSuiteData
+				testIdData.Variants = append(testIdData.Variants, builderSuiteData)
 			}
-			variantData.Metrics[date] = &api.TestMetricsArray{
+			builderSuiteData.Metrics[date] = &api.TestMetricsArray{
 				Data: variantRowVals.Metrics(req.Metrics),
 			}
 
