@@ -1,7 +1,7 @@
 create {
   verify { test: "python_test.py" }
   source {
-    patch_version: "chromium.45"
+    patch_version: "chromium.46"
     cpe_base_address: "cpe:/a:python:python"
   }
   package { version_file: ".versions/cpython.cipd_version" }
@@ -20,7 +20,7 @@ create {
     patch_dir: "patches"
   }
   build {
-    tool: "build_support/pip_bootstrap@pip20.3.4.setuptools44.1.1.wheel0.37.1"
+    tool: "build_support/pip_bootstrap@2@pip20.3.4.setuptools44.1.1.wheel0.37.1.chromium4"
     tool: "tools/autoconf"
     tool: "tools/sed"  # Used by python's makefiles
   }
@@ -29,7 +29,7 @@ create {
 create {
   platform_re: "linux-arm.*|linux-mips.*"
   build {
-    tool: "build_support/pip_bootstrap@pip20.3.4.setuptools44.1.1.wheel0.37.1"
+    tool: "build_support/pip_bootstrap@2@pip20.3.4.setuptools44.1.1.wheel0.37.1.chromium4"
     tool: "tools/autoconf"
     tool: "tools/sed"  # Used by python's makefiles
     tool: "tools/cpython"  # The host cpython for bootstrapping
@@ -72,7 +72,7 @@ create {
   platform_re: "windows-.*"
   source { script { name: "fetch.py" } }
   build {
-    tool: "build_support/pip_bootstrap@pip20.3.4.setuptools44.1.1.wheel0.37.1"
+    tool: "build_support/pip_bootstrap@2@pip20.3.4.setuptools44.1.1.wheel0.37.1.chromium4"
     tool: "tools/lessmsi"
 
     install: "install_win.sh"

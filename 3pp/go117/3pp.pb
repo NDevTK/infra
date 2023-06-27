@@ -6,6 +6,7 @@ create {
     }
     unpack_archive: true
     no_archive_prune: true
+    patch_version: "chromium.1"
   }
   build {
     install: "install_official.sh"
@@ -25,7 +26,7 @@ create {
   }
   build {
     install: "install_source.sh"
-    tool: "tools/go117@1.17.10"  # depend on the prebuilt version in $PATH
+    tool: "tools/go117@2@1.17.10"  # depend on the prebuilt version in $PATH
   }
 }
 

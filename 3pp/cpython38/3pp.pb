@@ -1,6 +1,6 @@
 create {
   verify { test: "python_test.py" }
-  source { patch_version: "chromium.29" }
+  source { patch_version: "chromium.30" }
   package {
     version_file: ".versions/cpython3.cipd_version"
     disable_latest_ref: true
@@ -24,7 +24,7 @@ create {
   build {
     # no binutils on mac since it includes some tools like 'ar' that we don't
     # actually want
-    tool: "build_support/pip_bootstrap@pip20.3.4.setuptools44.1.1.wheel0.37.1"
+    tool: "build_support/pip_bootstrap@2@pip20.3.4.setuptools44.1.1.wheel0.37.1.chromium4"
     tool: "tools/autoconf"
     tool: "tools/sed"
   }
@@ -61,7 +61,7 @@ create {
     # part of 'libc'.
     dep: "static_libs/nsl"
 
-    tool: "build_support/pip_bootstrap@pip20.3.4.setuptools44.1.1.wheel0.37.1"
+    tool: "build_support/pip_bootstrap@2@pip20.3.4.setuptools44.1.1.wheel0.37.1.chromium4"
     tool: "tools/autoconf"
     tool: "tools/binutils"
     tool: "tools/sed"
@@ -71,7 +71,7 @@ create {
 create {
   platform_re: "linux-arm.*|linux-mips.*"
   build {
-    tool: "build_support/pip_bootstrap@pip20.3.4.setuptools44.1.1.wheel0.37.1"
+    tool: "build_support/pip_bootstrap@2@pip20.3.4.setuptools44.1.1.wheel0.37.1.chromium4"
     tool: "tools/autoconf"
     tool: "tools/binutils"
     tool: "tools/sed"            # Used by python's makefiles
@@ -84,7 +84,7 @@ create {
   platform_re: "windows-.*"
   source { script { name: "fetch.py" } }
   build {
-    tool: "build_support/pip_bootstrap@pip20.3.4.setuptools44.1.1.wheel0.37.1"
+    tool: "build_support/pip_bootstrap@2@pip20.3.4.setuptools44.1.1.wheel0.37.1.chromium4"
     tool: "tools/lessmsi"
 
     install: "install_win.sh"

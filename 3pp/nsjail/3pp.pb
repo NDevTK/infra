@@ -12,12 +12,12 @@ create {
       version_restriction: { op: EQ val: "3.3"}
     }
     patch_dir: "patches"
-    patch_version: "chromium.1"
+    patch_version: "chromium.2"
   }
 
   build {
     tool: "tools/flex"
-    tool: "tools/protoc@21.12"
+    tool: "tools/protoc@2@21.12"
     dep: "tools/protobuf-cpp-21"
     dep: "tools/libnl"
   }
