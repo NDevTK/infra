@@ -58,6 +58,8 @@ message Config {
   string hostname = 25;
   // ExperimentalAPI is for determining the experimental percentage for new API
   ExperimentalAPI experimentalAPI = 26;
+  // Groups which indicate the caller is a partner
+  repeated string partnerACLGroups = 27;
 }
 
 message OSNetworkConfig {

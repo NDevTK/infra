@@ -6,6 +6,7 @@ package frontend
 
 import (
 	"context"
+	"regexp"
 
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/logging"
@@ -13,12 +14,15 @@ import (
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	api "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/acl"
+	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/untrusted"
+	"infra/unifiedfleet/app/util"
 )
 
 // InstallServices installs ...
@@ -63,4 +67,42 @@ func checkAccess(ctx context.Context, rpcName string, _ proto.Message) (context.
 	}
 	logging.Infof(ctx, "%s is a member of %s", auth.CurrentIdentity(ctx), group)
 	return ctx, nil
+}
+
+// Determines if a given email is an @google.com email
+var googlerRegex = regexp.MustCompile(`^.*@google.com$`)
+
+// isGoogler determines if the context belongs to a google authed account.
+func isGoogler(ctx context.Context) bool {
+	id := string(auth.CurrentIdentity(ctx))
+	return googlerRegex.MatchString(id)
+}
+
+// PartnerInterceptor rejects any calls from partner accounts that don't use
+// the os-partner namespace. Relies on having a namespace set and should only
+// be called after another interceptor that calls `SetupDatastoreNamespace` or
+// an equivalent.
+func PartnerInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+	// ignore this check for google emails, needed as some @google.com accounts
+	// could be in the CRIA groups used to determine partners.
+	if isGoogler(ctx) {
+		return handler(ctx, req)
+	}
+
+	cfg := config.Get(ctx)
+	sfpGroups := cfg.PartnerACLGroups
+	sfpMember, err := auth.IsMember(ctx, sfpGroups...)
+	if err != nil {
+		logging.Errorf(ctx, "Error fetching auth info: %s", err)
+		return nil, status.Error(codes.Internal, "error fetching auth perms")
+	}
+
+	ns := util.GetDatastoreNamespace(ctx)
+
+	if sfpMember && ns != util.OSPartnerNamespace {
+		logging.Errorf(ctx, "Blocking caller: %s making RPC: %s in namespace: %s", auth.CurrentUser(ctx), info.FullMethod, ns)
+		return nil, status.Error(codes.PermissionDenied, "partners only have access to `os-partner` namespace")
+	}
+
+	return handler(ctx, req)
 }

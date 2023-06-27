@@ -64,7 +64,7 @@ func main() {
 			panic(err)
 		}
 
-		srv.RegisterUnaryServerInterceptors(versionInterceptor, namespaceInterceptor)
+		srv.RegisterUnaryServerInterceptors(versionInterceptor, namespaceInterceptor, frontend.PartnerInterceptor)
 		frontend.InstallServices(srv)
 
 		// Add authenticator for handling JWT tokens. This is required to
