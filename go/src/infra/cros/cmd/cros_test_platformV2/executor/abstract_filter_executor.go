@@ -11,6 +11,8 @@ import (
 	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
 	"infra/cros/cmd/cros_test_runner/common"
 
+	buildapi "go.chromium.org/chromiumos/config/go/build/api"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
@@ -18,8 +20,7 @@ import (
 )
 
 type FilterExecutor struct {
-	Ctr  managers.ContainerManager
-	resp *api.TestSuite
+	Ctr managers.ContainerManager
 
 	conn *grpc.ClientConn
 
@@ -27,7 +28,20 @@ type FilterExecutor struct {
 	containerPath string
 }
 
-func (ex *FilterExecutor) Execute(ctx context.Context, cmd string) error {
+func newFilterExecutor(ctr managers.ContainerManager, req *api.Filter, containerMetadata map[string]*buildapi.ContainerImageInfo) (*FilterExecutor, error) {
+	var err error
+	// For non-default filters, the given request might not include the path. If not try to find
+	// it from the containermetadata.
+	if req.Container.ContainerPath == "" {
+		req, err = ResolvedContainer(req.Container.ServiceName, containerMetadata)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &FilterExecutor{Ctr: ctr, binaryName: req.Container.ServiceName, containerPath: req.Container.ContainerPath}, nil
+}
+
+func (ex *FilterExecutor) Execute(ctx context.Context, cmd string, resp *TestPlanResponse) error {
 	if cmd == "run" {
 		return nil // Call the (running) binary inside the executing container.
 	} else if cmd == "init" {

@@ -81,7 +81,7 @@ func (ex *CtrManager) StopContainer(ctx context.Context, foo string) error {
 func (ex *CtrManager) StartManager(ctx context.Context, foo string) (err error) {
 	fmt.Println("Starting CTR Server")
 	ctrCipd := crostoolrunner.CtrCipdInfo{
-		Version:        "dbeckett-test",
+		Version:        "prod",
 		CtrCipdPackage: common.CtrCipdPackage,
 	}
 	ex.CtrCipdInfo = ctrCipd

@@ -20,7 +20,7 @@ func NewCloudContainerExecutor(manager managers.ContainerManager) *CloudContaine
 	return &CloudContainerExecutor{manager: manager}
 }
 
-func (ex *CloudContainerExecutor) Execute(ctx context.Context, cmd string) error {
+func (ex *CloudContainerExecutor) Execute(ctx context.Context, cmd string, resp *TestPlanResponse) error {
 	if cmd == "run" {
 		return nil
 	} else if cmd == "init" {

@@ -4,12 +4,14 @@
 
 package executor
 
-import "context"
+import (
+	"context"
+)
 
 type Executor interface {
 
 	// Execute runs the exector
-	Execute(context.Context, string) error
+	Execute(context.Context, string, *TestPlanResponse) error
 
 	// Response
 }

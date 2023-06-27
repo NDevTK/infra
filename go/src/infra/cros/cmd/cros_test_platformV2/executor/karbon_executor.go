@@ -7,10 +7,12 @@ package executor
 import (
 	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
 
+	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
-func NewKarbonExecutor(ctr managers.ContainerManager, resp *api.TestSuite, req *api.Filter) *FilterExecutor {
+func NewKarbonExecutor(ctr managers.ContainerManager, req *api.Filter, containerMetadata map[string]*buildapi.ContainerImageInfo) (*FilterExecutor, error) {
 	// TODO, Given the request, make the correct filter.
-	return &FilterExecutor{Ctr: ctr, resp: resp, binaryName: req.Container.ServiceName, containerPath: req.Container.ContainerPath}
+
+	return newFilterExecutor(ctr, req, containerMetadata)
 }
