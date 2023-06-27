@@ -326,6 +326,7 @@ func servoRepairPlan() *Plan {
 				},
 				RecoveryActions: []string{
 					"Stop servod",
+					"Reboot servo device",
 					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
@@ -357,6 +358,7 @@ func servoRepairPlan() *Plan {
 				},
 				RecoveryActions: []string{
 					"Stop servod",
+					"Reboot servo device",
 					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
@@ -411,6 +413,7 @@ func servoRepairPlan() *Plan {
 				ExecName: "servod_echo",
 				RecoveryActions: []string{
 					"Stop servod",
+					"Reboot servo device",
 					"Toggle PD once and stop",
 					// Other actions just in case as we do not expect to run them.
 					"Try fake disconnect and stop",
@@ -537,6 +540,7 @@ func servoRepairPlan() *Plan {
 				ExecName: "servo_cr50_low_sbu",
 				RecoveryActions: []string{
 					"Stop servod",
+					"Reboot servo device",
 					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
@@ -560,6 +564,7 @@ func servoRepairPlan() *Plan {
 				},
 				RecoveryActions: []string{
 					"Stop servod",
+					"Reboot servo device",
 					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
@@ -586,6 +591,7 @@ func servoRepairPlan() *Plan {
 				// We need wake it up from DUT side.
 				RecoveryActions: []string{
 					"Stop servod",
+					"Reboot servo device",
 					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
@@ -634,6 +640,7 @@ func servoRepairPlan() *Plan {
 				},
 				RecoveryActions: []string{
 					"Stop servod",
+					"Reboot servo device",
 					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
@@ -666,6 +673,7 @@ func servoRepairPlan() *Plan {
 					// TODO(otabek): need verify if we can enable testlab.
 					"Open gsc testlab",
 					"Stop servod",
+					"Reboot servo device",
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
 				},
@@ -697,6 +705,7 @@ func servoRepairPlan() *Plan {
 				ExecName: "init_dut_for_servo",
 				RecoveryActions: []string{
 					"Stop servod",
+					"Reboot servo device",
 					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
@@ -731,6 +740,7 @@ func servoRepairPlan() *Plan {
 				ExecName: "servo_check_servod_control",
 				RecoveryActions: []string{
 					"Stop servod",
+					"Reboot servo device",
 					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
@@ -758,6 +768,7 @@ func servoRepairPlan() *Plan {
 				ExecName: "servo_low_ppdut5",
 				RecoveryActions: []string{
 					"Stop servod",
+					"Reboot servo device",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
@@ -845,6 +856,7 @@ func servoRepairPlan() *Plan {
 				},
 				RecoveryActions: []string{
 					"Stop servod",
+					"Reboot servo device",
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
 					"Toggle PD once and stop",
@@ -1124,6 +1136,7 @@ func servoRepairPlan() *Plan {
 				RecoveryActions: []string{
 					"Stop servod and request to use recovery-mode for servod",
 					"Stop servod",
+					"Reboot servo device",
 					"Reboot by EC console and stop",
 					"Cold reset the DUT by servod and stop",
 					"Reset EC from DUT and stop",
@@ -1157,6 +1170,7 @@ func servoRepairPlan() *Plan {
 				},
 				RecoveryActions: []string{
 					"Stop servod",
+					"Reboot servo device",
 					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
