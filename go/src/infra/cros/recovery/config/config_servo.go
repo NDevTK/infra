@@ -123,6 +123,9 @@ func servoRepairPlan() *Plan {
 					"Cache servod start time based on previous runs.",
 					"If we fail all logs will be collected",
 				},
+				Conditions: []string{
+					"Servod container is not used",
+				},
 				ExecName:               "cros_register_servod_logs_start",
 				AllowFailAfterRecovery: true,
 			},
@@ -1690,6 +1693,9 @@ func servoRepairPlan() *Plan {
 				// TODO(otabek): Think to save the result to logs.
 				Docs: []string{
 					"Read host release data for future analysis.",
+				},
+				Conditions: []string{
+					"Servod container is not used",
 				},
 				Dependencies: []string{
 					"Device is SSHable",
