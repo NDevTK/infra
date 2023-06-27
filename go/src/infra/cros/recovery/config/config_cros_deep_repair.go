@@ -48,6 +48,7 @@ func deepRepairServoPlan() *Plan {
 			"Servo serial is specified",
 			"Device is SSHable",
 			"Power-cycle by smart-hub",
+			"Reboot servo_v4.1",
 			"Mark labstation as servod is in-use",
 			"Start servod daemon without recovery",
 			"Servod is responsive to dut-control",
@@ -251,6 +252,26 @@ func deepRepairServoPlan() *Plan {
 				RunControl:             RunControl_ALWAYS_RUN,
 				AllowFailAfterRecovery: true,
 				MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			},
+			"Reboot servo_v4.1": {
+				Docs: []string{
+					"Reboot servo_v4.1 via servodtool",
+				},
+				Conditions: []string{
+					"is_servo_v4p1_by_serial_number",
+				},
+				Dependencies: []string{
+					"Device is SSHable",
+					"Stop servod",
+				},
+				ExecName: "servo_reboot",
+				ExecExtraArgs: []string{
+					"reboot_timeout:30",
+					"wait_timeout:30",
+				},
+				ExecTimeout:            &durationpb.Duration{Seconds: 70},
+				RunControl:             RunControl_RUN_ONCE,
+				AllowFailAfterRecovery: true,
 			},
 		},
 	}
