@@ -17,6 +17,7 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 
 	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state"
@@ -100,21 +101,30 @@ func (c *saveRun) innerRun(a subcommands.Application, env subcommands.Env) error
 			CacheDir: request.GetConfig().GetAutotestDir(),
 			Name:     hostname,
 		}
+		logging.Infof(ctx, "Starting loading data from bot for %q...", hostname)
 		s, err := bcs.Load()
 		if err != nil {
+			logging.Infof(ctx, "Fail to load data from bot: %v", err)
 			return err
 		}
+		logging.Infof(ctx, "Starting loading the state file for %q...", hostname)
 		i, err := getHostInfo(request.GetResultsDir(), hostname)
 		if err != nil {
+			logging.Infof(ctx, "Fail to load the state file: %v", err)
 			return err
 		}
+		logging.Infof(ctx, "Starting updating request from the state file for %q...", hostname)
 		s = updateDutStateFromHostInfo(s, i)
+		logging.Infof(ctx, "Starting updating the state file for %q...", hostname)
 		if err := bcs.Save(s); err != nil {
+			logging.Infof(ctx, "Fail to update the state file: %v", err)
 			return err
 		}
 
 		// Update the DUT state in UFS (if the current state is safe to update).
-		ufs.SafeUpdateUFSDUTState(ctx, &c.authFlags, hostname, request.GetDutState(), request.GetConfig().GetCrosUfsService(), request.GetRepairRequests())
+		if err := ufs.SafeUpdateUFSDUTState(ctx, &c.authFlags, hostname, request.GetDutState(), request.GetConfig().GetCrosUfsService(), request.GetRepairRequests()); err != nil {
+			logging.Infof(ctx, "Fail to update state in UFS: %v", err)
+		}
 	}
 
 	if request.GetSealResultsDir() {

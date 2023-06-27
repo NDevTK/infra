@@ -6,6 +6,7 @@ package ufs
 
 import (
 	"context"
+	"strings"
 
 	"infra/cros/dutstate"
 
@@ -34,7 +35,7 @@ func SafeUpdateUFSDUTState(ctx context.Context, authFlags *authcli.Flags, dutNam
 		return errors.Annotate(err, "save update ufs state").Err()
 	}
 	info := dutstate.Read(ctx, c, dutName)
-	logging.Infof(ctx, "Received DUT state from UFS: %s", info.State)
+	logging.Infof(ctx, "Received DUT state from UFS: %#v", info)
 	if info.DeviceId == "" {
 		return errors.Reason("save update ufs state: deviceId not found").Err()
 	}
@@ -49,11 +50,12 @@ func SafeUpdateUFSDUTState(ctx context.Context, authFlags *authcli.Flags, dutNam
 		if info.DeviceType == "chromeos" {
 			// Convert repair-requests to UFS enum.
 			var ufsRepairRequests []ufslab.DutState_RepairRequest
+			logging.Infof(ctx, "Repair-request received from the request: %v", repairRequests)
 			for _, rr := range repairRequests {
-				if v, ok := ufslab.DutState_RepairRequest_value[rr]; ok {
+				if v, ok := ufslab.DutState_RepairRequest_value[strings.ToUpper(rr)]; ok {
 					ufsRepairRequests = append(ufsRepairRequests, ufslab.DutState_RepairRequest(v))
 				} else {
-					logging.Debugf(ctx, "Repair-request %q is incorrect and skipped!", rr)
+					logging.Infof(ctx, "Repair-request %q is incorrect and skipped!", rr)
 				}
 			}
 			if len(ufsRepairRequests) > 0 {
@@ -65,11 +67,21 @@ func SafeUpdateUFSDUTState(ctx context.Context, authFlags *authcli.Flags, dutNam
 						},
 					},
 				}
+				logging.Infof(ctx, "Saving states to UFS with repair-requests: %v", ufsRepairRequests)
+			} else {
+				logging.Infof(ctx, "No repair-requests found to set!")
 			}
+		} else {
+			logging.Infof(ctx, "Updating device is not ChromeOS device!")
 		}
+		logging.Infof(ctx, "Saving states to UFS with masks: %v", maskPaths)
 		req.UpdateMask = &field_mask.FieldMask{Paths: maskPaths}
-		_, err = c.UpdateTestData(ctx, req)
-		return errors.Annotate(err, "save update ufs state").Err()
+		if _, err = c.UpdateTestData(ctx, req); err != nil {
+			logging.Infof(ctx, "Saving states fail: %v", err)
+			return errors.Annotate(err, "save update ufs state").Err()
+		}
+		logging.Infof(ctx, "Successful saved states for %q.", dutName)
+		return nil
 	}
 	logging.Warningf(ctx, "Not saving requested DUT state %s, since current DUT state is %s, which should never be overwritten!", dutState, info.State)
 	return nil
