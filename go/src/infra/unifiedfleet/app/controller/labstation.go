@@ -330,7 +330,7 @@ func validateUpdateLabstation(ctx context.Context, oldLabstation, labstation *uf
 // renameLabstation renames the labstation with the given name. Use inside a transaction
 func renameLabstation(ctx context.Context, oldName, newName string, lse *ufspb.MachineLSE, machine *ufspb.Machine) (*ufspb.MachineLSE, error) {
 	//Get all the duts referencing the old labstation
-	dutMachinelses, err := getDUTsConnectedToLabstation(ctx, oldName)
+	dutMachinelses, err := GetDUTsConnectedToLabstation(ctx, oldName)
 	if err != nil {
 		return nil, err
 	}
@@ -375,8 +375,8 @@ func renameLabstation(ctx context.Context, oldName, newName string, lse *ufspb.M
 	return lse, nil
 }
 
-// getDUTsConnectedToLabstation returns a list of DUTs whose servo hostname is the given labstation
-func getDUTsConnectedToLabstation(ctx context.Context, labstation string) ([]*ufspb.MachineLSE, error) {
+// GetDUTsConnectedToLabstation returns a list of DUTs whose servo hostname is the given labstation
+func GetDUTsConnectedToLabstation(ctx context.Context, labstation string) ([]*ufspb.MachineLSE, error) {
 	// As the DUTs are indexed by servo_id which is a concatenation of
 	// <host><port> strings we do a ranged query for everything greater
 	// than or equal to <labstation>9000 (min port) and less than or equal
