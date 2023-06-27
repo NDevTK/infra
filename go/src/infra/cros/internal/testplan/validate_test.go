@@ -296,7 +296,7 @@ func TestValidateMappingErrors(t *testing.T) {
 							Cq: &chromeos.ChromeOS_CQ{
 								SourceTestPlans: []*plan.SourceTestPlan{
 									{
-										PathRegexps: []string{"a/b/.*"},
+										PathRegexps: []string{"a/b/c/.*"},
 									},
 								},
 							},

@@ -9,7 +9,6 @@ import (
 	"io/fs"
 	"path/filepath"
 	"regexp"
-	"sort"
 	"strings"
 
 	"infra/cros/internal/gerrit"
@@ -20,6 +19,7 @@ import (
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/sync/parallel"
 )
 
 // ValidateMapping validates ChromeOS test config in mapping.
@@ -36,29 +36,23 @@ func ValidateMapping(
 		validateTemplateParameters,
 	}
 
-	// Iterate the mappings in lexicographical order.
-	dirs := make([]string, 0, len(mapping.Dirs))
-	for dir := range mapping.Dirs {
-		dirs = append(dirs, dir)
-	}
+	return parallel.WorkPool(0, func(c chan<- func() error) {
+		for dir, metadata := range mapping.Dirs {
+			dir := dir
+			metadata := metadata
+			logging.Infof(ctx, "validating dir %q", dir)
 
-	sort.Strings(dirs)
-
-	multiError := errors.MultiError{}
-
-	for _, dir := range dirs {
-		metadata := mapping.Dirs[dir]
-		logging.Infof(ctx, "validating dir %q", dir)
-		for _, sourceTestPlan := range metadata.GetChromeos().GetCq().GetSourceTestPlans() {
-			for _, fn := range validationFns {
-				if err := fn(ctx, authedClient, dir, repoRoot, sourceTestPlan); err != nil {
-					multiError = append(multiError, errors.Annotate(err, "validation failed for %s", dir).Err())
+			for _, sourceTestPlan := range metadata.GetChromeos().GetCq().GetSourceTestPlans() {
+				for _, fn := range validationFns {
+					sourceTestPlan := sourceTestPlan
+					fn := fn
+					c <- func() error {
+						return fn(ctx, authedClient, dir, repoRoot, sourceTestPlan)
+					}
 				}
 			}
 		}
-	}
-
-	return multiError.AsError()
+	})
 }
 
 func validateAtLeastOneTestPlanStarlarkFile(_ context.Context, _ gerrit.Client, _, _ string, plan *planpb.SourceTestPlan) error {
