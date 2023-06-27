@@ -882,8 +882,10 @@ class ProcessCodeCoverageData(BaseHandler):
   def _ProcessCodeCoverageData(self, build_id):
     build = GetV2Build(
         build_id,
-        fields=FieldMask(
-            paths=['id', 'output.properties', 'input', 'builder', 'status']))
+        fields=FieldMask(paths=[
+            'id', 'output.properties', 'output.gitiles_commit', 'input',
+            'builder', 'status'
+        ]))
 
     if not build:
       return BaseHandler.CreateError(
@@ -971,9 +973,10 @@ class ProcessCodeCoverageData(BaseHandler):
         return
       assert (len(mimic_builder_names) == len(gs_metadata_dirs)
              ), 'mimic builder names and gs paths should be of the same length'
-      if (properties.get('coverage_override_gitiles_commit', False) or
-          not self._IsGitilesCommitAvailable(build.input.gitiles_commit)):
+      if properties.get('coverage_override_gitiles_commit', False):
         self._SetGitilesCommitFromOutputProperty(build, properties)
+      elif not self._IsGitilesCommitAvailable(build.input.gitiles_commit):
+        build.input.gitiles_commit = build.output.gitiles_commit
 
       assert self._IsGitilesCommitAvailable(build.input.gitiles_commit), (
           'gitiles commit information is expected to be available either in '
@@ -989,14 +992,14 @@ class ProcessCodeCoverageData(BaseHandler):
                                         build_id, mimic_builder_name)
 
   def _IsGitilesCommitAvailable(self, gitiles_commit):
-    """Returns True if gitiles_commit is available in the input property."""
+    """Returns True if gitiles_commit is available in the property."""
     return (gitiles_commit.host and gitiles_commit.project and
             gitiles_commit.ref and gitiles_commit.id)
 
   def _SetGitilesCommitFromOutputProperty(self, build, output_properties):
-    """Set gitiles_commit of the build from output properties."""
+    """Set gitiles_commit of the build from override output properties."""
     logging.info('gitiles_commit is not available in the input properties, '
-                 'set them from output properties.')
+                 'set them from override output properties.')
     build.input.gitiles_commit.host = output_properties.get(
         'gitiles_commit_host')
     build.input.gitiles_commit.project = output_properties.get(
