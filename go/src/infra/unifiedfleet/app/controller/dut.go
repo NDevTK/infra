@@ -1164,25 +1164,26 @@ func UpdateTestData(ctx context.Context, req *ufsAPI.UpdateTestDataRequest) erro
 	if err := checkDutIdAndHostnameAreAssociated(ctx, req.GetDeviceId(), req.GetHostname()); err != nil {
 		logging.Errorf(ctx, "UpdateTestData chrome device id and hostname are not associated: %s", err.Error())
 	}
+	logging.Debugf(ctx, "UpdateTestData received masks: %v", req.GetUpdateMask().GetPaths())
 	maskSet := make(map[string]bool) // Set of all the masks
 	for _, path := range req.GetUpdateMask().GetPaths() {
 		maskSet[path] = true
 	}
 	if maskSet["dut.state"] {
 		if err := updateRecoveryResourceState(ctx, req.GetHostname(), req.GetResourceState()); err != nil {
-			logging.Errorf(ctx, "updateRecoveryData unable to update resource state", err.Error())
+			logging.Errorf(ctx, "UpdateTestData unable to update resource state", err.Error())
 			return err
 		}
 	}
 	if chromeos := req.GetChromeosData(); chromeos != nil {
 		if _, err := UpdateDutStateWithMasks(ctx, maskSet, chromeos.GetDutState()); err != nil {
-			logging.Errorf(ctx, "updateRecoveryData unable to update dut state", err.Error())
+			logging.Errorf(ctx, "UpdateTestData unable to update dut state", err.Error())
 			return err
 		}
 	} else if android := req.GetAndroidData(); android != nil {
 		// Do nothing as no states for that case.
 	} else {
-		logging.Debugf(ctx, "updateRecoveryData not device type specific data to update!")
+		logging.Debugf(ctx, "UpdateTestData not device type specific data to update!")
 	}
 	return nil
 }
