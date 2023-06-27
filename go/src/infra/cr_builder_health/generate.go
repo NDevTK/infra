@@ -278,7 +278,7 @@ func rpcBuildbucket(buildCtx context.Context, rows []Row, client BBClient) error
 	}
 
 	if nErrors > 0 {
-		return fmt.Errorf("%d set builder health requests failed", nErrors)
+		step.SetSummaryMarkdown(fmt.Sprintf("%d set builder health requests failed", nErrors))
 	}
 
 	return nil

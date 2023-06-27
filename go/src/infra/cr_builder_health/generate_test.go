@@ -103,8 +103,8 @@ func TestGenerate(t *testing.T) {
 			},
 		}
 		err := rpcBuildbucket(ctx, rows, client)
-		So(err.Error(), ShouldContainSubstring, "1")
 		So(client.setHealthCalls, ShouldEqual, 1)
 		So(ctx.Err(), ShouldBeNil)
+		So(err, ShouldBeNil)
 	})
 }
