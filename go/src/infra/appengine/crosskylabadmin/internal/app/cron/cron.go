@@ -36,7 +36,7 @@ func InstallHandlers(r *router.Router, mwBase router.MiddlewareChain) {
 	r.GET("/internal/cron/import-service-config", mwCron, logAndSetHTTPErr(importServiceConfig))
 
 	// Generate repair jobs for needs_repair CrOS DUTs.
-	r.GET("/internal/cron/push-bots-for-admin-tasks", mwCron, logAndSetHTTPErr(pushBotsForAdminTasksHandler([]fleet.DutState{fleet.DutState_NeedsRepair})))
+	r.GET("/internal/cron/push-bots-for-admin-tasks", mwCron, logAndSetHTTPErr(highFrequencyPushBotsForAdminTasksHandler([]fleet.DutState{fleet.DutState_NeedsRepair})))
 
 	// Generate repair jobs for repair_failed CrOS DUTs.
 	r.GET("/internal/cron/push-repair-failed-bots-for-admin-tasks-hourly", mwCron, logAndSetHTTPErr(pushBotsForAdminTasksHandler([]fleet.DutState{fleet.DutState_RepairFailed})))
@@ -65,6 +65,15 @@ func InstallHandlers(r *router.Router, mwBase router.MiddlewareChain) {
 
 func importServiceConfig(c *router.Context) error {
 	return config.Import(c.Request.Context())
+}
+
+// highFrequencyPushBotsForAdminTasksHandler high-order for pushBotsForAdminTasksCronHandler.
+//
+// This handler is called every two minutes at time of writing, and is intended to be called very frequently form now on.
+func highFrequencyPushBotsForAdminTasksHandler(dutStates []fleet.DutState) (err func(c *router.Context) error) {
+	return func(c *router.Context) error {
+		return pushBotsForAdminTasksCronHandler(c, dutStates)
+	}
 }
 
 // pushBotsForAdminTasksHandler high-order for pushBotsForAdminTasksCronHandler.
