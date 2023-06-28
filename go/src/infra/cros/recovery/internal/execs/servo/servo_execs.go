@@ -376,18 +376,20 @@ func servoFirmwareNeedsUpdateExec(ctx context.Context, info *execs.ExecInfo) err
 // the actionArgs should be in the format of ["command:....", "string_value:...."]
 func servoSetExec(ctx context.Context, info *execs.ExecInfo) error {
 	m := info.GetActionArgs(ctx)
-	command, existed := m["command"]
-	if !existed {
-		return errors.Reason("servo set state: command not found in the argument").Err()
+	command := strings.TrimSpace(m.AsString(ctx, "command", ""))
+	if command == "" {
+		return errors.Reason("servo set: command not found or empty").Err()
 	}
-	stringValue, existed := m["string_value"]
-	if !existed {
-		return errors.Reason("servo set state: string value not found in the argument").Err()
+	if !m.Has("string_value") {
+		return errors.Reason("servo set: string value not specified").Err()
 	}
-	command = strings.TrimSpace(command)
-	stringValue = strings.TrimSpace(stringValue)
-	if err := info.NewServod().Set(ctx, command, stringValue); err != nil {
-		return errors.Annotate(err, "servo set state").Err()
+	stringValue := strings.TrimSpace(m.AsString(ctx, "string_value", ""))
+	servod := info.NewServod()
+	timeout := m.AsDuration(ctx, "timeout", components.ServodDefaultTimeoutSec, time.Second)
+	if v, err := servod.Call(ctx, components.ServodSet, timeout, command, stringValue); err != nil {
+		return errors.Annotate(err, "servo set").Err()
+	} else {
+		log.Infof(ctx, "Call %q:%q and received %v", command, stringValue, v)
 	}
 	return nil
 }

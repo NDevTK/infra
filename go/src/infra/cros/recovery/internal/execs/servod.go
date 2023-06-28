@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,7 +54,7 @@ func (s *iServod) Get(ctx context.Context, command string) (*xmlrpc.Value, error
 	if command == "" {
 		return nil, errors.Reason("get: command is empty").Err()
 	}
-	v, err := s.Call(ctx, "get", components.ServodDefaultTimeout, command)
+	v, err := s.Call(ctx, components.ServodGet, components.ServodDefaultTimeout, command)
 	return v, errors.Annotate(err, "get %q", command).Err()
 }
 
@@ -66,7 +66,7 @@ func (s *iServod) Set(ctx context.Context, command string, val interface{}) erro
 	if val == nil {
 		return errors.Reason("set %q: value is empty", command).Err()
 	}
-	_, err := s.Call(ctx, "set", components.ServodDefaultTimeout, command, val)
+	_, err := s.Call(ctx, components.ServodSet, components.ServodDefaultTimeout, command, val)
 	return errors.Annotate(err, "set %q with %v", command, val).Err()
 }
 
@@ -76,7 +76,7 @@ func (s *iServod) Has(ctx context.Context, command string) error {
 	if command == "" {
 		return errors.Reason("has: command not specified").Err()
 	}
-	_, err := s.Call(ctx, "doc", components.ServodDefaultTimeout, command)
+	_, err := s.Call(ctx, components.ServodDoc, components.ServodDefaultTimeout, command)
 	return errors.Annotate(err, "has: %q is not know", command).Err()
 }
 

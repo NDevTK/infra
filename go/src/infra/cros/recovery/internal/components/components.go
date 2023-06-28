@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,13 @@ const (
 	// Default timeout recommended to use when call servod.
 	// Some usbkey actions can take 10+ seconds.
 	// TODO(b/240605067): Reduce default to 10 seconds by add specific timeout for special commands.
-	ServodDefaultTimeout = 20 * time.Second
+	ServodDefaultTimeoutSec = 20
+	ServodDefaultTimeout    = ServodDefaultTimeoutSec * time.Second
+
+	// Default servod call methods.
+	ServodSet = "set"
+	ServodGet = "get"
+	ServodDoc = "doc"
 )
 
 // Servod defines the interface to communicate with servod daemon.
