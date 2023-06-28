@@ -11,6 +11,7 @@ import (
 	"io"
 	"io/fs"
 	"io/ioutil"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -61,10 +62,18 @@ func CreateImagePath(i *buildapi.ContainerImageInfo) (string, error) {
 	if r.GetHostname() == "" || r.GetProject() == "" {
 		return "", errors.Reason("create image path: repository info is missing").Err()
 	}
+
+	var path string
 	if len(i.GetDigest()) == 0 {
 		return "", errors.Reason("create image path: no digest found").Err()
+	} else if i.GetDigest() == "sha256:" {
+		tag := i.GetTags()[0]
+		path = fmt.Sprintf("%s/%s/%s:%s", r.GetHostname(), r.GetProject(), i.GetName(), tag)
+		log.Println("Using tag as sha was not found.")
+	} else {
+		path = fmt.Sprintf("%s/%s/%s@%s", r.GetHostname(), r.GetProject(), i.GetName(), i.GetDigest())
 	}
-	path := fmt.Sprintf("%s/%s/%s@%s", r.GetHostname(), r.GetProject(), i.GetName(), i.GetDigest())
+
 	return path, nil
 }
 
