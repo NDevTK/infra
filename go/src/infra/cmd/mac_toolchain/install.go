@@ -566,6 +566,7 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 				defer os.RemoveAll(runtimeDMGPath)
 				runtimeDMGInstallArgs := RuntimeDMGInstallArgs{
 					runtimeVersion:     runtimeVersion,
+					xcodeVersion:       args.xcodeVersion,
 					installPath:        runtimeDMGPath,
 					cipdPackagePrefix:  args.cipdPackagePrefix,
 					serviceAccountJSON: args.serviceAccountJSON,
