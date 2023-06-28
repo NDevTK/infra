@@ -96,21 +96,16 @@ func Read(ctx context.Context, c UFSClient, host string) Info {
 		}
 	}
 	i := Info{
-		State:      ConvertFromUFSState(res.GetResourceState()),
-		Time:       res.GetUpdateTime().Seconds,
-		DeviceId:   res.GetMachines()[0],
-		DeviceType: "",
+		State:    ConvertFromUFSState(res.GetResourceState()),
+		Time:     res.GetUpdateTime().Seconds,
+		DeviceId: res.GetMachines()[0],
 	}
 	if res.GetChromeosMachineLse() != nil {
 		i.DeviceType = "chromeos"
 	} else if res.GetAttachedDeviceLse() != nil {
 		i.DeviceType = "attached_device"
 	}
-	return Info{
-		State:    ConvertFromUFSState(res.GetResourceState()),
-		Time:     res.GetUpdateTime().Seconds,
-		DeviceId: res.GetMachines()[0],
-	}
+	return i
 }
 
 // Update push new DUT/Labstation state to UFS.
