@@ -60,8 +60,14 @@ func createImagePath(i *build_api.ContainerImageInfo) (string, error) {
 	if len(i.GetTags()) == 0 {
 		return "", errors.Reason("create image path: no tags found").Err()
 	}
-
-	path := fmt.Sprintf("%s/%s/%s@%s", r.GetHostname(), r.GetProject(), i.GetName(), i.GetDigest())
+	var path string
+	if i.GetDigest() == "sha256:" {
+		tag := i.GetTags()[0]
+		path = fmt.Sprintf("%s/%s/%s:%s", r.GetHostname(), r.GetProject(), i.GetName(), tag)
+		log.Println("Using tag as sha was not found.")
+	} else {
+		path = fmt.Sprintf("%s/%s/%s@%s", r.GetHostname(), r.GetProject(), i.GetName(), i.GetDigest())
+	}
 	log.Printf("container image: %q", path)
 	return path, nil
 }
