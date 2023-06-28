@@ -15,7 +15,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/state"
@@ -48,15 +47,10 @@ func UpdateDutState(ctx context.Context, ds *chromeosLab.DutState) (*chromeosLab
 			return status.Errorf(codes.InvalidArgument, "dut state must not be null.")
 		}
 		// It's not ok that no such DUT (machine lse) exists in UFS.
-		machineLSE, err := inventory.GetMachineLSE(ctx, ds.GetHostname())
+		_, err := inventory.GetMachineLSE(ctx, ds.GetHostname())
 		if err != nil {
 			return err
 		}
-
-		if err := assignRealmFromMachineLSE(ds, machineLSE); err != nil {
-			return err
-		}
-
 		hc := &HistoryClient{}
 		// It's ok that no old dut state for this DUT exists before.
 		oldDS, _ := state.GetDutState(ctx, ds.GetId().GetValue())
@@ -82,7 +76,7 @@ func UpdateDutStateWithMasks(ctx context.Context, maskSet map[string]bool, ds *c
 			return status.Errorf(codes.InvalidArgument, "dut state must not be null.")
 		}
 		// It's not ok that no such DUT (machine lse) exists in UFS.
-		machineLSE, err := inventory.GetMachineLSE(ctx, ds.GetHostname())
+		_, err := inventory.GetMachineLSE(ctx, ds.GetHostname())
 		if err != nil {
 			return err
 		}
@@ -98,10 +92,6 @@ func UpdateDutStateWithMasks(ctx context.Context, maskSet map[string]bool, ds *c
 			oldDs = nil
 		} else {
 			oldDs = proto.Clone(newDs).(*chromeosLab.DutState)
-		}
-
-		if err := assignRealmFromMachineLSE(ds, machineLSE); err != nil {
-			return err
 		}
 
 		// Apply field by masks.
@@ -169,15 +159,4 @@ func UpdateDutStateWithMasks(ctx context.Context, maskSet map[string]bool, ds *c
 		return nil, err
 	}
 	return ds, nil
-}
-
-func assignRealmFromMachineLSE(ds *chromeosLab.DutState, machinelse *ufspb.MachineLSE) error {
-	if ds == nil {
-		return status.Error(codes.Internal, "assignRealmFromMachineLSE - DutState is nil")
-	}
-	if machinelse == nil {
-		return status.Error(codes.Internal, "assignRealmFromMachineLSE - MachineLSE is nil")
-	}
-	ds.Realm = machinelse.GetRealm()
-	return nil
 }

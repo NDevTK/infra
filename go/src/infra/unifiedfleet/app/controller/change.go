@@ -635,7 +635,6 @@ func (hc *HistoryClient) LogDutStateChanges(oldData, newData *chromeosLab.DutSta
 	hc.changes = append(hc.changes, logCommon(resourceName, "dut_state.bluetooth_state", oldData.GetBluetoothState(), newData.GetBluetoothState())...)
 	hc.changes = append(hc.changes, logCommon(resourceName, "dut_state.rpm_state", oldData.GetRpmState(), newData.GetRpmState())...)
 	hc.changes = append(hc.changes, logCommon(resourceName, "dut_state.repair_requests", oldData.GetRepairRequests(), newData.GetRepairRequests())...)
-	hc.changes = append(hc.changes, logCommon(resourceName, "dut_state.realm", oldData.GetRealm(), newData.GetRealm())...)
 	hc.logMsgEntity(resourceName, false, newData)
 }
 
