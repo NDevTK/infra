@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components"
+	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/retry"
 )
 
@@ -25,6 +26,10 @@ const (
 	modemManagerJobPresentCmd = "initctl status modemmanager"
 	restartModemManagerCmd    = "restart modemmanager"
 	startModemManagerCmd      = "start modemmanager"
+	shillInterface            = "org.chromium.flimflam"
+	getCellularServiceCmd     = "gdbus call --system --dest=org.chromium.flimflam" +
+		" -o / -m org.chromium.flimflam.Manager.FindMatchingService" +
+		" \"{'Type': 'cellular'}\" | cut -d\"'\" -f2"
 )
 
 // IsExpected returns true if cellular modem is expected to exist on the DUT.
@@ -67,6 +72,30 @@ func RestartModemManager(ctx context.Context, runner components.Runner, timeout 
 	return nil
 }
 
+// ConnectToDefaultService attempts a simple connection to the default cellular service.
+func ConnectToDefaultService(ctx context.Context, runner components.Runner, timeout time.Duration) error {
+	output, err := runner(ctx, 5*time.Second, getCellularServiceCmd)
+	if err != nil {
+		return errors.Annotate(err, "fetch service name").Err()
+	}
+
+	connectCmd := fmt.Sprintf("dbus-send --system --fixed --print-reply --dest=%s %s %s.Service.Connect", shillInterface, output, shillInterface)
+	output, err = runner(ctx, 30*time.Second, connectCmd)
+	if err != nil {
+		if strings.Contains(output, "already connecting") || strings.Contains(output, "already connected") {
+			// connection already in progress, just log error
+			log.Errorf(ctx, err.Error())
+		} else {
+			return errors.Annotate(err, "fetch service name").Err()
+		}
+	}
+
+	if err := WaitForModemState(ctx, runner, timeout, "connected"); err != nil {
+		return errors.Annotate(err, "connect to cellular service: modem never entered connected state").Err()
+	}
+	return nil
+}
+
 // WaitForModemManager waits for the modemmanager job to be running via upstart.
 func WaitForModemManager(ctx context.Context, runner components.Runner, timeout time.Duration) error {
 	cmd := fmt.Sprintf("status %s", modemManagerJob)
@@ -80,6 +109,39 @@ func WaitForModemManager(ctx context.Context, runner components.Runner, timeout 
 	}, "wait for modemmanager")
 }
 
+// WaitForModemState polls for the modem to enter a specific state.
+func WaitForModemState(ctx context.Context, runner components.Runner, timeout time.Duration, state string) error {
+	if err := retry.WithTimeout(ctx, time.Second, timeout, func() error {
+		output, err := runner(ctx, 5*time.Second, detectCmd)
+		if err != nil {
+			return errors.Annotate(err, "call mmcli").Err()
+		}
+
+		info, err := parseModemInfo(ctx, output)
+		if err != nil {
+			return errors.Annotate(err, "parse mmcli response").Err()
+		}
+
+		if info == nil || info.Modem == nil {
+			return errors.Reason("no modem found on DUT").Err()
+		}
+
+		if info.GetState() == "" {
+			return errors.Reason("modem state is empty").Err()
+		}
+
+		if strings.ToUpper(info.GetState()) != strings.ToUpper(state) {
+			return errors.Reason("modem state not equal to %s", state).Err()
+		}
+
+		return nil
+	}, "wait for modem state"); err != nil {
+		return errors.Annotate(err, "wait for modem state: wait for modem to enter requested state").Err()
+	}
+
+	return nil
+}
+
 // ModemInfo is a simplified version of the JSON output from ModemManager to get the modem connection state information.
 type ModemInfo struct {
 	Modem *struct {
@@ -87,6 +149,13 @@ type ModemInfo struct {
 			State string `state:"callbox,omitempty"`
 		} `json:"generic,omitempty"`
 	} `modem:"modem,omitempty"`
+}
+
+func (m *ModemInfo) GetState() string {
+	if m.Modem.Generic == nil {
+		return ""
+	}
+	return m.Modem.Generic.State
 }
 
 // WaitForModemInfo polls for a modem to appear on the DUT, which can take up to two minutes on reboot.
