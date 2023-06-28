@@ -738,7 +738,35 @@ func (fs *FleetServerImpl) GetDeviceData(ctx context.Context, req *ufsAPI.GetDev
 
 // GetDUTsForLabstation gets the duts associated with a specific labstation in UFS.
 func (_ *FleetServerImpl) GetDUTsForLabstation(ctx context.Context, req *ufsAPI.GetDUTsForLabstationRequest) (*ufsAPI.GetDUTsForLabstationResponse, error) {
-	return nil, errors.New("not yet implemented")
+	resp := &ufsAPI.GetDUTsForLabstationResponse{}
+
+	var errs []error
+
+	for _, labstation := range req.GetHostname() {
+		duts, err := controller.GetDUTsConnectedToLabstation(ctx, labstation)
+		switch err {
+		case nil:
+			var dutNames []string
+			for _, dut := range duts {
+				dutNames = append(dutNames, dut.GetHostname())
+			}
+			resp.Items = append(resp.GetItems(), &ufsAPI.GetDUTsForLabstationResponse_LabstationMapping{
+				Hostname: labstation,
+				DutName:  dutNames,
+			})
+		default:
+			errs = append(errs, err)
+		}
+	}
+
+	var err error
+	// TODO(gregorynisbet): If possible, sniff the errors better and distinguish datastore failures (rare)
+	//                      from nonexistent labstations (expected).
+	if len(errs) != 0 {
+		err = grpcStatus.Error(codes.FailedPrecondition, errors.Join(errs...).Error())
+	}
+
+	return resp, err
 }
 
 func getBrowserVMDataIfExists(ctx context.Context, hostname string) (*ufsAPI.GetDeviceDataResponse, error) {
