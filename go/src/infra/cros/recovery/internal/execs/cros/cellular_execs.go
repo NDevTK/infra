@@ -19,7 +19,7 @@ import (
 )
 
 func init() {
-	execs.Register("cros_audit_cellular", auditCellularExec)
+	execs.Register("cros_audit_cellular_modem", auditCellularModemExec)
 	execs.Register("cros_has_mmcli", hasModemManagerCLIExec)
 	execs.Register("cros_has_modemmanager_job", hasModemManagerJobExec)
 	execs.Register("cros_modemmanager_running", modemManagerRunningExec)
@@ -108,8 +108,8 @@ func setCellularModemStateExec(ctx context.Context, info *execs.ExecInfo) error 
 	return nil
 }
 
-// auditCellularExec will validate cellular modem and connectivity state.
-func auditCellularExec(ctx context.Context, info *execs.ExecInfo) error {
+// auditCellularModemExec will validate cellular modem and connectivity state.
+func auditCellularModemExec(ctx context.Context, info *execs.ExecInfo) error {
 	c := info.GetChromeos().GetCellular()
 	if c == nil {
 		return errors.Reason("audit cellular: cellular data is not present in dut info").Err()

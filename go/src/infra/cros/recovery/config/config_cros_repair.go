@@ -12,6 +12,7 @@ func crosRepairPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
 			"Set state: repair_failed",
+			"Enable verbose network logging for cellular DUTs",
 			"Collect logs and crashinfo",
 			"Device is pingable",
 			"Device is SSHable",
@@ -56,6 +57,7 @@ func crosRepairPlan() *Plan {
 			"Set state: ready",
 			"Update special device labels",
 			"Collect dmesg logs from DUT",
+			"Disable verbose network logging for cellular DUTs",
 			"Verify bootId and compare",
 			"Validate chromebook X label",
 			"Record type C status",
@@ -1177,11 +1179,12 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"regex:(?i)^cellular",
 			},
+			RunControl: RunControl_RUN_ONCE,
 			MetricsConfig: &MetricsConfig{
 				UploadPolicy: MetricsConfig_SKIP_ALL,
 			},
 		},
-		"Audit cellular": {
+		"Cellular modem is up": {
 			Docs: []string{
 				"Check cellular modem on the DUT is normal and update cellular modem state accordingly.",
 			},
@@ -1193,7 +1196,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Device is SSHable",
 			},
-			ExecName: "cros_audit_cellular",
+			ExecName: "cros_audit_cellular_modem",
 			ExecExtraArgs: []string{
 				"wait_manager_when_not_expected:120",
 				"wait_manager_when_expected:15",
@@ -1204,6 +1207,30 @@ func crosRepairActions() map[string]*Action {
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 180,
 			},
+		},
+		"Audit cellular modem": {
+			Docs: []string{
+				"Check cellular modem on the DUT is normal and update cellular modem state accordingly.",
+				"Identical to 'Cellular modem is up' action but is allowed to fail",
+			},
+			Dependencies: []string{
+				"Cellular modem is up",
+			},
+			ExecName:               "sample_pass",
+			AllowFailAfterRecovery: true,
+		},
+		"Audit cellular": {
+			Docs: []string{
+				"Audit cellular peripherals states and report metrics.",
+			},
+			Conditions: []string{
+				"Is in cellular pool",
+			},
+			Dependencies: []string{
+				"Audit cellular modem",
+				"Collect network logs",
+			},
+			ExecName:               "sample_pass",
 			AllowFailAfterRecovery: true,
 		},
 		"Verify tmp_fwver is updated correctly": {
@@ -3124,6 +3151,87 @@ func crosRepairActions() map[string]*Action {
 				"dest_suffix:prior_logs",
 			},
 			RunControl:             RunControl_RUN_ONCE,
+			AllowFailAfterRecovery: true,
+		},
+		"Collect var/log/messages from DUT": {
+			Docs: []string{
+				"Try to copy /var/log/messages from DUT in order to monitor ",
+				"system messages logged during the repair process to help ",
+				"retain context even when a repair was successful.",
+			},
+			Conditions: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_copy_to_logs",
+			ExecExtraArgs: []string{
+				"src_host_type:dut",
+				"src_path:/var/log/messages",
+				"src_type:file",
+				"use_host_dir:true",
+			},
+			RunControl:             RunControl_RUN_ONCE,
+			AllowFailAfterRecovery: true,
+		},
+		"Collect var/log/net.log from DUT": {
+			Docs: []string{
+				"Try to copy /var/log/net.log from DUT in order to monitor ",
+				"system messages logged during the repair process to help ",
+				"retain context even when a repair was successful.",
+			},
+			Conditions: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_copy_to_logs",
+			ExecExtraArgs: []string{
+				"src_host_type:dut",
+				"src_path:/var/log/net.log",
+				"src_type:file",
+				"use_host_dir:true",
+			},
+			RunControl:             RunControl_RUN_ONCE,
+			AllowFailAfterRecovery: true,
+		},
+		"Collect network logs": {
+			Docs: []string{
+				"Copy network logs from host to repair output.",
+			},
+			Conditions: []string{
+				"Device is SSHable",
+			},
+			Dependencies: []string{
+				"Collect var/log/messages from DUT",
+				"Collect var/log/net.log from DUT",
+			},
+			ExecName:               "sample_pass",
+			AllowFailAfterRecovery: true,
+		},
+		"Enable verbose network logging for cellular DUTs": {
+			Docs: []string{
+				"Enables verbose logging of networking daemons.",
+			},
+			Conditions: []string{
+				"Is in cellular pool",
+				"Device is SSHable",
+			},
+			ExecName: "cros_set_verbose_network_logging",
+			ExecExtraArgs: []string{
+				"is_enabled:true",
+			},
+			RunControl:             RunControl_RUN_ONCE,
+			AllowFailAfterRecovery: true,
+		},
+		"Disable verbose network logging for cellular DUTs": {
+			Docs: []string{
+				"Disables verbose logging of networking daemons.",
+			},
+			Conditions: []string{
+				"Is in cellular pool",
+				"Device is SSHable",
+			},
+			ExecName: "cros_set_verbose_network_logging",
+			ExecExtraArgs: []string{
+				"is_enabled:false",
+			},
 			AllowFailAfterRecovery: true,
 		},
 		"Collect dmesg": {

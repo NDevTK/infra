@@ -24,6 +24,10 @@ import (
 // Currently, we allow everyone to read and write and nobody to execute.
 const defaultFilePermissions fs.FileMode = 0666
 
+// verboseNetworkLogsCmd is the CLI command to enable/disable verbose logging
+// for network daemons.
+const verboseNetworkLogsCmd = "config_net_log set-verbose-logging-on-reboot-all"
+
 // DmesgExec grabs dmesg and persists the file into the log directory.
 // DmesgExec fails if and only if the dmesg executable doesn't exist or returns nonzero.
 //
@@ -250,10 +254,24 @@ func confirmFileNotExistsExec(ctx context.Context, info *execs.ExecInfo) error {
 	return errors.Annotate(err, "confirm file not exists").Err()
 }
 
+// verboseNetworkLogsExec enables/disables verbose logging for networking daemons.
+func verboseNetworkLogsExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	enabled := argsMap.AsBool(ctx, "is_enabled", true)
+	runner := info.DefaultRunner()
+
+	cmd := fmt.Sprintf("%s %v", verboseNetworkLogsCmd, enabled)
+	if _, err := runner(ctx, info.GetExecTimeout(), cmd); err != nil {
+		return errors.Annotate(err, "enable verbose network logs").Err()
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("cros_dmesg", dmesgExec)
 	execs.Register("cros_copy_to_logs", copyToLogsExec)
 	execs.Register("cros_collect_crash_dumps", collectCrashDumpsExec)
 	execs.Register("cros_create_log_collection_info", createLogCollectionInfoExec)
 	execs.Register("cros_confirm_file_not_exists", confirmFileNotExistsExec)
+	execs.Register("cros_set_verbose_network_logging", verboseNetworkLogsExec)
 }
