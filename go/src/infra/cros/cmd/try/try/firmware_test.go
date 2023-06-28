@@ -197,6 +197,7 @@ func TestFirmware_production(t *testing.T) {
 func TestFirmware_staging(t *testing.T) {
 	t.Parallel()
 	doFirmwareTest(t, &firmwareTestConfig{
+		patches:         []string{"crrev.com/c/1234567"},
 		branch:          "firmware-nissa-15217.B",
 		expectedBuilder: "staging-firmware-nissa-15217.B-branch",
 		production:      false,

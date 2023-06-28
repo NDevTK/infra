@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package try
@@ -68,6 +68,10 @@ func (f *firmwareRun) Run(_ subcommands.Application, _ []string, _ subcommands.E
 		return CmdError
 	}
 
+	if len(f.patches) > 0 {
+		f.bbAddArgs = append(f.bbAddArgs, patchListToBBAddArgs(f.patches)...)
+	}
+
 	var propsFile *os.File
 	if f.propsFile != nil {
 		propsFile = f.propsFile
@@ -87,9 +91,6 @@ func (f *firmwareRun) Run(_ subcommands.Application, _ []string, _ subcommands.E
 	}
 	f.bbAddArgs = append(f.bbAddArgs, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 
-	if len(f.patches) > 0 {
-		f.bbAddArgs = patchListToBBAddArgs(f.patches)
-	}
 	if err := f.runFirmwareBuilder(ctx); err != nil {
 		f.LogErr(err.Error())
 		return CmdError
