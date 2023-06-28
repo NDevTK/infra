@@ -319,7 +319,9 @@ func TestUpdateRack(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -337,7 +339,9 @@ func TestUpdateRack(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -400,8 +404,10 @@ func TestDeleteRack(t *testing.T) {
 	Convey("DeleteRack", t, func() {
 		Convey("Delete rack by existing ID with rackLSE reference", func() {
 			rack1 := &ufspb.Rack{
-				Name:  "rack-3",
-				Realm: util.BrowserLabAdminRealm,
+				Name: "rack-3",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack1)
 			So(err, ShouldBeNil)
@@ -625,8 +631,10 @@ func TestDeleteRack(t *testing.T) {
 
 		Convey("Delete rack - Permission denied: same realm and no delete permission", func() {
 			rack1 := &ufspb.Rack{
-				Name:  "rack-31",
-				Realm: util.BrowserLabAdminRealm,
+				Name: "rack-31",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack1)
 			So(err, ShouldBeNil)
@@ -639,8 +647,10 @@ func TestDeleteRack(t *testing.T) {
 
 		Convey("Delete rack - Permission denied: different realm", func() {
 			rack1 := &ufspb.Rack{
-				Name:  "rack-32",
-				Realm: util.BrowserLabAdminRealm,
+				Name: "rack-32",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack1)
 			So(err, ShouldBeNil)
@@ -812,15 +822,19 @@ func TestRenameRack(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	_, err := registration.CreateRack(ctx, &ufspb.Rack{
-		Name:  "rename-rack",
-		Realm: util.AtlLabAdminRealm,
+		Name: "rename-rack",
+		Location: &ufspb.Location{
+			Zone: ufspb.Zone_ZONE_CHROMEOS4,
+		},
 	})
 	Convey("RenameRack", t, func() {
 		Convey("RenameRack - happy path", func() {
 			ctx := initializeMockAuthDB(ctx, "user:user@example.com", util.AtlLabAdminRealm, util.RegistrationsUpdate, util.RegistrationsCreate, util.InventoriesCreate)
 			_, err := registration.CreateRack(ctx, &ufspb.Rack{
-				Name:  "rename-rack-0-old",
-				Realm: util.AtlLabAdminRealm,
+				Name: "rename-rack-0-old",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS4,
+				},
 			})
 			So(err, ShouldBeNil)
 			_, err = AssetRegistration(ctx, &ufspb.Asset{

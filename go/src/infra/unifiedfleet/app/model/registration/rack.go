@@ -47,6 +47,8 @@ func (e *RackEntity) GetProto() (proto.Message, error) {
 	if err := proto.Unmarshal(e.Rack, &p); err != nil {
 		return nil, err
 	}
+	// Realm is read only and not guaranteed to be in the proto bytes.
+	p.Realm = e.Realm
 	return &p, nil
 }
 
@@ -55,6 +57,9 @@ func newRackEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, er
 	if p.GetName() == "" {
 		return nil, errors.Reason("Empty Rack ID").Err()
 	}
+	// Assign the realm to the proto.
+	p.Realm = util.ToUFSRealm(p.GetLocation().GetZone().String())
+
 	rack, err := proto.Marshal(p)
 	if err != nil {
 		return nil, errors.Annotate(err, "fail to marshal Rack %s", p).Err()
@@ -66,7 +71,7 @@ func newRackEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, er
 		Tags:  p.GetTags(),
 		Rack:  rack,
 		State: p.GetResourceState().String(),
-		Realm: util.ToUFSRealm(p.GetLocation().GetZone().String()),
+		Realm: p.GetRealm(),
 	}, nil
 }
 

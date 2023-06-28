@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -122,7 +122,9 @@ func TestCreateRPM(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -143,7 +145,9 @@ func TestCreateRPM(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -191,7 +195,9 @@ func TestUpdateRPM(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack3)
 			So(err, ShouldBeNil)
@@ -201,7 +207,9 @@ func TestUpdateRPM(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err = registration.CreateRack(ctx, rack4)
 			So(err, ShouldBeNil)
@@ -209,6 +217,10 @@ func TestUpdateRPM(t *testing.T) {
 			rpm3 := &ufspb.RPM{
 				Name: "rpm-3",
 				Rack: "rack-3",
+				// Needs to be manually set since we directly call
+				// registration.CreateRPM which doesn't pull the zone from
+				// the rack.
+				Zone: "ZONE_SFO36_BROWSER",
 			}
 			_, err = registration.CreateRPM(ctx, rpm3)
 			So(err, ShouldBeNil)
@@ -238,7 +250,9 @@ func TestUpdateRPM(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -361,7 +375,9 @@ func TestUpdateRPM(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -385,7 +401,9 @@ func TestUpdateRPM(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -409,7 +427,9 @@ func TestUpdateRPM(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack3)
 			So(err, ShouldBeNil)
@@ -419,7 +439,9 @@ func TestUpdateRPM(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.AtlLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS4,
+				},
 			}
 			_, err = registration.CreateRack(ctx, rack4)
 			So(err, ShouldBeNil)
@@ -444,7 +466,9 @@ func TestUpdateRPM(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack3)
 			So(err, ShouldBeNil)
@@ -454,7 +478,9 @@ func TestUpdateRPM(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.AtlLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS4,
+				},
 			}
 			_, err = registration.CreateRack(ctx, rack4)
 			So(err, ShouldBeNil)
@@ -462,6 +488,10 @@ func TestUpdateRPM(t *testing.T) {
 			rpm3 := &ufspb.RPM{
 				Name: "rpm-55",
 				Rack: "rack-55",
+				// Needs to be manually set since we directly call
+				// registration.CreateRPM which doesn't pull the zone from
+				// the rack.
+				Zone: "ZONE_SFO36_BROWSER",
 			}
 			_, err = registration.CreateRPM(ctx, rpm3)
 			So(err, ShouldBeNil)
@@ -482,10 +512,13 @@ func TestUpdateRPM(t *testing.T) {
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "rpms/rpm-55")
 			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 1)
-			So(changes[0].GetEventLabel(), ShouldEqual, "rpm.rack")
-			So(changes[0].GetOldValue(), ShouldEqual, "rack-55")
-			So(changes[0].GetNewValue(), ShouldEqual, "rack-56")
+			So(changes, ShouldHaveLength, 2)
+			So(changes[0].GetEventLabel(), ShouldEqual, "rpm.zone")
+			So(changes[0].GetOldValue(), ShouldEqual, "ZONE_SFO36_BROWSER")
+			So(changes[0].GetNewValue(), ShouldEqual, "ZONE_CHROMEOS4")
+			So(changes[1].GetEventLabel(), ShouldEqual, "rpm.rack")
+			So(changes[1].GetOldValue(), ShouldEqual, "rack-55")
+			So(changes[1].GetNewValue(), ShouldEqual, "rack-56")
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "rpms/rpm-55")
 			So(err, ShouldBeNil)
 			So(msgs, ShouldHaveLength, 1)
@@ -498,7 +531,9 @@ func TestUpdateRPM(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -515,7 +550,9 @@ func TestUpdateRPM(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err = registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -534,7 +571,9 @@ func TestUpdateRPM(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -551,7 +590,9 @@ func TestUpdateRPM(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.AtlLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS4,
+				},
 			}
 			_, err = registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -577,7 +618,9 @@ func TestUpdateRPM(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -594,7 +637,9 @@ func TestUpdateRPM(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.AtlLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS4,
+				},
 			}
 			_, err = registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -788,7 +833,9 @@ func TestDeleteRPM(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -810,7 +857,9 @@ func TestDeleteRPM(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
