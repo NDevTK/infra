@@ -24,6 +24,7 @@ func GetCmdChromiumOSSDK() *subcommands.Command {
 			c := &chromiumOSSDKRun{}
 			c.cmdRunner = cmd.RealCommandRunner{}
 			c.addDryrunFlag()
+			c.addBranchFlag("")
 			c.addPatchesFlag()
 			c.addProductionFlag()
 			return c
@@ -54,11 +55,18 @@ func (r *chromiumOSSDKRun) Run(_ subcommands.Application, _ []string, _ subcomma
 		return CmdError
 	}
 
+	// Set properties.
 	propsStruct, err := r.bbClient.GetBuilderInputProps(ctx, r.getBuilderFullName())
 	fmt.Println(r.getBuilderFullName())
 	if err != nil {
 		r.LogErr(err.Error())
 		return CmdError
+	}
+	if r.branch != "" {
+		if err := bb.SetProperty(propsStruct, "manifest_branch", r.branch); err != nil {
+			r.LogErr(err.Error())
+			return CmdError
+		}
 	}
 
 	var propsFile *os.File

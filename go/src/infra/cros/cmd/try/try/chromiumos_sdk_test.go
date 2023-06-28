@@ -38,6 +38,7 @@ type chromiumOSSDKRunTestConfig struct {
 	production      bool
 	expectedBucket  string
 	expectedBuilder string
+	branch          string
 }
 
 func doChromiumOSSDKRun(t *testing.T, tc chromiumOSSDKRunTestConfig) {
@@ -76,6 +77,7 @@ func doChromiumOSSDKRun(t *testing.T, tc chromiumOSSDKRunTestConfig) {
 			cmdRunner:            cmdRunner,
 			production:           tc.production,
 			skipProductionPrompt: true,
+			branch:               tc.branch,
 		},
 		propsFile: propsFile,
 	}
@@ -83,6 +85,18 @@ func doChromiumOSSDKRun(t *testing.T, tc chromiumOSSDKRunTestConfig) {
 	// Try running!
 	ret := run.Run(nil, nil, nil)
 	assert.IntsEqual(t, ret, Success)
+
+	// Inspect properties.
+	properties, err := bb.ReadStructFromFile(propsFile.Name())
+	assert.NilError(t, err)
+
+	branch, exists := properties.GetFields()["manifest_branch"]
+	if tc.branch == "" {
+		assert.Assert(t, !exists)
+	} else {
+		assert.Assert(t, exists)
+		assert.Assert(t, tc.branch == branch.GetStringValue())
+	}
 }
 
 // TestChromiumOSSDKRun_Production is an end-to-end test of chromiumOSSDKRun.Run() for a production build.
@@ -103,6 +117,17 @@ func TestChromiumOSSDKRun_Staging(t *testing.T) {
 		production:      false,
 		expectedBucket:  "chromeos/staging",
 		expectedBuilder: "staging-build-chromiumos-sdk",
+	}
+	doChromiumOSSDKRun(t, tc)
+}
+
+func TestChromiumOSSDKRun_Branch(t *testing.T) {
+	t.Parallel()
+	tc := chromiumOSSDKRunTestConfig{
+		production:      true,
+		expectedBucket:  "chromeos/infra",
+		expectedBuilder: "build-chromiumos-sdk",
+		branch:          "stabilize-10000.B",
 	}
 	doChromiumOSSDKRun(t, tc)
 }
