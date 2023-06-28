@@ -258,7 +258,7 @@ func constructVmLeaserPayload(ctx context.Context, cmd *commands.DutVmLeaseCmd) 
 		Config: &vmlabapi.Config{
 			Backend: &vmlabapi.Config_VmLeaserBackend_{
 				VmLeaserBackend: &vmlabapi.Config_VmLeaserBackend{
-					Env: vmlabapi.Config_VmLeaserBackend_ENV_STAGING,
+					Env: vmlabapi.Config_VmLeaserBackend_ENV_PRODUCTION,
 					VmRequirements: &api.VMRequirements{
 						GceImage:                 img,
 						GceProject:               "chromeos-gce-tests",
