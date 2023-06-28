@@ -81,7 +81,7 @@ func (r *chromiumOSSDKRun) Run(_ subcommands.Application, _ []string, _ subcomma
 	r.bbAddArgs = append(r.bbAddArgs, "-p", fmt.Sprintf("@%s", propsFile.Name()))
 
 	if len(r.patches) > 0 {
-		r.bbAddArgs = patchListToBBAddArgs(r.patches)
+		r.bbAddArgs = append(r.bbAddArgs, patchListToBBAddArgs(r.patches)...)
 	}
 	if err := r.runBuilder(ctx); err != nil {
 		r.LogErr(err.Error())
@@ -104,7 +104,7 @@ func (r *chromiumOSSDKRun) getBuilderFullName() string {
 		bucket = "staging"
 		stagingPrefix = "staging-"
 	}
-	return fmt.Sprintf("chromeos/%s/%schromiumos-sdk", bucket, stagingPrefix)
+	return fmt.Sprintf("chromeos/%s/%sbuild-chromiumos-sdk", bucket, stagingPrefix)
 }
 
 // runBuilder creates a ChromiumOS SDK build via `bb add`, and reports it to the user.

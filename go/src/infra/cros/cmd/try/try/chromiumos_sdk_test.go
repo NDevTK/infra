@@ -20,8 +20,8 @@ func TestChromiumOSSDKGetBuilderFullName(t *testing.T) {
 		production          bool
 		expectedBuilderName string
 	}{
-		{true, "chromeos/infra/chromiumos-sdk"},
-		{false, "chromeos/staging/staging-chromiumos-sdk"},
+		{true, "chromeos/infra/build-chromiumos-sdk"},
+		{false, "chromeos/staging/staging-build-chromiumos-sdk"},
 	} {
 		run := chromiumOSSDKRun{
 			tryRunBase: tryRunBase{
@@ -91,7 +91,7 @@ func TestChromiumOSSDKRun_Production(t *testing.T) {
 	tc := chromiumOSSDKRunTestConfig{
 		production:      true,
 		expectedBucket:  "chromeos/infra",
-		expectedBuilder: "chromiumos-sdk",
+		expectedBuilder: "build-chromiumos-sdk",
 	}
 	doChromiumOSSDKRun(t, tc)
 }
@@ -102,7 +102,7 @@ func TestChromiumOSSDKRun_Staging(t *testing.T) {
 	tc := chromiumOSSDKRunTestConfig{
 		production:      false,
 		expectedBucket:  "chromeos/staging",
-		expectedBuilder: "staging-chromiumos-sdk",
+		expectedBuilder: "staging-build-chromiumos-sdk",
 	}
 	doChromiumOSSDKRun(t, tc)
 }
