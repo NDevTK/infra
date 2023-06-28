@@ -452,6 +452,8 @@ message Bluetooth {
 message Cellular {
   // State of the modem.
   HardwareState modem_state = 1;
+  // Device carrier.
+  string carrier = 2;
 }
 
 // Battery holds info about battery of the DUT.
