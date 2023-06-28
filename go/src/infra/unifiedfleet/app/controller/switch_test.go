@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,7 +87,9 @@ func TestCreateSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -119,7 +121,9 @@ func TestCreateSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -140,7 +144,9 @@ func TestCreateSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -188,7 +194,9 @@ func TestUpdateSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack3)
 			So(err, ShouldBeNil)
@@ -198,7 +206,9 @@ func TestUpdateSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err = registration.CreateRack(ctx, rack4)
 			So(err, ShouldBeNil)
@@ -206,6 +216,10 @@ func TestUpdateSwitch(t *testing.T) {
 			switch3 := &ufspb.Switch{
 				Name: "switch-3",
 				Rack: "rack-3",
+				// Needs to be manually set since we directly call
+				// registration.CreateSwitch which doesn't pull the zone from
+				// the rack.
+				Zone: "ZONE_SFO36_BROWSER",
 			}
 			_, err = registration.CreateSwitch(ctx, switch3)
 			So(err, ShouldBeNil)
@@ -235,7 +249,9 @@ func TestUpdateSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -294,7 +310,9 @@ func TestUpdateSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -326,7 +344,9 @@ func TestUpdateSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -350,8 +370,9 @@ func TestUpdateSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
-			}
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				}}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
 
@@ -374,7 +395,9 @@ func TestUpdateSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack3)
 			So(err, ShouldBeNil)
@@ -384,7 +407,9 @@ func TestUpdateSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.AtlLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS4,
+				},
 			}
 			_, err = registration.CreateRack(ctx, rack4)
 			So(err, ShouldBeNil)
@@ -409,7 +434,9 @@ func TestUpdateSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack3)
 			So(err, ShouldBeNil)
@@ -419,7 +446,9 @@ func TestUpdateSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.AtlLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err = registration.CreateRack(ctx, rack4)
 			So(err, ShouldBeNil)
@@ -427,6 +456,10 @@ func TestUpdateSwitch(t *testing.T) {
 			switch3 := &ufspb.Switch{
 				Name: "switch-55",
 				Rack: "rack-55",
+				// Needs to be manually set since we directly call
+				// registration.CreateSwitch which doesn't pull the zone from
+				// the rack.
+				Zone: "ZONE_SFO36_BROWSER",
 			}
 			_, err = registration.CreateSwitch(ctx, switch3)
 			So(err, ShouldBeNil)
@@ -463,7 +496,9 @@ func TestUpdateSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -480,7 +515,9 @@ func TestUpdateSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err = registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -499,7 +536,9 @@ func TestUpdateSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -516,7 +555,9 @@ func TestUpdateSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.AtlLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err = registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -542,7 +583,9 @@ func TestUpdateSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -559,7 +602,9 @@ func TestUpdateSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.AtlLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS4,
+				},
 			}
 			_, err = registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -631,7 +676,9 @@ func TestDeleteSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -678,7 +725,9 @@ func TestDeleteSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -700,7 +749,9 @@ func TestDeleteSwitch(t *testing.T) {
 				Rack: &ufspb.Rack_ChromeBrowserRack{
 					ChromeBrowserRack: &ufspb.ChromeBrowserRack{},
 				},
-				Realm: util.BrowserLabAdminRealm,
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+				},
 			}
 			_, err := registration.CreateRack(ctx, rack)
 			So(err, ShouldBeNil)
@@ -783,8 +834,10 @@ func TestRenameSwitch(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	registration.CreateRack(ctx, &ufspb.Rack{
-		Name:  "rack-1",
-		Realm: util.BrowserLabAdminRealm,
+		Name: "rack-1",
+		Location: &ufspb.Location{
+			Zone: ufspb.Zone_ZONE_SFO36_BROWSER,
+		},
 	})
 	Convey("RenameSwitch", t, func() {
 		Convey("Rename a Switch with new switch name", func() {
