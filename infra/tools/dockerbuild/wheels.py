@@ -1654,6 +1654,7 @@ SPECS.update({
         Universal('pytest-cov', '2.11.1'),
         Universal('pytest-forked', '1.3.0'),
         Universal('pytest-reportlog', '0.1.2', pyversions=['py3']),
+        Universal('pytest-rerunfailures', '11.1.2', pyversions=['py3']),
         Universal('pytest-xdist', '1.31.0'),
         Universal('python-dateutil', '2.7.3'),
         Universal('python-dateutil', '2.8.1'),

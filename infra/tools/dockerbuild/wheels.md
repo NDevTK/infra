@@ -7206,6 +7206,20 @@ wheel: <
 
 * *universal*
 
+## **pytest-rerunfailures-py3**
+
+### 11.1.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-rerunfailures-py3"
+  version: "version:11.1.2"
+>
+```
+
+
+* *universal*
+
 ## **pytest-xdist**
 
 ### 1.31.0
