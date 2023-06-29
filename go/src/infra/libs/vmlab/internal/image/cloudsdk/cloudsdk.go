@@ -38,7 +38,11 @@ const (
 
 // cloudsdkImageApi implementation api.ImageApi using Cloud SDK.
 // go/cros-image-importer
-type cloudsdkImageApi struct{}
+type cloudsdkImageApi struct {
+	// Retry policy for image status query.
+	imageQueryInitialRetryBackoff time.Duration
+	imageQueryMaxRetries          int
+}
 
 // buildInfo contains information about a build.
 type buildInfo struct {
@@ -54,7 +58,11 @@ type buildInfo struct {
 
 // New constructs a new api.ImageApi with CloudSDK backend.
 func New() (api.ImageApi, error) {
-	return &cloudsdkImageApi{}, nil
+	return &cloudsdkImageApi{
+		// Default retry policy for image status query.
+		imageQueryInitialRetryBackoff: 1 * time.Second,
+		imageQueryMaxRetries:          3,
+	}, nil
 }
 
 // computeImagesClient interfaces partial GCE client API
@@ -142,7 +150,22 @@ func (c *cloudsdkImageApi) DeleteImage(imageName string, wait bool) error {
 // image with the same name is being deleted. Then imports the image if the
 // status is not PENDING or READY.
 func (c *cloudsdkImageApi) handle(client computeImagesClient, buildInfo *buildInfo, gceImage *api.GceImage) (*compute.Operation, *api.GceImage, error) {
-	gceImage, _ = c.describeImage(client, gceImage)
+	// Retry image status query with exponential backoff
+	var err error
+	retry := 0
+	for {
+		gceImage, err = c.describeImage(client, gceImage)
+		if err == nil {
+			break
+		}
+		log.Default().Printf("Failed to query image status: %v", err)
+		if retry >= c.imageQueryMaxRetries {
+			log.Default().Printf("Unable to query image status after %d retries, trying to import image anyway", c.imageQueryMaxRetries)
+			break
+		}
+		time.Sleep(c.imageQueryInitialRetryBackoff * (1 << retry))
+		retry++
+	}
 
 	// If an image is being deleted, wait until it's finished.
 	if gceImage.GetStatus() == api.GceImage_DELETING {

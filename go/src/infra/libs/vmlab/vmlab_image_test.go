@@ -5,9 +5,8 @@
 package vmlab
 
 import (
+	"reflect"
 	"testing"
-
-	"github.com/google/go-cmp/cmp"
 
 	"infra/libs/vmlab/api"
 	"infra/libs/vmlab/internal/image/cloudsdk"
@@ -29,7 +28,7 @@ func TestNewImageApi_cloudsdk(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if !cmp.Equal(imageApi, want) {
+	if !reflect.DeepEqual(imageApi, want) {
 		t.Errorf("ImageApi = %v, but want %v", imageApi, want)
 	}
 }

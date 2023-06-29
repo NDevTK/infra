@@ -215,7 +215,7 @@ func TestHandleImportImage(t *testing.T) {
 	expected := &compute.Operation{}
 	client := &mockImageClient{
 		getFunc: func() (*computepb.Image, error) {
-			return nil, errors.New("404")
+			return nil, nil
 		},
 		importFunc: func() (*compute.Operation, error) {
 			return expected, nil
@@ -239,11 +239,48 @@ func TestHandleImportImage(t *testing.T) {
 	}
 }
 
+func TestHandleImportImageWithRetries(t *testing.T) {
+	imageApi := &cloudsdkImageApi{
+		imageQueryInitialRetryBackoff: 0,
+		imageQueryMaxRetries:          3,
+	}
+	expected := &compute.Operation{}
+	attempts := 0
+	client := &mockImageClient{
+		getFunc: func() (*computepb.Image, error) {
+			attempts++
+			return nil, errors.New("404")
+		},
+		importFunc: func() (*compute.Operation, error) {
+			return expected, nil
+		},
+	}
+	gceImage := &api.GceImage{
+		Name:    "my-image",
+		Project: "my-project",
+	}
+
+	op, gceImage, err := imageApi.handle(client, nil, gceImage)
+
+	if op != expected {
+		t.Errorf("handle() expected operation %v, got %v", expected, op)
+	}
+	if err != nil {
+		t.Errorf("handle() expected nil error, got %v", err)
+	}
+	if gceImage.Status != api.GceImage_PENDING {
+		t.Errorf("handle() expected status api.GceImage_PENDING, got %v", gceImage.Status)
+	}
+	if attempts != imageApi.imageQueryMaxRetries+1 {
+		t.Errorf("Expected %d retries, got %d", imageApi.imageQueryMaxRetries, attempts-1)
+	}
+}
+
 func TestHandleImportError(t *testing.T) {
 	imageApi := &cloudsdkImageApi{}
 	client := &mockImageClient{
 		getFunc: func() (*computepb.Image, error) {
-			return nil, errors.New("404")
+			return nil, nil
 		},
 		importFunc: func() (*compute.Operation, error) {
 			return nil, errors.New("Outage")
