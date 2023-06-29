@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"net/url"
 
 	"infra/cr_builder_health/healthpb"
 
@@ -74,7 +75,7 @@ func generate(ctx context.Context, input *healthpb.InputParams) error {
 		return errors.Annotate(err, "Make BB client").Err()
 	}
 
-	err = rpcBuildbucket(ctx, rows, client)
+	err = rpcBuildbucket(ctx, rowsWithIndicators, client)
 	if err != nil {
 		return errors.Annotate(err, "RPC buildbucket").Err()
 	}
@@ -253,8 +254,14 @@ func rpcBuildbucket(buildCtx context.Context, rows []Row, client BBClient) error
 				HealthScore:   int64(row.HealthScore),
 				HealthMetrics: simplifiedMetrics,
 				Description:   row.ScoreExplanation,
-				DocLinks:      map[string]string{"google.com": "go/builder-health-metrics-design"},
-				DataLinks:     map[string]string{"google.com": "go/builder-health-indicators"},
+				DocLinks: map[string]string{
+					"":           "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/infra/config/generated/health-specs/health-specs.json",
+					"google.com": "http://go/builder-health-metrics-design",
+				},
+				DataLinks: map[string]string{
+					"google.com": fmt.Sprintf("http://go/builder-health-indicators?f=builder:in:%s&f=bucket:in:%s&f=project:in:%s",
+						url.QueryEscape(row.Builder), url.QueryEscape(row.Bucket), url.QueryEscape(row.Project)),
+				},
 			},
 		}
 	}
