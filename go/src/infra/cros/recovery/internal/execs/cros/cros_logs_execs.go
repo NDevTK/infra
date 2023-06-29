@@ -250,10 +250,50 @@ func confirmFileNotExistsExec(ctx context.Context, info *execs.ExecInfo) error {
 	return errors.Annotate(err, "confirm file not exists").Err()
 }
 
+// verboseShillLogsExec enables/disables verbose shill logs.
+func verboseShillLogsExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	enabled := argsMap.AsBool(ctx, "is_enabled", true)
+
+	var cmd string
+	if enabled {
+		cmd = "ff_debug cellular+modem+device+dbus+manager --level -3"
+	} else {
+		cmd = "ff_debug reset --level 0"
+	}
+
+	runner := info.DefaultRunner()
+	if _, err := runner(ctx, info.GetExecTimeout(), cmd); err != nil {
+		return errors.Annotate(err, "verbose network logs: set shill logging level").Err()
+	}
+	return nil
+}
+
+// verboseModemManagerLogsExec enables/disables verbose ModemManager logs.
+func verboseModemManagerLogsExec(ctx context.Context, info *execs.ExecInfo) error {
+	argsMap := info.GetActionArgs(ctx)
+	enabled := argsMap.AsBool(ctx, "is_enabled", true)
+
+	var cmd string
+	if enabled {
+		cmd = "modem set-logging debug"
+	} else {
+		cmd = "modem set-logging info"
+	}
+
+	runner := info.DefaultRunner()
+	if _, err := runner(ctx, info.GetExecTimeout(), cmd); err != nil {
+		return errors.Annotate(err, "verbose network logs: set shill logging level").Err()
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("cros_dmesg", dmesgExec)
 	execs.Register("cros_copy_to_logs", copyToLogsExec)
 	execs.Register("cros_collect_crash_dumps", collectCrashDumpsExec)
 	execs.Register("cros_create_log_collection_info", createLogCollectionInfoExec)
 	execs.Register("cros_confirm_file_not_exists", confirmFileNotExistsExec)
+	execs.Register("cros_set_verbose_shill_logs", verboseShillLogsExec)
+	execs.Register("cros_set_verbose_mm_logs", verboseModemManagerLogsExec)
 }
