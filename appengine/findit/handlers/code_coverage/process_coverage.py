@@ -974,9 +974,15 @@ class ProcessCodeCoverageData(BaseHandler):
       assert (len(mimic_builder_names) == len(gs_metadata_dirs)
              ), 'mimic builder names and gs paths should be of the same length'
       if properties.get('coverage_override_gitiles_commit', False):
-        self._SetGitilesCommitFromOutputProperty(build, properties)
+        self._SetGitilesCommitFromOutputProperty(
+            build, properties['gitiles_commit_host'],
+            properties['gitiles_commit_project'],
+            properties['gitiles_commit_ref'], properties['gitiles_commit_id'])
       elif not self._IsGitilesCommitAvailable(build.input.gitiles_commit):
-        build.input.gitiles_commit = build.output.gitiles_commit
+        self._SetGitilesCommitFromOutputProperty(
+            build, build.output.gitiles_commit.host,
+            build.output.gitiles_commit.project,
+            build.output.gitiles_commit.ref, build.output.gitiles_commit.id)
 
       assert self._IsGitilesCommitAvailable(build.input.gitiles_commit), (
           'gitiles commit information is expected to be available either in '
@@ -996,16 +1002,16 @@ class ProcessCodeCoverageData(BaseHandler):
     return (gitiles_commit.host and gitiles_commit.project and
             gitiles_commit.ref and gitiles_commit.id)
 
-  def _SetGitilesCommitFromOutputProperty(self, build, output_properties):
-    """Set gitiles_commit of the build from override output properties."""
-    logging.info('gitiles_commit is not available in the input properties, '
-                 'set them from override output properties.')
-    build.input.gitiles_commit.host = output_properties.get(
-        'gitiles_commit_host')
-    build.input.gitiles_commit.project = output_properties.get(
-        'gitiles_commit_project')
-    build.input.gitiles_commit.ref = output_properties.get('gitiles_commit_ref')
-    build.input.gitiles_commit.id = output_properties.get('gitiles_commit_id')
+  def _SetGitilesCommitFromOutputProperty(self, build, gitiles_commit_host,
+                                          gitiles_commit_project,
+                                          gitiles_commit_ref,
+                                          gitiles_commit_id):
+    """Set gitiles_commit of the build to a custom value."""
+    logging.info('Modifying gitiles commit in the input properties.')
+    build.input.gitiles_commit.host = gitiles_commit_host
+    build.input.gitiles_commit.project = gitiles_commit_project
+    build.input.gitiles_commit.ref = gitiles_commit_ref
+    build.input.gitiles_commit.id = gitiles_commit_id
 
   def HandlePost(self):
     """Loads the data from GS bucket, and dumps them into ndb."""
