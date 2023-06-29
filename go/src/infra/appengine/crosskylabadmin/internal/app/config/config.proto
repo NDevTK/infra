@@ -82,6 +82,11 @@ message Tasker {
 
   // AdminTaskRealm is a LUCI realm name with ACLs for admin tasks.
   string admin_task_realm = 5;
+
+  // EnableSmartScheduling is a kill switch for the smart-scheduling feature.
+  // Setting it to false or not setting it prevents the smart-scheduling logic from
+  // affecting the behavior of CrOSSkylabAdmin.
+  bool enable_smart_scheduling = 6;
 }
 
 // Cron contains the configuration data specific to cron jobs on this app.
