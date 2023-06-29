@@ -22,4 +22,5 @@ var CronJobNames = map[string]string{
 	"indexMachines":              "ufs.indexer.machine",
 	"indexRacks":                 "ufs.indexer.rack",
 	"indexMachineLSEs":           "ufs.indexer.machinelse",
+	"indexDutStates":             "ufs.indexer.dutstate",
 }

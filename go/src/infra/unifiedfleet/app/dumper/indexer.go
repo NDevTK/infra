@@ -11,8 +11,10 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/registration"
+	"infra/unifiedfleet/app/model/state"
 	"infra/unifiedfleet/app/util"
 )
 
@@ -146,4 +148,38 @@ func indexMachineLSEs(ctx context.Context) error {
 		return nil
 	}
 	return indexTable(ctx, "machineLSEs", f)
+}
+
+// dutStates reads the entire DutState table in all namespaces, updates the realm
+// field for the table by reading the corresponding machines. And writes the updated
+// table back to datastore
+// UpdateDutStates
+func indexDutStates(ctx context.Context) error {
+	f := func(ctx context.Context, ns string, token *string) error {
+		var err error
+		var dutStates []*chromeosLab.DutState
+		dutStates, *token, err = state.ListDutStates(ctx, pageSize, *token, nil, false)
+		if err != nil {
+			return errors.Annotate(err, "indexDutStates[%s] -- Failed to list", ns).Err()
+		}
+		logging.Infof(ctx, "indexDutStates -- Indexing %v DutStates in %s", len(dutStates), ns)
+		for _, dutState := range dutStates {
+			machineLSE, err := inventory.GetMachineLSE(ctx, dutState.GetHostname())
+			if err != nil {
+				logging.Errorf(ctx, "indexDutStates[%s] -- Failed to update realms, as not able to extract machineLSE for the give DutState", dutState.GetHostname())
+				continue
+			}
+			if machineLSE.GetRealm() == "" {
+				logging.Errorf(ctx, "indexDutStates[%s] -- Failed to add realm. Missing realm in machineLSE: %s", dutState.GetHostname(), machineLSE)
+				continue
+			}
+			dutState.Realm = machineLSE.GetRealm()
+		}
+		_, err = state.UpdateDutStates(ctx, dutStates)
+		if err != nil {
+			return errors.Annotate(err, "indexDutStates[%s] -- Failed to update", ns).Err()
+		}
+		return nil
+	}
+	return indexTable(ctx, "dutStates", f)
 }
