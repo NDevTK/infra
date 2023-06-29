@@ -828,13 +828,15 @@ func TestInstallXcode(t *testing.T) {
 				"xcrun simctl list prints iOS 17.0 (21A5248u) - AAAAA (Deleting)",
 				"xcrun simctl list prints nothing",
 				"xcode-select -s prints nothing",
-				"resolve ios_runtime_dmg returns nothing",
+				"describe ios_runtime_dmg returns ios_runtime_version:ios-16-2",
+				"describe ios_runtime_dmg returns ios_runtime_version:ios-17-0",
 				"ios_runtime_build:21A5248u",
 				"testdata/Xcode-without-runtime.app",
 				"xcode-select -s prints nothing",
 				ListRuntimeDiffBuildJson,
 				"xcode-select -s prints nothing",
-				"cipd resolve prints nothing",
+				"describe ios_runtime_dmg returns ios_runtime_version:ios-16-2",
+				"describe ios_runtime_dmg returns ios_runtime_version:ios-17-0",
 				"cipd dry run",
 				"cipd ensures",
 				"chomod prints nothing",
@@ -844,7 +846,7 @@ func TestInstallXcode(t *testing.T) {
 			installArgsForTest.xcodeAppPath = "testdata/Xcode-without-runtime.app"
 			err := installXcode(ctx, installArgsForTest)
 			So(err, ShouldNotBeNil)
-			So(s.Calls, ShouldHaveLength, 26)
+			So(s.Calls, ShouldHaveLength, 28)
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
@@ -912,13 +914,19 @@ func TestInstallXcode(t *testing.T) {
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
 			So(s.Calls[callCounter].Args, ShouldResemble, []string{
-				"resolve", "test/prefix/ios_runtime_dmg", "-version", "testVersion",
+				"describe", "test/prefix/ios_runtime_dmg", "-version", "testVersion",
 			})
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
 			So(s.Calls[callCounter].Args, ShouldResemble, []string{
-				"describe", "test/prefix/ios_runtime_dmg", "-version", "testVersion",
+				"describe", "test/prefix/ios_runtime_dmg", "-version", "ios-17-0",
+			})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+				"describe", "test/prefix/ios_runtime_dmg", "-version", "ios-17-0",
 			})
 
 			callCounter++
@@ -955,7 +963,7 @@ func TestInstallXcode(t *testing.T) {
 				"xcrun simctl delete -d prints a list of runtime being deleted",
 				"xcrun simctl list prints nothing",
 				"xcode-select -s prints nothing",
-				"resolve ios_runtime_dmg returns nothing",
+				"descrone ios_runtime_dmg returns ios_runtime_version:ios-17-0",
 				"ios_runtime_build:21A5248u",
 				"testdata/Xcode-without-runtime.app",
 				"xcode-select -s prints nothing",
@@ -1032,7 +1040,7 @@ func TestInstallXcode(t *testing.T) {
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
 			So(s.Calls[callCounter].Args, ShouldResemble, []string{
-				"resolve", "test/prefix/ios_runtime_dmg", "-version", "testVersion",
+				"describe", "test/prefix/ios_runtime_dmg", "-version", "testVersion",
 			})
 
 			callCounter++
@@ -1362,6 +1370,12 @@ func TestInstallXcode(t *testing.T) {
 		ctx := useMockCmd(context.Background(), &s)
 
 		Convey("install runtime DMG without xcode-version ref", func() {
+			s.ReturnOutput = []string{
+				"describe ios_runtime_dmg returns ios_runtime_version:ios-test-runtime",
+				"dry run ensure file returns nothing",
+				"ensure file returns nothing",
+				"chmod returns nothing",
+			}
 			runtimeDMGInstallArgs := RuntimeDMGInstallArgs{
 				runtimeVersion:     "ios-test-runtime",
 				installPath:        "test/path/to/install/runtimes",
@@ -1375,7 +1389,7 @@ func TestInstallXcode(t *testing.T) {
 			callCounter := 0
 			So(s.Calls[0].Executable, ShouldEqual, "cipd")
 			So(s.Calls[0].Args, ShouldResemble, []string{
-				"resolve", "test/prefix/ios_runtime_dmg", "-version", "ios-test-runtime",
+				"describe", "test/prefix/ios_runtime_dmg", "-version", "ios-test-runtime",
 			})
 
 			callCounter++
@@ -1400,6 +1414,12 @@ func TestInstallXcode(t *testing.T) {
 		})
 
 		Convey("install runtime DMG with xcode-version ref", func() {
+			s.ReturnOutput = []string{
+				"describe ios_runtime_dmg returns ios_runtime_version:ios-test-runtime",
+				"dry run ensure file returns nothing",
+				"ensure file returns nothing",
+				"chmod returns nothing",
+			}
 			runtimeDMGInstallArgs := RuntimeDMGInstallArgs{
 				runtimeVersion:     "ios-test-runtime",
 				xcodeVersion:       "xcode-test-version",
@@ -1414,7 +1434,7 @@ func TestInstallXcode(t *testing.T) {
 			callCounter := 0
 			So(s.Calls[0].Executable, ShouldEqual, "cipd")
 			So(s.Calls[0].Args, ShouldResemble, []string{
-				"resolve", "test/prefix/ios_runtime_dmg", "-version", "xcode-test-version",
+				"describe", "test/prefix/ios_runtime_dmg", "-version", "xcode-test-version",
 			})
 
 			callCounter++
@@ -1430,6 +1450,58 @@ func TestInstallXcode(t *testing.T) {
 				"ensure", "-ensure-file", "-", "-root", "test/path/to/install/runtimes",
 			})
 			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime_dmg xcode-test-version\n")
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "chmod")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+				"-R", "u+w", "test/path/to/install/runtimes",
+			})
+		})
+
+		Convey("install runtime DMG with xcode-version ref and mismatched runtime", func() {
+			s.ReturnOutput = []string{
+				"describe ios_runtime_dmg returns ios_runtime_version:mismatched-runtime",
+				"describe ios_runtime_dmg returns ios_runtime_version:ios-test-runtime",
+				"dry run ensure file returns nothing",
+				"ensure file returns nothing",
+				"chmod returns nothing",
+			}
+			runtimeDMGInstallArgs := RuntimeDMGInstallArgs{
+				runtimeVersion:     "ios-test-runtime",
+				xcodeVersion:       "xcode-test-version",
+				installPath:        "test/path/to/install/runtimes",
+				cipdPackagePrefix:  "test/prefix",
+				serviceAccountJSON: "",
+			}
+			err := installRuntimeDMG(ctx, runtimeDMGInstallArgs)
+			So(err, ShouldBeNil)
+			So(s.Calls, ShouldHaveLength, 5)
+
+			callCounter := 0
+			So(s.Calls[0].Executable, ShouldEqual, "cipd")
+			So(s.Calls[0].Args, ShouldResemble, []string{
+				"describe", "test/prefix/ios_runtime_dmg", "-version", "xcode-test-version",
+			})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+				"describe", "test/prefix/ios_runtime_dmg", "-version", "ios-test-runtime",
+			})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+				"puppet-check-updates", "-ensure-file", "-", "-root", "test/path/to/install/runtimes",
+			})
+			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime_dmg ios-test-runtime\n")
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "cipd")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{
+				"ensure", "-ensure-file", "-", "-root", "test/path/to/install/runtimes",
+			})
+			So(s.Calls[callCounter].ConsumedStdin, ShouldEqual, "test/prefix/ios_runtime_dmg ios-test-runtime\n")
 
 			callCounter++
 			So(s.Calls[callCounter].Executable, ShouldEqual, "chmod")

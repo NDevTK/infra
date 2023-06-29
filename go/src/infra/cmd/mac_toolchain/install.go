@@ -262,7 +262,8 @@ type ResolveRuntimeDMGRefArgs struct {
 // Returns the best matched simulator runtime in CIPD with |runtimeVersion| and
 // |xcodeVersion| as input.
 // xcodeVersion will be used to search for runtime for best match.
-// If not found, runtimeVersion will be used as a second resort.
+// If not found, or if the returned cipd instance's ios_runtime_version is not
+// the desired runtimeVersion, then runtimeVersion will be used as a second resort.
 func resolveRuntimeDMGRef(ctx context.Context, args ResolveRuntimeDMGRefArgs) (string, error) {
 	if args.xcodeVersion == "" && args.runtimeVersion == "" {
 		err := errors.Reason("Empty Xcode and runtime version to resolve runtime dmg ref.").Err()
@@ -276,11 +277,19 @@ func resolveRuntimeDMGRef(ctx context.Context, args ResolveRuntimeDMGRefArgs) (s
 		searchRefs = append(searchRefs, args.runtimeVersion)
 	}
 	for _, searchRef := range searchRefs {
-		if err := resolveRef(ctx, args.packagePath, searchRef, args.serviceAccountJSON); err == nil { // if NO error
-			logging.Warningf(ctx, "Using ref %s for runtime DMG", searchRef)
-			return searchRef, nil
+		if output, err := describeRef(ctx, args.packagePath, searchRef); err == nil {
+			var runtimeVersionRegex = regexp.MustCompile(`ios_runtime_version:(.*)`)
+			result := runtimeVersionRegex.FindStringSubmatch(output)
+			if len(result) > 0 {
+				if result[1] == args.runtimeVersion {
+					logging.Warningf(ctx, "Using ref %s for runtime DMG", searchRef)
+					return searchRef, nil
+				} else {
+					logging.Warningf(ctx, "Cannot use ref %s for runtime DMG, expected iOS runtime %s, but got %s", searchRef, args.runtimeVersion, result[1])
+				}
+			}
 		} else {
-			logging.Warningf(ctx, "Failed to resolve ref: %s. Error: %s", searchRef, err.Error())
+			logging.Warningf(ctx, "Failed to describe ref: %s. Error: %s", searchRef, err.Error())
 		}
 	}
 	err := errors.Reason("Failed to resolve runtime dmg ref given runtime version: %s, xcode version: %s.", args.runtimeVersion, args.xcodeVersion).Err()
@@ -454,20 +463,17 @@ func shouldInstallRuntime(ctx context.Context, cipdPackagePrefix, iosVersion, xc
 	runtimeDMGPackagePath := cipdPackagePrefix + "/" + IosRuntimeDMGPackageName
 	runtimeBuildOnCipd, err := getLatestRuntimeBuild(ctx, runtimeDMGPackagePath, iosVersion, xcodeVersion)
 	if err != nil {
-		logging.Warningf(ctx, "Runtime should be installed due to error %s", err.Error())
-		return true, err
+		return shouldInstallRuntime, err
 	}
 	err = RunWithXcodeSelect(ctx, xcodeAppPath, func() error {
 		output, err := RunOutput(ctx, "xcrun", "simctl", "runtime", "list", "-j")
 		if err != nil {
-			shouldInstallRuntime = true
 			return errors.Annotate(err, "failed when invoking `xcrun simctl runtime list -j`").Err()
 		}
 
 		var runtimes map[string]IOSRuntime
 		err = json.Unmarshal([]byte(output), &runtimes)
 		if err != nil {
-			shouldInstallRuntime = true
 			return errors.Annotate(err, "failed when parsing `xcrun simctl runtime list -j` output").Err()
 		}
 		for _, runtime := range runtimes {
@@ -478,7 +484,6 @@ func shouldInstallRuntime(ctx context.Context, cipdPackagePrefix, iosVersion, xc
 				return nil
 			}
 		}
-		shouldInstallRuntime = true
 		return nil
 	})
 	return shouldInstallRuntime, err
@@ -552,7 +557,7 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 			if err != nil {
 				return err
 			}
-			shouldInstallRuntime, _ := shouldInstallRuntime(ctx, args.cipdPackagePrefix, cfBundleVersion, args.xcodeVersion, args.xcodeAppPath)
+			shouldInstallRuntime, err := shouldInstallRuntime(ctx, args.cipdPackagePrefix, cfBundleVersion, args.xcodeVersion, args.xcodeAppPath)
 			if err != nil {
 				return err
 			}
@@ -566,6 +571,7 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 				defer os.RemoveAll(runtimeDMGPath)
 				runtimeDMGInstallArgs := RuntimeDMGInstallArgs{
 					runtimeVersion:     runtimeVersion,
+					xcodeVersion:       args.xcodeVersion,
 					installPath:        runtimeDMGPath,
 					cipdPackagePrefix:  args.cipdPackagePrefix,
 					serviceAccountJSON: args.serviceAccountJSON,
