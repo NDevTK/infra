@@ -287,10 +287,13 @@ class OnlineWindowsCustomization(customization.Customization):
     """
     f_name = 'boot({})-drive({})-output'.format(oc_name, drive.name)
     key = '{}-{}'.format(self.id, f_name)
+    location = 'WIB-ONLINE-CACHE/{}-{}.zip'
+    if self.tryrun:
+      location = 'WIB-ONLINE-CACHE-TRY/{}-{}.zip'  # pragma: nocover
     ctx[key] = src_pb.Src(
         gcs_src=src_pb.GCSSrc(
             bucket='chrome-gce-images',
-            source='WIB-ONLINE-CACHE/{}-{}.zip'.format(self.get_key(), f_name)))
+            source=location.format(self.get_key(), f_name)))
     return ctx
 
   def inject_cache_upload(self, inputs):

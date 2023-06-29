@@ -518,10 +518,10 @@ def GenTests(api):
       t.GIT_PIN_FILE(api, 'test_cust', 'HEAD', 'images/startnet.cmd', 'HEAD') +
       # Mock the check for output existence. Twice for wim (as output of
       # test_cust and input for bimage), twice for iso and once for system.img
-      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip'.format(key_wim), False) +
-      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso'.format(key_iso), False) +
-      MOCK_CUST_OUTPUT(api, 'WIB-ISO/{}.iso (2)'.format(key_iso), True) +
-      MOCK_CUST_OUTPUT(api, 'WIB-WIM/{}.zip (2)'.format(key_wim), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM-TRY/{}.zip'.format(key_wim), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO-TRY/{}.iso'.format(key_iso), False) +
+      MOCK_CUST_OUTPUT(api, 'WIB-ISO-TRY/{}.iso (2)'.format(key_iso), True) +
+      MOCK_CUST_OUTPUT(api, 'WIB-WIM-TRY/{}.zip (2)'.format(key_wim), False) +
       # mock schedule output to test builds scheduled
       api.buildbucket.simulated_schedule_output(
           BATCH_RESPONSE_WIM,

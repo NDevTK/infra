@@ -96,9 +96,11 @@ class WinISOCustomization(customization.Customization):
     """ return the output(s) of executing this config. Doesn't guarantee that
     the output(s) exists"""
     if self.get_key():
+      location = 'WIB-ISO/{}.iso'
+      if self.tryrun:
+        location = 'WIB-ISO-TRY/{}.iso'  # pragma: nocover
       output = src_pb.GCSSrc(
-          bucket='chrome-gce-images',
-          source='WIB-ISO/{}.iso'.format(self.get_key()))
+          bucket='chrome-gce-images', source=location.format(self.get_key()))
       return [
           dest_pb.Dest(
               gcs_src=output,

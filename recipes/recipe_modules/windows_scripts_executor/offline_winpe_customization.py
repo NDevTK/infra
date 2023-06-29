@@ -112,9 +112,11 @@ class OfflineWinPECustomization(customization.Customization):
     """ return the output(s) of executing this config. Doesn't guarantee that
     the output(s) exists."""
     if self.get_key():
+      location = 'WIB-WIM/{}.zip'
+      if self.tryrun:
+        location = 'WIB-WIM-TRY/{}.zip'  # pragma: nocover
       output = src_pb.GCSSrc(
-          bucket='chrome-gce-images',
-          source='WIB-WIM/{}.zip'.format(self.get_key()))
+          bucket='chrome-gce-images', source=location.format(self.get_key()))
       return [
           dest_pb.Dest(
               gcs_src=output,
