@@ -32,6 +32,7 @@ type DutStateEntity struct {
 	Hostname string `gae:"hostname"`
 	// lab.DutState cannot be directly used as it contains pointer (timestamp).
 	DutState []byte `gae:",noindex"`
+	Realm    string `gae:"realm"`
 }
 
 // GetProto returns the unmarshaled dut state.
@@ -56,6 +57,7 @@ func newDutStateEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity
 		ID:       p.GetId().GetValue(),
 		Hostname: p.GetHostname(),
 		DutState: s,
+		Realm:    p.GetRealm(),
 	}, nil
 }
 
