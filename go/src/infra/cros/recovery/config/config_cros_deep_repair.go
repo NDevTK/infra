@@ -28,12 +28,8 @@ func DeepRepairConfig() *Configuration {
 func deepRepairCrosPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
-			"Flash EC (FW) by servo",
-			"Sleep 60 seconds",
-			"Disable software write protection via servo",
-			"Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot)",
-			"Download stable version OS image to servo usbkey if necessary (allow fail)",
-			"Install OS in DEV mode by USB-drive",
+			"Deep-repair ChromeOS DUT",
+			"Deep-repair Flex DUT",
 		},
 		Actions: crosRepairActions(),
 	}

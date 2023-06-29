@@ -1850,9 +1850,19 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "cros_switch_to_secure_mode",
 			AllowFailAfterRecovery: true,
 		},
+		"Is Flex device": {
+			Docs: []string{
+				"Check that DUT is a Flex board",
+			},
+			ExecExtraArgs: []string{
+				"string_values:aurora,reven",
+				"invert_result:false",
+			},
+			ExecName: "dut_check_board",
+		},
 		"Is not Flex device": {
 			Docs: []string{
-				"Verify that device is belong Reven models",
+				"Check that DUT is not a Flex board",
 			},
 			ExecExtraArgs: []string{
 				"string_values:aurora,reven",
@@ -3402,6 +3412,35 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:   "servo_v4p1_network_reset",
 			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Deep-repair ChromeOS DUT": {
+			Docs: []string{
+				"Force repair DUT with FW flash by servo and reimage from USB-drive in dev mode.",
+				"The action doesn't use recovery boot.",
+			},
+			Conditions: []string{
+				"Is not Flex device",
+			},
+			Dependencies: []string{
+				"Flash EC (FW) by servo",
+				"Sleep 60 seconds",
+				"Disable software write protection via servo",
+				"Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot)",
+				"Download stable version OS image to servo usbkey if necessary (allow fail)",
+				"Install OS in DEV mode by USB-drive",
+			},
+			ExecName: "sample_pass",
+		},
+		"Deep-repair Flex DUT": {
+			Docs: []string{
+				"Force repair DUT with reimage from USB-drive.",
+			},
+			Conditions: []string{
+				"Is Flex device",
+			},
+			// TODO: Add action special for Flex devices.
+			Dependencies: []string{},
+			ExecName:     "sample_pass",
 		},
 	}
 }
