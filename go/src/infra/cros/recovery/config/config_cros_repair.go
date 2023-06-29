@@ -2313,6 +2313,36 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"command:power_state",
 				"string_value:reset",
+				"timeout:30",
+			},
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Power OFF DUT by servo": {
+			Docs: []string{
+				"Turn DUT OFF by servo and do not wait.",
+			},
+			Dependencies: []string{
+				"Is servod running",
+			},
+			ExecName: "servo_set",
+			ExecExtraArgs: []string{
+				"command:power_state",
+				"string_value:off",
+				"timeout:30",
+			},
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Power ON DUT by servo": {
+			Docs: []string{
+				"Turn DUT ON by servo and do not wait.",
+			},
+			Dependencies: []string{
+				"Is servod running",
+			},
+			ExecName: "servo_set",
+			ExecExtraArgs: []string{
+				"command:power_state",
+				"string_value:on",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
