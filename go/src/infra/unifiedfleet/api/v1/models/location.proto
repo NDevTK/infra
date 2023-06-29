@@ -105,4 +105,5 @@ enum Zone {
   ZONE_SFO36_OS_CHROMIUM = 21; // "sfo36_os_chromium" // US-PAO-EM25 // CRE199-204
   ZONE_SFP_SFPTEST = 25;    // "sfp_sfptest" // Zone for SfP assets for partner `sfptest`
   ZONE_IAD65_OS = 26;       // "iad65_os" // Zone for datacenter site IAD65
+  ZONE_SFP_CROSTEST = 27; // "sfp_crostest" // Zone for SfP assets for partner `crostest`
 }
