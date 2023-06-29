@@ -33,6 +33,11 @@ PROPERTIES = {
             default=[],
             help='A list of <path>=<url> strings, indicating extra submodules '
             'to add to the mirror repo.'),
+    'cache_name':
+        Property(
+            default='codesearch_update_submodules_mirror',
+            help='Name of LUCI cache path. This name must match the cache '
+            'segment in cr-buildbucket.cfg.'),
     'overlays':
         Property(
             default=[],
@@ -76,13 +81,14 @@ MAIN_REF = 'refs/heads/main'
 SHA1_RE = re.compile(r'[0-9a-fA-F]{40}')
 
 
-def RunSteps(api, source_repo, target_repo, extra_submodules, overlays,
-             internal, with_tags, ref_patterns, refs_to_skip, push_to_refs_cs):
+def RunSteps(api, source_repo, target_repo, extra_submodules, cache_name,
+             overlays, internal, with_tags, ref_patterns, refs_to_skip,
+             push_to_refs_cs):
   _, source_project = api.gitiles.parse_repo_url(source_repo)
 
   # NOTE: This name must match the definition in cr-buildbucket.cfg. Do not
   # change without adjusting that config to match.
-  checkout_dir = api.m.path['cache'].join('codesearch_update_submodules_mirror')
+  checkout_dir = api.m.path['cache'].join(cache_name)
   api.m.file.ensure_directory('Create checkout parent dir', checkout_dir)
 
   # We assume here that we won't have a mirror for two repos with the same name.
