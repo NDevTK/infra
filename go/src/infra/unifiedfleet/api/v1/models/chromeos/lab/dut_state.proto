@@ -13,7 +13,7 @@ import "google/api/field_behavior.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/chromeos_device_id.proto";
 
 // This proto defines status labels in lab config of a DUT.
-// Next Tag: 21
+// Next Tag: 22
 message DutState {
   ChromeOSDeviceID id = 1;
   PeripheralState servo = 2;
@@ -86,6 +86,11 @@ message DutState {
   }
   // List of repair-requestes specified by external services for AutoRepair.
   repeated RepairRequest repair_requests = 19;
+
+  // Realm the underlying machine of the DutState belongs to. Shouldn't be set by the user.
+  string realm = 21 [
+    (google.api.field_behavior) = OUTPUT_ONLY
+  ];
 }
 
 // Next Tag: 27
