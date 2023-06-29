@@ -448,7 +448,7 @@ type DutState struct {
 	DutStateReason string `protobuf:"bytes,18,opt,name=dut_state_reason,json=dutStateReason,proto3" json:"dut_state_reason,omitempty"`
 	// List of repair-requestes specified by external services for AutoRepair.
 	RepairRequests []DutState_RepairRequest `protobuf:"varint,19,rep,packed,name=repair_requests,json=repairRequests,proto3,enum=unifiedfleet.api.v1.models.chromeos.lab.DutState_RepairRequest" json:"repair_requests,omitempty"`
-	// Realm the underlying machine of the DutState belongs to. Shouldn't be set by the user
+	// Realm the underlying machine of the DutState belongs to. Shouldn't be set by the user.
 	Realm string `protobuf:"bytes,21,opt,name=realm,proto3" json:"realm,omitempty"`
 }
 
