@@ -920,6 +920,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Setup has servo info",
+				"Is not Flex device",
 				"servod_control_exist_for_mac_address",
 			},
 			ExecName:               "servo_audit_nic_mac_address",
@@ -1912,6 +1913,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
+				"Is not Flex device",
 			},
 			Dependencies: []string{
 				"Trigger kernel panic by servod",
@@ -2141,6 +2143,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
+				"Is not Flex device",
 			},
 			Dependencies: []string{
 				"DUT has CrOS EC",
@@ -2172,6 +2175,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
+				"Is not Flex device",
 				"Is servo USB key detected",
 			},
 			Dependencies: []string{
@@ -2194,6 +2198,7 @@ func crosRepairActions() map[string]*Action {
 				"Pools allowed to stay in DEV mode",
 				"Recovery version has OS image path",
 				"Is servod running",
+				"Is not Flex device",
 				"Is servo USB key detected",
 			},
 			Dependencies: []string{
@@ -2226,6 +2231,7 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Recovery version has OS image path",
 				"Is servod running",
+				"Is not Flex device",
 				"Is servo USB key detected",
 			},
 			Dependencies: []string{
@@ -2244,6 +2250,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
+				"Is not Flex device",
 			},
 			Dependencies: []string{
 				"Set GBB flags to 0x18 by servo",
@@ -2583,6 +2590,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
+				"Is not Flex device",
 			},
 			Dependencies: []string{
 				"Flash EC (FW) by servo",
@@ -3312,6 +3320,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is servod running",
+				"Is not Flex device",
 				"is_servo_type_ccd",
 				"DUT is G3/S5 powerstate",
 			},
