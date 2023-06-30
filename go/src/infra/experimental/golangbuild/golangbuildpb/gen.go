@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//go:generate cproto
+//go:generate cproto -disable-grpc
 
 // Package golangbuildpb contains protos with inputs and outputs of golangbuild.
 package golangbuildpb
