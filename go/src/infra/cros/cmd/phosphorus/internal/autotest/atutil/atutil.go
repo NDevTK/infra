@@ -340,7 +340,19 @@ func runTask(ctx context.Context,
 
 		logging.Infof(ctx, "creating Docker container with command %q", containerConfig.Cmd)
 
-		err = docker.RunContainer(ctx, dockerCmdRunner, containerConfig, hostConfig, containerImageInfo)
+		err = docker.RunContainer(
+			ctx,
+			dockerCmdRunner,
+			containerConfig,
+			hostConfig,
+			containerImageInfo,
+			&docker.RuntimeOptions{
+				UseConfigureDocker: false,
+				NoSudo:             false,
+				StdoutBuf:          os.Stdout,
+				StderrBuf:          os.Stderr,
+			},
+		)
 		if err != nil {
 			var exErr *exec.ExitError
 			if errors.As(err, &exErr) {

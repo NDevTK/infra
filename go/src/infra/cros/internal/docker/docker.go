@@ -10,6 +10,7 @@ import (
 	"context"
 	"fmt"
 	"infra/cros/internal/cmd"
+	"io"
 	"os"
 	"strings"
 
@@ -86,26 +87,48 @@ func dockerLogin(ctx context.Context, runner cmd.CommandRunner, registry string)
 	return nil
 }
 
+// RuntimeOptions configures how docker and related auth commands are run.
+type RuntimeOptions struct {
+	// If true, use `gcloud auth configure-docker` instead of `docker login` to
+	// authenticate with the registry. Note that this is never run with sudo.
+	UseConfigureDocker bool
+	// If true, don't use sudo when running docker. Note this doesn't affect the
+	// authentication commands.
+	NoSudo bool
+	// Writer to send stdout from the docker command to, nil is valid (stdout
+	// isn't captured or printed).
+	StdoutBuf io.Writer
+	// Writer to send stderr from the docker command to, nil is valid (stderr
+	// isn't captured or printed).
+	StderrBuf io.Writer
+}
+
 // RunContainer runs a container with `docker run`.
-//
-// Note that `docker run` and all required `gcloud auth` commands are run as
-// root.
 func RunContainer(
 	ctx context.Context,
 	runner cmd.CommandRunner,
 	containerConfig *container.Config,
 	hostConfig *container.HostConfig,
 	containerImageInfo *api.ContainerImageInfo,
+	runtimeOptions *RuntimeOptions,
 ) error {
-	if err := dockerLogin(
-		ctx, runner,
-		fmt.Sprintf(
-			"%s/%s",
-			containerImageInfo.GetRepository().GetHostname(),
-			containerImageInfo.GetRepository().GetProject(),
-		),
-	); err != nil {
-		return err
+	if runtimeOptions.UseConfigureDocker {
+		var stderrBuf bytes.Buffer
+		if err := runner.RunCommand(ctx, io.Discard, &stderrBuf, "", "gcloud", "auth", "configure-docker", containerImageInfo.GetRepository().GetHostname(), "--quiet"); err != nil {
+			logging.Errorf(ctx, "gcloud auth configure-docker failed, stderr: %s", &stderrBuf)
+			return err
+		}
+	} else {
+		if err := dockerLogin(
+			ctx, runner,
+			fmt.Sprintf(
+				"%s/%s",
+				containerImageInfo.GetRepository().GetHostname(),
+				containerImageInfo.GetRepository().GetProject(),
+			),
+		); err != nil {
+			return err
+		}
 	}
 
 	args := []string{"run"}
@@ -127,9 +150,14 @@ func RunContainer(
 	args = append(args, containerConfig.Image)
 	args = append(args, containerConfig.Cmd...)
 
-	logging.Infof(ctx, "Running docker cmd: %q", args)
+	logging.Debugf(ctx, "Running docker cmd: %q", args)
 
-	err = runner.RunCommand(ctx, os.Stdout, os.Stderr, "", "sudo", append([]string{"docker"}, args...)...)
-
-	return err
+	var cmd string
+	if runtimeOptions.NoSudo {
+		cmd = "docker"
+	} else {
+		cmd = "sudo"
+		args = append([]string{"docker"}, args...)
+	}
+	return runner.RunCommand(ctx, runtimeOptions.StdoutBuf, runtimeOptions.StderrBuf, "", cmd, args...)
 }

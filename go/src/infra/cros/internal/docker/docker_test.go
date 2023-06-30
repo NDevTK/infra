@@ -3,6 +3,7 @@ package docker_test
 import (
 	"context"
 	"errors"
+	"os"
 	"testing"
 
 	"github.com/docker/docker/api/types/container"
@@ -14,37 +15,44 @@ import (
 	"infra/cros/internal/docker"
 )
 
+var containerImageInfo = &api.ContainerImageInfo{
+	Repository: &api.GcrRepository{
+		Hostname: "gcr.io",
+		Project:  "testproject",
+	},
+}
+
+var containerConfig = &container.Config{
+	Cmd:   strslice.StrSlice{"ls", "-l"},
+	User:  "testuser",
+	Image: "testimage",
+}
+
+var hostConfig = &container.HostConfig{
+	Mounts: []mount.Mount{
+		{
+			Type:   mount.TypeBind,
+			Source: "/tmp/hostdir",
+			Target: "/usr/local/containerdir",
+		},
+		{
+			Type:     mount.TypeBind,
+			Source:   "/othersource",
+			Target:   "/othertarget",
+			ReadOnly: true,
+		},
+	},
+	NetworkMode: "host",
+}
+
 func TestRunContainer(t *testing.T) {
 	ctx := context.Background()
 
-	containerImageInfo := &api.ContainerImageInfo{
-		Repository: &api.GcrRepository{
-			Hostname: "gcr.io",
-			Project:  "testproject",
-		},
-	}
-
-	containerConfig := &container.Config{
-		Cmd:   strslice.StrSlice{"ls", "-l"},
-		User:  "testuser",
-		Image: "testimage",
-	}
-
-	hostConfig := &container.HostConfig{
-		Mounts: []mount.Mount{
-			{
-				Type:   mount.TypeBind,
-				Source: "/tmp/hostdir",
-				Target: "/usr/local/containerdir",
-			},
-			{
-				Type:     mount.TypeBind,
-				Source:   "/othersource",
-				Target:   "/othertarget",
-				ReadOnly: true,
-			},
-		},
-		NetworkMode: "host",
+	runtimeOptions := &docker.RuntimeOptions{
+		UseConfigureDocker: false,
+		NoSudo:             false,
+		StdoutBuf:          os.Stdout,
+		StderrBuf:          os.Stderr,
 	}
 
 	cmdRunner := &cmd.FakeCommandRunnerMulti{
@@ -81,7 +89,45 @@ func TestRunContainer(t *testing.T) {
 		},
 	}
 
-	err := docker.RunContainer(ctx, cmdRunner, containerConfig, hostConfig, containerImageInfo)
+	err := docker.RunContainer(ctx, cmdRunner, containerConfig, hostConfig, containerImageInfo, runtimeOptions)
+	if err != nil {
+		t.Fatalf("RunContainer failed: %s", err)
+	}
+}
+
+func TestRunContainer_WithConfigureDocker(t *testing.T) {
+	ctx := context.Background()
+
+	runtimeOptions := &docker.RuntimeOptions{
+		UseConfigureDocker: true,
+		NoSudo:             true,
+		StdoutBuf:          os.Stdout,
+		StderrBuf:          os.Stderr,
+	}
+
+	cmdRunner := &cmd.FakeCommandRunnerMulti{
+		CommandRunners: []cmd.FakeCommandRunner{
+			{
+				ExpectedCmd: []string{
+					"gcloud", "auth", "configure-docker",
+					"gcr.io", "--quiet",
+				},
+			},
+			{
+				ExpectedCmd: []string{
+					"docker", "run",
+					"--user", "testuser",
+					"--network", "host",
+					"--mount=source=/tmp/hostdir,target=/usr/local/containerdir,type=bind",
+					"--mount=source=/othersource,target=/othertarget,type=bind,readonly",
+					"testimage",
+					"ls", "-l",
+				},
+			},
+		},
+	}
+
+	err := docker.RunContainer(ctx, cmdRunner, containerConfig, hostConfig, containerImageInfo, runtimeOptions)
 	if err != nil {
 		t.Fatalf("RunContainer failed: %s", err)
 	}
@@ -90,29 +136,38 @@ func TestRunContainer(t *testing.T) {
 func TestRunContainer_CmdError(t *testing.T) {
 	ctx := context.Background()
 
-	containerImageInfo := &api.ContainerImageInfo{
-		Name: "testimage",
-	}
-
-	containerConfig := &container.Config{
-		Cmd: strslice.StrSlice{"ls", "-l"},
-	}
-
-	hostConfig := &container.HostConfig{
-		Mounts: []mount.Mount{
-			{
-				Type:   mount.TypeBind,
-				Source: "/tmp/hostdir",
-				Target: "/usr/local/containerdir",
-			},
-		},
+	runtimeOptions := &docker.RuntimeOptions{
+		UseConfigureDocker: false,
+		NoSudo:             false,
+		StdoutBuf:          os.Stdout,
+		StderrBuf:          os.Stderr,
 	}
 
 	cmdRunner := cmd.FakeCommandRunner{}
 	cmdRunner.FailCommand = true
 	cmdRunner.FailError = errors.New("docker cmd failed.")
 
-	err := docker.RunContainer(ctx, cmdRunner, containerConfig, hostConfig, containerImageInfo)
+	err := docker.RunContainer(ctx, cmdRunner, containerConfig, hostConfig, containerImageInfo, runtimeOptions)
+	if err == nil {
+		t.Errorf("RunContainer expected to fail")
+	}
+}
+
+func TestRunContainer_ConfigureDockerError(t *testing.T) {
+	ctx := context.Background()
+
+	runtimeOptions := &docker.RuntimeOptions{
+		UseConfigureDocker: true,
+		NoSudo:             true,
+		StdoutBuf:          os.Stdout,
+		StderrBuf:          os.Stderr,
+	}
+
+	cmdRunner := cmd.FakeCommandRunner{}
+	cmdRunner.FailCommand = true
+	cmdRunner.FailError = errors.New("configure-docker cmd failed.")
+
+	err := docker.RunContainer(ctx, cmdRunner, containerConfig, hostConfig, containerImageInfo, runtimeOptions)
 	if err == nil {
 		t.Errorf("RunContainer expected to fail")
 	}
