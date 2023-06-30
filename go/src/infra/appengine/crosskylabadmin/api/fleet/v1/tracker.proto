@@ -28,8 +28,20 @@ service Tracker {
       returns (PushBotsForAdminAuditTasksResponse);
 }
 
+// PushBotsForAdminTasksRequest is used for an internal RPC that looks at the existing bots and determines which ones
+// to repair or audit or perform some other admin task on.
+//
+// It takes the states for the DUTs we're looking at (for example "needs_repair" or "ready" or "repair_failed") as well as
+// a strategy, which is used to control the smart-scheduling feature.
 message PushBotsForAdminTasksRequest {
   DutState target_dut_state = 1;
+  enum SchedulingStrategy {
+    // DefaultSchedulingStrategy means no smart scheduling. We only use the swarming state and the cron mechanism in GCP.
+    DefaultSchedulingStrategy = 0;
+    // LabstationRebootStrategy means that we repair the DUTs connected to a labstation after the labstation has rebooted.
+    LabstationRebootStrategy = 1;
+  }
+  SchedulingStrategy scheduling_strategy = 2;
 }
 
 message PushBotsForAdminTasksResponse {}
