@@ -11,6 +11,7 @@ import { Period, SortType } from '../api/resources';
 export interface OptionalContext {
   tests?: Test[],
   lastPage?: boolean,
+  isLoading?: boolean,
   api?: OptionalApi,
   params?: Params,
 }
@@ -29,27 +30,13 @@ export interface OptionalApi {
 }
 
 const defaultApi: Api = {
-  setPage: () => {
-    // Do nothing
-  },
-  setRowsPerPage: () => {
-    // Do nothing
-  },
-  setFilter: () => {
-    // Do nothing
-  },
-  setDate: () => {
-    // Do nothing
-  },
-  setPeriod: () => {
-    // Do nothing
-  },
-  setSort: () => {
-    // Do nothing
-  },
-  setAscending: () => {
-    // Do nothing
-  },
+  setPage: () => {/**/},
+  setRowsPerPage: () => {/**/},
+  setFilter: () => {/**/},
+  setDate: () => {/**/},
+  setPeriod: () => {/**/},
+  setSort: () => {/**/},
+  setAscending: () => {/**/},
 };
 
 const defaultParams: Params = {
@@ -88,6 +75,7 @@ export function renderWithContext(
       sort: opts.params?.sort || defaultParams.sort,
       ascending: opts.params?.ascending || defaultParams.ascending,
     },
+    isLoading: opts.isLoading || true,
   };
   render(
       <BrowserRouter>

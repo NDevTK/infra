@@ -11,7 +11,7 @@ import * as Resources from '../../api/resources';
 import { MetricsContext, MetricsContextProvider } from './MetricsContext';
 
 const TestingComponent = () => {
-  const { api, params, tests, lastPage } = useContext(MetricsContext);
+  const { api, params, tests, lastPage, isLoading } = useContext(MetricsContext);
   return (
     <>
       <div>{'id-' + tests[0]?.testId}</div>
@@ -30,6 +30,7 @@ const TestingComponent = () => {
       <div>{'variant-avgRuntime-' + tests[0]?.variants[0].metrics.get(Resources.MetricType.AVG_RUNTIME)}</div>
       <div>{'variant-totalRuntime-' + tests[0]?.variants[0].metrics.get(Resources.MetricType.TOTAL_RUNTIME)}</div>
       <div>{'variant-avgCores-' + tests[0]?.variants[0].metrics.get(Resources.MetricType.AVG_CORES)}</div>
+      <div>{'isLoading-' + isLoading}</div>
       <Button data-testid='buttonPage' onClick={() => api.setPage(20)}>{'paramsPage-' + params.page}</Button>
       <Button data-testid='buttonRowsPerPage' onClick={() => api.setRowsPerPage(20)}>{'paramsRowsPerPage-' + params.rowsPerPage}</Button>
       <Button data-testid='buttonFilter' onClick={() => api.setFilter('newFilt')}>{'paramsFilt-' + params.filter}</Button>
@@ -116,6 +117,7 @@ describe('<MetricsContext />', () => {
     expect(screen.getByText('variant-avgRuntime-4')).toBeInTheDocument();
     expect(screen.getByText('variant-totalRuntime-5')).toBeInTheDocument();
     expect(screen.getByText('variant-avgCores-6')).toBeInTheDocument();
+    expect(screen.getByText('isLoading-false')).toBeInTheDocument();
   });
   it('update params accordingly when api is called', async () => {
     jest.spyOn(Resources, 'fetchTestMetrics').mockResolvedValue({

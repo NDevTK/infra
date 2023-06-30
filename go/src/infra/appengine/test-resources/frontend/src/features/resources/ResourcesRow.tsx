@@ -19,11 +19,11 @@ export interface ResourcesRowProps {
 export function displayMetrics(metrics: Map<MetricType, number>) {
   return (
     <>
-      <TableCell component="td" data-testid="tableCell" align="right">{formatNumber(metrics.get(MetricType.NUM_RUNS) || 0)}</TableCell>
-      <TableCell component="td" data-testid="tableCell" align="right">{formatNumber(metrics.get(MetricType.NUM_FAILURES) || 0)}</TableCell>
-      <TableCell component="td" data-testid="tableCell" align="right">{formatTime(metrics.get(MetricType.AVG_RUNTIME) || 0)}</TableCell>
-      <TableCell component="td" data-testid="tableCell" align="right">{formatTime(metrics.get(MetricType.TOTAL_RUNTIME) || 0)}</TableCell>
-      <TableCell component="td" data-testid="tableCell" align="right">{formatNumber(metrics.get(MetricType.AVG_CORES) || 0)}</TableCell>
+      <TableCell data-testid="tableCell" align="right">{formatNumber(metrics.get(MetricType.NUM_RUNS) || 0)}</TableCell>
+      <TableCell data-testid="tableCell" align="right">{formatNumber(metrics.get(MetricType.NUM_FAILURES) || 0)}</TableCell>
+      <TableCell data-testid="tableCell" align="right">{formatTime(metrics.get(MetricType.AVG_RUNTIME) || 0)}</TableCell>
+      <TableCell data-testid="tableCell" align="right">{formatTime(metrics.get(MetricType.TOTAL_RUNTIME) || 0)}</TableCell>
+      <TableCell data-testid="tableCell" align="right">{formatNumber(metrics.get(MetricType.AVG_CORES) || 0)}</TableCell>
     </>
   );
 }
@@ -38,7 +38,7 @@ function ResourcesRow(resourcesRowParams: ResourcesRowProps) {
         key={resourcesRowParams.test.testId}
         className={styles.tableRow}
       >
-        <TableCell component="td" scope="row" className={styles.titleCell}>
+        <TableCell scope="row" className={styles.titleCell}>
           {
           resourcesRowParams.test.variants.length != 0 ? (
             <Button
@@ -53,7 +53,7 @@ function ResourcesRow(resourcesRowParams: ResourcesRowProps) {
           }
           {resourcesRowParams.test.testName}
         </TableCell>
-        <TableCell component="td" align="right"></TableCell>
+        <TableCell align="right"></TableCell>
         {displayMetrics(resourcesRowParams.test.metrics)}
       </TableRow>
       {

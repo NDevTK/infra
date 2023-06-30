@@ -27,6 +27,7 @@ export interface TestVariant {
 export interface MetricsContextValue {
   tests: Test[],
   lastPage: boolean,
+  isLoading: boolean,
   api: Api,
   params: Params,
 }
@@ -76,6 +77,7 @@ export const MetricsContext = createContext<MetricsContextValue>(
         sort: SortType.SORT_NAME,
         ascending: true,
       },
+      isLoading: false,
     },
 );
 
@@ -148,8 +150,13 @@ export const MetricsContextProvider = ({ children } : MetricsContextProviderProp
   const [period, setPeriod] = useState(Period.DAY);
   const [sort, setSort] = useState(SortType.SORT_NAME);
   const [ascending, setAscending] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  let loadingCount = 0;
 
   const fetchTestMetricsHelper = useCallback(() => {
+    setIsLoading(true);
+    loadingCount++;
     return fetchTestMetrics({
       'component': 'Blink',
       'period': Number(period) as Period,
@@ -192,7 +199,11 @@ export const MetricsContextProvider = ({ children } : MetricsContextProviderProp
       }
       setTests(tests);
       setLastPage(resp.lastPage);
+      loadingCount--;
+      setIsLoading(loadingCount !== 0);
     }).catch((error) => {
+      loadingCount--;
+      setIsLoading(loadingCount !== 0);
       throw error;
     });
   }, [page, rowsPerPage, filter, date, period, sort, ascending]);
@@ -211,8 +222,10 @@ export const MetricsContextProvider = ({ children } : MetricsContextProviderProp
     setAscending,
   };
 
+  const params: Params = { page, rowsPerPage, filter, date, period, sort, ascending };
+
   return (
-    <MetricsContext.Provider value={{ tests, lastPage, api, params: { page, rowsPerPage, filter, date, period, sort, ascending } }}>
+    <MetricsContext.Provider value={{ tests, lastPage, isLoading, api, params }}>
       { children }
     </MetricsContext.Provider>
   );

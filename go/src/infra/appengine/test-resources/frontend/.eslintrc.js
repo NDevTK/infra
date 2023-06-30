@@ -55,7 +55,7 @@ module.exports = {
       ],
     }],
     'no-trailing-spaces': 'error',
-    'no-console': ['error', { allow: ['error'] }],
+    'no-console': ['warn', { allow: ['error'] }],
     'eol-last': ['error', 'always'],
     'react/jsx-uses-react': 'off',
     'react/react-in-jsx-scope': 'off',

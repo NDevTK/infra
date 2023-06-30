@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import { Paper } from '@mui/material';
 import ResourcesTable from '../../features/resources/ResourcesTable';
 import { MetricsContextProvider } from '../../features/context/MetricsContext';
 import ResourcesToolbar from '../../features/resources/ResourcesToolbar';
@@ -11,7 +12,9 @@ function ResourcesPage() {
   return (
     <MetricsContextProvider>
       <ResourcesToolbar/>
-      <ResourcesTable/>
+      <Paper sx={{ margin: '10px 20px' }}>
+        <ResourcesTable/>
+      </Paper>
       <ResourcesSearchParams/>
     </MetricsContextProvider>
   );

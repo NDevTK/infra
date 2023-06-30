@@ -12,14 +12,14 @@ import Paper from '@mui/material/Paper';
 import { useContext } from 'react';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import { Button, TableFooter, TablePagination } from '@mui/material';
+import { Button, LinearProgress, TableFooter, TablePagination } from '@mui/material';
 import { SortType } from '../../api/resources';
 import { MetricsContext } from '../context/MetricsContext';
 import ResourcesRow from './ResourcesRow';
 import styles from './ResourcesTable.module.css';
 
 function ResourcesTable() {
-  const { tests, lastPage, api, params } = useContext(MetricsContext);
+  const { tests, lastPage, isLoading, api, params } = useContext(MetricsContext);
 
   const handleChangePage = (
       _: React.MouseEvent<HTMLButtonElement> | null,
@@ -65,9 +65,20 @@ function ResourcesTable() {
     );
   }
 
+  function tableMessageBoard(message: string) {
+    return (
+      <TableRow>
+        <TableCell colSpan={7} align="center" className={styles.tableCellNoData}>
+          {message}
+        </TableCell>
+      </TableRow>
+    );
+  }
+
   return (
     <>
       <TableContainer component={Paper}>
+        <LinearProgress sx={{ visibility: isLoading ? 'visible' : 'hidden' }} data-testid='loading-bar'/>
         <Table sx={{ minWidth: 650 }} size="small" aria-label="simple table">
           <TableHead>
             <TableRow className={styles.headerRow}>
@@ -94,26 +105,18 @@ function ResourcesTable() {
               </TableCell>
             </TableRow>
           </TableHead>
-          {tests.length > 0 ?
           <TableBody data-testid="tableBody">
-            {tests.map((row) => (
-              <ResourcesRow
-                key={row.testId} {
-                  ...{
-                    test: row,
-                    lastPage: lastPage,
-                  }
-                }/>
-            ))}
-          </TableBody> :
-          <TableBody>
-            <TableRow>
-              <TableCell colSpan={7} component="td" align="center" className={styles.tableCellNoData}>
-                No Data Available
-              </TableCell>
-            </TableRow>
+            {tests.length > 0 ?
+             tests.map((row) => (
+               <ResourcesRow
+                 key={row.testId} {
+                   ...{
+                     test: row,
+                     lastPage: lastPage,
+                   }
+                 }/>
+             )) : tableMessageBoard(isLoading ? 'Loading...' : 'No data available')}
           </TableBody>
-          }
           <TableFooter>
             <TableRow>
               <TablePagination

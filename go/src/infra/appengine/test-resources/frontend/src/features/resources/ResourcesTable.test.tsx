@@ -53,3 +53,13 @@ describe('when rendering the ResourcesTable', () => {
     expect(screen.getByText('Avg Cores')).toBeInTheDocument();
   });
 });
+
+describe('when rendering the ResourcesTable', () => {
+  it('should render loading screen', () => {
+    renderWithContext(<ResourcesTable/>, { tests: [], isLoading: true });
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    expect(screen.getByTestId('loading-bar')).not.toHaveClass(
+        'hidden',
+    );
+  });
+});

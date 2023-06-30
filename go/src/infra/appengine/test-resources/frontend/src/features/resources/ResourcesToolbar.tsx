@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { FormControl, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { Divider, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Toolbar } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -10,7 +10,6 @@ import { useContext, useEffect, useState } from 'react';
 import { formatDate } from '../../utils/formatUtils';
 import { Period } from '../../api/resources';
 import { MetricsContext } from '../context/MetricsContext';
-import styles from './ResourcesToolbar.module.css';
 
 
 function ResourcesToolbar() {
@@ -47,44 +46,47 @@ function ResourcesToolbar() {
 
   return (
     <>
-      <Grid container className={styles.formContainer} gap={3}>
-        <Grid item xs={3}>
-          <TextField
-            data-testid="textFieldTest"
-            fullWidth
-            label="Filter"
-            variant="standard"
-            onChange={handleFilterChange}
-            value={filter}
-          />
-        </Grid>
-        <Grid item xs={.7}>
-          <FormControl data-testid="formControlTest" fullWidth variant="standard">
-            <InputLabel shrink={true}>Period</InputLabel>
-            <Select
-              value={Number(params.period) as Period}
-              label="Period"
-              onChange={handlePeriodChange}
-            >
-              <MenuItem value={0}>Day</MenuItem>
-              <MenuItem value={1}>Week</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={2}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Date"
-              disableFuture
-              onChange={handleDateChange}
-              format="YYYY-MM-DD"
-              defaultValue={dayjs(params.date)}
-              slotProps={{ textField: { variant: 'standard' } }}
-              shouldDisableDate={handleShouldDisableDate}
+      <Toolbar>
+        <Grid container gap={3}>
+          <Grid item xs={3}>
+            <TextField
+              data-testid="textFieldTest"
+              fullWidth
+              label="Filter"
+              variant="standard"
+              onChange={handleFilterChange}
+              value={filter}
             />
-          </LocalizationProvider>
+          </Grid>
+          <Grid item xs={1}>
+            <FormControl data-testid="formControlTest" fullWidth variant="standard">
+              <InputLabel shrink={true}>Period</InputLabel>
+              <Select
+                value={Number(params.period) as Period}
+                label="Period"
+                onChange={handlePeriodChange}
+              >
+                <MenuItem value={0}>Day</MenuItem>
+                <MenuItem value={1}>Week</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={2}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Date"
+                disableFuture
+                onChange={handleDateChange}
+                format="YYYY-MM-DD"
+                defaultValue={dayjs(params.date)}
+                slotProps={{ textField: { variant: 'standard' } }}
+                shouldDisableDate={handleShouldDisableDate}
+              />
+            </LocalizationProvider>
+          </Grid>
         </Grid>
-      </Grid>
+      </Toolbar>
+      <Divider />
     </>
   );
 }
