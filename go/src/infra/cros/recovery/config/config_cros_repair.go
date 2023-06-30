@@ -15,6 +15,7 @@ func crosRepairPlan() *Plan {
 			"Collect logs and crashinfo",
 			"Device is pingable",
 			"Device is SSHable",
+			"Enable verbose network logging for cellular DUTs",
 			"Collect logs and crashinfo",
 			"Read bootId",
 			"Verify internal storage",
@@ -56,6 +57,7 @@ func crosRepairPlan() *Plan {
 			"Set state: ready",
 			"Update special device labels",
 			"Collect dmesg logs from DUT",
+			"Disable verbose network logging for cellular DUTs",
 			"Verify bootId and compare",
 			"Validate chromebook X label",
 			"Record type C status",
@@ -1177,11 +1179,49 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"regex:(?i)^cellular",
 			},
+			RunControl: RunControl_RUN_ONCE,
 			MetricsConfig: &MetricsConfig{
 				UploadPolicy: MetricsConfig_SKIP_ALL,
 			},
 		},
-		"Audit cellular": {
+		"Has live carrier": {
+			Docs: []string{
+				"Verify that DUT has a connectable carrier and not a test device.",
+			},
+			Conditions: []string{
+				"Is in cellular pool",
+				"has_cellular_info",
+			},
+			ExecName: "carrier_not_in",
+			ExecExtraArgs: []string{
+				"carriers:CMW500,CMX500,PINLOCK,TESTESIM,STARFISH",
+			},
+			RunControl: RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
+		},
+		"Cellular modem is not in failed state": {
+			Docs: []string{
+				"Verifies that the modem is in a valid state. Even if the modem",
+				" hardware is fine, the modem may still be in a failed state for",
+				" a variety of reasons, but commonly this is due to a missing",
+				" or invalid SIM card.",
+			},
+			Conditions: []string{
+				"Has live carrier",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+				"Cellular modem is up",
+			},
+			ExecName: "cros_modem_state_not_in",
+			ExecExtraArgs: []string{
+				"modem_timeout:15",
+				"states:FAILED",
+			},
+		},
+		"Cellular modem is up": {
 			Docs: []string{
 				"Check cellular modem on the DUT is normal and update cellular modem state accordingly.",
 			},
@@ -1193,7 +1233,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Device is SSHable",
 			},
-			ExecName: "cros_audit_cellular",
+			ExecName: "cros_audit_cellular_modem",
 			ExecExtraArgs: []string{
 				"wait_manager_when_not_expected:120",
 				"wait_manager_when_expected:15",
@@ -1204,6 +1244,56 @@ func crosRepairActions() map[string]*Action {
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 180,
 			},
+		},
+		"Audit cellular modem": {
+			Docs: []string{
+				"Check cellular modem on the DUT is normal and update cellular modem state accordingly.",
+				"Identical to 'Cellular modem is up' action but is allowed to fail",
+			},
+			Dependencies: []string{
+				"Cellular modem is up",
+			},
+			ExecName:               "sample_pass",
+			AllowFailAfterRecovery: true,
+		},
+		"Audit cellular network connection": {
+			Docs: []string{
+				"Verify DUT is able to connect to the default cellular network.",
+			},
+			Conditions: []string{
+				"Is in cellular pool",
+				"cros_has_mmcli",
+				"has_cellular_info",
+				"Has live carrier",
+				"Cellular modem is up",
+				"Cellular modem is not in failed state",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_audit_cellular_connection",
+			ExecExtraArgs: []string{
+				"wait_connected_timeout:120",
+			},
+			ExecTimeout: &durationpb.Duration{
+				Seconds: 180,
+			},
+			AllowFailAfterRecovery: true,
+		},
+		"Audit cellular": {
+			Docs: []string{
+				"Audit cellular peripherals states and report metrics.",
+			},
+			Conditions: []string{
+				"Is in cellular pool",
+			},
+			Dependencies: []string{
+				"Audit cellular modem",
+				"Audit cellular network connection",
+				"Collect var/log/messages from DUT",
+				"Collect var/log/net.log from DUT",
+			},
+			ExecName:               "sample_pass",
 			AllowFailAfterRecovery: true,
 		},
 		"Verify tmp_fwver is updated correctly": {
@@ -3125,6 +3215,182 @@ func crosRepairActions() map[string]*Action {
 			},
 			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
+		},
+		"Collect var/log/messages from DUT": {
+			Docs: []string{
+				"Try to copy /var/log/messages from DUT in order to monitor ",
+				"system messages logged during the repair process to help ",
+				"retain context even when a repair was successful.",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_copy_to_logs",
+			ExecExtraArgs: []string{
+				"src_host_type:dut",
+				"src_path:/var/log/messages",
+				"src_type:file",
+				"use_host_dir:true",
+			},
+			RunControl:             RunControl_RUN_ONCE,
+			AllowFailAfterRecovery: true,
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
+		},
+		"Collect var/log/net.log from DUT": {
+			Docs: []string{
+				"Try to copy /var/log/net.log from DUT in order to monitor ",
+				"system messages logged during the repair process to help ",
+				"retain context even when a repair was successful.",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_copy_to_logs",
+			ExecExtraArgs: []string{
+				"src_host_type:dut",
+				"src_path:/var/log/net.log",
+				"src_type:file",
+				"use_host_dir:true",
+			},
+			RunControl:             RunControl_RUN_ONCE,
+			AllowFailAfterRecovery: true,
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
+		},
+		"Is shill debug CLI present": {
+			Docs: []string{
+				"Checks if shill debug utility can be found in DUT cli.",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_is_tool_present",
+			ExecExtraArgs: []string{
+				"tools:ff_debug",
+			},
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
+		},
+		"Is modem CLI present": {
+			Docs: []string{
+				"Checks if modem utility can be found in DUT cli.",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_is_tool_present",
+			ExecExtraArgs: []string{
+				"tools:modem",
+			},
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
+		},
+		"Enable verbose shill logs": {
+			Docs: []string{
+				"Enables verbose logging of shill network manager.",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+				"Is shill debug CLI present",
+			},
+			ExecName: "cros_set_verbose_shill_logs",
+			ExecExtraArgs: []string{
+				"is_enabled:true",
+			},
+			AllowFailAfterRecovery: true,
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
+		},
+		"Enable verbose ModemManager logs": {
+			Docs: []string{
+				"Enables verbose logging of modem manager.",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+				"Is modem CLI present",
+			},
+			ExecName: "cros_set_verbose_mm_logs",
+			ExecExtraArgs: []string{
+				"is_enabled:true",
+			},
+			AllowFailAfterRecovery: true,
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
+		},
+		"Disable verbose shill logs": {
+			Docs: []string{
+				"Enables verbose logging of shill network manager.",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+				"Is shill debug CLI present",
+			},
+			ExecName: "cros_set_verbose_shill_logs",
+			ExecExtraArgs: []string{
+				"is_enabled:false",
+			},
+			AllowFailAfterRecovery: true,
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
+		},
+		"Disable verbose ModemManager logs": {
+			Docs: []string{
+				"Enables verbose logging of modem manager.",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+				"Is modem CLI present",
+			},
+			ExecName: "cros_set_verbose_mm_logs",
+			ExecExtraArgs: []string{
+				"is_enabled:false",
+			},
+			AllowFailAfterRecovery: true,
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
+		},
+		"Enable verbose network logging for cellular DUTs": {
+			Docs: []string{
+				"Enables verbose logging of networking daemons.",
+			},
+			Conditions: []string{
+				"Is in cellular pool",
+			},
+			Dependencies: []string{
+				"Enable verbose shill logs",
+				"Enable verbose ModemManager logs",
+			},
+			ExecName:               "sample_pass",
+			AllowFailAfterRecovery: true,
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
+		},
+		"Disable verbose network logging for cellular DUTs": {
+			Docs: []string{
+				"Disables verbose logging of networking daemons.",
+			},
+			Conditions: []string{
+				"Is in cellular pool",
+			},
+			Dependencies: []string{
+				"Disable verbose shill logs",
+				"Disable verbose ModemManager logs",
+			},
+			ExecName:               "sample_pass",
+			AllowFailAfterRecovery: true,
+			MetricsConfig: &MetricsConfig{
+				UploadPolicy: MetricsConfig_SKIP_ALL,
+			},
 		},
 		"Collect dmesg": {
 			Docs: []string{
