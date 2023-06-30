@@ -19,10 +19,13 @@ import (
 )
 
 func init() {
-	execs.Register("cros_audit_cellular", auditCellularExec)
+	execs.Register("carrier_not_in", carrierNotInExec)
+	execs.Register("cros_audit_cellular_modem", auditCellularModemExec)
+	execs.Register("cros_audit_cellular_connection", auditCellularConnectionExec)
 	execs.Register("cros_has_mmcli", hasModemManagerCLIExec)
 	execs.Register("cros_has_modemmanager_job", hasModemManagerJobExec)
 	execs.Register("cros_modemmanager_running", modemManagerRunningExec)
+	execs.Register("cros_modem_state_not_in", modemStateNotInExec)
 	execs.Register("cros_restart_modemmanager", restartModemManagerExec)
 	execs.Register("set_cellular_modem_state", setCellularModemStateExec)
 	execs.Register("has_cellular_info", hasCellularInfoExec)
@@ -88,6 +91,7 @@ func hasCellularInfoExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// setCellularModemStateExec sets the DUT's modem state to the requested value.
 func setCellularModemStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	c := info.GetChromeos().GetCellular()
 	if c == nil {
@@ -108,11 +112,73 @@ func setCellularModemStateExec(ctx context.Context, info *execs.ExecInfo) error 
 	return nil
 }
 
-// auditCellularExec will validate cellular modem and connectivity state.
-func auditCellularExec(ctx context.Context, info *execs.ExecInfo) error {
+// carrierNotInExec validates that the DUT cellular network carrier is not in a provided list.
+func carrierNotInExec(ctx context.Context, info *execs.ExecInfo) error {
 	c := info.GetChromeos().GetCellular()
 	if c == nil {
-		return errors.Reason("audit cellular: cellular data is not present in dut info").Err()
+		return errors.Reason("carrier not in: cellular data is not present in dut info").Err()
+	}
+
+	if c.Carrier == "" {
+		return errors.Reason("carrier not in: DUT carrier label is empty").Err()
+	}
+
+	argsMap := info.GetActionArgs(ctx)
+	carriers := argsMap.AsStringSlice(ctx, "carriers", []string{})
+	for _, carrier := range carriers {
+		if strings.EqualFold(carrier, c.Carrier) {
+			return errors.Reason("carrier not in: carrier %q is not allowed", c.Carrier).Err()
+		}
+	}
+
+	return nil
+}
+
+// modemStateNotInExec verifies that the modem state exported by ModemManager is not in the provided list.
+func modemStateNotInExec(ctx context.Context, info *execs.ExecInfo) error {
+	c := info.GetChromeos().GetCellular()
+	if c == nil {
+		return errors.Reason("modem state not in: cellular data is not present in dut info").Err()
+	}
+
+	argsMap := info.GetActionArgs(ctx)
+	timeout := argsMap.AsDuration(ctx, "wait_modem_timeout", 15, time.Second)
+	modemInfo, err := cellular.WaitForModemInfo(ctx, info.DefaultRunner(), timeout)
+	if err != nil {
+		return errors.Reason("modem state not in: no modem exported by ModemManager").Err()
+	}
+
+	if modemInfo.GetState() == "" {
+		return errors.Reason("modem state not in: modem state is empty").Err()
+	}
+
+	modemState := strings.ToUpper(modemInfo.GetState())
+	states := argsMap.AsStringSlice(ctx, "states", []string{})
+	for _, state := range states {
+		if strings.ToUpper(state) == modemState {
+			return errors.Reason("modem state not in: modem state %q not allowed", modemState).Err()
+		}
+	}
+
+	return nil
+}
+
+// auditCellularConnectionExec verifies that the device is able to connect to the provided cellular network.
+func auditCellularConnectionExec(ctx context.Context, info *execs.ExecInfo) error {
+	runner := info.DefaultRunner()
+	argsMap := info.GetActionArgs(ctx)
+	waitTimeout := argsMap.AsDuration(ctx, "wait_connected_timeout", 120, time.Second)
+	if err := cellular.ConnectToDefaultService(ctx, runner, waitTimeout); err != nil {
+		return errors.Annotate(err, "audit cellular connection").Err()
+	}
+	return nil
+}
+
+// auditCellularModem will validate cellular modem hardware state.
+func auditCellularModemExec(ctx context.Context, info *execs.ExecInfo) error {
+	c := info.GetChromeos().GetCellular()
+	if c == nil {
+		return errors.Reason("audit cellular modem: cellular data is not present in dut info").Err()
 	}
 	expected := cellular.IsExpected(ctx, info.DefaultRunner())
 
@@ -138,7 +204,7 @@ func auditCellularExec(ctx context.Context, info *execs.ExecInfo) error {
 		return nil
 	}
 
-	err = errors.Annotate(err, "audit cellular").Err()
+	err = errors.Annotate(err, "audit cellular modem").Err()
 	if execs.SSHErrorInternal.In(err) {
 		c.ModemState = tlw.HardwareState_HARDWARE_UNSPECIFIED
 		return err
