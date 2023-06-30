@@ -137,23 +137,34 @@ func logMetrics(ctx context.Context, logChan chan trackingMetric, workingDir str
 func logTotals(ctx context.Context, workingDirectory string) error {
 	destPath := filepath.Join(workingDirectory, totalsLogDirectory, "final.csv")
 	// This 2D array is what the CSV needs to write to a file. The first row is
-	// the headers that we are building in the format of:
+	// the headers that will make up the columns of the CSV:
 	//
 	// 	suiteName                 string
 	// 	totalTestExecutionSeconds float64
 	// 	completed                 bool
 	// 	exceededExecutionLimit    bool
+	// 	exceptionGranted			    bool
 	data := [][]string{
-		{"suiteName", "totalTestExecutionSeconds", "completed", "exceededExecutionLimit"},
+		{"suiteName", "totalTestExecutionSeconds", "completed", "exceededExecutionLimit", "exceptionGranted"},
 	}
 
 	// Create the data array for the CSV writer.
 	for taskSetName, entry := range lastSeenRuntimePerTask {
 		data = append(data, []string{
+			// Field: suiteName
 			taskSetName,
+
+			// Field: totalTestExecutionSeconds
 			strconv.FormatFloat(entry.totalSuiteTrackingTime.Seconds(), 'f', 2, 64),
+
+			// Field: completed
 			strconv.FormatBool(entry.allDone),
+
+			// Field: exceededExecutionLimit
 			strconv.FormatBool(entry.totalSuiteTrackingTime.Seconds() > SuiteTestExecutionMaximumSeconds),
+
+			// Field: exceptionGranted
+			strconv.FormatBool(checkForExceptionNoLogging(taskSetName)),
 		})
 	}
 

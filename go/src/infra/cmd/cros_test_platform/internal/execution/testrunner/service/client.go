@@ -65,6 +65,9 @@ type Client interface {
 	// the give arguments.
 	ValidateArgs(context.Context, *request.Args) (bool, []types.TaskDimKeyVal, error)
 
+	// CancelTasks cancels all tasks given.
+	CancelTasks(ctx context.Context, taskReferences []TaskReference, reason string) error
+
 	// LaunchTask creates a new test_runner task with the given arguments.
 	LaunchTask(context.Context, *request.Args) (TaskReference, error)
 
@@ -107,6 +110,7 @@ const VersionNumber = 4
 
 type swarmingClient interface {
 	BotExists(context.Context, []*swarmingapi.SwarmingRpcsStringPair) (bool, error)
+	CancelTask(ctx context.Context, taskID string) error
 }
 
 // NewClient creates a concrete instance of a Client.
@@ -187,7 +191,7 @@ func newSwarmingClient(ctx context.Context, c *config.Config_Swarming) (*swarmin
 		return nil, err
 	}
 
-	client, err := swarming.NewClient(hClient, c.Server)
+	client, err := swarming.NewClientUpdated(ctx, hClient, c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -259,6 +263,22 @@ func (c *clientImpl) ValidateArgs(ctx context.Context, args *request.Args) (botE
 		logging.Warningf(ctx, "Dependency validation failed for %s: no bot exists with dimensions: %v", args.TestRunnerRequest.GetTest().GetAutotest().GetName(), rejectedTaskDims)
 	}
 	return
+}
+
+// CancelTasks cancels all tasks given.
+func (c *clientImpl) CancelTasks(ctx context.Context, taskReferences []TaskReference, reason string) error {
+	for _, ref := range taskReferences {
+		req := &buildbucketpb.CancelBuildRequest{
+			Id:              c.knownTasks[ref].bbID,
+			SummaryMarkdown: reason,
+		}
+		_, err := c.bbClient.CancelBuild(ctx, req)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // LaunchTask sends an RPC request to start the task.

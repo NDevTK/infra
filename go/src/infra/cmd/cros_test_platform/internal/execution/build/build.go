@@ -55,17 +55,29 @@ func (r *RequestStepUpdater) NewInvocationStep(name string) *InvocationStepUpdat
 // complete.
 //
 // RequestStepUpdater should not be used once Close() has been called.
-func (r *RequestStepUpdater) Close() error {
+func (r *RequestStepUpdater) Close(status bbpb.Status, summaryMarkdown string) error {
 	if r.finalized {
 		return errors.Reason("RequestStepUpdater: finalized called more than once").Err()
 	}
 	for _, i := range r.invocations {
 		if !i.closed {
-			i.close()
+			i.close(status)
 		}
 	}
-	closeStep(r.step)
+	closeStep(r.step, status)
+
+	if summaryMarkdown != "" {
+		r.step.SummaryMarkdown = summaryMarkdown + "\n"
+	}
+	r.finalized = true
 	return nil
+}
+func (r *RequestStepUpdater) DisplayExceptionExpiredSummary(expirationDate time.Time) {
+	r.step.SummaryMarkdown = fmt.Sprintf("SuiteLimits exception expired on %s", expirationDate.UTC().Format(time.RFC822))
+}
+
+func (r *RequestStepUpdater) DisplayExceptionSummary(expirationDate time.Time) {
+	r.step.SummaryMarkdown = fmt.Sprintf("SuiteLimits Exception granted. Expires %s", expirationDate.UTC().Format(time.RFC822))
 }
 
 // InvocationStepUpdater provides methods to update a step corresponding to the
@@ -85,14 +97,20 @@ func (i *InvocationStepUpdater) NotifyNewTask(task *testrunner.Build) {
 
 // MarkCompleted closes the invocation step.
 func (i *InvocationStepUpdater) MarkCompleted() {
-	i.close()
+	i.close(bbpb.Status_SUCCESS)
 }
 
 const (
 	// Include a leading newline to separate from the step name.
-	latestAttemptTemplate    = "*    [latest attempt](%s)"
-	previousAttemptsTemplate = "*    previous failed attempts: %s"
+	latestAttemptTemplate     = "*    [latest attempt](%s)"
+	previousAttemptsTemplate  = "*    previous failed attempts: %s"
+	ExceededExecutionTimeText = "*    SUITE EXECUTION TIME LIMIT EXCEEDED"
 )
+
+func (i *InvocationStepUpdater) AddCancelledSummary() {
+	i.step.SummaryMarkdown = ExceededExecutionTimeText + "\n" + i.step.SummaryMarkdown
+	i.close(bbpb.Status_FAILURE)
+}
 
 func (i *InvocationStepUpdater) summary() string {
 	ts := i.tasks
@@ -111,9 +129,9 @@ func (i *InvocationStepUpdater) summary() string {
 	return strings.Join(s, "\n")
 }
 
-func (i *InvocationStepUpdater) close() {
+func (i *InvocationStepUpdater) close(status bbpb.Status) {
 	i.closed = true
-	closeStep(i.step)
+	closeStep(i.step, status)
 }
 
 func appendNewStep(build *bbpb.Build, name string) *bbpb.Step {
@@ -126,7 +144,7 @@ func appendNewStep(build *bbpb.Build, name string) *bbpb.Step {
 	return step
 }
 
-func closeStep(s *bbpb.Step) {
+func closeStep(s *bbpb.Step, status bbpb.Status) {
 	s.EndTime = timestamppb.New(time.Now())
-	s.Status = bbpb.Status_SUCCESS
+	s.Status = status
 }

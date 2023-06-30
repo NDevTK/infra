@@ -46,6 +46,11 @@ func newFakeSwarming() *fakeSwarming {
 	}
 }
 
+// CancelTask implements swarmingClient interface.
+func (f *fakeSwarming) CancelTask(_ context.Context, taskID string) error {
+	return nil
+}
+
 // BotExists implements swarmingClient interface.
 func (f *fakeSwarming) BotExists(_ context.Context, dims []*swarming_api.SwarmingRpcsStringPair) (bool, error) {
 	pool := ""

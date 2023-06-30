@@ -71,7 +71,8 @@ type RequestTaskSet struct {
 	step            *build.RequestStepUpdater
 	invocationSteps map[types.InvocationID]*build.InvocationStepUpdater
 
-	launched bool
+	launched                   bool
+	SuiteLimitExceptionGranted bool
 }
 
 // TaskSetConfig is a wrapper for the parameters common to the testTaskSets.
@@ -235,41 +236,6 @@ func (r *RequestTaskSet) getInvocationStep(iid types.InvocationID) *build.Invoca
 	return s
 }
 
-// updateTestExecutionTracking calculates the amount of time it's been since
-// this task was last seen. It then increase the global value tracking test
-// execution and returns the updated map with a new timestamp for the current iid.
-func updateTestExecutionTracking(ctx context.Context, iid types.InvocationID, lastSeen time.Time, taskSetName string, request *RequestTaskSet, completed bool, logChan chan trackingMetric) error {
-
-	// Mark the current time for calculation of the duration since last seen.
-	currentlySeenAt := time.Now()
-	lastSeenRuntimePerTask[taskSetName].lastSeenMap[iid] = currentlySeenAt
-
-	// Calculate the duration of time it has been since the last time we've seen
-	// this iid running.
-	delta := lastSeenRuntimePerTask[taskSetName].lastSeenMap[iid].Sub(lastSeen)
-
-	// Increase the total test execution time for the suite.
-	lastSeenRuntimePerTask[taskSetName].totalSuiteTrackingTime += delta
-
-	// Add update to the log.
-	logChan <- trackingMetric{
-		suiteName:       taskSetName,
-		taskName:        string(iid),
-		lastSeen:        lastSeen,
-		currentlySeenAt: currentlySeenAt,
-		delta:           delta,
-		completed:       completed,
-	}
-
-	// Check if we've exceeded the maximum time allowed for test execution.
-	// TODO(b/254114334): Introduce this once we find an agreed upon value for the limit.
-	// if lastSeenRuntimePerTask[taskSetName].totalSuiteTrackingTime.Seconds() > SuiteTestExecutionMaximumSeconds {
-	// 	return fmt.Errorf("TestExecutionLimit: Maximum suite execution runtime exceeded.")
-	// }
-
-	return nil
-}
-
 // CheckTasksAndRetry checks the status of currently running tasks for this
 // request and retries failed tasks when allowed.
 //
@@ -369,7 +335,7 @@ func (r *RequestTaskSet) CheckTasksAndRetry(ctx context.Context, c trservice.Cli
 // Finalize must be called exactly once to clean up state.
 // It is an error to call any methods except Response() on a Close()ed instance.
 func (r *RequestTaskSet) Close() {
-	r.step.Close()
+	r.step.Close(bbpb.Status_SUCCESS, "")
 }
 
 // Response returns the current response for this request.

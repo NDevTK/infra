@@ -272,12 +272,22 @@ func (r *runner) checkTasksAndRetry(ctx context.Context, c trservice.Client, log
 			}
 		}
 
-		c, err := ts.CheckTasksAndRetry(ctx, c, t, logChan)
+		taskSetStatus, err := ts.CheckTasksAndRetry(ctx, c, t, logChan)
 		if err != nil {
-			return false, errors.Annotate(err, "check tasks and retry for %s", t).Err()
+			// If the suite overran its execution limit then cancel its child
+			// test_runner builds.
+			if errors.Is(err, suiteLimitError) {
+				cancelErr := cancelExceededTests(ctx, c, t, ts)
+				if cancelErr != nil {
+					return false, cancelErr
+				}
+				taskSetStatus = true
+			} else {
+				return false, errors.Annotate(err, "check tasks and retry for %s", t).Err()
+			}
 		}
-		lastSeenRuntimePerTask[t].allDone = c
-		allDone = allDone && c
+		lastSeenRuntimePerTask[t].allDone = taskSetStatus
+		allDone = allDone && taskSetStatus
 	}
 	return allDone, nil
 }

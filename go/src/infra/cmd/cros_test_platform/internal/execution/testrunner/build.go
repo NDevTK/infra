@@ -80,7 +80,7 @@ type Build struct {
 	result         *skylab_test_runner.Result
 	lifeCycle      test_platform.TaskState_LifeCycle
 	swarmingTaskID string
-	taskReference  trservice.TaskReference
+	TaskReference  trservice.TaskReference
 	url            string
 }
 
@@ -101,7 +101,7 @@ func NewBuild(ctx context.Context, c trservice.Client, argsGenerator ArgsGenerat
 		return nil, errors.Annotate(err, "new task for %s", t.name()).Err()
 	}
 	t.args = args
-	t.taskReference = ref
+	t.TaskReference = ref
 	t.lifeCycle = test_platform.TaskState_LIFE_CYCLE_PENDING
 	t.url = c.URL(ref)
 	logging.Infof(ctx, "Launched attempt for %s as task %s", t.name(), t.url)
@@ -187,7 +187,7 @@ func (b *Build) verdict() test_platform.TaskState_Verdict {
 // Refresh fetches and updates the state of the given build from the test_runner
 // service.
 func (b *Build) Refresh(ctx context.Context, c trservice.Client) error {
-	resp, err := c.FetchResults(ctx, b.taskReference)
+	resp, err := c.FetchResults(ctx, b.TaskReference)
 
 	// If BuildBucketTransientFailure is true, this will fall through to below and
 	// be considered as an "Incomplete" build.
@@ -195,7 +195,7 @@ func (b *Build) Refresh(ctx context.Context, c trservice.Client) error {
 		return errors.Annotate(err, "refresh task").Err()
 	}
 
-	b.swarmingTaskID = c.SwarmingTaskID(b.taskReference)
+	b.swarmingTaskID = c.SwarmingTaskID(b.TaskReference)
 	b.lifeCycle = resp.LifeCycle
 
 	// The build is still running.

@@ -20,6 +20,8 @@ import (
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/common/retry/transient"
 	"google.golang.org/api/googleapi"
+
+	option "google.golang.org/api/option"
 )
 
 // SkylabPool is the swarming pool for all skylab bots.
@@ -40,7 +42,7 @@ func (l *ListedHost) String() string {
 	return l.Hostname
 }
 
-// NewClient creates a new Client.
+// [DEPRECATED] NewClient creates a new Client.
 func NewClient(h *http.Client, server string) (*Client, error) {
 	service, err := newSwarmingService(h, server)
 	if err != nil {
@@ -53,10 +55,34 @@ func NewClient(h *http.Client, server string) (*Client, error) {
 	return c, nil
 }
 
+// NewClientUpdated creates a new Client.
+func NewClientUpdated(ctx context.Context, h *http.Client, server string) (*Client, error) {
+	service, err := newSwarmingServiceUpdated(ctx, h, server)
+	if err != nil {
+		return nil, err
+	}
+	c := &Client{
+		SwarmingService: service,
+		server:          server,
+	}
+	return c, nil
+}
+
 const swarmingAPISuffix = "_ah/api/swarming/v1/"
 
+// [DEPRECATED]
 func newSwarmingService(h *http.Client, server string) (*swarming_api.Service, error) {
 	s, err := swarming_api.New(h)
+	if err != nil {
+		return nil, errors.Annotate(err, "create swarming client").Err()
+	}
+
+	s.BasePath = server + swarmingAPISuffix
+	return s, nil
+}
+
+func newSwarmingServiceUpdated(ctx context.Context, h *http.Client, server string) (*swarming_api.Service, error) {
+	s, err := swarming_api.NewService(ctx, option.WithHTTPClient(h))
 	if err != nil {
 		return nil, errors.Annotate(err, "create swarming client").Err()
 	}

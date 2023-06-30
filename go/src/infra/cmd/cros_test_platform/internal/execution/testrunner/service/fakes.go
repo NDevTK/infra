@@ -33,6 +33,16 @@ func (c StubClient) ValidateArgs(context.Context, *request.Args) (bool, []types.
 	return true, nil, nil
 }
 
+// CancelTasks implements Client interface.
+func (c StubClient) FetchSwarmingID(ctx context.Context, bbID int64) (string, error) {
+	return "", nil
+}
+
+// CancelTasks implements Client interface.
+func (c StubClient) CancelTasks(ctx context.Context, taskReferences []TaskReference, reason string) error {
+	return nil
+}
+
 // LaunchTask implements Client interface.
 func (c StubClient) LaunchTask(context.Context, *request.Args) (TaskReference, error) {
 	return TaskReference(unguessableString()), nil
@@ -240,6 +250,8 @@ type CallCountingClientWrapper struct {
 	CallCounts struct {
 		ValidateArgs          int
 		LaunchTask            int
+		FetchSwarmingID       int
+		CancelTasks           int
 		FetchResults          int
 		SwarmingTaskID        int
 		URL                   int
@@ -254,6 +266,12 @@ var _ Client = &CallCountingClientWrapper{Client: StubClient{}}
 func (c *CallCountingClientWrapper) ValidateArgs(ctx context.Context, args *request.Args) (bool, []types.TaskDimKeyVal, error) {
 	c.CallCounts.ValidateArgs++
 	return c.Client.ValidateArgs(ctx, args)
+}
+
+// LaunchTask implements Client interface.
+func (c *CallCountingClientWrapper) CancelTasks(ctx context.Context, taskReferences []TaskReference, reason string) error {
+	c.CallCounts.CancelTasks++
+	return c.Client.CancelTasks(ctx, taskReferences, reason)
 }
 
 // LaunchTask implements Client interface.
@@ -325,6 +343,10 @@ func (c *ArgsCollectingClientWrapper) ValidateArgs(ctx context.Context, args *re
 		Args: args,
 	})
 	return c.Client.ValidateArgs(ctx, args)
+}
+
+func (c *ArgsCollectingClientWrapper) CancelTasks(ctx context.Context, taskReferences []TaskReference, reason string) error {
+	return c.Client.CancelTasks(ctx, taskReferences, reason)
 }
 
 // LaunchTask implements Client interface.
