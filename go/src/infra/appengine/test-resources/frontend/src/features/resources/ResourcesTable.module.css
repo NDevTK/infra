@@ -1,0 +1,27 @@
+/* Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+*/
+
+.headerRow {
+    color:black;
+}
+
+.headerRow .filterButtonText {
+    border:none;
+    padding:0px;
+    color:black;
+    text-transform:none;
+}
+
+.headerRow .filterButtonText .icon {
+    font-size: 15px;
+}
+
+.headerRow .filterButtonText .iconNoShow {
+    font-size: 0px;
+}
+
+.tableCellNoData {
+    height: 200px;
+}

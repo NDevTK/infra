@@ -22,6 +22,7 @@ interface TestMetricsData {
 }
 
 export enum MetricType {
+  UNKNOWN_METRIC = 'UNKOWN_METRIC',
   NUM_RUNS = 'NUM_RUNS',
   NUM_FAILURES = 'NUM_FAILURES',
   AVG_RUNTIME = 'AVG_RUNTIME',
@@ -43,7 +44,7 @@ export enum Period {
 
 export interface FetchTestMetricsResponse {
   tests: TestDateMetricData[],
-  last_page: boolean,
+  lastPage: boolean,
 }
 
 export enum SortType {
@@ -64,9 +65,9 @@ export interface FetchTestMetricsRequest {
   component: string,
   period: Period,
   dates: string[],
-  metrics: number[],
+  metrics: MetricType[],
   filter?: string,
-  page: number,
+  page_offset: number,
   page_size: number,
   sort: SortBy,
 }
@@ -96,7 +97,7 @@ export const prpcClient = {
 };
 
 export async function fetchTestMetrics(
-    fetchTestMetricsRequest,
+    fetchTestMetricsRequest: FetchTestMetricsRequest,
 ): Promise<FetchTestMetricsResponse> {
   const resp: FetchTestMetricsResponse = await prpcClient.call(
       'test_resources.Stats',

@@ -4,21 +4,8 @@
 
 import { fireEvent, render } from '@testing-library/react';
 import { MetricType } from '../../api/resources';
-import { Api, Test } from '../context/MetricsContext';
+import { Test } from '../context/MetricsContext';
 import ResourcesRow, { ResourcesRowProps, displayMetrics } from './ResourcesRow';
-
-// Mock api. We will just test if they are called.
-const mockApi : Api = {
-  nextPage: () => {
-    // do nothing.
-  },
-  prevPage: () => {
-    // do nothing.
-  },
-  firstPage: () => {
-    // do nothing.
-  },
-};
 
 const mockMetrics: Map<MetricType, number> = new Map<MetricType, number>(
     [
@@ -52,7 +39,6 @@ const test: Test = {
 const resoucresRowProps: ResourcesRowProps = {
   test: test,
   lastPage: false,
-  api: mockApi,
 };
 
 describe('when rendering the ResourcesRow', () => {

@@ -5,32 +5,61 @@
 import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { ReactElement } from 'react';
-import { MetricsContext, Api, Test, MetricsContextValue } from '../features/context/MetricsContext';
+import { MetricsContext, Api, Test, MetricsContextValue, Params } from '../features/context/MetricsContext';
+import { Period, SortType } from '../api/resources';
 
 export interface OptionalContext {
   tests?: Test[],
-  page?: number,
   lastPage?: boolean,
   api?: OptionalApi,
+  params?: Params,
 }
 
 export interface OptionalApi {
-  // Page navigation
-  nextPage?: () => void,
-  prevPage?: () => void,
-  firstPage?: () => void,
+    // Page navigation
+    setPage: (page: number) => void,
+    setRowsPerPage: (rowsPerPage: number) => void,
+
+    // Filter related Apis
+    setFilter: (filter: string) => void,
+    setDate: (date: string) => void,
+    setPeriod: (period: Period) => void,
+    setSort: (sort: SortType) => void,
+    setAscending: (ascending: boolean) => void,
 }
 
-const defaultApi : Api = {
-  nextPage: () => {
-    // do nothing.
+const defaultApi: Api = {
+  setPage: () => {
+    // Do nothing
   },
-  prevPage: () => {
-    // do nothing.
+  setRowsPerPage: () => {
+    // Do nothing
   },
-  firstPage: () => {
-    // do nothing.
+  setFilter: () => {
+    // Do nothing
   },
+  setDate: () => {
+    // Do nothing
+  },
+  setPeriod: () => {
+    // Do nothing
+  },
+  setSort: () => {
+    // Do nothing
+  },
+  setAscending: () => {
+    // Do nothing
+  },
+};
+
+const defaultParams: Params = {
+  page: 0,
+  rowsPerPage: 25,
+  filter: '',
+  date: '2023-05-30',
+  period: Period.DAY,
+  sort: SortType.SORT_NAME,
+  ascending: true,
 };
 
 export function renderWithContext(
@@ -39,13 +68,25 @@ export function renderWithContext(
 ) {
   const ctx : MetricsContextValue = {
     tests: opts.tests || [],
-    page: opts.page || 0,
     lastPage: opts.lastPage || true,
     api: {
       // Page navigation
-      nextPage: opts.api?.nextPage || defaultApi.nextPage,
-      prevPage: opts.api?.prevPage || defaultApi.prevPage,
-      firstPage: opts.api?.firstPage || defaultApi.firstPage,
+      setPage: opts.api?.setPage || defaultApi.setPage,
+      setRowsPerPage: opts.api?.setRowsPerPage || defaultApi.setRowsPerPage,
+      setFilter: opts.api?.setFilter || defaultApi.setFilter,
+      setDate: opts.api?.setDate || defaultApi.setDate,
+      setPeriod: opts.api?.setPeriod || defaultApi.setPeriod,
+      setSort: opts.api?.setSort || defaultApi.setSort,
+      setAscending: opts.api?.setAscending || defaultApi.setAscending,
+    },
+    params: {
+      page: opts.params?.page || defaultParams.page,
+      rowsPerPage: opts.params?.rowsPerPage || defaultParams.rowsPerPage,
+      filter: opts.params?.filter || defaultParams.filter,
+      date: opts.params?.date || defaultParams.date,
+      period: opts.params?.period || defaultParams.period,
+      sort: opts.params?.sort || defaultParams.sort,
+      ascending: opts.params?.ascending || defaultParams.ascending,
     },
   };
   render(

@@ -6,14 +6,13 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { Button, TableCell, TableRow } from '@mui/material';
 import { formatNumber, formatTime } from '../../utils/formatUtils';
 import { MetricType } from '../../api/resources';
-import { Api, Test } from '../context/MetricsContext';
+import { Test } from '../context/MetricsContext';
 import styles from './ResourcesRow.module.css';
 import VariantRow from './VariantRow';
 
 export interface ResourcesRowProps {
   test: Test,
   lastPage: boolean,
-  api: Api,
 }
 
 // Display the metrics in TableCell Format

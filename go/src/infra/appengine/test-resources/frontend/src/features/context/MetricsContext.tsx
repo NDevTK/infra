@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useEffect, useState } from 'react';
 import { MetricType, Period, SortType, TestMetricsArray, fetchTestMetrics } from '../../api/resources';
+import { formatDate } from '../../utils/formatUtils';
 
 type MetricsContextProviderProps = {
   children: React.ReactNode
@@ -25,33 +26,55 @@ export interface TestVariant {
 
 export interface MetricsContextValue {
   tests: Test[],
-  page: number,
   lastPage: boolean,
-  api: Api
+  api: Api,
+  params: Params,
+}
+
+export interface Params {
+  page: number,
+  rowsPerPage: number,
+  filter: string,
+  date: string,
+  period: Period,
+  sort: SortType,
+  ascending: boolean,
 }
 
 export interface Api {
   // Page navigation
-  nextPage: () => void,
-  prevPage: () => void,
-  firstPage: () => void,
+  setPage: (page: number) => void,
+  setRowsPerPage: (rowsPerPage: number) => void,
+
+  // Test selection-related APIs
+  setFilter: (filter: string) => void,
+  setDate: (date: string) => void,
+  setPeriod: (period: Period) => void,
+  setSort: (sort: SortType) => void,
+  setAscending: (ascending: boolean) => void,
 }
 
 export const MetricsContext = createContext<MetricsContextValue>(
     {
       tests: [],
       lastPage: true,
-      page: 0,
       api: {
-        nextPage: () => {
-          // Do nothing
-        },
-        prevPage: () => {
-          // Do nothing
-        },
-        firstPage: () => {
-          // Do nothing
-        },
+        setPage: () => {/**/},
+        setRowsPerPage: () => {/**/},
+        setFilter: () => {/**/},
+        setDate: () => {/**/},
+        setPeriod: () => {/**/},
+        setSort: () => {/**/},
+        setAscending: () => {/**/},
+      },
+      params: {
+        page: 0,
+        rowsPerPage: 0,
+        filter: '',
+        date: '',
+        period: Period.DAY,
+        sort: SortType.SORT_NAME,
+        ascending: true,
       },
     },
 );
@@ -118,20 +141,19 @@ export function createMetricsMap(metrics: Map<string, TestMetricsArray>): Map<Me
 export const MetricsContextProvider = ({ children } : MetricsContextProviderProps) => {
   const [tests, setTests] = useState<Test[]>([]);
   const [lastPage, setLastPage] = useState(false);
-  let [page, setPage] = useState(0);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
+  const [filter, setFilter] = useState('');
+  const [date, setDate] = useState(formatDate(new Date()));
+  const [period, setPeriod] = useState(Period.DAY);
+  const [sort, setSort] = useState(SortType.SORT_NAME);
+  const [ascending, setAscending] = useState(true);
 
-  useEffect(() => {
-    // Initialize MetricContextValue on mount
-    fetchTestMetricsHelper();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    // TODO: Figure out how to fix the lint error
-  }, []);
-
-  function fetchTestMetricsHelper() {
+  const fetchTestMetricsHelper = useCallback(() => {
     return fetchTestMetrics({
       'component': 'Blink',
-      'period': Period.DAY,
-      'dates': ['2023-05-30'],
+      'period': Number(period) as Period,
+      'dates': [date],
       'metrics': [
         MetricType.NUM_RUNS,
         MetricType.AVG_RUNTIME,
@@ -139,61 +161,58 @@ export const MetricsContextProvider = ({ children } : MetricsContextProviderProp
         MetricType.NUM_FAILURES,
         // MetricType.AVG_CORES,
       ],
-      'page_offset': page * 25,
-      'page_size': 25,
-      'sort': { metric: SortType.SORT_NAME, ascending: true },
+      'filter': filter,
+      'page_offset': page * rowsPerPage,
+      'page_size': rowsPerPage,
+      'sort': { metric: Number(sort) as SortType, ascending: ascending },
     }).then((resp) => {
       const tests: Test[] = [];
       // Populate Test
-      for (const testDateMetricData of resp.tests) {
-        const metrics = testDateMetricData.metrics;
-        const testVariants: TestVariant[] = [];
-        // Construct variants
-        for (const testVariant of testDateMetricData.variants) {
-          testVariants.push({
-            suite: testVariant.suite,
-            builder: testVariant.builder,
-            metrics: createMetricsMap(testVariant.metrics),
-          });
+      if (resp.tests !== undefined) {
+        for (const testDateMetricData of resp.tests) {
+          const metrics = testDateMetricData.metrics;
+          const testVariants: TestVariant[] = [];
+          // Construct variants
+          for (const testVariant of testDateMetricData.variants) {
+            testVariants.push({
+              suite: testVariant.suite,
+              builder: testVariant.builder,
+              metrics: createMetricsMap(testVariant.metrics),
+            });
+          }
+          const newTest: Test = {
+            testId: testDateMetricData.testId,
+            testName: testDateMetricData.testName,
+            fileName: testDateMetricData.fileName,
+            metrics: createMetricsMap(metrics),
+            variants: testVariants,
+          };
+          tests.push(newTest);
         }
-        const newTest: Test = {
-          testId: testDateMetricData.testId,
-          testName: testDateMetricData.testName,
-          fileName: testDateMetricData.fileName,
-          metrics: createMetricsMap(metrics),
-          variants: testVariants,
-        };
-        tests.push(newTest);
       }
       setTests(tests);
-      setLastPage(resp.last_page);
+      setLastPage(resp.lastPage);
     }).catch((error) => {
       throw error;
     });
-  }
+  }, [page, rowsPerPage, filter, date, period, sort, ascending]);
+
+  useEffect(() => {
+    fetchTestMetricsHelper();
+  }, [fetchTestMetricsHelper]);
 
   const api: Api = {
-    nextPage: () => {
-      page++;
-      setPage(page);
-      fetchTestMetricsHelper();
-    },
-    prevPage: () => {
-      if (page > 0) {
-        page--;
-        setPage(page);
-        fetchTestMetricsHelper();
-      }
-    },
-    firstPage: () => {
-      page = 0;
-      setPage(0);
-      fetchTestMetricsHelper();
-    },
+    setPage,
+    setRowsPerPage,
+    setFilter,
+    setDate,
+    setPeriod,
+    setSort,
+    setAscending,
   };
 
   return (
-    <MetricsContext.Provider value={{ tests, page, lastPage, api }}>
+    <MetricsContext.Provider value={{ tests, lastPage, api, params: { page, rowsPerPage, filter, date, period, sort, ascending } }}>
       { children }
     </MetricsContext.Provider>
   );

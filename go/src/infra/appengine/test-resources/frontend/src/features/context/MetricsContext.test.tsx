@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 */
 
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { useContext } from 'react';
 import { act } from 'react-dom/test-utils';
+import { Button } from '@mui/material';
 import * as Resources from '../../api/resources';
 import { MetricsContext, MetricsContextProvider } from './MetricsContext';
 
 const TestingComponent = () => {
-  const { tests, lastPage } = useContext(MetricsContext);
+  const { api, params, tests, lastPage } = useContext(MetricsContext);
   return (
     <>
       <div>{'id-' + tests[0]?.testId}</div>
@@ -29,6 +30,13 @@ const TestingComponent = () => {
       <div>{'variant-avgRuntime-' + tests[0]?.variants[0].metrics.get(Resources.MetricType.AVG_RUNTIME)}</div>
       <div>{'variant-totalRuntime-' + tests[0]?.variants[0].metrics.get(Resources.MetricType.TOTAL_RUNTIME)}</div>
       <div>{'variant-avgCores-' + tests[0]?.variants[0].metrics.get(Resources.MetricType.AVG_CORES)}</div>
+      <Button data-testid='buttonPage' onClick={() => api.setPage(20)}>{'paramsPage-' + params.page}</Button>
+      <Button data-testid='buttonRowsPerPage' onClick={() => api.setRowsPerPage(20)}>{'paramsRowsPerPage-' + params.rowsPerPage}</Button>
+      <Button data-testid='buttonFilter' onClick={() => api.setFilter('newFilt')}>{'paramsFilt-' + params.filter}</Button>
+      <Button data-testid='buttonDate' onClick={() => api.setDate('newDate')}>{'paramsDate-' + params.date}</Button>
+      <Button data-testid='buttonPeriod' onClick={() => api.setPeriod(Resources.Period.WEEK)}>{'paramsPeriod-' + params.period}</Button>
+      <Button data-testid='buttonSort' onClick={() => api.setSort(Resources.SortType.SORT_NUM_RUNS)}>{'paramsSort-' + params.sort}</Button>
+      <Button data-testid='buttonAscending' onClick={() => api.setAscending(false)}>{'paramsAscending-' + params.ascending}</Button>
     </>
   );
 };
@@ -83,7 +91,7 @@ describe('<MetricsContext />', () => {
           ],
         },
       ],
-      last_page: true,
+      lastPage: true,
     });
     await act(async () => {
       render(
@@ -108,5 +116,47 @@ describe('<MetricsContext />', () => {
     expect(screen.getByText('variant-avgRuntime-4')).toBeInTheDocument();
     expect(screen.getByText('variant-totalRuntime-5')).toBeInTheDocument();
     expect(screen.getByText('variant-avgCores-6')).toBeInTheDocument();
+  });
+  it('update params accordingly when api is called', async () => {
+    jest.spyOn(Resources, 'fetchTestMetrics').mockResolvedValue({
+      tests: [
+        {
+          testId: '12',
+          testName: 'A',
+          fileName: 'A',
+          metrics: mockMetricsWithData,
+          variants: [
+            {
+              suite: 'suite',
+              builder: 'builder',
+              metrics: mockMetricsWithData,
+            },
+          ],
+        },
+      ],
+      lastPage: true,
+    });
+    await act(async () => {
+      render(
+          <MetricsContextProvider>
+            <TestingComponent/>
+          </MetricsContextProvider>,
+      );
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('buttonPage'));
+      fireEvent.click(screen.getByTestId('buttonRowsPerPage'));
+      fireEvent.click(screen.getByTestId('buttonFilter'));
+      fireEvent.click(screen.getByTestId('buttonDate'));
+      fireEvent.click(screen.getByTestId('buttonPeriod'));
+      fireEvent.click(screen.getByTestId('buttonSort'));
+      fireEvent.click(screen.getByTestId('buttonAscending'));
+    });
+    expect(screen.getByText('paramsPage-20')).toBeInTheDocument();
+    expect(screen.getByText('paramsRowsPerPage-20')).toBeInTheDocument();
+    expect(screen.getByText('paramsFilt-newFilt')).toBeInTheDocument();
+    expect(screen.getByText('paramsPeriod-1')).toBeInTheDocument();
+    expect(screen.getByText('paramsSort-1')).toBeInTheDocument();
+    expect(screen.getByText('paramsAscending-false')).toBeInTheDocument();
   });
 });

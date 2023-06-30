@@ -4,11 +4,15 @@
 
 import ResourcesTable from '../../features/resources/ResourcesTable';
 import { MetricsContextProvider } from '../../features/context/MetricsContext';
+import ResourcesToolbar from '../../features/resources/ResourcesToolbar';
+import ResourcesSearchParams from '../../features/resources/ResourcesSearchParams';
 
 function ResourcesPage() {
   return (
     <MetricsContextProvider>
+      <ResourcesToolbar/>
       <ResourcesTable/>
+      <ResourcesSearchParams/>
     </MetricsContextProvider>
   );
 }

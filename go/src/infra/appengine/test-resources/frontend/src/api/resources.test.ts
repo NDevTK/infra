@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { FetchTestMetricsResponse, MetricType, SortType, TestMetricsArray, fetchTestMetrics, prpcClient } from './resources';
+import { FetchTestMetricsResponse, MetricType, Period, SortType, TestMetricsArray, fetchTestMetrics, prpcClient } from './resources';
 
 const mockMetricsWithData: Map<string, TestMetricsArray> =
   new Map<string, TestMetricsArray>(
@@ -54,7 +54,7 @@ describe('fetchTestMetrics', () => {
           ],
         },
       ],
-      last_page: false,
+      lastPage: false,
     });
     const expected: FetchTestMetricsResponse = {
       tests: [
@@ -72,12 +72,12 @@ describe('fetchTestMetrics', () => {
           ],
         },
       ],
-      last_page: false,
+      lastPage: false,
     };
     const resp = await fetchTestMetrics(
         {
           'component': 'component',
-          'period': 'period',
+          'period': 0 as Period,
           'dates': ['date'],
           'metrics': [
             MetricType.NUM_RUNS,
@@ -88,8 +88,8 @@ describe('fetchTestMetrics', () => {
             // MetricType.AVG_CORES,
           ],
           'filter': 'filter',
-          'page_offset': 'page',
-          'page_size': 'rowsPerPage',
+          'page_offset': 0,
+          'page_size': 0,
           'sort': { metric: SortType.SORT_NAME, ascending: true },
         },
     );
@@ -100,12 +100,12 @@ describe('fetchTestMetrics', () => {
     expect(mockCall.mock.calls[0][1]).toBe('FetchTestMetrics');
     expect(mockCall.mock.calls[0][2]).toEqual({
       component: 'component',
-      period: 'period',
+      period: Period.DAY,
       dates: ['date'],
       metrics: ['NUM_RUNS', 'AVG_RUNTIME', 'TOTAL_RUNTIME', 'NUM_FAILURES'],
       filter: 'filter',
-      page_offset: 'page',
-      page_size: 'rowsPerPage',
+      page_offset: 0,
+      page_size: 0,
       sort: { metric: 0, ascending: true },
     });
     expect(resp).toEqual(expected);
