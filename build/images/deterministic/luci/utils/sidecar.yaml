@@ -1,0 +1,12 @@
+name: luci/utils/sidecar
+extends: ../../../base.yaml
+
+contextdir: ../../../../../go/src/go.chromium.org/luci/server/cmd/sidecar/docker
+deterministic: true
+
+sources:
+  - ../../../../../go/src/go.chromium.org/luci/server/cmd/sidecar
+
+build:
+  - go_binary: go.chromium.org/luci/server/cmd/sidecar
+    dest: ${contextdir}/bin/sidecar
