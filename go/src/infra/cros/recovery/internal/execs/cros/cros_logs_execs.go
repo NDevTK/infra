@@ -254,15 +254,16 @@ func confirmFileNotExistsExec(ctx context.Context, info *execs.ExecInfo) error {
 func verboseShillLogsExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	enabled := argsMap.AsBool(ctx, "is_enabled", true)
+	runner := info.DefaultRunner()
 
 	var cmd string
 	if enabled {
 		cmd = "ff_debug cellular+modem+device+dbus+manager --level -3"
 	} else {
 		cmd = "ff_debug reset --level 0"
+
 	}
 
-	runner := info.DefaultRunner()
 	if _, err := runner(ctx, info.GetExecTimeout(), cmd); err != nil {
 		return errors.Annotate(err, "verbose network logs: set shill logging level").Err()
 	}
@@ -273,6 +274,7 @@ func verboseShillLogsExec(ctx context.Context, info *execs.ExecInfo) error {
 func verboseModemManagerLogsExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	enabled := argsMap.AsBool(ctx, "is_enabled", true)
+	runner := info.DefaultRunner()
 
 	var cmd string
 	if enabled {
@@ -281,7 +283,6 @@ func verboseModemManagerLogsExec(ctx context.Context, info *execs.ExecInfo) erro
 		cmd = "modem set-logging info"
 	}
 
-	runner := info.DefaultRunner()
 	if _, err := runner(ctx, info.GetExecTimeout(), cmd); err != nil {
 		return errors.Annotate(err, "verbose network logs: set shill logging level").Err()
 	}
