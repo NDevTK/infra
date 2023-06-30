@@ -209,6 +209,15 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 // goTestArgs returns go command arguments that test the specified import path patterns.
 func (b *buildSpec) goTestArgs(patterns ...string) []string {
 	args := []string{"test", "-json"}
+	if b.inputs.CompileOnly {
+		hasGoIssue15513Fix := b.inputs.GoBranch != "release-branch.go1.20" && b.inputs.GoBranch != "release-branch.go1.19"
+		if !hasGoIssue15513Fix { // TODO: Delete after 1.20 drops off.
+			// In Go 1.20 and older, go test -c did not support multiple packages,
+			// so use the next best thing of -run that matches no tests.
+			return append(append(args, "-run=^$"), patterns...)
+		}
+		return append(append(args, "-c", "-o", os.DevNull), patterns...)
+	}
 	if !b.inputs.LongTest {
 		args = append(args, "-short")
 	}
@@ -229,6 +238,9 @@ func (b *buildSpec) goTestArgs(patterns ...string) []string {
 // using the provided build specification.
 func (b *buildSpec) distTestArgs() []string {
 	args := []string{"tool", "dist", "test", "-json"}
+	if b.inputs.CompileOnly {
+		return append(args, "-compile-only")
+	}
 	if b.inputs.LongTest {
 		// dist test doesn't have a flag to control longtest mode,
 		// so this is handled in buildSpec.setEnv instead of here.
@@ -252,6 +264,9 @@ func (b *buildSpec) distTestArgs() []string {
 // TODO(go.dev/issue/59990): Delete when it becomes unused.
 func (b *buildSpec) distTestNoJSONArgs(run string) []string {
 	args := []string{"tool", "dist", "test"}
+	if b.inputs.CompileOnly {
+		return append(args, "-compile-only", "-run="+run)
+	}
 	if b.inputs.LongTest {
 		// dist test doesn't have a flag to control longtest mode,
 		// so this is handled in buildSpec.setEnv instead of here.
