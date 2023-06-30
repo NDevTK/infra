@@ -16,6 +16,24 @@
       "message": "if possible please split proto changes from other changes.",
       "revId": "947d19951869fb7bcf999706e06466be6d50bf80",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d140cdeb_615ec1de",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2023-06-30T20:06:32Z",
+      "side": 1,
+      "message": "Thanks! Separated out proto changes PTAL WYGAC",
+      "parentUuid": "cbb1876b_69e062c2",
+      "revId": "947d19951869fb7bcf999706e06466be6d50bf80",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
