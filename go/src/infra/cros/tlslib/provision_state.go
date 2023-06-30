@@ -161,7 +161,7 @@ func (p *provisionState) swapStatefulPartition(ctx context.Context) error {
 	}
 	pi := getPartitionInfo(r)
 
-	err = runCmd(p.c, fmt.Sprintf("/bin/dd if=%s/fs of=%s bs=1M conv=sync", tmpMnt, pi.stateful))
+	err = runCmd(p.c, fmt.Sprintf("/bin/dd if=%s/fs of=%s bs=1M conv=fsync", tmpMnt, pi.stateful))
 	if err != nil {
 		return fmt.Errorf("swapStatefulPartition: failed to unmount powerwash filesystem, %s", err)
 	}
