@@ -374,6 +374,7 @@ func updateInventory(ctx context.Context, dut *tlw.Dut, args *RunArgs) (rErr err
 		log.Infof(ctx, "Update inventory %q: starting...", dut.Name)
 		// Update DUT info in inventory in any case. When fail and when it passed
 		if err := args.Access.UpdateDut(ctx, dut); err != nil {
+			log.Errorf(ctx, "Update inventory failed: %s", err.Error())
 			return errors.Annotate(err, "update inventory").Err()
 		}
 		log.Infof(ctx, "Update inventory %q: successful.", dut.Name)
