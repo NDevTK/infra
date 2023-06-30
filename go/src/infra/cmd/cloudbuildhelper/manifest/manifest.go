@@ -52,10 +52,10 @@ type Manifest struct {
 	// Dockerfile is a unix-style path to the image's Dockerfile, relative to this
 	// YAML file.
 	//
-	// Presence of this field indicates that the manifest describes how to build
-	// a docker image. If its missing, docker related subcommands won't work.
+	// If unset, but there exists `${contextdir}/Dockerfile`, it will be used
+	// instead (similarly to how Docker discovers Dockerfile).
 	//
-	// All images referenced in this Dockerfile are resolved into concrete digests
+	// All images referenced in a Dockerfile are resolved into concrete digests
 	// via an external file. See ImagePins field for more information.
 	Dockerfile string `yaml:"dockerfile,omitempty"`
 

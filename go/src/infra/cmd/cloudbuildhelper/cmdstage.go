@@ -6,6 +6,8 @@ package main
 
 import (
 	"context"
+	"io/fs"
+	"path/filepath"
 
 	"github.com/maruel/subcommands"
 
@@ -101,20 +103,34 @@ func (c *cmdStageRun) exec(ctx context.Context) error {
 // stage executes logic of 'stage' subcommand, calling the callback in the
 // end to handle the resulting fileset.
 func stage(ctx context.Context, m *manifest.Manifest, cb func(*fileset.Set) error) error {
+	// If the manifest had only `contextdir` field without `dockerfile` one, try
+	// to find the default Dockerfile (just like Docker itself does), but don't
+	// fail if it is missing (this is often the case for e.g GAE tarballs).
+	var dockerFilePath string
+	var dockerFileRequired bool
+	if m.Dockerfile != "" {
+		dockerFilePath = m.Dockerfile
+		dockerFileRequired = true
+	} else if m.ContextDir != "" {
+		dockerFilePath = filepath.Join(m.ContextDir, "Dockerfile")
+	}
+
 	// Load Dockerfile and resolve image tags there into digests using pins.yaml.
 	var dockerFileBody []byte
-	if m.Dockerfile != "" {
+	if dockerFilePath != "" {
 		var err error
-		dockerFileBody, err = dockerfile.LoadAndResolve(m.Dockerfile, m.ImagePins)
-		if pin := dockerfile.IsMissingPinErr(err); pin != nil {
-			logging.Errorf(ctx, "------------------------------------------------------------------------")
-			logging.Errorf(ctx, "Dockerfile refers to %q which is not pinned in %q", pin.ImageRef(), m.ImagePins)
-			logging.Errorf(ctx, "Add a pin there first by running:")
-			logging.Errorf(ctx, "  $ cloudbuildhelper pins-add %q %q", m.ImagePins, pin.ImageRef())
-			logging.Errorf(ctx, "------------------------------------------------------------------------")
-			return isCLIError.Apply(err)
-		}
-		if err != nil {
+		switch dockerFileBody, err = dockerfile.LoadAndResolve(dockerFilePath, m.ImagePins); {
+		case errors.Is(err, fs.ErrNotExist) && !dockerFileRequired:
+			dockerFilePath = "" // it is missing and it is OK
+		case err != nil:
+			if pin := dockerfile.IsMissingPinErr(err); pin != nil {
+				logging.Errorf(ctx, "------------------------------------------------------------------------")
+				logging.Errorf(ctx, "Dockerfile refers to %q which is not pinned in %q", pin.ImageRef(), m.ImagePins)
+				logging.Errorf(ctx, "Add a pin there first by running:")
+				logging.Errorf(ctx, "  $ cloudbuildhelper pins-add %q %q", m.ImagePins, pin.ImageRef())
+				logging.Errorf(ctx, "------------------------------------------------------------------------")
+				return isCLIError.Apply(err)
+			}
 			return errors.Annotate(err, "resolving Dockerfile").Err()
 		}
 	}
@@ -133,7 +149,7 @@ func stage(ctx context.Context, m *manifest.Manifest, cb func(*fileset.Set) erro
 	// Append resolved Dockerfile to outputs (perhaps overwriting an existing
 	// unresolved one). In tarballs produced by cloudbuildhelper the Dockerfile
 	// *always* lives in the root of the context directory.
-	if m.Dockerfile != "" {
+	if dockerFilePath != "" {
 		if err := out.AddFromMemory("Dockerfile", dockerFileBody, nil); err != nil {
 			return errors.Annotate(err, "failed to add Dockerfile to output").Err()
 		}
