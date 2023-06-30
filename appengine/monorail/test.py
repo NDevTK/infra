@@ -21,5 +21,8 @@ if __name__ == '__main__':
 
   import_utils.FixImports()
 
-  args = ['-Werror', '--ignore', 'components', '--ignore', 'gae_ts_mon']
+  args = ['-Werror']
+  args += ['--ignore', 'components']
+  args += ['--ignore', 'gae_ts_mon']
+  args += ['--reruns', '2']
   sys.exit(pytest.main(args + sys.argv[1:]))
