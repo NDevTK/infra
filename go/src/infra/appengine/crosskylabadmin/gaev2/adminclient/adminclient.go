@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,6 +38,7 @@ func newApplication() *cli.Application {
 			cmds.GetStableVersion,
 			cmds.SetStableVersion,
 			cmds.DeleteStableVersion,
+			cmds.PushBotsForAdminTasks,
 			// This section should contain only the UFS RPCs that are realistically needed
 			// to test CrOSSkylabAdmin functionality. If an RPC isn't needed or is no longer
 			// needed for this purpose, remove it.
