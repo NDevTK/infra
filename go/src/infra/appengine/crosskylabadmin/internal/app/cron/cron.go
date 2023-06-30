@@ -36,13 +36,13 @@ func InstallHandlers(r *router.Router, mwBase router.MiddlewareChain) {
 	r.GET("/internal/cron/import-service-config", mwCron, logAndSetHTTPErr(importServiceConfig))
 
 	// Generate repair jobs for needs_repair CrOS DUTs.
-	r.GET("/internal/cron/push-bots-for-admin-tasks", mwCron, logAndSetHTTPErr(pushBotsForAdminTasksHandler([]fleet.DutState{fleet.DutState_NeedsRepair})))
+	r.GET("/internal/cron/push-bots-for-admin-tasks", mwCron, logAndSetHTTPErr(pushBotsForAdminTasksHandler([]fleet.DutState{fleet.DutState_NeedsRepair}, fleet.PushBotsForAdminTasksRequest_DefaultSchedulingStrategy)))
 
 	// Generate repair jobs for repair_failed CrOS DUTs.
-	r.GET("/internal/cron/push-repair-failed-bots-for-admin-tasks-hourly", mwCron, logAndSetHTTPErr(pushBotsForAdminTasksHandler([]fleet.DutState{fleet.DutState_RepairFailed})))
+	r.GET("/internal/cron/push-repair-failed-bots-for-admin-tasks-hourly", mwCron, logAndSetHTTPErr(pushBotsForAdminTasksHandler([]fleet.DutState{fleet.DutState_RepairFailed}, fleet.PushBotsForAdminTasksRequest_DefaultSchedulingStrategy)))
 
 	// Generate repair jobs for needs_manual_repair CrOS DUTs.
-	r.GET("/internal/cron/push-repair-failed-bots-for-admin-tasks-daily", mwCron, logAndSetHTTPErr(pushBotsForAdminTasksHandler([]fleet.DutState{fleet.DutState_NeedsManualRepair})))
+	r.GET("/internal/cron/push-repair-failed-bots-for-admin-tasks-daily", mwCron, logAndSetHTTPErr(pushBotsForAdminTasksHandler([]fleet.DutState{fleet.DutState_NeedsManualRepair}, fleet.PushBotsForAdminTasksRequest_DefaultSchedulingStrategy)))
 
 	// for repair jobs of labstation.
 	r.GET("/internal/cron/push-repair-jobs-for-labstations", mwCron, logAndSetHTTPErr(pushRepairJobsForLabstationsCronHandler))
@@ -68,19 +68,27 @@ func importServiceConfig(c *router.Context) error {
 }
 
 // pushBotsForAdminTasksHandler high-order for pushBotsForAdminTasksCronHandler.
-func pushBotsForAdminTasksHandler(dutStates []fleet.DutState) (err func(c *router.Context) error) {
+func pushBotsForAdminTasksHandler(dutStates []fleet.DutState, strategy fleet.PushBotsForAdminTasksRequest_SchedulingStrategy) (err func(c *router.Context) error) {
 	return func(c *router.Context) error {
-		return pushBotsForAdminTasksCronHandler(c, dutStates)
+		return pushBotsForAdminTasksCronHandler(c, dutStates, strategy)
 	}
 }
 
 // pushBotsForAdminTasksCronHandler pushes bots that require admin tasks to bot queue.
-func pushBotsForAdminTasksCronHandler(c *router.Context, dutStates []fleet.DutState) (err error) {
+func pushBotsForAdminTasksCronHandler(c *router.Context, dutStates []fleet.DutState, strategy fleet.PushBotsForAdminTasksRequest_SchedulingStrategy) (err error) {
 	defer func() {
 		pushBotsForAdminTasksCronHandlerTick.Add(c.Request.Context(), 1, err == nil)
 	}()
 
 	cfg := config.Get(c.Request.Context())
+
+	if cfg.GetTasker().GetEnableSmartScheduling() {
+		logging.Infof(c.Request.Context(), "smart scheduling enabled by config")
+	} else {
+		logging.Infof(c.Request.Context(), "smart scheduling disabled by config")
+		strategy = fleet.PushBotsForAdminTasksRequest_DefaultSchedulingStrategy
+	}
+
 	if cfg.RpcControl != nil && cfg.RpcControl.GetDisablePushBotsForAdminTasks() {
 		logging.Infof(c.Request.Context(), "PushBotsForAdminTasks is disabled via config.")
 		return nil
@@ -89,14 +97,15 @@ func pushBotsForAdminTasksCronHandler(c *router.Context, dutStates []fleet.DutSt
 	for ind, dutState := range dutStates {
 		dutStateNames[ind] = dutState.String()
 	}
-	logging.Infof(c.Request.Context(), fmt.Sprintf("PushBotsForAdminTasks for states: %v", strings.Join(dutStateNames, ", ")))
+	logging.Infof(c.Request.Context(), fmt.Sprintf("PushBotsForAdminTasks strategy %q for states: %v", strategy.String(), strings.Join(dutStateNames, ", ")))
 
 	tsi := frontend.TrackerServerImpl{}
 
 	for _, dutState := range dutStates {
 		logging.Infof(c.Request.Context(), fmt.Sprintf("Started push AdminTasks for state %#v", dutState.String()))
 		if _, err := tsi.PushBotsForAdminTasks(c.Request.Context(), &fleet.PushBotsForAdminTasksRequest{
-			TargetDutState: dutState,
+			TargetDutState:     dutState,
+			SchedulingStrategy: strategy,
 		}); err != nil {
 			return err
 		}
