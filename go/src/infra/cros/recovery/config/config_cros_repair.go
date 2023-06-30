@@ -143,6 +143,7 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Update FW from fw-image by servo and wait for boot",
 				"Install OS in recovery mode by booting from servo USB-drive (special pools)",
+				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
 				"Install OS in DEV mode by USB-drive",
 				"Reset power using servo if booted from USB",
 				"Check if request labstation reboot",
@@ -166,6 +167,7 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Update FW from fw-image by servo and wait for boot",
 				"Install OS in recovery mode by booting from servo USB-drive (special pools)",
+				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
 				"Install OS in DEV mode by USB-drive",
 				"Reset power using servo if booted from USB",
 			},
@@ -2209,6 +2211,113 @@ func crosRepairActions() map[string]*Action {
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
+		"Install OS in recovery mode by booting from servo USB-drive (Flex)": {
+			Docs: []string{
+				"The action design only for Flex devices.",
+				"This action installs the test image on DUT utilizing the features of servo.",
+				"When DUT sees USB-key it will always try to boot from it.",
+			},
+			Conditions: []string{
+				"Is Flex device",
+				"Is servod running",
+				"Is servo USB key detected",
+			},
+			Dependencies: []string{
+				"Servo USB-Key needs to be reflashed",
+				"Download stable version OS image to servo usbkey if necessary (allow fail)",
+				"Power OFF DUT by servo",
+				"Direct USB-drive to DUT",
+				"Sleep 10 seconds",
+				"Power ON DUT by servo",
+				"Sleep 10 seconds",
+				"Wait to be SSHable (normal boot)",
+				"Print active devices",
+				"Is Flex booted from USB-drive",
+				"Run chromeos-install for Flex",
+				"Sleep 10 seconds",
+				"Power OFF DUT by servo",
+				"Direct USB-drive to servo host",
+				"Power ON DUT by servo",
+				"Wait to be SSHable (normal boot)",
+			},
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Run chromeos-install for Flex": {
+			Docs: []string{
+				"Run chromeos-install for Flex DUTs with detecting destination.",
+				"Flex device does not detect destination as part of chromeos-install script.",
+			},
+			Dependencies: []string{
+				"Is Flex device",
+			},
+			ExecName: "cros_run_command",
+			ExecExtraArgs: []string{
+				"host:dut",
+				"command:chromeos-install --dst $(lsblk --bytes --output NAME  --paths -I 259 -n -d) --yes",
+				"background:false",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 600},
+			RunControl:  RunControl_ALWAYS_RUN,
+		},
+		"Is Flex booted from USB-drive": {
+			Docs: []string{
+				"Check if device booted from USB in installer mode.",
+			},
+			Conditions: []string{
+				"Is Flex device",
+			},
+			ExecName: "cros_run_command",
+			ExecExtraArgs: []string{
+				"host:dut",
+				"command:is_running_from_installer |grep yes",
+				"background:false",
+			},
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Print active devices": {
+			Docs: []string{
+				"Print active devices visible for DUT.",
+			},
+			ExecName: "cros_run_command",
+			ExecExtraArgs: []string{
+				"host:dut",
+				"command:lsblk",
+				"background:false",
+			},
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
+		},
+		"Direct USB-drive to DUT": {
+			Docs: []string{
+				"Switch servo's USB-drive to point to DUT.",
+			},
+			Dependencies: []string{
+				"Is servod running",
+			},
+			ExecName: "servo_set",
+			ExecExtraArgs: []string{
+				"command:image_usbkey_direction",
+				"string_value:dut_sees_usbkey",
+			},
+			RunControl:  RunControl_ALWAYS_RUN,
+			ExecTimeout: &durationpb.Duration{Seconds: 20},
+		},
+		"Direct USB-drive to servo host": {
+			Docs: []string{
+				"Switch servo's USB-drive to point to servo-host.",
+			},
+			Dependencies: []string{
+				"Is servod running",
+			},
+			ExecName: "servo_set",
+			ExecExtraArgs: []string{
+				"command:image_usbkey_direction",
+				"string_value:servo_sees_usbkey",
+			},
+			RunControl:  RunControl_ALWAYS_RUN,
+			ExecTimeout: &durationpb.Duration{Seconds: 20},
+		},
 		"Download and install OS in DEV mode using USB-drive": {
 			Docs: []string{
 				"This action installs the test image on DUT after booking the DUT in dev mode.",
@@ -3477,9 +3586,10 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Is Flex device",
 			},
-			// TODO: Add action special for Flex devices.
-			Dependencies: []string{},
-			ExecName:     "sample_pass",
+			Dependencies: []string{
+				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
+			},
+			ExecName: "sample_pass",
 		},
 	}
 }
