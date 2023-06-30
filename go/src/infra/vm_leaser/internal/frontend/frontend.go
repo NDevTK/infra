@@ -79,7 +79,7 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 	err = createInstance(ctx, instancesClient, leaseID, expirationTime, r.GetHostReqs())
 	if err != nil {
 		if ctx.Err() != nil {
-			return nil, status.Errorf(codes.DeadlineExceeded, "when creating instance: %s", ctx.Err())
+			return nil, status.Errorf(codes.DeadlineExceeded, "context error when creating instance: %s", ctx.Err())
 		}
 		return nil, status.Errorf(codes.Internal, "failed to create instance: %s", err)
 	}
@@ -236,7 +236,7 @@ func createInstance(ctx context.Context, client computeInstancesClient, leaseID 
 		return fmt.Errorf("unable to wait for the operation: %v", err)
 	}
 
-	logging.Infof(ctx, "instance created: %s", leaseID)
+	logging.Infof(ctx, "instance scheduled for creation: %s", leaseID)
 	return nil
 }
 
