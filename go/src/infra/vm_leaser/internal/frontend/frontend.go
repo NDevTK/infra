@@ -40,12 +40,18 @@ var _ api.VMLeaserServiceServer = (*Server)(nil)
 type Server struct {
 	api.UnimplementedVMLeaserServiceServer
 	Env string
+
+	// retry defaults
+	initialRetryBackoff time.Duration
+	maxRetries          int
 }
 
 // NewServer returns a new Server
 func NewServer(env string) *Server {
 	return &Server{
-		Env: env,
+		Env:                 env,
+		initialRetryBackoff: 1 * time.Second,
+		maxRetries:          3,
 	}
 }
 
@@ -76,12 +82,20 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 	}
 	defer instancesClient.Close()
 
-	err = createInstance(ctx, instancesClient, leaseID, expirationTime, r.GetHostReqs())
-	if err != nil {
+	retry := 0
+	for {
+		err = createInstance(ctx, instancesClient, leaseID, expirationTime, r.GetHostReqs())
+		if err == nil {
+			break
+		}
 		if ctx.Err() != nil {
 			return nil, status.Errorf(codes.DeadlineExceeded, "context error when creating instance: %s", ctx.Err())
 		}
-		return nil, status.Errorf(codes.Internal, "failed to create instance: %s", err)
+		if retry >= s.maxRetries {
+			return nil, status.Errorf(codes.Internal, "failed to create instance after %d retries: %s", s.maxRetries, err)
+		}
+		time.Sleep(s.initialRetryBackoff * (1 << retry))
+		retry++
 	}
 
 	ins, err := getInstance(ctx, instancesClient, leaseID, r.GetHostReqs(), true)
