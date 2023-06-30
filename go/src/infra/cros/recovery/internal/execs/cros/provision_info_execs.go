@@ -40,6 +40,7 @@ func updateProvisionedInfoExec(ctx context.Context, info *execs.ExecInfo) error 
 
 	argsMap := info.GetActionArgs(ctx)
 	if argsMap.AsBool(ctx, "update_job_repo_url", false) {
+		log.Debugf(ctx, "Updating job repo URL ...")
 		gsPath := fmt.Sprintf("%s/%s", gsCrOSImageBucket, osVersion)
 		jobRepoURL, err := info.GetAccess().GetCacheUrl(ctx, info.GetDut().Name, gsPath)
 		if err != nil {
