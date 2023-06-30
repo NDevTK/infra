@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -240,6 +240,7 @@ func (c *tlwClient) UpdateDut(ctx context.Context, dut *tlw.Dut) error {
 	if err != nil {
 		return errors.Annotate(err, "update DUT %q", dut.Name).Err()
 	}
+	log.Debugf(ctx, "Creating update DUT request ....")
 	req, err := dutinfo.CreateUpdateDutRequest(dut.Id, dut)
 	if err != nil {
 		return errors.Annotate(err, "update DUT %q", dut.Name).Err()
@@ -247,6 +248,7 @@ func (c *tlwClient) UpdateDut(ctx context.Context, dut *tlw.Dut) error {
 	log.Debugf(ctx, "Update DUT: update request: %s", req)
 	rsp, err := c.ufsClient.UpdateDeviceRecoveryData(ctx, req)
 	if err != nil {
+		log.Debugf(ctx, "Fail to update inventory for %q: %v", dut.Name, err)
 		return errors.Annotate(err, "update DUT %q", dut.Name).Err()
 	}
 	log.Debugf(ctx, "Update DUT: update response: %s", rsp)
