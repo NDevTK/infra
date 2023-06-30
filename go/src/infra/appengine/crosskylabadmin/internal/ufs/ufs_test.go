@@ -99,3 +99,8 @@ func (f *fakeGetPoolsClient) GetDeviceData(ctx context.Context, in *ufsAPI.GetDe
 		},
 	}, nil
 }
+
+// GetDUTsForLabstation just panics.
+func (f *fakeGetPoolsClient) GetDUTsForLabstation(ctx context.Context, in *ufsAPI.GetDUTsForLabstationRequest, opts ...grpc.CallOption) (*ufsAPI.GetDUTsForLabstationResponse, error) {
+	panic("fakeGetPoolsClient.GetDUTsForLabstation not yet implemented")
+}
