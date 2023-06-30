@@ -19,6 +19,7 @@ from RECIPE_MODULES.infra.windows_scripts_executor import test_helper as t
 
 DEPS = [
     'depot_tools/gitiles',
+    'depot_tools/tryserver',
     'recipe_engine/platform',
     'recipe_engine/properties',
     'recipe_engine/raw_io',
@@ -37,6 +38,9 @@ def RunSteps(api, image):
   if api.platform.is_win:
     raise AssertionError('This recipe can only run on linux')
 
+  try_job = False
+  if api.tryserver.gerrit_change_fetch_ref:
+    try_job = True  # pragma: nocover
   # this recipe will only execute the online_windows_customization
   for cust in image.customizations:
     assert (
@@ -44,7 +48,7 @@ def RunSteps(api, image):
             cust.WhichOneof('customization') == 'windows_iso_customization')
 
   # initialize the image to scripts executor
-  api.windows_scripts_executor.init()
+  api.windows_scripts_executor.init(try_job)
 
   custs = api.windows_scripts_executor.init_customizations(image)
 

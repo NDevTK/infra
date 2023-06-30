@@ -1868,18 +1868,18 @@ name over the build link in schedule process.
 Returns string formatted with builder name and customization
 ### *recipes* / [windows\_image\_builder/online\_windows\_customization](/recipes/recipes/windows_image_builder/online_windows_customization.py)
 
-[DEPS](/recipes/recipes/windows_image_builder/online_windows_customization.py#20): [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [windows\_adk](#recipe_modules-windows_adk), [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
+[DEPS](/recipes/recipes/windows_image_builder/online_windows_customization.py#20): [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [depot\_tools/tryserver][depot_tools/recipe_modules/tryserver], [windows\_adk](#recipe_modules-windows_adk), [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
 
 
-&mdash; **def [RunSteps](/recipes/recipes/windows_image_builder/online_windows_customization.py#35)(api, image):**
+&mdash; **def [RunSteps](/recipes/recipes/windows_image_builder/online_windows_customization.py#36)(api, image):**
 
 This recipe executes offline_winpe_customization.
 ### *recipes* / [windows\_image\_builder/winpe\_customization](/recipes/recipes/windows_image_builder/winpe_customization.py)
 
-[DEPS](/recipes/recipes/windows_image_builder/winpe_customization.py#16): [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [windows\_adk](#recipe_modules-windows_adk), [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
+[DEPS](/recipes/recipes/windows_image_builder/winpe_customization.py#16): [depot\_tools/gitiles][depot_tools/recipe_modules/gitiles], [depot\_tools/tryserver][depot_tools/recipe_modules/tryserver], [windows\_adk](#recipe_modules-windows_adk), [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
 
 
-&mdash; **def [RunSteps](/recipes/recipes/windows_image_builder/winpe_customization.py#31)(api, image):**
+&mdash; **def [RunSteps](/recipes/recipes/windows_image_builder/winpe_customization.py#32)(api, image):**
 
 This recipe executes offline_winpe_customization.
 ### *recipes* / [windows\_scripts\_executor:examples/add\_windows\_driver](/recipes/recipe_modules/windows_scripts_executor/examples/add_windows_driver.py)

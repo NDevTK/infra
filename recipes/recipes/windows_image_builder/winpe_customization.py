@@ -15,6 +15,7 @@ from RECIPE_MODULES.infra.windows_scripts_executor import test_helper as t
 
 DEPS = [
     'depot_tools/gitiles',
+    'depot_tools/tryserver',
     'recipe_engine/platform',
     'recipe_engine/properties',
     'recipe_engine/raw_io',
@@ -37,8 +38,11 @@ def RunSteps(api, image):
   for cust in image.customizations:
     assert (cust.WhichOneof('customization') == 'offline_winpe_customization')
 
+  try_job = False
+  if api.tryserver.gerrit_change_fetch_ref:
+    try_job = True  # pragma: nocover
   # initialize the image to scripts executor
-  api.windows_scripts_executor.init()
+  api.windows_scripts_executor.init(try_job)
 
   custs = api.windows_scripts_executor.init_customizations(image)
 
