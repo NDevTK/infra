@@ -119,6 +119,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/luciexe/build"
 	"golang.org/x/exp/slices"
+	"golang.org/x/mod/modfile"
 
 	"infra/experimental/golangbuild/golangbuildpb"
 )
@@ -215,14 +216,14 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 
 		// Test this specific subrepo.
 		// If testing any one nested module fails, keep going and report all the end.
-		modRoots, err := repoToModules(ctx, spec, cwd, repoDir)
+		modules, err := repoToModules(ctx, spec, cwd, repoDir)
 		if err != nil {
 			return err
 		}
 		var testErrors []error
-		for _, modRoot := range modRoots {
-			testCmd := spec.wrapTestCmd(spec.goCmd(ctx, modRoot, spec.goTestArgs("./...")...))
-			if err := runCommandAsStep(ctx, "go test -json [-short] [-race] ./...", testCmd, false); err != nil {
+		for _, m := range modules {
+			testCmd := spec.wrapTestCmd(spec.goCmd(ctx, m.RootDir, spec.goTestArgs("./...")...))
+			if err := runCommandAsStep(ctx, fmt.Sprintf("test %q module", m.Path), testCmd, false); err != nil {
 				testErrors = append(testErrors, err)
 			}
 		}
@@ -233,8 +234,14 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	return nil
 }
 
+// A module is a Go module located on disk.
+type module struct {
+	RootDir string // Module root directory on disk.
+	Path    string // Module path specified in go.mod.
+}
+
 // repoToModules discovers and reports modules in repoDir to be tested.
-func repoToModules(ctx context.Context, spec *buildSpec, cwd, repoDir string) (modRoots []string, err error) {
+func repoToModules(ctx context.Context, spec *buildSpec, cwd, repoDir string) (modules []module, err error) {
 	step, ctx := build.StartStep(ctx, "discover modules")
 	defer func() {
 		// Any failure in this function is an infrastructure failure.
@@ -252,7 +259,14 @@ func repoToModules(ctx context.Context, spec *buildSpec, cwd, repoDir string) (m
 			return fs.SkipDir
 		}
 		if goModFile := d.Name() == "go.mod" && !d.IsDir(); goModFile {
-			modRoots = append(modRoots, filepath.Dir(path))
+			modPath, err := modPath(path)
+			if err != nil {
+				return err
+			}
+			modules = append(modules, module{
+				RootDir: filepath.Dir(path),
+				Path:    modPath,
+			})
 		}
 		return nil
 	}); err != nil {
@@ -268,25 +282,40 @@ func repoToModules(ctx context.Context, spec *buildSpec, cwd, repoDir string) (m
 		// Move nested modules to directories that aren't predictably-relative to each other
 		// to catch accidental reads across nested module boundaries. See go.dev/issue/34352.
 		//
-		// Sort modRoots by increasing nested-ness, and do this
+		// Sort modules by increasing nested-ness, and do this
 		// in reverse order for all but the first (root) module.
-		slices.SortFunc(modRoots, func(a, b string) bool {
-			return strings.Count(a, string(filepath.Separator)) < strings.Count(b, string(filepath.Separator))
+		slices.SortFunc(modules, func(a, b module) bool {
+			return strings.Count(a.RootDir, string(filepath.Separator)) < strings.Count(b.RootDir, string(filepath.Separator))
 		})
-		for i := len(modRoots) - 1; i >= 1; i-- {
+		for i := len(modules) - 1; i >= 1; i-- {
 			randomDir, err := os.MkdirTemp(cwd, "nestedmod")
 			if err != nil {
 				return nil, err
 			}
 			newDir := filepath.Join(randomDir, filepath.Base(randomDir)) // Use a non-predictable base directory name.
-			if err := os.Rename(modRoots[i], newDir); err != nil {
+			if err := os.Rename(modules[i].RootDir, newDir); err != nil {
 				return nil, err
 			}
-			modRoots[i] = newDir
+			modules[i].RootDir = newDir
 		}
 	}
 
-	return modRoots, nil
+	return modules, nil
+}
+
+// modPath reports the module path in the given go.mod file.
+func modPath(goModFile string) (string, error) {
+	b, err := os.ReadFile(goModFile)
+	if err != nil {
+		return "", err
+	}
+	f, err := modfile.ParseLax(goModFile, b, nil)
+	if err != nil {
+		return "", err
+	} else if f.Module == nil {
+		return "", fmt.Errorf("go.mod file %q has no module statement", goModFile)
+	}
+	return f.Module.Mod.Path, nil
 }
 
 // cipdDeps is an ensure file that describes all our CIPD dependencies.
