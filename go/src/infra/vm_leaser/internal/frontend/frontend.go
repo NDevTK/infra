@@ -138,12 +138,20 @@ func (s *Server) ReleaseVM(ctx context.Context, r *api.ReleaseVMRequest) (*api.R
 		return nil, status.Errorf(codes.InvalidArgument, "failed to validate release request: %s", err)
 	}
 
-	err := deleteInstance(ctx, r)
-	if err != nil {
-		if ctx.Err() != nil {
-			return nil, status.Errorf(codes.DeadlineExceeded, "when deleting instance: %s", ctx.Err())
+	retry := 0
+	for {
+		err := deleteInstance(ctx, r)
+		if err == nil {
+			break
 		}
-		return nil, status.Errorf(codes.Internal, "failed to delete instance: %s", err)
+		if ctx.Err() != nil {
+			return nil, status.Errorf(codes.DeadlineExceeded, "context error when deleting instance: %s", ctx.Err())
+		}
+		if retry >= s.maxRetries {
+			return nil, status.Errorf(codes.Internal, "failed to delete instance after %d retries: %s", s.maxRetries, err)
+		}
+		time.Sleep(s.initialRetryBackoff * (1 << retry))
+		retry++
 	}
 
 	return &api.ReleaseVMResponse{
