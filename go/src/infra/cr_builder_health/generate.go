@@ -248,6 +248,9 @@ func rpcBuildbucket(buildCtx context.Context, rows []Row, client BBClient) error
 			simplifiedMetrics[metric.Type] = metric.Value
 		}
 
+		dashboardLink := fmt.Sprintf("http://go/builder-health-indicators?f=builder:in:%s&f=bucket:in:%s&f=project:in:%s",
+			url.QueryEscape(row.Builder), url.QueryEscape(row.Bucket), url.QueryEscape(row.Project))
+		const designDocLink = "http://go/builder-health-metrics-design"
 		healthProtos[i] = &buildbucketpb.SetBuilderHealthRequest_BuilderHealth{
 			Id: &buildbucketpb.BuilderID{Project: row.Project, Bucket: row.Bucket, Builder: row.Builder},
 			Health: &buildbucketpb.HealthStatus{
@@ -255,12 +258,14 @@ func rpcBuildbucket(buildCtx context.Context, rows []Row, client BBClient) error
 				HealthMetrics: simplifiedMetrics,
 				Description:   row.ScoreExplanation,
 				DocLinks: map[string]string{
-					"":           "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/infra/config/generated/health-specs/health-specs.json",
-					"google.com": "http://go/builder-health-metrics-design",
+					"":             "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/infra/config/generated/health-specs/health-specs.json",
+					"google.com":   designDocLink,
+					"chromium.org": designDocLink,
 				},
 				DataLinks: map[string]string{
-					"google.com": fmt.Sprintf("http://go/builder-health-indicators?f=builder:in:%s&f=bucket:in:%s&f=project:in:%s",
-						url.QueryEscape(row.Builder), url.QueryEscape(row.Bucket), url.QueryEscape(row.Project)),
+					"":             "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/infra/config/generated/health-specs/health-specs.json",
+					"google.com":   dashboardLink,
+					"chromium.org": dashboardLink,
 				},
 			},
 		}
