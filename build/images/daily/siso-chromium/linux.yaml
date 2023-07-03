@@ -1,0 +1,4 @@
+name: rbe/siso-chromium/linux
+extends: ../../base.yaml
+dockerfile: ../../../../rbe/images/siso-chromium/linux/Dockerfile
+deterministic: false
