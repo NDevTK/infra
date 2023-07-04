@@ -104,10 +104,14 @@ download and install them to Xcode in order to support testing on those addition
 
 Runtime is currently being uploaded to cipd using dmg format. See crbug/1440179.
 
-1. Download the newest iOS runtime dmg and Xcode (if haven't already) from go/xcode.
-2. After download is complete, put the dmg into an empty folder. **Important:** it can be in any folder, but just make sure the iOS disk image will be the
+1. Launch Xcode. If you have not downloaded one, please download the latest from go/xcode.
+2. Navigate to Xcode -> Settings -> Platforms -> + sign on the bottom left corner. Choose iOS,
+and download the desired iOS version (e.g. iOS 16.2 Simulator)
+3. After download is complete, it should show up on the list of platforms. Then right click
+on the downloaded iOS simulator, and select "Export Disk Image". **Important:** make sure
+you export to an empty folder, where the iOS disk image will be the
 only file in there.
-3. There are 3 main args in the upload-runtime-dmg command:<br>
+4. There are 3 main args in the upload-runtime-dmg command:<br>
 ***runtime-version***: this is usually in the format of "ios-xx-x", for example "ios-16-2"<br>
 ***runtime-build***: this is the build number of the iOS runtime, which can be found in xcodereleases.com. For example iOS 16.2 beta 2 has a build number of 20c52.<br>
 ***xcode-version***: this is the first Xcode version that supports the uploaded runtime. For example 14c18 for ios-16-2.<br>
