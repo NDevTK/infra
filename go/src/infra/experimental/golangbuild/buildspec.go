@@ -49,6 +49,8 @@ type buildSpec struct {
 	invokedSrc *sourceSpec // the commit/change we were invoked with
 
 	experiments map[string]struct{}
+
+	noNetworkCapable bool // whether the host OS can disable network access during test execution
 }
 
 func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, st *build.State, inputs *golangbuildpb.Inputs) (*buildSpec, error) {
@@ -160,6 +162,11 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, st *build.State
 		experiments[ex] = struct{}{}
 	}
 
+	var noNetworkCapable bool
+	if _, err := exec.LookPath("unshare"); err == nil {
+		noNetworkCapable = true
+	}
+
 	return &buildSpec{
 		auth:        authenticator,
 		builderName: st.Build().GetBuilder().GetBuilder(),
@@ -173,6 +180,8 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, st *build.State
 		subrepoSrc:  subrepoSrc,
 		invokedSrc:  invokedSrc,
 		experiments: experiments,
+
+		noNetworkCapable: noNetworkCapable,
 	}, nil
 }
 
@@ -323,9 +332,24 @@ func (b *buildSpec) toolCmd(ctx context.Context, tool string, args ...string) *e
 	return command(ctx, b.toolPath(tool), args...)
 }
 
-// wrapTestCmd rewrites cmd to become 'rdb stream -- result_adapter go -- {cmd}'.
+// wrapTestCmd wraps cmd with 'rdb' and 'result_adapter' to send test results
+// to ResultDB. cmd must be a test command that emits a JSON stream in the
+// https://go.dev/cmd/test2json#hdr-Output_Format format.
+//
+// On Linux host OS, if long test mode is off, cmd is also prefixed with 'unshare'
+// to disable network access and catch tests that forget to check testing.Short().
+//
 // It edits cmd in place but for convenience also returns cmd back to its caller.
 func (b *buildSpec) wrapTestCmd(cmd *exec.Cmd) *exec.Cmd {
+	if b.noNetworkCapable && !b.inputs.LongTest && b.experiment("golang.no_network_in_short_test_mode") {
+		// Disable external network access for the test command.
+		// Permit internal loopback access.
+		cmd.Args = []string{
+			"unshare", "-r", "-n", "--",
+			"sh", "-c", "ip link set dev lo up && " + strings.Join(cmd.Args, " "),
+		}
+	}
+
 	cmd.Path = b.toolPath("rdb")
 	cmd.Args = append([]string{
 		cmd.Path, "stream", "--",

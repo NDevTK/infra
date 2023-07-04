@@ -220,6 +220,13 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		if err != nil {
 			return err
 		}
+		if spec.noNetworkCapable && !spec.inputs.LongTest && spec.experiment("golang.no_network_in_short_test_mode") {
+			// Fetch module dependencies ahead of time since 'go test' will not have network access.
+			err := fetchDependencies(ctx, spec, modules)
+			if err != nil {
+				return err
+			}
+		}
 		var testErrors []error
 		for _, m := range modules {
 			testCmd := spec.wrapTestCmd(spec.goCmd(ctx, m.RootDir, spec.goTestArgs("./...")...))

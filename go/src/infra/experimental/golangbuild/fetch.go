@@ -6,6 +6,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -131,6 +132,28 @@ func fetchRepoAtCommit(ctx context.Context, dst string, commit *bbpb.GitilesComm
 		}
 	}
 	return nil
+}
+
+// fetchDependencies uses 'go mod download' to fetch
+// dependencies for the given modules.
+func fetchDependencies(ctx context.Context, spec *buildSpec, modules []module) (err error) {
+	step, ctx := build.StartStep(ctx, "fetch dependencies")
+	defer func() {
+		// Any failure in this function is an infrastructure failure.
+		//
+		// TODO(dmitshur): See if errors due to adding a broken or unavailable
+		// module can be detected and correctly reported as non-infra somehow.
+		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
+		step.End(err)
+	}()
+
+	var errs []error
+	for _, m := range modules {
+		dlCmd := spec.goCmd(ctx, m.RootDir, "mod", "download")
+		err := runCommandAsStep(ctx, fmt.Sprintf("fetch %q dependencies", m.Path), dlCmd, true)
+		errs = append(errs, err)
+	}
+	return errors.Join(errs...)
 }
 
 func writeVersionFile(ctx context.Context, dst, version string) error {
