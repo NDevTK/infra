@@ -5,9 +5,10 @@
 package peripherals
 
 import (
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	"strings"
 	"testing"
+
+	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 func TestWifiCleanAndValidateFlags(t *testing.T) {
@@ -46,12 +47,12 @@ func TestWifiCleanAndValidateFlags(t *testing.T) {
 	// Test valid flags with hostname cleanup
 	c := &manageWifiCmd{
 		dutName:      "d",
-		wifiFeatures: []string{"unknown"},
+		wifiFeatures: []string{"WIFI_ROUTER_FEATURE_UNKNOWN"},
 		routers: [][]string{
 			{
 				"hostname:h1",
 				"model:test",
-				"feature:unknown",
+				"feature:WIFI_ROUTER_FEATURE_UNKNOWN",
 			},
 			{
 				"hostname:h2",
@@ -76,12 +77,12 @@ func TestWifiCleanAndValidateFlags(t *testing.T) {
 func TestAddWifi(t *testing.T) {
 	cmd := &manageWifiCmd{
 		dutName:      "d",
-		wifiFeatures: []string{"unknown"},
+		wifiFeatures: []string{"WIFI_ROUTER_FEATURE_UNKNOWN"},
 		routers: [][]string{
 			{
 				"hostname:h1",
 				"model:test",
-				"feature:unknown",
+				"feature:WIFI_ROUTER_FEATURE_UNKNOWN",
 			},
 			{
 				"hostname:h2",
@@ -121,7 +122,7 @@ func TestAddWifi(t *testing.T) {
 		t.Errorf("addWifi(%v) = %v, want total wifirouters %d", current, out.GetWifiRouters(), wantRouters)
 	}
 	wantFeatures := 1
-	if len(out.GetFeatures()) != wantFeatures {
+	if len(out.GetWifiRouterFeatures()) != wantFeatures {
 		t.Errorf("addWifi(%v) = %v, want total features %d", current, out, wantFeatures)
 	}
 }
@@ -133,7 +134,7 @@ func TestDeleteWifi(t *testing.T) {
 			{
 				"hostname:h1",
 				"model:test",
-				"feature:unknown",
+				"feature:WIFI_ROUTER_FEATURE_UNKNOWN",
 			},
 			{
 				"hostname:h2",

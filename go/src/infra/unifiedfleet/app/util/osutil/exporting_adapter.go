@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 
@@ -143,8 +144,8 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *chromeosLab.Perip
 
 		uniqFeatures := make(map[inventory.Peripherals_WifiFeature]bool)
 		// Collect wifi features
-		for _, wifiFeature := range wifi.GetFeatures() {
-			if wifiFeature != chromeosLab.Wifi_UNKNOWN {
+		for _, wifiFeature := range wifi.GetWifiRouterFeatures() {
+			if wifiFeature != labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_UNKNOWN {
 				v1Feature := inventory.Peripherals_WifiFeature(inventory.Peripherals_WifiFeature_value[wifiFeature.String()])
 				if !uniqFeatures[v1Feature] {
 					uniqFeatures[v1Feature] = true
@@ -155,7 +156,7 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *chromeosLab.Perip
 		// Collect wifirouters features
 		for _, wifiRouter := range wifi.GetWifiRouters() {
 			for _, routerFeature := range wifiRouter.GetFeatures() {
-				if routerFeature != chromeosLab.WifiRouter_UNKNOWN {
+				if routerFeature != labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_UNKNOWN {
 					v1Feature := inventory.Peripherals_WifiFeature(inventory.Peripherals_WifiFeature_value[routerFeature.String()])
 					if !uniqFeatures[v1Feature] {
 						uniqFeatures[v1Feature] = true
