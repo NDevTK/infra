@@ -550,6 +550,7 @@ common {
 			servo_type: "v3"
 			rpm_state: WORKING
 			peripheral_wifi_state: WORKING
+      peripheral_wifi_features: WIFI_ROUTER_FEATURE_UNKNOWN
 			chameleon_state: WORKING
 			smart_usbhub: true
 			storage_state: HARDWARE_NORMAL,

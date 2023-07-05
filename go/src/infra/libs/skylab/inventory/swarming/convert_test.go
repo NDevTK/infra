@@ -73,7 +73,7 @@ peripherals: {
   router_802_11ax: true
   working_bluetooth_btpeer: 3
   peripheral_wifi_state: 1
-  peripheral_wifi_features: [0]
+  peripheral_wifi_features: [0,2,99]
   hmr_state: 1
 }
 os_type: 2
@@ -227,7 +227,7 @@ peripherals: {
   router_802_11ax: true
   working_bluetooth_btpeer: 3
   peripheral_wifi_state: 1
-  peripheral_wifi_features: [0]
+  peripheral_wifi_features: [0,2,99]
   hmr_state: 1
 }
 os_type: 2
@@ -375,7 +375,7 @@ var fullDimensions = Dimensions{
 	"label-license":                 {"LICENSE_TYPE_MS_OFFICE_STANDARD", "LICENSE_TYPE_WINDOWS_10_PRO"},
 	"label-lucidsleep":              {"True"},
 	"label-os_type":                 {"OS_TYPE_CROS"},
-	"label-peripheral_wifi_feature": {"UNKNOWN"},
+	"label-peripheral_wifi_feature": {"UNKNOWN", "IEEE_802_11_A", "99"},
 	"label-peripheral_wifi_state":   {"WORKING"},
 	"label-phase":                   {"PHASE_MP"},
 	"label-platform":                {"platformval"},
