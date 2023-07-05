@@ -498,14 +498,18 @@ message Peripherals {
 
 
   optional PeripheralState peripheral_wifi_state = 31;
-  // WifiFeature enums copy UFS peripherals.proto Wifi.Feature and WifiRouter.Feature
-  // Next Tag: 12
-  enum WifiFeature {
-    UNKNOWN = 0;
-    // TODO add peripheral_wifi_features test in exporting_adapter_test.go when more enums are available
-  }
-  // Feature collections from UFS peripheral.wifi and peripheral.wifi.wifiRouters.
-  repeated WifiFeature peripheral_wifi_features = 32;
+
+  // WifiRouterFeatures that are supported by all wifi routers in the testbed.
+  //
+  // If there are no wifi routers this will be empty.
+  // If any routers have unknown features, this will just have a single
+  // WIFI_ROUTER_FEATURE_UNKNOWN entry.
+  // If any routers' features has a WIFI_ROUTER_FEATURE_INVALID feature, a
+  // WIFI_ROUTER_FEATURE_INVALID feature will be included along with the other
+  // common, valid features.
+  // If there are no common, valid features between all routers, this will just
+  // have a single WIFI_ROUTER_FEATURE_INVALID entry.
+  repeated WifiRouterFeature peripheral_wifi_features = 32;
 
   // The state of Human Motion Robot system.
   // See UFS peripherals.proto or go/fleet-infra-hmr-support for more context.
@@ -600,6 +604,46 @@ enum HardwareState {
   // Hardware is not detected to run verifiers.
   // (used for USB-drive when it expected but not detected on the device)
   HARDWARE_NOT_DETECTED = 4;
+}
+
+// Copy of chromiumos.test.lab.api.WifiRouterFeature.
+//
+// Recognized hardware and software features of WiFi router peripherals in
+// our testbeds.
+//
+// This is not an exhaustive list of features supported by these test WiFi
+// routers. The intent is to only track features that may differ between the
+// different types of WiFi router devices in our labs.
+enum WifiRouterFeature {
+  // Features are not known.
+  WIFI_ROUTER_FEATURE_UNKNOWN = 0;
+
+  // Feature was parsed from device, but it did not match any known features.
+  WIFI_ROUTER_FEATURE_INVALID = 1;
+
+  // WiFi 1 (IEEE 802.11a) support.
+  WIFI_ROUTER_FEATURE_IEEE_802_11_A = 2;
+
+  // WiFi 2 (IEEE 802.11b) support.
+  WIFI_ROUTER_FEATURE_IEEE_802_11_B = 3;
+
+  // WiFi 3 (IEEE 802.11g) support.
+  WIFI_ROUTER_FEATURE_IEEE_802_11_G = 4;
+
+  // WiFi 4 (IEEE 802.11n) support.
+  WIFI_ROUTER_FEATURE_IEEE_802_11_N = 5;
+
+  // WiFi 5 (IEEE 802.11ac) support.
+  WIFI_ROUTER_FEATURE_IEEE_802_11_AC = 6;
+
+  // WiFi 6 (IEEE 802.11ax, 2.4GHz, 5GHz) support.
+  WIFI_ROUTER_FEATURE_IEEE_802_11_AX = 7;
+
+  // WiFi 6E (IEEE 802.11ax, 6GHz) support.
+  WIFI_ROUTER_FEATURE_IEEE_802_11_AX_E = 8;
+
+  // WiFi 7 (IEEE 802.11be) support.
+  WIFI_ROUTER_FEATURE_IEEE_802_11_BE = 9;
 }
 
 // Copy from servo.proto

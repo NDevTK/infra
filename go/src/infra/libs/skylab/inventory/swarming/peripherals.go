@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -163,7 +163,7 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 		}
 	}
 	for _, v := range p.GetPeripheralWifiFeatures() {
-		appendDim(dims, "label-peripheral_wifi_feature", v.String())
+		appendDim(dims, "label-peripheral_wifi_feature", strings.TrimPrefix(v.String(), "WIFI_ROUTER_FEATURE_"))
 	}
 
 }
@@ -286,10 +286,21 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 		delete(d, "label-peripheral_wifi_state")
 	}
 
-	p.PeripheralWifiFeatures = make([]inventory.Peripherals_WifiFeature, len(d["label-peripheral_wifi_feature"]))
-	for i, v := range d["label-peripheral_wifi_feature"] {
-		p.PeripheralWifiFeatures[i] = inventory.Peripherals_WifiFeature(inventory.Peripherals_WifiFeature_value[v])
+	if peripheralWifiFeatures, ok := d["label-peripheral_wifi_feature"]; ok {
+		for _, featureStr := range peripheralWifiFeatures {
+			// Allow unmapped numerical values to persist since inventory enum copy may be outdated.
+			featureValue, ok := inventory.WifiRouterFeature_value["WIFI_ROUTER_FEATURE_"+featureStr]
+			if !ok {
+				featureInt, err := strconv.Atoi(featureStr)
+				if err == nil {
+					featureValue = int32(featureInt)
+				} else {
+					featureValue = int32(inventory.WifiRouterFeature_WIFI_ROUTER_FEATURE_INVALID.Number())
+				}
+			}
+			p.PeripheralWifiFeatures = append(p.PeripheralWifiFeatures, inventory.WifiRouterFeature(featureValue))
+		}
+		delete(d, "label-peripheral_wifi_feature")
 	}
-	delete(d, "label-peripheral_wifi_feature")
 	return d
 }
