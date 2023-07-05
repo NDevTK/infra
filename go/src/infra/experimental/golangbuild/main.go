@@ -101,6 +101,19 @@
 //
 // Experiments can be enabled on LUCIEXE_FAKEBUILD runs through the "experiments" property (array
 // of strings) on "input."
+//
+// ### Current experiments
+//
+//   - golang.build_result_sharing: Fetch prebuilt toolchain from CAS if an
+//     identical build has completed previously.
+//   - golang.force_test_outside_repository: Can be used to force running tests
+//     from outside the repository to catch accidental reads outside of module
+//     boundaries despite the repository not having opted-in to this test
+//     behavior.
+//   - golang.no_network_in_short_test_mode: Disable network access in -short
+//     test mode. Doesn't work yet because result_adapter doesn't handle it when
+//     the -json flag is provided in a nested command string rather than as a
+//     standalone flag.
 package main
 
 import (
