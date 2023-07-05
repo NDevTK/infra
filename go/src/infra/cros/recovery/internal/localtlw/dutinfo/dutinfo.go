@@ -204,6 +204,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		},
 		ProvisionedInfo: &tlw.ProvisionedInfo{},
 	}
+	d.Chromeos.WifiRouterFeatures = p.Wifi.GetWifiRouterFeatures()
 
 	if p.GetServo().GetServoSetup() == ufslab.ServoSetupType_SERVO_SETUP_DUAL_V4 {
 		d.ExtraAttributes[tlw.ExtraAttributeServoSetup] = []string{tlw.ExtraAttributeServoSetupDual}
@@ -405,11 +406,13 @@ func createWifiRouterHosts(wifi *ufslab.Wifi) []*tlw.WifiRouterHost {
 			tlwRpm.Outlet = rpm.GetPowerunitOutlet()
 		}
 		routers = append(routers, &tlw.WifiRouterHost{
-			Name:      ufsRouter.GetHostname(),
-			State:     convertWifiRouterState(ufsRouter.GetState()),
-			Model:     ufsRouter.GetModel(),
-			Board:     ufsRouter.GetBuildTarget(),
-			RPMOutlet: &tlwRpm,
+			Name:       ufsRouter.GetHostname(),
+			State:      convertWifiRouterState(ufsRouter.GetState()),
+			Model:      ufsRouter.GetModel(),
+			Board:      ufsRouter.GetBuildTarget(),
+			RPMOutlet:  &tlwRpm,
+			Features:   ufsRouter.GetFeatures(),
+			DeviceType: ufsRouter.GetDeviceType(),
 		})
 	}
 	return routers
@@ -460,8 +463,11 @@ func getUFSLabDataFromSpecs(dut *tlw.Dut) *ufsAPI.ChromeOsRecoveryData_LabData {
 		}
 		for _, router := range ch.GetWifiRouters() {
 			labData.WifiRouters = append(labData.WifiRouters, &ufsAPI.ChromeOsRecoveryData_WifiRouter{
-				Hostname: router.GetName(),
-				State:    convertWifiRouterStateToUFS(router.GetState()),
+				Hostname:   router.GetName(),
+				State:      convertWifiRouterStateToUFS(router.GetState()),
+				Model:      router.GetModel(),
+				Features:   router.GetFeatures(),
+				DeviceType: router.GetDeviceType(),
 			})
 		}
 		for _, btp := range ch.GetBluetoothPeers() {
@@ -473,6 +479,7 @@ func getUFSLabDataFromSpecs(dut *tlw.Dut) *ufsAPI.ChromeOsRecoveryData_LabData {
 		labData.RoVpdMap = ch.GetRoVpdMap()
 		labData.Cbi = ch.GetCbi()
 		labData.AudioboxJackpluggerState = convertAudioBoxJackPluggerStateToUFS(ch.GetChameleon().GetAudioboxjackpluggerstate())
+		labData.WifiRouterFeatures = ch.GetWifiRouterFeatures()
 	} else if ch := dut.GetDevBoard(); ch != nil {
 		if s := ch.GetServo(); s != nil {
 			labData.ServoType = s.GetServodType()
