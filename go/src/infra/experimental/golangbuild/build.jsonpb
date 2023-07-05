@@ -1,0 +1,19 @@
+{
+	"builder": {
+		"project": "go",
+			"bucket": "ci",
+			"builder": "linux-amd64"
+	},
+		"input": {
+			"properties": {
+				"project": "go"
+			},
+			"experiments": ["golang.cache_tools_root_"],
+			"gitiles_commit": {
+				"host": "go.googlesource.com",
+				"project": "go",
+				"id": "27301e8247580e456e712a07d68890dc1e857000",
+				"ref": "refs/heads/master"
+			}
+		}
+}
