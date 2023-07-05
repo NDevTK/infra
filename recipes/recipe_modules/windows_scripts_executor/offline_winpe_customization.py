@@ -54,8 +54,6 @@ class OfflineWinPECustomization(customization.Customization):
     for off_action in wpec.offline_customization:
       for action in off_action.actions:
         helper.pin_src_from_action(action, self._source, ctx)
-    if self.tryrun:
-      wpec.image_dests.clear()  # pragma: nocover
 
   def download_sources(self):
     """ download_sources downloads the sources in the given config to disk"""
@@ -107,23 +105,32 @@ class OfflineWinPECustomization(customization.Customization):
       self._canon_cust = cust
     return self._canon_cust
 
+  def remove_upload_dests(self):
+    """ remove_upload_dests removes the upload dests specified in a config.
+    This is meant to be used on a try job to avoid uploading to user specified
+    locations on a try job
+    """
+    self._customization.offline_winpe_customization.image_dests.clear()
+
   @property
   def outputs(self):
     """ return the output(s) of executing this config. Doesn't guarantee that
     the output(s) exists."""
+    dests = []
     if self.get_key():
       location = 'WIB-WIM/{}.zip'
       if self.tryrun:
         location = 'WIB-WIM-TRY/{}.zip'  # pragma: nocover
       output = src_pb.GCSSrc(
           bucket='chrome-gce-images', source=location.format(self.get_key()))
-      return [
+      dests.append(
           dest_pb.Dest(
               gcs_src=output,
               tags={'orig': self._source.get_url(src_pb.Src(gcs_src=output))},
-          )
-      ]
-    return None  # pragma: no cover
+          ))
+    if self._customization.offline_winpe_customization.image_dests:
+      dests.extend(self._customization.offline_winpe_customization.image_dests)
+    return dests  # pragma: no cover
 
   @property
   def inputs(self):  # pragma: no cover

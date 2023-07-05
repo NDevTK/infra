@@ -266,6 +266,9 @@ def RunSteps(api, inputs):
   for config in configs:
     custs.extend(api.windows_scripts_executor.init_customizations(config))
 
+  if try_job:
+    api.windows_scripts_executor.trim_uploads(custs)
+
   # Get all the inputs required. This will be used to determine if we have
   # to cache any images in online customization
   inputs = []

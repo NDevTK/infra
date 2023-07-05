@@ -92,6 +92,7 @@
   * [windows_scripts_executor:examples/process_customizations](#recipes-windows_scripts_executor_examples_process_customizations)
   * [windows_scripts_executor:examples/shutdown_vm](#recipes-windows_scripts_executor_examples_shutdown_vm)
   * [windows_scripts_executor:examples/test](#recipes-windows_scripts_executor_examples_test)
+  * [windows_scripts_executor:examples/trim_uploads](#recipes-windows_scripts_executor_examples_trim_uploads)
   * [windows_scripts_executor:examples/windows_iso](#recipes-windows_scripts_executor_examples_windows_iso)
   * [windows_sdk:examples/full](#recipes-windows_sdk_examples_full)
   * [zip:examples/full](#recipes-zip_examples_full)
@@ -1181,7 +1182,7 @@ Ensures that the WinPE add-on is available.
 
 API for using Windows PowerShell scripts.
 
-&mdash; **def [download\_all\_packages](/recipes/recipe_modules/windows_scripts_executor/api.py#302)(self, custs):**
+&mdash; **def [download\_all\_packages](/recipes/recipe_modules/windows_scripts_executor/api.py#308)(self, custs):**
 
 download_all_packages downloads all the packages referenced by given
 custs.
@@ -1189,14 +1190,14 @@ custs.
 Args:
   * custs: List of Customizations object from customizations.py
 
-&mdash; **def [execute\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#313)(self, custs):**
+&mdash; **def [execute\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#319)(self, custs):**
 
 Executes the windows image builder user config.
 
 Args:
   * custs: List of Customizations object from customizations.py
 
-&mdash; **def [filter\_executable\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#289)(self, customizations):**
+&mdash; **def [filter\_executable\_customizations](/recipes/recipe_modules/windows_scripts_executor/api.py#295)(self, customizations):**
 
 filter_executable_customizations generates a list of customizations
 that need to be executed.
@@ -1204,7 +1205,7 @@ that need to be executed.
 Args:
   * customizations: List of Customizations object from customizations.py
 
-&mdash; **def [gen\_canonical\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#180)(self, customizations):**
+&mdash; **def [gen\_canonical\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#186)(self, customizations):**
 
 gen_canonical_configs strips all the names in the config and returns
 individual configs containing one customization per image.
@@ -1289,7 +1290,7 @@ Example:
 Args:
   * customizations: List of Customizations object from customizations.py
 
-&mdash; **def [gen\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#348)(self, custs):**
+&mdash; **def [gen\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#354)(self, custs):**
 
 gen_executable_configs generates wib.Image configs that can be executed.
 
@@ -1306,7 +1307,7 @@ Args:
 Returns a list of tuples containing config and set of customization hash
 that can be executed at the time
 
-&mdash; **def [get\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#323)(self, custs):**
+&mdash; **def [get\_executable\_configs](/recipes/recipe_modules/windows_scripts_executor/api.py#329)(self, custs):**
 
 get_executable_configs returns a list of images that can be executed at
 this time.
@@ -1351,7 +1352,12 @@ Args:
 
 Returns list of customizations in order that they were processed
 
-&mdash; **def [update\_context](/recipes/recipe_modules/windows_scripts_executor/api.py#166)(self, custs, ctx):**
+&mdash; **def [trim\_uploads](/recipes/recipe_modules/windows_scripts_executor/api.py#166)(self, customizations):**
+
+trim_uploads removes the user specified uploads from a config.
+    
+
+&mdash; **def [update\_context](/recipes/recipe_modules/windows_scripts_executor/api.py#172)(self, custs, ctx):**
 
 update_context returns an updated dict with all the contexts
 updated
@@ -1970,6 +1976,12 @@ This recipe executes offline_winpe_customization.
 
 
 &mdash; **def [RunSteps](/recipes/recipe_modules/windows_scripts_executor/examples/test.py#37)(api, config):**
+### *recipes* / [windows\_scripts\_executor:examples/trim\_uploads](/recipes/recipe_modules/windows_scripts_executor/examples/trim_uploads.py)
+
+[DEPS](/recipes/recipe_modules/windows_scripts_executor/examples/trim_uploads.py#13): [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]
+
+
+&mdash; **def [RunSteps](/recipes/recipe_modules/windows_scripts_executor/examples/trim_uploads.py#24)(api, config):**
 ### *recipes* / [windows\_scripts\_executor:examples/windows\_iso](/recipes/recipe_modules/windows_scripts_executor/examples/windows_iso.py)
 
 [DEPS](/recipes/recipe_modules/windows_scripts_executor/examples/windows_iso.py#19): [depot\_tools/gsutil][depot_tools/recipe_modules/gsutil], [windows\_scripts\_executor](#recipe_modules-windows_scripts_executor), [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io]

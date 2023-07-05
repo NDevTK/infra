@@ -46,8 +46,6 @@ class OnlineWindowsCustomization(customization.Customization):
       for drive in boot.vm_config.qemu_vm.drives:
         if drive.input_src.WhichOneof('src'):
           drive.input_src.CopyFrom(self._source.pin(drive.input_src, ctx))
-        if self.tryrun:
-          drive.output_dests.clear()  # pragma: nocover
       # pin the refs in the actions
       for online_action in boot.online_actions:
         for action in online_action.actions:
@@ -229,6 +227,18 @@ class OnlineWindowsCustomization(customization.Customization):
         readonly=drive.readonly,
         size=drive.size,
         filesystem=drive.filesystem)
+
+  def remove_upload_dests(self):
+    """ remove_upload_dests removes the upload_dests specified by a config.
+    This is meant to be used by the try builder to avoid uploading to prod
+    locations from a try job.
+    Note: Run before pinning is done on the customization
+    """
+    owc = self.customization().online_windows_customization
+    for boot in owc.online_customizations:
+      for drive in boot.vm_config.qemu_vm.drives:
+        if drive.output_dests:
+          drive.output_dests.clear()
 
   @property
   def outputs(self):

@@ -39,8 +39,6 @@ class WinISOCustomization(customization.Customization):
       wic.boot_image.CopyFrom(self._source.pin(wic.boot_image, ctx))
     for x in wic.copy_files:
       x.artifact.CopyFrom(self._source.pin(x.artifact, ctx))
-    if self.tryrun:
-      wic.uploads.clear()  # pragma: nocover
 
   def download_sources(self):
     """ download_sources downloads the sources in the given config to the
@@ -91,23 +89,32 @@ class WinISOCustomization(customization.Customization):
           ),)
     return self._canon_cust
 
+  def remove_upload_dests(self):
+    """ remove_upload_dests removes the upload_dests specified by a config.
+    This is meant to be used by the try builder to avoid uploading to prod
+    locations from a try job.
+    """
+    self.customization().windows_iso_customization.uploads.clear()
+
   @property
   def outputs(self):
     """ return the output(s) of executing this config. Doesn't guarantee that
     the output(s) exists"""
+    uploads = []
     if self.get_key():
       location = 'WIB-ISO/{}.iso'
       if self.tryrun:
         location = 'WIB-ISO-TRY/{}.iso'  # pragma: nocover
       output = src_pb.GCSSrc(
           bucket='chrome-gce-images', source=location.format(self.get_key()))
-      return [
+      uploads.append(
           dest_pb.Dest(
               gcs_src=output,
               tags={'orig': self._source.get_url(src_pb.Src(gcs_src=output))},
-          )
-      ]
-    return None  # pragma: no cover
+          ))
+    if self.customization().windows_iso_customization.uploads:
+      uploads.extend(self.customization().windows_iso_customization.uploads)
+    return uploads
 
   @property
   def inputs(self):

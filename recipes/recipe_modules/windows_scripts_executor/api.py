@@ -163,6 +163,12 @@ class WindowsPSExecutorAPI(recipe_api.RecipeApi):
       with self.m.step.nest('Pin resources from {}'.format(cust.name())):
         cust.pin_sources(ctx)
 
+  def trim_uploads(self, customizations):
+    """ trim_uploads removes the user specified uploads from a config.
+    """
+    for cust in customizations:
+      cust.remove_upload_dests()
+
   def update_context(self, custs, ctx):
     """ update_context returns an updated dict with all the contexts
     updated
