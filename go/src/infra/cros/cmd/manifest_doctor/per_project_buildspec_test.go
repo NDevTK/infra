@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //go:build !windows
@@ -123,9 +123,10 @@ func (tc *testConfig) setUpPPBTest(t *testing.T) (*gs.FakeClient, gerrit.Client)
 			// Mock manifest-internal branches request.
 			chromeInternalHost: {
 				"chromeos/manifest-internal": {
-					"refs/heads/main":                "deadcafe",
-					"refs/heads/release-R93-13816.B": "deadbeef",
-					"refs/heads/release-R94-13904.B": "beefcafe",
+					"refs/heads/main":                          "deadcafe",
+					"refs/heads/release-R93-13816.B":           "deadbeef",
+					"refs/heads/release-R94-13904.B":           "beefcafe",
+					"refs/heads/release-R91-11816.B--snapshot": "cafebeef",
 				},
 			},
 		},
@@ -424,4 +425,25 @@ func TestCreateProjectBuildspecOtherRepos(t *testing.T) {
 		externalBuildspecsGSBucket: externalBuildspecsGSBucketDefault,
 	}
 	assert.NilError(t, b.CreateBuildspecs(f, gc))
+}
+
+func TestIgnoreReleaseSnapshotBranch(t *testing.T) {
+	t.Parallel()
+	tc := testConfig{
+		projects: map[string][]string{
+			"galaxy": {"milkyway"},
+		},
+		buildspecs: map[string]bool{
+			"full/buildspecs/91/11816.0.0.xml": true,
+		},
+		branches: []string{"refs/heads/release-R91-11816.B"}}
+	f, gc := tc.setUpPPBTest(t)
+
+	b := projectBuildspec{
+		buildspec:                  "full/buildspecs/91/11816.0.0.xml",
+		projects:                   []string{"galaxy/milkyway"},
+		internalBuildspecsGSBucket: internalBuildspecsGSBucketDefault,
+		externalBuildspecsGSBucket: externalBuildspecsGSBucketDefault,
+	}
+	assert.ErrorContains(t, b.CreateBuildspecs(f, gc), "release branch for R91 was not found")
 }

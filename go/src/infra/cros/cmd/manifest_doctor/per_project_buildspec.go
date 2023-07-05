@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package main
@@ -385,7 +385,7 @@ func (b *projectBuildspec) CreateProjectBuildspecs(projects map[string]projectBu
 		var releaseBranch string
 		hasPreviousMilestone := false
 		for branch := range branches {
-			if strings.HasPrefix(branch, fmt.Sprintf("refs/heads/release-R%d-", milestone)) {
+			if strings.HasPrefix(branch, fmt.Sprintf("refs/heads/release-R%d-", milestone)) && !strings.HasSuffix(branch, "-snapshot") {
 				releaseBranch = branch
 				break
 			}
