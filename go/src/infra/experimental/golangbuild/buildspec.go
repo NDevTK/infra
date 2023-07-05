@@ -51,7 +51,7 @@ type buildSpec struct {
 	experiments map[string]struct{}
 }
 
-func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, st *build.State, inputs *golangbuildpb.Inputs) (*buildSpec, error) {
+func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map[string]struct{}, st *build.State, inputs *golangbuildpb.Inputs) (*buildSpec, error) {
 	authOpts := chromeinfra.SetDefaultAuthOptions(auth.Options{
 		Scopes: append([]string{
 			"https://www.googleapis.com/auth/userinfo.email",
@@ -152,12 +152,6 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, st *build.State
 	casInst, err := casInstanceFromEnv()
 	if err != nil {
 		return nil, fmt.Errorf("casInstanceFromEnv: %w", err)
-	}
-
-	// Collect enabled experiments.
-	experiments := make(map[string]struct{})
-	for _, ex := range st.Build().GetInput().GetExperiments() {
-		experiments[ex] = struct{}{}
 	}
 
 	return &buildSpec{
