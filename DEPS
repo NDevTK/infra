@@ -148,7 +148,7 @@ deps = {
 
       {
         'package': 'infra/tools/cloudbuildhelper/${{os=mac,linux}}-${{arch=amd64}}',
-        'version': 'git_revision:7088a6d730d06d978dfa0e9c5dd07e51aeb5916e',
+        'version': 'git_revision:d8ce7f0ecf5d56e619686c0e82313227ba05c53b',
       },
 
       # TODO: These should be built via 3pp instead.
