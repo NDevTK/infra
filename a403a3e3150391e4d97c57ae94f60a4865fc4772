@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "93b651fa_40a2f09f",
+        "filename": "go/src/infra/experimental/golangbuild/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1112930
+      },
+      "writtenOn": "2023-07-05T17:01:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "50700ac5_7243c9a9",
+      "range": {
+        "startLine": 109,
+        "startChar": 0,
+        "endLine": 110,
+        "endChar": 71
+      },
+      "revId": "a403a3e3150391e4d97c57ae94f60a4865fc4772",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7be98899_e7456a1c",
@@ -54,6 +78,24 @@
       "writtenOn": "2023-07-05T16:57:00Z",
       "side": 1,
       "message": "Another work-in-progress experiment, if you want to capture its current behavior:\n\n```suggestion\n// * golang.no_network_in_short_test_mode: Disable network access in -short test\n//   mode. Doesn\u0027t work yet because result_adapter doesn\u0027t handle it when the -json\n//   flag is provided in a nested command string rather than as a standalone flag.\npackage main\n```\n\n(I\u0027ll update it after fixing it.)",
+      "revId": "a403a3e3150391e4d97c57ae94f60a4865fc4772",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "94b68c64_3bd2143c",
+        "filename": "go/src/infra/experimental/golangbuild/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1112930
+      },
+      "writtenOn": "2023-07-05T17:01:14Z",
+      "side": 1,
+      "message": "Oops, I wasn\u0027t synced far enough to see this one. 😊",
+      "parentUuid": "7be98899_e7456a1c",
       "revId": "a403a3e3150391e4d97c57ae94f60a4865fc4772",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
