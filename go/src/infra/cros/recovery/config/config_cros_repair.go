@@ -3221,6 +3221,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName:   "cros_verify_rootfs_verity",
 			RunControl: RunControl_ALWAYS_RUN,
 			RecoveryActions: []string{
+				"Quick provision OS",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in DEV mode, with force to DEV-mode",
 			},
