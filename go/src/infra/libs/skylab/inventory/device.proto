@@ -406,7 +406,7 @@ message HardwareCapabilities {
 //
 // Keep sorted by field names.
 //
-// NEXT TAG: 37
+// NEXT TAG: 38
 message Peripherals {
   optional bool audio_board = 6;
   // The DUT is housed in an audio box to record / replay audio for audio
@@ -510,6 +510,9 @@ message Peripherals {
   // If there are no common, valid features between all routers, this will just
   // have a single WIFI_ROUTER_FEATURE_INVALID entry.
   repeated WifiRouterFeature peripheral_wifi_features = 32;
+
+  // All wifi router model names in the testbed.
+  repeated string peripheral_wifi_models = 37;
 
   // The state of Human Motion Robot system.
   // See UFS peripherals.proto or go/fleet-infra-hmr-support for more context.
