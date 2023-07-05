@@ -32,6 +32,7 @@ import "infra/unifiedfleet/api/v1/models/scheduling_unit.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/cbi.proto";
 import "infra/unifiedfleet/api/v1/models/ownership.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/usb_drive.proto";
+import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/wifi_router.proto";
 
 service Fleet {
   // CreateChromePlatform creates a new chromePlatform.
@@ -1793,6 +1794,12 @@ message ChromeOsRecoveryData {
   message WifiRouter {
     string hostname = 1;
     models.chromeos.lab.PeripheralState state = 2;
+    // The model of the router.
+    string model = 3;
+    // Supported test router hardware and software features.
+    repeated chromiumos.test.lab.api.WifiRouterFeature features = 4;
+    // The type of router device this is (e.g. OpenWrt-based, ChromeOS Gale).
+    chromiumos.test.lab.api.WifiRouterDeviceType device_type = 5;
   }
 
   message BluetoothPeer {
@@ -1814,6 +1821,8 @@ message ChromeOsRecoveryData {
     chromiumos.test.lab.api.Cbi cbi = 9;
     // Audio Box Jack Plugger is a part of chameleon
     models.chromeos.lab.Chameleon.AudioBoxJackPlugger audiobox_jackplugger_state = 10;
+    // WifiRouterFeatures that are supported by all wifi routers in the testbed.
+    repeated chromiumos.test.lab.api.WifiRouterFeature wifi_router_features = 11;
   }
 
   // Used for updating back essential configs from repair/deploy task.
