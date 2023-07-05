@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	"infra/unifiedfleet/app/config"
 	. "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/util"
 )
@@ -113,6 +114,66 @@ func TestGetRack(t *testing.T) {
 			So(err.Error(), ShouldContainSubstring, InternalError)
 		})
 	})
+}
+
+func TestGetRackACL(t *testing.T) {
+	t.Parallel()
+	ctx := gaetesting.TestingContextWithAppID("go-test")
+	ctx = config.Use(ctx, &config.Config{
+		ExperimentalAPI: &config.ExperimentalAPI{
+			GetRackACL: 99,
+		},
+	})
+
+	// realm "@internal:ufs/os-acs"
+	rack := mockRack("rack-123", 100, ufspb.Zone_ZONE_CHROMEOS5)
+	_, err := CreateRack(ctx, rack)
+	if err != nil {
+		t.Errorf("failed to create rack: %s", err)
+	}
+
+	Convey("When a rack is created in a certain realm", t, func() {
+
+		Convey("No user is rejected", func() {
+			resp, err := getRackACL(ctx, "rack-123")
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Internal")
+			So(resp, ShouldBeNil)
+		})
+		Convey("A user without perms is rejected", func() {
+			userCtx := mockUser(ctx, "email@google.com")
+			resp, err := getRackACL(userCtx, "rack-123")
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Permission")
+			So(resp, ShouldBeNil)
+		})
+		Convey("A user without the correct perm is rejected", func() {
+			userCtx := mockUser(ctx, "email@google.com")
+			mockRealmPerms(userCtx, util.AcsLabAdminRealm, util.ConfigurationsGet)
+			mockRealmPerms(userCtx, util.AcsLabAdminRealm, util.RegistrationsCreate)
+			resp, err := getRackACL(userCtx, "rack-123")
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Permission")
+			So(resp, ShouldBeNil)
+		})
+		Convey("A user without the correct realm is rejected", func() {
+			userCtx := mockUser(ctx, "email@google.com")
+			mockRealmPerms(userCtx, util.SatLabInternalUserRealm, util.RegistrationsGet)
+			resp, err := getRackACL(userCtx, "rack-123")
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Permission")
+			So(resp, ShouldBeNil)
+		})
+		Convey("A user with the correct realm and permission is accepted", func() {
+			userCtx := mockUser(ctx, "email@google.com")
+			mockRealmPerms(userCtx, util.AcsLabAdminRealm, util.RegistrationsGet)
+			resp, err := getRackACL(userCtx, "rack-123")
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp, ShouldResembleProto, rack)
+		})
+	})
+
 }
 
 func TestListRacks(t *testing.T) {
