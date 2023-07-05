@@ -12,7 +12,7 @@ import "infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/servo.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
-
+import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/wifi_router.proto";
 
 // This proto defines setup labels in lab config of a DUT.
 
@@ -106,27 +106,34 @@ message Wifi {
   }
   AntennaConnection antenna_conn = 2;
 
+  // Deprecated. Replace all usage with chromiumos.test.lab.api.WifiRouterFeature.
   enum Router {
     ROUTER_UNSPECIFIED = 0;
     ROUTER_802_11AX = 1;
   }
   // Indicate if the device is in a pre-setup environment with 802.11ax routers.
   // crbug.com/1044786
+  // Deprecated. Use wifi_router_features instead.
   Router router = 3;
-  // collections of routers used for wifi testing.
+
+  // Router peripherals used for wifi testing.
   repeated WifiRouter wifi_routers = 4;
 
-  // Feature for Wifi.
-  // Next Tag: 6
-  enum Feature {
-    UNKNOWN = 0;
-  }
-  // Features this wifi testbed has.
-  repeated Feature features = 5;
+  // WifiRouterFeatures that are supported by all wifi routers in the testbed.
+  //
+  // If there are no wifi routers this will be empty.
+  // If any routers have unknown features, this will just have a single
+  // WIFI_ROUTER_FEATURE_UNKNOWN entry.
+  // If any routers' features has a WIFI_ROUTER_FEATURE_INVALID feature, a
+  // WIFI_ROUTER_FEATURE_INVALID feature will be included along with the other
+  // common, valid features.
+  // If there are no common, valid features between all routers, this will just
+  // have a single WIFI_ROUTER_FEATURE_INVALID entry.
+  repeated chromiumos.test.lab.api.WifiRouterFeature wifi_router_features = 5;
 }
 
 
-// Next Tag: 7
+// Next Tag: 8
 message WifiRouter {
 
   string hostname = 1;
@@ -137,13 +144,11 @@ message WifiRouter {
   // RPM to perform remote power management. use OSRPM defined here.
   OSRPM rpm = 5;
 
-  // Feature for Wifi.
-  // Next Tag: 7
-  enum Feature {
-    UNKNOWN = 0;
-  }
-  // Features this router exhibits.
-  repeated Feature features = 6;
+  // Supported test router hardware and software features.
+  repeated chromiumos.test.lab.api.WifiRouterFeature features = 6;
+
+  // The type of router device this is (e.g. OpenWrt-based, ChromeOS Gale).
+  chromiumos.test.lab.api.WifiRouterDeviceType device_type = 7;
 }
 
 // Next Tag: 2
