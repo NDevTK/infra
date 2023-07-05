@@ -106,6 +106,11 @@
 //
 //   - golang.build_result_sharing: Fetch prebuilt toolchain from CAS if an
 //     identical build has completed previously.
+//   - golang.cache_tools_root: Cache the cipd tool installation root across
+//     builds and builders. If the tool versions remain the same across builds,
+//     this allows `cipd ensure` to become a no-op on subsequent builds. This
+//     requires a named cache defined on each builder, whose name is provided
+//     via golangbuildpb.Inputs.ToolsCache.
 //   - golang.force_test_outside_repository: Can be used to force running tests
 //     from outside the repository to catch accidental reads outside of module
 //     boundaries despite the repository not having opted-in to this test
@@ -130,6 +135,7 @@ import (
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe/build"
 	"golang.org/x/exp/slices"
 	"golang.org/x/mod/modfile"
@@ -147,8 +153,14 @@ func main() {
 func run(ctx context.Context, args []string, st *build.State, inputs *golangbuildpb.Inputs) (err error) {
 	log.Printf("run starting")
 
+	// Collect enabled experiments.
+	experiments := make(map[string]struct{})
+	for _, ex := range st.Build().GetInput().GetExperiments() {
+		experiments[ex] = struct{}{}
+	}
+
 	// Install some tools we'll need, including a bootstrap toolchain.
-	toolsRoot, err := installTools(ctx)
+	toolsRoot, err := installTools(ctx, inputs, experiments)
 	if err != nil {
 		return err
 	}
@@ -160,7 +172,7 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		return build.AttachStatus(errors.Annotate(err, "Get CWD").Err(), bbpb.Status_INFRA_FAILURE, nil)
 	}
 
-	spec, err := deriveBuildSpec(ctx, cwd, toolsRoot, st, inputs)
+	spec, err := deriveBuildSpec(ctx, cwd, toolsRoot, experiments, st, inputs)
 	if err != nil {
 		return build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
 	}
@@ -359,7 +371,7 @@ infra/3pp/tools/go/${platform} version:2@1.19.3
 golang/third_party/llvm-mingw-msvcrt/${platform} latest
 `
 
-func installTools(ctx context.Context) (toolsRoot string, err error) {
+func installTools(ctx context.Context, inputs *golangbuildpb.Inputs, experiments map[string]struct{}) (toolsRoot string, err error) {
 	step, ctx := build.StartStep(ctx, "install tools")
 	defer func() {
 		// Any failure in this function is an infrastructure failure.
@@ -369,11 +381,34 @@ func installTools(ctx context.Context) (toolsRoot string, err error) {
 
 	io.WriteString(step.Log("ensure file"), cipdDeps)
 
-	toolsRoot, err = os.Getwd()
-	if err != nil {
-		return "", err
+	if _, ok := experiments["golang.cache_tools_root"]; ok {
+		// Store in a named cache. This is shared across builder types,
+		// allowing reuse across builds if the dependencies versions
+		// are the same.
+		luciExe := lucictx.GetLUCIExe(ctx)
+		if luciExe == nil {
+			return "", fmt.Errorf("missing LUCI_CONTEXT")
+		}
+
+		cache := inputs.ToolsCache
+		if cache == "" {
+			return "", fmt.Errorf("inputs missing ToolsCache: %+v", inputs)
+		}
+		if !filepath.IsLocal(cache) {
+			return "", fmt.Errorf("ToolsCache %q must be relative", cache)
+		}
+
+		toolsRoot = filepath.Join(luciExe.GetCacheDir(), cache)
+	} else {
+		// Store under CWD. This will be deleted after each build.
+		toolsRoot, err = os.Getwd()
+		if err != nil {
+			return "", err
+		}
+		toolsRoot = filepath.Join(toolsRoot, "tools")
 	}
-	toolsRoot = filepath.Join(toolsRoot, "tools")
+
+	io.WriteString(step.Log("tools root"), toolsRoot)
 
 	// Install packages.
 	cmd := exec.CommandContext(ctx, "cipd",
