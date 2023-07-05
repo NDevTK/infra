@@ -101,6 +101,13 @@
 //
 // Experiments can be enabled on LUCIEXE_FAKEBUILD runs through the "experiments" property (array
 // of strings) on "input."
+//
+// ### Current experiments
+//
+// * golang.build_result_sharing: Fetch prebuilt toolchain from CAS if an
+//   identical build has completed previously.
+// * golang.force_test_outsite_repository: Run tests from outside the
+//   repository to catch accidental reads outside of module boundaries.
 package main
 
 import (
