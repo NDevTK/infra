@@ -1404,6 +1404,20 @@ wheel: <
 
 * *universal*
 
+## **certifi-py3**
+
+### 2023.5.7
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/certifi-py3"
+  version: "version:2023.5.7"
+>
+```
+
+
+* *universal*
+
 ## **cffi**
 
 ### 1.14.3
@@ -7762,6 +7776,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/selenium-py3"
   version: "version:4.1.0"
+>
+```
+
+
+* *universal*
+
+### 4.10.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/selenium-py3"
+  version: "version:4.10.0"
 >
 ```
 
