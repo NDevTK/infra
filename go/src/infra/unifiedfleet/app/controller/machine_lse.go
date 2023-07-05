@@ -1898,6 +1898,7 @@ func updateRecoveryLabData(ctx context.Context, hostname string, resourceState u
 				updateRecoveryPeripheralServo(peri, labData)
 				// Update WiFi routers
 				updateRecoveryPeripheralWifi(ctx, peri, labData.GetWifiRouters())
+				peri.Wifi.WifiRouterFeatures = labData.WifiRouterFeatures
 				// Update Bluetooth peers
 				if err = updateBluetoothPeerStates(peri, labData.GetBluetoothPeers()); err != nil {
 					return err
@@ -1964,30 +1965,35 @@ func updateRecoveryPeripheralWifi(ctx context.Context, p *chromeosLab.Peripheral
 		p.Wifi = &chromeosLab.Wifi{}
 	}
 	wifi := p.GetWifi()
-	// labDataRouterStateMap is hostname-> wifirouter state hashmap for easier individual Wi-Fi router update
-	labDataRouterStateMap := make(map[string]chromeosLab.PeripheralState)
+	wifiRoutersByHostname := make(map[string]*ufsAPI.ChromeOsRecoveryData_WifiRouter)
 	for _, wifiRouter := range wifiRouters {
-		labDataRouterStateMap[wifiRouter.GetHostname()] = wifiRouter.GetState()
+		wifiRoutersByHostname[wifiRouter.GetHostname()] = wifiRouter
 	}
 	var newRouters []*chromeosLab.WifiRouter
 	for _, lseRouter := range wifi.GetWifiRouters() {
 		// edit wifirouter if router already exists in UFS
-		if labDataRouterState, ok := labDataRouterStateMap[lseRouter.GetHostname()]; ok {
+		if wifiRouter, ok := wifiRoutersByHostname[lseRouter.GetHostname()]; ok {
 			logging.Infof(ctx, "editRecoverPeripheralWifi - edit wifi router(%s), found in labdata.", lseRouter.GetHostname())
-			lseRouter.State = labDataRouterState
+			lseRouter.State = wifiRouter.State
+			lseRouter.Model = wifiRouter.Model
+			lseRouter.Features = wifiRouter.Features
+			lseRouter.DeviceType = wifiRouter.DeviceType
 			newRouters = append(newRouters, lseRouter)
-			delete(labDataRouterStateMap, lseRouter.GetHostname())
+			delete(wifiRoutersByHostname, lseRouter.GetHostname())
 		} else {
 			// remove from UFS if not in lab data
 			logging.Infof(ctx, "editRecoverPeripheralWifi - remove wifi router(%s), not found in labdata.", lseRouter.GetHostname())
 		}
 	}
 	// add new wifirouters to UFS
-	for hostname := range labDataRouterStateMap {
+	for hostname, wifiRouter := range wifiRoutersByHostname {
 		logging.Infof(ctx, "editRecoverPeripheralWifi - add wifi router(%s) new in labdata.", hostname)
 		newRouters = append(newRouters, &chromeosLab.WifiRouter{
-			Hostname: hostname,
-			State:    labDataRouterStateMap[hostname],
+			Hostname:   hostname,
+			State:      wifiRouter.State,
+			Model:      wifiRouter.Model,
+			Features:   wifiRouter.Features,
+			DeviceType: wifiRouter.DeviceType,
 		})
 	}
 	// assign updated routers to Wifi
