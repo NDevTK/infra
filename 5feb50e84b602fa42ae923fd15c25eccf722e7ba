@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9577aedf_1ab256ea",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2023-07-05T20:56:50Z",
+      "side": 1,
+      "message": "LGTM, thanks! only a couple of really minor comments",
+      "revId": "5feb50e84b602fa42ae923fd15c25eccf722e7ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d0b463a5_9425ed0e",
+        "filename": "go/src/infra/experimental/golangbuild/main.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 378,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2023-07-05T20:56:50Z",
+      "side": 1,
+      "message": "maybe add a TODO to move this into the input properties? I think this is fine for now.",
+      "range": {
+        "startLine": 374,
+        "startChar": 0,
+        "endLine": 378,
+        "endChar": 30
+      },
+      "revId": "5feb50e84b602fa42ae923fd15c25eccf722e7ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "24a8ea0f_81fa1f1e",
+        "filename": "go/src/infra/experimental/golangbuild/main.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 392,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2023-07-05T20:56:50Z",
+      "side": 1,
+      "message": "nit: dependencies\u0027",
+      "range": {
+        "startLine": 392,
+        "startChar": 41,
+        "endLine": 392,
+        "endChar": 53
+      },
+      "revId": "5feb50e84b602fa42ae923fd15c25eccf722e7ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
