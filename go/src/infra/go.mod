@@ -76,7 +76,6 @@ require (
 	go.chromium.org/chromiumos/infra/proto/go v0.0.0-20230321181237-93aaab0cc47c
 	go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp v0.0.0-20230324193748-f3c317a057be
 	go.chromium.org/luci v0.0.0-20230103053340-8a57daa72e32
-	go.opencensus.io v0.24.0
 	go.opentelemetry.io/contrib/detectors/gcp v1.10.0
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.40.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/httptrace/otelhttptrace v0.40.0
@@ -203,6 +202,7 @@ require (
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	github.com/zeebo/bencode v1.0.0 // indirect
+	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/internal/retry v1.14.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.14.0 // indirect
 	go.opentelemetry.io/otel/metric v0.37.0 // indirect

@@ -13,7 +13,6 @@ import (
 	"sync"
 
 	"github.com/pkg/errors"
-	"go.opencensus.io/trace"
 
 	"infra/cros/cmd/lucifer/internal/api"
 	"infra/cros/cmd/lucifer/internal/autotest"
@@ -22,8 +21,6 @@ import (
 )
 
 func doProvisioningStep(ctx context.Context, c *testCmd, ac *api.Client) (err error) {
-	ctx, span := trace.StartSpan(ctx, "Provision")
-	defer span.End()
 	s := ac.Step("Provision")
 	defer s.Close()
 	defer func() {
@@ -53,8 +50,6 @@ func doProvisioningStep(ctx context.Context, c *testCmd, ac *api.Client) (err er
 }
 
 func doPrejobStep(ctx context.Context, c *testCmd, ac *api.Client) (err error) {
-	ctx, span := trace.StartSpan(ctx, "Pre-job")
-	defer span.End()
 	if len(c.hosts) != 1 {
 		return errors.New("Prejob task only supported for one host")
 	}
@@ -75,8 +70,6 @@ func doPrejobStep(ctx context.Context, c *testCmd, ac *api.Client) (err error) {
 }
 
 func doRunningStep(ctx context.Context, c *testCmd, ac *api.Client) (err error) {
-	ctx, span := trace.StartSpan(ctx, "Test")
-	defer span.End()
 	s := ac.Step("Test")
 	defer s.Close()
 	defer func() {
@@ -103,8 +96,6 @@ func doRunningStep(ctx context.Context, c *testCmd, ac *api.Client) (err error) 
 }
 
 func doGatheringSubstep(ctx context.Context, c autotest.Config, ac *api.Client, t *atutil.HostTest, r *atutil.Result) {
-	_, span := trace.StartSpan(ctx, "Gather")
-	defer span.End()
 	s := ac.Step("Gather")
 	defer s.Close()
 	event.Send(event.Gathering)
@@ -130,8 +121,6 @@ func collectCrashinfo(c autotest.Config, hosts []string, resultsDir string) erro
 }
 
 func doParsingStep(ctx context.Context, c *testCmd, ac *api.Client) (err error) {
-	_, span := trace.StartSpan(ctx, "Parse")
-	defer span.End()
 	event.Send(event.Parsing)
 	var d string
 	s := ac.Step("Upload results to TKO")
