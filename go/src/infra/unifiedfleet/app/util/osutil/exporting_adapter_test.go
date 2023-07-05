@@ -9,6 +9,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	. "github.com/smartystreets/goconvey/convey"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	"infra/libs/skylab/inventory"
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -109,21 +110,19 @@ var lse = ufspb.MachineLSE{
 									Wificell:    true,
 									AntennaConn: chromeosLab.Wifi_CONN_CONDUCTIVE,
 									Router:      chromeosLab.Wifi_ROUTER_802_11AX,
-									// TODO: add valid enums when non Wifi_UNKNONW enum is available
-									// The UNKNONWN enum are testing periperal_wifi_features does not include "UNKNOWN" labels.
-									Features: []chromeosLab.Wifi_Feature{
-										chromeosLab.Wifi_UNKNOWN,
+									WifiRouterFeatures: []labapi.WifiRouterFeature{
+										labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_UNKNOWN,
 									},
 									WifiRouters: []*chromeosLab.WifiRouter{
 										{
-											Features: []chromeosLab.WifiRouter_Feature{
-												chromeosLab.WifiRouter_UNKNOWN,
-												chromeosLab.WifiRouter_UNKNOWN,
+											Features: []labapi.WifiRouterFeature{
+												labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_UNKNOWN,
+												labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_UNKNOWN,
 											},
 										},
 										{
-											Features: []chromeosLab.WifiRouter_Feature{
-												chromeosLab.WifiRouter_UNKNOWN,
+											Features: []labapi.WifiRouterFeature{
+												labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_UNKNOWN,
 											},
 										},
 									},
