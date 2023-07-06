@@ -31,23 +31,23 @@ INFRA_GO_SKIP_TOOLS_INSTALL = 'INFRA_GO_SKIP_TOOLS_INSTALL'
 INFRA_GO_VERSION_VARIANT = 'INFRA_GO_VERSION_VARIANT'
 
 # /path/to/infra
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+INFRA_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # The current overarching Infra version. If this changes, everything will be
 # updated regardless of its version.
 INFRA_VERSION = 1
 
 # Default workspace with infra go code.
-WORKSPACE = os.path.join(ROOT, 'go')
-
-# Where to install Go toolset to. GOROOT would be <TOOLSET_ROOT>/go.
-TOOLSET_ROOT = os.path.join(WORKSPACE, 'golang')
+WORKSPACE = os.path.join(INFRA_ROOT, 'go')
 
 # Platform depended suffix for executable files.
 EXE_SFX = '.exe' if sys.platform == 'win32' else ''
 
 # On Windows we use git from depot_tools.
 GIT_EXE = 'git.bat' if sys.platform == 'win32' else 'git'
+
+# A file with info about tools installed into GOBIN.
+TOOLS_SPEC_FILE = '.tools_spec.json'
 
 # Version of Go CIPD package (infra/3pp/tools/go/${platform}) to install per
 # value of INFRA_GO_VERSION_VARIANT env var.
@@ -72,19 +72,21 @@ Layout = collections.namedtuple(
         # The list of paths to tools.go files which are parsed to figure out
         # what binaries to "go install ..." into the GOBIN.
         'go_tools_specs',
+
+        # A list of directories to delete. Useful when changing the layout
+        # structure and cleaning up .gitignore.
+        'cleanup_dirs',
     ))
 
 
 # A base empty Layout.
 _EMPTY_LAYOUT = Layout(
-    toolset_root=None,
-    workspace=None,
-    go_tools_specs=None)
+    toolset_root=None, workspace=None, go_tools_specs=None, cleanup_dirs=None)
 
 
 # Infra standard layout.
 LAYOUT = Layout(
-    toolset_root=TOOLSET_ROOT,
+    toolset_root=os.path.join(WORKSPACE, 'golang'),
     workspace=WORKSPACE,
     # Note: order is important, a tool is installed only the first time it is
     # mentioned, using go.mod matching the corresponding tools.go for
@@ -92,6 +94,18 @@ LAYOUT = Layout(
     go_tools_specs=[
         os.path.join(WORKSPACE, 'src', 'go.chromium.org', 'luci', 'tools.go'),
         os.path.join(WORKSPACE, 'src', 'infra', 'tools.go'),
+    ],
+    cleanup_dirs=[
+        # Clean up former locations of GOCACHE and GOMODCACHE directories after
+        # they were moved under layout.toolset_root. These directories used to
+        # be in .gitignore. If we don't clean them, they'll show up in git
+        # diffs.
+        os.path.join(WORKSPACE, '.gocache'),
+        os.path.join(WORKSPACE, '.modcache'),
+        # Same for old directories that are completely unused now.
+        os.path.join(WORKSPACE, '.cache'),
+        os.path.join(WORKSPACE, '.glide'),
+        os.path.join(WORKSPACE, '.vendor'),
     ],
 )
 
@@ -136,20 +150,22 @@ def write_json(path, data):
   write_file(path, json.dumps(data, indent=2, sort_keys=True))
 
 
-def remove_directory(path):
+def remove_directory(p):
   """Recursively removes a directory."""
-  assert isinstance(path, (list, tuple))
-  p = os.path.join(*path)
   if not os.path.exists(p):
     return
-  # Crutch to remove read-only file (.git/* in particular) on Windows.
+  # Crutch to remove read-only files (.git/* and .modcache/* in particular).
+  touched = set()
+
   def onerror(func, path, _exc_info):
-    if not os.access(path, os.W_OK):
-      os.chmod(path, stat.S_IWUSR)
-      func(path)
-    else:
-      raise
-  shutil.rmtree(p, onerror=onerror if sys.platform == 'win32' else None)
+    # Need to make both the file and its parent directory writable.
+    for p in (path, os.path.dirname(path)):
+      if p not in touched:
+        os.chmod(p, os.stat(p).st_mode | stat.S_IWUSR)
+        touched.add(p)
+    func(path)
+
+  shutil.rmtree(p, onerror=onerror)
 
 
 def install_toolset(toolset_root, version):
@@ -184,7 +200,7 @@ def temp_dir(path):
   try:
     yield tmp
   finally:
-    remove_directory([tmp])
+    remove_directory(tmp)
 
 
 def check_hello_world(toolset_root):
@@ -263,7 +279,7 @@ def ensure_toolset_installed(toolset_root, version):
   LOGGER.info('Installing Go toolset.')
   LOGGER.info('  Old toolset is %s', installed)
   LOGGER.info('  New toolset is %s', version)
-  remove_directory([toolset_root])
+  remove_directory(toolset_root)
   install_toolset(toolset_root, version)
   LOGGER.info('Go toolset installed: %s', version)
   write_file([toolset_root, 'INSTALLED_TOOLSET'], version)
@@ -309,7 +325,7 @@ def install_go_tools(layout, force):
 
   # Use HEAD revisions to detect if anything has changed. This is sloppy but
   # significantly faster than relying on Go to check its build caches.
-  tools_spec_path = [layout.workspace, '.tools_spec.json']
+  tools_spec_path = [layout.workspace, TOOLS_SPEC_FILE]
   if not force and read_json(tools_spec_path) == spec:
     return
 
@@ -349,10 +365,10 @@ def get_go_environ_diff(layout):
   # Need to make sure we pick up our `go` and tools before the system ones.
   path_prefixes = [
       os.path.join(layout.toolset_root, 'go', 'bin'),
-      os.path.join(ROOT, 'cipd'),
-      os.path.join(ROOT, 'cipd', 'bin'),
-      os.path.join(ROOT, 'luci', 'appengine', 'components', 'tools'),
-      os.path.join(ROOT, 'cipd', 'gcloud', 'bin'),
+      os.path.join(INFRA_ROOT, 'cipd'),
+      os.path.join(INFRA_ROOT, 'cipd', 'bin'),
+      os.path.join(INFRA_ROOT, 'luci', 'appengine', 'components', 'tools'),
+      os.path.join(INFRA_ROOT, 'cipd', 'gcloud', 'bin'),
   ]
 
   # GOBIN often contain "WIP" variant of system binaries, pick them up last.
@@ -368,9 +384,9 @@ def get_go_environ_diff(layout):
       'GOPATH': None,
       'GOPRIVATE': '*.googlesource.com,*.google.com',
 
-      # Don't use default cache in '~'.
-      'GOCACHE': os.path.join(layout.workspace, '.gocache'),
-      'GOMODCACHE': os.path.join(layout.workspace, '.modcache'),
+      # Don't use default cache in '~' to avoid leaking it on builders.
+      'GOCACHE': os.path.join(layout.toolset_root, 'gocache'),
+      'GOMODCACHE': os.path.join(layout.toolset_root, 'modcache'),
 
       # Infra Go workspace doesn't use advanced build systems,
       # which inject custom `gopackagesdriver` binary. See also
@@ -416,18 +432,23 @@ def get_go_environ(layout):
   path_prefixes = diff.env_prefixes['PATH']
   path_suffixes = diff.env_suffixes['PATH']
 
-  # Remove preexisting bin/ paths pointing to infra or infra_internal Go
-  # workspaces. It's important when switching from infra_internal to infra
-  # environments: infra_internal bin paths should be removed.
-  # TODO(vadimsh,iannucci): This code knows about gclient checkout layout.
-  gclient_root = os.path.dirname(ROOT)
-
   def should_keep(p):
+    # Skip entries we'll insert in the correct position below.
+    p = os.path.normpath(p)
     if p in path_prefixes or p in path_suffixes:
-      return False  # we'll insert this entry in the correct position below
-    for d in ['infra', 'infra_internal']:
-      if p.startswith(os.path.join(gclient_root, d, 'go')):
-        return False
+      return False
+    # Skip anything resembling a Go environment. That way switching between
+    # different environments works correctly. It is important when switching
+    # between infra and infra_internal environments.
+    if (p.endswith(os.sep + 'bin') and
+        os.path.exists(os.path.join(p, 'go' + EXE_SFX))):
+      return False
+    # Skip GOBIN with tools from potentially different Go environment. Use
+    # TOOLS_SPEC_FILE marker file to detect this. It is present if anything was
+    # installed into GOBIN.
+    if (p.endswith(os.sep + 'bin') and
+        os.path.exists(os.path.join(p, '..', TOOLS_SPEC_FILE))):
+      return False
     return True
   path = list(filter(should_keep, path))
 
@@ -502,6 +523,13 @@ def bootstrap(layout, logging_level, args=None):
     for k, v in prev_environ.items():
       if v is not None:
         os.environ[k] = v
+
+  # Clean up no longer used directory that are or were in .gitignore. This is
+  # useful when changing the structure of the layout.
+  for p in (layout.cleanup_dirs or []):
+    if os.path.exists(p):
+      LOGGER.info('Cleaning up no longer necessary directory: %s', p)
+      remove_directory(p)
 
   output = get_go_environ_diff(layout)._asdict()
   output['go_version'] = toolset_version

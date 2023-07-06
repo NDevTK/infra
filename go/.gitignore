@@ -1,11 +1,4 @@
-.deps_repo_versions.json
-.tools_spec.json
-/.cache
-/.glide
-/.gocache
-/.modcache
-/.vendor
 /bin
 /coverage
 /golang
-/pkg
+.tools_spec.json
