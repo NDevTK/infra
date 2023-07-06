@@ -14,6 +14,148 @@ import (
 	xmlrpc "go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 )
 
+// MockSSHRunResponse is a mock of SSHRunResponse interface.
+type MockSSHRunResponse struct {
+	ctrl     *gomock.Controller
+	recorder *MockSSHRunResponseMockRecorder
+}
+
+// MockSSHRunResponseMockRecorder is the mock recorder for MockSSHRunResponse.
+type MockSSHRunResponseMockRecorder struct {
+	mock *MockSSHRunResponse
+}
+
+// NewMockSSHRunResponse creates a new mock instance.
+func NewMockSSHRunResponse(ctrl *gomock.Controller) *MockSSHRunResponse {
+	mock := &MockSSHRunResponse{ctrl: ctrl}
+	mock.recorder = &MockSSHRunResponseMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockSSHRunResponse) EXPECT() *MockSSHRunResponseMockRecorder {
+	return m.recorder
+}
+
+// GetExitCode mocks base method.
+func (m *MockSSHRunResponse) GetExitCode() int32 {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetExitCode")
+	ret0, _ := ret[0].(int32)
+	return ret0
+}
+
+// GetExitCode indicates an expected call of GetExitCode.
+func (mr *MockSSHRunResponseMockRecorder) GetExitCode() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetExitCode", reflect.TypeOf((*MockSSHRunResponse)(nil).GetExitCode))
+}
+
+// GetStderr mocks base method.
+func (m *MockSSHRunResponse) GetStderr() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetStderr")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetStderr indicates an expected call of GetStderr.
+func (mr *MockSSHRunResponseMockRecorder) GetStderr() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStderr", reflect.TypeOf((*MockSSHRunResponse)(nil).GetStderr))
+}
+
+// GetStdout mocks base method.
+func (m *MockSSHRunResponse) GetStdout() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetStdout")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetStdout indicates an expected call of GetStdout.
+func (mr *MockSSHRunResponseMockRecorder) GetStdout() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStdout", reflect.TypeOf((*MockSSHRunResponse)(nil).GetStdout))
+}
+
+// MockHostAccess is a mock of HostAccess interface.
+type MockHostAccess struct {
+	ctrl     *gomock.Controller
+	recorder *MockHostAccessMockRecorder
+}
+
+// MockHostAccessMockRecorder is the mock recorder for MockHostAccess.
+type MockHostAccessMockRecorder struct {
+	mock *MockHostAccess
+}
+
+// NewMockHostAccess creates a new mock instance.
+func NewMockHostAccess(ctrl *gomock.Controller) *MockHostAccess {
+	mock := &MockHostAccess{ctrl: ctrl}
+	mock.recorder = &MockHostAccessMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockHostAccess) EXPECT() *MockHostAccessMockRecorder {
+	return m.recorder
+}
+
+// Ping mocks base method.
+func (m *MockHostAccess) Ping(ctx context.Context, pingCount int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Ping", ctx, pingCount)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Ping indicates an expected call of Ping.
+func (mr *MockHostAccessMockRecorder) Ping(ctx, pingCount interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Ping", reflect.TypeOf((*MockHostAccess)(nil).Ping), ctx, pingCount)
+}
+
+// Run mocks base method.
+func (m *MockHostAccess) Run(ctx context.Context, timeout time.Duration, command string, args ...string) (components.SSHRunResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, timeout, command}
+	for _, a := range args {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Run", varargs...)
+	ret0, _ := ret[0].(components.SSHRunResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Run indicates an expected call of Run.
+func (mr *MockHostAccessMockRecorder) Run(ctx, timeout, command interface{}, args ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, timeout, command}, args...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Run", reflect.TypeOf((*MockHostAccess)(nil).Run), varargs...)
+}
+
+// RunBackground mocks base method.
+func (m *MockHostAccess) RunBackground(ctx context.Context, timeout time.Duration, command string, args ...string) (components.SSHRunResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, timeout, command}
+	for _, a := range args {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "RunBackground", varargs...)
+	ret0, _ := ret[0].(components.SSHRunResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// RunBackground indicates an expected call of RunBackground.
+func (mr *MockHostAccessMockRecorder) RunBackground(ctx, timeout, command interface{}, args ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, timeout, command}, args...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RunBackground", reflect.TypeOf((*MockHostAccess)(nil).RunBackground), varargs...)
+}
+
 // MockServod is a mock of Servod interface.
 type MockServod struct {
 	ctrl     *gomock.Controller

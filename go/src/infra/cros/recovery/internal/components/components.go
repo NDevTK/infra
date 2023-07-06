@@ -18,6 +18,32 @@ import (
 // on a host, and returns the result as a single line.
 type Runner func(context.Context, time.Duration, string, ...string) (string, error)
 
+// SSHRunResponse represents results of executed command by SSH.
+type SSHRunResponse interface {
+	// Provides exit code.
+	GetExitCode() int32
+	// Provides standard output.
+	GetStdout() string
+	// Provides standard error output.
+	GetStderr() string
+}
+
+// Provide access to the host to run commands by SSH or ping it.
+type HostAccess interface {
+	// Run executes command by SSH and wait to receive results of the execution.
+	//
+	// For all exit codes != `0` an error will be generated.
+	Run(ctx context.Context, timeout time.Duration, command string, args ...string) (SSHRunResponse, error)
+	// Run executes command by SSH and don't wait for results of the execution.
+	//
+	// For all exit codes != `0` an error will be generated.
+	RunBackground(ctx context.Context, timeout time.Duration, command string, args ...string) (SSHRunResponse, error)
+	// Ping the host.
+	//
+	// If error is nil ping is successful.
+	Ping(ctx context.Context, pingCount int) error
+}
+
 // Pinger defines the type for a function that will execute a ping command
 // on a host, and returns error if something went wrong.
 type Pinger func(ctx context.Context, count int) error
