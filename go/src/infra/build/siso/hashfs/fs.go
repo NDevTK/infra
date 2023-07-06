@@ -1146,7 +1146,7 @@ func (d *directory) lookup(ctx context.Context, root *directory, fname string) (
 					elems = append(elems, elem)
 					s = rest
 				}
-				target := filepath.Join(elems...)
+				target := filepath.Join(elems[:len(elems)-1]...)
 				target = filepath.ToSlash(filepath.Join(target, e.target))
 				e, _, ok = root.lookup(ctx, root, target)
 				if !ok {
