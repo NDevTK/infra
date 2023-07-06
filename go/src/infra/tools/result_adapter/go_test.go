@@ -29,22 +29,28 @@ func TestEnsureArgsValid(t *testing.T) {
 	t.Parallel()
 
 	r := &goRun{}
-	Convey(`Does not alter correct command`, t, func() {
+	Convey(`does not alter correct command`, t, func() {
 		args := strings.Split("go test -json infra/tools/result_adapter", " ")
 		validArgs, err := r.ensureArgsValid(args)
 		So(err, ShouldBeNil)
 		So(validArgs, ShouldResemble, args)
 	})
-	Convey(`Adds json flag`, t, func() {
+	Convey(`adds -json flag`, t, func() {
 		args := strings.Split("go test infra/tools/result_adapter", " ")
 		validArgs, err := r.ensureArgsValid(args)
 		So(err, ShouldBeNil)
 		So(validArgs, ShouldResemble, strings.Split("go test -json infra/tools/result_adapter", " "))
 	})
-	Convey(`detects bad command`, t, func() {
-		args := strings.Split("result_adapter.test -json -v", " ")
+	Convey(`passes plausible command through as is`, t, func() {
+		args := strings.Split("GOROOT/src/run.bash -json", " ")
+		plausibleArgs, err := r.ensureArgsValid(args)
+		So(err, ShouldBeNil)
+		So(plausibleArgs, ShouldResemble, args)
+	})
+	Convey(`reports unlikely command`, t, func() {
+		args := strings.Split("not_the_right_thing --at=all", " ")
 		_, err := r.ensureArgsValid(args)
-		So(err, ShouldErrLike, "Expected command to be an invocation of `go test`")
+		So(err, ShouldErrLike, "Expected command to be an invocation of `go test -json` or equivalent:")
 	})
 }
 

@@ -111,9 +111,7 @@
 //     boundaries despite the repository not having opted-in to this test
 //     behavior.
 //   - golang.no_network_in_short_test_mode: Disable network access in -short
-//     test mode. Doesn't work yet because result_adapter doesn't handle it when
-//     the -json flag is provided in a nested command string rather than as a
-//     standalone flag.
+//     test mode. In the process of being gradually rolled out to all repos.
 package main
 
 import (

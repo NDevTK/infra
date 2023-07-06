@@ -28,23 +28,31 @@ import (
 // invocation and that it has the `-json` flag.
 func (r *goRun) ensureArgsValid(args []string) ([]string, error) {
 	// Scan the arguments.
-	jsonFlagIndex := -1
-	testFlagIndex := -1
+	var (
+		testArgIndex = -1
+		jsonFlagSeen = false
+	)
 	for i, t := range args {
 		switch t {
-		case "-json":
-			jsonFlagIndex = i
 		case "test":
-			testFlagIndex = i
+			testArgIndex = i
+		case "-json":
+			jsonFlagSeen = true
 		}
 	}
-	if testFlagIndex == -1 {
-		return args, errors.Reason("Expected command to be an invocation of `go test` %q", args).Err()
+	if testArgIndex != -1 && !jsonFlagSeen {
+		// If there's a 'test' argument and no '-json' flag, automatically add one.
+		args = append(args[:testArgIndex+1], append([]string{"-json"}, args[testArgIndex+1:]...)...)
+		return args, nil
 	}
-	if jsonFlagIndex == -1 {
-		args = append(args[:testFlagIndex+1], append([]string{"-json"}, args[testFlagIndex+1:]...)...)
-		return r.ensureArgsValid(args)
+	if cmd := strings.Join(args, " "); !strings.Contains(cmd, "test") && !strings.Contains(cmd, "json") {
+		// Since the command line doesn't even mention "test" nor "json", probably safe enough to fail here.
+		return nil, errors.Reason("Expected command to be an invocation of `go test -json` or equivalent: %q", args).Err()
 	}
+	// Otherwise it might be something that will emit JSON events in https://go.dev/cmd/test2json format,
+	// such as 'GOROOT/src/run.bash -json' or 'sh -c "something && go test -json ./..."'.
+	//
+	// Use the arguments as is and let it fail at a higher level if the caller made a mistake.
 	return args, nil
 }
 
