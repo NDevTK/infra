@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// To generate the runner mock, use:
+// mockgen -source=internal/execs/wifirouter/ssh/runner.go -destination internal/execs/wifirouter/ssh/mocks/runner.go -package mocks
+// Then re-add the copyright to the top.
+
 package ssh
 
 import (
