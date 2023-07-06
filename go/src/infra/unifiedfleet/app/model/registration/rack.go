@@ -6,6 +6,7 @@ package registration
 
 import (
 	"context"
+	"math/rand"
 	"strings"
 
 	"github.com/golang/protobuf/proto"
@@ -18,6 +19,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	"infra/unifiedfleet/app/config"
 	ufsds "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/util"
 )
@@ -53,6 +55,10 @@ func (e *RackEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
+func (e *RackEntity) GetRealm() string {
+	return e.Realm
+}
+
 func newRackEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
 	p := pm.(*ufspb.Rack)
 	if p.GetName() == "" {
@@ -74,6 +80,14 @@ func newRackEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, er
 		State: p.GetResourceState().String(),
 		Realm: p.GetRealm(),
 	}, nil
+}
+
+func newRackRealmEntity(ctx context.Context, pm proto.Message) (ufsds.RealmEntity, error) {
+	r, err := newRackEntity(ctx, pm)
+	if err != nil {
+		return nil, err
+	}
+	return r.(*RackEntity), nil
 }
 
 // QueryRackByPropertyName queries Rack Entity in the datastore
@@ -122,6 +136,37 @@ func UpdateRack(ctx context.Context, rack *ufspb.Rack) (*ufspb.Rack, error) {
 // GetRack returns rack for the given id from datastore.
 func GetRack(ctx context.Context, id string) (*ufspb.Rack, error) {
 	pm, err := ufsds.Get(ctx, &ufspb.Rack{Name: id}, newRackEntity)
+	if err == nil {
+		return pm.(*ufspb.Rack), err
+	}
+	return nil, err
+}
+
+// GetRackACL returns a rack for the given id from datastore if the context
+// contains a user who has registration.get perms in the rack's realm.
+//
+// Temporarily may return a result without checking realm permissions if the
+// service is not configured to always check ACLs.
+func GetRackACL(ctx context.Context, id string) (*ufspb.Rack, error) {
+	// TODO(b/285605480): Clean up cutoff once read ACLs fully rolled out.
+	cutoff := config.Get(ctx).GetExperimentalAPI().GetGetRackACL()
+	if cutoff != 0 {
+		// Roll the dice to determine which one to use
+		roll := rand.Uint32() % 100
+		cutoff := cutoff % 100
+		if roll <= cutoff {
+			logging.Infof(ctx, "GetRack --- Running in experimental API")
+			return getRackACL(ctx, id)
+		}
+	}
+
+	return GetRack(ctx, id)
+}
+
+// getRackACL returns a rack for the given id from datastore if the context
+// contains a user who has registration.get perms in the rack's realm.
+func getRackACL(ctx context.Context, id string) (*ufspb.Rack, error) {
+	pm, err := ufsds.GetACL(ctx, &ufspb.Rack{Name: id}, newRackRealmEntity, util.RegistrationsGet)
 	if err == nil {
 		return pm.(*ufspb.Rack), err
 	}
