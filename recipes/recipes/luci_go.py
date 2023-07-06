@@ -83,7 +83,7 @@ def RunSteps(
           api.step('go build', ['go', 'build', './...'])
           api.step(
               'go test',
-              api.resultdb.wrap([adapter, 'go', '--', 'go', 'test', './...']))
+              api.resultdb.wrap([adapter, 'go', '--', 'go', 'test', '-json', './...']))
           if not api.platform.is_win:
             # Windows bots do not have gcc installed at the moment.
             api.step('go test -race', ['go', 'test', '-race', './...'])

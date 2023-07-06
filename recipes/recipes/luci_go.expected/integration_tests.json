@@ -320,6 +320,7 @@
       "--",
       "go",
       "test",
+      "-json",
       "./..."
     ],
     "cwd": "[CACHE]/builder/infra/go/src/go.chromium.org/luci",
