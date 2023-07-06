@@ -37,11 +37,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # updated regardless of its version.
 INFRA_VERSION = 1
 
-# Where to install Go toolset to. GOROOT would be <TOOLSET_ROOT>/go.
-TOOLSET_ROOT = os.path.join(os.path.dirname(ROOT), 'golang')
-
 # Default workspace with infra go code.
 WORKSPACE = os.path.join(ROOT, 'go')
+
+# Where to install Go toolset to. GOROOT would be <TOOLSET_ROOT>/go.
+TOOLSET_ROOT = os.path.join(WORKSPACE, 'golang')
 
 # Platform depended suffix for executable files.
 EXE_SFX = '.exe' if sys.platform == 'win32' else ''
