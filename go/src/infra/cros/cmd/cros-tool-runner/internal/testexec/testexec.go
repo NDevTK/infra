@@ -171,6 +171,11 @@ func readTestOutput(filePath string) (*api.CrosTestResponse, error) {
 func prepareTestResponse(resultRootDir string, testCaseResults []*api.TestCaseResult) (res *api.CrosToolRunnerTestResponse, err error) {
 	var results []*api.TestCaseResult
 	for _, t := range testCaseResults {
+		//Skip if ResultsDirPath is nil
+		if t.ResultDirPath == nil {
+			log.Printf("Empty resultsDirPath in test case result: %s", t)
+			continue
+		}
 		// Create the full path to results in the test environment. For example:
 		// 		t.ResultDirPath.Path = "/tmp/test/results/tauto"
 		// 		services.CrosTestResultsDirInsideDocker = "/tmp/test/results"
