@@ -27,6 +27,8 @@ func GetCmdChromiumOSSDK() *subcommands.Command {
 			c.addBranchFlag("")
 			c.addPatchesFlag()
 			c.addProductionFlag()
+			c.addLaunchPUprFlag()
+			c.addCQPolicyFlag()
 			return c
 		},
 	}
@@ -35,7 +37,32 @@ func GetCmdChromiumOSSDK() *subcommands.Command {
 // chromiumOSSDKRun tracks relevant info for a given `try chromiumos_sdk` run.
 type chromiumOSSDKRun struct {
 	tryRunBase
-	propsFile *os.File
+	propsFile  *os.File
+	launchPUpr bool
+	cqPolicy   string
+}
+
+func (r *chromiumOSSDKRun) addLaunchPUprFlag() {
+	r.tryRunBase.Flags.BoolVar(
+		&r.launchPUpr,
+		"launch-pupr",
+		false,
+		"If given, the build will launch a PUpr build to create CL(s) that uprev to the built SDK. However, the uprev CLs might not work as expected on staging!",
+	)
+}
+
+func (r *chromiumOSSDKRun) addCQPolicyFlag() {
+	acceptableValues := [6]string{"do-nothing", "dry-run", "full-run", "abandon", "submit", ""}
+	usage := fmt.Sprintf("Specify what PUpr should do with generated CLs. Acceptable values: %+v. Irrelevant if PUpr is not launched.", acceptableValues)
+	r.tryRunBase.Flags.Func("cq-policy", usage, func(s string) error {
+		for _, v := range acceptableValues {
+			if s == v {
+				r.cqPolicy = s
+				return nil
+			}
+		}
+		return fmt.Errorf("invalid cq-policy %s", s)
+	})
 }
 
 // Run provides the logic for a `try chromiumos_sdk` command run.
@@ -55,15 +82,33 @@ func (r *chromiumOSSDKRun) Run(_ subcommands.Application, _ []string, _ subcomma
 		return CmdError
 	}
 
+	// User email is used for setting BranchPolicy.
+	// This isn't always necessary, but testing is easier if we can always spoof this command's output.
+	userEmail, err := r.getUserEmail(ctx)
+	if err != nil {
+		r.LogErr(errors.Annotate(err, "getting user's email address").Err().Error())
+		return CmdError
+	}
+
 	// Set properties.
 	propsStruct, err := r.bbClient.GetBuilderInputProps(ctx, r.getBuilderFullName())
-	fmt.Println(r.getBuilderFullName())
 	if err != nil {
 		r.LogErr(err.Error())
 		return CmdError
 	}
 	if r.branch != "" {
 		if err := bb.SetProperty(propsStruct, "manifest_branch", r.branch); err != nil {
+			r.LogErr(err.Error())
+			return CmdError
+		}
+	}
+	if err := bb.SetProperty(propsStruct, "launch_pupr", r.launchPUpr); err != nil {
+		r.LogErr(err.Error())
+		return CmdError
+	}
+	if r.cqPolicy != "" {
+		branchPolicy := createBranchPolicy(r.cqPolicy, userEmail)
+		if err := bb.SetProperty(propsStruct, "pupr_branch_policy", branchPolicy); err != nil {
 			r.LogErr(err.Error())
 			return CmdError
 		}
@@ -120,4 +165,24 @@ func (r *chromiumOSSDKRun) runBuilder(ctx context.Context) error {
 	builderName := r.getBuilderFullName()
 	_, err := r.bbClient.BBAdd(ctx, r.dryrun, append([]string{builderName}, r.bbAddArgs...)...)
 	return err
+}
+
+// createBranchPolicy creates a struct representing a BranchPolicy message with the given CQ policy and reviewer.
+// BranchPolicy, SendToCqPolicy, and Reviewer are all proto messages defined in infra/recipes/recipes/generator.proto.
+func createBranchPolicy(cqPolicy, reviewerEmail string) map[string]interface{} {
+	// Values pulled from the SendToCqPolicy enum in generator.proto.
+	var sendToCQPolicy int = map[string]int{
+		"do-nothing": 1,
+		"dry-run":    2,
+		"full-run":   3,
+		"abandon":    4,
+		"submit":     5,
+	}[cqPolicy]
+	reviewer := map[string]interface{}{"email": reviewerEmail}
+	return map[string]interface{}{
+		"pattern":                ".*",
+		"reviewers":              []interface{}{reviewer},
+		"no_existing_cls_policy": sendToCQPolicy,
+		"existing_cls_policy":    sendToCQPolicy,
+	}
 }

@@ -35,10 +35,14 @@ func TestChromiumOSSDKGetBuilderFullName(t *testing.T) {
 
 // chromiumOSSDKRunTestConfig contains info for an end-to-end test of chromiumOSSDKRun.Run().
 type chromiumOSSDKRunTestConfig struct {
-	production      bool
-	expectedBucket  string
-	expectedBuilder string
-	branch          string
+	production            bool
+	expectedBucket        string
+	expectedBuilder       string
+	branch                string
+	launchPUpr            bool
+	cqPolicy              string
+	expectedCQPolicyValue int
+	expectedReviewerEmail string
 }
 
 func doChromiumOSSDKRun(t *testing.T, tc chromiumOSSDKRunTestConfig) {
@@ -54,6 +58,7 @@ func doChromiumOSSDKRun(t *testing.T, tc chromiumOSSDKRunTestConfig) {
 		CommandRunners: []cmd.FakeCommandRunner{
 			bb.FakeAuthInfoRunner("bb", 0),
 			bb.FakeAuthInfoRunner("led", 0),
+			bb.FakeAuthInfoRunnerSuccessStdout("led", "sundar@google.com"),
 			bb.FakeAuthInfoRunnerSuccessStdout("led", "sundar@google.com"),
 			*fakeLEDGetBuilderRunner(tc.expectedBucket, tc.expectedBuilder, true),
 			bb.FakeBBAddRunner(
@@ -79,7 +84,9 @@ func doChromiumOSSDKRun(t *testing.T, tc chromiumOSSDKRunTestConfig) {
 			skipProductionPrompt: true,
 			branch:               tc.branch,
 		},
-		propsFile: propsFile,
+		launchPUpr: tc.launchPUpr,
+		cqPolicy:   tc.cqPolicy,
+		propsFile:  propsFile,
 	}
 
 	// Try running!
@@ -87,15 +94,48 @@ func doChromiumOSSDKRun(t *testing.T, tc chromiumOSSDKRunTestConfig) {
 	assert.IntsEqual(t, ret, Success)
 
 	// Inspect properties.
-	properties, err := bb.ReadStructFromFile(propsFile.Name())
+	propsStruct, err := bb.ReadStructFromFile(propsFile.Name())
 	assert.NilError(t, err)
+	properties := propsStruct.GetFields()
 
-	branch, exists := properties.GetFields()["manifest_branch"]
+	branch, exists := properties["manifest_branch"]
 	if tc.branch == "" {
 		assert.Assert(t, !exists)
 	} else {
 		assert.Assert(t, exists)
 		assert.Assert(t, tc.branch == branch.GetStringValue())
+	}
+
+	launchPUpr, exists := properties["launch_pupr"]
+	assert.Assert(t, exists)
+	assert.Assert(t, tc.launchPUpr == launchPUpr.GetBoolValue())
+
+	branchPolicy, exists := properties["pupr_branch_policy"]
+	if tc.cqPolicy == "" {
+		assert.Assert(t, !exists)
+	} else {
+		t.Log("Checking branch policy, which should exist.")
+		assert.Assert(t, exists)
+		bpStruct := branchPolicy.GetStructValue()
+		bpFields := bpStruct.GetFields()
+
+		t.Logf("Checking existing_cls_policy, which should be %d.", tc.expectedCQPolicyValue)
+		existingCLsPolicy, exists := bpFields["existing_cls_policy"]
+		assert.Assert(t, exists)
+		assert.Assert(t, tc.expectedCQPolicyValue == int(existingCLsPolicy.GetNumberValue()))
+
+		t.Logf("Checking no_existing_cls_policy, which should be %d.", tc.expectedCQPolicyValue)
+		noExistingCLsPolicy, exists := bpFields["no_existing_cls_policy"]
+		assert.Assert(t, exists)
+		assert.Assert(t, tc.expectedCQPolicyValue == int(noExistingCLsPolicy.GetNumberValue()))
+
+		reviewers, exists := bpFields["reviewers"]
+		assert.Assert(t, exists)
+		reviewersSlice := reviewers.GetListValue().AsSlice()
+		assert.Assert(t, len(reviewersSlice) == 1)
+		reviewerMap, ok := reviewersSlice[0].(map[string]interface{})
+		assert.Assert(t, ok)
+		assert.Assert(t, tc.expectedReviewerEmail == reviewerMap["email"])
 	}
 }
 
@@ -128,6 +168,30 @@ func TestChromiumOSSDKRun_Branch(t *testing.T) {
 		expectedBucket:  "chromeos/infra",
 		expectedBuilder: "build-chromiumos-sdk",
 		branch:          "stabilize-10000.B",
+	}
+	doChromiumOSSDKRun(t, tc)
+}
+
+func TestChromiumOSSDKRun_LaunchPUpr(t *testing.T) {
+	t.Parallel()
+	tc := chromiumOSSDKRunTestConfig{
+		production:      false,
+		expectedBucket:  "chromeos/staging",
+		expectedBuilder: "staging-build-chromiumos-sdk",
+		launchPUpr:      true,
+	}
+	doChromiumOSSDKRun(t, tc)
+}
+
+func TestChromiumOSSDKRun_CQPolicy(t *testing.T) {
+	t.Parallel()
+	tc := chromiumOSSDKRunTestConfig{
+		production:            false,
+		expectedBucket:        "chromeos/staging",
+		expectedBuilder:       "staging-build-chromiumos-sdk",
+		cqPolicy:              "dry-run",
+		expectedCQPolicyValue: 2, // Based on generator.proto
+		expectedReviewerEmail: "sundar@google.com",
 	}
 	doChromiumOSSDKRun(t, tc)
 }

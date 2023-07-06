@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package try
@@ -153,16 +153,20 @@ func (t *tryRunBase) promptYes() (bool, error) {
 
 // tagBuilds adds the invoker's username as a tag to builds.
 func (t *tryRunBase) tagBuilds(ctx context.Context) error {
-	stdout, _, err := t.RunCmd(ctx, "led", "auth-info")
-	if err != nil {
-		return err
-	}
-	email, err := parseEmailFromAuthInfo(stdout)
+	email, err := t.getUserEmail(ctx)
 	if err != nil {
 		return err
 	}
 	t.bbAddArgs = append(t.bbAddArgs, "-t", fmt.Sprintf("tryjob-launcher:%s", email))
 	return nil
+}
+
+func (t *tryRunBase) getUserEmail(ctx context.Context) (string, error) {
+	stdout, _, err := t.RunCmd(ctx, "led", "auth-info")
+	if err != nil {
+		return "", err
+	}
+	return parseEmailFromAuthInfo(stdout)
 }
 
 // LogOut logs to stdout.
