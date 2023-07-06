@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	commonpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -84,7 +85,7 @@ func (cmd *ProcessResultsCmd) UpdateStateKeeper(
 func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 	var err error
 	step, ctx := build.StartStep(ctx, "Results")
-	defer func() { step.End(err) }()
+	defer func() { step.End(build.AttachStatus(err, bbpb.Status_FAILURE, nil)) }()
 
 	common.AddLinksToStepSummaryMarkdown(step, cmd.TesthausUrl, cmd.StainlessUrl, common.GetGcsClickableLink(cmd.GcsUrl))
 
@@ -112,11 +113,12 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 				},
 			},
 		}
-		_ = common.CreateStepWithStatus(ctx, "Provision", cmd.ProvisionResp.GetStatus().String(), cmd.ProvisionResp.GetStatus() != api.InstallResponse_STATUS_SUCCESS, false)
+		err = common.CreateStepWithStatus(ctx, "Provision", cmd.ProvisionResp.GetStatus().String(), cmd.ProvisionResp.GetStatus() != api.InstallResponse_STATUS_SUCCESS, true)
 	}
 
 	// Parse test results
 	autotestTestCases := []*skylab_test_runner.Result_Autotest_TestCase{}
+	var testErr error
 	if cmd.TestResponses != nil && len(cmd.TestResponses.GetTestCaseResults()) > 0 {
 		isIncomplete = false
 		for _, testResult := range cmd.TestResponses.GetTestCaseResults() {
@@ -130,7 +132,11 @@ func (cmd *ProcessResultsCmd) Execute(ctx context.Context) error {
 			autotestTestCases = append(autotestTestCases, autotestTestCase)
 
 			// Set test steps
-			_ = common.CreateStepWithStatus(ctx, testResult.GetTestCaseId().GetValue(), testResultReason, isTestFailure, false)
+			testErr = common.CreateStepWithStatus(ctx, testResult.GetTestCaseId().GetValue(), testResultReason, isTestFailure, true)
+			// Propagate error status to parent step
+			if err == nil && isTestFailure {
+				err = testErr
+			}
 		}
 	}
 

@@ -37,14 +37,14 @@ func AddLinksToStepSummaryMarkdown(
 }
 
 // CreateStepWithStatus creates a new step and sets step status based on
-// provided flags. If failBuild is true, the returned error will have build
+// provided flags. If failParent is true, the returned error will have build
 // failure status attached to it for caller to bubble up appropriately.
 func CreateStepWithStatus(
 	ctx context.Context,
 	stepName string,
 	summary string,
 	isFailure bool,
-	failBuild bool) (err error) {
+	failParentStep bool) (err error) {
 
 	if stepName == "" {
 		return nil
@@ -61,7 +61,7 @@ func CreateStepWithStatus(
 		stepErr = fmt.Errorf("%s: %s", stepName, summary)
 	}
 
-	if isFailure && failBuild {
+	if isFailure && failParentStep {
 		err = stepErr
 	}
 
