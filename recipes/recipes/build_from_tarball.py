@@ -59,11 +59,6 @@ def RunSteps(api):
           # necessary when unbundling libjpeg.
           'use_system_libjpeg=true',
           'use_v8_context_snapshot=false',
-
-          # |enable_rust| started defaulting to true in official builds in
-          # 115.0.5787.2 (https://crrev.com/c/4454842). Turn it off to avoid
-          # requiring a Rust toolchain for the build.
-          'enable_rust=false',
       ]
 
       # Until the release above (https://crrev.com/c/4108258), this defaulted
@@ -132,6 +127,14 @@ def RunSteps(api):
           api.path.join(src_dir, 'tools', 'clang', 'scripts', 'build.py'),
           '--skip-checkout', '--without-android', '--without-fuchsia'
       ])
+
+      api.step('Build rustc.', [
+          api.path.join(src_dir, 'tools', 'rust', 'build_rust.py'),
+          '--skip-checkout'
+      ])
+
+      api.step('Build bindgen.',
+               [api.path.join(src_dir, 'tools', 'rust', 'build_bindgen.py')])
 
       with api.context(env=gn_bootstrap_env):
         api.step(

@@ -82,9 +82,34 @@
   },
   {
     "cmd": [
+      "[START_DIR]/build_dir/chromium-111.0.5483.0/tools/rust/build_rust.py",
+      "--skip-checkout"
+    ],
+    "cwd": "[START_DIR]/build_dir/chromium-111.0.5483.0",
+    "env_suffixes": {
+      "PATH": [
+        "[CACHE]/cipd"
+      ]
+    },
+    "name": "Build rustc."
+  },
+  {
+    "cmd": [
+      "[START_DIR]/build_dir/chromium-111.0.5483.0/tools/rust/build_bindgen.py"
+    ],
+    "cwd": "[START_DIR]/build_dir/chromium-111.0.5483.0",
+    "env_suffixes": {
+      "PATH": [
+        "[CACHE]/cipd"
+      ]
+    },
+    "name": "Build bindgen."
+  },
+  {
+    "cmd": [
       "python3",
       "[START_DIR]/build_dir/chromium-111.0.5483.0/tools/gn/bootstrap/bootstrap.py",
-      "--gn-gen-args=is_debug=false enable_nacl=false is_official_build=true enable_distro_version_check=false use_system_libjpeg=true use_v8_context_snapshot=false enable_rust=false",
+      "--gn-gen-args=is_debug=false enable_nacl=false is_official_build=true enable_distro_version_check=false use_system_libjpeg=true use_v8_context_snapshot=false",
       "--use-custom-libcxx"
     ],
     "cwd": "[START_DIR]/build_dir/chromium-111.0.5483.0",
