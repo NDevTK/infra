@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ func WithLogger(ctx context.Context, logger logger.Logger) context.Context {
 }
 
 // Get logger from context.
-func get(ctx context.Context) logger.Logger {
+func Get(ctx context.Context) logger.Logger {
 	if log, ok := ctx.Value(loggerKey).(logger.Logger); ok {
 		return log
 	}
@@ -40,28 +40,28 @@ func get(ctx context.Context) logger.Logger {
 
 // Debugf log message at Debugf level.
 func Debugf(ctx context.Context, format string, args ...interface{}) {
-	if l := get(ctx); l != nil {
+	if l := Get(ctx); l != nil {
 		l.Debugf(format, args...)
 	}
 }
 
 // Infof is like Debug, but logs at Infof level.
 func Infof(ctx context.Context, format string, args ...interface{}) {
-	if l := get(ctx); l != nil {
+	if l := Get(ctx); l != nil {
 		l.Infof(format, args...)
 	}
 }
 
 // Warningf is like Debug, but logs at Warningf level.
 func Warningf(ctx context.Context, format string, args ...interface{}) {
-	if l := get(ctx); l != nil {
+	if l := Get(ctx); l != nil {
 		l.Warningf(format, args...)
 	}
 }
 
 // Errorf is like Debug, but logs at Errorf level.
 func Errorf(ctx context.Context, format string, args ...interface{}) {
-	if l := get(ctx); l != nil {
+	if l := Get(ctx); l != nil {
 		l.Errorf(format, args...)
 	}
 }
