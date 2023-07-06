@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9e8e5df5_70bffa1e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2023-07-06T18:28:13Z",
+      "side": 1,
+      "message": "still LGTM mod gitlinks",
+      "revId": "042f9e3f7eb35be582d32211ea3cf6d5cc977510",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
