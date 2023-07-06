@@ -13,8 +13,8 @@ import (
 )
 
 // ReadInput reads a CTPRequest2 jsonproto file and returns a pointer to CTPRequest2.
-func ReadInput(fileName string) (*api.CTPRequest2, error) {
-	req := api.CTPRequest2{}
+func ReadInput(fileName string) (*api.CTPv2Request, error) {
+	req := api.CTPv2Request{}
 
 	f, err := os.Open(fileName)
 	if err != nil {

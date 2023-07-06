@@ -10,6 +10,7 @@ import (
 
 	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 )
 
@@ -25,7 +26,7 @@ func NewCtrExecutor(ctr managers.ContainerManager) *CtrExecutor {
 	return &CtrExecutor{Ctr: ctr}
 }
 
-func (ex *CtrExecutor) Execute(ctx context.Context, cmd string, resp *TestPlanResponse) error {
+func (ex *CtrExecutor) Execute(ctx context.Context, cmd string, resp *api.InternalTestplan) error {
 	if cmd == "run" {
 		fmt.Println("CTR Run.")
 		return nil //ex.gcloudAuthCommandExecution(ctx)

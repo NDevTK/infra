@@ -6,12 +6,14 @@ package executor
 
 import (
 	"context"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
 type Executor interface {
 
 	// Execute runs the exector
-	Execute(context.Context, string, *TestPlanResponse) error
+	Execute(context.Context, string, *api.InternalTestplan) error
 
 	// Response
 }

@@ -11,7 +11,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
-func NewKarbonExecutor(ctr managers.ContainerManager, req *api.Filter, containerMetadata map[string]*buildapi.ContainerImageInfo) (*FilterExecutor, error) {
+func NewKarbonExecutor(ctr managers.ContainerManager, req *api.CTPFilter, containerMetadata map[string]*buildapi.ContainerImageInfo) (*FilterExecutor, error) {
 	// TODO, Given the request, make the correct filter.
 
 	return newFilterExecutor(ctr, req, containerMetadata)

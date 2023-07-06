@@ -8,6 +8,8 @@ import (
 	"context"
 	"fmt"
 	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
 // CloudContainerExecutor represents executor
@@ -20,7 +22,7 @@ func NewCloudContainerExecutor(manager managers.ContainerManager) *CloudContaine
 	return &CloudContainerExecutor{manager: manager}
 }
 
-func (ex *CloudContainerExecutor) Execute(ctx context.Context, cmd string, resp *TestPlanResponse) error {
+func (ex *CloudContainerExecutor) Execute(ctx context.Context, cmd string, resp *api.InternalTestplan) error {
 	if cmd == "run" {
 		return nil
 	} else if cmd == "init" {

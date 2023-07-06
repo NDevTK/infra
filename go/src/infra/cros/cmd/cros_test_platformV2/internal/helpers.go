@@ -6,6 +6,7 @@ package internal
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
 	"infra/cros/cmd/cros_test_platformV2/executor"
@@ -14,23 +15,26 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
-func translateRequest(req *api.CTPRequest2) *executor.TestPlanResponse {
-	internalStruct := &executor.TestPlanResponse{}
+func translateRequest(req *api.CTPv2Request) *api.InternalTestplan {
+	internalStruct := &api.InternalTestplan{}
 	hwReqs := hwRequirements(req)
-	internalStruct.SuiteMetadata = &executor.SuiteMetadata{
-		HWRequirements: hwReqs,
-		Builds:         []string{req.Build},
-		Pool:           "none",
+	// TODO, there is a bitch of a gap between the input request (where build is part of legacySW)
+	// And the current definition of channels (which is basically dev/beta/stable) in the suiteMetadata.
+	// It might not even be needed as part of the metadata. Need to investigate more.
+	internalStruct.SuiteMetadata = &api.SuiteMetadata{
+		HwRequirements: hwReqs,
+		Pool:           req.Pool,
 	}
 
 	return internalStruct
 }
 
-func hwRequirements(req *api.CTPRequest2) (hwReqs []*executor.HWRequirement) {
-	switch hw := req.Variant.(type) {
-	case *api.CTPRequest2_Board:
-		hwReq := &executor.HWRequirement{
-			Board: hw.Board,
+func hwRequirements(req *api.CTPv2Request) (hwReqs []*api.HWRequirements) {
+	switch hw := req.HwTargets.Targets.(type) {
+	case *api.HWTargets_LegacyHw:
+		fmt.Println(hw)
+		hwReq := &api.HWRequirements{
+			HwDefinition: []*api.SwarmingDefinition{},
 		}
 		hwReqs = append(hwReqs, hwReq)
 		return hwReqs
@@ -53,11 +57,33 @@ func createContainerManagerExecutor(ctx context.Context, cloud bool) (managers.C
 	return containerMgr, e
 }
 
-func buildExecutors(ctx context.Context, req *api.CTPRequest2, cloud bool) ([]executor.Executor, error) {
+func getFirstBoardFromLegacy(req *api.HWTargets) string {
+	switch hw := req.Targets.(type) {
+	case *api.HWTargets_LegacyHw:
+		if len(hw.LegacyHw.Board) == 0 {
+			return ""
+		}
+		return hw.LegacyHw.Board[0]
+	default:
+		return ""
+	}
+}
+func buildExecutors(ctx context.Context, req *api.CTPv2Request, cloud bool) ([]executor.Executor, error) {
 	execs := []executor.Executor{}
 
-	// TODO finalize this mess.
-	containerMetadata, err := gcs.FetchImageData(ctx, req.GetBoard(), "release", "R111-1111-1")
+	// TODO currently there is a bit of a race between getting the metadata to run test-finder, and the boards provided
+	// to the request. We don't want to run test-finder per board as that's extremely expensive to setup/act on, however
+	// CFT design has test-finder being board specific. For initial MVP we will just use the first board in the request to
+	// get the container MD from, but this will need to be solved long term.
+	board := getFirstBoardFromLegacy(req.HwTargets)
+	if board == "" {
+		return nil, errors.New("no board provided in legacy request")
+	}
+	// TODO, hardcodes....
+	containerMetadata, err := gcs.FetchImageData(ctx, board, "release", "R111-1111-1")
+	if err != nil {
+		return nil, fmt.Errorf("unable to fetch image data: %s", err)
+	}
 
 	// First must always be the container Manager. All further executors will require the manager.
 	contMang, contExec := createContainerManagerExecutor(ctx, cloud)

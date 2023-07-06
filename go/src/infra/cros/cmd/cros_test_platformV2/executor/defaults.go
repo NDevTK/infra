@@ -11,9 +11,9 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
-func DefaultFilters(req *api.CTPRequest2, containerMd map[string]*buildapi.ContainerImageInfo) ([]*api.Filter, []*api.Filter, error) {
-	karbons := []*api.Filter{}
-	koffees := []*api.Filter{}
+func DefaultFilters(req *api.CTPv2Request, containerMd map[string]*buildapi.ContainerImageInfo) ([]*api.CTPFilter, []*api.CTPFilter, error) {
+	karbons := []*api.CTPFilter{}
+	koffees := []*api.CTPFilter{}
 
 	// Can expand these as needed
 	defaultKarbonServices := make(map[string]bool)
@@ -23,16 +23,16 @@ func DefaultFilters(req *api.CTPRequest2, containerMd map[string]*buildapi.Conta
 	defaultKoffeeServices := make(map[string]bool)
 
 	for _, filter := range req.KarbonFilters {
-		_, ok := defaultKarbonServices[filter.Container.ServiceName]
+		_, ok := defaultKarbonServices[filter.Container.Name]
 		if ok {
-			defaultKarbonServices[filter.Container.ServiceName] = false
+			defaultKarbonServices[filter.Container.Name] = false
 		}
 	}
 
 	for _, filter := range req.KoffeeFilters {
-		_, ok := defaultKoffeeServices[filter.Container.ServiceName]
+		_, ok := defaultKoffeeServices[filter.Container.Name]
 		if ok {
-			defaultKoffeeServices[filter.Container.ServiceName] = false
+			defaultKoffeeServices[filter.Container.Name] = false
 		}
 	}
 
@@ -58,15 +58,15 @@ func DefaultFilters(req *api.CTPRequest2, containerMd map[string]*buildapi.Conta
 	return karbons, koffees, nil
 }
 
-func ResolvedContainer(name string, containerMd map[string]*buildapi.ContainerImageInfo) (*api.Filter, error) {
+func ResolvedContainer(name string, containerMd map[string]*buildapi.ContainerImageInfo) (*api.CTPFilter, error) {
 	image, ok := containerMd[name]
 	if !ok {
 		return nil, fmt.Errorf("Container image not found: %s", name)
 	}
-	return &api.Filter{
-		Container: &api.ContainerInfo{
-			ServiceName:   name,
-			ContainerPath: image.Digest,
+	return &api.CTPFilter{
+		Container: &buildapi.ContainerImageInfo{
+			Name:   name,
+			Digest: image.Digest,
 		},
 	}, nil
 }

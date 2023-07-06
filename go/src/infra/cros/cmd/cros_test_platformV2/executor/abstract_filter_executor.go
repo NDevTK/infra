@@ -28,20 +28,20 @@ type FilterExecutor struct {
 	containerPath string
 }
 
-func newFilterExecutor(ctr managers.ContainerManager, req *api.Filter, containerMetadata map[string]*buildapi.ContainerImageInfo) (*FilterExecutor, error) {
+func newFilterExecutor(ctr managers.ContainerManager, req *api.CTPFilter, containerMetadata map[string]*buildapi.ContainerImageInfo) (*FilterExecutor, error) {
 	var err error
 	// For non-default filters, the given request might not include the path. If not try to find
 	// it from the containermetadata.
-	if req.Container.ContainerPath == "" {
-		req, err = ResolvedContainer(req.Container.ServiceName, containerMetadata)
+	if req.Container.Digest == "" {
+		req, err = ResolvedContainer(req.Container.Name, containerMetadata)
 		if err != nil {
 			return nil, err
 		}
 	}
-	return &FilterExecutor{Ctr: ctr, binaryName: req.Container.ServiceName, containerPath: req.Container.ContainerPath}, nil
+	return &FilterExecutor{Ctr: ctr, binaryName: req.Container.Name, containerPath: req.Container.Digest}, nil
 }
 
-func (ex *FilterExecutor) Execute(ctx context.Context, cmd string, resp *TestPlanResponse) error {
+func (ex *FilterExecutor) Execute(ctx context.Context, cmd string, resp *api.InternalTestplan) error {
 	if cmd == "run" {
 		return nil // Call the (running) binary inside the executing container.
 	} else if cmd == "init" {
