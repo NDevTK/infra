@@ -47,5 +47,25 @@ yyanagisawa@google.com
 zhangtiff@chromium.org
 zhangtiff@google.com
 
+# Git Dependency rolls
 per-file DEPS=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file appengine/third_party/bootstrap=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file appengine/third_party/cloudstorage=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file appengine/third_party/dateutil=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file appengine/third_party/difflibjs=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file appengine/third_party/endpoints-proto-datastore=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file appengine/third_party/gae-pytz=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file appengine/third_party/google-api-python-client=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file appengine/third_party/httplib2=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file appengine/third_party/npm_modules=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file appengine/third_party/oauth2client=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file appengine/third_party/pipeline=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file appengine/third_party/six=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file appengine/third_party/uritemplate=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file bootstrap/virtualenv-ext=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file go/src/go.chromium.org/chromiumos/config=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file go/src/go.chromium.org/chromiumos/infra/proto=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file go/src/go.chromium.org/luci=chromium-autoroll@skia-public.iam.gserviceaccount.com
+per-file luci=chromium-autoroll@skia-public.iam.gserviceaccount.com
+
 per-file build/images/pins.yaml=images-pins-roller@chops-service-accounts.iam.gserviceaccount.com
