@@ -195,6 +195,41 @@ func BatchGetRacks(ctx context.Context, ids []string) ([]*ufspb.Rack, error) {
 	return res, nil
 }
 
+// BatchGetRacksACL returns a batch of racks after potentially checking for
+// ACLs in the relevant realms.
+func BatchGetRacksACL(ctx context.Context, ids []string) ([]*ufspb.Rack, error) {
+	cutoff := config.Get(ctx).GetExperimentalAPI().GetGetRackACL()
+	// If cutoff is set attempt to divert the traffic to new API
+	if cutoff != 0 {
+		// Roll the dice to determine which one to use
+		roll := rand.Uint32() % 100
+		cutoff := cutoff % 100
+		if roll <= cutoff {
+			logging.Infof(ctx, "GetRack --- Running in experimental API")
+			return batchGetRacksACL(ctx, ids)
+		}
+	}
+
+	return BatchGetRacks(ctx, ids)
+}
+
+// batchGetRacks returns a batch of racks from datastore after checking ACLs
+func batchGetRacksACL(ctx context.Context, ids []string) ([]*ufspb.Rack, error) {
+	protos := make([]proto.Message, len(ids))
+	for i, n := range ids {
+		protos[i] = &ufspb.Rack{Name: n}
+	}
+	pms, err := ufsds.BatchGetACL(ctx, protos, newRackRealmEntity, getRackID, util.RegistrationsGet)
+	if err != nil {
+		return nil, err
+	}
+	res := make([]*ufspb.Rack, len(pms))
+	for i, pm := range pms {
+		res[i] = pm.(*ufspb.Rack)
+	}
+	return res, nil
+}
+
 // ListRacks lists the racks
 // Does a query over Rack entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.

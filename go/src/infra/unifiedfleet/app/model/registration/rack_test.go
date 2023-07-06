@@ -173,7 +173,71 @@ func TestGetRackACL(t *testing.T) {
 			So(resp, ShouldResembleProto, rack)
 		})
 	})
+}
 
+func TestBatchGetRackACL(t *testing.T) {
+	t.Parallel()
+	ctx := gaetesting.TestingContextWithAppID("go-test")
+	ctx = config.Use(ctx, &config.Config{
+		ExperimentalAPI: &config.ExperimentalAPI{
+			GetRackACL: 99,
+		},
+	})
+
+	// realm "@internal:ufs/os-acs"
+	rack1 := mockRack("rack-1", 100, ufspb.Zone_ZONE_CHROMEOS5)
+	_, err := CreateRack(ctx, rack1)
+	if err != nil {
+		t.Errorf("failed to create rack: %s", err)
+	}
+
+	// realm "@internal:ufs/os-atl"
+	rack2 := mockRack("rack-2", 100, ufspb.Zone_ZONE_CHROMEOS4)
+	_, err = CreateRack(ctx, rack2)
+	if err != nil {
+		t.Errorf("failed to create rack: %s", err)
+	}
+
+	Convey("When two racks are created", t, func() {
+		Convey("No user is rejected", func() {
+			resp, err := BatchGetRacksACL(ctx, []string{"rack-1", "rack-2"})
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Internal")
+			So(resp, ShouldBeNil)
+		})
+		Convey("A user without perms is rejected", func() {
+			userCtx := mockUser(ctx, "email@google.com")
+			resp, err := BatchGetRacksACL(userCtx, []string{"rack-1", "rack-2"})
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Permission")
+			So(resp, ShouldBeNil)
+		})
+		Convey("A user requesting racks without for at least one is rejected", func() {
+			userCtx := mockUser(ctx, "email@google.com")
+			mockRealmPerms(userCtx, util.AcsLabAdminRealm, util.RegistrationsGet)
+			resp, err := BatchGetRacksACL(userCtx, []string{"rack-1", "rack-2"})
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Permission")
+			So(resp, ShouldBeNil)
+		})
+		Convey("A user requesting only racks they can access succeeds", func() {
+			userCtx := mockUser(ctx, "email@google.com")
+			mockRealmPerms(userCtx, util.AcsLabAdminRealm, util.RegistrationsGet)
+			resp, err := BatchGetRacksACL(userCtx, []string{"rack-1"})
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp, ShouldResembleProto, []*ufspb.Rack{rack1})
+		})
+		Convey("A user with all realm perms can see racks in multiple realms", func() {
+			userCtx := mockUser(ctx, "email@google.com")
+			mockRealmPerms(userCtx, util.AcsLabAdminRealm, util.RegistrationsGet)
+			mockRealmPerms(userCtx, util.AtlLabAdminRealm, util.RegistrationsGet)
+			resp, err := BatchGetRacksACL(userCtx, []string{"rack-1", "rack-2"})
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp, ShouldResembleProto, []*ufspb.Rack{rack1, rack2})
+		})
+	})
 }
 
 func TestListRacks(t *testing.T) {
