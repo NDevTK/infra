@@ -267,6 +267,15 @@ def IgnoredPaths(input_api): # pragma: no cover
   ]
 
 
+def IgnoredSubmodules(input_api):  # pragma: no cover
+  if not os.path.exists(os.path.join(os.getcwd(), '.gitmodules')):
+    return []
+  config_output = input_api.subprocess.check_output(
+      ['git', 'config', '--file', '.gitmodules', '--get-regexp', 'path'],
+      text=True)
+  return [line.split()[-1] for line in config_output.splitlines()]
+
+
 def PythonRootForPath(input_api, path):
   # For each path, walk up dirtories until find no more __init__.py
   # The directory with the last __init__.py is considered our root.
@@ -388,6 +397,7 @@ def PylintChecksForPython3(input_api, output_api, exclude):  # pragma: no cover
   files_to_skip += exclude
   files_to_skip += DISABLED_PROJECTS
   files_to_skip += IgnoredPaths(input_api)
+  files_to_skip += IgnoredSubmodules(input_api)
   files_to_skip += [
       r'.*_pb2\.py$',
 
