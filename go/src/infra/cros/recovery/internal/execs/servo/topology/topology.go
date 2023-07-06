@@ -1,5 +1,5 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved. Use of
-// this source code is governed by a BSD-style license that can be
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package topology
@@ -68,7 +68,7 @@ const (
 var vidPidServoTypes = map[string]string{
 	"18d1:501b": servo.SERVO_V4,
 	"18d1:520d": servo.SERVO_V4P1,
-	"18d1:5014": servo.CCD_CR50,
+	"18d1:5014": servo.CCD_GSC,
 	"18d1:504a": servo.CCD_GSC,
 	"18d1:501a": servo.SERVO_MICRO,
 	"18d1:5041": servo.C2D2,
