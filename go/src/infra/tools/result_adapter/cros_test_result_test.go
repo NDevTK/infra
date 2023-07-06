@@ -33,7 +33,7 @@ const (
 	multiDUTTestResultFile = "test_data/cros_test_result/multi_dut_result.json"
 
 	// Test result JSON file with skipped test results.
-	skippedTestResultFile = "test_data/cros_test_result/skpped_test_result.json"
+	skippedTestResultFile = "test_data/cros_test_result/skipped_test_result.json"
 
 	// Test result JSON file with missing test id.
 	missingTestIdFile = "test_data/cros_test_result/missing_test_id.json"
@@ -344,7 +344,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 			results := &CrosTestResult{}
 			results.ConvertFromJSON(strings.NewReader(testResultsJson))
 			_, err := results.ToProtos(ctx)
-			So(err, ShouldErrLike, "TestId is unspecified due to the missing id in test case")
+			So(err, ShouldErrLike, "testId is unspecified due to the missing id in test case")
 		})
 	})
 }

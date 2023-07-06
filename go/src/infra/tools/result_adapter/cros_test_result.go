@@ -51,7 +51,7 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 		status := genTestResultStatus(testCaseResult)
 		testId := getTestId(testCaseResult)
 		if testId == "" {
-			return nil, errors.Reason("TestId is unspecified due to the missing id in test case result: %v",
+			return nil, errors.Reason("testId is unspecified due to the missing id in test case result: %v",
 				testCaseResult).Err()
 		}
 
@@ -86,7 +86,8 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 		}
 
 		if err := PopulateProperties(tr, testRun); err != nil {
-			return nil, errors.Annotate(err, "Failed to unmarshal properties for test result").Err()
+			return nil, errors.Annotate(err,
+				"failed to unmarshal properties for test result").Err()
 		}
 
 		ret = append(ret, tr)
@@ -129,7 +130,7 @@ func PopulateProperties(testResult *sinkpb.TestResult, testRun *artifactpb.TestR
 	}
 
 	if testResult == nil {
-		return errors.Reason("The input test result is nil").Err()
+		return errors.Reason("the input test result is nil").Err()
 	}
 
 	data, err := protojson.Marshal(testRun)
