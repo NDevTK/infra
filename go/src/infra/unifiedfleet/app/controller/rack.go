@@ -290,7 +290,7 @@ func GetRack(ctx context.Context, id string) (*ufspb.Rack, error) {
 
 // BatchGetRacks returns a batch of racks from datastore.
 func BatchGetRacks(ctx context.Context, ids []string) ([]*ufspb.Rack, error) {
-	return registration.BatchGetRacks(ctx, ids)
+	return registration.BatchGetRacksACL(ctx, ids)
 }
 
 // ListRacks lists the racks
