@@ -7,6 +7,7 @@ package controller
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"strings"
 
 	"github.com/golang/protobuf/proto"
@@ -18,6 +19,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
+	"infra/unifiedfleet/app/config"
 	ufsds "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/registration"
@@ -307,13 +309,59 @@ func ListRacks(ctx context.Context, pageSize int32, pageToken, filter string, ke
 	if err != nil {
 		return nil, "", errors.Annotate(err, "filter value for bbnum cannot be parsed").Err()
 	}
-	racks, nextPageToken, err := registration.ListRacks(ctx, pageSize, pageToken, filterMap, keysOnly)
+	racks, nextPageToken, err := listRacksWithExperimentalACLs(ctx, pageSize, pageToken, filterMap, keysOnly)
 	if full && !keysOnly {
 		for _, rack := range racks {
 			setRack(ctx, rack)
 		}
 	}
 	return racks, nextPageToken, err
+}
+
+func listRacksWithExperimentalACLs(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.Rack, nextPageToken string, err error) {
+	if pageToken != "" {
+		// See registration/machine.go.
+		// ListMachinesACL runs a different API to compared to ListMachines
+		// This results in ListMachinesACL getting a different type of page
+		// token (a multicursor) compared to ListMachines. The function
+		// IsMultiCursor is used here to tell which API to use.
+		// This is required because this function gets called repeatedly
+		// (due to limitations in RPC size) by clients (like shivas).
+		//
+		// The first time there is no page token so we choose which rpc
+		// to use at random. But if there is more data to be returned
+		// after the first run, datastore returns a page token. As the
+		// token is different based on which API was used, we use it to
+		// do the remaining transactions.
+		//
+		// Note: We can't use token from ListMachinesACL on ListMachines,
+		// this doesn't always throw an error but the results are
+		// undefined. We do get an error(with high accuracy) if we use
+		// token from ListMachines on ListMachinesACL
+		if datastore.IsMultiCursorString(pageToken) {
+			logging.Infof(ctx, "ListMachines --- Continue Running in experimental API")
+			// If we have a multicursor in our hand. Then we got to do the ACLs
+			return registration.ListRacksACL(ctx, pageSize, pageToken, filterMap, keysOnly)
+		} else {
+			return registration.ListRacks(ctx, pageSize, pageToken, filterMap, keysOnly)
+		}
+	}
+
+	cutoff := config.Get(ctx).GetExperimentalAPI().GetListRacksACL()
+
+	// If cutoff is set attempt to divert the traffic to new API
+	if cutoff != 0 {
+		// Roll the dice to determine which one to use
+		roll := rand.Uint32() % 100
+		cutoff := cutoff % 100
+		if roll <= cutoff {
+			logging.Infof(ctx, "ListMachines --- Running in experimental API")
+			return registration.ListRacksACL(ctx, pageSize, pageToken, filterMap, keysOnly)
+		}
+	}
+
+	// default to old API
+	return registration.ListRacks(ctx, pageSize, pageToken, filterMap, keysOnly)
 }
 
 // DeleteRack deletes the rack in datastore

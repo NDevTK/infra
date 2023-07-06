@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
+	"go.chromium.org/luci/server/auth"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -190,6 +191,66 @@ func ListRacks(ctx context.Context, pageSize int32, pageToken string, filterMap 
 	return
 }
 
+// ListRacksACL lists the racks in realms user can access.
+// Does a query over Rack entities. Returns up to pageSize entities, plus non-nil cursor (if
+// there are more results). pageSize must be positive.
+func ListRacksACL(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.Rack, nextPageToken string, err error) {
+	err = validateListRackFilters(filterMap)
+	if err != nil {
+		return nil, "", errors.Annotate(err, "ListRacksACL --- cannot validate query").Err()
+	}
+	userRealms, err := auth.QueryRealms(ctx, util.RegistrationsList, "", nil)
+	if err != nil {
+		return nil, "", err
+	}
+
+	q, err := ufsds.ListQuery(ctx, RackKind, pageSize, "", filterMap, keysOnly)
+	if err != nil {
+		return nil, "", err
+	}
+
+	// Create a list of queries each checking for a realm assignment
+	queries := ufsds.AssignRealms(q, userRealms)
+
+	// Apply page token if necessary
+	if pageToken != "" {
+		queries, err = datastore.ApplyCursorString(ctx, queries, pageToken)
+	}
+
+	var nextCur datastore.Cursor
+	err = datastore.RunMulti(ctx, queries, func(ent *RackEntity, cb datastore.CursorCB) error {
+		if keysOnly {
+			rack := &ufspb.Rack{
+				Name: ent.ID,
+			}
+			res = append(res, rack)
+		} else {
+			pm, err := ent.GetProto()
+			if err != nil {
+				logging.Errorf(ctx, "Failed to UnMarshal: %s", err)
+				return nil
+			}
+			res = append(res, pm.(*ufspb.Rack))
+		}
+		if len(res) >= int(pageSize) {
+			if nextCur, err = cb(); err != nil {
+				return err
+			}
+			return datastore.Stop
+		}
+		return nil
+	})
+	if err != nil {
+		logging.Errorf(ctx, "Failed to List Racks %s", err)
+		return nil, "", status.Errorf(codes.Internal, ufsds.InternalError)
+	}
+	if nextCur != nil {
+		nextPageToken = nextCur.String()
+	}
+	logging.Debugf(ctx, "ListRacksACL --- filtering for %v", userRealms)
+	return
+}
+
 // DeleteRack deletes the rack in datastore
 func DeleteRack(ctx context.Context, id string) error {
 	return ufsds.Delete(ctx, &ufspb.Rack{Name: id}, newRackEntity)
@@ -284,4 +345,14 @@ func GetRackIndexedFieldName(input string) (string, error) {
 		return "", status.Errorf(codes.InvalidArgument, "Invalid field name %s - field name for rack are zone/tag/state/bbnum", input)
 	}
 	return field, nil
+}
+
+func validateListRackFilters(filterMap map[string][]interface{}) error {
+	for field := range filterMap {
+		if field == "realm" {
+			return errors.Reason("cannot filter on %s", field).Err()
+		}
+	}
+
+	return nil
 }
