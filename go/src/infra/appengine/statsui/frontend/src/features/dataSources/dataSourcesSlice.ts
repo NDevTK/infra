@@ -167,6 +167,11 @@ const initialState: DataSourcesState = populateMaps({
           description: `How many times this builder ran`,
         },
         {
+          name: 'Test Case Count',
+          unit: Unit.Number,
+          description: `How many tests were run in the builder/suite combo`,
+        },
+        {
           name: 'P50 Runtime',
           unit: Unit.Duration,
           description: `Time from start_time to end_time (actual execution
