@@ -111,7 +111,7 @@ func TestReviewCleanRevert(t *testing.T) {
 		Convey("clean revert with repo exp config is valid", func() {
 			cfg.HostConfigs["test-host"].RepoRegexpConfigs = []*config.HostConfig_RepoRegexpConfigPair{
 				{
-					Key: ".*my",
+					Key: "^.*my$",
 					Value: &config.RepoConfig{
 						CleanRevertPattern: &config.CleanRevertPattern{
 							TimeWindow:    "5m",
@@ -227,7 +227,7 @@ func TestReviewCleanRevert(t *testing.T) {
 				cfg.HostConfigs["test-host"].CleanRevertTimeWindow = "5d"
 				cfg.HostConfigs["test-host"].RepoRegexpConfigs = []*config.HostConfig_RepoRegexpConfigPair{
 					{
-						Key: ".*ummy",
+						Key: "^.*ummy$",
 						Value: &config.RepoConfig{
 							CleanRevertPattern: &config.CleanRevertPattern{
 								TimeWindow: "12m",
@@ -292,7 +292,7 @@ func TestReviewCleanRevert(t *testing.T) {
 			Convey("repo-level excluded files from regexp config works", func() {
 				cfg.HostConfigs["test-host"].RepoRegexpConfigs = []*config.HostConfig_RepoRegexpConfigPair{
 					{
-						Key: ".*ummy",
+						Key: "^.*ummy$",
 						Value: &config.RepoConfig{
 							CleanRevertPattern: &config.CleanRevertPattern{
 								ExcludedPaths: []string{"well.txt"},

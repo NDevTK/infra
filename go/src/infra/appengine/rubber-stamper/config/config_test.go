@@ -49,11 +49,11 @@ func TestIsRepoRegexpConfigMatch(t *testing.T) {
 		Convey("Should return the matched config when there is one", func() {
 			rrcfgs := []*HostConfig_RepoRegexpConfigPair{
 				{
-					Key:   "dummy/dummy-*",
+					Key:   "^dummy/dummy-.*$",
 					Value: sampleCfg,
 				},
 				{
-					Key:   "invalid/*",
+					Key:   "^invalid/.*$",
 					Value: nil,
 				},
 			}
@@ -62,7 +62,7 @@ func TestIsRepoRegexpConfigMatch(t *testing.T) {
 		Convey("Should return nil when no matched config", func() {
 			rrcfgs := []*HostConfig_RepoRegexpConfigPair{
 				{
-					Key:   "dummy/dummy-*",
+					Key:   "^dummy/dummy-.*$",
 					Value: sampleCfg,
 				},
 			}

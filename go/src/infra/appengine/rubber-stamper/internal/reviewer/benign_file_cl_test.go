@@ -106,7 +106,7 @@ func TestReviewBenignFileChange(t *testing.T) {
 			hostCfg := &config.HostConfig{
 				RepoRegexpConfigs: []*config.HostConfig_RepoRegexpConfigPair{
 					{
-						Key: ".*mmy",
+						Key: "^.*mmy$",
 						Value: &config.RepoConfig{
 							BenignFilePattern: &config.BenignFilePattern{
 								Paths: []string{
@@ -187,7 +187,7 @@ func TestRetrieveBenignFilePattern(t *testing.T) {
 			hostCfg := &config.HostConfig{
 				RepoRegexpConfigs: []*config.HostConfig_RepoRegexpConfigPair{
 					{
-						Key:   ".*mmy",
+						Key:   "^.*mmy$",
 						Value: nil,
 					},
 				},
@@ -214,7 +214,7 @@ func TestRetrieveBenignFilePattern(t *testing.T) {
 				hostCfg := &config.HostConfig{
 					RepoRegexpConfigs: []*config.HostConfig_RepoRegexpConfigPair{
 						{
-							Key: ".*mmy",
+							Key: "^.*mmy$",
 							Value: &config.RepoConfig{
 								BenignFilePattern: sampleBenignFilePattern,
 							},
@@ -227,7 +227,7 @@ func TestRetrieveBenignFilePattern(t *testing.T) {
 				hostCfg := &config.HostConfig{
 					RepoRegexpConfigs: []*config.HostConfig_RepoRegexpConfigPair{
 						{
-							Key: ".*mmy",
+							Key: "^.*mmy$",
 							Value: &config.RepoConfig{
 								BenignFilePattern: nil,
 							},
@@ -246,7 +246,7 @@ func TestRetrieveBenignFilePattern(t *testing.T) {
 				},
 				RepoRegexpConfigs: []*config.HostConfig_RepoRegexpConfigPair{
 					{
-						Key: ".*mmy",
+						Key: "^.*mmy$",
 						Value: &config.RepoConfig{
 							BenignFilePattern: nil,
 						},

@@ -229,7 +229,7 @@ func TestReviewCleanCherryPick(t *testing.T) {
 				cfg.HostConfigs["test-host"].CleanCherryPickTimeWindow = "5d"
 				cfg.HostConfigs["test-host"].RepoRegexpConfigs = []*config.HostConfig_RepoRegexpConfigPair{
 					{
-						Key: ".*mmy",
+						Key: "^.*mmy$",
 						Value: &config.RepoConfig{
 							CleanCherryPickPattern: &config.CleanCherryPickPattern{
 								TimeWindow: "10m",
