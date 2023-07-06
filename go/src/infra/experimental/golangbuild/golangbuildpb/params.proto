@@ -35,4 +35,9 @@ message Inputs {
   // with the same gerrit and gitiles build data this build was
   // triggered with.
   repeated string builders_to_trigger = 7;
+
+  // Named cache configured on the builder to use as a cipd tool root cache.
+  //
+  // No-op unless experiment "golang.cache_tools_root" is enabled.
+  string tools_cache = 8;
 }
