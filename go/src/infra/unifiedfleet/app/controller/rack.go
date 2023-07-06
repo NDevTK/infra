@@ -280,7 +280,7 @@ func updateIndexingForRackResources(ctx context.Context, rackName string, indexM
 
 // GetRack returns rack for the given id from datastore.
 func GetRack(ctx context.Context, id string) (*ufspb.Rack, error) {
-	rack, err := registration.GetRack(ctx, id)
+	rack, err := registration.GetRackACL(ctx, id)
 	if err != nil {
 		return nil, err
 	}
