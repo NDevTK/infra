@@ -95,6 +95,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "950de3ac_a4caf1ac",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1118,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-07-07T03:35:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "28642afa_0559fde7",
+      "range": {
+        "startLine": 1118,
+        "startChar": 20,
+        "endLine": 1118,
+        "endChar": 26
+      },
+      "revId": "cc4253cac208cb0833b7887b23224f6e033b5b7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "24370ed6_af88bd5b",
@@ -108,6 +132,30 @@
       "writtenOn": "2023-07-07T01:59:05Z",
       "side": 1,
       "message": "It would be better to have a comment about the goal of this block. \n\ne.g. \n```\nResolve a symlink and lookup the target from root.\n```",
+      "range": {
+        "startLine": 1137,
+        "startChar": 3,
+        "endLine": 1137,
+        "endChar": 34
+      },
+      "revId": "cc4253cac208cb0833b7887b23224f6e033b5b7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ba2083ee_d76b3fa7",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1137,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-07-07T03:35:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "24370ed6_af88bd5b",
       "range": {
         "startLine": 1137,
         "startChar": 3,
@@ -141,6 +189,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0abb724f_32df9744",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1148,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-07-07T03:35:01Z",
+      "side": 1,
+      "message": "not using strings.Split to reduce unnecessary memory allocation\n(we don\u0027t need to split after current element).",
+      "parentUuid": "53d39706_9016a890",
+      "range": {
+        "startLine": 1143,
+        "startChar": 4,
+        "endLine": 1148,
+        "endChar": 5
+      },
+      "revId": "cc4253cac208cb0833b7887b23224f6e033b5b7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "002cfe0d_021da6ac",
@@ -154,6 +226,30 @@
       "writtenOn": "2023-07-07T01:59:05Z",
       "side": 1,
       "message": "Can this part be extracted as a function? e.g. resolveSymlink()",
+      "range": {
+        "startLine": 1138,
+        "startChar": 4,
+        "endLine": 1151,
+        "endChar": 0
+      },
+      "revId": "cc4253cac208cb0833b7887b23224f6e033b5b7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "92df370c_c63b548c",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1151,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-07-07T03:35:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "002cfe0d_021da6ac",
       "range": {
         "startLine": 1138,
         "startChar": 4,
