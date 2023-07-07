@@ -74,6 +74,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "28642afa_0559fde7",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1118,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-07-07T02:00:01Z",
+      "side": 1,
+      "message": "Please consider adding tests for this type of fundamental operations.",
+      "range": {
+        "startLine": 1118,
+        "startChar": 20,
+        "endLine": 1118,
+        "endChar": 26
+      },
+      "revId": "cc4253cac208cb0833b7887b23224f6e033b5b7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "24370ed6_af88bd5b",
         "filename": "go/src/infra/build/siso/hashfs/fs.go",
         "patchSetId": 1
