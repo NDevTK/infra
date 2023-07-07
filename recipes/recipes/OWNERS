@@ -32,7 +32,6 @@ per-file recipe_autoroller.py=iannucci@chromium.org
 
 per-file recipe_simulation.py=iannucci@chromium.org
 
-per-file sheriff-o-matic-wct.py=seanmccullough@chromium.org
 
 per-file wpt*.py=jeffcarp@chromium.org
 
