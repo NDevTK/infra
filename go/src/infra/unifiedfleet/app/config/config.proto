@@ -60,6 +60,8 @@ message Config {
   ExperimentalAPI experimentalAPI = 26;
   // Groups which indicate the caller is a partner
   repeated string partnerACLGroups = 27;
+  // Methods which have no restrictions on namespace used
+  repeated string partnerRPCAllowlist = 28;
 }
 
 message OSNetworkConfig {

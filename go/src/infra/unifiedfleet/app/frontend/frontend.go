@@ -78,6 +78,21 @@ func isGoogler(ctx context.Context) bool {
 	return googlerRegex.MatchString(id)
 }
 
+// isAllowlistedRPC determines if a RPC call is allowlisted for arbitrary
+// namespace access in the configuration.
+func isAllowlistedRPC(ctx context.Context, info *grpc.UnaryServerInfo) bool {
+	method := info.FullMethod
+	cfg := config.Get(ctx)
+
+	for _, v := range cfg.PartnerRPCAllowlist {
+		if method == v {
+			return true
+		}
+	}
+
+	return false
+}
+
 // PartnerInterceptor rejects any calls from partner accounts that don't use
 // the os-partner namespace. Relies on having a namespace set and should only
 // be called after another interceptor that calls `SetupDatastoreNamespace` or
@@ -86,6 +101,10 @@ func PartnerInterceptor(ctx context.Context, req interface{}, info *grpc.UnarySe
 	// ignore this check for google emails, needed as some @google.com accounts
 	// could be in the CRIA groups used to determine partners.
 	if isGoogler(ctx) {
+		return handler(ctx, req)
+	}
+
+	if isAllowlistedRPC(ctx, info) {
 		return handler(ctx, req)
 	}
 

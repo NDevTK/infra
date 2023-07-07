@@ -38,7 +38,8 @@ func mockGroupMembership(ctx context.Context, group string) context.Context {
 
 func loadACLConfig(ctx context.Context) context.Context {
 	alwaysUseACLConfig := config.Config{
-		PartnerACLGroups: []string{"all-sfp-partners"},
+		PartnerACLGroups:    []string{"all-sfp-partners"},
+		PartnerRPCAllowlist: []string{"allowedRPC"},
 	}
 
 	return config.Use(ctx, &alwaysUseACLConfig)
@@ -53,6 +54,7 @@ func TestPartnerInterceptor(t *testing.T) {
 		user     string
 		ns       string
 		sfpGroup bool
+		rpcInfo  *grpc.UnaryServerInfo
 		wantErr  bool
 	}{
 		{
@@ -114,6 +116,14 @@ func TestPartnerInterceptor(t *testing.T) {
 			sfpGroup: false,
 			wantErr:  false,
 		},
+		{
+			name:     "non-googler in SfP group with allowlisted RPC",
+			user:     "test@gmail.com",
+			ns:       util.OSNamespace,
+			sfpGroup: true,
+			rpcInfo:  &grpc.UnaryServerInfo{FullMethod: "allowedRPC"},
+			wantErr:  false,
+		},
 	}
 	for _, tt := range tests {
 		ctx := context.Background()
@@ -129,8 +139,11 @@ func TestPartnerInterceptor(t *testing.T) {
 			if tt.sfpGroup {
 				ctx = mockGroupMembership(ctx, "all-sfp-partners")
 			}
+			if tt.rpcInfo == nil {
+				tt.rpcInfo = &grpc.UnaryServerInfo{FullMethod: "test"}
+			}
 
-			_, respErr := PartnerInterceptor(ctx, nil, &grpc.UnaryServerInfo{FullMethod: "test"}, nilHandler)
+			_, respErr := PartnerInterceptor(ctx, nil, tt.rpcInfo, nilHandler)
 			if (respErr != nil) != tt.wantErr {
 				t.Errorf("partnerInterceptor() error = %v, wantErr %v", respErr, tt.wantErr)
 				return
