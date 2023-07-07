@@ -18,7 +18,6 @@ import (
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
-	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -131,23 +130,10 @@ func (r *collectRun) doRun(ctx context.Context, args []string) error {
 		return err
 	}
 
-	opts := prpc.DefaultOptions()
-	opts.Retry = func() retry.Iterator {
-		return &retry.ExponentialBackoff{
-			Limited: retry.Limited{
-				Delay:   time.Second,
-				Retries: 10,
-			},
-			Multiplier: 2.0,
-			MaxDelay:   5 * time.Minute,
-		}
-	}
-	opts.Debug = true
-
 	buildsClient := bbpb.NewBuildsPRPCClient(&prpc.Client{
 		C:       httpClient,
 		Host:    r.host,
-		Options: opts,
+		Options: buildbucket.DefaultPRPCOpts(),
 	})
 
 	builds, err := buildbucket.PollForOutputProp(

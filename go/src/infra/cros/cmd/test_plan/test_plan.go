@@ -21,12 +21,14 @@ import (
 	"google.golang.org/protobuf/encoding/prototext"
 	protov2 "google.golang.org/protobuf/proto"
 
+	"infra/cros/internal/cmd"
 	igerrit "infra/cros/internal/gerrit"
 	"infra/cros/internal/manifestutil"
 	"infra/cros/internal/shared"
 	"infra/cros/internal/testplan"
 	"infra/cros/internal/testplan/computemapping"
 	"infra/cros/internal/testplan/migrationstatus"
+	"infra/cros/lib/buildbucket"
 	"infra/tools/dirmd"
 	"infra/tools/dirmd/cli/updater"
 	dirmdpb "infra/tools/dirmd/proto"
@@ -43,6 +45,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	cvpb "go.chromium.org/luci/cv/api/config/v2"
+	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
 
@@ -349,6 +352,12 @@ func (r *validateRun) run(a subcommands.Application, args []string, env subcomma
 		return err
 	}
 
+	bbClient := bbpb.NewBuildsPRPCClient(&prpc.Client{
+		C:       authedClient,
+		Host:    "cr-buildbucket.appspot.com",
+		Options: buildbucket.DefaultPRPCOpts(),
+	})
+
 	mapping, err := dirmd.ReadMapping(ctx, dirmdpb.MappingForm_ORIGINAL, true, dir)
 	if err != nil {
 		return err
@@ -359,7 +368,8 @@ func (r *validateRun) run(a subcommands.Application, args []string, env subcomma
 		return err
 	}
 
-	return testplan.ValidateMapping(ctx, gerritClient, mapping, repoRoot)
+	validator := testplan.NewValidator(gerritClient, bbClient, cmd.RealCommandRunner{})
+	return validator.ValidateMapping(ctx, mapping, repoRoot)
 }
 
 func cmdMigrationStatus(authOpts auth.Options) *subcommands.Command {
@@ -641,6 +651,7 @@ func (r *chromeosDirmdUpdateRun) run(ctx context.Context) error {
 
 func main() {
 	opts := chromeinfra.DefaultAuthOptions()
+	opts.PopulateDefaults()
 	opts.Scopes = append(opts.Scopes, gerrit.OAuthScope, bigquery.Scope)
 	os.Exit(subcommands.Run(app(opts), nil))
 }

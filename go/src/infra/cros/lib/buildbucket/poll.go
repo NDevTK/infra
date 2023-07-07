@@ -7,7 +7,9 @@ import (
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/grpc/grpcutil"
+	"go.chromium.org/luci/grpc/prpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
@@ -30,6 +32,24 @@ var defaultFields = []string{
 	"start_time",
 	"status",
 	"update_time",
+}
+
+// DefaultPRPCOpts returns a set of Options that work well with Buildbucket for
+// most use cases.
+func DefaultPRPCOpts() *prpc.Options {
+	opts := prpc.DefaultOptions()
+	opts.Retry = func() retry.Iterator {
+		return &retry.ExponentialBackoff{
+			Limited: retry.Limited{
+				Delay:   time.Second,
+				Retries: 10,
+			},
+			Multiplier: 2.0,
+			MaxDelay:   5 * time.Minute,
+		}
+	}
+	opts.Debug = true
+	return opts
 }
 
 // PollForOutputProp polls until all of buildIds are completed or have set

@@ -9,23 +9,35 @@ package testplan
 
 import (
 	"context"
+	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"infra/cros/internal/assert"
+	"infra/cros/internal/cmd"
 	"infra/cros/internal/gerrit"
 	"infra/tools/dirmd"
 	dirmdpb "infra/tools/dirmd/proto"
 	"infra/tools/dirmd/proto/chromeos"
 
+	"github.com/golang/mock/gomock"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/plan"
+	bbpb "go.chromium.org/luci/buildbucket/proto"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func TestValidateMapping(t *testing.T) {
 	ctx := context.Background()
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
 	testStarlarkContent := "testcontent"
 	templatedStarlarkContent := `testplan.get_suite_name()`
-	client := &gerrit.MockClient{
+
+	gerritClient := &gerrit.MockClient{
 		T: t,
 		ExpectedDownloads: map[gerrit.ExpectedPathParams]*string{
 			{
@@ -54,6 +66,85 @@ func TestValidateMapping(t *testing.T) {
 			}: &templatedStarlarkContent,
 		},
 	}
+
+	bbClient := bbpb.NewMockBuildsClient(ctrl)
+
+	// Not every test case will call SearchBuilds, because it is only called
+	// when there are TemplateParameters to check, but expect at least one call.
+	bbClient.EXPECT().
+		SearchBuilds(gomock.AssignableToTypeOf(ctx), &bbpb.SearchBuildsRequest{
+			Predicate: &bbpb.BuildPredicate{
+				Builder: &bbpb.BuilderID{
+					Project: "chromeos",
+					Bucket:  "postsubmit",
+					Builder: "amd64-generic-postsubmit",
+				},
+				Status: bbpb.Status_SUCCESS,
+				Tags:   []*bbpb.StringPair{{Key: "relevance", Value: "relevant"}},
+			},
+			PageSize: 1,
+		}).
+		Return(&bbpb.SearchBuildsResponse{
+			Builds: []*bbpb.Build{{Id: 123}},
+		}, nil).
+		MinTimes(1)
+
+	// If the validator is calling cros-test-finder, it uses a temp dir on the
+	// host to write the request and read the response, and binds this temp dir
+	// to a location on the container. Note that the temp dir created here is
+	// in the expected command, and is also used in the tmpdirFn set on the
+	// validator.
+	tmpDir := t.TempDir()
+
+	cmdRunner := &cmd.FakeCommandRunnerMulti{
+		CommandRunners: []cmd.FakeCommandRunner{
+			{
+				ExpectedCmd: []string{"gcloud", "auth", "configure-docker", "us-docker.pkg.dev", "--quiet"},
+			},
+			{
+				ExpectedCmd: []string{
+					"docker", "run",
+					fmt.Sprintf("--mount=source=%s,target=/tmp/test/cros-test-finder,type=bind", tmpDir),
+					"us-docker.pkg.dev/cros-registry/test-services/cros-test-finder:123",
+					"cros-test-finder",
+				},
+			},
+		},
+	}
+
+	validator := NewValidator(gerritClient, bbClient, cmdRunner)
+
+	// Override the validator's default tmpdir fn, to return a dir with a
+	// request already written in it; this simulates what cros-test-finder would
+	// do if it actually ran.
+	validator.WithTmpdirFn(func(_dir, _pattern string) (string, error) {
+		ctfResp := &api.CrosTestFinderResponse{
+			TestSuites: []*api.TestSuite{
+				{
+					Name: "suiteA",
+					Spec: &api.TestSuite_TestCases{
+						TestCases: &api.TestCaseList{
+							TestCases: []*api.TestCase{
+								{
+									Name: "test1",
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+		ctfRespJson, err := protojson.Marshal(ctfResp)
+		if err != nil {
+			return "", err
+		}
+
+		if err := os.WriteFile(filepath.Join(tmpDir, "result.json"), ctfRespJson, os.ModePerm); err != nil {
+			return "", err
+		}
+
+		return tmpDir, nil
+	})
 
 	tests := []struct {
 		name    string
@@ -231,6 +322,22 @@ func TestValidateMapping(t *testing.T) {
 											},
 										},
 									},
+									{
+										TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
+											{
+												Host:    "chromium.googlesource.com",
+												Project: "test/repo",
+												Path:    "templated.star",
+												TemplateParameters: &plan.SourceTestPlan_TestPlanStarlarkFile_TemplateParameters{
+													SuiteName: "tast_gce_suite",
+													TagCriteria: &api.TestSuite_TestCaseTagCriteria{
+														Tags:        []string{"group:mygroupA"},
+														TagExcludes: []string{"informational"},
+													},
+												},
+											},
+										},
+									},
 								},
 							},
 						},
@@ -242,15 +349,21 @@ func TestValidateMapping(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			assert.NilError(t, ValidateMapping(ctx, client, test.mapping, "./testdata/good_dirmd"))
+			assert.NilError(t, validator.ValidateMapping(ctx, test.mapping, "./testdata/good_dirmd"))
 		})
 	}
 }
 
 func TestValidateMappingErrors(t *testing.T) {
 	ctx := context.Background()
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
 	testfileContents := "print('hello')"
-	client := &gerrit.MockClient{
+	templatedStarlarkContent := `testplan.get_suite_name()`
+
+	gerritClient := &gerrit.MockClient{
 		T: t,
 		ExpectedDownloads: map[gerrit.ExpectedPathParams]*string{
 			{
@@ -273,12 +386,86 @@ func TestValidateMappingErrors(t *testing.T) {
 			}: &testfileContents,
 			{
 				Host:    "chromium.googlesource.com",
-				Project: "test/repo",
+				Project: "testrepo",
 				Ref:     "HEAD",
 				Path:    "templated.star",
-			}: &testfileContents,
+			}: &templatedStarlarkContent,
 		},
 	}
+
+	bbClient := bbpb.NewMockBuildsClient(ctrl)
+
+	bbClient.EXPECT().
+		SearchBuilds(gomock.AssignableToTypeOf(ctx), &bbpb.SearchBuildsRequest{
+			Predicate: &bbpb.BuildPredicate{
+				Builder: &bbpb.BuilderID{
+					Project: "chromeos",
+					Bucket:  "postsubmit",
+					Builder: "amd64-generic-postsubmit",
+				},
+				Status: bbpb.Status_SUCCESS,
+				Tags:   []*bbpb.StringPair{{Key: "relevance", Value: "relevant"}},
+			},
+			PageSize: 1,
+		}).
+		Return(&bbpb.SearchBuildsResponse{
+			Builds: []*bbpb.Build{{Id: 123}},
+		}, nil).
+		MinTimes(1)
+
+	// If the validator is calling cros-test-finder, it uses a temp dir on the
+	// host to write the request and read the response, and binds this temp dir
+	// to a location on the container. Note that the temp dir created here is
+	// in the expected command, and is also used in the tmpdirFn set on the
+	// validator.
+	tmpDir := t.TempDir()
+
+	cmdRunner := &cmd.FakeCommandRunnerMulti{
+		CommandRunners: []cmd.FakeCommandRunner{
+			{
+				ExpectedCmd: []string{"gcloud", "auth", "configure-docker", "us-docker.pkg.dev", "--quiet"},
+			},
+			{
+				ExpectedCmd: []string{
+					"docker", "run",
+					fmt.Sprintf("--mount=source=%s,target=/tmp/test/cros-test-finder,type=bind", tmpDir),
+					"us-docker.pkg.dev/cros-registry/test-services/cros-test-finder:123",
+					"cros-test-finder",
+				},
+			},
+		},
+	}
+
+	validator := NewValidator(gerritClient, bbClient, cmdRunner)
+
+	// Override the validator's default tmpdir fn, to return a dir with a
+	// request with no found test cases already written in it; this simulates
+	// what cros-test-finder would do if it actually ran and didn't find test
+	// cases
+	validator.WithTmpdirFn(func(_dir, _pattern string) (string, error) {
+		ctfResp := &api.CrosTestFinderResponse{
+			TestSuites: []*api.TestSuite{
+				{
+					Name: "suiteA",
+					Spec: &api.TestSuite_TestCases{
+						TestCases: &api.TestCaseList{
+							TestCases: []*api.TestCase{},
+						},
+					},
+				},
+			},
+		}
+		ctfRespJson, err := protojson.Marshal(ctfResp)
+		if err != nil {
+			return "", err
+		}
+
+		if err := os.WriteFile(filepath.Join(tmpDir, "result.json"), ctfRespJson, os.ModePerm); err != nil {
+			return "", err
+		}
+
+		return tmpDir, nil
+	})
 
 	tests := []struct {
 		name           string
@@ -453,7 +640,7 @@ func TestValidateMappingErrors(t *testing.T) {
 										TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
 											{
 												Host:    "chromium.googlesource.com",
-												Project: "test/repo",
+												Project: "testrepo",
 												Path:    "templated.star",
 												TemplateParameters: &plan.SourceTestPlan_TestPlanStarlarkFile_TemplateParameters{
 													TagCriteria: &api.TestSuite_TestCaseTagCriteria{
@@ -485,7 +672,7 @@ func TestValidateMappingErrors(t *testing.T) {
 										TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
 											{
 												Host:    "chromium.googlesource.com",
-												Project: "test/repo",
+												Project: "testrepo",
 												Path:    "templated.star",
 												TemplateParameters: &plan.SourceTestPlan_TestPlanStarlarkFile_TemplateParameters{
 													SuiteName: "mysuiteA",
@@ -517,8 +704,8 @@ func TestValidateMappingErrors(t *testing.T) {
 										TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
 											{
 												Host:    "chromium.googlesource.com",
-												Project: "test/repo",
-												Path:    "templated.star",
+												Project: "testrepo",
+												Path:    "testfile.star",
 												TemplateParameters: &plan.SourceTestPlan_TestPlanStarlarkFile_TemplateParameters{
 													SuiteName: "mysuiteA",
 													TagCriteria: &api.TestSuite_TestCaseTagCriteria{
@@ -538,11 +725,44 @@ func TestValidateMappingErrors(t *testing.T) {
 			"./testdata/good_dirmd",
 			"setting TemplateParameters has no effect",
 		},
+		{
+			"test criteria empty",
+			&dirmd.Mapping{
+				Dirs: map[string]*dirmdpb.Metadata{
+					"a/b": {
+						Chromeos: &chromeos.ChromeOS{
+							Cq: &chromeos.ChromeOS_CQ{
+								SourceTestPlans: []*plan.SourceTestPlan{
+									{
+										TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
+											{
+												Host:    "chromium.googlesource.com",
+												Project: "testrepo",
+												Path:    "templated.star",
+												TemplateParameters: &plan.SourceTestPlan_TestPlanStarlarkFile_TemplateParameters{
+													SuiteName: "mysuiteA",
+													TagCriteria: &api.TestSuite_TestCaseTagCriteria{
+														Tags:        []string{"group:mygroupA"},
+														TagExcludes: []string{"informational"},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			"./testdata/good_dirmd",
+			"no test cases found for test suite",
+		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			err := ValidateMapping(ctx, client, test.mapping, test.repoRoot)
+			err := validator.ValidateMapping(ctx, test.mapping, test.repoRoot)
 			assert.ErrorContains(t, err, test.errorSubstring)
 		})
 	}
