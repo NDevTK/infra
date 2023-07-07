@@ -48,7 +48,7 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 	for _, testRun := range r.TestResult.GetTestRuns() {
 		testCaseInfo := testRun.GetTestCaseInfo()
 		testCaseResult := testCaseInfo.GetTestCaseResult()
-		status := genTestResultStatus(testCaseResult)
+		status, expected := genTestResultStatus(testCaseResult)
 		testId := getTestId(testCaseResult)
 		if testId == "" {
 			return nil, errors.Reason("testId is unspecified due to the missing id in test case result: %v",
@@ -56,11 +56,9 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 		}
 
 		tr := &sinkpb.TestResult{
-			TestId: testId,
-			Status: status,
-			// The status is expected if the test passed or was skipped
-			// expectedly.
-			Expected: status == pb.TestStatus_PASS || testCaseResult.GetSkip() != nil,
+			TestId:   testId,
+			Status:   status,
+			Expected: expected,
 			// TODO(b/251357069): Move the invocation-level info and
 			// result-level info to the new JSON type columns accordingly when
 			// the new JSON type columns are ready in place.
@@ -103,23 +101,26 @@ func getTestId(testCaseResult *apipb.TestCaseResult) string {
 	return testCaseResult.GetTestCaseId().GetValue()
 }
 
-// Converts a TestCase Verdict into a ResultSink Status.
-func genTestResultStatus(result *apipb.TestCaseResult) pb.TestStatus {
+// genTestResultStatus converts a TestCase Verdict into a ResultSink Status and
+// determines the expected field.
+func genTestResultStatus(result *apipb.TestCaseResult) (status pb.TestStatus, expected bool) {
 	switch result.GetVerdict().(type) {
 	case *apipb.TestCaseResult_Pass_:
-		return pb.TestStatus_PASS
+		return pb.TestStatus_PASS, true
 	case *apipb.TestCaseResult_Fail_:
-		return pb.TestStatus_FAIL
+		return pb.TestStatus_FAIL, false
 	case *apipb.TestCaseResult_Crash_:
-		return pb.TestStatus_CRASH
+		return pb.TestStatus_CRASH, false
 	case *apipb.TestCaseResult_Abort_:
-		return pb.TestStatus_ABORT
-	// TODO(b/240893570): Split Skip (aka TestNa) and NotRun status once
-	// ResultDB can support rich statuses for ChromeOS test results.
-	case *apipb.TestCaseResult_Skip_, *apipb.TestCaseResult_NotRun_:
-		return pb.TestStatus_SKIP
+		return pb.TestStatus_ABORT, false
+	// Expectedly skipped (TEST_NA in Testhaus).
+	case *apipb.TestCaseResult_Skip_:
+		return pb.TestStatus_SKIP, true
+	// Unexpectedly skipped (NOSTATUS in Testhaus).
+	case *apipb.TestCaseResult_NotRun_:
+		return pb.TestStatus_SKIP, false
 	default:
-		return pb.TestStatus_STATUS_UNSPECIFIED
+		return pb.TestStatus_STATUS_UNSPECIFIED, false
 	}
 }
 
