@@ -104,8 +104,6 @@
 //
 // ### Current experiments
 //
-//   - golang.build_result_sharing: Fetch prebuilt toolchain from CAS if an
-//     identical build has completed previously.
 //   - golang.cache_tools_root: Cache the cipd tool installation root across
 //     builds and builders. If the tool versions remain the same across builds,
 //     this allows `cipd ensure` to become a no-op on subsequent builds. This
@@ -436,21 +434,19 @@ func getGo(ctx context.Context, spec *buildSpec) (err error) {
 	step, ctx := build.StartStep(ctx, "get go")
 	defer step.End(err)
 
-	if spec.experiment("golang.build_result_sharing") {
-		// Check to see if we might have a prebuilt Go in CAS.
-		digest, err := checkForPrebuiltGo(ctx, spec.goSrc)
+	// Check to see if we might have a prebuilt Go in CAS.
+	digest, err := checkForPrebuiltGo(ctx, spec.goSrc)
+	if err != nil {
+		return err
+	}
+	if digest != "" {
+		// Try to fetch from CAS. Note this might fail if the digest is stale enough.
+		ok, err := fetchGoFromCAS(ctx, spec, digest, spec.goroot)
 		if err != nil {
 			return err
 		}
-		if digest != "" {
-			// Try to fetch from CAS. Note this might fail if the digest is stale enough.
-			ok, err := fetchGoFromCAS(ctx, spec, digest, spec.goroot)
-			if err != nil {
-				return err
-			}
-			if ok {
-				return nil
-			}
+		if ok {
+			return nil
 		}
 	}
 
@@ -466,11 +462,8 @@ func getGo(ctx context.Context, spec *buildSpec) (err error) {
 		return err
 	}
 
-	if spec.experiment("golang.build_result_sharing") {
-		// Upload to CAS.
-		return uploadGoToCAS(ctx, spec, spec.goSrc, spec.goroot)
-	}
-	return nil
+	// Upload to CAS.
+	return uploadGoToCAS(ctx, spec, spec.goSrc, spec.goroot)
 }
 
 func triggerBuilders(ctx context.Context, spec *buildSpec) (err error) {
