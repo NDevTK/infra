@@ -9,8 +9,9 @@ import (
 	"infra/cros/cmd/cros_test_runner/internal/data"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
 	"infra/cros/cmd/cros_test_runner/common"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestGenerateHwConfigs(t *testing.T) {
@@ -29,8 +30,8 @@ func TestGenerateHwConfigs(t *testing.T) {
 	Convey("hwConfigsForPlatform for VM", t, func() {
 		hwConfigs := hwConfigsForPlatform(nil, common.BotProviderGce)
 
-		So(hwConfigs.MainConfigs, ShouldContain, DutVmRelease_CrosDutVmExecutor)
-		So(hwConfigs.CleanupConfigs, ShouldContain, DutVmRelease_CrosDutVmExecutor)
+		So(hwConfigs.MainConfigs, ShouldContain, VMProvisionRelease_CrosVMProvisionExecutor)
+		So(hwConfigs.CleanupConfigs, ShouldContain, VMProvisionRelease_CrosVMProvisionExecutor)
 		So(hwConfigs.MainConfigs, ShouldNotContain, DutServerStart_CrosDutExecutor)
 		So(hwConfigs.MainConfigs, ShouldNotContain, UpdateDutState_NoExecutor)
 		So(hwConfigs.CleanupConfigs, ShouldNotContain, UpdateDutState_NoExecutor)

@@ -36,6 +36,7 @@ var aCrosRdbPublishProcessor = newCrosRdbPublishProcessor()
 var aCrosCpconPublishProcessor = newCrosCpconPublishProcessor()
 var aCacheServerProcessor = newCacheServerProcessor()
 var aCrosFwProvisionProcessor = newCrosFwProvisionProcessor()
+var aCrosVMProvisionProcessor = newCrosVMProvisionProcessor()
 var aGenericProcessor = newGenericProcessor()
 
 // TemplateProcessor converts a container-specific template into a valid generic
@@ -100,6 +101,8 @@ func (r *RequestRouter) getActualProcessor(request *api.StartTemplatedContainerR
 		return r.getActualPublishProcessor(t.CrosPublish.PublishType)
 	case *api.Template_CrosFwProvision:
 		return aCrosFwProvisionProcessor, nil
+	case *api.Template_CrosVmProvision:
+		return aCrosVMProvisionProcessor, nil
 	default:
 		return nil, status.Error(codes.Unimplemented, fmt.Sprintf("%v to be implemented", t))
 	}

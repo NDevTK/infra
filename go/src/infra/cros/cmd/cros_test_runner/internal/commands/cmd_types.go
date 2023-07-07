@@ -52,8 +52,11 @@ const (
 	DutVmCacheServerStartCmdType interfaces.CommandType = "DutVmCacheServerStart"
 
 	// Provision service related commands
-	ProvisionServiceStartCmdType interfaces.CommandType = "ProvisionServiceStart"
-	ProvisonInstallCmdType       interfaces.CommandType = "ProvisonInstall"
+	ProvisionServiceStartCmdType   interfaces.CommandType = "ProvisionServiceStart"
+	ProvisonInstallCmdType         interfaces.CommandType = "ProvisonInstall"
+	VMProvisionServiceStartCmdType interfaces.CommandType = "VMProvisionServiceStart"
+	VMProvisionLeaseCmdType        interfaces.CommandType = "VMProvisionLease"
+	VMProvisionReleaseCmdType      interfaces.CommandType = "VMProvisionRelease"
 
 	// Test Finder service related commands
 	TestFinderServiceStartCmdType interfaces.CommandType = "TestFinderServiceStart"

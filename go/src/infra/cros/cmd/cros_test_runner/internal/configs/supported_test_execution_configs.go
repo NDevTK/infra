@@ -72,6 +72,9 @@ var DutVmLease_CrosDutVmExecutor = &CommandExecutorPairedConfig{CommandType: com
 var DutVmRelease_CrosDutVmExecutor = &CommandExecutorPairedConfig{CommandType: commands.DutVmReleaseCmdType, ExecutorType: executors.CrosDutVmExecutorType}
 var DutVmGetImage_CrosDutVmExecutor = &CommandExecutorPairedConfig{CommandType: commands.DutVmGetImageCmdType, ExecutorType: executors.CrosDutVmExecutorType}
 var DutServiceStart_CrosDutVmExecutor = &CommandExecutorPairedConfig{CommandType: commands.DutServiceStartCmdType, ExecutorType: executors.CrosDutVmExecutorType}
+var VMProvisionServerStart_CrosVMProvisionExecutor = &CommandExecutorPairedConfig{CommandType: commands.VMProvisionServiceStartCmdType, ExecutorType: executors.CrosVMProvisionExecutorType}
+var VMProvisionLease_CrosVMProvisionExecutor = &CommandExecutorPairedConfig{CommandType: commands.VMProvisionLeaseCmdType, ExecutorType: executors.CrosVMProvisionExecutorType}
+var VMProvisionRelease_CrosVMProvisionExecutor = &CommandExecutorPairedConfig{CommandType: commands.VMProvisionReleaseCmdType, ExecutorType: executors.CrosVMProvisionExecutorType}
 
 // GenerateHwConfigs generates hw tests execution for lab environment.
 func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig) *Configs {
@@ -121,7 +124,8 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform comm
 			// Prepare image, lease VM, start cache server before finally start Dut service
 			mainConfigs = append(mainConfigs,
 				DutVmGetImage_CrosDutVmExecutor,
-				DutVmLease_CrosDutVmExecutor,
+				VMProvisionServerStart_CrosVMProvisionExecutor,
+				VMProvisionLease_CrosVMProvisionExecutor,
 				DutVmCacheServerStart_CacheServerExecutor,
 				DutServiceStart_CrosDutVmExecutor)
 		} else {
@@ -177,21 +181,26 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform comm
 		}
 	}
 
-	// Recycle Dut is either update state to need repair (HW) or release (VM)
-	dutRecycle := UpdateDutState_NoExecutor
-	if platform == common.BotProviderGce {
-		dutRecycle = DutVmRelease_CrosDutVmExecutor
-	}
-
 	// Stop CTR and result processing commands
-	mainConfigs = append(mainConfigs,
-		CtrStop_CtrExecutor,
-		dutRecycle,
-		ProcessResults_NoExecutor)
-	cleanupConfigs = append(cleanupConfigs,
-		CtrStop_CtrExecutor,
-		dutRecycle,
-		ProcessResults_NoExecutor)
+	if platform == common.BotProviderGce {
+		mainConfigs = append(mainConfigs,
+			VMProvisionRelease_CrosVMProvisionExecutor,
+			CtrStop_CtrExecutor,
+			ProcessResults_NoExecutor)
+		cleanupConfigs = append(cleanupConfigs,
+			VMProvisionRelease_CrosVMProvisionExecutor,
+			CtrStop_CtrExecutor,
+			ProcessResults_NoExecutor)
+	} else {
+		mainConfigs = append(mainConfigs,
+			CtrStop_CtrExecutor,
+			UpdateDutState_NoExecutor,
+			ProcessResults_NoExecutor)
+		cleanupConfigs = append(cleanupConfigs,
+			CtrStop_CtrExecutor,
+			UpdateDutState_NoExecutor,
+			ProcessResults_NoExecutor)
+	}
 
 	return &Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
 }

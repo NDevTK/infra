@@ -17,6 +17,7 @@ const (
 	CrosDutExecutorType          interfaces.ExecutorType = "CrosDutExecutor"
 	CrosDutVmExecutorType        interfaces.ExecutorType = "CrosDutVmExecutor"
 	CrosProvisionExecutorType    interfaces.ExecutorType = "CrosProvisionExecutor"
+	CrosVMProvisionExecutorType  interfaces.ExecutorType = "CrosVMProvisionExecutor"
 	CrosTestExecutorType         interfaces.ExecutorType = "CrosTestExecutor"
 	CrosTestFinderExecutorType   interfaces.ExecutorType = "CrosTestFinderExecutor"
 	CrosGcsPublishExecutorType   interfaces.ExecutorType = "CrosGcsPublishExecutor"

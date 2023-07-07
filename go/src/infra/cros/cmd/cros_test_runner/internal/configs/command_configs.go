@@ -136,6 +136,27 @@ func (cfg *CommandConfig) GetCommand(
 		}
 		cmd = commands.NewProvisionInstallCmd(exec)
 
+	case commands.VMProvisionServiceStartCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewVMProvisionServiceStartCmd(exec)
+
+	case commands.VMProvisionLeaseCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewVMProvisionLeaseCmd(exec)
+
+	case commands.VMProvisionReleaseCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewVMProvisionReleaseCmd(exec)
+
 	case commands.TestServiceStartCmdType:
 		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
 		if err != nil {

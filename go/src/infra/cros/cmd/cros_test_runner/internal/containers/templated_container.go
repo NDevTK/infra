@@ -72,6 +72,11 @@ func (cont *TemplatedContainer) Initialize(
 		if err = cont.initializeCacheServerTemplate(ctx, t.CacheServer); err != nil {
 			return errors.Annotate(err, "initialization failed for cache-server template: ").Err()
 		}
+	case *api.Template_CrosVmProvision:
+		if err = cont.initializeCrosVmProvisionTemplate(ctx, t.CrosVmProvision); err != nil {
+			return errors.Annotate(err, "initialization failed for cros-vm-provision template: ").Err()
+		}
+	case *api.Template_Generic:
 	default:
 		return fmt.Errorf("Provided template %v not found!", t)
 	}
@@ -159,6 +164,18 @@ func (cont *TemplatedContainer) initializeCacheServerTemplate(
 
 	if cacheTemplate == nil {
 		return fmt.Errorf("Provided CacheServerTemplate is nil!")
+	}
+
+	return nil
+}
+
+// initializeCacheServerTemplate initializes cros vm provision template.
+func (cont *TemplatedContainer) initializeCrosVmProvisionTemplate(
+	ctx context.Context,
+	crosVmProvisionTemplate *api.CrosVMProvisionTemplate) error {
+
+	if crosVmProvisionTemplate == nil {
+		return fmt.Errorf("Provided CrosVmProvisionTemplate is nil!")
 	}
 
 	return nil
