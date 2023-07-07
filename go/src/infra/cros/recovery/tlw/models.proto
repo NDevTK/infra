@@ -146,6 +146,10 @@ message WifiRouterHost {
   chromiumos.test.lab.api.WifiRouterDeviceType device_type = 7;
 }
 
+message AsusWrtRouterControllerState {
+  string asus_model = 1;
+}
+
 // VersionRequest holds data for version service request.
 message VersionRequest {
   // Resource name of device.
