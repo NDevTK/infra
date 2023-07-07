@@ -46,6 +46,75 @@
       },
       "revId": "cc4253cac208cb0833b7887b23224f6e033b5b7c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "24370ed6_af88bd5b",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1137,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-07-07T01:59:05Z",
+      "side": 1,
+      "message": "It would be better to have a comment about the goal of this block. \n\ne.g. \n```\nResolve a symlink and lookup the target from root.\n```",
+      "range": {
+        "startLine": 1137,
+        "startChar": 3,
+        "endLine": 1137,
+        "endChar": 34
+      },
+      "revId": "cc4253cac208cb0833b7887b23224f6e033b5b7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "53d39706_9016a890",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1148,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-07-07T01:59:05Z",
+      "side": 1,
+      "message": "I wonder if this can be easier to understand.\n\n\nIs there any reason why not using `strings.Split()`?\nOr append `e.target` at the last iteration instead of `elem` to avoid L1149. \nOr even concatenate strings as it iterates to avoid `filepath.Join` at L1150.",
+      "range": {
+        "startLine": 1143,
+        "startChar": 4,
+        "endLine": 1148,
+        "endChar": 5
+      },
+      "revId": "cc4253cac208cb0833b7887b23224f6e033b5b7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "002cfe0d_021da6ac",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1151,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-07-07T01:59:05Z",
+      "side": 1,
+      "message": "Can this part be extracted as a function? e.g. resolveSymlink()",
+      "range": {
+        "startLine": 1138,
+        "startChar": 4,
+        "endLine": 1151,
+        "endChar": 0
+      },
+      "revId": "cc4253cac208cb0833b7887b23224f6e033b5b7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
