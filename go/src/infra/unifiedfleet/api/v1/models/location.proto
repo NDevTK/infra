@@ -106,4 +106,5 @@ enum Zone {
   ZONE_SFP_SFPTEST = 25;    // "sfp_sfptest" // Zone for SfP assets for partner `sfptest`
   ZONE_IAD65_OS = 26;       // "iad65_os" // Zone for datacenter site IAD65
   ZONE_SFP_CROSTEST = 27; // "sfp_crostest" // Zone for SfP assets for partner `crostest`
+  ZONE_SFP_2 = 28; // "sfp_2" // Zone for SfP assets for partner
 }
