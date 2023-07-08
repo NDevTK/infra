@@ -354,7 +354,7 @@ func modPath(goModFile string) (string, error) {
 //
 // TODO(mknyszek): Make sure Go 1.17 still works as the bootstrap toolchain since
 // it's our published minimum.
-var cipdDeps = `
+const cipdDeps = `
 infra/3pp/tools/git/${platform} version:2@2.39.2.chromium.11
 @Subdir bin
 infra/tools/bb/${platform} latest
@@ -365,6 +365,7 @@ infra/tools/result_adapter/${platform} latest
 infra/3pp/tools/go/${platform} version:2@1.19.3
 @Subdir cc/${os=windows}
 golang/third_party/llvm-mingw-msvcrt/${platform} latest
+@Subdir
 `
 
 func installTools(ctx context.Context, inputs *golangbuildpb.Inputs, experiments map[string]struct{}) (toolsRoot string, err error) {
@@ -374,6 +375,11 @@ func installTools(ctx context.Context, inputs *golangbuildpb.Inputs, experiments
 		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
 		step.End(err)
 	}()
+
+	cipdDeps := cipdDeps
+	if inputs.XcodeVersion != "" {
+		cipdDeps += "infra/tools/mac_toolchain/${platform} latest\n"
+	}
 
 	io.WriteString(step.Log("ensure file"), cipdDeps)
 
@@ -413,6 +419,20 @@ func installTools(ctx context.Context, inputs *golangbuildpb.Inputs, experiments
 	cmd.Stdin = strings.NewReader(cipdDeps)
 	if err := runCommandAsStep(ctx, "cipd ensure", cmd, true); err != nil {
 		return "", err
+	}
+
+	// Set up XCode.
+	// See https://source.corp.google.com/h/chromium/infra/infra/+/main:go/src/infra/cmd/mac_toolchain/README.md and
+	// https://chromium.googlesource.com/chromium/tools/depot_tools/+/HEAD/recipes/recipe_modules/osx_sdk/api.py
+	if inputs.XcodeVersion != "" {
+		xcodeInstall := exec.CommandContext(ctx, filepath.Join(toolsRoot, "mac_toolchain"), "install", "-xcode-version", inputs.XcodeVersion, "-output-dir", filepath.Join(toolsRoot, "XCode.app"))
+		if err := runCommandAsStep(ctx, "install XCode "+inputs.XcodeVersion, xcodeInstall, true); err != nil {
+			return "", err
+		}
+		xcodeSelect := exec.CommandContext(ctx, "sudo", "xcode-select", "--switch", filepath.Join(toolsRoot, "XCode.app"))
+		if err := runCommandAsStep(ctx, "select XCode "+inputs.XcodeVersion, xcodeSelect, true); err != nil {
+			return "", err
+		}
 	}
 	return toolsRoot, nil
 }
