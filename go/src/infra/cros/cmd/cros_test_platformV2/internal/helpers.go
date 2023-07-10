@@ -68,6 +68,32 @@ func getFirstBoardFromLegacy(req *api.HWTargets) string {
 		return ""
 	}
 }
+
+func getFirstGcsPathFromLegacy(req *api.SWTargets) string {
+	switch sw := req.SwTargets.(type) {
+	case *api.SWTargets_LegacySw:
+		if len(sw.LegacySw.LegacySws) == 0 {
+			return ""
+		}
+		return sw.LegacySw.LegacySws[0].GcsPath
+	default:
+		return ""
+	}
+}
+
+func gcsInfo(req *api.CTPv2Request) (string, string, error) {
+	board := getFirstBoardFromLegacy(req.HwTargets)
+	if board == "" {
+		return "", "", errors.New("no board provided in legacy request")
+	}
+
+	gcsPath := getFirstGcsPathFromLegacy(req.SwTargets)
+	if board == "" {
+		return "", "", errors.New("no gcsPath provided in legacy request")
+	}
+
+	return board, gcsPath, nil
+}
 func buildExecutors(ctx context.Context, req *api.CTPv2Request, cloud bool) ([]executor.Executor, error) {
 	execs := []executor.Executor{}
 
@@ -75,12 +101,12 @@ func buildExecutors(ctx context.Context, req *api.CTPv2Request, cloud bool) ([]e
 	// to the request. We don't want to run test-finder per board as that's extremely expensive to setup/act on, however
 	// CFT design has test-finder being board specific. For initial MVP we will just use the first board in the request to
 	// get the container MD from, but this will need to be solved long term.
-	board := getFirstBoardFromLegacy(req.HwTargets)
-	if board == "" {
-		return nil, errors.New("no board provided in legacy request")
+	board, gcsPath, err := gcsInfo(req)
+	if err != nil {
+		return nil, err
 	}
-	// TODO, hardcodes....
-	containerMetadata, err := gcs.FetchImageData(ctx, board, "release", "R111-1111-1")
+
+	containerMetadata, err := gcs.FetchImageData(ctx, board, gcsPath)
 	if err != nil {
 		return nil, fmt.Errorf("unable to fetch image data: %s", err)
 	}

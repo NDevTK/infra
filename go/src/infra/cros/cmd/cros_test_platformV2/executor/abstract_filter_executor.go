@@ -26,6 +26,8 @@ type FilterExecutor struct {
 
 	binaryName    string
 	containerPath string
+
+	client testapi.GenericFilterServiceClient
 }
 
 func newFilterExecutor(ctr managers.ContainerManager, req *api.CTPFilter, containerMetadata map[string]*buildapi.ContainerImageInfo) (*FilterExecutor, error) {
@@ -38,25 +40,34 @@ func newFilterExecutor(ctr managers.ContainerManager, req *api.CTPFilter, contai
 			return nil, err
 		}
 	}
-	return &FilterExecutor{Ctr: ctr, binaryName: req.Container.Name, containerPath: req.Container.Digest}, nil
+
+	path := fmt.Sprintf("%s/%s/%s@%s", "us-docker.pkg.dev", "cros-registry/test-services", req.Container.Name, req.Container.Digest)
+	fmt.Printf("Container path: %s\n\n", path)
+
+	return &FilterExecutor{Ctr: ctr, binaryName: req.Container.Name, containerPath: path}, nil
 }
 
-func (ex *FilterExecutor) Execute(ctx context.Context, cmd string, resp *api.InternalTestplan) error {
+func (ex *FilterExecutor) Execute(ctx context.Context, cmd string, resp *api.InternalTestplan) (*api.InternalTestplan, error) {
 	if cmd == "run" {
-		return nil // Call the (running) binary inside the executing container.
+		return ex.run(resp)
 	} else if cmd == "init" {
 		fmt.Println("FILTER INIT!")
 		ex.init()
 		// TODO, consider moving this to "process", and adjusting process to meet our needs.
-		return nil
+		return nil, nil
 	} else if cmd == "stop" {
-		return nil // Stop containers.
+		return nil, nil // Stop containers.
 	}
-	return fmt.Errorf("invalid command given: %s\n", cmd)
+	return nil, fmt.Errorf("invalid command given: %s\n", cmd)
 }
-func (ex *FilterExecutor) run() error {
-	// Call binary, put the resp in ex.resp = ...
-	return nil
+
+func (ex *FilterExecutor) run(req *api.InternalTestplan) (*api.InternalTestplan, error) {
+	resp, err := ex.client.Execute(context.Background(), req)
+	if err != nil {
+		return resp, fmt.Errorf("err running filter: %s", err)
+	}
+
+	return resp, nil
 }
 
 // init starts the container, creates a client.
@@ -96,13 +107,11 @@ func (ex *FilterExecutor) init() error {
 	}
 	ex.conn = conn
 
-	// Current question: How do we know how to make a connection to the client?
-	// Abstract client interface? Has to be...
-	// Below is an example of making a conn to TestFinder...
-	testClient := api.NewTestFinderServiceClient(conn)
-	if testClient == nil {
-		return fmt.Errorf("testFinderServiceClient is nil")
+	filterClient := api.NewGenericFilterServiceClient(conn)
+	if filterClient == nil {
+		return fmt.Errorf("could not connect to GenericFilterClient: %s", err)
 	}
+	ex.client = filterClient
 
 	return nil
 

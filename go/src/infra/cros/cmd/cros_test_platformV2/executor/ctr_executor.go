@@ -26,18 +26,18 @@ func NewCtrExecutor(ctr managers.ContainerManager) *CtrExecutor {
 	return &CtrExecutor{Ctr: ctr}
 }
 
-func (ex *CtrExecutor) Execute(ctx context.Context, cmd string, resp *api.InternalTestplan) error {
+func (ex *CtrExecutor) Execute(ctx context.Context, cmd string, resp *api.InternalTestplan) (*api.InternalTestplan, error) {
 	if cmd == "run" {
 		fmt.Println("CTR Run.")
-		return nil //ex.gcloudAuthCommandExecution(ctx)
+		return nil, nil //ex.gcloudAuthCommandExecution(ctx)
 	} else if cmd == "init" {
 		fmt.Println("CTR init")
 		ex.Ctr.StartManager(ctx, "foo")
-		return nil
+		return nil, nil
 	} else if cmd == "stop" {
 		fmt.Println("CTR stop")
 		ex.Ctr.StopManager(ctx, "foo")
-		return nil
+		return nil, nil
 	}
-	return fmt.Errorf("invalid command given: %s", cmd)
+	return nil, fmt.Errorf("invalid command given: %s", cmd)
 }

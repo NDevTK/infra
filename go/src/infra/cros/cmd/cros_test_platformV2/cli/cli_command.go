@@ -55,7 +55,7 @@ func (cc *CLICommand) Init(args []string) error {
 
 // Run runs the commands to publish test results
 func (cc *CLICommand) Run() error {
-	log.Printf("Running CLI Mode:")
+	log.Printf("Running CLI Mode: %s", cc.args.inputPath)
 	_, err := internal.Execute(cc.args.inputPath, false)
 	return err
 }

@@ -14,14 +14,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func FetchImageData(ctx context.Context, board string, bucket string, number string) (map[string]*api.ContainerImageInfo, error) {
-	image_data_template := "gs://chromeos-image-archive/%s-%s/%s*/metadata/containers.jsonpb"
-	template := fmt.Sprintf(
-		image_data_template,
-		board,
-		bucket,
-		number,
-	)
+func FetchImageData(ctx context.Context, board string, template string) (map[string]*api.ContainerImageInfo, error) {
 
 	gsutil := exec.CommandContext(ctx, "gsutil", "ls", "-l", template)
 	sort := exec.CommandContext(ctx, "sort", "-k", "2")
@@ -45,7 +38,7 @@ func FetchImageData(ctx context.Context, board string, bucket string, number str
 	containerImages := regContainerEx.FindAllStringSubmatch(string(imageDataRaw), -1)
 
 	if len(containerImages) == 0 {
-		return nil, fmt.Errorf("Could not find any container images with given build %s-%s/%s", board, bucket, number)
+		return nil, fmt.Errorf("Could not find any container images with given build %s", template)
 	}
 	archivePath := containerImages[len(containerImages)-1][0]
 	// ImagePath = strings.Split(archivePath, "metadata")[0]

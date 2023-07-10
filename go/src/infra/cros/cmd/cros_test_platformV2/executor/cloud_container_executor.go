@@ -22,14 +22,14 @@ func NewCloudContainerExecutor(manager managers.ContainerManager) *CloudContaine
 	return &CloudContainerExecutor{manager: manager}
 }
 
-func (ex *CloudContainerExecutor) Execute(ctx context.Context, cmd string, resp *api.InternalTestplan) error {
+func (ex *CloudContainerExecutor) Execute(ctx context.Context, cmd string, resp *api.InternalTestplan) (*api.InternalTestplan, error) {
 	if cmd == "run" {
-		return nil
+		return nil, nil
 	} else if cmd == "init" {
 		ex.manager.StartContainer(ctx, nil)
-		return nil
+		return nil, nil
 	} else if cmd == "stop" {
-		return nil
+		return nil, nil
 	}
-	return fmt.Errorf("invalid command given: %s\n", cmd)
+	return nil, fmt.Errorf("invalid command given: %s\n", cmd)
 }

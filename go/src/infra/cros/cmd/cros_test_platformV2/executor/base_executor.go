@@ -13,7 +13,7 @@ import (
 type Executor interface {
 
 	// Execute runs the exector
-	Execute(context.Context, string, *api.InternalTestplan) error
+	Execute(context.Context, string, *api.InternalTestplan) (*api.InternalTestplan, error)
 
 	// Response
 }

@@ -27,32 +27,55 @@ func Execute(inputPath string, cloud bool) (*api.TestSuite, error) {
 	executors, _ := buildExecutors(ctx, request, cloud)
 
 	InternalStruct := translateRequest(request)
-
 	// Run the same commands for each
 	for _, executor := range executors {
 		// For CTR, init = start Server async. For services it will be pull/prep container/launch
-		err := executor.Execute(ctx, "init", InternalStruct)
-		fmt.Println("Executing Executor Init.")
+		newIS, err := executor.Execute(ctx, "init", InternalStruct)
 		if err != nil {
-			fmt.Println("Error")
+			fmt.Printf("filter err: %s", err)
+		}
+		err = validateStruct(InternalStruct, newIS)
+		if err == nil {
+			InternalStruct = newIS
+		}
+		if err != nil {
+			fmt.Printf("validator err err: %s", err)
 		}
 	}
 	// Run the same commands for each
 	for _, executor := range executors {
 		// Gcloud auth for CTR (kinda odd...). For services, it will be `call the service.`
-		err = executor.Execute(ctx, "run", InternalStruct)
+		newIS, err := executor.Execute(ctx, "run", InternalStruct)
 		if err != nil {
-			fmt.Println("Error")
+			fmt.Printf("filter err: %s", err)
+		}
+
+		err = validateStruct(InternalStruct, newIS)
+		if err == nil {
+			InternalStruct = newIS
+		}
+		if err != nil {
+			fmt.Printf("validator err err: %s", err)
 		}
 	}
 
 	// After all execs are run, stop them all. TODO, this probably needs to be a bit smarter defered.
 	for _, executor := range executors {
-		err := executor.Execute(ctx, "stop", InternalStruct)
+		newIS, err := executor.Execute(ctx, "stop", InternalStruct)
 		if err != nil {
-			fmt.Println("Error")
+			fmt.Printf("filter err: %s", err)
+		}
+		err = validateStruct(InternalStruct, newIS)
+		if err == nil {
+			InternalStruct = newIS
+		}
+		if err != nil {
+			fmt.Printf("validator err err: %s", err)
 		}
 	}
 	return nil, nil
+}
 
+func validateStruct(resp *api.InternalTestplan, newResp *api.InternalTestplan) error {
+	return nil
 }

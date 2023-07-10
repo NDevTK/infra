@@ -112,7 +112,7 @@ func (ex *CtrManager) StartManager(ctx context.Context, foo string) (err error) 
 	}
 
 	// Step 5. Auth
-	dockerKeyFileLocation := "TODO"
+	dockerKeyFileLocation := "/creds/service_accounts/skylab-drone.json"
 	_, err = ex.gcloudAuth(ctx, dockerKeyFileLocation)
 	if err != nil {
 		return errors.Annotate(err, "error during gcloud cmd: ").Err()
@@ -392,10 +392,9 @@ func (ctr *CtrManager) GetContainer(
 func (ex *CtrManager) gcloudAuth(
 	ctx context.Context,
 	dockerFileLocation string) (*testapi.LoginRegistryResponse, error) {
-	fmt.Println("Authing")
-	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Auth Gcloud with user %s", Username))
+	log.Println("Gcloud Authing")
+	log.Printf("CrosToolRunner: Auth Gcloud with user %s", Username)
 	var err error
-	defer func() { step.End(err) }()
 
 	if ex.CtrClient == nil {
 		return nil, fmt.Errorf("Ctr client not found. Please start the server if not done already.")
@@ -409,15 +408,14 @@ func (ex *CtrManager) gcloudAuth(
 	}
 
 	loginReq := testapi.LoginRegistryRequest{Username: Username, Password: Password, Registry: ImageRegistry, Extensions: &extension}
-	common.WriteProtoToStepLog(ctx, step, &loginReq, "LoginRegistryRequest")
 
 	// Login
 	resp, err := ex.CtrClient.LoginRegistry(ctx, &loginReq, grpc.EmptyCallOption{})
 	if err != nil {
+		fmt.Printf("error in gcloud auth: %s", err)
 		return nil, errors.Annotate(err, "error in gcloud auth: ").Err()
 	}
 
-	common.WriteProtoToStepLog(ctx, step, resp, "LoginRegistryResponse")
 	log.Printf("Successfully logged in!")
 	return resp, nil
 }
