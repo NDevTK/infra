@@ -154,7 +154,7 @@ class WinISOCustomization(customization.Customization):
         iso_dir = self._workdir.join('staging')
         boot = None
         # Copy base image
-        if output.base_image:
+        if output.base_image.WhichOneof('src'):
           self.copy_base_image(output.base_image, iso_dir)
         # Copy all the modifications
         for cf in output.copy_files:
@@ -300,33 +300,34 @@ class WinISOCustomization(customization.Customization):
       * directory: The staging directory for the image
       * output: The output image to be generated
     """
-    if not boot:
-      # If no boot image is given, use the windows default
-      boot = 'boot/etfsboot.com'
     # For info regarding el-torito boot image and genisoimage
     # See: https://wiki.osdev.org/El-Torito
     # See: https://wiki.osdev.org/Genisoimage
     cmd = [
         'genisoimage',  # use genisoimage to generate the iso image
-        '-b{}'.format(boot),  # use this as the bootloader image
+    ]
+    if boot:
+      cmd.append('-b{}'.format(boot))  # use this as the bootloader image
+    elif self._arch == "aarch64":
+      cmd.append('-befi/microsoft/boot/efisys_noprompt.bin')  # pragma: nocover
+    else:
+      # x86_64 or x86 options
+      cmd.append('-bboot/etfsboot.com')
+      cmd.append('-no-emul-boot')
+      cmd.append('--eltorito-alt-boot')
+      cmd.append('-befi/microsoft/boot/efisys_noprompt.bin')
+    cmd.extend([
         '-no-emul-boot',  # dont emulate boot image as floppy
-        '-boot-load-seg',
-        '0',  # load segment address for boot image
-        '-boot-load-size',
-        '8',  # size of the bios image
+        '--hide',
+        '*',
+        '--udf',  # include UDF filesystem support
         '-iso-level',
-        '2',  # Use level 2
-        '-J',  # Generate Joliet directory records
-        '-l',  # Allow full 31 character filenames
-        '-D',  # disable deep directory relocation
-        '-N',  # omit version numbers
-        '-joliet-long',  # Allow joliet filenames to be 103 unicode chars
-        '-allow-limited-size',  # support files larger than 2 GB
-        '-relaxed-filenames',  # allow filenames to include all 7-bit ASCII
+        '3',  # Use level 3
+        '-allow-limited-size',  # allow files bigger than 4GB
         '-V',
         '{}'.format(name),  # name for the iso being generated
         '-o',
         output,  # write to this file
         directory  # directory to be used for this image
-    ]
+    ])
     self.m.step('Generate iso image', cmd=cmd)
