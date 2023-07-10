@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"go.chromium.org/luci/common/tsmon"
+	"go.chromium.org/luci/common/tsmon/distribution"
 	"go.chromium.org/luci/common/tsmon/field"
 	"go.chromium.org/luci/common/tsmon/metric"
 	"go.chromium.org/luci/common/tsmon/target"
@@ -267,10 +268,12 @@ var respBytesSent = metric.NewCounter("chromeos/caching_backend/nginx/response_b
 )
 
 // respBytesPerSecond is a tsmon metric for the response bandwidth.
-var respBytesPerSecond = metric.NewInt("chromeos/caching_backend/nginx/response_bytes_per_second",
-	"response bandwidth (Byte/second) to clients from a caching backend",
+var respBytesPerSecond = metric.NewCumulativeDistribution("chromeos/caching_backend/nginx/response_bandwidth",
+	"distribution of response bandwidth (Byte/second) to clients from a caching backend",
 	nil,
-	field.String("hostname"),
+	// The bucket covers from 2^0 to 2^25 (i.e. 128 MB/s) which is the range we
+	// concern.
+	distribution.GeometricBucketer(2, 25),
 	field.String("http_method"),
 	field.String("rpc"),
 	field.Int("status"),
@@ -290,6 +293,6 @@ func reportToTsMon(i *record) {
 
 	respBytesSent.Add(ctx, int64(i.bodyBytesSent), i.hostname, i.httpMethod, rpc, i.status, i.cacheStatus, i.expectedSize == i.bodyBytesSent)
 	if i.requestTime > 0.0 {
-		respBytesPerSecond.Set(ctx, int64(float64(i.bodyBytesSent)/i.requestTime), i.hostname, i.httpMethod, rpc, i.status, i.cacheStatus, i.expectedSize == i.bodyBytesSent)
+		respBytesPerSecond.Add(ctx, float64(i.bodyBytesSent)/i.requestTime, i.httpMethod, rpc, i.status, i.cacheStatus, i.expectedSize == i.bodyBytesSent)
 	}
 }
