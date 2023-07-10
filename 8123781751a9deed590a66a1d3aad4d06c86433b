@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f73a4808_f930846a",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/cellular/modem.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2023-07-10T19:18:35Z",
+      "side": 1,
+      "message": "Done, added separate ModemState enum.",
+      "parentUuid": "e500e6aa_20db011d",
+      "range": {
+        "startLine": 83,
+        "startChar": 39,
+        "endLine": 83,
+        "endChar": 50
+      },
+      "revId": "8123781751a9deed590a66a1d3aad4d06c86433b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "93ac4d88_70355adc",
@@ -58,6 +82,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cd319b24_8cb5902f",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/cellular/modem.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2023-07-10T19:18:35Z",
+      "side": 1,
+      "message": "This will just attempt to connect to the service but it won\u0027t attempt to reset anything if it fails.",
+      "parentUuid": "93ac4d88_70355adc",
+      "revId": "8123781751a9deed590a66a1d3aad4d06c86433b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6c8295b3_43552977",
@@ -71,6 +113,30 @@
       "writtenOn": "2023-06-30T23:19:59Z",
       "side": 1,
       "message": "please check if modem is not nil and m itself.",
+      "range": {
+        "startLine": 164,
+        "startChar": 4,
+        "endLine": 164,
+        "endChar": 11
+      },
+      "revId": "8123781751a9deed590a66a1d3aad4d06c86433b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "97ea9d2e_2a0ed15b",
+        "filename": "go/src/infra/cros/recovery/internal/components/cros/cellular/modem.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2023-07-10T19:18:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6c8295b3_43552977",
       "range": {
         "startLine": 164,
         "startChar": 4,
@@ -104,6 +170,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "358a9282_aeda2b17",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cellular_execs.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2023-07-10T19:18:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "131372cb_ed19c849",
+      "range": {
+        "startLine": 129,
+        "startChar": 34,
+        "endLine": 129,
+        "endChar": 41
+      },
+      "revId": "8123781751a9deed590a66a1d3aad4d06c86433b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "86bbbbc7_8ceba17a",
@@ -117,6 +207,30 @@
       "writtenOn": "2023-06-30T23:19:59Z",
       "side": 1,
       "message": "to match the logic `.. %q is in the provided list`",
+      "range": {
+        "startLine": 130,
+        "startChar": 52,
+        "endLine": 130,
+        "endChar": 66
+      },
+      "revId": "8123781751a9deed590a66a1d3aad4d06c86433b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4717558c_f5689705",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cellular_execs.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2023-07-10T19:18:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "86bbbbc7_8ceba17a",
       "range": {
         "startLine": 130,
         "startChar": 52,
@@ -150,6 +264,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7bf9736e_70d2e1e8",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cellular_execs.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2023-07-10T19:18:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "25a78706_c77600c7",
+      "range": {
+        "startLine": 158,
+        "startChar": 28,
+        "endLine": 158,
+        "endChar": 30
+      },
+      "revId": "8123781751a9deed590a66a1d3aad4d06c86433b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "628cf0e5_6ea0bb31",
@@ -163,6 +301,30 @@
       "writtenOn": "2023-06-30T23:19:59Z",
       "side": 1,
       "message": "to match exec `...%q in provided list`",
+      "range": {
+        "startLine": 159,
+        "startChar": 60,
+        "endLine": 159,
+        "endChar": 71
+      },
+      "revId": "8123781751a9deed590a66a1d3aad4d06c86433b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "064e60f6_e9a56054",
+        "filename": "go/src/infra/cros/recovery/internal/execs/cros/cellular_execs.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1541462
+      },
+      "writtenOn": "2023-07-10T19:18:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "628cf0e5_6ea0bb31",
       "range": {
         "startLine": 159,
         "startChar": 60,
