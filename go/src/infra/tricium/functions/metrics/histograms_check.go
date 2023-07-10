@@ -53,6 +53,7 @@ const (
 	removedHistogramInfo         = `[INFO] The following histograms were removed without an obsoletion message: %s. If you want to add the same obsoletion message to all the histograms removed in the CL, you can add "OBSOLETE_HISTOGRAMS=message" in the CL description. You can also add obsoletion messages to specific histograms by adding "OBSOLETE_HISTOGRAM[histogram name]=obsoletion message" tags in the CL description, these will override the CL-level obsoletion message if there is one.`
 	obsoletionMessageError       = `[ERROR] An obsoletion message has been added to following histograms: %s, but they are not removed. Please double check if there're typos.`
 	allRemovedHistogramInfo      = `[INFO] The following histograms have been removed and obsoleted in this CL: %s.`
+	globalObsoletionMessageError = `[WARNING] A CL-level obsoletion message was added but no histogram has been removed in the CL.`
 )
 
 var (
@@ -155,15 +156,7 @@ const (
 	REMOVED
 )
 
-type histogramStatus int
-
-const (
-	ADD histogramStatus = iota
-	UNCHANGE
-	REMOVE
-)
-
-func analyzeHistogramFile(f io.Reader, filePath, prevDir string, filesChanged *diffsPerFile, singletonEnums stringset.Set, obsoletedHistograms map[string]bool, histogramStatus map[string]histogramStatus, globalMessage bool) []*tricium.Data_Comment {
+func analyzeHistogramFile(f io.Reader, filePath, prevDir string, filesChanged *diffsPerFile, singletonEnums stringset.Set) ([]*tricium.Data_Comment, stringset.Set, stringset.Set) {
 	log.Printf("ANALYZING File: %s", filePath)
 	var allComments []*tricium.Data_Comment
 	// Analyze removed lines in file (if any).
@@ -176,11 +169,11 @@ func analyzeHistogramFile(f io.Reader, filePath, prevDir string, filesChanged *d
 	// Analyze added lines in file (if any).
 	comments, newHistograms, newNamespaces, namespaceLineNums, newVariants := analyzeChangedLines(bufio.NewScanner(f), filePath, filesChanged.addedLines[filePath], singletonEnums, oldHistograms, ADDED)
 	allComments = append(allComments, comments...)
-	// Identify if any histograms were removed.
-	allComments = append(allComments, generateCommentsForRemovedHistograms(filePath, newHistograms, oldHistograms, newVariants, oldVariants, obsoletedHistograms, histogramStatus, globalMessage)...)
+	// Get the list of added histograms and the list of removed histograms after expansion. Expired and obsolete histograms are excluded.
+	addedHistograms, removedHistograms := generateAddedAndRemovedHistograms(newHistograms, oldHistograms, newVariants, oldVariants)
 	// Identify if any new namespaces were added.
 	allComments = append(allComments, generateCommentsForAddedNamespaces(filePath, newNamespaces, oldNamespaces, namespaceLineNums)...)
-	return showAllComments(allComments)
+	return showAllComments(allComments), addedHistograms, removedHistograms
 }
 
 func analyzeHistogramSuffixesFile(f io.Reader, filePath string, filesChanged *diffsPerFile) []*tricium.Data_Comment {
@@ -194,16 +187,39 @@ func analyzeHistogramSuffixesFile(f io.Reader, filePath string, filesChanged *di
 	return showAllComments(comments)
 }
 
-func analyzeCommitMessage(obsoletedHistograms map[string]bool) []*tricium.Data_Comment {
+func analyzeCommitMessage(obsoletedHistograms stringset.Set, removedHistograms stringset.Set, globalObsoleteTagAdded bool) []*tricium.Data_Comment {
 	var comments []*tricium.Data_Comment
-	var obsoletedWithoutRemovalHistograms []string
-	for histogram := range obsoletedHistograms {
-		obsoletedWithoutRemovalHistograms = append(obsoletedWithoutRemovalHistograms, histogram)
+	// Check if there's at least one histogram removed when a CL-level obsoletion message is added.
+	if len(removedHistograms) == 0 && globalObsoleteTagAdded {
+		comment := &tricium.Data_Comment{
+			Category: category + "/Obsolete",
+			Message:  globalObsoletionMessageError,
+		}
+		comments = append(comments, comment)
 	}
+
+	// Check if there's any obsoletion message added without a corresponding histogram removed.
+	obsoletedWithoutRemovalHistograms := obsoletedHistograms.Difference(removedHistograms).ToSlice()
 	if len(obsoletedWithoutRemovalHistograms) > 0 {
 		comment := &tricium.Data_Comment{
 			Category: category + "/Obsolete",
 			Message:  fmt.Sprintf(obsoletionMessageError, strings.Join(obsoletedWithoutRemovalHistograms, ", ")),
+		}
+		comments = append(comments, comment)
+	}
+
+	// If a CL-level obsoletion message was added, we don't need to check if there's any histogram removed without
+	// an obsoletion message.
+	if globalObsoleteTagAdded {
+		return comments
+	}
+
+	// Check if there's any histogram removed without an obsoletion message.
+	removedWithoutMessageHistograms := removedHistograms.Difference(obsoletedHistograms).ToSlice()
+	if len(removedWithoutMessageHistograms) > 0 {
+		comment := &tricium.Data_Comment{
+			Category: category + "/Obsolete",
+			Message:  fmt.Sprintf(removedHistogramInfo, strings.Join(removedWithoutMessageHistograms, ", ")),
 		}
 		comments = append(comments, comment)
 	}
@@ -586,40 +602,12 @@ func checkEnums(path string, hist *histogram, meta *metadata, singletonEnums str
 	return nil
 }
 
-func generateCommentsForRemovedHistograms(path string, newHistograms map[string]*histogram, oldHistograms map[string]*histogram, newVariants map[string]*variants, oldVariants map[string]*variants, obsoletedHistograms map[string]bool, histogramStatus map[string]histogramStatus, globalMessage bool) []*tricium.Data_Comment {
-	var comments []*tricium.Data_Comment
-	var removedWithoutMessageHistograms []string
+func generateAddedAndRemovedHistograms(newHistograms map[string]*histogram, oldHistograms map[string]*histogram, newVariants map[string]*variants, oldVariants map[string]*variants) (stringset.Set, stringset.Set) {
 	newHistogramNames := expandHistograms(newHistograms, newVariants)
 	oldHistogramNames := expandHistograms(oldHistograms, oldVariants)
-	allRemovedHistograms := oldHistogramNames.Difference(newHistogramNames).ToSlice()
-	allAddedHistograms := newHistogramNames.Difference(oldHistogramNames).ToSlice()
-	updateHistogramStatus(histogramStatus, allRemovedHistograms, REMOVE)
-	updateHistogramStatus(histogramStatus, allAddedHistograms, ADD)
-	for _, removedHistogram := range allRemovedHistograms {
-		if _, present := obsoletedHistograms[removedHistogram]; present {
-			// Delete the histogram from obsoletedHistograms to show the obsoleted histogram is
-			// indeed removed.
-			// TODO(arielzhang): Clean up the logic here to avoid modifying obsoletedHistograms
-			// which isn't used in this function.
-			delete(obsoletedHistograms, removedHistogram)
-		} else {
-			removedWithoutMessageHistograms = append(removedWithoutMessageHistograms, removedHistogram)
-		}
-	}
-	if globalMessage {
-		return comments
-	}
-	if len(removedWithoutMessageHistograms) > 0 {
-		sort.Strings(removedWithoutMessageHistograms)
-		comment := &tricium.Data_Comment{
-			Category: category + "/Removed",
-			Message:  fmt.Sprintf(removedHistogramInfo, strings.Join(removedWithoutMessageHistograms, ", ")),
-			Path:     path,
-		}
-		comments = append(comments, comment)
-		log.Printf("ADDING Comment: [Info]: Histogram(s) removed without an obsoletion message")
-	}
-	return comments
+	allAddedHistograms := newHistogramNames.Difference(oldHistogramNames)
+	allRemovedHistograms := oldHistogramNames.Difference(newHistogramNames)
+	return allAddedHistograms, allRemovedHistograms
 }
 
 func generateCommentsForAddedNamespaces(path string, newNamespaces stringset.Set, oldNamespaces stringset.Set, namespaceLineNums map[string]int) []*tricium.Data_Comment {
@@ -714,14 +702,4 @@ func hasExpiredBy(hist *histogram, numDays int) bool {
 		}
 	}
 	return false
-}
-
-func updateHistogramStatus(histogramStatus map[string]histogramStatus, hists []string, status histogramStatus) {
-	for _, hist := range hists {
-		if _, present := histogramStatus[hist]; present {
-			histogramStatus[hist] += (status - UNCHANGE)
-		} else {
-			histogramStatus[hist] = status
-		}
-	}
 }

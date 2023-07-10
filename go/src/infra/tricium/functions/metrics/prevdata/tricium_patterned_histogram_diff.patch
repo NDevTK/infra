@@ -33,3 +33,16 @@ index f1de1c2..750e437 100644
              <owner>ltina@google.com</owner>
              <owner>chrome-metrics-team@google.com</owner>
              <summary> This is a summary </summary>
+diff --git a/test/histograms.xml b/test/histograms.xml
+index cf333a1..9514caf 100644
+--- a/test/histograms.xml
++++ b/test/histograms.xml
+@@ -5,7 +5,7 @@
+             <owner>chrome-metrics-team@google.com</owner>
+             <summary> This is a summary </summary>
+         </histogram>
+-        <histogram name="Test.Histogram2" units="units" expires_after="M150">
++        <histogram name="Test.Histogram3" units="units" expires_after="M150">
+             <owner>ltina@google.com</owner>
+             <owner>chrome-metrics-team@google.com</owner>
+             <summary> This is a summary </summary>

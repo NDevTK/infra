@@ -12,6 +12,8 @@ import (
 	"testing"
 	"time"
 
+	"go.chromium.org/luci/common/data/stringset"
+
 	. "github.com/smartystreets/goconvey/convey"
 
 	tricium "infra/tricium/api/v1"
@@ -23,7 +25,7 @@ const (
 	enumsPath  = "testdata/src/enums/enums.xml"
 )
 
-func analyzeHistogramTestFileWithObsoletionAndGlobal(t *testing.T, filePath, patch, prevDir string, obsoletedHistograms map[string]bool, globalMessage bool) []*tricium.Data_Comment {
+func analyzeHistogramTestFileAll(t *testing.T, filePath, patch, prevDir string) ([]*tricium.Data_Comment, stringset.Set, stringset.Set) {
 	// now mocks the current time for testing.
 	now = func() time.Time { return time.Date(2019, time.September, 18, 0, 0, 0, 0, time.UTC) }
 	// getMilestoneDate is a function that mocks getting the milestone date from server.
@@ -67,22 +69,12 @@ func analyzeHistogramTestFileWithObsoletionAndGlobal(t *testing.T, filePath, pat
 	inputPath := filepath.Join(inputDir, filePath)
 	f := openFileOrDie(inputPath)
 	defer closeFileOrDie(f)
-	removedHistograms := make(map[string]histogramStatus)
-	return analyzeHistogramFile(f, filePath, prevDir, filesChanged, singletonEnums, obsoletedHistograms, removedHistograms, globalMessage)
-}
-
-func analyzeHistogramTestFileWithObsoletion(t *testing.T, filePath, patch, prevDir string, obsoletedHistograms map[string]bool) []*tricium.Data_Comment {
-	return analyzeHistogramTestFileWithObsoletionAndGlobal(t, filePath, patch, prevDir, obsoletedHistograms, false)
-}
-
-func analyzeHistogramTestFileWithGlobal(t *testing.T, filePath, patch, prevDir string) []*tricium.Data_Comment {
-	obsoletedHistograms := make(map[string]bool)
-	return analyzeHistogramTestFileWithObsoletionAndGlobal(t, filePath, patch, prevDir, obsoletedHistograms, true)
+	return analyzeHistogramFile(f, filePath, prevDir, filesChanged, singletonEnums)
 }
 
 func analyzeHistogramTestFile(t *testing.T, filePath, patch, prevDir string) []*tricium.Data_Comment {
-	obsoletedHistograms := make(map[string]bool)
-	return analyzeHistogramTestFileWithObsoletionAndGlobal(t, filePath, patch, prevDir, obsoletedHistograms, false)
+	comments, _, _ := analyzeHistogramTestFileAll(t, filePath, patch, prevDir)
+	return comments
 }
 
 func analyzeHistogramSuffixesTestFile(t *testing.T, filePath, patch string) []*tricium.Data_Comment {
@@ -97,6 +89,9 @@ func analyzeHistogramSuffixesTestFile(t *testing.T, filePath, patch string) []*t
 }
 
 func TestHistogramsCheck(t *testing.T) {
+	// An empty histogram set. Used as an empty removed histogram set or an empty obsoleted histogram set.
+	emptyHistogramSet := make(stringset.Set)
+
 	patchPath := filepath.Join(inputDir, emptyPatch)
 	patchFile, err := os.Create(patchPath)
 	if err != nil {
@@ -581,71 +576,146 @@ func TestHistogramsCheck(t *testing.T) {
 		})
 	})
 
-	// REMOVED HISTOGRAM tests
-	Convey("Analyze XML file with no error: only owner line deleted", t, func() {
-		results := analyzeHistogramTestFile(t, "rm/remove_owner_line.xml", "prevdata/tricium_owner_line_diff.patch", "prevdata/src")
-		So(results, ShouldBeNil)
+	// ADDED AND REMOVED HISTOGRAM tests
+
+	Convey("Analyze XML file with no histogram added or removed: only owner line deleted", t, func() {
+		comments, addedHistograms, removedHistograms := analyzeHistogramTestFileAll(t, "rm/remove_owner_line.xml",
+			"prevdata/tricium_owner_line_diff.patch", "prevdata/src")
+		So(comments, ShouldBeNil)
+		So(addedHistograms, ShouldBeEmpty)
+		So(removedHistograms, ShouldBeEmpty)
 	})
 
-	Convey("Analyze XML file with no error: only attribute changed", t, func() {
-		results := analyzeHistogramTestFile(t, "rm/change_attribute.xml", "prevdata/tricium_attribute_diff.patch", "prevdata/src")
-		So(results, ShouldBeNil)
+	Convey("Analyze XML file with no histogram added or removed: only attribute changed", t, func() {
+		comments, addedHistograms, removedHistograms := analyzeHistogramTestFileAll(t,
+			"rm/change_attribute.xml", "prevdata/tricium_attribute_diff.patch", "prevdata/src")
+		So(comments, ShouldBeNil)
+		So(addedHistograms, ShouldBeEmpty)
+		So(removedHistograms, ShouldBeEmpty)
 	})
 
-	Convey("Analyze XML file with histogram(s) removed without an obsoletion message", t, func() {
-		results := analyzeHistogramTestFile(t, "rm/remove_histogram.xml", "prevdata/tricium_generated_diff.patch", "prevdata/src")
-		So(results, ShouldResemble, []*tricium.Data_Comment{
-			{
-				Category:             category + "/Removed",
-				Message:              fmt.Sprintf(removedHistogramInfo, "Test.Histogram2"),
-				Path:                 "rm/remove_histogram.xml",
-				ShowOnUnchangedLines: true,
-			},
-		})
+	Convey("Analyze XML file with histogram(s) removed", t, func() {
+		comments, addedHistograms, removedHistograms := analyzeHistogramTestFileAll(t,
+			"rm/remove_histogram.xml", "prevdata/tricium_generated_diff.patch", "prevdata/src")
+		So(comments, ShouldBeNil)
+		So(addedHistograms, ShouldBeEmpty)
+		So(removedHistograms, ShouldResemble, stringset.NewFromSlice([]string{"Test.Histogram2"}...))
 	})
 
-	Convey("Analyze XML file with histogram(s) removed with a global message", t, func() {
-		results := analyzeHistogramTestFileWithGlobal(t, "rm/remove_histogram.xml", "prevdata/tricium_generated_diff.patch", "prevdata/src")
-		So(results, ShouldBeNil)
+	Convey("Analyze XML file with patterned histogram(s) removed", t, func() {
+		comments, addedHistograms, removedHistograms := analyzeHistogramTestFileAll(t,
+			"rm/remove_patterned_histogram.xml", "prevdata/tricium_remove_patterned_histogram_diff.patch", "prevdata/src")
+		So(comments, ShouldBeNil)
+		So(addedHistograms, ShouldBeEmpty)
+		So(removedHistograms, ShouldResemble, stringset.NewFromSlice(
+			[]string{"TestDragon.Histogram2.Bulbasaur", "TestDragon.Histogram2.Charizard",
+				"TestFlying.Histogram2.Bulbasaur", "TestFlying.Histogram2.Charizard"}...))
 	})
 
-	Convey("Analyze XML file with patterned histogram(s) removed without an obsoletion message", t, func() {
-		results := analyzeHistogramTestFile(t, "rm/remove_patterned_histogram.xml", "prevdata/tricium_remove_patterned_histogram_diff.patch", "prevdata/src")
-		So(results, ShouldResemble, []*tricium.Data_Comment{
-			{
-				Category:             category + "/Removed",
-				Message:              fmt.Sprintf(removedHistogramInfo, "TestDragon.Histogram2.Bulbasaur, TestDragon.Histogram2.Charizard, TestFlying.Histogram2.Bulbasaur, TestFlying.Histogram2.Charizard"),
-				Path:                 "rm/remove_patterned_histogram.xml",
-				ShowOnUnchangedLines: true,
-			},
-		})
-	})
-
-	Convey("Analyze XML file with histogram(s) removed without an obsoletion message with data discontinuity", t, func() {
-		results := analyzeHistogramTestFile(t, "rm/remove_histogram_with_old_expiry.xml", "prevdata/tricium_remove_histogram_with_old_expiry.patch", "prevdata/src")
-		// Remove an already deprecated histogram shouldn't show a Tricium warning.
-		So(results, ShouldBeNil)
+	Convey("Analyze XML file with deprecated histogram(s) removed", t, func() {
+		comments, addedHistograms, removedHistograms := analyzeHistogramTestFileAll(t,
+			"rm/remove_histogram_with_old_expiry.xml", "prevdata/tricium_remove_histogram_with_old_expiry.patch", "prevdata/src")
+		So(comments, ShouldBeNil)
+		So(addedHistograms, ShouldBeEmpty)
+		So(removedHistograms, ShouldBeEmpty)
 	})
 
 	Convey("Analyze XML file with <variants> modified to remove a variant", t, func() {
-		results := analyzeHistogramTestFile(t, "rm/modify_variants.xml", "prevdata/tricium_modify_variants_diff.patch", "prevdata/src")
+		comments, addedHistograms, removedHistograms := analyzeHistogramTestFileAll(t,
+			"rm/modify_variants.xml", "prevdata/tricium_modify_variants_diff.patch", "prevdata/src")
+		So(comments, ShouldBeNil)
+		So(addedHistograms, ShouldBeEmpty)
+		So(removedHistograms, ShouldResemble, stringset.NewFromSlice(
+			[]string{"TestDragon.Histogram2.Charizard", "TestFlying.Histogram2.Charizard"}...))
+	})
+
+	Convey("Analyze XML file with histogram(s) added and removed", t, func() {
+		comments, addedHistograms, removedHistograms := analyzeHistogramTestFileAll(t,
+			"rm/add_remove_histogram.xml", "prevdata/tricium_patterned_histogram_diff.patch", "prevdata/src")
+		So(comments, ShouldBeNil)
+		So(addedHistograms, ShouldResemble, stringset.NewFromSlice([]string{"Test.Histogram99"}...))
+		So(removedHistograms, ShouldResemble, stringset.NewFromSlice([]string{"Test.Histogram2"}...))
+	})
+
+	// COMMIT MESSAGE tests
+
+	Convey("Analyze commit message with no error: no histogram removed and no obsoletion tag added", t, func() {
+		results := analyzeCommitMessage(emptyHistogramSet, emptyHistogramSet, false)
+		So(results, ShouldBeNil)
+	})
+
+	Convey("Analyze commit message with no error: histograms removed and a CL-level obsoletion tag added", t, func() {
+		results := analyzeCommitMessage(emptyHistogramSet, stringset.NewFromSlice([]string{"Test.Histogram", "Test.Histogram2"}...), true)
+		So(results, ShouldBeNil)
+	})
+
+	Convey("Analyze commit message with no error: histograms removed and histogram specific obsoletion tags added", t, func() {
+		results := analyzeCommitMessage(stringset.NewFromSlice([]string{"Test.Histogram", "Test.Histogram2"}...),
+			stringset.NewFromSlice([]string{"Test.Histogram", "Test.Histogram2"}...), false)
+		So(results, ShouldBeNil)
+	})
+
+	Convey("Analyze commit message with no error: histograms removed and a CL-level and a histogram specific obsoletion tag added", t, func() {
+		results := analyzeCommitMessage(stringset.NewFromSlice([]string{"Test.Histogram"}...),
+			stringset.NewFromSlice([]string{"Test.Histogram", "Test.Histogram2"}...), true)
+		So(results, ShouldBeNil)
+	})
+
+	Convey("Analyze commit message with a CL-level obsoletion message tag added but no histogram removed", t, func() {
+		results := analyzeCommitMessage(emptyHistogramSet, emptyHistogramSet, true)
 		So(results, ShouldResemble, []*tricium.Data_Comment{
 			{
-				Category:             category + "/Removed",
-				Message:              fmt.Sprintf(removedHistogramInfo, "TestDragon.Histogram2.Charizard, TestFlying.Histogram2.Charizard"),
-				Path:                 "rm/modify_variants.xml",
-				ShowOnUnchangedLines: true,
+				Category: category + "/Obsolete",
+				Message:  globalObsoletionMessageError,
 			},
 		})
 	})
 
-	Convey("Analyze XML file with histogram(s) removed with an obsoletion message", t, func() {
-		obsoletedHistograms := make(map[string]bool)
-		obsoletedHistograms["Test.Histogram2"] = true
-		results := analyzeHistogramTestFileWithObsoletion(t, "rm/remove_histogram.xml", "prevdata/tricium_generated_diff.patch", "prevdata/src", obsoletedHistograms)
-		_, present := obsoletedHistograms["Test.Histogram2"]
-		So(results, ShouldBeNil)
-		So(present, ShouldBeFalse)
+	Convey("Analyze commit message with a histogram specific obsoletion message tag added but no histogram removed", t, func() {
+		results := analyzeCommitMessage(stringset.NewFromSlice([]string{"Test.Histogram"}...), emptyHistogramSet, false)
+		So(results, ShouldResemble, []*tricium.Data_Comment{
+			{
+				Category: category + "/Obsolete",
+				Message:  fmt.Sprintf(obsoletionMessageError, "Test.Histogram"),
+			},
+		})
+	})
+
+	Convey("Analyze commit message with a histogram removed without an obsoletion message tag", t, func() {
+		results := analyzeCommitMessage(emptyHistogramSet, stringset.NewFromSlice([]string{"Test.Histogram"}...), false)
+		So(results, ShouldResemble, []*tricium.Data_Comment{
+			{
+				Category: category + "/Obsolete",
+				Message:  fmt.Sprintf(removedHistogramInfo, "Test.Histogram"),
+			},
+		})
+	})
+
+	Convey("Analyze commit message with a histogram specific obsoletion message tag added with a typo", t, func() {
+		results := analyzeCommitMessage(stringset.NewFromSlice([]string{"Test.Histogram"}...),
+			stringset.NewFromSlice([]string{"Test.Histogram2"}...), false)
+		So(results, ShouldResemble, []*tricium.Data_Comment{
+			{
+				Category: category + "/Obsolete",
+				Message:  fmt.Sprintf(obsoletionMessageError, "Test.Histogram"),
+			},
+			{
+				Category: category + "/Obsolete",
+				Message:  fmt.Sprintf(removedHistogramInfo, "Test.Histogram2"),
+			},
+		})
+	})
+
+	Convey("Analyze commit message with a histogram specific obsoletion message tag added with a typo "+
+		"and a CL-level obsoletion message tag added", t, func() {
+		results := analyzeCommitMessage(stringset.NewFromSlice([]string{"Test.Histogram"}...),
+			stringset.NewFromSlice([]string{"Test.Histogram2", "Test.Histogram3"}...), true)
+		So(results, ShouldResemble, []*tricium.Data_Comment{
+			{
+				Category: category + "/Obsolete",
+				Message:  fmt.Sprintf(obsoletionMessageError, "Test.Histogram"),
+			},
+		})
 	})
 
 	// ADDED NAMESPACE tests

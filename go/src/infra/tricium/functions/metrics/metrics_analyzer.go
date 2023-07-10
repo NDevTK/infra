@@ -60,12 +60,10 @@ func main() {
 		log.Panicf("Failed to get diffs per file: %v", err)
 	}
 	singletonEnums := getSingleElementEnums(filepath.Join(*inputDir, *enumsPath))
-	obsoletedHistograms := getObsoletedHistograms(*commitMessage)
-	histogramStatus := make(map[string]histogramStatus)
-	globalObsoleteMessagePattern := regexp.MustCompile(`OBSOLETE_HISTOGRAMS=(.+)`)
-	globalMessageExists := globalObsoleteMessagePattern.Match([]byte(*commitMessage))
 
 	results := &tricium.Data_Results{}
+	allAddedHistograms := make(stringset.Set)
+	allRemovedHistograms := make(stringset.Set)
 	for _, filePath := range filePaths {
 		inputPath := filepath.Join(*inputDir, filePath)
 		f := openFileOrDie(inputPath)
@@ -73,7 +71,10 @@ func main() {
 		if ext := filepath.Ext(filePath); ext == ".xml" {
 			switch strings.TrimSuffix(filepath.Base(filePath), ext) {
 			case "histograms":
-				results.Comments = append(results.Comments, analyzeHistogramFile(f, filePath, *prevDir, filesChanged, singletonEnums, obsoletedHistograms, histogramStatus, globalMessageExists)...)
+				comments, addedHistograms, removedHistograms := analyzeHistogramFile(f, filePath, *prevDir, filesChanged, singletonEnums)
+				results.Comments = append(results.Comments, comments...)
+				allAddedHistograms = allAddedHistograms.Union(addedHistograms)
+				allRemovedHistograms = allRemovedHistograms.Union(removedHistograms)
 			case "histogram_suffixes_list":
 				results.Comments = append(results.Comments, analyzeHistogramSuffixesFile(f, filePath, filesChanged)...)
 			}
@@ -82,20 +83,17 @@ func main() {
 		}
 	}
 
-	// Check if all obsoletion messages has a corresponding removed histogram.
-	results.Comments = append(results.Comments, analyzeCommitMessage(obsoletedHistograms)...)
+	globalObsoleteTagAdded := regexp.MustCompile(`OBSOLETE_HISTOGRAMS=(.+)`).Match([]byte(*commitMessage))
+	removedHistograms := allRemovedHistograms.Difference(allAddedHistograms)
+	// Check if all obsoletion messages and all removed histograms have their counterpart.
+	results.Comments = append(results.Comments, analyzeCommitMessage(
+		getObsoletedHistograms(*commitMessage), removedHistograms, globalObsoleteTagAdded)...)
 
-	removedHistograms := make([]string, 0, len(histogramStatus))
-	for hist := range histogramStatus {
-		if histogramStatus[hist] == REMOVE {
-			removedHistograms = append(removedHistograms, hist)
-		}
-	}
-
-	if len(removedHistograms) > 0 {
+	// Record all removed histograms in the CL.
+	if removedHistograms.Len() > 0 {
 		comment := &tricium.Data_Comment{
 			Category: category + "/Removed",
-			Message:  fmt.Sprintf(allRemovedHistogramInfo, strings.Join(removedHistograms, ", ")),
+			Message:  fmt.Sprintf(allRemovedHistogramInfo, strings.Join(removedHistograms.ToSlice(), ", ")),
 		}
 		results.Comments = append(results.Comments, comment)
 	}
@@ -174,12 +172,12 @@ func closeFileOrDie(f *os.File) {
 	}
 }
 
-func getObsoletedHistograms(commitMessage string) map[string]bool {
+func getObsoletedHistograms(commitMessage string) stringset.Set {
 	re := regexp.MustCompile(`OBSOLETE_HISTOGRAM\[(.+?)\]`)
 	histograms := re.FindAllStringSubmatch(commitMessage, -1)
-	histogramsMap := make(map[string]bool)
+	histogramsSet := make(stringset.Set)
 	for _, match := range histograms {
-		histogramsMap[match[1]] = true
+		histogramsSet.Add(match[1])
 	}
-	return histogramsMap
+	return histogramsSet
 }
