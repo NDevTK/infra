@@ -56,6 +56,14 @@ func crosRepairClosingActions() map[string]*Action {
 			ExecName:               "cros_remove_servo_in_use",
 			AllowFailAfterRecovery: true,
 		},
+		"Is Flex device": {
+			Docs: []string{"Verify that device is belong Reven models"},
+			ExecExtraArgs: []string{
+				"string_values:aurora,reven",
+			},
+			ExecName:      "dut_check_board",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
 		"Is not Flex device": {
 			Docs: []string{"Verify that device is belong Reven models"},
 			ExecExtraArgs: []string{
@@ -141,6 +149,9 @@ func crosRepairClosingActions() map[string]*Action {
 				"has failed is greater than a threshold value or ",
 				"not.",
 			},
+			Conditions: []string{
+				"Is not Flex device",
+			},
 			ExecName: "metrics_check_task_failures",
 			ExecExtraArgs: []string{
 				"task_name:recovery",
@@ -148,6 +159,23 @@ func crosRepairClosingActions() map[string]*Action {
 			},
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},
+		"Failure count above threshold (Flex)": {
+			Docs: []string{
+				"Check if the number of times the recovery task ",
+				"has failed is greater than a threshold value or ",
+				"not.",
+			},
+			Conditions: []string{
+				"Is Flex device",
+			},
+			ExecName: "metrics_check_task_failures",
+			ExecExtraArgs: []string{
+				"task_name:recovery",
+				"repair_failed_count:3",
+			},
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
+		},
+
 		"Update DUT state for failures more than threshold": {
 			Docs: []string{
 				"Set the DUT state to the value passed in the ",
@@ -156,6 +184,7 @@ func crosRepairClosingActions() map[string]*Action {
 			Conditions: []string{
 				"DUT state is repair_failed",
 				"Failure count above threshold",
+				"Failure count above threshold (Flex)",
 				"Set state: needs_manual_repair",
 			},
 			ExecName: "dut_set_state_reason",
