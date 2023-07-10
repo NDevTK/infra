@@ -104,6 +104,11 @@
 //
 // ### Current experiments
 //
+//   - golang.cache_git_clone: Cache a git clone of each project builds and
+//     builders. New builds fetch required objects into the cache repo, which
+//     may already contain the object or some parents. This requires a named
+//     cache defined on each builder, whose name is provided via
+//     golangbuildpb.Inputs.GitCache.
 //   - golang.cache_tools_root: Cache the cipd tool installation root across
 //     builds and builders. If the tool versions remain the same across builds,
 //     this allows `cipd ensure` to become a no-op on subsequent builds. This
@@ -231,7 +236,7 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		if err != nil {
 			return err
 		}
-		if err := fetchRepo(ctx, spec.subrepoSrc, repoDir); err != nil {
+		if err := fetchRepo(ctx, spec.subrepoSrc, repoDir, spec.inputs, spec.experiments); err != nil {
 			return err
 		}
 
@@ -473,7 +478,7 @@ func getGo(ctx context.Context, spec *buildSpec) (err error) {
 	// There was no prebuilt toolchain we could grab. Fetch Go and build it.
 
 	// Fetch the main Go repository into goroot.
-	if err := fetchRepo(ctx, spec.goSrc, spec.goroot); err != nil {
+	if err := fetchRepo(ctx, spec.goSrc, spec.goroot, spec.inputs, spec.experiments); err != nil {
 		return err
 	}
 
@@ -517,7 +522,7 @@ func triggerBuilders(ctx context.Context, spec *buildSpec) (err error) {
 
 // runCommandAsStep runs the provided command as a build step.
 //
-// It overwrites cmd.Stdout and cmd.Stderr to redirect into step logs.
+// It wraps cmd.Stdout and cmd.Stderr to redirect into step logs.
 // It runs the command with the environment from the context, so change
 // the context's environment to alter the command's environment.
 func runCommandAsStep(ctx context.Context, stepName string, cmd *exec.Cmd, infra bool) (err error) {
@@ -552,13 +557,23 @@ func runCommandAsStep(ctx context.Context, stepName string, cmd *exec.Cmd, infra
 		return err
 	}
 
-	// Run the command.
+	// Redirect to a log file for inspection. Note we must wrap if the
+	// caller also wants output.
 	//
 	// Combine output because it's annoying to pick one of stdout and stderr
 	// in the UI and be wrong.
 	output := step.Log("output")
-	cmd.Stdout = output
-	cmd.Stderr = output
+	if cmd.Stdout == nil {
+		cmd.Stdout = output
+	} else {
+		cmd.Stdout = io.MultiWriter(cmd.Stdout, output)
+	}
+	if cmd.Stderr == nil {
+		cmd.Stderr = output
+	} else {
+		cmd.Stderr = io.MultiWriter(cmd.Stderr, output)
+	}
+
 	if err := cmd.Run(); err != nil {
 		return errors.Annotate(err, "Failed to run %q", stepName).Err()
 	}

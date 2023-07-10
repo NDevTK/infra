@@ -5,20 +5,26 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"go.chromium.org/luci/auth"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/api/gitiles"
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
+	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe/build"
+
+	"infra/experimental/golangbuild/golangbuildpb"
 )
 
 const (
@@ -55,13 +61,17 @@ type sourceSpec struct {
 }
 
 // fetchRepo fetches a repository according to src and places it at dst.
-func fetchRepo(ctx context.Context, src *sourceSpec, dst string) (err error) {
+func fetchRepo(ctx context.Context, src *sourceSpec, dst string, inputs *golangbuildpb.Inputs, experiments map[string]struct{}) (err error) {
 	step, ctx := build.StartStep(ctx, "fetch "+src.project)
 	defer func() {
 		// Any failure in this function is an infrastructure failure.
 		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
 		step.End(err)
 	}()
+
+	if _, ok := experiments["golang.cache_git_clone"]; ok {
+		return fetchRepoCached(ctx, inputs, src, dst)
+	}
 
 	switch {
 	case src.change != nil && !src.cherryPick:
@@ -73,6 +83,21 @@ func fetchRepo(ctx context.Context, src *sourceSpec, dst string) (err error) {
 			return fmt.Errorf("cherryPick is unexpectedly set in the commit case")
 		}
 		return fetchRepoAtCommit(ctx, dst, src.commit)
+	}
+	return fmt.Errorf("one of change or commit must be non-nil")
+}
+
+func fetchRepoCached(ctx context.Context, inputs *golangbuildpb.Inputs, src *sourceSpec, dst string) (err error) {
+	switch {
+	case src.change != nil && !src.cherryPick:
+		return fetchRepoChangeAsIsCached(ctx, inputs, src.change, dst)
+	case src.change != nil && src.cherryPick:
+		return fetchRepoChangeWithCherryPickCached(ctx, inputs, src.branch, src.change, dst)
+	case src.commit != nil:
+		if src.cherryPick {
+			return fmt.Errorf("cherryPick is unexpectedly set in the commit case")
+		}
+		return fetchRepoAtCommitCached(ctx, inputs, src.commit, dst)
 	}
 	return fmt.Errorf("one of change or commit must be non-nil")
 }
@@ -139,6 +164,186 @@ func fetchRepoAtCommit(ctx context.Context, dst string, commit *bbpb.GitilesComm
 	return nil
 }
 
+// cachedRepoPath returns the path to the cached bare repo for this gerrit
+// change, performing initial clone if it is missing from cache.
+func cachedRepoPath(ctx context.Context, inputs *golangbuildpb.Inputs, host, project string) (string, error) {
+	cache := inputs.GitCache
+	if cache == "" {
+		return "", fmt.Errorf("inputs missing GitCache: %+v", inputs)
+	}
+	if !filepath.IsLocal(cache) {
+		return "", fmt.Errorf("GitCache %q must be relative", cache)
+	}
+
+	// Double check that the host and project don't form malformed paths.
+	if !filepath.IsLocal(host) {
+		return "", fmt.Errorf("host %q must make a relative path", host)
+	}
+	if !filepath.IsLocal(project) {
+		return "", fmt.Errorf("project %q must make a relative path", project)
+	}
+
+	luciExe := lucictx.GetLUCIExe(ctx)
+	if luciExe == nil {
+		return "", fmt.Errorf("missing LUCI_CONTEXT")
+	}
+
+	// N.B. host is included in the path so that we don't mix contents from
+	// potentially conflicting repos with the same project name. e.g.,
+	// go/go and go-internal/go.
+	//
+	// Once annoyance with this approach is that GitilesChange uses host
+	// "go.googlesource.com" while GerritChange uses
+	// "go-review.googlesource.com", so those repos will be duplicated.
+	repo := filepath.Join(luciExe.GetCacheDir(), cache, host, project)
+
+	_, err := os.Stat(repo)
+	if err == nil {
+		// Repo already exists.
+		return repo, nil
+	} else if !errors.Is(err, fs.ErrNotExist) {
+		// Some other error.
+		return "", fmt.Errorf("error checking for repo existence: %w", err)
+	}
+
+	// Repo does not exist; perform initial clone.
+
+	if err := runGit(ctx, "git clone upstream to cache", "clone", "--bare", urlFromHostProject(host, project), repo); err != nil {
+		return "", err
+	}
+
+	return repo, nil
+}
+
+// Fetch a remote object (a ref or explicit commit SHA) from host/project into
+// the cache repo. Returns the explicit commit SHA that obj resolves to
+// (unnecessary if obj is already an explicit commit SHA).
+//
+// N.B. We don't need to worry about git gc pruning these unreferenced objects
+// before we get a chance to clone to repo because git gc never prunes objects
+// less than 2 weeks old.
+func fetchObjIntoCache(ctx context.Context, inputs *golangbuildpb.Inputs, host, project, obj string) (string, error) {
+	cacheRepo, err := cachedRepoPath(ctx, inputs, host, project)
+	if err != nil {
+		return "", err
+	}
+
+	// Fetch object into cached repo (may be a no-op).
+	if err := runGit(ctx, "git fetch into cache", "--git-dir", cacheRepo, "fetch", urlFromHostProject(host, project), obj); err != nil {
+		return "", err
+	}
+
+	// Resolve fetched commit for subsequent fetch. We need this because
+	// the fetched refs aren't named in the cache repo, so they need to be
+	// fetched by explicit sha.
+	//
+	// This is useless if obj is already a sha, but it doesn't hurt.
+	sha, err := runGitStdout(ctx, "git rev-parse", "--git-dir", cacheRepo, "rev-parse", "FETCH_HEAD")
+	if err != nil {
+		return "", err
+	}
+	sha = strings.TrimSpace(sha)
+
+	return sha, nil
+}
+
+// Clone the cache repo to dst and checkout sha.
+func cloneFromCache(ctx context.Context, inputs *golangbuildpb.Inputs, host, project, dst, sha string) error {
+	cacheRepo, err := cachedRepoPath(ctx, inputs, host, project)
+	if err != nil {
+		return err
+	}
+
+	// It is very tempting to be clever and try to "optimize" this. e.g.,
+	// by creating a new repo and fetching only the objects we need from
+	// the cache. However, that ends up being less efficient because fetch
+	// is fairly expensive, while a local clone is optimized to a direct
+	// copy of the .git directory (see --local in git help clone), which is
+	// much faster.
+	if err := runGit(ctx, "git clone from cache", "clone", cacheRepo, dst); err != nil {
+		return err
+	}
+
+	if err := runGit(ctx, "git checkout", "-C", dst, "checkout", sha); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// fetchRepoChangeAsIs checks out a change to be tested as is, without
+// rebasing.
+func fetchRepoChangeAsIsCached(ctx context.Context, inputs *golangbuildpb.Inputs, change *bbpb.GerritChange, dst string) error {
+	ref := refFromChange(change)
+	sha, err := fetchObjIntoCache(ctx, inputs, change.Host, change.Project, ref)
+	if err != nil {
+		return err
+	}
+
+	if err := cloneFromCache(ctx, inputs, change.Host, change.Project, dst, sha); err != nil {
+		return err
+	}
+
+	if change.Project == "go" {
+		if err := writeVersionFile(ctx, dst, fmt.Sprintf("%d/%d", change.Change, change.Patchset)); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// fetchRepoChangeWithCherryPickCached checks out a change by cherry-picking it on
+// top of branch.
+func fetchRepoChangeWithCherryPickCached(ctx context.Context, inputs *golangbuildpb.Inputs, branch string, change *bbpb.GerritChange, dst string) error {
+	// Fetch branch and change into cache so they will be both be available
+	// in the clone.
+	branchRef := "refs/heads/" + branch
+	branchSha, err := fetchObjIntoCache(ctx, inputs, change.Host, change.Project, branchRef)
+	if err != nil {
+		return err
+	}
+	changeRef := refFromChange(change)
+	changeSha, err := fetchObjIntoCache(ctx, inputs, change.Host, change.Project, changeRef)
+	if err != nil {
+		return err
+	}
+
+	if err := cloneFromCache(ctx, inputs, change.Host, change.Project, dst, branchSha); err != nil {
+		return err
+	}
+
+	if err := runGit(ctx, "git cherry-pick", "-C", dst, "cherry-pick", changeSha); err != nil {
+		return err
+	}
+
+	if change.Project == "go" {
+		if err := writeVersionFile(ctx, dst, fmt.Sprintf("%d/%d", change.Change, change.Patchset)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// fetchRepoAtCommitCached checks out a commit to be tested as is.
+func fetchRepoAtCommitCached(ctx context.Context, inputs *golangbuildpb.Inputs, commit *bbpb.GitilesCommit, dst string) error {
+	_, err := fetchObjIntoCache(ctx, inputs, commit.Host, commit.Project, commit.Id)
+	if err != nil {
+		return err
+	}
+
+	if err := cloneFromCache(ctx, inputs, commit.Host, commit.Project, dst, commit.Id); err != nil {
+		return err
+	}
+
+	if commit.Project == "go" {
+		if err := writeVersionFile(ctx, dst, commit.Id); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // fetchDependencies uses 'go mod download' to fetch
 // dependencies for the given modules.
 func fetchDependencies(ctx context.Context, spec *buildSpec, modules []module) (err error) {
@@ -192,12 +397,28 @@ func writeFile(ctx context.Context, path, data string) (err error) {
 	return err
 }
 
+func urlFromHostProject(host, project string) string {
+	return "https://" + host + "/" + project
+}
+
 func refFromChange(change *bbpb.GerritChange) string {
 	return fmt.Sprintf("refs/changes/%02d/%d/%d", change.Change%100, change.Change, change.Patchset)
 }
 
 func runGit(ctx context.Context, stepName string, args ...string) (err error) {
-	return runCommandAsStep(ctx, stepName, exec.CommandContext(ctx, "git", args...), true)
+	cmd := exec.CommandContext(ctx, "git", args...)
+	return runCommandAsStep(ctx, stepName, cmd, true)
+}
+
+func runGitStdout(ctx context.Context, stepName string, args ...string) (out string, err error) {
+	cmd := exec.CommandContext(ctx, "git", args...)
+
+	var buf bytes.Buffer
+	cmd.Stdout = &buf
+
+	err = runCommandAsStep(ctx, stepName, cmd, true)
+
+	return buf.String(), err
 }
 
 // sourceForBranch produces a sourceSpec representing the tip of a branch for a project.
