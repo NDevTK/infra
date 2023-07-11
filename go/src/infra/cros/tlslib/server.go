@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net"
+	net_url "net/url"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -32,6 +34,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"infra/cros/internal/env"
 	"infra/cros/tlslib/internal/resource"
 	"infra/libs/sshpool"
 )
@@ -151,8 +154,30 @@ func (s *Server) cacheForDut(ctx context.Context, url, dutName string) (string, 
 		return "", fmt.Errorf("cacheForDut: unexpected response from CacheForDut, %v", a)
 	}
 
-	log.Printf("cacheForDut: the cache URL for %q is %q", url, resp.GetUrl())
-	return resp.GetUrl(), nil
+	// TLS side, wrap in Swarming and BBID.
+	u, err := net_url.Parse(resp.GetUrl())
+	if err != nil {
+		return "", fmt.Errorf("cacheForDut: failed to parse url=%s, %s", resp.GetUrl(), err)
+	}
+
+	u_stid := "swarming/"
+	if stid := env.GetSwarmingTaskID(); len(stid) != 0 {
+		u_stid += stid
+	} else {
+		u_stid += "none"
+	}
+
+	u_bbid := "bbid/"
+	if bbid := env.GetBuildBucketID(); len(bbid) != 0 {
+		u_bbid += bbid
+	} else {
+		u_bbid += "none"
+	}
+
+	u.Path = filepath.Join(u_stid, u_bbid, u.Path)
+
+	log.Printf("cacheForDut: the cache URL for %q is %q", url, u.String())
+	return u.String(), nil
 }
 
 // ProvisionDut implements TLS provision API.

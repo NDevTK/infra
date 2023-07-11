@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,4 +10,14 @@ import "os"
 // the USER env var.
 func RunningOnBot() bool {
 	return os.Getenv("USER") == "chrome-bot"
+}
+
+// GetSwarmingTaskID retrieves the swarming task ID.
+func GetSwarmingTaskID() string {
+	return os.Getenv("SWARMING_TASK_ID")
+}
+
+// GetBuildBucketID retrieves the build bucket ID.
+func GetBuildBucketID() string {
+	return os.Getenv("BUILD_BUCKET_ID")
 }
