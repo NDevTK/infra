@@ -50,6 +50,8 @@ func makeGetShivasFlags(c *getDUT) flagmap {
 	if c.outputFlags.JSON() {
 		out["json"] = []string{}
 	}
+	out["namespace"] = []string{c.envFlags.GetNamespace()}
+
 	return out
 }
 
