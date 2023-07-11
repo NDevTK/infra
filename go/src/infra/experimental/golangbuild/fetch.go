@@ -45,9 +45,13 @@ type sourceSpec struct {
 	// commit is a Gitiles commit to fetch. If this is non-nil, change must be nil.
 	commit *bbpb.GitilesCommit
 
-	// rebase controls whether to rebase onto branch.
-	// This field applies when change is non-nil only, and must be false otherwise.
-	rebase bool
+	// cherryPick controls whether to cherry-pick change onto branch.
+	//
+	// This field may only be true when change is non-nil.
+	//
+	// Note that this will cherry-pick change without any of its parent
+	// changes (if any), thus testing the change in isolation.
+	cherryPick bool
 }
 
 // fetchRepo fetches a repository according to src and places it at dst.
@@ -60,13 +64,13 @@ func fetchRepo(ctx context.Context, src *sourceSpec, dst string) (err error) {
 	}()
 
 	switch {
-	case src.change != nil && !src.rebase:
+	case src.change != nil && !src.cherryPick:
 		return fetchRepoChangeAsIs(ctx, dst, src.change)
-	case src.change != nil && src.rebase:
-		return fetchRepoChangeWithRebase(ctx, src.branch, dst, src.change)
+	case src.change != nil && src.cherryPick:
+		return fetchRepoChangeWithCherryPick(ctx, src.branch, dst, src.change)
 	case src.commit != nil:
-		if src.rebase {
-			return fmt.Errorf("rebase is unexpectedly set in the commit case")
+		if src.cherryPick {
+			return fmt.Errorf("cherryPick is unexpectedly set in the commit case")
 		}
 		return fetchRepoAtCommit(ctx, dst, src.commit)
 	}
@@ -96,8 +100,9 @@ func fetchRepoChangeAsIs(ctx context.Context, dst string, change *bbpb.GerritCha
 	return nil
 }
 
-// fetchRepoChangeWithRebase checks out a change, rebasing it on top of its branch.
-func fetchRepoChangeWithRebase(ctx context.Context, branch, dst string, change *bbpb.GerritChange) error {
+// fetchRepoChangeWithCherryPick checks out a change by cherry-picking it on
+// top of branch.
+func fetchRepoChangeWithCherryPick(ctx context.Context, branch, dst string, change *bbpb.GerritChange) error {
 	// For submit, fetch HEAD for the branch this change is for, fetch the CL, and cherry-pick it.
 	if err := runGit(ctx, "git clone", "-C", ".", "clone", "--depth", "1", "-b", branch, "https://"+change.Host+"/"+change.Project, dst); err != nil {
 		return err

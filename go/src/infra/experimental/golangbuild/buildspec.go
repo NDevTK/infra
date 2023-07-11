@@ -119,11 +119,11 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 	// Figure out what our Go and subrepo commits are, but retain
 	// which one we were invoked with.
 	invokedSrc := &sourceSpec{
-		project: changedProject,
-		branch:  changedBranch,
-		commit:  gitilesCommit,
-		change:  gerritChange,
-		rebase:  !isDryRun && gerritChange != nil, // Rebase change onto branch if it's not a dry run.
+		project:    changedProject,
+		branch:     changedBranch,
+		commit:     gitilesCommit,
+		change:     gerritChange,
+		cherryPick: !isDryRun && gerritChange != nil, // Cherry-pick change onto branch if it's not a dry run.
 	}
 	var goSrc, subrepoSrc *sourceSpec
 	var err error
