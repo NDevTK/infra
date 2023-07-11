@@ -18,7 +18,7 @@ AS r"""
   return dirs;
 """;
 
-MERGE INTO %s.%s.daily_file_metrics AS T
+MERGE INTO {project}.{dataset}.daily_file_metrics AS T
 USING (
   WITH file_summaries AS (
     SELECT
@@ -36,7 +36,7 @@ USING (
       SUM(p50_runtime) AS p50_runtime,
       SUM(p90_runtime) AS p90_runtime,
     FROM
-      %s.%s.daily_test_metrics AS day_metrics
+      {project}.{dataset}.daily_test_metrics AS day_metrics
     WHERE DATE(date) BETWEEN @from_date AND @to_date
     GROUP BY
       file_name, date, component, repo
@@ -78,4 +78,5 @@ WHEN MATCHED THEN
     avg_runtime = S.avg_runtime,
     total_runtime = S.total_runtime
 WHEN NOT MATCHED THEN
-  INSERT ROW
+  INSERT (`date`, repo, component, node_name, is_file, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
+  VALUES (`date`, repo, component, node_name, is_file, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)

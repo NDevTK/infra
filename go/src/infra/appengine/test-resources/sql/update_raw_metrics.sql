@@ -1,4 +1,4 @@
-MERGE INTO %s.%s.raw_metrics AS T
+MERGE INTO {project}.{dataset}.raw_metrics AS T
 USING (
   WITH
     raw_results_tables AS (
@@ -20,7 +20,7 @@ USING (
         exonerated,
         duration,
       FROM chrome-luci-data.chromium.try_test_results as tr
-      WHERE DATE(partition_time) BETWEEN @from_date AND @to_date
+      WHERE DATE(partition_time, "PST8PDT") BETWEEN @from_date AND @to_date
     ), tests AS (
       SELECT
         EXTRACT(DATE FROM partition_time AT TIME ZONE "PST8PDT") AS `date`,
@@ -47,13 +47,13 @@ USING (
         target_platform, variant_hash
     ), attempt_builds AS (
       SELECT
-        DATE(partition_time) `date`,
+        EXTRACT(DATE FROM partition_time AT TIME ZONE "PST8PDT") AS `date`,
         b.id AS build_id,
         ps.change,
         ps.earliest_equivalent_patchset AS patchset,
         partition_time AS ps_approx_timestamp,
       FROM `commit-queue`.chromium.attempts a, a.gerrit_changes ps, a.builds b
-      WHERE DATE(partition_time) BETWEEN @from_date AND @to_date
+      WHERE DATE(partition_time, "PST8PDT") BETWEEN @from_date AND @to_date
     ), patchset_flakes AS (
       SELECT
         `date`,
@@ -126,4 +126,5 @@ WHEN MATCHED THEN
     avg_runtime = S.avg_runtime,
     total_runtime = S.total_runtime
 WHEN NOT MATCHED THEN
-  INSERT ROW
+  INSERT (`date`, test_id, test_name, file_name, repo, component, variant_hash, `project`, bucket, target_platform, builder, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
+  VALUES (`date`, test_id, test_name, file_name, repo, component, variant_hash, `project`, bucket, target_platform, builder, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)

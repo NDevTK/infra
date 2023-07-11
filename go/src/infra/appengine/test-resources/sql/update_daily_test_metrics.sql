@@ -1,4 +1,4 @@
-MERGE INTO %s.%s.daily_test_metrics AS T
+MERGE INTO {project}.{dataset}.daily_test_metrics AS T
 USING (
   SELECT
     t.date,
@@ -23,7 +23,7 @@ USING (
     SUM(avg_runtime * num_runs) / SUM(num_runs) avg_runtime,
     SUM(p50_runtime * num_runs) / SUM(num_runs) p50_runtime,
     SUM(p90_runtime * num_runs) / SUM(num_runs) p90_runtime,
-  FROM %s.%s.raw_metrics AS t
+  FROM {project}.{dataset}.raw_metrics AS t
   GROUP BY `date`, test_id, repo, component, builder, test_suite
   ) AS S
 ON
@@ -44,4 +44,5 @@ WHEN MATCHED THEN
     avg_runtime = S.avg_runtime,
     total_runtime = S.total_runtime
 WHEN NOT MATCHED THEN
-  INSERT ROW
+  INSERT (`date`, test_id, test_name, file_name, repo, component, builder, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
+  VALUES (`date`, test_id, test_name, file_name, repo, component, builder, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)

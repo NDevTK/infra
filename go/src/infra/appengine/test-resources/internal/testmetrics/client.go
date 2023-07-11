@@ -6,7 +6,6 @@ package testmetrics
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"strings"
 
@@ -19,37 +18,46 @@ import (
 )
 
 var (
+	// Period to the table in the dataset to use
 	periodToTestMetricTable = map[api.Period]string{
 		api.Period_DAY:  "daily_test_metrics",
 		api.Period_WEEK: "weekly_test_metrics",
 	}
+	// Period to table in the dataset to use
 	periodToFileMetricTable = map[api.Period]string{
 		api.Period_DAY:  "daily_file_metrics",
 		api.Period_WEEK: "weekly_file_metrics",
 	}
+	// Lookup table for converting sort type to it's sql column name
 	sortTypeSqlLookup = map[api.SortType]string{
 		api.SortType_SORT_NUM_RUNS:      "num_runs",
 		api.SortType_SORT_NUM_FAILURES:  "num_failures",
 		api.SortType_SORT_AVG_RUNTIME:   "avg_runtime",
 		api.SortType_SORT_TOTAL_RUNTIME: "total_runtime",
 	}
+	// Metrics that aren't summed but averaged when aggregated
 	weightedAverageMetrics = map[api.MetricType]struct{}{
 		api.MetricType_AVG_RUNTIME: {},
 		api.MetricType_P50_RUNTIME: {},
 		api.MetricType_P90_RUNTIME: {},
 	}
+	// Queries run in order to update the db
+	updateQueries = []string{
+		"sql/update_raw_metrics.sql",
+		"sql/update_daily_test_metrics.sql",
+		"sql/update_weekly_test_metrics.sql",
+		"sql/update_daily_file_metrics.sql",
+		"sql/update_weekly_file_metrics.sql",
+		"sql/update_average_cores.sql",
+	}
 )
 
 // Client is used to fetch metrics from a given data source.
 type Client struct {
-	BqClient                   *bigquery.Client
-	ProjectId                  string
-	DataSet                    string
-	updateRawSql               string
-	updateDailySummarySql      string
-	updateWeeklySummarySql     string
-	updateFileSummarySql       string
-	updateWeeklyFileSummarySql string
+	BqClient      *bigquery.Client
+	ProjectId     string
+	DataSet       string
+	updateQueries []string
 }
 
 func bqToDateArray(dates []string) ([]civil.Date, error) {
@@ -64,6 +72,14 @@ func bqToDateArray(dates []string) ([]civil.Date, error) {
 	return ret, nil
 }
 
+func parseDatasetQuery(r *strings.Replacer, fileName string) (string, error) {
+	bytes, err := os.ReadFile(fileName)
+	if err != nil {
+		return "", err
+	}
+	return r.Replace(string(bytes)), nil
+}
+
 // Initializes the testmetric client
 func (c *Client) Init() error {
 	if c.ProjectId == "" {
@@ -73,36 +89,15 @@ func (c *Client) Init() error {
 		c.DataSet = "test_results"
 	}
 
-	bytes, err := os.ReadFile("sql/update_raw_metrics.sql")
-	if err != nil {
-		return err
-	}
-	c.updateRawSql = fmt.Sprintf(string(bytes), c.ProjectId, c.DataSet)
+	r := strings.NewReplacer("{project}", c.ProjectId, "{dataset}", c.DataSet)
 
-	bytes, err = os.ReadFile("sql/update_daily_test_metrics.sql")
-	if err != nil {
-		return err
+	for _, filename := range updateQueries {
+		query, err := parseDatasetQuery(r, filename)
+		if err != nil {
+			return err
+		}
+		c.updateQueries = append(c.updateQueries, query)
 	}
-	c.updateDailySummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.DataSet, c.ProjectId, c.DataSet)
-
-	bytes, err = os.ReadFile("sql/update_weekly_test_metrics.sql")
-	if err != nil {
-		return err
-	}
-	c.updateWeeklySummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.DataSet, c.ProjectId, c.DataSet)
-
-	bytes, err = os.ReadFile("sql/update_daily_file_metrics.sql")
-	if err != nil {
-		return err
-	}
-	c.updateFileSummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.DataSet, c.ProjectId, c.DataSet)
-
-	bytes, err = os.ReadFile("sql/update_weekly_file_metrics.sql")
-	if err != nil {
-		return err
-	}
-	c.updateWeeklyFileSummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.DataSet, c.ProjectId, c.DataSet)
-
 	return nil
 }
 
@@ -459,24 +454,13 @@ func (c *Client) FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirect
 // UpdateMetricsTableRequest. All rollups (e.g. weekly/monthly) will be updated
 // as well. The dates are inclusive
 func (c *Client) UpdateSummary(ctx context.Context, fromDate civil.Date, toDate civil.Date) error {
-	err := c.runUpdateSummary(ctx, fromDate, toDate, c.updateRawSql)
-	if err != nil {
-		return err
+	for _, query := range c.updateQueries {
+		err := c.runUpdateSummary(ctx, fromDate, toDate, query)
+		if err != nil {
+			return err
+		}
 	}
-	err = c.runUpdateSummary(ctx, fromDate, toDate, c.updateDailySummarySql)
-	if err != nil {
-		return err
-	}
-	err = c.runUpdateSummary(ctx, fromDate, toDate, c.updateWeeklySummarySql)
-	if err != nil {
-		return err
-	}
-	err = c.runUpdateSummary(ctx, fromDate, toDate, c.updateFileSummarySql)
-	if err != nil {
-		return err
-	}
-	err = c.runUpdateSummary(ctx, fromDate, toDate, c.updateWeeklyFileSummarySql)
-	return err
+	return nil
 }
 
 func (c *Client) runUpdateSummary(ctx context.Context, fromDate civil.Date, toDate civil.Date, query string) error {
@@ -489,12 +473,12 @@ func (c *Client) runUpdateSummary(ctx context.Context, fromDate civil.Date, toDa
 
 	job, err := q.Run(ctx)
 	if err != nil {
-		return err
+		return errors.Annotate(err, "failed to start the job").Err()
 	}
 
 	job_status, err := job.Wait(ctx)
 	if err != nil {
-		return err
+		return errors.Annotate(err, "failed to finish the query").Err()
 	}
 	return job_status.Err()
 }

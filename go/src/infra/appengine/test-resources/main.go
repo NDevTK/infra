@@ -105,7 +105,9 @@ func updateDailySummary(ctx context.Context) error {
 		return err
 	}
 
-	err = stats.Client.UpdateSummary(ctx, cDate, cDate)
+	// Update today and yesterday. Average cores for instance will need the
+	// total day seconds included to finalize it's value
+	err = stats.Client.UpdateSummary(ctx, cDate.AddDays(-1), cDate)
 	if err != nil {
 		logging.Errorf(ctx, "Failed updating current date: %s", err)
 		return err

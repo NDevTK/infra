@@ -6,7 +6,7 @@ AS r"""
   Array.from(new Set(file_names));
 """;
 
-MERGE INTO %s.%s.weekly_file_metrics AS T
+MERGE INTO {project}.{dataset}.weekly_file_metrics AS T
 USING (
   -- Get all the relevant summaries for the week
   SELECT
@@ -23,7 +23,7 @@ USING (
     SUM(avg_runtime * num_runs) / SUM(num_runs) avg_runtime,
     SUM(p50_runtime * num_runs) / SUM(num_runs) p50_runtime,
     SUM(p90_runtime * num_runs) / SUM(num_runs) p90_runtime,
-  FROM %s.%s.daily_file_metrics
+  FROM {project}.{dataset}.daily_file_metrics
   WHERE `date` BETWEEN
     -- The date range is inclusive so only go up to the Saturday
     DATE_TRUNC(DATE(@from_date), WEEK) AND
@@ -43,4 +43,5 @@ WHEN MATCHED THEN
     avg_runtime = S.avg_runtime,
     total_runtime = S.total_runtime
 WHEN NOT MATCHED THEN
-  INSERT ROW
+  INSERT (`date`, repo, component, node_name, is_file, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
+  VALUES (`date`, repo, component, node_name, is_file, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)

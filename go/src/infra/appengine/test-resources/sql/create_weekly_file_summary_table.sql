@@ -9,6 +9,7 @@ CREATE OR REPLACE TABLE APP_ID.DATASET.weekly_file_metrics (
   num_flake INTEGER OPTIONS (description = 'How often a test provided conflicting statuses for an equivalent patchset in the file or folder'),
   total_runtime FLOAT64 OPTIONS (description = 'The total time spent running tests in this file or directory'),
   avg_runtime FLOAT64 OPTIONS (description = 'The summed average runtime for all tests in the file or directory'),
+  avg_cores FLOAT64 OPTIONS (description = 'The total time normalized on time'),
   p50_runtime FLOAT64 OPTIONS (description = 'The p50 runtime for the test from that day in this file or directory'),
   p90_runtime FLOAT64 OPTIONS (description = 'The p90 runtime for the test from that day in this file or directory'),
 )

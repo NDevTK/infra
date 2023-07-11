@@ -21,6 +21,7 @@ CREATE OR REPLACE TABLE APP_ID.DATASET.raw_metrics (
   num_failures INTEGER OPTIONS (description = 'How often a test failed'),
   num_flake INTEGER OPTIONS (description = 'How often a test provided conflicting statuses for an equivalent patchset'),
   total_runtime FLOAT64 OPTIONS (description = 'The total time spent running this test throughout the day'),
+  avg_cores FLOAT64 OPTIONS (description = 'The total time normalized on time'),
   avg_runtime FLOAT64 OPTIONS (description = 'The average runtime for a single run of the test'),
   p50_runtime FLOAT64 OPTIONS (description = 'The p50 runtime for the test from that day. Aggregated as an average of the p50 runtimes of variants that ran this test'),
   p90_runtime FLOAT64 OPTIONS (description = 'The p90 runtime for the test from that day. Aggregated as an average of the p90 runtimes of variants that ran this test'),
