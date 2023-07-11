@@ -18,32 +18,35 @@ const mockMetrics: Map<MetricType, number> = new Map<MetricType, number>(
     ],
 );
 
-const test: Test = {
-  testId: 'testId',
-  testName: 'testName',
+const tests: Test[] = [{
+  id: 'testId',
+  name: 'testName',
   fileName: 'fileName',
   metrics: mockMetrics,
-  variants: [
+  isLeaf: false,
+  nodes: [
     {
-      suite: 'suite',
-      builder: 'builder',
+      id: 'v1',
+      name: 'suite',
+      subname: 'builder',
       metrics: mockMetrics,
+      isLeaf: true,
+      nodes: [],
     },
     {
-      suite: 'suite',
-      builder: 'builder',
+      id: 'v1',
+      name: 'suite',
+      subname: 'builder',
       metrics: mockMetrics,
+      isLeaf: true,
+      nodes: [],
     },
   ],
-};
-
-const tests: Test[] = [
-  test,
-];
+}];
 
 describe('when rendering the ResourcesTable', () => {
   it('should render the TableContainer', () => {
-    renderWithContext(<ResourcesTable/>, { tests });
+    renderWithContext(<ResourcesTable/>, { data: tests });
     expect(screen.getByTestId('tableBody')).toBeInTheDocument();
     expect(screen.getByText('Test Suite')).toBeInTheDocument();
     expect(screen.getByText('# Runs')).toBeInTheDocument();
@@ -56,7 +59,7 @@ describe('when rendering the ResourcesTable', () => {
 
 describe('when rendering the ResourcesTable', () => {
   it('should render loading screen', () => {
-    renderWithContext(<ResourcesTable/>, { tests: [], isLoading: true });
+    renderWithContext(<ResourcesTable/>, { data: [], isLoading: true });
     expect(screen.getByText('Loading...')).toBeInTheDocument();
     expect(screen.getByTestId('loading-bar')).not.toHaveClass(
         'hidden',

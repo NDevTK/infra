@@ -5,11 +5,11 @@
 import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { ReactElement } from 'react';
-import { MetricsContext, Api, Test, MetricsContextValue, Params } from '../features/context/MetricsContext';
+import { MetricsContext, Api, Node, MetricsContextValue, Params } from '../features/context/MetricsContext';
 import { Period, SortType } from '../api/resources';
 
 export interface OptionalContext {
-  tests?: Test[],
+  data?: Node[],
   lastPage?: boolean,
   isLoading?: boolean,
   api?: OptionalApi,
@@ -55,7 +55,7 @@ export function renderWithContext(
     opts: OptionalContext,
 ) {
   const ctx : MetricsContextValue = {
-    tests: opts.tests || [],
+    data: opts.data || [],
     lastPage: opts.lastPage || true,
     api: {
       updatePage: opts.api?.updatePage || defaultApi.updatePage,

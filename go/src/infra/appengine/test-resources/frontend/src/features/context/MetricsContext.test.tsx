@@ -11,25 +11,24 @@ import * as Resources from '../../api/resources';
 import { MetricsContext, MetricsContextProvider } from './MetricsContext';
 
 const TestingComponent = () => {
-  const { api, params, tests, lastPage, isLoading } = useContext(MetricsContext);
+  const { api, params, data, lastPage, isLoading } = useContext(MetricsContext);
   return (
     <>
-      <div>{'id-' + tests[0]?.testId}</div>
-      <div>{'testName-' + tests[0]?.testName}</div>
-      <div>{'fileName-' + tests[0]?.fileName}</div>
-      <div>{'numRuns-' + tests[0]?.metrics.get(Resources.MetricType.NUM_RUNS)}</div>
-      <div>{'numFailures-' + tests[0]?.metrics.get(Resources.MetricType.NUM_FAILURES)}</div>
-      <div>{'avgRuntime-' + tests[0]?.metrics.get(Resources.MetricType.AVG_RUNTIME)}</div>
-      <div>{'totalRuntime-' + tests[0]?.metrics.get(Resources.MetricType.TOTAL_RUNTIME)}</div>
-      <div>{'avgCores-' + tests[0]?.metrics.get(Resources.MetricType.AVG_CORES)}</div>
+      <div>{'id-' + data[0]?.id}</div>
+      <div>{'name-' + data[0]?.name}</div>
+      <div>{'numRuns-' + data[0]?.metrics.get(Resources.MetricType.NUM_RUNS)}</div>
+      <div>{'numFailures-' + data[0]?.metrics.get(Resources.MetricType.NUM_FAILURES)}</div>
+      <div>{'avgRuntime-' + data[0]?.metrics.get(Resources.MetricType.AVG_RUNTIME)}</div>
+      <div>{'totalRuntime-' + data[0]?.metrics.get(Resources.MetricType.TOTAL_RUNTIME)}</div>
+      <div>{'avgCores-' + data[0]?.metrics.get(Resources.MetricType.AVG_CORES)}</div>
       <div>{'lastPage-' + lastPage}</div>
-      <div>{'suite-' + tests[0]?.variants[0].suite}</div>
-      <div>{'builder-' + tests[0]?.variants[0].builder}</div>
-      <div>{'variant-numRuns-' + tests[0]?.variants[0].metrics.get(Resources.MetricType.NUM_RUNS)}</div>
-      <div>{'variant-numFailures-' + tests[0]?.variants[0].metrics.get(Resources.MetricType.NUM_FAILURES)}</div>
-      <div>{'variant-avgRuntime-' + tests[0]?.variants[0].metrics.get(Resources.MetricType.AVG_RUNTIME)}</div>
-      <div>{'variant-totalRuntime-' + tests[0]?.variants[0].metrics.get(Resources.MetricType.TOTAL_RUNTIME)}</div>
-      <div>{'variant-avgCores-' + tests[0]?.variants[0].metrics.get(Resources.MetricType.AVG_CORES)}</div>
+      <div>{'variant-name-' + data[0]?.nodes[0].name}</div>
+      <div>{'variant-subname-' + data[0]?.nodes[0].subname}</div>
+      <div>{'variant-numRuns-' + data[0]?.nodes[0].metrics.get(Resources.MetricType.NUM_RUNS)}</div>
+      <div>{'variant-numFailures-' + data[0]?.nodes[0].metrics.get(Resources.MetricType.NUM_FAILURES)}</div>
+      <div>{'variant-avgRuntime-' + data[0]?.nodes[0].metrics.get(Resources.MetricType.AVG_RUNTIME)}</div>
+      <div>{'variant-totalRuntime-' + data[0]?.nodes[0].metrics.get(Resources.MetricType.TOTAL_RUNTIME)}</div>
+      <div>{'variant-avgCores-' + data[0]?.nodes[0].metrics.get(Resources.MetricType.AVG_CORES)}</div>
       <div>{'isLoading-' + isLoading}</div>
       <Button data-testid='buttonPage' onClick={() => api.updatePage(20)}>{'paramsPage-' + params.page}</Button>
       <Button data-testid='buttonRowsPerPage' onClick={() => api.updateRowsPerPage(20)}>{'paramsRowsPerPage-' + params.rowsPerPage}</Button>
@@ -102,16 +101,15 @@ describe('<MetricsContext />', () => {
       );
     });
     expect(screen.getByText('id-12')).toBeInTheDocument();
-    expect(screen.getByText('testName-A')).toBeInTheDocument();
-    expect(screen.getByText('fileName-A')).toBeInTheDocument();
+    expect(screen.getByText('name-A')).toBeInTheDocument();
     expect(screen.getByText('numRuns-2')).toBeInTheDocument();
     expect(screen.getByText('numFailures-3')).toBeInTheDocument();
     expect(screen.getByText('avgRuntime-4')).toBeInTheDocument();
     expect(screen.getByText('totalRuntime-5')).toBeInTheDocument();
     expect(screen.getByText('avgCores-6')).toBeInTheDocument();
     expect(screen.getByText('lastPage-true')).toBeInTheDocument();
-    expect(screen.getByText('suite-suite')).toBeInTheDocument();
-    expect(screen.getByText('builder-builder')).toBeInTheDocument();
+    expect(screen.getByText('variant-name-builder')).toBeInTheDocument();
+    expect(screen.getByText('variant-subname-suite')).toBeInTheDocument();
     expect(screen.getByText('variant-numRuns-2')).toBeInTheDocument();
     expect(screen.getByText('variant-numFailures-3')).toBeInTheDocument();
     expect(screen.getByText('variant-avgRuntime-4')).toBeInTheDocument();

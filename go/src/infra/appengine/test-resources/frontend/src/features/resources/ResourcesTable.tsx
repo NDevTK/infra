@@ -19,7 +19,7 @@ import ResourcesRow from './ResourcesRow';
 import styles from './ResourcesTable.module.css';
 
 function ResourcesTable() {
-  const { tests, lastPage, isLoading, api, params } = useContext(MetricsContext);
+  const { data, lastPage, isLoading, api, params } = useContext(MetricsContext);
 
   const handleChangePage = (
       _: React.MouseEvent<HTMLButtonElement> | null,
@@ -85,7 +85,7 @@ function ResourcesTable() {
               <TableCell component="th" align="left">
                 {sortableColumnLabel(SortType.SORT_NAME, 'Test')}
               </TableCell>
-              <TableCell component="th" align="right">
+              <TableCell component="th" align="left">
                 Test Suite
               </TableCell>
               <TableCell component="th" align="right">
@@ -106,16 +106,10 @@ function ResourcesTable() {
             </TableRow>
           </TableHead>
           <TableBody data-testid="tableBody">
-            {tests.length > 0 ?
-             tests.map((row) => (
-               <ResourcesRow
-                 key={row.testId} {
-                   ...{
-                     test: row,
-                     lastPage: lastPage,
-                   }
-                 }/>
-             )) : tableMessageBoard(isLoading ? 'Loading...' : 'No data available')}
+            {data.length > 0 ?
+             data.map(
+                 (row) => <ResourcesRow key={row.id} data={row} depth={0}/>,
+             ) : tableMessageBoard(isLoading ? 'Loading...' : 'No data available')}
           </TableBody>
           <TableFooter>
             <TableRow>

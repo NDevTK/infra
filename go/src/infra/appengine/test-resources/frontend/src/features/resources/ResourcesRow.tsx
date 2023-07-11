@@ -3,16 +3,14 @@
 // found in the LICENSE file.
 import { useState } from 'react';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { Button, TableCell, TableRow } from '@mui/material';
+import { IconButton, TableCell, TableRow } from '@mui/material';
 import { formatNumber, formatTime } from '../../utils/formatUtils';
 import { MetricType } from '../../api/resources';
-import { Test } from '../context/MetricsContext';
-import styles from './ResourcesRow.module.css';
-import VariantRow from './VariantRow';
+import { Node } from '../context/MetricsContext';
 
 export interface ResourcesRowProps {
-  test: Test,
-  lastPage: boolean,
+  data: Node,
+  depth: number,
 }
 
 // Display the metrics in TableCell Format
@@ -28,39 +26,46 @@ export function displayMetrics(metrics: Map<MetricType, number>) {
   );
 }
 
-function ResourcesRow(resourcesRowParams: ResourcesRowProps) {
+function ResourcesRow(props: ResourcesRowProps) {
   const [isOpen, setIsOpen] = useState(false);
   const rotate = isOpen ? 'rotate(0deg)' : 'rotate(270deg)';
   return (
     <>
       <TableRow
-        data-testid="tableRowTest"
-        key={resourcesRowParams.test.testId}
-        className={styles.tableRow}
+        data-testid={'tablerow-' + props.data.id}
+        data-depth={props.depth}
+        key={props.data.id}
       >
-        <TableCell scope="row" className={styles.titleCell}>
+        <TableCell
+          colSpan={props.data.subname === undefined ? 2 : 1}
+          sx={{ paddingLeft: props.depth * 2 + 2, whiteSpace: 'nowrap' }}>
           {
-          resourcesRowParams.test.variants.length != 0 ? (
-            <Button
-              data-testid="clickButton"
-              onClick={() => setIsOpen(!isOpen)}
-              style={{ transform: rotate }}
-              className={styles.btn}
-            >
-              <ArrowDropDownIcon/>
-            </Button>
-          ) : null
+            props.data.isLeaf ? null : (
+              <IconButton
+                data-testid={'clickButton-' + props.data.id}
+                color="primary"
+                size="small"
+                onClick={() => setIsOpen(!isOpen)}
+                style={{ transform: rotate }}
+                sx={{ margin: 0, padding: 0, ml: -2 }}
+              >
+                <ArrowDropDownIcon/>
+              </IconButton>
+            )
           }
-          {resourcesRowParams.test.testName}
+          {props.data.name}
         </TableCell>
-        <TableCell align="right"></TableCell>
-        {displayMetrics(resourcesRowParams.test.metrics)}
+        {props.data.subname === undefined ? null : (
+          <TableCell sx={{ whiteSpace: 'nowrap' }}>{props.data.subname}</TableCell>
+        )}
+        {displayMetrics(props.data.metrics)}
       </TableRow>
       {
-        isOpen ? (
-        resourcesRowParams.test.variants.map((variant, idx) =>
-          <VariantRow {...{ variant: variant, tableKey: idx }} key={idx}/>,
-        ) ) : null
+        isOpen && props.data.nodes.length > 0 ? (
+          props.data.nodes.map(
+              (row) => <ResourcesRow key={row.id} data={row} depth={props.depth + 1} />,
+          )
+        ) : null
       }
     </>
   );

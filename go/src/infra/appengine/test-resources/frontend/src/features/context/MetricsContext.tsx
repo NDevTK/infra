@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { MetricType, Period, SortType, TestMetricsArray, fetchTestMetrics } from '../../api/resources';
 import { formatDate } from '../../utils/formatUtils';
 
@@ -10,22 +10,26 @@ type MetricsContextProviderProps = {
   children: React.ReactNode
 }
 
-export interface Test {
-  testId: string,
-  testName: string,
-  fileName: string,
+export interface Node {
+  id: string,
+  name: string,
+  subname?: string,
   metrics: Map<MetricType, number>,
-  variants: TestVariant[]
+  isLeaf: boolean,
+  nodes: Node[]
 }
 
-export interface TestVariant {
-  suite: string,
-  builder: string,
-  metrics: Map<MetricType, number>
+// This node is for a single test, which may have multiple variants
+export interface Test extends Node {
+  fileName: string,
 }
+
+// This node is for a single variant, which is a test run in a particular
+// configuration (builder, suite)
+export type TestVariant = Node
 
 export interface MetricsContextValue {
-  tests: Test[],
+  data: Node[],
   lastPage: boolean,
   isLoading: boolean,
   api: Api,
@@ -57,7 +61,7 @@ export interface Api {
 
 export const MetricsContext = createContext<MetricsContextValue>(
     {
-      tests: [],
+      data: [],
       lastPage: true,
       api: {
         updatePage: () => {/**/},
@@ -141,7 +145,7 @@ export function createMetricsMap(metrics: Map<string, TestMetricsArray>): Map<Me
 }
 
 export const MetricsContextProvider = ({ children } : MetricsContextProviderProps) => {
-  const [tests, setTests] = useState<Test[]>([]);
+  const [data, setData] = useState<Node[]>([]);
   const [lastPage, setLastPage] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   let [page, setPage] = useState(0);
@@ -176,28 +180,31 @@ export const MetricsContextProvider = ({ children } : MetricsContextProviderProp
       const tests: Test[] = [];
       // Populate Test
       if (resp.tests !== undefined) {
-        for (const testDateMetricData of resp.tests) {
-          const metrics = testDateMetricData.metrics;
-          const testVariants: TestVariant[] = [];
+        for (const test of resp.tests) {
+          const metrics = test.metrics;
+          const newTest: Test = {
+            id: test.testId,
+            name: test.testName,
+            fileName: test.fileName,
+            metrics: createMetricsMap(metrics),
+            isLeaf: false,
+            nodes: [],
+          };
           // Construct variants
-          for (const testVariant of testDateMetricData.variants) {
-            testVariants.push({
-              suite: testVariant.suite,
-              builder: testVariant.builder,
-              metrics: createMetricsMap(testVariant.metrics),
+          for (const variant of test.variants) {
+            newTest.nodes.push({
+              id: newTest.id + ':' + variant.builder + ':' + variant.suite,
+              name: variant.builder,
+              subname: variant.suite,
+              metrics: createMetricsMap(variant.metrics),
+              isLeaf: true,
+              nodes: [],
             });
           }
-          const newTest: Test = {
-            testId: testDateMetricData.testId,
-            testName: testDateMetricData.testName,
-            fileName: testDateMetricData.fileName,
-            metrics: createMetricsMap(metrics),
-            variants: testVariants,
-          };
           tests.push(newTest);
         }
       }
-      setTests(tests);
+      setData(tests);
       setLastPage(resp.lastPage);
       loadingCount--;
       setIsLoading(loadingCount !== 0);
@@ -207,6 +214,12 @@ export const MetricsContextProvider = ({ children } : MetricsContextProviderProp
       throw error;
     });
   }
+
+  useEffect(() => {
+    fetchTestMetricsHelper();
+  // Adding this because we don't want a dependency on api
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const api: Api = {
     updatePage: (newPage: number) => {
@@ -259,7 +272,7 @@ export const MetricsContextProvider = ({ children } : MetricsContextProviderProp
   const params: Params = { page, rowsPerPage, filter, date, period, sort, ascending };
 
   return (
-    <MetricsContext.Provider value={{ tests, lastPage, isLoading, api, params }}>
+    <MetricsContext.Provider value={{ data, lastPage, isLoading, api, params }}>
       { children }
     </MetricsContext.Provider>
   );
