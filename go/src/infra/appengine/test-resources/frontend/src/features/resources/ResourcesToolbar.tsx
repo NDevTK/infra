@@ -7,7 +7,6 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useContext, useEffect, useState } from 'react';
-import { formatDate } from '../../utils/formatUtils';
 import { Period } from '../../api/resources';
 import { MetricsContext } from '../context/MetricsContext';
 
@@ -17,24 +16,23 @@ function ResourcesToolbar() {
   const [filter, setFilter] = useState(params.filter);
 
   const handleFilterChange = (event) => {
-    api.setPage(0);
     setFilter(event.target.value);
   };
   const handleDateChange = (event) => {
-    api.setDate(formatDate(new Date(event)));
-    api.setPage(0);
+    api.updateDate(new Date(event));
   };
   const handlePeriodChange = (event) => {
-    api.setPeriod(event.target.value);
+    api.updatePeriod(event.target.value);
   };
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      api.setFilter(filter);
+      api.updateFilter(filter);
     }, 500);
     return () => clearTimeout(timer);
-  }, [filter, api]);
-
+  // Adding this because we don't want a dependency on api
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter]);
 
   // If we have week selected as the period, disable everything but Sundays
   const handleShouldDisableDate = (date) => {

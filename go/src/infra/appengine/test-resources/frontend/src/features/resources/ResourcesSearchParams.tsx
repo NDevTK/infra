@@ -5,6 +5,7 @@
 import { useCallback, useContext, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { MetricsContext } from '../context/MetricsContext';
+import { formatDate } from '../../utils/formatUtils';
 
 export const PAGE = 'page';
 export const ROWS_PER_PAGE = 'rows';
@@ -23,7 +24,7 @@ function ResourcesParamControls() {
     search.set(PAGE, String(params.page));
     search.set(ROWS_PER_PAGE, String(params.rowsPerPage));
     search.set(FILTER, params.filter);
-    search.set(DATE, params.date);
+    search.set(DATE, formatDate(params.date));
     search.set(PERIOD, String(params.period));
     search.set(SORT_BY, String(params.sort));
     search.set(ASCENDING, String(params.ascending));

@@ -13,7 +13,7 @@ const params: Params = {
   page: 12,
   rowsPerPage: 25,
   filter: 'filter',
-  date: 'date',
+  date: new Date(),
   period: Period.DAY,
   sort: SortType.SORT_NAME,
   ascending: true,

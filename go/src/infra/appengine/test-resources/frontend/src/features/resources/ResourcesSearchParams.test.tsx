@@ -29,7 +29,7 @@ const params: Params = {
   page: 12,
   rowsPerPage: 25,
   filter: 'filter',
-  date: 'date',
+  date: new Date('2020-01-01T00:00:00'),
   period: Period.DAY,
   sort: SortType.SORT_NAME,
   ascending: true,
@@ -48,7 +48,7 @@ describe('when rendering the ResourcesTableToolbar', () => {
     expect(screen.getByText('page-12')).toBeInTheDocument();
     expect(screen.getByText('rowsPerPage-25')).toBeInTheDocument();
     expect(screen.getByText('filter-filter')).toBeInTheDocument();
-    expect(screen.getByText('date-date')).toBeInTheDocument();
+    expect(screen.getByText('date-2020-01-01')).toBeInTheDocument();
     expect(screen.getByText('period-0')).toBeInTheDocument();
     expect(screen.getByText('sortby-0')).toBeInTheDocument();
     expect(screen.getByText('ascending-true')).toBeInTheDocument();

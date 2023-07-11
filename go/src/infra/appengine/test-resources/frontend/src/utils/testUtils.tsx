@@ -17,33 +17,34 @@ export interface OptionalContext {
 }
 
 export interface OptionalApi {
-    // Page navigation
-    setPage: (page: number) => void,
-    setRowsPerPage: (rowsPerPage: number) => void,
+  // Page navigation
+  updatePage: (page: number) => void,
+  updateRowsPerPage: (rowsPerPage: number) => void,
 
-    // Filter related Apis
-    setFilter: (filter: string) => void,
-    setDate: (date: string) => void,
-    setPeriod: (period: Period) => void,
-    setSort: (sort: SortType) => void,
-    setAscending: (ascending: boolean) => void,
+  // Filter related Apis
+  updateFilter: (filter: string) => void,
+  updateDate: (date: Date) => void,
+  updatePeriod: (period: Period) => void,
+  updateSort: (sort: SortType) => void,
+  updateAscending: (ascending: boolean) => void,
+  updateTimelineView: (timelineView: boolean) => void,
 }
 
 const defaultApi: Api = {
-  setPage: () => {/**/},
-  setRowsPerPage: () => {/**/},
-  setFilter: () => {/**/},
-  setDate: () => {/**/},
-  setPeriod: () => {/**/},
-  setSort: () => {/**/},
-  setAscending: () => {/**/},
+  updatePage: () => {/**/},
+  updateRowsPerPage: () => {/**/},
+  updateFilter: () => {/**/},
+  updateDate: () => {/**/},
+  updatePeriod: () => {/**/},
+  updateSort: () => {/**/},
+  updateAscending: () => {/**/},
 };
 
 const defaultParams: Params = {
   page: 0,
   rowsPerPage: 25,
   filter: '',
-  date: '2023-05-30',
+  date: new Date(),
   period: Period.DAY,
   sort: SortType.SORT_NAME,
   ascending: true,
@@ -57,14 +58,13 @@ export function renderWithContext(
     tests: opts.tests || [],
     lastPage: opts.lastPage || true,
     api: {
-      // Page navigation
-      setPage: opts.api?.setPage || defaultApi.setPage,
-      setRowsPerPage: opts.api?.setRowsPerPage || defaultApi.setRowsPerPage,
-      setFilter: opts.api?.setFilter || defaultApi.setFilter,
-      setDate: opts.api?.setDate || defaultApi.setDate,
-      setPeriod: opts.api?.setPeriod || defaultApi.setPeriod,
-      setSort: opts.api?.setSort || defaultApi.setSort,
-      setAscending: opts.api?.setAscending || defaultApi.setAscending,
+      updatePage: opts.api?.updatePage || defaultApi.updatePage,
+      updateRowsPerPage: opts.api?.updateRowsPerPage || defaultApi.updateRowsPerPage,
+      updateFilter: opts.api?.updateFilter || defaultApi.updateFilter,
+      updateDate: opts.api?.updateDate || defaultApi.updateDate,
+      updatePeriod: opts.api?.updatePeriod || defaultApi.updatePeriod,
+      updateSort: opts.api?.updateSort || defaultApi.updateSort,
+      updateAscending: opts.api?.updateAscending || defaultApi.updateAscending,
     },
     params: {
       page: opts.params?.page || defaultParams.page,

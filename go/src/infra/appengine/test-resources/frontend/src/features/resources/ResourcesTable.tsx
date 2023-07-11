@@ -25,24 +25,24 @@ function ResourcesTable() {
       _: React.MouseEvent<HTMLButtonElement> | null,
       newPage: number,
   ) => {
-    api.setPage(newPage);
+    api.updatePage(newPage);
   };
   const handleChangeRowsPerPage = (
       event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    api.setRowsPerPage(Number(event.target.value));
+    api.updateRowsPerPage(Number(event.target.value));
   };
 
   const handleButtonClick = (event) => {
     if (Number(params.sort) as SortType === event as SortType) {
       if (params.ascending ) {
-        api.setAscending(false);
+        api.updateAscending(false);
       } else {
-        api.setAscending(true);
+        api.updateAscending(true);
       }
     } else {
-      api.setSort(event);
-      api.setAscending(true);
+      api.updateSort(event);
+      api.updateAscending(true);
     }
   };
 

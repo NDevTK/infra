@@ -31,13 +31,13 @@ const TestingComponent = () => {
       <div>{'variant-totalRuntime-' + tests[0]?.variants[0].metrics.get(Resources.MetricType.TOTAL_RUNTIME)}</div>
       <div>{'variant-avgCores-' + tests[0]?.variants[0].metrics.get(Resources.MetricType.AVG_CORES)}</div>
       <div>{'isLoading-' + isLoading}</div>
-      <Button data-testid='buttonPage' onClick={() => api.setPage(20)}>{'paramsPage-' + params.page}</Button>
-      <Button data-testid='buttonRowsPerPage' onClick={() => api.setRowsPerPage(20)}>{'paramsRowsPerPage-' + params.rowsPerPage}</Button>
-      <Button data-testid='buttonFilter' onClick={() => api.setFilter('newFilt')}>{'paramsFilt-' + params.filter}</Button>
-      <Button data-testid='buttonDate' onClick={() => api.setDate('newDate')}>{'paramsDate-' + params.date}</Button>
-      <Button data-testid='buttonPeriod' onClick={() => api.setPeriod(Resources.Period.WEEK)}>{'paramsPeriod-' + params.period}</Button>
-      <Button data-testid='buttonSort' onClick={() => api.setSort(Resources.SortType.SORT_NUM_RUNS)}>{'paramsSort-' + params.sort}</Button>
-      <Button data-testid='buttonAscending' onClick={() => api.setAscending(false)}>{'paramsAscending-' + params.ascending}</Button>
+      <Button data-testid='buttonPage' onClick={() => api.updatePage(20)}>{'paramsPage-' + params.page}</Button>
+      <Button data-testid='buttonRowsPerPage' onClick={() => api.updateRowsPerPage(20)}>{'paramsRowsPerPage-' + params.rowsPerPage}</Button>
+      <Button data-testid='buttonFilter' onClick={() => api.updateFilter('newFilt')}>{'paramsFilt-' + params.filter}</Button>
+      <Button data-testid='buttonDate' onClick={() => api.updateDate(new Date())}>{'paramsDate-' + params.date}</Button>
+      <Button data-testid='buttonPeriod' onClick={() => api.updatePeriod(Resources.Period.WEEK)}>{'paramsPeriod-' + params.period}</Button>
+      <Button data-testid='buttonSort' onClick={() => api.updateSort(Resources.SortType.SORT_NUM_RUNS)}>{'paramsSort-' + params.sort}</Button>
+      <Button data-testid='buttonAscending' onClick={() => api.updateAscending(false)}>{'paramsAscending-' + params.ascending}</Button>
     </>
   );
 };
@@ -146,13 +146,13 @@ describe('<MetricsContext />', () => {
       );
     });
     await act(async () => {
-      fireEvent.click(screen.getByTestId('buttonPage'));
       fireEvent.click(screen.getByTestId('buttonRowsPerPage'));
       fireEvent.click(screen.getByTestId('buttonFilter'));
       fireEvent.click(screen.getByTestId('buttonDate'));
       fireEvent.click(screen.getByTestId('buttonPeriod'));
       fireEvent.click(screen.getByTestId('buttonSort'));
       fireEvent.click(screen.getByTestId('buttonAscending'));
+      fireEvent.click(screen.getByTestId('buttonPage'));
     });
     expect(screen.getByText('paramsPage-20')).toBeInTheDocument();
     expect(screen.getByText('paramsRowsPerPage-20')).toBeInTheDocument();

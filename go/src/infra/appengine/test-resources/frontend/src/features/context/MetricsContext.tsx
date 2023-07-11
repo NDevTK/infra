@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { createContext, useCallback, useEffect, useState } from 'react';
+import { createContext, useState } from 'react';
 import { MetricType, Period, SortType, TestMetricsArray, fetchTestMetrics } from '../../api/resources';
 import { formatDate } from '../../utils/formatUtils';
 
@@ -36,23 +36,23 @@ export interface Params {
   page: number,
   rowsPerPage: number,
   filter: string,
-  date: string,
+  date: Date,
   period: Period,
   sort: SortType,
   ascending: boolean,
 }
 
 export interface Api {
-  // Page navigation
-  setPage: (page: number) => void,
-  setRowsPerPage: (rowsPerPage: number) => void,
+    // Page navigation
+    updatePage: (page: number) => void,
+    updateRowsPerPage: (rowsPerPage: number) => void,
 
-  // Test selection-related APIs
-  setFilter: (filter: string) => void,
-  setDate: (date: string) => void,
-  setPeriod: (period: Period) => void,
-  setSort: (sort: SortType) => void,
-  setAscending: (ascending: boolean) => void,
+    // Test selection-related APIs
+    updateFilter: (filter: string) => void,
+    updateDate: (date: Date) => void,
+    updatePeriod: (period: Period) => void,
+    updateSort: (sort: SortType) => void,
+    updateAscending: (ascending: boolean) => void,
 }
 
 export const MetricsContext = createContext<MetricsContextValue>(
@@ -60,19 +60,19 @@ export const MetricsContext = createContext<MetricsContextValue>(
       tests: [],
       lastPage: true,
       api: {
-        setPage: () => {/**/},
-        setRowsPerPage: () => {/**/},
-        setFilter: () => {/**/},
-        setDate: () => {/**/},
-        setPeriod: () => {/**/},
-        setSort: () => {/**/},
-        setAscending: () => {/**/},
+        updatePage: () => {/**/},
+        updateRowsPerPage: () => {/**/},
+        updateFilter: () => {/**/},
+        updateDate: () => {/**/},
+        updatePeriod: () => {/**/},
+        updateSort: () => {/**/},
+        updateAscending: () => {/**/},
       },
       params: {
         page: 0,
         rowsPerPage: 0,
         filter: '',
-        date: '',
+        date: new Date(),
         period: Period.DAY,
         sort: SortType.SORT_NAME,
         ascending: true,
@@ -143,24 +143,24 @@ export function createMetricsMap(metrics: Map<string, TestMetricsArray>): Map<Me
 export const MetricsContextProvider = ({ children } : MetricsContextProviderProps) => {
   const [tests, setTests] = useState<Test[]>([]);
   const [lastPage, setLastPage] = useState(false);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(50);
-  const [filter, setFilter] = useState('');
-  const [date, setDate] = useState(formatDate(new Date()));
-  const [period, setPeriod] = useState(Period.DAY);
-  const [sort, setSort] = useState(SortType.SORT_NAME);
-  const [ascending, setAscending] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  let [page, setPage] = useState(0);
+  let [rowsPerPage, setRowsPerPage] = useState(50);
+  let [filter, setFilter] = useState('');
+  let [date, setDate] = useState(new Date(Date.now() - 86400000));
+  let [period, setPeriod] = useState(Period.DAY);
+  let [sort, setSort] = useState(SortType.SORT_NAME);
+  let [ascending, setAscending] = useState(true);
 
   let loadingCount = 0;
 
-  const fetchTestMetricsHelper = useCallback(() => {
+  function fetchTestMetricsHelper() {
     setIsLoading(true);
     loadingCount++;
     return fetchTestMetrics({
       'component': 'Blink',
       'period': Number(period) as Period,
-      'dates': [date],
+      'dates': [formatDate(date)],
       'metrics': [
         MetricType.NUM_RUNS,
         MetricType.AVG_RUNTIME,
@@ -206,20 +206,54 @@ export const MetricsContextProvider = ({ children } : MetricsContextProviderProp
       setIsLoading(loadingCount !== 0);
       throw error;
     });
-  }, [page, rowsPerPage, filter, date, period, sort, ascending]);
-
-  useEffect(() => {
-    fetchTestMetricsHelper();
-  }, [fetchTestMetricsHelper]);
+  }
 
   const api: Api = {
-    setPage,
-    setRowsPerPage,
-    setFilter,
-    setDate,
-    setPeriod,
-    setSort,
-    setAscending,
+    updatePage: (newPage: number) => {
+      page = newPage;
+      fetchTestMetricsHelper();
+      setPage(newPage);
+    },
+    updateRowsPerPage: (newRowsPerPage: number) => {
+      rowsPerPage = newRowsPerPage;
+      fetchTestMetricsHelper();
+      setRowsPerPage(newRowsPerPage);
+    },
+    updateFilter: (newFilter: string) => {
+      page = 0;
+      filter = newFilter;
+      fetchTestMetricsHelper();
+      setFilter(newFilter);
+      setPage(0);
+    },
+    updateDate: (newDate: Date) => {
+      date = newDate;
+      page = 0;
+      fetchTestMetricsHelper();
+      setDate(newDate);
+      setPage(0);
+    },
+    updatePeriod: (newPeriod: Period) => {
+      period = newPeriod;
+      page = 0;
+      fetchTestMetricsHelper();
+      setPeriod(newPeriod);
+      setPage(0);
+    },
+    updateSort: (newSort: SortType) => {
+      sort = newSort;
+      page = 0;
+      fetchTestMetricsHelper();
+      setSort(newSort);
+      setPage(0);
+    },
+    updateAscending: (newAscending: boolean) => {
+      ascending = newAscending;
+      page = 0;
+      fetchTestMetricsHelper();
+      setAscending(newAscending);
+      setPage(0);
+    },
   };
 
   const params: Params = { page, rowsPerPage, filter, date, period, sort, ascending };
