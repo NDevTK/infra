@@ -37,7 +37,7 @@ luci.builder(
     bucket = "try",
     executable = infra.recipe("gerrit_plugins"),
     dimensions = {
-        "os": "Ubuntu-18.04",
+        "os": "Ubuntu-22",
         "cpu": "x86-64",
         "pool": "luci.infra.try",
     },
