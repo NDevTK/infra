@@ -7,7 +7,8 @@ import { MetricType, Period, SortType, TestMetricsArray, fetchTestMetrics } from
 import { formatDate } from '../../utils/formatUtils';
 
 type MetricsContextProviderProps = {
-  children: React.ReactNode
+  page?: number,
+  children: React.ReactNode,
 }
 
 export interface Node {
@@ -144,11 +145,11 @@ export function createMetricsMap(metrics: Map<string, TestMetricsArray>): Map<Me
   );
 }
 
-export const MetricsContextProvider = ({ children } : MetricsContextProviderProps) => {
+export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
   const [data, setData] = useState<Node[]>([]);
   const [lastPage, setLastPage] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  let [page, setPage] = useState(0);
+  let [page, setPage] = useState(props.page || 0);
   let [rowsPerPage, setRowsPerPage] = useState(50);
   let [filter, setFilter] = useState('');
   let [date, setDate] = useState(new Date(Date.now() - 86400000));
@@ -273,7 +274,7 @@ export const MetricsContextProvider = ({ children } : MetricsContextProviderProp
 
   return (
     <MetricsContext.Provider value={{ data, lastPage, isLoading, api, params }}>
-      { children }
+      { props.children }
     </MetricsContext.Provider>
   );
 };
