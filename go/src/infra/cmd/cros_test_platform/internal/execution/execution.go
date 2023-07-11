@@ -209,7 +209,7 @@ func (r *runner) LaunchAndWait(ctx context.Context, c trservice.Client, workingD
 	// can attach them to the builder steps in recipes.
 	defer func(ctx context.Context, wg *sync.WaitGroup) {
 		// Closing the channel here flushes all the logs to the appropriate CSVs
-		err := logTotals(ctx, workingDirectory)
+		err := logTotals(ctx, workingDirectory, r.requestTaskSets)
 		if err != nil {
 			logging.Warningf(ctx, "Printing final execution metrics to logs failed: %s", err.Error())
 		}

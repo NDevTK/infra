@@ -31,6 +31,7 @@ const (
 
 var suiteLimitError = errors.New("TestExecutionLimit: Maximum suite execution runtime exceeded.")
 
+// cancelExceededTests sends a buildbucket cancellation request to all active testrunners for the given suite(taskSet).
 func cancelExceededTests(ctx context.Context, client trservice.Client, taskSetName string, taskSet *RequestTaskSet) error {
 	// Aggregate all the references of tasks to be cancelled.
 	taskIds := []trservice.TaskReference{}
@@ -51,28 +52,6 @@ func cancelExceededTests(ctx context.Context, client trservice.Client, taskSetNa
 	}
 
 	return err
-}
-
-func checkForExceptionNoLogging(taskSetName string) bool {
-	// Iterate through the exceptions list.
-	for _, exception := range exceptions {
-
-		// Continue early if current exception doesn't apply.
-		if !strings.HasSuffix(taskSetName, exception.suiteName) {
-			continue
-		}
-
-		// Exception has expired but has not been removed from the list. Explain
-		// the failure in the summary markdown.
-		if exception.expiration.Before(time.Now()) {
-			return false
-		}
-		// Active exception found.
-		return true
-	}
-
-	// No Exception Found
-	return false
 }
 
 // checkForException iterates through the exceptions list to see if we should

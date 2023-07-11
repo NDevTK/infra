@@ -134,7 +134,7 @@ func logMetrics(ctx context.Context, logChan chan trackingMetric, workingDir str
 }
 
 // logTotals writes the final per suite execution totals to a CSV.
-func logTotals(ctx context.Context, workingDirectory string) error {
+func logTotals(ctx context.Context, workingDirectory string, taskSets map[string]*RequestTaskSet) error {
 	destPath := filepath.Join(workingDirectory, totalsLogDirectory, "final.csv")
 	// This 2D array is what the CSV needs to write to a file. The first row is
 	// the headers that will make up the columns of the CSV:
@@ -150,6 +150,11 @@ func logTotals(ctx context.Context, workingDirectory string) error {
 
 	// Create the data array for the CSV writer.
 	for taskSetName, entry := range lastSeenRuntimePerTask {
+		// This line was added because some testing doesn't properly fill in the taskset map.
+		exceptionGranted := false
+		if val, ok := taskSets[taskSetName]; ok {
+			exceptionGranted = val.SuiteLimitExceptionGranted
+		}
 		data = append(data, []string{
 			// Field: suiteName
 			taskSetName,
@@ -164,7 +169,7 @@ func logTotals(ctx context.Context, workingDirectory string) error {
 			strconv.FormatBool(entry.totalSuiteTrackingTime.Seconds() > suiteTestExecutionMaximumSeconds),
 
 			// Field: exceptionGranted
-			strconv.FormatBool(checkForExceptionNoLogging(taskSetName)),
+			strconv.FormatBool(exceptionGranted),
 		})
 	}
 
