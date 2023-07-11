@@ -9,48 +9,26 @@ AS r"""
 MERGE INTO %s.%s.weekly_file_metrics AS T
 USING (
   -- Get all the relevant summaries for the week
-  WITH agged_files AS(
-    SELECT
-      DATE_TRUNC(date, WEEK(SUNDAY)) AS `date`,
-      repo,
-      component,
-      node_name,
-      ANY_VALUE(is_file) AS is_file,
-      SUM(num_runs) AS num_runs,
-      SUM(num_failures) AS num_failures,
-      SUM(num_flake) AS num_flake,
-      SUM(total_runtime) AS total_runtime,
-      -- Use weighted averages for aggregate quantiles
-      SUM(avg_runtime * num_runs) / SUM(num_runs) avg_runtime,
-      SUM(p50_runtime * num_runs) / SUM(num_runs) p50_runtime,
-      SUM(p90_runtime * num_runs) / SUM(num_runs) p90_runtime,
-      ARRAY_CONCAT_AGG(child_file_summaries) all_child_file_summaries
-    FROM %s.%s.file_metrics
-    WHERE `date` BETWEEN
-      -- The date range is inclusive so only go up to the Saturday
-      DATE_TRUNC(DATE(@from_date), WEEK) AND
-      DATE_ADD(DATE_TRUNC(DATE(@to_date), WEEK), INTERVAL 6 DAY)
-    GROUP BY DATE_TRUNC(date, WEEK(SUNDAY)), component, node_name, repo
-  )
-  -- Combine the child file summaries used to aggregate with filter
-  SELECT * EXCEPT(all_child_file_summaries),
-    (
-      SELECT ARRAY_AGG(file_summary)
-      FROM (
-        SELECT
-          file_name,
-          SUM(c.num_runs) AS num_runs,
-          SUM(c.num_failures) AS num_failures,
-          SUM(c.num_flake) AS num_flake,
-          SUM(c.total_runtime) AS total_runtime,
-          -- Use weighted averages for aggregate quantiles
-          SUM(c.avg_runtime * c.num_runs) / SUM(c.num_runs) avg_runtime,
-          SUM(c.p50_runtime * c.num_runs) / SUM(c.num_runs) p50_runtime,
-          SUM(c.p90_runtime * c.num_runs) / SUM(c.num_runs) p90_runtime,
-        FROM UNNEST(all_child_file_summaries) c
-        GROUP BY file_name
-    ) AS file_summary) AS child_file_summaries
-  FROM agged_files
+  SELECT
+    DATE_TRUNC(date, WEEK(SUNDAY)) AS `date`,
+    repo,
+    component,
+    node_name,
+    ANY_VALUE(is_file) AS is_file,
+    SUM(num_runs) AS num_runs,
+    SUM(num_failures) AS num_failures,
+    SUM(num_flake) AS num_flake,
+    SUM(total_runtime) AS total_runtime,
+    -- Use weighted averages for aggregate quantiles
+    SUM(avg_runtime * num_runs) / SUM(num_runs) avg_runtime,
+    SUM(p50_runtime * num_runs) / SUM(num_runs) p50_runtime,
+    SUM(p90_runtime * num_runs) / SUM(num_runs) p90_runtime,
+  FROM %s.%s.daily_file_metrics
+  WHERE `date` BETWEEN
+    -- The date range is inclusive so only go up to the Saturday
+    DATE_TRUNC(DATE(@from_date), WEEK) AND
+    DATE_ADD(DATE_TRUNC(DATE(@to_date), WEEK), INTERVAL 6 DAY)
+  GROUP BY DATE_TRUNC(date, WEEK(SUNDAY)), component, node_name, repo
   ) AS S
 ON
   T.date = S.date
@@ -63,7 +41,6 @@ WHEN MATCHED THEN
     num_failures = S.num_failures,
     num_flake = S.num_flake,
     avg_runtime = S.avg_runtime,
-    total_runtime = S.total_runtime,
-    child_file_summaries = S.child_file_summaries
+    total_runtime = S.total_runtime
 WHEN NOT MATCHED THEN
   INSERT ROW

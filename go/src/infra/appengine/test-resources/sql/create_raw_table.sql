@@ -1,4 +1,4 @@
-CREATE OR REPLACE TABLE APP_ID.DATASET.daily_test_metrics (
+CREATE OR REPLACE TABLE APP_ID.DATASET.raw_metrics (
   date DATE OPTIONS (description = 'The day being summarized'),
 
   -- test level info
@@ -8,7 +8,11 @@ CREATE OR REPLACE TABLE APP_ID.DATASET.daily_test_metrics (
   file_name STRING OPTIONS (description = 'File in which the test resides'),
   component STRING OPTIONS (description = 'Component which owns the test'),
 
-  -- rolled up variant info
+  -- detailed variant level info
+  variant_hash STRING OPTIONS (description = 'Hash that identifies the variant'),
+  `project` STRING OPTIONS (description = 'The project (e.g. milestone) being summarized'),
+  bucket STRING OPTIONS (description = 'The bucket (e.g. "try", "ci") being summarized'),
+  target_platform STRING OPTIONS (description = 'The platform being run (e.g. linux, mac, win, etc.)'),
   builder STRING OPTIONS (description = 'The breakdown of the builder being run'),
   test_suite STRING OPTIONS (description = 'Test suite in which the test is being run'),
 

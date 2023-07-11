@@ -20,11 +20,11 @@ import (
 
 var (
 	periodToTestMetricTable = map[api.Period]string{
-		api.Period_DAY:  "test_metrics",
+		api.Period_DAY:  "daily_test_metrics",
 		api.Period_WEEK: "weekly_test_metrics",
 	}
 	periodToFileMetricTable = map[api.Period]string{
-		api.Period_DAY:  "file_metrics",
+		api.Period_DAY:  "daily_file_metrics",
 		api.Period_WEEK: "weekly_file_metrics",
 	}
 	sortTypeSqlLookup = map[api.SortType]string{
@@ -33,6 +33,11 @@ var (
 		api.SortType_SORT_AVG_RUNTIME:   "avg_runtime",
 		api.SortType_SORT_TOTAL_RUNTIME: "total_runtime",
 	}
+	weightedAverageMetrics = map[api.MetricType]struct{}{
+		api.MetricType_AVG_RUNTIME: {},
+		api.MetricType_P50_RUNTIME: {},
+		api.MetricType_P90_RUNTIME: {},
+	}
 )
 
 // Client is used to fetch metrics from a given data source.
@@ -40,41 +45,11 @@ type Client struct {
 	BqClient                   *bigquery.Client
 	ProjectId                  string
 	DataSet                    string
+	updateRawSql               string
 	updateDailySummarySql      string
 	updateWeeklySummarySql     string
 	updateFileSummarySql       string
 	updateWeeklyFileSummarySql string
-}
-
-// Initializes the testmetric client
-func (c *Client) Init() error {
-	if c.ProjectId == "" {
-		c.ProjectId = "chrome-resources-staging"
-	}
-	if c.DataSet == "" {
-		c.DataSet = "test_results"
-	}
-	bytes, err := os.ReadFile("sql/update_test_metrics.sql")
-	if err != nil {
-		return err
-	}
-	c.updateDailySummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.DataSet)
-	bytes, err = os.ReadFile("sql/update_weekly_test_metrics.sql")
-	if err != nil {
-		return err
-	}
-	c.updateWeeklySummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.DataSet, c.ProjectId, c.DataSet)
-	bytes, err = os.ReadFile("sql/update_file_metrics.sql")
-	if err != nil {
-		return err
-	}
-	c.updateFileSummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.DataSet, c.ProjectId, c.DataSet)
-	bytes, err = os.ReadFile("sql/update_weekly_file_metrics.sql")
-	if err != nil {
-		return err
-	}
-	c.updateWeeklyFileSummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.DataSet, c.ProjectId, c.DataSet)
-	return nil
 }
 
 func bqToDateArray(dates []string) ([]civil.Date, error) {
@@ -89,6 +64,49 @@ func bqToDateArray(dates []string) ([]civil.Date, error) {
 	return ret, nil
 }
 
+// Initializes the testmetric client
+func (c *Client) Init() error {
+	if c.ProjectId == "" {
+		c.ProjectId = "chrome-resources-staging"
+	}
+	if c.DataSet == "" {
+		c.DataSet = "test_results"
+	}
+
+	bytes, err := os.ReadFile("sql/update_raw_metrics.sql")
+	if err != nil {
+		return err
+	}
+	c.updateRawSql = fmt.Sprintf(string(bytes), c.ProjectId, c.DataSet)
+
+	bytes, err = os.ReadFile("sql/update_daily_test_metrics.sql")
+	if err != nil {
+		return err
+	}
+	c.updateDailySummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.DataSet, c.ProjectId, c.DataSet)
+
+	bytes, err = os.ReadFile("sql/update_weekly_test_metrics.sql")
+	if err != nil {
+		return err
+	}
+	c.updateWeeklySummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.DataSet, c.ProjectId, c.DataSet)
+
+	bytes, err = os.ReadFile("sql/update_daily_file_metrics.sql")
+	if err != nil {
+		return err
+	}
+	c.updateFileSummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.DataSet, c.ProjectId, c.DataSet)
+
+	bytes, err = os.ReadFile("sql/update_weekly_file_metrics.sql")
+	if err != nil {
+		return err
+	}
+	c.updateWeeklyFileSummarySql = fmt.Sprintf(string(bytes), c.ProjectId, c.DataSet, c.ProjectId, c.DataSet)
+
+	return nil
+}
+
+// Lists the available monorail components
 func (c *Client) ListComponents(ctx context.Context, req *api.ListComponentsRequest) (*api.ListComponentsResponse, error) {
 	query := "SELECT DISTINCT component FROM chrome-metadata.chrome.monorail_component_owners ORDER BY component"
 	q := c.BqClient.Query(query)
@@ -126,35 +144,17 @@ func (c *Client) FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequ
 		return nil, err
 	}
 
-	// If there's a filter we have to aggregate it now, otherwise use the
-	// pre-aggregated metric
 	metricNames := make([]string, len(req.Metrics))
 	for i := 0; i < len(req.Metrics); i++ {
-		name := MetricSqlName(req.Metrics[i])
-		if req.Filter == "" {
-			metricNames[i] = name
-		} else {
-			aggFunc := "SUM"
-			if req.Metrics[i] == api.MetricType_AVG_RUNTIME {
-				aggFunc = "AVG"
-			}
-			metricNames[i] = `(SELECT ` + aggFunc + `(f.` + name + `) FROM UNNEST(m.variant_summaries) f
-		WHERE
-			REGEXP_CONTAINS(test_name, @string_filter) OR
-			REGEXP_CONTAINS(file_name, @string_filter) OR
-			# Only display variant matches if the variant is what matches
-			REGEXP_CONTAINS(builder, @string_filter) OR
-			REGEXP_CONTAINS(test_suite, @string_filter) LIMIT 1) AS ` + name
-		}
+		metricNames[i] = MetricSqlName(req.Metrics[i])
 	}
 
-	// Terms for converting the rolled up variants (including thing like
-	// project, bucket etc) into the builder and suite variant
+	// Terms for converting the rolling up the variants
 	metricAggregations := make([]string, len(req.Metrics))
 	for i := 0; i < len(req.Metrics); i++ {
 		name := MetricSqlName(req.Metrics[i])
-		if req.Metrics[i] == api.MetricType_AVG_RUNTIME {
-			metricAggregations[i] = `AVG(` + name + `) AS ` + name
+		if _, ok := weightedAverageMetrics[req.Metrics[i]]; ok {
+			metricAggregations[i] = `SUM(` + name + ` * num_runs) / SUM(num_runs) AS ` + name
 		} else {
 			metricAggregations[i] = `SUM(` + name + `) AS ` + name
 		}
@@ -177,40 +177,36 @@ func (c *Client) FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequ
 	}
 
 	string_filter := strings.Join(strings.Split(req.Filter, " "), "|")
+	filter := ""
+	if string_filter != "" {
+		filter = `
+	# If it matches the parent ID display everything
+	AND (REGEXP_CONTAINS(test_name, @string_filter) OR
+	REGEXP_CONTAINS(file_name, @string_filter) OR
+	# Only display variant matches if the variant is what matches
+	REGEXP_CONTAINS(builder, @string_filter) OR
+	REGEXP_CONTAINS(test_suite, @string_filter))`
+	}
 
 	query := `
-WITH raw AS (
-	SELECT
-		m.date,
-		m.test_id,
-		m.test_name,
-		m.file_name,
-		` + strings.Join(metricNames, ",\n\t\t") + `,
-		(
-			SELECT ARRAY_AGG(builder_suite_summary) FROM (
-				SELECT STRUCT(
-					v.builder AS builder,
-					v.test_suite AS test_suite,
-					` + strings.Join(metricAggregations, ",\n\t\t\t\t\t") + `
-				) AS builder_suite_summary
-				FROM m.variant_summaries v
-				WHERE (@string_filter = "" OR
-					# If it matches the parent ID display everything
-					REGEXP_CONTAINS(test_name, @string_filter) OR
-					REGEXP_CONTAINS(file_name, @string_filter) OR
-					# Only display variant matches if the variant is what matches
-					REGEXP_CONTAINS(builder, @string_filter) OR
-					REGEXP_CONTAINS(test_suite, @string_filter))
-				GROUP BY builder, test_suite
-				)
-			) AS variants
-	FROM
-		` + c.ProjectId + `.` + c.DataSet + `.` + table + ` AS m
-	WHERE
-		DATE(date) IN UNNEST(@dates)
-		AND component = @component
-)
-SELECT * FROM raw WHERE ARRAY_LENGTH(raw.variants) > 0
+SELECT
+	m.date,
+	m.test_id,
+	ANY_VALUE(m.test_name) AS test_name,
+	ANY_VALUE(m.file_name) AS file_name,
+	` + strings.Join(metricAggregations, ",\n\t") + `,
+	ARRAY_AGG(STRUCT(
+		builder AS builder,
+		test_suite AS test_suite,
+		` + strings.Join(metricNames, ",\n\t\t") + `
+		)
+	) AS variants
+FROM
+	` + c.ProjectId + `.` + c.DataSet + `.` + table + ` AS m
+WHERE
+	DATE(date) IN UNNEST(@dates)
+	AND component = @component` + filter + `
+GROUP BY date, test_id
 ORDER BY ` + sortMetric + ` ` + sortDirection + `
 LIMIT @page_size OFFSET @page_offset`
 
@@ -226,13 +222,17 @@ LIMIT @page_size OFFSET @page_offset`
 
 	job, err := q.Run(ctx)
 	if err != nil {
-		return nil, err
+		return nil, errors.Annotate(err, "failed to run start the query").Err()
 	}
 	it, err := job.Read(ctx)
 	if err != nil {
-		return nil, err
+		return nil, errors.Annotate(err, "the query failed to complete").Err()
 	}
 
+	return c.readFetchTestMetricsResponse(it, req)
+}
+
+func (*Client) readFetchTestMetricsResponse(it *bigquery.RowIterator, req *api.FetchTestMetricsRequest) (*api.FetchTestMetricsResponse, error) {
 	// maps for quick lookup of the test id
 	testIdToTestDateMetricData := make(map[string]*api.TestDateMetricData)
 	variantHashToTestDateMetricData := make(map[string]map[string]*api.TestVariantData)
@@ -242,7 +242,7 @@ LIMIT @page_size OFFSET @page_offset`
 	}
 	for i := int64(0); i < req.PageSize; i++ {
 		var rowVals rowLoader
-		err = it.Next(&rowVals)
+		err := it.Next(&rowVals)
 		if err == iterator.Done {
 			break
 		}
@@ -325,29 +325,24 @@ LIMIT @page_size OFFSET @page_offset`
 			return nil, err
 		}
 	}
-
 	return response, nil
 }
 
-// Fetches requested metrics for the provided days and filters for a given
-// directory node. A directory node represents a directory or file and the
-// metrics are the combined metrics of the tests in these locations
-func (c *Client) FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error) {
+func (c *Client) fetchUnfilteredDirectoryMetrics(ctx context.Context, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error) {
+	// TODO(crbug.com/1435578): Filtering needs to be done all the way down to
+	// the test level
+	panic("Not implemented")
+}
+
+func (c *Client) fetchFilteredDirectoryMetrics(ctx context.Context, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error) {
 	dates, err := bqToDateArray(req.GetDates())
 	if err != nil {
 		return nil, err
 	}
 
-	// If there's a filter we have to aggregate it now, otherwise use the
-	// pre-aggregated metric
 	metricNames := make([]string, len(req.Metrics))
 	for i := 0; i < len(req.Metrics); i++ {
-		name := MetricSqlName(req.Metrics[i])
-		if req.Filter == "" {
-			metricNames[i] = name
-		} else {
-			metricNames[i] = `(SELECT SUM(f.` + name + `) FROM UNNEST(child_file_summaries) f WHERE REGEXP_CONTAINS(f.file_name, @string_filter) LIMIT 1) AS ` + name
-		}
+		metricNames[i] = MetricSqlName(req.Metrics[i])
 	}
 
 	table, ok := periodToFileMetricTable[req.Period]
@@ -382,7 +377,6 @@ WHERE
 	REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(@parent) + 2), "^[^/]*$")
 	AND DATE(date) IN UNNEST(@dates)
 	AND component = @component
-	AND (@string_filter = "" OR EXISTS(SELECT 0 FROM UNNEST(child_file_summaries) AS f WHERE REGEXP_CONTAINS(f.file_name, @string_filter)))
 ORDER BY ` + sortMetric + ` ` + sortDirection
 
 	q := c.BqClient.Query(query)
@@ -450,11 +444,26 @@ ORDER BY ` + sortMetric + ` ` + sortDirection
 	return response, nil
 }
 
+// Fetches requested metrics for the provided days and filters for a given
+// directory node. A directory node represents a directory or file and the
+// metrics are the combined metrics of the tests in these locations
+func (c *Client) FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error) {
+	if req.Filter == "" {
+		return c.fetchUnfilteredDirectoryMetrics(ctx, req)
+	} else {
+		return c.fetchFilteredDirectoryMetrics(ctx, req)
+	}
+}
+
 // Updates the summary tables between the days in the provided
 // UpdateMetricsTableRequest. All rollups (e.g. weekly/monthly) will be updated
 // as well. The dates are inclusive
 func (c *Client) UpdateSummary(ctx context.Context, fromDate civil.Date, toDate civil.Date) error {
-	err := c.runUpdateSummary(ctx, fromDate, toDate, c.updateDailySummarySql)
+	err := c.runUpdateSummary(ctx, fromDate, toDate, c.updateRawSql)
+	if err != nil {
+		return err
+	}
+	err = c.runUpdateSummary(ctx, fromDate, toDate, c.updateDailySummarySql)
 	if err != nil {
 		return err
 	}

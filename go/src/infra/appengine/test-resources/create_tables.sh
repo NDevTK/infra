@@ -19,10 +19,13 @@ fi
 echo "creating tables for project $project_name"
 bq --project_id $APP_ID mk -d "$DATASET"
 sed -e s/APP_ID/$APP_ID/g -e s/DATASET/$DATASET/g \
+  sql/create_raw_table.sql | \
+  bq --project_id $APP_ID query --use_legacy_sql=false
+sed -e s/APP_ID/$APP_ID/g -e s/DATASET/$DATASET/g \
   sql/create_daily_summary_table.sql | \
   bq --project_id $APP_ID query --use_legacy_sql=false
 sed -e s/APP_ID/$APP_ID/g -e s/DATASET/$DATASET/g \
-  sql/create_file_summary_table.sql | \
+  sql/create_daily_file_summary_table.sql | \
   bq --project_id $APP_ID query --use_legacy_sql=false
 sed -e s/APP_ID/$APP_ID/g -e s/DATASET/$DATASET/g \
   sql/create_weekly_file_summary_table.sql | \

@@ -1,4 +1,4 @@
-MERGE INTO %s.%s.test_metrics AS T
+MERGE INTO %s.%s.raw_metrics AS T
 USING (
   WITH
     raw_results_tables AS (
@@ -21,19 +21,19 @@ USING (
         duration,
       FROM chrome-luci-data.chromium.try_test_results as tr
       WHERE DATE(partition_time) BETWEEN @from_date AND @to_date
-    ), test_simple_metrics AS (
+    ), tests AS (
       SELECT
-        DATE(tr.partition_time) AS date,
-        test_name,
+        EXTRACT(DATE FROM partition_time AT TIME ZONE "PST8PDT") AS `date`,
         test_id,
         repo,
-        file_name,
         `project`,
         bucket,
         builder,
         test_suite,
         target_platform,
         variant_hash,
+        ANY_VALUE(test_name) AS test_name,
+        ANY_VALUE(file_name) AS file_name,
         ANY_VALUE(component) AS component,
         COUNT(*) AS num_runs,
         COUNTIF(NOT tr.expected AND NOT tr.exonerated) AS num_failures,
@@ -43,11 +43,11 @@ USING (
       FROM
         raw_results_tables AS tr
       GROUP BY
-        date, test_name, test_id, repo, file_name, `project`, bucket, builder, test_suite,
+        `date`, test_id, repo, `project`, bucket, builder, test_suite,
         target_platform, variant_hash
     ), attempt_builds AS (
       SELECT
-        DATE(partition_time) date,
+        DATE(partition_time) `date`,
         b.id AS build_id,
         ps.change,
         ps.earliest_equivalent_patchset AS patchset,
@@ -56,7 +56,7 @@ USING (
       WHERE DATE(partition_time) BETWEEN @from_date AND @to_date
     ), patchset_flakes AS (
       SELECT
-        date,
+        `date`,
         tr.test_id,
         tr.variant_hash,
         LOGICAL_OR(expected) AND LOGICAL_OR(NOT expected) AS undetected_flake,
@@ -64,78 +64,57 @@ USING (
       FROM raw_results_tables AS tr
       INNER JOIN attempt_builds AS b
         USING (build_id)
-      GROUP BY change, patchset, tr.variant_hash, tr.test_id, date
+      GROUP BY change, patchset, tr.variant_hash, tr.test_id, `date`
     ), flakes AS (
       SELECT
-        date,
+        `date`,
         test_id,
         variant_hash,
         COUNTIF(undetected_flake OR detected_flake) AS num_flake,
       FROM patchset_flakes
-      GROUP BY variant_hash, test_id, date
-    ), variant_summaries AS (
-      SELECT
-        t.date,
-        t.test_id,
-        t.test_name,
-        t.repo,
-        t.file_name,
-        t.`project`,
-        t.bucket,
-        t.component,
-        t.num_runs,
-        t.num_failures,
-        f.num_flake,
-        t.avg_runtime,
-        t.total_runtime,
-        t.variant_hash,
-        t.builder,
-        t.test_suite,
-        t.target_platform,
-        t.runtime_quantiles[500] p50_runtime,
-        t.runtime_quantiles[900] p90_runtime,
-      FROM test_simple_metrics AS t
-      INNER JOIN flakes AS f
-        USING (variant_hash, test_id, date)
+      GROUP BY variant_hash, test_id, `date`
     )
-  SELECT
-    v.date,
-    v.test_id,
-    ANY_VALUE(v.test_name) AS test_name,
-    v.repo AS repo,
-    ANY_VALUE(v.file_name) AS file_name,
-    ANY_VALUE(v.component) AS component,
-    # Test level metrics
-    SUM(num_runs) AS num_runs,
-    SUM(num_failures) AS num_failures,
-    SUM(num_flake) AS num_flake,
-    SUM(total_runtime) AS total_runtime,
-    -- Use weighted averages for aggregates
-    SUM(avg_runtime * num_runs) / SUM(num_runs) avg_runtime,
-    SUM(p50_runtime * num_runs) / SUM(num_runs) p50_runtime,
-    SUM(p90_runtime * num_runs) / SUM(num_runs) p90_runtime,
-    ARRAY_AGG(STRUCT(
-      v.variant_hash AS variant_hash,
-      v.`project` AS `project`,
-      v.bucket AS bucket,
-      v.target_platform AS target_platform,
-      v.builder AS builder,
-      v.test_suite AS test_suite,
-      v.num_runs AS num_runs,
-      v.num_failures AS num_failures,
-      v.num_flake AS num_flake,
-      v.avg_runtime AS avg_runtime,
-      v.total_runtime AS total_runtime,
-      v.p50_runtime AS p50_runtime,
-      v.p90_runtime AS p90_runtime
-    )) AS variant_summaries
-  FROM variant_summaries v
-  GROUP BY date, test_id, repo
+    SELECT
+      t.date,
+
+      -- test level info
+      t.test_id,
+      t.test_name,
+      t.repo,
+      t.file_name,
+      t.component,
+
+      -- variant level info
+      t.variant_hash,
+      t.`project`,
+      t.bucket,
+      t.target_platform,
+      t.builder,
+      t.test_suite,
+
+      -- metrics
+      t.num_runs,
+      t.num_failures,
+      f.num_flake,
+      t.avg_runtime,
+      t.total_runtime,
+      t.runtime_quantiles[500] p50_runtime,
+      t.runtime_quantiles[900] p90_runtime,
+    FROM tests AS t
+    INNER JOIN flakes AS f
+      USING (variant_hash, test_id, date)
   ) AS S
 ON
   T.date = S.date
   AND T.test_id = S.test_id
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
+  AND (T.component = S.component OR (T.component IS NULL AND S.component IS NULL))
+  AND (T.variant_hash = S.variant_hash OR (T.variant_hash IS NULL AND S.variant_hash IS NULL))
+  AND (T.`project` = S.`project` OR (T.`project` IS NULL AND S.`project` IS NULL))
+  AND (T.bucket = S.bucket OR (T.bucket IS NULL AND S.bucket IS NULL))
+  AND (T.target_platform = S.target_platform OR (T.target_platform IS NULL AND S.target_platform IS NULL))
+  AND (T.builder = S.builder OR (T.builder IS NULL AND S.builder IS NULL))
+  AND (T.test_suite = S.test_suite OR (T.test_suite IS NULL AND S.test_suite IS NULL))
 WHEN MATCHED THEN
   UPDATE SET
     test_name = S.test_name,
@@ -145,7 +124,6 @@ WHEN MATCHED THEN
     num_failures = S.num_failures,
     num_flake = S.num_flake,
     avg_runtime = S.avg_runtime,
-    total_runtime = S.total_runtime,
-    variant_summaries = S.variant_summaries
+    total_runtime = S.total_runtime
 WHEN NOT MATCHED THEN
   INSERT ROW

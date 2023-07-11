@@ -18,7 +18,7 @@ AS r"""
   return dirs;
 """;
 
-MERGE INTO %s.%s.file_metrics AS T
+MERGE INTO %s.%s.daily_file_metrics AS T
 USING (
   WITH file_summaries AS (
     SELECT
@@ -36,7 +36,7 @@ USING (
       SUM(p50_runtime) AS p50_runtime,
       SUM(p90_runtime) AS p90_runtime,
     FROM
-      %s.%s.test_metrics AS day_metrics
+      %s.%s.daily_test_metrics AS day_metrics
     WHERE DATE(date) BETWEEN @from_date AND @to_date
     GROUP BY
       file_name, date, component, repo
@@ -62,15 +62,6 @@ USING (
     SUM(avg_runtime) AS avg_runtime,
     SUM(p50_runtime) AS p50_runtime,
     SUM(p90_runtime) AS p90_runtime,
-    ARRAY_AGG(STRUCT(
-      file_name AS file_name,
-      num_runs AS num_runs,
-      num_failures AS num_failures,
-      num_flake AS num_flake,
-      avg_runtime AS avg_runtime,
-      total_runtime AS total_runtime,
-      p50_runtime AS p50_runtime,
-      p90_runtime AS p90_runtime) IGNORE NULLS) AS child_file_summaries,
   FROM dir_nodes n
   GROUP BY date, component, node_name, repo
   ) AS S
@@ -85,7 +76,6 @@ WHEN MATCHED THEN
     num_failures = S.num_failures,
     num_flake = S.num_flake,
     avg_runtime = S.avg_runtime,
-    total_runtime = S.total_runtime,
-    child_file_summaries = S.child_file_summaries
+    total_runtime = S.total_runtime
 WHEN NOT MATCHED THEN
   INSERT ROW

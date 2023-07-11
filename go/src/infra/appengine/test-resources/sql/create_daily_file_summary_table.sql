@@ -1,4 +1,4 @@
-CREATE OR REPLACE TABLE APP_ID.DATASET.file_metrics (
+CREATE OR REPLACE TABLE APP_ID.DATASET.daily_file_metrics (
   `date` DATE OPTIONS (description = 'The day being summarized'),
   repo STRING OPTIONS (description = 'Repo from which the file summaries apply'),
   component STRING OPTIONS (description = 'Component rollup. Only files that apply to this component are rolled up here.'),
@@ -11,16 +11,6 @@ CREATE OR REPLACE TABLE APP_ID.DATASET.file_metrics (
   avg_runtime FLOAT64 OPTIONS (description = 'The summed average runtime for all tests in the file or directory'),
   p50_runtime FLOAT64 OPTIONS (description = 'The p50 runtime for the test from that day in this file or directory'),
   p90_runtime FLOAT64 OPTIONS (description = 'The p90 runtime for the test from that day in this file or directory'),
-  child_file_summaries ARRAY<STRUCT<
-    file_name STRING OPTIONS (description = 'File name rooted with //'),
-    num_runs INTEGER OPTIONS (description = 'How many times a test was run in the file'),
-    num_failures INTEGER OPTIONS (description = 'How often a test failed in the file'),
-    num_flake INTEGER OPTIONS (description = 'How often a test provided conflicting statuses for an equivalent patchset in the file'),
-    total_runtime FLOAT64 OPTIONS (description = 'The total time spent running tests in this file'),
-    avg_runtime FLOAT64 OPTIONS (description = 'The summed average runtime for all tests in the file'),
-    p50_runtime FLOAT64 OPTIONS (description = 'The p50 runtime for the test'),
-    p90_runtime FLOAT64 OPTIONS (description = 'The p90 runtime for the test')
-    >> OPTIONS (description = 'All the file summaries for this directory')
   )
 PARTITION BY `date`
 CLUSTER BY component
