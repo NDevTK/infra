@@ -100,9 +100,9 @@ func TestLoadFile(t *testing.T) {
       `), 0644)
 			So(err, ShouldBeNil)
 
-			f, status, _, err := loadFile(ctx, fileName)
+			f, st, _, err := loadFile(ctx, fileName)
 			So(err, ShouldBeNil)
-			So(status, ShouldEqual, "good")
+			So(st, ShouldEqual, status("good"))
 			var cpu float64 = 25
 			So(f, ShouldResemble, deviceStatusFile{
 				Devices: map[string]deviceStatus{
@@ -152,9 +152,9 @@ func TestLoadFile(t *testing.T) {
       `), 0644)
 			So(err, ShouldBeNil)
 
-			f, status, _, err := loadFile(ctx, fileName)
+			f, st, _, err := loadFile(ctx, fileName)
 			So(err, ShouldBeNil)
-			So(status, ShouldEqual, "good")
+			So(st, ShouldEqual, status("good"))
 			So(f, ShouldResemble, deviceStatusFile{
 				Devices: map[string]deviceStatus{
 					"02eccd9208ead9ab": {
@@ -172,18 +172,18 @@ func TestLoadFile(t *testing.T) {
 		})
 
 		Convey("file not found", func() {
-			_, status, _, err := loadFile(ctx, "/file/not/found")
+			_, st, _, err := loadFile(ctx, "/file/not/found")
 			So(err, ShouldNotBeNil)
-			So(status, ShouldEqual, "not_found")
+			So(st, ShouldEqual, status("not_found"))
 		})
 
 		Convey("invalid json", func() {
 			err := ioutil.WriteFile(fileName, []byte(`not valid json`), 0644)
 			So(err, ShouldBeNil)
 
-			_, status, _, err := loadFile(ctx, fileName)
+			_, st, _, err := loadFile(ctx, fileName)
 			So(err, ShouldNotBeNil)
-			So(status, ShouldEqual, "invalid_json")
+			So(st, ShouldEqual, status("invalid_json"))
 		})
 
 		Convey("invalid version", func() {
@@ -194,9 +194,9 @@ func TestLoadFile(t *testing.T) {
       `), 0644)
 			So(err, ShouldBeNil)
 
-			_, status, _, err := loadFile(ctx, fileName)
+			_, st, _, err := loadFile(ctx, fileName)
 			So(err, ShouldBeNil)
-			So(status, ShouldEqual, "invalid_version")
+			So(st, ShouldEqual, status("invalid_version"))
 		})
 
 		Convey("previous version", func() {
@@ -208,9 +208,9 @@ func TestLoadFile(t *testing.T) {
       `), 0644)
 			So(err, ShouldBeNil)
 
-			_, status, _, err := loadFile(ctx, fileName)
+			_, st, _, err := loadFile(ctx, fileName)
 			So(err, ShouldBeNil)
-			So(status, ShouldEqual, "good")
+			So(st, ShouldEqual, status("good"))
 		})
 
 		Convey("stale timestamp", func() {
@@ -223,10 +223,10 @@ func TestLoadFile(t *testing.T) {
       `), 0644)
 			So(err, ShouldBeNil)
 
-			_, status, staleness, err := loadFile(ctx, fileName)
+			_, st, staleness, err := loadFile(ctx, fileName)
 			So(err, ShouldBeNil)
 			So(staleness, ShouldEqual, 161)
-			So(status, ShouldEqual, "stale_file")
+			So(st, ShouldEqual, status("stale_file"))
 		})
 	})
 }

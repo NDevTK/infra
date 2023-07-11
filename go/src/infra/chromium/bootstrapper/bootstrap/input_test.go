@@ -214,7 +214,7 @@ func TestInput(t *testing.T) {
 				So(err, ShouldBeNil)
 				So(input.commits, ShouldResembleProto, []*buildbucketpb.GitilesCommit{build.Input.GitilesCommit})
 				// Make sure we can't modify the build through aliased protos
-				So(input.commits[0], ShouldNotEqual, build.Input.GitilesCommit)
+				So(input.commits[0], ShouldNotPointTo, build.Input.GitilesCommit)
 			})
 
 			Convey("with commits set if $bootstrap/trigger has commits", func() {
@@ -323,8 +323,8 @@ func TestInput(t *testing.T) {
 				So(input.changes, ShouldHaveLength, 2)
 				So(input.changes, ShouldResembleProto, build.Input.GerritChanges)
 				// Make sure we can't modify the build through aliased protos
-				So(input.changes[0], ShouldNotEqual, build.Input.GerritChanges[0])
-				So(input.changes[1], ShouldNotEqual, build.Input.GerritChanges[1])
+				So(input.changes[0], ShouldNotPointTo, build.Input.GerritChanges[0])
+				So(input.changes[1], ShouldNotPointTo, build.Input.GerritChanges[1])
 			})
 
 			Convey("with casRecipeBundle set if build has led_cas_recipe_bundle property", func() {

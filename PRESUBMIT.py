@@ -81,7 +81,8 @@ DISABLED_PROJECTS = [
 
 # List of third_party direcories.
 THIRD_PARTY_DIRS = [
-  'appengine/third_party',
+    r'appengine/third_party/.*',
+    r'go/src/vendor/.*',
 ]
 
 # List of directories to jshint.
@@ -126,11 +127,13 @@ def CommandInGoEnv(input_api, output_api, name, cmd, kwargs):
 
 
 def GoCheckers(input_api, output_api):
+  file_filter = lambda path: input_api.FilterSourceFile(
+      path,
+      files_to_check=[r'.*\.go$'],
+      files_to_skip=THIRD_PARTY_DIRS + [r'.*\.pb\.go$', r'.*\.gen\.go$'])
   affected_files = sorted([
-    f.AbsoluteLocalPath()
-    for f in input_api.AffectedFiles(include_deletes=False)
-    if f.AbsoluteLocalPath().endswith('.go') and
-    not any(f.AbsoluteLocalPath().endswith(x) for x in ('.pb.go', '.gen.go'))
+      f.AbsoluteLocalPath() for f in input_api.AffectedFiles(
+          include_deletes=False, file_filter=file_filter)
   ])
   if not affected_files:
     return []
@@ -558,7 +561,7 @@ def CommonChecks(input_api, output_api):  # pragma: no cover
       input_api.canned_checks.PanProjectChecks(
           input_api, output_api, excluded_paths=[r'.*python_pb2/.*_pb2\.py$']))
 
-  files_to_skip = list(input_api.DEFAULT_FILES_TO_SKIP) + [
+  files_to_skip = list(input_api.DEFAULT_FILES_TO_SKIP) + THIRD_PARTY_DIRS + [
       r'.*pb[^/]*\.go$',
   ]
   files_to_check = list(input_api.DEFAULT_FILES_TO_CHECK) + [

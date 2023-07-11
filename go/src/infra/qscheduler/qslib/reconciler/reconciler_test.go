@@ -274,8 +274,8 @@ func TestPreemption(t *testing.T) {
 						c := r.Cancellations(ctx)
 						Convey("then it returns a cancellation for the old request on that worker.", func() {
 							So(c, ShouldHaveLength, 1)
-							So(c[0].RequestID, ShouldEqual, oldRequest)
-							So(c[0].WorkerID, ShouldEqual, wid)
+							So(c[0].RequestID, ShouldEqual, string(oldRequest))
+							So(c[0].WorkerID, ShouldEqual, string(wid))
 						})
 					})
 
@@ -368,7 +368,7 @@ func TestTaskError(t *testing.T) {
 				c := r.Cancellations(ctx)
 				Convey("then it returns the error'ed task.", func() {
 					So(c, ShouldHaveLength, 1)
-					So(c[0].RequestID, ShouldEqual, taskID)
+					So(c[0].RequestID, ShouldEqual, string(taskID))
 					So(c[0].WorkerID, ShouldEqual, "")
 					So(c[0].ErrorMessage, ShouldContainSubstring, "frabjous")
 				})

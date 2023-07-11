@@ -7,6 +7,7 @@ package migrator
 import (
 	"bytes"
 	"encoding/csv"
+	"reflect"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -78,7 +79,7 @@ func TestReportDump(t *testing.T) {
 
 			Convey(`Clone`, func() {
 				c := rd.Clone()
-				So(c.data, ShouldNotEqual, rd.data)
+				So(reflect.ValueOf(c.data).Pointer(), ShouldNotEqual, reflect.ValueOf(rd.data).Pointer())
 				So(c.data, ShouldResemble, rd.data)
 			})
 		})

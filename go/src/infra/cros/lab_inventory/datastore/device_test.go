@@ -189,7 +189,7 @@ func TestAddDevices(t *testing.T) {
 			So(dsResp.Passed(), ShouldHaveLength, 1)
 			So(dsResp.Failed(), ShouldHaveLength, 1)
 
-			So(dsResp.Passed()[0].Entity.ID, ShouldEqual, "ID_PASS")
+			So(dsResp.Passed()[0].Entity.ID, ShouldEqual, DeviceEntityID("ID_PASS"))
 			So(dsResp.Failed()[0].Data.(*lab.ChromeOSDevice).GetId().GetValue(), ShouldEqual, "ID_FAIL")
 		})
 		Convey("Add device with existing ID", func() {
@@ -534,7 +534,7 @@ func TestUpdateDeviceSetup(t *testing.T) {
 			}
 			passed := result.Passed()
 			So(passed, ShouldHaveLength, 1)
-			So(passed[0].Entity.ID, ShouldEqual, "UUID:01")
+			So(passed[0].Entity.ID, ShouldEqual, DeviceEntityID("UUID:01"))
 			labConfig := getLabConfigByID(ctx, t, DeviceEntityID("UUID:01"))
 			So(int(labConfig.GetDut().GetPeripherals().GetServo().GetServoPort()), ShouldEqual, 8888)
 
@@ -556,13 +556,13 @@ func TestUpdateDeviceSetup(t *testing.T) {
 			}
 			passed := result.Passed()
 			So(passed, ShouldHaveLength, 1)
-			So(passed[0].Entity.ID, ShouldEqual, "UUID:01")
+			So(passed[0].Entity.ID, ShouldEqual, DeviceEntityID("UUID:01"))
 			labConfig := getLabConfigByID(ctx, t, DeviceEntityID("UUID:01"))
 			So(int(labConfig.GetDut().GetPeripherals().GetServo().GetServoPort()), ShouldEqual, 9999)
 
 			failed := result.Failed()
 			So(failed, ShouldHaveLength, 1)
-			So(failed[0].Entity.ID, ShouldEqual, "UUID:ghost")
+			So(failed[0].Entity.ID, ShouldEqual, DeviceEntityID("UUID:ghost"))
 		})
 	})
 }
@@ -596,7 +596,7 @@ func TestUpdateDutMeta(t *testing.T) {
 			}
 			passed := result.Passed()
 			So(passed, ShouldHaveLength, 1)
-			So(passed[0].Entity.ID, ShouldEqual, "UUID:01")
+			So(passed[0].Entity.ID, ShouldEqual, DeviceEntityID("UUID:01"))
 			var p lab.ChromeOSDevice
 			passed[0].Entity.GetCrosDeviceProto(&p)
 			So(p.GetSerialNumber(), ShouldEqual, "serial2")
@@ -605,7 +605,7 @@ func TestUpdateDutMeta(t *testing.T) {
 
 			failed := result.Failed()
 			So(failed, ShouldHaveLength, 1)
-			So(failed[0].Entity.ID, ShouldEqual, "UUID:ghost")
+			So(failed[0].Entity.ID, ShouldEqual, DeviceEntityID("UUID:ghost"))
 		})
 		Convey("Update the same meta", func() {
 			meta := map[string]DutMeta{
@@ -625,7 +625,7 @@ func TestUpdateDutMeta(t *testing.T) {
 			result, err = UpdateDutMeta(ctx, meta)
 			failed := result.Failed()
 			So(failed, ShouldHaveLength, 1)
-			So(failed[0].Entity.ID, ShouldEqual, "UUID:01")
+			So(failed[0].Entity.ID, ShouldEqual, DeviceEntityID("UUID:01"))
 			So(failed[0].Err.Error(), ShouldContainSubstring, "meta is not changed")
 		})
 		Convey("Update the empty hwid - not accept", func() {
@@ -652,7 +652,7 @@ func TestUpdateDutMeta(t *testing.T) {
 			result, err = UpdateDutMeta(ctx, meta2)
 			passed = result.Passed()
 			So(passed, ShouldHaveLength, 1)
-			So(passed[0].Entity.ID, ShouldEqual, "UUID:01")
+			So(passed[0].Entity.ID, ShouldEqual, DeviceEntityID("UUID:01"))
 			var p lab.ChromeOSDevice
 			passed[0].Entity.GetCrosDeviceProto(&p)
 			// It's not allowed to wipe the device sku for now
@@ -694,7 +694,7 @@ func TestUpdateLabMeta(t *testing.T) {
 			}
 			passed := result.Passed()
 			So(passed, ShouldHaveLength, 1)
-			So(passed[0].Entity.ID, ShouldEqual, "UUID:01")
+			So(passed[0].Entity.ID, ShouldEqual, DeviceEntityID("UUID:01"))
 			var p lab.ChromeOSDevice
 			passed[0].Entity.GetCrosDeviceProto(&p)
 			So(p.GetDut().GetPeripherals().GetServo().GetServoType(), ShouldEqual, "servo_v4_with_ccd_cr50")
@@ -712,7 +712,7 @@ func TestUpdateLabMeta(t *testing.T) {
 
 			failed := result.Failed()
 			So(failed, ShouldHaveLength, 1)
-			So(failed[0].Entity.ID, ShouldEqual, "UUID:ghost")
+			So(failed[0].Entity.ID, ShouldEqual, DeviceEntityID("UUID:ghost"))
 		})
 	})
 }
@@ -742,11 +742,11 @@ func TestUpdateDutsStatus(t *testing.T) {
 			}
 			passed := result.Passed()
 			So(passed, ShouldHaveLength, 1)
-			So(passed[0].Entity.ID, ShouldEqual, "UUID:01")
+			So(passed[0].Entity.ID, ShouldEqual, DeviceEntityID("UUID:01"))
 
 			failed := result.Failed()
 			So(failed, ShouldHaveLength, 1)
-			So(failed[0].Entity.ID, ShouldEqual, "ghost")
+			So(failed[0].Entity.ID, ShouldEqual, DeviceEntityID("ghost"))
 		})
 		Convey("Update dut state", func() {
 			state := lab.DutState{
@@ -759,7 +759,7 @@ func TestUpdateDutsStatus(t *testing.T) {
 			}
 			passed := result.Passed()
 			So(passed, ShouldHaveLength, 1)
-			So(passed[0].Entity.ID, ShouldEqual, "UUID:01")
+			So(passed[0].Entity.ID, ShouldEqual, DeviceEntityID("UUID:01"))
 
 			failed := result.Failed()
 			So(failed, ShouldBeEmpty)
@@ -787,7 +787,7 @@ func TestUpdateDutsStatus(t *testing.T) {
 
 			failed := result.Failed()
 			So(failed, ShouldHaveLength, 1)
-			So(failed[0].Entity.ID, ShouldEqual, "UUID:02")
+			So(failed[0].Entity.ID, ShouldEqual, DeviceEntityID("UUID:02"))
 		})
 	})
 }

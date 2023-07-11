@@ -66,7 +66,7 @@ func TestIsRepoRegexpConfigMatch(t *testing.T) {
 					Value: sampleCfg,
 				},
 			}
-			So(RetrieveRepoRegexpConfig(context.Background(), "dummy-valid", rrcfgs), ShouldEqual, nil)
+			So(RetrieveRepoRegexpConfig(context.Background(), "dummy-valid", rrcfgs), ShouldBeNil)
 		})
 	})
 }

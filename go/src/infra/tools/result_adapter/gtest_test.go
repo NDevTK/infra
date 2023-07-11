@@ -490,7 +490,7 @@ func TestGTestConversions(t *testing.T) {
 					Status:      "FAILURE",
 					ResultParts: []*GTestRunResultPart{},
 				})
-				So(tr.FailureReason, ShouldEqual, nil)
+				So(tr.FailureReason, ShouldBeNil)
 			})
 			Convey("primary error message truncated at 1024 bytes", func() {
 				var input bytes.Buffer
@@ -604,7 +604,7 @@ func TestGTestConversions(t *testing.T) {
 				So(result, ShouldNotEqual, nil)
 				So(result.PrimaryErrorMessage, ShouldEqual, expected)
 			} else {
-				So(result, ShouldEqual, nil)
+				So(result, ShouldBeNil)
 			}
 		}
 		Convey("fatal example without DCheck", func() {

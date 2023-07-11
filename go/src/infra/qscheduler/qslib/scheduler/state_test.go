@@ -304,7 +304,7 @@ func TestApplyIdleAssignment(t *testing.T) {
 				So(s.queuedRequests, ShouldBeEmpty)
 				rt := s.workers["w1"].runningTask
 				So(rt, ShouldNotBeNil)
-				So(rt.request.ID, ShouldEqual, "t1")
+				So(rt.request.ID, ShouldEqual, RequestID("t1"))
 				So(rt.priority, ShouldEqual, 1)
 
 			})
@@ -342,7 +342,7 @@ func TestApplyPreempt(t *testing.T) {
 				rt := s.workers["w1"].runningTask
 				So(rt, ShouldNotBeNil)
 				So(rt.cost, ShouldResemble, Balance{1})
-				So(rt.request.ID, ShouldEqual, "t2")
+				So(rt.request.ID, ShouldEqual, RequestID("t2"))
 				So(s.balances["a1"], ShouldResemble, Balance{2})
 				So(s.balances["a2"], ShouldResemble, Balance{1})
 			})

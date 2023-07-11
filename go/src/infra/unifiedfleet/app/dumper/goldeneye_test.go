@@ -23,16 +23,16 @@ func TestParseGoldenEyeJsonData(t *testing.T) {
 
 			devices, err := parseGoldenEyeData(context.Background(), reader)
 			So(err, ShouldEqual, nil)
-			So(devices.Devices, ShouldNotEqual, nil)
+			So(devices.Devices, ShouldNotBeNil)
 		})
 		Convey("parse for non existent file", func() {
 			file, err := os.Open("test2.json")
 			reader := bufio.NewReader(file)
 
 			devices, err := parseGoldenEyeData(context.Background(), reader)
-			So(err, ShouldNotEqual, nil)
+			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldEqual, "unmarshal chunk failed while reading golden eye data for devices: invalid argument")
-			So(devices, ShouldEqual, nil)
+			So(devices, ShouldBeNil)
 		})
 	})
 }

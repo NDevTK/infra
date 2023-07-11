@@ -44,31 +44,31 @@ func TestReadState(t *testing.T) {
 		}
 		// no namespace - should default to `os`
 		r := Read(ctx, c, "host1")
-		So(r.State, ShouldEqual, "repair_failed")
+		So(r.State, ShouldEqual, RepairFailed)
 		So(r.Time, ShouldNotEqual, 0)
 
 		r = Read(ctx, c, "host2")
-		So(r.State, ShouldEqual, "manual_repair")
+		So(r.State, ShouldEqual, ManualRepair)
 		So(r.Time, ShouldNotEqual, 0)
 
 		r = Read(ctx, c, "not_found")
-		So(r.State, ShouldEqual, "unknown")
+		So(r.State, ShouldEqual, Unknown)
 		So(r.Time, ShouldEqual, 0)
 
 		r = Read(ctx, c, "fail")
-		So(r.State, ShouldEqual, "unknown")
+		So(r.State, ShouldEqual, Unknown)
 		So(r.Time, ShouldEqual, 0)
 
 		// explicitly set os context, should give the same results
 		osCtx := ctxWithNamespace(ufsUtil.OSNamespace)
 		r = Read(osCtx, c, "host1")
-		So(r.State, ShouldEqual, "repair_failed")
+		So(r.State, ShouldEqual, RepairFailed)
 		So(r.Time, ShouldNotEqual, 0)
 
 		// explicitly set partner context, should fetch a different DUT
 		partnerCtx := ctxWithNamespace(ufsUtil.OSPartnerNamespace)
 		r = Read(partnerCtx, c, "host1")
-		So(r.State, ShouldEqual, "needs_deploy")
+		So(r.State, ShouldEqual, NeedsDeploy)
 		So(r.Time, ShouldNotEqual, 0)
 	})
 }
@@ -83,14 +83,14 @@ func TestUpdateState(t *testing.T) {
 
 		// dont explicitly set context
 		Convey("set repair_failed and expect REPAIR_FAILED", func() {
-			e := Update(ctx, c, "host1", "repair_failed")
+			e := Update(ctx, c, "host1", RepairFailed)
 			So(e, ShouldBeNil)
 			So(c.updateStateMap, ShouldHaveLength, 1)
 			So(c.updateStateMap["os:machineLSEs/host1"], ShouldEqual, ufsProto.State_STATE_REPAIR_FAILED)
 		})
 
 		Convey("set manual_repair and expect DEPLOYED_TESTING", func() {
-			e := Update(ctx, c, "host2", "manual_repair")
+			e := Update(ctx, c, "host2", ManualRepair)
 			So(e, ShouldBeNil)
 			So(c.updateStateMap, ShouldHaveLength, 1)
 			So(c.updateStateMap["os:machineLSEs/host2"], ShouldEqual, ufsProto.State_STATE_DEPLOYED_TESTING)
@@ -106,7 +106,7 @@ func TestUpdateState(t *testing.T) {
 		// explicitly set os context and expect same result as default
 		Convey("set repair_failed and expect REPAIR_FAILED in os namespace", func() {
 			osCtx := ctxWithNamespace(ufsUtil.OSNamespace)
-			e := Update(osCtx, c, "host1", "repair_failed")
+			e := Update(osCtx, c, "host1", RepairFailed)
 			So(e, ShouldBeNil)
 			So(c.updateStateMap, ShouldHaveLength, 1)
 			So(c.updateStateMap["os:machineLSEs/host1"], ShouldEqual, ufsProto.State_STATE_REPAIR_FAILED)
@@ -115,7 +115,7 @@ func TestUpdateState(t *testing.T) {
 		// update DUT in separate namespace, should touch a different machine
 		Convey("set state in separate namespace", func() {
 			partnerCtx := ctxWithNamespace(ufsUtil.OSPartnerNamespace)
-			e := Update(partnerCtx, c, "host1", "manual_repair")
+			e := Update(partnerCtx, c, "host1", ManualRepair)
 			So(e, ShouldBeNil)
 			So(c.updateStateMap, ShouldHaveLength, 1)
 			So(c.updateStateMap["os-partner:machineLSEs/host1"], ShouldEqual, ufsProto.State_STATE_DEPLOYED_TESTING)
@@ -130,11 +130,11 @@ func TestConvertToUFSState(t *testing.T) {
 		out ufsProto.State
 	}{
 		{
-			State("ready"),
+			Ready,
 			ufsProto.State_STATE_SERVING,
 		},
 		{
-			State("repair_failed"),
+			RepairFailed,
 			ufsProto.State_STATE_REPAIR_FAILED,
 		},
 		{

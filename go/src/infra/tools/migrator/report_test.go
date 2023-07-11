@@ -5,6 +5,7 @@
 package migrator
 
 import (
+	"reflect"
 	"testing"
 
 	"go.chromium.org/luci/common/data/stringset"
@@ -47,12 +48,16 @@ func TestReport(t *testing.T) {
 		}
 
 		Convey(`Clone`, func() {
+			ptr := func(a any) uintptr {
+				return reflect.ValueOf(a).Pointer()
+			}
+
 			newR := r.Clone()
 			So(r.ReportID, ShouldResemble, newR.ReportID)
 			So(r.Tag, ShouldResemble, newR.Tag)
 			So(r.Problem, ShouldResemble, newR.Problem)
-			So(r.Metadata, ShouldNotEqual, newR.Metadata)                 // different maps
-			So(r.Metadata["meta"], ShouldNotEqual, newR.Metadata["meta"]) // different sets
+			So(ptr(r.Metadata), ShouldNotEqual, ptr(newR.Metadata))                 // different maps
+			So(ptr(r.Metadata["meta"]), ShouldNotEqual, ptr(newR.Metadata["meta"])) // different sets
 			So(r.Metadata["meta"].ToSlice(), ShouldResemble, newR.Metadata["meta"].ToSlice())
 		})
 
