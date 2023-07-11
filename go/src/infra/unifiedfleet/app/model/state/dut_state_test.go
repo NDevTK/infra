@@ -14,7 +14,9 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"infra/unifiedfleet/app/config"
 	ufsds "infra/unifiedfleet/app/model/datastore"
+	"infra/unifiedfleet/app/util"
 )
 
 func mockDutState(id string) *chromeosLab.DutState {
@@ -22,6 +24,15 @@ func mockDutState(id string) *chromeosLab.DutState {
 		Id:       &chromeosLab.ChromeOSDeviceID{Value: id},
 		Hostname: fmt.Sprintf("hostname-%s", id),
 		Servo:    chromeosLab.PeripheralState_NOT_CONNECTED,
+	}
+}
+
+func mockDutStateWithRealm(id string, realm string) *chromeosLab.DutState {
+	return &chromeosLab.DutState{
+		Id:       &chromeosLab.ChromeOSDeviceID{Value: id},
+		Hostname: fmt.Sprintf("hostname-%s", id),
+		Servo:    chromeosLab.PeripheralState_NOT_CONNECTED,
+		Realm:    realm,
 	}
 }
 
@@ -93,6 +104,90 @@ func TestDeleteDutState(t *testing.T) {
 		Convey("Delete dut state by non-existing ID", func() {
 			resp := DeleteDutStates(ctx, []string{"delete-dut-non-existing-id"})
 			So(resp.Failed(), ShouldHaveLength, 1)
+		})
+	})
+}
+
+func TestGetDutStateACL(t *testing.T) {
+	t.Parallel()
+	// manually turn on config
+	alwaysUseACLConfig := config.Config{
+		ExperimentalAPI: &config.ExperimentalAPI{
+			GetDutStateACL: 99,
+		},
+	}
+
+	ctx := gaetesting.TestingContextWithAppID("go-test")
+	ctx = config.Use(ctx, &alwaysUseACLConfig)
+
+	dutState1 := mockDutStateWithRealm("dut-state-1", util.BrowserLabAdminRealm)
+	dutState2 := mockDutStateWithRealm("dut-state-2", util.SatLabInternalUserRealm)
+	_, err := UpdateDutStates(ctx, []*chromeosLab.DutState{dutState1, dutState2})
+	if err != nil {
+		fmt.Println("Not able to instantiate DutStates in TestGetDutStateACL")
+	}
+
+	Convey("GetDutStateACL", t, func() {
+		Convey("GetDutStateACL - no user", func() {
+			resp, err := GetDutStateACL(ctx, "dut-state-1")
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Internal")
+			So(resp, ShouldBeNil)
+		})
+		Convey("GetDutStateACL - no perms", func() {
+			userCtx := mockUser(ctx, "nombre@chromium.org")
+			resp, err := GetDutStateACL(userCtx, "dut-state-1")
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "PermissionDenied")
+			So(resp, ShouldBeNil)
+		})
+		Convey("GetDutStateACL - missing perms", func() {
+			userCtx := mockUser(ctx, "nombre@chromium.org")
+			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.RegistrationsList)
+			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.RegistrationsGet)
+			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.RegistrationsDelete)
+			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.RegistrationsCreate)
+			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.InventoriesList)
+			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.InventoriesDelete)
+			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.InventoriesCreate)
+			resp, err := GetDutStateACL(userCtx, "dut-state-1")
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "PermissionDenied")
+			So(resp, ShouldBeNil)
+		})
+		Convey("GetDutStateACL - missing realms", func() {
+			userCtx := mockUser(ctx, "nombre@chromium.org")
+			mockRealmPerms(userCtx, util.AtlLabAdminRealm, util.ConfigurationsGet)
+			mockRealmPerms(userCtx, util.AtlLabChromiumAdminRealm, util.ConfigurationsGet)
+			mockRealmPerms(userCtx, util.AcsLabAdminRealm, util.ConfigurationsGet)
+			mockRealmPerms(userCtx, util.AtlLabAdminRealm, util.ConfigurationsGet)
+			mockRealmPerms(userCtx, util.SatLabInternalUserRealm, util.ConfigurationsGet)
+			resp, err := GetDutStateACL(userCtx, "dut-state-1")
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "PermissionDenied")
+			So(resp, ShouldBeNil)
+			// 2nd dut-state of different realm
+			user2Ctx := mockUser(ctx, "name@chromium.org")
+			mockRealmPerms(user2Ctx, util.BrowserLabAdminRealm, util.ConfigurationsGet)
+			resp, err = GetDutStateACL(user2Ctx, "dut-state-2")
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "PermissionDenied")
+			So(resp, ShouldBeNil)
+		})
+		Convey("GetDutStateACL - happy path", func() {
+			userCtx := mockUser(ctx, "nombre@chromium.org")
+			mockRealmPerms(userCtx, util.BrowserLabAdminRealm, util.ConfigurationsGet)
+			resp, err := GetDutStateACL(userCtx, "dut-state-1")
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp, ShouldResembleProto, dutState1)
+			// 2nd dut-state of different realm
+			user2Ctx := mockUser(ctx, "name@chromium.org")
+			mockRealmPerms(user2Ctx, util.SatLabInternalUserRealm, util.ConfigurationsGet)
+			resp, err = GetDutStateACL(user2Ctx, "dut-state-2")
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(resp, ShouldResembleProto, dutState2)
 		})
 	})
 }

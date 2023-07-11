@@ -2083,7 +2083,7 @@ func GetAttachedDeviceData(ctx context.Context, lse *ufspb.MachineLSE) (*ufsAPI.
 		return nil, fmt.Errorf("host does not have machines registered to it")
 	}
 	machineId := lse.GetMachines()[0]
-	dutState, err := state.GetDutState(ctx, machineId)
+	dutState, err := state.GetDutStateACL(ctx, machineId)
 	if err != nil {
 		logging.Warningf(ctx, "DutState for %s not found. Error: %s", machineId, err)
 	}

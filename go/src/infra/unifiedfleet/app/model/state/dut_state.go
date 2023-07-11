@@ -6,6 +6,7 @@ package state
 
 import (
 	"context"
+	"math/rand"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
@@ -16,7 +17,9 @@ import (
 	"google.golang.org/grpc/status"
 
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"infra/unifiedfleet/app/config"
 	ufsds "infra/unifiedfleet/app/model/datastore"
+	"infra/unifiedfleet/app/util"
 )
 
 // DutStateKind is the datastore entity kind of dut state.
@@ -44,7 +47,11 @@ func (e *DutStateEntity) GetProto() (proto.Message, error) {
 	return &p, nil
 }
 
-func newDutStateEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
+func (e *DutStateEntity) GetRealm() string {
+	return e.Realm
+}
+
+func newDutStateEntityRealm(ctx context.Context, pm proto.Message) (ufsds.RealmEntity, error) {
 	p := pm.(*chromeosLab.DutState)
 	if p.GetId().GetValue() == "" {
 		return nil, errors.Reason("Empty ID in Dut state").Err()
@@ -61,6 +68,10 @@ func newDutStateEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity
 	}, nil
 }
 
+func newDutStateEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEntity, error) {
+	return newDutStateEntityRealm(ctx, pm)
+}
+
 // GetDutState returns dut state for the given id from datastore.
 func GetDutState(ctx context.Context, id string) (*chromeosLab.DutState, error) {
 	pm, err := ufsds.Get(ctx, &chromeosLab.DutState{Id: &chromeosLab.ChromeOSDeviceID{Value: id}}, newDutStateEntity)
@@ -68,6 +79,36 @@ func GetDutState(ctx context.Context, id string) (*chromeosLab.DutState, error) 
 		return pm.(*chromeosLab.DutState), err
 	}
 	return nil, err
+}
+
+// GetDutStateACL returns the DutState for the requested id if the user
+// has permissions to do so.
+func GetDutStateACL(ctx context.Context, id string) (*chromeosLab.DutState, error) {
+	// TODO(b/285605478): Remove the cutoff logic once we migrate to using
+	// ACLs everywhere
+	cutoff := config.Get(ctx).GetExperimentalAPI().GetGetDutStateACL()
+	// If cutoff is set attempt to divert the traffic to new API
+	if cutoff != 0 {
+		// Roll the dice to determine which one to use
+		roll := rand.Uint32() % 100
+		cutoff := cutoff % 100
+		if roll <= cutoff {
+			logging.Infof(ctx, "GetDutStateACL --- Running in experimental API")
+			return getDutStateACL(ctx, id)
+		}
+	}
+
+	return GetDutState(ctx, id)
+}
+
+// getDutStateACL returns the DutState for the requested id if the user has
+// permissions to do so.
+func getDutStateACL(ctx context.Context, id string) (*chromeosLab.DutState, error) {
+	pm, err := ufsds.GetACL(ctx, &chromeosLab.DutState{Id: &chromeosLab.ChromeOSDeviceID{Value: id}}, newDutStateEntityRealm, util.ConfigurationsGet)
+	if err != nil {
+		return nil, err
+	}
+	return pm.(*chromeosLab.DutState), nil
 }
 
 // UpdateDutStates updates dut states in datastore.
@@ -96,31 +137,6 @@ func queryAllDutStates(ctx context.Context) ([]ufsds.FleetEntity, error) {
 		fe[i] = e
 	}
 	return fe, nil
-}
-
-// ListAllDutStates returns all DutState in datastore.
-func ListAllDutStates(ctx context.Context, keysOnly bool) (res []*chromeosLab.DutState, err error) {
-	var entities []*DutStateEntity
-	q := datastore.NewQuery(DutStateKind).KeysOnly(keysOnly).FirestoreMode(true)
-	if err = datastore.GetAll(ctx, q, &entities); err != nil {
-		return nil, err
-	}
-	for _, ent := range entities {
-		if keysOnly {
-			res = append(res, &chromeosLab.DutState{
-				Id: &chromeosLab.ChromeOSDeviceID{Value: ent.ID},
-			})
-		} else {
-			pm, err := ent.GetProto()
-			if err != nil {
-				logging.Errorf(ctx, "Failed to UnMarshal: %s", err)
-				return nil, err
-			}
-			dutState := pm.(*chromeosLab.DutState)
-			res = append(res, dutState)
-		}
-	}
-	return
 }
 
 // QueryDutStateByPropertyNames queries DutState Entity in the datastore.
@@ -199,6 +215,11 @@ func ListDutStates(ctx context.Context, pageSize int32, pageToken string, filter
 	}
 	return
 }
+
+// The below 3 functions (GetAllDutStates, DeleteDutStates, ImportDutStates)
+// cannot be used by anyone outside the fleet team.
+// Although we believe these need to be removed that is a task for another day
+// TODO: remove usage of these function or just throw an error as an output
 
 // GetAllDutStates returns all dut states in datastore.
 func GetAllDutStates(ctx context.Context) (*ufsds.OpResults, error) {

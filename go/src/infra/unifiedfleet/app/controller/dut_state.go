@@ -24,7 +24,7 @@ import (
 // GetDutState returns the DutState for the ChromeOS device.
 func GetDutState(ctx context.Context, id, hostname string) (*chromeosLab.DutState, error) {
 	if id != "" {
-		return state.GetDutState(ctx, id)
+		return state.GetDutStateACL(ctx, id)
 	}
 	dutStates, err := state.QueryDutStateByPropertyNames(ctx, map[string]string{"hostname": hostname}, false)
 	if err != nil {
@@ -59,7 +59,7 @@ func UpdateDutState(ctx context.Context, ds *chromeosLab.DutState) (*chromeosLab
 
 		hc := &HistoryClient{}
 		// It's ok that no old dut state for this DUT exists before.
-		oldDS, _ := state.GetDutState(ctx, ds.GetId().GetValue())
+		oldDS, _ := state.GetDutStateACL(ctx, ds.GetId().GetValue())
 
 		if _, err := state.UpdateDutStates(ctx, []*chromeosLab.DutState{ds}); err != nil {
 			return errors.Annotate(err, "Unable to update dut state for %s", ds.GetId().GetValue()).Err()

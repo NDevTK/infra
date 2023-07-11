@@ -161,4 +161,6 @@ message ExperimentalAPI {
   uint32 ListRacksACL = 7;
   // GetRackACL determines the experimental percental for the API
   uint32 GetRackACL = 8;
+  // GetDutStateACL determines the experimental percentage for the API
+  uint32 GetDutStateACL=9;
 }
