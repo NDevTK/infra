@@ -22,7 +22,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 )
 
-const PatchRegexpPattern = `^crrev\.com\/([ci])\/(\d{7,8})$`
+const PatchRegexpPattern = `^crrev\.com\/([ci])\/(\d+)$`
 
 type list []string
 
