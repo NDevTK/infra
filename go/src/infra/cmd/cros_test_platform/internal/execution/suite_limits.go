@@ -22,7 +22,7 @@ import (
 const (
 	hour                             = 60 * 60
 	day                              = 24 * hour
-	suiteTestExecutionMaximumSeconds = 3
+	suiteTestExecutionMaximumSeconds = 3 * hour
 	dutPoolQuota                     = "DUT_POOL_QUOTA"
 	managedPoolQuota                 = "MANAGED_POOL_QUOTA"
 	quota                            = "quota"
