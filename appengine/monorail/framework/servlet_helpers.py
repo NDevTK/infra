@@ -208,28 +208,37 @@ def ProjectIsRestricted(mr):
   return (mr.project and mr.project.access != project_pb2.ProjectAccess.ANYONE)
 
 
-def SafeCreateLoginURL(mr, continue_url=None):
+def SafeCreateLoginURL(mr):
   """Make a login URL w/ a detailed continue URL, otherwise use a short one."""
-  current_page_url = mr.current_page_url_encoded
+  current_url = mr.current_page_url_encoded
   if settings.local_mode:
-    current_page_url = mr.current_page_url
-  continue_url = continue_url or current_page_url
+    current_url = mr.current_page_url
   try:
     # Check the URL length
-    generated_login_url = users.create_login_url(continue_url)
+    generated_login_url = users.create_login_url(current_url)
   except users.RedirectTooLongError:
     if mr.project_name:
-      continue_url = '/p/%s' % mr.project_name
+      current_url = '/p/%s' % mr.project_name
     else:
-      continue_url = '/'
+      current_url = '/'
   if settings.local_mode:
     return generated_login_url
+
+  current_parts = urllib.parse.urlparse(current_url)
+  current_query = current_parts.query
+  # Double encode only the query so that it survives redirect parsing.
+  current_url = urllib.parse.urlunparse(
+      current_parts[:3] + ('', urllib.parse.quote_plus(current_query), ''))
   # URL to allow user to choose an account when >1 account is logged in.
-  redirect_url = (
-      'https://accounts.google.com/AccountChooser?continue='
-      'https://uc.appengine.google.com/_ah/conflogin%3Fcontinue%3D{}')
-  url = redirect_url.format(continue_url)
-  return url
+  second_redirect_url = 'https://uc.appengine.google.com/_ah/conflogin?'
+  second_redirect_query = 'continue=' + current_url
+  second_redirect_uri = second_redirect_url + second_redirect_query
+
+  first_redirect_url = 'https://accounts.google.com/AccountChooser?'
+  first_redirect_params = {'continue': second_redirect_uri}
+  first_redirect_uri = first_redirect_url + urllib.parse.urlencode(
+      first_redirect_params)
+  return first_redirect_uri
 
 
 def SafeCreateLogoutURL(mr):

@@ -11,7 +11,7 @@ import unittest
 import settings
 
 from google.appengine.ext import testbed
-
+from six.moves import urllib
 
 from framework import permissions
 from framework import servlet_helpers
@@ -216,30 +216,21 @@ class ComputerCreateUrl(unittest.TestCase):
   def tearDown(self):
     self.testbed.deactivate()
 
-  def testCreateLoginUrl(self):
-    _, mr = testing_helpers.GetRequestObjects(
-        path='/p/proj/issues/detail?id=123&q=term', project=self.project)
-    url = servlet_helpers.SafeCreateLoginURL(mr, 'current.url.to.return.to')
-    # Ensure that users can pick their account to use with Monorail.
-    self.assertIn('/AccountChooser', url)
-    self.assertIn('current.url.to.return.to', url)
-
-  def testCreateLoginUrl(self):
-    _, mr = testing_helpers.GetRequestObjects(
-        path='/p/proj/issues/detail?id=123&q=term', project=self.project)
-    url = servlet_helpers.SafeCreateLoginURL(mr, 'current.url.to.return.to')
-    # Ensure that users can pick their account to use with Monorail.
-    self.assertIn('/AccountChooser', url)
-    self.assertIn('current.url.to.return.to', url)
-
   def testCreateEscapedLoginUrlFromMR(self):
     _, mr = testing_helpers.GetRequestObjects(
         path='/p/proj/issues/detail?id=123&q=term', project=self.project)
     mr.current_page_url_encoded = (
         'https%3A%2F%2Fbugs.chromium.org'
-        '%2Fp%2Fchromium%2Fissues%2Fentry')
+        '%2Fp%2Fchromium%2Fissues%2Fentry%3F'
+        'template%3DBuild%2520Infrastructure%26'
+        'labels%3DRestrict-View-Google%2CInfra-Troopers')
     url = servlet_helpers.SafeCreateLoginURL(mr)
-    self.assertIn('https%3A%2F%2Fbugs.chromium.org%2Fp', url)
+    double_encoded_query = (
+        'https%253A%252F%252Fbugs.chromium.org'
+        '%252Fp%252Fchromium%252Fissues%252Fentry%253F'
+        'template%253DBuild%252520Infrastructure%2526'
+        'labels%253DRestrict-View-Google%252CInfra-Troopers')
+    self.assertIn(double_encoded_query, url)
 
   def testCreateLogoutUrl(self):
     _, mr = testing_helpers.GetRequestObjects(
