@@ -17,14 +17,15 @@ import (
 
 func translateRequest(req *api.CTPv2Request) *api.InternalTestplan {
 	internalStruct := &api.InternalTestplan{}
-	hwReqs := hwRequirements(req)
-	// TODO, there is a bitch of a gap between the input request (where build is part of legacySW)
-	// And the current definition of channels (which is basically dev/beta/stable) in the suiteMetadata.
-	// It might not even be needed as part of the metadata. Need to investigate more.
-	internalStruct.SuiteMetadata = &api.SuiteMetadata{
-		HwRequirements: hwReqs,
-		Pool:           req.Pool,
-	}
+	// TODO: b:290797979 re-enable this and migrate to new suite_metadata proto changes.
+	// hwReqs := hwRequirements(req)
+	// // TODO, there is a bitch of a gap between the input request (where build is part of legacySW)
+	// // And the current definition of channels (which is basically dev/beta/stable) in the suiteMetadata.
+	// // It might not even be needed as part of the metadata. Need to investigate more.
+	// internalStruct.SuiteMetadata = &api.SuiteMetadata{
+	// 	HwRequirements: hwReqs,
+	// 	Pool:           req.Pool,
+	// }
 
 	return internalStruct
 }
