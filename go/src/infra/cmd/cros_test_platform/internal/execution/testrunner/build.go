@@ -76,7 +76,7 @@ func ValidateDependencies(ctx context.Context, c trservice.Client, argsGenerator
 // Build represents an individual test_runner build.
 type Build struct {
 	argsGenerator  ArgsGenerator
-	args           request.Args
+	Args           request.Args
 	result         *skylab_test_runner.Result
 	lifeCycle      test_platform.TaskState_LifeCycle
 	swarmingTaskID string
@@ -100,7 +100,7 @@ func NewBuild(ctx context.Context, c trservice.Client, argsGenerator ArgsGenerat
 	if err != nil {
 		return nil, errors.Annotate(err, "new task for %s", t.name()).Err()
 	}
-	t.args = args
+	t.Args = args
 	t.TaskReference = ref
 	t.lifeCycle = test_platform.TaskState_LIFE_CYCLE_PENDING
 	t.url = c.URL(ref)
@@ -116,7 +116,7 @@ func NewBuildForTesting(swarmingTaskID, url string) *Build {
 
 // name is the build name as it is displayed in the UI.
 func (b *Build) name() string {
-	return b.args.Cmd.TaskName
+	return b.Args.Cmd.TaskName
 }
 
 func (b *Build) autotestResult() *skylab_test_runner.Result_Autotest {
@@ -207,15 +207,15 @@ func (b *Build) Refresh(ctx context.Context, c trservice.Client) error {
 	// If the autotest result is missing, treat the build as incomplete.
 	if b.autotestResult() == nil {
 		testCases := []*skylab_test_runner.Result_Autotest_TestCase{}
-		if b.args.CFTIsEnabled && b.args.CFTTestRunnerRequest != nil && !proto.Equal(b.args.CFTTestRunnerRequest, &skylab_test_runner.CFTTestRequest{}) {
-			for _, test_case := range b.args.CFTTestRunnerRequest.GetTestSuites()[0].GetTestCaseIds().GetTestCaseIds() {
+		if b.Args.CFTIsEnabled && b.Args.CFTTestRunnerRequest != nil && !proto.Equal(b.Args.CFTTestRunnerRequest, &skylab_test_runner.CFTTestRequest{}) {
+			for _, test_case := range b.Args.CFTTestRunnerRequest.GetTestSuites()[0].GetTestCaseIds().GetTestCaseIds() {
 				testCases = append(testCases, &skylab_test_runner.Result_Autotest_TestCase{
 					Name:    test_case.Value,
 					Verdict: skylab_test_runner.Result_Autotest_TestCase_VERDICT_NO_VERDICT,
 				})
 			}
-		} else if b.args.TestRunnerRequest != nil && !proto.Equal(b.args.TestRunnerRequest, &skylab_test_runner.Request{}) {
-			for _, test_case := range b.args.TestRunnerRequest.GetTests() {
+		} else if b.Args.TestRunnerRequest != nil && !proto.Equal(b.Args.TestRunnerRequest, &skylab_test_runner.Request{}) {
+			for _, test_case := range b.Args.TestRunnerRequest.GetTests() {
 				testCases = append(testCases, &skylab_test_runner.Result_Autotest_TestCase{
 					Name:    test_case.GetAutotest().Name,
 					Verdict: skylab_test_runner.Result_Autotest_TestCase_VERDICT_NO_VERDICT,

@@ -161,7 +161,7 @@ func logTotals(ctx context.Context, workingDirectory string) error {
 			strconv.FormatBool(entry.allDone),
 
 			// Field: exceededExecutionLimit
-			strconv.FormatBool(entry.totalSuiteTrackingTime.Seconds() > SuiteTestExecutionMaximumSeconds),
+			strconv.FormatBool(entry.totalSuiteTrackingTime.Seconds() > suiteTestExecutionMaximumSeconds),
 
 			// Field: exceptionGranted
 			strconv.FormatBool(checkForExceptionNoLogging(taskSetName)),

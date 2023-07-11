@@ -19,82 +19,17 @@ import (
 	"go.chromium.org/luci/common/logging"
 )
 
+const (
+	hour                             = 60 * 60
+	day                              = 24 * hour
+	suiteTestExecutionMaximumSeconds = 3
+	dutPoolQuota                     = "DUT_POOL_QUOTA"
+	managedPoolQuota                 = "MANAGED_POOL_QUOTA"
+	quota                            = "quota"
+	suiteLimitMinimumMilestone       = 117
+)
+
 var suiteLimitError = errors.New("TestExecutionLimit: Maximum suite execution runtime exceeded.")
-
-type suiteFilter struct {
-	suiteName    string
-	expiration   time.Time
-	neverExpires bool
-}
-
-// exceptions stores all granted exceptions from the SuiteLimits project.
-var exceptions = []suiteFilter{
-	{
-		suiteName:    "arc-cts",
-		expiration:   time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
-		neverExpires: true,
-	},
-	{
-		suiteName:    "arc-cts-camera-opendut",
-		expiration:   time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
-		neverExpires: true,
-	},
-	{
-		suiteName:    "arc-cts-hardware",
-		expiration:   time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
-		neverExpires: true,
-	},
-	{
-		suiteName:    "arc-cts-qual",
-		expiration:   time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
-		neverExpires: true,
-	},
-	{
-		suiteName:    "arc-cts-vm-stable",
-		expiration:   time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
-		neverExpires: true,
-	},
-	{
-		suiteName:    "arc-gts",
-		expiration:   time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
-		neverExpires: true,
-	},
-	{
-		suiteName:    "arc-gts-qual",
-		expiration:   time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
-		neverExpires: true,
-	},
-	{
-		suiteName:    "arc-sts-full",
-		expiration:   time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
-		neverExpires: true,
-	},
-	{
-		suiteName:    "arc-sts-full-r",
-		expiration:   time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
-		neverExpires: true,
-	},
-	{
-		suiteName:    "arc-sts-full-t",
-		expiration:   time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
-		neverExpires: true,
-	},
-	{
-		suiteName:    "arc-sts-incremental-r",
-		expiration:   time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
-		neverExpires: true,
-	},
-	{
-		suiteName:    "bvt-tast-arc",
-		expiration:   time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
-		neverExpires: false,
-	},
-	{
-		suiteName:    "bvt-tast-cq",
-		expiration:   time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
-		neverExpires: false,
-	},
-}
 
 func cancelExceededTests(ctx context.Context, client trservice.Client, taskSetName string, taskSet *RequestTaskSet) error {
 	// Aggregate all the references of tasks to be cancelled.
@@ -143,11 +78,6 @@ func checkForExceptionNoLogging(taskSetName string) bool {
 // checkForException iterates through the exceptions list to see if we should
 // allow the suite to continue running.
 func checkForException(ctx context.Context, taskSetName string, request *RequestTaskSet) bool {
-	// If exception already granted then quickly return with an OK.
-	if request.SuiteLimitExceptionGranted {
-		return true
-	}
-
 	// Iterate through the exceptions list.
 	for _, exception := range exceptions {
 		// Continue early if current exception doesn't apply.
@@ -164,9 +94,6 @@ func checkForException(ctx context.Context, taskSetName string, request *Request
 
 		logging.Infof(ctx, "SuiteLimits: Exception found for taskSetName: %s\n", exception.suiteName)
 
-		// Mark as exception granted so next checks will not require a full list search.
-		request.SuiteLimitExceptionGranted = true
-
 		// Show exception information in the summary markdown.
 		request.step.DisplayExceptionSummary(exception.expiration)
 
@@ -176,6 +103,65 @@ func checkForException(ctx context.Context, taskSetName string, request *Request
 
 	// No Exception Found
 	return false
+}
+
+// isQuotaPool checks to see if the given pool is within one of the shared HW pools.
+func isQuotaPool(pool, suiteName string) bool {
+	return (strings.Contains(pool, dutPoolQuota) || strings.Contains(pool, managedPoolQuota) || strings.Contains(pool, quota))
+}
+
+// isEligibleForSuiteLimits cross checks the requested run against qualifications for being limited.
+// To qualify for suite runtime limitation:
+//  1. The suite must be in the shared pool(DUT_POOL_QUOTA, MANAGED_POOL_QUOTA)
+//  2. The milestone must be >= R117
+//  3. The suite must not be granted an exception.
+func isEligibleForSuiteLimits(ctx context.Context, iid types.InvocationID, taskSetName string, request *RequestTaskSet) bool {
+	if request.SuiteLimitExceptionGranted {
+		return false
+	}
+	// In some cases single suite runs are listed as default. This will extract the real SuiteName from the requirement.
+	suiteName, err := request.GetSuiteName(iid)
+
+	// Some runs do not launch suites and run individual tests. In that case we will default to the task set name chosen by CTP.
+	if err != nil {
+		suiteName = taskSetName
+	}
+
+	// Assume in shared pool, if label-pool isn't found then the pool will be treated as if it is in the shared pools.
+	inSharedPool := true
+	pool, err := request.GetTestRunnerPool(iid)
+	if err != nil {
+		logging.Infof(ctx, "%s\n", err.Error())
+	} else {
+		inSharedPool = isQuotaPool(pool, suiteName)
+	}
+
+	// If its in a private pool then SuiteLimits do no apply to the run.
+	if !inSharedPool {
+		logging.Infof(ctx, "Suite Limits: Running in private pool.\n")
+		request.SuiteLimitExceptionGranted = true
+		return false
+	}
+
+	// If the milestone is less than 117 then do not apply suite limits. If we cannot determine the milestone then consider the milestone < 117.
+	if milestone, err := request.GetMilestone(iid); err != nil || milestone < suiteLimitMinimumMilestone {
+		if err != nil {
+			logging.Infof(ctx, "SuiteLimits Milestone error: %s\n", err.Error())
+		}
+		logging.Infof(ctx, "Suite Limits: Milestone exception milestone(%d)\n", milestone)
+		request.SuiteLimitExceptionGranted = true
+		return false
+
+	}
+
+	// If an exception was found for the suite then do not check if the execution limit was exceeded.
+	if checkForException(ctx, suiteName, request) {
+		logging.Infof(ctx, "Suite Limits: SuiteLimits exemption found\n")
+		request.SuiteLimitExceptionGranted = true
+		return false
+	}
+
+	return true
 }
 
 // updateTestExecutionTracking calculates the amount of time it's been since
@@ -204,13 +190,16 @@ func updateTestExecutionTracking(ctx context.Context, iid types.InvocationID, la
 		completed:       completed,
 	}
 
-	// Check if we've exceeded the maximum time allowed for test execution.
-	// TODO(b/254114334): Activate this once the feature is dropped.
-	// if lastSeenRuntimePerTask[taskSetName].totalSuiteTrackingTime.Seconds() > SuiteTestExecutionMaximumSeconds && !checkForException(ctx, taskSetName, request) {
-	// 	logging.Infof(ctx, "Suite %s exceeded execution runtime limit. %d seconds allowed, %d seconds used.", taskSetName, SuiteTestExecutionMaximumSeconds, int(lastSeenRuntimePerTask[taskSetName].totalSuiteTrackingTime.Seconds()))
+	// Check the run for eligibility according to the SuiteLimit rules.
+	if !isEligibleForSuiteLimits(ctx, iid, taskSetName, request) {
+		return nil
+	}
 
-	// 	return suiteLimitError
-	// }
+	// Finally, check if we've exceeded the maximum time allowed for test execution.
+	if lastSeenRuntimePerTask[taskSetName].totalSuiteTrackingTime.Seconds() > suiteTestExecutionMaximumSeconds {
+		logging.Infof(ctx, "Suite %s exceeded execution runtime limit. %d seconds allowed, %d seconds used.", taskSetName, suiteTestExecutionMaximumSeconds, int(lastSeenRuntimePerTask[taskSetName].totalSuiteTrackingTime.Seconds()))
+		return suiteLimitError
+	}
 
 	return nil
 }

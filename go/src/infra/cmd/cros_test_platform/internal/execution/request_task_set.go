@@ -7,6 +7,9 @@ package execution
 import (
 	"context"
 	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
 	"time"
 
 	"infra/cmd/cros_test_platform/internal/execution/args"
@@ -33,13 +36,7 @@ import (
 
 // Retry count on transient errors
 const (
-	hour                       = 60 * 60
-	day                        = 24 * hour
 	RetryCountOnTransientError = 5
-
-	// TODO(b:254114334): Once an execution time has been finalized this this to
-	// the proposed limit.
-	SuiteTestExecutionMaximumSeconds = 3 * hour
 
 	completed = true
 	running   = false
@@ -132,6 +129,71 @@ func NewRequestTaskSet(
 		invocationSteps:     invocationSteps,
 		step:                step,
 	}, nil
+}
+
+var MilestoneNotFoundError = errors.New("RequestTaskSet: No milestone found")
+var MilestoneFormatError = errors.New("RequestTaskSet: image filed incofrectly formed, milestone could not be determined.")
+
+// GetMilestone returns the milestone requirement of the invocation run.
+func (r *RequestTaskSet) GetMilestone(iid types.InvocationID) (int64, error) {
+	image := ""
+	software_deps := r.argsGenerators[iid].Params.GetSoftwareDependencies()
+	for _, dep := range software_deps {
+		switch d := dep.Dep.(type) {
+		case *test_platform.Request_Params_SoftwareDependency_ChromeosBuild:
+			image = d.ChromeosBuild
+		default:
+			break
+		}
+
+		// Image value found, stop iterating.
+		if image != "" {
+			break
+		}
+	}
+
+	if image == "" {
+		return 0, MilestoneNotFoundError
+	}
+
+	re := regexp.MustCompile(`\/R(?P<milestone>\d{2,3})-\d*`)
+	matches := re.FindStringSubmatch(image)
+
+	// Nil means no matches found.
+	// The first match is the full text captured and the second is the capture group defined.
+	if len(matches) == 2 {
+		milestone, err := strconv.ParseInt(matches[1], 10, 0)
+		if err != nil {
+			return 0, err
+		}
+		return milestone, nil
+	}
+
+	return 0, MilestoneFormatError
+}
+
+// GetSuiteName returns the testing suite in the of the given request.
+func (r *RequestTaskSet) GetSuiteName(iid types.InvocationID) (string, error) {
+	for _, tag := range r.argsGenerators[iid].Params.Decorations.Tags {
+		if strings.HasPrefix(tag, "label-suite:") {
+			return strings.TrimPrefix(tag, "label-suite:"), nil
+		} else if strings.HasPrefix(tag, "suite:") {
+			return strings.TrimPrefix(tag, "suite:"), nil
+		}
+	}
+	return "", fmt.Errorf("suite tag not found.")
+}
+
+// GetSuiteName returns the HW pool testrunner will use for testing.
+func (r *RequestTaskSet) GetTestRunnerPool(iid types.InvocationID) (string, error) {
+	for _, tag := range r.argsGenerators[iid].Params.Decorations.Tags {
+		if strings.HasPrefix(tag, "label-pool:") {
+			return strings.TrimPrefix(tag, "label-pool:"), nil
+		} else if strings.HasPrefix(tag, "pool:") {
+			return strings.TrimPrefix(tag, "pool:"), nil
+		}
+	}
+	return "", fmt.Errorf("Pool tag not found.")
 }
 
 // completed returns true if all tasks for this request have completed.
