@@ -790,7 +790,8 @@ def WIN_ISO(
                     source='media/sources/install.wim',
                     mount=True,
                     dest='sources')),
-    uploads=()):
+    uploads=(),
+    unpacked_uploads=()):
   return wib.Image(
       name=image,
       arch=arch,
@@ -801,5 +802,7 @@ def WIN_ISO(
                   base_image=base_image,
                   boot_image=boot_image,
                   copy_files=copy_files,
-                  uploads=uploads))
+                  uploads=uploads,
+                  unpacked_uploads=unpacked_uploads,
+              ))
       ])

@@ -95,6 +95,7 @@ class WinISOCustomization(customization.Customization):
     locations from a try job.
     """
     self.customization().windows_iso_customization.uploads.clear()
+    self.customization().windows_iso_customization.unpacked_uploads.clear()
 
   @property
   def outputs(self):
@@ -110,10 +111,16 @@ class WinISOCustomization(customization.Customization):
       uploads.append(
           dest_pb.Dest(
               gcs_src=output,
-              tags={'orig': self._source.get_url(src_pb.Src(gcs_src=output))},
+              tags={
+                  'orig': self._source.get_url(src_pb.Src(gcs_src=output)),
+                  'build_url': self.m.buildbucket.build_url()
+              },
           ))
-    if self.customization().windows_iso_customization.uploads:
-      uploads.extend(self.customization().windows_iso_customization.uploads)
+    wic = self.customization().windows_iso_customization
+    if wic.uploads:
+      uploads.extend(wic.uploads)
+    if wic.unpacked_uploads:
+      uploads.extend(wic.unpacked_uploads)
     return uploads
 
   @property
@@ -164,15 +171,37 @@ class WinISOCustomization(customization.Customization):
           # Copy the boot_image to /boot dir
           self.m.file.copy('Add {}'.format(src), src, iso_dir.join('boot'))
           boot = iso_dir.join('boot', self.m.path.basename(src))
+        compressed_archive = self._workdir.join('{}.zip'.format(output.name))
+        if output.unpacked_uploads:
+          do_archive = False
+          # Only archive if gcs upload is needed. CIPD can do its own archiving
+          for package in output.unpacked_uploads:
+            if package.WhichOneof('dest') == 'gcs_src':
+              do_archive = True
+              break
+          if do_archive:
+            # archive the iso staging as we need to upload it
+            self.m.archive.package(iso_dir).archive(
+                'Compress contents for upload', compressed_archive)
         output_image = iso_dir.join(output.name + '.iso')
         # package everything into an iso
         self.generate_iso_image(
             output.name, boot=boot, directory=iso_dir, output=output_image)
         # Upload the image
         self._source.upload_package(self.outputs[0], output_image)
+        orig_tag = self.outputs[0].tags['orig']
+        build_url = self.outputs[0].tags['build_url']
         for package in output.uploads:
-          package.tags['orig'] = self.outputs[0].tags['orig']
+          package.tags['orig'] = orig_tag
+          package.tags['build_url'] = build_url
           self._source.upload_package(package, output_image)
+        for package in output.unpacked_uploads:
+          package.tags['orig'] = orig_tag
+          package.tags['build_url'] = build_url
+          if package.WhichOneof('dest') == 'cipd_src':
+            self._source.upload_package(package, iso_dir)
+          else:
+            self._source.upload_package(package, compressed_archive)
       finally:
         # cleanup everything
         with self.m.step.nest('Cleanup customization') as n:

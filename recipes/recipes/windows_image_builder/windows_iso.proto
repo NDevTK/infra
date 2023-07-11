@@ -33,6 +33,9 @@ message WinISOImage {
 
   // The destination to upload the built image
   repeated dest.Dest uploads = 5;
+
+  // The destination to upload the image without iso packaging
+  repeated dest.Dest unpacked_uploads = 6;
 }
 
 // CopyArtifact action allows you to copy a file/directory from given src. The

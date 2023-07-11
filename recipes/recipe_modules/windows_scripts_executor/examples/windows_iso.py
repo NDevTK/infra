@@ -60,10 +60,29 @@ def GenTests(api):
           tags={'VERSION': '10'},
       )
   ]
+  unpacked_uploads = [
+      dest.Dest(
+          gcs_src=sources.GCSSrc(
+              bucket='chrome-windows-image', source='Win10/win10_release.zip'),
+          tags={'VERSION': '10'},
+      ),
+      dest.Dest(
+          cipd_src=sources.CIPDSrc(
+              package='chrome-windows-image',
+              platform='windows-amd64',
+              refs='latest'),
+          tags={'VERSION': '10'},
+      )
+  ]
 
   yield (api.test('Happy path with custom bootloader') +
          api.platform('linux', 64, 'intel') + api.properties(
-             t.WIN_ISO(image=image, arch=arch, name=cust, uploads=uploads)) +
+             t.WIN_ISO(
+                 image=image,
+                 arch=arch,
+                 name=cust,
+                 uploads=uploads,
+                 unpacked_uploads=unpacked_uploads)) +
          t.MOCK_CUST_OUTPUT(
              api, "gs://chrome-gce-images/WIB-ISO/{}.iso".format(key), False) +
          t.MOUNT_DISK_ISO(api, image, cust,
