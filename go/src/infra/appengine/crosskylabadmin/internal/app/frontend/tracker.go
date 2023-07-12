@@ -6,7 +6,6 @@ package frontend
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
@@ -53,29 +52,7 @@ func (tsi *TrackerServerImpl) PushBotsForAdminTasks(ctx context.Context, req *fl
 		return nil, errors.Annotate(err, "failed to obtain Swarming client").Err()
 	}
 
-	dutState, ok := clients.DutStateRevMap[req.GetTargetDutState()]
-	if !ok {
-		return nil, fmt.Errorf("DutState=%#v does not map to swarming value", req.GetTargetDutState())
-	}
-
-	// Schedule admin tasks to idle DUTs.
-	dims := make(strpair.Map)
-	dims[clients.DutStateDimensionKey] = []string{dutState}
-	bots, err := sc.ListAliveIdleBotsInPool(ctx, cfg.Swarming.BotPool, dims)
-	if err != nil {
-		reason := fmt.Sprintf("failed to list alive idle cros bots with dut_state %q", dutState)
-		return nil, errors.Annotate(err, reason).Err()
-	}
-	logging.Infof(ctx, "successfully get %d alive idle cros bots with dut_state %q.", len(bots), dutState)
-
-	// Parse BOT id to schedule tasks for readability.
-	repairBOTs := identifyBotsForRepair(ctx, bots)
-	err = clients.PushRepairDUTs(ctx, repairBOTs, dutState)
-	if err != nil {
-		logging.Infof(ctx, "push repair bots: %v", err)
-		return nil, errors.New("failed to push repair duts")
-	}
-	return &fleet.PushBotsForAdminTasksResponse{}, nil
+	return pushBotsForAdminTasksImpl(ctx, sc, req)
 }
 
 // PushBotsForAdminAuditTasks implements the fleet.Tracker.pushBotsForAdminTasks() method.
