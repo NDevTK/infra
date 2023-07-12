@@ -8,7 +8,7 @@ import { act, screen } from '@testing-library/react';
 import { renderWithContext } from '../../utils/testUtils';
 import { Params } from '../context/MetricsContext';
 import { Period, SortType } from '../../api/resources';
-import ResourcesParamControls, { ASCENDING, DATE, FILTER, PAGE, PERIOD, ROWS_PER_PAGE, SORT_BY } from './ResourcesSearchParams';
+import ResourcesParamControls, { ASCENDING, DATE, FILTER, PAGE, PERIOD, ROWS_PER_PAGE, SORT_BY, TIMELINE } from './ResourcesSearchParams';
 
 const TestingComponent = () => {
   const [search] = useSearchParams();
@@ -21,6 +21,7 @@ const TestingComponent = () => {
       <div>period-{search.get(PERIOD)}</div>
       <div>sortby-{search.get(SORT_BY)}</div>
       <div>ascending-{search.get(ASCENDING)}</div>
+      <div>timeline-{search.get(TIMELINE)}</div>
     </>
   );
 };
@@ -33,6 +34,7 @@ const params: Params = {
   period: Period.DAY,
   sort: SortType.SORT_NAME,
   ascending: true,
+  timelineView: false,
 };
 
 describe('when rendering the ResourcesTableToolbar', () => {
@@ -52,5 +54,6 @@ describe('when rendering the ResourcesTableToolbar', () => {
     expect(screen.getByText('period-0')).toBeInTheDocument();
     expect(screen.getByText('sortby-0')).toBeInTheDocument();
     expect(screen.getByText('ascending-true')).toBeInTheDocument();
+    expect(screen.getByText('timeline-false')).toBeInTheDocument();
   });
 });

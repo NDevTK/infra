@@ -10,10 +10,12 @@ import { Period, SortType } from '../api/resources';
 
 export interface OptionalContext {
   data?: Node[],
+  datesToShow?: string[],
   lastPage?: boolean,
   isLoading?: boolean,
   api?: OptionalApi,
   params?: Params,
+  isTimelineView?: boolean,
 }
 
 export interface OptionalApi {
@@ -38,6 +40,7 @@ const defaultApi: Api = {
   updatePeriod: () => {/**/},
   updateSort: () => {/**/},
   updateAscending: () => {/**/},
+  updateTimelineView: () => {/**/},
 };
 
 const defaultParams: Params = {
@@ -48,6 +51,7 @@ const defaultParams: Params = {
   period: Period.DAY,
   sort: SortType.SORT_NAME,
   ascending: true,
+  timelineView: false,
 };
 
 export function renderWithContext(
@@ -56,6 +60,7 @@ export function renderWithContext(
 ) {
   const ctx : MetricsContextValue = {
     data: opts.data || [],
+    datesToShow: opts.datesToShow || [],
     lastPage: opts.lastPage || true,
     api: {
       updatePage: opts.api?.updatePage || defaultApi.updatePage,
@@ -65,6 +70,7 @@ export function renderWithContext(
       updatePeriod: opts.api?.updatePeriod || defaultApi.updatePeriod,
       updateSort: opts.api?.updateSort || defaultApi.updateSort,
       updateAscending: opts.api?.updateAscending || defaultApi.updateAscending,
+      updateTimelineView: opts.api?.updateTimelineView || defaultApi.updateTimelineView,
     },
     params: {
       page: opts.params?.page || defaultParams.page,
@@ -74,6 +80,7 @@ export function renderWithContext(
       period: opts.params?.period || defaultParams.period,
       sort: opts.params?.sort || defaultParams.sort,
       ascending: opts.params?.ascending || defaultParams.ascending,
+      timelineView: opts.params?.timelineView || defaultParams.timelineView,
     },
     isLoading: opts.isLoading || true,
   };

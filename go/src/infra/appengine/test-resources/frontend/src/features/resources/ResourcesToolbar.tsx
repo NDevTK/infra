@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { Divider, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Toolbar } from '@mui/material';
+import { Divider, FormControl, Grid, InputLabel, MenuItem, Select, TextField, ToggleButton, ToggleButtonGroup, Toolbar } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import TimelineIcon from '@mui/icons-material/Timeline';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useContext, useEffect, useState } from 'react';
 import { Period } from '../../api/resources';
@@ -40,6 +42,15 @@ function ResourcesToolbar() {
       return date.day() !== 0;
     }
     return false;
+  };
+
+  const handleViewToggle = (
+      _event: React.MouseEvent<HTMLElement>,
+      isTimeline: boolean | null,
+  ) => {
+    if (isTimeline !== null) {
+      api.updateTimelineView(isTimeline || false);
+    }
   };
 
   return (
@@ -81,6 +92,22 @@ function ResourcesToolbar() {
                 shouldDisableDate={handleShouldDisableDate}
               />
             </LocalizationProvider>
+          </Grid>
+          <Grid item xs={2}>
+            <ToggleButtonGroup
+              value={params.timelineView}
+              exclusive
+              onChange={handleViewToggle}
+              aria-label="timeline view"
+              data-testid="timelineViewToggle"
+            >
+              <ToggleButton value={false} aria-label="snapshot">
+                <CameraAltIcon />
+              </ToggleButton>
+              <ToggleButton value={true} aria-label="timeline">
+                <TimelineIcon />
+              </ToggleButton>
+            </ToggleButtonGroup>
           </Grid>
         </Grid>
       </Toolbar>

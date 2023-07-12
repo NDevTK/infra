@@ -19,7 +19,7 @@ import ResourcesRow from './ResourcesRow';
 import styles from './ResourcesTable.module.css';
 
 function ResourcesTable() {
-  const { data, lastPage, isLoading, api, params } = useContext(MetricsContext);
+  const { data, lastPage, isLoading, api, params, datesToShow } = useContext(MetricsContext);
 
   const handleChangePage = (
       _: React.MouseEvent<HTMLButtonElement> | null,
@@ -75,6 +75,43 @@ function ResourcesTable() {
     );
   }
 
+  function displayHeader() {
+    if (params.timelineView) {
+      const headerArr = [] as JSX.Element[];
+      datesToShow.forEach((date) => {
+        headerArr.push(
+            <TableCell key={date} component="th" align="right" data-testid="timelineHeader">
+              {date}
+            </TableCell>,
+        );
+      });
+      return (
+        <>
+          {headerArr}
+        </>
+      );
+    }
+    return (
+      <>
+        <TableCell component="th" align="right">
+          {sortableColumnLabel(SortType.SORT_NUM_RUNS, '# Runs')}
+        </TableCell>
+        <TableCell component="th" align="right">
+          {sortableColumnLabel(SortType.SORT_NUM_FAILURES, '# Failures')}
+        </TableCell>
+        <TableCell component="th" align="right">
+          {sortableColumnLabel(SortType.SORT_AVG_RUNTIME, 'Avg Runtime')}
+        </TableCell>
+        <TableCell component="th" align="right">
+          {sortableColumnLabel(SortType.SORT_TOTAL_RUNTIME, 'Total Runtime')}
+        </TableCell>
+        <TableCell component="th" align="right">
+          {sortableColumnLabel(SortType.SORT_AVG_CORES, 'Avg Cores')}
+        </TableCell>
+      </>
+    );
+  }
+
   return (
     <>
       <TableContainer component={Paper}>
@@ -88,21 +125,7 @@ function ResourcesTable() {
               <TableCell component="th" align="left">
                 Test Suite
               </TableCell>
-              <TableCell component="th" align="right">
-                {sortableColumnLabel(SortType.SORT_NUM_RUNS, '# Runs')}
-              </TableCell>
-              <TableCell component="th" align="right">
-                {sortableColumnLabel(SortType.SORT_NUM_FAILURES, '# Failures')}
-              </TableCell>
-              <TableCell component="th" align="right">
-                {sortableColumnLabel(SortType.SORT_AVG_RUNTIME, 'Avg Runtime')}
-              </TableCell>
-              <TableCell component="th" align="right">
-                {sortableColumnLabel(SortType.SORT_TOTAL_RUNTIME, 'Total Runtime')}
-              </TableCell>
-              <TableCell component="th" align="right">
-                {sortableColumnLabel(SortType.SORT_AVG_CORES, 'Avg Cores')}
-              </TableCell>
+              {displayHeader()}
             </TableRow>
           </TableHead>
           <TableBody data-testid="tableBody">

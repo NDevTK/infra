@@ -1,34 +1,49 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { IconButton, TableCell, TableRow } from '@mui/material';
 import { formatNumber, formatTime } from '../../utils/formatUtils';
 import { MetricType } from '../../api/resources';
-import { Node } from '../context/MetricsContext';
+import { Node, MetricsContext } from '../context/MetricsContext';
 
 export interface ResourcesRowProps {
   data: Node,
   depth: number,
 }
 
-// Display the metrics in TableCell Format
-export function displayMetrics(metrics: Map<MetricType, number>) {
-  return (
-    <>
-      <TableCell data-testid="tableCell" align="right">{formatNumber(metrics.get(MetricType.NUM_RUNS) || 0)}</TableCell>
-      <TableCell data-testid="tableCell" align="right">{formatNumber(metrics.get(MetricType.NUM_FAILURES) || 0)}</TableCell>
-      <TableCell data-testid="tableCell" align="right">{formatTime(metrics.get(MetricType.AVG_RUNTIME) || 0)}</TableCell>
-      <TableCell data-testid="tableCell" align="right">{formatTime(metrics.get(MetricType.TOTAL_RUNTIME) || 0)}</TableCell>
-      <TableCell data-testid="tableCell" align="right">{formatNumber(metrics.get(MetricType.AVG_CORES) || 0)}</TableCell>
-    </>
-  );
-}
-
 function ResourcesRow(props: ResourcesRowProps) {
+  const { params, datesToShow } = useContext(MetricsContext);
   const [isOpen, setIsOpen] = useState(false);
   const rotate = isOpen ? 'rotate(0deg)' : 'rotate(270deg)';
+
+  function displayMetrics() {
+    if (params.timelineView) {
+      const bodyArr = [] as JSX.Element[];
+      datesToShow.forEach((date) => {
+        bodyArr.push(
+            <TableCell key={date} component="th" align="right" data-testid="timelineTest">
+              {formatNumber(Number(props.data.metrics.get(date)?.get(MetricType.AVG_RUNTIME)))}
+            </TableCell>,
+        );
+      });
+      return (
+        <>
+          { bodyArr }
+        </>
+      );
+    }
+    return (
+      <>
+        <TableCell data-testid="tableCell" align="right">{formatNumber(props.data.metrics.get(datesToShow[0])?.get(MetricType.NUM_RUNS) || 0)}</TableCell>
+        <TableCell data-testid="tableCell" align="right">{formatNumber(props.data.metrics.get(datesToShow[0])?.get(MetricType.NUM_FAILURES) || 0)}</TableCell>
+        <TableCell data-testid="tableCell" align="right">{formatTime(props.data.metrics.get(datesToShow[0])?.get(MetricType.AVG_RUNTIME) || 0)}</TableCell>
+        <TableCell data-testid="tableCell" align="right">{formatTime(props.data.metrics.get(datesToShow[0])?.get(MetricType.TOTAL_RUNTIME) || 0)}</TableCell>
+        <TableCell data-testid="tableCell" align="right">{formatNumber(props.data.metrics.get(datesToShow[0])?.get(MetricType.AVG_CORES) || 0)}</TableCell>
+      </>
+    );
+  }
   return (
     <>
       <TableRow
@@ -58,7 +73,7 @@ function ResourcesRow(props: ResourcesRowProps) {
         {props.data.subname === undefined ? null : (
           <TableCell sx={{ whiteSpace: 'nowrap' }}>{props.data.subname}</TableCell>
         )}
-        {displayMetrics(props.data.metrics)}
+        {displayMetrics()}
       </TableRow>
       {
         isOpen && props.data.nodes.length > 0 ? (

@@ -14,6 +14,7 @@ export const DATE = 'date';
 export const PERIOD = 'period';
 export const SORT_BY = 'sort';
 export const ASCENDING = 'asc';
+export const TIMELINE = 'timeline';
 
 function ResourcesParamControls() {
   const { params } = useContext(MetricsContext);
@@ -28,6 +29,7 @@ function ResourcesParamControls() {
     search.set(PERIOD, String(params.period));
     search.set(SORT_BY, String(params.sort));
     search.set(ASCENDING, String(params.ascending));
+    search.set(TIMELINE, String(params.timelineView));
     setSearchParams(search);
   }, [search, setSearchParams, params]);
 

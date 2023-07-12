@@ -8,6 +8,7 @@ import { formatDate } from '../../utils/formatUtils';
 
 type MetricsContextProviderProps = {
   page?: number,
+  timelineView?: boolean,
   children: React.ReactNode,
 }
 
@@ -15,7 +16,7 @@ export interface Node {
   id: string,
   name: string,
   subname?: string,
-  metrics: Map<MetricType, number>,
+  metrics: Map<string, Map<MetricType, number>>,
   isLeaf: boolean,
   nodes: Node[]
 }
@@ -31,6 +32,7 @@ export type TestVariant = Node
 
 export interface MetricsContextValue {
   data: Node[],
+  datesToShow: string[],
   lastPage: boolean,
   isLoading: boolean,
   api: Api,
@@ -45,6 +47,7 @@ export interface Params {
   period: Period,
   sort: SortType,
   ascending: boolean,
+  timelineView: boolean,
 }
 
 export interface Api {
@@ -58,11 +61,13 @@ export interface Api {
     updatePeriod: (period: Period) => void,
     updateSort: (sort: SortType) => void,
     updateAscending: (ascending: boolean) => void,
+    updateTimelineView: (timelineView: boolean) => void,
 }
 
 export const MetricsContext = createContext<MetricsContextValue>(
     {
       data: [],
+      datesToShow: [] as string[],
       lastPage: true,
       api: {
         updatePage: () => {/**/},
@@ -72,6 +77,7 @@ export const MetricsContext = createContext<MetricsContextValue>(
         updatePeriod: () => {/**/},
         updateSort: () => {/**/},
         updateAscending: () => {/**/},
+        updateTimelineView: () => {/**/},
       },
       params: {
         page: 0,
@@ -81,19 +87,34 @@ export const MetricsContext = createContext<MetricsContextValue>(
         period: Period.DAY,
         sort: SortType.SORT_NAME,
         ascending: true,
+        timelineView: false,
       },
       isLoading: false,
     },
 );
 
-export function createMetricsMap(metrics: Map<string, TestMetricsArray>): Map<MetricType, number> {
-  let numRuns = 0;
-  let numFailures = 0;
-  let avgRuntime = 0;
-  let totalRuntime = 0;
-  let avgCores = 0;
+export function createTimelineViewMetricsMap(metrics: Map<string, TestMetricsArray>): Map<string, number> {
+  const computedMetricsMap = new Map<string, number>();
   let fixedMetricsMap = metrics;
 
+  if (new Map<string, TestMetricsArray>(Object.entries(metrics)).size !== 0) {
+    fixedMetricsMap = new Map<string, TestMetricsArray>(Object.entries(metrics));
+  }
+  fixedMetricsMap.forEach((data, date) => {
+    let avgRuntime = 0;
+    // Obtain avg_runtime metric
+    data.data.forEach((metric) => {
+      if (metric.metricType === MetricType.AVG_RUNTIME) {
+        avgRuntime = metric.metricValue;
+      }
+    });
+    computedMetricsMap.set(date, avgRuntime);
+  });
+  return computedMetricsMap;
+}
+
+export function createMetricsMap(metrics: Map<string, TestMetricsArray>): Map<string, Map<MetricType, number>> {
+  let fixedMetricsMap = metrics;
   // This is done because for testing, Object.entries on the map gives us an empty array
   // While the counterpart returned from the backend does not give us an empty array
   // despite both arguments being the same type. I will update this if I ever
@@ -101,54 +122,32 @@ export function createMetricsMap(metrics: Map<string, TestMetricsArray>): Map<Me
   if (new Map<string, TestMetricsArray>(Object.entries(metrics)).size !== 0) {
     fixedMetricsMap = new Map<string, TestMetricsArray>(Object.entries(metrics));
   }
-  // We are just accessing the singular object in the map. But because it's a map
-  // we "loop" anyways.
-  fixedMetricsMap.forEach((data) => {
+
+  const metricsMap = new Map<string, Map<MetricType, number>>();
+  fixedMetricsMap.forEach((data, date) => {
+    const metricToVal = new Map<MetricType, number>();
     data.data.forEach((metric) => {
-      let metricType: MetricType = metric.metricType;
-      let metricValue: number = metric.metricValue;
-      if (metricValue === undefined) {
-        metricValue = 0;
-      }
-      if (metricType === undefined) {
-        metricType = 'NUM_RUNS' as MetricType;
-      }
-      switch (metricType) {
-        case MetricType.NUM_RUNS:
-          numRuns += metricValue;
-          break;
-        case MetricType.NUM_FAILURES:
-          numFailures += metricValue;
-          break;
-        case MetricType.AVG_RUNTIME:
-          avgRuntime += metricValue;
-          break;
-        case MetricType.TOTAL_RUNTIME:
-          totalRuntime += metricValue;
-          break;
-        case MetricType.AVG_CORES:
-          avgCores += metricValue;
-          break;
-        default:
-          throw new Error('No metric type found for data - ' + String(metricType));
-      }
+      metricToVal.set(metric.metricType, metric.metricValue);
     });
+    metricsMap.set(date, metricToVal);
   });
-  return new Map<MetricType, number>(
-      [
-        [MetricType.NUM_RUNS, numRuns],
-        [MetricType.NUM_FAILURES, numFailures],
-        [MetricType.AVG_RUNTIME, avgRuntime],
-        [MetricType.TOTAL_RUNTIME, totalRuntime],
-        [MetricType.AVG_CORES, avgCores],
-      ],
-  );
+  return metricsMap;
+}
+
+function computeDates(date: Date, period: Period, datesBefore: number): string[] {
+  const computedDates = [] as string[];
+  for (let x = datesBefore; x >= 0; x--) {
+    const newDate = formatDate(new Date(new Date().setDate(new Date(date).getDate() - (x * (period === Period.DAY ? 1 : 7)))));
+    computedDates.push(newDate);
+  }
+  return computedDates;
 }
 
 export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
   const [data, setData] = useState<Node[]>([]);
   const [lastPage, setLastPage] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [datesToShow, setDatesToShow] = useState<string[]>([formatDate(new Date(Date.now() - 86400000))]);
   let [page, setPage] = useState(props.page || 0);
   let [rowsPerPage, setRowsPerPage] = useState(50);
   let [filter, setFilter] = useState('');
@@ -156,16 +155,18 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
   let [period, setPeriod] = useState(Period.DAY);
   let [sort, setSort] = useState(SortType.SORT_NAME);
   let [ascending, setAscending] = useState(true);
+  let [timelineView, setTimelineView] = useState(props.timelineView || false);
 
   let loadingCount = 0;
 
   function fetchTestMetricsHelper() {
     setIsLoading(true);
     loadingCount++;
+    const datesToFetch = computeDates(date, period, timelineView ? 4 : 0);
     return fetchTestMetrics({
       'component': 'Blink',
       'period': Number(period) as Period,
-      'dates': [formatDate(date)],
+      'dates': datesToFetch,
       'metrics': [
         MetricType.NUM_RUNS,
         MetricType.AVG_RUNTIME,
@@ -209,6 +210,7 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
       setLastPage(resp.lastPage);
       loadingCount--;
       setIsLoading(loadingCount !== 0);
+      setDatesToShow(datesToFetch);
     }).catch((error) => {
       loadingCount--;
       setIsLoading(loadingCount !== 0);
@@ -268,12 +270,17 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
       setAscending(newAscending);
       setPage(0);
     },
+    updateTimelineView: (newTimelineView: boolean) => {
+      timelineView = newTimelineView;
+      fetchTestMetricsHelper();
+      setTimelineView(newTimelineView);
+    },
   };
 
-  const params: Params = { page, rowsPerPage, filter, date, period, sort, ascending };
+  const params: Params = { page, rowsPerPage, filter, date, period, sort, ascending, timelineView };
 
   return (
-    <MetricsContext.Provider value={{ data, lastPage, isLoading, api, params }}>
+    <MetricsContext.Provider value={{ data, lastPage, isLoading, api, params, datesToShow }}>
       { props.children }
     </MetricsContext.Provider>
   );

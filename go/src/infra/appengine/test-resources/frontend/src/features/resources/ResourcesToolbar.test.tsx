@@ -17,6 +17,7 @@ const params: Params = {
   period: Period.DAY,
   sort: SortType.SORT_NAME,
   ascending: true,
+  timelineView: false,
 };
 
 describe('when rendering the ResourcesTableToolbar', () => {
@@ -28,5 +29,6 @@ describe('when rendering the ResourcesTableToolbar', () => {
     })).toBeInTheDocument();
     expect(screen.getByTestId('formControlTest')).toBeInTheDocument();
     expect(screen.getByTestId('textFieldTest')).toBeInTheDocument();
+    expect(screen.getByTestId('timelineViewToggle')).toBeInTheDocument();
   });
 });

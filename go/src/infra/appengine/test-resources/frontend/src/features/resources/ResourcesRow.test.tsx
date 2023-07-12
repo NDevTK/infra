@@ -2,12 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 import { MetricType } from '../../api/resources';
-import { Test } from '../context/MetricsContext';
-import ResourcesRow, { displayMetrics } from './ResourcesRow';
+import { MetricsContextProvider, MetricsContextValue, Test, MetricsContext } from '../context/MetricsContext';
+import * as Resources from '../../api/resources';
+import ResourcesRow from './ResourcesRow';
 
-const mockMetrics: Map<MetricType, number> = new Map<MetricType, number>(
+
+async function contextRender(ui: (value: MetricsContextValue) => React.ReactElement, { props } = { props: {} }) {
+  await act(async () => {
+    render(
+        <MetricsContextProvider {... props}>
+          <MetricsContext.Consumer>
+            {(value) => ui(value)}
+          </MetricsContext.Consumer>
+        </MetricsContextProvider>,
+    );
+  },
+  );
+}
+
+const mockMetricTypeToNum: Map<MetricType, number> = new Map<MetricType, number>(
     [
       [MetricType.NUM_RUNS, 1],
       [MetricType.NUM_FAILURES, 2],
@@ -16,6 +32,15 @@ const mockMetrics: Map<MetricType, number> = new Map<MetricType, number>(
       [MetricType.AVG_CORES, 5],
     ],
 );
+
+const mockMetrics: Map<string, Map<MetricType, number>> = new Map<string, Map<MetricType, number>>(
+    [
+      ['2023-01-01', mockMetricTypeToNum],
+      ['2023-01-02', mockMetricTypeToNum],
+      ['2023-01-03', mockMetricTypeToNum],
+    ],
+);
+
 
 describe('when rendering the ResourcesRow', () => {
   it('should render a single row', () => {
@@ -87,17 +112,88 @@ describe('when rendering the ResourcesRow', () => {
   });
 });
 
-describe('when calling formatMetrics', () => {
-  it('should return 5 table cells for snapshot metrics', () => {
-    const formattedMetrics = render(
+describe('when rendering ResourcesRow', () => {
+  beforeEach(() => {
+    jest.spyOn(Resources, 'fetchTestMetrics').mockResolvedValue({
+      tests: [],
+      lastPage: true,
+    });
+  });
+  it('should render test snapshot view properly', async () => {
+    const test: Test = {
+      id: 'testId',
+      name: 'testName',
+      fileName: 'fileName',
+      metrics: mockMetrics,
+      isLeaf: false,
+      nodes: [
+        {
+          id: 'v1',
+          name: 'suite',
+          subname: 'builder',
+          metrics: mockMetrics,
+          isLeaf: true,
+          nodes: [],
+        },
+        {
+          id: 'v2',
+          name: 'suite',
+          subname: 'builder',
+          metrics: mockMetrics,
+          isLeaf: true,
+          nodes: [],
+        },
+      ],
+    };
+    await contextRender(() => {
+      return (
+        <>
+          <table>
+            <tbody>
+              <ResourcesRow data={test} depth={0}/>
+            </tbody>
+          </table>,
+        </>
+
+      );
+    });
+    expect(screen.getAllByTestId('tableCell')).toHaveLength(5);
+  });
+  it('should render test timeline view properly', async () => {
+    const test: Test = {
+      id: 'testId',
+      name: 'testName',
+      fileName: 'fileName',
+      metrics: mockMetrics,
+      isLeaf: false,
+      nodes: [
+        {
+          id: 'v1',
+          name: 'suite',
+          subname: 'builder',
+          metrics: mockMetrics,
+          isLeaf: true,
+          nodes: [],
+        },
+        {
+          id: 'v2',
+          name: 'suite',
+          subname: 'builder',
+          metrics: mockMetrics,
+          isLeaf: true,
+          nodes: [],
+        },
+      ],
+    };
+    await contextRender(() => (
+      <>
         <table>
           <tbody>
-            <tr>
-              { displayMetrics(mockMetrics) }
-            </tr>
+            <ResourcesRow data={test} depth={0}/>
           </tbody>
         </table>,
-    );
-    expect(formattedMetrics.getAllByTestId('tableCell')).toHaveLength(5);
+      </>
+    ), { props: { timelineView: true } });
+    expect(screen.getAllByTestId('timelineTest')).toHaveLength(5);
   });
 });
