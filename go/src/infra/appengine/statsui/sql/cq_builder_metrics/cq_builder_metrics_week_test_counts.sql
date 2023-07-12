@@ -4,7 +4,7 @@
 -- This query is meant to be almost identical to the one in cq_builder_metrics_day_test_counts.sql.
 
 -- The lines below are used by the deploy tool.
---name: Populate cq_builder_metrics_week slow test metrics
+--name: Populate cq_builder_metrics_week Test Case Count
 --schedule: every 8 hours synchronized
 
 DECLARE start_date DATE DEFAULT DATE_SUB(CURRENT_DATE('PST8PDT'), INTERVAL 8 DAY);
@@ -39,7 +39,7 @@ USING
         COUNT(DISTINCT tr.test_id) test_count,
         (SELECT v.value FROM tr.variant v WHERE v.key = 'builder') builder,
         (SELECT v.value FROM tr.variant v WHERE v.key = 'test_suite') test_suite,
-      FROM chrome-luci-data.chrome.try_test_results tr
+      FROM chrome-luci-data.chromium.try_test_results tr
       WHERE tr.parent.realm = "chromium:try"
         AND tr.partition_time >= start_ts
         AND tr.partition_time < end_ts
@@ -56,6 +56,7 @@ USING
       ORDER BY test_suite
     ) AS value_agg,
   FROM test_ids
+  WHERE builder IS NOT NULL AND test_suite IS NOT NULL
   GROUP BY `date`, builder
   ) S
 ON
