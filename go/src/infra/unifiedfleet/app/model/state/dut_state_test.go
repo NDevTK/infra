@@ -191,3 +191,78 @@ func TestGetDutStateACL(t *testing.T) {
 		})
 	})
 }
+func TestListDutStatesACL(t *testing.T) {
+	t.Parallel()
+	ctx := gaetesting.TestingContextWithAppID("go-test")
+	datastore.GetTestable(ctx).Consistent(true)
+	dutStates := make([]*chromeosLab.DutState, 0, 8)
+	for i := 0; i < 4; i++ {
+		broswerDutState := mockDutStateWithRealm(fmt.Sprintf("dut-state-%d", i), util.BrowserLabAdminRealm)
+		dutStates = append(dutStates, broswerDutState)
+	}
+	for i := 0; i < 4; i++ {
+		satlabDutState := mockDutStateWithRealm(fmt.Sprintf("dut-state-%d", i+4), util.SatLabInternalUserRealm)
+		dutStates = append(dutStates, satlabDutState)
+	}
+	_, err := UpdateDutStates(ctx, dutStates)
+	if err != nil {
+		fmt.Println("Not able to instantiate DutStates in TestGetDutStateACL")
+	}
+
+	noPermUserCtx := mockUser(ctx, "none@google.com")
+
+	somePermUserCtx := mockUser(ctx, "some@google.com")
+	mockRealmPerms(somePermUserCtx, util.BrowserLabAdminRealm, util.ConfigurationsList)
+
+	allPermUserCtx := mockUser(ctx, "all@google.com")
+	mockRealmPerms(allPermUserCtx, util.BrowserLabAdminRealm, util.ConfigurationsList)
+	mockRealmPerms(allPermUserCtx, util.SatLabInternalUserRealm, util.ConfigurationsList)
+	Convey("ListDutStates", t, func() {
+		Convey("List DutStates - anonymous call rejected", func() {
+			resp, nextPageToken, err := ListDutStatesACL(ctx, 100, "", nil, false)
+			So(err, ShouldNotBeNil)
+			So(resp, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+		})
+		Convey("List DutStates - filter on realm rejected", func() {
+			resp, nextPageToken, err := ListDutStatesACL(allPermUserCtx, 100, "", map[string][]interface{}{"realm": nil}, false)
+			So(err, ShouldNotBeNil)
+			So(resp, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+		})
+		Convey("List DutStates - happy path with no perms returns no results", func() {
+			resp, nextPageToken, err := ListDutStatesACL(noPermUserCtx, 100, "", nil, false)
+			So(err, ShouldBeNil)
+			So(resp, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+		})
+		Convey("List DutStates - happy path with partial perms returns partial results", func() {
+			resp, nextPageToken, err := ListDutStatesACL(somePermUserCtx, 2, "", nil, false)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, dutStates[:2])
+			So(nextPageToken, ShouldNotBeEmpty)
+
+			resp2, nextPageToken2, err2 := ListDutStatesACL(somePermUserCtx, 100, nextPageToken, nil, false)
+			So(err2, ShouldBeNil)
+			So(resp2, ShouldResembleProto, dutStates[2:4])
+			So(nextPageToken2, ShouldBeEmpty)
+		})
+		Convey("List DutStates - happy path with all perms returns all results", func() {
+			resp, nextPageToken, err := ListDutStatesACL(allPermUserCtx, 4, "", nil, false)
+			So(err, ShouldBeNil)
+			So(resp, ShouldResembleProto, dutStates[:4])
+			So(nextPageToken, ShouldNotBeEmpty)
+
+			resp2, nextPageToken2, err2 := ListDutStatesACL(allPermUserCtx, 100, nextPageToken, nil, false)
+			So(err2, ShouldBeNil)
+			So(resp2, ShouldResembleProto, dutStates[4:])
+			So(nextPageToken2, ShouldBeEmpty)
+		})
+		Convey("List DutStates - happy path with all perms and filters with no matches returns no results", func() {
+			resp, nextPageToken, err := ListDutStatesACL(allPermUserCtx, 100, "", map[string][]interface{}{"hostname": {"fake"}}, false)
+			So(err, ShouldBeNil)
+			So(resp, ShouldBeNil)
+			So(nextPageToken, ShouldBeEmpty)
+		})
+	})
+}

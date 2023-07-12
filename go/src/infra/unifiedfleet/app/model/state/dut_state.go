@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
+	"go.chromium.org/luci/server/auth"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -214,6 +215,73 @@ func ListDutStates(ctx context.Context, pageSize int32, pageToken string, filter
 		nextPageToken = nextCur.String()
 	}
 	return
+}
+
+func ListDutStatesACL(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*chromeosLab.DutState, nextPageToken string, err error) {
+	err = validateDutStateFilters(filterMap)
+	if err != nil {
+		return nil, "", errors.Annotate(err, "ListDutStatesACL --- cannot validate query").Err()
+	}
+	userRealms, err := auth.QueryRealms(ctx, util.ConfigurationsList, "", nil)
+	if err != nil {
+		return nil, "", err
+	}
+
+	q, err := ufsds.ListQuery(ctx, DutStateKind, pageSize, "", filterMap, keysOnly)
+	if err != nil {
+		return nil, "", err
+	}
+
+	// Create a list of queries each checking for a realm assignment
+	queries := ufsds.AssignRealms(q, userRealms)
+	// Apply page token if necessary
+	if pageToken != "" {
+		queries, err = datastore.ApplyCursorString(ctx, queries, pageToken)
+	}
+
+	var nextCur datastore.Cursor
+	err = datastore.RunMulti(ctx, queries, func(ent *DutStateEntity, cb datastore.CursorCB) error {
+		if keysOnly {
+			DutState := &chromeosLab.DutState{
+				Id: &chromeosLab.ChromeOSDeviceID{Value: ent.ID},
+			}
+			res = append(res, DutState)
+		} else {
+			pm, err := ent.GetProto()
+			if err != nil {
+				logging.Errorf(ctx, "Failed to UnMarshal: %s", err)
+				return nil
+			}
+			res = append(res, pm.(*chromeosLab.DutState))
+		}
+		if len(res) >= int(pageSize) {
+			if nextCur, err = cb(); err != nil {
+				return err
+			}
+			return datastore.Stop
+		}
+		return nil
+	})
+	if err != nil {
+		logging.Errorf(ctx, "Failed to list DutStates %s", err)
+		return nil, "", status.Errorf(codes.Internal, ufsds.InternalError)
+	}
+	if nextCur != nil {
+		nextPageToken = nextCur.String()
+	}
+	logging.Debugf(ctx, "ListDutStatesACL --- filtering for %v", userRealms)
+
+	return
+}
+
+func validateDutStateFilters(filterMap map[string][]interface{}) error {
+	for field := range filterMap {
+		if field == "realm" {
+			return errors.Reason("cannot filter on %s", field).Err()
+		}
+	}
+
+	return nil
 }
 
 // The below 3 functions (GetAllDutStates, DeleteDutStates, ImportDutStates)
