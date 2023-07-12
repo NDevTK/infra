@@ -9,6 +9,7 @@ set -o pipefail
 
 PREFIX="$1"
 
-./configure --host="$CROSS_TRIPLE" --prefix="$PREFIX"
-make "-j$(nproc)"
-make install
+nmake -f Mkfiles/msvc.mak
+mkdir -p "${PREFIX}"/bin
+cp nasm.exe ndisasm.exe "${PREFIX}"/bin
+
