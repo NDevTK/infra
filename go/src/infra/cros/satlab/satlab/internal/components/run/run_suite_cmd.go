@@ -197,8 +197,8 @@ func (c *run) validateArgs() error {
 	if executionTarget != 1 {
 		return errors.Reason("Please specify only one of the following: -suite, -test, -testplan").Err()
 	}
-	if c.test != "" && c.harness == "" {
-		return errors.Reason("-harness is required for individual test execution").Err()
+	if c.cft && c.test != "" && c.harness == "" {
+		return errors.Reason("-harness is required for cft test runs").Err()
 	}
 	if c.board == "" {
 		return errors.Reason("-board not specified").Err()

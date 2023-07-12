@@ -139,7 +139,7 @@ func TestValidateArgs(t *testing.T) {
 			},
 		},
 		{
-			&run{ // test without harness
+			&run{ // 'cft' test without harness
 				runFlags: runFlags{
 					test:      "rlz_CheckPing.should_send_rlz_ping_missing",
 					board:     "zork",
@@ -147,7 +147,8 @@ func TestValidateArgs(t *testing.T) {
 					milestone: "111",
 					build:     "15329.6.0",
 					satlabId:  "satlab-0wgatfqi21118003",
-					pool:      "pool"},
+					pool:      "pool",
+					cft:       true},
 			},
 		},
 		{
