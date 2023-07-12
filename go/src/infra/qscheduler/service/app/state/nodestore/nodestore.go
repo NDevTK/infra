@@ -26,10 +26,11 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/google/uuid"
+	"go.opentelemetry.io/otel/attribute"
+
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/sync/parallel"
-	"go.chromium.org/luci/common/trace"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	"infra/qscheduler/qslib/reconciler"
@@ -37,6 +38,7 @@ import (
 	"infra/qscheduler/service/app/state/metrics"
 	"infra/qscheduler/service/app/state/nodestore/internal/blob"
 	"infra/qscheduler/service/app/state/types"
+	"infra/qscheduler/service/app/tracing"
 )
 
 var errWrongGeneration = errors.New("wrong generation")
@@ -135,9 +137,10 @@ func For(qsPoolID string) *NodeStore {
 }
 
 // List returns the full list of scheduler ids.
-func List(ctx context.Context) ([]string, error) {
-	ctx, span := trace.StartSpan(ctx, "nodestore.List")
-	defer span.End(nil)
+func List(ctx context.Context) (_ []string, err error) {
+	ctx, span := tracing.Start(ctx, "nodestore.List")
+	defer func() { tracing.End(span, err) }()
+
 	var keys []*datastore.Key
 	query := datastore.NewQuery("stateRecord")
 	if err := datastore.GetAll(ctx, query, &keys); err != nil {
@@ -163,8 +166,9 @@ type NodeStore struct {
 
 // Create creates a new persistent scheduler entity if one doesn't exist.
 func (n *NodeStore) Create(ctx context.Context, timestamp time.Time) (err error) {
-	ctx, span := trace.StartSpan(ctx, "nodestore.Create")
-	defer span.End(err)
+	ctx, span := tracing.Start(ctx, "nodestore.Create")
+	defer func() { tracing.End(span, err) }()
+
 	record := &stateRecord{PoolID: n.qsPoolID}
 	exists, err := datastore.Exists(ctx, record)
 	if err != nil {
@@ -211,12 +215,13 @@ func (n *NodeStore) Create(ctx context.Context, timestamp time.Time) (err error)
 
 // Run runs the given operator.
 func (n *NodeStore) Run(ctx context.Context, o Operator) (err error) {
-	ctx, span := trace.StartSpan(ctx, "nodestore.Run")
-	defer span.End(err)
+	ctx, span := tracing.Start(ctx, "nodestore.Run")
+	defer func() { tracing.End(span, err) }()
+
 	sg := n.getCached()
 	// Fast path; use in-memory cache to avoid reading state from datastore.
 	if sg != nil {
-		span.Attribute("nodestore.Run.cached", true)
+		span.SetAttributes(attribute.Bool("nodestore.Run.cached", true))
 		err := n.tryRun(ctx, o, sg)
 		switch {
 		case err == nil:
@@ -232,7 +237,7 @@ func (n *NodeStore) Run(ctx context.Context, o Operator) (err error) {
 	for i := 0; i < 10; i++ {
 		// Slow path; read full state from datastore, then follow usual modification
 		// flow.
-		span.Attribute("nodestore.Run.cached", false)
+		span.SetAttributes(attribute.Bool("nodestore.Run.cached", false))
 		sg, err := n.loadState(ctx)
 		if err != nil {
 			return errors.Annotate(err, "nodestore run").Err()
@@ -255,8 +260,9 @@ func (n *NodeStore) Run(ctx context.Context, o Operator) (err error) {
 
 // Get returns the current qscheduler state.
 func (n *NodeStore) Get(ctx context.Context) (t *types.QScheduler, err error) {
-	ctx, span := trace.StartSpan(ctx, "nodestore.Get")
-	defer span.End(err)
+	ctx, span := tracing.Start(ctx, "nodestore.Get")
+	defer func() { tracing.End(span, err) }()
+
 	sg, err := n.loadState(ctx)
 	if err != nil {
 		return nil, errors.Annotate(err, "nodestore get").Err()
@@ -272,8 +278,9 @@ func (n *NodeStore) Get(ctx context.Context) (t *types.QScheduler, err error) {
 //
 // It returns the number of stale entities deleted.
 func (n *NodeStore) Clean(ctx context.Context) (ns int, err error) {
-	ctx, span := trace.StartSpan(ctx, "nodestore.Clean")
-	defer span.End(err)
+	ctx, span := tracing.Start(ctx, "nodestore.Clean")
+	defer func() { tracing.End(span, err) }()
+
 	sg, err := n.loadState(ctx)
 	if err != nil {
 		return 0, errors.Annotate(err, "nodestore clean").Err()
@@ -298,8 +305,9 @@ func (n *NodeStore) Clean(ctx context.Context) (ns int, err error) {
 
 // Delete deletes all entities associated with a given pool.
 func (n *NodeStore) Delete(ctx context.Context) (err error) {
-	ctx, span := trace.StartSpan(ctx, "nodestore.Delete")
-	defer span.End(err)
+	ctx, span := tracing.Start(ctx, "nodestore.Delete")
+	defer func() { tracing.End(span, err) }()
+
 	record := &stateRecord{
 		PoolID: n.qsPoolID,
 	}
@@ -330,8 +338,9 @@ func (n *NodeStore) Delete(ctx context.Context) (err error) {
 
 // tryRun attempts to modify and commit the given state, using the given operator.
 func (n *NodeStore) tryRun(ctx context.Context, o Operator, sg *stateAndGeneration) (err error) {
-	ctx, span := trace.StartSpan(ctx, "nodestore.tryRun")
-	defer span.End(err)
+	ctx, span := tracing.Start(ctx, "nodestore.tryRun")
+	defer func() { tracing.End(span, err) }()
+
 	q := &types.QScheduler{
 		SchedulerID: n.qsPoolID,
 		Reconciler:  reconciler.NewFromProto(sg.state.Reconciler),
@@ -403,8 +412,9 @@ func (n *NodeStore) setCached(sg *stateAndGeneration) {
 }
 
 func (n *NodeStore) loadState(ctx context.Context) (s *stateAndGeneration, err error) {
-	ctx, span := trace.StartSpan(ctx, "nodestore.loadState")
-	defer span.End(err)
+	ctx, span := tracing.Start(ctx, "nodestore.loadState")
+	defer func() { tracing.End(span, err) }()
+
 	record := &stateRecord{PoolID: n.qsPoolID}
 	if err := datastore.Get(ctx, record); err != nil {
 		return nil, errors.Annotate(err, "nodestore load").Err()
@@ -454,8 +464,9 @@ type stateNode struct {
 // writeNodes writes the byte array to as many nodes as necessary, and returns
 // their IDs.
 func writeNodes(ctx context.Context, bytes []byte, poolID string, generation int64) (n []string, err error) {
-	ctx, span := trace.StartSpan(ctx, "nodestore.writeNodes")
-	defer span.End(err)
+	ctx, span := tracing.Start(ctx, "nodestore.writeNodes")
+	defer func() { tracing.End(span, err) }()
+
 	maxBytes := 900000
 	var shards [][]byte
 	for offset := 0; offset < len(bytes); offset += maxBytes {
@@ -499,8 +510,9 @@ func writeNodes(ctx context.Context, bytes []byte, poolID string, generation int
 
 // loadNodes loads state from the given set of nodes.
 func loadNodes(ctx context.Context, nodeIDs []string) (s *blob.QSchedulerPoolState, err error) {
-	ctx, span := trace.StartSpan(ctx, "nodestore.loadNodes")
-	defer span.End(err)
+	ctx, span := tracing.Start(ctx, "nodestore.loadNodes")
+	defer func() { tracing.End(span, err) }()
+
 	nodes := make([]interface{}, len(nodeIDs))
 	for i, ID := range nodeIDs {
 		nodes[i] = &stateNode{ID: ID}

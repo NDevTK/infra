@@ -31,7 +31,6 @@ import (
 
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/common/trace"
 
 	"infra/qscheduler/qslib/protos"
 	"infra/qscheduler/qslib/protos/metrics"
@@ -269,8 +268,8 @@ func (s *Scheduler) Unassign(ctx context.Context, requestID RequestID, workerID 
 // RunOnce performs a single round of the quota scheduler algorithm
 // on a given state and config, and returns a slice of state mutations.
 func (s *Scheduler) RunOnce(ctx context.Context, e EventSink) []*Assignment {
-	ctx, span := trace.StartSpan(ctx, "scheduler.RunOnce")
-	defer span.End(nil)
+	ctx, span := tracer.Start(ctx, "scheduler.RunOnce")
+	defer span.End()
 
 	pass := s.newRun()
 	return pass.Run(ctx, e)

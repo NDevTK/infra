@@ -20,9 +20,10 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
+	"go.opentelemetry.io/otel/attribute"
+
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/common/trace"
 	swarming "go.chromium.org/luci/swarming/proto/api"
 
 	"infra/qscheduler/qslib/scheduler"
@@ -31,6 +32,7 @@ import (
 	"infra/qscheduler/service/app/state/nodestore"
 	"infra/qscheduler/service/app/state/operations"
 	"infra/qscheduler/service/app/state/types"
+	"infra/qscheduler/service/app/tracing"
 )
 
 const (
@@ -111,8 +113,9 @@ func (b *BatchRunner) TryNotify(ctx context.Context, req *swarming.NotifyTasksRe
 
 // TryAssign runs the given assign request in a batch.
 func (b *BatchRunner) TryAssign(ctx context.Context, req *swarming.AssignTasksRequest) (atr *swarming.AssignTasksResponse, err error) {
-	ctx, span := trace.StartSpan(ctx, "batchrunner.TryAssign")
-	defer span.End(err)
+	ctx, span := tracing.Start(ctx, "batchrunner.TryAssign")
+	defer func() { tracing.End(span, err) }()
+
 	ba := &batchedAssign{
 		batchedRequest: newBatchedRequest(ctx),
 		req:            req,
@@ -128,10 +131,10 @@ func (b *BatchRunner) TryAssign(ctx context.Context, req *swarming.AssignTasksRe
 		// persisted.
 		// Fortunately, qscheduler's reconciler logic ensures that subsequent Assign
 		// calls will return the already-assigned task.
-		span.Attribute("batchrunner.Assign.HungUp", true)
+		span.SetAttributes(attribute.Bool("batchrunner.Assign.HungUp", true))
 		return nil, ctx.Err()
 	case <-ba.Done():
-		span.Attribute("batchrunner.Assign.HungUp", false)
+		span.SetAttributes(attribute.Bool("batchrunner.Assign.HungUp", false))
 		return ba.resp, ba.Err()
 	}
 }
@@ -163,8 +166,9 @@ func (b *BatchRunner) Close() {
 func (b *BatchRunner) runRequestsInBatches(store *nodestore.NodeStore) {
 	for r := range b.requests {
 		// Create a new batch that will run in r's context.
-		ctx, span := trace.StartSpan(r.Ctx(), "batchrunner.runRequestsInBatches")
-		defer span.End(nil)
+		ctx, span := tracing.Start(r.Ctx(), "batchrunner.runRequestsInBatches")
+		defer func() { tracing.End(span, nil) }()
+
 		logging.Debugf(ctx, "request picked as batch leader")
 
 		if ctx.Err() != nil {
@@ -196,8 +200,8 @@ func (b *BatchRunner) runRequestsInBatches(store *nodestore.NodeStore) {
 }
 
 func (b *BatchRunner) collectForBatch(ctx context.Context, nb *batch) (err error) {
-	ctx, span := trace.StartSpan(ctx, "batchrunner.collectForBatch")
-	defer span.End(err)
+	ctx, span := tracing.Start(ctx, "batchrunner.collectForBatch")
+	defer func() { tracing.End(span, err) }()
 
 	timer := clock.After(ctx, waitToCollect(ctx))
 	batchSize := int64(1000)
@@ -233,7 +237,7 @@ func (b *BatchRunner) collectForBatch(ctx context.Context, nb *batch) (err error
 			// unwind when its context is cancelled.
 			return ctx.Err()
 		case tr := <-timer:
-			span.Attribute("batchrunner.collectForBatch.batchSize", nb.numOperations())
+			span.SetAttributes(attribute.Int("batchrunner.collectForBatch.batchSize", nb.numOperations()))
 			return tr.Err
 		case <-b.testonlyBatchStart:
 			// Stop collecting due to test fixture signal.

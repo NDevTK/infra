@@ -20,9 +20,10 @@ import (
 	"math"
 	"sort"
 
-	"infra/qscheduler/qslib/protos/metrics"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 
-	"go.chromium.org/luci/common/trace"
+	"infra/qscheduler/qslib/protos/metrics"
 )
 
 const max_sort_amount = 100000
@@ -75,8 +76,8 @@ func (run *schedulerRun) Run(ctx context.Context, e EventSink) []*Assignment {
 	// Proceed through multiple passes of the scheduling algorithm, from highest
 	// to lowest priority requests (high priority = low p).
 	func() {
-		ctx, span := trace.StartSpan(ctx, "scheduler_run.Run.Priorities")
-		defer span.End(nil)
+		ctx, span := tracer.Start(ctx, "scheduler_run.Run.Priorities")
+		defer span.End()
 		for p := Priority(0); p < NumPriorities; p++ {
 			workerMatches := run.computeIdleWorkerMatches(ctx, p)
 
@@ -99,8 +100,8 @@ func (run *schedulerRun) Run(ctx context.Context, e EventSink) []*Assignment {
 	// A final pass matches free jobs (in the FreeBucket) to any remaining
 	// idle workers. The reprioritize and preempt stages do not apply here.
 	func() {
-		ctx, span := trace.StartSpan(ctx, "scheduler_run.Run.Freebie")
-		defer span.End(nil)
+		ctx, span := tracer.Start(ctx, "scheduler_run.Run.Freebie")
+		defer span.End()
 		workerMatches := run.computeIdleWorkerMatches(ctx, FreeBucket)
 		output = append(output, run.assignToIdleWorkers(FreeBucket, workerMatches, true, e)...)
 		output = append(output, run.assignToIdleWorkers(FreeBucket, workerMatches, false, e)...)
@@ -211,9 +212,10 @@ func computeMatch(w *Worker, r *TaskRequest) match {
 // computeIdleWorkerMatches computes the match lists for all idle workers, against
 // requests at the given priority.
 func (run *schedulerRun) computeIdleWorkerMatches(ctx context.Context, priority Priority) map[WorkerID]matchList {
-	ctx, span := trace.StartSpan(ctx, "scheduler_run.computeIdleWorkerMatches")
-	defer span.End(nil)
-	span.Attribute("priority", priority)
+	_, span := tracer.Start(ctx, "scheduler_run.computeIdleWorkerMatches",
+		trace.WithAttributes(attribute.Int("priority", int(priority))),
+	)
+	defer span.End()
 
 	matchesPerWorker := make(map[WorkerID]matchList, len(run.idleWorkers))
 	type widAndItem struct {
