@@ -1,0 +1,12 @@
+name: luci/resultdb/baselineupdater
+extends: ../../../base.yaml
+
+contextdir: ../../../../../go/src/go.chromium.org/luci/resultdb/cmd/baselineupdater/docker
+deterministic: true
+
+sources:
+  - ../../../../../go/src/go.chromium.org/luci/resultdb
+
+build:
+  - go_binary: go.chromium.org/luci/resultdb/cmd/baselineupdater
+    dest: ${contextdir}/bin/baselineupdater
