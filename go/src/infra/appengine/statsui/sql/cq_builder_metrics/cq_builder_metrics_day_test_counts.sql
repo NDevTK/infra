@@ -4,7 +4,7 @@
 -- This query is meant to be almost identical to the one in cq_builder_metrics_week_test_counts.sql.
 
 -- The lines below are used by the deploy tool.
---name: Populate cq_builder_metrics_day slow test metrics
+--name: Populate cq_builder_metrics_day Test Case Count
 --schedule: every 4 hours synchronized
 
 DECLARE start_date DATE DEFAULT DATE_SUB(CURRENT_DATE('PST8PDT'), INTERVAL 2 DAY);
