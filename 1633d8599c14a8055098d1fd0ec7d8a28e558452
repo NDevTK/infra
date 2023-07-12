@@ -22,6 +22,30 @@
       },
       "revId": "1633d8599c14a8055098d1fd0ec7d8a28e558452",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7cb80a0f_21d08b14",
+        "filename": "go/src/infra/appengine/crosskylabadmin/internal/app/frontend/push_bots_for_admin_tasks_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1351748
+      },
+      "writtenOn": "2023-07-12T22:18:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f97e240d_66503e6a",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 74,
+        "endChar": 1
+      },
+      "revId": "1633d8599c14a8055098d1fd0ec7d8a28e558452",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
