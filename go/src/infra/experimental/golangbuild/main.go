@@ -18,7 +18,8 @@
 //		},
 //		"input": {
 //			"properties": {
-//				"project": "go"
+//				"project": "go",
+//				"tools_cache": "tools"
 //			},
 //			"gitiles_commit": {
 //				"host": "go.googlesource.com",
@@ -50,6 +51,7 @@
 //		"input": {
 //			"properties": {
 //				"project": "go",
+//				"tools_cache": "tools",
 //				"$recipe_engine/cq": {
 //					"active": true,
 //					"runMode": "DRY_RUN"
@@ -109,11 +111,6 @@
 //     may already contain the object or some parents. This requires a named
 //     cache defined on each builder, whose name is provided via
 //     golangbuildpb.Inputs.GitCache.
-//   - golang.cache_tools_root: Cache the cipd tool installation root across
-//     builds and builders. If the tool versions remain the same across builds,
-//     this allows `cipd ensure` to become a no-op on subsequent builds. This
-//     requires a named cache defined on each builder, whose name is provided
-//     via golangbuildpb.Inputs.ToolsCache.
 //   - golang.force_test_outside_repository: Can be used to force running tests
 //     from outside the repository to catch accidental reads outside of module
 //     boundaries despite the repository not having opted-in to this test
@@ -161,7 +158,7 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	}
 
 	// Install some tools we'll need, including a bootstrap toolchain.
-	toolsRoot, err := installTools(ctx, inputs, experiments)
+	toolsRoot, err := installTools(ctx, inputs)
 	if err != nil {
 		return err
 	}
@@ -373,7 +370,7 @@ golang/third_party/llvm-mingw-msvcrt/${platform} latest
 @Subdir
 `
 
-func installTools(ctx context.Context, inputs *golangbuildpb.Inputs, experiments map[string]struct{}) (toolsRoot string, err error) {
+func installTools(ctx context.Context, inputs *golangbuildpb.Inputs) (toolsRoot string, err error) {
 	step, ctx := build.StartStep(ctx, "install tools")
 	defer func() {
 		// Any failure in this function is an infrastructure failure.
@@ -388,32 +385,23 @@ func installTools(ctx context.Context, inputs *golangbuildpb.Inputs, experiments
 
 	io.WriteString(step.Log("ensure file"), cipdDeps)
 
-	if _, ok := experiments["golang.cache_tools_root"]; ok {
-		// Store in a named cache. This is shared across builder types,
-		// allowing reuse across builds if the dependencies versions
-		// are the same.
-		luciExe := lucictx.GetLUCIExe(ctx)
-		if luciExe == nil {
-			return "", fmt.Errorf("missing LUCI_CONTEXT")
-		}
-
-		cache := inputs.ToolsCache
-		if cache == "" {
-			return "", fmt.Errorf("inputs missing ToolsCache: %+v", inputs)
-		}
-		if !filepath.IsLocal(cache) {
-			return "", fmt.Errorf("ToolsCache %q must be relative", cache)
-		}
-
-		toolsRoot = filepath.Join(luciExe.GetCacheDir(), cache)
-	} else {
-		// Store under CWD. This will be deleted after each build.
-		toolsRoot, err = os.Getwd()
-		if err != nil {
-			return "", err
-		}
-		toolsRoot = filepath.Join(toolsRoot, "tools")
+	// Store in the named cache specified in Inputs. This is shared across
+	// builder types, allowing reuse across builds if the dependencies
+	// versions are the same.
+	luciExe := lucictx.GetLUCIExe(ctx)
+	if luciExe == nil {
+		return "", fmt.Errorf("missing LUCI_CONTEXT")
 	}
+
+	cache := inputs.ToolsCache
+	if cache == "" {
+		return "", fmt.Errorf("inputs missing ToolsCache: %+v", inputs)
+	}
+	if !filepath.IsLocal(cache) {
+		return "", fmt.Errorf("ToolsCache %q must be relative", cache)
+	}
+
+	toolsRoot = filepath.Join(luciExe.GetCacheDir(), cache)
 
 	io.WriteString(step.Log("tools root"), toolsRoot)
 

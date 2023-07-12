@@ -38,7 +38,7 @@ message Inputs {
 
   // Named cache configured on the builder to use as a cipd tool root cache.
   //
-  // No-op unless experiment "golang.cache_tools_root" is enabled.
+  // Required.
   string tools_cache = 8;
 
   // Named cache configured on the builder to use as a git clone cache.
