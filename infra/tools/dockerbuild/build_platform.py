@@ -308,7 +308,8 @@ def _CheckTranslated():
 
   try:
     output = subprocess.check_output(
-        ["/usr/sbin/sysctl", "-n", "sysctl.proc_translated"], text=True)
+        ["/usr/sbin/sysctl", "-n", "sysctl.proc_translated"], text=True,
+        stderr=subprocess.STDOUT)
     return output[0] == '1'
   except subprocess.CalledProcessError:
     # The call will fail on x86_64 Macs.

@@ -470,6 +470,30 @@ SPECS.update({
             patch_version='chromium.1',
         ),
         SourceOrPrebuilt(
+            'gevent',
+            '23.7.0',
+            build_deps=BuildDependencies(
+                remote=[
+                    'setuptools >= 40.8.0',
+                    'wheel',
+                    # cython: https://github.com/gevent/gevent/issues/1801
+                    'Cython >= 3.0a9',
+                ],
+                local=[
+                    _CFFI_DEPENDENCY,
+                    SourceOrPrebuilt(
+                        'greenlet',
+                        '2.0.2',
+                        packaged=[
+                            'windows-x64-py3.11',
+                        ],
+                    ),
+                ],
+            ),
+            packaged=[],
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
             'google-crc32c',
             '1.1.2',
             packaged=[],
