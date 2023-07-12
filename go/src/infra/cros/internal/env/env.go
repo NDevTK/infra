@@ -4,7 +4,10 @@
 
 package env
 
-import "os"
+import (
+	"os"
+	"strings"
+)
 
 // RunningOnBot checks whether or not it is running on a bot, by way of checking
 // the USER env var.
@@ -19,5 +22,10 @@ func GetSwarmingTaskID() string {
 
 // GetBuildBucketID retrieves the build bucket ID.
 func GetBuildBucketID() string {
+	bbidArr := strings.Split(os.Getenv("LOGDOG_STREAM_PREFIX"), "/")
+	bbidArrLen := len(bbidArr)
+	if bbidArrLen > 0 {
+		return bbidArr[bbidArrLen-1]
+	}
 	return os.Getenv("BUILD_BUCKET_ID")
 }
