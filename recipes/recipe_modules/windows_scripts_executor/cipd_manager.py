@@ -140,19 +140,34 @@ class CIPDManager:
           verification_timeout='30m')
 
   # TODO(anushruth): Cover this test path
-  def exists(self, cipd_src):  #pragma: no cover
+  def exists(self, cipd_src, tags=None):  #pragma: no cover
     """ exists returns true if the package exists on cipd backend
 
     Args:
       * cipd_src: sources.CIPDSrc object representing a cipd package
+      * tags: The tags associated with this object
     """
     url = self.get_cipd_url(cipd_src)
     if url in self._existence:
       return True
     try:
-      self.m.cipd.describe(
+      desc = self.m.cipd.describe(
           package_name='{}/{}'.format(cipd_src.package, cipd_src.platform),
           version=cipd_src.refs)
+      if tags:
+        for k, v in tags:
+          # Ignore build url tag. This will always be unique
+          if k == 'build_url':
+            continue
+          # check if the tags exist
+          is_tag = False
+          tag_str = '{}:{}'.format(k, v)
+          for t in desc.tags:
+            if t.tag == tag_str:
+              is_tag = True
+              break
+          if not is_tag:
+            return False
       self._existence.add(url)
       return True
     except Exception:
