@@ -18,9 +18,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
 
+	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
-	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 )
 
 // CrosPublishExecutor represents executor for all cros-publish related commands.

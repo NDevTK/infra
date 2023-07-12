@@ -7,10 +7,10 @@ package configs
 import (
 	"fmt"
 
-	"infra/cros/cmd/cros_test_runner/internal/containers"
+	"infra/cros/cmd/common_lib/containers"
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
-	"infra/cros/cmd/cros_test_runner/internal/interfaces"
-	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
 
 	"go.chromium.org/luci/common/errors"
 )

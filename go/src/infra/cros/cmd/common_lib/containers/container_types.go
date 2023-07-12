@@ -4,7 +4,7 @@
 
 package containers
 
-import "infra/cros/cmd/cros_test_runner/internal/interfaces"
+import "infra/cros/cmd/common_lib/interfaces"
 
 // All supported container types.
 const (

@@ -1,10 +1,14 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package commands
 
 import (
 	"context"
 	"fmt"
+	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/internal/data"
-	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 
 	_go "go.chromium.org/chromiumos/config/go"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"

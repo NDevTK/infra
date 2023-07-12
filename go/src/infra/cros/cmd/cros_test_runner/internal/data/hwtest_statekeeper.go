@@ -14,8 +14,8 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/protobuf/types/known/anypb"
 
-	"infra/cros/cmd/cros_test_runner/internal/interfaces"
-	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/dutstate"
 )
 

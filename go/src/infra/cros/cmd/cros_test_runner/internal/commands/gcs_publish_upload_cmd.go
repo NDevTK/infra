@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@ package commands
 import (
 	"context"
 	"fmt"
+	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/internal/data"
-	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 
 	"go.chromium.org/luci/common/errors"
 )

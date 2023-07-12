@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,13 @@ import (
 	"context"
 	"testing"
 
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/data"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
-	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
 	vmlabapi "infra/libs/vmlab/api"
+
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 
 	. "github.com/smartystreets/goconvey/convey"
 )

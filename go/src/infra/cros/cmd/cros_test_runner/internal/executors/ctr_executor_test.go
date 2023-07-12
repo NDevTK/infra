@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
+	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
-	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
 )
 
 func TestCtrServiceStartAsync(t *testing.T) {

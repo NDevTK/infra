@@ -14,9 +14,9 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
+	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
-	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 )
 
 // CacheServerExecutor represents executor for all cache-server related commands.

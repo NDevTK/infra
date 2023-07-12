@@ -5,7 +5,7 @@
 package commands
 
 import (
-	"infra/cros/cmd/cros_test_runner/internal/interfaces"
+	"infra/cros/cmd/common_lib/interfaces"
 )
 
 // All supported command types.

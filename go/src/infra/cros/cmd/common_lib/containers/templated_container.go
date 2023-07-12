@@ -11,9 +11,9 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/common"
-	"infra/cros/cmd/cros_test_runner/internal/interfaces"
-	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
 )
 
 // TemplatedContainer represents the cft templated container.

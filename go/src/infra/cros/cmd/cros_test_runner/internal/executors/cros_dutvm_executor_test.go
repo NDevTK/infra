@@ -16,10 +16,10 @@ import (
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/luciexe/build"
 
+	"infra/cros/cmd/common_lib/containers"
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
-	"infra/cros/cmd/cros_test_runner/internal/containers"
-	"infra/cros/cmd/cros_test_runner/internal/interfaces"
-	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
 	vmlabapi "infra/libs/vmlab/api"
 )
 

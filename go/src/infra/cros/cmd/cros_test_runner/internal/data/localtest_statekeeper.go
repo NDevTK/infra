@@ -5,7 +5,7 @@
 package data
 
 import (
-	"infra/cros/cmd/cros_test_runner/internal/interfaces"
+	"infra/cros/cmd/common_lib/interfaces"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 )

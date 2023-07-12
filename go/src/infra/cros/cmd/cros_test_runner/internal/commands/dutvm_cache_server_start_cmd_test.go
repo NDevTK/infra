@@ -8,12 +8,13 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
-	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/data"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
-	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
+
+	. "github.com/smartystreets/goconvey/convey"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
 func buildDutVmCacheServerStartCmdForTest() *commands.DutVmCacheServerStartCmd {

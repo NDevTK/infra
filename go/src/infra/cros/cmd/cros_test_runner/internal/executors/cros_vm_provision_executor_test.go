@@ -16,10 +16,10 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 
+	"infra/cros/cmd/common_lib/containers"
+	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
-	"infra/cros/cmd/cros_test_runner/internal/containers"
 	"infra/cros/cmd/cros_test_runner/internal/mocked_services"
-	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
 )
 
 func TestVMProvisionServiceStart(t *testing.T) {

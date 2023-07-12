@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,12 @@ import (
 	"context"
 	"fmt"
 
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/data"
-	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 	vmlabapi "infra/libs/vmlab/api"
+
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 )
 
 // DutVmGetImageCmd defines the step I/O of get the GCE image of Dut VM.

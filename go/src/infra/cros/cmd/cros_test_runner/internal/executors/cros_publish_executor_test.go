@@ -13,10 +13,10 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 
+	"infra/cros/cmd/common_lib/containers"
+	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
-	"infra/cros/cmd/cros_test_runner/internal/containers"
 	"infra/cros/cmd/cros_test_runner/internal/mocked_services"
-	"infra/cros/cmd/cros_test_runner/internal/tools/crostoolrunner"
 
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"google.golang.org/protobuf/proto"

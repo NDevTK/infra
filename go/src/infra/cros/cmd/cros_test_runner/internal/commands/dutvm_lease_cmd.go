@@ -13,9 +13,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/luciexe/build"
 
+	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/data"
-	"infra/cros/cmd/cros_test_runner/internal/interfaces"
 	vmlabapi "infra/libs/vmlab/api"
 )
 
