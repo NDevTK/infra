@@ -166,7 +166,7 @@ class Source:
       if src.WhichOneof('dest') == 'gcs_src':
         return self._gcs.exists(src.gcs_src)
       if src.WhichOneof('dest') == 'cipd_src':
-        return self._cipd.exists(src.cipd_src)
+        return self._cipd.exists(src.cipd_src, tags=src.tags)
 
     raise SourceException('Cannot determine if {} exists'.format(
         self.get_url(src)))
