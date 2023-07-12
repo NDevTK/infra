@@ -128,13 +128,17 @@ def RunSteps(api):
           '--skip-checkout', '--without-android', '--without-fuchsia'
       ])
 
-      api.step('Build rustc.', [
-          api.path.join(src_dir, 'tools', 'rust', 'build_rust.py'),
-          '--skip-checkout'
-      ])
-
-      api.step('Build bindgen.',
-               [api.path.join(src_dir, 'tools', 'rust', 'build_bindgen.py')])
+      # This was originally enabled for all versions in
+      # https://crrev.com/c/4658882 but failed on M115. It is safe to assume
+      # that this only works as expected in the Publish Tarball bot from M117
+      # on.
+      if int(version.split('.')[0]) >= 117:
+        api.step('Build rustc.', [
+            api.path.join(src_dir, 'tools', 'rust', 'build_rust.py'),
+            '--skip-checkout'
+        ])
+        api.step('Build bindgen.',
+                 [api.path.join(src_dir, 'tools', 'rust', 'build_bindgen.py')])
 
       with api.context(env=gn_bootstrap_env):
         api.step(
@@ -166,7 +170,7 @@ def RunSteps(api):
 
 
 def GenTests(api):
-  yield (api.test('basic') + api.properties.generic(version='111.0.5483.0') +
+  yield (api.test('basic') + api.properties.generic(version='117.0.5884.0') +
          api.platform('linux', 64))
   yield (api.test('basic-with-js_type_check-gn-arg') +
          api.properties.generic(version='80.0.3987.76') +
