@@ -218,39 +218,42 @@ func configBuildMetaDataTags(tags []*pb.StringPair, buildMetadata *artifactpb.Bu
 		return tags
 	}
 
+	newTags := make([]*pb.StringPair, 0, len(tags))
+	newTags = append(newTags, tags...)
+
 	firmware := buildMetadata.GetFirmware()
 	if firmware != nil {
-		tags = AppendTags(tags, "ro_fwid", firmware.GetRoVersion())
-		tags = AppendTags(tags, "rw_fwid", firmware.GetRwVersion())
+		newTags = AppendTags(newTags, "ro_fwid", firmware.GetRoVersion())
+		newTags = AppendTags(newTags, "rw_fwid", firmware.GetRwVersion())
 	}
 
 	chipset := buildMetadata.GetChipset()
 	if chipset != nil {
-		tags = AppendTags(tags, "wifi_chip", chipset.GetWifiChip())
+		newTags = AppendTags(newTags, "wifi_chip", chipset.GetWifiChip())
 	}
 
 	kernel := buildMetadata.GetKernel()
 	if kernel != nil {
-		tags = AppendTags(tags, "kernel_version", kernel.GetVersion())
+		newTags = AppendTags(newTags, "kernel_version", kernel.GetVersion())
 	}
 
 	sku := buildMetadata.GetSku()
 	if sku != nil {
-		tags = AppendTags(tags, "hwid_sku", sku.GetHwidSku())
+		newTags = AppendTags(newTags, "hwid_sku", sku.GetHwidSku())
 	}
 
 	cellular := buildMetadata.GetCellular()
 	if cellular != nil {
-		tags = AppendTags(tags, "carrier", cellular.GetCarrier())
+		newTags = AppendTags(newTags, "carrier", cellular.GetCarrier())
 	}
 
 	lacros := buildMetadata.GetLacros()
 	if lacros != nil {
-		tags = AppendTags(tags, "ash_version", lacros.GetAshVersion())
-		tags = AppendTags(tags, "lacros_version", lacros.GetLacrosVersion())
+		newTags = AppendTags(newTags, "ash_version", lacros.GetAshVersion())
+		newTags = AppendTags(newTags, "lacros_version", lacros.GetLacrosVersion())
 	}
 
-	return tags
+	return newTags
 }
 
 // configEnvInfoTags configs test result tags based on the test environment
@@ -261,22 +264,25 @@ func configEnvInfoTags(tags []*pb.StringPair, execInfo *artifactpb.ExecutionInfo
 		return tags
 	}
 
+	newTags := make([]*pb.StringPair, 0, len(tags))
+	newTags = append(newTags, tags...)
+
 	switch envInfo.(type) {
 	case *artifactpb.ExecutionInfo_SkylabInfo:
 		skylabInfo := execInfo.GetSkylabInfo()
 		if skylabInfo != nil {
-			tags = configDroneTags(tags, skylabInfo.GetDroneInfo())
-			tags = configSwarmingTags(tags, skylabInfo.GetSwarmingInfo())
-			tags = configBuildbucketTags(tags, skylabInfo.GetBuildbucketInfo())
+			newTags = configDroneTags(newTags, skylabInfo.GetDroneInfo())
+			newTags = configSwarmingTags(newTags, skylabInfo.GetSwarmingInfo())
+			newTags = configBuildbucketTags(newTags, skylabInfo.GetBuildbucketInfo())
 		}
 	case *artifactpb.ExecutionInfo_SatlabInfo:
 		satlabInfo := execInfo.GetSatlabInfo()
 		if satlabInfo != nil {
-			tags = configSwarmingTags(tags, satlabInfo.GetSwarmingInfo())
-			tags = configBuildbucketTags(tags, satlabInfo.GetBuildbucketInfo())
+			newTags = configSwarmingTags(newTags, satlabInfo.GetSwarmingInfo())
+			newTags = configBuildbucketTags(newTags, satlabInfo.GetBuildbucketInfo())
 		}
 	}
-	return tags
+	return newTags
 }
 
 // configDroneTags configs test result tags based on the Drone information.
@@ -285,9 +291,12 @@ func configDroneTags(tags []*pb.StringPair, droneInfo *artifactpb.DroneInfo) []*
 		return tags
 	}
 
-	tags = AppendTags(tags, "drone", droneInfo.GetDrone())
-	tags = AppendTags(tags, "drone_server", droneInfo.GetDroneServer())
-	return tags
+	newTags := make([]*pb.StringPair, 0, len(tags))
+	newTags = append(newTags, tags...)
+
+	newTags = AppendTags(newTags, "drone", droneInfo.GetDrone())
+	newTags = AppendTags(newTags, "drone_server", droneInfo.GetDroneServer())
+	return newTags
 }
 
 // configSwarmingTags configs test result tags based on the swarming
@@ -297,12 +306,15 @@ func configSwarmingTags(tags []*pb.StringPair, swarmingInfo *artifactpb.Swarming
 		return tags
 	}
 
-	tags = AppendTags(tags, "task_id", swarmingInfo.GetTaskId())
-	tags = AppendTags(tags, "suite_task_id", swarmingInfo.GetSuiteTaskId())
-	tags = AppendTags(tags, "job_name", swarmingInfo.GetTaskName())
-	tags = AppendTags(tags, "pool", swarmingInfo.GetPool())
-	tags = AppendTags(tags, "label_pool", swarmingInfo.GetLabelPool())
-	return tags
+	newTags := make([]*pb.StringPair, 0, len(tags))
+	newTags = append(newTags, tags...)
+
+	newTags = AppendTags(newTags, "task_id", swarmingInfo.GetTaskId())
+	newTags = AppendTags(newTags, "suite_task_id", swarmingInfo.GetSuiteTaskId())
+	newTags = AppendTags(newTags, "job_name", swarmingInfo.GetTaskName())
+	newTags = AppendTags(newTags, "pool", swarmingInfo.GetPool())
+	newTags = AppendTags(newTags, "label_pool", swarmingInfo.GetLabelPool())
+	return newTags
 }
 
 // configBuildbucketTags configs test result tags based on the buildbucket
@@ -312,10 +324,22 @@ func configBuildbucketTags(tags []*pb.StringPair, buildbucketInfo *artifactpb.Bu
 		return tags
 	}
 
+	newTags := make([]*pb.StringPair, 0, len(tags))
+	newTags = append(newTags, tags...)
+
+	buildbucketBuilder := buildbucketInfo.GetBuilder()
+	if buildbucketBuilder != nil {
+		newTags = AppendTags(
+			newTags, "buildbucket_builder", buildbucketBuilder.GetBucket())
+	}
+
 	return AppendTags(
-		tags,
+		newTags,
 		"ancestor_buildbucket_ids",
-		strings.Trim(strings.Join(strings.Fields(fmt.Sprint(buildbucketInfo.GetAncestorIds())), ","), "[]"))
+		strings.Trim(
+			strings.Join(strings.Fields(
+				fmt.Sprint(buildbucketInfo.GetAncestorIds())), ","),
+			"[]"))
 }
 
 // configMultiDUTTags configs test result tags based on the multi-DUT testing.
@@ -325,13 +349,16 @@ func configMultiDUTTags(tags []*pb.StringPair, primaryExecInfo *artifactpb.Execu
 		return tags
 	}
 
+	newTags := make([]*pb.StringPair, 0, len(tags))
+	newTags = append(newTags, tags...)
+
 	if len(secondaryExecInfos) == 0 {
-		return AppendTags(tags, "multiduts", "False")
+		return AppendTags(newTags, "multiduts", "False")
 	}
 
-	tags = AppendTags(tags, "multiduts", "True")
-	tags = AppendTags(tags, "primary_board", primaryExecInfo.GetBuildInfo().GetBoard())
-	tags = AppendTags(tags, "primary_model", primaryExecInfo.GetDutInfo().GetDut().GetChromeos().GetDutModel().GetModelName())
+	newTags = AppendTags(newTags, "multiduts", "True")
+	newTags = AppendTags(newTags, "primary_board", primaryExecInfo.GetBuildInfo().GetBoard())
+	newTags = AppendTags(newTags, "primary_model", primaryExecInfo.GetDutInfo().GetDut().GetChromeos().GetDutModel().GetModelName())
 
 	secordaryDUTSize := len(secondaryExecInfos)
 	secondaryBoards := make([]string, 0, secordaryDUTSize)
@@ -346,8 +373,7 @@ func configMultiDUTTags(tags []*pb.StringPair, primaryExecInfo *artifactpb.Execu
 	}
 
 	// Concatenates board names and model names separately.
-	tags = AppendTags(tags, "secondary_boards", strings.Join(secondaryBoards, " | "))
-	tags = AppendTags(tags, "secondary_models", strings.Join(secondaryModels, " | "))
-
-	return tags
+	newTags = AppendTags(newTags, "secondary_boards", strings.Join(secondaryBoards, " | "))
+	newTags = AppendTags(newTags, "secondary_models", strings.Join(secondaryModels, " | "))
+	return newTags
 }

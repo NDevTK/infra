@@ -57,6 +57,11 @@
                 },
                 "buildbucket_info":{
                     "id":8818737803155059937,
+                    "builder": {
+                        "project": "chromeos",
+                        "bucket": "test_runner",
+                        "builder": "test_runner"
+                    },
                     "ancestor_ids":[
                         8814950840874708945,
                         8814951792758733697

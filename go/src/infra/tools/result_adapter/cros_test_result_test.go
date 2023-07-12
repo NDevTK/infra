@@ -262,6 +262,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("board", "hatch"),
 						pbutil.StringPair("branch", "main"),
 						pbutil.StringPair("build", "R106-15048.0.0"),
+						pbutil.StringPair("buildbucket_builder", "test_runner"),
 						pbutil.StringPair("contacts", "user@google.com"),
 						pbutil.StringPair("declared_name", "hatch-cq/R102-14632.0.0-62834-8818718496810023809/wificell-cq/tast.wificell-cq"),
 						pbutil.StringPair("suite", "arc-cts-vm"),
