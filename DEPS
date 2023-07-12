@@ -1,4 +1,5 @@
 use_relative_paths = True
+git_dependencies = 'SYNC'
 vars = {
   "chromium_git": "https://chromium.googlesource.com",
   "external_github": "https://chromium.googlesource.com/external/github.com",
