@@ -6,7 +6,6 @@ package internal
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
 	"infra/cros/cmd/cros_test_platformV2/executor"
@@ -62,42 +61,43 @@ func createContainerManagerExecutor(ctx context.Context, cloud bool) (managers.C
 	return containerMgr, e
 }
 
-func getFirstBoardFromLegacy(req *api.HWTargets) string {
-	switch hw := req.Targets.(type) {
-	case *api.HWTargets_LegacyHw:
-		if len(hw.LegacyHw.Board) == 0 {
-			return ""
-		}
-		return hw.LegacyHw.Board[0]
-	default:
-		return ""
-	}
-}
+// TODO, update this once the breaking proto change has rolled.
+// func getFirstBoardFromLegacy(req *api.HWTargets) string {
+// 	switch hw := req.Targets.(type) {
+// 	case *api.HWTargets_LegacyHw:
+// 		if len(hw.LegacyHw.Board) == 0 {
+// 			return ""
+// 		}
+// 		return hw.LegacyHw.Board[0]
+// 	default:
+// 		return ""
+// 	}
+// }
 
-func getFirstGcsPathFromLegacy(req *api.SWTargets) string {
-	switch sw := req.SwTargets.(type) {
-	case *api.SWTargets_LegacySw:
-		if len(sw.LegacySw.LegacySws) == 0 {
-			return ""
-		}
-		return sw.LegacySw.LegacySws[0].GcsPath
-	default:
-		return ""
-	}
-}
+// func getFirstGcsPathFromLegacy(req *api.SWTargets) string {
+// 	switch sw := req.SwTargets.(type) {
+// 	case *api.SWTargets_LegacySw:
+// 		if len(sw.LegacySw.LegacySws) == 0 {
+// 			return ""
+// 		}
+// 		return sw.LegacySw.LegacySws[0].GcsPath
+// 	default:
+// 		return ""
+// 	}
+// }
 
 func gcsInfo(req *api.CTPv2Request) (string, string, error) {
-	board := getFirstBoardFromLegacy(req.HwTargets)
-	if board == "" {
-		return "", "", errors.New("no board provided in legacy request")
-	}
+	// board := getFirstBoardFromLegacy(req.HwTargets)
+	// if board == "" {
+	// 	return "", "", errors.New("no board provided in legacy request")
+	// }
 
-	gcsPath := getFirstGcsPathFromLegacy(req.SwTargets)
-	if board == "" {
-		return "", "", errors.New("no gcsPath provided in legacy request")
-	}
+	// gcsPath := getFirstGcsPathFromLegacy(req.SwTargets)
+	// if board == "" {
+	// 	return "", "", errors.New("no gcsPath provided in legacy request")
+	// }
 
-	return board, gcsPath, nil
+	return "", "", nil
 }
 func buildExecutors(ctx context.Context, req *api.CTPv2Request, cloud bool) ([]executor.Executor, error) {
 	execs := []executor.Executor{}
