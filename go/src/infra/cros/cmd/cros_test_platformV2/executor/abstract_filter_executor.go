@@ -41,6 +41,7 @@ func newFilterExecutor(ctr managers.ContainerManager, req *api.CTPFilter, contai
 		}
 	}
 
+	// TODO, add configurable globals for project, regsitry.
 	path := fmt.Sprintf("%s/%s/%s@%s", "us-docker.pkg.dev", "cros-registry/test-services", req.Container.Name, req.Container.Digest)
 	fmt.Printf("Container path: %s\n\n", path)
 
@@ -52,9 +53,8 @@ func (ex *FilterExecutor) Execute(ctx context.Context, cmd string, resp *api.Int
 		return ex.run(resp)
 	} else if cmd == "init" {
 		fmt.Println("FILTER INIT!")
-		ex.init()
-		// TODO, consider moving this to "process", and adjusting process to meet our needs.
-		return nil, nil
+		err := ex.init()
+		return nil, err
 	} else if cmd == "stop" {
 		return nil, nil // Stop containers.
 	}

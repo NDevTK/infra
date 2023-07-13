@@ -17,6 +17,10 @@ func DefaultFilters(req *api.CTPv2Request, containerMd map[string]*buildapi.Cont
 
 	// Can expand these as needed
 	defaultKarbonServices := make(map[string]bool)
+
+	// TODO and note: We will use only the first given GCSPath for test-finder.
+	// This means autotest will *NOT* WAI, and this must be resolved on either this side
+	// or the autotest side before putting prod traffic in.
 	defaultKarbonServices["cros-test-finder"] = true
 
 	// Currently none for default Koffee. I am sure some will come.

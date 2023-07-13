@@ -17,14 +17,13 @@ import (
 
 func translateRequest(req *api.CTPv2Request) *api.InternalTestplan {
 	internalStruct := &api.InternalTestplan{}
-	hwReqs := hwRequirements(req)
-
-	// // TODO, there is a bitch of a gap between the input request (where build is part of legacySW)
-	// // And the current definition of channels (which is basically dev/beta/stable) in the suiteMetadata.
-	// // It might not even be needed as part of the metadata. Need to investigate more.
+	// hwReqs := hwRequirements(req)
+	// TODO, there is a bit of a gap between the input request (where build is part of legacySW)
+	// And the current definition of channels (which is basically dev/beta/stable) in the suiteMetadata.
+	// It might not even be needed as part of the metadata. Need to investigate more.
 	suitemd := &api.SuiteMetadata{
-		HwRequirements: hwReqs,
-		Pool:           req.Pool,
+		// HwRequirements: hwReqs,
+		Pool: req.Pool,
 	}
 
 	internalStruct.SuiteInfo = &api.SuiteInfo{
@@ -35,19 +34,19 @@ func translateRequest(req *api.CTPv2Request) *api.InternalTestplan {
 	return internalStruct
 }
 
-func hwRequirements(req *api.CTPv2Request) (hwReqs []*api.HWRequirements) {
-	switch hw := req.HwTargets.Targets.(type) {
-	case *api.HWTargets_LegacyHw:
-		fmt.Println(hw)
-		hwReq := &api.HWRequirements{
-			HwDefinition: []*api.SwarmingDefinition{},
-		}
-		hwReqs = append(hwReqs, hwReq)
-		return hwReqs
-	default:
-		return hwReqs
-	}
-}
+// TODO, update this once the breaking proto change has rolled.
+// func hwRequirements(req *api.CTPv2Request) (hwReqs []*api.HWRequirements) {
+// 	switch hw := req.HwTargets.Targets.(type) {
+// 	case *api.HWTargets_LegacyHw:
+// 		hwReq := &api.HWRequirements{
+// 			HwDefinition: []*api.SwarmingDefinition{},
+// 		}
+// 		hwReqs = append(hwReqs, hwReq)
+// 		return hwReqs
+// 	default:
+// 		return hwReqs
+// 	}
+// }
 
 func createContainerManagerExecutor(ctx context.Context, cloud bool) (managers.ContainerManager, executor.Executor) {
 	var containerMgr managers.ContainerManager
