@@ -19,6 +19,7 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/util"
+	"infra/appengine/crosskylabadmin/internal/ufs"
 	"infra/cros/lab_inventory/utilization"
 )
 
@@ -52,7 +53,16 @@ func (tsi *TrackerServerImpl) PushBotsForAdminTasks(ctx context.Context, req *fl
 		return nil, errors.Annotate(err, "failed to obtain Swarming client").Err()
 	}
 
-	return pushBotsForAdminTasksImpl(ctx, sc, req)
+	httpClient, err := ufs.NewHTTPClient(ctx)
+	if err != nil {
+		logging.Errorf(ctx, "error setting up UFS client: %s")
+	}
+	ufsClient, err := ufs.NewClient(ctx, httpClient, cfg.GetUFS().GetHost())
+	if err != nil {
+		logging.Errorf(ctx, "error setting up UFS client: %s")
+	}
+
+	return pushBotsForAdminTasksImpl(ctx, sc, ufsClient, req)
 }
 
 // PushBotsForAdminAuditTasks implements the fleet.Tracker.pushBotsForAdminTasks() method.
