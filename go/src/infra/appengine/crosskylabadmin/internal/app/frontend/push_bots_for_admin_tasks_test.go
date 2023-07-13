@@ -9,23 +9,24 @@ import (
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/fakes"
+
+	"github.com/golang/mock/gomock"
 )
 
 func TestPushBotsForAdminTasksImplSmokeTest(t *testing.T) {
 	tf, validate := newTestFixture(t)
 	defer validate()
 	ctx := tf.C
+	tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), gomock.Any(), gomock.Any())
 	ctx = config.Use(ctx, &config.Config{
 		Swarming: &config.Swarming{
 			BotPool: "fake-bot-pool",
 		},
 	})
-	swarmingClient := &fakes.SwarmingClient{}
 	req := &fleet.PushBotsForAdminTasksRequest{
 		TargetDutState: fleet.DutState_NeedsRepair,
 	}
-	_, err := pushBotsForAdminTasksImpl(ctx, swarmingClient, req)
+	_, err := pushBotsForAdminTasksImpl(ctx, tf.MockSwarming, nil, req)
 
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
