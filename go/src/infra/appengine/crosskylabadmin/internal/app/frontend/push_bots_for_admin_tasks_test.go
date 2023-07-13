@@ -25,7 +25,7 @@ func TestPushBotsForAdminTasksImplSmokeTest(t *testing.T) {
 	req := &fleet.PushBotsForAdminTasksRequest{
 		TargetDutState: fleet.DutState_NeedsRepair,
 	}
-	_, err := pushBotsForAdminTasksImpl(ctx, swarmingClient, req)
+	_, err := pushBotsForAdminTasksImpl(ctx, swarmingClient, nil, req)
 
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
