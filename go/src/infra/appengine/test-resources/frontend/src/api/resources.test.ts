@@ -2,39 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { FetchTestMetricsResponse, MetricType, Period, SortType, TestMetricsArray, fetchTestMetrics, prpcClient } from './resources';
+import { FetchTestMetricsResponse, MetricType, Period, SortType, TestMetricsDateMap, fetchTestMetrics, prpcClient } from './resources';
 
-const mockMetricsWithData: Map<string, TestMetricsArray> =
-  new Map<string, TestMetricsArray>(
-      Object.entries(
-          {
-            '2012-01-02': {
-              'data': [
-                {
-                  metricType: 'NUM_RUNS' as MetricType,
-                  metricValue: 2,
-                },
-                {
-                  metricType: 'NUM_FAILURES' as MetricType,
-                  metricValue: 2,
-                },
-                {
-                  metricType: 'AVG_RUNTIME' as MetricType,
-                  metricValue: 2,
-                },
-                {
-                  metricType: 'TOTAL_RUNTIME' as MetricType,
-                  metricValue: 2,
-                },
-                {
-                  metricType: 'AVG_CORES' as MetricType,
-                  metricValue: 2,
-                },
-              ],
-            },
-          },
-      ),
-  );
+const mockMetricsWithData: TestMetricsDateMap = {
+  '2012-01-02': {
+    data: [
+      {
+        metricType: 'NUM_RUNS' as MetricType,
+        metricValue: 2,
+      },
+      {
+        metricType: 'NUM_FAILURES' as MetricType,
+        metricValue: 2,
+      },
+      {
+        metricType: 'AVG_RUNTIME' as MetricType,
+        metricValue: 2,
+      },
+      {
+        metricType: 'TOTAL_RUNTIME' as MetricType,
+        metricValue: 2,
+      },
+      {
+        metricType: 'AVG_CORES' as MetricType,
+        metricValue: 2,
+      },
+    ],
+  },
+};
 
 describe('fetchTestMetrics', () => {
   it('returns metrics', async () => {
