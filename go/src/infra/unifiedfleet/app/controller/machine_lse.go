@@ -570,16 +570,17 @@ func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken, filter stri
 		} else {
 			lses, nextPageToken, err = inventory.ListMachineLSEs(ctx, pageSize, pageToken, filterMap, keysOnly)
 		}
-	}
-	cutoff := config.Get(ctx).GetExperimentalAPI().GetListMachineLSEsACL()
-	// Roll the dice to determine which one to use
-	roll := rand.Uint32() % 100
-	cutoff = cutoff % 100
-	if cutoff != 0 && roll <= cutoff {
-		logging.Infof(ctx, "ListMachineLSEsACL --- Running in experimental API")
-		lses, nextPageToken, err = inventory.ListMachineLSEsACL(ctx, pageSize, pageToken, filterMap, keysOnly)
 	} else {
-		lses, nextPageToken, err = inventory.ListMachineLSEs(ctx, pageSize, pageToken, filterMap, keysOnly)
+		cutoff := config.Get(ctx).GetExperimentalAPI().GetListMachineLSEsACL()
+		// Roll the dice to determine which one to use
+		roll := rand.Uint32() % 100
+		cutoff = cutoff % 100
+		if cutoff != 0 && roll <= cutoff {
+			logging.Infof(ctx, "ListMachineLSEsACL --- Running in experimental API")
+			lses, nextPageToken, err = inventory.ListMachineLSEsACL(ctx, pageSize, pageToken, filterMap, keysOnly)
+		} else {
+			lses, nextPageToken, err = inventory.ListMachineLSEs(ctx, pageSize, pageToken, filterMap, keysOnly)
+		}
 	}
 	if full && !keysOnly {
 		for _, lse := range lses {
