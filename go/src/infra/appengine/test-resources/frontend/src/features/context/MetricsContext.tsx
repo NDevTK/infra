@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { createContext, useEffect, useState } from 'react';
-import { MetricType, Period, SortType, TestMetricsArray, fetchTestMetrics } from '../../api/resources';
+import { createContext, useEffect, useReducer, useState } from 'react';
+import { FetchTestMetricsResponse, MetricType, Period, SortType } from '../../api/resources';
 import { formatDate } from '../../utils/formatUtils';
+import { dataReducer, loadTestMetrics } from './LoadMetrics';
 
 type MetricsContextProviderProps = {
   page?: number,
@@ -93,194 +94,129 @@ export const MetricsContext = createContext<MetricsContextValue>(
     },
 );
 
-export function createTimelineViewMetricsMap(metrics: Map<string, TestMetricsArray>): Map<string, number> {
-  const computedMetricsMap = new Map<string, number>();
-  let fixedMetricsMap = metrics;
-
-  if (new Map<string, TestMetricsArray>(Object.entries(metrics)).size !== 0) {
-    fixedMetricsMap = new Map<string, TestMetricsArray>(Object.entries(metrics));
-  }
-  fixedMetricsMap.forEach((data, date) => {
-    let avgRuntime = 0;
-    // Obtain avg_runtime metric
-    data.data.forEach((metric) => {
-      if (metric.metricType === MetricType.AVG_RUNTIME) {
-        avgRuntime = metric.metricValue;
-      }
-    });
-    computedMetricsMap.set(date, avgRuntime);
-  });
-  return computedMetricsMap;
+interface LoadingState {
+  count: number,
+  isLoading: boolean,
 }
 
-export function createMetricsMap(metrics: Map<string, TestMetricsArray>): Map<string, Map<MetricType, number>> {
-  let fixedMetricsMap = metrics;
-  // This is done because for testing, Object.entries on the map gives us an empty array
-  // While the counterpart returned from the backend does not give us an empty array
-  // despite both arguments being the same type. I will update this if I ever
-  // find out the root cause of it. For now, adding this bandaid fix.
-  if (new Map<string, TestMetricsArray>(Object.entries(metrics)).size !== 0) {
-    fixedMetricsMap = new Map<string, TestMetricsArray>(Object.entries(metrics));
-  }
+type LoadingAction =
+ | { type: 'start' }
+ | { type: 'end' }
 
-  const metricsMap = new Map<string, Map<MetricType, number>>();
-  fixedMetricsMap.forEach((data, date) => {
-    const metricToVal = new Map<MetricType, number>();
-    data.data.forEach((metric) => {
-      metricToVal.set(metric.metricType, metric.metricValue);
-    });
-    metricsMap.set(date, metricToVal);
-  });
-  return metricsMap;
-}
-
-function computeDates(date: Date, period: Period, datesBefore: number): string[] {
-  const computedDates = [] as string[];
-  for (let x = datesBefore; x >= 0; x--) {
-    const newDate = formatDate(new Date(new Date().setDate(new Date(date).getDate() - (x * (period === Period.DAY ? 1 : 7)))));
-    computedDates.push(newDate);
+function loadingCountReducer(state: LoadingState, action: LoadingAction): LoadingState {
+  const newState = { ...state };
+  switch (action.type) {
+    case 'start':
+      newState.count++;
+      break;
+    case 'end':
+      newState.count--;
+      break;
   }
-  return computedDates;
+  newState.isLoading = newState.count !== 0;
+  return newState;
 }
 
 export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
-  const [data, setData] = useState<Node[]>([]);
+  const [page, setPage] = useState(props.page || 0);
+  const [rowsPerPage, setRowsPerPage] = useState(50);
+  const [filter, setFilter] = useState('');
+  const [date, setDate] = useState(new Date(Date.now() - 86400000));
+  const [period, setPeriod] = useState(Period.DAY);
+  const [sort, setSort] = useState(SortType.SORT_NAME);
+  const [ascending, setAscending] = useState(true);
+  const [timelineView, setTimelineView] = useState(props.timelineView || false);
+
+  const params: Params = { page, rowsPerPage, filter, date, period, sort, ascending, timelineView };
+
+  const [data, dataDispatch] = useReducer(dataReducer, []);
   const [lastPage, setLastPage] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [datesToShow, setDatesToShow] = useState<string[]>([formatDate(new Date(Date.now() - 86400000))]);
-  let [page, setPage] = useState(props.page || 0);
-  let [rowsPerPage, setRowsPerPage] = useState(50);
-  let [filter, setFilter] = useState('');
-  let [date, setDate] = useState(new Date(Date.now() - 86400000));
-  let [period, setPeriod] = useState(Period.DAY);
-  let [sort, setSort] = useState(SortType.SORT_NAME);
-  let [ascending, setAscending] = useState(true);
-  let [timelineView, setTimelineView] = useState(props.timelineView || false);
+  const [datesToShow, setDatesToShow] = useState<string[]>([formatDate(date)]);
+  const [loading, loadingDispatch] = useReducer(loadingCountReducer, { count: 0, isLoading: false });
 
-  let loadingCount = 0;
+  function loadFailure(error: any) {
+    loadingDispatch({ type: 'end' });
+    throw error;
+  }
 
-  function fetchTestMetricsHelper() {
-    setIsLoading(true);
-    loadingCount++;
-    const datesToFetch = computeDates(date, period, timelineView ? 4 : 0);
-    return fetchTestMetrics({
-      'component': 'Blink',
-      'period': Number(period) as Period,
-      'dates': datesToFetch,
-      'metrics': [
-        MetricType.NUM_RUNS,
-        MetricType.AVG_RUNTIME,
-        MetricType.TOTAL_RUNTIME,
-        MetricType.NUM_FAILURES,
-        // MetricType.AVG_CORES,
-      ],
-      'filter': filter,
-      'page_offset': page * rowsPerPage,
-      'page_size': rowsPerPage,
-      'sort': { metric: Number(sort) as SortType, ascending: ascending },
-    }).then((resp) => {
-      const tests: Test[] = [];
-      // Populate Test
-      if (resp.tests !== undefined) {
-        for (const test of resp.tests) {
-          const metrics = test.metrics;
-          const newTest: Test = {
-            id: test.testId,
-            name: test.testName,
-            fileName: test.fileName,
-            metrics: createMetricsMap(metrics),
-            isLeaf: false,
-            nodes: [],
-          };
-          // Construct variants
-          for (const variant of test.variants) {
-            newTest.nodes.push({
-              id: newTest.id + ':' + variant.builder + ':' + variant.suite,
-              name: variant.builder,
-              subname: variant.suite,
-              metrics: createMetricsMap(variant.metrics),
-              isLeaf: true,
-              nodes: [],
-            });
-          }
-          tests.push(newTest);
-        }
-      }
-      setData(tests);
-      setLastPage(resp.lastPage);
-      loadingCount--;
-      setIsLoading(loadingCount !== 0);
-      setDatesToShow(datesToFetch);
-    }).catch((error) => {
-      loadingCount--;
-      setIsLoading(loadingCount !== 0);
-      throw error;
-    });
+  function load(params: Params) {
+    loadingDispatch({ type: 'start' });
+    loadTestMetrics(
+        params,
+        (response: FetchTestMetricsResponse, fetchedDates: string[]) => {
+          dataDispatch({ type: 'merge_test', tests: response.tests });
+          setLastPage(response.lastPage);
+          setTimelineView(params.timelineView);
+          setDatesToShow(fetchedDates);
+          loadingDispatch({ type: 'end' });
+        },
+        loadFailure,
+    );
   }
 
   useEffect(() => {
-    fetchTestMetricsHelper();
+    load(params);
   // Adding this because we don't want a dependency on api
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const api: Api = {
     updatePage: (newPage: number) => {
-      page = newPage;
-      fetchTestMetricsHelper();
-      setPage(newPage);
+      if (params.page !== newPage) {
+        params.page = newPage;
+        setPage(newPage);
+        load(params);
+      }
     },
     updateRowsPerPage: (newRowsPerPage: number) => {
-      rowsPerPage = newRowsPerPage;
-      fetchTestMetricsHelper();
-      setRowsPerPage(newRowsPerPage);
+      params.rowsPerPage = newRowsPerPage;
+      setRowsPerPage(params.rowsPerPage);
+      load(params);
     },
     updateFilter: (newFilter: string) => {
-      page = 0;
-      filter = newFilter;
-      fetchTestMetricsHelper();
-      setFilter(newFilter);
-      setPage(0);
+      params.filter = newFilter;
+      params.page = 0;
+      setFilter(params.filter);
+      setPage(params.page);
+      load(params);
     },
     updateDate: (newDate: Date) => {
-      date = newDate;
-      page = 0;
-      fetchTestMetricsHelper();
-      setDate(newDate);
-      setPage(0);
+      params.date = newDate;
+      params.page = 0;
+      setDate(params.date);
+      setPage(params.page);
+      load(params);
     },
     updatePeriod: (newPeriod: Period) => {
-      period = newPeriod;
-      page = 0;
-      fetchTestMetricsHelper();
-      setPeriod(newPeriod);
-      setPage(0);
+      params.period = newPeriod;
+      params.page = 0;
+      setPeriod(params.period);
+      setPage(params.page);
+      load(params);
     },
     updateSort: (newSort: SortType) => {
-      sort = newSort;
-      page = 0;
-      fetchTestMetricsHelper();
-      setSort(newSort);
-      setPage(0);
+      params.sort = newSort;
+      params.page = 0;
+      setSort(params.sort);
+      setPage(params.page);
+      load(params);
     },
     updateAscending: (newAscending: boolean) => {
-      ascending = newAscending;
-      page = 0;
-      fetchTestMetricsHelper();
-      setAscending(newAscending);
-      setPage(0);
+      params.ascending = newAscending;
+      params.page = 0;
+      setAscending(params.ascending);
+      setPage(params.page);
+      load(params);
     },
     updateTimelineView: (newTimelineView: boolean) => {
-      timelineView = newTimelineView;
-      fetchTestMetricsHelper();
-      setTimelineView(newTimelineView);
+      params.timelineView = newTimelineView;
+      // Don't set timeline view until the data has been loaded.
+      load(params);
     },
   };
 
-  const params: Params = { page, rowsPerPage, filter, date, period, sort, ascending, timelineView };
-
   return (
-    <MetricsContext.Provider value={{ data, lastPage, isLoading, api, params, datesToShow }}>
+    <MetricsContext.Provider value={{ data, datesToShow, lastPage, isLoading: loading.isLoading, api, params }}>
       { props.children }
     </MetricsContext.Provider>
   );

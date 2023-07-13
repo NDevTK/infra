@@ -16,7 +16,7 @@ export interface TestMetricsArray {
   data: TestMetricsData[]
 }
 
-interface TestMetricsData {
+export interface TestMetricsData {
   metricType: MetricType,
   metricValue: number
 }
