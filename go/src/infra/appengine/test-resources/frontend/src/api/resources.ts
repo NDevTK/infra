@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 export interface TestDateMetricData {
   testId: string,
   testName: string,
   fileName: string,
   // Note that string represent date in "YYYY-MM-DD format"
-  metrics: Map<string, TestMetricsArray>,
+  metrics: TestMetricsDateMap,
   variants: TestVariantData[],
 }
+
+export type TestMetricsDateMap = {[key: string]: TestMetricsArray}
 
 export interface TestMetricsArray {
   data: TestMetricsData[]
 }
 
-interface TestMetricsData {
+export interface TestMetricsData {
   metricType: MetricType,
   metricValue: number
 }
@@ -33,7 +34,7 @@ export enum MetricType {
 export interface TestVariantData {
   suite: string,
   builder: string,
-  metrics: Map<string, TestMetricsArray>
+  metrics: TestMetricsDateMap,
 }
 
 export enum Period {
