@@ -54,9 +54,9 @@ TOOLS_SPEC_FILE = '.tools_spec.json'
 #
 # Some builders use "legacy" and "bleeding_edge" variants.
 TOOLSET_VERSIONS = {
-    'default': '1.20.5',  # used on dev workstations and most try builders
-    'legacy': '1.20.5',  # used on OSX amd64 CI and prod builders
-    'bleeding_edge': '1.20.5',  # used on most CI and prod and some try builders
+    'default': '1.20.6',  # used on dev workstations and most try builders
+    'legacy': '1.20.6',  # used on OSX amd64 CI and prod builders
+    'bleeding_edge': '1.20.6',  # used on most CI and prod and some try builders
 }
 
 # Layout is the layout of the bootstrap installation.
@@ -139,6 +139,15 @@ def write_file(path, data):
     f.write(data)
 
 
+def remove_file(path):
+  """Removes the given file if it exists."""
+  assert isinstance(path, (list, tuple))
+  try:
+    os.remove(os.path.join(*path))
+  except FileNotFoundError:
+    pass
+
+
 def read_json(path):
   """Reads |path| and parses it as JSON, returning None if it is missing."""
   blob = read_file(path)
@@ -184,6 +193,7 @@ def install_toolset(toolset_root, version):
                          stdin=subprocess.PIPE,
                          universal_newlines=True)
   cmd.communicate(
+    '$ParanoidMode CheckIntegrity\n'
     '@Subdir go\n'
     'infra/3pp/tools/go/${platform} version:2@%s\n' % version
   )
@@ -191,6 +201,11 @@ def install_toolset(toolset_root, version):
     raise Failure('CIPD call failed, exit code %d' % cmd.returncode)
   LOGGER.info('Validating...')
   check_hello_world(toolset_root)
+
+
+def cleanup_toolset(toolset_root):
+  """Deletes files installed by install_toolset(...)."""
+  remove_directory(os.path.join(toolset_root, 'go'))
 
 
 @contextlib.contextmanager
@@ -279,7 +294,8 @@ def ensure_toolset_installed(toolset_root, version):
   LOGGER.info('Installing Go toolset.')
   LOGGER.info('  Old toolset is %s', installed)
   LOGGER.info('  New toolset is %s', version)
-  remove_directory(toolset_root)
+  remove_file([toolset_root, 'INSTALLED_TOOLSET'])
+  cleanup_toolset(toolset_root)
   install_toolset(toolset_root, version)
   LOGGER.info('Go toolset installed: %s', version)
   write_file([toolset_root, 'INSTALLED_TOOLSET'], version)
