@@ -102,24 +102,33 @@ class WinISOCustomization(customization.Customization):
     """ return the output(s) of executing this config. Doesn't guarantee that
     the output(s) exists"""
     uploads = []
+    build_tags = {}
     if self.get_key():
       location = 'WIB-ISO/{}.iso'
       if self.tryrun:
         location = 'WIB-ISO-TRY/{}.iso'  # pragma: nocover
       output = src_pb.GCSSrc(
           bucket='chrome-gce-images', source=location.format(self.get_key()))
-      uploads.append(
-          dest_pb.Dest(
-              gcs_src=output,
-              tags={
-                  'orig': self._source.get_url(src_pb.Src(gcs_src=output)),
-                  'build_url': self.m.buildbucket.build_url()
-              },
-          ))
+      build_tags = {
+          'orig': self._source.get_url(src_pb.Src(gcs_src=output)),
+          'build_url': self.m.buildbucket.build_url()
+      }
+      uploads.append(dest_pb.Dest(
+          gcs_src=output,
+          tags=build_tags,
+      ))
     wic = self.customization().windows_iso_customization
     if wic.uploads:
+      # inject build tags
+      if build_tags:
+        for up in wic.uploads:
+          up.tags.update(build_tags)
       uploads.extend(wic.uploads)
     if wic.unpacked_uploads:
+      # inject build tags
+      if build_tags:
+        for up in wic.unpacked_uploads:
+          up.tags.update(build_tags)
       uploads.extend(wic.unpacked_uploads)
     return uploads
 
@@ -183,7 +192,7 @@ class WinISOCustomization(customization.Customization):
             # archive the iso staging as we need to upload it
             self.m.archive.package(iso_dir).archive(
                 'Compress contents for upload', compressed_archive)
-        output_image = iso_dir.join(output.name + '.iso')
+        output_image = self._workdir.join(output.name + '.iso')
         # package everything into an iso
         self.generate_iso_image(
             output.name, boot=boot, directory=iso_dir, output=output_image)

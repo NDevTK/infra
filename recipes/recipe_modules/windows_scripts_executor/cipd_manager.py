@@ -155,7 +155,7 @@ class CIPDManager:
           package_name='{}/{}'.format(cipd_src.package, cipd_src.platform),
           version=cipd_src.refs)
       if tags:
-        for k, v in tags:
+        for k, v in tags.items():
           # Ignore build url tag. This will always be unique
           if k == 'build_url':
             continue
