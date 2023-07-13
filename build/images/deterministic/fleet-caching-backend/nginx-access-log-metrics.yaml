@@ -1,0 +1,11 @@
+---
+name: fleet-caching-backend/nginx-access-log-metrics
+extends: ../../base.yaml
+
+dockerfile: ../../../../go/src/infra/cros/cmd/caching-backend/nginx-access-log-metrics/docker/Dockerfile
+deterministic: true
+
+build:
+  - go_binary: infra/cros/cmd/caching-backend/nginx-access-log-metrics
+  # ContextDir defaults to the directory with Dockerfile
+    dest: ${contextdir}/nginx-access-log-metrics
