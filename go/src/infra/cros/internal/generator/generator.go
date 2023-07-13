@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -289,6 +289,33 @@ func createResponse(targetBuildResults []buildResult, pruneResult *testPruneResu
 	return resp, nil
 }
 
+// testProto is an interface for protos with a TestSuiteCommon field, e.g.
+// testplans.HwTestCfg_HwTest.
+type testProto interface {
+	GetCommon() *testplans.TestSuiteCommon
+}
+
+// dedupedByTestName returns a copy of tests with all protos that have the same
+// Common.DisplayName deduplicated. There is no guarantee about which of the
+// duplicates is kept (protos for the same display name are assumed equivalent).
+func dedupedByDisplayName[T testProto](tests []T) []T {
+	displayNameToTest := make(map[string]T)
+	for _, test := range tests {
+		if _, found := displayNameToTest[test.GetCommon().DisplayName]; found {
+			log.Printf("already added testing for %v, deduping", test.GetCommon().DisplayName)
+		} else {
+			displayNameToTest[test.GetCommon().DisplayName] = test
+		}
+	}
+
+	dedupedTests := make([]T, 0, len(displayNameToTest))
+	for _, test := range displayNameToTest {
+		dedupedTests = append(dedupedTests, test)
+	}
+
+	return dedupedTests
+}
+
 func getHwTestUnit(tuc *testplans.TestUnitCommon, tests []*testplans.HwTestCfg_HwTest, pruneResult *testPruneResult, sfg suitesForGroups, criticalBuild bool) *testplans.HwTestUnit {
 	if tests == nil {
 		return nil
@@ -330,6 +357,9 @@ testLoop:
 		t.Common = withCritical(t.Common, criticalBuild)
 		tu.HwTestCfg.HwTest = append(tu.HwTestCfg.HwTest, t)
 	}
+
+	tu.HwTestCfg.HwTest = dedupedByDisplayName(tu.HwTestCfg.HwTest)
+
 	if len(tu.HwTestCfg.HwTest) > 0 {
 		return tu
 	}
@@ -377,6 +407,9 @@ testLoop:
 		t.Common = withCritical(t.Common, criticalBuild)
 		tu.TastVmTestCfg.TastVmTest = append(tu.TastVmTestCfg.TastVmTest, t)
 	}
+
+	tu.TastVmTestCfg.TastVmTest = dedupedByDisplayName(tu.TastVmTestCfg.TastVmTest)
+
 	if len(tu.TastVmTestCfg.TastVmTest) > 0 {
 		return tu
 	}
@@ -424,6 +457,9 @@ testLoop:
 		t.Common = withCritical(t.Common, criticalBuild)
 		tu.TastGceTestCfg.TastGceTest = append(tu.TastGceTestCfg.TastGceTest, t)
 	}
+
+	tu.TastGceTestCfg.TastGceTest = dedupedByDisplayName(tu.TastGceTestCfg.TastGceTest)
+
 	if len(tu.TastGceTestCfg.TastGceTest) > 0 {
 		return tu
 	}

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/testplans"
 	bbproto "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 const (
@@ -1038,6 +1039,143 @@ func TestCreateCombinedTestPlan_ignoresNonArtifactBuild(t *testing.T) {
 	}
 
 	expectedTestPlan := &testplans.GenerateTestPlanResponse{}
+	if diff := cmp.Diff(expectedTestPlan, actualTestPlan, protocmp.Transform()); diff != "" {
+		t.Errorf("CreateCombinedTestPlan bad result (-want/+got)\n%s", diff)
+	}
+}
+
+func TestCreateCombinedTestPlan_dedupesTests(t *testing.T) {
+	kevinHWTestCfg := &testplans.HwTestCfg{HwTest: []*testplans.HwTestCfg_HwTest{
+		{
+			Common:          &testplans.TestSuiteCommon{DisplayName: "kev.hw"},
+			Suite:           "HW kevin",
+			SkylabBoard:     "kev",
+			HwTestSuiteType: testplans.HwTestCfg_AUTOTEST,
+		},
+		{
+			Common:          &testplans.TestSuiteCommon{DisplayName: "kev.hw"},
+			Suite:           "HW kevin",
+			SkylabBoard:     "kev",
+			HwTestSuiteType: testplans.HwTestCfg_AUTOTEST,
+		},
+	}}
+	kevinTastVMTestCfg := &testplans.TastVmTestCfg{TastVmTest: []*testplans.TastVmTestCfg_TastVmTest{
+		{
+			Common:    &testplans.TestSuiteCommon{DisplayName: "kev.vm"},
+			SuiteName: "Tast kevin",
+		},
+		{
+			Common:    &testplans.TestSuiteCommon{DisplayName: "kev.vm"},
+			SuiteName: "Tast kevin",
+		},
+	}}
+	kevinTastGceTestCfg := &testplans.TastGceTestCfg{TastGceTest: []*testplans.TastGceTestCfg_TastGceTest{
+		{
+			Common:    &testplans.TestSuiteCommon{DisplayName: "kev.gce"},
+			SuiteName: "Gce kevin",
+		},
+		{
+			Common:    &testplans.TestSuiteCommon{DisplayName: "kev.gce"},
+			SuiteName: "Gce kevin",
+		},
+	}}
+	testReqs := &testplans.TargetTestRequirementsCfg{
+		PerTargetTestRequirements: []*testplans.PerTargetTestRequirements{
+			{
+				TargetCriteria: &testplans.TargetCriteria{
+					BuilderName: "kevin-cq",
+					TargetType:  &testplans.TargetCriteria_BuildTarget{BuildTarget: "kevin"}},
+				HwTestCfg:           kevinHWTestCfg,
+				DirectTastVmTestCfg: kevinTastVMTestCfg,
+				TastGceTestCfg:      kevinTastGceTestCfg,
+			},
+		},
+	}
+	sourceTreeTestCfg := &testplans.SourceTreeTestCfg{}
+	bbBuilds := []*bbproto.Build{
+		makeBuildbucketBuild("kevin", "kevin-cq", bbproto.Status_SUCCESS, true),
+	}
+	chRevData := gerrit.GetChangeRevsForTest([]*gerrit.ChangeRev{})
+	repoToBranchToSrcRoot := map[string]map[string]string{"chromiumos/repo/name": {"refs/heads/main": "src/to/file"}}
+
+	actualTestPlan, err := CreateTestPlan(testReqs, sourceTreeTestCfg, &testplans.BoardPriorityList{}, bbBuilds, emptyGerritChanges, chRevData, repoToBranchToSrcRoot)
+	if err != nil {
+		t.Error(err)
+	}
+
+	expectedTestPlan := &testplans.GenerateTestPlanResponse{
+		HwTestUnits: []*testplans.HwTestUnit{
+			{
+				Common: &testplans.TestUnitCommon{
+					BuildPayload: &testplans.BuildPayload{
+						ArtifactsGsBucket: gsBucket,
+						ArtifactsGsPath:   gsPathPrefix + "kevin",
+						FilesByArtifact:   simpleFilesByArtifact(),
+					},
+					BuilderName: "kevin-cq",
+					BuildTarget: &chromiumos.BuildTarget{Name: "kevin"}},
+				HwTestCfg: &testplans.HwTestCfg{
+					HwTest: []*testplans.HwTestCfg_HwTest{
+						{
+							Common: &testplans.TestSuiteCommon{
+								DisplayName: "kev.hw",
+								Critical:    wrapperspb.Bool(true),
+							},
+							Suite:           "HW kevin",
+							SkylabBoard:     "kev",
+							HwTestSuiteType: testplans.HwTestCfg_AUTOTEST,
+						},
+					},
+				},
+			},
+		},
+		DirectTastVmTestUnits: []*testplans.TastVmTestUnit{
+			{
+				Common: &testplans.TestUnitCommon{
+					BuildPayload: &testplans.BuildPayload{
+						ArtifactsGsBucket: gsBucket,
+						ArtifactsGsPath:   gsPathPrefix + "kevin",
+						FilesByArtifact:   simpleFilesByArtifact(),
+					},
+					BuilderName: "kevin-cq",
+					BuildTarget: &chromiumos.BuildTarget{Name: "kevin"}},
+				TastVmTestCfg: &testplans.TastVmTestCfg{
+					TastVmTest: []*testplans.TastVmTestCfg_TastVmTest{
+						{
+							Common: &testplans.TestSuiteCommon{
+								DisplayName: "kev.vm",
+								Critical:    wrapperspb.Bool(true),
+							},
+							SuiteName: "Tast kevin",
+						},
+					},
+				},
+			},
+		},
+		TastGceTestUnits: []*testplans.TastGceTestUnit{
+			{
+				Common: &testplans.TestUnitCommon{
+					BuildPayload: &testplans.BuildPayload{
+						ArtifactsGsBucket: gsBucket,
+						ArtifactsGsPath:   gsPathPrefix + "kevin",
+						FilesByArtifact:   simpleFilesByArtifact(),
+					},
+					BuilderName: "kevin-cq",
+					BuildTarget: &chromiumos.BuildTarget{Name: "kevin"}},
+				TastGceTestCfg: &testplans.TastGceTestCfg{
+					TastGceTest: []*testplans.TastGceTestCfg_TastGceTest{
+						{
+							Common: &testplans.TestSuiteCommon{
+								DisplayName: "kev.gce",
+								Critical:    wrapperspb.Bool(true),
+							},
+							SuiteName: "Gce kevin",
+						},
+					},
+				},
+			},
+		},
+	}
 	if diff := cmp.Diff(expectedTestPlan, actualTestPlan, protocmp.Transform()); diff != "" {
 		t.Errorf("CreateCombinedTestPlan bad result (-want/+got)\n%s", diff)
 	}
