@@ -58,8 +58,8 @@ function ResourcesTable() {
         {colName}
         {
         params.ascending ?
-          <ArrowDownwardIcon className={params.sort === sortType ? styles.icon : styles.iconNoShow}/> :
-          <ArrowUpwardIcon className={params.sort === sortType ? styles.icon : styles.iconNoShow}/>
+          <ArrowUpwardIcon className={params.sort === sortType ? styles.icon : styles.iconNoShow}/> :
+          <ArrowDownwardIcon className={params.sort === sortType ? styles.icon : styles.iconNoShow}/>
         }
       </Button>
     );
