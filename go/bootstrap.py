@@ -453,11 +453,12 @@ def get_go_environ(layout):
     p = os.path.normpath(p)
     if p in path_prefixes or p in path_suffixes:
       return False
-    # Skip anything resembling a Go environment. That way switching between
-    # different environments works correctly. It is important when switching
-    # between infra and infra_internal environments.
-    if (p.endswith(os.sep + 'bin') and
-        os.path.exists(os.path.join(p, 'go' + EXE_SFX))):
+    # Skip GOROOT/bin of anything resembling an infra Go environment. That way
+    # switching between different environments works correctly. It is important
+    # when switching between infra and infra_internal environments. Use
+    # INSTALLED_TOOLSET marker file to detect an infra environment.
+    if (p.endswith(os.path.join('go', 'bin')) and
+        os.path.exists(os.path.join(p, '..', '..', 'INSTALLED_TOOLSET'))):
       return False
     # Skip GOBIN with tools from potentially different Go environment. Use
     # TOOLS_SPEC_FILE marker file to detect this. It is present if anything was
