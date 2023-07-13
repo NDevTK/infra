@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "908bcde4_f429222a",
+        "filename": "go/src/infra/appengine/test-resources/frontend/src/api/resources.ts",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2023-07-13T06:13:23Z",
+      "side": 1,
+      "message": "FYI, this is an indexed signature. See https://www.typescriptlang.org/docs/handbook/2/objects.html#index-signatures",
+      "revId": "65261df7ee5e99bc82b7c375a00663f1e8b7dbb2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

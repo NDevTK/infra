@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a054f405_e9c56e4f",
+        "filename": "go/src/infra/appengine/test-resources/frontend/src/features/context/MetricsContext.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2023-07-13T06:13:23Z",
+      "side": 0,
+      "message": "This was needed because the response from the backend was a JSON object, not a map. Maps have the .forEach function. Objects do not. The tests were creating the map, but the actual fetch only returned an object, which you were then converting into a Map here.",
+      "revId": "6cb29163d8da79a354042dedf77235bb14beb8ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
