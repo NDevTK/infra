@@ -160,4 +160,8 @@ var exceptions = []suiteFilter{
 		suiteName:  "stress",
 		expiration: time.Date(2023, time.August, 10, 0, 0, 0, 0, time.UTC),
 	},
+	{
+		suiteName:  "chrome-uprev-hw",
+		expiration: time.Date(2023, time.August, 10, 0, 0, 0, 0, time.UTC),
+	},
 }
