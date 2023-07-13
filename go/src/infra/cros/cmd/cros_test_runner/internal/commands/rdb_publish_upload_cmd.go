@@ -15,13 +15,13 @@ import (
 
 	_go "go.chromium.org/chromiumos/config/go"
 	testapipb "go.chromium.org/chromiumos/config/go/test/api"
+	testapi_metadata "go.chromium.org/chromiumos/config/go/test/api/metadata"
 	artifactpb "go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/luciexe/build"
 )
 
 // RdbPublishUploadCmd represents rdb publish upload cmd.
@@ -32,15 +32,14 @@ type RdbPublishUploadCmd struct {
 	CurrentInvocationId string
 	StainlessUrl        string
 	TesthausUrl         string
+	Sources             *testapi_metadata.PublishRdbMetadata_Sources
 
 	// Either constructed TestResultForRdb is required,
 	TestResultForRdb *artifactpb.TestResult
 	// Or all these are required.
-	GcsUrl         string
-	BuildState     *build.State
-	DutTopology    *labapi.DutTopology
-	CftTestRequest *skylab_test_runner.CFTTestRequest
-	TestResponses  *testapipb.CrosTestResponse
+	GcsUrl        string
+	DutTopology   *labapi.DutTopology
+	TestResponses *testapipb.CrosTestResponse
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -77,6 +76,9 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 	if sk.TesthausUrl == "" {
 		return fmt.Errorf("Cmd %q missing dependency: TesthausUrl", cmd.GetCommandType())
 	}
+	if sk.CftTestRequest == nil {
+		return fmt.Errorf("Cmd %q missing dependency: CftTestRequest", cmd.GetCommandType())
+	}
 
 	// If TestResultForRdb is not provided, try to construct it.
 	if sk.TestResultForRdb == nil {
@@ -88,9 +90,6 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 		if sk.GcsUrl == "" {
 			return fmt.Errorf("Cmd %q missing dependency: GcsUrl", cmd.GetCommandType())
 		}
-		if sk.CftTestRequest == nil {
-			return fmt.Errorf("Cmd %q missing dependency: CftTestRequest", cmd.GetCommandType())
-		}
 		if sk.DutTopology == nil {
 			return fmt.Errorf("Cmd %q missing dependency: DutTopology", cmd.GetCommandType())
 		}
@@ -100,9 +99,9 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 
 		// Construct testResultProto
 		var testResultProtoErr error
-		sk.TestResultForRdb, testResultProtoErr = cmd.constructTestResultFromStateKeeper(ctx, sk)
+		sk.TestResultForRdb, testResultProtoErr = constructTestResultFromStateKeeper(ctx, sk)
 		if testResultProtoErr != nil {
-			return errors.Annotate(testResultProtoErr, fmt.Sprintf("Cmd %q failed to construct dependency: TestResultForRdb", cmd.GetCommandType())).Err()
+			return errors.Annotate(testResultProtoErr, "Cmd %q failed to construct dependency: TestResultForRdb", cmd.GetCommandType()).Err()
 		}
 	}
 
@@ -110,14 +109,20 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 	cmd.StainlessUrl = sk.StainlessUrl
 	cmd.TestResultForRdb = sk.TestResultForRdb
 	cmd.TesthausUrl = sk.TesthausUrl
-	cmd.BuildState = sk.BuildState
+
+	var err error
+	cmd.Sources, err = SourcesFromCFTTestRequest(sk.CftTestRequest)
+	if err != nil {
+		return errors.Annotate(err, "Cmd %q failed to construct dependency: Sources", cmd.GetCommandType()).Err()
+	}
+
 	cmd.GcsUrl = sk.GcsUrl
 	cmd.TestResponses = sk.TestResponses
 
 	return nil
 }
 
-func (cmd *RdbPublishUploadCmd) constructTestResultFromStateKeeper(
+func constructTestResultFromStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) (*artifactpb.TestResult, error) {
 
@@ -459,6 +464,44 @@ func getTaskRequestId(taskId string) string {
 	}
 
 	return fmt.Sprintf("%s0", taskId[:len(taskId)-1])
+}
+
+// SourcesFromCFTTestRequest returns the code sources tested in the given
+// CFT testing request.
+func SourcesFromCFTTestRequest(request *skylab_test_runner.CFTTestRequest) (*testapi_metadata.PublishRdbMetadata_Sources, error) {
+	if request == nil {
+		return nil, errors.Reason("CFTTestRequest: missing").Err()
+	}
+	provisionState := request.GetPrimaryDut().GetProvisionState()
+	if provisionState == nil {
+		// Invalid request.
+		return nil, errors.Reason("CFTTestRequest: primary_dut.provision_state missing").Err()
+	}
+
+	// The path to the system image.
+	imagePath := provisionState.SystemImage.GetSystemImagePath()
+	if imagePath == nil || imagePath.GetHostType() != _go.StoragePath_GS {
+		// For non-GS stored build outputs (e.g. local files),
+		// we do not have information about the sources used.
+		return nil, nil
+	}
+	if !strings.HasPrefix(imagePath.GetPath(), "gs://") {
+		return nil, errors.Reason("CFTTestRequest: primary_dut.provision_state.system_image.system_image_path.path: must start with gs://").Err()
+	}
+	if strings.HasSuffix(imagePath.GetPath(), "/") {
+		return nil, errors.Reason("CFTTestRequest: primary_dut.provision_state.system_image.system_image_path.path: must not have trailing '/'").Err()
+	}
+
+	return &testapi_metadata.PublishRdbMetadata_Sources{
+		// Path to the file in Google Cloud Storage that contains
+		// information about the code sources built into the build.
+		GsPath: imagePath.Path + common.SourceMetadataPath,
+		// If custom firmware is used or custom packages are deployed
+		// that were not built as part of the Chrome OS image (e.g. Lacros
+		// testing or firmware testing), the test is not a pure test
+		// of the build sources.
+		IsDeploymentDirty: provisionState.GetFirmware() != nil || len(provisionState.GetPackages()) > 0,
+	}, nil
 }
 
 func NewRdbPublishUploadCmd(executor interfaces.ExecutorInterface) *RdbPublishUploadCmd {

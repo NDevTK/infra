@@ -198,7 +198,9 @@ func (ex *CrosPublishExecutor) rdbPublishUploadCommandExecution(
 	rdbMetadata, err := anypb.New(&testapi_metadata.PublishRdbMetadata{
 		CurrentInvocationId: cmd.CurrentInvocationId,
 		TestResult:          cmd.TestResultForRdb,
-		StainlessUrl:        cmd.StainlessUrl})
+		StainlessUrl:        cmd.StainlessUrl,
+		Sources:             cmd.Sources,
+	})
 	if err != nil {
 		return errors.Annotate(err, "Creating publish rdb metadata err: ").Err()
 	}

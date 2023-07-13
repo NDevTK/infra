@@ -35,6 +35,10 @@ const (
 	TkoParseScriptPath                     = "/usr/local/autotest/tko/parse"
 	DutConnectionPort                      = 22
 	VmLeaserExperimentStr                  = "chromeos.cros_infra_config.vmleaser.launch"
+	// SourceMetadataPath is the path in the build output directory that
+	// details the code sources compiled into the build. The path is
+	// specified relative to the root of the build output directory.
+	SourceMetadataPath = "/metadata/sources.jsonpb"
 	// OS file constants
 	// OWNER: Execute, Read, Write
 	// GROUP: Execute, Read
