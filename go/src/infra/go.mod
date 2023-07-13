@@ -99,7 +99,7 @@ require (
 	gonum.org/v1/gonum v0.12.0
 	google.golang.org/api v0.130.0
 	google.golang.org/appengine v1.6.8-0.20221117013220-504804fb50de
-	google.golang.org/appengine/v2 v2.0.1
+	google.golang.org/appengine/v2 v2.0.4
 	google.golang.org/genproto v0.0.0-20230710151506-e685fd7b542b
 	google.golang.org/genproto/googleapis/api v0.0.0-20230706204954-ccb25ca9f130
 	google.golang.org/genproto/googleapis/bytestream v0.0.0-20230629202037-9506855d4529
@@ -232,10 +232,6 @@ require (
 
 // See https://github.com/google/cel-go/issues/441.
 exclude github.com/antlr/antlr4 v0.0.0-20200503195918-621b933c7a7f
-
-// See https://github.com/golang/appengine/issues/311. This is temporary until
-// the fix lands upstream.
-replace google.golang.org/appengine/v2 => ../vendor/appenginev2
 
 // Apparently checking out NDKs at head isn't really safe.
 replace golang.org/x/mobile => golang.org/x/mobile v0.0.0-20170111200746-6f0c9f6df9bb
