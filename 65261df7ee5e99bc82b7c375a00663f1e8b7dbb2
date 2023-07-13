@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "8990c8b1_6d0f9eb9",
+        "filename": "go/src/infra/appengine/test-resources/frontend/src/api/resources.ts",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2023-07-13T18:56:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9c5d6ec6_e4f7d3f6",
+      "range": {
+        "startLine": 9,
+        "startChar": 2,
+        "endLine": 9,
+        "endChar": 59
+      },
+      "revId": "65261df7ee5e99bc82b7c375a00663f1e8b7dbb2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "908bcde4_f429222a",
         "filename": "go/src/infra/appengine/test-resources/frontend/src/api/resources.ts",
         "patchSetId": 3
