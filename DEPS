@@ -33,7 +33,7 @@ deps = {
 
   "luci":
      "{chromium_git}/infra/luci/luci-py@" +
-     "981b3a7adff808d9cebd917f747a49d9739e3f2a",
+     "458b0bd8218d22b849b7f9ecbcc13fed2a84b85b",
 
   # TODO(crbug.com/1415507): remove this once infra_superproject is in
   # OSS codesearch. In the meantime, no need to add a gitlink for this.
