@@ -292,7 +292,13 @@ func reportToTsMon(i *record) {
 	defer cancel()
 
 	respBytesSent.Add(ctx, int64(i.bodyBytesSent), i.hostname, i.httpMethod, rpc, i.status, i.cacheStatus, i.expectedSize == i.bodyBytesSent)
-	if i.requestTime > 0.0 {
+
+	// Set the response speed metric. The minimum resolution of Nginx request
+	// time is 1 ms. For shorter cases, we just set the download speed to a
+	// high number as the speed is supposed high enough.
+	if speed := 100. * 1024 * 1024; i.requestTime < 0.001 {
+		respBytesPerSecond.Add(ctx, speed, i.httpMethod, rpc, i.status, i.cacheStatus, i.expectedSize == i.bodyBytesSent)
+	} else {
 		respBytesPerSecond.Add(ctx, float64(i.bodyBytesSent)/i.requestTime, i.httpMethod, rpc, i.status, i.cacheStatus, i.expectedSize == i.bodyBytesSent)
 	}
 }
