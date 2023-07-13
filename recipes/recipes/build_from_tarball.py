@@ -37,6 +37,10 @@ def RunSteps(api):
         'infra/3pp/tools/ninja/${platform}', 'version:2@1.8.2.chromium.3')
     api.cipd.ensure(cipd_root, ensure_file)
 
+    # The Rust sources are included in the tarball only from M117 on.
+    # See https://crrev.com/c/4681637.
+    enable_rust = int(version.split('.')[0]) >= 117
+
     with api.context(
         cwd=src_dir,
         env_suffixes={'PATH': [cipd_root]}):
@@ -67,6 +71,9 @@ def RunSteps(api):
       # here.
       if [int(x) for x in version.split('.')] < [111, 0, 5483, 0]:
         gn_args.append('enable_js_type_check=false')
+
+      if not enable_rust:
+        gn_args.append('enable_rust=false')
 
       unbundle_libs = [
           'fontconfig',
@@ -128,11 +135,7 @@ def RunSteps(api):
           '--skip-checkout', '--without-android', '--without-fuchsia'
       ])
 
-      # This was originally enabled for all versions in
-      # https://crrev.com/c/4658882 but failed on M115. It is safe to assume
-      # that this only works as expected in the Publish Tarball bot from M117
-      # on.
-      if int(version.split('.')[0]) >= 117:
+      if enable_rust:
         api.step('Build rustc.', [
             api.path.join(src_dir, 'tools', 'rust', 'build_rust.py'),
             '--skip-checkout'
