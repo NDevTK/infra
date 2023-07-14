@@ -416,7 +416,7 @@ ORDER BY ` + sortMetric + ` ` + sortDirection
 	q.Parameters = []bigquery.QueryParameter{
 		{Name: "dates", Value: dates},
 		{Name: "component", Value: req.Component},
-		{Name: "parent", Value: req.ParentId},
+		{Name: "parent", Value: req.ParentIds[0]},
 		{Name: "string_filter", Value: string_filter},
 	}
 
@@ -480,7 +480,7 @@ ORDER BY ` + sortMetric + ` ` + sortDirection
 	q.Parameters = []bigquery.QueryParameter{
 		{Name: "dates", Value: dates},
 		{Name: "component", Value: req.Component},
-		{Name: "parent", Value: req.ParentId},
+		{Name: "parent", Value: req.ParentIds[0]},
 	}
 
 	job, err := q.Run(ctx)
@@ -525,7 +525,7 @@ func (*Client) readFetchDirectoryMetricsResponse(it *bigquery.RowIterator, req *
 			}
 			filenameToTestDateMetricData[nodeName] = dirNode
 			// Add to the actual struct being returned
-			response.Node = append(response.Node, dirNode)
+			response.Nodes = append(response.Nodes, dirNode)
 		}
 
 		// Each row is the summary of a node for a day

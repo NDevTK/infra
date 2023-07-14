@@ -87,28 +87,34 @@ message SortBy {
   SortType metric = 1;
   // Ascending or Descending
   bool ascending = 2;
+  // The day to do the sorting on
+  string sort_date = 3;
 }
 
 message FetchTestMetricsRequest {
   // The component to get metrics for. This is effectively a required filter.
   string component = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // Filter specific to the test file names.
+  // An empty string will do no filtering
+  repeated string file_names = 2;
   // Time period to fetch (e.g. DAY, WEEK)
-  Period period = 2;
+  Period period = 3;
   // Dates to fetch.  This should align to the period.
   // Dates should be specified in YYYY-MM-DD format.
-  repeated string dates = 3 [ (google.api.field_behavior) = REQUIRED ];
+  repeated string dates = 4 [ (google.api.field_behavior) = REQUIRED ];
   // Metrics to fetch.
   // This is required.  If no metrics are specified an error is returned.
-  repeated MetricType metrics = 4 [ (google.api.field_behavior) = REQUIRED ];
+  repeated MetricType metrics = 5 [ (google.api.field_behavior) = REQUIRED ];
   // A string filter. This will return metrics for tests that have parts
   // of the tokenized filter
-  string filter = 5;
+  // An empty string will do no filtering
+  string filter = 6;
   // The offset to start at for the next request
-  int64 page_offset = 6;
+  int64 page_offset = 7;
   // The maximum number of tests to retrieve for this request
-  int64 page_size = 7;
+  int64 page_size = 8;
   // The order in which to return the results
-  SortBy sort = 8;
+  SortBy sort = 9;
 }
 
 message FetchTestMetricsResponse {
@@ -165,7 +171,7 @@ message FetchDirectoryMetricsRequest {
   repeated string dates = 3 [ (google.api.field_behavior) = REQUIRED ];
   // The optional parent node for this data (i.e. The directory to get the child
   // metrics for). The root parent_id is '/'.
-  string parent_id = 4 [ (google.api.field_behavior) = REQUIRED ];
+  repeated string parent_ids = 4 [ (google.api.field_behavior) = REQUIRED ];
   // A string filter. This will return metrics for directories that have parts
   // of the tokenized filter. This does not change the metric values of the
   // rolled up parent (filtering a file out does not remove its runtime from
@@ -181,7 +187,7 @@ message FetchDirectoryMetricsRequest {
 message FetchDirectoryMetricsResponse {
   // An array of directories and files belonging to the requested parent
   // directory
-  repeated DirectoryNode node = 1;
+  repeated DirectoryNode nodes = 1;
 }
 
 enum DirectoryNodeType {
