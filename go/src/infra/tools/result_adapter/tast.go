@@ -195,7 +195,7 @@ func (r *TastResults) ToProtos(ctx context.Context, testMetadataFile string, pro
 		if testhausBaseUrl != "" {
 			tr.Artifacts["testhaus_logs"] = &sinkpb.Artifact{
 				Body: &sinkpb.Artifact_Contents{
-					Contents: []byte(fmt.Sprintf("%s/cros-test/artifact/tast/tests/%s", strings.TrimSuffix(testhausBaseUrl, "/"), c.Name)),
+					Contents: []byte(fmt.Sprintf("%s/cros-test/artifact/tast/tests/%s?test=%s", strings.TrimSuffix(testhausBaseUrl, "/"), c.Name, testName)),
 				},
 				ContentType: "text/x-uri",
 			}
