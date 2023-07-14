@@ -28,7 +28,9 @@ import (
 )
 
 type deleteClient interface {
+	DeleteAsset(context.Context, *ufsApi.DeleteAssetRequest, ...grpc.CallOption) (*emptypb.Empty, error)
 	DeleteMachineLSE(context.Context, *ufsApi.DeleteMachineLSERequest, ...grpc.CallOption) (*emptypb.Empty, error)
+	DeleteRack(context.Context, *ufsApi.DeleteRackRequest, ...grpc.CallOption) (*emptypb.Empty, error)
 	GetMachineLSE(ctx context.Context, in *ufsApi.GetMachineLSERequest, opts ...grpc.CallOption) (*ufsModels.MachineLSE, error)
 }
 
@@ -39,6 +41,7 @@ var DeleteDUTCmd = &subcommands.Command{
 	CommandRun: func() subcommands.CommandRun {
 		c := &deleteDUT{}
 		registerShivasFlags(c)
+		c.Flags.BoolVar(&c.full, "full", false, "whether to use a full/cascading delete for DUTs")
 		return c
 	},
 }
@@ -47,6 +50,7 @@ var DeleteDUTCmd = &subcommands.Command{
 type deleteDUT struct {
 	shivasDeleteDUT
 	// Satlab-specific fields, if any exist, go here.
+	full bool
 }
 
 // Run attempts to delete a DUT and returns an exit status.
@@ -100,6 +104,40 @@ func innerRunWithClients(ctx context.Context, c *deleteDUT, dutNames []string, u
 	fmt.Printf("\nFailed to delete DUT(s):\n")
 	fmt.Printf("%v\n", fail)
 
+	if c.full {
+		// Delete all assets for DUTs. If the DUT still exists (due to a
+		// failure when deleting), the DeleteAsset RPC will return an error,
+		// so we can be relatively sloppy when finding which assets to delete.
+		assetsToDelete := []string{}
+		for _, dut := range duts {
+			fmt.Printf("Attempting to delete assets: %v for dut: %s\n", dut.Machines, dut.Name)
+			assetsToDelete = append(assetsToDelete, dut.Machines...)
+		}
+
+		pass, fail := deleteAllAssets(ctx, assetsToDelete, ufs)
+		fmt.Printf("\nSuccessfully deleted Assets(s):\n")
+		fmt.Printf("%v\n", pass)
+		fmt.Printf("Failed to delete Assets(s):\n")
+		fmt.Printf("%v\n\n", fail)
+
+		// Delete all racks. Similarly, if a rack still has assets associated
+		// with it, the RPC will fail, so we can give a best effort attempt and
+		// tell the user the RPC failed if there is some issue.
+		//
+		// In theory this is just `satlab-<id>-rack`, but it's easy enough to
+		// use the actual rack that `GetMachineLSE` reports.
+		racksToDelete := []string{}
+		for _, dut := range duts {
+			fmt.Printf("Attempting to delete rack: %s for dut: %s\n", dut.Rack, dut.Name)
+			racksToDelete = append(racksToDelete, dut.Rack)
+		}
+		pass, fail = deleteAllRacks(ctx, racksToDelete, ufs)
+		fmt.Printf("\nSuccessfully deleted Racks(s):\n")
+		fmt.Printf("%v\n", pass)
+		fmt.Printf("Failed to delete Racks(s):\n")
+		fmt.Printf("%v\n\n", fail)
+	}
+
 	return nil
 }
 
@@ -139,6 +177,48 @@ func deleteAllDuts(ctx context.Context, names []string, ufs deleteClient) ([]str
 			fail = append(fail, dut)
 		} else {
 			success = append(success, dut)
+		}
+	}
+
+	return success, fail
+}
+
+// deleteAllAssets deletes all Assets with certain names. Returns an two arrays
+// with the names that have been deleted successfully and unsuccessfully.
+func deleteAllAssets(ctx context.Context, names []string, ufs deleteClient) ([]string, []string) {
+	success := []string{}
+	fail := []string{}
+
+	for _, assetName := range names {
+		_, err := ufs.DeleteAsset(ctx, &ufsApi.DeleteAssetRequest{
+			Name: ufsUtil.AddPrefix(ufsUtil.AssetCollection, assetName),
+		})
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err.Error()+" => "+assetName)
+			fail = append(fail, assetName)
+		} else {
+			success = append(success, assetName)
+		}
+	}
+
+	return success, fail
+}
+
+// deleteAllRacks deletes all Racks with certain names. Returns an two arrays
+// with the names that have been deleted successfully and unsuccessfully.
+func deleteAllRacks(ctx context.Context, names []string, ufs deleteClient) ([]string, []string) {
+	success := []string{}
+	fail := []string{}
+
+	for _, rackName := range names {
+		_, err := ufs.DeleteRack(ctx, &ufsApi.DeleteRackRequest{
+			Name: ufsUtil.AddPrefix(ufsUtil.RackCollection, rackName),
+		})
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err.Error()+" => "+rackName)
+			fail = append(fail, rackName)
+		} else {
+			success = append(success, rackName)
 		}
 	}
 
