@@ -149,7 +149,7 @@
     "name": "git cl issue",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"issue\": 123456789, @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"issue\": 123456789,@@@",
       "@@@STEP_LOG_LINE@json.output@  \"issue_url\": \"https://chromium-review.googlesource.com/c/1234567\"@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@",

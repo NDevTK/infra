@@ -159,7 +159,7 @@
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_TEXT@multiple instances with tag 'version:2@1.5.0-rc1'@@@",
       "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"error\": \"ambiguity when resolving the tag, more than one instance has it\", @@@",
+      "@@@STEP_LOG_LINE@json.output@  \"error\": \"ambiguity when resolving the tag, more than one instance has it\",@@@",
       "@@@STEP_LOG_LINE@json.output@  \"result\": null@@@",
       "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
