@@ -5,19 +5,32 @@
 package dut
 
 import (
+	"context"
 	"fmt"
 	"os"
-	"os/exec"
-	"strings"
 
 	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 
+	"infra/cmd/shivas/utils"
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/satlab/satlab/internal/commands"
-	"infra/cros/satlab/satlab/internal/paths"
+	"infra/cros/satlab/satlab/internal/components/ufs"
 	"infra/cros/satlab/satlab/internal/site"
+	ufsModels "infra/unifiedfleet/api/v1/models"
+	ufsApi "infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
+
+type deleteClient interface {
+	DeleteMachineLSE(context.Context, *ufsApi.DeleteMachineLSERequest, ...grpc.CallOption) (*emptypb.Empty, error)
+	GetMachineLSE(ctx context.Context, in *ufsApi.GetMachineLSERequest, opts ...grpc.CallOption) (*ufsModels.MachineLSE, error)
+}
 
 // DeleteDUTCmd is the implementation of the "satlab delete DUT" command.
 var DeleteDUTCmd = &subcommands.Command{
@@ -47,6 +60,9 @@ func (c *deleteDUT) Run(a subcommands.Application, args []string, env subcommand
 
 // InnerRun is the implementation of the delete command.
 func (c *deleteDUT) innerRun(a subcommands.Application, positionalArgs []string, env subcommands.Env) error {
+	ctx := cli.GetContext(a, c, env)
+	ctx = utils.SetupContext(ctx, c.envFlags.GetNamespace())
+
 	if c.commonFlags.SatlabID == "" {
 		var err error
 		c.commonFlags.SatlabID, err = commands.GetDockerHostBoxIdentifier()
@@ -62,25 +78,88 @@ func (c *deleteDUT) innerRun(a subcommands.Application, positionalArgs []string,
 		positionalArgs[i] = site.MaybePrepend(site.Satlab, c.commonFlags.SatlabID, item)
 	}
 
-	args := (&commands.CommandWithFlags{
-		Commands:       []string{paths.ShivasCLI, "delete", "dut"},
-		PositionalArgs: positionalArgs,
-		Flags: map[string][]string{
-			"namespace": {c.envFlags.GetNamespace()},
-		},
-	}).ToCommand()
-	command := exec.Command(args[0], args[1:]...)
-	command.Stdin = os.Stdin
-	command.Stdout = os.Stdout
-	command.Stderr = os.Stderr
-	if err := command.Run(); err != nil {
-		return errors.Annotate(
-			err,
-			fmt.Sprintf(
-				"delete dut: running %s",
-				strings.Join(args, " "),
-			),
-		).Err()
+	ufs, err := ufs.NewUFSClient(ctx, c.envFlags.GetUFSService(), &c.authFlags)
+	if err != nil {
+		return errors.Annotate(err, "get dut").Err()
 	}
+
+	return innerRunWithClients(ctx, c, positionalArgs, ufs)
+}
+
+// innerRunWithClients is intended to contain testable business logic we can
+// pass a custom client into.
+func innerRunWithClients(ctx context.Context, c *deleteDUT, dutNames []string, ufs deleteClient) error {
+	// fetch DUTs to print them. Purely cosmetic, so errors will be ignored.
+	duts := getAllDuts(ctx, dutNames, ufs)
+	fmt.Printf("\nDUT(s) before deletion:")
+	printMachineLSEs(duts)
+
+	pass, fail := deleteAllDuts(ctx, dutNames, ufs)
+	fmt.Printf("\nSuccessfully deleted DUT(s):\n")
+	fmt.Printf("%v\n", pass)
+	fmt.Printf("\nFailed to delete DUT(s):\n")
+	fmt.Printf("%v\n", fail)
+
 	return nil
+}
+
+// getAllDuts fetches all DUTs with name in names.
+//
+// Should eventually be replaced with BatchGet or ConcurrentGet methods but
+// since the caller will only be using this with a low # of DUTs is acceptable
+// for now.
+func getAllDuts(ctx context.Context, names []string, ufs deleteClient) []*ufsModels.MachineLSE {
+	machineLSEs := []*ufsModels.MachineLSE{}
+	for _, n := range names {
+		m, err := ufs.GetMachineLSE(ctx, &ufsApi.GetMachineLSERequest{
+			Name: ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, n),
+		})
+		if err != nil {
+			fmt.Printf("error fetching DUT: %s", err)
+		} else {
+			machineLSEs = append(machineLSEs, m)
+		}
+	}
+
+	return machineLSEs
+}
+
+// deleteAllDuts deletes all DUTs with certain names. Returns an two arrays
+// with the names that have been deleted successfully and unsuccessfully.
+func deleteAllDuts(ctx context.Context, names []string, ufs deleteClient) ([]string, []string) {
+	success := []string{}
+	fail := []string{}
+
+	for _, dut := range names {
+		_, err := ufs.DeleteMachineLSE(ctx, &ufsApi.DeleteMachineLSERequest{
+			Name: ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, dut),
+		})
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err.Error()+" => "+dut)
+			fail = append(fail, dut)
+		} else {
+			success = append(success, dut)
+		}
+	}
+
+	return success, fail
+}
+
+func printMachineLSEs(machineLSEs []*ufsModels.MachineLSE) {
+	for i, m := range machineLSEs {
+		m.Name = ufsUtil.RemovePrefix(m.Name)
+		PrintProtoJSON(m)
+		if i < len(machineLSEs)-1 {
+			fmt.Printf(",\n")
+		}
+	}
+}
+
+// PrintProtoJSON prints proto as a JSON object.
+func PrintProtoJSON(pm proto.Message) {
+	m := protojson.MarshalOptions{
+		Indent:          "\t",
+		EmitUnpopulated: true,
+	}
+	fmt.Print(m.Format(pm))
 }
