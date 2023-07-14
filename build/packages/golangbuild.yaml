@@ -2,6 +2,7 @@ package: infra/experimental/golangbuild/${platform}
 description: A luciexe that builds and tests the Go project
 platforms:
   - linux-amd64
+  - linux-arm64
   - windows-amd64
   - mac-amd64
   - mac-arm64
