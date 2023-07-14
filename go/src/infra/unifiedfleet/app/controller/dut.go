@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
+	"go.chromium.org/luci/server/auth"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -1130,6 +1131,11 @@ func GetDUTConnectedToServo(ctx context.Context, servo *chromeosLab.Servo) (*ufs
 // UpdateRecoveryData updates data from recovery
 // It updates machine/asset, Peripherals(servo, wifirouter,...) and Dut's resourceState
 func UpdateRecoveryData(ctx context.Context, req *ufsAPI.UpdateDeviceRecoveryDataRequest) error {
+	err := validateUpdateRecoveryData(ctx, req.GetHostname())
+	if err != nil {
+		logging.Infof(ctx, "Validation error - Failed call UpdateRecoveryData: %s", err)
+	}
+
 	if err := checkDutIdAndHostnameAreAssociated(ctx, req.GetDeviceId(), req.GetHostname()); err != nil {
 		logging.Errorf(ctx, "updateRecoveryData chrome device id and hostname are not associated: %s", err.Error())
 	}
@@ -1158,12 +1164,32 @@ func UpdateRecoveryData(ctx context.Context, req *ufsAPI.UpdateDeviceRecoveryDat
 	return nil
 }
 
+func validateUpdateRecoveryData(ctx context.Context, hostname string) error {
+	lse, err := inventory.GetMachineLSE(ctx, hostname)
+	if err != nil {
+		return fmt.Errorf("failed to fetch MachineLSE: %s", err)
+	}
+
+	if err := util.CheckPermission(ctx, util.ConfigurationsUpdate, lse.GetRealm()); err != nil {
+		logging.Infof(ctx, "User %s missing permission in realm %s for UpdateRecoveryData", auth.CurrentIdentity(ctx), lse.GetRealm())
+		return err
+	}
+
+	return nil
+}
+
 // UpdateTestData updates data from test data.
 // It updates only different type of states.
 func UpdateTestData(ctx context.Context, req *ufsAPI.UpdateTestDataRequest) error {
+	err := validateUpdateTestData(ctx, req.GetHostname())
+	if err != nil {
+		logging.Infof(ctx, "Validation error - Failed call UpdateTestData: %s", err)
+	}
+
 	if err := checkDutIdAndHostnameAreAssociated(ctx, req.GetDeviceId(), req.GetHostname()); err != nil {
 		logging.Errorf(ctx, "UpdateTestData chrome device id and hostname are not associated: %s", err.Error())
 	}
+
 	logging.Debugf(ctx, "UpdateTestData received masks: %v", req.GetUpdateMask().GetPaths())
 	maskSet := make(map[string]bool) // Set of all the masks
 	for _, path := range req.GetUpdateMask().GetPaths() {
@@ -1199,5 +1225,19 @@ func checkDutIdAndHostnameAreAssociated(ctx context.Context, dutId string, hostn
 	if lses[0].GetName() != hostname {
 		return status.Errorf(codes.FailedPrecondition, "chromeos device id(%s) associated hostname(%s) does not match(%s).", dutId, lses[0].GetName(), hostname)
 	}
+	return nil
+}
+
+func validateUpdateTestData(ctx context.Context, hostname string) error {
+	lse, err := inventory.GetMachineLSE(ctx, hostname)
+	if err != nil {
+		return fmt.Errorf("failed to fetch MachineLSE: %s", err)
+	}
+
+	if err := util.CheckPermission(ctx, util.ConfigurationsUpdate, lse.GetRealm()); err != nil {
+		logging.Infof(ctx, "User %s missing permission in realm %s for UpdateTestData", auth.CurrentIdentity(ctx), lse.GetRealm())
+		return err
+	}
+
 	return nil
 }

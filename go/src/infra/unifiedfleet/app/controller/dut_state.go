@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
+	"go.chromium.org/luci/server/auth"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -21,6 +22,7 @@ import (
 	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/state"
+	"infra/unifiedfleet/app/util"
 )
 
 // GetDutState returns the DutState for the ChromeOS device.
@@ -99,6 +101,10 @@ func UpdateDutState(ctx context.Context, ds *chromeosLab.DutState) (*chromeosLab
 		machineLSE, err := inventory.GetMachineLSE(ctx, ds.GetHostname())
 		if err != nil {
 			return err
+		}
+
+		if err := util.CheckPermission(ctx, util.ConfigurationsUpdate, machineLSE.GetRealm()); err != nil {
+			logging.Infof(ctx, "User %s missing permission in realm %s for UpdateDutState", auth.CurrentIdentity(ctx), machineLSE.GetRealm())
 		}
 
 		if err := assignRealmFromMachineLSE(ds, machineLSE); err != nil {
