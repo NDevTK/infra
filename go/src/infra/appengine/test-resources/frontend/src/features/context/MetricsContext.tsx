@@ -3,9 +3,15 @@
 // found in the LICENSE file.
 
 import { createContext, useEffect, useReducer, useState } from 'react';
-import { FetchTestMetricsResponse, MetricType, Period, SortType } from '../../api/resources';
+import {
+  FetchDirectoryMetricsResponse,
+  FetchTestMetricsResponse,
+  MetricType,
+  Period,
+  SortType,
+} from '../../api/resources';
 import { formatDate } from '../../utils/formatUtils';
-import { dataReducer, loadTestMetrics } from './LoadMetrics';
+import { dataReducer, loadDirectoryMetrics, loadTestMetrics } from './LoadMetrics';
 
 type MetricsContextProviderProps = {
   page?: number,
@@ -19,7 +25,15 @@ export interface Node {
   subname?: string,
   metrics: Map<string, Map<MetricType, number>>,
   isLeaf: boolean,
+  onExpand?: (node: Node) => void,
   nodes: Node[]
+}
+
+// This node is for a file system path, which may be a directory or file
+// A directory may contain multiple files. A file may contain multiple tests.
+export interface Path extends Node {
+  path: string,
+  loaded: boolean,
 }
 
 // This node is for a single test, which may have multiple variants
@@ -49,6 +63,7 @@ export interface Params {
   sort: SortType,
   ascending: boolean,
   timelineView: boolean,
+  directoryView: boolean,
 }
 
 export interface Api {
@@ -62,7 +77,9 @@ export interface Api {
     updatePeriod: (period: Period) => void,
     updateSort: (sort: SortType) => void,
     updateAscending: (ascending: boolean) => void,
+
     updateTimelineView: (timelineView: boolean) => void,
+    updateDirectoryView: (directoryView: boolean) => void,
 }
 
 export const MetricsContext = createContext<MetricsContextValue>(
@@ -79,6 +96,7 @@ export const MetricsContext = createContext<MetricsContextValue>(
         updateSort: () => {/**/},
         updateAscending: () => {/**/},
         updateTimelineView: () => {/**/},
+        updateDirectoryView: () => {/**/},
       },
       params: {
         page: 0,
@@ -89,6 +107,7 @@ export const MetricsContext = createContext<MetricsContextValue>(
         sort: SortType.SORT_NAME,
         ascending: true,
         timelineView: false,
+        directoryView: false,
       },
       isLoading: false,
     },
@@ -126,8 +145,9 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
   const [sort, setSort] = useState(SortType.SORT_TOTAL_RUNTIME);
   const [ascending, setAscending] = useState(false);
   const [timelineView, setTimelineView] = useState(props.timelineView || false);
+  const [directoryView, setDirectoryView] = useState(false);
 
-  const params: Params = { page, rowsPerPage, filter, date, period, sort, ascending, timelineView };
+  const params: Params = { page, rowsPerPage, filter, date, period, sort, ascending, timelineView, directoryView };
 
   const [data, dataDispatch] = useReducer(dataReducer, []);
   const [lastPage, setLastPage] = useState(false);
@@ -139,19 +159,57 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
     throw error;
   }
 
+  function loadPathNode(node: Node) {
+    if (Object.hasOwn(node, 'loaded') && !(node as Path).loaded) {
+      loadingDispatch({ type: 'start' });
+      loadDirectoryMetrics(params, node.id,
+          (response: FetchDirectoryMetricsResponse) => {
+            dataDispatch({
+              type: 'merge_dir',
+              nodes: response.node,
+              parentId: node.id,
+              onExpand: loadPathNode,
+            });
+            loadingDispatch({ type: 'end' });
+          },
+          loadFailure,
+      );
+    }
+  }
+
   function load(params: Params) {
     loadingDispatch({ type: 'start' });
-    loadTestMetrics(
-        params,
-        (response: FetchTestMetricsResponse, fetchedDates: string[]) => {
-          dataDispatch({ type: 'merge_test', tests: response.tests });
-          setLastPage(response.lastPage);
-          setTimelineView(params.timelineView);
-          setDatesToShow(fetchedDates);
-          loadingDispatch({ type: 'end' });
-        },
-        loadFailure,
-    );
+    if (params.directoryView) {
+      loadDirectoryMetrics(
+          params,
+          '/',
+          (response: FetchDirectoryMetricsResponse, fetchedDates: string[]) => {
+            dataDispatch({
+              type: 'merge_dir',
+              nodes: response.node,
+              onExpand: loadPathNode,
+            });
+            setTimelineView(params.timelineView);
+            setDirectoryView(params.directoryView);
+            setDatesToShow(fetchedDates);
+            loadingDispatch({ type: 'end' });
+          },
+          loadFailure,
+      );
+    } else {
+      loadTestMetrics(
+          params,
+          (response: FetchTestMetricsResponse, fetchedDates: string[]) => {
+            dataDispatch({ type: 'merge_test', tests: response.tests });
+            setLastPage(response.lastPage);
+            setTimelineView(params.timelineView);
+            setDirectoryView(params.directoryView);
+            setDatesToShow(fetchedDates);
+            loadingDispatch({ type: 'end' });
+          },
+          loadFailure,
+      );
+    }
   }
 
   useEffect(() => {
@@ -211,6 +269,11 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
     updateTimelineView: (newTimelineView: boolean) => {
       params.timelineView = newTimelineView;
       // Don't set timeline view until the data has been loaded.
+      load(params);
+    },
+    updateDirectoryView: (newDirectoryView: boolean) => {
+      params.directoryView = newDirectoryView;
+      // Don't set directory view until the data has been loaded.
       load(params);
     },
   };

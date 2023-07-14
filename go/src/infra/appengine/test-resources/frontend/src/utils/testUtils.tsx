@@ -14,8 +14,19 @@ export interface OptionalContext {
   lastPage?: boolean,
   isLoading?: boolean,
   api?: OptionalApi,
-  params?: Params,
+  params?: {
+    page?: number,
+    rowsPerPage?: number,
+    filter?: string,
+    date?: Date,
+    period?: Period,
+    sort?: SortType,
+    ascending?: boolean,
+    timelineView?: boolean,
+    directoryView?: boolean,
+  },
   isTimelineView?: boolean,
+  isDirectoryView?: boolean,
 }
 
 export interface OptionalApi {
@@ -30,6 +41,7 @@ export interface OptionalApi {
   updateSort: (sort: SortType) => void,
   updateAscending: (ascending: boolean) => void,
   updateTimelineView: (timelineView: boolean) => void,
+  updateDirectoryView: (directoryView: boolean) => void,
 }
 
 const defaultApi: Api = {
@@ -41,6 +53,7 @@ const defaultApi: Api = {
   updateSort: () => {/**/},
   updateAscending: () => {/**/},
   updateTimelineView: () => {/**/},
+  updateDirectoryView: () => {/**/},
 };
 
 const defaultParams: Params = {
@@ -52,11 +65,12 @@ const defaultParams: Params = {
   sort: SortType.SORT_NAME,
   ascending: true,
   timelineView: false,
+  directoryView: false,
 };
 
 export function renderWithContext(
     ui: ReactElement,
-    opts: OptionalContext,
+    opts: OptionalContext = {},
 ) {
   const ctx : MetricsContextValue = {
     data: opts.data || [],
@@ -71,6 +85,7 @@ export function renderWithContext(
       updateSort: opts.api?.updateSort || defaultApi.updateSort,
       updateAscending: opts.api?.updateAscending || defaultApi.updateAscending,
       updateTimelineView: opts.api?.updateTimelineView || defaultApi.updateTimelineView,
+      updateDirectoryView: opts.api?.updateDirectoryView || defaultApi.updateDirectoryView,
     },
     params: {
       page: opts.params?.page || defaultParams.page,
@@ -81,6 +96,7 @@ export function renderWithContext(
       sort: opts.params?.sort || defaultParams.sort,
       ascending: opts.params?.ascending || defaultParams.ascending,
       timelineView: opts.params?.timelineView || defaultParams.timelineView,
+      directoryView: opts.params?.directoryView || defaultParams.directoryView,
     },
     isLoading: opts.isLoading || true,
   };

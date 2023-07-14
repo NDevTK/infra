@@ -2,9 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { FetchTestMetricsResponse, MetricType, Period, SortType, TestMetricsDateMap, fetchTestMetrics, prpcClient } from './resources';
+import {
+  FetchTestMetricsResponse,
+  MetricType,
+  Period,
+  SortType,
+  MetricsDateMap,
+  fetchTestMetrics,
+  prpcClient,
+  DirectoryNodeType,
+  fetchDirectoryMetrics,
+  FetchDirectoryMetricsResponse,
+} from './resources';
 
-const mockMetricsWithData: TestMetricsDateMap = {
+const mockMetricsWithData: MetricsDateMap = {
   '2012-01-02': {
     data: [
       {
@@ -104,5 +115,44 @@ describe('fetchTestMetrics', () => {
       sort: { metric: 0, ascending: true },
     });
     expect(resp).toEqual(expected);
+  });
+});
+
+describe('fetchDirectoryMetrics', () => {
+  it('returns metrics', async () => {
+    const data: FetchDirectoryMetricsResponse = {
+      node: [
+        {
+          id: '//a',
+          type: DirectoryNodeType.DIRECTORY,
+          name: 'a',
+          metrics: mockMetricsWithData,
+        },
+        {
+          id: '//b',
+          type: DirectoryNodeType.FILENAME,
+          name: 'b',
+          metrics: mockMetricsWithData,
+        },
+      ],
+    };
+    jest.spyOn(prpcClient, 'call').mockResolvedValue(data);
+    const resp = await fetchDirectoryMetrics(
+        {
+          'component': 'component',
+          'period': Period.DAY,
+          'dates': ['2012-01-02'],
+          'parent_id': '/',
+          'metrics': [
+            MetricType.NUM_RUNS,
+            MetricType.AVG_RUNTIME,
+            MetricType.TOTAL_RUNTIME,
+            MetricType.NUM_FAILURES,
+          ],
+          'filter': 'filter',
+          'sort': { metric: SortType.SORT_NAME, ascending: true },
+        },
+    );
+    expect(resp).toEqual(data);
   });
 });

@@ -3,57 +3,52 @@
 // found in the LICENSE file.
 */
 
-import { useSearchParams } from 'react-router-dom';
-import { act, screen } from '@testing-library/react';
+import { act } from '@testing-library/react';
 import { renderWithContext } from '../../utils/testUtils';
 import { Params } from '../context/MetricsContext';
 import { Period, SortType } from '../../api/resources';
-import ResourcesParamControls, { ASCENDING, DATE, FILTER, PAGE, PERIOD, ROWS_PER_PAGE, SORT_BY, TIMELINE } from './ResourcesSearchParams';
-
-const TestingComponent = () => {
-  const [search] = useSearchParams();
-  return (
-    <>
-      <div>page-{search.get(PAGE)}</div>
-      <div>rowsPerPage-{search.get(ROWS_PER_PAGE)}</div>
-      <div>filter-{search.get(FILTER)}</div>
-      <div>date-{search.get(DATE)}</div>
-      <div>period-{search.get(PERIOD)}</div>
-      <div>sortby-{search.get(SORT_BY)}</div>
-      <div>ascending-{search.get(ASCENDING)}</div>
-      <div>timeline-{search.get(TIMELINE)}</div>
-    </>
-  );
-};
-
-const params: Params = {
-  page: 12,
-  rowsPerPage: 25,
-  filter: 'filter',
-  date: new Date('2020-01-01T00:00:00'),
-  period: Period.DAY,
-  sort: SortType.SORT_NAME,
-  ascending: true,
-  timelineView: false,
-};
+import ResourcesParamControls, {
+  ASCENDING,
+  DATE,
+  FILTER,
+  PAGE,
+  PERIOD,
+  ROWS_PER_PAGE,
+  SORT_BY,
+  TIMELINE_VIEW,
+  DIRECTORY_VIEW,
+} from './ResourcesSearchParams';
 
 describe('when rendering the ResourcesTableToolbar', () => {
   it('should render toolbar elements', async () => {
+    const params: Params = {
+      page: 12,
+      rowsPerPage: 25,
+      filter: 'filter',
+      date: new Date('2020-01-02T00:00:00'),
+      period: Period.DAY,
+      sort: SortType.SORT_NAME,
+      ascending: true,
+      timelineView: true,
+      directoryView: true,
+    };
+
     await act(async () => {
       renderWithContext(<>
         <ResourcesParamControls/>
-        <TestingComponent/>
       </>
       , { params },
       );
     });
-    expect(screen.getByText('page-12')).toBeInTheDocument();
-    expect(screen.getByText('rowsPerPage-25')).toBeInTheDocument();
-    expect(screen.getByText('filter-filter')).toBeInTheDocument();
-    expect(screen.getByText('date-2020-01-01')).toBeInTheDocument();
-    expect(screen.getByText('period-0')).toBeInTheDocument();
-    expect(screen.getByText('sortby-0')).toBeInTheDocument();
-    expect(screen.getByText('ascending-true')).toBeInTheDocument();
-    expect(screen.getByText('timeline-false')).toBeInTheDocument();
+    const searchParams = new URLSearchParams(window.location.search);
+    expect(searchParams.get(PAGE)).toBe('12');
+    expect(searchParams.get(ROWS_PER_PAGE)).toBe('25');
+    expect(searchParams.get(FILTER)).toBe('filter');
+    expect(searchParams.get(DATE)).toBe('2020-01-02');
+    expect(searchParams.get(PERIOD)).toBe(Period.DAY.toString());
+    expect(searchParams.get(SORT_BY)).toBe(SortType.SORT_NAME.toString());
+    expect(searchParams.get(ASCENDING)).toBe('true');
+    expect(searchParams.get(TIMELINE_VIEW)).toBe('true');
+    expect(searchParams.get(DIRECTORY_VIEW)).toBe('true');
   });
 });

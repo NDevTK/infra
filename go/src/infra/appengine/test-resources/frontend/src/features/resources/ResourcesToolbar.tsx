@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { Divider, FormControl, Grid, InputLabel, MenuItem, Select, TextField, ToggleButton, ToggleButtonGroup, Toolbar } from '@mui/material';
+import { Divider, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, ToggleButton, ToggleButtonGroup, Toolbar } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
@@ -44,19 +44,19 @@ function ResourcesToolbar() {
     return false;
   };
 
-  const handleViewToggle = (
-      _event: React.MouseEvent<HTMLElement>,
-      isTimeline: boolean | null,
-  ) => {
-    if (isTimeline !== null) {
-      api.updateTimelineView(isTimeline || false);
-    }
+  const handleTimelineToggle = (_, isTimeline: boolean) => {
+    api.updateTimelineView(isTimeline);
+  };
+
+  const handleDirectoryToggle = (_, isDirectory: boolean) => {
+    api.updateDirectoryView(isDirectory);
   };
 
   return (
     <>
       <Toolbar>
         <Grid container gap={3}>
+
           <Grid item xs={3}>
             <TextField
               data-testid="textFieldTest"
@@ -67,6 +67,7 @@ function ResourcesToolbar() {
               value={filter}
             />
           </Grid>
+
           <Grid item xs={1}>
             <FormControl data-testid="formControlTest" fullWidth variant="standard">
               <InputLabel shrink={true}>Period</InputLabel>
@@ -80,7 +81,8 @@ function ResourcesToolbar() {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={2}>
+
+          <Grid item xs={1}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Date"
@@ -93,22 +95,43 @@ function ResourcesToolbar() {
               />
             </LocalizationProvider>
           </Grid>
-          <Grid item xs={2}>
-            <ToggleButtonGroup
-              value={params.timelineView}
-              exclusive
-              onChange={handleViewToggle}
-              aria-label="timeline view"
-              data-testid="timelineViewToggle"
-            >
-              <ToggleButton value={false} aria-label="snapshot">
-                <CameraAltIcon />
-              </ToggleButton>
-              <ToggleButton value={true} aria-label="timeline">
-                <TimelineIcon />
-              </ToggleButton>
-            </ToggleButtonGroup>
+
+          <Grid item xs={3}>
+            <Stack direction="row" spacing={4}>
+              <ToggleButtonGroup
+                size="small"
+                color="primary"
+                value={params.timelineView}
+                exclusive
+                onChange={handleTimelineToggle}
+                aria-label="timeline view"
+                data-testid="timelineViewToggle"
+                sx={{ paddingTop: 0.5 }}
+              >
+                <ToggleButton value={false} aria-label="snapshot">
+                  <CameraAltIcon />
+                </ToggleButton>
+                <ToggleButton value={true} aria-label="timeline">
+                  <TimelineIcon />
+                </ToggleButton>
+              </ToggleButtonGroup>
+
+              <ToggleButtonGroup
+                size="small"
+                color="primary"
+                value={params.directoryView}
+                exclusive
+                onChange={handleDirectoryToggle}
+                aria-label="directory view"
+                data-testid="directoryViewToggle"
+                sx={{ paddingTop: 0.5 }}
+              >
+                <ToggleButton value={false}>By Test</ToggleButton>
+                <ToggleButton value={true}>By Directory</ToggleButton>
+              </ToggleButtonGroup>
+            </Stack>
           </Grid>
+
         </Grid>
       </Toolbar>
       <Divider />

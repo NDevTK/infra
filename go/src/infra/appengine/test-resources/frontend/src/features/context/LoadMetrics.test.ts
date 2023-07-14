@@ -7,13 +7,16 @@ import {
   Period,
   SortType,
   TestDateMetricData,
-  TestMetricsDateMap } from '../../api/resources';
+  MetricsDateMap,
+  DirectoryNode,
+  DirectoryNodeType } from '../../api/resources';
 import { computeDates, dataReducer } from './LoadMetrics';
+import { Node, Path } from './MetricsContext';
 
 function metricsMap(
     metrics: {[date: string]: [MetricType, number][]},
-): TestMetricsDateMap {
-  const ret: TestMetricsDateMap = {};
+): MetricsDateMap {
+  const ret: MetricsDateMap = {};
   for (const date in metrics) {
     if (Object.hasOwn(metrics, date)) {
       ret[date] = {
@@ -47,6 +50,7 @@ describe('computeDates', () => {
           sort: SortType.SORT_NAME,
           ascending: true,
           timelineView: timeline as boolean,
+          directoryView: false,
         })).toEqual(expected);
       });
 });
@@ -123,5 +127,61 @@ describe('Merge TestMetrics', () => {
         .toEqual(3);
     expect(merged[0].metrics.get('2012-01-03')?.get(MetricType.NUM_FAILURES))
         .toEqual(4);
+  });
+});
+
+describe('Merge LoadMetrics', () => {
+  it('merge a single root node', () => {
+    const nodes: DirectoryNode[] = [{
+      id: '/',
+      type: DirectoryNodeType.DIRECTORY,
+      name: 'src',
+      metrics: {},
+    }];
+    const onExpand = () => {/**/};
+    const merged = dataReducer([], { type: 'merge_dir', nodes, onExpand });
+    expect(merged).toHaveLength(1);
+    expect(merged[0].id).toEqual(nodes[0].id);
+    expect(merged[0].name).toEqual(nodes[0].name);
+    expect(merged[0].nodes).toHaveLength(0);
+    expect(merged[0].isLeaf).toEqual(false);
+    expect(merged[0].onExpand).toBe(onExpand);
+    expect((merged[0] as Path).path).toEqual(nodes[0].id);
+    expect((merged[0] as Path).loaded).toEqual(false);
+  });
+  it('merge a single node into existing state', () => {
+    const state: Node[] = [{
+      id: '/',
+      name: 'src',
+      metrics: new Map(),
+      isLeaf: false,
+      nodes: [],
+      path: '',
+      loaded: false,
+    } as Path];
+    const nodes: DirectoryNode[] = [{
+      id: '/a',
+      type: DirectoryNodeType.DIRECTORY,
+      name: 'a',
+      metrics: {},
+    }];
+    const onExpand = () => {/**/};
+    const merged = dataReducer(state, {
+      type: 'merge_dir',
+      parentId: '/',
+      nodes: nodes,
+      onExpand: onExpand,
+    });
+    expect(merged).toHaveLength(1);
+    expect(merged[0].nodes).toHaveLength(1);
+    expect((merged[0] as Path).loaded).toEqual(true);
+
+    const m0n0 = merged[0].nodes[0];
+    expect(m0n0.id).toEqual(nodes[0].id);
+    expect(m0n0.name).toEqual(nodes[0].name);
+    expect(m0n0.nodes).toHaveLength(0);
+    expect(m0n0.isLeaf).toEqual(false);
+    expect(m0n0.onExpand).toBe(onExpand);
+    expect((m0n0 as Path).loaded).toEqual(false);
   });
 });

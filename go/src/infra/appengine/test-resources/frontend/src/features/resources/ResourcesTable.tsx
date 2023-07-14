@@ -134,10 +134,11 @@ function ResourcesTable() {
                  (row) => <ResourcesRow key={row.id} data={row} depth={0}/>,
              ) : tableMessageBoard(isLoading ? 'Loading...' : 'No data available')}
           </TableBody>
+          {params.directoryView ? null : (
           <TableFooter>
             <TableRow>
               <TablePagination
-                data-testid="tableRowTest"
+                data-testid="tablePagination"
                 rowsPerPageOptions={[25, 50, 100, 200]}
                 count={lastPage ? (params.page * params.rowsPerPage): -1}
                 rowsPerPage={params.rowsPerPage}
@@ -147,6 +148,7 @@ function ResourcesTable() {
               />
             </TableRow>
           </TableFooter>
+          )}
         </Table>
       </TableContainer>
     </>

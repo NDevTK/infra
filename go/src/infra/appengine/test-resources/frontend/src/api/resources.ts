@@ -6,12 +6,12 @@ export interface TestDateMetricData {
   testId: string,
   testName: string,
   fileName: string,
-  metrics: TestMetricsDateMap,
+  metrics: MetricsDateMap,
   variants: TestVariantData[],
 }
 
 // Note that string represent date in "YYYY-MM-DD format"
-export type TestMetricsDateMap = {[key: string]: TestMetricsArray}
+export type MetricsDateMap = {[key: string]: TestMetricsArray}
 
 export interface TestMetricsArray {
   data: TestMetricsData[]
@@ -34,7 +34,7 @@ export enum MetricType {
 export interface TestVariantData {
   suite: string,
   builder: string,
-  metrics: TestMetricsDateMap,
+  metrics: MetricsDateMap,
 }
 
 export enum Period {
@@ -90,9 +90,9 @@ export const prpcClient = {
     });
     const text = await response.text();
     if (text.startsWith(')]}\'')) {
-      return JSON.parse(text.substr(4));
+      return JSON.parse(text.substring(4));
     } else {
-      return JSON.parse(text);
+      throw text;
     }
   },
 };
@@ -104,6 +104,43 @@ export async function fetchTestMetrics(
       'test_resources.Stats',
       'FetchTestMetrics',
       fetchTestMetricsRequest,
+  );
+  return resp;
+}
+
+export interface FetchDirectoryMetricsRequest {
+  component: string,
+  period: Period,
+  dates: string[],
+  parent_id: string,
+  metrics: MetricType[],
+  filter?: string,
+  sort: SortBy,
+}
+
+export enum DirectoryNodeType {
+  DIRECTORY = 0,
+  FILENAME = 1,
+}
+
+export interface DirectoryNode {
+  id: string,
+  type: DirectoryNodeType,
+  name: string,
+  metrics: MetricsDateMap,
+}
+
+export interface FetchDirectoryMetricsResponse {
+  node: DirectoryNode[],
+}
+
+export async function fetchDirectoryMetrics(
+    request: FetchDirectoryMetricsRequest,
+): Promise<FetchDirectoryMetricsResponse> {
+  const resp: FetchDirectoryMetricsResponse = await prpcClient.call(
+      'test_resources.Stats',
+      'FetchDirectoryMetrics',
+      request,
   );
   return resp;
 }

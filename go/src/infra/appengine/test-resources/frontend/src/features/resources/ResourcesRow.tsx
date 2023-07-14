@@ -18,6 +18,13 @@ function ResourcesRow(props: ResourcesRowProps) {
   const [isOpen, setIsOpen] = useState(false);
   const rotate = isOpen ? 'rotate(0deg)' : 'rotate(270deg)';
 
+  function handleOpenToggle() {
+    if (!isOpen && props.data.onExpand !== undefined) {
+      props.data.onExpand(props.data);
+    }
+    setIsOpen(!isOpen);
+  }
+
   function displayMetrics() {
     if (params.timelineView) {
       const bodyArr = [] as JSX.Element[];
@@ -60,7 +67,7 @@ function ResourcesRow(props: ResourcesRowProps) {
                 data-testid={'clickButton-' + props.data.id}
                 color="primary"
                 size="small"
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={handleOpenToggle}
                 style={{ transform: rotate }}
                 sx={{ margin: 0, padding: 0, ml: -2 }}
               >

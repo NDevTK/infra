@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import { screen } from '@testing-library/react';
-import { Params, Test } from '../context/MetricsContext';
-import { MetricType, Period, SortType } from '../../api/resources';
+import { Node, Test } from '../context/MetricsContext';
+import { MetricType } from '../../api/resources';
 import { renderWithContext } from '../../utils/testUtils';
 import ResourcesTable from './ResourcesTable';
 
@@ -53,7 +53,7 @@ const tests: Test[] = [{
 }];
 
 describe('when rendering the ResourcesTable', () => {
-  it('should render the TableContainer with snapshot view', () => {
+  it('snapshot view', () => {
     renderWithContext(<ResourcesTable/>, { data: tests });
     expect(screen.getByTestId('tableBody')).toBeInTheDocument();
     expect(screen.getByText('Test Suite')).toBeInTheDocument();
@@ -63,21 +63,24 @@ describe('when rendering the ResourcesTable', () => {
     expect(screen.getByText('Total Runtime')).toBeInTheDocument();
     expect(screen.getByText('Avg Cores')).toBeInTheDocument();
   });
-  it('should render the TableContainer with timeline view', () => {
-    const params: Params = {
-      page: 0,
-      rowsPerPage: 25,
-      filter: '',
-      date: new Date(),
-      period: Period.DAY,
-      sort: SortType.SORT_AVG_CORES,
-      ascending: true,
-      timelineView: true,
-    };
-    renderWithContext(<ResourcesTable/>, { data: tests, params: params, datesToShow: ['1', '2'] });
+  it('timeline view', () => {
+    renderWithContext(<ResourcesTable/>, { data: tests, params: { timelineView: true }, datesToShow: ['1', '2'] });
     expect(screen.getByTestId('tableBody')).toBeInTheDocument();
     expect(screen.getByText('Test Suite')).toBeInTheDocument();
     expect(screen.getAllByTestId('timelineHeader')).toHaveLength(2);
+  });
+  it('directory view', () => {
+    const nodes: Node[] = [{
+      id: '/',
+      name: 'src',
+      metrics: mockMetrics,
+      isLeaf: false,
+      nodes: [],
+    }];
+    renderWithContext(<ResourcesTable/>, { data: nodes, params: { directoryView: true }, datesToShow: ['1', '2'] });
+    expect(screen.getByTestId('tableBody')).toBeInTheDocument();
+    expect(screen.getByText('src')).toBeInTheDocument();
+    expect(screen.queryByTestId('tablePagination')).toBeNull();
   });
 });
 
