@@ -3,6 +3,40 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "9b90c062_ed2d9cad",
+        "filename": "go/src/infra/appengine/statsui/sql/cq_builder_metrics/cq_builder_metrics_day_test_counts.sql",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2023-07-14T18:42:26Z",
+      "side": 1,
+      "message": "Small nit, but lowercase for consistency.",
+      "revId": "67e024d75e4eeef1ad538d5ae38ac1f09f92f2ef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b273b626_dec1f891",
+        "filename": "go/src/infra/appengine/statsui/sql/cq_builder_metrics/cq_builder_metrics_week_test_counts.sql",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2023-07-14T18:42:26Z",
+      "side": 1,
+      "message": "Lowercase for consistency",
+      "revId": "67e024d75e4eeef1ad538d5ae38ac1f09f92f2ef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "4fbf6539_6f4958b7",
         "filename": "go/src/infra/appengine/statsui/sql/cq_builder_metrics/cq_builder_metrics_week_test_counts.sql",
         "patchSetId": 3
