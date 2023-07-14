@@ -187,7 +187,7 @@ func (c *startServodRun) runOrchestratedCommand(ctx context.Context, d DockerCli
 
 // fetchMetadataFromUFS pulls information about the asset and DUT of a given host
 func fetchMetadataFromUFS(ctx context.Context, ufsClient ufs.UFSClient, host string, authFlags *authcli.Flags) (ufsMetadata, error) {
-	dut, err := ufsClient.GetDut(ctx, &ufsApi.GetMachineLSERequest{
+	dut, err := ufsClient.GetMachineLSE(ctx, &ufsApi.GetMachineLSERequest{
 		Name: ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, host),
 	})
 	if err != nil {

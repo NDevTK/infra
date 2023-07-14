@@ -22,8 +22,7 @@ import (
 // not strictly necessary (could just use proto client directly) but makes it easier to test
 // add more methods if additional UFS reqs needed
 type UFSClient interface {
-	GetDut(context.Context, *ufsApi.GetMachineLSERequest) (*ufsModels.MachineLSE, error)
-	GetMachine(context.Context, *ufsApi.GetMachineRequest) (*ufsModels.Machine, error)
+	GetMachine(context.Context, *ufsApi.GetMachineRequest, ...grpc.CallOption) (*ufsModels.Machine, error)
 	GetMachineLSE(context.Context, *ufsApi.GetMachineLSERequest, ...grpc.CallOption) (*ufsModels.MachineLSE, error)
 	UpdateMachineLSE(context.Context, *ufsApi.UpdateMachineLSERequest, ...grpc.CallOption) (*ufsModels.MachineLSE, error)
 }
@@ -31,11 +30,6 @@ type UFSClient interface {
 //  implementation of UFS client
 type clientImpl struct {
 	client ufsApi.FleetClient
-}
-
-// GetDut uses the GetMachineLSE method to fetch info about lab setup
-func (c *clientImpl) GetDut(ctx context.Context, req *ufsApi.GetMachineLSERequest) (*ufsModels.MachineLSE, error) {
-	return c.client.GetMachineLSE(ctx, req)
 }
 
 // GetMachine fetches information about the machine we request.
@@ -54,7 +48,7 @@ func (c *clientImpl) UpdateMachineLSE(ctx context.Context, req *ufsApi.UpdateMac
 }
 
 // NewUFSClient creates a new client to access UFS, but only exposing specific methods needed for Satlab CLI
-func NewUFSClient(ctx context.Context, ufsService string, authFlags *authcli.Flags) (UFSClient, error) {
+func NewUFSClient(ctx context.Context, ufsService string, authFlags *authcli.Flags) (ufsApi.FleetClient, error) {
 	if ufsService == "" {
 		return nil, errors.Reason("new ufs client: must provide ufs service hostname").Err()
 	}
@@ -64,11 +58,9 @@ func NewUFSClient(ctx context.Context, ufsService string, authFlags *authcli.Fla
 		return nil, err
 	}
 
-	client := ufsApi.NewFleetPRPCClient(&prpc.Client{
+	return ufsApi.NewFleetPRPCClient(&prpc.Client{
 		C:       httpClient,
 		Host:    ufsService,
 		Options: site.DefaultPRPCOptions,
-	})
-
-	return &clientImpl{client: client}, nil
+	}), nil
 }

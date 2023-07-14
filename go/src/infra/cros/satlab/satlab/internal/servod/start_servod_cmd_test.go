@@ -22,9 +22,27 @@ type FakeUFSClient struct {
 	badData bool
 }
 
-// GetDUT returns a hardcoded DUT with a servo connected
-func (f *FakeUFSClient) GetDut(context.Context, *ufsApi.GetMachineLSERequest) (*ufsModels.MachineLSE, error) {
+// GetMachine returns a hardcoded machine.
+// If the fake UFS client calling it was designated to have bad data, instead returns machine with all default fields.
+func (f *FakeUFSClient) GetMachine(context.Context, *ufsApi.GetMachineRequest, ...grpc.CallOption) (*ufsModels.Machine, error) {
 	if f.badData {
+		return &ufsModels.Machine{}, nil
+	}
+
+	chromeOsMachine := ufsModels.ChromeOSMachine{
+		BuildTarget: "ufsBoard",
+		Model:       "ufsModel",
+	}
+
+	m := ufsModels.Machine_ChromeosMachine{ChromeosMachine: &chromeOsMachine}
+
+	return &ufsModels.Machine{
+		Device: &m,
+	}, nil
+}
+
+func (c *FakeUFSClient) GetMachineLSE(ctx context.Context, req *ufsApi.GetMachineLSERequest, opts ...grpc.CallOption) (*ufsModels.MachineLSE, error) {
+	if c.badData {
 		return &ufsModels.MachineLSE{}, nil
 	}
 
@@ -51,29 +69,6 @@ func (f *FakeUFSClient) GetDut(context.Context, *ufsApi.GetMachineLSERequest) (*
 			},
 		},
 	}, nil
-}
-
-// GetMachine returns a hardcoded machine.
-// If the fake UFS client calling it was designated to have bad data, instead returns machine with all default fields.
-func (f *FakeUFSClient) GetMachine(context.Context, *ufsApi.GetMachineRequest) (*ufsModels.Machine, error) {
-	if f.badData {
-		return &ufsModels.Machine{}, nil
-	}
-
-	chromeOsMachine := ufsModels.ChromeOSMachine{
-		BuildTarget: "ufsBoard",
-		Model:       "ufsModel",
-	}
-
-	m := ufsModels.Machine_ChromeosMachine{ChromeosMachine: &chromeOsMachine}
-
-	return &ufsModels.Machine{
-		Device: &m,
-	}, nil
-}
-
-func (c *FakeUFSClient) GetMachineLSE(ctx context.Context, req *ufsApi.GetMachineLSERequest, opts ...grpc.CallOption) (*ufsModels.MachineLSE, error) {
-	return nil, nil
 }
 func (c *FakeUFSClient) UpdateMachineLSE(ctx context.Context, req *ufsApi.UpdateMachineLSERequest, opts ...grpc.CallOption) (*ufsModels.MachineLSE, error) {
 	return nil, nil
