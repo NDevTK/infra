@@ -47,13 +47,12 @@ USING (
         target_platform, variant_hash
     ), attempt_builds AS (
       SELECT
-        EXTRACT(DATE FROM partition_time AT TIME ZONE "PST8PDT") AS `date`,
+        EXTRACT(DATE FROM start_time AT TIME ZONE "PST8PDT") AS `date`,
         b.id AS build_id,
         ps.change,
         ps.earliest_equivalent_patchset AS patchset,
-        partition_time AS ps_approx_timestamp,
       FROM `commit-queue`.chromium.attempts a, a.gerrit_changes ps, a.builds b
-      WHERE DATE(partition_time, "PST8PDT") BETWEEN @from_date AND @to_date
+      WHERE DATE(start_time, "PST8PDT") BETWEEN @from_date AND @to_date
     ), patchset_flakes AS (
       SELECT
         `date`,
@@ -101,7 +100,7 @@ USING (
       t.runtime_quantiles[500] p50_runtime,
       t.runtime_quantiles[900] p90_runtime,
     FROM tests AS t
-    INNER JOIN flakes AS f
+    LEFT JOIN flakes AS f
       USING (variant_hash, test_id, date)
   ) AS S
 ON
