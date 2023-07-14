@@ -6,23 +6,22 @@ package internal
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
 	"infra/cros/cmd/cros_test_platformV2/executor"
 	"infra/cros/cmd/cros_test_platformV2/tools/gcs"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	dut_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
 func translateRequest(req *api.CTPv2Request) *api.InternalTestplan {
 	internalStruct := &api.InternalTestplan{}
-	// hwReqs := hwRequirements(req)
-	// TODO, there is a bit of a gap between the input request (where build is part of legacySW)
-	// And the current definition of channels (which is basically dev/beta/stable) in the suiteMetadata.
-	// It might not even be needed as part of the metadata. Need to investigate more.
+	targs := targetRequirements(req)
 	suitemd := &api.SuiteMetadata{
-		// HwRequirements: hwReqs,
-		Pool: req.Pool,
+		TargetRequirements: targs,
+		Pool:               req.Pool,
 	}
 
 	internalStruct.SuiteInfo = &api.SuiteInfo{
@@ -33,19 +32,53 @@ func translateRequest(req *api.CTPv2Request) *api.InternalTestplan {
 	return internalStruct
 }
 
-// TODO, update this once the breaking proto change has rolled.
-// func hwRequirements(req *api.CTPv2Request) (hwReqs []*api.HWRequirements) {
-// 	switch hw := req.HwTargets.Targets.(type) {
-// 	case *api.HWTargets_LegacyHw:
-// 		hwReq := &api.HWRequirements{
-// 			HwDefinition: []*api.SwarmingDefinition{},
-// 		}
-// 		hwReqs = append(hwReqs, hwReq)
-// 		return hwReqs
-// 	default:
-// 		return hwReqs
-// 	}
-// }
+func legacyswpoper(sws []*api.SWTarget) []*api.LegacySW {
+	var legsws []*api.LegacySW
+	for _, swTarg := range sws {
+		switch sw := swTarg.SwTarget.(type) {
+		case *api.SWTarget_LegacySw:
+			legsws = append(legsws, sw.LegacySw)
+		}
+	}
+	return legsws
+}
+
+func buildcrosDut(hw *api.LegacyHW) *api.SwarmingDefinition {
+	dut := &dut_api.Dut{}
+
+	Cros := &dut_api.Dut_ChromeOS{DutModel: &dut_api.DutModel{
+		BuildTarget: hw.Board,
+		ModelName:   hw.Model,
+	}}
+	dut.DutType = &dut_api.Dut_Chromeos{Chromeos: Cros}
+
+	return &api.SwarmingDefinition{DutInfo: dut}
+}
+
+func targetRequirements(req *api.CTPv2Request) (targs []*api.TargetRequirements) {
+	for _, targ := range req.Targets {
+		switch hw := targ.HwTarget.Target.(type) {
+		case *api.HWTarget_LegacyHw:
+
+			// There will only be one set by the translation; but other filters might
+			// expand this as they see fit.
+			var hwDefs []*api.SwarmingDefinition
+			hwDefs = append(hwDefs, buildcrosDut(hw.LegacyHw))
+
+			legacysw := legacyswpoper(targ.SwTargets)
+
+			builtTarget := &api.TargetRequirements{
+				HwRequirements: &api.HWRequirements{
+					HwDefinition: hwDefs,
+				},
+				SwRequirements: legacysw,
+			}
+			targs = append(targs, builtTarget)
+		}
+	}
+	return targs
+
+}
 
 func createContainerManagerExecutor(ctx context.Context, cloud bool) (managers.ContainerManager, executor.Executor) {
 	var containerMgr managers.ContainerManager
@@ -61,44 +94,47 @@ func createContainerManagerExecutor(ctx context.Context, cloud bool) (managers.C
 	return containerMgr, e
 }
 
-// TODO, update this once the breaking proto change has rolled.
-// func getFirstBoardFromLegacy(req *api.HWTargets) string {
-// 	switch hw := req.Targets.(type) {
-// 	case *api.HWTargets_LegacyHw:
-// 		if len(hw.LegacyHw.Board) == 0 {
-// 			return ""
-// 		}
-// 		return hw.LegacyHw.Board[0]
-// 	default:
-// 		return ""
-// 	}
-// }
+func getFirstBoardFromLegacy(targs []*api.Targets) string {
+	if len(targs) == 0 {
+		return ""
+	}
+	switch hw := targs[0].HwTarget.Target.(type) {
+	case *api.HWTarget_LegacyHw:
+		return hw.LegacyHw.Board
+	default:
+		return ""
+	}
+}
 
-// func getFirstGcsPathFromLegacy(req *api.SWTargets) string {
-// 	switch sw := req.SwTargets.(type) {
-// 	case *api.SWTargets_LegacySw:
-// 		if len(sw.LegacySw.LegacySws) == 0 {
-// 			return ""
-// 		}
-// 		return sw.LegacySw.LegacySws[0].GcsPath
-// 	default:
-// 		return ""
-// 	}
-// }
+func getFirstGcsPathFromLegacy(targs []*api.Targets) string {
+	if len(targs) == 0 {
+		return ""
+	}
+	if len(targs[0].SwTargets) == 0 {
+		return ""
+	}
+	switch sw := targs[0].SwTargets[0].SwTarget.(type) {
+	case *api.SWTarget_LegacySw:
+		return sw.LegacySw.GcsPath
+	default:
+		return ""
+	}
+}
 
 func gcsInfo(req *api.CTPv2Request) (string, string, error) {
-	// board := getFirstBoardFromLegacy(req.HwTargets)
-	// if board == "" {
-	// 	return "", "", errors.New("no board provided in legacy request")
-	// }
+	board := getFirstBoardFromLegacy(req.Targets)
+	if board == "" {
+		return "", "", errors.New("no board provided in legacy request")
+	}
 
-	// gcsPath := getFirstGcsPathFromLegacy(req.SwTargets)
-	// if board == "" {
-	// 	return "", "", errors.New("no gcsPath provided in legacy request")
-	// }
+	gcsPath := getFirstGcsPathFromLegacy(req.Targets)
+	if gcsPath == "" {
+		return "", "", errors.New("no gcsPath provided in legacy request")
+	}
 
-	return "", "", nil
+	return board, gcsPath, nil
 }
+
 func buildExecutors(ctx context.Context, req *api.CTPv2Request, cloud bool) ([]executor.Executor, error) {
 	execs := []executor.Executor{}
 
