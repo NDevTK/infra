@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4fbf6539_6f4958b7",
+        "filename": "go/src/infra/appengine/statsui/sql/cq_builder_metrics/cq_builder_metrics_week_test_counts.sql",
+        "patchSetId": 3
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2023-07-14T18:41:22Z",
+      "side": 1,
+      "message": "This change should be done in the daily as well right?",
+      "revId": "67e024d75e4eeef1ad538d5ae38ac1f09f92f2ef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
