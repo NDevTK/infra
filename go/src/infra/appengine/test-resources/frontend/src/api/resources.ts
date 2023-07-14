@@ -112,7 +112,7 @@ export interface FetchDirectoryMetricsRequest {
   component: string,
   period: Period,
   dates: string[],
-  parent_id: string,
+  parent_ids: string[],
   metrics: MetricType[],
   filter?: string,
   sort: SortBy,
@@ -131,7 +131,7 @@ export interface DirectoryNode {
 }
 
 export interface FetchDirectoryMetricsResponse {
-  node: DirectoryNode[],
+  nodes: DirectoryNode[],
 }
 
 export async function fetchDirectoryMetrics(

@@ -99,7 +99,7 @@ export function dataReducer(state: Node[], action: DataAction): Node[] {
         })),
       }));
     case 'merge_dir': {
-      const nodes = action.nodes.map((node) => ({
+      const nodes = action.nodes ? action.nodes.map((node) => ({
         id: node.id,
         path: node.id,
         name: node.name,
@@ -108,7 +108,7 @@ export function dataReducer(state: Node[], action: DataAction): Node[] {
         onExpand: action.onExpand,
         loaded: false,
         nodes: [],
-      }));
+      })) : [];
       if (action.parentId === undefined) {
         return nodes;
       } else {
@@ -136,7 +136,7 @@ export function loadDirectoryMetrics(
     component: 'Blink',
     period: params.period,
     dates: datesToFetch,
-    parent_id: parentId,
+    parent_ids: [parentId],
     metrics: [
       MetricType.NUM_RUNS,
       MetricType.AVG_RUNTIME,

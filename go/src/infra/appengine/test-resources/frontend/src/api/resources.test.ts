@@ -121,7 +121,7 @@ describe('fetchTestMetrics', () => {
 describe('fetchDirectoryMetrics', () => {
   it('returns metrics', async () => {
     const data: FetchDirectoryMetricsResponse = {
-      node: [
+      nodes: [
         {
           id: '//a',
           type: DirectoryNodeType.DIRECTORY,
@@ -142,7 +142,7 @@ describe('fetchDirectoryMetrics', () => {
           'component': 'component',
           'period': Period.DAY,
           'dates': ['2012-01-02'],
-          'parent_id': '/',
+          'parent_ids': ['/'],
           'metrics': [
             MetricType.NUM_RUNS,
             MetricType.AVG_RUNTIME,

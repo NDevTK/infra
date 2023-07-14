@@ -166,7 +166,7 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
           (response: FetchDirectoryMetricsResponse) => {
             dataDispatch({
               type: 'merge_dir',
-              nodes: response.node,
+              nodes: response.nodes,
               parentId: node.id,
               onExpand: loadPathNode,
             });
@@ -186,7 +186,7 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
           (response: FetchDirectoryMetricsResponse, fetchedDates: string[]) => {
             dataDispatch({
               type: 'merge_dir',
-              nodes: response.node,
+              nodes: response.nodes,
               onExpand: loadPathNode,
             });
             setTimelineView(params.timelineView);
