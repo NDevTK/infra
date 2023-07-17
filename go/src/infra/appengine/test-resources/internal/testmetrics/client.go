@@ -7,6 +7,7 @@ package testmetrics
 import (
 	"context"
 	"os"
+	"strconv"
 	"strings"
 
 	"cloud.google.com/go/bigquery"
@@ -134,6 +135,24 @@ func (c *Client) ListComponents(ctx context.Context, req *api.ListComponentsRequ
 
 // Fetches requested metrics for the provided days and filters
 func (c *Client) FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequest) (*api.FetchTestMetricsResponse, error) {
+	q, err := c.createFetchMetricsQuery(req)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to parse the request into a query").Err()
+	}
+
+	job, err := q.Run(ctx)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to run start the query").Err()
+	}
+	it, err := job.Read(ctx)
+	if err != nil {
+		return nil, errors.Annotate(err, "the query failed to complete").Err()
+	}
+
+	return c.readFetchTestMetricsResponse(it, req)
+}
+
+func (c *Client) createFetchMetricsQuery(req *api.FetchTestMetricsRequest) (*bigquery.Query, error) {
 	dates, err := bqToDateArray(req.GetDates())
 	if err != nil {
 		return nil, err
@@ -171,16 +190,17 @@ func (c *Client) FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequ
 		sortDirection = "DESC"
 	}
 
-	string_filter := strings.Join(strings.Split(req.Filter, " "), "|")
-	filter := ""
-	if string_filter != "" {
-		filter = `
-	# If it matches the parent ID display everything
-	AND (REGEXP_CONTAINS(test_name, @string_filter) OR
-	REGEXP_CONTAINS(file_name, @string_filter) OR
-	# Only display variant matches if the variant is what matches
-	REGEXP_CONTAINS(builder, @string_filter) OR
-	REGEXP_CONTAINS(test_suite, @string_filter))`
+	filterClause := ""
+	var filterParameters []bigquery.QueryParameter
+	if req.Filter != "" {
+		for i, filter := range strings.Split(req.Filter, " ") {
+			filterClause += `
+	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter` + strconv.Itoa(i) + `)`
+			filterParameters = append(filterParameters, bigquery.QueryParameter{
+				Name:  "filter" + strconv.Itoa(i),
+				Value: filter,
+			})
+		}
 	}
 
 	query := `
@@ -200,7 +220,7 @@ FROM
 	` + c.ProjectId + `.` + c.DataSet + `.` + table + ` AS m
 WHERE
 	DATE(date) IN UNNEST(@dates)
-	AND component = @component` + filter + `
+	AND component = @component` + filterClause + `
 GROUP BY date, test_id
 ORDER BY ` + sortMetric + ` ` + sortDirection + `
 LIMIT @page_size OFFSET @page_offset`
@@ -212,19 +232,9 @@ LIMIT @page_size OFFSET @page_offset`
 		{Name: "page_size", Value: req.PageSize + 1},
 		{Name: "page_offset", Value: req.PageOffset},
 		{Name: "component", Value: req.Component},
-		{Name: "string_filter", Value: string_filter},
 	}
-
-	job, err := q.Run(ctx)
-	if err != nil {
-		return nil, errors.Annotate(err, "failed to run start the query").Err()
-	}
-	it, err := job.Read(ctx)
-	if err != nil {
-		return nil, errors.Annotate(err, "the query failed to complete").Err()
-	}
-
-	return c.readFetchTestMetricsResponse(it, req)
+	q.Parameters = append(q.Parameters, filterParameters...)
+	return q, nil
 }
 
 func (*Client) readFetchTestMetricsResponse(it *bigquery.RowIterator, req *api.FetchTestMetricsRequest) (*api.FetchTestMetricsResponse, error) {
@@ -323,7 +333,7 @@ func (*Client) readFetchTestMetricsResponse(it *bigquery.RowIterator, req *api.F
 	return response, nil
 }
 
-func (c *Client) fetchFilteredDirectoryMetrics(ctx context.Context, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error) {
+func (c *Client) createFilteredDirectoryQuery(req *api.FetchDirectoryMetricsRequest) (*bigquery.Query, error) {
 	dates, err := bqToDateArray(req.GetDates())
 	if err != nil {
 		return nil, err
@@ -367,7 +377,18 @@ func (c *Client) fetchFilteredDirectoryMetrics(ctx context.Context, req *api.Fet
 		sortDirection = "DESC"
 	}
 
-	string_filter := strings.Join(strings.Split(req.Filter, " "), "|")
+	filterClause := ""
+	var filterParameters []bigquery.QueryParameter
+	if req.Filter != "" {
+		for i, filter := range strings.Split(req.Filter, " ") {
+			filterClause += `
+		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter` + strconv.Itoa(i) + `)`
+			filterParameters = append(filterParameters, bigquery.QueryParameter{
+				Name:  "filter" + strconv.Itoa(i),
+				Value: filter,
+			})
+		}
+	}
 
 	query := `
 WITH
@@ -382,13 +403,7 @@ test_summaries AS (
 		date IN UNNEST(@dates)
 		AND file_name IS NOT NULL
 		AND component = @component
-		-- Apply the requested filter
-		AND (
-			REGEXP_CONTAINS(builder, @string_filter) OR
-			REGEXP_CONTAINS(test_suite, @string_filter) OR
-			REGEXP_CONTAINS(test_name, @string_filter) OR
-			REGEXP_CONTAINS(file_name, @string_filter)
-		)
+		-- Apply the requested filter` + filterClause + `
 	GROUP BY file_name, date, test_id
 )
 SELECT
@@ -417,22 +432,12 @@ ORDER BY ` + sortMetric + ` ` + sortDirection
 		{Name: "dates", Value: dates},
 		{Name: "component", Value: req.Component},
 		{Name: "parent", Value: req.ParentIds[0]},
-		{Name: "string_filter", Value: string_filter},
 	}
-
-	job, err := q.Run(ctx)
-	if err != nil {
-		return nil, err
-	}
-	it, err := job.Read(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return c.readFetchDirectoryMetricsResponse(it, req)
+	q.Parameters = append(q.Parameters, filterParameters...)
+	return q, nil
 }
 
-func (c *Client) fetchUnfilteredDirectoryMetrics(ctx context.Context, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error) {
+func (c *Client) createUnfilteredDirectoryQuery(req *api.FetchDirectoryMetricsRequest) (*bigquery.Query, error) {
 	dates, err := bqToDateArray(req.GetDates())
 	if err != nil {
 		return nil, err
@@ -483,16 +488,7 @@ ORDER BY ` + sortMetric + ` ` + sortDirection
 		{Name: "parent", Value: req.ParentIds[0]},
 	}
 
-	job, err := q.Run(ctx)
-	if err != nil {
-		return nil, err
-	}
-	it, err := job.Read(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return c.readFetchDirectoryMetricsResponse(it, req)
+	return q, nil
 }
 
 func (*Client) readFetchDirectoryMetricsResponse(it *bigquery.RowIterator, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error) {
@@ -547,11 +543,27 @@ func (*Client) readFetchDirectoryMetricsResponse(it *bigquery.RowIterator, req *
 // directory node. A directory node represents a directory or file and the
 // metrics are the combined metrics of the tests in these locations
 func (c *Client) FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error) {
+	var q *bigquery.Query
+	var err error
 	if req.Filter == "" {
-		return c.fetchUnfilteredDirectoryMetrics(ctx, req)
+		q, err = c.createUnfilteredDirectoryQuery(req)
 	} else {
-		return c.fetchFilteredDirectoryMetrics(ctx, req)
+		q, err = c.createFilteredDirectoryQuery(req)
 	}
+	if err != nil {
+		return nil, err
+	}
+
+	job, err := q.Run(ctx)
+	if err != nil {
+		return nil, err
+	}
+	it, err := job.Read(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.readFetchDirectoryMetricsResponse(it, req)
 }
 
 // Updates the summary tables between the days in the provided
