@@ -14,7 +14,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
-func Execute(inputPath string, cloud bool) (*api.TestSuite, error) {
+func Execute(inputPath string, cloud bool) (*api.CTPv2Response, error) {
 	request, err := parsers.ReadInput(inputPath)
 	if err != nil {
 		fmt.Printf("Unable to parse: %s", err)
@@ -27,12 +27,13 @@ func Execute(inputPath string, cloud bool) (*api.TestSuite, error) {
 	executors, _ := buildExecutors(ctx, request, cloud)
 
 	InternalStruct := translateRequest(request)
+
 	// Run the same commands for each
 	for _, executor := range executors {
 		// For CTR, init = start Server async. For services it will be pull/prep container/launch
 		newIS, err := executor.Execute(ctx, "init", InternalStruct)
 		if err != nil {
-			fmt.Printf("filter err: %s", err)
+			fmt.Printf("filter err: %s\n", err)
 		}
 		err = validateStruct(InternalStruct, newIS)
 		if err == nil {
@@ -47,9 +48,8 @@ func Execute(inputPath string, cloud bool) (*api.TestSuite, error) {
 		// Gcloud auth for CTR (kinda odd...). For services, it will be `call the service.`
 		newIS, err := executor.Execute(ctx, "run", InternalStruct)
 		if err != nil {
-			fmt.Printf("filter err: %s", err)
+			fmt.Printf("filter err: %s\n", err)
 		}
-
 		err = validateStruct(InternalStruct, newIS)
 		if err == nil {
 			InternalStruct = newIS
@@ -73,9 +73,14 @@ func Execute(inputPath string, cloud bool) (*api.TestSuite, error) {
 			fmt.Printf("validator err err: %s", err)
 		}
 	}
+
+	return kompress(InternalStruct)
+}
+
+func kompress(resp *api.InternalTestplan) (*api.CTPv2Response, error) {
 	return nil, nil
 }
 
 func validateStruct(resp *api.InternalTestplan, newResp *api.InternalTestplan) error {
-	return nil
+	return fmt.Errorf("no change")
 }

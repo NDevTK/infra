@@ -106,6 +106,7 @@ func (ex *FilterExecutor) init() error {
 		return err
 	}
 	ex.conn = conn
+	fmt.Println("Connected to container")
 
 	filterClient := api.NewGenericFilterServiceClient(conn)
 	if filterClient == nil {
