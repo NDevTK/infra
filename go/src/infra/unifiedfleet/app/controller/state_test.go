@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@ import (
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/model/history"
+	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/state"
 	"infra/unifiedfleet/app/util"
 )
@@ -135,6 +136,71 @@ func TestUpdateState(t *testing.T) {
 			So(changes[0].GetNewValue(), ShouldEqual, ufspb.State_STATE_NEEDS_REPAIR.String())
 			So(changes[0].GetEventLabel(), ShouldEqual, "state_record.state")
 			msgs, err := history.QuerySnapshotMsgByPropertyName(osCtx, "resource_name", "states/machines/os-machine-2")
+			So(err, ShouldBeNil)
+			So(msgs, ShouldHaveLength, 1)
+			So(msgs[0].Delete, ShouldBeFalse)
+		})
+		Convey("UpdateState for machine lse lacking perms", func() {
+			// user has no realm permissions
+			noPermsCtx := withAuthorizedNoPermsUser(osCtx)
+			state.UpdateStateRecord(noPermsCtx, &ufspb.StateRecord{
+				ResourceName: "machinelses/os-machine-3",
+				State:        ufspb.State_STATE_SERVING,
+			})
+			inventory.CreateMachineLSE(noPermsCtx, &ufspb.MachineLSE{
+				Name:  "os-machine-3",
+				Realm: util.AtlLabAdminRealm,
+			})
+
+			sr := &ufspb.StateRecord{
+				ResourceName: "machineslses/os-machine-3",
+				State:        ufspb.State_STATE_NEEDS_REPAIR,
+			}
+			res, err := UpdateState(noPermsCtx, sr)
+			So(res, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "PermissionDenied")
+
+			changes, err := history.QueryChangesByPropertyName(osCtx, "name", "states/machines/os-machine-3")
+			So(err, ShouldBeNil)
+			So(changes, ShouldHaveLength, 0)
+			msgs, err := history.QuerySnapshotMsgByPropertyName(osCtx, "resource_name", "states/machines/os-machine-3")
+			So(err, ShouldBeNil)
+			So(msgs, ShouldHaveLength, 0)
+		})
+		Convey("UpdateState for machine lse with perms", func() {
+			// user has correct realm perms
+			atlPermsCtx := withAuthorizedAtlUser(osCtx)
+			state.UpdateStateRecord(atlPermsCtx, &ufspb.StateRecord{
+				ResourceName: "machinelses/os-machine-4",
+				State:        ufspb.State_STATE_SERVING,
+			})
+			inventory.CreateMachineLSE(atlPermsCtx, &ufspb.MachineLSE{
+				Name:  "os-machine-4",
+				Realm: util.AtlLabAdminRealm,
+			})
+
+			sr := &ufspb.StateRecord{
+				ResourceName: "machinelses/os-machine-4",
+				State:        ufspb.State_STATE_NEEDS_REPAIR,
+			}
+			res, err := UpdateState(atlPermsCtx, sr)
+			So(err, ShouldBeNil)
+			So(res, ShouldResembleProto, sr)
+
+			res, err = state.GetStateRecord(atlPermsCtx, "machinelses/os-machine-4")
+			So(err, ShouldBeNil)
+			So(res.GetResourceName(), ShouldEqual, "machinelses/os-machine-4")
+			So(res.GetState(), ShouldEqual, ufspb.State_STATE_NEEDS_REPAIR)
+
+			changes, err := history.QueryChangesByPropertyName(atlPermsCtx, "name", "states/machinelses/os-machine-4")
+			So(err, ShouldBeNil)
+			So(changes, ShouldHaveLength, 1)
+			So(changes[0].GetName(), ShouldEqual, "states/machinelses/os-machine-4")
+			So(changes[0].GetOldValue(), ShouldEqual, ufspb.State_STATE_SERVING.String())
+			So(changes[0].GetNewValue(), ShouldEqual, ufspb.State_STATE_NEEDS_REPAIR.String())
+			So(changes[0].GetEventLabel(), ShouldEqual, "state_record.state")
+			msgs, err := history.QuerySnapshotMsgByPropertyName(atlPermsCtx, "resource_name", "states/machinelses/os-machine-4")
 			So(err, ShouldBeNil)
 			So(msgs, ShouldHaveLength, 1)
 			So(msgs[0].Delete, ShouldBeFalse)

@@ -22,7 +22,9 @@ import (
 func TestUpdateDutState(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	osCtx, _ := util.SetupDatastoreNamespace(ctx, util.OSNamespace)
+	ctx, _ = util.SetupDatastoreNamespace(ctx, util.OSNamespace)
+	osCtx := withAuthorizedAtlUser(ctx)
+	noPermsCtx := withAuthorizedNoPermsUser(ctx)
 	Convey("UpdateDutState", t, func() {
 		Convey("Update dut state - missing state", func() {
 			_, err := UpdateDutState(ctx, nil)
@@ -48,8 +50,10 @@ func TestUpdateDutState(t *testing.T) {
 				Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
 					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
 				},
+				Realm: util.AtlLabAdminRealm,
 			})
 			So(err, ShouldBeNil)
+
 			_, err = state.UpdateDutStates(osCtx, []*chromeosLab.DutState{ds1})
 			So(err, ShouldBeNil)
 			oldDS, err := state.GetDutState(osCtx, "update-dutstate-id2")
@@ -75,7 +79,7 @@ func TestUpdateDutState(t *testing.T) {
 			// Verify changes
 			changes, err := history.QueryChangesByPropertyName(osCtx, "name", "dutstates/update-dutstate-id2")
 			So(err, ShouldBeNil)
-			So(changes, ShouldHaveLength, 3)
+			So(changes, ShouldHaveLength, 4)
 			So(changes[0].GetEventLabel(), ShouldEqual, "dut_state.servo")
 			So(changes[0].GetOldValue(), ShouldEqual, chromeosLab.PeripheralState_WORKING.String())
 			So(changes[0].GetNewValue(), ShouldEqual, chromeosLab.PeripheralState_BROKEN.String())
@@ -89,6 +93,27 @@ func TestUpdateDutState(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(msgs, ShouldHaveLength, 1)
 			So(msgs[0].Delete, ShouldBeFalse)
+		})
+		Convey("Update dut state - no perms", func() {
+			ds3 := mockDutState("update-dutstate-id3", "update-dutstate-hostname3")
+			ds3.Servo = chromeosLab.PeripheralState_WORKING
+			ds3.Chameleon = chromeosLab.PeripheralState_WORKING
+			ds3.StorageState = chromeosLab.HardwareState_HARDWARE_ACCEPTABLE
+
+			// Use osCtx in setup
+			_, err := inventory.CreateMachineLSE(osCtx, &ufspb.MachineLSE{
+				Name:     "update-dutstate-hostname3",
+				Hostname: "update-dutstate-hostname3",
+				Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
+					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
+				},
+				Realm: util.AtlLabAdminRealm,
+			})
+			So(err, ShouldBeNil)
+
+			_, err = UpdateDutState(noPermsCtx, ds3)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Permission")
 		})
 	})
 }

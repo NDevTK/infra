@@ -1133,7 +1133,7 @@ func GetDUTConnectedToServo(ctx context.Context, servo *chromeosLab.Servo) (*ufs
 func UpdateRecoveryData(ctx context.Context, req *ufsAPI.UpdateDeviceRecoveryDataRequest) error {
 	err := validateUpdateRecoveryData(ctx, req.GetHostname())
 	if err != nil {
-		logging.Infof(ctx, "Validation error - Failed call UpdateRecoveryData: %s", err)
+		return errors.Annotate(err, "Validation error - Failed call UpdateRecoveryData").Err()
 	}
 
 	if err := checkDutIdAndHostnameAreAssociated(ctx, req.GetDeviceId(), req.GetHostname()); err != nil {
@@ -1183,7 +1183,7 @@ func validateUpdateRecoveryData(ctx context.Context, hostname string) error {
 func UpdateTestData(ctx context.Context, req *ufsAPI.UpdateTestDataRequest) error {
 	err := validateUpdateTestData(ctx, req.GetHostname())
 	if err != nil {
-		logging.Infof(ctx, "Validation error - Failed call UpdateTestData: %s", err)
+		return errors.Annotate(err, "Validation error - Failed call UpdateTestData").Err()
 	}
 
 	if err := checkDutIdAndHostnameAreAssociated(ctx, req.GetDeviceId(), req.GetHostname()); err != nil {

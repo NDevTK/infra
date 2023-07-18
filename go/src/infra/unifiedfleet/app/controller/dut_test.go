@@ -3441,61 +3441,64 @@ func TestCheckDutIdAndHostnameAreAssociated(t *testing.T) {
 
 func TestUpdateRecoveryData(t *testing.T) {
 	t.Parallel()
-	ctx := external.WithTestingContext(testingContext())
-	ctx = withAuthorizedAtlUser(ctx)
-	Convey("UpdateRecoveryData", t, func() {
-		Convey("Update ChromeOS device", func() {
-			const dutName = "dut-1"
-			const dutMachine = "dut-machine-1"
-			const labstationName = "labstation-1"
-			const labstationMachine = "labstation-machine-1"
-			req := &ufsAPI.UpdateDeviceRecoveryDataRequest{
-				DeviceId:     dutMachine,
-				Hostname:     dutName,
-				ResourceType: ufsAPI.UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_CHROMEOS_DEVICE,
-				DeviceRecoveryData: &ufsAPI.UpdateDeviceRecoveryDataRequest_Chromeos{
-					Chromeos: &ufsAPI.ChromeOsRecoveryData{
-						DutState: &chromeosLab.DutState{
-							Id: &chromeosLab.ChromeOSDeviceID{
-								Value: dutMachine,
-							},
-							Hostname: dutName,
-						},
-						DutData: &ufsAPI.ChromeOsRecoveryData_DutData{
-							SerialNumber: "serialNumber",
-							HwID:         "hwID",
-							DeviceSku:    "deviceSku",
-						},
-						LabData: &ufsAPI.ChromeOsRecoveryData_LabData{},
-					},
-				},
-				ResourceState: ufspb.State_STATE_READY,
-			}
-			err := createValidDUTWithLabstation(ctx, dutName, dutMachine, labstationName, labstationMachine)
-			So(err, ShouldBeNil)
-			machine, err := registration.GetMachine(ctx, dutMachine)
-			So(err, ShouldBeNil)
-			So(machine.GetSerialNumber(), ShouldBeEmpty)
-			So(machine.GetChromeosMachine().GetHwid(), ShouldBeEmpty)
-			So(machine.GetChromeosMachine().GetSku(), ShouldBeEmpty)
-			asset, err := registration.CreateAsset(ctx, &ufspb.Asset{
-				Name: dutMachine,
-				Info: &ufspb.AssetInfo{
-					AssetTag: dutMachine + "-asset-1",
-				},
-				Type:     ufspb.AssetType_DUT,
-				Location: &ufspb.Location{},
-			})
-			So(err, ShouldBeNil)
-			So(asset.GetInfo().GetSerialNumber(), ShouldBeEmpty)
-			So(asset.GetInfo().GetHwid(), ShouldBeEmpty)
-			So(asset.GetInfo().GetSku(), ShouldBeEmpty)
-			err = updateRecoveryResourceState(ctx, dutName, ufspb.State_STATE_NEEDS_REPAIR)
-			So(err, ShouldBeNil)
-			lse, err := GetMachineLSE(ctx, dutName)
-			So(err, ShouldBeNil)
-			So(lse.GetResourceState(), ShouldEqual, ufspb.State_STATE_NEEDS_REPAIR)
+	Convey("Setup data", t, func() {
+		// new context every test allows us to reuse test data in a clean
+		// context every time.
+		baseCtx := external.WithTestingContext(testingContext())
+		ctx := withAuthorizedAtlUser(baseCtx)
 
+		const dutName = "dut-1"
+		const dutMachine = "dut-machine-1"
+		const labstationName = "labstation-1"
+		const labstationMachine = "labstation-machine-1"
+		req := &ufsAPI.UpdateDeviceRecoveryDataRequest{
+			DeviceId:     dutMachine,
+			Hostname:     dutName,
+			ResourceType: ufsAPI.UpdateDeviceRecoveryDataRequest_RESOURCE_TYPE_CHROMEOS_DEVICE,
+			DeviceRecoveryData: &ufsAPI.UpdateDeviceRecoveryDataRequest_Chromeos{
+				Chromeos: &ufsAPI.ChromeOsRecoveryData{
+					DutState: &chromeosLab.DutState{
+						Id: &chromeosLab.ChromeOSDeviceID{
+							Value: dutMachine,
+						},
+						Hostname: dutName,
+					},
+					DutData: &ufsAPI.ChromeOsRecoveryData_DutData{
+						SerialNumber: "serialNumber",
+						HwID:         "hwID",
+						DeviceSku:    "deviceSku",
+					},
+					LabData: &ufsAPI.ChromeOsRecoveryData_LabData{},
+				},
+			},
+			ResourceState: ufspb.State_STATE_READY,
+		}
+		err := createValidDUTWithLabstation(ctx, dutName, dutMachine, labstationName, labstationMachine)
+		So(err, ShouldBeNil)
+		machine, err := registration.GetMachine(ctx, dutMachine)
+		So(err, ShouldBeNil)
+		So(machine.GetSerialNumber(), ShouldBeEmpty)
+		So(machine.GetChromeosMachine().GetHwid(), ShouldBeEmpty)
+		So(machine.GetChromeosMachine().GetSku(), ShouldBeEmpty)
+		asset, err := registration.CreateAsset(ctx, &ufspb.Asset{
+			Name: dutMachine,
+			Info: &ufspb.AssetInfo{
+				AssetTag: dutMachine + "-asset-1",
+			},
+			Type:     ufspb.AssetType_DUT,
+			Location: &ufspb.Location{},
+		})
+		So(err, ShouldBeNil)
+		So(asset.GetInfo().GetSerialNumber(), ShouldBeEmpty)
+		So(asset.GetInfo().GetHwid(), ShouldBeEmpty)
+		So(asset.GetInfo().GetSku(), ShouldBeEmpty)
+		err = updateRecoveryResourceState(ctx, dutName, ufspb.State_STATE_NEEDS_REPAIR)
+		So(err, ShouldBeNil)
+		lse, err := GetMachineLSE(ctx, dutName)
+		So(err, ShouldBeNil)
+		So(lse.GetResourceState(), ShouldEqual, ufspb.State_STATE_NEEDS_REPAIR)
+
+		Convey("Update recovery data should update information", func() {
 			err = UpdateRecoveryData(ctx, req)
 			So(err, ShouldBeNil)
 			machine, err = registration.GetMachine(ctx, dutMachine)
@@ -3512,5 +3515,11 @@ func TestUpdateRecoveryData(t *testing.T) {
 			So(asset.GetInfo().GetHwid(), ShouldEqual, "hwID")
 			So(asset.GetInfo().GetSku(), ShouldEqual, "deviceSku")
 		})
+		Convey("Update recovery data rejected without perms", func() {
+			noPermsCtx := withAuthorizedNoPermsUser(baseCtx)
+			err = UpdateRecoveryData(noPermsCtx, req)
+			So(err, ShouldNotBeNil)
+		})
 	})
+
 }

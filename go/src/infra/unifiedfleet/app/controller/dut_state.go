@@ -13,7 +13,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
-	"go.chromium.org/luci/server/auth"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -104,7 +103,7 @@ func UpdateDutState(ctx context.Context, ds *chromeosLab.DutState) (*chromeosLab
 		}
 
 		if err := util.CheckPermission(ctx, util.ConfigurationsUpdate, machineLSE.GetRealm()); err != nil {
-			logging.Infof(ctx, "User %s missing permission in realm %s for UpdateDutState", auth.CurrentIdentity(ctx), machineLSE.GetRealm())
+			return err
 		}
 
 		if err := assignRealmFromMachineLSE(ds, machineLSE); err != nil {

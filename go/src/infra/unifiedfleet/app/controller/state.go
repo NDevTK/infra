@@ -12,7 +12,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
-	"go.chromium.org/luci/server/auth"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsds "infra/unifiedfleet/app/model/datastore"
@@ -56,7 +55,7 @@ func UpdateState(ctx context.Context, stateRecord *ufspb.StateRecord) (*ufspb.St
 			logging.Errorf(ctx, "Failed to update ResourceState: GetMachineLSE %s failed: %s", name, err)
 		} else {
 			if err := util.CheckPermission(ctx, util.ConfigurationsUpdate, lse.GetRealm()); err != nil {
-				logging.Infof(ctx, "User %s missing permission in realm %s for UpdateState", auth.CurrentIdentity(ctx), lse.GetRealm())
+				return err
 			}
 
 			// Copy for logging

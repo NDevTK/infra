@@ -131,7 +131,17 @@ func withAuthorizedAtlUser(c context.Context) context.Context {
 				Realm:      util.AtlLabAdminRealm,
 				Permission: util.InventoriesDelete,
 			},
+			{
+				Realm:      util.AtlLabAdminRealm,
+				Permission: util.ConfigurationsUpdate,
+			},
 		},
 	})
 	return c
+}
+
+func withAuthorizedNoPermsUser(ctx context.Context) context.Context {
+	return auth.WithState(ctx, &authtest.FakeState{
+		Identity: "user:tes@ter.com",
+	})
 }
