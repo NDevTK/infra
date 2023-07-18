@@ -6,14 +6,15 @@ package dut
 
 import (
 	"fmt"
+	"strings"
+	"time"
+
 	"infra/cmd/crosfleet/internal/buildbucket"
 	"infra/cmd/crosfleet/internal/common"
 	dutinfopb "infra/cmd/crosfleet/internal/proto"
 	"infra/cmd/crosfleet/internal/site"
 	"infra/cmd/crosfleet/internal/ufs"
 	"infra/cmdsupport/cmdlib"
-	"strings"
-	"time"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
@@ -36,7 +37,6 @@ Do not build automation around this subcommand.`,
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
 		c.printer.Register(&c.Flags)
-		c.Flags.BoolVar(&c.full, "full", false, "Output full DUT/servo info for each lease.")
 		c.Flags.BoolVar(&c.includeFinished, "include-finished", false, "Include finished builds.")
 		c.Flags.Int64Var(&c.hoursBack, "hours-back", maxLeaseLengthMinutes/60, `Max time since lease finished. Only applies if including finished leases in the search
 via the -include-finished flag.`)
@@ -46,7 +46,6 @@ via the -include-finished flag.`)
 
 type leasesRun struct {
 	subcommands.CommandRunBase
-	full            bool
 	includeFinished bool
 	hoursBack       int64
 	authFlags       authcli.Flags
@@ -129,11 +128,7 @@ func (c *leasesRun) innerRun(a subcommands.Application, env subcommands.Env) err
 		dutHostname := buildbucket.FindDimValInFinalDims("dut_name", build)
 		allDutInfoFound := true
 		if dutHostname != "" {
-			if c.full {
-				leaseInfo.DUT, allDutInfoFound, err = getDutInfo(ctx, ufsClient, dutHostname)
-			} else {
-				leaseInfo.DUT = &dutinfopb.DUTInfo{Hostname: dutHostname}
-			}
+			leaseInfo.DUT, allDutInfoFound, err = getDutInfo(ctx, ufsClient, dutHostname)
 		}
 		// If outputting the command as JSON, collect all lease info in a proto
 		// message first, then print together as one JSON object.
