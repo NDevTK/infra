@@ -57,7 +57,7 @@ func NewServer(env string) *Server {
 
 // LeaseVM leases a VM defined by LeaseVMRequest
 func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.LeaseVMResponse, error) {
-	logging.Infof(ctx, "[server:LeaseVM] Started")
+	logging.Infof(ctx, "LeaseVM start")
 
 	// Set defaults for LeaseVMRequest if needed.
 	r, err := setDefaultLeaseVMRequest(ctx, r, s.Env)
@@ -96,6 +96,7 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 		}
 		time.Sleep(s.initialRetryBackoff * (1 << retry))
 		retry++
+		logging.Debugf(ctx, "LeaseVM: retrying %d time createInstance", retry)
 	}
 
 	ins, err := getInstance(ctx, instancesClient, leaseID, r.GetHostReqs(), true)
@@ -123,13 +124,13 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 
 // ExtendLease extends a VM lease
 func (s *Server) ExtendLease(ctx context.Context, r *api.ExtendLeaseRequest) (*api.ExtendLeaseResponse, error) {
-	logging.Infof(ctx, "[server:ExtendLease] Started")
+	logging.Infof(ctx, "ExtendLease start")
 	return nil, status.Errorf(codes.Unimplemented, "ExtendLease is not implemented")
 }
 
 // ReleaseVM releases a VM lease
 func (s *Server) ReleaseVM(ctx context.Context, r *api.ReleaseVMRequest) (*api.ReleaseVMResponse, error) {
-	logging.Infof(ctx, "[server:ReleaseVM] Started")
+	logging.Infof(ctx, "ReleaseVM start")
 
 	// Set default values for ReleaseVMRequest if needed.
 	r = setDefaultReleaseVMRequest(ctx, r, s.Env)
@@ -163,7 +164,11 @@ func (s *Server) ReleaseVM(ctx context.Context, r *api.ReleaseVMRequest) (*api.R
 //
 // getInstance returns a GCE instance with valid network interface and network
 // IP. If no network is available, it does not return the instance.
-func getInstance(ctx context.Context, client computeInstancesClient, leaseID string, hostReqs *api.VMRequirements, shouldPoll bool) (*computepb.Instance, error) {
+func getInstance(parentCtx context.Context, client computeInstancesClient, leaseID string, hostReqs *api.VMRequirements, shouldPoll bool) (*computepb.Instance, error) {
+	// Implement a 30 second deadline for polling for the instance
+	ctx, cancel := context.WithTimeout(parentCtx, 30*time.Second)
+	defer cancel()
+
 	getReq := &computepb.GetInstanceRequest{
 		Instance: leaseID,
 		Project:  hostReqs.GetGceProject(),
@@ -173,12 +178,7 @@ func getInstance(ctx context.Context, client computeInstancesClient, leaseID str
 	var ins *computepb.Instance
 	var err error
 	if shouldPoll {
-		// Implement a 30 second deadline for polling for the instance
-		d := time.Now().Add(30 * time.Second)
-		ctx, cancel := context.WithDeadline(ctx, d)
-		defer cancel()
-
-		logging.Debugf(ctx, "polling for instance")
+		logging.Debugf(ctx, "getInstance: polling for instance")
 		err = poll(ctx, func(ctx context.Context) (bool, error) {
 			ins, err = client.Get(ctx, getReq)
 			if err != nil {
@@ -190,7 +190,7 @@ func getInstance(ctx context.Context, client computeInstancesClient, leaseID str
 			return nil, err
 		}
 	} else {
-		logging.Debugf(ctx, "getting instance without polling")
+		logging.Debugf(ctx, "getInstance: getting instance without polling")
 		ins, err = client.Get(ctx, getReq)
 		if err != nil {
 			return nil, err
@@ -210,7 +210,11 @@ func getInstance(ctx context.Context, client computeInstancesClient, leaseID str
 }
 
 // createInstance sends an instance creation request to the Compute Engine API and waits for it to complete.
-func createInstance(ctx context.Context, client computeInstancesClient, leaseID string, expirationTime int64, hostReqs *api.VMRequirements) error {
+func createInstance(parentCtx context.Context, client computeInstancesClient, leaseID string, expirationTime int64, hostReqs *api.VMRequirements) error {
+	// Implement a 180 second deadline for creating the instance
+	ctx, cancel := context.WithTimeout(parentCtx, 180*time.Second)
+	defer cancel()
+
 	networkInterfaces, err := getInstanceNetworkInterfaces(ctx, hostReqs)
 	if err != nil {
 		return fmt.Errorf("failed to get network interfaces: %v", err)
@@ -245,7 +249,7 @@ func createInstance(ctx context.Context, client computeInstancesClient, leaseID 
 		},
 	}
 
-	logging.Debugf(ctx, "instance request params: %v", req)
+	logging.Debugf(ctx, "createInstance: InsertInstanceRequest payload: %v", req)
 	op, err := client.Insert(ctx, req)
 	if err != nil {
 		return fmt.Errorf("unable to create instance: %v", err)
@@ -254,11 +258,12 @@ func createInstance(ctx context.Context, client computeInstancesClient, leaseID 
 		return errors.New("no operation returned for waiting")
 	}
 
+	logging.Debugf(ctx, "createInstance: waiting for operation completion")
 	if err = op.Wait(ctx); err != nil {
 		return fmt.Errorf("unable to wait for the operation: %v", err)
 	}
 
-	logging.Infof(ctx, "instance scheduled for creation: %s", leaseID)
+	logging.Infof(ctx, "createInstance: instance scheduled for creation: %s", leaseID)
 	return nil
 }
 
@@ -275,7 +280,7 @@ func deleteInstance(ctx context.Context, r *api.ReleaseVMRequest) error {
 		Project:  r.GetGceProject(),
 		Zone:     r.GetGceRegion(),
 	}
-	logging.Debugf(ctx, "instance request params: %v", req)
+	logging.Debugf(ctx, "deleteInstance: DeleteInstanceRequest payload: %v", req)
 
 	// We omit checking the returned operation or calling Wait so that this call
 	// becomes non-blocking. This saves callers time and lets the clean up cron
@@ -285,7 +290,7 @@ func deleteInstance(ctx context.Context, r *api.ReleaseVMRequest) error {
 		return fmt.Errorf("unable to delete instance: %v", err)
 	}
 
-	logging.Infof(ctx, "instance delete request received by GCP")
+	logging.Infof(ctx, "deleteInstance: instance delete request received by GCP")
 	return nil
 }
 
