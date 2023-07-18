@@ -94,7 +94,7 @@ export function dataReducer(state: Node[], action: DataAction): Node[] {
           id: `${test.testId}:${variant.builder}:${variant.suite}`,
           name: variant.builder,
           subname: variant.suite,
-          metrics: createMetricsMap(test.metrics),
+          metrics: createMetricsMap(variant.metrics),
           isLeaf: true,
           nodes: [],
         })),

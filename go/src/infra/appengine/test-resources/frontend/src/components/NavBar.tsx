@@ -31,7 +31,7 @@ function NavBar() {
       <AppBar>
         <Toolbar>
           <div className={styles.horizontalCenter}>
-            <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+            <FormControl fullWidth sx={{ 'border': 'none', '& fieldset': { border: 'none' } }}>
               <Select
                 data-testid='selectTest'
                 value={componentCtx.component}
@@ -40,8 +40,6 @@ function NavBar() {
                 sx={{ 'color': 'white', '& .MuiSvgIcon-root': {
                   color: 'white',
                 }, 'fontSize': '30px', 'minWidth': '250px' }}
-                disableUnderline
-
               >
                 {componentCtx.allComponents.length ?
                 componentCtx.allComponents.map(

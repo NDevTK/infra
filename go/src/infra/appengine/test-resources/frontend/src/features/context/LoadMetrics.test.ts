@@ -72,7 +72,12 @@ describe('Merge TestMetrics', () => {
         {
           suite: 'suite',
           builder: 'builder',
-          metrics: metrics,
+          metrics: metricsMap({
+            '2012-01-02': [
+              [MetricType.NUM_RUNS, 3],
+              [MetricType.NUM_FAILURES, 4],
+            ],
+          }),
         },
       ],
     }];
@@ -91,9 +96,9 @@ describe('Merge TestMetrics', () => {
     expect(v.name).toEqual(tests[0].variants[0].builder);
     expect(v.subname).toEqual(tests[0].variants[0].suite);
     expect(v.metrics.size).toEqual(1);
-    expect(v.metrics.get('2012-01-02')?.get(MetricType.NUM_RUNS)).toEqual(1);
+    expect(v.metrics.get('2012-01-02')?.get(MetricType.NUM_RUNS)).toEqual(3);
     expect(v.metrics.get('2012-01-02')?.get(MetricType.NUM_FAILURES))
-        .toEqual(2);
+        .toEqual(4);
   });
 
   it('return empty node for empty tests returned', () => {
