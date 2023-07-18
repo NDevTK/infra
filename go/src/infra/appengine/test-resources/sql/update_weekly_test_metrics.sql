@@ -8,6 +8,7 @@ USING (
     ANY_VALUE(m.file_name) AS file_name,
     ANY_VALUE(m.component) AS component,
     builder,
+    bucket,
     test_suite,
     -- Test level metrics
     SUM(m.num_runs) AS num_runs,
@@ -23,13 +24,14 @@ USING (
     -- The date range is inclusive so only go up to the Saturday
     DATE_TRUNC(DATE(@from_date), WEEK) AND
     DATE_ADD(DATE_TRUNC(DATE(@to_date), WEEK), INTERVAL 6 DAY)
-  GROUP BY DATE_TRUNC(m.date, WEEK(SUNDAY)), test_id, repo, builder, test_suite
+  GROUP BY DATE_TRUNC(m.date, WEEK(SUNDAY)), test_id, repo, builder, bucket, test_suite
   ) AS S
 ON
   T.date = S.date
   AND T.test_id = S.test_id
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
   AND (T.builder = S.builder OR (T.builder IS NULL AND S.builder IS NULL))
+  AND (T.bucket = S.bucket OR (T.bucket IS NULL AND S.bucket IS NULL))
   AND (T.test_suite = S.repo OR (T.test_suite IS NULL AND S.test_suite IS NULL))
 WHEN MATCHED THEN
   UPDATE SET
@@ -39,5 +41,5 @@ WHEN MATCHED THEN
     avg_runtime = S.avg_runtime,
     total_runtime = S.total_runtime
 WHEN NOT MATCHED THEN
-  INSERT (`date`, test_id, test_name, file_name, repo, component, builder, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
-  VALUES (`date`, test_id, test_name, file_name, repo, component, builder, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
+  INSERT (`date`, test_id, test_name, file_name, repo, component, builder, bucket, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
+  VALUES (`date`, test_id, test_name, file_name, repo, component, builder, bucket, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)

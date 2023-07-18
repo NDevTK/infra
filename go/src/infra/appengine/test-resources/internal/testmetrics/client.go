@@ -218,6 +218,7 @@ SELECT
 	` + strings.Join(metricAggregations, ",\n\t") + `,
 	ARRAY_AGG(STRUCT(
 		builder AS builder,
+		bucket AS bucket,
 		test_suite AS test_suite,
 		` + strings.Join(metricNames, ",\n\t\t") + `
 		)
@@ -309,8 +310,9 @@ func (*Client) readFetchTestMetricsResponse(it *bigquery.RowIterator, req *api.F
 			}
 
 			builder := variantRowVals.NullString("builder").StringVal
+			bucket := variantRowVals.NullString("bucket").StringVal
 			suite := variantRowVals.NullString("test_suite").StringVal
-			builderSuite := builder + ":" + suite
+			builderSuite := builder + ":" + bucket + ":" + suite
 			builderSuiteData, ok := variantHashToTestDateMetricData[testId][builderSuite]
 			if !ok {
 				fields := ""
@@ -318,8 +320,9 @@ func (*Client) readFetchTestMetricsResponse(it *bigquery.RowIterator, req *api.F
 					fields += field.Name
 				}
 				builderSuiteData = &api.TestVariantData{
-					Builder: variantRowVals.NullString("builder").StringVal,
-					Suite:   variantRowVals.NullString("test_suite").StringVal,
+					Builder: builder,
+					Bucket:  bucket,
+					Suite:   suite,
 					Metrics: make(map[string]*api.TestMetricsArray),
 				}
 				variantHashToTestDateMetricData[testId][builderSuite] = builderSuiteData

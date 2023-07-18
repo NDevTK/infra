@@ -52,6 +52,7 @@ USING (
     component,
     -- variant level info
     builder,
+    bucket,
     test_suite,
     -- Total runtime in seconds divided by the seconds in the time window
     total_runtime / (LEAST(
@@ -67,6 +68,7 @@ ON
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
   AND (T.component = S.component OR (T.component IS NULL AND S.component IS NULL))
   AND (T.builder = S.builder OR (T.builder IS NULL AND S.builder IS NULL))
+  AND (T.bucket = S.bucket OR (T.bucket IS NULL AND S.bucket IS NULL))
   AND (T.test_suite = S.test_suite OR (T.test_suite IS NULL AND S.test_suite IS NULL))
 WHEN MATCHED THEN
   UPDATE SET
@@ -85,6 +87,7 @@ USING (
     component,
     -- variant level info
     builder,
+    bucket,
     test_suite,
     -- Total runtime in seconds divided by the seconds in the time window
     total_runtime / (LEAST(
@@ -102,6 +105,7 @@ ON
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
   AND (T.component = S.component OR (T.component IS NULL AND S.component IS NULL))
   AND (T.builder = S.builder OR (T.builder IS NULL AND S.builder IS NULL))
+  AND (T.bucket = S.bucket OR (T.bucket IS NULL AND S.bucket IS NULL))
   AND (T.test_suite = S.test_suite OR (T.test_suite IS NULL AND S.test_suite IS NULL))
 WHEN MATCHED THEN
   UPDATE SET

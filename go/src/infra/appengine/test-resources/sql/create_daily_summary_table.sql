@@ -10,6 +10,7 @@ CREATE OR REPLACE TABLE APP_ID.DATASET.daily_test_metrics (
 
   -- rolled up variant info
   builder STRING OPTIONS (description = 'The breakdown of the builder being run'),
+  bucket STRING OPTIONS (description = 'The bucket the builder is in (i.e. try, ci)'),
   test_suite STRING OPTIONS (description = 'Test suite in which the test is being run'),
 
   -- metrics
