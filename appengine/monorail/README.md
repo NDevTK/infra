@@ -18,15 +18,6 @@ Instructions for deploying Monorail to an existing instance or setting up a new 
 
 See also: [Common Development Problems](doc/development-problems.md)
 
-## Feature Launch Tracking
-
-To set up FLT/Approvals in Monorail:
-1. Visit the gear > Development Process > Labels and fields
-1. Add at least one custom field with type "Approval" (this will be your approval)
-1. Visit gear > Development Process > Templates
-1. Check "Include Gates and Approval Tasks in issue"
-1. Fill out the chart - The top row is the gates/phases on your FLT issue and you can select radio buttons for which gate each approval goes
-
 ## Testing
 
 ### Python backend testing
