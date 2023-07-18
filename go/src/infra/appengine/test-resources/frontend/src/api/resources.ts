@@ -64,7 +64,7 @@ export interface SortBy {
 }
 
 export interface FetchTestMetricsRequest {
-  component: string,
+  components: string[],
   period: Period,
   dates: string[],
   metrics: MetricType[],
@@ -123,7 +123,7 @@ export async function fetchTestMetrics(
 }
 
 export interface FetchDirectoryMetricsRequest {
-  component: string,
+  components: string[],
   period: Period,
   dates: string[],
   parent_ids: string[],

@@ -92,8 +92,8 @@ message SortBy {
 }
 
 message FetchTestMetricsRequest {
-  // The component to get metrics for. This is effectively a required filter.
-  string component = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // The components to get metrics for. This is effectively a required filter.
+  repeated string components = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Filter specific to the test file names.
   // An empty string will do no filtering
   repeated string file_names = 2;
@@ -164,8 +164,8 @@ message TestMetricsData {
 }
 
 message FetchDirectoryMetricsRequest {
-  // The component being rolled up for the given metrics
-  string component = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // The components being rolled up for the given metrics
+  repeated string components = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Time period to fetch (e.g. DAY, WEEK)
   Period period = 2;
   // Dates to fetch.  This should align to the period.

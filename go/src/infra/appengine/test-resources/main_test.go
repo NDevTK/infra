@@ -131,7 +131,7 @@ func TestFetchMetrics(t *testing.T) {
 		}
 		Convey("Valid request", func() {
 			request := &api.FetchTestMetricsRequest{
-				Component:  "some>component",
+				Components: []string{"some>component"},
 				Period:     api.Period_DAY,
 				Dates:      []string{"2023-01-01"},
 				Metrics:    []api.MetricType{api.MetricType_NUM_RUNS},
@@ -169,7 +169,7 @@ func TestFetchMetrics(t *testing.T) {
 		})
 		Convey("Missing dates", func() {
 			request := &api.FetchTestMetricsRequest{
-				Component:  "some>component",
+				Components: []string{"some>component"},
 				Period:     api.Period_DAY,
 				Metrics:    []api.MetricType{api.MetricType_NUM_RUNS},
 				Filter:     "filter:this",
@@ -187,7 +187,7 @@ func TestFetchMetrics(t *testing.T) {
 		})
 		Convey("Missing metrics", func() {
 			request := &api.FetchTestMetricsRequest{
-				Component:  "some>component",
+				Components: []string{"some>component"},
 				Period:     api.Period_DAY,
 				Dates:      []string{"2023-01-01"},
 				Filter:     "filter:this",
@@ -219,12 +219,12 @@ func TestFetchFileMetrics(t *testing.T) {
 		}
 		Convey("Valid request", func() {
 			request := &api.FetchDirectoryMetricsRequest{
-				Component: "some>component",
-				Period:    api.Period_DAY,
-				Dates:     []string{"2023-01-01"},
-				Metrics:   []api.MetricType{api.MetricType_NUM_RUNS},
-				Filter:    "filter:this",
-				ParentIds: []string{"/"},
+				Components: []string{"some>component"},
+				Period:     api.Period_DAY,
+				Dates:      []string{"2023-01-01"},
+				Metrics:    []api.MetricType{api.MetricType_NUM_RUNS},
+				Filter:     "filter:this",
+				ParentIds:  []string{"/"},
 				Sort: &api.SortBy{
 					Metric:    api.SortType_SORT_NUM_RUNS,
 					Ascending: true,
@@ -255,11 +255,11 @@ func TestFetchFileMetrics(t *testing.T) {
 		})
 		Convey("Missing dates", func() {
 			request := &api.FetchDirectoryMetricsRequest{
-				Component: "some>component",
-				Period:    api.Period_DAY,
-				Metrics:   []api.MetricType{api.MetricType_NUM_RUNS},
-				Filter:    "filter:this",
-				ParentIds: []string{"/"},
+				Components: []string{"some>component"},
+				Period:     api.Period_DAY,
+				Metrics:    []api.MetricType{api.MetricType_NUM_RUNS},
+				Filter:     "filter:this",
+				ParentIds:  []string{"/"},
 				Sort: &api.SortBy{
 					Metric:    api.SortType_SORT_NUM_RUNS,
 					Ascending: true,
@@ -272,11 +272,11 @@ func TestFetchFileMetrics(t *testing.T) {
 		})
 		Convey("Missing parentId", func() {
 			request := &api.FetchDirectoryMetricsRequest{
-				Component: "some>component",
-				Period:    api.Period_DAY,
-				Dates:     []string{"2023-01-01"},
-				Metrics:   []api.MetricType{api.MetricType_NUM_RUNS},
-				Filter:    "filter:this",
+				Components: []string{"some>component"},
+				Period:     api.Period_DAY,
+				Dates:      []string{"2023-01-01"},
+				Metrics:    []api.MetricType{api.MetricType_NUM_RUNS},
+				Filter:     "filter:this",
 				Sort: &api.SortBy{
 					Metric:    api.SortType_SORT_NUM_RUNS,
 					Ascending: true,
@@ -289,11 +289,11 @@ func TestFetchFileMetrics(t *testing.T) {
 		})
 		Convey("Missing metrics", func() {
 			request := &api.FetchDirectoryMetricsRequest{
-				Component: "some>component",
-				Period:    api.Period_DAY,
-				Dates:     []string{"2023-01-01"},
-				Filter:    "filter:this",
-				ParentIds: []string{"/"},
+				Components: []string{"some>component"},
+				Period:     api.Period_DAY,
+				Dates:      []string{"2023-01-01"},
+				Filter:     "filter:this",
+				ParentIds:  []string{"/"},
 				Sort: &api.SortBy{
 					Metric:    api.SortType_SORT_NUM_RUNS,
 					Ascending: true,

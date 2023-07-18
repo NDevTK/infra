@@ -227,7 +227,7 @@ FROM
 	` + c.ProjectId + `.` + c.DataSet + `.` + table + ` AS m
 WHERE
 	DATE(date) IN UNNEST(@dates)
-	AND component = @component` + fileNameClause + filterClause + `
+	AND component IN UNNEST(@components)` + fileNameClause + filterClause + `
 GROUP BY date, test_id
 ORDER BY ` + sortMetric + ` ` + sortDirection + `
 LIMIT @page_size OFFSET @page_offset`
@@ -238,7 +238,7 @@ LIMIT @page_size OFFSET @page_offset`
 		{Name: "dates", Value: dates},
 		{Name: "page_size", Value: req.PageSize + 1},
 		{Name: "page_offset", Value: req.PageOffset},
-		{Name: "component", Value: req.Component},
+		{Name: "components", Value: req.Components},
 		{Name: "file_names", Value: req.FileNames},
 	}
 	q.Parameters = append(q.Parameters, filterParameters...)
@@ -412,7 +412,7 @@ test_summaries AS (
 	WHERE
 		date IN UNNEST(@dates)
 		AND file_name IS NOT NULL
-		AND component = @component
+		AND component IN UNNEST(@components)
 		-- Apply the requested filter` + filterClause + `
 	GROUP BY file_name, date, test_id
 )
@@ -432,7 +432,7 @@ WHERE
 	-- The child folders and files can't have a / after the parent's name
 	AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(@parent) + 2), "^[^/]*$")
 	AND DATE(f.date) IN UNNEST(@dates)
-	AND component = @component
+	AND component IN UNNEST(@components)
 GROUP BY date, node_name
 ORDER BY ` + sortMetric + ` ` + sortDirection
 
@@ -440,7 +440,7 @@ ORDER BY ` + sortMetric + ` ` + sortDirection
 
 	q.Parameters = []bigquery.QueryParameter{
 		{Name: "dates", Value: dates},
-		{Name: "component", Value: req.Component},
+		{Name: "components", Value: req.Components},
 		{Name: "parent", Value: req.ParentIds[0]},
 	}
 	q.Parameters = append(q.Parameters, filterParameters...)
@@ -453,9 +453,15 @@ func (c *Client) createUnfilteredDirectoryQuery(req *api.FetchDirectoryMetricsRe
 		return nil, err
 	}
 
-	metricNames := make([]string, len(req.Metrics))
+	// Terms for converting the rolling up the variants
+	metricAggregations := make([]string, len(req.Metrics))
 	for i := 0; i < len(req.Metrics); i++ {
-		metricNames[i] = MetricSqlName(req.Metrics[i])
+		name := MetricSqlName(req.Metrics[i])
+		if _, ok := weightedAverageMetrics[req.Metrics[i]]; ok {
+			metricAggregations[i] = `SUM(` + name + ` * num_runs) / SUM(num_runs) AS ` + name
+		} else {
+			metricAggregations[i] = `SUM(` + name + `) AS ` + name
+		}
 	}
 
 	table, ok := periodToFileMetricTable[req.Period]
@@ -479,22 +485,23 @@ SELECT
 	date,
 	node_name,
 	ARRAY_REVERSE(SPLIT(node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
-	is_file,
-	` + strings.Join(metricNames, ",\n\t") + `,
+	ANY_VALUE(is_file) AS is_file,
+	` + strings.Join(metricAggregations, ",\n\t") + `,
 FROM ` + c.ProjectId + `.` + c.DataSet + `.` + table + `
 WHERE
 	STARTS_WITH(node_name, @parent || "/") AND
 	-- The child folders and files can't have a / after the parent's name
 	REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(@parent) + 2), "^[^/]*$")
 	AND DATE(date) IN UNNEST(@dates)
-	AND component = @component
+	AND component IN UNNEST(@components)
+GROUP BY date, node_name
 ORDER BY ` + sortMetric + ` ` + sortDirection
 
 	q := c.BqClient.Query(query)
 
 	q.Parameters = []bigquery.QueryParameter{
 		{Name: "dates", Value: dates},
-		{Name: "component", Value: req.Component},
+		{Name: "components", Value: req.Components},
 		{Name: "parent", Value: req.ParentIds[0]},
 	}
 

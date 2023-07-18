@@ -34,7 +34,9 @@ func TestCreateFetchMetricsQuery(t *testing.T) {
 		}
 		Convey("Valid unfiltered request", func() {
 			request := &api.FetchTestMetricsRequest{
-				Component: "Blink",
+				Components: []string{
+					"Blink",
+				},
 				Dates: []string{
 					"2023-07-12",
 				},
@@ -71,7 +73,7 @@ FROM
 	chrome-test-health-project.normal-dataset.daily_test_metrics AS m
 WHERE
 	DATE(date) IN UNNEST(@dates)
-	AND component = @component
+	AND component IN UNNEST(@components)
 GROUP BY date, test_id
 ORDER BY test_id ASC
 LIMIT @page_size OFFSET @page_offset`)
@@ -79,7 +81,9 @@ LIMIT @page_size OFFSET @page_offset`)
 
 		Convey("Valid filtered request", func() {
 			request := &api.FetchTestMetricsRequest{
-				Component: "Blink",
+				Components: []string{
+					"Blink",
+				},
 				Dates: []string{
 					"2023-07-12",
 				},
@@ -117,7 +121,7 @@ FROM
 	chrome-test-health-project.normal-dataset.daily_test_metrics AS m
 WHERE
 	DATE(date) IN UNNEST(@dates)
-	AND component = @component
+	AND component IN UNNEST(@components)
 	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter0)
 	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter1)
 GROUP BY date, test_id
@@ -127,7 +131,9 @@ LIMIT @page_size OFFSET @page_offset`)
 
 		Convey("Valid filename filtered request", func() {
 			request := &api.FetchTestMetricsRequest{
-				Component: "Blink",
+				Components: []string{
+					"Blink",
+				},
 				Dates: []string{
 					"2023-07-12",
 				},
@@ -166,7 +172,7 @@ FROM
 	chrome-test-health-project.normal-dataset.daily_test_metrics AS m
 WHERE
 	DATE(date) IN UNNEST(@dates)
-	AND component = @component
+	AND component IN UNNEST(@components)
 	AND file_name IN UNNEST(@file_names)
 	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter0)
 	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter1)
@@ -177,14 +183,16 @@ LIMIT @page_size OFFSET @page_offset`)
 
 		Convey("Parameterized args", func() {
 			request := &api.FetchTestMetricsRequest{
-				Component: "Blink",
+				Components: []string{
+					"Blink",
+				},
 			}
 			query, err := client.createFetchMetricsQuery(request)
 
 			So(err, ShouldBeNil)
 			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
-				Name:  "component",
-				Value: "Blink",
+				Name:  "components",
+				Value: []string{"Blink"},
 			})
 		})
 
@@ -263,7 +271,9 @@ func TestCreateUnfilteredDirectoryQuery(t *testing.T) {
 		Convey("Valid unfiltered request", func() {
 			request := &api.FetchDirectoryMetricsRequest{
 				ParentIds: []string{"/"},
-				Component: "Blink",
+				Components: []string{
+					"Blink",
+				},
 				Dates: []string{
 					"2023-07-12",
 				},
@@ -285,29 +295,34 @@ SELECT
 	date,
 	node_name,
 	ARRAY_REVERSE(SPLIT(node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
-	is_file,
-	num_runs,
+	ANY_VALUE(is_file) AS is_file,
+	SUM(num_runs) AS num_runs,
 FROM chrome-test-health-project.normal-dataset.daily_file_metrics
 WHERE
 	STARTS_WITH(node_name, @parent || "/") AND
 	-- The child folders and files can't have a / after the parent's name
 	REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(@parent) + 2), "^[^/]*$")
 	AND DATE(date) IN UNNEST(@dates)
-	AND component = @component
+	AND component IN UNNEST(@components)
+GROUP BY date, node_name
 ORDER BY node_name ASC`)
 		})
 
 		Convey("Parameterized args", func() {
 			request := &api.FetchDirectoryMetricsRequest{
-				Component: "Blink",
+				Components: []string{
+					"Blink",
+				},
 				ParentIds: []string{"/"},
 			}
 			query, err := client.createUnfilteredDirectoryQuery(request)
 
 			So(err, ShouldBeNil)
 			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
-				Name:  "component",
-				Value: "Blink",
+				Name: "components",
+				Value: []string{
+					"Blink",
+				},
 			})
 			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
 				Name:  "parent",
@@ -356,7 +371,9 @@ func TestCreateFilteredDirectoryQuery(t *testing.T) {
 		Convey("Valid unfiltered request", func() {
 			request := &api.FetchDirectoryMetricsRequest{
 				ParentIds: []string{"/"},
-				Component: "Blink",
+				Components: []string{
+					"Blink",
+				},
 				Dates: []string{
 					"2023-07-12",
 				},
@@ -386,7 +403,7 @@ test_summaries AS (
 	WHERE
 		date IN UNNEST(@dates)
 		AND file_name IS NOT NULL
-		AND component = @component
+		AND component IN UNNEST(@components)
 		-- Apply the requested filter
 		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter0)
 	GROUP BY file_name, date, test_id
@@ -407,22 +424,24 @@ WHERE
 	-- The child folders and files can't have a / after the parent's name
 	AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(@parent) + 2), "^[^/]*$")
 	AND DATE(f.date) IN UNNEST(@dates)
-	AND component = @component
+	AND component IN UNNEST(@components)
 GROUP BY date, node_name
 ORDER BY node_name ASC`)
 		})
 
 		Convey("Parameterized args", func() {
 			request := &api.FetchDirectoryMetricsRequest{
-				Component: "Blink",
+				Components: []string{
+					"Blink",
+				},
 				ParentIds: []string{"/"},
 			}
 			query, err := client.createFilteredDirectoryQuery(request)
 
 			So(err, ShouldBeNil)
 			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
-				Name:  "component",
-				Value: "Blink",
+				Name:  "components",
+				Value: []string{"Blink"},
 			})
 			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
 				Name:  "parent",

@@ -35,7 +35,7 @@ export function loadTestMetrics(
 ) {
   const datesToFetch = computeDates(params);
   const request: FetchTestMetricsRequest = {
-    component: component,
+    components: [component],
     period: params.period,
     dates: datesToFetch,
     metrics: [
@@ -135,7 +135,7 @@ export function loadDirectoryMetrics(
 ) {
   const datesToFetch = computeDates(params);
   const request: FetchDirectoryMetricsRequest = {
-    component: component,
+    components: [component],
     period: params.period,
     dates: datesToFetch,
     parent_ids: [parentId],

@@ -84,7 +84,7 @@ describe('fetchTestMetrics', () => {
     };
     const resp = await fetchTestMetrics(
         {
-          'component': 'component',
+          'components': ['component'],
           'period': 0 as Period,
           'dates': ['date'],
           'metrics': [
@@ -107,7 +107,7 @@ describe('fetchTestMetrics', () => {
     expect(mockCall.mock.calls[0][0]).toBe('test_resources.Stats');
     expect(mockCall.mock.calls[0][1]).toBe('FetchTestMetrics');
     expect(mockCall.mock.calls[0][2]).toEqual({
-      component: 'component',
+      components: ['component'],
       period: Period.DAY,
       dates: ['date'],
       metrics: ['NUM_RUNS', 'AVG_RUNTIME', 'TOTAL_RUNTIME', 'NUM_FAILURES'],
@@ -141,7 +141,7 @@ describe('fetchDirectoryMetrics', () => {
     jest.spyOn(prpcClient, 'call').mockResolvedValue(data);
     const resp = await fetchDirectoryMetrics(
         {
-          'component': 'component',
+          components: ['component'],
           'period': Period.DAY,
           'dates': ['2012-01-02'],
           'parent_ids': ['/'],
