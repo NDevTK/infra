@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"reflect"
@@ -101,7 +102,7 @@ func cipdExport(ctx context.Context, cmd *exec.Cmd) error {
 	out := GetEnv("out", cmd.Env)
 
 	export := CIPDCommand("export", "--root", out, "--ensure-file", "-")
-	export.Env = cmd.Env
+	export.Env = append(os.Environ(), cmd.Env...) // Workaround for crbug/1462669.
 	export.Dir = cmd.Dir
 	export.Stdin = strings.NewReader(cmd.Args[1])
 	export.Stdout = cmd.Stdout
