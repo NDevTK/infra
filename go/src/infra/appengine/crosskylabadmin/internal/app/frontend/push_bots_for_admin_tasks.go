@@ -15,9 +15,17 @@ import (
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
+	"infra/appengine/crosskylabadmin/internal/ufs"
 )
 
-func pushBotsForAdminTasksImpl(ctx context.Context, sc clients.SwarmingClient, req *fleet.PushBotsForAdminTasksRequest) (*fleet.PushBotsForAdminTasksResponse, error) {
+// pushBotsForAdminTasksImpl
+//
+// sc        -- the Swarming client cannot be nil, in order to push we always need a swarming client
+// ufsClient -- can be nil
+func pushBotsForAdminTasksImpl(ctx context.Context, sc clients.SwarmingClient, ufsClient ufs.Client, req *fleet.PushBotsForAdminTasksRequest) (*fleet.PushBotsForAdminTasksResponse, error) {
+	if sc == nil {
+		return nil, errors.Reason("swarming client cannot be nil").Err()
+	}
 	cfg := config.Get(ctx)
 	dutState, ok := clients.DutStateRevMap[req.GetTargetDutState()]
 	if !ok {
