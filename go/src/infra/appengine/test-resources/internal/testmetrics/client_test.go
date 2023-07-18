@@ -123,6 +123,55 @@ ORDER BY test_id ASC
 LIMIT @page_size OFFSET @page_offset`)
 		})
 
+		Convey("Valid filename filtered request", func() {
+			request := &api.FetchTestMetricsRequest{
+				Component: "Blink",
+				Dates: []string{
+					"2023-07-12",
+				},
+				Period: api.Period_DAY,
+				Metrics: []api.MetricType{
+					api.MetricType_NUM_RUNS,
+				},
+				PageOffset: 0,
+				PageSize:   10,
+				Sort: &api.SortBy{
+					Metric:    api.SortType_SORT_NAME,
+					Ascending: true,
+				},
+				Filter:    "linux-rel blink_python_tests",
+				FileNames: []string{"filename.html"},
+			}
+			query, err := client.createFetchMetricsQuery(request)
+
+			So(err, ShouldBeNil)
+			So(query, ShouldNotBeNil)
+			So(query.QueryConfig.Q, ShouldResemble, `
+SELECT
+	m.date,
+	m.test_id,
+	ANY_VALUE(m.test_name) AS test_name,
+	ANY_VALUE(m.file_name) AS file_name,
+	SUM(num_runs) AS num_runs,
+	ARRAY_AGG(STRUCT(
+		builder AS builder,
+		test_suite AS test_suite,
+		num_runs
+		)
+	) AS variants
+FROM
+	chrome-test-health-project.normal-dataset.daily_test_metrics AS m
+WHERE
+	DATE(date) IN UNNEST(@dates)
+	AND component = @component
+	AND file_name IN UNNEST(@file_names)
+	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter0)
+	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter1)
+GROUP BY date, test_id
+ORDER BY test_id ASC
+LIMIT @page_size OFFSET @page_offset`)
+		})
+
 		Convey("Parameterized args", func() {
 			request := &api.FetchTestMetricsRequest{
 				Component: "Blink",

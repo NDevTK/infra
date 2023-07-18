@@ -190,6 +190,12 @@ func (c *Client) createFetchMetricsQuery(req *api.FetchTestMetricsRequest) (*big
 		sortDirection = "DESC"
 	}
 
+	fileNameClause := ""
+	if len(req.FileNames) > 0 {
+		fileNameClause = `
+	AND file_name IN UNNEST(@file_names)`
+	}
+
 	filterClause := ""
 	var filterParameters []bigquery.QueryParameter
 	if req.Filter != "" {
@@ -220,7 +226,7 @@ FROM
 	` + c.ProjectId + `.` + c.DataSet + `.` + table + ` AS m
 WHERE
 	DATE(date) IN UNNEST(@dates)
-	AND component = @component` + filterClause + `
+	AND component = @component` + fileNameClause + filterClause + `
 GROUP BY date, test_id
 ORDER BY ` + sortMetric + ` ` + sortDirection + `
 LIMIT @page_size OFFSET @page_offset`
@@ -232,6 +238,7 @@ LIMIT @page_size OFFSET @page_offset`
 		{Name: "page_size", Value: req.PageSize + 1},
 		{Name: "page_offset", Value: req.PageOffset},
 		{Name: "component", Value: req.Component},
+		{Name: "file_names", Value: req.FileNames},
 	}
 	q.Parameters = append(q.Parameters, filterParameters...)
 	return q, nil
