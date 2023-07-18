@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { createContext, useEffect, useReducer, useState } from 'react';
+import { createContext, useContext, useEffect, useReducer, useState } from 'react';
 import {
   FetchDirectoryMetricsResponse,
   FetchTestMetricsResponse,
@@ -11,6 +11,7 @@ import {
   SortType,
 } from '../../api/resources';
 import { formatDate } from '../../utils/formatUtils';
+import { ComponentContext } from '../components/ComponentContext';
 import { dataReducer, loadDirectoryMetrics, loadTestMetrics } from './LoadMetrics';
 
 type MetricsContextProviderProps = {
@@ -137,6 +138,7 @@ function loadingCountReducer(state: LoadingState, action: LoadingAction): Loadin
 }
 
 export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
+  const { component } = useContext(ComponentContext);
   const [page, setPage] = useState(props.page || 0);
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [filter, setFilter] = useState('');
@@ -162,7 +164,7 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
   function loadPathNode(node: Node) {
     if (Object.hasOwn(node, 'loaded') && !(node as Path).loaded) {
       loadingDispatch({ type: 'start' });
-      loadDirectoryMetrics(params, node.id,
+      loadDirectoryMetrics(component, params, node.id,
           (response: FetchDirectoryMetricsResponse) => {
             dataDispatch({
               type: 'merge_dir',
@@ -181,6 +183,7 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
     loadingDispatch({ type: 'start' });
     if (params.directoryView) {
       loadDirectoryMetrics(
+          component,
           params,
           '/',
           (response: FetchDirectoryMetricsResponse, fetchedDates: string[]) => {
@@ -198,6 +201,7 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
       );
     } else {
       loadTestMetrics(
+          component,
           params,
           (response: FetchTestMetricsResponse, fetchedDates: string[]) => {
             dataDispatch({ type: 'merge_test', tests: response.tests });
@@ -216,7 +220,7 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
     load(params);
   // Adding this because we don't want a dependency on api
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [component]);
 
   const api: Api = {
     updatePage: (newPage: number) => {

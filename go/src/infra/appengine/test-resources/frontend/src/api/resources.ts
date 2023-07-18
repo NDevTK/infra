@@ -73,6 +73,10 @@ export interface FetchTestMetricsRequest {
   sort: SortBy,
 }
 
+export interface ListComponentsResponse {
+  components: string[],
+}
+
 export const prpcClient = {
   call: async function <Type>(
       service: string,
@@ -96,6 +100,15 @@ export const prpcClient = {
     }
   },
 };
+
+export async function listComponents(): Promise<ListComponentsResponse> {
+  const resp: ListComponentsResponse = await prpcClient.call(
+      'test_resources.Stats',
+      'ListComponents',
+      {},
+  );
+  return resp;
+}
 
 export async function fetchTestMetrics(
     fetchTestMetricsRequest: FetchTestMetricsRequest,

@@ -96,6 +96,12 @@ describe('Merge TestMetrics', () => {
         .toEqual(2);
   });
 
+  it('return empty node for empty tests returned', () => {
+    const tests: TestDateMetricData[] = [];
+    const merged = dataReducer([], { type: 'merge_test', tests });
+    expect(merged).toHaveLength(0);
+  });
+
   it('populate tests with a multiple dates correctly', () => {
     const metrics = metricsMap({
       '2012-01-02': [

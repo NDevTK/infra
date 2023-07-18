@@ -18,5 +18,6 @@ describe('when rendering the navbar', () => {
     expect(screen.getByText('COVERAGE')).toBeInTheDocument();
     expect(screen.getByText('RESOURCES')).toBeInTheDocument();
     expect(screen.getByText('FLAKINESS')).toBeInTheDocument();
+    expect(screen.getByTestId('selectTest')).toBeInTheDocument();
   });
 });

@@ -28,13 +28,14 @@ export function computeDates(params: Params): string[] {
 }
 
 export function loadTestMetrics(
+    component: string,
     params: Params,
     successCallback: (response: FetchTestMetricsResponse, fetchedDates: string[]) => void,
     failureCallback: (erorr: any) => void,
 ) {
   const datesToFetch = computeDates(params);
   const request: FetchTestMetricsRequest = {
-    component: 'Blink',
+    component: component,
     period: params.period,
     dates: datesToFetch,
     metrics: [
@@ -126,6 +127,7 @@ export function dataReducer(state: Node[], action: DataAction): Node[] {
 }
 
 export function loadDirectoryMetrics(
+    component: string,
     params: Params,
     parentId: string,
     successCallback: (response: FetchDirectoryMetricsResponse, fetchedDates: string[]) => void,
@@ -133,7 +135,7 @@ export function loadDirectoryMetrics(
 ) {
   const datesToFetch = computeDates(params);
   const request: FetchDirectoryMetricsRequest = {
-    component: 'Blink',
+    component: component,
     period: params.period,
     dates: datesToFetch,
     parent_ids: [parentId],

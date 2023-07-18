@@ -6,19 +6,23 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Box } from '@mui/material';
 import NavBar from './components/NavBar';
 import ResourcesPage from './pages/resources/ResourcesPage';
+import { ComponentContextProvider } from './features/components/ComponentContext';
 
 const App = () => {
   return (
     <div className="App">
       <BrowserRouter>
-        <NavBar/>
-        <Box component="main" sx={{ flexGrow: 1, marginTop: '74px' }}>
-          <Routes>
-            <Route path="/" element={<Navigate to='resources/component/Blink>CSS'/>} />
-            <Route path="/resources/component/:component" element={<ResourcesPage/>} />
-          </Routes>
-        </Box>
+        <ComponentContextProvider>
+          <NavBar/>
+          <Box component="main" sx={{ flexGrow: 1, marginTop: '74px' }}>
+            <Routes>
+              <Route path="/" element={<Navigate to='resources/tests'/>} />
+              <Route path="/resources/tests" element={<ResourcesPage/>} />
+            </Routes>
+          </Box>
+        </ComponentContextProvider>
       </BrowserRouter>
+
     </div>
   );
 };

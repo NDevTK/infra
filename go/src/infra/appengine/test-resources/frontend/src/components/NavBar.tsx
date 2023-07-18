@@ -4,20 +4,26 @@
 
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import { Button, Container, Divider, IconButton, Typography } from '@mui/material';
+import { Button, Container, Divider, FormControl, Select, SelectChangeEvent } from '@mui/material';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
-import MenuIcon from '@mui/icons-material/Menu';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import MenuItem from '@mui/material/MenuItem';
+import { useContext } from 'react';
+import { ComponentContext } from '../features/components/ComponentContext';
 import styles from './NavBar.module.css';
 
 function NavBar() {
   const params = useParams();
   const navigate = useNavigate();
-
+  const componentCtx = useContext(ComponentContext);
   const updateMetrics = (newComponent : any) => {
     navigate('/' + newComponent + '/component/' + params.component);
+  };
+
+  const handleChange = (event: SelectChangeEvent) => {
+    componentCtx.api.updateComponent(event.target.value);
   };
 
   return (
@@ -25,10 +31,26 @@ function NavBar() {
       <AppBar>
         <Toolbar>
           <div className={styles.horizontalCenter}>
-            <IconButton color="inherit">
-              <MenuIcon></MenuIcon>
-            </IconButton>
-            <Typography className={styles.componentTypography} variant='h6'> {params.component} </Typography>
+            <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+              <Select
+                data-testid='selectTest'
+                value={componentCtx.component}
+                onChange={handleChange}
+                defaultValue=''
+                sx={{ 'color': 'white', '& .MuiSvgIcon-root': {
+                  color: 'white',
+                }, 'fontSize': '30px', 'minWidth': '250px' }}
+                disableUnderline
+
+              >
+                {componentCtx.allComponents.length ?
+                componentCtx.allComponents.map(
+                    (component) =>
+                      <MenuItem key={component} value={component}>{component}</MenuItem>,
+                ) : null
+                }
+              </Select>
+            </FormControl>
           </div>
           <Divider orientation="vertical" flexItem />
           <div className={styles.horizontalCenter}>
