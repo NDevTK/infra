@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
-	"regexp"
 	"strings"
 
 	"github.com/golang/protobuf/proto"
@@ -1824,7 +1823,7 @@ func UpdateLabMeta(ctx context.Context, meta *ufspb.LabMeta) error {
 		if servo := dut.GetPeripherals().GetServo(); servo != nil {
 			servo.ServoType = meta.GetServoType()
 			servo.ServoTopology = meta.GetServoTopology()
-			servo.ServoComponent = extractServoComponents(meta.GetServoType())
+			servo.ServoComponent = extractServoComponents(meta.GetServoTopology())
 		}
 		// Periphrals cannot be nil for valid DUT
 		if dut.GetPeripherals() == nil {
@@ -1953,7 +1952,7 @@ func updateRecoveryPeripheralServo(p *chromeosLab.Peripherals, labData *ufsAPI.C
 	servo := p.GetServo()
 	servo.ServoType = labData.GetServoType()
 	servo.ServoTopology = labData.GetServoTopology()
-	servo.ServoComponent = extractServoComponents(labData.GetServoType())
+	servo.ServoComponent = extractServoComponents(labData.GetServoTopology())
 	servo.UsbDrive = labData.GetServoUsbDrive()
 }
 
@@ -2006,16 +2005,21 @@ func updateRecoveryPeripheralAudioboxJackplugger(ctx context.Context, p *chromeo
 	}
 }
 
-// extractServoComponents extracts servo components based on servo_type.
+// extractServoComponents extracts servo components based on servo-topology.
 // TODO(xianuowang): Move this function out of UFS since UFS doesn't have knowledge of
 // how this should works.
-func extractServoComponents(servoType string) []string {
+func extractServoComponents(st *chromeosLab.ServoTopology) []string {
 	var servoComponents []string
-	reg := regexp.MustCompile("_with_|_and_")
-	for _, c := range reg.Split(servoType, -1) {
-		// Sanitize empty string in case of servoType is empty or invalid.
-		if len(c) > 0 {
-			servoComponents = append(servoComponents, c)
+	if st != nil && st.GetMain() != nil && st.GetMain().GetType() != "" {
+		components := make(map[string]bool)
+		components[st.GetMain().GetType()] = true
+		servoComponents = append(servoComponents, st.GetMain().GetType())
+		for _, c := range st.GetChildren() {
+			if c == nil || c.GetType() == "" || components[c.GetType()] {
+				continue
+			}
+			components[c.GetType()] = true
+			servoComponents = append(servoComponents, c.GetType())
 		}
 	}
 	return servoComponents
