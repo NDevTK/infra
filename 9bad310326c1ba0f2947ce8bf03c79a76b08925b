@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d14bbf68_9b21b0aa",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1214214
+      },
+      "writtenOn": "2023-07-19T10:57:15Z",
+      "side": 1,
+      "message": "This LGTM from the ChromeDriver codebase side of things, but per crbug.com/1465740 it seems Chrome WPT infra folks have concerns. Please also obtain an LGTM from weizhong@ before landing.",
+      "revId": "9bad310326c1ba0f2947ce8bf03c79a76b08925b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
