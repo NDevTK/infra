@@ -118,6 +118,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"fmt"
@@ -127,14 +128,18 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe/build"
+	resultdbpb "go.chromium.org/luci/resultdb/proto/v1"
 	"golang.org/x/exp/slices"
 	"golang.org/x/mod/modfile"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"infra/experimental/golangbuild/golangbuildpb"
 )
@@ -165,12 +170,12 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	// Define working directory.
 	cwd, err := os.Getwd()
 	if err != nil {
-		return build.AttachStatus(errors.Annotate(err, "Get CWD").Err(), bbpb.Status_INFRA_FAILURE, nil)
+		return infraErrorf("get CWD")
 	}
 
 	spec, err := deriveBuildSpec(ctx, cwd, toolsRoot, experiments, st, inputs)
 	if err != nil {
-		return build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
+		return infraWrap(err)
 	}
 
 	// Set up environment.
@@ -180,86 +185,22 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		return err
 	}
 
-	// Get a built Go toolchain.
-	if err := getGo(ctx, spec); err != nil {
-		return err
+	// Select a runner based on the mode, then initialize and invoke it.
+	var rn runner
+	switch inputs.GetMode() {
+	case golangbuildpb.Mode_MODE_ALL:
+		rn = newAllRunner(inputs.GetAllMode())
+	case golangbuildpb.Mode_MODE_COORDINATOR:
+		rn = newCoordRunner(inputs.GetCoordMode())
+	case golangbuildpb.Mode_MODE_BUILD:
+		rn = newBuildRunner(inputs.GetBuildMode())
+	case golangbuildpb.Mode_MODE_TEST:
+		rn, err = newTestRunner(inputs.GetTestMode(), inputs.GetTestShard())
 	}
-
-	if spec.inputs.Project == "go" {
-		// Trigger downstream builders (subrepo builders) with the commit and/or Gerrit change we got.
-		if len(spec.inputs.BuildersToTrigger) > 0 {
-			if err := triggerBuilders(ctx, spec); err != nil {
-				return err
-			}
-		}
-
-		// Test Go.
-		//
-		// We have two paths, unfortunately: a simple one for Go 1.21+ that uses dist test -json,
-		// and a two-step path for Go 1.20 and older that uses go test -json and dist test (without JSON).
-		// TODO(when Go 1.20 stops being supported): Delete the latter path.
-		//
-		// TODO(mknyszek): Support sharding by running `go tool dist test -list` and/or `go list std cmd` and
-		// triggering N test builders with a subset of those tests in their properties.
-		// Pass the newly-built toolchain via CAS.
-		gorootSrc := filepath.Join(spec.goroot, "src")
-		hasDistTestJSON := spec.inputs.GoBranch != "release-branch.go1.20" && spec.inputs.GoBranch != "release-branch.go1.19"
-		if hasDistTestJSON {
-			testCmd := spec.wrapTestCmd(spec.goCmd(ctx, gorootSrc, spec.distTestArgs()...))
-			if err := runCommandAsStep(ctx, "all"+scriptExt()+" -json", testCmd, false); err != nil {
-				return err
-			}
-		} else {
-			// To have structured all.bash output on 1.20/1.19 release branches without dist test -json,
-			// we divide Go tests into two parts:
-			//   - the large remaining set with structured output support (uploaded to ResultDB)
-			//   - a small set of unstructured tests (this part is fully eliminated in Go 1.21!)
-			// While maintaining the property that their union doesn't fall short of all.bash.
-			jsonOnPart := spec.wrapTestCmd(spec.goCmd(ctx, gorootSrc, spec.goTestArgs("std", "cmd")...))
-			if err := runCommandAsStep(ctx, "run std and cmd tests", jsonOnPart, false); err != nil {
-				return err
-			}
-			const allButStdCmd = "!^go_test:.+$" // Pattern that works in Go 1.20 and 1.19.
-			jsonOffPart := spec.goCmd(ctx, gorootSrc, spec.distTestNoJSONArgs(allButStdCmd)...)
-			if err := runCommandAsStep(ctx, "run various dist tests", jsonOffPart, false); err != nil {
-				return err
-			}
-		}
-	} else {
-		// Fetch the target repository.
-		repoDir, err := os.MkdirTemp(cwd, "targetrepo") // Use a non-predictable base directory name.
-		if err != nil {
-			return err
-		}
-		if err := fetchRepo(ctx, spec.subrepoSrc, repoDir); err != nil {
-			return err
-		}
-
-		// Test this specific subrepo.
-		// If testing any one nested module fails, keep going and report all the end.
-		modules, err := repoToModules(ctx, spec, cwd, repoDir)
-		if err != nil {
-			return err
-		}
-		if spec.noNetworkCapable && !spec.inputs.LongTest && spec.experiment("golang.no_network_in_short_test_mode") {
-			// Fetch module dependencies ahead of time since 'go test' will not have network access.
-			err := fetchDependencies(ctx, spec, modules)
-			if err != nil {
-				return err
-			}
-		}
-		var testErrors []error
-		for _, m := range modules {
-			testCmd := spec.wrapTestCmd(spec.goCmd(ctx, m.RootDir, spec.goTestArgs("./...")...))
-			if err := runCommandAsStep(ctx, fmt.Sprintf("test %q module", m.Path), testCmd, false); err != nil {
-				testErrors = append(testErrors, err)
-			}
-		}
-		if len(testErrors) > 0 {
-			return errors.Join(testErrors...)
-		}
+	if err != nil {
+		return infraErrorf("initializing runner: %v", err)
 	}
-	return nil
+	return rn.Run(ctx, spec)
 }
 
 // A module is a Go module located on disk.
@@ -269,13 +210,9 @@ type module struct {
 }
 
 // repoToModules discovers and reports modules in repoDir to be tested.
-func repoToModules(ctx context.Context, spec *buildSpec, cwd, repoDir string) (modules []module, err error) {
+func repoToModules(ctx context.Context, spec *buildSpec, repoDir string) (modules []module, err error) {
 	step, ctx := build.StartStep(ctx, "discover modules")
-	defer func() {
-		// Any failure in this function is an infrastructure failure.
-		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
-		step.End(err)
-	}()
+	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
 	// Discover all modules that we wish to test. See go.dev/issue/32528.
 	if err := filepath.WalkDir(repoDir, func(path string, d fs.DirEntry, err error) error {
@@ -316,7 +253,7 @@ func repoToModules(ctx context.Context, spec *buildSpec, cwd, repoDir string) (m
 			return strings.Count(a.RootDir, string(filepath.Separator)) < strings.Count(b.RootDir, string(filepath.Separator))
 		})
 		for i := len(modules) - 1; i >= 1; i-- {
-			randomDir, err := os.MkdirTemp(cwd, "nestedmod")
+			randomDir, err := os.MkdirTemp(spec.workdir, "nestedmod")
 			if err != nil {
 				return nil, err
 			}
@@ -370,11 +307,7 @@ golang/third_party/llvm-mingw-msvcrt/${platform} latest
 
 func installTools(ctx context.Context, inputs *golangbuildpb.Inputs, experiments map[string]struct{}) (toolsRoot string, err error) {
 	step, ctx := build.StartStep(ctx, "install tools")
-	defer func() {
-		// Any failure in this function is an infrastructure failure.
-		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
-		step.End(err)
-	}()
+	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
 	cipdDeps := cipdDeps
 	if inputs.XcodeVersion != "" {
@@ -417,7 +350,7 @@ func installTools(ctx context.Context, inputs *golangbuildpb.Inputs, experiments
 		"ensure", "-root", toolsRoot, "-ensure-file", "-",
 		"-json-output", filepath.Join(os.TempDir(), "ensure_results.json"))
 	cmd.Stdin = strings.NewReader(cipdDeps)
-	if err := runCommandAsStep(ctx, "cipd ensure", cmd, true); err != nil {
+	if err := cmdStepRun(ctx, "cipd ensure", cmd, true); err != nil {
 		return "", err
 	}
 
@@ -426,11 +359,11 @@ func installTools(ctx context.Context, inputs *golangbuildpb.Inputs, experiments
 	// https://chromium.googlesource.com/chromium/tools/depot_tools/+/HEAD/recipes/recipe_modules/osx_sdk/api.py
 	if inputs.XcodeVersion != "" {
 		xcodeInstall := exec.CommandContext(ctx, filepath.Join(toolsRoot, "mac_toolchain"), "install", "-xcode-version", inputs.XcodeVersion, "-output-dir", filepath.Join(toolsRoot, "XCode.app"))
-		if err := runCommandAsStep(ctx, "install XCode "+inputs.XcodeVersion, xcodeInstall, true); err != nil {
+		if err := cmdStepRun(ctx, "install XCode "+inputs.XcodeVersion, xcodeInstall, true); err != nil {
 			return "", err
 		}
 		xcodeSelect := exec.CommandContext(ctx, "sudo", "xcode-select", "--switch", filepath.Join(toolsRoot, "XCode.app"))
-		if err := runCommandAsStep(ctx, "select XCode "+inputs.XcodeVersion, xcodeSelect, true); err != nil {
+		if err := cmdStepRun(ctx, "select XCode "+inputs.XcodeVersion, xcodeSelect, true); err != nil {
 			return "", err
 		}
 	}
@@ -450,9 +383,9 @@ func scriptExt() string {
 	}
 }
 
-func getGo(ctx context.Context, spec *buildSpec) (err error) {
+func getGo(ctx context.Context, spec *buildSpec, requirePrebuilt bool) (err error) {
 	step, ctx := build.StartStep(ctx, "get go")
-	defer step.End(err)
+	defer endStep(step, &err)
 
 	// Check to see if we might have a prebuilt Go in CAS.
 	digest, err := checkForPrebuiltGo(ctx, spec.goSrc)
@@ -469,6 +402,9 @@ func getGo(ctx context.Context, spec *buildSpec) (err error) {
 			return nil
 		}
 	}
+	if requirePrebuilt {
+		return infraErrorf("no prebuilt Go found, but this builder requires it")
+	}
 
 	// There was no prebuilt toolchain we could grab. Fetch Go and build it.
 
@@ -478,7 +414,7 @@ func getGo(ctx context.Context, spec *buildSpec) (err error) {
 	}
 
 	// Build Go.
-	if err := runCommandAsStep(ctx, "make"+scriptExt(), spec.goScriptCmd(ctx, "make"+scriptExt()), false); err != nil {
+	if err := cmdStepRun(ctx, "make"+scriptExt(), spec.goScriptCmd(ctx, "make"+scriptExt()), false); err != nil {
 		return err
 	}
 
@@ -486,49 +422,455 @@ func getGo(ctx context.Context, spec *buildSpec) (err error) {
 	return uploadGoToCAS(ctx, spec, spec.goSrc, spec.goroot)
 }
 
-func triggerBuilders(ctx context.Context, spec *buildSpec) (err error) {
-	step, ctx := build.StartStep(ctx, "trigger downstream builders")
-	defer func() {
-		// Any failure in this function is an infrastructure failure.
-		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
-		step.End(err)
-	}()
+func runGoTests(ctx context.Context, spec *buildSpec, shard testShard) error {
+	if spec.inputs.Project != "go" {
+		return infraErrorf("runGoTests called for a subrepo builder")
+	}
+	gorootSrc := filepath.Join(spec.goroot, "src")
+
+	// We have two paths, unfortunately: a simple one for Go 1.21+ that uses dist test -json,
+	// and a two-step path for Go 1.20 and older that uses go test -json and dist test (without JSON).
+	hasDistTestJSON := spec.inputs.GoBranch != "release-branch.go1.20" && spec.inputs.GoBranch != "release-branch.go1.19"
+	if !hasDistTestJSON {
+		if shard != noSharding {
+			return fmt.Errorf("test sharding is not supported for Go version 1.20 and earlier")
+		}
+		// TODO(when Go 1.20 stops being supported): Delete this path.
+		//
+		// To have structured all.bash output on 1.20/1.19 release branches without dist test -json,
+		// we divide Go tests into two parts:
+		//   - the large remaining set with structured output support (uploaded to ResultDB)
+		//   - a small set of unstructured tests (this part is fully eliminated in Go 1.21!)
+		// While maintaining the property that their union doesn't fall short of all.bash.
+		jsonOnPart := spec.wrapTestCmd(spec.goCmd(ctx, gorootSrc, spec.goTestArgs("std", "cmd")...))
+		if err := cmdStepRun(ctx, "run std and cmd tests", jsonOnPart, false); err != nil {
+			return err
+		}
+		const allButStdCmd = "!^go_test:.+$" // Pattern that works in Go 1.20 and 1.19.
+		jsonOffPart := spec.distTestRunCmd(ctx, gorootSrc, allButStdCmd, false)
+		return cmdStepRun(ctx, "run various dist tests", jsonOffPart, false)
+	}
+	// Go 1.21+ path.
+
+	// Determine what to run.
+	//
+	// If noSharding is true, runRegexp will be the empty string, which actually means to
+	// run *all* tests.
+	runRegexp := ""
+	if shard != noSharding {
+		// Collect the list of tests for this shard.
+		testList, err := goDistTestList(ctx, spec, shard)
+		if err != nil {
+			return err
+		}
+		if len(testList) == 0 {
+			// Explicitly disable all tests. We can't leave runRegexp blank because that will
+			// run all tests.
+			runRegexp = "^$"
+		} else {
+			// Transform each test name into a regular expression matching only that name.
+			for i := range testList {
+				testList[i] = "^" + regexp.QuoteMeta(testList[i]) + "$"
+			}
+			// Construct a regexp string for the test list.
+			runRegexp = strings.Join(testList, "|")
+		}
+	}
+
+	// Invoke go tool dist test.
+	testCmd := spec.wrapTestCmd(spec.distTestRunCmd(ctx, gorootSrc, runRegexp, true))
+	return cmdStepRun(ctx, "go tool dist test -json", testCmd, false)
+}
+
+func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) ([]string, error) {
+	// Run go tool dist test -list.
+	listCmd := spec.distTestListCmd(ctx, spec.goroot)
+	testList, err := cmdStepOutput(ctx, "go tool dist test -list", listCmd, false)
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse the output: each line is a test name.
+	var tests []string
+	scanner := bufio.NewScanner(bytes.NewReader(testList))
+	for scanner.Scan() {
+		name := scanner.Text()
+		if shard.shouldRunTest(name) {
+			tests = append(tests, name)
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("parsing test list from dist: %v", err)
+	}
+	return tests, nil
+}
+
+func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec) error {
+	if spec.inputs.Project == "go" {
+		return infraErrorf("fetchSubrepoAndRunTests called for a main Go repo builder")
+	}
+
+	// Fetch the target repository.
+	repoDir, err := os.MkdirTemp(spec.workdir, "targetrepo") // Use a non-predictable base directory name.
+	if err != nil {
+		return err
+	}
+	if err := fetchRepo(ctx, spec.subrepoSrc, repoDir); err != nil {
+		return err
+	}
+
+	// Test this specific subrepo.
+	// If testing any one nested module fails, keep going and report all the end.
+	modules, err := repoToModules(ctx, spec, repoDir)
+	if err != nil {
+		return err
+	}
+	if spec.noNetworkCapable && !spec.inputs.LongTest && spec.experiment("golang.no_network_in_short_test_mode") {
+		// Fetch module dependencies ahead of time since 'go test' will not have network access.
+		err := fetchDependencies(ctx, spec, modules)
+		if err != nil {
+			return err
+		}
+	}
+	var testErrors []error
+	for _, m := range modules {
+		testCmd := spec.wrapTestCmd(spec.goCmd(ctx, m.RootDir, spec.goTestArgs("./...")...))
+		if err := cmdStepRun(ctx, fmt.Sprintf("test %q module", m.Path), testCmd, false); err != nil {
+			testErrors = append(testErrors, err)
+		}
+	}
+	if len(testErrors) > 0 {
+		return errors.Join(testErrors...)
+	}
+	return nil
+}
+
+// triggerDownstreamBuilds triggers a single build for each of a bunch of builders,
+// and does not wait on them to complete.
+func triggerDownstreamBuilds(ctx context.Context, spec *buildSpec, builders ...string) (err error) {
+	step, ctx := build.StartStep(ctx, "trigger downstream builds")
+	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
 	// Scribble down the builders we're triggering.
 	buildersLog := step.Log("builders")
-	if _, err := io.WriteString(buildersLog, strings.Join(spec.inputs.BuildersToTrigger, "\n")+"\n"); err != nil {
+	if _, err := io.WriteString(buildersLog, strings.Join(builders, "\n")+"\n"); err != nil {
 		return err
 	}
 
 	// Figure out the arguments to bb.
 	bbArgs := []string{"add"}
 	if spec.invokedSrc.commit != nil {
-		commit := spec.invokedSrc.commit
-		bbArgs = append(bbArgs, "-commit", fmt.Sprintf("https://%s/%s/+/%s", commit.Host, commit.Project, commit.Id))
+		bbArgs = append(bbArgs, "-commit", spec.invokedSrc.asURL())
 	}
 	if spec.invokedSrc.change != nil {
-		change := spec.invokedSrc.change
-		bbArgs = append(bbArgs, "-cl", fmt.Sprintf("https://%s/c/%s/+/%d/%d", change.Host, change.Project, change.Change, change.Patchset))
+		bbArgs = append(bbArgs, "-cl", spec.invokedSrc.asURL())
 	}
-	bbArgs = append(bbArgs, spec.inputs.BuildersToTrigger...)
+	bbArgs = append(bbArgs, builders...)
 
-	return runCommandAsStep(ctx, "bb add", spec.toolCmd(ctx, "bb", bbArgs...), true)
+	return cmdStepRun(ctx, "bb add", spec.toolCmd(ctx, "bb", bbArgs...), true)
 }
 
-// runCommandAsStep runs the provided command as a build step.
+// ensurePrebuiltGoExists checks if a prebuilt Go exists for the invoked source, and if
+// not, spawns a new build for the provided builder to generate that prebuilt Go.
+func ensurePrebuiltGoExists(ctx context.Context, spec *buildSpec, builder string) (err error) {
+	step, ctx := build.StartStep(ctx, "ensure prebuilt go exists")
+	defer endStep(step, &err)
+
+	// Check to see if we might have a prebuilt Go in CAS.
+	digest, err := checkForPrebuiltGo(ctx, spec.goSrc)
+	if err != nil {
+		return err
+	}
+	if digest != "" {
+		// Try to fetch from CAS. Note this might fail if the digest is stale enough.
+		//
+		// TODO(mknyszek): Rather than download the toolchain, it would be nice to check
+		// this more directly.
+		ok, err := fetchGoFromCAS(ctx, spec, digest, spec.goroot)
+		if err != nil {
+			return err
+		}
+		if ok {
+			return nil
+		}
+	}
+
+	// There was no prebuilt toolchain we could grab. Launch a build.
+	//
+	// N.B. We can theoretically just launch a build without checking, since the build
+	// will already back out if it turns out there's a prebuilt Go already hanging around.
+	// But it's worthwhile to check first because we don't have to wait to acquire the
+	// resources for a build.
+	build, err := triggerBuild(ctx, spec, noSharding, builder)
+	if err != nil {
+		return err
+	}
+
+	// Wait on build to finish.
+	return waitOnBuilds(ctx, spec, "wait for make.bash", build.Id)
+}
+
+// runTestShards spawns `shards` builds from the provided `builder` and waits on them to complete.
+//
+// It passes the current build's source information to the child builds and includes the child builds'
+// ResultDB invocations in the current invocation.
+func runTestShards(ctx context.Context, spec *buildSpec, shards uint32, builder string) (err error) {
+	step, ctx := build.StartStep(ctx, "run tests")
+	defer endStep(step, &err)
+
+	// Trigger test shards.
+	buildIDs, err := triggerTestShards(ctx, spec, shards, builder)
+	if err != nil {
+		return err
+	}
+
+	// Wait on test shards to finish.
+	return waitOnBuilds(ctx, spec, "wait for test shards", buildIDs...)
+}
+
+// triggerTestShards spawns `shards` builds from the provided `builder`.
+//
+// It passes the current build's source information to the child builds and includes the child builds'
+// ResultDB invocations in the current invocation.
+func triggerTestShards(ctx context.Context, spec *buildSpec, shards uint32, builder string) (ids []int64, err error) {
+	step, ctx := build.StartStep(ctx, "trigger test shards")
+	defer endStep(step, &err)
+
+	// Start N shards and collect their build IDs and invocation IDs.
+	buildIDs := make([]int64, 0, shards)
+	invocationIDs := make([]string, 0, shards)
+	for i := uint32(0); i < shards; i++ {
+		shardBuild, err := triggerBuild(ctx, spec, testShard{shardID: i, nShards: shards}, builder)
+		if err != nil {
+			return nil, err
+		}
+		buildIDs = append(buildIDs, shardBuild.Id)
+		invocationIDs = append(invocationIDs, shardBuild.GetInfra().GetResultdb().GetInvocation())
+	}
+	// Include the ResultDB invocations in ours.
+	if err := includeResultDBInvocations(ctx, spec, invocationIDs...); err != nil {
+		return nil, infraWrap(err)
+	}
+	return buildIDs, nil
+}
+
+// triggerBuild spawns a single build from the provided `builder`.
+//
+// If shard is not noSharding, then this function will pass the test shard identity
+// as a set of properties to the build.
+func triggerBuild(ctx context.Context, spec *buildSpec, shard testShard, builder string) (b *bbpb.Build, err error) {
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("trigger %s (%d of %d)", builder, shard.shardID+1, shard.nShards))
+	defer endStep(step, &err)
+
+	// Construct args.
+	prop, err := protojson.Marshal(&golangbuildpb.TestShard{
+		ShardId:   shard.shardID,
+		NumShards: shard.nShards,
+	})
+	if err != nil {
+		return nil, infraErrorf("marshalling shard identity: %v", err)
+	}
+	bbArgs := []string{"add", "-json"}
+	if shard != noSharding {
+		bbArgs = append(bbArgs, "-p", fmt.Sprintf(`test_shard=%s`, string(prop)))
+	}
+	if spec.invokedSrc.commit != nil {
+		bbArgs = append(bbArgs, "-commit", spec.invokedSrc.asURL())
+	}
+	if spec.invokedSrc.change != nil {
+		bbArgs = append(bbArgs, "-cl", spec.invokedSrc.asURL())
+	}
+	bbArgs = append(bbArgs, builder)
+
+	// Execute `bb add` for this shard and collect the output.
+	stepName := fmt.Sprintf("bb add (%d of %d)", shard.shardID+1, shard.nShards)
+	out, err := cmdStepOutput(ctx, stepName, spec.toolCmd(ctx, "bb", bbArgs...), true)
+	if err != nil {
+		return nil, err
+	}
+
+	// Unmarshal the output as a bbpb.Build.
+	var build bbpb.Build
+	if err := protojson.Unmarshal(out, &build); err != nil {
+		return nil, infraWrap(err)
+	}
+	step.SetSummaryMarkdown(fmt.Sprintf(`[build link](https://ci.chromium.org/b/%d)`, build.Id))
+	return &build, nil
+}
+
+// includeResultDBInvocations includes the provided ResultDB invocation IDs in the
+// current invocation, as found in the buildSpec.
+func includeResultDBInvocations(ctx context.Context, spec *buildSpec, ids ...string) (err error) {
+	step, ctx := build.StartStep(ctx, "include ResultDB invocations")
+	defer endStep(step, &err)
+
+	// Set up the request and marshal it as JSON.
+	updateReq := resultdbpb.UpdateIncludedInvocationsRequest{
+		IncludingInvocation: spec.invocation,
+		AddInvocations:      ids,
+	}
+	out, err := protojson.Marshal(&updateReq)
+	if err != nil {
+		return infraWrap(err)
+	}
+
+	// Write out the JSON as a log for debugging.
+	reqLog := step.Log("request json")
+	reqLog.Write(out)
+
+	// Set up the `rdb rpc` command and pass the request through stdin.
+	//
+	// TODO(mknyszek): It's a bit silly to shell out for something that is
+	// overtly just making an RPC call. However, there's currently no API
+	// for pulling some of the ResultDB information out of LUCI_CONTEXT,
+	// so we'd have to hard-code that and copy it here, or send a patch
+	// to luci-go. The latter is preferable and should be considered as
+	// part of a more general unit testing story for golangbuild.
+	// For now, just shell out.
+	cmd := spec.toolCmd(ctx, "rdb", "rpc", "luci.resultdb.v1.Recorder", "UpdateIncludedInvocations")
+	cmd.Stdin = bytes.NewReader(out)
+	return cmdStepRun(ctx, "rdb rpc", cmd, true)
+}
+
+// waitOnBuilds polls until the provided builds (by int64 ID) complete and
+// reports a step that represents the result of those builds. Returns an error if
+// any of the builds fail or if for some reason it fails to wait on the builds. The error
+// returned by this function reflects the "worst" state of all builds. More specifically,
+// an infra failure takes precedence over a regular test failure among the builds.
+func waitOnBuilds(ctx context.Context, spec *buildSpec, stepName string, buildIDs ...int64) (err error) {
+	step, ctx := build.StartStep(ctx, stepName)
+	defer endStep(step, &err)
+
+	// Run `bb collect`.
+	collectArgs := []string{
+		"collect",
+		"-interval", "20s",
+	}
+	for _, id := range buildIDs {
+		collectArgs = append(collectArgs, strconv.FormatInt(id, 10))
+	}
+	collectCmd := spec.toolCmd(ctx, "bb", collectArgs...)
+	out, err := cmdStepOutput(ctx, "bb collect", collectCmd, true)
+	if err != nil {
+		return err
+	}
+
+	// Presentation state.
+	var summary strings.Builder
+	writeSummaryLine := func(shardID int, buildID int64, result string) {
+		summary.WriteString(fmt.Sprintf("[shard %d %s](https://ci.chromium.org/b/%d)\n", shardID, result, buildID))
+	}
+
+	// Parse the protojson output: one per line.
+	buildsBytes := bytes.Split(out, []byte{'\n'})
+	var foundFailure, foundInfraFailure bool
+	for i, buildBytes := range buildsBytes {
+		build := new(bbpb.Build)
+		if err := protojson.Unmarshal(buildBytes, build); err != nil {
+			return infraWrap(err)
+		}
+		switch build.Status {
+		case bbpb.Status_SUCCESS:
+			// Tests passed. Nothing to do.
+		case bbpb.Status_FAILURE:
+			// Something was wrong with the change being tested.
+			writeSummaryLine(i+1, build.Id, "failed")
+			foundFailure = true
+		case bbpb.Status_INFRA_FAILURE:
+			// Something was wrong with the infrastructure.
+			writeSummaryLine(i+1, build.Id, "infra-failed")
+			foundInfraFailure = true
+		case bbpb.Status_CANCELED:
+			// Build got cancelled, which is very unexpected. Call it out.
+			writeSummaryLine(i+1, build.Id, "cancelled")
+			foundInfraFailure = true
+		default:
+			return infraErrorf("unexpected build status from `bb collect` for build %d: %s", build.Id, build.Status)
+		}
+	}
+	step.SetSummaryMarkdown(summary.String())
+
+	// Report an error for regular test failure or infra failure.
+	if foundInfraFailure {
+		return infraErrorf("one or more test shards experienced an infra failure")
+	} else if foundFailure {
+		return fmt.Errorf("one or more tests failed")
+	}
+	return nil
+}
+
+// cmdStepRun calls Run on the provided command and wraps it in a build step.
 //
 // It overwrites cmd.Stdout and cmd.Stderr to redirect into step logs.
 // It runs the command with the environment from the context, so change
 // the context's environment to alter the command's environment.
-func runCommandAsStep(ctx context.Context, stepName string, cmd *exec.Cmd, infra bool) (err error) {
-	step, ctx := build.StartStep(ctx, stepName)
+func cmdStepRun(ctx context.Context, stepName string, cmd *exec.Cmd, infra bool) (err error) {
+	step, ctx, err := cmdStartStep(ctx, stepName, cmd)
 	defer func() {
 		if infra {
 			// Any failure in this function is an infrastructure failure.
-			err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
+			err = infraWrap(err)
 		}
 		step.End(err)
 	}()
+	if err != nil {
+		return err
+	}
+
+	// Combine output because it's annoying to pick one of stdout and stderr
+	// in the UI and be wrong.
+	output := step.Log("output")
+	cmd.Stdout = output
+	cmd.Stderr = output
+
+	// Run the command.
+	if err := cmd.Run(); err != nil {
+		return errors.Annotate(err, "Failed to run %q", stepName).Err()
+	}
+	return nil
+}
+
+// cmdStepOutput calls Output on the provided command and wraps it in a build step.
+//
+// It overwrites cmd.Stdout and cmd.Stderr to redirect into step logs.
+// It runs the command with the environment from the context, so change
+// the context's environment to alter the command's environment.
+func cmdStepOutput(ctx context.Context, stepName string, cmd *exec.Cmd, infra bool) (output []byte, err error) {
+	step, ctx, err := cmdStartStep(ctx, stepName, cmd)
+	defer func() {
+		if infra {
+			// Any failure in this function is an infrastructure failure.
+			err = infraWrap(err)
+		}
+		step.End(err)
+	}()
+	if err != nil {
+		return nil, err
+	}
+
+	// Make sure we log stderr.
+	cmd.Stderr = step.Log("stderr")
+
+	// Run the command and capture stdout.
+	output, err = cmd.Output()
+
+	// Log stdout before we do anything else.
+	step.Log("stdout").Write(output)
+
+	// Check for errors.
+	if err != nil {
+		return output, errors.Annotate(err, "Failed to run %q", stepName).Err()
+	}
+	return output, nil
+}
+
+// cmdStartStep sets up a command step.
+//
+// It overwrites cmd.Stdout and cmd.Stderr to redirect into step logs.
+// It runs the command with the environment from the context, so change
+// the context's environment to alter the command's environment.
+func cmdStartStep(ctx context.Context, stepName string, cmd *exec.Cmd) (*build.Step, context.Context, error) {
+	step, ctx := build.StartStep(ctx, stepName)
 
 	// Log the full command we're executing.
 	//
@@ -549,18 +891,23 @@ func runCommandAsStep(ctx context.Context, stepName string, cmd *exec.Cmd, infra
 	}
 	fullCmd.WriteString(cmd.String())
 	if _, err := io.Copy(step.Log("command"), &fullCmd); err != nil {
-		return err
+		return step, ctx, err
 	}
+	return step, ctx, nil
+}
 
-	// Run the command.
-	//
-	// Combine output because it's annoying to pick one of stdout and stderr
-	// in the UI and be wrong.
-	output := step.Log("output")
-	cmd.Stdout = output
-	cmd.Stderr = output
-	if err := cmd.Run(); err != nil {
-		return errors.Annotate(err, "Failed to run %q", stepName).Err()
-	}
-	return nil
+func infraErrorf(s string, args ...any) error {
+	return build.AttachStatus(fmt.Errorf(s, args...), bbpb.Status_INFRA_FAILURE, nil)
+}
+
+func infraWrap(err error) error {
+	return build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
+}
+
+func endStep(step *build.Step, errp *error) {
+	step.End(*errp)
+}
+
+func endInfraStep(step *build.Step, errp *error) {
+	step.End(infraWrap(*errp))
 }

@@ -25,6 +25,8 @@ message Inputs {
   bool race_mode = 4;
 
   // CompileOnly controls whether tests are compiled, but not run.
+  //
+  // Ignored in MODE_BUILD and irrelevant in MODE_TEST.
   bool compile_only = 5;
 
   // Extra environment variables to set for building and testing.
@@ -34,6 +36,12 @@ message Inputs {
   // Must be empty if project is not "go." The builds are triggered
   // with the same gerrit and gitiles build data this build was
   // triggered with.
+  //
+  // TODO(mknyszek): Delete this once no builder is setting it. ALL_MODE
+  // currently uses this for backwards compatibility, but in the near future
+  // ALL_MODE will not run with a service account that can schedule new builds.
+  // In that case, only COORDINATOR_MODE will be able to actually schedule
+  // new builds, and that's handled by CoordinatorMode-specific properties.
   repeated string builders_to_trigger = 7;
 
   // Named cache configured on the builder to use as a cipd tool root cache.
@@ -44,4 +52,86 @@ message Inputs {
   // On Macs, the version of XCode to use. Because installing it is expensive,
   // it should be the same for all builders that run on a given host.
   string xcode_version = 9;
+
+  // Which mode to run golangbuild in. See the Mode enum for details.
+  Mode mode = 10;
+
+  // Properties specific to MODE_ALL.
+  AllMode all_mode = 11;
+
+  // Properties specific to MODE_COORDINATOR.
+  CoordinatorMode coord_mode = 12;
+
+  // Properties specific to MODE_BUILD.
+  BuildMode build_mode = 13;
+
+  // Properties specific to MODE_TEST.
+  TestMode test_mode = 14;
+
+  // Test shard identity. This property is specific to MODE_TEST.
+  //
+  // Note: this property is mutable.
+  //
+  // N.B. This cannot be part of "TestMode" without making "test_mode"
+  // mutable in the builder configuration, because property mutability
+  // is only controllable at the top level.
+  TestShard test_shard = 15;
+}
+
+// golangbuild runs in one of these modes.
+enum Mode {
+  // MODE_ALL builds and tests the project all within the same build.
+  MODE_ALL = 0;
+
+  // MODE_COORDINATOR launches and coordinates tasks that build Go and
+  // test the provided project.
+  MODE_COORDINATOR = 1;
+
+  // MODE_BUILD indicates golangbuild should just run make.bash.
+  MODE_BUILD = 2;
+
+  // MODE_TEST indicates golangbuild should only run tests.
+  //
+  // A prebuilt toolchain must be available for the provided source.
+  MODE_TEST = 3;
+}
+
+// AllMode contains properties specific to MODE_ALL.
+message AllMode {
+}
+
+// CoordinatorMode contains properties specific to MODE_COORDINATOR.
+message CoordinatorMode {
+  // Name of the builder to create a build for for building Go.
+  string build_builder = 1;
+
+  // Name of the builder to create a build for to run tests.
+  string test_builder = 2;
+
+  // Number of separate builds to spawn to run tests in shards.
+  uint32 num_test_shards = 3;
+
+  // Names of other builders to trigger for testing when the
+  // build_builder completes successfully.
+  repeated string builders_to_trigger_after_toolchain_build = 4;
+}
+
+// BuildMode contains properties specific to MODE_BUILD.
+message BuildMode {
+}
+
+// TestMode contains properties specific to MODE_TEST.
+message TestMode {
+}
+
+// TestShard is specific to MODE_TEST and represents the build's
+// test shard identity.
+//
+// Note: this is mutable by ScheduleBuild, so add fields with care.
+message TestShard {
+  // ID of the test shard. This is always less than num_shards.
+  uint32 shard_id = 1;
+
+  // Number of test shards.
+  uint32 num_shards = 2;
 }

@@ -13,7 +13,6 @@ import (
 	"os"
 	"strings"
 
-	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/client/cmd/swarming/swarmingimpl"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/luciexe/build"
@@ -64,11 +63,7 @@ func casInstanceFromEnv() (string, error) {
 
 func checkForPrebuiltGo(ctx context.Context, src *sourceSpec) (digest string, err error) {
 	step, ctx := build.StartStep(ctx, "check for prebuilt go")
-	defer func() {
-		// Any failure in this function is an infrastructure failure.
-		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
-		step.End(err)
-	}()
+	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
 	id, err := src.prebuiltID()
 	if err != nil {
@@ -92,11 +87,7 @@ func checkForPrebuiltGo(ctx context.Context, src *sourceSpec) (digest string, er
 
 func fetchGoFromCAS(ctx context.Context, spec *buildSpec, digest, goroot string) (ok bool, err error) {
 	step, ctx := build.StartStep(ctx, "fetch prebuilt go")
-	defer func() {
-		// Any failure in this function is an infrastructure failure.
-		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
-		step.End(err)
-	}()
+	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
 	// Create a file to write out structured results.
 	//
@@ -117,7 +108,7 @@ func fetchGoFromCAS(ctx context.Context, spec *buildSpec, digest, goroot string)
 		"-digest", digest,
 		"-dump-json", jsonDump.Name(),
 	)
-	if err := runCommandAsStep(ctx, "cas download", cmd, true); err != nil {
+	if err := cmdStepRun(ctx, "cas download", cmd, true); err != nil {
 		var dlr struct {
 			Result string `json:"result"`
 		}
@@ -135,11 +126,7 @@ func fetchGoFromCAS(ctx context.Context, spec *buildSpec, digest, goroot string)
 
 func uploadGoToCAS(ctx context.Context, spec *buildSpec, src *sourceSpec, goroot string) (err error) {
 	step, ctx := build.StartStep(ctx, "upload prebuilt go")
-	defer func() {
-		// Any failure in this function is an infrastructure failure.
-		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
-		step.End(err)
-	}()
+	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
 	// Collect the paths that we'll be archiving.
 	gorootEntries, err := os.ReadDir(goroot)
@@ -173,7 +160,7 @@ func uploadGoToCAS(ctx context.Context, spec *buildSpec, src *sourceSpec, goroot
 		"-dump-digest", digestFile.Name(),
 	}
 	cmd := spec.toolCmd(ctx, "cas", append(args, pathArgs...)...)
-	if err := runCommandAsStep(ctx, "cas archive", cmd, true); err != nil {
+	if err := cmdStepRun(ctx, "cas archive", cmd, true); err != nil {
 		return err
 	}
 

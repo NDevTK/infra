@@ -36,6 +36,7 @@ type buildSpec struct {
 	auth *auth.Authenticator
 
 	builderName string
+	workdir     string
 	goroot      string
 	gopath      string
 	gocacheDir  string
@@ -47,6 +48,8 @@ type buildSpec struct {
 	goSrc      *sourceSpec
 	subrepoSrc *sourceSpec // nil if inputs.Project == "go"
 	invokedSrc *sourceSpec // the commit/change we were invoked with
+
+	invocation string // current ResultDB invocation
 
 	experiments map[string]struct{}
 
@@ -164,12 +167,14 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 	return &buildSpec{
 		auth:        authenticator,
 		builderName: st.Build().GetBuilder().GetBuilder(),
+		workdir:     cwd,
 		goroot:      filepath.Join(cwd, "goroot"),
 		gopath:      filepath.Join(cwd, "gopath"),
 		gocacheDir:  filepath.Join(cwd, "gocache"),
 		toolsRoot:   toolsRoot,
 		casInstance: casInst,
 		inputs:      inputs,
+		invocation:  st.Build().GetInfra().GetResultdb().GetInvocation(),
 		goSrc:       goSrc,
 		subrepoSrc:  subrepoSrc,
 		invokedSrc:  invokedSrc,
@@ -237,12 +242,49 @@ func (b *buildSpec) goTestArgs(patterns ...string) []string {
 	return append(args, patterns...)
 }
 
-// distTestArgs returns go tool dist arguments that run tests in the main Go repository
-// using the provided build specification.
-func (b *buildSpec) distTestArgs() []string {
-	args := []string{"tool", "dist", "test", "-json"}
+// distTestListCmd returns an exec.Cmd for executing `go tool dist test -list`.
+//
+// dir is the directory to run the command from.
+//
+// It automatically applies additional dist flags based on the buildSpec (e.g. -race).
+func (b *buildSpec) distTestListCmd(ctx context.Context, dir string) *exec.Cmd {
+	args := []string{"tool", "dist", "test", "-list"}
+	args = append(args, b.distTestFlags()...)
+	return b.goCmd(ctx, dir, args...)
+}
+
+// distTestRunCmd returns an exec.Cmd for executing `go tool dist test -run`.
+//
+// dir is the directory to run the command from.
+// run controls with dist tests are run, using dist test's interface for controlling
+// which tests to run:
+//
+//	-run string
+//	  	run only those tests matching the regular expression; empty means to run all.
+//	  	Special exception: if the string begins with '!', the match is inverted.
+//
+// If json is true, passes the -json flag, producing `go test -json`-compatible output.
+// Note: -json is not supported before Go 1.21.
+//
+// TODO(go.dev/issue/59990): Delete the json argument when it becomes always true.
+//
+// It automatically applies additional dist flags based on the buildSpec (e.g. -race).
+func (b *buildSpec) distTestRunCmd(ctx context.Context, dir, run string, json bool) *exec.Cmd {
+	args := []string{"tool", "dist", "test"}
+	if json {
+		args = append(args, "-json")
+	}
+	args = append(args, b.distTestFlags()...)
+	args = append(args, "-run", run)
+	return b.goCmd(ctx, dir, args...)
+}
+
+// distTestFlags returns just the flags that we should pass to `go tool dist test`
+// based on the spec.
+func (b *buildSpec) distTestFlags() []string {
+	var args []string
 	if b.inputs.CompileOnly {
-		return append(args, "-compile-only")
+		args = append(args, "-compile-only")
 	}
 	if b.inputs.LongTest {
 		// dist test doesn't have a flag to control longtest mode,
@@ -252,32 +294,6 @@ func (b *buildSpec) distTestArgs() []string {
 		args = append(args, "-race")
 	}
 	return args
-}
-
-// distTestNoJSONArgs returns go tool dist arguments that run tests in the main Go repository
-// using the provided build specification. run controls which dist tests are run, using
-// dist test's interface for controlling which tests run:
-//
-//	-run string
-//	  	run only those tests matching the regular expression; empty means to run all.
-//	  	Special exception: if the string begins with '!', the match is inverted.
-//
-// distTestNoJSONArgs is like distTestArgs, but doesn't include -json flag and supports
-// setting dist's -run flag.
-// TODO(go.dev/issue/59990): Delete when it becomes unused.
-func (b *buildSpec) distTestNoJSONArgs(run string) []string {
-	args := []string{"tool", "dist", "test"}
-	if b.inputs.CompileOnly {
-		return append(args, "-compile-only", "-run="+run)
-	}
-	if b.inputs.LongTest {
-		// dist test doesn't have a flag to control longtest mode,
-		// so this is handled in buildSpec.setEnv instead of here.
-	}
-	if b.inputs.RaceMode {
-		args = append(args, "-race")
-	}
-	return append(args, "-run="+run)
 }
 
 const cloudProject = "golang-ci-luci"

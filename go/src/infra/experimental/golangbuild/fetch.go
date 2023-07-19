@@ -50,14 +50,23 @@ type sourceSpec struct {
 	rebase bool
 }
 
+// asURL returns a URL string for the sourceSpec.
+func (s *sourceSpec) asURL() string {
+	switch {
+	case s.commit != nil && s.change != nil:
+		panic("sourceSpec has both a change and a commit")
+	case s.commit != nil && s.change == nil:
+		return fmt.Sprintf("https://%s/%s/+/%s", s.commit.Host, s.commit.Project, s.commit.Id)
+	case s.commit == nil && s.change != nil:
+		return fmt.Sprintf("https://%s/c/%s/+/%d/%d", s.change.Host, s.change.Project, s.change.Change, s.change.Patchset)
+	}
+	panic("no commit or change in sourceSpec")
+}
+
 // fetchRepo fetches a repository according to src and places it at dst.
 func fetchRepo(ctx context.Context, src *sourceSpec, dst string) (err error) {
 	step, ctx := build.StartStep(ctx, "fetch "+src.project)
-	defer func() {
-		// Any failure in this function is an infrastructure failure.
-		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
-		step.End(err)
-	}()
+	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
 	switch {
 	case src.change != nil && !src.rebase:
@@ -138,19 +147,14 @@ func fetchRepoAtCommit(ctx context.Context, dst string, commit *bbpb.GitilesComm
 // dependencies for the given modules.
 func fetchDependencies(ctx context.Context, spec *buildSpec, modules []module) (err error) {
 	step, ctx := build.StartStep(ctx, "fetch dependencies")
-	defer func() {
-		// Any failure in this function is an infrastructure failure.
-		//
-		// TODO(dmitshur): See if errors due to adding a broken or unavailable
-		// module can be detected and correctly reported as non-infra somehow.
-		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
-		step.End(err)
-	}()
+	// TODO(dmitshur): See if errors due to adding a broken or unavailable
+	// module can be detected and correctly reported as non-infra somehow.
+	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
 	var errs []error
 	for _, m := range modules {
 		dlCmd := spec.goCmd(ctx, m.RootDir, "mod", "download")
-		err := runCommandAsStep(ctx, fmt.Sprintf("fetch %q dependencies", m.Path), dlCmd, true)
+		err := cmdStepRun(ctx, fmt.Sprintf("fetch %q dependencies", m.Path), dlCmd, true)
 		errs = append(errs, err)
 	}
 	return errors.Join(errs...)
@@ -162,11 +166,7 @@ func writeVersionFile(ctx context.Context, dst, version string) error {
 
 func writeFile(ctx context.Context, path, data string) (err error) {
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("write %s", filepath.Base(path)))
-	defer func() {
-		// Any failure in this function is an infrastructure failure.
-		err = build.AttachStatus(err, bbpb.Status_INFRA_FAILURE, nil)
-		step.End(err)
-	}()
+	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 	contentsLog := step.Log("contents")
 
 	f, err := os.Create(path)
@@ -192,7 +192,7 @@ func refFromChange(change *bbpb.GerritChange) string {
 }
 
 func runGit(ctx context.Context, stepName string, args ...string) (err error) {
-	return runCommandAsStep(ctx, stepName, exec.CommandContext(ctx, "git", args...), true)
+	return cmdStepRun(ctx, stepName, exec.CommandContext(ctx, "git", args...), true)
 }
 
 // sourceForBranch produces a sourceSpec representing the tip of a branch for a project.
