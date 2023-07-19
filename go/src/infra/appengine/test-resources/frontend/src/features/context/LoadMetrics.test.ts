@@ -102,6 +102,44 @@ describe('Merge TestMetrics', () => {
         .toEqual(4);
   });
 
+  it('merge tests into existing state correctly', () => {
+    const state: Node[] = [{
+      id: 'foo',
+      name: 'foo',
+      metrics: new Map(),
+      isLeaf: false,
+      nodes: [],
+      path: 'foo',
+      type: DirectoryNodeType.FILENAME,
+      loaded: false,
+    } as Path];
+    const tests: TestDateMetricData[] = [{
+      testId: '12',
+      testName: 'name',
+      fileName: 'file',
+      metrics: metricsMap({
+        '2012-01-02': [
+          [MetricType.NUM_RUNS, 1],
+        ],
+      }),
+      variants: [],
+    }];
+    const merged = dataReducer(state, {
+      type: 'merge_test',
+      tests: tests,
+      parentId: 'foo',
+    });
+    expect(merged).toHaveLength(1);
+    expect(merged[0].id).toEqual('foo');
+
+    expect(merged[0].nodes).toHaveLength(1);
+    const t = merged[0].nodes[0];
+    expect(t.id).toEqual(tests[0].testId);
+    expect(t.name).toEqual(tests[0].testName);
+    expect(t.metrics.size).toEqual(1);
+    expect(t.metrics.get('2012-01-02')?.get(MetricType.NUM_RUNS)).toEqual(1);
+  });
+
   it('return empty node for empty tests returned', () => {
     const tests: TestDateMetricData[] = [];
     const merged = dataReducer([], { type: 'merge_test', tests });
@@ -161,19 +199,21 @@ describe('Merge LoadMetrics', () => {
     expect((merged[0] as Path).path).toEqual(nodes[0].id);
     expect((merged[0] as Path).loaded).toEqual(false);
   });
-  it('merge a single node into existing state', () => {
+
+  it('merge a single directory node into existing state', () => {
     const state: Node[] = [{
       id: '/',
       name: 'src',
       metrics: new Map(),
       isLeaf: false,
       nodes: [],
-      path: '',
+      path: '/',
+      type: DirectoryNodeType.DIRECTORY,
       loaded: false,
     } as Path];
     const nodes: DirectoryNode[] = [{
       id: '/a',
-      type: DirectoryNodeType.DIRECTORY,
+      type: DirectoryNodeType.FILENAME,
       name: 'a',
       metrics: {},
     }];
@@ -186,6 +226,7 @@ describe('Merge LoadMetrics', () => {
     });
     expect(merged).toHaveLength(1);
     expect(merged[0].nodes).toHaveLength(1);
+    expect((merged[0] as Path).type).toEqual(DirectoryNodeType.DIRECTORY);
     expect((merged[0] as Path).loaded).toEqual(true);
 
     const m0n0 = merged[0].nodes[0];
@@ -194,6 +235,7 @@ describe('Merge LoadMetrics', () => {
     expect(m0n0.nodes).toHaveLength(0);
     expect(m0n0.isLeaf).toEqual(false);
     expect(m0n0.onExpand).toBe(onExpand);
+    expect((m0n0 as Path).type).toEqual(DirectoryNodeType.FILENAME);
     expect((m0n0 as Path).loaded).toEqual(false);
   });
 });

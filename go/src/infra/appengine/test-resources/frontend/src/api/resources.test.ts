@@ -142,17 +142,17 @@ describe('fetchDirectoryMetrics', () => {
     const resp = await fetchDirectoryMetrics(
         {
           components: ['component'],
-          'period': Period.DAY,
-          'dates': ['2012-01-02'],
-          'parent_ids': ['/'],
-          'metrics': [
+          period: Period.DAY,
+          dates: ['2012-01-02'],
+          parent_ids: ['/'],
+          metrics: [
             MetricType.NUM_RUNS,
             MetricType.AVG_RUNTIME,
             MetricType.TOTAL_RUNTIME,
             MetricType.NUM_FAILURES,
           ],
-          'filter': 'filter',
-          'sort': { metric: SortType.SORT_NAME, ascending: true },
+          filter: 'filter',
+          sort: { metric: SortType.SORT_NAME, ascending: true },
         },
     );
     expect(resp).toEqual(data);

@@ -10,7 +10,9 @@ import { FetchDirectoryMetricsRequest, fetchDirectoryMetrics, DirectoryNode,
   TestDateMetricData,
   MetricsDateMap,
   fetchTestMetrics,
-  FetchDirectoryMetricsResponse } from '../../api/resources';
+  FetchDirectoryMetricsResponse,
+  DirectoryNodeType,
+} from '../../api/resources';
 import { formatDate } from '../../utils/formatUtils';
 import { Node, Params, Path } from './MetricsContext';
 
@@ -32,6 +34,7 @@ export function loadTestMetrics(
     params: Params,
     successCallback: (response: FetchTestMetricsResponse, fetchedDates: string[]) => void,
     failureCallback: (erorr: any) => void,
+    fileNames?: string[],
 ) {
   const datesToFetch = computeDates(params);
   const request: FetchTestMetricsRequest = {
@@ -53,13 +56,16 @@ export function loadTestMetrics(
       ascending: params.ascending,
     },
   };
+  if (fileNames) {
+    request.file_names = fileNames;
+  }
   fetchTestMetrics(request).then((response) => {
     successCallback(response, datesToFetch);
   }).catch(failureCallback);
 }
 
 type DataAction =
- | { type: 'merge_test', tests: TestDateMetricData[] }
+ | { type: 'merge_test', tests: TestDateMetricData[], parentId?: string }
  | {
   type: 'merge_dir',
   nodes: DirectoryNode[],
@@ -79,12 +85,10 @@ function findNode(nodes: Node[], id: string): Node | undefined {
 }
 
 export function dataReducer(state: Node[], action: DataAction): Node[] {
+  let nodes: Node[] = [];
   switch (action.type) {
-    case 'merge_test':
-      if (action.tests === undefined) {
-        return [];
-      }
-      return action.tests.map((test) => ({
+    case 'merge_test': {
+      nodes = action.tests ? action.tests.map((test) => ({
         id: test.testId,
         name: test.testName,
         fileName: test.fileName,
@@ -98,9 +102,11 @@ export function dataReducer(state: Node[], action: DataAction): Node[] {
           isLeaf: true,
           nodes: [],
         })),
-      }));
+      })) : [];
+      break;
+    }
     case 'merge_dir': {
-      const nodes = action.nodes ? action.nodes.map((node) => ({
+      nodes = action.nodes ? action.nodes.map((node) => ({
         id: node.id,
         path: node.id,
         name: node.name,
@@ -108,22 +114,23 @@ export function dataReducer(state: Node[], action: DataAction): Node[] {
         isLeaf: false,
         onExpand: action.onExpand,
         loaded: false,
+        type: node.type as DirectoryNodeType,
         nodes: [],
-      })) : [];
-      if (action.parentId === undefined) {
-        return nodes;
-      } else {
-        const parentNode = findNode(state, action.parentId);
-        if (parentNode !== undefined) {
-          parentNode.nodes = nodes;
-          (parentNode as Path).loaded = true;
-        }
-        // Necessary to return a new object to trigger a re-render.
-        return [...state];
-      }
+      })) as Path[] : [];
+      break;
     }
   }
-  return state;
+  if (action.parentId === undefined) {
+    return nodes;
+  } else {
+    const parentNode = findNode(state, action.parentId);
+    if (parentNode !== undefined) {
+      parentNode.nodes = nodes;
+      (parentNode as Path).loaded = true;
+    }
+    // Necessary to return a new object to trigger a re-render.
+    return [...state];
+  }
 }
 
 export function loadDirectoryMetrics(

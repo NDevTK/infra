@@ -4,6 +4,7 @@
 
 import { createContext, useContext, useEffect, useReducer, useState } from 'react';
 import {
+  DirectoryNodeType,
   FetchDirectoryMetricsResponse,
   FetchTestMetricsResponse,
   MetricType,
@@ -34,6 +35,7 @@ export interface Node {
 // A directory may contain multiple files. A file may contain multiple tests.
 export interface Path extends Node {
   path: string,
+  type: DirectoryNodeType,
   loaded: boolean,
 }
 
@@ -163,19 +165,35 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
 
   function loadPathNode(node: Node) {
     if (Object.hasOwn(node, 'loaded') && !(node as Path).loaded) {
+      const pathNode = node as Path;
       loadingDispatch({ type: 'start' });
-      loadDirectoryMetrics(component, params, node.id,
-          (response: FetchDirectoryMetricsResponse) => {
-            dataDispatch({
-              type: 'merge_dir',
-              nodes: response.nodes,
-              parentId: node.id,
-              onExpand: loadPathNode,
-            });
-            loadingDispatch({ type: 'end' });
-          },
-          loadFailure,
-      );
+      if (pathNode.type === DirectoryNodeType.FILENAME) {
+        loadTestMetrics(component, params,
+            (response: FetchTestMetricsResponse) => {
+              dataDispatch({
+                type: 'merge_test',
+                tests: response.tests,
+                parentId: node.id,
+              });
+              loadingDispatch({ type: 'end' });
+            },
+            loadFailure,
+            [pathNode.path],
+        );
+      } else {
+        loadDirectoryMetrics(component, params, node.id,
+            (response: FetchDirectoryMetricsResponse) => {
+              dataDispatch({
+                type: 'merge_dir',
+                nodes: response.nodes,
+                parentId: node.id,
+                onExpand: loadPathNode,
+              });
+              loadingDispatch({ type: 'end' });
+            },
+            loadFailure,
+        );
+      }
     }
   }
 

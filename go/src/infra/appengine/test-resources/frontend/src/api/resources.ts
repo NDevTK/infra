@@ -69,6 +69,7 @@ export interface FetchTestMetricsRequest {
   dates: string[],
   metrics: MetricType[],
   filter?: string,
+  file_names?: string[],
   page_offset: number,
   page_size: number,
   sort: SortBy,
@@ -133,8 +134,8 @@ export interface FetchDirectoryMetricsRequest {
 }
 
 export enum DirectoryNodeType {
-  DIRECTORY = 0,
-  FILENAME = 1,
+  DIRECTORY = 'DIRECTORY',
+  FILENAME = 'FILENAME',
 }
 
 export interface DirectoryNode {
