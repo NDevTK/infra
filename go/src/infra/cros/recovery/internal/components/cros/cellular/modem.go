@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -25,6 +26,7 @@ const (
 	mmcliCliPresentCmd        = "which mmcli"
 	modemManagerJobPresentCmd = "initctl status modemmanager"
 	restartModemManagerCmd    = "restart modemmanager"
+	getSignalStrengthCmd      = "mmcli -m a --signal-get -J"
 	startModemManagerCmd      = "start modemmanager"
 	shillInterface            = "org.chromium.flimflam"
 	getCellularServiceCmd     = "gdbus call --system --dest=org.chromium.flimflam" +
@@ -154,9 +156,9 @@ func WaitForModemState(ctx context.Context, runner components.Runner, timeout ti
 type ModemInfo struct {
 	Modem *struct {
 		Generic *struct {
-			State string `state:"callbox,omitempty"`
+			State string `json:"state,omitempty"`
 		} `json:"generic,omitempty"`
-	} `modem:"modem,omitempty"`
+	} `json:"modem,omitempty"`
 }
 
 // ModemState represents a valid cellular modem state.
@@ -207,6 +209,125 @@ func WaitForModemInfo(ctx context.Context, runner components.Runner, timeout tim
 // parseModemInfo unmarshals the modem properties json output from mmcli.
 func parseModemInfo(ctx context.Context, output string) (*ModemInfo, error) {
 	info := &ModemInfo{}
+	if err := json.Unmarshal([]byte(output), info); err != nil {
+		return nil, err
+	}
+	return info, nil
+}
+
+// signalInfo is a simplified version of the JSON output from ModemManager to get the modem signal strength information
+type signalInfo struct {
+	Modem *struct {
+		Signal *struct {
+			FiveG *struct {
+				RSRP string `json:"rsrp,omitempty"`
+				RSSI string `json:"rssi,omitempty"`
+				SNR  string `json:"snr,omitempty"`
+			} `json:"5g,omitempty"`
+			LTE *struct {
+				RSRP string `json:"rsrp,omitempty"`
+				RSSI string `json:"rssi,omitempty"`
+				SNR  string `json:"snr,omitempty"`
+			} `json:"lte,omitempty"`
+		} `json:"signal,omitempty"`
+	} `json:"modem,omitempty"`
+}
+
+// NetworkTechnology represents a cellular network technology.
+type NetworkTechnology string
+
+const (
+	// NetworkTechnologyLTE represents an LTE cellular network.
+	NetworkTechnologyLTE NetworkTechnology = "LTE"
+	// NetworkTechnology5G represents a 5G cellular network.
+	NetworkTechnology5G NetworkTechnology = "5G"
+)
+
+// SignalStrength represents a generic cellular signal measurement. Different modems may
+// report all or only some of the possible measurements, unavailable measurements are set
+// to nil.
+type SignalStrength struct {
+	RSRP       *float64
+	RSSI       *float64
+	SNR        *float64
+	Technology NetworkTechnology
+}
+
+func (s SignalStrength) HasValue() bool {
+	return s.RSRP != nil || s.RSSI != nil || s.SNR != nil
+}
+
+// GetSignalStrength fetches the available cellular signals and returns their strengths.
+// Note: Multiple signal technologies may be available at one time (i.e. 5G and LTE) in which case
+// all available will be returned.
+func GetSignalStrength(ctx context.Context, runner components.Runner, timeout time.Duration) ([]SignalStrength, error) {
+	signalStrength := make([]SignalStrength, 0)
+	if err := retry.WithTimeout(ctx, time.Second, timeout, func() error {
+		output, err := runner(ctx, 5*time.Second, getSignalStrengthCmd)
+		if err != nil {
+			return errors.Annotate(err, "query signal").Err()
+		}
+
+		info, err := parseSignalInfo(ctx, output)
+		if err != nil {
+			return errors.Annotate(err, "parse signal response").Err()
+		}
+
+		if info == nil || info.Modem == nil || info.Modem.Signal == nil {
+			return errors.Reason("no signal info found on DUT").Err()
+		}
+
+		if info.Modem.Signal.FiveG != nil {
+			// CLI may return "--" or empty strings for missing signals so we need
+			// to verify by attempting to parse.
+			strength := SignalStrength{}
+			if rsrp, err := strconv.ParseFloat(info.Modem.Signal.FiveG.RSRP, 32); err == nil {
+				strength.RSRP = &rsrp
+			}
+			if rssi, err := strconv.ParseFloat(info.Modem.Signal.FiveG.RSSI, 32); err == nil {
+				strength.RSSI = &rssi
+			}
+			if snr, err := strconv.ParseFloat(info.Modem.Signal.FiveG.SNR, 32); err == nil {
+				strength.SNR = &snr
+			}
+			if strength.HasValue() {
+				strength.Technology = NetworkTechnology5G
+				signalStrength = append(signalStrength, strength)
+			}
+		}
+
+		if info.Modem.Signal.LTE != nil {
+			strength := SignalStrength{}
+			if rsrp, err := strconv.ParseFloat(info.Modem.Signal.LTE.RSRP, 32); err == nil {
+				strength.RSRP = &rsrp
+			}
+			if rssi, err := strconv.ParseFloat(info.Modem.Signal.LTE.RSSI, 32); err == nil {
+				strength.RSSI = &rssi
+			}
+			if snr, err := strconv.ParseFloat(info.Modem.Signal.LTE.SNR, 32); err == nil {
+				strength.SNR = &snr
+			}
+			if strength.HasValue() {
+				strength.Technology = NetworkTechnologyLTE
+				signalStrength = append(signalStrength, strength)
+			}
+		}
+
+		// if any available signals were found
+		if len(signalStrength) > 0 {
+			return nil
+		}
+		return errors.Reason("no signal info found on DUT").Err()
+	}, "wait for modem"); err != nil {
+		return nil, errors.Annotate(err, "wait for modem info: wait for ModemManager to export modem").Err()
+	}
+
+	return signalStrength, nil
+}
+
+// parseSignalInfo unmarshals the modem signal properties json output from mmcli.
+func parseSignalInfo(ctx context.Context, output string) (*signalInfo, error) {
+	info := &signalInfo{}
 	if err := json.Unmarshal([]byte(output), info); err != nil {
 		return nil, err
 	}
