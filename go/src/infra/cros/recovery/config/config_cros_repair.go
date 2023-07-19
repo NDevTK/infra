@@ -138,7 +138,6 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"Cold reset by servo and wait for SSH",
 				"Reset servo_v4.1 ethernet and wait for SSH",
-				"Battery cut-off by servo and wait for SSH",
 				"Power cycle DUT by RPM and wait",
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
 				"Restore AC detection by EC console and wait for ping",
@@ -148,6 +147,7 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
 				"Install OS in DEV mode by USB-drive",
 				"Reset power using servo if booted from USB",
+				"Battery cut-off by servo and wait for SSH",
 				"Check if request labstation reboot",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
