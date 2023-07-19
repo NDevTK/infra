@@ -70,7 +70,12 @@ func (c *updateDUTState) innerRun(a subcommands.Application, args []string, env 
 	}
 
 	qualifiedHostname := site.MaybePrepend(site.Satlab, dockerHostBoxIdentifier, c.hostname)
-	err = updateDUTStateToUFS(ctx, &c.authFlags, ufs, qualifiedHostname, c.state)
+
+	return c.innerRunWithClients(ctx, ufs, qualifiedHostname)
+}
+
+func (c *updateDUTState) innerRunWithClients(ctx context.Context, ufs ufs.UFSClient, hostname string) error {
+	err := updateDUTStateToUFS(ctx, &c.authFlags, ufs, hostname, c.state)
 	if err != nil {
 		return err
 	}
