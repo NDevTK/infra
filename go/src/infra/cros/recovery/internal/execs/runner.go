@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 
 	"infra/cros/recovery/internal/components"
+	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 )
 
@@ -75,61 +76,127 @@ func (ei *ExecInfo) DefaultRunner() components.Runner {
 func (ei *ExecInfo) NewRunner(host string) components.Runner {
 	return ei.newRunner(host, false)
 }
+
 func (ei *ExecInfo) newRunner(host string, inBackground bool) components.Runner {
+	ha := ei.NewHostAccess(host)
 	runner := func(ctx context.Context, timeout time.Duration, cmd string, args ...string) (string, error) {
-		fullCmd := cmd
-		if len(args) > 0 {
-			fullCmd += " " + strings.Join(args, " ")
+		var res components.SSHRunResponse
+		var err error
+		if inBackground {
+			res, err = ha.RunBackground(ctx, timeout, cmd, args...)
+		} else {
+			res, err = ha.Run(ctx, timeout, cmd, args...)
 		}
-		log := ei.NewLogger()
-		log.Debugf("Prepare to run command: %q", fullCmd)
-		r := ei.GetAccess().Run(ctx, &tlw.RunRequest{
-			Resource:     host,
-			Timeout:      durationpb.New(timeout),
-			Command:      cmd,
-			Args:         args,
-			InBackground: inBackground,
-		})
-		log.Debugf("Run %q completed with exit code %d", r.Command, r.ExitCode)
-		exitCode := r.ExitCode
-		out := strings.TrimSpace(r.Stdout)
-		log.Debugf("Run output:\n%s", out)
-		if exitCode != 0 {
-			errAnnotator := errors.Reason("runner: command %q completed with exit code %d", r.Command, r.ExitCode)
-			// Note: here the exitCode is stored in the field named
-			// 'Value' of the TagValue structure. This field is an
-			// empty interface. Since we are storing an exitCode of
-			// type int32 in this field, we need to be mindful of
-			// later comparing this to values of type int32
-			// only. Specifically, literal integers are of type 'int',
-			// and comparison with such literals will fail even if the
-			// value of the literal matches the value of
-			// exitCode. Ref: http://b/253326688.
-			errCodeTagValue := errors.TagValue{Key: ErrCodeTag, Value: exitCode}
-			errAnnotator.Tag(errCodeTagValue)
-			errAnnotator.Tag(errors.TagValue{Key: StdErrTag, Value: r.Stderr})
-			log.Debugf("Run stderr:\n%s", r.Stderr)
-			// different kinds of internal errors
-			if exitCode < 0 {
-				errAnnotator.Tag(SSHErrorInternal)
-				if exitCode == -1 {
-					errAnnotator.Tag(FailToCreateSSHErrorInternal)
-				} else if exitCode == -2 {
-					errAnnotator.Tag(NoExitStatusErrorInternal)
-				} else if exitCode == -3 {
-					errAnnotator.Tag(OtherErrorInternal)
-				}
-				// general linux errors
-			} else if exitCode == 124 {
-				errAnnotator.Tag(SSHErrorLinuxTimeout)
-			} else if exitCode == 127 {
-				errAnnotator.Tag(SSHErrorCLINotFound)
-			} else {
-				errAnnotator.Tag(GeneralError)
-			}
-			return out, errAnnotator.Err()
-		}
-		return out, nil
+		return strings.TrimSpace(res.GetStdout()), err
 	}
 	return runner
+}
+
+// hostAccess provides implementation of components.HostAccess interface.
+//
+// Implementation created in builder approach to simplify configuration.
+type hostAccess struct {
+	host   string
+	user   string
+	access tlw.Access
+}
+
+// NewHostAccess creates new instance of HostAccess.
+func (ei *ExecInfo) NewHostAccess(host string) *hostAccess {
+	if ei == nil {
+		panic("ExecInfo is nil")
+	}
+	return &hostAccess{
+		host:   host,
+		access: ei.GetAccess(),
+	}
+}
+
+func (b *hostAccess) UseUser(user string) *hostAccess {
+	if b == nil {
+		panic("Something went wrong as builder is nil")
+	}
+	b.user = user
+	return b
+}
+
+// Run executes command by SSH and wait to receive results of the execution.
+//
+// For all exit codes != `0` an error will be generated.
+func (b *hostAccess) Run(ctx context.Context, timeout time.Duration, command string, args ...string) (components.SSHRunResponse, error) {
+	return b.run(ctx, false, timeout, command, args...)
+}
+
+// Run executes command by SSH and don't wait for results of the execution.
+//
+// For all exit codes != `0` an error will be generated.
+func (b *hostAccess) RunBackground(ctx context.Context, timeout time.Duration, command string, args ...string) (components.SSHRunResponse, error) {
+	return b.run(ctx, true, timeout, command, args...)
+}
+
+func (b *hostAccess) run(ctx context.Context, inBackground bool, timeout time.Duration, command string, args ...string) (components.SSHRunResponse, error) {
+	fullCmd := command
+	if len(args) > 0 {
+		fullCmd += " " + strings.Join(args, " ")
+	}
+	if inBackground {
+		log.Debugf(ctx, "Prepare to run in background command: %q", fullCmd)
+	} else {
+		log.Debugf(ctx, "Prepare to run command: %q", fullCmd)
+	}
+	res := b.access.Run(ctx, &tlw.RunRequest{
+		Resource:     b.host,
+		Timeout:      durationpb.New(timeout),
+		Command:      command,
+		Args:         args,
+		InBackground: inBackground,
+	})
+	log.Debugf(ctx, "Run %q completed with exit code %d", res.Command, res.ExitCode)
+	log.Debugf(ctx, "Run output:\n%s", strings.TrimSpace(res.GetStdout()))
+	if res.GetExitCode() == 0 {
+		// Success execution.
+		return res, nil
+	}
+	// Something wrong, so we need create error.
+	errAnnotator := errors.Reason("runner: command %q completed with exit code %d", fullCmd, res.GetExitCode())
+	// Note: here the exitCode is stored in the field named
+	// 'Value' of the TagValue structure. This field is an
+	// empty interface. Since we are storing an exitCode of
+	// type int32 in this field, we need to be mindful of
+	// later comparing this to values of type int32
+	// only. Specifically, literal integers are of type 'int',
+	// and comparison with such literals will fail even if the
+	// value of the literal matches the value of
+	// exitCode. Ref: http://b/253326688.
+	errCodeTagValue := errors.TagValue{Key: ErrCodeTag, Value: res.GetExitCode()}
+	errAnnotator.Tag(errCodeTagValue)
+	errAnnotator.Tag(errors.TagValue{Key: StdErrTag, Value: res.GetStderr()})
+	log.Debugf(ctx, "Run stderr:\n%s", res.GetStderr())
+	// different kinds of internal errors
+	if res.GetExitCode() < 0 {
+		errAnnotator.Tag(SSHErrorInternal)
+		if res.GetExitCode() == -1 {
+			errAnnotator.Tag(FailToCreateSSHErrorInternal)
+		} else if res.GetExitCode() == -2 {
+			errAnnotator.Tag(NoExitStatusErrorInternal)
+		} else if res.GetExitCode() == -3 {
+			errAnnotator.Tag(OtherErrorInternal)
+		}
+		// general linux errors
+	} else if res.GetExitCode() == 124 {
+		errAnnotator.Tag(SSHErrorLinuxTimeout)
+	} else if res.GetExitCode() == 127 {
+		errAnnotator.Tag(SSHErrorCLINotFound)
+	} else {
+		errAnnotator.Tag(GeneralError)
+	}
+	return res, errAnnotator.Err()
+}
+
+// Ping the host.
+//
+// If error is nil ping is successful.
+func (b *hostAccess) Ping(ctx context.Context, pingCount int) error {
+	log.Debugf(ctx, "Start ping %q %d times", b.host, pingCount)
+	return b.access.Ping(ctx, b.host, pingCount)
 }
