@@ -13,6 +13,8 @@ func crosRepairPlan() *Plan {
 		CriticalActions: []string{
 			"Set state: repair_failed",
 			"Collect logs and crashinfo",
+			"Has repair-request for re-image USB-key",
+			"Has repair-request for re-image by USB-key",
 			"Device is pingable",
 			"Device is SSHable",
 			"Enable verbose network logging for cellular DUTs",
@@ -22,8 +24,6 @@ func crosRepairPlan() *Plan {
 			"Set dev_boot_usb is enabled",
 			"Verify if booted from priority kernel",
 			"Verify rootfs is on fs-verity",
-			"Has repair-request for re-image USB-key",
-			"Has repair-request for re-image by USB-key",
 			"Has repair-request for re-provision",
 			"Check if last provision was good",
 			"Python is present",
