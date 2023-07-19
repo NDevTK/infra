@@ -5,9 +5,6 @@ trap "exit 10" SIGUSR1
 SWARM_DIR=/b/swarming
 SWARM_ZIP=swarming_bot.zip
 
-DEPOT_TOOLS_DIR=/b/depot_tools
-DEPOT_TOOLS_URL='https://chromium.googlesource.com/chromium/tools/depot_tools.git'
-DEPOT_TOOLS_REV='da3a29e13e816459234b0b08ed1059300bae46dd'
 LUCI_MACHINE_TOKEN_FILE='/var/lib/luci_machine_tokend/token.json'
 
 if [ -z "$CROS_SSH_ID_FILE_PATH" ] ; then
@@ -17,15 +14,6 @@ else
   # Pass an empty password via "-N ''".
   su -c "/usr/bin/ssh-keygen -f $CROS_SSH_ID_FILE_PATH -N '' -t ed25519" chrome-bot
 fi
-
-# Some chromium tests need depot tools.
-mkdir -p $DEPOT_TOOLS_DIR
-chown chrome-bot:chrome-bot $DEPOT_TOOLS_DIR
-su -c "cd $DEPOT_TOOLS_DIR && \
-       /usr/bin/git init && \
-       /usr/bin/git remote add origin $DEPOT_TOOLS_URL ; \
-       /usr/bin/git fetch origin $DEPOT_TOOLS_REV && \
-       /usr/bin/git reset --hard FETCH_HEAD" chrome-bot
 
 curl_header_args=()
 if [[ -r "${LUCI_MACHINE_TOKEN_FILE}" ]]; then
