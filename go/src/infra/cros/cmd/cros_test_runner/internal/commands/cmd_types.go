@@ -29,11 +29,6 @@ const (
 	LoadDutTopologyCmdType  interfaces.CommandType = "LoadDutTopology"
 	BuildDutTopologyCmdType interfaces.CommandType = "BuildDutTopology"
 
-	// Ctr service related commands
-	CtrServiceStartAsyncCmdType interfaces.CommandType = "CtrServiceStartAsync"
-	CtrServiceStopCmdType       interfaces.CommandType = "CtrServiceStop"
-	GcloudAuthCmdType           interfaces.CommandType = "GcloudAuth"
-
 	// SSH service related commands
 	SshStartTunnelCmdType        interfaces.CommandType = "SshTunnelStart"
 	SshStartReverseTunnelCmdType interfaces.CommandType = "SshReverseTunnelStart"

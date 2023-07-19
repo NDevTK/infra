@@ -7,6 +7,9 @@ package configs
 import (
 	"testing"
 
+	"infra/cros/cmd/common_lib/common_commands"
+	"infra/cros/cmd/common_lib/common_configs"
+	"infra/cros/cmd/common_lib/common_executors"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
@@ -19,7 +22,7 @@ func TestGetCommand_UnsupportedCmdType(t *testing.T) {
 	Convey("Unsupported command type", t, func() {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := NewCftContainerConfig(ctr, nil, false)
+		contConfig := common_configs.NewContainerConfig(ctr, nil, false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		cmd, err := cmdConfig.GetCommand(commands.UnSupportedCmdType, executors.NoExecutorType)
@@ -34,7 +37,7 @@ func TestGetCommand_SupportedCmdType(t *testing.T) {
 	Convey("Supported command type", t, func() {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := NewCftContainerConfig(ctr, getMockContainerImagesInfo(), false)
+		contConfig := common_configs.NewContainerConfig(ctr, getMockContainerImagesInfo(), false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 
@@ -58,15 +61,15 @@ func TestGetCommand_SupportedCmdType(t *testing.T) {
 		So(cmd, ShouldNotBeNil)
 		So(err, ShouldBeNil)
 
-		cmd, err = cmdConfig.GetCommand(commands.CtrServiceStartAsyncCmdType, executors.CtrExecutorType)
+		cmd, err = cmdConfig.GetCommand(common_commands.CtrServiceStartAsyncCmdType, common_executors.CtrExecutorType)
 		So(cmd, ShouldNotBeNil)
 		So(err, ShouldBeNil)
 
-		cmd, err = cmdConfig.GetCommand(commands.CtrServiceStopCmdType, executors.CtrExecutorType)
+		cmd, err = cmdConfig.GetCommand(common_commands.CtrServiceStopCmdType, common_executors.CtrExecutorType)
 		So(cmd, ShouldNotBeNil)
 		So(err, ShouldBeNil)
 
-		cmd, err = cmdConfig.GetCommand(commands.GcloudAuthCmdType, executors.CtrExecutorType)
+		cmd, err = cmdConfig.GetCommand(common_commands.GcloudAuthCmdType, common_executors.CtrExecutorType)
 		So(cmd, ShouldNotBeNil)
 		So(err, ShouldBeNil)
 

@@ -15,12 +15,12 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/grpc"
 
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 )
 
-// CrosTestFinderExecutor represents executor for all cros-test related commands.
+// CrosTestFinderExecutor represents executor for all cros-test-finder related commands.
 type CrosTestFinderExecutor struct {
 	*interfaces.AbstractExecutor
 
@@ -138,7 +138,7 @@ func (ex *CrosTestFinderExecutor) testFinderExecutionCommandExecution(
 	return err
 }
 
-// Start starts the cros-test server.
+// Start starts the cros-test-finder server.
 func (ex *CrosTestFinderExecutor) Start(ctx context.Context) error {
 	template := &api.Template{
 		Container: &api.Template_CrosTestFinder{

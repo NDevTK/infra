@@ -16,10 +16,10 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
-	"infra/cros/cmd/cros_test_runner/common"
+	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/configs"
-	"infra/cros/cmd/cros_test_runner/internal/data"
 )
 
 func LocalExecution(sk *data.LocalTestStateKeeper, ctrCipdVersion, pathToCipdBin, logPath string, noSudo bool) (*skylab_test_runner.ExecuteResponse, error) {
@@ -99,12 +99,12 @@ func executeLocalTests(
 	}
 	// TODO: Add cacheserver to container image map. Ignored for server implementation.
 	containerImagesMap := metadataMap.GetImages()
-	containerCfg := configs.NewCftContainerConfig(ctr, containerImagesMap, false)
+	containerCfg := configs.NewContainerConfig(ctr, containerImagesMap, false)
 	executorCfg := configs.NewExecutorConfig(ctr, containerCfg)
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 
 	// Generate config
-	localTestConfig := configs.NewTestExecutionConfig(configs.LocalTestExecutionConfigType, cmdCfg, sk, nil)
+	localTestConfig := configs.NewTrv2ExecutionConfig(configs.LocalTestExecutionConfigType, cmdCfg, sk, nil)
 	err = localTestConfig.GenerateConfig(ctx)
 	if err != nil {
 		return sk.SkylabResult, errors.Annotate(err, "error during generating local test configs: ").Err()

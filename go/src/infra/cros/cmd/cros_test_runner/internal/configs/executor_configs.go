@@ -7,6 +7,7 @@ package configs
 import (
 	"fmt"
 
+	"infra/cros/cmd/common_lib/common_executors"
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
@@ -49,11 +50,11 @@ func (cfg *ExecutorConfig) GetExecutor(execType interfaces.ExecutorType) (interf
 		}
 		exec = executors.NewInvServiceExecutor(invServiceAddress)
 
-	case executors.CtrExecutorType:
+	case common_executors.CtrExecutorType:
 		if cfg.Ctr == nil {
 			return nil, fmt.Errorf("CrosToolRunner is nil!")
 		}
-		exec = executors.NewCtrExecutor(cfg.Ctr)
+		exec = common_executors.NewCtrExecutor(cfg.Ctr)
 
 	case executors.CrosDutExecutorType:
 		container, err := cfg.ContainerConfig.GetContainer(containers.CrosDutTemplatedContainerType)

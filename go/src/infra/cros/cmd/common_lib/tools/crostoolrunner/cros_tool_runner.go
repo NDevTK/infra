@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"infra/cros/cmd/cros_test_runner/common"
+	"infra/cros/cmd/common_lib/common"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"

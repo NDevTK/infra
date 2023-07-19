@@ -6,10 +6,10 @@ package configs
 
 import (
 	"context"
-	"infra/cros/cmd/cros_test_runner/internal/data"
+	"infra/cros/cmd/cros_test_runner/data"
 	"testing"
 
-	"infra/cros/cmd/cros_test_runner/common"
+	"infra/cros/cmd/common_lib/common"
 
 	. "github.com/smartystreets/goconvey/convey"
 )

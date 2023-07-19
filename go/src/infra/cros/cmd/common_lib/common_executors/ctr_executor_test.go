@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package executors
+package common_executors_test
 
 import (
 	"context"
@@ -10,9 +10,21 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
+	"infra/cros/cmd/common_lib/common_commands"
+	"infra/cros/cmd/common_lib/common_executors"
+	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
-	"infra/cros/cmd/cros_test_runner/internal/commands"
 )
+
+type UnsupportedCmd struct {
+	*interfaces.AbstractSingleCmdByNoExecutor
+}
+
+func NewUnsupportedCmd() interfaces.CommandInterface {
+	absCmd := interfaces.NewAbstractCmd(common_commands.UnSupportedCmdType)
+	absSingleCmdByNoExec := &interfaces.AbstractSingleCmdByNoExecutor{AbstractCmd: absCmd}
+	return &UnsupportedCmd{AbstractSingleCmdByNoExecutor: absSingleCmdByNoExec}
+}
 
 func TestCtrServiceStartAsync(t *testing.T) {
 	t.Parallel()
@@ -21,7 +33,7 @@ func TestCtrServiceStartAsync(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		exec := NewCtrExecutor(ctr)
+		exec := common_executors.NewCtrExecutor(ctr)
 		err := exec.StartAsync(ctx)
 		So(err, ShouldNotBeNil)
 	})
@@ -34,7 +46,7 @@ func TestGcloudAuth(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		exec := NewCtrExecutor(ctr)
+		exec := common_executors.NewCtrExecutor(ctr)
 		err := exec.GcloudAuth(ctx, "", false)
 		So(err, ShouldNotBeNil)
 	})
@@ -47,7 +59,7 @@ func TestCtrStop(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		exec := NewCtrExecutor(ctr)
+		exec := common_executors.NewCtrExecutor(ctr)
 		err := exec.Stop(ctx)
 		So(err, ShouldBeNil)
 	})
@@ -60,7 +72,7 @@ func TestCtrExecuteCommand(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		exec := NewCtrExecutor(ctr)
+		exec := common_executors.NewCtrExecutor(ctr)
 		err := exec.ExecuteCommand(ctx, NewUnsupportedCmd())
 		So(err, ShouldNotBeNil)
 	})
@@ -69,8 +81,8 @@ func TestCtrExecuteCommand(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		exec := NewCtrExecutor(ctr)
-		cmd := commands.NewCtrServiceStartAsyncCmd(exec)
+		exec := common_executors.NewCtrExecutor(ctr)
+		cmd := common_commands.NewCtrServiceStartAsyncCmd(exec)
 		err := exec.ExecuteCommand(ctx, cmd)
 		So(err, ShouldNotBeNil)
 	})
@@ -79,8 +91,8 @@ func TestCtrExecuteCommand(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		exec := NewCtrExecutor(ctr)
-		cmd := commands.NewCtrServiceStopCmd(exec)
+		exec := common_executors.NewCtrExecutor(ctr)
+		cmd := common_commands.NewCtrServiceStopCmd(exec)
 		err := exec.ExecuteCommand(ctx, cmd)
 		So(err, ShouldBeNil)
 	})
@@ -89,8 +101,8 @@ func TestCtrExecuteCommand(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		exec := NewCtrExecutor(ctr)
-		cmd := commands.NewGcloudAuthCmd(exec)
+		exec := common_executors.NewCtrExecutor(ctr)
+		cmd := common_commands.NewGcloudAuthCmd(exec)
 		err := exec.ExecuteCommand(ctx, cmd)
 		So(err, ShouldNotBeNil)
 	})

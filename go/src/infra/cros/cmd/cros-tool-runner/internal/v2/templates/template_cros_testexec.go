@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@ import (
 	"os/user"
 	"path"
 
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
-	"infra/cros/cmd/cros_test_runner/common"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"

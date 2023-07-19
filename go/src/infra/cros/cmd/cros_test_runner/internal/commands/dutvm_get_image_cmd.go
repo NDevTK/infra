@@ -8,9 +8,9 @@ import (
 	"context"
 	"fmt"
 
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/cros_test_runner/common"
-	"infra/cros/cmd/cros_test_runner/internal/data"
+	"infra/cros/cmd/cros_test_runner/data"
 	vmlabapi "infra/libs/vmlab/api"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"

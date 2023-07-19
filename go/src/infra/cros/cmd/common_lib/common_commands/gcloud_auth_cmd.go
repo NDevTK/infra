@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package commands
+package common_commands
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/cros_test_runner/internal/data"
+	"infra/cros/cmd/cros_test_runner/data"
 )
 
 // GcloudAuthCmd represents gcloud auth cmd.

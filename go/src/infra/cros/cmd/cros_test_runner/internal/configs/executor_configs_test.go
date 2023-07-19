@@ -7,6 +7,8 @@ package configs
 import (
 	"testing"
 
+	"infra/cros/cmd/common_lib/common_configs"
+	"infra/cros/cmd/common_lib/common_executors"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
 
@@ -18,7 +20,7 @@ func TestGetExecutor_UnsupportedExecutorType(t *testing.T) {
 	Convey("Unsupported executor type", t, func() {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := NewCftContainerConfig(ctr, nil, false)
+		contConfig := common_configs.NewContainerConfig(ctr, nil, false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		executor, err := execConfig.GetExecutor(executors.NoExecutorType)
 		So(executor, ShouldBeNil)
@@ -31,7 +33,7 @@ func TestGetExecutor_SupportedExecutorType(t *testing.T) {
 	Convey("Supported executor type", t, func() {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := NewCftContainerConfig(ctr, getMockContainerImagesInfo(), false)
+		contConfig := common_configs.NewContainerConfig(ctr, getMockContainerImagesInfo(), false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 
 		executor, err := execConfig.GetExecutor(executors.NoExecutorType)
@@ -42,7 +44,7 @@ func TestGetExecutor_SupportedExecutorType(t *testing.T) {
 		So(executor, ShouldNotBeNil)
 		So(err, ShouldBeNil)
 
-		executor, err = execConfig.GetExecutor(executors.CtrExecutorType)
+		executor, err = execConfig.GetExecutor(common_executors.CtrExecutorType)
 		So(executor, ShouldNotBeNil)
 		So(err, ShouldBeNil)
 

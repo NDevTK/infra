@@ -7,8 +7,8 @@ package executors
 import (
 	"context"
 	"fmt"
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"time"
 

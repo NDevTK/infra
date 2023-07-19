@@ -6,8 +6,8 @@ package service
 
 import (
 	"context"
+	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/executions"
-	"infra/cros/cmd/cros_test_runner/internal/data"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 )

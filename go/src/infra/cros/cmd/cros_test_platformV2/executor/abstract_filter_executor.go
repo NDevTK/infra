@@ -7,9 +7,9 @@ package executor
 import (
 	"context"
 	"fmt"
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/cros_test_platformV2/containers"
 	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
-	"infra/cros/cmd/cros_test_runner/common"
 
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 

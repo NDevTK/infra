@@ -7,8 +7,8 @@ package commands_test
 import (
 	"context"
 	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
-	"infra/cros/cmd/cros_test_runner/internal/data"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"

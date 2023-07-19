@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/cros_test_runner/internal/data"
+	"infra/cros/cmd/cros_test_runner/data"
 
 	"github.com/gogo/protobuf/jsonpb"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"

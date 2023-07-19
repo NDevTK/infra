@@ -20,10 +20,10 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/protobuf/proto"
 
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
-	"infra/cros/cmd/cros_test_runner/common"
+	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/configs"
-	"infra/cros/cmd/cros_test_runner/internal/data"
 	"infra/cros/cmd/cros_test_runner/protos"
 )
 
@@ -109,7 +109,7 @@ func executeHwTests(
 	}
 	cqRun := common.IsCqRun(req.TestSuites)
 	containerImagesMap := metadataMap.GetImages()
-	containerCfg := configs.NewCftContainerConfig(ctr, containerImagesMap, cqRun)
+	containerCfg := configs.NewContainerConfig(ctr, containerImagesMap, cqRun)
 	executorCfg := configs.NewExecutorConfig(ctr, containerCfg)
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 
@@ -127,7 +127,7 @@ func executeHwTests(
 	}
 
 	// Generate config
-	hwTestConfig := configs.NewTestExecutionConfig(configs.HwTestExecutionConfigType, cmdCfg, sk, req.GetStepsConfig())
+	hwTestConfig := configs.NewTrv2ExecutionConfig(configs.HwTestExecutionConfigType, cmdCfg, sk, req.GetStepsConfig())
 	err = hwTestConfig.GenerateConfig(ctx)
 	if err != nil {
 		return sk.SkylabResult, errors.Annotate(err, "error during generating hw test configs: ").Err()

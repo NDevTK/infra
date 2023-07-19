@@ -7,8 +7,8 @@ package containers
 import (
 	"context"
 	"fmt"
+	"infra/cros/cmd/common_lib/common"
 	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
-	"infra/cros/cmd/cros_test_runner/common"
 	"strings"
 
 	"github.com/google/uuid"

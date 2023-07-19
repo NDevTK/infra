@@ -8,10 +8,10 @@ import (
 	"context"
 	"testing"
 
+	"infra/cros/cmd/common_lib/common_executors"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
+	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
-	"infra/cros/cmd/cros_test_runner/internal/data"
-	"infra/cros/cmd/cros_test_runner/internal/executors"
 	vmlabapi "infra/libs/vmlab/api"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
@@ -22,7 +22,7 @@ import (
 func buildDutVmGetImageCmdForTest() *commands.DutVmGetImageCmd {
 	ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 	ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-	exec := executors.NewCtrExecutor(ctr)
+	exec := common_executors.NewCtrExecutor(ctr)
 	cmd := commands.NewDutVmGetImageCmd(exec)
 	return cmd
 }

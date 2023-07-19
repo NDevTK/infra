@@ -7,10 +7,10 @@ package configs
 import (
 	"fmt"
 
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
-	"infra/cros/cmd/cros_test_runner/common"
 
 	"go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/luci/common/errors"
@@ -25,7 +25,7 @@ type CftContainerConfig struct {
 	cqRun         bool
 }
 
-func NewCftContainerConfig(
+func NewContainerConfig(
 	ctr *crostoolrunner.CrosToolRunner,
 	containerImagesMap map[string]*api.ContainerImageInfo, cqRun bool) interfaces.ContainerConfigInterface {
 

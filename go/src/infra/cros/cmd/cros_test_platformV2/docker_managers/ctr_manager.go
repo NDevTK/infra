@@ -7,8 +7,8 @@ package managers
 import (
 	"context"
 	"fmt"
+	"infra/cros/cmd/common_lib/common"
 	crostoolrunner "infra/cros/cmd/cros_test_platformV2/tools/ctr"
-	"infra/cros/cmd/cros_test_runner/common"
 	"log"
 	"os/exec"
 	"path"

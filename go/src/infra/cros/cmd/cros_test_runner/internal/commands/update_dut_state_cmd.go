@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/ufs"
-	"infra/cros/cmd/cros_test_runner/internal/data"
+	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/dutstate"
 
-	"infra/cros/cmd/cros_test_runner/common"
+	"infra/cros/cmd/common_lib/common"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"

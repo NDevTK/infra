@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package executors
+package common_executors
 
 import (
 	"context"
@@ -14,10 +14,10 @@ import (
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 
+	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/common_commands"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
-	"infra/cros/cmd/cros_test_runner/common"
-	"infra/cros/cmd/cros_test_runner/internal/commands"
 )
 
 // CrosProvisionExecutor represents executor
@@ -36,11 +36,11 @@ func NewCtrExecutor(ctr *crostoolrunner.CrosToolRunner) *CtrExecutor {
 
 func (ex *CtrExecutor) ExecuteCommand(ctx context.Context, cmdInterface interfaces.CommandInterface) error {
 	switch cmd := cmdInterface.(type) {
-	case *commands.CtrServiceStartAsyncCmd:
+	case *common_commands.CtrServiceStartAsyncCmd:
 		return ex.startAsyncCommandExecution(ctx, cmd)
-	case *commands.GcloudAuthCmd:
+	case *common_commands.GcloudAuthCmd:
 		return ex.gcloudAuthCommandExecution(ctx, cmd)
-	case *commands.CtrServiceStopCmd:
+	case *common_commands.CtrServiceStopCmd:
 		ex.stopCommandExecution(ctx, cmd)
 
 	default:
@@ -59,7 +59,7 @@ func (ex *CtrExecutor) ExecuteCommand(ctx context.Context, cmdInterface interfac
 // asynchronously command.
 func (ex *CtrExecutor) startAsyncCommandExecution(
 	ctx context.Context,
-	cmd *commands.CtrServiceStartAsyncCmd) error {
+	cmd *common_commands.CtrServiceStartAsyncCmd) error {
 
 	var err error
 	step, ctx := build.StartStep(ctx, "Ctr service start")
@@ -80,7 +80,7 @@ func (ex *CtrExecutor) startAsyncCommandExecution(
 // stopCommandExecution executes stop ctr server command.
 func (ex *CtrExecutor) stopCommandExecution(
 	ctx context.Context,
-	cmd *commands.CtrServiceStopCmd) error {
+	cmd *common_commands.CtrServiceStopCmd) error {
 
 	var err error
 	step, ctx := build.StartStep(ctx, "Ctr service stop")
@@ -97,7 +97,7 @@ func (ex *CtrExecutor) stopCommandExecution(
 // gcloudAuthCommandExecution executes the gcloud registry auth command.
 func (ex *CtrExecutor) gcloudAuthCommandExecution(
 	ctx context.Context,
-	cmd *commands.GcloudAuthCmd) error {
+	cmd *common_commands.GcloudAuthCmd) error {
 
 	var err error
 	step, ctx := build.StartStep(ctx, "Gcloud Auth")

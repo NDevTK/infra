@@ -7,9 +7,9 @@ package containers
 import (
 	"context"
 	"fmt"
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
-	"infra/cros/cmd/cros_test_runner/common"
 	"strings"
 
 	"github.com/google/uuid"
@@ -180,5 +180,4 @@ func (cont *AbstractContainer) ProcessContainer(
 	}
 
 	return serverAddress, nil
-
 }

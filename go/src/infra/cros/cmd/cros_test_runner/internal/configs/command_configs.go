@@ -7,6 +7,7 @@ package configs
 import (
 	"fmt"
 
+	"infra/cros/cmd/common_lib/common_commands"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 
@@ -66,26 +67,26 @@ func (cfg *CommandConfig) GetCommand(
 		}
 		cmd = commands.NewLoadDutTopologyCmd(exec)
 
-	case commands.CtrServiceStartAsyncCmdType:
+	case common_commands.CtrServiceStartAsyncCmdType:
 		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
 		if err != nil {
 			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
 		}
-		cmd = commands.NewCtrServiceStartAsyncCmd(exec)
+		cmd = common_commands.NewCtrServiceStartAsyncCmd(exec)
 
-	case commands.CtrServiceStopCmdType:
+	case common_commands.CtrServiceStopCmdType:
 		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
 		if err != nil {
 			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
 		}
-		cmd = commands.NewCtrServiceStopCmd(exec)
+		cmd = common_commands.NewCtrServiceStopCmd(exec)
 
-	case commands.GcloudAuthCmdType:
+	case common_commands.GcloudAuthCmdType:
 		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
 		if err != nil {
 			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
 		}
-		cmd = commands.NewGcloudAuthCmd(exec)
+		cmd = common_commands.NewGcloudAuthCmd(exec)
 
 	case commands.DutServiceStartCmdType:
 		exec, err := cfg.ExecutorConfig.GetExecutor(execType)

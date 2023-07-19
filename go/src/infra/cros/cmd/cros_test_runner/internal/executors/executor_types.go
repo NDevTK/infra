@@ -10,10 +10,8 @@ import (
 
 // All supported executor types.
 const (
-	NoExecutorType               interfaces.ExecutorType = "NoExecutor"
 	InvServiceExecutorType       interfaces.ExecutorType = "InvServiceExecutor"
 	CacheServerExecutorType      interfaces.ExecutorType = "CacheServerExecutor"
-	CtrExecutorType              interfaces.ExecutorType = "CtrExecutor"
 	CrosDutExecutorType          interfaces.ExecutorType = "CrosDutExecutor"
 	CrosDutVmExecutorType        interfaces.ExecutorType = "CrosDutVmExecutor"
 	CrosProvisionExecutorType    interfaces.ExecutorType = "CrosProvisionExecutor"
@@ -25,4 +23,7 @@ const (
 	CrosRdbPublishExecutorType   interfaces.ExecutorType = "CrosRdbPublishExecutor"
 	CrosCpconPublishExecutorType interfaces.ExecutorType = "CrosCpconPublishExecutor"
 	SshTunnelExecutorType        interfaces.ExecutorType = "SshTunnelExecutor"
+
+	// For testing purpose only
+	NoExecutorType interfaces.ExecutorType = "NoExecutor"
 )
