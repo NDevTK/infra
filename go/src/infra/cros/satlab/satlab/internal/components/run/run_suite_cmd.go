@@ -5,11 +5,16 @@
 package run
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"path"
 	"strconv"
+	"time"
+
+	"cloud.google.com/go/storage"
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/googleapis/gax-go/v2"
@@ -71,11 +76,24 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 		tp = builder.TestPlanForSuites([]string{c.suite})
 	} else if c.test != "" {
 		tp = builder.TestPlanForTests(c.testArgs, c.harness, []string{c.test})
-	} else {
+	} else if c.testplan != "" {
+		fmt.Printf("Fetching testplan...\n")
+		var w bytes.Buffer
+		err = downloadTestPlan(&w, site.GetGCSImageBucket(), c.testplan)
+		if err != nil {
+			return err
+		}
 		tp, err = readTestPlan(c.testplan)
 		if err != nil {
 			return err
 		}
+	} else if c.testplan_local != "" {
+		fmt.Printf("Running local testplan...\n")
+		tp, err = readTestPlan(c.testplan_local)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("Running local testplan...\n")
 	}
 
 	// Set drone target based on user input
@@ -188,6 +206,9 @@ func (c *run) validateArgs() error {
 	if c.testplan != "" {
 		executionTarget++
 	}
+	if c.testplan_local != "" {
+		executionTarget++
+	}
 	if c.suite != "" {
 		executionTarget++
 	}
@@ -195,7 +216,7 @@ func (c *run) validateArgs() error {
 		executionTarget++
 	}
 	if executionTarget != 1 {
-		return errors.Reason("Please specify only one of the following: -suite, -test, -testplan").Err()
+		return errors.Reason("Please specify only one of the following: -suite, -test, -testplan, -testplan_local").Err()
 	}
 	if c.cft && c.test != "" && c.harness == "" {
 		return errors.Reason("-harness is required for cft test runs").Err()
@@ -247,6 +268,41 @@ type BuildbucketClient interface {
 type MoblabClient interface {
 	StageBuild(ctx context.Context, req *moblabpb.StageBuildRequest, opts ...gax.CallOption) (*moblab.StageBuildOperation, error)
 	CheckBuildStageStatus(ctx context.Context, req *moblabpb.CheckBuildStageStatusRequest, opts ...gax.CallOption) (*moblabpb.CheckBuildStageStatusResponse, error)
+}
+
+// Downloads specified testplan from bucket to remote access container
+func downloadTestPlan(w io.Writer, bucket, testplan string) error {
+	object := "testplans/" + testplan
+	destFileName := "/config/" + testplan
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
+	if err != nil {
+		return fmt.Errorf("storage.NewClient: %w", err)
+	}
+	defer client.Close()
+
+	ctx, cancel := context.WithTimeout(ctx, time.Second*50)
+	defer cancel()
+
+	rc, err := client.Bucket(bucket).Object(object).NewReader(ctx)
+	if err != nil {
+		return fmt.Errorf("%q Error: %w", object, err)
+	}
+	defer rc.Close()
+
+	f, err := os.Create(destFileName)
+	if err != nil {
+		return fmt.Errorf("os.Create: %w", err)
+	}
+	defer f.Close()
+
+	if _, err := io.Copy(f, rc); err != nil {
+		return fmt.Errorf("io.Copy: %w", err)
+	}
+
+	fmt.Fprintf(w, "Blob %v downloaded to local file %v\n", object, destFileName)
+
+	return nil
 }
 
 // JSONPBUnmarshaler unmarshals JSON into proto messages.

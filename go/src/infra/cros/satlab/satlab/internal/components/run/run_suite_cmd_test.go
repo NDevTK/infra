@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/googleapis/gax-go/v2"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
@@ -62,7 +63,7 @@ func TestRun(t *testing.T) {
 
 	tests := []test{
 		{
-			&run{
+			&run{ // suite run (rlz)
 				runFlags: runFlags{
 					suite:     "rlz",
 					board:     "zork",
@@ -72,7 +73,7 @@ func TestRun(t *testing.T) {
 			},
 		},
 		{
-			&run{
+			&run{ // test run (local satlab)
 				runFlags: runFlags{
 					test:      "rlz_CheckPing.should_send_rlz_ping_missing",
 					harness:   "tauto",
@@ -83,7 +84,7 @@ func TestRun(t *testing.T) {
 			},
 		},
 		{
-			&run{
+			&run{ // test run (remote satlab)
 				runFlags: runFlags{
 					test:      "rlz_CheckPing.should_send_rlz_ping_missing",
 					harness:   "tauto",
@@ -139,6 +140,19 @@ func TestValidateArgs(t *testing.T) {
 			},
 		},
 		{
+			&run{ // test and testplan
+				runFlags: runFlags{
+					test:      "rlz_CheckPing.should_send_rlz_ping_missing",
+					testplan:  "testplan.json",
+					harness:   "tauto",
+					board:     "zork",
+					model:     "gumboz",
+					milestone: "111",
+					build:     "15329.6.0",
+					pool:      "pool"},
+			},
+		},
+		{
 			&run{ // 'cft' test without harness
 				runFlags: runFlags{
 					test:      "rlz_CheckPing.should_send_rlz_ping_missing",
@@ -180,5 +194,58 @@ func TestValidateArgs(t *testing.T) {
 		if err == nil {
 			t.Errorf("Expected command to error")
 		}
+	}
+}
+
+func TestReadTestPlan(t *testing.T) {
+	t.Parallel()
+
+	path := "testplan.json"
+	res, err := readTestPlan(path)
+	if err != nil {
+		t.Errorf("Unexpected err: %v", err)
+	}
+
+	expected := &test_platform.Request_TestPlan{
+		Test: []*test_platform.Request_Test{
+			{
+				Harness: &test_platform.Request_Test_Autotest_{
+					Autotest: &test_platform.Request_Test_Autotest{
+						Name: "audio_CrasGetNodes",
+					},
+				},
+			},
+			{
+				Harness: &test_platform.Request_Test_Autotest_{
+					Autotest: &test_platform.Request_Test_Autotest{
+						Name: "audio_CrasStress.input_only",
+					},
+				},
+			},
+			{
+				Harness: &test_platform.Request_Test_Autotest_{
+					Autotest: &test_platform.Request_Test_Autotest{
+						Name: "audio_CrasStress.output_only",
+					},
+				},
+			},
+		},
+	}
+	if expected.String() != res.String() {
+		t.Error("readTestPlan Error")
+	}
+
+	res, err = readTestPlan("testplan1.json")
+	if err == nil {
+		t.Errorf("Unexpected err: %v", err)
+	}
+}
+
+func TestReadTestPlanFail(t *testing.T) {
+	t.Parallel()
+
+	_, err := readTestPlan("testplan1.json")
+	if err == nil {
+		t.Errorf("Unexpected err: %v", err)
 	}
 }
