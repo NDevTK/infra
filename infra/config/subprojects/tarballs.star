@@ -69,7 +69,7 @@ builder(
 builder(
     name = "Build From Tarball",
     executable = infra.recipe("build_from_tarball"),
-    execution_timeout = 5 * time.hour,
+    execution_timeout = 8 * time.hour,
     # Each trigger from 'publish_tarball' should result in a build.
     triggering_policy = scheduler.greedy_batching(max_batch_size = 1),
     cores = 32,
