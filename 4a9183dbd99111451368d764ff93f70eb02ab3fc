@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ab1993b4_05de34b6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-07-20T01:22:39Z",
+      "side": 1,
+      "message": "please split to following changes\n1) add new field and enum to proto\n2) add usage of new field paralel with old one.\n3) push changed to the prod as read data from new and if empty then from old field.\n4) push changes to update new field for all devices \n5) remove update of old field and disable to read from old field if new is empty\n6) remove old field from proto.",
+      "revId": "4a9183dbd99111451368d764ff93f70eb02ab3fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c4114f38_ae718a81",
+        "filename": "go/src/infra/libs/skylab/inventory/device.proto",
+        "patchSetId": 5
+      },
+      "lineNbr": 512,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-07-20T01:22:39Z",
+      "side": 1,
+      "message": "it is incorrect to change type of the field and keep the same id. please rename to new one and mark old as deprecated first.",
+      "revId": "4a9183dbd99111451368d764ff93f70eb02ab3fc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
