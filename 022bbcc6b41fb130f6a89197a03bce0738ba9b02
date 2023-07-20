@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "11cc2d7e_9bff52e8",
+        "filename": "go/src/infra/unifiedfleet/app/controller/machine_lse.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 1901,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-07-20T01:28:41Z",
+      "side": 1,
+      "message": "please update only if peri.Wifi is not nil",
+      "range": {
+        "startLine": 1901,
+        "startChar": 4,
+        "endLine": 1901,
+        "endChar": 13
+      },
+      "revId": "022bbcc6b41fb130f6a89197a03bce0738ba9b02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b10c6b5_205548be",
+        "filename": "go/src/infra/unifiedfleet/app/controller/machine_lse.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 1977,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-07-20T01:28:41Z",
+      "side": 1,
+      "message": "nit: please use getters when read from proto structs. (all fields)",
+      "range": {
+        "startLine": 1977,
+        "startChar": 32,
+        "endLine": 1977,
+        "endChar": 37
+      },
+      "revId": "022bbcc6b41fb130f6a89197a03bce0738ba9b02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3976fa95_eea03c7c",
+        "filename": "go/src/infra/unifiedfleet/app/controller/machine_lse.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 1993,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-07-20T01:28:41Z",
+      "side": 1,
+      "message": "nit: please use getters",
+      "range": {
+        "startLine": 1993,
+        "startChar": 26,
+        "endLine": 1993,
+        "endChar": 31
+      },
+      "revId": "022bbcc6b41fb130f6a89197a03bce0738ba9b02",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
