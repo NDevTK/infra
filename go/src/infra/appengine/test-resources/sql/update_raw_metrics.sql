@@ -21,6 +21,26 @@ USING (
         duration,
       FROM chrome-luci-data.chromium.try_test_results as tr
       WHERE DATE(partition_time, "PST8PDT") BETWEEN @from_date AND @to_date
+      UNION ALL
+      SELECT
+        CAST(REGEXP_EXTRACT(exported.id, r'build-(\d+)') AS INT64) AS build_id,
+        test_metadata.name AS test_name,
+        partition_time,
+        test_id,
+        test_metadata.location.repo AS repo,
+        test_metadata.location.file_name AS file_name,
+        SPLIT(exported.realm, ':')[SAFE_OFFSET(0)] AS `project`,
+        SPLIT(exported.realm, ':')[SAFE_OFFSET(1)] AS bucket,
+        (SELECT v.value FROM tr.variant AS v WHERE v.key = 'builder' LIMIT 1) AS builder,
+        (SELECT v.value FROM tr.variant AS v WHERE v.key = 'test_suite' LIMIT 1) AS test_suite,
+        (SELECT t.value FROM tr.tags AS t WHERE t.key = 'target_platform' LIMIT 1) AS target_platform,
+        variant_hash,
+        (SELECT t.value FROM tr.tags t WHERE t.key = 'monorail_component' LIMIT 1) AS component,
+        expected,
+        exonerated,
+        duration,
+      FROM chrome-luci-data.chromium.ci_test_results as tr
+      WHERE DATE(partition_time, "PST8PDT") BETWEEN @from_date AND @to_date
     ), tests AS (
       SELECT
         EXTRACT(DATE FROM partition_time AT TIME ZONE "PST8PDT") AS `date`,
