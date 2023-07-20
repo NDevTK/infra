@@ -39,16 +39,16 @@ describe('ComponentContext values', () => {
     expect(components[1]).toHaveTextContent('2');
     expect(components[2]).toHaveTextContent('3');
   });
-  it('component', async () => {
+  it('components', async () => {
     await contextRender((value) => (
       <>
-        <Button data-testid='updateComponent' onClick={() => value.api.updateComponent('comp')}>{'component-' + value.component}</Button>
+        <Button data-testid='updateComponent' onClick={() => value.api.updateComponents(['comp', 'comp1'])}>{'components-' + value.components}</Button>
       </>
-    ), { props: { component: 'blink' } });
-    expect(screen.getByText('component-Blink')).toBeInTheDocument();
+    ), { props: { components: ['blink'] } });
+    expect(screen.getByText('components-blink')).toBeInTheDocument();
     await act(async () => {
       fireEvent.click(screen.getByTestId('updateComponent'));
     });
-    expect(screen.getByText('component-comp')).toBeInTheDocument();
+    expect(screen.getByText('components-comp,comp1')).toBeInTheDocument();
   });
 });

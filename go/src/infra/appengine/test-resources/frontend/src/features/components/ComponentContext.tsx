@@ -7,33 +7,33 @@ import { listComponents } from '../../api/resources';
 
 type ComponentContextProviderProps = {
     children: React.ReactNode,
-    component?: string,
+    components?: string[],
   }
 
 export interface ComponentContextValue {
-    component: string,
+    components: string[],
     allComponents: string[],
     api: Api
 }
 
 export interface Api {
     // Component navigation
-    updateComponent: (component: string) => void,
+    updateComponents: (component: string[]) => void,
 }
 
 export const ComponentContext = createContext<ComponentContextValue>(
     {
-      component: '',
+      components: [],
       allComponents: [],
       api: {
-        updateComponent: () => {/**/},
+        updateComponents: () => {/**/},
       },
     },
 );
 
 export const ComponentContextProvider = (props: ComponentContextProviderProps) => {
-  const [component, setComponent] = useState('Blink');
-  const [allComponents, setAllComponents] = useState<string[]>([]);
+  const [allComponents, setAllComponents] = useState<string[]>(['Blink']);
+  const [components, setComponents] = useState<string[]>(props.components || ['Blink']);
 
   function loadComponents() {
     listComponents().then((resp) => {
@@ -50,13 +50,13 @@ export const ComponentContextProvider = (props: ComponentContextProviderProps) =
   }, []);
 
   const api: Api = {
-    updateComponent: (newComponent: string) => {
-      setComponent(newComponent);
+    updateComponents: (newComponents: string[]) => {
+      setComponents(newComponents);
     },
   };
 
   return (
-    <ComponentContext.Provider value={{ component, allComponents, api }}>
+    <ComponentContext.Provider value={{ components, allComponents, api }}>
       { props.children }
     </ComponentContext.Provider>
   );

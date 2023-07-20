@@ -28,9 +28,9 @@ describe('when rendering ComponentParams', () => {
           <>
             <ComponentParams/>
           </>
-          , { component: 'Blink', allComponents: [], api: { updateComponent: () =>{/**/} } });
+          , { components: ['1', '2', '3'], allComponents: [], api: { updateComponents: () =>{/**/} } });
     });
     const searchParams = new URLSearchParams(window.location.search);
-    expect(searchParams.get(COMPONENT)).toBe('Blink');
+    expect(searchParams.getAll(COMPONENT)).toEqual(['1', '2', '3']);
   });
 });

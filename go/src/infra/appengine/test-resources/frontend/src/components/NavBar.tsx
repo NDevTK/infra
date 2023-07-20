@@ -4,7 +4,13 @@
 
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import { Button, Container, Divider, FormControl, Select, SelectChangeEvent } from '@mui/material';
+import { Button, Checkbox, Container,
+  Divider,
+  FormControl,
+  ListItemText,
+  Select,
+  SelectChangeEvent,
+} from '@mui/material';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
@@ -22,8 +28,9 @@ function NavBar() {
     navigate('/' + newComponent + '/component/' + params.component);
   };
 
-  const handleChange = (event: SelectChangeEvent) => {
-    componentCtx.api.updateComponent(event.target.value);
+  const handleChange = (event: SelectChangeEvent<typeof componentCtx.allComponents>) => {
+    const value = event.target.value;
+    componentCtx.api.updateComponents(typeof value === 'string' ? value.split(',') : value);
   };
 
   return (
@@ -31,21 +38,24 @@ function NavBar() {
       <AppBar>
         <Toolbar>
           <div className={styles.horizontalCenter}>
-            <FormControl fullWidth sx={{ 'border': 'none', '& fieldset': { border: 'none' } }}>
+            <FormControl sx={{ 'border': 'none', '& fieldset': { border: 'none' } }}>
               <Select
-                data-testid='selectTest'
-                value={componentCtx.component}
+                data-testid="selectTest"
+                multiple
+                value={componentCtx.components}
                 onChange={handleChange}
-                defaultValue=''
+                renderValue={(selected) => selected.join(', ')}
                 sx={{ 'color': 'white', '& .MuiSvgIcon-root': {
                   color: 'white',
-                }, 'fontSize': '30px', 'minWidth': '250px' }}
+                }, 'fontSize': '20px', 'minWidth': '250px', 'maxWidth': '250px' }}
               >
                 {componentCtx.allComponents.length ?
-                componentCtx.allComponents.map(
-                    (component) =>
-                      <MenuItem key={component} value={component}>{component}</MenuItem>,
-                ) : null
+                componentCtx.allComponents.map((component) => (
+                  <MenuItem key={component} value={component}>
+                    <Checkbox checked={componentCtx.components.indexOf(component) > -1} />
+                    <ListItemText primary={component} />
+                  </MenuItem>
+                )) : null
                 }
               </Select>
             </FormControl>

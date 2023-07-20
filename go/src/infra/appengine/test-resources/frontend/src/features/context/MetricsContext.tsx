@@ -140,7 +140,7 @@ function loadingCountReducer(state: LoadingState, action: LoadingAction): Loadin
 }
 
 export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
-  const { component } = useContext(ComponentContext);
+  const { components } = useContext(ComponentContext);
   const [page, setPage] = useState(props.page || 0);
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [filter, setFilter] = useState('');
@@ -168,7 +168,7 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
       const pathNode = node as Path;
       loadingDispatch({ type: 'start' });
       if (pathNode.type === DirectoryNodeType.FILENAME) {
-        loadTestMetrics(component, params,
+        loadTestMetrics(components, params,
             (response: FetchTestMetricsResponse) => {
               dataDispatch({
                 type: 'merge_test',
@@ -181,7 +181,7 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
             [pathNode.path],
         );
       } else {
-        loadDirectoryMetrics(component, params, node.id,
+        loadDirectoryMetrics(components, params, node.id,
             (response: FetchDirectoryMetricsResponse) => {
               dataDispatch({
                 type: 'merge_dir',
@@ -201,7 +201,7 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
     loadingDispatch({ type: 'start' });
     if (params.directoryView) {
       loadDirectoryMetrics(
-          component,
+          components,
           params,
           '/',
           (response: FetchDirectoryMetricsResponse, fetchedDates: string[]) => {
@@ -219,7 +219,7 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
       );
     } else {
       loadTestMetrics(
-          component,
+          components,
           params,
           (response: FetchTestMetricsResponse, fetchedDates: string[]) => {
             dataDispatch({ type: 'merge_test', tests: response.tests });
@@ -238,7 +238,7 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
     load(params);
   // Adding this because we don't want a dependency on api
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [component]);
+  }, [components]);
 
   const api: Api = {
     updatePage: (newPage: number) => {

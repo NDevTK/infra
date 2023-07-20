@@ -9,14 +9,15 @@ import { ComponentContext } from './ComponentContext';
 export const COMPONENT = 'comp';
 
 function ComponentParams() {
-  const { component } = useContext(ComponentContext);
+  const { components } = useContext(ComponentContext);
 
   const [search, setSearchParams] = useSearchParams();
 
   const updateParams = useCallback(() => {
-    search.set(COMPONENT, String(component));
+    search.delete(COMPONENT);
+    components.forEach((c) => search.append(COMPONENT, c));
     setSearchParams(search);
-  }, [search, setSearchParams, component]);
+  }, [search, setSearchParams, components]);
 
   useEffect(() => {
     updateParams();
