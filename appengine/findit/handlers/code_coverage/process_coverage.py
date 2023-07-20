@@ -699,9 +699,10 @@ class ProcessCodeCoverageData(BaseHandler):
       is_cohort_file_match = True
       # Do not block because of test/main files
       if re.match(utils.TEST_FILE_REGEX, inc_metrics.path) or re.match(
-          utils.MAIN_FILE_REGEX, inc_metrics.path):
-        logging.info("%s is a test/main file for cohort %s", inc_metrics.path,
-                     cohort)
+          utils.MAIN_FILE_REGEX, inc_metrics.path) or re.match(
+              utils.EXAMPLE_FILE_REGEX, inc_metrics.path):
+        logging.info("%s is a test/main/example file for cohort %s",
+                     inc_metrics.path, cohort)
         continue
       if not _HaveEnoughLinesChangedForBlocking(config, inc_metrics):
         logging.info("%s doesn't have enough lines changed for cohort %s",

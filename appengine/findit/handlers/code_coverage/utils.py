@@ -20,6 +20,9 @@ TEST_FILE_REGEX = r'(^|.+\/)test(s|ing)?\/.+|.+(T|t)ests?\..*'
 # Regex to identify main files
 MAIN_FILE_REGEX = r'.*(m|M)ain\..*'
 
+# Regex to identify example files
+EXAMPLE_FILE_REGEX = r'.*example.*'
+
 
 def GetPostsubmitPlatformInfoMap(luci_project):
   """Returns a map of postsubmit platform information.

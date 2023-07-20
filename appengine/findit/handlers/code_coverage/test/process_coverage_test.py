@@ -1450,7 +1450,7 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
   @mock.patch.object(code_coverage_util, 'CalculateIncrementalPercentages')
   @mock.patch.object(process_coverage, '_GetValidatedData')
   @mock.patch.object(process_coverage, 'GetV2Build')
-  def testLowCoverageBlocking_testAndMainFile_allow(
+  def testLowCoverageBlocking_testMainExampleFile_allow(
       self, mocked_get_build, mocked_get_validated_data, mocked_inc_percentages,
       mocked_fetch_change_details, mocked_get_file_content, mock_http_client,
       mock_buildbucket_client, *_):
@@ -1507,6 +1507,19 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
             {
                 'path':
                     '//dir/myfileTests.java',
+                'lines': [{
+                    'count': 100,
+                    'first': 1,
+                    'last': 10,
+                }, {
+                    'count': 0,
+                    'first': 11,
+                    'last': 100,
+                }],
+            },
+            {
+                'path':
+                    '//dir/examples/xx.java',
                 'lines': [{
                     'count': 100,
                     'first': 1,
