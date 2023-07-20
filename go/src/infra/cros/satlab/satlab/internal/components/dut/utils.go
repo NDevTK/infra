@@ -5,8 +5,11 @@
 package dut
 
 import (
+	"bytes"
 	"fmt"
 	"os"
+	"os/exec"
+	"strconv"
 	"strings"
 
 	"infra/cros/satlab/satlab/internal/commands"
@@ -35,4 +38,44 @@ func getDockerHostBoxIdentifier(common site.CommonFlags) (string, error) {
 	}
 
 	return dockerHostBoxIdentifier, nil
+}
+
+// Pinger allows checking aliveness of DUTs.
+type Pinger interface {
+	// Ping attempts to contact the device.
+	Ping() error
+}
+
+// DUTPinger uses the hostname of DUTs to send the pings.
+type DUTPinger struct {
+	hostname string
+	count    int
+}
+
+func (p *DUTPinger) Ping() error {
+	if p.hostname == "" {
+		return errors.Reason("ping: addr is empty").Err()
+	}
+	cmd := exec.Command("sudo",
+		"ping",
+		p.hostname,
+		"-c",
+		strconv.Itoa(p.count), // How many times will ping.
+		"-W",
+		"1", // How long wait for response.
+	)
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		return errors.Annotate(err, stderr.String()).Err()
+	}
+	return nil
+}
+
+// DefaultPinger creates a Pinger targeting a hostname.
+func DefaultPinger(hostname string) Pinger {
+	return &DUTPinger{
+		hostname: hostname,
+		count:    2, // arbitrary
+	}
 }

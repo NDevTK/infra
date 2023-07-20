@@ -20,6 +20,7 @@ type updateDUTStateFlags struct {
 
 	hostname string
 	state    string
+	force    bool
 }
 
 // registerUpdateDutStateFlags registers the flags inherited from shivas.
@@ -30,4 +31,5 @@ func registerUpdateDutStateFlags(c *updateDUTState) {
 
 	c.Flags.StringVar(&c.hostname, "hostname", "", "hostname of the DUT.")
 	c.Flags.StringVar(&c.state, "state", "", "target state for the DUT.")
+	c.Flags.BoolVar(&c.force, "force", false, "force dutstate update regardless of checks.")
 }

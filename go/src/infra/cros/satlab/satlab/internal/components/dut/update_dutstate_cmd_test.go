@@ -18,6 +18,8 @@ import (
 	ufsApi "infra/unifiedfleet/api/v1/rpc"
 )
 
+// fakeUFSClient maintains a map of all MachineLSEs. Get/Update commands both
+// operate on the machineLSE map.
 type fakeUFSClient struct {
 	machineLSEs           map[string]*ufsModel.MachineLSE
 	getMachineLSECalls    []*ufsApi.GetMachineLSERequest
@@ -47,6 +49,20 @@ func (c *fakeUFSClient) UpdateMachineLSE(ctx context.Context, req *ufsApi.Update
 	return req.GetMachineLSE(), nil
 }
 
+// fakePinger will error or not when pinging depending on `err` status.
+type fakePinger struct {
+	err bool
+}
+
+func (p *fakePinger) Ping() error {
+	if p.err {
+		return errors.New("couldnt ping")
+	}
+
+	return nil
+}
+
+// Tests the behavior of calls to UFS.
 func TestUpdateDUTStateCallsUFS(t *testing.T) {
 	tests := []struct {
 		name            string
@@ -96,7 +112,7 @@ func TestUpdateDUTStateCallsUFS(t *testing.T) {
 				machineLSEs: tt.machineLSEs,
 			}
 
-			if err := c.innerRunWithClients(context.Background(), ufs, tt.hostname); (err != nil) != tt.wantErr {
+			if err := c.innerRunWithClients(context.Background(), ufs, tt.hostname, &fakePinger{}); (err != nil) != tt.wantErr {
 				t.Errorf("updateDUTState.innerRunWithClients() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
@@ -105,6 +121,73 @@ func TestUpdateDUTStateCallsUFS(t *testing.T) {
 			}
 
 			if diff := cmp.Diff(ufs.updateMachineLSECalls, tt.wantUpdateCalls, cmpopts.IgnoreUnexported(field_mask.FieldMask{}, ufsApi.UpdateMachineLSERequest{}, ufsModel.MachineLSE{})); diff != "" {
+				t.Errorf("unexpected diff in getMachineLSE calls: %s", diff)
+			}
+		})
+	}
+}
+
+// TestPingerBehavior checks the UFS, return status of command given certain
+// ping status and force params.
+func TestPingerBehavior(t *testing.T) {
+	tests := []struct {
+		name         string
+		pingerError  bool
+		force        bool
+		wantGetCalls []*ufsApi.GetMachineLSERequest
+		wantErr      bool
+	}{
+		{
+			name:         "pinger fine without force calls UFS and doesnt error",
+			pingerError:  false,
+			force:        false,
+			wantGetCalls: []*ufsApi.GetMachineLSERequest{{Name: "machineLSEs/real"}},
+			wantErr:      false,
+		},
+		{
+			name:         "pinger erroring without force doesnt call UFS and doesnt error",
+			pingerError:  true,
+			force:        false,
+			wantGetCalls: nil,
+			wantErr:      true,
+		},
+		{
+			name:         "pinger fine with force calls UFS and doesnt error",
+			pingerError:  false,
+			force:        true,
+			wantGetCalls: []*ufsApi.GetMachineLSERequest{{Name: "machineLSEs/real"}},
+			wantErr:      false,
+		},
+		{
+			name:         "pinger erroring with force doesnt calls UFS and doesnt error",
+			pingerError:  true,
+			force:        true,
+			wantGetCalls: []*ufsApi.GetMachineLSERequest{{Name: "machineLSEs/real"}},
+			wantErr:      false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &updateDUTState{
+				updateDUTStateFlags: updateDUTStateFlags{
+					hostname: "real",
+					state:    "ready",
+					force:    tt.force,
+				},
+			}
+
+			ufs := &fakeUFSClient{
+				machineLSEs: map[string]*ufsModel.MachineLSE{"machineLSEs/real": {Name: "real"}},
+			}
+
+			// check error
+			if err := c.innerRunWithClients(context.Background(), ufs, "real", &fakePinger{err: tt.pingerError}); (err != nil) != tt.wantErr {
+				t.Errorf("updateDUTState.innerRunWithClients() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			// check to see if it hits UFS
+			if diff := cmp.Diff(ufs.getMachineLSECalls, tt.wantGetCalls, cmpopts.IgnoreUnexported(ufsApi.GetMachineLSERequest{})); diff != "" {
 				t.Errorf("unexpected diff in getMachineLSE calls: %s", diff)
 			}
 		})

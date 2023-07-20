@@ -70,11 +70,22 @@ func (c *updateDUTState) innerRun(a subcommands.Application, args []string, env 
 	}
 
 	qualifiedHostname := site.MaybePrepend(site.Satlab, dockerHostBoxIdentifier, c.hostname)
+	pinger := DefaultPinger(qualifiedHostname)
 
-	return c.innerRunWithClients(ctx, ufs, qualifiedHostname)
+	return c.innerRunWithClients(ctx, ufs, qualifiedHostname, pinger)
 }
 
-func (c *updateDUTState) innerRunWithClients(ctx context.Context, ufs ufs.UFSClient, hostname string) error {
+// innerRunWithClients uses interfaces for UFS, pinging the DUT, to allow easy
+// testing setups.
+func (c *updateDUTState) innerRunWithClients(ctx context.Context, ufs ufs.UFSClient, hostname string, pinger Pinger) error {
+	// If user doesn't force the update, we perform any needed checks.
+	if !c.force {
+		if err := pinger.Ping(); err != nil {
+			fmt.Printf("Failed to ping DUT: %s. DUT may need repairs. Re-run the command with `-force` to update DUT without attempting to ping\n", hostname)
+			return fmt.Errorf("failed to ping DUT %s", hostname)
+		}
+	}
+
 	err := updateDUTStateToUFS(ctx, &c.authFlags, ufs, hostname, c.state)
 	if err != nil {
 		return err
