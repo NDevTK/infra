@@ -744,6 +744,7 @@ func waitOnBuilds(ctx context.Context, spec *buildSpec, stepName string, buildID
 	// Run `bb collect`.
 	collectArgs := []string{
 		"collect",
+		"-json",
 		"-interval", "20s",
 	}
 	for _, id := range buildIDs {
