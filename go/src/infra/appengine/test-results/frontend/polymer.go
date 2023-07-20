@@ -5,7 +5,6 @@
 package main
 
 import (
-	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/server/router"
 	"go.chromium.org/luci/server/templates"
 )
@@ -13,7 +12,5 @@ import (
 // polymerHandler is the HTTP handler for requests to pages that are part of the
 // Polymer app.
 func polymerHandler(ctx *router.Context) {
-	templates.MustRender(ctx.Request.Context(), ctx.Writer, "pages/index.html", templates.Args{
-		"IsDevAppServer": info.IsDevAppServer(ctx.Request.Context()),
-	})
+	templates.MustRender(ctx.Request.Context(), ctx.Writer, "pages/index.html", nil)
 }

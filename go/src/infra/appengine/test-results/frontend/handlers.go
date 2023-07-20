@@ -37,8 +37,6 @@ func init() {
 	r.GET("/", getMW, polymerHandler)
 	r.GET("/home", getMW, polymerHandler)
 	r.GET("/revision_range", frontendMW, revisionHandler)
-	// Endpoint that returns layout results unzipped from an archive in google storage.
-	r.GET("/data/layout_results/:builder/:buildnum/*filepath", frontendMW, getZipHandler)
 
 	http.DefaultServeMux.Handle("/", r)
 }
