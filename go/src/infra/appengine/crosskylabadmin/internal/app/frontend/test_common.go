@@ -22,7 +22,7 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/clients/mock"
 	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/ufs"
+	"infra/appengine/crosskylabadmin/internal/ufs/mockufs"
 	"infra/libs/git"
 )
 
@@ -35,9 +35,7 @@ type testFixture struct {
 
 	MockSwarming       *mock.MockSwarmingClient
 	MockBotTasksCursor *mock.MockBotTasksCursor
-	// For UFS and other clients, use a different naming convention than MockXXX because
-	// these dependencies do not use gomock.
-	UFS ufs.Client
+	MockUFS            *mockufs.MockClient
 }
 
 // newTextFixture creates a new testFixture to be used in unittests.
@@ -61,6 +59,7 @@ func newTestFixtureWithContext(c context.Context, t *testing.T) (testFixture, fu
 	}
 	tf.MockBotTasksCursor = mock.NewMockBotTasksCursor(mc)
 	tf.Inventory = &ServerImpl{}
+	tf.MockUFS = mockufs.NewMockClient(mc)
 
 	validate := func() {
 		mc.Finish()
