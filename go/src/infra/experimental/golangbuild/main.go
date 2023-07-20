@@ -727,7 +727,7 @@ func includeResultDBInvocations(ctx context.Context, spec *buildSpec, ids ...str
 	// to luci-go. The latter is preferable and should be considered as
 	// part of a more general unit testing story for golangbuild.
 	// For now, just shell out.
-	cmd := spec.toolCmd(ctx, "rdb", "rpc", "luci.resultdb.v1.Recorder", "UpdateIncludedInvocations")
+	cmd := spec.toolCmd(ctx, "rdb", "rpc", "-include-update-token", "luci.resultdb.v1.Recorder", "UpdateIncludedInvocations")
 	cmd.Stdin = bytes.NewReader(out)
 	return cmdStepRun(ctx, "rdb rpc", cmd, true)
 }
