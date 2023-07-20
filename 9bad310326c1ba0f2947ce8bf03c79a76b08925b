@@ -34,6 +34,24 @@
       "parentUuid": "d14bbf68_9b21b0aa",
       "revId": "9bad310326c1ba0f2947ce8bf03c79a76b08925b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "53706138_00fdb3c9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2023-07-20T03:12:37Z",
+      "side": 1,
+      "message": "Thanks Weizhong.",
+      "parentUuid": "e17c0e9b_df8dfc99",
+      "revId": "9bad310326c1ba0f2947ce8bf03c79a76b08925b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
