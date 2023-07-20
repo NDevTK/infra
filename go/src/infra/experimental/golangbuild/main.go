@@ -768,7 +768,9 @@ func waitOnBuilds(ctx context.Context, spec *buildSpec, stepName string, buildID
 	}
 
 	// Parse the protojson output: one per line.
-	buildsBytes := bytes.Split(out, []byte{'\n'})
+	//
+	// Trim trailing newline, it'll mess with the proto parser.
+	buildsBytes := bytes.Split(bytes.TrimSuffix(out, []byte{'\n'}), []byte{'\n'})
 	var foundFailure, foundInfraFailure bool
 	for i, buildBytes := range buildsBytes {
 		build := new(bbpb.Build)
