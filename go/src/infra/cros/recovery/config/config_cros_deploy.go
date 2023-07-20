@@ -18,8 +18,10 @@ func crosDeployPlan() *Plan {
 			"Download stable version OS image to servo usbkey if necessary",
 			"Device is pingable before deploy",
 			"DUT is on test channel OS",
+			"DUT has correct cros image version",
 			"Set dev_boot_usb is enabled",
 			"DUT has expected dev firmware",
+			"DUT has expected firmware version",
 			"Deployment checks",
 			"Collect DUT labels",
 			"DUT verify",
@@ -70,6 +72,26 @@ func deployActions() map[string]*Action {
 				"Install OS in DEV mode, with force to DEV-mode with test firmware",
 			},
 		},
+		"DUT has correct cros image version": {
+			Docs: []string{
+				"Check whether the cros image version on the device is match expected.",
+			},
+			Conditions: []string{
+				"Is it first deployment task",
+				"Recovery version has OS image path",
+				"Has a stable-version service",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_is_on_stable_version",
+			RecoveryActions: []string{
+				"Quick provision OS",
+				"Install OS in DEV mode, with force to DEV-mode",
+				"Install OS in DEV mode with fresh image",
+				"Install OS in DEV mode, with force to DEV-mode with test firmware",
+			},
+		},
 		"DUT has expected dev firmware": {
 			Docs: []string{
 				"Verify that FW on the DUT has dev keys.",
@@ -87,6 +109,48 @@ func deployActions() map[string]*Action {
 				"Update DUT firmware with factory mode and restart by servo",
 				"Update DUT firmware with factory mode and restart by host",
 			},
+		},
+		"DUT has expected firmware version": {
+			Docs: []string{
+				"Verify that FW on the DUT has dev keys.",
+			},
+			Conditions: []string{
+				"Is it first deployment task",
+				//TODO(b:231627918): Flex does not have own firmware for EC/AP
+				"Is not Flex device",
+				"Has a stable-version service",
+				"Check stable firmware version exists",
+				"Recovery version has firmware image path",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+				"DUT has expected RO firmware version",
+				"DUT has expected RW firmware version",
+			},
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"DUT has expected RO firmware version": {
+			Docs: []string{
+				"Verify that RO FW on the DUT matches stable version.",
+			},
+			ExecName: "cros_is_on_ro_firmware_stable_version",
+			RecoveryActions: []string{
+				"Fix FW on the DUT to match stable-version and wait to boot",
+				"Update FW from fw-image by servo and wait for boot",
+			},
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"DUT has expected RW firmware version": {
+			Docs: []string{
+				"Verify that RW FW on the DUT matches stable version.",
+			},
+			ExecName: "cros_is_on_rw_firmware_stable_version",
+			RecoveryActions: []string{
+				"Fix FW on the DUT to match stable-version and wait to boot",
+				"Update FW from fw-image by servo and wait for boot",
+			},
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Update DUT firmware with factory mode and restart by servo": {
 			Docs: []string{
@@ -172,7 +236,7 @@ func deployActions() map[string]*Action {
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
-		"Need to run deployment checks": {
+		"Is it first deployment task": {
 			Docs: []string{
 				"Check if deployment check not need to be run.",
 				"If HWID or serial-number already collected from DUT then we already test it before.",
@@ -181,7 +245,8 @@ func deployActions() map[string]*Action {
 				"Is HWID known",
 				"Is serial-number known",
 			},
-			ExecName: "sample_fail",
+			ExecName:   "sample_fail",
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Deployment checks": {
 			Docs: []string{
@@ -189,7 +254,7 @@ func deployActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Not Satlab device",
-				"Need to run deployment checks",
+				"Is it first deployment task",
 			},
 			Dependencies: []string{
 				"Verify battery charging level",
