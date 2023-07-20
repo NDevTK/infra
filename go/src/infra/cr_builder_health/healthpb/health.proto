@@ -12,4 +12,5 @@ import "google/protobuf/timestamp.proto";
 
 message InputParams {
   google.protobuf.Timestamp date = 1;  // which date to generate health for
+  bool dryRun = 2;  // don't write to database, don't rpc, just calculate and print health
 }

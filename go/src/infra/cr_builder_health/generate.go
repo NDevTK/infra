@@ -70,6 +70,15 @@ func generate(ctx context.Context, input *healthpb.InputParams) error {
 		return errors.Annotate(err, "Calculate indicators").Err()
 	}
 
+	err = logIndicators(ctx, rowsWithIndicators)
+	if err != nil {
+		return errors.Annotate(err, "Log indicators").Err()
+	}
+
+	if input.DryRun {
+		return nil
+	}
+
 	client, err := bbClient(ctx)
 	if err != nil {
 		return errors.Annotate(err, "Make BB client").Err()
@@ -306,6 +315,22 @@ func writeIndicators(buildCtx context.Context, bqClient *bigquery.Client, rows [
 	inserter := bqClient.Dataset("builder_health_indicators").Table("builder-health-indicators").Inserter()
 	if err := inserter.Put(ctx, rows); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func logIndicators(buildCtx context.Context, rowsWithIndicators []Row) error {
+	var stepErr error
+	step, ctx := build.StartStep(buildCtx, "Print indicators")
+	defer func() { step.End(stepErr) }()
+
+	for _, row := range rowsWithIndicators {
+		logging.Errorf(ctx, "%s/%s/%s: HealthScore: %d.", row.Project, row.Bucket, row.Builder, row.HealthScore)
+		for _, metric := range row.Metrics {
+			logging.Errorf(ctx, "%+v", *metric)
+		}
+		logging.Errorf(ctx, "")
 	}
 
 	return nil

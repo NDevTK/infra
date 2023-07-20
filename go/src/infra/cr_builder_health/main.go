@@ -35,7 +35,9 @@ type generateRun struct {
 	logCfg   gologger.LoggerConfig
 	authOpts auth.Options
 
-	dateString string // cmdline input
+	// cmdline flags
+	dateString string
+	dryRun     bool
 }
 
 func main() {
@@ -79,6 +81,7 @@ func main() {
 					}
 					r.logCfg = gologger.LoggerConfig{Out: os.Stderr}
 					r.Flags.StringVar(&r.dateString, "date", "", "The date to generate for in ISO 8601 (YYYY-MM-DD). The default date is yesterday.")
+					r.Flags.BoolVar(&r.dryRun, "dry-run", false, "Calculate health and print but don't write to db and don't RPC.")
 
 					return r
 				},
@@ -120,6 +123,7 @@ func (r *luciexeGenerateRun) Run(a subcommands.Application, args []string, env s
 
 func (r *generateRun) ParseFlags(ctx context.Context) (*healthpb.InputParams, error) {
 	input := &healthpb.InputParams{}
+	input.DryRun = r.dryRun
 	if r.dateString == "" {
 		// The default date is yesterday
 		yesterday := time.Now().Add(-24 * time.Hour)
