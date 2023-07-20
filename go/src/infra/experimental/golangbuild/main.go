@@ -299,7 +299,7 @@ infra/tools/rdb/${platform} latest
 infra/tools/luci/cas/${platform} latest
 infra/tools/result_adapter/${platform} latest
 @Subdir go_bootstrap
-infra/3pp/tools/go/${platform} version:2@1.19.3
+infra/3pp/tools/go/${platform} version:2@BOOTSTRAP_VERSION
 @Subdir cc/${os=windows}
 golang/third_party/llvm-mingw-msvcrt/${platform} latest
 @Subdir
@@ -309,7 +309,12 @@ func installTools(ctx context.Context, inputs *golangbuildpb.Inputs, experiments
 	step, ctx := build.StartStep(ctx, "install tools")
 	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
-	cipdDeps := cipdDeps
+	bootstrap := inputs.BootstrapVersion
+	if bootstrap == "" {
+		bootstrap = "1.19.3"
+	}
+	cipdDeps := strings.ReplaceAll(cipdDeps, "BOOTSTRAP_VERSION", bootstrap)
+
 	if inputs.XcodeVersion != "" {
 		cipdDeps += "infra/tools/mac_toolchain/${platform} latest\n"
 	}
