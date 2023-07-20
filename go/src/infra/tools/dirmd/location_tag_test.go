@@ -53,6 +53,9 @@ func TestLocationTag(t *testing.T) {
 						Project:   "chromium",
 						Component: "Some>File>Component",
 					},
+					BuganizerPublic: &dirmdpb.Buganizer{
+						ComponentId: 123456,
+					},
 				},
 			},
 		}
@@ -84,7 +87,9 @@ func TestLocationTag(t *testing.T) {
 			Files: map[string]*sinkpb.LocationTags_File{
 				"subdir/test.txt": {
 					Tags: pbutil.StringPairs(
-						"monorail_component", "Some>File>Component"),
+						"monorail_component", "Some>File>Component",
+						"public_buganizer_component", "123456",
+					),
 				},
 			},
 		}

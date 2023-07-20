@@ -5,6 +5,8 @@
 package dirmd
 
 import (
+	"fmt"
+
 	dirmdpb "infra/tools/dirmd/proto"
 
 	"go.chromium.org/luci/common/data/strpair"
@@ -30,6 +32,10 @@ func createTag(md *dirmdpb.Metadata) []*resultpb.StringPair {
 
 	if len(md.GetResultdb().GetTags()) > 0 {
 		tags = append(tags, pbutil.FromStrpairMap(strpair.ParseMap(md.Resultdb.Tags))...)
+	}
+
+	if md.GetBuganizerPublic().GetComponentId() != 0 {
+		tags = append(tags, pbutil.StringPair("public_buganizer_component", fmt.Sprint(md.BuganizerPublic.ComponentId)))
 	}
 
 	return tags
