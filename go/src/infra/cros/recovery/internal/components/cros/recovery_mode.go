@@ -26,6 +26,8 @@ type BootInRecoveryRequest struct {
 	BootRetry    int
 	BootTimeout  time.Duration
 	BootInterval time.Duration
+	// Prevent PD switch to snk before boot.
+	PreventPowerSnk bool
 	// Call function to cal after device booted in recovery mode.
 	Callback            func(context.Context) error
 	AddObservation      func(*metrics.Observation)
@@ -53,9 +55,17 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 			}
 		}
 	}
-	needSink, err := RecoveryModeRequiredPDOff(ctx, dutRun, servod, req.DUT)
-	if err != nil {
-		return errors.Annotate(err, "boot in recovery mode").Err()
+	// Flag specified if we need set PD to `snk` before boot in recovery mode.
+	var needSink bool
+	if req.PreventPowerSnk {
+		log.Infof("Recovery boot will be performed without PD:snk by request.")
+		needSink = false
+	} else {
+		var err error
+		needSink, err = RecoveryModeRequiredPDOff(ctx, dutRun, servod, req.DUT)
+		if err != nil {
+			return errors.Annotate(err, "boot in recovery mode").Err()
+		}
 	}
 	defer func() {
 		// Record the label at the end as it can be changed.

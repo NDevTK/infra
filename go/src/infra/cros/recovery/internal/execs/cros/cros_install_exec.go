@@ -210,10 +210,11 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 		return nil
 	}
 	req := &cros.BootInRecoveryRequest{
-		DUT:          dut,
-		BootRetry:    am.AsInt(ctx, "boot_retry", 1),
-		BootTimeout:  am.AsDuration(ctx, "boot_timeout", 480, time.Second),
-		BootInterval: am.AsDuration(ctx, "boot_interval", 10, time.Second),
+		DUT:             dut,
+		BootRetry:       am.AsInt(ctx, "boot_retry", 1),
+		BootTimeout:     am.AsDuration(ctx, "boot_timeout", 480, time.Second),
+		BootInterval:    am.AsDuration(ctx, "boot_interval", 10, time.Second),
+		PreventPowerSnk: am.AsBool(ctx, "prevent_power_snk", false),
 		// Register that device booted and sshable.
 		Callback:            callback,
 		AddObservation:      info.AddObservation,
