@@ -18,6 +18,191 @@ import (
 	"infra/appengine/test-resources/api"
 )
 
+// Base queries to build from
+const (
+	testSingleDayQuery string = `
+SELECT
+	m.date,
+	m.test_id,
+	ANY_VALUE(m.test_name) AS test_name,
+	ANY_VALUE(m.file_name) AS file_name,
+	{metricAggregations},
+	ARRAY_AGG(STRUCT(
+		builder AS builder,
+		bucket AS bucket,
+		test_suite AS test_suite,
+		{metricNames}
+		)
+	) AS variants
+FROM
+	{table} AS m
+WHERE
+	DATE(date) IN UNNEST(@dates)
+	AND component IN UNNEST(@components){fileNameClause}{filterClause}
+GROUP BY date, test_id
+ORDER BY {sortMetric} {sortDirection}
+LIMIT @page_size OFFSET @page_offset`
+
+	testMultiDayQuery string = `
+WITH tests AS (
+	SELECT
+		m.date,
+		m.test_id,
+		ANY_VALUE(m.test_name) AS test_name,
+		ANY_VALUE(m.file_name) AS file_name,
+		{metricAggregations},
+		ARRAY_AGG(STRUCT(
+			builder AS builder,
+			bucket AS bucket,
+			test_suite AS test_suite,
+			{metricNames}
+			)
+		) AS variants
+	FROM
+		{table} AS m
+	WHERE
+		DATE(date) IN UNNEST(@dates)
+		AND component IN UNNEST(@components){fileNameClause}{filterClause}
+	GROUP BY m.date, m.test_id
+), sorted_day AS (
+	SELECT
+		test_id,
+		{sortMetric} AS rank
+	FROM tests
+	WHERE date = @sort_date
+	ORDER BY {sortMetric} {sortDirection}
+	LIMIT @page_size OFFSET @page_offset
+)
+SELECT t.*
+FROM sorted_day AS s LEFT JOIN tests AS t USING(test_id)
+ORDER BY rank {sortDirection}`
+
+	unfilteredDirectorySingleDayQuery string = `
+SELECT
+	date,
+	node_name,
+	ARRAY_REVERSE(SPLIT(node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
+	ANY_VALUE(is_file) AS is_file,
+	{metricAggregations},
+FROM {table}
+WHERE
+	STARTS_WITH(node_name, @parent || "/") AND
+	-- The child folders and files can't have a / after the parent's name
+	REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(@parent) + 2), "^[^/]*$")
+	AND DATE(date) IN UNNEST(@dates)
+	AND component IN UNNEST(@components)
+GROUP BY date, node_name
+ORDER BY {sortMetric} {sortDirection}`
+
+	unfilteredDirectoryMultiDayQuery string = `
+WITH nodes AS(
+	SELECT
+		date,
+		node_name,
+		ARRAY_REVERSE(SPLIT(node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
+		ANY_VALUE(is_file) AS is_file,
+		{metricAggregations},
+	FROM {table}
+	WHERE
+		STARTS_WITH(node_name, @parent || "/")
+		-- The child folders and files can't have a / after the parent's name
+		AND REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(@parent) + 2), "^[^/]*$")
+		AND DATE(date) IN UNNEST(@dates)
+		AND component IN UNNEST(@components)
+	GROUP BY date, node_name
+), sorted_day AS (
+	SELECT
+		node_name,
+		{sortMetric} AS rank
+	FROM nodes
+	WHERE date = @sort_date
+)
+SELECT t.*
+FROM nodes AS t LEFT JOIN sorted_day AS s USING(node_name)
+ORDER BY s.rank {sortDirection}`
+
+	filteredDirectorySingleDayQuery string = `
+WITH
+test_summaries AS (
+	SELECT
+		file_name AS node_name,
+		date,
+		--metrics
+		{metricAggregations},
+	FROM {testTable}
+	WHERE
+		date IN UNNEST(@dates)
+		AND file_name IS NOT NULL
+		AND component IN UNNEST(@components)
+		-- Apply the requested filter{filterClause}
+	GROUP BY file_name, date, test_id
+)
+SELECT
+	f.date,
+	f.node_name,
+	ARRAY_REVERSE(SPLIT(f.node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
+	ANY_VALUE(is_file) AS is_file,
+	-- metrics
+	{fileAggMetricTerms},
+FROM {fileTable} AS f
+JOIN test_summaries t ON
+	f.date = t.date
+	AND STARTS_WITH(t.node_name, f.node_name)
+WHERE
+	STARTS_WITH(f.node_name, @parent || "/")
+	-- The child folders and files can't have a / after the parent's name
+	AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(@parent) + 2), "^[^/]*$")
+	AND DATE(f.date) IN UNNEST(@dates)
+	AND component IN UNNEST(@components)
+GROUP BY date, node_name
+ORDER BY {sortMetric} {sortDirection}`
+	filteredDirectoryMultiDayQuery string = `
+WITH
+test_summaries AS (
+	SELECT
+		file_name AS node_name,
+		date,
+		--metrics
+		{metricAggregations},
+	FROM {testTable}
+	WHERE
+		date IN UNNEST(@dates)
+		AND file_name IS NOT NULL
+		AND component IN UNNEST(@components)
+		-- Apply the requested filter{filterClause}
+	GROUP BY file_name, date, test_id
+), node_summaries AS (
+	SELECT
+		f.date,
+		f.node_name,
+		ARRAY_REVERSE(SPLIT(f.node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
+		ANY_VALUE(is_file) AS is_file,
+		-- metrics
+		{fileAggMetricTerms},
+	FROM {fileTable} AS f
+	JOIN test_summaries t ON
+		f.date = t.date
+		AND STARTS_WITH(t.node_name, f.node_name)
+	WHERE
+		STARTS_WITH(f.node_name, @parent || "/")
+		-- The child folders and files can't have a / after the parent's name
+		AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(@parent) + 2), "^[^/]*$")
+		AND DATE(f.date) IN UNNEST(@dates)
+		AND component IN UNNEST(@components)
+	GROUP BY date, node_name
+), sorted_day AS (
+	SELECT
+		node_name,
+		{sortMetric} AS rank
+	FROM node_summaries
+	WHERE date = @sort_date
+)
+
+SELECT node_summaries.*
+FROM node_summaries LEFT JOIN sorted_day USING(node_name)
+ORDER BY rank {sortDirection}`
+)
+
 var (
 	// Period to the table in the dataset to use
 	periodToTestMetricTable = map[api.Period]string{
@@ -189,6 +374,10 @@ func (c *Client) createFetchMetricsQuery(req *api.FetchTestMetricsRequest) (*big
 	if req.Sort != nil && !req.Sort.Ascending {
 		sortDirection = "DESC"
 	}
+	sortDate := req.Dates[0]
+	if req.Sort != nil && req.Sort.SortDate != "" {
+		sortDate = req.Sort.SortDate
+	}
 
 	fileNameClause := ""
 	if len(req.FileNames) > 0 {
@@ -209,30 +398,26 @@ func (c *Client) createFetchMetricsQuery(req *api.FetchTestMetricsRequest) (*big
 		}
 	}
 
-	query := `
-SELECT
-	m.date,
-	m.test_id,
-	ANY_VALUE(m.test_name) AS test_name,
-	ANY_VALUE(m.file_name) AS file_name,
-	` + strings.Join(metricAggregations, ",\n\t") + `,
-	ARRAY_AGG(STRUCT(
-		builder AS builder,
-		bucket AS bucket,
-		test_suite AS test_suite,
-		` + strings.Join(metricNames, ",\n\t\t") + `
-		)
-	) AS variants
-FROM
-	` + c.ProjectId + `.` + c.DataSet + `.` + table + ` AS m
-WHERE
-	DATE(date) IN UNNEST(@dates)
-	AND component IN UNNEST(@components)` + fileNameClause + filterClause + `
-GROUP BY date, test_id
-ORDER BY ` + sortMetric + ` ` + sortDirection + `
-LIMIT @page_size OFFSET @page_offset`
+	replacements := []string{
+		"{metricAggregations}", strings.Join(metricAggregations, ",\n\t"),
+		"{metricNames}", strings.Join(metricNames, ",\n\t\t"),
+		"{table}", c.ProjectId + `.` + c.DataSet + `.` + table,
+		"{filterClause}", filterClause,
+		"{fileNameClause}", fileNameClause,
+		"{sortMetric}", sortMetric,
+		"{sortDirection}", sortDirection,
+	}
 
-	q := c.BqClient.Query(query)
+	r := strings.NewReplacer(replacements...)
+	// TODO(sshrimp): this query construction is pretty hard to read and should be refactored
+	var query string
+	if len(req.Dates) == 1 {
+		query = testSingleDayQuery
+	} else {
+		query = testMultiDayQuery
+	}
+
+	q := c.BqClient.Query(r.Replace(query))
 
 	q.Parameters = []bigquery.QueryParameter{
 		{Name: "dates", Value: dates},
@@ -240,6 +425,7 @@ LIMIT @page_size OFFSET @page_offset`
 		{Name: "page_offset", Value: req.PageOffset},
 		{Name: "components", Value: req.Components},
 		{Name: "file_names", Value: req.FileNames},
+		{Name: "sort_date", Value: sortDate},
 	}
 	q.Parameters = append(q.Parameters, filterParameters...)
 	return q, nil
@@ -367,11 +553,11 @@ func (c *Client) createFilteredDirectoryQuery(req *api.FetchDirectoryMetricsRequ
 		}
 	}
 
-	table, ok := periodToFileMetricTable[req.Period]
+	fileTable, ok := periodToFileMetricTable[req.Period]
 	if !ok {
 		return nil, errors.Reason("Received unsupported period request: '%s'", req.Period).Err()
 	}
-	test_table, ok := periodToTestMetricTable[req.Period]
+	testTable, ok := periodToTestMetricTable[req.Period]
 	if !ok {
 		return nil, errors.Reason("Received unsupported period request: '%s'", req.Period).Err()
 	}
@@ -385,6 +571,10 @@ func (c *Client) createFilteredDirectoryQuery(req *api.FetchDirectoryMetricsRequ
 	sortDirection := "ASC"
 	if req.Sort != nil && !req.Sort.Ascending {
 		sortDirection = "DESC"
+	}
+	sortDate := req.Dates[0]
+	if req.Sort != nil && req.Sort.SortDate != "" {
+		sortDate = req.Sort.SortDate
 	}
 
 	filterClause := ""
@@ -400,48 +590,31 @@ func (c *Client) createFilteredDirectoryQuery(req *api.FetchDirectoryMetricsRequ
 		}
 	}
 
-	query := `
-WITH
-test_summaries AS (
-	SELECT
-		file_name AS node_name,
-		date,
-		--metrics
-		` + strings.Join(metricAggregations, ",\n\t") + `,
-	FROM ` + c.ProjectId + `.` + c.DataSet + `.` + test_table + `
-	WHERE
-		date IN UNNEST(@dates)
-		AND file_name IS NOT NULL
-		AND component IN UNNEST(@components)
-		-- Apply the requested filter` + filterClause + `
-	GROUP BY file_name, date, test_id
-)
-SELECT
-	f.date,
-	f.node_name,
-	ARRAY_REVERSE(SPLIT(f.node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
-	ANY_VALUE(is_file) AS is_file,
-	-- metrics
-	` + strings.Join(fileAggMetricTerms, ",\n\t") + `,
-FROM ` + c.ProjectId + `.` + c.DataSet + `.` + table + ` AS f
-JOIN test_summaries t ON
-	f.date = t.date
-	AND STARTS_WITH(t.node_name, f.node_name)
-WHERE
-	STARTS_WITH(f.node_name, @parent || "/")
-	-- The child folders and files can't have a / after the parent's name
-	AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(@parent) + 2), "^[^/]*$")
-	AND DATE(f.date) IN UNNEST(@dates)
-	AND component IN UNNEST(@components)
-GROUP BY date, node_name
-ORDER BY ` + sortMetric + ` ` + sortDirection
+	replacements := []string{
+		"{metricAggregations}", strings.Join(metricAggregations, ",\n\t"),
+		"{testTable}", c.ProjectId + `.` + c.DataSet + `.` + testTable,
+		"{filterClause}", filterClause,
+		"{fileAggMetricTerms}", strings.Join(fileAggMetricTerms, ",\n\t"),
+		"{fileTable}", c.ProjectId + `.` + c.DataSet + `.` + fileTable,
+		"{sortMetric}", sortMetric,
+		"{sortDirection}", sortDirection,
+	}
+	r := strings.NewReplacer(replacements...)
 
-	q := c.BqClient.Query(query)
+	var query string
+	if len(req.Dates) == 1 {
+		query = filteredDirectorySingleDayQuery
+	} else {
+		query = filteredDirectoryMultiDayQuery
+	}
+
+	q := c.BqClient.Query(r.Replace(query))
 
 	q.Parameters = []bigquery.QueryParameter{
 		{Name: "dates", Value: dates},
 		{Name: "components", Value: req.Components},
 		{Name: "parent", Value: req.ParentIds[0]},
+		{Name: "sort_date", Value: sortDate},
 	}
 	q.Parameters = append(q.Parameters, filterParameters...)
 	return q, nil
@@ -479,30 +652,33 @@ func (c *Client) createUnfilteredDirectoryQuery(req *api.FetchDirectoryMetricsRe
 	if req.Sort != nil && !req.Sort.Ascending {
 		sortDirection = "DESC"
 	}
+	sortDate := req.Dates[0]
+	if req.Sort != nil && req.Sort.SortDate != "" {
+		sortDate = req.Sort.SortDate
+	}
 
-	query := `
-SELECT
-	date,
-	node_name,
-	ARRAY_REVERSE(SPLIT(node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
-	ANY_VALUE(is_file) AS is_file,
-	` + strings.Join(metricAggregations, ",\n\t") + `,
-FROM ` + c.ProjectId + `.` + c.DataSet + `.` + table + `
-WHERE
-	STARTS_WITH(node_name, @parent || "/") AND
-	-- The child folders and files can't have a / after the parent's name
-	REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(@parent) + 2), "^[^/]*$")
-	AND DATE(date) IN UNNEST(@dates)
-	AND component IN UNNEST(@components)
-GROUP BY date, node_name
-ORDER BY ` + sortMetric + ` ` + sortDirection
+	replacements := []string{
+		"{metricAggregations}", strings.Join(metricAggregations, ",\n\t"),
+		"{table}", c.ProjectId + `.` + c.DataSet + `.` + table,
+		"{sortMetric}", sortMetric,
+		"{sortDirection}", sortDirection,
+	}
+	r := strings.NewReplacer(replacements...)
 
-	q := c.BqClient.Query(query)
+	var query string
+	if len(req.Dates) == 1 {
+		query = unfilteredDirectorySingleDayQuery
+	} else {
+		query = unfilteredDirectoryMultiDayQuery
+	}
+
+	q := c.BqClient.Query(r.Replace(query))
 
 	q.Parameters = []bigquery.QueryParameter{
 		{Name: "dates", Value: dates},
 		{Name: "components", Value: req.Components},
 		{Name: "parent", Value: req.ParentIds[0]},
+		{Name: "sort_date", Value: sortDate},
 	}
 
 	return q, nil

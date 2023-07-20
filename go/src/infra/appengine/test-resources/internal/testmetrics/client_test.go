@@ -181,10 +181,142 @@ ORDER BY test_id ASC
 LIMIT @page_size OFFSET @page_offset`)
 		})
 
+		Convey("Valid filtered multi-day request", func() {
+			request := &api.FetchTestMetricsRequest{
+				Components: []string{
+					"Blink",
+				},
+				Dates: []string{
+					"2023-07-12",
+					"2023-07-13",
+				},
+				Period: api.Period_DAY,
+				Metrics: []api.MetricType{
+					api.MetricType_NUM_RUNS,
+				},
+				PageOffset: 0,
+				PageSize:   10,
+				Sort: &api.SortBy{
+					Metric:    api.SortType_SORT_NAME,
+					Ascending: false,
+					SortDate:  "2023-07-13",
+				},
+				Filter: "linux-rel blink_python_tests",
+			}
+			query, err := client.createFetchMetricsQuery(request)
+
+			So(err, ShouldBeNil)
+			So(query, ShouldNotBeNil)
+			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+				Name:  "sort_date",
+				Value: "2023-07-13",
+			})
+			So(query.QueryConfig.Q, ShouldResemble, `
+WITH tests AS (
+	SELECT
+		m.date,
+		m.test_id,
+		ANY_VALUE(m.test_name) AS test_name,
+		ANY_VALUE(m.file_name) AS file_name,
+		SUM(num_runs) AS num_runs,
+		ARRAY_AGG(STRUCT(
+			builder AS builder,
+			bucket AS bucket,
+			test_suite AS test_suite,
+			num_runs
+			)
+		) AS variants
+	FROM
+		chrome-test-health-project.normal-dataset.daily_test_metrics AS m
+	WHERE
+		DATE(date) IN UNNEST(@dates)
+		AND component IN UNNEST(@components)
+	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter0)
+	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter1)
+	GROUP BY m.date, m.test_id
+), sorted_day AS (
+	SELECT
+		test_id,
+		test_id AS rank
+	FROM tests
+	WHERE date = @sort_date
+	ORDER BY test_id DESC
+	LIMIT @page_size OFFSET @page_offset
+)
+SELECT t.*
+FROM sorted_day AS s LEFT JOIN tests AS t USING(test_id)
+ORDER BY rank DESC`)
+		})
+
+		Convey("Valid sorted multi-day request", func() {
+			request := &api.FetchTestMetricsRequest{
+				Components: []string{
+					"Blink",
+				},
+				Dates: []string{
+					"2023-07-12",
+					"2023-07-13",
+				},
+				Period: api.Period_DAY,
+				Metrics: []api.MetricType{
+					api.MetricType_NUM_RUNS,
+				},
+				PageOffset: 0,
+				PageSize:   10,
+				Sort: &api.SortBy{
+					Metric:    api.SortType_SORT_NUM_RUNS,
+					Ascending: false,
+				},
+				Filter: "linux-rel blink_python_tests",
+			}
+			query, err := client.createFetchMetricsQuery(request)
+
+			So(err, ShouldBeNil)
+			So(query, ShouldNotBeNil)
+			So(query.QueryConfig.Q, ShouldResemble, `
+WITH tests AS (
+	SELECT
+		m.date,
+		m.test_id,
+		ANY_VALUE(m.test_name) AS test_name,
+		ANY_VALUE(m.file_name) AS file_name,
+		SUM(num_runs) AS num_runs,
+		ARRAY_AGG(STRUCT(
+			builder AS builder,
+			bucket AS bucket,
+			test_suite AS test_suite,
+			num_runs
+			)
+		) AS variants
+	FROM
+		chrome-test-health-project.normal-dataset.daily_test_metrics AS m
+	WHERE
+		DATE(date) IN UNNEST(@dates)
+		AND component IN UNNEST(@components)
+	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter0)
+	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter1)
+	GROUP BY m.date, m.test_id
+), sorted_day AS (
+	SELECT
+		test_id,
+		num_runs AS rank
+	FROM tests
+	WHERE date = @sort_date
+	ORDER BY num_runs DESC
+	LIMIT @page_size OFFSET @page_offset
+)
+SELECT t.*
+FROM sorted_day AS s LEFT JOIN tests AS t USING(test_id)
+ORDER BY rank DESC`)
+		})
+
 		Convey("Parameterized args", func() {
 			request := &api.FetchTestMetricsRequest{
 				Components: []string{
 					"Blink",
+				},
+				Dates: []string{
+					"2023-07-12",
 				},
 			}
 			query, err := client.createFetchMetricsQuery(request)
@@ -198,6 +330,9 @@ LIMIT @page_size OFFSET @page_offset`)
 
 		Convey("Parameterized page args", func() {
 			request := &api.FetchTestMetricsRequest{
+				Dates: []string{
+					"2023-07-12",
+				},
 				PageSize:   10,
 				PageOffset: 5,
 			}
@@ -216,6 +351,9 @@ LIMIT @page_size OFFSET @page_offset`)
 
 		Convey("Parameterized filter arg", func() {
 			request := &api.FetchTestMetricsRequest{
+				Dates: []string{
+					"2023-07-12",
+				},
 				Filter: "linux-rel blink_python_tests",
 			}
 			query, err := client.createFetchMetricsQuery(request)
@@ -308,12 +446,71 @@ GROUP BY date, node_name
 ORDER BY node_name ASC`)
 		})
 
+		Convey("Valid unfiltered multi-day request", func() {
+			request := &api.FetchDirectoryMetricsRequest{
+				ParentIds: []string{"/"},
+				Components: []string{
+					"Blink",
+				},
+				Dates: []string{
+					"2023-07-12",
+					"2023-07-13",
+				},
+				Period: api.Period_DAY,
+				Metrics: []api.MetricType{
+					api.MetricType_NUM_RUNS,
+				},
+				Sort: &api.SortBy{
+					Metric:    api.SortType_SORT_NAME,
+					Ascending: false,
+					SortDate:  "2023-07-13",
+				},
+			}
+			query, err := client.createUnfilteredDirectoryQuery(request)
+
+			So(err, ShouldBeNil)
+			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+				Name:  "sort_date",
+				Value: "2023-07-13",
+			})
+			So(query, ShouldNotBeNil)
+			So(query.QueryConfig.Q, ShouldResemble, `
+WITH nodes AS(
+	SELECT
+		date,
+		node_name,
+		ARRAY_REVERSE(SPLIT(node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
+		ANY_VALUE(is_file) AS is_file,
+		SUM(num_runs) AS num_runs,
+	FROM chrome-test-health-project.normal-dataset.daily_file_metrics
+	WHERE
+		STARTS_WITH(node_name, @parent || "/")
+		-- The child folders and files can't have a / after the parent's name
+		AND REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(@parent) + 2), "^[^/]*$")
+		AND DATE(date) IN UNNEST(@dates)
+		AND component IN UNNEST(@components)
+	GROUP BY date, node_name
+), sorted_day AS (
+	SELECT
+		node_name,
+		node_name AS rank
+	FROM nodes
+	WHERE date = @sort_date
+)
+SELECT t.*
+FROM nodes AS t LEFT JOIN sorted_day AS s USING(node_name)
+ORDER BY s.rank DESC`)
+		})
+
 		Convey("Parameterized args", func() {
 			request := &api.FetchDirectoryMetricsRequest{
 				Components: []string{
 					"Blink",
 				},
 				ParentIds: []string{"/"},
+				Dates: []string{
+					"2023-07-12",
+				},
 			}
 			query, err := client.createUnfilteredDirectoryQuery(request)
 
@@ -429,8 +626,86 @@ GROUP BY date, node_name
 ORDER BY node_name ASC`)
 		})
 
+		Convey("Valid unfiltered multi-day request", func() {
+			request := &api.FetchDirectoryMetricsRequest{
+				ParentIds: []string{"/"},
+				Components: []string{
+					"Blink",
+				},
+				Dates: []string{
+					"2023-07-12",
+					"2023-07-13",
+				},
+				Period: api.Period_DAY,
+				Metrics: []api.MetricType{
+					api.MetricType_NUM_RUNS,
+				},
+				Sort: &api.SortBy{
+					Metric:    api.SortType_SORT_NAME,
+					Ascending: false,
+					SortDate:  "2023-07-13",
+				},
+				Filter: "linux-rel",
+			}
+			query, err := client.createFilteredDirectoryQuery(request)
+
+			So(err, ShouldBeNil)
+			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+				Name:  "sort_date",
+				Value: "2023-07-13",
+			})
+			So(query, ShouldNotBeNil)
+			So(query.QueryConfig.Q, ShouldResemble, `
+WITH
+test_summaries AS (
+	SELECT
+		file_name AS node_name,
+		date,
+		--metrics
+		SUM(num_runs) AS num_runs,
+	FROM chrome-test-health-project.normal-dataset.daily_test_metrics
+	WHERE
+		date IN UNNEST(@dates)
+		AND file_name IS NOT NULL
+		AND component IN UNNEST(@components)
+		-- Apply the requested filter
+		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter0)
+	GROUP BY file_name, date, test_id
+), node_summaries AS (
+	SELECT
+		f.date,
+		f.node_name,
+		ARRAY_REVERSE(SPLIT(f.node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
+		ANY_VALUE(is_file) AS is_file,
+		-- metrics
+		SUM(t.num_runs) AS num_runs,
+	FROM chrome-test-health-project.normal-dataset.daily_file_metrics AS f
+	JOIN test_summaries t ON
+		f.date = t.date
+		AND STARTS_WITH(t.node_name, f.node_name)
+	WHERE
+		STARTS_WITH(f.node_name, @parent || "/")
+		-- The child folders and files can't have a / after the parent's name
+		AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(@parent) + 2), "^[^/]*$")
+		AND DATE(f.date) IN UNNEST(@dates)
+		AND component IN UNNEST(@components)
+	GROUP BY date, node_name
+), sorted_day AS (
+	SELECT
+		node_name,
+		node_name AS rank
+	FROM node_summaries
+	WHERE date = @sort_date
+)
+
+SELECT node_summaries.*
+FROM node_summaries LEFT JOIN sorted_day USING(node_name)
+ORDER BY rank DESC`)
+		})
+
 		Convey("Parameterized args", func() {
 			request := &api.FetchDirectoryMetricsRequest{
+				Dates: []string{"2023-07-12"},
 				Components: []string{
 					"Blink",
 				},
@@ -479,6 +754,7 @@ ORDER BY node_name ASC`)
 
 		Convey("Parameterized filter arg", func() {
 			request := &api.FetchDirectoryMetricsRequest{
+				Dates:     []string{"2023-07-12"},
 				ParentIds: []string{"/"},
 				Filter:    "linux-rel blink_python_tests",
 			}

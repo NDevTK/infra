@@ -456,7 +456,8 @@ type SortBy struct {
 	Metric SortType `protobuf:"varint,1,opt,name=metric,proto3,enum=test_resources.SortType" json:"metric,omitempty"`
 	// Ascending or Descending
 	Ascending bool `protobuf:"varint,2,opt,name=ascending,proto3" json:"ascending,omitempty"`
-	// The day to do the sorting on
+	// The day to do the sorting on. This day must be in the request as well
+	// Defaults to the first date being requested
 	SortDate string `protobuf:"bytes,3,opt,name=sort_date,json=sortDate,proto3" json:"sort_date,omitempty"`
 }
 

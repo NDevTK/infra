@@ -87,7 +87,8 @@ message SortBy {
   SortType metric = 1;
   // Ascending or Descending
   bool ascending = 2;
-  // The day to do the sorting on
+  // The day to do the sorting on. This day must be in the request as well
+  // Defaults to the first date being requested
   string sort_date = 3;
 }
 
