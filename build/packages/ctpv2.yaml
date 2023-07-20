@@ -1,0 +1,11 @@
+package: chromiumos/infra/ctpv2/${platform}
+description: Filtering service responsible for running various filters
+ and creating test runner input requests.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/ctpv2
+root: ../../go/bin
+data:
+  - file: ctpv2${exe_suffix}
+  - version_file: .versions/ctpv2${exe_suffix}.cipd_version
