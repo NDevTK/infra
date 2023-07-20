@@ -16,6 +16,24 @@
       "message": "This LGTM from the ChromeDriver codebase side of things, but per crbug.com/1465740 it seems Chrome WPT infra folks have concerns. Please also obtain an LGTM from weizhong@ before landing.",
       "revId": "9bad310326c1ba0f2947ce8bf03c79a76b08925b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e17c0e9b_df8dfc99",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1476473
+      },
+      "writtenOn": "2023-07-20T00:37:34Z",
+      "side": 1,
+      "message": "I am ok to land this. The problem really is that webdriver tests failed often the importer, and it is a burden to the two-way-sync sheriffs. And sounds like the webdriver tests do not have an owner.\n\nI will take a look and try to find a solution for that.",
+      "parentUuid": "d14bbf68_9b21b0aa",
+      "revId": "9bad310326c1ba0f2947ce8bf03c79a76b08925b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
