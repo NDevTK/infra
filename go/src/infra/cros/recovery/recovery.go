@@ -425,7 +425,7 @@ func runDUTPlans(ctx context.Context, dut *tlw.Dut, c *config.Configuration, arg
 	// for this devices. We need created all of them at the beginning as one
 	// plan can have access to current resource or another one.
 	// Always has to be empty for merge code
-	if jumpHostForLocalProxy := args.DevJumpHost; jumpHostForLocalProxy != "" {
+	if args.DevJumpHost != "" || len(args.DevHostProxyAddresses) > 0 {
 		for _, planName := range planNames {
 			resources := collectResourcesForPlan(planName, execArgs.DUT)
 			for _, resource := range resources {
@@ -435,7 +435,13 @@ func runDUTPlans(ctx context.Context, dut *tlw.Dut, c *config.Configuration, arg
 				if associatedHostname := execArgs.DUT.GetAndroid().GetAssociatedHostname(); associatedHostname != "" {
 					resource = associatedHostname
 				}
-				if err := localproxy.RegHost(ctx, resource, jumpHostForLocalProxy); err != nil {
+				if args.DevHostProxyAddresses != nil {
+					if proxyAddress, ok := args.DevHostProxyAddresses[resource]; ok {
+						localproxy.SetHostProxyAddress(ctx, resource, proxyAddress)
+						continue
+					}
+				}
+				if err := localproxy.RegHost(ctx, resource, args.DevJumpHost); err != nil {
 					return errors.Annotate(err, "run plans: create proxy for %q", resource).Err()
 				}
 			}
@@ -617,6 +623,9 @@ type RunArgs struct {
 	// JumpHost is the host to use as a SSH proxy between ones dev environment and the lab,
 	// if necessary. An empty JumpHost means do not use a jump host.
 	DevJumpHost string
+	// DevHostProxyAddresses is a map of resource names to proxy addresses to use
+	// for SSH connections.
+	DevHostProxyAddresses map[string]string
 	// MetricSaver provides ability to save a metric with original context.
 	metricSaver metrics.MetricSaver
 }
