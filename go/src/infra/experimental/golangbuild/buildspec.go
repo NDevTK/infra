@@ -84,15 +84,9 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 	case gerritChange != nil && gitilesCommit != nil:
 		return nil, fmt.Errorf("only a Gerrit change or a Gitiles commit is supported, not both")
 	case gerritChange == nil && gitilesCommit != nil:
-		if gitilesCommit.Host != goHost {
-			return nil, fmt.Errorf("unsupported host %q, want %q", gitilesCommit.Host, goHost)
-		}
 		changedProject = gitilesCommit.Project
 		changedBranch = refToBranch(gitilesCommit.Ref)
 	case gerritChange != nil && gitilesCommit == nil:
-		if gerritChange.Host != goReviewHost {
-			return nil, fmt.Errorf("unsupported host %q, want %q", gerritChange.Host, goReviewHost)
-		}
 		changedProject = gerritChange.Project
 		hc, err := authenticator.Client()
 		if err != nil {

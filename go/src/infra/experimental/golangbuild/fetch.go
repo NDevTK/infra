@@ -21,6 +21,15 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 )
 
+// TODO(yifany): `goHost` is used in the implementation for deriving the build
+// specs in the file `buildspec.go`. The current implementation works under the
+// the situation that:
+//   - development of subrepos is in the public gerrit host,
+//   - tests from subrepos are always against corresponding branch in the go
+//     repo in the public gerrit host.
+//
+// If these conditions changed, the implementation need to adjust accordingly.
+// At that point, the const declarations here may no longer be needed.
 const (
 	goHost       = "go.googlesource.com"
 	goReviewHost = "go-review.googlesource.com"
