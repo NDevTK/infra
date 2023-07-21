@@ -25,10 +25,10 @@ _CHROMIUM_SOURCE_BUILDERS = [
 
 
 def ExportFilesAbsoluteCoverage():
-  """Exports metrics for files with low coverage to Bigquery.
+  """Exports metrics for files to Bigquery.
 
-  Reads FileCoverageData for latest revision, keeps only those not meeting the
-  coverage bar and exports them to a Bigquery table.
+  Reads FileCoverageData for latest revision and exports them to a Bigquery
+  table.
   """
 
   for builder in _CHROMIUM_SOURCE_BUILDERS:
@@ -38,12 +38,21 @@ def ExportFilesAbsoluteCoverage():
         server_host='chromium.googlesource.com')
 
   _ExportAbsoluteCoverageForBuilder(
+      builder='coverage-runner',
+      project='chromium/src',
+      server_host='chromium.googlesource.com',
+      bucket='reviver')
+
+  _ExportAbsoluteCoverageForBuilder(
       builder='fuchsia-coverage',
       project='fuchsia',
       server_host='fuchsia.googlesource.com')
 
 
-def _ExportAbsoluteCoverageForBuilder(builder, project, server_host):
+def _ExportAbsoluteCoverageForBuilder(builder,
+                                      project,
+                                      server_host,
+                                      bucket='ci'):
   """Export Absolute coverage for files in a given ci builder
 
   Args:
@@ -54,7 +63,7 @@ def _ExportAbsoluteCoverageForBuilder(builder, project, server_host):
   query = PostsubmitReport.query(
       PostsubmitReport.gitiles_commit.server_host == server_host,
       PostsubmitReport.gitiles_commit.project == project,
-      PostsubmitReport.bucket == "ci", PostsubmitReport.builder == builder,
+      PostsubmitReport.bucket == bucket, PostsubmitReport.builder == builder,
       PostsubmitReport.visible == True, PostsubmitReport.modifier_id ==
       0).order(-PostsubmitReport.commit_timestamp)
   entities = query.fetch(limit=1)
