@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "23785592_b44b6c63",
+        "filename": "go/src/infra/appengine/statsui/sql/cq_builder_metrics/cq_builder_metrics_day_test_counts.sql",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2023-07-21T21:33:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9b90c062_ed2d9cad",
+      "revId": "67e024d75e4eeef1ad538d5ae38ac1f09f92f2ef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b273b626_dec1f891",
@@ -35,6 +53,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e3f9185e_4aa11810",
+        "filename": "go/src/infra/appengine/statsui/sql/cq_builder_metrics/cq_builder_metrics_week_test_counts.sql",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2023-07-21T21:33:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b273b626_dec1f891",
+      "revId": "67e024d75e4eeef1ad538d5ae38ac1f09f92f2ef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4fbf6539_6f4958b7",
@@ -48,6 +84,24 @@
       "writtenOn": "2023-07-14T18:41:22Z",
       "side": 1,
       "message": "This change should be done in the daily as well right?",
+      "revId": "67e024d75e4eeef1ad538d5ae38ac1f09f92f2ef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "087985fd_c909ad6a",
+        "filename": "go/src/infra/appengine/statsui/sql/cq_builder_metrics/cq_builder_metrics_week_test_counts.sql",
+        "patchSetId": 3
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2023-07-21T21:33:30Z",
+      "side": 1,
+      "message": "No, you actually caught it in the daily but I didn\u0027t think apply it to both queries",
+      "parentUuid": "4fbf6539_6f4958b7",
       "revId": "67e024d75e4eeef1ad538d5ae38ac1f09f92f2ef",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
