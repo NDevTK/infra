@@ -49,6 +49,7 @@ describe('computeDates', () => {
           period: period as Period,
           sort: SortType.SORT_NAME,
           ascending: true,
+          sortIndex: 0,
           timelineView: timeline as boolean,
           directoryView: false,
         })).toEqual(expected);

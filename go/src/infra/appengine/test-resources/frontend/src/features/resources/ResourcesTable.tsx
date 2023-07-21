@@ -14,7 +14,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { Button, LinearProgress, TableFooter, TablePagination } from '@mui/material';
 import { SortType } from '../../api/resources';
-import { MetricsContext } from '../context/MetricsContext';
+import { MetricsContext, convertToSortIndex } from '../context/MetricsContext';
 import ResourcesRow from './ResourcesRow';
 import styles from './ResourcesTable.module.css';
 
@@ -33,16 +33,19 @@ function ResourcesTable() {
     api.updateRowsPerPage(Number(event.target.value));
   };
 
-  const handleButtonClick = (event) => {
+  const handleSortType = (event) => {
     if (Number(params.sort) as SortType === event as SortType) {
-      if (params.ascending ) {
-        api.updateAscending(false);
-      } else {
-        api.updateAscending(true);
-      }
+      api.updateAscending(!params.ascending);
     } else {
       api.updateSort(event);
-      api.updateAscending(true);
+    }
+  };
+
+  const handleSortDate = (date) => {
+    if (date === datesToShow[params.sortIndex]) {
+      api.updateAscending(!params.ascending);
+    } else {
+      api.updateSortIndex(convertToSortIndex(datesToShow, date));
     }
   };
 
@@ -51,7 +54,7 @@ function ResourcesTable() {
       <Button
         className={styles.filterButtonText}
         onClick={() => {
-          handleButtonClick(sortType);
+          handleSortType(sortType);
         }
         }
       >
@@ -60,6 +63,25 @@ function ResourcesTable() {
         params.ascending ?
           <ArrowUpwardIcon className={params.sort === sortType ? styles.icon : styles.iconNoShow}/> :
           <ArrowDownwardIcon className={params.sort === sortType ? styles.icon : styles.iconNoShow}/>
+        }
+      </Button>
+    );
+  }
+
+  function sortableDateColumn(date: string) {
+    return (
+      <Button
+        className={styles.filterButtonText}
+        onClick={() => {
+          handleSortDate(date);
+        }
+        }
+      >
+        {date}
+        {
+        params.ascending ?
+        <ArrowUpwardIcon className={datesToShow[params.sortIndex] === date ? styles.icon : styles.iconNoShow}/> :
+        <ArrowDownwardIcon className={datesToShow[params.sortIndex] === date ? styles.icon : styles.iconNoShow}/>
         }
       </Button>
     );
@@ -81,7 +103,7 @@ function ResourcesTable() {
       datesToShow.forEach((date) => {
         headerArr.push(
             <TableCell key={date} component="th" align="right" data-testid="timelineHeader">
-              {date}
+              {sortableDateColumn(date)}
             </TableCell>,
         );
       });

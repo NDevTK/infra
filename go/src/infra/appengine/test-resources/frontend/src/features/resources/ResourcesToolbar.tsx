@@ -44,12 +44,20 @@ function ResourcesToolbar() {
     return false;
   };
 
-  const handleTimelineToggle = (_, isTimeline: boolean) => {
-    api.updateTimelineView(isTimeline);
+  // Adding null in method signature to account for selecting selected toggle
+  // in which we want to ignore
+  const handleTimelineToggle = (_, isTimeline: boolean | null) => {
+    if (isTimeline !== null) {
+      api.updateTimelineView(isTimeline);
+    }
   };
 
-  const handleDirectoryToggle = (_, isDirectory: boolean) => {
-    api.updateDirectoryView(isDirectory);
+  // Adding null in method signature to account for selecting selected toggle
+  // in which we want to ignore
+  const handleDirectoryToggle = (_, isDirectory: boolean | null) => {
+    if (isDirectory !== null) {
+      api.updateDirectoryView(isDirectory);
+    }
   };
 
   return (

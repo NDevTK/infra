@@ -18,6 +18,8 @@ import { dataReducer, loadDirectoryMetrics, loadTestMetrics } from './LoadMetric
 type MetricsContextProviderProps = {
   page?: number,
   timelineView?: boolean,
+  date?: Date,
+  sortIndex?: number,
   children: React.ReactNode,
 }
 
@@ -65,6 +67,7 @@ export interface Params {
   period: Period,
   sort: SortType,
   ascending: boolean,
+  sortIndex: number,
   timelineView: boolean,
   directoryView: boolean,
 }
@@ -80,6 +83,7 @@ export interface Api {
     updatePeriod: (period: Period) => void,
     updateSort: (sort: SortType) => void,
     updateAscending: (ascending: boolean) => void,
+    updateSortIndex: (index: number) => void,
 
     updateTimelineView: (timelineView: boolean) => void,
     updateDirectoryView: (directoryView: boolean) => void,
@@ -98,6 +102,7 @@ export const MetricsContext = createContext<MetricsContextValue>(
         updatePeriod: () => {/**/},
         updateSort: () => {/**/},
         updateAscending: () => {/**/},
+        updateSortIndex: () => {/**/},
         updateTimelineView: () => {/**/},
         updateDirectoryView: () => {/**/},
       },
@@ -109,6 +114,7 @@ export const MetricsContext = createContext<MetricsContextValue>(
         period: Period.DAY,
         sort: SortType.SORT_NAME,
         ascending: true,
+        sortIndex: 0,
         timelineView: false,
         directoryView: false,
       },
@@ -139,19 +145,26 @@ function loadingCountReducer(state: LoadingState, action: LoadingAction): Loadin
   return newState;
 }
 
+export function convertToSortIndex(datesToShow: string[], date: Date ) {
+  return datesToShow.findIndex((c) => {
+    return c === formatDate(date);
+  });
+}
+
 export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
   const { components } = useContext(ComponentContext);
   const [page, setPage] = useState(props.page || 0);
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [filter, setFilter] = useState('');
-  const [date, setDate] = useState(new Date(Date.now() - 86400000));
+  const [date, setDate] = useState(props.date || new Date(Date.now() - 86400000));
   const [period, setPeriod] = useState(Period.DAY);
   const [sort, setSort] = useState(SortType.SORT_TOTAL_RUNTIME);
   const [ascending, setAscending] = useState(false);
+  const [sortIndex, setSortIndex] = useState(props.sortIndex || 0);
   const [timelineView, setTimelineView] = useState(props.timelineView || false);
   const [directoryView, setDirectoryView] = useState(false);
 
-  const params: Params = { page, rowsPerPage, filter, date, period, sort, ascending, timelineView, directoryView };
+  const params: Params = { page, rowsPerPage, filter, date, period, sort, ascending, sortIndex, timelineView, directoryView };
 
   const [data, dataDispatch] = useReducer(dataReducer, []);
   const [lastPage, setLastPage] = useState(false);
@@ -265,6 +278,8 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
       params.page = 0;
       setDate(params.date);
       setPage(params.page);
+      params.sortIndex = params.timelineView ? 4 : 0;
+      setSortIndex(params.sortIndex);
       load(params);
     },
     updatePeriod: (newPeriod: Period) => {
@@ -288,8 +303,15 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
       setPage(params.page);
       load(params);
     },
+    updateSortIndex: (newSortIndex: number) => {
+      params.sortIndex = newSortIndex;
+      setSortIndex(params.sortIndex);
+      load(params);
+    },
     updateTimelineView: (newTimelineView: boolean) => {
       params.timelineView = newTimelineView;
+      params.sortIndex = params.timelineView ? 4 : 0;
+      setSortIndex(params.sortIndex);
       // Don't set timeline view until the data has been loaded.
       load(params);
     },

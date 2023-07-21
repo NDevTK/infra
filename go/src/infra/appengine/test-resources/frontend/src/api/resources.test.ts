@@ -98,7 +98,7 @@ describe('fetchTestMetrics', () => {
           'filter': 'filter',
           'page_offset': 0,
           'page_size': 0,
-          'sort': { metric: SortType.SORT_NAME, ascending: true },
+          'sort': { metric: SortType.SORT_NAME, ascending: true, sort_date: '2012-01-02' },
         },
     );
 
@@ -114,7 +114,7 @@ describe('fetchTestMetrics', () => {
       filter: 'filter',
       page_offset: 0,
       page_size: 0,
-      sort: { metric: 0, ascending: true },
+      sort: { metric: 0, ascending: true, sort_date: '2012-01-02' },
     });
     expect(resp).toEqual(expected);
   });
@@ -152,7 +152,7 @@ describe('fetchDirectoryMetrics', () => {
             MetricType.NUM_FAILURES,
           ],
           filter: 'filter',
-          sort: { metric: SortType.SORT_NAME, ascending: true },
+          sort: { metric: SortType.SORT_NAME, ascending: true, sort_date: '2012-01-02' },
         },
     );
     expect(resp).toEqual(data);

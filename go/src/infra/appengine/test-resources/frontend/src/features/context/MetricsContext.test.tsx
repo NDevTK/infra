@@ -7,6 +7,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import { Button } from '@mui/material';
 import * as Resources from '../../api/resources';
+import { formatDate } from '../../utils/formatUtils';
 import { MetricsContext, MetricsContextProvider, MetricsContextValue } from './MetricsContext';
 
 async function contextRender(ui: (value: MetricsContextValue) => React.ReactElement, { props } = { props: {} }) {
@@ -53,5 +54,55 @@ describe('MetricsContext params', () => {
     });
     expect(screen.getByText('filter-filt')).toBeInTheDocument();
     expect(screen.getByText('page-0')).toBeInTheDocument();
+  });
+
+  it('updateDate snapshot view', async () => {
+    await contextRender((value) => (
+      <>
+        <Button data-testid='updateDate' onClick={() => value.api.updateDate(new Date('2023-01-02'))}>{'date-' + formatDate(value.params.date)}</Button>
+        <div>page-{value.params.page}</div>
+        <div>sortIndex-{value.params.sortIndex}</div>
+      </>
+    ), { props: { page: 1, date: new Date('2023-01-01'), timelineView: false, sortIndex: 4 } });
+    expect(screen.getByText('page-1')).toBeInTheDocument();
+    expect(screen.getByText('date-2023-01-01')).toBeInTheDocument();
+    expect(screen.getByText('sortIndex-4')).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('updateDate'));
+    });
+    expect(screen.getByText('page-0')).toBeInTheDocument();
+    expect(screen.getByText('date-2023-01-02')).toBeInTheDocument();
+    expect(screen.getByText('sortIndex-0')).toBeInTheDocument();
+  });
+
+  it('updateDate timeline view', async () => {
+    await contextRender((value) => (
+      <>
+        <Button data-testid='updateDate' onClick={() => value.api.updateDate(new Date('2023-01-02'))}/>
+        <div>sortIndex-{value.params.sortIndex}</div>
+      </>
+    ), { props: { page: 1, date: new Date('2023-01-01'), timelineView: true, sortIndex: 0 } });
+    expect(screen.getByText('sortIndex-0')).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('updateDate'));
+    });
+    expect(screen.getByText('sortIndex-4')).toBeInTheDocument();
+  });
+
+  it('updateTimelineView ', async () => {
+    await contextRender((value) => (
+      <>
+        <Button data-testid='updateTimeline' onClick={() => value.api.updateTimelineView(false)}/>
+        <div>sortIndex-{value.params.sortIndex}</div>
+        <div>timelineView-{String(value.params.timelineView)}</div>
+      </>
+    ), { props: { timelineView: true, sortIndex: 4 } });
+    expect(screen.getByText('sortIndex-4')).toBeInTheDocument();
+    expect(screen.getByText('timelineView-true')).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('updateTimeline'));
+    });
+    expect(screen.getByText('sortIndex-0')).toBeInTheDocument();
+    expect(screen.getByText('timelineView-false')).toBeInTheDocument();
   });
 });

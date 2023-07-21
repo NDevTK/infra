@@ -54,6 +54,7 @@ export function loadTestMetrics(
     sort: {
       metric: params.sort,
       ascending: params.ascending,
+      sort_date: datesToFetch[params.sortIndex],
     },
   };
   if (fileNames) {
@@ -157,6 +158,7 @@ export function loadDirectoryMetrics(
     sort: {
       metric: params.sort,
       ascending: params.ascending,
+      sort_date: datesToFetch[params.sortIndex],
     },
   };
   fetchDirectoryMetrics(request).then((response) => {

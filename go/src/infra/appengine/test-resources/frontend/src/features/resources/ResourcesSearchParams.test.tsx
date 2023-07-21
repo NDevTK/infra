@@ -17,10 +17,11 @@ import ResourcesParamControls, {
   SORT_BY,
   TIMELINE_VIEW,
   DIRECTORY_VIEW,
+  SORT_INDEX,
 } from './ResourcesSearchParams';
 
-describe('when rendering the ResourcesTableToolbar', () => {
-  it('should render toolbar elements', async () => {
+describe('when rendering the ResourcesSearchParams', () => {
+  it('should render url corrently', async () => {
     const params: Params = {
       page: 12,
       rowsPerPage: 25,
@@ -29,6 +30,7 @@ describe('when rendering the ResourcesTableToolbar', () => {
       period: Period.DAY,
       sort: SortType.SORT_NAME,
       ascending: true,
+      sortIndex: 0,
       timelineView: true,
       directoryView: true,
     };
@@ -50,5 +52,6 @@ describe('when rendering the ResourcesTableToolbar', () => {
     expect(searchParams.get(ASCENDING)).toBe('true');
     expect(searchParams.get(TIMELINE_VIEW)).toBe('true');
     expect(searchParams.get(DIRECTORY_VIEW)).toBe('true');
+    expect(searchParams.get(SORT_INDEX)).toBe('0');
   });
 });

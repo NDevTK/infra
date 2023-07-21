@@ -16,6 +16,7 @@ export const SORT_BY = 'sort';
 export const ASCENDING = 'asc';
 export const TIMELINE_VIEW = 'tl';
 export const DIRECTORY_VIEW = 'dir';
+export const SORT_INDEX = 'ind';
 
 function ResourcesParamControls() {
   const { params } = useContext(MetricsContext);
@@ -32,6 +33,7 @@ function ResourcesParamControls() {
     search.set(ASCENDING, String(params.ascending));
     search.set(TIMELINE_VIEW, String(params.timelineView));
     search.set(DIRECTORY_VIEW, String(params.directoryView));
+    search.set(SORT_INDEX, String(params.sortIndex));
     setSearchParams(search);
   }, [search, setSearchParams, params]);
 

@@ -61,6 +61,7 @@ export enum SortType {
 export interface SortBy {
   metric: SortType,
   ascending: boolean,
+  sort_date: string,
 }
 
 export interface FetchTestMetricsRequest {
