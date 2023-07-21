@@ -104,6 +104,11 @@
 //
 // ### Current experiments
 //
+//   - golang.cache_git_clone: Cache a git clone of each project builds and
+//     builders. New builds fetch required objects into the cache repo, which
+//     may already contain the object or some parents. This requires a named
+//     cache defined on each builder, whose name is provided via
+//     golangbuildpb.Inputs.GitCache.
 //   - golang.cache_tools_root: Cache the cipd tool installation root across
 //     builds and builders. If the tool versions remain the same across builds,
 //     this allows `cipd ensure` to become a no-op on subsequent builds. This
@@ -414,7 +419,7 @@ func getGo(ctx context.Context, spec *buildSpec, requirePrebuilt bool) (err erro
 	// There was no prebuilt toolchain we could grab. Fetch Go and build it.
 
 	// Fetch the main Go repository into goroot.
-	if err := fetchRepo(ctx, spec.goSrc, spec.goroot); err != nil {
+	if err := fetchRepo(ctx, spec.goSrc, spec.goroot, spec.inputs, spec.experiments); err != nil {
 		return err
 	}
 
@@ -520,7 +525,7 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec) error {
 	if err != nil {
 		return err
 	}
-	if err := fetchRepo(ctx, spec.subrepoSrc, repoDir); err != nil {
+	if err := fetchRepo(ctx, spec.subrepoSrc, repoDir, spec.inputs, spec.experiments); err != nil {
 		return err
 	}
 
@@ -809,7 +814,7 @@ func waitOnBuilds(ctx context.Context, spec *buildSpec, stepName string, buildID
 
 // cmdStepRun calls Run on the provided command and wraps it in a build step.
 //
-// It overwrites cmd.Stdout and cmd.Stderr to redirect into step logs.
+// It wraps cmd.Stdout and cmd.Stderr to redirect into step logs.
 // It runs the command with the environment from the context, so change
 // the context's environment to alter the command's environment.
 func cmdStepRun(ctx context.Context, stepName string, cmd *exec.Cmd, infra bool) (err error) {
