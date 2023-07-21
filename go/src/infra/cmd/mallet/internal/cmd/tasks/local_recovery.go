@@ -16,6 +16,7 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
+	lflag "go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	"google.golang.org/grpc/metadata"
@@ -56,7 +57,9 @@ var LocalRecovery = &subcommands.Command{
 
 For now only running in testing mode.`,
 	CommandRun: func() subcommands.CommandRun {
-		c := &localRecoveryRun{}
+		c := &localRecoveryRun{
+			devHostProxyAddresses: make(map[string]string),
+		}
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.CommonFlags.Register(&c.Flags)
 		c.envFlags.Register(&c.Flags)
@@ -66,6 +69,12 @@ For now only running in testing mode.`,
 		c.Flags.BoolVar(&c.csaServer, "csa-server", true, "Use CSA Service or not.")
 
 		c.Flags.StringVar(&c.devJumpHost, "dev-jump-host", "", "Jump host for SSH (Dev-only feature).")
+		c.Flags.Var(lflag.JSONMap(&c.devHostProxyAddresses), "host-proxies",
+			"JSON map of resource names to proxy addresses to use for ssh access (Dev-only feature). "+
+				"For example, if you have an ssh tunnel to host chromeos15-row9-rack2-host1 at localhost:2200, you would set this to '{\"chromeos15-row9-rack2-host1\":\"localhost:2200\"}'. "+
+				"The recovery process will then ssh into localhost:2200 when it otherwise would have tried to ssh into chromeos15-row9-rack2-host1. "+
+				"The tunnel should point to port 22 on the target host so that requests are sent to the host's ssh server. "+
+				"For easy tunneling, use labtunnel to create and maintain your tunnels and check the logs it emits for this JSON map (see go/labtunnel for docs).")
 		c.Flags.StringVar(&c.logRoot, "log-root", "", "Path to the custom json config file.")
 		c.Flags.BoolVar(&c.generateLogFiles, "generate-log-files", false, "Generate log files. Default is no.")
 
@@ -85,17 +94,18 @@ type localRecoveryRun struct {
 	authFlags authcli.Flags
 	envFlags  site.EnvFlags
 
-	devJumpHost      string
-	logRoot          string
-	configFile       string
-	karteServer      string
-	csaServer        bool
-	onlyVerify       bool
-	updateInventory  bool
-	showSteps        bool
-	generateLogFiles bool
-	taskName         string
-	dutSSHKeyPath    string
+	devJumpHost           string
+	devHostProxyAddresses map[string]string
+	logRoot               string
+	configFile            string
+	karteServer           string
+	csaServer             bool
+	onlyVerify            bool
+	updateInventory       bool
+	showSteps             bool
+	generateLogFiles      bool
+	taskName              string
+	dutSSHKeyPath         string
 }
 
 // Run initiates execution of local recovery.
@@ -225,6 +235,7 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 		TaskName:              tn,
 		LogRoot:               logRoot,
 		DevJumpHost:           c.devJumpHost,
+		DevHostProxyAddresses: c.devHostProxyAddresses,
 	}
 	if uErr := in.UseConfigFile(c.configFile); uErr != nil {
 		return errors.Annotate(err, "local recovery").Err()
