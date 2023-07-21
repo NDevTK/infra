@@ -97,7 +97,7 @@ function ResourcesToolbar() {
                 disableFuture
                 onChange={handleDateChange}
                 format="YYYY-MM-DD"
-                defaultValue={dayjs(params.date)}
+                value={dayjs(params.date)}
                 slotProps={{ textField: { variant: 'standard' } }}
                 shouldDisableDate={handleShouldDisableDate}
               />

@@ -20,6 +20,7 @@ type MetricsContextProviderProps = {
   timelineView?: boolean,
   date?: Date,
   sortIndex?: number,
+  period?: Period,
   children: React.ReactNode,
 }
 
@@ -151,13 +152,18 @@ export function convertToSortIndex(datesToShow: string[], date: Date ) {
   });
 }
 
+function snapToPeriod(date: Date) {
+  const ret = new Date(date);
+  ret.setDate(ret.getDate() - ret.getDay());
+  return ret;
+}
 export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
   const { components } = useContext(ComponentContext);
   const [page, setPage] = useState(props.page || 0);
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [filter, setFilter] = useState('');
-  const [date, setDate] = useState(props.date || new Date(Date.now() - 86400000));
-  const [period, setPeriod] = useState(Period.DAY);
+  const [date, setDate] = useState(props.date || snapToPeriod(new Date(Date.now() - 86400000)));
+  const [period, setPeriod] = useState(Period.WEEK);
   const [sort, setSort] = useState(SortType.SORT_TOTAL_RUNTIME);
   const [ascending, setAscending] = useState(false);
   const [sortIndex, setSortIndex] = useState(props.sortIndex || 0);
@@ -285,6 +291,10 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
     updatePeriod: (newPeriod: Period) => {
       params.period = newPeriod;
       params.page = 0;
+      // Snap to valid date for weekly view
+      if (newPeriod === Period.WEEK) {
+        setDate(snapToPeriod(params.date));
+      }
       setPeriod(params.period);
       setPage(params.page);
       load(params);

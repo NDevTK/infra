@@ -105,4 +105,29 @@ describe('MetricsContext params', () => {
     expect(screen.getByText('sortIndex-0')).toBeInTheDocument();
     expect(screen.getByText('timelineView-false')).toBeInTheDocument();
   });
+
+  it('updatePeriod', async () => {
+    await contextRender((value) => (
+      <>
+        <Button data-testid='updatePeriodToWeek' onClick={() => value.api.updatePeriod(Resources.Period.WEEK)}>{'period-' + value.params.period}</Button>
+        <Button data-testid='updatePeriodToDay' onClick={() => value.api.updatePeriod(Resources.Period.DAY)}/>
+        <div>date-{formatDate(value.params.date)}</div>
+        <div>page-{value.params.page}</div>
+      </>
+    ), {props: { date: new Date('2023-07-19'), page: 10 }});
+    expect(screen.getByText('period-1')).toBeInTheDocument();
+    expect(screen.getByText('page-10')).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('updatePeriodToDay'));
+    });
+    expect(screen.getByText('period-0')).toBeInTheDocument();
+    expect(screen.getByText('date-2023-07-19')).toBeInTheDocument();
+    expect(screen.getByText('page-0')).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('updatePeriodToWeek'));
+    });
+    expect(screen.getByText('period-1')).toBeInTheDocument();
+    expect(screen.getByText('date-2023-07-16')).toBeInTheDocument();
+    expect(screen.getByText('page-0')).toBeInTheDocument();
+  });
 });
