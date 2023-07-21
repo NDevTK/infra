@@ -360,6 +360,7 @@ func TestValidateMappingErrors(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
+	textfileContents := "testtext"
 	testfileContents := "print('hello')"
 	templatedStarlarkContent := `testplan.get_suite_name()`
 
@@ -377,7 +378,7 @@ func TestValidateMappingErrors(t *testing.T) {
 				Project: "testrepo",
 				Ref:     "HEAD",
 				Path:    "testfile.txt",
-			}: nil,
+			}: &textfileContents,
 			{
 				Host:    "chromium.googlesource.com",
 				Project: "testrepo",
@@ -573,7 +574,7 @@ func TestValidateMappingErrors(t *testing.T) {
 				},
 			},
 			"./testdata/good_dirmd",
-			"all TestPlanStarlarkFile must specify \".star\" files, got \"testfile.txt\" (and 1 other error)",
+			"all TestPlanStarlarkFile must specify \".star\" files, got \"testfile.txt\"",
 		},
 		{
 			"starlark file missing",
