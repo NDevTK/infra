@@ -228,18 +228,3 @@ func sourceForBranch(ctx context.Context, auth *auth.Authenticator, project, bra
 		},
 	}, nil
 }
-
-func (s *sourceSpec) prebuiltID() (string, error) {
-	if s.project != "go" {
-		return "", fmt.Errorf("prebuilt Go ID only applies if project is 'go'; project is %q", s.project)
-	}
-	var rev string
-	if s.commit != nil {
-		rev = s.commit.Id
-	} else if s.change != nil {
-		rev = fmt.Sprintf("%d-%d", s.change.Change, s.change.Patchset)
-	} else {
-		return "", fmt.Errorf("source for (%s, %s) has no change or commit", s.project, s.branch)
-	}
-	return fmt.Sprintf("%s-%s-%s", hostGOOS, hostGOARCH, rev), nil
-}

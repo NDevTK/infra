@@ -393,7 +393,7 @@ func getGo(ctx context.Context, spec *buildSpec, requirePrebuilt bool) (err erro
 	defer endStep(step, &err)
 
 	// Check to see if we might have a prebuilt Go in CAS.
-	digest, err := checkForPrebuiltGo(ctx, spec.goSrc)
+	digest, err := checkForPrebuiltGo(ctx, spec)
 	if err != nil {
 		return err
 	}
@@ -582,7 +582,7 @@ func ensurePrebuiltGoExists(ctx context.Context, spec *buildSpec, builder string
 	defer endStep(step, &err)
 
 	// Check to see if we might have a prebuilt Go in CAS.
-	digest, err := checkForPrebuiltGo(ctx, spec.goSrc)
+	digest, err := checkForPrebuiltGo(ctx, spec)
 	if err != nil {
 		return err
 	}

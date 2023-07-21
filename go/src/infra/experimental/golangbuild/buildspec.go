@@ -200,12 +200,6 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 	// Use our tools before the system tools. Notably, use raw Git rather than the Chromium wrapper.
 	env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.toolsRoot, "bin"), os.PathListSeparator, env.Get("PATH")))
 
-	if b.targetGOOS() != hostGOOS {
-		env.Set("GOHOSTOS", hostGOOS)
-	}
-	if b.targetGOARCH() != hostGOARCH {
-		env.Set("GOHOSTARCH", hostGOARCH)
-	}
 	if hostGOOS == "windows" {
 		env.Set("GOBUILDEXIT", "1") // On Windows, emit exit codes from .bat scripts. See go.dev/issue/9799.
 		// TODO(heschi): select gcc32 for GOARCH=i386
@@ -313,20 +307,6 @@ func (b *buildSpec) installDatastoreClient(ctx context.Context) (context.Context
 		DS:        client,
 	}
 	return cfg.Use(ctx), nil
-}
-
-func (b *buildSpec) targetGOOS() string {
-	if goos, ok := b.inputs.Env["GOOS"]; ok {
-		return goos
-	}
-	return hostGOOS
-}
-
-func (b *buildSpec) targetGOARCH() string {
-	if goarch, ok := b.inputs.Env["GOARCH"]; ok {
-		return goarch
-	}
-	return hostGOARCH
 }
 
 const (

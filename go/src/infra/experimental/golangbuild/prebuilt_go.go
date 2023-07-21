@@ -6,22 +6,25 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/url"
 	"os"
+	"sort"
 	"strings"
 
 	"go.chromium.org/luci/client/cmd/swarming/swarmingimpl"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/luciexe/build"
+	"golang.org/x/exp/maps"
 )
 
 // prebuiltGo represents a mapping between a Go toolchain version and the prebuilt
 // GOROOT for that toolchain in CAS.
 type prebuiltGo struct {
-	// ID represents the toolchain build target. Specifically, it takes the form: $GOOS-$GOARCH-$commit.
+	// ID represents the toolchain build target. Specifically, it takes the form: $GOOS-$GOARCH-$commit-$envhash.
 	ID string `gae:"$id"`
 
 	// CASDigest is the digest of the prebuilt toolchain in CAS.
@@ -61,11 +64,11 @@ func casInstanceFromEnv() (string, error) {
 	return inst, nil
 }
 
-func checkForPrebuiltGo(ctx context.Context, src *sourceSpec) (digest string, err error) {
+func checkForPrebuiltGo(ctx context.Context, spec *buildSpec) (digest string, err error) {
 	step, ctx := build.StartStep(ctx, "check for prebuilt go")
 	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
-	id, err := src.prebuiltID()
+	id, err := prebuiltID(spec)
 	if err != nil {
 		return "", err
 	}
@@ -83,6 +86,38 @@ func checkForPrebuiltGo(ctx context.Context, src *sourceSpec) (digest string, er
 		return "", err
 	}
 	return tc.CASDigest, nil
+}
+
+var harmlessBuildIDEnvVars = map[string]bool{
+	"GO_TEST_TIMEOUT_SCALE": true,
+}
+
+func prebuiltID(spec *buildSpec) (string, error) {
+	goSrc := spec.goSrc
+	if goSrc.project != "go" {
+		return "", fmt.Errorf("prebuilt Go ID only applies if project is 'go'; project is %q", goSrc.project)
+	}
+	var rev string
+	if goSrc.commit != nil {
+		rev = goSrc.commit.Id
+	} else if goSrc.change != nil {
+		rev = fmt.Sprintf("%d-%d", goSrc.change.Change, goSrc.change.Patchset)
+	} else {
+		return "", fmt.Errorf("source for (%s, %s) has no change or commit", goSrc.project, goSrc.branch)
+	}
+
+	details := sha256.New()
+	keys := maps.Keys(spec.inputs.Env)
+	sort.Strings(keys)
+	for _, k := range keys {
+		if _, ok := harmlessBuildIDEnvVars[k]; ok {
+			continue
+		}
+		fmt.Fprintf(details, "%v=%v", k, spec.inputs.Env[k])
+	}
+	fmt.Fprintf(details, "xcode=%v", spec.inputs.XcodeVersion)
+
+	return fmt.Sprintf("%s-%s-%s-%x", hostGOOS, hostGOARCH, rev, details.Sum(nil)), nil
 }
 
 func fetchGoFromCAS(ctx context.Context, spec *buildSpec, digest, goroot string) (ok bool, err error) {
@@ -171,7 +206,7 @@ func uploadGoToCAS(ctx context.Context, spec *buildSpec, src *sourceSpec, goroot
 	}
 
 	// Get the prebuilt ID.
-	id, err := src.prebuiltID()
+	id, err := prebuiltID(spec)
 	if err != nil {
 		return err
 	}
