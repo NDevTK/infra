@@ -34,6 +34,7 @@ export enum MetricType {
 export interface TestVariantData {
   suite: string,
   builder: string,
+  project: string,
   bucket: string,
   metrics: MetricsDateMap,
 }

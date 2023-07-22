@@ -11,7 +11,7 @@ USING (
     component,
     -- variant level info
     variant_hash,
-    `project`,
+    project,
     bucket,
     target_platform,
     builder,
@@ -30,7 +30,7 @@ ON
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
   AND (T.component = S.component OR (T.component IS NULL AND S.component IS NULL))
   AND (T.variant_hash = S.variant_hash OR (T.variant_hash IS NULL AND S.variant_hash IS NULL))
-  AND (T.`project` = S.`project` OR (T.`project` IS NULL AND S.`project` IS NULL))
+  AND (T.project = S.project OR (T.project IS NULL AND S.project IS NULL))
   AND (T.bucket = S.bucket OR (T.bucket IS NULL AND S.bucket IS NULL))
   AND (T.target_platform = S.target_platform OR (T.target_platform IS NULL AND S.target_platform IS NULL))
   AND (T.builder = S.builder OR (T.builder IS NULL AND S.builder IS NULL))
@@ -52,6 +52,7 @@ USING (
     component,
     -- variant level info
     builder,
+    project,
     bucket,
     test_suite,
     -- Total runtime in seconds divided by the seconds in the time window
@@ -68,6 +69,7 @@ ON
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
   AND (T.component = S.component OR (T.component IS NULL AND S.component IS NULL))
   AND (T.builder = S.builder OR (T.builder IS NULL AND S.builder IS NULL))
+  AND (T.project = S.project OR (T.project IS NULL AND S.project IS NULL))
   AND (T.bucket = S.bucket OR (T.bucket IS NULL AND S.bucket IS NULL))
   AND (T.test_suite = S.test_suite OR (T.test_suite IS NULL AND S.test_suite IS NULL))
 WHEN MATCHED THEN
@@ -87,6 +89,7 @@ USING (
     component,
     -- variant level info
     builder,
+    project,
     bucket,
     test_suite,
     -- Total runtime in seconds divided by the seconds in the time window
@@ -105,6 +108,7 @@ ON
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
   AND (T.component = S.component OR (T.component IS NULL AND S.component IS NULL))
   AND (T.builder = S.builder OR (T.builder IS NULL AND S.builder IS NULL))
+  AND (T.project = S.project OR (T.project IS NULL AND S.project IS NULL))
   AND (T.bucket = S.bucket OR (T.bucket IS NULL AND S.bucket IS NULL))
   AND (T.test_suite = S.test_suite OR (T.test_suite IS NULL AND S.test_suite IS NULL))
 WHEN MATCHED THEN

@@ -64,6 +64,7 @@ SELECT
 	SUM(num_runs) AS num_runs,
 	ARRAY_AGG(STRUCT(
 		builder AS builder,
+		project AS project,
 		bucket AS bucket,
 		test_suite AS test_suite,
 		num_runs
@@ -112,6 +113,7 @@ SELECT
 	SUM(num_runs) AS num_runs,
 	ARRAY_AGG(STRUCT(
 		builder AS builder,
+		project AS project,
 		bucket AS bucket,
 		test_suite AS test_suite,
 		num_runs
@@ -122,8 +124,8 @@ FROM
 WHERE
 	DATE(date) IN UNNEST(@dates)
 	AND component IN UNNEST(@components)
-	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter0)
-	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter1)
+	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
+	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter1)
 GROUP BY date, test_id
 ORDER BY test_id ASC
 LIMIT @page_size OFFSET @page_offset`)
@@ -163,6 +165,7 @@ SELECT
 	SUM(num_runs) AS num_runs,
 	ARRAY_AGG(STRUCT(
 		builder AS builder,
+		project AS project,
 		bucket AS bucket,
 		test_suite AS test_suite,
 		num_runs
@@ -174,8 +177,8 @@ WHERE
 	DATE(date) IN UNNEST(@dates)
 	AND component IN UNNEST(@components)
 	AND file_name IN UNNEST(@file_names)
-	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter0)
-	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter1)
+	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
+	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter1)
 GROUP BY date, test_id
 ORDER BY test_id ASC
 LIMIT @page_size OFFSET @page_offset`)
@@ -222,6 +225,7 @@ WITH tests AS (
 		ARRAY_AGG(STRUCT(
 			builder AS builder,
 			bucket AS bucket,
+			project AS project,
 			test_suite AS test_suite,
 			num_runs
 			)
@@ -231,8 +235,8 @@ WITH tests AS (
 	WHERE
 		DATE(date) IN UNNEST(@dates)
 		AND component IN UNNEST(@components)
-	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter0)
-	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter1)
+	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
+	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter1)
 	GROUP BY m.date, m.test_id
 ), sorted_day AS (
 	SELECT
@@ -284,6 +288,7 @@ WITH tests AS (
 		ARRAY_AGG(STRUCT(
 			builder AS builder,
 			bucket AS bucket,
+			project AS project,
 			test_suite AS test_suite,
 			num_runs
 			)
@@ -293,8 +298,8 @@ WITH tests AS (
 	WHERE
 		DATE(date) IN UNNEST(@dates)
 		AND component IN UNNEST(@components)
-	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter0)
-	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter1)
+	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
+	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter1)
 	GROUP BY m.date, m.test_id
 ), sorted_day AS (
 	SELECT
@@ -602,7 +607,7 @@ test_summaries AS (
 		AND file_name IS NOT NULL
 		AND component IN UNNEST(@components)
 		-- Apply the requested filter
-		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter0)
+		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
 	GROUP BY file_name, date, test_id
 )
 SELECT
@@ -669,7 +674,7 @@ test_summaries AS (
 		AND file_name IS NOT NULL
 		AND component IN UNNEST(@components)
 		-- Apply the requested filter
-		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter0)
+		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
 	GROUP BY file_name, date, test_id
 ), node_summaries AS (
 	SELECT

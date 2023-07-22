@@ -12,6 +12,7 @@ USING (
 
     -- variant level info
     t.builder,
+    t.project,
     t.bucket,
     t.test_suite,
 
@@ -25,7 +26,7 @@ USING (
     SUM(p50_runtime * num_runs) / SUM(num_runs) p50_runtime,
     SUM(p90_runtime * num_runs) / SUM(num_runs) p90_runtime,
   FROM {project}.{dataset}.raw_metrics AS t
-  GROUP BY `date`, test_id, repo, component, builder, bucket, test_suite
+  GROUP BY `date`, test_id, repo, component, builder, project, bucket, test_suite
   ) AS S
 ON
   T.date = S.date
@@ -33,6 +34,7 @@ ON
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
   AND (T.component = S.component OR (T.component IS NULL AND S.component IS NULL))
   AND (T.builder = S.builder OR (T.builder IS NULL AND S.builder IS NULL))
+  AND (T.project = S.project OR (T.project IS NULL AND S.project IS NULL))
   AND (T.bucket = S.bucket OR (T.bucket IS NULL AND S.bucket IS NULL))
   AND (T.test_suite = S.test_suite OR (T.test_suite IS NULL AND S.test_suite IS NULL))
 WHEN MATCHED THEN
@@ -46,5 +48,5 @@ WHEN MATCHED THEN
     avg_runtime = S.avg_runtime,
     total_runtime = S.total_runtime
 WHEN NOT MATCHED THEN
-  INSERT (`date`, test_id, test_name, file_name, repo, component, builder, bucket, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
-  VALUES (`date`, test_id, test_name, file_name, repo, component, builder, bucket, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
+  INSERT (`date`, test_id, test_name, file_name, repo, component, builder, project, bucket, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
+  VALUES (`date`, test_id, test_name, file_name, repo, component, builder, project, bucket, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)

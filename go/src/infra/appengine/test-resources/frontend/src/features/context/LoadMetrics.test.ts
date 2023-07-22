@@ -73,6 +73,7 @@ describe('Merge TestMetrics', () => {
         {
           suite: 'suite',
           builder: 'builder',
+          project: 'project',
           bucket: 'bucket',
           metrics: metricsMap({
             '2012-01-02': [
