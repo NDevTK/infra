@@ -429,7 +429,7 @@ func TestCreateUnfilteredDirectoryQuery(t *testing.T) {
 					Ascending: true,
 				},
 			}
-			query, err := client.createUnfilteredDirectoryQuery(request)
+			query, err := client.createDirectoryQuery(request)
 
 			So(err, ShouldBeNil)
 			So(query, ShouldNotBeNil)
@@ -471,7 +471,7 @@ ORDER BY node_name ASC`)
 					SortDate:  "2023-07-13",
 				},
 			}
-			query, err := client.createUnfilteredDirectoryQuery(request)
+			query, err := client.createDirectoryQuery(request)
 
 			So(err, ShouldBeNil)
 			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
@@ -517,7 +517,7 @@ ORDER BY s.rank DESC`)
 					"2023-07-12",
 				},
 			}
-			query, err := client.createUnfilteredDirectoryQuery(request)
+			query, err := client.createDirectoryQuery(request)
 
 			So(err, ShouldBeNil)
 			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
@@ -540,7 +540,7 @@ ORDER BY s.rank DESC`)
 					"2023-07-13",
 				},
 			}
-			query, err := client.createUnfilteredDirectoryQuery(request)
+			query, err := client.createDirectoryQuery(request)
 
 			So(err, ShouldBeNil)
 			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
@@ -589,7 +589,7 @@ func TestCreateFilteredDirectoryQuery(t *testing.T) {
 				},
 				Filter: "linux-rel",
 			}
-			query, err := client.createFilteredDirectoryQuery(request)
+			query, err := client.createDirectoryQuery(request)
 
 			So(err, ShouldBeNil)
 			So(query, ShouldNotBeNil)
@@ -652,7 +652,7 @@ ORDER BY node_name ASC`)
 				},
 				Filter: "linux-rel",
 			}
-			query, err := client.createFilteredDirectoryQuery(request)
+			query, err := client.createDirectoryQuery(request)
 
 			So(err, ShouldBeNil)
 			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
@@ -716,7 +716,7 @@ ORDER BY rank DESC`)
 				},
 				ParentIds: []string{"/"},
 			}
-			query, err := client.createFilteredDirectoryQuery(request)
+			query, err := client.createDirectoryQuery(request)
 
 			So(err, ShouldBeNil)
 			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
@@ -737,7 +737,7 @@ ORDER BY rank DESC`)
 					"2023-07-13",
 				},
 			}
-			query, err := client.createFilteredDirectoryQuery(request)
+			query, err := client.createDirectoryQuery(request)
 
 			So(err, ShouldBeNil)
 			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
@@ -763,7 +763,7 @@ ORDER BY rank DESC`)
 				ParentIds: []string{"/"},
 				Filter:    "linux-rel blink_python_tests",
 			}
-			query, err := client.createFilteredDirectoryQuery(request)
+			query, err := client.createDirectoryQuery(request)
 
 			So(err, ShouldBeNil)
 			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{

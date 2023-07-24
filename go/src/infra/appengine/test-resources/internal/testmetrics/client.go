@@ -86,7 +86,7 @@ SELECT
 	ARRAY_REVERSE(SPLIT(node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
 	ANY_VALUE(is_file) AS is_file,
 	{metricAggregations},
-FROM {table}
+FROM {fileTable}
 WHERE
 	STARTS_WITH(node_name, @parent || "/") AND
 	-- The child folders and files can't have a / after the parent's name
@@ -104,7 +104,7 @@ WITH nodes AS(
 		ARRAY_REVERSE(SPLIT(node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
 		ANY_VALUE(is_file) AS is_file,
 		{metricAggregations},
-	FROM {table}
+	FROM {fileTable}
 	WHERE
 		STARTS_WITH(node_name, @parent || "/")
 		-- The child folders and files can't have a / after the parent's name
@@ -158,6 +158,7 @@ WHERE
 	AND component IN UNNEST(@components)
 GROUP BY date, node_name
 ORDER BY {sortMetric} {sortDirection}`
+
 	filteredDirectoryMultiDayQuery string = `
 WITH
 test_summaries AS (
@@ -533,7 +534,7 @@ func (*Client) readFetchTestMetricsResponse(it *bigquery.RowIterator, req *api.F
 	return response, nil
 }
 
-func (c *Client) createFilteredDirectoryQuery(req *api.FetchDirectoryMetricsRequest) (*bigquery.Query, error) {
+func (c *Client) createDirectoryQuery(req *api.FetchDirectoryMetricsRequest) (*bigquery.Query, error) {
 	dates, err := bqToDateArray(req.GetDates())
 	if err != nil {
 		return nil, err
@@ -606,10 +607,18 @@ func (c *Client) createFilteredDirectoryQuery(req *api.FetchDirectoryMetricsRequ
 	r := strings.NewReplacer(replacements...)
 
 	var query string
-	if len(req.Dates) == 1 {
-		query = filteredDirectorySingleDayQuery
+	if req.Filter == "" {
+		if len(req.Dates) == 1 {
+			query = unfilteredDirectorySingleDayQuery
+		} else {
+			query = unfilteredDirectoryMultiDayQuery
+		}
 	} else {
-		query = filteredDirectoryMultiDayQuery
+		if len(req.Dates) == 1 {
+			query = filteredDirectorySingleDayQuery
+		} else {
+			query = filteredDirectoryMultiDayQuery
+		}
 	}
 
 	q := c.BqClient.Query(r.Replace(query))
@@ -621,70 +630,6 @@ func (c *Client) createFilteredDirectoryQuery(req *api.FetchDirectoryMetricsRequ
 		{Name: "sort_date", Value: sortDate},
 	}
 	q.Parameters = append(q.Parameters, filterParameters...)
-	return q, nil
-}
-
-func (c *Client) createUnfilteredDirectoryQuery(req *api.FetchDirectoryMetricsRequest) (*bigquery.Query, error) {
-	dates, err := bqToDateArray(req.GetDates())
-	if err != nil {
-		return nil, err
-	}
-
-	// Terms for converting the rolling up the variants
-	metricAggregations := make([]string, len(req.Metrics))
-	for i := 0; i < len(req.Metrics); i++ {
-		name := MetricSqlName(req.Metrics[i])
-		if _, ok := weightedAverageMetrics[req.Metrics[i]]; ok {
-			metricAggregations[i] = `SUM(` + name + ` * num_runs) / SUM(num_runs) AS ` + name
-		} else {
-			metricAggregations[i] = `SUM(` + name + `) AS ` + name
-		}
-	}
-
-	table, ok := periodToFileMetricTable[req.Period]
-	if !ok {
-		return nil, errors.Reason("Received unsupported period request: '%s'", req.Period).Err()
-	}
-
-	sortMetric := "node_name"
-	// A default value of 0 maps to the name which for file based fetches is
-	// node_name. Other values map to metrics in both file and directory tables
-	if req.Sort != nil && req.Sort.Metric != api.SortType_SORT_NAME {
-		sortMetric = sortTypeSqlLookup[req.Sort.Metric]
-	}
-	sortDirection := "ASC"
-	if req.Sort != nil && !req.Sort.Ascending {
-		sortDirection = "DESC"
-	}
-	sortDate := req.Dates[0]
-	if req.Sort != nil && req.Sort.SortDate != "" {
-		sortDate = req.Sort.SortDate
-	}
-
-	replacements := []string{
-		"{metricAggregations}", strings.Join(metricAggregations, ",\n\t"),
-		"{table}", c.ProjectId + `.` + c.DataSet + `.` + table,
-		"{sortMetric}", sortMetric,
-		"{sortDirection}", sortDirection,
-	}
-	r := strings.NewReplacer(replacements...)
-
-	var query string
-	if len(req.Dates) == 1 {
-		query = unfilteredDirectorySingleDayQuery
-	} else {
-		query = unfilteredDirectoryMultiDayQuery
-	}
-
-	q := c.BqClient.Query(r.Replace(query))
-
-	q.Parameters = []bigquery.QueryParameter{
-		{Name: "dates", Value: dates},
-		{Name: "components", Value: req.Components},
-		{Name: "parent", Value: req.ParentIds[0]},
-		{Name: "sort_date", Value: sortDate},
-	}
-
 	return q, nil
 }
 
@@ -740,13 +685,7 @@ func (*Client) readFetchDirectoryMetricsResponse(it *bigquery.RowIterator, req *
 // directory node. A directory node represents a directory or file and the
 // metrics are the combined metrics of the tests in these locations
 func (c *Client) FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error) {
-	var q *bigquery.Query
-	var err error
-	if req.Filter == "" {
-		q, err = c.createUnfilteredDirectoryQuery(req)
-	} else {
-		q, err = c.createFilteredDirectoryQuery(req)
-	}
+	q, err := c.createDirectoryQuery(req)
 	if err != nil {
 		return nil, err
 	}
