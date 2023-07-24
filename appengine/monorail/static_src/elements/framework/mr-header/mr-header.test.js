@@ -166,7 +166,7 @@ describe('mr-header', () => {
     element.userProjects = {
       ownerOf: ['chromium'],
       memberOf: ['v8'],
-      contributorTo: ['skia'],
+      contributorTo: ['mockskia'],
       starredProjects: ['mockgerrit'],
     };
     element.userDisplayName = 'test@example.com';
@@ -178,8 +178,8 @@ describe('mr-header', () => {
     // My Projects
     assert.equal(items[1].text, 'chromium');
     assert.equal(items[1].url, '/p/chromium/issues/list');
-    assert.equal(items[2].text, 'skia');
-    assert.equal(items[2].url, '/p/skia/issues/list');
+    assert.equal(items[2].text, 'mockskia');
+    assert.equal(items[2].url, '/p/mockskia/issues/list');
     assert.equal(items[3].text, 'v8');
     assert.equal(items[3].url, '/p/v8/issues/list');
 

@@ -14,6 +14,7 @@ PROJECT_REDIRECT_MAP = {
     'pigweed': 'https://issues.pigweed.dev',
     'git': 'https://git.issues.gerritcodereview.com',
     'gerrit': 'https://issues.gerritcodereview.com',
+    'skia': 'http://issues.skia.org/',
 }
 
 MAX_MONORAIL_ISSUE_ID = 10000000
@@ -67,7 +68,7 @@ def GetSearchQuery(project_name, params):
   search_conds = []
 
   # can param is the default search query used in monorail.
-  # Each project can customize the canned queries. 
+  # Each project can customize the canned queries.
   # (eg.can=41013401 in Monorail is the Triage Queue.)
   # For redirect we will just support the build in can query as the first step.
   # TODO(b/283983843): support customized can query as needed.
