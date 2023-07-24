@@ -1143,24 +1143,35 @@ func removeServoEntryFromLabstation(ctx context.Context, servo *chromeosLab.Serv
 	return nil
 }
 
-// validateCreateMachineLSE validates if a machinelse can be created in the datastore.
-func validateCreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *ufsAPI.NetworkOption, machine *ufspb.Machine) error {
-	// Validate browser DUTs
+// validateDUTsForBrowserTest validates DUTs used for browser tests
+func validateDUTsForBrowserTest(ctx context.Context, machinelse *ufspb.MachineLSE, machine *ufspb.Machine) error {
 	if util.IsChromiumLegacyHost(machinelse.GetName()) || util.IsChromeLegacyHost(machinelse.GetName()) {
 		pools := machinelse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools()
+		if util.IsChromePerfHost(machinelse.GetName()) {
+			if !util.IsInChromePerfPool(pools) {
+				return status.Errorf(codes.FailedPrecondition, "chrome perf DUTs has to have prefix 'chrome-perf-' and in pool 'chrome.tests.pinpoint' or 'chrome.tests.perf'")
+			}
+			return nil
+		}
 		if util.IsInChromiumPool(pools) != util.IsChromiumLegacyHost(machinelse.GetName()) {
 			return status.Errorf(codes.FailedPrecondition, "chromium DUTs has to have prefix of 'chromium-' and in pool 'chromium'\n")
-		}
-		if util.IsChromePerfHost(machinelse.GetName()) != util.IsInChromePerfPool(pools) {
-			return status.Errorf(codes.FailedPrecondition, "chrome perf DUTs has to have prefix 'chrome-perf-' and in pool 'chrome.tests.pinpoint' or 'chrome.tests.perf'")
-		}
-		if util.IsInChromePool(pools) != util.IsChromeLegacyHost(machinelse.GetName()) {
-			return status.Errorf(codes.FailedPrecondition, "chrome DUTs has to have prefix of 'chrome-' and in pool 'chrome'\n")
 		}
 		if util.IsInChromiumPool(pools) && machine.GetLocation().GetZone() != ufspb.Zone_ZONE_SFO36_OS_CHROMIUM {
 			return status.Errorf(codes.FailedPrecondition, "DUTs in pool:%s has to be in zone %s, please modify asset %s's zone.\n",
 				util.ChromiumPool, util.RemoveZonePrefix(ufspb.Zone_ZONE_SFO36_OS_CHROMIUM.String()), machine.GetName())
 		}
+		if util.IsInChromePool(pools) != util.IsChromeLegacyHost(machinelse.GetName()) {
+			return status.Errorf(codes.FailedPrecondition, "chrome DUTs has to have prefix of 'chrome-' and in pool 'chrome'\n")
+		}
+	}
+	return nil
+}
+
+// validateCreateMachineLSE validates if a machinelse can be created in the datastore.
+func validateCreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *ufsAPI.NetworkOption, machine *ufspb.Machine) error {
+	// Validate browser DUTs
+	if err := validateDUTsForBrowserTest(ctx, machinelse, machine); err != nil {
+		return err
 	}
 
 	// Check permission

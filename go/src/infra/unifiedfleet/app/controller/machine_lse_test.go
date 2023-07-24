@@ -125,6 +125,7 @@ func mockDevboardMachineLSE(name string) *ufspb.MachineLSE {
 func TestCreateMachineLSE(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
+	ctx = external.WithTestingContext(ctx)
 	Convey("CreateMachineLSE", t, func() {
 		Convey("Create new machineLSE with already existing machinelse", func() {
 			machine1 := &ufspb.Machine{
@@ -231,6 +232,26 @@ func TestCreateMachineLSE(t *testing.T) {
 			So(resp, ShouldBeNil)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "chrome perf DUTs has to have prefix")
+		})
+
+		Convey("Create new machineLSE ChromePerf DUT with matched pools", func() {
+			machine1 := &ufspb.Machine{
+				Name: "chrome-perf-asset4",
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{
+						BuildTarget: "test",
+						Model:       "test",
+					},
+				},
+			}
+			_, merr := registration.CreateMachine(ctx, machine1)
+			So(merr, ShouldBeNil)
+
+			dut := mockDutMachineLSE("chrome-perf-dut4")
+			dut.Machines = []string{"chrome-perf-asset4"}
+			dut.GetChromeosMachineLse().GetDeviceLse().GetDut().Pools = []string{"chrome.tests.perf"}
+			_, err := CreateMachineLSE(ctx, dut, nil)
+			So(err, ShouldBeNil)
 		})
 
 		Convey("Create new machineLSE with existing machines, specify ip with wrong vlan name", func() {
