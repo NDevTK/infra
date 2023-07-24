@@ -24,8 +24,8 @@ require (
 	github.com/VividCortex/godaemon v1.0.0
 	github.com/aclements/go-moremath v0.0.0-20210112150236-f10218a38794
 	github.com/andygrunwald/go-gerrit v0.0.0-20210726065827-cc4e14e40b5b
-	github.com/bazelbuild/remote-apis v0.0.0-20230411132548-35aee1c4a425
-	github.com/bazelbuild/remote-apis-sdks v0.0.0-20230511173731-022d76cc3978
+	github.com/bazelbuild/remote-apis v0.0.0-20230719205137-cb8058798964
+	github.com/bazelbuild/remote-apis-sdks v0.0.0-20230720185216-60ab576f8d4a
 	github.com/bmatcuk/doublestar v1.3.4
 	github.com/containerd/cgroups v1.0.4
 	github.com/danjacques/gofslock v0.0.0-20230227034627-eebdc482a3f5
@@ -35,7 +35,7 @@ require (
 	github.com/gliderlabs/ssh v0.3.3
 	github.com/gofrs/flock v0.8.1
 	github.com/gogo/protobuf v1.3.2
-	github.com/golang/glog v1.1.0
+	github.com/golang/glog v1.1.1
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.3
 	github.com/google/cel-go v0.7.3
@@ -45,7 +45,7 @@ require (
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/google/subcommands v1.2.0
 	github.com/google/uuid v1.3.0
-	github.com/googleapis/gax-go/v2 v2.11.0
+	github.com/googleapis/gax-go/v2 v2.12.0
 	github.com/googleapis/google-cloud-go-testing v0.0.0-20210719221736-1c9a4c676720
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/go-version v1.2.0
@@ -82,7 +82,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.16.0
 	go.opentelemetry.io/otel/trace v1.16.0
 	go.skia.org/infra v0.0.0-20230524042348-e1356ea7576d
-	go.starlark.net v0.0.0-20230612165344-9532f5667272
+	go.starlark.net v0.0.0-20230721164632-08598ae210f9
 	golang.org/x/build v0.0.0-20210913192547-14e3e09d6b10
 	golang.org/x/crypto v0.11.0
 	golang.org/x/exp v0.0.0-20221031165847-c99f073a8326
@@ -97,13 +97,13 @@ require (
 	golang.org/x/tools v0.11.0
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 	gonum.org/v1/gonum v0.12.0
-	google.golang.org/api v0.130.0
+	google.golang.org/api v0.133.0
 	google.golang.org/appengine v1.6.8-0.20221117013220-504804fb50de
 	google.golang.org/appengine/v2 v2.0.4
-	google.golang.org/genproto v0.0.0-20230710151506-e685fd7b542b
-	google.golang.org/genproto/googleapis/api v0.0.0-20230706204954-ccb25ca9f130
-	google.golang.org/genproto/googleapis/bytestream v0.0.0-20230629202037-9506855d4529
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20230706204954-ccb25ca9f130
+	google.golang.org/genproto v0.0.0-20230724170836-66ad5b6ff146
+	google.golang.org/genproto/googleapis/api v0.0.0-20230724170836-66ad5b6ff146
+	google.golang.org/genproto/googleapis/bytestream v0.0.0-20230724170836-66ad5b6ff146
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230724170836-66ad5b6ff146
 	google.golang.org/grpc v1.56.2
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.3.0
 	google.golang.org/protobuf v1.31.0
