@@ -348,11 +348,11 @@ SELECT
 	ARRAY_REVERSE(SPLIT(node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
 	ANY_VALUE(is_file) AS is_file,
 	SUM(num_runs) AS num_runs,
-FROM chrome-test-health-project.normal-dataset.daily_file_metrics
+FROM chrome-test-health-project.normal-dataset.daily_file_metrics, UNNEST(@parents) AS parent
 WHERE
-	STARTS_WITH(node_name, @parent || "/") AND
+	STARTS_WITH(node_name, parent || "/")
 	-- The child folders and files can't have a / after the parent's name
-	REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(@parent) + 2), "^[^/]*$")
+	AND REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(parent) + 2), "^[^/]*$")
 	AND DATE(date) IN UNNEST(@dates)
 	AND component IN UNNEST(@components)
 GROUP BY date, node_name
@@ -379,11 +379,11 @@ WITH nodes AS(
 		ARRAY_REVERSE(SPLIT(node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
 		ANY_VALUE(is_file) AS is_file,
 		SUM(num_runs) AS num_runs,
-	FROM chrome-test-health-project.normal-dataset.daily_file_metrics
+	FROM chrome-test-health-project.normal-dataset.daily_file_metrics, UNNEST(@parents) AS parent
 	WHERE
-		STARTS_WITH(node_name, @parent || "/")
+		STARTS_WITH(node_name, parent || "/")
 		-- The child folders and files can't have a / after the parent's name
-		AND REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(@parent) + 2), "^[^/]*$")
+		AND REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(parent) + 2), "^[^/]*$")
 		AND DATE(date) IN UNNEST(@dates)
 		AND component IN UNNEST(@components)
 	GROUP BY date, node_name
@@ -404,14 +404,12 @@ ORDER BY s.rank DESC`)
 
 			So(err, ShouldBeNil)
 			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
-				Name: "components",
-				Value: []string{
-					"Blink",
-				},
+				Name:  "components",
+				Value: []string{"Blink"},
 			})
 			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
-				Name:  "parent",
-				Value: "/",
+				Name:  "parents",
+				Value: []string{"/"},
 			})
 		})
 
@@ -498,14 +496,14 @@ SELECT
 	ANY_VALUE(is_file) AS is_file,
 	-- metrics
 	SUM(t.num_runs) AS num_runs,
-FROM chrome-test-health-project.normal-dataset.daily_file_metrics AS f
+FROM chrome-test-health-project.normal-dataset.daily_file_metrics AS f, UNNEST(@parents) AS parent
 JOIN test_summaries t ON
 	f.date = t.date
 	AND STARTS_WITH(t.node_name, f.node_name)
 WHERE
-	STARTS_WITH(f.node_name, @parent || "/")
+	STARTS_WITH(f.node_name, parent || "/")
 	-- The child folders and files can't have a / after the parent's name
-	AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(@parent) + 2), "^[^/]*$")
+	AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(parent) + 2), "^[^/]*$")
 	AND DATE(f.date) IN UNNEST(@dates)
 	AND component IN UNNEST(@components)
 GROUP BY date, node_name
@@ -552,14 +550,14 @@ test_summaries AS (
 		ANY_VALUE(is_file) AS is_file,
 		-- metrics
 		SUM(t.num_runs) AS num_runs,
-	FROM chrome-test-health-project.normal-dataset.daily_file_metrics AS f
+	FROM chrome-test-health-project.normal-dataset.daily_file_metrics AS f, UNNEST(@parents) AS parent
 	JOIN test_summaries t ON
 		f.date = t.date
 		AND STARTS_WITH(t.node_name, f.node_name)
 	WHERE
-		STARTS_WITH(f.node_name, @parent || "/")
+		STARTS_WITH(f.node_name, parent || "/")
 		-- The child folders and files can't have a / after the parent's name
-		AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(@parent) + 2), "^[^/]*$")
+		AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(parent) + 2), "^[^/]*$")
 		AND DATE(f.date) IN UNNEST(@dates)
 		AND component IN UNNEST(@components)
 	GROUP BY date, node_name
@@ -585,8 +583,8 @@ ORDER BY rank DESC`)
 				Value: []string{"Blink"},
 			})
 			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
-				Name:  "parent",
-				Value: "/",
+				Name:  "parents",
+				Value: []string{"/"},
 			})
 		})
 
