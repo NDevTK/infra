@@ -67,19 +67,23 @@ enum MetricType {
 // Sort types includes all metric types as well as the name (ie test name or
 // directory name to sort)
 enum SortType {
-  SORT_NAME = 0;
-  SORT_NUM_RUNS = 1;
-  SORT_NUM_FAILURES = 2;
-  SORT_AVG_RUNTIME = 3;
+  UNKNOWN_SORTTYPE = 0;
+  SORT_NAME = 1;
+  SORT_NUM_RUNS = 2;
+  SORT_NUM_FAILURES = 3;
   SORT_TOTAL_RUNTIME = 4;
   SORT_AVG_CORES = 5;
+  SORT_AVG_RUNTIME = 6;
+  SORT_P50_RUNTIME = 7;
+  SORT_P90_RUNTIME = 8;
  }
 
 // Enumeration to specify the time period to fetch
 enum Period {
-  DAY = 0;
-  WEEK = 1;
-  MONTH = 2;
+  UNKNOWN_PERIOD = 0;
+  DAY = 1;
+  WEEK = 2;
+  MONTH = 3;
 }
 
 message SortBy {
@@ -196,8 +200,9 @@ message FetchDirectoryMetricsResponse {
 }
 
 enum DirectoryNodeType {
-  DIRECTORY = 0;
-  FILENAME = 1;
+  UNKNOWN_NODE_TYPE = 0;
+  DIRECTORY = 1;
+  FILENAME = 2;
 }
 
 message DirectoryNode {

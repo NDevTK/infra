@@ -32,25 +32,25 @@ func TestCreateFetchMetricsQuery(t *testing.T) {
 			ProjectId: "chrome-test-health-project",
 			DataSet:   "normal-dataset",
 		}
+		request := &api.FetchTestMetricsRequest{
+			Components: []string{
+				"Blink",
+			},
+			Dates: []string{
+				"2023-07-12",
+			},
+			Period: api.Period_DAY,
+			Metrics: []api.MetricType{
+				api.MetricType_NUM_RUNS,
+			},
+			PageOffset: 0,
+			PageSize:   10,
+			Sort: &api.SortBy{
+				Metric:    api.SortType_SORT_NAME,
+				Ascending: true,
+			},
+		}
 		Convey("Valid unfiltered request", func() {
-			request := &api.FetchTestMetricsRequest{
-				Components: []string{
-					"Blink",
-				},
-				Dates: []string{
-					"2023-07-12",
-				},
-				Period: api.Period_DAY,
-				Metrics: []api.MetricType{
-					api.MetricType_NUM_RUNS,
-				},
-				PageOffset: 0,
-				PageSize:   10,
-				Sort: &api.SortBy{
-					Metric:    api.SortType_SORT_NAME,
-					Ascending: true,
-				},
-			}
 			query, err := client.createFetchMetricsQuery(request)
 
 			So(err, ShouldBeNil)
@@ -81,25 +81,7 @@ LIMIT @page_size OFFSET @page_offset`)
 		})
 
 		Convey("Valid filtered request", func() {
-			request := &api.FetchTestMetricsRequest{
-				Components: []string{
-					"Blink",
-				},
-				Dates: []string{
-					"2023-07-12",
-				},
-				Period: api.Period_DAY,
-				Metrics: []api.MetricType{
-					api.MetricType_NUM_RUNS,
-				},
-				PageOffset: 0,
-				PageSize:   10,
-				Sort: &api.SortBy{
-					Metric:    api.SortType_SORT_NAME,
-					Ascending: true,
-				},
-				Filter: "linux-rel blink_python_tests",
-			}
+			request.Filter = "linux-rel blink_python_tests"
 			query, err := client.createFetchMetricsQuery(request)
 
 			So(err, ShouldBeNil)
@@ -132,26 +114,8 @@ LIMIT @page_size OFFSET @page_offset`)
 		})
 
 		Convey("Valid filename filtered request", func() {
-			request := &api.FetchTestMetricsRequest{
-				Components: []string{
-					"Blink",
-				},
-				Dates: []string{
-					"2023-07-12",
-				},
-				Period: api.Period_DAY,
-				Metrics: []api.MetricType{
-					api.MetricType_NUM_RUNS,
-				},
-				PageOffset: 0,
-				PageSize:   10,
-				Sort: &api.SortBy{
-					Metric:    api.SortType_SORT_NAME,
-					Ascending: true,
-				},
-				Filter:    "linux-rel blink_python_tests",
-				FileNames: []string{"filename.html"},
-			}
+			request.Filter = "linux-rel blink_python_tests"
+			request.FileNames = []string{"filename.html"}
 			query, err := client.createFetchMetricsQuery(request)
 
 			So(err, ShouldBeNil)
@@ -185,34 +149,15 @@ LIMIT @page_size OFFSET @page_offset`)
 		})
 
 		Convey("Valid filtered multi-day request", func() {
-			request := &api.FetchTestMetricsRequest{
-				Components: []string{
-					"Blink",
-				},
-				Dates: []string{
-					"2023-07-12",
-					"2023-07-13",
-				},
-				Period: api.Period_DAY,
-				Metrics: []api.MetricType{
-					api.MetricType_NUM_RUNS,
-				},
-				PageOffset: 0,
-				PageSize:   10,
-				Sort: &api.SortBy{
-					Metric:    api.SortType_SORT_NAME,
-					Ascending: false,
-					SortDate:  "2023-07-13",
-				},
-				Filter: "linux-rel blink_python_tests",
-			}
+			request.Filter = "linux-rel blink_python_tests"
+			request.Dates = append(request.Dates, "2023-07-13")
 			query, err := client.createFetchMetricsQuery(request)
 
 			So(err, ShouldBeNil)
 			So(query, ShouldNotBeNil)
 			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
 				Name:  "sort_date",
-				Value: "2023-07-13",
+				Value: "2023-07-12",
 			})
 			So(query.QueryConfig.Q, ShouldResemble, `
 WITH tests AS (
@@ -244,35 +189,18 @@ WITH tests AS (
 		test_id AS rank
 	FROM tests
 	WHERE date = @sort_date
-	ORDER BY test_id DESC
+	ORDER BY test_id ASC
 	LIMIT @page_size OFFSET @page_offset
 )
 SELECT t.*
 FROM sorted_day AS s LEFT JOIN tests AS t USING(test_id)
-ORDER BY rank DESC`)
+ORDER BY rank ASC`)
 		})
 
 		Convey("Valid sorted multi-day request", func() {
-			request := &api.FetchTestMetricsRequest{
-				Components: []string{
-					"Blink",
-				},
-				Dates: []string{
-					"2023-07-12",
-					"2023-07-13",
-				},
-				Period: api.Period_DAY,
-				Metrics: []api.MetricType{
-					api.MetricType_NUM_RUNS,
-				},
-				PageOffset: 0,
-				PageSize:   10,
-				Sort: &api.SortBy{
-					Metric:    api.SortType_SORT_NUM_RUNS,
-					Ascending: false,
-				},
-				Filter: "linux-rel blink_python_tests",
-			}
+			request.Dates = append(request.Dates, "2023-07-13")
+			request.Sort.SortDate = "2023-07-13"
+			request.Sort.Ascending = false
 			query, err := client.createFetchMetricsQuery(request)
 
 			So(err, ShouldBeNil)
@@ -298,16 +226,14 @@ WITH tests AS (
 	WHERE
 		DATE(date) IN UNNEST(@dates)
 		AND component IN UNNEST(@components)
-	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
-	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter1)
 	GROUP BY m.date, m.test_id
 ), sorted_day AS (
 	SELECT
 		test_id,
-		num_runs AS rank
+		test_id AS rank
 	FROM tests
 	WHERE date = @sort_date
-	ORDER BY num_runs DESC
+	ORDER BY test_id DESC
 	LIMIT @page_size OFFSET @page_offset
 )
 SELECT t.*
@@ -316,14 +242,6 @@ ORDER BY rank DESC`)
 		})
 
 		Convey("Parameterized args", func() {
-			request := &api.FetchTestMetricsRequest{
-				Components: []string{
-					"Blink",
-				},
-				Dates: []string{
-					"2023-07-12",
-				},
-			}
 			query, err := client.createFetchMetricsQuery(request)
 
 			So(err, ShouldBeNil)
@@ -334,13 +252,8 @@ ORDER BY rank DESC`)
 		})
 
 		Convey("Parameterized page args", func() {
-			request := &api.FetchTestMetricsRequest{
-				Dates: []string{
-					"2023-07-12",
-				},
-				PageSize:   10,
-				PageOffset: 5,
-			}
+			request.PageSize = 10
+			request.PageOffset = 5
 			query, err := client.createFetchMetricsQuery(request)
 
 			So(err, ShouldBeNil)
@@ -355,12 +268,8 @@ ORDER BY rank DESC`)
 		})
 
 		Convey("Parameterized filter arg", func() {
-			request := &api.FetchTestMetricsRequest{
-				Dates: []string{
-					"2023-07-12",
-				},
-				Filter: "linux-rel blink_python_tests",
-			}
+			request.Filter = "linux-rel blink_python_tests"
+
 			query, err := client.createFetchMetricsQuery(request)
 
 			So(err, ShouldBeNil)
@@ -375,12 +284,11 @@ ORDER BY rank DESC`)
 		})
 
 		Convey("Parameterized dates arg", func() {
-			request := &api.FetchTestMetricsRequest{
-				Dates: []string{
-					"2023-07-12",
-					"2023-07-13",
-				},
+			request.Dates = []string{
+				"2023-07-12",
+				"2023-07-13",
 			}
+
 			query, err := client.createFetchMetricsQuery(request)
 
 			So(err, ShouldBeNil)
@@ -411,24 +319,24 @@ func TestCreateUnfilteredDirectoryQuery(t *testing.T) {
 			ProjectId: "chrome-test-health-project",
 			DataSet:   "normal-dataset",
 		}
+		request := &api.FetchDirectoryMetricsRequest{
+			ParentIds: []string{"/"},
+			Components: []string{
+				"Blink",
+			},
+			Dates: []string{
+				"2023-07-12",
+			},
+			Period: api.Period_DAY,
+			Metrics: []api.MetricType{
+				api.MetricType_NUM_RUNS,
+			},
+			Sort: &api.SortBy{
+				Metric:    api.SortType_SORT_NAME,
+				Ascending: true,
+			},
+		}
 		Convey("Valid unfiltered request", func() {
-			request := &api.FetchDirectoryMetricsRequest{
-				ParentIds: []string{"/"},
-				Components: []string{
-					"Blink",
-				},
-				Dates: []string{
-					"2023-07-12",
-				},
-				Period: api.Period_DAY,
-				Metrics: []api.MetricType{
-					api.MetricType_NUM_RUNS,
-				},
-				Sort: &api.SortBy{
-					Metric:    api.SortType_SORT_NAME,
-					Ascending: true,
-				},
-			}
 			query, err := client.createDirectoryQuery(request)
 
 			So(err, ShouldBeNil)
@@ -452,25 +360,9 @@ ORDER BY node_name ASC`)
 		})
 
 		Convey("Valid unfiltered multi-day request", func() {
-			request := &api.FetchDirectoryMetricsRequest{
-				ParentIds: []string{"/"},
-				Components: []string{
-					"Blink",
-				},
-				Dates: []string{
-					"2023-07-12",
-					"2023-07-13",
-				},
-				Period: api.Period_DAY,
-				Metrics: []api.MetricType{
-					api.MetricType_NUM_RUNS,
-				},
-				Sort: &api.SortBy{
-					Metric:    api.SortType_SORT_NAME,
-					Ascending: false,
-					SortDate:  "2023-07-13",
-				},
-			}
+			request.Dates = append(request.Dates, "2023-07-13")
+			request.Sort.SortDate = "2023-07-13"
+			request.Sort.Ascending = false
 			query, err := client.createDirectoryQuery(request)
 
 			So(err, ShouldBeNil)
@@ -508,15 +400,6 @@ ORDER BY s.rank DESC`)
 		})
 
 		Convey("Parameterized args", func() {
-			request := &api.FetchDirectoryMetricsRequest{
-				Components: []string{
-					"Blink",
-				},
-				ParentIds: []string{"/"},
-				Dates: []string{
-					"2023-07-12",
-				},
-			}
 			query, err := client.createDirectoryQuery(request)
 
 			So(err, ShouldBeNil)
@@ -533,13 +416,11 @@ ORDER BY s.rank DESC`)
 		})
 
 		Convey("Parameterized dates arg", func() {
-			request := &api.FetchDirectoryMetricsRequest{
-				ParentIds: []string{"/"},
-				Dates: []string{
-					"2023-07-12",
-					"2023-07-13",
-				},
+			request.Dates = []string{
+				"2023-07-12",
+				"2023-07-13",
 			}
+
 			query, err := client.createDirectoryQuery(request)
 
 			So(err, ShouldBeNil)
@@ -570,25 +451,25 @@ func TestCreateFilteredDirectoryQuery(t *testing.T) {
 			ProjectId: "chrome-test-health-project",
 			DataSet:   "normal-dataset",
 		}
+		request := &api.FetchDirectoryMetricsRequest{
+			ParentIds: []string{"/"},
+			Components: []string{
+				"Blink",
+			},
+			Dates: []string{
+				"2023-07-12",
+			},
+			Period: api.Period_DAY,
+			Metrics: []api.MetricType{
+				api.MetricType_NUM_RUNS,
+			},
+			Sort: &api.SortBy{
+				Metric:    api.SortType_SORT_NAME,
+				Ascending: true,
+			},
+			Filter: "linux-rel",
+		}
 		Convey("Valid unfiltered request", func() {
-			request := &api.FetchDirectoryMetricsRequest{
-				ParentIds: []string{"/"},
-				Components: []string{
-					"Blink",
-				},
-				Dates: []string{
-					"2023-07-12",
-				},
-				Period: api.Period_DAY,
-				Metrics: []api.MetricType{
-					api.MetricType_NUM_RUNS,
-				},
-				Sort: &api.SortBy{
-					Metric:    api.SortType_SORT_NAME,
-					Ascending: true,
-				},
-				Filter: "linux-rel",
-			}
 			query, err := client.createDirectoryQuery(request)
 
 			So(err, ShouldBeNil)
@@ -632,26 +513,13 @@ ORDER BY node_name ASC`)
 		})
 
 		Convey("Valid unfiltered multi-day request", func() {
-			request := &api.FetchDirectoryMetricsRequest{
-				ParentIds: []string{"/"},
-				Components: []string{
-					"Blink",
-				},
-				Dates: []string{
-					"2023-07-12",
-					"2023-07-13",
-				},
-				Period: api.Period_DAY,
-				Metrics: []api.MetricType{
-					api.MetricType_NUM_RUNS,
-				},
-				Sort: &api.SortBy{
-					Metric:    api.SortType_SORT_NAME,
-					Ascending: false,
-					SortDate:  "2023-07-13",
-				},
-				Filter: "linux-rel",
+			request.Dates = []string{
+				"2023-07-12",
+				"2023-07-13",
 			}
+			request.Sort.SortDate = "2023-07-13"
+			request.Sort.Ascending = false
+
 			query, err := client.createDirectoryQuery(request)
 
 			So(err, ShouldBeNil)
@@ -709,13 +577,6 @@ ORDER BY rank DESC`)
 		})
 
 		Convey("Parameterized args", func() {
-			request := &api.FetchDirectoryMetricsRequest{
-				Dates: []string{"2023-07-12"},
-				Components: []string{
-					"Blink",
-				},
-				ParentIds: []string{"/"},
-			}
 			query, err := client.createDirectoryQuery(request)
 
 			So(err, ShouldBeNil)
@@ -730,13 +591,11 @@ ORDER BY rank DESC`)
 		})
 
 		Convey("Parameterized dates arg", func() {
-			request := &api.FetchDirectoryMetricsRequest{
-				ParentIds: []string{"/"},
-				Dates: []string{
-					"2023-07-12",
-					"2023-07-13",
-				},
+			request.Dates = []string{
+				"2023-07-12",
+				"2023-07-13",
 			}
+
 			query, err := client.createDirectoryQuery(request)
 
 			So(err, ShouldBeNil)
@@ -758,11 +617,8 @@ ORDER BY rank DESC`)
 		})
 
 		Convey("Parameterized filter arg", func() {
-			request := &api.FetchDirectoryMetricsRequest{
-				Dates:     []string{"2023-07-12"},
-				ParentIds: []string{"/"},
-				Filter:    "linux-rel blink_python_tests",
-			}
+			request.Filter = "linux-rel blink_python_tests"
+
 			query, err := client.createDirectoryQuery(request)
 
 			So(err, ShouldBeNil)

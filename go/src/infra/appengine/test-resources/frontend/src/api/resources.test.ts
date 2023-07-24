@@ -87,15 +87,14 @@ describe('fetchTestMetrics', () => {
     const resp = await fetchTestMetrics(
         {
           'components': ['component'],
-          'period': 0 as Period,
+          'period': Period.DAY,
           'dates': ['date'],
           'metrics': [
             MetricType.NUM_RUNS,
             MetricType.AVG_RUNTIME,
             MetricType.TOTAL_RUNTIME,
             MetricType.NUM_FAILURES,
-            // AVG_CORES is currently unsupported.
-            // MetricType.AVG_CORES,
+            MetricType.AVG_CORES,
           ],
           'filter': 'filter',
           'page_offset': 0,
@@ -112,11 +111,17 @@ describe('fetchTestMetrics', () => {
       components: ['component'],
       period: Period.DAY,
       dates: ['date'],
-      metrics: ['NUM_RUNS', 'AVG_RUNTIME', 'TOTAL_RUNTIME', 'NUM_FAILURES'],
+      metrics: [
+        'NUM_RUNS',
+        'AVG_RUNTIME',
+        'TOTAL_RUNTIME',
+        'NUM_FAILURES',
+        'AVG_CORES'
+      ],
       filter: 'filter',
       page_offset: 0,
       page_size: 0,
-      sort: { metric: 0, ascending: true, sort_date: '2012-01-02' },
+      sort: { metric: 1, ascending: true, sort_date: '2012-01-02' },
     });
     expect(resp).toEqual(expected);
   });

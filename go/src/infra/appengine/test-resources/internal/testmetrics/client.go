@@ -223,6 +223,9 @@ var (
 		api.SortType_SORT_NUM_FAILURES:  "num_failures",
 		api.SortType_SORT_AVG_RUNTIME:   "avg_runtime",
 		api.SortType_SORT_TOTAL_RUNTIME: "total_runtime",
+		api.SortType_SORT_AVG_CORES:     "avg_cores",
+		api.SortType_SORT_P50_RUNTIME:   "p50_runtime",
+		api.SortType_SORT_P90_RUNTIME:   "p90_runtime",
 	}
 	// Metrics that aren't summed but averaged when aggregated
 	weightedAverageMetrics = map[api.MetricType]struct{}{

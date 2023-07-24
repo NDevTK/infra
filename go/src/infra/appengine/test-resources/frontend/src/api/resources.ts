@@ -23,12 +23,14 @@ export interface TestMetricsData {
 }
 
 export enum MetricType {
-  UNKNOWN_METRIC = 'UNKOWN_METRIC',
+  UNKNOWN_METRIC = 'UNKNOWN_METRIC',
   NUM_RUNS = 'NUM_RUNS',
   NUM_FAILURES = 'NUM_FAILURES',
-  AVG_RUNTIME = 'AVG_RUNTIME',
   TOTAL_RUNTIME = 'TOTAL_RUNTIME',
   AVG_CORES = 'AVG_CORES',
+  AVG_RUNTIME = 'AVG_RUNTIME',
+  P50_RUNTIME = 'P50_RUNTIME',
+  P90_RUNTIME = 'P90_RUNTIME',
 }
 
 export interface TestVariantData {
@@ -40,9 +42,10 @@ export interface TestVariantData {
 }
 
 export enum Period {
-  DAY = 0,
-  WEEK = 1,
-  MONTH = 2,
+  UNKNOWN_PERIOD = 0,
+  DAY = 1,
+  WEEK = 2,
+  MONTH = 3,
 }
 
 export interface FetchTestMetricsResponse {
@@ -51,12 +54,15 @@ export interface FetchTestMetricsResponse {
 }
 
 export enum SortType {
-  SORT_NAME = 0,
-  SORT_NUM_RUNS = 1,
-  SORT_NUM_FAILURES = 2,
-  SORT_AVG_RUNTIME = 3,
+  UNKNOWN_SORTTYPE = 0,
+  SORT_NAME = 1,
+  SORT_NUM_RUNS = 2,
+  SORT_NUM_FAILURES = 3,
   SORT_TOTAL_RUNTIME = 4,
   SORT_AVG_CORES = 5,
+  SORT_AVG_RUNTIME = 6,
+  SORT_P50_RUNTIME = 7,
+  SORT_P90_RUNTIME = 8,
  }
 
 export interface SortBy {
@@ -136,6 +142,7 @@ export interface FetchDirectoryMetricsRequest {
 }
 
 export enum DirectoryNodeType {
+  UNKNOWN_NODE_TYPE = 'UNKNOWN',
   DIRECTORY = 'DIRECTORY',
   FILENAME = 'FILENAME',
 }
