@@ -7,6 +7,7 @@ from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import pytest
 import six
 import unittest
 
@@ -568,6 +569,7 @@ class UsersServicerTest(unittest.TestCase):
         'members-only-' + str(user_id), owner_ids=[user_id])
     members_only.access = project_pb2.ProjectAccess.MEMBERS_ONLY
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testGetUsersProjects(self):
     self.user = self.services.user.TestAddUser('test3@example.com', 333)
     self.services.project_star.SetStar(
