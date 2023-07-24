@@ -7,24 +7,31 @@ import dayjs from 'dayjs';
 export function formatTime(seconds: number) {
   let result = '';
 
-  const hour = seconds / 3600;
-  if (hour >= 1) {
-    result += `${hour.toFixed(0)}h`;
+  const day = Math.floor(seconds / 86400);
+  if (day >= 1) {
+    result += `${day.toFixed(0)}d`;
   }
 
-  const min = seconds % 3600 / 60;
-  if (min >= 1) {
+  const hour = Math.floor(seconds % 86400 / 3600);
+  if (hour >= 1) {
+    result += ` ${hour.toFixed(0)}h`;
+  }
+
+  const min = Math.floor(seconds % 3600 / 60);
+  if (day < 1 && min >= 1) {
     result += ` ${min.toFixed(0)}m`;
   }
 
-  const sec = seconds % 60;
-  result += ` ${sec.toPrecision(2)}s`;
+  const sec = Math.floor(seconds % 60);
+  if (hour < 1) {
+    result += ` ${sec.toPrecision(2)}s`;
+  }
 
   return result.trimStart();
 }
 
 export function formatNumber(num: number) {
-  return new Intl.NumberFormat().format(num);
+  return Number.isNaN(num) ? '-' : new Intl.NumberFormat().format(num);
 }
 
 export function formatDate(date : Date) {
