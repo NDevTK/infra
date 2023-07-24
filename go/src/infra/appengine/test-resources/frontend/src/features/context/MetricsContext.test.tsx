@@ -115,18 +115,18 @@ describe('MetricsContext params', () => {
         <div>page-{value.params.page}</div>
       </>
     ), {props: { date: new Date('2023-07-19'), page: 10 }});
-    expect(screen.getByText('period-1')).toBeInTheDocument();
+    expect(screen.getByText('period-2')).toBeInTheDocument();
     expect(screen.getByText('page-10')).toBeInTheDocument();
     await act(async () => {
       fireEvent.click(screen.getByTestId('updatePeriodToDay'));
     });
-    expect(screen.getByText('period-0')).toBeInTheDocument();
+    expect(screen.getByText('period-1')).toBeInTheDocument();
     expect(screen.getByText('date-2023-07-19')).toBeInTheDocument();
     expect(screen.getByText('page-0')).toBeInTheDocument();
     await act(async () => {
       fireEvent.click(screen.getByTestId('updatePeriodToWeek'));
     });
-    expect(screen.getByText('period-1')).toBeInTheDocument();
+    expect(screen.getByText('period-2')).toBeInTheDocument();
     expect(screen.getByText('date-2023-07-16')).toBeInTheDocument();
     expect(screen.getByText('page-0')).toBeInTheDocument();
   });

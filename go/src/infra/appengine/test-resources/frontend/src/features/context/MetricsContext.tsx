@@ -293,7 +293,8 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
       params.page = 0;
       // Snap to valid date for weekly view
       if (newPeriod === Period.WEEK) {
-        setDate(snapToPeriod(params.date));
+        params.date = (snapToPeriod(params.date));
+        setDate(params.date);
       }
       setPeriod(params.period);
       setPage(params.page);

@@ -38,7 +38,7 @@ function ResourcesToolbar() {
 
   // If we have week selected as the period, disable everything but Sundays
   const handleShouldDisableDate = (date) => {
-    if (String(params.period) === '1') {
+    if (String(params.period) === String(Period.WEEK)) {
       return date.day() !== 0;
     }
     return false;
@@ -84,8 +84,8 @@ function ResourcesToolbar() {
                 label="Period"
                 onChange={handlePeriodChange}
               >
-                <MenuItem value={0}>Day</MenuItem>
-                <MenuItem value={1}>Week</MenuItem>
+                <MenuItem value={Period.DAY}>Day</MenuItem>
+                <MenuItem value={Period.WEEK}>Week</MenuItem>
               </Select>
             </FormControl>
           </Grid>
