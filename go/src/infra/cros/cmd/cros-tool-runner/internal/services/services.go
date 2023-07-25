@@ -256,6 +256,11 @@ func RunTestCLI(ctx context.Context, image *build_api.ContainerImageInfo, networ
 	if _, err := os.Stat(autotestResultsFolder); err == nil {
 		volumes = append(volumes, fmt.Sprintf("%s:%s", autotestResultsFolder, autotestResultsFolder))
 	}
+	// Mount drone credentials folder if exists. See b/291654727
+	credsFolder := "/creds/service_accounts"
+	if _, err := os.Stat(credsFolder); err == nil {
+		volumes = append(volumes, fmt.Sprintf("%s:%s", credsFolder, credsFolder))
+	}
 
 	d := &docker.Docker{
 		Name:               fmt.Sprintf(crosTestContainerNameTemplate, os.Getpid(), time.Now().Unix()),
