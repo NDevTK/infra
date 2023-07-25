@@ -96,12 +96,14 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 		fmt.Printf("Running local testplan...\n")
 	}
 
-	// Set drone target based on user input
-	drone, err := c.setDroneTarget()
+	dims := c.addedDims
+
+	// Set drone target based on user input, defaulting to the current box.
+	droneDim, err := c.setDroneTarget()
 	if err != nil {
 		return err
 	}
-	dims := map[string]string{"drone": drone}
+	dims["drone"] = droneDim
 
 	builderId := &buildbucketpb.BuilderID{
 		Project: site.GetLUCIProject(),
@@ -235,6 +237,9 @@ func (c *run) validateArgs() error {
 	}
 	if c.pool == "" {
 		return errors.Reason("-pool not specified").Err()
+	}
+	if _, ok := c.addedDims["drone"]; ok {
+		return errors.Reason("-dims cannot include drone (control via -satlabId instead)").Err()
 	}
 	return nil
 }

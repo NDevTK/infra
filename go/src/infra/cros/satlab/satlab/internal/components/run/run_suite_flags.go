@@ -5,6 +5,8 @@
 package run
 
 import (
+	"infra/cros/satlab/satlab/internal/flagx"
+
 	"github.com/maruel/subcommands"
 )
 
@@ -25,6 +27,7 @@ type runFlags struct {
 	testArgs       string
 	satlabId       string
 	cft            bool
+	addedDims      map[string]string
 }
 
 // registerRunFlags registers the test execution flags.
@@ -42,4 +45,5 @@ func registerRunFlags(c *run) {
 	c.Flags.StringVar(&c.testArgs, "testArgs", "", "test args to use for test execution")
 	c.Flags.StringVar(&c.satlabId, "satlabId", "", "id of satlab box to execute tests on (e.g. 'satlab-XXXXXXXXX')")
 	c.Flags.BoolVar(&c.cft, "cft", false, "whether to use CFT execution framework")
+	c.Flags.Var(flagx.MapToFlagValue(&c.addedDims), "dims", "Additional scheduling dimension in format key=val or key:val; may be specified multiple times.")
 }

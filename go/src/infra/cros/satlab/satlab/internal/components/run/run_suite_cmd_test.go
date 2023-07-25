@@ -95,6 +95,18 @@ func TestRun(t *testing.T) {
 					satlabId:  "satlab-0wgatfqi21118003"},
 			},
 		},
+		{
+			&run{ // suite run with dims
+				runFlags: runFlags{
+					suite:     "rlz",
+					board:     "zork",
+					model:     "gumboz",
+					milestone: "111",
+					build:     "15329.6.0",
+					addedDims: map[string]string{"label-dut": "123"},
+				},
+			},
+		},
 	}
 
 	for _, tc := range tests {
@@ -185,6 +197,20 @@ func TestValidateArgs(t *testing.T) {
 					milestone: "111",
 					build:     "15329.6.0",
 					satlabId:  "satlab-0wgatfqi21118003"},
+			},
+		},
+		{
+			&run{ // drone passed as dim
+				runFlags: runFlags{
+					suite:     "rlz",
+					board:     "zork",
+					model:     "gumboz",
+					milestone: "111",
+					build:     "15329.6.0",
+					satlabId:  "satlab-0wgatfqi21118003",
+					pool:      "pool",
+					addedDims: map[string]string{"drone": "not allowed"},
+				},
 			},
 		},
 	}
