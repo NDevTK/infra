@@ -18,38 +18,52 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 )
 
+// CIPD dependencies for non-coordinator mode builds.
+//
 // N.B. We assume a few tools are already available on the machine we're
 // running on. Namely:
 // - For non-Windows, a C/C++ toolchain
-//
-// TODO(mknyszek): Make sure Go 1.17 still works as the bootstrap toolchain since
-// it's our published minimum.
-const cipdDeps = `
+const cipdBuildDeps = `
+@Subdir
 infra/3pp/tools/git/${platform} version:2@2.39.2.chromium.11
+@Subdir go_bootstrap
+infra/3pp/tools/go/${platform} version:2@BOOTSTRAP_VERSION
+@Subdir cc/${os=windows}
+golang/third_party/llvm-mingw-msvcrt/${platform} latest
+` + cipdToolDeps
+
+// CIPD tool dependencies only. Used for coordinator builds.
+const cipdToolDeps = `
 @Subdir bin
 infra/tools/bb/${platform} latest
 infra/tools/rdb/${platform} latest
 infra/tools/luci/cas/${platform} latest
 infra/tools/result_adapter/${platform} latest
-@Subdir go_bootstrap
-infra/3pp/tools/go/${platform} version:2@BOOTSTRAP_VERSION
-@Subdir cc/${os=windows}
-golang/third_party/llvm-mingw-msvcrt/${platform} latest
+`
+
+// CIPD dependency for XCode.
+const cipdXCodeDep = `
 @Subdir
+infra/tools/mac_toolchain/${platform} latest
 `
 
 func installTools(ctx context.Context, inputs *golangbuildpb.Inputs) (toolsRoot string, err error) {
 	step, ctx := build.StartStep(ctx, "install tools")
 	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
-	bootstrap := inputs.BootstrapVersion
-	if bootstrap == "" {
-		bootstrap = "1.19.3"
-	}
-	cipdDeps := strings.ReplaceAll(cipdDeps, "BOOTSTRAP_VERSION", bootstrap)
-
-	if inputs.XcodeVersion != "" {
-		cipdDeps += "infra/tools/mac_toolchain/${platform} latest\n"
+	// Construct the CIPD ensure file.
+	var cipdDeps string
+	if inputs.GetMode() == golangbuildpb.Mode_MODE_COORDINATOR {
+		cipdDeps = cipdToolDeps
+	} else {
+		bootstrap := inputs.BootstrapVersion
+		if bootstrap == "" {
+			bootstrap = "1.19.3"
+		}
+		cipdDeps = strings.ReplaceAll(cipdBuildDeps, "BOOTSTRAP_VERSION", bootstrap)
+		if inputs.XcodeVersion != "" {
+			cipdDeps += cipdXCodeDep
+		}
 	}
 
 	io.WriteString(step.Log("ensure file"), cipdDeps)
