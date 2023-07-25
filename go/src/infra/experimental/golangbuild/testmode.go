@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"infra/experimental/golangbuild/golangbuildpb"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -136,7 +137,10 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard) error {
 	return cmdStepRun(ctx, "go tool dist test -json", testCmd, false)
 }
 
-func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) ([]string, error) {
+func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) (tests []string, err error) {
+	step, ctx := build.StartStep(ctx, "list tests")
+	defer endStep(step, &err)
+
 	// Run go tool dist test -list.
 	listCmd := spec.distTestListCmd(ctx, spec.goroot)
 	testList, err := cmdStepOutput(ctx, "go tool dist test -list", listCmd, false)
@@ -145,7 +149,6 @@ func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) ([]st
 	}
 
 	// Parse the output: each line is a test name.
-	var tests []string
 	scanner := bufio.NewScanner(bytes.NewReader(testList))
 	for scanner.Scan() {
 		name := scanner.Text()
@@ -156,6 +159,7 @@ func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) ([]st
 	if err := scanner.Err(); err != nil {
 		return nil, fmt.Errorf("parsing test list from dist: %v", err)
 	}
+	io.WriteString(step.Log("packages"), strings.Join(tests, "\n"))
 	return tests, nil
 }
 
