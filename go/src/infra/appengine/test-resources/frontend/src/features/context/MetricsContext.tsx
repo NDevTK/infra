@@ -4,16 +4,19 @@
 
 import { createContext, useContext, useEffect, useReducer, useState } from 'react';
 import {
+  DirectoryNode,
   DirectoryNodeType,
   FetchDirectoryMetricsResponse,
   FetchTestMetricsResponse,
   MetricType,
   Period,
   SortType,
+  TestDateMetricData,
+  isTestMetricsResponse,
 } from '../../api/resources';
 import { formatDate } from '../../utils/formatUtils';
 import { ComponentContext } from '../components/ComponentContext';
-import { dataReducer, loadDirectoryMetrics, loadTestMetrics } from './LoadMetrics';
+import { dataReducer, getLoadedParentIds, loadDirectoryMetrics, loadTestMetrics } from './LoadMetrics';
 
 type MetricsContextProviderProps = {
   page?: number,
@@ -40,6 +43,10 @@ export interface Path extends Node {
   path: string,
   type: DirectoryNodeType,
   loaded: boolean,
+}
+
+export function isPath(object: any): object is Path {
+  return 'path' in object;
 }
 
 // This node is for a single test, which may have multiple variants
@@ -183,10 +190,9 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
   }
 
   function loadPathNode(node: Node) {
-    if (Object.hasOwn(node, 'loaded') && !(node as Path).loaded) {
-      const pathNode = node as Path;
+    if (isPath(node) && !node.loaded) {
       loadingDispatch({ type: 'start' });
-      if (pathNode.type === DirectoryNodeType.FILENAME) {
+      if (node.type === DirectoryNodeType.FILENAME) {
         loadTestMetrics(components, params,
             (response: FetchTestMetricsResponse) => {
               dataDispatch({
@@ -197,10 +203,10 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
               loadingDispatch({ type: 'end' });
             },
             loadFailure,
-            [pathNode.path],
+            [node.path],
         );
       } else {
-        loadDirectoryMetrics(components, params, node.id,
+        loadDirectoryMetrics(components, params, [node.id],
             (response: FetchDirectoryMetricsResponse) => {
               dataDispatch({
                 type: 'merge_dir',
@@ -219,23 +225,71 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
   function load(params: Params) {
     loadingDispatch({ type: 'start' });
     if (params.directoryView) {
-      loadDirectoryMetrics(
-          components,
-          params,
-          '/',
-          (response: FetchDirectoryMetricsResponse, fetchedDates: string[]) => {
-            dataDispatch({
-              type: 'merge_dir',
-              nodes: response.nodes,
-              onExpand: loadPathNode,
-            });
-            setTimelineView(params.timelineView);
-            setDirectoryView(params.directoryView);
-            setDatesToShow(fetchedDates);
-            loadingDispatch({ type: 'end' });
-          },
-          loadFailure,
-      );
+      // If we're not switching to directory view, we will need to reload
+      // the tree with the current loaded/expanded state.
+      if (directoryView) {
+        const [directories, filenames] = getLoadedParentIds(data);
+
+        // The rebuildState callback allows us to dispatch both RPC requests
+        // at the same time and merge the data once we get both responses back,
+        // as opposed to chaining promises, which would lead to sequential reqs.
+        let directoryNodes: DirectoryNode[] | undefined;
+        let tests: TestDateMetricData[] | undefined;
+        const rebuildState = (
+            response: FetchDirectoryMetricsResponse | FetchTestMetricsResponse,
+            fetchedDates: string[],
+        ) => {
+          if (isTestMetricsResponse(response)) {
+            tests = response.tests;
+          } else {
+            // A empty directory response will have no nodes field
+            directoryNodes = response.nodes || [];
+          }
+          if (directoryNodes === undefined || tests === undefined) {
+            return;
+          }
+          dataDispatch({
+            type: 'rebuild_state',
+            nodes: directoryNodes,
+            tests: tests,
+            onExpand: loadPathNode,
+          });
+          setDatesToShow(fetchedDates);
+          loadingDispatch({ type: 'end' });
+        };
+
+        loadDirectoryMetrics(
+            components, params, ['/', ...directories],
+            rebuildState, loadFailure,
+        );
+        if (filenames.length > 0) {
+          loadTestMetrics(components, {
+            ...params,
+            page: 0,
+            rowsPerPage: 1000,
+          }, rebuildState, loadFailure, filenames);
+        } else {
+          tests = [];
+        }
+      } else {
+        loadDirectoryMetrics(
+            components,
+            params,
+            ['/'],
+            (response: FetchDirectoryMetricsResponse, fetchedDates: string[]) => {
+              dataDispatch({
+                type: 'merge_dir',
+                nodes: response.nodes,
+                onExpand: loadPathNode,
+              });
+              setTimelineView(params.timelineView);
+              setDirectoryView(params.directoryView);
+              setDatesToShow(fetchedDates);
+              loadingDispatch({ type: 'end' });
+            },
+            loadFailure,
+        );
+      }
     } else {
       loadTestMetrics(
           components,

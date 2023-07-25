@@ -14,7 +14,7 @@ import { FetchDirectoryMetricsRequest, fetchDirectoryMetrics, DirectoryNode,
   DirectoryNodeType,
 } from '../../api/resources';
 import { formatDate } from '../../utils/formatUtils';
-import { Node, Params, Path } from './MetricsContext';
+import { Node, Params, Path, Test, isPath } from './MetricsContext';
 
 export function computeDates(params: Params): string[] {
   const computedDates: string[] = [];
@@ -72,7 +72,13 @@ type DataAction =
   nodes: DirectoryNode[],
   onExpand: (node: Node) => void,
   parentId?: string
-}
+ }
+ | {
+  type: 'rebuild_state',
+  nodes: DirectoryNode[],
+  tests: TestDateMetricData[],
+  onExpand?: (node: Node) => void,
+ }
 
 function findNode(nodes: Node[], id: string): Node | undefined {
   for (let i = 0; i < nodes.length; i++) {
@@ -85,40 +91,79 @@ function findNode(nodes: Node[], id: string): Node | undefined {
   return undefined;
 }
 
+export function getLoadedParentIds(
+    state: Node[],
+    dirs: string[] = [],
+    files: string[] = [],
+): [dirs: string[], files: string[]] {
+  state.forEach((node) => {
+    if (isPath(node) && node.loaded) {
+      if (node.type === DirectoryNodeType.FILENAME) {
+        files.push(node.id);
+      } else {
+        dirs.push(node.id);
+      }
+    }
+    if (node.nodes.length > 0) {
+      getLoadedParentIds(node.nodes, dirs, files);
+    }
+  });
+  return [dirs, files];
+}
+
+function createTestNode(test: TestDateMetricData): Test {
+  return {
+    id: test.testId,
+    name: test.testName,
+    fileName: test.fileName,
+    metrics: createMetricsMap(test.metrics),
+    isLeaf: false,
+    nodes: test.variants.map((variant) => ({
+      id: `${test.testId}:${variant.bucket}:${variant.builder}` +
+        `:${variant.suite}`,
+      name: variant.builder,
+      subname: variant.suite,
+      metrics: createMetricsMap(variant.metrics),
+      isLeaf: true,
+      nodes: [],
+    })),
+  };
+}
+
+function createPathNode(
+    node: DirectoryNode,
+    onExpand?: (node: Node) => void,
+) : Path {
+  return {
+    id: node.id,
+    path: node.id,
+    name: node.name,
+    metrics: createMetricsMap(node.metrics),
+    isLeaf: false,
+    onExpand: onExpand,
+    loaded: false,
+    type: node.type as DirectoryNodeType,
+    nodes: [],
+  };
+}
+
 export function dataReducer(state: Node[], action: DataAction): Node[] {
   let nodes: Node[] = [];
   switch (action.type) {
     case 'merge_test': {
-      nodes = action.tests ? action.tests.map((test) => ({
-        id: test.testId,
-        name: test.testName,
-        fileName: test.fileName,
-        metrics: createMetricsMap(test.metrics),
-        isLeaf: false,
-        nodes: test.variants.map((variant) => ({
-          id: `${test.testId}:${variant.builder}:${variant.suite}`,
-          name: variant.builder,
-          subname: variant.suite,
-          metrics: createMetricsMap(variant.metrics),
-          isLeaf: true,
-          nodes: [],
-        })),
-      })) : [];
+      nodes = action.tests?.map(createTestNode) || [];
       break;
     }
     case 'merge_dir': {
-      nodes = action.nodes ? action.nodes.map((node) => ({
-        id: node.id,
-        path: node.id,
-        name: node.name,
-        metrics: createMetricsMap(node.metrics),
-        isLeaf: false,
-        onExpand: action.onExpand,
-        loaded: false,
-        type: node.type as DirectoryNodeType,
-        nodes: [],
-      })) as Path[] : [];
+      nodes = action.nodes?.map(
+          (node) => {
+            return createPathNode(node, action.onExpand);
+          },
+      ) || [];
       break;
+    }
+    case 'rebuild_state': {
+      return rebuildState(action.nodes, action.tests, action.onExpand);
     }
   }
   if (action.parentId === undefined) {
@@ -134,10 +179,58 @@ export function dataReducer(state: Node[], action: DataAction): Node[] {
   }
 }
 
+function getParentId(id: string) {
+  const pieces = id.split('/');
+  pieces.pop();
+  // Just to note that in javascript, ['', ''] joined becomes '/'
+  // So parent ID for '//foo' is just '/' and not '//'
+  return pieces.join('/');
+}
+
+// This function takes a list of paths and a list of tests and rebuilds the
+// directory tree. The basic algorithm is that it iterates through the paths
+// and tests, figures out the parent ID of each node, and populates a map of
+// parent IDs to child nodes. It then starts from the root nodes and sets
+// the children for each node it encounters based on the populated map.
+function rebuildState(
+    paths: DirectoryNode[],
+    tests: TestDateMetricData[],
+    onExpand?: (node: Node) => void,
+): Node[] {
+  const parents = new Map<string, Node[]>();
+  paths.forEach((path) => {
+    const node = createPathNode(path, onExpand);
+    const parentId = getParentId(node.path);
+    if (!parents.has(parentId)) {
+      parents.set(parentId, []);
+    }
+    parents.get(parentId)?.push(node);
+  });
+  tests.forEach((test) => {
+    const node = createTestNode(test);
+    if (!parents.has(node.fileName)) {
+      parents.set(node.fileName, []);
+    }
+    parents.get(node.fileName)?.push(node);
+  });
+  const nodes = parents.get('/') || [];
+  const populate = (nodes: Node[]) => {
+    nodes.forEach((node) => {
+      if (isPath(node) && parents.has(node.id)) {
+        node.nodes = parents.get(node.id) || [];
+        node.loaded = true;
+        populate(node.nodes);
+      }
+    });
+  };
+  populate(nodes);
+  return nodes;
+}
+
 export function loadDirectoryMetrics(
     components: string[],
     params: Params,
-    parentId: string,
+    parentIds: string[],
     successCallback: (response: FetchDirectoryMetricsResponse, fetchedDates: string[]) => void,
     failureCallback: (erorr: any) => void,
 ) {
@@ -146,7 +239,7 @@ export function loadDirectoryMetrics(
     components: components,
     period: params.period,
     dates: datesToFetch,
-    parent_ids: [parentId],
+    parent_ids: parentIds,
     metrics: [
       MetricType.NUM_RUNS,
       MetricType.AVG_RUNTIME,

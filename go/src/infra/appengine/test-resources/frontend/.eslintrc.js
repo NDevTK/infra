@@ -41,8 +41,8 @@ module.exports = {
   'plugins': ['react', '@typescript-eslint', 'prettier', 'jsx-a11y', 'import'],
   'rules': {
     'max-len': 0,
-    'quotes': ['error', 'single'],
-    'semi': ['error', 'always'],
+
+    // Errors
     'object-curly-spacing': ['error', 'always', { 'objectsInObjects': true }],
     'require-jsdoc': 0,
     'import/order': ['error', {
@@ -55,11 +55,17 @@ module.exports = {
       ],
     }],
     'no-trailing-spaces': 'error',
-    'no-console': ['warn', { allow: ['error'] }],
     'eol-last': ['error', 'always'],
+
+    // Warnings
+    'no-console': ['warn', { allow: ['error'] }],
+    'quotes': ['warn', 'single'],
+    'semi': ['warn', 'always'],
+    'indent': 'warn',
+
+    // Off
     'react/jsx-uses-react': 'off',
     'react/react-in-jsx-scope': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
-    'indent': 'warn',
   },
 };

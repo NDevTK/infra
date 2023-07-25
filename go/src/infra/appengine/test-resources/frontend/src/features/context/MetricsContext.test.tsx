@@ -59,11 +59,11 @@ describe('MetricsContext params', () => {
   it('updateDate snapshot view', async () => {
     await contextRender((value) => (
       <>
-        <Button data-testid='updateDate' onClick={() => value.api.updateDate(new Date('2023-01-02'))}>{'date-' + formatDate(value.params.date)}</Button>
+        <Button data-testid='updateDate' onClick={() => value.api.updateDate(new Date('2023-01-02T00:00:00'))}>{'date-' + formatDate(value.params.date)}</Button>
         <div>page-{value.params.page}</div>
         <div>sortIndex-{value.params.sortIndex}</div>
       </>
-    ), { props: { page: 1, date: new Date('2023-01-01'), timelineView: false, sortIndex: 4 } });
+    ), { props: { page: 1, date: new Date('2023-01-01T00:00:00'), timelineView: false, sortIndex: 4 } });
     expect(screen.getByText('page-1')).toBeInTheDocument();
     expect(screen.getByText('date-2023-01-01')).toBeInTheDocument();
     expect(screen.getByText('sortIndex-4')).toBeInTheDocument();
@@ -114,7 +114,7 @@ describe('MetricsContext params', () => {
         <div>date-{formatDate(value.params.date)}</div>
         <div>page-{value.params.page}</div>
       </>
-    ), {props: { date: new Date('2023-07-19'), page: 10 }});
+    ), { props: { date: new Date('2023-07-19T00:00:00'), page: 10 } });
     expect(screen.getByText('period-2')).toBeInTheDocument();
     expect(screen.getByText('page-10')).toBeInTheDocument();
     await act(async () => {

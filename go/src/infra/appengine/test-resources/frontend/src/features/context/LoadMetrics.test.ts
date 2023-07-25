@@ -10,8 +10,8 @@ import {
   MetricsDateMap,
   DirectoryNode,
   DirectoryNodeType } from '../../api/resources';
-import { computeDates, dataReducer } from './LoadMetrics';
-import { Node, Path } from './MetricsContext';
+import { computeDates, dataReducer, getLoadedParentIds } from './LoadMetrics';
+import { Node, Path, Test } from './MetricsContext';
 
 function metricsMap(
     metrics: {[date: string]: [MetricType, number][]},
@@ -56,7 +56,67 @@ describe('computeDates', () => {
       });
 });
 
-describe('Merge TestMetrics', () => {
+function pathNode(
+    id: string,
+    type: DirectoryNodeType,
+    loaded: boolean,
+    nodes: Node[] = [],
+): Path {
+  return {
+    id: id,
+    name: id,
+    isLeaf: false,
+    metrics: new Map(),
+    path: id,
+    type: type,
+    loaded: loaded,
+    nodes: nodes,
+  };
+}
+
+function testNode(
+    id: string,
+    fileName: string,
+    leaf: boolean,
+    nodes: Node[] = [],
+): Test {
+  return {
+    id: id,
+    name: id,
+    isLeaf: leaf,
+    metrics: new Map(),
+    nodes: nodes,
+    fileName: fileName,
+  };
+}
+
+describe('getLoadedParentIds', () => {
+  it('it returns all loaded parent IDs for both directories and files', () => {
+    const nodes: Path[] = [
+      pathNode('//chrome', DirectoryNodeType.DIRECTORY, true, [
+        pathNode('//chrome/app', DirectoryNodeType.DIRECTORY, true, [
+          pathNode('//chrome/app/theme', DirectoryNodeType.DIRECTORY, false),
+          pathNode('//chrome/app/app.cc', DirectoryNodeType.FILENAME, true, [
+            testNode('app', '//chrome/app/app.cc', false),
+          ]),
+        ]),
+        pathNode('//chrome/chrome.cc', DirectoryNodeType.FILENAME, false),
+      ]),
+      pathNode('//root.cc', DirectoryNodeType.FILENAME, true, [
+        testNode('root', '//root.cc', false),
+      ]),
+    ];
+    const [dirs, files] = getLoadedParentIds(nodes);
+    expect(dirs).toHaveLength(2);
+    expect(dirs).toContain('//chrome');
+    expect(dirs).toContain('//chrome/app');
+    expect(files).toHaveLength(2);
+    expect(files).toContain('//chrome/app/app.cc');
+    expect(files).toContain('//root.cc');
+  });
+});
+
+describe('merge_test action', () => {
   it('populate tests with a single variant correctly', () => {
     const metrics = metricsMap({
       '2012-01-02': [
@@ -105,16 +165,7 @@ describe('Merge TestMetrics', () => {
   });
 
   it('merge tests into existing state correctly', () => {
-    const state: Node[] = [{
-      id: 'foo',
-      name: 'foo',
-      metrics: new Map(),
-      isLeaf: false,
-      nodes: [],
-      path: 'foo',
-      type: DirectoryNodeType.FILENAME,
-      loaded: false,
-    } as Path];
+    const state: Node[] = [pathNode('foo', DirectoryNodeType.FILENAME, false)];
     const tests: TestDateMetricData[] = [{
       testId: '12',
       testName: 'name',
@@ -182,7 +233,7 @@ describe('Merge TestMetrics', () => {
   });
 });
 
-describe('Merge LoadMetrics', () => {
+describe('merge_dir action', () => {
   it('merge a single root node', () => {
     const nodes: DirectoryNode[] = [{
       id: '/',
@@ -203,16 +254,7 @@ describe('Merge LoadMetrics', () => {
   });
 
   it('merge a single directory node into existing state', () => {
-    const state: Node[] = [{
-      id: '/',
-      name: 'src',
-      metrics: new Map(),
-      isLeaf: false,
-      nodes: [],
-      path: '/',
-      type: DirectoryNodeType.DIRECTORY,
-      loaded: false,
-    } as Path];
+    const state: Node[] = [pathNode('/', DirectoryNodeType.DIRECTORY, false)];
     const nodes: DirectoryNode[] = [{
       id: '/a',
       type: DirectoryNodeType.FILENAME,
@@ -239,5 +281,93 @@ describe('Merge LoadMetrics', () => {
     expect(m0n0.onExpand).toBe(onExpand);
     expect((m0n0 as Path).type).toEqual(DirectoryNodeType.FILENAME);
     expect((m0n0 as Path).loaded).toEqual(false);
+  });
+});
+
+describe('rebuild_state action', () => {
+  it('rebuild an unexpanded root node', () => {
+    const nodes: DirectoryNode[] = [{
+      id: '//chrome',
+      type: DirectoryNodeType.DIRECTORY,
+      name: '//chrome',
+      metrics: {},
+    }, {
+      id: '//infra',
+      type: DirectoryNodeType.DIRECTORY,
+      name: '//infra',
+      metrics: {},
+    }];
+    const state = dataReducer([], { type: 'rebuild_state', nodes, tests: [] });
+
+    const expected: Node[] = [
+      pathNode('//chrome', DirectoryNodeType.DIRECTORY, false),
+      pathNode('//infra', DirectoryNodeType.DIRECTORY, false),
+    ];
+    expect(state).toEqual(expected);
+  });
+
+  it('rebuild an expanded root node', () => {
+    const nodes: DirectoryNode[] = [{
+      id: '//chrome',
+      type: DirectoryNodeType.DIRECTORY,
+      name: '//chrome',
+      metrics: {},
+    }, {
+      id: '//chrome/app',
+      type: DirectoryNodeType.DIRECTORY,
+      name: '//chrome/app',
+      metrics: {},
+    }, {
+      id: '//infra',
+      type: DirectoryNodeType.DIRECTORY,
+      name: '//infra',
+      metrics: {},
+    }];
+    const state = dataReducer([], { type: 'rebuild_state', nodes, tests: [] });
+
+    const expected: Node[] = [
+      pathNode('//chrome', DirectoryNodeType.DIRECTORY, true, [
+        pathNode('//chrome/app', DirectoryNodeType.DIRECTORY, false),
+      ]),
+      pathNode('//infra', DirectoryNodeType.DIRECTORY, false),
+    ];
+    expect(state).toEqual(expected);
+  });
+
+  it('rebuild an expanded root node with tests', () => {
+    const nodes: DirectoryNode[] = [{
+      id: '//chrome',
+      type: DirectoryNodeType.DIRECTORY,
+      name: '//chrome',
+      metrics: {},
+    }, {
+      id: '//chrome/app.cc',
+      type: DirectoryNodeType.FILENAME,
+      name: '//chrome/app.cc',
+      metrics: {},
+    }, {
+      id: '//infra',
+      type: DirectoryNodeType.DIRECTORY,
+      name: '//infra',
+      metrics: {},
+    }];
+    const tests: TestDateMetricData[] = [{
+      testId: 'app',
+      testName: 'app',
+      fileName: '//chrome/app.cc',
+      metrics: {},
+      variants: [],
+    }];
+    const state = dataReducer([], { type: 'rebuild_state', nodes, tests });
+
+    const expected: Node[] = [
+      pathNode('//chrome', DirectoryNodeType.DIRECTORY, true, [
+        pathNode('//chrome/app.cc', DirectoryNodeType.FILENAME, true, [
+          testNode('app', '//chrome/app.cc', false),
+        ]),
+      ]),
+      pathNode('//infra', DirectoryNodeType.DIRECTORY, false),
+    ];
+    expect(state).toEqual(expected);
   });
 });

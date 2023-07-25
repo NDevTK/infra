@@ -116,7 +116,7 @@ describe('fetchTestMetrics', () => {
         'AVG_RUNTIME',
         'TOTAL_RUNTIME',
         'NUM_FAILURES',
-        'AVG_CORES'
+        'AVG_CORES',
       ],
       filter: 'filter',
       page_offset: 0,

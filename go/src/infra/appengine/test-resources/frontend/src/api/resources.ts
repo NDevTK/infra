@@ -120,6 +120,12 @@ export async function listComponents(): Promise<ListComponentsResponse> {
   return resp;
 }
 
+export function isTestMetricsResponse(
+    object: any,
+): object is FetchTestMetricsResponse {
+  return 'lastPage' in object;
+}
+
 export async function fetchTestMetrics(
     fetchTestMetricsRequest: FetchTestMetricsRequest,
 ): Promise<FetchTestMetricsResponse> {
