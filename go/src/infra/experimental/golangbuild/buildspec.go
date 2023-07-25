@@ -142,8 +142,8 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 		}
 	}
 
-	// Validate BuildersToTrigger invariant.
-	if inputs.Project != "go" && len(inputs.BuildersToTrigger) != 0 {
+	// Validate BuildersToTriggerAfterToolchainBuild invariant.
+	if inputs.Project != "go" && len(inputs.GetCoordMode().GetBuildersToTriggerAfterToolchainBuild()) != 0 {
 		return nil, fmt.Errorf("specified builders to trigger for unsupported project")
 	}
 

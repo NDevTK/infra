@@ -36,27 +36,15 @@ message Inputs {
   // Extra environment variables to set for building and testing.
   map<string, string> env = 6;
 
-  // List of builders to trigger builds for once make.bash is done.
-  // Must be empty if project is not "go." The builds are triggered
-  // with the same gerrit and gitiles build data this build was
-  // triggered with.
-  //
-  // TODO(mknyszek): Delete this once no builder is setting it. ALL_MODE
-  // currently uses this for backwards compatibility, but in the near future
-  // ALL_MODE will not run with a service account that can schedule new builds.
-  // In that case, only COORDINATOR_MODE will be able to actually schedule
-  // new builds, and that's handled by CoordinatorMode-specific properties.
-  repeated string builders_to_trigger = 7;
-
   // Named cache configured on the builder to use as a cipd tool root cache.
   //
   // Required.
-  string tools_cache = 8;
+  string tools_cache = 7;
 
   // Named cache configured on the builder to use as a git clone cache.
   //
   // No-op unless experiment "golang.cache_git_repos" is enabled.
-  string git_cache = 17;
+  string git_cache = 8;
 
   // On Macs, the version of XCode to use. Because installing it is expensive,
   // it should be the same for all builders that run on a given host.
@@ -122,6 +110,8 @@ message CoordinatorMode {
 
   // Names of other builders to trigger for testing when the
   // build_builder completes successfully.
+  //
+  // This must be empty if project != "go".
   repeated string builders_to_trigger_after_toolchain_build = 4;
 }
 

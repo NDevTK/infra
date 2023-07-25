@@ -29,15 +29,6 @@ func (r *allRunner) Run(ctx context.Context, spec *buildSpec) error {
 		return err
 	}
 	if spec.inputs.Project == "go" {
-		// Trigger downstream builds (of subrepo builders) with the commit and/or Gerrit change we got.
-		//
-		// TODO(mknyszek): This is for backwards compatibility. Soon only coordinator mode invocations
-		// of golangbuild will be allowed to schedule builds, at which point this will fail to work.
-		if builders := spec.inputs.BuildersToTrigger; len(builders) > 0 {
-			if err := triggerDownstreamBuilds(ctx, spec, builders...); err != nil {
-				return err
-			}
-		}
 		return runGoTests(ctx, spec, noSharding)
 	}
 	return fetchSubrepoAndRunTests(ctx, spec)
