@@ -10,8 +10,10 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	_go "go.chromium.org/chromiumos/config/go"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 )
 
 func TestDependencyInjectionBasic(t *testing.T) {
@@ -37,6 +39,66 @@ func TestDependencyInjectionBasic(t *testing.T) {
 		So(original_proto.DutServer, ShouldNotBeNil)
 		So(original_proto.DutServer.Address, ShouldEqual, dut_address_proto.Address)
 		So(original_proto.DutServer.Port, ShouldEqual, dut_address_proto.Port)
+	})
+
+	Convey("IpEndpoint direct injection", t, func() {
+		original_proto := &labapi.IpEndpoint{}
+		dut_address_proto := &labapi.IpEndpoint{
+			Address: "localhost",
+			Port:    4040,
+		}
+		injection_map := map[string]interface{}{}
+		injection_map["cros-dut"] = common.ProtoToInterfaceMap(dut_address_proto)
+
+		err := common.Inject(original_proto, "", injection_map, "cros-dut")
+
+		So(err, ShouldBeNil)
+		So(original_proto, ShouldNotBeNil)
+		So(original_proto.Address, ShouldEqual, dut_address_proto.Address)
+		So(original_proto.Port, ShouldEqual, dut_address_proto.Port)
+	})
+
+	Convey("test injection", t, func() {
+		original_proto := &skylab_test_runner.ContainerRequest{
+			DynamicIdentifier: "cros-provision",
+			Container: &api.Template{
+				Container: &api.Template_CrosProvision{
+					CrosProvision: &api.CrosProvisionTemplate{
+						InputRequest: &api.CrosProvisionRequest{},
+					},
+				},
+			},
+			ContainerImageKey: "cros-provision",
+			DynamicDeps: []*skylab_test_runner.DynamicDep{
+				{
+					Key:   "crosProvision.inputRequest.dut",
+					Value: "dut_primary",
+				},
+				{
+					Key:   "crosProvision.inputRequest.dutServer",
+					Value: "cros-dut",
+				},
+			},
+		}
+		dut_address_proto := &labapi.IpEndpoint{
+			Address: "localhost",
+			Port:    4040,
+		}
+		dut := &labapi.Dut{
+			DutType: &labapi.Dut_Chromeos{
+				Chromeos: &labapi.Dut_ChromeOS{
+					Name: "hello",
+				},
+			},
+		}
+		injection_map := map[string]interface{}{}
+		injection_map["cros-dut"] = common.ProtoToInterfaceMap(dut_address_proto)
+		injection_map["dut_primary"] = common.ProtoToInterfaceMap(dut)
+
+		for _, dep := range original_proto.DynamicDeps {
+			err := common.Inject(original_proto.Container, dep.Key, injection_map, dep.Value)
+			So(err, ShouldBeNil)
+		}
 	})
 }
 

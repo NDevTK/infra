@@ -14,7 +14,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/reflect/protoreflect"
-	"google.golang.org/protobuf/types/known/anypb"
 )
 
 // Inject implements the logic for which Dependency Injection is based on.
@@ -53,28 +52,33 @@ func Inject(receiver protoreflect.ProtoMessage, injection_point string, injectab
 		}
 	}()
 
-	receiver_map := protoToInterfaceMap(receiver)
+	receiver_map := ProtoToInterfaceMap(receiver)
 
 	// Retrieve the injectable using the injection_key
 	injectable := stepThroughInterface(injectables, strings.Split(injection_key, "."))
 
-	// Isolate the injection_point and apply the injection
-	injection_point_parts := strings.Split(injection_point, ".")
-	point := stepThroughInterface(receiver_map, injection_point_parts[0:len(injection_point_parts)-1])
-
-	// Special logic for last part of the injection_point as it may not exist
-	// and therefore can't be indexed, as well as how to handle arrays.
-	last_part := injection_point_parts[len(injection_point_parts)-1]
-	if reflect.ValueOf(point.(map[string]interface{})[last_part]).Kind() == reflect.Slice {
-		last_point := point.(map[string]interface{})[last_part]
-		last_point = TranslateSliceToInterface(last_point)
-		if reflect.ValueOf(last_point).Kind() == reflect.ValueOf(injectable).Kind() {
-			point.(map[string]interface{})[last_part] = injectable
-		} else {
-			point.(map[string]interface{})[last_part] = append(last_point.([]interface{}), injectable)
-		}
+	// Cover 1-to-1 injections
+	if injection_point == "" {
+		receiver_map = injectable.(map[string]interface{})
 	} else {
-		point.(map[string]interface{})[last_part] = injectable
+		// Isolate the injection_point and apply the injection
+		injection_point_parts := strings.Split(injection_point, ".")
+		point := stepThroughInterface(receiver_map, injection_point_parts[0:len(injection_point_parts)-1])
+
+		// Special logic for last part of the injection_point as it may not exist
+		// and therefore can't be indexed, as well as how to handle arrays.
+		last_part := injection_point_parts[len(injection_point_parts)-1]
+		if reflect.ValueOf(point.(map[string]interface{})[last_part]).Kind() == reflect.Slice {
+			last_point := point.(map[string]interface{})[last_part]
+			last_point = TranslateSliceToInterface(last_point)
+			if reflect.ValueOf(last_point).Kind() == reflect.ValueOf(injectable).Kind() {
+				point.(map[string]interface{})[last_part] = injectable
+			} else {
+				point.(map[string]interface{})[last_part] = append(last_point.([]interface{}), injectable)
+			}
+		} else {
+			point.(map[string]interface{})[last_part] = injectable
+		}
 	}
 
 	unmarshalInterfaceProtoMapToProto(receiver_map, receiver)
@@ -86,13 +90,7 @@ func Inject(receiver protoreflect.ProtoMessage, injection_point string, injectab
 // back into a provided proto message.
 func unmarshalInterfaceProtoMapToProto(proto_map map[string]interface{}, proto protoreflect.ProtoMessage) {
 	json_bytes, _ := json.Marshal(proto_map)
-	any := anypb.Any{}
-	err := protojson.Unmarshal(json_bytes, &any)
-	if err != nil {
-		panic(err)
-	}
-
-	err = any.UnmarshalTo(proto)
+	err := protojson.Unmarshal(json_bytes, proto)
 	if err != nil {
 		panic(err)
 	}
@@ -100,12 +98,8 @@ func unmarshalInterfaceProtoMapToProto(proto_map map[string]interface{}, proto p
 
 // protoToInterfaceMap converts a proto message into an interface map
 // which is a useful struct for dependency injection.
-func protoToInterfaceMap(proto protoreflect.ProtoMessage) map[string]interface{} {
-	any, err := anypb.New(proto)
-	if err != nil {
-		panic(err)
-	}
-	json_bytes, err := protojson.Marshal(any)
+func ProtoToInterfaceMap(proto protoreflect.ProtoMessage) map[string]interface{} {
+	json_bytes, err := protojson.Marshal(proto)
 	if err != nil {
 		panic(err)
 	}
