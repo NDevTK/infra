@@ -242,8 +242,6 @@ http {
         set $arg_gs_bucket "chromeos-image-archive";
       }
       # The ending '?' erase any query string from the incoming request.
-      rewrite "^/static/(tast/cros/.+)" "/download/chromiumos-test-assets-public/$1?" last;
-      rewrite "^/static/(tast/.+)" "/download/chromeos-test-assets-private/$1?" last;
       rewrite "^/static/([^/]+-channel/.+)$" "/download/chromeos-releases/$1?" last;
       rewrite "^/static/([^/]+/[^/]+)/(autotest/packages)/(.*)" "/extract/$arg_gs_bucket/$1/autotest_packages.tar?file=$2/$3?" last;
       rewrite "^/static/([^/]+/[^/]+/chromiumos_test_image)\.bin$" "/extract/$arg_gs_bucket/$1.tar.xz?file=chromiumos_test_image.bin?" last;
