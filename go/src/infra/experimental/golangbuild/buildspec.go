@@ -263,7 +263,7 @@ func (b *buildSpec) distTestRunCmd(ctx context.Context, dir, run string, json bo
 		args = append(args, "-json")
 	}
 	args = append(args, b.distTestFlags()...)
-	args = append(args, "-run", run)
+	args = append(args, "-run="+run)
 	return b.goCmd(ctx, dir, args...)
 }
 
