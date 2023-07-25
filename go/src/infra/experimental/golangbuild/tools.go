@@ -1,0 +1,100 @@
+// Copyright 2023 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package main
+
+import (
+	"context"
+	"fmt"
+	"infra/experimental/golangbuild/golangbuildpb"
+	"io"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+
+	"go.chromium.org/luci/lucictx"
+	"go.chromium.org/luci/luciexe/build"
+)
+
+// N.B. We assume a few tools are already available on the machine we're
+// running on. Namely:
+// - For non-Windows, a C/C++ toolchain
+//
+// TODO(mknyszek): Make sure Go 1.17 still works as the bootstrap toolchain since
+// it's our published minimum.
+const cipdDeps = `
+infra/3pp/tools/git/${platform} version:2@2.39.2.chromium.11
+@Subdir bin
+infra/tools/bb/${platform} latest
+infra/tools/rdb/${platform} latest
+infra/tools/luci/cas/${platform} latest
+infra/tools/result_adapter/${platform} latest
+@Subdir go_bootstrap
+infra/3pp/tools/go/${platform} version:2@BOOTSTRAP_VERSION
+@Subdir cc/${os=windows}
+golang/third_party/llvm-mingw-msvcrt/${platform} latest
+@Subdir
+`
+
+func installTools(ctx context.Context, inputs *golangbuildpb.Inputs) (toolsRoot string, err error) {
+	step, ctx := build.StartStep(ctx, "install tools")
+	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
+
+	bootstrap := inputs.BootstrapVersion
+	if bootstrap == "" {
+		bootstrap = "1.19.3"
+	}
+	cipdDeps := strings.ReplaceAll(cipdDeps, "BOOTSTRAP_VERSION", bootstrap)
+
+	if inputs.XcodeVersion != "" {
+		cipdDeps += "infra/tools/mac_toolchain/${platform} latest\n"
+	}
+
+	io.WriteString(step.Log("ensure file"), cipdDeps)
+
+	// Store in the named cache specified in Inputs. This is shared across
+	// builder types, allowing reuse across builds if the dependencies
+	// versions are the same.
+	luciExe := lucictx.GetLUCIExe(ctx)
+	if luciExe == nil {
+		return "", fmt.Errorf("missing LUCI_CONTEXT")
+	}
+
+	cache := inputs.ToolsCache
+	if cache == "" {
+		return "", fmt.Errorf("inputs missing ToolsCache: %+v", inputs)
+	}
+	if !filepath.IsLocal(cache) {
+		return "", fmt.Errorf("ToolsCache %q must be relative", cache)
+	}
+
+	toolsRoot = filepath.Join(luciExe.GetCacheDir(), cache)
+
+	io.WriteString(step.Log("tools root"), toolsRoot)
+
+	// Install packages.
+	cmd := exec.CommandContext(ctx, "cipd",
+		"ensure", "-root", toolsRoot, "-ensure-file", "-",
+		"-json-output", filepath.Join(os.TempDir(), "ensure_results.json"))
+	cmd.Stdin = strings.NewReader(cipdDeps)
+	if err := cmdStepRun(ctx, "cipd ensure", cmd, true); err != nil {
+		return "", err
+	}
+
+	// Set up XCode.
+	// See https://source.corp.google.com/h/chromium/infra/infra/+/main:go/src/infra/cmd/mac_toolchain/README.md and
+	// https://chromium.googlesource.com/chromium/tools/depot_tools/+/HEAD/recipes/recipe_modules/osx_sdk/api.py
+	if inputs.XcodeVersion != "" {
+		xcodeInstall := exec.CommandContext(ctx, filepath.Join(toolsRoot, "mac_toolchain"), "install", "-xcode-version", inputs.XcodeVersion, "-output-dir", filepath.Join(toolsRoot, "XCode.app"))
+		if err := cmdStepRun(ctx, "install XCode "+inputs.XcodeVersion, xcodeInstall, true); err != nil {
+			return "", err
+		}
+		xcodeSelect := exec.CommandContext(ctx, "sudo", "xcode-select", "--switch", filepath.Join(toolsRoot, "XCode.app"))
+		if err := cmdStepRun(ctx, "select XCode "+inputs.XcodeVersion, xcodeSelect, true); err != nil {
+			return "", err
+		}
+	}
+	return toolsRoot, nil
+}
