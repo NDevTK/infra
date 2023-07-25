@@ -187,6 +187,13 @@ func triggerBuild(ctx context.Context, spec *buildSpec, shard testShard, builder
 	if spec.invokedSrc.change != nil {
 		bbArgs = append(bbArgs, "-cl", spec.invokedSrc.asURL())
 	}
+	for ex := range spec.experiments {
+		switch ex {
+		case "golang.force_test_outside_repository",
+			"golang.no_network_in_short_test_mode":
+			bbArgs = append(bbArgs, "-ex", "+"+ex)
+		}
+	}
 	bbArgs = append(bbArgs, builder)
 
 	// Execute `bb add` for this shard and collect the output.
