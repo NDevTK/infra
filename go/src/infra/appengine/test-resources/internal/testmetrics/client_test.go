@@ -356,7 +356,7 @@ WHERE
 	AND DATE(date) IN UNNEST(@dates)
 	AND component IN UNNEST(@components)
 GROUP BY date, node_name
-ORDER BY node_name ASC`)
+ORDER BY is_file, node_name ASC`)
 		})
 
 		Convey("Valid unfiltered multi-day request", func() {
@@ -396,7 +396,7 @@ WITH nodes AS(
 )
 SELECT t.*
 FROM nodes AS t LEFT JOIN sorted_day AS s USING(node_name)
-ORDER BY s.rank DESC`)
+ORDER BY is_file, s.rank DESC`)
 		})
 
 		Convey("Parameterized args", func() {
@@ -507,7 +507,7 @@ WHERE
 	AND DATE(f.date) IN UNNEST(@dates)
 	AND component IN UNNEST(@components)
 GROUP BY date, node_name
-ORDER BY node_name ASC`)
+ORDER BY is_file, node_name ASC`)
 		})
 
 		Convey("Valid unfiltered multi-day request", func() {
@@ -571,7 +571,7 @@ test_summaries AS (
 
 SELECT node_summaries.*
 FROM node_summaries LEFT JOIN sorted_day USING(node_name)
-ORDER BY rank DESC`)
+ORDER BY is_file, rank DESC`)
 		})
 
 		Convey("Parameterized args", func() {

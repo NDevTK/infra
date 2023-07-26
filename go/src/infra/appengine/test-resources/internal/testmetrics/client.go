@@ -94,7 +94,7 @@ WHERE
 	AND DATE(date) IN UNNEST(@dates)
 	AND component IN UNNEST(@components)
 GROUP BY date, node_name
-ORDER BY {sortMetric} {sortDirection}`
+ORDER BY is_file, {sortMetric} {sortDirection}`
 
 	unfilteredDirectoryMultiDayQuery string = `
 WITH nodes AS(
@@ -121,7 +121,7 @@ WITH nodes AS(
 )
 SELECT t.*
 FROM nodes AS t LEFT JOIN sorted_day AS s USING(node_name)
-ORDER BY s.rank {sortDirection}`
+ORDER BY is_file, s.rank {sortDirection}`
 
 	filteredDirectorySingleDayQuery string = `
 WITH
@@ -157,7 +157,7 @@ WHERE
 	AND DATE(f.date) IN UNNEST(@dates)
 	AND component IN UNNEST(@components)
 GROUP BY date, node_name
-ORDER BY {sortMetric} {sortDirection}`
+ORDER BY is_file, {sortMetric} {sortDirection}`
 
 	filteredDirectoryMultiDayQuery string = `
 WITH
@@ -203,7 +203,7 @@ test_summaries AS (
 
 SELECT node_summaries.*
 FROM node_summaries LEFT JOIN sorted_day USING(node_name)
-ORDER BY rank {sortDirection}`
+ORDER BY is_file, rank {sortDirection}`
 )
 
 var (
