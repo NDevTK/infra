@@ -52,7 +52,9 @@ type commitLog struct {
 
 type Change struct {
 	// This does not include all fields
-	ChangeNumber int `json:"_change_number"`
+	Project        string `json:"project"`
+	ChangeNumber   int    `json:"_change_number"`
+	RevisionNumber int    `json:"_revision_number"`
 }
 
 type changeLog struct {

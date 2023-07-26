@@ -1,6 +1,9 @@
 ## gerrit_related_changes
 A CLI tool to find related changes given a Gerrit CL. See [Gerrit documentation](https://gerrit-review.googlesource.com/Documentation/rest-api-changes.html#get-related-changes).
 
+## Auth
+Note that you'll need to log in with `bb auth-login` and have the `https://www.googleapis.com/auth/gerritcodereview` OAuth scope.
+
 ### Sample usage
 
 #### Related changes
@@ -14,14 +17,19 @@ cat /tmp/sample_gerrit_related_changes_output.txt
 {
  "related": [
   {
-   "_change_number": 4508966
+   "project": "chromiumos/platform2",
+   "_change_number": 4508966,
+   "_revision_number": 2
   },
   {
-   "_change_number": 4508965
+   "project": "chromiumos/platform2",
+   "_change_number": 4508965,
+   "_revision_number": 1
   }
  ],
  "relatedCount": 2,
  "hasRelated": true
+}
 ```
 
 

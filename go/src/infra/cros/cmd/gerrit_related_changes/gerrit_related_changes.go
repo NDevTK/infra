@@ -130,7 +130,7 @@ func (r *relatedRun) Run(a subcommands.Application, args []string, env subcomman
 	if r.gerritClient == nil {
 		gc, err := r.CreateOAuthGerritClient(context.Background())
 		if err != nil {
-			r.LogErr("Error: %s. Please run `%s auth-login` and sign in with your @google.com account", err, os.Args[0])
+			r.LogErr("Error: %s. Please run `cros try auth-login` from a ChromiumOS checkout and sign in with your @google.com account.", err)
 			return 2
 		}
 		r.gerritClient = gc

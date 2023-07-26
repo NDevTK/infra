@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package gerrit
@@ -436,6 +436,6 @@ func TestGetRelatedChanges(t *testing.T) {
 	changes, err := gc.GetRelatedChanges(ctx, server.URL, 4279218)
 	assert.NilError(t, err)
 
-	expectedChanges := []Change{{4279218}, {4279217}}
+	expectedChanges := []Change{{ChangeNumber: 4279218, RevisionNumber: 1, Project: "chromiumos/third_party/kernel"}, {ChangeNumber: 4279217, RevisionNumber: 1, Project: "chromiumos/third_party/kernel"}}
 	assert.Assert(t, reflect.DeepEqual(changes, expectedChanges))
 }

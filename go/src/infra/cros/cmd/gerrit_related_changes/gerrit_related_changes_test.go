@@ -19,7 +19,7 @@ import (
 func gerritChangesToStr(gChanges []gerrit.Change) []string {
 	gChangesStr := make([]string, len(gChanges))
 	for i, chg := range gChanges {
-		gChangesStr[i] = fmt.Sprintf("%d", chg)
+		gChangesStr[i] = fmt.Sprintf("ChangeNumber:%d, RevisionNumber:%d, Project:%s", chg.ChangeNumber, chg.RevisionNumber, chg.Project)
 	}
 	return gChangesStr
 }
@@ -98,10 +98,10 @@ func TestRun_related(t *testing.T) {
 		"host": "chromium-review.googlesource.com"}`,
 		relatedChangesMock: map[string]map[int][]gerrit.Change{
 			"chromium-review.googlesource.com": {
-				1234567: {{ChangeNumber: 1234565}, {ChangeNumber: 1234567}},
+				1234567: {{ChangeNumber: 1234565, RevisionNumber: 1, Project: "chromiumos/platform2"}, {ChangeNumber: 1234567, RevisionNumber: 2, Project: "chromiumos/platform2"}},
 			},
 		},
-		expectedRelatedChanges: []gerrit.Change{{ChangeNumber: 1234565}, {ChangeNumber: 1234567}},
+		expectedRelatedChanges: []gerrit.Change{{ChangeNumber: 1234565, RevisionNumber: 1, Project: "chromiumos/platform2"}, {ChangeNumber: 1234567, RevisionNumber: 2, Project: "chromiumos/platform2"}},
 		expectedRelCount:       2,
 		expectedHasRel:         true,
 		expectedRetVal:         0,
