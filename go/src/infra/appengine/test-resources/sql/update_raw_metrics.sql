@@ -58,7 +58,7 @@ USING (
         variant_hash,
         ANY_VALUE(test_name) AS test_name,
         ANY_VALUE(file_name) AS file_name,
-        ANY_VALUE(component) AS component,
+        IFNULL(ANY_VALUE(component), "Unknown") AS component,
         COUNT(*) AS num_runs,
         COUNTIF(NOT tr.expected AND NOT tr.exonerated) AS num_failures,
         AVG(tr.duration) AS avg_runtime,
