@@ -11,6 +11,8 @@ import (
 // All supported common command types.
 const (
 	// Ctr service related commands
+	ContainerStartCmdType       interfaces.CommandType = "ContainerStart"
+	ContainerCloseLogsCmdType   interfaces.CommandType = "ContainerCloseLogs"
 	CtrServiceStartAsyncCmdType interfaces.CommandType = "CtrServiceStartAsync"
 	CtrServiceStopCmdType       interfaces.CommandType = "CtrServiceStop"
 	GcloudAuthCmdType           interfaces.CommandType = "GcloudAuth"

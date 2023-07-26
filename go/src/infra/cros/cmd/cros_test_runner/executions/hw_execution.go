@@ -7,6 +7,7 @@ package executions
 import (
 	"bytes"
 	"compress/zlib"
+	"container/list"
 	"context"
 	"encoding/base64"
 	"fmt"
@@ -21,6 +22,7 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/configs"
@@ -113,6 +115,8 @@ func executeHwTests(
 	executorCfg := configs.NewExecutorConfig(ctr, containerCfg)
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 
+	containerQueue := list.New()
+
 	// Create state keeper
 	gcsurl := common.GetGcsUrl(gsRoot)
 	sk := &data.HwTestStateKeeper{
@@ -124,6 +128,10 @@ func executeHwTests(
 		GcsUrl:                gcsurl,
 		StainlessUrl:          common.GetStainlessUrl(gcsurl),
 		TesthausUrl:           common.GetTesthausUrl(gcsurl),
+		ContainerQueue:        containerQueue,
+		Injectables:           make(map[string]interface{}),
+		ContainerInstances:    make(map[string]interfaces.ContainerInterface),
+		ContainerImages:       containerImagesMap,
 	}
 
 	// Generate config

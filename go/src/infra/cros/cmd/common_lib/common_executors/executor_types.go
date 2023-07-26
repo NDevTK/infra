@@ -10,7 +10,8 @@ import (
 
 // All supported common executor types.
 const (
-	CtrExecutorType interfaces.ExecutorType = "CtrExecutor"
+	CtrExecutorType       interfaces.ExecutorType = "CtrExecutor"
+	ContainerExecutorType interfaces.ExecutorType = "ContainerExecutor"
 
 	// For testing purpose only
 	NoExecutorType interfaces.ExecutorType = "NoExecutor"

@@ -295,6 +295,20 @@ func (cfg *CommandConfig) GetCommand(
 	case commands.ParseArgsCmdType:
 		cmd = commands.NewParseArgsCmd()
 
+	case common_commands.ContainerStartCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = common_commands.NewContainerStartCmd(exec)
+
+	case common_commands.ContainerCloseLogsCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = common_commands.NewContainerCloseLogsCmd(exec)
+
 	default:
 		return nil, fmt.Errorf("Command type %s not supported in command configs!", cmdType)
 	}

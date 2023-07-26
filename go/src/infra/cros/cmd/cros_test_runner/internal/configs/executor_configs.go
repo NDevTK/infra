@@ -56,6 +56,12 @@ func (cfg *ExecutorConfig) GetExecutor(execType interfaces.ExecutorType) (interf
 		}
 		exec = common_executors.NewCtrExecutor(cfg.Ctr)
 
+	case common_executors.ContainerExecutorType:
+		if cfg.Ctr == nil {
+			return nil, fmt.Errorf("CrosToolRunner is nil!")
+		}
+		exec = common_executors.NewContainerExecutor(cfg.Ctr)
+
 	case executors.CrosDutExecutorType:
 		container, err := cfg.ContainerConfig.GetContainer(containers.CrosDutTemplatedContainerType)
 		if err != nil {

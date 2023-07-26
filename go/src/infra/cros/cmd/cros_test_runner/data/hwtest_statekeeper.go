@@ -5,8 +5,10 @@
 package data
 
 import (
+	"container/list"
 	vmlabapi "infra/libs/vmlab/api"
 
+	"go.chromium.org/chromiumos/config/go/build/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	artifactpb "go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
@@ -28,6 +30,14 @@ type HwTestStateKeeper struct {
 
 	// Set from input
 	CftTestRequest *skylab_test_runner.CFTTestRequest
+
+	// Request Queues
+	ContainerQueue *list.List
+
+	// Dictionaries
+	Injectables        map[string]interface{}
+	ContainerInstances map[string]interfaces.ContainerInterface
+	ContainerImages    map[string]*api.ContainerImageInfo
 
 	// Dut related
 	HostName         string
