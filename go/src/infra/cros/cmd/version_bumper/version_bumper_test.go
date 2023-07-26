@@ -72,11 +72,8 @@ func resetTestFile() error {
 	return testVersion.UpdateVersionFile()
 }
 
-// b/293339982 -- TestBumpVersion does the wrong thing locally and alters the whole git repo state.
-//
-//	This test is disabled (by lowercasing it) until it can be rewritten to be better behaved
-//	locally.
-func testBumpVersion(t *testing.T) {
+func TestBumpVersion(t *testing.T) {
+	t.Skip("See b/293339982 -- TestBumpVersion does the wrong thing locally and alters the whole git repo state.")
 	s := GetApplication()
 
 	testDir, err := filepath.Abs("test/")
