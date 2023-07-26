@@ -4,9 +4,13 @@ USING (
     raw_results_tables AS (
       SELECT
         CAST(REGEXP_EXTRACT(exported.id, r'build-(\d+)') AS INT64) AS build_id,
-        test_metadata.name AS test_name,
+        -- Remove any parameterized portion of the name. These consistently end
+        -- in a backlash with a number (e.g. foo/0, bar/1, etc.)
+        REGEXP_REPLACE(test_metadata.name, '/[0-9]+$', '') AS test_name,
         partition_time,
-        test_id,
+        -- Remove any parameterized portion of the test_id. These end in /0
+        -- or /All.0
+        REGEXP_REPLACE(test_id, r'[/\.][0-9]+$', '') AS test_id,
         test_metadata.location.repo AS repo,
         test_metadata.location.file_name AS file_name,
         SPLIT(exported.realm, ':')[SAFE_OFFSET(0)] AS `project`,
@@ -24,9 +28,9 @@ USING (
       UNION ALL
       SELECT
         CAST(REGEXP_EXTRACT(exported.id, r'build-(\d+)') AS INT64) AS build_id,
-        test_metadata.name AS test_name,
+        REGEXP_REPLACE(test_metadata.name, '/[0-9]+$', '') AS test_name,
         partition_time,
-        test_id,
+        REGEXP_REPLACE(test_id, r'[/\.][0-9]+$', '') AS test_id,
         test_metadata.location.repo AS repo,
         test_metadata.location.file_name AS file_name,
         SPLIT(exported.realm, ':')[SAFE_OFFSET(0)] AS `project`,
