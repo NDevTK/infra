@@ -297,6 +297,7 @@ This module uses the following named caches:
 
 import hashlib
 import itertools
+import posixpath
 import re
 
 from google.protobuf import json_format as jsonpb
@@ -585,11 +586,44 @@ class Support3ppApi(recipe_api.RecipeApi):
                                       force_build_packages, skip_upload, spec,
                                       version, self._infra_3pp_hash.hexdigest())
 
+  def _glob_paths_from_git(self,
+                           name,
+                           source,
+                           pattern):
+    """glob rules for `pattern` using `git ls-files`.
+
+    Args:
+      * name (str): The name of the step.
+      * source (Path): The directory whose contents should be globbed. It must
+        be part of the git repository.
+      * pattern (str): The glob pattern to apply under `source`.
+    """
+    assert isinstance(source, config_types.Path)
+    result = self.m.step(
+        name,
+        ['git', '-C', source, 'ls-files', pattern],
+        stdout=self.m.raw_io.output_text(),
+    )
+
+    # `git ls-files` always returns posix path.
+    ret = [
+        source.join(*x.split(posixpath.sep))
+        for x in result.stdout.splitlines()
+    ]
+    result.presentation.logs["glob_from_git"] = [str(x) for x in ret]
+    return ret
+
+
   def load_packages_from_path(self,
                               base_path,
                               glob_pattern='**/3pp.pb',
                               check_dup=True):
-    """Loads all package definitions from the given base_path and glob pattern.
+    """Loads all package definitions from the given base_path and glob pattern
+    inside the git repository.
+
+    To include package definitions across multiple git repository or git
+    submodules, load_packages_from_path need to be called for each of the
+    repository.
 
     This will parse and intern all the 3pp.pb package definition files so that
     packages can be identified by their cipd package name.
@@ -624,8 +658,8 @@ class Support3ppApi(recipe_api.RecipeApi):
     """
 
     self._package_roots.add(self._NormalizePath(base_path))
-    known_package_specs = self.m.file.glob_paths('find package specs',
-                                                 base_path, glob_pattern)
+    known_package_specs = self._glob_paths_from_git('find package specs',
+                                                    base_path, glob_pattern)
 
     discovered = set()
 

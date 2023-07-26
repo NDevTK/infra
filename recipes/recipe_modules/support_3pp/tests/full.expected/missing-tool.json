@@ -54,19 +54,15 @@
   },
   {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "glob",
+      "git",
+      "-C",
       "[CACHE]/builder/package_repo",
+      "ls-files",
       "**/3pp.pb"
     ],
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
     },
-    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "project:ci"
@@ -81,8 +77,8 @@
     },
     "name": "find package specs",
     "~followup_annotations": [
-      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/a/3pp.pb@@@",
-      "@@@STEP_LOG_END@glob@@@"
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/a/3pp.pb@@@",
+      "@@@STEP_LOG_END@glob_from_git@@@"
     ]
   },
   {

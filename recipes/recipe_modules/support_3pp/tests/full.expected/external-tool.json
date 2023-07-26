@@ -30,23 +30,19 @@
   },
   {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "glob",
+      "git",
+      "-C",
       "[CACHE]/builder/package_repo",
+      "ls-files",
       "**/3pp.pb"
     ],
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
     },
-    "infra_step": true,
     "name": "find package specs",
     "~followup_annotations": [
-      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_build_tools/external_tool/3pp.pb@@@",
-      "@@@STEP_LOG_END@glob@@@"
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/dir_build_tools/external_tool/3pp.pb@@@",
+      "@@@STEP_LOG_END@glob_from_git@@@"
     ]
   },
   {

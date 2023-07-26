@@ -54,19 +54,15 @@
   },
   {
     "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "glob",
+      "git",
+      "-C",
       "[CACHE]/builder/package_repo",
+      "ls-files",
       "**/3pp.pb"
     ],
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
     },
-    "infra_step": true,
     "luci_context": {
       "realm": {
         "name": "project:ci"
@@ -81,23 +77,23 @@
     },
     "name": "find package specs",
     "~followup_annotations": [
-      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_build_tools/git_tool/3pp.pb@@@",
-      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_build_tools/tool/3pp.pb@@@",
-      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_deps/bottom_dep_git/3pp.pb@@@",
-      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_deps/bottom_dep_url/3pp.pb@@@",
-      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_deps/deep_dep/3pp.pb@@@",
-      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_deps/dep/3pp.pb@@@",
-      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_fetch/fetch_and_package/3pp.pb@@@",
-      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_tools/already_uploaded/3pp.pb@@@",
-      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_tools/pkg/3pp.pb@@@",
-      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_tools/pkg_checkout/3pp.pb@@@",
-      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_tools/pkg_override_and_no_latest/3pp.pb@@@",
-      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_tools/pkg_timeout/3pp.pb@@@",
-      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_tools/posix_tool/3pp.pb@@@",
-      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/dir_tools/windows_experiment/3pp.pb@@@",
-      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/unsupported/3pp.pb@@@",
-      "@@@STEP_LOG_LINE@glob@[CACHE]/builder/package_repo/unsupported_no_method/3pp.pb@@@",
-      "@@@STEP_LOG_END@glob@@@"
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/dir_build_tools/git_tool/3pp.pb@@@",
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/dir_build_tools/tool/3pp.pb@@@",
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/dir_deps/bottom_dep_git/3pp.pb@@@",
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/dir_deps/bottom_dep_url/3pp.pb@@@",
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/dir_deps/deep_dep/3pp.pb@@@",
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/dir_deps/dep/3pp.pb@@@",
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/dir_fetch/fetch_and_package/3pp.pb@@@",
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/dir_tools/already_uploaded/3pp.pb@@@",
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/dir_tools/pkg/3pp.pb@@@",
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/dir_tools/pkg_checkout/3pp.pb@@@",
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/dir_tools/pkg_override_and_no_latest/3pp.pb@@@",
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/dir_tools/pkg_timeout/3pp.pb@@@",
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/dir_tools/posix_tool/3pp.pb@@@",
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/dir_tools/windows_experiment/3pp.pb@@@",
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/unsupported/3pp.pb@@@",
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/unsupported_no_method/3pp.pb@@@",
+      "@@@STEP_LOG_END@glob_from_git@@@"
     ]
   },
   {
