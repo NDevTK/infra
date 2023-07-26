@@ -101,9 +101,11 @@ func isEligibleForSuiteLimits(ctx context.Context, iid types.InvocationID, taskS
 	// In some cases single suite runs are listed as default. This will extract the real SuiteName from the requirement.
 	suiteName, err := request.GetSuiteName(iid)
 
+	// TODO(b/293153310): Single tests will temporarily exempt from SuiteLimits because CTS needs to run individual tests manually to avoid re-running a full suite.
 	// Some runs do not launch suites and run individual tests. In that case we will default to the task set name chosen by CTP.
 	if err != nil {
-		suiteName = taskSetName
+		request.SuiteLimitExceptionGranted = true
+		return false
 	}
 
 	// Assume in shared pool, if label-pool isn't found then the pool will be treated as if it is in the shared pools.
