@@ -236,10 +236,11 @@ func (b *Build) Refresh(ctx context.Context, c trservice.Client) error {
 }
 
 var liftTestCaseRunnerVerdict = map[skylab_test_runner.Result_Autotest_TestCase_Verdict]test_platform.TaskState_Verdict{
-	skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS:  test_platform.TaskState_VERDICT_PASSED,
-	skylab_test_runner.Result_Autotest_TestCase_VERDICT_FAIL:  test_platform.TaskState_VERDICT_FAILED,
-	skylab_test_runner.Result_Autotest_TestCase_VERDICT_ERROR: test_platform.TaskState_VERDICT_FAILED,
-	skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT: test_platform.TaskState_VERDICT_FAILED,
+	skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS:       test_platform.TaskState_VERDICT_PASSED,
+	skylab_test_runner.Result_Autotest_TestCase_VERDICT_FAIL:       test_platform.TaskState_VERDICT_FAILED,
+	skylab_test_runner.Result_Autotest_TestCase_VERDICT_ERROR:      test_platform.TaskState_VERDICT_FAILED,
+	skylab_test_runner.Result_Autotest_TestCase_VERDICT_ABORT:      test_platform.TaskState_VERDICT_FAILED,
+	skylab_test_runner.Result_Autotest_TestCase_VERDICT_NO_VERDICT: test_platform.TaskState_VERDICT_NO_VERDICT,
 }
 
 // testCases unpacks test cases contained in the results of a build.
