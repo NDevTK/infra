@@ -23,6 +23,7 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/clients/mock"
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/ufs/mockufs"
+	"infra/cros/recovery/logger/metrics/mockmetrics"
 	"infra/libs/git"
 )
 
@@ -36,6 +37,7 @@ type testFixture struct {
 	MockSwarming       *mock.MockSwarmingClient
 	MockBotTasksCursor *mock.MockBotTasksCursor
 	MockUFS            *mockufs.MockClient
+	MockKarte          *mockmetrics.MockMetrics
 }
 
 // newTextFixture creates a new testFixture to be used in unittests.
@@ -60,6 +62,7 @@ func newTestFixtureWithContext(c context.Context, t *testing.T) (testFixture, fu
 	tf.MockBotTasksCursor = mock.NewMockBotTasksCursor(mc)
 	tf.Inventory = &ServerImpl{}
 	tf.MockUFS = mockufs.NewMockClient(mc)
+	tf.MockKarte = mockmetrics.NewMockMetrics(mc)
 
 	validate := func() {
 		mc.Finish()

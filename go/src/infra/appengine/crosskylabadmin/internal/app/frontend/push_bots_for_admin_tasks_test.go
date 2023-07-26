@@ -27,7 +27,7 @@ func TestPushBotsForAdminTasksImplSmokeTest(t *testing.T) {
 	req := &fleet.PushBotsForAdminTasksRequest{
 		TargetDutState: fleet.DutState_NeedsRepair,
 	}
-	_, err := pushBotsForAdminTasksImpl(ctx, tf.MockSwarming, nil, req)
+	_, err := pushBotsForAdminTasksImpl(ctx, tf.MockSwarming, nil, nil, req)
 
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
@@ -66,7 +66,7 @@ func TestPushBotsForAdminTasksWithUFSClient(t *testing.T) {
 	req := &fleet.PushBotsForAdminTasksRequest{
 		TargetDutState: fleet.DutState_NeedsRepair,
 	}
-	_, err := pushBotsForAdminTasksImpl(ctx, tf.MockSwarming, tf.MockUFS, req)
+	_, err := pushBotsForAdminTasksImpl(ctx, tf.MockSwarming, tf.MockUFS, tf.MockKarte, req)
 
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)

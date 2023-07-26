@@ -6,6 +6,7 @@ package frontend
 
 import (
 	"context"
+	"net/http"
 	"time"
 
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
@@ -14,13 +15,17 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/grpc/grpcutil"
+	"go.chromium.org/luci/server/auth"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/app/frontend/util"
 	"infra/appengine/crosskylabadmin/internal/ufs"
+	"infra/appengine/crosskylabadmin/site"
 	"infra/cros/lab_inventory/utilization"
+	"infra/cros/recovery/karte"
+	"infra/cros/recovery/logger/metrics"
 )
 
 // SwarmingFactory is a constructor for a SwarmingClient.
@@ -41,6 +46,22 @@ func (tsi *TrackerServerImpl) newSwarmingClient(c context.Context, host string) 
 	return clients.NewSwarmingClient(c, host)
 }
 
+func getKarteClient(ctx context.Context) (metrics.Metrics, error) {
+	cfg := config.Get(ctx)
+	// Create the Karte client
+	transport, err := auth.GetRPCTransport(ctx, auth.AsSelf)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to get RPC transport").Err()
+	}
+	kClient, err := karte.NewMetricsWithHttp(ctx, &http.Client{
+		Transport: transport,
+	}, cfg.GetKarte().GetHost(), site.DefaultPRPCOptions)
+	if err != nil {
+		return nil, err
+	}
+	return kClient, nil
+}
+
 // PushBotsForAdminTasks implements the fleet.Tracker.pushBotsForAdminTasks() method.
 func (tsi *TrackerServerImpl) PushBotsForAdminTasks(ctx context.Context, req *fleet.PushBotsForAdminTasksRequest) (res *fleet.PushBotsForAdminTasksResponse, err error) {
 	defer func() {
@@ -55,14 +76,18 @@ func (tsi *TrackerServerImpl) PushBotsForAdminTasks(ctx context.Context, req *fl
 
 	httpClient, err := ufs.NewHTTPClient(ctx)
 	if err != nil {
-		logging.Errorf(ctx, "error setting up UFS client: %s")
+		logging.Errorf(ctx, "error setting up UFS client: %s", err)
 	}
 	ufsClient, err := ufs.NewClient(ctx, httpClient, cfg.GetUFS().GetHost())
 	if err != nil {
-		logging.Errorf(ctx, "error setting up UFS client: %s")
+		logging.Errorf(ctx, "error setting up UFS client: %s", err)
+	}
+	metricsClient, err := getKarteClient(ctx)
+	if err != nil {
+		logging.Errorf(ctx, "error setting up Karte client: %s", err)
 	}
 
-	return pushBotsForAdminTasksImpl(ctx, sc, ufsClient, req)
+	return pushBotsForAdminTasksImpl(ctx, sc, ufsClient, metricsClient, req)
 }
 
 // PushBotsForAdminAuditTasks implements the fleet.Tracker.pushBotsForAdminTasks() method.
