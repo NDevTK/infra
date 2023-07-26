@@ -13,6 +13,7 @@ import (
 
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
+	ctpv2_data "infra/cros/cmd/ctpv2/data"
 )
 
 // GcloudAuthCmd represents gcloud auth cmd.
@@ -35,6 +36,8 @@ func (cmd *GcloudAuthCmd) ExtractDependencies(ctx context.Context,
 		err = cmd.extractDepsFromHwTestStateKeeper(ctx, sk)
 	case *data.LocalTestStateKeeper:
 		err = cmd.extractDepsFromLocalTestStateKeeper(ctx, sk)
+	case *ctpv2_data.FilterStateKeeper:
+		err = cmd.extractDepsFromFilterStateKeeper(ctx, sk)
 	default:
 		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
 	}
@@ -70,6 +73,18 @@ func (cmd *GcloudAuthCmd) extractDepsFromLocalTestStateKeeper(
 	if sk.UseDockerKeyDirectly {
 		logging.Infof(ctx, "Info: using service account key directly for docker login")
 	}
+
+	return nil
+}
+
+func (cmd *GcloudAuthCmd) extractDepsFromFilterStateKeeper(
+	ctx context.Context,
+	sk *ctpv2_data.FilterStateKeeper) error {
+
+	if sk.DockerKeyFileLocation == "" {
+		return fmt.Errorf("Cmd %q missing dependency: DockerKeyFileLocation", cmd.GetCommandType())
+	}
+	cmd.DockerKeyFileLocation = sk.DockerKeyFileLocation
 
 	return nil
 }

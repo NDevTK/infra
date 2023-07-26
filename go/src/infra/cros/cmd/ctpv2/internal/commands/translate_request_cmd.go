@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/ctpv2/internal/data"
+	"infra/cros/cmd/ctpv2/data"
 
 	"github.com/gogo/protobuf/jsonpb"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
@@ -112,6 +112,11 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 	internalStruct.SuiteInfo = &testapi.SuiteInfo{
 		SuiteMetadata: suitemd,
 		SuiteRequest:  cmd.CtpV2Req.GetSuiteRequest(),
+	}
+
+	translated_req := step.Log("translated request")
+	if err = marsh.Marshal(translated_req, internalStruct); err != nil {
+		err = errors.Annotate(err, "failed to marshal proto").Err()
 	}
 
 	cmd.InternalTestPlan = internalStruct

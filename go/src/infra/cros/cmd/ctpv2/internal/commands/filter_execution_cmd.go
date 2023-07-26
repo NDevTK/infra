@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/ctpv2/internal/data"
+	"infra/cros/cmd/ctpv2/data"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"

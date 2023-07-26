@@ -10,16 +10,18 @@ import (
 	"log"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	"go.chromium.org/luci/common/errors"
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/common_configs"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/protos"
+	"infra/cros/cmd/ctpv2/data"
 	"infra/cros/cmd/ctpv2/internal/configs"
-	"infra/cros/cmd/ctpv2/internal/data"
+
+	"go.chromium.org/luci/common/errors"
 )
 
 // TODO : Re-structure different execution flow properly later.
@@ -28,13 +30,13 @@ func LuciBuildExecution() {
 	// Set input property reader functions
 	var ctrCipdInfoReader func(context.Context) *protos.CipdVersionInfo
 	build.MakePropertyReader(common.HwTestCtrInputPropertyName, &ctrCipdInfoReader)
-	input := &api.CTPv2Request{}
+	input := &steps.CTPv2BinaryBuildInput{}
 
 	// Set output props writer functions
 	// TODO: add the fields to the response that is responsible for
 	// feeding the test results to upstream.
-	var writeOutputProps func(*api.CTPv2Response)
-	var mergeOutputProps func(*api.CTPv2Response)
+	var writeOutputProps func(*steps.CTPv2BinaryBuildOutput)
+	var mergeOutputProps func(*steps.CTPv2BinaryBuildOutput)
 
 	build.Main(input, &writeOutputProps, &mergeOutputProps,
 		func(ctx context.Context, args []string, st *build.State) error {
@@ -43,8 +45,8 @@ func LuciBuildExecution() {
 			ctrCipdInfo := ctrCipdInfoReader(ctx)
 			logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
 			logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
-			resp := &api.CTPv2Response{}
-			resp, err := executeFiltersInLuciBuild(ctx, input, ctrCipdInfo.GetVersion().GetCipdLabel(), st)
+			resp := &steps.CTPv2BinaryBuildOutput{}
+			_, err := executeFiltersInLuciBuild(ctx, input.Ctpv2Request, ctrCipdInfo.GetVersion().GetCipdLabel(), st)
 			// TODO: add compressed result
 			// if resp != nil {
 			// 	m, _ := proto.Marshal(resp)
@@ -58,7 +60,7 @@ func LuciBuildExecution() {
 			if err != nil {
 				logging.Infof(ctx, "error found: %s", err)
 				st.SetSummaryMarkdown(err.Error())
-				// resp.ErrorSummaryMarkdown = err.Error()
+				resp.ErrorSummaryMarkdown = err.Error()
 			}
 
 			writeOutputProps(resp)
