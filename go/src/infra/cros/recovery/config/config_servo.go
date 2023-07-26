@@ -68,6 +68,9 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Verify if setup data has any data related to servo-host which mean servo is present in setup.",
 				},
+				Dependencies: []string{
+					"Set state:WRONG_CONFIG",
+				},
 				ExecName:   "dut_servo_host_present",
 				RunControl: RunControl_RUN_ONCE,
 			},

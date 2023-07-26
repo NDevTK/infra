@@ -137,6 +137,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			RecoveryActions: []string{
 				"Cold reset by servo and wait for SSH",
+				"Pulse GSC_RST_L with servo and wait for SSH",
 				"Reset servo_v4.1 ethernet and wait for SSH",
 				"Power cycle DUT by RPM and wait",
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
@@ -2505,6 +2506,24 @@ func crosRepairActions() map[string]*Action {
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
+		"Pulse GSC_RST_L with servo and wait for SSH": {
+			Docs: []string{
+				"This repair action call `gsc_reset:on sleep:1 gsc_reset:off` by servo.",
+				"The action is applicable only for setups with c2d2",
+			},
+			Conditions: []string{
+				"Is servod running",
+				"is_servo_c2d2",
+			},
+			Dependencies: []string{
+				"Assert GSC_RST_L by servo",
+				"Sleep 1 seconds",
+				"Deassert GSC_RST_L by servo",
+				"Wait to be SSHable (normal boot)",
+			},
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
 		"Cold reset DUT by servo": {
 			Docs: []string{
 				"Cold reset device by servo and do not wait.",
@@ -2519,6 +2538,38 @@ func crosRepairActions() map[string]*Action {
 				"timeout:30",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Deassert GSC_RST_L by servo": {
+			Docs: []string{
+				"Release GSC from reset.",
+			},
+			Dependencies: []string{
+				"Is servod running",
+			},
+			ExecName: "servo_set",
+			ExecExtraArgs: []string{
+				"command:gsc_reset",
+				"string_value:off",
+				"timeout:10",
+			},
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Assert GSC_RST_L by servo": {
+			Docs: []string{
+				"Assert GSC_RST_L by servo and do not wait.",
+			},
+			Dependencies: []string{
+				"Is servod running",
+			},
+			ExecName: "servo_set",
+			ExecExtraArgs: []string{
+				"command:gsc_reset",
+				"string_value:on",
+				"timeout:10",
+			},
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Power OFF DUT by servo": {
 			Docs: []string{
@@ -3632,6 +3683,16 @@ func crosRepairActions() map[string]*Action {
 				"sleep:60",
 			},
 			ExecTimeout:            &durationpb.Duration{Seconds: 70},
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Sleep 1 seconds": {
+			ExecName: "sample_sleep",
+			ExecExtraArgs: []string{
+				"sleep:1",
+			},
+			ExecTimeout:            &durationpb.Duration{Seconds: 2},
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
