@@ -107,11 +107,6 @@
 //
 // ### Current experiments
 //
-//   - golang.cache_git_clone: Cache a git clone of each project builds and
-//     builders. New builds fetch required objects into the cache repo, which
-//     may already contain the object or some parents. This requires a named
-//     cache defined on each builder, whose name is provided via
-//     golangbuildpb.Inputs.GitCache.
 //   - golang.force_test_outside_repository: Can be used to force running tests
 //     from outside the repository to catch accidental reads outside of module
 //     boundaries despite the repository not having opted-in to this test

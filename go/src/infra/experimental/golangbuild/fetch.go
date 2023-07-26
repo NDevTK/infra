@@ -82,103 +82,22 @@ func (s *sourceSpec) asURL() string {
 }
 
 // fetchRepo fetches a repository according to src and places it at dst.
-func fetchRepo(ctx context.Context, src *sourceSpec, dst string, inputs *golangbuildpb.Inputs, experiments map[string]struct{}) (err error) {
+func fetchRepo(ctx context.Context, src *sourceSpec, dst string, inputs *golangbuildpb.Inputs) (err error) {
 	step, ctx := build.StartStep(ctx, "fetch "+src.project)
 	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
-	if _, ok := experiments["golang.cache_git_clone"]; ok {
-		return fetchRepoCached(ctx, inputs, src, dst)
-	}
-
 	switch {
 	case src.change != nil && !src.cherryPick:
-		return fetchRepoChangeAsIs(ctx, dst, src.change)
+		return fetchRepoChangeAsIs(ctx, inputs, src.change, dst)
 	case src.change != nil && src.cherryPick:
-		return fetchRepoChangeWithCherryPick(ctx, src.branch, dst, src.change)
+		return fetchRepoChangeWithCherryPick(ctx, inputs, src.branch, src.change, dst)
 	case src.commit != nil:
 		if src.cherryPick {
 			return fmt.Errorf("cherryPick is unexpectedly set in the commit case")
 		}
-		return fetchRepoAtCommit(ctx, dst, src.commit)
+		return fetchRepoAtCommit(ctx, inputs, src.commit, dst)
 	}
 	return fmt.Errorf("one of change or commit must be non-nil")
-}
-
-func fetchRepoCached(ctx context.Context, inputs *golangbuildpb.Inputs, src *sourceSpec, dst string) (err error) {
-	switch {
-	case src.change != nil && !src.cherryPick:
-		return fetchRepoChangeAsIsCached(ctx, inputs, src.change, dst)
-	case src.change != nil && src.cherryPick:
-		return fetchRepoChangeWithCherryPickCached(ctx, inputs, src.branch, src.change, dst)
-	case src.commit != nil:
-		if src.cherryPick {
-			return fmt.Errorf("cherryPick is unexpectedly set in the commit case")
-		}
-		return fetchRepoAtCommitCached(ctx, inputs, src.commit, dst)
-	}
-	return fmt.Errorf("one of change or commit must be non-nil")
-}
-
-// fetchRepoChangeAsIs checks out a change to be tested as is, without rebasing.
-func fetchRepoChangeAsIs(ctx context.Context, dst string, change *bbpb.GerritChange) error {
-	// TODO(mknyszek): We're cloning tip here then fetching what we actually want because git doesn't
-	// provide a good way to clone at a specific ref or commit. Is there a way to speed this up?
-	// Maybe caching is sufficient?
-	if err := runGit(ctx, "git clone", "-C", ".", "clone", "--depth", "1", "https://"+change.Host+"/"+change.Project, dst); err != nil {
-		return err
-	}
-	ref := refFromChange(change)
-	if err := runGit(ctx, "git fetch", "-C", dst, "fetch", "https://"+change.Host+"/"+change.Project, ref); err != nil {
-		return err
-	}
-	if err := runGit(ctx, "git checkout", "-C", dst, "checkout", "FETCH_HEAD"); err != nil {
-		return err
-	}
-	if change.Project == "go" {
-		if err := writeVersionFile(ctx, dst, fmt.Sprintf("%d/%d", change.Change, change.Patchset)); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// fetchRepoChangeWithCherryPick checks out a change by cherry-picking it on
-// top of branch.
-func fetchRepoChangeWithCherryPick(ctx context.Context, branch, dst string, change *bbpb.GerritChange) error {
-	// For submit, fetch HEAD for the branch this change is for, fetch the CL, and cherry-pick it.
-	if err := runGit(ctx, "git clone", "-C", ".", "clone", "--depth", "1", "-b", branch, "https://"+change.Host+"/"+change.Project, dst); err != nil {
-		return err
-	}
-	ref := refFromChange(change)
-	if err := runGit(ctx, "git fetch", "-C", dst, "fetch", "https://"+change.Host+"/"+change.Project, ref); err != nil {
-		return err
-	}
-	if err := runGit(ctx, "git cherry-pick", "-C", dst, "cherry-pick", "FETCH_HEAD"); err != nil {
-		return err
-	}
-	if change.Project == "go" {
-		if err := writeVersionFile(ctx, dst, fmt.Sprintf("%d/%d", change.Change, change.Patchset)); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// fetchRepoAtCommit checks out a commit to be tested as is.
-func fetchRepoAtCommit(ctx context.Context, dst string, commit *bbpb.GitilesCommit) error {
-	// TODO(mknyszek): This is a full git checkout, which is wasteful. Consider caching.
-	if err := runGit(ctx, "git clone", "-C", ".", "clone", "https://"+commit.Host+"/"+commit.Project, dst); err != nil {
-		return err
-	}
-	if err := runGit(ctx, "git checkout", "-C", dst, "checkout", commit.Id); err != nil {
-		return err
-	}
-	if commit.Project == "go" {
-		if err := writeVersionFile(ctx, dst, commit.Id); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 // cachedRepoPath returns the path to the cached bare repo for this gerrit
@@ -290,7 +209,7 @@ func cloneFromCache(ctx context.Context, inputs *golangbuildpb.Inputs, host, pro
 
 // fetchRepoChangeAsIs checks out a change to be tested as is, without
 // rebasing.
-func fetchRepoChangeAsIsCached(ctx context.Context, inputs *golangbuildpb.Inputs, change *bbpb.GerritChange, dst string) error {
+func fetchRepoChangeAsIs(ctx context.Context, inputs *golangbuildpb.Inputs, change *bbpb.GerritChange, dst string) error {
 	ref := refFromChange(change)
 	sha, err := fetchObjIntoCache(ctx, inputs, change.Host, change.Project, ref)
 	if err != nil {
@@ -310,9 +229,9 @@ func fetchRepoChangeAsIsCached(ctx context.Context, inputs *golangbuildpb.Inputs
 	return nil
 }
 
-// fetchRepoChangeWithCherryPickCached checks out a change by cherry-picking it on
+// fetchRepoChangeWithCherryPick checks out a change by cherry-picking it on
 // top of branch.
-func fetchRepoChangeWithCherryPickCached(ctx context.Context, inputs *golangbuildpb.Inputs, branch string, change *bbpb.GerritChange, dst string) error {
+func fetchRepoChangeWithCherryPick(ctx context.Context, inputs *golangbuildpb.Inputs, branch string, change *bbpb.GerritChange, dst string) error {
 	// Fetch branch and change into cache so they will be both be available
 	// in the clone.
 	branchRef := "refs/heads/" + branch
@@ -342,8 +261,8 @@ func fetchRepoChangeWithCherryPickCached(ctx context.Context, inputs *golangbuil
 	return nil
 }
 
-// fetchRepoAtCommitCached checks out a commit to be tested as is.
-func fetchRepoAtCommitCached(ctx context.Context, inputs *golangbuildpb.Inputs, commit *bbpb.GitilesCommit, dst string) error {
+// fetchRepoAtCommit checks out a commit to be tested as is.
+func fetchRepoAtCommit(ctx context.Context, inputs *golangbuildpb.Inputs, commit *bbpb.GitilesCommit, dst string) error {
 	_, err := fetchObjIntoCache(ctx, inputs, commit.Host, commit.Project, commit.Id)
 	if err != nil {
 		return err

@@ -57,7 +57,7 @@ func getGo(ctx context.Context, spec *buildSpec, requirePrebuilt bool) (err erro
 	// There was no prebuilt toolchain we could grab. Fetch Go and build it.
 
 	// Fetch the main Go repository into goroot.
-	if err := fetchRepo(ctx, spec.goSrc, spec.goroot, spec.inputs, spec.experiments); err != nil {
+	if err := fetchRepo(ctx, spec.goSrc, spec.goroot, spec.inputs); err != nil {
 		return err
 	}
 

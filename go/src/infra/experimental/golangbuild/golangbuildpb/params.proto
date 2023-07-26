@@ -43,7 +43,7 @@ message Inputs {
 
   // Named cache configured on the builder to use as a git clone cache.
   //
-  // No-op unless experiment "golang.cache_git_repos" is enabled.
+  // Required.
   string git_cache = 8;
 
   // On Macs, the version of XCode to use. Because installing it is expensive,

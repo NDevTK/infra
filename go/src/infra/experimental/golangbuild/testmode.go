@@ -171,7 +171,7 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec) error {
 	if err != nil {
 		return err
 	}
-	if err := fetchRepo(ctx, spec.subrepoSrc, repoDir, spec.inputs, spec.experiments); err != nil {
+	if err := fetchRepo(ctx, spec.subrepoSrc, repoDir, spec.inputs); err != nil {
 		return err
 	}
 
