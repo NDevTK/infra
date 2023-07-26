@@ -53,7 +53,7 @@ type buildSpec struct {
 
 	experiments map[string]struct{}
 
-	noNetworkCapable bool // whether the host OS can disable network access during test execution
+	noNetworkCapable bool // whether the build can disable network access during test execution
 }
 
 func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map[string]struct{}, st *build.State, inputs *golangbuildpb.Inputs) (*buildSpec, error) {
@@ -153,9 +153,14 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 		return nil, fmt.Errorf("casInstanceFromEnv: %w", err)
 	}
 
-	var noNetworkCapable bool
-	if _, err := exec.LookPath("unshare"); err == nil {
-		noNetworkCapable = true
+	// Determine if the system is capable of disabling external network
+	// during short test execution. (Doing this on just one GOOS is enough.)
+	noNetworkCapable := runtime.GOOS == "linux"
+	if _, err := exec.LookPath("unshare"); err != nil {
+		noNetworkCapable = false
+	}
+	if _, err := exec.LookPath("ip"); err != nil {
+		noNetworkCapable = false
 	}
 
 	return &buildSpec{
@@ -326,9 +331,15 @@ func (b *buildSpec) toolCmd(ctx context.Context, tool string, args ...string) *e
 //
 // It edits cmd in place but for convenience also returns cmd back to its caller.
 func (b *buildSpec) wrapTestCmd(cmd *exec.Cmd) *exec.Cmd {
-	if b.noNetworkCapable && !b.inputs.LongTest && b.experiment("golang.no_network_in_short_test_mode") {
+	if b.noNetworkCapable && !b.inputs.LongTest && b.experiment("golang.no_network_in_short_test_mode_v2") {
 		// Disable external network access for the test command.
 		// Permit internal loopback access.
+		cmd.Args = []string{
+			"unshare", "--net", "--map-current-user", "--",
+			"sh", "-c", "ip link set dev lo up && " + strings.Join(cmd.Args, " "),
+		}
+	} else if b.noNetworkCapable && !b.inputs.LongTest && b.experiment("golang.no_network_in_short_test_mode") {
+		// TODO(dmitshur): Delete this v0 in favor of v2 above, after it's tested and proves not to regress.
 		cmd.Args = []string{
 			"unshare", "-r", "-n", "--",
 			"sh", "-c", "ip link set dev lo up && " + strings.Join(cmd.Args, " "),

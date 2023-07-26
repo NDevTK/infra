@@ -118,6 +118,8 @@
 //     behavior.
 //   - golang.no_network_in_short_test_mode: Disable network access in -short
 //     test mode. In the process of being gradually rolled out to all repos.
+//   - golang.no_network_in_short_test_mode_v2: Like above, but unshare uses
+//     the -c (--map-current-user) flag instead of -r (--map-root-user).
 package main
 
 import (

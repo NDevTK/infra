@@ -190,7 +190,8 @@ func triggerBuild(ctx context.Context, spec *buildSpec, shard testShard, builder
 	for ex := range spec.experiments {
 		switch ex {
 		case "golang.force_test_outside_repository",
-			"golang.no_network_in_short_test_mode":
+			"golang.no_network_in_short_test_mode",
+			"golang.no_network_in_short_test_mode_v2":
 			bbArgs = append(bbArgs, "-ex", "+"+ex)
 		}
 	}
