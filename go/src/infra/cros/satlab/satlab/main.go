@@ -43,6 +43,7 @@ func getApplication() *cli.Application {
 			subcmds.DeleteCmd,
 			subcmds.GetCmd,
 			subcmds.UpdateCmd,
+			subcmds.RepairCmd,
 			subcommands.Section("Run"),
 			run.RunCmd,
 			subcommands.Section("Stable Version"),
