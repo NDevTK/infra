@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium OS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,9 @@ type dockerClient struct {
 
 // NewClient creates client to work with docker client.
 func NewClient(ctx context.Context) (Client, error) {
-	if client, err := createDockerClient(ctx); err != nil {
+	// Disabled by b/292794064.
+	useSocketFile := false
+	if client, err := createDockerClient(ctx, useSocketFile); err != nil {
 		log.Debugf(ctx, "New docker client: failed to create docker client: %s", err)
 		if client != nil {
 			client.Close()
@@ -69,31 +71,33 @@ func NewClient(ctx context.Context) (Client, error) {
 }
 
 // Create Docker Client.
-func createDockerClient(ctx context.Context) (*client.Client, error) {
-	// If the dockerd socket exists, use the default option.
-	// Otherwise, try to use the tcp connection local host IP 192.168.231.1:2375
-	if _, err := os.Lstat(dockerSocketFilePath); err != nil {
-		if !base_error.Is(err, os.ErrNotExist) {
-			log.Debugf(ctx, "Docker file is not exist: %v", err)
-			return nil, err
+func createDockerClient(ctx context.Context, useSocketFile bool) (*client.Client, error) {
+	if useSocketFile {
+		// Use the dockerd socket if allowed.
+		if _, err := os.Lstat(dockerSocketFilePath); err != nil {
+			log.Debugf(ctx, "Docker file check fail: %v", err)
+			if !base_error.Is(err, os.ErrNotExist) {
+				log.Debugf(ctx, "Docker file is exist: %v", err)
+				return nil, err
+			}
+		} else {
+			log.Debugf(ctx, "Docker client connecting over docker.sock")
+			return client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 		}
-		log.Debugf(ctx, "Docker file check fail: %v", err)
-		log.Debugf(ctx, "Docker client connecting over TCP")
-		// Default HTTPClient inside the Docker Client object fails to
-		// connects to docker daemon. Create the transport with DialContext and use
-		// this while initializing new docker client object.
-		timeout := time.Duration(1 * time.Second)
-		transport := &http.Transport{
-			DialContext: (&net.Dialer{
-				Timeout: timeout,
-			}).DialContext,
-		}
-		c := http.Client{Transport: transport}
-
-		return client.NewClientWithOpts(client.WithHost(dockerTcpPath), client.WithHTTPClient(&c), client.WithAPIVersionNegotiation())
 	}
-	log.Debugf(ctx, "Docker client connecting over docker.sock")
-	return client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	// Use the tcp connection local host IP 192.168.231.1:2375
+	log.Debugf(ctx, "Docker client connecting over TCP")
+	// Default HTTPClient inside the Docker Client object fails to
+	// connects to docker daemon. Create the transport with DialContext and use
+	// this while initializing new docker client object.
+	timeout := time.Duration(1 * time.Second)
+	transport := &http.Transport{
+		DialContext: (&net.Dialer{
+			Timeout: timeout,
+		}).DialContext,
+	}
+	c := http.Client{Transport: transport}
+	return client.NewClientWithOpts(client.WithHost(dockerTcpPath), client.WithHTTPClient(&c), client.WithAPIVersionNegotiation())
 }
 
 // Pull is pulling docker image.
