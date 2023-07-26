@@ -7,13 +7,14 @@ package redirect
 import (
 	"context"
 	"fmt"
-	"infra/appengine/cr-rev/config"
-	"infra/appengine/cr-rev/models"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/gae/service/datastore"
+
+	"infra/appengine/cr-rev/config"
+	"infra/appengine/cr-rev/models"
 )
 
 func redirectTestSetup() context.Context {
@@ -173,6 +174,18 @@ func TestRedirects(t *testing.T) {
 				url, _, err := r.FindRedirectURL(ctx, "/291563")
 				So(err, ShouldBeNil)
 				So(url, ShouldEqual, "https://chromium.googlesource.com/chromium/src/+/291563")
+			})
+		})
+		Convey("git numberer diff", func() {
+			Convey("existing commits", func() {
+				url, _, err := r.FindRedirectURL(ctx, "/291560..291562")
+				So(err, ShouldBeNil)
+				So(url, ShouldEqual, "https://chromium.googlesource.com/chromium/src/+/0000000000000000000000000000000000291560..0000000000000000000000000000000000291562")
+			})
+
+			Convey("commit missing", func() {
+				_, _, err := r.FindRedirectURL(ctx, "/291..292")
+				So(err, ShouldEqual, ErrNoMatch)
 			})
 		})
 		Convey("with path", func() {

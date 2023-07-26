@@ -11,17 +11,19 @@ package redirect
 import (
 	"context"
 	"fmt"
-	"infra/appengine/cr-rev/common"
-	"infra/appengine/cr-rev/models"
-	"infra/appengine/cr-rev/utils"
 	"regexp"
 	"strconv"
 
 	"go.chromium.org/luci/gae/service/datastore"
+
+	"infra/appengine/cr-rev/common"
+	"infra/appengine/cr-rev/models"
+	"infra/appengine/cr-rev/utils"
 )
 
 var rietveldRedirectRegex = regexp.MustCompile(`^/(\d{9,39})(?:/(.*))?$`)
 var numberRedirectRegex = regexp.MustCompile(`^/(\d{1,8})(?:/(.*))?$`)
+var diffNumberRedirectRegex = regexp.MustCompile(`^/(\d{1,8})(\.{2,3})(\d{1,8})$`)
 var fullCommitHashRegex = regexp.MustCompile(`^/([[:xdigit:]]{40})(?:/(.*))?$`)
 var shortCommitHashRegex = regexp.MustCompile(`^/([[:xdigit:]]{6,39})(?:/(.*))?$`)
 var diffFullHashRegex = regexp.MustCompile(`^/([[:xdigit:]]{40})(\.{2,3})([[:xdigit:]]{40})`)
@@ -56,32 +58,14 @@ func (r *numberRedirectRule) getRedirect(ctx context.Context, url string) (strin
 	if len(result) == 0 {
 		return "", nil, ErrNoMatch
 	}
-	id, err := strconv.Atoi(result[1])
+	number, err := strconv.Atoi(result[1])
 	if err != nil {
 		return "", nil, err
 	}
 
-	queries := make([]*datastore.Query, len(chromiumPositionRefs))
-	for i, ref := range chromiumPositionRefs {
-		queries[i] = datastore.NewQuery("Commit").
-			Eq("PositionNumber", id).
-			Eq("Host", "chromium").
-			Eq("Repository", "chromium/src").
-			Eq("PositionRef", ref)
-	}
-
-	var commit *models.Commit
-	err = datastore.RunMulti(ctx, queries, func(c *models.Commit) {
-		if commit != nil {
-			return
-		}
-		commit = c
-	})
+	commit, err := findCommitFromNumber(ctx, number)
 	if err != nil {
 		return "", nil, err
-	}
-	if commit == nil {
-		return "", nil, ErrNoMatch
 	}
 
 	path := ""
@@ -89,6 +73,71 @@ func (r *numberRedirectRule) getRedirect(ctx context.Context, url string) (strin
 		path = result[2]
 	}
 	url, err = r.gitRedirect.Commit(*commit, path)
+	if err != nil {
+		return "", nil, err
+	}
+	return url, commit, nil
+}
+
+func findCommitFromNumber(ctx context.Context, number int) (*models.Commit, error) {
+	queries := make([]*datastore.Query, len(chromiumPositionRefs))
+	for i, ref := range chromiumPositionRefs {
+		queries[i] = datastore.NewQuery("Commit").
+			Eq("PositionNumber", number).
+			Eq("Host", "chromium").
+			Eq("Repository", "chromium/src").
+			Eq("PositionRef", ref)
+	}
+
+	var commits []*models.Commit
+	err := datastore.RunMulti(ctx, queries, func(c *models.Commit) {
+		commits = append(commits, c)
+	})
+	if err != nil {
+		return nil, err
+	}
+	commit := utils.FindBestCommit(ctx, commits)
+	if commit == nil {
+		return nil, ErrNoMatch
+	}
+	return commit, nil
+}
+
+// diffNumberRedirectRule redirects from two commit numbers to the diff between
+// the commits in gitiles.
+type diffNumberRedirectRule struct {
+	gitRedirect GitRedirect
+}
+
+func (r *diffNumberRedirectRule) getRedirect(ctx context.Context, url string) (string,
+	*models.Commit, error) {
+	result := diffNumberRedirectRegex.FindStringSubmatch(url)
+	if len(result) == 0 {
+		return "", nil, ErrNoMatch
+	}
+	number, err := strconv.Atoi(result[1])
+	if err != nil {
+		return "", nil, err
+	}
+	number2, err := strconv.Atoi(result[3])
+	if err != nil {
+		return "", nil, err
+	}
+
+	commit, err := findCommitFromNumber(ctx, number)
+	if err != nil {
+		return "", nil, err
+	}
+
+	commit2, err := findCommitFromNumber(ctx, number2)
+	if err != nil {
+		return "", nil, err
+	}
+	if !commit.SameRepoAs(*commit2) {
+		return "", nil, ErrNoMatch
+	}
+
+	url, err = r.gitRedirect.Diff(*commit, *commit2)
 	if err != nil {
 		return "", nil, err
 	}
@@ -268,6 +317,9 @@ func NewRules(redirect GitRedirect) *Rules {
 	return &Rules{
 		rules: []redirectRule{
 			&numberRedirectRule{
+				gitRedirect: redirect,
+			},
+			&diffNumberRedirectRule{
 				gitRedirect: redirect,
 			},
 			&fullCommitHashRule{
