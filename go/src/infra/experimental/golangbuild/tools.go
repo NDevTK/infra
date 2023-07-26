@@ -53,6 +53,7 @@ func installTools(ctx context.Context, inputs *golangbuildpb.Inputs) (toolsRoot 
 
 	// Construct the CIPD ensure file.
 	var cipdDeps string
+	gotXCode := false
 	if inputs.GetMode() == golangbuildpb.Mode_MODE_COORDINATOR {
 		cipdDeps = cipdToolDeps
 	} else {
@@ -62,6 +63,7 @@ func installTools(ctx context.Context, inputs *golangbuildpb.Inputs) (toolsRoot 
 		}
 		cipdDeps = strings.ReplaceAll(cipdBuildDeps, "BOOTSTRAP_VERSION", bootstrap)
 		if inputs.XcodeVersion != "" {
+			gotXCode = true
 			cipdDeps += cipdXCodeDep
 		}
 	}
@@ -100,7 +102,7 @@ func installTools(ctx context.Context, inputs *golangbuildpb.Inputs) (toolsRoot 
 	// Set up XCode.
 	// See https://source.corp.google.com/h/chromium/infra/infra/+/main:go/src/infra/cmd/mac_toolchain/README.md and
 	// https://chromium.googlesource.com/chromium/tools/depot_tools/+/HEAD/recipes/recipe_modules/osx_sdk/api.py
-	if inputs.XcodeVersion != "" {
+	if gotXCode {
 		xcodeInstall := exec.CommandContext(ctx, filepath.Join(toolsRoot, "mac_toolchain"), "install", "-xcode-version", inputs.XcodeVersion, "-output-dir", filepath.Join(toolsRoot, "XCode.app"))
 		if err := cmdStepRun(ctx, "install XCode "+inputs.XcodeVersion, xcodeInstall, true); err != nil {
 			return "", err
