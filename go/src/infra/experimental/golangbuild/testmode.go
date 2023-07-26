@@ -15,7 +15,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
@@ -102,38 +101,32 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard) error {
 			return err
 		}
 		const allButStdCmd = "!^go_test:.+$" // Pattern that works in Go 1.20 and 1.19.
-		jsonOffPart := spec.distTestRunCmd(ctx, gorootSrc, allButStdCmd, false)
+		jsonOffPart := spec.distTestCmd(ctx, gorootSrc, allButStdCmd, nil, false)
 		return cmdStepRun(ctx, "run various dist tests", jsonOffPart, false)
 	}
 	// Go 1.21+ path.
 
 	// Determine what to run.
 	//
-	// If noSharding is true, runRegexp will be the empty string, which actually means to
-	// run *all* tests.
-	runRegexp := ""
+	// If noSharding is true, tests will be left as the empty slice, which means to
+	// use dist test's default behavior of running all tests.
+	var tests []string
 	if shard != noSharding {
 		// Collect the list of tests for this shard.
-		testList, err := goDistTestList(ctx, spec, shard)
+		var err error
+		tests, err = goDistTestList(ctx, spec, shard)
 		if err != nil {
 			return err
 		}
-		if len(testList) == 0 {
-			// Explicitly disable all tests. We can't leave runRegexp blank because that will
-			// run all tests.
-			runRegexp = "^$"
-		} else {
-			// Transform each test name into a regular expression matching only that name.
-			for i := range testList {
-				testList[i] = "^" + regexp.QuoteMeta(testList[i]) + "$"
-			}
-			// Construct a regexp string for the test list.
-			runRegexp = strings.Join(testList, "|")
+		if len(tests) == 0 {
+			// No tests were selected to run. Explicitly return early instead
+			// of needlessly calling dist test and telling it to run no tests.
+			return nil
 		}
 	}
 
 	// Invoke go tool dist test.
-	testCmd := spec.wrapTestCmd(spec.distTestRunCmd(ctx, gorootSrc, runRegexp, true))
+	testCmd := spec.wrapTestCmd(spec.distTestCmd(ctx, gorootSrc, "", tests, true))
 	return cmdStepRun(ctx, "go tool dist test -json", testCmd, false)
 }
 
@@ -143,13 +136,14 @@ func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) (test
 
 	// Run go tool dist test -list.
 	listCmd := spec.distTestListCmd(ctx, spec.goroot)
-	testList, err := cmdStepOutput(ctx, "go tool dist test -list", listCmd, false)
+	listOutput, err := cmdStepOutput(ctx, "go tool dist test -list", listCmd, false)
 	if err != nil {
 		return nil, err
 	}
 
-	// Parse the output: each line is a test name.
-	scanner := bufio.NewScanner(bytes.NewReader(testList))
+	// Parse the output—each line is a test name,
+	// and select ones matching this shard.
+	scanner := bufio.NewScanner(bytes.NewReader(listOutput))
 	for scanner.Scan() {
 		name := scanner.Text()
 		if shard.shouldRunTest(name) {
@@ -159,7 +153,11 @@ func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) (test
 	if err := scanner.Err(); err != nil {
 		return nil, fmt.Errorf("parsing test list from dist: %v", err)
 	}
-	io.WriteString(step.Log("packages"), strings.Join(tests, "\n"))
+	testList := strings.Join(tests, "\n")
+	if len(tests) == 0 {
+		testList = "(no tests selected)"
+	}
+	io.WriteString(step.Log("tests"), testList)
 	return tests, nil
 }
 
