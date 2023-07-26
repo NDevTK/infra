@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package main
@@ -72,7 +72,11 @@ func resetTestFile() error {
 	return testVersion.UpdateVersionFile()
 }
 
-func TestBumpVersion(t *testing.T) {
+// b/293339982 -- TestBumpVersion does the wrong thing locally and alters the whole git repo state.
+//
+//	This test is disabled (by lowercasing it) until it can be rewritten to be better behaved
+//	locally.
+func testBumpVersion(t *testing.T) {
 	s := GetApplication()
 
 	testDir, err := filepath.Abs("test/")
