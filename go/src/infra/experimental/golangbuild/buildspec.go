@@ -241,15 +241,13 @@ func (b *buildSpec) distTestListCmd(ctx context.Context, dir string) *exec.Cmd {
 	return b.goCmd(ctx, dir, args...)
 }
 
-// distTestRunCmd returns an exec.Cmd for executing `go tool dist test -run`.
+// distTestCmd returns an exec.Cmd for executing `go tool dist test`.
 //
 // dir is the directory to run the command from.
-// run controls with dist tests are run, using dist test's interface for controlling
-// which tests to run:
 //
-//	-run string
-//	  	run only those tests matching the regular expression; empty means to run all.
-//	  	Special exception: if the string begins with '!', the match is inverted.
+// runRx and testNames are optional, mutually exclusive flags that select
+// a subset of dist tests to run using dist test's command-line interface.
+// (See 'go tool dist test -help'.)
 //
 // If json is true, passes the -json flag, producing `go test -json`-compatible output.
 // Note: -json is not supported before Go 1.21.
@@ -257,13 +255,16 @@ func (b *buildSpec) distTestListCmd(ctx context.Context, dir string) *exec.Cmd {
 // TODO(go.dev/issue/59990): Delete the json argument when it becomes always true.
 //
 // It automatically applies additional dist flags based on the buildSpec (e.g. -race).
-func (b *buildSpec) distTestRunCmd(ctx context.Context, dir, run string, json bool) *exec.Cmd {
+func (b *buildSpec) distTestCmd(ctx context.Context, dir, runRx string, testNames []string, json bool) *exec.Cmd {
 	args := []string{"tool", "dist", "test"}
 	if json {
 		args = append(args, "-json")
 	}
 	args = append(args, b.distTestFlags()...)
-	args = append(args, "-run="+run)
+	if runRx != "" {
+		args = append(args, "-run="+runRx)
+	}
+	args = append(args, testNames...)
 	return b.goCmd(ctx, dir, args...)
 }
 
