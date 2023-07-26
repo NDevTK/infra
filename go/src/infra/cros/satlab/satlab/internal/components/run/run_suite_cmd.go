@@ -97,6 +97,10 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 	}
 
 	dims := c.addedDims
+	// Will be nil if not provided by user.
+	if dims == nil {
+		dims = make(map[string]string)
+	}
 
 	// Set drone target based on user input, defaulting to the current box.
 	droneDim, err := c.setDroneTarget()
