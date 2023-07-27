@@ -571,6 +571,7 @@ def fakebuild_builder(name, steps, sleep_min_sec, sleep_max_sec, build_numbers, 
         build_numbers = build_numbers,
         experiments = {
             "luci.buildbucket.omit_default_packages": 100,
+            "luci.buildbucket.backend_alt": 100,
         },
         caches = [
             swarming.cache(
