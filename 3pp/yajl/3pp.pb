@@ -5,6 +5,7 @@ create {
       repo: "https://github.com/lloyd/yajl.git"
       tag_pattern: "%s"
     }
+    cpe_base_address: "cpe:/a:yajl_project:yajl"
   }
   build {
     tool: "tools/cmake"
