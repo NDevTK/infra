@@ -19,5 +19,12 @@ test-slow:
 
 .PHONY: gen
 gen:
+	# Generate proto files
 	@find . -name '*.pb.go' -delete
 	go generate ./...
+	# Generate config tree files
+	RECOVERY_GENERATE_CONFIG_TREE=ON go test -run TestConfigTreeChanges
+
+.PHONY:
+test:
+	go test ./...

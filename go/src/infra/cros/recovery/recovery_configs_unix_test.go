@@ -48,10 +48,10 @@ var configTreeChangesCases = []struct {
 	},
 }
 
-// Key to create Tree Files if it is not exist.
-// Please keep const in state `false` to keep checks in place.
-// The const can be switch to true to regenerate files.
-const createTreeFileIfNotExist = false
+// CreateTreeFileIfNotExist controls whether we create tree files.
+// When set to true, tree files are created in their appropriate location if
+// no such tree files already exist.
+var createTreeFileIfNotExist = os.Getenv("RECOVERY_GENERATE_CONFIG_TREE") != ""
 
 func TestConfigTreeGeneraterOff(t *testing.T) {
 	if createTreeFileIfNotExist {
