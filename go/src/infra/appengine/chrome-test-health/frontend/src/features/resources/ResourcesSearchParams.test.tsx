@@ -32,7 +32,7 @@ describe('when rendering the ResourcesSearchParams', () => {
       ascending: true,
       sortIndex: 0,
       timelineView: true,
-      directoryView: true,
+      directoryView: false,
     };
 
     await act(async () => {
@@ -51,7 +51,35 @@ describe('when rendering the ResourcesSearchParams', () => {
     expect(searchParams.get(SORT_BY)).toBe(SortType.SORT_NAME.toString());
     expect(searchParams.get(ASCENDING)).toBe('true');
     expect(searchParams.get(TIMELINE_VIEW)).toBe('true');
-    expect(searchParams.get(DIRECTORY_VIEW)).toBe('true');
+    expect(searchParams.get(DIRECTORY_VIEW)).toBe('false');
     expect(searchParams.get(SORT_INDEX)).toBe('0');
+  });
+  it('should render url without empty params', async () => {
+    const params: Params = {
+      page: 0,
+      rowsPerPage: 25,
+      filter: '',
+      date: new Date('2020-01-02T00:00:00'),
+      period: Period.DAY,
+      sort: SortType.SORT_NAME,
+      ascending: true,
+      sortIndex: 0,
+      timelineView: false,
+      directoryView: true,
+    };
+
+    await act(async () => {
+      renderWithContext(<>
+        <ResourcesParamControls/>
+      </>
+      , { params },
+      );
+    });
+    const searchParams = new URLSearchParams(window.location.search);
+    expect(searchParams.get(PAGE)).toBe(null);
+    expect(searchParams.get(ROWS_PER_PAGE)).toBe(null);
+    expect(searchParams.get(FILTER)).toBe(null);
+    expect(searchParams.get(PAGE)).toBe(null);
+    expect(searchParams.get(SORT_INDEX)).toBe(null);
   });
 });

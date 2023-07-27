@@ -9,7 +9,6 @@ import { Button, Checkbox, Container,
   FormControl,
   ListItemText,
   Select,
-  SelectChangeEvent,
 } from '@mui/material';
 import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
@@ -28,9 +27,11 @@ function NavBar() {
     navigate('/' + newComponent + '/component/' + params.component);
   };
 
-  const handleChange = (event: SelectChangeEvent<typeof componentCtx.allComponents>) => {
+  const handleChange = (event) => {
     const value = event.target.value;
-    componentCtx.api.updateComponents(typeof value === 'string' ? value.split(',') : value);
+    if (value.length > 0) {
+      componentCtx.api.updateComponents(value);
+    }
   };
 
   return (

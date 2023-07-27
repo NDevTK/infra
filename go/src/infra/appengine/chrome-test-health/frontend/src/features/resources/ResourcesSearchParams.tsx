@@ -21,21 +21,32 @@ export const SORT_INDEX = 'ind';
 function ResourcesParamControls() {
   const { params } = useContext(MetricsContext);
 
-  const [search, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
 
   const updateParams = useCallback(() => {
-    search.set(PAGE, String(params.page));
-    search.set(ROWS_PER_PAGE, String(params.rowsPerPage));
-    search.set(FILTER, params.filter);
-    search.set(DATE, formatDate(params.date));
-    search.set(PERIOD, String(params.period));
-    search.set(SORT_BY, String(params.sort));
-    search.set(ASCENDING, String(params.ascending));
-    search.set(TIMELINE_VIEW, String(params.timelineView));
-    search.set(DIRECTORY_VIEW, String(params.directoryView));
-    search.set(SORT_INDEX, String(params.sortIndex));
-    setSearchParams(search);
-  }, [search, setSearchParams, params]);
+    const newSearchParams = new URLSearchParams();
+    if (params.page > 0 && !params.directoryView) {
+      newSearchParams.set(PAGE, String(params.page));
+    }
+    if (!params.directoryView) {
+      newSearchParams.set(ROWS_PER_PAGE, String(params.rowsPerPage));
+    }
+    if (params.filter !== '') {
+      newSearchParams.set(FILTER, params.filter);
+    }
+    newSearchParams.set(DATE, formatDate(params.date));
+    newSearchParams.set(PERIOD, String(params.period));
+    newSearchParams.set(SORT_BY, String(params.sort));
+    newSearchParams.set(ASCENDING, String(params.ascending));
+    newSearchParams.set(TIMELINE_VIEW, String(params.timelineView));
+    newSearchParams.set(DIRECTORY_VIEW, String(params.directoryView));
+    if (params.timelineView) {
+      newSearchParams.set(SORT_INDEX, String(params.sortIndex));
+    }
+    setSearchParams(newSearchParams);
+    // We don't want a dependency on searchParams
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params]);
 
   useEffect(() => {
     updateParams();

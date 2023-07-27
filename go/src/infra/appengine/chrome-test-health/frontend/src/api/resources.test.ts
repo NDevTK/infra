@@ -100,7 +100,7 @@ describe('fetchTestMetrics', () => {
           'sort': {
             metric: SortType.SORT_NAME,
             ascending: true,
-            sort_date: '2012-01-02'
+            sort_date: '2012-01-02',
           },
         },
     );
@@ -164,7 +164,7 @@ describe('fetchDirectoryMetrics', () => {
           sort: {
             metric: SortType.SORT_NAME,
             ascending: true,
-            sort_date: '2012-01-02'
+            sort_date: '2012-01-02',
           },
         },
     );

@@ -27,6 +27,8 @@ function ResourcesToolbar() {
     api.updatePeriod(event.target.value);
   };
 
+  // ToDo - rgw fix bug where ingesting page gets deleted
+  // because this gets triggered during page load.
   useEffect(() => {
     const timer = setTimeout(() => {
       api.updateFilter(filter);

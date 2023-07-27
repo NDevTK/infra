@@ -116,3 +116,32 @@ export function renderWithContext(
       </BrowserRouter>,
   );
 }
+
+export function createProps(
+  param : TestProps) : Params {
+return {
+  page: param.page || 0,
+  rowsPerPage: param.rowsPerPage || 50,
+  filter: param.filter || '',
+  date: param.date || new Date(),
+  period: param.period || Period.WEEK,
+  sort: param.sort || SortType.SORT_NAME,
+  ascending: param.ascending || true,
+  sortIndex: param.sortIndex || 0,
+  timelineView: param.timelineView || false,
+  directoryView: param.directoryView || false,
+};
+}
+
+type TestProps = {
+  page?: number,
+  rowsPerPage?: number,
+  filter?: string,
+  date?: Date,
+  period?: Period,
+  sort?: SortType,
+  ascending?: boolean,
+  sortIndex?: number,
+  timelineView?: boolean,
+  directoryView?: boolean,
+}

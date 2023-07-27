@@ -7,7 +7,7 @@ import { listComponents } from '../../api/resources';
 
 type ComponentContextProviderProps = {
     children: React.ReactNode,
-    components?: string[],
+    components: string[],
   }
 
 export interface ComponentContextValue {
@@ -32,8 +32,8 @@ export const ComponentContext = createContext<ComponentContextValue>(
 );
 
 export const ComponentContextProvider = (props: ComponentContextProviderProps) => {
-  const [allComponents, setAllComponents] = useState<string[]>(['Blink']);
-  const [components, setComponents] = useState<string[]>(props.components || ['Blink']);
+  const [allComponents, setAllComponents] = useState<string[]>(props.components);
+  const [components, setComponents] = useState<string[]>(props.components);
 
   function loadComponents() {
     listComponents().then((resp) => {

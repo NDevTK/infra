@@ -8,7 +8,18 @@ import { Button } from '@mui/material';
 import * as Resources from '../../api/resources';
 import { ComponentContext, ComponentContextProvider, ComponentContextValue } from './ComponentContext';
 
-async function contextRender(ui: (value: ComponentContextValue) => React.ReactElement, { props } = { props: {} }) {
+function createProps(
+    param : TestProps) {
+  return {
+    components: param.components || ['Blink'],
+  };
+}
+
+type TestProps = {
+components?: string[],
+}
+
+async function contextRender(ui: (value: ComponentContextValue) => React.ReactElement, { props } = { props: { ...createProps({}) } }) {
   await act(async () => {
     render(
         <ComponentContextProvider {... props}>
@@ -44,7 +55,7 @@ describe('ComponentContext values', () => {
       <>
         <Button data-testid='updateComponent' onClick={() => value.api.updateComponents(['comp', 'comp1'])}>{'components-' + value.components}</Button>
       </>
-    ), { props: { components: ['blink'] } });
+    ), { props: { ...createProps({ components: ['blink'] }) } });
     expect(screen.getByText('components-blink')).toBeInTheDocument();
     await act(async () => {
       fireEvent.click(screen.getByTestId('updateComponent'));

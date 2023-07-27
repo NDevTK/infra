@@ -19,12 +19,17 @@ import { ComponentContext } from '../components/ComponentContext';
 import { dataReducer, getLoadedParentIds, loadDirectoryMetrics, loadTestMetrics } from './LoadMetrics';
 
 type MetricsContextProviderProps = {
-  page?: number,
-  timelineView?: boolean,
-  date?: Date,
-  sortIndex?: number,
-  period?: Period,
-  children: React.ReactNode,
+  page: number,
+  rowsPerPage: number,
+  filter: string,
+  date: Date,
+  period: Period,
+  sort: SortType,
+  ascending: boolean,
+  sortIndex: number,
+  timelineView: boolean,
+  directoryView: boolean,
+  children?: React.ReactNode,
 }
 
 export interface Node {
@@ -166,16 +171,16 @@ function snapToPeriod(date: Date) {
 }
 export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
   const { components } = useContext(ComponentContext);
-  const [page, setPage] = useState(props.page || 0);
-  const [rowsPerPage, setRowsPerPage] = useState(50);
-  const [filter, setFilter] = useState('');
-  const [date, setDate] = useState(props.date || snapToPeriod(new Date(Date.now() - 86400000)));
-  const [period, setPeriod] = useState(Period.WEEK);
-  const [sort, setSort] = useState(SortType.SORT_TOTAL_RUNTIME);
-  const [ascending, setAscending] = useState(false);
-  const [sortIndex, setSortIndex] = useState(props.sortIndex || 0);
-  const [timelineView, setTimelineView] = useState(props.timelineView || false);
-  const [directoryView, setDirectoryView] = useState(false);
+  const [page, setPage] = useState(props.page);
+  const [rowsPerPage, setRowsPerPage] = useState(props.rowsPerPage);
+  const [filter, setFilter] = useState(props.filter);
+  const [date, setDate] = useState(props.period === Period.WEEK ? snapToPeriod(props.date) : props.date);
+  const [period, setPeriod] = useState(props.period);
+  const [sort, setSort] = useState(props.sort);
+  const [ascending, setAscending] = useState(props.ascending);
+  const [sortIndex, setSortIndex] = useState(props.sortIndex);
+  const [timelineView, setTimelineView] = useState(props.timelineView);
+  const [directoryView, setDirectoryView] = useState(props.directoryView);
 
   const params: Params = { page, rowsPerPage, filter, date, period, sort, ascending, sortIndex, timelineView, directoryView };
 

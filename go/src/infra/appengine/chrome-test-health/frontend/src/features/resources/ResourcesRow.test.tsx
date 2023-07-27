@@ -7,10 +7,11 @@ import { act } from 'react-dom/test-utils';
 import { MetricType } from '../../api/resources';
 import { MetricsContextProvider, MetricsContextValue, Test, MetricsContext } from '../context/MetricsContext';
 import * as Resources from '../../api/resources';
+import { createProps } from '../../utils/testUtils';
 import ResourcesRow from './ResourcesRow';
 
 
-async function contextRender(ui: (value: MetricsContextValue) => React.ReactElement, { props } = { props: {} }) {
+async function contextRender(ui: (value: MetricsContextValue) => React.ReactElement, { props } = { props: { ...createProps({}) } }) {
   await act(async () => {
     render(
         <MetricsContextProvider {... props}>
@@ -193,7 +194,7 @@ describe('when rendering ResourcesRow', () => {
           </tbody>
         </table>,
       </>
-    ), { props: { timelineView: true } });
+    ), { props: { ...createProps({ timelineView: true }) } });
     expect(screen.getAllByTestId('timelineTest')).toHaveLength(5);
   });
 });
