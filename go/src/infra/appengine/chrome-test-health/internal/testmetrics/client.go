@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/api/iterator"
 
-	"infra/appengine/test-resources/api"
+	"infra/appengine/chrome-test-health/api"
 )
 
 // Base queries to build from

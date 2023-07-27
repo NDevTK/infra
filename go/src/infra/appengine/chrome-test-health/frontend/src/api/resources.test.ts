@@ -99,7 +99,11 @@ describe('fetchTestMetrics', () => {
           'filter': 'filter',
           'page_offset': 0,
           'page_size': 0,
-          'sort': { metric: SortType.SORT_NAME, ascending: true, sort_date: '2012-01-02' },
+          'sort': {
+            metric: SortType.SORT_NAME,
+            ascending: true,
+            sort_date: '2012-01-02'
+          },
         },
     );
 
@@ -159,7 +163,11 @@ describe('fetchDirectoryMetrics', () => {
             MetricType.NUM_FAILURES,
           ],
           filter: 'filter',
-          sort: { metric: SortType.SORT_NAME, ascending: true, sort_date: '2012-01-02' },
+          sort: {
+            metric: SortType.SORT_NAME,
+            ascending: true,
+            sort_date: '2012-01-02'
+          },
         },
     );
     expect(resp).toEqual(data);

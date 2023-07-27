@@ -6,7 +6,7 @@ package main
 
 import (
 	"context"
-	"infra/appengine/test-resources/api"
+	"infra/appengine/chrome-test-health/api"
 	"testing"
 
 	"cloud.google.com/go/civil"

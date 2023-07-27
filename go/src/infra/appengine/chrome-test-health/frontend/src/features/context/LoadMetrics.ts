@@ -32,7 +32,10 @@ export function computeDates(params: Params): string[] {
 export function loadTestMetrics(
     components: string[],
     params: Params,
-    successCallback: (response: FetchTestMetricsResponse, fetchedDates: string[]) => void,
+    successCallback: (
+      response: FetchTestMetricsResponse,
+      fetchedDates: string[]
+      ) => void,
     failureCallback: (erorr: any) => void,
     fileNames?: string[],
 ) {
@@ -231,7 +234,10 @@ export function loadDirectoryMetrics(
     components: string[],
     params: Params,
     parentIds: string[],
-    successCallback: (response: FetchDirectoryMetricsResponse, fetchedDates: string[]) => void,
+    successCallback: (
+      response: FetchDirectoryMetricsResponse,
+      fetchedDates: string[]
+      ) => void,
     failureCallback: (erorr: any) => void,
 ) {
   const datesToFetch = computeDates(params);

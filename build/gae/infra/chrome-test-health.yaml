@@ -1,7 +1,7 @@
-name: infra/test-resources
+name: infra/chrome-test-health
 extends: ../base.yaml
 
-contextdir: ../../../go/src/infra/appengine/test-resources
+contextdir: ../../../go/src/infra/appengine/chrome-test-health
 
 build:
   # This builds the frontend code, updating ${inputsdir}/frontend/build.

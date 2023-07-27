@@ -25,8 +25,8 @@ import (
 	"go.chromium.org/luci/server/cron"
 	"go.chromium.org/luci/server/module"
 
-	"infra/appengine/test-resources/api"
-	"infra/appengine/test-resources/internal/testmetrics"
+	"infra/appengine/chrome-test-health/api"
+	"infra/appengine/chrome-test-health/internal/testmetrics"
 )
 
 const (
