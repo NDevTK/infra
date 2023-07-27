@@ -447,7 +447,7 @@ func (*Client) readFetchTestMetricsResponse(it *bigquery.RowIterator, req *api.F
 	response := &api.FetchTestMetricsResponse{
 		LastPage: int64(it.TotalRows) != req.PageSize+1,
 	}
-	for i := int64(0); i < req.PageSize; i++ {
+	for {
 		var rowVals rowLoader
 		err := it.Next(&rowVals)
 		if err == iterator.Done {
@@ -459,6 +459,10 @@ func (*Client) readFetchTestMetricsResponse(it *bigquery.RowIterator, req *api.F
 		testId := rowVals.String("test_id")
 		testIdData, ok := testIdToTestDateMetricData[testId]
 		if !ok {
+			// Don't report the extra row that was retrieved for last page
+			if int64(len(testIdToTestDateMetricData)) == req.PageSize {
+				break
+			}
 			testIdData = &api.TestDateMetricData{
 				TestId:   testId,
 				TestName: rowVals.NullString("test_name").StringVal,
