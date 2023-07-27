@@ -364,11 +364,6 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 		log.Printf("provision: failed to provision miniOS partitions, check partition table, %s", err)
 	}
 
-	// Finish provisioning.
-	if err := s.lroMgr.SetResult(opName, &tls.ProvisionDutResponse{}); err != nil {
-		log.Printf("provision: failed to set Operation result, %s", err)
-	}
-
 	// Remove the provisionFailed marker as provisioning stateful is skipped if OS
 	// is already on the requested version.
 	if err := runCmd(p.c, fmt.Sprintf("rm %s %s", provisionFailed, provisionFailedMarker)); err != nil {
@@ -379,6 +374,11 @@ func (s *Server) provision(req *tls.ProvisionDutRequest, opName string) {
 		log.Printf("provision: Warning, failed to get boot ID")
 	} else {
 		log.Printf("provision: boot ID is %s", bootID)
+	}
+
+	// Finish provisioning.
+	if err := s.lroMgr.SetResult(opName, &tls.ProvisionDutResponse{}); err != nil {
+		log.Printf("provision: failed to set Operation result, %s", err)
 	}
 }
 
