@@ -64,7 +64,6 @@ SELECT
 	SUM(num_runs) AS num_runs,
 	ARRAY_AGG(STRUCT(
 		builder AS builder,
-		project AS project,
 		bucket AS bucket,
 		test_suite AS test_suite,
 		num_runs
@@ -95,7 +94,6 @@ SELECT
 	SUM(num_runs) AS num_runs,
 	ARRAY_AGG(STRUCT(
 		builder AS builder,
-		project AS project,
 		bucket AS bucket,
 		test_suite AS test_suite,
 		num_runs
@@ -129,7 +127,6 @@ SELECT
 	SUM(num_runs) AS num_runs,
 	ARRAY_AGG(STRUCT(
 		builder AS builder,
-		project AS project,
 		bucket AS bucket,
 		test_suite AS test_suite,
 		num_runs
@@ -170,7 +167,6 @@ WITH tests AS (
 		ARRAY_AGG(STRUCT(
 			builder AS builder,
 			bucket AS bucket,
-			project AS project,
 			test_suite AS test_suite,
 			num_runs
 			)
@@ -216,7 +212,6 @@ WITH tests AS (
 		ARRAY_AGG(STRUCT(
 			builder AS builder,
 			bucket AS bucket,
-			project AS project,
 			test_suite AS test_suite,
 			num_runs
 			)
