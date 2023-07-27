@@ -309,6 +309,13 @@ func (cfg *CommandConfig) GetCommand(
 		}
 		cmd = common_commands.NewContainerCloseLogsCmd(exec)
 
+	case common_commands.ContainerReadLogsCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = common_commands.NewContainerReadLogsCmd(exec)
+
 	default:
 		return nil, fmt.Errorf("Command type %s not supported in command configs!", cmdType)
 	}

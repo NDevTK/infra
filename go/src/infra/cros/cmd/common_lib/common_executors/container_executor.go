@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"sync"
 
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -29,14 +28,21 @@ import (
 type ContainerExecutor struct {
 	*interfaces.AbstractExecutor
 
-	Ctr         *crostoolrunner.CrosToolRunner
-	WaitGroups  []*sync.WaitGroup
-	LogChannels []chan<- bool
+	Ctr              *crostoolrunner.CrosToolRunner
+	WaitGroups       []*sync.WaitGroup
+	LogChannels      []chan<- bool
+	ContainerChannel chan struct {
+		string
+		interfaces.ContainerInterface
+	}
 }
 
 func NewContainerExecutor(ctr *crostoolrunner.CrosToolRunner) *ContainerExecutor {
 	absExec := interfaces.NewAbstractExecutor(ContainerExecutorType)
-	return &ContainerExecutor{AbstractExecutor: absExec, Ctr: ctr, WaitGroups: []*sync.WaitGroup{}, LogChannels: []chan<- bool{}}
+	return &ContainerExecutor{AbstractExecutor: absExec, Ctr: ctr, WaitGroups: []*sync.WaitGroup{}, LogChannels: []chan<- bool{}, ContainerChannel: make(chan struct {
+		string
+		interfaces.ContainerInterface
+	})}
 }
 
 func (ex *ContainerExecutor) ExecuteCommand(ctx context.Context, cmdInterface interfaces.CommandInterface) error {
@@ -45,6 +51,8 @@ func (ex *ContainerExecutor) ExecuteCommand(ctx context.Context, cmdInterface in
 		return ex.startContainerCommandExecution(ctx, cmd)
 	case *common_commands.ContainerCloseLogsCmd:
 		return ex.CloseLogs()
+	case *common_commands.ContainerReadLogsCmd:
+		return ex.ReadLogs(ctx)
 
 	default:
 		return fmt.Errorf(
@@ -61,16 +69,9 @@ func (ex *ContainerExecutor) startContainerCommandExecution(
 	ctx context.Context,
 	cmd *common_commands.ContainerStartCmd) error {
 	var err error
-	var wg *sync.WaitGroup
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("Container Start: %s", cmd.ContainerRequest.DynamicIdentifier))
 	defer func() {
-		// Delay ending step until log has been closed.
-		go func() {
-			if wg != nil {
-				wg.Wait()
-			}
-			step.End(err)
-		}()
+		step.End(err)
 	}()
 
 	if cmd.ContainerRequest == nil {
@@ -83,17 +84,37 @@ func (ex *ContainerExecutor) startContainerCommandExecution(
 		interfaces.ContainerType(cmd.ContainerRequest.DynamicIdentifier),
 		cmd.ContainerRequest.DynamicIdentifier,
 		cmd.ContainerImage)
-	if err != nil {
-		return err
-	}
-	cmd.ContainerInstance = containerInstance
-	cmd.Endpoint = endpoint
-	wg = ex.streamLogAsync(ctx, step, cmd.ContainerRequest, containerInstance)
+
 	if err != nil {
 		return errors.Annotate(err, "Start container cmd err: ").Err()
 	}
+	cmd.ContainerInstance = containerInstance
+	cmd.Endpoint = endpoint
+
+	// Send container for logs to be read.
+	ex.ContainerChannel <- struct {
+		string
+		interfaces.ContainerInterface
+	}{cmd.ContainerRequest.DynamicIdentifier, containerInstance}
 
 	return err
+}
+
+func (ex *ContainerExecutor) ReadLogs(ctx context.Context) error {
+	var err error
+	step, ctx := build.StartStep(ctx, "Read Container Logs")
+
+	go func() {
+		defer func() {
+			step.End(err)
+		}()
+
+		for recv := range ex.ContainerChannel {
+			ex.streamLogAsync(ctx, step, recv.string, recv.ContainerInterface)
+		}
+	}()
+
+	return nil
 }
 
 // Start starts the container.
@@ -125,12 +146,12 @@ func (ex *ContainerExecutor) Start(
 }
 
 // streamLog kicks off streaming the containers log and stores its channel and waitgroup.
-func (ex *ContainerExecutor) streamLogAsync(ctx context.Context, step *build.Step, request *skylab_test_runner.ContainerRequest, containerInstance interfaces.ContainerInterface) (wg *sync.WaitGroup) {
+func (ex *ContainerExecutor) streamLogAsync(ctx context.Context, step *build.Step, identifier string, containerInstance interfaces.ContainerInterface) (wg *sync.WaitGroup) {
 	logsLoc, err := containerInstance.GetLogsLocation()
 	if err != nil {
 		logging.Infof(ctx, "error during getting container log location: %s", err)
 	}
-	containerLog := step.Log(fmt.Sprintf("%s Log", request.DynamicIdentifier))
+	containerLog := step.Log(fmt.Sprintf("%s Log", identifier))
 
 	taskDone, wg, err := common.StreamLogAsync(ctx, logsLoc, containerLog)
 	if err != nil {
@@ -152,6 +173,8 @@ func (ex *ContainerExecutor) CloseLogs() error {
 	for _, waitGroup := range ex.WaitGroups {
 		waitGroup.Wait()
 	}
+
+	close(ex.ContainerChannel)
 
 	return nil
 }

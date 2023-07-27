@@ -13,6 +13,7 @@ const (
 	// Ctr service related commands
 	ContainerStartCmdType       interfaces.CommandType = "ContainerStart"
 	ContainerCloseLogsCmdType   interfaces.CommandType = "ContainerCloseLogs"
+	ContainerReadLogsCmdType    interfaces.CommandType = "ContainerReadLogs"
 	CtrServiceStartAsyncCmdType interfaces.CommandType = "CtrServiceStartAsync"
 	CtrServiceStopCmdType       interfaces.CommandType = "CtrServiceStop"
 	GcloudAuthCmdType           interfaces.CommandType = "GcloudAuth"
