@@ -88,12 +88,16 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 		if err == nil {
 			break
 		}
-		if ctx.Err() != nil {
-			return nil, status.Errorf(codes.DeadlineExceeded, "context error when creating instance: %s", ctx.Err())
-		}
+
+		logging.Errorf(ctx, "retry #%d - error when creating instance: %s", retry, err)
 		if retry >= s.maxRetries {
 			return nil, status.Errorf(codes.Internal, "failed to create instance after %d retries: %s", s.maxRetries, err)
 		}
+
+		if ctx.Err() != nil {
+			return nil, status.Errorf(codes.DeadlineExceeded, "context error when creating instance: %s", ctx.Err())
+		}
+
 		time.Sleep(s.initialRetryBackoff * (1 << retry))
 		retry++
 		logging.Debugf(ctx, "LeaseVM: retrying %d time createInstance", retry)
@@ -145,12 +149,16 @@ func (s *Server) ReleaseVM(ctx context.Context, r *api.ReleaseVMRequest) (*api.R
 		if err == nil {
 			break
 		}
-		if ctx.Err() != nil {
-			return nil, status.Errorf(codes.DeadlineExceeded, "context error when deleting instance: %s", ctx.Err())
-		}
+
+		logging.Errorf(ctx, "retry #%d - error when deleting instance: %s", retry, err)
 		if retry >= s.maxRetries {
 			return nil, status.Errorf(codes.Internal, "failed to delete instance after %d retries: %s", s.maxRetries, err)
 		}
+
+		if ctx.Err() != nil {
+			return nil, status.Errorf(codes.DeadlineExceeded, "context error when deleting instance: %s", ctx.Err())
+		}
+
 		time.Sleep(s.initialRetryBackoff * (1 << retry))
 		retry++
 	}
