@@ -29,7 +29,6 @@ SELECT
 	{metricAggregations},
 	ARRAY_AGG(STRUCT(
 		builder AS builder,
-		project AS project,
 		bucket AS bucket,
 		test_suite AS test_suite,
 		{metricNames}
@@ -55,7 +54,6 @@ WITH tests AS (
 		ARRAY_AGG(STRUCT(
 			builder AS builder,
 			bucket AS bucket,
-			project AS project,
 			test_suite AS test_suite,
 			{metricNames}
 			)
@@ -449,7 +447,7 @@ func (*Client) readFetchTestMetricsResponse(it *bigquery.RowIterator, req *api.F
 	response := &api.FetchTestMetricsResponse{
 		LastPage: int64(it.TotalRows) != req.PageSize+1,
 	}
-	for i := int64(0); i < req.PageSize; i++ {
+	for true {
 		var rowVals rowLoader
 		err := it.Next(&rowVals)
 		if err == iterator.Done {
@@ -461,6 +459,10 @@ func (*Client) readFetchTestMetricsResponse(it *bigquery.RowIterator, req *api.F
 		testId := rowVals.String("test_id")
 		testIdData, ok := testIdToTestDateMetricData[testId]
 		if !ok {
+			// Don't report the extra row that was retrieved for last page
+			if int64(len(testIdToTestDateMetricData)) == req.PageSize {
+				break
+			}
 			testIdData = &api.TestDateMetricData{
 				TestId:   testId,
 				TestName: rowVals.NullString("test_name").StringVal,
@@ -506,10 +508,9 @@ func (*Client) readFetchTestMetricsResponse(it *bigquery.RowIterator, req *api.F
 			}
 
 			builder := variantRowVals.NullString("builder").StringVal
-			project := variantRowVals.NullString("project").StringVal
 			bucket := variantRowVals.NullString("bucket").StringVal
 			suite := variantRowVals.NullString("test_suite").StringVal
-			builderSuite := builder + ":" + project + ":" + bucket + ":" + suite
+			builderSuite := builder + ":" + bucket + ":" + suite
 			builderSuiteData, ok := variantHashToTestDateMetricData[testId][builderSuite]
 			if !ok {
 				fields := ""
@@ -518,7 +519,6 @@ func (*Client) readFetchTestMetricsResponse(it *bigquery.RowIterator, req *api.F
 				}
 				builderSuiteData = &api.TestVariantData{
 					Builder: builder,
-					Project: project,
 					Bucket:  bucket,
 					Suite:   suite,
 					Metrics: make(map[string]*api.TestMetricsArray),

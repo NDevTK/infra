@@ -149,13 +149,11 @@ message TestVariantData {
   string suite = 1;
   // The builder which this variant was run on
   string builder = 2;
-  // The project the builder is in (i.e. chromium, chromium-m115, etc)
-  string project = 3;
   // The bucket the builder is in (i.e. try, ci)
-  string bucket = 4;
+  string bucket = 3;
   // Rollup metrics for the variant. This is a map of dates (in YYYY-MM-DD
   // format) to an array of measured metrics.
-  map<string, TestMetricsArray> metrics = 5;
+  map<string, TestMetricsArray> metrics = 4;
 }
 
 message TestMetricsArray {
