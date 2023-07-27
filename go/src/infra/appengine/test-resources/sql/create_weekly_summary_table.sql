@@ -10,7 +10,6 @@ CREATE OR REPLACE TABLE APP_ID.DATASET.weekly_test_metrics (
 
   -- variant level info
   builder STRING OPTIONS (description = 'The breakdown of the builder being run'),
-  project STRING OPTIONS (description = 'The project the builder is in (i.e. chromium, chromium-m115, etc)'),
   bucket STRING OPTIONS (description = 'The bucket the builder is in (i.e. try, ci)'),
   test_suite STRING OPTIONS (description = 'Test suite in which the test is being run'),
 

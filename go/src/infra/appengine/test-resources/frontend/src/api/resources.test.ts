@@ -55,7 +55,6 @@ describe('fetchTestMetrics', () => {
             {
               suite: 'suite',
               builder: 'builder',
-              project: 'project',
               bucket: 'try',
               metrics: mockMetricsWithData,
             },
@@ -75,7 +74,6 @@ describe('fetchTestMetrics', () => {
             {
               suite: 'suite',
               builder: 'builder',
-              project: 'project',
               bucket: 'try',
               metrics: mockMetricsWithData,
             },
