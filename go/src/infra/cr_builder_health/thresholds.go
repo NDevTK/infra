@@ -113,6 +113,11 @@ func compareThresholds(ctx context.Context, row *Row, thresholds *BuilderThresho
 }
 
 func compareThresholdsHelper(row *Row, metric *Metric) {
+	if metric.Threshold == 0 {
+		metric.HealthScore = 0 // redundant but wanted to be explicit
+		return
+	}
+
 	metric.HealthScore = 10
 	if metric.Value > metric.Threshold {
 		metric.HealthScore = 1
