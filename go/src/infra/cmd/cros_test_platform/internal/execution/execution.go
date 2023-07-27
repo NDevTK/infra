@@ -276,7 +276,7 @@ func (r *runner) checkTasksAndRetry(ctx context.Context, c trservice.Client, log
 		if err != nil {
 			// If the suite overran its execution limit then cancel its child
 			// test_runner builds.
-			if errors.Is(err, suiteLimitError) {
+			if errors.Is(err, errSuiteLimit) {
 				cancelErr := cancelExceededTests(ctx, c, t, ts)
 				if cancelErr != nil {
 					return false, cancelErr

@@ -29,7 +29,7 @@ const (
 	suiteLimitMinimumMilestone       = 117
 )
 
-var suiteLimitError = errors.New("TestExecutionLimit: Maximum suite execution runtime exceeded.")
+var errSuiteLimit = errors.New("TestExecutionLimit: Maximum suite execution runtime exceeded.")
 
 // cancelExceededTests sends a buildbucket cancellation request to all active testrunners for the given suite(taskSet).
 func cancelExceededTests(ctx context.Context, client trservice.Client, taskSetName string, taskSet *RequestTaskSet) error {
@@ -179,7 +179,7 @@ func updateTestExecutionTracking(ctx context.Context, iid types.InvocationID, la
 	// Finally, check if we've exceeded the maximum time allowed for test execution.
 	if lastSeenRuntimePerTask[taskSetName].totalSuiteTrackingTime.Seconds() > suiteTestExecutionMaximumSeconds {
 		logging.Infof(ctx, "Suite %s exceeded execution runtime limit. %d seconds allowed, %d seconds used.", taskSetName, suiteTestExecutionMaximumSeconds, int(lastSeenRuntimePerTask[taskSetName].totalSuiteTrackingTime.Seconds()))
-		return suiteLimitError
+		return errSuiteLimit
 	}
 
 	return nil
