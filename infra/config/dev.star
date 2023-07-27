@@ -546,7 +546,7 @@ luci.bucket(
     shadows = "loadtest",
 )
 
-def fakebuild_builder(name, steps, sleep_min_sec, sleep_max_sec, build_numbers, wait_missing_cache):
+def fakebuild_builder(name, steps, sleep_min_sec, sleep_max_sec, build_numbers, wait_missing_cache, schedule = None):
     luci.builder(
         name = name,
         bucket = "loadtest",
@@ -585,10 +585,11 @@ def fakebuild_builder(name, steps, sleep_min_sec, sleep_max_sec, build_numbers, 
             ),
         ] if wait_missing_cache else [],
         wait_for_capacity = True if wait_missing_cache else None,
+        schedule = schedule,
     )
 
 # Finishes in ~1min with 10 steps.
-fakebuild_builder("fake-1m", 10, 2, 10, True, False)
+fakebuild_builder("fake-1m", 10, 2, 10, True, False, schedule = "triggered")
 fakebuild_builder("fake-1m-no-bn", 10, 2, 10, False, False)
 fakebuild_builder("fake-1m-exp-slices", 10, 2, 10, False, True)
 
