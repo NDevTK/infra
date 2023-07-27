@@ -29,7 +29,6 @@ SELECT
 	{metricAggregations},
 	ARRAY_AGG(STRUCT(
 		builder AS builder,
-		project AS project,
 		bucket AS bucket,
 		test_suite AS test_suite,
 		{metricNames}
@@ -55,7 +54,6 @@ WITH tests AS (
 		ARRAY_AGG(STRUCT(
 			builder AS builder,
 			bucket AS bucket,
-			project AS project,
 			test_suite AS test_suite,
 			{metricNames}
 			)
@@ -506,10 +504,9 @@ func (*Client) readFetchTestMetricsResponse(it *bigquery.RowIterator, req *api.F
 			}
 
 			builder := variantRowVals.NullString("builder").StringVal
-			project := variantRowVals.NullString("project").StringVal
 			bucket := variantRowVals.NullString("bucket").StringVal
 			suite := variantRowVals.NullString("test_suite").StringVal
-			builderSuite := builder + ":" + project + ":" + bucket + ":" + suite
+			builderSuite := builder + ":" + bucket + ":" + suite
 			builderSuiteData, ok := variantHashToTestDateMetricData[testId][builderSuite]
 			if !ok {
 				fields := ""
@@ -518,7 +515,6 @@ func (*Client) readFetchTestMetricsResponse(it *bigquery.RowIterator, req *api.F
 				}
 				builderSuiteData = &api.TestVariantData{
 					Builder: builder,
-					Project: project,
 					Bucket:  bucket,
 					Suite:   suite,
 					Metrics: make(map[string]*api.TestMetricsArray),
@@ -594,7 +590,7 @@ func (c *Client) createDirectoryQuery(req *api.FetchDirectoryMetricsRequest) (*b
 	if req.Filter != "" {
 		for i, filter := range strings.Split(req.Filter, " ") {
 			filterClause += `
-		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter` + strconv.Itoa(i) + `)`
+		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', builder, ' ', test_suite), @filter` + strconv.Itoa(i) + `)`
 			filterParameters = append(filterParameters, bigquery.QueryParameter{
 				Name:  "filter" + strconv.Itoa(i),
 				Value: filter,
