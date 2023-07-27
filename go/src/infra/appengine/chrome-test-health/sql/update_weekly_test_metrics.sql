@@ -8,7 +8,6 @@ USING (
     ANY_VALUE(m.file_name) AS file_name,
     ANY_VALUE(m.component) AS component,
     builder,
-    project,
     bucket,
     test_suite,
     -- Test level metrics
@@ -32,7 +31,6 @@ ON
   AND T.test_id = S.test_id
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
   AND (T.builder = S.builder OR (T.builder IS NULL AND S.builder IS NULL))
-  AND (T.project = S.project OR (T.project IS NULL AND S.project IS NULL))
   AND (T.bucket = S.bucket OR (T.bucket IS NULL AND S.bucket IS NULL))
   AND (T.test_suite = S.repo OR (T.test_suite IS NULL AND S.test_suite IS NULL))
 WHEN MATCHED THEN
@@ -43,5 +41,5 @@ WHEN MATCHED THEN
     avg_runtime = S.avg_runtime,
     total_runtime = S.total_runtime
 WHEN NOT MATCHED THEN
-  INSERT (`date`, test_id, test_name, file_name, repo, component, builder, project, bucket, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
-  VALUES (`date`, test_id, test_name, file_name, repo, component, builder, project, bucket, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
+  INSERT (`date`, test_id, test_name, file_name, repo, component, builder, bucket, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
+  VALUES (`date`, test_id, test_name, file_name, repo, component, builder, bucket, test_suite, num_runs, num_failures, num_flake, total_runtime, avg_runtime, p50_runtime, p90_runtime)
