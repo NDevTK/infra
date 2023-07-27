@@ -30,6 +30,8 @@ type OwnershipRecorder interface {
 	GetMapping() map[string]string
 	// Clear reset the state.
 	Clear()
+	// GetIdForOwner returns a copy of ID mapping to name.
+	GetIdForOwner(name string) string
 }
 
 // ownershipState is the implementation of OwnershipRecorder. It uses a history
@@ -92,4 +94,11 @@ func (o *ownershipState) GetMapping() map[string]string {
 func (o *ownershipState) Clear() {
 	o.history = make([]string, 0)
 	o.mapping = make(map[string]string)
+}
+
+func (o *ownershipState) GetIdForOwner(name string) string {
+	if val, ok := o.mapping[name]; ok {
+		return val
+	}
+	return ""
 }

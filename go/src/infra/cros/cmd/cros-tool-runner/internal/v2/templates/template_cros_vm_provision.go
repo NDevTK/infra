@@ -7,14 +7,21 @@ package templates
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"strings"
+	"time"
 
 	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
+	"infra/cros/cmd/cros-tool-runner/internal/v2/state"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+)
+
+const (
+	authTokenFile = "/authToken.txt"
 )
 
 type crosVMProvisionProcessor struct {
@@ -61,6 +68,7 @@ func (p *crosVMProvisionProcessor) Process(request *api.StartTemplatedContainerR
 		"-port", port,
 		"-log", p.dockerArtifactDirName,
 	}
+	go authCopier(request.Name, request.ArtifactDir, p.dockerArtifactDirName)
 	return &api.StartContainerRequest{Name: request.Name, ContainerImage: request.ContainerImage, AdditionalOptions: additionalOptions, StartCommand: startCommand}, nil
 }
 
@@ -93,4 +101,31 @@ func generateAuthFile(dir string) error {
 		return status.Error(codes.Internal, "unable to write to token file for vm provision")
 	}
 	return nil
+}
+
+// generates auth and copies to vm-provision container
+func authCopier(name string, source string, destination string) {
+
+	// The first auth token is generated and mounted at the container startup. The goroutine only generates
+	// consequent tokens after 45 mins delay.
+	interval := 45 * time.Minute
+
+	for {
+		time.Sleep(interval)
+		err := generateAuthFile(source)
+		if err != nil {
+			log.Printf("Error generating auth for vm-provision during goroutine")
+		}
+		containerId := state.ServerState.Containers.GetIdForOwner(name)
+		if containerId == "" {
+			log.Printf("vm-provision container not started yet")
+		}
+		cmd := &commands.DockerCp{Source: source + authTokenFile, Destination: containerId + ":" + destination + authTokenFile}
+		_, _, err = cmd.Execute(context.Background())
+		if err != nil {
+			log.Printf("Failed to copy auth file for vm-provision during goroutine")
+		} else {
+			log.Printf("Successfully copied auth file for vm-provision during goroutine")
+		}
+	}
 }
