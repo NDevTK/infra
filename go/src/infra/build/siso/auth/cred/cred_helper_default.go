@@ -4,8 +4,13 @@
 
 //go:build !linux
 
-package main
+package cred
 
-func defaultCredentialHelper() string {
+// DefaultCredentialHelper returns default credential helper's path.
+func DefaultCredentialHelper() string {
 	return ""
+}
+
+func credHelperErr(err error) error {
+	return err
 }
