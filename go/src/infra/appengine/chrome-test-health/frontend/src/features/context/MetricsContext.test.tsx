@@ -8,8 +8,8 @@ import { act } from 'react-dom/test-utils';
 import { Button } from '@mui/material';
 import * as Resources from '../../api/resources';
 import { formatDate } from '../../utils/formatUtils';
-import { MetricsContext, MetricsContextProvider, MetricsContextValue } from './MetricsContext';
 import { createProps } from '../../utils/testUtils';
+import { MetricsContext, MetricsContextProvider, MetricsContextValue } from './MetricsContext';
 
 async function contextRender(ui: (value: MetricsContextValue) => React.ReactElement, { props } = { props: { ...createProps({}) } }) {
   await act(async () => {
@@ -64,7 +64,7 @@ describe('MetricsContext params', () => {
         <div>page-{value.params.page}</div>
         <div>sortIndex-{value.params.sortIndex}</div>
       </>
-    ), { props: { ...createProps({ page: 1, date: new Date('2023-01-01'), timelineView: false, sortIndex: 4 }) } });
+    ), { props: { ...createProps({ page: 1, date: new Date('2023-01-01T00:00:00'), timelineView: false, sortIndex: 4 }) } });
     expect(screen.getByText('page-1')).toBeInTheDocument();
     expect(screen.getByText('date-2023-01-01')).toBeInTheDocument();
     expect(screen.getByText('sortIndex-4')).toBeInTheDocument();
@@ -79,7 +79,7 @@ describe('MetricsContext params', () => {
   it('updateDate timeline view', async () => {
     await contextRender((value) => (
       <>
-        <Button data-testid='updateDate' onClick={() => value.api.updateDate(new Date('2023-01-02'))}/>
+        <Button data-testid='updateDate' onClick={() => value.api.updateDate(new Date('2023-01-02T00:00:00'))}/>
         <div>sortIndex-{value.params.sortIndex}</div>
       </>
     ), { props: { ...createProps({ page: 1, date: new Date('2023-01-01'), timelineView: true, sortIndex: 0 }) } });
@@ -115,7 +115,7 @@ describe('MetricsContext params', () => {
         <div>date-{formatDate(value.params.date)}</div>
         <div>page-{value.params.page}</div>
       </>
-    ), { props: { ...createProps( { date: new Date('2023-07-19'), page: 10, period: Resources.Period.DAY }) } });
+    ), { props: { ...createProps( { date: new Date('2023-07-19T00:00:00'), page: 10, period: Resources.Period.DAY }) } });
     expect(screen.getByText('period-' + Resources.Period.DAY)).toBeInTheDocument();
     expect(screen.getByText('date-2023-07-19')).toBeInTheDocument();
     expect(screen.getByText('page-10')).toBeInTheDocument();

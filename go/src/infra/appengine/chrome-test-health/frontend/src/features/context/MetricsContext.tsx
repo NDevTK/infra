@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { createContext, useContext, useEffect, useReducer, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState } from 'react';
 import {
   DirectoryNode,
   DirectoryNodeType,
@@ -182,19 +182,25 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
   const [timelineView, setTimelineView] = useState(props.timelineView);
   const [directoryView, setDirectoryView] = useState(props.directoryView);
 
-  const params: Params = { page, rowsPerPage, filter, date, period, sort, ascending, sortIndex, timelineView, directoryView };
+  const params: Params = useMemo(() => ({
+    page, rowsPerPage, filter, date, period, sort, ascending, sortIndex,
+    timelineView, directoryView,
+  }), [
+    page, rowsPerPage, filter, date, period, sort, ascending, sortIndex,
+    timelineView, directoryView,
+  ]);
 
   const [data, dataDispatch] = useReducer(dataReducer, []);
   const [lastPage, setLastPage] = useState(false);
   const [datesToShow, setDatesToShow] = useState<string[]>([formatDate(date)]);
   const [loading, loadingDispatch] = useReducer(loadingCountReducer, { count: 0, isLoading: false });
 
-  function loadFailure(error: any) {
+  const loadFailure = useCallback((error: any) => {
     loadingDispatch({ type: 'end' });
     throw error;
-  }
+  }, [loadingDispatch]);
 
-  function loadPathNode(node: Node) {
+  const loadPathNode = useCallback((node: Node) => {
     if (isPath(node) && !node.loaded) {
       loadingDispatch({ type: 'start' });
       if (node.type === DirectoryNodeType.FILENAME) {
@@ -225,9 +231,9 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
         );
       }
     }
-  }
+  }, [loadingDispatch, dataDispatch, loadFailure, components, params]);
 
-  function load(params: Params) {
+  const load = useCallback((_from: string, components: string[], params: Params) => {
     loadingDispatch({ type: 'start' });
     if (params.directoryView) {
       // If we're not switching to directory view, we will need to reload
@@ -253,14 +259,15 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
           if (directoryNodes === undefined || tests === undefined) {
             return;
           }
+          loadingDispatch({ type: 'end' });
           dataDispatch({
             type: 'rebuild_state',
             nodes: directoryNodes,
             tests: tests,
             onExpand: loadPathNode,
           });
+          setTimelineView(params.timelineView);
           setDatesToShow(fetchedDates);
-          loadingDispatch({ type: 'end' });
         };
 
         loadDirectoryMetrics(
@@ -282,6 +289,7 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
             params,
             ['/'],
             (response: FetchDirectoryMetricsResponse, fetchedDates: string[]) => {
+              loadingDispatch({ type: 'end' });
               dataDispatch({
                 type: 'merge_dir',
                 nodes: response.nodes,
@@ -290,7 +298,6 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
               setTimelineView(params.timelineView);
               setDirectoryView(params.directoryView);
               setDatesToShow(fetchedDates);
-              loadingDispatch({ type: 'end' });
             },
             loadFailure,
         );
@@ -300,95 +307,117 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
           components,
           params,
           (response: FetchTestMetricsResponse, fetchedDates: string[]) => {
+            loadingDispatch({ type: 'end' });
             dataDispatch({ type: 'merge_test', tests: response.tests });
             setLastPage(response.lastPage);
             setTimelineView(params.timelineView);
             setDirectoryView(params.directoryView);
             setDatesToShow(fetchedDates);
-            loadingDispatch({ type: 'end' });
           },
           loadFailure,
       );
     }
-  }
+  }, [
+    data, directoryView,
+    loadPathNode, loadingDispatch, dataDispatch, loadFailure,
+    setTimelineView, setDirectoryView, setDatesToShow, setLastPage,
+  ]);
 
   useEffect(() => {
-    load(params);
-  // Adding this because we don't want a dependency on api
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    load('useEffect components', components, params);
+    // We don't want to run this effect every time load or params change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [components]);
 
   const api: Api = {
     updatePage: (newPage: number) => {
-      if (params.page !== newPage) {
+      if (page !== newPage) {
         params.page = newPage;
         setPage(newPage);
-        load(params);
+        load('updatePage', components, params);
       }
     },
     updateRowsPerPage: (newRowsPerPage: number) => {
-      params.rowsPerPage = newRowsPerPage;
-      setRowsPerPage(params.rowsPerPage);
-      load(params);
+      if (rowsPerPage !== newRowsPerPage) {
+        params.rowsPerPage = newRowsPerPage;
+        setRowsPerPage(params.rowsPerPage);
+        load('updateRowsPerPage', components, params);
+      }
     },
     updateFilter: (newFilter: string) => {
-      params.filter = newFilter;
-      params.page = 0;
-      setFilter(params.filter);
-      setPage(params.page);
-      load(params);
+      if (filter !== newFilter) {
+        params.filter = newFilter;
+        params.page = 0;
+        setFilter(params.filter);
+        setPage(params.page);
+        load('updateFilter', components, params);
+      }
     },
     updateDate: (newDate: Date) => {
-      params.date = newDate;
-      params.page = 0;
-      setDate(params.date);
-      setPage(params.page);
-      params.sortIndex = params.timelineView ? 4 : 0;
-      setSortIndex(params.sortIndex);
-      load(params);
+      if (date.getTime() !== newDate.getTime()) {
+        params.date = newDate;
+        params.page = 0;
+        setDate(params.date);
+        setPage(params.page);
+        params.sortIndex = params.timelineView ? 4 : 0;
+        setSortIndex(params.sortIndex);
+        load('updateDate', components, params);
+      }
     },
     updatePeriod: (newPeriod: Period) => {
-      params.period = newPeriod;
-      params.page = 0;
-      // Snap to valid date for weekly view
-      if (newPeriod === Period.WEEK) {
-        params.date = (snapToPeriod(params.date));
-        setDate(params.date);
+      if (period !== newPeriod) {
+        params.period = newPeriod;
+        params.page = 0;
+        // Snap to valid date for weekly view
+        if (newPeriod === Period.WEEK) {
+          params.date = (snapToPeriod(params.date));
+          setDate(params.date);
+        }
+        setPeriod(params.period);
+        setPage(params.page);
+        load('updatePeriod', components, params);
       }
-      setPeriod(params.period);
-      setPage(params.page);
-      load(params);
     },
     updateSort: (newSort: SortType) => {
-      params.sort = newSort;
-      params.page = 0;
-      setSort(params.sort);
-      setPage(params.page);
-      load(params);
+      if (sort !== newSort) {
+        params.sort = newSort;
+        params.page = 0;
+        setSort(params.sort);
+        setPage(params.page);
+        load('updateSort', components, params);
+      }
     },
     updateAscending: (newAscending: boolean) => {
-      params.ascending = newAscending;
-      params.page = 0;
-      setAscending(params.ascending);
-      setPage(params.page);
-      load(params);
+      if (ascending !== newAscending) {
+        params.ascending = newAscending;
+        params.page = 0;
+        setAscending(params.ascending);
+        setPage(params.page);
+        load('updateAscending', components, params);
+      }
     },
     updateSortIndex: (newSortIndex: number) => {
-      params.sortIndex = newSortIndex;
-      setSortIndex(params.sortIndex);
-      load(params);
+      if (sortIndex !== newSortIndex) {
+        params.sortIndex = newSortIndex;
+        setSortIndex(params.sortIndex);
+        load('updateSortIndex', components, params);
+      }
     },
     updateTimelineView: (newTimelineView: boolean) => {
-      params.timelineView = newTimelineView;
-      params.sortIndex = params.timelineView ? 4 : 0;
-      setSortIndex(params.sortIndex);
-      // Don't set timeline view until the data has been loaded.
-      load(params);
+      if (timelineView !== newTimelineView) {
+        params.timelineView = newTimelineView;
+        params.sortIndex = params.timelineView ? 4 : 0;
+        setSortIndex(params.sortIndex);
+        // Don't set timeline view until the data has been loaded.
+        load('updateTimelineView', components, params);
+      }
     },
     updateDirectoryView: (newDirectoryView: boolean) => {
-      params.directoryView = newDirectoryView;
-      // Don't set directory view until the data has been loaded.
-      load(params);
+      if (directoryView !== newDirectoryView) {
+        params.directoryView = newDirectoryView;
+        // Don't set directory view until the data has been loaded.
+        load('updateDirectoryView', components, params);
+      }
     },
   };
 

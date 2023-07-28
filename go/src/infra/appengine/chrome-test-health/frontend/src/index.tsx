@@ -4,9 +4,7 @@
 
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
 import { CssBaseline } from '@mui/material';
-import { store } from './app/store';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
@@ -18,10 +16,8 @@ const root = createRoot(container);
 
 root.render(
     <React.StrictMode>
-      <Provider store={store}>
-        <CssBaseline />
-        <App />
-      </Provider>
+      <CssBaseline />
+      <App />
     </React.StrictMode>,
 );
 

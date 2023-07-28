@@ -15,9 +15,6 @@ jest.mock('react-router-dom', () => ({
 describe('when rendering the navbar', () => {
   it('should render the ', () => {
     render(<NavBar />);
-    expect(screen.getByText('COVERAGE')).toBeInTheDocument();
-    expect(screen.getByText('RESOURCES')).toBeInTheDocument();
-    expect(screen.getByText('FLAKINESS')).toBeInTheDocument();
-    expect(screen.getByTestId('selectTest')).toBeInTheDocument();
+    expect(screen.getByTestId('selectComponents')).toBeInTheDocument();
   });
 });
