@@ -105,3 +105,9 @@ runOnLoad(function() {
   crdx('setFeedbackButtonLink', 'https://bugs.chromium.org/p/monorail/issues/entry?template=Online%20Feedback');
 });
 </script>
+
+<script
+    data-autoload-cookie-consent-bar="true"
+    src="https://www.gstatic.com/brandstudio/kato/cookie_choice_component/cookie_consent_bar.v3.js"
+    nonce="[nonce]">
+</script>
