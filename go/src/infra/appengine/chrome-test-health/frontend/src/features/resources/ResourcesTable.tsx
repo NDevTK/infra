@@ -12,7 +12,7 @@ import Paper from '@mui/material/Paper';
 import { useContext } from 'react';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import { Button, LinearProgress, TableFooter, TablePagination } from '@mui/material';
+import { Box, Button, LinearProgress, TableFooter, TablePagination } from '@mui/material';
 import { SortType } from '../../api/resources';
 import { MetricsContext, convertToSortIndex } from '../context/MetricsContext';
 import ResourcesRow from './ResourcesRow';
@@ -99,52 +99,48 @@ function ResourcesTable() {
 
   function displayHeader() {
     if (params.timelineView) {
-      const headerArr = [] as JSX.Element[];
-      datesToShow.forEach((date) => {
-        headerArr.push(
-            <TableCell key={date} component="th" align="right" data-testid="timelineHeader">
-              {sortableDateColumn(date)}
-            </TableCell>,
-        );
-      });
       return (
         <>
-          {headerArr}
+          {datesToShow.map((date) => (
+            <TableCell key={date} component="th" align="right" data-testid="timelineHeader"
+              sx={{ whiteSpace: 'nowrap', width: '8%', minWidth: '100px', maxWidth: '140px' }}>
+              {sortableDateColumn(date)}
+            </TableCell>
+          ))}
         </>
       );
     }
+    const columns: [SortType, string][] = [
+      [SortType.SORT_NUM_RUNS, '# Runs'],
+      [SortType.SORT_NUM_FAILURES, '# Failures'],
+      [SortType.SORT_AVG_RUNTIME, 'Avg Runtime'],
+      [SortType.SORT_TOTAL_RUNTIME, 'Total Runtime'],
+      [SortType.SORT_AVG_CORES, 'Avg Cores'],
+    ];
     return (
       <>
-        <TableCell component="th" align="right">
-          {sortableColumnLabel(SortType.SORT_NUM_RUNS, '# Runs')}
-        </TableCell>
-        <TableCell component="th" align="right">
-          {sortableColumnLabel(SortType.SORT_NUM_FAILURES, '# Failures')}
-        </TableCell>
-        <TableCell component="th" align="right">
-          {sortableColumnLabel(SortType.SORT_AVG_RUNTIME, 'Avg Runtime')}
-        </TableCell>
-        <TableCell component="th" align="right">
-          {sortableColumnLabel(SortType.SORT_TOTAL_RUNTIME, 'Total Runtime')}
-        </TableCell>
-        <TableCell component="th" align="right">
-          {sortableColumnLabel(SortType.SORT_AVG_CORES, 'Avg Cores')}
-        </TableCell>
+        {columns.map(([sortType, name]) => (
+          <TableCell key={name} component="th" align="right"
+            sx={{ whiteSpace: 'nowrap', width: '8%', minWidth: '100px', maxWidth: '140px' }}>
+            {sortableColumnLabel(sortType, name)}
+          </TableCell>
+        ))}
       </>
     );
   }
 
   return (
     <>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ position: 'relative' }}>
         <LinearProgress sx={{ visibility: isLoading ? 'visible' : 'hidden' }} data-testid='loading-bar'/>
+        <Box className={styles.loadingDimmer} sx={{ visibility: isLoading? 'visible' : 'hidden' }}></Box>
         <Table sx={{ minWidth: 650 }} size="small" aria-label="simple table">
           <TableHead>
             <TableRow className={styles.headerRow}>
-              <TableCell component="th" align="left">
+              <TableCell component="th" align="left" sx={{ width: '30%' }}>
                 {sortableColumnLabel(SortType.SORT_NAME, 'Test')}
               </TableCell>
-              <TableCell component="th" align="left">
+              <TableCell component="th" align="left" sx={{ width: '20%' }}>
                 Test Suite
               </TableCell>
               {displayHeader()}
@@ -167,6 +163,7 @@ function ResourcesTable() {
                 page={params.page}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
+                showFirstButton
               />
             </TableRow>
           </TableFooter>

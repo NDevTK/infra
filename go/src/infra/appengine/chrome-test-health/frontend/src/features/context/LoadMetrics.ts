@@ -124,7 +124,7 @@ function createTestNode(test: TestDateMetricData): Test {
     nodes: test.variants.map((variant) => ({
       id: `${test.testId}:${variant.bucket}:${variant.builder}` +
         `:${variant.suite}`,
-      name: variant.builder,
+      name: variant.bucket + '/' + variant.builder,
       subname: variant.suite,
       metrics: createMetricsMap(variant.metrics),
       isLeaf: true,
@@ -140,7 +140,7 @@ function createPathNode(
   return {
     id: node.id,
     path: node.id,
-    name: node.name,
+    name: node.name + ((node.type === DirectoryNodeType.DIRECTORY) ? '/' : ''),
     metrics: createMetricsMap(node.metrics),
     isLeaf: false,
     onExpand: onExpand,

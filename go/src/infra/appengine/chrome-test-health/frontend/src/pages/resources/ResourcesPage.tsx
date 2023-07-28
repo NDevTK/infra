@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { Paper } from '@mui/material';
+import { Box } from '@mui/material';
 import ResourcesTable from '../../features/resources/ResourcesTable';
 import { MetricsContextProvider } from '../../features/context/MetricsContext';
 import ResourcesToolbar from '../../features/resources/ResourcesToolbar';
@@ -29,7 +29,7 @@ function ResourcesPage() {
     filter: params.get(FILTER) || '',
     date: new Date(params.has(DATE) ? params.get(DATE) + 'T00:00:00' : null || (Date.now() - 86400000)),
     period: params.has(PERIOD) ? Number(params.get(PERIOD)) as Period : null || Period.WEEK,
-    sort: params.has(SORT_BY) ? Number(params.get(SORT_BY)) as SortType : null || SortType.SORT_TOTAL_RUNTIME,
+    sort: params.has(SORT_BY) ? Number(params.get(SORT_BY)) as SortType : null || SortType.SORT_AVG_CORES,
     ascending: params.get(ASCENDING) === 'true',
     sortIndex: Number(params.get(SORT_INDEX) || 0),
     timelineView: params.get(TIMELINE_VIEW) === 'true',
@@ -38,9 +38,9 @@ function ResourcesPage() {
   return (
     <MetricsContextProvider {...props}>
       <ResourcesToolbar/>
-      <Paper sx={{ margin: '10px 20px' }}>
+      <Box sx={{ margin: '10px 20px' }}>
         <ResourcesTable/>
-      </Paper>
+      </Box>
       <ResourcesSearchParams/>
       <ComponentParams/>
     </MetricsContextProvider>

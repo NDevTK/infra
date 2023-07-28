@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import { useContext, useState } from 'react';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { IconButton, TableCell, TableRow } from '@mui/material';
+import { IconButton, TableCell, TableRow, styled } from '@mui/material';
 import { formatNumber, formatTime } from '../../utils/formatUtils';
 import { MetricType } from '../../api/resources';
 import { Node, MetricsContext } from '../context/MetricsContext';
@@ -12,6 +12,12 @@ export interface ResourcesRowProps {
   data: Node,
   depth: number,
 }
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: theme.palette.action.hover,
+  },
+}));
 
 function ResourcesRow(props: ResourcesRowProps) {
   const { params, datesToShow } = useContext(MetricsContext);
@@ -53,7 +59,7 @@ function ResourcesRow(props: ResourcesRowProps) {
   }
   return (
     <>
-      <TableRow
+      <StyledTableRow
         data-testid={'tablerow-' + props.data.id}
         data-depth={props.depth}
         key={props.data.id}
@@ -81,7 +87,7 @@ function ResourcesRow(props: ResourcesRowProps) {
           <TableCell sx={{ whiteSpace: 'nowrap' }}>{props.data.subname}</TableCell>
         )}
         {displayMetrics()}
-      </TableRow>
+      </StyledTableRow>
       {
         isOpen && props.data.nodes.length > 0 ? (
           props.data.nodes.map(
