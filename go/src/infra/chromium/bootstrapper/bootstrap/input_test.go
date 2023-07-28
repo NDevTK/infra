@@ -69,7 +69,7 @@ func TestInput(t *testing.T) {
 					},
 					"ref": "refs/heads/top-level"
 				},
-				"properties_file": "infra/config/fake-bucket/fake-builder/properties.textpb"
+				"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
 			}`)
 
 			Convey("for incorrectly typed $bootstrap/exe", func() {
@@ -101,7 +101,7 @@ func TestInput(t *testing.T) {
 					},
 					"ref": "refs/heads/top-level"
 				},
-				"properties_file": "infra/config/fake-bucket/fake-builder/properties.textpb"
+				"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
 			}`)
 			setBootstrapExeProperties(build, `{
 				"exe": {
@@ -130,7 +130,7 @@ func TestInput(t *testing.T) {
 						},
 						"ref": "refs/heads/top-level"
 					},
-					"properties_file": "infra/config/fake-bucket/fake-builder/properties.textpb"
+					"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
 				}`)
 				So(input.exeProperties, ShouldResembleProtoJSON, `{
 					"exe": {
@@ -197,7 +197,7 @@ func TestInput(t *testing.T) {
 						},
 						"ref": "refs/heads/top-level"
 					},
-					"properties_file": "infra/config/fake-bucket/fake-builder/properties.textpb"
+					"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
 				}`)
 			})
 

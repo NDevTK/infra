@@ -76,7 +76,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 				},
 				"ref": "refs/heads/top-level"
 			},
-			"properties_file": "infra/config/fake-bucket/fake-builder/properties.textpb"
+			"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
 		}`)
 		setBootstrapExeProperties(build, `{
 			"exe": {
@@ -135,7 +135,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 				topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
 				topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
 					Files: map[string]*string{
-						"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(""),
+						"infra/config/fake-bucket/fake-builder/properties.json": strPtr(""),
 					},
 				}
 
@@ -163,7 +163,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 				topLevelGitiles.Refs["top-level-some-branch-head"] = "top-level-some-branch-head-revision"
 				topLevelGitiles.Revisions["top-level-some-branch-head-revision"] = &fakegitiles.Revision{
 					Files: map[string]*string{
-						"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr("{}"),
+						"infra/config/fake-bucket/fake-builder/properties.json": strPtr("{}"),
 					},
 				}
 				topLevelGitiles.Revisions["cl-revision"] = &fakegitiles.Revision{
@@ -196,7 +196,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 				topLevelGitiles.Refs["top-level-some-branch-head"] = "top-level-some-branch-head-revision"
 				topLevelGitiles.Revisions["top-level-some-branch-head-revision"] = &fakegitiles.Revision{
 					Files: map[string]*string{
-						"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+						"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 							"test_property": "foo"
 						}`),
 					},
@@ -204,14 +204,14 @@ func TestGetBootstrapConfig(t *testing.T) {
 				topLevelGitiles.Revisions["cl-revision"] = &fakegitiles.Revision{
 					Parent: "cl-base",
 					Files: map[string]*string{
-						"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+						"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 							"test_property": "bar"
 						}`),
 					},
 				}
 				topLevelGitiles.Revisions["cl-base"] = &fakegitiles.Revision{
 					Files: map[string]*string{
-						"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr("{}"),
+						"infra/config/fake-bucket/fake-builder/properties.json": strPtr("{}"),
 					},
 				}
 				input := getInput(build)
@@ -231,7 +231,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 				topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
 				topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
 					Files: map[string]*string{
-						"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{}`),
+						"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{}`),
 					},
 				}
 				setBootstrapPropertiesProperties(build, `{
@@ -242,7 +242,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 						},
 						"ref": "refs/heads/top-level"
 					},
-					"properties_file": "infra/config/fake-bucket/fake-builder/properties.textpb"
+					"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
 				}`)
 				build.Input.Properties.Fields["test_property"] = structpb.NewStringValue("foo")
 				build.Infra = &buildbucketpb.BuildInfra{
@@ -270,7 +270,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 				topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
 				topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
 					Files: map[string]*string{
-						"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{}`),
+						"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{}`),
 					},
 				}
 				setBootstrapPropertiesProperties(build, `{
@@ -281,7 +281,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 						},
 						"ref": "refs/heads/top-level"
 					},
-					"properties_file": "infra/config/fake-bucket/fake-builder/properties.textpb"
+					"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
 				}`)
 				inputOpts := InputOptions{Polymorphic: true}
 				input, err := inputOpts.NewInput(build)
@@ -317,7 +317,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 						},
 						"ref": "refs/heads/top-level"
 					},
-					"properties_file": "infra/config/fake-bucket/fake-builder/properties.textpb"
+					"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
 				}`)
 
 				Convey("returns config with properties from top level ref when no commit or change for project", func() {
@@ -327,7 +327,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					}
 					topLevelGitiles.Revisions["config-changed-revision"] = &fakegitiles.Revision{
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "config-changed-value"
 							}`),
 						},
@@ -354,7 +354,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 							"ref": "refs/heads/top-level",
 							"id": "config-changed-revision"
 						},
-						"path": "infra/config/fake-bucket/fake-builder/properties.textpb"
+						"path": "infra/config/fake-bucket/fake-builder/properties.json"
 					}`)
 				})
 
@@ -367,7 +367,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					topLevelGitiles.Refs["refs/heads/some-branch"] = "top-level-some-branch-head"
 					topLevelGitiles.Revisions["top-level-some-branch-head"] = &fakegitiles.Revision{
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "some-branch-head-value"
 							}`),
 						},
@@ -398,7 +398,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					}
 					topLevelGitiles.Revisions["some-branch-revision"] = &fakegitiles.Revision{
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "some-branch-revision-value"
 							}`),
 						},
@@ -438,7 +438,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					topLevelGitiles.Refs["refs/heads/some-branch"] = "top-level-some-branch-head"
 					topLevelGitiles.Revisions["top-level-some-branch-head"] = &fakegitiles.Revision{
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "some-branch-head-value",
 								"test_property2": "some-branch-head-value2",
 								"test_property3": "some-branch-head-value3",
@@ -449,7 +449,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					}
 					topLevelGitiles.Revisions["cl-base"] = &fakegitiles.Revision{
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "some-branch-head-value",
 								"test_property2": "some-branch-head-value2",
 								"test_property3": "some-branch-head-value3",
@@ -461,7 +461,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					topLevelGitiles.Revisions["cl-revision"] = &fakegitiles.Revision{
 						Parent: "cl-base",
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "some-branch-head-new-value",
 								"test_property2": "some-branch-head-value2",
 								"test_property3": "some-branch-head-value3",
@@ -495,7 +495,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 						"test_property5": "some-branch-head-value5"
 					}`)
 					So(config.skipAnalysisReasons, ShouldResemble, []string{
-						"properties file infra/config/fake-bucket/fake-builder/properties.textpb is affected by CL",
+						"properties file infra/config/fake-bucket/fake-builder/properties.json is affected by CL",
 					})
 				})
 
@@ -519,7 +519,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 							"config/repo/old-path"
 						]
 					},
-					"properties_file": "infra/config/fake-bucket/fake-builder/properties.textpb"
+					"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
 				}`)
 
 				Convey("returns config with properties from ref pinned by top level ref when no commit or change for either project", func() {
@@ -534,7 +534,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					dependencyGitiles.Refs["refs/heads/dependency"] = "dependency-dependency-head"
 					dependencyGitiles.Revisions["dependency-dependency-head"] = &fakegitiles.Revision{
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "dependency-head-value"
 							}`),
 						},
@@ -573,7 +573,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					}
 					dependencyGitiles.Revisions["dependency-revision"] = &fakegitiles.Revision{
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "dependency-revision-value"
 							}`),
 						},
@@ -609,7 +609,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					dependencyGitiles.Refs["refs/heads/some-branch"] = "dependency-some-branch-head"
 					dependencyGitiles.Revisions["dependency-some-branch-head"] = &fakegitiles.Revision{
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "some-branch-head-value"
 							}`),
 						},
@@ -640,7 +640,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					}
 					dependencyGitiles.Revisions["dependency-some-branch-revision"] = &fakegitiles.Revision{
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "some-branch-revision-value"
 							}`),
 						},
@@ -678,7 +678,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					}
 					dependencyGitiles.Revisions["dependency-revision"] = &fakegitiles.Revision{
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "dependency-revision-value"
 							}`),
 						},
@@ -721,7 +721,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					}
 					dependencyGitiles.Revisions["dependency-revision"] = &fakegitiles.Revision{
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "dependency-revision-value"
 							}`),
 						},
@@ -766,7 +766,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					dependencyGitiles.Refs["refs/heads/some-branch"] = "dependency-some-branch-head"
 					dependencyGitiles.Revisions["dependency-some-branch-head"] = &fakegitiles.Revision{
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "some-branch-head-value",
 								"test_property2": "some-branch-head-value2",
 								"test_property3": "some-branch-head-value3",
@@ -777,7 +777,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					}
 					dependencyGitiles.Revisions["cl-base"] = &fakegitiles.Revision{
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "some-branch-head-value",
 								"test_property2": "some-branch-head-value2",
 								"test_property3": "some-branch-head-value3",
@@ -789,7 +789,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					dependencyGitiles.Revisions["cl-revision"] = &fakegitiles.Revision{
 						Parent: "cl-base",
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "some-branch-head-new-value",
 								"test_property2": "some-branch-head-value2",
 								"test_property3": "some-branch-head-value3",
@@ -823,7 +823,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 						"test_property5": "some-branch-head-value5"
 					}`)
 					So(config.skipAnalysisReasons, ShouldResemble, []string{
-						"properties file infra/config/fake-bucket/fake-builder/properties.textpb is affected by CL",
+						"properties file infra/config/fake-bucket/fake-builder/properties.json is affected by CL",
 					})
 				})
 
@@ -870,14 +870,14 @@ func TestGetBootstrapConfig(t *testing.T) {
 					}
 					dependencyGitiles.Revisions["old-dependency-revision"] = &fakegitiles.Revision{
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "old-dependency-revision-value"
 							}`),
 						},
 					}
 					dependencyGitiles.Revisions["new-dependency-revision"] = &fakegitiles.Revision{
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "new-dependency-revision-value"
 							}`),
 						},
@@ -903,7 +903,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 						"test_property": "new-dependency-revision-value"
 					}`)
 					So(config.skipAnalysisReasons, ShouldResemble, []string{
-						"properties file infra/config/fake-bucket/fake-builder/properties.textpb is affected by CL (via DEPS change)",
+						"properties file infra/config/fake-bucket/fake-builder/properties.json is affected by CL (via DEPS change)",
 					})
 				})
 
@@ -959,14 +959,14 @@ func TestGetBootstrapConfig(t *testing.T) {
 					}
 					dependencyGitiles.Revisions["old-dependency-revision"] = &fakegitiles.Revision{
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "dependency-value"
 							}`),
 						},
 					}
 					dependencyGitiles.Revisions["new-dependency-revision"] = &fakegitiles.Revision{
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "dependency-value"
 							}`),
 						},
@@ -1037,7 +1037,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 					}
 					dependencyGitiles.Revisions["new-dependency-revision"] = &fakegitiles.Revision{
 						Files: map[string]*string{
-							"infra/config/fake-bucket/fake-builder/properties.textpb": strPtr(`{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
 								"test_property": "new-dependency-revision-value"
 							}`),
 						},
@@ -1083,7 +1083,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
 
-					So(err, ShouldErrLike, `dependency properties file infra/config/fake-bucket/fake-builder/properties.textpb does not exist in pinned revision chromium.googlesource.com/dependency/+/dependency-dependency-head
+					So(err, ShouldErrLike, `dependency properties file infra/config/fake-bucket/fake-builder/properties.json does not exist in pinned revision chromium.googlesource.com/dependency/+/dependency-dependency-head
 This should resolve once the CL that adds this builder rolls into chromium.googlesource.com/top/level`)
 					sleepDuration, errHasSleepTag := SleepBeforeExiting.In(err)
 					So(errHasSleepTag, ShouldBeTrue)
