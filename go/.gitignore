@@ -1,4 +1,5 @@
 /bin
 /coverage
 /golang
+/pkg
 .tools_spec.json
