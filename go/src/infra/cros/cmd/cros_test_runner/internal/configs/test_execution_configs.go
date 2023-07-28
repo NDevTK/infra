@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/data"
 
 	tpcommon "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
@@ -103,14 +104,14 @@ func NewTestExecutionConfig(
 		executedCommands:            executedCmdMap}
 }
 
-func (tecfg *TestExecutionConfig) GenerateConfig(ctx context.Context) error {
+func (tecfg *TestExecutionConfig) GenerateConfig(ctx context.Context, platform common.SwarmingBotProvider) error {
 	var err error
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("Generate configs: %s", tecfg.GetConfigType()))
 	defer func() { step.End(err) }()
 
 	switch configType := tecfg.GetConfigType(); configType {
 	case HwTestExecutionConfigType:
-		tecfg.configs = GenerateHwConfigs(ctx, tecfg.cftStepsConfig.GetHwTestConfig())
+		tecfg.configs = GenerateHwConfigs(ctx, tecfg.cftStepsConfig.GetHwTestConfig(), platform)
 	case LocalTestExecutionConfigType:
 		tecfg.configs = GenerateLocalConfigs(ctx, tecfg.stateKeeper.(*data.LocalTestStateKeeper))
 	case PreLocalTestExecutionConfigType:
@@ -194,6 +195,7 @@ func (tecfg *TestExecutionConfig) executeCommands(
 	var allErr error
 	var singleErr error
 	for _, cmd := range cmds {
+		// return errors.New("hello")
 		cmdType := cmd.GetCommandType()
 		logging.Infof(ctx, "Executing cmd: %T", cmd)
 		if _, ok := tecfg.executedCommands[cmdType]; ok {

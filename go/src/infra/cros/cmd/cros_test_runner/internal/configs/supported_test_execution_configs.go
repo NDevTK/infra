@@ -77,8 +77,7 @@ var VMProvisionLease_CrosVMProvisionExecutor = &CommandExecutorPairedConfig{Comm
 var VMProvisionRelease_CrosVMProvisionExecutor = &CommandExecutorPairedConfig{CommandType: commands.VMProvisionReleaseCmdType, ExecutorType: executors.CrosVMProvisionExecutorType}
 
 // GenerateHwConfigs generates hw tests execution for lab environment.
-func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig) *Configs {
-	platform := common.GetBotProvider()
+func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig, platform common.SwarmingBotProvider) *Configs {
 	return hwConfigsForPlatform(cftHwStepsConfig, platform)
 }
 

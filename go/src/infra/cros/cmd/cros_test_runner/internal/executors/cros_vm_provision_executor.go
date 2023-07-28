@@ -228,6 +228,13 @@ func (ex *CrosVMProvisionExecutor) vmProvisionReleaseCommandExecution(
 	step, ctx := build.StartStep(ctx, "VM-Provision release dut vm")
 	defer func() { step.End(err) }()
 
+	if cmd.LeaseVMResponse == nil {
+		return errors.New("cmd.LeaseVMResponse is nil")
+	}
+	if cmd.LeaseVMResponse.Vm == nil {
+		return errors.New("cmd.LeaseVMResponse.Vm is nil")
+	}
+
 	//create request
 	releaseVMRequest := &api.ReleaseVMRequest{
 		LeaseId:    cmd.LeaseVMResponse.GetLeaseId(),

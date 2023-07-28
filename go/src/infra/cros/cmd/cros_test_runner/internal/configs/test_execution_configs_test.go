@@ -7,6 +7,7 @@ package configs
 import (
 	"context"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
+	"infra/cros/cmd/cros_test_runner/common"
 	"infra/cros/cmd/cros_test_runner/internal/data"
 	"testing"
 
@@ -25,7 +26,7 @@ func TestGenerateConfig_UnSupportedConfig(t *testing.T) {
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
 		testExecConfig := NewTestExecutionConfig(UnSupportedTestExecutionConfigType, cmdConfig, sk, nil)
-		err := testExecConfig.GenerateConfig(ctx)
+		err := testExecConfig.GenerateConfig(ctx, common.BotProviderUnknown)
 		So(err, ShouldNotBeNil)
 	})
 }
@@ -41,7 +42,7 @@ func TestGenerateConfig_SupportedConfig(t *testing.T) {
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
 		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk, nil)
-		err := testExecConfig.GenerateConfig(ctx)
+		err := testExecConfig.GenerateConfig(ctx, common.BotProviderUnknown)
 		So(err, ShouldBeNil)
 	})
 }
@@ -75,7 +76,7 @@ func TestExecute_UnsuccesfulHwTestsExecution(t *testing.T) {
 		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk, nil)
 
 		// Generate configs first
-		err := testExecConfig.GenerateConfig(ctx)
+		err := testExecConfig.GenerateConfig(ctx, common.BotProviderUnknown)
 		So(err, ShouldBeNil)
 
 		// Execute configs
@@ -108,6 +109,36 @@ func TestExecute_SuccesfulHwTestsExecution(t *testing.T) {
 		So(err, ShouldBeNil)
 	})
 }
+
+func TestExecute_SuccesfulHwTestsExecution_Gce(t *testing.T) {
+	t.Parallel()
+	Convey("Execute hw tests successfully on Gce", t, func() {
+		wantPublishSrcDir := "publish/src/dir"
+		ctx := context.Background()
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		contConfig := NewCftContainerConfig(ctr, getMockContainerImagesInfo(), false)
+		execConfig := NewExecutorConfig(ctr, contConfig)
+		cmdConfig := NewCommandConfig(execConfig)
+		sk := &data.HwTestStateKeeper{
+			GcsPublishSrcDir: wantPublishSrcDir,
+			CftTestRequest: &skylab_test_runner.CFTTestRequest{
+				ParentBuildId: 12345678,
+			},
+		}
+		testExecConfig := NewTestExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk, nil)
+
+		// Generate configs first
+		err := testExecConfig.GenerateConfig(ctx, common.BotProviderGce)
+		So(err, ShouldBeNil)
+
+		// Execute configs
+		err = testExecConfig.Execute(ctx)
+		So(err, ShouldBeNil)
+	})
+}
+
+// FIXME: add test with failed DutVmGetImage command
 
 func getMockedHwTestConfig() *Configs {
 	mainConfigs := []*CommandExecutorPairedConfig{

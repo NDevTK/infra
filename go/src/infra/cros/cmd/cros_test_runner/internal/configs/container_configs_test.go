@@ -59,6 +59,7 @@ func getMockContainerImagesInfo() map[string]*api.ContainerImageInfo {
 		"cros-publish":     getMockedContainerImageInfo(),
 		"cros-test-finder": getMockedContainerImageInfo(),
 		"cache-server":     getMockedContainerImageInfo(),
+		"vm-provision":     getMockedContainerImageInfo(),
 	}
 }
 
