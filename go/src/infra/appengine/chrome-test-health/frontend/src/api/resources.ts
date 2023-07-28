@@ -2,6 +2,46 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+export const prpcClient = {
+  call: async function <Type>(
+      service: string,
+      method: string,
+      message: unknown,
+  ): Promise<Type> {
+    const url = `/prpc/${service}/${method}`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify(message),
+    });
+    const text = await response.text();
+    if (text.startsWith(')]}\'')) {
+      return JSON.parse(text.substring(4));
+    } else {
+      throw text;
+    }
+  },
+};
+
+export interface ListComponentsResponse {
+  components: string[],
+}
+
+export async function listComponents(): Promise<ListComponentsResponse> {
+  const resp: ListComponentsResponse = await prpcClient.call(
+      'test_resources.Stats',
+      'ListComponents',
+      {},
+  );
+  if (resp.components === undefined) {
+    resp.components = [];
+  }
+  return resp;
+}
+
 export interface TestDateMetricData {
   testId: string,
   testName: string,
@@ -29,8 +69,6 @@ export enum MetricType {
   TOTAL_RUNTIME = 'TOTAL_RUNTIME',
   AVG_CORES = 'AVG_CORES',
   AVG_RUNTIME = 'AVG_RUNTIME',
-  P50_RUNTIME = 'P50_RUNTIME',
-  P90_RUNTIME = 'P90_RUNTIME',
 }
 
 export interface TestVariantData {
@@ -82,47 +120,36 @@ export interface FetchTestMetricsRequest {
   sort: SortBy,
 }
 
-export interface ListComponentsResponse {
-  components: string[],
-}
-
-export const prpcClient = {
-  call: async function <Type>(
-      service: string,
-      method: string,
-      message: unknown,
-  ): Promise<Type> {
-    const url = `/prpc/${service}/${method}`;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify(message),
-    });
-    const text = await response.text();
-    if (text.startsWith(')]}\'')) {
-      return JSON.parse(text.substring(4));
-    } else {
-      throw text;
-    }
-  },
-};
-
-export async function listComponents(): Promise<ListComponentsResponse> {
-  const resp: ListComponentsResponse = await prpcClient.call(
-      'test_resources.Stats',
-      'ListComponents',
-      {},
-  );
-  return resp;
-}
-
 export function isTestMetricsResponse(
     object: any,
 ): object is FetchTestMetricsResponse {
   return 'lastPage' in object;
+}
+
+// Protobuf json transport drops certain fields/values if they are the default.
+// This function replaces the defaults.
+function fixFetchTestMetricsResponse(resp: FetchTestMetricsResponse) {
+  if (resp.tests === undefined) {
+    resp.tests = [];
+  }
+  resp.tests.forEach((test) => {
+    fixMetricsDateMap(test.metrics);
+    if (test.variants === undefined) {
+      test.variants = [];
+    } else {
+      test.variants.forEach((variant) => fixMetricsDateMap(variant.metrics));
+    }
+  });
+}
+
+function fixMetricsDateMap(map: MetricsDateMap) {
+  Object.keys(map).forEach((date) => {
+    map[date].data.forEach((data) => {
+      if (data.metricValue === undefined) {
+        data.metricValue = 0;
+      }
+    });
+  });
 }
 
 export async function fetchTestMetrics(
@@ -133,6 +160,7 @@ export async function fetchTestMetrics(
       'FetchTestMetrics',
       fetchTestMetricsRequest,
   );
+  fixFetchTestMetricsResponse(resp);
   return resp;
 }
 
@@ -163,6 +191,14 @@ export interface FetchDirectoryMetricsResponse {
   nodes: DirectoryNode[],
 }
 
+function fixFetchDirectoryMetricsResponse(resp: FetchDirectoryMetricsResponse) {
+  if (resp.nodes === undefined) {
+    resp.nodes = [];
+  } else {
+    resp.nodes.forEach((node) => fixMetricsDateMap(node.metrics));
+  }
+}
+
 export async function fetchDirectoryMetrics(
     request: FetchDirectoryMetricsRequest,
 ): Promise<FetchDirectoryMetricsResponse> {
@@ -171,5 +207,6 @@ export async function fetchDirectoryMetrics(
       'FetchDirectoryMetrics',
       request,
   );
+  fixFetchDirectoryMetricsResponse(resp);
   return resp;
 }
