@@ -1,0 +1,11 @@
+name: luci/config-service/server
+extends: ../../../base.yaml
+
+contextdir: ../../../../../go/src/go.chromium.org/luci/config_service/cmd/config_server
+deterministic: true
+
+sources:
+  - ../../../../../go/src/go.chromium.org/luci/config_service
+
+build:
+  - go_binary: go.chromium.org/luci/config_service/cmd/config_server
