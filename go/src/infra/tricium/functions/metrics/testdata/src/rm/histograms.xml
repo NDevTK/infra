@@ -3,7 +3,7 @@
         <variants name="Characters">
             <variant name="Charizard"/>
         </variants>
-        <histogram name="Test{OpponentType}.Histogram2.{Character}" units="units" expires_after="M150">
+        <histogram name="Test{OpponentType}.Histogram2.{Character}" units="units" expires_after="2023-04-27">
             <owner>ltina@google.com</owner>
             <owner>chrome-metrics-team@google.com</owner>
             <summary> This is a summary </summary>
@@ -12,13 +12,13 @@
                 <variant name="Flying" summary="flappity-flap"/>
             </token>
         </histogram>
-        <histogram name="Test.{Character}.Histogram" units="units" expires_after="M150">
+        <histogram name="Test.{Character}.Histogram" units="units" expires_after="2023-04-27">
             <owner>ltina@google.com</owner>
             <owner>chrome-metrics-team@google.com</owner>
             <summary> This is a summary </summary>
             <token key="Character" variants="Characters"/>
         </histogram>
-        <histogram name="Test.Histogram4" units="units" expires_after="M150">
+        <histogram name="Test.Histogram4" units="units" expires_after="2024-04-27">
             <owner>ltina@google.com</owner>
             <owner>chrome-metrics-team@google.com</owner>
             <summary> This is a summary </summary>

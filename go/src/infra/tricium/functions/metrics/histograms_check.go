@@ -51,7 +51,7 @@ const (
 	SuffixesDeprecationWarning   = `[WARNING] The <histogram_suffixes> syntax is deprecated. If you're adding a new list of suffixes, please use patterned histograms instead. If you're modifying an existing list of suffixes, please consider migrating that list to use patterned histograms. See https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#patterned-histograms.`
 	osxNamespaceDeprecationError = `[ERROR] The namespace "OSX" is deprecated. Prefer adding new Mac histograms to the "Mac" namespace.`
 	removedHistogramInfo         = `[INFO] The following histograms were removed without an obsoletion message: %s. If you want to add the same obsoletion message to all the histograms removed in the CL, you can add "OBSOLETE_HISTOGRAMS=message" in the CL description. You can also add obsoletion messages to specific histograms by adding "OBSOLETE_HISTOGRAM[histogram name]=obsoletion message" tags in the CL description, these will override the CL-level obsoletion message if there is one.`
-	obsoletionMessageError       = `[ERROR] An obsoletion message has been added to following histograms: %s, but they are not removed. Please double check if there're typos.`
+	obsoletionMessageError       = `[WARNING] An obsoletion message has been added to following histograms: %s, but they are not removed. Please double check if there're typos.`
 	allRemovedHistogramInfo      = `[INFO] The following histograms have been removed and obsoleted in this CL: %s.`
 	globalObsoletionMessageError = `[WARNING] A CL-level obsoletion message was added but no histogram has been removed in the CL.`
 )
@@ -169,7 +169,7 @@ func analyzeHistogramFile(f io.Reader, filePath, prevDir string, filesChanged *d
 	// Analyze added lines in file (if any).
 	comments, newHistograms, newNamespaces, namespaceLineNums, newVariants := analyzeChangedLines(bufio.NewScanner(f), filePath, filesChanged.addedLines[filePath], singletonEnums, oldHistograms, ADDED)
 	allComments = append(allComments, comments...)
-	// Get the list of added histograms and the list of removed histograms after expansion. Expired and obsolete histograms are excluded.
+	// Get the list of added histograms and the list of removed histograms after expansion. Obsolete histograms are excluded.
 	addedHistograms, removedHistograms := generateAddedAndRemovedHistograms(newHistograms, oldHistograms, newVariants, oldVariants)
 	// Identify if any new namespaces were added.
 	allComments = append(allComments, generateCommentsForAddedNamespaces(filePath, newNamespaces, oldNamespaces, namespaceLineNums)...)
@@ -659,8 +659,8 @@ func expandHistograms(hists map[string]*histogram, variants map[string]*variants
 	histogramNames := make(stringset.Set)
 	for name := range hists {
 		hist := hists[name]
-		// Skip the histogram if it's already obsolete or expired.
-		if hist.Obsolete != "" || hasExpiredBy(hist, 0) {
+		// Skip the histogram if it's already obsolete.
+		if hist.Obsolete != "" {
 			continue
 		}
 		if hist.Tokens == nil {

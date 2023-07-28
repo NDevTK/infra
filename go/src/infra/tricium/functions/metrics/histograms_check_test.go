@@ -612,14 +612,6 @@ func TestHistogramsCheck(t *testing.T) {
 				"TestFlying.Histogram2.Bulbasaur", "TestFlying.Histogram2.Charizard"}...))
 	})
 
-	Convey("Analyze XML file with deprecated histogram(s) removed", t, func() {
-		comments, addedHistograms, removedHistograms := analyzeHistogramTestFileAll(t,
-			"rm/remove_histogram_with_old_expiry.xml", "prevdata/tricium_remove_histogram_with_old_expiry.patch", "prevdata/src")
-		So(comments, ShouldBeNil)
-		So(addedHistograms, ShouldBeEmpty)
-		So(removedHistograms, ShouldBeEmpty)
-	})
-
 	Convey("Analyze XML file with <variants> modified to remove a variant", t, func() {
 		comments, addedHistograms, removedHistograms := analyzeHistogramTestFileAll(t,
 			"rm/modify_variants.xml", "prevdata/tricium_modify_variants_diff.patch", "prevdata/src")
