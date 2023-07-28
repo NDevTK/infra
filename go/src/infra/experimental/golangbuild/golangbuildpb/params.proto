@@ -22,11 +22,20 @@ message Inputs {
   // toolchain when needed.
   string bootstrap_version = 16;
 
-  // LongTest controls whether this build should run in long test mode.
+  // LongTest controls whether the build runs in long test mode.
   bool long_test = 3;
 
-  // RaceMode controls whether this build should run with the race detector enabled.
+  // RaceMode controls whether the build runs with the race detector enabled.
   bool race_mode = 4;
+
+  // NoNetwork controls whether the build disables network access during test execution.
+  //
+  // It's meant to catch tests that accidentally need internet without realizing it,
+  // or otherwise forget to skip themselves when testing.Short() is true.
+  //
+  // This mode is only supported on Linux systems with unshare and ip available.
+  // The build fails if the check is on but its system requirements are unmet.
+  bool no_network = 17;
 
   // CompileOnly controls whether tests are compiled, but not run.
   //

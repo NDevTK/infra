@@ -181,7 +181,7 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec) error {
 	if err != nil {
 		return err
 	}
-	if spec.noNetworkCapable && !spec.inputs.LongTest && spec.experiment("golang.no_network_in_short_test_mode") {
+	if spec.inputs.NoNetwork {
 		// Fetch module dependencies ahead of time since 'go test' will not have network access.
 		err := fetchDependencies(ctx, spec, modules)
 		if err != nil {

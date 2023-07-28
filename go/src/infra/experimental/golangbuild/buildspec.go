@@ -52,8 +52,6 @@ type buildSpec struct {
 	invocation string // current ResultDB invocation
 
 	experiments map[string]struct{}
-
-	noNetworkCapable bool // whether the build can disable network access during test execution
 }
 
 func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map[string]struct{}, st *build.State, inputs *golangbuildpb.Inputs) (*buildSpec, error) {
@@ -153,14 +151,17 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 		return nil, fmt.Errorf("casInstanceFromEnv: %w", err)
 	}
 
-	// Determine if the system is capable of disabling external network
-	// during short test execution. (Doing this on just one GOOS is enough.)
-	noNetworkCapable := runtime.GOOS == "linux"
-	if _, err := exec.LookPath("unshare"); err != nil {
-		noNetworkCapable = false
-	}
-	if _, err := exec.LookPath("ip"); err != nil {
-		noNetworkCapable = false
+	if inputs.NoNetwork {
+		// Return a helpful error if the system requirements
+		// for disabling external network are unmet.
+		if runtime.GOOS != "linux" {
+			return nil, fmt.Errorf("NoNetwork is not supported on %q", runtime.GOOS)
+		}
+		for _, cmd := range [...]string{"unshare", "ip", "sh"} {
+			if _, err := exec.LookPath(cmd); err != nil {
+				return nil, fmt.Errorf("NoNetwork needs %s in $PATH: %v", cmd, err)
+			}
+		}
 	}
 
 	return &buildSpec{
@@ -178,8 +179,6 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 		subrepoSrc:  subrepoSrc,
 		invokedSrc:  invokedSrc,
 		experiments: experiments,
-
-		noNetworkCapable: noNetworkCapable,
 	}, nil
 }
 
@@ -326,22 +325,15 @@ func (b *buildSpec) toolCmd(ctx context.Context, tool string, args ...string) *e
 // to ResultDB. cmd must be a test command that emits a JSON stream in the
 // https://go.dev/cmd/test2json#hdr-Output_Format format.
 //
-// On Linux host OS, if long test mode is off, cmd is also prefixed with 'unshare'
-// to disable network access and catch tests that forget to check testing.Short().
+// If external network access is to be disabled, cmd is also prefixed with 'unshare'.
 //
 // It edits cmd in place but for convenience also returns cmd back to its caller.
 func (b *buildSpec) wrapTestCmd(cmd *exec.Cmd) *exec.Cmd {
-	if b.noNetworkCapable && !b.inputs.LongTest && b.experiment("golang.no_network_in_short_test_mode_v2") {
+	if b.inputs.NoNetwork {
 		// Disable external network access for the test command.
 		// Permit internal loopback access.
 		cmd.Args = []string{
-			"unshare", "--net", "--map-current-user", "--",
-			"sh", "-c", "ip link set dev lo up && " + strings.Join(cmd.Args, " "),
-		}
-	} else if b.noNetworkCapable && !b.inputs.LongTest && b.experiment("golang.no_network_in_short_test_mode") {
-		// TODO(dmitshur): Delete this v0 in favor of v2 above, after it's tested and proves not to regress.
-		cmd.Args = []string{
-			"unshare", "-r", "-n", "--",
+			"unshare", "--net", "--map-root-user", "--",
 			"sh", "-c", "ip link set dev lo up && " + strings.Join(cmd.Args, " "),
 		}
 	}
