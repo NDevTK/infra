@@ -115,7 +115,7 @@ class SomRevRange extends Polymer.Element {
       // _checkUseRangeRevisions determined that range.revisions
       // are unreliable because build outputs data was used to populate
       // ranges data. Build outputs are only used for chromium builds so
-      // we can send the start and end positions to test-results to
+      // we can send the start and end positions to crrev.com to
       // produce a chromium/src link.
       range.positions.sort();
       let end = this._parseCommitPosition(range.positions[0]);
@@ -124,8 +124,7 @@ class SomRevRange extends Polymer.Element {
         end = this._parseCommitPosition(
           range.positions[range.positions.length - 1]);
       }
-      return 'https://test-results.appspot.com/revision_range?start=' +
-          `${start}&end=${end}`;
+      return `https://crrev.com/${start}..${end}`;
     }
     return '';
   }

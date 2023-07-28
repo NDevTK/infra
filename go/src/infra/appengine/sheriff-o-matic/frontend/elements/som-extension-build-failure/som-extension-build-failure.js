@@ -5,7 +5,6 @@
 'use strict';
 
 const codeSearchURL = 'https://cs.chromium.org/';
-const testResultsURL = 'https://test-results.appspot.com/';
 
 class SomExtensionBuildFailure extends Polymer.Element {
   static get is() {
