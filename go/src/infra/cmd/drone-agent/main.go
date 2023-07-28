@@ -395,11 +395,11 @@ type deferStack struct {
 	f []func()
 }
 
-func (s deferStack) add(f func()) {
+func (s *deferStack) add(f func()) {
 	s.f = append(s.f, f)
 }
 
-func (s deferStack) run() {
+func (s *deferStack) run() {
 	for i := len(s.f) - 1; i >= 0; i-- {
 		s.f[i]()
 	}
