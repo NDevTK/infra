@@ -31,11 +31,7 @@ class SomWebkitTests extends Polymer.Element {
         type: Array,
         value: [],
         observer: '_expectedUrlsChanged',
-      },
-      _flakinessDashboardUrl: {
-        type: String,
-        computed: '_computeFlakinessDashboardUrl(testName, testType)',
-      },
+      },      
       diffUrls: {
         type: Array,
         value: [],
@@ -94,14 +90,6 @@ class SomWebkitTests extends Polymer.Element {
     iframe.style.flexGrow = 1;
     iframe.src = url;
     el.appendChild(iframe);
-  }
-
-  _computeFlakinessDashboardUrl(testName, testType) {
-    testType = testType ? testType : 'webkit_tests';
-    return 'https://test-results.appspot.com/dashboards/' +
-           'flakiness_dashboard.html#' +
-           'tests=' + encodeURIComponent(testName) +
-           '&testType=' + encodeURIComponent(testType);
   }
 
   _testNameChanged(testName) {
