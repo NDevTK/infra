@@ -13,7 +13,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"gopkg.in/fsnotify.v1"
+	"github.com/fsnotify/fsnotify"
 
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
