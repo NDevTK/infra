@@ -478,7 +478,7 @@ func shouldInstallRuntime(ctx context.Context, cipdPackagePrefix, iosVersion, xc
 		}
 		for _, runtime := range runtimes {
 			// check whether runtime already exists
-			if iosVersion == runtime.Version && strings.ToLower(runtimeBuildOnCipd) == strings.ToLower(runtime.Build) {
+			if iosVersion == runtime.Version && strings.EqualFold(runtimeBuildOnCipd, runtime.Build) {
 				logging.Warningf(ctx, "Runtime %s Build %s should not be installed because it already exists", iosVersion, runtimeBuildOnCipd)
 				shouldInstallRuntime = false
 				return nil
