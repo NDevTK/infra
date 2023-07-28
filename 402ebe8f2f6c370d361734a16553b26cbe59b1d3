@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3c279ac0_f8331c9b",
+        "filename": "go/src/infra/build/siso/auth/cred/cred_helper_linux.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-07-28T09:01:54Z",
+      "side": 1,
+      "message": "when certificate is expired.",
+      "parentUuid": "19bc59c4_f563b78a",
+      "range": {
+        "startLine": 22,
+        "startChar": 104,
+        "endLine": 22,
+        "endChar": 110
+      },
+      "revId": "402ebe8f2f6c370d361734a16553b26cbe59b1d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d2da117e_bc930528",
@@ -37,6 +61,30 @@
       "writtenOn": "2023-07-28T06:55:31Z",
       "side": 1,
       "message": "sort?",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 25
+      },
+      "revId": "402ebe8f2f6c370d361734a16553b26cbe59b1d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4419757c_82e56c68",
+        "filename": "go/src/infra/build/siso/subcmd/whoami/whoami.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-07-28T09:01:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d2da117e_bc930528",
       "range": {
         "startLine": 10,
         "startChar": 0,
