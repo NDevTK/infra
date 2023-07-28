@@ -32,20 +32,32 @@ var exceptions = []suiteFilter{
 		expiration: time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
 	},
 	{
+		suiteName:  "arc-cts-long",
+		expiration: time.Date(2099, time.September, 30, 0, 0, 0, 0, time.UTC),
+	},
+	{
 		suiteName:  "arc-cts-camera-opendut",
 		expiration: time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "arc-cts-hardware",
-		expiration: time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 8, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "arc-cts-qual",
-		expiration: time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 8, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		suiteName:  "arc-cts-qual-long",
+		expiration: time.Date(2099, time.January, 8, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "arc-cts-vm-stable",
 		expiration: time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		suiteName:  "arc-cts-vm-stable-long",
+		expiration: time.Date(2099, time.September, 30, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "arc-gts",
@@ -53,7 +65,11 @@ var exceptions = []suiteFilter{
 	},
 	{
 		suiteName:  "arc-gts-qual",
-		expiration: time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 8, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		suiteName:  "arc-gts-qual-long",
+		expiration: time.Date(2099, time.January, 8, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "arc-sts-full",
