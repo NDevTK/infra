@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium OS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package main
@@ -302,12 +302,8 @@ func (c *CollectState) canRetry(build *bbpb.Build, originalBBID string) bool {
 func (c *CollectState) recordRetry(build *bbpb.Build, originalBBID string) {
 	for _, rule := range c.rules {
 		if rule.matches(build) {
-			rule.totalRetries += 1
-			if _, ok := rule.retriesByBuild[originalBBID]; ok {
-				rule.retriesByBuild[originalBBID] += 1
-			} else {
-				rule.retriesByBuild[originalBBID] = 1
-			}
+			rule.totalRetries++
+			rule.retriesByBuild[originalBBID]++
 		}
 	}
 }
