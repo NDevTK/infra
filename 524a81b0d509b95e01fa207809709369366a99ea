@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0d53eef8_707ba479",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/configs/supported_test_execution_configs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1557583
+      },
+      "writtenOn": "2023-07-31T19:20:43Z",
+      "side": 0,
+      "message": "Can\u0027t remove this. This value is determined on runtime through this function. I see you added a platform value as param in func GenerateConfig() in test_execution_config.go but where is the value coming from?",
+      "revId": "524a81b0d509b95e01fa207809709369366a99ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
