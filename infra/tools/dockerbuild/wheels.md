@@ -7363,6 +7363,20 @@ wheel: <
 
 * *universal*
 
+## **pytest-xdist-py3**
+
+### 3.3.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-xdist-py3"
+  version: "version:3.3.1"
+>
+```
+
+
+* *universal*
+
 ## **python-dateutil**
 
 ### 2.7.3
