@@ -12,6 +12,7 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -88,7 +89,6 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 			return err
 		}
 	} else if c.testplan_local != "" {
-		fmt.Printf("Running local testplan...\n")
 		tp, err = readTestPlan(c.testplan_local)
 		if err != nil {
 			return err
@@ -115,8 +115,11 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 		Builder: site.GetCTPBuilder(),
 	}
 
+	if c.image == "" {
+		c.image = fmt.Sprintf("%s-release/R%s-%s", c.board, c.milestone, c.build)
+	}
 	bbClient := &builder.CTPBuilder{
-		Image:       fmt.Sprintf("%s-release/R%s-%s", c.board, c.milestone, c.build),
+		Image:       c.image,
 		Board:       c.board,
 		Model:       c.model,
 		Pool:        c.pool,
@@ -147,11 +150,10 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 }
 
 func (c *run) innerRunWithClients(ctx context.Context, moblabClient MoblabClient, bbClient BuildbucketClient, gcsBucket string) error {
-	_, err := c.StageImageToBucket(ctx, moblabClient, gcsBucket)
-	if err != nil {
-		return errors.Annotate(err, "satlab stage image to bucket").Err()
-	}
-	_, err = ScheduleBuild(ctx, bbClient)
+
+	_, _ = c.StageImageToBucket(ctx, moblabClient, gcsBucket)
+
+	_, err := ScheduleBuild(ctx, bbClient)
 	if err != nil {
 		return errors.Annotate(err, "satlab schedule build").Err()
 	}
@@ -163,7 +165,13 @@ func (c *run) StageImageToBucket(ctx context.Context, moblabClient MoblabClient,
 		fmt.Println("GCS_BUCKET not found")
 		return "", errors.New("GCS_BUCKET not found")
 	}
-
+	if c.model == "" {
+		c.model = "~"
+	}
+	if c.image != "" && c.build == "" {
+		c.build = strings.Split(c.image, "/")[1]
+		c.build = strings.Split(c.build, "-")[1]
+	}
 	buildTarget := buildTargetParent(c.board, c.model)
 	artifactName := fmt.Sprintf("%s/builds/%s/artifacts/%s", buildTarget, c.build, bucket)
 	stageReq := &moblabpb.StageBuildRequest{
@@ -230,14 +238,16 @@ func (c *run) validateArgs() error {
 	if c.board == "" {
 		return errors.Reason("-board not specified").Err()
 	}
-	if c.model == "" {
-		return errors.Reason("-model not specified").Err()
-	}
-	if c.milestone == "" {
-		return errors.Reason("-milestone not specified").Err()
-	}
-	if c.build == "" {
-		return errors.Reason("-build not specified").Err()
+	if c.image == "" {
+		if c.model == "" {
+			return errors.Reason("-model must be specified if -image is not provided").Err()
+		}
+		if c.milestone == "" {
+			return errors.Reason("-milestone must be specified if -image is not provided").Err()
+		}
+		if c.build == "" {
+			return errors.Reason("-build must be specified if -image is not provided").Err()
+		}
 	}
 	if c.pool == "" {
 		return errors.Reason("-pool not specified").Err()

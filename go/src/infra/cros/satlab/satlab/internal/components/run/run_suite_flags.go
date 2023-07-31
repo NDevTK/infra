@@ -14,6 +14,7 @@ import (
 type runFlags struct {
 	subcommands.CommandRunBase
 
+	image          string
 	model          string
 	board          string
 	milestone      string
@@ -32,6 +33,7 @@ type runFlags struct {
 
 // registerRunFlags registers the test execution flags.
 func registerRunFlags(c *run) {
+	c.Flags.StringVar(&c.image, "image", "", "image to run test against")
 	c.Flags.StringVar(&c.suite, "suite", "", "test suite to execute")
 	c.Flags.StringVar(&c.test, "test", "", "individual test to execute")
 	c.Flags.StringVar(&c.testplan, "testplan", "", "path to testplan file")
