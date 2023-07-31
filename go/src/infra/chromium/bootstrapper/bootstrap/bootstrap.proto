@@ -84,9 +84,17 @@ message BootstrapPropertiesProperties {
     DependencyProject dependency_project = 2;
   }
 
-  // Required, the path to the properties file, relative to the root of
-  // the config repo
+  // Required, the path to the properties file, relative to the root of the
+  // config repo
   string properties_file = 3;
+  // The path to the shadow properties file, relative to the root of the config
+  // repo
+  //
+  // If this is set and the build is an led real build, then the properties will
+  // be read from the shadow properties file and will override the values set by
+  // the standard properties file. Any properties set in the build request
+  // itself will still override these values.
+  string shadow_properties_file = 4;
 }
 
 // The input properties identifying the executable to bootstrap
