@@ -109,7 +109,7 @@ deps = {
   "appengine/third_party/npm_modules": {
      "url":
         "{chromium_git}/infra/third_party/npm_modules.git@" +
-        "f83fafaa22f5ff396cf5306285ca3806d1b2cf1b",
+        "81e9eccce6089f4155fdc1935b1d430bd6411b95",
      "condition": "checkout_linux or checkout_mac",
   },
 
