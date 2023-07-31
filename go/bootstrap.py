@@ -398,7 +398,7 @@ def get_go_environ_diff(layout):
       'GO111MODULE': 'on',
       'GOPROXY': None,
       'GOPATH': None,
-      'GOPRIVATE': '*.googlesource.com,*.google.com',
+      'GOPRIVATE': '*.googlesource.com,*.git.corp.google.com,google.com',
 
       # Don't use default cache in '~' to avoid leaking it on builders.
       'GOCACHE': os.path.join(layout.toolset_root, 'gocache'),
