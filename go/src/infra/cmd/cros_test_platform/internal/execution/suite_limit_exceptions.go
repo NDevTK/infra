@@ -64,6 +64,10 @@ var exceptions = []suiteFilter{
 		expiration: time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
 	},
 	{
+		suiteName:  "arc-gts-long",
+		expiration: time.Date(2099, time.September, 30, 0, 0, 0, 0, time.UTC),
+	},
+	{
 		suiteName:  "arc-gts-qual",
 		expiration: time.Date(2024, time.January, 8, 0, 0, 0, 0, time.UTC),
 	},
