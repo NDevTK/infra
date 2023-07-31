@@ -526,6 +526,7 @@ func servoRepairPlan() *Plan {
 				},
 				Conditions: []string{
 					"Is not Flex device",
+					"Servo main device is CCD",
 				},
 				Dependencies: []string{
 					"Set state:SBU_LOW_VOLTAGE",
