@@ -22,6 +22,30 @@
       },
       "revId": "9762c0b7462ca42bf8fca4d414615bc928bbb64c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f2c6597b_c2ec2003",
+        "filename": "go/src/infra/build/siso/subcmd/whoami/whoami.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-07-31T04:38:44Z",
+      "side": 1,
+      "message": "hmm, better to rename whoami -\u003e auth-check?",
+      "parentUuid": "d52f02a2_57568684",
+      "range": {
+        "startLine": 66,
+        "startChar": 1,
+        "endLine": 75,
+        "endChar": 0
+      },
+      "revId": "9762c0b7462ca42bf8fca4d414615bc928bbb64c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
