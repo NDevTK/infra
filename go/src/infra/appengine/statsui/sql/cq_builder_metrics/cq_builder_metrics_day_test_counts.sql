@@ -20,30 +20,43 @@ MERGE INTO
 USING
   (
   WITH test_ids AS (
-      SELECT
-        EXTRACT(DATE FROM partition_time AT TIME ZONE "PST8PDT") AS `date`,
-        MAX(partition_time) max_result_time,
-        COUNT(DISTINCT tr.test_id) test_count,
-        (SELECT v.value FROM tr.variant v WHERE v.key = 'builder') builder,
-        (SELECT v.value FROM tr.variant v WHERE v.key = 'test_suite') test_suite,
-      FROM chrome-luci-data.chrome.try_test_results tr
-      WHERE tr.parent.realm = "chrome:try"
-        AND tr.partition_time >= start_ts
-        AND tr.partition_time < end_ts
-      GROUP BY builder, test_suite, `date`
-      UNION ALL
-      SELECT
-        EXTRACT(DATE FROM partition_time AT TIME ZONE "PST8PDT") AS `date`,
-        MAX(partition_time) max_result_time,
-        COUNT(DISTINCT tr.test_id) test_count,
-        (SELECT v.value FROM tr.variant v WHERE v.key = 'builder') builder,
-        (SELECT v.value FROM tr.variant v WHERE v.key = 'test_suite') test_suite,
-      FROM chrome-luci-data.chromium.try_test_results tr
-      WHERE tr.parent.realm = "chromium:try"
-        AND tr.partition_time >= start_ts
-        AND tr.partition_time < end_ts
-      GROUP BY builder, test_suite, `date`
-    )
+    SELECT
+      EXTRACT(DATE FROM partition_time AT TIME ZONE "PST8PDT") AS `date`,
+      MAX(partition_time) max_result_time,
+      COUNT(DISTINCT tr.test_id) test_count,
+      (SELECT v.value FROM tr.variant v WHERE v.key = 'builder') builder,
+      (SELECT v.value FROM tr.variant v WHERE v.key = 'test_suite') test_suite,
+    FROM chrome-luci-data.chrome.try_test_results tr
+    WHERE tr.parent.realm = "chrome:try"
+      AND tr.partition_time >= start_ts
+      AND tr.partition_time < end_ts
+      AND NOT tr.status = "SKIP"
+    GROUP BY builder, test_suite, `date`, exported.id
+    UNION ALL
+    SELECT
+      EXTRACT(DATE FROM partition_time AT TIME ZONE "PST8PDT") AS `date`,
+      MAX(partition_time) max_result_time,
+      COUNT(DISTINCT tr.test_id) test_count,
+      (SELECT v.value FROM tr.variant v WHERE v.key = 'builder') builder,
+      (SELECT v.value FROM tr.variant v WHERE v.key = 'test_suite') test_suite,
+    FROM chrome-luci-data.chromium.try_test_results tr
+    WHERE tr.parent.realm = "chromium:try"
+      AND tr.partition_time >= start_ts
+      AND tr.partition_time < end_ts
+      AND NOT tr.status = "SKIP"
+    GROUP BY builder, test_suite, `date`, exported.id
+  ), test_id_per_build AS (
+    SELECT
+      builder,
+      test_suite,
+      `date`,
+      MAX(max_result_time) AS max_result_time,
+      -- There isn't likely much value in other quantiles, this is just to filter
+      -- days where the tests are getting added but not landed (avoid the P100)
+      APPROX_QUANTILES(test_count, 100)[50] test_count,
+    FROM test_ids
+    GROUP BY builder, test_suite, `date`
+  )
   SELECT
     date,
     'Test Case Count' AS metric,
@@ -54,7 +67,7 @@ USING
       STRUCT(test_suite AS label, CAST(test_count AS NUMERIC) AS value)
       ORDER BY test_suite
     ) AS value_agg,
-  FROM test_ids
+  FROM test_id_per_build
   WHERE builder IS NOT NULL and test_suite IS NOT NULL
   GROUP BY `date`, builder
   ) S
