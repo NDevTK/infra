@@ -87,6 +87,10 @@ macOS 13+, please don't change anything in `Xcode.app/Contents/version.plist`.
 By passing in `-skip-ref-tag` argument, the uploaded packages will have no CIPD
 `ref` or `tag` attached.
 
+**Note**: During a new Xcode release, there's usually a new iOS runtime dmg that
+need to upload to cipd as well. Even in the case when there's no new iOS runtime
+release, you still need to run the upload-runtime-dmg command. See below
+section for more information.
 
 ## Working with iOS runtime packages (Current solution for MacOS13+)
 
@@ -99,6 +103,8 @@ we test chrome with iOS 16.4, 15.5 and 14.4.
 
 Therefore, we need to upload additional iOS runtimes to cipd in order for swarming jobs to
 download and install them to Xcode in order to support testing on those additional iOS versions.
+**NOTE**: upload-runtime-dmg command needs to be run EVERYTIME with a new release of Xcode, even when
+a new iOS is not released. This is CRUCIAL to ensure that the iOS cipd package ref tags are up-to-date.
 
 ### Uploading a runtime package to cipd
 
@@ -113,8 +119,9 @@ you export to an empty folder, where the iOS disk image will be the
 only file in there.
 4. There are 3 main args in the upload-runtime-dmg command:<br>
 ***runtime-version***: this is usually in the format of "ios-xx-x", for example "ios-16-2"<br>
-***runtime-build***: this is the build number of the iOS runtime, which can be found in xcodereleases.com. For example iOS 16.2 beta 2 has a build number of 20c52.<br>
-***xcode-version***: this is the first Xcode version that supports the uploaded runtime. For example 14c18 for ios-16-2.<br>
+***runtime-build***: this is the build number of the iOS runtime, which can be found by running:
+`xcrun simctl runtime list -j`. For example iOS 16.2 beta 2 has a build number of 20C52.<br>
+***xcode-version***: this is the latest Xcode version that supports the uploaded runtime. For example 14c18 for ios-16-2 with runtime-build of 20C52.<br>
 
 Upload the disk image file to cipd by running the below command:
 ```
