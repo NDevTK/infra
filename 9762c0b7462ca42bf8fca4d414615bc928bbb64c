@@ -46,6 +46,30 @@
       },
       "revId": "9762c0b7462ca42bf8fca4d414615bc928bbb64c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3745162a_0707a66e",
+        "filename": "go/src/infra/build/siso/subcmd/whoami/whoami.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-07-31T05:24:26Z",
+      "side": 1,
+      "message": "Thanks.",
+      "parentUuid": "f2c6597b_c2ec2003",
+      "range": {
+        "startLine": 66,
+        "startChar": 1,
+        "endLine": 75,
+        "endChar": 0
+      },
+      "revId": "9762c0b7462ca42bf8fca4d414615bc928bbb64c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
