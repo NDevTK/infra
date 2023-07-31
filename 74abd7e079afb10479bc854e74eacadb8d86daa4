@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "29e7cc75_d7df4781",
+        "filename": "go/src/infra/build/siso/auth/cred/cred_helper_linux.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-07-31T08:59:50Z",
+      "side": 1,
+      "message": "yeah, but it makes it more clearer.",
+      "parentUuid": "e4309c2c_81037e92",
+      "revId": "74abd7e079afb10479bc854e74eacadb8d86daa4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5576d03a_ef77339d",
@@ -48,6 +66,24 @@
       "writtenOn": "2023-07-31T05:03:34Z",
       "side": 1,
       "message": "remove this file?",
+      "revId": "74abd7e079afb10479bc854e74eacadb8d86daa4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dbc1cfcd_79fc6e96",
+        "filename": "go/src/infra/build/siso/subcmd/authcheck/auth_check.go~",
+        "patchSetId": 5
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-07-31T08:59:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5576d03a_ef77339d",
       "revId": "74abd7e079afb10479bc854e74eacadb8d86daa4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
