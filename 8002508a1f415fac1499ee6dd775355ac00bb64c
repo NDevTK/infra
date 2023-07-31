@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7dfd236a_e224fe94",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/vm_provision_release_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-07-31T18:23:24Z",
+      "side": 1,
+      "message": "nit: GetVm()",
+      "range": {
+        "startLine": 37,
+        "startChar": 24,
+        "endLine": 37,
+        "endChar": 26
+      },
+      "revId": "8002508a1f415fac1499ee6dd775355ac00bb64c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dd6000b5_9218a9ab",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/commands/vm_provision_release_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-07-31T18:23:24Z",
+      "side": 1,
+      "message": "nit: let\u0027s change this to GetVm() as well",
+      "range": {
+        "startLine": 40,
+        "startChar": 24,
+        "endLine": 40,
+        "endChar": 26
+      },
+      "revId": "8002508a1f415fac1499ee6dd775355ac00bb64c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0c879813_df146c9f",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/configs/test_execution_configs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-07-31T18:23:24Z",
+      "side": 1,
+      "message": "I blv you added it to make it easier to test vm release cmd failure from configs side. If you do decide take the route I suggested in other comment, we can get rid of this change.",
+      "range": {
+        "startLine": 107,
+        "startChar": 69,
+        "endLine": 107,
+        "endChar": 105
+      },
+      "revId": "8002508a1f415fac1499ee6dd775355ac00bb64c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bf31a5b5_81fc99e5",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/configs/test_execution_configs_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-07-31T18:23:24Z",
+      "side": 1,
+      "message": "Instead of testing it from top level, I would recommend testing it from the cmd_test file (http://cs/h/chromium/infra/infra/+/main:go/src/infra/cros/cmd/cros_test_runner/internal/commands/vm_provision_release_cmd_test.go?l\u003d20). Adding a simple test case to the cmd_test will be much easier to test that release cmd fails (extractDeps function specifically) when there is no vm info in the leaseVmResponse.\n\nIf you still want to add a test case to the configs to test it, I should be doable but I will have to play around myself to figure out the deps.",
+      "range": {
+        "startLine": 141,
+        "startChar": 3,
+        "endLine": 141,
+        "endChar": 52
+      },
+      "revId": "8002508a1f415fac1499ee6dd775355ac00bb64c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8819bf98_d3ead8db",
+        "filename": "go/src/infra/cros/cmd/cros_test_runner/internal/executors/cros_vm_provision_executor.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-07-31T18:23:24Z",
+      "side": 1,
+      "message": "nit: GetVm()",
+      "range": {
+        "startLine": 234,
+        "startChar": 24,
+        "endLine": 234,
+        "endChar": 26
+      },
+      "revId": "8002508a1f415fac1499ee6dd775355ac00bb64c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
