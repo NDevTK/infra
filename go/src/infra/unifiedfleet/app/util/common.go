@@ -210,8 +210,8 @@ var (
 	// gtransitRegex regular expression to identify a gTransit DUT hostname.
 	gtransitRegex = regexp.MustCompile(`^cros-mtv1950-144-rack[\d]+`)
 
-	// Lab SFO36_OS will start with the DUT naming of 'chromeos8-...'.
-	sfo36OSRegex = regexp.MustCompile(`^chromeos8-`)
+	// Lab SFO36_OS DUT names have 'chromeos8' substring.
+	sfo36OSRegex = regexp.MustCompile(`chromeos8-`)
 )
 
 // gtransitHive hive value for a gTransit DUT.
