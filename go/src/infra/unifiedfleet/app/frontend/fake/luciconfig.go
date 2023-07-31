@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -170,4 +170,9 @@ func (c *LuciConfigClient) GetRefs(ctx context.Context, projectID string) ([]str
 // ListFiles returns the list of files for a config set.
 func (c *LuciConfigClient) ListFiles(ctx context.Context, configSet luciconfig.Set) ([]string, error) {
 	return nil, nil
+}
+
+// Close is a no-op.
+func (c *LuciConfigClient) Close() error {
+	return nil
 }
