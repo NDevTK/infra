@@ -9,14 +9,15 @@ import (
 	"fmt"
 	"strings"
 
-	"infra/cros/cmd/phosphorus/internal/cmd"
-	"infra/cros/cmd/phosphorus/internal/skylab_local_state/ufs"
-
 	"github.com/maruel/subcommands"
 	"go.chromium.org/chromiumos/infra/proto/go/uprev/build_parallels_image"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/cmd/phosphorus/internal/cmd"
+	"infra/cros/cmd/phosphorus/internal/skylab_local_state/ufs"
+	ufsutil "infra/unifiedfleet/app/util"
 )
 
 // Save subcommand: Saves DUT state.
@@ -63,6 +64,7 @@ func (c *saveRun) innerRun(ctx context.Context, env subcommands.Env) error {
 	if err := validateSaveRequest(r); err != nil {
 		return err
 	}
+	ctx = ufs.SetupContext(ctx, ufsutil.OSNamespace)
 	if err := ufs.SafeUpdateUFSDUTState(ctx, &c.AuthFlags, r.GetDutName(), r.GetDutState(), r.GetConfig().GetCrosUfsService(), nil); err != nil {
 		return err
 	}
