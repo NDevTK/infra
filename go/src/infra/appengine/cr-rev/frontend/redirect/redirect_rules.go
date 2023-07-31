@@ -23,7 +23,7 @@ import (
 
 var rietveldRedirectRegex = regexp.MustCompile(`^/(\d{9,39})(?:/(.*))?$`)
 var numberRedirectRegex = regexp.MustCompile(`^/(\d{1,8})(?:/(.*))?$`)
-var diffNumberRedirectRegex = regexp.MustCompile(`^/(\d{1,8})(\.{2,3})(\d{1,8})$`)
+var diffLogNumberRedirectRegex = regexp.MustCompile(`^/(\d{1,8})(\.{2,3})(\d{1,8})$`)
 var fullCommitHashRegex = regexp.MustCompile(`^/([[:xdigit:]]{40})(?:/(.*))?$`)
 var shortCommitHashRegex = regexp.MustCompile(`^/([[:xdigit:]]{6,39})(?:/(.*))?$`)
 var diffFullHashRegex = regexp.MustCompile(`^/([[:xdigit:]]{40})(\.{2,3})([[:xdigit:]]{40})`)
@@ -103,15 +103,15 @@ func findCommitFromNumber(ctx context.Context, number int) (*models.Commit, erro
 	return commit, nil
 }
 
-// diffNumberRedirectRule redirects from two commit numbers to the diff between
+// diffLogNumberRedirectRule redirects from two commit numbers to the diff between
 // the commits in gitiles.
-type diffNumberRedirectRule struct {
+type diffLogNumberRedirectRule struct {
 	gitRedirect GitRedirect
 }
 
-func (r *diffNumberRedirectRule) getRedirect(ctx context.Context, url string) (string,
+func (r *diffLogNumberRedirectRule) getRedirect(ctx context.Context, url string) (string,
 	*models.Commit, error) {
-	result := diffNumberRedirectRegex.FindStringSubmatch(url)
+	result := diffLogNumberRedirectRegex.FindStringSubmatch(url)
 	if len(result) == 0 {
 		return "", nil, ErrNoMatch
 	}
@@ -137,7 +137,7 @@ func (r *diffNumberRedirectRule) getRedirect(ctx context.Context, url string) (s
 		return "", nil, ErrNoMatch
 	}
 
-	url, err = r.gitRedirect.Diff(*commit, *commit2)
+	url, err = r.gitRedirect.Log(*commit, *commit2)
 	if err != nil {
 		return "", nil, err
 	}
@@ -319,7 +319,7 @@ func NewRules(redirect GitRedirect) *Rules {
 			&numberRedirectRule{
 				gitRedirect: redirect,
 			},
-			&diffNumberRedirectRule{
+			&diffLogNumberRedirectRule{
 				gitRedirect: redirect,
 			},
 			&fullCommitHashRule{

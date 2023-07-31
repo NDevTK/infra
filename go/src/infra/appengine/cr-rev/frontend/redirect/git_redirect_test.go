@@ -76,6 +76,43 @@ func TestGitilesRedirect(t *testing.T) {
 			So(err, ShouldEqual, errNotIdenticalRepositories)
 		})
 	})
+
+	Convey("Log redirect", t, func() {
+		Convey("identical repositories", func() {
+			commit2 := models.Commit{
+				Host:       "foo",
+				Repository: "bar/baz",
+				CommitHash: "0000000000000000000000000000000000000000",
+			}
+			url, err := redirect.Log(commit, commit2)
+			So(err, ShouldBeNil)
+			So(
+				url,
+				ShouldEqual,
+				"https://foo.googlesource.com/bar/baz/+log/1234567890123456789012345678901234567890..0000000000000000000000000000000000000000",
+			)
+		})
+
+		Convey("different repositories", func() {
+			commit2 := models.Commit{
+				Host:       "foo",
+				Repository: "bar/baz/baq",
+				CommitHash: "0000000000000000000000000000000000000000",
+			}
+			_, err := redirect.Log(commit, commit2)
+			So(err, ShouldEqual, errNotIdenticalRepositories)
+		})
+
+		Convey("different host repositories", func() {
+			commit2 := models.Commit{
+				Host:       "bar",
+				Repository: "bar/baz",
+				CommitHash: "0000000000000000000000000000000000000000",
+			}
+			_, err := redirect.Log(commit, commit2)
+			So(err, ShouldEqual, errNotIdenticalRepositories)
+		})
+	})
 }
 
 func TestCodesearchRedirect(t *testing.T) {

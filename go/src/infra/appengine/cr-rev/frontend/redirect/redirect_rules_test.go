@@ -176,11 +176,11 @@ func TestRedirects(t *testing.T) {
 				So(url, ShouldEqual, "https://chromium.googlesource.com/chromium/src/+/291563")
 			})
 		})
-		Convey("git numberer diff", func() {
+		Convey("git numberer log", func() {
 			Convey("existing commits", func() {
 				url, _, err := r.FindRedirectURL(ctx, "/291560..291562")
 				So(err, ShouldBeNil)
-				So(url, ShouldEqual, "https://chromium.googlesource.com/chromium/src/+/0000000000000000000000000000000000291560..0000000000000000000000000000000000291562")
+				So(url, ShouldEqual, "https://chromium.googlesource.com/chromium/src/+log/0000000000000000000000000000000000291560..0000000000000000000000000000000000291562")
 			})
 
 			Convey("commit missing", func() {

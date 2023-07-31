@@ -30,6 +30,8 @@ type GitRedirect interface {
 	Commit(models.Commit, string) (string, error)
 	// Diff returns URL for viewing difference between two commits.
 	Diff(models.Commit, models.Commit) (string, error)
+	// Log returns URL for viewing log between two commits.
+	Log(models.Commit, models.Commit) (string, error)
 }
 
 type gitilesRedirect struct{}
@@ -56,6 +58,17 @@ func (r *gitilesRedirect) Diff(c1, c2 models.Commit) (string, error) {
 	}
 	url := fmt.Sprintf(
 		"https://%s.googlesource.com/%s/+/%s..%s",
+		c1.Host, c1.Repository, c1.CommitHash, c2.CommitHash)
+	return url, nil
+}
+
+// Log returns URL for viewing log between two commits.
+func (r *gitilesRedirect) Log(c1, c2 models.Commit) (string, error) {
+	if !c1.SameRepoAs(c2) {
+		return "", errNotIdenticalRepositories
+	}
+	url := fmt.Sprintf(
+		"https://%s.googlesource.com/%s/+log/%s..%s",
 		c1.Host, c1.Repository, c1.CommitHash, c2.CommitHash)
 	return url, nil
 }
@@ -96,4 +109,11 @@ func (r *codesearchRedirect) Diff(c1, c2 models.Commit) (string, error) {
 		"%s%s/+/%s...%s",
 		url, c1.Repository, c1.CommitHash, c2.CommitHash)
 	return url, nil
+}
+
+// Log returns URL for viewing log between two commits.
+func (r *codesearchRedirect) Log(c1, c2 models.Commit) (string, error) {
+	// Codesearch has two tabs - files and commits. However, it's not
+	// possible to default to commit via URL.
+	return r.Diff(c1, c2)
 }
