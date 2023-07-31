@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "99bcf5a3_6c382dda",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1557583
+      },
+      "writtenOn": "2023-07-31T20:46:13Z",
+      "side": 1,
+      "message": "The release command ExtractDependencies is doing the checks correctly but since it\u0027s run as a cleanupConfig, the execute overrides the Extract Dependencies check.\nI added a fix for this here https://chromium-review.googlesource.com/c/infra/infra/+/4735932\nPlease feel free to review. Thanks",
+      "revId": "8002508a1f415fac1499ee6dd775355ac00bb64c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7dfd236a_e224fe94",
