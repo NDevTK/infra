@@ -1734,6 +1734,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is Chromebook X supported",
+				"cros_check_cbx_device_is_hb",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
