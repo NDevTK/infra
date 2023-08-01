@@ -12,6 +12,7 @@ import "google/protobuf/duration.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/config/api/test/xmlrpc/xmlrpc.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/usb_drive.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/cbi.proto";
+import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/wifi_router.proto";
 
 // RunRequest represents result of executed command.
 message RunRequest {
@@ -120,22 +121,29 @@ message RPMOutlet {
 
 // Router devices
 message WifiRouterHost {
-  // Name name of router device e.g. "chromeos15-row99-rack33-host105-router".
-  string name = 1;
   // State of the device.
   enum State {
     UNSPECIFIED = 0;
     WORKING = 1;
     BROKEN = 2;
   }
+
+  // Name name of router device e.g. "chromeos15-row99-rack33-host105-router".
+  string name = 1;
   // The state of the wifi router.
   State state = 2;
   // The model of the router.
   string model = 3;
-  // The board of the router.
-  string board = 4;
+  // The board of the router. Deprecated as it is not used by anything anymore.
+  string board = 4 [deprecated = true];
   // RPMOutlet the router power connects to if it exists.
   RPMOutlet RPMOutlet = 5;
+
+  // Supported test router hardware and software features.
+  repeated chromiumos.test.lab.api.WifiRouterFeature features = 6;
+
+  // The type of router device this is (e.g. OpenWrt-based, ChromeOS Gale).
+  chromiumos.test.lab.api.WifiRouterDeviceType device_type = 7;
 }
 
 // VersionRequest holds data for version service request.
@@ -547,6 +555,7 @@ message ChromeOS {
   Chameleon chameleon = 17;
   // BluetoothPeer info of DUT setup.
   repeated BluetoothPeer bluetooth_peers = 18;
+
   // Array of Wifi Router peripheral devices.
   repeated WifiRouterHost wifi_routers = 19;
   // PeripheralWifiState describes the state of peripheral wifi testbed.
@@ -559,8 +568,20 @@ message ChromeOS {
     // State is not applicable for setup.
     PERIPHERAL_WIFI_STATE_NOT_APPLICABLE = 4;
   }
-  // Peripehral Wifi state of testbed
+  // Peripheral Wifi state of testbed
   PeripheralWifiState peripheral_wifi_state = 20;
+  // WifiRouterFeatures that are supported by all wifi routers in the testbed.
+  //
+  // If there are no wifi routers this will be empty.
+  // If any routers have unknown features, this will just have a single
+  // WIFI_ROUTER_FEATURE_UNKNOWN entry.
+  // If any routers' features has a WIFI_ROUTER_FEATURE_INVALID feature, a
+  // WIFI_ROUTER_FEATURE_INVALID feature will be included along with the other
+  // common, valid features.
+  // If there are no common, valid features between all routers, this will just
+  // have a single WIFI_ROUTER_FEATURE_INVALID entry.
+  repeated chromiumos.test.lab.api.WifiRouterFeature wifi_router_features = 27;
+
   // RPMOutlet of the DUT setup.
   RPMOutlet rpm_outlet = 21;
   // Map of key value pairs from RO_VPD.
