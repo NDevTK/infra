@@ -10,7 +10,6 @@ from backend.handlers import rerun_analyses
 from backend.handlers import rerun_analysis
 from backend.handlers import update_component_config
 from backend.handlers import update_inverted_index
-from backend.handlers import update_monorail_metrics
 from backend.handlers import update_repo_to_dep_path
 from gae_libs.pipeline_wrapper import pipeline_handlers
 
@@ -29,8 +28,6 @@ backend_handler_mappings = [
     ('/process/rerun-analysis', rerun_analysis.RerunAnalysis),
     ('/process/update-inverted-index',
      update_inverted_index.UpdateInvertedIndex),
-    ('/process/update-monorail-metrics',
-     update_monorail_metrics.UpdateMonorailMetrics),
     ('/process/update-repo-to-dep-path',
      update_repo_to_dep_path.UpdateRepoToDepPath),
 ]

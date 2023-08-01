@@ -15,6 +15,3 @@ cron:
   url: /process/update-inverted-index
   schedule: every 24 hours
 
-- description: Update monorail metrics everyday.
-  url: /process/update-monorail-metrics
-  schedule: every 24 hours
