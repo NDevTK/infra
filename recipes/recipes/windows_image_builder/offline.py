@@ -304,6 +304,8 @@ def RunSteps(api, inputs):
   built_custs = set()
   # mapping from build_id to keys
   build_id_keys = {}
+  # Summary text for the build
+  summary = ''
   with api.step.nest('Execute customizations') as e:
     # Get all the images that can be executed at this time
     executions = api.windows_scripts_executor.get_executable_configs(custs)
@@ -359,37 +361,41 @@ def RunSteps(api, inputs):
       # generate the new set of images that can be built
       executions = api.windows_scripts_executor.get_executable_configs(rcusts)
 
+    summary = 'Summary:<br>'
+    if failed_custs:
+      summary += 'Failed:<br>'
+      for cust in custs:
+        if cust.get_key() in failed_custs:
+          summary += '{}/{}<br>'.format(cust.id, cust.get_key())
+    if infra_failed_custs:
+      summary += 'InfraFailure:<br>'
+      for cust in custs:
+        if cust.get_key() in infra_failed_custs:
+          summary += '{}/{}<br>'.format(cust.id, cust.get_key())
+    if cancelled_custs:
+      summary += 'Canceled:<br>'
+      for cust in custs:
+        if cust.get_key() in cancelled_custs:
+          summary += '{}/{}<br>'.format(cust.id, cust.get_key())
+    if built_custs:
+      summary += 'Built:<br>'
+      for cust in custs:
+        if cust.get_key() in built_custs:
+          summary += '{}/{}<br>'.format(cust.id, cust.get_key())
+    not_built = set()
+    for cust in custs:
+      if cust.get_key() not in triggered_custs:
+        not_built.add(cust.get_key())
+    if not_built:
+      summary += 'Did not build:<br>'
+      for cust in custs:
+        if cust.get_key() in not_built:
+          summary += '{}/{}<br>'.format(cust.id, cust.get_key())
+    e.step_summary_text = summary
 
-  summary = 'Summary:<br>'
-  if failed_custs:
-    summary += 'Failed:<br>'
-    for cust in custs:
-      if cust.get_key() in failed_custs:
-        summary += '{}/{}<br>'.format(cust.id, cust.get_key())
-  if infra_failed_custs:
-    summary += 'InfraFailure:<br>'
-    for cust in custs:
-      if cust.get_key() in infra_failed_custs:
-        summary += '{}/{}<br>'.format(cust.id, cust.get_key())
-  if cancelled_custs:
-    summary += 'Canceled:<br>'
-    for cust in custs:
-      if cust.get_key() in cancelled_custs:
-        summary += '{}/{}<br>'.format(cust.id, cust.get_key())
-  if built_custs:
-    summary += 'Built:<br>'
-    for cust in custs:
-      if cust.get_key() in built_custs:
-        summary += '{}/{}<br>'.format(cust.id, cust.get_key())
-  not_built = set()
-  for cust in custs:
-    if cust.get_key() not in triggered_custs:
-      not_built.add(cust.get_key())
-  if not_built:
-    summary += 'Did not build:<br>'
-    for cust in custs:
-      if cust.get_key() in not_built:
-        summary += '{}/{}<br>'.format(cust.id, cust.get_key())
+  if len(summary) > 4000:  # pragma: nocover
+    # Truncate the summary to 4000 bytes. As it fails otherwise
+    summary = summary[:3967] + '...'
   if failed_custs or infra_failed_custs or cancelled_custs:
     # looks like we failed a few builds
     return RawResult(status=common_pb2.FAILURE, summary_markdown=summary)
