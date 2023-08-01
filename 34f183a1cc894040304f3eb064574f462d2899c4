@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fbf94481_adfa2929",
+        "filename": "go/src/infra/build/siso/auth/cred/cred_helper_linux.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-08-01T02:56:32Z",
+      "side": 1,
+      "message": "This is drepcated, better to use\nhttps://pkg.go.dev/golang.org/x/sys\n?",
+      "range": {
+        "startLine": 13,
+        "startChar": 2,
+        "endLine": 13,
+        "endChar": 9
+      },
+      "revId": "34f183a1cc894040304f3eb064574f462d2899c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1309fbdd_043b892b",
+        "filename": "go/src/infra/build/siso/auth/cred/cred_helper_linux.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-08-01T02:56:32Z",
+      "side": 1,
+      "message": "w?",
+      "range": {
+        "startLine": 30,
+        "startChar": 43,
+        "endLine": 30,
+        "endChar": 44
+      },
+      "revId": "34f183a1cc894040304f3eb064574f462d2899c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
