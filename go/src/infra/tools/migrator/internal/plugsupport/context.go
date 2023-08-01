@@ -51,7 +51,7 @@ func (r *ContextConfig) Apply(ctx context.Context) (context.Context, error) {
 
 	authenticator := auth.NewAuthenticator(ctx, auth.SilentLogin, r.Auth)
 
-	client, err := cfgclient.New(cfgclient.Options{
+	client, err := cfgclient.New(ctx, cfgclient.Options{
 		ServiceHost: r.ConfigServiceHost,
 		ClientFactory: func(context.Context) (*http.Client, error) {
 			return authenticator.Client()

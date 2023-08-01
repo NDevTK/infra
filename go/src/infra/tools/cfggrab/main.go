@@ -153,7 +153,7 @@ func withConfigClient(ctx context.Context) (context.Context, error) {
 	if err != nil {
 		return ctx, err
 	}
-	return cfgclient.Use(ctx, remote.New(*configService, false, func(context.Context) (*http.Client, error) {
+	return cfgclient.Use(ctx, remote.NewV1(*configService, false, func(context.Context) (*http.Client, error) {
 		return client, nil
 	})), nil
 }

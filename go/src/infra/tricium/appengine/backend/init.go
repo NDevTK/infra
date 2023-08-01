@@ -86,7 +86,7 @@ func withRemoteConfigService(c *router.Context, next router.Handler) {
 		logging.WithError(err).Errorf(c.Request.Context(), "Failed to retrieve cached settings")
 		return
 	}
-	iface := remote.New(s.ConfigServiceHost, false, func(c context.Context) (*http.Client, error) {
+	iface := remote.NewV1(s.ConfigServiceHost, false, func(c context.Context) (*http.Client, error) {
 		t, err := auth.GetRPCTransport(c, auth.AsSelf)
 		if err != nil {
 			return nil, err

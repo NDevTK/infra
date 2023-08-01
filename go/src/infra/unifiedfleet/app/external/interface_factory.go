@@ -183,7 +183,7 @@ func cfgInterfaceFactoryImpl(ctx context.Context) luciconfig.Interface {
 	if cfgService == "" {
 		cfgService = defaultCfgService
 	}
-	return remote.New(cfgService, false, func(ctx context.Context) (*http.Client, error) {
+	return remote.NewV1(cfgService, false, func(ctx context.Context) (*http.Client, error) {
 		t, err := auth.GetRPCTransport(ctx, auth.AsSelf)
 		if err != nil {
 			return nil, err
