@@ -546,11 +546,15 @@ func servoValidateBatteryChargingExec(ctx context.Context, info *execs.ExecInfo)
 // initDutForServoExec initializes the DUT and sets all servo signals
 // to default values.
 func initDutForServoExec(ctx context.Context, info *execs.ExecInfo) error {
-	verbose := true
 	s := info.NewServod()
-	if _, err := s.Call(ctx, "hwinit", components.ServodDefaultTimeout, verbose); err != nil {
+	args := info.GetActionArgs(ctx)
+	hwinitVerbose := args.AsBool(ctx, "hwinit_verbose", true)
+	hwinitTimeout := args.AsDuration(ctx, "hwinit_timeout", 60, time.Second)
+	start := time.Now()
+	if _, err := s.Call(ctx, "hwinit", hwinitTimeout, hwinitVerbose); err != nil {
 		return errors.Annotate(err, "init dut for servo exec").Err()
 	}
+	info.AddObservation(metrics.NewFloat64Observation("hwinit_execution_time", time.Since(start).Seconds()))
 	usbMuxControl := "usb_mux_oe1"
 	if err := s.Has(ctx, usbMuxControl); err == nil {
 		if err2 := s.Set(ctx, usbMuxControl, "on"); err2 != nil {

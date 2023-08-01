@@ -705,11 +705,12 @@ func servoRepairPlan() *Plan {
 					"Call servod to init dependencies for DUT",
 				},
 				Dependencies: []string{
-					"Set state:SERVOD_PROXY_ISSUE",
+					"Set state:BROKEN",
 					"Set main servo device",
 					"Open gsc testlab",
 				},
-				ExecName: "init_dut_for_servo",
+				ExecName:    "init_dut_for_servo",
+				ExecTimeout: &durationpb.Duration{Seconds: 120},
 				RecoveryActions: []string{
 					"Stop servod",
 					"Reboot servo device",

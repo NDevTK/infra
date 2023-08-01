@@ -2069,7 +2069,8 @@ func crosRepairActions() map[string]*Action {
 				"Setup has servo info",
 				"Sleep 1s",
 			},
-			ExecName: "init_dut_for_servo",
+			ExecName:    "init_dut_for_servo",
+			ExecTimeout: &durationpb.Duration{Seconds: 120},
 		},
 		"Servo main device is GSC chip": {
 			Docs: []string{
