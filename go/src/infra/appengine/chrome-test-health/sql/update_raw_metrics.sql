@@ -24,7 +24,9 @@ USING (
         exonerated,
         duration,
       FROM chrome-luci-data.chromium.try_test_results as tr
-      WHERE DATE(partition_time, "PST8PDT") BETWEEN @from_date AND @to_date
+      WHERE
+        DATE(partition_time, "PST8PDT") BETWEEN @from_date AND @to_date
+        AND tr.status != "SKIP"
       UNION ALL
       SELECT
         CAST(REGEXP_EXTRACT(exported.id, r'build-(\d+)') AS INT64) AS build_id,
@@ -44,7 +46,9 @@ USING (
         exonerated,
         duration,
       FROM chrome-luci-data.chromium.ci_test_results as tr
-      WHERE DATE(partition_time, "PST8PDT") BETWEEN @from_date AND @to_date
+      WHERE
+        DATE(partition_time, "PST8PDT") BETWEEN @from_date AND @to_date
+        AND tr.status != "SKIP"
     ), tests AS (
       SELECT
         EXTRACT(DATE FROM partition_time AT TIME ZONE "PST8PDT") AS `date`,
