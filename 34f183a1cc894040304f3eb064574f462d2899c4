@@ -72,6 +72,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c5d48687_4ab4e151",
+        "filename": "go/src/infra/build/siso/auth/cred/cred_helper_linux.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-08-01T05:07:17Z",
+      "side": 1,
+      "message": "yeah, but it is not deprecated in real sense?",
+      "parentUuid": "a5a22231_1bd101cc",
+      "range": {
+        "startLine": 13,
+        "startChar": 2,
+        "endLine": 13,
+        "endChar": 9
+      },
+      "revId": "34f183a1cc894040304f3eb064574f462d2899c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1309fbdd_043b892b",
