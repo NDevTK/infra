@@ -445,7 +445,7 @@ func (*Client) readFetchTestMetricsResponse(it *bigquery.RowIterator, req *api.F
 	variantHashToTestDateMetricData := make(map[string]map[string]*api.TestVariantData)
 
 	response := &api.FetchTestMetricsResponse{
-		LastPage: int64(it.TotalRows) != req.PageSize+1,
+		LastPage: true,
 	}
 	for {
 		var rowVals rowLoader
@@ -461,6 +461,7 @@ func (*Client) readFetchTestMetricsResponse(it *bigquery.RowIterator, req *api.F
 		if !ok {
 			// Don't report the extra row that was retrieved for last page
 			if int64(len(testIdToTestDateMetricData)) == req.PageSize {
+				response.LastPage = false
 				break
 			}
 			testIdData = &api.TestDateMetricData{
