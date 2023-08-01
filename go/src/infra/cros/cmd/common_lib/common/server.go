@@ -98,14 +98,13 @@ func GetFreePort() uint16 {
 	return uint16(l.Addr().(*net.TCPAddr).Port)
 }
 
+// cqRunPattern matches precisely the suite names for CQ runs.
+var cqRunPattern = regexp.MustCompile(`^bvt-tast-cq.*|^cq-.*`)
+
 // IsCqRun determines if the current execution is a CQ run
 func IsCqRun(testSuite []*api.TestSuite) bool {
 	for _, suite := range testSuite {
-		match, err := regexp.MatchString(`^bvt-tast-cq.*|^cq-.*`, suite.Name)
-		if err != nil {
-			log.Printf("Error while matching testSuite value during IsCqRun")
-		}
-		if match {
+		if cqRunPattern.MatchString(suite.Name) {
 			return true
 		}
 	}
