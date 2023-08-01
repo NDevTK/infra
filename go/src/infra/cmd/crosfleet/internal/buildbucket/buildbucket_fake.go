@@ -64,11 +64,9 @@ func requestSummary(in *buildbucketpb.ScheduleBuildRequest) string {
 
 func (f FakeBuildClient) ScheduleBuild(ctx context.Context, in *buildbucketpb.ScheduleBuildRequest, opts ...grpc.CallOption) (*buildbucketpb.Build, error) {
 	matchedExpectation := false
-	for i, expected := range f.ExpectedSchedule {
+	for _, expected := range f.ExpectedSchedule {
 		if expected.matches(in) {
 			matchedExpectation = true
-			// Matching an expectation "consumes" it.
-			f.ExpectedSchedule = append(f.ExpectedSchedule[:i], f.ExpectedSchedule[i:]...)
 			break
 		}
 	}
