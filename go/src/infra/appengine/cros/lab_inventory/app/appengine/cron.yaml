@@ -2,15 +2,15 @@ cron:
 - description: Import config.cfg from LUCI Config
   url: /internal/cron/import-service-config
   schedule: every 10 minutes
+
 - description: Device config data periodic refresh
   url: /internal/cron/sync-dev-config
   schedule: every 1 hours
-- description: Manufacturing config data periodic refresh
-  url: /internal/cron/sync-manufacturing-config
-  schedule: every 1 hours
+
 - description: Inventory change history periodic dump to bigquery
   url: /internal/cron/changehistory-to-bq
   schedule: every 10 minutes
+
 - description: Push inventory to drone queen
   url: /internal/cron/push-to-drone-queen
   schedule: every 10 minutes
