@@ -228,11 +228,16 @@ func (ex *CrosVMProvisionExecutor) vmProvisionReleaseCommandExecution(
 	step, ctx := build.StartStep(ctx, "VM-Provision release dut vm")
 	defer func() { step.End(err) }()
 
+	if cmd.LeaseVMResponse == nil {
+		logging.Infof(ctx, "Skipping release as lease did not happen earlier during execution")
+		return nil
+	}
+
 	//create request
 	releaseVMRequest := &api.ReleaseVMRequest{
 		LeaseId:    cmd.LeaseVMResponse.GetLeaseId(),
 		GceProject: common.GceProject,
-		GceRegion:  cmd.LeaseVMResponse.Vm.GetGceRegion(),
+		GceRegion:  cmd.LeaseVMResponse.GetVm().GetGceRegion(),
 	}
 	metadata := &anypb.Any{}
 	if err := metadata.MarshalFrom(releaseVMRequest); err != nil {
