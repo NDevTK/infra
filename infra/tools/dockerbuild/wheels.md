@@ -2083,6 +2083,20 @@ wheel: <
 
 * *universal*
 
+## **execnet-py3**
+
+### 2.0.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/execnet-py3"
+  version: "version:2.0.2"
+>
+```
+
+
+* *universal*
+
 ## **ezt**
 
 ### 1.1

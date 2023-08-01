@@ -1430,6 +1430,7 @@ SPECS.update({
         Universal('enum34', '1.1.6', pyversions=['py3']),
         Universal('exceptiongroup', '1.1.2', pyversions=['py3']),
         Universal('execnet', '1.8.0'),
+        Universal('execnet', '2.0.2', pyversions=['py3']),
         Universal('fasteners', '0.14.1'),
         Universal('filelock', '3.0.12', pyversions=['py3']),
         Universal('flask', '1.0.2'),
