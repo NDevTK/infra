@@ -56,7 +56,7 @@ func innerMain() error {
 	ctx, cancel = notifySIGTERM(ctx)
 	defer cancel()
 	if *address == "" {
-		return fmt.Errorf("No Prometheus address")
+		return fmt.Errorf("no Prometheus address")
 	}
 
 	// Pull image before probing. We want to exclude download time from probing.
@@ -144,16 +144,14 @@ func runExec(ctx context.Context, cmd *exec.Cmd) (err error) {
 }
 
 func notifyShutdown(ctx context.Context, idleConns chan struct{}, svr *http.Server, gracePeriod time.Duration) {
-	select {
-	case <-ctx.Done():
-		log.Printf("Gracefully shutting down drone-prober")
-		ctx, cancel := context.WithTimeout(context.Background(), gracePeriod)
-		defer cancel()
-		if err := svr.Shutdown(ctx); err != nil {
-			log.Printf("Shutdown drone-prober unsuccesfully: %v", err)
-		} else {
-			log.Printf("Shutdown drone-prober successfully")
-		}
-		close(idleConns)
+	<-ctx.Done()
+	log.Printf("Gracefully shutting down drone-prober")
+	ctx, cancel := context.WithTimeout(context.Background(), gracePeriod)
+	defer cancel()
+	if err := svr.Shutdown(ctx); err != nil {
+		log.Printf("Shutdown drone-prober unsuccesfully: %v", err)
+	} else {
+		log.Printf("Shutdown drone-prober successfully")
 	}
+	close(idleConns)
 }
