@@ -18,6 +18,7 @@ func wifiRouterRepairPlan() *Plan {
 
 			// Actions only executed for specific device types.
 			"Check ChromeOS Gale device",
+			"Check AsusWrt device",
 
 			// General final actions done for all device types.
 			"Reboot device",
@@ -74,6 +75,17 @@ func wifiRouterRepairPlan() *Plan {
 				ExecName: "wifi_router_device_type_in_list",
 				ExecExtraArgs: []string{
 					"device_types:WIFI_ROUTER_DEVICE_TYPE_CHROMEOS_GALE",
+				},
+				RunControl:    RunControl_RUN_ONCE,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			},
+			"Is AsusWrt": {
+				Docs: []string{
+					"Checks if the router's device type is WIFI_ROUTER_DEVICE_TYPE_ASUSWRT.",
+				},
+				ExecName: "wifi_router_device_type_in_list",
+				ExecExtraArgs: []string{
+					"device_types:WIFI_ROUTER_DEVICE_TYPE_ASUSWRT",
 				},
 				RunControl:    RunControl_RUN_ONCE,
 				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
@@ -187,6 +199,34 @@ func wifiRouterRepairPlan() *Plan {
 				ExecExtraArgs: []string{
 					"rm -Rf /mnt/stateful_partition/home/.shadow /mnt/stateful_partition/dev_image/telemetry",
 				},
+			},
+
+			// AsusWrt actions.
+			"Check AsusWrt device": {
+				Docs: []string{
+					"Recovery checks preformed only for AsusWrt router devices.",
+				},
+				Conditions: []string{
+					"Is AsusWrt",
+				},
+				Dependencies: []string{
+					"Fetch model from AsusWrt device",
+					"Update model and features based on this AsusWrt device",
+				},
+				ExecName: "sample_pass",
+			},
+			"Update model and features based on this AsusWrt device": {
+				Docs: []string{
+					"Sets model based on data read from the AsusWrt device and sets the ",
+					"features based on known, hardcoded values based on model.",
+				},
+				ExecName: "wifi_router_update_model_and_features",
+			},
+			"Fetch model from AsusWrt device": {
+				Docs: []string{
+					"Retrieves the AsusWrt device's model name from the device and stores it in the controller state for later reference.",
+				},
+				ExecName: "wifi_router_asuswrt_fetch_model",
 			},
 		},
 	}
