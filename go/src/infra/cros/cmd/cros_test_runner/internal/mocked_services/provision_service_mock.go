@@ -57,6 +57,26 @@ func (mr *MockGenericProvisionServiceClientMockRecorder) Install(ctx, in interfa
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Install", reflect.TypeOf((*MockGenericProvisionServiceClient)(nil).Install), varargs...)
 }
 
+// StartUp mocks base method.
+func (m *MockGenericProvisionServiceClient) StartUp(ctx context.Context, in *api.ProvisionStartupRequest, opts ...grpc.CallOption) (*api.ProvisionStartupResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "StartUp", varargs...)
+	ret0, _ := ret[0].(*api.ProvisionStartupResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// StartUp indicates an expected call of StartUp.
+func (mr *MockGenericProvisionServiceClientMockRecorder) StartUp(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StartUp", reflect.TypeOf((*MockGenericProvisionServiceClient)(nil).StartUp), varargs...)
+}
+
 // MockGenericProvisionServiceServer is a mock of GenericProvisionServiceServer interface.
 type MockGenericProvisionServiceServer struct {
 	ctrl     *gomock.Controller
@@ -93,6 +113,21 @@ func (m *MockGenericProvisionServiceServer) Install(arg0 context.Context, arg1 *
 func (mr *MockGenericProvisionServiceServerMockRecorder) Install(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Install", reflect.TypeOf((*MockGenericProvisionServiceServer)(nil).Install), arg0, arg1)
+}
+
+// StartUp mocks base method.
+func (m *MockGenericProvisionServiceServer) StartUp(arg0 context.Context, arg1 *api.ProvisionStartupRequest) (*api.ProvisionStartupResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "StartUp", arg0, arg1)
+	ret0, _ := ret[0].(*api.ProvisionStartupResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// StartUp indicates an expected call of StartUp.
+func (mr *MockGenericProvisionServiceServerMockRecorder) StartUp(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StartUp", reflect.TypeOf((*MockGenericProvisionServiceServer)(nil).StartUp), arg0, arg1)
 }
 
 // MockUnsafeGenericProvisionServiceServer is a mock of UnsafeGenericProvisionServiceServer interface.

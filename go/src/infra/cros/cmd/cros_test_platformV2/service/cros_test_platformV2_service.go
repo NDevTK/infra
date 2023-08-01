@@ -5,15 +5,9 @@
 package service
 
 import (
-	"os"
-
-	"google.golang.org/protobuf/encoding/protojson"
-
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 
 	"context"
-	"fmt"
 	"log"
 
 	"google.golang.org/grpc"
@@ -38,10 +32,6 @@ func NewCTPv2Server(metadata *ServerMetadata) (*CrosTestRunnerServer, func(), er
 			conn.Close()
 		}
 		conns = nil
-	}
-
-	if err := ValidateExecuteRequest(metadata.InputProto); err != nil {
-		return nil, closer, err
 	}
 
 	return &CrosTestRunnerServer{metadata: metadata}, closer, nil
@@ -80,35 +70,4 @@ func (server *CrosTestRunnerServer) Execute(ctx context.Context, req *skylab_tes
 
 	log.Println("Execution finished successfully!")
 	return out, nil
-}
-
-// ValidateExecuteRequest validates provided request.
-func ValidateExecuteRequest(req *api.CTPRequest2) error {
-	// TODO : Add all validations.
-	return nil
-}
-
-// ParseServerStartReq parses CrosTestRunnerServerStartRequest input request data from
-// the input file.
-func ParseServerStartReq(path string) (*api.CTPRequest2, error) {
-	in := &api.CTPRequest2{}
-	r, err := os.Open(path)
-	if err != nil {
-		return nil, fmt.Errorf("error while opening file at %s: %s", path, err)
-	}
-
-	data, err := os.ReadFile(r.Name())
-	if err != nil {
-		return nil, fmt.Errorf("error while reading file %s: %s", r.Name(), err)
-	}
-
-	umrsh := protojson.UnmarshalOptions{
-		DiscardUnknown: true,
-	}
-	err = umrsh.Unmarshal(data, in)
-	if err != nil {
-		return nil, fmt.Errorf("err while unmarshalling: %s", err)
-	}
-
-	return in, nil
 }
