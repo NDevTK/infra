@@ -65,6 +65,7 @@ def builder(
         os = None,
         cpu_cores = None,
         cpu = None,
+        machine_type = None,
         properties = None,
         builder_group_property_name = "mastername",
         caches = None,
@@ -85,6 +86,7 @@ def builder(
       os: the target OS dimension.
       cpu_cores: the CPU cores count dimension (as string).
       cpu: the CPU architecture (as string)
+      machine_type: the machine type.
       properties: a dict with properties to pass to the recipe.
       builder_group_property_name: the name of the property to set with the
         builder group.
@@ -129,6 +131,7 @@ def builder(
             "os": os or "Ubuntu-22",
             "cpu": cpu or "x86-64",
             "cores": cpu_cores or "8",
+            "machine_type": machine_type or "n1-standard-8",
             "pool": "luci.infra.codesearch",
         },
         caches = caches,
@@ -155,6 +158,7 @@ def chromium_genfiles(
         os = None,
         cpu_cores = None,
         cpu = None,
+        machine_type = None,
         xcode_build_version = None):
     """A builder for generating kzips for chromium/src.
 
@@ -179,6 +183,7 @@ def chromium_genfiles(
         os = os,
         cpu_cores = cpu_cores,
         cpu = cpu,
+        machine_type = machine_type,
         caches = [swarming.cache(
             path = "generated",
             name = "codesearch_git_genfiles_repo",
@@ -258,6 +263,7 @@ chromium_genfiles(
         "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
         "build_config": "android",
     },
+    machine_type = "n1-highmem-8",
 )
 
 chromium_genfiles(
@@ -354,6 +360,7 @@ chromium_genfiles(
     os = "Mac-13",
     cpu_cores = "8",
     cpu = "arm64",
+    machine_type = "n1-highcpu-8",
     xcode_build_version = "14e5207e",
 )
 
@@ -398,6 +405,7 @@ chromium_genfiles(
     },
     os = "Mac-11",
     cpu_cores = "4",
+    machine_type = "n1-standard-4",
 )
 
 chromium_genfiles(
@@ -415,6 +423,7 @@ chromium_genfiles(
     },
     os = "Windows-10",
     cpu_cores = "32",
+    machine_type = "n1-standard-32",
 )
 
 update_submodules_mirror(
