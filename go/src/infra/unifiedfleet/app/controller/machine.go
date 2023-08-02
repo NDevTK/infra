@@ -110,10 +110,10 @@ func MachineRegistration(ctx context.Context, machine *ufspb.Machine) (*ufspb.Ma
 	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
 		logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming MachineRegistration results.")
 		// Create a new object so we are not accidentally mutating the original struct.
-		var pubsubMachine ufspb.Machine = *machine
+		pubsubMachine := proto.Clone(machine).(*ufspb.Machine)
 		// Generate the message for Pub/Sub
 		row := apibq.MachineRow{
-			Machine: &pubsubMachine,
+			Machine: pubsubMachine,
 			Delete:  false,
 		}
 
@@ -270,10 +270,10 @@ func UpdateMachine(ctx context.Context, machine *ufspb.Machine, mask *field_mask
 	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
 		logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming UpdateMachine results.")
 		// Create a new object so we are not accidentally mutating the original struct.
-		var pubsubMachine ufspb.Machine = *updatedMachine
+		pubsubMachine := proto.Clone(updatedMachine).(*ufspb.Machine)
 		// Generate the message for Pub/Sub
 		row := apibq.MachineRow{
-			Machine: &pubsubMachine,
+			Machine: pubsubMachine,
 			Delete:  false,
 		}
 		data, err_ps := json.Marshal(row)
@@ -699,9 +699,9 @@ func ListMachines(ctx context.Context, pageSize int32, pageToken, filter string,
 			msgs := [][]byte{}
 			for _, machine := range machines {
 				// Create a new object so we are not accidentally mutating the original struct.
-				var pubsubMachine ufspb.Machine = *machine
+				pubsubMachine := proto.Clone(machine).(*ufspb.Machine)
 				row := apibq.MachineRow{
-					Machine: &pubsubMachine,
+					Machine: pubsubMachine,
 					Delete:  false,
 				}
 				data, err_ps := json.Marshal(row)
@@ -835,10 +835,10 @@ func DeleteMachine(ctx context.Context, id string) error {
 	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
 		logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming DeleteMachine results.")
 		// Create a new object so we are not accidentally mutating the original struct.
-		var pubsubMachine ufspb.Machine = *existingMachine
+		pubsubMachine := proto.Clone(existingMachine).(*ufspb.Machine)
 		// Generate the message for Pub/Sub
 		row := apibq.MachineRow{
-			Machine: &pubsubMachine,
+			Machine: pubsubMachine,
 			Delete:  true,
 		}
 		data, err_ps := json.Marshal(row)

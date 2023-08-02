@@ -43,7 +43,7 @@ type ConfigSha struct {
 
 var prevConfig = ConfigSha{sha1: ""}
 
-// ImportBotsConfig gets the OwnershipConfig and git client and passes them to functions for importing bot configs
+// ImportBotConfigs gets the OwnershipConfig and git client and passes them to functions for importing bot configs
 func ImportBotConfigs(ctx context.Context) error {
 	ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
 	if err != nil {
@@ -102,7 +102,7 @@ func ImportSecurityConfig(ctx context.Context, ownershipConfig *config.Ownership
 		}
 		ParseSecurityConfig(ctx, content)
 		duration := time.Since(start)
-		logging.Debugf(ctx, "########### Done Parsing %s; Time taken %s ###########", cfg.GetName(), fmt.Sprintf(duration.String()))
+		logging.Debugf(ctx, "########### Done Parsing %s; Time taken %s ###########", cfg.GetName(), duration.String())
 	}
 	return nil
 }
