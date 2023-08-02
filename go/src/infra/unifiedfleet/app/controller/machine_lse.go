@@ -60,12 +60,13 @@ func CreateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, nwOpt *
 		// Publish the MachineLSE creation via Pub/Sub.
 		if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
 			logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming CreateMachineLSE results.")
-			// Create a new object so we are not accidentally mutating the original struct.
 			if err == nil {
-				var pubsubMachineLSE ufspb.MachineLSE = *machineLSE
+				// Create a new object so we are not
+				// accidentally mutating the original struct.
+				pubsubMachineLSE := proto.Clone(machineLSE).(*ufspb.MachineLSE)
 				// Generate the message for Pub/Sub
 				row := apibq.MachineLSERow{
-					MachineLse: &pubsubMachineLSE,
+					MachineLse: pubsubMachineLSE,
 					Delete:     false,
 				}
 				data, err_ps := json.Marshal(row)
@@ -330,10 +331,10 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
 		logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming UpdateMachineLSE results.")
 		// Create a new object so we are not accidentally mutating the original struct.
-		var pubsubMachineLSE ufspb.MachineLSE = *updatedMachinelse
+		pubsubMachineLSE := proto.Clone(updatedMachinelse).(*ufspb.MachineLSE)
 		// Generate the message for Pub/Sub
 		row := apibq.MachineLSERow{
-			MachineLse: &pubsubMachineLSE,
+			MachineLse: pubsubMachineLSE,
 			Delete:     false,
 		}
 		data, err_ps := json.Marshal(row)
@@ -598,10 +599,10 @@ func ListMachineLSEs(ctx context.Context, pageSize int32, pageToken, filter stri
 			msgs := [][]byte{}
 			for _, machinelse := range lses {
 				// Create a new object so we are not accidentally mutating the original struct.
-				var pubsubMachineLSE ufspb.MachineLSE = *machinelse
+				pubsubMachineLSE := proto.Clone(machinelse).(*ufspb.MachineLSE)
 
 				row := apibq.MachineLSERow{
-					MachineLse: &pubsubMachineLSE,
+					MachineLse: pubsubMachineLSE,
 					Delete:     false,
 				}
 				data, err_ps := json.Marshal(row)
@@ -747,11 +748,11 @@ func DeleteMachineLSE(ctx context.Context, id string) error {
 	if pubsubOk := rand.Float32() < config.Get(ctx).GetSendMessagesToPubsubRatio(); pubsubOk {
 		logging.Debugf(ctx, "pubsub_stream: Experiment activated, streaming DeleteMachineLSE results.")
 		// Create a new object so we are not accidentally mutating the original struct.
-		var pubsubMachineLSE ufspb.MachineLSE = *existingMachinelse
+		pubsubMachineLSE := proto.Clone(existingMachinelse).(*ufspb.MachineLSE)
 
 		// Generate the message for Pub/Sub
 		row := apibq.MachineLSERow{
-			MachineLse: &pubsubMachineLSE,
+			MachineLse: pubsubMachineLSE,
 			Delete:     true,
 		}
 		data, err_ps := json.Marshal(row)

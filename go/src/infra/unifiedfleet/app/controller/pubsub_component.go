@@ -20,7 +20,7 @@ func CreatePubSubTopicClient(ctx context.Context, topicID string) (*pubsub.Topic
 	// Create client for Pub/Sub publishing.
 	client := external.GetPubSub(ctx)
 	if client == nil {
-		return nil, fmt.Errorf("pubsub_stream: Pubsub client is nil.")
+		return nil, fmt.Errorf("pubsub_stream: Pubsub client is nil")
 	}
 
 	// Associate the Pub/Sub client with the correct topicID.
