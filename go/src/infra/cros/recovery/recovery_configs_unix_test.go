@@ -59,6 +59,8 @@ func TestConfigTreeGeneraterOff(t *testing.T) {
 	}
 }
 
+// TestConfigTreeChanges checks that configs trees matches to current configs.
+// Please run `make trees` in recovery folder to regenerate tree files.
 func TestConfigTreeChanges(t *testing.T) {
 	t.Parallel()
 	for _, c := range configTreeChangesCases {

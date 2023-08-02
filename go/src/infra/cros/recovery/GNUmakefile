@@ -13,18 +13,17 @@ build:
 	@go test $(GOTESTFLAGS) ./...
 	go build ./...
 
-.PHONY:
+.PHONY: test test-slow
 test-slow:
 	go test ./... $(GOTESTFLAGS) -p 1
+test:
+	go test ./...
 
-.PHONY: gen
+.PHONY: gen trees
 gen:
 	# Generate proto files
 	@find . -name '*.pb.go' -delete
 	go generate ./...
+trees:
 	# Generate config tree files
 	RECOVERY_GENERATE_CONFIG_TREE=ON go test -run TestConfigTreeChanges
-
-.PHONY:
-test:
-	go test ./...
