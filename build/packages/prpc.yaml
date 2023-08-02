@@ -5,22 +5,23 @@ platforms:
   - linux-amd64
   - linux-arm64
   - linux-armv6l
-  - linux-mipsle
   - linux-mips64
   - linux-mips64le
+  - linux-mipsle
   - linux-ppc64
   - linux-ppc64le
   - linux-s390x
   - mac-amd64
   - mac-arm64
+  - solaris-amd64
   - windows-386
   - windows-amd64
   - windows-arm64
 go_build_environ:
   CGO_ENABLED:
-    darwin:  1  # native Go DNS resolved is buggy on OSX (crbug.com/803673)
-    linux:   0  # to avoid linking to system dynamic libraries
-    windows: 0  # we have no cgo toolchain on Windows
+    darwin: 1 # native Go DNS resolved is buggy on OSX (crbug.com/803673)
+    linux: 0 # to avoid linking to system dynamic libraries
+    windows: 0 # we have no cgo toolchain on Windows
 go_packages:
   - go.chromium.org/luci/grpc/cmd/prpc
 root: ../../go/bin
