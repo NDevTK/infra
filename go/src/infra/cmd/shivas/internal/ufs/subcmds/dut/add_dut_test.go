@@ -5,8 +5,11 @@
 package dut
 
 import (
+	"context"
 	"testing"
 
+	ufspb "infra/unifiedfleet/api/v1/models"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "infra/unifiedfleet/app/util"
 )
 
@@ -57,7 +60,68 @@ func TestAddDutNamespace(t *testing.T) {
 				t.Errorf("Expected namespace: %s, got namespace: %s", tt.expectedNamespace, ns)
 			}
 			if (err != nil) != tt.expectedErr {
-				t.Errorf("Expected error: %t, got error: %t", (err != nil), tt.expectedErr)
+				t.Errorf("Expected error: %t, got error: %t", tt.expectedErr, (err != nil))
+			}
+		})
+	}
+}
+
+func TestValidateDutAndAssetLocation(t *testing.T) {
+	tests := []struct {
+		name        string
+		ctx         context.Context
+		ic          ufsAPI.FleetClient
+		dutParam    *dutDeployUFSParams
+		expectedErr bool
+	}{
+		{
+			name: "DUT name without zone prefix returns no error",
+			ctx:  context.Background(),
+			ic:   nil,
+			dutParam: &dutDeployUFSParams{
+				DUT:   &ufspb.MachineLSE{Name: "non-standard-dut-name"},
+				Asset: &ufspb.Asset{},
+			},
+			expectedErr: false,
+		},
+		{
+			name: "DUT name with chromeos1 prefix and asset matching zone returns no error",
+			ctx:  context.Background(),
+			ic:   nil,
+			dutParam: &dutDeployUFSParams{
+				DUT:   &ufspb.MachineLSE{Name: "chromeos1-row1-rack1-host1"},
+				Asset: &ufspb.Asset{Location: &ufspb.Location{Zone: ufspb.Zone_ZONE_CHROMEOS1}},
+			},
+			expectedErr: false,
+		},
+		{
+			name: "DUT name with chromium-chromeos8 prefix and asset matching zone returns no error",
+			ctx:  context.Background(),
+			ic:   nil,
+			dutParam: &dutDeployUFSParams{
+				DUT:   &ufspb.MachineLSE{Name: "chromium-chromeos8-row1-rack1-host1"},
+				Asset: &ufspb.Asset{Location: &ufspb.Location{Zone: ufspb.Zone_ZONE_SFO36_OS_CHROMIUM}},
+			},
+			expectedErr: false,
+		},
+		{
+			name: "DUT name with zone prefix and asset not matching zone returns error",
+			ctx:  context.Background(),
+			ic:   nil,
+			dutParam: &dutDeployUFSParams{
+				DUT:   &ufspb.MachineLSE{Name: "chromeos1-row1-rack1-host1"},
+				Asset: &ufspb.Asset{Location: &ufspb.Location{Zone: ufspb.Zone_ZONE_SFO36_OS}},
+			},
+			expectedErr: true,
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			err := validateDutAndAssetLocation(tt.ctx, tt.ic, tt.dutParam)
+			if (err != nil) != tt.expectedErr {
+				t.Errorf("Expected error: %t, got error: %t", tt.expectedErr, (err != nil))
 			}
 		})
 	}

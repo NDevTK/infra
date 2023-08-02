@@ -274,6 +274,9 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 			if len(param.DUT.GetMachines()) == 0 {
 				fmt.Printf("Failed to add DUT %s to UFS. It is not linked to any Asset(Machine).\n", param.DUT.GetName())
 				continue
+			} else if err := validateDutAndAssetLocation(ctx, ic, param); err != nil {
+				fmt.Printf("Error, skipping UFS update and deployment: %s", err.Error())
+				continue
 			}
 			if err := c.addDutToUFS(ctx, ic, param); err != nil {
 				fmt.Printf("Failed to add DUT %s to UFS. Skipping deployment. %s", param.DUT.GetName(), err.Error())
@@ -441,6 +444,47 @@ func (c *addDUT) parseMCSV() ([]*dutDeployUFSParams, error) {
 		}
 	}
 	return dutParams, nil
+}
+
+var shortZoneStringToZone = map[string]ufspb.Zone{
+	"chromeos1":          ufspb.Zone_ZONE_CHROMEOS1,
+	"chromeos3":          ufspb.Zone_ZONE_CHROMEOS3,
+	"chromeos5":          ufspb.Zone_ZONE_CHROMEOS5,
+	"chromeos6":          ufspb.Zone_ZONE_CHROMEOS6,
+	"chromeos7":          ufspb.Zone_ZONE_CHROMEOS7,
+	"chromeos15":         ufspb.Zone_ZONE_CHROMEOS15,
+	"chromeos8":          ufspb.Zone_ZONE_SFO36_OS,
+	"chromium-chromeos8": ufspb.Zone_ZONE_SFO36_OS_CHROMIUM,
+}
+var dutZoneRegex = regexp.MustCompile(`^(chromium-)?(chromeos[0-9]{1,2})-.*$`)
+
+func validateDutAndAssetLocation(ctx context.Context, ic ufsAPI.FleetClient, dutParam *dutDeployUFSParams) error {
+	dutName := dutParam.DUT.GetName()
+	matches := dutZoneRegex.FindStringSubmatch(dutName)
+	if len(matches) == 0 || len(matches[2]) == 0 {
+		fmt.Printf("Warning: Could not verify zone from DUT name %q. Continuing.\n", dutName)
+		return nil
+	}
+	dutZonePrefix := matches[1] + matches[2]
+	dutZone := shortZoneStringToZone[dutZonePrefix]
+
+	asset, err := getAssetForUpdatedDut(ctx, ic, dutParam)
+	if err != nil {
+		return err
+	}
+	if asset.GetLocation().GetZone() != dutZone {
+		return fmt.Errorf("DUT prefix %q and asset zone %q do not match. Please update the asset.\n", dutZonePrefix, asset.GetLocation().GetZone())
+	}
+	return nil
+}
+
+func getAssetForUpdatedDut(ctx context.Context, ic ufsAPI.FleetClient, dutParam *dutDeployUFSParams) (*ufspb.Asset, error) {
+	if dutParam.Asset != nil {
+		return dutParam.Asset, nil
+	}
+	return ic.GetAsset(ctx, &ufsAPI.GetAssetRequest{
+		Name: ufsUtil.AddPrefix(ufsUtil.AssetCollection, dutParam.DUT.GetMachines()[0]),
+	})
 }
 
 func (c *addDUT) addDutToUFS(ctx context.Context, ic ufsAPI.FleetClient, param *dutDeployUFSParams) error {
