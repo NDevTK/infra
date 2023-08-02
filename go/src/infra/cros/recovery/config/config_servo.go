@@ -677,8 +677,6 @@ func servoRepairPlan() *Plan {
 					"expected_string_value:on",
 				},
 				RecoveryActions: []string{
-					// TODO(otabek): need verify if we can enable testlab.
-					"Open gsc testlab",
 					"Stop servod",
 					"Reboot servo device",
 					"Try fake disconnect and stop",
@@ -700,6 +698,21 @@ func servoRepairPlan() *Plan {
 				RunControl:             RunControl_ALWAYS_RUN,
 				AllowFailAfterRecovery: true,
 			},
+			"Reset CCD to factory settings": {
+				Docs: []string{
+					"Reset CCD to the factory settings.",
+				},
+				Conditions: []string{
+					"Servo main device is GSC chip",
+				},
+				ExecExtraArgs: []string{
+					"command:cr50_uart_cmd",
+					"string_value:ccd reset factory",
+				},
+				ExecName:               "servo_set",
+				RunControl:             RunControl_ALWAYS_RUN,
+				AllowFailAfterRecovery: true,
+			},
 			"Initialize DUT part for servo": {
 				Docs: []string{
 					"Call servod to init dependencies for DUT",
@@ -708,6 +721,7 @@ func servoRepairPlan() *Plan {
 					"Set state:BROKEN",
 					"Set main servo device",
 					"Open gsc testlab",
+					"Reset CCD to factory settings",
 				},
 				ExecName:    "init_dut_for_servo",
 				ExecTimeout: &durationpb.Duration{Seconds: 120},
