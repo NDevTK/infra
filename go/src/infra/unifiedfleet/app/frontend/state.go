@@ -78,7 +78,7 @@ func (fs *FleetServerImpl) UpdateDeviceRecoveryData(ctx context.Context, req *ap
 }
 
 // UpdateTestData updates the device date provide by Test runner.
-func (s *FleetServerImpl) UpdateTestData(ctx context.Context, req *api.UpdateTestDataRequest) (rsp *api.UpdateTestDataResponse, err error) {
+func (fs *FleetServerImpl) UpdateTestData(ctx context.Context, req *api.UpdateTestDataRequest) (rsp *api.UpdateTestDataResponse, err error) {
 	if err := req.Validate(); err != nil {
 		logging.Errorf(ctx, "UpdateTestData request validate fail - %s", err.Error())
 		return nil, err
