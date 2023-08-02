@@ -83,7 +83,8 @@ def RunSteps(api, properties):
           infra=properties.infra,
           labels=meta.labels,
           tags=meta.tags,
-          checkout_metadata=meta.checkout)
+          checkout_metadata=meta.checkout,
+          cost=api.step.ResourceCost(cpu=2000))
       futures[fut] = m
 
   # Wait until all builds complete.

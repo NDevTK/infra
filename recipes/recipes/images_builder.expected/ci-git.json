@@ -183,6 +183,12 @@
       "-json-output",
       "/path/to/tmp/json"
     ],
+    "cost": {
+      "cpu": 2000,
+      "disk": 0,
+      "memory": 50,
+      "net": 0
+    },
     "name": "cloudbuildhelper build target",
     "~followup_annotations": [
       "@@@STEP_TEXT@<br/>Image: example.com/fake-registry/target:ci-2012.05.14-11112-deadbee<br/>Digest: sha256:34a04005bcaf206e...<br/>Tag: ci-2012.05.14-11112-deadbee<br/>Tag: latest@@@",

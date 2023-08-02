@@ -111,7 +111,7 @@ See https://chromium.googlesource.com/infra/infra/+/main/build/images/.
 
 API for calling 'cloudbuildhelper' tool.
 
-&mdash; **def [build](/recipes/recipe_modules/cloudbuildhelper/api.py#129)(self, manifest, canonical_tag=None, build_id=None, infra=None, restrictions=None, labels=None, tags=None, checkout_metadata=None, step_test_image=None):**
+&mdash; **def [build](/recipes/recipe_modules/cloudbuildhelper/api.py#129)(self, manifest, canonical_tag=None, build_id=None, infra=None, restrictions=None, labels=None, tags=None, checkout_metadata=None, step_test_image=None, cost=None):**
 
 Calls `cloudbuildhelper build <manifest>` interpreting the result.
 
@@ -125,6 +125,7 @@ Args:
   * tags ([str]) - tags to unconditionally push the image to.
   * checkout_metadata (CheckoutMetadata) - to get revisions.
   * step_test_image (Image) - image to produce in training mode.
+  * cost (ResourceCost) - an estimated resource cost of this call.
 
 Returns:
   Image instance or NotUploadedImage if the YAML doesn't specify a registry.
@@ -132,7 +133,7 @@ Returns:
 Raises:
   StepFailure on failures.
 
-&emsp; **@contextlib.contextmanager**<br>&mdash; **def [build\_environment](/recipes/recipe_modules/cloudbuildhelper/api.py#635)(self, root, go_version_file=None, nodejs_version_file=None):**
+&emsp; **@contextlib.contextmanager**<br>&mdash; **def [build\_environment](/recipes/recipe_modules/cloudbuildhelper/api.py#641)(self, root, go_version_file=None, nodejs_version_file=None):**
 
 A context manager that activates the build environment.
 
@@ -175,7 +176,7 @@ Args:
 
 Can be used to tell the module to use an existing binary.
 
-&mdash; **def [discover\_manifests](/recipes/recipe_modules/cloudbuildhelper/api.py#481)(self, root, entries, test_data=None):**
+&mdash; **def [discover\_manifests](/recipes/recipe_modules/cloudbuildhelper/api.py#487)(self, root, entries, test_data=None):**
 
 Returns a list with paths to all manifests we need to build.
 
@@ -190,7 +191,7 @@ Args:
 Returns:
   [Path].
 
-&mdash; **def [do\_roll](/recipes/recipe_modules/cloudbuildhelper/api.py#507)(self, repo_url, root, callback, ref='main'):**
+&mdash; **def [do\_roll](/recipes/recipe_modules/cloudbuildhelper/api.py#513)(self, repo_url, root, callback, ref='main'):**
 
 Checks out a repo, calls the callback to modify it, uploads the result.
 
@@ -207,7 +208,7 @@ Returns:
   * (None, None) if didn't create a CL (because nothing has changed).
   * (Issue number, Issue URL) if created a CL.
 
-&mdash; **def [get\_version\_label](/recipes/recipe_modules/cloudbuildhelper/api.py#577)(self, path, revision, ref=None, commit_position=None, template=None):**
+&mdash; **def [get\_version\_label](/recipes/recipe_modules/cloudbuildhelper/api.py#583)(self, path, revision, ref=None, commit_position=None, template=None):**
 
 Computes a version string identifying a commit.
 
@@ -245,7 +246,7 @@ Reports the version of cloudbuildhelper tool via the step text.
 Returns:
   None.
 
-&mdash; **def [update\_pins](/recipes/recipe_modules/cloudbuildhelper/api.py#457)(self, path):**
+&mdash; **def [update\_pins](/recipes/recipe_modules/cloudbuildhelper/api.py#463)(self, path):**
 
 Calls `cloudbuildhelper pins-update <path>`.
 
@@ -258,7 +259,7 @@ Args:
 Returns:
   List of strings with updated "<image>:<tag>" pairs, if any.
 
-&mdash; **def [upload](/recipes/recipe_modules/cloudbuildhelper/api.py#361)(self, manifest, canonical_tag, build_id=None, infra=None, restrictions=None, checkout_metadata=None, step_test_tarball=None):**
+&mdash; **def [upload](/recipes/recipe_modules/cloudbuildhelper/api.py#364)(self, manifest, canonical_tag, build_id=None, infra=None, restrictions=None, checkout_metadata=None, step_test_tarball=None, cost=None):**
 
 Calls `cloudbuildhelper upload <manifest>` interpreting the result.
 
@@ -270,6 +271,7 @@ Args:
   * restrictions (Restrictions) - restrictions to apply to manifests.
   * checkout_metadata (CheckoutMetadata) - to get revisions.
   * step_test_tarball (Tarball) - tarball to produce in training mode.
+  * cost (ResourceCost) - an estimated resource cost of this call.
 
 Returns:
   Tarball instance.

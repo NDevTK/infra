@@ -227,6 +227,12 @@
       "-json-output",
       "/path/to/tmp/json"
     ],
+    "cost": {
+      "cpu": 2000,
+      "disk": 0,
+      "memory": 50,
+      "net": 0
+    },
     "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal",
     "env": {
       "GOFLAGS": "-mod=readonly",

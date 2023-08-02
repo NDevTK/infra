@@ -135,7 +135,8 @@ class CloudBuildHelperApi(recipe_api.RecipeApi):
             labels=None,
             tags=None,
             checkout_metadata=None,
-            step_test_image=None):
+            step_test_image=None,
+            cost=None):
     """Calls `cloudbuildhelper build <manifest>` interpreting the result.
 
     Args:
@@ -148,6 +149,7 @@ class CloudBuildHelperApi(recipe_api.RecipeApi):
       * tags ([str]) - tags to unconditionally push the image to.
       * checkout_metadata (CheckoutMetadata) - to get revisions.
       * step_test_image (Image) - image to produce in training mode.
+      * cost (ResourceCost) - an estimated resource cost of this call.
 
     Returns:
       Image instance or NotUploadedImage if the YAML doesn't specify a registry.
@@ -192,6 +194,7 @@ class CloudBuildHelperApi(recipe_api.RecipeApi):
               step_test_image, name, canonical_tag,
               checkout_metadata=checkout_metadata,
           ),
+          cost=cost or self.m.step.ResourceCost(),
       )
       if not res.json.output:  # pragma: no cover
         res.presentation.status = self.m.step.FAILURE
@@ -365,7 +368,8 @@ class CloudBuildHelperApi(recipe_api.RecipeApi):
              infra=None,
              restrictions=None,
              checkout_metadata=None,
-             step_test_tarball=None):
+             step_test_tarball=None,
+             cost=None):
     """Calls `cloudbuildhelper upload <manifest>` interpreting the result.
 
     Args:
@@ -376,6 +380,7 @@ class CloudBuildHelperApi(recipe_api.RecipeApi):
       * restrictions (Restrictions) - restrictions to apply to manifests.
       * checkout_metadata (CheckoutMetadata) - to get revisions.
       * step_test_tarball (Tarball) - tarball to produce in training mode.
+      * cost (ResourceCost) - an estimated resource cost of this call.
 
     Returns:
       Tarball instance.
@@ -414,6 +419,7 @@ class CloudBuildHelperApi(recipe_api.RecipeApi):
               step_test_tarball, name, canonical_tag,
               checkout_metadata=checkout_metadata,
           ),
+          cost=cost or self.m.step.ResourceCost(),
       )
       if not res.json.output:  # pragma: no cover
         res.presentation.status = self.m.step.FAILURE
