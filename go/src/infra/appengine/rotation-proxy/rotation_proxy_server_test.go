@@ -5,17 +5,20 @@
 package main
 
 import (
+	"context"
 	"testing"
 	"time"
+
+	rpb "infra/appengine/rotation-proxy/proto"
 
 	"github.com/golang/protobuf/proto"
 	timestamp "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 	. "github.com/smartystreets/goconvey/convey"
-	"go.chromium.org/luci/appengine/gaetesting"
+	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
+	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
-	rpb "infra/appengine/rotation-proxy/proto"
 )
 
 var person1 = &rpb.OncallPerson{Email: "person1@google.com"}
@@ -50,7 +53,11 @@ var rotation1 = &rpb.Rotation{
 }
 
 func TestBatchUpdateRotations(t *testing.T) {
-	ctx := gaetesting.TestingContext()
+	ctx := memory.Use(context.Background())
+	cl := testclock.New(testclock.TestTimeUTC)
+	currentTime := time.Unix(10000, 0).UTC()
+	cl.Set(currentTime)
+	ctx = clock.Set(ctx, cl)
 
 	server := &RotationProxyServer{}
 
@@ -82,6 +89,7 @@ func TestBatchUpdateRotations(t *testing.T) {
 		So(len(dsRotations), ShouldEqual, 1)
 		diff := cmp.Diff(rotation1, &dsRotations[0].Proto, cmp.Comparer(proto.Equal))
 		So(diff, ShouldEqual, "")
+		So(dsRotations[0].ExpiryAt, ShouldResemble, currentTime.Add(7*24*time.Hour))
 	})
 
 	Convey("batch update rotations should delete previous shifts", t, func() {
@@ -110,11 +118,15 @@ func TestBatchUpdateRotations(t *testing.T) {
 		So(len(dsRotations), ShouldEqual, 1)
 		diff := cmp.Diff(rotation1Updated, &dsRotations[0].Proto, cmp.Comparer(proto.Equal))
 		So(diff, ShouldEqual, "")
+		So(dsRotations[0].ExpiryAt, ShouldResemble, currentTime.Add(7*24*time.Hour))
 	})
 }
 
 func TestGetRotation(t *testing.T) {
-	ctx := gaetesting.TestingContext()
+	ctx := memory.Use(context.Background())
+	cl := testclock.New(testclock.TestTimeUTC)
+	ctx = clock.Set(ctx, cl)
+
 	server := &RotationProxyServer{}
 	Convey("get rotation", t, func() {
 		var rotation = &rpb.Rotation{
@@ -174,8 +186,11 @@ func TestGetRotation(t *testing.T) {
 }
 
 func TestBatchGetRotations(t *testing.T) {
-	ctx := gaetesting.TestingContext()
+	ctx := memory.Use(context.Background())
 	server := &RotationProxyServer{}
+	cl := testclock.New(testclock.TestTimeUTC)
+	ctx = clock.Set(ctx, cl)
+
 	Convey("batch get rotations", t, func() {
 		var rotation = &rpb.Rotation{
 			Name: "rotation",
@@ -235,7 +250,10 @@ func TestBatchGetRotations(t *testing.T) {
 }
 
 func TestGetCurrentOncallEmails(t *testing.T) {
-	ctx := gaetesting.TestingContext()
+	ctx := memory.Use(context.Background())
+	cl := testclock.New(testclock.TestTimeUTC)
+	ctx = clock.Set(ctx, cl)
+
 	server := &RotationProxyServer{}
 	Convey("Test get current oncall emails", t, func() {
 		var rotation = &rpb.Rotation{

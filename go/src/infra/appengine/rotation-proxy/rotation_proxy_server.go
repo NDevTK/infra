@@ -28,6 +28,10 @@ import (
 type Rotation struct {
 	Name  string       `gae:"$id"`
 	Proto rpb.Rotation `gae:"proto,noindex"`
+	// The time where this entity is expired and may be deleted from datastore.
+	// This field is set to be 7 days from the last updated time of the entity,
+	// so it can be eligible to be deleted after 7 days.
+	ExpiryAt time.Time `gae:"expiry_at"`
 }
 
 // RotationProxyServer implements the proto service RotationProxyService.
@@ -99,8 +103,9 @@ func (rps *RotationProxyServer) BatchUpdateRotations(ctx context.Context, reques
 	entities := make([]*Rotation, len(request.Requests))
 	for i, req := range request.Requests {
 		entities[i] = &Rotation{
-			Name:  req.Rotation.Name,
-			Proto: *req.Rotation,
+			Name:     req.Rotation.Name,
+			Proto:    *req.Rotation,
+			ExpiryAt: clock.Now(ctx).Add(7 * 24 * time.Hour),
 		}
 	}
 	err := datastore.RunInTransaction(ctx, func(ctx context.Context) error {
