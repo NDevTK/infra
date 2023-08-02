@@ -11,7 +11,6 @@ platforms:
   - linux-ppc64
   - linux-ppc64le
   - linux-s390x
-  - aix-ppc64
   - mac-amd64
   - mac-arm64
   - windows-386
