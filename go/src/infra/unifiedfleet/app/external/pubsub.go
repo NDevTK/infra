@@ -1,6 +1,7 @@
-// Copyright 2022 All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 package external
 
 import (
@@ -30,7 +31,7 @@ func UsePubSub(c context.Context, projectID string) (context.Context, error) {
 	if err != nil {
 		// The precise value of the error that we got back from the pubsub client is important for local debugging.
 		// See b:267829708 for details.
-		return nil, fmt.Errorf("Failed to create Pub/Sub client for project %q: %w", projectID, err)
+		return nil, fmt.Errorf("failed to create Pub/Sub client for project %q: %w", projectID, err)
 	}
 	return context.WithValue(c, &pubsubKey, client), nil
 }

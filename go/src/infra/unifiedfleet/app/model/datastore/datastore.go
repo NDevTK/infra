@@ -64,7 +64,7 @@ func Exists(ctx context.Context, entities []FleetEntity) ([]bool, error) {
 	return res.List(0), nil
 }
 
-// Exists checks if a list of fleet entities exist in datastore and is visible
+// ExistsACL checks if a list of fleet entities exist in datastore and is visible
 // to the user with their current permissions.
 func ExistsACL(ctx context.Context, entities []RealmEntity, neededPerm realms.Permission) ([]bool, error) {
 	existsArr := make([]bool, len(entities))
