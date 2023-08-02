@@ -132,7 +132,7 @@ func (b *BuildBootstrapper) GetBootstrapConfig(ctx context.Context, input *Input
 			return nil, errors.Reason("config_project handling for type %T is not implemented", x).Err()
 		}
 
-		if err := b.getPropertiesFromFile(ctx, input.propsProperties.PropertiesFile, config); err != nil {
+		if err := b.getPropertiesFromFile(ctx, input.propsProperties.PropertiesFile, input.propsProperties.ShadowPropertiesFile, input.shadowBuild, config); err != nil {
 			return nil, errors.Annotate(err, "failed to get properties from properties file %s", input.propsProperties.PropertiesFile).Err()
 		}
 	}
@@ -311,26 +311,49 @@ func (b *BuildBootstrapper) getCommitAndChange(ctx context.Context, input *Input
 
 // getPropertiesFromFile updates config to include the properties contained in
 // the builder's properties file.
-func (b *BuildBootstrapper) getPropertiesFromFile(ctx context.Context, propsFile string, config *BootstrapConfig) error {
-	var diff string
-	if config.change != nil {
-		var err error
-		diff, err = b.getDiffForMaybeAffectedFile(ctx, config.change, propsFile)
-		if err != nil {
-			return err
+func (b *BuildBootstrapper) getPropertiesFromFile(ctx context.Context, propsFile, shadowPropsFile string, shadowBuild bool, config *BootstrapConfig) error {
+	getPropertiesFromFile := func(f string) (*structpb.Struct, error) {
+		var diff string
+		if config.change != nil {
+			var err error
+			diff, err = b.getDiffForMaybeAffectedFile(ctx, config.change, f)
+			if err != nil {
+				return nil, err
+			}
 		}
+
+		contents, err := b.downloadPropertiesFile(ctx, f, config)
+		if err != nil {
+			return nil, err
+		}
+		if diff != "" {
+			config.skipAnalysisReasons = append(config.skipAnalysisReasons, fmt.Sprintf("properties file %s is affected by CL", f))
+			logging.Infof(ctx, "patching properties file %s", f)
+			contents, err = patchFile(ctx, f, contents, diff)
+			if err != nil {
+				return nil, errors.Annotate(err, "failed to patch properties file %s", f).Err()
+			}
+		}
+
+		properties := &structpb.Struct{}
+		logging.Infof(ctx, "unmarshalling builder properties file %s", f)
+		if err := protojson.Unmarshal([]byte(contents), properties); err != nil {
+			return nil, errors.Annotate(err, "failed to unmarshall builder properties file %s: {%s}", f, contents).Err()
+		}
+		return properties, nil
 	}
 
-	contents, err := b.downloadPropertiesFile(ctx, propsFile, config)
+	properties, err := getPropertiesFromFile(propsFile)
 	if err != nil {
 		return err
 	}
-	if diff != "" {
-		config.skipAnalysisReasons = append(config.skipAnalysisReasons, fmt.Sprintf("properties file %s is affected by CL", propsFile))
-		logging.Infof(ctx, "patching properties file %s", propsFile)
-		contents, err = patchFile(ctx, propsFile, contents, diff)
+	if shadowBuild && shadowPropsFile != "" {
+		shadowProperties, err := getPropertiesFromFile(shadowPropsFile)
 		if err != nil {
-			return errors.Annotate(err, "failed to patch properties file %s", propsFile).Err()
+			return err
+		}
+		for k, v := range shadowProperties.Fields {
+			properties.Fields[k] = v
 		}
 	}
 
@@ -349,11 +372,6 @@ func (b *BuildBootstrapper) getPropertiesFromFile(ctx context.Context, propsFile
 		Path: propsFile,
 	}
 
-	properties := &structpb.Struct{}
-	logging.Infof(ctx, "unmarshalling builder properties file")
-	if err := protojson.Unmarshal([]byte(contents), properties); err != nil {
-		return errors.Annotate(err, "failed to unmarshall builder properties file: {%s}", contents).Err()
-	}
 	config.builderProperties = properties
 	config.configSource = configSource
 

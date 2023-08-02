@@ -47,6 +47,8 @@ type Input struct {
 	buildProperties *structpb.Struct
 	// buildRequestedProperties are the properties requested when the build was scheduled.
 	buildRequestedProperties *structpb.Struct
+	// shadowBuild indicates whether the build is a shadow build i.e. an lead real build
+	shadowBuild bool
 	// polymorphic changes the behavior to support polymoprhic builders by prioritizing build
 	// properties over properties from the properties file
 	polymorphic bool
@@ -83,6 +85,15 @@ func (o InputOptions) NewInput(build *buildbucketpb.Build) (*Input, error) {
 	}
 
 	requestedProperties := build.GetInfra().GetBuildbucket().GetRequestedProperties()
+
+	shadowBuild := false
+	ledProps := properties.Fields["$recipe_engine/led"].GetStructValue()
+	if ledProps != nil {
+		shadowBucket := ledProps.Fields["shadowed_bucket"].GetStringValue()
+		if shadowBucket != "" {
+			shadowBuild = true
+		}
+	}
 
 	// Check for the presence of required properties
 	exeProperties := &BootstrapExeProperties{}
@@ -159,6 +170,7 @@ func (o InputOptions) NewInput(build *buildbucketpb.Build) (*Input, error) {
 		changes:                  changes,
 		buildProperties:          properties,
 		buildRequestedProperties: requestedProperties,
+		shadowBuild:              shadowBuild,
 		polymorphic:              o.Polymorphic,
 		propertiesOptional:       o.PropertiesOptional,
 		propsProperties:          propsProperties,

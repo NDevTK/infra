@@ -162,6 +162,17 @@ func TestInput(t *testing.T) {
 				}`)
 			})
 
+			Convey("for shadow build", func() {
+				build.Input.Properties.Fields["$recipe_engine/led"] = structpb.NewStructValue(jsonToStruct(`{
+					"shadowed_bucket": "fake-bucket"
+				}`))
+
+				input, err := opts.NewInput(build)
+
+				So(err, ShouldBeNil)
+				So(input.shadowBuild, ShouldBeTrue)
+			})
+
 			Convey("for polymorphic option", func() {
 				opts := InputOptions{Polymorphic: true}
 

@@ -1093,6 +1093,70 @@ This should resolve once the CL that adds this builder rolls into chromium.googl
 
 			})
 
+			Convey("for builder with shadow props file", func() {
+				setBootstrapPropertiesProperties(build, `{
+					"top_level_project": {
+						"repo": {
+							"host": "chromium.googlesource.com",
+							"project": "top/level"
+						},
+						"ref": "refs/heads/top-level"
+					},
+					"properties_file": "infra/config/fake-bucket/fake-builder/properties.json",
+					"shadow_properties_file": "infra/config/fake-bucket/fake-builder/shadow-properties.json"
+				}`)
+
+				Convey("returns properties without shadow properties if not a shadow build", func() {
+					topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
+					topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
+								"test_property": "non-shadow-value"
+							}`),
+							"infra/config/fake-bucket/fake-builder/shadow-properties.json": strPtr(`{
+								"test_property": "shadow-value"
+							}`),
+						},
+					}
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "non-shadow-value"
+					}`)
+				})
+
+				Convey("returns properties with shadow properties if a shadow build", func() {
+					topLevelGitiles.Refs["refs/heads/top-level"] = "top-level-top-level-head"
+					topLevelGitiles.Revisions["top-level-top-level-head"] = &fakegitiles.Revision{
+						Files: map[string]*string{
+							"infra/config/fake-bucket/fake-builder/properties.json": strPtr(`{
+								"test_property": "non-shadow-value"
+							}`),
+							"infra/config/fake-bucket/fake-builder/shadow-properties.json": strPtr(`{
+								"test_property": "shadow-value"
+							}`),
+						},
+					}
+					setPropertiesFromJson(build, map[string]string{
+						"$recipe_engine/led": `{
+							"shadowed_bucket": "shadow-fake-bucket"
+						}`,
+					})
+					input := getInput(build)
+
+					config, err := bootstrapper.GetBootstrapConfig(ctx, input)
+
+					So(err, ShouldBeNil)
+					So(config.builderProperties, ShouldResembleProtoJSON, `{
+						"test_property": "shadow-value"
+					}`)
+				})
+
+			})
+
 		})
 
 	})
