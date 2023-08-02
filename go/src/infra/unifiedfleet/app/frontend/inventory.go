@@ -737,7 +737,7 @@ func (fs *FleetServerImpl) GetDeviceData(ctx context.Context, req *ufsAPI.GetDev
 }
 
 // GetDUTsForLabstation gets the duts associated with a specific labstation in UFS.
-func (_ *FleetServerImpl) GetDUTsForLabstation(ctx context.Context, req *ufsAPI.GetDUTsForLabstationRequest) (*ufsAPI.GetDUTsForLabstationResponse, error) {
+func (*FleetServerImpl) GetDUTsForLabstation(ctx context.Context, req *ufsAPI.GetDUTsForLabstationRequest) (*ufsAPI.GetDUTsForLabstationResponse, error) {
 	resp := &ufsAPI.GetDUTsForLabstationResponse{}
 
 	var errs []error

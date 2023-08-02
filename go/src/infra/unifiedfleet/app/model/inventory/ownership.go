@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,13 +24,13 @@ import (
 // OwnershipDataKind is the datastore entity kind OwnershipData.
 const OwnershipDataKind string = "Ownership"
 
-// AssetType Machine
+// AssetTypeMachine is the Machine asset type.
 const AssetTypeMachine string = "Machine"
 
-// AssetType MachineLSE
+// AssetTypeMachineLSE is the MachineLSE asset type
 const AssetTypeMachineLSE string = "MachineLSE"
 
-// AssetType VM
+// AssetTypeVM is the VM asset type.
 const AssetTypeVM string = "VM"
 
 // OwnershipDataEntity is a datastore entity that tracks a OwnershipData.
