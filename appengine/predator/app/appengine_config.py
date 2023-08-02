@@ -12,3 +12,6 @@ _THIS_DIR = os.path.realpath(os.path.dirname(__file__))
 # Add all the first-party and third-party libraries.
 vendor.add(os.path.realpath(os.path.join(_THIS_DIR, 'first_party')))
 vendor.add(os.path.realpath(os.path.join(_THIS_DIR, 'third_party')))
+vendor.add(
+    os.path.realpath(
+        os.path.join(_THIS_DIR, 'third_party', 'pipeline', 'python', 'src')))
