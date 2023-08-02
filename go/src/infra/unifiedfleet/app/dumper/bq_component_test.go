@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,7 +60,6 @@ func TestGetAllHwidData(t *testing.T) {
 	ctx = logging.SetLevel(ctx, logging.Error)
 	datastore.GetTestable(ctx).Consistent(true)
 
-	hds := make([]*ufspb.HwidData, 0, 4)
 	bqMsgs := make([]*apibq.HwidDataRow, 0, 4)
 	for i := 0; i < 4; i++ {
 		hdId := fmt.Sprintf("test-hwid-%d", i)
@@ -73,7 +72,6 @@ func TestGetAllHwidData(t *testing.T) {
 		if err != nil {
 			t.Fatalf("GetProto failed: %s", err)
 		}
-		hds = append(hds, respProto.(*ufspb.HwidData))
 		bqMsgs = append(bqMsgs, &apibq.HwidDataRow{
 			HwidData: respProto.(*ufspb.HwidData),
 		})
