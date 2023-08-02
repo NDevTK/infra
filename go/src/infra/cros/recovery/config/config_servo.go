@@ -864,7 +864,6 @@ func servoRepairPlan() *Plan {
 				},
 				RecoveryActions: []string{
 					"Stop servod",
-					"Reboot servo device",
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
 					"Toggle PD once and stop",
