@@ -7,6 +7,8 @@ package frontend
 import (
 	"context"
 	"fmt"
+	"sort"
+	"time"
 
 	"go.chromium.org/luci/common/data/strpair"
 	"go.chromium.org/luci/common/errors"
@@ -17,7 +19,53 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/config"
 	"infra/appengine/crosskylabadmin/internal/ufs"
 	"infra/cros/recovery/logger/metrics"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
+
+const labstationRebootKind = `action:Labstation reboot`
+
+// getLabstations takes a metricsClient a start time and a stop time and returns the labstations with reboot events in that time range.
+func getLabstations(ctx context.Context, metricsClient metrics.Metrics, startTime time.Time, stopTime time.Time) ([]string, error) {
+	// TODO(gregorynisbet): look at "action:Power cycle by RPM" as well.
+	results, err := metricsClient.Search(ctx, &metrics.Query{
+		StartTime:  startTime,
+		StopTime:   stopTime,
+		ActionKind: labstationRebootKind,
+		Limit:      2000,
+	})
+	if err != nil {
+		return nil, err
+	}
+	labstationMap := map[string]struct{}{}
+	for _, action := range results.Actions {
+		if action.Status == metrics.ActionStatusSuccess {
+			labstationMap[action.Hostname] = struct{}{}
+		}
+	}
+	var labstations []string
+	for k := range labstationMap {
+		labstations = append(labstations, k)
+	}
+	sort.Strings(labstations)
+	return labstations, err
+}
+
+// getDUTsForLabstations gets all the DUTs associated with a labstation.
+func getDUTsForLabstations(ctx context.Context, ufsClient ufs.Client, labstations []string) ([]string, error) {
+	var duts []string
+	resp, err := ufsClient.GetDUTsForLabstation(ctx, &ufsAPI.GetDUTsForLabstationRequest{
+		Hostname: labstations,
+	})
+	if err != nil {
+		return nil, err
+	}
+	for _, item := range resp.GetItems() {
+		for _, hostname := range item.GetDutName() {
+			duts = append(duts, fmt.Sprintf("crossk-%s", hostname))
+		}
+	}
+	return duts, nil
+}
 
 // pushBotsForAdminTasksImpl
 //
