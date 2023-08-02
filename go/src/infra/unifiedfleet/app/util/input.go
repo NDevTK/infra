@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -468,7 +468,7 @@ func ToLogicalZone(logicalZone string) ufspb.LogicalZone {
 	return ufspb.LogicalZone(ufspb.LogicalZone_value[v])
 }
 
-// ValidAssetTypeStr returns a valid str list for LogicalZone
+// ValidLogicalZoneStr returns a valid str list for LogicalZone
 func ValidLogicalZoneStr() []string {
 	ks := make([]string, 0, len(StrToLogicalZone))
 	for k := range StrToLogicalZone {

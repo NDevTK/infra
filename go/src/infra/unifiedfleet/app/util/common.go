@@ -99,7 +99,7 @@ func IsInOSZone(name string) bool {
 	}
 }
 
-// IsInSFPZone checks if a given zone name indicates it's a SfP zone. This check
+// IsSFPZone checks if a given zone name indicates it's a SfP zone. This check
 // looks for a string of format "ZONE_SFP_*"
 func IsSFPZone(zone string) bool {
 	s := strings.Split(zone, UnderscoreSeparator)
