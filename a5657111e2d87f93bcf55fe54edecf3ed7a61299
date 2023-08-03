@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "f4c79edb_44ad2492",
+        "filename": "go/src/infra/build/siso/build/builder.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-08-03T02:43:25Z",
+      "side": 1,
+      "message": "I think it makes clean to disable reproxy.\n\nempty reproxy address indicates offline mode.",
+      "parentUuid": "ea8dec72_cfc03166",
+      "range": {
+        "startLine": 242,
+        "startChar": 1,
+        "endLine": 242,
+        "endChar": 44
+      },
+      "revId": "a5657111e2d87f93bcf55fe54edecf3ed7a61299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "7df102ee_8d896b22",
         "filename": "go/src/infra/build/siso/execute/reproxyexec/reproxyexec.go",
         "patchSetId": 3
@@ -70,6 +94,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e3b411ab_648dfbdc",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/ninja.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-08-03T02:43:25Z",
+      "side": 1,
+      "message": "no difference.",
+      "parentUuid": "ac4fd125_1d94ef3b",
+      "range": {
+        "startLine": 220,
+        "startChar": 12,
+        "endLine": 220,
+        "endChar": 15
+      },
+      "revId": "a5657111e2d87f93bcf55fe54edecf3ed7a61299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "78fdf09b_365a7895",
@@ -83,6 +131,30 @@
       "writtenOn": "2023-08-03T02:39:32Z",
       "side": 1,
       "message": "nit: move close to the `fmt.Fprintln` line.",
+      "range": {
+        "startLine": 226,
+        "startChar": 2,
+        "endLine": 226,
+        "endChar": 15
+      },
+      "revId": "a5657111e2d87f93bcf55fe54edecf3ed7a61299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ba3c7958_17231e60",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/ninja.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-08-03T02:43:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "78fdf09b_365a7895",
       "range": {
         "startLine": 226,
         "startChar": 2,
