@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f078ca7f_42c9d8dd",
+        "filename": "go/src/infra/build/siso/hashfs/fs_bench_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-08-03T06:03:49Z",
+      "side": 1,
+      "message": "Do we see any performance change by this CL?",
+      "revId": "d9a5d70164408928069d56170eb5983478cc3b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
