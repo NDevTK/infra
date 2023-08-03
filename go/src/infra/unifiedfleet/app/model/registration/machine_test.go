@@ -18,7 +18,6 @@ import (
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/config"
 	. "infra/unifiedfleet/app/model/datastore"
-	"infra/unifiedfleet/app/util"
 	ufsutil "infra/unifiedfleet/app/util"
 )
 
@@ -33,7 +32,7 @@ func mockChromeOSMachine(id, lab, board string, zone ufspb.Zone) *ufspb.Machine 
 		Location: &ufspb.Location{
 			Zone: zone,
 		},
-		Realm: util.ToUFSRealm(zone.String()),
+		Realm: ufsutil.ToUFSRealm(zone.String()),
 	}
 }
 

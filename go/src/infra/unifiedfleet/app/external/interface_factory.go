@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -154,7 +154,7 @@ func gitInterfaceFactoryImpl(ctx context.Context, gitilesHost, project, branch s
 	return git.NewClient(ctx, &http.Client{Transport: t}, "", gitilesHost, project, branch)
 }
 
-// NewGitInterface creates a new git interface.
+// NewGitTilesInterface creates a new git interface.
 func (es *InterfaceFactory) NewGitTilesInterface(ctx context.Context, gitilesHost string) (GitTilesClient, error) {
 	if es.gitInterfaceFactory == nil {
 		es.gitInterfaceFactory = gitInterfaceFactoryImpl

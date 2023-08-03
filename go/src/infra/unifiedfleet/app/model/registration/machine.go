@@ -251,7 +251,7 @@ func batchGetMachines(ctx context.Context, ids []string) ([]*ufspb.Machine, erro
 	return res, nil
 }
 
-// BatchGetMachineACL routes the request to either the ACLed or
+// BatchGetMachinesACL routes the request to either the ACLed or
 // unACLed method depending on the rollout status.
 func BatchGetMachinesACL(ctx context.Context, ids []string) ([]*ufspb.Machine, error) {
 	cutoff := config.Get(ctx).GetExperimentalAPI().GetGetMachineACL()
@@ -298,7 +298,7 @@ func ListMachines(ctx context.Context, pageSize int32, pageToken string, filterM
 	return runListQuery(ctx, q, pageSize, pageToken, keysOnly)
 }
 
-// ListMachines lists the machines
+// ListMachinesACL lists the machine ACLs.
 // Does a query over Machine entities. Returns up to pageSize entities, plus non-nil cursor (if
 // there are more results). pageSize must be positive.
 func ListMachinesACL(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.Machine, nextPageToken string, err error) {
