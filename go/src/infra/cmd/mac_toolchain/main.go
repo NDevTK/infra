@@ -9,6 +9,7 @@ import (
 	"flag"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
@@ -51,6 +52,9 @@ const IosPackageName = "ios"
 
 // Maximum number of days to keep an iOS runtime within Xcode since last used
 const MaxIOSRuntimeKeepDays = "14"
+
+// Time to first launching Xcode, including codesign check
+const LaunchXcodeTimeout = 1 * time.Minute
 
 // KindType is the type for enum values for the -kind argument.
 type KindType string
@@ -199,7 +203,24 @@ func (c *installRun) Run(a subcommands.Application, args []string, env subcomman
 		packageInstallerOnBots: PackageInstallerOnBots,
 		withRuntime:            c.withRuntime && c.kind == iosKind,
 	}
-	if err := installXcode(ctx, installArgs); err != nil {
+	err := installXcode(ctx, installArgs)
+	if err != nil {
+		// TODO(crbug.com/1468600): when failing to update Xcode package permission,
+		// the xcode is un-launchable even when it passes codesign check.
+		// The root cause is currenly unknown but we are adding a workaround
+		// to retry and download the Xcode one more time.
+		// This issue seems to be gone in MacOS13.5. We should aim to remove the workaround
+		// when all machines are upgraded.
+		if strings.Contains(err.Error(), "failed to update package permissions") {
+			logging.Warningf(ctx, "Downloaded Xcode might be corrupted, going to retry... Error: %s", err.Error())
+
+			// remove Xcode file. File is automatically recreated in installXcode
+			os.RemoveAll(c.outputDir)
+			err = installXcode(ctx, installArgs)
+			if err == nil {
+				return 0
+			}
+		}
 		errors.Log(ctx, err)
 		return 1
 	}
