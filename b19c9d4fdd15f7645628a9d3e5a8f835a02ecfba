@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c398e251_53d9d2e9",
+        "filename": "go/src/infra/unifiedfleet/app/controller/machine_lse.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 1989,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-08-03T20:13:35Z",
+      "side": 1,
+      "message": "please update only if new dat is not empty? or we can merge it only after we start sent this data to the UFS.",
+      "range": {
+        "startLine": 1989,
+        "startChar": 3,
+        "endLine": 1989,
+        "endChar": 42
+      },
+      "revId": "b19c9d4fdd15f7645628a9d3e5a8f835a02ecfba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b0b66825_53f12962",
+        "filename": "go/src/infra/unifiedfleet/app/controller/machine_lse.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 1991,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-08-03T20:13:35Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 1991,
+        "startChar": 3,
+        "endLine": 1991,
+        "endChar": 52
+      },
+      "revId": "b19c9d4fdd15f7645628a9d3e5a8f835a02ecfba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
