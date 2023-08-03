@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ea8dec72_cfc03166",
+        "filename": "go/src/infra/build/siso/build/builder.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-08-03T02:39:32Z",
+      "side": 1,
+      "message": "Is adding `ReproxyAddr` and `RBE_server_address` support necessary in this CL? \nI\u0027m bit confused how it\u0027s related.",
+      "range": {
+        "startLine": 242,
+        "startChar": 1,
+        "endLine": 242,
+        "endChar": 44
+      },
+      "revId": "a5657111e2d87f93bcf55fe54edecf3ed7a61299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ac4fd125_1d94ef3b",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/ninja.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-08-03T02:39:32Z",
+      "side": 1,
+      "message": "What\u0027s the difference from `\u0026reapi.Option{}`?",
+      "range": {
+        "startLine": 220,
+        "startChar": 12,
+        "endLine": 220,
+        "endChar": 15
+      },
+      "revId": "a5657111e2d87f93bcf55fe54edecf3ed7a61299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "78fdf09b_365a7895",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/ninja.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 226,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-08-03T02:39:32Z",
+      "side": 1,
+      "message": "nit: move close to the `fmt.Fprintln` line.",
+      "range": {
+        "startLine": 226,
+        "startChar": 2,
+        "endLine": 226,
+        "endChar": 15
+      },
+      "revId": "a5657111e2d87f93bcf55fe54edecf3ed7a61299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
