@@ -16,6 +16,78 @@
       "message": "lgtm % tricium messages",
       "revId": "2770d4add2b75c4422884b7d561d6674f2ba01a8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cf23b855_67f8f3d5",
+        "filename": "go/src/infra/cr_builder_value/generate.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1575692
+      },
+      "writtenOn": "2023-08-03T18:07:56Z",
+      "side": 1,
+      "message": "\u003e Error return value is not checked\n\nPlease fix.",
+      "parentUuid": "a43d9ba1_b9bad915",
+      "range": {
+        "startLine": 78,
+        "startChar": 0,
+        "endLine": 78,
+        "endChar": 0
+      },
+      "revId": "2770d4add2b75c4422884b7d561d6674f2ba01a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1ca8cc23_09d405ac",
+        "filename": "go/src/infra/cr_builder_value/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1575692
+      },
+      "writtenOn": "2023-08-03T18:07:56Z",
+      "side": 1,
+      "message": "\u003e field `dateString` is unused\n\nPlease fix.",
+      "parentUuid": "1e205ec6_ab9a2052",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 30,
+        "endChar": 0
+      },
+      "revId": "2770d4add2b75c4422884b7d561d6674f2ba01a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ed1d7aee_18e514e3",
+        "filename": "go/src/infra/cr_builder_value/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1575692
+      },
+      "writtenOn": "2023-08-03T18:07:56Z",
+      "side": 1,
+      "message": "\u003e Error return value is not checked\n\nPlease fix.",
+      "parentUuid": "7d1b33fe_28c34b4b",
+      "range": {
+        "startLine": 109,
+        "startChar": 0,
+        "endLine": 109,
+        "endChar": 0
+      },
+      "revId": "2770d4add2b75c4422884b7d561d6674f2ba01a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
