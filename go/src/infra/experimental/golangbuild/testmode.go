@@ -89,7 +89,10 @@ func (s testShard) shouldRunTest(name string) bool {
 // of the test suite.
 var noSharding = testShard{shardID: 0, nShards: 1}
 
-func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []Port) error {
+func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []Port) (err error) {
+	step, ctx := build.StartStep(ctx, "run tests")
+	defer endStep(step, &err)
+
 	if spec.inputs.Project != "go" {
 		return infraErrorf("runGoTests called for a subrepo builder")
 	}
@@ -191,7 +194,10 @@ func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) (test
 	return tests, nil
 }
 
-func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []Port) error {
+func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []Port) (err error) {
+	step, ctx := build.StartStep(ctx, "run tests")
+	defer endStep(step, &err)
+
 	if spec.inputs.Project == "go" {
 		return infraErrorf("fetchSubrepoAndRunTests called for a main Go repo builder")
 	}
