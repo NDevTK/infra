@@ -91,11 +91,13 @@ func (ex *ContainerExecutor) startContainerCommandExecution(
 	cmd.ContainerInstance = containerInstance
 	cmd.Endpoint = endpoint
 
-	// Send container for logs to be read.
-	ex.ContainerChannel <- struct {
-		string
-		interfaces.ContainerInterface
-	}{cmd.ContainerRequest.DynamicIdentifier, containerInstance}
+	go func() {
+		// Send container for logs to be read.
+		ex.ContainerChannel <- struct {
+			string
+			interfaces.ContainerInterface
+		}{cmd.ContainerRequest.DynamicIdentifier, containerInstance}
+	}()
 
 	return err
 }

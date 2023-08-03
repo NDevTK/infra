@@ -472,8 +472,10 @@ func (ex *CrosPublishExecutor) InvokePublishWithAsyncLogging(
 
 	// Publish.
 	resp, err := ex.Publish(ctx, request, client)
-	taskDone <- true // Notify logging process that main task is done
-	wg.Wait()        // wait for the logging to complete
+	if taskDone != nil {
+		taskDone <- true // Notify logging process that main task is done
+	}
+	wg.Wait() // wait for the logging to complete
 
 	if err != nil {
 		err = errors.Annotate(err, fmt.Sprintf("%s publish cmd err: ", publishType)).Err()

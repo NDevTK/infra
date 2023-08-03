@@ -29,6 +29,45 @@ type ContainerStartCmd struct {
 	ContainerInstance interfaces.ContainerInterface
 }
 
+// Instantiate extracts initial state info from the state keeper.
+func (cmd *ContainerStartCmd) Instantiate(
+	ctx context.Context,
+	ski interfaces.StateKeeperInterface) error {
+	var err error
+	switch sk := ski.(type) {
+	case *data.HwTestStateKeeper:
+		err = cmd.instantiateWithHwTestStateKeeper(ctx, sk)
+	case *data.LocalTestStateKeeper:
+		err = cmd.instantiateWithHwTestStateKeeper(ctx, &sk.HwTestStateKeeper)
+	default:
+		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
+	}
+
+	if err != nil {
+		return errors.Annotate(err, "error while instantiating for command %s: ", cmd.GetCommandType()).Err()
+	}
+
+	return nil
+}
+
+func (cmd *ContainerStartCmd) instantiateWithHwTestStateKeeper(
+	ctx context.Context,
+	sk *data.HwTestStateKeeper) (err error) {
+	// Catch panics from bad cast.
+	defer func() {
+		if r := recover(); r != nil {
+			err = r.(error)
+		}
+	}()
+
+	if sk.ContainerQueue.Len() < 1 {
+		return fmt.Errorf("cmd %q missing dependency: ContainerRequest", cmd.GetCommandType())
+	}
+	cmd.ContainerRequest = sk.ContainerQueue.Remove(sk.ContainerQueue.Front()).(*skylab_test_runner.ContainerRequest)
+
+	return nil
+}
+
 // ExtractDependencies extracts all the command dependencies from state keeper.
 func (cmd *ContainerStartCmd) ExtractDependencies(ctx context.Context,
 	ski interfaces.StateKeeperInterface) error {
@@ -73,10 +112,9 @@ func (cmd *ContainerStartCmd) extractDepsFromHwTestStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) error {
 
-	if sk.ContainerQueue.Len() < 1 {
+	if cmd.ContainerRequest == nil {
 		return fmt.Errorf("cmd %q missing dependency: ContainerRequest", cmd.GetCommandType())
 	}
-	cmd.ContainerRequest = sk.ContainerQueue.Remove(sk.ContainerQueue.Front()).(*skylab_test_runner.ContainerRequest)
 
 	for _, dep := range cmd.ContainerRequest.DynamicDeps {
 		if err := common.Inject(cmd.ContainerRequest.Container, dep.Key, sk.Injectables, dep.Value); err != nil {

@@ -170,7 +170,7 @@ func StreamLogAsync(ctx context.Context, rootDir string, writer io.Writer) (chan
 	if err != nil {
 		logging.Infof(ctx, "Failed to find file '%s' at '%s' with error:%s", fileName, rootDir, err)
 		wg.Done()
-		return taskDone, &wg, nil
+		return nil, &wg, err
 	}
 
 	// Open the file for reading
@@ -178,7 +178,7 @@ func StreamLogAsync(ctx context.Context, rootDir string, writer io.Writer) (chan
 	if err != nil {
 		logging.Infof(ctx, "Failed to open file %s: %s", filePath, err)
 		wg.Done()
-		return taskDone, &wg, nil
+		return nil, &wg, err
 	}
 
 	// Kick off async reading the file and writing contents to writer

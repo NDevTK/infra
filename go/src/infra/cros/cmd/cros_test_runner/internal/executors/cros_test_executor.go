@@ -105,8 +105,10 @@ func (ex *CrosTestExecutor) testExecutionCommandExecution(
 	}
 
 	testResp, err := ex.ExecuteTests(ctx, testReq)
-	taskDone <- true // Notify logging process that main task is done
-	wg.Wait()        // wait for the logging to complete
+	if taskDone != nil {
+		taskDone <- true // Notify logging process that main task is done
+	}
+	wg.Wait() // wait for the logging to complete
 
 	if err != nil {
 		err = errors.Annotate(err, "Tests execution cmd err: ").Err()

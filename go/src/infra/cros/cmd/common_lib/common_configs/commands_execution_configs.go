@@ -19,6 +19,8 @@ import (
 type CommandExecutorPairedConfig struct {
 	CommandType  interfaces.CommandType
 	ExecutorType interfaces.ExecutorType
+
+	required bool
 }
 
 // ToString returns string representation of the object.
@@ -28,6 +30,16 @@ func (cepc *CommandExecutorPairedConfig) ToString() string {
 	}
 
 	return fmt.Sprintf("%s_%s", cepc.CommandType, cepc.ExecutorType)
+}
+
+// IsRequired returns whether the command is required.
+func (cepc *CommandExecutorPairedConfig) IsRequired() bool {
+	return cepc.required
+}
+
+// SetRequired sets the commands requirement status.
+func (cepc *CommandExecutorPairedConfig) SetRequired(required bool) {
+	cepc.required = required
 }
 
 // Config types
@@ -136,10 +148,11 @@ func (tecfg *CmdExecutionConfig) Execute(ctx context.Context) error {
 		return errors.Annotate(err, "error during processing clean up configs for config type %s: ", tecfg.GetConfigType()).Err()
 	}
 
-	err = tecfg.executeCommands(ctx, cmds, false)
+	err = tecfg.executeCommands(ctx, cmds, tecfg.Configs.MainConfigs, false)
 	if err != nil {
+		logging.Infof(ctx, "error during execution of main config commmands, %s", err)
 		// execute clean up commands
-		cleanupErr := tecfg.executeCommands(ctx, cleanupCmds, true)
+		cleanupErr := tecfg.executeCommands(ctx, cleanupCmds, tecfg.Configs.CleanupConfigs, true)
 		if cleanupErr != nil {
 			err = fmt.Errorf("main error: %w; cleanup error: %s", err, cleanupErr)
 		}
@@ -161,6 +174,9 @@ func (tecfg *CmdExecutionConfig) processCommandConfig(
 			return nil, errors.Annotate(err, "error during getting command for cmd type %s and executor type %s: ", cmdConfig.CommandType, cmdConfig.ExecutorType).Err()
 		}
 		logging.Infof(ctx, "Processing cmd: %T", cmd)
+		if err := cmd.Instantiate(ctx, tecfg.StateKeeper); err != nil {
+			return nil, errors.Annotate(err, "error while instantiation command for cmd type %s and executor type %s: ", cmdConfig.CommandType, cmdConfig.ExecutorType).Err()
+		}
 		cmds = append(cmds, cmd)
 	}
 
@@ -172,10 +188,15 @@ func (tecfg *CmdExecutionConfig) processCommandConfig(
 func (tecfg *CmdExecutionConfig) executeCommands(
 	ctx context.Context,
 	cmds []interfaces.CommandInterface,
+	cmdExecPairConfigs []*CommandExecutorPairedConfig,
 	executeAllCmds bool) error {
 	var allErr error
 	var singleErr error
-	for _, cmd := range cmds {
+	foundErr := false
+	for i, cmd := range cmds {
+		if foundErr && !executeAllCmds && !cmdExecPairConfigs[i].IsRequired() {
+			continue
+		}
 		cmdType := cmd.GetCommandType()
 		logging.Infof(ctx, "Executing cmd: %T", cmd)
 		if _, ok := tecfg.executedCommands[cmdType]; ok {
@@ -183,13 +204,16 @@ func (tecfg *CmdExecutionConfig) executeCommands(
 		}
 
 		if singleErr = cmd.ExtractDependencies(ctx, tecfg.StateKeeper); singleErr != nil {
+			foundErr = true
 			if executeAllCmds {
 				allErr = errors.Append(allErr, singleErr)
 			} else {
-				return singleErr
+				logging.Infof(ctx, "Command type %s extract dependencies failed, %s", cmdType, singleErr)
+				continue
 			}
 		}
 		if singleErr = cmd.Execute(ctx); singleErr != nil {
+			foundErr = true
 			if executeAllCmds {
 				allErr = errors.Append(allErr, singleErr)
 			} else {
@@ -197,16 +221,17 @@ func (tecfg *CmdExecutionConfig) executeCommands(
 				if innerErr := cmd.UpdateStateKeeper(ctx, tecfg.StateKeeper); innerErr != nil {
 					logging.Infof(ctx, "Command type %s could not update state keeper: %s", cmdType, innerErr)
 				}
-				return singleErr
+				continue
 			}
 		}
 		logging.Infof(ctx, "Command type %s execution completed. Marking as completed.", cmdType)
 		tecfg.executedCommands[cmdType] = true
 		if singleErr = cmd.UpdateStateKeeper(ctx, tecfg.StateKeeper); singleErr != nil {
+			foundErr = true
 			if executeAllCmds {
 				allErr = errors.Append(allErr, singleErr)
 			} else {
-				return singleErr
+				continue
 			}
 		}
 	}

@@ -14,27 +14,21 @@ import (
 	"go.chromium.org/luci/common/errors"
 )
 
+type commandFn func() interfaces.ContainerInterface
+
 // CommandConfig represents command config.
 type CommandConfig struct {
 	ExecutorConfig interfaces.ExecutorConfigInterface
-
-	commandsMap map[interfaces.CommandType]interfaces.CommandInterface
 }
 
 func NewCommandConfig(execConfig interfaces.ExecutorConfigInterface) interfaces.CommandConfigInterface {
-	cmdMap := make(map[interfaces.CommandType]interfaces.CommandInterface)
-	return &CommandConfig{ExecutorConfig: execConfig, commandsMap: cmdMap}
+	return &CommandConfig{ExecutorConfig: execConfig}
 }
 
 // GetCommand returns the concrete command based on provided command and executor type.
 func (cfg *CommandConfig) GetCommand(
 	cmdType interfaces.CommandType,
 	execType interfaces.ExecutorType) (interfaces.CommandInterface, error) {
-
-	// Return cmd if already created.
-	if savedCmd, ok := cfg.commandsMap[cmdType]; ok {
-		return savedCmd, nil
-	}
 
 	var cmd interfaces.CommandInterface
 
@@ -320,6 +314,5 @@ func (cfg *CommandConfig) GetCommand(
 		return nil, fmt.Errorf("Command type %s not supported in command configs!", cmdType)
 	}
 
-	cfg.commandsMap[cmdType] = cmd
 	return cmd, nil
 }

@@ -18,6 +18,10 @@ type CommandInterface interface {
 	// GetCommandType returns the command type.
 	GetCommandType() CommandType
 
+	// Instantiate pulls data from the provided state keeper
+	// to instantiate it during config generation.
+	Instantiate(context.Context, StateKeeperInterface) error
+
 	// ExtractDependencies extracts command dependencies from
 	// the provided state keeper before command execution.
 	ExtractDependencies(context.Context, StateKeeperInterface) error
@@ -42,6 +46,13 @@ func NewAbstractCmd(cmdType CommandType) *AbstractCmd {
 
 func (cmd *AbstractCmd) GetCommandType() CommandType {
 	return cmd.cmdType
+}
+
+func (cmd *AbstractCmd) Instantiate(
+	ctx context.Context,
+	ski StateKeeperInterface) error {
+	// Nothing to instantiate (Sub classes will overwrite if necessary)
+	return nil
 }
 
 func (cmd *AbstractCmd) ExtractDependencies(

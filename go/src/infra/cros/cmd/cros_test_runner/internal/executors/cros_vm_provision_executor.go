@@ -164,8 +164,10 @@ func (ex *CrosVMProvisionExecutor) vmProvisionLeaseCommandExecution(
 	}
 	// lease DUT VM
 	resp, err := ex.LeaseDutVM(ctx, req)
-	taskDone <- true // Notify logging process that main task is done
-	wg.Wait()        // Wait for the logging to complete
+	if taskDone != nil {
+		taskDone <- true // Notify logging process that main task is done
+	}
+	wg.Wait() // Wait for the logging to complete
 	if err != nil {
 		return errors.Annotate(err, "VM Provision lease cmd err: ").Err()
 	}
@@ -263,8 +265,10 @@ func (ex *CrosVMProvisionExecutor) vmProvisionReleaseCommandExecution(
 	}
 
 	resp, err := ex.ReleaseDutVM(ctx, req)
-	taskDone <- true // Notify logging process that main task is done
-	wg.Wait()        // Wait for the logging to complete
+	if taskDone != nil {
+		taskDone <- true // Notify logging process that main task is done
+	}
+	wg.Wait() // Wait for the logging to complete
 	if err != nil {
 		return errors.Annotate(err, "VM Provision release cmd err: ").Err()
 	}

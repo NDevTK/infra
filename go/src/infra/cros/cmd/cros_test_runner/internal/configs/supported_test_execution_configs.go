@@ -65,6 +65,24 @@ var ContainerStart_ContainerExecutor = &common_configs.CommandExecutorPairedConf
 var ContainerCloseLogs_ContainerExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.ContainerCloseLogsCmdType, ExecutorType: common_executors.ContainerExecutorType}
 var ContainerReadLogs_ContainerExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.ContainerReadLogsCmdType, ExecutorType: common_executors.ContainerExecutorType}
 
+var RequiredCmdExecPairMap = map[*common_configs.CommandExecutorPairedConfig]*common_configs.CommandExecutorPairedConfig{}
+
+func GetRequiredCmdExecPair(pair_base *common_configs.CommandExecutorPairedConfig) *common_configs.CommandExecutorPairedConfig {
+	if pair_required, ok := RequiredCmdExecPairMap[pair_base]; ok {
+		return pair_required
+	}
+
+	pair_required := &common_configs.CommandExecutorPairedConfig{
+		CommandType:  pair_base.CommandType,
+		ExecutorType: pair_base.ExecutorType,
+	}
+	pair_required.SetRequired(true)
+
+	RequiredCmdExecPairMap[pair_base] = pair_required
+
+	return pair_required
+}
+
 // GenerateHwConfigs generates hw tests execution for lab environment.
 func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig) *common_configs.Configs {
 	platform := common.GetBotProvider()
