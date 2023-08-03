@@ -34,6 +34,24 @@
       "parentUuid": "18f75046_bf054fd9",
       "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9a441436_dab7a5aa",
+        "filename": "go/src/infra/cr_builder_value/generate.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1377971
+      },
+      "writtenOn": "2023-08-03T20:00:10Z",
+      "side": 1,
+      "message": "Ah of course",
+      "parentUuid": "b02bdd1f_400e00ed",
+      "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
