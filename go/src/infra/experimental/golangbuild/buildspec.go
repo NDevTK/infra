@@ -206,6 +206,16 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 	return env.SetInCtx(ctx)
 }
 
+func (b *buildSpec) addPortEnv(ctx context.Context, port Port) context.Context {
+	if !port.explicit {
+		return ctx
+	}
+	env := environ.FromCtx(ctx)
+	env.Set("GOOS", port.GOOS)
+	env.Set("GOARCH", port.GOARCH)
+	return env.SetInCtx(ctx)
+}
+
 // goTestArgs returns go command arguments that test the specified import path patterns.
 func (b *buildSpec) goTestArgs(patterns ...string) []string {
 	args := []string{"test", "-json"}
@@ -213,8 +223,10 @@ func (b *buildSpec) goTestArgs(patterns ...string) []string {
 		hasGoIssue15513Fix := b.inputs.GoBranch != "release-branch.go1.20" && b.inputs.GoBranch != "release-branch.go1.19"
 		if !hasGoIssue15513Fix { // TODO: Delete after 1.20 drops off.
 			// In Go 1.20 and older, go test -c did not support multiple packages,
-			// so use the next best thing of -run that matches no tests.
-			return append(append(args, "-run=^$"), patterns...)
+			// so use the next best thing of -exec=true to not run the test binary.
+			// Note that 'true' here refers not to a boolean value, but a binary
+			// (e.g., /usr/bin/true) that ignores parameters and exits with code 0.
+			return append(append(args, "-exec=true"), patterns...)
 		}
 		return append(append(args, "-c", "-o", os.DevNull), patterns...)
 	}
@@ -287,6 +299,12 @@ func (b *buildSpec) distTestFlags() []string {
 		args = append(args, "-race")
 	}
 	return args
+}
+
+// distListCmd returns an exec.Cmd for executing `go tool dist list -json`.
+// dir is the directory to run the command from.
+func (b *buildSpec) distListCmd(ctx context.Context, dir string) *exec.Cmd {
+	return b.goCmd(ctx, dir, "tool", "dist", "list", "-json")
 }
 
 const cloudProject = "golang-ci-luci"

@@ -37,10 +37,24 @@ message Inputs {
   // The build fails if the check is on but its system requirements are unmet.
   bool no_network = 17;
 
-  // CompileOnly controls whether tests are compiled, but not run.
+  // CompileOnly controls whether the build does as much as possible to check
+  // for problems but stops short of process execution for the target OS/arch.
+  // It will compile packages and tests (but not execute tests), run static
+  // analysis (such as vet), and so on.
   //
-  // Ignored in MODE_BUILD and irrelevant in MODE_TEST.
+  // This mode makes it possible for any highly available machine type to run
+  // a quick smoke test for any port.
   bool compile_only = 5;
+
+  // MiscPorts controls whether the build is run across miscellaneous ports
+  // instead of the default single current port.
+  //
+  // It exists because misc-compile builders are inherently faster at testing
+  // a single port in CompileOnly-mode, so they compensate for that by testing
+  // multiple ports at once.
+  //
+  // MiscPorts is only supported when CompileOnly is also set.
+  bool misc_ports = 18;
 
   // Extra environment variables to set for building and testing.
   map<string, string> env = 6;

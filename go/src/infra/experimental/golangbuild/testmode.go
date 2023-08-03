@@ -8,6 +8,7 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"hash/crc32"
 	"infra/experimental/golangbuild/golangbuildpb"
@@ -53,10 +54,22 @@ func (r *testRunner) Run(ctx context.Context, spec *buildSpec) error {
 	if err := getGo(ctx, spec, true); err != nil {
 		return err
 	}
-	if spec.inputs.Project == "go" {
-		return runGoTests(ctx, spec, r.shard)
+	// Determine what ports to test.
+	ports := []Port{currentPort}
+	if spec.inputs.MiscPorts {
+		// Note: There may be code changes in cmd/dist or cmd/go that have not
+		// been fully reviewed yet, and it is a test error if goDistList fails.
+		var err error
+		ports, err = goDistList(ctx, spec, r.shard)
+		if err != nil {
+			return err
+		}
 	}
-	return fetchSubrepoAndRunTests(ctx, spec)
+	// Run tests. (Also fetch dependencies if applicable.)
+	if spec.inputs.Project == "go" {
+		return runGoTests(ctx, spec, r.shard, ports)
+	}
+	return fetchSubrepoAndRunTests(ctx, spec, ports)
 }
 
 // testShard is a test shard identity that can be used to deterministically filter tests.
@@ -76,11 +89,28 @@ func (s testShard) shouldRunTest(name string) bool {
 // of the test suite.
 var noSharding = testShard{shardID: 0, nShards: 1}
 
-func runGoTests(ctx context.Context, spec *buildSpec, shard testShard) error {
+func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []Port) error {
 	if spec.inputs.Project != "go" {
 		return infraErrorf("runGoTests called for a subrepo builder")
 	}
 	gorootSrc := filepath.Join(spec.goroot, "src")
+
+	if spec.inputs.CompileOnly {
+		// If compiling any one port fails, keep going and report all at the end.
+		var testErrors []error
+		for _, p := range ports {
+			portContext := spec.addPortEnv(ctx, p)
+			testCmd := spec.wrapTestCmd(spec.distTestCmd(portContext, gorootSrc, "", nil, true))
+			if err := cmdStepRun(ctx, fmt.Sprintf("compile %s port", p), testCmd, false); err != nil {
+				testErrors = append(testErrors, err)
+			}
+		}
+		return errors.Join(testErrors...)
+	}
+
+	if len(ports) != 1 || ports[0] != currentPort {
+		return infraErrorf("testing multiple ports is only supported in CompileOnly mode")
+	}
 
 	// We have two paths, unfortunately: a simple one for Go 1.21+ that uses dist test -json,
 	// and a two-step path for Go 1.20 and older that uses go test -json and dist test (without JSON).
@@ -106,7 +136,7 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard) error {
 	}
 	// Go 1.21+ path.
 
-	// Determine what to run.
+	// Determine what tests to run.
 	//
 	// If noSharding is true, tests will be left as the empty slice, which means to
 	// use dist test's default behavior of running all tests.
@@ -161,9 +191,18 @@ func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) (test
 	return tests, nil
 }
 
-func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec) error {
+func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []Port) error {
 	if spec.inputs.Project == "go" {
 		return infraErrorf("fetchSubrepoAndRunTests called for a main Go repo builder")
+	}
+
+	if len(ports) != 1 || ports[0] != currentPort {
+		// TODO(dmitshur): Implement this for golang.org/x repos too, after the main repo.
+		//
+		// Unfortunately it will unavoidably increase indentation in this function :(, but
+		// that is warranted since the alternative of maintaining two parallel versions of
+		// fetchSubrepoAndRunTests is worse yet. Sorry!
+		return infraErrorf("testing multiple ports for golang.org/x repos is not supported yet; it will be only supported in CompileOnly mode soon")
 	}
 
 	// Fetch the target repository.
@@ -176,7 +215,7 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec) error {
 	}
 
 	// Test this specific subrepo.
-	// If testing any one nested module fails, keep going and report all the end.
+	// If testing any one nested module fails, keep going and report all at the end.
 	modules, err := repoToModules(ctx, spec, repoDir)
 	if err != nil {
 		return err
@@ -195,10 +234,7 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec) error {
 			testErrors = append(testErrors, err)
 		}
 	}
-	if len(testErrors) > 0 {
-		return errors.Join(testErrors...)
-	}
-	return nil
+	return errors.Join(testErrors...)
 }
 
 // A module is a Go module located on disk.
@@ -279,4 +315,68 @@ func modPath(goModFile string) (string, error) {
 		return "", fmt.Errorf("go.mod file %q has no module statement", goModFile)
 	}
 	return f.Module.Mod.Path, nil
+}
+
+// Port is a Go port identity.
+//
+// The zero value means the implicit, default
+// Go port as determined from the environment.
+type Port struct {
+	GOOS, GOARCH string
+	explicit     bool // whether to use GOOS, GOARCH
+}
+
+func (p Port) String() string {
+	if !p.explicit {
+		return "implicit Go port"
+	}
+	return p.GOOS + "/" + p.GOARCH
+}
+
+// currentPort indicates the implicit, default Go port as determined from the environment.
+// Testing only this port is the default behavior for most test modes.
+var currentPort = Port{}
+
+// goDistList uses 'go tool dist list' to get a list of all ports,
+// excluding ones that definitely already have a pre-submit builder,
+// and returns those that match the provided shard.
+func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []Port, err error) {
+	step, ctx := build.StartStep(ctx, "list ports")
+	defer endStep(step, &err)
+
+	// Run go tool dist list -json.
+	listCmd := spec.distListCmd(ctx, spec.goroot)
+	listOutput, err := cmdStepOutput(ctx, "go tool dist list -json", listCmd, false)
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse the JSON output and
+	// select ports matching this shard.
+	var allPorts []struct {
+		GOOS       string
+		GOARCH     string
+		FirstClass bool
+	}
+	err = json.Unmarshal(listOutput, &allPorts)
+	if err != nil {
+		return nil, fmt.Errorf("parsing port list from dist: %v", err)
+	}
+	for _, p := range allPorts {
+		if p.FirstClass && p.GOOS != "darwin" {
+			// There's enough machine capacity and speed for almost
+			// all first-class ports to have a pre-submit builder,
+			// and there's not enough benefit to include them here.
+			continue
+		} else if shard != noSharding && !shard.shouldRunTest(p.GOOS+"/"+p.GOARCH) {
+			continue
+		}
+		ports = append(ports, Port{p.GOOS, p.GOARCH, true})
+	}
+	portList := fmt.Sprint(ports)
+	if len(ports) == 0 {
+		portList = "(no ports selected)"
+	}
+	io.WriteString(step.Log("ports"), portList)
+	return ports, nil
 }

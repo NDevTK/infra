@@ -28,8 +28,20 @@ func (r *allRunner) Run(ctx context.Context, spec *buildSpec) error {
 	if err := getGo(ctx, spec, false); err != nil {
 		return err
 	}
-	if spec.inputs.Project == "go" {
-		return runGoTests(ctx, spec, noSharding)
+	// Determine what ports to test.
+	ports := []Port{currentPort}
+	if spec.inputs.MiscPorts {
+		// Note: There may be code changes in cmd/dist or cmd/go that have not
+		// been fully reviewed yet, and it is a test error if goDistList fails.
+		var err error
+		ports, err = goDistList(ctx, spec, noSharding)
+		if err != nil {
+			return err
+		}
 	}
-	return fetchSubrepoAndRunTests(ctx, spec)
+	// Run tests. (Also fetch dependencies if applicable.)
+	if spec.inputs.Project == "go" {
+		return runGoTests(ctx, spec, noSharding, ports)
+	}
+	return fetchSubrepoAndRunTests(ctx, spec, ports)
 }
