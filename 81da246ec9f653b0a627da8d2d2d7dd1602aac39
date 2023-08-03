@@ -16,6 +16,24 @@
       "message": "What does this do?",
       "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b02bdd1f_400e00ed",
+        "filename": "go/src/infra/cr_builder_value/generate.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1575692
+      },
+      "writtenOn": "2023-08-03T18:46:14Z",
+      "side": 1,
+      "message": "To prevent duplicate data from being added to BQ when we run the app multiple times per day (in local or remote), we will delete any data that was added on the same day.",
+      "parentUuid": "18f75046_bf054fd9",
+      "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
