@@ -61,12 +61,14 @@ function pathNode(
     type: DirectoryNodeType,
     loaded: boolean,
     nodes: Node[] = [],
+    onExpand?: (node: Node) => void,
 ): Path {
   return {
     id: id,
-    name: id,
+    name: id + ((type === DirectoryNodeType.DIRECTORY) ? '/' : ''),
     isLeaf: false,
     metrics: new Map(),
+    onExpand: onExpand,
     path: id,
     type: type,
     loaded: loaded,
@@ -155,7 +157,8 @@ describe('merge_test action', () => {
 
     expect(merged[0].nodes).toHaveLength(1);
     const v = merged[0].nodes[0];
-    expect(v.name).toEqual(tests[0].variants[0].builder);
+    expect(v.name).toEqual(tests[0].variants[0].bucket
+      + '/' +tests[0].variants[0].builder);
     expect(v.subname).toEqual(tests[0].variants[0].suite);
     expect(v.metrics.size).toEqual(1);
     expect(v.metrics.get('2012-01-02')?.get(MetricType.NUM_RUNS)).toEqual(3);
@@ -244,7 +247,7 @@ describe('merge_dir action', () => {
     const merged = dataReducer([], { type: 'merge_dir', nodes, onExpand });
     expect(merged).toHaveLength(1);
     expect(merged[0].id).toEqual(nodes[0].id);
-    expect(merged[0].name).toEqual(nodes[0].name);
+    expect(merged[0].name).toEqual(nodes[0].name + '/');
     expect(merged[0].nodes).toHaveLength(0);
     expect(merged[0].isLeaf).toEqual(false);
     expect(merged[0].onExpand).toBe(onExpand);
