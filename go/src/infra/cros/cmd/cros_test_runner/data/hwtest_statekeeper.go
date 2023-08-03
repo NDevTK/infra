@@ -16,6 +16,7 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/protobuf/types/known/anypb"
 
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/dutstate"
@@ -35,7 +36,7 @@ type HwTestStateKeeper struct {
 	ContainerQueue *list.List
 
 	// Dictionaries
-	Injectables        map[string]interface{}
+	Injectables        *common.InjectableStorage
 	ContainerInstances map[string]interfaces.ContainerInterface
 	ContainerImages    map[string]*api.ContainerImageInfo
 

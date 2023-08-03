@@ -14,8 +14,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 )
 
-type commandFn func() interfaces.ContainerInterface
-
 // CommandConfig represents command config.
 type CommandConfig struct {
 	ExecutorConfig interfaces.ExecutorConfigInterface
