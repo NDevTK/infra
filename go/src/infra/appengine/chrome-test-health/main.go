@@ -96,10 +96,8 @@ func main() {
 }
 
 func updateDailySummary(ctx context.Context) error {
-	previousDateTime := time.Now().AddDate(0, 0, -1)
-	date := previousDateTime.Format("2006-01-02")
-
-	cDate, err := civil.ParseDate(date)
+	today := time.Now().Format("2006-01-02")
+	cDate, err := civil.ParseDate(today)
 	if err != nil {
 		logging.Errorf(ctx, "Failed parsing current date: %s", err)
 		return err
@@ -149,11 +147,16 @@ func (s *testResourcesServer) UpdateMetricsTable(ctx context.Context, req *api.U
 		return nil, appstatus.Errorf(codes.InvalidArgument, "%s", err.Error())
 	}
 
-	err = s.Client.UpdateSummary(ctx, fromDate, toDate)
-
-	if err != nil {
-		return nil, err
-	}
+	go func() {
+		deadlineCtx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Hour*2))
+		defer cancel()
+		err = s.Client.UpdateSummary(deadlineCtx, fromDate, toDate)
+		if err != nil {
+			logging.Errorf(ctx, "Failed backfilling days %s - %s: %s", fromDate, toDate, err)
+		} else {
+			logging.Infof(ctx, "Succeeded backfilling days %s - %s: %s", fromDate, toDate, err)
+		}
+	}()
 	return &api.UpdateMetricsTableResponse{}, nil
 }
 
