@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "16dc8956_7f15c878",
+        "filename": "go/src/infra/build/siso/build/run_cmd.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-08-03T02:47:12Z",
+      "side": 1,
+      "message": "How about adding `offline` field to `Builder` and check it here?",
+      "range": {
+        "startLine": 81,
+        "startChar": 1,
+        "endLine": 81,
+        "endChar": 3
+      },
+      "revId": "dff693a7885243ac40a322640a4da92dd224e655",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
