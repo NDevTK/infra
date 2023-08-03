@@ -34,7 +34,7 @@ func (cmd *VMProvisionReleaseCmd) ExtractDependencies(
 		if sk.LeaseVMResponse.GetLeaseId() == "" {
 			return fmt.Errorf("cmd %q missing dependency: LeaseVMResponse.LeaseID", cmd.GetCommandType())
 		}
-		if sk.LeaseVMResponse.Vm.GetGceRegion() == "" {
+		if sk.LeaseVMResponse.GetVm().GetGceRegion() == "" {
 			return fmt.Errorf("cmd %q missing dependency: LeaseVMResponse.GceRegion", cmd.GetCommandType())
 		}
 		cmd.LeaseVMResponse = sk.LeaseVMResponse
