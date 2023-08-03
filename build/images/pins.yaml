@@ -29,13 +29,13 @@ pins:
   digest: sha256:152dc042452c496007f07ca9127571cb9c29697f42acbfad72324b2bb2e43c98
 - image: docker.io/library/ubuntu
   tag: "20.04"
-  digest: sha256:4c3b72952fa574f688750168f1dcf3be02887742ae7e32fd62fea1178a52778b
+  digest: sha256:33a5cc25d22c45900796a1aca487ad7a7cb09f09ea00b779e3b2026b4fc2faba
 - image: docker.io/library/ubuntu
   tag: "22.04"
   digest: sha256:0bced47fffa3361afa981854fcabcd4577cd43cebbb808cea2b1f33a3dd7f508
 - image: docker.io/library/ubuntu
   tag: focal
-  digest: sha256:4c3b72952fa574f688750168f1dcf3be02887742ae7e32fd62fea1178a52778b
+  digest: sha256:33a5cc25d22c45900796a1aca487ad7a7cb09f09ea00b779e3b2026b4fc2faba
 - image: docker.io/library/ubuntu
   tag: jammy
   digest: sha256:0bced47fffa3361afa981854fcabcd4577cd43cebbb808cea2b1f33a3dd7f508
