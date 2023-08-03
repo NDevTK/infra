@@ -16,6 +16,24 @@
       "message": "Do we see any performance change by this CL?",
       "revId": "d9a5d70164408928069d56170eb5983478cc3b68",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "22ac97b8_119e9f02",
+        "filename": "go/src/infra/build/siso/hashfs/fs_bench_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-08-03T23:44:53Z",
+      "side": 1,
+      "message": "$ benchstat /tmp/bench.base /tmp/bench.fix\ngoos: linux\ngoarch: amd64\npkg: infra/build/siso/hashfs\ncpu: Intel(R) Xeon(R) Gold 6154 CPU @ 3.00GHz\n                        │ /tmp/bench.base │           /tmp/bench.fix            │\n                        │     sec/op      │   sec/op     vs base                │\nDirectoryLookup/miss-72       23.58n ± 2%   33.71n ± 2%  +42.96% (p\u003d0.000 n\u003d10)\nDirectoryLookup/ok-72         352.6n ± 1%   414.6n ± 2%  +17.58% (p\u003d0.000 n\u003d10)\ngeomean                       91.19n        118.2n       +29.65%\n\n                        │ /tmp/bench.base │           /tmp/bench.fix            │\n                        │      B/op       │    B/op     vs base                 │\nDirectoryLookup/miss-72      0.000 ± 0%     0.000 ± 0%       ~ (p\u003d1.000 n\u003d10) ¹\nDirectoryLookup/ok-72        0.000 ± 0%     0.000 ± 0%       ~ (p\u003d1.000 n\u003d10) ¹\ngeomean                                 ²               +0.00%                ²\n¹ all samples are equal\n² summaries must be \u003e0 to compute geomean\n\n                        │ /tmp/bench.base │           /tmp/bench.fix            │\n                        │    allocs/op    │ allocs/op   vs base                 │\nDirectoryLookup/miss-72      0.000 ± 0%     0.000 ± 0%       ~ (p\u003d1.000 n\u003d10) ¹\nDirectoryLookup/ok-72        0.000 ± 0%     0.000 ± 0%       ~ (p\u003d1.000 n\u003d10) ¹\ngeomean                                 ²               +0.00%                ²\n¹ all samples are equal\n² summaries must be \u003e0 to compute geomean\n\nsince it keeps zero allocation, end-to-end performance doesn\u0027t change so much.\n\nhyperfine \\                                                                     |\n   --warmup 1 \\                                                                 |\n   --prepare \u0027gn clean out/siso\u0027 \\                                              |\n   \u0027/tmp/siso.old ninja -C out/siso -project rbe-chrome-untrusted \u003e\u003e /tmp/orig.l|\nog\u0027 \\                                                                           |\n   \u0027/tmp/siso.new ninja -C out/siso -project rbe-chrome-untrusted \u003e\u003e /tmp/new.lo|\ng\u0027                                                                              |\nBenchmark 1: /tmp/siso.old ninja -C out/siso -project rbe-chrome-untrusted \u003e\u003e /t|\nmp/orig.log                                                                     |\n  Time (mean ± σ):     414.591 s ± 21.185 s    [User: 12064.284 s, System: 1562.|\n300 s]                                                                          |\n  Range (min … max):   400.844 s … 473.363 s    10 runs                         |\n                                                                                |\n  Warning: Statistical outliers were detected. Consider re-running this benchmar|\nk on a quiet PC without any interferences from other programs. It might help to |\nuse the \u0027--warmup\u0027 or \u0027--prepare\u0027 options.                                      |\n                                                                                |\nBenchmark 2: /tmp/siso.new ninja -C out/siso -project rbe-chrome-untrusted \u003e\u003e /t|\nmp/new.log                                                                      |\n  Time (mean ± σ):     413.215 s ± 11.918 s    [User: 12133.002 s, System: 1548.|\n880 s]                                                                          |\n  Range (min … max):   390.919 s … 430.616 s    10 runs                         |\n                                                                                |\nSummary                                                                         |\n  \u0027/tmp/siso.new ninja -C out/siso -project rbe-chrome-untrusted \u003e\u003e /tmp/new.log|\n\u0027 ran                                                                           |\n    1.00 ± 0.06 times faster than \u0027/tmp/siso.old ninja -C out/siso -project rbe-|\nchrome-untrusted \u003e\u003e /tmp/orig.log\u0027",
+      "parentUuid": "f078ca7f_42c9d8dd",
+      "revId": "d9a5d70164408928069d56170eb5983478cc3b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
