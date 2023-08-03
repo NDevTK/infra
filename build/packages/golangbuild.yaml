@@ -3,9 +3,11 @@ description: A luciexe that builds and tests the Go project
 platforms:
   - linux-amd64
   - linux-arm64
-  - windows-amd64
+  - linux-ppc64le
   - mac-amd64
   - mac-arm64
+  - solaris-amd64
+  - windows-amd64
 go_packages:
   - infra/experimental/golangbuild
 root: ../../go/bin
