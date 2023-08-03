@@ -26,6 +26,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "7df102ee_8d896b22",
+        "filename": "go/src/infra/build/siso/execute/reproxyexec/reproxyexec.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-08-03T02:43:15Z",
+      "side": 1,
+      "message": "`autosiso` needs to set `RBE_server_address` explicitly before landing this CL?",
+      "range": {
+        "startLine": 98,
+        "startChar": 1,
+        "endLine": 101,
+        "endChar": 0
+      },
+      "revId": "a5657111e2d87f93bcf55fe54edecf3ed7a61299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ac4fd125_1d94ef3b",
         "filename": "go/src/infra/build/siso/subcmd/ninja/ninja.go",
         "patchSetId": 3
