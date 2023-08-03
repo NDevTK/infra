@@ -67,7 +67,10 @@ var ContainerReadLogs_ContainerExecutor = &common_configs.CommandExecutorPairedC
 
 var RequiredCmdExecPairMap = map[*common_configs.CommandExecutorPairedConfig]*common_configs.CommandExecutorPairedConfig{}
 
-func GetRequiredCmdExecPair(pair_base *common_configs.CommandExecutorPairedConfig) *common_configs.CommandExecutorPairedConfig {
+func GetCmdExecPair(pair_base *common_configs.CommandExecutorPairedConfig, required bool) *common_configs.CommandExecutorPairedConfig {
+	if !required {
+		return pair_base
+	}
 	if pair_required, ok := RequiredCmdExecPairMap[pair_base]; ok {
 		return pair_required
 	}

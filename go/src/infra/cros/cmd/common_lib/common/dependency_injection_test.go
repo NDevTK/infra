@@ -30,10 +30,11 @@ func TestDependencyInjectionBasic(t *testing.T) {
 			Address: "localhost",
 			Port:    4040,
 		}
-		injection_map := map[string]interface{}{}
-		injection_map["dut_primary"] = dut_address_proto
+		storage := common.NewInjectableStorage()
+		storage.Set("dut_primary", dut_address_proto)
+		storage.LoadInjectables()
 
-		err := common.Inject(original_proto, "dutServer", injection_map, "dut_primary")
+		err := common.Inject(original_proto, "dutServer", storage, "dut_primary")
 
 		So(err, ShouldBeNil)
 		So(original_proto.DutServer, ShouldNotBeNil)
@@ -47,10 +48,11 @@ func TestDependencyInjectionBasic(t *testing.T) {
 			Address: "localhost",
 			Port:    4040,
 		}
-		injection_map := map[string]interface{}{}
-		injection_map["cros-dut"] = common.ProtoToInterfaceMap(dut_address_proto)
+		storage := common.NewInjectableStorage()
+		storage.Set("cros-dut", dut_address_proto)
+		storage.LoadInjectables()
 
-		err := common.Inject(original_proto, "", injection_map, "cros-dut")
+		err := common.Inject(original_proto, "", storage, "cros-dut")
 
 		So(err, ShouldBeNil)
 		So(original_proto, ShouldNotBeNil)
@@ -91,12 +93,13 @@ func TestDependencyInjectionBasic(t *testing.T) {
 				},
 			},
 		}
-		injection_map := map[string]interface{}{}
-		injection_map["cros-dut"] = common.ProtoToInterfaceMap(dut_address_proto)
-		injection_map["dut_primary"] = common.ProtoToInterfaceMap(dut)
+		storage := common.NewInjectableStorage()
+		storage.Set("cros-dut", dut_address_proto)
+		storage.Set("dut_primary", dut)
+		storage.LoadInjectables()
 
 		for _, dep := range original_proto.DynamicDeps {
-			err := common.Inject(original_proto.Container, dep.Key, injection_map, dep.Value)
+			err := common.Inject(original_proto.Container, dep.Key, storage, dep.Value)
 			So(err, ShouldBeNil)
 		}
 	})
@@ -123,10 +126,11 @@ func TestDependencyInjectionArray(t *testing.T) {
 			},
 		}
 
-		injection_map := map[string]interface{}{}
-		injection_map["duts"] = dut_address_protos
+		storage := common.NewInjectableStorage()
+		storage.Set("duts", dut_address_protos)
+		storage.LoadInjectables()
 
-		err := common.Inject(original_proto, "dutServer", injection_map, "duts.1")
+		err := common.Inject(original_proto, "dutServer", storage, "duts.1")
 
 		So(err, ShouldBeNil)
 		So(original_proto.DutServer, ShouldNotBeNil)
@@ -168,10 +172,11 @@ func TestDependencyInjectionArrayAppend(t *testing.T) {
 			},
 		}
 
-		injection_map := map[string]interface{}{}
-		injection_map["package"] = new_package
+		storage := common.NewInjectableStorage()
+		storage.Set("package", new_package)
+		storage.LoadInjectables()
 
-		err := common.Inject(original_proto, "provisionState.packages", injection_map, "package")
+		err := common.Inject(original_proto, "provisionState.packages", storage, "package")
 
 		So(err, ShouldBeNil)
 		So(original_proto.ProvisionState.Packages, ShouldHaveLength, 4)
@@ -208,15 +213,135 @@ func TestDependencyInjectionArrayOverride(t *testing.T) {
 			},
 		}
 
-		injection_map := map[string]interface{}{}
-		injection_map["packages"] = new_packages
+		storage := common.NewInjectableStorage()
+		storage.Set("packages", new_packages)
+		storage.LoadInjectables()
 
-		err := common.Inject(original_proto, "provisionState.packages", injection_map, "packages")
+		err := common.Inject(original_proto, "provisionState.packages", storage, "packages")
 
 		So(err, ShouldBeNil)
 		So(original_proto.ProvisionState.Packages, ShouldHaveLength, 3)
 		So(original_proto.ProvisionState.Packages[0].PackagePath.Path, ShouldEqual, new_packages[0].PackagePath.Path)
 		So(original_proto.ProvisionState.Packages[1].PackagePath.Path, ShouldEqual, new_packages[1].PackagePath.Path)
 		So(original_proto.ProvisionState.Packages[2].PackagePath.Path, ShouldEqual, new_packages[2].PackagePath.Path)
+	})
+}
+
+func TestDependencyInjectionFullTest(t *testing.T) {
+	storage := common.NewInjectableStorage()
+	req := &skylab_test_runner.CrosTestRunnerRequest{
+		StartRequest: &skylab_test_runner.CrosTestRunnerRequest_Build{
+			Build: &skylab_test_runner.BuildMode{},
+		},
+		Params: &skylab_test_runner.CrosTestRunnerParams{},
+	}
+	err := storage.Set("req", req)
+	if err != nil {
+		t.Fatalf("%s", err)
+	}
+
+	Convey("NoticeChangesInStateKeeper", t, func() {
+		req.GetParams().Keyvals = map[string]string{
+			"build_target": "drallion",
+		}
+		err := storage.LoadInjectables()
+		So(err, ShouldBeNil)
+
+		buildTarget, err := storage.Get("req.params.keyvals.build_target")
+		So(err, ShouldBeNil)
+		So(buildTarget, ShouldEqual, "drallion")
+	})
+
+	Convey("CanAddStringToInjectables", t, func() {
+		err := storage.Set("hello", "world!")
+		So(err, ShouldBeNil)
+		err = storage.LoadInjectables()
+		So(err, ShouldBeNil)
+
+		str, err := storage.Get("hello")
+		So(err, ShouldBeNil)
+		So(str, ShouldEqual, "world!")
+	})
+
+	Convey("CanAddStringArrayToInjectables", t, func() {
+		err := storage.Set("hello", []string{"World1", "World2"})
+		So(err, ShouldBeNil)
+		err = storage.LoadInjectables()
+		So(err, ShouldBeNil)
+
+		arr, err := storage.Get("hello")
+		So(err, ShouldBeNil)
+		So(arr, ShouldHaveLength, 2)
+	})
+
+	Convey("CanAddAndPullParams", t, func() {
+		req.Params.TestSuites = []*api.TestSuite{
+			{
+				Name: "Test1",
+			}, {
+				Name: "Test2",
+			}, {
+				Name: "Test3",
+			},
+		}
+		So(err, ShouldBeNil)
+		err = storage.LoadInjectables()
+		So(err, ShouldBeNil)
+
+		testSuites, err := storage.Get("req.params.testSuites")
+		So(err, ShouldBeNil)
+		So(testSuites, ShouldHaveLength, 3)
+
+		req.Params.TestSuites = append(req.Params.TestSuites, &testapi.TestSuite{Name: "Test4"})
+		err = storage.LoadInjectables()
+		So(err, ShouldBeNil)
+		testSuites, err = storage.Get("req.params.testSuites")
+		So(err, ShouldBeNil)
+		So(testSuites, ShouldHaveLength, 4)
+	})
+
+	Convey("CanDoDependencyInjection", t, func() {
+		endpoint := &labapi.IpEndpoint{
+			Address: "localhost",
+			Port:    1234,
+		}
+		err := storage.Set("cros-test", endpoint)
+		So(err, ShouldBeNil)
+		req.Params.TestSuites = []*api.TestSuite{
+			{
+				Name: "Test1",
+			}, {
+				Name: "Test2",
+			}, {
+				Name: "Test3",
+			},
+		}
+		testRequest := &skylab_test_runner.TestRequest{
+			ServiceAddress: &labapi.IpEndpoint{},
+			TestRequest:    &testapi.CrosTestRequest{},
+			DynamicDeps: []*skylab_test_runner.DynamicDep{
+				{
+					Key:   "serviceAddress",
+					Value: "cros-test",
+				},
+				{
+					Key:   "testRequest.testSuites",
+					Value: "req.params.testSuites",
+				},
+			},
+		}
+		req.OrderedTasks = []*skylab_test_runner.CrosTestRunnerRequest_Task{
+			{
+				Task: &skylab_test_runner.CrosTestRunnerRequest_Task_Test{
+					Test: testRequest,
+				},
+			},
+		}
+
+		err = common.InjectDependencies(testRequest, storage, testRequest.DynamicDeps)
+		So(err, ShouldBeNil)
+		So(testRequest.ServiceAddress.Address, ShouldEqual, endpoint.Address)
+		So(testRequest.ServiceAddress.Port, ShouldEqual, endpoint.Port)
+		So(testRequest.TestRequest.TestSuites, ShouldHaveLength, len(req.Params.TestSuites))
 	})
 }

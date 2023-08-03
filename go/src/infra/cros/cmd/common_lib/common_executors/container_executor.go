@@ -78,6 +78,8 @@ func (ex *ContainerExecutor) startContainerCommandExecution(
 		return fmt.Errorf("Cannot start container with nil container request.")
 	}
 
+	common.WriteProtoToStepLog(ctx, step, cmd.ContainerRequest, "container service request")
+
 	containerInstance, endpoint, err := ex.Start(
 		ctx,
 		cmd.ContainerRequest.Container,

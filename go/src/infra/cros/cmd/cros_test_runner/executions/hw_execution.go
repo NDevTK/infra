@@ -129,7 +129,7 @@ func executeHwTests(
 		StainlessUrl:          common.GetStainlessUrl(gcsurl),
 		TesthausUrl:           common.GetTesthausUrl(gcsurl),
 		ContainerQueue:        containerQueue,
-		Injectables:           make(map[string]interface{}),
+		Injectables:           common.NewInjectableStorage(),
 		ContainerInstances:    make(map[string]interfaces.ContainerInterface),
 		ContainerImages:       containerImagesMap,
 	}
