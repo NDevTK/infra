@@ -1,0 +1,34 @@
+[
+  {
+    "testSuites": [
+      {
+        "name": "testsuite1",
+        "testCaseTagCriteria": {
+          "tags": [
+            "group:mainline",
+            "group:testgroupA"
+          ],
+          "tagExcludes": [
+            "informational"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "testSuites": [
+      {
+        "name": "testsuite2",
+        "testCaseTagCriteria": {
+          "tags": [
+            "group:mainline",
+            "group:testgroupB"
+          ],
+          "tagExcludes": [
+            "informational"
+          ]
+        }
+      }
+    ]
+  }
+]

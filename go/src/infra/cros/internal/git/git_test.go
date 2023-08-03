@@ -338,6 +338,62 @@ func TestGetRemotes(t *testing.T) {
 	assert.StringArrsEqual(t, remotes, []string{"origin", "cros"})
 }
 
+func TestGetRemoteHostAndProject(t *testing.T) {
+	fakeGitRepo := "repo"
+
+	CommandRunnerImpl = cmd.FakeCommandRunner{
+		ExpectedDir: fakeGitRepo,
+		ExpectedCmd: []string{"git", "ls-remote", "--get-url"},
+		Stdout:      "https://chromium.googlesource.com/chromiumos/project1\n",
+	}
+
+	host, project, err := GetRemoteHostAndProject(fakeGitRepo)
+	assert.NilError(t, err)
+	assert.StringsEqual(t, "chromium.googlesource.com", host)
+	assert.StringsEqual(t, "chromiumos/project1", project)
+}
+
+func TestGetRemoteHostAndProjectMalformedURL(t *testing.T) {
+	fakeGitRepo := "repo"
+
+	CommandRunnerImpl = cmd.FakeCommandRunner{
+		ExpectedDir: fakeGitRepo,
+		ExpectedCmd: []string{"git", "ls-remote", "--get-url"},
+		Stdout:      "https://badurl\n",
+	}
+
+	_, _, err := GetRemoteHostAndProject(fakeGitRepo)
+	assert.ErrorContains(t, err, `url "https://badurl" did not match regex`)
+}
+
+func TestGetRepoRelativePath(t *testing.T) {
+	fakeGitRepo := "repo"
+
+	CommandRunnerImpl = cmd.FakeCommandRunner{
+		ExpectedDir: fakeGitRepo,
+		ExpectedCmd: []string{"git", "ls-files", "--full-name", "--error-unmatch", "./test.txt"},
+		Stdout:      "a/b/test.txt\n",
+	}
+
+	relativePath, err := GetRepoRelativePath(fakeGitRepo, "./test.txt")
+	assert.NilError(t, err)
+	assert.StringsEqual(t, "a/b/test.txt", relativePath)
+}
+
+func TestGetRepoRelativePathMissingFile(t *testing.T) {
+	fakeGitRepo := "repo"
+
+	CommandRunnerImpl = cmd.FakeCommandRunner{
+		ExpectedDir: fakeGitRepo,
+		ExpectedCmd: []string{"git", "ls-files", "--full-name", "--error-unmatch", "./test.txt"},
+		FailError:   errors.New("pathspec './test.txt' did not match any file(s) known to git"),
+		FailCommand: true,
+	}
+
+	_, err := GetRepoRelativePath(fakeGitRepo, "./test.txt")
+	assert.ErrorContains(t, err, "`git ls-files ./test.txt` failed, is ./test.txt part of the index or working tree?")
+}
+
 func TestAddRemote(t *testing.T) {
 	fakeGitRepo := "repo"
 	remoteName := "remote"

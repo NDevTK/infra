@@ -264,6 +264,36 @@ func GetRemotes(gitRepo string) ([]string, error) {
 	return remotes, nil
 }
 
+// remoteURLRegex is used to parse a URL into a host and project.
+var remoteURLRegex = regexp.MustCompile(`^https://([^/]+)/(.*)$`)
+
+// GetRemoteHostAndProject returns the host and project of the remote for
+// gitRepo.
+func GetRemoteHostAndProject(gitRepo string) (string, string, error) {
+	output, err := RunGit(gitRepo, []string{"ls-remote", "--get-url"})
+	if err != nil {
+		return "", "", err
+	}
+
+	url := strings.TrimSpace(output.Stdout)
+	groups := remoteURLRegex.FindStringSubmatch(url)
+	if groups == nil {
+		return "", "", fmt.Errorf("url %q did not match regex %q", url, remoteURLRegex)
+	}
+	return groups[1], groups[2], nil
+}
+
+// GetRepoRelativePath gets the path of file relative to the root of gitRepo.
+// Note that file must be in the index or working tree, since ls-files is used.
+func GetRepoRelativePath(gitRepo, file string) (string, error) {
+	output, err := RunGit(gitRepo, []string{"ls-files", "--full-name", "--error-unmatch", file})
+	if err != nil {
+		return "", fmt.Errorf("`git ls-files %s` failed, is %s part of the index or working tree?", file, file)
+	}
+
+	return strings.TrimSpace(output.Stdout), nil
+}
+
 // AddRemote adds a remote.
 func AddRemote(gitRepo, remote, remoteLocation string) error {
 	output, err := RunGit(gitRepo, []string{"remote", "add", remote, remoteLocation})
