@@ -25,9 +25,14 @@ function ResourcesPage() {
   const params = new URLSearchParams(window.location.search);
   const props = {
     page: Number(params.get(PAGE) || 0),
-    rowsPerPage: Number(params.get(ROWS_PER_PAGE) || 50),
+    rowsPerPage: Number(
+        params.get(ROWS_PER_PAGE) ||
+      localStorage.getItem(ROWS_PER_PAGE) ||
+      50),
     filter: params.get(FILTER) || '',
-    date: new Date(params.has(DATE) ? params.get(DATE) + 'T00:00:00' : null || (Date.now() - 86400000)),
+    date: new Date(
+      params.has(DATE) ? params.get(DATE) + 'T00:00:00' : (Date.now()),
+    ),
     period: params.has(PERIOD) ? Number(params.get(PERIOD)) as Period : null || Period.WEEK,
     sort: params.has(SORT_BY) ? Number(params.get(SORT_BY)) as SortType : null || SortType.SORT_AVG_CORES,
     ascending: params.get(ASCENDING) === 'true',

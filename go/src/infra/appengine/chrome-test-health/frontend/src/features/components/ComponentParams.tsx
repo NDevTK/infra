@@ -11,18 +11,18 @@ export const COMPONENT = 'comp';
 function ComponentParams() {
   const { components } = useContext(ComponentContext);
 
-  const [search, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
 
-  const updateParams = useCallback(() => {
+  const updateParams = useCallback((search: URLSearchParams) => {
     search.delete(COMPONENT);
     components.forEach((c) => search.append(COMPONENT, c));
-    setSearchParams(search);
-  }, [search, setSearchParams, components]);
+    localStorage.setItem(COMPONENT, components.join(','));
+    return search;
+  }, [components]);
 
   useEffect(() => {
-    updateParams();
-  }, [updateParams]);
-
+    setSearchParams(updateParams);
+  }, [components, setSearchParams, updateParams]);
   return (<></>);
 }
 

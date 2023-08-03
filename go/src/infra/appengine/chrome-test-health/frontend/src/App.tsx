@@ -11,13 +11,13 @@ import { COMPONENT } from './features/components/ComponentParams';
 
 const App = () => {
   const params = new URLSearchParams(window.location.search);
-  const props = {
-    components: params.has(COMPONENT) ? params.getAll(COMPONENT) : ['Blink'],
-  };
+  const components = params.has(COMPONENT) ?
+    params.getAll(COMPONENT) :
+    localStorage.getItem(COMPONENT)?.split(',') || ['Blink'];
   return (
     <div className="App">
       <BrowserRouter>
-        <ComponentContextProvider {...props}>
+        <ComponentContextProvider {...{ components }}>
           <NavBar/>
           <Box component="main" sx={{ flexGrow: 1, marginTop: '74px' }}>
             <Routes>

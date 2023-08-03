@@ -32,5 +32,6 @@ describe('when rendering ComponentParams', () => {
     });
     const searchParams = new URLSearchParams(window.location.search);
     expect(searchParams.getAll(COMPONENT)).toEqual(['1', '2', '3']);
+    expect(global.localStorage.getItem(COMPONENT)?.split(',')).toEqual(['1', '2', '3']);
   });
 });

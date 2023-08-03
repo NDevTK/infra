@@ -53,6 +53,7 @@ describe('when rendering the ResourcesSearchParams', () => {
     expect(searchParams.get(TIMELINE_VIEW)).toBe('true');
     expect(searchParams.get(DIRECTORY_VIEW)).toBe('false');
     expect(searchParams.get(SORT_INDEX)).toBe('0');
+    expect(global.localStorage.getItem(ROWS_PER_PAGE)).toEqual('25');
   });
   it('should render url without empty params', async () => {
     const params: Params = {
@@ -76,7 +77,6 @@ describe('when rendering the ResourcesSearchParams', () => {
       );
     });
     const searchParams = new URLSearchParams(window.location.search);
-    expect(searchParams.get(PAGE)).toBe(null);
     expect(searchParams.get(ROWS_PER_PAGE)).toBe(null);
     expect(searchParams.get(FILTER)).toBe(null);
     expect(searchParams.get(PAGE)).toBe(null);

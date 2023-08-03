@@ -23,34 +23,40 @@ function ResourcesParamControls() {
 
   const [, setSearchParams] = useSearchParams();
 
-  const updateParams = useCallback(() => {
-    const newSearchParams = new URLSearchParams();
+  const updateParams = useCallback((search: URLSearchParams) => {
     if (params.page > 0 && !params.directoryView) {
-      newSearchParams.set(PAGE, String(params.page));
+      search.set(PAGE, String(params.page));
+    } else {
+      search.delete(PAGE);
     }
     if (!params.directoryView) {
-      newSearchParams.set(ROWS_PER_PAGE, String(params.rowsPerPage));
+      search.set(ROWS_PER_PAGE, String(params.rowsPerPage));
+      localStorage.setItem(ROWS_PER_PAGE, String(params.rowsPerPage));
+    } else {
+      search.delete(ROWS_PER_PAGE);
     }
     if (params.filter !== '') {
-      newSearchParams.set(FILTER, params.filter);
+      search.set(FILTER, params.filter);
+    } else {
+      search.delete(FILTER);
     }
-    newSearchParams.set(DATE, formatDate(params.date));
-    newSearchParams.set(PERIOD, String(params.period));
-    newSearchParams.set(SORT_BY, String(params.sort));
-    newSearchParams.set(ASCENDING, String(params.ascending));
-    newSearchParams.set(TIMELINE_VIEW, String(params.timelineView));
-    newSearchParams.set(DIRECTORY_VIEW, String(params.directoryView));
+    search.set(DATE, formatDate(params.date));
+    search.set(PERIOD, String(params.period));
+    search.set(SORT_BY, String(params.sort));
+    search.set(ASCENDING, String(params.ascending));
+    search.set(TIMELINE_VIEW, String(params.timelineView));
+    search.set(DIRECTORY_VIEW, String(params.directoryView));
     if (params.timelineView) {
-      newSearchParams.set(SORT_INDEX, String(params.sortIndex));
+      search.set(SORT_INDEX, String(params.sortIndex));
+    } else {
+      search.delete(SORT_INDEX);
     }
-    setSearchParams(newSearchParams);
-    // We don't want a dependency on searchParams
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return search;
   }, [params]);
 
   useEffect(() => {
-    updateParams();
-  }, [updateParams]);
+    setSearchParams(updateParams);
+  }, [setSearchParams, updateParams]);
 
   return (<></>);
 }
