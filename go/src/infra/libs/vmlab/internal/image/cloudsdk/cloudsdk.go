@@ -194,6 +194,14 @@ func (c *cloudsdkImageApi) handle(client computeImagesClient, buildInfo *buildIn
 		op, err := c.importImage(client, buildInfo, gceImage)
 		if err == nil {
 			gceImage.Status = api.GceImage_PENDING
+			return op, gceImage, err
+		}
+		re := regexp.MustCompile(`Error 409: The resource '.*' already exists`)
+		// This error happens when two builders try to import at the same time.
+		if re.MatchString(err.Error()) {
+			log.Default().Printf("The image has already been imported by another request: %s", err)
+			gceImage.Status = api.GceImage_PENDING
+			return nil, gceImage, nil
 		}
 		return op, gceImage, err
 	}

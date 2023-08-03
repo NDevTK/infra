@@ -301,6 +301,31 @@ func TestHandleImportError(t *testing.T) {
 	}
 }
 
+func TestHandleImportConflict(t *testing.T) {
+	imageApi := &cloudsdkImageApi{}
+	client := &mockImageClient{
+		getFunc: func() (*computepb.Image, error) {
+			return nil, nil
+		},
+		importFunc: func() (*compute.Operation, error) {
+			return nil, errors.New("googleapi: Error 409: The resource 'projects/chromeos-gce-tests/global/images/betty-arc-r-117-8773915992628062017-15565-0-0-85838-snapshot' already exists")
+		},
+	}
+	gceImage := &api.GceImage{
+		Name:    "my-image",
+		Project: "my-project",
+	}
+
+	_, gceImage, err := imageApi.handle(client, nil, gceImage)
+
+	if err != nil {
+		t.Errorf("handle() expected nil error, got %v", err)
+	}
+	if gceImage.Status != api.GceImage_PENDING {
+		t.Errorf("handle() expected status api.GceImage_PENDING, got %v", gceImage.Status)
+	}
+}
+
 func TestDeleteImageNoWait(t *testing.T) {
 	imageApi := &cloudsdkImageApi{}
 	client := &mockImageClient{
