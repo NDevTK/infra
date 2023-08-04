@@ -133,6 +133,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d9b1df27_7eaa8d84",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 8
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2023-08-04T21:07:30Z",
+      "side": 1,
+      "message": "Why is it using resources from cr-builder-health-indicators? Isn\u0027t that for indicators on milo, while this is something separate? Was there a design discussing how this interacts with cr-builder-health-indicators? \n\nAlso, go/luci-builders-dashboard shows only chromium builders. \"LUCI\" is a set of services used to run the CI for a variety of projects, not just chrome/chromium. (Including fuchsia \u0026 CrOS.) So \"luci-builders-dashboard\" is misleading since once would expect to see builders from every luci project there.",
+      "parentUuid": "40c06d55_cccfd113",
+      "range": {
+        "startLine": 12,
+        "startChar": 12,
+        "endLine": 12,
+        "endChar": 40
+      },
+      "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ab30ec21_ce484bd7",
         "filename": "go/src/infra/cr_builder_value/generate.go",
         "patchSetId": 8
@@ -322,6 +346,24 @@
       "side": 1,
       "message": "This app will retrieve Chrome and Chromium builders. Do you think I should move it to /chromium?",
       "parentUuid": "28b9d78f_5065081c",
+      "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c84a206d_c1578a9d",
+        "filename": "go/src/infra/cr_builder_value/main.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2023-08-04T21:07:30Z",
+      "side": 1,
+      "message": "Yeah. \"infra/\" contains many tools for a variety of teams. Since this is just focused to chromium/chrome, better to put it in a chrome-focused subdir.",
+      "parentUuid": "4585d3d1_3652c2e7",
       "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
