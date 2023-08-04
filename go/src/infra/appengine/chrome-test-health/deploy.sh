@@ -10,4 +10,4 @@ then
   exit 1
 fi
 cp -R frontend/build static
-gae.py upload --switch --app-id=chrome-resources-staging
+gae.py upload --switch --app-id=chrome-test-health-staging
