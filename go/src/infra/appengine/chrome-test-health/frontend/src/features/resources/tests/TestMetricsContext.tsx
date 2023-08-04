@@ -145,17 +145,6 @@ export const TestMetricsContext = createContext<TestMetricsContextValue>(
     },
 );
 
-// Mapping for timelineMetric to update both
-// MetricType and SortType simultaenously with
-// only 1 load call
-export const metricToSortType = new Map<MetricType, SortType>([
-  [MetricType.NUM_RUNS, SortType.SORT_NUM_RUNS],
-  [MetricType.NUM_FAILURES, SortType.SORT_NUM_FAILURES],
-  [MetricType.TOTAL_RUNTIME, SortType.SORT_TOTAL_RUNTIME],
-  [MetricType.AVG_CORES, SortType.SORT_AVG_CORES],
-  [MetricType.AVG_RUNTIME, SortType.SORT_AVG_RUNTIME],
-]);
-
 interface LoadingState {
   count: number,
   isLoading: boolean,
@@ -164,6 +153,23 @@ interface LoadingState {
 type LoadingAction =
  | { type: 'start' }
  | { type: 'end' }
+
+function getSortType(metric: MetricType): SortType {
+  switch (metric) {
+    case MetricType.NUM_RUNS:
+      return SortType.SORT_NUM_RUNS;
+    case MetricType.NUM_FAILURES:
+      return SortType.SORT_NUM_FAILURES;
+    case MetricType.TOTAL_RUNTIME:
+      return SortType.SORT_TOTAL_RUNTIME;
+    case MetricType.AVG_CORES:
+      return SortType.SORT_AVG_CORES;
+    case MetricType.AVG_RUNTIME:
+      return SortType.SORT_AVG_RUNTIME;
+    default:
+      return SortType.SORT_AVG_CORES;
+  }
+}
 
 function loadingCountReducer(state: LoadingState, action: LoadingAction): LoadingState {
   const newState = { ...state };
@@ -425,7 +431,7 @@ export const TestMetricsContextProvider = (props : TestMetricsContextProviderPro
     updateSortIndex: (newSortIndex: number) => {
       if (sortIndex !== newSortIndex) {
         params.sortIndex = newSortIndex;
-        params.sort = metricToSortType.get(params.timelineMetric) || SortType.SORT_AVG_CORES;
+        params.sort = getSortType(params.timelineMetric);
         setSort(params.sort);
         setSortIndex(params.sortIndex);
         load('updateSortIndex', components, params);
@@ -436,9 +442,7 @@ export const TestMetricsContextProvider = (props : TestMetricsContextProviderPro
         params.timelineMetric = newTimelineMetric;
         // If we are sorting by name, just change timeline metric.
         if (params.sort !== SortType.SORT_NAME) {
-          // Should always have a mapping, setting deafult to AVG_CORES which
-          // should never happen
-          params.sort = metricToSortType.get(params.timelineMetric) || SortType.SORT_AVG_CORES;
+          params.sort = getSortType(params.timelineMetric);
           setSort(params.sort);
         }
         setTimelineMetric(params.timelineMetric);
