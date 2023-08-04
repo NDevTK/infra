@@ -71,6 +71,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f6ca054a_1eb7b09a",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 1193,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-08-04T07:07:19Z",
+      "side": 1,
+      "message": "Done\n\nIn the 3-clause form, the start of the iteration body copies the per-loop i into a per-iteration i, and then the end of the body (or any continue statement) copies the current value of the per-iteration i back to the per-loop i\n\nbench.fix: var i int; for i \u003d 0; .. {}\nbench.fix2: for i :\u003d 0; .. {}\n\n```\n % benchstat /tmp/bench.fix /tmp/bench.fix2                                     |\ngoos: linux\ngoarch: amd64\npkg: infra/build/siso/hashfs\ncpu: Intel(R) Xeon(R) Gold 6154 CPU @ 3.00GHz\n                        │ /tmp/bench.fix │          /tmp/bench.fix2           │\n                        │     sec/op     │   sec/op     vs base               │\nDirectoryLookup/miss-72      33.29n ± 1%   33.32n ± 0%       ~ (p\u003d0.869 n\u003d10)\nDirectoryLookup/ok-72        417.1n ± 5%   419.4n ± 2%       ~ (p\u003d0.100 n\u003d10)\ngeomean                      117.8n        118.2n       +0.31%\n```",
+      "parentUuid": "76ff45d6_404a79af",
+      "revId": "f8f6d677ce411490fd1f4b4b669dcd0af0e630d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c18fa9dd_3735b0e2",
