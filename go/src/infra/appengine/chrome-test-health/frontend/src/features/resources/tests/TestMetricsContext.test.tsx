@@ -6,25 +6,29 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import { Button } from '@mui/material';
-import * as Resources from '../../api/resources';
-import { formatDate } from '../../utils/formatUtils';
-import { createProps } from '../../utils/testUtils';
-import { MetricsContext, MetricsContextProvider, MetricsContextValue } from './MetricsContext';
+import * as Resources from '../../../api/resources';
+import { formatDate } from '../../../utils/formatUtils';
+import { createProps } from './testUtils';
+import {
+  TestMetricsContext,
+  TestMetricsContextProvider,
+  TestMetricsContextValue,
+} from './TestMetricsContext';
 
-async function contextRender(ui: (value: MetricsContextValue) => React.ReactElement, { props } = { props: { ...createProps({}) } }) {
+async function contextRender(ui: (value: TestMetricsContextValue) => React.ReactElement, { props } = { props: { ...createProps({}) } }) {
   await act(async () => {
     render(
-        <MetricsContextProvider {... props}>
-          <MetricsContext.Consumer>
+        <TestMetricsContextProvider {... props}>
+          <TestMetricsContext.Consumer>
             {(value) => ui(value)}
-          </MetricsContext.Consumer>
-        </MetricsContextProvider>,
+          </TestMetricsContext.Consumer>
+        </TestMetricsContextProvider>,
     );
   },
   );
 }
 
-describe('MetricsContext params', () => {
+describe('TestMetricsContext params', () => {
   beforeEach(() => {
     jest.spyOn(Resources, 'fetchTestMetrics').mockResolvedValue({
       tests: [],

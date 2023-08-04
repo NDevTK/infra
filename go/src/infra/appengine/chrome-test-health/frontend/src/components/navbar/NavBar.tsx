@@ -13,7 +13,7 @@ import { Checkbox, Container,
 import { Outlet } from 'react-router-dom';
 import MenuItem from '@mui/material/MenuItem';
 import { useContext } from 'react';
-import { ComponentContext } from '../features/components/ComponentContext';
+import { ComponentContext } from '../../features/components/ComponentContext';
 
 function NavBar() {
   const componentCtx = useContext(ComponentContext);

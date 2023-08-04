@@ -4,21 +4,26 @@
 
 import { fireEvent, render, screen } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
-import { MetricType } from '../../api/resources';
-import { MetricsContextProvider, MetricsContextValue, Test, MetricsContext } from '../context/MetricsContext';
-import * as Resources from '../../api/resources';
-import { createProps } from '../../utils/testUtils';
-import ResourcesRow from './ResourcesRow';
+import { MetricType } from '../../../api/resources';
+import * as Resources from '../../../api/resources';
+import {
+  Test,
+  TestMetricsContextProvider,
+  TestMetricsContextValue,
+  TestMetricsContext,
+} from './TestMetricsContext';
+import TestMetricsRow from './TestMetricsRow';
+import { createProps } from './testUtils';
 
 
-async function contextRender(ui: (value: MetricsContextValue) => React.ReactElement, { props } = { props: { ...createProps({}) } }) {
+async function contextRender(ui: (value: TestMetricsContextValue) => React.ReactElement, { props } = { props: { ...createProps({}) } }) {
   await act(async () => {
     render(
-        <MetricsContextProvider {... props}>
-          <MetricsContext.Consumer>
+        <TestMetricsContextProvider {... props}>
+          <TestMetricsContext.Consumer>
             {(value) => ui(value)}
-          </MetricsContext.Consumer>
-        </MetricsContextProvider>,
+          </TestMetricsContext.Consumer>
+        </TestMetricsContextProvider>,
     );
   },
   );
@@ -57,7 +62,7 @@ describe('when rendering the ResourcesRow', () => {
     const { getByTestId } = render(
         <table>
           <tbody>
-            <ResourcesRow data={test} depth={0}/>
+            <TestMetricsRow data={test} depth={0}/>
           </tbody>
         </table>,
     );
@@ -94,7 +99,7 @@ describe('when rendering the ResourcesRow', () => {
     const { getByTestId } = render(
         <table>
           <tbody>
-            <ResourcesRow data={test} depth={0}/>
+            <TestMetricsRow data={test} depth={0}/>
           </tbody>
         </table>,
     );
@@ -151,7 +156,7 @@ describe('when rendering ResourcesRow', () => {
         <>
           <table>
             <tbody>
-              <ResourcesRow data={test} depth={0}/>
+              <TestMetricsRow data={test} depth={0}/>
             </tbody>
           </table>,
         </>
@@ -190,7 +195,7 @@ describe('when rendering ResourcesRow', () => {
       <>
         <table>
           <tbody>
-            <ResourcesRow data={test} depth={0}/>
+            <TestMetricsRow data={test} depth={0}/>
           </tbody>
         </table>,
       </>

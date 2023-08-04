@@ -4,10 +4,10 @@
 
 import { useCallback, useContext, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { MetricsContext } from '../context/MetricsContext';
-import { formatDate } from '../../utils/formatUtils';
+import { formatDate } from '../../../utils/formatUtils';
+import { TestMetricsContext } from './TestMetricsContext';
 
-export const PAGE = 'page';
+export const PAGE = 'p';
 export const ROWS_PER_PAGE = 'rows';
 export const FILTER = 'filter';
 export const DATE = 'date';
@@ -17,10 +17,10 @@ export const ASCENDING = 'asc';
 export const TIMELINE_VIEW = 'tl';
 export const TIMELINE_VIEW_METRIC = 'tlm';
 export const DIRECTORY_VIEW = 'dir';
-export const SORT_INDEX = 'ind';
+export const SORT_INDEX = 'sidx';
 
-function ResourcesParamControls() {
-  const { params } = useContext(MetricsContext);
+function TestMetricsSearchParams() {
+  const { params } = useContext(TestMetricsContext);
 
   const [, setSearchParams] = useSearchParams();
 
@@ -64,4 +64,4 @@ function ResourcesParamControls() {
   return (<></>);
 }
 
-export default ResourcesParamControls;
+export default TestMetricsSearchParams;

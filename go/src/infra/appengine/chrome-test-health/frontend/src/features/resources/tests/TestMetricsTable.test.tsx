@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import { screen } from '@testing-library/react';
-import { Node, Test } from '../context/MetricsContext';
-import { MetricType } from '../../api/resources';
-import { renderWithContext } from '../../utils/testUtils';
-import ResourcesTable from './ResourcesTable';
+import { MetricType } from '../../../api/resources';
+import { Node, Test } from './TestMetricsContext';
+import { renderWithContext } from './testUtils';
+import TestMetricsTable from './TestMetricsTable';
 
 const mockMetricTypeToNum: Map<MetricType, number> = new Map<MetricType, number>(
     [
@@ -54,7 +54,7 @@ const tests: Test[] = [{
 
 describe('when rendering the ResourcesTable', () => {
   it('snapshot view', () => {
-    renderWithContext(<ResourcesTable/>, { data: tests });
+    renderWithContext(<TestMetricsTable/>, { data: tests });
     expect(screen.getByTestId('tableBody')).toBeInTheDocument();
     expect(screen.getByText('Test Suite')).toBeInTheDocument();
     expect(screen.getByText('# Runs')).toBeInTheDocument();
@@ -64,7 +64,7 @@ describe('when rendering the ResourcesTable', () => {
     expect(screen.getByText('Avg Cores')).toBeInTheDocument();
   });
   it('timeline view', () => {
-    renderWithContext(<ResourcesTable/>, { data: tests, params: { timelineView: true }, datesToShow: ['1', '2'] });
+    renderWithContext(<TestMetricsTable/>, { data: tests, params: { timelineView: true }, datesToShow: ['1', '2'] });
     expect(screen.getByTestId('tableBody')).toBeInTheDocument();
     expect(screen.getByText('Test Suite')).toBeInTheDocument();
     expect(screen.getAllByTestId('timelineHeader')).toHaveLength(2);
@@ -77,7 +77,7 @@ describe('when rendering the ResourcesTable', () => {
       isLeaf: false,
       nodes: [],
     }];
-    renderWithContext(<ResourcesTable/>, { data: nodes, params: { directoryView: true }, datesToShow: ['1', '2'] });
+    renderWithContext(<TestMetricsTable/>, { data: nodes, params: { directoryView: true }, datesToShow: ['1', '2'] });
     expect(screen.getByTestId('tableBody')).toBeInTheDocument();
     expect(screen.getByText('src')).toBeInTheDocument();
     expect(screen.queryByTestId('tablePagination')).toBeNull();
@@ -86,7 +86,7 @@ describe('when rendering the ResourcesTable', () => {
 
 describe('when rendering the ResourcesTable', () => {
   it('should render loading screen', () => {
-    renderWithContext(<ResourcesTable/>, { data: [], isLoading: true });
+    renderWithContext(<TestMetricsTable/>, { data: [], isLoading: true });
     expect(screen.getByText('Loading...')).toBeInTheDocument();
     expect(screen.getByTestId('loading-bar')).not.toHaveClass(
         'hidden',

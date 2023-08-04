@@ -12,9 +12,9 @@ import { FetchDirectoryMetricsRequest, fetchDirectoryMetrics, DirectoryNode,
   fetchTestMetrics,
   FetchDirectoryMetricsResponse,
   DirectoryNodeType,
-} from '../../api/resources';
-import { formatDate } from '../../utils/formatUtils';
-import { Node, Params, Path, Test, isPath } from './MetricsContext';
+} from '../../../api/resources';
+import { formatDate } from '../../../utils/formatUtils';
+import { Node, Params, Path, Test, isPath } from './TestMetricsContext';
 
 export function computeDates(params: Params): string[] {
   const computedDates: string[] = [];

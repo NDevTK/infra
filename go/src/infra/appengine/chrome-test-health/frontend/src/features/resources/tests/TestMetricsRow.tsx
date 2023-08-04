@@ -4,9 +4,9 @@
 import { useContext, useState } from 'react';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { IconButton, TableCell, TableRow, styled } from '@mui/material';
-import { formatNumber, formatTime } from '../../utils/formatUtils';
-import { MetricType } from '../../api/resources';
-import { Node, MetricsContext } from '../context/MetricsContext';
+import { formatNumber, formatTime } from '../../../utils/formatUtils';
+import { MetricType } from '../../../api/resources';
+import { Node, TestMetricsContext } from './TestMetricsContext';
 
 export interface ResourcesRowProps {
   data: Node,
@@ -19,8 +19,8 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-function ResourcesRow(props: ResourcesRowProps) {
-  const { params, datesToShow } = useContext(MetricsContext);
+function TestMetricsRow(props: ResourcesRowProps) {
+  const { params, datesToShow } = useContext(TestMetricsContext);
   const [isOpen, setIsOpen] = useState(false);
   const rotate = isOpen ? 'rotate(0deg)' : 'rotate(270deg)';
 
@@ -91,7 +91,7 @@ function ResourcesRow(props: ResourcesRowProps) {
       {
         isOpen && props.data.nodes.length > 0 ? (
           props.data.nodes.map(
-              (row) => <ResourcesRow key={row.id} data={row} depth={props.depth + 1} />,
+              (row) => <TestMetricsRow key={row.id} data={row} depth={props.depth + 1} />,
           )
         ) : null
       }
@@ -99,4 +99,4 @@ function ResourcesRow(props: ResourcesRowProps) {
   );
 }
 
-export default ResourcesRow;
+export default TestMetricsRow;

@@ -4,8 +4,8 @@
 
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Box } from '@mui/material';
-import NavBar from './components/NavBar';
-import ResourcesPage from './pages/resources/ResourcesPage';
+import NavBar from './components/navbar/NavBar';
+import TestsPage from './pages/resources/TestsPage';
 import { ComponentContextProvider } from './features/components/ComponentContext';
 import { COMPONENT } from './features/components/ComponentParams';
 
@@ -22,7 +22,7 @@ const App = () => {
           <Box component="main" sx={{ flexGrow: 1, marginTop: '74px' }}>
             <Routes>
               <Route path="/" element={<Navigate to='resources/tests'/>} />
-              <Route path="/resources/tests" element={<ResourcesPage/>} />
+              <Route path="/resources/tests" element={<TestsPage/>} />
             </Routes>
           </Box>
         </ComponentContextProvider>

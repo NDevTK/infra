@@ -9,9 +9,9 @@ import {
   TestDateMetricData,
   MetricsDateMap,
   DirectoryNode,
-  DirectoryNodeType } from '../../api/resources';
-import { computeDates, dataReducer, getLoadedParentIds } from './LoadMetrics';
-import { Node, Path, Test } from './MetricsContext';
+  DirectoryNodeType } from '../../../api/resources';
+import { computeDates, dataReducer, getLoadedParentIds } from './LoadTestMetrics';
+import { Node, Path, Test } from './TestMetricsContext';
 
 function metricsMap(
     metrics: {[date: string]: [MetricType, number][]},
@@ -158,8 +158,8 @@ describe('merge_test action', () => {
 
     expect(merged[0].nodes).toHaveLength(1);
     const v = merged[0].nodes[0];
-    expect(v.name).toEqual(tests[0].variants[0].bucket
-      + '/' +tests[0].variants[0].builder);
+    expect(v.name).toEqual(tests[0].variants[0].bucket +
+      '/' +tests[0].variants[0].builder);
     expect(v.subname).toEqual(tests[0].variants[0].suite);
     expect(v.metrics.size).toEqual(1);
     expect(v.metrics.get('2012-01-02')?.get(MetricType.NUM_RUNS)).toEqual(3);

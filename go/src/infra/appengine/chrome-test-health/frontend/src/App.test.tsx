@@ -31,7 +31,7 @@ describe('when rendering the App', () => {
     jest.spyOn(ComponentContextP, 'ComponentContextProvider').mockImplementation((props) => {
       return mockComponentContext(props);
     });
-    window.location.search = 'https://test.com?placeholder=p&comp=Admin';
+    window.location.search = 'https://localhost/?placeholder=p&comp=Admin';
     render(<App/>);
     expect(mockComponentContext).toHaveBeenCalledWith(
         expect.objectContaining({

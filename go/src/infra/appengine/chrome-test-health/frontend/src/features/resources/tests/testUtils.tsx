@@ -5,8 +5,14 @@
 import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { ReactElement } from 'react';
-import { MetricsContext, Api, Node, MetricsContextValue, Params } from '../features/context/MetricsContext';
-import { MetricType, Period, SortType } from '../api/resources';
+import { MetricType, Period, SortType } from '../../../api/resources';
+import {
+  Api,
+  Node,
+  Params,
+  TestMetricsContext,
+  TestMetricsContextValue,
+} from './TestMetricsContext';
 
 export interface OptionalContext {
   data?: Node[],
@@ -82,7 +88,7 @@ export function renderWithContext(
     ui: ReactElement,
     opts: OptionalContext = {},
 ) {
-  const ctx : MetricsContextValue = {
+  const ctx : TestMetricsContextValue = {
     data: opts.data || [],
     datesToShow: opts.datesToShow || [],
     lastPage: opts.lastPage || true,
@@ -116,9 +122,9 @@ export function renderWithContext(
   };
   render(
       <BrowserRouter>
-        <MetricsContext.Provider value= {ctx}>
+        <TestMetricsContext.Provider value= {ctx}>
           {ui}
-        </MetricsContext.Provider>
+        </TestMetricsContext.Provider>
       </BrowserRouter>,
   );
 }

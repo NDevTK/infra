@@ -4,10 +4,10 @@
 */
 
 import { act } from '@testing-library/react';
-import { renderWithContext } from '../../utils/testUtils';
-import { Params } from '../context/MetricsContext';
-import { MetricType, Period, SortType } from '../../api/resources';
-import ResourcesParamControls, {
+import { MetricType, Period, SortType } from '../../../api/resources';
+import { renderWithContext } from './testUtils';
+import { Params } from './TestMetricsContext';
+import TestMetricsSearchParams, {
   ASCENDING,
   DATE,
   FILTER,
@@ -19,7 +19,7 @@ import ResourcesParamControls, {
   DIRECTORY_VIEW,
   SORT_INDEX,
   TIMELINE_VIEW_METRIC,
-} from './ResourcesSearchParams';
+} from './TestMetricsSearchParams';
 
 describe('when rendering the ResourcesSearchParams', () => {
   it('should render url corrently', async () => {
@@ -39,7 +39,7 @@ describe('when rendering the ResourcesSearchParams', () => {
 
     await act(async () => {
       renderWithContext(<>
-        <ResourcesParamControls/>
+        <TestMetricsSearchParams/>
       </>
       , { params },
       );
@@ -75,7 +75,7 @@ describe('when rendering the ResourcesSearchParams', () => {
 
     await act(async () => {
       renderWithContext(<>
-        <ResourcesParamControls/>
+        <TestMetricsSearchParams/>
       </>
       , { params },
       );

@@ -9,11 +9,11 @@ import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useContext, useEffect, useState } from 'react';
-import { MetricType, Period } from '../../api/resources';
-import { MetricsContext } from '../context/MetricsContext';
+import { MetricType, Period } from '../../../api/resources';
+import { TestMetricsContext } from './TestMetricsContext';
 
-function ResourcesToolbar() {
-  const { api, params } = useContext(MetricsContext);
+function TestMetricsToolbar() {
+  const { api, params } = useContext(TestMetricsContext);
   const [filter, setFilter] = useState(params.filter);
 
   const handleFilterChange = (event) => {
@@ -167,4 +167,4 @@ function ResourcesToolbar() {
   );
 }
 
-export default ResourcesToolbar;
+export default TestMetricsToolbar;

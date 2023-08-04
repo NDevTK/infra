@@ -13,12 +13,17 @@ import {
   SortType,
   TestDateMetricData,
   isTestMetricsResponse,
-} from '../../api/resources';
-import { formatDate } from '../../utils/formatUtils';
-import { ComponentContext } from '../components/ComponentContext';
-import { dataReducer, getLoadedParentIds, loadDirectoryMetrics, loadTestMetrics } from './LoadMetrics';
+} from '../../../api/resources';
+import { formatDate } from '../../../utils/formatUtils';
+import { ComponentContext } from '../../components/ComponentContext';
+import {
+  dataReducer,
+  getLoadedParentIds,
+  loadDirectoryMetrics,
+  loadTestMetrics,
+} from './LoadTestMetrics';
 
-type MetricsContextProviderProps = {
+type TestMetricsContextProviderProps = {
   page: number,
   rowsPerPage: number,
   filter: string,
@@ -64,7 +69,7 @@ export interface Test extends Node {
 // configuration (builder, suite)
 export type TestVariant = Node
 
-export interface MetricsContextValue {
+export interface TestMetricsContextValue {
   data: Node[],
   datesToShow: string[],
   lastPage: boolean,
@@ -105,7 +110,7 @@ export interface Api {
     updateDirectoryView: (directoryView: boolean) => void,
 }
 
-export const MetricsContext = createContext<MetricsContextValue>(
+export const TestMetricsContext = createContext<TestMetricsContextValue>(
     {
       data: [],
       datesToShow: [] as string[],
@@ -185,7 +190,7 @@ function snapToPeriod(date: Date) {
   ret.setDate(ret.getDate() - ret.getDay());
   return ret;
 }
-export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
+export const TestMetricsContextProvider = (props : TestMetricsContextProviderProps) => {
   const { components } = useContext(ComponentContext);
   const [page, setPage] = useState(props.page);
   const [rowsPerPage, setRowsPerPage] = useState(props.rowsPerPage);
@@ -459,10 +464,10 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
   };
 
   return (
-    <MetricsContext.Provider value={{ data, datesToShow, lastPage, isLoading: loading.isLoading, api, params }}>
+    <TestMetricsContext.Provider value={{ data, datesToShow, lastPage, isLoading: loading.isLoading, api, params }}>
       { props.children }
-    </MetricsContext.Provider>
+    </TestMetricsContext.Provider>
   );
 };
 
-export default MetricsContext;
+export default TestMetricsContext;

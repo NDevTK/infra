@@ -5,11 +5,11 @@
 import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { ReactElement } from 'react';
-import * as MetricsContextP from '../../features/context/MetricsContext';
+import * as TestMetricsContext from '../../features/resources/tests/TestMetricsContext';
 import { Period, SortType } from '../../api/resources';
-import { ROWS_PER_PAGE } from '../../features/resources/ResourcesSearchParams';
+import { ROWS_PER_PAGE } from '../../features/resources/tests/TestMetricsSearchParams';
 import { formatDate } from '../../utils/formatUtils';
-import ResourcesPage from './ResourcesPage';
+import TestsPage from './TestsPage';
 
 export function renderWithBrowserRouter(
     ui: ReactElement,
@@ -21,19 +21,19 @@ export function renderWithBrowserRouter(
   );
 }
 
-describe('when rendering the ResourcesPage', () => {
+describe('when rendering the TestsPage', () => {
   // This is needed to allow us to modify window.location
   Object.defineProperty(window, 'location', {
     writable: true,
     value: { assign: jest.fn() },
   });
   it('should pass in default values', async () => {
-    const mockMetricsContext = jest.fn();
-    jest.spyOn(MetricsContextP, 'MetricsContextProvider').mockImplementation((props) => {
-      return mockMetricsContext(props);
+    const mockContext = jest.fn();
+    jest.spyOn(TestMetricsContext, 'TestMetricsContextProvider').mockImplementation((props) => {
+      return mockContext(props);
     });
-    renderWithBrowserRouter(<ResourcesPage/>);
-    expect(mockMetricsContext).toHaveBeenCalledWith(
+    renderWithBrowserRouter(<TestsPage/>);
+    expect(mockContext).toHaveBeenCalledWith(
         expect.objectContaining({
           page: 0,
           rowsPerPage: 50,
@@ -47,17 +47,17 @@ describe('when rendering the ResourcesPage', () => {
         }),
     );
     // Adding this check here to verify dates are correct
-    expect(formatDate(mockMetricsContext.mock.calls[0][0].date)).toEqual(formatDate(new Date()));
+    expect(formatDate(mockContext.mock.calls[0][0].date)).toEqual(formatDate(new Date()));
   });
   it('should pass in url param values', async () => {
-    const mockMetricsContext = jest.fn();
-    jest.spyOn(MetricsContextP, 'MetricsContextProvider').mockImplementation((props) => {
-      return mockMetricsContext(props);
+    const mockContext = jest.fn();
+    jest.spyOn(TestMetricsContext, 'TestMetricsContextProvider').mockImplementation((props) => {
+      return mockContext(props);
     });
-    window.location.search = 'https://test.com/?placeholder'+
-    '=placeholder&page=10&rows=500&filter=filter&period=1&sort=2&asc=true&ind=2&tl=true&dir=true';
-    renderWithBrowserRouter(<ResourcesPage/>);
-    expect(mockMetricsContext).toHaveBeenCalledWith(
+    window.location.search = 'https://localhost/?placeholder'+
+    '=placeholder&p=10&rows=500&filter=filter&period=1&sort=2&asc=true&sidx=2&tl=true&dir=true';
+    renderWithBrowserRouter(<TestsPage/>);
+    expect(mockContext).toHaveBeenCalledWith(
         expect.objectContaining({
           page: 10,
           rowsPerPage: 500,
@@ -71,17 +71,17 @@ describe('when rendering the ResourcesPage', () => {
         }),
     );
     // Adding this check here to verify dates are correct
-    expect(formatDate(mockMetricsContext.mock.calls[0][0].date)).toEqual(formatDate(new Date()));
+    expect(formatDate(mockContext.mock.calls[0][0].date)).toEqual(formatDate(new Date()));
   });
   it('should pass in local storage values', async () => {
-    const mockMetricsContext = jest.fn();
+    const mockContext = jest.fn();
     window.location.search = '';
-    jest.spyOn(MetricsContextP, 'MetricsContextProvider').mockImplementation((props) => {
-      return mockMetricsContext(props);
+    jest.spyOn(TestMetricsContext, 'TestMetricsContextProvider').mockImplementation((props) => {
+      return mockContext(props);
     });
     localStorage.setItem(ROWS_PER_PAGE, '250');
-    renderWithBrowserRouter(<ResourcesPage/>);
-    expect(mockMetricsContext).toHaveBeenCalledWith(
+    renderWithBrowserRouter(<TestsPage/>);
+    expect(mockContext).toHaveBeenCalledWith(
         expect.objectContaining({
           rowsPerPage: 250,
         }),

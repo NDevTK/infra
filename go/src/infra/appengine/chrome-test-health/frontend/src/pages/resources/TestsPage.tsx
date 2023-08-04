@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import { Box } from '@mui/material';
-import ResourcesTable from '../../features/resources/ResourcesTable';
-import { MetricsContextProvider } from '../../features/context/MetricsContext';
-import ResourcesToolbar from '../../features/resources/ResourcesToolbar';
-import ResourcesSearchParams, {
+import TestMetricsTable from '../../features/resources/tests/TestMetricsTable';
+import { TestMetricsContextProvider } from '../../features/resources/tests/TestMetricsContext';
+import TestMetricsToolbar from '../../features/resources/tests/TestMetricsToolbar';
+import TestMetricsSearchParams, {
   ASCENDING,
   DATE,
   DIRECTORY_VIEW,
@@ -18,11 +18,11 @@ import ResourcesSearchParams, {
   SORT_INDEX,
   TIMELINE_VIEW,
   TIMELINE_VIEW_METRIC,
-} from '../../features/resources/ResourcesSearchParams';
+} from '../../features/resources/tests/TestMetricsSearchParams';
 import ComponentParams from '../../features/components/ComponentParams';
 import { MetricType, Period, SortType } from '../../api/resources';
 
-function ResourcesPage() {
+function TestsPage() {
   const params = new URLSearchParams(window.location.search);
   const props = {
     page: Number(params.get(PAGE) || 0),
@@ -44,15 +44,15 @@ function ResourcesPage() {
     directoryView: params.get(DIRECTORY_VIEW) === 'true',
   };
   return (
-    <MetricsContextProvider {...props}>
-      <ResourcesToolbar/>
+    <TestMetricsContextProvider {...props}>
+      <TestMetricsToolbar/>
       <Box sx={{ margin: '10px 20px' }}>
-        <ResourcesTable/>
+        <TestMetricsTable/>
       </Box>
-      <ResourcesSearchParams/>
+      <TestMetricsSearchParams/>
       <ComponentParams/>
-    </MetricsContextProvider>
+    </TestMetricsContextProvider>
   );
 }
 
-export default ResourcesPage;
+export default TestsPage;

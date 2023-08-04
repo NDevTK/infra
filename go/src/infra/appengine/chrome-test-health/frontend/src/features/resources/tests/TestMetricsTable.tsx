@@ -13,13 +13,13 @@ import { useContext } from 'react';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { Box, Button, LinearProgress, TableFooter, TablePagination } from '@mui/material';
-import { SortType } from '../../api/resources';
-import { MetricsContext, convertToSortIndex } from '../context/MetricsContext';
-import ResourcesRow from './ResourcesRow';
-import styles from './ResourcesTable.module.css';
+import { SortType } from '../../../api/resources';
+import { TestMetricsContext, convertToSortIndex } from './TestMetricsContext';
+import TestMetricsRow from './TestMetricsRow';
+import styles from './TestMetricsTable.module.css';
 
-function ResourcesTable() {
-  const { data, lastPage, isLoading, api, params, datesToShow } = useContext(MetricsContext);
+function TestMetricsTable() {
+  const { data, lastPage, isLoading, api, params, datesToShow } = useContext(TestMetricsContext);
 
   const handleChangePage = (
       _: React.MouseEvent<HTMLButtonElement> | null,
@@ -149,7 +149,7 @@ function ResourcesTable() {
           <TableBody data-testid="tableBody">
             {data.length > 0 ?
              data.map(
-                 (row) => <ResourcesRow key={row.id} data={row} depth={0}/>,
+                 (row) => <TestMetricsRow key={row.id} data={row} depth={0}/>,
              ) : tableMessageBoard(isLoading ? 'Loading...' : 'No data available')}
           </TableBody>
           {params.directoryView ? null : (
@@ -174,4 +174,4 @@ function ResourcesTable() {
   );
 }
 
-export default ResourcesTable;
+export default TestMetricsTable;

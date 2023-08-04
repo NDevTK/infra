@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import { screen } from '@testing-library/react';
-import { renderWithContext } from '../../utils/testUtils';
-import ResourcesToolbar from './ResourcesToolbar';
+import { renderWithContext } from './testUtils';
+import TestMetricsToolbar from './TestMetricsToolbar';
 
 describe('when rendering the ResourcesTableToolbar', () => {
   it('should render toolbar elements', () => {
-    renderWithContext(<ResourcesToolbar/>, { params: { timelineView: true } });
+    renderWithContext(<TestMetricsToolbar/>, { params: { timelineView: true } });
     expect(screen.getByTestId('CalendarIcon')).toBeInTheDocument();
     expect(screen.getByRole('textbox', {
       name: /date/i,
