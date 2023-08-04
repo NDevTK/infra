@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d229bc99_8e43449d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378662
+      },
+      "writtenOn": "2023-08-04T04:16:02Z",
+      "side": 1,
+      "message": "We can\u0027t test the behaviour because the default path (under ~/.local) is hard coded in python.",
+      "revId": "22769505fe0f4a32cd2740de89e3275239184955",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
