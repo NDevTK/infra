@@ -22,6 +22,18 @@ func fetchOpenWrtBuildInfoExec(ctx context.Context, info *execs.ExecInfo) error 
 	return nil
 }
 
+func fetchOpenWrtConfigExec(ctx context.Context, info *execs.ExecInfo) error {
+	c, err := activeHostOpenWrtRouterController(ctx, info)
+	if err != nil {
+		return errors.Annotate(err, "fetch openwrt config").Err()
+	}
+	if err := c.FetchGlobalImageConfig(ctx); err != nil {
+		return errors.Annotate(err, "failed to fetch device build info").Err()
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("wifi_router_openwrt_fetch_build_info", fetchOpenWrtBuildInfoExec)
+	execs.Register("wifi_router_openwrt_fetch_config", fetchOpenWrtConfigExec)
 }
