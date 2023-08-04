@@ -242,7 +242,7 @@ func writeAllValues(c context.Context, values map[string]string) error {
 }
 
 // WriteSettings persists the settings values.
-func (SettingsPage) WriteSettings(c context.Context, values map[string]string, who, why string) error {
+func (SettingsPage) WriteSettings(c context.Context, values map[string]string) error {
 	// Putting the write logic in a function outside of WriteSettings makes unit testing easier.
 	return writeAllValues(c, values)
 }
