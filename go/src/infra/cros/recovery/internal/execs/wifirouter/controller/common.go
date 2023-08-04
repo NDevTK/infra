@@ -20,6 +20,10 @@ import (
 	"infra/cros/recovery/tlw"
 )
 
+// wifiRouterArtifactsGCSBasePath is the base Google Cloud Storage path for
+// all wifi-related ChromeOS connectivity test artifact GCS objects.
+const wifiRouterArtifactsGCSBasePath = "gs://chromeos-connectivity-test-artifacts/wifi_router"
+
 // invalidDeviceNameCharacterRegex matches one or more invalid device name
 // characters and underscores so that they may be replaced with a single
 // underscore.
