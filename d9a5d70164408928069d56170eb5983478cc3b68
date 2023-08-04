@@ -48,6 +48,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ada59b2f_5e027b46",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1180,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-08-04T06:00:15Z",
+      "side": 1,
+      "message": "I think filename is bit ambiguous as it can be interpreted as basename.",
+      "parentUuid": "47b93570_1d2aa701",
+      "range": {
+        "startLine": 1180,
+        "startChar": 20,
+        "endLine": 1180,
+        "endChar": 28
+      },
+      "revId": "d9a5d70164408928069d56170eb5983478cc3b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "480f980e_df324187",

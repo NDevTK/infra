@@ -16,6 +16,132 @@
       "message": "It\u0027s not easy to review this CL. But this CL works for the new test case and the old one. So it guarantees the behaviors.",
       "revId": "f8f6d677ce411490fd1f4b4b669dcd0af0e630d2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7562fa63_8e4f6786",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 1193,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-08-04T06:00:15Z",
+      "side": 1,
+      "message": "It is fine to declare in L1194?",
+      "revId": "f8f6d677ce411490fd1f4b4b669dcd0af0e630d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c18fa9dd_3735b0e2",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 1357,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-08-04T06:00:15Z",
+      "side": 1,
+      "message": "What is this \u0027it\u0027? `next` or resolveNextDir?",
+      "range": {
+        "startLine": 1357,
+        "startChar": 3,
+        "endLine": 1357,
+        "endChar": 5
+      },
+      "revId": "f8f6d677ce411490fd1f4b4b669dcd0af0e630d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "69d6e345_2301cfab",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 1407,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-08-04T06:00:15Z",
+      "side": 1,
+      "message": "Better to return early in !ok case for shallower nest?",
+      "revId": "f8f6d677ce411490fd1f4b4b669dcd0af0e630d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3d034dc9_aade2e57",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 1425,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-08-04T06:00:15Z",
+      "side": 1,
+      "message": "This?",
+      "range": {
+        "startLine": 1425,
+        "startChar": 3,
+        "endLine": 1425,
+        "endChar": 5
+      },
+      "revId": "f8f6d677ce411490fd1f4b4b669dcd0af0e630d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "75b3582e_8a900ff1",
+        "filename": "go/src/infra/build/siso/hashfs/fs_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 723,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-08-04T06:00:15Z",
+      "side": 1,
+      "message": "This and L756-759 can be extracted from this t.Run?",
+      "range": {
+        "startLine": 720,
+        "startChar": 3,
+        "endLine": 723,
+        "endChar": 0
+      },
+      "revId": "f8f6d677ce411490fd1f4b4b669dcd0af0e630d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ed4c10e5_be669eb9",
+        "filename": "go/src/infra/build/siso/hashfs/fs_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 729,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-08-04T06:00:15Z",
+      "side": 1,
+      "message": "ditto but with maybe with t.Cleanup?",
+      "range": {
+        "startLine": 724,
+        "startChar": 0,
+        "endLine": 729,
+        "endChar": 7
+      },
+      "revId": "f8f6d677ce411490fd1f4b4b669dcd0af0e630d2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
