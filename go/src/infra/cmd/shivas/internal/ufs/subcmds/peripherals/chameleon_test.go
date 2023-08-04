@@ -5,6 +5,7 @@
 package peripherals
 
 import (
+	"fmt"
 	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	"strings"
 	"testing"
@@ -60,6 +61,20 @@ func TestChameleonCleanAndValidateFlags(t *testing.T) {
 			},
 			want: []string{errDuplicateType},
 		},
+
+		// TRRS Type tests
+		{
+			cmd: &manageChamCmd{
+				hostname:     "h1",
+				dutName:      "d",
+				trrsTypeName: "abcd",
+			},
+			want: []string{
+				fmt.Sprintf(
+					"Invalid TRRS type specified (ABCD), only supports (%s)",
+					strings.Join(supportedTrrsTypes(), ","),
+				)},
+		},
 	}
 
 	for _, tt := range errTests {
@@ -75,18 +90,41 @@ func TestChameleonCleanAndValidateFlags(t *testing.T) {
 		}
 	}
 
+	validTests := []*manageChamCmd{
+		{
+			dutName:     "d",
+			hostname:    "h1",
+			types:       []string{"v2", "v3"},
+			rpmHostname: "rmp",
+			rpmOutlet:   "123",
+			mode:        actionAdd,
+		},
+
+		// TRRS Type tests
+		{
+			hostname:     "h1",
+			dutName:      "d",
+			trrsTypeName: "ctia",
+		},
+		{
+			hostname:     "h1",
+			dutName:      "d",
+			trrsTypeName: "",
+		},
+		{
+			hostname:     "h1",
+			dutName:      "d",
+			trrsTypeName: "OMTP",
+		},
+	}
+
 	// Test valid flags with hostname cleanup
-	c := &manageChamCmd{
-		dutName:     "d",
-		hostname:    "h1",
-		types:       []string{"v2", "v3"},
-		rpmHostname: "rmp",
-		rpmOutlet:   "123",
-		mode:        actionAdd,
+	for _, c := range validTests {
+		if err := c.cleanAndValidateFlags(); err != nil {
+			t.Errorf("cleanAndValidateFlags = %v; want nil", err)
+		}
 	}
-	if err := c.cleanAndValidateFlags(); err != nil {
-		t.Errorf("cleanAndValidateFlags = %v; want nil", err)
-	}
+
 }
 
 func TestAddCham(t *testing.T) {

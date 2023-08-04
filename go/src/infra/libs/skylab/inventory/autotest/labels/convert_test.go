@@ -82,6 +82,7 @@ peripherals: {
   chameleon: true
   chameleon_state: 1
   audiobox_jackplugger_state: 1
+  trrs_type: 1
   camerabox: true
   camerabox_facing: 1
   camerabox_light: 1
@@ -304,6 +305,7 @@ var fullLabels = []string{
 	"test_usbprinting",
 	"touchpad",
 	"touchscreen",
+	"trrs_type:CTIA",
 	"usb_detect",
 	"use_lid",
 	"variant:somevariant",
@@ -686,6 +688,7 @@ peripherals: {
   chameleon: true
   chameleon_state: 1
   audiobox_jackplugger_state: 1
+  trrs_type: 1
   camerabox: true
   camerabox_facing: 1
   camerabox_light: 1
@@ -814,6 +817,7 @@ var fullLabelsSpecial = []string{
 	"chameleon:hdmi",
 	"chameleon_state:WORKING",
 	"audiobox_jackplugger_state:WORKING",
+	"trrs_type:CTIA",
 	"chaos_dut",
 	"chaos_nightly",
 	"chromesign",
