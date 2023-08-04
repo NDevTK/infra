@@ -3,6 +3,52 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1d1613b4_b10dcdde",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 8
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2023-08-04T01:01:46Z",
+      "side": 1,
+      "message": "What is a \"registered\" builder? Can you give an example of an unregistered builder?",
+      "range": {
+        "startLine": 12,
+        "startChar": 12,
+        "endLine": 12,
+        "endChar": 40
+      },
+      "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ab30ec21_ce484bd7",
+        "filename": "go/src/infra/cr_builder_value/generate.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2023-08-04T01:01:46Z",
+      "side": 1,
+      "message": "You\u0027re hard-coding \"chromium\" at line 39 below though?",
+      "range": {
+        "startLine": 23,
+        "startChar": 1,
+        "endLine": 23,
+        "endChar": 40
+      },
+      "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "18f75046_bf054fd9",
         "filename": "go/src/infra/cr_builder_value/generate.go",
         "patchSetId": 8
@@ -50,6 +96,23 @@
       "side": 1,
       "message": "Ah of course",
       "parentUuid": "b02bdd1f_400e00ed",
+      "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c1750de3_9915aaa2",
+        "filename": "go/src/infra/cr_builder_value/main.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2023-08-04T01:01:46Z",
+      "side": 1,
+      "message": "Can you add either a README to this dir or a docstring here explaining what this program is for/what it does?\n\nAlso, should this be moved under go/src/infra/chromium/ ?",
       "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
