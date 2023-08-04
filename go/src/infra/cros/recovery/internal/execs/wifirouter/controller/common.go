@@ -10,10 +10,13 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
+	"infra/cros/recovery/internal/retry"
+	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/tlw"
 )
 
@@ -224,4 +227,86 @@ func RemoteFileContentsMatch(ctx context.Context, sshRunner ssh.Runner, remoteFi
 		return false, err
 	}
 	return matcher.MatchString(fileContents), nil
+}
+
+// CacheAccess is a subset of tlw.Access that just has the ability to access the
+// cache server.
+type CacheAccess interface {
+	// GetCacheUrl provides URL to download requested path to file.
+	// URL will use to download image to USB-drive and provisioning.
+	GetCacheUrl(ctx context.Context, resourceName, filePath string) (string, error)
+}
+
+// ReadFileFromCacheServer downloads a file from the cache server through
+// the router host and then returns its contents as a string. No temporary file
+// is used on the router host, as its contents are taken from the stdout of
+// wget.
+//
+// The cache server will download the file from GCS if it is not already cached.
+//
+// If the download from the cache server fails, it will be reattempted every
+// 1 second up until the downloadTimeout is reached.
+func ReadFileFromCacheServer(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, hostResource string, downloadTimeout time.Duration, srcFilePath string) (string, error) {
+	// Prepare file for download from cache server.
+	downloadURL, err := cacheAccess.GetCacheUrl(ctx, hostResource, srcFilePath)
+	if err != nil {
+		return "", errors.Annotate(err, "failed to get download URL from cache server for file path %q", srcFilePath).Err()
+	}
+	// Download file from cache server to router with wget and output to stdout.
+	// Retry every second until the timeout is reached, as it make take some
+	// time for the cache server to prepare the file.
+	var lastStdout string
+	var lastHttpErrorCode int
+	if err := retry.WithTimeout(ctx, time.Second, downloadTimeout, func() error {
+		var err error
+		lastStdout, _, lastHttpErrorCode, err = ssh.WgetURL(ctx, sshRunner, downloadTimeout, downloadURL, "-q", "-O", "-")
+		return err
+	}, fmt.Sprintf("router host download %q from cache server", downloadURL)); err != nil {
+		reportCacheFailedMetric(ctx, downloadURL, lastHttpErrorCode)
+		return "", errors.Annotate(err, "failed to download %q from cache server to router with wget", downloadURL).Err()
+	}
+	return lastStdout, nil
+}
+
+// DownloadFileFromCacheServer downloads a file from the cache server to the
+// router host.
+//
+// The cache server will download the file from GCS if it is not already cached.
+//
+// If the download from the cache server fails, it will be reattempted every
+// 1 second up until the downloadTimeout is reached.
+func DownloadFileFromCacheServer(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, hostResource string, downloadTimeout time.Duration, srcFilePath, dstFilePath string) error {
+	// Prepare file for download from cache server.
+	downloadURL, err := cacheAccess.GetCacheUrl(ctx, hostResource, srcFilePath)
+	if err != nil {
+		return errors.Annotate(err, "failed to get download URL from cache server for file path %q", srcFilePath).Err()
+	}
+	// Download file from cache server to router with wget to dstFilePath.
+	// Retry every second until the timeout is reached, as it make take some
+	// time for the cache server to prepare the file.
+	var lastHttpErrorCode int
+	if err := retry.WithTimeout(ctx, time.Second, downloadTimeout, func() error {
+		var err error
+		_, _, lastHttpErrorCode, err = ssh.WgetURL(ctx, sshRunner, downloadTimeout, downloadURL, "-O", dstFilePath)
+		return err
+	}, fmt.Sprintf("router host download %q from cache server", downloadURL)); err != nil {
+		reportCacheFailedMetric(ctx, downloadURL, lastHttpErrorCode)
+		return errors.Annotate(err, "failed to download %q from cache server to router with wget", downloadURL).Err()
+	}
+	return nil
+}
+
+// reportCacheFailedMetric adds metrics related to downloads from the cache
+// server failing.
+func reportCacheFailedMetric(ctx context.Context, sourcePath string, httpResponseCode int) {
+	if httpResponseCode >= 500 {
+		// Non-500 errors are recorded by caching service.
+		// We are only interested in 500 errors coming from the caching service.
+		if execMetric := metrics.GetDefaultAction(ctx); execMetric != nil {
+			execMetric.Observations = append(execMetric.Observations,
+				metrics.NewInt64Observation("cache_failed_response_code", int64(httpResponseCode)),
+				metrics.NewStringObservation("cache_failed_source_path", sourcePath),
+			)
+		}
+	}
 }
