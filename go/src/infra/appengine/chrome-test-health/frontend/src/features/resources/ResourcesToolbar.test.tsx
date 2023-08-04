@@ -8,7 +8,7 @@ import ResourcesToolbar from './ResourcesToolbar';
 
 describe('when rendering the ResourcesTableToolbar', () => {
   it('should render toolbar elements', () => {
-    renderWithContext(<ResourcesToolbar/>);
+    renderWithContext(<ResourcesToolbar/>, { params: { timelineView: true } });
     expect(screen.getByTestId('CalendarIcon')).toBeInTheDocument();
     expect(screen.getByRole('textbox', {
       name: /date/i,
@@ -16,5 +16,6 @@ describe('when rendering the ResourcesTableToolbar', () => {
     expect(screen.getByTestId('formControlTest')).toBeInTheDocument();
     expect(screen.getByTestId('textFieldTest')).toBeInTheDocument();
     expect(screen.getByTestId('timelineViewToggle')).toBeInTheDocument();
+    expect(screen.getByTestId('formControlMetricTest')).toBeInTheDocument();
   });
 });

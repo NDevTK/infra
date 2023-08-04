@@ -34,7 +34,7 @@ function ResourcesTable() {
   };
 
   const handleSortType = (event) => {
-    if (Number(params.sort) as SortType === event as SortType) {
+    if (params.sort === event as SortType) {
       api.updateAscending(!params.ascending);
     } else {
       api.updateSort(event);
@@ -79,10 +79,10 @@ function ResourcesTable() {
       >
         {date}
         {
-        params.ascending ?
+        params.sort !== SortType.SORT_NAME ? (params.ascending ?
         <ArrowUpwardIcon className={datesToShow[params.sortIndex] === date ? styles.icon : styles.iconNoShow}/> :
-        <ArrowDownwardIcon className={datesToShow[params.sortIndex] === date ? styles.icon : styles.iconNoShow}/>
-        }
+        <ArrowDownwardIcon className={datesToShow[params.sortIndex] === date ? styles.icon : styles.iconNoShow}/>) :
+        null}
       </Button>
     );
   }

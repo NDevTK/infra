@@ -6,7 +6,7 @@
 import { act } from '@testing-library/react';
 import { renderWithContext } from '../../utils/testUtils';
 import { Params } from '../context/MetricsContext';
-import { Period, SortType } from '../../api/resources';
+import { MetricType, Period, SortType } from '../../api/resources';
 import ResourcesParamControls, {
   ASCENDING,
   DATE,
@@ -18,6 +18,7 @@ import ResourcesParamControls, {
   TIMELINE_VIEW,
   DIRECTORY_VIEW,
   SORT_INDEX,
+  TIMELINE_VIEW_METRIC,
 } from './ResourcesSearchParams';
 
 describe('when rendering the ResourcesSearchParams', () => {
@@ -31,6 +32,7 @@ describe('when rendering the ResourcesSearchParams', () => {
       sort: SortType.SORT_NAME,
       ascending: true,
       sortIndex: 0,
+      timelineMetric: MetricType.AVG_CORES,
       timelineView: true,
       directoryView: false,
     };
@@ -51,6 +53,7 @@ describe('when rendering the ResourcesSearchParams', () => {
     expect(searchParams.get(SORT_BY)).toBe(SortType.SORT_NAME.toString());
     expect(searchParams.get(ASCENDING)).toBe('true');
     expect(searchParams.get(TIMELINE_VIEW)).toBe('true');
+    expect(searchParams.get(TIMELINE_VIEW_METRIC)).toBe('AVG_CORES');
     expect(searchParams.get(DIRECTORY_VIEW)).toBe('false');
     expect(searchParams.get(SORT_INDEX)).toBe('0');
     expect(global.localStorage.getItem(ROWS_PER_PAGE)).toEqual('25');
@@ -65,6 +68,7 @@ describe('when rendering the ResourcesSearchParams', () => {
       sort: SortType.SORT_NAME,
       ascending: true,
       sortIndex: 0,
+      timelineMetric: MetricType.AVG_CORES,
       timelineView: false,
       directoryView: true,
     };

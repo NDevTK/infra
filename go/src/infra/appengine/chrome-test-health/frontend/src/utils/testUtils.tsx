@@ -6,7 +6,7 @@ import { render } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { ReactElement } from 'react';
 import { MetricsContext, Api, Node, MetricsContextValue, Params } from '../features/context/MetricsContext';
-import { Period, SortType } from '../api/resources';
+import { MetricType, Period, SortType } from '../api/resources';
 
 export interface OptionalContext {
   data?: Node[],
@@ -24,6 +24,7 @@ export interface OptionalContext {
     ascending?: boolean,
     sortDate?: string,
     sortIndex?: number,
+    timelineMetric?: MetricType,
     timelineView?: boolean,
     directoryView?: boolean,
   },
@@ -44,6 +45,7 @@ export interface OptionalApi {
   updateAscending: (ascending: boolean) => void,
   updateSortDate: (date: string) => void,
   updateSortIndex: (index: number) => void,
+  updateTimelineMetric: (metric: MetricType) => void,
   updateTimelineView: (timelineView: boolean) => void,
   updateDirectoryView: (directoryView: boolean) => void,
 }
@@ -57,6 +59,7 @@ const defaultApi: Api = {
   updateSort: () => {/**/},
   updateAscending: () => {/**/},
   updateSortIndex: () => {/**/},
+  updateTimelineMetric: () => {/**/},
   updateTimelineView: () => {/**/},
   updateDirectoryView: () => {/**/},
 };
@@ -70,6 +73,7 @@ const defaultParams: Params = {
   sort: SortType.SORT_NAME,
   ascending: true,
   sortIndex: 0,
+  timelineMetric: MetricType.AVG_CORES,
   timelineView: false,
   directoryView: false,
 };
@@ -91,6 +95,7 @@ export function renderWithContext(
       updateSort: opts.api?.updateSort || defaultApi.updateSort,
       updateAscending: opts.api?.updateAscending || defaultApi.updateAscending,
       updateSortIndex: opts.api?.updateSortIndex || defaultApi.updateSortIndex,
+      updateTimelineMetric: opts.api?.updateTimelineMetric || defaultApi.updateTimelineMetric,
       updateTimelineView: opts.api?.updateTimelineView || defaultApi.updateTimelineView,
       updateDirectoryView: opts.api?.updateDirectoryView || defaultApi.updateDirectoryView,
     },
@@ -103,6 +108,7 @@ export function renderWithContext(
       sort: opts.params?.sort || defaultParams.sort,
       ascending: opts.params?.ascending || defaultParams.ascending,
       sortIndex: opts.params?.sortIndex || defaultParams.sortIndex,
+      timelineMetric: opts.params?.timelineMetric || defaultParams.timelineMetric,
       timelineView: opts.params?.timelineView || defaultParams.timelineView,
       directoryView: opts.params?.directoryView || defaultParams.directoryView,
     },
@@ -128,6 +134,7 @@ export function createProps(
     sort: param.sort || SortType.SORT_NAME,
     ascending: param.ascending || true,
     sortIndex: param.sortIndex || 0,
+    timelineMetric: param.timelineMetric || MetricType.AVG_CORES,
     timelineView: param.timelineView || false,
     directoryView: param.directoryView || false,
   };
@@ -142,6 +149,7 @@ type TestProps = {
   sort?: SortType,
   ascending?: boolean,
   sortIndex?: number,
+  timelineMetric?: MetricType,
   timelineView?: boolean,
   directoryView?: boolean,
 }

@@ -28,6 +28,7 @@ type MetricsContextProviderProps = {
   ascending: boolean,
   sortIndex: number,
   timelineView: boolean,
+  timelineMetric: MetricType,
   directoryView: boolean,
   children?: React.ReactNode,
 }
@@ -81,6 +82,7 @@ export interface Params {
   sort: SortType,
   ascending: boolean,
   sortIndex: number,
+  timelineMetric: MetricType,
   timelineView: boolean,
   directoryView: boolean,
 }
@@ -97,6 +99,7 @@ export interface Api {
     updateSort: (sort: SortType) => void,
     updateAscending: (ascending: boolean) => void,
     updateSortIndex: (index: number) => void,
+    updateTimelineMetric: (metric: MetricType) => void,
 
     updateTimelineView: (timelineView: boolean) => void,
     updateDirectoryView: (directoryView: boolean) => void,
@@ -116,6 +119,7 @@ export const MetricsContext = createContext<MetricsContextValue>(
         updateSort: () => {/**/},
         updateAscending: () => {/**/},
         updateSortIndex: () => {/**/},
+        updateTimelineMetric: () => {/**/},
         updateTimelineView: () => {/**/},
         updateDirectoryView: () => {/**/},
       },
@@ -128,12 +132,24 @@ export const MetricsContext = createContext<MetricsContextValue>(
         sort: SortType.SORT_NAME,
         ascending: true,
         sortIndex: 0,
+        timelineMetric: MetricType.AVG_CORES,
         timelineView: false,
         directoryView: false,
       },
       isLoading: false,
     },
 );
+
+// Mapping for timelineMetric to update both
+// MetricType and SortType simultaenously with
+// only 1 load call
+export const metricToSortType = new Map<MetricType, SortType>([
+  [MetricType.NUM_RUNS, SortType.SORT_NUM_RUNS],
+  [MetricType.NUM_FAILURES, SortType.SORT_NUM_FAILURES],
+  [MetricType.TOTAL_RUNTIME, SortType.SORT_TOTAL_RUNTIME],
+  [MetricType.AVG_CORES, SortType.SORT_AVG_CORES],
+  [MetricType.AVG_RUNTIME, SortType.SORT_AVG_RUNTIME],
+]);
 
 interface LoadingState {
   count: number,
@@ -179,15 +195,16 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
   const [sort, setSort] = useState(props.sort);
   const [ascending, setAscending] = useState(props.ascending);
   const [sortIndex, setSortIndex] = useState(props.sortIndex);
+  const [timelineMetric, setTimelineMetric] = useState(props.timelineMetric);
   const [timelineView, setTimelineView] = useState(props.timelineView);
   const [directoryView, setDirectoryView] = useState(props.directoryView);
 
   const params: Params = useMemo(() => ({
     page, rowsPerPage, filter, date, period, sort, ascending, sortIndex,
-    timelineView, directoryView,
+    timelineMetric, timelineView, directoryView,
   }), [
     page, rowsPerPage, filter, date, period, sort, ascending, sortIndex,
-    timelineView, directoryView,
+    timelineMetric, timelineView, directoryView,
   ]);
 
   const [data, dataDispatch] = useReducer(dataReducer, []);
@@ -382,6 +399,10 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
       if (sort !== newSort) {
         params.sort = newSort;
         params.page = 0;
+        if (newSort === SortType.SORT_NAME) {
+          params.sortIndex = -1;
+          setSortIndex(params.sortIndex);
+        }
         setSort(params.sort);
         setPage(params.page);
         load('updateSort', components, params);
@@ -399,8 +420,24 @@ export const MetricsContextProvider = (props : MetricsContextProviderProps) => {
     updateSortIndex: (newSortIndex: number) => {
       if (sortIndex !== newSortIndex) {
         params.sortIndex = newSortIndex;
+        params.sort = metricToSortType.get(params.timelineMetric) || SortType.SORT_AVG_CORES;
+        setSort(params.sort);
         setSortIndex(params.sortIndex);
         load('updateSortIndex', components, params);
+      }
+    },
+    updateTimelineMetric: (newTimelineMetric: MetricType) => {
+      if (timelineMetric !== newTimelineMetric) {
+        params.timelineMetric = newTimelineMetric;
+        // If we are sorting by name, just change timeline metric.
+        if (params.sort !== SortType.SORT_NAME) {
+          // Should always have a mapping, setting deafult to AVG_CORES which
+          // should never happen
+          params.sort = metricToSortType.get(params.timelineMetric) || SortType.SORT_AVG_CORES;
+          setSort(params.sort);
+        }
+        setTimelineMetric(params.timelineMetric);
+        load('updateTimelineMetric', components, params);
       }
     },
     updateTimelineView: (newTimelineView: boolean) => {

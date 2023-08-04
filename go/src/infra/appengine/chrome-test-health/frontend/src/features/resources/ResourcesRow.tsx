@@ -37,7 +37,7 @@ function ResourcesRow(props: ResourcesRowProps) {
       datesToShow.forEach((date) => {
         bodyArr.push(
             <TableCell key={date} component="th" align="right" data-testid="timelineTest">
-              {formatNumber(Number(props.data.metrics.get(date)?.get(MetricType.AVG_RUNTIME)))}
+              {formatNumber(Number(props.data.metrics.get(date)?.get(params.timelineMetric)))}
             </TableCell>,
         );
       });

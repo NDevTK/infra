@@ -50,6 +50,7 @@ describe('computeDates', () => {
           sort: SortType.SORT_NAME,
           ascending: true,
           sortIndex: 0,
+          timelineMetric: MetricType.AVG_CORES,
           timelineView: timeline as boolean,
           directoryView: false,
         })).toEqual(expected);

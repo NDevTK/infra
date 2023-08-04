@@ -9,9 +9,8 @@ import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useContext, useEffect, useState } from 'react';
-import { Period } from '../../api/resources';
+import { MetricType, Period } from '../../api/resources';
 import { MetricsContext } from '../context/MetricsContext';
-
 
 function ResourcesToolbar() {
   const { api, params } = useContext(MetricsContext);
@@ -27,8 +26,6 @@ function ResourcesToolbar() {
     api.updatePeriod(event.target.value);
   };
 
-  // ToDo - rgw fix bug where ingesting page gets deleted
-  // because this gets triggered during page load.
   useEffect(() => {
     const timer = setTimeout(() => {
       api.updateFilter(filter);
@@ -60,6 +57,10 @@ function ResourcesToolbar() {
     if (isDirectory !== null) {
       api.updateDirectoryView(isDirectory);
     }
+  };
+
+  const handleMetricChange = (event) => {
+    api.updateTimelineMetric(event.target.value);
   };
 
   return (
@@ -102,11 +103,12 @@ function ResourcesToolbar() {
                 value={dayjs(params.date)}
                 slotProps={{ textField: { variant: 'standard' } }}
                 shouldDisableDate={handleShouldDisableDate}
+                sx={{ minWidth: '120px' }}
               />
             </LocalizationProvider>
           </Grid>
 
-          <Grid item xs={3}>
+          <Grid item xs={5}>
             <Stack direction="row" spacing={4}>
               <ToggleButtonGroup
                 size="small"
@@ -126,6 +128,23 @@ function ResourcesToolbar() {
                 </ToggleButton>
               </ToggleButtonGroup>
 
+              {params.timelineView ?
+                  <FormControl data-testid="formControlMetricTest" sx={{ minWidth: '150px' }} variant="standard">
+                    <InputLabel shrink={true}>Metric</InputLabel>
+                    <Select
+                      value={params.timelineMetric}
+                      label="Show Metric"
+                      onChange={handleMetricChange}
+                    >
+                      <MenuItem value={MetricType.NUM_RUNS}># Runs</MenuItem>
+                      <MenuItem value={MetricType.NUM_FAILURES}># Failures</MenuItem>
+                      <MenuItem value={MetricType.TOTAL_RUNTIME}>Total Runtime</MenuItem>
+                      <MenuItem value={MetricType.AVG_CORES}>Avg Cores</MenuItem>
+                      <MenuItem value={MetricType.AVG_RUNTIME}>Avg Runtime</MenuItem>
+                    </Select>
+                  </FormControl> :
+                null}
+
               <ToggleButtonGroup
                 size="small"
                 color="primary"
@@ -141,7 +160,6 @@ function ResourcesToolbar() {
               </ToggleButtonGroup>
             </Stack>
           </Grid>
-
         </Grid>
       </Toolbar>
       <Divider />

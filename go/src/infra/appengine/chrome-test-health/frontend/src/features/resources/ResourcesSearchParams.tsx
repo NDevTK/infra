@@ -15,6 +15,7 @@ export const PERIOD = 'period';
 export const SORT_BY = 'sort';
 export const ASCENDING = 'asc';
 export const TIMELINE_VIEW = 'tl';
+export const TIMELINE_VIEW_METRIC = 'tlm';
 export const DIRECTORY_VIEW = 'dir';
 export const SORT_INDEX = 'ind';
 
@@ -48,7 +49,9 @@ function ResourcesParamControls() {
     search.set(DIRECTORY_VIEW, String(params.directoryView));
     if (params.timelineView) {
       search.set(SORT_INDEX, String(params.sortIndex));
+      search.set(TIMELINE_VIEW_METRIC, String(params.timelineMetric));
     } else {
+      search.delete(TIMELINE_VIEW_METRIC);
       search.delete(SORT_INDEX);
     }
     return search;

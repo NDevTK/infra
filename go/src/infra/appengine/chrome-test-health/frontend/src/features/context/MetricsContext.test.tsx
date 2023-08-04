@@ -126,4 +126,36 @@ describe('MetricsContext params', () => {
     expect(screen.getByText('date-2023-07-16')).toBeInTheDocument();
     expect(screen.getByText('page-0')).toBeInTheDocument();
   });
+
+  it('updateTimelineMetric', async () => {
+    await contextRender((value) => (
+      <>
+        <Button data-testid='updateTimelineMetric' onClick={() => value.api.updateTimelineMetric(Resources.MetricType.AVG_RUNTIME)}>{'timelineM-' + value.params.timelineMetric}</Button>
+        <div>sort-{value.params.sort}</div>
+      </>
+    ), { props: { ...createProps( { timelineMetric: Resources.MetricType.AVG_CORES, sort: Resources.SortType.SORT_AVG_CORES }) } });
+    expect(screen.getByText('timelineM-AVG_CORES')).toBeInTheDocument();
+    expect(screen.getByText('sort-5')).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('updateTimelineMetric'));
+    });
+    expect(screen.getByText('timelineM-AVG_RUNTIME')).toBeInTheDocument();
+    expect(screen.getByText('sort-6')).toBeInTheDocument();
+  });
+
+  it('updateSortIndex', async () => {
+    await contextRender((value) => (
+      <>
+        <Button data-testid='updateSortIndex' onClick={() => value.api.updateSortIndex(2)}>{'sortIndex-' + value.params.sortIndex}</Button>
+        <div>sort-{value.params.sort}</div>
+      </>
+    ), { props: { ...createProps( { sortIndex: 0, timelineMetric: Resources.MetricType.NUM_FAILURES, sort: Resources.SortType.SORT_AVG_CORES }) } });
+    expect(screen.getByText('sortIndex-0')).toBeInTheDocument();
+    expect(screen.getByText('sort-5')).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('updateSortIndex'));
+    });
+    expect(screen.getByText('sortIndex-2')).toBeInTheDocument();
+    expect(screen.getByText('sort-3')).toBeInTheDocument();
+  });
 });

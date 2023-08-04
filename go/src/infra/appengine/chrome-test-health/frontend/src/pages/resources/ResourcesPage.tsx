@@ -17,9 +17,10 @@ import ResourcesSearchParams, {
   SORT_BY,
   SORT_INDEX,
   TIMELINE_VIEW,
+  TIMELINE_VIEW_METRIC,
 } from '../../features/resources/ResourcesSearchParams';
 import ComponentParams from '../../features/components/ComponentParams';
-import { Period, SortType } from '../../api/resources';
+import { MetricType, Period, SortType } from '../../api/resources';
 
 function ResourcesPage() {
   const params = new URLSearchParams(window.location.search);
@@ -37,6 +38,8 @@ function ResourcesPage() {
     sort: params.has(SORT_BY) ? Number(params.get(SORT_BY)) as SortType : null || SortType.SORT_AVG_CORES,
     ascending: params.get(ASCENDING) === 'true',
     sortIndex: Number(params.get(SORT_INDEX) || 0),
+    timelineMetric: params.has(TIMELINE_VIEW_METRIC) ?
+      String(params.get(TIMELINE_VIEW_METRIC)) as MetricType : null || MetricType.AVG_CORES,
     timelineView: params.get(TIMELINE_VIEW) === 'true',
     directoryView: params.get(DIRECTORY_VIEW) === 'true',
   };
