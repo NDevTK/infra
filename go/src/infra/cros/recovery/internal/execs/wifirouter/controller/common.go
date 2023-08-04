@@ -14,6 +14,7 @@ import (
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
+	"google.golang.org/protobuf/encoding/protojson"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
 	"infra/cros/recovery/internal/retry"
 	"infra/cros/recovery/logger/metrics"
@@ -313,4 +314,20 @@ func reportCacheFailedMetric(ctx context.Context, sourcePath string, httpRespons
 			)
 		}
 	}
+}
+
+// fetchWifiRouterConfig downloads the production WifiRouterConfig JSON file
+// from GCS via the cache server through the router and returns its unmarshalled
+// contents.
+func fetchWifiRouterConfig(ctx context.Context, sshRunner ssh.Runner, cacheAccess CacheAccess, hostResource string) (*labapi.WifiRouterConfig, error) {
+	const wifiRouterConfigFileGCSPath = wifiRouterArtifactsGCSBasePath + "/wifi_router_config_prod.json"
+	wifiRouterConfigJSON, err := ReadFileFromCacheServer(ctx, sshRunner, cacheAccess, hostResource, 30*time.Second, wifiRouterConfigFileGCSPath)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to read %q on the router through the cache server", wifiRouterConfigFileGCSPath).Err()
+	}
+	config := &labapi.WifiRouterConfig{}
+	if err := protojson.Unmarshal([]byte(wifiRouterConfigJSON), config); err != nil {
+		return nil, errors.Annotate(err, "failed to unmarshal WifiRouterConfig from %q", wifiRouterConfigFileGCSPath).Err()
+	}
+	return config, nil
 }
