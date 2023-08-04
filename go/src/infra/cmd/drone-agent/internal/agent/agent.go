@@ -16,7 +16,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
-	specs "github.com/opencontainers/runtime-spec/specs-go"
+	"github.com/opencontainers/runtime-spec/specs-go"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/appengine/drone-queen/api"
