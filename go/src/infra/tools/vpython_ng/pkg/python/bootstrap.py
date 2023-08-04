@@ -11,7 +11,7 @@ import sys
 virtualenv = glob.glob(
     os.path.join(r'{{.virtualenv}}', '*', 'virtualenv.py*'))[0]
 subprocess.check_call([
-    sys.executable, virtualenv, '--no-download', '--always-copy',
+    sys.executable, '-I', virtualenv, '--no-download', '--always-copy',
     os.environ['out']
 ])
 
@@ -36,7 +36,7 @@ if 'wheels' in os.environ:
 # correctness if .pyc can't be written to the directory anyway.
 try:
   subprocess.check_call([
-      sys.executable, '-m', 'compileall', os.environ['out']
+      sys.executable, '-I', '-m', 'compileall', os.environ['out']
   ])
 except subprocess.CalledProcessError as e:
   print('complieall failed and ignored: {}'.format(e.returncode))
