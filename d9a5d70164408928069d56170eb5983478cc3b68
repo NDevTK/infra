@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "47b93570_1d2aa701",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1180,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-08-04T05:45:25Z",
+      "side": 1,
+      "message": "any difference in this context?",
+      "parentUuid": "30d53a64_f7a1ddc6",
+      "range": {
+        "startLine": 1180,
+        "startChar": 20,
+        "endLine": 1180,
+        "endChar": 28
+      },
+      "revId": "d9a5d70164408928069d56170eb5983478cc3b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "480f980e_df324187",
@@ -71,6 +95,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ebb47e69_fa215f69",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1351,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-08-04T05:45:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "230204bf_7a90ea4f",
+      "range": {
+        "startLine": 1351,
+        "startChar": 27,
+        "endLine": 1351,
+        "endChar": 35
+      },
+      "revId": "d9a5d70164408928069d56170eb5983478cc3b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9c843949_32e1bd8d",
@@ -108,6 +156,30 @@
       "side": 1,
       "message": "Is this correct?\n\n```suggestion\n// `next` function is expected to return\n// - directory if the entry is a directory.\n// - string if the entry is a symlink.\n//`next` function is expected to resolve symlink as follows:\n// - return directory if the target is just a directory.\n//.- return the resolved path name if next is symlink.\n```",
       "parentUuid": "9c843949_32e1bd8d",
+      "range": {
+        "startLine": 1352,
+        "startChar": 36,
+        "endLine": 1352,
+        "endChar": 41
+      },
+      "revId": "d9a5d70164408928069d56170eb5983478cc3b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aa3b1556_1ebb4e31",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1352,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-08-04T05:45:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bb3885bf_e69b0662",
       "range": {
         "startLine": 1352,
         "startChar": 36,
