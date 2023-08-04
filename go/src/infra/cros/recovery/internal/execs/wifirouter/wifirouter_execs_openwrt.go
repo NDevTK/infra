@@ -68,9 +68,18 @@ func assertOpenWrtRouterHasExpectedImageExec(ctx context.Context, info *execs.Ex
 	return c.AssertHasExpectedImage()
 }
 
+func updateOpenWrtRouterToExpectedImageExec(ctx context.Context, info *execs.ExecInfo) error {
+	c, err := activeHostOpenWrtRouterController(ctx, info)
+	if err != nil {
+		return errors.Annotate(err, "update openwrt router to expected image").Err()
+	}
+	return c.UpdateToExpectedImage(ctx)
+}
+
 func init() {
 	execs.Register("wifi_router_openwrt_fetch_build_info", fetchOpenWrtBuildInfoExec)
 	execs.Register("wifi_router_openwrt_fetch_config", fetchOpenWrtConfigExec)
 	execs.Register("wifi_router_openwrt_identify_expected_image", identifyExpectedOpenWrtImageExec)
 	execs.Register("wifi_router_openwrt_has_expected_image", assertOpenWrtRouterHasExpectedImageExec)
+	execs.Register("wifi_router_openwrt_update_to_expected_image", updateOpenWrtRouterToExpectedImageExec)
 }
