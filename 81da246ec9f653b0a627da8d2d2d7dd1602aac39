@@ -157,6 +157,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "de2c6afa_fef074a0",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 8
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1575692
+      },
+      "writtenOn": "2023-08-04T23:38:54Z",
+      "side": 1,
+      "message": "1. I have created a separate GCP project to host cr-builder-value. \n\n2. While cr-builder-value is somewhat similar to cr-builder-health-indicators, there is not much interaction between the two due to the following main differences:\n- cr-builder-health-indicators focuses on sheriffed builders, while cr-builder-value works with all Chrome/Chromium builders.\n- cr-builder-value also shows value indicators in the builder pages, but it makes more sense to show this information in a dashboard so that we can see the list of recommended low-value builders.\n\n3. go/luci-builders-dashboard has been changed to go/cr-builders-dashboard",
+      "parentUuid": "d9b1df27_7eaa8d84",
+      "range": {
+        "startLine": 12,
+        "startChar": 12,
+        "endLine": 12,
+        "endChar": 40
+      },
+      "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ab30ec21_ce484bd7",
         "filename": "go/src/infra/cr_builder_value/generate.go",
         "patchSetId": 8
@@ -364,6 +388,24 @@
       "side": 1,
       "message": "Yeah. \"infra/\" contains many tools for a variety of teams. Since this is just focused to chromium/chrome, better to put it in a chrome-focused subdir.",
       "parentUuid": "4585d3d1_3652c2e7",
+      "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "277a6d3e_72617043",
+        "filename": "go/src/infra/cr_builder_value/main.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1575692
+      },
+      "writtenOn": "2023-08-04T23:38:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c84a206d_c1578a9d",
       "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
