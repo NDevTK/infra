@@ -6,8 +6,10 @@ package controller
 
 import (
 	"context"
+	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
@@ -28,6 +30,18 @@ const (
 
 	// buildInfoFilePath is the path to the build info file on OpenWrt routers.
 	buildInfoFilePath = "/etc/cros/cros_openwrt_image_build_info.json"
+
+	// openWrtArchiveBaseGCSPath is the base GCS object path for all OpenWrt
+	// image archive files.
+	openWrtArchiveBaseGCSPath = wifiRouterArtifactsGCSBasePath + "/openwrt_images/"
+
+	// openWrtArchiveFileExt is the file extension for all OpenWrt image archive
+	// files.
+	openWrtArchiveFileExt = ".tar.xz"
+
+	// openWrtImageFileExt is the file extension of all OpenWrt image binary
+	// files contained within image archive files.
+	openWrtImageFileExt = ".bin"
 )
 
 // hostIsOpenWrtRouter checks if the remote host is an OpenWrt router.
@@ -377,6 +391,152 @@ func (c *OpenWrtRouterController) AssertHasExpectedImage() error {
 	}
 	if !strings.EqualFold(c.state.DeviceBuildInfo.ImageUuid, c.state.ExpectedImageUuid) {
 		return errors.Reason("device is expected to have an OpenWrt image with UUID %q, but its installed image has %q", c.state.ExpectedImageUuid, c.state.DeviceBuildInfo.ImageUuid).Err()
+	}
+	return nil
+}
+
+// UpdateToExpectedImage uses the `sysupgrade` command on the router to update
+// the image installed on the router with the expected image. This can take a
+// few minutes, as it does not return until the new image is installed and the
+// router has come back up. Once it is back up, the build info file is retrieved
+// from the device again and the ImageUUID is checked to ensure that the image
+// that was installed is the expected ImageUUID.
+//
+// The image binary file used is retrieved from archives stored in GCS, which
+// are uploaded manually by developers using the cros_openwrt_image_builder CLI
+// utility. The infra cache server downloads the archive from GCS (if it is not
+// cached), then the router downloads the archive from the cache server,
+// extracts the image binary from the archive locally, then runs `sysupgrade`.
+//
+// This function may only be called after the expected image has been identified
+// with IdentifyExpectedImage.
+func (c *OpenWrtRouterController) UpdateToExpectedImage(ctx context.Context) error {
+	if c.state.GetExpectedImageUuid() == "" {
+		return errors.Reason("expected OpenWrt image not yet identified for device").Err()
+	}
+	return c.updateImage(ctx, c.state.ExpectedImageUuid)
+}
+
+func (c *OpenWrtRouterController) updateImage(ctx context.Context, imageUUID string) error {
+	if c.state.GetConfig() == nil {
+		return errors.Reason("state.Config must not be nil").Err()
+	}
+	if c.state.GetDeviceBuildInfo() == nil {
+		return errors.Reason("state.DeviceBuildInfo must not be nil").Err()
+	}
+	originalImageUUID := c.state.DeviceBuildInfo.ImageUuid
+	log.Infof(ctx, "Updating router OpenWrt image from %q to %q", originalImageUUID, imageUUID)
+
+	// Get the corresponding image binary from the stored archive to the device.
+	desiredImage, err := c.selectImageByUUID(c.state.Config, imageUUID)
+	if err != nil {
+		return err
+	}
+	log.Infof(ctx, "Downloading to OpenWrt image from %q to router", desiredImage.ArchivePath)
+	remoteImageBinaryPath, err := c.downloadImageToDevice(ctx, desiredImage.ArchivePath)
+	if err != nil {
+		return errors.Annotate(err, "failed to download image to device").Err()
+	}
+
+	// Flash the device with the new image binary.
+	log.Infof(ctx, "Flashing OpenWrt device with new image binary at %q", remoteImageBinaryPath)
+	sysupgradeRunResult := c.sshRunner.RunForResult(ctx, 0, false, "sysupgrade", remoteImageBinaryPath)
+	if sysupgradeRunResult.GetExitCode() != -2 {
+		return errors.Reason("sysupgrade did not cause remote command to exit as expected: ExitCode=%d, Stdout=%s", sysupgradeRunResult.GetExitCode(), sysupgradeRunResult.GetStdout()).Err()
+	}
+	log.Infof(ctx, "Waiting 1m before reconnecting to give time for OpenWrt sysupgrade to complete")
+	time.Sleep(1 * time.Minute)
+	log.Infof(ctx, "Attempting to reconnect to OpenWrt router after sysupgrade")
+	if err := cros.WaitUntilSSHable(ctx, 4*time.Minute, 10*time.Second, c.sshRunner.Run, log.Get(ctx)); err != nil {
+		return errors.Annotate(err, "failed to reconnect to OpenWrt device over ssh after flashing new image binary").Err()
+	}
+	log.Infof(ctx, "Successfully reconnected to OpenWrt router after sysupgrade")
+
+	// Update cached device build info.
+	if err := c.FetchDeviceBuildInfo(ctx); err != nil {
+		return errors.Annotate(err, "failed to fetch build info after flashing image with uuid %q", imageUUID).Err()
+	}
+
+	// Verify device image matches expected image.
+	if c.state.GetDeviceBuildInfo().GetImageUuid() != imageUUID {
+		return errors.Annotate(err, "unexpected image uuid after flashing new image; got %q, expected %q", c.state.GetDeviceBuildInfo().GetImageUuid(), imageUUID).Err()
+	}
+
+	log.Infof(ctx, "Successfully updated router OpenWrt image from %q to %q", originalImageUUID, imageUUID)
+	return nil
+}
+
+// downloadImageToDevice downloads the image archive from GCS through the
+// cache server to the router directly, extracts the image binary file from it,
+// and then deletes the original image archive that was downloaded. The
+// absolute path to the image binary file on the router is returned.
+func (c *OpenWrtRouterController) downloadImageToDevice(ctx context.Context, imageArchiveGCSPath string) (string, error) {
+	// Download archive to router.
+	if err := c.validateImageArchivePath(imageArchiveGCSPath); err != nil {
+		return "", errors.Annotate(err, "invalid image archive GCS path %q", imageArchiveGCSPath).Err()
+	}
+	tmpDir := filepath.Join("/tmp/cros_infra_image")
+	if err := ssh.RecreateDir(ctx, c.sshRunner, tmpDir); err != nil {
+		return "", errors.Annotate(err, "failed to create tmp image dir %q on router", tmpDir).Err()
+	}
+	archiveRouterPath := filepath.Join(tmpDir, filepath.Base(imageArchiveGCSPath))
+	if err := DownloadFileFromCacheServer(ctx, c.sshRunner, c.cacheAccess, c.resource, 5*time.Minute, imageArchiveGCSPath, archiveRouterPath); err != nil {
+		return "", err
+	}
+
+	// Extract binary from archive and get filepath from output.
+	tarRunOutput, err := c.sshRunner.Run(ctx, 30*time.Second,
+		// Run tar in tmp dir, as it can only extract to current dir.
+		"cd",
+		tmpDir,
+		"&&",
+		"tar",
+
+		// Extract from the image archive file.
+		"-x",
+		"-f",
+		archiveRouterPath,
+
+		// Use xz decompression.
+		"-J",
+		"--xz",
+
+		// Only extract image binary file.
+		"--wildcards",
+		"*"+openWrtImageFileExt,
+
+		// List extracted files in stdout (paths will be relative).
+		"-v",
+	)
+	if err != nil {
+		return "", errors.Annotate(err, "failed to extract binary from archive %q on router", archiveRouterPath).Err()
+	}
+	imageBinaryRouterPath := filepath.Join(tmpDir, strings.TrimSpace(tarRunOutput))
+	if !strings.HasSuffix(imageBinaryRouterPath, openWrtImageFileExt) {
+		return "", errors.Reason("invalid image binary file %q extracted from image archive %q on router", imageBinaryRouterPath, imageArchiveGCSPath).Err()
+	}
+	exists, err := ssh.TestFileExists(ctx, c.sshRunner, imageBinaryRouterPath)
+	if err != nil {
+		return "", err
+	}
+	if !exists {
+		return "", errors.Reason("extracted image binary file %q does not exist on router as expected", imageBinaryRouterPath).Err()
+	}
+
+	// Delete archive from router to conserve space.
+	if _, err := c.sshRunner.Run(ctx, 5*time.Second, "rm", archiveRouterPath); err != nil {
+		return "", errors.Annotate(err, "failed to delete archive %q on router after image binary extraction", archiveRouterPath).Err()
+	}
+
+	return imageBinaryRouterPath, nil
+}
+
+func (c *OpenWrtRouterController) validateImageArchivePath(imageArchiveGCSPath string) error {
+	if !strings.HasPrefix(imageArchiveGCSPath, openWrtArchiveBaseGCSPath) {
+		return errors.Reason("must start with %q", openWrtArchiveBaseGCSPath).Err()
+	}
+	if !strings.HasSuffix(imageArchiveGCSPath, openWrtArchiveFileExt) {
+		return errors.Reason("must end with %q", openWrtArchiveFileExt).Err()
 	}
 	return nil
 }

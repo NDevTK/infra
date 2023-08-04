@@ -113,3 +113,21 @@ func WgetURL(ctx context.Context, sshRunner Runner, timeout time.Duration, downl
 	}
 	return stdout, "", 0, nil
 }
+
+// RecreateDir will delete (if it exists) and then recreate the directory
+// at remoteDirPath on the remote host.
+func RecreateDir(ctx context.Context, sshRunner Runner, remoteDirPath string) error {
+	exists, err := TestPath(ctx, sshRunner, "-d", remoteDirPath)
+	if err != nil {
+		return errors.Annotate(err, "failed to check if remote dir %q exists", remoteDirPath).Err()
+	}
+	if exists {
+		if _, err := sshRunner.Run(ctx, 10*time.Second, "rm", "-r", remoteDirPath); err != nil {
+			return errors.Annotate(err, "failed to remove existing remote dir %q", remoteDirPath).Err()
+		}
+	}
+	if _, err := sshRunner.Run(ctx, time.Second, "mkdir", "-p", remoteDirPath); err != nil {
+		return errors.Annotate(err, "failed to create new remote dir %q", remoteDirPath).Err()
+	}
+	return nil
+}
