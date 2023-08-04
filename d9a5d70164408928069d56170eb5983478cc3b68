@@ -3,6 +3,75 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "30d53a64_f7a1ddc6",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1180,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-08-04T03:16:08Z",
+      "side": 1,
+      "message": "filepath?",
+      "range": {
+        "startLine": 1180,
+        "startChar": 20,
+        "endLine": 1180,
+        "endChar": 28
+      },
+      "revId": "d9a5d70164408928069d56170eb5983478cc3b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "480f980e_df324187",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1351,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-08-04T03:16:08Z",
+      "side": 1,
+      "message": "what is next dir?",
+      "range": {
+        "startLine": 1351,
+        "startChar": 27,
+        "endLine": 1351,
+        "endChar": 35
+      },
+      "revId": "d9a5d70164408928069d56170eb5983478cc3b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9c843949_32e1bd8d",
+        "filename": "go/src/infra/build/siso/hashfs/fs.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1352,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-08-04T03:16:08Z",
+      "side": 1,
+      "message": "What does \u0027next is directory\u0027 mean?",
+      "range": {
+        "startLine": 1352,
+        "startChar": 36,
+        "endLine": 1352,
+        "endChar": 41
+      },
+      "revId": "d9a5d70164408928069d56170eb5983478cc3b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f078ca7f_42c9d8dd",
         "filename": "go/src/infra/build/siso/hashfs/fs_bench_test.go",
         "patchSetId": 1
@@ -68,6 +137,24 @@
       "side": 1,
       "message": "I think you can look at the last part.\n\n```\nSummary |\n\u0027/tmp/siso.new ninja -C out/siso -project rbe-chrome-untrusted \u003e\u003e /tmp/new.log|\n\u0027 ran |\n1.00 ± 0.06 times faster than \u0027/tmp/siso.old ninja -C out/siso -project rbe-|\n```",
       "parentUuid": "72f7e69e_e1babbef",
+      "revId": "d9a5d70164408928069d56170eb5983478cc3b68",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4fe2827c_a7aa413f",
+        "filename": "go/src/infra/build/siso/hashfs/fs_bench_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-08-04T03:16:08Z",
+      "side": 1,
+      "message": "Ah, I see.",
+      "parentUuid": "dc37f673_c1eaf7f9",
       "revId": "d9a5d70164408928069d56170eb5983478cc3b68",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
