@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "97221065_673c959a",
+        "filename": "go/src/infra/unifiedfleet/app/controller/machine_lse.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 1989,
+      "author": {
+        "id": 1530777
+      },
+      "writtenOn": "2023-08-04T05:36:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c398e251_53d9d2e9",
+      "range": {
+        "startLine": 1989,
+        "startChar": 3,
+        "endLine": 1989,
+        "endChar": 42
+      },
+      "revId": "b19c9d4fdd15f7645628a9d3e5a8f835a02ecfba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b0b66825_53f12962",
@@ -37,6 +61,30 @@
       "writtenOn": "2023-08-03T20:13:35Z",
       "side": 1,
       "message": "same",
+      "range": {
+        "startLine": 1991,
+        "startChar": 3,
+        "endLine": 1991,
+        "endChar": 52
+      },
+      "revId": "b19c9d4fdd15f7645628a9d3e5a8f835a02ecfba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ad73915e_80bbb078",
+        "filename": "go/src/infra/unifiedfleet/app/controller/machine_lse.go",
+        "patchSetId": 12
+      },
+      "lineNbr": 1991,
+      "author": {
+        "id": 1530777
+      },
+      "writtenOn": "2023-08-04T05:36:10Z",
+      "side": 1,
+      "message": "For this one we should always set it. Being an enum, this will always be present in the message, since the 0 value is a valid value. It\u0027s also good to know if repair hasn\u0027t identified it.",
+      "parentUuid": "b0b66825_53f12962",
       "range": {
         "startLine": 1991,
         "startChar": 3,
