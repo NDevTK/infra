@@ -6,12 +6,15 @@ package controller
 
 import (
 	"context"
+	"sort"
+	"strings"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
+	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 )
 
@@ -203,6 +206,177 @@ func (c *OpenWrtRouterController) validateOpenWrtOSImage(image *labapi.OpenWrtWi
 	}
 	if _, err := cros.ParseChromeOSReleaseVersion(image.MinDutReleaseVersion); err != nil {
 		return errors.Annotate(err, "MinDutReleaseVersion is invalid").Err()
+	}
+	return nil
+}
+
+// IdentifyExpectedImage will select an appropriate OpenWrt OS image from the
+// available images in the config based on its model and the provided
+// dutHostname and dutChromeOSReleaseVersion. The selected image's UUID is
+// stored for later reference. A non-nil error is returned if an image was not
+// selected.
+//
+// Each supported OpenWrt device has its own set of images, as defined by the
+// corresponding labapi.OpenWrtWifiRouterDeviceConfig. See the proto definition
+// for more details on how this config defines which image should be used.
+func (c *OpenWrtRouterController) IdentifyExpectedImage(ctx context.Context, dutHostname, dutChromeOSReleaseVersion string) error {
+	if c.state.GetDeviceBuildInfo() == nil {
+		return errors.Reason("state.DeviceBuildInfo must not be nil").Err()
+	}
+	if c.state.GetConfig() == nil {
+		return errors.Reason("state.Config must not be nil").Err()
+	}
+	log.Debugf(ctx, "Identifying expected router OpenWrt OS image for dut %q with CHROMEOS_RELEASE_VERSION %q", dutHostname, dutChromeOSReleaseVersion)
+	expectedImageConfig, err := c.selectImageForDut(ctx, c.state.Config, dutHostname, dutChromeOSReleaseVersion)
+	if err != nil {
+		return errors.Annotate(err, "failed to select image for dut %q with CHROMEOS_RELEASE_VERSION %q", dutHostname, dutChromeOSReleaseVersion).Err()
+	}
+	log.Debugf(ctx, "Identified image %q as expected router OpenWrt OS image for dut %q with CHROMEOS_RELEASE_VERSION %q", expectedImageConfig.ImageUuid, dutHostname, dutChromeOSReleaseVersion)
+	c.state.ExpectedImageUuid = expectedImageConfig.ImageUuid
+	return nil
+}
+
+func (c *OpenWrtRouterController) selectImageByUUID(deviceConfig *labapi.OpenWrtWifiRouterDeviceConfig, imageUUID string) (*labapi.OpenWrtWifiRouterDeviceConfig_OpenWrtOSImage, error) {
+	for _, imageConfig := range deviceConfig.Images {
+		if strings.EqualFold(imageConfig.ImageUuid, imageUUID) {
+			return imageConfig, nil
+		}
+	}
+	return nil, errors.Reason("found no image with ImageUUID %q configured for device", imageUUID).Err()
+}
+
+func (c *OpenWrtRouterController) selectCurrentImage(deviceConfig *labapi.OpenWrtWifiRouterDeviceConfig) (*labapi.OpenWrtWifiRouterDeviceConfig_OpenWrtOSImage, error) {
+	if deviceConfig.CurrentImageUuid == "" {
+		return nil, errors.Reason("no current image configured for device").Err()
+	}
+	imageConfig, err := c.selectImageByUUID(deviceConfig, deviceConfig.CurrentImageUuid)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to select image set as current image").Err()
+	}
+	return imageConfig, nil
+}
+func (c *OpenWrtRouterController) selectNextImage(deviceConfig *labapi.OpenWrtWifiRouterDeviceConfig) (*labapi.OpenWrtWifiRouterDeviceConfig_OpenWrtOSImage, error) {
+	if deviceConfig.NextImageUuid == "" {
+		return nil, errors.Reason("no next image configured for device").Err()
+	}
+	imageConfig, err := c.selectImageByUUID(deviceConfig, deviceConfig.NextImageUuid)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to select image set as next image").Err()
+	}
+	return imageConfig, nil
+}
+
+func (c *OpenWrtRouterController) selectImageByCrosReleaseVersion(ctx context.Context, deviceConfig *labapi.OpenWrtWifiRouterDeviceConfig, dutCrosReleaseVersion string, useCurrentIfNoMatches bool) (*labapi.OpenWrtWifiRouterDeviceConfig_OpenWrtOSImage, error) {
+	if len(deviceConfig.Images) == 0 {
+		return nil, errors.Reason("no images are configured for this device").Err()
+	}
+	dutVersion, err := cros.ParseChromeOSReleaseVersion(dutCrosReleaseVersion)
+	if err != nil {
+		return nil, errors.Annotate(err, "invalid CHROMEOS_RELEASE_VERSION %q", dutCrosReleaseVersion).Err()
+	}
+
+	// Collect all matching versions.
+	var allMatchingImageVersions []cros.ChromeOSReleaseVersion
+	imageVersionToConfig := make(map[string]*labapi.OpenWrtWifiRouterDeviceConfig_OpenWrtOSImage)
+	for i, imageConfig := range deviceConfig.Images {
+		imageMinVersion, err := cros.ParseChromeOSReleaseVersion(imageConfig.MinDutReleaseVersion)
+		if err != nil {
+			return nil, errors.Annotate(err, "failed to parse deviceConfig.Images[%d].MinDutReleaseVersion", i).Err()
+		}
+		if !cros.IsChromeOSReleaseVersionLessThan(dutVersion, imageMinVersion) {
+			allMatchingImageVersions = append(allMatchingImageVersions, imageMinVersion)
+			imageVersionToConfig[imageMinVersion.String()] = imageConfig
+		}
+	}
+	if len(allMatchingImageVersions) == 0 {
+		if useCurrentIfNoMatches {
+			log.Warningf(ctx, "None of the %d images configured for this device have a MinDutReleaseVersion greater than or equal to %q; selecting current version instead", len(deviceConfig.Images), dutVersion.String())
+			return c.selectCurrentImage(deviceConfig)
+		}
+		return nil, errors.Reason("none of the %d images configured for this device have a MinDutReleaseVersion greater than or equal to %q", len(deviceConfig.Images), dutVersion.String()).Err()
+	}
+
+	// Sort them and use the highest matching min version.
+	sort.SliceStable(allMatchingImageVersions, func(i, j int) bool {
+		return cros.IsChromeOSReleaseVersionLessThan(allMatchingImageVersions[i], allMatchingImageVersions[j])
+	})
+	highestMatchingVersion := allMatchingImageVersions[len(allMatchingImageVersions)-1]
+	if len(allMatchingImageVersions) > 1 {
+		secondHighestMatchingVersion := allMatchingImageVersions[len(allMatchingImageVersions)-2]
+		if !cros.IsChromeOSReleaseVersionLessThan(secondHighestMatchingVersion, highestMatchingVersion) {
+			// Versions are the same, and thus we cannot pick between the two images
+			// they belong to (this is a config error we'd need to fix manually).
+			return nil, errors.Reason("config error: unable to choose image for CHROMEOS_RELEASE_VERSION %q, as multiple matching images were found with the same MinDutReleaseVersion %q", dutVersion.String(), highestMatchingVersion.String()).Err()
+		}
+	}
+	return imageVersionToConfig[highestMatchingVersion.String()], nil
+}
+
+func (c *OpenWrtRouterController) selectImageForDut(ctx context.Context, deviceConfig *labapi.OpenWrtWifiRouterDeviceConfig, dutHostname, dutCrosReleaseVersion string) (*labapi.OpenWrtWifiRouterDeviceConfig_OpenWrtOSImage, error) {
+	var dutVersion cros.ChromeOSReleaseVersion
+	if dutCrosReleaseVersion != "" {
+		var err error
+		dutVersion, err = cros.ParseChromeOSReleaseVersion(dutCrosReleaseVersion)
+		if err != nil {
+			return nil, errors.Annotate(err, "invalid CHROMEOS_RELEASE_VERSION %q", dutCrosReleaseVersion).Err()
+		}
+	}
+	for _, hostname := range deviceConfig.NextImageVerificationDutPool {
+		if hostname == dutHostname {
+			log.Debugf(ctx, "DUT %q is in the NextImageVerificationDutPool, selecting next image\n", dutHostname)
+			if dutVersion == nil {
+				return c.selectNextImage(deviceConfig)
+			}
+			nextImage, err := c.selectNextImage(deviceConfig)
+			if err != nil {
+				return nil, err
+			}
+			nextImageMinVersion, err := cros.ParseChromeOSReleaseVersion(nextImage.MinDutReleaseVersion)
+			if err != nil {
+				return nil, errors.Annotate(err, "failed to parse MinDutReleaseVersion for next image with UUID %q", nextImage.ImageUuid).Err()
+			}
+			if cros.IsChromeOSReleaseVersionLessThan(dutVersion, nextImageMinVersion) {
+				log.Warningf(ctx, "The DUT CHROMEOS_RELEASE_VERSION provided, %q, is less than the selected next OpenWrt OS image MinDutReleaseVersion %q\n", dutVersion.String(), nextImage.String())
+			}
+			return nextImage, nil
+		}
+	}
+	if dutVersion == nil {
+		log.Debugf(ctx, "DUT %q is not in the NextImageVerificationDutPool and no DUT CHROMEOS_RELEASE_VERSION specified, selecting current image\n", dutHostname)
+		return c.selectCurrentImage(deviceConfig)
+	}
+	currentImage, err := c.selectCurrentImage(deviceConfig)
+	if err != nil {
+		return nil, err
+	}
+	currentImageMinVersion, err := cros.ParseChromeOSReleaseVersion(currentImage.MinDutReleaseVersion)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to parse MinDutReleaseVersion for current image with UUID %q", currentImage.ImageUuid).Err()
+	}
+	if cros.IsChromeOSReleaseVersionLessThan(dutVersion, currentImageMinVersion) {
+		log.Warningf(ctx, "DUT %q is not in the NextImageVerificationDutPool and the current image's MinDutReleaseVersion is higher than requested, selecting image by CHROMEOS_RELEASE_VERSION from available images\n", dutHostname)
+		return c.selectImageByCrosReleaseVersion(ctx, deviceConfig, dutCrosReleaseVersion, true)
+	}
+	return currentImage, nil
+}
+
+// AssertHasExpectedImage asserts that router has the expected image installed
+// on it.
+//
+// This function may only be called after the expected image has been identified
+// with IdentifyExpectedImage.
+func (c *OpenWrtRouterController) AssertHasExpectedImage() error {
+	if c.state.GetDeviceBuildInfo() == nil {
+		return errors.Reason("state.DeviceBuildInfo must not be nil").Err()
+	}
+	if c.state.GetDeviceBuildInfo().GetImageUuid() == "" {
+		return errors.Reason("device does not have an image UUID in its OpenWrt build info").Err()
+	}
+	if c.state.GetExpectedImageUuid() == "" {
+		return errors.Reason("expected OpenWrt image not yet identified for device").Err()
+	}
+	if !strings.EqualFold(c.state.DeviceBuildInfo.ImageUuid, c.state.ExpectedImageUuid) {
+		return errors.Reason("device is expected to have an OpenWrt image with UUID %q, but its installed image has %q", c.state.ExpectedImageUuid, c.state.DeviceBuildInfo.ImageUuid).Err()
 	}
 	return nil
 }
