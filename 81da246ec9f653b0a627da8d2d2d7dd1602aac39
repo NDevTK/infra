@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9a88ac5e_ed4026f2",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 8
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1575692
+      },
+      "writtenOn": "2023-08-04T17:29:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0b37b634_09a35812",
+      "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1d1613b4_b10dcdde",
@@ -41,6 +59,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ebf9174a_1f871933",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 8
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1575692
+      },
+      "writtenOn": "2023-08-04T17:29:21Z",
+      "side": 1,
+      "message": "I used the term \"registered\" to refer to builders that are defined in the LUCI configuration. They include both active and inactive builders.\nI replaced \"registered\" with \"configured\" to avoid confusing.",
+      "parentUuid": "1d1613b4_b10dcdde",
+      "range": {
+        "startLine": 12,
+        "startChar": 12,
+        "endLine": 12,
+        "endChar": 40
+      },
+      "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ab30ec21_ce484bd7",
@@ -54,6 +96,30 @@
       "writtenOn": "2023-08-04T01:01:46Z",
       "side": 1,
       "message": "You\u0027re hard-coding \"chromium\" at line 39 below though?",
+      "range": {
+        "startLine": 23,
+        "startChar": 1,
+        "endLine": 23,
+        "endChar": 40
+      },
+      "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5fc56dbe_666ad03d",
+        "filename": "go/src/infra/cr_builder_value/generate.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1575692
+      },
+      "writtenOn": "2023-08-04T17:29:21Z",
+      "side": 1,
+      "message": "Changed it to all Chrome and Chromium, so Project is still needed.",
+      "parentUuid": "ab30ec21_ce484bd7",
       "range": {
         "startLine": 23,
         "startChar": 1,
@@ -130,6 +196,24 @@
       "writtenOn": "2023-08-04T01:01:46Z",
       "side": 1,
       "message": "Can you add either a README to this dir or a docstring here explaining what this program is for/what it does?\n\nAlso, should this be moved under go/src/infra/chromium/ ?",
+      "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7b3b04f6_ae12061f",
+        "filename": "go/src/infra/cr_builder_value/main.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1575692
+      },
+      "writtenOn": "2023-08-04T17:29:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c1750de3_9915aaa2",
       "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
