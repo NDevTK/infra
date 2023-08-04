@@ -17,7 +17,7 @@ const (
 	GceProject                             = "chromeos-gce-tests"
 	GceNetwork                             = "global/networks/chromeos-gce-tests"
 	GceMachineType                         = "n2-standard-4"
-	DockerImageCacheServer                 = "us-docker.pkg.dev/cros-registry/test-services/cacheserver:cacheserver2"
+	DockerImageCacheServer                 = "us-docker.pkg.dev/cros-registry/test-services/cacheserver:prod"
 	LroSleepTime                           = 5 * time.Second
 	GcsPublishTestArtifactsDir             = "/tmp/gcs-publish-test-artifacts/"
 	TKOPublishTestArtifactsDir             = "/tmp/tko-publish-test-artifacts/"
