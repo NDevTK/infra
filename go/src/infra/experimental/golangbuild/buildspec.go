@@ -206,7 +206,7 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 	return env.SetInCtx(ctx)
 }
 
-func (b *buildSpec) addPortEnv(ctx context.Context, port Port) context.Context {
+func (*buildSpec) addPortEnv(ctx context.Context, port Port) context.Context {
 	if !port.explicit {
 		return ctx
 	}

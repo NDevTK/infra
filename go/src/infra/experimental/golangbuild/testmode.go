@@ -97,6 +97,7 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []P
 		return infraErrorf("runGoTests called for a subrepo builder")
 	}
 	gorootSrc := filepath.Join(spec.goroot, "src")
+	hasDistTestJSON := spec.inputs.GoBranch != "release-branch.go1.20" && spec.inputs.GoBranch != "release-branch.go1.19"
 
 	if spec.inputs.CompileOnly {
 		// If compiling any one port fails, keep going and report all at the end.
@@ -104,6 +105,10 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []P
 		for _, p := range ports {
 			portContext := spec.addPortEnv(ctx, p)
 			testCmd := spec.wrapTestCmd(spec.distTestCmd(portContext, gorootSrc, "", nil, true))
+			if !hasDistTestJSON {
+				// TODO(when Go 1.20 stops being supported): Delete this non-JSON path.
+				testCmd = spec.distTestCmd(portContext, gorootSrc, "", nil, false)
+			}
 			if err := cmdStepRun(portContext, fmt.Sprintf("compile %s port", p), testCmd, false); err != nil {
 				testErrors = append(testErrors, err)
 			}
@@ -117,7 +122,6 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []P
 
 	// We have two paths, unfortunately: a simple one for Go 1.21+ that uses dist test -json,
 	// and a two-step path for Go 1.20 and older that uses go test -json and dist test (without JSON).
-	hasDistTestJSON := spec.inputs.GoBranch != "release-branch.go1.20" && spec.inputs.GoBranch != "release-branch.go1.19"
 	if !hasDistTestJSON {
 		if shard != noSharding {
 			return fmt.Errorf("test sharding is not supported for Go version 1.20 and earlier")
