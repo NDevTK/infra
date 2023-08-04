@@ -206,13 +206,16 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 	return env.SetInCtx(ctx)
 }
 
-func addPortEnv(ctx context.Context, port Port) context.Context {
+func addPortEnv(ctx context.Context, port Port, extraEnv ...string) context.Context {
 	if port == currentPort {
 		return ctx
 	}
 	env := environ.FromCtx(ctx)
 	env.Set("GOOS", port.GOOS)
 	env.Set("GOARCH", port.GOARCH)
+	for _, e := range extraEnv {
+		env.SetEntry(e)
+	}
 	return env.SetInCtx(ctx)
 }
 

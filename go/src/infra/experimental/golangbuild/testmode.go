@@ -123,7 +123,11 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []P
 		var testErrors = make([]error, len(ports))
 		for i, p := range ports {
 			i, p := i, p
-			portContext := addPortEnv(ctx, p)
+			var extraEnv []string
+			if spec.experiment("golang.parallel_compile_only_ports_maxprocs") {
+				extraEnv = append(extraEnv, "GOMAXPROCS=1")
+			}
+			portContext := addPortEnv(ctx, p, extraEnv...)
 			testCmd := spec.wrapTestCmd(spec.distTestCmd(portContext, gorootSrc, "", nil, true))
 			if !hasDistTestJSON {
 				// TODO(when Go 1.20 stops being supported): Delete this non-JSON path.
