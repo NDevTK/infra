@@ -182,6 +182,6 @@ var exceptions = []suiteFilter{
 	},
 	{
 		suiteName:  "chrome-uprev-hw",
-		expiration: time.Date(2023, time.August, 10, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 8, 0, 0, 0, 0, time.UTC),
 	},
 }
