@@ -10,6 +10,7 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/encoding/protojson"
+	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/execs/wifirouter/ssh"
 	"infra/cros/recovery/tlw"
 )
@@ -105,6 +106,12 @@ func (c *OpenWrtRouterController) Features() ([]labapi.WifiRouterFeature, error)
 	return c.state.DeviceBuildInfo.RouterFeatures, nil
 }
 
+// Reboot will reboot the router and wait for it to come back up. A non-nil
+// error indicates that the router was rebooted and is ssh-able again.
+func (c *OpenWrtRouterController) Reboot(ctx context.Context) error {
+	return ssh.Reboot(ctx, c.sshRunner)
+}
+
 // FetchDeviceBuildInfo retrieves the build info from the router and stores
 // it in the controller state.
 func (c *OpenWrtRouterController) FetchDeviceBuildInfo(ctx context.Context) error {
@@ -141,8 +148,61 @@ func (c *OpenWrtRouterController) FetchDeviceBuildInfo(ctx context.Context) erro
 	return nil
 }
 
-// Reboot will reboot the router and wait for it to come back up. A non-nil
-// error indicates that the router was rebooted and is ssh-able again.
-func (c *OpenWrtRouterController) Reboot(ctx context.Context) error {
-	return ssh.Reboot(ctx, c.sshRunner)
+// FetchGlobalImageConfig retrieves the global image config from GCS for this
+// router and stores it in the controller state.
+func (c *OpenWrtRouterController) FetchGlobalImageConfig(ctx context.Context) error {
+	if c.state.GetDeviceBuildInfo() == nil {
+		return errors.Reason("state.DeviceBuildInfo must not be nil").Err()
+	}
+	deviceName := c.state.GetDeviceBuildInfo().GetStandardBuildConfig().GetDeviceName()
+
+	// Fetch and unmarshal config from GCS.
+	wifiRouterConfig, err := fetchWifiRouterConfig(ctx, c.sshRunner, c.cacheAccess, c.resource)
+	if err != nil {
+		return err
+	}
+	if wifiRouterConfig.GetOpenwrt() == nil {
+		return errors.Reason("wifi router config missing OpenWrt configuration").Err()
+	}
+
+	// Select the config for this device.
+	deviceConfig, ok := wifiRouterConfig.Openwrt[deviceName]
+	if !ok || deviceConfig == nil {
+		return errors.Reason("no config available for OpenWrt device %q", deviceName).Err()
+	}
+
+	// Validate required fields.
+	if len(deviceConfig.Images) == 0 {
+		return errors.Reason("OpenWrt device config for %q does not have any images", deviceName).Err()
+	}
+	for i, image := range deviceConfig.Images {
+		if err := c.validateOpenWrtOSImage(image); err != nil {
+			return errors.Annotate(err, "OpenWrt device config for %q has an invalid image at OpenWrtWifiRouterDeviceConfig.images[%d]", deviceName, i).Err()
+		}
+	}
+
+	c.state.Config = deviceConfig
+	return nil
+}
+
+// validateOpenWrtOSImage will check all properties of an image and throw an
+// error if any are empty or if MinDutReleaseVersion is invalid. All images
+// are expected to have all of these fields populated in the config file.
+func (c *OpenWrtRouterController) validateOpenWrtOSImage(image *labapi.OpenWrtWifiRouterDeviceConfig_OpenWrtOSImage) error {
+	if image == nil {
+		return errors.Reason("image is nil").Err()
+	}
+	if image.ImageUuid == "" {
+		return errors.Reason("ImageUuid is empty").Err()
+	}
+	if image.ArchivePath == "" {
+		return errors.Reason("ArchivePath is empty").Err()
+	}
+	if image.MinDutReleaseVersion == "" {
+		return errors.Reason("MinDutReleaseVersion is empty").Err()
+	}
+	if _, err := cros.ParseChromeOSReleaseVersion(image.MinDutReleaseVersion); err != nil {
+		return errors.Annotate(err, "MinDutReleaseVersion is invalid").Err()
+	}
+	return nil
 }
