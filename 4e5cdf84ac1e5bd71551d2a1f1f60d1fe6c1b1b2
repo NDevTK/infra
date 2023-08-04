@@ -22,6 +22,30 @@
       },
       "revId": "4e5cdf84ac1e5bd71551d2a1f1f60d1fe6c1b1b2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b22216d0_a5003533",
+        "filename": "go/src/infra/cr_builder_value/README.md",
+        "patchSetId": 10
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1575692
+      },
+      "writtenOn": "2023-08-04T20:35:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c3c670c0_762c3984",
+      "range": {
+        "startLine": 3,
+        "startChar": 72,
+        "endLine": 3,
+        "endChar": 73
+      },
+      "revId": "4e5cdf84ac1e5bd71551d2a1f1f60d1fe6c1b1b2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
