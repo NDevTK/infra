@@ -104,12 +104,6 @@ func otherPeripheralsConverter(ls *inventory.SchedulableLabels) []string {
 		labels = append(labels, fmt.Sprintf("audiobox_jackplugger_state:%s", labJackPluggerState[plen:]))
 	}
 
-	if invTRRSType := p.GetTrrsType(); invTRRSType != inventory.Peripherals_TRRS_TYPE_UNSPECIFIED {
-		labTRRSType := invTRRSType.String() // TRRS_TYPE_{ CTIA, OMTP, ... }
-		const plen = len("TRRS_TYPE_")
-		labels = append(labels, fmt.Sprintf("trrs_type:%s", labTRRSType[plen:]))
-	}
-
 	if invHmrState := p.GetHmrState(); invHmrState != inventory.PeripheralState_UNKNOWN {
 		if labHmrState, ok := lab.PeripheralState_name[int32(invHmrState)]; ok {
 			lv := "hmr_state:" + labHmrState
@@ -288,15 +282,6 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, labels []string) 
 			if invJackPluggerVal, ok := inventory.Peripherals_AudioBoxJackPlugger_value[labJackPluggerState]; ok {
 				invJackPluggerState := inventory.Peripherals_AudioBoxJackPlugger(invJackPluggerVal)
 				p.AudioboxJackpluggerState = &invJackPluggerState
-			}
-		case "trrs_type":
-			if v == "" {
-				continue
-			}
-			labTRRSType := "TRRS_TYPE_" + v
-			if invTRRSVal, ok := inventory.Peripherals_TRRSType_value[labTRRSType]; ok {
-				invTRRSType := inventory.Peripherals_TRRSType(invTRRSVal)
-				p.TrrsType = &invTRRSType
 			}
 		case "hmr_state":
 			if v == "" {

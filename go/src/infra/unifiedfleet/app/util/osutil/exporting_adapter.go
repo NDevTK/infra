@@ -109,7 +109,6 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *chromeosLab.Perip
 		p.AudioBoard = &chameleon.AudioBoard
 		p.AudioboxJackpluggerState = setAudioboxJackpluggerState(chameleon.GetAudioboxJackplugger())
 	}
-	p.TrrsType = setTrrsType(d.GetChameleon().GetTrrsType())
 
 	p.Huddly = &falseValue
 	if cameras := d.GetConnectedCamera(); cameras != nil {
@@ -521,14 +520,6 @@ func setAudioboxJackpluggerState(s chromeosLab.Chameleon_AudioBoxJackPlugger) *i
 	target := inventory.Peripherals_AUDIOBOX_JACKPLUGGER_UNSPECIFIED
 	if s != chromeosLab.Chameleon_AUDIOBOX_JACKPLUGGER_UNSPECIFIED {
 		target = inventory.Peripherals_AudioBoxJackPlugger(s)
-	}
-	return &target
-}
-
-func setTrrsType(s chromeosLab.Chameleon_TRRSType) *inventory.Peripherals_TRRSType {
-	target := inventory.Peripherals_TRRS_TYPE_UNSPECIFIED
-	if s != chromeosLab.Chameleon_TRRS_TYPE_UNSPECIFIED {
-		target = inventory.Peripherals_TRRSType(s)
 	}
 	return &target
 }
