@@ -6,12 +6,16 @@ package ssh
 
 import (
 	"context"
+	"regexp"
+	"strconv"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
 	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/log"
 )
+
+var wgetStderrHttpResponseCodeRegex = regexp.MustCompile(`HTTP error (\d+)`)
 
 // TestPath runs `test <testFlag> <remotePath>` on the host and returns the
 // result of the test.
@@ -72,4 +76,40 @@ func Reboot(ctx context.Context, sshRunner Runner) error {
 func TryAccess(ctx context.Context, sshRunner Runner) error {
 	_, err := sshRunner.Run(ctx, 0, "true")
 	return err
+}
+
+// WgetURL will run "wget <downloadURL> [additionalWgetArgs...]" on the host.
+//
+// On wget run success, just the stdout of wget is returned with an empty
+// stdout, 0 HTTP response code (wget does not provide it on success), and a
+// nil error.
+//
+// On wget run failure, the stdout, the stderr, the HTTP error response code,
+// and an err is returned. The HTTP error response code will be attempted to
+// be parsed from stderr, but if it is not found it will be -1.
+func WgetURL(ctx context.Context, sshRunner Runner, timeout time.Duration, downloadURL string, additionalWgetArgs ...string) (stdout, stderr string, httpErrorResponseCode int, err error) {
+	wgetArgs := append([]string{downloadURL}, additionalWgetArgs...)
+	runResult := sshRunner.RunForResult(ctx, timeout, false, "wget", wgetArgs...)
+	stdout = runResult.GetStdout()
+	stderr = runResult.GetStderr()
+	exitCode := runResult.GetExitCode()
+	if exitCode != 0 {
+		if stderr != "" {
+			// Try to parse the HTTP response code from stderr.
+			match := wgetStderrHttpResponseCodeRegex.FindStringSubmatch(stderr)
+			if len(match) == 2 {
+				if code, err := strconv.Atoi(match[1]); err != nil {
+					httpErrorResponseCode = -1
+				} else {
+					httpErrorResponseCode = code
+				}
+			} else {
+				httpErrorResponseCode = -1
+			}
+		} else {
+			httpErrorResponseCode = -1
+		}
+		return stdout, stderr, httpErrorResponseCode, errors.Reason("command %q returned non-zero exit code", runResult.GetCommand()).Err()
+	}
+	return stdout, "", 0, nil
 }
