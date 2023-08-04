@@ -114,7 +114,7 @@
 //   - golang.parallel_compile_only_ports: Compiles multiple ports in parallel
 //     instead of sequentially.
 //   - golang.parallel_compile_only_ports_maxprocs: Causes the experiment above
-//     to also use GOMAXPROCS=1.
+//     to also control GOMAXPROCS.
 package main
 
 import (

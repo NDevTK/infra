@@ -125,7 +125,13 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []P
 			i, p := i, p
 			var extraEnv []string
 			if spec.experiment("golang.parallel_compile_only_ports_maxprocs") {
-				extraEnv = append(extraEnv, "GOMAXPROCS=1")
+				max := func(x, y int) int { // TODO: Drop once go.mod's version is 1.21 or newer.
+					if x > y {
+						return x
+					}
+					return y
+				}
+				extraEnv = append(extraEnv, "GOMAXPROCS="+fmt.Sprint(max(1, runtime.NumCPU()/len(ports))))
 			}
 			portContext := addPortEnv(ctx, p, extraEnv...)
 			testCmd := spec.wrapTestCmd(spec.distTestCmd(portContext, gorootSrc, "", nil, true))
@@ -258,8 +264,12 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []Port)
 	for _, p := range ports {
 		portContext := addPortEnv(ctx, p)
 		for _, m := range modules {
+			stepName := fmt.Sprintf("test %s module", m.Path)
+			if len(ports) > 1 || p != currentPort {
+				stepName += fmt.Sprintf(" for %s", p)
+			}
 			testCmd := spec.wrapTestCmd(spec.goCmd(portContext, m.RootDir, spec.goTestArgs("./...")...))
-			if err := cmdStepRun(portContext, fmt.Sprintf("test %q module", m.Path), testCmd, false); err != nil {
+			if err := cmdStepRun(portContext, stepName, testCmd, false); err != nil {
 				testErrors = append(testErrors, err)
 			}
 		}
