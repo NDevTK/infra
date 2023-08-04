@@ -105,7 +105,7 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []P
 		// If compiling any one port fails, keep going and report all at the end.
 		var testErrors []error
 		for _, p := range ports {
-			portContext := spec.addPortEnv(ctx, p)
+			portContext := addPortEnv(ctx, p)
 			testCmd := spec.wrapTestCmd(spec.distTestCmd(portContext, gorootSrc, "", nil, true))
 			if !hasDistTestJSON {
 				// TODO(when Go 1.20 stops being supported): Delete this non-JSON path.
@@ -123,7 +123,7 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []P
 		var testErrors = make([]error, len(ports))
 		for i, p := range ports {
 			i, p := i, p
-			portContext := spec.addPortEnv(ctx, p)
+			portContext := addPortEnv(ctx, p)
 			testCmd := spec.wrapTestCmd(spec.distTestCmd(portContext, gorootSrc, "", nil, true))
 			if !hasDistTestJSON {
 				// TODO(when Go 1.20 stops being supported): Delete this non-JSON path.
@@ -252,7 +252,7 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []Port)
 	}
 	var testErrors []error
 	for _, p := range ports {
-		portContext := spec.addPortEnv(ctx, p)
+		portContext := addPortEnv(ctx, p)
 		for _, m := range modules {
 			testCmd := spec.wrapTestCmd(spec.goCmd(portContext, m.RootDir, spec.goTestArgs("./...")...))
 			if err := cmdStepRun(portContext, fmt.Sprintf("test %q module", m.Path), testCmd, false); err != nil {
@@ -349,11 +349,10 @@ func modPath(goModFile string) (string, error) {
 // Go port as determined from the environment.
 type Port struct {
 	GOOS, GOARCH string
-	explicit     bool // whether to use GOOS, GOARCH
 }
 
 func (p Port) String() string {
-	if !p.explicit {
+	if p == (Port{}) {
 		return "implicit Go port"
 	}
 	return p.GOOS + "/" + p.GOARCH
@@ -389,6 +388,9 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 		return nil, fmt.Errorf("parsing port list from dist: %v", err)
 	}
 	for _, p := range allPorts {
+		if p.GOOS == "" || p.GOARCH == "" {
+			return nil, fmt.Errorf("go tool dist list returned an invalid GOOS/GOARCH pair: %#v", p)
+		}
 		if p.FirstClass && p.GOOS != "darwin" {
 			// There's enough machine capacity and speed for almost
 			// all first-class ports to have a pre-submit builder,
@@ -397,7 +399,7 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 		} else if shard != noSharding && !shard.shouldRunTest(p.GOOS+"/"+p.GOARCH) {
 			continue
 		}
-		ports = append(ports, Port{p.GOOS, p.GOARCH, true})
+		ports = append(ports, Port{p.GOOS, p.GOARCH})
 	}
 	portList := fmt.Sprint(ports)
 	if len(ports) == 0 {
