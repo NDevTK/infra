@@ -21,27 +21,33 @@ import (
 // Base queries to build from
 const (
 	testSingleDayQuery string = `
+WITH base AS (
+	SELECT
+		m.date,
+		m.test_id,
+		ANY_VALUE(m.test_name) AS test_name,
+		ANY_VALUE(m.file_name) AS file_name,
+		{metricAggregations},
+		ARRAY_AGG(STRUCT(
+			builder AS builder,
+			bucket AS bucket,
+			test_suite AS test_suite,
+			{metricNames}
+			)
+		) AS variants
+	FROM
+		{table} AS m
+	WHERE
+		DATE(date) IN UNNEST(@dates)
+		AND component IN UNNEST(@components){fileNameClause}{filterClause}
+	GROUP BY date, test_id
+	ORDER BY {sortMetric} {sortDirection}
+	LIMIT @page_size OFFSET @page_offset
+)
 SELECT
-	m.date,
-	m.test_id,
-	ANY_VALUE(m.test_name) AS test_name,
-	ANY_VALUE(m.file_name) AS file_name,
-	{metricAggregations},
-	ARRAY_AGG(STRUCT(
-		builder AS builder,
-		bucket AS bucket,
-		test_suite AS test_suite,
-		{metricNames}
-		)
-	) AS variants
-FROM
-	{table} AS m
-WHERE
-	DATE(date) IN UNNEST(@dates)
-	AND component IN UNNEST(@components){fileNameClause}{filterClause}
-GROUP BY date, test_id
-ORDER BY {sortMetric} {sortDirection}
-LIMIT @page_size OFFSET @page_offset`
+	* EXCEPT (variants),
+	(SELECT ARRAY_AGG(v ORDER BY {sortMetric} {sortDirection}) FROM UNNEST(variants) v) AS variants
+FROM base`
 
 	testMultiDayQuery string = `
 WITH tests AS (
@@ -56,7 +62,7 @@ WITH tests AS (
 			bucket AS bucket,
 			test_suite AS test_suite,
 			{metricNames}
-			)
+			) ORDER BY {sortMetric} {sortDirection}
 		) AS variants
 	FROM
 		{table} AS m
@@ -390,7 +396,7 @@ func (c *Client) createFetchMetricsQuery(req *api.FetchTestMetricsRequest) (*big
 	fileNameClause := ""
 	if len(req.FileNames) > 0 {
 		fileNameClause = `
-	AND file_name IN UNNEST(@file_names)`
+		AND file_name IN UNNEST(@file_names)`
 	}
 
 	filterClause := ""
@@ -398,7 +404,7 @@ func (c *Client) createFetchMetricsQuery(req *api.FetchTestMetricsRequest) (*big
 	if req.Filter != "" {
 		for i, filter := range strings.Split(req.Filter, " ") {
 			filterClause += `
-	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter` + strconv.Itoa(i) + `)`
+		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter` + strconv.Itoa(i) + `)`
 			filterParameters = append(filterParameters, bigquery.QueryParameter{
 				Name:  "filter" + strconv.Itoa(i),
 				Value: filter,
@@ -407,8 +413,8 @@ func (c *Client) createFetchMetricsQuery(req *api.FetchTestMetricsRequest) (*big
 	}
 
 	replacements := []string{
-		"{metricAggregations}", strings.Join(metricAggregations, ",\n\t"),
-		"{metricNames}", strings.Join(metricNames, ",\n\t\t"),
+		"{metricAggregations}", strings.Join(metricAggregations, ",\n\t\t"),
+		"{metricNames}", strings.Join(metricNames, ",\n\t\t\t"),
 		"{table}", c.ProjectId + `.` + c.DataSet + `.` + table,
 		"{filterClause}", filterClause,
 		"{fileNameClause}", fileNameClause,

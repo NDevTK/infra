@@ -56,27 +56,33 @@ func TestCreateFetchMetricsQuery(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(query, ShouldNotBeNil)
 			So(query.QueryConfig.Q, ShouldResemble, `
+WITH base AS (
+	SELECT
+		m.date,
+		m.test_id,
+		ANY_VALUE(m.test_name) AS test_name,
+		ANY_VALUE(m.file_name) AS file_name,
+		SUM(num_runs) AS num_runs,
+		ARRAY_AGG(STRUCT(
+			builder AS builder,
+			bucket AS bucket,
+			test_suite AS test_suite,
+			num_runs
+			)
+		) AS variants
+	FROM
+		chrome-test-health-project.normal-dataset.daily_test_metrics AS m
+	WHERE
+		DATE(date) IN UNNEST(@dates)
+		AND component IN UNNEST(@components)
+	GROUP BY date, test_id
+	ORDER BY test_id ASC
+	LIMIT @page_size OFFSET @page_offset
+)
 SELECT
-	m.date,
-	m.test_id,
-	ANY_VALUE(m.test_name) AS test_name,
-	ANY_VALUE(m.file_name) AS file_name,
-	SUM(num_runs) AS num_runs,
-	ARRAY_AGG(STRUCT(
-		builder AS builder,
-		bucket AS bucket,
-		test_suite AS test_suite,
-		num_runs
-		)
-	) AS variants
-FROM
-	chrome-test-health-project.normal-dataset.daily_test_metrics AS m
-WHERE
-	DATE(date) IN UNNEST(@dates)
-	AND component IN UNNEST(@components)
-GROUP BY date, test_id
-ORDER BY test_id ASC
-LIMIT @page_size OFFSET @page_offset`)
+	* EXCEPT (variants),
+	(SELECT ARRAY_AGG(v ORDER BY test_id ASC) FROM UNNEST(variants) v) AS variants
+FROM base`)
 		})
 
 		Convey("Valid filtered request", func() {
@@ -86,29 +92,35 @@ LIMIT @page_size OFFSET @page_offset`)
 			So(err, ShouldBeNil)
 			So(query, ShouldNotBeNil)
 			So(query.QueryConfig.Q, ShouldResemble, `
+WITH base AS (
+	SELECT
+		m.date,
+		m.test_id,
+		ANY_VALUE(m.test_name) AS test_name,
+		ANY_VALUE(m.file_name) AS file_name,
+		SUM(num_runs) AS num_runs,
+		ARRAY_AGG(STRUCT(
+			builder AS builder,
+			bucket AS bucket,
+			test_suite AS test_suite,
+			num_runs
+			)
+		) AS variants
+	FROM
+		chrome-test-health-project.normal-dataset.daily_test_metrics AS m
+	WHERE
+		DATE(date) IN UNNEST(@dates)
+		AND component IN UNNEST(@components)
+		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
+		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter1)
+	GROUP BY date, test_id
+	ORDER BY test_id ASC
+	LIMIT @page_size OFFSET @page_offset
+)
 SELECT
-	m.date,
-	m.test_id,
-	ANY_VALUE(m.test_name) AS test_name,
-	ANY_VALUE(m.file_name) AS file_name,
-	SUM(num_runs) AS num_runs,
-	ARRAY_AGG(STRUCT(
-		builder AS builder,
-		bucket AS bucket,
-		test_suite AS test_suite,
-		num_runs
-		)
-	) AS variants
-FROM
-	chrome-test-health-project.normal-dataset.daily_test_metrics AS m
-WHERE
-	DATE(date) IN UNNEST(@dates)
-	AND component IN UNNEST(@components)
-	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
-	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter1)
-GROUP BY date, test_id
-ORDER BY test_id ASC
-LIMIT @page_size OFFSET @page_offset`)
+	* EXCEPT (variants),
+	(SELECT ARRAY_AGG(v ORDER BY test_id ASC) FROM UNNEST(variants) v) AS variants
+FROM base`)
 		})
 
 		Convey("Valid filename filtered request", func() {
@@ -119,30 +131,36 @@ LIMIT @page_size OFFSET @page_offset`)
 			So(err, ShouldBeNil)
 			So(query, ShouldNotBeNil)
 			So(query.QueryConfig.Q, ShouldResemble, `
+WITH base AS (
+	SELECT
+		m.date,
+		m.test_id,
+		ANY_VALUE(m.test_name) AS test_name,
+		ANY_VALUE(m.file_name) AS file_name,
+		SUM(num_runs) AS num_runs,
+		ARRAY_AGG(STRUCT(
+			builder AS builder,
+			bucket AS bucket,
+			test_suite AS test_suite,
+			num_runs
+			)
+		) AS variants
+	FROM
+		chrome-test-health-project.normal-dataset.daily_test_metrics AS m
+	WHERE
+		DATE(date) IN UNNEST(@dates)
+		AND component IN UNNEST(@components)
+		AND file_name IN UNNEST(@file_names)
+		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
+		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter1)
+	GROUP BY date, test_id
+	ORDER BY test_id ASC
+	LIMIT @page_size OFFSET @page_offset
+)
 SELECT
-	m.date,
-	m.test_id,
-	ANY_VALUE(m.test_name) AS test_name,
-	ANY_VALUE(m.file_name) AS file_name,
-	SUM(num_runs) AS num_runs,
-	ARRAY_AGG(STRUCT(
-		builder AS builder,
-		bucket AS bucket,
-		test_suite AS test_suite,
-		num_runs
-		)
-	) AS variants
-FROM
-	chrome-test-health-project.normal-dataset.daily_test_metrics AS m
-WHERE
-	DATE(date) IN UNNEST(@dates)
-	AND component IN UNNEST(@components)
-	AND file_name IN UNNEST(@file_names)
-	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
-	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter1)
-GROUP BY date, test_id
-ORDER BY test_id ASC
-LIMIT @page_size OFFSET @page_offset`)
+	* EXCEPT (variants),
+	(SELECT ARRAY_AGG(v ORDER BY test_id ASC) FROM UNNEST(variants) v) AS variants
+FROM base`)
 		})
 
 		Convey("Valid filtered multi-day request", func() {
@@ -169,15 +187,15 @@ WITH tests AS (
 			bucket AS bucket,
 			test_suite AS test_suite,
 			num_runs
-			)
+			) ORDER BY test_id ASC
 		) AS variants
 	FROM
 		chrome-test-health-project.normal-dataset.daily_test_metrics AS m
 	WHERE
 		DATE(date) IN UNNEST(@dates)
 		AND component IN UNNEST(@components)
-	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
-	AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter1)
+		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
+		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter1)
 	GROUP BY m.date, m.test_id
 ), sorted_day AS (
 	SELECT
@@ -214,7 +232,7 @@ WITH tests AS (
 			bucket AS bucket,
 			test_suite AS test_suite,
 			num_runs
-			)
+			) ORDER BY test_id DESC
 		) AS variants
 	FROM
 		chrome-test-health-project.normal-dataset.daily_test_metrics AS m
