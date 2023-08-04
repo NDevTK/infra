@@ -379,8 +379,7 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 	// Parse the JSON output and
 	// select ports matching this shard.
 	var allPorts []struct {
-		GOOS       string
-		GOARCH     string
+		Port
 		FirstClass bool
 	}
 	err = json.Unmarshal(listOutput, &allPorts)
@@ -391,15 +390,26 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 		if p.GOOS == "" || p.GOARCH == "" {
 			return nil, fmt.Errorf("go tool dist list returned an invalid GOOS/GOARCH pair: %#v", p)
 		}
-		if p.FirstClass && p.GOOS != "darwin" {
+		switch {
+		case p.FirstClass && p.GOOS != "darwin":
 			// There's enough machine capacity and speed for almost
 			// all first-class ports to have a pre-submit builder,
 			// and there's not enough benefit to include them here.
 			continue
-		} else if shard != noSharding && !shard.shouldRunTest(p.GOOS+"/"+p.GOARCH) {
+		case p.Port == Port{"ios", "arm64"}:
+			// TODO(go.dev/issue/61761): Add misc-compile coverage for ios/arm64 port (iOS).
+			continue
+		case p.Port == Port{"ios", "amd64"}:
+			// TODO(go.dev/issue/61760): Add misc-compile coverage for ios/amd64 port (iOS Simulator).
+			continue
+		case p.Port == Port{"android", "arm"}:
+			// TODO(go.dev/issue/61762): Add misc-compile coverage for android/arm port.
 			continue
 		}
-		ports = append(ports, Port{p.GOOS, p.GOARCH})
+		if shard != noSharding && !shard.shouldRunTest(p.GOOS+"/"+p.GOARCH) {
+			continue
+		}
+		ports = append(ports, p.Port)
 	}
 	portList := fmt.Sprint(ports)
 	if len(ports) == 0 {
