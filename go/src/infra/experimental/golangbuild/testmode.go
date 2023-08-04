@@ -16,12 +16,14 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/luciexe/build"
 	"golang.org/x/exp/slices"
 	"golang.org/x/mod/modfile"
+	"golang.org/x/sync/errgroup"
 )
 
 // testRunner runs a non-strict subset of available tests. It requires a prebuilt
@@ -99,7 +101,7 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []P
 	gorootSrc := filepath.Join(spec.goroot, "src")
 	hasDistTestJSON := spec.inputs.GoBranch != "release-branch.go1.20" && spec.inputs.GoBranch != "release-branch.go1.19"
 
-	if spec.inputs.CompileOnly {
+	if !spec.experiment("golang.parallel_compile_only_ports") && spec.inputs.CompileOnly {
 		// If compiling any one port fails, keep going and report all at the end.
 		var testErrors []error
 		for _, p := range ports {
@@ -113,6 +115,26 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []P
 				testErrors = append(testErrors, err)
 			}
 		}
+		return errors.Join(testErrors...)
+	} else if spec.inputs.CompileOnly {
+		// If compiling any one port fails, keep going and report all at the end.
+		g := new(errgroup.Group)
+		g.SetLimit(runtime.NumCPU())
+		var testErrors = make([]error, len(ports))
+		for i, p := range ports {
+			i, p := i, p
+			portContext := spec.addPortEnv(ctx, p)
+			testCmd := spec.wrapTestCmd(spec.distTestCmd(portContext, gorootSrc, "", nil, true))
+			if !hasDistTestJSON {
+				// TODO(when Go 1.20 stops being supported): Delete this non-JSON path.
+				testCmd = spec.distTestCmd(portContext, gorootSrc, "", nil, false)
+			}
+			g.Go(func() error {
+				testErrors[i] = cmdStepRun(portContext, fmt.Sprintf("compile %s port", p), testCmd, false)
+				return nil
+			})
+		}
+		g.Wait()
 		return errors.Join(testErrors...)
 	}
 

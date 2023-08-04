@@ -189,7 +189,8 @@ func triggerBuild(ctx context.Context, spec *buildSpec, shard testShard, builder
 	}
 	for ex := range spec.experiments {
 		switch ex {
-		case "golang.force_test_outside_repository":
+		case "golang.force_test_outside_repository",
+			"golang.parallel_compile_only_ports":
 			bbArgs = append(bbArgs, "-ex", "+"+ex)
 		}
 	}

@@ -111,6 +111,8 @@
 //     from outside the repository to catch accidental reads outside of module
 //     boundaries despite the repository not having opted-in to this test
 //     behavior.
+//   - golang.parallel_compile_only_ports: Compiles multiple ports in parallel
+//     instead of sequentially.
 package main
 
 import (
