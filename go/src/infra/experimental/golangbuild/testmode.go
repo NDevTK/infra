@@ -104,7 +104,7 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []P
 		for _, p := range ports {
 			portContext := spec.addPortEnv(ctx, p)
 			testCmd := spec.wrapTestCmd(spec.distTestCmd(portContext, gorootSrc, "", nil, true))
-			if err := cmdStepRun(ctx, fmt.Sprintf("compile %s port", p), testCmd, false); err != nil {
+			if err := cmdStepRun(portContext, fmt.Sprintf("compile %s port", p), testCmd, false); err != nil {
 				testErrors = append(testErrors, err)
 			}
 		}
@@ -202,15 +202,6 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []Port)
 		return infraErrorf("fetchSubrepoAndRunTests called for a main Go repo builder")
 	}
 
-	if len(ports) != 1 || ports[0] != currentPort {
-		// TODO(dmitshur): Implement this for golang.org/x repos too, after the main repo.
-		//
-		// Unfortunately it will unavoidably increase indentation in this function :(, but
-		// that is warranted since the alternative of maintaining two parallel versions of
-		// fetchSubrepoAndRunTests is worse yet. Sorry!
-		return infraErrorf("testing multiple ports for golang.org/x repos is not supported yet; it will be only supported in CompileOnly mode soon")
-	}
-
 	// Fetch the target repository.
 	repoDir, err := os.MkdirTemp(spec.workdir, "targetrepo") // Use a non-predictable base directory name.
 	if err != nil {
@@ -221,7 +212,7 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []Port)
 	}
 
 	// Test this specific subrepo.
-	// If testing any one nested module fails, keep going and report all at the end.
+	// If testing any one nested module or port fails, keep going and report all at the end.
 	modules, err := repoToModules(ctx, spec, repoDir)
 	if err != nil {
 		return err
@@ -234,10 +225,13 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []Port)
 		}
 	}
 	var testErrors []error
-	for _, m := range modules {
-		testCmd := spec.wrapTestCmd(spec.goCmd(ctx, m.RootDir, spec.goTestArgs("./...")...))
-		if err := cmdStepRun(ctx, fmt.Sprintf("test %q module", m.Path), testCmd, false); err != nil {
-			testErrors = append(testErrors, err)
+	for _, p := range ports {
+		portContext := spec.addPortEnv(ctx, p)
+		for _, m := range modules {
+			testCmd := spec.wrapTestCmd(spec.goCmd(portContext, m.RootDir, spec.goTestArgs("./...")...))
+			if err := cmdStepRun(portContext, fmt.Sprintf("test %q module", m.Path), testCmd, false); err != nil {
+				testErrors = append(testErrors, err)
+			}
 		}
 	}
 	return errors.Join(testErrors...)
