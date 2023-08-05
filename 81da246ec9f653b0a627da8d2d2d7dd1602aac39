@@ -203,6 +203,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0585a364_a01b2e06",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 8
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1575692
+      },
+      "writtenOn": "2023-08-05T06:03:19Z",
+      "side": 1,
+      "message": "I will create a design doc for this project.",
+      "parentUuid": "7f258728_66143c29",
+      "range": {
+        "startLine": 12,
+        "startChar": 12,
+        "endLine": 12,
+        "endChar": 40
+      },
+      "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ab30ec21_ce484bd7",
