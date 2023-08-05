@@ -181,6 +181,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "7f258728_66143c29",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 8
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2023-08-05T00:02:13Z",
+      "side": 1,
+      "message": "\u003e 1. I have created a separate GCP project to host cr-builder-value. \n\nOk, that seems better. lgtm\n\nThough a couple notes:\n- I was under the impression that creating GCP projects properly is easier said than done these days. (ie: it ought to be configured as terraform in google3). I could be wrong there, though.\n- `chrome-luci-data` is a pre-existing GCP project that this might have fit into.\n\nDiscussions around both of those points would have been good to have in a design doc.",
+      "parentUuid": "de2c6afa_fef074a0",
+      "range": {
+        "startLine": 12,
+        "startChar": 12,
+        "endLine": 12,
+        "endChar": 40
+      },
+      "revId": "81da246ec9f653b0a627da8d2d2d7dd1602aac39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ab30ec21_ce484bd7",
         "filename": "go/src/infra/cr_builder_value/generate.go",
         "patchSetId": 8
