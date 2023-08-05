@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d88df1e1_df6955c8",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 14
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1170419
+      },
+      "writtenOn": "2023-08-05T00:10:35Z",
+      "side": 1,
+      "message": "Also @chanli@chromium.org and @vadimsh@chromium.org FYI to give them a heads-up for this buildbucket-bigquery use-case. (Did we ever think of filing this as a FR for buildbucket to upload such a bigquery view?)",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 63
+      },
+      "revId": "1e22707a0bb3b0d57a6274fbecc875547f3ef11f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
