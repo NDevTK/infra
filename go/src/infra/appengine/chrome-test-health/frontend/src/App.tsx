@@ -19,7 +19,7 @@ const App = () => {
       <BrowserRouter>
         <ComponentContextProvider {...{ components }}>
           <NavBar/>
-          <Box component="main" sx={{ flexGrow: 1, marginTop: '74px' }}>
+          <Box component="main" sx={{ flexGrow: 1, minWidth: '1200px' }}>
             <Routes>
               <Route path="/" element={<Navigate to='resources/tests'/>} />
               <Route path="/resources/tests" element={<TestsPage/>} />

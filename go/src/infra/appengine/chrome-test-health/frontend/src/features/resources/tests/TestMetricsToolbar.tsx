@@ -2,11 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { Divider, FormControl, Grid, InputLabel, MenuItem, Select, Stack, TextField, ToggleButton, ToggleButtonGroup, Toolbar } from '@mui/material';
+import {
+  Divider,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  Toolbar,
+} from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
-import TimelineIcon from '@mui/icons-material/Timeline';
+import HistoryIcon from '@mui/icons-material/History';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useContext, useEffect, useState } from 'react';
 import { MetricType, Period } from '../../../api/resources';
@@ -65,71 +75,62 @@ function TestMetricsToolbar() {
 
   return (
     <>
-      <Toolbar>
-        <Grid container gap={3}>
+      <Toolbar sx={{ mt: 0.5 }}>
 
-          <Grid item xs={3}>
-            <TextField
-              data-testid="textFieldTest"
-              fullWidth
-              label="Filter"
-              variant="standard"
-              onChange={handleFilterChange}
-              value={filter}
-            />
-          </Grid>
+        <TextField
+          data-testid="textFieldTest"
+          label="Filter"
+          variant="standard"
+          onChange={handleFilterChange}
+          value={filter}
+          sx={{ mr: 3, minWidth: '300px' }}
+        />
 
-          <Grid item xs={1}>
-            <FormControl data-testid="formControlTest" fullWidth variant="standard">
-              <InputLabel shrink={true}>Period</InputLabel>
-              <Select
-                value={Number(params.period) as Period}
-                label="Period"
-                onChange={handlePeriodChange}
-              >
-                <MenuItem value={Period.DAY}>Day</MenuItem>
-                <MenuItem value={Period.WEEK}>Week</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
+        <FormControl data-testid="formControlTest" variant="standard" sx={{ mr: 3 }}>
+          <InputLabel shrink={true}>Period</InputLabel>
+          <Select
+            value={Number(params.period) as Period}
+            label="Period"
+            onChange={handlePeriodChange}
+          >
+            <MenuItem value={Period.DAY}>Day</MenuItem>
+            <MenuItem value={Period.WEEK}>Week</MenuItem>
+          </Select>
+        </FormControl>
 
-          <Grid item xs={1}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label="Date"
-                disableFuture
-                onChange={handleDateChange}
-                format="YYYY-MM-DD"
-                value={dayjs(params.date)}
-                slotProps={{ textField: { variant: 'standard' } }}
-                shouldDisableDate={handleShouldDisableDate}
-                sx={{ minWidth: '120px' }}
-              />
-            </LocalizationProvider>
-          </Grid>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            label="Date"
+            disableFuture
+            onChange={handleDateChange}
+            format="YYYY-MM-DD"
+            value={dayjs(params.date)}
+            slotProps={{ textField: { variant: 'standard' } }}
+            shouldDisableDate={handleShouldDisableDate}
+            sx={{ mr: 3 }}
+          />
+        </LocalizationProvider>
 
-          <Grid item xs={5}>
-            <Stack direction="row" spacing={4}>
-              <ToggleButtonGroup
-                size="small"
-                color="primary"
-                value={params.timelineView}
-                exclusive
-                onChange={handleTimelineToggle}
-                aria-label="timeline view"
-                data-testid="timelineViewToggle"
-                sx={{ paddingTop: 0.5 }}
-              >
-                <ToggleButton value={false} aria-label="snapshot">
-                  <CameraAltIcon />
-                </ToggleButton>
-                <ToggleButton value={true} aria-label="timeline">
-                  <TimelineIcon />
-                </ToggleButton>
-              </ToggleButtonGroup>
+        <ToggleButtonGroup
+          size="small"
+          color="primary"
+          value={params.timelineView}
+          exclusive
+          onChange={handleTimelineToggle}
+          aria-label="timeline view"
+          data-testid="timelineViewToggle"
+          sx={{ paddingTop: 0.5, mr: 3 }}
+        >
+          <ToggleButton value={false} aria-label="snapshot">
+            <CameraAltIcon />
+          </ToggleButton>
+          <ToggleButton value={true} aria-label="timeline">
+            <HistoryIcon />
+          </ToggleButton>
+        </ToggleButtonGroup>
 
-              {params.timelineView ?
-                  <FormControl data-testid="formControlMetricTest" sx={{ minWidth: '150px' }} variant="standard">
+        {params.timelineView ?
+                  <FormControl data-testid="formControlMetricTest" variant="standard" sx={{ mr: 3 }}>
                     <InputLabel shrink={true}>Metric</InputLabel>
                     <Select
                       value={params.timelineMetric}
@@ -145,22 +146,19 @@ function TestMetricsToolbar() {
                   </FormControl> :
                 null}
 
-              <ToggleButtonGroup
-                size="small"
-                color="primary"
-                value={params.directoryView}
-                exclusive
-                onChange={handleDirectoryToggle}
-                aria-label="directory view"
-                data-testid="directoryViewToggle"
-                sx={{ paddingTop: 0.5 }}
-              >
-                <ToggleButton value={false}>By Test</ToggleButton>
-                <ToggleButton value={true}>By Directory</ToggleButton>
-              </ToggleButtonGroup>
-            </Stack>
-          </Grid>
-        </Grid>
+        <ToggleButtonGroup
+          size="small"
+          color="primary"
+          value={params.directoryView}
+          exclusive
+          onChange={handleDirectoryToggle}
+          aria-label="directory view"
+          data-testid="directoryViewToggle"
+          sx={{ paddingTop: 0.5, mr: 3 }}
+        >
+          <ToggleButton value={false}>By Test</ToggleButton>
+          <ToggleButton value={true}>By Directory</ToggleButton>
+        </ToggleButtonGroup>
       </Toolbar>
       <Divider />
     </>
