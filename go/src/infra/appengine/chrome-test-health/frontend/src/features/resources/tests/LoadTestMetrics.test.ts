@@ -285,6 +285,34 @@ describe('merge_dir action', () => {
     expect((m0n0 as Path).type).toEqual(DirectoryNodeType.FILENAME);
     expect((m0n0 as Path).loaded).toEqual(false);
   });
+
+  // Tests for a findNode bug where it wouldn't find the node if the first
+  // node had children
+  it('merge a single directory node into nested second directory', () => {
+    const state: Node[] = [
+      pathNode('/a', DirectoryNodeType.DIRECTORY, false, [
+        pathNode('/a/a', DirectoryNodeType.DIRECTORY, false),
+        pathNode('/a/b', DirectoryNodeType.DIRECTORY, false),
+      ]),
+      pathNode('/b', DirectoryNodeType.DIRECTORY, false),
+    ];
+    const nodes: DirectoryNode[] = [{
+      id: '/b/a',
+      type: DirectoryNodeType.FILENAME,
+      name: 'ba',
+      metrics: {},
+    }];
+    const onExpand = () => {/**/};
+    const merged = dataReducer(state, {
+      type: 'merge_dir',
+      parentId: '/b',
+      nodes: nodes,
+      onExpand: onExpand,
+    });
+    expect(merged).toHaveLength(2);
+    expect(merged[0].nodes).toHaveLength(2);
+    expect(merged[1].nodes).toHaveLength(1);
+  });
 });
 
 describe('rebuild_state action', () => {

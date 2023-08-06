@@ -88,7 +88,10 @@ function findNode(nodes: Node[], id: string): Node | undefined {
     if (nodes[i].id === id) {
       return nodes[i];
     } else if (nodes[i].nodes.length > 0) {
-      return findNode(nodes[i].nodes, id);
+      const node = findNode(nodes[i].nodes, id);
+      if (node !== undefined) {
+        return node;
+      }
     }
   }
   return undefined;
