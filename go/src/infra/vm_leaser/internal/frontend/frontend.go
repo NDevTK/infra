@@ -71,11 +71,6 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 
 	// Appending "vm-" to satisfy GCE regex
 	leaseID := fmt.Sprintf("vm-%s", uuid.New().String())
-	expirationTime, err := computeExpirationTime(ctx, r.GetLeaseDuration(), s.Env)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "failed to compute expiration time: %s", err)
-	}
-
 	instancesClient, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create NewInstancesRESTClient: %s", err)
@@ -84,7 +79,7 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 
 	retry := 0
 	for {
-		err = createInstance(ctx, instancesClient, leaseID, expirationTime, r.GetHostReqs())
+		err = createInstance(ctx, instancesClient, s.Env, leaseID, r)
 		if err == nil {
 			break
 		}
@@ -218,16 +213,22 @@ func getInstance(parentCtx context.Context, client computeInstancesClient, lease
 }
 
 // createInstance sends an instance creation request to the Compute Engine API and waits for it to complete.
-func createInstance(parentCtx context.Context, client computeInstancesClient, leaseID string, expirationTime int64, hostReqs *api.VMRequirements) error {
+func createInstance(parentCtx context.Context, client computeInstancesClient, env, leaseID string, r *api.LeaseVMRequest) error {
 	// Implement a 180 second deadline for creating the instance
 	ctx, cancel := context.WithTimeout(parentCtx, 180*time.Second)
 	defer cancel()
 
+	hostReqs := r.GetHostReqs()
+	zone := hostReqs.GetGceRegion()
 	networkInterfaces, err := getInstanceNetworkInterfaces(ctx, hostReqs)
 	if err != nil {
 		return fmt.Errorf("failed to get network interfaces: %v", err)
 	}
-	zone := hostReqs.GetGceRegion()
+	metadata, err := getMetadata(ctx, env, r)
+	if err != nil {
+		return fmt.Errorf("failed to get metadata: %v", err)
+	}
+
 	req := &computepb.InsertInstanceRequest{
 		Project: hostReqs.GetGceProject(),
 		Zone:    zone,
@@ -244,15 +245,8 @@ func createInstance(parentCtx context.Context, client computeInstancesClient, le
 					Type:       proto.String(computepb.AttachedDisk_PERSISTENT.String()),
 				},
 			},
-			MachineType: proto.String(fmt.Sprintf("zones/%s/machineTypes/%s", zone, hostReqs.GetGceMachineType())),
-			Metadata: &computepb.Metadata{
-				Items: []*computepb.Items{
-					{
-						Key:   proto.String("expiration_time"),
-						Value: proto.String(strconv.FormatInt(expirationTime, 10)),
-					},
-				},
-			},
+			MachineType:       proto.String(fmt.Sprintf("zones/%s/machineTypes/%s", zone, hostReqs.GetGceMachineType())),
+			Metadata:          metadata,
 			NetworkInterfaces: networkInterfaces,
 		},
 	}
@@ -373,6 +367,32 @@ func getInstanceNetworkInterfaces(ctx context.Context, hostReqs *api.VMRequireme
 	}
 
 	return netInts, nil
+}
+
+// getMetadata gets the Metadata based on VM reqs.
+func getMetadata(ctx context.Context, env string, r *api.LeaseVMRequest) (*computepb.Metadata, error) {
+	expirationTime, err := computeExpirationTime(ctx, r.GetLeaseDuration(), env)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "failed to compute expiration time: %s", err)
+	}
+
+	metadataItems := []*computepb.Items{
+		{
+			Key:   proto.String("expiration_time"),
+			Value: proto.String(strconv.FormatInt(expirationTime, 10)),
+		},
+	}
+
+	if r.GetIdempotencyKey() != "" {
+		metadataItems = append(metadataItems, &computepb.Items{
+			Key:   proto.String("idempotency_key"),
+			Value: proto.String(r.GetIdempotencyKey()),
+		})
+	}
+
+	return &computepb.Metadata{
+		Items: metadataItems,
+	}, nil
 }
 
 // computeExpirationTime calculates the expiration time of a VM

@@ -70,15 +70,17 @@ func TestCreateInstance(t *testing.T) {
 					return nil, errors.New("failed insert")
 				},
 			}
-			hostReqs := &api.VMRequirements{
-				GceImage:       "test-image",
-				GceRegion:      "test-region",
-				GceProject:     "test-project",
-				GceMachineType: "test-machine-type",
-				GceNetwork:     "test-network",
-				GceDiskSize:    100,
+			leaseReq := &api.LeaseVMRequest{
+				HostReqs: &api.VMRequirements{
+					GceImage:       "test-image",
+					GceRegion:      "test-region",
+					GceProject:     "test-project",
+					GceMachineType: "test-machine-type",
+					GceNetwork:     "test-network",
+					GceDiskSize:    100,
+				},
 			}
-			err := createInstance(ctx, client, "test-id", 100, hostReqs)
+			err := createInstance(ctx, client, "dev", "test-id", leaseReq)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "unable to create instance")
 		})
@@ -88,15 +90,17 @@ func TestCreateInstance(t *testing.T) {
 					return nil, nil
 				},
 			}
-			hostReqs := &api.VMRequirements{
-				GceImage:       "test-image",
-				GceRegion:      "test-region",
-				GceProject:     "test-project",
-				GceMachineType: "test-machine-type",
-				GceNetwork:     "test-network",
-				GceDiskSize:    100,
+			leaseReq := &api.LeaseVMRequest{
+				HostReqs: &api.VMRequirements{
+					GceImage:       "test-image",
+					GceRegion:      "test-region",
+					GceProject:     "test-project",
+					GceMachineType: "test-machine-type",
+					GceNetwork:     "test-network",
+					GceDiskSize:    100,
+				},
 			}
-			err := createInstance(ctx, client, "test-id", 100, hostReqs)
+			err := createInstance(ctx, client, "dev", "test-id", leaseReq)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "no operation returned for waiting")
 		})
@@ -106,14 +110,17 @@ func TestCreateInstance(t *testing.T) {
 					return nil, nil
 				},
 			}
-			hostReqs := &api.VMRequirements{
-				GceImage:       "test-image",
-				GceRegion:      "test-region",
-				GceProject:     "test-project",
-				GceMachineType: "test-machine-type",
-				GceDiskSize:    100,
+
+			leaseReq := &api.LeaseVMRequest{
+				HostReqs: &api.VMRequirements{
+					GceImage:       "test-image",
+					GceRegion:      "test-region",
+					GceProject:     "test-project",
+					GceMachineType: "test-machine-type",
+					GceDiskSize:    100,
+				},
 			}
-			err := createInstance(ctx, client, "test-id", 100, hostReqs)
+			err := createInstance(ctx, client, "dev", "test-id", leaseReq)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "failed to get network interface")
 		})
