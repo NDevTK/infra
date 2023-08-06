@@ -4,7 +4,8 @@
 
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import { Checkbox, Container,
+import {
+  Checkbox,
   Divider,
   FormControl,
   ListItemText,
@@ -26,36 +27,33 @@ function NavBar() {
   };
 
   return (
-    <Container maxWidth={false}>
-      <AppBar>
-        <Toolbar>
-          <FormControl sx={{ 'border': 'none', '& fieldset': { border: 'none' } }}>
-            <Select
-              data-testid="selectComponents"
-              multiple
-              value={componentCtx.components}
-              onChange={handleChange}
-              renderValue={(selected) => selected.join(', ')}
-              sx={{ 'color': 'white', '& .MuiSvgIcon-root': {
-                color: 'white',
-              }, 'fontSize': '20px', 'minWidth': '250px', 'maxWidth': '250px' }}
-            >
-              {componentCtx.allComponents.length ?
+    <AppBar position='relative'>
+      <Toolbar>
+        <FormControl sx={{ 'border': 'none', '& fieldset': { border: 'none' } }}>
+          <Select
+            data-testid="selectComponents"
+            multiple
+            value={componentCtx.components}
+            onChange={handleChange}
+            renderValue={(selected) => selected.join(', ')}
+            sx={{ 'color': 'white', '& .MuiSvgIcon-root': {
+              color: 'white',
+            }, 'fontSize': '20px', 'minWidth': '250px' }}
+          >
+            {componentCtx.allComponents.length ?
                 componentCtx.allComponents.map((component) => (
                   <MenuItem key={component} value={component}>
                     <Checkbox checked={componentCtx.components.indexOf(component) > -1} />
                     <ListItemText primary={component} />
                   </MenuItem>
                 )) : null
-              }
-            </Select>
-          </FormControl>
-          <Divider orientation="vertical" flexItem />
-        </Toolbar>
-        <Outlet/>
-      </AppBar>
-    </Container>
-
+            }
+          </Select>
+        </FormControl>
+        <Divider orientation="vertical" flexItem />
+      </Toolbar>
+      <Outlet/>
+    </AppBar>
   );
 }
 export default NavBar;

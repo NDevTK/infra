@@ -12,7 +12,7 @@ import Paper from '@mui/material/Paper';
 import { useContext } from 'react';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import { Box, Button, LinearProgress, TableFooter, TablePagination } from '@mui/material';
+import { Button, LinearProgress, TablePagination } from '@mui/material';
 import { SortType } from '../../../api/resources';
 import { TestMetricsContext, convertToSortIndex } from './TestMetricsContext';
 import TestMetricsRow from './TestMetricsRow';
@@ -130,11 +130,12 @@ function TestMetricsTable() {
   }
 
   return (
-    <>
-      <TableContainer component={Paper} sx={{ position: 'relative' }}>
+    <Paper>
+      <TableContainer sx={{
+        maxHeight: 'calc(100vh - ' + (params.directoryView ? '160' : '210') + 'px)',
+      }}>
         <LinearProgress sx={{ visibility: isLoading ? 'visible' : 'hidden' }} data-testid='loading-bar'/>
-        <Box className={styles.loadingDimmer} sx={{ visibility: isLoading? 'visible' : 'hidden' }}></Box>
-        <Table sx={{ minWidth: 650 }} size="small" aria-label="simple table">
+        <Table stickyHeader size="small" aria-label="simple table">
           <TableHead>
             <TableRow className={styles.headerRow}>
               <TableCell component="th" align="left" sx={{ width: '30%' }}>
@@ -152,25 +153,23 @@ function TestMetricsTable() {
                  (row) => <TestMetricsRow key={row.id} data={row} depth={0}/>,
              ) : tableMessageBoard(isLoading ? 'Loading...' : 'No data available')}
           </TableBody>
-          {params.directoryView ? null : (
-          <TableFooter>
-            <TableRow>
-              <TablePagination
-                data-testid="tablePagination"
-                rowsPerPageOptions={[25, 50, 100, 200]}
-                count={lastPage ? (params.page * params.rowsPerPage): -1}
-                rowsPerPage={params.rowsPerPage}
-                page={params.page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                showFirstButton
-              />
-            </TableRow>
-          </TableFooter>
-          )}
         </Table>
       </TableContainer>
-    </>
+      {params.directoryView ? null : (
+          <TablePagination
+            data-testid="tablePagination"
+            rowsPerPageOptions={[25, 50, 100, 200]}
+            component="div"
+            count={lastPage ? (params.page * params.rowsPerPage): -1}
+            rowsPerPage={params.rowsPerPage}
+            page={params.page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            showFirstButton
+            sx={{ borderTop: 1, borderColor: 'grey.300' }}
+          />
+      )}
+    </Paper>
   );
 }
 
