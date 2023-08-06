@@ -25,6 +25,7 @@ import (
 type mockComputeInstancesClient struct {
 	getFunc    func() (*computepb.Instance, error)
 	insertFunc func() (*compute.Operation, error)
+	deleteFunc func() (*compute.Operation, error)
 }
 
 // Get mocks the Get instance method of the compute client.
@@ -35,6 +36,11 @@ func (m *mockComputeInstancesClient) Get(context.Context, *computepb.GetInstance
 // Insert mocks the Insert instance method of the compute client.
 func (m *mockComputeInstancesClient) Insert(context.Context, *computepb.InsertInstanceRequest, ...gax.CallOption) (*compute.Operation, error) {
 	return m.insertFunc()
+}
+
+// Delete mocks the Delete instance method of the compute client.
+func (m *mockComputeInstancesClient) Delete(context.Context, *computepb.DeleteInstanceRequest, ...gax.CallOption) (*compute.Operation, error) {
+	return m.deleteFunc()
 }
 
 func TestComputeExpirationTime(t *testing.T) {
@@ -123,6 +129,42 @@ func TestCreateInstance(t *testing.T) {
 			err := createInstance(ctx, client, "dev", "test-id", leaseReq)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "failed to get network interface")
+		})
+	})
+}
+
+func TestDeleteInstance(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	Convey("Test deleteInstance", t, func() {
+		Convey("deleteInstance - error: unable to delete", func() {
+			client := &mockComputeInstancesClient{
+				deleteFunc: func() (*compute.Operation, error) {
+					return nil, errors.New("failed delete")
+				},
+			}
+			releaseReq := &api.ReleaseVMRequest{
+				LeaseId:    "test-id",
+				GceProject: "test-project",
+				GceRegion:  "test-region",
+			}
+			err := deleteInstance(ctx, client, releaseReq)
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "unable to delete instance")
+		})
+		Convey("deleteInstance - success", func() {
+			client := &mockComputeInstancesClient{
+				deleteFunc: func() (*compute.Operation, error) {
+					return &compute.Operation{}, nil
+				},
+			}
+			releaseReq := &api.ReleaseVMRequest{
+				LeaseId:    "test-id",
+				GceProject: "test-project",
+				GceRegion:  "test-region",
+			}
+			err := deleteInstance(ctx, client, releaseReq)
+			So(err, ShouldBeNil)
 		})
 	})
 }

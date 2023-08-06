@@ -31,6 +31,7 @@ import (
 type computeInstancesClient interface {
 	Get(ctx context.Context, r *computepb.GetInstanceRequest, opts ...gax.CallOption) (*computepb.Instance, error)
 	Insert(ctx context.Context, r *computepb.InsertInstanceRequest, opts ...gax.CallOption) (*compute.Operation, error)
+	Delete(ctx context.Context, r *computepb.DeleteInstanceRequest, opts ...gax.CallOption) (*compute.Operation, error)
 }
 
 // Prove that Server implements pb.VMLeaserServiceServer by instantiating a Server
@@ -138,9 +139,15 @@ func (s *Server) ReleaseVM(ctx context.Context, r *api.ReleaseVMRequest) (*api.R
 		return nil, status.Errorf(codes.InvalidArgument, "failed to validate release request: %s", err)
 	}
 
+	instancesClient, err := compute.NewInstancesRESTClient(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create NewInstancesRESTClient: %s", err)
+	}
+	defer instancesClient.Close()
+
 	retry := 0
 	for {
-		err := deleteInstance(ctx, r)
+		err := deleteInstance(ctx, instancesClient, r)
 		if err == nil {
 			break
 		}
@@ -270,13 +277,7 @@ func createInstance(parentCtx context.Context, client computeInstancesClient, en
 }
 
 // deleteInstance sends an instance deletion request to the Compute Engine API.
-func deleteInstance(ctx context.Context, r *api.ReleaseVMRequest) error {
-	c, err := compute.NewInstancesRESTClient(ctx)
-	if err != nil {
-		return fmt.Errorf("NewInstancesRESTClient error: %v", err)
-	}
-	defer c.Close()
-
+func deleteInstance(ctx context.Context, c computeInstancesClient, r *api.ReleaseVMRequest) error {
 	req := &computepb.DeleteInstanceRequest{
 		Instance: r.GetLeaseId(),
 		Project:  r.GetGceProject(),
@@ -287,7 +288,7 @@ func deleteInstance(ctx context.Context, r *api.ReleaseVMRequest) error {
 	// We omit checking the returned operation or calling Wait so that this call
 	// becomes non-blocking. This saves callers time and lets the clean up cron
 	// job take care of any stale instances instead. See b/287524018.
-	_, err = c.Delete(ctx, req)
+	_, err := c.Delete(ctx, req)
 	if err != nil {
 		return fmt.Errorf("unable to delete instance: %v", err)
 	}
