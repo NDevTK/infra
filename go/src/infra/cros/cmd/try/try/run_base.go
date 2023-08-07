@@ -49,6 +49,7 @@ type tryRunBase struct {
 	skipProductionPrompt bool
 
 	dryrun     bool
+	verbose    bool
 	branch     string
 	production bool
 	publish    bool
@@ -86,6 +87,11 @@ func (t *tryRunBase) addDryrunFlag() {
 // addPublishFlag creates a `-publish-artifacts` command-line flag to specify that artifacts should be published.
 func (t *tryRunBase) addPublishFlag() {
 	t.Flags.BoolVar(&t.publish, "publish-artifacts", false, "Publish artifacts to canonical location in addition to uploading to GS.")
+}
+
+// addVerboseFlag creates a `-verbose` command-line flag to specify the level of logging.
+func (t *tryRunBase) addVerboseFlag() {
+	t.Flags.BoolVar(&t.verbose, "verbose", false, "Log additional information.")
 }
 
 // validate validates base args for the command.
@@ -171,6 +177,16 @@ func (t *tryRunBase) getUserEmail(ctx context.Context) (string, error) {
 
 // LogOut logs to stdout.
 func (t *tryRunBase) LogOut(format string, a ...interface{}) {
+	if t.stdoutLog != nil {
+		t.stdoutLog.Printf(format, a...)
+	}
+}
+
+// LogOutIfVerbose logs to stdout if `-verbose` is set.
+func (t *tryRunBase) LogOutIfVerbose(format string, a ...interface{}) {
+	if !t.verbose {
+		return
+	}
 	if t.stdoutLog != nil {
 		t.stdoutLog.Printf(format, a...)
 	}

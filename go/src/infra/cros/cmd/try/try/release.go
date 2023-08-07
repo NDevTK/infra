@@ -35,6 +35,7 @@ func GetCmdRelease(authOpts auth.Options) *subcommands.Command {
 			c.addProductionFlag()
 			c.addPatchesFlag()
 			c.addBuildTargetsFlag()
+			c.addVerboseFlag()
 			c.Flags.BoolVar(&c.useProdTests, "prod_tests", false, "Run (production) HW tests even if in staging. "+
 				"By default, HW tests are disabled in staging.")
 			c.Flags.BoolVar(&c.skipPaygen, "skip_paygen", false, "Skip payload generation. Only supported for staging builds.")
@@ -258,6 +259,7 @@ func (r *releaseRun) innerRun(_ subcommands.Application, _ []string, _ subcomman
 	}
 
 	if r.skipPaygen {
+		r.LogOutIfVerbose("Setting skip paygen.")
 		if err := bb.SetProperty(propsStruct, "$chromeos/orch_menu.skip_paygen", true); err != nil {
 			r.LogErr(err.Error())
 			return CmdError
@@ -265,6 +267,7 @@ func (r *releaseRun) innerRun(_ subcommands.Application, _ []string, _ subcomman
 	}
 
 	if r.channelOverride != "" {
+		r.LogOutIfVerbose("Setting channel override: %v", r.channelOverride)
 		channelList := strings.Split(r.channelOverride, ",")
 		if err := bb.SetProperty(propsStruct, "$chromeos/cros_infra_config.override_release_channels", channelList); err != nil {
 			r.LogErr(err.Error())
@@ -277,6 +280,7 @@ func (r *releaseRun) innerRun(_ subcommands.Application, _ []string, _ subcomman
 	}
 
 	if len(r.buildTargets) > 0 {
+		r.LogOutIfVerbose("Setting build targets: %v", r.buildTargets)
 		if err := bb.SetProperty(propsStruct, "$chromeos/orch_menu.child_builds", r.getReleaseBuilderNames()); err != nil {
 			r.LogErr(err.Error())
 			return CmdError
@@ -293,6 +297,7 @@ func (r *releaseRun) innerRun(_ subcommands.Application, _ []string, _ subcomman
 			return CmdError
 		}
 	}
+	r.LogOutIfVerbose("Running with the following props: %v", propsStruct)
 	if err := bb.WriteStructToFile(propsStruct, propsFile); err != nil {
 		r.LogErr(errors.Annotate(err, "writing input properties to tempfile").Err().Error())
 		return UnspecifiedError
