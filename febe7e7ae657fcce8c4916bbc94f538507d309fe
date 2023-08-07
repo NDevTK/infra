@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "337fada0_b49af4dc",
+        "filename": "go/src/infra/build/siso/hashfs/digester.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-08-07T01:47:18Z",
+      "side": 1,
+      "message": "Does it make sense to check inside `digest.FromLocalFile`?",
+      "range": {
+        "startLine": 33,
+        "startChar": 1,
+        "endLine": 37,
+        "endChar": 0
+      },
+      "revId": "febe7e7ae657fcce8c4916bbc94f538507d309fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
