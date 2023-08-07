@@ -952,21 +952,11 @@ func (e *entry) compute(ctx context.Context, fname, xattrname string) error {
 	if !e.d.IsZero() {
 		return nil
 	}
-	if xattrname != "" {
-		d, err := xattr.LGet(fname, xattrname)
-		if err == nil {
-			e.d = digest.Digest{
-				Hash:      string(d),
-				SizeBytes: e.size,
-			}
-			return nil
-		}
-	}
-	src, ok := e.src.(digest.LocalFileSource)
+	lsrc, ok := e.src.(digest.LocalFileSource)
 	if !ok {
-		return nil
+		return fmt.Errorf("compute %s src=%T, not local", fname, e.src)
 	}
-	data, err := digest.FromLocalFile(ctx, src)
+	data, err := localDigest(ctx, lsrc, fname, xattrname, e.size)
 	if err != nil {
 		return err
 	}
@@ -1093,7 +1083,8 @@ func (e *entry) flush(ctx context.Context, fname, xattrname string, m *iometrics
 			m.OpsDone(err)
 		} else {
 			var fileDigest digest.Digest
-			ld, err := localDigest(ctx, fname, xattrname, fi.Size(), m)
+			src := digest.LocalFileSource{Fname: fname, IOMetrics: m}
+			ld, err := localDigest(ctx, src, fname, xattrname, fi.Size())
 			if err == nil {
 				fileDigest = ld.Digest()
 				if fileDigest == d {

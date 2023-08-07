@@ -182,8 +182,10 @@ func (b byteSource) String() string {
 	return b.name
 }
 
-// FromLocalFile creates Data from local file source.
-func FromLocalFile(ctx context.Context, src LocalFileSource) (Data, error) {
+// FromLocalFile creates Data from source.
+// LocalFileSource would not return retriable err.
+// but it's caller's responsibility to retry for retriable err from src.
+func FromLocalFile(ctx context.Context, src Source) (Data, error) {
 	f, err := src.Open(ctx)
 	if err != nil {
 		return Data{}, err
