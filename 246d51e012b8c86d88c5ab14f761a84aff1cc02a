@@ -22,6 +22,30 @@
       },
       "revId": "246d51e012b8c86d88c5ab14f761a84aff1cc02a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "872e73ba_f58a8485",
+        "filename": "go/src/infra/build/siso/reapi/digest/digest.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-08-07T03:50:50Z",
+      "side": 1,
+      "message": "I\u0027m wondering where is the good place to check src\u0027s type.\n\nif FromLocalFile accepts Source, FromLocalFile would be ok for any src if caller handles retriable err, but *entry may not have LocalFileSource as src.",
+      "parentUuid": "d3311525_53743d2a",
+      "range": {
+        "startLine": 188,
+        "startChar": 44,
+        "endLine": 188,
+        "endChar": 50
+      },
+      "revId": "246d51e012b8c86d88c5ab14f761a84aff1cc02a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
