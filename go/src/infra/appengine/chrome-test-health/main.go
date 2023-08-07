@@ -79,7 +79,7 @@ func main() {
 		stats = &testResourcesServer{
 			Client: client,
 		}
-		srv.Options.DefaultRequestTimeout = time.Minute * 10
+		srv.Options.InternalRequestTimeout = time.Hour
 		cron.RegisterHandler("update-daily-summary", updateDailySummary)
 
 		// All RPC APIs.
