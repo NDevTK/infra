@@ -122,8 +122,11 @@ def _IsAuthorInAllowlistForBlocking(config, author_email):
 
 def _IsFileInAllowlistForBlocking(config, file_path):
   assert file_path.startswith('//')
-  for allowed_dir in config.get('monitored_directories', []):
+  for allowed_dir in config.get('included_directories', []):
     if file_path.startswith(allowed_dir):
+      for disallowed_dir in config.get('excluded_directories', []):
+        if file_path.startswith(disallowed_dir):
+          return False
       return True
   return False
 
