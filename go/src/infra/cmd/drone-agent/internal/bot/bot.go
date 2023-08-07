@@ -15,7 +15,7 @@ import (
 	"path/filepath"
 	"time"
 
-	specs "github.com/opencontainers/runtime-spec/specs-go"
+	"github.com/opencontainers/runtime-spec/specs-go"
 	"go.chromium.org/luci/common/errors"
 )
 
