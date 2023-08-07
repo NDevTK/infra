@@ -16,6 +16,24 @@
       "message": "Why not specifying project in the request? So that you don\u0027t need to filter out the results later",
       "revId": "770b155f03a3be5d300dcf8bc90734dde260b42e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0572a884_fe27d114",
+        "filename": "go/src/infra/chromium/cr_builder_value/generate.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1575692
+      },
+      "writtenOn": "2023-08-07T17:48:24Z",
+      "side": 1,
+      "message": "Does ListBuildersRequest support regex? I want all project names that match chrome, chromium, chrome-* and chromium-*.",
+      "parentUuid": "27639f1e_fa121afc",
+      "revId": "770b155f03a3be5d300dcf8bc90734dde260b42e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
