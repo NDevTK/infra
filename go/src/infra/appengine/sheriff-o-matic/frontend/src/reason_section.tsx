@@ -36,10 +36,10 @@ const codeSearchLink = (t: AlertReasonTestJson): string => {
 }
 
 const historyLink = (t: AlertReasonTestJson): string => {
-    const realm = encodeURIComponent(t.realm);
+    const project = encodeURIComponent(t.realm.split(':', 2)[0]);
     const testId = encodeURIComponent(t.test_id);
     const query = encodeURIComponent('VHASH:' + t.variant_hash);
-    return `https://ci.chromium.org/ui/test/${realm}/${testId}?q=${query}`;
+    return `https://ci.chromium.org/ui/test/${project}/${testId}?q=${query}`;
 }
 
 const similarFailuresLink = (t: AlertReasonTestJson): string => {
