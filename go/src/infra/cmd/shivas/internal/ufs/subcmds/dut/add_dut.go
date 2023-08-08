@@ -468,23 +468,27 @@ func validateDutAndAssetLocation(ctx context.Context, ic ufsAPI.FleetClient, dut
 	dutZonePrefix := matches[1] + matches[2]
 	dutZone := shortZoneStringToZone[dutZonePrefix]
 
-	asset, err := getAssetForUpdatedDut(ctx, ic, dutParam)
+	assetZone, err := getAssetZoneForUpdatedDut(ctx, ic, dutParam)
 	if err != nil {
 		return err
 	}
-	if asset.GetLocation().GetZone() != dutZone {
-		return fmt.Errorf("DUT prefix %q and asset zone %q do not match. Please update the asset.\n", dutZonePrefix, asset.GetLocation().GetZone())
+	if assetZone != dutZone {
+		return fmt.Errorf("DUT prefix %q and asset zone %q do not match. Please update the asset.\n", dutZonePrefix, assetZone)
 	}
 	return nil
 }
 
-func getAssetForUpdatedDut(ctx context.Context, ic ufsAPI.FleetClient, dutParam *dutDeployUFSParams) (*ufspb.Asset, error) {
-	if dutParam.Asset != nil {
-		return dutParam.Asset, nil
+func getAssetZoneForUpdatedDut(ctx context.Context, ic ufsAPI.FleetClient, dutParam *dutDeployUFSParams) (ufspb.Zone, error) {
+	if dutParam.Asset.GetLocation().GetZone() != ufspb.Zone_ZONE_UNSPECIFIED {
+		return dutParam.Asset.GetLocation().GetZone(), nil
 	}
-	return ic.GetAsset(ctx, &ufsAPI.GetAssetRequest{
+	asset, err := ic.GetAsset(ctx, &ufsAPI.GetAssetRequest{
 		Name: ufsUtil.AddPrefix(ufsUtil.AssetCollection, dutParam.DUT.GetMachines()[0]),
 	})
+	if err != nil {
+		return ufspb.Zone_ZONE_UNSPECIFIED, err
+	}
+	return asset.GetLocation().GetZone(), nil
 }
 
 func (c *addDUT) addDutToUFS(ctx context.Context, ic ufsAPI.FleetClient, param *dutDeployUFSParams) error {
