@@ -9,6 +9,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	. "github.com/smartystreets/goconvey/convey"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	"infra/libs/skylab/inventory"
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -109,21 +110,24 @@ var lse = ufspb.MachineLSE{
 									Wificell:    true,
 									AntennaConn: chromeosLab.Wifi_CONN_CONDUCTIVE,
 									Router:      chromeosLab.Wifi_ROUTER_802_11AX,
-									// TODO: add valid enums when non Wifi_UNKNONW enum is available
-									// The UNKNONWN enum are testing periperal_wifi_features does not include "UNKNOWN" labels.
-									Features: []chromeosLab.Wifi_Feature{
-										chromeosLab.Wifi_UNKNOWN,
+									WifiRouterFeatures: []labapi.WifiRouterFeature{
+										labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_IEEE_802_11_N,
+										labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_IEEE_802_11_AC,
 									},
 									WifiRouters: []*chromeosLab.WifiRouter{
 										{
-											Features: []chromeosLab.WifiRouter_Feature{
-												chromeosLab.WifiRouter_UNKNOWN,
-												chromeosLab.WifiRouter_UNKNOWN,
+											Model: "gale",
+											SupportedFeatures: []labapi.WifiRouterFeature{
+												labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_IEEE_802_11_N,
+												labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_IEEE_802_11_AC,
 											},
 										},
 										{
-											Features: []chromeosLab.WifiRouter_Feature{
-												chromeosLab.WifiRouter_UNKNOWN,
+											Model: "OPENWRT[Ubiquiti_Unifi_6_Lite]",
+											SupportedFeatures: []labapi.WifiRouterFeature{
+												labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_IEEE_802_11_N,
+												labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_IEEE_802_11_AC,
+												labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_IEEE_802_11_AX,
 											},
 										},
 									},
@@ -551,6 +555,10 @@ common {
 			servo_type: "v3"
 			rpm_state: WORKING
 			peripheral_wifi_state: WORKING
+			wifi_router_features: WIFI_ROUTER_FEATURE_IEEE_802_11_N
+			wifi_router_features: WIFI_ROUTER_FEATURE_IEEE_802_11_AC
+			wifi_router_models: "gale"
+			wifi_router_models: "OPENWRT[Ubiquiti_Unifi_6_Lite]"
 			chameleon_state: WORKING
 			smart_usbhub: true
 			storage_state: HARDWARE_NORMAL,
@@ -612,78 +620,78 @@ common {
 		board: "guado"
 		brand: ""
 		sku: ""
-        capabilities {
-          atrus: false
-          bluetooth: false
-          carrier: CARRIER_INVALID
-          detachablebase: false
-          fingerprint: false
-          flashrom: false
-          gpu_family: ""
-          graphics: ""
-          hotwording: false
-          internal_display: false
-          lucidsleep: false
-          modem: ""
-          power: "AC_only"
-          starfish_slot_mapping: ""
-          storage: ""
-          webcam: false
-          telephony: ""
-          touchpad: false
-          touchscreen: false
-        }
-        cr50_phase: CR50_PHASE_PVT
-        cr50_ro_keyid: "prod"
-        cr50_ro_version: ""
-        cr50_rw_keyid: ""
-        cr50_rw_version: ""
-        ec_type: EC_TYPE_INVALID
-        hwid_sku: ""
+		capabilities {
+			atrus: false
+			bluetooth: false
+			carrier: CARRIER_INVALID
+			detachablebase: false
+			fingerprint: false
+			flashrom: false
+			gpu_family: ""
+			graphics: ""
+			hotwording: false
+			internal_display: false
+			lucidsleep: false
+			modem: ""
+			power: "AC_only"
+			starfish_slot_mapping: ""
+			storage: ""
+			webcam: false
+			telephony: ""
+			touchpad: false
+			touchscreen: false
+		}
+		cr50_phase: CR50_PHASE_PVT
+		cr50_ro_keyid: "prod"
+		cr50_ro_version: ""
+		cr50_rw_keyid: ""
+		cr50_rw_version: ""
+		ec_type: EC_TYPE_INVALID
+		hwid_sku: ""
 		peripherals {
-          audio_board: false
-          audio_box: false
-          audio_loopback_dongle: false
-          chameleon: false
-          chameleon_type: CHAMELEON_TYPE_INVALID
-          conductive: false
-          huddly: false
-          mimo: false
-          servo: true
-          servo_state: BROKEN
-          smart_usbhub: false
-          stylus: false
-          camerabox: false
-          wificell: false
-          router_802_11ax: false
-		  working_bluetooth_btpeer: 3
-          storage_state: HARDWARE_NORMAL
-          servo_usb_state: HARDWARE_NEED_REPLACEMENT
-          battery_state: HARDWARE_UNKNOWN
-          wifi_state: HARDWARE_ACCEPTABLE
-          bluetooth_state: HARDWARE_NORMAL
-          cellular_modem_state: HARDWARE_NORMAL
-          rpm_state: WORKING
-          peripheral_wifi_state: WORKING
-		  chameleon_state: WORKING
-		  hmr_state: UNKNOWN
+			audio_board: false
+			audio_box: false
+			audio_loopback_dongle: false
+			chameleon: false
+			chameleon_type: CHAMELEON_TYPE_INVALID
+			conductive: false
+			huddly: false
+			mimo: false
+			servo: true
+			servo_state: BROKEN
+			smart_usbhub: false
+			stylus: false
+			camerabox: false
+			wificell: false
+			router_802_11ax: false
+			working_bluetooth_btpeer: 3
+			storage_state: HARDWARE_NORMAL
+			servo_usb_state: HARDWARE_NEED_REPLACEMENT
+			battery_state: HARDWARE_UNKNOWN
+			wifi_state: HARDWARE_ACCEPTABLE
+			bluetooth_state: HARDWARE_NORMAL
+			cellular_modem_state: HARDWARE_NORMAL
+			rpm_state: WORKING
+			peripheral_wifi_state: WORKING
+			chameleon_state: WORKING
+			hmr_state: UNKNOWN
 		}
 		platform:""
-        test_coverage_hints {
-            chaos_dut: false
-            chaos_nightly: false
-            chromesign: false
-            hangout_app: false
-            meet_app: false
-            recovery_test: false
-            test_audiojack: false
-            test_hdmiaudio: false
-            test_usbaudio: false
-            test_usbprinting: false
-            usb_detect: false
-            use_lid: false
-        }
-        wifi_chip: ""
+		test_coverage_hints {
+				chaos_dut: false
+				chaos_nightly: false
+				chromesign: false
+				hangout_app: false
+				meet_app: false
+				recovery_test: false
+				test_audiojack: false
+				test_hdmiaudio: false
+				test_usbaudio: false
+				test_usbprinting: false
+				usb_detect: false
+				use_lid: false
+		}
+		wifi_chip: ""
 	}
 }
 `

@@ -140,29 +140,17 @@ func setDutPeripherals(labels *inventory.SchedulableLabels, d *chromeosLab.Perip
 		} else {
 			p.Router_802_11Ax = &falseValue
 		}
-
-		uniqFeatures := make(map[inventory.Peripherals_WifiFeature]bool)
-		// Collect wifi features
-		for _, wifiFeature := range wifi.GetFeatures() {
-			if wifiFeature != chromeosLab.Wifi_UNKNOWN {
-				v1Feature := inventory.Peripherals_WifiFeature(inventory.Peripherals_WifiFeature_value[wifiFeature.String()])
-				if !uniqFeatures[v1Feature] {
-					uniqFeatures[v1Feature] = true
-					p.PeripheralWifiFeatures = append(p.PeripheralWifiFeatures, v1Feature)
-				}
-			}
+		p.WifiRouterFeatures = nil
+		for _, feature := range wifi.GetWifiRouterFeatures() {
+			p.WifiRouterFeatures = append(p.WifiRouterFeatures, inventory.Peripherals_WifiRouterFeature(feature.Number()))
 		}
-		// Collect wifirouters features
+		p.WifiRouterModels = nil
 		for _, wifiRouter := range wifi.GetWifiRouters() {
-			for _, routerFeature := range wifiRouter.GetFeatures() {
-				if routerFeature != chromeosLab.WifiRouter_UNKNOWN {
-					v1Feature := inventory.Peripherals_WifiFeature(inventory.Peripherals_WifiFeature_value[routerFeature.String()])
-					if !uniqFeatures[v1Feature] {
-						uniqFeatures[v1Feature] = true
-						p.PeripheralWifiFeatures = append(p.PeripheralWifiFeatures, v1Feature)
-					}
-				}
+			routerModelForLabel := wifiRouter.GetModel()
+			if routerModelForLabel == "" {
+				routerModelForLabel = "UNKNOWN"
 			}
+			p.WifiRouterModels = append(p.WifiRouterModels, routerModelForLabel)
 		}
 	}
 
