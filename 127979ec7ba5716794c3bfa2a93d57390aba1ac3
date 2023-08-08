@@ -16,6 +16,24 @@
       "message": "Hi All,\n\nSorry I didn\u0027t implement the shivas test case properly causing some trouble last week. In this reland CL, the first patchset is the original change. The second patchset is the fix for the shivas test cases. \n\nPTAL, would be great to have some advice. Also for some reason the pb.discovery.go in api/v1/cron are being changed, should I include in this CL?\n\nBest,\nEugene.",
       "revId": "127979ec7ba5716794c3bfa2a93d57390aba1ac3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "28c34b37_2319a058",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1307525
+      },
+      "writtenOn": "2023-08-08T21:27:29Z",
+      "side": 1,
+      "message": "Looks like some recent CLs caused generated file desynced, I raise a CL to update it in https://chromium-review.googlesource.com/c/infra/infra/+/4762744, you can rebase once it landed.",
+      "parentUuid": "dbe4b3e2_e5de30cb",
+      "revId": "127979ec7ba5716794c3bfa2a93d57390aba1ac3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
