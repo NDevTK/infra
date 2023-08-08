@@ -1,6 +1,6 @@
-// copyright 2021 the chromium os authors. all rights reserved.
-// use of this source code is governed by a bsd-style license that can be
-// found in the license file.
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package docker
 
