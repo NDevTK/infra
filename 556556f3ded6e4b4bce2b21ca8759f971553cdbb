@@ -22,6 +22,30 @@
       },
       "revId": "556556f3ded6e4b4bce2b21ca8759f971553cdbb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "59061eb8_f40c14bd",
+        "filename": "go/src/infra/build/siso/build/progress.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-08-08T07:06:53Z",
+      "side": 1,
+      "message": "pre:164 local:901 remote:0 2413.0/s cache:100.00% fallback:0",
+      "parentUuid": "fe92f792_98630cde",
+      "range": {
+        "startLine": 176,
+        "startChar": 65,
+        "endLine": 176,
+        "endChar": 66
+      },
+      "revId": "556556f3ded6e4b4bce2b21ca8759f971553cdbb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
