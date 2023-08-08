@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fe92f792_98630cde",
+        "filename": "go/src/infra/build/siso/build/progress.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-08-08T06:41:49Z",
+      "side": 1,
+      "message": "How does this look like?",
+      "range": {
+        "startLine": 176,
+        "startChar": 65,
+        "endLine": 176,
+        "endChar": 66
+      },
+      "revId": "556556f3ded6e4b4bce2b21ca8759f971553cdbb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
