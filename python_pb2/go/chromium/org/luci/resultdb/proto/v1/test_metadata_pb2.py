@@ -11,6 +11,9 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
+from google.protobuf import struct_pb2 as google_dot_protobuf_dot_struct__pb2
+from google.api import field_behavior_pb2 as google_dot_api_dot_field__behavior__pb2
+from go.chromium.org.luci.resultdb.proto.v1 import common_pb2 as go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_common__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -19,10 +22,78 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z/go.chromium.org/luci/resultdb/proto/v1;resultpb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n:go.chromium.org/luci/resultdb/proto/v1/test_metadata.proto\x12\x10luci.resultdb.v1\"N\n\x0cTestMetadata\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x30\n\x08location\x18\x02 \x01(\x0b\x32\x1e.luci.resultdb.v1.TestLocation\"=\n\x0cTestLocation\x12\x0c\n\x04repo\x18\x01 \x01(\t\x12\x11\n\tfile_name\x18\x02 \x01(\t\x12\x0c\n\x04line\x18\x03 \x01(\x05\x42\x31Z/go.chromium.org/luci/resultdb/proto/v1;resultpbb\x06proto3'
+  serialized_pb=b'\n:go.chromium.org/luci/resultdb/proto/v1/test_metadata.proto\x12\x10luci.resultdb.v1\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x33go.chromium.org/luci/resultdb/proto/v1/common.proto\"\xc2\x01\n\x12TestMetadataDetail\x12\x11\n\x04name\x18\x01 \x01(\tB\x03\xe0\x41\x03\x12\x0f\n\x07project\x18\x02 \x01(\t\x12\x0f\n\x07test_id\x18\x03 \x01(\t\x12\x10\n\x08ref_hash\x18\x0c \x01(\t\x12/\n\nsource_ref\x18\x04 \x01(\x0b\x32\x1b.luci.resultdb.v1.SourceRef\x12\x34\n\x0ctestMetadata\x18\x05 \x01(\x0b\x32\x1e.luci.resultdb.v1.TestMetadata\"\xcd\x01\n\x0cTestMetadata\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x30\n\x08location\x18\x02 \x01(\x0b\x32\x1e.luci.resultdb.v1.TestLocation\x12\x35\n\rbug_component\x18\x03 \x01(\x0b\x32\x1e.luci.resultdb.v1.BugComponent\x12\x19\n\x11properties_schema\x18\x04 \x01(\t\x12+\n\nproperties\x18\x05 \x01(\x0b\x32\x17.google.protobuf.Struct\"=\n\x0cTestLocation\x12\x0c\n\x04repo\x18\x01 \x01(\t\x12\x11\n\tfile_name\x18\x02 \x01(\t\x12\x0c\n\x04line\x18\x03 \x01(\x05\"\x93\x01\n\x0c\x42ugComponent\x12@\n\rissue_tracker\x18\x01 \x01(\x0b\x32\'.luci.resultdb.v1.IssueTrackerComponentH\x00\x12\x37\n\x08monorail\x18\x02 \x01(\x0b\x32#.luci.resultdb.v1.MonorailComponentH\x00\x42\x08\n\x06system\"-\n\x15IssueTrackerComponent\x12\x14\n\x0c\x63omponent_id\x18\x01 \x01(\x03\"3\n\x11MonorailComponent\x12\x0f\n\x07project\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\tB1Z/go.chromium.org/luci/resultdb/proto/v1;resultpbb\x06proto3'
+  ,
+  dependencies=[google_dot_protobuf_dot_struct__pb2.DESCRIPTOR,google_dot_api_dot_field__behavior__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_common__pb2.DESCRIPTOR,])
+
+
+
+
+_TESTMETADATADETAIL = _descriptor.Descriptor(
+  name='TestMetadataDetail',
+  full_name='luci.resultdb.v1.TestMetadataDetail',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='name', full_name='luci.resultdb.v1.TestMetadataDetail.name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=b'\340A\003', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='project', full_name='luci.resultdb.v1.TestMetadataDetail.project', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='test_id', full_name='luci.resultdb.v1.TestMetadataDetail.test_id', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='ref_hash', full_name='luci.resultdb.v1.TestMetadataDetail.ref_hash', index=3,
+      number=12, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='source_ref', full_name='luci.resultdb.v1.TestMetadataDetail.source_ref', index=4,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='testMetadata', full_name='luci.resultdb.v1.TestMetadataDetail.testMetadata', index=5,
+      number=5, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=197,
+  serialized_end=391,
 )
-
-
 
 
 _TESTMETADATA = _descriptor.Descriptor(
@@ -47,6 +118,27 @@ _TESTMETADATA = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='bug_component', full_name='luci.resultdb.v1.TestMetadata.bug_component', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='properties_schema', full_name='luci.resultdb.v1.TestMetadata.properties_schema', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='properties', full_name='luci.resultdb.v1.TestMetadata.properties', index=4,
+      number=5, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -59,8 +151,8 @@ _TESTMETADATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=80,
-  serialized_end=158,
+  serialized_start=394,
+  serialized_end=599,
 )
 
 
@@ -105,14 +197,152 @@ _TESTLOCATION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=160,
-  serialized_end=221,
+  serialized_start=601,
+  serialized_end=662,
 )
 
+
+_BUGCOMPONENT = _descriptor.Descriptor(
+  name='BugComponent',
+  full_name='luci.resultdb.v1.BugComponent',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='issue_tracker', full_name='luci.resultdb.v1.BugComponent.issue_tracker', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='monorail', full_name='luci.resultdb.v1.BugComponent.monorail', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name='system', full_name='luci.resultdb.v1.BugComponent.system',
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+  ],
+  serialized_start=665,
+  serialized_end=812,
+)
+
+
+_ISSUETRACKERCOMPONENT = _descriptor.Descriptor(
+  name='IssueTrackerComponent',
+  full_name='luci.resultdb.v1.IssueTrackerComponent',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='component_id', full_name='luci.resultdb.v1.IssueTrackerComponent.component_id', index=0,
+      number=1, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=814,
+  serialized_end=859,
+)
+
+
+_MONORAILCOMPONENT = _descriptor.Descriptor(
+  name='MonorailComponent',
+  full_name='luci.resultdb.v1.MonorailComponent',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='project', full_name='luci.resultdb.v1.MonorailComponent.project', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='value', full_name='luci.resultdb.v1.MonorailComponent.value', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=861,
+  serialized_end=912,
+)
+
+_TESTMETADATADETAIL.fields_by_name['source_ref'].message_type = go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_common__pb2._SOURCEREF
+_TESTMETADATADETAIL.fields_by_name['testMetadata'].message_type = _TESTMETADATA
 _TESTMETADATA.fields_by_name['location'].message_type = _TESTLOCATION
+_TESTMETADATA.fields_by_name['bug_component'].message_type = _BUGCOMPONENT
+_TESTMETADATA.fields_by_name['properties'].message_type = google_dot_protobuf_dot_struct__pb2._STRUCT
+_BUGCOMPONENT.fields_by_name['issue_tracker'].message_type = _ISSUETRACKERCOMPONENT
+_BUGCOMPONENT.fields_by_name['monorail'].message_type = _MONORAILCOMPONENT
+_BUGCOMPONENT.oneofs_by_name['system'].fields.append(
+  _BUGCOMPONENT.fields_by_name['issue_tracker'])
+_BUGCOMPONENT.fields_by_name['issue_tracker'].containing_oneof = _BUGCOMPONENT.oneofs_by_name['system']
+_BUGCOMPONENT.oneofs_by_name['system'].fields.append(
+  _BUGCOMPONENT.fields_by_name['monorail'])
+_BUGCOMPONENT.fields_by_name['monorail'].containing_oneof = _BUGCOMPONENT.oneofs_by_name['system']
+DESCRIPTOR.message_types_by_name['TestMetadataDetail'] = _TESTMETADATADETAIL
 DESCRIPTOR.message_types_by_name['TestMetadata'] = _TESTMETADATA
 DESCRIPTOR.message_types_by_name['TestLocation'] = _TESTLOCATION
+DESCRIPTOR.message_types_by_name['BugComponent'] = _BUGCOMPONENT
+DESCRIPTOR.message_types_by_name['IssueTrackerComponent'] = _ISSUETRACKERCOMPONENT
+DESCRIPTOR.message_types_by_name['MonorailComponent'] = _MONORAILCOMPONENT
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+TestMetadataDetail = _reflection.GeneratedProtocolMessageType('TestMetadataDetail', (_message.Message,), {
+  'DESCRIPTOR' : _TESTMETADATADETAIL,
+  '__module__' : 'go.chromium.org.luci.resultdb.proto.v1.test_metadata_pb2'
+  # @@protoc_insertion_point(class_scope:luci.resultdb.v1.TestMetadataDetail)
+  })
+_sym_db.RegisterMessage(TestMetadataDetail)
 
 TestMetadata = _reflection.GeneratedProtocolMessageType('TestMetadata', (_message.Message,), {
   'DESCRIPTOR' : _TESTMETADATA,
@@ -128,6 +358,28 @@ TestLocation = _reflection.GeneratedProtocolMessageType('TestLocation', (_messag
   })
 _sym_db.RegisterMessage(TestLocation)
 
+BugComponent = _reflection.GeneratedProtocolMessageType('BugComponent', (_message.Message,), {
+  'DESCRIPTOR' : _BUGCOMPONENT,
+  '__module__' : 'go.chromium.org.luci.resultdb.proto.v1.test_metadata_pb2'
+  # @@protoc_insertion_point(class_scope:luci.resultdb.v1.BugComponent)
+  })
+_sym_db.RegisterMessage(BugComponent)
+
+IssueTrackerComponent = _reflection.GeneratedProtocolMessageType('IssueTrackerComponent', (_message.Message,), {
+  'DESCRIPTOR' : _ISSUETRACKERCOMPONENT,
+  '__module__' : 'go.chromium.org.luci.resultdb.proto.v1.test_metadata_pb2'
+  # @@protoc_insertion_point(class_scope:luci.resultdb.v1.IssueTrackerComponent)
+  })
+_sym_db.RegisterMessage(IssueTrackerComponent)
+
+MonorailComponent = _reflection.GeneratedProtocolMessageType('MonorailComponent', (_message.Message,), {
+  'DESCRIPTOR' : _MONORAILCOMPONENT,
+  '__module__' : 'go.chromium.org.luci.resultdb.proto.v1.test_metadata_pb2'
+  # @@protoc_insertion_point(class_scope:luci.resultdb.v1.MonorailComponent)
+  })
+_sym_db.RegisterMessage(MonorailComponent)
+
 
 DESCRIPTOR._options = None
+_TESTMETADATADETAIL.fields_by_name['name']._options = None
 # @@protoc_insertion_point(module_scope)

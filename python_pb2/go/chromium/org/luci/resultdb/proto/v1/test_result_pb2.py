@@ -27,7 +27,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z/go.chromium.org/luci/resultdb/proto/v1;resultpb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n8go.chromium.org/luci/resultdb/proto/v1/test_result.proto\x12\x10luci.resultdb.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x33go.chromium.org/luci/resultdb/proto/v1/common.proto\x1a:go.chromium.org/luci/resultdb/proto/v1/test_metadata.proto\x1a;go.chromium.org/luci/resultdb/proto/v1/failure_reason.proto\"\xc2\x04\n\nTestResult\x12\x14\n\x04name\x18\x01 \x01(\tB\x06\xe0\x41\x03\xe0\x41\x05\x12\x14\n\x07test_id\x18\x02 \x01(\tB\x03\xe0\x41\x05\x12\x19\n\tresult_id\x18\x03 \x01(\tB\x06\xe0\x41\x05\xe0\x41\x02\x12/\n\x07variant\x18\x04 \x01(\x0b\x32\x19.luci.resultdb.v1.VariantB\x03\xe0\x41\x05\x12\x15\n\x08\x65xpected\x18\x05 \x01(\x08\x42\x03\xe0\x41\x05\x12\x31\n\x06status\x18\x06 \x01(\x0e\x32\x1c.luci.resultdb.v1.TestStatusB\x03\xe0\x41\x05\x12\x19\n\x0csummary_html\x18\x07 \x01(\tB\x03\xe0\x41\x05\x12\x33\n\nstart_time\x18\x08 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x03\xe0\x41\x05\x12\x30\n\x08\x64uration\x18\t \x01(\x0b\x32\x19.google.protobuf.DurationB\x03\xe0\x41\x05\x12/\n\x04tags\x18\n \x03(\x0b\x32\x1c.luci.resultdb.v1.StringPairB\x03\xe0\x41\x05\x12\x1c\n\x0cvariant_hash\x18\x0c \x01(\tB\x06\xe0\x41\x03\xe0\x41\x05\x12\x35\n\rtest_metadata\x18\r \x01(\x0b\x32\x1e.luci.resultdb.v1.TestMetadata\x12\x37\n\x0e\x66\x61ilure_reason\x18\x0e \x01(\x0b\x32\x1f.luci.resultdb.v1.FailureReason\x12+\n\nproperties\x18\x0f \x01(\x0b\x32\x17.google.protobuf.StructJ\x04\x08\x0b\x10\x0c\"\xf8\x01\n\x0fTestExoneration\x12\x14\n\x04name\x18\x01 \x01(\tB\x06\xe0\x41\x03\xe0\x41\x05\x12\x0f\n\x07test_id\x18\x02 \x01(\t\x12*\n\x07variant\x18\x03 \x01(\x0b\x32\x19.luci.resultdb.v1.Variant\x12\x1e\n\x0e\x65xoneration_id\x18\x04 \x01(\tB\x06\xe0\x41\x03\xe0\x41\x05\x12\x1d\n\x10\x65xplanation_html\x18\x05 \x01(\tB\x03\xe0\x41\x05\x12\x19\n\x0cvariant_hash\x18\x06 \x01(\tB\x03\xe0\x41\x05\x12\x38\n\x06reason\x18\x07 \x01(\x0e\x32#.luci.resultdb.v1.ExonerationReasonB\x03\xe0\x41\x05*X\n\nTestStatus\x12\x16\n\x12STATUS_UNSPECIFIED\x10\x00\x12\x08\n\x04PASS\x10\x01\x12\x08\n\x04\x46\x41IL\x10\x02\x12\t\n\x05\x43RASH\x10\x03\x12\t\n\x05\x41\x42ORT\x10\x04\x12\x08\n\x04SKIP\x10\x05*\x8f\x01\n\x11\x45xonerationReason\x12\"\n\x1e\x45XONERATION_REASON_UNSPECIFIED\x10\x00\x12\x16\n\x12OCCURS_ON_MAINLINE\x10\x01\x12\x17\n\x13OCCURS_ON_OTHER_CLS\x10\x02\x12\x10\n\x0cNOT_CRITICAL\x10\x03\x12\x13\n\x0fUNEXPECTED_PASS\x10\x04\x42\x31Z/go.chromium.org/luci/resultdb/proto/v1;resultpbb\x06proto3'
+  serialized_pb=b'\n8go.chromium.org/luci/resultdb/proto/v1/test_result.proto\x12\x10luci.resultdb.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x33go.chromium.org/luci/resultdb/proto/v1/common.proto\x1a:go.chromium.org/luci/resultdb/proto/v1/test_metadata.proto\x1a;go.chromium.org/luci/resultdb/proto/v1/failure_reason.proto\"\xda\x04\n\nTestResult\x12\x14\n\x04name\x18\x01 \x01(\tB\x06\xe0\x41\x03\xe0\x41\x05\x12\x14\n\x07test_id\x18\x02 \x01(\tB\x03\xe0\x41\x05\x12\x19\n\tresult_id\x18\x03 \x01(\tB\x06\xe0\x41\x05\xe0\x41\x02\x12/\n\x07variant\x18\x04 \x01(\x0b\x32\x19.luci.resultdb.v1.VariantB\x03\xe0\x41\x05\x12\x15\n\x08\x65xpected\x18\x05 \x01(\x08\x42\x03\xe0\x41\x05\x12\x31\n\x06status\x18\x06 \x01(\x0e\x32\x1c.luci.resultdb.v1.TestStatusB\x03\xe0\x41\x05\x12\x19\n\x0csummary_html\x18\x07 \x01(\tB\x03\xe0\x41\x05\x12\x33\n\nstart_time\x18\x08 \x01(\x0b\x32\x1a.google.protobuf.TimestampB\x03\xe0\x41\x05\x12\x30\n\x08\x64uration\x18\t \x01(\x0b\x32\x19.google.protobuf.DurationB\x03\xe0\x41\x05\x12/\n\x04tags\x18\n \x03(\x0b\x32\x1c.luci.resultdb.v1.StringPairB\x03\xe0\x41\x05\x12\x1c\n\x0cvariant_hash\x18\x0c \x01(\tB\x06\xe0\x41\x03\xe0\x41\x05\x12\x35\n\rtest_metadata\x18\r \x01(\x0b\x32\x1e.luci.resultdb.v1.TestMetadata\x12\x37\n\x0e\x66\x61ilure_reason\x18\x0e \x01(\x0b\x32\x1f.luci.resultdb.v1.FailureReason\x12+\n\nproperties\x18\x0f \x01(\x0b\x32\x17.google.protobuf.Struct\x12\x16\n\tis_masked\x18\x10 \x01(\x08\x42\x03\xe0\x41\x03J\x04\x08\x0b\x10\x0c\"\x90\x02\n\x0fTestExoneration\x12\x14\n\x04name\x18\x01 \x01(\tB\x06\xe0\x41\x03\xe0\x41\x05\x12\x0f\n\x07test_id\x18\x02 \x01(\t\x12*\n\x07variant\x18\x03 \x01(\x0b\x32\x19.luci.resultdb.v1.Variant\x12\x1e\n\x0e\x65xoneration_id\x18\x04 \x01(\tB\x06\xe0\x41\x03\xe0\x41\x05\x12\x1d\n\x10\x65xplanation_html\x18\x05 \x01(\tB\x03\xe0\x41\x05\x12\x19\n\x0cvariant_hash\x18\x06 \x01(\tB\x03\xe0\x41\x05\x12\x38\n\x06reason\x18\x07 \x01(\x0e\x32#.luci.resultdb.v1.ExonerationReasonB\x03\xe0\x41\x05\x12\x16\n\tis_masked\x18\x08 \x01(\x08\x42\x03\xe0\x41\x03*X\n\nTestStatus\x12\x16\n\x12STATUS_UNSPECIFIED\x10\x00\x12\x08\n\x04PASS\x10\x01\x12\x08\n\x04\x46\x41IL\x10\x02\x12\t\n\x05\x43RASH\x10\x03\x12\t\n\x05\x41\x42ORT\x10\x04\x12\x08\n\x04SKIP\x10\x05*\x8f\x01\n\x11\x45xonerationReason\x12\"\n\x1e\x45XONERATION_REASON_UNSPECIFIED\x10\x00\x12\x16\n\x12OCCURS_ON_MAINLINE\x10\x01\x12\x17\n\x13OCCURS_ON_OTHER_CLS\x10\x02\x12\x10\n\x0cNOT_CRITICAL\x10\x03\x12\x13\n\x0fUNEXPECTED_PASS\x10\x04\x42\x31Z/go.chromium.org/luci/resultdb/proto/v1;resultpbb\x06proto3'
   ,
   dependencies=[google_dot_api_dot_field__behavior__pb2.DESCRIPTOR,google_dot_protobuf_dot_duration__pb2.DESCRIPTOR,google_dot_protobuf_dot_struct__pb2.DESCRIPTOR,google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_common__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_test__metadata__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_failure__reason__pb2.DESCRIPTOR,])
 
@@ -71,8 +71,8 @@ _TESTSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1212,
-  serialized_end=1300,
+  serialized_start=1260,
+  serialized_end=1348,
 )
 _sym_db.RegisterEnumDescriptor(_TESTSTATUS)
 
@@ -112,8 +112,8 @@ _EXONERATIONREASON = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1303,
-  serialized_end=1446,
+  serialized_start=1351,
+  serialized_end=1494,
 )
 _sym_db.RegisterEnumDescriptor(_EXONERATIONREASON)
 
@@ -238,6 +238,13 @@ _TESTRESULT = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='is_masked', full_name='luci.resultdb.v1.TestResult.is_masked', index=14,
+      number=16, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=b'\340A\003', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -251,7 +258,7 @@ _TESTRESULT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=381,
-  serialized_end=959,
+  serialized_end=983,
 )
 
 
@@ -312,6 +319,13 @@ _TESTEXONERATION = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=b'\340A\005', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='is_masked', full_name='luci.resultdb.v1.TestExoneration.is_masked', index=7,
+      number=8, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=b'\340A\003', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -324,8 +338,8 @@ _TESTEXONERATION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=962,
-  serialized_end=1210,
+  serialized_start=986,
+  serialized_end=1258,
 )
 
 _TESTRESULT.fields_by_name['variant'].message_type = go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_common__pb2._VARIANT
@@ -371,9 +385,11 @@ _TESTRESULT.fields_by_name['start_time']._options = None
 _TESTRESULT.fields_by_name['duration']._options = None
 _TESTRESULT.fields_by_name['tags']._options = None
 _TESTRESULT.fields_by_name['variant_hash']._options = None
+_TESTRESULT.fields_by_name['is_masked']._options = None
 _TESTEXONERATION.fields_by_name['name']._options = None
 _TESTEXONERATION.fields_by_name['exoneration_id']._options = None
 _TESTEXONERATION.fields_by_name['explanation_html']._options = None
 _TESTEXONERATION.fields_by_name['variant_hash']._options = None
 _TESTEXONERATION.fields_by_name['reason']._options = None
+_TESTEXONERATION.fields_by_name['is_masked']._options = None
 # @@protoc_insertion_point(module_scope)

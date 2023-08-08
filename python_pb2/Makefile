@@ -22,8 +22,10 @@ $(TOOLS)/protoc-gen-prpc-python:
 
 regenerate: $(PROTOC) $(TOOLS)/protoc-gen-prpc-python
 	rm -rf ./go
+	python3 ${THIS_DIR}/third_party/validate/update.py
 	$(INFRA)/cipd/legacy/bin/protoc \
 		--proto_path $(INFRA)/go/src \
+		--proto_path ${THIS_DIR}/third_party \
 		--proto_path $(LUCI_GO)/common/proto/googleapis \
 		$(LUCI_GO)/buildbucket/proto/*.proto \
 		$(LUCI_GO)/bisection/proto/*.proto \

@@ -19,22 +19,22 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z/go.chromium.org/luci/resultdb/proto/v1;resultpb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n;go.chromium.org/luci/resultdb/proto/v1/failure_reason.proto\x12\x10luci.resultdb.v1\".\n\rFailureReason\x12\x1d\n\x15primary_error_message\x18\x01 \x01(\tB1Z/go.chromium.org/luci/resultdb/proto/v1;resultpbb\x06proto3'
+  serialized_pb=b'\n;go.chromium.org/luci/resultdb/proto/v1/failure_reason.proto\x12\x10luci.resultdb.v1\"\x9f\x01\n\rFailureReason\x12\x1d\n\x15primary_error_message\x18\x01 \x01(\t\x12\x35\n\x06\x65rrors\x18\x02 \x03(\x0b\x32%.luci.resultdb.v1.FailureReason.Error\x12\x1e\n\x16truncated_errors_count\x18\x03 \x01(\x05\x1a\x18\n\x05\x45rror\x12\x0f\n\x07message\x18\x01 \x01(\tB1Z/go.chromium.org/luci/resultdb/proto/v1;resultpbb\x06proto3'
 )
 
 
 
 
-_FAILUREREASON = _descriptor.Descriptor(
-  name='FailureReason',
-  full_name='luci.resultdb.v1.FailureReason',
+_FAILUREREASON_ERROR = _descriptor.Descriptor(
+  name='Error',
+  full_name='luci.resultdb.v1.FailureReason.Error',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='primary_error_message', full_name='luci.resultdb.v1.FailureReason.primary_error_message', index=0,
+      name='message', full_name='luci.resultdb.v1.FailureReason.Error.message', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -52,19 +52,74 @@ _FAILUREREASON = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=81,
-  serialized_end=127,
+  serialized_start=217,
+  serialized_end=241,
 )
 
+_FAILUREREASON = _descriptor.Descriptor(
+  name='FailureReason',
+  full_name='luci.resultdb.v1.FailureReason',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='primary_error_message', full_name='luci.resultdb.v1.FailureReason.primary_error_message', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='errors', full_name='luci.resultdb.v1.FailureReason.errors', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='truncated_errors_count', full_name='luci.resultdb.v1.FailureReason.truncated_errors_count', index=2,
+      number=3, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[_FAILUREREASON_ERROR, ],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=82,
+  serialized_end=241,
+)
+
+_FAILUREREASON_ERROR.containing_type = _FAILUREREASON
+_FAILUREREASON.fields_by_name['errors'].message_type = _FAILUREREASON_ERROR
 DESCRIPTOR.message_types_by_name['FailureReason'] = _FAILUREREASON
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 FailureReason = _reflection.GeneratedProtocolMessageType('FailureReason', (_message.Message,), {
+
+  'Error' : _reflection.GeneratedProtocolMessageType('Error', (_message.Message,), {
+    'DESCRIPTOR' : _FAILUREREASON_ERROR,
+    '__module__' : 'go.chromium.org.luci.resultdb.proto.v1.failure_reason_pb2'
+    # @@protoc_insertion_point(class_scope:luci.resultdb.v1.FailureReason.Error)
+    })
+  ,
   'DESCRIPTOR' : _FAILUREREASON,
   '__module__' : 'go.chromium.org.luci.resultdb.proto.v1.failure_reason_pb2'
   # @@protoc_insertion_point(class_scope:luci.resultdb.v1.FailureReason)
   })
 _sym_db.RegisterMessage(FailureReason)
+_sym_db.RegisterMessage(FailureReason.Error)
 
 
 DESCRIPTOR._options = None

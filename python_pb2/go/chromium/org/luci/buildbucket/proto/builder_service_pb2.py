@@ -11,7 +11,11 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
+from google.api import field_behavior_pb2 as google_dot_api_dot_field__behavior__pb2
+from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
+from google.rpc import status_pb2 as google_dot_rpc_dot_status__pb2
 from go.chromium.org.luci.buildbucket.proto import builder_common_pb2 as go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_builder__common__pb2
+from go.chromium.org.luci.buildbucket.proto import common_pb2 as go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -20,11 +24,46 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z4go.chromium.org/luci/buildbucket/proto;buildbucketpb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n<go.chromium.org/luci/buildbucket/proto/builder_service.proto\x12\x0e\x62uildbucket.v2\x1a;go.chromium.org/luci/buildbucket/proto/builder_common.proto\":\n\x11GetBuilderRequest\x12%\n\x02id\x18\x01 \x01(\x0b\x32\x19.buildbucket.v2.BuilderID\"]\n\x13ListBuildersRequest\x12\x0f\n\x07project\x18\x01 \x01(\t\x12\x0e\n\x06\x62ucket\x18\x02 \x01(\t\x12\x11\n\tpage_size\x18\x03 \x01(\x05\x12\x12\n\npage_token\x18\x04 \x01(\t\"^\n\x14ListBuildersResponse\x12-\n\x08\x62uilders\x18\x01 \x03(\x0b\x32\x1b.buildbucket.v2.BuilderItem\x12\x17\n\x0fnext_page_token\x18\x02 \x01(\t2\xb7\x01\n\x08\x42uilders\x12N\n\nGetBuilder\x12!.buildbucket.v2.GetBuilderRequest\x1a\x1b.buildbucket.v2.BuilderItem\"\x00\x12[\n\x0cListBuilders\x12#.buildbucket.v2.ListBuildersRequest\x1a$.buildbucket.v2.ListBuildersResponse\"\x00\x42\x36Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3'
+  serialized_pb=b'\n<go.chromium.org/luci/buildbucket/proto/builder_service.proto\x12\x0e\x62uildbucket.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x17google/rpc/status.proto\x1a;go.chromium.org/luci/buildbucket/proto/builder_common.proto\x1a\x33go.chromium.org/luci/buildbucket/proto/common.proto\"e\n\x11GetBuilderRequest\x12%\n\x02id\x18\x01 \x01(\x0b\x32\x19.buildbucket.v2.BuilderID\x12)\n\x04mask\x18\x02 \x01(\x0b\x32\x1b.buildbucket.v2.BuilderMask\"]\n\x13ListBuildersRequest\x12\x0f\n\x07project\x18\x01 \x01(\t\x12\x0e\n\x06\x62ucket\x18\x02 \x01(\t\x12\x11\n\tpage_size\x18\x03 \x01(\x05\x12\x12\n\npage_token\x18\x04 \x01(\t\"^\n\x14ListBuildersResponse\x12-\n\x08\x62uilders\x18\x01 \x03(\x0b\x32\x1b.buildbucket.v2.BuilderItem\x12\x17\n\x0fnext_page_token\x18\x02 \x01(\t\"\xd0\x01\n\x17SetBuilderHealthRequest\x12\x45\n\x06health\x18\x01 \x03(\x0b\x32\x35.buildbucket.v2.SetBuilderHealthRequest.BuilderHealth\x1an\n\rBuilderHealth\x12*\n\x02id\x18\x01 \x01(\x0b\x32\x19.buildbucket.v2.BuilderIDB\x03\xe0\x41\x02\x12\x31\n\x06health\x18\x02 \x01(\x0b\x32\x1c.buildbucket.v2.HealthStatusB\x03\xe0\x41\x02\"\xc7\x01\n\x18SetBuilderHealthResponse\x12\x44\n\tresponses\x18\x01 \x03(\x0b\x32\x31.buildbucket.v2.SetBuilderHealthResponse.Response\x1a\x65\n\x08Response\x12(\n\x06result\x18\x01 \x01(\x0b\x32\x16.google.protobuf.EmptyH\x00\x12#\n\x05\x65rror\x18\x64 \x01(\x0b\x32\x12.google.rpc.StatusH\x00\x42\n\n\x08response\"\xab\x01\n\x0b\x42uilderMask\x12\x39\n\x04type\x18\x01 \x01(\x0e\x32+.buildbucket.v2.BuilderMask.BuilderMaskType\"a\n\x0f\x42uilderMaskType\x12!\n\x1d\x42UILDER_MASK_TYPE_UNSPECIFIED\x10\x00\x12\x0f\n\x0b\x43ONFIG_ONLY\x10\x01\x12\x07\n\x03\x41LL\x10\x02\x12\x11\n\rMETADATA_ONLY\x10\x03\x32\xa0\x02\n\x08\x42uilders\x12N\n\nGetBuilder\x12!.buildbucket.v2.GetBuilderRequest\x1a\x1b.buildbucket.v2.BuilderItem\"\x00\x12[\n\x0cListBuilders\x12#.buildbucket.v2.ListBuildersRequest\x1a$.buildbucket.v2.ListBuildersResponse\"\x00\x12g\n\x10SetBuilderHealth\x12\'.buildbucket.v2.SetBuilderHealthRequest\x1a(.buildbucket.v2.SetBuilderHealthResponse\"\x00\x42\x36Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3'
   ,
-  dependencies=[go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_builder__common__pb2.DESCRIPTOR,])
+  dependencies=[google_dot_api_dot_field__behavior__pb2.DESCRIPTOR,google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,google_dot_rpc_dot_status__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_builder__common__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2.DESCRIPTOR,])
 
 
+
+_BUILDERMASK_BUILDERMASKTYPE = _descriptor.EnumDescriptor(
+  name='BuilderMaskType',
+  full_name='buildbucket.v2.BuilderMask.BuilderMaskType',
+  filename=None,
+  file=DESCRIPTOR,
+  create_key=_descriptor._internal_create_key,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='BUILDER_MASK_TYPE_UNSPECIFIED', index=0, number=0,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='CONFIG_ONLY', index=1, number=1,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ALL', index=2, number=2,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='METADATA_ONLY', index=3, number=3,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=1063,
+  serialized_end=1160,
+)
+_sym_db.RegisterEnumDescriptor(_BUILDERMASK_BUILDERMASKTYPE)
 
 
 _GETBUILDERREQUEST = _descriptor.Descriptor(
@@ -42,6 +81,13 @@ _GETBUILDERREQUEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='mask', full_name='buildbucket.v2.GetBuilderRequest.mask', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -54,8 +100,8 @@ _GETBUILDERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=141,
-  serialized_end=199,
+  serialized_start=281,
+  serialized_end=382,
 )
 
 
@@ -107,8 +153,8 @@ _LISTBUILDERSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=201,
-  serialized_end=294,
+  serialized_start=384,
+  serialized_end=477,
 )
 
 
@@ -146,15 +192,213 @@ _LISTBUILDERSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=296,
-  serialized_end=390,
+  serialized_start=479,
+  serialized_end=573,
+)
+
+
+_SETBUILDERHEALTHREQUEST_BUILDERHEALTH = _descriptor.Descriptor(
+  name='BuilderHealth',
+  full_name='buildbucket.v2.SetBuilderHealthRequest.BuilderHealth',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='id', full_name='buildbucket.v2.SetBuilderHealthRequest.BuilderHealth.id', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=b'\340A\002', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='health', full_name='buildbucket.v2.SetBuilderHealthRequest.BuilderHealth.health', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=b'\340A\002', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=674,
+  serialized_end=784,
+)
+
+_SETBUILDERHEALTHREQUEST = _descriptor.Descriptor(
+  name='SetBuilderHealthRequest',
+  full_name='buildbucket.v2.SetBuilderHealthRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='health', full_name='buildbucket.v2.SetBuilderHealthRequest.health', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[_SETBUILDERHEALTHREQUEST_BUILDERHEALTH, ],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=576,
+  serialized_end=784,
+)
+
+
+_SETBUILDERHEALTHRESPONSE_RESPONSE = _descriptor.Descriptor(
+  name='Response',
+  full_name='buildbucket.v2.SetBuilderHealthResponse.Response',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='result', full_name='buildbucket.v2.SetBuilderHealthResponse.Response.result', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='error', full_name='buildbucket.v2.SetBuilderHealthResponse.Response.error', index=1,
+      number=100, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name='response', full_name='buildbucket.v2.SetBuilderHealthResponse.Response.response',
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+  ],
+  serialized_start=885,
+  serialized_end=986,
+)
+
+_SETBUILDERHEALTHRESPONSE = _descriptor.Descriptor(
+  name='SetBuilderHealthResponse',
+  full_name='buildbucket.v2.SetBuilderHealthResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='responses', full_name='buildbucket.v2.SetBuilderHealthResponse.responses', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[_SETBUILDERHEALTHRESPONSE_RESPONSE, ],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=787,
+  serialized_end=986,
+)
+
+
+_BUILDERMASK = _descriptor.Descriptor(
+  name='BuilderMask',
+  full_name='buildbucket.v2.BuilderMask',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='type', full_name='buildbucket.v2.BuilderMask.type', index=0,
+      number=1, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+    _BUILDERMASK_BUILDERMASKTYPE,
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=989,
+  serialized_end=1160,
 )
 
 _GETBUILDERREQUEST.fields_by_name['id'].message_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_builder__common__pb2._BUILDERID
+_GETBUILDERREQUEST.fields_by_name['mask'].message_type = _BUILDERMASK
 _LISTBUILDERSRESPONSE.fields_by_name['builders'].message_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_builder__common__pb2._BUILDERITEM
+_SETBUILDERHEALTHREQUEST_BUILDERHEALTH.fields_by_name['id'].message_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_builder__common__pb2._BUILDERID
+_SETBUILDERHEALTHREQUEST_BUILDERHEALTH.fields_by_name['health'].message_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2._HEALTHSTATUS
+_SETBUILDERHEALTHREQUEST_BUILDERHEALTH.containing_type = _SETBUILDERHEALTHREQUEST
+_SETBUILDERHEALTHREQUEST.fields_by_name['health'].message_type = _SETBUILDERHEALTHREQUEST_BUILDERHEALTH
+_SETBUILDERHEALTHRESPONSE_RESPONSE.fields_by_name['result'].message_type = google_dot_protobuf_dot_empty__pb2._EMPTY
+_SETBUILDERHEALTHRESPONSE_RESPONSE.fields_by_name['error'].message_type = google_dot_rpc_dot_status__pb2._STATUS
+_SETBUILDERHEALTHRESPONSE_RESPONSE.containing_type = _SETBUILDERHEALTHRESPONSE
+_SETBUILDERHEALTHRESPONSE_RESPONSE.oneofs_by_name['response'].fields.append(
+  _SETBUILDERHEALTHRESPONSE_RESPONSE.fields_by_name['result'])
+_SETBUILDERHEALTHRESPONSE_RESPONSE.fields_by_name['result'].containing_oneof = _SETBUILDERHEALTHRESPONSE_RESPONSE.oneofs_by_name['response']
+_SETBUILDERHEALTHRESPONSE_RESPONSE.oneofs_by_name['response'].fields.append(
+  _SETBUILDERHEALTHRESPONSE_RESPONSE.fields_by_name['error'])
+_SETBUILDERHEALTHRESPONSE_RESPONSE.fields_by_name['error'].containing_oneof = _SETBUILDERHEALTHRESPONSE_RESPONSE.oneofs_by_name['response']
+_SETBUILDERHEALTHRESPONSE.fields_by_name['responses'].message_type = _SETBUILDERHEALTHRESPONSE_RESPONSE
+_BUILDERMASK.fields_by_name['type'].enum_type = _BUILDERMASK_BUILDERMASKTYPE
+_BUILDERMASK_BUILDERMASKTYPE.containing_type = _BUILDERMASK
 DESCRIPTOR.message_types_by_name['GetBuilderRequest'] = _GETBUILDERREQUEST
 DESCRIPTOR.message_types_by_name['ListBuildersRequest'] = _LISTBUILDERSREQUEST
 DESCRIPTOR.message_types_by_name['ListBuildersResponse'] = _LISTBUILDERSRESPONSE
+DESCRIPTOR.message_types_by_name['SetBuilderHealthRequest'] = _SETBUILDERHEALTHREQUEST
+DESCRIPTOR.message_types_by_name['SetBuilderHealthResponse'] = _SETBUILDERHEALTHRESPONSE
+DESCRIPTOR.message_types_by_name['BuilderMask'] = _BUILDERMASK
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 GetBuilderRequest = _reflection.GeneratedProtocolMessageType('GetBuilderRequest', (_message.Message,), {
@@ -178,8 +422,47 @@ ListBuildersResponse = _reflection.GeneratedProtocolMessageType('ListBuildersRes
   })
 _sym_db.RegisterMessage(ListBuildersResponse)
 
+SetBuilderHealthRequest = _reflection.GeneratedProtocolMessageType('SetBuilderHealthRequest', (_message.Message,), {
+
+  'BuilderHealth' : _reflection.GeneratedProtocolMessageType('BuilderHealth', (_message.Message,), {
+    'DESCRIPTOR' : _SETBUILDERHEALTHREQUEST_BUILDERHEALTH,
+    '__module__' : 'go.chromium.org.luci.buildbucket.proto.builder_service_pb2'
+    # @@protoc_insertion_point(class_scope:buildbucket.v2.SetBuilderHealthRequest.BuilderHealth)
+    })
+  ,
+  'DESCRIPTOR' : _SETBUILDERHEALTHREQUEST,
+  '__module__' : 'go.chromium.org.luci.buildbucket.proto.builder_service_pb2'
+  # @@protoc_insertion_point(class_scope:buildbucket.v2.SetBuilderHealthRequest)
+  })
+_sym_db.RegisterMessage(SetBuilderHealthRequest)
+_sym_db.RegisterMessage(SetBuilderHealthRequest.BuilderHealth)
+
+SetBuilderHealthResponse = _reflection.GeneratedProtocolMessageType('SetBuilderHealthResponse', (_message.Message,), {
+
+  'Response' : _reflection.GeneratedProtocolMessageType('Response', (_message.Message,), {
+    'DESCRIPTOR' : _SETBUILDERHEALTHRESPONSE_RESPONSE,
+    '__module__' : 'go.chromium.org.luci.buildbucket.proto.builder_service_pb2'
+    # @@protoc_insertion_point(class_scope:buildbucket.v2.SetBuilderHealthResponse.Response)
+    })
+  ,
+  'DESCRIPTOR' : _SETBUILDERHEALTHRESPONSE,
+  '__module__' : 'go.chromium.org.luci.buildbucket.proto.builder_service_pb2'
+  # @@protoc_insertion_point(class_scope:buildbucket.v2.SetBuilderHealthResponse)
+  })
+_sym_db.RegisterMessage(SetBuilderHealthResponse)
+_sym_db.RegisterMessage(SetBuilderHealthResponse.Response)
+
+BuilderMask = _reflection.GeneratedProtocolMessageType('BuilderMask', (_message.Message,), {
+  'DESCRIPTOR' : _BUILDERMASK,
+  '__module__' : 'go.chromium.org.luci.buildbucket.proto.builder_service_pb2'
+  # @@protoc_insertion_point(class_scope:buildbucket.v2.BuilderMask)
+  })
+_sym_db.RegisterMessage(BuilderMask)
+
 
 DESCRIPTOR._options = None
+_SETBUILDERHEALTHREQUEST_BUILDERHEALTH.fields_by_name['id']._options = None
+_SETBUILDERHEALTHREQUEST_BUILDERHEALTH.fields_by_name['health']._options = None
 
 _BUILDERS = _descriptor.ServiceDescriptor(
   name='Builders',
@@ -188,8 +471,8 @@ _BUILDERS = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=393,
-  serialized_end=576,
+  serialized_start=1163,
+  serialized_end=1451,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetBuilder',
@@ -208,6 +491,16 @@ _BUILDERS = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_LISTBUILDERSREQUEST,
     output_type=_LISTBUILDERSRESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='SetBuilderHealth',
+    full_name='buildbucket.v2.Builders.SetBuilderHealth',
+    index=2,
+    containing_service=None,
+    input_type=_SETBUILDERHEALTHREQUEST,
+    output_type=_SETBUILDERHEALTHRESPONSE,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),

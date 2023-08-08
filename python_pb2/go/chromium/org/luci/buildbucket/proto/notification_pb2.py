@@ -11,7 +11,6 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 from go.chromium.org.luci.buildbucket.proto import build_pb2 as go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_build__pb2
 from go.chromium.org.luci.buildbucket.proto import common_pb2 as go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2
 
@@ -22,64 +21,11 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z4go.chromium.org/luci/buildbucket/proto;buildbucketpb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n9go.chromium.org/luci/buildbucket/proto/notification.proto\x12\x0e\x62uildbucket.v2\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x32go.chromium.org/luci/buildbucket/proto/build.proto\x1a\x33go.chromium.org/luci/buildbucket/proto/common.proto\"r\n\x0cNotification\x12-\n\ttimestamp\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x0e\n\x06\x61pp_id\x18\x02 \x01(\t\x12\x10\n\x08\x62uild_id\x18\x03 \x01(\x03\x12\x11\n\tuser_data\x18\x04 \x01(\x0c\"=\n\x12NotificationConfig\x12\x14\n\x0cpubsub_topic\x18\x01 \x01(\t\x12\x11\n\tuser_data\x18\x02 \x01(\x0c\"\x84\x01\n\x0e\x42uildsV2PubSub\x12$\n\x05\x62uild\x18\x01 \x01(\x0b\x32\x15.buildbucket.v2.Build\x12\x1a\n\x12\x62uild_large_fields\x18\x02 \x01(\x0c\x12\x30\n\x0b\x63ompression\x18\x03 \x01(\x0e\x32\x1b.buildbucket.v2.CompressionB6Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3'
+  serialized_pb=b'\n9go.chromium.org/luci/buildbucket/proto/notification.proto\x12\x0e\x62uildbucket.v2\x1a\x32go.chromium.org/luci/buildbucket/proto/build.proto\x1a\x33go.chromium.org/luci/buildbucket/proto/common.proto\"=\n\x12NotificationConfig\x12\x14\n\x0cpubsub_topic\x18\x01 \x01(\t\x12\x11\n\tuser_data\x18\x02 \x01(\x0c\"\x84\x01\n\x0e\x42uildsV2PubSub\x12$\n\x05\x62uild\x18\x01 \x01(\x0b\x32\x15.buildbucket.v2.Build\x12\x1a\n\x12\x62uild_large_fields\x18\x02 \x01(\x0c\x12\x30\n\x0b\x63ompression\x18\x03 \x01(\x0e\x32\x1b.buildbucket.v2.Compression\"Y\n\x0ePubSubCallBack\x12\x34\n\x0c\x62uild_pubsub\x18\x01 \x01(\x0b\x32\x1e.buildbucket.v2.BuildsV2PubSub\x12\x11\n\tuser_data\x18\x02 \x01(\x0c\x42\x36Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3'
   ,
-  dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_build__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2.DESCRIPTOR,])
+  dependencies=[go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_build__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2.DESCRIPTOR,])
 
 
-
-
-_NOTIFICATION = _descriptor.Descriptor(
-  name='Notification',
-  full_name='buildbucket.v2.Notification',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='timestamp', full_name='buildbucket.v2.Notification.timestamp', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='app_id', full_name='buildbucket.v2.Notification.app_id', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='build_id', full_name='buildbucket.v2.Notification.build_id', index=2,
-      number=3, type=3, cpp_type=2, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='user_data', full_name='buildbucket.v2.Notification.user_data', index=3,
-      number=4, type=12, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"",
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=215,
-  serialized_end=329,
-)
 
 
 _NOTIFICATIONCONFIG = _descriptor.Descriptor(
@@ -116,8 +62,8 @@ _NOTIFICATIONCONFIG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=331,
-  serialized_end=392,
+  serialized_start=182,
+  serialized_end=243,
 )
 
 
@@ -162,24 +108,56 @@ _BUILDSV2PUBSUB = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=395,
-  serialized_end=527,
+  serialized_start=246,
+  serialized_end=378,
 )
 
-_NOTIFICATION.fields_by_name['timestamp'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+
+_PUBSUBCALLBACK = _descriptor.Descriptor(
+  name='PubSubCallBack',
+  full_name='buildbucket.v2.PubSubCallBack',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='build_pubsub', full_name='buildbucket.v2.PubSubCallBack.build_pubsub', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='user_data', full_name='buildbucket.v2.PubSubCallBack.user_data', index=1,
+      number=2, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=380,
+  serialized_end=469,
+)
+
 _BUILDSV2PUBSUB.fields_by_name['build'].message_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_build__pb2._BUILD
 _BUILDSV2PUBSUB.fields_by_name['compression'].enum_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2._COMPRESSION
-DESCRIPTOR.message_types_by_name['Notification'] = _NOTIFICATION
+_PUBSUBCALLBACK.fields_by_name['build_pubsub'].message_type = _BUILDSV2PUBSUB
 DESCRIPTOR.message_types_by_name['NotificationConfig'] = _NOTIFICATIONCONFIG
 DESCRIPTOR.message_types_by_name['BuildsV2PubSub'] = _BUILDSV2PUBSUB
+DESCRIPTOR.message_types_by_name['PubSubCallBack'] = _PUBSUBCALLBACK
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
-
-Notification = _reflection.GeneratedProtocolMessageType('Notification', (_message.Message,), {
-  'DESCRIPTOR' : _NOTIFICATION,
-  '__module__' : 'go.chromium.org.luci.buildbucket.proto.notification_pb2'
-  # @@protoc_insertion_point(class_scope:buildbucket.v2.Notification)
-  })
-_sym_db.RegisterMessage(Notification)
 
 NotificationConfig = _reflection.GeneratedProtocolMessageType('NotificationConfig', (_message.Message,), {
   'DESCRIPTOR' : _NOTIFICATIONCONFIG,
@@ -194,6 +172,13 @@ BuildsV2PubSub = _reflection.GeneratedProtocolMessageType('BuildsV2PubSub', (_me
   # @@protoc_insertion_point(class_scope:buildbucket.v2.BuildsV2PubSub)
   })
 _sym_db.RegisterMessage(BuildsV2PubSub)
+
+PubSubCallBack = _reflection.GeneratedProtocolMessageType('PubSubCallBack', (_message.Message,), {
+  'DESCRIPTOR' : _PUBSUBCALLBACK,
+  '__module__' : 'go.chromium.org.luci.buildbucket.proto.notification_pb2'
+  # @@protoc_insertion_point(class_scope:buildbucket.v2.PubSubCallBack)
+  })
+_sym_db.RegisterMessage(PubSubCallBack)
 
 
 DESCRIPTOR._options = None

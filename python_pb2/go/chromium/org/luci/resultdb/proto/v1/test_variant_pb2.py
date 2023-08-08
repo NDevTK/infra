@@ -12,6 +12,7 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
+from google.api import field_behavior_pb2 as google_dot_api_dot_field__behavior__pb2
 from go.chromium.org.luci.resultdb.proto.v1 import common_pb2 as go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_common__pb2
 from go.chromium.org.luci.resultdb.proto.v1 import test_metadata_pb2 as go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_test__metadata__pb2
 from go.chromium.org.luci.resultdb.proto.v1 import test_result_pb2 as go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_test__result__pb2
@@ -23,9 +24,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z/go.chromium.org/luci/resultdb/proto/v1;resultpb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n9go.chromium.org/luci/resultdb/proto/v1/test_variant.proto\x12\x10luci.resultdb.v1\x1a\x33go.chromium.org/luci/resultdb/proto/v1/common.proto\x1a:go.chromium.org/luci/resultdb/proto/v1/test_metadata.proto\x1a\x38go.chromium.org/luci/resultdb/proto/v1/test_result.proto\"\xba\x02\n\x0bTestVariant\x12\x0f\n\x07test_id\x18\x01 \x01(\t\x12*\n\x07variant\x18\x02 \x01(\x0b\x32\x19.luci.resultdb.v1.Variant\x12\x14\n\x0cvariant_hash\x18\x03 \x01(\t\x12\x33\n\x06status\x18\x04 \x01(\x0e\x32#.luci.resultdb.v1.TestVariantStatus\x12\x33\n\x07results\x18\x05 \x03(\x0b\x32\".luci.resultdb.v1.TestResultBundle\x12\x37\n\x0c\x65xonerations\x18\x06 \x03(\x0b\x32!.luci.resultdb.v1.TestExoneration\x12\x35\n\rtest_metadata\x18\x07 \x01(\x0b\x32\x1e.luci.resultdb.v1.TestMetadata\"@\n\x10TestResultBundle\x12,\n\x06result\x18\x01 \x01(\x0b\x32\x1c.luci.resultdb.v1.TestResult\"K\n\x14TestVariantPredicate\x12\x33\n\x06status\x18\x01 \x01(\x0e\x32#.luci.resultdb.v1.TestVariantStatus*\xa0\x01\n\x11TestVariantStatus\x12#\n\x1fTEST_VARIANT_STATUS_UNSPECIFIED\x10\x00\x12\x0e\n\nUNEXPECTED\x10\n\x12\x18\n\x14UNEXPECTEDLY_SKIPPED\x10\x14\x12\t\n\x05\x46LAKY\x10\x1e\x12\x0e\n\nEXONERATED\x10(\x12\x13\n\x0fUNEXPECTED_MASK\x10-\x12\x0c\n\x08\x45XPECTED\x10\x32\x42\x31Z/go.chromium.org/luci/resultdb/proto/v1;resultpbb\x06proto3'
+  serialized_pb=b'\n9go.chromium.org/luci/resultdb/proto/v1/test_variant.proto\x12\x10luci.resultdb.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x33go.chromium.org/luci/resultdb/proto/v1/common.proto\x1a:go.chromium.org/luci/resultdb/proto/v1/test_metadata.proto\x1a\x38go.chromium.org/luci/resultdb/proto/v1/test_result.proto\"\xe6\x02\n\x0bTestVariant\x12\x0f\n\x07test_id\x18\x01 \x01(\t\x12*\n\x07variant\x18\x02 \x01(\x0b\x32\x19.luci.resultdb.v1.Variant\x12\x14\n\x0cvariant_hash\x18\x03 \x01(\t\x12\x33\n\x06status\x18\x04 \x01(\x0e\x32#.luci.resultdb.v1.TestVariantStatus\x12\x33\n\x07results\x18\x05 \x03(\x0b\x32\".luci.resultdb.v1.TestResultBundle\x12\x37\n\x0c\x65xonerations\x18\x06 \x03(\x0b\x32!.luci.resultdb.v1.TestExoneration\x12\x35\n\rtest_metadata\x18\x07 \x01(\x0b\x32\x1e.luci.resultdb.v1.TestMetadata\x12\x16\n\tis_masked\x18\x08 \x01(\x08\x42\x03\xe0\x41\x03\x12\x12\n\nsources_id\x18\t \x01(\t\"@\n\x10TestResultBundle\x12,\n\x06result\x18\x01 \x01(\x0b\x32\x1c.luci.resultdb.v1.TestResult\"K\n\x14TestVariantPredicate\x12\x33\n\x06status\x18\x01 \x01(\x0e\x32#.luci.resultdb.v1.TestVariantStatus*\xa0\x01\n\x11TestVariantStatus\x12#\n\x1fTEST_VARIANT_STATUS_UNSPECIFIED\x10\x00\x12\x0e\n\nUNEXPECTED\x10\n\x12\x18\n\x14UNEXPECTEDLY_SKIPPED\x10\x14\x12\t\n\x05\x46LAKY\x10\x1e\x12\x0e\n\nEXONERATED\x10(\x12\x13\n\x0fUNEXPECTED_MASK\x10-\x12\x0c\n\x08\x45XPECTED\x10\x32\x42\x31Z/go.chromium.org/luci/resultdb/proto/v1;resultpbb\x06proto3'
   ,
-  dependencies=[go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_common__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_test__metadata__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_test__result__pb2.DESCRIPTOR,])
+  dependencies=[google_dot_api_dot_field__behavior__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_common__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_test__metadata__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_test__result__pb2.DESCRIPTOR,])
 
 _TESTVARIANTSTATUS = _descriptor.EnumDescriptor(
   name='TestVariantStatus',
@@ -72,8 +73,8 @@ _TESTVARIANTSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=711,
-  serialized_end=871,
+  serialized_start=788,
+  serialized_end=948,
 )
 _sym_db.RegisterEnumDescriptor(_TESTVARIANTSTATUS)
 
@@ -145,6 +146,20 @@ _TESTVARIANT = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='is_masked', full_name='luci.resultdb.v1.TestVariant.is_masked', index=7,
+      number=8, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=b'\340A\003', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='sources_id', full_name='luci.resultdb.v1.TestVariant.sources_id', index=8,
+      number=9, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -157,8 +172,8 @@ _TESTVARIANT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=251,
-  serialized_end=565,
+  serialized_start=284,
+  serialized_end=642,
 )
 
 
@@ -189,8 +204,8 @@ _TESTRESULTBUNDLE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=567,
-  serialized_end=631,
+  serialized_start=644,
+  serialized_end=708,
 )
 
 
@@ -221,8 +236,8 @@ _TESTVARIANTPREDICATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=633,
-  serialized_end=708,
+  serialized_start=710,
+  serialized_end=785,
 )
 
 _TESTVARIANT.fields_by_name['variant'].message_type = go_dot_chromium_dot_org_dot_luci_dot_resultdb_dot_proto_dot_v1_dot_common__pb2._VARIANT
@@ -261,4 +276,5 @@ _sym_db.RegisterMessage(TestVariantPredicate)
 
 
 DESCRIPTOR._options = None
+_TESTVARIANT.fields_by_name['is_masked']._options = None
 # @@protoc_insertion_point(module_scope)
