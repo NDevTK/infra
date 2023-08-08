@@ -22,6 +22,30 @@
       },
       "revId": "b37a0c531d2488b2be97fcd16cea87ec12493b5b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8dd24e3e_573b0eed",
+        "filename": "go/src/infra/build/siso/build/ninjabuild/ninjabuild.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-08-08T08:00:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "005f1efd_7c8fb9c5",
+      "range": {
+        "startLine": 137,
+        "startChar": 9,
+        "endLine": 137,
+        "endChar": 22
+      },
+      "revId": "b37a0c531d2488b2be97fcd16cea87ec12493b5b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
