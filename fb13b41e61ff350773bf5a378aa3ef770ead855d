@@ -16,6 +16,24 @@
       "message": "If the caller is not authenticated, this one will just return \"anonymous:anonymous\", so we cannot use this to see which clients call rotation proxy.",
       "revId": "fb13b41e61ff350773bf5a378aa3ef770ead855d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dd10c374_e53354bd",
+        "filename": "go/src/infra/appengine/rotation-proxy/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1369089
+      },
+      "writtenOn": "2023-08-08T03:01:33Z",
+      "side": 1,
+      "message": "Calling this endpoint from browser (e.g. going to chrome-ops-rotation-proxy.appspot.com/currrent/\u003crotation_name\u003e) also results in the identity set to \"anonymous:anonymous\"",
+      "parentUuid": "423a3714_390503f1",
+      "revId": "fb13b41e61ff350773bf5a378aa3ef770ead855d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
