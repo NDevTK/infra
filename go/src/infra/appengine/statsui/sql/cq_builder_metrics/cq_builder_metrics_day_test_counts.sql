@@ -26,19 +26,6 @@ USING
       COUNT(DISTINCT tr.test_id) test_count,
       (SELECT v.value FROM tr.variant v WHERE v.key = 'builder') builder,
       (SELECT v.value FROM tr.variant v WHERE v.key = 'test_suite') test_suite,
-    FROM chrome-luci-data.chrome.try_test_results tr
-    WHERE tr.parent.realm = "chrome:try"
-      AND tr.partition_time >= start_ts
-      AND tr.partition_time < end_ts
-      AND NOT tr.status = "SKIP"
-    GROUP BY builder, test_suite, `date`, exported.id
-    UNION ALL
-    SELECT
-      EXTRACT(DATE FROM partition_time AT TIME ZONE "PST8PDT") AS `date`,
-      MAX(partition_time) max_result_time,
-      COUNT(DISTINCT tr.test_id) test_count,
-      (SELECT v.value FROM tr.variant v WHERE v.key = 'builder') builder,
-      (SELECT v.value FROM tr.variant v WHERE v.key = 'test_suite') test_suite,
     FROM chrome-luci-data.chromium.try_test_results tr
     WHERE tr.parent.realm = "chromium:try"
       AND tr.partition_time >= start_ts
@@ -58,18 +45,22 @@ USING
     GROUP BY builder, test_suite, `date`
   )
   SELECT
-    date,
+    t.date,
     'Test Case Count' AS metric,
-    builder,
+    t.builder,
     -- Use the latest result as our dirty flag so we don't have to waste merging with the build table
-    MAX(max_result_time) AS max_builder_start_time,
+    MAX(t.max_result_time) AS max_builder_start_time,
     ARRAY_AGG(
-      STRUCT(test_suite AS label, CAST(test_count AS NUMERIC) AS value)
-      ORDER BY test_suite
+      STRUCT(t.test_suite AS label, CAST(t.test_count AS NUMERIC) AS value)
+      ORDER BY t.test_suite
     ) AS value_agg,
-  FROM test_id_per_build
-  WHERE builder IS NOT NULL and test_suite IS NOT NULL
-  GROUP BY `date`, builder
+  FROM
+    test_id_per_build t,
+    `chrome-trooper-analytics.metrics.cq_builders` cq
+  WHERE
+    t.builder IS NOT NULL AND t.test_suite IS NOT NULL
+    AND t.builder = cq.builder
+  GROUP BY t.date, t.builder
   ) S
 ON
   T.date = S.date AND T.metric = S.metric AND T.builder = S.builder

@@ -39,3 +39,5 @@ ON
   T.builder = S.builder
 WHEN NOT MATCHED THEN
   INSERT (builder) VALUES (builder)
+WHEN NOT MATCHED BY SOURCE THEN
+  DELETE

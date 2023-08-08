@@ -167,11 +167,6 @@ const initialState: DataSourcesState = populateMaps({
           description: `How many times this builder ran`,
         },
         {
-          name: 'Test Case Count',
-          unit: Unit.Number,
-          description: `How many tests were run in the builder/suite combo`,
-        },
-        {
           name: 'P50 Runtime',
           unit: Unit.Duration,
           description: `Time from start_time to end_time (actual execution
@@ -231,10 +226,15 @@ const initialState: DataSourcesState = populateMaps({
           color: colorGradient(MetricOptionColorType.DeltaPercentage, 0.1),
         },
         {
-          name: 'Count Tests',
+          name: 'Test Suite Runs',
           unit: Unit.Number,
           hasSubsections: true,
           description: `How many times the test suite ran.`,
+        },
+        {
+          name: 'Test Case Count',
+          unit: Unit.Number,
+          description: `How many tests were run in the builder/suite combo`,
         },
         {
           name: 'P50 Slow Tests',
@@ -351,12 +351,17 @@ export const setCurrent = (
 
   const dataSource = state.dataSources.availableMap[name];
 
+  const renamedMetrics = new Map<string, string>([
+    ['Count Tests', 'Test Suite Runs'],
+  ])
+
   // Sets the metrics to show based on URL parameters, local storage
   // preferences, or whatever is default for the data source.
   let metrics: string[] = [];
   if (params !== undefined && params.has('metric')) {
     metrics = params
       .getAll('metric')
+      .map((metric) => renamedMetrics.get(metric) || metric)
       .filter((metric) => metric in dataSource.metricMap);
   } else if (
     name in state.preferences.dataSources &&

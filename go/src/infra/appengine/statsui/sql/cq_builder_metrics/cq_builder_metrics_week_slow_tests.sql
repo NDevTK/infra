@@ -90,7 +90,7 @@ USING
     )
   SELECT
     date,
-    'Count Tests' AS metric,
+    'Test Suite Runs' AS metric,
     builder,
     MAX(max_builder_start_time) AS max_builder_start_time,
     ARRAY_AGG(
