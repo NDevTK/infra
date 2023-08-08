@@ -61,6 +61,14 @@ message Swarming {
   // LuciProjectTag is the swarming tag that associates the task with a
   // luci project, allowing milo to work with the swarming UI.
   string luci_project_tag = 4;
+
+  // PoolCfgs contains all configs required for the admin jobs of a particular pool.
+  repeated PoolCfg pool_cfgs = 5;
+
+  message PoolCfg {
+    // The pool containing the skylab bots
+    string pool_name = 1;
+  }
 }
 
 // Tasker contains configuration data specific to the Tasker API endpoints.
