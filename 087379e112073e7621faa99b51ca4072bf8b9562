@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "44f55467_c35f9aa4",
+        "filename": "go/src/infra/build/siso/build/ninjabuild/ninjabuild.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-08-08T06:50:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3037baae_dcccd98b",
+      "range": {
+        "startLine": 164,
+        "startChar": 11,
+        "endLine": 166,
+        "endChar": 58
+      },
+      "revId": "087379e112073e7621faa99b51ca4072bf8b9562",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "af9edd9e_45e37e6b",
@@ -37,6 +61,30 @@
       "writtenOn": "2023-08-08T06:36:06Z",
       "side": 1,
       "message": "`%6s` is necessary here?",
+      "range": {
+        "startLine": 104,
+        "startChar": 40,
+        "endLine": 104,
+        "endChar": 43
+      },
+      "revId": "087379e112073e7621faa99b51ca4072bf8b9562",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0812f271_4adc8bc1",
+        "filename": "go/src/infra/build/siso/build/progress.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-08-08T06:50:58Z",
+      "side": 1,
+      "message": "probably unnecessary?",
+      "parentUuid": "af9edd9e_45e37e6b",
       "range": {
         "startLine": 104,
         "startChar": 40,
@@ -70,6 +118,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "52024f05_6e295421",
+        "filename": "go/src/infra/build/siso/ui/duration.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-08-08T06:50:58Z",
+      "side": 1,
+      "message": "for \u003c10m, it won\u0027t use 2 digits.",
+      "parentUuid": "372ed32c_e78d22ac",
+      "range": {
+        "startLine": 13,
+        "startChar": 64,
+        "endLine": 13,
+        "endChar": 65
+      },
+      "revId": "087379e112073e7621faa99b51ca4072bf8b9562",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4126f745_9fad5061",
@@ -83,6 +155,24 @@
       "writtenOn": "2023-08-08T06:36:42Z",
       "side": 1,
       "message": "add test for more than 1 hour case?",
+      "revId": "087379e112073e7621faa99b51ca4072bf8b9562",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5a2f4965_bd410f16",
+        "filename": "go/src/infra/build/siso/ui/duration_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-08-08T06:50:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4126f745_9fad5061",
       "revId": "087379e112073e7621faa99b51ca4072bf8b9562",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
