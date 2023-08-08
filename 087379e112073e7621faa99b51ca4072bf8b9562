@@ -45,6 +45,46 @@
       },
       "revId": "087379e112073e7621faa99b51ca4072bf8b9562",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "372ed32c_e78d22ac",
+        "filename": "go/src/infra/build/siso/ui/duration.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-08-08T06:36:42Z",
+      "side": 1,
+      "message": "XXm?",
+      "range": {
+        "startLine": 13,
+        "startChar": 64,
+        "endLine": 13,
+        "endChar": 65
+      },
+      "revId": "087379e112073e7621faa99b51ca4072bf8b9562",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4126f745_9fad5061",
+        "filename": "go/src/infra/build/siso/ui/duration_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-08-08T06:36:42Z",
+      "side": 1,
+      "message": "add test for more than 1 hour case?",
+      "revId": "087379e112073e7621faa99b51ca4072bf8b9562",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
