@@ -86,8 +86,14 @@ func pushBotsForAdminTasksImpl(ctx context.Context, sc clients.SwarmingClient, u
 	dims[clients.DutStateDimensionKey] = []string{dutState}
 	bots, err := sc.ListAliveIdleBotsInPool(ctx, cfg.Swarming.BotPool, dims)
 	if err != nil {
-		reason := fmt.Sprintf("failed to list alive idle cros bots with dut_state %q", dutState)
-		return nil, errors.Annotate(err, reason).Err()
+		return nil, errors.Annotate(err, "failed to list alive idle bots with dut_state %q in pool %q", dutState, cfg.Swarming.BotPool).Err()
+	}
+	for _, c := range cfg.Swarming.PoolCfgs {
+		tmpBots, err := sc.ListAliveIdleBotsInPool(ctx, c.PoolName, dims)
+		if err != nil {
+			return nil, errors.Annotate(err, "failed to list alive idle bots with dut_state %q in pool %q", dutState, c.PoolName).Err()
+		}
+		bots = append(bots, tmpBots...)
 	}
 	logging.Infof(ctx, "successfully get %d alive idle cros bots with dut_state %q.", len(bots), dutState)
 
