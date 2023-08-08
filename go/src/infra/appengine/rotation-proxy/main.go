@@ -8,10 +8,12 @@ package main
 
 import (
 	"context"
+	"net/http"
 
 	rpb "infra/appengine/rotation-proxy/proto"
 
 	"github.com/golang/protobuf/proto"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/gaeemulation"
@@ -44,6 +46,28 @@ func checkAPIAccess(ctx context.Context, methodName string, req proto.Message) (
 	return ctx, nil
 }
 
+// checkAccess is middleware that checks if the user is authorized to
+// call HTTP endpoint of rotation proxy.
+func checkHttpAccess(ctx *router.Context, next router.Handler) {
+	c := ctx.Request.Context()
+	hasAccess, err := auth.IsMember(c, "rotation-proxy-access")
+	if err != nil {
+		logging.Errorf(ctx.Request.Context(), "error in checking membership %s", err.Error())
+		http.Error(ctx.Writer, "Error in authorizing the user.", http.StatusInternalServerError)
+		return
+	}
+	if !hasAccess {
+		// TODO(nqmtuan): Remove logging and return permission error.
+		// For now, just log and and continue.
+		c := ctx.Request.Context()
+		identity := string(auth.CurrentIdentity(c))
+		logging.Errorf(c, "%s does not have access to rotation proxy", identity)
+		next(ctx)
+	} else {
+		next(ctx)
+	}
+}
+
 func main() {
 	modules := []module.Module{
 		gaeemulation.NewModuleFromFlags(),
@@ -51,7 +75,7 @@ func main() {
 
 	server.Main(nil, modules, func(srv *server.Server) error {
 		// Install regular http service
-		srv.Routes.GET("/current/:name", router.MiddlewareChain{}, func(c *router.Context) {
+		srv.Routes.GET("/current/:name", router.MiddlewareChain{checkHttpAccess}, func(c *router.Context) {
 			GetCurrentShiftHandler(c)
 		})
 
