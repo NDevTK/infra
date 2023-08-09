@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState } from 'react';
+import { AuthContext } from '../../auth/AuthContext';
 import {
   DirectoryNode,
   DirectoryNodeType,
@@ -197,6 +198,7 @@ function snapToPeriod(date: Date) {
   return ret;
 }
 export const TestMetricsContextProvider = (props : TestMetricsContextProviderProps) => {
+  const { auth } = useContext(AuthContext);
   const { components } = useContext(ComponentContext);
   const [page, setPage] = useState(props.page);
   const [rowsPerPage, setRowsPerPage] = useState(props.rowsPerPage);
@@ -229,10 +231,13 @@ export const TestMetricsContextProvider = (props : TestMetricsContextProviderPro
   }, [loadingDispatch]);
 
   const loadPathNode = useCallback((node: Node) => {
+    if (auth === undefined) {
+      return;
+    }
     if (isPath(node) && !node.loaded) {
       loadingDispatch({ type: 'start' });
       if (node.type === DirectoryNodeType.FILENAME) {
-        loadTestMetrics(components, params,
+        loadTestMetrics(auth, components, params,
             (response: FetchTestMetricsResponse) => {
               dataDispatch({
                 type: 'merge_test',
@@ -245,7 +250,7 @@ export const TestMetricsContextProvider = (props : TestMetricsContextProviderPro
             [node.path],
         );
       } else {
-        loadDirectoryMetrics(components, params, [node.id],
+        loadDirectoryMetrics(auth, components, params, [node.id],
             (response: FetchDirectoryMetricsResponse) => {
               dataDispatch({
                 type: 'merge_dir',
@@ -259,9 +264,12 @@ export const TestMetricsContextProvider = (props : TestMetricsContextProviderPro
         );
       }
     }
-  }, [loadingDispatch, dataDispatch, loadFailure, components, params]);
+  }, [loadingDispatch, dataDispatch, loadFailure, auth, components, params]);
 
   const load = useCallback((_from: string, components: string[], params: Params) => {
+    if (auth === undefined) {
+      return;
+    }
     loadingDispatch({ type: 'start' });
     if (params.directoryView) {
       // If we're not switching to directory view, we will need to reload
@@ -299,11 +307,11 @@ export const TestMetricsContextProvider = (props : TestMetricsContextProviderPro
         };
 
         loadDirectoryMetrics(
-            components, params, ['/', ...directories],
+            auth, components, params, ['/', ...directories],
             rebuildState, loadFailure,
         );
         if (filenames.length > 0) {
-          loadTestMetrics(components, {
+          loadTestMetrics(auth, components, {
             ...params,
             page: 0,
             rowsPerPage: 1000,
@@ -313,6 +321,7 @@ export const TestMetricsContextProvider = (props : TestMetricsContextProviderPro
         }
       } else {
         loadDirectoryMetrics(
+            auth,
             components,
             params,
             ['/'],
@@ -332,6 +341,7 @@ export const TestMetricsContextProvider = (props : TestMetricsContextProviderPro
       }
     } else {
       loadTestMetrics(
+          auth,
           components,
           params,
           (response: FetchTestMetricsResponse, fetchedDates: string[]) => {
@@ -346,7 +356,7 @@ export const TestMetricsContextProvider = (props : TestMetricsContextProviderPro
       );
     }
   }, [
-    data, directoryView,
+    auth, data, directoryView,
     loadPathNode, loadingDispatch, dataDispatch, loadFailure,
     setTimelineView, setDirectoryView, setDatesToShow, setLastPage,
   ]);

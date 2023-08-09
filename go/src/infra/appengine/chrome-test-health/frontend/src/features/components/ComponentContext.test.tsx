@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import { act } from 'react-dom/test-utils';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { Button } from '@mui/material';
 import * as Resources from '../../api/resources';
-import { ComponentContext, ComponentContextProvider, ComponentContextValue } from './ComponentContext';
+import { renderWithAuth } from '../auth/testUtils';
+import { ComponentContext, ComponentContextProvider, ComponentContextValue, URL_COMPONENT, updateComponentsUrl } from './ComponentContext';
 
 function createProps(
     param : TestProps) {
@@ -19,17 +20,16 @@ type TestProps = {
 components?: string[],
 }
 
-async function contextRender(ui: (value: ComponentContextValue) => React.ReactElement, { props } = { props: { ...createProps({}) } }) {
+async function renderWithContext(ui: (context: ComponentContextValue) => React.ReactElement, { props } = { props: { ...createProps({}) } }) {
   await act(async () => {
-    render(
+    renderWithAuth(
         <ComponentContextProvider {... props}>
           <ComponentContext.Consumer>
-            {(value) => ui(value)}
+            {(context) => ui(context)}
           </ComponentContext.Consumer>
         </ComponentContextProvider>,
     );
-  },
-  );
+  });
 }
 
 describe('ComponentContext values', () => {
@@ -39,9 +39,9 @@ describe('ComponentContext values', () => {
     });
   });
   it('allComponents', async () => {
-    await contextRender((value) => (
+    await renderWithContext((context) => (
       <>
-        {value.allComponents.map((c) => (<div data-testid='component' key={c}>{c}</div>))}
+        {context.allComponents.map((c) => (<div data-testid='component' key={c}>{c}</div>))}
       </>
     ));
     const components = screen.getAllByTestId('component');
@@ -51,9 +51,13 @@ describe('ComponentContext values', () => {
     expect(components[2]).toHaveTextContent('3');
   });
   it('components', async () => {
-    await contextRender((value) => (
+    await renderWithContext((context) => (
       <>
-        <Button data-testid='updateComponent' onClick={() => value.api.updateComponents(['comp', 'comp1'])}>{'components-' + value.components}</Button>
+        <Button data-testid='updateComponent' onClick={
+          () => context.api.updateComponents(['comp', 'comp1'])
+        }>
+          {'components-' + context.components}
+        </Button>
       </>
     ), { props: { ...createProps({ components: ['blink'] }) } });
     expect(screen.getByText('components-blink')).toBeInTheDocument();
@@ -61,5 +65,14 @@ describe('ComponentContext values', () => {
       fireEvent.click(screen.getByTestId('updateComponent'));
     });
     expect(screen.getByText('components-comp,comp1')).toBeInTheDocument();
+  });
+});
+
+describe('updateComponentsUrl', () => {
+  it('sets multiple components', () => {
+    const search = new URLSearchParams();
+    updateComponentsUrl(['a', 'b', 'c'], search);
+    expect(search.getAll(URL_COMPONENT)).toEqual(['a', 'b', 'c']);
+    expect(global.localStorage.getItem(URL_COMPONENT)).toEqual('a,b,c');
   });
 });

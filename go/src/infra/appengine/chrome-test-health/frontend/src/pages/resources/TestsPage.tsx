@@ -19,27 +19,25 @@ import TestMetricsSearchParams, {
   TIMELINE_VIEW,
   TIMELINE_VIEW_METRIC,
 } from '../../features/resources/tests/TestMetricsSearchParams';
-import ComponentParams from '../../features/components/ComponentParams';
 import { MetricType, Period, SortType } from '../../api/resources';
 
 function TestsPage() {
   const params = new URLSearchParams(window.location.search);
   const props = {
-    page: Number(params.get(PAGE) || 0),
+    page: Number(params.get(PAGE)) || 0,
     rowsPerPage: Number(
-        params.get(ROWS_PER_PAGE) ||
-      localStorage.getItem(ROWS_PER_PAGE) ||
-      50),
+        params.get(ROWS_PER_PAGE) || localStorage.getItem(ROWS_PER_PAGE),
+    ) || 50,
     filter: params.get(FILTER) || '',
     date: new Date(
       params.has(DATE) ? params.get(DATE) + 'T00:00:00' : (Date.now()),
     ),
-    period: params.has(PERIOD) ? Number(params.get(PERIOD)) as Period : null || Period.WEEK,
-    sort: params.has(SORT_BY) ? Number(params.get(SORT_BY)) as SortType : null || SortType.SORT_AVG_CORES,
+    period: params.has(PERIOD) ? Number(params.get(PERIOD)) as Period : Period.WEEK,
+    sort: params.has(SORT_BY) ? Number(params.get(SORT_BY)) as SortType : SortType.SORT_AVG_CORES,
     ascending: params.get(ASCENDING) === 'true',
-    sortIndex: Number(params.get(SORT_INDEX) || 0),
+    sortIndex: Number(params.get(SORT_INDEX)) || 0,
     timelineMetric: params.has(TIMELINE_VIEW_METRIC) ?
-      String(params.get(TIMELINE_VIEW_METRIC)) as MetricType : null || MetricType.AVG_CORES,
+      String(params.get(TIMELINE_VIEW_METRIC)) as MetricType : MetricType.AVG_CORES,
     timelineView: params.get(TIMELINE_VIEW) === 'true',
     directoryView: params.get(DIRECTORY_VIEW) === 'true',
   };
@@ -50,7 +48,6 @@ function TestsPage() {
         <TestMetricsTable/>
       </Box>
       <TestMetricsSearchParams/>
-      <ComponentParams/>
     </TestMetricsContextProvider>
   );
 }

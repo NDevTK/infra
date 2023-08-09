@@ -7,6 +7,7 @@ import { createRoot } from 'react-dom/client';
 import { CssBaseline } from '@mui/material';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { AuthContextProvider } from './features/auth/AuthContext';
 
 // Below ESlint is disabled based on ReactJS recommendation
 // https://reactjs.org/blog/2022/03/08/react-18-upgrade-guide.html#updates-to-client-rendering-apis
@@ -17,7 +18,9 @@ const root = createRoot(container);
 root.render(
     <React.StrictMode>
       <CssBaseline />
-      <App />
+      <AuthContextProvider>
+        <App />
+      </AuthContextProvider>
     </React.StrictMode>,
 );
 

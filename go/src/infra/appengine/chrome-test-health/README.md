@@ -14,38 +14,43 @@ chrome-resources-staging GCP project for its data.
 
 ## Frontend
 
-Running the frontend:
+Running the frontend without the backend:
 
 ```sh
-# Run from a different shell from where you evaled env.py because the frontend
-# uses a newer version of npm vs what's provided.
 cd frontend
 npm install
+npm start-stg
+```
+
+This will set up the frontend client running on port `3000` with a proxy to the
+staging environment. For auth to work, you will need to complete the auth flow
+and copy over the `LUCISID` cookie from the staging environment into localhost.
+
+You can also run the frontend against your local backend using:
+
+```sh
 npm start
 ```
 
-This will set up the frontend client running on port `3000` with an automatic
-proxy to the backend server running on `8800`.  To view the UI, go to
-[localhost:3000](http://localhost:3000)
+This will proxy the frontend against `localhost:8800`, which should not require
+an auth flow.
 
-Formatting:
+Before submitting code, make sure to run:
 
 ```sh
-npm run fix
+npm run fix # Reformat the code.
+npm test # Run all tests to make sure that nothing breaks.
 ```
 
 ## Deployment
 
 ```sh
-# Use a clean shell so that you can run newer npm
-cd frontend
-npm run build
-# That builds static assets (html, js, css, etc) into frontend/build
-# frontend/build is symlinked to /static
-cd ..
-# Sets up the environment for gae.py to run
 eval `../../../../env.py`
+cd frontend
+# Build static assets (html, js, css, etc) into frontend/build
+npm run build
+cd ..
 ./deploy.sh
 ```
 
-See the latest version at [https://chrome-infra-stats.googleplex.com/](https://chrome-infra-stats.googleplex.com/)
+See the latest version at [https://chrome-test-health.appspot.com/](https://chrome-test-health.appspot.com/)

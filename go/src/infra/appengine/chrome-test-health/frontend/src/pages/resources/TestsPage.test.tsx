@@ -27,6 +27,7 @@ describe('when rendering the TestsPage', () => {
     writable: true,
     value: { assign: jest.fn() },
   });
+
   it('should pass in default values', async () => {
     const mockContext = jest.fn();
     jest.spyOn(TestMetricsContext, 'TestMetricsContextProvider').mockImplementation((props) => {
@@ -49,6 +50,7 @@ describe('when rendering the TestsPage', () => {
     // Adding this check here to verify dates are correct
     expect(formatDate(mockContext.mock.calls[0][0].date)).toEqual(formatDate(new Date()));
   });
+
   it('should pass in url param values', async () => {
     const mockContext = jest.fn();
     jest.spyOn(TestMetricsContext, 'TestMetricsContextProvider').mockImplementation((props) => {
@@ -73,6 +75,7 @@ describe('when rendering the TestsPage', () => {
     // Adding this check here to verify dates are correct
     expect(formatDate(mockContext.mock.calls[0][0].date)).toEqual(formatDate(new Date()));
   });
+
   it('should pass in local storage values', async () => {
     const mockContext = jest.fn();
     window.location.search = '';
@@ -84,6 +87,21 @@ describe('when rendering the TestsPage', () => {
     expect(mockContext).toHaveBeenCalledWith(
         expect.objectContaining({
           rowsPerPage: 250,
+        }),
+    );
+  });
+
+  it('if local storage rows per page is 0, it should use the default', async () => {
+    const mockContext = jest.fn();
+    window.location.search = '';
+    jest.spyOn(TestMetricsContext, 'TestMetricsContextProvider').mockImplementation((props) => {
+      return mockContext(props);
+    });
+    localStorage.setItem(ROWS_PER_PAGE, '0');
+    renderWithBrowserRouter(<TestsPage/>);
+    expect(mockContext).toHaveBeenCalledWith(
+        expect.objectContaining({
+          rowsPerPage: 50,
         }),
     );
   });

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import { Auth } from './auth';
 import {
   FetchTestMetricsResponse,
   MetricType,
@@ -43,6 +44,8 @@ const mockMetricsWithData: MetricsDateMap = {
     ],
   },
 };
+
+const auth = new Auth('', new Date('3000-01-01'));
 
 describe('fetchTestMetrics', () => {
   const dummyRequest: FetchTestMetricsRequest = {
@@ -103,13 +106,11 @@ describe('fetchTestMetrics', () => {
       ],
       lastPage: false,
     };
-    const resp = await fetchTestMetrics(dummyRequest);
+    const resp = await fetchTestMetrics(auth, dummyRequest);
 
     expect(mockCall.mock.calls.length).toBe(1);
-    expect(mockCall.mock.calls[0].length).toBe(3);
-    expect(mockCall.mock.calls[0][0]).toBe('test_resources.Stats');
-    expect(mockCall.mock.calls[0][1]).toBe('FetchTestMetrics');
-    expect(mockCall.mock.calls[0][2]).toEqual(dummyRequest);
+    expect(mockCall.mock.calls[0].length).toBe(4);
+    expect(mockCall.mock.calls[0][3]).toEqual(dummyRequest);
     expect(resp).toEqual(expected);
   });
 
@@ -117,7 +118,7 @@ describe('fetchTestMetrics', () => {
     jest.spyOn(prpcClient, 'call').mockResolvedValue({
       lastPage: false,
     });
-    const resp = await fetchTestMetrics(dummyRequest);
+    const resp = await fetchTestMetrics(auth, dummyRequest);
     expect(resp.tests).toHaveLength(0);
   });
 
@@ -139,7 +140,7 @@ describe('fetchTestMetrics', () => {
       ],
       lastPage: false,
     });
-    const resp = await fetchTestMetrics(dummyRequest);
+    const resp = await fetchTestMetrics(auth, dummyRequest);
     expect(resp.tests[0]?.metrics['2012-01-02']?.data[0].metricValue).toBe(0);
   });
 });
@@ -181,13 +182,13 @@ describe('fetchDirectoryMetrics', () => {
       ],
     };
     jest.spyOn(prpcClient, 'call').mockResolvedValue(data);
-    const resp = await fetchDirectoryMetrics(dummyRequest);
+    const resp = await fetchDirectoryMetrics(auth, dummyRequest);
     expect(resp).toEqual(data);
   });
 
   it('returns a response with nodes', async () => {
     jest.spyOn(prpcClient, 'call').mockResolvedValue({});
-    const resp = await fetchDirectoryMetrics(dummyRequest);
+    const resp = await fetchDirectoryMetrics(auth, dummyRequest);
     expect(resp.nodes).toHaveLength(0);
   });
 });

@@ -2,32 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { fireEvent, render, screen } from '@testing-library/react';
-import { act } from 'react-dom/test-utils';
+import { fireEvent, screen } from '@testing-library/react';
 import { MetricType } from '../../../api/resources';
-import * as Resources from '../../../api/resources';
-import {
-  Test,
-  TestMetricsContextProvider,
-  TestMetricsContextValue,
-  TestMetricsContext,
-} from './TestMetricsContext';
+import { Test } from './TestMetricsContext';
 import TestMetricsRow from './TestMetricsRow';
-import { createProps } from './testUtils';
-
-
-async function contextRender(ui: (value: TestMetricsContextValue) => React.ReactElement, { props } = { props: { ...createProps({}) } }) {
-  await act(async () => {
-    render(
-        <TestMetricsContextProvider {... props}>
-          <TestMetricsContext.Consumer>
-            {(value) => ui(value)}
-          </TestMetricsContext.Consumer>
-        </TestMetricsContextProvider>,
-    );
-  },
-  );
-}
+import { renderWithContext } from './testUtils';
 
 const mockMetricTypeToNum: Map<MetricType, number> = new Map<MetricType, number>(
     [
@@ -47,7 +26,6 @@ const mockMetrics: Map<string, Map<MetricType, number>> = new Map<string, Map<Me
     ],
 );
 
-
 describe('when rendering the ResourcesRow', () => {
   it('should render a single row', () => {
     const test: Test = {
@@ -59,14 +37,14 @@ describe('when rendering the ResourcesRow', () => {
       nodes: [],
     };
 
-    const { getByTestId } = render(
+    renderWithContext(
         <table>
           <tbody>
             <TestMetricsRow data={test} depth={0}/>
           </tbody>
         </table>,
     );
-    const tableRow = getByTestId('tablerow-testId');
+    const tableRow = screen.getByTestId('tablerow-testId');
     expect(tableRow).toBeInTheDocument();
   });
   it('should render expandable rows', () => {
@@ -96,35 +74,29 @@ describe('when rendering the ResourcesRow', () => {
       ],
     };
 
-    const { getByTestId } = render(
+    renderWithContext(
         <table>
           <tbody>
             <TestMetricsRow data={test} depth={0}/>
           </tbody>
         </table>,
     );
-    const testRow = getByTestId('tablerow-testId');
+    const testRow = screen.getByTestId('tablerow-testId');
     expect(testRow).toBeInTheDocument();
     expect(testRow.getAttribute('data-depth')).toEqual('0');
 
-    const button = getByTestId('clickButton-testId');
+    const button = screen.getByTestId('clickButton-testId');
     fireEvent.click(button);
 
-    const v1Row = getByTestId('tablerow-v1');
+    const v1Row = screen.getByTestId('tablerow-v1');
     expect(v1Row).toBeInTheDocument();
     expect(v1Row.getAttribute('data-depth')).toEqual('1');
 
-    expect(getByTestId('tablerow-v2')).toBeInTheDocument();
+    expect(screen.getByTestId('tablerow-v2')).toBeInTheDocument();
   });
 });
 
 describe('when rendering ResourcesRow', () => {
-  beforeEach(() => {
-    jest.spyOn(Resources, 'fetchTestMetrics').mockResolvedValue({
-      tests: [],
-      lastPage: true,
-    });
-  });
   it('should render test snapshot view properly', async () => {
     const test: Test = {
       id: 'testId',
@@ -151,18 +123,13 @@ describe('when rendering ResourcesRow', () => {
         },
       ],
     };
-    await contextRender(() => {
-      return (
-        <>
-          <table>
-            <tbody>
-              <TestMetricsRow data={test} depth={0}/>
-            </tbody>
-          </table>,
-        </>
-
-      );
-    });
+    renderWithContext(
+        <table>
+          <tbody>
+            <TestMetricsRow data={test} depth={0}/>
+          </tbody>
+        </table>,
+    );
     expect(screen.getAllByTestId('tableCell')).toHaveLength(5);
   });
   it('should render test timeline view properly', async () => {
@@ -191,15 +158,16 @@ describe('when rendering ResourcesRow', () => {
         },
       ],
     };
-    await contextRender(() => (
-      <>
-        <table>
-          <tbody>
-            <TestMetricsRow data={test} depth={0}/>
-          </tbody>
-        </table>,
-      </>
-    ), { props: { ...createProps({ timelineView: true }) } });
-    expect(screen.getAllByTestId('timelineTest')).toHaveLength(5);
+    renderWithContext((
+      <table>
+        <tbody>
+          <TestMetricsRow data={test} depth={0}/>
+        </tbody>
+      </table>
+    ), {
+      datesToShow: ['2023-01-01', '2023-01-02', '2023-01-03'],
+      params: { timelineView: true },
+    } );
+    expect(screen.getAllByTestId('timelineTest')).toHaveLength(3);
   });
 });

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import { Auth } from '../../../api/auth';
 import { FetchDirectoryMetricsRequest, fetchDirectoryMetrics, DirectoryNode,
   FetchTestMetricsRequest,
   FetchTestMetricsResponse,
@@ -30,6 +31,7 @@ export function computeDates(params: Params): string[] {
 }
 
 export function loadTestMetrics(
+    auth: Auth,
     components: string[],
     params: Params,
     successCallback: (
@@ -63,7 +65,7 @@ export function loadTestMetrics(
   if (fileNames) {
     request.file_names = fileNames;
   }
-  fetchTestMetrics(request).then((response) => {
+  fetchTestMetrics(auth, request).then((response) => {
     successCallback(response, datesToFetch);
   }).catch(failureCallback);
 }
@@ -234,6 +236,7 @@ function rebuildState(
 }
 
 export function loadDirectoryMetrics(
+    auth: Auth,
     components: string[],
     params: Params,
     parentIds: string[],
@@ -263,7 +266,7 @@ export function loadDirectoryMetrics(
       sort_date: datesToFetch[params.sortIndex],
     },
   };
-  fetchDirectoryMetrics(request).then((response) => {
+  fetchDirectoryMetrics(auth, request).then((response) => {
     successCallback(response, datesToFetch);
   }).catch(failureCallback);
 }

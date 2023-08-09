@@ -4,7 +4,9 @@
 */
 
 import { act } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import { MetricType, Period, SortType } from '../../../api/resources';
+import { renderWithComponents } from '../../components/testUtils';
 import { renderWithContext } from './testUtils';
 import { Params } from './TestMetricsContext';
 import TestMetricsSearchParams, {
@@ -58,6 +60,7 @@ describe('when rendering the ResourcesSearchParams', () => {
     expect(searchParams.get(SORT_INDEX)).toBe('0');
     expect(global.localStorage.getItem(ROWS_PER_PAGE)).toEqual('25');
   });
+
   it('should render url without empty params', async () => {
     const params: Params = {
       page: 0,
@@ -85,5 +88,19 @@ describe('when rendering the ResourcesSearchParams', () => {
     expect(searchParams.get(FILTER)).toBe(null);
     expect(searchParams.get(PAGE)).toBe(null);
     expect(searchParams.get(SORT_INDEX)).toBe(null);
+  });
+
+  it('should render components in url', async () => {
+    await act(async () => {
+      renderWithComponents(<>
+        <BrowserRouter>
+          <TestMetricsSearchParams/>
+        </BrowserRouter>
+      </>
+      , ['a', 'b'],
+      );
+    });
+    const searchParams = new URLSearchParams(window.location.search);
+    expect(searchParams.getAll('c')).toEqual(['a', 'b']);
   });
 });

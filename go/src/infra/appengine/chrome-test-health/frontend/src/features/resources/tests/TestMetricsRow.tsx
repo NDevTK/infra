@@ -36,7 +36,7 @@ function TestMetricsRow(props: ResourcesRowProps) {
       const bodyArr = [] as JSX.Element[];
       datesToShow.forEach((date) => {
         bodyArr.push(
-            <TableCell key={date} component="th" align="right" data-testid="timelineTest">
+            <TableCell key={date} data-testid="timelineTest" align="right">
               {formatNumber(Number(props.data.metrics.get(date)?.get(params.timelineMetric)))}
             </TableCell>,
         );

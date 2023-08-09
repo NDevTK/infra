@@ -1,12 +1,11 @@
-/* Copyright 2023 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-*/
 
-import { render } from '@testing-library/react';
 import * as ComponentContextP from './features/components/ComponentContext';
 import App from './App';
-import { COMPONENT } from './features/components/ComponentParams';
+import { URL_COMPONENT } from './features/components/ComponentContext';
+import { renderWithAuth } from './features/auth/testUtils';
 
 describe('when rendering the App', () => {
   // This is needed to allow us to modify window.location
@@ -19,7 +18,7 @@ describe('when rendering the App', () => {
     jest.spyOn(ComponentContextP, 'ComponentContextProvider').mockImplementation((props) => {
       return mockComponentContext(props);
     });
-    render(<App/>);
+    renderWithAuth(<App/>);
     expect(mockComponentContext).toHaveBeenCalledWith(
         expect.objectContaining({
           components: ['Blink'],
@@ -31,8 +30,8 @@ describe('when rendering the App', () => {
     jest.spyOn(ComponentContextP, 'ComponentContextProvider').mockImplementation((props) => {
       return mockComponentContext(props);
     });
-    window.location.search = 'https://localhost/?placeholder=p&comp=Admin';
-    render(<App/>);
+    window.location.search = '?c=Admin';
+    renderWithAuth(<App/>);
     expect(mockComponentContext).toHaveBeenCalledWith(
         expect.objectContaining({
           components: ['Admin'],
@@ -45,8 +44,8 @@ describe('when rendering the App', () => {
     jest.spyOn(ComponentContextP, 'ComponentContextProvider').mockImplementation((props) => {
       return mockComponentContext(props);
     });
-    localStorage.setItem(COMPONENT, 'LOCALSTORAGE1,LOCALSTORAGE2');
-    render(<App/>);
+    localStorage.setItem(URL_COMPONENT, 'LOCALSTORAGE1,LOCALSTORAGE2');
+    renderWithAuth(<App/>);
     expect(mockComponentContext).toHaveBeenCalledWith(
         expect.objectContaining({
           components: ['LOCALSTORAGE1', 'LOCALSTORAGE2'],

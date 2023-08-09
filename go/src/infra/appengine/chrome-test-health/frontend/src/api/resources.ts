@@ -2,27 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import { Auth } from './auth';
+
 export const prpcClient = {
   call: async function <Type>(
+      auth: Auth,
       service: string,
       method: string,
       message: unknown,
   ): Promise<Type> {
-    const url = `/prpc/${service}/${method}`;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify(message),
+    return auth.validateOrRedirect().then(async (auth) => {
+      if (auth === undefined) {
+        return;
+      }
+      const url = `/prpc/${service}/${method}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'OAuth ' + auth?.accessToken,
+        },
+        body: JSON.stringify(message),
+      });
+      const text = await response.text();
+      if (text.startsWith(')]}\'')) {
+        return JSON.parse(text.substring(4));
+      } else {
+        throw text;
+      }
     });
-    const text = await response.text();
-    if (text.startsWith(')]}\'')) {
-      return JSON.parse(text.substring(4));
-    } else {
-      throw text;
-    }
   },
 };
 
@@ -30,8 +39,10 @@ export interface ListComponentsResponse {
   components: string[],
 }
 
-export async function listComponents(): Promise<ListComponentsResponse> {
+export async function listComponents(auth: Auth):
+  Promise<ListComponentsResponse> {
   const resp: ListComponentsResponse = await prpcClient.call(
+      auth,
       'test_resources.Stats',
       'ListComponents',
       {},
@@ -153,9 +164,11 @@ function fixMetricsDateMap(map: MetricsDateMap) {
 }
 
 export async function fetchTestMetrics(
+    auth: Auth,
     fetchTestMetricsRequest: FetchTestMetricsRequest,
 ): Promise<FetchTestMetricsResponse> {
   const resp: FetchTestMetricsResponse = await prpcClient.call(
+      auth,
       'test_resources.Stats',
       'FetchTestMetrics',
       fetchTestMetricsRequest,
@@ -200,9 +213,11 @@ function fixFetchDirectoryMetricsResponse(resp: FetchDirectoryMetricsResponse) {
 }
 
 export async function fetchDirectoryMetrics(
+    auth: Auth,
     request: FetchDirectoryMetricsRequest,
 ): Promise<FetchDirectoryMetricsResponse> {
   const resp: FetchDirectoryMetricsResponse = await prpcClient.call(
+      auth,
       'test_resources.Stats',
       'FetchDirectoryMetrics',
       request,

@@ -2,13 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { listComponents } from '../../api/resources';
+import { AuthContext } from '../auth/AuthContext';
+
+export const URL_COMPONENT = 'c';
+
+export function updateComponentsUrl(components: string[], search: URLSearchParams) {
+  search.delete(URL_COMPONENT);
+  components.forEach((c) => search.append(URL_COMPONENT, c));
+  // Updating it here isn't great, but not sure there's a cleaner way to do this
+  localStorage.setItem(URL_COMPONENT, components.join(','));
+}
 
 type ComponentContextProviderProps = {
-    children: React.ReactNode,
-    components: string[],
-  }
+  children: React.ReactNode,
+  components: string[],
+}
 
 export interface ComponentContextValue {
     components: string[],
@@ -32,11 +42,15 @@ export const ComponentContext = createContext<ComponentContextValue>(
 );
 
 export const ComponentContextProvider = (props: ComponentContextProviderProps) => {
+  const { auth } = useContext(AuthContext);
   const [allComponents, setAllComponents] = useState<string[]>(props.components);
   const [components, setComponents] = useState<string[]>(props.components);
 
   function loadComponents() {
-    listComponents().then((resp) => {
+    if (auth == undefined) {
+      return;
+    }
+    listComponents(auth).then((resp) => {
       setAllComponents(resp.components);
     }).catch((err) => {
       throw err;

@@ -4,16 +4,23 @@
 
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Box } from '@mui/material';
+import { useContext } from 'react';
 import NavBar from './components/navbar/NavBar';
 import TestsPage from './pages/resources/TestsPage';
-import { ComponentContextProvider } from './features/components/ComponentContext';
-import { COMPONENT } from './features/components/ComponentParams';
+import { ComponentContextProvider, URL_COMPONENT } from './features/components/ComponentContext';
+import { AuthContext } from './features/auth/AuthContext';
 
 const App = () => {
+  const { auth } = useContext(AuthContext);
+  if (auth === undefined) {
+    return null;
+  }
+
   const params = new URLSearchParams(window.location.search);
-  const components = params.has(COMPONENT) ?
-    params.getAll(COMPONENT) :
-    localStorage.getItem(COMPONENT)?.split(',') || ['Blink'];
+  const components = params.has(URL_COMPONENT) ?
+    params.getAll(URL_COMPONENT) :
+    localStorage.getItem(URL_COMPONENT)?.split(',') || ['Blink'];
+
   return (
     <div className="App">
       <BrowserRouter>
@@ -27,7 +34,6 @@ const App = () => {
           </Box>
         </ComponentContextProvider>
       </BrowserRouter>
-
     </div>
   );
 };
