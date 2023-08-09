@@ -34,6 +34,24 @@
       "parentUuid": "dbe4b3e2_e5de30cb",
       "revId": "127979ec7ba5716794c3bfa2a93d57390aba1ac3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a6d67677_28971cac",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1557599
+      },
+      "writtenOn": "2023-08-09T08:04:23Z",
+      "side": 1,
+      "message": "Sure! thank you 😄 I have rebased your change into this CL, PTAL! \n\nNotice that:\n- cron/pb.discovery.go change is fixed. \n- device.proto no longer used the tag number 37 (from original CL).\n\n[Visit here to see the changes between original CL and reland CL](https://chromium-review.googlesource.com/c/infra/infra/+/4755007/1..3)",
+      "parentUuid": "28c34b37_2319a058",
+      "revId": "127979ec7ba5716794c3bfa2a93d57390aba1ac3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
