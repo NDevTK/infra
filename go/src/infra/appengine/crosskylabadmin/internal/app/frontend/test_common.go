@@ -50,9 +50,11 @@ func newTestFixture(t *testing.T) (testFixture, func()) {
 }
 
 func newTestFixtureWithContext(c context.Context, t *testing.T) (testFixture, func()) {
+	// Configure the tq implementation: confirm that it's testable and set up queues used by CrOSSkylabAdmin.
 	if tq.GetTestable(c) == nil {
 		panic("internal error in app/frontend/test_common.go: in unit tests, taskqueue must be a testable implementation")
 	}
+
 	tf := testFixture{T: t, C: c}
 
 	mc := gomock.NewController(t)

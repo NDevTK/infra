@@ -14,10 +14,13 @@ import (
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/config"
+	"infra/appengine/crosskylabadmin/internal/tq"
 	"infra/cros/recovery/logger/metrics"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
+// TestPushBotsForAdminTasksImplSmokeTesttests that pushing bots for admin tasks
+// calls the ListALiveIdleBotsInPool API.
 func TestPushBotsForAdminTasksImplSmokeTest(t *testing.T) {
 	tf, validate := newTestFixture(t)
 	defer validate()
@@ -38,17 +41,27 @@ func TestPushBotsForAdminTasksImplSmokeTest(t *testing.T) {
 	}
 }
 
+// TestPushBotsForAdminTasksWithUFSClient tests that pushing bots for admin tasks with a UFS client succeeds.
 func TestPushBotsForAdminTasksWithUFSClient(t *testing.T) {
 	tf, validate := newTestFixture(t)
 	defer validate()
 	ctx := tf.C
+	tq.GetTestable(ctx).CreateQueue("repair-bots")
 	tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), gomock.Any(), gomock.Any()).Return([]*swarming.SwarmingRpcsBotInfo{
 		{
 			BotId: "fake-bot-a",
 			Dimensions: []*swarming.SwarmingRpcsStringListPair{
 				{
+					Key:   "id",
+					Value: []string{"fake-bot-a"},
+				},
+				{
 					Key:   "pool",
 					Value: []string{"fake-bot-pool"},
+				},
+				{
+					Key:   "dut_state",
+					Value: []string{"needs_repair"},
 				},
 			},
 		},
@@ -56,8 +69,16 @@ func TestPushBotsForAdminTasksWithUFSClient(t *testing.T) {
 			BotId: "fake-bot-b",
 			Dimensions: []*swarming.SwarmingRpcsStringListPair{
 				{
+					Key:   "id",
+					Value: []string{"fake-bot-b"},
+				},
+				{
 					Key:   "pool",
 					Value: []string{"fake-bot-pool"},
+				},
+				{
+					Key:   "dut_state",
+					Value: []string{"needs_repair"},
 				},
 			},
 		},
@@ -71,9 +92,12 @@ func TestPushBotsForAdminTasksWithUFSClient(t *testing.T) {
 		TargetDutState: fleet.DutState_NeedsRepair,
 	}
 	_, err := pushBotsForAdminTasksImpl(ctx, tf.MockSwarming, tf.MockUFS, tf.MockKarte, req)
-
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
+	}
+	numTasks := len(tq.GetTestable(ctx).GetScheduledTasks()["repair-bots"])
+	if numTasks != 2 {
+		t.Errorf("unexpected number of tasks %d", numTasks)
 	}
 }
 
