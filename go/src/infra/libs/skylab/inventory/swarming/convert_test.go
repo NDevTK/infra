@@ -70,6 +70,7 @@ peripherals: {
   audio_cable: true
   audio_box: true
   audio_board: true
+  trrs_type: 1
   router_802_11ax: true
   working_bluetooth_btpeer: 3
   peripheral_wifi_state: 1
@@ -224,6 +225,7 @@ peripherals: {
   audio_cable: true
   audio_box: true
   audio_board: true
+  trrs_type: 1
   router_802_11ax: true
   working_bluetooth_btpeer: 3
   peripheral_wifi_state: 1
@@ -425,6 +427,7 @@ var fullDimensions = Dimensions{
 	"label-test_hdmiaudio":          {"True"},
 	"label-test_usbaudio":           {"True"},
 	"label-test_usbprinting":        {"True"},
+	"label-trrs_type":               {"CTIA"},
 	"label-usb_detect":              {"True"},
 	"label-use_lid":                 {"True"},
 	"label-variant":                 {"somevariant"},
