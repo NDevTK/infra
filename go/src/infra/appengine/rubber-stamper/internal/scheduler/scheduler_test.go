@@ -15,6 +15,7 @@ import (
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/server/tq/tqtesting"
+	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"infra/appengine/rubber-stamper/config"
 	"infra/appengine/rubber-stamper/internal/util"
@@ -159,8 +160,8 @@ func TestScheduleReviews(t *testing.T) {
 			So(err, ShouldBeNil)
 
 			sched.Run(ctx, tqtesting.StopWhenDrained())
-			So(succeeded.Payloads(), ShouldResembleProto, []*taskspb.ChangeReviewTask{
-				{
+			So(succeeded.Payloads(), ShouldResembleProto, []protoreflect.ProtoMessage{
+				&taskspb.ChangeReviewTask{
 					Host:           "test-host",
 					Number:         00000,
 					Revision:       "123abc",
@@ -170,7 +171,7 @@ func TestScheduleReviews(t *testing.T) {
 					Hashtags:       []string{"Tag"},
 					OwnerEmail:     "user@example.com",
 				},
-				{
+				&taskspb.ChangeReviewTask{
 					Host:           "test-host",
 					Number:         00001,
 					Revision:       "234abc",
@@ -180,7 +181,7 @@ func TestScheduleReviews(t *testing.T) {
 					Hashtags:       []string{"Tag"},
 					OwnerEmail:     "user@example.com",
 				},
-				{
+				&taskspb.ChangeReviewTask{
 					Host:               "test-host",
 					Number:             00002,
 					Revision:           "789012",

@@ -16,6 +16,7 @@ import (
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/server/tq/tqtesting"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/appengine/rubber-stamper/config"
@@ -209,8 +210,8 @@ func TestQueue(t *testing.T) {
 			sched.Run(ctx, tqtesting.StopWhenDrained())
 
 			So(len(succeeded.Payloads()), ShouldEqual, 4)
-			So(succeeded.Payloads(), ShouldResembleProto, []*taskspb.ChangeReviewTask{
-				{
+			So(succeeded.Payloads(), ShouldResembleProto, []protoreflect.ProtoMessage{
+				&taskspb.ChangeReviewTask{
 					Host:           "host",
 					Number:         12345,
 					Revision:       "123abc",
@@ -221,7 +222,7 @@ func TestQueue(t *testing.T) {
 					Hashtags:       []string{"Tag"},
 					OwnerEmail:     "user@example.com",
 				},
-				{
+				&taskspb.ChangeReviewTask{
 					Host:           "host",
 					Number:         12345,
 					Revision:       "456789",
@@ -232,7 +233,7 @@ func TestQueue(t *testing.T) {
 					Hashtags:       []string{"Tag"},
 					OwnerEmail:     "user@example.com",
 				},
-				{
+				&taskspb.ChangeReviewTask{
 					Host:           "host",
 					Number:         12315,
 					Revision:       "112233",
@@ -244,7 +245,7 @@ func TestQueue(t *testing.T) {
 					Hashtags:       []string{"Tag"},
 					OwnerEmail:     "user@example.com",
 				},
-				{
+				&taskspb.ChangeReviewTask{
 					Host:               "host",
 					Number:             12387,
 					Revision:           "111aaa",
