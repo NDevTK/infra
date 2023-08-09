@@ -26,8 +26,6 @@ import (
 const cipdBuildDeps = `
 @Subdir
 infra/3pp/tools/git/${platform} version:2@2.39.2.chromium.11
-@Subdir go_bootstrap
-infra/3pp/tools/go/${platform} version:2@BOOTSTRAP_VERSION
 @Subdir cc/${os=windows}
 golang/third_party/llvm-mingw-msvcrt/${platform} latest
 ` + cipdToolDeps
@@ -47,21 +45,25 @@ const cipdXCodeDep = `
 infra/tools/mac_toolchain/${platform} latest
 `
 
-func installTools(ctx context.Context, inputs *golangbuildpb.Inputs) (toolsRoot string, err error) {
+func installTools(ctx context.Context, inputs *golangbuildpb.Inputs, experiments map[string]struct{}) (toolsRoot string, err error) {
 	step, ctx := build.StartStep(ctx, "install tools")
 	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
 	// Construct the CIPD ensure file.
 	var cipdDeps string
 	gotXCode := false
+
 	if inputs.GetMode() == golangbuildpb.Mode_MODE_COORDINATOR {
 		cipdDeps = cipdToolDeps
 	} else {
-		bootstrap := inputs.BootstrapVersion
-		if bootstrap == "" {
-			bootstrap = "1.19.3"
+		// Don't install git from CIPD on less-common platforms. We'll get it from the external OS as needed.
+		if _, bestEffortPlatform := experiments["luci.best_effort_platform"]; !bestEffortPlatform {
+			cipdDeps = cipdBuildDeps
 		}
-		cipdDeps = strings.ReplaceAll(cipdBuildDeps, "BOOTSTRAP_VERSION", bootstrap)
+		cipdDeps += `
+@Subdir go_bootstrap
+golang/bootstrap-go/${platform} ` + inputs.BootstrapVersion + `
+`
 		if inputs.XcodeVersion != "" {
 			gotXCode = true
 			cipdDeps += cipdXCodeDep

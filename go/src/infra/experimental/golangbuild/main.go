@@ -115,6 +115,8 @@
 //     instead of sequentially.
 //   - golang.parallel_compile_only_ports_maxprocs: Causes the experiment above
 //     to also control GOMAXPROCS.
+//   - luci.best_effort_platform: set by LUCI on less-supported platforms.
+//     Affects which tools are downloaded from CIPD.
 package main
 
 import (
@@ -144,7 +146,7 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 	}
 
 	// Install some tools we'll need, including a bootstrap toolchain.
-	toolsRoot, err := installTools(ctx, inputs)
+	toolsRoot, err := installTools(ctx, inputs, experiments)
 	if err != nil {
 		return err
 	}
