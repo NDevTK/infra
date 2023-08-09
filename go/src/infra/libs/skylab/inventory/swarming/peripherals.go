@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2023 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -162,10 +162,12 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 			dims["label-peripheral_wifi_state"] = []string{pwsState}
 		}
 	}
-	for _, v := range p.GetPeripheralWifiFeatures() {
-		appendDim(dims, "label-peripheral_wifi_feature", v.String())
+	for _, v := range p.GetWifiRouterFeatures() {
+		appendDim(dims, "label-wifi_router_features", v.String())
 	}
-
+	for _, v := range p.GetWifiRouterModels() {
+		appendDim(dims, "label-wifi_router_models", v)
+	}
 }
 
 func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
@@ -286,10 +288,26 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 		delete(d, "label-peripheral_wifi_state")
 	}
 
-	p.PeripheralWifiFeatures = make([]inventory.Peripherals_WifiFeature, len(d["label-peripheral_wifi_feature"]))
-	for i, v := range d["label-peripheral_wifi_feature"] {
-		p.PeripheralWifiFeatures[i] = inventory.Peripherals_WifiFeature(inventory.Peripherals_WifiFeature_value[v])
+	p.WifiRouterFeatures = make([]inventory.Peripherals_WifiRouterFeature, len(d["label-wifi_router_features"]))
+	for i, v := range d["label-wifi_router_features"] {
+		int32Value, ok := inventory.Peripherals_WifiRouterFeature_value[v]
+		if !ok {
+			// Could an int if the infra enum copy is out of sync, so try to parse it.
+			intValue, err := strconv.Atoi(v)
+			if err != nil {
+				intValue = int(inventory.Peripherals_WIFI_ROUTER_FEATURE_INVALID.Number())
+			}
+			int32Value = int32(intValue)
+		}
+		p.WifiRouterFeatures[i] = inventory.Peripherals_WifiRouterFeature(int32Value)
 	}
-	delete(d, "label-peripheral_wifi_feature")
+	delete(d, "label-wifi_router_features")
+
+	p.WifiRouterModels = make([]string, len(d["label-wifi_router_models"]))
+	for i, v := range d["label-wifi_router_models"] {
+		p.WifiRouterModels[i] = v
+	}
+	delete(d, "label-wifi_router_models")
+
 	return d
 }
