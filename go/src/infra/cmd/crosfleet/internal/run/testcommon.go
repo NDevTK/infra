@@ -181,6 +181,10 @@ func (c *testCommonFlags) validateArgs(f *flag.FlagSet, args []string, mainArgTy
 	if mainArgType == testCmdName && c.cft && c.testHarness == "" {
 		errors = append(errors, fmt.Sprintf("missing harness flag"))
 	}
+	// harness should not be provided for non-cft.
+	if mainArgType == testCmdName && !c.cft && c.testHarness != "" {
+		errors = append(errors, fmt.Sprintf("harness should only be provided for single cft test case"))
+	}
 	if c.image != "" && c.release != "" {
 		errors = append(errors, "cannot specify both image and release branch")
 	}
