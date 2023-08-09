@@ -34,3 +34,4 @@ cp -a bin/$SUFFIX/* $PREFIX/bin/
 cp -a lib/*         $PREFIX/lib/
 cp -a pkg/$SUFFIX/* $PREFIX/pkg/
 cp -a src/*/        $PREFIX/src/
+cp src/go.env       $PREFIX/

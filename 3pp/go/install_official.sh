@@ -9,4 +9,4 @@ set -o pipefail
 
 PREFIX="$1"
 
-cp -a go/{bin,src,pkg,lib} "$PREFIX"/
+cp -a go/{bin,src,pkg,lib,go.env} "$PREFIX"/
