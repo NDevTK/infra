@@ -118,7 +118,7 @@ var exceptions = []suiteFilter{
 	},
 	{
 		suiteName:  "bvt-tast-cq",
-		expiration: time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 8, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "bvt-tast-cq-cft-crostini",
