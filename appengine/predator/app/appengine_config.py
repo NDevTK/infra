@@ -4,14 +4,19 @@
 
 import os
 
-from google.appengine.ext import vendor
+import six
+import sys
 
 
 _THIS_DIR = os.path.realpath(os.path.dirname(__file__))
 
 # Add all the first-party and third-party libraries.
-vendor.add(os.path.realpath(os.path.join(_THIS_DIR, 'first_party')))
-vendor.add(os.path.realpath(os.path.join(_THIS_DIR, 'third_party')))
-vendor.add(
+sys.path.append(os.path.realpath(os.path.join(_THIS_DIR, 'first_party')))
+sys.path.append(os.path.realpath(os.path.join(_THIS_DIR, 'third_party')))
+sys.path.append(
     os.path.realpath(
         os.path.join(_THIS_DIR, 'third_party', 'pipeline', 'python', 'src')))
+
+if six.PY2:
+  sys.path.append(
+      os.path.realpath(os.path.join(_THIS_DIR, 'third_party', 'python2')))
