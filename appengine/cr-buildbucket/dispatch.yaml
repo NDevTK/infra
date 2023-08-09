@@ -28,3 +28,7 @@ dispatch:
   # /push-handlers is for all Go pubsub subscriptions.
   - url: "*/push-handlers/*"
     service: default-go
+
+  # /internal/pubsub is for all internal Go pubsub subscriptions.
+  - url: "*/internal/pubsub/*"
+    service: default-go
