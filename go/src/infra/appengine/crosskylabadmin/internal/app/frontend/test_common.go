@@ -22,6 +22,7 @@ import (
 	"infra/appengine/crosskylabadmin/internal/app/clients"
 	"infra/appengine/crosskylabadmin/internal/app/clients/mock"
 	"infra/appengine/crosskylabadmin/internal/app/config"
+	"infra/appengine/crosskylabadmin/internal/tq"
 	"infra/appengine/crosskylabadmin/internal/ufs/mockufs"
 	"infra/cros/recovery/logger/metrics/mockmetrics"
 	"infra/libs/git"
@@ -49,6 +50,9 @@ func newTestFixture(t *testing.T) (testFixture, func()) {
 }
 
 func newTestFixtureWithContext(c context.Context, t *testing.T) (testFixture, func()) {
+	if tq.GetTestable(c) == nil {
+		panic("internal error in app/frontend/test_common.go: in unit tests, taskqueue must be a testable implementation")
+	}
 	tf := testFixture{T: t, C: c}
 
 	mc := gomock.NewController(t)
@@ -70,6 +74,7 @@ func newTestFixtureWithContext(c context.Context, t *testing.T) (testFixture, fu
 	return tf, validate
 }
 
+// TestingContext returns a context suitable for unit tests.
 func testingContext() context.Context {
 	c := gaetesting.TestingContextWithAppID("dev~infra-crosskylabadmin")
 	c = config.Use(c, &config.Config{
