@@ -28,7 +28,7 @@ const cipdBuildDeps = `
 infra/3pp/tools/git/${platform} version:2@2.39.2.chromium.11
 @Subdir cc/${os=windows}
 golang/third_party/llvm-mingw-msvcrt/${platform} latest
-` + cipdToolDeps
+`
 
 // CIPD tool dependencies only. Used for coordinator builds.
 const cipdToolDeps = `
@@ -60,10 +60,11 @@ func installTools(ctx context.Context, inputs *golangbuildpb.Inputs, experiments
 		if _, bestEffortPlatform := experiments["luci.best_effort_platform"]; !bestEffortPlatform {
 			cipdDeps = cipdBuildDeps
 		}
-		cipdDeps += `
+
+		cipdDeps += cipdToolDeps + fmt.Sprintf(`
 @Subdir go_bootstrap
-golang/bootstrap-go/${platform} ` + inputs.BootstrapVersion + `
-`
+golang/bootstrap-go/${platform} %v
+`, inputs.BootstrapVersion)
 		if inputs.XcodeVersion != "" {
 			gotXCode = true
 			cipdDeps += cipdXCodeDep
