@@ -1,0 +1,134 @@
+{
+  "plans": [
+    {
+      "name": "cros",
+      "critical_actions": [
+        {
+          "name": "dut_state_needs_deploy",
+          "exec_name": "dut_state_needs_deploy",
+          "run_control": "RERUN_AFTER_RECOVERY"
+        },
+        {
+          "name": "check_host_info",
+          "docs": [
+            "Check basic info for deployment."
+          ],
+          "dependencies": [
+            {
+              "name": "dut_has_name",
+              "exec_name": "dut_has_name",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "dut_has_board_name",
+              "exec_name": "dut_has_board_name",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "dut_has_model_name",
+              "exec_name": "dut_has_model_name",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            }
+          ],
+          "exec_name": "sample_pass",
+          "run_control": "RERUN_AFTER_RECOVERY"
+        },
+        {
+          "name": "Device is SSHable",
+          "docs": [
+            "This verifier checks whether the host is accessible over ssh."
+          ],
+          "exec_name": "cros_ssh",
+          "timeout": "30s",
+          "run_control": "ALWAYS_RUN"
+        },
+        {
+          "name": "Update inventory info",
+          "docs": [
+            "Updating device info in inventory."
+          ],
+          "dependencies": [
+            {
+              "name": "cros_ssh",
+              "exec_name": "cros_ssh",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "cros_update_hwid_to_inventory",
+              "exec_name": "cros_update_hwid_to_inventory",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "cros_update_serial_number_inventory",
+              "exec_name": "cros_update_serial_number_inventory",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            }
+          ],
+          "exec_name": "sample_pass",
+          "run_control": "RERUN_AFTER_RECOVERY"
+        },
+        {
+          "name": "install_stable_os",
+          "docs": [
+            "Install stable OS on the device.",
+            "Labstation will be rebooted to make it ready for use."
+          ],
+          "conditions": [
+            {
+              "name": "has_stable_version_cros_image",
+              "exec_name": "has_stable_version_cros_image",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "cros_not_on_stable_version",
+              "exec_name": "cros_not_on_stable_version",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            }
+          ],
+          "exec_name": "cros_provision",
+          "timeout": "1h0m0s",
+          "run_control": "RERUN_AFTER_RECOVERY"
+        },
+        {
+          "name": "remove_reboot_requests",
+          "docs": [
+            "Remove reboot request flag files."
+          ],
+          "exec_name": "cros_remove_all_reboot_request",
+          "allow_fail_after_recovery": true,
+          "run_control": "RERUN_AFTER_RECOVERY"
+        },
+        {
+          "name": "Update provisioned info",
+          "docs": [
+            "Update OS version for provision info."
+          ],
+          "exec_name": "cros_update_provision_info",
+          "run_control": "RERUN_AFTER_RECOVERY"
+        },
+        {
+          "name": "validate_rpm",
+          "docs": [
+            "Validate and update rpm_state.",
+            "The execs is not ready yet."
+          ],
+          "conditions": [
+            {
+              "name": "has_rpm_info",
+              "exec_name": "has_rpm_info",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            }
+          ],
+          "exec_name": "rpm_audit_without_battery",
+          "timeout": "10m0s",
+          "run_control": "RERUN_AFTER_RECOVERY"
+        },
+        {
+          "name": "dut_state_ready",
+          "exec_name": "dut_state_ready",
+          "run_control": "RERUN_AFTER_RECOVERY"
+        }
+      ]
+    }
+  ]
+}
