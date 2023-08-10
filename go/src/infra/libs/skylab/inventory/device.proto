@@ -406,7 +406,7 @@ message HardwareCapabilities {
 //
 // Keep sorted by field names.
 //
-// NEXT TAG: 42
+// NEXT TAG: 43
 message Peripherals {
   optional bool audio_board = 6;
   // The DUT is housed in an audio box to record / replay audio for audio
@@ -441,6 +441,16 @@ message Peripherals {
     AUDIOBOX_JACKPLUGGER_NOT_APPLICABLE = 3;
   }
   optional AudioBoxJackPlugger audiobox_jackplugger_state = 35;
+
+  // copy from peripheral.proto
+  // NEXT TAG: 3
+  enum TRRSType {
+    TRRS_TYPE_UNSPECIFIED = 0;
+    TRRS_TYPE_CTIA = 1;
+    TRRS_TYPE_OMTP = 2;
+  }
+  // Indicate the type of audio cable
+  optional TRRSType trrs_type = 42;
 
   // Whether DUT WiFi antenna is connected conductively or OTA.
   optional bool conductive = 11;
