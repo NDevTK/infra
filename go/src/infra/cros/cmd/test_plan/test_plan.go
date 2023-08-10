@@ -27,6 +27,7 @@ import (
 	"infra/cros/internal/shared"
 	"infra/cros/internal/testplan"
 	"infra/cros/internal/testplan/computemapping"
+	"infra/cros/internal/testplan/coveragerules"
 	"infra/cros/internal/testplan/migrationstatus"
 	"infra/cros/lib/buildbucket"
 	"infra/tools/dirmd"
@@ -103,16 +104,21 @@ func app(authOpts auth.Options) *cli.Application {
 		Title:   "A tool to work with SourceTestPlan protos in DIR_METADATA files.",
 		Context: logCfg.Use,
 		Commands: []*subcommands.Command{
+			subcommands.CmdHelp,
+
+			subcommands.Section("Test Planning"),
 			cmdRelevantPlans(authOpts),
 			cmdValidate(authOpts),
 			cmdMigrationStatus(authOpts),
-			cmdChromeosDirmdUpdateRun(authOpts),
 
+			subcommands.Section("Authentication"),
 			authcli.SubcommandInfo(authOpts, "auth-info", false),
 			authcli.SubcommandLogin(authOpts, "auth-login", false),
 			authcli.SubcommandLogout(authOpts, "auth-logout", false),
 
-			subcommands.CmdHelp,
+			subcommands.Section("BigQuery Updates (Advanced, Internal use only)"),
+			cmdChromeosDirmdUpdateRun(authOpts),
+			cmdChromeosCoverageRulesUpdateRun(authOpts),
 		},
 	}
 }
@@ -496,88 +502,43 @@ func (r *migrationStatusRun) run(ctx context.Context, args []string) error {
 	return nil
 }
 
-func cmdChromeosDirmdUpdateRun(authOpts auth.Options) *subcommands.Command {
-	return &subcommands.Command{
-		UsageLine: "chromeos-dirmd-update -table project.dataset.table -crossrcroot ~/chromiumos",
-		ShortDesc: text.Doc(`
-			Computes all DIR_METADATA mappings in a ChromeOS checkout and
-			uploads them to a BigQuery table.
-		`),
-		LongDesc: text.Doc(`
-			Computes all DIR_METADATA mappings in a ChromeOS checkout and
-			uploads them to a BigQuery table.
-
-			Each mapping is converted to a DirBQRow proto for upload to
-			BigQuery. Mappings are computed using the local ChromeOS manifest
-			and checkout, i.e. any local changes will be reflected in the
-			uploaded rows.
-
-			Note that previous rows for a given directory are not deleted, but
-			each execution uses the same partition_time field in every row.
-			Thus, queries will often want to use a view of the table that only
-			shows rows from the most recent partition.
-		`),
-		CommandRun: func() subcommands.CommandRun {
-			r := &chromeosDirmdUpdateRun{}
-			r.addSharedFlags(authOpts)
-
-			r.Flags.StringVar(
-				&r.crosSrcRoot,
-				"crossrcroot",
-				"",
-				text.Doc(`
-					Path to the root of a ChromeOS checkout to use. The manifest
-					and DIR_METADATA in the checkout will be used to compute the
-					uploaded rows. Required.
-				`),
-			)
-			r.Flags.StringVar(
-				&r.tableRef,
-				"table",
-				"",
-				text.Doc(`
-					BigQuery table to upload to, in the form
-					<project>.<dataset>.<table>. Required. The table will be
-					created if it doesn't already exist, and the schema will be
-					updated if it doesn't match the DirBQRow schema.
-				`),
-			)
-			r.Flags.DurationVar(
-				&r.expiration,
-				"expiration",
-				time.Hour*24*90,
-				text.Doc(`
-					The expiration on the rows uploaded during execution,
-					see https://cloud.google.com/bigquery/docs/managing-partitioned-tables#partition-expiration.
-					Defaults to 90 days.
-				`),
-			)
-
-			return r
-		},
-		Advanced: true,
-	}
-}
-
-type chromeosDirmdUpdateRun struct {
+// bqUpdateRun embeds baseTestPlanRun and implements flags shared across
+// commands that update BigQuery, such as table and expiration flags.
+// It should be embedded in another struct that implements Run() for a specific
+// command.
+type bqUpdateRun struct {
 	baseTestPlanRun
-	crosSrcRoot string
-	expiration  time.Duration
-	tableRef    string
+	expiration time.Duration
+	tableRef   string
 }
 
-func (r *chromeosDirmdUpdateRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
-	ctx := cli.GetContext(a, r, env)
-	return errToCode(a, r.run(ctx))
+// addBigQueryFlags defines flags for updating BigQuery.
+func (r *bqUpdateRun) addBigQueryFlags() {
+	r.Flags.StringVar(
+		&r.tableRef,
+		"table",
+		"",
+		text.Doc(`
+			BigQuery table to upload to, in the form
+			<project>.<dataset>.<table>. Required. The table will be
+			created if it doesn't already exist, and the schema will be
+			updated if needed.
+		`),
+	)
+	r.Flags.DurationVar(
+		&r.expiration,
+		"expiration",
+		time.Hour*24*90,
+		text.Doc(`
+			The expiration on the rows uploaded during execution,
+			see https://cloud.google.com/bigquery/docs/managing-partitioned-tables#partition-expiration.
+			Defaults to 90 days.
+		`),
+	)
 }
 
-// validateFlagsAndGetClientAndTable validates flags and parses tableRef to
-// build a bigquery Client and Table.
-func (r *chromeosDirmdUpdateRun) validateFlagsAndGetClientAndTable(ctx context.Context) (*bigquery.Client, *bigquery.Table, error) {
-	if r.crosSrcRoot == "" {
-		return nil, nil, errors.New("-crossrcroot must be set")
-	}
-
+// getClientAndTable parses tableRef to get a bigquery client and table.
+func (r *bqUpdateRun) getClientAndTable(ctx context.Context) (*bigquery.Client, *bigquery.Table, error) {
 	components := strings.Split(r.tableRef, ".")
 	if len(components) != 3 {
 		return nil, nil, fmt.Errorf("-table must be in the form <project>.<dataset>.<table>, got %q", r.tableRef)
@@ -602,8 +563,98 @@ func (r *chromeosDirmdUpdateRun) validateFlagsAndGetClientAndTable(ctx context.C
 	return client, table, nil
 }
 
+// ensureTableAndUploadRows ensures that the table exists and updates its schema
+// if needed, then uploads rows.
+func ensureTableAndUploadRows[M protov2.Message](
+	ctx context.Context,
+	client *bigquery.Client,
+	table *bigquery.Table,
+	tableMetadata *bigquery.TableMetadata,
+	rows []M,
+) error {
+	logging.Infof(ctx, "ensuring table exists and updating schema")
+	if err := lucibq.EnsureTable(ctx, table, tableMetadata); err != nil {
+		return err
+	}
+
+	logging.Infof(ctx, "uploading rows to BigQuery.")
+	uploader := lucibq.NewUploader(ctx, client, table.DatasetID, table.TableID)
+	// Uploader takes v1 proto rows, so we need to convert DirBQRow to
+	// MessageV1.
+	v1Rows := make([]proto.Message, len(rows))
+	for i, row := range rows {
+		v1Rows[i] = proto.MessageV1(row)
+	}
+	return uploader.Put(ctx, v1Rows...)
+}
+
+func cmdChromeosDirmdUpdateRun(authOpts auth.Options) *subcommands.Command {
+	return &subcommands.Command{
+		UsageLine: "chromeos-dirmd-update -table project.dataset.table -crossrcroot ~/chromiumos",
+		ShortDesc: text.Doc(`
+			Computes all DIR_METADATA mappings in a ChromeOS checkout and
+			uploads them to a BigQuery table.
+		`),
+		LongDesc: text.Doc(`
+			Computes all DIR_METADATA mappings in a ChromeOS checkout and
+			uploads them to a BigQuery table.
+
+			Each mapping is converted to a DirBQRow proto for upload to
+			BigQuery. Mappings are computed using the local ChromeOS manifest
+			and checkout, i.e. any local changes will be reflected in the
+			uploaded rows.
+
+			Note that previous rows for a given directory are not deleted, but
+			each execution uses the same partition_time field in every row.
+			Thus, queries will often want to use a view of the table that only
+			shows rows from the most recent partition.
+		`),
+		CommandRun: func() subcommands.CommandRun {
+			r := &chromeosDirmdUpdateRun{}
+			r.addSharedFlags(authOpts)
+			r.addBigQueryFlags()
+
+			r.Flags.StringVar(
+				&r.crosSrcRoot,
+				"crossrcroot",
+				"",
+				text.Doc(`
+					Path to the root of a ChromeOS checkout to use. The manifest
+					and DIR_METADATA in the checkout will be used to compute the
+					uploaded rows. Required.
+				`),
+			)
+
+			return r
+		},
+		Advanced: true,
+	}
+}
+
+type chromeosDirmdUpdateRun struct {
+	bqUpdateRun
+	crosSrcRoot string
+}
+
+func (r *chromeosDirmdUpdateRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+	ctx := cli.GetContext(a, r, env)
+	return errToCode(a, r.run(ctx))
+}
+
+func (r *chromeosDirmdUpdateRun) validateFlags(ctx context.Context) error {
+	if r.crosSrcRoot == "" {
+		return errors.New("-crossrcroot must be set")
+	}
+
+	return nil
+}
+
 func (r *chromeosDirmdUpdateRun) run(ctx context.Context) error {
-	client, table, err := r.validateFlagsAndGetClientAndTable(ctx)
+	if err := r.validateFlags(ctx); err != nil {
+		return err
+	}
+
+	client, table, err := r.getClientAndTable(ctx)
 	if err != nil {
 		return err
 	}
@@ -626,27 +677,111 @@ func (r *chromeosDirmdUpdateRun) run(ctx context.Context) error {
 		return err
 	}
 
-	logging.Infof(ctx, "ensuring table exists and updating schema")
-	tableMetadata := &bigquery.TableMetadata{
-		Schema: schema,
-		TimePartitioning: &bigquery.TimePartitioning{
-			Field:      "partition_time",
-			Expiration: r.expiration,
+	return ensureTableAndUploadRows(ctx, client, table,
+		&bigquery.TableMetadata{
+			Schema: schema,
+			TimePartitioning: &bigquery.TimePartitioning{
+				Expiration: r.expiration,
+				Field:      "partition_time",
+			},
 		},
+		rows,
+	)
+}
+
+func cmdChromeosCoverageRulesUpdateRun(authOpts auth.Options) *subcommands.Command {
+	return &subcommands.Command{
+		UsageLine: "chromeos-coverage-rules-update -table project.dataset.table -generateddir ./generated",
+		ShortDesc: text.Doc(`
+			Reads all of the generated CoverageRule jsonprotos in a directory
+			and uploads them to a BigQuery table.
+		`),
+		LongDesc: text.Doc(`
+			Reads all of the generated CoverageRule jsonprotos in a directory
+			and uploads them to a BigQuery table.
+
+			Each CoverageRule is converted to a CoverageRuleBqRow proto for
+			upload to BigQuery.  The currently generated CoverageRules in the local
+			checkout are used, i.e. any local changes will be reflected in the
+			uploaded rows.
+
+			Note that previous rows for a given directory are not deleted, but
+			each execution uses the same partition_time field in every row.
+			Thus, queries will often want to use a view of the table that only
+			shows rows from the most recent partition.
+		`),
+		CommandRun: func() subcommands.CommandRun {
+			r := &chromeosCoverageRulesUpdateRun{}
+			r.addSharedFlags(authOpts)
+			r.addBigQueryFlags()
+
+			r.Flags.StringVar(&r.generatedDir,
+				"generateddir",
+				"",
+				text.Doc(`
+					Directory containing lists of CoverageRules to upload. Every
+					file in the dir is assumed to be a JSON list of CoverageRule
+					jsonprotos (note that there is no proto message representing
+					a list of CoverageRules, i.e. the generated files should not
+					actually be valid jsonproto, but they should be a JSON list
+					of valid jsonproto). If any file in -generateddir isn't a
+					list of CoverageRules, parsing will fail and no rows will be
+					uploaded.
+				`),
+			)
+
+			return r
+		},
+		Advanced: true,
 	}
-	if err := lucibq.EnsureTable(ctx, table, tableMetadata); err != nil {
+}
+
+type chromeosCoverageRulesUpdateRun struct {
+	bqUpdateRun
+	generatedDir string
+}
+
+func (r *chromeosCoverageRulesUpdateRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+	ctx := cli.GetContext(a, r, env)
+	return errToCode(a, r.run(ctx))
+}
+
+func (r *chromeosCoverageRulesUpdateRun) validateFlags(ctx context.Context) error {
+	if r.generatedDir == "" {
+		return errors.New("-generateddir must be set")
+	}
+
+	return nil
+}
+
+func (r *chromeosCoverageRulesUpdateRun) run(ctx context.Context) error {
+	if err := r.validateFlags(ctx); err != nil {
 		return err
 	}
 
-	logging.Infof(ctx, "uploading rows to BigQuery.")
-	uploader := lucibq.NewUploader(ctx, client, table.DatasetID, table.TableID)
-	// Uploader takes v1 proto rows, so we need to convert DirBQRow to
-	// MessageV1.
-	v1Rows := make([]proto.Message, len(rows))
-	for i, row := range rows {
-		v1Rows[i] = proto.MessageV1(row)
+	client, table, err := r.getClientAndTable(ctx)
+	if err != nil {
+		return err
 	}
-	return uploader.Put(ctx, v1Rows...)
+
+	rows, err := coveragerules.ReadGenerated(ctx, r.generatedDir)
+	if err != nil {
+		return err
+	}
+
+	schema, err := coveragerules.GenerateCoverageRuleBqRowSchema()
+	if err != nil {
+		return err
+	}
+
+	return ensureTableAndUploadRows(ctx, client, table,
+		&bigquery.TableMetadata{
+			Schema: schema,
+			TimePartitioning: &bigquery.TimePartitioning{
+				Expiration: r.expiration,
+			},
+		},
+		rows)
 }
 
 func main() {

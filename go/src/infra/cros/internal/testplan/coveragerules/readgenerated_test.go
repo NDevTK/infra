@@ -104,3 +104,9 @@ func TestReadGeneratedErrors(t *testing.T) {
 	assert.ErrorContains(t, err,
 		fmt.Sprintf("failed to unmarshal JSON in %s", filepath.FromSlash("../testdata/bad_generated_rules/test.txt")))
 }
+
+func TestGenerateCoverageRuleBqRowSchema(t *testing.T) {
+	_, err := coveragerules.GenerateCoverageRuleBqRowSchema()
+	// Just assert error is nil, it is difficult to validate the entire schema.
+	assert.NilError(t, err)
+}
