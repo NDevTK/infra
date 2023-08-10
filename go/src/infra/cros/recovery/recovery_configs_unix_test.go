@@ -35,6 +35,24 @@ var configTreeChangesCases = []struct {
 		"cros_repair.json",
 	},
 	{
+		"CROS Audit RPM",
+		tlw.DUTSetupTypeCros,
+		buildbucket.AuditRPM,
+		"cros_audit_rpm.json",
+	},
+	{
+		"CROS Audit Storage",
+		tlw.DUTSetupTypeCros,
+		buildbucket.AuditStorage,
+		"cros_audit_storage.json",
+	},
+	{
+		"CROS Audit USB stick",
+		tlw.DUTSetupTypeCros,
+		buildbucket.AuditUSB,
+		"cros_audit_usb_stick.json",
+	},
+	{
 		"Android AutoRepair",
 		tlw.DUTSetupTypeAndroid,
 		buildbucket.Recovery,
