@@ -130,15 +130,15 @@ var exceptions = []suiteFilter{
 	},
 	{
 		suiteName:  "bvt-tast-cq-hw",
-		expiration: time.Date(2023, time.August, 10, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2023, time.August, 17, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "bvt-tast-criticalstaging",
-		expiration: time.Date(2023, time.August, 10, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2023, time.August, 17, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "bvt-tast-informational",
-		expiration: time.Date(2023, time.August, 10, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2023, time.August, 17, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "bvt-tast-cq-non-arc-non-crostini",
