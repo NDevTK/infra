@@ -5,5 +5,5 @@
 // Package api contains the lab_inventory service API.
 package api
 
-//go:generate cproto -proto-path ../../../../../../go.chromium.org/chromiumos/infra/proto/src
+//go:generate cproto -proto-path ../../../../../../go.chromium.org/chromiumos/infra/proto/src -proto-path ../../../../../..
 //go:generate svcdec -type InventoryServer
