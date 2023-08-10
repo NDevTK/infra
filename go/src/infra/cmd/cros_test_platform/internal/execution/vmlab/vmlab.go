@@ -16,18 +16,24 @@ const (
 	testRunnerGceBuilderName  = "test_runner_gce"
 )
 
+// TODO(b/274006123) make this configurable.
+// For MVP, we only check boards as tests are manually mapped to boards.
+// http://shortn/_f7B59IyUau We assume a suite sent to a supported board can be
+// fully or partially executed on VM.
+var supportedBoards = []string{"betty"}
+
 // ShouldRun decides if VM test flow should be triggered based on eligibility
 // and required data from the original Skylab request.
 func ShouldRun(args *request.Args) bool {
 	return args.CFTIsEnabled &&
 		args.CFTTestRunnerRequest != nil &&
-		eligible(args.SchedulableLabels.GetSelfServePools(), args.Experiments)
+		eligible(args.SchedulableLabels.GetBoard(), args.Experiments)
 }
 
 // eligible checks board name and experiments to decide if preconditions are met
 // to run test on VMLab.
-func eligible(pool []string, experiments []string) bool {
-	return isExperimentEnabled(experiments) && isSupportedPool(pool)
+func eligible(board string, experiments []string) bool {
+	return isExperimentEnabled(experiments) && isSupportedBoard(board)
 }
 
 // ConvertBuilderName converts the original test runner name to corresponding
@@ -43,12 +49,12 @@ func ConvertBuilderName(originalBuilderName string) string {
 	return strings.Replace(originalBuilderName, testRunnerBuilderName, testRunnerGceBuilderName, 1)
 }
 
-func isSupportedPool(pool []string) bool {
-	if pool == nil {
+func isSupportedBoard(board string) bool {
+	if supportedBoards == nil || board == "" {
 		return false
 	}
-	for _, e := range pool {
-		if e == "vmlab" {
+	for _, e := range supportedBoards {
+		if board == e {
 			return true
 		}
 	}
