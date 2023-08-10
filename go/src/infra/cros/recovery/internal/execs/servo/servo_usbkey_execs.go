@@ -117,60 +117,29 @@ func servoUSBKeyIsDetectedExec(ctx context.Context, info *execs.ExecInfo) error 
 }
 
 // createMetricsRecordWhenNewUSBDriveFound creates new metrics record when new USB drive detected in setup.
-// TODO(gregorynisbet): refactor to reduce copy of better interaction with metrics, avoid passing info.
 func createMetricsRecordWhenNewUSBDriveFound(ctx context.Context, info *execs.ExecInfo, newDevice *labApi.UsbDrive) {
-	action := &metrics.Action{
-		// TODO(b/248635230): When karte' Search API is capable of taking in asset tag,
-		// change the query to use asset tag instead of using hostname.
-		Hostname:   info.GetDut().Name,
-		ActionKind: metrics.USBDriveDetectionKind,
-		StartTime:  newDevice.GetFirstSeenTime().AsTime(),
-		StopTime:   newDevice.GetFirstSeenTime().AsTime(),
-		Status:     metrics.ActionStatusSuccess,
-		Observations: []*metrics.Observation{
-			metrics.NewStringObservation("serial", newDevice.GetSerial()),
-			metrics.NewStringObservation("manufacturer", newDevice.GetManufacturer()),
-		},
-	}
-	if info.GetMetrics() == nil {
-		log.Debugf(ctx, "Skip creating metrics with %#v", action)
-		return
-	}
-	if err := info.GetMetrics().Create(ctx, action); err != nil {
-		log.Debugf(ctx, "Fail to create metrics for %q: %s", action.ActionKind, err)
-	}
+	metric := info.NewMetric(metrics.USBDriveDetectionKind)
+	metric.Status = metrics.ActionStatusSuccess
+	metric.Observations = append(metric.Observations,
+		metrics.NewStringObservation("serial", newDevice.GetSerial()),
+		metrics.NewStringObservation("manufacturer", newDevice.GetManufacturer()),
+	)
 }
 
 // createMetricsRecordWhenUSBDriveReplaced creates new metrics record when detected that device was replace or removed from setup.
-// TODO(b/248635230): refactor to reduce copy of better interaction with metrics, avoid passing info.
 func createMetricsRecordWhenUSBDriveReplaced(ctx context.Context, info *execs.ExecInfo, oldDevice, newDevice *labApi.UsbDrive) {
 	newTime := time.Now()
 	if newDevice != nil {
 		newTime = newDevice.GetFirstSeenTime().AsTime()
 	}
 	duration := newTime.Sub(oldDevice.GetFirstSeenTime().AsTime())
-	if info.GetMetrics() == nil {
-		return
-	}
-	action := &metrics.Action{
-		Hostname:   info.GetDut().Name,
-		ActionKind: metrics.USBDriveReplacedKind,
-		StartTime:  newTime,
-		StopTime:   newTime,
-		Status:     metrics.ActionStatusSuccess,
-		Observations: []*metrics.Observation{
-			metrics.NewStringObservation("serial", oldDevice.GetSerial()),
-			metrics.NewStringObservation("manufacturer", oldDevice.GetManufacturer()),
-			metrics.NewStringObservation("duration", duration.String()),
-		},
-	}
-	if info.GetMetrics() == nil {
-		log.Debugf(ctx, "Skip creating metrics with %#v", action)
-		return
-	}
-	if err := info.GetMetrics().Create(ctx, action); err != nil {
-		log.Debugf(ctx, "Fail to create metrics for %q: %s", action.ActionKind, err)
-	}
+	metric := info.NewMetric(metrics.USBDriveReplacedKind)
+	metric.Status = metrics.ActionStatusSuccess
+	metric.Observations = append(metric.Observations,
+		metrics.NewStringObservation("serial", oldDevice.GetSerial()),
+		metrics.NewStringObservation("manufacturer", oldDevice.GetManufacturer()),
+		metrics.NewStringObservation("duration", duration.String()),
+	)
 }
 
 // servoUpdateUSBKeyHistoryExec will update the inventory record for the servo's usbkey stick with the latest information.

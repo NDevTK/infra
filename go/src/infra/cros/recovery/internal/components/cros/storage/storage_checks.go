@@ -429,6 +429,10 @@ func isItTimeToRunRWBadblocks(ctx context.Context, metric metrics.Metrics, hostn
 
 // isItTimeToRunBadBlocks determines whether it is time to execute the badblocks check.
 func isItTimeToRunBadBlocks(ctx context.Context, metric metrics.Metrics, hostname, metricsKind string, days int) error {
+	if metric == nil {
+		log.Debugf(ctx, "Is It Time To Run Badblocks: metrics not provided. Allowed to run!")
+		return nil
+	}
 	karteQuery := &metrics.Query{
 		Hostname:   hostname,
 		ActionKind: metricsKind,

@@ -43,24 +43,6 @@ func sampleSleepExec(ctx context.Context, i *ExecInfo) error {
 	return nil
 }
 
-// sampleMetricsActionExec sends a record to the metrics service.
-func sampleMetricsActionExec(ctx context.Context, info *ExecInfo) error {
-	// TODO(gregorynisbet): Add more interesting information to the action.
-	action := &metrics.Action{}
-	if info.GetMetrics() != nil {
-		action.StartTime = time.Now()
-		// TODO(gregorynisbet): Don't ignore error here.
-		info.GetMetrics().Create(ctx, action)
-		// TODO(gregorynisbet): Uncomment when update lands.
-		// defer func() { args.Metrics.Update(ctx, action) }()
-	}
-	// Test sleeping for one nanosecond. This will cause time to pass, which will be
-	// reflected in the action and therefore in Karte.
-	time.Sleep(time.Nanosecond)
-	action.StopTime = time.Now()
-	return nil
-}
-
 // sampleDemoMetricsExec creates and sends a metrics data as example.
 // The Action create abservation and custom action as part of execution.
 func sampleDemoMetricsExec(ctx context.Context, info *ExecInfo) error {
@@ -140,7 +122,6 @@ func init() {
 	Register("sample_pass", samplePassActionExec)
 	Register("sample_fail", sampleFailActionExec)
 	Register("sample_sleep", sampleSleepExec)
-	Register("sample_metrics_action", sampleMetricsActionExec)
 	Register("sample_metrics", sampleDemoMetricsExec)
 	Register("sample_step_summary_markdown", sampleStepSummaryMarkdownExec)
 	Register("sample_step_logs", sampleStepLogExec)

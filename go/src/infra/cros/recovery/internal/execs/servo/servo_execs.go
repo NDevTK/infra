@@ -597,33 +597,6 @@ func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (er
 	if filteredServoBoard != "" {
 		log.Debugf(ctx, "Servo update servo firmware: Only updating board: %q's firmware", filteredServoBoard)
 	}
-	startTime := time.Now()
-	if info.GetMetrics() != nil {
-		// Record fw flash time to karte.
-		action := &metrics.Action{
-			// TODO(b/248635230): When karte' Search API is capable of taking in asset tag,
-			// change the query to use asset tag instead of using hostname.
-			Hostname:   info.GetDut().Name,
-			ActionKind: metrics.ServoFwUpdateKind,
-			StartTime:  startTime,
-			Status:     metrics.ActionStatusSuccess,
-		}
-		if mErr := info.GetMetrics().Create(ctx, action); mErr != nil {
-			log.Debugf(ctx, "Servo update servo firmware: cannot create karte metrics: %s", mErr)
-		}
-		defer func() {
-			// Recoding servo fw update to Karte.
-			log.Debugf(ctx, "Updating servo firmware information in Karte.")
-			action.StopTime = time.Now()
-			if err != nil {
-				action.Status = metrics.ActionStatusFail
-				action.FailReason = err.Error()
-			}
-			if mErr := info.GetMetrics().Create(ctx, action); mErr != nil {
-				log.Debugf(ctx, "Servo update servo firmware: Metrics error: %s", mErr)
-			}
-		}()
-	}
 	run := info.NewRunner(sh.GetName())
 	if forceUpdate {
 		// If requested to update with force then first attempt will be with force
@@ -644,32 +617,17 @@ func servoUpdateServoFirmwareExec(ctx context.Context, info *execs.ExecInfo) (er
 		return errors.Reason("servo update servo firmware: the number of servo devices to update fw is 0").Err()
 	}
 	failDevices := UpdateDevicesServoFw(ctx, run, req, devicesToUpdate)
-	if info.GetMetrics() != nil {
-		// Record every single servo device fw flash time as well as status to karte.
-		for _, device := range devicesToUpdate {
-			eachBoardAction := &metrics.Action{
-				// TODO(b/248635230): When karte' Search API is capable of taking in asset tag,
-				// change the query to use asset tag instead of using hostname.
-				Hostname:   info.GetDut().Name,
-				ActionKind: fmt.Sprintf(metrics.ServoEachDeviceFwUpdateKind, device.Type),
-				StartTime:  startTime,
-				StopTime:   time.Now(),
-				Status:     metrics.ActionStatusSuccess,
-			}
-			var isDeviceUpdateFailed bool
-			for _, failDevice := range failDevices {
-				if failDevice.Type == device.Type {
-					isDeviceUpdateFailed = true
-					break
-				}
-			}
-			if isDeviceUpdateFailed {
-				eachBoardAction.Status = metrics.ActionStatusFail
-			}
-			if mErr := info.GetMetrics().Create(ctx, eachBoardAction); mErr != nil {
-				log.Debugf(ctx, "Servo update servo firmware: cannot create karte metrics: %s", mErr)
+	// Record every single servo device fw flash time as well as status to karte.
+	for _, device := range devicesToUpdate {
+		status := metrics.ActionStatusSuccess
+		for _, failDevice := range failDevices {
+			if failDevice.GetType() == device.GetType() {
+				status = metrics.ActionStatusFail
+				break
 			}
 		}
+		observationStatusKind := fmt.Sprintf(metrics.ServoEachDeviceFwUpdateKind, device.Type)
+		info.AddObservation(metrics.NewStringObservation(observationStatusKind, string(status)))
 	}
 	if len(failDevices) != 0 {
 		sh.State = tlw.ServoHost_NEED_REPLACEMENT
