@@ -1003,6 +1003,11 @@ func (is *InventoryServerImpl) BatchCreateManualRepairRecords(ctx context.Contex
 	}, nil
 }
 
+// ListDeviceConfigs lists all device configs inventory has in datastore.
+func (is *InventoryServerImpl) ListDeviceConfigs(ctx context.Context, req *api.ListDeviceConfigsRequest) (resp *api.ListDeviceConfigsResponse, err error) {
+	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason("Not implemented").Err())
+}
+
 // parseManualRepairRecordResult parses the repair records found in the
 // datastore and converts it into a ManualRepairRecordResult. If an error
 // occurs, the error is attached to the result object and returned.

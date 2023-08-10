@@ -109,6 +109,12 @@ service Inventory {
   // BatchCreateManualRepairRecords creates multiple manual repair records in
   // datastore in batch
   rpc BatchCreateManualRepairRecords(BatchCreateManualRepairRecordsRequest) returns (BatchCreateManualRepairRecordsResponse);
+
+  // ListDeviceConfigs lists all device configs
+  //
+  // Explicitly not implementing AIP practices (https://google.aip.dev/132) due
+  // to desired deprecation of this service.
+  rpc ListDeviceConfigs(ListDeviceConfigsRequest) returns (ListDeviceConfigsResponse);
 }
 
 message ListCrosDevicesLabConfigRequest {
@@ -371,4 +377,13 @@ message ManualRepairRecordResult {
   // success or failure. The message content is mainly used for UI side logic.
   string error_msg = 3;
   string hostname = 4;
+}
+
+// ListDeviceConfigsRequest is currently empty as we do not support pagination
+// or filtering due to desired deprecation of this service.
+message ListDeviceConfigsRequest {}
+
+// ListDeviceConfigsResponse contains a list of all device configs.
+message ListDeviceConfigsResponse {
+  repeated device.Config device_configs = 1;
 }

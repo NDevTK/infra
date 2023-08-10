@@ -399,3 +399,20 @@ func (s *DecoratedInventory) BatchCreateManualRepairRecords(ctx context.Context,
 	}
 	return
 }
+
+func (s *DecoratedInventory) ListDeviceConfigs(ctx context.Context, req *ListDeviceConfigsRequest) (rsp *ListDeviceConfigsResponse, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "ListDeviceConfigs", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.ListDeviceConfigs(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "ListDeviceConfigs", rsp, err)
+	}
+	return
+}

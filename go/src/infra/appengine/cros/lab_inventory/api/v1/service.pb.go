@@ -2610,6 +2610,94 @@ func (x *ManualRepairRecordResult) GetHostname() string {
 	return ""
 }
 
+// ListDeviceConfigsRequest is currently empty as we do not support pagination
+// or filtering due to desired deprecation of this service.
+type ListDeviceConfigsRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *ListDeviceConfigsRequest) Reset() {
+	*x = ListDeviceConfigsRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[47]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ListDeviceConfigsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListDeviceConfigsRequest) ProtoMessage() {}
+
+func (x *ListDeviceConfigsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[47]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListDeviceConfigsRequest.ProtoReflect.Descriptor instead.
+func (*ListDeviceConfigsRequest) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{47}
+}
+
+// ListDeviceConfigsResponse contains a list of all device configs.
+type ListDeviceConfigsResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	DeviceConfigs []*device.Config `protobuf:"bytes,1,rep,name=device_configs,json=deviceConfigs,proto3" json:"device_configs,omitempty"`
+}
+
+func (x *ListDeviceConfigsResponse) Reset() {
+	*x = ListDeviceConfigsResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[48]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ListDeviceConfigsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListDeviceConfigsResponse) ProtoMessage() {}
+
+func (x *ListDeviceConfigsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[48]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListDeviceConfigsResponse.ProtoReflect.Descriptor instead.
+func (*ListDeviceConfigsResponse) Descriptor() ([]byte, []int) {
+	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{48}
+}
+
+func (x *ListDeviceConfigsResponse) GetDeviceConfigs() []*device.Config {
+	if x != nil {
+		return x.DeviceConfigs
+	}
+	return nil
+}
+
 type ListCrosDevicesLabConfigResponse_LabConfig struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2623,7 +2711,7 @@ type ListCrosDevicesLabConfigResponse_LabConfig struct {
 func (x *ListCrosDevicesLabConfigResponse_LabConfig) Reset() {
 	*x = ListCrosDevicesLabConfigResponse_LabConfig{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[47]
+		mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[49]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2636,7 +2724,7 @@ func (x *ListCrosDevicesLabConfigResponse_LabConfig) String() string {
 func (*ListCrosDevicesLabConfigResponse_LabConfig) ProtoMessage() {}
 
 func (x *ListCrosDevicesLabConfigResponse_LabConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[47]
+	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[49]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2685,7 +2773,7 @@ type DeleteCrosDevicesRequest_Reason struct {
 func (x *DeleteCrosDevicesRequest_Reason) Reset() {
 	*x = DeleteCrosDevicesRequest_Reason{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[49]
+		mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[51]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2698,7 +2786,7 @@ func (x *DeleteCrosDevicesRequest_Reason) String() string {
 func (*DeleteCrosDevicesRequest_Reason) ProtoMessage() {}
 
 func (x *DeleteCrosDevicesRequest_Reason) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[49]
+	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[51]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2740,7 +2828,7 @@ type DeviceProperty_Rpm struct {
 func (x *DeviceProperty_Rpm) Reset() {
 	*x = DeviceProperty_Rpm{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[50]
+		mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[52]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2753,7 +2841,7 @@ func (x *DeviceProperty_Rpm) String() string {
 func (*DeviceProperty_Rpm) ProtoMessage() {}
 
 func (x *DeviceProperty_Rpm) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[50]
+	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[52]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3171,7 +3259,14 @@ var file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDesc = []byt
 	0x09, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x5f, 0x6d, 0x73, 0x67, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x08, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x4d, 0x73, 0x67, 0x12, 0x1a, 0x0a, 0x08, 0x68, 0x6f,
 	0x73, 0x74, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x68, 0x6f,
-	0x73, 0x74, 0x6e, 0x61, 0x6d, 0x65, 0x32, 0x9a, 0x11, 0x0a, 0x09, 0x49, 0x6e, 0x76, 0x65, 0x6e,
+	0x73, 0x74, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x1a, 0x0a, 0x18, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x65,
+	0x76, 0x69, 0x63, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x22, 0x52, 0x0a, 0x19, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65,
+	0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x35, 0x0a, 0x0e, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x5f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67,
+	0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65,
+	0x2e, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x0d, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x43,
+	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x32, 0xfa, 0x11, 0x0a, 0x09, 0x49, 0x6e, 0x76, 0x65, 0x6e,
 	0x74, 0x6f, 0x72, 0x79, 0x12, 0x5a, 0x0a, 0x0e, 0x41, 0x64, 0x64, 0x43, 0x72, 0x6f, 0x73, 0x44,
 	0x65, 0x76, 0x69, 0x63, 0x65, 0x73, 0x12, 0x20, 0x2e, 0x69, 0x6e, 0x76, 0x65, 0x6e, 0x74, 0x6f,
 	0x72, 0x79, 0x2e, 0x41, 0x64, 0x64, 0x43, 0x72, 0x6f, 0x73, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65,
@@ -3309,6 +3404,12 @@ var file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDesc = []byt
 	0x1a, 0x31, 0x2e, 0x69, 0x6e, 0x76, 0x65, 0x6e, 0x74, 0x6f, 0x72, 0x79, 0x2e, 0x42, 0x61, 0x74,
 	0x63, 0x68, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x4d, 0x61, 0x6e, 0x75, 0x61, 0x6c, 0x52, 0x65,
 	0x70, 0x61, 0x69, 0x72, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x5e, 0x0a, 0x11, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x65, 0x76, 0x69, 0x63,
+	0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x12, 0x23, 0x2e, 0x69, 0x6e, 0x76, 0x65, 0x6e,
+	0x74, 0x6f, 0x72, 0x79, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x43,
+	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e,
+	0x69, 0x6e, 0x76, 0x65, 0x6e, 0x74, 0x6f, 0x72, 0x79, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x65,
+	0x76, 0x69, 0x63, 0x65, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
 	0x6e, 0x73, 0x65, 0x42, 0x2f, 0x5a, 0x2d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70,
 	0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x5f,
 	0x69, 0x6e, 0x76, 0x65, 0x6e, 0x74, 0x6f, 0x72, 0x79, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31,
@@ -3327,7 +3428,7 @@ func file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP() 
 	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescData
 }
 
-var file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 51)
+var file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 53)
 var file_infra_appengine_cros_lab_inventory_api_v1_service_proto_goTypes = []interface{}{
 	(*ListCrosDevicesLabConfigRequest)(nil),            // 0: inventory.ListCrosDevicesLabConfigRequest
 	(*ListCrosDevicesLabConfigResponse)(nil),           // 1: inventory.ListCrosDevicesLabConfigResponse
@@ -3376,118 +3477,123 @@ var file_infra_appengine_cros_lab_inventory_api_v1_service_proto_goTypes = []int
 	(*BatchCreateManualRepairRecordsRequest)(nil),      // 44: inventory.BatchCreateManualRepairRecordsRequest
 	(*BatchCreateManualRepairRecordsResponse)(nil),     // 45: inventory.BatchCreateManualRepairRecordsResponse
 	(*ManualRepairRecordResult)(nil),                   // 46: inventory.ManualRepairRecordResult
-	(*ListCrosDevicesLabConfigResponse_LabConfig)(nil), // 47: inventory.ListCrosDevicesLabConfigResponse.LabConfig
-	nil,                                      // 48: inventory.DeviceConfigsExistsResponse.ExistsEntry
-	(*DeleteCrosDevicesRequest_Reason)(nil),  // 49: inventory.DeleteCrosDevicesRequest.Reason
-	(*DeviceProperty_Rpm)(nil),               // 50: inventory.DeviceProperty.Rpm
-	(*device.ConfigId)(nil),                  // 51: device.ConfigId
-	(*lab.ChromeOSDevice)(nil),               // 52: lab.ChromeOSDevice
-	(*device.Config)(nil),                    // 53: device.Config
-	(*manufacturing.Config)(nil),             // 54: manufacturing.Config
-	(*lab.DutState)(nil),                     // 55: lab.DutState
-	(*lab.ServoTopology)(nil),                // 56: lab.ServoTopology
-	(*protos.ChopsAsset)(nil),                // 57: fleet.ChopsAsset
-	(*protos1.DeviceManualRepairRecord)(nil), // 58: inventory.libs.protos.DeviceManualRepairRecord
-	(*timestamppb.Timestamp)(nil),            // 59: google.protobuf.Timestamp
+	(*ListDeviceConfigsRequest)(nil),                   // 47: inventory.ListDeviceConfigsRequest
+	(*ListDeviceConfigsResponse)(nil),                  // 48: inventory.ListDeviceConfigsResponse
+	(*ListCrosDevicesLabConfigResponse_LabConfig)(nil), // 49: inventory.ListCrosDevicesLabConfigResponse.LabConfig
+	nil,                                      // 50: inventory.DeviceConfigsExistsResponse.ExistsEntry
+	(*DeleteCrosDevicesRequest_Reason)(nil),  // 51: inventory.DeleteCrosDevicesRequest.Reason
+	(*DeviceProperty_Rpm)(nil),               // 52: inventory.DeviceProperty.Rpm
+	(*device.ConfigId)(nil),                  // 53: device.ConfigId
+	(*lab.ChromeOSDevice)(nil),               // 54: lab.ChromeOSDevice
+	(*device.Config)(nil),                    // 55: device.Config
+	(*manufacturing.Config)(nil),             // 56: manufacturing.Config
+	(*lab.DutState)(nil),                     // 57: lab.DutState
+	(*lab.ServoTopology)(nil),                // 58: lab.ServoTopology
+	(*protos.ChopsAsset)(nil),                // 59: fleet.ChopsAsset
+	(*protos1.DeviceManualRepairRecord)(nil), // 60: inventory.libs.protos.DeviceManualRepairRecord
+	(*timestamppb.Timestamp)(nil),            // 61: google.protobuf.Timestamp
 }
 var file_infra_appengine_cros_lab_inventory_api_v1_service_proto_depIdxs = []int32{
-	47, // 0: inventory.ListCrosDevicesLabConfigResponse.lab_configs:type_name -> inventory.ListCrosDevicesLabConfigResponse.LabConfig
-	51, // 1: inventory.DeviceConfigsExistsRequest.configIds:type_name -> device.ConfigId
-	48, // 2: inventory.DeviceConfigsExistsResponse.exists:type_name -> inventory.DeviceConfigsExistsResponse.ExistsEntry
-	52, // 3: inventory.AddCrosDevicesRequest.devices:type_name -> lab.ChromeOSDevice
+	49, // 0: inventory.ListCrosDevicesLabConfigResponse.lab_configs:type_name -> inventory.ListCrosDevicesLabConfigResponse.LabConfig
+	53, // 1: inventory.DeviceConfigsExistsRequest.configIds:type_name -> device.ConfigId
+	50, // 2: inventory.DeviceConfigsExistsResponse.exists:type_name -> inventory.DeviceConfigsExistsResponse.ExistsEntry
+	54, // 3: inventory.AddCrosDevicesRequest.devices:type_name -> lab.ChromeOSDevice
 	4,  // 4: inventory.AddCrosDevicesResponse.passed_devices:type_name -> inventory.DeviceOpResult
 	4,  // 5: inventory.AddCrosDevicesResponse.failed_devices:type_name -> inventory.DeviceOpResult
 	5,  // 6: inventory.GetCrosDevicesRequest.ids:type_name -> inventory.DeviceID
-	52, // 7: inventory.ExtendedDeviceData.lab_config:type_name -> lab.ChromeOSDevice
-	53, // 8: inventory.ExtendedDeviceData.device_config:type_name -> device.Config
-	54, // 9: inventory.ExtendedDeviceData.manufacturing_config:type_name -> manufacturing.Config
+	54, // 7: inventory.ExtendedDeviceData.lab_config:type_name -> lab.ChromeOSDevice
+	55, // 8: inventory.ExtendedDeviceData.device_config:type_name -> device.Config
+	56, // 9: inventory.ExtendedDeviceData.manufacturing_config:type_name -> manufacturing.Config
 	9,  // 10: inventory.ExtendedDeviceData.hwid_data:type_name -> inventory.HwidData
-	55, // 11: inventory.ExtendedDeviceData.dut_state:type_name -> lab.DutState
+	57, // 11: inventory.ExtendedDeviceData.dut_state:type_name -> lab.DutState
 	10, // 12: inventory.GetCrosDevicesResponse.data:type_name -> inventory.ExtendedDeviceData
 	4,  // 13: inventory.GetCrosDevicesResponse.failed_devices:type_name -> inventory.DeviceOpResult
-	52, // 14: inventory.UpdateLabstationsResponse.labstation:type_name -> lab.ChromeOSDevice
-	55, // 15: inventory.UpdateDutsStatusRequest.states:type_name -> lab.DutState
+	54, // 14: inventory.UpdateLabstationsResponse.labstation:type_name -> lab.ChromeOSDevice
+	57, // 15: inventory.UpdateDutsStatusRequest.states:type_name -> lab.DutState
 	15, // 16: inventory.UpdateDutsStatusRequest.dut_metas:type_name -> inventory.DutMeta
 	16, // 17: inventory.UpdateDutsStatusRequest.lab_metas:type_name -> inventory.LabMeta
-	56, // 18: inventory.LabMeta.servo_topology:type_name -> lab.ServoTopology
+	58, // 18: inventory.LabMeta.servo_topology:type_name -> lab.ServoTopology
 	4,  // 19: inventory.UpdateDutsStatusResponse.updated_devices:type_name -> inventory.DeviceOpResult
 	4,  // 20: inventory.UpdateDutsStatusResponse.failed_devices:type_name -> inventory.DeviceOpResult
-	52, // 21: inventory.UpdateCrosDevicesSetupRequest.devices:type_name -> lab.ChromeOSDevice
+	54, // 21: inventory.UpdateCrosDevicesSetupRequest.devices:type_name -> lab.ChromeOSDevice
 	4,  // 22: inventory.UpdateCrosDevicesSetupResponse.updated_devices:type_name -> inventory.DeviceOpResult
 	4,  // 23: inventory.UpdateCrosDevicesSetupResponse.failed_devices:type_name -> inventory.DeviceOpResult
 	5,  // 24: inventory.DeleteCrosDevicesRequest.ids:type_name -> inventory.DeviceID
-	49, // 25: inventory.DeleteCrosDevicesRequest.reason:type_name -> inventory.DeleteCrosDevicesRequest.Reason
+	51, // 25: inventory.DeleteCrosDevicesRequest.reason:type_name -> inventory.DeleteCrosDevicesRequest.Reason
 	4,  // 26: inventory.DeleteCrosDevicesResponse.removed_devices:type_name -> inventory.DeviceOpResult
 	4,  // 27: inventory.DeleteCrosDevicesResponse.failed_devices:type_name -> inventory.DeviceOpResult
-	50, // 28: inventory.DeviceProperty.rpm:type_name -> inventory.DeviceProperty.Rpm
+	52, // 28: inventory.DeviceProperty.rpm:type_name -> inventory.DeviceProperty.Rpm
 	22, // 29: inventory.BatchUpdateDevicesRequest.device_properties:type_name -> inventory.DeviceProperty
-	57, // 30: inventory.AssetResult.asset:type_name -> fleet.ChopsAsset
-	57, // 31: inventory.AssetList.asset:type_name -> fleet.ChopsAsset
+	59, // 30: inventory.AssetResult.asset:type_name -> fleet.ChopsAsset
+	59, // 31: inventory.AssetList.asset:type_name -> fleet.ChopsAsset
 	25, // 32: inventory.AssetResponse.passed:type_name -> inventory.AssetResult
 	25, // 33: inventory.AssetResponse.failed:type_name -> inventory.AssetResult
 	29, // 34: inventory.AssetIDResponse.passed:type_name -> inventory.AssetIDResult
 	29, // 35: inventory.AssetIDResponse.failed:type_name -> inventory.AssetIDResult
-	58, // 36: inventory.GetDeviceManualRepairRecordResponse.device_repair_record:type_name -> inventory.libs.protos.DeviceManualRepairRecord
-	58, // 37: inventory.CreateDeviceManualRepairRecordRequest.device_repair_record:type_name -> inventory.libs.protos.DeviceManualRepairRecord
-	58, // 38: inventory.UpdateDeviceManualRepairRecordRequest.device_repair_record:type_name -> inventory.libs.protos.DeviceManualRepairRecord
-	58, // 39: inventory.ListManualRepairRecordsResponse.repair_records:type_name -> inventory.libs.protos.DeviceManualRepairRecord
-	51, // 40: inventory.GetDeviceConfigRequest.configId:type_name -> device.ConfigId
+	60, // 36: inventory.GetDeviceManualRepairRecordResponse.device_repair_record:type_name -> inventory.libs.protos.DeviceManualRepairRecord
+	60, // 37: inventory.CreateDeviceManualRepairRecordRequest.device_repair_record:type_name -> inventory.libs.protos.DeviceManualRepairRecord
+	60, // 38: inventory.UpdateDeviceManualRepairRecordRequest.device_repair_record:type_name -> inventory.libs.protos.DeviceManualRepairRecord
+	60, // 39: inventory.ListManualRepairRecordsResponse.repair_records:type_name -> inventory.libs.protos.DeviceManualRepairRecord
+	53, // 40: inventory.GetDeviceConfigRequest.configId:type_name -> device.ConfigId
 	46, // 41: inventory.BatchGetManualRepairRecordsResponse.repair_records:type_name -> inventory.ManualRepairRecordResult
-	58, // 42: inventory.BatchCreateManualRepairRecordsRequest.repair_records:type_name -> inventory.libs.protos.DeviceManualRepairRecord
+	60, // 42: inventory.BatchCreateManualRepairRecordsRequest.repair_records:type_name -> inventory.libs.protos.DeviceManualRepairRecord
 	46, // 43: inventory.BatchCreateManualRepairRecordsResponse.repair_records:type_name -> inventory.ManualRepairRecordResult
-	58, // 44: inventory.ManualRepairRecordResult.repair_record:type_name -> inventory.libs.protos.DeviceManualRepairRecord
-	52, // 45: inventory.ListCrosDevicesLabConfigResponse.LabConfig.config:type_name -> lab.ChromeOSDevice
-	55, // 46: inventory.ListCrosDevicesLabConfigResponse.LabConfig.state:type_name -> lab.DutState
-	59, // 47: inventory.ListCrosDevicesLabConfigResponse.LabConfig.updated_time:type_name -> google.protobuf.Timestamp
-	6,  // 48: inventory.Inventory.AddCrosDevices:input_type -> inventory.AddCrosDevicesRequest
-	8,  // 49: inventory.Inventory.GetCrosDevices:input_type -> inventory.GetCrosDevicesRequest
-	14, // 50: inventory.Inventory.UpdateDutsStatus:input_type -> inventory.UpdateDutsStatusRequest
-	18, // 51: inventory.Inventory.UpdateCrosDevicesSetup:input_type -> inventory.UpdateCrosDevicesSetupRequest
-	12, // 52: inventory.Inventory.UpdateLabstations:input_type -> inventory.UpdateLabstationsRequest
-	20, // 53: inventory.Inventory.DeleteCrosDevices:input_type -> inventory.DeleteCrosDevicesRequest
-	23, // 54: inventory.Inventory.BatchUpdateDevices:input_type -> inventory.BatchUpdateDevicesRequest
-	26, // 55: inventory.Inventory.AddAssets:input_type -> inventory.AssetList
-	28, // 56: inventory.Inventory.GetAssets:input_type -> inventory.AssetIDList
-	28, // 57: inventory.Inventory.DeleteAssets:input_type -> inventory.AssetIDList
-	26, // 58: inventory.Inventory.UpdateAssets:input_type -> inventory.AssetList
-	2,  // 59: inventory.Inventory.DeviceConfigsExists:input_type -> inventory.DeviceConfigsExistsRequest
-	31, // 60: inventory.Inventory.GetDeviceManualRepairRecord:input_type -> inventory.GetDeviceManualRepairRecordRequest
-	33, // 61: inventory.Inventory.CreateDeviceManualRepairRecord:input_type -> inventory.CreateDeviceManualRepairRecordRequest
-	35, // 62: inventory.Inventory.UpdateDeviceManualRepairRecord:input_type -> inventory.UpdateDeviceManualRepairRecordRequest
-	0,  // 63: inventory.Inventory.ListCrosDevicesLabConfig:input_type -> inventory.ListCrosDevicesLabConfigRequest
-	37, // 64: inventory.Inventory.ListManualRepairRecords:input_type -> inventory.ListManualRepairRecordsRequest
-	39, // 65: inventory.Inventory.GetManufacturingConfig:input_type -> inventory.GetManufacturingConfigRequest
-	40, // 66: inventory.Inventory.GetDeviceConfig:input_type -> inventory.GetDeviceConfigRequest
-	41, // 67: inventory.Inventory.GetHwidData:input_type -> inventory.GetHwidDataRequest
-	42, // 68: inventory.Inventory.BatchGetManualRepairRecords:input_type -> inventory.BatchGetManualRepairRecordsRequest
-	44, // 69: inventory.Inventory.BatchCreateManualRepairRecords:input_type -> inventory.BatchCreateManualRepairRecordsRequest
-	7,  // 70: inventory.Inventory.AddCrosDevices:output_type -> inventory.AddCrosDevicesResponse
-	11, // 71: inventory.Inventory.GetCrosDevices:output_type -> inventory.GetCrosDevicesResponse
-	17, // 72: inventory.Inventory.UpdateDutsStatus:output_type -> inventory.UpdateDutsStatusResponse
-	19, // 73: inventory.Inventory.UpdateCrosDevicesSetup:output_type -> inventory.UpdateCrosDevicesSetupResponse
-	13, // 74: inventory.Inventory.UpdateLabstations:output_type -> inventory.UpdateLabstationsResponse
-	21, // 75: inventory.Inventory.DeleteCrosDevices:output_type -> inventory.DeleteCrosDevicesResponse
-	24, // 76: inventory.Inventory.BatchUpdateDevices:output_type -> inventory.BatchUpdateDevicesResponse
-	27, // 77: inventory.Inventory.AddAssets:output_type -> inventory.AssetResponse
-	27, // 78: inventory.Inventory.GetAssets:output_type -> inventory.AssetResponse
-	30, // 79: inventory.Inventory.DeleteAssets:output_type -> inventory.AssetIDResponse
-	27, // 80: inventory.Inventory.UpdateAssets:output_type -> inventory.AssetResponse
-	3,  // 81: inventory.Inventory.DeviceConfigsExists:output_type -> inventory.DeviceConfigsExistsResponse
-	32, // 82: inventory.Inventory.GetDeviceManualRepairRecord:output_type -> inventory.GetDeviceManualRepairRecordResponse
-	34, // 83: inventory.Inventory.CreateDeviceManualRepairRecord:output_type -> inventory.CreateDeviceManualRepairRecordResponse
-	36, // 84: inventory.Inventory.UpdateDeviceManualRepairRecord:output_type -> inventory.UpdateDeviceManualRepairRecordResponse
-	1,  // 85: inventory.Inventory.ListCrosDevicesLabConfig:output_type -> inventory.ListCrosDevicesLabConfigResponse
-	38, // 86: inventory.Inventory.ListManualRepairRecords:output_type -> inventory.ListManualRepairRecordsResponse
-	54, // 87: inventory.Inventory.GetManufacturingConfig:output_type -> manufacturing.Config
-	53, // 88: inventory.Inventory.GetDeviceConfig:output_type -> device.Config
-	9,  // 89: inventory.Inventory.GetHwidData:output_type -> inventory.HwidData
-	43, // 90: inventory.Inventory.BatchGetManualRepairRecords:output_type -> inventory.BatchGetManualRepairRecordsResponse
-	45, // 91: inventory.Inventory.BatchCreateManualRepairRecords:output_type -> inventory.BatchCreateManualRepairRecordsResponse
-	70, // [70:92] is the sub-list for method output_type
-	48, // [48:70] is the sub-list for method input_type
-	48, // [48:48] is the sub-list for extension type_name
-	48, // [48:48] is the sub-list for extension extendee
-	0,  // [0:48] is the sub-list for field type_name
+	60, // 44: inventory.ManualRepairRecordResult.repair_record:type_name -> inventory.libs.protos.DeviceManualRepairRecord
+	55, // 45: inventory.ListDeviceConfigsResponse.device_configs:type_name -> device.Config
+	54, // 46: inventory.ListCrosDevicesLabConfigResponse.LabConfig.config:type_name -> lab.ChromeOSDevice
+	57, // 47: inventory.ListCrosDevicesLabConfigResponse.LabConfig.state:type_name -> lab.DutState
+	61, // 48: inventory.ListCrosDevicesLabConfigResponse.LabConfig.updated_time:type_name -> google.protobuf.Timestamp
+	6,  // 49: inventory.Inventory.AddCrosDevices:input_type -> inventory.AddCrosDevicesRequest
+	8,  // 50: inventory.Inventory.GetCrosDevices:input_type -> inventory.GetCrosDevicesRequest
+	14, // 51: inventory.Inventory.UpdateDutsStatus:input_type -> inventory.UpdateDutsStatusRequest
+	18, // 52: inventory.Inventory.UpdateCrosDevicesSetup:input_type -> inventory.UpdateCrosDevicesSetupRequest
+	12, // 53: inventory.Inventory.UpdateLabstations:input_type -> inventory.UpdateLabstationsRequest
+	20, // 54: inventory.Inventory.DeleteCrosDevices:input_type -> inventory.DeleteCrosDevicesRequest
+	23, // 55: inventory.Inventory.BatchUpdateDevices:input_type -> inventory.BatchUpdateDevicesRequest
+	26, // 56: inventory.Inventory.AddAssets:input_type -> inventory.AssetList
+	28, // 57: inventory.Inventory.GetAssets:input_type -> inventory.AssetIDList
+	28, // 58: inventory.Inventory.DeleteAssets:input_type -> inventory.AssetIDList
+	26, // 59: inventory.Inventory.UpdateAssets:input_type -> inventory.AssetList
+	2,  // 60: inventory.Inventory.DeviceConfigsExists:input_type -> inventory.DeviceConfigsExistsRequest
+	31, // 61: inventory.Inventory.GetDeviceManualRepairRecord:input_type -> inventory.GetDeviceManualRepairRecordRequest
+	33, // 62: inventory.Inventory.CreateDeviceManualRepairRecord:input_type -> inventory.CreateDeviceManualRepairRecordRequest
+	35, // 63: inventory.Inventory.UpdateDeviceManualRepairRecord:input_type -> inventory.UpdateDeviceManualRepairRecordRequest
+	0,  // 64: inventory.Inventory.ListCrosDevicesLabConfig:input_type -> inventory.ListCrosDevicesLabConfigRequest
+	37, // 65: inventory.Inventory.ListManualRepairRecords:input_type -> inventory.ListManualRepairRecordsRequest
+	39, // 66: inventory.Inventory.GetManufacturingConfig:input_type -> inventory.GetManufacturingConfigRequest
+	40, // 67: inventory.Inventory.GetDeviceConfig:input_type -> inventory.GetDeviceConfigRequest
+	41, // 68: inventory.Inventory.GetHwidData:input_type -> inventory.GetHwidDataRequest
+	42, // 69: inventory.Inventory.BatchGetManualRepairRecords:input_type -> inventory.BatchGetManualRepairRecordsRequest
+	44, // 70: inventory.Inventory.BatchCreateManualRepairRecords:input_type -> inventory.BatchCreateManualRepairRecordsRequest
+	47, // 71: inventory.Inventory.ListDeviceConfigs:input_type -> inventory.ListDeviceConfigsRequest
+	7,  // 72: inventory.Inventory.AddCrosDevices:output_type -> inventory.AddCrosDevicesResponse
+	11, // 73: inventory.Inventory.GetCrosDevices:output_type -> inventory.GetCrosDevicesResponse
+	17, // 74: inventory.Inventory.UpdateDutsStatus:output_type -> inventory.UpdateDutsStatusResponse
+	19, // 75: inventory.Inventory.UpdateCrosDevicesSetup:output_type -> inventory.UpdateCrosDevicesSetupResponse
+	13, // 76: inventory.Inventory.UpdateLabstations:output_type -> inventory.UpdateLabstationsResponse
+	21, // 77: inventory.Inventory.DeleteCrosDevices:output_type -> inventory.DeleteCrosDevicesResponse
+	24, // 78: inventory.Inventory.BatchUpdateDevices:output_type -> inventory.BatchUpdateDevicesResponse
+	27, // 79: inventory.Inventory.AddAssets:output_type -> inventory.AssetResponse
+	27, // 80: inventory.Inventory.GetAssets:output_type -> inventory.AssetResponse
+	30, // 81: inventory.Inventory.DeleteAssets:output_type -> inventory.AssetIDResponse
+	27, // 82: inventory.Inventory.UpdateAssets:output_type -> inventory.AssetResponse
+	3,  // 83: inventory.Inventory.DeviceConfigsExists:output_type -> inventory.DeviceConfigsExistsResponse
+	32, // 84: inventory.Inventory.GetDeviceManualRepairRecord:output_type -> inventory.GetDeviceManualRepairRecordResponse
+	34, // 85: inventory.Inventory.CreateDeviceManualRepairRecord:output_type -> inventory.CreateDeviceManualRepairRecordResponse
+	36, // 86: inventory.Inventory.UpdateDeviceManualRepairRecord:output_type -> inventory.UpdateDeviceManualRepairRecordResponse
+	1,  // 87: inventory.Inventory.ListCrosDevicesLabConfig:output_type -> inventory.ListCrosDevicesLabConfigResponse
+	38, // 88: inventory.Inventory.ListManualRepairRecords:output_type -> inventory.ListManualRepairRecordsResponse
+	56, // 89: inventory.Inventory.GetManufacturingConfig:output_type -> manufacturing.Config
+	55, // 90: inventory.Inventory.GetDeviceConfig:output_type -> device.Config
+	9,  // 91: inventory.Inventory.GetHwidData:output_type -> inventory.HwidData
+	43, // 92: inventory.Inventory.BatchGetManualRepairRecords:output_type -> inventory.BatchGetManualRepairRecordsResponse
+	45, // 93: inventory.Inventory.BatchCreateManualRepairRecords:output_type -> inventory.BatchCreateManualRepairRecordsResponse
+	48, // 94: inventory.Inventory.ListDeviceConfigs:output_type -> inventory.ListDeviceConfigsResponse
+	72, // [72:95] is the sub-list for method output_type
+	49, // [49:72] is the sub-list for method input_type
+	49, // [49:49] is the sub-list for extension type_name
+	49, // [49:49] is the sub-list for extension extendee
+	0,  // [0:49] is the sub-list for field type_name
 }
 
 func init() { file_infra_appengine_cros_lab_inventory_api_v1_service_proto_init() }
@@ -4061,7 +4167,19 @@ func file_infra_appengine_cros_lab_inventory_api_v1_service_proto_init() {
 			}
 		}
 		file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[47].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListCrosDevicesLabConfigResponse_LabConfig); i {
+			switch v := v.(*ListDeviceConfigsRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[48].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListDeviceConfigsResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4073,6 +4191,18 @@ func file_infra_appengine_cros_lab_inventory_api_v1_service_proto_init() {
 			}
 		}
 		file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[49].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListCrosDevicesLabConfigResponse_LabConfig); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[51].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DeleteCrosDevicesRequest_Reason); i {
 			case 0:
 				return &v.state
@@ -4084,7 +4214,7 @@ func file_infra_appengine_cros_lab_inventory_api_v1_service_proto_init() {
 				return nil
 			}
 		}
-		file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[50].Exporter = func(v interface{}, i int) interface{} {
+		file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[52].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DeviceProperty_Rpm); i {
 			case 0:
 				return &v.state
@@ -4107,7 +4237,7 @@ func file_infra_appengine_cros_lab_inventory_api_v1_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   51,
+			NumMessages:   53,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
@@ -4189,6 +4319,11 @@ type InventoryClient interface {
 	// BatchCreateManualRepairRecords creates multiple manual repair records in
 	// datastore in batch
 	BatchCreateManualRepairRecords(ctx context.Context, in *BatchCreateManualRepairRecordsRequest, opts ...grpc.CallOption) (*BatchCreateManualRepairRecordsResponse, error)
+	// ListDeviceConfigs lists all device configs
+	//
+	// Explicitly not implementing AIP practices (https://google.aip.dev/132) due
+	// to desired deprecation of this service.
+	ListDeviceConfigs(ctx context.Context, in *ListDeviceConfigsRequest, opts ...grpc.CallOption) (*ListDeviceConfigsResponse, error)
 }
 type inventoryPRPCClient struct {
 	client *prpc.Client
@@ -4390,6 +4525,15 @@ func (c *inventoryPRPCClient) BatchGetManualRepairRecords(ctx context.Context, i
 func (c *inventoryPRPCClient) BatchCreateManualRepairRecords(ctx context.Context, in *BatchCreateManualRepairRecordsRequest, opts ...grpc.CallOption) (*BatchCreateManualRepairRecordsResponse, error) {
 	out := new(BatchCreateManualRepairRecordsResponse)
 	err := c.client.Call(ctx, "inventory.Inventory", "BatchCreateManualRepairRecords", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *inventoryPRPCClient) ListDeviceConfigs(ctx context.Context, in *ListDeviceConfigsRequest, opts ...grpc.CallOption) (*ListDeviceConfigsResponse, error) {
+	out := new(ListDeviceConfigsResponse)
+	err := c.client.Call(ctx, "inventory.Inventory", "ListDeviceConfigs", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -4611,6 +4755,15 @@ func (c *inventoryClient) BatchCreateManualRepairRecords(ctx context.Context, in
 	return out, nil
 }
 
+func (c *inventoryClient) ListDeviceConfigs(ctx context.Context, in *ListDeviceConfigsRequest, opts ...grpc.CallOption) (*ListDeviceConfigsResponse, error) {
+	out := new(ListDeviceConfigsResponse)
+	err := c.cc.Invoke(ctx, "/inventory.Inventory/ListDeviceConfigs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // InventoryServer is the server API for Inventory service.
 type InventoryServer interface {
 	// Deprecated: Do not use.
@@ -4669,6 +4822,11 @@ type InventoryServer interface {
 	// BatchCreateManualRepairRecords creates multiple manual repair records in
 	// datastore in batch
 	BatchCreateManualRepairRecords(context.Context, *BatchCreateManualRepairRecordsRequest) (*BatchCreateManualRepairRecordsResponse, error)
+	// ListDeviceConfigs lists all device configs
+	//
+	// Explicitly not implementing AIP practices (https://google.aip.dev/132) due
+	// to desired deprecation of this service.
+	ListDeviceConfigs(context.Context, *ListDeviceConfigsRequest) (*ListDeviceConfigsResponse, error)
 }
 
 // UnimplementedInventoryServer can be embedded to have forward compatible implementations.
@@ -4740,6 +4898,9 @@ func (*UnimplementedInventoryServer) BatchGetManualRepairRecords(context.Context
 }
 func (*UnimplementedInventoryServer) BatchCreateManualRepairRecords(context.Context, *BatchCreateManualRepairRecordsRequest) (*BatchCreateManualRepairRecordsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchCreateManualRepairRecords not implemented")
+}
+func (*UnimplementedInventoryServer) ListDeviceConfigs(context.Context, *ListDeviceConfigsRequest) (*ListDeviceConfigsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListDeviceConfigs not implemented")
 }
 
 func RegisterInventoryServer(s prpc.Registrar, srv InventoryServer) {
@@ -5142,6 +5303,24 @@ func _Inventory_BatchCreateManualRepairRecords_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Inventory_ListDeviceConfigs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDeviceConfigsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InventoryServer).ListDeviceConfigs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/inventory.Inventory/ListDeviceConfigs",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InventoryServer).ListDeviceConfigs(ctx, req.(*ListDeviceConfigsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Inventory_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "inventory.Inventory",
 	HandlerType: (*InventoryServer)(nil),
@@ -5233,6 +5412,10 @@ var _Inventory_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BatchCreateManualRepairRecords",
 			Handler:    _Inventory_BatchCreateManualRepairRecords_Handler,
+		},
+		{
+			MethodName: "ListDeviceConfigs",
+			Handler:    _Inventory_ListDeviceConfigs_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
