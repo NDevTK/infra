@@ -79,7 +79,6 @@ func main() {
 		stats = &testResourcesServer{
 			Client: client,
 		}
-		srv.Options.InternalRequestTimeout = time.Hour
 		cron.RegisterHandler("update-daily-summary", updateDailySummary)
 
 		// All RPC APIs.
@@ -112,13 +111,21 @@ func updateDailySummary(ctx context.Context) error {
 		return err
 	}
 
-	// Update today and yesterday. Average cores for instance will need the
-	// total day seconds included to finalize it's value
-	err = stats.Client.UpdateSummary(ctx, cDate.AddDays(-1), cDate)
-	if err != nil {
-		logging.Errorf(ctx, "Failed updating current date: %s", err)
-		return err
-	}
+	go func() {
+		deadlineCtx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Hour*2))
+		defer cancel()
+		startTime := time.Now()
+
+		// Update today and yesterday. Average cores for instance will need the
+		// total day seconds included to finalize it's value
+		err = stats.Client.UpdateSummary(deadlineCtx, cDate.AddDays(-1), cDate)
+		updateRuntime := time.Since(startTime)
+		if err != nil {
+			logging.Errorf(deadlineCtx, "Failed updating current date: %s which took %s seconds", err, updateRuntime.Seconds())
+		} else {
+			logging.Infof(deadlineCtx, "Succeeded updating current date: %s which took %s seconds", err, updateRuntime.Seconds())
+		}
+	}()
 	return nil
 }
 
@@ -161,9 +168,9 @@ func (s *testResourcesServer) UpdateMetricsTable(ctx context.Context, req *api.U
 		defer cancel()
 		err = s.Client.UpdateSummary(deadlineCtx, fromDate, toDate)
 		if err != nil {
-			logging.Errorf(ctx, "Failed backfilling days %s - %s: %s", fromDate, toDate, err)
+			logging.Errorf(deadlineCtx, "Failed backfilling days %s - %s: %s", fromDate, toDate, err)
 		} else {
-			logging.Infof(ctx, "Succeeded backfilling days %s - %s: %s", fromDate, toDate, err)
+			logging.Infof(deadlineCtx, "Succeeded backfilling days %s - %s: %s", fromDate, toDate, err)
 		}
 	}()
 	return &api.UpdateMetricsTableResponse{}, nil
