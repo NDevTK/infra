@@ -106,6 +106,12 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 		dims["label-audiobox_jackplugger_state"] = []string{labJackPluggerState[plen:]}
 	}
 
+	if invTRRSType := p.GetTrrsType(); invTRRSType != inventory.Peripherals_TRRS_TYPE_UNSPECIFIED {
+		labTRRSType := invTRRSType.String() // TRRS_TYPE_{ CTIA, OMTP, ... }
+		const plen = len("TRRS_TYPE_")
+		dims["label-trrs_type"] = []string{labTRRSType[plen:]}
+	}
+
 	if hmrState := p.GetHmrState(); hmrState != inventory.PeripheralState_UNKNOWN {
 		if labSState, ok := lab.PeripheralState_name[int32(hmrState)]; ok {
 			dims["label-hmr_state"] = []string{labSState}
@@ -197,6 +203,15 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 			p.AudioboxJackpluggerState = &invJackPluggerState
 		}
 		delete(d, "label-audiobox_jackplugger_state")
+	}
+
+	if labTRRSTypeName, ok := getLastStringValue(d, "label-trrs_type"); ok {
+		labTRRSType := "TRRS_TYPE_" + labTRRSTypeName
+		if invTRRSVal, ok := inventory.Peripherals_TRRSType_value[labTRRSType]; ok {
+			invTRRSType := inventory.Peripherals_TRRSType(invTRRSVal)
+			p.TrrsType = &invTRRSType
+		}
+		delete(d, "label-trrs_type")
 	}
 
 	if hmrStateName, ok := getLastStringValue(d, "label-hmr_state"); ok {

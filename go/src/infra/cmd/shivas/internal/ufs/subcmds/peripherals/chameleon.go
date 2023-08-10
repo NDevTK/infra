@@ -48,6 +48,8 @@ func chamCmd(mode action) *subcommands.Command {
 			c.Flags.StringVar(&c.rpmHostname, "rpm", "", "hostname for rpm connected to chameleon")
 			c.Flags.StringVar(&c.rpmOutlet, "rpm-outlet", "", "outlet number of rpm connected to chameleon")
 			c.Flags.BoolVar(&c.audioBoard, "audio-board", false, "audio board chameleon")
+			c.Flags.StringVar(&c.trrsTypeName, "trrs", "", "type of trrs, ie. CTIA or OMTP")
+
 			return &c
 		},
 	}
@@ -66,9 +68,11 @@ type manageChamCmd struct {
 	chameleonTypes []lab.ChameleonType
 	typesMap       map[lab.ChameleonType]bool
 
-	rpmHostname string
-	rpmOutlet   string
-	audioBoard  bool
+	rpmHostname  string
+	rpmOutlet    string
+	audioBoard   bool
+	trrsTypeName string
+	trrsType     lab.Chameleon_TRRSType
 
 	mode action
 }
@@ -155,8 +159,9 @@ func (c *manageChamCmd) newCham(current *lab.Chameleon) (*lab.Chameleon, error) 
 }
 
 const (
-	errEmptyType     = "empty type"
-	errDuplicateType = "duplicate type specified"
+	errEmptyType       = "empty type"
+	errDuplicateType   = "duplicate type specified"
+	errInvalidTRRSType = "invalid TRRS type specified"
 )
 
 // cleanAndValidateFlags returns an error with the result of all validations. It strips whitespaces
@@ -207,6 +212,26 @@ func (c *manageChamCmd) cleanAndValidateFlags() error {
 	}
 	c.chameleonTypes = types
 
+	if c.trrsTypeName != "" {
+
+		c.trrsTypeName = strings.ToUpper(c.trrsTypeName)
+
+		if trrsVal, ok := lab.Chameleon_TRRSType_value["TRRS_TYPE_"+c.trrsTypeName]; ok {
+			c.trrsType = lab.Chameleon_TRRSType(trrsVal)
+		} else {
+			errStrs = append(
+				errStrs,
+				fmt.Sprintf(
+					"%s (%s), only supports (%s)",
+					errInvalidTRRSType,
+					c.trrsTypeName,
+					strings.Join(supportedTrrsTypes(), ","),
+				),
+			)
+		}
+
+	}
+
 	if (c.rpmHostname != "" && c.rpmOutlet == "") || (c.rpmHostname == "" && c.rpmOutlet != "") {
 		errStrs = append(errStrs, fmt.Sprintf("Need both rpm and its outlet. %s:%s is invalid", c.rpmHostname, c.rpmOutlet))
 	}
@@ -223,6 +248,7 @@ func (c *manageChamCmd) createChameleon() *lab.Chameleon {
 		Hostname:             c.hostname,
 		ChameleonPeripherals: c.chameleonTypes,
 		AudioBoard:           c.audioBoard,
+		TrrsType:             c.trrsType,
 	}
 	if c.rpmHostname != "" {
 		ret.Rpm = &lab.OSRPM{
@@ -245,4 +271,17 @@ func toChameleonType(s string) lab.ChameleonType {
 		return lab.ChameleonType(lab.ChameleonType_value[fmt.Sprintf("CHAMELEON_TYPE_%s", s)])
 	}
 	return lab.ChameleonType_CHAMELEON_TYPE_INVALID
+}
+
+func supportedTrrsTypes() []string {
+	supportedTrrsTypes := []string{}
+	const plen = len("TRRS_TYPE_")
+	for key := range lab.Chameleon_TRRSType_value {
+		key = key[plen:]
+		if key == "UNSPECIFIED" {
+			continue
+		}
+		supportedTrrsTypes = append(supportedTrrsTypes, key)
+	}
+	return supportedTrrsTypes
 }
