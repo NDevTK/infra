@@ -41,11 +41,11 @@ var exceptions = []suiteFilter{
 	},
 	{
 		suiteName:  "arc-cts-hardware",
-		expiration: time.Date(2024, time.January, 8, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 16, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "arc-cts-qual",
-		expiration: time.Date(2024, time.January, 8, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 16, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "arc-cts-qual-long",
@@ -69,7 +69,7 @@ var exceptions = []suiteFilter{
 	},
 	{
 		suiteName:  "arc-gts-qual",
-		expiration: time.Date(2024, time.January, 8, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 16, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "arc-gts-qual-long",
@@ -109,60 +109,60 @@ var exceptions = []suiteFilter{
 	},
 	{
 		suiteName:  "bvt-perbuild",
-		expiration: time.Date(2023, time.August, 10, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 16, 0, 0, 0, 0, time.UTC),
 	},
 
 	{
 		suiteName:  "bvt-tast-arc",
-		expiration: time.Date(2023, time.September, 30, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 16, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "bvt-tast-cq",
-		expiration: time.Date(2024, time.January, 8, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 16, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "bvt-tast-cq-cft-crostini",
-		expiration: time.Date(2023, time.August, 10, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 16, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "bvt-tast-cq-crostini",
-		expiration: time.Date(2023, time.August, 10, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 16, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "bvt-tast-cq-hw",
-		expiration: time.Date(2023, time.August, 17, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 16, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "bvt-tast-criticalstaging",
-		expiration: time.Date(2023, time.August, 17, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 16, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "bvt-tast-informational",
-		expiration: time.Date(2023, time.August, 17, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 16, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "bvt-tast-cq-non-arc-non-crostini",
-		expiration: time.Date(2023, time.August, 10, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 16, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "bvt-tast-parallels-informational",
-		expiration: time.Date(2023, time.August, 10, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 16, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "crosbolt_perf_nightly",
-		expiration: time.Date(2023, time.August, 10, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 16, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "crosbolt_perf_perbuild",
-		expiration: time.Date(2023, time.August, 10, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 16, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "crosbolt_perf_weekly",
-		expiration: time.Date(2023, time.August, 10, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 16, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "flex-perbuild",
-		expiration: time.Date(2024, time.January, 8, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 16, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "graphics_per-build",
@@ -182,6 +182,6 @@ var exceptions = []suiteFilter{
 	},
 	{
 		suiteName:  "chrome-uprev-hw",
-		expiration: time.Date(2024, time.January, 8, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 16, 0, 0, 0, 0, time.UTC),
 	},
 }
