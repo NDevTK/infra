@@ -6,6 +6,7 @@ package testmetrics
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -38,8 +39,7 @@ WITH base AS (
 	FROM
 		{table} AS m
 	WHERE
-		DATE(date) IN UNNEST(@dates)
-		AND component IN UNNEST(@components){fileNameClause}{filterClause}
+		DATE(date) IN UNNEST(@dates){componentsClause}{fileNameClause}{filterClause}
 	GROUP BY date, test_id
 	ORDER BY {sortMetric} {sortDirection}
 	LIMIT @page_size OFFSET @page_offset
@@ -67,8 +67,7 @@ WITH tests AS (
 	FROM
 		{table} AS m
 	WHERE
-		DATE(date) IN UNNEST(@dates)
-		AND component IN UNNEST(@components){fileNameClause}{filterClause}
+		DATE(date) IN UNNEST(@dates){componentsClause}{fileNameClause}{filterClause}
 	GROUP BY m.date, m.test_id
 ), sorted_day AS (
 	SELECT
@@ -95,8 +94,7 @@ WHERE
 	STARTS_WITH(node_name, parent || "/")
 	-- The child folders and files can't have a / after the parent's name
 	AND REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(parent) + 2), "^[^/]*$")
-	AND DATE(date) IN UNNEST(@dates)
-	AND component IN UNNEST(@components)
+	AND DATE(date) IN UNNEST(@dates){componentsClause}
 GROUP BY date, node_name
 ORDER BY is_file, {sortMetric} {sortDirection}`
 
@@ -113,8 +111,7 @@ WITH nodes AS(
 		STARTS_WITH(node_name, parent || "/")
 		-- The child folders and files can't have a / after the parent's name
 		AND REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(parent) + 2), "^[^/]*$")
-		AND DATE(date) IN UNNEST(@dates)
-		AND component IN UNNEST(@components)
+		AND DATE(date) IN UNNEST(@dates){componentsClause}
 	GROUP BY date, node_name
 ), sorted_day AS (
 	SELECT
@@ -138,8 +135,7 @@ test_summaries AS (
 	FROM {testTable}
 	WHERE
 		date IN UNNEST(@dates)
-		AND file_name IS NOT NULL
-		AND component IN UNNEST(@components)
+		AND file_name IS NOT NULL{componentsClause}
 		-- Apply the requested filter{filterClause}
 	GROUP BY file_name, date, test_id
 )
@@ -158,8 +154,7 @@ WHERE
 	STARTS_WITH(f.node_name, parent || "/")
 	-- The child folders and files can't have a / after the parent's name
 	AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(parent) + 2), "^[^/]*$")
-	AND DATE(f.date) IN UNNEST(@dates)
-	AND component IN UNNEST(@components)
+	AND DATE(f.date) IN UNNEST(@dates){componentsClause}
 GROUP BY date, node_name
 ORDER BY is_file, {sortMetric} {sortDirection}`
 
@@ -174,8 +169,7 @@ test_summaries AS (
 	FROM {testTable}
 	WHERE
 		date IN UNNEST(@dates)
-		AND file_name IS NOT NULL
-		AND component IN UNNEST(@components)
+		AND file_name IS NOT NULL{componentsClause}
 		-- Apply the requested filter{filterClause}
 	GROUP BY file_name, date, test_id
 ), node_summaries AS (
@@ -194,8 +188,7 @@ test_summaries AS (
 		STARTS_WITH(f.node_name, parent || "/")
 		-- The child folders and files can't have a / after the parent's name
 		AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(parent) + 2), "^[^/]*$")
-		AND DATE(f.date) IN UNNEST(@dates)
-		AND component IN UNNEST(@components)
+		AND DATE(f.date) IN UNNEST(@dates){componentsClause}
 	GROUP BY date, node_name
 ), sorted_day AS (
 	SELECT
@@ -245,6 +238,7 @@ var (
 		"sql/update_daily_file_metrics.sql",
 		"sql/update_weekly_file_metrics.sql",
 		"sql/update_average_cores.sql",
+		"sql/update_components.sql",
 	}
 )
 
@@ -299,7 +293,10 @@ func (c *Client) Init() error {
 
 // Lists the available monorail components
 func (c *Client) ListComponents(ctx context.Context, req *api.ListComponentsRequest) (*api.ListComponentsResponse, error) {
-	query := "SELECT DISTINCT component FROM chrome-metadata.chrome.monorail_component_owners ORDER BY component"
+	query := fmt.Sprintf(
+		"SELECT DISTINCT component FROM %s.%s.components ORDER BY component",
+		c.ProjectId,
+		c.DataSet)
 	q := c.BqClient.Query(query)
 
 	job, err := q.Run(ctx)
@@ -412,6 +409,12 @@ func (c *Client) createFetchMetricsQuery(req *api.FetchTestMetricsRequest) (*big
 		}
 	}
 
+	componentsClause := ""
+	if len(req.Components) != 0 {
+		componentsClause = `
+		AND component IN UNNEST(@components)`
+	}
+
 	replacements := []string{
 		"{metricAggregations}", strings.Join(metricAggregations, ",\n\t\t"),
 		"{metricNames}", strings.Join(metricNames, ",\n\t\t\t"),
@@ -420,6 +423,7 @@ func (c *Client) createFetchMetricsQuery(req *api.FetchTestMetricsRequest) (*big
 		"{fileNameClause}", fileNameClause,
 		"{sortMetric}", sortMetric,
 		"{sortDirection}", sortDirection,
+		"{componentsClause}", componentsClause,
 	}
 
 	r := strings.NewReplacer(replacements...)
@@ -609,6 +613,12 @@ func (c *Client) createDirectoryQuery(req *api.FetchDirectoryMetricsRequest) (*b
 		}
 	}
 
+	componentsClause := ""
+	if len(req.Components) != 0 {
+		componentsClause = `
+		AND component IN UNNEST(@components)`
+	}
+
 	replacements := []string{
 		"{metricAggregations}", strings.Join(metricAggregations, ",\n\t"),
 		"{testTable}", c.ProjectId + `.` + c.DataSet + `.` + testTable,
@@ -617,6 +627,7 @@ func (c *Client) createDirectoryQuery(req *api.FetchDirectoryMetricsRequest) (*b
 		"{fileTable}", c.ProjectId + `.` + c.DataSet + `.` + fileTable,
 		"{sortMetric}", sortMetric,
 		"{sortDirection}", sortDirection,
+		"{componentsClause}", componentsClause,
 	}
 	r := strings.NewReplacer(replacements...)
 

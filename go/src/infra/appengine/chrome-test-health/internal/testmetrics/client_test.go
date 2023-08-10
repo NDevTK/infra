@@ -123,6 +123,41 @@ SELECT
 FROM base`)
 		})
 
+		Convey("No component request", func() {
+			request.Components = []string{}
+			query, err := client.createFetchMetricsQuery(request)
+
+			So(err, ShouldBeNil)
+			So(query, ShouldNotBeNil)
+			So(query.QueryConfig.Q, ShouldResemble, `
+WITH base AS (
+	SELECT
+		m.date,
+		m.test_id,
+		ANY_VALUE(m.test_name) AS test_name,
+		ANY_VALUE(m.file_name) AS file_name,
+		SUM(num_runs) AS num_runs,
+		ARRAY_AGG(STRUCT(
+			builder AS builder,
+			bucket AS bucket,
+			test_suite AS test_suite,
+			num_runs
+			)
+		) AS variants
+	FROM
+		chrome-test-health-project.normal-dataset.daily_test_metrics AS m
+	WHERE
+		DATE(date) IN UNNEST(@dates)
+	GROUP BY date, test_id
+	ORDER BY test_id ASC
+	LIMIT @page_size OFFSET @page_offset
+)
+SELECT
+	* EXCEPT (variants),
+	(SELECT ARRAY_AGG(v ORDER BY test_id ASC) FROM UNNEST(variants) v) AS variants
+FROM base`)
+		})
+
 		Convey("Valid filename filtered request", func() {
 			request.Filter = "linux-rel blink_python_tests"
 			request.FileNames = []string{"filename.html"}
@@ -194,6 +229,54 @@ WITH tests AS (
 	WHERE
 		DATE(date) IN UNNEST(@dates)
 		AND component IN UNNEST(@components)
+		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
+		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter1)
+	GROUP BY m.date, m.test_id
+), sorted_day AS (
+	SELECT
+		test_id,
+		test_id AS rank
+	FROM tests
+	WHERE date = @sort_date
+	ORDER BY test_id ASC
+	LIMIT @page_size OFFSET @page_offset
+)
+SELECT t.*
+FROM sorted_day AS s LEFT JOIN tests AS t USING(test_id)
+ORDER BY rank ASC`)
+		})
+
+		Convey("Valid no component multi-day request", func() {
+			request.Filter = "linux-rel blink_python_tests"
+			request.Dates = append(request.Dates, "2023-07-13")
+			request.Components = []string{}
+			query, err := client.createFetchMetricsQuery(request)
+
+			So(err, ShouldBeNil)
+			So(query, ShouldNotBeNil)
+			So(query.Parameters, ShouldContainParameter, bigquery.QueryParameter{
+				Name:  "sort_date",
+				Value: "2023-07-12",
+			})
+			So(query.QueryConfig.Q, ShouldResemble, `
+WITH tests AS (
+	SELECT
+		m.date,
+		m.test_id,
+		ANY_VALUE(m.test_name) AS test_name,
+		ANY_VALUE(m.file_name) AS file_name,
+		SUM(num_runs) AS num_runs,
+		ARRAY_AGG(STRUCT(
+			builder AS builder,
+			bucket AS bucket,
+			test_suite AS test_suite,
+			num_runs
+			) ORDER BY test_id ASC
+		) AS variants
+	FROM
+		chrome-test-health-project.normal-dataset.daily_test_metrics AS m
+	WHERE
+		DATE(date) IN UNNEST(@dates)
 		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
 		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter1)
 	GROUP BY m.date, m.test_id
@@ -349,6 +432,30 @@ func TestCreateUnfilteredDirectoryQuery(t *testing.T) {
 				Ascending: true,
 			},
 		}
+
+		Convey("Valid no component request", func() {
+			request.Components = []string{}
+			query, err := client.createDirectoryQuery(request)
+
+			So(err, ShouldBeNil)
+			So(query, ShouldNotBeNil)
+			So(query.QueryConfig.Q, ShouldResemble, `
+SELECT
+	date,
+	node_name,
+	ARRAY_REVERSE(SPLIT(node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
+	ANY_VALUE(is_file) AS is_file,
+	SUM(num_runs) AS num_runs,
+FROM chrome-test-health-project.normal-dataset.daily_file_metrics, UNNEST(@parents) AS parent
+WHERE
+	STARTS_WITH(node_name, parent || "/")
+	-- The child folders and files can't have a / after the parent's name
+	AND REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(parent) + 2), "^[^/]*$")
+	AND DATE(date) IN UNNEST(@dates)
+GROUP BY date, node_name
+ORDER BY is_file, node_name ASC`)
+		})
+
 		Convey("Valid unfiltered request", func() {
 			query, err := client.createDirectoryQuery(request)
 
@@ -367,7 +474,7 @@ WHERE
 	-- The child folders and files can't have a / after the parent's name
 	AND REGEXP_CONTAINS(SUBSTR(node_name, LENGTH(parent) + 2), "^[^/]*$")
 	AND DATE(date) IN UNNEST(@dates)
-	AND component IN UNNEST(@components)
+		AND component IN UNNEST(@components)
 GROUP BY date, node_name
 ORDER BY is_file, node_name ASC`)
 		})
@@ -480,6 +587,7 @@ func TestCreateFilteredDirectoryQuery(t *testing.T) {
 			},
 			Filter: "linux-rel",
 		}
+
 		Convey("Valid unfiltered request", func() {
 			query, err := client.createDirectoryQuery(request)
 
@@ -518,7 +626,49 @@ WHERE
 	-- The child folders and files can't have a / after the parent's name
 	AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(parent) + 2), "^[^/]*$")
 	AND DATE(f.date) IN UNNEST(@dates)
-	AND component IN UNNEST(@components)
+		AND component IN UNNEST(@components)
+GROUP BY date, node_name
+ORDER BY is_file, node_name ASC`)
+		})
+
+		Convey("Valid no component request", func() {
+			request.Components = []string{}
+			query, err := client.createDirectoryQuery(request)
+
+			So(err, ShouldBeNil)
+			So(query, ShouldNotBeNil)
+			So(query.QueryConfig.Q, ShouldResemble, `
+WITH
+test_summaries AS (
+	SELECT
+		file_name AS node_name,
+		date,
+		--metrics
+		SUM(num_runs) AS num_runs,
+	FROM chrome-test-health-project.normal-dataset.daily_test_metrics
+	WHERE
+		date IN UNNEST(@dates)
+		AND file_name IS NOT NULL
+		-- Apply the requested filter
+		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
+	GROUP BY file_name, date, test_id
+)
+SELECT
+	f.date,
+	f.node_name,
+	ARRAY_REVERSE(SPLIT(f.node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
+	ANY_VALUE(is_file) AS is_file,
+	-- metrics
+	SUM(t.num_runs) AS num_runs,
+FROM chrome-test-health-project.normal-dataset.daily_file_metrics AS f, UNNEST(@parents) AS parent
+JOIN test_summaries t ON
+	f.date = t.date
+	AND STARTS_WITH(t.node_name, f.node_name)
+WHERE
+	STARTS_WITH(f.node_name, parent || "/")
+	-- The child folders and files can't have a / after the parent's name
+	AND REGEXP_CONTAINS(SUBSTR(f.node_name, LENGTH(parent) + 2), "^[^/]*$")
+	AND DATE(f.date) IN UNNEST(@dates)
 GROUP BY date, node_name
 ORDER BY is_file, node_name ASC`)
 		})
