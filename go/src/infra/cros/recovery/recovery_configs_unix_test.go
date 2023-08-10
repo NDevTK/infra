@@ -79,7 +79,7 @@ func TestConfigTreeChanges(t *testing.T) {
 				return
 			}
 			// Read config from file.
-			treeFilepath := filepath.Join("config_tries", cs.treeFilename)
+			treeFilepath := filepath.Join("config_trees", cs.treeFilename)
 			if createTreeFileIfNotExist {
 				if err := os.WriteFile(treeFilepath, treeBytes, 0750); err != nil {
 					t.Errorf("TestConfigTreeChanges:%q -> fail to create file by request: %q", cs.name, treeFilepath)
