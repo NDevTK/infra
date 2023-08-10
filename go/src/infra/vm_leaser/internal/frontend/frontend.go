@@ -22,8 +22,8 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
 
-	vmleaserpb "infra/vm_leaser/api/v1"
 	"infra/vm_leaser/internal/constants"
+	"infra/vm_leaser/internal/validation"
 	"infra/vm_leaser/internal/zone_selector"
 )
 
@@ -66,7 +66,7 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 		return nil, status.Errorf(codes.InvalidArgument, "failed to set lease request: %s", err)
 	}
 
-	if err := vmleaserpb.ValidateLeaseVMRequest(r); err != nil {
+	if err := validation.ValidateLeaseVMRequest(r); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "failed to validate lease request: %s", err)
 	}
 
@@ -135,7 +135,7 @@ func (s *Server) ReleaseVM(ctx context.Context, r *api.ReleaseVMRequest) (*api.R
 	// Set default values for ReleaseVMRequest if needed.
 	r = setDefaultReleaseVMRequest(ctx, r, s.Env)
 
-	if err := vmleaserpb.ValidateReleaseVMRequest(r); err != nil {
+	if err := validation.ValidateReleaseVMRequest(r); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "failed to validate release request: %s", err)
 	}
 

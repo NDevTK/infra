@@ -29,11 +29,6 @@ endef
 help:
 	$(info $(help_message))
 
-# Generate bindings
-.PHONY: gen
-gen:
-	go generate ./...
-
 # Run Go tests
 .PHONY: test
 test:
