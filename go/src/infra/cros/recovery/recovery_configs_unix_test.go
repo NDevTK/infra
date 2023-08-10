@@ -41,6 +41,12 @@ var configTreeChangesCases = []struct {
 		"android_repair.json",
 	},
 	{
+		"Android Deploy",
+		tlw.DUTSetupTypeAndroid,
+		buildbucket.Deploy,
+		"android_deploy.json",
+	},
+	{
 		"Labstation AutoRepair",
 		tlw.DUTSetupTypeLabstation,
 		buildbucket.Recovery,
