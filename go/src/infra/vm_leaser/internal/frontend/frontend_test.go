@@ -23,9 +23,15 @@ import (
 
 // mockComputeInstancesClient mocks compute.NewInstancesRESTClient for testing.
 type mockComputeInstancesClient struct {
+	deleteFunc func() (*compute.Operation, error)
 	getFunc    func() (*computepb.Instance, error)
 	insertFunc func() (*compute.Operation, error)
-	deleteFunc func() (*compute.Operation, error)
+	listFunc   func() *compute.InstanceIterator
+}
+
+// Delete mocks the Delete instance method of the compute client.
+func (m *mockComputeInstancesClient) Delete(context.Context, *computepb.DeleteInstanceRequest, ...gax.CallOption) (*compute.Operation, error) {
+	return m.deleteFunc()
 }
 
 // Get mocks the Get instance method of the compute client.
@@ -38,9 +44,9 @@ func (m *mockComputeInstancesClient) Insert(context.Context, *computepb.InsertIn
 	return m.insertFunc()
 }
 
-// Delete mocks the Delete instance method of the compute client.
-func (m *mockComputeInstancesClient) Delete(context.Context, *computepb.DeleteInstanceRequest, ...gax.CallOption) (*compute.Operation, error) {
-	return m.deleteFunc()
+// List mocks the List instance method of the compute client.
+func (m *mockComputeInstancesClient) List(context.Context, *computepb.ListInstancesRequest, ...gax.CallOption) *compute.InstanceIterator {
+	return m.listFunc()
 }
 
 func TestComputeExpirationTime(t *testing.T) {

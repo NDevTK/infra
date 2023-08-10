@@ -29,9 +29,10 @@ import (
 
 // computeInstancesClient interfaces the GCE instance client API.
 type computeInstancesClient interface {
+	Delete(ctx context.Context, r *computepb.DeleteInstanceRequest, opts ...gax.CallOption) (*compute.Operation, error)
 	Get(ctx context.Context, r *computepb.GetInstanceRequest, opts ...gax.CallOption) (*computepb.Instance, error)
 	Insert(ctx context.Context, r *computepb.InsertInstanceRequest, opts ...gax.CallOption) (*compute.Operation, error)
-	Delete(ctx context.Context, r *computepb.DeleteInstanceRequest, opts ...gax.CallOption) (*compute.Operation, error)
+	List(ctx context.Context, r *computepb.ListInstancesRequest, opts ...gax.CallOption) *compute.InstanceIterator
 }
 
 // Prove that Server implements pb.VMLeaserServiceServer by instantiating a Server
@@ -168,6 +169,11 @@ func (s *Server) ReleaseVM(ctx context.Context, r *api.ReleaseVMRequest) (*api.R
 	return &api.ReleaseVMResponse{
 		LeaseId: r.GetLeaseId(),
 	}, nil
+}
+
+func (s *Server) ListLeases(ctx context.Context, r *api.ListLeasesRequest) (*api.ListLeasesResponse, error) {
+	logging.Infof(ctx, "ListLeases start")
+	return nil, status.Errorf(codes.Unimplemented, "ListLeases is not implemented")
 }
 
 // getInstance gets a GCE instance based on lease id and GCE configs.
