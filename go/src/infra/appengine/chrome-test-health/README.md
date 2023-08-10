@@ -26,6 +26,10 @@ This will set up the frontend client running on port `3000` with a proxy to the
 staging environment. For auth to work, you will need to complete the auth flow
 and copy over the `LUCISID` cookie from the staging environment into localhost.
 
+To do this, you will need to go to [http://localhost:3000/auth/openid/state](http://localhost:3000/auth/openid/state)
+and go to developer tools. Go to Application -> Storage -> Cookes -> http://localhost:3000
+and then add the Name:Value pair you obtained completing the auth flow prior.
+
 You can also run the frontend against your local backend using:
 
 ```sh

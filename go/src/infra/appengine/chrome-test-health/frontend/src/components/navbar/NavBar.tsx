@@ -5,51 +5,81 @@
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import {
-  Checkbox,
+  Autocomplete,
   Divider,
-  FormControl,
-  ListItemText,
-  Select,
+  TextField,
 } from '@mui/material';
 import { Outlet } from 'react-router-dom';
-import MenuItem from '@mui/material/MenuItem';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { ComponentContext } from '../../features/components/ComponentContext';
 
 function NavBar() {
   const componentCtx = useContext(ComponentContext);
+  const [navComps, setNavComps] = useState(componentCtx.components);
 
-  const handleChange = (event) => {
-    const value = event.target.value;
-    if (value.length > 0) {
-      componentCtx.api.updateComponents(value);
-    }
+  const handleChange = (_, components) => {
+    setNavComps(components.filter(
+        (component) => component !== 'All Components'));
   };
+
+  const handleBlur = () => {
+    componentCtx.api.updateComponents(navComps);
+  };
+
+  function displayComponents(components: string[]) {
+    const finalDisplay: JSX.Element[] = [];
+    for (let x = 0; x < components.length; x ++) {
+      if ( x === 0) {
+        finalDisplay.push(<p>{components[x]}</p>);
+      } else {
+        finalDisplay.push(<p>,&nbsp;{components[x]}</p>);
+      }
+    }
+    return finalDisplay;
+  }
 
   return (
     <AppBar position='relative'>
       <Toolbar>
-        <FormControl sx={{ 'border': 'none', '& fieldset': { border: 'none' } }}>
-          <Select
-            data-testid="selectComponents"
-            multiple
-            value={componentCtx.components}
-            onChange={handleChange}
-            renderValue={(selected) => selected.join(', ')}
-            sx={{ 'color': 'white', '& .MuiSvgIcon-root': {
+        <Autocomplete
+          multiple
+          limitTags={3}
+          data-testid="selectComponents"
+          options={componentCtx.allComponents}
+          value={navComps.length > 0 && navComps[0] !== '' ? navComps : ['All Components']}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          disableCloseOnSelect
+          getLimitTagsText={(more) => `... +${more}`}
+          renderInput={(params) => (
+            <TextField {...params} InputProps={{ ...params.InputProps, style: { color: 'white' } }}/>
+          )}
+          renderTags={(components) => displayComponents(components)}
+          sx={{ 'maxWidth': '650px', 'border': 'none', '& fieldset': { border: 'none' },
+            '& .MuiSvgIcon-root': {
               color: 'white',
-            }, 'fontSize': '20px', 'minWidth': '250px' }}
-          >
-            {componentCtx.allComponents.length ?
-                componentCtx.allComponents.map((component) => (
-                  <MenuItem key={component} value={component}>
-                    <Checkbox checked={componentCtx.components.indexOf(component) > -1} />
-                    <ListItemText primary={component} />
-                  </MenuItem>
-                )) : null
-            }
-          </Select>
-        </FormControl>
+            }, '& .MuiAutocomplete-tag': {
+              color: 'white',
+            },
+            '& .MuiAutocomplete-inputRoot': {
+              flexWrap: 'nowrap',
+              overflowX: 'scroll',
+              maxHeight: '73px',
+            },
+            '& .MuiAutocomplete-endAdornment': {
+              position: 'sticky',
+              flex: 'none',
+              right: '0px',
+              transform: 'translateX(75px)',
+            },
+            '& .MuiIconButton-root': {
+              backgroundColor: 'rgb(49 49 50)',
+              margin: '5px',
+              maxHeight: '20px',
+              maxWidth: '20px',
+            },
+          }}
+        />
         <Divider orientation="vertical" flexItem />
       </Toolbar>
       <Outlet/>

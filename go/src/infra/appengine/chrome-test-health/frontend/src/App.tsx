@@ -19,7 +19,8 @@ const App = () => {
   const params = new URLSearchParams(window.location.search);
   const components = params.has(URL_COMPONENT) ?
     params.getAll(URL_COMPONENT) :
-    localStorage.getItem(URL_COMPONENT)?.split(',') || ['Blink'];
+    // Note that ''.split(',') evaluates to ['']
+    (localStorage.getItem(URL_COMPONENT) || '').split(',');
 
   return (
     <div className="App">
