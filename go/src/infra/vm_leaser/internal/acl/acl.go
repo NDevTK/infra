@@ -9,8 +9,7 @@ import (
 )
 
 const (
-	// TODO(justinsuen): Temporarily setting the auth group. Change to VM Lab
-	// group when it is known.
+	// This is a LUCI Auth group set in both the dev and prod LUCI Auth Services.
 	VMLabGroup = "vm-leaser-access"
 )
 
