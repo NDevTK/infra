@@ -36,18 +36,19 @@ import (
 )
 
 const (
-	dataOwnersGroup = "mdb/chrome-browser-infra"
+	serviceAccessGroup = "project-chrome-test-health-access"
+	dataOwnersGroup    = "mdb/chrome-browser-infra"
 )
 
 var (
 	stats *testResourcesServer
 	// RPC-level ACLs.
 	rpcACL = rpcacl.Map{
-		"/discovery.Discovery/*":                      rpcacl.All,
+		"/discovery.Discovery/*":                      serviceAccessGroup,
 		"/test_resources.Stats/UpdateMetricsTable":    dataOwnersGroup,
-		"/test_resources.Stats/ListComponents":        rpcacl.All,
-		"/test_resources.Stats/FetchTestMetrics":      rpcacl.All,
-		"/test_resources.Stats/FetchDirectoryMetrics": rpcacl.All,
+		"/test_resources.Stats/ListComponents":        serviceAccessGroup,
+		"/test_resources.Stats/FetchTestMetrics":      serviceAccessGroup,
+		"/test_resources.Stats/FetchDirectoryMetrics": serviceAccessGroup,
 	}
 	// Data set to work with
 	dataSet = flag.String(
