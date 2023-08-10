@@ -3,19 +3,19 @@ module infra
 go 1.20
 
 require (
-	cloud.google.com/go v0.110.4
+	cloud.google.com/go v0.110.7
 	cloud.google.com/go/appengine v1.8.1
-	cloud.google.com/go/bigquery v1.52.0
-	cloud.google.com/go/cloudtasks v1.11.1
-	cloud.google.com/go/compute v1.21.0
+	cloud.google.com/go/bigquery v1.53.0
+	cloud.google.com/go/cloudtasks v1.12.1
+	cloud.google.com/go/compute v1.23.0
 	cloud.google.com/go/compute/metadata v0.2.3
-	cloud.google.com/go/datastore v1.12.1
-	cloud.google.com/go/firestore v1.11.0
-	cloud.google.com/go/logging v1.7.0
+	cloud.google.com/go/datastore v1.13.0
+	cloud.google.com/go/firestore v1.12.0
+	cloud.google.com/go/logging v1.8.0
 	cloud.google.com/go/longrunning v0.5.1
 	cloud.google.com/go/monitoring v1.15.1
 	cloud.google.com/go/profiler v0.3.1
-	cloud.google.com/go/pubsub v1.32.0
+	cloud.google.com/go/pubsub v1.33.0
 	cloud.google.com/go/storage v1.31.0
 	cloud.google.com/go/trace v1.10.1
 	github.com/Microsoft/go-winio v0.6.1
@@ -25,7 +25,7 @@ require (
 	github.com/aclements/go-moremath v0.0.0-20210112150236-f10218a38794
 	github.com/andygrunwald/go-gerrit v0.0.0-20210726065827-cc4e14e40b5b
 	github.com/bazelbuild/remote-apis v0.0.0-20230719205137-cb8058798964
-	github.com/bazelbuild/remote-apis-sdks v0.0.0-20230720185216-60ab576f8d4a
+	github.com/bazelbuild/remote-apis-sdks v0.0.0-20230809203756-67f2ffbec0ef
 	github.com/bmatcuk/doublestar v1.3.4
 	github.com/containerd/cgroups v1.0.4
 	github.com/danjacques/gofslock v0.0.0-20230728142113-ae8f59f9e88b
@@ -84,29 +84,29 @@ require (
 	go.opentelemetry.io/otel/sdk v1.16.0
 	go.opentelemetry.io/otel/trace v1.16.0
 	go.skia.org/infra v0.0.0-20230524042348-e1356ea7576d
-	go.starlark.net v0.0.0-20230721164632-08598ae210f9
+	go.starlark.net v0.0.0-20230807144010-2aa75752d1da
 	golang.org/x/build v0.0.0-20210913192547-14e3e09d6b10
-	golang.org/x/crypto v0.11.0
+	golang.org/x/crypto v0.12.0
 	golang.org/x/exp v0.0.0-20221031165847-c99f073a8326
 	golang.org/x/mobile v0.0.0-20191031020345-0945064e013a
 	golang.org/x/mod v0.12.0
-	golang.org/x/net v0.12.0
-	golang.org/x/oauth2 v0.10.0
+	golang.org/x/net v0.14.0
+	golang.org/x/oauth2 v0.11.0
 	golang.org/x/sync v0.3.0
-	golang.org/x/sys v0.10.0
-	golang.org/x/term v0.10.0
+	golang.org/x/sys v0.11.0
+	golang.org/x/term v0.11.0
 	golang.org/x/time v0.3.0
-	golang.org/x/tools v0.11.0
+	golang.org/x/tools v0.12.0
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
 	gonum.org/v1/gonum v0.12.0
-	google.golang.org/api v0.133.0
+	google.golang.org/api v0.136.0
 	google.golang.org/appengine v1.6.8-0.20221117013220-504804fb50de
 	google.golang.org/appengine/v2 v2.0.4
-	google.golang.org/genproto v0.0.0-20230724170836-66ad5b6ff146
-	google.golang.org/genproto/googleapis/api v0.0.0-20230724170836-66ad5b6ff146
-	google.golang.org/genproto/googleapis/bytestream v0.0.0-20230724170836-66ad5b6ff146
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20230724170836-66ad5b6ff146
-	google.golang.org/grpc v1.56.2
+	google.golang.org/genproto v0.0.0-20230807174057-1744710a1577
+	google.golang.org/genproto/googleapis/api v0.0.0-20230803162519-f966b187b2e5
+	google.golang.org/genproto/googleapis/bytestream v0.0.0-20230807174057-1744710a1577
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230807174057-1744710a1577
+	google.golang.org/grpc v1.58.0-dev.0.20230804151048-7aceafcc52f9
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.3.0
 	google.golang.org/protobuf v1.31.0
 	gopkg.in/src-d/go-git.v4 v4.13.1
@@ -122,7 +122,7 @@ require (
 
 require (
 	cloud.google.com/go/errorreporting v0.3.0 // indirect
-	cloud.google.com/go/iam v1.1.1 // indirect
+	cloud.google.com/go/iam v1.1.2 // indirect
 	cloud.google.com/go/secretmanager v1.11.1 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.13.1 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.16.1 // indirect
@@ -221,7 +221,7 @@ require (
 	go.opentelemetry.io/proto/otlp v0.19.0 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
-	golang.org/x/text v0.11.0 // indirect
+	golang.org/x/text v0.12.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/src-d/go-billy.v4 v4.3.2 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
