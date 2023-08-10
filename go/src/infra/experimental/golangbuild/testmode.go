@@ -270,6 +270,10 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []Port)
 				stepName += fmt.Sprintf(" for %s", p)
 			}
 			testCmd := spec.wrapTestCmd(spec.goCmd(portContext, m.RootDir, spec.goTestArgs("./...")...))
+			if spec.inputs.CompileOnly && compileOptOut(spec.inputs.Project, p, m.Path) {
+				stepName += " (skipped)"
+				testCmd = command(portContext, "echo", "(skipped)")
+			}
 			if err := cmdStepRun(portContext, stepName, testCmd, false); err != nil {
 				testErrors = append(testErrors, err)
 			}
@@ -358,7 +362,7 @@ func modPath(goModFile string) (string, error) {
 	return f.Module.Mod.Path, nil
 }
 
-// Port is a Go port identity.
+// A Port is a Go port identity.
 //
 // The zero value means the implicit, default
 // Go port as determined from the environment.
@@ -412,13 +416,13 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 			// and there's not enough benefit to include them here.
 			continue
 		case p.Port == Port{"ios", "arm64"}:
-			// TODO(go.dev/issue/61761): Add misc-compile coverage for ios/arm64 port (iOS).
+			// TODO(go.dev/issue/61761): Add misc-compile coverage for the ios/arm64 port (iOS).
 			continue
 		case p.Port == Port{"ios", "amd64"}:
-			// TODO(go.dev/issue/61760): Add misc-compile coverage for ios/amd64 port (iOS Simulator).
+			// TODO(go.dev/issue/61760): Add misc-compile coverage for the ios/amd64 port (iOS Simulator).
 			continue
-		case p.Port == Port{"android", "arm"}:
-			// TODO(go.dev/issue/61762): Add misc-compile coverage for android/arm port.
+		case p.GOOS == "android":
+			// TODO(go.dev/issue/61762): Add misc-compile coverage for the GOOS=android ports (Android).
 			continue
 		}
 		if shard != noSharding && !shard.shouldRunTest(p.GOOS+"/"+p.GOARCH) {
@@ -432,4 +436,110 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 	}
 	io.WriteString(step.Log("ports"), portList)
 	return ports, nil
+}
+
+// compileOptOut is a policy function that reports whether the provided
+// port and module pair is considered opted out of compile-only testing.
+//
+// TODO(dmitshur,heschi): Ideally we want to have policy configured in
+// one place, more likely in main.star than here. If so, factor it out.
+func compileOptOut(project string, p Port, modulePath string) bool {
+	const (
+		optOut                           = true
+		performCompileOnlyTestingAsUsual = false // Long name so that it stands out. It's the rare case here.
+	)
+	switch project {
+	case "benchmarks":
+		if p == (Port{"linux", "loong64"}) {
+			// Dependency "go.etcd.io/bbolt" fails to build on linux/loong64.
+			// See go.dev/issue/58306.
+			// Can be fixed by updating the dependency to v1.3.7 or higher (as done in go.dev/cl/492535).
+			return optOut
+		}
+		if p.GOOS == "plan9" {
+			// Dependency "github.com/coreos/go-systemd/v22/journal" fails to build on Plan 9.
+			return optOut
+		}
+		if p.GOARCH == "wasm" {
+			// Dependencies "github.com/blevesearch/mmap-go", "go.etcd.io/bbolt", and "github.com/coreos/go-systemd/v22/journal"
+			// fail to build. Also "golang.org/x/benchmarks/driver" fails to build.
+			return optOut
+		}
+	case "build":
+		// build is a special repository for internal Go build infrastructure needs.
+		// It relies only on real pre- and post-submit testing, not compile-only testing.
+		if p.GOOS == "darwin" {
+			// Except darwin, which doesn't yet have pre-submit coverage,
+			// so use compile-only coverage to help out.
+			return performCompileOnlyTestingAsUsual
+		}
+		return optOut
+	case "debug":
+		if p.GOARCH == "wasm" {
+			// Dependency "github.com/chzyer/readline" fails to build.
+			return optOut
+		}
+	case "exp":
+		switch modulePath {
+		case "golang.org/x/exp/event":
+			if p == (Port{"wasip1", "wasm"}) {
+				// Dependency "github.com/sirupsen/logrus" fails to build on wasip1/wasm.
+				return optOut
+			}
+		case "golang.org/x/exp/shiny":
+			switch p {
+			case Port{"darwin", "arm64"}, Port{"darwin", "amd64"},
+				Port{"linux", "mips64"}, Port{"linux", "mips64le"},
+				Port{"linux", "ppc64"}, Port{"linux", "ppc64le"},
+				Port{"linux", "s390x"},
+				Port{"openbsd", "amd64"}:
+				return performCompileOnlyTestingAsUsual
+			default:
+				// x/exp/shiny fails to build on most cross-compile platforms, largely because
+				// of x/mobile dependencies.
+				return optOut
+			}
+		}
+	case "mobile":
+		// mobile fails to build on all cross-compile platforms. This is somewhat expected
+		// given the nature of the repository. Leave this as a blanket policy for now.
+		return optOut
+	case "pkgsite":
+		// See go.dev/issue/61341.
+		if p.GOOS == "plan9" {
+			// Dependency "github.com/lib/pq" fails to build on Plan 9.
+			return optOut
+		}
+		if p == (Port{"wasip1", "wasm"}) {
+			// Dependency "github.com/lib/pq" fails to build on wasip1/wasm.
+			return optOut
+		}
+	case "pkgsite-metrics":
+		if p == (Port{"wasip1", "wasm"}) {
+			// Dependency "github.com/lib/pq" fails to build on wasip1/wasm.
+			return optOut
+		}
+	case "vuln":
+		if p.GOOS == "plan9" {
+			// Dependency "github.com/google/go-cmdtest" fails to build on Plan 9.
+			return optOut
+		}
+	case "vulndb":
+		if p == (Port{"aix", "ppc64"}) {
+			// Dependency "github.com/go-git/go-billy/v5/osfs" fails to build on aix/ppc64.
+			// See go.dev/issue/58308.
+			return optOut
+		}
+		if p.GOOS == "plan9" {
+			// Package "golang.org/x/vulndb/cmd/modinfo/internal/pkgsitedb" fails to build on Plan 9.
+			// Can be fixed by correcting the _plan9.go implementation (as done in go.dev/cl/518095).
+			return optOut
+		}
+		if p == (Port{"wasip1", "wasm"}) {
+			// Dependency "github.com/go-git/go-billy/v5/osfs" fails to build on wasip1/wasm.
+			return optOut
+		}
+	}
+	// The default policy decision is not to opt out.
+	return performCompileOnlyTestingAsUsual
 }
