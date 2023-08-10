@@ -52,6 +52,12 @@ var configTreeChangesCases = []struct {
 		buildbucket.Recovery,
 		"labstation_repair.json",
 	},
+	{
+		"Labstation Deploy",
+		tlw.DUTSetupTypeLabstation,
+		buildbucket.Deploy,
+		"labstation_deploy.json",
+	},
 }
 
 // CreateTreeFileIfNotExist controls whether we create tree files.
