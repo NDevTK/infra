@@ -162,7 +162,7 @@ var exceptions = []suiteFilter{
 	},
 	{
 		suiteName:  "flex-perbuild",
-		expiration: time.Date(2023, time.August, 10, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 8, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "graphics_per-build",
