@@ -32,14 +32,7 @@ func crosDeployPlan() *Plan {
 
 func deployActions() map[string]*Action {
 	// Prepare critical actions as part of DUT verify.
-	var repairCriticalActions []string
-	for _, a := range crosRepairPlan().GetCriticalActions() {
-		// Exclude repair state to keep need_deploy state as default.
-		if a == "Set state: repair_failed" {
-			continue
-		}
-		repairCriticalActions = append(repairCriticalActions, a)
-	}
+	repairCriticalActions := crosRepairCriticalActions(true)
 
 	return map[string]*Action{
 		"Device is pingable before deploy": {
