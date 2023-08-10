@@ -450,12 +450,6 @@ func compileOptOut(project string, p Port, modulePath string) bool {
 	)
 	switch project {
 	case "benchmarks":
-		if p == (Port{"linux", "loong64"}) {
-			// Dependency "go.etcd.io/bbolt" fails to build on linux/loong64.
-			// See go.dev/issue/58306.
-			// Can be fixed by updating the dependency to v1.3.7 or higher (as done in go.dev/cl/492535).
-			return optOut
-		}
 		if p.GOOS == "plan9" {
 			// Dependency "github.com/coreos/go-systemd/v22/journal" fails to build on Plan 9.
 			return optOut
@@ -528,11 +522,6 @@ func compileOptOut(project string, p Port, modulePath string) bool {
 		if p == (Port{"aix", "ppc64"}) {
 			// Dependency "github.com/go-git/go-billy/v5/osfs" fails to build on aix/ppc64.
 			// See go.dev/issue/58308.
-			return optOut
-		}
-		if p.GOOS == "plan9" {
-			// Package "golang.org/x/vulndb/cmd/modinfo/internal/pkgsitedb" fails to build on Plan 9.
-			// Can be fixed by correcting the _plan9.go implementation (as done in go.dev/cl/518095).
 			return optOut
 		}
 		if p == (Port{"wasip1", "wasm"}) {
