@@ -35,6 +35,12 @@ var configTreeChangesCases = []struct {
 		"cros_repair.json",
 	},
 	{
+		"CROS Deploy",
+		tlw.DUTSetupTypeCros,
+		buildbucket.Deploy,
+		"cros_deploy.json",
+	},
+	{
 		"CROS Audit RPM",
 		tlw.DUTSetupTypeCros,
 		buildbucket.AuditRPM,
