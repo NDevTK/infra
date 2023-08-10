@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c04c894c_131adde7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1557599
+      },
+      "writtenOn": "2023-08-10T01:50:51Z",
+      "side": 1,
+      "message": "New merge errors was fixed, and Kalin comment is resolved.",
+      "revId": "fe9ebb1946e4e74184374c5513c27d67936d3440",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

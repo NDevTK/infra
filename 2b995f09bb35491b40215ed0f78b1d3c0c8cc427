@@ -22,6 +22,30 @@
       },
       "revId": "2b995f09bb35491b40215ed0f78b1d3c0c8cc427",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "86cbb40b_e13f53ae",
+        "filename": "go/src/infra/cmd/shivas/internal/ufs/subcmds/peripherals/chameleon_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1557599
+      },
+      "writtenOn": "2023-08-10T01:50:51Z",
+      "side": 1,
+      "message": "Oh, thanks for catching it!",
+      "parentUuid": "59653a37_399b0a4c",
+      "range": {
+        "startLine": 93,
+        "startChar": 17,
+        "endLine": 93,
+        "endChar": 20
+      },
+      "revId": "2b995f09bb35491b40215ed0f78b1d3c0c8cc427",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
