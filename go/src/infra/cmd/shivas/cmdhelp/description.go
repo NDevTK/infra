@@ -2186,26 +2186,29 @@ This cmd always runs in the OS namespace. A single DUT can have multiple wifi ro
 requires specifying an action which is either add, delete, or replace. Multiple routers can
 be specified for each action.
 
-Add adds specified routers or wifi features to the DUT and leaves what is already there untouched.
-Delete deletes specified routers or wifi features in the DUT and leaves remainining untouched.
-Replace replaces the entire set of routers or wifi features with the specified list.
+Add adds specified routers to the DUT and leaves what is already there untouched.
+Delete deletes specified routers in the DUT and leaves remaining untouched.
+Replace replaces the entire set of routers with the specified list.
 
 A json file with wifi struct defined can be used to update wifi struct
 
-A csv file with header dut, wifi_features, router can be used to update multiple duts.
+A csv file with header "dut" and one or more "router" entries can be used to
+update multiple duts.
 Example of CSV format:
-dut,wifi_features,router,router,[router,...]
-d1,f1;f2,hostname:h1;model:m1;feature:f1;feature:f2,hostname:h2
-d2,f2,,hostname:h3;model:m2
+dut,router,router
+d1,hostname:h1,hostname:h2
+d2,hostname:h3;model:m1
+d3,hostname:h4;supported_feature:f1;supported_feature:f2
 
-
+In most cases, you will only need to specify the hostname of the router, as the
+recovery process automatically identifies the model and supported features.
 
 Examples:
-shivas add peripheral-wifi -dut {d} -wifi-feature {f1} -wifi-feature {f2} -router {hostname:h1,build_target:b1,model:m1,feature:f2} -router {hostname:h2,build_target:b1,model:m1,feature:f3}
-shivas delete peripheral-wifi -dut {d} -router {hostanme:h1} -router {hostname:h2}
-shivas replace peripheral-wifi -dut {d} -wifi-feature {f3} -wifi-feature {f4}
-shivas replace peripheral-wifi -dut {d} -router {hostname:h3,build_target:b1}
-shivas replace peripheral-wifi -dut {d} -wifi-feature {f5} -wifi-feature {f6} -router {hostname:h6,build_target:b2}
+shivas add peripheral-wifi -dut {d} -router {hostname:h1} -router {hostname:h2}
+shivas add peripheral-wifi -dut {d} -router {hostname:h1,model:m1,supported_feature:f1} -router {hostname:h2,model:m1,supported_feature:f2}
+shivas delete peripheral-wifi -dut {d} -router {hostname:h1} -router {hostname:h2}
+shivas replace peripheral-wifi -dut {d} -router {hostname:h1}
+shivas replace peripheral-wifi -dut {d} -router {hostname:h1,supported_feature:f1}
 
 shivas add peripheral-wifi -dut {d} -f {fpath.json}
 shivas replace peripheral-wifi -dut {d} -f {fpath.json}

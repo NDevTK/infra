@@ -5,9 +5,10 @@
 package peripherals
 
 import (
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	"strings"
 	"testing"
+
+	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 func TestWifiCleanAndValidateFlags(t *testing.T) {
@@ -18,11 +19,11 @@ func TestWifiCleanAndValidateFlags(t *testing.T) {
 	}{
 		{
 			cmd:  &manageWifiCmd{},
-			want: []string{errDUTMissing, errNoRouterAndNoFeature},
+			want: []string{errDUTMissing, errNoRouter},
 		},
 		{
 			cmd:  &manageWifiCmd{routers: [][]string{{"hostname: "}}},
-			want: []string{errDUTMissing, errNoRouterAndNoFeature, errEmptyHostname},
+			want: []string{errDUTMissing, errNoRouter, errEmptyHostname},
 		},
 		{
 			cmd:  &manageWifiCmd{routers: [][]string{{"hostname:h1 "}, {"hostname:h1"}}, dutName: "d1"},
@@ -45,13 +46,13 @@ func TestWifiCleanAndValidateFlags(t *testing.T) {
 
 	// Test valid flags with hostname cleanup
 	c := &manageWifiCmd{
-		dutName:      "d",
-		wifiFeatures: []string{"unknown"},
+		dutName: "d",
 		routers: [][]string{
 			{
 				"hostname:h1",
 				"model:test",
-				"feature:unknown",
+				"supported_feature:WIFI_ROUTER_FEATURE_IEEE_802_11_A",
+				"supported_feature:WIFI_ROUTER_FEATURE_IEEE_802_11_B",
 			},
 			{
 				"hostname:h2",
@@ -62,10 +63,6 @@ func TestWifiCleanAndValidateFlags(t *testing.T) {
 	if err := c.cleanAndValidateFlags(); err != nil {
 		t.Errorf("cleanAndValidateFlags = %v; want nil", err)
 	}
-	wantFeatures := 1
-	if n := len(c.wifiFeatures); n != wantFeatures {
-		t.Errorf("len(c.wifiFeatures) = %d; want %d", n, wantFeatures)
-	}
 	wantRouters := 2
 	if n := len(c.routers); n != wantRouters {
 		t.Errorf("len(c.routers) = %d; want %d", n, wantRouters)
@@ -73,15 +70,15 @@ func TestWifiCleanAndValidateFlags(t *testing.T) {
 
 }
 
-func TestAddWifi(t *testing.T) {
+func TestAddWifiRouters(t *testing.T) {
 	cmd := &manageWifiCmd{
-		dutName:      "d",
-		wifiFeatures: []string{"unknown"},
+		dutName: "d",
 		routers: [][]string{
 			{
 				"hostname:h1",
 				"model:test",
-				"feature:unknown",
+				"supported_feature:WIFI_ROUTER_FEATURE_IEEE_802_11_A",
+				"supported_feature:WIFI_ROUTER_FEATURE_IEEE_802_11_B",
 			},
 			{
 				"hostname:h2",
@@ -89,7 +86,9 @@ func TestAddWifi(t *testing.T) {
 		},
 		mode: actionAdd,
 	}
-	cmd.cleanAndValidateFlags()
+	if err := cmd.cleanAndValidateFlags(); err != nil {
+		t.Errorf("unexpected cleanAndValidateFlags() failure = %v", err)
+	}
 
 	// Test adding a duplicate and a valid BTP
 	current := &lab.Wifi{
@@ -100,11 +99,11 @@ func TestAddWifi(t *testing.T) {
 		},
 	}
 
-	if _, err := cmd.addWifi(current, cmd.dutName); err == nil {
-		t.Errorf("addWifi(%v) succeeded, expect duplication failure", current)
+	if _, err := cmd.addWifiRouters(current, cmd.dutName); err == nil {
+		t.Errorf("addWifiRouters(%v) succeeded, expect duplication failure", current)
 	}
 
-	// Test adding two valid routers and one wifi feature
+	// Test adding two valid routers.
 	current = &lab.Wifi{
 		WifiRouters: []*lab.WifiRouter{
 			{
@@ -112,28 +111,25 @@ func TestAddWifi(t *testing.T) {
 			},
 		},
 	}
-	out, err := cmd.addWifi(current, cmd.dutName)
+	out, err := cmd.addWifiRouters(current, cmd.dutName)
 	if err != nil {
-		t.Errorf("addWifi(%v) = %v, expect success", current, err)
+		t.Errorf("addWifiRouters(%v) = %v, expect success", current, err)
 	}
 	wantRouters := 3
 	if len(out.GetWifiRouters()) != wantRouters {
-		t.Errorf("addWifi(%v) = %v, want total wifirouters %d", current, out.GetWifiRouters(), wantRouters)
-	}
-	wantFeatures := 1
-	if len(out.GetFeatures()) != wantFeatures {
-		t.Errorf("addWifi(%v) = %v, want total features %d", current, out, wantFeatures)
+		t.Errorf("addWifiRouters(%v) = %v, want total wifirouters %d", current, out.GetWifiRouters(), wantRouters)
 	}
 }
 
-func TestDeleteWifi(t *testing.T) {
+func TestDeleteWifiRouters(t *testing.T) {
 	cmd := &manageWifiCmd{
 		dutName: "d",
 		routers: [][]string{
 			{
 				"hostname:h1",
 				"model:test",
-				"feature:unknown",
+				"supported_feature:WIFI_ROUTER_FEATURE_IEEE_802_11_A",
+				"supported_feature:WIFI_ROUTER_FEATURE_IEEE_802_11_B",
 			},
 			{
 				"hostname:h2",
@@ -141,7 +137,9 @@ func TestDeleteWifi(t *testing.T) {
 		},
 		mode: actionDelete,
 	}
-	cmd.cleanAndValidateFlags()
+	if err := cmd.cleanAndValidateFlags(); err != nil {
+		t.Errorf("unexpected cleanAndValidateFlags() failure = %v", err)
+	}
 
 	// Test deleting two non-existent BTPs
 	current := &lab.Wifi{
@@ -152,8 +150,8 @@ func TestDeleteWifi(t *testing.T) {
 		},
 	}
 
-	if _, err := cmd.deleteWifi(current, cmd.dutName); err == nil {
-		t.Errorf("deleteWifi(%v) succeeded, expected non-existent delete failure", current)
+	if _, err := cmd.deleteWifiRouters(current, cmd.dutName); err == nil {
+		t.Errorf("deleteWifiRouters(%v) succeeded, expected non-existent delete failure", current)
 	}
 
 	// Test deleting 2 of 3 routers
@@ -171,30 +169,32 @@ func TestDeleteWifi(t *testing.T) {
 		},
 	}
 
-	out, err := cmd.deleteWifi(current, cmd.dutName)
+	out, err := cmd.deleteWifiRouters(current, cmd.dutName)
 	if err != nil {
-		t.Errorf("deleteWifi(%v) = %v, expect success", current, err)
+		t.Errorf("deleteWifiRouters(%v) = %v, expect success", current, err)
 	}
 	want := "h3"
 	if len(out.GetWifiRouters()) != 1 || out.GetWifiRouters()[0].GetHostname() != want {
-		t.Fatalf("deleteWifi(%v) = %v, want %s", current, out.GetWifiRouters(), want)
+		t.Fatalf("deleteWifiRouters(%v) = %v, want %s", current, out.GetWifiRouters(), want)
 	}
 }
 
-func TestReplaceWifi(t *testing.T) {
+func TestReplaceWifiRouters(t *testing.T) {
 	cmd := &manageWifiCmd{
 		dutName: "d",
 		routers: [][]string{
 			{
 				"hostname:h1",
 				"model:test",
-				"feature:unknown",
+				"supported_feature:WIFI_ROUTER_FEATURE_UNKNOWN",
 			},
 			{"hostname:h2"},
 		},
 		mode: actionReplace,
 	}
-	cmd.cleanAndValidateFlags()
+	if err := cmd.cleanAndValidateFlags(); err != nil {
+		t.Errorf("unexpected cleanAndValidateFlags() failure = %v", err)
+	}
 
 	// Test replace two non-existent BTPs
 	current := &lab.Wifi{
@@ -205,8 +205,8 @@ func TestReplaceWifi(t *testing.T) {
 		},
 	}
 	want := 2
-	if out, _ := cmd.replaceWifi(current, cmd.dutName); len(out.GetWifiRouters()) != want {
-		t.Errorf("replaceWifi(%v) = %v, want %d replacing failure", current, out, want)
+	if out, _ := cmd.replaceWifiRouters(current, cmd.dutName); len(out.GetWifiRouters()) != want {
+		t.Errorf("replaceWifiRouters(%v) = %v, want %d replacing failure", current, out, want)
 	}
 
 }

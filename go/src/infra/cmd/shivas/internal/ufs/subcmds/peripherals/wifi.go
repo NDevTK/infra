@@ -7,6 +7,9 @@ package peripherals
 import (
 	"context"
 	"fmt"
+	"strings"
+
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"infra/cmd/shivas/cmdhelp"
 	"infra/cmd/shivas/site"
 	"infra/cmd/shivas/utils"
@@ -14,13 +17,11 @@ import (
 	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	rpc "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/util"
-	"strings"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/grpc/prpc"
 )
 
@@ -31,15 +32,14 @@ var (
 )
 
 var csvHeaderMap = map[string]bool{
-	"dut":           true,
-	"router":        true,
-	"wifi_features": true,
+	"dut":    true,
+	"router": true,
 }
 
-// wifiCmd creates command for adding, removing, or completely replacing wifi features or routers on a DUT.
+// wifiCmd creates command for adding, removing, or completely replacing routers on a DUT.
 func wifiCmd(mode action) *subcommands.Command {
 	return &subcommands.Command{
-		UsageLine: "peripheral-wifi -dut {DUT name} -wifi-feature {wifi feature} -router {hostname:h1,build_target:b1,model:m1,feature:f1} [-router {hostname:hn,...}...]",
+		UsageLine: "peripheral-wifi -dut {DUT name} -router {hostname:h1,model:m1} [-router {hostname:hn,...}...]",
 		ShortDesc: "Manage wifi router connections to a DUT",
 		LongDesc:  cmdhelp.ManagePeripheralWifiLongDesc,
 		CommandRun: func() subcommands.CommandRun {
@@ -49,7 +49,6 @@ func wifiCmd(mode action) *subcommands.Command {
 			c.commonFlags.Register(&c.Flags)
 
 			c.Flags.StringVar(&c.dutName, "dut", "", "DUT name to update")
-			c.Flags.Var(flag.StringSlice(&c.wifiFeatures), "wifi-feature", "wifi feature of the testbed, can be specified multiple times")
 			c.Flags.Var(utils.CSVStringList(&c.routers), "router", "comma separated router info. require hostname:h1")
 			c.Flags.StringVar(&c.wifiFile, "f", "", "File path to csv or json file. Note: Can only use in replace action. json file replaces the whole wifi proto, csv file replace multiple duts")
 
@@ -58,19 +57,16 @@ func wifiCmd(mode action) *subcommands.Command {
 	}
 }
 
-// manageWifiCmd supports adding, replacing, or deleting Wifi features or routers.
-// TODO (b/227504173): Add json file, csv file input options.
+// manageWifiCmd supports adding, replacing, or deleting routers.
 type manageWifiCmd struct {
 	subcommands.CommandRunBase
 	authFlags   authcli.Flags
 	envFlags    site.EnvFlags
 	commonFlags site.CommonFlags
 
-	dutName         string
-	wifiFeatures    []string
-	wifiFeaturesMap map[string]map[lab.Wifi_Feature]bool
-	routers         [][]string
-	routersMap      map[string]map[string]*lab.WifiRouter // set of WifiRouter
+	dutName    string
+	routers    [][]string
+	routersMap map[string]map[string]*lab.WifiRouter // set of WifiRouter
 
 	wifiFile            string
 	wifiJsonFileWifiObj *lab.Wifi
@@ -156,32 +152,26 @@ func (c *manageWifiCmd) runSingleDut(ctx context.Context, client rpc.FleetClient
 	return err
 }
 
-// runWifiAction returns a new list of wifi feature and routers based on the action specified in c and current list.
-// note: runWifiAction currently only modifies wifi.Features and wifi.WifiRouters
+// runWifiAction updates the routers in current based on the action specified in c.
+// note: runWifiAction currently only modifies wifi.WifiRouters
 func (c *manageWifiCmd) runWifiAction(current *lab.Wifi, dutName string) (*lab.Wifi, error) {
 	switch c.mode {
 	case actionAdd:
-		return c.addWifi(current, dutName)
+		return c.addWifiRouters(current, dutName)
 	case actionReplace:
 		if c.commonFlags.Verbose() {
 			fmt.Println("Replacing", current)
 		}
-		return c.replaceWifi(current, dutName)
+		return c.replaceWifiRouters(current, dutName)
 	case actionDelete:
-		return c.deleteWifi(current, dutName)
+		return c.deleteWifiRouters(current, dutName)
 	default:
 		return nil, errors.Reason("unknown action %d", c.mode).Err()
 	}
 }
 
-// replaceWifi replaces routers and/or wifi features with specified routers and/or wifi features.
-func (c *manageWifiCmd) replaceWifi(current *lab.Wifi, dutName string) (*lab.Wifi, error) {
-	if len(c.wifiFeaturesMap[dutName]) != 0 {
-		current.Features = make([]lab.Wifi_Feature, 0)
-		for feature := range c.wifiFeaturesMap[dutName] {
-			current.Features = append(current.Features, feature)
-		}
-	}
+// replaceWifiRouters replaces routers in current with the routers in c.
+func (c *manageWifiCmd) replaceWifiRouters(current *lab.Wifi, dutName string) (*lab.Wifi, error) {
 	if len(c.routersMap[dutName]) != 0 {
 		current.WifiRouters = make([]*lab.WifiRouter, 0)
 		for hostname := range c.routersMap[dutName] {
@@ -191,54 +181,32 @@ func (c *manageWifiCmd) replaceWifi(current *lab.Wifi, dutName string) (*lab.Wif
 	return current, nil
 }
 
-// addWifi takes the current wifi returns the same wifi with wifi features and routers specified in c added.
+// addWifiRouters adds routers in c to the routers in current.
 // It returns an error if a duplicate is specified.
-func (c *manageWifiCmd) addWifi(current *lab.Wifi, dutName string) (*lab.Wifi, error) {
+func (c *manageWifiCmd) addWifiRouters(current *lab.Wifi, dutName string) (*lab.Wifi, error) {
 	for _, router := range current.GetWifiRouters() {
 		if _, ok := c.routersMap[dutName][router.GetHostname()]; ok {
 			return nil, errors.Reason("wifi router %s already exists", router.GetHostname()).Err()
 		}
 	}
-	for _, feature := range current.GetFeatures() {
-		if c.wifiFeaturesMap[dutName][feature] {
-			return nil, errors.Reason("wifi feature %s already exists", feature).Err()
-		}
-	}
 	for hostname := range c.routersMap[dutName] {
 		current.WifiRouters = append(current.WifiRouters, c.routersMap[dutName][hostname])
-	}
-	for feature := range c.wifiFeaturesMap[dutName] {
-		current.Features = append(current.Features, feature)
 	}
 	return current, nil
 }
 
-// deleteWifi returns a wifi by removing those wifi feature, routers specified in c from current.
-// It returns an error if a non-existent wifi feature or router is attempted to be removed.
-func (c *manageWifiCmd) deleteWifi(current *lab.Wifi, dutName string) (*lab.Wifi, error) {
-	currentFeaturesMap := make(map[lab.Wifi_Feature]bool)
-	for _, feature := range current.GetFeatures() {
-		currentFeaturesMap[feature] = true
-	}
+// deleteWifiRouters deletes routers in c with routers in current that have the
+// same hostname.
+func (c *manageWifiCmd) deleteWifiRouters(current *lab.Wifi, dutName string) (*lab.Wifi, error) {
 	currentRoutersMap := make(map[string]*lab.WifiRouter)
 	for _, router := range current.GetWifiRouters() {
 		currentRoutersMap[router.GetHostname()] = router
-	}
-	for feature := range c.wifiFeaturesMap[dutName] {
-		if _, ok := currentFeaturesMap[feature]; !ok {
-			return nil, errors.Reason("wifi feature %s does not exist", feature).Err()
-		}
-		delete(currentFeaturesMap, feature)
 	}
 	for hostname := range c.routersMap[dutName] {
 		if _, ok := currentRoutersMap[hostname]; !ok {
 			return nil, errors.Reason("wifi router %s does not exist", hostname).Err()
 		}
 		delete(currentRoutersMap, hostname)
-	}
-	current.Features = make([]lab.Wifi_Feature, 0, len(currentFeaturesMap))
-	for feature := range currentFeaturesMap {
-		current.Features = append(current.Features, feature)
 	}
 	current.WifiRouters = make([]*lab.WifiRouter, 0, len(currentRoutersMap))
 	for hostname := range currentRoutersMap {
@@ -249,13 +217,10 @@ func (c *manageWifiCmd) deleteWifi(current *lab.Wifi, dutName string) (*lab.Wifi
 
 const (
 	errDuplicateDut           = "duplicate dut specified"
-	errDuplicateBuildTarget   = "duplicate build_target specified"
 	errDuplicateModel         = "duplicate model specified"
 	errDuplicateRouterFeature = "duplicate router feature specified"
-	errDuplicateWifiFeature   = "duplicate wifi feature specified"
 	errInvalidRouterFeature   = "invalid router feature"
-	errInvalidWifiFeature     = "invalid wifi feature"
-	errNoRouterAndNoFeature   = "at least one -router or one -wifi-feature is required"
+	errNoRouter               = "at least one -router required"
 )
 
 // cleanAndValidateFlags returns an error with the result of all validations. It strips whitespaces
@@ -264,9 +229,6 @@ func (c *manageWifiCmd) cleanAndValidateFlags() error {
 	var errStrs []string
 	if c.routersMap == nil {
 		c.routersMap = map[string]map[string]*lab.WifiRouter{}
-	}
-	if c.wifiFeaturesMap == nil {
-		c.wifiFeaturesMap = map[string]map[lab.Wifi_Feature]bool{}
 	}
 	if len(c.wifiFile) != 0 {
 		if utils.IsCSVFile(c.wifiFile) {
@@ -287,9 +249,8 @@ func (c *manageWifiCmd) cleanAndValidateFlags() error {
 					}
 					continue
 				}
-				dut, routers, wifiFeatures := parseWifiCSVRow(records[0], rec)
-				err := c.validateSingleDut(dut, routers, wifiFeatures)
-				if err != nil {
+				dut, routers := parseWifiCSVRow(records[0], rec)
+				if err := c.validateSingleDut(dut, routers); err != nil {
 					return errors.Annotate(err, "invalid input row number %d", i).Err()
 				}
 			}
@@ -304,12 +265,8 @@ func (c *manageWifiCmd) cleanAndValidateFlags() error {
 				c.wifiJsonFileWifiObj = &lab.Wifi{}
 			}
 			c.routersMap[c.dutName] = map[string]*lab.WifiRouter{}
-			c.wifiFeaturesMap[c.dutName] = map[lab.Wifi_Feature]bool{}
 			if err := utils.ParseJSONFile(c.wifiFile, c.wifiJsonFileWifiObj); err != nil {
 				return errors.Annotate(err, "json parse error").Err()
-			}
-			for _, wifiFeature := range c.wifiJsonFileWifiObj.Features {
-				c.wifiFeaturesMap[c.dutName][wifiFeature] = true
 			}
 			for _, router := range c.wifiJsonFileWifiObj.WifiRouters {
 				if hostname := strings.TrimSpace(router.Hostname); hostname == "" {
@@ -321,27 +278,22 @@ func (c *manageWifiCmd) cleanAndValidateFlags() error {
 			return nil
 		}
 	} else {
-		err := c.validateSingleDut(c.dutName, c.routers, c.wifiFeatures)
-		if err != nil {
+		if err := c.validateSingleDut(c.dutName, c.routers); err != nil {
 			return err
 		}
-		if len(errStrs) == 0 {
-			return nil
+		if len(errStrs) != 0 {
+			return cmdlib.NewQuietUsageError(c.Flags, fmt.Sprintf("Wrong usage!!\n%s", strings.Join(errStrs, "\n")))
 		}
-		return cmdlib.NewQuietUsageError(c.Flags, fmt.Sprintf("Wrong usage!!\n%s", strings.Join(errStrs, "\n")))
+		return nil
 	}
 }
 
-func parseWifiCSVRow(header []string, row []string) (dut string, routers [][]string, wifiFeatures []string) {
+func parseWifiCSVRow(header []string, row []string) (dut string, routers [][]string) {
 	for i, headerKey := range header {
 		rowField := strings.ToLower(strings.TrimSpace(row[i]))
 		switch headerKey {
 		case "dut":
 			dut = rowField
-		case "wifi_features":
-			if rowField != "" {
-				wifiFeatures = strings.Split(rowField, ";")
-			}
 		case "router":
 			if rowField != "" {
 				routers = append(routers, strings.Split(rowField, ";"))
@@ -350,11 +302,11 @@ func parseWifiCSVRow(header []string, row []string) (dut string, routers [][]str
 			fmt.Println("shouldn't be in here since header fields are checked. add cases that is in csvHeaderMap")
 		}
 	}
-	return dut, routers, wifiFeatures
+	return dut, routers
 }
 
 // validateSingleDut validate input for single dut. Use for multiple row update and single cli input
-func (c *manageWifiCmd) validateSingleDut(dutName string, routersInput [][]string, wifiFeaturesInput []string) error {
+func (c *manageWifiCmd) validateSingleDut(dutName string, routersInput [][]string) error {
 	var errStrs []string
 	if len(dutName) == 0 {
 		errStrs = append(errStrs, errDUTMissing)
@@ -362,14 +314,11 @@ func (c *manageWifiCmd) validateSingleDut(dutName string, routersInput [][]strin
 	if _, ok := c.routersMap[dutName]; ok {
 		return errors.Reason("%s: %s", errDuplicateDut, dutName).Err()
 	}
-	if _, ok := c.wifiFeaturesMap[dutName]; ok {
-		return errors.Reason("%s: %s", errDuplicateDut, dutName).Err()
-	}
+
 	c.routersMap[dutName] = map[string]*lab.WifiRouter{}
-	c.wifiFeaturesMap[dutName] = map[lab.Wifi_Feature]bool{}
 	for _, routerCSV := range routersInput {
 		newRouter := &lab.WifiRouter{}
-		newRouterFeaturesMap := make(map[lab.WifiRouter_Feature]bool)
+		newRouterFeaturesMap := make(map[labapi.WifiRouterFeature]bool)
 		for _, keyValStr := range routerCSV {
 			keyValList := strings.Split(keyValStr, ":")
 			if len(keyValList) != 2 {
@@ -388,20 +337,15 @@ func (c *manageWifiCmd) validateSingleDut(dutName string, routersInput [][]strin
 					errStrs = append(errStrs, errDuplicateModel)
 				}
 				newRouter.Model = val
-			case "build_target":
-				if newRouter.GetBuildTarget() != "" {
-					errStrs = append(errStrs, errDuplicateBuildTarget)
-				}
-				newRouter.BuildTarget = val
-			case "feature":
+			case "supported_feature":
 				val = strings.ToUpper(val)
-				if fInt, ok := lab.WifiRouter_Feature_value[val]; !ok {
+				if fInt, ok := labapi.WifiRouterFeature_value[val]; !ok {
 					errStrs = append(errStrs, fmt.Sprintf("%s: %q", errInvalidRouterFeature, val))
 				} else {
-					if newRouterFeaturesMap[lab.WifiRouter_Feature(fInt)] {
+					if newRouterFeaturesMap[labapi.WifiRouterFeature(fInt)] {
 						errStrs = append(errStrs, errDuplicateRouterFeature)
 					}
-					newRouterFeaturesMap[lab.WifiRouter_Feature(fInt)] = true
+					newRouterFeaturesMap[labapi.WifiRouterFeature(fInt)] = true
 				}
 			default:
 				errStrs = append(errStrs, fmt.Sprintf("unsupported router key: %q", key))
@@ -409,36 +353,21 @@ func (c *manageWifiCmd) validateSingleDut(dutName string, routersInput [][]strin
 		}
 		if newRouter.GetHostname() == "" {
 			errStrs = append(errStrs, errEmptyHostname)
-		} else {
-			for feature := range newRouterFeaturesMap {
-				newRouter.Features = append(newRouter.Features, feature)
-			}
-			if _, ok := c.routersMap[dutName][newRouter.GetHostname()]; ok {
-				errStrs = append(errStrs, errDuplicateHostname)
-			}
-			c.routersMap[dutName][newRouter.GetHostname()] = newRouter
+			continue
 		}
-	}
-
-	for _, feature := range wifiFeaturesInput {
-		feature = strings.ToUpper(strings.TrimSpace(feature))
-		if fInt, ok := lab.Wifi_Feature_value[feature]; !ok {
-			errStrs = append(errStrs, fmt.Sprintf("%s: %q", errInvalidWifiFeature, feature))
-		} else {
-			if c.wifiFeaturesMap[dutName][lab.Wifi_Feature(fInt)] {
-				errStrs = append(errStrs, errDuplicateWifiFeature)
-			}
-			c.wifiFeaturesMap[dutName][lab.Wifi_Feature(fInt)] = true
+		for feature := range newRouterFeaturesMap {
+			newRouter.SupportedFeatures = append(newRouter.SupportedFeatures, feature)
 		}
+		if _, ok := c.routersMap[dutName][newRouter.GetHostname()]; ok {
+			errStrs = append(errStrs, errDuplicateHostname)
+		}
+		c.routersMap[dutName][newRouter.GetHostname()] = newRouter
 	}
-
-	if len(c.routersMap[dutName]) == 0 && len(c.wifiFeaturesMap[dutName]) == 0 {
-		errStrs = append(errStrs, errNoRouterAndNoFeature)
+	if len(c.routersMap[dutName]) == 0 {
+		errStrs = append(errStrs, errNoRouter)
 	}
-
-	if len(errStrs) == 0 {
-		return nil
+	if len(errStrs) != 0 {
+		return cmdlib.NewQuietUsageError(c.Flags, fmt.Sprintf("Wrong usage!!\n%s", strings.Join(errStrs, "\n")))
 	}
-
-	return cmdlib.NewQuietUsageError(c.Flags, fmt.Sprintf("Wrong usage!!\n%s", strings.Join(errStrs, "\n")))
+	return nil
 }

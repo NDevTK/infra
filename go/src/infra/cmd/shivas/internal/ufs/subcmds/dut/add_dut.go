@@ -671,14 +671,10 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 	if c.appcap {
 		peripherals.GetWifi().WifiRouters = []*chromeosLab.WifiRouter{
 			{
-				Hostname:    fmt.Sprintf("%s-router", name),
-				BuildTarget: "gale",
-				Model:       "gale",
+				Hostname: fmt.Sprintf("%s-router", name),
 			},
 			{
-				Hostname:    fmt.Sprintf("%s-pcap", name),
-				BuildTarget: "gale",
-				Model:       "gale",
+				Hostname: fmt.Sprintf("%s-pcap", name),
 			},
 		}
 	}
