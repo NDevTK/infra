@@ -322,6 +322,7 @@ export const ISSUE_WIZARD_QUESTIONS: IssueCategory[] = [
           "Blink>Vibration",
           "Blink>ViewSource",
           "Blink>WebAudio",
+          "Blink>WebAuthentication",
           "Blink>WebComponents",
           "Blink>WebCrypto",
           "Blink>WebFonts",
