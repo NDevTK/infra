@@ -155,7 +155,7 @@ func (r *releaseRun) validate() error {
 func (r *releaseRun) checkChildrenExist(ctx context.Context) error {
 	if len(r.buildTargets) > 0 {
 		builderNames := r.getReleaseBuilderNames()
-		bucket := "staging-try"
+		bucket := "try-dev"
 		if r.production {
 			bucket = "release"
 		}
@@ -337,7 +337,7 @@ func (r *releaseRun) getReleaseOrchestratorName() string {
 	if r.production {
 		bucket = "release"
 	} else {
-		bucket = "staging-try"
+		bucket = "try-dev"
 		stagingPrefix = "staging-"
 	}
 	if strings.HasPrefix(r.branch, "release-") {
