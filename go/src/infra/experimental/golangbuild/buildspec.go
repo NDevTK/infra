@@ -200,8 +200,11 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 
 	if hostGOOS == "windows" {
 		env.Set("GOBUILDEXIT", "1") // On Windows, emit exit codes from .bat scripts. See go.dev/issue/9799.
-		// TODO(heschi): select gcc32 for GOARCH=i386
-		env.Set("PATH", fmt.Sprintf("%v%c%v", env.Get("PATH"), os.PathListSeparator, filepath.Join(b.toolsRoot, "cc/windows/gcc64/bin")))
+		ccPath := filepath.Join(b.toolsRoot, "cc/windows/gcc64/bin")
+		if env.Get("GOARCH") == "386" {
+			ccPath = filepath.Join(b.toolsRoot, "cc/windows/gcc32/bin")
+		}
+		env.Set("PATH", fmt.Sprintf("%v%c%v", env.Get("PATH"), os.PathListSeparator, ccPath))
 	}
 	return env.SetInCtx(ctx)
 }
