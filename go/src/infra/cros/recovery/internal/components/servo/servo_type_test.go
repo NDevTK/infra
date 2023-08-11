@@ -4,6 +4,7 @@
 package servo
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -98,6 +99,9 @@ func TestServoType(t *testing.T) {
 		}
 		if servo.IsCCD() != listContains(CCD_SERVOS, servoStr) {
 			t.Errorf("servo %v: expected IsCCD() to return %v", servoStr, !servo.IsCCD())
+		}
+		if servo.IsMainDeviceCCD() != strings.HasPrefix(servo.MainDevice(), "ccd_") {
+			t.Errorf("servo %v: expected IsMainDeviceCCD() to return %v", servoStr, !servo.IsMainDeviceCCD())
 		}
 		if servo.IsCr50() != listContains(CR50_SERVOS, servoStr) {
 			t.Errorf("servo %v: expected IsCr50() to return %v", servoStr, !servo.IsCr50())
