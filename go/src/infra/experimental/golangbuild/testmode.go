@@ -381,7 +381,7 @@ func (p Port) String() string {
 // Testing only this port is the default behavior for most test modes.
 var currentPort = Port{}
 
-// goDistList uses 'go tool dist list' to get a list of all ports,
+// goDistList uses 'go tool dist list' to get a list of all non-broken ports,
 // excluding ones that definitely already have a pre-submit builder,
 // and returns those that match the provided shard.
 func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []Port, err error) {
@@ -389,6 +389,8 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 	defer endStep(step, &err)
 
 	// Run go tool dist list -json.
+	//
+	// Notably, we leave out -broken flag to get only non-broken ports.
 	listCmd := spec.distListCmd(ctx, spec.goroot)
 	listOutput, err := cmdStepOutput(ctx, "go tool dist list -json", listCmd, false)
 	if err != nil {
@@ -423,6 +425,15 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 			continue
 		case p.GOOS == "android":
 			// TODO(go.dev/issue/61762): Add misc-compile coverage for the GOOS=android ports (Android).
+			continue
+		case spec.inputs.GoBranch == "release-branch.go1.20" && p.Port == Port{"openbsd", "mips64"}:
+			// The openbsd/mips64 port is marked broken at tip as of 2023-08-10.
+			// It's not marked as broken in cmd/dist on release-branch.go1.20,
+			// but it still fails to compile a number of golang.org/x repos.
+			// So treat it as a broken port for our purposes since its negative signal
+			// is not actionable until known issues with the port at tip are resolved.
+			//
+			// TODO(go.dev/issue/61546, go.dev/issue/58110): If the port gets fixed, drop this case.
 			continue
 		}
 		if shard != noSharding && !shard.shouldRunTest(p.GOOS+"/"+p.GOARCH) {
