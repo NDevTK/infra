@@ -3554,6 +3554,28 @@
                   ],
                   "exec_name": "is_servo_v4",
                   "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Is servo_v4(p1) used with type-c connector",
+                  "docs": [
+                    "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "is_servo_v4",
+                      "docs": [
+                        "This action will detect whether or not the attached servo device is of type V4."
+                      ],
+                      "exec_name": "is_servo_v4",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_check_servod_control",
+                  "exec_args": [
+                    "command:root.dut_connection_type",
+                    "expected_string_value:type-c"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
                 }
               ],
               "exec_name": "servo_main_device_is_ccd",
@@ -9923,6 +9945,28 @@
                     "This action will detect whether or not the attached servo device is of type V4."
                   ],
                   "exec_name": "is_servo_v4",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Is servo_v4(p1) used with type-c connector",
+                  "docs": [
+                    "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "is_servo_v4",
+                      "docs": [
+                        "This action will detect whether or not the attached servo device is of type V4."
+                      ],
+                      "exec_name": "is_servo_v4",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_check_servod_control",
+                  "exec_args": [
+                    "command:root.dut_connection_type",
+                    "expected_string_value:type-c"
+                  ],
                   "run_control": "RERUN_AFTER_RECOVERY"
                 }
               ],
