@@ -78,7 +78,7 @@ func (c *customProvisionRun) innerRun(a subcommands.Application, args []string, 
 			TaskName:         string(buildbucket.Custom),
 			AdminService:     e.AdminService,
 			InventoryService: e.UFSService,
-			NoMetrics:        true,
+			NoMetrics:        false,
 			Configuration:    configuration,
 			// We do not update as this is just manual action.
 			UpdateInventory: false,

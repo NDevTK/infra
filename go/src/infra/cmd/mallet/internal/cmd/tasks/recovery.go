@@ -120,7 +120,7 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 				InventoryService: e.UFSService,
 				UpdateInventory:  c.updateUFS,
 				NoStepper:        c.noStepper,
-				NoMetrics:        true,
+				NoMetrics:        false,
 				Configuration:    configuration,
 				ExtraTags: []string{
 					sessionTag,
