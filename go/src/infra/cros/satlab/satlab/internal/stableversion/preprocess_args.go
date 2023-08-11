@@ -38,7 +38,7 @@ func preprocessHostname(common site.CommonFlags, hostname string, getDHBID getDH
 	// If the hostname is empty, then the user did not provide it.
 	// Try to provide a direct, helpful error message.
 	if hostname == "" {
-		return "", errors.Reason("hostname cannot be empty").Err()
+		return "", errors.Reason("hostname cannot be empty without board/model").Err()
 	}
 
 	// An explicit satlabID was provided. The user may or may not be in the satlab-remote-access

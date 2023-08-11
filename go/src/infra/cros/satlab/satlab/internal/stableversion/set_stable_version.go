@@ -6,17 +6,25 @@ package stableversion
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"os"
+	"strings"
 
+	"github.com/googleapis/gax-go/v2"
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
+	"google.golang.org/api/option"
+	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
+	"infra/cmd/shivas/utils"
 	"infra/cmdsupport/cmdlib"
+	"infra/cros/satlab/satlab/internal/pkg/google.golang.org/google/chromeos/moblab"
 	"infra/cros/satlab/satlab/internal/site"
 )
 
@@ -38,15 +46,15 @@ var SetStableVersionCmd = &subcommands.Command{
 		r.envFlags.Register(&r.Flags)
 		r.commonFlags.Register(&r.Flags)
 
-		if allowSetModelBoard {
-			r.Flags.StringVar(&r.board, "board", "", `the board or build target (used with model)`)
-			r.Flags.StringVar(&r.model, "model", "", `the model (used with board)`)
-		}
+		// if allowSetModelBoard (
+		r.Flags.StringVar(&r.board, "board", "", `the board or build target (used with model)`)
+		r.Flags.StringVar(&r.model, "model", "", `the model (used with board)`)
+		// )
+
 		r.Flags.StringVar(&r.hostname, "hostname", "", `the hostname (used by itself)`)
 		r.Flags.StringVar(&r.os, "os", "", `the OS version to set (no change if empty)`)
 		r.Flags.StringVar(&r.fw, "fw", "", `the firmware version to set (no change if empty)`)
 		r.Flags.StringVar(&r.fwImage, "fwImage", "", `the firmware image version to set (no change if empty)`)
-
 		return r
 	},
 }
@@ -75,6 +83,216 @@ func (c *setStableVersionRun) Run(a subcommands.Application, args []string, env 
 		return 1
 	}
 	return 0
+}
+
+// InnerRun implements Run using Board/Model or Hostname depending on provided args.
+func (c *setStableVersionRun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
+	ctx = utils.SetupContext(ctx, c.envFlags.GetNamespace())
+	err := c.validateArgs()
+	if err != nil {
+		return err
+	}
+
+	// Hostname flow: INTERNAL USERS ONLY
+	if c.hostname != "" {
+		err := c.innerRunHostname(ctx, a, args, env)
+		if err != nil {
+			return err
+		}
+	} else if c.board != "" && c.model != "" { // Board Model flow: SFP EXTERNAL USERS ONLY
+		recovery_version := &RecoveryVersion{
+			Board:   c.board,
+			Model:   c.model,
+			Os:      c.os,
+			Fw:      c.fw,
+			FwImage: c.fwImage,
+		}
+		err := innerRunBoardModel(ctx, a, args, env, recovery_version)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// InnerRunBoardModel is the implementation of setStableVersion that uses Board/Model and circumvents the cros-inventory call.
+func innerRunBoardModel(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env, rv *RecoveryVersion) error {
+
+	fmt.Println("WARNING: internal users must use -hostname override instead of board/model")
+
+	// Count how many of OS, FW or FW Image are provided
+	numArgs := validateStableVersionArgs(rv.Os, rv.Fw, rv.FwImage)
+
+	if numArgs == 0 { // If none provided, use board/model to fetch arbitrary version
+		moblabClient, err := moblab.NewBuildClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
+		if err != nil {
+			return errors.Annotate(err, "satlab new moblab api build client").Err()
+		}
+		rv, err = FindMostStableBuild(ctx, moblabClient, rv.Board, rv.Model)
+		if err != nil {
+			return errors.Annotate(err, "find most stable build").Err()
+		}
+	} else if numArgs < 3 { // If partial args provided, throw an error
+		return fmt.Errorf("Please provide all or none of the following: -os, -fw, -fwImage")
+	}
+
+	// Save recovery version in local directory
+	err := WriteLocalStableVersion(rv, site.RecoveryVersionDirectory)
+	if err != nil {
+		return errors.Annotate(err, "write local stable version").Err()
+	}
+
+	return nil
+}
+
+// InnerRunHostname is the implementation of setStableVersion for internal Satlab users that requires hostname et al.
+func (c *setStableVersionRun) innerRunHostname(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
+
+	fmt.Println("WARNING: Satlab for Partners users must use board/model override instead of hostname")
+
+	newHostname, err := preprocessHostname(c.commonFlags, c.hostname, nil, nil)
+	if err != nil {
+		return errors.Annotate(err, "set stable version").Err()
+	}
+	c.hostname = newHostname
+
+	req, err := c.produceRequest(ctx, a, args, env)
+	if err != nil {
+		return errors.Annotate(err, "set stable version").Err()
+	}
+
+	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
+	if err != nil {
+		return errors.Annotate(err, "set stable version").Err()
+	}
+
+	invWithSVClient := fleet.NewInventoryPRPCClient(
+		&prpc.Client{
+			C:       hc,
+			Host:    c.envFlags.GetCrosAdmService(),
+			Options: site.DefaultPRPCOptions,
+		},
+	)
+
+	resp, err := invWithSVClient.SetSatlabStableVersion(ctx, req)
+	if err != nil {
+		return errors.Annotate(err, "get stable version").Err()
+	}
+	out, err := protojson.MarshalOptions{
+		Indent: "  ",
+	}.Marshal(resp)
+	if err != nil {
+		return errors.Annotate(err, "get stable version").Err()
+	}
+	fmt.Fprintf(a.GetOut(), "%s\n", out)
+	return nil
+}
+
+// WriteLocalStableVersion saves a recovery version to the specified directory and creates the directory if necessary.
+func WriteLocalStableVersion(recovery_version *RecoveryVersion, path string) error {
+
+	// Create recovery_versions directory if not yet created
+	err := os.MkdirAll(path, os.ModePerm)
+	if err != nil {
+		return errors.Annotate(err, "mkdir recovery version").Err()
+	}
+
+	fname := fmt.Sprintf("%s%s-%s.json", path, recovery_version.Board, recovery_version.Model)
+	f, err := os.Create(fname)
+	if err != nil {
+		return err
+	}
+	// close file on exit and check for its returned error
+	defer func() {
+		if err := f.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	rv, err := json.MarshalIndent(recovery_version, "", " ")
+	if err != nil {
+		return errors.Annotate(err, "marshal recovery version").Err()
+	}
+	_, err = f.Write(rv)
+	if err != nil {
+		return err
+	}
+	fmt.Println("Recovery Version written locally: ", string(rv))
+
+	return nil
+}
+
+// Fetch a stable recovery version for a given board model
+func FindMostStableBuild(ctx context.Context, moblabClient MoblabClient, board string, model string) (*RecoveryVersion, error) {
+
+	// fetch os image and fw
+	findBuildRequest := &moblabpb.FindMostStableBuildRequest{
+		BuildTarget: "buildTargets/" + board,
+	}
+	resp, err := moblabClient.FindMostStableBuild(ctx, findBuildRequest)
+	if err != nil {
+		return nil, err
+	}
+	milestone := strings.Split(resp.GetBuild().GetMilestone(), "/")[1]
+	os := "R" + milestone + "-" + resp.Build.GetBuildVersion()
+	fw := resp.Build.GetRwFirmwareVersion()
+
+	listMilestonesRequest := &moblabpb.ListBuildsRequest{
+		Parent: fmt.Sprintf("buildTargets/%s/models/%s", board, model),
+		Filter: "type=firmware",
+	}
+	listMilestonesResponse := moblabClient.ListBuilds(ctx, listMilestonesRequest)
+	milestoneBuild, err := listMilestonesResponse.Next()
+	if err != nil {
+		return nil, err
+	}
+	fw_milestone := strings.Split(milestoneBuild.GetMilestone(), "/")[1]
+
+	// fetch firmware build version
+	listBuildVersionsRequest := &moblabpb.ListBuildsRequest{
+		Parent:   fmt.Sprintf("buildTargets/%s/models/%s", board, model),
+		Filter:   fmt.Sprintf("type=firmware+milestone=milestones/%s", fw_milestone),
+		PageSize: 1,
+	}
+	listBuildVersionsResponse := moblabClient.ListBuilds(ctx, listBuildVersionsRequest)
+	firmwareBuild, err := listBuildVersionsResponse.Next()
+	if err != nil {
+		return nil, err
+	}
+	fwImage := fmt.Sprintf("%s-firmware/R%s-%s", board, fw_milestone, firmwareBuild.GetBuildVersion())
+
+	rv := &RecoveryVersion{
+		Board:   board,
+		Model:   model,
+		Os:      os,
+		Fw:      fw,
+		FwImage: fwImage,
+	}
+	return rv, nil
+}
+
+func (c *setStableVersionRun) validateArgs() error {
+	if (c.board != "" && c.model == "") || (c.board == "" && c.model != "") {
+		return errors.Reason("Please provide both -board AND -model").Err()
+	}
+	if c.hostname == "" && c.board == "" && c.model == "" {
+		return errors.Reason("Please provide either -hostname OR -board and -model").Err()
+	}
+	return nil
+}
+
+func validateStableVersionArgs(os string, fw string, fwImage string) int {
+	count := 0
+	if os != "" {
+		count++
+	}
+	if fw != "" {
+		count++
+	}
+	if fwImage != "" {
+		count++
+	}
+	return count
 }
 
 // ProduceRequest creates a request that can be used as a key to set the stable version.
@@ -119,42 +337,16 @@ func (c *setStableVersionRun) produceRequest(ctx context.Context, a subcommands.
 	return req, nil
 }
 
-// InnerRun creates a client, sends a GetStableVersion request, and prints the response.
-func (c *setStableVersionRun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
-	newHostname, err := preprocessHostname(c.commonFlags, c.hostname, nil, nil)
-	if err != nil {
-		return errors.Annotate(err, "set stable version").Err()
-	}
-	c.hostname = newHostname
+// MoblabClient interface provides subset of Moblab API methods relevant to Stable Version functionality
+type MoblabClient interface {
+	FindMostStableBuild(ctx context.Context, req *moblabpb.FindMostStableBuildRequest, opts ...gax.CallOption) (*moblabpb.FindMostStableBuildResponse, error)
+	ListBuilds(ctx context.Context, req *moblabpb.ListBuildsRequest, opts ...gax.CallOption) *moblab.BuildIterator
+}
 
-	req, err := c.produceRequest(ctx, a, args, env)
-	if err != nil {
-		return errors.Annotate(err, "set stable version").Err()
-	}
-
-	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
-	if err != nil {
-		return errors.Annotate(err, "set stable version").Err()
-	}
-
-	invWithSVClient := fleet.NewInventoryPRPCClient(
-		&prpc.Client{
-			C:       hc,
-			Host:    c.envFlags.GetCrosAdmService(),
-			Options: site.DefaultPRPCOptions,
-		},
-	)
-
-	resp, err := invWithSVClient.SetSatlabStableVersion(ctx, req)
-	if err != nil {
-		return errors.Annotate(err, "get stable version").Err()
-	}
-	out, err := protojson.MarshalOptions{
-		Indent: "  ",
-	}.Marshal(resp)
-	if err != nil {
-		return errors.Annotate(err, "get stable version").Err()
-	}
-	fmt.Fprintf(a.GetOut(), "%s\n", out)
-	return nil
+type RecoveryVersion struct {
+	Board   string
+	Model   string
+	Os      string
+	Fw      string
+	FwImage string
 }

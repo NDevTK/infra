@@ -36,6 +36,8 @@ const ProdUFSService = "ufs.api.cr.dev"
 // places to create resource names.
 const Satlab = "satlab"
 
+const RecoveryVersionDirectory = "/config/recovery_versions/"
+
 const (
 	// CTPBuilderBucketEnv is the env var used to determine what bucket the
 	// ctp task should run in.

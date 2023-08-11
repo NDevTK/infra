@@ -5,18 +5,21 @@
 package dut
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"regexp"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/errors"
+	"google.golang.org/api/option"
 
 	"infra/cmdsupport/cmdlib"
-
 	"infra/cros/satlab/satlab/internal/commands/dns"
 	"infra/cros/satlab/satlab/internal/components/dut/shivas"
+	"infra/cros/satlab/satlab/internal/pkg/google.golang.org/google/chromeos/moblab"
 	"infra/cros/satlab/satlab/internal/site"
+	"infra/cros/satlab/satlab/internal/stableversion"
 )
 
 // AddDUTCmd is the command that deploys a Satlab DUT.
@@ -73,6 +76,8 @@ func (c *addDUT) Run(a subcommands.Application, args []string, env subcommands.E
 
 // InnerRun is the implementation of run.
 func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcommands.Env) (err error) {
+	ctx := context.Background()
+
 	if err := validateHostname(c.hostname); err != nil {
 		return errors.Annotate(err, "bad hostname").Err()
 	}
@@ -97,6 +102,23 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 	// The qualified name of a rack if no information is given is "satlab-...-rack".
 	if c.rack == "" {
 		c.rack = "rack"
+	}
+
+	// Check if board/model are provided and stable version not yet created.
+	if c.board != "" && c.model != "" && shouldCreateStableVersion(c.board, c.model) {
+		// Fetch an arbitrary stable version and save locally.
+		moblabClient, err := moblab.NewBuildClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
+		if err != nil {
+			return errors.Annotate(err, "add dut - satlab new moblab api build client").Err()
+		}
+		recovery_version, err := stableversion.FindMostStableBuild(ctx, moblabClient, c.board, c.model)
+		if err != nil {
+			return errors.Annotate(err, "add dut - find most stable build").Err()
+		}
+		err = stableversion.WriteLocalStableVersion(recovery_version, site.RecoveryVersionDirectory)
+		if err != nil {
+			return errors.Annotate(err, "add dut - write local stable version").Err()
+		}
 	}
 
 	c.qualifiedHostname = site.MaybePrepend(site.Satlab, dockerHostBoxIdentifier, c.hostname)
@@ -235,4 +257,10 @@ func validateHostname(host string) error {
 	}
 
 	return nil
+}
+
+func shouldCreateStableVersion(board string, model string) bool {
+	localStableVersion := fmt.Sprintf("/config/recovery_versions/%s-%s.json", board, model)
+	_, err := os.Stat(localStableVersion)
+	return err != nil
 }
