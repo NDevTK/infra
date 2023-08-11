@@ -625,6 +625,7 @@ func servoRepairPlan() *Plan {
 				},
 				Dependencies: []string{
 					"is_servo_v4",
+					"Is servo_v4(p1) used with type-c connector",
 				},
 				ExecName: "servo_main_device_is_ccd",
 			},
