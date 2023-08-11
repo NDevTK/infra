@@ -196,20 +196,22 @@ func mainDeviceIsGSCExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // mainDeviceIsCCDExec checks whether or not the servo device is CCD.
 func mainDeviceIsCCDExec(ctx context.Context, info *execs.ExecInfo) error {
-	sType, err := WrappedServoType(ctx, info)
-	if err != nil {
-		return errors.Annotate(err, "main devices is ccd").Err()
+	actionMap := info.GetActionArgs(ctx)
+	if actionMap.AsBool(ctx, "check_info", true) {
+		if st := info.GetChromeos().GetServo().GetServodType(); st != "" {
+			if servo.NewServoType(st).IsMainDeviceCCD() {
+				return nil
+			}
+		}
 	}
-	md := sType.MainDevice()
-	switch md {
-	case servo.CCD_CR50:
-		fallthrough
-	case servo.CCD_GSC:
-		info.NewLogger().Debugf("Found main device: %q", md)
-		return nil
-	default:
-		return errors.Reason("main devices is ccd: found %q does not match expectations", md).Err()
+	if actionMap.AsBool(ctx, "read_servod", true) {
+		if sType, err := WrappedServoType(ctx, info); err != nil {
+			return errors.Annotate(err, "main devices is ccd").Err()
+		} else if sType.IsMainDeviceCCD() {
+			return nil
+		}
 	}
+	return errors.Reason("main devices is ccd: does not match expectations").Err()
 }
 
 // servoTypeRegexMatchExec checks if servo_type match to provided regex.
