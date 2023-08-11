@@ -170,3 +170,7 @@ infra:
       - kind: git
         repo: https://chrome-internal.googlesource.com/infradata/gae
         script: scripts/roll_images.py
+      # Rolling the images for Cloud Run
+      - kind: git
+        repo: https://chrome-internal.googlesource.com/infradata/cloud-run
+        script: scripts/roll_images.py
