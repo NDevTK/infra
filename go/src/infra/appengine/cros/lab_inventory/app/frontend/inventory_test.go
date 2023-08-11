@@ -6,6 +6,7 @@ package frontend
 
 import (
 	"context"
+	"sort"
 	"testing"
 	"time"
 
@@ -867,7 +868,7 @@ func TestListDeviceConfigs(t *testing.T) {
 	Convey("When device configs exist in datastore", t, func() {
 		ctx := gaetesting.TestingContext()
 		ds.GetTestable(ctx).Consistent(true)
-		_, validate := newTestFixtureWithContext(ctx, t)
+		tf, validate := newTestFixtureWithContext(ctx, t)
 		defer validate()
 
 		devCfg1 := mockDevCfg("board1", "model1", "variant1")
@@ -885,15 +886,18 @@ func TestListDeviceConfigs(t *testing.T) {
 		So(err, ShouldBeNil)
 
 		Convey("ListDeviceConfigs should return all configs", func() {
-			// This test is nondeterministic and closed the tree.
-			// Future CLs will make it deterministic and sort the output of ListDeviceConfigs.
-			//
-			// expected := &api.ListDeviceConfigsResponse{
-			// 	DeviceConfigs: []*device.Config{devCfg1, devCfg2},
-			// }
-			// resp2, err := tf.Inventory.ListDeviceConfigs(ctx, &api.ListDeviceConfigsRequest{})
-			// So(err, ShouldBeNil)
-			// So(resp2, ShouldResembleProto, expected)
+			expected := &api.ListDeviceConfigsResponse{
+				DeviceConfigs: []*device.Config{devCfg1, devCfg2},
+			}
+			resp2, err := tf.Inventory.ListDeviceConfigs(ctx, &api.ListDeviceConfigsRequest{})
+			So(err, ShouldBeNil)
+			if resp2 != nil {
+				sort.Slice(resp2.DeviceConfigs, func(i int, j int) bool {
+					// Id field is unique for device configs in real life, so we can use it to sort.
+					return resp2.DeviceConfigs[i].GetId().String() < resp2.DeviceConfigs[j].GetId().String()
+				})
+			}
+			So(resp2, ShouldResembleProto, expected)
 		})
 	})
 }
