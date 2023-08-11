@@ -42,6 +42,7 @@ type InventoryServerImpl struct {
 var (
 	getHwidDataFunc            = hwid.GetHwidData
 	getDeviceConfigFunc        = deviceconfig.GetCachedConfig
+	getAllDeviceConfigFunc     = deviceconfig.GetAllCachedConfig
 	getManufacturingConfigFunc = manufacturingconfig.GetCachedConfig
 )
 
@@ -1005,7 +1006,22 @@ func (is *InventoryServerImpl) BatchCreateManualRepairRecords(ctx context.Contex
 
 // ListDeviceConfigs lists all device configs inventory has in datastore.
 func (is *InventoryServerImpl) ListDeviceConfigs(ctx context.Context, req *api.ListDeviceConfigsRequest) (resp *api.ListDeviceConfigsResponse, err error) {
-	return nil, grpcutil.GRPCifyAndLogErr(ctx, errors.Reason("Not implemented").Err())
+	defer func() {
+		err = grpcutil.GRPCifyAndLogErr(ctx, err)
+	}()
+
+	cfgMap, err := getAllDeviceConfigFunc(ctx)
+
+	cfgs := make([]*device.Config, len(cfgMap))
+	i := 0
+	for k := range cfgMap {
+		cfgs[i] = k
+		i++
+	}
+
+	return &api.ListDeviceConfigsResponse{
+		DeviceConfigs: cfgs,
+	}, nil
 }
 
 // parseManualRepairRecordResult parses the repair records found in the

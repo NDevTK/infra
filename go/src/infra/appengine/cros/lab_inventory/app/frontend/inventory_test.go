@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
+	"github.com/golang/protobuf/proto"
 	timestamp "github.com/golang/protobuf/ptypes/timestamp"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
@@ -25,6 +26,7 @@ import (
 	api "infra/appengine/cros/lab_inventory/api/v1"
 	"infra/appengine/cros/lab_inventory/app/config"
 	"infra/cros/lab_inventory/datastore"
+	"infra/cros/lab_inventory/deviceconfig"
 	invlibs "infra/cros/lab_inventory/protos"
 )
 
@@ -832,6 +834,63 @@ func TestBatchCreateManualRepairRecords(t *testing.T) {
 			propFilter := map[string]string{"hostname": record5.Hostname}
 			getRes, err := datastore.GetRepairRecordByPropertyName(ctx, propFilter, -1, 0, []string{})
 			So(getRes, ShouldHaveLength, 0)
+		})
+	})
+}
+
+func mockDevCfg(board string, model string, variant string) *device.Config {
+	return &device.Config{
+		Id: &device.ConfigId{
+			PlatformId: &device.PlatformId{Value: board},
+			ModelId:    &device.ModelId{Value: model},
+			VariantId:  &device.VariantId{Value: variant},
+		},
+	}
+}
+
+func mockDevCfgEntity(devCfg *device.Config) (*devcfgEntity, error) {
+	cfgBytes, err := proto.Marshal(devCfg)
+	if err != nil {
+		return nil, err
+	}
+
+	return &devcfgEntity{
+		ID:        deviceconfig.GetDeviceConfigIDStr(devCfg.GetId()),
+		DevConfig: cfgBytes,
+	}, nil
+
+}
+
+func TestListDeviceConfigs(t *testing.T) {
+	t.Parallel()
+
+	Convey("When device configs exist in datastore", t, func() {
+		ctx := gaetesting.TestingContext()
+		ds.GetTestable(ctx).Consistent(true)
+		tf, validate := newTestFixtureWithContext(ctx, t)
+		defer validate()
+
+		devCfg1 := mockDevCfg("board1", "model1", "variant1")
+		cfgEntity1, err := mockDevCfgEntity(devCfg1)
+		So(err, ShouldBeNil)
+
+		devCfg2 := mockDevCfg("board2", "model2", "variant2")
+		cfgEntity2, err := mockDevCfgEntity(devCfg2)
+		So(err, ShouldBeNil)
+
+		err = ds.Put(ctx, []devcfgEntity{
+			*cfgEntity1,
+			*cfgEntity2,
+		})
+		So(err, ShouldBeNil)
+
+		Convey("ListDeviceConfigs should return all configs", func() {
+			expected := &api.ListDeviceConfigsResponse{
+				DeviceConfigs: []*device.Config{devCfg1, devCfg2},
+			}
+			resp2, err := tf.Inventory.ListDeviceConfigs(ctx, &api.ListDeviceConfigsRequest{})
+			So(err, ShouldBeNil)
+			So(resp2, ShouldResembleProto, expected)
 		})
 	})
 }
