@@ -24,4 +24,15 @@ go build
 go run main.go local -dev-jump-host [ip address of dut]
 ```
 
+## Scheduling a job with mallet
+
+This command also runs auto-repair, but instead of running locally,
+it schedules a job to the DUT and generates both a luci job and a
+swarming task page through labpack_builder.
+
+```
+go run main.go config > generated_config.json
+./mallet recovery -config generated_config.json [DUT_NAME]
+```
+
 [Go env setup]: http://go/fleet-creating-work-env
