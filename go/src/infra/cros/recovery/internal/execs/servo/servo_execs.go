@@ -687,6 +687,49 @@ func servoServodCCToggleExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// servoServodDTSAndServoRoleToggleExec is the servo repair action that toggles dts mode and servo role.
+// Note: do not change the sequence of operations as the repair actions here are executed in a sequence like  -
+// "dut-control -p $port servo_dts_mode:off sleep:1 servo_pd_role:snk sleep:1 servo_pd_role:src sleep:1 servo_dts_mode:on"
+// @params: actionArgs should be in the format of:
+// Ex: ["off_timeout:x", "on_timeout:x"]
+func servoServodDTSAndServoRoleToggleExec(ctx context.Context, info *execs.ExecInfo) error {
+	toggleMap := info.GetActionArgs(ctx)
+	// Timeout to turn off dts. Default is 1s.
+	dtsOffTimeout := toggleMap.AsDuration(ctx, "dts_off_timeout", 1, time.Second)
+	// Timeout to change servo role to snk. Default is 1s.
+	pdRoleSnkTimeout := toggleMap.AsDuration(ctx, "pd_role_snk_timeout", 1, time.Second)
+	// Timeout to change servo role to src. Default is 1s.
+	pdRoleSrcTimeout := toggleMap.AsDuration(ctx, "pd_role_src_timeout", 1, time.Second)
+	servod := info.NewServod()
+
+	// "servo_dts_mode" is the servod command to enable/disable DTS mode on servo.
+	// turn off dts mode
+	log.Infof(ctx, "Turn off dts and wait %d seconds.", dtsOffTimeout)
+	if err := servod.Set(ctx, "servo_dts_mode", "off"); err != nil {
+		return errors.Annotate(err, "servod dts and servo role toggle").Err()
+	}
+	time.Sleep(dtsOffTimeout)
+
+	// "servo_pd_role" is the servod command to toggle servo role.
+	log.Infof(ctx, "Set servo pd role to snk and wait %d seconds.", pdRoleSnkTimeout)
+	if err := servod.Set(ctx, "servo_pd_role", "snk"); err != nil {
+		return errors.Annotate(err, "servod dts and servo role toggle").Err()
+	}
+	time.Sleep(pdRoleSnkTimeout)
+	log.Infof(ctx, "Set servo pd role to src and wait %d seconds.", pdRoleSrcTimeout)
+	if err := servod.Set(ctx, "servo_pd_role", "src"); err != nil {
+		return errors.Annotate(err, "servod dts and servo role toggle").Err()
+	}
+	time.Sleep(pdRoleSrcTimeout)
+
+	// turn on dts mode
+	if err := servod.Set(ctx, "servo_dts_mode", "on"); err != nil {
+		return errors.Annotate(err, "servod dts and servo role toggle").Err()
+	}
+
+	return nil
+}
+
 // servoSetEcUartCmdExec will set "ec_uart_cmd" to the specific value based on the passed in parameter.
 // Before and after the set of the "ec_uart_cmd", it will toggle the value of "ec_uart_flush".
 //
@@ -773,4 +816,5 @@ func init() {
 	execs.Register("servo_set_ec_uart_cmd", servoSetEcUartCmdExec)
 	execs.Register("servo_power_state_reset", servoPowerStateResetExec)
 	execs.Register("servo_power_state_match", servoECPowerStateMatchExec)
+	execs.Register("servo_servod_dts_and_servo_role_toggle_exec", servoServodDTSAndServoRoleToggleExec)
 }

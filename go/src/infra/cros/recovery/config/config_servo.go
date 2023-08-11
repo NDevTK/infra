@@ -880,6 +880,7 @@ func servoRepairPlan() *Plan {
 					"Stop servod",
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
+					"Toggle DTS Mode and Servo Role",
 					"Toggle PD once and stop",
 					"Reboot by EC console and stop",
 					"Cold reset the DUT by servod and stop",
@@ -1484,6 +1485,21 @@ func servoRepairPlan() *Plan {
 				ExecExtraArgs: []string{
 					"cc_off_timeout:10",
 					"cc_on_timeout:30",
+				},
+				RunControl: RunControl_ALWAYS_RUN,
+			},
+			"Toggle DTS Mode and Servo Role": {
+				Docs: []string{
+					"Toggle dts mode and servo role to try and recover CCD.",
+				},
+				Conditions: []string{
+					"is_servo_type_ccd",
+				},
+				ExecName: "servo_servod_dts_and_servo_role_toggle_exec",
+				ExecExtraArgs: []string{
+					"dts_off_timeout:1",
+					"pd_role_snk_timeout:1",
+					"pd_role_src_timeout:1",
 				},
 				RunControl: RunControl_ALWAYS_RUN,
 			},
