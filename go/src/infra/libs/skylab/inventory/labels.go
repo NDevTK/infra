@@ -64,6 +64,7 @@ func NewSchedulableLabels() *SchedulableLabels {
 			ServoType:                new(string),
 			SmartUsbhub:              new(bool),
 			Stylus:                   new(bool),
+			TrrsType:                 new(Peripherals_TRRSType),
 			Wificell:                 new(bool),
 			Router_802_11Ax:          new(bool),
 			WorkingBluetoothBtpeer:   new(int32),
