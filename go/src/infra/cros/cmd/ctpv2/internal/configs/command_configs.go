@@ -43,12 +43,8 @@ func (cfg *CommandConfig) GetCommand(
 	case commands.TranslateRequestType:
 		cmd = commands.NewTranslateRequestCmd()
 
-	case commands.FilterStartCmdType:
-		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
-		if err != nil {
-			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
-		}
-		cmd = commands.NewFilterStartCmd(exec)
+	case commands.PrepareFilterContainersCmdType:
+		cmd = commands.NewPrepareFilterContainersInfoCmd()
 
 	case commands.FilterExecutionCmdType:
 		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
@@ -77,6 +73,26 @@ func (cfg *CommandConfig) GetCommand(
 			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
 		}
 		cmd = common_commands.NewGcloudAuthCmd(exec)
+	case common_commands.ContainerStartCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = common_commands.NewContainerStartCmd(exec)
+
+	case common_commands.ContainerReadLogsCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = common_commands.NewContainerReadLogsCmd(exec)
+
+	case common_commands.ContainerCloseLogsCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = common_commands.NewContainerCloseLogsCmd(exec)
 
 	default:
 		return nil, fmt.Errorf("Command type %s not supported in command configs!", cmdType)

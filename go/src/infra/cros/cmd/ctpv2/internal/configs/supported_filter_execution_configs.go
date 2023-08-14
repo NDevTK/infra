@@ -15,15 +15,18 @@ import (
 
 // All currently supported command-executor pairs.
 var TranslateRequest_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.TranslateRequestType, ExecutorType: common_executors.NoExecutorType}
-var StartFilter_FilterExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.FilterStartCmdType, ExecutorType: executors.FilterExecutorType}
+var PrepareFilterContainers_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.PrepareFilterContainersCmdType, ExecutorType: common_executors.NoExecutorType}
 var ExecuteFilter_FilterExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.FilterExecutionCmdType, ExecutorType: executors.FilterExecutorType}
 
 var CtrStartAsync_CtrExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.CtrServiceStartAsyncCmdType, ExecutorType: common_executors.CtrExecutorType}
 var CtrStop_CtrExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.CtrServiceStopCmdType, ExecutorType: common_executors.CtrExecutorType}
 var GcloudAuth_CtrExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.GcloudAuthCmdType, ExecutorType: common_executors.CtrExecutorType}
+var ContainerStart_ContainerExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.ContainerStartCmdType, ExecutorType: common_executors.ContainerExecutorType}
+var ContainerReadLogs_ContainerExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.ContainerReadLogsCmdType, ExecutorType: common_executors.ContainerExecutorType}
+var ContainerCloseLogs_ContainerExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.ContainerCloseLogsCmdType, ExecutorType: common_executors.ContainerExecutorType}
 
 // GenerateFilterConfigs generates cmd execution for ctpv2.
-func GenerateFilterConfigs(ctx context.Context) *common_configs.Configs {
+func GenerateFilterConfigs(ctx context.Context, totalFilters int) *common_configs.Configs {
 	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
 	cleanupConfigs := []*common_configs.CommandExecutorPairedConfig{}
 
@@ -36,17 +39,25 @@ func GenerateFilterConfigs(ctx context.Context) *common_configs.Configs {
 		CtrStartAsync_CtrExecutor,
 		GcloudAuth_CtrExecutor)
 
-	// Execute Test-Finder Filter
-	// TODO: Make this more generic to dynamically build configs based on provided
-	// container info in inputs.
 	mainConfigs = append(mainConfigs,
-		StartFilter_FilterExecutor,
-		ExecuteFilter_FilterExecutor)
+		PrepareFilterContainers_NoExecutor,
+		ContainerReadLogs_ContainerExecutor)
+
+	for i := 0; i < totalFilters; i++ {
+		mainConfigs = append(mainConfigs,
+			ContainerStart_ContainerExecutor,
+			ExecuteFilter_FilterExecutor,
+		)
+	}
+
+	mainConfigs = append(mainConfigs,
+		ContainerCloseLogs_ContainerExecutor)
 
 	// Stop CTR
 	mainConfigs = append(mainConfigs,
 		CtrStop_CtrExecutor)
 	cleanupConfigs = append(cleanupConfigs,
+		ContainerCloseLogs_ContainerExecutor,
 		CtrStop_CtrExecutor)
 
 	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}

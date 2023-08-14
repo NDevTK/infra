@@ -10,6 +10,7 @@ import (
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
+	ctpv2_data "infra/cros/cmd/ctpv2/data"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
@@ -19,6 +20,9 @@ import (
 // ContainerStartCmd represents gcloud auth cmd.
 type ContainerStartCmd struct {
 	*interfaces.SingleCmdByExecutor
+
+	// container info data associated with this cmd.
+	containerInfo *ctpv2_data.ContainerInfo
 
 	// Deps
 	ContainerRequest *skylab_test_runner.ContainerRequest
@@ -39,6 +43,8 @@ func (cmd *ContainerStartCmd) Instantiate(
 		err = cmd.instantiateWithHwTestStateKeeper(ctx, sk)
 	case *data.LocalTestStateKeeper:
 		err = cmd.instantiateWithHwTestStateKeeper(ctx, &sk.HwTestStateKeeper)
+	case *ctpv2_data.FilterStateKeeper:
+		err = cmd.instantiateWithFilterStateKeeper(ctx, sk)
 	default:
 		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
 	}
@@ -68,6 +74,14 @@ func (cmd *ContainerStartCmd) instantiateWithHwTestStateKeeper(
 	return nil
 }
 
+func (cmd *ContainerStartCmd) instantiateWithFilterStateKeeper(
+	ctx context.Context,
+	sk *ctpv2_data.FilterStateKeeper) (err error) {
+	// No implementation needed for this. But since abstract implementation is
+	// already overridden, we need to return nil to avoid runtime error.
+	return nil
+}
+
 // ExtractDependencies extracts all the command dependencies from state keeper.
 func (cmd *ContainerStartCmd) ExtractDependencies(ctx context.Context,
 	ski interfaces.StateKeeperInterface) error {
@@ -77,6 +91,8 @@ func (cmd *ContainerStartCmd) ExtractDependencies(ctx context.Context,
 		err = cmd.extractDepsFromHwTestStateKeeper(ctx, sk)
 	case *data.LocalTestStateKeeper:
 		err = cmd.extractDepsFromHwTestStateKeeper(ctx, &sk.HwTestStateKeeper)
+	case *ctpv2_data.FilterStateKeeper:
+		err = cmd.extractDepsFromFilterStateKeeper(ctx, sk)
 	default:
 		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
 	}
@@ -99,6 +115,8 @@ func (cmd *ContainerStartCmd) UpdateStateKeeper(
 		err = cmd.updateHwTestStateKeeper(ctx, sk)
 	case *data.LocalTestStateKeeper:
 		err = cmd.updateHwTestStateKeeper(ctx, &sk.HwTestStateKeeper)
+	case *ctpv2_data.FilterStateKeeper:
+		err = cmd.updateFilterStateKeeper(ctx, sk)
 	}
 
 	if err != nil {
@@ -131,6 +149,27 @@ func (cmd *ContainerStartCmd) extractDepsFromHwTestStateKeeper(
 	return nil
 }
 
+func (cmd *ContainerStartCmd) extractDepsFromFilterStateKeeper(
+	ctx context.Context,
+	sk *ctpv2_data.FilterStateKeeper) error {
+
+	if sk.ContainerInfoQueue.Len() < 1 {
+		return fmt.Errorf("cmd %q missing dependency: ContainerRequest", cmd.GetCommandType())
+	}
+	// This cmd will always update the first value in queue.
+	// It's expected that other execution cmd will deque the value later on.
+	contInfo := (sk.ContainerInfoQueue.Front().Value).(*ctpv2_data.ContainerInfo)
+	cmd.containerInfo = contInfo
+	cmd.ContainerRequest = contInfo.Request
+	imagePath, err := contInfo.GetImagePath()
+	if err != nil {
+		return errors.Annotate(err, "cmd %q missing dependency: ContainerImage", cmd.GetCommandType()).Err()
+	}
+	cmd.ContainerImage = imagePath
+
+	return nil
+}
+
 func (cmd *ContainerStartCmd) updateHwTestStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) error {
@@ -141,6 +180,17 @@ func (cmd *ContainerStartCmd) updateHwTestStateKeeper(
 
 	if cmd.ContainerInstance != nil && cmd.ContainerRequest.DynamicIdentifier != "" {
 		sk.ContainerInstances[cmd.ContainerRequest.ContainerImageKey] = cmd.ContainerInstance
+	}
+
+	return nil
+}
+
+func (cmd *ContainerStartCmd) updateFilterStateKeeper(
+	ctx context.Context,
+	sk *ctpv2_data.FilterStateKeeper) error {
+
+	if cmd.Endpoint != nil {
+		cmd.containerInfo.ServiceEndpoint = cmd.Endpoint
 	}
 
 	return nil

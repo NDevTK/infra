@@ -77,6 +77,9 @@ func (cont *TemplatedContainer) Initialize(
 			return errors.Annotate(err, "initialization failed for cros-vm-provision template: ").Err()
 		}
 	case *api.Template_Generic:
+		if err = cont.initializeGenericTemplate(ctx, t.Generic); err != nil {
+			return errors.Annotate(err, "initialization failed for generic template: ").Err()
+		}
 	default:
 		return fmt.Errorf("Provided template %v not found!", t)
 	}
@@ -196,6 +199,26 @@ func (cont *TemplatedContainer) initializeCrosPublishTemplate(
 		if publishTemplate.PublishSrcDir == "" {
 			return fmt.Errorf("PublishSrcDir is empty but required for GCS, TKO, and CPCON publish types!")
 		}
+	}
+
+	return nil
+}
+
+// initializeGenericTemplate initializes generic template.
+func (cont *TemplatedContainer) initializeGenericTemplate(
+	ctx context.Context,
+	genericTemplate *api.GenericTemplate) error {
+
+	if genericTemplate == nil {
+		return fmt.Errorf("Provided GenericTemplate is nil!")
+	}
+
+	if genericTemplate.GetDockerArtifactDir() == "" {
+		return fmt.Errorf("No docker artifact directory provided for generic template!")
+	}
+
+	if genericTemplate.GetBinaryArgs() == nil {
+		return fmt.Errorf("No args provided for generic template")
 	}
 
 	return nil

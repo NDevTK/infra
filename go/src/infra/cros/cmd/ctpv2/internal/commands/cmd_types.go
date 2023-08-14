@@ -10,8 +10,8 @@ import (
 
 // All supported command types.
 const (
-	FilterStartCmdType     interfaces.CommandType = "FilterStart"
-	FilterStopCmdType      interfaces.CommandType = "FilterStop"
-	FilterExecutionCmdType interfaces.CommandType = "FilterExecution"
-	TranslateRequestType   interfaces.CommandType = "TranslateRequest"
+	PrepareFilterContainersCmdType interfaces.CommandType = "PrepareFilterContainers"
+	FilterExecutionCmdType         interfaces.CommandType = "FilterExecution"
+	FilterStopCmdType              interfaces.CommandType = "FilterStop"
+	TranslateRequestType           interfaces.CommandType = "TranslateRequest"
 )

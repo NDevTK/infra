@@ -5,6 +5,7 @@
 package executions
 
 import (
+	"container/list"
 	"context"
 	"fmt"
 	"log"
@@ -15,7 +16,6 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/common_configs"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/protos"
 	"infra/cros/cmd/ctpv2/data"
@@ -47,7 +47,7 @@ func LuciBuildExecution() {
 			logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
 			resp := &steps.CTPv2BinaryBuildOutput{}
 			_, err := executeFiltersInLuciBuild(ctx, input.Ctpv2Request, ctrCipdInfo.GetVersion().GetCipdLabel(), st)
-			// TODO: add compressed result
+			// TODO (azrahman): add compressed result for upstream
 			// if resp != nil {
 			// 	m, _ := proto.Marshal(resp)
 			// 	var b bytes.Buffer
@@ -90,39 +90,23 @@ func executeFiltersInLuciBuild(
 		EnvVarsToPreserve: []string{},
 	}
 
-	// Fetch container MD
-
-	// TODO: currently there is a bit of a race between getting the metadata to run test-finder, and the boards provided
-	// to the request. We don't want to run test-finder per board as that's extremely expensive to setup/act on, however
-	// CFT design has test-finder being board specific. For initial MVP we will just use the first board in the request to
-	// get the container MD from, but this will need to be solved long term.
-	board, gcsPath, err := gcsInfo(req)
-	if err != nil {
-		return nil, err
-	}
-	containerMetadata, err := common.FetchImageData(ctx, board, gcsPath)
-	if err != nil {
-		return nil, fmt.Errorf("unable to fetch image data: %s", err)
-	}
-
 	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
 	if err != nil {
 		return nil, fmt.Errorf("unable to locate dockerKeyFile during initialization: %w", err)
 	}
 
-	containerCfg := common_configs.NewContainerConfig(ctr, containerMetadata, false)
-	executorCfg := configs.NewExecutorConfig(ctr, containerCfg)
+	executorCfg := configs.NewExecutorConfig(ctr, nil)
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 
-	// Create state keeper
 	sk := &data.FilterStateKeeper{
 		CtpV2Req:              req,
 		DockerKeyFileLocation: dockerKeyFile,
 		Ctr:                   ctr,
+		ContainerInfoQueue:    list.New(),
 	}
 
 	// Generate config
-	ctpv2Config := configs.NewCtpv2ExecutionConfig(configs.LuciBuildFilterExecutionConfigType, cmdCfg, sk)
+	ctpv2Config := configs.NewCtpv2ExecutionConfig(getTotalFilters(req, common.DefaultKarbonFilterNames, common.DefaultKoffeeFilterNames), configs.LuciBuildFilterExecutionConfigType, cmdCfg, sk)
 	err = ctpv2Config.GenerateConfig(ctx)
 	if err != nil {
 		return nil, errors.Annotate(err, "error during generating filter configs: ").Err()
@@ -137,43 +121,24 @@ func executeFiltersInLuciBuild(
 	return sk.CtpV2Response, nil
 }
 
-func gcsInfo(req *api.CTPv2Request) (string, string, error) {
-	board := getFirstBoardFromLegacy(req.Targets)
-	if board == "" {
-		return "", "", errors.New("no board provided in legacy request")
+func getTotalFilters(req *api.CTPv2Request, defaultKarbonFilterNames []string, defaultKoffeeFilterNames []string) int {
+	filterSet := map[string]bool{}
+
+	for _, filterName := range defaultKarbonFilterNames {
+		filterSet[filterName] = true
 	}
 
-	gcsPath := getFirstGcsPathFromLegacy(req.Targets)
-	if gcsPath == "" {
-		return "", "", errors.New("no gcsPath provided in legacy request")
+	for _, filterName := range defaultKoffeeFilterNames {
+		filterSet[filterName] = true
 	}
 
-	return board, gcsPath, nil
-}
+	for _, filter := range req.GetKarbonFilters() {
+		filterSet[filter.GetContainer().GetName()] = true
+	}
 
-func getFirstBoardFromLegacy(targs []*api.Targets) string {
-	if len(targs) == 0 {
-		return ""
+	for _, filter := range req.GetKoffeeFilters() {
+		filterSet[filter.GetContainer().GetName()] = true
 	}
-	switch hw := targs[0].HwTarget.Target.(type) {
-	case *api.HWTarget_LegacyHw:
-		return hw.LegacyHw.Board
-	default:
-		return ""
-	}
-}
 
-func getFirstGcsPathFromLegacy(targs []*api.Targets) string {
-	if len(targs) == 0 {
-		return ""
-	}
-	if len(targs[0].SwTargets) == 0 {
-		return ""
-	}
-	switch sw := targs[0].SwTargets[0].SwTarget.(type) {
-	case *api.SWTarget_LegacySw:
-		return sw.LegacySw.GcsPath
-	default:
-		return ""
-	}
+	return len(filterSet)
 }

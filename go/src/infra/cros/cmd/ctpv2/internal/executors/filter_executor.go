@@ -17,21 +17,21 @@ import (
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
+	ctpv2_data "infra/cros/cmd/ctpv2/data"
 	"infra/cros/cmd/ctpv2/internal/commands"
 )
 
-// CrosTestFinderExecutor represents executor for all cros-test-finder related commands.
+// FilterExecutor represents executor for all filter related commands.
 type FilterExecutor struct {
 	*interfaces.AbstractExecutor
 
-	Container           interfaces.ContainerInterface
 	FilterServiceClient testapi.GenericFilterServiceClient
-	ServerAddress       string
+	ContainerInfo       *ctpv2_data.ContainerInfo
 }
 
-func NewFilterExecutor(container interfaces.ContainerInterface) *FilterExecutor {
+func NewFilterExecutor() *FilterExecutor {
 	absExec := interfaces.NewAbstractExecutor(FilterExecutorType)
-	return &FilterExecutor{AbstractExecutor: absExec, Container: container}
+	return &FilterExecutor{AbstractExecutor: absExec}
 }
 
 func (ex *FilterExecutor) ExecuteCommand(
@@ -39,8 +39,6 @@ func (ex *FilterExecutor) ExecuteCommand(
 	cmdInterface interfaces.CommandInterface) error {
 
 	switch cmd := cmdInterface.(type) {
-	case *commands.FilterStartCmd:
-		return ex.filterContainerStartCommandExecution(ctx, cmd)
 	case *commands.FilterExecutionCmd:
 		return ex.filterExecutionCommandExecution(ctx, cmd)
 	default:
@@ -51,92 +49,28 @@ func (ex *FilterExecutor) ExecuteCommand(
 	}
 }
 
-// testStartCommandExecution executes the test server start command.
-func (ex *FilterExecutor) filterContainerStartCommandExecution(
-	ctx context.Context,
-	cmd *commands.FilterStartCmd) error {
-
-	var err error
-	step, ctx := build.StartStep(ctx, "Test Finder service start")
-	defer func() { step.End(err) }()
-
-	err = ex.StartContainerService(ctx)
-	logErr := common.WriteContainerLogToStepLog(ctx, ex.Container, step, "cros-test-finder log")
-	if err != nil {
-		return errors.Annotate(err, "Start test finder service cmd err: ").Err()
-	}
-	if logErr != nil {
-		logging.Infof(ctx, "error during writing cros-test-finder log contents: %s", err)
-	}
-
-	return err
-}
-
-// testExecutionCommandExecution executes the test execution command.
+// filterExecutionCommandExecution executes filter execution command.
 func (ex *FilterExecutor) filterExecutionCommandExecution(
 	ctx context.Context,
 	cmd *commands.FilterExecutionCmd) error {
 
+	ex.ContainerInfo = cmd.ContainerInfo
+
 	var err error
-	step, ctx := build.StartStep(ctx, "Test Finder execution")
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("Filter execution: %s", ex.ContainerInfo.GetKey()))
 	defer func() { step.End(err) }()
 
-	testReq := &testapi.InternalTestplan{}
+	common.WriteProtoToStepLog(ctx, step, cmd.InputTestPlan, "filter request")
 
-	common.WriteProtoToStepLog(ctx, step, testReq, "test finder request")
-
-	testResp, err := ex.ExecuteFilter(ctx, testReq)
-
+	fitlerResp, err := ex.ExecuteFilter(ctx, cmd.InputTestPlan)
 	if err != nil {
-		return errors.Annotate(err, "Tests execution cmd err: ").Err()
+		return errors.Annotate(err, "Filter execution cmd err: ").Err()
 	}
-	//cmd.TestSuites = testResp.TestSuites
 
-	common.WriteProtoToStepLog(ctx, step, testResp, "test finder response")
-
-	cmd.OutputTestPlan = testResp
+	common.WriteProtoToStepLog(ctx, step, fitlerResp, "filter response")
+	cmd.OutputTestPlan = fitlerResp
 
 	return err
-}
-
-// Start starts the cros-test-finder server.
-func (ex *FilterExecutor) StartContainerService(ctx context.Context) error {
-	// TODO: Get this info from input/deps. Make it work for generic container.
-	template := &api.Template{
-		Container: &api.Template_CrosTestFinder{
-			CrosTestFinder: &testapi.CrosTestFinderTemplate{},
-		},
-	}
-
-	// Process container.
-	serverAddress, err := ex.Container.ProcessContainer(ctx, template)
-	if err != nil {
-		return errors.Annotate(err, "error processing container: ").Err()
-	}
-
-	ex.ServerAddress = serverAddress
-
-	// Connect with the service.
-	conn, err := common.ConnectWithService(ctx, serverAddress)
-	if err != nil {
-		logging.Infof(
-			ctx,
-			"error during connecting with cros-test-finder server at %s: %s",
-			serverAddress,
-			err.Error())
-		return err
-	}
-	logging.Infof(ctx, "Connected with cros-test-finder service.")
-
-	// Create new client.
-	filterServiceClient := api.NewGenericFilterServiceClient(conn)
-	if filterServiceClient == nil {
-		return fmt.Errorf("filterServiceClient is nil")
-	}
-
-	ex.FilterServiceClient = filterServiceClient
-
-	return nil
 }
 
 // ExecuteTests invokes the run tests endpoint of cros-test.
@@ -144,14 +78,42 @@ func (ex *FilterExecutor) ExecuteFilter(
 	ctx context.Context,
 	filterReq *testapi.InternalTestplan) (*testapi.InternalTestplan, error) {
 	if filterReq == nil {
-		return nil, fmt.Errorf("Cannot find tests for nil test finder request.")
+		return nil, fmt.Errorf("Cannot execute filter for nil filter request.")
 	}
-	if ex.FilterServiceClient == nil {
-		return nil, fmt.Errorf("FilterServiceClient is nil in CrosTestFinderExecutor")
+	if ex.ContainerInfo == nil {
+		return nil, fmt.Errorf("Cannot execute filter with nil container info.")
 	}
-	findTestResp, err := ex.FilterServiceClient.Execute(ctx, filterReq, grpc.EmptyCallOption{})
+	if ex.ContainerInfo.ServiceEndpoint == nil {
+		return nil, fmt.Errorf("Cannot execute filter for nil service endpoint.")
+	}
+
+	filterEndpointStr, err := ex.ContainerInfo.GetEndpointString()
 	if err != nil {
-		return nil, errors.Annotate(err, "test execution failure: ").Err()
+		return nil, errors.Annotate(err, "error while getting filter endpoint str: ").Err()
+	}
+
+	// Connect with the filter service.
+	conn, err := common.ConnectWithService(ctx, filterEndpointStr)
+	if err != nil {
+		logging.Infof(
+			ctx,
+			"error during connecting with filter server at %s: %s",
+			filterEndpointStr,
+			err.Error())
+		return nil, err
+	}
+	logging.Infof(ctx, "Connected with filter service.")
+
+	// Create new client.
+	filterServiceClient := api.NewGenericFilterServiceClient(conn)
+	if filterServiceClient == nil {
+		return nil, fmt.Errorf("filterServiceClient is nil")
+	}
+
+	// Call filter grpc endpoint
+	findTestResp, err := filterServiceClient.Execute(ctx, filterReq, grpc.EmptyCallOption{})
+	if err != nil {
+		return nil, errors.Annotate(err, "filter grpc execution failure: ").Err()
 	}
 
 	return findTestResp, nil

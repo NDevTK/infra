@@ -14,9 +14,9 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func FetchImageData(ctx context.Context, board string, template string) (map[string]*api.ContainerImageInfo, error) {
-
-	gsutil := exec.CommandContext(ctx, "gsutil", "ls", "-l", template)
+// FetchImageData fetches container image metadata from provided gcs path
+func FetchImageData(ctx context.Context, board string, gcsPath string) (map[string]*api.ContainerImageInfo, error) {
+	gsutil := exec.CommandContext(ctx, "gsutil", "ls", "-l", gcsPath)
 	sort := exec.CommandContext(ctx, "sort", "-k", "2")
 
 	gPipe, err := gsutil.StdoutPipe()
@@ -38,10 +38,9 @@ func FetchImageData(ctx context.Context, board string, template string) (map[str
 	containerImages := regContainerEx.FindAllStringSubmatch(string(imageDataRaw), -1)
 
 	if len(containerImages) == 0 {
-		return nil, fmt.Errorf("Could not find any container images with given build %s", template)
+		return nil, fmt.Errorf("Could not find any container images with given build %s", gcsPath)
 	}
 	archivePath := containerImages[len(containerImages)-1][0]
-	// ImagePath = strings.Split(archivePath, "metadata")[0]
 
 	cat := exec.CommandContext(ctx, "gsutil", "cat", archivePath)
 
@@ -51,7 +50,6 @@ func FetchImageData(ctx context.Context, board string, template string) (map[str
 	}
 
 	metadata := &api.ContainerMetadata{}
-	// unmarshaler := protojson.Unmarshaler{}
 	err = protojson.Unmarshal(catOut, metadata)
 	if err != nil {
 		return nil, fmt.Errorf("unable to unmarshal metadata: %s", err)

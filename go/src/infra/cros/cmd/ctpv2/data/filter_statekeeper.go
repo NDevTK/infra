@@ -5,10 +5,13 @@
 package data
 
 import (
+	"container/list"
 	"infra/cros/cmd/common_lib/interfaces"
 
-	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
+
+	buildapi "go.chromium.org/chromiumos/config/go/build/api"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 )
 
 // PreLocalTestStateKeeper represents all the data pre local test execution flow requires.
@@ -19,6 +22,12 @@ type FilterStateKeeper struct {
 	CtpV2Response           *testapi.CTPv2Response
 	InitialInternalTestPlan *testapi.InternalTestplan
 	TestPlanStates          []*testapi.InternalTestplan
+
+	// Container info queue
+	ContainerInfoQueue *list.List
+
+	// Dictionaries
+	ContainerMetadataMap map[string]*buildapi.ContainerImageInfo
 
 	// Tools and their related dependencies
 	Ctr                   *crostoolrunner.CrosToolRunner

@@ -27,10 +27,12 @@ const (
 type Ctpv2ExecutionConfig struct {
 	*common_configs.CmdExecutionConfig
 
+	TotalFilters     int
 	executedCommands map[interfaces.CommandType]bool
 }
 
 func NewCtpv2ExecutionConfig(
+	totalFilters int,
 	configType interfaces.ConfigType,
 	cmdConfig interfaces.CommandConfigInterface,
 	ski interfaces.StateKeeperInterface) *Ctpv2ExecutionConfig {
@@ -38,6 +40,7 @@ func NewCtpv2ExecutionConfig(
 	cmdExecutionConfig := common_configs.NewCmdExecutionConfig(configType, cmdConfig, ski)
 	return &Ctpv2ExecutionConfig{
 		CmdExecutionConfig: cmdExecutionConfig,
+		TotalFilters:       totalFilters,
 	}
 }
 
@@ -48,7 +51,7 @@ func (ctpv2cfg *Ctpv2ExecutionConfig) GenerateConfig(ctx context.Context) error 
 
 	switch configType := ctpv2cfg.GetConfigType(); configType {
 	case LuciBuildFilterExecutionConfigType:
-		ctpv2cfg.Configs = GenerateFilterConfigs(ctx)
+		ctpv2cfg.Configs = GenerateFilterConfigs(ctx, ctpv2cfg.TotalFilters)
 	default:
 		err = fmt.Errorf("Config type %s is not supported!", configType)
 	}

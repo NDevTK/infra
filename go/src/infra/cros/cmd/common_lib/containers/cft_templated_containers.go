@@ -61,3 +61,11 @@ func NewCrosPublishTemplatedContainer(
 	}
 	return NewContainer(contType, "cros-publish", containerImage, ctr, true)
 }
+
+func NewGenericTemplatedContainer(
+	namePrefix string,
+	containerImage string,
+	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
+
+	return NewContainer(CacheServerTemplatedContainerType, namePrefix, containerImage, ctr, true)
+}

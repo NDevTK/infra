@@ -10,6 +10,7 @@ import (
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/ctpv2/data"
+	ctpv2_data "infra/cros/cmd/ctpv2/data"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
@@ -22,6 +23,7 @@ type FilterExecutionCmd struct {
 
 	// Deps
 	InputTestPlan *testapi.InternalTestplan
+	ContainerInfo *ctpv2_data.ContainerInfo
 
 	// Updates
 	OutputTestPlan *testapi.InternalTestplan
@@ -35,7 +37,7 @@ func (cmd *FilterExecutionCmd) ExtractDependencies(
 	var err error
 	switch sk := ski.(type) {
 	case *data.FilterStateKeeper:
-		err = cmd.extractDepsFromFilterStateKeepr(ctx, sk)
+		err = cmd.extractDepsFromFilterStateKeeper(ctx, sk)
 
 	default:
 		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
@@ -66,9 +68,18 @@ func (cmd *FilterExecutionCmd) UpdateStateKeeper(
 	return nil
 }
 
-func (cmd *FilterExecutionCmd) extractDepsFromFilterStateKeepr(
+func (cmd *FilterExecutionCmd) extractDepsFromFilterStateKeeper(
 	ctx context.Context,
 	sk *data.FilterStateKeeper) error {
+
+	if sk.ContainerInfoQueue.Len() < 1 {
+		return fmt.Errorf("cmd %q missing dependency: ContainerInfo", cmd.GetCommandType())
+	}
+
+	cmd.ContainerInfo = sk.ContainerInfoQueue.Remove(sk.ContainerInfoQueue.Front()).(*ctpv2_data.ContainerInfo)
+	if cmd.ContainerInfo.ServiceEndpoint == nil {
+		return fmt.Errorf("cmd %q missing dependency: ServiceEndpoint", cmd.GetCommandType())
+	}
 
 	if sk.TestPlanStates == nil || len(sk.TestPlanStates) == 0 {
 		if sk.InitialInternalTestPlan != nil {
@@ -83,6 +94,7 @@ func (cmd *FilterExecutionCmd) extractDepsFromFilterStateKeepr(
 		// Get the last test plan state and set it as input test plan for current filter
 		cmd.InputTestPlan = proto.Clone(sk.TestPlanStates[len(sk.TestPlanStates)-1]).(*testapi.InternalTestplan)
 	}
+
 	return nil
 }
 
