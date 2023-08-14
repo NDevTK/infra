@@ -254,6 +254,10 @@ _SPECIAL_ROOT_DEVICE_LIST = [
 _SPECIAL_ROOT_DEVICE_LIST += [
     'aosp_%s' % _d for _d in _SPECIAL_ROOT_DEVICE_LIST
 ]
+_ALTERNATE_SCREENSHOT_CMD_DEVICES = {
+    'flame',  # Pixel 4
+    'oriole',  # Pixel 6
+}
 
 # Streamed installation is introduced in Nougat. Some devices and emulators
 # at some API levels are slow/timeout with default streaming app install so
@@ -1560,14 +1564,10 @@ class DeviceUtils(object):
           'Package %s with version %s not installed on device after explicit '
           'install attempt.' % (package_name, library_version))
 
-    # Granting permissions takes a small amount of time, which can add up if
-    # done repeatedly. So, only grant permissions if an APK was actually
-    # installed.
-    if apks_to_install:
-      if (permissions is None
-          and self.build_version_sdk >= version_codes.MARSHMALLOW):
-        permissions = apk.GetPermissions()
-      self.GrantPermissions(package_name, permissions)
+    if (permissions is None
+        and self.build_version_sdk >= version_codes.MARSHMALLOW):
+      permissions = apk.GetPermissions()
+    self.GrantPermissions(package_name, permissions)
     # Upon success, we know the device checksums, but not their paths.
     if host_checksums is not None:
       self._cache['package_apk_checksums'][package_name] = host_checksums
@@ -3879,8 +3879,16 @@ class DeviceUtils(object):
       host_path = os.path.abspath(
           'screenshot-%s-%s.png' % (self.serial, _GetTimeStamp()))
     with device_temp_file.DeviceTempFile(self.adb, suffix='.png') as device_tmp:
-      self.RunShellCommand(['/system/bin/screencap', '-p', device_tmp.name],
-                           check_return=True)
+      # For whatever reason, certain devices can hang when specifying a file to
+      # screencap, but work fine when redirecting output to a file.
+      # See crbug.com/1446736.
+      if self.product_name in _ALTERNATE_SCREENSHOT_CMD_DEVICES:
+        cmd = '/system/bin/screencap -p > %s' % device_tmp.name
+        use_shell = True
+      else:
+        cmd = ['/system/bin/screencap', '-p', device_tmp.name]
+        use_shell = False
+      self.RunShellCommand(cmd, check_return=True, shell=use_shell)
       self.PullFile(device_tmp.name, host_path)
     return host_path
 
