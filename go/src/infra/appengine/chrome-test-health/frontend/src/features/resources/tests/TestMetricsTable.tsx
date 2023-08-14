@@ -132,7 +132,7 @@ function TestMetricsTable() {
   return (
     <Paper>
       <TableContainer sx={{
-        maxHeight: 'calc(100vh - ' + (params.directoryView ? '160' : '210') + 'px)',
+        maxHeight: 'calc(100vh - ' + (params.directoryView ? '170' : '220') + 'px)',
       }}>
         <LinearProgress sx={{ visibility: isLoading ? 'visible' : 'hidden' }} data-testid='loading-bar'/>
         <Table stickyHeader size="small" aria-label="simple table">

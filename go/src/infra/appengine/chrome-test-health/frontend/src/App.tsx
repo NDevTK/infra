@@ -17,10 +17,16 @@ const App = () => {
   }
 
   const params = new URLSearchParams(window.location.search);
-  const components = params.has(URL_COMPONENT) ?
-    params.getAll(URL_COMPONENT) :
-    // Note that ''.split(',') evaluates to ['']
-    (localStorage.getItem(URL_COMPONENT) || '').split(',');
+
+  let components: string[] = [];
+  if (params.has(URL_COMPONENT)) {
+    components = params.getAll(URL_COMPONENT);
+  } else {
+    const local = localStorage.getItem(URL_COMPONENT);
+    if (local !== undefined && local !== '' && local !== null) {
+      components = local.split(',');
+    }
+  }
 
   return (
     <div className="App">

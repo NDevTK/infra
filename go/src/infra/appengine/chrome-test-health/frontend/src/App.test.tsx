@@ -21,7 +21,7 @@ describe('when rendering the App', () => {
     renderWithAuth(<App/>);
     expect(mockComponentContext).toHaveBeenCalledWith(
         expect.objectContaining({
-          components: ['Blink'],
+          components: [],
         }),
     );
   });
@@ -49,6 +49,20 @@ describe('when rendering the App', () => {
     expect(mockComponentContext).toHaveBeenCalledWith(
         expect.objectContaining({
           components: ['LOCALSTORAGE1', 'LOCALSTORAGE2'],
+        }),
+    );
+  });
+  it('should evalute local storage val \'\' correctly', async () => {
+    const mockComponentContext = jest.fn();
+    window.location.search = '';
+    jest.spyOn(ComponentContextP, 'ComponentContextProvider').mockImplementation((props) => {
+      return mockComponentContext(props);
+    });
+    localStorage.setItem(URL_COMPONENT, '');
+    renderWithAuth(<App/>);
+    expect(mockComponentContext).toHaveBeenCalledWith(
+        expect.objectContaining({
+          components: [],
         }),
     );
   });

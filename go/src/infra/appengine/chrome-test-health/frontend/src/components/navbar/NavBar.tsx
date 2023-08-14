@@ -28,13 +28,14 @@ function NavBar() {
 
   function displayComponents(components: string[]) {
     const finalDisplay: JSX.Element[] = [];
-    for (let x = 0; x < components.length; x ++) {
-      if ( x === 0) {
-        finalDisplay.push(<p>{components[x]}</p>);
-      } else {
-        finalDisplay.push(<p>,&nbsp;{components[x]}</p>);
-      }
-    }
+    components.forEach((component, index) => {
+      finalDisplay.push(
+          <p style={{ minWidth: 'fit-content' }} key={component}>
+            {index !== 0 ? ', ' : ''}
+            {component}
+          </p>,
+      );
+    });
     return finalDisplay;
   }
 
@@ -46,7 +47,7 @@ function NavBar() {
           limitTags={3}
           data-testid="selectComponents"
           options={componentCtx.allComponents}
-          value={navComps.length > 0 && navComps[0] !== '' ? navComps : ['All Components']}
+          value={navComps.length > 0 ? navComps : ['All Components']}
           onChange={handleChange}
           onBlur={handleBlur}
           disableCloseOnSelect
@@ -55,7 +56,7 @@ function NavBar() {
             <TextField {...params} InputProps={{ ...params.InputProps, style: { color: 'white' } }}/>
           )}
           renderTags={(components) => displayComponents(components)}
-          sx={{ 'maxWidth': '650px', 'border': 'none', '& fieldset': { border: 'none' },
+          sx={{ 'width': '700px', 'border': 'none', '& fieldset': { border: 'none' },
             '& .MuiSvgIcon-root': {
               color: 'white',
             }, '& .MuiAutocomplete-tag': {
@@ -63,14 +64,14 @@ function NavBar() {
             },
             '& .MuiAutocomplete-inputRoot': {
               flexWrap: 'nowrap',
-              overflowX: 'scroll',
+              overflowX: 'auto',
+              overflowY: 'hidden',
               maxHeight: '73px',
             },
             '& .MuiAutocomplete-endAdornment': {
               position: 'sticky',
               flex: 'none',
-              right: '0px',
-              transform: 'translateX(75px)',
+              transform: 'translateX(50px)',
             },
             '& .MuiIconButton-root': {
               backgroundColor: 'rgb(49 49 50)',
