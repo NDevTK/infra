@@ -1,6 +1,6 @@
-// Copyright 2020 The LUCI Authors. All rights reserved.
-// Use of this source code is governed under the Apache License, Version 2.0
-// that can be found in the LICENSE file.
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 // Command 'led' is the new generation of 'infra/tools/led'. The strange
 // directory structure here is to allow the side-by-side existence of the old
@@ -37,6 +37,7 @@ import (
 	"go.chromium.org/luci/led/job"
 	"go.chromium.org/luci/led/ledcli"
 	logdog_types "go.chromium.org/luci/logdog/common/types"
+	swarmingpb "go.chromium.org/luci/swarming/proto/api_v2"
 )
 
 const bbModPropKey = "$recipe_engine/buildbucket"
@@ -119,6 +120,54 @@ func (kitchenSupport) GenerateCommand(ctx context.Context, bb *job.Buildbucket) 
 }
 
 func (kitchenSupport) FromSwarming(ctx context.Context, in *swarming.SwarmingRpcsNewTaskRequest, out *job.Buildbucket) error {
+	ts := in.TaskSlices[0]
+
+	var kitchenArgs cookflags.CookFlags
+	fs := flag.NewFlagSet("kitchen_cook", flag.ContinueOnError)
+	kitchenArgs.Register(fs)
+	if err := fs.Parse(ts.Properties.Command[2:]); err != nil {
+		return errors.Annotate(err, "parsing kitchen cook args").Err()
+	}
+
+	out.BbagentArgs = &bbpb.BBAgentArgs{
+		CacheDir:               kitchenArgs.CacheDir,
+		KnownPublicGerritHosts: ([]string)(kitchenArgs.KnownGerritHost),
+		Build:                  &bbpb.Build{},
+
+		// See note in the job.Buildbucket message for the reason we use "luciexe"
+		// even in kitchen mode.
+		ExecutablePath: path.Join(kitchenArgs.CheckoutDir, "luciexe"),
+	}
+
+	// kitchen builds are sorta inverted; the Build message is in the buildbucket
+	// module property, but it doesn't contain the properties in input.
+	bbModProps := kitchenArgs.Properties[bbModPropKey].(map[string]interface{})
+	delete(kitchenArgs.Properties, bbModPropKey)
+
+	blob, err := json.Marshal(bbModProps["build"])
+	if err != nil {
+		return errors.Annotate(err, "%s['build'] -> json", bbModPropKey).Err()
+	}
+	if err := jsonpb.Unmarshal(bytes.NewReader(blob), out.BbagentArgs.Build); err != nil {
+		return errors.Annotate(err, "%s['build'] -> jsonpb", bbModPropKey).Err()
+	}
+
+	out.EnsureBasics()
+	out.BbagentArgs.Build.Infra.Buildbucket.Hostname = bbModProps["hostname"].(string)
+
+	err = jsonpb.UnmarshalString(kitchenArgs.Properties.String(),
+		out.BbagentArgs.Build.Input.Properties)
+	if err != nil {
+		return errors.Annotate(err, "populating properties").Err()
+	}
+
+	out.WriteProperties(map[string]interface{}{
+		"recipe": kitchenArgs.RecipeName,
+	})
+	return nil
+}
+
+func (kitchenSupport) FromSwarmingV2(ctx context.Context, in *swarmingpb.NewTaskRequest, out *job.Buildbucket) error {
 	ts := in.TaskSlices[0]
 
 	var kitchenArgs cookflags.CookFlags
