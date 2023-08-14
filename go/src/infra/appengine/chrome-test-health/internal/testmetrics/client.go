@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -244,10 +245,13 @@ var (
 
 // Client is used to fetch metrics from a given data source.
 type Client struct {
-	BqClient      *bigquery.Client
-	ProjectId     string
-	DataSet       string
-	updateQueries []string
+	BqClient            *bigquery.Client
+	ProjectId           string
+	DataSet             string
+	updateQueries       []string
+	ChromiumTryRdbTable string
+	ChromiumCiRdbTable  string
+	AttemptsTable       string
 }
 
 func bqToDateArray(dates []string) ([]civil.Date, error) {
@@ -271,18 +275,33 @@ func parseDatasetQuery(r *strings.Replacer, fileName string) (string, error) {
 }
 
 // Initializes the testmetric client
-func (c *Client) Init() error {
+func (c *Client) Init(sqlDir string) error {
 	if c.ProjectId == "" {
 		c.ProjectId = "chrome-resources-staging"
 	}
 	if c.DataSet == "" {
 		c.DataSet = "test_results"
 	}
+	if c.ChromiumTryRdbTable == "" {
+		c.ChromiumTryRdbTable = "chrome-luci-data.chromium.try_test_results"
+	}
+	if c.ChromiumCiRdbTable == "" {
+		c.ChromiumCiRdbTable = "chrome-luci-data.chromium.ci_test_results"
+	}
+	if c.AttemptsTable == "" {
+		c.AttemptsTable = "commit-queue.chromium.attempts"
+	}
 
-	r := strings.NewReplacer("{project}", c.ProjectId, "{dataset}", c.DataSet)
+	r := strings.NewReplacer(
+		"{project}", c.ProjectId,
+		"{dataset}", c.DataSet,
+		"{chromium_try_rdb_table}", c.ChromiumTryRdbTable,
+		"{chromium_ci_rdb_table}", c.ChromiumCiRdbTable,
+		"{attempts_table}", c.AttemptsTable,
+	)
 
 	for _, filename := range updateQueries {
-		query, err := parseDatasetQuery(r, filename)
+		query, err := parseDatasetQuery(r, filepath.Join(sqlDir, filename))
 		if err != nil {
 			return err
 		}

@@ -140,7 +140,7 @@ func setupClient(srv *server.Server) (*testmetrics.Client, error) {
 		ProjectId: srv.Options.CloudProject,
 		DataSet:   *dataSet,
 	}
-	err = client.Init()
+	err = client.Init("")
 	if err != nil {
 		return nil, err
 	}

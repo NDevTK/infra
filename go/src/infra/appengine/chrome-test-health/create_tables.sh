@@ -4,8 +4,8 @@
 # found in the LICENSE file.
 
 # Change APP_ID to setup views for prod
-APP_ID=chrome-resources-staging
-DATASET=test_results
+APP_ID=chrome-test-health-staging
+DATASET=test
 
 if ! [ -z "$1" ]
   then

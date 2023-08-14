@@ -23,7 +23,7 @@ USING (
         expected,
         exonerated,
         duration,
-      FROM chrome-luci-data.chromium.try_test_results as tr
+      FROM {chromium_try_rdb_table} as tr
       WHERE
         DATE(partition_time, "PST8PDT") BETWEEN @from_date AND @to_date
         AND tr.status != "SKIP"
@@ -45,7 +45,7 @@ USING (
         expected,
         exonerated,
         duration,
-      FROM chrome-luci-data.chromium.ci_test_results as tr
+      FROM {chromium_ci_rdb_table} as tr
       WHERE
         DATE(partition_time, "PST8PDT") BETWEEN @from_date AND @to_date
         AND tr.status != "SKIP"
@@ -79,7 +79,7 @@ USING (
         b.id AS build_id,
         ps.change,
         ps.earliest_equivalent_patchset AS patchset,
-      FROM `commit-queue`.chromium.attempts a, a.gerrit_changes ps, a.builds b
+      FROM {attempts_table} a, a.gerrit_changes ps, a.builds b
       WHERE DATE(start_time, "PST8PDT") BETWEEN @from_date AND @to_date
     ), patchset_flakes AS (
       SELECT
