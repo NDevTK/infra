@@ -1679,6 +1679,17 @@
                   "exec_name": "cros_ssh",
                   "timeout": "2m30s",
                   "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Remove REIMAGE_BY_USBKEY repair-request",
+                  "docs": [
+                    "Remove REIMAGE_BY_USBKEY and PROVISION repair-requests."
+                  ],
+                  "exec_name": "dut_remove_repair_requests",
+                  "exec_args": [
+                    "requests:PROVISION,REIMAGE_BY_USBKEY"
+                  ],
+                  "run_control": "ALWAYS_RUN"
                 }
               ],
               "exec_name": "sample_pass",

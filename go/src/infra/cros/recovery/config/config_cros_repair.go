@@ -318,6 +318,7 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"Repair by powerwash",
 				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
 				"Install OS in DEV mode by USB-drive",
 			},
 		},
@@ -332,6 +333,7 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"Quick provision OS",
 				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
 				"Install OS in DEV mode, with force to DEV-mode",
 			},
 		},
@@ -358,6 +360,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			RecoveryActions: []string{
 				"Install OS in recovery mode by booting from servo USB-drive",
+				"Install OS in recovery mode by booting from servo USB-drive (Flex)",
 				"Install OS in DEV mode, with force to DEV-mode",
 			},
 		},
@@ -2344,6 +2347,7 @@ func crosRepairActions() map[string]*Action {
 				"Direct USB-drive to servo host",
 				"Power ON DUT by servo",
 				"Wait to be SSHable (normal boot)",
+				"Remove REIMAGE_BY_USBKEY repair-request",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
