@@ -132,6 +132,7 @@ WITH
 	tryjobs AS (
 		SELECT
 			b.id,
+			b.critical,
 			ps.change,
 			ps.earliest_equivalent_patchset as patchset,
 			partition_time as ps_approx_timestamp,

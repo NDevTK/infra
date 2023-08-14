@@ -22,16 +22,17 @@ You will also need IAM permissions for the chrome-rts project.
      -out samples.dur \
      -ignore-file
    ```
-   Note: Duration data is expensive to collect/analyze. To reduce this cost only
-   a fraction of the applicable durations will be collected. By default this
-   optional -frac flag hold .1 (10%) over the given time period and savings
+   Note: These records are expensive to collect/analyze. To reduce this cost
+   only a fraction of the applicable durations will be collected. By default
+   this optional -frac flag hold .1 (10%) over the given time period and savings
    are estimated based this fraction (the durations don't need to be over the
    same time period as rejections to function as this is an estimate, as long
    as the average test in the suite hasn't changed dramatically the estimate
    should still be accurate)
 
-    -ignore-file is necessary for any builder/test suite that doesn't include
-    its filename when uploaded to rdb
+   -ignore-file is necessary for any builder/test suite that doesn't include
+   its filename when uploaded to rdb. This should be passed when using
+   rts-suite-analysis.
 
    The savings provided later by this tool is based on all durations gathered
    in this step. If you're more curious about savings for a particular builder
@@ -97,6 +98,14 @@ want to go over a months worth of data as the results tend to stay consistent
 while the collection time can be very long) but are reuseable for testing
 different builder/test suite combinations and only the last step needs to be
 repeated for different tests.
+
+To avoid having to fetch all the durations and rejections for a long period
+of time the flag -append can be added to the command. This will add the new
+records from this run to any existing data in the out dir. Caution needs to
+be taken to make sure that a day is not fetched twice. These rejections can be
+found in the output directory. To remove old data from the records you can
+directly remove the .jsonl.gz files with the "from" and "to" prepended to the
+file.
 
 After a builder has a specific test suite removed it invalidates the rejection
 and duration data since there could have been overlapping coverage of tests. To

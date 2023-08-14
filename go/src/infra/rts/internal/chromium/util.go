@@ -13,9 +13,14 @@ import (
 
 // prepareOutDir ensures that a dir exists and does not have files that match
 // clearPattern glob, e.g. "*.jsonl.gz".
-func PrepareOutDir(path, clearPattern string) error {
+func PrepareOutDir(path string, append bool, clearPattern string) error {
 	if err := os.MkdirAll(path, 0777); err != nil {
 		return err
+	}
+
+	// If we're appending to existing data, don't delete existing files
+	if append {
+		return nil
 	}
 
 	// Remove existing files.

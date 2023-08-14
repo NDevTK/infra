@@ -99,6 +99,7 @@ const rejectedPatchSetsSQL = commonSubqueries + `
 		FROM tryjobs_with_status t
 		JOIN test_results_base tr ON t.id = tr.build_id
 		WHERE not exonerated  AND tr.status != 'SKIP'  -- not needed for RTS purposes
+			AND t.critical
 		GROUP BY change, patchset, test_id, variant_hash
 
 		# Exclude all-expected results early on.

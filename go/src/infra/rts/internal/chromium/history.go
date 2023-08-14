@@ -13,6 +13,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"cloud.google.com/go/bigquery"
@@ -21,6 +22,7 @@ import (
 	"google.golang.org/api/option"
 
 	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 	luciflag "go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/common/logging"
@@ -43,6 +45,7 @@ type baseHistoryRun struct {
 	testIDRegex  string
 	clOwner      string
 	ignoreFile   bool
+	append       bool
 
 	authOpt       *auth.Options
 	authenticator *auth.Authenticator
@@ -65,6 +68,11 @@ func (r *baseHistoryRun) RegisterBaseFlags(fs *flag.FlagSet) {
 	fs.StringVar(&r.testIDRegex, "test", ".*", "A regular expression for test. Implicitly wrapped with ^ and $.")
 	fs.StringVar(&r.clOwner, "cl-owner", "", "CL owner, e.g. someone@chromium.org")
 	fs.BoolVar(&r.ignoreFile, "ignore-file", false, "ignores the filename and includes results with no filename and all /third_party/ results")
+	fs.BoolVar(&r.append, "append", false, text.Doc(`
+		When set the fetched rejections from this run will be appended to the existing
+		output. This does not manage duplicates. Any days that are fetched twice will
+		result in multiple rejects as if they were separate runs.
+	`))
 }
 
 func (r *baseHistoryRun) ValidateBaseFlags() error {
@@ -162,7 +170,7 @@ func (r *baseHistoryRun) fetchResults(ctx context.Context, table *bigquery.Table
 	//    This also takes care of the converting from tabular format to a file format.
 	// 2. Download the prepared files to the destination directory.
 
-	if err := PrepareOutDir(r.out, "*.jsonl.gz"); err != nil {
+	if err := PrepareOutDir(r.out, r.append, "*.jsonl.gz"); err != nil {
 		return err
 	}
 
@@ -174,7 +182,7 @@ func (r *baseHistoryRun) fetchResults(ctx context.Context, table *bigquery.Table
 	gcsRef := &bigquery.GCSReference{
 		// Start the object name with a date, so that the user can merge
 		// data directories if needed.
-		URIs:              []string{fmt.Sprintf("%s%s-*.jsonl.gz", gcsDir, r.startTime.Format("2006-01-02"))},
+		URIs:              []string{fmt.Sprintf("%s%s_%s_*.jsonl.gz", gcsDir, r.startTime.Format("2006-01-02"), r.endTime.Format("2006-01-02"))},
 		DestinationFormat: bigquery.JSON,
 		Compression:       bigquery.Gzip,
 	}
@@ -214,8 +222,16 @@ func (r *baseHistoryRun) fetchResults(ctx context.Context, table *bigquery.Table
 				}
 				defer rd.Close()
 
+				filename := filepath.Join(r.out, path.Base(objAttrs.Name))
+				if r.append {
+					// If we're appending we need to ensure a unique new file
+					filename, err = uniqueFilename(filename)
+					if err != nil {
+						return err
+					}
+				}
 				// Prepare the sink.
-				f, err := os.Create(filepath.Join(r.out, path.Base(objAttrs.Name)))
+				f, err := os.Create(filename)
 				if err != nil {
 					return err
 				}
@@ -226,6 +242,23 @@ func (r *baseHistoryRun) fetchResults(ctx context.Context, table *bigquery.Table
 			}
 		}
 	})
+}
+
+func uniqueFilename(baseFilename string) (string, error) {
+	filename := baseFilename
+	i := 0
+	for {
+		_, err := os.Stat(filename)
+		errors.Is(err, os.ErrNotExist)
+
+		if errors.Is(err, os.ErrNotExist) {
+			return filename, nil
+		} else if err != nil {
+			return "", err
+		}
+		i++
+		filename = baseFilename + "_" + strconv.Itoa(i)
+	}
 }
 
 func waitForSuccess(ctx context.Context, job *bigquery.Job) error {

@@ -79,7 +79,7 @@ func (r *selectRun) Run(a subcommands.Application, args []string, env subcommand
 		return r.Done(err)
 	}
 
-	if err := chromium.PrepareOutDir(r.Out, "*.filter"); err != nil {
+	if err := chromium.PrepareOutDir(r.Out, false, "*.filter"); err != nil {
 		return r.Done(errors.Annotate(err, "failed to prepare filter file dir %q", r.Out).Err())
 	}
 
