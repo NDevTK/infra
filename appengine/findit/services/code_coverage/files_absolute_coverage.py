@@ -18,10 +18,14 @@ _PAGE_SIZE = 100
 # List of builders for which coverage metrics to be exported.
 # These should be ci builders.
 _CHROMIUM_SOURCE_BUILDERS = [
-    'linux-code-coverage', 'win10-code-coverage', 'android-code-coverage',
-    'ios-simulator-code-coverage', 'linux-chromeos-code-coverage',
-    'linux-lacros-code-coverage', 'mac-code-coverage',
-    'android-code-coverage-native'
+    'linux-code-coverage', 'linux-code-coverage_unit', 'win10-code-coverage',
+    'win10-code-coverage_unit', 'android-code-coverage',
+    'android-code-coverage_unit', 'ios-simulator-code-coverage',
+    'ios-simulator-code-coverage_unit', 'linux-chromeos-code-coverage',
+    'linux-chromeos-code-coverage_unit', 'linux-lacros-code-coverage',
+    'linux-lacros-code-coverage_unit', 'mac-code-coverage',
+    'mac-code-coverage_unit', 'android-code-coverage-native',
+    'android-code-coverage-native_unit'
 ]
 
 
