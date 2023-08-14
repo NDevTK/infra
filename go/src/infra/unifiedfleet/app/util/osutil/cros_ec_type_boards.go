@@ -54,6 +54,7 @@ var crosEcTypeBoards = []string{
 	"skyrim",
 	"snappy",
 	"soraka",
+	"staryu",
 	"strago",
 	"strongbad",
 	"trogdor",
