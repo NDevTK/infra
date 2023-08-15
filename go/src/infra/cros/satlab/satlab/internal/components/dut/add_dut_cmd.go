@@ -260,7 +260,7 @@ func validateHostname(host string) error {
 }
 
 func shouldCreateStableVersion(board string, model string) bool {
-	localStableVersion := fmt.Sprintf("/config/recovery_versions/%s-%s.json", board, model)
+	localStableVersion := fmt.Sprintf("%s%s-%s.json", site.RecoveryVersionDirectory, board, model)
 	_, err := os.Stat(localStableVersion)
 	return err != nil
 }

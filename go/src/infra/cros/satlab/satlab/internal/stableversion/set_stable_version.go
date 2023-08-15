@@ -191,10 +191,10 @@ func (c *setStableVersionRun) innerRunHostname(ctx context.Context, a subcommand
 // WriteLocalStableVersion saves a recovery version to the specified directory and creates the directory if necessary.
 func WriteLocalStableVersion(recovery_version *RecoveryVersion, path string) error {
 
-	// Create recovery_versions directory if not yet created
-	err := os.MkdirAll(path, os.ModePerm)
+	// Check if recovery_versions directory created
+	_, err := os.Stat(path)
 	if err != nil {
-		return errors.Annotate(err, "mkdir recovery version").Err()
+		return err
 	}
 
 	fname := fmt.Sprintf("%s%s-%s.json", path, recovery_version.Board, recovery_version.Model)

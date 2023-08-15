@@ -24,7 +24,14 @@ func TestWriteLocalStableVersion(t *testing.T) {
 	}
 
 	path := "./tmp/recovery_versions/"
-	err := WriteLocalStableVersion(rv, path)
+
+	os.RemoveAll(path)
+	err := os.MkdirAll(path, 0777)
+	if err != nil {
+		t.Errorf("Unexpected err: %v", err)
+	}
+
+	err = WriteLocalStableVersion(rv, path)
 	if err != nil {
 		t.Errorf("Unexpected err: %v", err)
 	}
