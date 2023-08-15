@@ -23,10 +23,11 @@ import (
 
 // mockComputeInstancesClient mocks compute.NewInstancesRESTClient for testing.
 type mockComputeInstancesClient struct {
-	deleteFunc func() (*compute.Operation, error)
-	getFunc    func() (*computepb.Instance, error)
-	insertFunc func() (*compute.Operation, error)
-	listFunc   func() *compute.InstanceIterator
+	deleteFunc         func() (*compute.Operation, error)
+	getFunc            func() (*computepb.Instance, error)
+	insertFunc         func() (*compute.Operation, error)
+	listFunc           func() *compute.InstanceIterator
+	aggregatedListFunc func() *compute.InstancesScopedListPairIterator
 }
 
 // Delete mocks the Delete instance method of the compute client.
@@ -47,6 +48,11 @@ func (m *mockComputeInstancesClient) Insert(context.Context, *computepb.InsertIn
 // List mocks the List instance method of the compute client.
 func (m *mockComputeInstancesClient) List(context.Context, *computepb.ListInstancesRequest, ...gax.CallOption) *compute.InstanceIterator {
 	return m.listFunc()
+}
+
+// AggregateList mocks the AggregateList instance method of the compute client.
+func (m *mockComputeInstancesClient) AggregatedList(context.Context, *computepb.AggregatedListInstancesRequest, ...gax.CallOption) *compute.InstancesScopedListPairIterator {
+	return m.aggregatedListFunc()
 }
 
 func TestComputeExpirationTime(t *testing.T) {
@@ -401,6 +407,43 @@ func TestPoll(t *testing.T) {
 
 			So(err, ShouldBeNil)
 			So(actual, ShouldEqual, expected)
+		})
+	})
+}
+
+func TestListInstances(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	Convey("Test listInstances", t, func() {
+		Convey("listAllInstances - nil iterator returned", func() {
+			client := &mockComputeInstancesClient{
+				aggregatedListFunc: func() *compute.InstancesScopedListPairIterator {
+					return nil
+				},
+			}
+			listReq := &api.ListLeasesRequest{
+				Parent:    "projects/test-project",
+				PageSize:  5,
+				PageToken: "test-token",
+			}
+			_, err := listAllInstances(ctx, client, "test-project", listReq)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "listAllInstances: cannot get instances")
+		})
+		Convey("listZoneInstances - nil iterator returned", func() {
+			client := &mockComputeInstancesClient{
+				listFunc: func() *compute.InstanceIterator {
+					return nil
+				},
+			}
+			listReq := &api.ListLeasesRequest{
+				Parent:    "projects/test-project/zones/test-zone",
+				PageSize:  5,
+				PageToken: "test-token",
+			}
+			_, err := listZoneInstances(ctx, client, "test-project", "test-zone", listReq)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "listZoneInstances: cannot get instances")
 		})
 	})
 }

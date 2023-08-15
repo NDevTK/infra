@@ -17,6 +17,7 @@ import (
 	"github.com/googleapis/gax-go/v2"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
+	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -33,6 +34,7 @@ type computeInstancesClient interface {
 	Get(ctx context.Context, r *computepb.GetInstanceRequest, opts ...gax.CallOption) (*computepb.Instance, error)
 	Insert(ctx context.Context, r *computepb.InsertInstanceRequest, opts ...gax.CallOption) (*compute.Operation, error)
 	List(ctx context.Context, r *computepb.ListInstancesRequest, opts ...gax.CallOption) *compute.InstanceIterator
+	AggregatedList(ctx context.Context, r *computepb.AggregatedListInstancesRequest, opts ...gax.CallOption) *compute.InstancesScopedListPairIterator
 }
 
 // Prove that Server implements pb.VMLeaserServiceServer by instantiating a Server
@@ -173,56 +175,40 @@ func (s *Server) ReleaseVM(ctx context.Context, r *api.ReleaseVMRequest) (*api.R
 
 func (s *Server) ListLeases(ctx context.Context, r *api.ListLeasesRequest) (*api.ListLeasesResponse, error) {
 	logging.Infof(ctx, "ListLeases start")
-	return nil, status.Errorf(codes.Unimplemented, "ListLeases is not implemented")
-}
 
-// getInstance gets a GCE instance based on lease id and GCE configs.
-//
-// getInstance returns a GCE instance with valid network interface and network
-// IP. If no network is available, it does not return the instance.
-func getInstance(parentCtx context.Context, client computeInstancesClient, leaseID string, hostReqs *api.VMRequirements, shouldPoll bool) (*computepb.Instance, error) {
-	// Implement a 30 second deadline for polling for the instance
-	ctx, cancel := context.WithTimeout(parentCtx, 30*time.Second)
-	defer cancel()
+	instancesClient, err := compute.NewInstancesRESTClient(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create NewInstancesRESTClient: %s", err)
+	}
+	defer instancesClient.Close()
 
-	getReq := &computepb.GetInstanceRequest{
-		Instance: leaseID,
-		Project:  hostReqs.GetGceProject(),
-		Zone:     hostReqs.GetGceRegion(),
+	instances, err := listInstances(ctx, instancesClient, r)
+	if err != nil {
+		return nil, err
 	}
 
-	var ins *computepb.Instance
-	var err error
-	if shouldPoll {
-		logging.Debugf(ctx, "getInstance: polling for instance")
-		err = poll(ctx, func(ctx context.Context) (bool, error) {
-			ins, err = client.Get(ctx, getReq)
-			if err != nil {
-				return false, err
-			}
-			return true, nil
-		}, 2*time.Second)
-		if err != nil {
-			return nil, err
+	var vms []*api.VM
+	for _, in := range instances {
+		logging.Infof(ctx, in.GetName())
+		if in.GetNetworkInterfaces() == nil || in.GetNetworkInterfaces()[0] == nil {
+			logging.Warningf(ctx, "instance %s does not have a network interface", in.GetName())
 		}
-	} else {
-		logging.Debugf(ctx, "getInstance: getting instance without polling")
-		ins, err = client.Get(ctx, getReq)
-		if err != nil {
-			return nil, err
-		}
+
+		vms = append(vms, &api.VM{
+			Id:        in.GetName(),
+			GceRegion: in.GetZone(),
+			Address: &api.VMAddress{
+				// Internal IP. Only one NetworkInterface should be available.
+				Host: in.GetNetworkInterfaces()[0].GetNetworkIP(),
+				// Temporarily hardcode as port 22.
+				Port: 22,
+			},
+		})
 	}
 
-	if ins.GetNetworkInterfaces() == nil || ins.GetNetworkInterfaces()[0] == nil {
-		return nil, errors.New("instance does not have a network interface")
-	}
-	if ins.GetNetworkInterfaces()[0].GetAccessConfigs() == nil || ins.GetNetworkInterfaces()[0].GetAccessConfigs()[0] == nil {
-		return nil, errors.New("instance does not have an access config")
-	}
-	if ins.GetNetworkInterfaces()[0].GetAccessConfigs()[0].GetNatIP() == "" {
-		return nil, errors.New("instance does not have a nat ip")
-	}
-	return ins, nil
+	return &api.ListLeasesResponse{
+		Vms: vms,
+	}, nil
 }
 
 // createInstance sends an instance creation request to the Compute Engine API and waits for it to complete.
@@ -301,6 +287,140 @@ func deleteInstance(ctx context.Context, c computeInstancesClient, r *api.Releas
 
 	logging.Infof(ctx, "deleteInstance: instance delete request received by GCP")
 	return nil
+}
+
+// getInstance gets a GCE instance based on lease id and GCE configs.
+//
+// getInstance returns a GCE instance with valid network interface and network
+// IP. If no network is available, it does not return the instance.
+func getInstance(parentCtx context.Context, client computeInstancesClient, leaseID string, hostReqs *api.VMRequirements, shouldPoll bool) (*computepb.Instance, error) {
+	// Implement a 30 second deadline for polling for the instance
+	ctx, cancel := context.WithTimeout(parentCtx, 30*time.Second)
+	defer cancel()
+
+	getReq := &computepb.GetInstanceRequest{
+		Instance: leaseID,
+		Project:  hostReqs.GetGceProject(),
+		Zone:     hostReqs.GetGceRegion(),
+	}
+
+	var ins *computepb.Instance
+	var err error
+	if shouldPoll {
+		logging.Debugf(ctx, "getInstance: polling for instance")
+		err = poll(ctx, func(ctx context.Context) (bool, error) {
+			ins, err = client.Get(ctx, getReq)
+			if err != nil {
+				return false, err
+			}
+			return true, nil
+		}, 2*time.Second)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		logging.Debugf(ctx, "getInstance: getting instance without polling")
+		ins, err = client.Get(ctx, getReq)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if ins.GetNetworkInterfaces() == nil || ins.GetNetworkInterfaces()[0] == nil {
+		return nil, errors.New("instance does not have a network interface")
+	}
+	if ins.GetNetworkInterfaces()[0].GetAccessConfigs() == nil || ins.GetNetworkInterfaces()[0].GetAccessConfigs()[0] == nil {
+		return nil, errors.New("instance does not have an access config")
+	}
+	if ins.GetNetworkInterfaces()[0].GetAccessConfigs()[0].GetNatIP() == "" {
+		return nil, errors.New("instance does not have a nat ip")
+	}
+	return ins, nil
+}
+
+// listInstances lists VMs in a GCP project based on request filters.
+func listInstances(ctx context.Context, client computeInstancesClient, r *api.ListLeasesRequest) ([]*computepb.Instance, error) {
+	logging.Debugf(ctx, "listInstances: %v", r)
+	parent := r.GetParent()
+	if err := validation.ValidateLeaseParent(parent); err != nil {
+		return nil, err
+	}
+	matches := validation.ValidLeaseParent.FindStringSubmatch(parent)
+	project := matches[validation.ValidLeaseParent.SubexpIndex("project")]
+	zone := matches[validation.ValidLeaseParent.SubexpIndex("zone")]
+
+	// TODO (b/295547037): Implement filtering for list method.
+	if r.GetFilter() != "" {
+		logging.Warningf(ctx, "listInstances: filtering is not yet implemented; filter string will be ignored")
+	}
+
+	if zone == "" {
+		return listAllInstances(ctx, client, project, r)
+	}
+	return listZoneInstances(ctx, client, project, zone, r)
+}
+
+// listAllInstances lists all VMs in a GCP project.
+func listAllInstances(ctx context.Context, client computeInstancesClient, project string, r *api.ListLeasesRequest) ([]*computepb.Instance, error) {
+	maxResults := uint32(r.GetPageSize())
+	req := &computepb.AggregatedListInstancesRequest{
+		Project:    project,
+		PageToken:  proto.String(r.GetPageToken()),
+		MaxResults: &maxResults,
+		Filter:     proto.String("name eq ^vm-.*"),
+	}
+
+	var instances []*computepb.Instance
+	it := client.AggregatedList(ctx, req)
+	if it == nil {
+		return nil, errors.New("listAllInstances: cannot get instances")
+	}
+	logging.Infof(ctx, "listAllInstances: instances found in project %s:", project)
+	for {
+		pair, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+
+		zoneIns := pair.Value.Instances
+		if len(zoneIns) > 0 {
+			instances = append(instances, zoneIns...)
+		}
+	}
+	return instances, nil
+}
+
+// listZoneInstances lists all VMs in a GCP project specified by zone.
+func listZoneInstances(ctx context.Context, client computeInstancesClient, project, zone string, r *api.ListLeasesRequest) ([]*computepb.Instance, error) {
+	maxResults := uint32(r.GetPageSize())
+	req := &computepb.ListInstancesRequest{
+		PageToken:  proto.String(r.GetPageToken()),
+		Project:    project,
+		MaxResults: &maxResults,
+		Zone:       zone,
+		Filter:     proto.String("name eq ^vm-.*"),
+	}
+
+	var instances []*computepb.Instance
+	it := client.List(ctx, req)
+	if it == nil {
+		return nil, errors.New("listZoneInstances: cannot get instances")
+	}
+	logging.Infof(ctx, "listZoneInstances: instances found in project %s zone %s:", project, zone)
+	for {
+		in, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		instances = append(instances, in)
+	}
+	return instances, nil
 }
 
 // getDefaultParams returns the default params of a prod/dev environment

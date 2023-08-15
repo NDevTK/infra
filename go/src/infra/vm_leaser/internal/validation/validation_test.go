@@ -9,6 +9,7 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	. "go.chromium.org/luci/common/testing/assertions"
 )
 
 func TestLeaseVMValidate(t *testing.T) {
@@ -208,6 +209,31 @@ func TestVMRequirementsValidate(t *testing.T) {
 			err := ValidateVMRequirements(req)
 			So(err, ShouldNotBeNil)
 			So(err.Error(), ShouldContainSubstring, "GCE machine disk size must be set (in GB).")
+		})
+	})
+}
+
+func TestValidateLeaseParent(t *testing.T) {
+	Convey("Validate LeaseParent", t, func() {
+		Convey("Valid regex - successful path; only project", func() {
+			err := ValidateLeaseParent("projects/test-project")
+			So(err, ShouldBeNil)
+		})
+		Convey("Valid regex - successful path; project and zone", func() {
+			err := ValidateLeaseParent("projects/test-project/zones/test-zone")
+			So(err, ShouldBeNil)
+		})
+		Convey("Valid regex - error; no project", func() {
+			err := ValidateLeaseParent("projects/")
+			So(err, ShouldErrLike, "parent must be in the format `projects/${project}` or `projects/${project}/zones/${zone}`")
+		})
+		Convey("Valid regex - error; extra string", func() {
+			err := ValidateLeaseParent("projects/test-project/123")
+			So(err, ShouldErrLike, "parent must be in the format `projects/${project}` or `projects/${project}/zones/${zone}`")
+		})
+		Convey("Valid regex - error; typo in zone", func() {
+			err := ValidateLeaseParent("projects/test-project/zone/fail-zone")
+			So(err, ShouldErrLike, "parent must be in the format `projects/${project}` or `projects/${project}/zones/${zone}`")
 		})
 	})
 }

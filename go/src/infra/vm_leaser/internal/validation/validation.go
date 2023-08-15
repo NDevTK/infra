@@ -5,9 +5,19 @@
 package validation
 
 import (
+	"regexp"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+)
+
+var (
+	// Lease parent resource in requests should compile to
+	// `projects/${project}` or `projects/${project}/zones/${zone}`.
+	// The parent resource for all leases should be a GCP project or a project
+	// with a zone specified.
+	ValidLeaseParent = regexp.MustCompile(`^projects\/(?P<project>[-|\w]+)\/?(?:zones\/(?P<zone>[-|\w]+))?\/?$`)
 )
 
 // ValidateLeaseVMRequest validates input requests of LeaseVMRequest.
@@ -52,6 +62,14 @@ func ValidateVMRequirements(r *api.VMRequirements) error {
 	}
 	if r.GetGceDiskSize() == 0 {
 		return status.Errorf(codes.InvalidArgument, "GCE machine disk size must be set (in GB).")
+	}
+	return nil
+}
+
+// ValidateLeaseParent validates the parent field to be `projects/${project}`.
+func ValidateLeaseParent(parent string) error {
+	if !ValidLeaseParent.MatchString(parent) {
+		return status.Errorf(codes.InvalidArgument, "parent must be in the format `projects/${project}` or `projects/${project}/zones/${zone}`")
 	}
 	return nil
 }
