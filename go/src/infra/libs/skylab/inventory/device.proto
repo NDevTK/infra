@@ -598,7 +598,7 @@ enum ServoFwChannel {
 }
 
 // copy of enum from dut_state.proto
-// Next Tag: 26
+// Next Tag: 28
 enum PeripheralState {
   // Please keep for all unknown states.
   UNKNOWN = 0;
@@ -654,6 +654,11 @@ enum PeripheralState {
   WARM_RESET_PIN_ISSUE = 24;
   // Issue related to power button pin on the DUT.
   POWER_BUTTON_PIN_ISSUE = 25;
+  // Peripheral state is not applicable.
+  NOT_APPLICABLE = 26;
+  // The servo device connected to debug header is not detected.
+  // Reported by dut_controller_missing_fault control.
+  DEBUG_HEADER_SERVO_MISSING = 27;
 }
 
 // copy of enum from dut_state.proto

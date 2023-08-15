@@ -349,6 +349,9 @@ message ServoHost {
     WARM_RESET_PIN_ISSUE = 24;
     // Issue related to power button pin on the DUT.
     POWER_BUTTON_PIN_ISSUE = 25;
+    // The servo device connected to debug header is not detected.
+    // Reported by dut_controller_missing_fault control.
+    DEBUG_HEADER_SERVO_MISSING = 27;
   }
   State state = 2;
   // Serial number of the root servo device.
