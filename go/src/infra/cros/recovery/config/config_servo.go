@@ -1392,6 +1392,22 @@ func servoRepairPlan() *Plan {
 				RunControl:    RunControl_ALWAYS_RUN,
 				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
+			"Set state:POWER_BUTTON_PIN_ISSUE": {
+				ExecName: "servo_set_servo_state",
+				ExecExtraArgs: []string{
+					"state:POWER_BUTTON_PIN_ISSUE",
+				},
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			},
+			"Set state:DEBUG_HEADER_SERVO_MISSING": {
+				ExecName: "servo_set_servo_state",
+				ExecExtraArgs: []string{
+					"state:DEBUG_HEADER_SERVO_MISSING",
+				},
+				RunControl:    RunControl_ALWAYS_RUN,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			},
 			"Set state:SBU_LOW_VOLTAGE": {
 				ExecName: "servo_set_servo_state",
 				ExecExtraArgs: []string{
