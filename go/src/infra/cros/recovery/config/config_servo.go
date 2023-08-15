@@ -333,6 +333,7 @@ func servoRepairPlan() *Plan {
 				RecoveryActions: []string{
 					"Stop servod",
 					"Reboot servo device",
+					"Toggle DTS Mode and Servo Role",
 					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
@@ -365,6 +366,7 @@ func servoRepairPlan() *Plan {
 				RecoveryActions: []string{
 					"Stop servod",
 					"Reboot servo device",
+					"Toggle DTS Mode and Servo Role",
 					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
@@ -420,6 +422,7 @@ func servoRepairPlan() *Plan {
 				RecoveryActions: []string{
 					"Stop servod",
 					"Reboot servo device",
+					"Toggle DTS Mode and Servo Role",
 					"Toggle PD once and stop",
 					// Other actions just in case as we do not expect to run them.
 					"Try fake disconnect and stop",
@@ -517,6 +520,7 @@ func servoRepairPlan() *Plan {
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
+					"Toggle DTS Mode and Servo Role",
 				},
 				AllowFailAfterRecovery: true,
 			},
@@ -548,6 +552,7 @@ func servoRepairPlan() *Plan {
 				RecoveryActions: []string{
 					"Stop servod",
 					"Reboot servo device",
+					"Toggle DTS Mode and Servo Role",
 					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
@@ -572,6 +577,7 @@ func servoRepairPlan() *Plan {
 				RecoveryActions: []string{
 					"Stop servod",
 					"Reboot servo device",
+					"Toggle DTS Mode and Servo Role",
 					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
@@ -599,6 +605,7 @@ func servoRepairPlan() *Plan {
 				RecoveryActions: []string{
 					"Stop servod",
 					"Reboot servo device",
+					"Toggle DTS Mode and Servo Role",
 					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
@@ -649,6 +656,7 @@ func servoRepairPlan() *Plan {
 				RecoveryActions: []string{
 					"Stop servod",
 					"Reboot servo device",
+					"Toggle DTS Mode and Servo Role",
 					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
@@ -729,6 +737,7 @@ func servoRepairPlan() *Plan {
 				RecoveryActions: []string{
 					"Stop servod",
 					"Reboot servo device",
+					"Toggle DTS Mode and Servo Role",
 					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
@@ -764,6 +773,7 @@ func servoRepairPlan() *Plan {
 				RecoveryActions: []string{
 					"Stop servod",
 					"Reboot servo device",
+					"Toggle DTS Mode and Servo Role",
 					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",
@@ -1194,6 +1204,7 @@ func servoRepairPlan() *Plan {
 				RecoveryActions: []string{
 					"Stop servod",
 					"Reboot servo device",
+					"Toggle DTS Mode and Servo Role",
 					"Toggle PD once and stop",
 					"Toggle PD (5 times) and stop",
 					"Try fake disconnect and stop",

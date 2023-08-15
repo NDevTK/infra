@@ -1707,6 +1707,26 @@
               "run_control": "RUN_ONCE"
             },
             {
+              "name": "Toggle DTS Mode and Servo Role",
+              "docs": [
+                "Toggle dts mode and servo role to try and recover CCD."
+              ],
+              "conditions": [
+                {
+                  "name": "is_servo_type_ccd",
+                  "exec_name": "is_servo_type_ccd",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
+              "exec_args": [
+                "dts_off_timeout:1",
+                "pd_role_snk_timeout:1",
+                "pd_role_src_timeout:1"
+              ],
+              "run_control": "ALWAYS_RUN"
+            },
+            {
               "name": "Toggle PD once and stop",
               "docs": [
                 "Toggle the servod command servo_pd_role only once. And then stop the servod afterwards.",
@@ -3518,6 +3538,26 @@
               ],
               "exec_name": "sample_pass",
               "run_control": "ALWAYS_RUN"
+            },
+            {
+              "name": "Toggle DTS Mode and Servo Role",
+              "docs": [
+                "Toggle dts mode and servo role to try and recover CCD."
+              ],
+              "conditions": [
+                {
+                  "name": "is_servo_type_ccd",
+                  "exec_name": "is_servo_type_ccd",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
+              "exec_args": [
+                "dts_off_timeout:1",
+                "pd_role_snk_timeout:1",
+                "pd_role_src_timeout:1"
+              ],
+              "run_control": "ALWAYS_RUN"
             }
           ],
           "allow_fail_after_recovery": true,
@@ -3720,6 +3760,26 @@
                   ],
                   "timeout": "1m10s",
                   "run_control": "RUN_ONCE"
+                },
+                {
+                  "name": "Toggle DTS Mode and Servo Role",
+                  "docs": [
+                    "Toggle dts mode and servo role to try and recover CCD."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "is_servo_type_ccd",
+                      "exec_name": "is_servo_type_ccd",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
+                  "exec_args": [
+                    "dts_off_timeout:1",
+                    "pd_role_snk_timeout:1",
+                    "pd_role_src_timeout:1"
+                  ],
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Toggle PD once and stop",
@@ -4434,6 +4494,26 @@
                   "run_control": "RUN_ONCE"
                 },
                 {
+                  "name": "Toggle DTS Mode and Servo Role",
+                  "docs": [
+                    "Toggle dts mode and servo role to try and recover CCD."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "is_servo_type_ccd",
+                      "exec_name": "is_servo_type_ccd",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
+                  "exec_args": [
+                    "dts_off_timeout:1",
+                    "pd_role_snk_timeout:1",
+                    "pd_role_src_timeout:1"
+                  ],
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
                   "name": "Toggle PD once and stop",
                   "docs": [
                     "Toggle the servod command servo_pd_role only once. And then stop the servod afterwards.",
@@ -5106,6 +5186,26 @@
               ],
               "timeout": "1m10s",
               "run_control": "RUN_ONCE"
+            },
+            {
+              "name": "Toggle DTS Mode and Servo Role",
+              "docs": [
+                "Toggle dts mode and servo role to try and recover CCD."
+              ],
+              "conditions": [
+                {
+                  "name": "is_servo_type_ccd",
+                  "exec_name": "is_servo_type_ccd",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
+              "exec_args": [
+                "dts_off_timeout:1",
+                "pd_role_snk_timeout:1",
+                "pd_role_src_timeout:1"
+              ],
+              "run_control": "ALWAYS_RUN"
             },
             {
               "name": "Toggle PD once and stop",
@@ -5843,6 +5943,26 @@
                   "run_control": "RUN_ONCE"
                 },
                 {
+                  "name": "Toggle DTS Mode and Servo Role",
+                  "docs": [
+                    "Toggle dts mode and servo role to try and recover CCD."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "is_servo_type_ccd",
+                      "exec_name": "is_servo_type_ccd",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
+                  "exec_args": [
+                    "dts_off_timeout:1",
+                    "pd_role_snk_timeout:1",
+                    "pd_role_src_timeout:1"
+                  ],
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
                   "name": "Toggle PD once and stop",
                   "docs": [
                     "Toggle the servod command servo_pd_role only once. And then stop the servod afterwards.",
@@ -6561,6 +6681,26 @@
                   ],
                   "timeout": "1m10s",
                   "run_control": "RUN_ONCE"
+                },
+                {
+                  "name": "Toggle DTS Mode and Servo Role",
+                  "docs": [
+                    "Toggle dts mode and servo role to try and recover CCD."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "is_servo_type_ccd",
+                      "exec_name": "is_servo_type_ccd",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
+                  "exec_args": [
+                    "dts_off_timeout:1",
+                    "pd_role_snk_timeout:1",
+                    "pd_role_src_timeout:1"
+                  ],
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Toggle PD once and stop",
@@ -7665,6 +7805,26 @@
               "run_control": "RUN_ONCE"
             },
             {
+              "name": "Toggle DTS Mode and Servo Role",
+              "docs": [
+                "Toggle dts mode and servo role to try and recover CCD."
+              ],
+              "conditions": [
+                {
+                  "name": "is_servo_type_ccd",
+                  "exec_name": "is_servo_type_ccd",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
+              "exec_args": [
+                "dts_off_timeout:1",
+                "pd_role_snk_timeout:1",
+                "pd_role_src_timeout:1"
+              ],
+              "run_control": "ALWAYS_RUN"
+            },
+            {
               "name": "Toggle PD once and stop",
               "docs": [
                 "Toggle the servod command servo_pd_role only once. And then stop the servod afterwards.",
@@ -8717,6 +8877,26 @@
                   "run_control": "RUN_ONCE"
                 },
                 {
+                  "name": "Toggle DTS Mode and Servo Role",
+                  "docs": [
+                    "Toggle dts mode and servo role to try and recover CCD."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "is_servo_type_ccd",
+                      "exec_name": "is_servo_type_ccd",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
+                  "exec_args": [
+                    "dts_off_timeout:1",
+                    "pd_role_snk_timeout:1",
+                    "pd_role_src_timeout:1"
+                  ],
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
                   "name": "Toggle PD once and stop",
                   "docs": [
                     "Toggle the servod command servo_pd_role only once. And then stop the servod afterwards.",
@@ -9365,6 +9545,26 @@
               ],
               "timeout": "1m10s",
               "run_control": "RUN_ONCE"
+            },
+            {
+              "name": "Toggle DTS Mode and Servo Role",
+              "docs": [
+                "Toggle dts mode and servo role to try and recover CCD."
+              ],
+              "conditions": [
+                {
+                  "name": "is_servo_type_ccd",
+                  "exec_name": "is_servo_type_ccd",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
+              "exec_args": [
+                "dts_off_timeout:1",
+                "pd_role_snk_timeout:1",
+                "pd_role_src_timeout:1"
+              ],
+              "run_control": "ALWAYS_RUN"
             },
             {
               "name": "Toggle PD once and stop",
@@ -10782,6 +10982,26 @@
                   ],
                   "timeout": "1m10s",
                   "run_control": "RUN_ONCE"
+                },
+                {
+                  "name": "Toggle DTS Mode and Servo Role",
+                  "docs": [
+                    "Toggle dts mode and servo role to try and recover CCD."
+                  ],
+                  "conditions": [
+                    {
+                      "name": "is_servo_type_ccd",
+                      "exec_name": "is_servo_type_ccd",
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
+                  "exec_args": [
+                    "dts_off_timeout:1",
+                    "pd_role_snk_timeout:1",
+                    "pd_role_src_timeout:1"
+                  ],
+                  "run_control": "ALWAYS_RUN"
                 },
                 {
                   "name": "Toggle PD once and stop",
