@@ -404,6 +404,14 @@ ORDER BY rank DESC`)
 				},
 			})
 		})
+
+		Convey("Partially defined sort returns error", func() {
+			request.Sort = &api.SortBy{Metric: 99}
+
+			_, err := client.createFetchMetricsQuery(request)
+
+			So(err, ShouldNotBeNil)
+		})
 	})
 }
 
@@ -791,6 +799,14 @@ ORDER BY is_file, rank DESC`)
 				Name:  "filter1",
 				Value: "blink_python_tests",
 			})
+		})
+
+		Convey("Invalid sort metric returns error", func() {
+			request.Sort = &api.SortBy{Metric: 99}
+
+			_, err := client.createDirectoryQuery(request)
+
+			So(err, ShouldNotBeNil)
 		})
 	})
 }

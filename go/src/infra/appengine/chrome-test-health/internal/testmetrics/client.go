@@ -395,10 +395,13 @@ func (c *Client) createFetchMetricsQuery(req *api.FetchTestMetricsRequest) (*big
 	}
 
 	sortMetric := "test_id"
-	// A default value of 0 maps to the name which for test based fetches is
-	// test_id. Other values map to metrics in both file and directory tables
-	if req.Sort != nil && req.Sort.Metric != api.SortType_SORT_NAME {
-		sortMetric = sortTypeSqlLookup[req.Sort.Metric]
+	// A default value maps to the name which for test based fetches is test_id.
+	// Other values map to metrics in both file and directory tables
+	if req.Sort != nil && req.Sort.Metric != api.SortType_SORT_NAME && req.Sort.Metric != api.SortType_UNKNOWN_SORTTYPE {
+		sortMetric, ok = sortTypeSqlLookup[req.Sort.Metric]
+		if !ok {
+			return nil, errors.Reason("Received an unsupported sort metric").Err()
+		}
 	}
 	sortDirection := "ASC"
 	if req.Sort != nil && !req.Sort.Ascending {
@@ -605,10 +608,13 @@ func (c *Client) createDirectoryQuery(req *api.FetchDirectoryMetricsRequest) (*b
 	}
 
 	sortMetric := "node_name"
-	// A default value of 0 maps to the name which for file based fetches is
+	// A default value maps to the name which for test based fetches is
 	// node_name. Other values map to metrics in both file and directory tables
-	if req.Sort != nil && req.Sort.Metric != api.SortType_SORT_NAME {
-		sortMetric = sortTypeSqlLookup[req.Sort.Metric]
+	if req.Sort != nil && req.Sort.Metric != api.SortType_SORT_NAME && req.Sort.Metric != api.SortType_UNKNOWN_SORTTYPE {
+		sortMetric, ok = sortTypeSqlLookup[req.Sort.Metric]
+		if !ok {
+			return nil, errors.Reason("Received an unsupported sort metric").Err()
+		}
 	}
 	sortDirection := "ASC"
 	if req.Sort != nil && !req.Sort.Ascending {
