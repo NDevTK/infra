@@ -30,7 +30,7 @@ type Environment struct {
 
 // Prod is the environment for prod.
 var Prod = Environment{
-	SwarmingService: "https://chromeos-swarming.appspot.com/",
+	SwarmingService: "chromeos-swarming.appspot.com",
 	UFSService:      "ufs.api.cr.dev",
 
 	BuildbucketService: "cr-buildbucket.appspot.com",
@@ -48,7 +48,7 @@ var Prod = Environment{
 
 // Dev is the environment for dev.
 var Dev = Environment{
-	SwarmingService: "https://chromeos-swarming.appspot.com/",
+	SwarmingService: "chromeos-swarming.appspot.com",
 	UFSService:      "staging.ufs.api.cr.dev",
 
 	BuildbucketService: "cr-buildbucket.appspot.com",

@@ -7,41 +7,47 @@ package dut
 import (
 	"context"
 	"fmt"
+	"infra/cmd/crosfleet/internal/site"
 	"infra/cmdsupport/cmdlib"
 	ufsutil "infra/unifiedfleet/app/util"
 
 	"google.golang.org/grpc/metadata"
 
 	"go.chromium.org/luci/auth/client/authcli"
-	swarmingapi "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/errors"
-	"google.golang.org/api/option"
+	"go.chromium.org/luci/grpc/prpc"
+	swarmingapi "go.chromium.org/luci/swarming/proto/api_v2"
 )
 
-const swarmingAPISuffix = "_ah/api/swarming/v1/"
-
-// newSwarmingService returns a new service to interact with the Swarming API.
-func newSwarmingService(ctx context.Context, swarmingServicePath string, authFlags *authcli.Flags) (*swarmingapi.Service, error) {
+// newSwarmingBotClient returns a new bot client service to interact with.
+func newSwarmingBotsClient(ctx context.Context, swarmingHost string, authFlags *authcli.Flags) (swarmingapi.BotsClient, error) {
 	httpClient, err := cmdlib.NewHTTPClient(ctx, authFlags)
 	if err != nil {
 		return nil, err
 	}
-	swarmingService, err := swarmingapi.NewService(ctx, option.WithHTTPClient(httpClient))
-	if err != nil {
-		return nil, err
-	}
-	swarmingService.BasePath = swarmingServicePath + swarmingAPISuffix
-	return swarmingService, nil
+	return swarmingapi.NewBotsClient(&prpc.Client{
+		C:       httpClient,
+		Options: site.DefaultPRPCOptions,
+		Host:    swarmingHost,
+	},
+	), nil
 }
 
 // hostnameToBotID returns the bot ID for a given DUT hostname.
-func hostnameToBotID(ctx context.Context, swarmingService *swarmingapi.Service, hostname string) (string, error) {
-	hostnameDim := fmt.Sprintf("dut_name:%s", hostname)
-	botsListReply, err := swarmingService.Bots.List().Context(ctx).Dimensions(hostnameDim).Do()
+func hostnameToBotID(ctx context.Context, swarmingBotsClient swarmingapi.BotsClient, hostname string) (string, error) {
+	botsListReply, err := swarmingBotsClient.ListBots(ctx, &swarmingapi.BotsRequest{
+		Limit: 1,
+		Dimensions: []*swarmingapi.StringPair{
+			{
+				Key:   "dut_name",
+				Value: hostname,
+			},
+		},
+	})
 	if err != nil {
 		return "", err
 	}
-	bots := botsListReply.Items
+	bots := botsListReply.GetItems()
 	if len(bots) == 0 {
 		return "", errors.Reason(fmt.Sprintf("Invalid host %s: no associated Swarming bots found", hostname)).Err()
 	}
@@ -50,12 +56,14 @@ func hostnameToBotID(ctx context.Context, swarmingService *swarmingapi.Service, 
 
 // countBotsWithDims returns the number of Swarming bots satisfying the given
 // Swarming dimensions.
-func countBotsWithDims(ctx context.Context, s *swarmingapi.Service, dimsMap map[string]string) (*swarmingapi.SwarmingRpcsBotsCount, error) {
-	var dims []string
+func countBotsWithDims(ctx context.Context, s swarmingapi.BotsClient, dimsMap map[string]string) (*swarmingapi.BotsCount, error) {
+	var dims []*swarmingapi.StringPair
 	for key, val := range dimsMap {
-		dims = append(dims, fmt.Sprintf("%s:%s", key, val))
+		dims = append(dims, &swarmingapi.StringPair{Key: key, Value: val})
 	}
-	return s.Bots.Count().Context(ctx).Dimensions(dims...).Do()
+	return s.CountBots(ctx, &swarmingapi.BotsCountRequest{
+		Dimensions: dims,
+	})
 }
 
 // contextWithOSNamespace adds an "os" namespace to the given context, which

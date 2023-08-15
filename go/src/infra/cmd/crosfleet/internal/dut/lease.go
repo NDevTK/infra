@@ -21,8 +21,8 @@ import (
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
-	swarmingapi "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/cli"
+	swarmingapi "go.chromium.org/luci/swarming/proto/api_v2"
 )
 
 const (
@@ -81,16 +81,16 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 		return err
 	}
 	ctx := cli.GetContext(a, c, env)
-	swarmingService, err := newSwarmingService(ctx, c.envFlags.Env().SwarmingService, &c.authFlags)
+	swarmingBotsClient, err := newSwarmingBotsClient(ctx, c.envFlags.Env().SwarmingService, &c.authFlags)
 	if err != nil {
 		return err
 	}
-	botDims, buildTags, err := botDimsAndBuildTags(ctx, swarmingService, c.leaseFlags)
+	botDims, buildTags, err := botDimsAndBuildTags(ctx, swarmingBotsClient, c.leaseFlags)
 	if err != nil {
 		return err
 	}
 	c.printer.WriteTextStderr("Verifying the provided DUT dimensions...")
-	duts, err := countBotsWithDims(ctx, swarmingService, botDims)
+	duts, err := countBotsWithDims(ctx, swarmingBotsClient, botDims)
 	if err != nil {
 		return err
 	}
@@ -143,13 +143,13 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 
 // botDimsAndBuildTags constructs bot dimensions and Buildbucket build tags for
 // a dut_leaser build from the given lease flags and optional bot ID.
-func botDimsAndBuildTags(ctx context.Context, swarmingService *swarmingapi.Service, leaseFlags leaseFlags) (dims, tags map[string]string, err error) {
+func botDimsAndBuildTags(ctx context.Context, swarmingBotsClient swarmingapi.BotsClient, leaseFlags leaseFlags) (dims, tags map[string]string, err error) {
 	dims = map[string]string{}
 	tags = map[string]string{}
 	if leaseFlags.host != "" {
 		// Hostname-based lease.
 		correctedHostname := heuristics.NormalizeBotNameToDeviceName(leaseFlags.host)
-		id, err := hostnameToBotID(ctx, swarmingService, correctedHostname)
+		id, err := hostnameToBotID(ctx, swarmingBotsClient, correctedHostname)
 		if err != nil {
 			return nil, nil, err
 		}

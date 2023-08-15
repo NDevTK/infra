@@ -61,7 +61,7 @@ func (c *abandonRun) innerRun(a subcommands.Application, args []string, env subc
 	if err != nil {
 		return err
 	}
-	swarmingService, err := newSwarmingService(ctx, c.envFlags.Env().SwarmingService, &c.authFlags)
+	swarmingBotsClient, err := newSwarmingBotsClient(ctx, c.envFlags.Env().SwarmingService, &c.authFlags)
 	if err != nil {
 		return err
 	}
@@ -73,7 +73,7 @@ func (c *abandonRun) innerRun(a subcommands.Application, args []string, env subc
 	var botIDs []string
 	for _, hostname := range args {
 		correctedHostname := heuristics.NormalizeBotNameToDeviceName(hostname)
-		id, err := hostnameToBotID(ctx, swarmingService, correctedHostname)
+		id, err := hostnameToBotID(ctx, swarmingBotsClient, correctedHostname)
 		if err != nil {
 			return err
 		}
