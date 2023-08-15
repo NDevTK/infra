@@ -2,19 +2,98 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
+import { renderWithComponents } from '../../features/components/testUtils';
 import NavBar from './NavBar';
 
-const mockedUsedNavigate = jest.fn();
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => mockedUsedNavigate,
-}));
-
 describe('when rendering the navbar', () => {
-  it('should render the ', () => {
-    render(<NavBar />);
-    expect(screen.getByTestId('selectComponents')).toBeInTheDocument();
+  it('should set the component', () => {
+    const updateMock = jest.fn();
+    renderWithComponents(
+        <NavBar/>,
+        { api: { updateComponents: updateMock } },
+    );
+    const inputFields = screen.getByTestId('componentsTextField').getElementsByTagName('input');
+    expect(inputFields).toHaveLength(1);
+    const input = inputFields[0];
+    fireEvent.change(input, { target: { value: 'Test' } });
+    fireEvent.blur(input);
+    expect(updateMock).toBeCalled();
+    expect(updateMock).lastCalledWith(['Test']);
+  });
+
+  it('should set empty array when no components', () => {
+    const updateMock = jest.fn();
+    renderWithComponents(
+        <NavBar/>,
+        { api: { updateComponents: updateMock } },
+    );
+    const inputFields = screen.getByTestId('componentsTextField').getElementsByTagName('input');
+    expect(inputFields).toHaveLength(1);
+    const input = inputFields[0];
+    fireEvent.change(input, { target: { value: '' } });
+    fireEvent.blur(input);
+    expect(updateMock).toBeCalled();
+    expect(updateMock).lastCalledWith([]);
+  });
+
+  it('should set multiple components', () => {
+    const updateMock = jest.fn();
+    renderWithComponents(
+        <NavBar/>,
+        { api: { updateComponents: updateMock } },
+    );
+    const inputFields = screen.getByTestId('componentsTextField').getElementsByTagName('input');
+    expect(inputFields).toHaveLength(1);
+    const input = inputFields[0];
+    fireEvent.change(input, { target: { value: 'A, B' } });
+    fireEvent.blur(input);
+    expect(updateMock).toBeCalled();
+    expect(updateMock).lastCalledWith(['A', 'B']);
+  });
+
+  it('should not set duplicate components', () => {
+    const updateMock = jest.fn();
+    renderWithComponents(
+        <NavBar/>,
+        { api: { updateComponents: updateMock } },
+    );
+    const inputFields = screen.getByTestId('componentsTextField').getElementsByTagName('input');
+    expect(inputFields).toHaveLength(1);
+    const input = inputFields[0];
+    fireEvent.change(input, { target: { value: 'A, A' } });
+    fireEvent.blur(input);
+    expect(updateMock).toBeCalled();
+    expect(updateMock).lastCalledWith(['A']);
+  });
+
+  it('should not set empty components', () => {
+    const updateMock = jest.fn();
+    renderWithComponents(
+        <NavBar/>,
+        { api: { updateComponents: updateMock } },
+    );
+    const inputFields = screen.getByTestId('componentsTextField').getElementsByTagName('input');
+    expect(inputFields).toHaveLength(1);
+    const input = inputFields[0];
+    fireEvent.change(input, { target: { value: 'A, ,B' } });
+    fireEvent.blur(input);
+    expect(updateMock).toBeCalled();
+    expect(updateMock).lastCalledWith(['A', 'B']);
+  });
+
+  it('should handle whitespace well', () => {
+    const updateMock = jest.fn();
+    renderWithComponents(
+        <NavBar/>,
+        { api: { updateComponents: updateMock } },
+    );
+    const inputFields = screen.getByTestId('componentsTextField').getElementsByTagName('input');
+    expect(inputFields).toHaveLength(1);
+    const input = inputFields[0];
+    fireEvent.change(input, { target: { value: ' A ,B,C   ' } });
+    fireEvent.blur(input);
+    expect(updateMock).toBeCalled();
+    expect(updateMock).lastCalledWith(['A', 'B', 'C']);
   });
 });

@@ -92,12 +92,13 @@ describe('when rendering the ResourcesSearchParams', () => {
 
   it('should render components in url', async () => {
     await act(async () => {
-      renderWithComponents(<>
-        <BrowserRouter>
-          <TestMetricsSearchParams/>
-        </BrowserRouter>
-      </>
-      , ['a', 'b'],
+      renderWithComponents((
+        <>
+          <BrowserRouter>
+            <TestMetricsSearchParams/>
+          </BrowserRouter>
+        </>
+      ), { components: ['a', 'b'] },
       );
     });
     const searchParams = new URLSearchParams(window.location.search);

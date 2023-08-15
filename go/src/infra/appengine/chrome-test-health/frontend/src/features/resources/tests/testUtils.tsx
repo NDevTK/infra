@@ -7,7 +7,6 @@ import { ReactElement } from 'react';
 import { MetricType, Period, SortType } from '../../../api/resources';
 import { renderWithAuth } from '../../auth/testUtils';
 import {
-  Api,
   Node,
   Params,
   TestMetricsContext,
@@ -19,7 +18,23 @@ export interface OptionalContext {
   datesToShow?: string[],
   lastPage?: boolean,
   isLoading?: boolean,
-  api?: OptionalApi,
+  api?: {
+    // Page navigation
+    updatePage?: (page: number) => void,
+    updateRowsPerPage?: (rowsPerPage: number) => void,
+
+    // Filter related Apis
+    updateFilter?: (filter: string) => void,
+    updateDate?: (date: Date) => void,
+    updatePeriod?: (period: Period) => void,
+    updateSort?: (sort: SortType) => void,
+    updateAscending?: (ascending: boolean) => void,
+    updateSortDate?: (date: string) => void,
+    updateSortIndex?: (index: number) => void,
+    updateTimelineMetric?: (metric: MetricType) => void,
+    updateTimelineView?: (timelineView: boolean) => void,
+    updateDirectoryView?: (directoryView: boolean) => void,
+  },
   params?: OptionalParams,
   isTimelineView?: boolean,
   isDirectoryView?: boolean,
@@ -55,37 +70,7 @@ export function createParams(params? : OptionalParams) : Params {
   };
 }
 
-export interface OptionalApi {
-  // Page navigation
-  updatePage: (page: number) => void,
-  updateRowsPerPage: (rowsPerPage: number) => void,
-
-  // Filter related Apis
-  updateFilter: (filter: string) => void,
-  updateDate: (date: Date) => void,
-  updatePeriod: (period: Period) => void,
-  updateSort: (sort: SortType) => void,
-  updateAscending: (ascending: boolean) => void,
-  updateSortDate: (date: string) => void,
-  updateSortIndex: (index: number) => void,
-  updateTimelineMetric: (metric: MetricType) => void,
-  updateTimelineView: (timelineView: boolean) => void,
-  updateDirectoryView: (directoryView: boolean) => void,
-}
-
-const defaultApi: Api = {
-  updatePage: () => {/**/},
-  updateRowsPerPage: () => {/**/},
-  updateFilter: () => {/**/},
-  updateDate: () => {/**/},
-  updatePeriod: () => {/**/},
-  updateSort: () => {/**/},
-  updateAscending: () => {/**/},
-  updateSortIndex: () => {/**/},
-  updateTimelineMetric: () => {/**/},
-  updateTimelineView: () => {/**/},
-  updateDirectoryView: () => {/**/},
-};
+const defaultApi = () => {/**/};
 
 export function renderWithContext(
     ui: ReactElement,
@@ -96,17 +81,17 @@ export function renderWithContext(
     datesToShow: opts.datesToShow || [],
     lastPage: (opts.lastPage === undefined ? true : opts.lastPage),
     api: {
-      updatePage: opts.api?.updatePage || defaultApi.updatePage,
-      updateRowsPerPage: opts.api?.updateRowsPerPage || defaultApi.updateRowsPerPage,
-      updateFilter: opts.api?.updateFilter || defaultApi.updateFilter,
-      updateDate: opts.api?.updateDate || defaultApi.updateDate,
-      updatePeriod: opts.api?.updatePeriod || defaultApi.updatePeriod,
-      updateSort: opts.api?.updateSort || defaultApi.updateSort,
-      updateAscending: opts.api?.updateAscending || defaultApi.updateAscending,
-      updateSortIndex: opts.api?.updateSortIndex || defaultApi.updateSortIndex,
-      updateTimelineMetric: opts.api?.updateTimelineMetric || defaultApi.updateTimelineMetric,
-      updateTimelineView: opts.api?.updateTimelineView || defaultApi.updateTimelineView,
-      updateDirectoryView: opts.api?.updateDirectoryView || defaultApi.updateDirectoryView,
+      updatePage: opts.api?.updatePage || defaultApi,
+      updateRowsPerPage: opts.api?.updateRowsPerPage || defaultApi,
+      updateFilter: opts.api?.updateFilter || defaultApi,
+      updateDate: opts.api?.updateDate || defaultApi,
+      updatePeriod: opts.api?.updatePeriod || defaultApi,
+      updateSort: opts.api?.updateSort || defaultApi,
+      updateAscending: opts.api?.updateAscending || defaultApi,
+      updateSortIndex: opts.api?.updateSortIndex || defaultApi,
+      updateTimelineMetric: opts.api?.updateTimelineMetric || defaultApi,
+      updateTimelineView: opts.api?.updateTimelineView || defaultApi,
+      updateDirectoryView: opts.api?.updateDirectoryView || defaultApi,
     },
     params: createParams(opts.params),
     isLoading: (opts.isLoading === undefined ? false : opts.isLoading),
