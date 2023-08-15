@@ -173,7 +173,8 @@ class Cdb:
           actual_include_args.generated.add(actual_arg)
         elif actual_path.startswith(self.setup.src_dir):
           actual_include_args.local.add(actual_arg)
-        elif actual_path.startswith(self.setup.chroot_dir):
+        elif (actual_path.startswith(self.setup.chroot.path) or
+              actual_path.startswith(self.setup.chroot.out_path)):
           actual_include_args.chroot.add(actual_arg)
         else:
           raise NotImplementedError(f"Unexpected include path: {actual_path}")

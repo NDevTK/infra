@@ -3,8 +3,10 @@
 # found in the LICENSE file.
 
 import os
-from typing import List
+from pathlib import Path
+from typing import List, Optional
 
+from chromite.lib import chroot_lib
 from chromite.lib import constants
 from chromite.lib import git
 from chromite.lib import path_util
@@ -17,6 +19,7 @@ class Setup:
     * board
     * cros_dir: absolute path to chromeos checkout root dir
     * chroot_dir: absolute path to chroot dir
+    * chroot_out_dir: absolute path to chroot output dir
     * src_dir: absolute path to src
     * manifest: manifest handler
   """
@@ -24,10 +27,11 @@ class Setup:
   def __init__(self,
                board: str,
                *,
-               skip_packages: List[str] = None,
+               skip_packages: Optional[List[str]] = None,
                with_build: bool = False,
                with_tests: bool = False,
-               chroot_dir: str = None):
+               chroot_dir: str = "",
+               chroot_out_dir: str = ""):
     self.board = board
 
     checkout_info = path_util.DetermineCheckout()
@@ -37,15 +41,21 @@ class Setup:
 
     self.cros_dir = checkout_info.root
     if chroot_dir:
-      self.chroot_dir = os.path.realpath(chroot_dir)
+      self.chroot = chroot_lib.Chroot(
+          path=Path(os.path.realpath(chroot_dir)),
+          out_path=Path(os.path.realpath(chroot_out_dir)),
+      )
       assert (
-          not self.chroot_dir.startswith(self.cros_dir) or
-          self.chroot_dir == constants.DEFAULT_CHROOT_DIR), (
+          not self.chroot.path.startswith(self.cros_dir) or
+          self.chroot.path == constants.DEFAULT_CHROOT_DIR), (
               f"Custom chroot dir inside {self.cros_dir} is not supported, and "
               f"chromite resolves it to {constants.DEFAULT_CHROOT_DIR}.")
     else:
-      self.chroot_dir = path_util.FromChrootPath('/', self.cros_dir)
-    self.board_dir = os.path.join(self.chroot_dir, 'build', self.board)
+      self.chroot = chroot_lib.Chroot(
+          path=Path(self.cros_dir) / constants.DEFAULT_CHROOT_DIR,
+          out_path=Path(self.cros_dir) / constants.DEFAULT_OUT_DIR,
+      )
+    self.board_dir = self.chroot.full_path(os.path.join('/build', self.board))
     self.src_dir = os.path.join(self.cros_dir, 'src')
     self.platform2_dir = os.path.join(self.src_dir, 'platform2')
 
@@ -56,13 +66,13 @@ class Setup:
         os.path.join(self.board_dir, 'usr', 'include', 'u2f', 'client'),
         os.path.join(self.board_dir, 'usr', 'share', 'dbus-1'),
         os.path.join(self.board_dir, 'usr', 'share', 'proto'),
-        os.path.join(self.chroot_dir, 'build', 'share'),
-        os.path.join(self.chroot_dir, 'usr', 'include', 'android'),
-        os.path.join(self.chroot_dir, 'usr', 'include', 'cros-camera'),
-        os.path.join(self.chroot_dir, 'usr', 'lib64', 'shill'),
-        os.path.join(self.chroot_dir, 'usr', 'libexec', 'ipsec'),
-        os.path.join(self.chroot_dir, 'usr', 'libexec', 'l2tpipsec_vpn'),
-        os.path.join(self.chroot_dir, 'usr', 'share', 'cros-camera'),
+        self.chroot.full_path(os.path.join('/build', 'share')),
+        self.chroot.full_path(os.path.join('/usr', 'include', 'android')),
+        self.chroot.full_path(os.path.join('/usr', 'include', 'cros-camera')),
+        self.chroot.full_path(os.path.join('/usr', 'lib64', 'shill')),
+        self.chroot.full_path(os.path.join('/usr', 'libexec', 'ipsec')),
+        self.chroot.full_path(os.path.join('/usr', 'libexec', 'l2tpipsec_vpn')),
+        self.chroot.full_path(os.path.join('/usr', 'share', 'cros-camera')),
     ]
 
     self.skip_packages = skip_packages

@@ -136,6 +136,14 @@ def _BuildParser():
     checkout are currently ignored and always resolved as
     '/cros_checkout/chroot'."""))
 
+  parser.add_argument(
+      '--chroot-out',
+      type=str,
+      default='',
+      dest='chroot_out_dir',
+      help=textwrap.dedent("""\
+  Set custom chroot output path instead of default one."""))
+
   compile_commands_args = parser.add_mutually_exclusive_group()
   compile_commands_args.add_argument('--compile-commands',
                                      '--compile_commands',
@@ -214,7 +222,8 @@ def main():
       skip_packages=args.skip_packages.split(' '),
       with_build=args.with_build,
       with_tests=args.with_tests,
-      chroot_dir=args.chroot_dir)
+      chroot_dir=args.chroot_dir,
+      chroot_out_dir=args.chroot_out_dir)
 
   conductor = Conductor(setup=setup)
   conductor.Prepare(package_names=args.packages,

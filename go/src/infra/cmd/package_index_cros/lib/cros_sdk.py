@@ -27,16 +27,15 @@ class CrosSdk:
     encoding = 'utf-8' if capture_output else None
 
     g_logger.debug("Executing: '%s'", cmd)
-    run_func = cros_build_lib.sudo_run if with_sudo else cros_build_lib.run
+    run_func = (
+        self.setup.chroot.sudo_run if with_sudo else self.setup.chroot.run)
     res = run_func(
         cmd,
-        enter_chroot=True,
         shell=shell,
         capture_output=capture_output,
         encoding=encoding,
         check=True,
-        print_cmd=False,
-        chroot_args=['--chroot', self.setup.chroot_dir])
+        print_cmd=False)
     return res
 
   def __init__(self, setup: Setup):

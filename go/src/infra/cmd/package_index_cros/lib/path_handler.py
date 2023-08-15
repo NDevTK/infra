@@ -55,18 +55,10 @@ class PathHandler:
         os.path.join(to_dir, os.path.relpath(path, from_dir)))
 
   def FromChroot(self, chroot_path: str):
-    # |path_util.ChrootPathResolver._ConvertPath| resolves symlinks outside
-    # of chroot which don't exist inside chroot. E.g. /bin/ln becomes
-    # /chroot/usr/bin/ln if /bin is linked as /usr/bin outside of chroot.
-    # Use |_GetHostPath| directly and resolve symlinks outside of chroot.
-    return os.path.realpath(
-        path_util.ChrootPathResolver(
-            chroot_path=self.setup.chroot_dir)._GetHostPath(chroot_path))
+    return self.setup.chroot.full_path(chroot_path)
 
   def ToChroot(self, path: str):
-    # Unlike |FromChroot|, here it is useful to resolve symlinks before
-    # converting path to inside chroot.
-    return path_util.ToChrootPath(path, chroot_path=self.setup.chroot_dir)
+    return self.setup.chroot.chroot_path(path)
 
   def _GetPathOutsideOfChroot(self,
                               chroot_path: str,
