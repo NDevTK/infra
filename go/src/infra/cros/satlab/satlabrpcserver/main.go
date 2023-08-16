@@ -40,6 +40,9 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*20)
 	defer cancel()
 
+	monitor := m.New()
+	defer monitor.Stop()
+
 	bucketService, err := bucket_services.New(ctx, constants.BucketName)
 
 	if err != nil {
@@ -57,16 +60,25 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to create a DUT service")
 	}
+
+	// Register a CPU temperature orchestrator if we can find the temperature
+	// on a platform
+	var cpuTemperatureOrchestrator *cpu_temperature.CPUTemperatureOrchestrator
 	cpuTemperature, err := cpu_temperature.NewCPUTemperature()
 	if err != nil {
-		log.Fatalf("Can't create a cpu temperature, got an error: %v", err)
+		log.Printf("This platform doesn't support getting the temperature, got an error: %v", err)
+	} else {
+		cpuTemperatureOrchestrator = cpu_temperature.NewOrchestrator(cpuTemperature, 30)
+		monitor.Register(cpuTemperatureOrchestrator, time.Minute)
 	}
-	cpuTemperatureOrchestrator := cpu_temperature.NewOrchestrator(cpuTemperature, 30)
-	monitor := m.New()
-	monitor.Register(cpuTemperatureOrchestrator, time.Minute)
-	defer monitor.Stop()
 
-	server := rpc_services.New(buildService, bucketService, dutService, labelParser, cpuTemperatureOrchestrator)
+	server := rpc_services.New(
+		buildService,
+		bucketService,
+		dutService,
+		labelParser,
+		cpuTemperatureOrchestrator,
+	)
 	defer server.Close()
 	pb.RegisterSatlabRpcServiceServer(s, server)
 

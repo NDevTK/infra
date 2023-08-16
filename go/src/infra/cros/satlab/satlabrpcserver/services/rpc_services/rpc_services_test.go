@@ -628,6 +628,29 @@ func TestGetSystemInfoShouldWork(t *testing.T) {
 	}
 }
 
+func TestGetSystemInfoShouldWorkWithoutCPUOrchestrator(t *testing.T) {
+	t.Parallel()
+	// Create a mock server
+	s := createMockServer(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	req := pb.GetSystemInfoRequest{}
+
+	res, err := s.GetSystemInfo(ctx, &req)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Should not return error, but got an error: %v", err)
+	}
+
+	expected := -1.0
+	if !utils.NearlyEqual(float64(res.GetCpuTemperature()), expected) {
+		t.Errorf("Expected %v, got %v", expected, res.GetCpuTemperature())
+	}
+}
+
 func TestGetPeripheralInformationShouldSuccess(t *testing.T) {
 	t.Parallel()
 	// Create a mock server
