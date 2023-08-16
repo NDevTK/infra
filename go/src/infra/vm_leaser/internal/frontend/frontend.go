@@ -102,7 +102,7 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 		logging.Debugf(ctx, "LeaseVM: retrying %d time createInstance", retry)
 	}
 
-	ins, err := getInstance(ctx, instancesClient, leaseID, r.GetHostReqs(), true)
+	in, err := getInstance(ctx, instancesClient, leaseID, r.GetHostReqs(), true)
 	if err != nil {
 		if ctx.Err() != nil {
 			return nil, status.Errorf(codes.DeadlineExceeded, "when getting instance: %s", ctx.Err())
@@ -116,7 +116,7 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 			Id: leaseID,
 			Address: &api.VMAddress{
 				// Internal IP. Only one NetworkInterface should be available.
-				Host: ins.GetNetworkInterfaces()[0].GetNetworkIP(),
+				Host: in.GetNetworkInterfaces()[0].GetNetworkIP(),
 				// Temporarily hardcode as port 22
 				Port: 22,
 			},
@@ -304,12 +304,12 @@ func getInstance(parentCtx context.Context, client computeInstancesClient, lease
 		Zone:     hostReqs.GetGceRegion(),
 	}
 
-	var ins *computepb.Instance
+	var in *computepb.Instance
 	var err error
 	if shouldPoll {
 		logging.Debugf(ctx, "getInstance: polling for instance")
 		err = poll(ctx, func(ctx context.Context) (bool, error) {
-			ins, err = client.Get(ctx, getReq)
+			in, err = client.Get(ctx, getReq)
 			if err != nil {
 				return false, err
 			}
@@ -320,22 +320,22 @@ func getInstance(parentCtx context.Context, client computeInstancesClient, lease
 		}
 	} else {
 		logging.Debugf(ctx, "getInstance: getting instance without polling")
-		ins, err = client.Get(ctx, getReq)
+		in, err = client.Get(ctx, getReq)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	if ins.GetNetworkInterfaces() == nil || ins.GetNetworkInterfaces()[0] == nil {
+	if in.GetNetworkInterfaces() == nil || in.GetNetworkInterfaces()[0] == nil {
 		return nil, errors.New("instance does not have a network interface")
 	}
-	if ins.GetNetworkInterfaces()[0].GetAccessConfigs() == nil || ins.GetNetworkInterfaces()[0].GetAccessConfigs()[0] == nil {
+	if in.GetNetworkInterfaces()[0].GetAccessConfigs() == nil || in.GetNetworkInterfaces()[0].GetAccessConfigs()[0] == nil {
 		return nil, errors.New("instance does not have an access config")
 	}
-	if ins.GetNetworkInterfaces()[0].GetAccessConfigs()[0].GetNatIP() == "" {
+	if in.GetNetworkInterfaces()[0].GetAccessConfigs()[0].GetNatIP() == "" {
 		return nil, errors.New("instance does not have a nat ip")
 	}
-	return ins, nil
+	return in, nil
 }
 
 // listInstances lists VMs in a GCP project based on request filters.

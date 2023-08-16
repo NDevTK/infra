@@ -12,8 +12,8 @@ import (
 	. "go.chromium.org/luci/common/testing/assertions"
 )
 
-func TestLeaseVMValidate(t *testing.T) {
-	Convey("LeaseVMRequest Validate", t, func() {
+func TestValidateLeaseVM(t *testing.T) {
+	Convey("Test ValidateLeaseVMRequest", t, func() {
 		Convey("Valid request - successful path", func() {
 			req := &api.LeaseVMRequest{
 				HostReqs: &api.VMRequirements{
@@ -101,8 +101,8 @@ func TestLeaseVMValidate(t *testing.T) {
 	})
 }
 
-func TestReleaseVMValidate(t *testing.T) {
-	Convey("ReleaseVMRequest Validate", t, func() {
+func TestValidateReleaseVM(t *testing.T) {
+	Convey("Test ValidateReleaseVMRequest", t, func() {
 		Convey("Valid request - successful path", func() {
 			req := &api.ReleaseVMRequest{
 				LeaseId:    "test-lease-id",
@@ -142,8 +142,8 @@ func TestReleaseVMValidate(t *testing.T) {
 	})
 }
 
-func TestVMRequirementsValidate(t *testing.T) {
-	Convey("VMRequirements Validate", t, func() {
+func TestValidateVMRequirements(t *testing.T) {
+	Convey("Test ValidateVMRequirements", t, func() {
 		Convey("Valid request - successful path", func() {
 			req := &api.VMRequirements{
 				GceImage:       "test-image",
@@ -214,7 +214,7 @@ func TestVMRequirementsValidate(t *testing.T) {
 }
 
 func TestValidateLeaseParent(t *testing.T) {
-	Convey("Validate LeaseParent", t, func() {
+	Convey("Test ValidateLeaseParent", t, func() {
 		Convey("Valid regex - successful path; only project", func() {
 			err := ValidateLeaseParent("projects/test-project")
 			So(err, ShouldBeNil)
