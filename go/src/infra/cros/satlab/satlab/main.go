@@ -53,6 +53,7 @@ func getApplication() *cli.Application {
 			subcommands.Section("Utils"),
 			subcmds.IsSatlabRemoteAccessCmd,
 			subcmds.ServodCmd,
+			subcmds.PruneCmd,
 		},
 	}
 }
