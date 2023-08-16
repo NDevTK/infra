@@ -326,11 +326,7 @@ func (c *Client) ListComponents(ctx context.Context, req *api.ListComponentsRequ
 	if err != nil {
 		return nil, err
 	}
-	response := &api.ListComponentsResponse{
-		// Add the "Unknown" component for tests that are detached from their
-		// component
-		Components: []string{"Unknown"},
-	}
+	response := &api.ListComponentsResponse{}
 	type row struct {
 		Component string `bigquery:"component"`
 	}
