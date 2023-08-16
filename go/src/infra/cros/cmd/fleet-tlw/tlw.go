@@ -193,13 +193,38 @@ func (s *tlwServer) CacheForDut(ctx context.Context, req *tls.CacheForDutRequest
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("CacheForDut: unsupported url %s in request", rawURL))
 	}
-	dutName := req.GetDutName()
+	dutName := extractDutName(req.GetDutName())
 	if dutName == "" {
 		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("CacheForDut: unsupported DutName %s in request", dutName))
 	}
 	op := s.lroMgr.NewOperation()
 	go s.cache(context.TODO(), parsedURL, dutName, op.Name)
 	return op, status.Error(codes.OK, "Started: CacheForDut Operation.")
+}
+
+var (
+	// Peripheral suffixes used with dut-name to create peripheral names.
+	peripheralNameSuffixes = []string{
+		"-router",
+		"-pcap",
+		"-btpeer1",
+		"-btpeer2",
+		"-btpeer3",
+		"-btpeer4",
+		"-btpeer5",
+		"-btpeer6",
+	}
+)
+
+// extractDutName extracts dut-name from peripherals names.
+// If the name is peripheral, then it will have one of the suffixes.
+func extractDutName(name string) string {
+	for _, s := range peripheralNameSuffixes {
+		if strings.HasSuffix(name, s) {
+			return strings.TrimSuffix(name, s)
+		}
+	}
+	return name
 }
 
 // cache implements the logic for the CacheForDut method and runs as a goroutine.
