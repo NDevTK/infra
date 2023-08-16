@@ -55,6 +55,10 @@ func (l *Locator) SetPreferredServices(services []string) error {
 
 // FindCacheServer returns the ip address of a cache server mapped to a dut.
 func (l *Locator) FindCacheServer(dutName string, client ufsapi.FleetClient) (*labapi.IpEndpoint, error) {
+	dutName = extractDutName(dutName)
+	if dutName == "" {
+		return nil, fmt.Errorf("find cache server for %q: dut-name is empty ", dutName)
+	}
 	cs, err := l.findPreferredServer(dutName)
 	if err == nil {
 		return cs, nil
@@ -70,6 +74,31 @@ func (l *Locator) FindCacheServer(dutName string, client ufsapi.FleetClient) (*l
 		return nil, fmt.Errorf("find cache server for %q: %s", dutName, err)
 	}
 	return cs, nil
+}
+
+var (
+	// Peripheral suffixes used with dut-name to create peripheral names.
+	peripheralNameSuffixes = []string{
+		"-router",
+		"-pcap",
+		"-btpeer1",
+		"-btpeer2",
+		"-btpeer3",
+		"-btpeer4",
+		"-btpeer5",
+		"-btpeer6",
+	}
+)
+
+// extractDutName extracts dut-name from peripherals names.
+// If the name is peripheral, then it will have one of the suffixes.
+func extractDutName(name string) string {
+	for _, s := range peripheralNameSuffixes {
+		if strings.HasSuffix(name, s) {
+			return strings.TrimSuffix(name, s)
+		}
+	}
+	return name
 }
 
 func (l *Locator) findPreferredServer(dutName string) (*labapi.IpEndpoint, error) {
