@@ -184,8 +184,8 @@ def _step_client_tests(api, changes):
 
 def _step_swarming_tests(api, changes):
   deps = [
-      'swarming', 'client', 'components', 'vpython3', 'vpython',
-      'appengine_third_party'
+      'DEPS', 'swarming', 'client', 'components', 'vpython3', 'vpython',
+      'appengine_third_party',
   ]
   if not any([changes[d] for d in deps]):
     # skip tests when no changes on the dependencies.
@@ -200,7 +200,7 @@ def _step_swarming_tests(api, changes):
 
 
 def _step_swarming_bot_tests(api, changes):
-  deps = ['swarming', 'client', 'components', 'vpython3', 'vpython']
+  deps = ['DEPS', 'swarming', 'client', 'components', 'vpython3', 'vpython']
   if not any([changes[d] for d in deps]):
     # skip tests when no changes on the dependencies.
     return
