@@ -70,6 +70,30 @@
       },
       "revId": "b2ebfcb9673ee671017615236c00d440395ea26e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9c51a619_2fdffa35",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-08-16T23:46:05Z",
+      "side": 1,
+      "message": "The labservice is trade off as for long run we hope for load balancer of cache when we do not need this logic to find the cache address.\n\nresolved in offline chat",
+      "parentUuid": "977e747c_c0430450",
+      "range": {
+        "startLine": 205,
+        "startChar": 0,
+        "endLine": 217,
+        "endChar": 1
+      },
+      "revId": "b2ebfcb9673ee671017615236c00d440395ea26e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
