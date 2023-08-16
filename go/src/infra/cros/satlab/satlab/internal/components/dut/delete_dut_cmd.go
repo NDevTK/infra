@@ -19,9 +19,9 @@ import (
 
 	"infra/cmd/shivas/utils"
 	"infra/cmdsupport/cmdlib"
+	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlab/internal/commands"
 	"infra/cros/satlab/satlab/internal/components/ufs"
-	"infra/cros/satlab/satlab/internal/site"
 	ufsModels "infra/unifiedfleet/api/v1/models"
 	ufsApi "infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "infra/unifiedfleet/app/util"

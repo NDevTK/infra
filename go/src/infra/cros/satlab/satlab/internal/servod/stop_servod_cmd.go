@@ -15,9 +15,9 @@ import (
 	"infra/cmd/shivas/utils"
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/recovery/docker"
+	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlab/internal/commands"
 	"infra/cros/satlab/satlab/internal/components/ufs"
-	"infra/cros/satlab/satlab/internal/site"
 )
 
 // StartServodCmd is the command that will start a servod container

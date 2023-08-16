@@ -12,7 +12,7 @@ import (
 
 	"infra/cmd/shivas/cmdhelp"
 	"infra/cmd/shivas/utils"
-	"infra/cros/satlab/satlab/internal/site"
+	"infra/cros/satlab/common/site"
 )
 
 // MakeUpdateShivasFlags serializes the command line arguments of updateDUT into a flagmap

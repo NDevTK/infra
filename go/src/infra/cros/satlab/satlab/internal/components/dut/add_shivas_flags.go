@@ -12,7 +12,7 @@ import (
 
 	"infra/cmd/shivas/cmdhelp"
 	"infra/cmd/shivas/utils"
-	"infra/cros/satlab/satlab/internal/site"
+	"infra/cros/satlab/common/site"
 )
 
 // MakeShivasFlags takes an add DUT command and serializes its flags in such

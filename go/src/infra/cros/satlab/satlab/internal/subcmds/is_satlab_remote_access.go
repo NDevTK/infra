@@ -11,7 +11,7 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 
-	"infra/cros/satlab/satlab/internal/site"
+	"infra/cros/satlab/common/site"
 	"infra/libs/skylab/common/heuristics"
 )
 

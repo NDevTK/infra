@@ -8,7 +8,7 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 
-	"infra/cros/satlab/satlab/internal/site"
+	"infra/cros/satlab/common/site"
 )
 
 // updateDUTStateFlags is a command that contains the arguments that "shivas update" understands.

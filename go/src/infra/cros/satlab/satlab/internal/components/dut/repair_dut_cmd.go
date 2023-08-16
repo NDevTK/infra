@@ -6,8 +6,8 @@ package dut
 
 import (
 	"infra/cmdsupport/cmdlib"
+	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlab/internal/components/dut/shivas"
-	"infra/cros/satlab/satlab/internal/site"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/errors"

@@ -5,7 +5,7 @@
 package dut
 
 import (
-	"infra/cros/satlab/satlab/internal/site"
+	"infra/cros/satlab/common/site"
 	"reflect"
 	"testing"
 )

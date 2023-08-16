@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/satlab/satlab/internal/site"
+	"infra/cros/satlab/common/site"
 	"infra/libs/cipd"
 )
 

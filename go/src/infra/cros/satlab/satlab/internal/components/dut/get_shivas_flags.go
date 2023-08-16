@@ -10,7 +10,7 @@ import (
 	"go.chromium.org/luci/common/flag"
 
 	"infra/cmd/shivas/cmdhelp"
-	"infra/cros/satlab/satlab/internal/site"
+	"infra/cros/satlab/common/site"
 )
 
 // MakeShivasFlags creates a map for the flags inherited from shivas.

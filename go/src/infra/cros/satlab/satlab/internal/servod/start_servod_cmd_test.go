@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc"
 
 	"infra/cros/recovery/docker"
-	"infra/cros/satlab/satlab/internal/site"
+	"infra/cros/satlab/common/site"
 	ufsModels "infra/unifiedfleet/api/v1/models"
 	ufsCros "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsApi "infra/unifiedfleet/api/v1/rpc"

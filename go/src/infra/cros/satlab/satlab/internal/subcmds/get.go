@@ -10,9 +10,9 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
 
+	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlab/internal/commands/dns"
 	"infra/cros/satlab/satlab/internal/components/dut"
-	"infra/cros/satlab/satlab/internal/site"
 )
 
 // GetBase is a placeholder command for "get".

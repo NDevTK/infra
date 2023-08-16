@@ -17,7 +17,7 @@ import (
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/cmdsupport/cmdlib"
-	"infra/cros/satlab/satlab/internal/site"
+	"infra/cros/satlab/common/site"
 )
 
 // DeleteStableVersionCmd deletes a stable version entry.

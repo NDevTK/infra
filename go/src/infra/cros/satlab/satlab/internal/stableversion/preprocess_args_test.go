@@ -10,7 +10,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"infra/cros/satlab/satlab/internal/site"
+	"infra/cros/satlab/common/site"
 )
 
 // TestPreprocessHostname checks that preprocessHostname correctly determines the hostname and doesn't call

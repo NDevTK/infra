@@ -15,10 +15,10 @@ import (
 	"google.golang.org/api/option"
 
 	"infra/cmdsupport/cmdlib"
+	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlab/internal/commands/dns"
 	"infra/cros/satlab/satlab/internal/components/dut/shivas"
 	"infra/cros/satlab/satlab/internal/pkg/google.golang.org/google/chromeos/moblab"
-	"infra/cros/satlab/satlab/internal/site"
 	"infra/cros/satlab/satlab/internal/stableversion"
 )
 

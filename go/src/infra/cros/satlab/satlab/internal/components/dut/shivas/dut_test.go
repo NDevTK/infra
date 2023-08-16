@@ -8,7 +8,7 @@ import (
 	"os/exec"
 	"testing"
 
-	"infra/cros/satlab/satlab/internal/site"
+	"infra/cros/satlab/common/site"
 )
 
 // cmdRunTracker holds the last command run.

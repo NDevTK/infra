@@ -14,9 +14,9 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 
+	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlab/internal/components/run"
 	"infra/cros/satlab/satlab/internal/meta"
-	"infra/cros/satlab/satlab/internal/site"
 	"infra/cros/satlab/satlab/internal/stableversion"
 	"infra/cros/satlab/satlab/internal/subcmds"
 )

@@ -10,8 +10,8 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
 
+	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlab/internal/servod"
-	"infra/cros/satlab/satlab/internal/site"
 )
 
 // servodBase is the type for the servod placeholder command.

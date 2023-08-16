@@ -10,8 +10,8 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
 
+	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlab/internal/components/dut"
-	"infra/cros/satlab/satlab/internal/site"
 )
 
 // AddBase is the type for the add placeholder command.

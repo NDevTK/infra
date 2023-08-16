@@ -12,8 +12,8 @@ import (
 	"strconv"
 	"strings"
 
+	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlab/internal/commands"
-	"infra/cros/satlab/satlab/internal/site"
 
 	"go.chromium.org/luci/common/errors"
 )

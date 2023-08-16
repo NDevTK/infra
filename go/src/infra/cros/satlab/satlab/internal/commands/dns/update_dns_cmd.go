@@ -9,8 +9,8 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlab/internal/commands"
-	"infra/cros/satlab/satlab/internal/site"
 )
 
 // DockerHostBoxIdentifierGetter is a function type fulfilled by commands.GetDockerHostBoxIdentifier
