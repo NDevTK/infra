@@ -22,6 +22,30 @@
       },
       "revId": "b2ebfcb9673ee671017615236c00d440395ea26e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2738ca72_67765361",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-08-16T23:06:16Z",
+      "side": 1,
+      "message": "Device zone is only available for DUTs not peripherals. Change UFS to support it is more long run goal then goal for now.",
+      "parentUuid": "e5230893_203c62ee",
+      "range": {
+        "startLine": 205,
+        "startChar": 0,
+        "endLine": 217,
+        "endChar": 1
+      },
+      "revId": "b2ebfcb9673ee671017615236c00d440395ea26e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
