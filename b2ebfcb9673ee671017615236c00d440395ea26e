@@ -46,6 +46,30 @@
       },
       "revId": "b2ebfcb9673ee671017615236c00d440395ea26e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "977e747c_c0430450",
+        "filename": "go/src/infra/cros/cmd/fleet-tlw/tlw.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1527672
+      },
+      "writtenOn": "2023-08-16T23:31:39Z",
+      "side": 1,
+      "message": "Yes, embedding the logic here and labservice is creating more tech debt. It might be better and faster just update it from UFS considering the turn around time for drone update right now is at least two weeks.",
+      "parentUuid": "2738ca72_67765361",
+      "range": {
+        "startLine": 205,
+        "startChar": 0,
+        "endLine": 217,
+        "endChar": 1
+      },
+      "revId": "b2ebfcb9673ee671017615236c00d440395ea26e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
