@@ -3,36 +3,12 @@ cron:
   url: /internal/cron/ts_mon/housekeeping
   schedule: every 1 minutes
 
-- description: Update android bug queue
-  url: /_cron/refresh/bugqueue/sheriff-android
-  schedule: every 24 hours
-
-- description: Update chromium bug queue
-  url: /_cron/refresh/bugqueue/sheriff-chromium
-  schedule: every 24 hours
-
-- description: Update fuchsia bug queue
-  url: /_cron/refresh/bugqueue/sheriff-fuchsia
-  schedule: every 24 hours
-
-- description: Update trooper queue
-  url: /_cron/refresh/bugqueue/infra-troopers
-  schedule: every 24 hours
-
-- description: Update chrome browser release bug queue
-  url: /_cron/refresh/bugqueue/sheriff-chrome-release
-  schedule: every 24 hours
-
-- description: Update cached annotation metadata
-  url: /_cron/annotations/refresh/
-  schedule: every 15 minutes
-
 - description: Delete old annotations
-  url: /_cron/annotations/flush_old/
+  url: /internal/cron/annotations_flush_old
   schedule: every 1 hours
 
 - description: Delete old alerts
-  url: /_cron/alerts/flush_old/
+  url: /internal/cron/alerts_flush_old
   schedule: every 24 hours
 
 - description: Update Android alerts

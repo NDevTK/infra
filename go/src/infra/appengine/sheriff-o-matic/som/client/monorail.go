@@ -10,6 +10,9 @@ import (
 	"regexp"
 
 	"go.chromium.org/luci/gae/service/info"
+	"google.golang.org/grpc"
+
+	monorailv3 "infra/monorailv2/api/v3/api_proto"
 )
 
 // monorailPriorityFieldMap records the resource name of priority field
@@ -90,4 +93,15 @@ func ParseMonorailIssueName(issueName string) (string, string, error) {
 		return "", "", fmt.Errorf("Invalid resource %q", issueName)
 	}
 	return rs[1], rs[2], nil
+}
+
+// FakeMonorailIssueClient is a fake client that is used when running locally
+// because the calls to Monorail always fail.  This prevents waiting for the
+// 60 second timeout.
+//
+// Any functionality using monorail must be tested when deployed to AppEngine.
+type FakeMonorailIssueClient struct{}
+
+func (ic FakeMonorailIssueClient) SearchIssues(c context.Context, req *monorailv3.SearchIssuesRequest, ops ...grpc.CallOption) (*monorailv3.SearchIssuesResponse, error) {
+	return &monorailv3.SearchIssuesResponse{}, nil
 }

@@ -57,13 +57,10 @@ deploy_staging: build
 deploy_prod: build
 	$(GAE_PY) upload -A sheriff-o-matic --app-dir . default analyzer
 
-devserver:
-	$(DEVSERVER_PY) frontend/app.yaml backend/service-analyzer.yaml
+devserver_default:
+	cd frontend && go run main.go -cloud-project sheriff-o-matic-staging
 
-# The -remote commands expose the app so that it is externally
-# accessible by hostname:port, rather than just localhost:port.
-devserver_remote:
-	$(DEVSERVER_PY) --host $$HOSTNAME frontend/app.yaml backend/app.yaml
+# TODO(mwarton): devserver_analyze
 
 deploy_cron_staging:
 	cp cron_staging.yaml cron.yaml

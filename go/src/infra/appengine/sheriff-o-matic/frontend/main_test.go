@@ -13,7 +13,7 @@ import (
 	"testing"
 
 	"github.com/julienschmidt/httprouter"
-
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
@@ -21,8 +21,6 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 	"go.chromium.org/luci/server/router"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 var _ = fmt.Printf
@@ -41,20 +39,18 @@ func TestMain(t *testing.T) {
 
 		Convey("index", func() {
 			Convey("pathless", func() {
-				indexPage(&router.Context{
+				(&SOMHandlers{}).indexPage(&router.Context{
 					Writer:  w,
-					Request: makeGetRequest(c),
-					Params:  makeParams("path", ""),
+					Request: makeGetRequest(c, "/"),
 				})
 
 				So(w.Code, ShouldEqual, 302)
 			})
 
 			Convey("anonymous", func() {
-				indexPage(&router.Context{
+				(&SOMHandlers{}).indexPage(&router.Context{
 					Writer:  w,
-					Request: makeGetRequest(c),
-					Params:  makeParams("path", "chromium"),
+					Request: makeGetRequest(c, "/chromium"),
 				})
 
 				r, err := ioutil.ReadAll(w.Body)
@@ -71,10 +67,9 @@ func TestMain(t *testing.T) {
 			c = auth.WithState(c, authState)
 
 			Convey("No access", func() {
-				indexPage(&router.Context{
+				(&SOMHandlers{}).indexPage(&router.Context{
 					Writer:  w,
-					Request: makeGetRequest(c),
-					Params:  makeParams("path", "chromium"),
+					Request: makeGetRequest(c, "/chromium"),
 				})
 
 				So(w.Code, ShouldEqual, 200)
@@ -87,10 +82,9 @@ func TestMain(t *testing.T) {
 			authState.IdentityGroups = []string{authGroup}
 
 			Convey("good path", func() {
-				indexPage(&router.Context{
+				(&SOMHandlers{}).indexPage(&router.Context{
 					Writer:  w,
-					Request: makeGetRequest(c),
-					Params:  makeParams("path", "chromium"),
+					Request: makeGetRequest(c, "/chromium"),
 				})
 				r, err := ioutil.ReadAll(w.Body)
 				So(err, ShouldBeNil)
@@ -106,8 +100,8 @@ func TestMain(t *testing.T) {
 	})
 }
 
-func makeGetRequest(ctx context.Context) *http.Request {
-	req, _ := http.NewRequestWithContext(ctx, "GET", "/doesntmatter", nil)
+func makeGetRequest(ctx context.Context, path string) *http.Request {
+	req, _ := http.NewRequestWithContext(ctx, "GET", path, nil)
 	return req
 }
 

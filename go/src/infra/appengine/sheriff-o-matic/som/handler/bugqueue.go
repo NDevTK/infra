@@ -10,21 +10,22 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-
-	"infra/appengine/sheriff-o-matic/som/client"
-	"infra/appengine/sheriff-o-matic/som/model"
-	"infra/monorail"
-	monorailv3 "infra/monorailv2/api/v3/api_proto"
+	"time"
 
 	"go.chromium.org/luci/common/clock"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/tsmon/field"
 	"go.chromium.org/luci/common/tsmon/metric"
 	"go.chromium.org/luci/gae/service/datastore"
-	"go.chromium.org/luci/gae/service/memcache"
 	"go.chromium.org/luci/server/auth"
+	"go.chromium.org/luci/server/caching"
 	"go.chromium.org/luci/server/router"
 	"google.golang.org/grpc"
+
+	"infra/appengine/sheriff-o-matic/som/client"
+	"infra/appengine/sheriff-o-matic/som/model"
+	monorailv3 "infra/monorailv2/api/v3/api_proto"
 )
 
 const (
@@ -35,6 +36,8 @@ var (
 	bugQueueLength = metric.NewInt("bug_queue_length", "Number of bugs in queue.",
 		nil, field.String("label"))
 )
+
+var bugCache = caching.RegisterLRUCache[string, []byte](20)
 
 // IssueClient is for testing purpose
 type IssueClient interface {
@@ -50,32 +53,8 @@ type SearchIssueResponseExtras struct {
 
 // BugQueueHandler handles bug queue-related requests.
 type BugQueueHandler struct {
-	Monorail               monorail.MonorailClient
 	MonorailIssueClient    IssueClient
 	DefaultMonorailProject string
-}
-
-// A bit of a hack to let us mock getBugsFromMonorail.
-func (bqh *BugQueueHandler) getBugsFromMonorail(c context.Context, q string, projectID string,
-	can monorail.IssuesListRequest_CannedQuery) (*monorail.IssuesListResponse, error) {
-	// TODO: make this look up request info based on Tree datastore object
-	req := &monorail.IssuesListRequest{
-		ProjectId: projectID,
-		Q:         q,
-	}
-
-	req.Can = can
-
-	before := clock.Now(c)
-
-	res, err := bqh.Monorail.IssuesList(c, req)
-	if err != nil {
-		logging.Errorf(c, "error getting issuelist: %v", err)
-		return nil, err
-	}
-
-	logging.Debugf(c, "Fetch to monorail took %v. Got %d bugs.", clock.Now(c).Sub(before), res.TotalResults)
-	return res, nil
 }
 
 func (bqh *BugQueueHandler) getBugsFromMonorailV3(c context.Context, q string, projectID string) (*SearchIssueResponseExtras, error) {
@@ -123,27 +102,24 @@ func getAlternateEmail(email string) string {
 
 // GetBugQueueHandler returns a set of bugs for the current user and tree.
 func (bqh *BugQueueHandler) GetBugQueueHandler(ctx *router.Context) {
+	var err error
 	c, w, p := ctx.Request.Context(), ctx.Writer, ctx.Params
-
 	label := p.ByName("label")
 	key := fmt.Sprintf(bugQueueCacheFormat, label)
 
-	item, err := memcache.GetKey(c, key)
+	item, found := bugCache.LRU(c).Get(c, key)
 
-	if err == memcache.ErrCacheMiss {
-		logging.Debugf(c, "No bug queue data for %s in memcache, refreshing...", label)
+	if !found {
+		logging.Debugf(c, "No bug queue data for %s in cache, refreshing...", label)
 		item, err = bqh.refreshBugQueue(c, label, bqh.GetMonorailProjectNameFromLabel(c, label))
+		if err != nil {
+			errStatus(c, w, http.StatusInternalServerError, err.Error())
+			return
+		}
 	}
-
-	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	result := item.Value()
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(result)
+	w.Write(item)
 }
 
 // GetUncachedBugsHandler bypasses the cache to return the bug queue for current user and tree.
@@ -174,7 +150,7 @@ func (bqh *BugQueueHandler) GetUncachedBugsHandler(ctx *router.Context) {
 }
 
 // Makes a request to Monorail for bugs in a label and caches the results.
-func (bqh *BugQueueHandler) refreshBugQueue(c context.Context, label string, projectID string) (memcache.Item, error) {
+func (bqh *BugQueueHandler) refreshBugQueue(c context.Context, label string, projectID string) ([]byte, error) {
 	q := fmt.Sprintf("is:open (label=%s)", label)
 	res, err := bqh.getBugsFromMonorailV3(c, q, projectID)
 
@@ -187,28 +163,23 @@ func (bqh *BugQueueHandler) refreshBugQueue(c context.Context, label string, pro
 		return nil, err
 	}
 
-	item := memcache.NewItem(c, fmt.Sprintf(bugQueueCacheFormat, label)).SetValue(bytes)
+	bugCache.LRU(c).Put(c, fmt.Sprintf(bugQueueCacheFormat, label), bytes, 15*time.Minute)
 
-	if err = memcache.Set(c, item); err != nil {
-		return nil, err
-	}
-
-	return item, nil
+	return bytes, nil
 }
 
 // RefreshBugQueueHandler updates the cached bug queue for current tree.
-func (bqh *BugQueueHandler) RefreshBugQueueHandler(ctx *router.Context) {
-	c, w, p := ctx.Request.Context(), ctx.Writer, ctx.Params
-	label := p.ByName("label")
-	item, err := bqh.refreshBugQueue(c, label, bqh.GetMonorailProjectNameFromLabel(c, label))
-
+func (bqh *BugQueueHandler) RefreshBugQueueHandler(ctx context.Context) error {
+	labels, err := queryAllMonorailLabels(ctx)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
-		return
+		return errors.Annotate(err, "getting monorail project names").Err()
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(item.Value())
+	errs := errors.NewMultiError()
+	for label, project := range labels {
+		_, err := bqh.refreshBugQueue(ctx, label, project)
+		errs.MaybeAdd(err)
+	}
+	return errs.AsError()
 }
 
 // GetMonorailProjectNameFromLabel returns the default monorail project name
@@ -233,4 +204,19 @@ func (bqh *BugQueueHandler) queryTreeForLabel(c context.Context, label string) s
 		}
 	}
 	return "chromium"
+}
+
+func queryAllMonorailLabels(ctx context.Context) (map[string]string, error) {
+	q := datastore.NewQuery("Tree")
+	trees := []*model.Tree{}
+	if err := datastore.GetAll(ctx, q, &trees); err != nil {
+		return nil, err
+	}
+	labels := map[string]string{}
+	for _, tree := range trees {
+		if tree.BugQueueLabel != "" {
+			labels[tree.BugQueueLabel] = tree.DefaultMonorailProjectName
+		}
+	}
+	return labels, nil
 }

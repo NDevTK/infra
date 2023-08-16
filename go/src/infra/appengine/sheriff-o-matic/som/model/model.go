@@ -15,18 +15,17 @@ import (
 	"strings"
 	"time"
 
-	"infra/appengine/sheriff-o-matic/som/model/gen"
-
 	"cloud.google.com/go/bigquery"
-	"google.golang.org/appengine"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	"go.chromium.org/luci/common/bq"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/server/auth"
+	"google.golang.org/appengine"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"infra/appengine/sheriff-o-matic/som/model/gen"
 )
 
 const (
@@ -83,14 +82,6 @@ type AlertJSONNonGrouping struct {
 	Resolved     bool
 	AutoResolved bool
 	ResolvedDate time.Time
-}
-
-// RevisionSummaryJSON is the JSON blob of a RevisionSummary for a tree.
-type RevisionSummaryJSON struct {
-	ID       string         `gae:"$id" json:"-"`
-	Tree     *datastore.Key `gae:"$parent"`
-	Date     time.Time
-	Contents []byte `gae:",noindex"`
 }
 
 // ResolveRequest is the format of the request to resolve alerts.
@@ -263,7 +254,7 @@ func (a *Annotation) Add(c context.Context, r io.Reader) (bool, error) {
 	}
 
 	if modified {
-		a.ModificationTime = clock.Now(c)
+		a.ModificationTime = clock.Now(c).UTC()
 	}
 
 	evt := createAnnotationEvent(c, a, gen.SOMAnnotationEvent_ADD)
@@ -352,7 +343,7 @@ func (a *Annotation) Remove(c context.Context, r io.Reader) (bool, error) {
 	}
 
 	if modified {
-		a.ModificationTime = clock.Now(c)
+		a.ModificationTime = clock.Now(c).UTC()
 	}
 
 	user := auth.CurrentIdentity(c)

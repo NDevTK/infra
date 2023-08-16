@@ -1,3 +1,7 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package handler
 
 import (
@@ -8,11 +12,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"infra/appengine/sheriff-o-matic/som/client"
-	"infra/appengine/sheriff-o-matic/som/model"
-	"infra/monorail"
-	monorailv3 "infra/monorailv2/api/v3/api_proto"
-
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
@@ -23,7 +23,9 @@ import (
 	"go.chromium.org/luci/server/router"
 	"google.golang.org/grpc"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"infra/appengine/sheriff-o-matic/som/model"
+	"infra/monorail"
+	monorailv3 "infra/monorailv2/api/v3/api_proto"
 )
 
 type FakeIssueClient struct{}
@@ -63,12 +65,10 @@ func TestBugQueue(t *testing.T) {
 
 		monorailServer := httptest.NewServer(monorailMux)
 		defer monorailServer.Close()
-		monorail := client.NewMonorail(c, monorailServer.URL)
 
 		issueClient := FakeIssueClient{}
 
 		bqh := &BugQueueHandler{
-			Monorail:               monorail,
 			MonorailIssueClient:    issueClient,
 			DefaultMonorailProject: "",
 		}
@@ -87,15 +87,8 @@ func TestBugQueue(t *testing.T) {
 			})
 
 			Convey("refresh bug queue handler", func() {
-				bqh.RefreshBugQueueHandler(&router.Context{
-					Writer:  w,
-					Request: makeGetRequest(c),
-				})
-
-				b, err := ioutil.ReadAll(w.Body)
+				err := bqh.RefreshBugQueueHandler(c)
 				So(err, ShouldBeNil)
-				So(w.Code, ShouldEqual, 200)
-				So(string(b), ShouldEqual, `{"extras":{"priority_field":"projects/chromium/fieldDefs/11"}}`)
 			})
 
 			Convey("refresh bug queue", func() {

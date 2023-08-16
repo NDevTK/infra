@@ -16,11 +16,8 @@ import (
 	"testing"
 	"time"
 
-	"infra/appengine/sheriff-o-matic/som/model"
-	"infra/monitoring/messages"
-
 	"github.com/julienschmidt/httprouter"
-
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
@@ -30,7 +27,8 @@ import (
 	"go.chromium.org/luci/server/auth/xsrf"
 	"go.chromium.org/luci/server/router"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"infra/appengine/sheriff-o-matic/som/model"
+	"infra/monitoring/messages"
 )
 
 var _ = fmt.Printf
@@ -132,18 +130,6 @@ func TestMain(t *testing.T) {
 					Date:     clock.Now(c),
 					Contents: []byte(contents3),
 				}
-				oldRevisionSummaryJSON := &model.RevisionSummaryJSON{
-					ID:       "rev1",
-					Tree:     datastore.MakeKey(c, "Tree", "chromeos"),
-					Date:     time.Unix(1, 0).UTC(),
-					Contents: []byte(contents),
-				}
-				newRevisionSummaryJSON := &model.RevisionSummaryJSON{
-					ID:       "rev2",
-					Tree:     datastore.MakeKey(c, "Tree", "chromeos"),
-					Date:     clock.Now(c),
-					Contents: []byte(contents),
-				}
 
 				Convey("GET", func() {
 					Convey("no alerts yet", func() {
@@ -159,8 +145,6 @@ func TestMain(t *testing.T) {
 					})
 
 					So(datastorePutAlertJSON(c, alertJSON), ShouldBeNil)
-					So(datastore.Put(c, oldRevisionSummaryJSON), ShouldBeNil)
-					So(datastore.Put(c, newRevisionSummaryJSON), ShouldBeNil)
 					datastore.GetTestable(c).CatchupIndexes()
 
 					Convey("basic alerts", func() {
@@ -240,18 +224,6 @@ func TestMain(t *testing.T) {
 					Date:     clock.Now(c),
 					Contents: []byte(contents3),
 				}
-				oldRevisionSummaryJSON := &model.RevisionSummaryJSON{
-					ID:       "rev1",
-					Tree:     datastore.MakeKey(c, "Tree", "chromeos"),
-					Date:     time.Unix(1, 0).UTC(),
-					Contents: []byte(contents),
-				}
-				newRevisionSummaryJSON := &model.RevisionSummaryJSON{
-					ID:       "rev2",
-					Tree:     datastore.MakeKey(c, "Tree", "chromeos"),
-					Date:     clock.Now(c),
-					Contents: []byte(contents),
-				}
 
 				Convey("GET", func() {
 					Convey("no alerts yet", func() {
@@ -267,8 +239,6 @@ func TestMain(t *testing.T) {
 					})
 
 					So(datastorePutAlertJSON(c, alertJSON), ShouldBeNil)
-					So(datastore.Put(c, oldRevisionSummaryJSON), ShouldBeNil)
-					So(datastore.Put(c, newRevisionSummaryJSON), ShouldBeNil)
 					So(datastorePutAlertJSON(c, oldResolvedJSON), ShouldBeNil)
 					So(datastorePutAlertJSON(c, newResolvedJSON), ShouldBeNil)
 					datastore.GetTestable(c).CatchupIndexes()
@@ -324,18 +294,6 @@ func TestMain(t *testing.T) {
 					Date:     clock.Now(c),
 					Contents: []byte(contents3),
 				}
-				oldRevisionSummaryJSON := &model.RevisionSummaryJSON{
-					ID:       "rev1",
-					Tree:     datastore.MakeKey(c, "Tree", "chromeos"),
-					Date:     time.Unix(1, 0).UTC(),
-					Contents: []byte(contents),
-				}
-				newRevisionSummaryJSON := &model.RevisionSummaryJSON{
-					ID:       "rev2",
-					Tree:     datastore.MakeKey(c, "Tree", "chromeos"),
-					Date:     clock.Now(c),
-					Contents: []byte(contents),
-				}
 
 				Convey("GET", func() {
 					Convey("no alerts yet", func() {
@@ -351,8 +309,6 @@ func TestMain(t *testing.T) {
 					})
 
 					So(datastorePutAlertJSON(c, alertJSON), ShouldBeNil)
-					So(datastore.Put(c, oldRevisionSummaryJSON), ShouldBeNil)
-					So(datastore.Put(c, newRevisionSummaryJSON), ShouldBeNil)
 					So(datastorePutAlertJSON(c, oldResolvedJSON), ShouldBeNil)
 					So(datastorePutAlertJSON(c, newResolvedJSON), ShouldBeNil)
 					datastore.GetTestable(c).CatchupIndexes()
@@ -444,13 +400,7 @@ func TestMain(t *testing.T) {
 				})
 
 				Convey("handler", func() {
-					ctx := &router.Context{
-						Writer:  w,
-						Request: makePostRequest(c, ""),
-						Params:  makeParams("annKey", "foobar", "action", "add"),
-					}
-
-					FlushOldAnnotationsHandler(ctx)
+					FlushOldAnnotationsHandler(c)
 				})
 			})
 

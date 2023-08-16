@@ -1,3 +1,7 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package handler
 
 import (
@@ -12,9 +16,7 @@ import (
 	"testing"
 	"time"
 
-	"infra/appengine/sheriff-o-matic/som/model"
-	monorailv3 "infra/monorailv2/api/v3/api_proto"
-
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
@@ -25,7 +27,8 @@ import (
 	"go.chromium.org/luci/server/router"
 	"google.golang.org/grpc"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"infra/appengine/sheriff-o-matic/som/model"
+	monorailv3 "infra/monorailv2/api/v3/api_proto"
 )
 
 func TestFilterAnnotations(t *testing.T) {
@@ -171,20 +174,18 @@ func TestMakeAnnotationResponse(t *testing.T) {
 				{BugID: "456", ProjectID: "chromium"},
 			},
 		}
-		meta := map[string]*monorailv3.Issue{
-			"123": {
-				Name: "projects/chromium/issues/123",
-				Status: &monorailv3.Issue_StatusValue{
-					Status: "Assigned",
-				},
-				Summary: "Sum1",
+		meta := []*MonorailBugData{
+			{
+				ProjectID: "chromium",
+				BugID:     "123",
+				Summary:   "Sum1",
+				Status:    "Assigned",
 			},
-			"456": {
-				Name: "projects/chromium/issues/456",
-				Status: &monorailv3.Issue_StatusValue{
-					Status: "Fixed",
-				},
-				Summary: "Sum2",
+			{
+				ProjectID: "chromium",
+				BugID:     "456",
+				Summary:   "Sum2",
+				Status:    "Fixed",
 			},
 		}
 		expected := &AnnotationResponse{
@@ -204,23 +205,8 @@ func TestMakeAnnotationResponse(t *testing.T) {
 				},
 			},
 		}
-		actual, err := makeAnnotationResponse(annotations, meta)
-		So(err, ShouldBeNil)
+		actual := makeAnnotationResponse(annotations, meta)
 		So(actual, ShouldResemble, expected)
-	})
-	Convey("Test make annotation response failed", t, func() {
-		annotations := &model.Annotation{
-			Bugs: []model.MonorailBug{
-				{BugID: "123", ProjectID: "chromium"},
-			},
-		}
-		meta := map[string]*monorailv3.Issue{
-			"123": {
-				Name: "invalid",
-			},
-		}
-		_, err := makeAnnotationResponse(annotations, meta)
-		So(err, ShouldNotBeNil)
 	})
 }
 
@@ -481,16 +467,8 @@ func TestAnnotations(t *testing.T) {
 		Convey("refreshAnnotations", func() {
 			Convey("handler", func() {
 				c, _ := newContext()
-
-				ah.RefreshAnnotationsHandler(&router.Context{
-					Writer:  w,
-					Request: makeGetRequest(c),
-				})
-
-				b, err := ioutil.ReadAll(w.Body)
+				err := ah.RefreshAnnotationsHandler(c)
 				So(err, ShouldBeNil)
-				So(w.Code, ShouldEqual, 200)
-				So(string(b), ShouldEqual, "{}")
 			})
 
 			ann := &model.Annotation{
@@ -510,137 +488,9 @@ func TestAnnotations(t *testing.T) {
 			datastore.GetTestable(c).CatchupIndexes()
 
 			Convey("query alerts which have multiple bugs", func() {
-				ah.RefreshAnnotationsHandler(&router.Context{
-					Writer:  w,
-					Request: makeGetRequest(c),
-				})
-
-				b, err := ioutil.ReadAll(w.Body)
+				err := ah.RefreshAnnotationsHandler(c)
 				So(err, ShouldBeNil)
-				So(w.Code, ShouldEqual, 200)
-
-				var result map[string]interface{}
-				json.Unmarshal(b, &result)
-				expected := map[string]interface{}{
-					"333": map[string]interface{}{
-						"name":   "projects/chromium/issues/333",
-						"status": map[string]interface{}{"status": "Untriaged"},
-					},
-					"444": map[string]interface{}{
-						"name":   "projects/chromium/issues/444",
-						"status": map[string]interface{}{"status": "Untriaged"},
-					},
-					"555": map[string]interface{}{
-						"name":   "projects/fuchsia/issues/555",
-						"status": map[string]interface{}{"status": "Untriaged"},
-					},
-					"666": map[string]interface{}{
-						"name":   "projects/fuchsia/issues/666",
-						"status": map[string]interface{}{"status": "Untriaged"},
-					},
-				}
-				So(result, ShouldResemble, expected)
 			})
-		})
-		Convey("file bug", func() {
-			c, _ := newContext()
-			ah.FileBugHandler(&router.Context{
-				Writer: w,
-				Request: makePostRequest(c, addXSRFToken(map[string]interface{}{
-					"ProjectId":   "chromium",
-					"Description": "des",
-					"Labels":      []string{"label1"},
-					"Cc":          []string{"abc@google.com"},
-					"Summary":     "my summary",
-				}, tok)),
-			})
-
-			b, err := ioutil.ReadAll(w.Body)
-			So(err, ShouldBeNil)
-			So(w.Code, ShouldEqual, 200)
-			res := &monorailv3.Issue{}
-			err = json.Unmarshal(b, res)
-			So(res, ShouldResemble, &monorailv3.Issue{
-				Name:    "projects/chromium/issues/123",
-				Summary: "my summary",
-				Status:  &monorailv3.Issue_StatusValue{Status: "Untriaged"},
-				CcUsers: []*monorailv3.Issue_UserValue{
-					{User: "users/abc@google.com"},
-				},
-				Labels: []*monorailv3.Issue_LabelValue{
-					{Label: "label1"},
-				},
-			})
-		})
-	})
-	Convey("Test process issue request", t, func() {
-		c, _ := newContext()
-		Convey("Test process issue request chromium", func() {
-			req := &monorailv3.MakeIssueRequest{
-				Parent: "projects/chromium",
-				Issue: &monorailv3.Issue{
-					Summary: "sum",
-					Status: &monorailv3.Issue_StatusValue{
-						Status: "Untriaged",
-					},
-				},
-			}
-			processIssueRequest(c, "chromium", req)
-			expected := &monorailv3.MakeIssueRequest{
-				Parent: "projects/chromium",
-				Issue: &monorailv3.Issue{
-					Summary: "sum",
-					Status: &monorailv3.Issue_StatusValue{
-						Status: "Untriaged",
-					},
-					FieldValues: []*monorailv3.FieldValue{
-						{
-							Field: "projects/chromium/fieldDefs/10",
-							Value: "Bug",
-						},
-					},
-				},
-			}
-			So(req, ShouldResemble, expected)
-		})
-		Convey("Test process issue request angleproject", func() {
-			req := &monorailv3.MakeIssueRequest{
-				Parent: "projects/angleproject",
-				Issue: &monorailv3.Issue{
-					Summary: "sum",
-					Status: &monorailv3.Issue_StatusValue{
-						Status: "Untriaged",
-					},
-					Labels: []*monorailv3.Issue_LabelValue{
-						{Label: "File-From-SoM"},
-						{Label: "Pri-3"},
-					},
-				},
-			}
-			processIssueRequest(c, "angleproject", req)
-			expected := &monorailv3.MakeIssueRequest{
-				Parent: "projects/angleproject",
-				Issue: &monorailv3.Issue{
-					Summary: "sum",
-					Status: &monorailv3.Issue_StatusValue{
-						Status: "New",
-					},
-					FieldValues: []*monorailv3.FieldValue{
-						{
-							Field: "projects/angleproject/fieldDefs/32",
-							Value: "Low",
-						},
-						{
-							Field: "projects/angleproject/fieldDefs/55",
-							Value: "Defect",
-						},
-					},
-					Labels: []*monorailv3.Issue_LabelValue{
-						{Label: "File-From-SoM"},
-					},
-				},
-			}
-			So(req, ShouldResemble, expected)
 		})
 	})
 }

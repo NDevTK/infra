@@ -12,13 +12,13 @@ import (
 	"net/http"
 	"time"
 
-	"infra/appengine/sheriff-o-matic/som/model"
-	"infra/monitoring/messages"
-
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/router"
+
+	"infra/appengine/sheriff-o-matic/som/model"
+	"infra/monitoring/messages"
 )
 
 const (
@@ -45,20 +45,9 @@ func GetAlerts(ctx *router.Context, unresolved bool, resolved bool) *messages.Al
 
 	var q *datastore.Query
 	alertResults := []*model.AlertJSON{}
-	revisionSummaryResults := []*model.RevisionSummaryJSON{}
 	if unresolved {
 		q = datastoreCreateAlertQuery().Ancestor(datastore.MakeKey(c, "Tree", tree)).Eq("Resolved", false)
 		err := datastoreGetAlertsByQuery(c, &alertResults, q)
-		if err != nil {
-			errStatus(c, w, http.StatusInternalServerError, err.Error())
-			return nil
-		}
-
-		q = datastore.NewQuery("RevisionSummaryJSON")
-		q = q.Ancestor(datastore.MakeKey(c, "Tree", tree))
-		q = q.Gt("Date", clock.Get(c).Now().Add(-recentRevisions))
-
-		err = datastore.GetAll(c, q, &revisionSummaryResults)
 		if err != nil {
 			errStatus(c, w, http.StatusInternalServerError, err.Error())
 			return nil
@@ -113,15 +102,6 @@ func GetAlerts(ctx *router.Context, unresolved bool, resolved bool) *messages.Al
 		}
 	}
 
-	for _, summaryJSON := range revisionSummaryResults {
-		summary := &messages.RevisionSummary{}
-		err := json.Unmarshal(summaryJSON.Contents, summary)
-		if err != nil {
-			errStatus(c, w, http.StatusInternalServerError, err.Error())
-			return nil
-		}
-		alertsSummary.RevisionSummaries[summaryJSON.ID] = summary
-	}
 	return alertsSummary
 }
 
@@ -274,38 +254,17 @@ func putAlertsDatastore(c context.Context, tree string, alertsSummary *messages.
 		}
 	}
 
-	revisionSummaryJSONs := make([]model.RevisionSummaryJSON,
-		len(alertsSummary.RevisionSummaries))
-	i := 0
-	for key, summary := range alertsSummary.RevisionSummaries {
-		revisionSummaryJSONs[i].ID = key
-		revisionSummaryJSONs[i].Tree = treeKey
-		revisionSummaryJSONs[i].Date = now
-		revisionSummaryJSONs[i].Contents, err = json.Marshal(summary)
-		if err != nil {
-			return err
-		}
-
-		i++
-	}
-
-	return datastore.Put(c, revisionSummaryJSONs)
+	return nil
 }
 
 // FlushOldAlertsHandler deletes old resolved alerts from datastore.
-func FlushOldAlertsHandler(ctx *router.Context) {
-	c, w := ctx.Request.Context(), ctx.Writer
-
-	numDeleted, err := flushOldAlerts(c)
+func FlushOldAlertsHandler(ctx context.Context) error {
+	numDeleted, err := flushOldAlerts(ctx)
 	if err != nil {
-		errStatus(c, w, http.StatusInternalServerError, err.Error())
-		return
+		return err
 	}
-
-	s := fmt.Sprintf("deleted %d alerts", numDeleted)
-	logging.Debugf(c, s)
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(s))
+	logging.Debugf(ctx, "deleted %d alerts", numDeleted)
+	return nil
 }
 
 func flushOldAlerts(c context.Context) (int, error) {

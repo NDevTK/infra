@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package main implements HTTP server that handles requests to default module.
 package main
 
 import (
@@ -11,23 +10,25 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"strings"
+	"time"
 
-	"go.chromium.org/luci/appengine/gaeauth/server"
-	"go.chromium.org/luci/appengine/gaemiddleware/standard"
 	"go.chromium.org/luci/auth/identity"
+	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/gae/service/info"
+	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/xsrf"
-	"go.chromium.org/luci/server/portal"
+	"go.chromium.org/luci/server/cron"
+	"go.chromium.org/luci/server/encryptedcookies"
+	_ "go.chromium.org/luci/server/encryptedcookies/session/datastore"
+	"go.chromium.org/luci/server/gaeemulation"
+	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/router"
-	"google.golang.org/appengine"
+	"go.chromium.org/luci/server/secrets"
+	_ "go.chromium.org/luci/server/tq/txn/datastore"
 
-	"infra/appengine/sheriff-o-matic/som/analyzer"
 	"infra/appengine/sheriff-o-matic/som/client"
 	"infra/appengine/sheriff-o-matic/som/handler"
-	"infra/monorail"
 	monorailv3 "infra/monorailv2/api/v3/api_proto"
 )
 
@@ -50,9 +51,18 @@ var errStatus = func(c context.Context, w http.ResponseWriter, status int, msg s
 	w.Write([]byte(msg))
 }
 
-func indexPage(ctx *router.Context) {
-	c, w, r, p := ctx.Request.Context(), ctx.Writer, ctx.Request, ctx.Params
-	if p.ByName("path") == "" {
+type SOMHandlers struct {
+	// IsStaging is true if this is either a local dev server or on the staging GAE server
+	IsStaging bool
+	// IsDevAppServer is true if this is running locally instead of on GAE
+	IsDevAppServer bool
+	// CloudProject is the cloud project this is running as
+	CloudProject string
+}
+
+func (s *SOMHandlers) indexPage(ctx *router.Context) {
+	c, w, r, p := ctx.Request.Context(), ctx.Writer, ctx.Request, ctx.Request.URL.Path
+	if p == "/" {
 		http.Redirect(w, r, "/chromium", http.StatusFound)
 		return
 	}
@@ -60,7 +70,7 @@ func indexPage(ctx *router.Context) {
 	user := auth.CurrentIdentity(c)
 
 	if user.Kind() == identity.Anonymous {
-		url, err := auth.LoginURL(c, p.ByName("path"))
+		url, err := auth.LoginURL(c, p)
 		if err != nil {
 			errStatus(c, w, http.StatusInternalServerError, fmt.Sprintf(
 				"You must login. Additionally, an error was encountered while serving this request: %s", err.Error()))
@@ -102,11 +112,9 @@ func indexPage(ctx *router.Context) {
 	}
 
 	AnalyticsID := stagingAnalyticsID
-	isStaging := true
-	if !strings.HasSuffix(info.AppID(c), "-staging") {
-		logging.Debugf(c, "Using production GA ID for app %s", info.AppID(c))
+	if !s.IsStaging {
+		logging.Debugf(c, "Using production GA ID for app %s", s.CloudProject)
 		AnalyticsID = productionAnalyticsID
-		isStaging = false
 	}
 
 	trees, err := handler.GetTrees(c)
@@ -117,8 +125,8 @@ func indexPage(ctx *router.Context) {
 	data := map[string]interface{}{
 		"User":           user.Email(),
 		"LogoutUrl":      logoutURL,
-		"IsDevAppServer": info.IsDevAppServer(c),
-		"IsStaging":      isStaging,
+		"IsDevAppServer": s.IsDevAppServer,
+		"IsStaging":      s.IsStaging,
 		"XsrfToken":      tok,
 		"AnalyticsID":    AnalyticsID,
 		"Trees":          string(trees),
@@ -127,41 +135,6 @@ func indexPage(ctx *router.Context) {
 	err = mainPage.Execute(w, data)
 	if err != nil {
 		logging.Errorf(c, "while rendering index: %s", err)
-	}
-}
-
-// base is the root of the middleware chain.
-func base(includeCookie bool) router.MiddlewareChain {
-	a := auth.Authenticator{
-		Methods: []auth.Method{
-			&server.OAuth2Method{Scopes: []string{server.EmailScope}},
-			&server.InboundAppIDAuthMethod{},
-		},
-	}
-	if includeCookie {
-		a.Methods = append(a.Methods, server.CookieAuth)
-	}
-	return standard.Base().Extend(a.GetMiddleware()).Extend(withServiceClients)
-}
-
-func withServiceClients(ctx *router.Context, next router.Handler) {
-	a := analyzer.New(5, 100)
-	setServiceClients(ctx, a)
-	ctx.Request = ctx.Request.WithContext(handler.WithAnalyzer(ctx.Request.Context(), a))
-	next(ctx)
-}
-
-func setServiceClients(ctx *router.Context, a *analyzer.Analyzer) {
-	// TODO: audit this code to make sure frontend module actually uses
-	// Analyzer and/or any of these clients besides milo and crbug.
-	if info.AppID(ctx.Request.Context()) == prodAppID {
-		crBug, _, bisection := client.ProdClients(ctx.Request.Context())
-		a.CrBug = crBug
-		a.Bisection = bisection
-	} else {
-		crBug, _, bisection := client.StagingClients(ctx.Request.Context())
-		a.CrBug = crBug
-		a.Bisection = bisection
 	}
 }
 
@@ -200,55 +173,76 @@ func getXSRFToken(ctx *router.Context) {
 	w.Write(txt)
 }
 
-func newBugQueueHandler(c context.Context) *handler.BugQueueHandler {
-	var monorailClient monorail.MonorailClient
-	if info.AppID(c) == prodAppID {
-		monorailClient = client.NewMonorail(c, "https://monorail-prod.appspot.com")
+func newBugQueueHandler(c context.Context, options *SOMHandlers) *handler.BugQueueHandler {
+	var issueClientV3 handler.IssueClient
+	if options.IsDevAppServer {
+		issueClientV3 = client.FakeMonorailIssueClient{}
 	} else {
-		monorailClient = client.NewMonorail(c, "https://monorail-staging.appspot.com")
+		monorailV3Client, _ := client.NewMonorailV3Client(c)
+		issueClientV3 = monorailv3.NewIssuesPRPCClient(monorailV3Client)
 	}
 	// TODO (nqmtuan): Handle error here
-	monorailV3Client, _ := client.NewMonorailV3Client(c)
 	bqh := &handler.BugQueueHandler{
-		Monorail:               monorailClient,
-		MonorailIssueClient:    monorailv3.NewIssuesPRPCClient(monorailV3Client),
+		MonorailIssueClient:    issueClientV3,
 		DefaultMonorailProject: "",
 	}
 	return bqh
 }
 
-func refreshBugQueueHandler(ctx *router.Context) {
-	bqh := newBugQueueHandler(ctx.Request.Context())
-	bqh.RefreshBugQueueHandler(ctx)
-}
-
-func getBugQueueHandler(ctx *router.Context) {
-	bqh := newBugQueueHandler(ctx.Request.Context())
-	bqh.GetBugQueueHandler(ctx)
-}
-
-func getUncachedBugsHandler(ctx *router.Context) {
-	bqh := newBugQueueHandler(ctx.Request.Context())
-	bqh.GetUncachedBugsHandler(ctx)
-}
-
-func newAnnotationHandler(ctx *router.Context) *handler.AnnotationHandler {
-	bqh := newBugQueueHandler(ctx.Request.Context())
-	// TODO (nqmtuan): Handle error here
-	monorailV3Client, _ := client.NewMonorailV3Client(ctx.Request.Context())
-	return &handler.AnnotationHandler{
-		Bqh:                 bqh,
-		MonorailIssueClient: monorailv3.NewIssuesPRPCClient(monorailV3Client),
+func (s *SOMHandlers) refreshBugQueuePeriodically(ctx context.Context) {
+	for {
+		bqh := newBugQueueHandler(ctx, s)
+		if err := bqh.RefreshBugQueueHandler(ctx); err != nil {
+			logging.Warningf(ctx, "Failed to refresh bug queue: %s", err)
+		}
+		if r := <-clock.After(ctx, 4*time.Minute); r.Err != nil {
+			return // the context is canceled
+		}
 	}
 }
 
-func refreshAnnotationsHandler(ctx *router.Context) {
-	ah := newAnnotationHandler(ctx)
-	ah.RefreshAnnotationsHandler(ctx)
+func (s *SOMHandlers) getBugQueueHandler(ctx *router.Context) {
+	bqh := newBugQueueHandler(ctx.Request.Context(), s)
+	bqh.GetBugQueueHandler(ctx)
 }
 
-func getAnnotationsHandler(ctx *router.Context) {
-	ah := newAnnotationHandler(ctx)
+func (s *SOMHandlers) getUncachedBugsHandler(ctx *router.Context) {
+	bqh := newBugQueueHandler(ctx.Request.Context(), s)
+	bqh.GetUncachedBugsHandler(ctx)
+}
+
+func newAnnotationHandler(ctx context.Context, options *SOMHandlers) *handler.AnnotationHandler {
+	bqh := newBugQueueHandler(ctx, options)
+	var issueClient handler.AnnotationsIssueClient
+
+	if options.IsDevAppServer {
+		// Disable monorail calls for locally run servers.
+		issueClient = &client.FakeMonorailIssueClient{}
+	} else {
+		// TODO (nqmtuan): Handle error here
+		monorailV3Client, _ := client.NewMonorailV3Client(ctx)
+		issueClient = monorailv3.NewIssuesPRPCClient(monorailV3Client)
+	}
+	return &handler.AnnotationHandler{
+		Bqh:                 bqh,
+		MonorailIssueClient: issueClient,
+	}
+}
+
+func (s *SOMHandlers) refreshAnnotationsPeriodically(ctx context.Context) {
+	for {
+		ah := newAnnotationHandler(ctx, s)
+		if err := ah.RefreshAnnotationsHandler(ctx); err != nil {
+			logging.Warningf(ctx, "Failed to refresh bug queue: %s", err)
+		}
+		if r := <-clock.After(ctx, 4*time.Minute); r.Err != nil {
+			return // the context is canceled
+		}
+	}
+}
+
+func (s *SOMHandlers) getAnnotationsHandler(ctx *router.Context) {
+	ah := newAnnotationHandler(ctx.Request.Context(), s)
 	activeKeys := map[string]interface{}{}
 	activeAlerts := handler.GetAlerts(ctx, true, false)
 	for _, alrt := range activeAlerts.Alerts {
@@ -257,70 +251,70 @@ func getAnnotationsHandler(ctx *router.Context) {
 	ah.GetAnnotationsHandler(ctx, activeKeys)
 }
 
-func postAnnotationsHandler(ctx *router.Context) {
-	ah := newAnnotationHandler(ctx)
+func (s *SOMHandlers) postAnnotationsHandler(ctx *router.Context) {
+	ah := newAnnotationHandler(ctx.Request.Context(), s)
 	ah.PostAnnotationsHandler(ctx)
 }
 
-func fileBugHandler(ctx *router.Context) {
-	ah := newAnnotationHandler(ctx)
-	ah.FileBugHandler(ctx)
-}
-
-// // Routes.
-func init() {
-	portal.RegisterPage(settingsKey, handler.SettingsPage{})
-
-	r := router.New()
-	basemw := base(true)
-
-	protected := basemw.Extend(requireGoogler)
-
-	standard.InstallHandlers(r)
-	r.GET("/api/v1/alerts/:tree", protected, handler.GetAlertsHandler)
-	r.GET("/api/v1/unresolved/:tree", protected, handler.GetUnresolvedAlertsHandler)
-	r.GET("/api/v1/resolved/:tree", protected, handler.GetResolvedAlertsHandler)
-	r.GET("/api/v1/xsrf_token", protected, getXSRFToken)
-
-	r.GET("/api/v1/annotations/:tree", protected, getAnnotationsHandler)
-	r.POST("/api/v1/annotations/:tree/:action", protected, postAnnotationsHandler)
-	r.POST("/api/v1/filebug/", protected, fileBugHandler)
-	r.GET("/api/v1/bugqueue/:label", protected, getBugQueueHandler)
-	r.GET("/api/v1/bugqueue/:label/uncached/", protected, getUncachedBugsHandler)
-	r.GET("/api/v1/revrange/:host/:repo", basemw, handler.GetRevRangeHandler)
-	r.GET("/api/v1/testexpectations", protected, handler.GetLayoutTestsHandler)
-	r.POST("/api/v1/testexpectation", protected, handler.PostLayoutTestExpectationChangeHandler)
-	r.GET("/logos/:tree", protected, handler.GetTreeLogoHandler)
-	r.GET("/_/autocomplete/:query", protected, handler.GetUserAutocompleteHandler)
-
-	// Non-public endpoints.
-	r.GET("/_cron/refresh/bugqueue/:label", basemw, refreshBugQueueHandler)
-	r.GET("/_cron/annotations/flush_old/", basemw, handler.FlushOldAnnotationsHandler)
-	r.GET("/_cron/annotations/refresh/", basemw, refreshAnnotationsHandler)
-	r.GET("/_cron/alerts/flush_old/", basemw, handler.FlushOldAlertsHandler)
-	r.POST("/_/clientmon", basemw, handler.PostClientMonHandler)
-
-	// Ingore reqeuests from builder-alerts rather than 404.
-	r.GET("/alerts", standard.Base(), noopHandler)
-	r.POST("/alerts", standard.Base(), noopHandler)
-
-	rootRouter := router.New()
-	rootRouter.GET("/*path", basemw, indexPage)
-
-	http.DefaultServeMux.Handle("/_cron/", r)
-	http.DefaultServeMux.Handle("/api/", r)
-	http.DefaultServeMux.Handle("/admin/", r)
-	http.DefaultServeMux.Handle("/auth/", r)
-	http.DefaultServeMux.Handle("/_ah/", r)
-	http.DefaultServeMux.Handle("/internal/", r)
-	http.DefaultServeMux.Handle("/_/", r)
-	http.DefaultServeMux.Handle("/logos/", r)
-	http.DefaultServeMux.Handle("/alerts", r)
-	http.DefaultServeMux.Handle("/alertdiff/", r)
-
-	http.DefaultServeMux.Handle("/", rootRouter)
-}
-
 func main() {
-	appengine.Main()
+	// Additional modules that extend the server functionality.
+	modules := []module.Module{
+		cron.NewModuleFromFlags(),
+		encryptedcookies.NewModuleFromFlags(),
+		gaeemulation.NewModuleFromFlags(),
+		secrets.NewModuleFromFlags(),
+	}
+
+	server.Main(nil, modules, func(srv *server.Server) error {
+		// When running locally, serve static files ourself.
+		if !srv.Options.Prod {
+			srv.Routes.Static("/bower_components", nil, http.Dir("./bower_components"))
+			srv.Routes.Static("/images", nil, http.Dir("./images"))
+			srv.Routes.Static("/elements", nil, http.Dir("./elements"))
+			srv.Routes.Static("/scripts", nil, http.Dir("./scripts"))
+			srv.Routes.Static("/test", nil, http.Dir("./test"))
+		}
+
+		somHandlers := &SOMHandlers{
+			IsStaging:      !srv.Options.Prod || srv.Options.CloudProject == prodAppID,
+			IsDevAppServer: !srv.Options.Prod,
+			CloudProject:   srv.Options.CloudProject,
+		}
+
+		basemw := router.NewMiddlewareChain(
+			auth.Authenticate(srv.CookieAuth),
+		)
+		protected := router.NewMiddlewareChain(
+			auth.Authenticate(srv.CookieAuth),
+			requireGoogler,
+		)
+
+		srv.RunInBackground("som.refresh_annotations", somHandlers.refreshAnnotationsPeriodically)
+		srv.RunInBackground("som.refresh_bugqueue", somHandlers.refreshBugQueuePeriodically)
+
+		srv.Routes.GET("/api/v1/alerts/:tree", protected, handler.GetAlertsHandler)
+		srv.Routes.GET("/api/v1/unresolved/:tree", protected, handler.GetUnresolvedAlertsHandler)
+		srv.Routes.GET("/api/v1/resolved/:tree", protected, handler.GetResolvedAlertsHandler)
+		srv.Routes.GET("/api/v1/xsrf_token", protected, getXSRFToken)
+		srv.Routes.GET("/api/v1/annotations/:tree", protected, somHandlers.getAnnotationsHandler)
+		srv.Routes.POST("/api/v1/annotations/:tree/:action", protected, somHandlers.postAnnotationsHandler)
+		srv.Routes.GET("/api/v1/bugqueue/:label", protected, somHandlers.getBugQueueHandler)
+		srv.Routes.GET("/api/v1/bugqueue/:label/uncached/", protected, somHandlers.getUncachedBugsHandler)
+		srv.Routes.GET("/api/v1/revrange/:host/:repo", basemw, handler.GetRevRangeHandler)
+		srv.Routes.GET("/api/v1/testexpectations", protected, handler.GetLayoutTestsHandler)
+		srv.Routes.POST("/api/v1/testexpectation", protected, handler.PostLayoutTestExpectationChangeHandler)
+		srv.Routes.GET("/logos/:tree", protected, handler.GetTreeLogoHandler)
+		srv.Routes.GET("/_/autocomplete/:query", protected, handler.GetUserAutocompleteHandler)
+		srv.Routes.POST("/_/clientmon", basemw, handler.PostClientMonHandler)
+		// Non-public endpoints.
+		cron.RegisterHandler("annotations_flush_old", handler.FlushOldAnnotationsHandler)
+		cron.RegisterHandler("alerts_flush_old", handler.FlushOldAlertsHandler)
+		// Ignore reqeuests from builder-alerts rather than 404.
+		srv.Routes.GET("/alerts", nil, noopHandler)
+		srv.Routes.POST("/alerts", nil, noopHandler)
+
+		srv.Routes.NotFound(basemw, somHandlers.indexPage)
+
+		return nil
+	})
 }

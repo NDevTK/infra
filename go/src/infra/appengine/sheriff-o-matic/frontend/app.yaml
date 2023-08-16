@@ -1,6 +1,5 @@
 service: default
 runtime: go120
-app_engine_apis: true
 
 instance_class: F4
 
@@ -51,3 +50,24 @@ handlers:
 - url: /.*
   script: auto
   secure: always
+
+luci_gae_vars:
+  sheriff-o-matic-staging:
+    AUTH_SERVICE_HOST: chrome-infra-auth-dev.appspot.com
+    TS_MON_ACCOUNT: app-engine-metric-publishers@prodx-mon-chrome-infra.google.com.iam.gserviceaccount.com
+    OAUTH_CLIENT_ID: 408214842030-n7qkqet08nqmsvoap6qkik6euga4v41v.apps.googleusercontent.com
+    OAUTH_CLIENT_SECRET: sm://oauth-client-secret
+    OAUTH_REDIRECT_URL: https://sheriff-o-matic-staging.appspot.com/auth/openid/callback
+    ROOT_SECRET: sm://root-secret
+    TINK_AEAD_KEY: sm://tink-aead-primary
+
+entrypoint: >
+  main
+  -auth-service-host ${AUTH_SERVICE_HOST}
+  -ts-mon-account ${TS_MON_ACCOUNT}
+  -encrypted-cookies-client-id ${OAUTH_CLIENT_ID}
+  -frontend-client-id ${OAUTH_CLIENT_ID}
+  -encrypted-cookies-client-secret ${OAUTH_CLIENT_SECRET}
+  -encrypted-cookies-redirect-url ${OAUTH_REDIRECT_URL}
+  -encrypted-cookies-tink-aead-key ${TINK_AEAD_KEY}
+  -root-secret ${ROOT_SECRET}
