@@ -187,7 +187,7 @@ func mainDeviceIsGSCExec(ctx context.Context, info *execs.ExecInfo) error {
 	case servo.CCD_CR50:
 		fallthrough
 	case servo.CCD_GSC:
-		info.NewLogger().Debugf("Found main device: %q", md)
+		log.Debugf(ctx, "Found main device: %q", md)
 		return nil
 	default:
 		return errors.Reason("main devices is gsc: found %q does not match expectations", md).Err()
@@ -200,6 +200,7 @@ func mainDeviceIsCCDExec(ctx context.Context, info *execs.ExecInfo) error {
 	if actionMap.AsBool(ctx, "check_info", true) {
 		if st := info.GetChromeos().GetServo().GetServodType(); st != "" {
 			if servo.NewServoType(st).IsMainDeviceCCD() {
+				log.Debugf(ctx, "Main CCD device established from DUT info: %q", st)
 				return nil
 			}
 		}
@@ -208,6 +209,7 @@ func mainDeviceIsCCDExec(ctx context.Context, info *execs.ExecInfo) error {
 		if sType, err := WrappedServoType(ctx, info); err != nil {
 			return errors.Annotate(err, "main devices is ccd").Err()
 		} else if sType.IsMainDeviceCCD() {
+			log.Debugf(ctx, "Main CCD device established from servod response: %q", sType.String())
 			return nil
 		}
 	}
