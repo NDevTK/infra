@@ -45,6 +45,16 @@ func TestSelectZone(t *testing.T) {
 			z := SelectZone(ctx, req, 1)
 			So(allZones, ShouldContain, z)
 		})
+		Convey("SelectZone - select single random zone for ChromeOS testing client", func() {
+			req := &api.LeaseVMRequest{
+				HostReqs: &api.VMRequirements{
+					GceImage: "test-image",
+				},
+				TestingClient: api.VMTestingClient_VM_TESTING_CLIENT_CHROMEOS,
+			}
+			z := SelectZone(ctx, req, 1)
+			So(allZones, ShouldContain, z)
+		})
 		Convey("SelectZone - check distribution of zones", func() {
 			req := &api.LeaseVMRequest{
 				HostReqs: &api.VMRequirements{

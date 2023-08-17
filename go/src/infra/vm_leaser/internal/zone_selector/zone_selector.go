@@ -52,8 +52,8 @@ func getRandomZone(ctx context.Context, zones [][]string) string {
 // GetZoneSubnet uses the selected zone to return the correct subnet.
 //
 // GetZoneSubnet expects zone to be in the format `xxx-yyy-zzz`. `xxx-yyy`
-// represents the main zone while `zzz` represents the subzone. For example,
-// `us-central1-a` means the main zone is `us-central1` and the subzone is `a`.
+// represents the region while `zzz` represents the subzone. For example,
+// `us-central1-a` means the region is `us-central1` and the subzone is `a`.
 func GetZoneSubnet(ctx context.Context, zone string) (string, error) {
 	if err := validateZone(zone); err != nil {
 		return "", err
