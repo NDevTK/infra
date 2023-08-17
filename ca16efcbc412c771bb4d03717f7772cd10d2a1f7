@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f26aef2e_f76f9bb4",
+        "filename": "go/src/infra/cros/cmd/common_lib/common/dependency_injection.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1520767
+      },
+      "writtenOn": "2023-08-17T18:11:13Z",
+      "side": 1,
+      "message": "Hard to read same names. Should be named different.",
+      "range": {
+        "startLine": 24,
+        "startChar": 1,
+        "endLine": 28,
+        "endChar": 1
+      },
+      "revId": "ca16efcbc412c771bb4d03717f7772cd10d2a1f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
