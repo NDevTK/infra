@@ -639,6 +639,7 @@ def fakebuild_tree_builder(name, children, batch_size, builder, sleep_min_sec, s
         build_numbers = build_numbers,
         experiments = {
             "luci.buildbucket.omit_default_packages": 100,
+            "luci.buildbucket.backend_alt": 100,
         },
         schedule = schedule,
     )
@@ -680,6 +681,7 @@ def fakebuild_search_builder(name, steps, search_steps, sleep_min_sec, sleep_max
         build_numbers = build_numbers,
         experiments = {
             "luci.buildbucket.omit_default_packages": 100,
+            "luci.buildbucket.backend_alt": 100,
         },
     )
 
