@@ -232,10 +232,10 @@ func bootstrapMain(ctx context.Context, getOpts getOptionsFn, performBootstrap b
 		logging.Errorf(ctx, err.Error())
 
 		build := &buildbucketpb.Build{}
-		build.Status = buildbucketpb.Status_INFRA_FAILURE
-		build.SummaryMarkdown = fmt.Sprintf("<pre>%s</pre>", err)
 
 		if bootstrap.PatchRejected.In(err) {
+			build.Status = buildbucketpb.Status_FAILURE
+			build.SummaryMarkdown = "<pre>Patch failure: See build stderr log. Try rebasing?</pre>"
 			build.Output = &buildbucketpb.Build_Output{
 				Properties: &structpb.Struct{
 					Fields: map[string]*structpb.Value{
@@ -243,6 +243,9 @@ func bootstrapMain(ctx context.Context, getOpts getOptionsFn, performBootstrap b
 					},
 				},
 			}
+		} else {
+			build.Status = buildbucketpb.Status_INFRA_FAILURE
+			build.SummaryMarkdown = fmt.Sprintf("<pre>%s</pre>", err)
 		}
 
 		if err := updateBuild(ctx, build); err != nil {

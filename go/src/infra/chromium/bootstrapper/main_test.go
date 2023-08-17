@@ -454,8 +454,8 @@ func TestBootstrapMain(t *testing.T) {
 			So(err, ShouldErrLike, bootstrapErr)
 			So(sleepDuration, ShouldEqual, 0)
 			So(record.build, ShouldResembleProtoJSON, `{
-				"status": "INFRA_FAILURE",
-				"summary_markdown": "<pre>test bootstrap failure</pre>",
+				"status": "FAILURE",
+				"summary_markdown": "<pre>Patch failure: See build stderr log. Try rebasing?</pre>",
 				"output": {
 					"properties": {
 						"failure_type": "PATCH_FAILURE"
