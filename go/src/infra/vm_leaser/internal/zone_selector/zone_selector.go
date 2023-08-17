@@ -9,12 +9,18 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"regexp"
 	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
 
 	"infra/vm_leaser/internal/constants"
+)
+
+var (
+	googleApiZoneUriFormat = regexp.MustCompile(`^https:\/\/www\.googleapis\.com\/.*zones\/(?P<zone>[\w]+\-[\w]+\-[\w]+){1}?`)
+	zoneFormat             = regexp.MustCompile(`^(?P<zone>[\w]+\-[\w]+\-[\w]+){1}$`)
 )
 
 // SelectZone selects a random zone based on the specified testing client.
@@ -49,9 +55,8 @@ func getRandomZone(ctx context.Context, zones [][]string) string {
 // represents the main zone while `zzz` represents the subzone. For example,
 // `us-central1-a` means the main zone is `us-central1` and the subzone is `a`.
 func GetZoneSubnet(ctx context.Context, zone string) (string, error) {
-	splitZone := strings.Split(zone, "-")
-	if len(splitZone) != 3 {
-		return "", errors.New("zone is malformed; needs to be xxx-yyy-zzz")
+	if err := validateZone(zone); err != nil {
+		return "", err
 	}
 
 	network := strings.Join(strings.Split(zone, "-")[:2], "-")
@@ -59,4 +64,29 @@ func GetZoneSubnet(ctx context.Context, zone string) (string, error) {
 
 	logging.Debugf(ctx, "zone: %s - subnet: %s", zone, subnet)
 	return subnet, nil
+}
+
+// ExtractGoogleApiZone takes a Google API zone string and returns the zone.
+func ExtractGoogleApiZone(uri string) (string, error) {
+	if err := validateGoogleApiZoneUri(uri); err != nil {
+		return "", err
+	}
+	matches := googleApiZoneUriFormat.FindStringSubmatch(uri)
+	return matches[googleApiZoneUriFormat.SubexpIndex("zone")], nil
+}
+
+// validateZone validates the zone format to be xxx-yyy-zzz.
+func validateZone(zone string) error {
+	if !zoneFormat.MatchString(zone) {
+		return errors.New("zone is malformed; needs to be xxx-yyy-zzz")
+	}
+	return nil
+}
+
+// validateGoogleApiZoneUri validates the uri field to be a Google API zone URI.
+func validateGoogleApiZoneUri(uri string) error {
+	if !googleApiZoneUriFormat.MatchString(uri) {
+		return errors.New("google api zone uri is malformed")
+	}
+	return nil
 }

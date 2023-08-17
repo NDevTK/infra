@@ -98,3 +98,48 @@ func TestGetZoneSubnet(t *testing.T) {
 		})
 	})
 }
+
+func TestExtractGoogleApiZone(t *testing.T) {
+	t.Parallel()
+
+	Convey("Test ExtractGoogleApiZone", t, func() {
+		Convey("ExtractGoogleApiZone - happy path", func() {
+			z, err := ExtractGoogleApiZone("https://www.googleapis.com/compute/v1/projects/chrome-fleet-vm-leaser-dev/zones/us-central1-b")
+			So(err, ShouldBeNil)
+			So(z, ShouldEqual, "us-central1-b")
+		})
+		Convey("ExtractGoogleApiZone - bad zone", func() {
+			z, err := ExtractGoogleApiZone("https://www.googleapis.com/compute/v1/projects/chrome-fleet-vm-leaser-dev/zones/us-central1")
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "google api zone uri is malformed")
+			So(z, ShouldEqual, "")
+		})
+		Convey("ExtractGoogleApiZone - no zone", func() {
+			z, err := ExtractGoogleApiZone("https://www.googleapis.com/compute/v1/projects/chrome-fleet-vm-leaser-dev/zones")
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "google api zone uri is malformed")
+			So(z, ShouldEqual, "")
+		})
+	})
+}
+
+func TestValidateZone(t *testing.T) {
+	t.Parallel()
+
+	Convey("Test validateZone", t, func() {
+		Convey("validateZone - happy path", func() {
+			err := validateZone("us-central1-b")
+			So(err, ShouldBeNil)
+		})
+		Convey("validateZone - bad zone", func() {
+			err := validateZone("us-central1")
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "zone is malformed; needs to be xxx-yyy-zzz")
+		})
+		Convey("validateZone - no zone", func() {
+			err := validateZone("")
+			So(err, ShouldNotBeNil)
+			So(err.Error(), ShouldContainSubstring, "zone is malformed; needs to be xxx-yyy-zzz")
+		})
+	})
+}
