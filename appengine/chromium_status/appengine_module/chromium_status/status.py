@@ -212,6 +212,8 @@ class Status(db.Model):
   username = db.StringProperty(required=True)
   # The date when the status got added.
   date = db.DateTimeProperty(auto_now_add=True)
+  # The date after which this entry will be deleted.
+  expiry_date = db.DateTimeProperty()
   # The message. It can contain html code.
   message = db.StringProperty(required=True)
 
@@ -431,7 +433,9 @@ class StatusPage(BasePage):
     message = limit_length(message, 500)
     username = self.request.get('username')
     if message and username:
-      put_status(Status(message=message, username=username))
+      expiry_date = datetime.datetime.utcnow() + datetime.timedelta(days=140)
+      put_status(
+          Status(message=message, username=username, expiry_date=expiry_date))
     self.response.out.write('OK')
 
 
@@ -502,7 +506,12 @@ class MainPage(BasePage):
       last_message = new_message
       return self._handle(error_message, last_message)
     else:
-      put_status(Status(message=new_message, username=self.user.email()))
+      expiry_date = datetime.datetime.utcnow() + datetime.timedelta(days=140)
+      put_status(
+          Status(
+              message=new_message,
+              username=self.user.email(),
+              expiry_date=expiry_date))
       self.redirect("/")
 
 
