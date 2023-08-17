@@ -716,6 +716,9 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Check whether the RW VPD keys can be listed without any errors.",
 			},
+			Conditions: []string{
+				"Is not Flex device",
+			},
 			ExecName: "cros_can_list_rw_vpd_keys",
 			RecoveryActions: []string{
 				"Recover from RW VPD keys listing errors",
