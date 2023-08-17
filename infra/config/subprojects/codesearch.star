@@ -102,19 +102,9 @@ def builder(
     # config in mb_config.pyl.
     properties = properties or {}
     properties[builder_group_property_name] = "chromium.infra.codesearch"
-    enable_ats = True
     scandeps_server = False
     if os and os.lower().startswith("mac"):
-        # goma does not support arbitrary toolchains for mac.
-        enable_ats = False
         scandeps_server = True
-
-    properties["$build/goma"] = {
-        "server_host": "goma.chromium.org",
-        "rpc_extra_params": "?prod",
-        "enable_ats": enable_ats,
-        "use_luci_auth": True,
-    }
 
     properties["$build/reclient"] = {
         "instance": "rbe-chromium-trusted",
