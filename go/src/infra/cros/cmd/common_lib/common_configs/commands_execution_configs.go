@@ -205,34 +205,25 @@ func (tecfg *CmdExecutionConfig) executeCommands(
 
 		if singleErr = cmd.ExtractDependencies(ctx, tecfg.StateKeeper); singleErr != nil {
 			foundErr = true
-			if executeAllCmds {
-				allErr = errors.Append(allErr, singleErr)
-			} else {
-				logging.Infof(ctx, "Command type %s extract dependencies failed, %s", cmdType, singleErr)
-				continue
-			}
+			allErr = errors.Append(allErr, singleErr)
+			logging.Infof(ctx, "Command type %s extract dependencies failed, %s", cmdType, singleErr)
+			continue
 		}
 		if singleErr = cmd.Execute(ctx); singleErr != nil {
 			foundErr = true
-			if executeAllCmds {
-				allErr = errors.Append(allErr, singleErr)
-			} else {
-				logging.Infof(ctx, "Command type %s execution failed. Attempting to update state keeper.", cmdType)
-				if innerErr := cmd.UpdateStateKeeper(ctx, tecfg.StateKeeper); innerErr != nil {
-					logging.Infof(ctx, "Command type %s could not update state keeper: %s", cmdType, innerErr)
-				}
-				continue
+			allErr = errors.Append(allErr, singleErr)
+			logging.Infof(ctx, "Command type %s execution failed. Attempting to update state keeper.", cmdType)
+			if innerErr := cmd.UpdateStateKeeper(ctx, tecfg.StateKeeper); innerErr != nil {
+				logging.Infof(ctx, "Command type %s could not update state keeper: %s", cmdType, innerErr)
 			}
+			continue
 		}
 		logging.Infof(ctx, "Command type %s execution completed. Marking as completed.", cmdType)
 		tecfg.executedCommands[cmdType] = true
 		if singleErr = cmd.UpdateStateKeeper(ctx, tecfg.StateKeeper); singleErr != nil {
 			foundErr = true
-			if executeAllCmds {
-				allErr = errors.Append(allErr, singleErr)
-			} else {
-				continue
-			}
+			allErr = errors.Append(allErr, singleErr)
+			continue
 		}
 	}
 

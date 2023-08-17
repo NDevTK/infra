@@ -15,6 +15,7 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 )
 
 // ContainerStartCmd represents gcloud auth cmd.
@@ -134,10 +135,8 @@ func (cmd *ContainerStartCmd) extractDepsFromHwTestStateKeeper(
 		return fmt.Errorf("cmd %q missing dependency: ContainerRequest", cmd.GetCommandType())
 	}
 
-	for _, dep := range cmd.ContainerRequest.DynamicDeps {
-		if err := common.Inject(cmd.ContainerRequest.Container, dep.Key, sk.Injectables, dep.Value); err != nil {
-			return fmt.Errorf("cmd %q failed injecting %s into %s, err: %s", cmd.GetCommandType(), dep.Value, dep.Key, err)
-		}
+	if err := common.InjectDependencies(cmd.ContainerRequest.Container, sk.Injectables, cmd.ContainerRequest.DynamicDeps); err != nil {
+		return fmt.Errorf("cmd %q failed injecting dependencies, %s", cmd.GetCommandType(), err)
 	}
 
 	containerImage, err := common.GetContainerImageFromMap(cmd.ContainerRequest.ContainerImageKey, sk.ContainerImages)
@@ -175,7 +174,10 @@ func (cmd *ContainerStartCmd) updateHwTestStateKeeper(
 	sk *data.HwTestStateKeeper) error {
 
 	if cmd.Endpoint != nil && cmd.ContainerRequest.DynamicIdentifier != "" {
-		sk.Injectables[cmd.ContainerRequest.DynamicIdentifier] = common.ProtoToInterfaceMap(cmd.Endpoint)
+		err := sk.Injectables.Set(cmd.ContainerRequest.DynamicIdentifier, cmd.Endpoint)
+		if err != nil {
+			logging.Infof(ctx, "Warning: Failed to set container endpoint for %s, %s", cmd.ContainerRequest.DynamicIdentifier, err)
+		}
 	}
 
 	if cmd.ContainerInstance != nil && cmd.ContainerRequest.DynamicIdentifier != "" {

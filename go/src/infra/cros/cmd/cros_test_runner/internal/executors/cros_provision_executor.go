@@ -103,8 +103,10 @@ func (ex *CrosProvisionExecutor) provisionInstallCommandExecution(
 	}
 
 	resp, err := ex.Install(ctx, req)
-	taskDone <- true // Notify logging process that main task is done
-	wg.Wait()        // Wait for the logging to complete
+	if taskDone != nil {
+		taskDone <- true // Notify logging process that main task is done
+	}
+	wg.Wait() // Wait for the logging to complete
 	if err != nil {
 		err = errors.Annotate(err, "Provision install cmd err: ").Err()
 	}
