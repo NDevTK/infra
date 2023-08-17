@@ -5,6 +5,7 @@
 import {
   Divider,
   FormControl,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
@@ -12,9 +13,11 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Toolbar,
+  Tooltip,
 } from '@mui/material';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import HistoryIcon from '@mui/icons-material/History';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -83,6 +86,16 @@ function TestMetricsToolbar() {
           variant="standard"
           onChange={handleFilterChange}
           value={filter}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <Tooltip title="Filter by test name, file name, builder, or test
+                  suite. Regexes are supported">
+                  <HelpOutlineIcon />
+                </Tooltip>
+              </InputAdornment>
+            ),
+          }}
           sx={{ mr: 3, minWidth: '300px' }}
         />
 
