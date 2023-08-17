@@ -15,12 +15,9 @@ import (
 	"strings"
 	"time"
 
-	"cloud.google.com/go/bigquery"
-	"go.chromium.org/luci/common/bq"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
-	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/server/auth"
 	"google.golang.org/appengine"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -257,39 +254,6 @@ func (a *Annotation) Add(c context.Context, r io.Reader) (bool, error) {
 		a.ModificationTime = clock.Now(c).UTC()
 	}
 
-	evt := createAnnotationEvent(c, a, gen.SOMAnnotationEvent_ADD)
-	evt.User = user.Email()
-	for _, changedBug := range change.Bugs {
-		evt.BugList = append(evt.BugList, &gen.SOMAnnotationEvent_MonorailBug{
-			BugId:     changedBug.BugID,
-			ProjectId: changedBug.ProjectID,
-		})
-	}
-	if ts, err := intToTimestamp(a.SnoozeTime); err != nil {
-		evt.SnoozeTime = ts
-	} else {
-		logging.Errorf(c, "error getting timestamp proto: %v", err)
-	}
-
-	evt.GroupId = change.GroupID
-
-	ct := timestamppb.New(commentTime)
-	if err := ct.CheckValid(); err != nil {
-		logging.Errorf(c, "error getting timestamp proto: %v", err)
-	}
-
-	for _, text := range change.Comments {
-		evt.Comments = append(evt.Comments, &gen.SOMAnnotationEvent_Comment{
-			Text: text,
-			Time: ct,
-		})
-	}
-
-	if err := writeAnnotationEvent(c, evt); err != nil {
-		logging.Errorf(c, "error writing annotation event to bigquery: %v", err)
-		// Continue. This isn't fatal.
-	}
-
 	return needRefresh, nil
 }
 
@@ -346,39 +310,6 @@ func (a *Annotation) Remove(c context.Context, r io.Reader) (bool, error) {
 		a.ModificationTime = clock.Now(c).UTC()
 	}
 
-	user := auth.CurrentIdentity(c)
-	evt := createAnnotationEvent(c, a, gen.SOMAnnotationEvent_DELETE)
-	evt.User = user.Email()
-	for _, changedBug := range change.Bugs {
-		evt.BugList = append(evt.BugList, &gen.SOMAnnotationEvent_MonorailBug{
-			BugId:     changedBug.BugID,
-			ProjectId: changedBug.ProjectID,
-		})
-	}
-	if ts, err := intToTimestamp(a.SnoozeTime); err == nil {
-		evt.SnoozeTime = ts
-	} else {
-		logging.Errorf(c, "error getting timestamp proto: %v", err)
-	}
-
-	evt.GroupId = a.GroupID
-	for _, comment := range deletedComments {
-		ct := timestamppb.New(comment.Time)
-		if err := ct.CheckValid(); err == nil {
-			evt.Comments = append(evt.Comments, &gen.SOMAnnotationEvent_Comment{
-				Text: comment.Text,
-				Time: ct,
-			})
-		} else {
-			logging.Errorf(c, "error getting timestamp proto: %v", err)
-		}
-	}
-
-	if err := writeAnnotationEvent(c, evt); err != nil {
-		logging.Errorf(c, "error writing annotation event to bigquery: %v", err)
-		// Continue. This isn't fatal.
-	}
-
 	return false, nil
 }
 
@@ -410,16 +341,4 @@ func createAnnotationEvent(ctx context.Context, a *Annotation, operation gen.SOM
 	}
 
 	return evt
-}
-
-func writeAnnotationEvent(c context.Context, evt *gen.SOMAnnotationEvent) error {
-	client, err := bigquery.NewClient(c, info.AppID(c))
-	if err != nil {
-		return err
-	}
-	up := bq.NewUploader(c, client, bqDatasetID, bqTableID)
-	up.SkipInvalidRows = true
-	up.IgnoreUnknownValues = true
-
-	return up.Put(c, evt)
 }

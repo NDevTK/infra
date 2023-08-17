@@ -60,14 +60,23 @@ luci_gae_vars:
     OAUTH_REDIRECT_URL: https://sheriff-o-matic-staging.appspot.com/auth/openid/callback
     ROOT_SECRET: sm://root-secret
     TINK_AEAD_KEY: sm://tink-aead-primary
+  sheriff-o-matic:
+    AUTH_SERVICE_HOST: chrome-infra-auth.appspot.com
+    TS_MON_ACCOUNT: app-engine-metric-publishers@prodx-mon-chrome-infra.google.com.iam.gserviceaccount.com
+    OAUTH_CLIENT_ID: 297387252952-io4k56a9uagle7rq4o8b7sclfih6136c.apps.googleusercontent.com
+    OAUTH_CLIENT_SECRET: sm://oauth-client-secret
+    OAUTH_REDIRECT_URL: https://sheriff-o-matic.appspot.com/auth/openid/callback
+    ROOT_SECRET: sm://root-secret
+    TINK_AEAD_KEY: sm://tink-aead-primary
 
 entrypoint: >
   main
   -auth-service-host ${AUTH_SERVICE_HOST}
-  -ts-mon-account ${TS_MON_ACCOUNT}
   -encrypted-cookies-client-id ${OAUTH_CLIENT_ID}
-  -frontend-client-id ${OAUTH_CLIENT_ID}
   -encrypted-cookies-client-secret ${OAUTH_CLIENT_SECRET}
   -encrypted-cookies-redirect-url ${OAUTH_REDIRECT_URL}
   -encrypted-cookies-tink-aead-key ${TINK_AEAD_KEY}
+  -frontend-client-id ${OAUTH_CLIENT_ID}
+  -primary-tink-aead-key ${TINK_AEAD_KEY}
   -root-secret ${ROOT_SECRET}
+  -ts-mon-account ${TS_MON_ACCOUNT}
