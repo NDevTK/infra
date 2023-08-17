@@ -1609,10 +1609,10 @@
           ],
           "dependencies": [
             {
-              "name": "Set state:SERVO_HOST_ISSUE",
+              "name": "Set state:SERVOD_PROXY_ISSUE",
               "exec_name": "servo_set_servo_state",
               "exec_args": [
-                "state:SERVO_HOST_ISSUE"
+                "state:SERVOD_PROXY_ISSUE"
               ],
               "run_control": "ALWAYS_RUN"
             }
@@ -2200,26 +2200,6 @@
               "name": "DUT has CrOS EC",
               "docs": [
                 "Verify if DUT has ChromeOS firmware for EC"
-              ],
-              "dependencies": [
-                {
-                  "name": "Read servo serial by servod harness",
-                  "docs": [
-                    "Try to read servo serial by XMLRPC request to servod."
-                  ],
-                  "dependencies": [
-                    {
-                      "name": "Set state:SERVO_HOST_ISSUE",
-                      "exec_name": "servo_set_servo_state",
-                      "exec_args": [
-                        "state:SERVO_HOST_ISSUE"
-                      ],
-                      "run_control": "ALWAYS_RUN"
-                    }
-                  ],
-                  "exec_name": "servod_echo",
-                  "run_control": "RERUN_AFTER_RECOVERY"
-                }
               ],
               "exec_name": "servo_check_servod_control",
               "exec_args": [
@@ -10407,26 +10387,6 @@
               "docs": [
                 "Verify if DUT has ChromeOS firmware for EC"
               ],
-              "dependencies": [
-                {
-                  "name": "Read servo serial by servod harness",
-                  "docs": [
-                    "Try to read servo serial by XMLRPC request to servod."
-                  ],
-                  "dependencies": [
-                    {
-                      "name": "Set state:SERVO_HOST_ISSUE",
-                      "exec_name": "servo_set_servo_state",
-                      "exec_args": [
-                        "state:SERVO_HOST_ISSUE"
-                      ],
-                      "run_control": "ALWAYS_RUN"
-                    }
-                  ],
-                  "exec_name": "servod_echo",
-                  "run_control": "RERUN_AFTER_RECOVERY"
-                }
-              ],
               "exec_name": "servo_check_servod_control",
               "exec_args": [
                 "command:supports_cros_ec_communication",
@@ -10451,26 +10411,6 @@
                   "name": "DUT has CrOS EC",
                   "docs": [
                     "Verify if DUT has ChromeOS firmware for EC"
-                  ],
-                  "dependencies": [
-                    {
-                      "name": "Read servo serial by servod harness",
-                      "docs": [
-                        "Try to read servo serial by XMLRPC request to servod."
-                      ],
-                      "dependencies": [
-                        {
-                          "name": "Set state:SERVO_HOST_ISSUE",
-                          "exec_name": "servo_set_servo_state",
-                          "exec_args": [
-                            "state:SERVO_HOST_ISSUE"
-                          ],
-                          "run_control": "ALWAYS_RUN"
-                        }
-                      ],
-                      "exec_name": "servod_echo",
-                      "run_control": "RERUN_AFTER_RECOVERY"
-                    }
                   ],
                   "exec_name": "servo_check_servod_control",
                   "exec_args": [
@@ -11909,26 +11849,6 @@
                   "name": "DUT has CrOS EC",
                   "docs": [
                     "Verify if DUT has ChromeOS firmware for EC"
-                  ],
-                  "dependencies": [
-                    {
-                      "name": "Read servo serial by servod harness",
-                      "docs": [
-                        "Try to read servo serial by XMLRPC request to servod."
-                      ],
-                      "dependencies": [
-                        {
-                          "name": "Set state:SERVO_HOST_ISSUE",
-                          "exec_name": "servo_set_servo_state",
-                          "exec_args": [
-                            "state:SERVO_HOST_ISSUE"
-                          ],
-                          "run_control": "ALWAYS_RUN"
-                        }
-                      ],
-                      "exec_name": "servod_echo",
-                      "run_control": "RERUN_AFTER_RECOVERY"
-                    }
                   ],
                   "exec_name": "servo_check_servod_control",
                   "exec_args": [

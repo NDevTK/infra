@@ -416,7 +416,7 @@ func servoRepairPlan() *Plan {
 					"Try to read servo serial by XMLRPC request to servod.",
 				},
 				Dependencies: []string{
-					"Set state:SERVO_HOST_ISSUE",
+					"Set state:SERVOD_PROXY_ISSUE",
 				},
 				ExecName: "servod_echo",
 				RecoveryActions: []string{
@@ -840,9 +840,6 @@ func servoRepairPlan() *Plan {
 				Conditions: []string{
 					"DUT has CrOS EC",
 				},
-				Dependencies: []string{
-					"Read servo serial by servod harness",
-				},
 				ExecName: "servo_check_servod_control",
 				ExecExtraArgs: []string{
 					"command:ec_system_powerstate",
@@ -868,9 +865,6 @@ func servoRepairPlan() *Plan {
 			"DUT has CrOS EC": {
 				Docs: []string{
 					"Verify if DUT has ChromeOS firmware for EC",
-				},
-				Dependencies: []string{
-					"Read servo serial by servod harness",
 				},
 				ExecExtraArgs: []string{
 					"command:supports_cros_ec_communication",
