@@ -44,24 +44,37 @@ func TestIntegrationTest(t *testing.T) {
 	Convey("no duplicate rows are created", t, func() {
 		// Deleting rows with a streaming buffer doesn't work well, instead
 		// partition the fake table
-		testPartition := "2023-07-01"
+		testPartition := "2023-07-02"
 		rf.timePartition, err = civil.ParseDate(testPartition)
 		if err != nil {
 			t.Fail()
 		}
 
 		// Generate the fake rdb data.
-		if err := createFakeRdb(ctx, bqClient, testProject, testDataset, fakeChromiumRdb, []*fakeRdbResult{
+		if err := createFakeRdb(ctx, bqClient, testProject, testDataset, fakeChromiumTryRdb, []*fakeRdbResult{
 			rf.createResult(),
 			rf.createResult(),
+			rf.createResult().AddTime(time.Hour * 24),
+			rf.createResult().AddTime(time.Hour * 24 * 2),
+			rf.createResult().AddTime(time.Hour * 24 * 6),
 		}); err != nil {
 			t.Fail()
 		}
 
-		err = client.UpdateSummary(ctx, rf.timePartition, rf.timePartition)
+		err = client.UpdateSummary(ctx, rf.timePartition, rf.timePartition.AddDays(6))
 		So(err, ShouldBeNil)
+		// Even if new data appears after the first roll up, that data needs to
+		// be included in existing rows, not as new ones
+		if err := createFakeRdb(ctx, bqClient, testProject, testDataset, fakeChromiumTryRdb, []*fakeRdbResult{
+			rf.createResult(),
+			rf.createResult().AddTime(time.Hour * 24),
+			rf.createResult().AddTime(time.Hour * 24 * 2),
+			rf.createResult().AddTime(time.Hour * 24 * 6),
+		}); err != nil {
+			t.Fail()
+		}
 		// Run the updates again to ensure nothing changes
-		err = client.UpdateSummary(ctx, rf.timePartition, rf.timePartition)
+		err = client.UpdateSummary(ctx, rf.timePartition, rf.timePartition.AddDays(6))
 		So(err, ShouldBeNil)
 
 		// Check the rolled up tables
@@ -79,7 +92,7 @@ func TestIntegrationTest(t *testing.T) {
 		}
 
 		// Generate the rollups from fake rdb data.
-		if err := createRollupFromResults(ctx, client, testProject, testDataset, fakeChromiumRdb, testPartition, []*fakeRdbResult{
+		if err := createRollupFromResults(ctx, client, testProject, testDataset, fakeChromiumTryRdb, testPartition, []*fakeRdbResult{
 			rf.createResult().AddTime(-time.Second),
 			rf.createResult(),
 			rf.createResult(),
@@ -118,5 +131,104 @@ func TestIntegrationTest(t *testing.T) {
 		variantMetricData = variant.Metrics[testPartition].Data[0]
 		So(variantMetricData.MetricType, ShouldEqual, api.MetricType_NUM_RUNS)
 		So(variantMetricData.MetricValue, ShouldEqual, 1)
+	})
+
+	Convey("total runtime", t, func() {
+		// Deleting rows with a streaming buffer doesn't work well, instead
+		// partition the fake table. Use a Sunday to make weekly tests easier
+		testPartition := "2023-05-07"
+
+		// Setup defaults for rdb data
+		rf.timePartition, err = civil.ParseDate(testPartition)
+		if err != nil {
+			t.Fail()
+		}
+		rf.defaultFilename = "//dir/name/filename.go"
+		rf.defaultRuntime = 1.0
+
+		// Generate the rollups from fake rdb data.
+		if err := createRollupFromResults(ctx, client, testProject, testDataset, fakeChromiumTryRdb, testPartition, []*fakeRdbResult{
+			rf.createResult(),
+			rf.createResult(),
+			rf.createResult().WithFilename("//dir/other/name/filename.go"),
+			rf.createResult().WithBuilder("different_builder"),
+			rf.createResult().WithBuilder("different_builder").WithFilename("//dir/other/name/filename.go"),
+		}); err != nil {
+			t.Fail()
+		}
+
+		// Start checking the fetches
+		testResp, err := client.FetchMetrics(ctx,
+			&api.FetchTestMetricsRequest{
+				Period:     api.Period_DAY,
+				Components: []string{"component"},
+				Dates:      []string{testPartition},
+				Metrics: []api.MetricType{
+					api.MetricType_TOTAL_RUNTIME,
+				},
+				PageSize: 10,
+			},
+		)
+		So(err, ShouldBeNil)
+
+		testSummary := getTestIdFromResponse(testResp, defaultTestId)
+		metric, err := getMetric(testSummary.Metrics[testPartition], api.MetricType_TOTAL_RUNTIME)
+		So(err, ShouldBeNil)
+		So(metric, ShouldEqual, 5)
+
+		testResp, err = client.FetchMetrics(ctx,
+			&api.FetchTestMetricsRequest{
+				Period:     api.Period_DAY,
+				Components: []string{"component"},
+				Dates:      []string{testPartition},
+				Metrics: []api.MetricType{
+					api.MetricType_TOTAL_RUNTIME,
+				},
+				Filter:   "different_builder",
+				PageSize: 10,
+			},
+		)
+		So(err, ShouldBeNil)
+
+		testSummary = getTestIdFromResponse(testResp, defaultTestId)
+		metric, err = getMetric(testSummary.Metrics[testPartition], api.MetricType_TOTAL_RUNTIME)
+		So(err, ShouldBeNil)
+		So(metric, ShouldEqual, 2)
+
+		// Start checking the fetches
+		dirResp, err := client.FetchDirectoryMetrics(ctx,
+			&api.FetchDirectoryMetricsRequest{
+				Period:     api.Period_DAY,
+				Components: []string{"component"},
+				Dates:      []string{testPartition},
+				Metrics: []api.MetricType{
+					api.MetricType_TOTAL_RUNTIME,
+				},
+				ParentIds: []string{"/"},
+			},
+		)
+		So(err, ShouldBeNil)
+
+		metric, err = getMetric(dirResp.Nodes[0].Metrics[testPartition], api.MetricType_TOTAL_RUNTIME)
+		So(err, ShouldBeNil)
+		So(metric, ShouldEqual, 5)
+
+		dirResp, err = client.FetchDirectoryMetrics(ctx,
+			&api.FetchDirectoryMetricsRequest{
+				Period:     api.Period_DAY,
+				Components: []string{"component"},
+				Dates:      []string{testPartition},
+				Metrics: []api.MetricType{
+					api.MetricType_TOTAL_RUNTIME,
+				},
+				ParentIds: []string{"/"},
+				Filter:    "different_builder",
+			},
+		)
+		So(err, ShouldBeNil)
+
+		metric, err = getMetric(dirResp.Nodes[0].Metrics[testPartition], api.MetricType_TOTAL_RUNTIME)
+		So(err, ShouldBeNil)
+		So(metric, ShouldEqual, 2)
 	})
 }

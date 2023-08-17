@@ -20,11 +20,11 @@ import (
 )
 
 var (
-	testProject     = "chrome-test-health-staging"
-	fakeChromiumRdb = "fake_chromium_rdb"
-	fakeChromeRdb   = "fake_chrome_rdb"
-	fakeAttempts    = "fake_attempts"
-	testDataset     = "test"
+	testProject        = "chrome-test-health-staging"
+	fakeChromiumTryRdb = "fake_chromium_try_rdb"
+	fakeChromiumCiRdb  = "fake_chromium_ci_rdb"
+	fakeAttempts       = "fake_attempts"
+	testDataset        = "test"
 
 	sqlDir = "../../"
 
@@ -61,7 +61,9 @@ type fakeRdbResult struct {
 
 type resultFactory struct {
 	// The day to create the results in
-	timePartition civil.Date
+	timePartition   civil.Date
+	defaultRuntime  float64
+	defaultFilename string
 }
 
 func (f *resultFactory) createResult() *fakeRdbResult {
@@ -80,9 +82,11 @@ func (f *resultFactory) createResult() *fakeRdbResult {
 		exonerated:    false,
 		partitionTime: partitionTime,
 		component:     "component",
-		duration:      1.0,
+		duration:      f.defaultRuntime,
 		builder:       "builder",
 		testSuite:     "test_suite",
+		filename:      f.defaultFilename,
+		name:          "test_name",
 	}
 }
 
@@ -110,8 +114,13 @@ func (f *fakeRdbResult) Failed() *fakeRdbResult {
 	return f
 }
 
-func (f *fakeRdbResult) Duration(duration float64) *fakeRdbResult {
+func (f *fakeRdbResult) WithDuration(duration float64) *fakeRdbResult {
 	f.duration = duration
+	return f
+}
+
+func (f *fakeRdbResult) WithFilename(filename string) *fakeRdbResult {
+	f.filename = filename
 	return f
 }
 
@@ -140,6 +149,7 @@ func (f *fakeRdbResult) Save() (row map[string]bigquery.Value, insertID string, 
 				"file_name": f.filename,
 				"repo":      f.repo,
 			},
+			"name": f.name,
 		},
 		"name": f.name,
 		"variant": []map[string]bigquery.Value{
@@ -167,12 +177,12 @@ func (f *fakeRdbResult) Save() (row map[string]bigquery.Value, insertID string, 
 
 func setupClient(ctx context.Context, bqClient *bigquery.Client, dataSet string, project string) (*Client, error) {
 	var client = &Client{
-		BqClient:         bqClient,
-		ProjectId:        project,
-		DataSet:          dataSet,
-		ChromiumRdbTable: testProject + "." + testDataset + "." + fakeChromiumRdb,
-		ChromeRdbTable:   testProject + "." + testDataset + "." + fakeChromeRdb,
-		AttemptsTable:    testProject + "." + testDataset + "." + fakeAttempts,
+		BqClient:            bqClient,
+		ProjectId:           project,
+		DataSet:             dataSet,
+		ChromiumTryRdbTable: testProject + "." + testDataset + "." + fakeChromiumTryRdb,
+		ChromiumCiRdbTable:  testProject + "." + testDataset + "." + fakeChromiumCiRdb,
+		AttemptsTable:       testProject + "." + testDataset + "." + fakeAttempts,
 	}
 	err := client.Init(sqlDir)
 	if err != nil {
@@ -339,10 +349,10 @@ func ensureTables(ctx context.Context, client *bigquery.Client) error {
 		}
 	}
 
-	if err := ensureTable(ctx, client, "chrome-luci-data", "chromium", "try_test_results", testSet, fakeChromiumRdb); err != nil {
+	if err := ensureTable(ctx, client, "chrome-luci-data", "chromium", "try_test_results", testSet, fakeChromiumTryRdb); err != nil {
 		return err
 	}
-	if err := ensureTable(ctx, client, "chrome-luci-data", "chrome", "try_test_results", testSet, fakeChromeRdb); err != nil {
+	if err := ensureTable(ctx, client, "chrome-luci-data", "chrome", "try_test_results", testSet, fakeChromiumCiRdb); err != nil {
 		return err
 	}
 	if err := ensureTable(ctx, client, "commit-queue", "chromium", "attempts", testSet, fakeAttempts); err != nil {
@@ -374,6 +384,19 @@ func checkForRows(ctx context.Context, client *bigquery.Client, q string) (bool,
 }
 
 func checkForDuplicateRows(ctx context.Context, client *bigquery.Client) error {
+	if err := checkRawMetricsForDuplicateRows(ctx, client); err != nil {
+		return err
+	}
+	if err := checkDailyMetricsForDuplicateRows(ctx, client); err != nil {
+		return err
+	}
+	if err := checkWeeklyMetricsForDuplicateRows(ctx, client); err != nil {
+		return err
+	}
+	return nil
+}
+
+func checkRawMetricsForDuplicateRows(ctx context.Context, client *bigquery.Client) error {
 	query := `
 	SELECT COUNT(*) rowCount
 	FROM ` + testProject + `.` + testDataset + `.raw_metrics
@@ -387,6 +410,42 @@ func checkForDuplicateRows(ctx context.Context, client *bigquery.Client) error {
 	}
 	if duplicates {
 		return errors.New("Duplicate rows created in raw_metrics")
+	}
+	return nil
+}
+
+func checkDailyMetricsForDuplicateRows(ctx context.Context, client *bigquery.Client) error {
+	query := `
+	SELECT COUNT(*) rowCount
+	FROM ` + testProject + `.` + testDataset + `.daily_test_metrics
+	GROUP BY
+		date, test_id, repo, component, builder, bucket, test_suite
+	HAVING rowCount > 1`
+
+	duplicates, err := checkForRows(ctx, client, query)
+	if err != nil {
+		return err
+	}
+	if duplicates {
+		return errors.New("Duplicate rows created in raw_metrics")
+	}
+	return nil
+}
+
+func checkWeeklyMetricsForDuplicateRows(ctx context.Context, client *bigquery.Client) error {
+	query := `
+	SELECT COUNT(*) rowCount
+	FROM ` + testProject + `.` + testDataset + `.weekly_test_metrics
+	GROUP BY
+		date, test_id, repo, component, builder, bucket, test_suite
+	HAVING rowCount > 1`
+
+	duplicates, err := checkForRows(ctx, client, query)
+	if err != nil {
+		return err
+	}
+	if duplicates {
+		return errors.New("Duplicate rows were detected")
 	}
 	return nil
 }
@@ -411,4 +470,13 @@ func getBuilderVariantFromTest(testSummary *api.TestDateMetricData, builder stri
 		}
 	}
 	return variant
+}
+
+func getMetric(data *api.TestMetricsArray, metric api.MetricType) (float64, error) {
+	for _, metricData := range data.Data {
+		if metricData.MetricType == metric {
+			return metricData.MetricValue, nil
+		}
+	}
+	return 0, errors.New("Requested metric type not in provided values")
 }
