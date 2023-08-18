@@ -36,6 +36,9 @@ func GetCmdRelease(authOpts auth.Options) *subcommands.Command {
 			c.addPatchesFlag()
 			c.addBuildTargetsFlag()
 			c.addVerboseFlag()
+			c.Flags.BoolVar(&c.dev, "dev", true,
+				"run a staging builder with the true ToT environment (recipes, bot image, etc.),"+
+					"instead of a prod-like env.")
 			c.Flags.BoolVar(&c.useProdTests, "prod_tests", false, "Run (production) HW tests even if in staging. "+
 				"By default, HW tests are disabled in staging.")
 			c.Flags.BoolVar(&c.skipPaygen, "skip_paygen", false, "Skip payload generation. Only supported for staging builds.")
@@ -128,6 +131,7 @@ func includeAllAncestors(ctx context.Context, client gerrit.Client, patches []st
 // releaseRun tracks relevant info for a given `try release` run.
 type releaseRun struct {
 	tryRunBase
+	dev             bool
 	useProdTests    bool
 	skipPaygen      bool
 	channelOverride string
@@ -139,8 +143,11 @@ type releaseRun struct {
 // validate validates release-specific args for the command.
 func (r *releaseRun) validate() error {
 	if r.production {
+		if r.dev {
+			return errors.New("--dev and --production cannot be used together")
+		}
 		if r.skipPaygen {
-			return fmt.Errorf("--skip_paygen is not supported for production builds")
+			return errors.New("--skip_paygen is not supported for production builds")
 		}
 	}
 
@@ -155,8 +162,10 @@ func (r *releaseRun) validate() error {
 func (r *releaseRun) checkChildrenExist(ctx context.Context) error {
 	if len(r.buildTargets) > 0 {
 		builderNames := r.getReleaseBuilderNames()
-		bucket := "try-dev"
-		if r.production {
+		bucket := "try-preprod"
+		if r.dev {
+			bucket = "try-dev"
+		} else if r.production {
 			bucket = "release"
 		}
 		for i, builderName := range builderNames {
@@ -337,7 +346,11 @@ func (r *releaseRun) getReleaseOrchestratorName() string {
 	if r.production {
 		bucket = "release"
 	} else {
-		bucket = "try-dev"
+		if r.dev {
+			bucket = "try-dev"
+		} else {
+			bucket = "try-preprod"
+		}
 		stagingPrefix = "staging-"
 	}
 	if strings.HasPrefix(r.branch, "release-") {

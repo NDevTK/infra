@@ -22,19 +22,24 @@ func TestGetReleaseOrchestratorName(t *testing.T) {
 	t.Parallel()
 	for i, testCase := range []struct {
 		production bool
+		dev        bool
 		branch     string
 		expected   string
 	}{
-		{false, "main", "chromeos/try-dev/staging-release-main-orchestrator"},
-		{true, "main", "chromeos/release/release-main-orchestrator"},
-		{false, "release-R106.15054.B", "chromeos/try-dev/staging-release-R106.15054.B-orchestrator"},
-		{true, "release-R106.15054.B", "chromeos/release/release-R106.15054.B-orchestrator"},
+		{false, false, "main", "chromeos/try-preprod/staging-release-main-orchestrator"},
+		{true, false, "main", "chromeos/release/release-main-orchestrator"},
+		{false, false, "release-R106.15054.B", "chromeos/try-preprod/staging-release-R106.15054.B-orchestrator"},
+		{true, false, "release-R106.15054.B", "chromeos/release/release-R106.15054.B-orchestrator"},
+		{false, false, "release-R106.15054.B", "chromeos/try-preprod/staging-release-R106.15054.B-orchestrator"},
+		{false, true, "main", "chromeos/try-dev/staging-release-main-orchestrator"},
+		{false, true, "release-R106.15054.B", "chromeos/try-dev/staging-release-R106.15054.B-orchestrator"},
 	} {
 		r := releaseRun{
 			tryRunBase: tryRunBase{
 				branch:     testCase.branch,
 				production: testCase.production,
 			},
+			dev: testCase.dev,
 		}
 		if actual := r.getReleaseOrchestratorName(); actual != testCase.expected {
 			t.Errorf("#%d: Incorrect release orch name: got %s; want %s", i, actual, testCase.expected)
@@ -116,6 +121,7 @@ type runTestConfig struct {
 	expectedChildren        []string
 	skipPaygen              bool
 	production              bool
+	dev                     bool
 	dryrun                  bool
 	branch                  string
 	channelOverride         string
@@ -132,8 +138,10 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 	expectedBuilder := tc.expectedOrch
 	if tc.production {
 		expectedBucket = "chromeos/release"
-	} else {
+	} else if tc.dev {
 		expectedBucket = "chromeos/try-dev"
+	} else {
+		expectedBucket = "chromeos/try-preprod"
 	}
 
 	f := &cmd.FakeCommandRunnerMulti{
@@ -184,6 +192,7 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 			buildTargets:         tc.buildTargets,
 			skipProductionPrompt: true,
 		},
+		dev:             tc.dev,
 		useProdTests:    true,
 		channelOverride: tc.channelOverride,
 	}
@@ -282,6 +291,17 @@ func TestRun_staging_buildTargets_fail(t *testing.T) {
 	doTestRun(t, &runTestConfig{
 		failChildCheck:   true,
 		branch:           "release-R106.15054.B",
+		buildTargets:     []string{"eve", "kevin-kernelnext"},
+		expectedOrch:     "staging-release-R106.15054.B-orchestrator",
+		expectedChildren: []string{"staging-eve-release-R106.15054.B", "staging-kevin-kernelnext-release-R106.15054.B"},
+	})
+}
+
+func TestRun_dev(t *testing.T) {
+	t.Parallel()
+	doTestRun(t, &runTestConfig{
+		branch:           "release-R106.15054.B",
+		dev:              true,
 		buildTargets:     []string{"eve", "kevin-kernelnext"},
 		expectedOrch:     "staging-release-R106.15054.B-orchestrator",
 		expectedChildren: []string{"staging-eve-release-R106.15054.B", "staging-kevin-kernelnext-release-R106.15054.B"},
