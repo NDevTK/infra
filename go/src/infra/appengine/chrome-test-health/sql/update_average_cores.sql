@@ -94,7 +94,7 @@ USING (
         TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), TIMESTAMP(DATE_TRUNC(`date`, WEEK), "PST8PDT"), SECOND),
         60 * 60 * 24 * 7
         )) AS avg_cores
-  FROM {project}.{dataset}.daily_test_metrics
+  FROM {project}.{dataset}.weekly_test_metrics
   WHERE `date` BETWEEN
     DATE_TRUNC(DATE(@from_date), WEEK) AND
     DATE_ADD(DATE_TRUNC(DATE(@to_date), WEEK), INTERVAL 6 DAY)
