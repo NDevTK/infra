@@ -274,6 +274,10 @@ func createInstance(parentCtx context.Context, client computeInstancesClient, en
 		},
 	}
 
+	if hostReqs.GetGceMinCpuPlatform() != "" {
+		req.InstanceResource.MinCpuPlatform = proto.String(hostReqs.GetGceMinCpuPlatform())
+	}
+
 	logging.Debugf(ctx, "createInstance: InsertInstanceRequest payload: %v", req)
 	op, err := client.Insert(ctx, req)
 	if err != nil {
