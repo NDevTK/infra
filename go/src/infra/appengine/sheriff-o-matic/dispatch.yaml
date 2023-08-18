@@ -8,6 +8,14 @@ dispatch:
   - url: "*/_ah/queue/*"
     service: analyzer
 
+  # GAEv1 endpoints must be handled by our only remaining GAEv1 service.
+  # GAEv1 AuthDB pub/sub.
+  - url: "*/auth/pubsub/authdb:push"
+    service: analyzer
+  # GAEv1 Admin settings portal.
+  - url: "*/admin/*"
+    service: analyzer
+  
   - url: "*/*"
     service: default
 
