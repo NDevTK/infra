@@ -6,6 +6,7 @@ import * as ComponentContextP from './features/components/ComponentContext';
 import App from './App';
 import { URL_COMPONENT } from './features/components/ComponentContext';
 import { renderWithAuth } from './features/auth/testUtils';
+import { TEST_SEARCH_PARAMS_ALL_COMPONENTS } from './features/components/ComponentContext.test';
 
 describe('when rendering the App', () => {
   // This is needed to allow us to modify window.location
@@ -13,6 +14,7 @@ describe('when rendering the App', () => {
     writable: true,
     value: { assign: jest.fn() },
   });
+
   it('should pass in default values', async () => {
     const mockComponentContext = jest.fn();
     jest.spyOn(ComponentContextP, 'ComponentContextProvider').mockImplementation((props) => {
@@ -25,6 +27,7 @@ describe('when rendering the App', () => {
         }),
     );
   });
+
   it('should pass in url param values', async () => {
     const mockComponentContext = jest.fn();
     jest.spyOn(ComponentContextP, 'ComponentContextProvider').mockImplementation((props) => {
@@ -38,7 +41,23 @@ describe('when rendering the App', () => {
         }),
     );
   });
-  it('should pass in localStorage values', async () => {
+
+  it('should pass in all components param values', async () => {
+    const mockComponentContext = jest.fn();
+    jest.spyOn(ComponentContextP, 'ComponentContextProvider').mockImplementation((props) => {
+      return mockComponentContext(props);
+    });
+    localStorage.setItem(URL_COMPONENT, 'WRONG_COMPONENT');
+    window.location.search = '?' + TEST_SEARCH_PARAMS_ALL_COMPONENTS;
+    renderWithAuth(<App/>);
+    expect(mockComponentContext).toHaveBeenCalledWith(
+        expect.objectContaining({
+          components: [],
+        }),
+    );
+  });
+
+ it('should pass in localStorage values', async () => {
     const mockComponentContext = jest.fn();
     window.location.search = '';
     jest.spyOn(ComponentContextP, 'ComponentContextProvider').mockImplementation((props) => {
@@ -52,6 +71,7 @@ describe('when rendering the App', () => {
         }),
     );
   });
+
   it('should evalute local storage val \'\' correctly', async () => {
     const mockComponentContext = jest.fn();
     window.location.search = '';

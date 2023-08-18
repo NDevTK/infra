@@ -68,11 +68,19 @@ describe('ComponentContext values', () => {
   });
 });
 
+export const TEST_SEARCH_PARAMS_ALL_COMPONENTS = 'ac=true'
+
 describe('updateComponentsUrl', () => {
   it('sets multiple components', () => {
     const search = new URLSearchParams();
     updateComponentsUrl(['a', 'b', 'c'], search);
     expect(search.getAll(URL_COMPONENT)).toEqual(['a', 'b', 'c']);
     expect(global.localStorage.getItem(URL_COMPONENT)).toEqual('a,b,c');
+  });
+
+  it('sets all components', () => {
+    const search = new URLSearchParams();
+    updateComponentsUrl([], search);
+    expect(search.toString()).toEqual(TEST_SEARCH_PARAMS_ALL_COMPONENTS);
   });
 });
