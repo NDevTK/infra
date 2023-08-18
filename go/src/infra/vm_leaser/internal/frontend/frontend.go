@@ -73,14 +73,33 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 		return nil, status.Errorf(codes.InvalidArgument, "failed to validate lease request: %s", err)
 	}
 
-	// Appending "vm-" to satisfy GCE regex
-	leaseID := fmt.Sprintf("vm-%s", uuid.New().String())
 	instancesClient, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create NewInstancesRESTClient: %s", err)
 	}
 	defer instancesClient.Close()
 
+	in := checkIdempotencyKey(ctx, instancesClient, r.GetHostReqs().GetGceProject(), r.GetIdempotencyKey())
+	if in != nil {
+		zone, err := zone_selector.ExtractGoogleApiZone(in.GetZone())
+		if err != nil {
+			return nil, err
+		}
+		return &api.LeaseVMResponse{
+			LeaseId: in.GetName(),
+			Vm: &api.VM{
+				Id:        in.GetName(),
+				GceRegion: zone,
+				Address: &api.VMAddress{
+					Host: in.GetNetworkInterfaces()[0].GetNetworkIP(),
+					Port: 22,
+				},
+			},
+		}, nil
+	}
+
+	// Appending "vm-" to satisfy GCE regex
+	leaseID := fmt.Sprintf("vm-%s", uuid.New().String())
 	retry := 0
 	for {
 		err = createInstance(ctx, instancesClient, s.Env, leaseID, r)
@@ -102,7 +121,7 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 		logging.Debugf(ctx, "LeaseVM: retrying %d time createInstance", retry)
 	}
 
-	in, err := getInstance(ctx, instancesClient, leaseID, r.GetHostReqs(), true)
+	in, err = getInstance(ctx, instancesClient, leaseID, r.GetHostReqs(), true)
 	if err != nil {
 		if ctx.Err() != nil {
 			return nil, status.Errorf(codes.DeadlineExceeded, "when getting instance: %s", ctx.Err())
@@ -375,7 +394,6 @@ func listAllInstances(ctx context.Context, client computeInstancesClient, projec
 	if it == nil {
 		return nil, errors.New("listAllInstances: cannot get instances")
 	}
-	logging.Infof(ctx, "listAllInstances: instances found in project %s:", project)
 	for {
 		pair, err := it.Next()
 		if err == iterator.Done {
@@ -390,6 +408,7 @@ func listAllInstances(ctx context.Context, client computeInstancesClient, projec
 			instances = append(instances, zoneIns...)
 		}
 	}
+	logging.Infof(ctx, "listAllInstances: found %v instances in project %s", len(instances), project)
 	return instances, nil
 }
 
@@ -409,7 +428,6 @@ func listZoneInstances(ctx context.Context, client computeInstancesClient, proje
 	if it == nil {
 		return nil, errors.New("listZoneInstances: cannot get instances")
 	}
-	logging.Infof(ctx, "listZoneInstances: instances found in project %s zone %s:", project, zone)
 	for {
 		in, err := it.Next()
 		if err == iterator.Done {
@@ -420,6 +438,7 @@ func listZoneInstances(ctx context.Context, client computeInstancesClient, proje
 		}
 		instances = append(instances, in)
 	}
+	logging.Infof(ctx, "listZoneInstances: found %v instances in project %s zone %s", len(instances), project, zone)
 	return instances, nil
 }
 
@@ -520,6 +539,31 @@ func getMetadata(ctx context.Context, env string, r *api.LeaseVMRequest) (*compu
 	return &computepb.Metadata{
 		Items: metadataItems,
 	}, nil
+}
+
+// checkIdempotencyKey checks the request idempotency with the existing leases
+//
+// checkIdempotencyKey takes a key and searches all instances within a project
+// to check if any current lease matches the request being made. If a request is
+// a duplicate request based on the key, then the instance already created will
+// be returned to the caller and no additional request will be made to GCE.
+func checkIdempotencyKey(ctx context.Context, client computeInstancesClient, project, idemKey string) *computepb.Instance {
+	t1 := time.Now()
+	allInstances, err := listAllInstances(ctx, client, project, nil)
+	if err != nil {
+		logging.Warningf(ctx, "checkIdempotencyKey: could not check idempotency; continuing lease operation")
+	}
+	for _, in := range allInstances {
+		for _, m := range in.GetMetadata().GetItems() {
+			if m.GetKey() == "idempotency_key" && m.GetValue() == idemKey {
+				logging.Debugf(ctx, "checkIdempotencyKey: found matching idempotency key; returning VM")
+				logging.Debugf(ctx, "checkIdempotencyKey: check completed in %v", time.Since(t1))
+				return in
+			}
+		}
+	}
+	logging.Debugf(ctx, "checkIdempotencyKey: check completed in %v", time.Since(t1))
+	return nil
 }
 
 // computeExpirationTime calculates the expiration time of a VM

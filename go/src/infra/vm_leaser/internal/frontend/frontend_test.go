@@ -447,3 +447,19 @@ func TestListInstances(t *testing.T) {
 		})
 	})
 }
+
+func TestCheckIdempotencyKey(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	Convey("Test checkIdempotencyKey", t, func() {
+		Convey("checkIdempotencyKey - no instances found", func() {
+			client := &mockComputeInstancesClient{
+				aggregatedListFunc: func() *compute.InstancesScopedListPairIterator {
+					return nil
+				},
+			}
+			in := checkIdempotencyKey(ctx, client, "test-project", "test-key")
+			So(in, ShouldBeNil)
+		})
+	})
+}
