@@ -129,17 +129,22 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 		return nil, status.Errorf(codes.Internal, "failed to get instance: %s", err)
 	}
 
+	zone, err := zone_selector.ExtractGoogleApiZone(in.GetZone())
+	if err != nil {
+		return nil, err
+	}
+
 	return &api.LeaseVMResponse{
-		LeaseId: leaseID,
+		LeaseId: in.GetName(),
 		Vm: &api.VM{
-			Id: leaseID,
+			Id: in.GetName(),
 			Address: &api.VMAddress{
 				// Internal IP. Only one NetworkInterface should be available.
 				Host: in.GetNetworkInterfaces()[0].GetNetworkIP(),
 				// Temporarily hardcode as port 22
 				Port: 22,
 			},
-			GceRegion: r.GetHostReqs().GetGceRegion(),
+			GceRegion: zone,
 		},
 	}, nil
 }
