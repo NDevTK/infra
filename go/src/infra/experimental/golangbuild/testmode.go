@@ -125,12 +125,6 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []P
 			i, p := i, p
 			var extraEnv []string
 			if spec.experiment("golang.parallel_compile_only_ports_maxprocs") {
-				max := func(x, y int) int { // TODO: Drop once go.mod's version is 1.21 or newer.
-					if x > y {
-						return x
-					}
-					return y
-				}
 				extraEnv = append(extraEnv, "GOMAXPROCS="+fmt.Sprint(max(1, runtime.NumCPU()/len(ports))))
 			}
 			portContext := addPortEnv(ctx, p, extraEnv...)
@@ -261,6 +255,9 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []Port)
 			return err
 		}
 	}
+	if spec.experiment("golang.parallel_compile_only_ports") && spec.inputs.CompileOnly {
+		return compileTestsInParallel(ctx, spec, modules, ports)
+	}
 	var testErrors []error
 	for _, p := range ports {
 		portContext := addPortEnv(ctx, p)
@@ -279,6 +276,37 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []Port)
 			}
 		}
 	}
+	return errors.Join(testErrors...)
+}
+
+func compileTestsInParallel(ctx context.Context, spec *buildSpec, modules []module, ports []Port) error {
+	g := new(errgroup.Group)
+	g.SetLimit(runtime.NumCPU())
+	var testErrors = make([]error, len(ports)*len(modules))
+	for i, p := range ports {
+		i := i
+		var extraEnv []string
+		if spec.experiment("golang.parallel_compile_only_ports_maxprocs") {
+			extraEnv = append(extraEnv, "GOMAXPROCS="+fmt.Sprint(max(1, runtime.NumCPU()/(len(ports)*len(modules)))))
+		}
+		portContext := addPortEnv(ctx, p, extraEnv...)
+		for _, m := range modules {
+			stepName := fmt.Sprintf("test %s module", m.Path)
+			if len(ports) > 1 || p != currentPort {
+				stepName += fmt.Sprintf(" for %s", p)
+			}
+			testCmd := spec.wrapTestCmd(spec.goCmd(portContext, m.RootDir, spec.goTestArgs("./...")...))
+			if spec.inputs.CompileOnly && compileOptOut(spec.inputs.Project, p, m.Path) {
+				stepName += " (skipped)"
+				testCmd = command(portContext, "echo", "(skipped)")
+			}
+			g.Go(func() error {
+				testErrors[i] = cmdStepRun(portContext, stepName, testCmd, false)
+				return nil
+			})
+		}
+	}
+	g.Wait()
 	return errors.Join(testErrors...)
 }
 
@@ -542,4 +570,11 @@ func compileOptOut(project string, p Port, modulePath string) bool {
 	}
 	// The default policy decision is not to opt out.
 	return performCompileOnlyTestingAsUsual
+}
+
+func max(x, y int) int { // TODO: Drop once go.mod's version is 1.21 or newer.
+	if x > y {
+		return x
+	}
+	return y
 }
