@@ -226,9 +226,10 @@
       "GOMODCACHE": "[CACHE]/gocache/modcache",
       "GOPACKAGESDRIVER": "off",
       "GOPATH": null,
-      "GOPRIVATE": "*.googlesource.com,*.google.com",
+      "GOPRIVATE": "*.googlesource.com,*.git.corp.google.com,google.com",
       "GOPROXY": null,
       "GOROOT": "[CACHE]/go6_6_6",
+      "GOTOOLCHAIN": "local",
       "MSSdk": "1"
     },
     "env_prefixes": {
@@ -262,9 +263,10 @@
       "GOMODCACHE": "[CACHE]/gocache/modcache",
       "GOPACKAGESDRIVER": "off",
       "GOPATH": null,
-      "GOPRIVATE": "*.googlesource.com,*.google.com",
+      "GOPRIVATE": "*.googlesource.com,*.git.corp.google.com,google.com",
       "GOPROXY": null,
       "GOROOT": "[CACHE]/go6_6_6",
+      "GOTOOLCHAIN": "local",
       "MAC_CHROMIUM_TMPDIR": "[CLEANUP]/tmp_tmp_1",
       "MSSdk": "1",
       "TEMP": "[CLEANUP]/tmp_tmp_1",

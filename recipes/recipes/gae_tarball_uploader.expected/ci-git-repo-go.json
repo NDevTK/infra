@@ -186,9 +186,10 @@
       "GOMODCACHE": "[CACHE]/gocache/modcache",
       "GOPACKAGESDRIVER": "off",
       "GOPATH": null,
-      "GOPRIVATE": "*.googlesource.com,*.google.com",
+      "GOPRIVATE": "*.googlesource.com,*.git.corp.google.com,google.com",
       "GOPROXY": null,
-      "GOROOT": "[CACHE]/go6_6_6"
+      "GOROOT": "[CACHE]/go6_6_6",
+      "GOTOOLCHAIN": "local"
     },
     "env_prefixes": {
       "PATH": [
@@ -227,9 +228,10 @@
       "GOMODCACHE": "[CACHE]/gocache/modcache",
       "GOPACKAGESDRIVER": "off",
       "GOPATH": null,
-      "GOPRIVATE": "*.googlesource.com,*.google.com",
+      "GOPRIVATE": "*.googlesource.com,*.git.corp.google.com,google.com",
       "GOPROXY": null,
-      "GOROOT": "[CACHE]/go6_6_6"
+      "GOROOT": "[CACHE]/go6_6_6",
+      "GOTOOLCHAIN": "local"
     },
     "env_prefixes": {
       "PATH": [
@@ -280,9 +282,10 @@
       "GOMODCACHE": "[CACHE]/gocache/modcache",
       "GOPACKAGESDRIVER": "off",
       "GOPATH": null,
-      "GOPRIVATE": "*.googlesource.com,*.google.com",
+      "GOPRIVATE": "*.googlesource.com,*.git.corp.google.com,google.com",
       "GOPROXY": null,
       "GOROOT": "[CACHE]/go6_6_6",
+      "GOTOOLCHAIN": "local",
       "npm_config_cache": "[CACHE]/npmcache/npm",
       "npm_config_prefix": "[CACHE]/npmcache/pfx"
     },
@@ -324,9 +327,10 @@
       "GOMODCACHE": "[CACHE]/gocache/modcache",
       "GOPACKAGESDRIVER": "off",
       "GOPATH": null,
-      "GOPRIVATE": "*.googlesource.com,*.google.com",
+      "GOPRIVATE": "*.googlesource.com,*.git.corp.google.com,google.com",
       "GOPROXY": null,
       "GOROOT": "[CACHE]/go6_6_6",
+      "GOTOOLCHAIN": "local",
       "npm_config_cache": "[CACHE]/npmcache/npm",
       "npm_config_prefix": "[CACHE]/npmcache/pfx"
     },
@@ -371,9 +375,10 @@
       "GOMODCACHE": "[CACHE]/gocache/modcache",
       "GOPACKAGESDRIVER": "off",
       "GOPATH": null,
-      "GOPRIVATE": "*.googlesource.com,*.google.com",
+      "GOPRIVATE": "*.googlesource.com,*.git.corp.google.com,google.com",
       "GOPROXY": null,
       "GOROOT": "[CACHE]/go6_6_6",
+      "GOTOOLCHAIN": "local",
       "npm_config_cache": "[CACHE]/npmcache/npm",
       "npm_config_prefix": "[CACHE]/npmcache/pfx"
     },
@@ -421,9 +426,10 @@
       "GOMODCACHE": "[CACHE]/gocache/modcache",
       "GOPACKAGESDRIVER": "off",
       "GOPATH": null,
-      "GOPRIVATE": "*.googlesource.com,*.google.com",
+      "GOPRIVATE": "*.googlesource.com,*.git.corp.google.com,google.com",
       "GOPROXY": null,
       "GOROOT": "[CACHE]/go6_6_6",
+      "GOTOOLCHAIN": "local",
       "npm_config_cache": "[CACHE]/npmcache/npm",
       "npm_config_prefix": "[CACHE]/npmcache/pfx"
     },
