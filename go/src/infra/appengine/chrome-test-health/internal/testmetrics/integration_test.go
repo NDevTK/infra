@@ -237,4 +237,118 @@ func TestIntegrationTest(t *testing.T) {
 		// "different_builder" should be 2 total runtime
 		So(metric, ShouldEqual, 2)
 	})
+
+	Convey("avg cores", t, func() {
+		// Deleting rows with a streaming buffer doesn't work well, instead
+		// partition the fake table. Use a Sunday to make weekly tests easier
+		testPartition := "2023-04-02"
+
+		// Setup defaults for rdb data
+		rf.timePartition, err = civil.ParseDate(testPartition)
+		if err != nil {
+			t.Fail()
+		}
+		rf.defaultFilename = "//dir/name/filename.go"
+		// Make tests run all day for 7 days so all avg cores will be 1
+		rf.defaultRuntime = (time.Hour * 24).Seconds()
+
+		// Generate the rollups from fake rdb data.
+		if err := createRollupFromResults(ctx, client, testProject, testDataset, fakeChromiumTryRdb, testPartition, []*fakeRdbResult{
+			rf.createResult().AddTime(time.Hour * 24 * 0),
+			rf.createResult().AddTime(time.Hour * 24 * 1),
+			rf.createResult().AddTime(time.Hour * 24 * 2),
+			rf.createResult().AddTime(time.Hour * 24 * 3),
+			rf.createResult().AddTime(time.Hour * 24 * 4),
+			rf.createResult().AddTime(time.Hour * 24 * 5),
+			rf.createResult().AddTime(time.Hour * 24 * 6),
+			// Force the weekly cores to be 2
+			rf.createResult().AddTime(time.Hour * 24 * 6).WithDuration(60 * 60 * 24 * 7),
+		}); err != nil {
+			t.Fail()
+		}
+
+		// Start checking the fetches
+		testResp, err := client.FetchMetrics(ctx,
+			&api.FetchTestMetricsRequest{
+				Period:     api.Period_DAY,
+				Components: []string{"component"},
+				Dates:      []string{testPartition, "2023-04-08"},
+				Metrics: []api.MetricType{
+					api.MetricType_AVG_CORES,
+				},
+				PageSize: 10,
+			},
+		)
+		So(err, ShouldBeNil)
+
+		testSummary := getTestIdFromResponse(testResp, defaultTestId)
+		metric, err := getMetric(testSummary.Metrics[testPartition], api.MetricType_AVG_CORES)
+		So(err, ShouldBeNil)
+		// The test ran for 24 hours on the Sunday consuming 1 core the whole time
+		So(metric, ShouldEqual, 1)
+		metric, err = getMetric(testSummary.Metrics["2023-04-08"], api.MetricType_AVG_CORES)
+		So(err, ShouldBeNil)
+		// The test ran for 1 + 7 days on the Saturday over 2 results
+		So(metric, ShouldEqual, 8)
+
+		// Verify weekly
+		testResp, err = client.FetchMetrics(ctx,
+			&api.FetchTestMetricsRequest{
+				Period:     api.Period_WEEK,
+				Components: []string{"component"},
+				Dates:      []string{testPartition},
+				Metrics: []api.MetricType{
+					api.MetricType_AVG_CORES,
+				},
+				PageSize: 10,
+			},
+		)
+		So(err, ShouldBeNil)
+
+		testSummary = getTestIdFromResponse(testResp, defaultTestId)
+		metric, err = getMetric(testSummary.Metrics[testPartition], api.MetricType_AVG_CORES)
+		So(err, ShouldBeNil)
+		// The total runtime should be 14 days which over 7 days is 2 cores
+		So(metric, ShouldEqual, 2)
+
+		dirResp, err := client.FetchDirectoryMetrics(ctx,
+			&api.FetchDirectoryMetricsRequest{
+				Period:     api.Period_DAY,
+				Components: []string{"component"},
+				Dates:      []string{testPartition, "2023-04-08"},
+				Metrics: []api.MetricType{
+					api.MetricType_AVG_CORES,
+				},
+				ParentIds: []string{"/"},
+			},
+		)
+		So(err, ShouldBeNil)
+
+		metric, err = getMetric(dirResp.Nodes[0].Metrics[testPartition], api.MetricType_AVG_CORES)
+		So(err, ShouldBeNil)
+		// The test ran for 24 hours on the Sunday consuming 1 core the whole time
+		So(metric, ShouldEqual, 1)
+		metric, err = getMetric(dirResp.Nodes[0].Metrics["2023-04-08"], api.MetricType_AVG_CORES)
+		So(err, ShouldBeNil)
+		// The test ran for 1 + 7 days on the Saturday over 2 results
+		So(metric, ShouldEqual, 8)
+
+		dirResp, err = client.FetchDirectoryMetrics(ctx,
+			&api.FetchDirectoryMetricsRequest{
+				Period:     api.Period_WEEK,
+				Components: []string{"component"},
+				Dates:      []string{testPartition, "2023-04-08"},
+				Metrics: []api.MetricType{
+					api.MetricType_AVG_CORES,
+				},
+				ParentIds: []string{"/"},
+			},
+		)
+		So(err, ShouldBeNil)
+
+		metric, err = getMetric(dirResp.Nodes[0].Metrics[testPartition], api.MetricType_AVG_CORES)
+		So(err, ShouldBeNil)
+		// The total runtime should be 14 days which over 7 days is 2 cores
+		So(metric, ShouldEqual, 2)
+	})
 }
