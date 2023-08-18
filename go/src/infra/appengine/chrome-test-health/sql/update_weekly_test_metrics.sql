@@ -32,7 +32,7 @@ ON
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
   AND (T.builder = S.builder OR (T.builder IS NULL AND S.builder IS NULL))
   AND (T.bucket = S.bucket OR (T.bucket IS NULL AND S.bucket IS NULL))
-  AND (T.test_suite = S.repo OR (T.test_suite IS NULL AND S.test_suite IS NULL))
+  AND (T.test_suite = S.test_suite OR (T.test_suite IS NULL AND S.test_suite IS NULL))
 WHEN MATCHED THEN
   UPDATE SET
     num_runs = S.num_runs,
