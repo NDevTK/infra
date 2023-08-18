@@ -7,7 +7,11 @@ import { Box } from '@mui/material';
 import { useContext } from 'react';
 import NavBar from './components/navbar/NavBar';
 import TestsPage from './pages/resources/TestsPage';
-import { ComponentContextProvider, URL_COMPONENT } from './features/components/ComponentContext';
+import {
+  ComponentContextProvider,
+  URL_ALL_COMPONENTS,
+  URL_COMPONENT,
+} from './features/components/ComponentContext';
 import { AuthContext } from './features/auth/AuthContext';
 
 const App = () => {
@@ -19,7 +23,9 @@ const App = () => {
   const params = new URLSearchParams(window.location.search);
 
   let components: string[] = [];
-  if (params.has(URL_COMPONENT)) {
+  if (params.has(URL_ALL_COMPONENTS)) {
+    // Default to empty array
+  } else if (params.has(URL_COMPONENT)) {
     components = params.getAll(URL_COMPONENT);
   } else {
     const local = localStorage.getItem(URL_COMPONENT);

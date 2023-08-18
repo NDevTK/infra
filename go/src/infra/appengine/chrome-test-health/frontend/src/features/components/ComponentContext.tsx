@@ -7,10 +7,16 @@ import { listComponents } from '../../api/resources';
 import { AuthContext } from '../auth/AuthContext';
 
 export const URL_COMPONENT = 'c';
+export const URL_ALL_COMPONENTS = 'ac';
 
 export function updateComponentsUrl(components: string[], search: URLSearchParams) {
   search.delete(URL_COMPONENT);
   components.forEach((c) => search.append(URL_COMPONENT, c));
+  if (components.length === 0) {
+    search.set(URL_ALL_COMPONENTS, 'true');
+  } else {
+    search.delete(URL_ALL_COMPONENTS);
+  }
   // Updating it here isn't great, but not sure there's a cleaner way to do this
   localStorage.setItem(URL_COMPONENT, components.join(','));
 }
