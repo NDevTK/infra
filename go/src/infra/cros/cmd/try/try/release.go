@@ -36,7 +36,7 @@ func GetCmdRelease(authOpts auth.Options) *subcommands.Command {
 			c.addPatchesFlag()
 			c.addBuildTargetsFlag()
 			c.addVerboseFlag()
-			c.Flags.BoolVar(&c.dev, "dev", true,
+			c.Flags.BoolVar(&c.dev, "dev", false,
 				"run a staging builder with the true ToT environment (recipes, bot image, etc.),"+
 					"instead of a prod-like env.")
 			c.Flags.BoolVar(&c.useProdTests, "prod_tests", false, "Run (production) HW tests even if in staging. "+
