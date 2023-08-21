@@ -52,6 +52,7 @@ const (
 	VMProvisionServiceStartCmdType interfaces.CommandType = "VMProvisionServiceStart"
 	VMProvisionLeaseCmdType        interfaces.CommandType = "VMProvisionLease"
 	VMProvisionReleaseCmdType      interfaces.CommandType = "VMProvisionRelease"
+	GenericProvisionCmdType        interfaces.CommandType = "GenericProvision"
 
 	// Test Finder service related commands
 	TestFinderServiceStartCmdType interfaces.CommandType = "TestFinderServiceStart"
@@ -60,8 +61,11 @@ const (
 	// Test service related commands
 	TestServiceStartCmdType interfaces.CommandType = "TestServiceStart"
 	TestsExecutionCmdType   interfaces.CommandType = "TestsExecution"
+	GenericTestsCmdType     interfaces.CommandType = "GenericTests"
 
 	// Publish service related commands
+	GenericPublishCmdType interfaces.CommandType = "GenericPublish"
+
 	GcsPublishStartCmdType  interfaces.CommandType = "GcsPublishStart"
 	GcsPublishUploadCmdType interfaces.CommandType = "GcsPublishUpload"
 

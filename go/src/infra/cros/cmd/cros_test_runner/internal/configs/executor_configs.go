@@ -62,6 +62,15 @@ func (cfg *ExecutorConfig) GetExecutor(execType interfaces.ExecutorType) (interf
 		}
 		exec = common_executors.NewContainerExecutor(cfg.Ctr)
 
+	case executors.GenericProvisionExecutorType:
+		exec = executors.NewGenericProvisionExecutor()
+
+	case executors.GenericTestsExecutorType:
+		exec = executors.NewGenericTestsExecutor()
+
+	case executors.GenericPublishExecutorType:
+		exec = executors.NewGenericPublishExecutor()
+
 	case executors.CrosDutExecutorType:
 		container, err := cfg.ContainerConfig.GetContainer(containers.CrosDutTemplatedContainerType)
 		if err != nil {

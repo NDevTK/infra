@@ -308,6 +308,27 @@ func (cfg *CommandConfig) GetCommand(
 		}
 		cmd = common_commands.NewContainerReadLogsCmd(exec)
 
+	case commands.GenericProvisionCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewGenericProvisionCmd(exec)
+
+	case commands.GenericTestsCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewGenericTestsCmd(exec)
+
+	case commands.GenericPublishCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewGenericPublishCmd(exec)
+
 	default:
 		return nil, fmt.Errorf("Command type %s not supported in command configs!", cmdType)
 	}

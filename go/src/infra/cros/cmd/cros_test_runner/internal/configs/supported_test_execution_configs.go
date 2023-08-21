@@ -64,6 +64,9 @@ var VMProvisionRelease_CrosVMProvisionExecutor = &common_configs.CommandExecutor
 var ContainerStart_ContainerExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.ContainerStartCmdType, ExecutorType: common_executors.ContainerExecutorType}
 var ContainerCloseLogs_ContainerExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.ContainerCloseLogsCmdType, ExecutorType: common_executors.ContainerExecutorType}
 var ContainerReadLogs_ContainerExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.ContainerReadLogsCmdType, ExecutorType: common_executors.ContainerExecutorType}
+var GenericProvision_GenericProvisionExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericProvisionCmdType, ExecutorType: executors.GenericProvisionExecutorType}
+var GenericTests_GenericTestsExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericTestsCmdType, ExecutorType: executors.GenericTestsExecutorType}
+var GenericPublish_GenericPublishExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericPublishCmdType, ExecutorType: executors.GenericPublishExecutorType}
 
 var RequiredCmdExecPairMap = map[*common_configs.CommandExecutorPairedConfig]*common_configs.CommandExecutorPairedConfig{}
 

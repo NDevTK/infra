@@ -30,10 +30,16 @@ type HwTestStateKeeper struct {
 	BuildState *build.State
 
 	// Set from input
-	CftTestRequest *skylab_test_runner.CFTTestRequest
+	CftTestRequest        *skylab_test_runner.CFTTestRequest
+	CrosTestRunnerRequest *skylab_test_runner.CrosTestRunnerRequest
 
 	// Request Queues
 	ContainerQueue *list.List
+	ProvisionQueue *list.List
+	PreTestQueue   *list.List
+	TestQueue      *list.List
+	PostTestQueue  *list.List
+	PublishQueue   *list.List
 
 	// Dictionaries
 	Injectables        *common.InjectableStorage
@@ -41,10 +47,14 @@ type HwTestStateKeeper struct {
 	ContainerImages    map[string]*api.ContainerImageInfo
 
 	// Dut related
-	HostName         string
-	DutTopology      *labapi.DutTopology
-	DutServerAddress *labapi.IpEndpoint
-	CurrentDutState  dutstate.State
+	HostName                 string
+	PrimaryDevice            *testapi.CrosTestRequest_Device
+	PrimaryDeviceMetadata    *skylab_test_runner.CFTTestRequest_Device
+	CompanionDevices         []*testapi.CrosTestRequest_Device
+	CompanionDevicesMetadata []*skylab_test_runner.CFTTestRequest_Device
+	DutTopology              *labapi.DutTopology
+	DutServerAddress         *labapi.IpEndpoint
+	CurrentDutState          dutstate.State
 	// Only when DUT is a VM
 	DutVmGceImage   *vmlabapi.GceImage
 	DutVm           *vmlabapi.VmInstance

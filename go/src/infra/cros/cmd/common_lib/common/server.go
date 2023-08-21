@@ -86,6 +86,16 @@ func GetIpEndpoint(serverAddress string) (*labapi.IpEndpoint, error) {
 	return &labapi.IpEndpoint{Address: addressInfo[0], Port: int32(port)}, nil
 }
 
+// GetServerAddress creates a string from provided IpEndpoint.
+// Example: IpEndpoint{Address:localhost, port:8080} -> localhost:8080.
+func GetServerAddress(endpoint *labapi.IpEndpoint) string {
+	if endpoint == nil {
+		return ""
+	}
+
+	return fmt.Sprintf("%s:%d", endpoint.GetAddress(), endpoint.GetPort())
+}
+
 // Finds an available port on the running OS
 // to prevent collisions between services
 func GetFreePort() uint16 {
