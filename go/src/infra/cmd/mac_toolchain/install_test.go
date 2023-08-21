@@ -51,6 +51,27 @@ const ListRuntimeDiffBuildJson = `{
   }
 }`
 
+const ListRuntimeSDKJson = `{
+	"appletvos17.0": {
+        "chosenRuntimeBuild": "21J11111",
+        "defaultBuild": "21J11111",
+        "platform": "com.apple.platform.appletvos",
+        "preferredBuild": "21J11111",
+        "sdkBuild": "21J11111",
+        "sdkVersion": "13.1"
+    },
+    "iphoneos17.0": {
+        "chosenRuntimeBuild": "21A111112",
+        "defaultBuild": "21A111112",
+        "platform": "com.apple.platform.iphoneos",
+        "preferredBuild": "21A111111",
+        "sdkBuild": "21A111112",
+        "sdkVersion": "17.0"
+    }
+}`
+
+const TestRuntimeId = "1111111"
+
 func TestInstallXcode(t *testing.T) {
 	t.Parallel()
 
@@ -1508,6 +1529,86 @@ func TestInstallXcode(t *testing.T) {
 			So(s.Calls[callCounter].Args, ShouldResemble, []string{
 				"-R", "u+w", "test/path/to/install/runtimes",
 			})
+		})
+	})
+
+	Convey("addRuntimeDMG works", t, func() {
+		var s MockSession
+		ctx := useMockCmd(context.Background(), &s)
+		Convey("addRuntimeDMG should succeed", func() {
+			s.ReturnOutput = []string{
+				"testdata/Xcode-old.app",
+				"xcode-select -s prints nothing",
+				"xcrun simctl runtime add returns " + TestRuntimeId,
+				ListRuntimeJson,
+				ListRuntimeSDKJson,
+				"xcrun simctl runtime match set returns nothing",
+				"xcode-select -s prints nothing",
+			}
+			err := addRuntimeDMG(ctx, "testdata/Xcode-old.app", "random-path/runtime.dmg")
+			So(err, ShouldBeNil)
+			So(s.Calls, ShouldHaveLength, 7)
+
+			callCounter := 0
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "add", "random-path/runtime.dmg"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "list", "-j"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "match", "list", "-j"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "match", "set", "iphoneos17.0", "21A5248u", "--sdkBuild", "21A111112"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+		})
+
+		Convey("addRuntimeDMG runtime id not found", func() {
+			s.ReturnOutput = []string{
+				"testdata/Xcode-old.app",
+				"xcode-select -s prints nothing",
+				"xcrun simctl runtime add returns nothing",
+				ListRuntimeJson,
+				"xcode-select -s prints nothing",
+			}
+			err := addRuntimeDMG(ctx, "testdata/Xcode-old.app", "random-path/runtime.dmg")
+			So(err, ShouldNotBeNil)
+			So(s.Calls, ShouldHaveLength, 5)
+
+			callCounter := 0
+			So(s.Calls[callCounter].Executable, ShouldEqual, "/usr/bin/xcode-select")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"-p"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "add", "random-path/runtime.dmg"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "xcrun")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"simctl", "runtime", "list", "-j"})
+
+			callCounter++
+			So(s.Calls[callCounter].Executable, ShouldEqual, "sudo")
+			So(s.Calls[callCounter].Args, ShouldResemble, []string{"/usr/bin/xcode-select", "-s", "testdata/Xcode-old.app"})
 		})
 	})
 

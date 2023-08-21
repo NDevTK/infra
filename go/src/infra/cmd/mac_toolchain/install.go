@@ -336,6 +336,69 @@ func installRuntimeDMG(ctx context.Context, args RuntimeDMGInstallArgs) error {
 	return nil
 }
 
+func addRuntimeDMG(ctx context.Context, xcodeAppPath string, dmgFilePath string) error {
+	return RunWithXcodeSelect(ctx, xcodeAppPath, func() error {
+		// add runtime dmg to Xcode
+		addOutput, err := RunOutput(ctx, "xcrun", "simctl", "runtime", "add", dmgFilePath)
+		if err != nil {
+			return errors.Annotate(err, "failed to add runtime dmg to Xcode").Err()
+		}
+		logging.Warningf(ctx, "Runtime %s added to Xcode", addOutput)
+
+		// get the build version of the added runtime dmg
+		listOutput, err := RunOutput(ctx, "xcrun", "simctl", "runtime", "list", "-j")
+		if err != nil {
+			return errors.Annotate(err, "failed when invoking `xcrun simctl runtime list -j`").Err()
+		}
+		var runtimes map[string]IOSRuntime
+		err = json.Unmarshal([]byte(listOutput), &runtimes)
+		if err != nil {
+			return errors.Annotate(err, "failed when parsing `xcrun simctl runtime list -j` output").Err()
+		}
+		overridingBuild := ""
+		iosVersion := ""
+		for id, runtime := range runtimes {
+			if strings.Contains(addOutput, id) {
+				overridingBuild = runtime.Build
+				iosVersion = runtime.Version
+				break
+			}
+		}
+		if overridingBuild == "" {
+			return errors.Reason("Unable to find the runtime build id to override with...").Err()
+		}
+
+		// get the build version of the default runtime
+		matchListOutput, err := RunOutput(ctx, "xcrun", "simctl", "runtime", "match", "list", "-j")
+		if err != nil {
+			return errors.Annotate(err, "failed when invoking `xcrun simctl runtime match list -j`").Err()
+		}
+		var sdkRuntimes map[string]SDKRuntime
+		err = json.Unmarshal([]byte(matchListOutput), &sdkRuntimes)
+		if err != nil {
+			return errors.Annotate(err, "failed when parsing `xcrun simctl runtime match list -j` output").Err()
+		}
+		overriddenBuild := ""
+		iphoneSdk := "iphoneos" + iosVersion
+		for id, sdkRuntime := range sdkRuntimes {
+			if id == iphoneSdk {
+				overriddenBuild = sdkRuntime.SdkBuild
+				break
+			}
+		}
+		if overriddenBuild == "" {
+			return errors.Reason("Unable to find the runtime build id to be overridden...").Err()
+		}
+
+		// Override the default runtime build with the desired one
+		logging.Warningf(ctx, "Overriding runtime %s with %s", overridingBuild, overriddenBuild)
+		err = RunCommand(ctx, "xcrun", "simctl", "runtime", "match", "set", iphoneSdk, overridingBuild, "--sdkBuild", overriddenBuild)
+		if err != nil {
+			return errors.Annotate(err, "failed when trying to override runtime %s with %s", overridingBuild, overriddenBuild).Err()
+		}
+		return nil
+	})
+}
 func installAndAddRuntimeDMG(ctx context.Context, runtimeDMGInstallArgs RuntimeDMGInstallArgs, xcodeAppPath string) error {
 	// install runtime
 	if err := installRuntimeDMG(ctx, runtimeDMGInstallArgs); err != nil {
@@ -359,14 +422,10 @@ func installAndAddRuntimeDMG(ctx context.Context, runtimeDMGInstallArgs RuntimeD
 		return errors.Reason("Unable to locate dmg file in directory %s", runtimeDMGInstallArgs.installPath).Err()
 	}
 
-	// add runtime dmg to Xcode
-	return RunWithXcodeSelect(ctx, xcodeAppPath, func() error {
-		err := RunCommand(ctx, "xcrun", "simctl", "runtime", "add", dmgFilePath)
-		if err != nil {
-			return errors.Annotate(err, "failed to add runtime dmg to Xcode").Err()
-		}
-		return nil
-	})
+	if err = addRuntimeDMG(ctx, xcodeAppPath, dmgFilePath); err != nil {
+		return errors.Annotate(err, "failed to add runtime dmg %s to Xcode", dmgFilePath).Err()
+	}
+	return nil
 }
 
 // InstallArgs are the parameters for installXcode() to keep them manageable.
@@ -428,6 +487,10 @@ func shouldReInstallXcode(ctx context.Context, cipdPackagePrefix, xcodeAppPath, 
 type IOSRuntime struct {
 	Build   string `json:"build"`
 	Version string `json:"version"`
+}
+type SDKRuntime struct {
+	SdkBuild   string `json:"sdkBuild"`
+	SdkVersion string `json:"sdkVersion"`
 }
 
 // get the runtime build string from the latest iOS runtime given an iOS version
