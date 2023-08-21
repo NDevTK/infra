@@ -26,20 +26,16 @@ class Warmup(webapp.RequestHandler):
 
 
 # Application configuration.
-URLS = [
-  ('/', status.MainPage),
-  ('/([^/]+\.(?:gif|png|jpg|ico))', static_blobs.ServeHandler),
-  ('/_ah/warmup', Warmup),
-  ('/allstatus/?', status.AllStatusPage),
-  ('/current/?', status.CurrentPage),
-  ('/lkgr/?', git_lkgr.LastKnownGoodRevisionGIT),
-  ('/git-lkgr/?', git_lkgr.LastKnownGoodRevisionGIT),
-  ('/login/?', login.Login),
-  ('/revisions/?', git_lkgr.Commits),
-  ('/commits/?', git_lkgr.Commits),
-  ('/status/?', status.StatusPage),
-  ('/status_viewer/?', status.StatusViewerPage),
-]
+URLS = [('/', status.MainPage),
+        ('/([^/]+\.(?:gif|png|jpg|ico))', static_blobs.ServeHandler),
+        ('/_ah/warmup', Warmup), ('/allstatus/?', status.AllStatusPage),
+        ('/current/?', status.CurrentPage),
+        ('/lkgr/?', git_lkgr.LastKnownGoodRevisionGIT),
+        ('/git-lkgr/?', git_lkgr.LastKnownGoodRevisionGIT),
+        ('/login/?', login.Login), ('/revisions/?', git_lkgr.Commits),
+        ('/commits/?', git_lkgr.Commits), ('/status/?', status.StatusPage),
+        ('/status_viewer/?', status.StatusViewerPage),
+        ('/_cron/clear-usernames', status.CleanupUsernamesCron)]
 APPLICATION = webapp.WSGIApplication(URLS, debug=True)
 
 

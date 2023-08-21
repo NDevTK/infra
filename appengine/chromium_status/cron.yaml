@@ -1,0 +1,4 @@
+cron:
+- description: Clears usernames from Status entity which have exceeded TTL of 30 days.
+  url: /_cron/clear-usernames
+  schedule: every 30 minutes

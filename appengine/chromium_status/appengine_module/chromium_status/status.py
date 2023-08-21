@@ -7,6 +7,7 @@
 
 import datetime
 import json
+import logging
 import re
 
 from google.appengine.api import memcache
@@ -22,6 +23,9 @@ ALLOWED_ORIGINS = [
     'https://chrome-internal-review.googlesource.com',
     'https://chromium-review.googlesource.com',
 ]
+
+
+DEFAULT_USERNAME = "user"
 
 
 class TextFragment(object):
@@ -513,6 +517,29 @@ class MainPage(BasePage):
               username=self.user.email(),
               expiry_date=expiry_date))
       self.redirect("/")
+
+
+class CleanupUsernamesCron(BasePage):
+  """ Handler of the cron job that cleans up usernames. """
+
+  @utils.requires_work_queue_login
+  def get(self):
+    """Cleans up usernames after 30 days by setting
+       the username field to 'user'.
+    """
+    logging.info('Cleaning up Status usernames.')
+
+    threshold_date = datetime.datetime.utcnow() - datetime.timedelta(days=30)
+    statuses = Status.gql('WHERE date < :1', threshold_date).fetch()
+    updated_statuses = [s for s in statuses if s.username != DEFAULT_USERNAME]
+    for status in updated_statuses:
+      status.username = DEFAULT_USERNAME
+    db.put(updated_statuses)
+
+    logging.info('Status usernames clean up done, %d rows affected.',
+                 len(updated_statuses))
+
+    return self.response.out.write('Usernames cleared.')
 
 
 def bootstrap():
