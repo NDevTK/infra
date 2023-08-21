@@ -9,8 +9,6 @@ from recipe_engine import recipe_api
 
 from PB.recipes.infra import images_builder as images_builder_pb
 
-PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
-
 DEPS = [
     'recipe_engine/buildbucket',
     'recipe_engine/futures',
@@ -21,6 +19,7 @@ DEPS = [
     'recipe_engine/time',
     'depot_tools/gerrit',
     'depot_tools/git',
+    'buildenv',
     'cloudbuildhelper',
     'infra_checkout',
 ]
@@ -300,8 +299,7 @@ def _checkout_git(api, repo, mode):
 
   @contextmanager
   def build_environ(api):
-    with api.cloudbuildhelper.build_environment(path, repo.go_version_file,
-                                                repo.nodejs_version_file):
+    with api.buildenv(path, repo.go_version_file, repo.nodejs_version_file):
       yield
 
   canonical_tag = None

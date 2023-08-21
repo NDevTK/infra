@@ -13,7 +13,7 @@
     "infra_step": true,
     "name": "read GO_VERSION",
     "~followup_annotations": [
-      "@@@STEP_LOG_LINE@GO_VERSION@6.6.6@@@",
+      "@@@STEP_LOG_LINE@GO_VERSION@6.6.6.chromium1@@@",
       "@@@STEP_LOG_END@GO_VERSION@@@"
     ]
   },
@@ -22,9 +22,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[CACHE]/go6_6_6",
+      "[CACHE]/go6_6_6_chromium1",
       "-ensure-file",
-      "infra/3pp/tools/go/${platform} version:2@6.6.6",
+      "infra/3pp/tools/go/${platform} version:2@6.6.6.chromium1",
       "-max-threads",
       "0",
       "-json-output",
@@ -37,7 +37,7 @@
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@6.6.6-\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@6.6.6.\",@@@",
       "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/go/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
@@ -66,12 +66,12 @@
       "GOPATH": null,
       "GOPRIVATE": "*.googlesource.com,*.git.corp.google.com,google.com",
       "GOPROXY": null,
-      "GOROOT": "[CACHE]/go6_6_6",
+      "GOROOT": "[CACHE]/go6_6_6_chromium1",
       "GOTOOLCHAIN": "local"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/go6_6_6/bin"
+        "[CACHE]/go6_6_6_chromium1/bin"
       ]
     },
     "env_suffixes": {
@@ -82,7 +82,7 @@
     "infra_step": true,
     "name": "read NODEJS_VERSION",
     "~followup_annotations": [
-      "@@@STEP_LOG_LINE@NODEJS_VERSION@6.6.6@@@",
+      "@@@STEP_LOG_LINE@NODEJS_VERSION@6.6.6.chromium1@@@",
       "@@@STEP_LOG_END@NODEJS_VERSION@@@"
     ]
   },
@@ -91,9 +91,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[CACHE]/nodejs6_6_6",
+      "[CACHE]/nodejs6_6_6_chromium1",
       "-ensure-file",
-      "infra/3pp/tools/nodejs/${platform} version:2@6.6.6",
+      "infra/3pp/tools/nodejs/${platform} version:2@6.6.6.chromium1",
       "-max-threads",
       "0",
       "-json-output",
@@ -108,12 +108,12 @@
       "GOPATH": null,
       "GOPRIVATE": "*.googlesource.com,*.git.corp.google.com,google.com",
       "GOPROXY": null,
-      "GOROOT": "[CACHE]/go6_6_6",
+      "GOROOT": "[CACHE]/go6_6_6_chromium1",
       "GOTOOLCHAIN": "local"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]/go6_6_6/bin"
+        "[CACHE]/go6_6_6_chromium1/bin"
       ]
     },
     "env_suffixes": {
@@ -128,7 +128,7 @@
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@6.6.6-\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@6.6.6.\",@@@",
       "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/nodejs/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
@@ -151,7 +151,7 @@
       "GOPATH": null,
       "GOPRIVATE": "*.googlesource.com,*.git.corp.google.com,google.com",
       "GOPROXY": null,
-      "GOROOT": "[CACHE]/go6_6_6",
+      "GOROOT": "[CACHE]/go6_6_6_chromium1",
       "GOTOOLCHAIN": "local",
       "npm_config_cache": "[CACHE]/npmcache/npm",
       "npm_config_prefix": "[CACHE]/npmcache/pfx"
@@ -159,8 +159,8 @@
     "env_prefixes": {
       "PATH": [
         "[CACHE]/npmcache/pfx/bin",
-        "[CACHE]/nodejs6_6_6/bin",
-        "[CACHE]/go6_6_6/bin"
+        "[CACHE]/nodejs6_6_6_chromium1/bin",
+        "[CACHE]/go6_6_6_chromium1/bin"
       ]
     },
     "env_suffixes": {

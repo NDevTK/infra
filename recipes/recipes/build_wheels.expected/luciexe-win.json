@@ -241,7 +241,7 @@
     "infra_step": true,
     "name": "read [CACHE]\\builder\\build_wheels\\infra\\go\\src\\go.chromium.org\\luci\\build\\GO_VERSION",
     "~followup_annotations": [
-      "@@@STEP_LOG_LINE@GO_VERSION@6.6.6@@@",
+      "@@@STEP_LOG_LINE@GO_VERSION@6.6.6.chromium1@@@",
       "@@@STEP_LOG_END@GO_VERSION@@@"
     ]
   },
@@ -250,9 +250,9 @@
       "cipd.bat",
       "ensure",
       "-root",
-      "[CACHE]\\go6_6_6",
+      "[CACHE]\\go6_6_6_chromium1",
       "-ensure-file",
-      "infra/3pp/tools/go/${platform} version:2@6.6.6",
+      "infra/3pp/tools/go/${platform} version:2@6.6.6.chromium1",
       "-max-threads",
       "0",
       "-json-output",
@@ -276,7 +276,7 @@
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@6.6.6-\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@6.6.6.\",@@@",
       "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/go/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
@@ -305,14 +305,14 @@
       "GOPATH": null,
       "GOPRIVATE": "*.googlesource.com,*.git.corp.google.com,google.com",
       "GOPROXY": null,
-      "GOROOT": "[CACHE]\\go6_6_6",
+      "GOROOT": "[CACHE]\\go6_6_6_chromium1",
       "GOTOOLCHAIN": "local",
       "MSSdk": "1",
       "VSINSTALLDIR": "[CACHE]\\windows_sdk"
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\go6_6_6\\bin",
+        "[CACHE]\\go6_6_6_chromium1\\bin",
         "[CACHE]\\windows_sdk\\win_sdk\\bin\\x64"
       ]
     },
@@ -347,7 +347,7 @@
       "GOPATH": null,
       "GOPRIVATE": "*.googlesource.com,*.git.corp.google.com,google.com",
       "GOPROXY": null,
-      "GOROOT": "[CACHE]\\go6_6_6",
+      "GOROOT": "[CACHE]\\go6_6_6_chromium1",
       "GOTOOLCHAIN": "local",
       "MAC_CHROMIUM_TMPDIR": "[CLEANUP]\\tmp_tmp_1",
       "MSSdk": "1",
@@ -359,7 +359,7 @@
     },
     "env_prefixes": {
       "PATH": [
-        "[CACHE]\\go6_6_6\\bin",
+        "[CACHE]\\go6_6_6_chromium1\\bin",
         "[CACHE]\\windows_sdk\\win_sdk\\bin\\x64"
       ]
     },

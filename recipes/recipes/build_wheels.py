@@ -14,8 +14,6 @@ from PB.go.chromium.org.luci.buildbucket.proto import build as build_pb2
 from PB.go.chromium.org.luci.buildbucket.proto import common as common_pb2
 from PB.go.chromium.org.luci.buildbucket.proto import step as step_pb2
 
-PYTHON_VERSION_COMPATIBILITY = 'PY3'
-
 DEPS = [
     'depot_tools/gclient',
     'depot_tools/git',
@@ -31,7 +29,7 @@ DEPS = [
     'recipe_engine/properties',
     'recipe_engine/raw_io',
     'recipe_engine/step',
-    'cloudbuildhelper',
+    'buildenv',
 ]
 
 PROPERTIES = {
@@ -184,8 +182,7 @@ def RunSteps(api, platforms, dry_run, rebuild, experimental,
                                                 "go.chromium.org", "luci",
                                                 "build", "GO_VERSION")
       # Ensures latest golang version is available in the environment.
-      # Counter-intuitively doesn't actually cause the build to happen in cloud.
-      with api.cloudbuildhelper.build_environment(
+      with api.buildenv(
           solution_path, go_version_file=str(go_version_file_path)):
         # We build the binary rather than directly running the script as luciexe
         # inserts an --output flag after the first command-line space-separated

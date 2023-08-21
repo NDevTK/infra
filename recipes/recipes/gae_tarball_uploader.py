@@ -13,11 +13,7 @@ from PB.recipe_engine.result import RawResult
 
 from PB.recipes.infra import gae_tarball_uploader as pb
 
-PYTHON_VERSION_COMPATIBILITY = 'PY2+3'
-
 DEPS = [
-    'depot_tools/git',
-
     'recipe_engine/buildbucket',
     'recipe_engine/file',
     'recipe_engine/futures',
@@ -26,7 +22,8 @@ DEPS = [
     'recipe_engine/properties',
     'recipe_engine/step',
     'recipe_engine/time',
-
+    'depot_tools/git',
+    'buildenv',
     'cloudbuildhelper',
     'infra_checkout',
 ]
@@ -254,8 +251,7 @@ def _checkout_git(api, repo, version_label_template):
 
   @contextmanager
   def build_environ(api):
-    with api.cloudbuildhelper.build_environment(
-        path, repo.go_version_file, repo.nodejs_version_file):
+    with api.buildenv(path, repo.go_version_file, repo.nodejs_version_file):
       yield
 
   return Metadata(
