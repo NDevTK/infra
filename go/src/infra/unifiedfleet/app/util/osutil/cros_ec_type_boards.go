@@ -47,6 +47,7 @@ var crosEcTypeBoards = []string{
 	"rambi",
 	"rammus",
 	"reef",
+	"rex",
 	"samus",
 	"sarien",
 	"scarlet",
