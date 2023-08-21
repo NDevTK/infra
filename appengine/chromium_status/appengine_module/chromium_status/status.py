@@ -530,7 +530,7 @@ class CleanupUsernamesCron(BasePage):
     logging.info('Cleaning up Status usernames.')
 
     threshold_date = datetime.datetime.utcnow() - datetime.timedelta(days=30)
-    statuses = Status.gql('WHERE date < :1', threshold_date).fetch()
+    statuses = Status.gql('WHERE date < :1', threshold_date).fetch(limit=None)
     updated_statuses = [s for s in statuses if s.username != DEFAULT_USERNAME]
     for status in updated_statuses:
       status.username = DEFAULT_USERNAME
