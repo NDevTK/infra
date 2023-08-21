@@ -1,0 +1,141 @@
+[
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "compute_hash",
+      "RECIPE_REPO[infra]",
+      "recipes/recipe_modules/support_3pp",
+      "recipes/recipes/3pp.py",
+      "infra/tools/dockerbuild"
+    ],
+    "infra_step": true,
+    "name": "compute recipe file hash",
+    "~followup_annotations": [
+      "@@@STEP_TEXT@Hash calculated: deadbeef@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "echo",
+      "3pp"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "name": "echo package_prefix"
+  },
+  {
+    "cmd": [
+      "git",
+      "-C",
+      "[CACHE]/builder/package_repo",
+      "ls-files",
+      "**/3pp.pb"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "name": "find package specs",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@glob_from_git@[CACHE]/builder/package_repo/dir_tools/tool/3pp.pb@@@",
+      "@@@STEP_LOG_END@glob_from_git@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "load package specs"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]/builder/package_repo/dir_tools/tool/3pp.pb",
+      "/path/to/tmp/"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "infra_step": true,
+    "name": "load package specs.read 'dir_tools/tool/3pp.pb'",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@  create {@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@    source { git {@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@        repo: \"https://chromium.googlesource.com/external/go.repo/dep\"@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@        fixed_commit: \"refs/heads/main\"@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@    } }@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@  }@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@  upload { pkg_prefix: \"tools\" }@@@",
+      "@@@STEP_LOG_LINE@3pp.pb@  @@@",
+      "@@@STEP_LOG_END@3pp.pb@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "compute_hash",
+      "[START_DIR]",
+      "../[CACHE]/builder/package_repo/dir_tools/tool"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "infra_step": true,
+    "name": "load package specs.Compute hash for 'tools/tool'",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_TEXT@Hash calculated: deadbeef@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "compute build plan"
+  },
+  {
+    "cmd": [],
+    "name": "building tools/tool",
+    "~followup_annotations": [
+      "@@@STEP_EXCEPTION@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "RECIPE CRASH (Uncaught exception)",
+    "~followup_annotations": [
+      "@@@STEP_EXCEPTION@@@",
+      "The recipe has crashed at point 'Uncaught exception'!",
+      "",
+      "Traceback (most recent call last):",
+      "  File \"RECIPE_REPO[infra]/recipes/recipe_modules/support_3pp/tests/full.py\", line 74, in RunSteps",
+      "    _, unsupported = api.support_3pp.ensure_uploaded(",
+      "  File \"RECIPE_REPO[infra]/recipes/recipe_modules/support_3pp/api.py\", line 870, in ensure_uploaded",
+      "    self._build_resolved_spec(spec, version, force_build_packages,",
+      "  File \"RECIPE_REPO[infra]/recipes/recipe_modules/support_3pp/api.py\", line 584, in _build_resolved_spec",
+      "    return create.build_resolved_spec(self.m, self._resolve_for,",
+      "  File \"RECIPE_REPO[infra]/recipes/recipe_modules/support_3pp/create.py\", line 103, in build_resolved_spec",
+      "    version, git_hash = source.resolve_latest(api, spec)",
+      "  File \"RECIPE_REPO[infra]/recipes/recipe_modules/support_3pp/source.py\", line 119, in resolve_latest",
+      "    raise AssertionError(",
+      "AssertionError('Non git-rev commit specified: refs/heads/main')"
+    ]
+  },
+  {
+    "failure": {
+      "humanReason": "Uncaught Exception: AssertionError('Non git-rev commit specified: refs/heads/main')"
+    },
+    "name": "$result"
+  }
+]

@@ -429,6 +429,11 @@ message GitSource {
 
   // (optional) only consider tags that fully match this regular expression.
   string tag_filter_re = 5;
+
+  // (optional) If specified, rather than fetching the latest tag, fetch this
+  // specific commit. This option is mutually exclusive with tag_pattern,
+  // version_restriction, version_join, and tag_filter_re.
+  string fixed_commit = 6;
 }
 
 // Pulls sources from a CIPD package.

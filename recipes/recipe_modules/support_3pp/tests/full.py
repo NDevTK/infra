@@ -1132,3 +1132,75 @@ def GenTests(api):
              mk_name("load package specs",
                      "read 'dir_build_tools/external_dep/3pp.pb'"),
              api.file.read_text(spec)))
+
+  spec = '''
+  create {
+    source { git {
+        repo: "https://chromium.googlesource.com/external/go.repo/dep"
+        fixed_commit: "deadbeef"
+    } }
+  }
+  upload { pkg_prefix: "tools" }
+  '''
+  yield (api.test('fixed-commit') + api.platform('linux', 64) +
+         api.properties(GOOS='linux', GOARCH='amd64')
+         + api.properties(key_path=KEY_PATH)
+         + api.step_data(
+             'find package specs',
+             api.file.glob_paths(['dir_tools/tool/3pp.pb']))
+         + api.step_data(
+             mk_name("load package specs",
+                     "read 'dir_tools/tool/3pp.pb'"),
+             api.file.read_text(spec))
+         + api.post_process(
+             post_process.StepCommandContains,
+             mk_name("building tools/tool",
+                     "cipd describe 3pp/tools/tool/linux-amd64"),
+             ['-version', 'version:%s@deadbeef' % PACKAGE_EPOCH]))
+
+  spec = '''
+  create {
+    source { git {
+        repo: "https://chromium.googlesource.com/external/go.repo/dep"
+        tag_pattern: "%s"
+        fixed_commit: "deadbeef"
+    } }
+  }
+  upload { pkg_prefix: "tools" }
+  '''
+  yield (api.test('fixed-commit-with-tag-pattern') + api.platform('linux', 64) +
+         api.properties(GOOS='linux', GOARCH='amd64')
+         + api.properties(key_path=KEY_PATH)
+         + api.step_data(
+             'find package specs',
+             api.file.glob_paths(['dir_tools/tool/3pp.pb']))
+         + api.step_data(
+             mk_name("load package specs",
+                     "read 'dir_tools/tool/3pp.pb'"),
+             api.file.read_text(spec))
+         + api.expect_exception('AssertionError')
+         + api.post_process(post_process.ResultReasonRE,
+                            'fixed_commit is mutually exclusive with tags.'))
+
+  spec = '''
+  create {
+    source { git {
+        repo: "https://chromium.googlesource.com/external/go.repo/dep"
+        fixed_commit: "refs/heads/main"
+    } }
+  }
+  upload { pkg_prefix: "tools" }
+  '''
+  yield (api.test('fixed-commit-invalid-commit') + api.platform('linux', 64) +
+         api.properties(GOOS='linux', GOARCH='amd64')
+         + api.properties(key_path=KEY_PATH)
+         + api.step_data(
+             'find package specs',
+             api.file.glob_paths(['dir_tools/tool/3pp.pb']))
+         + api.step_data(
+             mk_name("load package specs",
+                     "read 'dir_tools/tool/3pp.pb'"),
+             api.file.read_text(spec))
+         + api.expect_exception('AssertionError')
+         + api.post_process(post_process.ResultReasonRE,
+                            'Non git-rev commit specified: refs/heads/main'))

@@ -103,6 +103,42 @@ def resolve_latest(api, spec):
   method_name, source_method_pb = spec.source_method
   source_hash = ''
   if method_name == 'git':
+    # If a fixed commit is specified, validate and return that ref instead
+    # of iterating through tags.
+    if source_method_pb.fixed_commit:
+      if source_method_pb.tag_pattern \
+      or source_method_pb.version_restriction \
+      or source_method_pb.version_join \
+      or source_method_pb.tag_filter_re:
+        raise AssertionError(
+          "fixed_commit is mutually exclusive with tags."
+        )
+
+      fixed_commit = source_method_pb.fixed_commit
+      if not re.match(r'[0-9a-f]{7,40}$', fixed_commit):
+        raise AssertionError(
+          'Non git-rev commit specified: %s' % fixed_commit
+        )
+
+      # Add the remote repository.
+      api.git(
+        'remote',
+        'add',
+        'src-remote',
+        source_method_pb.repo
+      )
+
+      # Check remote repository for existence of fixed commit. If it doesn't exist, this
+      # step will raise an exception.
+      res = api.git(
+        'fetch',
+        'src-remote',
+        fixed_commit
+      )
+
+      # The commit exists, so return it as both the package version and hash.
+      return fixed_commit, fixed_commit
+
     # We need to transform the tag_pattern (which is a python format-string
     # lookalike with `%s` in it) into a regex which we can use to scan over the
     # repo's tags.
