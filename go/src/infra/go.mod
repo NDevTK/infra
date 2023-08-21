@@ -11,7 +11,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.3
 	cloud.google.com/go/datastore v1.13.0
 	cloud.google.com/go/firestore v1.12.0
-	cloud.google.com/go/logging v1.7.0
+	cloud.google.com/go/logging v1.8.1
 	cloud.google.com/go/longrunning v0.5.1
 	cloud.google.com/go/monitoring v1.15.1
 	cloud.google.com/go/profiler v0.3.1
