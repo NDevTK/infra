@@ -54,9 +54,9 @@ TOOLS_SPEC_FILE = '.tools_spec.json'
 #
 # Some builders use "legacy" and "bleeding_edge" variants.
 TOOLSET_VERSIONS = {
-    'default': '1.20.6',  # used on dev workstations and most try builders
-    'legacy': '1.20.6',  # used on OSX amd64 CI and prod builders
-    'bleeding_edge': '1.20.6',  # used on most CI and prod and some try builders
+    'default': '1.21.0.chromium1',
+    'legacy': '1.21.0.chromium1',
+    'bleeding_edge': '1.21.0.chromium1',
 }
 
 # Layout is the layout of the bootstrap installation.
@@ -403,6 +403,11 @@ def get_go_environ_diff(layout):
       # Don't use default cache in '~' to avoid leaking it on builders.
       'GOCACHE': os.path.join(layout.toolset_root, 'gocache'),
       'GOMODCACHE': os.path.join(layout.toolset_root, 'modcache'),
+
+      # Use only the toolchain version we fetched from CIPD. We prefer updating
+      # the code to be compatible with the latest toolchain rather than using
+      # multiple different toolchains at the same time.
+      'GOTOOLCHAIN': 'local',
 
       # Infra Go workspace doesn't use advanced build systems,
       # which inject custom `gopackagesdriver` binary. See also

@@ -5,7 +5,7 @@
 package main
 
 import (
-	"infra/tricium/api/v1"
+	tricium "infra/tricium/api/v1"
 	"path/filepath"
 	"testing"
 
@@ -33,10 +33,8 @@ func TestGosecWrapper(t *testing.T) {
 		}
 		other := issue
 		expected := [32]uint8{
-			112, 173, 182, 160, 71, 177, 218, 240,
-			58, 93, 77, 99, 62, 79, 78, 204, 235,
-			197, 93, 185, 153, 150, 175, 29, 50,
-			100, 216, 6, 214, 98, 109, 251}
+			110, 157, 73, 217, 74, 91, 117, 141, 251, 137, 228, 144, 93, 155, 215,
+			152, 226, 0, 255, 83, 42, 178, 23, 140, 77, 241, 151, 53, 67, 141, 116, 1}
 
 		So(hashIssue(&issue), ShouldResemble, expected)
 		// Assert x = y -> f(x) = f(y)
