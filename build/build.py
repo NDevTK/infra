@@ -705,6 +705,8 @@ def bootstrap_go_toolset(go_workspace):
       k, _, v = line.lstrip('set ').partition('=')
       if v.startswith('"') and v.endswith('"'):
         v = v.strip('"')
+      elif v.startswith("'") and v.endswith("'"):
+        v = v.strip("'")
       env[k] = v
 
     # This would be something like "go version go1.15.8 darwin/amd64".
