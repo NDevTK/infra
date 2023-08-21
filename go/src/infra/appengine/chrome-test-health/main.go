@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"flag"
+	"regexp"
 	"strings"
 	"time"
 
@@ -32,6 +33,7 @@ import (
 	_ "go.chromium.org/luci/server/encryptedcookies/session/datastore"
 
 	"infra/appengine/chrome-test-health/api"
+	"infra/appengine/chrome-test-health/internal/coverage"
 	"infra/appengine/chrome-test-health/internal/testmetrics"
 )
 
@@ -42,19 +44,27 @@ const (
 
 var (
 	stats *testResourcesServer
+	cov   *coverageServer
 	// RPC-level ACLs.
 	rpcACL = rpcacl.Map{
-		"/discovery.Discovery/*":                      serviceAccessGroup,
-		"/test_resources.Stats/UpdateMetricsTable":    dataOwnersGroup,
-		"/test_resources.Stats/ListComponents":        serviceAccessGroup,
-		"/test_resources.Stats/FetchTestMetrics":      serviceAccessGroup,
-		"/test_resources.Stats/FetchDirectoryMetrics": serviceAccessGroup,
+		"/discovery.Discovery/*":                           serviceAccessGroup,
+		"/test_resources.Stats/UpdateMetricsTable":         dataOwnersGroup,
+		"/test_resources.Stats/ListComponents":             serviceAccessGroup,
+		"/test_resources.Stats/FetchTestMetrics":           serviceAccessGroup,
+		"/test_resources.Stats/FetchDirectoryMetrics":      serviceAccessGroup,
+		"/test_resources.Coverage/GetProjectDefaultConfig": serviceAccessGroup,
 	}
 	// Data set to work with
 	dataSet = flag.String(
 		"data-set",
 		"test_results",
 		"The data set to use (e.g. test_results_test for testing).",
+	)
+	// Flag to reference GCP project Findit.
+	finditCloudProject = flag.String(
+		"findit-cloud-project",
+		"findit-for-me-staging",
+		"Findit's cloud project required to query the data for new coverage dashboard.",
 	)
 )
 
@@ -63,6 +73,10 @@ type Client interface {
 	ListComponents(ctx context.Context, req *api.ListComponentsRequest) (*api.ListComponentsResponse, error)
 	FetchMetrics(ctx context.Context, req *api.FetchTestMetricsRequest) (*api.FetchTestMetricsResponse, error)
 	FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error)
+}
+
+type CoverageClient interface {
+	GetProjectDefaultConfig(ctx context.Context, req *api.GetProjectDefaultConfigRequest) (*api.GetProjectDefaultConfigResponse, error)
 }
 
 func main() {
@@ -80,10 +94,20 @@ func main() {
 		stats = &testResourcesServer{
 			Client: client,
 		}
+
+		coverageClient, err := setupCoverageClient(srv)
+		if err != nil {
+			return err
+		}
+		cov = &coverageServer{
+			Client: coverageClient,
+		}
+
 		cron.RegisterHandler("update-daily-summary", updateDailySummary)
 
 		// All RPC APIs.
 		api.RegisterStatsServer(srv, stats)
+		api.RegisterCoverageServer(srv, cov)
 
 		// Authentication methods for RPC APIs.
 		srv.SetRPCAuthMethods([]auth.Method{
@@ -147,8 +171,42 @@ func setupClient(srv *server.Server) (*testmetrics.Client, error) {
 	return client, nil
 }
 
+func setupCoverageClient(srv *server.Server) (*coverage.Client, error) {
+	var client = &coverage.Client{
+		ChromeTestHealthCloudProject: srv.Options.CloudProject,
+		FinditCloudProject:           *finditCloudProject,
+	}
+	err := client.Init(srv.Context)
+	if err != nil {
+		return nil, err
+	}
+	return client, nil
+}
+
 type testResourcesServer struct {
 	Client Client
+}
+
+type coverageServer struct {
+	Client CoverageClient
+}
+
+func (covServer *coverageServer) GetProjectDefaultConfig(ctx context.Context, req *api.GetProjectDefaultConfigRequest) (*api.GetProjectDefaultConfigResponse, error) {
+	if err := validateRequest(ctx, req); err != nil {
+		return nil, appstatus.Errorf(codes.InvalidArgument, "%s", err.Error())
+	}
+
+	if isValidProject := validProject(req.Project); !isValidProject {
+		logging.Errorf(ctx, "Argument project did not match required format")
+		return nil, appstatus.Errorf(codes.InvalidArgument, "Argument Project is invalid")
+	}
+
+	resp, err := covServer.Client.GetProjectDefaultConfig(ctx, req)
+	if err != nil {
+		logging.Errorf(ctx, "Error fetching the default Config: %s", err)
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (s *testResourcesServer) UpdateMetricsTable(ctx context.Context, req *api.UpdateMetricsTableRequest) (*api.UpdateMetricsTableResponse, error) {
@@ -217,4 +275,13 @@ func validateRequest(ctx context.Context, req proto.Message) error {
 		}
 	}
 	return nil
+}
+
+// validProject checks if the project is a valid LUCI project or not.
+// See go.chromium.org/luci/buildbucket/proto/builder_common.proto for additional details.
+func validProject(project string) bool {
+	if match, _ := regexp.MatchString(`^[a-z0-9-_]+$`, project); !match {
+		return false
+	}
+	return true
 }

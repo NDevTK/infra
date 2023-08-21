@@ -1,16 +1,30 @@
 ## Backend
 
+Every time a .proto file is changed in /api folder.
+
+```sh
+# Change to api folder where proto resides
+cd api
+# Compiles all the protos again.
+go generate
+# cd back to root.
+cd ..
+```
+
+
 Running the server:
 
 ```sh
 eval `../../../../env.py`
 # Needs to be run the first time to set up BigQuery credentials
 gcloud auth application-default login
-go run main.go -cloud-project chrome-resources-staging
+# Emulator command needs to be run in a separate terminal window
+make emulator
+make backend-dev
 ```
 
 This will set up the backend server running on port `8800` and using the
-chrome-resources-staging GCP project for its data.
+chrome-test-health-staging GCP project for its data.
 
 ## Frontend
 

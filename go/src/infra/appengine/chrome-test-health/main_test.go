@@ -12,12 +12,17 @@ import (
 	"cloud.google.com/go/civil"
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"google.golang.org/grpc/codes"
 )
 
 type clientMock struct {
 	lastListReq     *api.ListComponentsRequest
 	lastFetchReq    *api.FetchTestMetricsRequest
 	lastFetchDirReq *api.FetchDirectoryMetricsRequest
+}
+
+type coverageClientMock struct {
+	lastGetProjectDefaultConfigReq *api.GetProjectDefaultConfigRequest
 }
 
 func (cm *clientMock) UpdateSummary(_ context.Context, fromDate civil.Date, toDate civil.Date) error {
@@ -37,6 +42,11 @@ func (cm *clientMock) FetchMetrics(ctx context.Context, req *api.FetchTestMetric
 func (cm *clientMock) FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error) {
 	cm.lastFetchDirReq = req
 	return &api.FetchDirectoryMetricsResponse{}, nil
+}
+
+func (cm *coverageClientMock) GetProjectDefaultConfig(ctx context.Context, req *api.GetProjectDefaultConfigRequest) (*api.GetProjectDefaultConfigResponse, error) {
+	cm.lastGetProjectDefaultConfigReq = req
+	return &api.GetProjectDefaultConfigResponse{}, nil
 }
 
 func TestUpdateDailySummary(t *testing.T) {
@@ -267,6 +277,47 @@ func TestFetchFileMetrics(t *testing.T) {
 			resp, err := srv.FetchDirectoryMetrics(ctx, request)
 
 			So(err, ShouldErrLike, "metrics")
+			So(resp, ShouldBeNil)
+		})
+	})
+}
+
+func TestGetProjectDefaultConfig(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	Convey("GetProjectDefaultConfig", t, func() {
+		mock := &coverageClientMock{}
+
+		srv := &coverageServer{
+			Client: mock,
+		}
+		Convey("Valid request", func() {
+			request := &api.GetProjectDefaultConfigRequest{
+				Project: "chromium",
+			}
+			resp, err := srv.GetProjectDefaultConfig(ctx, request)
+
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(mock.lastGetProjectDefaultConfigReq, ShouldResemble, request)
+		})
+		Convey("Invalid argument Project", func() {
+			request := &api.GetProjectDefaultConfigRequest{
+				Project: "chromium src",
+			}
+			resp, err := srv.GetProjectDefaultConfig(ctx, request)
+
+			So(err, ShouldErrLike, "Argument Project is invalid")
+			So(err, ShouldHaveAppStatus, codes.InvalidArgument)
+			So(resp, ShouldBeNil)
+		})
+		Convey("Missing project", func() {
+			request := &api.GetProjectDefaultConfigRequest{}
+			resp, err := srv.GetProjectDefaultConfig(ctx, request)
+
+			So(err, ShouldErrLike, "project")
 			So(resp, ShouldBeNil)
 		})
 	})

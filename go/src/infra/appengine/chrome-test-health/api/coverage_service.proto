@@ -1,0 +1,44 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package test_resources;
+
+option go_package = "infra/appengine/chrome-test-health/api";
+
+import "google/protobuf/descriptor.proto";
+import "google/api/field_behavior.proto";
+
+service Coverage {
+  // Gets the default configuration stored in the datastore
+  // required to fetch Code Coverage statistics
+  rpc GetProjectDefaultConfig(GetProjectDefaultConfigRequest) returns (GetProjectDefaultConfigResponse);
+}
+
+message GetProjectDefaultConfigRequest {
+  // Project for which the default configuration will be fetched.
+  // For example: chromium. Each Project is unique within a LUCI deployment.
+  // Project is equivalent to Buildbucket's concept of a project
+  // and requires regex match ^[a-z0-9-_]+$
+  // See go.chromium.org/luci/buildbucket/proto/builder_common.proto for additional details.
+  string project = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+message GetProjectDefaultConfigResponse {
+  // Default Configuration values for the specified project
+  // as stored in FinditConfig entity. Based on these configuration
+  // values we fetch the code coverage data.
+
+  // The website host where the repo resides.
+  // E.g: chromium.googlesource.com
+  string host = 1;
+  // Platform over which project is built.
+  // E.g: linux
+  string platform = 2;
+  // Project is the git repository. E.g: chromium/src.
+  string project = 3;
+  // Ref is the git branch within the project. E.g: refs/heads/main:
+  string ref = 4;
+}
