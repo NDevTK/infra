@@ -13,6 +13,7 @@ platforms:
   - linux-s390x
   - mac-amd64
   - mac-arm64
+  - openbsd-amd64
   - solaris-amd64
   - windows-386
   - windows-amd64

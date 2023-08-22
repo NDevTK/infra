@@ -104,6 +104,7 @@ CIPD_PACKAGE_BUILDERS = {
         'linux-arm',  # ~60 sec
         'linux-arm64',  # ~60 sec
         'solaris-amd64',
+        'openbsd-amd64',
     ],
     'infra-packager-linux-xc2': [
         'aix-ppc64',  # ~5 sec

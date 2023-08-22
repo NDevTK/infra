@@ -10,6 +10,7 @@ platforms:
   - linux-ppc64le
   - linux-riscv64
   - linux-s390x
+  - openbsd-amd64
   - solaris-amd64
 go_build_environ:
   CGO_ENABLED:
