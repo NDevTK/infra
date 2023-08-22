@@ -22,7 +22,7 @@ MERGE INTO {project}.{dataset}.daily_file_metrics AS T
 USING (
   WITH file_summaries AS (
     SELECT
-      date,
+      `date`,
       file_name,
       component,
       ARRAY_AGG(test_id) AS test_ids,
@@ -37,9 +37,9 @@ USING (
       SUM(p90_runtime) AS p90_runtime,
     FROM
       {project}.{dataset}.daily_test_metrics AS day_metrics
-    WHERE DATE(date) BETWEEN @from_date AND @to_date
+    WHERE DATE(`date`) BETWEEN @from_date AND @to_date
     GROUP BY
-      file_name, date, component, repo
+      file_name, `date`, component, repo
   ), dir_nodes AS (
     SELECT
       node_name,
@@ -63,10 +63,11 @@ USING (
     SUM(p50_runtime) AS p50_runtime,
     SUM(p90_runtime) AS p90_runtime,
   FROM dir_nodes n
-  GROUP BY date, component, node_name, repo
+  GROUP BY `date`, component, node_name, repo
   ) AS S
 ON
   T.date = S.date
+  AND T.date BETWEEN @from_date AND @to_date
   AND T.node_name = S.node_name
   AND (T.component = S.component OR (T.component IS NULL AND S.component IS NULL))
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))

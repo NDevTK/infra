@@ -27,5 +27,4 @@ CREATE OR REPLACE TABLE APP_ID.DATASET.raw_metrics (
   p90_runtime FLOAT64 OPTIONS (description = 'The p90 runtime for the test from that day. Aggregated as an average of the p90 runtimes of variants that ran this test'),
   )
 PARTITION BY `date`
-CLUSTER BY component, test_id, builder, test_suite
-OPTIONS (partition_expiration_days = 540);
+CLUSTER BY component, test_id, builder, test_suite;

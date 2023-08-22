@@ -14,5 +14,4 @@ CREATE OR REPLACE TABLE APP_ID.DATASET.weekly_file_metrics (
   p90_runtime FLOAT64 OPTIONS (description = 'The p90 runtime for the test from that day in this file or directory'),
 )
 PARTITION BY `date`
-CLUSTER BY component
-OPTIONS (partition_expiration_days = 540);
+CLUSTER BY component;

@@ -133,6 +133,7 @@ USING (
   ) AS S
 ON
   T.date = S.date
+  AND T.date BETWEEN @from_date AND @to_date
   AND T.test_id = S.test_id
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
   AND (T.component = S.component OR (T.component IS NULL AND S.component IS NULL))

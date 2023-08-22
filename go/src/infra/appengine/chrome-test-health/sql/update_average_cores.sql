@@ -26,6 +26,7 @@ USING (
   ) AS S
 ON
   T.date = S.date
+  AND T.date BETWEEN @from_date AND @to_date
   AND T.test_id = S.test_id
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
   AND (T.component = S.component OR (T.component IS NULL AND S.component IS NULL))
@@ -64,6 +65,7 @@ USING (
   ) AS S
 ON
   T.date = S.date
+  AND T.date BETWEEN @from_date AND @to_date
   AND T.test_id = S.test_id
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
   AND (T.component = S.component OR (T.component IS NULL AND S.component IS NULL))
@@ -101,6 +103,9 @@ USING (
   ) AS S
 ON
   T.date = S.date
+  AND T.date BETWEEN
+    DATE_TRUNC(DATE(@from_date), WEEK) AND
+    DATE_ADD(DATE_TRUNC(DATE(@to_date), WEEK), INTERVAL 6 DAY)
   AND T.test_id = S.test_id
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
   AND (T.component = S.component OR (T.component IS NULL AND S.component IS NULL))
@@ -129,6 +134,7 @@ USING (
   ) AS S
 ON
   T.date = S.date
+  AND T.date BETWEEN @from_date AND @to_date
   AND T.node_name = S.node_name
   AND (T.component = S.component OR (T.component IS NULL AND S.component IS NULL))
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
@@ -156,6 +162,9 @@ USING (
   ) AS S
 ON
   T.date = S.date
+  AND T.date BETWEEN
+    DATE_TRUNC(DATE(@from_date), WEEK) AND
+    DATE_ADD(DATE_TRUNC(DATE(@to_date), WEEK), INTERVAL 6 DAY)
   AND T.node_name = S.node_name
   AND (T.component = S.component OR (T.component IS NULL AND S.component IS NULL))
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))

@@ -1,7 +1,7 @@
 MERGE INTO {project}.{dataset}.weekly_test_metrics AS T
 USING (
   SELECT
-    DATE_TRUNC(m.date, WEEK(SUNDAY)) date,
+    DATE_TRUNC(m.date, WEEK(SUNDAY)) `date`,
     m.test_id,
     ANY_VALUE(m.test_name) AS test_name,
     m.repo AS repo,
@@ -28,6 +28,9 @@ USING (
   ) AS S
 ON
   T.date = S.date
+  AND T.date BETWEEN
+    DATE_TRUNC(DATE(@from_date), WEEK) AND
+    DATE_ADD(DATE_TRUNC(DATE(@to_date), WEEK), INTERVAL 6 DAY)
   AND T.test_id = S.test_id
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
   AND (T.builder = S.builder OR (T.builder IS NULL AND S.builder IS NULL))

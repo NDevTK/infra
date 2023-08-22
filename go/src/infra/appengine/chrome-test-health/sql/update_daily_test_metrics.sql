@@ -25,10 +25,13 @@ USING (
     SUM(p50_runtime * num_runs) / SUM(num_runs) p50_runtime,
     SUM(p90_runtime * num_runs) / SUM(num_runs) p90_runtime,
   FROM {project}.{dataset}.raw_metrics AS t
+  WHERE
+      `date` BETWEEN @from_date AND @to_date
   GROUP BY `date`, test_id, repo, component, builder, bucket, test_suite
   ) AS S
 ON
   T.date = S.date
+  AND T.date BETWEEN @from_date AND @to_date
   AND T.test_id = S.test_id
   AND (T.repo = S.repo OR (T.repo IS NULL AND S.repo IS NULL))
   AND (T.component = S.component OR (T.component IS NULL AND S.component IS NULL))
