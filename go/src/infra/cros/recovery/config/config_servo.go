@@ -885,7 +885,6 @@ func servoRepairPlan() *Plan {
 					"Stop servod",
 					"Try fake disconnect and stop",
 					"Toggle CC line and stop",
-					"Toggle DTS Mode and Servo Role",
 					"Toggle PD once and stop",
 					"Reboot by EC console and stop",
 					"Cold reset the DUT by servod and stop",
