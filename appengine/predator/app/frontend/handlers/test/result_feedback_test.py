@@ -4,10 +4,10 @@
 
 import calendar
 from datetime import datetime
+from flask import Flask
 import mock
 
 from google.appengine.api import users
-import webapp2
 
 from analysis.stacktrace import CallStack
 from analysis.stacktrace import StackFrame
@@ -28,8 +28,11 @@ class MockResultFeedback(result_feedback.ResultFeedback):
 
 
 class ResultFeedbackTest(AppengineTestCase):
-  app_module = webapp2.WSGIApplication(
-      [('/result-feedback', MockResultFeedback)], debug=True)
+  app_module = Flask(__name__)
+  app_module.add_url_rule(
+      '/result-feedback',
+      view_func=MockResultFeedback().Handle,
+      methods=['GET'])
 
   def setUp(self):
     super(ResultFeedbackTest, self).setUp()

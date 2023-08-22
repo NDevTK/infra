@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 import copy
+from flask import Flask
 import json
 import mock
 import re
-import webapp2
 import webtest
 
 from google.appengine.api import users
@@ -36,9 +36,11 @@ class MockChromeDependencyFetcher(object):
 
 class UpdateRepoToDepPathTest(AppengineTestCase):
   """Tests utility functions and ``UpdateRepoToDepPath`` handler."""
-  app_module = webapp2.WSGIApplication([
-      ('/process/update-repo-to-dep-path', UpdateRepoToDepPath),
-  ], debug=True)
+  app_module = Flask(__name__)
+  app_module.add_url_rule(
+      '/process/update-repo-to-dep-path',
+      view_func=UpdateRepoToDepPath().Handle,
+      methods=['GET'])
 
   def setUp(self):
     super(UpdateRepoToDepPathTest, self).setUp()

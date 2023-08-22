@@ -19,18 +19,9 @@
 In a separate file from the core pipeline module to break circular dependencies.
 """
 
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp import util as webapp_util
 
+from flask import Flask
 import pipeline
 
-
-_APP = webapp.WSGIApplication(pipeline.create_handlers_map(), debug=True)
-
-
-def _main():
-  webapp_util.run_wsgi_app(_APP)
-
-
-if __name__ == '__main__':
-  _main()
+_APP = Flask(__name__)
+pipeline.create_handlers_map(_APP)

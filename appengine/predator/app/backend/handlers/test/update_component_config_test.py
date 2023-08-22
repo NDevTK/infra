@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 import copy
+from flask import Flask
 import json
 import mock
 import re
-import webapp2
 import webtest
 
 from google.appengine.api import users
@@ -75,9 +75,11 @@ class DummyHttpClient(HttpClientAppengine):  # pragma: no cover.
 
 class UpdateComponentConfigTest(TestCase):
   """Tests utility functions and ``CrashConfig`` handler."""
-  app_module = webapp2.WSGIApplication([
-      ('/process/update-component-config', UpdateComponentConfig),
-  ], debug=True)
+  app_module = Flask(__name__)
+  app_module.add_url_rule(
+      '/process/update-component-config',
+      view_func=UpdateComponentConfig().Handle,
+      methods=['GET'])
 
   def setUp(self):
     super(UpdateComponentConfigTest, self).setUp()

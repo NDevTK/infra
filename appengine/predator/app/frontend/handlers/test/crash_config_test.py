@@ -3,9 +3,9 @@
 # found in the LICENSE file.
 
 import copy
+from flask import Flask
 import json
 import re
-import webapp2
 import webtest
 
 from google.appengine.api import users
@@ -95,9 +95,11 @@ _MOCK_CONFIG = {
 
 class CrashConfigTest(TestCase):
   """Tests utility functions and ``CrashConfig`` handler."""
-  app_module = webapp2.WSGIApplication([
-      ('/crash/config', CrashConfigHandler),
-  ], debug=True)
+  app_module = Flask(__name__)
+  app_module.add_url_rule(
+      '/crash/config',
+      view_func=crash_config.CrashConfig().Handle,
+      methods=['GET', 'POST'])
 
   def testSortConfig(self):
     """Tests ``_SortConfig`` function."""

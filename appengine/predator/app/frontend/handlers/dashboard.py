@@ -8,8 +8,8 @@ from datetime import time
 from datetime import timedelta
 import json
 
+from common.base_handler import BaseHandler, Permission
 from gae_libs import dashboard_util
-from gae_libs.handlers.base_handler import BaseHandler, Permission
 from libs import time_util
 
 
@@ -47,12 +47,12 @@ class DashBoard(BaseHandler):
         self.crash_analysis_cls.requested_time < end_date)
 
     for equal_filter, converter in self.property_to_value_converter.iteritems():
-      if not self.request.get(equal_filter):
+      if not self.request.values.get(equal_filter):
         continue
 
       query = query.filter(
-          getattr(self.crash_analysis_cls, equal_filter) ==
-          converter(self.request.get(equal_filter)))
+          getattr(self.crash_analysis_cls, equal_filter) == converter(
+              self.request.values.get(equal_filter, "")))
 
     return query
 
@@ -84,38 +84,48 @@ class DashBoard(BaseHandler):
   def HandleGet(self):
     """Shows crash analysis results in an HTML page."""
     start_date, end_date = dashboard_util.GetStartAndEndDates(
-        self.request.get('start_date'), self.request.get('end_date'))
+        self.request.values.get('start_date'),
+        self.request.values.get('end_date'))
 
     query = self.Filter(start_date, end_date)
 
     try:
-      page_size = int(self.request.get('n'))
+      page_size = int(self.request.values.get('n'))
     except (ValueError, TypeError):
       page_size = _PAGE_SIZE
 
     crash_analyses, top_cusor, bottom_cursor = dashboard_util.GetPagedResults(
-        query,
-        [(self.crash_analysis_cls.requested_time, dashboard_util.DESC)],
-        cursor=self.request.get('cursor'),
-        direction=self.request.get('direction', 'next'), page_size=page_size)
+        query, [(self.crash_analysis_cls.requested_time, dashboard_util.DESC)],
+        cursor=self.request.values.get('cursor'),
+        direction=self.request.values.get('direction', 'next'),
+        page_size=page_size)
 
     # TODO(katesonia): An optimization is to index analysis.status.
     crash_analyses = [analysis for analysis in crash_analyses
                       if analysis.completed]
     data = {
-        'start_date': time_util.FormatDatetime(start_date),
-        'end_date': time_util.FormatDatetime(end_date),
-        'found_suspects': self.request.get('found_suspects', '-1'),
-        'has_regression_range': self.request.get('has_regression_range', '-1'),
-        'suspected_cls_triage_status': self.request.get(
-            'suspected_cls_triage_status', '-1'),
-        'regression_range_triage_status': self.request.get(
-            'regression_range_triage_status', '-1'),
-        'client': self.client,
-        'crashes': self.CrashDataToDisplay(crash_analyses),
-        'signature': self.request.get('signature'),
-        'top_cursor': top_cusor,
-        'bottom_cursor': bottom_cursor,
+        'start_date':
+            time_util.FormatDatetime(start_date),
+        'end_date':
+            time_util.FormatDatetime(end_date),
+        'found_suspects':
+            self.request.values.get('found_suspects', '-1'),
+        'has_regression_range':
+            self.request.values.get('has_regression_range', '-1'),
+        'suspected_cls_triage_status':
+            self.request.values.get('suspected_cls_triage_status', '-1'),
+        'regression_range_triage_status':
+            self.request.values.get('regression_range_triage_status', '-1'),
+        'client':
+            self.client,
+        'crashes':
+            self.CrashDataToDisplay(crash_analyses),
+        'signature':
+            self.request.values.get('signature', ''),
+        'top_cursor':
+            top_cusor,
+        'bottom_cursor':
+            bottom_cursor,
     }
 
     return {

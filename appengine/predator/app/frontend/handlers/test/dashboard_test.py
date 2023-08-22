@@ -1,15 +1,15 @@
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
 import base64
 import copy
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
+from flask import Flask
 import json
 import mock
-
-import webapp2
 
 from common.model import triage_status
 from common.model.chrome_crash_analysis import ChromeCrashAnalysis
@@ -32,12 +32,14 @@ class MockDashBoard(dashboard.DashBoard):
 
 
 class DashBoardTest(testing.AppengineTestCase):
-  app_module = webapp2.WSGIApplication(
-      [('/mock-dashboard', MockDashBoard), ], debug=True)
+  app_module = Flask(__name__)
+  app_module.add_url_rule(
+      '/mock-dashboard', view_func=MockDashBoard().Handle, methods=['GET'])
 
   def setUp(self):
     super(DashBoardTest, self).setUp()
     self.mock_current_user(user_email='test@chromium.org', is_admin=True)
+    self.maxDiff = 10000
     self.handler = MockDashBoard()
     self.keys = self._AddAnalysisResults()
     self.crashes = []
@@ -162,7 +164,7 @@ class DashBoardTest(testing.AppengineTestCase):
         'channel': crash.channel,
         'platform': crash.platform,
         'regression_range': crash.regression_range or '',
-        'suspected_cls':crash.result['suspected_cls'],
+        'suspected_cls': crash.result['suspected_cls'],
         'suspected_project': crash.result['suspected_project'],
         'suspected_components': crash.result['suspected_components'],
         'key': crash.key.urlsafe()

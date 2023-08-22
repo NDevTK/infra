@@ -5,10 +5,10 @@
 import copy
 from datetime import datetime
 from datetime import timedelta
+from flask import Flask
 import json
 import mock
 import re
-import webapp2
 import webtest
 
 from google.appengine.api import users
@@ -32,9 +32,11 @@ def _MockKeywrodExtractor(crash_report):
 
 class UpdateInvertedIndexTest(TestCase):
   """Tests utility functions and ``UpdateInvertedIndex`` handler."""
-  app_module = webapp2.WSGIApplication([
-      ('/process/update-inverted-index', UpdateInvertedIndex),
-  ], debug=True)
+  app_module = Flask(__name__)
+  app_module.add_url_rule(
+      '/process/update-inverted-index',
+      view_func=UpdateInvertedIndex().Handle,
+      methods=['GET'])
 
   def testUpdateInvertedIndexForCrash(self):
     crash_report = CrashReport('50.0.1234.0', 'sig', 'win',

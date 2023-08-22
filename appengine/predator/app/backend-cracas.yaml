@@ -13,7 +13,7 @@ handlers:
 
 # Pipeline handler.
 - url: /_ah/pipeline(/.*)?
-  script: backend.main.pipeline_backend_application
+  script: backend.main.backend_app
   secure: always
 
 skip_files:
@@ -29,9 +29,9 @@ skip_files:
 - scripts/.*
 
 libraries:
-- name: webapp2
-  version: latest
 - name: jinja2
   version: latest
 - name: numpy
   version: 1.6.1
+- name: flask
+  version: 0.12

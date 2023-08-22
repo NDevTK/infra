@@ -17,7 +17,7 @@ class ClusterfuzzResultFeedback(ResultFeedback):
     return CrashClient.CLUSTERFUZZ
 
   def HandleGet(self):
-    key = self.request.get('key')
+    key = self.request.values.get('key', '')
     analysis = ndb.Key(urlsafe=key).get()
     data = super(ClusterfuzzResultFeedback, self).HandleGet()['data']
     data['testcase_id'] = analysis.testcase_id

@@ -8,9 +8,9 @@ import json
 import logging
 import mock
 
+from flask import Flask
 from google.appengine.api import app_identity
 from google.appengine.ext import ndb
-import webapp2
 from webtest.app import AppError
 
 from analysis.type_enums import CrashClient
@@ -29,10 +29,11 @@ from libs.gitiles import gitiles_repository
 
 
 class CrashHandlerTest(AppengineTestCase):
-  app_module = webapp2.WSGIApplication([
-      ('/_ah/push-handlers/crash/fracas', crash_handler.CrashHandler),
-      ('/_ah/push-handlers/crash/clusterfuzz', crash_handler.CrashHandler),
-  ], debug=True)
+  app_module = Flask(__name__)
+  app_module.add_url_rule(
+      '/_ah/push-handlers/crash/clusterfuzz',
+      view_func=crash_handler.CrashHandler().Handle,
+      methods=['POST'])
 
   @mock.patch('common.crash_pipeline.CrashWrapperPipeline.start')
   def testStartAnalysis(self, mock_start):

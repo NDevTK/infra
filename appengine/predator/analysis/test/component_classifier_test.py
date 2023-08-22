@@ -9,7 +9,6 @@ from analysis.component import Component
 from analysis.component_classifier import ComponentClassifier
 from analysis.component_classifier import MergeComponents
 from analysis.suspect import Suspect
-from gae_libs.pipeline_wrapper import pipeline_handlers
 from libs.gitiles.change_log import ChangeLog
 from libs.gitiles.change_log import FileChangeInfo
 from libs.gitiles.diff import ChangeType

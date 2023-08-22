@@ -11,8 +11,8 @@ import traceback
 
 from google.appengine.api import users
 
+from common.base_handler import BaseHandler, Permission
 from common.model.crash_config import CrashConfig
-from gae_libs.handlers.base_handler import BaseHandler, Permission
 from gae_libs.http.http_client_appengine import HttpClientAppengine
 
 

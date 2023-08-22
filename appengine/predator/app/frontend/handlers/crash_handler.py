@@ -9,10 +9,10 @@ import logging
 from analysis.exceptions import PredatorError
 from common import constants
 from common import crash_pipeline
+from common.base_handler import BaseHandler, Permission
 from common.model.crash_config import CrashConfig
 from gae_libs import appengine_util
 from gae_libs.gitiles.cached_gitiles_repository import CachedGitilesRepository
-from gae_libs.handlers.base_handler import BaseHandler
 from gae_libs.handlers.base_handler import Permission
 from gae_libs.http.http_client_appengine import HttpClientAppengine
 
@@ -66,7 +66,7 @@ class CrashHandler(BaseHandler):
     }
     """
     try:
-      received_message = json.loads(self.request.body)
+      received_message = json.loads(self.request.data)
       pubsub_message = received_message['message']
       json_crash_data = json.loads(base64.b64decode(pubsub_message['data']))
 
@@ -78,7 +78,7 @@ class CrashHandler(BaseHandler):
     except (KeyError, ValueError, PredatorError):  # pragma: no cover.
       # TODO: save exception in datastore and create a page to show them.
       logging.exception('Failed to process crash message')
-      logging.info(self.request.body)
+      logging.info(self.request.data)
 
 
 # TODO(http://crbug.com/659346): we don't cover anything after the

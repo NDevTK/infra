@@ -9,7 +9,6 @@ from analysis.occurrence import RankByOccurrence
 from analysis.stacktrace import StackFrame
 from analysis.stacktrace import CallStack
 from analysis.suspect import Suspect
-from gae_libs.pipeline_wrapper import pipeline_handlers
 
 
 class DummyClassifier(object):

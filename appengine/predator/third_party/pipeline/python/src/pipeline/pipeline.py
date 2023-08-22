@@ -40,13 +40,13 @@ import time
 import urllib
 import uuid
 
+import flask
 from google.appengine.api import mail
 from google.appengine.api import app_identity
 from google.appengine.api import users
 from google.appengine.api import taskqueue
 from google.appengine.ext import blobstore
 from google.appengine.ext import db
-from google.appengine.ext import webapp
 
 # pylint: disable=g-import-not-at-top
 # TODO(user): Cleanup imports if/when cloudstorage becomes part of runtime.
@@ -1248,7 +1248,7 @@ def _write_json_blob(encoded_value, pipeline_id=None):
   Returns:
     The blobstore.BlobKey for the file that was created.
   """
-  
+
   default_bucket = app_identity.get_default_gcs_bucket_name()
   path_components = ['/', default_bucket, "appengine_pipeline"]
   if pipeline_id:
@@ -2647,71 +2647,74 @@ class _PipelineContext(object):
 ################################################################################
 
 
-class _BarrierHandler(webapp.RequestHandler):
+class _BarrierHandler():
   """Request handler for triggering barriers."""
 
   def post(self):
-    if 'HTTP_X_APPENGINE_TASKNAME' not in self.request.environ:
-      self.response.set_status(403)
-      return
+    if 'HTTP_X_APPENGINE_TASKNAME' not in flask.request.environ:
+      return flask.make_response('', 403)
 
-    context = _PipelineContext.from_environ(self.request.environ)
+    context = _PipelineContext.from_environ(flask.request.environ)
     context.notify_barriers(
-        self.request.get('slot_key'),
-        self.request.get('cursor'),
-        use_barrier_indexes=self.request.get('use_barrier_indexes') == 'True')
+        flask.request.values.get('slot_key'),
+        flask.request.values.get('cursor'),
+        use_barrier_indexes=flask.request.values.get('use_barrier_indexes') ==
+        'True')
+    return flask.make_response()
 
 
-class _PipelineHandler(webapp.RequestHandler):
+class _PipelineHandler():
   """Request handler for running pipelines."""
 
   def post(self):
-    if 'HTTP_X_APPENGINE_TASKNAME' not in self.request.environ:
-      self.response.set_status(403)
-      return
+    if 'HTTP_X_APPENGINE_TASKNAME' not in flask.request.environ:
+      return flask.make_response('', 403)
 
-    context = _PipelineContext.from_environ(self.request.environ)
-    context.evaluate(self.request.get('pipeline_key'),
-                     purpose=self.request.get('purpose'),
-                     attempt=int(self.request.get('attempt', '0')))
+    context = _PipelineContext.from_environ(flask.request.environ)
+    context.evaluate(
+        flask.request.values.get('pipeline_key'),
+        purpose=flask.request.values.get('purpose'),
+        attempt=int(flask.request.values.get('attempt', '0')))
+    return flask.make_response()
 
 
-class _FanoutAbortHandler(webapp.RequestHandler):
+class _FanoutAbortHandler():
   """Request handler for fanning out abort notifications."""
 
   def post(self):
-    if 'HTTP_X_APPENGINE_TASKNAME' not in self.request.environ:
-      self.response.set_status(403)
-      return
+    if 'HTTP_X_APPENGINE_TASKNAME' not in flask.request.environ:
+      return flask.make_response('', 403)
 
-    context = _PipelineContext.from_environ(self.request.environ)
+    context = _PipelineContext.from_environ(flask.request.environ)
     context.continue_abort(
-        self.request.get('root_pipeline_key'),
-        self.request.get('cursor'))
+        flask.request.values.get('root_pipeline_key'),
+        flask.request.values.get('cursor'))
+    return flask.make_response()
 
 
-class _FanoutHandler(webapp.RequestHandler):
+class _FanoutHandler():
   """Request handler for fanning out pipeline children."""
 
   def post(self):
-    if 'HTTP_X_APPENGINE_TASKNAME' not in self.request.environ:
-      self.response.set_status(403)
-      return
+    if 'HTTP_X_APPENGINE_TASKNAME' not in flask.request.environ:
+      return flask.make_response('', 403)
 
-    context = _PipelineContext.from_environ(self.request.environ)
+    context = _PipelineContext.from_environ(flask.request.environ)
 
     # Set of stringified db.Keys of children to run.
     all_pipeline_keys = set()
 
     # For backwards compatibility with the old style of fan-out requests.
-    all_pipeline_keys.update(self.request.get_all('pipeline_key'))
+    all_pipeline_keys.update(flask.request.values.getlist('pipeline_key'))
 
     # Fetch the child pipelines from the parent. This works around the 10KB
     # task payload limit. This get() is consistent-on-read and the fan-out
     # task is enqueued in the transaction that updates the parent, so the
     # fanned_out property is consistent here.
-    parent_key = self.request.get('parent_key')
-    child_indexes = [int(x) for x in self.request.get_all('child_indexes')]
+    parent_key = flask.request.values.get('parent_key')
+    child_indexes = [
+        int(x) for x in flask.request.values.getlist('child_indexes')
+    ]
     if parent_key:
       parent_key = db.Key(parent_key)
       parent = db.get(parent_key)
@@ -2739,16 +2742,17 @@ class _FanoutHandler(webapp.RequestHandler):
       except (taskqueue.TombstonedTaskError, taskqueue.TaskAlreadyExistsError):
         pass
 
+    return flask.make_response()
 
-class _CleanupHandler(webapp.RequestHandler):
+
+class _CleanupHandler():
   """Request handler for cleaning up a Pipeline."""
 
   def post(self):
-    if 'HTTP_X_APPENGINE_TASKNAME' not in self.request.environ:
-      self.response.set_status(403)
-      return
+    if 'HTTP_X_APPENGINE_TASKNAME' not in flask.request.environ:
+      return flask.make_response('', 403)
 
-    root_pipeline_key = db.Key(self.request.get('root_pipeline_key'))
+    root_pipeline_key = db.Key(flask.request.values.get('root_pipeline_key'))
     logging.debug('Cleaning up root_pipeline_key=%r', root_pipeline_key)
 
     # TODO(user): Accumulate all BlobKeys from _PipelineRecord and
@@ -2773,34 +2777,37 @@ class _CleanupHandler(webapp.RequestHandler):
         _BarrierIndex.all(keys_only=True)
         .filter('root_pipeline =', root_pipeline_key))
     db.delete(barrier_index_keys)
+    return flask.make_response()
 
 
-class _CallbackHandler(webapp.RequestHandler):
+class _CallbackHandler():
   """Receives asynchronous callback requests from humans or tasks."""
 
   def post(self):
-    self.get()
+    return self.get()
 
   def get(self):
+    response = None
     try:
-      self.run_callback()
+      response = self.run_callback()
     except _CallbackTaskError, e:
       logging.error(str(e))
-      if 'HTTP_X_APPENGINE_TASKRETRYCOUNT' in self.request.environ:
+      if 'HTTP_X_APPENGINE_TASKRETRYCOUNT' in flask.request.environ:
         # Silently give up on tasks that have retried many times. This
         # probably means that the target pipeline has been deleted, so there's
         # no reason to keep trying this task forever.
         retry_count = int(
-            self.request.environ.get('HTTP_X_APPENGINE_TASKRETRYCOUNT'))
+            flask.request.environ.get('HTTP_X_APPENGINE_TASKRETRYCOUNT'))
         if retry_count > _MAX_CALLBACK_TASK_RETRIES:
           logging.error('Giving up on task after %d retries',
                         _MAX_CALLBACK_TASK_RETRIES)
-          return
+          return flask.make_response()
 
       # NOTE: The undescriptive error code 400 are present to address security
       # risks of giving external users access to cause PipelineRecord lookups
       # and execution.
-      self.response.set_status(400)
+      response = flask.make_response('', 400)
+    return response
 
   def run_callback(self):
     """Runs the callback for the pipeline specified in the request.
@@ -2808,7 +2815,7 @@ class _CallbackHandler(webapp.RequestHandler):
     Raises:
       _CallbackTaskError if something was wrong with the request parameters.
     """
-    pipeline_id = self.request.get('pipeline_id')
+    pipeline_id = flask.request.values.get('pipeline_id')
     if not pipeline_id:
       raise _CallbackTaskError('"pipeline_id" parameter missing.')
 
@@ -2827,7 +2834,7 @@ class _CallbackHandler(webapp.RequestHandler):
           'Cannot load class named "%s" for pipeline ID "%s".'
           % (real_class_path, pipeline_id))
 
-    if 'HTTP_X_APPENGINE_TASKNAME' not in self.request.environ:
+    if 'HTTP_X_APPENGINE_TASKNAME' not in flask.request.environ:
       if pipeline_func_class.public_callbacks:
         pass
       elif pipeline_func_class.admin_callbacks:
@@ -2841,9 +2848,9 @@ class _CallbackHandler(webapp.RequestHandler):
             % pipeline_id)
 
     kwargs = {}
-    for key in self.request.arguments():
+    for key in flask.request.arguments():
       if key != 'pipeline_id':
-        kwargs[str(key)] = self.request.get(key)
+        kwargs[str(key)] = flask.request.values.get(key)
 
     def perform_callback():
       stage = pipeline_func_class.from_id(pipeline_id)
@@ -2864,9 +2871,9 @@ class _CallbackHandler(webapp.RequestHandler):
 
     if callback_result is not None:
       status_code, content_type, content = callback_result
-      self.response.set_status(status_code)
-      self.response.headers['Content-Type'] = content_type
-      self.response.out.write(content)
+      return flask.make_response(content, status_code,
+                                 {'Content-Type': content_type})
+    return flask.make_response()
 
 
 ################################################################################
@@ -3211,8 +3218,8 @@ def get_pipeline_names():
   """Returns the class paths of all Pipelines defined in alphabetical order."""
   class_path_set = set()
   for cls in _PipelineMeta._all_classes:
-      if cls.class_path is not None:
-        class_path_set.add(cls.class_path)
+    if cls.class_path is not None:
+      class_path_set.add(cls.class_path)
   return sorted(class_path_set)
 
 
@@ -3304,26 +3311,69 @@ def set_enforce_auth(new_status):
   _ENFORCE_AUTH = new_status
 
 
-def create_handlers_map(prefix='.*'):
+def create_handlers_map(app, prefix='/_ah/pipeline'):
   """Create new handlers map.
 
   Args:
     prefix: url prefix to use.
-
-  Returns:
-    list of (regexp, handler) pairs for WSGIApplication constructor.
   """
-  return [
-      (prefix + '/output', _BarrierHandler),
-      (prefix + '/run', _PipelineHandler),
-      (prefix + '/finalized', _PipelineHandler),
-      (prefix + '/cleanup', _CleanupHandler),
-      (prefix + '/abort', _PipelineHandler),
-      (prefix + '/fanout', _FanoutHandler),
-      (prefix + '/fanout_abort', _FanoutAbortHandler),
-      (prefix + '/callback', _CallbackHandler),
-      (prefix + '/rpc/tree', status_ui._TreeStatusHandler),
-      (prefix + '/rpc/class_paths', status_ui._ClassPathListHandler),
-      (prefix + '/rpc/list', status_ui._RootListHandler),
-      (prefix + '(/.+)', status_ui._StatusUiHandler),
-      ]
+
+  app.add_url_rule(
+      prefix + '/output',
+      endpoint="pipeline.BarrierHandler",
+      view_func=_BarrierHandler().post,
+      methods=['POST'])
+
+  pipeline_view_func = _PipelineHandler().post
+  app.add_url_rule(
+      prefix + '/run',
+      endpoint="pipeline.PipelineHandler",
+      view_func=pipeline_view_func,
+      methods=['POST'])
+  app.add_url_rule(
+      prefix + '/finalized',
+      endpoint="pipeline.PipelineHandler",
+      view_func=pipeline_view_func,
+      methods=['POST'])
+  app.add_url_rule(
+      prefix + '/abort',
+      endpoint="pipeline.PipelineHandler",
+      view_func=pipeline_view_func,
+      methods=['POST'])
+
+  app.add_url_rule(
+      prefix + '/cleanup',
+      endpoint="pipeline.CleanupHandler",
+      view_func=_CleanupHandler().post,
+      methods=['POST'])
+  app.add_url_rule(
+      prefix + '/fanout',
+      endpoint="pipeline.FanoutHandler",
+      view_func=_FanoutHandler().post,
+      methods=['POST'])
+  app.add_url_rule(
+      prefix + '/fanout_abort',
+      endpoint="pipeline.FanoutAbortHandler",
+      view_func=_FanoutAbortHandler().post,
+      methods=['POST'])
+  app.add_url_rule(
+      prefix + '/callback',
+      endpoint="pipeline.CallbackHandler",
+      view_func=_CallbackHandler().post,
+      methods=['GET', 'POST'])
+
+  app.add_url_rule(
+      prefix + '/rpc/tree',
+      endpoint="pipeline.TreeStatusHandler",
+      view_func=status_ui._TreeStatusHandler().get,
+      methods=['GET'])
+  app.add_url_rule(
+      prefix + '/rpc/class_paths',
+      endpoint="pipeline.ClassPathListHandler",
+      view_func=status_ui._ClassPathListHandler().get,
+      methods=['GET'])
+  app.add_url_rule(
+      prefix + '/rpc/list',
+      endpoint="pipeline.RootListHandler",
+      view_func=status_ui._RootListHandler().get,
+      methods=['GET'])

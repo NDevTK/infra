@@ -9,6 +9,7 @@ import logging
 from google.appengine.ext import ndb
 
 from analysis.type_enums import CrashClient
+from common.base_handler import BaseHandler
 from common.crash_pipeline import RerunPipeline
 from common.crash_pipeline import PredatorForClientID
 from common.model.clusterfuzz_analysis import ClusterfuzzAnalysis
@@ -18,7 +19,6 @@ from common.model.crash_config import CrashConfig
 from common.model.fracas_crash_analysis import FracasCrashAnalysis
 from gae_libs import appengine_util
 from gae_libs.gitiles.cached_gitiles_repository import CachedGitilesRepository
-from gae_libs.handlers.base_handler import BaseHandler
 from gae_libs.handlers.base_handler import Permission
 from gae_libs.http.http_client_appengine import HttpClientAppengine
 from gae_libs.iterator import Iterate
@@ -67,16 +67,18 @@ class RerunAnalyses(BaseHandler):
 
   # TODO(crbug.com/731934): Add XSRF token verification.
   def HandleGet(self):
-    client_id = self.request.get('client_id', CrashClient.CRACAS)
+    client_id = self.request.values.get('client_id', CrashClient.CRACAS)
 
     now = time_util.GetUTCNow()
     last_week = time_util.GetUTCNow() - timedelta(days=7)
 
     start_date, end_date = time_util.GetStartEndDates(
-        self.request.get('start_date'), self.request.get('end_date'),
-        default_start=last_week, default_end=now)
+        self.request.values.get('start_date'),
+        self.request.values.get('end_date'),
+        default_start=last_week,
+        default_end=now)
 
-    publish_to_client = bool(self.request.get('publish'))
+    publish_to_client = bool(self.request.values.get('publish'))
     count = 0
     for crash_keys in IterateCrashBatches(client_id, start_date, end_date):
       pipeline = RerunPipeline(client_id, crash_keys, publish_to_client)

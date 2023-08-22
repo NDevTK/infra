@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import webapp2
+from flask import Flask
 
 import gae_ts_mon
 
@@ -18,53 +18,54 @@ from frontend.handlers import fracas_result_feedback
 from frontend.handlers import triage_analysis
 from frontend.handlers import uma_sampling_profiler_dashboard
 from frontend.handlers import uma_sampling_profiler_result_feedback
-from gae_libs.pipeline_wrapper import pipeline_status_ui
-
-
-# App Engine pipeline status pages in the default module.
-pipeline_status_handler_mappings = [
-    ('/_ah/pipeline/rpc/tree', pipeline_status_ui._TreeStatusHandler),
-    ('/_ah/pipeline/rpc/class_paths', pipeline_status_ui._ClassPathListHandler),
-    ('/_ah/pipeline/rpc/list', pipeline_status_ui._RootListHandler),
-    ('/_ah/pipeline(/.+)', pipeline_status_ui._StatusUiHandler),
-]
-pipeline_status_application = webapp2.WSGIApplication(
-    pipeline_status_handler_mappings, debug=False)
-# TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
-# service account and change to gae_ts_mon.initialize_prod()
-gae_ts_mon.initialize_adhoc(pipeline_status_application)
 
 
 frontend_web_pages_handler_mappings = [
-    ('/clusterfuzz/dashboard', clusterfuzz_dashboard.ClusterfuzzDashBoard),
-    ('/clusterfuzz/public-dashboard',
-     clusterfuzz_public_dashboard.ClusterfuzzPublicDashBoard),
-    ('/clusterfuzz/result-feedback',
-     clusterfuzz_result_feedback.ClusterfuzzResultFeedback),
-    ('/clusterfuzz/triage-analysis', triage_analysis.TriageAnalysis),
-    ('/config', crash_config.CrashConfig),
-    ('/cracas/dashboard', cracas_dashboard.CracasDashBoard),
-    ('/cracas/result-feedback',
-     cracas_result_feedback.CracasResultFeedback),
-    ('/cracas/triage-analysis', triage_analysis.TriageAnalysis),
-    ('/uma-sampling-profiler/dashboard',
-     uma_sampling_profiler_dashboard.UMASamplingProfilerDashboard),
+    ('/clusterfuzz/dashboard', 'clusterfuzz_dashboard',
+     clusterfuzz_dashboard.ClusterfuzzDashBoard().Handle, ['GET']),
+    ('/clusterfuzz/public-dashboard', 'clusterfuzz_public_dashboard',
+     clusterfuzz_public_dashboard.ClusterfuzzPublicDashBoard().Handle, ['GET']),
+    ('/uma-sampling-profiler/dashboard', 'uma_sampling_profiler_dashboard',
+     uma_sampling_profiler_dashboard.UMASamplingProfilerDashboard().Handle,
+     ['GET']),
+    ('/cracas/dashboard', 'cracas_dashboard',
+     cracas_dashboard.CracasDashBoard().Handle, ['GET']),
+    ('/clusterfuzz/result-feedback', 'clusterfuzz_result_feedback',
+     clusterfuzz_result_feedback.ClusterfuzzResultFeedback().Handle, ['GET']),
     ('/uma-sampling-profiler/result-feedback',
-     uma_sampling_profiler_result_feedback.UMASamplingProfilerResultFeedback),
-    ('/cracas/triage-analysis', triage_analysis.TriageAnalysis),
-    ('/fracas/dashboard', fracas_dashboard.FracasDashBoard),
-    ('/fracas/result-feedback',
-     fracas_result_feedback.FracasResultFeedback),
-    ('/fracas/triage-analysis', triage_analysis.TriageAnalysis),
-    ('/uma-sampling-profiler/triage-analysis', triage_analysis.TriageAnalysis),
-    ('/_ah/push-handlers/crash/fracas', crash_handler.CrashHandler),
-    ('/_ah/push-handlers/crash/cracas', crash_handler.CrashHandler),
-    ('/_ah/push-handlers/crash/clusterfuzz', crash_handler.CrashHandler),
-    ('/_ah/push-handlers/regression/uma-sampling-profiler',
-     crash_handler.CrashHandler),
+     'uma_sampling_profiler_result_feedback',
+     uma_sampling_profiler_result_feedback.UMASamplingProfilerResultFeedback(
+     ).Handle, ['GET']),
+    ('/cracas/result-feedback', 'cracas_result_feedback',
+     cracas_result_feedback.CracasResultFeedback().Handle, ['GET']),
+    ('/config', 'config', crash_config.CrashConfig().Handle, ['GET', 'POST'])
 ]
-frontend_app = webapp2.WSGIApplication(
-    frontend_web_pages_handler_mappings, debug=False)
+
+triage_analysis_view = triage_analysis.TriageAnalysis().Handle
+frontend_web_pages_handler_mappings += [
+    ('/clusterfuzz/triage-analysis', 'clusterfuzz_triage_analysis',
+     triage_analysis_view, ['POST']),
+    ('/cracas/triage-analysis', 'cracas_triage_analysis', triage_analysis_view,
+     ['POST']),
+    ('/uma-sampling-profiler/triage-analysis',
+     'uma_sampling_profiler_triage_analysis', triage_analysis_view, ['POST']),
+]
+
+crash_handler_view = crash_handler.CrashHandler().Handle
+frontend_web_pages_handler_mappings += [
+    ('/_ah/push-handlers/crash/cracas', 'cracas_crash_handler',
+     crash_handler_view, ['POST']),
+    ('/_ah/push-handlers/crash/clusterfuzz', 'clusterfuzz_crash_handler',
+     crash_handler_view, ['POST']),
+    ('/_ah/push-handlers/regression/uma-sampling-profiler',
+     'uma_sampling_profiler_handler', crash_handler_view, ['POST']),
+]
+
+frontend_app = Flask(__name__)
+for url, endpoint, view_func, methods in frontend_web_pages_handler_mappings:
+  frontend_app.add_url_rule(
+      url, endpoint=endpoint, view_func=view_func, methods=methods)
+
 # TODO(crbug.com/1322775) Migrate away from the shared prodx-mon-chrome-infra
 # service account and change to gae_ts_mon.initialize_prod()
 gae_ts_mon.initialize_adhoc(frontend_app)

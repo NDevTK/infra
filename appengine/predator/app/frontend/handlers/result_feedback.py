@@ -9,8 +9,7 @@ from google.appengine.api import users
 from google.appengine.ext import ndb
 
 from common import constants
-from gae_libs.handlers.base_handler import BaseHandler
-from gae_libs.handlers.base_handler import Permission
+from common.base_handler import BaseHandler, Permission
 from libs import time_util
 
 
@@ -45,7 +44,7 @@ class ResultFeedback(BaseHandler):
 
     Serve HTML page or JSON result as requested.
     """
-    key = self.request.get('key')
+    key = self.request.values.get('key', '')
 
     analysis = ndb.Key(urlsafe=key).get()
     if not analysis:  # pragma: no cover.

@@ -22,7 +22,6 @@ import pkgutil
 import traceback
 
 from google.appengine.api import users
-from google.appengine.ext import webapp
 
 try:
   import json
@@ -33,7 +32,7 @@ except ImportError:
 import util
 
 
-class _StatusUiHandler(webapp.RequestHandler):
+class _StatusUiHandler():
   """Render the status UI."""
 
   _RESOURCE_MAP = {
@@ -102,7 +101,7 @@ class _StatusUiHandler(webapp.RequestHandler):
     self.response.out.write(data or open(path, 'rb').read())
 
 
-class _BaseRpcHandler(webapp.RequestHandler):
+class _BaseRpcHandler():
   """Base handler for JSON-RPC responses.
 
   Sub-classes should fill in the 'json_response' property. All exceptions will

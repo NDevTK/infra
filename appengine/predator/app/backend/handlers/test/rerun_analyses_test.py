@@ -4,7 +4,7 @@
 
 from datetime import datetime
 import mock
-import webapp2
+from flask import Flask
 
 from google.appengine.api import users
 from google.appengine.ext import ndb
@@ -15,7 +15,6 @@ from backend.handlers.rerun_analyses import RerunAnalyses
 from common.appengine_testcase import AppengineTestCase
 from common.crash_pipeline import RerunPipeline
 from common.model.cracas_crash_analysis import CracasCrashAnalysis
-from gae_libs.pipeline_wrapper import pipeline_handlers
 
 
 _START_DATE = datetime(2017, 6, 1, 0, 0, 0)
@@ -24,9 +23,11 @@ _END_DATE = datetime(2017, 6, 15, 0, 0, 0)
 
 class RerunAnalysesTest(AppengineTestCase):
   """Tests utility functions and ``RerunAnalyses`` handler."""
-  app_module = webapp2.WSGIApplication([
-      ('/process/rerun-analyses', RerunAnalyses),
-  ], debug=True)
+  app_module = Flask(__name__)
+  app_module.add_url_rule(
+      '/process/rerun-analyses',
+      view_func=RerunAnalyses().Handle,
+      methods=['GET'])
 
   def setUp(self):
     super(RerunAnalysesTest, self).setUp()

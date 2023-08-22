@@ -9,9 +9,8 @@ import json
 from google.appengine.api import users
 from google.appengine.ext import ndb
 
+from common.base_handler import BaseHandler, Permission
 from common.model import triage_status
-from gae_libs.handlers.base_handler import BaseHandler
-from gae_libs.handlers.base_handler import Permission
 from libs import time_util
 
 
@@ -53,8 +52,8 @@ class TriageAnalysis(BaseHandler):
 
   def HandlePost(self):
     """Sets the manual triage result for crash analysis."""
-    key = ndb.Key(urlsafe=self.request.get('key'))
-    update_data = self.request.params.get('update-data')
+    key = ndb.Key(urlsafe=self.request.values.get('key', ''))
+    update_data = self.request.form.get('update-data')
     if not update_data:
       return {'data': {'success': False}}
 

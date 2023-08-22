@@ -8,8 +8,8 @@ import json
 
 from google.appengine.api import users
 
+from common.base_handler import BaseHandler, Permission
 from common.model.crash_config import CrashConfig as CrashConfigModel
-from gae_libs.handlers.base_handler import BaseHandler, Permission
 
 # TODO(katesonia): Have the validate function return error messages, and make
 # the error page surface those messages.
@@ -405,7 +405,7 @@ class CrashConfig(BaseHandler):
     return {'template': 'crash_config.html', 'data': data}
 
   def HandlePost(self):
-    data = self.request.params.get('data')
+    data = self.request.form.get('data')
     new_config_dict = json.loads(data)
     if not _ConfigurationDictIsValid(new_config_dict):
       return self.CreateError(

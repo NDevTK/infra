@@ -1,17 +1,18 @@
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
 import calendar
 import base64
 import copy
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
+from flask import Flask
 import json
 from urllib import quote
 
 from google.appengine.api import users
-import webapp2
 
 from common.appengine_testcase import AppengineTestCase
 from common.model import triage_status
@@ -22,9 +23,11 @@ from libs import time_util
 
 
 class TriageAnalysisTest(AppengineTestCase):
-  app_module = webapp2.WSGIApplication(
-      [('/triage-analysis',
-        triage_analysis.TriageAnalysis)], debug=True)
+  app_module = Flask(__name__)
+  app_module.add_url_rule(
+      '/triage-analysis',
+      view_func=triage_analysis.TriageAnalysis().Handle,
+      methods=['POST'])
 
   def setUp(self):
     super(TriageAnalysisTest, self).setUp()

@@ -4,7 +4,7 @@
 
 from datetime import datetime
 import mock
-import webapp2
+from flask import Flask
 
 from google.appengine.api import users
 from google.appengine.ext import ndb
@@ -18,9 +18,11 @@ from common.model.cracas_crash_analysis import CracasCrashAnalysis
 
 class RerunAnalysisTest(AppengineTestCase):
   """Tests utility functions and ``RerunAnalysis`` handler."""
-  app_module = webapp2.WSGIApplication([
-      ('/process/rerun-analysis', RerunAnalysis),
-  ], debug=True)
+  app_module = Flask(__name__)
+  app_module.add_url_rule(
+      '/process/rerun-analysis',
+      view_func=RerunAnalysis().Handle,
+      methods=['GET'])
 
   def testHandleErrorWhenThereIsNoKeyProvided(self):
     """Tests that handler returns 500 when there is no crash key provided."""
