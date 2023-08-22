@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 
 	apipb "go.chromium.org/chromiumos/config/go/test/api"
@@ -174,6 +175,8 @@ func genTestResultTags(testRun *artifactpb.TestRun, testInvocation *artifactpb.T
 					tags = AppendTags(tags, "model", chromeOSInfo.GetDutModel().GetModelName())
 					tags = AppendTags(tags, "hostname", dut.GetId().GetValue())
 				}
+
+				tags = AppendTags(tags, "cbx", strconv.FormatBool(dutInfo.GetCbx()))
 			}
 
 			tags = configEnvInfoTags(tags, primaryExecInfo)

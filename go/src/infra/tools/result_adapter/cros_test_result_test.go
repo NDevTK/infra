@@ -154,6 +154,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 					Tags: SortTags([]*pb.StringPair{
 						pbutil.StringPair("board", "hatch"),
 						pbutil.StringPair("build", "R106-15048.0.0"),
+						pbutil.StringPair("cbx", "false"),
 						pbutil.StringPair("hostname", "chromeos15-row4-rack5-host1"),
 						pbutil.StringPair("image", "hatch-cq/R106-15048.0.0"),
 						pbutil.StringPair("logs_url", "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da03"),
@@ -176,6 +177,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 					Tags: SortTags([]*pb.StringPair{
 						pbutil.StringPair("board", "hatch"),
 						pbutil.StringPair("build", "R106-15048.0.0"),
+						pbutil.StringPair("cbx", "false"),
 						pbutil.StringPair("hostname", "chromeos15-row4-rack5-host1"),
 						pbutil.StringPair("image", "hatch-cq/R106-15048.0.0"),
 						pbutil.StringPair("logs_url", "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da04"),
@@ -263,6 +265,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("branch", "main"),
 						pbutil.StringPair("build", "R106-15048.0.0"),
 						pbutil.StringPair("buildbucket_builder", "test_runner"),
+						pbutil.StringPair("cbx", "true"),
 						pbutil.StringPair("contacts", "user@google.com"),
 						pbutil.StringPair("declared_name", "hatch-cq/R102-14632.0.0-62834-8818718496810023809/wificell-cq/tast.wificell-cq"),
 						pbutil.StringPair("suite", "arc-cts-vm"),
@@ -315,6 +318,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 					Tags: SortTags([]*pb.StringPair{
 						pbutil.StringPair("board", "hatch"),
 						pbutil.StringPair("build", "R106-15048.0.0"),
+						pbutil.StringPair("cbx", "false"),
 						pbutil.StringPair("hostname", "chromeos15-row4-rack5-host1"),
 						pbutil.StringPair("image", "hatch-cq/R106-15048.0.0"),
 						pbutil.StringPair("logs_url", "gs://chromeos-test-logs/test-runner/prod/2022-09-07/98098abe-da4f-4bfa-bef5-9cbc4936da03"),
