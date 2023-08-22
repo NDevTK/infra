@@ -87,3 +87,13 @@ indexes:
   - name: tags
   - name: status_changed_time
     direction: desc
+
+# Used to query builds from a luci project running on a backend that have
+# reached or exceeded their next sync time.
+- kind: Build
+  properties:
+  - name: incomplete
+  - name: backend_target
+  - name: project
+  - name: next_backend_sync_time
+
