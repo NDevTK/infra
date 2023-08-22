@@ -5,6 +5,7 @@
 package common
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -14,6 +15,8 @@ import (
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
@@ -70,6 +73,22 @@ func (storage *InjectableStorage) Set(key string, obj interface{}) error {
 		err = fmt.Errorf("Failed to set %s in storage, %s is not a valid `proto` type", key, reflect.TypeOf(obj))
 	}
 	return err
+}
+
+// LogStorageToStep writes the json structure of the storage as a log in a step.
+func (storage *InjectableStorage) LogStorageToBuild(ctx context.Context, buildState *build.State) {
+	err := storage.LoadInjectables()
+	if err != nil {
+		return
+	}
+
+	storageLog := buildState.Log("Injectable Storage Contents")
+	storageJson, _ := json.MarshalIndent(storage.Injectables, "", "    ")
+	storageStr := string(storageJson)
+	_, err = storageLog.Write([]byte(storageStr))
+	if err != nil {
+		logging.Infof(ctx, "Failed to write contents of injectable storage, %s", err)
+	}
 }
 
 // isValidType checks if a type implements ProtoMessage or is a basic, non struct, type.
@@ -238,6 +257,7 @@ func unmarshalInterfaceProtoMapToProto(proto_map map[string]interface{}, proto p
 	if err != nil {
 		return err
 	}
+
 	err = protojson.Unmarshal(json_bytes, proto)
 	if err != nil {
 		return err

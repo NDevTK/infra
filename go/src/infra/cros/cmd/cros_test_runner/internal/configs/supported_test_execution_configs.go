@@ -16,6 +16,7 @@ import (
 	"infra/cros/cmd/cros_test_runner/internal/executors"
 
 	tpcommon "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 )
 
 // All currently supported command-executor pairs.
@@ -67,6 +68,7 @@ var ContainerReadLogs_ContainerExecutor = &common_configs.CommandExecutorPairedC
 var GenericProvision_GenericProvisionExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericProvisionCmdType, ExecutorType: executors.GenericProvisionExecutorType}
 var GenericTests_GenericTestsExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericTestsCmdType, ExecutorType: executors.GenericTestsExecutorType}
 var GenericPublish_GenericPublishExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericPublishCmdType, ExecutorType: executors.GenericPublishExecutorType}
+var ParseDutTopology_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.ParseDutTopologyCmdType, ExecutorType: common_executors.NoExecutorType}
 
 var RequiredCmdExecPairMap = map[*common_configs.CommandExecutorPairedConfig]*common_configs.CommandExecutorPairedConfig{}
 
@@ -123,7 +125,8 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform comm
 		mainConfigs = append(mainConfigs,
 			InvServiceStart_InvExecutor,
 			LoadDutTopology_InvExecutor,
-			InvServiceStop_InvExecutor)
+			InvServiceStop_InvExecutor,
+			ParseDutTopology_NoExecutor)
 	}
 
 	// Start CTR and gcloud auth commands
@@ -301,6 +304,33 @@ func GenerateLocalConfigs(ctx context.Context, sk *data.LocalTestStateKeeper) *c
 	}
 
 	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
+}
+
+func generateTaskConfigs(inputV2 *skylab_test_runner.CrosTestRunnerRequest) *common_configs.Configs {
+	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
+
+	for _, task := range inputV2.GetOrderedTasks() {
+		for range task.GetOrderedContainerRequests() {
+			mainConfigs = append(mainConfigs,
+				GetCmdExecPair(ContainerStart_ContainerExecutor, task.Required))
+		}
+		switch task.Task.(type) {
+		case *skylab_test_runner.CrosTestRunnerRequest_Task_Provision:
+			mainConfigs = append(mainConfigs,
+				GetCmdExecPair(GenericProvision_GenericProvisionExecutor, task.Required))
+		case *skylab_test_runner.CrosTestRunnerRequest_Task_PreTest:
+		case *skylab_test_runner.CrosTestRunnerRequest_Task_Test:
+			mainConfigs = append(mainConfigs,
+				GetCmdExecPair(GenericTests_GenericTestsExecutor, task.Required))
+		case *skylab_test_runner.CrosTestRunnerRequest_Task_PostTest:
+		case *skylab_test_runner.CrosTestRunnerRequest_Task_Publish:
+			mainConfigs = append(mainConfigs,
+				GetCmdExecPair(GenericPublish_GenericPublishExecutor, task.Required))
+		default:
+		}
+	}
+
+	return &common_configs.Configs{MainConfigs: mainConfigs}
 }
 
 // GetHwConfigsEnvVars gets all env vars that are required

@@ -26,9 +26,9 @@ type UpdateDutStateCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
 
 	// Deps
-	HostName      string
-	TestResponses *testapi.CrosTestResponse // optional
-	ProvisionResp *testapi.InstallResponse  // optional
+	TestResponses      *testapi.CrosTestResponse // optional
+	ProvisionResponses map[string][]*testapi.InstallResponse
+	ProvisionDevices   map[string]*testapi.CrosTestRequest_Device
 
 	// Updates
 	CurrentDutState dutstate.State
@@ -73,49 +73,72 @@ func (cmd *UpdateDutStateCmd) UpdateStateKeeper(
 // Execute executes the command.
 func (cmd *UpdateDutStateCmd) Execute(ctx context.Context) error {
 	var err error
-	step, ctx := build.StartStep(ctx, "Update dut state if required")
+	step, ctx := build.StartStep(ctx, "Update dut states if required")
 	defer func() { step.End(err) }()
 
+	for deviceId := range cmd.ProvisionDevices {
+		err := cmd.updateDevice(ctx, deviceId)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (cmd *UpdateDutStateCmd) updateDevice(ctx context.Context, deviceId string) error {
+	device := cmd.ProvisionDevices[deviceId]
+	responses := cmd.ProvisionResponses[deviceId]
+
+	var err error
+	step, ctx := build.StartStep(ctx, fmt.Sprintf("Update Dut: %s", device.GetDut().GetId().GetValue()))
+	defer func() { step.End(err) }()
+
+	logging.Infof(ctx, "deviceId: %s", deviceId)
 	triedToUpdateState := false
-	cmd.CurrentDutState, err = ufs.GetDutStateFromUFS(ctx, cmd.HostName)
+	currentDutState, err := ufs.GetDutStateFromUFS(ctx, device.GetDut().GetId().GetValue())
 	if err != nil {
 		logging.Infof(ctx, "error while getting current dut state: %s", err.Error())
 	}
-	logging.Infof(ctx, "Dut state before any kind of update: %s", cmd.CurrentDutState)
+	logging.Infof(ctx, "Dut state before any kind of update: %s", currentDutState)
 
-	// Update on provision/test failures
-	if cmd.ProvisionResp != nil && cmd.ProvisionResp.GetStatus() != api.InstallResponse_STATUS_SUCCESS {
-		triedToUpdateState = updateDutState(ctx, cmd.HostName, dutstate.NeedsRepair, "provision")
-	} else if cmd.TestResponses != nil && len(cmd.TestResponses.GetTestCaseResults()) > 0 && common.IsAnyTestFailure(cmd.TestResponses.GetTestCaseResults()) {
-		triedToUpdateState = updateDutState(ctx, cmd.HostName, dutstate.NeedsRepair, "test(s)")
+	for _, response := range responses {
+		logging.Infof(ctx, "Found provision response with status: %s", response.GetStatus().String())
+		if response.GetStatus() != api.InstallResponse_STATUS_SUCCESS {
+			triedToUpdateState = updateDutState(ctx, device.GetDut().GetId().GetValue(), dutstate.NeedsRepair, "provision")
+			break
+		}
+	}
+	if !triedToUpdateState && cmd.TestResponses != nil && len(cmd.TestResponses.GetTestCaseResults()) > 0 && common.IsAnyTestFailure(cmd.TestResponses.GetTestCaseResults()) {
+		triedToUpdateState = updateDutState(ctx, device.GetDut().GetId().GetValue(), dutstate.NeedsRepair, "test(s)")
 	}
 
 	if triedToUpdateState {
-		cmd.CurrentDutState, err = ufs.GetDutStateFromUFS(ctx, cmd.HostName)
+		currentDutState, err = ufs.GetDutStateFromUFS(ctx, device.GetDut().GetId().GetValue())
 		if err != nil {
 			logging.Infof(ctx, "error while getting current dut state: %s", err.Error())
 		}
-		logging.Infof(ctx, "Dut state after update: %s", cmd.CurrentDutState)
+		logging.Infof(ctx, "Dut state after update: %s", currentDutState)
 	}
 
-	step.SetSummaryMarkdown(fmt.Sprintf("dut state: %s", cmd.CurrentDutState.String()))
-	step.AddTagValue("dut_state", cmd.CurrentDutState.String())
+	step.SetSummaryMarkdown(fmt.Sprintf("dut state: %s", currentDutState.String()))
+	step.AddTagValue("dut_state", currentDutState.String())
 	return nil
 }
 
 func (cmd *UpdateDutStateCmd) extractDepsFromHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
-	if sk.ProvisionResp == nil {
-		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: ProvisionResp", cmd.GetCommandType())
+	cmd.ProvisionResponses = make(map[string][]*testapi.InstallResponse)
+	cmd.ProvisionDevices = make(map[string]*testapi.CrosTestRequest_Device)
+
+	for _, deviceId := range sk.DeviceIdentifiers {
+		cmd.ProvisionResponses[deviceId] = sk.ProvisionResponses[deviceId]
+		cmd.ProvisionDevices[deviceId] = sk.Devices[deviceId]
 	}
+
 	if sk.TestResponses == nil {
 		logging.Infof(ctx, "Warning: cmd %q missing non-critical dependency: TestResponses", cmd.GetCommandType())
 	}
-	if sk.HostName == "" {
-		return fmt.Errorf("Cmd %q missing dependency: HostName", cmd.GetCommandType())
-	}
-	cmd.ProvisionResp = sk.ProvisionResp
 	cmd.TestResponses = sk.TestResponses
-	cmd.HostName = sk.HostName
 
 	return nil
 }
@@ -133,7 +156,7 @@ func (cmd *UpdateDutStateCmd) updateHwTestStateKeeper(
 
 // updateDutState tries to update dut state
 func updateDutState(ctx context.Context, hostName string, dutState dutstate.State, failureType string) bool {
-	logging.Infof(ctx, "Trying to update dut state to %s due to %s failure.", dutstate.NeedsRepair)
+	logging.Infof(ctx, "Trying to update dut state to %s due to %s failure.", dutstate.NeedsRepair, failureType)
 	err := ufs.SafeUpdateUFSDUTState(ctx, hostName, dutState)
 	if err != nil {
 		logging.Infof(ctx, "Error while updating dut state: %s", err)

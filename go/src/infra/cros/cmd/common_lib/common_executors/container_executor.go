@@ -105,10 +105,10 @@ func (ex *ContainerExecutor) startContainerCommandExecution(
 }
 
 func (ex *ContainerExecutor) ReadLogs(ctx context.Context) error {
-	var err error
-	step, ctx := build.StartStep(ctx, "Read Container Logs")
-
 	go func() {
+		var err error
+		step, ctx := build.StartStep(ctx, "Read Container Logs")
+
 		defer func() {
 			step.End(err)
 		}()

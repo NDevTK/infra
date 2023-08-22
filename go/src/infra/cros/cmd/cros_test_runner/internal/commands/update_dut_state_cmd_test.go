@@ -25,17 +25,6 @@ func TestUpdateDutStateCmd_UnsupportedSK(t *testing.T) {
 	})
 }
 
-func TestUpdateDutStateCmd_MissingDeps(t *testing.T) {
-	t.Parallel()
-	Convey("Cmd missing deps", t, func() {
-		ctx := context.Background()
-		sk := &data.HwTestStateKeeper{CftTestRequest: nil}
-		cmd := commands.NewUpdateDutStateCmd()
-		err := cmd.ExtractDependencies(ctx, sk)
-		So(err, ShouldNotBeNil)
-	})
-}
-
 func TestUpdateDutStateCmd_UpdateSK(t *testing.T) {
 	t.Parallel()
 	Convey("Update SK", t, func() {

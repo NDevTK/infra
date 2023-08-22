@@ -13,6 +13,7 @@ import (
 	"github.com/gogo/protobuf/jsonpb"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 )
 
@@ -21,7 +22,8 @@ type BuildInputValidationCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
 
 	// Deps
-	CftTestRequest *skylab_test_runner.CFTTestRequest
+	CftTestRequest        *skylab_test_runner.CFTTestRequest
+	CrosTestRunnerRequest *skylab_test_runner.CrosTestRunnerRequest
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -48,8 +50,18 @@ func (cmd *BuildInputValidationCmd) Execute(ctx context.Context) error {
 	step, ctx := build.StartStep(ctx, "Inputs validation")
 	defer func() { step.End(err) }()
 
-	if cmd.CftTestRequest.GetParentBuildId() != 0 {
-		step.SetSummaryMarkdown(fmt.Sprintf("* [parent CTP](https://cr-buildbucket.appspot.com/build/%d)", cmd.CftTestRequest.GetParentBuildId()))
+	if cmd.CrosTestRunnerRequest != nil {
+		if cmd.CrosTestRunnerRequest.GetBuild().GetParentBuildId() != 0 {
+			step.SetSummaryMarkdown(fmt.Sprintf("* [parent CTP](https://cr-buildbucket.appspot.com/build/%d)", cmd.CrosTestRunnerRequest.GetBuild().GetParentBuildId()))
+		}
+
+		req := step.Log("request")
+		marsh := jsonpb.Marshaler{Indent: "  "}
+		if err = marsh.Marshal(req, cmd.CrosTestRunnerRequest); err != nil {
+			err = errors.Annotate(err, "failed to marshal proto").Err()
+		}
+
+		return err
 	}
 
 	req := step.Log("request")
@@ -64,10 +76,15 @@ func (cmd *BuildInputValidationCmd) Execute(ctx context.Context) error {
 }
 
 func (cmd *BuildInputValidationCmd) extractDepsFromHwTestStateKeeper(ctx context.Context, sk *data.HwTestStateKeeper) error {
-	if sk.CftTestRequest == nil {
-		return fmt.Errorf("Cmd %q missing dependency: CftTestRequest", cmd.GetCommandType())
+	if sk.CrosTestRunnerRequest == nil {
+		logging.Infof(ctx, "Warning: cmd %q missing dependency: CrosTestRunnerRequest")
+		if sk.CftTestRequest == nil {
+			return fmt.Errorf("Cmd %q missing dependency: CftTestRequest", cmd.GetCommandType())
+		}
+		cmd.CftTestRequest = sk.CftTestRequest
+	} else {
+		cmd.CrosTestRunnerRequest = sk.CrosTestRunnerRequest
 	}
-	cmd.CftTestRequest = sk.CftTestRequest
 
 	return nil
 }

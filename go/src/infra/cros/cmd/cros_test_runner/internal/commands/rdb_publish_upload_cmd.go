@@ -111,9 +111,16 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 	cmd.TesthausUrl = sk.TesthausUrl
 
 	var err error
-	cmd.Sources, err = SourcesFromCFTTestRequest(sk.CftTestRequest)
-	if err != nil {
-		return errors.Annotate(err, "Cmd %q failed to construct dependency: Sources", cmd.GetCommandType()).Err()
+	if sk.CrosTestRunnerRequest != nil {
+		cmd.Sources, err = SourcesFromPrimaryDevice(sk)
+		if err != nil {
+			return errors.Annotate(err, "Cmd %q failed to construct dependency: Sources", cmd.GetCommandType()).Err()
+		}
+	} else {
+		cmd.Sources, err = SourcesFromCFTTestRequest(sk.CftTestRequest)
+		if err != nil {
+			return errors.Annotate(err, "Cmd %q failed to construct dependency: Sources", cmd.GetCommandType()).Err()
+		}
 	}
 
 	cmd.GcsUrl = sk.GcsUrl
@@ -180,7 +187,7 @@ func populatePrimaryBuildInfo(
 	primaryBuildInfo := &artifactpb.BuildInfo{}
 	primaryExecInfo.BuildInfo = primaryBuildInfo
 
-	if buildName := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, "build"); buildName != "" {
+	if buildName := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "build"); buildName != "" {
 		primaryBuildInfo.Name = buildName
 	}
 
@@ -188,9 +195,11 @@ func populatePrimaryBuildInfo(
 	// set to board upstream (since pre trv2). This should be fixed at some point.
 	if board := sk.CftTestRequest.GetPrimaryDut().GetDutModel().GetBuildTarget(); board != "" {
 		primaryBuildInfo.Board = board
+	} else if board := common.GetValueFromRequestKeyvals(ctx, nil, sk.CrosTestRunnerRequest, "build_target"); board != "" {
+		primaryBuildInfo.Board = board
 	}
 
-	if buildTarget := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, "build_target"); buildTarget != "" {
+	if buildTarget := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "build_target"); buildTarget != "" {
 		primaryBuildInfo.BuildTarget = buildTarget
 	}
 
@@ -251,11 +260,11 @@ func populatePrimaryBuildMetadata(
 	lacrosInfo := &artifactpb.BuildMetadata_Lacros{}
 	buildMetadata.Lacros = lacrosInfo
 
-	if ashVersion := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, "ash_version"); ashVersion != "" {
+	if ashVersion := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "ash_version"); ashVersion != "" {
 		lacrosInfo.AshVersion = ashVersion
 	}
 
-	if lacrosVersion := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, "lacros_version"); lacrosVersion != "" {
+	if lacrosVersion := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "lacros_version"); lacrosVersion != "" {
 		lacrosInfo.LacrosVersion = lacrosVersion
 	}
 }
@@ -277,7 +286,11 @@ func populatePrimaryDutInfo(
 		isSkylab = !strings.HasPrefix(testDuts[0].GetId().GetValue(), "satlab-")
 	}
 
-	provisionState := sk.CftTestRequest.GetPrimaryDut().GetProvisionState()
+	primaryDut := sk.CftTestRequest.GetPrimaryDut()
+	if sk.PrimaryDeviceMetadata != nil {
+		primaryDut = sk.PrimaryDeviceMetadata
+	}
+	provisionState := primaryDut.GetProvisionState()
 	if provisionState != nil {
 		primaryDutInfo.ProvisionState = provisionState
 	}
@@ -351,20 +364,32 @@ func populateSecondaryExecutionInfo(
 	// or not for multi-duts. If not, raise this issue to proper channel.
 	testDuts := sk.DutTopology.GetDuts()
 	if len(testDuts) > 1 {
-		inputCompDuts := sk.CftTestRequest.GetCompanionDuts()
+		companionDevices := testDuts[1 : len(testDuts)-1]
+		companionDevicesMetadata := sk.CftTestRequest.GetCompanionDuts()
+
+		if sk.CompanionDevicesMetadata != nil {
+			companionDevices = []*labapi.Dut{}
+			for _, device := range sk.CompanionDevices {
+				companionDevices = append(companionDevices, device.GetDut())
+			}
+			companionDevicesMetadata = sk.CompanionDevicesMetadata
+		}
 
 		secondaryExecInfos := []*artifactpb.ExecutionInfo{}
-		for i, dut := range testDuts {
+		for i, device := range companionDevices {
 			secondaryExecInfo := &artifactpb.ExecutionInfo{}
 			secondaryDutInfo := &artifactpb.DutInfo{}
 			secondaryExecInfo.DutInfo = secondaryDutInfo
-			secondaryDutInfo.Dut = dut
+			secondaryDutInfo.Dut = device
 
 			secondaryBuildInfo := &artifactpb.BuildInfo{}
 			secondaryExecInfo.BuildInfo = secondaryBuildInfo
-			if i < len(inputCompDuts) {
-				if secondaryBoard := inputCompDuts[i].GetDutModel().GetBuildTarget(); secondaryBoard != "" {
+			if i < len(companionDevicesMetadata) {
+				if secondaryBoard := companionDevicesMetadata[i].GetDutModel().GetBuildTarget(); secondaryBoard != "" {
 					secondaryBuildInfo.Board = secondaryBoard
+				}
+				if secondaryProvisionState := companionDevicesMetadata[i].GetProvisionState(); secondaryProvisionState != nil {
+					secondaryDutInfo.ProvisionState = secondaryProvisionState
 				}
 			}
 
@@ -385,9 +410,9 @@ func populateTestRunsInfo(
 	testRuns := []*artifactpb.TestRun{}
 	resultProto.TestRuns = testRuns
 
-	suite := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, "suite")
-	branch := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, "branch")
-	mainBuilderName := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, "master_build_config")
+	suite := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "suite")
+	branch := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "branch")
+	mainBuilderName := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "master_build_config")
 	displayName := getSingleTagValue(build.Tags, "display_name")
 	for _, testCaseResult := range sk.TestResponses.GetTestCaseResults() {
 		// - TestRun
@@ -464,6 +489,41 @@ func getTaskRequestId(taskId string) string {
 	}
 
 	return fmt.Sprintf("%s0", taskId[:len(taskId)-1])
+}
+
+// SourcesFromPrimaryDevice returns the code sources tested in the given
+// testing request assuming provision was successful and the version did
+// not shcnage during the test.
+func SourcesFromPrimaryDevice(sk *data.HwTestStateKeeper) (*testapi_metadata.PublishRdbMetadata_Sources, error) {
+	provisionState := sk.PrimaryDeviceMetadata.GetProvisionState()
+	if provisionState == nil {
+		// Invalid request.
+		return nil, errors.Reason("CFTTestRequest: primary_dut.provision_state missing").Err()
+	}
+
+	// The path to the system image.
+	imagePath := provisionState.SystemImage.GetSystemImagePath()
+	if imagePath == nil || imagePath.GetHostType() != _go.StoragePath_GS {
+		// For non-GS stored build outputs (e.g. local files),
+		// we do not have information about the sources used.
+		return nil, nil
+	}
+	if !strings.HasPrefix(imagePath.GetPath(), "gs://") {
+		return nil, errors.Reason("CFTTestRequest: primary_dut.provision_state.system_image.system_image_path.path: must start with gs://").Err()
+	}
+	if strings.HasSuffix(imagePath.GetPath(), "/") {
+		return nil, errors.Reason("CFTTestRequest: primary_dut.provision_state.system_image.system_image_path.path: must not have trailing '/'").Err()
+	}
+	return &testapi_metadata.PublishRdbMetadata_Sources{
+		// Path to the file in Google Cloud Storage that contains
+		// information about the code sources built into the build.
+		GsPath: imagePath.Path + common.SourceMetadataPath,
+		// If custom firmware is used or custom packages are deployed
+		// that were not built as part of the Chrome OS image (e.g. Lacros
+		// testing or firmware testing), the test is not a pure test
+		// of the build sources.
+		IsDeploymentDirty: provisionState.GetFirmware() != nil || len(provisionState.GetPackages()) > 0,
+	}, nil
 }
 
 // SourcesFromCFTTestRequest returns the code sources tested in the given

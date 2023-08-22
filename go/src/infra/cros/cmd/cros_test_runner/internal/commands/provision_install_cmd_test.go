@@ -67,6 +67,7 @@ func TestProvisionInstallCmd_UpdateSK(t *testing.T) {
 		ctx := context.Background()
 		wantProvisionResp := &api.InstallResponse{Status: api.InstallResponse_STATUS_SUCCESS}
 		sk := &data.HwTestStateKeeper{CftTestRequest: nil}
+		sk.ProvisionResponses = map[string][]*api.InstallResponse{}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
 		cont := containers.NewCrosProvisionTemplatedContainer("container/image/path", ctr)
@@ -75,7 +76,7 @@ func TestProvisionInstallCmd_UpdateSK(t *testing.T) {
 		cmd.ProvisionResp = wantProvisionResp
 		err := cmd.UpdateStateKeeper(ctx, sk)
 		So(err, ShouldBeNil)
-		So(sk.ProvisionResp, ShouldEqual, wantProvisionResp)
+		So(sk.ProvisionResponses["primaryDevice"][0], ShouldEqual, wantProvisionResp)
 	})
 }
 

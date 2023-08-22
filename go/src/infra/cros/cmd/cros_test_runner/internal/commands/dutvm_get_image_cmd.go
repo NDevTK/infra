@@ -36,7 +36,7 @@ func (cmd *DutVmGetImageCmd) ExtractDependencies(
 		if sk.CftTestRequest == nil {
 			return fmt.Errorf("cmd %q missing dependency: CftTestRequest", cmd.GetCommandType())
 		}
-		buildName := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, "build")
+		buildName := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "build")
 		if buildName == "" {
 			return fmt.Errorf("cmd %q missing dependency: CftTestRequest.AutotestKeyvals['build']", cmd.GetCommandType())
 		}

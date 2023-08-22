@@ -86,6 +86,7 @@ func (cmd *ParseEnvInfoCmd) updateHwTestStateKeeper(
 
 	if cmd.CurrentInvocationId != "" {
 		sk.CurrentInvocationId = cmd.CurrentInvocationId
+		sk.Injectables.Set("invocation-id", sk.CurrentInvocationId)
 	}
 
 	return nil

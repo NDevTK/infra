@@ -14,6 +14,7 @@ import (
 	"log"
 	"os"
 
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner/steps"
 	"go.chromium.org/luci/common/errors"
@@ -116,9 +117,20 @@ func executeHwTests(
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 
 	containerQueue := list.New()
+	provisionQueue := list.New()
+	preTestQueue := list.New()
+	testQueue := list.New()
+	postTestQueue := list.New()
+	publishQueue := list.New()
+
+	injectables := common.NewInjectableStorage()
+	_ = injectables.Set("req", req)
+	_ = injectables.Set("botDims", buildState.Build().GetInfra().GetSwarming().GetBotDimensions())
 
 	// Create state keeper
 	gcsurl := common.GetGcsUrl(gsRoot)
+	_ = injectables.Set("gcs-url", gcsurl)
+	_ = injectables.Set("stainless-url", common.GetStainlessUrl(gcsurl))
 	sk := &data.HwTestStateKeeper{
 		BuildState:            buildState,
 		CftTestRequest:        req,
@@ -129,9 +141,17 @@ func executeHwTests(
 		StainlessUrl:          common.GetStainlessUrl(gcsurl),
 		TesthausUrl:           common.GetTesthausUrl(gcsurl),
 		ContainerQueue:        containerQueue,
-		Injectables:           common.NewInjectableStorage(),
+		ProvisionQueue:        provisionQueue,
+		PreTestQueue:          preTestQueue,
+		TestQueue:             testQueue,
+		PostTestQueue:         postTestQueue,
+		PublishQueue:          publishQueue,
+		Injectables:           injectables,
 		ContainerInstances:    make(map[string]interfaces.ContainerInterface),
 		ContainerImages:       containerImagesMap,
+		ProvisionResponses:    map[string][]*testapi.InstallResponse{},
+		DeviceIdentifiers:     []string{},
+		Devices:               map[string]*testapi.CrosTestRequest_Device{},
 	}
 
 	// Generate config
@@ -143,6 +163,7 @@ func executeHwTests(
 
 	// Execute config
 	err = hwTestConfig.Execute(ctx)
+	sk.Injectables.LogStorageToBuild(ctx, buildState)
 	if err != nil {
 		return sk.SkylabResult, errors.Annotate(err, "error during executing hw test configs: ").Err()
 	}

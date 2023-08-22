@@ -109,12 +109,18 @@ func parseTime(s string) time.Time {
 }
 
 // GetValueFromRequestKeyvals gets value from provided keyvals based on key.
-func GetValueFromRequestKeyvals(ctx context.Context, cftReq *skylab_test_runner.CFTTestRequest, key string) string {
-	if cftReq == nil {
+func GetValueFromRequestKeyvals(ctx context.Context, cftReq *skylab_test_runner.CFTTestRequest, ctrrReq *skylab_test_runner.CrosTestRunnerRequest, key string) string {
+	if cftReq == nil && ctrrReq == nil {
 		return ""
 	}
+	keyvals := map[string]string{}
+	if ctrrReq != nil {
+		keyvals = ctrrReq.GetParams().GetKeyvals()
+	} else {
+		keyvals = cftReq.GetAutotestKeyvals()
+	}
 
-	value, ok := cftReq.GetAutotestKeyvals()[key]
+	value, ok := keyvals[key]
 	if !ok {
 		logging.Infof(ctx, "%s not found in keyvals.", key)
 		return ""

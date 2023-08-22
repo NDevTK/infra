@@ -329,6 +329,9 @@ func (cfg *CommandConfig) GetCommand(
 		}
 		cmd = commands.NewGenericPublishCmd(exec)
 
+	case commands.ParseDutTopologyCmdType:
+		cmd = commands.NewParseDutTopologyCmd()
+
 	default:
 		return nil, fmt.Errorf("Command type %s not supported in command configs!", cmdType)
 	}

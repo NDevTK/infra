@@ -6,6 +6,7 @@ package service
 
 import (
 	"context"
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/executions"
 
@@ -30,6 +31,7 @@ func NewCrosTestRunnerService(execReq *skylab_test_runner.ExecuteRequest, server
 	executeSK.StainlessUrl = serverSK.StainlessUrl
 	executeSK.TesthausUrl = serverSK.TesthausUrl
 	executeSK.GcsPublishSrcDir = serverSK.GcsPublishSrcDir
+	executeSK.Injectables = common.NewInjectableStorage()
 
 	executeSK.Args.HostName = serverSK.HostName
 	duts := serverSK.DutTopology.GetDuts()
@@ -65,6 +67,7 @@ func (crs *CrosTestRunnerService) Execute(ctx context.Context, logPath string, n
 	testPlan := crs.req.GetTestPlan()
 	if testPlan != nil {
 		crs.sk.TestArgs = testPlan.TestArgs
+		_ = crs.sk.Injectables.Set("test-args", testPlan.TestArgs)
 	}
 
 	return executions.LocalExecution(crs.sk, crs.req.CtrCipdVersion, crs.req.PathToCipdBin, logPath, noSudo)

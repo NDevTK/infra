@@ -6,6 +6,7 @@ package configs
 
 import (
 	"context"
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/common_configs"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/data"
@@ -98,6 +99,7 @@ func TestExecute_SuccesfulHwTestsExecution(t *testing.T) {
 			CftTestRequest: &skylab_test_runner.CFTTestRequest{
 				ParentBuildId: 12345678,
 			},
+			Injectables: common.NewInjectableStorage(),
 		}
 		testExecConfig := NewTrv2ExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk, nil)
 

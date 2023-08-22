@@ -6,6 +6,7 @@ package commands_test
 
 import (
 	"context"
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"testing"
@@ -53,6 +54,7 @@ func TestParseEnvInfoCmd_Execute(t *testing.T) {
 		t.Setenv("SWARMING_BOT_ID", hostName)
 		ctx := context.Background()
 		sk := &data.HwTestStateKeeper{}
+		sk.Injectables = common.NewInjectableStorage()
 		cmd := commands.NewParseEnvInfoCmd()
 
 		// Extract deps first

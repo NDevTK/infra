@@ -48,6 +48,8 @@ type HwTestStateKeeper struct {
 
 	// Dut related
 	HostName                 string
+	DeviceIdentifiers        []string
+	Devices                  map[string]*testapi.CrosTestRequest_Device
 	PrimaryDevice            *testapi.CrosTestRequest_Device
 	PrimaryDeviceMetadata    *skylab_test_runner.CFTTestRequest_Device
 	CompanionDevices         []*testapi.CrosTestRequest_Device
@@ -61,8 +63,8 @@ type HwTestStateKeeper struct {
 	LeaseVMResponse *testapi.LeaseVMResponse
 
 	// Provision related
-	InstallMetadata *anypb.Any
-	ProvisionResp   *testapi.InstallResponse
+	InstallMetadata    *anypb.Any
+	ProvisionResponses map[string][]*testapi.InstallResponse
 
 	// Test related
 	TestArgs      *testapi.AutotestExecutionMetadata

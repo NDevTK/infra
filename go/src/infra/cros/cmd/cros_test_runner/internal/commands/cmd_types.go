@@ -28,6 +28,7 @@ const (
 	InvServiceStopCmdType   interfaces.CommandType = "InvServiceStop"
 	LoadDutTopologyCmdType  interfaces.CommandType = "LoadDutTopology"
 	BuildDutTopologyCmdType interfaces.CommandType = "BuildDutTopology"
+	ParseDutTopologyCmdType interfaces.CommandType = "ParseDutTopology"
 
 	// SSH service related commands
 	SshStartTunnelCmdType        interfaces.CommandType = "SshTunnelStart"

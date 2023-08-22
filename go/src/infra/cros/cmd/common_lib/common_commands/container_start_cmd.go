@@ -141,7 +141,7 @@ func (cmd *ContainerStartCmd) extractDepsFromHwTestStateKeeper(
 
 	containerImage, err := common.GetContainerImageFromMap(cmd.ContainerRequest.ContainerImageKey, sk.ContainerImages)
 	if err != nil {
-		return fmt.Errorf("cmd %q missing dependency: ContainerImage", cmd.GetCommandType())
+		return fmt.Errorf("cmd %q missing dependency: ContainerImage, %s", cmd.GetCommandType(), err)
 	}
 	cmd.ContainerImage = containerImage
 

@@ -25,6 +25,7 @@ type GenericProvisionCmd struct {
 	// Deps
 	ProvisionRequest *skylab_test_runner.ProvisionRequest
 	Identifier       string
+	TargetDevice     string
 
 	// Updates
 	ProvisionResp *testapi.InstallResponse
@@ -122,6 +123,12 @@ func (cmd *GenericProvisionCmd) extractDepsFromHwTestStateKeeper(
 		}
 	}
 
+	// TODO(cdelagarza): Move provision target value from keyvals to ProvisionRequest
+	cmd.TargetDevice = common.GetValueFromRequestKeyvals(ctx, nil, sk.CrosTestRunnerRequest, cmd.Identifier+"-target")
+	if cmd.TargetDevice == "" {
+		logging.Infof(ctx, "Warning: cmd %q missing preferred dependency: TargetDevice", cmd.GetCommandType())
+	}
+
 	return nil
 }
 
@@ -130,23 +137,30 @@ func (cmd *GenericProvisionCmd) updateHwTestStateKeeper(
 	sk *data.HwTestStateKeeper) error {
 
 	if cmd.ProvisionResp != nil {
-		sk.ProvisionResp = cmd.ProvisionResp
+		responses := sk.ProvisionResponses[cmd.TargetDevice]
+		if responses == nil {
+			responses = []*testapi.InstallResponse{}
+		}
+		responses = append(responses, cmd.ProvisionResp)
+		sk.ProvisionResponses[cmd.TargetDevice] = responses
+		if err := sk.Injectables.Set(cmd.TargetDevice+"ProvisionResponses", responses); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), cmd.TargetDevice+"ProvisionResponses", err)
+		}
 	}
 
-	// TODO(cdelagarza): Update to use targeted DUT instead of defaulting to primaryDeviceMetadata
-	// when we start supporting Multi-DUT provisioning.
 	if cmd.ProvisionRequest != nil && cmd.ProvisionRequest.GetInstallRequest() != nil {
+		key := cmd.TargetDevice + "Metadata"
 		deviceMetadata := &skylab_test_runner.CFTTestRequest_Device{}
-		if err := common.Inject(deviceMetadata, "", sk.Injectables, "primaryDeviceMetadata"); err != nil {
-			logging.Infof(ctx, "Warning: could not retrieve 'primaryDeviceMetadata' from InjectableStorage, %s", err)
+		if err := common.Inject(deviceMetadata, "", sk.Injectables, key); err != nil {
+			logging.Infof(ctx, "Warning: could not retrieve '%s' from InjectableStorage, %s", key, err)
 		} else {
 			deviceMetadata.ProvisionState = &testapi.ProvisionState{
 				SystemImage: &testapi.ProvisionState_SystemImage{
 					SystemImagePath: cmd.ProvisionRequest.GetInstallRequest().GetImagePath(),
 				},
 			}
-			if err := sk.Injectables.Set("primaryDeviceMetadata", deviceMetadata); err != nil {
-				logging.Infof(ctx, "Warning: failed to set 'primaryDeviceMetadata' into the InjectableStorage, %s", err)
+			if err := sk.Injectables.Set(key, deviceMetadata); err != nil {
+				logging.Infof(ctx, "Warning: failed to set '%s' into the InjectableStorage, %s", key, err)
 			}
 		}
 	}
