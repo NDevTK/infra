@@ -1,6 +1,7 @@
 package: infra/tools/cipd/${platform}
 description: CIPD client binary.
 platforms:
+  - aix-ppc64
   - linux-386
   - linux-amd64
   - linux-arm64
@@ -12,17 +13,17 @@ platforms:
   - linux-ppc64le
   - linux-riscv64
   - linux-s390x
-  - aix-ppc64
   - mac-amd64
   - mac-arm64
+  - openbsd-amd64
   - windows-386
   - windows-amd64
   - windows-arm64
 go_build_environ:
   CGO_ENABLED:
-    darwin:  1  # native Go DNS resolved is buggy on OSX (crbug.com/803673)
-    linux:   0  # to avoid linking to system dynamic libraries
-    windows: 0  # we have no cgo toolchain on Windows
+    darwin: 1 # native Go DNS resolved is buggy on OSX (crbug.com/803673)
+    linux: 0 # to avoid linking to system dynamic libraries
+    windows: 0 # we have no cgo toolchain on Windows
 go_packages:
   - go.chromium.org/luci/cipd/client/cmd/cipd
 root: ../../go/bin
