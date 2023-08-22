@@ -2822,7 +2822,6 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     build.builder.bucket = 'coverage'
     build.builder.builder = 'linux-code-coverage'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', False),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'postsubmit/chromium.googlesource.com/chromium/src/'
@@ -2956,7 +2955,6 @@ class ProcessCodeCoverageDataTest(WaterfallTestCase):
     build.builder.bucket = 'coverage'
     build.builder.builder = 'linux-code-coverage'
     build.output.properties.items.return_value = [
-        ('coverage_is_presubmit', False),
         ('coverage_gs_bucket', 'code-coverage-data'),
         ('coverage_metadata_gs_paths', [
             'postsubmit/chromium.googlesource.com/chromium/src/'
