@@ -12,7 +12,7 @@ import (
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
-	"infra/cros/satlab/satlab/internal/pkg/google.golang.org/google/chromeos/moblab"
+	"infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
 )
 
 // FakeMoblabClient is a mock Moblab API client that returns hardcoded data

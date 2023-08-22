@@ -12,7 +12,7 @@ import (
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 	"google.golang.org/genproto/protobuf/field_mask"
 
-	moblabapi "infra/cros/satlab/satlabrpcserver/google.golang.org/google/chromeos/moblab/v1beta1"
+	moblabapi "infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
 	"infra/cros/satlab/satlabrpcserver/utils"
 )
 

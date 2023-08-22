@@ -13,9 +13,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlab/internal/commands"
-	"infra/cros/satlab/satlab/internal/paths"
 )
 
 // commandRunnerFunc is a type allowing us to monkey patch command execution

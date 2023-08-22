@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/satlab/satlab/internal/paths"
+	"infra/cros/satlab/common/paths"
 )
 
 // Decision is a classification of a line in a file.

@@ -11,8 +11,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/satlab/internal/commands"
-	"infra/cros/satlab/satlab/internal/paths"
 )
 
 // Asset is a group of parameters needed to add an asset to UFS.

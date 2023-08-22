@@ -28,9 +28,9 @@ import (
 	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
 	"infra/cmdsupport/cmdlib"
+	"infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlab/internal/commands"
-	"infra/cros/satlab/satlab/internal/pkg/google.golang.org/google/chromeos/moblab"
 )
 
 // RunCmd is the implementation of the "satlab run" command.

@@ -11,8 +11,8 @@ import (
 	"sort"
 	"strings"
 
+	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/satlab/internal/commands"
-	"infra/cros/satlab/satlab/internal/paths"
 
 	"go.chromium.org/luci/common/errors"
 )

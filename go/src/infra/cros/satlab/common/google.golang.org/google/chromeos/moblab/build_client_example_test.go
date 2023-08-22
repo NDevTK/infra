@@ -7,7 +7,7 @@ package moblab_test
 import (
 	"context"
 
-	"infra/cros/satlab/satlab/internal/pkg/google.golang.org/google/chromeos/moblab"
+	"infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
 
 	"google.golang.org/api/iterator"
 	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"

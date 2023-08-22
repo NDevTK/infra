@@ -24,8 +24,8 @@ import (
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/cmd/shivas/utils"
 	"infra/cmdsupport/cmdlib"
+	"infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
 	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/satlab/internal/pkg/google.golang.org/google/chromeos/moblab"
 )
 
 // If allowSetModelBoard is true, then the user is allowed to create new entries for a host&model.
