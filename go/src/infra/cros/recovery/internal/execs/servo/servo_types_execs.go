@@ -162,16 +162,24 @@ func servoVerifyDualSetupExec(ctx context.Context, info *execs.ExecInfo) error {
 // servoVerifyServoCCDExec verifies whether the servo attached to
 // the servo host is of type servo ccd.
 func servoVerifyServoCCDExec(ctx context.Context, info *execs.ExecInfo) error {
-	sType, err := WrappedServoType(ctx, info)
-	if err != nil {
-		log.Debugf(ctx, "Servo Verify Servo CCD: could not determine the servo type")
-		return errors.Annotate(err, "servo verify servo type ccd").Err()
+	actionMap := info.GetActionArgs(ctx)
+	if actionMap.AsBool(ctx, "check_info", true) {
+		if st := info.GetChromeos().GetServo().GetServodType(); st != "" {
+			if servo.NewServoType(st).IsCCD() {
+				log.Debugf(ctx, "Servo Verify servo CCD: established from DUT info: %q", st)
+				return nil
+			}
+		}
 	}
-	if !sType.IsCCD() {
-		log.Debugf(ctx, "Servo Verify servo CCD: servo type is not servo ccd.")
-		return errors.Reason("servo verify servo ccd: servo type %q is not servo ccd.", sType).Err()
+	if actionMap.AsBool(ctx, "read_servod", true) {
+		if sType, err := WrappedServoType(ctx, info); err != nil {
+			return errors.Annotate(err, "servo verify servo ccd").Err()
+		} else if sType.IsCCD() {
+			log.Debugf(ctx, "Servo Verify servo CCD: established from servod response: %q", sType.String())
+			return nil
+		}
 	}
-	return nil
+	return errors.Reason("servo verify servo ccd: does not match expectations").Err()
 }
 
 // mainDeviceIsGSCExec checks whether or not the servo device is CR50 or TI50.
