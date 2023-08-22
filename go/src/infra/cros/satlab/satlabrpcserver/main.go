@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
+	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
 	pb "infra/cros/satlab/satlabrpcserver/proto"
 	"infra/cros/satlab/satlabrpcserver/services/bucket_services"
@@ -19,7 +20,6 @@ import (
 	"infra/cros/satlab/satlabrpcserver/services/dut_services"
 	"infra/cros/satlab/satlabrpcserver/services/rpc_services"
 	"infra/cros/satlab/satlabrpcserver/utils"
-	"infra/cros/satlab/satlabrpcserver/utils/constants"
 	m "infra/cros/satlab/satlabrpcserver/utils/monitor"
 )
 
@@ -43,7 +43,7 @@ func main() {
 	monitor := m.New()
 	defer monitor.Stop()
 
-	bucketService, err := bucket_services.New(ctx, constants.BucketName)
+	bucketService, err := bucket_services.New(ctx, site.GetGCSImageBucket())
 
 	if err != nil {
 		log.Fatalf("Failed to create a bucket connector %v", err)

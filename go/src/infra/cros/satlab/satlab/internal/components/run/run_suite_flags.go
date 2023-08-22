@@ -14,21 +14,21 @@ import (
 type runFlags struct {
 	subcommands.CommandRunBase
 
-	image          string
-	model          string
-	board          string
-	milestone      string
-	build          string
-	pool           string
-	suite          string
-	test           string
-	testplan       string
-	testplan_local string
-	harness        string
-	testArgs       string
-	satlabId       string
-	cft            bool
-	addedDims      map[string]string
+	image         string
+	model         string
+	board         string
+	milestone     string
+	build         string
+	pool          string
+	suite         string
+	test          string
+	testplan      string
+	testplanLocal string
+	harness       string
+	testArgs      string
+	satlabId      string
+	cft           bool
+	addedDims     map[string]string
 }
 
 // registerRunFlags registers the test execution flags.
@@ -37,7 +37,9 @@ func registerRunFlags(c *run) {
 	c.Flags.StringVar(&c.suite, "suite", "", "test suite to execute")
 	c.Flags.StringVar(&c.test, "test", "", "individual test to execute")
 	c.Flags.StringVar(&c.testplan, "testplan", "", "path to testplan file")
-	c.Flags.StringVar(&c.testplan_local, "testplan_local", "", "path to local testplan file")
+	// changing the variable to match with the standard convention
+	// but not changing flag name as it is now used by users
+	c.Flags.StringVar(&c.testplanLocal, "testplan_local", "", "path to local testplan file")
 	c.Flags.StringVar(&c.model, "model", "", "model specifies what model a test should run on")
 	c.Flags.StringVar(&c.board, "board", "", "board is the board to run against")
 	c.Flags.StringVar(&c.milestone, "milestone", "", "milestone of the ChromeOS image")

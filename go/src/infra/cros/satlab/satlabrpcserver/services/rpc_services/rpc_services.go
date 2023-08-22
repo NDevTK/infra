@@ -13,6 +13,7 @@ import (
 	"github.com/hashicorp/go-version"
 
 	run_pkg "infra/cros/satlab/common/run"
+	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
 	pb "infra/cros/satlab/satlabrpcserver/proto"
 	"infra/cros/satlab/satlabrpcserver/services/bucket_services"
@@ -235,7 +236,7 @@ func (s *SatlabRpcServiceServer) ListBuildVersions(ctx context.Context, in *pb.L
 //
 // pb.StageBuildRequest in the request from client which we want to stage the artifact in the partner bucket.
 func (s *SatlabRpcServiceServer) StageBuild(ctx context.Context, in *pb.StageBuildRequest) (*pb.StageBuildResponse, error) {
-	res, err := s.buildService.StageBuild(ctx, in.GetBoard(), in.GetModel(), in.GetBuildVersion(), constants.BucketName)
+	res, err := s.buildService.StageBuild(ctx, in.GetBoard(), in.GetModel(), in.GetBuildVersion(), site.GetGCSImageBucket())
 	if err != nil {
 		return nil, err
 	}

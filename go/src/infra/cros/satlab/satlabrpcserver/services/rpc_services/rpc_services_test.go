@@ -15,6 +15,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
+	"infra/cros/satlab/common/site"
 	mk "infra/cros/satlab/satlabrpcserver/mocks"
 	"infra/cros/satlab/satlabrpcserver/models"
 	cpu "infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
@@ -459,12 +460,12 @@ func TestStageBuildShouldSuccess(t *testing.T) {
 	board := "zork"
 	model := "dirinboz"
 	build := "1234.0.0"
-	bucketName := "chromeos-moblab-cienet-dev"
+	bucketName := site.GetGCSImageBucket()
 	expectedArtifact := &moblabapipb.BuildArtifact{
 		Build:  build,
 		Name:   "artifacts",
 		Bucket: bucketName,
-		Path:   "buildTargets/zork/models/dirinboz/builds/1234.0.0/artifacts/chromeos-moblab-cienet-dev",
+		Path:   "buildTargets/zork/models/dirinboz/builds/1234.0.0/artifacts/chromeos-image-archive",
 	}
 
 	s.buildService.(*mk.MockBuildServices).
@@ -502,12 +503,12 @@ func TestStageBuildShouldFailWhenMakeARequestToBuildClientFailed(t *testing.T) {
 	board := "zork"
 	model := "dirinboz"
 	build := "1234.0.0"
-	bucketName := "chromeos-moblab-cienet-dev"
+	bucketName := site.GetGCSImageBucket()
 	expectedArtifact := &moblabapipb.BuildArtifact{
 		Build:  build,
 		Name:   "artifacts",
 		Bucket: bucketName,
-		Path:   "buildTargets/zork/models/dirinboz/builds/1234.0.0/artifacts/chromeos-moblab-cienet-dev",
+		Path:   "buildTargets/zork/models/dirinboz/builds/1234.0.0/artifacts/chromeos-image-archive",
 	}
 	expectedErr := errors.New("can't make a request")
 

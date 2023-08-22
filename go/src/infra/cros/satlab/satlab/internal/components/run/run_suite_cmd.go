@@ -61,7 +61,7 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 		Suite:         c.suite,
 		Test:          c.test,
 		Testplan:      c.testplan,
-		TestplanLocal: c.testplan_local,
+		TestplanLocal: c.testplanLocal,
 		Harness:       c.harness,
 		TestArgs:      c.testArgs,
 		SatlabId:      c.satlabId,
@@ -77,7 +77,7 @@ func (c *run) validateArgs() error {
 	if c.testplan != "" {
 		executionTarget++
 	}
-	if c.testplan_local != "" {
+	if c.testplanLocal != "" {
 		executionTarget++
 	}
 	if c.suite != "" {
