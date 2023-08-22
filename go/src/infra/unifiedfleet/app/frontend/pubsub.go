@@ -139,6 +139,7 @@ func updateMachineHelper(ctx context.Context, asset *ufspb.Asset) error {
 		machine.GetChromeosMachine().GoogleCodeName = asset.GetInfo().GetGoogleCodeName()
 		machine.GetChromeosMachine().CostCenter = asset.GetInfo().GetCostCenter()
 		machine.GetChromeosMachine().Gpn = asset.GetInfo().GetGpn()
+		machine.GetChromeosMachine().HwXComplianceVersion = asset.GetInfo().GetHwXComplianceVersion()
 		hc.LogMachineChanges(oldMachineCopy, machine)
 		if _, err := registration.BatchUpdateMachines(ctx, []*ufspb.Machine{machine}); err != nil {
 			return errors.Annotate(err, "updateMachineHelper - Failed to update machine %s", machine.GetName()).Err()
