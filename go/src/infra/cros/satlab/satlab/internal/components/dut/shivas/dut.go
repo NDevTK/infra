@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/satlab/common/paths"
+	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlab/internal/commands"
 )
@@ -77,7 +78,7 @@ func (d *DUT) check() (string, error) {
 
 	err := commandRunner(command)
 
-	dutMsg := commands.TrimOutput(stdout.Bytes())
+	dutMsg := satlabcommands.TrimOutput(stdout.Bytes())
 	if err != nil {
 		return "", errors.Annotate(err, "check DUT in UFS: running %s", strings.Join(args, " ")).Err()
 	}

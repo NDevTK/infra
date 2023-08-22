@@ -12,13 +12,13 @@ import (
 	"strings"
 
 	"infra/cros/satlab/common/paths"
-	"infra/cros/satlab/satlab/internal/commands"
+	"infra/cros/satlab/common/satlabcommands"
 
 	"go.chromium.org/luci/common/errors"
 )
 
 // A classifier takes a line and determines whether to keep, remove, or modify it.
-type classifier func(map[string]bool, string) commands.Decision
+type classifier func(map[string]bool, string) satlabcommands.Decision
 
 // A replacer takes a line that is selected to be modified and modifies it.
 type replacer func(string) string
@@ -51,7 +51,7 @@ func readContents() (string, error) {
 
 // WriteBackup set the content of the backup DNS file.
 func writeBackup(content string) error {
-	name, err := commands.MakeTempFile(content)
+	name, err := satlabcommands.MakeTempFile(content)
 	if err != nil {
 		return errors.Annotate(err, "set backup dns file content").Err()
 	}
@@ -67,7 +67,7 @@ func writeBackup(content string) error {
 
 // SetDNSFileContent set the content of the DNS file.
 func SetDNSFileContent(content string) error {
-	name, err := commands.MakeTempFile(content)
+	name, err := satlabcommands.MakeTempFile(content)
 	if err != nil {
 		return errors.Annotate(err, "set dns file content").Err()
 	}
@@ -178,21 +178,21 @@ func makeClassifier(newRecords map[string]string, deletedRecords map[string]bool
 
 	// Classifier takes a map of hostnames that have seen before and the current line
 	// and determines how to transform it.
-	classifier := func(seen map[string]bool, line string) commands.Decision {
+	classifier := func(seen map[string]bool, line string) satlabcommands.Decision {
 		words := strings.Fields(line)
 		// Keep blank lines.
 		if len(words) == 0 {
-			return commands.Keep
+			return satlabcommands.Keep
 		}
 		// Keep comments.
 		if strings.HasPrefix(nth(words, 0), "#") {
-			return commands.Keep
+			return satlabcommands.Keep
 		}
 		host := nth(words, 1)
 		// If host selected to be deleted, reject the line
 		if _, ok := deletedRecords[host]; ok {
 			fmt.Printf("Deleting DNS entry for host %s\n", host)
-			return commands.Reject
+			return satlabcommands.Reject
 		}
 		// Modify lines of the form: addr host.
 		// Discard lines of this form after the first one has been
@@ -200,11 +200,11 @@ func makeClassifier(newRecords map[string]string, deletedRecords map[string]bool
 		if _, ok := newRecords[host]; ok {
 			if _, alreadySeen := seen[host]; !alreadySeen {
 				seen[host] = true
-				return commands.Modify
+				return satlabcommands.Modify
 			}
-			return commands.Reject
+			return satlabcommands.Reject
 		}
-		return commands.Keep
+		return satlabcommands.Keep
 	}
 	return classifier
 }
@@ -219,13 +219,13 @@ func replaceLineContents(seen map[string]bool, lines []string, classifier classi
 	for _, line := range lines {
 		decision := classifier(seen, line)
 		switch decision {
-		case commands.Unknown:
+		case satlabcommands.Unknown:
 			return nil, errors.New("replace line contents: unexpected decision")
-		case commands.Keep:
+		case satlabcommands.Keep:
 			out = append(out, line)
-		case commands.Modify:
+		case satlabcommands.Modify:
 			out = append(out, replacer(line))
-		case commands.Reject:
+		case satlabcommands.Reject:
 			continue
 		default:
 			return nil, errors.New("replace line contents: unrecognized decision")

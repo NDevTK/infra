@@ -9,11 +9,11 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/satlab/internal/commands"
 )
 
-// DockerHostBoxIdentifierGetter is a function type fulfilled by commands.GetDockerHostBoxIdentifier
+// DockerHostBoxIdentifierGetter is a function type fulfilled by satlabcommands.GetDockerHostBoxIdentifier
 // we do this because the function assumes we are in a real Satlab env and we can't unit test using this func
 type DockerHostBoxIdentifierGetter func() (string, error)
 
@@ -53,7 +53,7 @@ func (c *updateDNSRun) Run(a subcommands.Application, args []string, env subcomm
 
 // innerRun gathers all needed function and interface implementations and calls the business logic
 func (c *updateDNSRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-	return c.runCmdInjected(args, commands.GetDockerHostBoxIdentifier, UpdateRecord)
+	return c.runCmdInjected(args, satlabcommands.GetDockerHostBoxIdentifier, UpdateRecord)
 }
 
 // runCmdInjected executes actual logic of command

@@ -9,8 +9,8 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/satlab/internal/commands"
 )
 
 // DeleteDNSCmd is the command to delete a hostname from the hostsfile of the DNS container
@@ -43,7 +43,7 @@ func (c *deleteDNSRun) Run(a subcommands.Application, args []string, env subcomm
 // innerRun calls underlying business logic with appropriate functions and interfaces injected
 // extra abstraction layer allows us to test `runCmdInjected` with fake implementations
 func (c *deleteDNSRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-	return c.runCmdInjected(args, commands.GetDockerHostBoxIdentifier)
+	return c.runCmdInjected(args, satlabcommands.GetDockerHostBoxIdentifier)
 }
 
 // runCmdInjected executes business logic

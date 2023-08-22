@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/satlab/common/paths"
+	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/satlab/internal/commands"
 )
 
@@ -49,7 +50,7 @@ func (r *Rack) check() (string, error) {
 	command := exec.Command(args[0], args[1:]...)
 	command.Stderr = os.Stderr
 	rackMsgBytes, err := command.Output()
-	rackMsg := commands.TrimOutput(rackMsgBytes)
+	rackMsg := satlabcommands.TrimOutput(rackMsgBytes)
 	if err != nil {
 		return "", errors.Annotate(err, "add rack").Err()
 	}

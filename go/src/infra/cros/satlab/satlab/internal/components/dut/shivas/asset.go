@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/satlab/common/paths"
+	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/satlab/internal/commands"
 )
 
@@ -58,7 +59,7 @@ func (a *Asset) check() (string, error) {
 	command := exec.Command(args[0], args[1:]...)
 	command.Stderr = os.Stderr
 	assetMsgBytes, err := command.Output()
-	assetMsg := commands.TrimOutput(assetMsgBytes)
+	assetMsg := satlabcommands.TrimOutput(assetMsgBytes)
 	if err != nil {
 		return "", errors.Annotate(err, "add asset").Err()
 	}

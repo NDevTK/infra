@@ -14,6 +14,7 @@ import (
 
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/satlab/common/paths"
+	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlab/internal/commands"
 )
@@ -55,7 +56,7 @@ func (c *getDUT) innerRun(a subcommands.Application, positionalArgs []string, en
 
 	if c.commonFlags.SatlabID == "" {
 		var err error
-		c.commonFlags.SatlabID, err = commands.GetDockerHostBoxIdentifier()
+		c.commonFlags.SatlabID, err = satlabcommands.GetDockerHostBoxIdentifier()
 		if err != nil {
 			return errors.Annotate(err, "get dut").Err()
 		}

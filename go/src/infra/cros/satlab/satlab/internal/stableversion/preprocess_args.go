@@ -6,8 +6,8 @@ package stableversion
 
 import (
 	"fmt"
+	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/satlab/internal/commands"
 	"infra/libs/skylab/common/heuristics"
 	"strings"
 
@@ -30,7 +30,7 @@ func preprocessHostname(common site.CommonFlags, hostname string, getDHBID getDH
 	// By default, these values really should be the real versions "GetDockerHostBoxIdentifier" and "LooksLikeSatlabRemoteAccessContainer".
 	// Set them here so that we never accidentally call a nil function by mistake on the production path.
 	if getDHBID == nil {
-		getDHBID = commands.GetDockerHostBoxIdentifier
+		getDHBID = satlabcommands.GetDockerHostBoxIdentifier
 	}
 	if isRemoteAccess == nil {
 		isRemoteAccess = heuristics.LooksLikeSatlabRemoteAccessContainer
