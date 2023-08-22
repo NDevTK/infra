@@ -238,7 +238,7 @@ func TestIntegrationTest(t *testing.T) {
 		So(metric, ShouldEqual, 2)
 	})
 
-	Convey("avg cores", t, func() {
+	Convey("avg cores unfiltered", t, func() {
 		// Deleting rows with a streaming buffer doesn't work well, instead
 		// partition the fake table. Use a Sunday to make weekly tests easier
 		testPartition := "2023-04-02"
@@ -350,5 +350,110 @@ func TestIntegrationTest(t *testing.T) {
 		So(err, ShouldBeNil)
 		// The total runtime should be 14 days which over 7 days is 2 cores
 		So(metric, ShouldEqual, 2)
+	})
+
+	Convey("avg cores filtered", t, func() {
+		// Deleting rows with a streaming buffer doesn't work well, instead
+		// partition the fake table. Use a Sunday to make weekly tests easier
+		testPartition := "2023-03-19"
+
+		// Setup defaults for rdb data
+		rf.timePartition, err = civil.ParseDate(testPartition)
+		if err != nil {
+			t.Fail()
+		}
+		rf.defaultFilename = "//dir/name/filename.go"
+		// Make tests run all day for 7 days so all avg cores will be 1
+		rf.defaultRuntime = (time.Hour * 24).Seconds()
+
+		// Generate the rollups from fake rdb data.
+		if err := createRollupFromResults(ctx, client, testProject, testDataset, fakeChromiumTryRdb, testPartition, []*fakeRdbResult{
+			rf.createResult().AddTime(time.Hour * 24 * 6),
+			// Force the weekly cores to be 1 split when filter is "other_builder"
+			rf.createResult().AddTime(time.Hour * 24 * 6).WithDuration(60 * 60 * 24 * 7).WithBuilder("other_builder"),
+		}); err != nil {
+			t.Fail()
+		}
+
+		testResp, err := client.FetchMetrics(ctx,
+			&api.FetchTestMetricsRequest{
+				Period:     api.Period_DAY,
+				Components: []string{"component"},
+				Dates:      []string{testPartition, "2023-03-25"},
+				Metrics: []api.MetricType{
+					api.MetricType_AVG_CORES,
+				},
+				PageSize: 10,
+				Filter:   "other_builder",
+			},
+		)
+		So(err, ShouldBeNil)
+
+		testSummary := getTestIdFromResponse(testResp, defaultTestId)
+		// other_builder variant did not run Sunday, we shouldn't get anything for this day
+		So(testSummary.Metrics, ShouldNotContainKey, testPartition)
+		metric, err := getMetric(testSummary.Metrics["2023-03-25"], api.MetricType_AVG_CORES)
+		So(err, ShouldBeNil)
+		// The other_builder test ran for 7 days on the Saturday over 1 day is 7 cores
+		So(metric, ShouldEqual, 7)
+
+		// Verify weekly
+		testResp, err = client.FetchMetrics(ctx,
+			&api.FetchTestMetricsRequest{
+				Period:     api.Period_WEEK,
+				Components: []string{"component"},
+				Dates:      []string{testPartition},
+				Metrics: []api.MetricType{
+					api.MetricType_AVG_CORES,
+				},
+				PageSize: 10,
+				Filter:   "other_builder",
+			},
+		)
+		So(err, ShouldBeNil)
+
+		testSummary = getTestIdFromResponse(testResp, defaultTestId)
+		metric, err = getMetric(testSummary.Metrics[testPartition], api.MetricType_AVG_CORES)
+		So(err, ShouldBeNil)
+		// The total runtime for other_builder should be 7 days over 7 days which is 1 core
+		So(metric, ShouldEqual, 1)
+
+		dirResp, err := client.FetchDirectoryMetrics(ctx,
+			&api.FetchDirectoryMetricsRequest{
+				Period:     api.Period_DAY,
+				Components: []string{"component"},
+				Dates:      []string{testPartition, "2023-03-25"},
+				Metrics: []api.MetricType{
+					api.MetricType_AVG_CORES,
+				},
+				ParentIds: []string{"/"},
+				Filter:    "other_builder",
+			},
+		)
+		So(err, ShouldBeNil)
+		// other_builder variant did not run Sunday, we shouldn't get anything for this day
+		So(dirResp.Nodes[0].Metrics, ShouldNotContainKey, testPartition)
+		metric, err = getMetric(dirResp.Nodes[0].Metrics["2023-03-25"], api.MetricType_AVG_CORES)
+		So(err, ShouldBeNil)
+		// The other_builder test ran for 7 days on the Saturday over 1 day is 7 cores
+		So(metric, ShouldEqual, 7)
+
+		dirResp, err = client.FetchDirectoryMetrics(ctx,
+			&api.FetchDirectoryMetricsRequest{
+				Period:     api.Period_WEEK,
+				Components: []string{"component"},
+				Dates:      []string{testPartition, "2023-03-25"},
+				Metrics: []api.MetricType{
+					api.MetricType_AVG_CORES,
+				},
+				ParentIds: []string{"/"},
+				Filter:    "other_builder",
+			},
+		)
+		So(err, ShouldBeNil)
+		metric, err = getMetric(dirResp.Nodes[0].Metrics[testPartition], api.MetricType_AVG_CORES)
+		So(err, ShouldBeNil)
+		// The total runtime for other_builder should be 7 days over 7 days which is 1 core
+		So(metric, ShouldEqual, 1)
 	})
 }

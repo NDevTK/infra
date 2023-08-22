@@ -242,8 +242,8 @@ WITH tests AS (
 	LIMIT @page_size OFFSET @page_offset
 )
 SELECT t.*
-FROM sorted_day AS s LEFT JOIN tests AS t USING(test_id)
-ORDER BY rank ASC`)
+FROM sorted_day AS s FULL OUTER JOIN tests AS t USING(test_id)
+ORDER BY rank IS NULL, rank ASC`)
 		})
 
 		Convey("Valid no component multi-day request", func() {
@@ -290,8 +290,8 @@ WITH tests AS (
 	LIMIT @page_size OFFSET @page_offset
 )
 SELECT t.*
-FROM sorted_day AS s LEFT JOIN tests AS t USING(test_id)
-ORDER BY rank ASC`)
+FROM sorted_day AS s FULL OUTER JOIN tests AS t USING(test_id)
+ORDER BY rank IS NULL, rank ASC`)
 		})
 
 		Convey("Valid sorted multi-day request", func() {
@@ -333,8 +333,8 @@ WITH tests AS (
 	LIMIT @page_size OFFSET @page_offset
 )
 SELECT t.*
-FROM sorted_day AS s LEFT JOIN tests AS t USING(test_id)
-ORDER BY rank DESC`)
+FROM sorted_day AS s FULL OUTER JOIN tests AS t USING(test_id)
+ORDER BY rank IS NULL, rank DESC`)
 		})
 
 		Convey("Parameterized args", func() {
@@ -523,8 +523,8 @@ WITH nodes AS(
 	WHERE date = @sort_date
 )
 SELECT t.*
-FROM nodes AS t LEFT JOIN sorted_day AS s USING(node_name)
-ORDER BY is_file, s.rank DESC`)
+FROM nodes AS t FULL OUTER JOIN sorted_day AS s USING(node_name)
+ORDER BY is_file, s.rank IS NULL, s.rank DESC`)
 		})
 
 		Convey("Parameterized args", func() {
@@ -741,8 +741,8 @@ test_summaries AS (
 )
 
 SELECT node_summaries.*
-FROM node_summaries LEFT JOIN sorted_day USING(node_name)
-ORDER BY is_file, rank DESC`)
+FROM node_summaries FULL OUTER JOIN sorted_day USING(node_name)
+ORDER BY is_file, rank IS NULL, rank DESC`)
 		})
 
 		Convey("Parameterized args", func() {

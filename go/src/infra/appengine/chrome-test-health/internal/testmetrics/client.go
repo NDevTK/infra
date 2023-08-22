@@ -80,8 +80,8 @@ WITH tests AS (
 	LIMIT @page_size OFFSET @page_offset
 )
 SELECT t.*
-FROM sorted_day AS s LEFT JOIN tests AS t USING(test_id)
-ORDER BY rank {sortDirection}`
+FROM sorted_day AS s FULL OUTER JOIN tests AS t USING(test_id)
+ORDER BY rank IS NULL, rank {sortDirection}`
 
 	unfilteredDirectorySingleDayQuery string = `
 SELECT
@@ -122,8 +122,8 @@ WITH nodes AS(
 	WHERE date = @sort_date
 )
 SELECT t.*
-FROM nodes AS t LEFT JOIN sorted_day AS s USING(node_name)
-ORDER BY is_file, s.rank {sortDirection}`
+FROM nodes AS t FULL OUTER JOIN sorted_day AS s USING(node_name)
+ORDER BY is_file, s.rank IS NULL, s.rank {sortDirection}`
 
 	filteredDirectorySingleDayQuery string = `
 WITH
@@ -200,8 +200,8 @@ test_summaries AS (
 )
 
 SELECT node_summaries.*
-FROM node_summaries LEFT JOIN sorted_day USING(node_name)
-ORDER BY is_file, rank {sortDirection}`
+FROM node_summaries FULL OUTER JOIN sorted_day USING(node_name)
+ORDER BY is_file, rank IS NULL, rank {sortDirection}`
 )
 
 var (
