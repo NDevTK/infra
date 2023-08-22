@@ -73,7 +73,7 @@ func getGo(ctx context.Context, spec *buildSpec, requirePrebuilt bool) (err erro
 // scriptExt returns the extension to use for
 // GOROOT/src/{make,all} scripts on this GOOS.
 func scriptExt() string {
-	switch hostGOOS {
+	switch host.GOOS {
 	case "windows":
 		return ".bat"
 	case "plan9":

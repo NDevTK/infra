@@ -42,6 +42,7 @@ type buildSpec struct {
 	gocacheDir  string
 	toolsRoot   string
 	casInstance string
+	targetPort  Port
 
 	inputs *golangbuildpb.Inputs
 
@@ -164,6 +165,20 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 		}
 	}
 
+	// Determine the port we're targeting.
+	var targetPort Port
+	switch inputs.GetMode() {
+	case golangbuildpb.Mode_MODE_ALL:
+		targetPort = host
+	case golangbuildpb.Mode_MODE_COORDINATOR:
+		cm := inputs.GetCoordMode()
+		targetPort = Port{GOOS: cm.TargetGoos, GOARCH: cm.TargetGoarch}
+	case golangbuildpb.Mode_MODE_BUILD:
+		targetPort = host
+	case golangbuildpb.Mode_MODE_TEST:
+		targetPort = host
+	}
+
 	return &buildSpec{
 		auth:        authenticator,
 		builderName: st.Build().GetBuilder().GetBuilder(),
@@ -173,6 +188,7 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 		gocacheDir:  filepath.Join(cwd, "gocache"),
 		toolsRoot:   toolsRoot,
 		casInstance: casInst,
+		targetPort:  targetPort,
 		inputs:      inputs,
 		invocation:  st.Build().GetInfra().GetResultdb().GetInvocation(),
 		goSrc:       goSrc,
@@ -198,7 +214,7 @@ func (b *buildSpec) setEnv(ctx context.Context) context.Context {
 	// Use our tools before the system tools. Notably, use raw Git rather than the Chromium wrapper.
 	env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(b.toolsRoot, "bin"), os.PathListSeparator, env.Get("PATH")))
 
-	if hostGOOS == "windows" {
+	if host.GOOS == "windows" {
 		env.Set("GOBUILDEXIT", "1") // On Windows, emit exit codes from .bat scripts. See go.dev/issue/9799.
 		ccPath := filepath.Join(b.toolsRoot, "cc/windows/gcc64/bin")
 		if env.Get("GOARCH") == "386" {
@@ -332,10 +348,10 @@ func (b *buildSpec) installDatastoreClient(ctx context.Context) (context.Context
 	return cfg.Use(ctx), nil
 }
 
-const (
-	hostGOOS   = runtime.GOOS
-	hostGOARCH = runtime.GOARCH
-)
+var host = Port{
+	GOOS:   runtime.GOOS,
+	GOARCH: runtime.GOARCH,
+}
 
 func (b *buildSpec) toolPath(tool string) string {
 	return filepath.Join(b.toolsRoot, "bin", tool)

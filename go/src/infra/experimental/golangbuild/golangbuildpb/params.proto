@@ -136,6 +136,12 @@ message CoordinatorMode {
   //
   // This must be empty if project != "go".
   repeated string builders_to_trigger_after_toolchain_build = 4;
+
+  // TargetGoos is the OS we're building for.
+  string target_goos = 5;
+
+  // TargetGoarch is the CPU architecture we're building for.
+  string target_goarch = 6;
 }
 
 // BuildMode contains properties specific to MODE_BUILD.

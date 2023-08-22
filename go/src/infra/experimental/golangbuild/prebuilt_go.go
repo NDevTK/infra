@@ -117,7 +117,7 @@ func prebuiltID(spec *buildSpec) (string, error) {
 	}
 	fmt.Fprintf(details, "xcode=%v", spec.inputs.XcodeVersion)
 
-	return fmt.Sprintf("%s-%s-%s-%x", hostGOOS, hostGOARCH, rev, details.Sum(nil)), nil
+	return fmt.Sprintf("%s-%s-%s-%x", spec.targetPort.GOOS, spec.targetPort.GOARCH, rev, details.Sum(nil)), nil
 }
 
 func fetchGoFromCAS(ctx context.Context, spec *buildSpec, digest, goroot string) (ok bool, err error) {
