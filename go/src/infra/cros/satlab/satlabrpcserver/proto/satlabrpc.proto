@@ -17,6 +17,9 @@ service SatlabRpcService {
   rpc get_system_info(GetSystemInfoRequest) returns (GetSystemInfoResponse);
   rpc get_peripheral_information (GetPeripheralInformationRequest) returns (GetPeripheralInformationResponse);
   rpc update_duts_firmware (UpdateDutsFirmwareRequest)  returns (UpdateDutsFirmwareResponse);
+
+  // services to run different types of test suites
+  rpc run_suite (RunSuiteRequest) returns (RunSuiteResponse) {}
 }
 
 message ListBuildTargetsRequest {
@@ -141,4 +144,19 @@ message FirmwareUpdateCommandOutput {
 // NEXT_TAG = 2
 message UpdateDutsFirmwareResponse {
   repeated FirmwareUpdateCommandOutput outputs = 1;
+}
+
+
+// NEXT_TAG = 7
+message RunSuiteRequest {
+  string suite = 1;
+  string build_target = 2;
+  string milestone = 3;
+  string build_version = 4;
+  string model = 5;
+  string pool = 6;
+}
+
+// NEXT_TAG = 2
+message RunSuiteResponse {
 }

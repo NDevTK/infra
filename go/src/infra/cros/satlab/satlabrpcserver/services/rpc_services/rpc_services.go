@@ -12,6 +12,7 @@ import (
 
 	"github.com/hashicorp/go-version"
 
+	run_pkg "infra/cros/satlab/common/run"
 	"infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
 	pb "infra/cros/satlab/satlabrpcserver/proto"
 	"infra/cros/satlab/satlabrpcserver/services/bucket_services"
@@ -351,4 +352,21 @@ func (s *SatlabRpcServiceServer) Close() {
 	if err != nil {
 		log.Println(err)
 	}
+}
+
+// Run suite triggers the test suite on the satlab. Right now, this is implemented using CTPBuildRequest
+func (s *SatlabRpcServiceServer) RunSuite(ctx context.Context, in *pb.RunSuiteRequest) (*pb.RunSuiteResponse, error) {
+	r := &run_pkg.Run{
+		Suite:     in.Suite,
+		Model:     in.Model,
+		Board:     in.BuildTarget,
+		Milestone: in.Milestone,
+		Build:     in.BuildVersion,
+		Pool:      in.Pool,
+	}
+	err := r.TriggerRun(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.RunSuiteResponse{}, nil
 }

@@ -734,7 +734,7 @@ func TestUpdateDUTsFirmwareShouldSuccess(t *testing.T) {
 
 	// Assert
 	if err != nil {
-		t.Errorf("Should not return error, but got and error: {%v}", err)
+		t.Errorf("Should not return error, but got an error: {%v}", err)
 	}
 
 	// Create a expected result
