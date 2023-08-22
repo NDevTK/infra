@@ -276,7 +276,7 @@ func main() {
 		}
 
 		somHandlers := &SOMHandlers{
-			IsStaging:      !srv.Options.Prod || srv.Options.CloudProject == prodAppID,
+			IsStaging:      !srv.Options.Prod || srv.Options.CloudProject != prodAppID,
 			IsDevAppServer: !srv.Options.Prod,
 			CloudProject:   srv.Options.CloudProject,
 		}
