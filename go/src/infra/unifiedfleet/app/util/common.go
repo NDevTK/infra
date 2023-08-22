@@ -212,20 +212,32 @@ var (
 
 	// Lab SFO36_OS DUT names have 'chromeos8' substring.
 	sfo36OSRegex = regexp.MustCompile(`chromeos8-`)
+
+	// lab IAD65_OS DUT name have 'cri' substring.
+	iad65OSRegex = regexp.MustCompile(`cri[\d]+-`)
 )
 
-// gtransitHive hive value for a gTransit DUT.
-const gtransitHive string = "cros-mtv1950-144"
+const (
+	// 'e' is the site letter assigned to SFO36.
+	sfo36OSHive string = "e"
 
-// chromiumHive hive value for a chromium-cq DUT.
-const chromiumHive string = "chromium-cq"
+	// Hive value for a OS DUT host in IAD65.
+	iad65OSHive string = "iad65-os"
 
-// chromiumHive hive value for a chrome-perf DUT.
-const chromePerfHive string = "chrome-perf"
+	// gtransitHive hive value for a gTransit DUT.
+	gtransitHive string = "cros-mtv1950-144"
+
+	// chromiumHive hive value for a chromium-cq DUT.
+	chromiumHive string = "chromium-cq"
+
+	// chromiumHive hive value for a chrome-perf DUT.
+	chromePerfHive string = "chrome-perf"
+)
 
 // GetHiveForDut returns the hive value for a DUT.
 //
 // hive value is derived from the DUT hostname.
+// TODO(b:296635614) use UFS stored data instead of hostname to determine hive.
 func GetHiveForDut(hostname string) string {
 	// gTransit DUTs.
 	if gtransitRegex.MatchString(hostname) {
@@ -238,8 +250,10 @@ func GetHiveForDut(hostname string) string {
 		return chromePerfHive
 	}
 	if sfo36OSRegex.MatchString(hostname) {
-		// 'e' is site site letter assigned to SFO36.
-		return "e"
+		return sfo36OSHive
+	}
+	if iad65OSRegex.MatchString(hostname) {
+		return iad65OSHive
 	}
 	// Satlab DUTs.
 	if satlabRegex.MatchString(hostname) {
