@@ -496,7 +496,7 @@ func handleExtract(ctx context.Context, w http.ResponseWriter, r *http.Request, 
 		action = "decompress"
 	}
 	reqURL := fmt.Sprintf("%s/%s/%s/%s", cacheServerURL, action, objectName.bucket, objectName.path)
-	res := downloadURL(ctx, w, reqURL, reqID)
+	res := downloadURL(ctx, w, reqURL, reqID, r)
 	if res == nil {
 		return metricData{status: http.StatusInternalServerError}
 	}
@@ -525,13 +525,18 @@ func handleExtract(ctx context.Context, w http.ResponseWriter, r *http.Request, 
 // downloadURL downloads the reqURL and returns the content in response.
 // It writes to client header if error occurs or relays non 200 status code
 // from upstream.
-func downloadURL(ctx context.Context, w http.ResponseWriter, reqURL string, reqID string) *http.Response {
+func downloadURL(ctx context.Context, w http.ResponseWriter, reqURL string, reqID string, parentReq *http.Request) *http.Response {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
 	if err != nil {
 		errStr := fmt.Sprintf("%s download request %q: %s", reqID, reqURL, err)
 		http.Error(w, errStr, http.StatusInternalServerError)
 		log.Printf(errStr)
 		return nil
+	}
+
+	// Pass down headers needed for customer tracking.
+	for _, h := range []string{"X-SWARMING-TASK-ID", "X-BBID"} {
+		req.Header.Add(h, parentReq.Header.Get(h))
 	}
 
 	res, err := http.DefaultClient.Do(req)
@@ -664,7 +669,7 @@ func handleDecompressGET(ctx context.Context, w http.ResponseWriter, r *http.Req
 	}
 
 	reqURL := fmt.Sprintf("%s/download/%s/%s", cacheServerURL, objectName.bucket, objectName.path)
-	res := downloadURL(ctx, w, reqURL, reqID)
+	res := downloadURL(ctx, w, reqURL, reqID, r)
 	if res == nil {
 		return metricData{status: http.StatusInternalServerError}
 	}
