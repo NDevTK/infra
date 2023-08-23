@@ -248,12 +248,11 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []Port)
 	if err != nil {
 		return err
 	}
-	if spec.inputs.NoNetwork {
-		// Fetch module dependencies ahead of time since 'go test' will not have network access.
-		err := fetchDependencies(ctx, spec, modules)
-		if err != nil {
-			return err
-		}
+	// Fetch module dependencies ahead of time, marking temporary network errors as an infra failure.
+	// Also 'go test' may not have network access (in the case of spec.inputs.NoNetwork).
+	err = fetchDependencies(ctx, spec, modules)
+	if err != nil {
+		return err
 	}
 	if spec.experiment("golang.parallel_compile_only_ports") && spec.inputs.CompileOnly {
 		return compileTestsInParallel(ctx, spec, modules, ports)

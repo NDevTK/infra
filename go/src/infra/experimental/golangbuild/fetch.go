@@ -284,14 +284,12 @@ func fetchRepoAtCommit(ctx context.Context, inputs *golangbuildpb.Inputs, commit
 // dependencies for the given modules.
 func fetchDependencies(ctx context.Context, spec *buildSpec, modules []module) (err error) {
 	step, ctx := build.StartStep(ctx, "fetch dependencies")
-	// TODO(dmitshur): See if errors due to adding a broken or unavailable
-	// module can be detected and correctly reported as non-infra somehow.
-	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
+	defer endStep(step, &err)
 
 	var errs []error
 	for _, m := range modules {
-		dlCmd := spec.goCmd(ctx, m.RootDir, "mod", "download")
-		err := cmdStepRun(ctx, fmt.Sprintf("fetch %q dependencies", m.Path), dlCmd, true)
+		dlCmd := spec.goCmd(ctx, m.RootDir, "mod", "download", "-json")
+		err := goModDownloadStep(ctx, fmt.Sprintf("fetch %q dependencies", m.Path), dlCmd)
 		errs = append(errs, err)
 	}
 	return errors.Join(errs...)

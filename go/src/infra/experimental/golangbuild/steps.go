@@ -7,10 +7,12 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
+	"strings"
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
@@ -19,15 +21,14 @@ import (
 
 // cmdStepRun calls Run on the provided command and wraps it in a build step.
 //
-// It wraps cmd.Stdout and cmd.Stderr to redirect into step logs.
+// It overwrites cmd.Stdout and cmd.Stderr to redirect into step logs.
 // It runs the command with the environment from the context, so change
 // the context's environment to alter the command's environment.
 func cmdStepRun(ctx context.Context, stepName string, cmd *exec.Cmd, infra bool) (err error) {
 	step, ctx, err := cmdStartStep(ctx, stepName, cmd)
 	defer func() {
 		if infra {
-			// Any failure in this function is an infrastructure failure.
-			err = infraWrap(err)
+			err = infraWrap(err) // Failure is deemed to be an infrastructure failure.
 		}
 		step.End(err)
 	}()
@@ -57,8 +58,7 @@ func cmdStepOutput(ctx context.Context, stepName string, cmd *exec.Cmd, infra bo
 	step, ctx, err := cmdStartStep(ctx, stepName, cmd)
 	defer func() {
 		if infra {
-			// Any failure in this function is an infrastructure failure.
-			err = infraWrap(err)
+			err = infraWrap(err) // Failure is deemed to be an infrastructure failure.
 		}
 		step.End(err)
 	}()
@@ -80,6 +80,53 @@ func cmdStepOutput(ctx context.Context, stepName string, cmd *exec.Cmd, infra bo
 		return output, errors.Annotate(err, "Failed to run %q", stepName).Err()
 	}
 	return output, nil
+}
+
+// goModDownloadStep runs a 'go mod download -json' command in a build step.
+//
+// It overwrites cmd.Stdout and cmd.Stderr to redirect into step logs.
+// It runs the command with the environment from the context, so change
+// the context's environment to alter the command's environment.
+func goModDownloadStep(ctx context.Context, stepName string, cmd *exec.Cmd) (err error) {
+	var infra bool
+	step, ctx, err := cmdStartStep(ctx, stepName, cmd)
+	defer func() {
+		if infra {
+			err = infraWrap(err) // Failure is deemed to be an infrastructure failure.
+		}
+		step.End(err)
+	}()
+	if err != nil {
+		return err
+	}
+
+	// Run 'go mod download -json' and process its output
+	// to determine if this was an infrastructure failure.
+	var stdout bytes.Buffer
+	cmd.Stdout = io.MultiWriter(step.Log("stdout"), &stdout)
+	cmd.Stderr = step.Log("stderr")
+	err = cmd.Run()
+	if ee := (*exec.ExitError)(nil); errors.As(err, &ee) && ee.ExitCode() == 1 {
+		for dec := json.NewDecoder(&stdout); ; {
+			var m struct{ Error string }
+			err := dec.Decode(&m)
+			if err == io.EOF {
+				break
+			} else if err != nil {
+				return fmt.Errorf("error decoding JSON object from go mod download -json: %v\n", err)
+			}
+			if strings.Contains(m.Error, "dial tcp") && strings.HasSuffix(m.Error, ": i/o timeout") {
+				// An I/O timeout error to the Go module proxy is deemed to be an infrastructure failure.
+				// See https://ci.chromium.org/b/8772399708036918561 for an example.
+				infra = true
+				break
+			}
+		}
+	}
+	if err != nil {
+		return errors.Annotate(err, "Failed to run %q", stepName).Err()
+	}
+	return nil
 }
 
 // cmdStartStep sets up a command step.
