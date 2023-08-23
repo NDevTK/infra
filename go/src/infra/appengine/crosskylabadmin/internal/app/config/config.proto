@@ -68,6 +68,8 @@ message Swarming {
   message PoolCfg {
     // The pool containing the skylab bots
     string pool_name = 1;
+    // The builder bucket specifies the bucket to use to run swarming task.
+    string builder_bucket = 2;
   }
 }
 
