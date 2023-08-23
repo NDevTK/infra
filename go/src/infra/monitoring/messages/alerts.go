@@ -13,7 +13,6 @@ import (
 	"os"
 	"time"
 
-	gfipb "go.chromium.org/luci/bisection/proto"
 	bisectionpb "go.chromium.org/luci/bisection/proto/v1"
 )
 
@@ -162,9 +161,6 @@ type BuildFailure struct {
 	// that it can support different LUCI projects easily.
 	// When presents, SuspectedCLs should be empty.
 	Culprits []*Culprit `json:"culprits"`
-	// Analysis result from GoFindit. Leave it here for backward compatibility
-	// TODO (nqmtuan): remove it
-	GoFinditResult []*gfipb.Analysis `json:"gofindit_result"`
 	// Result from LUCI Bisection
 	LuciBisectionResult *LuciBisectionResult `json:"luci_bisection_result"`
 }
