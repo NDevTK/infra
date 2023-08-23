@@ -67,6 +67,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "a82a8040_371338cf",
+        "filename": "go/src/infra/experimental/golangbuild/fetch.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2023-08-23T16:28:09Z",
+      "side": 1,
+      "message": "Good idea. Though trying it out makes me worry that fetchDependencies itself becomes less clear:\n\n```\nstep, ctx :\u003d build.StartStep(ctx, \"fetch dependencies\")\ndefer endStep(step, \u0026err)\n\nvar errs []error\nfor _, m :\u003d range modules {\n\terr :\u003d goModDownloadStep(ctx, spec *buildSpec, m.RootDir)\n\terrs \u003d append(errs, err)\n}\nreturn errors.Join(errs...)\n```\n\nSeeing `dlCmd :\u003d spec.goCmd(ctx, m.RootDir, \"mod\", \"download\", \"-json\")` here seems to make it easier to tell what goModDownloadStep will do. So I\u0027m leaning towards leaving it as is. Or do you think it can be clear enough that \u0027goModDownloadStep\u0027 creates and runs a command, and returns its output\u0027, perhaps by giving it a better name?",
+      "parentUuid": "1287c063_8bca7457",
+      "range": {
+        "startLine": 291,
+        "startChar": 2,
+        "endLine": 291,
+        "endChar": 65
+      },
+      "revId": "8a2fc43ad4bc989a0bd756acec99afffe9bc2c25",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ce084c90_9d70b8af",
         "filename": "go/src/infra/experimental/golangbuild/testmode.go",
         "patchSetId": 1
