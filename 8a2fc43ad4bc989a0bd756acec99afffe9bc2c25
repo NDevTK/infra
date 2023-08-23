@@ -89,6 +89,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "def2215e_15756db4",
+        "filename": "go/src/infra/experimental/golangbuild/fetch.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2023-08-23T17:06:39Z",
+      "side": 1,
+      "message": "Renamed it to \u0027goModDownload\u0027 and moved its implementation to be near fetchDependencies itself. I tried to keep the \"Keep step presentation and command execution separate from logic where possible\" guideline in mind, but the constraint here is that a part of the presentation (whether it\u0027s an infra failure) is intertwined with command execution.",
+      "parentUuid": "a82a8040_371338cf",
+      "range": {
+        "startLine": 291,
+        "startChar": 2,
+        "endLine": 291,
+        "endChar": 65
+      },
+      "revId": "8a2fc43ad4bc989a0bd756acec99afffe9bc2c25",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ce084c90_9d70b8af",
