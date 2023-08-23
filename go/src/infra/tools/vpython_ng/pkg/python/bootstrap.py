@@ -7,12 +7,14 @@ import os
 import subprocess
 import sys
 
+ISOLATION_FLAG = '-I' if sys.version_info[0] > 2 else '-sSE'
+
 # Create virtual environment in ${out} directory
 virtualenv = glob.glob(
     os.path.join(r'{{.virtualenv}}', '*', 'virtualenv.py*'))[0]
 subprocess.check_call([
-    sys.executable, virtualenv, '--no-download', '--always-copy',
-    os.environ['out']
+    sys.executable, ISOLATION_FLAG, virtualenv,
+    '--no-download', '--always-copy', os.environ['out']
 ])
 
 # Install wheels to virtual environment
@@ -36,7 +38,7 @@ if 'wheels' in os.environ:
 # correctness if .pyc can't be written to the directory anyway.
 try:
   subprocess.check_call([
-      sys.executable, '-m', 'compileall', os.environ['out']
+      sys.executable, ISOLATION_FLAG, '-m', 'compileall', os.environ['out']
   ])
 except subprocess.CalledProcessError as e:
   print('complieall failed and ignored: {}'.format(e.returncode))

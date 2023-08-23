@@ -99,13 +99,15 @@ func TestMain(m *testing.M) {
 	if testStorageDir, err = os.MkdirTemp("", "vpython-test-"); err != nil {
 		panic(err)
 	}
+	defer func() {
+		if err = filesystem.RemoveAll(testStorageDir); err != nil {
+			panic(err)
+		}
+	}()
+
 	wheels.Init(filepath.Join(testStorageDir, "cipd"))
 
 	rc := m.Run()
-
-	if err = filesystem.RemoveAll(testStorageDir); err != nil {
-		panic(err)
-	}
 
 	os.Exit(rc)
 }
