@@ -1035,15 +1035,24 @@ SPECS.update({
     s.spec.tag: s for s in assert_sorted(
         'Prebuilt',
         # We can't build this ourselves as the build depends on Bazel.
+        # dm-tree 0.1.8 needed for python 3.11.
         Prebuilt(
             'dm-tree',
             '0.1.6',
             # TODO: The prebuilt Mac wheel is built against 10.14, but we
             # require 10.11 or earlier. We'll need to do something else to get
             # it working.
-            #
-            # TODO: No 3.11 wheels.
             ['manylinux-x64-py3.8', 'windows-x64-py3.8'],
+        ),
+        Prebuilt(
+            'dm-tree',
+            '0.1.8',
+            [
+                'mac-x64-py3.8',
+                'manylinux-x64-py3.8',
+                'manylinux-x64-py3.11',
+                'windows-x64-py3.8',
+            ],
         ),
         Prebuilt(
             'freetype-py',

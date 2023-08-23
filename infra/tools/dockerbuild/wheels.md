@@ -2037,6 +2037,21 @@ wheel: <
 * *manylinux-x64-py3.8*
 * *windows-x64-py3.8*
 
+### 0.1.8
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/dm-tree/${vpython_platform}"
+  version: "version:0.1.8"
+>
+```
+
+
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.8*
+
 ## **docker**
 
 ### 2.7.0
