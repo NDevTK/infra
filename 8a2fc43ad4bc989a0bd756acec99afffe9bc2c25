@@ -39,6 +39,47 @@
       },
       "revId": "8a2fc43ad4bc989a0bd756acec99afffe9bc2c25",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d3754a5b_9daa8e0e",
+        "filename": "go/src/infra/experimental/golangbuild/fetch.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 1568168
+      },
+      "writtenOn": "2023-08-23T16:10:02Z",
+      "side": 1,
+      "message": "+1",
+      "parentUuid": "1287c063_8bca7457",
+      "range": {
+        "startLine": 291,
+        "startChar": 2,
+        "endLine": 291,
+        "endChar": 65
+      },
+      "revId": "8a2fc43ad4bc989a0bd756acec99afffe9bc2c25",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ce084c90_9d70b8af",
+        "filename": "go/src/infra/experimental/golangbuild/testmode.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 1568168
+      },
+      "writtenOn": "2023-08-23T16:10:02Z",
+      "side": 1,
+      "message": "inline?",
+      "revId": "8a2fc43ad4bc989a0bd756acec99afffe9bc2c25",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
