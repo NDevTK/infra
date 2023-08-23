@@ -7,7 +7,10 @@ package localtlw
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
+	"os"
 
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/grpc/codes"
@@ -17,6 +20,7 @@ import (
 	"infra/cros/recovery/internal/localtlw/dutinfo"
 	"infra/cros/recovery/internal/localtlw/localinfo"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/models"
 	"infra/cros/recovery/tlw"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
@@ -59,7 +63,12 @@ func (c *tlwClient) Version(ctx context.Context, req *tlw.VersionRequest) (*tlw.
 	case tlw.VersionRequest_CROS:
 		sv, err := c.getCrosStableVersion(ctx, dut)
 		if err != nil {
-			return nil, errors.Annotate(err, "version").Err()
+			log.Debugf(ctx, "version: %s", err)
+			sv, err = c.getLocalStableVersion(ctx, dut)
+			if err != nil {
+				log.Debugf(ctx, "local version: %s", err)
+				return nil, errors.Annotate(err, "local version").Err()
+			}
 		}
 		log.Debugf(ctx, "Received Cros version: %#v", sv)
 		// Cache received version for future usage.
@@ -227,6 +236,47 @@ func (c *tlwClient) getCrosStableVersion(ctx context.Context, dut *tlw.Dut) (*tl
 			"os_image":   fmt.Sprintf("%s-release/%s", dut.GetChromeos().GetBoard(), res.GetCrosVersion()),
 			"fw_image":   res.GetFaftVersion(),
 			"fw_version": res.GetFirmwareVersion(),
+		},
+	}, nil
+}
+
+// getLocalStableVersion receives local stable versions for ChromeOS device.
+func (c *tlwClient) getLocalStableVersion(ctx context.Context, dut *tlw.Dut) (*tlw.VersionResponse, error) {
+
+	if dut.GetChromeos().GetBoard() == "" {
+		return nil, fmt.Errorf("get local stable-version %q: board missing", dut.Name)
+	}
+	if dut.GetChromeos().GetModel() == "" {
+		return nil, fmt.Errorf("get local stable-version %q: model missing", dut.Name)
+	}
+	if os.Getenv("DOCKER_DRONE_RECOVERY_VERSIONS_DIR") == "" {
+		return nil, fmt.Errorf("get local stable-version %q: recovery versions directory not set", dut.Name)
+	}
+	stableVersionPath := fmt.Sprintf("%s%s-%s.json", os.Getenv("DOCKER_DRONE_RECOVERY_VERSIONS_DIR"), dut.GetChromeos().GetBoard(), dut.GetChromeos().GetModel())
+
+	svFile, err := os.Open(stableVersionPath)
+	if err != nil {
+		return nil, errors.Annotate(err, "get local stable-version %q: cannot open stable version file", dut.Name).Err()
+	}
+	defer svFile.Close()
+
+	svByteArr, err := io.ReadAll(svFile)
+	if err != nil {
+		return nil, errors.Annotate(err, "get local stable-version %q: cannot read stable version file", dut.Name).Err()
+	}
+
+	recovery_version := models.RecoveryVersion{}
+	err = json.Unmarshal(svByteArr, &recovery_version)
+	if err != nil {
+		return nil, errors.Annotate(err, "get local stable-version %q: cannot parse stable version file", dut.Name).Err()
+	}
+	return &tlw.VersionResponse{
+		Value: map[string]string{
+			"board":      recovery_version.GetBoard(),
+			"model":      recovery_version.GetModel(),
+			"os_image":   recovery_version.GetOsImage(),
+			"fw_image":   recovery_version.GetFwImage(),
+			"fw_version": recovery_version.GetFwVersion(),
 		},
 	}, nil
 }

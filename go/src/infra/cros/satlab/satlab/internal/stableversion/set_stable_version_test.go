@@ -8,19 +8,22 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"reflect"
 	"testing"
+
+	"infra/cros/recovery/models"
 )
 
 // TestWriteLocalStableVersion tests stable version file creation
 func TestWriteLocalStableVersion(t *testing.T) {
 	t.Parallel()
 
-	rv := &RecoveryVersion{
-		Board:   "zork",
-		Model:   "gumboz",
-		Os:      "R115-15474.70.0",
-		Fw:      "Google_Berknip.13434.356.0",
-		FwImage: "zork-firmware/R87-13434.819.0",
+	rv := &models.RecoveryVersion{
+		Board:     "zork",
+		Model:     "gumboz",
+		OsImage:   "R115-15474.70.0",
+		FwVersion: "Google_Berknip.13434.356.0",
+		FwImage:   "zork-firmware/R87-13434.819.0",
 	}
 
 	path := "./tmp/recovery_versions/"
@@ -45,11 +48,10 @@ func TestWriteLocalStableVersion(t *testing.T) {
 		t.Errorf("Unexpected err: %v", err)
 	}
 
-	rv2 := &RecoveryVersion{}
+	rv2 := &models.RecoveryVersion{}
 	_ = json.Unmarshal([]byte(savedRecoveryVersion), rv2)
 
-	if *rv != *rv2 {
+	if !reflect.DeepEqual(rv, rv2) {
 		t.Errorf("Recovery version saved incorrectly")
 	}
-
 }

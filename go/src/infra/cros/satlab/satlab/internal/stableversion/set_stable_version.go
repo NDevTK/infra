@@ -24,6 +24,7 @@ import (
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/cmd/shivas/utils"
 	"infra/cmdsupport/cmdlib"
+	"infra/cros/recovery/models"
 	"infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
 	"infra/cros/satlab/common/site"
 )
@@ -100,12 +101,12 @@ func (c *setStableVersionRun) innerRun(ctx context.Context, a subcommands.Applic
 			return err
 		}
 	} else if c.board != "" && c.model != "" { // Board Model flow: SFP EXTERNAL USERS ONLY
-		recovery_version := &RecoveryVersion{
-			Board:   c.board,
-			Model:   c.model,
-			Os:      c.os,
-			Fw:      c.fw,
-			FwImage: c.fwImage,
+		recovery_version := &models.RecoveryVersion{
+			Board:     c.board,
+			Model:     c.model,
+			OsImage:   c.os,
+			FwVersion: c.fw,
+			FwImage:   c.fwImage,
 		}
 		err := innerRunBoardModel(ctx, a, args, env, recovery_version)
 		if err != nil {
@@ -116,12 +117,12 @@ func (c *setStableVersionRun) innerRun(ctx context.Context, a subcommands.Applic
 }
 
 // InnerRunBoardModel is the implementation of setStableVersion that uses Board/Model and circumvents the cros-inventory call.
-func innerRunBoardModel(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env, rv *RecoveryVersion) error {
+func innerRunBoardModel(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env, rv *models.RecoveryVersion) error {
 
 	fmt.Println("WARNING: internal users must use -hostname override instead of board/model")
 
 	// Count how many of OS, FW or FW Image are provided
-	numArgs := validateStableVersionArgs(rv.Os, rv.Fw, rv.FwImage)
+	numArgs := validateStableVersionArgs(rv.OsImage, rv.FwVersion, rv.FwImage)
 
 	if numArgs == 0 { // If none provided, use board/model to fetch arbitrary version
 		moblabClient, err := moblab.NewBuildClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
@@ -189,7 +190,7 @@ func (c *setStableVersionRun) innerRunHostname(ctx context.Context, a subcommand
 }
 
 // WriteLocalStableVersion saves a recovery version to the specified directory and creates the directory if necessary.
-func WriteLocalStableVersion(recovery_version *RecoveryVersion, path string) error {
+func WriteLocalStableVersion(recovery_version *models.RecoveryVersion, path string) error {
 
 	// Check if recovery_versions directory created
 	_, err := os.Stat(path)
@@ -223,7 +224,7 @@ func WriteLocalStableVersion(recovery_version *RecoveryVersion, path string) err
 }
 
 // Fetch a stable recovery version for a given board model
-func FindMostStableBuild(ctx context.Context, moblabClient MoblabClient, board string, model string) (*RecoveryVersion, error) {
+func FindMostStableBuild(ctx context.Context, moblabClient MoblabClient, board string, model string) (*models.RecoveryVersion, error) {
 
 	// fetch os image and fw
 	findBuildRequest := &moblabpb.FindMostStableBuildRequest{
@@ -261,12 +262,12 @@ func FindMostStableBuild(ctx context.Context, moblabClient MoblabClient, board s
 	}
 	fwImage := fmt.Sprintf("%s-firmware/R%s-%s", board, fw_milestone, firmwareBuild.GetBuildVersion())
 
-	rv := &RecoveryVersion{
-		Board:   board,
-		Model:   model,
-		Os:      os,
-		Fw:      fw,
-		FwImage: fwImage,
+	rv := &models.RecoveryVersion{
+		Board:     board,
+		Model:     model,
+		OsImage:   os,
+		FwVersion: fw,
+		FwImage:   fwImage,
 	}
 	return rv, nil
 }
@@ -341,12 +342,4 @@ func (c *setStableVersionRun) produceRequest(ctx context.Context, a subcommands.
 type MoblabClient interface {
 	FindMostStableBuild(ctx context.Context, req *moblabpb.FindMostStableBuildRequest, opts ...gax.CallOption) (*moblabpb.FindMostStableBuildResponse, error)
 	ListBuilds(ctx context.Context, req *moblabpb.ListBuildsRequest, opts ...gax.CallOption) *moblab.BuildIterator
-}
-
-type RecoveryVersion struct {
-	Board   string
-	Model   string
-	Os      string
-	Fw      string
-	FwImage string
 }
