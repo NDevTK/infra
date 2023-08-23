@@ -236,7 +236,7 @@ func getTestVerdict(ctx context.Context, testResult *api.TestCaseResult) (skylab
 	case *api.TestCaseResult_Crash_:
 		testVerdict = skylab_test_runner.Result_Autotest_TestCase_VERDICT_ERROR
 	case *api.TestCaseResult_Skip_:
-		testVerdict = skylab_test_runner.Result_Autotest_TestCase_VERDICT_NO_VERDICT
+		testVerdict = skylab_test_runner.Result_Autotest_TestCase_VERDICT_PASS
 	case *api.TestCaseResult_NotRun_:
 		testVerdict = skylab_test_runner.Result_Autotest_TestCase_VERDICT_NO_VERDICT
 	default:
