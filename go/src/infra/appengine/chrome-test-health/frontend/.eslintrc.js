@@ -62,6 +62,8 @@ module.exports = {
     'quotes': ['warn', 'single'],
     'semi': ['warn', 'always'],
     'indent': 'warn',
+    '@typescript-eslint/no-unused-vars':
+      ['warn', { 'argsIgnorePattern': '^_' }],
 
     // Off
     'react/jsx-uses-react': 'off',

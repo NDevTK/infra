@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import { Row } from '../../../features/table/DataTable';
 import { Auth } from '../../../api/auth';
 import { FetchDirectoryMetricsRequest, fetchDirectoryMetrics, DirectoryNode,
   FetchTestMetricsRequest,
@@ -75,22 +76,22 @@ type DataAction =
  | {
   type: 'merge_dir',
   nodes: DirectoryNode[],
-  onExpand: (node: Node) => void,
+  onExpand: (row: Row) => void,
   parentId?: string
  }
  | {
   type: 'rebuild_state',
   nodes: DirectoryNode[],
   tests: TestDateMetricData[],
-  onExpand?: (node: Node) => void,
+  onExpand?: (row: Row) => void,
  }
 
 function findNode(nodes: Node[], id: string): Node | undefined {
   for (let i = 0; i < nodes.length; i++) {
     if (nodes[i].id === id) {
       return nodes[i];
-    } else if (nodes[i].nodes.length > 0) {
-      const node = findNode(nodes[i].nodes, id);
+    } else if (nodes[i].rows !== undefined && nodes[i].rows.length > 0) {
+      const node = findNode(nodes[i].rows as Node[], id);
       if (node !== undefined) {
         return node;
       }
@@ -112,8 +113,8 @@ export function getLoadedParentIds(
         dirs.push(node.id);
       }
     }
-    if (node.nodes.length > 0) {
-      getLoadedParentIds(node.nodes, dirs, files);
+    if (node.rows.length > 0) {
+      getLoadedParentIds(node.rows as Node[], dirs, files);
     }
   });
   return [dirs, files];
@@ -125,33 +126,33 @@ function createTestNode(test: TestDateMetricData): Test {
     name: test.testName,
     fileName: test.fileName,
     metrics: createMetricsMap(test.metrics),
-    isLeaf: false,
-    nodes: test.variants.map((variant) => ({
+    isExpandable: true,
+    rows: test.variants.map((variant) => ({
       id: `${test.testId}:${variant.bucket}:${variant.builder}` +
         `:${variant.suite}`,
       name: variant.bucket + '/' + variant.builder,
       subname: variant.suite,
       metrics: createMetricsMap(variant.metrics),
-      isLeaf: true,
-      nodes: [],
+      isExpandable: false,
+      rows: [],
     })),
   };
 }
 
 function createPathNode(
     node: DirectoryNode,
-    onExpand?: (node: Node) => void,
+    onExpand?: (row: Row) => void,
 ) : Path {
   return {
     id: node.id,
     path: node.id,
     name: node.name + ((node.type === DirectoryNodeType.DIRECTORY) ? '/' : ''),
     metrics: createMetricsMap(node.metrics),
-    isLeaf: false,
+    isExpandable: true,
     onExpand: onExpand,
     loaded: false,
     type: node.type as DirectoryNodeType,
-    nodes: [],
+    rows: [],
   };
 }
 
@@ -179,7 +180,7 @@ export function dataReducer(state: Node[], action: DataAction): Node[] {
   } else {
     const parentNode = findNode(state, action.parentId);
     if (parentNode !== undefined) {
-      parentNode.nodes = nodes;
+      parentNode.rows = nodes;
       (parentNode as Path).loaded = true;
     }
     // Necessary to return a new object to trigger a re-render.
@@ -203,7 +204,7 @@ function getParentId(id: string) {
 function rebuildState(
     paths: DirectoryNode[],
     tests: TestDateMetricData[],
-    onExpand?: (node: Node) => void,
+    onExpand?: (row: Row) => void,
 ): Node[] {
   const parents = new Map<string, Node[]>();
   paths.forEach((path) => {
@@ -225,9 +226,9 @@ function rebuildState(
   const populate = (nodes: Node[]) => {
     nodes.forEach((node) => {
       if (isPath(node) && parents.has(node.id)) {
-        node.nodes = parents.get(node.id) || [];
+        node.rows = parents.get(node.id) || [];
         node.loaded = true;
-        populate(node.nodes);
+        populate(node.rows as Node[]);
       }
     });
   };

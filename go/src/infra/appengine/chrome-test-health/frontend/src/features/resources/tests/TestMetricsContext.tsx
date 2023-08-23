@@ -16,6 +16,7 @@ import {
   isTestMetricsResponse,
 } from '../../../api/resources';
 import { formatDate } from '../../../utils/formatUtils';
+import { Row } from '../../../features/table/DataTable';
 import { ComponentContext } from '../../components/ComponentContext';
 import {
   dataReducer,
@@ -39,14 +40,11 @@ type TestMetricsContextProviderProps = {
   children?: React.ReactNode,
 }
 
-export interface Node {
-  id: string,
+export interface Node extends Row {
   name: string,
   subname?: string,
   metrics: Map<string, Map<MetricType, number>>,
-  isLeaf: boolean,
-  onExpand?: (node: Node) => void,
-  nodes: Node[]
+  rows: Row[],
 }
 
 // This node is for a file system path, which may be a directory or file
@@ -230,7 +228,8 @@ export const TestMetricsContextProvider = (props : TestMetricsContextProviderPro
     throw error;
   }, [loadingDispatch]);
 
-  const loadPathNode = useCallback((node: Node) => {
+  const loadPathNode = useCallback((row: Row) => {
+    const node = row as Node;
     if (auth === undefined) {
       return;
     }

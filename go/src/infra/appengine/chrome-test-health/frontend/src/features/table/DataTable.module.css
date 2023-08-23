@@ -7,19 +7,11 @@
     color:black;
 }
 
-.headerRow .filterButtonText {
+.headerRow .sortButtonText {
     border:none;
     padding:0px;
     color:black;
     text-transform:none;
-}
-
-.headerRow .filterButtonText .icon {
-    font-size: 15px;
-}
-
-.headerRow .filterButtonText .iconNoShow {
-    font-size: 0px;
 }
 
 .tableCellNoData {

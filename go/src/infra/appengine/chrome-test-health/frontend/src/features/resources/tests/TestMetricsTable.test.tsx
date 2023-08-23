@@ -31,24 +31,24 @@ const tests: Test[] = [{
   name: 'testName',
   fileName: 'fileName',
   metrics: mockMetrics,
-  isLeaf: false,
-  nodes: [
+  isExpandable: true,
+  rows: [
     {
       id: 'v1',
       name: 'suite',
       subname: 'builder',
       metrics: mockMetrics,
-      isLeaf: true,
-      nodes: [],
-    },
+      isExpandable: false,
+      rows: [],
+    } as Node,
     {
       id: 'v1',
       name: 'suite',
       subname: 'builder',
       metrics: mockMetrics,
-      isLeaf: true,
-      nodes: [],
-    },
+      isExpandable: false,
+      rows: [],
+    } as Node,
   ],
 }];
 
@@ -67,15 +67,14 @@ describe('when rendering the ResourcesTable', () => {
     renderWithContext(<TestMetricsTable/>, { data: tests, params: { timelineView: true }, datesToShow: ['1', '2'] });
     expect(screen.getByTestId('tableBody')).toBeInTheDocument();
     expect(screen.getByText('Test Suite')).toBeInTheDocument();
-    expect(screen.getAllByTestId('timelineHeader')).toHaveLength(2);
   });
   it('directory view', () => {
     const nodes: Node[] = [{
       id: '/',
       name: 'src',
       metrics: mockMetrics,
-      isLeaf: false,
-      nodes: [],
+      isExpandable: true,
+      rows: [],
     }];
     renderWithContext(<TestMetricsTable/>, { data: nodes, params: { directoryView: true }, datesToShow: ['1', '2'] });
     expect(screen.getByTestId('tableBody')).toBeInTheDocument();

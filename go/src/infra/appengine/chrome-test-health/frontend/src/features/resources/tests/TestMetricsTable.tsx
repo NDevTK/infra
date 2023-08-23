@@ -2,173 +2,119 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { useContext } from 'react';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import { Button, LinearProgress, TablePagination } from '@mui/material';
-import { SortType } from '../../../api/resources';
-import { TestMetricsContext, convertToSortIndex } from './TestMetricsContext';
-import TestMetricsRow from './TestMetricsRow';
-import styles from './TestMetricsTable.module.css';
+import { MetricType, SortType } from '../../../api/resources';
+import { formatNumber, formatTime } from '../../../utils/formatUtils';
+import DataTable, { Column, PaginatorProps, Row } from '../../table/DataTable';
+import { Node, TestMetricsContext } from './TestMetricsContext';
 
 function TestMetricsTable() {
   const { data, lastPage, isLoading, api, params, datesToShow } = useContext(TestMetricsContext);
 
-  const handleChangePage = (
-      _: React.MouseEvent<HTMLButtonElement> | null,
-      newPage: number,
-  ) => {
-    api.updatePage(newPage);
-  };
-  const handleChangeRowsPerPage = (
-      event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    api.updateRowsPerPage(Number(event.target.value));
-  };
-
-  const handleSortType = (event) => {
-    if (params.sort === event as SortType) {
-      api.updateAscending(!params.ascending);
-    } else {
-      api.updateSort(event);
-    }
-  };
-
-  const handleSortDate = (date) => {
-    if (date === datesToShow[params.sortIndex]) {
-      api.updateAscending(!params.ascending);
-    } else {
-      api.updateSortIndex(convertToSortIndex(datesToShow, date));
-    }
-  };
-
-  function sortableColumnLabel(sortType: SortType, colName: string) {
-    return (
-      <Button
-        className={styles.filterButtonText}
-        onClick={() => {
-          handleSortType(sortType);
+  function constructColumns() {
+    const cols: Column[] = [{
+      name: 'Test',
+      renderer: (_: Column, row: Row) => {
+        const node = row as Node;
+        if (node.subname) {
+          return node.name;
+        } else {
+          return [node.name, 2];
         }
+      },
+      align: 'left',
+      isSortedBy: params.sort === SortType.SORT_NAME,
+      isSortAscending: params.sort === SortType.SORT_NAME ? params.ascending : undefined,
+      sx: { width: '30%' },
+      onClick: () => {
+        if (params.sort === SortType.SORT_NAME) {
+          api.updateAscending(!params.ascending);
+        } else {
+          api.updateSort(SortType.SORT_NAME);
         }
-      >
-        {colName}
-        {
-        params.ascending ?
-          <ArrowUpwardIcon className={params.sort === sortType ? styles.icon : styles.iconNoShow}/> :
-          <ArrowDownwardIcon className={params.sort === sortType ? styles.icon : styles.iconNoShow}/>
-        }
-      </Button>
-    );
-  }
-
-  function sortableDateColumn(date: string) {
-    return (
-      <Button
-        className={styles.filterButtonText}
-        onClick={() => {
-          handleSortDate(date);
-        }
-        }
-      >
-        {date}
-        {
-        params.sort !== SortType.SORT_NAME ? (params.ascending ?
-        <ArrowUpwardIcon className={datesToShow[params.sortIndex] === date ? styles.icon : styles.iconNoShow}/> :
-        <ArrowDownwardIcon className={datesToShow[params.sortIndex] === date ? styles.icon : styles.iconNoShow}/>) :
-        null}
-      </Button>
-    );
-  }
-
-  function tableMessageBoard(message: string) {
-    return (
-      <TableRow>
-        <TableCell colSpan={7} align="center" className={styles.tableCellNoData}>
-          {message}
-        </TableCell>
-      </TableRow>
-    );
-  }
-
-  function displayHeader() {
+      },
+    }, {
+      name: 'Test Suite',
+      renderer: (_: Column, row: Row) => {
+        const node = row as Node;
+        return node.subname ? node.subname : undefined;
+      },
+      align: 'left',
+      sx: { width: '20%' },
+    }];
     if (params.timelineView) {
-      return (
-        <>
-          {datesToShow.map((date) => (
-            <TableCell key={date} component="th" align="right" data-testid="timelineHeader"
-              sx={{ whiteSpace: 'nowrap', width: '8%', minWidth: '100px', maxWidth: '140px' }}>
-              {sortableDateColumn(date)}
-            </TableCell>
-          ))}
-        </>
-      );
+      datesToShow.map((date, index) => {
+        cols.push({
+          name: date,
+          renderer: (col: Column, row: Row) => {
+            return formatNumber(Number((row as Node).metrics.get(col.name)?.get(params.timelineMetric)));
+          },
+          isSortedBy: params.sortIndex === index,
+          isSortAscending: params.sortIndex === index ? params.ascending : undefined,
+          align: 'right',
+          sx: { whiteSpace: 'nowrap', width: '8%', minWidth: '100px', maxWidth: '140px' },
+          onClick: () => {
+            if (index === params.sortIndex) {
+              api.updateAscending(!params.ascending);
+            } else {
+              api.updateSortIndex(index);
+            }
+          },
+        });
+      });
+    } else {
+      const columns: [SortType, MetricType, string, (val:any) => string][] = [
+        [SortType.SORT_NUM_RUNS, MetricType.NUM_RUNS, '# Runs', formatNumber],
+        [SortType.SORT_NUM_FAILURES, MetricType.NUM_FAILURES, '# Failures', formatNumber],
+        [SortType.SORT_AVG_RUNTIME, MetricType.AVG_RUNTIME, 'Avg Runtime', formatTime],
+        [SortType.SORT_TOTAL_RUNTIME, MetricType.TOTAL_RUNTIME, 'Total Runtime', formatTime],
+        [SortType.SORT_AVG_CORES, MetricType.AVG_CORES, 'Avg Cores', formatNumber],
+      ];
+      columns.map(([sortType, metricType, name, format]) => {
+        cols.push({
+          name: name,
+          renderer: (_: Column, row: Row) => {
+            return format((row as Node).metrics.get(datesToShow[0])?.get(metricType));
+          },
+          align: 'right',
+          isSortedBy: params.sort == sortType,
+          isSortAscending: params.sort === sortType ? params.ascending : undefined,
+          sx: { whiteSpace: 'nowrap', width: '8%', minWidth: '100px', maxWidth: '140px' },
+          onClick: () => {
+            if (params.sort === sortType) {
+              api.updateAscending(!params.ascending);
+            } else {
+              api.updateSort(sortType);
+            }
+          },
+        });
+      });
     }
-    const columns: [SortType, string][] = [
-      [SortType.SORT_NUM_RUNS, '# Runs'],
-      [SortType.SORT_NUM_FAILURES, '# Failures'],
-      [SortType.SORT_AVG_RUNTIME, 'Avg Runtime'],
-      [SortType.SORT_TOTAL_RUNTIME, 'Total Runtime'],
-      [SortType.SORT_AVG_CORES, 'Avg Cores'],
-    ];
-    return (
-      <>
-        {columns.map(([sortType, name]) => (
-          <TableCell key={name} component="th" align="right"
-            sx={{ whiteSpace: 'nowrap', width: '8%', minWidth: '100px', maxWidth: '140px' }}>
-            {sortableColumnLabel(sortType, name)}
-          </TableCell>
-        ))}
-      </>
-    );
+    return cols;
   }
+
+  const paginatorProps: PaginatorProps = {
+    rowsPerPageOptions: [25, 50, 100, 200],
+    count: lastPage ? (params.page * params.rowsPerPage): -1,
+    rowsPerPage: params.rowsPerPage,
+    page: params.page,
+    onPageChange: (
+        _: React.MouseEvent<HTMLButtonElement> | null,
+        newPage: number,
+    ) => {
+      api.updatePage(newPage);
+    },
+    onChangeRowsPerPage: (
+        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    ) => {
+      api.updateRowsPerPage(Number(event.target.value));
+    },
+  };
 
   return (
     <Paper>
-      <TableContainer sx={{
-        maxHeight: 'calc(100vh - ' + (params.directoryView ? '164' : '214') + 'px)',
-      }}>
-        <LinearProgress sx={{ visibility: isLoading ? 'visible' : 'hidden' }} data-testid='loading-bar'/>
-        <Table stickyHeader size="small" aria-label="simple table">
-          <TableHead>
-            <TableRow className={styles.headerRow}>
-              <TableCell component="th" align="left" sx={{ width: '30%' }}>
-                {sortableColumnLabel(SortType.SORT_NAME, 'Test')}
-              </TableCell>
-              <TableCell component="th" align="left" sx={{ width: '20%' }}>
-                Test Suite
-              </TableCell>
-              {displayHeader()}
-            </TableRow>
-          </TableHead>
-          <TableBody data-testid="tableBody">
-            {data.length > 0 ?
-             data.map(
-                 (row) => <TestMetricsRow key={row.id} data={row} depth={0}/>,
-             ) : tableMessageBoard(isLoading ? 'Loading...' : 'No data available')}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      {params.directoryView ? null : (
-          <TablePagination
-            data-testid="tablePagination"
-            rowsPerPageOptions={[25, 50, 100, 200]}
-            component="div"
-            count={lastPage ? (params.page * params.rowsPerPage): -1}
-            rowsPerPage={params.rowsPerPage}
-            page={params.page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            showFirstButton
-            sx={{ borderTop: 1, borderColor: 'grey.300' }}
-          />
-      )}
+      <DataTable isLoading={isLoading} rows={data} columns={constructColumns()} showPaginator={!params.directoryView} paginatorProps={paginatorProps}/>
     </Paper>
   );
 }

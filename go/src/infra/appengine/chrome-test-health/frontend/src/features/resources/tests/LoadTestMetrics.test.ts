@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import { Row } from '../../../features/table/DataTable';
 import {
   MetricType,
   Period,
@@ -62,18 +63,18 @@ function pathNode(
     type: DirectoryNodeType,
     loaded: boolean,
     nodes: Node[] = [],
-    onExpand?: (node: Node) => void,
+    onExpand?: (row: Row) => void,
 ): Path {
   return {
     id: id,
     name: id + ((type === DirectoryNodeType.DIRECTORY) ? '/' : ''),
-    isLeaf: false,
+    isExpandable: true,
     metrics: new Map(),
     onExpand: onExpand,
     path: id,
     type: type,
     loaded: loaded,
-    nodes: nodes,
+    rows: nodes,
   };
 }
 
@@ -86,9 +87,9 @@ function testNode(
   return {
     id: id,
     name: id,
-    isLeaf: leaf,
+    isExpandable: !leaf,
     metrics: new Map(),
-    nodes: nodes,
+    rows: nodes,
     fileName: fileName,
   };
 }
@@ -156,8 +157,8 @@ describe('merge_test action', () => {
     expect(merged[0].metrics.get('2012-01-02')?.get(MetricType.NUM_FAILURES))
         .toEqual(2);
 
-    expect(merged[0].nodes).toHaveLength(1);
-    const v = merged[0].nodes[0];
+    expect(merged[0].rows).toHaveLength(1);
+    const v = merged[0].rows[0] as Node;
     expect(v.name).toEqual(tests[0].variants[0].bucket +
       '/' +tests[0].variants[0].builder);
     expect(v.subname).toEqual(tests[0].variants[0].suite);
@@ -188,8 +189,8 @@ describe('merge_test action', () => {
     expect(merged).toHaveLength(1);
     expect(merged[0].id).toEqual('foo');
 
-    expect(merged[0].nodes).toHaveLength(1);
-    const t = merged[0].nodes[0];
+    expect(merged[0].rows).toHaveLength(1);
+    const t = merged[0].rows[0] as Node;
     expect(t.id).toEqual(tests[0].testId);
     expect(t.name).toEqual(tests[0].testName);
     expect(t.metrics.size).toEqual(1);
@@ -249,8 +250,8 @@ describe('merge_dir action', () => {
     expect(merged).toHaveLength(1);
     expect(merged[0].id).toEqual(nodes[0].id);
     expect(merged[0].name).toEqual(nodes[0].name + '/');
-    expect(merged[0].nodes).toHaveLength(0);
-    expect(merged[0].isLeaf).toEqual(false);
+    expect(merged[0].rows).toHaveLength(0);
+    expect(merged[0].isExpandable).toEqual(true);
     expect(merged[0].onExpand).toBe(onExpand);
     expect((merged[0] as Path).path).toEqual(nodes[0].id);
     expect((merged[0] as Path).loaded).toEqual(false);
@@ -272,15 +273,15 @@ describe('merge_dir action', () => {
       onExpand: onExpand,
     });
     expect(merged).toHaveLength(1);
-    expect(merged[0].nodes).toHaveLength(1);
+    expect(merged[0].rows).toHaveLength(1);
     expect((merged[0] as Path).type).toEqual(DirectoryNodeType.DIRECTORY);
     expect((merged[0] as Path).loaded).toEqual(true);
 
-    const m0n0 = merged[0].nodes[0];
+    const m0n0 = merged[0].rows[0] as Node;
     expect(m0n0.id).toEqual(nodes[0].id);
     expect(m0n0.name).toEqual(nodes[0].name);
-    expect(m0n0.nodes).toHaveLength(0);
-    expect(m0n0.isLeaf).toEqual(false);
+    expect(m0n0.rows).toHaveLength(0);
+    expect(m0n0.isExpandable).toEqual(true);
     expect(m0n0.onExpand).toBe(onExpand);
     expect((m0n0 as Path).type).toEqual(DirectoryNodeType.FILENAME);
     expect((m0n0 as Path).loaded).toEqual(false);
@@ -310,8 +311,8 @@ describe('merge_dir action', () => {
       onExpand: onExpand,
     });
     expect(merged).toHaveLength(2);
-    expect(merged[0].nodes).toHaveLength(2);
-    expect(merged[1].nodes).toHaveLength(1);
+    expect(merged[0].rows).toHaveLength(2);
+    expect(merged[1].rows).toHaveLength(1);
   });
 });
 
