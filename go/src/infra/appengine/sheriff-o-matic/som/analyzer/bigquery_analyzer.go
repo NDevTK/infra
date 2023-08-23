@@ -70,9 +70,11 @@ WHERE
 // TODO (nqmtuan): Filter the critical for other projects
 // But firstly make sure it is working with chrome os first
 const crosFailuresQuery = selectFromWhere + `
-	project = "chromeos"
-	AND bucket IN ("postsubmit")
-	AND (critical != "NO" OR critical is NULL)
+	Project = "chromeos"
+	AND ((Bucket IN ("postsubmit"))
+	     OR (Bucket IN ("release")
+		 AND Builder LIKE "%%-release-main"))
+	AND (Critical != "NO" OR Critical is NULL)
 `
 
 const fuchsiaFailuresQuery = selectFromWhere + `

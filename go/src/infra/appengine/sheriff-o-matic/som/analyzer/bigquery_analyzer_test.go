@@ -187,9 +187,11 @@ func TestGenerateSQLQuery(t *testing.T) {
 			  BuildStatus
 			FROM
 				` + "`sheriff-o-matic.chromeos.sheriffable_failures`" + `
-			WHERE project = "chromeos"
-				AND bucket IN ("postsubmit")
-				AND (critical != "NO" OR critical is NULL)
+			WHERE Project = "chromeos"
+				AND ((Bucket IN ("postsubmit"))
+                                     OR (Bucket IN ("release")
+					 AND Builder LIKE "%-release-main"))
+				AND (Critical != "NO" OR Critical is NULL)
 		`
 		actual, err := generateSQLQuery(c, treeName, "sheriff-o-matic")
 		So(formatQuery(actual), ShouldEqual, formatQuery(expected))
