@@ -128,7 +128,7 @@ class TokenTest(testing.AppengineTestCase):
     self.assertEqual({'key': 'value'}, response.json_body)
 
   @mock.patch.object(
-      time_util, 'GetUTCNow', return_value=datetime(2017, 06, 13, 0, 0, 0))
+      time_util, 'GetUTCNow', return_value=datetime(2017, 6, 13, 0, 0, 0))
   def testValidateAuthTokenSucceed(self, _):
     tested_token = token.GenerateAuthToken('key', 'email')
     valid, expired = token.ValidateAuthToken('key', tested_token, 'email')
@@ -147,19 +147,19 @@ class TokenTest(testing.AppengineTestCase):
     self.assertFalse(expired)
 
   @mock.patch.object(
-      time_util, 'GetUTCNow', return_value=datetime(2017, 06, 13, 2, 0, 0))
+      time_util, 'GetUTCNow', return_value=datetime(2017, 6, 13, 2, 0, 0))
   def testValidateAuthTokenExpired(self, _):
     tested_token = token.GenerateAuthToken(
-        'key', 'email', when=datetime(2017, 06, 13, 0, 0, 0))
+        'key', 'email', when=datetime(2017, 6, 13, 0, 0, 0))
     valid, expired = token.ValidateAuthToken('key', tested_token, 'email')
     self.assertTrue(valid)
     self.assertTrue(expired)
 
   @mock.patch.object(
-      time_util, 'GetUTCNow', return_value=datetime(2017, 06, 13, 0, 0, 0))
+      time_util, 'GetUTCNow', return_value=datetime(2017, 6, 13, 0, 0, 0))
   def testValidateAuthTokenLengthDifferent(self, _):
     token_created_timestamp = time_util.ConvertToTimestamp(
-        datetime(2017, 06, 13, 0, 0, 0))
+        datetime(2017, 6, 13, 0, 0, 0))
     tested_token = base64.urlsafe_b64encode(
         'token:' + str(token_created_timestamp))
     valid, expired = token.ValidateAuthToken('key', tested_token, 'email')

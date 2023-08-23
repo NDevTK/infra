@@ -37,7 +37,7 @@ class VersionedConfig(VersionedModel):
       raise Exception('Only admin could update config.')
 
     dirty = False
-    for k, v in kwargs.iteritems():
+    for k, v in kwargs.items():
       assert k in self._properties, k
       if getattr(self, k) != v:
         setattr(self, k, v)

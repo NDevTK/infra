@@ -2,9 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import logging
 import re
-import urlparse
+from six.moves.urllib.parse import urlparse
 
 from google.appengine.api import oauth
 from google.appengine.api import users
@@ -41,7 +40,7 @@ class Authenticator(object):
 
   def GetHttpHeadersFor(self, url):
     """Returns a dict with http headers for authentication to the given url."""
-    result = urlparse.urlparse(url)
+    result = urlparse(url)
     if result.scheme != 'https':
       return {}
 

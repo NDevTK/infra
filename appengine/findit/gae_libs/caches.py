@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import cStringIO
+import six
 import pickle
 import zlib
 
@@ -49,7 +49,7 @@ class CompressedMemCache(Cache):
       if len(all_data) != num:  # Some data is missing.
         return None
 
-      data_output = cStringIO.StringIO()
+      data_output = six.StringIO()
       for sub_key in sub_keys:
         data_output.write(all_data[sub_key])
       data = data_output.getvalue()
@@ -63,7 +63,7 @@ class CompressedMemCache(Cache):
     all_data = {}
     if len(compressed_data) > self.CHUNK_SIZE:
       num = 0
-      for index in xrange(0, len(compressed_data), self.CHUNK_SIZE):
+      for index in range(0, len(compressed_data), self.CHUNK_SIZE):
         sub_key = '%s-%s' % (key, num)
         all_data[sub_key] = compressed_data[index:index + self.CHUNK_SIZE]
         num += 1

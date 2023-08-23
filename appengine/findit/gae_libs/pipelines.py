@@ -106,7 +106,7 @@ from libs import exceptions
 from libs.structured_object import StructuredObject
 
 _UNDEFINED_TYPE = object()
-_SUPPORTED_TYPES = (type(None), int, float, long, basestring, list, dict,
+_SUPPORTED_TYPES = (type(None), int, float, int, basestring, list, dict,
                     StructuredObject)
 _SUPPORTED_TYPE_NAMES = ', '.join([t.__name__ for t in _SUPPORTED_TYPES])
 
@@ -122,8 +122,9 @@ def _ValidateType(parameter_type, parameter_name):
     parameter_type (types.TypeType): The type of a pipeline parameter.
     parameter_name (str): The name of the parameter to be validated.
   """
-  assert isinstance(parameter_type, types.TypeType), (
-      '%s must be defined with a class or a type' % parameter_name)
+  assert isinstance(parameter_type,
+                    type), ('%s must be defined with a class or a type' %
+                            parameter_name)
   assert any(issubclass(parameter_type, t) for t in _SUPPORTED_TYPES), (
       '%s must be in supported types: %r.' % (parameter_name,
                                               _SUPPORTED_TYPE_NAMES))

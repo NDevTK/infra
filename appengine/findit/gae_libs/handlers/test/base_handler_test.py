@@ -4,7 +4,6 @@
 
 import mock
 import re
-import urllib
 
 import webapp2
 import webtest

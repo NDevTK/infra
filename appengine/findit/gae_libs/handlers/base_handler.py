@@ -53,8 +53,10 @@ class BaseHandler(webapp2.RequestHandler):
         self.request.path.startswith('/_ah/'))
 
   def IsCorpUserOrAdmin(self):
+    # 'consider-using-ternary' has a bug as of 2023/08/23, remove if fixed.
+    # pylint: disable=consider-using-ternary
     """Returns True if the user logged in with corp account or as admin."""
-    user_email = auth_util.GetUserEmail()
+    user_email = auth_util.GetUserEmail()    
     return ((user_email and user_email.endswith('@google.com')) or
             auth_util.IsCurrentUserAdmin())
 
@@ -185,7 +187,7 @@ class BaseHandler(webapp2.RequestHandler):
 
       # Order the dictionary so that simple and small data comes first.
       ordered_data = collections.OrderedDict(
-          sorted(data.iteritems(), key=lambda (k, v): _Compare(k, v)))
+          sorted(iter(data.items()), key=lambda k_v: _Compare(k_v[0], k_v[1])))
       return json.dumps(ordered_data, indent=2, default=str)
 
     if response_format == 'html' and template is not None:
