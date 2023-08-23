@@ -5,7 +5,9 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -19,6 +21,7 @@ import (
 	"go.chromium.org/luci/auth"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/api/gitiles"
+	lucierrors "go.chromium.org/luci/common/errors"
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe/build"
@@ -284,17 +287,58 @@ func fetchRepoAtCommit(ctx context.Context, inputs *golangbuildpb.Inputs, commit
 // dependencies for the given modules.
 func fetchDependencies(ctx context.Context, spec *buildSpec, modules []module) (err error) {
 	step, ctx := build.StartStep(ctx, "fetch dependencies")
-	// TODO(dmitshur): See if errors due to adding a broken or unavailable
-	// module can be detected and correctly reported as non-infra somehow.
-	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
+	defer endStep(step, &err)
 
 	var errs []error
 	for _, m := range modules {
-		dlCmd := spec.goCmd(ctx, m.RootDir, "mod", "download")
-		err := cmdStepRun(ctx, fmt.Sprintf("fetch %q dependencies", m.Path), dlCmd, true)
+		err := goModDownload(ctx, spec, fmt.Sprintf("fetch %q dependencies", m.Path), m.RootDir)
 		errs = append(errs, err)
 	}
 	return errors.Join(errs...)
+}
+
+// goModDownload runs 'go mod download' in dir in a build step.
+//
+// Its output (in JSON format) is parsed to determine whether a
+// failure in the build step is a test or infrastructure failure.
+func goModDownload(ctx context.Context, spec *buildSpec, stepName, dir string) (err error) {
+	cmd := spec.goCmd(ctx, dir, "mod", "download", "-json")
+	var infra bool
+	step, ctx, err := cmdStartStep(ctx, stepName, cmd)
+	defer func() {
+		if infra {
+			err = infraWrap(err) // Failure is deemed to be an infrastructure failure.
+		}
+		step.End(err)
+	}()
+	if err != nil {
+		return err
+	}
+	var stdout bytes.Buffer
+	cmd.Stdout = io.MultiWriter(step.Log("stdout"), &stdout)
+	cmd.Stderr = step.Log("stderr")
+	err = cmd.Run()
+	if ee := (*exec.ExitError)(nil); errors.As(err, &ee) && ee.ExitCode() == 1 {
+		for dec := json.NewDecoder(&stdout); ; {
+			var m struct{ Error string }
+			err := dec.Decode(&m)
+			if err == io.EOF {
+				break
+			} else if err != nil {
+				return fmt.Errorf("error decoding JSON object from go mod download -json: %v\n", err)
+			}
+			if strings.Contains(m.Error, "dial tcp") && strings.HasSuffix(m.Error, ": i/o timeout") {
+				// An I/O timeout error to the Go module proxy is deemed to be an infrastructure failure.
+				// See https://ci.chromium.org/b/8772399708036918561 for an example.
+				infra = true
+				break
+			}
+		}
+	}
+	if err != nil {
+		return lucierrors.Annotate(err, "Failed to run %q", stepName).Err()
+	}
+	return nil
 }
 
 func writeVersionFile(ctx context.Context, dst, version string) error {
