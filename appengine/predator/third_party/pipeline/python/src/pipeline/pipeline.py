@@ -394,7 +394,7 @@ class Pipeline(object):
   """A Pipeline function-object that performs operations and has a life cycle.
 
   Class properties (to be overridden by sub-classes):
-    async: When True, this Pipeline will execute asynchronously and fill the
+    asynchronous: When True, this Pipeline will execute asynchronously and fill the
       default output slot itself using the complete() method.
     output_names: List of named outputs (in addition to the default slot) that
       this Pipeline must output to (no more, no less).
@@ -425,7 +425,7 @@ class Pipeline(object):
   __metaclass__ = _PipelineMeta
 
   # To be set by sub-classes
-  async = False
+  asynchronous = False
   output_names = []
   public_callbacks = False
   admin_callbacks = False
@@ -703,7 +703,7 @@ class Pipeline(object):
       True if the Pipeline should be retried, False if it cannot be cancelled
       mid-flight for some reason.
     """
-    if not self.async:
+    if not self.asynchronous:
       raise UnexpectedPipelineError(
           'May only call retry() method for asynchronous pipelines.')
     if self.try_cancel():
@@ -728,9 +728,9 @@ class Pipeline(object):
     """
     # TODO: Use thread-local variable to enforce that this is not called
     # while a pipeline is executing in the current thread.
-    if (self.async and self._root_pipeline_key == self._pipeline_key and
+    if (self.asynchronous and self._root_pipeline_key == self._pipeline_key and
         not self.try_cancel()):
-      # Handle the special case where the root pipeline is async and thus
+      # Handle the special case where the root pipeline is asynchronous and thus
       # cannot be aborted outright.
       return False
     else:
@@ -822,12 +822,12 @@ class Pipeline(object):
 
     Raises:
       UnexpectedPipelineError if the slot no longer exists or this method was
-      called for a pipeline that is not async.
+      called for a pipeline that is not asynchronous.
     """
-    # TODO: Enforce that all outputs expected by this async pipeline were
+    # TODO: Enforce that all outputs expected by this asynchronous pipeline were
     # filled before this complete() function was called. May required all
-    # async functions to declare their outputs upfront.
-    if not self.async:
+    # asynchronous functions to declare their outputs upfront.
+    if not self.asynchronous:
       raise UnexpectedPipelineError(
           'May only call complete() method for asynchronous pipelines.')
     self._context.fill_slot(
@@ -841,10 +841,10 @@ class Pipeline(object):
         should be passed to the callback when it is invoked.
 
     Raises:
-      UnexpectedPipelineError if this is invoked on pipeline that is not async.
+      UnexpectedPipelineError if this is invoked on pipeline that is not asynchronous.
     """
     # TODO: Support positional parameters.
-    if not self.async:
+    if not self.asynchronous:
       raise UnexpectedPipelineError(
           'May only call get_callback_url() method for asynchronous pipelines.')
     kwargs['pipeline_id'] = self._pipeline_key.name()
@@ -863,7 +863,7 @@ class Pipeline(object):
     Returns:
       A taskqueue.Task instance that must be enqueued by the caller.
     """
-    if not self.async:
+    if not self.asynchronous:
       raise UnexpectedPipelineError(
           'May only call get_callback_task() method for asynchronous pipelines.')
 
@@ -1902,7 +1902,7 @@ class _PipelineContext(object):
     logging.debug('Running %s(*%s, **%s)', stage._class_path,
                   _short_repr(stage.args), _short_repr(stage.kwargs))
 
-    if stage.async:
+    if stage.asynchronous:
       stage.run_test(*stage.args, **stage.kwargs)
     elif pipeline_generator:
       all_output_slots = set()
@@ -2085,11 +2085,11 @@ class _PipelineContext(object):
           pipeline_func_class.run)
       caller_output = pipeline_func.outputs
 
-    if (abort_signal and pipeline_func.async and
+    if (abort_signal and pipeline_func.asynchronous and
         pipeline_record.status == _PipelineRecord.RUN
         and not pipeline_func.try_cancel()):
       logging.warning(
-          'Could not cancel and abort mid-flight async pipeline: %r#%s',
+          'Could not cancel and abort mid-flight asynchronous pipeline: %r#%s',
           pipeline_func, pipeline_key.name())
       return
 
@@ -2150,7 +2150,7 @@ class _PipelineContext(object):
       return
 
     if (pipeline_record.status == _PipelineRecord.WAITING and
-        pipeline_func.async):
+        pipeline_func.asynchronous):
       self.transition_run(pipeline_key)
 
     try:
@@ -2162,7 +2162,7 @@ class _PipelineContext(object):
       else:
         return
 
-    if pipeline_func.async:
+    if pipeline_func.asynchronous:
       return
 
     if not pipeline_generator:

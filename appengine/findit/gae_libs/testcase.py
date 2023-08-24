@@ -36,7 +36,7 @@ class TestCase(BaseTestCase, testing.AppengineTestCase):  # pragma: no cover.
     def Mocked_run(pipeline_class_instance, *args, **kwargs):
       self.assertEqual(list(args), expected_args)
       self.assertEqual(kwargs, expected_kwargs)
-      if pipeline_class_instance.async:
+      if pipeline_class_instance.asynchronous:
         pipeline_class_instance.complete(result)
       return result
 

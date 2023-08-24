@@ -336,7 +336,7 @@ class Delay(pipeline.Pipeline):
     How long this delay waited.
   """
 
-  async = True
+  asynchronous = True
 
   def __init__(self, *args, **kwargs):
     if len(args) != 0 or len(kwargs) != 1 or kwargs.keys()[0] != 'seconds':
@@ -382,7 +382,7 @@ class EmailToContinue(pipeline.Pipeline):
   A random token is used to secure the asynchronous action.
   """
 
-  async = True
+  asynchronous = True
   public_callbacks = True
 
   _email_message = mail.EmailMessage
