@@ -9,9 +9,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import { Button, LinearProgress, SxProps, TablePagination, Theme } from '@mui/material';
+import { LinearProgress, SxProps, TablePagination, TableSortLabel, Theme } from '@mui/material';
 import styles from './DataTable.module.css';
 import DataTableRow from './DataTableRow';
 
@@ -50,14 +48,6 @@ export interface Column {
   sx?: SxProps<Theme>,
 }
 
-function showSortArrow(col: Column) {
-  return (
-    col.isSortAscending ?
-          <ArrowUpwardIcon sx={{ visibility: col.isSortedBy ? 'visible' : 'hidden', height: '20px', width: '20px' }}/> :
-          <ArrowDownwardIcon sx={{ visibility: col.isSortedBy ? 'visible' : 'hidden', height: '20px', width: '20px' }}/>
-  );
-}
-
 function columnHeader(column: Column): JSX.Element {
   return (
     <TableCell
@@ -67,14 +57,15 @@ function columnHeader(column: Column): JSX.Element {
       align={column.align}
       sx={column.sx}
     >
-      {
-        column.onClick ?
-          <Button className={styles.sortButtonText} onClick={column.onClick}>
-            {column.name}
-            {showSortArrow(column)}
-          </Button> :
-          <p>{column.name}</p>
-      }
+      {column.onClick ? (
+        <TableSortLabel
+          active={column.isSortedBy}
+          direction={column.isSortAscending ? 'asc' : 'desc'}
+          onClick={column.onClick}
+        >{column.name}</TableSortLabel>
+      ) : (
+        <span>{column.name}</span>
+      )}
     </TableCell>
   );
 }
@@ -92,10 +83,10 @@ function messageRow(colSpan: number, message: string): JSX.Element {
 function DataTable(props: DataTableProps) {
   return (
     <Paper>
+      <LinearProgress sx={{ visibility: props.isLoading ? 'visible' : 'hidden' }} data-testid='loading-bar'/>
       <TableContainer sx={{
-        maxHeight: 'calc(100vh - ' + (props.showPaginator ? '164' : '214') + 'px)',
+        maxHeight: 'calc(100vh - ' + (props.showPaginator ? '214' : '164') + 'px)',
       }}>
-        <LinearProgress sx={{ visibility: props.isLoading ? 'visible' : 'hidden' }} data-testid='loading-bar'/>
         <Table stickyHeader size="small" aria-label="simple table">
           <TableHead>
             <TableRow className={styles.headerRow}>
