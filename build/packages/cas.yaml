@@ -1,7 +1,6 @@
 package: infra/tools/luci/cas/${platform}
 description: Tool upload and download files from CAS server.
 platforms:
-  - aix-ppc64
   - dragonfly-amd64
   - freebsd-amd64
   - freebsd-arm64
