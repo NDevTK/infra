@@ -105,9 +105,18 @@ CIPD_PACKAGE_BUILDERS = {
         'linux-arm64',  # ~60 sec
         'solaris-amd64',
         'openbsd-amd64',
+        'freebsd-amd64',
+        'freebsd-arm64',
+        'illumos-amd64',
+        'netbsd-amd64',
+        'netbsd-arm64',
+        'openbsd-amd64',
+        'openbsd-arm64',
     ],
     'infra-packager-linux-xc2': [
         'aix-ppc64',  # ~5 sec
+        'linux-loong64',
+        'linux-mips',
         'linux-mips64',  # ~40 sec
         'linux-mips64le',  # ~40 sec
         'linux-mipsle',  # ~40 sec
@@ -115,6 +124,7 @@ CIPD_PACKAGE_BUILDERS = {
         'linux-ppc64le',  # ~40 sec
         'linux-riscv64',  # ~5 sec
         'linux-s390x',  # ~40 sec
+        'solaris-amd64',
     ],
     'infra-packager-mac-64': [
         # NOTE: Mac packages need to be codesigned and so can ONLY be packaged

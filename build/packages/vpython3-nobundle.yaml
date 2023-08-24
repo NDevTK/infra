@@ -2,7 +2,17 @@
 package: infra/tools/luci/vpython3/${platform}
 description: vpython3 is a VirtualEnv Python3 bootstrap tool.
 platforms:
+  - aix-ppc64
+  - dragonfly-amd64
+  - freebsd-amd64
+  - freebsd-arm64
+  - freebsd-riscv64
+  - illumos-amd64
   - linux-386
+  - linux-amd64
+  - linux-arm64
+  - linux-loong64
+  - linux-mips
   - linux-mips64
   - linux-mips64le
   - linux-mipsle
@@ -10,8 +20,13 @@ platforms:
   - linux-ppc64le
   - linux-riscv64
   - linux-s390x
+  - netbsd-amd64
+  - netbsd-arm64
   - openbsd-amd64
+  - openbsd-arm64
   - solaris-amd64
+  - windows-amd64
+  - windows-arm64
 go_build_environ:
   CGO_ENABLED:
     linux: 0 # to avoid linking to system dynamic libraries

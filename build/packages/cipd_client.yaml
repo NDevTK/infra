@@ -2,10 +2,17 @@ package: infra/tools/cipd/${platform}
 description: CIPD client binary.
 platforms:
   - aix-ppc64
+  - dragonfly-amd64
+  - freebsd-amd64
+  - freebsd-arm64
+  - freebsd-riscv64
+  - illumos-amd64
   - linux-386
   - linux-amd64
   - linux-arm64
   - linux-armv6l
+  - linux-loong64
+  - linux-mips
   - linux-mips64
   - linux-mips64le
   - linux-mipsle
@@ -15,7 +22,11 @@ platforms:
   - linux-s390x
   - mac-amd64
   - mac-arm64
+  - netbsd-amd64
+  - netbsd-arm64
   - openbsd-amd64
+  - openbsd-arm64
+  - solaris-amd64
   - windows-386
   - windows-amd64
   - windows-arm64
