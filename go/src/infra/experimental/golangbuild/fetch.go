@@ -252,7 +252,7 @@ func fetchRepoChangeWithCherryPick(ctx context.Context, inputs *golangbuildpb.In
 		return err
 	}
 
-	if err := runGit(ctx, "git cherry-pick", "-C", dst, "cherry-pick", changeSha); err != nil {
+	if err := runGit(ctx, "git cherry-pick", "-C", dst, "cherry-pick", "--allow-empty", changeSha); err != nil {
 		return err
 	}
 
