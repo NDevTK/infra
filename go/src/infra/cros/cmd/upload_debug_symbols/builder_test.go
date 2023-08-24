@@ -239,76 +239,6 @@ func TestUnpackTarball(t *testing.T) {
 
 }
 
-// TestUnpackKernelTarball confirms that we can properly unpack a given tarball and
-// return filepath to vmlinux.debug. Basic testing pulled from
-// https://pkg.go.dev/archive/tar#pkg-overview.
-func TestUnpackKernelTarball(t *testing.T) {
-	// Create working directory and tarball.
-	testDir, err := ioutil.TempDir("", "tarballTest")
-	if err != nil {
-		t.Error("error: " + err.Error())
-	}
-	debugSymbolsDir, err := ioutil.TempDir(testDir, "symbols")
-	if err != nil {
-		t.Error("error: " + err.Error())
-	}
-	defer os.RemoveAll(testDir)
-
-	// Generate file information.
-	tarPath := filepath.Join(testDir, "test.tar")
-	inputFile, err := os.Create(tarPath)
-	if err != nil {
-		t.Error("error: " + err.Error())
-	}
-
-	tarWriter := tar.NewWriter(inputFile)
-	// Struct for file info
-	type file struct {
-		name, body string
-		modeType   fs.FileMode
-	}
-
-	// Create an array holding some basic info to build headers. Contains regular
-	// files and directories.
-	files := []file{
-		{"vmlinuz", "fake-vmlinuz-content", 0600},
-		{"vmlinux.debug", "fake-vmlinux-content", 0600},
-	}
-
-	// Expected filename after test called.
-	expectedSymbolFile := debugSymbolsDir + "/vmlinux.debug"
-
-	// Write the mock files to the tarball.
-	for _, file := range files {
-		hdr := &tar.Header{
-			Name: file.name,
-			Mode: int64(file.modeType),
-			Size: int64(len(file.body)),
-		}
-		if err := tarWriter.WriteHeader(hdr); err != nil {
-			t.Error("error: " + err.Error())
-		}
-
-		if file.modeType == 0600 {
-			if _, err := tarWriter.Write([]byte(file.body)); err != nil {
-				t.Error("error: " + err.Error())
-			}
-		}
-	}
-	if err := tarWriter.Close(); err != nil {
-		t.Error("error: " + err.Error())
-	}
-
-	// Call the Function
-	symbolPath, err := unpackKernelTarball(tarPath, debugSymbolsDir)
-	if err != nil {
-		t.Error("error: " + err.Error())
-	}
-	if symbolPath != expectedSymbolFile {
-		t.Errorf("error: unexpected symbol file returned %s", symbolPath)
-	}
-}
-
 // TestGenerateConfigs validates that proper task configs are generated when a
 // list of filepaths are given.
 func TestGenerateConfigs(t *testing.T) {
@@ -358,7 +288,7 @@ func TestGenerateConfigs(t *testing.T) {
 		},
 	}
 
-	// Make the expected request body.
+	// Make the expected request body
 	responseBody := filterResponseBody{Pairs: []filterResponseStatusPair{}}
 
 	// Test for all 3 cases found in http://google3/net/crash/symbolcollector/symbol_collector.proto?l=19
@@ -389,7 +319,7 @@ func TestGenerateConfigs(t *testing.T) {
 		if err != nil {
 			t.Error("error: " + err.Error())
 		}
-		task := taskConfig{mockPath, "BREAKPAD", response.filename, response.symbol, false, false}
+		task := taskConfig{mockPath, response.filename, response.symbol, false, false}
 
 		if response.status != "FOUND" {
 			expectedTasks[task] = false
@@ -429,65 +359,14 @@ func TestGenerateConfigs(t *testing.T) {
 	}
 }
 
-// TestGenerateKernelConfigs validates that proper task configs are generated when a
-// list of filepaths are given.
-func TestGenerateKernelConfigs(t *testing.T) {
-	// Init the mock files and verifying structures.
-	type responseInfo struct {
-		filename string
-		symbol   string
-		status   string
-	}
-	mockResponse := responseInfo{
-		filename: "vmlinux.debug",
-		symbol:   "jacuzzi-R117-15544.0.0",
-		status:   "MISSING",
-	}
-
-	// Make the expected request body
-	responseBody := filterResponseBody{Pairs: []filterResponseStatusPair{}}
-	symbol := filterSymbolFileInfo{mockResponse.filename, mockResponse.symbol}
-	responseBody.Pairs = append(responseBody.Pairs, filterResponseStatusPair{SymbolId: symbol, Status: mockResponse.status})
-
-	mockResponseBody, err := json.Marshal(responseBody)
-	if err != nil {
-		t.Error("error: " + err.Error())
-	}
-
-	// Mock the symbol files locally.
-	testDir, err := ioutil.TempDir("", "configGenTest")
-	if err != nil {
-		t.Error("error: " + err.Error())
-	}
-	defer os.RemoveAll(testDir)
-
-	// Init mock.
-	mockCrash := initCrashConnectionMock("google.com", "1234", map[string]string{"google.com/symbols:checkStatuses?key=1234": string(mockResponseBody)})
-
-	mockPath := filepath.Join(testDir, mockResponse.filename)
-	err = ioutil.WriteFile(mockPath, []byte("fake-vmlinux-content"), 0644)
-	if err != nil {
-		t.Error("error: " + err.Error())
-	}
-
-	tasks, err := generateKernelConfigs(context.Background(), mockPath, mockResponse.symbol, 0, false, mockCrash)
-	if err != nil {
-		t.Error("error: " + err.Error())
-	}
-	// Check that returns aren't nil.
-	if tasks == nil {
-		t.Error("error: expect task to be not nil")
-	}
-}
-
 // TestUploadSymbols affirms that the worker design and retry model are valid.
 func TestUploadSymbols(t *testing.T) {
 	// Create tasks and expected returns.
 	tasks := []taskConfig{
-		{"", "BREAKPAD", "test1.so.sym", "", false, false},
-		{"", "BREAKPAD", "test2.so.sym", "", false, false},
-		{"", "BREAKPAD", "test3.so.sym", "", false, false},
-		{"", "BREAKPAD", "test4.so.sym", "", false, false},
+		{"", "test1.so.sym", "", false, false},
+		{"", "test2.so.sym", "", false, false},
+		{"", "test3.so.sym", "", false, false},
+		{"", "test4.so.sym", "", false, false},
 	}
 
 	// Mock the symbol files locally.
@@ -558,14 +437,5 @@ func TestCleanErrorMessage(t *testing.T) {
 
 	if strings.Contains(cleanedErrMessage, "-HIDDEN-KEY-") {
 		t.Error("error: non-existant key was fouind in error")
-	}
-}
-
-// TestGenerateKernelDebugId tests parsing kernel debugId.
-func TestGenerateKernelDebugId(t *testing.T) {
-	mockPath := "gs://chromeos-image-archive/brya-release/R117-15544.0.0/vmlinuz.tar.xz"
-	_, err := generateKernelDebugId(mockPath)
-	if err != nil {
-		t.Error("error: " + err.Error())
 	}
 }

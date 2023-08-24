@@ -23,7 +23,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -62,8 +61,7 @@ type crashUploadInformation struct {
 	UploadKey string `json:"uploadKey"`
 }
 type crashSubmitSymbolBody struct {
-	SymbolId   crashSymbolFile `json:"symbol_id"`
-	SymbolType string          `json:"symbol_type"`
+	SymbolId crashSymbolFile `json:"symbol_id"`
 }
 type crashSubmitResposne struct {
 	Result string `json:"result"`
@@ -89,7 +87,6 @@ type filterResponseBody struct {
 // taskConfig will contain the information needed to complete the upload task.
 type taskConfig struct {
 	symbolPath  string
-	symbolType  string
 	debugFile   string
 	debugId     string
 	dryRun      bool
@@ -100,7 +97,6 @@ type uploadDebugSymbols struct {
 	subcommands.CommandRunBase
 	authFlags   authcli.Flags
 	gsPath      string
-	dataType    string
 	workerCount uint64
 	retryQuota  uint64
 	staging     bool
@@ -257,7 +253,6 @@ func crashSubmitSymbolUpload(uploadKey string, task taskConfig, crash crashConne
 			task.debugFile,
 			task.debugId,
 		},
-		task.symbolType,
 	}
 
 	body, err := json.Marshal(bodyInfo)
@@ -339,8 +334,6 @@ func getCmdUploadDebugSymbols(authOpts auth.Options) *subcommands.Command {
 			b.authFlags = authcli.Flags{}
 			b.Flags.StringVar(&b.gsPath, "gs-path", "", ("[Required] Url pointing to the GS " +
 				"bucket storing the tarball."))
-			b.Flags.StringVar(&b.dataType, "data-type", "breakpad", ("Tarball content data type." +
-				"Can be breakpad or vmlinux."))
 			b.Flags.Uint64Var(&b.workerCount, "worker-count", 64, ("Number of worker threads" +
 				" to spawn."))
 			b.Flags.Uint64Var(&b.retryQuota, "retry-quota", 200, ("Number of total upload retries" +
@@ -508,58 +501,6 @@ func unpackTarball(inputPath, outputDir string) ([]string, error) {
 	return retArray, err
 }
 
-// unpackKernelTarball will take the local path of the fetched tarball and then unpack
-// it. It will then return a file path pointing to the unpacked kernel symbol file.
-func unpackKernelTarball(inputPath, outputDir string) (string, error) {
-	LogOut("Untarring files from %s and storing symbols in %s", inputPath, outputDir)
-
-	// Open locally stored .tar file.
-	srcReader, err := os.Open(inputPath)
-	if err != nil {
-		return "", err
-	}
-	defer srcReader.Close()
-
-	tarReader := tar.NewReader(srcReader)
-
-	// Iterate through the tar file saving only the debug symbols.
-	for {
-		header, err := tarReader.Next()
-		// End of file reached, terminate the loop smoothly.
-		if err == io.EOF {
-			break
-		}
-		// An error occurred fetching the next header.
-		if err != nil {
-			return "", err
-		}
-		// The header indicates it's a file. Store and save the file if it is a
-		// symbol file.
-		if header.FileInfo().Mode().IsRegular() {
-			// Check if the file is a symbol file.
-			if !strings.HasSuffix(header.Name, ".debug") {
-				continue
-			}
-			debugBase := filepath.Base(header.Name)
-			destFilePath := filepath.Join(outputDir, debugBase)
-			destFile, err := os.Create(destFilePath)
-			if err != nil {
-				return "", err
-			}
-
-			// Write contents of the symbol file to local storage.
-			_, err = io.Copy(destFile, tarReader)
-			if err != nil {
-				return "", err
-			}
-
-			return destFilePath, nil
-		}
-	}
-
-	return "", errors.New("Kernel symbol is empty")
-}
-
 // getDebugFileInformation parses the given file and returns the debug ID and
 // debug filename, e.g. "352EE5D992DDBBBC19519D0ACB4B0B480", "libassistant.so".
 func getDebugFileInformation(filepath string) (*filterSymbolFileInfo, error) {
@@ -587,16 +528,6 @@ func getDebugFileInformation(filepath string) (*filterSymbolFileInfo, error) {
 	return nil, nil
 }
 
-// generateKernelDebugId will take a file path and generate debugId containing board and version info.
-func generateKernelDebugId(filepath string) (string, error) {
-	kernelApiFormat := regexp.MustCompile(`(?P<platform>[a-z\-]+)-release/(?P<release>R[0-9\-.]+)/vmlinuz.tar.xz`)
-	if !kernelApiFormat.MatchString(filepath) {
-		return "", fmt.Errorf("Invalid filepath %s", filepath)
-	}
-	submatch := kernelApiFormat.FindStringSubmatch(filepath)
-	return submatch[kernelApiFormat.SubexpIndex("platform")] + "-" + submatch[kernelApiFormat.SubexpIndex("release")], nil
-}
-
 // generateConfigs will take a list of strings with containing the paths to the
 // unpacked symbol files. It will return a list of generated task configs
 // alongside the communication channels to be used.
@@ -617,7 +548,7 @@ func generateConfigs(ctx context.Context, symbolFiles []string, retryQuota uint6
 		debugFile := debugInfo.DebugFile
 		debugId := debugInfo.DebugId
 
-		tasks[index] = taskConfig{filepath, "BREAKPAD", debugFile, debugId, dryRun, shouldSleep}
+		tasks[index] = taskConfig{filepath, debugFile, debugId, dryRun, shouldSleep}
 	}
 
 	// Filter out already uploaded debug symbols.
@@ -626,29 +557,6 @@ func generateConfigs(ctx context.Context, symbolFiles []string, retryQuota uint6
 		return nil, err
 	}
 	LogOut("%d of %d symbols were duplicates. %d symbols will be sent for upload.", (len(symbolFiles) - len(tasks)), len(symbolFiles), len(tasks))
-
-	return tasks, nil
-}
-
-// generateKernelConfigs will take a string containing the path to the unpacked
-// kernel symbol file. It will return a list of generated task configs.
-func generateKernelConfigs(ctx context.Context, symbolFile string, debugId string, retryQuota uint64, dryRun bool, crash crashConnectionInfo) ([]taskConfig, error) {
-	LogOut("Generating kernel task configs")
-
-	// The task should only sleep on retry.
-	shouldSleep := false
-
-	tasks := make([]taskConfig, 1)
-
-	// Generate task configurations.
-	tasks[0] = taskConfig{symbolFile, "ELF", filepath.Base(symbolFile), debugId, dryRun, shouldSleep}
-
-	// Filter out already uploaded debug symbols.
-	tasks, err := filterTasksAlreadyUploaded(ctx, tasks, dryRun, crash)
-	if err != nil {
-		return nil, err
-	}
-	LogOut("%d of %d symbols were duplicates. %d symbols will be sent for upload.", (1 - len(tasks)), 1, len(tasks))
 
 	return tasks, nil
 }
@@ -835,9 +743,6 @@ func (b *uploadDebugSymbols) validate() error {
 	if !(strings.HasSuffix(b.gsPath, ".tgz") || strings.HasSuffix(b.gsPath, ".tar.xz")) {
 		return fmt.Errorf("error: -gs-path must point to a compressed tar file. %s", b.gsPath)
 	}
-	if b.dataType == "vmlinux" && !(strings.HasSuffix(b.gsPath, "vmlinuz.tar.xz")) {
-		return fmt.Errorf("error: -gs-path must end with vmlinuz.tar.xz if -data-type is set as vmlinux. %s", b.gsPath)
-	}
 	if b.workerCount <= 0 {
 		return fmt.Errorf("error: -worker-count value must be greater than zero")
 	}
@@ -903,95 +808,43 @@ func (b *uploadDebugSymbols) Run(a subcommands.Application, args []string, env s
 		LogErr(&crash, err.Error())
 		return 1
 	}
+	symbolDir, err := ioutil.TempDir(workDir, "symbols")
+	if err != nil {
+		LogErr(&crash, err.Error())
+		return 1
+	}
 
 	tarbalPath := filepath.Join(workDir, "debug.tar")
 	defer os.RemoveAll(workDir)
 
-	retcode := 0
-	if b.dataType == "breakpad" {
-		symbolDir, err := ioutil.TempDir(workDir, "symbols")
-		if err != nil {
-			LogErr(&crash, err.Error())
-			return 1
-		}
-
-		zippedSymbolsPath, err := downloadZippedSymbols(authClient, b.gsPath, workDir)
-		if err != nil {
-			LogErr(&crash, err.Error())
-			return 1
-		}
-
-		err = unzipSymbols(zippedSymbolsPath, tarbalPath)
-		if err != nil {
-			LogErr(&crash, err.Error())
-			return 1
-		}
-
-		symbolFiles, err := unpackTarball(tarbalPath, symbolDir)
-		if err != nil {
-			LogErr(&crash, err.Error())
-			return 1
-		}
-
-		tasks, err := generateConfigs(ctx, symbolFiles, b.retryQuota, b.dryRun, crash)
-		if err != nil {
-			LogErr(&crash, err.Error())
-			return 1
-		}
-
-		retcode, err = uploadSymbols(tasks, b.workerCount, b.retryQuota, b.staging, crash)
-		if err != nil {
-			LogErr(&crash, err.Error())
-			return 1
-		}
-	} else if b.dataType == "vmlinux" {
-		zippedSymbolsPath, err := downloadZippedSymbols(authClient, b.gsPath, workDir)
-		if err != nil {
-			LogErr(&crash, err.Error())
-			return 1
-		}
-
-		err = unzipSymbols(zippedSymbolsPath, tarbalPath)
-		if err != nil {
-			LogErr(&crash, err.Error())
-			return 1
-		}
-
-		kSymbolDir, err := ioutil.TempDir(workDir, "ksymbols")
-		if err != nil {
-			LogErr(&crash, err.Error())
-			return 1
-		}
-
-		kernelSymbolFile, err := unpackKernelTarball(tarbalPath, kSymbolDir)
-		if err != nil {
-			LogErr(&crash, err.Error())
-			return 1
-		}
-
-		debugId, err := generateKernelDebugId(b.gsPath)
-		if err != nil {
-			LogErr(&crash, err.Error())
-			return 1
-		}
-
-		LogOut("Parsing kernel symbol debugId %s", debugId)
-		tasks, err := generateKernelConfigs(ctx, kernelSymbolFile, debugId, b.retryQuota, b.dryRun, crash)
-		if err != nil {
-			LogErr(&crash, err.Error())
-			return 1
-		}
-
-		retcode, err = uploadSymbols(tasks, b.workerCount, b.retryQuota, b.staging, crash)
-		if err != nil {
-			LogErr(&crash, err.Error())
-			return 1
-		}
-	} else {
-		LogErr(&crash, "Unknown data type %s", b.dataType)
+	zippedSymbolsPath, err := downloadZippedSymbols(authClient, b.gsPath, workDir)
+	if err != nil {
+		LogErr(&crash, err.Error())
+		return 1
+	}
+	err = unzipSymbols(zippedSymbolsPath, tarbalPath)
+	if err != nil {
+		LogErr(&crash, err.Error())
 		return 1
 	}
 
+	symbolFiles, err := unpackTarball(tarbalPath, symbolDir)
+	if err != nil {
+		LogErr(&crash, err.Error())
+		return 1
+	}
+
+	tasks, err := generateConfigs(ctx, symbolFiles, b.retryQuota, b.dryRun, crash)
+	if err != nil {
+		LogErr(&crash, err.Error())
+		return 1
+	}
+
+	retcode, err := uploadSymbols(tasks, b.workerCount, b.retryQuota, b.staging, crash)
+	if err != nil {
+		LogErr(&crash, err.Error())
+		return 1
+	}
 	LogOut("Exiting with retcode: %d", retcode)
 	return retcode
 }
