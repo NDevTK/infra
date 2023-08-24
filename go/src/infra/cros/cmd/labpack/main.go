@@ -119,7 +119,12 @@ func mainRunInternal(ctx context.Context, input *lab.LabpackInput, state *build.
 	// If any identifier is provided by the client, we use it as is.
 	if input.GetSwarmingTaskId() == "" && input.GetBbid() == "" {
 		input.SwarmingTaskId = state.Build().GetInfra().GetSwarming().GetTaskId()
-		input.Bbid = state.Build().GetInfra().GetBackend().GetTask().GetId().GetId()
+		if bbid := state.Build().GetId(); bbid > int64(0) {
+			input.Bbid = fmt.Sprintf("%d", bbid)
+		} else if bbid := state.Build().GetInfra().GetBackend().GetTask().GetId().GetId(); bbid != "" {
+			// TODO(b/297262498): Remove block if bug closed. As block above should work for us.
+			input.Bbid = bbid
+		}
 	}
 	var metrics metrics.Metrics
 	if !input.GetNoMetrics() {
