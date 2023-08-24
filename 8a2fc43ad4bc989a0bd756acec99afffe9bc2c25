@@ -128,6 +128,24 @@
       "message": "inline?",
       "revId": "8a2fc43ad4bc989a0bd756acec99afffe9bc2c25",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "557db38d_9a3fe859",
+        "filename": "go/src/infra/experimental/golangbuild/testmode.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2023-08-24T19:15:41Z",
+      "side": 1,
+      "message": "I went back and forth on this, but left it non-inlined to avoid reducing emphasis, given there\u0027s a comment explaining why it\u0027s being done despite most commonly relying on \u0027go test\u0027 to fetch dependencies automatically. Moved back inline.",
+      "parentUuid": "ce084c90_9d70b8af",
+      "revId": "8a2fc43ad4bc989a0bd756acec99afffe9bc2c25",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
