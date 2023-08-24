@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { Row } from '../../../features/table/DataTable';
 import { Auth } from '../../../api/auth';
 import { FetchDirectoryMetricsRequest, fetchDirectoryMetrics, DirectoryNode,
   FetchTestMetricsRequest,
@@ -76,22 +75,22 @@ type DataAction =
  | {
   type: 'merge_dir',
   nodes: DirectoryNode[],
-  onExpand: (row: Row) => void,
+  onExpand: (node: Node) => void,
   parentId?: string
  }
  | {
   type: 'rebuild_state',
   nodes: DirectoryNode[],
   tests: TestDateMetricData[],
-  onExpand?: (row: Row) => void,
+  onExpand?: (node: Node) => void,
  }
 
 function findNode(nodes: Node[], id: string): Node | undefined {
   for (let i = 0; i < nodes.length; i++) {
     if (nodes[i].id === id) {
       return nodes[i];
-    } else if (nodes[i].rows !== undefined && nodes[i].rows.length > 0) {
-      const node = findNode(nodes[i].rows as Node[], id);
+    } else if (nodes[i].rows.length > 0) {
+      const node = findNode(nodes[i].rows, id);
       if (node !== undefined) {
         return node;
       }
@@ -114,7 +113,7 @@ export function getLoadedParentIds(
       }
     }
     if (node.rows.length > 0) {
-      getLoadedParentIds(node.rows as Node[], dirs, files);
+      getLoadedParentIds(node.rows, dirs, files);
     }
   });
   return [dirs, files];
@@ -141,7 +140,7 @@ function createTestNode(test: TestDateMetricData): Test {
 
 function createPathNode(
     node: DirectoryNode,
-    onExpand?: (row: Row) => void,
+    onExpand?: (node: Node) => void,
 ) : Path {
   return {
     id: node.id,
@@ -204,7 +203,7 @@ function getParentId(id: string) {
 function rebuildState(
     paths: DirectoryNode[],
     tests: TestDateMetricData[],
-    onExpand?: (row: Row) => void,
+    onExpand?: (node: Node) => void,
 ): Node[] {
   const parents = new Map<string, Node[]>();
   paths.forEach((path) => {
@@ -228,7 +227,7 @@ function rebuildState(
       if (isPath(node) && parents.has(node.id)) {
         node.rows = parents.get(node.id) || [];
         node.loaded = true;
-        populate(node.rows as Node[]);
+        populate(node.rows);
       }
     });
   };

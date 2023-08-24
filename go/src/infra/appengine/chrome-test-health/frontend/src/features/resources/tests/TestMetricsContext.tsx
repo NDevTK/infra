@@ -40,11 +40,11 @@ type TestMetricsContextProviderProps = {
   children?: React.ReactNode,
 }
 
-export interface Node extends Row {
+export interface Node extends Row<Node> {
   name: string,
   subname?: string,
   metrics: Map<string, Map<MetricType, number>>,
-  rows: Row[],
+  rows: Node[],
 }
 
 // This node is for a file system path, which may be a directory or file
@@ -228,8 +228,7 @@ export const TestMetricsContextProvider = (props : TestMetricsContextProviderPro
     throw error;
   }, [loadingDispatch]);
 
-  const loadPathNode = useCallback((row: Row) => {
-    const node = row as Node;
+  const loadPathNode = useCallback((node: Node) => {
     if (auth === undefined) {
       return;
     }

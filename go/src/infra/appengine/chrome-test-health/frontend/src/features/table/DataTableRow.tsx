@@ -8,7 +8,7 @@ import { ArrowDropDownIcon } from '@mui/x-date-pickers';
 import { Column, Row } from './DataTable';
 
 export interface DataTableRowProps {
-  row: Row,
+  row: Row<any>,
   depth: number,
   columns: Column[],
 }

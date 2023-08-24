@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { Row } from '../../../features/table/DataTable';
 import {
   MetricType,
   Period,
@@ -63,7 +62,7 @@ function pathNode(
     type: DirectoryNodeType,
     loaded: boolean,
     nodes: Node[] = [],
-    onExpand?: (row: Row) => void,
+    onExpand?: (node: Node) => void,
 ): Path {
   return {
     id: id,
@@ -158,7 +157,7 @@ describe('merge_test action', () => {
         .toEqual(2);
 
     expect(merged[0].rows).toHaveLength(1);
-    const v = merged[0].rows[0] as Node;
+    const v = merged[0].rows[0];
     expect(v.name).toEqual(tests[0].variants[0].bucket +
       '/' +tests[0].variants[0].builder);
     expect(v.subname).toEqual(tests[0].variants[0].suite);
@@ -190,7 +189,7 @@ describe('merge_test action', () => {
     expect(merged[0].id).toEqual('foo');
 
     expect(merged[0].rows).toHaveLength(1);
-    const t = merged[0].rows[0] as Node;
+    const t = merged[0].rows[0];
     expect(t.id).toEqual(tests[0].testId);
     expect(t.name).toEqual(tests[0].testName);
     expect(t.metrics.size).toEqual(1);
@@ -277,7 +276,7 @@ describe('merge_dir action', () => {
     expect((merged[0] as Path).type).toEqual(DirectoryNodeType.DIRECTORY);
     expect((merged[0] as Path).loaded).toEqual(true);
 
-    const m0n0 = merged[0].rows[0] as Node;
+    const m0n0 = merged[0].rows[0];
     expect(m0n0.id).toEqual(nodes[0].id);
     expect(m0n0.name).toEqual(nodes[0].name);
     expect(m0n0.rows).toHaveLength(0);

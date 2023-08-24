@@ -10,14 +10,14 @@ const columns: Column[] = [
   {
     name: 'Test',
     align: 'left',
-    renderer: (_: Column, _row: Row) => {
+    renderer: (_: Column, _row: Row<any>) => {
       return '';
     },
   },
   {
     name: 'Test2',
     align: 'left',
-    renderer: (_: Column, _row: Row) => {
+    renderer: (_: Column, _row: Row<any>) => {
       return '';
     },
   },
@@ -26,7 +26,7 @@ const columns: Column[] = [
 
 describe('when rendering the DataTableRow', () => {
   it('should render a single row', () => {
-    const test: Row = {
+    const test: Row<any> = {
       id: 'testId',
       isExpandable: false,
       rows: [],
@@ -42,7 +42,7 @@ describe('when rendering the DataTableRow', () => {
     expect(tableRow).toBeInTheDocument();
   });
   it('should render expandable rows', () => {
-    const test: Row = {
+    const test: Row<any> = {
       id: 'testId',
       isExpandable: true,
       rows: [
@@ -80,7 +80,7 @@ describe('when rendering the DataTableRow', () => {
     expect(screen.getByTestId('tablerow-v2')).toBeInTheDocument();
   });
   it('should render correct number of columns', async () => {
-    const test: Row = {
+    const test: Row<any> = {
       id: 'testId',
       isExpandable: true,
       rows: [

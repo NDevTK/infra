@@ -5,7 +5,7 @@
 import { render, screen } from '@testing-library/react';
 import DataTable, { Column, PaginatorProps, Row } from './DataTable';
 
-const tests: Row[] = [
+const tests: Row<any>[] = [
   {
     id: 'testId',
     isExpandable: true,
@@ -44,14 +44,14 @@ const columns: Column[] = [
   {
     name: 'Test',
     align: 'left',
-    renderer: (_: Column, _row: Row) => {
+    renderer: (_: Column, _1: Row<any>) => {
       return '';
     },
   },
   {
     name: 'Test2',
     align: 'left',
-    renderer: (_: Column, _row: Row) => {
+    renderer: (_: Column, _1: Row<any>) => {
       return '';
     },
   },

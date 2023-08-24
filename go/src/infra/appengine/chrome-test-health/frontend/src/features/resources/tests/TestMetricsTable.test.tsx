@@ -40,7 +40,7 @@ const tests: Test[] = [{
       metrics: mockMetrics,
       isExpandable: false,
       rows: [],
-    } as Node,
+    },
     {
       id: 'v1',
       name: 'suite',
@@ -48,7 +48,7 @@ const tests: Test[] = [{
       metrics: mockMetrics,
       isExpandable: false,
       rows: [],
-    } as Node,
+    },
   ],
 }];
 

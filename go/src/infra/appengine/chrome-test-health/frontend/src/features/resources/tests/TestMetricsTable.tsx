@@ -15,7 +15,7 @@ function TestMetricsTable() {
   function constructColumns() {
     const cols: Column[] = [{
       name: 'Test',
-      renderer: (_: Column, row: Row) => {
+      renderer: (_: Column, row: Row<Node>) => {
         const node = row as Node;
         if (node.subname) {
           return node.name;
@@ -36,7 +36,7 @@ function TestMetricsTable() {
       },
     }, {
       name: 'Test Suite',
-      renderer: (_: Column, row: Row) => {
+      renderer: (_: Column, row: Row<Node>) => {
         const node = row as Node;
         return node.subname ? node.subname : undefined;
       },
@@ -47,8 +47,9 @@ function TestMetricsTable() {
       datesToShow.map((date, index) => {
         cols.push({
           name: date,
-          renderer: (col: Column, row: Row) => {
-            return formatNumber(Number((row as Node).metrics.get(col.name)?.get(params.timelineMetric)));
+          renderer: (col: Column, row: Row<Node>) => {
+            const node = row as Node;
+            return formatNumber(Number(node.metrics.get(col.name)?.get(params.timelineMetric)));
           },
           isSortedBy: params.sortIndex === index,
           isSortAscending: params.sortIndex === index ? params.ascending : undefined,
@@ -74,8 +75,9 @@ function TestMetricsTable() {
       columns.map(([sortType, metricType, name, format]) => {
         cols.push({
           name: name,
-          renderer: (_: Column, row: Row) => {
-            return format((row as Node).metrics.get(datesToShow[0])?.get(metricType));
+          renderer: (_: Column, row: Row<Node>) => {
+            const node = row as Node;
+            return format(node.metrics.get(datesToShow[0])?.get(metricType));
           },
           align: 'right',
           isSortedBy: params.sort == sortType,

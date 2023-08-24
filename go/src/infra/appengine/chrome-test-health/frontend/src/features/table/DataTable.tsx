@@ -14,7 +14,7 @@ import styles from './DataTable.module.css';
 import DataTableRow from './DataTableRow';
 
 export interface DataTableProps {
-  rows: Row[],
+  rows: Row<any>[],
   columns: Column[],
   isLoading?: boolean,
   showPaginator?: boolean,
@@ -30,17 +30,17 @@ export interface PaginatorProps {
   onChangeRowsPerPage: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void,
 }
 
-export interface Row {
+export interface Row<T extends Row<T>> {
   id: string,
   isExpandable?: boolean,
-  onExpand?: (row: Row) => void,
-  rows?: Row[],
+  onExpand?: (row: T) => void,
+  rows?: T[],
 }
 
 export interface Column {
   name: string,
   // Can return undefined to render no cell, or an optional colSpan
-  renderer: (column: Column, row: Row) => string | [string, number] | undefined,
+  renderer: <T extends Row<any>>(column: Column, row: T) => string | [string, number] | undefined,
   align: any,
   isSortedBy?: boolean,
   isSortAscending?: boolean,
