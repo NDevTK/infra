@@ -52,3 +52,4 @@
 [submodule "appengine/third_party/npm_modules"]
 	path = appengine/third_party/npm_modules
 	url = https://chromium.googlesource.com/infra/third_party/npm_modules.git
+	gclient-condition = checkout_linux or checkout_mac
