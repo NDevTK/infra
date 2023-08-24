@@ -6,8 +6,6 @@ import os
 import re
 from typing import Callable, List, NamedTuple, Tuple
 
-from chromite.lib import path_util
-
 from .logger import g_logger
 from .package import PackagePathException
 from .package import Package
