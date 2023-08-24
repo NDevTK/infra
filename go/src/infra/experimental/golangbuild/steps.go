@@ -19,15 +19,14 @@ import (
 
 // cmdStepRun calls Run on the provided command and wraps it in a build step.
 //
-// It wraps cmd.Stdout and cmd.Stderr to redirect into step logs.
+// It overwrites cmd.Stdout and cmd.Stderr to redirect into step logs.
 // It runs the command with the environment from the context, so change
 // the context's environment to alter the command's environment.
 func cmdStepRun(ctx context.Context, stepName string, cmd *exec.Cmd, infra bool) (err error) {
 	step, ctx, err := cmdStartStep(ctx, stepName, cmd)
 	defer func() {
 		if infra {
-			// Any failure in this function is an infrastructure failure.
-			err = infraWrap(err)
+			err = infraWrap(err) // Failure is deemed to be an infrastructure failure.
 		}
 		step.End(err)
 	}()
@@ -57,8 +56,7 @@ func cmdStepOutput(ctx context.Context, stepName string, cmd *exec.Cmd, infra bo
 	step, ctx, err := cmdStartStep(ctx, stepName, cmd)
 	defer func() {
 		if infra {
-			// Any failure in this function is an infrastructure failure.
-			err = infraWrap(err)
+			err = infraWrap(err) // Failure is deemed to be an infrastructure failure.
 		}
 		step.End(err)
 	}()
