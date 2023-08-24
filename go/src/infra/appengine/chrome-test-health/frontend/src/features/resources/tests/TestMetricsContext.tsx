@@ -16,7 +16,7 @@ import {
   isTestMetricsResponse,
 } from '../../../api/resources';
 import { formatDate } from '../../../utils/formatUtils';
-import { Row } from '../../../features/table/DataTable';
+import { Row } from '../../../components/table/DataTable';
 import { ComponentContext } from '../../components/ComponentContext';
 import {
   dataReducer,

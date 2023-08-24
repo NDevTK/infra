@@ -6,7 +6,7 @@ import Paper from '@mui/material/Paper';
 import { useContext } from 'react';
 import { MetricType, SortType } from '../../../api/resources';
 import { formatNumber, formatTime } from '../../../utils/formatUtils';
-import DataTable, { Column, PaginatorProps, Row } from '../../table/DataTable';
+import DataTable, { Column, PaginatorProps, Row } from '../../../components/table/DataTable';
 import { Node, TestMetricsContext } from './TestMetricsContext';
 
 function TestMetricsTable() {
