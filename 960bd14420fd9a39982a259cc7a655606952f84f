@@ -51,6 +51,23 @@
       "parentUuid": "d47772ae_c5acaf44",
       "revId": "960bd14420fd9a39982a259cc7a655606952f84f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "718a5562_ee9b074a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002374
+      },
+      "writtenOn": "2023-08-25T20:20:50Z",
+      "side": 1,
+      "message": "... and there is no way to recognize these audioboxes from the ones with plugger being stuck.",
+      "revId": "960bd14420fd9a39982a259cc7a655606952f84f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
