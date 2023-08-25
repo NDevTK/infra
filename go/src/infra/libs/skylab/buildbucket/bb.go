@@ -46,12 +46,11 @@ type Client interface {
 
 // ClientImpl is the implementation of the Client interface.
 type clientImpl struct {
-	client    buildbucket_pb.BuildsClient
-	builderID *buildbucket_pb.BuilderID
+	client buildbucket_pb.BuildsClient
 }
 
 // NewClient returns a new client to interact with buildbucket builds.
-func NewClient(ctx context.Context, hc *http.Client, options *prpc.Options, project string, bucket string, builder string) (Client, error) {
+func NewClient(ctx context.Context, hc *http.Client, options *prpc.Options) (Client, error) {
 	if hc == nil {
 		return nil, errors.Reason("buildbucket client cannot be created from nil http.Client").Err()
 	}
@@ -63,11 +62,6 @@ func NewClient(ctx context.Context, hc *http.Client, options *prpc.Options, proj
 
 	return &clientImpl{
 		client: buildbucket_pb.NewBuildsPRPCClient(pClient),
-		builderID: &buildbucket_pb.BuilderID{
-			Project: project,
-			Bucket:  bucket,
-			Builder: builder,
-		},
 	}, nil
 }
 
@@ -142,11 +136,6 @@ func (c *clientImpl) ScheduleLabpackTask(ctx context.Context, params *ScheduleLa
 
 // BuildURLFmt is the format of a build URL.
 const BuildURLFmt = "https://ci.chromium.org/p/%s/builders/%s/%s/b%d"
-
-// BuildURL constructs the URL to a build with the given ID.
-func (c *clientImpl) BuildURL(buildID int64) string {
-	return fmt.Sprintf(BuildURLFmt, c.builderID.Project, c.builderID.Bucket, c.builderID.Builder, buildID)
-}
 
 func splitTagPairs(tags []string) ([]*buildbucket_pb.StringPair, error) {
 	ret := make([]*buildbucket_pb.StringPair, 0, len(tags))

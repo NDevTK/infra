@@ -69,7 +69,7 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 	if err != nil {
 		return err
 	}
-	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
+	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions)
 	if err != nil {
 		return err
 	}

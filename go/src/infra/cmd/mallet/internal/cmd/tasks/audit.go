@@ -95,7 +95,7 @@ func (c *auditRun) innerRun(a subcommands.Application, args []string, env subcom
 	if err != nil {
 		return errors.Annotate(err, "audit run").Err()
 	}
-	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions, site.BBProject, site.MalletBucket, site.MalletBuilder)
+	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions)
 	if err != nil {
 		return err
 	}

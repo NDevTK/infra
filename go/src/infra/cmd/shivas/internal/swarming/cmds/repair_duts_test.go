@@ -39,8 +39,3 @@ type fakeClient struct{}
 func (c *fakeClient) ScheduleLabpackTask(ctx context.Context, _ *buildbucket.ScheduleLabpackTaskParams, _ string) (string, int64, error) {
 	return fmt.Sprintf(buildbucket.BuildURLFmt, "chromeos", "labpack", "labpack", 1), 1, nil
 }
-
-// BuildURL returns the build URL.
-func (c *fakeClient) BuildURL(buildID int64) string {
-	return fmt.Sprintf(buildbucket.BuildURLFmt, "chromeos", "labpack", "labpack", buildID)
-}

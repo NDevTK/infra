@@ -249,7 +249,7 @@ func createBuildbucketTask(ctx context.Context, params createBuildbucketTaskRequ
 	hc := &http.Client{
 		Transport: transport,
 	}
-	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
+	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions)
 	if err != nil {
 		logging.Errorf(ctx, "error creating buildbucket client: %q", err)
 		return "", errors.Annotate(err, "create buildbucket repair task").Err()

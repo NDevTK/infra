@@ -22,15 +22,6 @@ import (
 // OAuth scope for the whole of cloud platform.
 const CloudOAuthScope = "https://www.googleapis.com/auth/cloud-platform"
 
-// BBProject is the buildbucket project for the labpack recipe.
-const BBProject = "chromeos"
-
-// MalletBucket is the bucket used by the labpack recipe and its associated builder.
-const MalletBucket = "labpack"
-
-// MalletBuilder is the bucket used by the labpack recipe and its associated builder.
-const MalletBuilder = "labpack"
-
 // Environment contains environment specific values.
 type Environment struct {
 	LUCIProject      string

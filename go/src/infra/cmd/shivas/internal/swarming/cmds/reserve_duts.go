@@ -82,7 +82,7 @@ func (c *reserveDuts) innerRun(a subcommands.Application, args []string, env sub
 	if err != nil {
 		return err
 	}
-	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
+	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions)
 	if err != nil {
 		return err
 	}

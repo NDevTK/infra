@@ -63,7 +63,7 @@ func (c *fwUpdateRun) innerRun(a subcommands.Application, args []string, env sub
 	if err != nil {
 		return errors.Annotate(err, "deep repair").Err()
 	}
-	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions, site.BBProject, site.MalletBucket, site.MalletBuilder)
+	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions)
 	if err != nil {
 		return errors.Annotate(err, "deep repair").Err()
 	}

@@ -57,7 +57,7 @@ func (command *cbiRepairCommandRun) innerRun(app subcommands.Application, args [
 	if err != nil {
 		return errors.Annotate(err, "repair CBI").Err()
 	}
-	buildBucketClient, err := buildbucket.NewClient(ctx, httpClient, site.DefaultPRPCOptions, site.BBProject, site.MalletBucket, site.MalletBuilder)
+	buildBucketClient, err := buildbucket.NewClient(ctx, httpClient, site.DefaultPRPCOptions)
 	if err != nil {
 		return errors.Annotate(err, "repair CBI").Err()
 	}

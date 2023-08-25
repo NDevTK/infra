@@ -76,7 +76,7 @@ func (c *auditRun) innerRun(a subcommands.Application, args []string, env subcom
 	if err != nil {
 		return errors.Annotate(err, "audit dut").Err()
 	}
-	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions, "chromeos", "labpack", "labpack")
+	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions)
 	if err != nil {
 		return errors.Annotate(err, "audit dut").Err()
 	}

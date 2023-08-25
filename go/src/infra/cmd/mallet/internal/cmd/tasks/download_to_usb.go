@@ -60,7 +60,7 @@ func (c *downloadToUsbDriveRun) innerRun(a subcommands.Application, args []strin
 	if err != nil {
 		return errors.Annotate(err, "custom provision run").Err()
 	}
-	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions, site.BBProject, site.MalletBucket, site.MalletBuilder)
+	bc, err := buildbucket.NewClient(ctx, hc, site.DefaultPRPCOptions)
 	if err != nil {
 		return errors.Annotate(err, "custom provision run").Err()
 	}
