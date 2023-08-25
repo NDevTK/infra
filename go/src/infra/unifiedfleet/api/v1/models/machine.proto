@@ -11,6 +11,7 @@ option go_package = "infra/unifiedfleet/api/v1/models;ufspb";
 import "google/protobuf/timestamp.proto";
 import "google/api/resource.proto";
 import "google/api/field_behavior.proto";
+import "infra/unifiedfleet/api/v1/models/chassis_x.proto";
 import "infra/unifiedfleet/api/v1/models/location.proto";
 import "infra/unifiedfleet/api/v1/models/peripherals.proto";
 import "infra/unifiedfleet/api/v1/models/network.proto";
@@ -133,6 +134,12 @@ message ChromeOSMachine {
     string gpn = 11;
     // Capability to support Chromebook X features
     double hw_x_compliance_version = 12;
+    // Capability to support Chromebook X features
+    bool is_cbx = 13;
+    // Chromebook X feature type
+    ChassisXBrandType cbx_feature_type = 14;
+    // Whether the SKU contains both CBX and non-CBX devices
+    bool is_mixed_x = 15;
 }
 
 // ChromeOSDeviceType refers to the different types of

@@ -1,0 +1,24 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Copied from https://source.corp.google.com/piper///depot/google3/java/com/google/chrome/crosbuilds/common/proto/device.proto
+// and edited
+//TODO(b/297076502): Automate changes with Copybara
+syntax = "proto3";
+
+package unifiedfleet.api.v1.models;
+
+option go_package = "infra/unifiedfleet/api/v1/models;ufspb";
+
+enum ChassisXBrandType {
+  UNKNOWN = 0;
+  NO_BRAND = 1 [deprecated = true];
+  MIXED = 2 [deprecated = true];
+  ALL_BRANDED = 3 [deprecated = true];
+  NON_X = 4;
+  HARD_BRANDED = 5;
+  SOFT_BRANDED_LEGACY = 6;
+  SOFT_BRANDED_WAIVER = 7;
+  NA = 8;
+}
