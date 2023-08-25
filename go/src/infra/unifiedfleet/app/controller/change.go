@@ -169,7 +169,14 @@ func (hc *HistoryClient) LogAssetInfoChanges(resName string, oldInfo, newInfo *u
 	hc.changes = append(hc.changes, logCommon(resName, "asset.info.sku", oldInfo.GetSku(), newInfo.GetSku())...)
 	hc.changes = append(hc.changes, logCommon(resName, "asset.info.phase", oldInfo.GetPhase(), newInfo.GetPhase())...)
 	hc.changes = append(hc.changes, logCommon(resName, "asset.info.gpn", oldInfo.GetGpn(), newInfo.GetGpn())...)
+	hc.changes = append(hc.changes, logCommon(resName, "asset.info.reference_design", oldInfo.GetReferenceDesign(), newInfo.GetReferenceDesign())...)
+	hc.changes = append(hc.changes, logCommon(resName, "asset.info.product_status", oldInfo.GetProductStatus(), newInfo.GetProductStatus())...)
+	hc.changes = append(hc.changes, logCommon(resName, "asset.info.fingerprint_sensor", oldInfo.GetFingerprintSensor(), newInfo.GetFingerprintSensor())...)
 	hc.changes = append(hc.changes, logCommon(resName, "asset.info.hw_x_compliance_version", oldInfo.GetHwXComplianceVersion(), newInfo.GetHwXComplianceVersion())...)
+	hc.changes = append(hc.changes, logCommon(resName, "asset.info.touch_screen", oldInfo.GetTouchScreen(), newInfo.GetTouchScreen())...)
+	hc.changes = append(hc.changes, logCommon(resName, "asset.info.is_cbx", oldInfo.GetIsCbx(), newInfo.GetIsCbx())...)
+	hc.changes = append(hc.changes, logCommon(resName, "asset.info.cbx_feature_type", oldInfo.GetCbxFeatureType(), newInfo.GetCbxFeatureType())...)
+	hc.changes = append(hc.changes, logCommon(resName, "asset.info.is_mixed_x", oldInfo.GetIsMixedX(), newInfo.GetIsMixedX())...)
 }
 
 // LogMachineChanges logs the change of the given machine.
@@ -881,6 +888,9 @@ func logChromeOSMachine(resourceName string, oldData, newData *ufspb.ChromeOSMac
 	changes = append(changes, logCommon(resourceName, "machine.chrome_os_machine.device_type", oldData.GetDeviceType(), newData.GetDeviceType())...)
 	changes = append(changes, logCommon(resourceName, "machine.chrome_os_machine.gpn", oldData.GetGpn(), newData.GetGpn())...)
 	changes = append(changes, logCommon(resourceName, "machine.chrome_os_machine.hw_x_compliance_version", oldData.GetHwXComplianceVersion(), newData.GetHwXComplianceVersion())...)
+	changes = append(changes, logCommon(resourceName, "machine.chrome_os_machine.is_cbx", oldData.GetIsCbx(), newData.GetIsCbx())...)
+	changes = append(changes, logCommon(resourceName, "machine.chrome_os_machine.cbx_feature_type", oldData.GetCbxFeatureType(), newData.GetCbxFeatureType())...)
+	changes = append(changes, logCommon(resourceName, "machine.chrome_os_machine.is_mixed_x", oldData.GetIsMixedX(), newData.GetIsMixedX())...)
 	return changes
 }
 

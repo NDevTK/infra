@@ -140,6 +140,9 @@ func updateMachineHelper(ctx context.Context, asset *ufspb.Asset) error {
 		machine.GetChromeosMachine().CostCenter = asset.GetInfo().GetCostCenter()
 		machine.GetChromeosMachine().Gpn = asset.GetInfo().GetGpn()
 		machine.GetChromeosMachine().HwXComplianceVersion = asset.GetInfo().GetHwXComplianceVersion()
+		machine.GetChromeosMachine().IsCbx = asset.GetInfo().GetIsCbx()
+		machine.GetChromeosMachine().CbxFeatureType = asset.GetInfo().GetCbxFeatureType()
+		machine.GetChromeosMachine().IsMixedX = asset.GetInfo().GetIsMixedX()
 		hc.LogMachineChanges(oldMachineCopy, machine)
 		if _, err := registration.BatchUpdateMachines(ctx, []*ufspb.Machine{machine}); err != nil {
 			return errors.Annotate(err, "updateMachineHelper - Failed to update machine %s", machine.GetName()).Err()
@@ -229,18 +232,34 @@ func updateAssetInfoFromHart(ufsAssetInfo, hartAssetInfo *ufspb.AssetInfo) *ufsp
 	}
 	if ufsAssetInfo.GetFingerprintSensor() != hartAssetInfo.GetFingerprintSensor() {
 		updated = true
-		// Update product status if it's changed
+		// Update fingerprint sensor if it's changed
 		ufsAssetInfo.FingerprintSensor = hartAssetInfo.GetFingerprintSensor()
 	}
 	if ufsAssetInfo.GetHwXComplianceVersion() != hartAssetInfo.GetHwXComplianceVersion() {
 		updated = true
-		// Update product status if it's changed
+		// Update hwX compliance version if it's changed
 		ufsAssetInfo.HwXComplianceVersion = hartAssetInfo.GetHwXComplianceVersion()
 	}
 	if ufsAssetInfo.GetTouchScreen() != hartAssetInfo.GetTouchScreen() {
 		updated = true
-		// Update product status if it's changed
+		// Update touchscreen if it's changed
 		ufsAssetInfo.TouchScreen = hartAssetInfo.GetTouchScreen()
+	}
+	if ufsAssetInfo.GetIsCbx() != hartAssetInfo.GetIsCbx() {
+		updated = true
+		// Update isCbx if it's changed
+		ufsAssetInfo.IsCbx = proto.Bool(hartAssetInfo.GetIsCbx())
+	}
+	if ufsAssetInfo.GetCbxFeatureType() != hartAssetInfo.GetCbxFeatureType() {
+		updated = true
+		// Update cbxFeatureType if it's changed
+		hartCbxFeatureType := hartAssetInfo.GetCbxFeatureType()
+		ufsAssetInfo.CbxFeatureType = &hartCbxFeatureType
+	}
+	if ufsAssetInfo.GetIsMixedX() != hartAssetInfo.GetIsMixedX() {
+		updated = true
+		// Update isMixedX status if it's changed
+		ufsAssetInfo.IsMixedX = proto.Bool(hartAssetInfo.GetIsMixedX())
 	}
 	// Avoid write to DB if nothing was updated
 	if updated {
