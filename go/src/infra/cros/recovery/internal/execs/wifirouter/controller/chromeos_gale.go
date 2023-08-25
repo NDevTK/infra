@@ -14,6 +14,9 @@ import (
 )
 
 const (
+	// RouterModelGale is the model name used for ChromeOS Gale routers.
+	RouterModelGale = "gale"
+
 	lsbReleaseFilePath    = "/etc/lsb-release"
 	lsbReleaseMatchIfGale = "(?m)^CHROMEOS_RELEASE_BOARD=gale$"
 )
@@ -58,7 +61,7 @@ func (c *ChromeOSGaleRouterController) DeviceType() labapi.WifiRouterDeviceType 
 // supported.
 func (c *ChromeOSGaleRouterController) Model() (string, error) {
 	// This matches the manually set value.
-	return "gale", nil
+	return RouterModelGale, nil
 }
 
 // Features returns the router features that this router supports.

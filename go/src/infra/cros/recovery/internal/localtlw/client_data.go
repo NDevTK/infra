@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"infra/cros/recovery/internal/execs/wifirouter/controller"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/cros/recovery/internal/localtlw/dutinfo"
@@ -88,7 +89,7 @@ func (c *tlwClient) Version(ctx context.Context, req *tlw.VersionRequest) (*tlw.
 		}
 		if routerHost == nil {
 			return nil, errors.Reason("version: target device not  found").Err()
-		} else if routerHost.GetBoard() == "gale" && routerHost.GetModel() == "gale" {
+		} else if routerHost.GetModel() == controller.RouterModelGale {
 			return &tlw.VersionResponse{
 				Value: map[string]string{
 					"os_image": "gale-test-ap-tryjob/R92-13982.81.0-b4959409",
