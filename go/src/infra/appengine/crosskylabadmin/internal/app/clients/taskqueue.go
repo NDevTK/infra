@@ -33,13 +33,13 @@ const auditBotsQueue = "audit-bots"
 // PushRepairLabstations pushes BOT ids to taskqueue repairLabstationQueue for
 // upcoming repair jobs.
 func PushRepairLabstations(ctx context.Context, botIDs []string) error {
-	return pushDUTs(ctx, repairLabstationQueue, createTasks(botIDs, "", labstationRepairTask))
+	return pushDUTs(ctx, repairLabstationQueue, createTasks(botIDs, "", "", labstationRepairTask))
 }
 
 // PushRepairDUTs pushes BOT ids to taskqueue repairBotsQueue for upcoming repair
 // jobs.
-func PushRepairDUTs(ctx context.Context, botIDs []string, expectedState string) error {
-	return pushDUTs(ctx, repairBotsQueue, createTasks(botIDs, expectedState, crosRepairTask))
+func PushRepairDUTs(ctx context.Context, botIDs []string, expectedState string, builderBucket string) error {
+	return pushDUTs(ctx, repairBotsQueue, createTasks(botIDs, expectedState, builderBucket, crosRepairTask))
 }
 
 // PushAuditDUTs pushes BOT ids to taskqueue auditBotsQueue for upcoming audit jobs.
@@ -57,14 +57,15 @@ func PushAuditDUTs(ctx context.Context, botIDs, actions []string, taskname strin
 	return pushDUTs(ctx, auditBotsQueue, tasks)
 }
 
-func crosRepairTask(botID, expectedState string) *tq.Task {
+func crosRepairTask(botID, expectedState string, builderBucket string) *tq.Task {
 	values := url.Values{}
 	values.Set("botID", botID)
 	values.Set("expectedState", expectedState)
+	values.Set("builderBucket", builderBucket)
 	return tq.NewPOSTTask(fmt.Sprintf("/internal/task/cros_repair/%s", botID), values)
 }
 
-func labstationRepairTask(botID, expectedState string) *tq.Task {
+func labstationRepairTask(botID, expectedState string, builderBucket string) *tq.Task {
 	values := url.Values{}
 	values.Set("botID", botID)
 	return tq.NewPOSTTask(fmt.Sprintf("/internal/task/labstation_repair/%s", botID), values)
@@ -78,10 +79,10 @@ func crosAuditTask(botID, taskname, actionsCSV, actionsStr string) *tq.Task {
 	return tq.NewPOSTTask(fmt.Sprintf("/internal/task/audit/%s/%s", botID, actionsStr), values)
 }
 
-func createTasks(botIDs []string, expectedState string, taskGenerator func(string, string) *tq.Task) []*tq.Task {
+func createTasks(botIDs []string, expectedState string, builderBucket string, taskGenerator func(string, string, string) *tq.Task) []*tq.Task {
 	tasks := make([]*tq.Task, 0, len(botIDs))
 	for _, id := range botIDs {
-		tasks = append(tasks, taskGenerator(id, expectedState))
+		tasks = append(tasks, taskGenerator(id, expectedState, builderBucket))
 	}
 	return tasks
 }

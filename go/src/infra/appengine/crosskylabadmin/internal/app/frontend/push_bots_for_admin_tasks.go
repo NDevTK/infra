@@ -67,6 +67,24 @@ func getDUTsForLabstations(ctx context.Context, ufsClient ufs.Client, labstation
 	return duts, nil
 }
 
+// pushRepairDUTsForGivenPool pushes repair jobs for duts in a given pool
+func pushRepairDUTsForGivenPool(ctx context.Context, sc clients.SwarmingClient, pool string, dutState string, bucket string, dims strpair.Map) error {
+	bots, err := sc.ListAliveIdleBotsInPool(ctx, pool, dims)
+	if err != nil {
+		return errors.Annotate(err, "failed to list alive idle bots with dut_state %q", dutState).Err()
+	} else {
+		logging.Infof(ctx, "successfully get %d alive idle cros bots with dut_state %q in pool %q.", len(bots), dutState, pool)
+		//Parse BOT id to schedule tasks for readability.
+		repairBOTs := identifyBotsForRepair(ctx, bots)
+		err = clients.PushRepairDUTs(ctx, repairBOTs, dutState, bucket)
+		if err != nil {
+			logging.Infof(ctx, "push repair bots in pool %q: %v", pool, err)
+			return errors.Annotate(err, "failed to push repair duts in pool %q", pool).Err()
+		}
+	}
+	return nil
+}
+
 // pushBotsForAdminTasksImpl
 //
 // sc        -- the Swarming client cannot be nil, in order to push we always need a swarming client
@@ -81,28 +99,35 @@ func pushBotsForAdminTasksImpl(ctx context.Context, sc clients.SwarmingClient, u
 		return nil, fmt.Errorf("DutState=%#v does not map to swarming value", req.GetTargetDutState())
 	}
 
+	var merr errors.MultiError
 	// Schedule admin tasks to idle DUTs.
 	dims := make(strpair.Map)
 	dims[clients.DutStateDimensionKey] = []string{dutState}
-	bots, err := sc.ListAliveIdleBotsInPool(ctx, cfg.Swarming.BotPool, dims)
-	if err != nil {
-		return nil, errors.Annotate(err, "failed to list alive idle bots with dut_state %q in pool %q", dutState, cfg.Swarming.BotPool).Err()
-	}
-	for _, c := range cfg.Swarming.PoolCfgs {
-		tmpBots, err := sc.ListAliveIdleBotsInPool(ctx, c.PoolName, dims)
-		if err != nil {
-			return nil, errors.Annotate(err, "failed to list alive idle bots with dut_state %q in pool %q", dutState, c.PoolName).Err()
-		}
-		bots = append(bots, tmpBots...)
-	}
-	logging.Infof(ctx, "successfully get %d alive idle cros bots with dut_state %q.", len(bots), dutState)
 
-	// Parse BOT id to schedule tasks for readability.
-	repairBOTs := identifyBotsForRepair(ctx, bots)
-	err = clients.PushRepairDUTs(ctx, repairBOTs, dutState)
-	if err != nil {
-		logging.Infof(ctx, "push repair bots: %v", err)
-		return nil, errors.New("failed to push repair duts")
+	//TODO (prasadv): Create PoolCfg for ChromeOSSkylab and push admin tasks similar to other pool configs.
+	// Once the Config is updated, remove the below code to push repair DUTs for admin task for Swarming.BotPool
+	if cfg.Swarming.BotPool != "" {
+		if err := pushRepairDUTsForGivenPool(ctx, sc, cfg.Swarming.BotPool, dutState, "", dims); err != nil {
+			merr = append(merr, errors.Annotate(err, "failed to push repair duts in pool %q", cfg.Swarming.BotPool).Err())
+		} else {
+			logging.Infof(ctx, "successfully pushed repair duts with dut_state %q in pool %q.", dutState, cfg.Swarming.BotPool)
+		}
 	}
+
+	// Loop through all the Swarming Pool configs and push duts for repair.
+	for _, c := range cfg.Swarming.PoolCfgs {
+		//TODO (prasadv): Remove this condition once BotPool is added to PoolCfg.
+		if cfg.Swarming.BotPool != c.PoolName {
+			if err := pushRepairDUTsForGivenPool(ctx, sc, c.PoolName, dutState, c.BuilderBucket, dims); err != nil {
+				merr = append(merr, errors.Annotate(err, "failed to push repair duts in pool %q", c.PoolName).Err())
+			} else {
+				logging.Infof(ctx, "successfully pushed repair duts with dut_state %q in pool %q.", dutState, c.PoolName)
+			}
+		}
+	}
+	if len(merr) > 0 {
+		return nil, merr
+	}
+	logging.Infof(ctx, "successfully pushed repair duts in all pools")
 	return &fleet.PushBotsForAdminTasksResponse{}, nil
 }

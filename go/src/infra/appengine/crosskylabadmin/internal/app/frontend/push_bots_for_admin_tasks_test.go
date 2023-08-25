@@ -5,12 +5,17 @@
 package frontend
 
 import (
+	"fmt"
+	"sort"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
+	. "github.com/smartystreets/goconvey/convey"
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
+	"go.chromium.org/luci/common/errors"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/config"
@@ -159,4 +164,239 @@ func TestGetLabstations(t *testing.T) {
 	if diff := cmp.Diff([]string{"fake-labstation-1"}, labstations); diff != "" {
 		t.Errorf("unexpected diff (-want +got): %s", diff)
 	}
+}
+
+// TestPushBotsForAdminTasksWithPoolCfg tests that pushing bots for admin tasks with Pool
+func TestPushBotsForAdminTasksWithPoolCfg(t *testing.T) {
+	Convey("Handling PoolCfg bots", t, func() {
+		tf, validate := newTestFixture(t)
+		defer validate()
+		ctx := tf.C
+		tqt := tq.GetTestable(ctx)
+		qn := "repair-bots"
+		tqt.CreateQueue(qn)
+		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "fake-bot-pool", gomock.Any()).Return([]*swarming.SwarmingRpcsBotInfo{
+			{
+				BotId: "fake-bot-a",
+				Dimensions: []*swarming.SwarmingRpcsStringListPair{
+					{
+						Key:   "id",
+						Value: []string{"fake-bot-a"},
+					},
+					{
+						Key:   "pool",
+						Value: []string{"fake-bot-pool"},
+					},
+					{
+						Key:   "dut_state",
+						Value: []string{"needs_repair"},
+					},
+				},
+			},
+			{
+				BotId: "fake-bot-b",
+				Dimensions: []*swarming.SwarmingRpcsStringListPair{
+					{
+						Key:   "id",
+						Value: []string{"fake-bot-b"},
+					},
+					{
+						Key:   "pool",
+						Value: []string{"fake-bot-pool"},
+					},
+					{
+						Key:   "dut_state",
+						Value: []string{"needs_repair"},
+					},
+				},
+			},
+		}, nil)
+		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "pool-cfg-a", gomock.Any()).Return([]*swarming.SwarmingRpcsBotInfo{
+			{
+				BotId: "pool-cfg-bot-a",
+				Dimensions: []*swarming.SwarmingRpcsStringListPair{
+					{
+						Key:   "id",
+						Value: []string{"pool-cfg-bot-a"},
+					},
+					{
+						Key:   "pool",
+						Value: []string{"pool-cfg-a"},
+					},
+					{
+						Key:   "dut_state",
+						Value: []string{"needs_repair"},
+					},
+				},
+			},
+		}, nil)
+
+		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "pool-cfg-b", gomock.Any()).Return([]*swarming.SwarmingRpcsBotInfo{
+			{
+				BotId: "pool-cfg-bot-b",
+				Dimensions: []*swarming.SwarmingRpcsStringListPair{
+					{
+						Key:   "id",
+						Value: []string{"pool-cfg-bot-b"},
+					},
+					{
+						Key:   "pool",
+						Value: []string{"pool-cfg-b"},
+					},
+					{
+						Key:   "dut_state",
+						Value: []string{"needs_repair"},
+					},
+				},
+			},
+		}, nil)
+
+		ctx = config.Use(ctx, &config.Config{
+			Swarming: &config.Swarming{
+				BotPool: "fake-bot-pool",
+				PoolCfgs: []*config.Swarming_PoolCfg{
+					{
+						PoolName: "pool-cfg-a",
+					},
+					{
+						PoolName:      "pool-cfg-b",
+						BuilderBucket: "some_bucket",
+					},
+				},
+			},
+		})
+
+		req := &fleet.PushBotsForAdminTasksRequest{
+			TargetDutState: fleet.DutState_NeedsRepair,
+		}
+		_, err := pushBotsForAdminTasksImpl(ctx, tf.MockSwarming, tf.MockUFS, tf.MockKarte, req)
+		if err != nil {
+			t.Errorf("unexpected error: %s", err)
+		}
+		tasks := tqt.GetScheduledTasks()[qn]
+		fmt.Println(tasks)
+		numTasks := len(tasks)
+		So(numTasks, ShouldEqual, 4)
+		var taskPaths, taskParams []string
+		for _, v := range tasks {
+			taskPaths = append(taskPaths, v.Path)
+			taskParams = append(taskParams, string(v.Payload))
+		}
+		sort.Strings(taskPaths)
+		sort.Strings(taskParams)
+		expectedPaths := []string{"/internal/task/cros_repair/fake-bot-a", "/internal/task/cros_repair/fake-bot-b", "/internal/task/cros_repair/pool-cfg-bot-a", "/internal/task/cros_repair/pool-cfg-bot-b"}
+		expectedParams := []string{"botID=fake-bot-a&builderBucket=&expectedState=needs_repair", "botID=fake-bot-b&builderBucket=&expectedState=needs_repair", "botID=pool-cfg-bot-a&builderBucket=&expectedState=needs_repair", "botID=pool-cfg-bot-b&builderBucket=some_bucket&expectedState=needs_repair"}
+		So(taskPaths, ShouldResemble, expectedPaths)
+		So(taskParams, ShouldResemble, expectedParams)
+	})
+}
+
+// TestPushBotsForAdminTasksWithPoolCfgSkipError tests that error condition while pushing bots for admin tasks with Pool
+func TestPushBotsForAdminTasksWithPoolCfgSkipError(t *testing.T) {
+	Convey("Handling Errors for PoolCfg bots ", t, func() {
+		tf, validate := newTestFixture(t)
+		defer validate()
+		ctx := tf.C
+		tqt := tq.GetTestable(ctx)
+		qn := "repair-bots"
+		tqt.CreateQueue(qn)
+		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "fake-bot-pool", gomock.Any()).Return([]*swarming.SwarmingRpcsBotInfo{
+			{
+				BotId: "fake-bot-a",
+				Dimensions: []*swarming.SwarmingRpcsStringListPair{
+					{
+						Key:   "id",
+						Value: []string{"fake-bot-a"},
+					},
+					{
+						Key:   "pool",
+						Value: []string{"fake-bot-pool"},
+					},
+					{
+						Key:   "dut_state",
+						Value: []string{"needs_repair"},
+					},
+				},
+			},
+			{
+				BotId: "fake-bot-b",
+				Dimensions: []*swarming.SwarmingRpcsStringListPair{
+					{
+						Key:   "id",
+						Value: []string{"fake-bot-b"},
+					},
+					{
+						Key:   "pool",
+						Value: []string{"fake-bot-pool"},
+					},
+					{
+						Key:   "dut_state",
+						Value: []string{"needs_repair"},
+					},
+				},
+			},
+		}, nil)
+
+		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "pool-cfg-a", gomock.Any()).Return(nil, errors.Reason("Fake Error").Err())
+
+		tf.MockSwarming.EXPECT().ListAliveIdleBotsInPool(gomock.Any(), "pool-cfg-b", gomock.Any()).Return([]*swarming.SwarmingRpcsBotInfo{
+			{
+				BotId: "pool-cfg-bot-b",
+				Dimensions: []*swarming.SwarmingRpcsStringListPair{
+					{
+						Key:   "id",
+						Value: []string{"pool-cfg-bot-b"},
+					},
+					{
+						Key:   "pool",
+						Value: []string{"pool-cfg-b"},
+					},
+					{
+						Key:   "dut_state",
+						Value: []string{"needs_repair"},
+					},
+				},
+			},
+		}, nil)
+
+		ctx = config.Use(ctx, &config.Config{
+			Swarming: &config.Swarming{
+				BotPool: "fake-bot-pool",
+				PoolCfgs: []*config.Swarming_PoolCfg{
+					{
+						PoolName: "pool-cfg-a",
+					},
+					{
+						PoolName:      "pool-cfg-b",
+						BuilderBucket: "some_bucket",
+					},
+				},
+			},
+		})
+
+		req := &fleet.PushBotsForAdminTasksRequest{
+			TargetDutState: fleet.DutState_NeedsRepair,
+		}
+		_, err := pushBotsForAdminTasksImpl(ctx, tf.MockSwarming, tf.MockUFS, tf.MockKarte, req)
+		if err != nil {
+			if !strings.Contains(err.Error(), "Fake Error") {
+				t.Errorf("unexpected error: %s", err)
+			}
+		}
+		tasks := tqt.GetScheduledTasks()[qn]
+		fmt.Println(tasks)
+		numTasks := len(tasks)
+		So(numTasks, ShouldEqual, 3)
+		var taskPaths, taskParams []string
+		for _, v := range tasks {
+			taskPaths = append(taskPaths, v.Path)
+			taskParams = append(taskParams, string(v.Payload))
+		}
+		sort.Strings(taskPaths)
+		sort.Strings(taskParams)
+		expectedPaths := []string{"/internal/task/cros_repair/fake-bot-a", "/internal/task/cros_repair/fake-bot-b", "/internal/task/cros_repair/pool-cfg-bot-b"}
+		expectedParams := []string{"botID=fake-bot-a&builderBucket=&expectedState=needs_repair", "botID=fake-bot-b&builderBucket=&expectedState=needs_repair", "botID=pool-cfg-bot-b&builderBucket=some_bucket&expectedState=needs_repair"}
+		So(taskPaths, ShouldResemble, expectedPaths)
+		So(taskParams, ShouldResemble, expectedParams)
+	})
 }
