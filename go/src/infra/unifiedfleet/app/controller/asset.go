@@ -621,6 +621,9 @@ func CreateMachineFromAsset(asset *ufspb.Asset) *ufspb.Machine {
 		CostCenter:           asset.GetInfo().GetCostCenter(),
 		Gpn:                  asset.GetInfo().GetGpn(),
 		HwXComplianceVersion: asset.GetInfo().GetHwXComplianceVersion(),
+		IsCbx:                asset.GetInfo().GetIsCbx(),
+		CbxFeatureType:       asset.GetInfo().GetCbxFeatureType(),
+		IsMixedX:             asset.GetInfo().GetIsMixedX(),
 	}
 	switch asset.GetType() {
 	case ufspb.AssetType_DUT:
@@ -687,6 +690,9 @@ func updateMachineFromAsset(ctx context.Context, machine *ufspb.Machine, asset *
 	machine.GetChromeosMachine().CostCenter = asset.GetInfo().GetCostCenter()
 	machine.GetChromeosMachine().Gpn = asset.GetInfo().GetGpn()
 	machine.GetChromeosMachine().HwXComplianceVersion = asset.GetInfo().GetHwXComplianceVersion()
+	machine.GetChromeosMachine().IsCbx = asset.GetInfo().GetIsCbx()
+	machine.GetChromeosMachine().CbxFeatureType = asset.GetInfo().GetCbxFeatureType()
+	machine.GetChromeosMachine().IsMixedX = asset.GetInfo().GetIsMixedX()
 	switch asset.GetType() {
 	case ufspb.AssetType_DUT:
 		machine.GetChromeosMachine().DeviceType = ufspb.ChromeOSDeviceType_DEVICE_CHROMEBOOK
