@@ -112,11 +112,11 @@ func wifiRouterRepairPlan() *Plan {
 					"Is ChromeOS Gale",
 				},
 				Dependencies: []string{
+					"Set Gale WifiRouter model and features",
 					"Device is on stable-version",
 					"Device has required wifi tools",
 					"Device has 50 percent tmp diskspace",
 					"Device has 50 percent stateful partition diskspace",
-					"Set Gale WifiRouter model and features",
 				},
 				ExecName: "sample_pass",
 			},
