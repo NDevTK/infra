@@ -74,6 +74,7 @@ func runRepairQueueHandler(c *router.Context) (err error) {
 	}
 	botID := c.Request.FormValue("botID")
 	expectedState := c.Request.FormValue("expectedState")
+	builderBucket := c.Request.FormValue("builderBucket")
 	// RandFloat is guaranteed to be in the half-open interval [0,1).
 	randFloat := rand.Float64()
 	pools, err := ufs.GetPools(c.Request.Context(), ufsClient, botID)
@@ -82,7 +83,7 @@ func runRepairQueueHandler(c *router.Context) (err error) {
 	if err != nil {
 		logging.Infof(c.Request.Context(), "run repair queue handler: %s", err)
 	}
-	taskURL, err := frontend.CreateRepairTask(c.Request.Context(), botID, expectedState, pools, randFloat)
+	taskURL, err := frontend.CreateRepairTask(c.Request.Context(), botID, expectedState, pools, randFloat, builderBucket)
 	if err != nil {
 		logging.Infof(c.Request.Context(), "fail to run repair job in queue for %s: %s", botID, err.Error())
 		return err

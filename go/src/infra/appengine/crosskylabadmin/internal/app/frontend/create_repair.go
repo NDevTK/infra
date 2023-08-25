@@ -115,7 +115,7 @@ func findProperRecoveryTask(ctx context.Context, expectedState, dutName string, 
 //
 // This function will either schedule a legacy repair task or a PARIS repair task.
 // Note that the ufs client can be nil.
-func CreateRepairTask(ctx context.Context, botID string, expectedState string, pools []string, randFloat float64) (string, error) {
+func CreateRepairTask(ctx context.Context, botID string, expectedState string, pools []string, randFloat float64, builderBucket string) (string, error) {
 	logging.Infof(ctx, "Creating repair task for %q expected state %q with random input %f", botID, expectedState, randFloat)
 	// If we encounter an error picking paris or legacy, do the safe thing and use legacy.
 	taskType, err := RouteTask(
@@ -142,6 +142,7 @@ func CreateRepairTask(ctx context.Context, botID string, expectedState string, p
 		taskType:      cipdVersion,
 		botID:         botID,
 		expectedState: expectedState,
+		builderBucket: builderBucket,
 	}
 	karteC, err := createKarteClient(ctx)
 	if err != nil {
@@ -223,6 +224,8 @@ type createBuildbucketTaskRequest struct {
 	// botID is the ID of the bot, for example, "crossk-chromeos...".
 	botID         string
 	expectedState string
+	// Build bucket to be used to schedule swarming task
+	builderBucket string
 }
 
 // CreateBuildbucketTask creates a new task (repair by default) for the provided DUT.
@@ -252,9 +255,11 @@ func createBuildbucketTask(ctx context.Context, params createBuildbucketTaskRequ
 		return "", errors.Annotate(err, "create buildbucket repair task").Err()
 	}
 	p := &buildbucket.Params{
-		UnitName:       heuristics.NormalizeBotNameToDeviceName(params.botID),
-		TaskName:       params.taskName.String(),
-		BuilderName:    buildbucket.TaskNameToBuilderNamePerVersion(params.taskName, params.taskType),
+		UnitName:    heuristics.NormalizeBotNameToDeviceName(params.botID),
+		TaskName:    params.taskName.String(),
+		BuilderName: buildbucket.TaskNameToBuilderNamePerVersion(params.taskName, params.taskType),
+		// Set the build bucket information to the swarming task
+		BuilderBucket:  params.builderBucket,
 		EnableRecovery: true,
 		// TODO(gregorynisbet): This is our own name, move it to the config.
 		AdminService: "chromeos-skylab-bot-fleet.appspot.com",
