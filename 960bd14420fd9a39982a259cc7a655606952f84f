@@ -33,6 +33,24 @@
       "message": "why do we block the logic to do nothing if the state set once? if there other logic to set NOT_APPLICABLE?\n\n\nif you need optimization then please create condition for the action",
       "revId": "960bd14420fd9a39982a259cc7a655606952f84f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "01aed289_0d458d68",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1002374
+      },
+      "writtenOn": "2023-08-25T20:18:08Z",
+      "side": 1,
+      "message": "B/c there is the case of some audioboxes that do not have audiojack_plugger arm and controller(and can not be equipped with). Now they show as BROKEN. We want to manually(by \u0027shivas add\u0027) mark them as N/A, and from that moment on they will not turn into BROKEN.",
+      "parentUuid": "d47772ae_c5acaf44",
+      "revId": "960bd14420fd9a39982a259cc7a655606952f84f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
