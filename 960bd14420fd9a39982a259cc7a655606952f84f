@@ -68,6 +68,24 @@
       "message": "... and there is no way to recognize these audioboxes from the ones with plugger being stuck.",
       "revId": "960bd14420fd9a39982a259cc7a655606952f84f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "06039054_fbfa79f4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-08-25T21:15:18Z",
+      "side": 1,
+      "message": "i think the logic need to be able to set the state and change it based on change variables of infra.\n\nIn this cases I would use environment label to establish the case when it need to set as not_applicable. Maybe some common label which can describe expectation of that.",
+      "parentUuid": "01aed289_0d458d68",
+      "revId": "960bd14420fd9a39982a259cc7a655606952f84f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
