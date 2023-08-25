@@ -594,16 +594,9 @@ func (g *Generator) testRunnerRequest(ctx context.Context) (*skylab_test_runner.
 	}, nil
 }
 
-// cftTestRunnerRequest creates test runner request for cft workflow
-func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runner.CFTTestRequest, error) {
-	kv := g.keyvals(ctx)
-
-	var deadline *timestamppb.Timestamp
-	if !g.Deadline.IsZero() {
-		deadline = timestamppb.New(g.Deadline)
-	}
-
-	builds, err := extractBuilds(g.Params.GetSoftwareDependencies())
+// buildProvisionState constructs the provision state from a request's software dependencies.
+func buildProvisionState(softwareDeps []*test_platform.Request_Params_SoftwareDependency) (*testapi.ProvisionState, error) {
+	builds, err := extractBuilds(softwareDeps)
 	if err != nil {
 		return nil, errors.Annotate(err, "create cft test runner request: extractBuilds").Err()
 	}
@@ -622,13 +615,25 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 		return nil, errors.NewMultiError(errors.Reason("create cft test runner request: empty imagePath").Err())
 	}
 
-	provsionState := &testapi.ProvisionState{
+	provisionState := &testapi.ProvisionState{
 		SystemImage: &testapi.ProvisionState_SystemImage{
 			SystemImagePath: &goconfig.StoragePath{
 				HostType: goconfig.StoragePath_GS,
 				Path:     imagePath,
 			},
 		},
+	}
+
+	return provisionState, nil
+}
+
+// cftTestRunnerRequest creates test runner request for cft workflow
+func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runner.CFTTestRequest, error) {
+	kv := g.keyvals(ctx)
+
+	var deadline *timestamppb.Timestamp
+	if !g.Deadline.IsZero() {
+		deadline = timestamppb.New(g.Deadline)
 	}
 
 	buildTarget := g.Params.GetSoftwareAttributes().GetBuildTarget().GetName()
@@ -668,6 +673,30 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 		buildTargetInferred = buildTarget
 	}
 
+	primaryProvisionState, err := buildProvisionState(g.Params.GetSoftwareDependencies())
+	if err != nil {
+		return nil, err
+	}
+	companionDuts := []*skylab_test_runner.CFTTestRequest_Device{}
+	for _, companion := range g.Params.GetSecondaryDevices() {
+		companionProvisionState, err := buildProvisionState(companion.GetSoftwareDependencies())
+		if err != nil {
+			// Error from buildProvisionState represents a non-chromeos type device and
+			// cannot have a provision request built for it. ie prevents android
+			// from requesting a chromeos provision.
+			continue
+		}
+		companionDutModel := &labapi.DutModel{
+			BuildTarget: companion.GetSoftwareAttributes().GetBuildTarget().GetName(),
+			ModelName:   companion.GetHardwareAttributes().GetModel(),
+		}
+		companionDuts = append(companionDuts, &skylab_test_runner.CFTTestRequest_Device{
+			DutModel:             companionDutModel,
+			ProvisionState:       companionProvisionState,
+			ContainerMetadataKey: buildTargetInferred,
+		})
+	}
+
 	testName := g.Invocation.Test.Name
 	testCaseIds := []*testapi.TestCase_Id{}
 	// "Names" field takes priority and "Name" will only be checked/modified when "Names" is not provided.
@@ -700,9 +729,10 @@ func (g *Generator) cftTestRunnerRequest(ctx context.Context) (*skylab_test_runn
 		ParentBuildId:    g.ParentBuildID,
 		PrimaryDut: &skylab_test_runner.CFTTestRequest_Device{
 			DutModel:             dutModel,
-			ProvisionState:       provsionState,
+			ProvisionState:       primaryProvisionState,
 			ContainerMetadataKey: buildTargetInferred,
 		},
+		CompanionDuts:                companionDuts,
 		ContainerMetadata:            g.Params.GetExecutionParam().GetContainerMetadata(),
 		TestSuites:                   testSuites,
 		DefaultTestExecutionBehavior: g.Params.GetTestExecutionBehavior(),
