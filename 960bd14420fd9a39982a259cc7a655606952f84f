@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b9229469_0d4b899b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1551857
+      },
+      "writtenOn": "2023-08-25T19:16:32Z",
+      "side": 1,
+      "message": "Hi team, as mentioned in b/297266036, this CL is to fix `chromeos15-row2-metro8-host1` - an edge case of audiobox that has no audiobox jackplugger.\n\nThis testbed unit should be marked as N/A by shivas, and I will add the required shivas commands in later CL.",
+      "revId": "960bd14420fd9a39982a259cc7a655606952f84f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
