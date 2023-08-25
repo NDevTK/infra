@@ -16,6 +16,23 @@
       "message": "Hi team, as mentioned in b/297266036, this CL is to fix `chromeos15-row2-metro8-host1` - an edge case of audiobox that has no audiobox jackplugger.\n\nThis testbed unit should be marked as N/A by shivas, and I will add the required shivas commands in later CL.",
       "revId": "960bd14420fd9a39982a259cc7a655606952f84f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d47772ae_c5acaf44",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-08-25T20:10:56Z",
+      "side": 1,
+      "message": "why do we block the logic to do nothing if the state set once? if there other logic to set NOT_APPLICABLE?\n\n\nif you need optimization then please create condition for the action",
+      "revId": "960bd14420fd9a39982a259cc7a655606952f84f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
