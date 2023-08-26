@@ -607,6 +607,7 @@ test_summaries AS (
 	SELECT
 		file_name AS node_name,
 		date,
+		component AS test_component,
 		--metrics
 		SUM(num_runs) AS num_runs,
 	FROM chrome-test-health-project.normal-dataset.daily_test_metrics
@@ -616,7 +617,7 @@ test_summaries AS (
 		AND component IN UNNEST(@components)
 		-- Apply the requested filter
 		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
-	GROUP BY file_name, date, test_id
+	GROUP BY file_name, date, test_id, component
 )
 SELECT
 	f.date,
@@ -628,6 +629,7 @@ SELECT
 FROM chrome-test-health-project.normal-dataset.daily_file_metrics AS f, UNNEST(@parents) AS parent
 JOIN test_summaries t ON
 	f.date = t.date
+	AND t.test_component = f.component
 	AND STARTS_WITH(t.node_name, f.node_name)
 WHERE
 	STARTS_WITH(f.node_name, parent || "/")
@@ -651,6 +653,7 @@ test_summaries AS (
 	SELECT
 		file_name AS node_name,
 		date,
+		component AS test_component,
 		--metrics
 		SUM(num_runs) AS num_runs,
 	FROM chrome-test-health-project.normal-dataset.daily_test_metrics
@@ -659,7 +662,7 @@ test_summaries AS (
 		AND file_name IS NOT NULL
 		-- Apply the requested filter
 		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
-	GROUP BY file_name, date, test_id
+	GROUP BY file_name, date, test_id, component
 )
 SELECT
 	f.date,
@@ -671,6 +674,7 @@ SELECT
 FROM chrome-test-health-project.normal-dataset.daily_file_metrics AS f, UNNEST(@parents) AS parent
 JOIN test_summaries t ON
 	f.date = t.date
+	AND t.test_component = f.component
 	AND STARTS_WITH(t.node_name, f.node_name)
 WHERE
 	STARTS_WITH(f.node_name, parent || "/")
@@ -703,6 +707,7 @@ test_summaries AS (
 	SELECT
 		file_name AS node_name,
 		date,
+		component AS test_component,
 		--metrics
 		SUM(num_runs) AS num_runs,
 	FROM chrome-test-health-project.normal-dataset.daily_test_metrics
@@ -712,7 +717,7 @@ test_summaries AS (
 		AND component IN UNNEST(@components)
 		-- Apply the requested filter
 		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
-	GROUP BY file_name, date, test_id
+	GROUP BY file_name, date, test_id, test_component
 ), node_summaries AS (
 	SELECT
 		f.date,
@@ -724,6 +729,7 @@ test_summaries AS (
 	FROM chrome-test-health-project.normal-dataset.daily_file_metrics AS f, UNNEST(@parents) AS parent
 	JOIN test_summaries t ON
 		f.date = t.date
+		AND f.component = t.test_component
 		AND STARTS_WITH(t.node_name, f.node_name)
 	WHERE
 		STARTS_WITH(f.node_name, parent || "/")

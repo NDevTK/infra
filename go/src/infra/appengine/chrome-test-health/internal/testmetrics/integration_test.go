@@ -262,7 +262,7 @@ func TestIntegrationTest(t *testing.T) {
 			rf.createResult().AddTime(time.Hour * 24 * 5),
 			rf.createResult().AddTime(time.Hour * 24 * 6),
 			// Force the weekly cores to be 2
-			rf.createResult().AddTime(time.Hour * 24 * 6).WithDuration(60 * 60 * 24 * 7),
+			rf.createResult().AddTime(time.Hour * 24 * 6).WithDuration(time.Hour * 24 * 7),
 		}); err != nil {
 			t.Fail()
 		}
@@ -370,7 +370,7 @@ func TestIntegrationTest(t *testing.T) {
 		if err := createRollupFromResults(ctx, client, testProject, testDataset, fakeChromiumTryRdb, testPartition, []*fakeRdbResult{
 			rf.createResult().AddTime(time.Hour * 24 * 6),
 			// Force the weekly cores to be 1 split when filter is "other_builder"
-			rf.createResult().AddTime(time.Hour * 24 * 6).WithDuration(60 * 60 * 24 * 7).WithBuilder("other_builder"),
+			rf.createResult().AddTime(time.Hour * 24 * 6).WithDuration(time.Hour * 24 * 7).WithBuilder("other_builder"),
 		}); err != nil {
 			t.Fail()
 		}
@@ -455,5 +455,137 @@ func TestIntegrationTest(t *testing.T) {
 		So(err, ShouldBeNil)
 		// The total runtime for other_builder should be 7 days over 7 days which is 1 core
 		So(metric, ShouldEqual, 1)
+	})
+
+	Convey("file based component aggregations", t, func() {
+		// Deleting rows with a streaming buffer doesn't work well, instead
+		// partition the fake table. Use a Sunday to make weekly tests easier
+		testPartition := "2023-03-12"
+
+		// Setup defaults for rdb data
+		rf.timePartition, err = civil.ParseDate(testPartition)
+		if err != nil {
+			t.Fail()
+		}
+		rf.defaultFilename = "//dir/name/filename.go"
+		rf.defaultRuntime = (time.Hour * 24).Seconds()
+
+		// Generate the rollups from fake rdb data.
+		if err := createRollupFromResults(ctx, client, testProject, testDataset, fakeChromiumTryRdb, testPartition, []*fakeRdbResult{
+			// All tests exist in the same file but with different component/builder combinations
+			rf.createResult().WithId("test1").WithComponent("component1").WithDuration(time.Minute * 1),
+			rf.createResult().WithId("test2").WithComponent("component1").WithDuration(time.Minute * 5).WithBuilder("other_builder"),
+			rf.createResult().WithId("test3").WithComponent("component2").WithDuration(time.Minute * 10).WithBuilder("other_builder"),
+			// Add an entry that shouldn't affect the previous day
+			rf.createResult().WithId("test1").WithComponent("component1").WithDuration(time.Hour).AddTime(time.Hour * 24),
+			rf.createResult().WithId("test3").WithComponent("component2").WithDuration(time.Hour).AddTime(time.Hour * 24).WithBuilder("other_builder"),
+		}); err != nil {
+			t.Fail()
+		}
+
+		dirResp, err := client.FetchDirectoryMetrics(ctx,
+			&api.FetchDirectoryMetricsRequest{
+				Period:     api.Period_DAY,
+				Components: []string{},
+				Dates:      []string{testPartition},
+				Metrics: []api.MetricType{
+					api.MetricType_AVG_RUNTIME,
+				},
+				ParentIds: []string{"/"},
+			},
+		)
+		So(err, ShouldBeNil)
+
+		metric, err := getMetric(dirResp.Nodes[0].Metrics[testPartition], api.MetricType_AVG_RUNTIME)
+		So(err, ShouldBeNil)
+		// 3 tests in the same file on the first day make the avg runtime of
+		// the file the sum of those 3 tests (1 + 5 + 10)
+		So(metric, ShouldEqual, (time.Minute * 16).Seconds())
+
+		dirResp, err = client.FetchDirectoryMetrics(ctx,
+			&api.FetchDirectoryMetricsRequest{
+				Period:     api.Period_DAY,
+				Components: []string{},
+				// Add the next day to exercise the multi-day query
+				Dates: []string{testPartition, "2023-03-13"},
+				Metrics: []api.MetricType{
+					api.MetricType_AVG_RUNTIME,
+				},
+				ParentIds: []string{"/"},
+			},
+		)
+		So(err, ShouldBeNil)
+		metric, err = getMetric(dirResp.Nodes[0].Metrics[testPartition], api.MetricType_AVG_RUNTIME)
+		So(err, ShouldBeNil)
+		// The first day should not be affected by fetching the second
+		So(metric, ShouldEqual, (time.Minute * 16).Seconds())
+		metric, err = getMetric(dirResp.Nodes[0].Metrics["2023-03-13"], api.MetricType_AVG_RUNTIME)
+		So(err, ShouldBeNil)
+		So(metric, ShouldEqual, (time.Hour * 2).Seconds())
+
+		dirResp, err = client.FetchDirectoryMetrics(ctx,
+			&api.FetchDirectoryMetricsRequest{
+				Period:     api.Period_DAY,
+				Components: []string{},
+				Dates:      []string{testPartition},
+				Metrics: []api.MetricType{
+					api.MetricType_AVG_RUNTIME,
+				},
+				ParentIds: []string{"/"},
+				Filter:    "other_builder",
+			},
+		)
+		So(err, ShouldBeNil)
+
+		metric, err = getMetric(dirResp.Nodes[0].Metrics[testPartition], api.MetricType_AVG_RUNTIME)
+		So(err, ShouldBeNil)
+		// 2 tests belong to other_builder on the first day (5 + 10)
+		So(metric, ShouldEqual, (time.Minute * 15).Seconds())
+
+		dirResp, err = client.FetchDirectoryMetrics(ctx,
+			&api.FetchDirectoryMetricsRequest{
+				Period:     api.Period_DAY,
+				Components: []string{},
+				// Add the next day to exercise the multi-day query
+				Dates: []string{testPartition, "2023-03-13"},
+				Metrics: []api.MetricType{
+					api.MetricType_AVG_RUNTIME,
+				},
+				ParentIds: []string{"/"},
+				Filter:    "other_builder",
+			},
+		)
+		So(err, ShouldBeNil)
+		metric, err = getMetric(dirResp.Nodes[0].Metrics[testPartition], api.MetricType_AVG_RUNTIME)
+		So(err, ShouldBeNil)
+		// The first day should not be affected by fetching the second
+		So(metric, ShouldEqual, (time.Minute * 15).Seconds())
+		metric, err = getMetric(dirResp.Nodes[0].Metrics["2023-03-13"], api.MetricType_AVG_RUNTIME)
+		So(err, ShouldBeNil)
+		// Only 1 test on the 2nd day for other_builder
+		So(metric, ShouldEqual, (time.Hour).Seconds())
+
+		dirResp, err = client.FetchDirectoryMetrics(ctx,
+			&api.FetchDirectoryMetricsRequest{
+				Period:     api.Period_DAY,
+				Components: []string{"component1"},
+				Dates:      []string{testPartition, "2023-03-13"},
+				Metrics: []api.MetricType{
+					api.MetricType_AVG_RUNTIME,
+				},
+				ParentIds: []string{"/"},
+			},
+		)
+		So(err, ShouldBeNil)
+
+		metric, err = getMetric(dirResp.Nodes[0].Metrics[testPartition], api.MetricType_AVG_RUNTIME)
+		So(err, ShouldBeNil)
+		// 2 tests have component1 on the first day make the avg runtime of
+		// the file the sum of those 2 tests (1 + 5)
+		So(metric, ShouldEqual, (time.Minute * 6).Seconds())
+		metric, err = getMetric(dirResp.Nodes[0].Metrics["2023-03-13"], api.MetricType_AVG_RUNTIME)
+		So(err, ShouldBeNil)
+		// Only 1 test on the 2nd day for component1
+		So(metric, ShouldEqual, (time.Hour).Seconds())
 	})
 }

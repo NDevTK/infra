@@ -114,13 +114,23 @@ func (f *fakeRdbResult) Failed() *fakeRdbResult {
 	return f
 }
 
-func (f *fakeRdbResult) WithDuration(duration float64) *fakeRdbResult {
-	f.duration = duration
+func (f *fakeRdbResult) WithDuration(duration time.Duration) *fakeRdbResult {
+	f.duration = duration.Seconds()
 	return f
 }
 
 func (f *fakeRdbResult) WithFilename(filename string) *fakeRdbResult {
 	f.filename = filename
+	return f
+}
+
+func (f *fakeRdbResult) WithId(testId string) *fakeRdbResult {
+	f.testId = testId
+	return f
+}
+
+func (f *fakeRdbResult) WithComponent(component string) *fakeRdbResult {
+	f.component = component
 	return f
 }
 

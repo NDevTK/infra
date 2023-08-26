@@ -89,7 +89,7 @@ SELECT
 	node_name,
 	ARRAY_REVERSE(SPLIT(node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
 	ANY_VALUE(is_file) AS is_file,
-	{metricAggregations},
+	{fileComponentAggTerms},
 FROM {fileTable}, UNNEST(@parents) AS parent
 WHERE
 	STARTS_WITH(node_name, parent || "/")
@@ -106,7 +106,7 @@ WITH nodes AS(
 		node_name,
 		ARRAY_REVERSE(SPLIT(node_name, '/'))[SAFE_OFFSET(0)] AS display_name,
 		ANY_VALUE(is_file) AS is_file,
-		{metricAggregations},
+		{fileComponentAggTerms},
 	FROM {fileTable}, UNNEST(@parents) AS parent
 	WHERE
 		STARTS_WITH(node_name, parent || "/")
@@ -131,6 +131,7 @@ test_summaries AS (
 	SELECT
 		file_name AS node_name,
 		date,
+		component AS test_component,
 		--metrics
 		{metricAggregations},
 	FROM {testTable}
@@ -138,7 +139,7 @@ test_summaries AS (
 		date IN UNNEST(@dates)
 		AND file_name IS NOT NULL{componentsClause}
 		-- Apply the requested filter{filterClause}
-	GROUP BY file_name, date, test_id
+	GROUP BY file_name, date, test_id, component
 )
 SELECT
 	f.date,
@@ -150,6 +151,7 @@ SELECT
 FROM {fileTable} AS f, UNNEST(@parents) AS parent
 JOIN test_summaries t ON
 	f.date = t.date
+	AND t.test_component = f.component
 	AND STARTS_WITH(t.node_name, f.node_name)
 WHERE
 	STARTS_WITH(f.node_name, parent || "/")
@@ -165,6 +167,7 @@ test_summaries AS (
 	SELECT
 		file_name AS node_name,
 		date,
+		component AS test_component,
 		--metrics
 		{metricAggregations},
 	FROM {testTable}
@@ -172,7 +175,7 @@ test_summaries AS (
 		date IN UNNEST(@dates)
 		AND file_name IS NOT NULL{componentsClause}
 		-- Apply the requested filter{filterClause}
-	GROUP BY file_name, date, test_id
+	GROUP BY file_name, date, test_id, test_component
 ), node_summaries AS (
 	SELECT
 		f.date,
@@ -184,6 +187,7 @@ test_summaries AS (
 	FROM {fileTable} AS f, UNNEST(@parents) AS parent
 	JOIN test_summaries t ON
 		f.date = t.date
+		AND f.component = t.test_component
 		AND STARTS_WITH(t.node_name, f.node_name)
 	WHERE
 		STARTS_WITH(f.node_name, parent || "/")
@@ -582,6 +586,12 @@ func (c *Client) createDirectoryQuery(req *api.FetchDirectoryMetricsRequest) (*b
 	for i := 0; i < len(req.Metrics); i++ {
 		fileAggMetricTerms[i] = `SUM(t.` + MetricSqlName(req.Metrics[i]) + `) AS ` + MetricSqlName(req.Metrics[i])
 	}
+	// Terms to aggregate the metric names between components. This is a sum even
+	// for averaged runtimes
+	fileComponentAggTerms := make([]string, len(req.Metrics))
+	for i := 0; i < len(req.Metrics); i++ {
+		fileComponentAggTerms[i] = `SUM(` + MetricSqlName(req.Metrics[i]) + `) AS ` + MetricSqlName(req.Metrics[i])
+	}
 
 	// Terms for converting the rolling up the variants
 	metricAggregations := make([]string, len(req.Metrics))
@@ -645,6 +655,7 @@ func (c *Client) createDirectoryQuery(req *api.FetchDirectoryMetricsRequest) (*b
 		"{testTable}", c.ProjectId + `.` + c.DataSet + `.` + testTable,
 		"{filterClause}", filterClause,
 		"{fileAggMetricTerms}", strings.Join(fileAggMetricTerms, ",\n\t"),
+		"{fileComponentAggTerms}", strings.Join(fileComponentAggTerms, ",\n\t"),
 		"{fileTable}", c.ProjectId + `.` + c.DataSet + `.` + fileTable,
 		"{sortMetric}", sortMetric,
 		"{sortDirection}", sortDirection,
