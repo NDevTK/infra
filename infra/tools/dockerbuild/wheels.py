@@ -1596,6 +1596,8 @@ SPECS.update({
         Universal('opentelemetry-api', '1.18.0', pyversions=['py3']),
         Universal('opentelemetry-exporter-gcp-monitoring', '1.5.0a0',
                   pyversions=['py3']),
+        Universal('opentelemetry-exporter-google-cloud', '0.18b1',
+                  pyversions=['py3']),
         Universal('opentelemetry-resourcedetector-gcp', '1.5.0a0',
                   pyversions=['py3']),
         Universal('opentelemetry-sdk', '1.12.0', pyversions=['py3']),

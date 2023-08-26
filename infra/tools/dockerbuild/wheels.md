@@ -5409,6 +5409,20 @@ wheel: <
 
 * *universal*
 
+## **opentelemetry-exporter-google-cloud-py3**
+
+### 0.18b1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/opentelemetry-exporter-google-cloud-py3"
+  version: "version:0.18b1"
+>
+```
+
+
+* *universal*
+
 ## **opentelemetry-resourcedetector-gcp-py3**
 
 ### 1.5.0a0
