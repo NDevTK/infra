@@ -200,6 +200,7 @@ var respBytesSent = metric.NewCounter("chromeos/caching_backend/nginx/response_b
 	field.Int("status"),
 	field.String("cache"),
 	field.Bool("full_download"),
+	field.Bool("internal_traffic"),
 )
 
 // respBytesPerSecond is a tsmon metric for the response bandwidth.
@@ -214,6 +215,7 @@ var respBytesPerSecond = metric.NewCumulativeDistribution("chromeos/caching_back
 	field.Int("status"),
 	field.String("cache"),
 	field.Bool("full_download"),
+	field.Bool("internal_traffic"),
 )
 
 // reportToTsMon reports the parsed log line data to tsmon server.
@@ -226,14 +228,17 @@ func reportToTsMon(i *record) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	respBytesSent.Add(ctx, int64(i.BodyBytesSent), i.hostname, i.HttpMethod, rpc, i.Status, i.CacheStatus, i.ExpectedSize == i.BodyBytesSent)
+	fullDownload := (i.ExpectedSize == i.BodyBytesSent)
+	internalTraffic := i.ClientIP == "127.0.0.1"
+
+	respBytesSent.Add(ctx, int64(i.BodyBytesSent), i.hostname, i.HttpMethod, rpc, i.Status, i.CacheStatus, fullDownload, internalTraffic)
 
 	// Set the response speed metric. The minimum resolution of Nginx request
 	// time is 1 ms. For shorter cases, we just set the download speed to a
 	// high number as the speed is supposed high enough.
 	if speed := 100. * 1024 * 1024; i.RequestTime < 0.001 {
-		respBytesPerSecond.Add(ctx, speed, i.HttpMethod, rpc, i.Status, i.CacheStatus, i.ExpectedSize == i.BodyBytesSent)
+		respBytesPerSecond.Add(ctx, speed, i.HttpMethod, rpc, i.Status, i.CacheStatus, fullDownload, internalTraffic)
 	} else {
-		respBytesPerSecond.Add(ctx, float64(i.BodyBytesSent)/i.RequestTime, i.HttpMethod, rpc, i.Status, i.CacheStatus, i.ExpectedSize == i.BodyBytesSent)
+		respBytesPerSecond.Add(ctx, float64(i.BodyBytesSent)/i.RequestTime, i.HttpMethod, rpc, i.Status, i.CacheStatus, fullDownload, internalTraffic)
 	}
 }
