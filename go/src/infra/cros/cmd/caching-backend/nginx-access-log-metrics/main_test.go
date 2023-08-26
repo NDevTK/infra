@@ -16,22 +16,38 @@ import (
 
 func TestParseLine(t *testing.T) {
 	t.Parallel()
-	line := `127.0.0.1 - - [2021-06-09T20:24:39+00:00] "GET /download/abc HTTP/1.1" 200 369 "-" 0.123 "-" "curl/7.66.0" "-" HIT`
-
-	got := parseLine(line)
-	want := &record{
-		timestamp:     time.Date(2021, 06, 9, 20, 24, 39, 0, time.UTC),
-		clientIP:      "127.0.0.1",
-		httpMethod:    "GET",
-		path:          "/download/abc",
-		status:        200,
-		bodyBytesSent: 369,
-		expectedSize:  -1,
-		requestTime:   0.123,
-		cacheStatus:   "HIT",
+	tests := []struct {
+		line string
+		want *record
+	}{
+		{
+			line: `{"access_time":"2021-06-09T13:24:39-07:00","bytes_sent":369,"content_length":369,"host":"100.115.168.189","method":"GET","proxy_host":"gs_archive_servers","referer":"","remote_addr":"127.0.0.1","remote_user":"","request":"GET /static/abc HTTP/1.1","request_time":0.123,"status":200,"uri":"/download/abc","user_agent":"curl","upstream":"","upstream_cache_status":"HIT","upstream_response_time":"","swarming_task_id": "id1","bbid": "id2","x_forwarded_for":""}`,
+			want: &record{
+				Timestamp:     time.Date(2021, 06, 9, 20, 24, 39, 0, time.UTC),
+				ClientIP:      "127.0.0.1",
+				HttpMethod:    "GET",
+				Path:          "/download/abc",
+				Status:        200,
+				BodyBytesSent: 369,
+				ExpectedSize:  369,
+				RequestTime:   0.123,
+				CacheStatus:   "HIT",
+			},
+		},
+		{
+			line: "a invalid json line",
+			want: nil,
+		},
 	}
 
-	if diff := cmp.Diff(want, got, cmp.AllowUnexported(record{})); diff != "" {
-		t.Errorf("emitMetric returned unexpected diff (-want +got):\n%s", diff)
+	for _, tc := range tests {
+		tc := tc
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			got := parseLine(tc.line)
+			if diff := cmp.Diff(tc.want, got, cmp.AllowUnexported(record{})); diff != "" {
+				t.Errorf("parseLine returned unexpected diff (-want +got):\n%s", diff)
+			}
+		})
 	}
 }
