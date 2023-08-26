@@ -292,6 +292,7 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 			UseLatestVersion: c.latestVersion,
 			BBProject:        c.deployBBProject,
 			BBBucket:         c.deployBBBucket,
+			BBBuilderName:    ufsUtil.GetDeployBBBuilderName(param.DUT.GetName()),
 		}
 
 		if err := utils.ScheduleDeployTask(ctx, deployParams); err != nil {

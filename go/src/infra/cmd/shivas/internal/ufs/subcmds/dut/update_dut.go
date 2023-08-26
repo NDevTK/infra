@@ -319,6 +319,7 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 				UseLatestVersion: c.latestVersion,
 				BBProject:        c.deployBBProject,
 				BBBucket:         c.deployBBBucket,
+				BBBuilderName:    ufsUtil.GetDeployBBBuilderName(req.GetMachineLSE().GetHostname()),
 			}
 			utils.ScheduleDeployTask(ctx, deployParams)
 			resTable.RecordResult(swarmOp, req.MachineLSE.GetName(), err)

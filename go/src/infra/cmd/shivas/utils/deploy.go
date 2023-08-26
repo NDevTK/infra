@@ -38,6 +38,8 @@ type DeployTaskParams struct {
 	BBBucket string
 	// BBProject is the name of the LUCI project the deploy build runs in.
 	BBProject string
+	// BBBuilderName is the name of the builder that deploy build runs.
+	BBBuilderName string
 }
 
 // ScheduleDeployTask schedules a deploy task by Buildbucket for PARIS.
@@ -56,7 +58,7 @@ func ScheduleDeployTask(ctx context.Context, params DeployTaskParams) error {
 		adminServicePath = ""
 	}
 	p := &buildbucket.Params{
-		BuilderName:    "deploy",
+		BuilderName:    params.BBBuilderName,
 		BuilderProject: params.BBProject,
 		BuilderBucket:  params.BBBucket,
 		UnitName:       params.Unit,

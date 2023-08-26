@@ -44,9 +44,13 @@ func TestScheduleDeployTask(t *testing.T) {
 		expectedCall *buildbucket.ScheduleLabpackTaskParams
 	}{
 		{
-			name:         "no explicit namespace",
-			ctx:          context.Background(),
-			deployParams: &DeployTaskParams{},
+			name: "no explicit namespace",
+			ctx:  context.Background(),
+			deployParams: &DeployTaskParams{
+				BBBuilderName: "deploy",
+				BBProject:     "chromeos",
+				BBBucket:      "labpack_runner",
+			},
 			expectedCall: &buildbucket.ScheduleLabpackTaskParams{
 				UnitName: "test-unit",
 				Props: &structpb.Struct{
@@ -70,9 +74,13 @@ func TestScheduleDeployTask(t *testing.T) {
 			},
 		},
 		{
-			name:         "explicit namespace",
-			ctx:          SetupContext(context.Background(), ufsUtil.OSPartnerNamespace),
-			deployParams: &DeployTaskParams{},
+			name: "explicit namespace",
+			ctx:  SetupContext(context.Background(), ufsUtil.OSPartnerNamespace),
+			deployParams: &DeployTaskParams{
+				BBBuilderName: "deploy",
+				BBProject:     "chromeos",
+				BBBucket:      "labpack_runner",
+			},
 			expectedCall: &buildbucket.ScheduleLabpackTaskParams{
 				UnitName: "test-unit",
 				Props: &structpb.Struct{
@@ -99,8 +107,9 @@ func TestScheduleDeployTask(t *testing.T) {
 			name: "explicit params",
 			ctx:  context.Background(),
 			deployParams: &DeployTaskParams{
-				BBBucket:  "eli-bucket",
-				BBProject: "eli-project",
+				BBBuilderName: "special-deploy",
+				BBBucket:      "eli-bucket",
+				BBProject:     "eli-project",
 			},
 			expectedCall: &buildbucket.ScheduleLabpackTaskParams{
 				UnitName: "test-unit",
@@ -119,7 +128,7 @@ func TestScheduleDeployTask(t *testing.T) {
 					},
 				},
 				ExtraTags:      []string{"test-session", "task:deploy", "client:shivas", "inventory_namespace:os", "version:prod", "service_name:shivas"},
-				BuilderName:    "deploy",
+				BuilderName:    "special-deploy",
 				BuilderProject: "eli-project",
 				BuilderBucket:  "eli-bucket",
 			},
