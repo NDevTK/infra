@@ -104,6 +104,24 @@
       "parentUuid": "06039054_fbfa79f4",
       "revId": "960bd14420fd9a39982a259cc7a655606952f84f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0fd5b8be_06a8605f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1551857
+      },
+      "writtenOn": "2023-08-26T08:01:24Z",
+      "side": 1,
+      "message": "Hi Otabek, about the test_audiojack label, it is also configured from UFS/shivas right? or is there any other recommended way to change the label value?\n\nEarlier I was thinking of using shivas and put logic to set N/A there. Next, we can set it manually, and the configuration will propagate from UFS to both Skylab and TLW. (submit other CLs like crrev/c/4612950 and crrev/c/4622972)\n\nAre you suggesting we directly check the test_audiojack label here, and no need to touch shivas? (simply import Skylab here?) It will be greatly appreciated if you can provide an example for us 🙏",
+      "parentUuid": "65bd0697_4c9ca448",
+      "revId": "960bd14420fd9a39982a259cc7a655606952f84f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
