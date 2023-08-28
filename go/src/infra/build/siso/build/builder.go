@@ -35,6 +35,7 @@ import (
 	"infra/build/siso/execute/localexec"
 	"infra/build/siso/execute/remoteexec"
 	"infra/build/siso/execute/reproxyexec"
+	"infra/build/siso/experiments"
 	"infra/build/siso/hashfs"
 	"infra/build/siso/o11y/clog"
 	"infra/build/siso/o11y/iometrics"
@@ -130,8 +131,6 @@ type Options struct {
 	// RemoteLimit limits the number of remote actions that can run in parallel.
 	RemoteLimit int
 }
-
-var experiments Experiments
 
 // Builder is a builder.
 type Builder struct {

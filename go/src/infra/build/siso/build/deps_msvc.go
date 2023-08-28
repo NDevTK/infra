@@ -17,6 +17,7 @@ import (
 	log "github.com/golang/glog"
 
 	"infra/build/siso/execute"
+	"infra/build/siso/experiments"
 	"infra/build/siso/o11y/clog"
 	"infra/build/siso/o11y/trace"
 	"infra/build/siso/reapi/merkletree"
@@ -310,7 +311,6 @@ func expandCPPCaseSensitiveIncludes(ctx context.Context, b *Builder, files []str
 			for _, f := range files {
 				if strings.HasSuffix(strings.ToLower(f), "/"+inc) {
 					f = f[:len(f)-len(inc)]
-					f = filepath.ToSlash(filepath.Join(f, inc))
 					if seen[f] {
 						continue
 					}
