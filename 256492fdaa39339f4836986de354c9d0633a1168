@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f4d1e6dc_9749e58f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 7
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-08-28T07:36:58Z",
+      "side": 1,
+      "message": "hmm..\n\ncan\u0027t we fix strategy in build/run_reproxy.go by experiments value?",
+      "revId": "256492fdaa39339f4836986de354c9d0633a1168",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
