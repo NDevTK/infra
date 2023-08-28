@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f648c310_f8af5dd4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1366072
+      },
+      "writtenOn": "2023-08-28T07:40:30Z",
+      "side": 1,
+      "message": "Siso needs to disable Siso\u0027s local fallback in this CL.",
+      "revId": "56c1f8b5092212b2847c1ce852af02f393de2bed",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
