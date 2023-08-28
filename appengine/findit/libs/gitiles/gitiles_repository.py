@@ -6,7 +6,8 @@ import base64
 from datetime import datetime
 import json
 import re
-import urllib
+
+from six.moves import urllib
 
 from google.appengine.api import app_identity
 
@@ -239,7 +240,7 @@ class GitilesRepository(GitRepository):
 
   def GetSourceAndStatus(self, path, revision):
     """Like GetSource(), but also returns status code of the response."""
-    url = '%s/+/%s/%s' % (self.repo_url, urllib.quote(revision), path)
+    url = '%s/+/%s/%s' % (self.repo_url, urllib.parse.quote(revision), path)
     return self._SendRequestForTextResponse(url)
 
   def GetChangeLogs(self, start_revision, end_revision, **kwargs):
@@ -265,7 +266,7 @@ class GitilesRepository(GitRepository):
           'n': '1000',  # Default value, could be replaced if n is in kwargs.
           'name-status': '1'
       }
-      for k, v in kwargs.iteritems():
+      for k, v in kwargs.items():
         params[k] = v
 
       data = self._SendRequestForJsonResponse(url, params=params)

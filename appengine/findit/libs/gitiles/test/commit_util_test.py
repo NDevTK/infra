@@ -3,10 +3,8 @@
 # found in the LICENSE file.
 
 import json
-import StringIO
 from testing_utils import testing
 import textwrap
-import urllib2
 
 from libs.gitiles import commit_util
 

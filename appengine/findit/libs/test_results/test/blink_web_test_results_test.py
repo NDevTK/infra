@@ -515,7 +515,7 @@ class BlinkWebTestResultsTest(wf_testcase.WaterfallTestCase):
         }
     }
     result = self.test_result.GetClassifiedTestResults()
-    for test_name, expected_test_result in expected_statuses.iteritems():
+    for test_name, expected_test_result in expected_statuses.items():
       self.assertEqual(expected_test_result, result[test_name].ToDict())
 
   def testGetTestLocationNoTestLocation(self):

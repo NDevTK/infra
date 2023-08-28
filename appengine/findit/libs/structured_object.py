@@ -140,7 +140,7 @@ class StructuredObject(BaseSerializableObject):
     """
     self._type_validation_func = type_validation_func
     self._data = {}
-    for name, value in kwargs.iteritems():
+    for name, value in kwargs.items():
       setattr(self, name, value)
 
   def __setattr__(self, name, value):
@@ -212,7 +212,7 @@ class StructuredObject(BaseSerializableObject):
     """Returns a dict into which all defined attributes are serialized."""
     data = {}
     defined_attributes = self._GetDefinedAttributes()
-    for name, value_type in defined_attributes.iteritems():
+    for name, value_type in defined_attributes.items():
       assert name in self._data, '%s.%s is not set' % (self.__class__.__name__,
                                                        name)
       value = self._data[name]
@@ -278,7 +278,7 @@ class StructuredObject(BaseSerializableObject):
         raise
 
     instance = cls()
-    for name, value_type in defined_attributes.iteritems():
+    for name, value_type in defined_attributes.items():
       if name not in data:
         setattr(instance, name, None)
         logging.warning('Assigned None to %s.%s as it is missing in %r',
@@ -326,7 +326,7 @@ class TypedDict(MutableMapping, BaseSerializableObject):
     result = {}
     if issubclass(self._value_type, BaseSerializableObject):
       # Serialize sub objects as well.
-      for key, value in self._dict.iteritems():
+      for key, value in self._dict.items():
         result[key] = value.ToSerializable()
     else:
       result.update(self._dict)
@@ -340,7 +340,7 @@ class TypedDict(MutableMapping, BaseSerializableObject):
 
     instance = cls()
     if issubclass(instance._value_type, BaseSerializableObject):
-      for key, value in data.iteritems():
+      for key, value in data.items():
         instance._dict[key] = instance._value_type.FromSerializable(value)
     else:
       instance._dict.update(data)

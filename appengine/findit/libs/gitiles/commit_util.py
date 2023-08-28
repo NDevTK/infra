@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import re
-import urlparse
+from six.moves import urllib
 
 RIETVELD_CODE_REVIEW_URL_PATTERN = re.compile(
     '^(?:Review URL|Review-Url): (?P<url>.*/(?P<change_id>\d+)).*$',
@@ -79,12 +79,12 @@ def ExtractChangeInfo(message, ref):
       match = RIETVELD_CODE_REVIEW_URL_PATTERN.match(line)
       if match:
         change_info['code_review_url'] = match.group('url')
-        change_info['host'] = urlparse.urlparse(match.group('url')).netloc
+        change_info['host'] = urllib.parse.urlparse(match.group('url')).netloc
         change_info['change_id'] = match.group('change_id')
       else:
         match = GERRIT_REVIEW_URL_PATTERN.match(line)
         if match:
-          change_info['host'] = urlparse.urlparse(match.group('url')).netloc
+          change_info['host'] = urllib.parse.urlparse(match.group('url')).netloc
 
     if not change_info['change_id']:
       match = GERRIT_CHANGE_ID_PATTERN.match(line)
@@ -127,7 +127,7 @@ def GetRevertedRevision(message):
 
 # TODO(katesonia): Deprecate this copy (there is a copy in min_distance
 # feature), after scorer-based classfier got depecated.
-def DistanceBetweenLineRanges((start1, end1), (start2, end2)):
+def DistanceBetweenLineRanges(range1, range2):
   """Given two ranges, compute the (unsigned) distance between them.
 
   Args:
@@ -143,6 +143,8 @@ def DistanceBetweenLineRanges((start1, end1), (start2, end2)):
     range, then the difference between those points. Otherwise, returns
     zero (because the ranges overlap).
   """
+  (start1, end1) = range1
+  (start2, end2) = range2
   if end1 < start1:
     raise ValueError('the first range is empty: %d < %d' % (end1, start1))
   if end2 < start2:

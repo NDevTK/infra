@@ -25,10 +25,10 @@ class MetaDictTest(unittest.TestCase):
     d = {'a': 1, 'b': 2, 'c': 3}
     meta_dict = MetaDict(d)
     self.assertListEqual(list(key for key in meta_dict), list(key for key in d))
-    self.assertListEqual(list(meta_dict.iteritems()), list(d.iteritems()))
-    self.assertListEqual(list(meta_dict.itervalues()), list(d.itervalues()))
-    self.assertListEqual(meta_dict.keys(), d.keys())
-    self.assertListEqual(meta_dict.values(), d.values())
+    self.assertListEqual(list(meta_dict.items()), list(d.items()))
+    self.assertListEqual(list(meta_dict.values()), list(d.values()))
+    self.assertListEqual(list(meta_dict.keys()), list(d.keys()))
+    self.assertListEqual(list(meta_dict.values()), list(d.values()))
     self.assertEqual(MetaDict(d), MetaDict(d))
 
   def testLeavesProperty(self):

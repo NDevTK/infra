@@ -67,7 +67,7 @@ class ChromeDependencyFetcher(object):
     # Flatten the dependency tree into a one-level dict.
     def FlattenDepTree(dep):
       dependencies[dep.path] = dep
-      for child in dep.children.values():
+      for child in list(dep.children.values()):
         FlattenDepTree(child)
 
     FlattenDepTree(root_dep)
@@ -101,7 +101,7 @@ class ChromeDependencyFetcher(object):
 
     rolls = []
 
-    for path, new_dep in new_deps.iteritems():
+    for path, new_dep in new_deps.items():
       if skip_chromium_roll and path == _CHROMIUM_ROOT_DIR:
         continue
 
@@ -114,7 +114,7 @@ class ChromeDependencyFetcher(object):
             dependency.DependencyRoll(path, new_dep.repo_url, old_revision,
                                       new_dep.revision))
 
-    for path, old_dep in old_deps.iteritems():
+    for path, old_dep in old_deps.items():
       if path not in new_deps:
         rolls.append(
             dependency.DependencyRoll(path, old_dep.repo_url, old_dep.revision,

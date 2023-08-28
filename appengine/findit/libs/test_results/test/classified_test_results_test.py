@@ -81,7 +81,7 @@ class ClassifiedTestResultsTest(wf_testcase.WaterfallTestCase):
     test_result_object = ClassifiedTestResults.FromDict(test_result_dict)
     self.assertEqual(test_result_dict, test_result_object.ToDict())
     self.assertEqual(4, len(test_result_object))
-    for test_name, test_result in test_result_object.iteritems():
+    for test_name, test_result in test_result_object.items():
       self.assertEqual(test_result_dict[test_name], test_result.ToDict())
 
     self.assertEqual(test_result_dict['Unittest2.Subtest1'],

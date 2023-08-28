@@ -340,7 +340,7 @@ class ResultDBTestResultsTest(wf_testcase.WaterfallTestCase):
     }
     test_results = ResultDBTestResults(_SAMPLE_TEST_RESULTS)
     classified_results = test_results.GetClassifiedTestResults()
-    for test_name, expected_test_result in expected_statuses.iteritems():
+    for test_name, expected_test_result in expected_statuses.items():
       self.assertEqual(expected_test_result,
                        classified_results[test_name].ToDict())
 

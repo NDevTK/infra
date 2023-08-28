@@ -108,7 +108,7 @@ def ParseDEPSContent(deps_content, keys=('deps', 'deps_os')):
       'skip_child_includes': [],
       'hooks': [],
   }
-  exec deps_content in global_scope, local_scope
+  exec(deps_content, global_scope, local_scope)
 
   # We assume that the returned values have the same order of input ``keys``.
   # So we used OrderedDict to maintain the order.
@@ -120,7 +120,7 @@ def ParseDEPSContent(deps_content, keys=('deps', 'deps_os')):
     Makes sure that every entry in deps is a dep_path mapping to a url
     string.
     """
-    for dep_path, dep_content in deps.items():
+    for dep_path, dep_content in list(deps.items()):
       if not dep_content:
         continue
 
@@ -143,10 +143,10 @@ def ParseDEPSContent(deps_content, keys=('deps', 'deps_os')):
     UpdateUrlMappingInDepsDict(key_to_deps['deps'])
 
   if 'deps_os' in key_to_deps:
-    for os_deps in key_to_deps['deps_os'].itervalues():
+    for os_deps in key_to_deps['deps_os'].values():
       UpdateUrlMappingInDepsDict(os_deps)
 
-  return key_to_deps.values()
+  return list(key_to_deps.values())
 
 
 def MergeWithOsDeps(deps, deps_os, target_os_list):
@@ -169,7 +169,7 @@ def MergeWithOsDeps(deps, deps_os, target_os_list):
 
   for os in target_os_list:
     target_os_deps = deps_os.get(os, {})
-    for path, url in target_os_deps.iteritems():
+    for path, url in target_os_deps.items():
       if url is None:
         if IsAllNoneForPath(path):
           os_deps[path] = None
@@ -228,7 +228,7 @@ def UpdateDependencyTree(root_dep, target_os_list, deps_loader):
 
     return dependency.Dependency(path, repo_url, revision, root_dep.deps_file)
 
-  for path, repo_info in all_deps.iteritems():
+  for path, repo_info in all_deps.items():
     if repo_info is None:
       # The dependency is not needed for all the target os.
       continue

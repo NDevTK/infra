@@ -31,7 +31,7 @@ class MetaDict(dict, MetaObject):
   def leaves(self):
     """Gets a dict of all leaf items."""
     leaves = {}
-    for key, value in self.iteritems():
+    for key, value in self.items():
       if not hasattr(value, 'is_meta'):
         leaves[key] = value
       else:
@@ -41,7 +41,7 @@ class MetaDict(dict, MetaObject):
 
   def iterleaves(self):
     """Iterates leaf items."""
-    for key, value in self.iteritems():
+    for key, value in self.items():
       if not hasattr(value, 'is_meta'):
         yield (key, value)
       else:
@@ -50,7 +50,7 @@ class MetaDict(dict, MetaObject):
 
   def UpdateLeaves(self, leaves):
     """Update leaf nodes by a dict - ``leaves``."""
-    for key, value in self.iteritems():
+    for key, value in self.items():
       if not hasattr(value, 'is_meta'):
         if key in leaves:
           self[key] = leaves[key]
@@ -58,7 +58,7 @@ class MetaDict(dict, MetaObject):
         value.UpdateLeaves(leaves)
 
   def __eq__(self, other):
-    for key, value in self.iteritems():
+    for key, value in self.items():
       if key not in other or value != other[key]:
         return False
 

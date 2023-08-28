@@ -27,7 +27,7 @@ class SerializerTest(unittest.TestCase):
 class MockedMetaDict(MetaDict):  # pragma: no cover
 
   def __eq__(self, other):
-    for key, meta_object in self.iteritems():
+    for key, meta_object in self.items():
       if meta_object != other.get(key):
         return False
 

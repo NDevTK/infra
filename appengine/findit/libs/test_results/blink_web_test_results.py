@@ -115,7 +115,7 @@ class BlinkWebTestResults(BaseTestResults):
 
     failed_test_log = {}
     reliable_failed_tests = {}
-    for test_name, test_result in self.test_results_json['tests'].iteritems():
+    for test_name, test_result in self.test_results_json['tests'].items():
       if test_result.get('actual'):  # pragma: no branch.
         actuals = test_result['actual'].split(' ')
         expects = test_result['expected'].split(' ')
@@ -139,7 +139,7 @@ class BlinkWebTestResults(BaseTestResults):
         self.test_results_json.get('num_failures_by_type') and
         self.test_results_json.get('tests') and all(
             isinstance(i, dict) and i.get('actual') and i.get('expected')
-            for i in self.test_results_json['tests'].itervalues()))
+            for i in self.test_results_json['tests'].values()))
 
   def GetTestLocation(self, test_name):
     """Gets test location for a specific test.
@@ -202,7 +202,7 @@ class BlinkWebTestResults(BaseTestResults):
       return {}
 
     test_results = ClassifiedTestResults()
-    for test_name, test_result in self.test_results_json['tests'].iteritems():
+    for test_name, test_result in self.test_results_json['tests'].items():
       actuals = test_result['actual'].split(' ')
       expects = test_result['expected'].split(' ')
 
@@ -292,7 +292,7 @@ class BlinkWebTestResults(BaseTestResults):
     flattened = BlinkWebTestResults.FlattenTestResults(test_results_json)
     return all(
         isinstance(i, dict) and i.get('actual') and i.get('expected')
-        for i in flattened['tests'].itervalues())
+        for i in flattened['tests'].values())
 
   @staticmethod
   def _GetPathDelimiter(test_results_json):
@@ -306,7 +306,7 @@ class BlinkWebTestResults(BaseTestResults):
     if not test_results_json or not test_results_json.get('tests'):
       return test_results_json
 
-    sample_key = test_results_json['tests'].keys()[0]
+    sample_key = list(test_results_json['tests'].keys())[0]
     path_delimiter = BlinkWebTestResults._GetPathDelimiter(
         test_results_json)
     if path_delimiter in sample_key:
@@ -324,7 +324,7 @@ class BlinkWebTestResults(BaseTestResults):
     flattened = {}
 
     def flatten(tests, parent_key=''):
-      for k, v in tests.items():
+      for k, v in list(tests.items()):
         new_key = parent_key + path_delimiter + k if parent_key else k
         if isinstance(v, dict):
           if not is_a_leaf(v):
@@ -333,7 +333,7 @@ class BlinkWebTestResults(BaseTestResults):
             flattened[new_key] = v
 
     new_results = {}
-    for k, v in test_results_json.iteritems():
+    for k, v in test_results_json.items():
       if k == 'tests':
         flatten(v)
         new_results[k] = flattened
@@ -367,7 +367,7 @@ class BlinkWebTestResults(BaseTestResults):
         merged_value = shard_value + (merged_value or 0)
       elif isinstance(shard_value, dict):
         merged_value = merged_value or {}
-        for sub_key, sub_value in shard_value.iteritems():
+        for sub_key, sub_value in shard_value.items():
           merged_value[sub_key] = MergeAddable(
               sub_key, merged_value.get(sub_key), sub_value)
       else:
@@ -387,7 +387,7 @@ class BlinkWebTestResults(BaseTestResults):
           'skips', 'num_failures_by_type'
       ]
 
-      for key, value in shard_result.iteritems():
+      for key, value in shard_result.items():
         if key == 'interrupted':
           # If any shard is interrupted, mark the whole thing as interrupted.
           merged_results[key] = value or merged_results.get(key, False)

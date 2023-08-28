@@ -69,7 +69,7 @@ class GtestTestResults(BaseTestResults):
     tests_has_non_failed_runs = {}
 
     for iteration in (self.test_results_json.get('per_iteration_data') or []):
-      for test_name, test_results in iteration.iteritems():
+      for test_name, test_results in iteration.items():
         if (tests_has_non_failed_runs.get(test_name) or any(
             test['status'] in _NON_FAILURE_STATUSES for test in test_results)):
           # Ignore the test if any of the attempts didn't fail.
@@ -89,7 +89,7 @@ class GtestTestResults(BaseTestResults):
 
     for test_name in failed_test_log:
       test_logs = failed_test_log[test_name]
-      merged_test_log = '\n'.join(test_logs.itervalues())
+      merged_test_log = '\n'.join(iter(test_logs.values()))
       failed_test_log[test_name] = base64.b64encode(merged_test_log)
 
     return failed_test_log, reliable_failed_tests
@@ -159,7 +159,7 @@ class GtestTestResults(BaseTestResults):
 
     test_results = ClassifiedTestResults()
     for iteration in self.test_results_json['per_iteration_data']:
-      for test_name, runs in iteration.iteritems():
+      for test_name, runs in iteration.items():
         base_test_name = RemoveAllPrefixesFromGTestName(test_name)
         expected_status = SUCCESS if self.IsTestEnabled(
             base_test_name) else SKIPPED
@@ -221,10 +221,10 @@ class GtestTestResults(BaseTestResults):
     def MergeListsOfDicts(merged, shard):
       """Merges the ith dict in shard onto the ith dict of merged."""
       min_len = min(len(merged), len(shard))
-      for i in xrange(min_len):
+      for i in range(min_len):
         # Updates merged with data in shard.
         merged[i].update(shard[i])
-      for k in xrange(min_len, len(shard)):
+      for k in range(min_len, len(shard)):
         # If shard has a longer length, appends the rest data in shard.
         merged.append(shard[k])
 

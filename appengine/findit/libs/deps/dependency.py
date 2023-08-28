@@ -43,7 +43,7 @@ class Dependency(object):
 
   def ToDict(self):
     children_dict = {}
-    for path, child in self.children.iteritems():
+    for path, child in self.children.items():
       children_dict[path] = child.ToDict()
     return {
         'path': self.path,

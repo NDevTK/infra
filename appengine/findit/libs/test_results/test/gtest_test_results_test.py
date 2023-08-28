@@ -508,7 +508,7 @@ class GtestTestResultsTest(wf_testcase.WaterfallTestCase):
         }
     }
     result = GtestTestResults(test_results).GetClassifiedTestResults()
-    for test_name, expected_test_result in expected_result.iteritems():
+    for test_name, expected_test_result in expected_result.items():
       self.assertEqual(expected_test_result, result[test_name].ToDict())
 
   def testcontains_all_tests(self):

@@ -90,12 +90,12 @@ EXPECTED_CHANGE_LOG_JSON = {
     'author': {
         'name': 'test1@chromium.org',
         'email': 'test1@chromium.org',
-        'time': datetime(2014, 06, 11, 23, 35, 32),
+        'time': datetime(2014, 6, 11, 23, 35, 32),
     },
     'committer': {
         'name': 'test1@chromium.org',
         'email': 'test1@chromium.org',
-        'time': datetime(2014, 06, 11, 19, 35, 32),
+        'time': datetime(2014, 6, 11, 19, 35, 32),
     },
     'message':
         COMMIT_MESSAGE,
@@ -210,59 +210,51 @@ EXPECTED_FILE_BLAME_JSON = {
     'regions': [{
         'count': 6,
         'author_email': u'test2@chromium.org',
-        'author_time': datetime(2013, 02, 11, 20, 18, 51),
+        'author_time': datetime(2013, 2, 11, 20, 18, 51),
         'author_name': u'test2@chromium.org',
         'start': 1,
         'revision': u'584ae1f26b070150f65a03dba75fc8af6b6f6ece'
     }, {
         'count': 1,
         'author_email': u'test3@chromium.org',
-        'author_time': datetime(2014, 02, 06, 06, 02, 10),
+        'author_time': datetime(2014, 2, 6, 6, 2, 10),
         'author_name': u'test3@chromium.org',
         'start': 7,
         'revision': u'030b5d9bb7d6c9f673cd8f0c86d8f1e921de7076'
     }, {
         'count': 1,
         'author_email': u'test2@chromium.org',
-        'author_time': datetime(2013, 02, 11, 20, 18, 51),
+        'author_time': datetime(2013, 2, 11, 20, 18, 51),
         'author_name': u'test2@chromium.org',
         'start': 8,
         'revision': u'584ae1f26b070150f65a03dba75fc8af6b6f6ece'
     }],
-    'path':
-        'a/b/c.cc',
-    'revision':
-        'dummy_abcd1234'
+    'path': 'a/b/c.cc',
+    'revision': 'dummy_abcd1234'
 }
 
 DUMMY_CHANGELOG_JSON = {
     'author': {
         'name': 'test@chromium.org',
         'email': 'test1@chromium.org',
-        'time': datetime(2016, 01, 11, 23, 35, 32),
+        'time': datetime(2016, 1, 11, 23, 35, 32),
     },
     'committer': {
         'name': 'test1@chromium.org',
         'email': 'test@chromium.org',
-        'time': datetime(2016, 01, 11, 19, 35, 32),
+        'time': datetime(2016, 1, 11, 19, 35, 32),
     },
-    'message':
-        'dummy',
-    'commit_position':
-        175976,
+    'message': 'dummy',
+    'commit_position': 175976,
     'touched_files': [{
         'change_type': 'add',
         'new_path': 'Source/devtools/added_file.js',
         'old_path': '/dev/null'
     }],
-    'commit_url':
-        'https://repo.test/+/bcfd',
-    'code_review_url':
-        'https://codereview.chromium.org/328113005',
-    'revision':
-        'bcfd',
-    'reverted_revision':
-        None
+    'commit_url': 'https://repo.test/+/bcfd',
+    'code_review_url': 'https://codereview.chromium.org/328113005',
+    'revision': 'bcfd',
+    'reverted_revision': None
 }
 
 

@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from six.moves import urllib
 import time
-import urllib
 
 from libs.http.interceptor import LoggingInterceptor
 
@@ -77,7 +77,7 @@ class RetryHttpClient(object):
              retry_backoff=1.5,
              headers=None):
     if params and method == 'GET':
-      url = '%s?%s' % (url, urllib.urlencode(params))
+      url = '%s?%s' % (url, urllib.parse.urlencode(params))
 
     if self.interceptor:
       request = {'url': url, 'headers': headers or {}}

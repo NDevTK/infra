@@ -11,6 +11,7 @@
 
 import functools
 import os
+import six
 import sys
 import traceback
 
@@ -42,6 +43,6 @@ def EnhanceMessage(func):
       new_message = '%s:%s %s $$ %s' % (file_path, line_num, function_name,
                                         e.message)
       # Re-raise the exception with the new message but the old traceback.
-      raise exc_type, exc_type(new_message), exc_tb
+      six.reraise(exc_type, exc_type(new_message), exc_tb)
 
   return Wrapped

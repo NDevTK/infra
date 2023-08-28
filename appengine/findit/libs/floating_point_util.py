@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """Utility functions for processing floating point operations."""
 
+from __future__ import division
+
 ABSOLUTE_TOLERANCE = 0.000001
 
 

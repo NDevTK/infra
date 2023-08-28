@@ -74,12 +74,12 @@ class ClassifiedTestResults(defaultdict):
   @classmethod
   def FromDict(cls, info):
     instance = cls()
-    for key, value in info.iteritems():
+    for key, value in info.items():
       instance[key] = _ClassifiedTestResult.FromDict(value)
     return instance
 
   def ToDict(self):
     data_dict = {}
-    for key, value in self.iteritems():
+    for key, value in self.items():
       data_dict[key] = value.ToDict()
     return data_dict

@@ -5,6 +5,7 @@
 
 import base64
 import logging
+import six
 
 from collections import defaultdict
 from common.findit_http_client import FinditHttpClient
@@ -45,13 +46,14 @@ class ResultDBTestResults(BaseTestResults):
   def GetFailedTestsInformation(self):
     failed_test_log = {}
     reliable_failed_tests = {}
-    for test_name, result in self.test_results.items():
+    for test_name, result in list(self.test_results.items()):
       if result["reliable_failure"]:
         test_type = result["test_type"]
         # TODO(crbug.com/981066): Consider running this in parallel
-        real_logs = map(
-            lambda l: ResultDBTestResults.get_detailed_failure_log(
-                test_type, l), result["failure_logs"])
+        real_logs = [
+            ResultDBTestResults.get_detailed_failure_log(test_type, l)
+            for l in result["failure_logs"]
+        ]
         merged_test_log = '\n'.join(real_logs)
         failed_test_log[test_name] = base64.b64encode(merged_test_log)
         reliable_failed_tests[test_name] = test_name
@@ -66,7 +68,7 @@ class ResultDBTestResults(BaseTestResults):
     return not self.partial_result
 
   def test_type(self):
-    for _, result in self.test_results.items():
+    for _, result in list(self.test_results.items()):
       return result["test_type"]
     return ResultDBTestType.OTHER
 
@@ -83,7 +85,7 @@ class ResultDBTestResults(BaseTestResults):
         unknowns, notruns.
     """
     classified_results = ClassifiedTestResults()
-    for test_name, test_info in self.test_results.items():
+    for test_name, test_info in list(self.test_results.items()):
       # We don't care about the tests that were skipped on purpose
       if (test_info["num_passed"] == 0 and test_info["num_failed"] == 0 and
           test_info["num_crashed"] == 0 and test_info["num_aborted"] == 0 and
@@ -308,7 +310,7 @@ class ResultDBTestResults(BaseTestResults):
       return summary_html
     test_result_name = failure_log["name"]
     artifacts = resultdb.list_artifacts(test_result_name) or []
-    stack_trace_artifact = next(
+    stack_trace_artifact = six.next(
         (a for a in artifacts if a.artifact_id == "stack_trace"), None)
     if not stack_trace_artifact:
       return summary_html

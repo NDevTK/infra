@@ -4,7 +4,8 @@
 
 import json
 import logging
-import urlparse
+
+from six.moves.urllib.parse import urlparse
 
 _NO_RETRY_CODES = [200, 302, 401, 403, 404, 409, 501]
 _RETRIABLE_EXCEPTIONS = []
@@ -111,7 +112,7 @@ class HttpInterceptorBase(object):
     """
     host = None
     if url:
-      host = urlparse.urlparse(url).hostname
+      host = urlparse(url).hostname
     return host
 
 
@@ -127,8 +128,9 @@ class LoggingInterceptor(HttpInterceptorBase):
         'status_code') not in self.no_error_logging_statuses:
       logging.info(
           'request to %s responded with %d http status, headers %s, and content %s',  # pylint: disable=line-too-long
-          request.get('url'), response.get('status_code', 0),
-          json.dumps(response.get('headers', {}).items()),
+          request.get('url'),
+          response.get('status_code', 0),
+          json.dumps(list(response.get('headers', {}).items())),
           response.get('content', ''))
 
     # Call the base's OnResponse to keep the retry functionality.

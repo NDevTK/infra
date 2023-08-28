@@ -101,7 +101,7 @@ class MetaDictSerializer(MetaDict):
       A list of ``Element``s.
     """
     element_list = []
-    for key, serializer in self.iteritems():
+    for key, serializer in self.items():
       sub_meta_dict = meta_dict.get(key) if meta_dict else None
       element_list.extend(serializer.ToList(sub_meta_dict, default=default))
 
@@ -133,7 +133,7 @@ class MetaDictSerializer(MetaDict):
     meta_constructor = meta_constructor or (lambda x: x)
     meta_objs = {}
     index = 0
-    for key, serializer in self.iteritems():
+    for key, serializer in self.items():
       # Truncate the segment in the element list to construct
       # the ``MetaObject`` corresponding to ``key``.
       segment = element_list[index:(index + serializer.Length())]
@@ -157,7 +157,7 @@ class MetaDictSerializer(MetaDict):
       return self._length
 
     self._length = 0
-    for value in self.itervalues():
+    for value in self.values():
       self._length += value.Length()
 
     return self._length
@@ -173,7 +173,7 @@ def GetSerializer(meta_object, key=None):
   if not hasattr(meta_object, 'is_meta'):
     return Serializer()
 
-  sorted_meta = sorted(meta_object.iteritems(), key=key)
+  sorted_meta = sorted(iter(meta_object.items()), key=key)
   ordered_dict = OrderedDict((key, GetSerializer(sub_meta))
                              for key, sub_meta in sorted_meta)
 

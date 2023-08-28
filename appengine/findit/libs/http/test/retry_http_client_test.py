@@ -4,7 +4,7 @@
 
 import logging
 import mock
-import urllib
+from six.moves import urllib
 
 from testing_utils import testing
 
@@ -98,13 +98,13 @@ class HttpClientTest(testing.AppengineTestCase):
     self.assertEquals(200, status_code)
     self.assertEquals('success - GET', content)
     self.assertEquals(1, dummy_http_client.request_count)
-    target_url, query_str = urllib.splitquery(
+    target_url, query_str = urllib.parse.splitquery(
         dummy_http_client.requests[0]['url'])
     self.assertEquals(url, target_url)
     for query in query_str.split('&'):
-      name, value = urllib.splitvalue(query)
+      name, value = urllib.parse.splitvalue(query)
       self.assertIn(name, params)
-      self.assertEqual(urllib.quote(str(params[name])), value)
+      self.assertEqual(urllib.parse.quote(str(params[name])), value)
 
   def testGetBackoff(self):
     cases = [

@@ -4,7 +4,7 @@
 
 import logging
 import mock
-import urlparse
+from six.moves import urllib
 
 from testing_utils import testing
 
@@ -24,8 +24,8 @@ class DummyHttpClient(retry_http_client.RetryHttpClient):
         no_error_logging_statuses=no_error_logging_statuses)
 
   def _Get(self, url, timeout_seconds, headers=None):
-    url = urlparse.urlparse(url)
-    query = urlparse.parse_qs(url.query)
+    url = urllib.parse.urlparse(url)
+    query = urllib.parse.parse_qs(url.query)
     status_string = query.get('status', ['404'])[0]  # parse_qs returns a list.
     content = query.get('content', [''])[0]  # Ditto.
     return int(status_string), content, {}

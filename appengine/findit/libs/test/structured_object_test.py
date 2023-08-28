@@ -218,7 +218,7 @@ class SerilizableObjectTest(unittest.TestCase):
     obj_a = _ObjectA()
     obj_a.v = 3
     d['a'] = obj_a
-    for value in d.values():
+    for value in list(d.values()):
       self.assertTrue(isinstance(value, _ObjectA))
 
   def testTypedDictLen(self):

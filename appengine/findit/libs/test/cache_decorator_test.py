@@ -152,7 +152,7 @@ class GeneratorCachedTest(unittest.TestCase):
     value_list = [0, 1, 2]
     key = 'n-func'
     # Zero value won't be cached.
-    cached_keys = ['%s-%d' % (key, i) for i in xrange(len(value_list))]
+    cached_keys = ['%s-%d' % (key, i) for i in range(len(value_list))]
     cached_data = {key: value for key, value in zip(cached_keys, value_list)}
     cached_data[key] = cached_keys
 
@@ -178,7 +178,7 @@ class GeneratorCachedTest(unittest.TestCase):
         yield value
 
     key = _DummyKeyGenerator(func, [], {}, namespace='n')
-    cached_keys = ['%s-%d' % (key, i) for i in xrange(len(value_list))]
+    cached_keys = ['%s-%d' % (key, i) for i in range(len(value_list))]
     cached_data = {key: value for key, value in zip(cached_keys, value_list)}
     cached_data[key] = cached_keys
     for value, expected_value in zip(func(), value_list):
@@ -198,7 +198,7 @@ class GeneratorCachedTest(unittest.TestCase):
         yield value
 
     key = _DummyKeyGenerator(func, [], {}, namespace='n')
-    cached_keys = ['%s-%d' % (key, i) for i in xrange(len(value_list))]
+    cached_keys = ['%s-%d' % (key, i) for i in range(len(value_list))]
     cached_data = {key: value for key, value in zip(cached_keys, value_list)}
     cached_data[key] = cached_keys
     for value, expected_value in zip(func(), value_list):

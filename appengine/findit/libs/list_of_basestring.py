@@ -2,10 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from six import string_types
+
 from libs.structured_object import TypedList
 
 
 class ListOfBasestring(TypedList):
 
   # TODO(crbug.com/806361): Support generic typed lists and dicts.
-  _element_type = basestring
+  _element_type = string_types[0]
