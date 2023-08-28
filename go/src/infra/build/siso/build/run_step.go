@@ -14,6 +14,7 @@ import (
 	log "github.com/golang/glog"
 
 	"infra/build/siso/execute"
+	"infra/build/siso/experiments"
 	"infra/build/siso/o11y/clog"
 	"infra/build/siso/o11y/trace"
 	"infra/build/siso/reapi"

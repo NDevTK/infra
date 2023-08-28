@@ -18,6 +18,7 @@ import (
 
 	"infra/build/siso/execute"
 	"infra/build/siso/execute/localexec"
+	"infra/build/siso/experiments"
 	"infra/build/siso/o11y/clog"
 	"infra/build/siso/o11y/trace"
 )
