@@ -21,6 +21,9 @@ help:
 test:
 	../../test.py test appengine/predator
 
+pytest:
+	vpython3 test.py app
+
 deploy_staging:
 	gcloud app deploy --project ${PREDATOR_STAGING} ${MODULES}
 
