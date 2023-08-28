@@ -10,6 +10,7 @@ import (
 	"fmt"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/logging"
 	"google.golang.org/grpc"
 
 	vmlabpb "infra/libs/vmlab/api"
@@ -30,6 +31,7 @@ func New() (vmlabpb.InstanceApi, error) {
 type vmLeaserServiceClient interface {
 	LeaseVM(ctx context.Context, r *api.LeaseVMRequest, opts ...grpc.CallOption) (*api.LeaseVMResponse, error)
 	ReleaseVM(ctx context.Context, r *api.ReleaseVMRequest, opts ...grpc.CallOption) (*api.ReleaseVMResponse, error)
+	ListLeases(ctx context.Context, r *api.ListLeasesRequest, opts ...grpc.CallOption) (*api.ListLeasesResponse, error)
 }
 
 // envConfig returns a VM Leaser client config.
@@ -88,8 +90,26 @@ func (g *vmLeaserInstanceApi) Delete(ctx context.Context, ins *vmlabpb.VmInstanc
 	return g.releaseVM(ctx, vmLeaser.VMLeaserClient, ins)
 }
 
+// List takes a ListVmInstancesRequest and returns a list of VmInstance.
 func (g *vmLeaserInstanceApi) List(ctx context.Context, req *vmlabpb.ListVmInstancesRequest) ([]*vmlabpb.VmInstance, error) {
-	return []*vmlabpb.VmInstance{}, errors.New("not implemented")
+	vmLeaserBackend := req.GetConfig().GetVmLeaserBackend()
+	if vmLeaserBackend == nil {
+		return nil, fmt.Errorf("invalid argument: bad backend: want vm leaser, got %v", req.GetConfig())
+	}
+	if vmLeaserBackend.GetVmRequirements().GetGceProject() == "" {
+		return nil, errors.New("project must be set")
+	}
+	if req.GetTagFilters() != nil {
+		logging.Debugf(ctx, "List: tag filters are not implemented; they will be ignored.")
+	}
+
+	vmLeaser, err := client.NewClient(ctx, envConfig(req.GetConfig().GetVmLeaserBackend().GetEnv()))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create new client: %w", err)
+	}
+	defer vmLeaser.Close()
+
+	return g.listLeases(ctx, vmLeaser.VMLeaserClient, req)
 }
 
 // leaseVM calls LeaseVM using the VM Leaser service client.
@@ -114,6 +134,7 @@ func (g *vmLeaserInstanceApi) leaseVM(ctx context.Context, client vmLeaserServic
 	}, nil
 }
 
+// releaseVM calls ReleaseVM using the VM Leaser service client.
 func (g *vmLeaserInstanceApi) releaseVM(ctx context.Context, client vmLeaserServiceClient, ins *vmlabpb.VmInstance) error {
 	vmLeaserBackend := ins.GetConfig().GetVmLeaserBackend()
 	_, err := client.ReleaseVM(ctx, &api.ReleaseVMRequest{
@@ -125,4 +146,46 @@ func (g *vmLeaserInstanceApi) releaseVM(ctx context.Context, client vmLeaserServ
 		return fmt.Errorf("failed to release VM: %w", err)
 	}
 	return nil
+}
+
+// listLeases calls ListLeases using the VM Leaser service client.
+func (g *vmLeaserInstanceApi) listLeases(ctx context.Context, client vmLeaserServiceClient, req *vmlabpb.ListVmInstancesRequest) ([]*vmlabpb.VmInstance, error) {
+	vmLeaserBackend := req.GetConfig().GetVmLeaserBackend()
+	var parent string
+	parent = fmt.Sprintf("/projects/%s", vmLeaserBackend.GetVmRequirements().GetGceProject())
+	if vmLeaserBackend.GetVmRequirements().GetGceRegion() != "" {
+		parent = fmt.Sprintf("/projects/%s/zones/%s", vmLeaserBackend.GetVmRequirements().GetGceProject(), vmLeaserBackend.GetVmRequirements().GetGceRegion())
+	}
+	leases, err := client.ListLeases(ctx, &api.ListLeasesRequest{
+		Parent: parent,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to list VMs: %w", err)
+	}
+
+	ins := []*vmlabpb.VmInstance{}
+	for _, vm := range leases.GetVms() {
+		in := &vmlabpb.VmInstance{
+			Name: vm.GetId(),
+			Ssh: &vmlabpb.AddressPort{
+				Address: vm.GetAddress().GetHost(),
+				Port:    vm.GetAddress().GetPort(),
+			},
+			Config: &vmlabpb.Config{
+				Backend: &vmlabpb.Config_VmLeaserBackend_{
+					VmLeaserBackend: &vmlabpb.Config_VmLeaserBackend{
+						VmRequirements: &api.VMRequirements{
+							GceProject: vmLeaserBackend.GetVmRequirements().GetGceProject(),
+							GceRegion:  vm.GetGceRegion(),
+						},
+					},
+				},
+			},
+			GceRegion: vm.GetGceRegion(),
+		}
+		ins = append(ins, in)
+	}
+
+	logging.Debugf(ctx, "listLeases: %d leases found", len(ins))
+	return ins, nil
 }

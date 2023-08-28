@@ -7,6 +7,7 @@ package vmleaser
 import (
 	"context"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
@@ -22,8 +23,9 @@ import (
 
 // mockVMLeaserClient mocks vmLeaserServiceClient for testing.
 type mockVMLeaserClient struct {
-	leaseVM   func() (*api.LeaseVMResponse, error)
-	releaseVM func() (*api.ReleaseVMResponse, error)
+	leaseVM    func() (*api.LeaseVMResponse, error)
+	releaseVM  func() (*api.ReleaseVMResponse, error)
+	listLeases func() (*api.ListLeasesResponse, error)
 }
 
 // LeaseVM mocks the LeaseVM method of the VM Leaser Client.
@@ -34,6 +36,11 @@ func (m *mockVMLeaserClient) LeaseVM(context.Context, *api.LeaseVMRequest, ...gr
 // ReleaseVM mocks the ReleaseVM method of the VM Leaser Client.
 func (m *mockVMLeaserClient) ReleaseVM(context.Context, *api.ReleaseVMRequest, ...grpc.CallOption) (*api.ReleaseVMResponse, error) {
 	return m.releaseVM()
+}
+
+// ListLeases mocks the ListLeases method of the VM Leaser Client.
+func (m *mockVMLeaserClient) ListLeases(context.Context, *api.ListLeasesRequest, ...grpc.CallOption) (*api.ListLeasesResponse, error) {
+	return m.listLeases()
 }
 
 func TestCreate(t *testing.T) {
@@ -155,13 +162,168 @@ func TestDelete(t *testing.T) {
 }
 
 func TestList(t *testing.T) {
-	vmLeaser, err := New()
-	if err != nil {
-		t.Errorf("Error: %v", err)
-	}
+	t.Parallel()
+	ctx := context.Background()
 
-	_, err = vmLeaser.List(context.Background(), &vmlabpb.ListVmInstancesRequest{})
-	if err == nil {
-		t.Errorf("error should not be nil")
-	}
+	Convey("Test List", t, func() {
+		Convey("List - error when listing; no backend", func() {
+			vmLeaser, err := New()
+			So(err, ShouldBeNil)
+
+			ins, err := vmLeaser.List(ctx, &vmlabpb.ListVmInstancesRequest{})
+			So(ins, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "invalid argument: bad backend: want vm leaser")
+		})
+		Convey("List - error when listing; no gce project", func() {
+			vmLeaser, err := New()
+			So(err, ShouldBeNil)
+
+			cfg := vmlabpb.Config{
+				Backend: &vmlabpb.Config_VmLeaserBackend_{
+					VmLeaserBackend: &vmlabpb.Config_VmLeaserBackend{
+						Env: vmlabpb.Config_VmLeaserBackend_ENV_LOCAL,
+						VmRequirements: &api.VMRequirements{
+							GceRegion: "test-region",
+						},
+					},
+				},
+			}
+
+			ins, err := vmLeaser.List(ctx, &vmlabpb.ListVmInstancesRequest{
+				Config: &cfg,
+			})
+			So(ins, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "project must be set")
+		})
+	})
+}
+
+func TestListLeases(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	Convey("Test listLeases", t, func() {
+		Convey("listLeases - success", func() {
+			cfg := vmlabpb.Config{
+				Backend: &vmlabpb.Config_VmLeaserBackend_{
+					VmLeaserBackend: &vmlabpb.Config_VmLeaserBackend{
+						Env: vmlabpb.Config_VmLeaserBackend_ENV_LOCAL,
+						VmRequirements: &api.VMRequirements{
+							GceRegion:  "test-region",
+							GceProject: "test-project",
+						},
+					},
+				},
+			}
+
+			client := &mockVMLeaserClient{
+				listLeases: func() (*api.ListLeasesResponse, error) {
+					return &api.ListLeasesResponse{
+						Vms: []*api.VM{
+							{
+								Id: "vm-test-id",
+								Address: &api.VMAddress{
+									Host: "1.2.3.4",
+									Port: 99,
+								},
+								Type:      api.VMType_VM_TYPE_DUT,
+								GceRegion: "test-region",
+							},
+							{
+								Id: "vm-test-id-2",
+								Address: &api.VMAddress{
+									Host: "2.3.4.5",
+									Port: 99,
+								},
+								Type:      api.VMType_VM_TYPE_DUT,
+								GceRegion: "test-region",
+							},
+						},
+					}, nil
+				},
+			}
+
+			vmLeaser := &vmLeaserInstanceApi{}
+			ins, err := vmLeaser.listLeases(ctx, client, &vmlabpb.ListVmInstancesRequest{
+				Config: &cfg,
+			})
+			So(ins, ShouldResembleProto, []*vmlabpb.VmInstance{
+				{
+					Name: "vm-test-id",
+					Ssh: &vmlabpb.AddressPort{
+						Address: "1.2.3.4",
+						Port:    99,
+					},
+					Config:    &cfg,
+					GceRegion: "test-region",
+				},
+				{
+					Name: "vm-test-id-2",
+					Ssh: &vmlabpb.AddressPort{
+						Address: "2.3.4.5",
+						Port:    99,
+					},
+					Config:    &cfg,
+					GceRegion: "test-region",
+				},
+			})
+			So(err, ShouldBeNil)
+		})
+		Convey("listLeases - no results", func() {
+			cfg := vmlabpb.Config{
+				Backend: &vmlabpb.Config_VmLeaserBackend_{
+					VmLeaserBackend: &vmlabpb.Config_VmLeaserBackend{
+						Env: vmlabpb.Config_VmLeaserBackend_ENV_LOCAL,
+						VmRequirements: &api.VMRequirements{
+							GceRegion:  "test-region",
+							GceProject: "test-project",
+						},
+					},
+				},
+			}
+
+			client := &mockVMLeaserClient{
+				listLeases: func() (*api.ListLeasesResponse, error) {
+					return &api.ListLeasesResponse{
+						Vms: []*api.VM{},
+					}, nil
+				},
+			}
+
+			vmLeaser := &vmLeaserInstanceApi{}
+			ins, err := vmLeaser.listLeases(ctx, client, &vmlabpb.ListVmInstancesRequest{
+				Config: &cfg,
+			})
+			So(ins, ShouldResembleProto, []*vmlabpb.VmInstance{})
+			So(err, ShouldBeNil)
+		})
+		Convey("listLeases - error when listing", func() {
+			cfg := vmlabpb.Config{
+				Backend: &vmlabpb.Config_VmLeaserBackend_{
+					VmLeaserBackend: &vmlabpb.Config_VmLeaserBackend{
+						Env: vmlabpb.Config_VmLeaserBackend_ENV_LOCAL,
+						VmRequirements: &api.VMRequirements{
+							GceRegion:  "test-region",
+							GceProject: "test-project",
+						},
+					},
+				},
+			}
+
+			client := &mockVMLeaserClient{
+				listLeases: func() (*api.ListLeasesResponse, error) {
+					return nil, fmt.Errorf("cannot list VMs")
+				},
+			}
+
+			vmLeaser := &vmLeaserInstanceApi{}
+			ins, err := vmLeaser.listLeases(ctx, client, &vmlabpb.ListVmInstancesRequest{
+				Config: &cfg,
+			})
+			So(err, ShouldErrLike, "failed to list VMs")
+			So(ins, ShouldBeNil)
+		})
+	})
 }
