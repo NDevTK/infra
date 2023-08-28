@@ -24,6 +24,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"infra/build/siso/execute"
+	"infra/build/siso/experiments"
 	"infra/build/siso/o11y/clog"
 	"infra/build/siso/o11y/trace"
 	"infra/build/siso/reapi/digest"
@@ -176,9 +177,12 @@ func createRequest(ctx context.Context, cmd *execute.Cmd, execTimeout time.Durat
 		return nil, fmt.Errorf("invalid execution strategy %s", cmd.REProxyConfig.ExecStrategy)
 	}
 
-	// Manually override remote_local_fallback to remote.
-	// Local fallback should always use our logic, not reproxy.
-	if strategy == ppb.ExecutionStrategy_REMOTE_LOCAL_FALLBACK {
+	// Manually override remote_local_fallback to remote when falback is disabled.
+	// TODO: b/297807325 - Siso relies on Reclient metrics and monitoring at this moment.
+	// CompileErrorRatioAlert checks remote failure/local success case. So it
+	// needs to do local fallback on Reproxy side. However, all local executions
+	// need to be handled at Siso layer.
+	if experiments.Enabled("no-fallback", "") && strategy == ppb.ExecutionStrategy_REMOTE_LOCAL_FALLBACK {
 		if log.V(1) {
 			clog.Infof(ctx, "overriding reproxy REMOTE_LOCAL_FALLBACK to REMOTE")
 		}
