@@ -18,6 +18,7 @@ import (
 
 	"infra/build/siso/execute"
 	"infra/build/siso/execute/localexec"
+	"infra/build/siso/experiments"
 	"infra/build/siso/o11y/clog"
 	"infra/build/siso/o11y/trace"
 )
@@ -123,7 +124,6 @@ func (b *Builder) prepareLocalInputs(ctx context.Context, step *Step) error {
 	ctx, span := trace.NewSpan(ctx, "prepare-local-inputs")
 	defer span.Close(nil)
 	inputs := step.cmd.AllInputs()
-	span.SetAttr("inputs", len(inputs))
 	start := time.Now()
 	if log.V(1) {
 		clog.Infof(ctx, "prepare-local-inputs %d", len(inputs))

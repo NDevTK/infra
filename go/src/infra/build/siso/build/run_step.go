@@ -14,6 +14,7 @@ import (
 	log "github.com/golang/glog"
 
 	"infra/build/siso/execute"
+	"infra/build/siso/experiments"
 	"infra/build/siso/o11y/clog"
 	"infra/build/siso/o11y/trace"
 	"infra/build/siso/reapi"
@@ -228,9 +229,6 @@ func cmdOutput(ctx context.Context, result string, cmd *execute.Cmd, cmdline, ru
 		// but RBE merges stderr into stdout...
 		_, stdout = msvcutil.ParseShowIncludes(stdout)
 		_, stderr = msvcutil.ParseShowIncludes(stderr)
-	}
-	if err == nil && len(stdout) == 0 && len(stderr) == 0 {
-		return nil
 	}
 	var output string
 	if len(cmd.Outputs) > 0 {
