@@ -32,6 +32,8 @@ type Access interface {
 	CallServod(ctx context.Context, req *CallServodRequest) *CallServodResponse
 	// Commands will be run against servod on servo-host.
 	CallBluetoothPeer(ctx context.Context, req *CallBluetoothPeerRequest) *CallBluetoothPeerResponse
+	// CallTouchHostd calls API on touchostd with XMLRPC.
+	CallTouchHostd(ctx context.Context, req *CallTouchHostdRequest) *CallTouchHostdResponse
 	// CopyFileTo copies file to remote device from local.
 	CopyFileTo(ctx context.Context, req *CopyRequest) error
 	// CopyFileFrom copies file from remote device to local.

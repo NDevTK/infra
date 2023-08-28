@@ -15,6 +15,7 @@ func hmrRepairPlan() *Plan {
 			"Set state:BROKEN",
 			"Device is pingable",
 			"Device is sshable",
+			"Check HMR state with XMLRPC call GetErrors",
 			"Set state:WORKING",
 		},
 		Actions: map[string]*Action{
@@ -40,6 +41,12 @@ func hmrRepairPlan() *Plan {
 				ExecExtraArgs: []string{
 					"state:WORKING",
 				},
+			},
+			"Check HMR state with XMLRPC call GetErrors": {
+				Docs: []string{
+					"Check the state of Touchhost of HMR with XMLRPC API call GetErrors.",
+				},
+				ExecName: "check_hmr_state",
 			},
 		},
 	}

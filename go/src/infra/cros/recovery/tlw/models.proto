@@ -74,6 +74,25 @@ message CallBluetoothPeerResponse {
   bool fault = 2;
 }
 
+// CallTouchHostdRequest represents data to run command on touchhost.
+message CallTouchHostdRequest {
+  // Resource name
+  string resource = 1;
+  // Method called on service.
+  string method = 2;
+  // Arguments provided to the service.
+  repeated chromiumos.config.api.test.xmlrpc.Value args = 3;
+  // Timeout
+  google.protobuf.Duration timeout = 4;
+}
+
+// CallTouchHostdResponse represents result data from running command on
+// touchhost.
+message CallTouchHostdResponse {
+  chromiumos.config.api.test.xmlrpc.Value value = 1;
+  bool fault = 2;
+}
+
 // RunRPMActionRequest represents data to perform action on RPM outlet.
 message RunRPMActionRequest {
   // Hostname of the DUT.
