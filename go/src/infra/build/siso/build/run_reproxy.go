@@ -10,6 +10,7 @@ import (
 
 	"infra/build/siso/o11y/clog"
 	"infra/build/siso/o11y/trace"
+	ppb "infra/third_party/reclient/api/proxy"
 )
 
 func (b *Builder) runReproxy(ctx context.Context, step *Step) error {
@@ -28,6 +29,7 @@ func (b *Builder) runReproxy(ctx context.Context, step *Step) error {
 		started := time.Now()
 		clog.Infof(ctx, "step state: remote exec (via reproxy)")
 		step.setPhase(stepRemoteRun)
+		maybeDisableLocalFallback(step)
 		err := b.reproxyExec.Run(ctx, step.cmd)
 		step.setPhase(stepOutput)
 		if err == nil {
@@ -51,4 +53,15 @@ func (b *Builder) runReproxy(ctx context.Context, step *Step) error {
 		clog.Warningf(ctx, "failed to update deps: %v", err)
 	}
 	return err
+}
+
+func maybeDisableLocalFallback(step *Step) {
+	// Manually override remote_local_fallback to remote when falback is disabled.
+	// TODO: b/297807325 - Siso relies on Reclient metrics and monitoring at this moment.
+	// CompileErrorRatioAlert checks remote failure/local success case. So it
+	// needs to do local fallback on Reproxy side. However, all local executions
+	// need to be handled at Siso layer.
+	if experiments.Enabled("no-fallback", "") && step.cmd.REProxyConfig.ExecStrategy == ppb.ExecutionStrategy_REMOTE_LOCAL_FALLBACK.String() {
+		step.cmd.REProxyConfig.ExecStrategy = ppb.ExecutionStrategy_REMOTE.String()
+	}
 }
