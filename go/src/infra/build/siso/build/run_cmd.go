@@ -82,6 +82,9 @@ func (b *Builder) runCmd(ctx context.Context, step *Step, allowLocalFallback boo
 		var err error
 		if allowREProxy {
 			err = b.runReproxy(ctx, step)
+			// TODO: b/297807325 - Siso replies on Reproxy's local fallback for
+			// monitoring. So Siso shouldn't try local fallback.
+			allowLocalFallback = false
 		} else {
 			err = b.runRemote(ctx, step)
 		}
