@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -41,4 +42,4 @@ if not os.environ.get('APPLICATION_ID'):  # pragma: no branch.
 
   # This hack is because the appengine_config.py is loaded by the testing setup
   # only if it is in the root directory appengine/predator.
-  import appengine_config  # Unused Variable pylint: disable=W0612, W0403
+  from . import appengine_config  # Unused Variable pylint: disable=W0612, W0403

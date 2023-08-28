@@ -134,7 +134,7 @@ class CrashAnalysis(ndb.Model):
 
   def Update(self, update):
     updated = False
-    for key, value in update.iteritems():
+    for key, value in update.items():
       if not hasattr(self, key):
         continue
 

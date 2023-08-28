@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 import json
-import urllib
 
 from analysis.type_enums import CrashClient
 from common.model.crash_analysis import CrashAnalysis
+from six.moves.urllib.parse import quote
 from google.appengine.ext import ndb
 
 _UMA_SAMPLING_PROFILER_URL_TEMPLATE = (
@@ -115,8 +115,7 @@ class UMASamplingProfilerAnalysis(CrashAnalysis):
           }
         }
     }
-    return (_UMA_SAMPLING_PROFILER_URL_TEMPLATE
-            % urllib.quote(json.dumps(params)))
+    return (_UMA_SAMPLING_PROFILER_URL_TEMPLATE % quote(json.dumps(params)))
 
   @property
   def channel(self):
@@ -164,5 +163,5 @@ class UMASamplingProfilerAnalysis(CrashAnalysis):
         'subtree_stacks': self.subtree_stacks,
     }
     if self.startup_phase:
-        output_json['startup_phase'] = self.startup_phase
+      output_json['startup_phase'] = self.startup_phase
     return output_json

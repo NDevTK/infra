@@ -4,7 +4,6 @@
 
 import json
 import mock
-import urllib
 
 from analysis.test.uma_sampling_profiler_data_test import TEST_DATA
 from analysis.type_enums import CrashClient
@@ -12,6 +11,7 @@ from analysis.uma_sampling_profiler_data import UMASamplingProfilerData
 from common.appengine_testcase import AppengineTestCase
 from common.model.uma_sampling_profiler_analysis import (
     UMASamplingProfilerAnalysis)
+from six.moves.urllib.parse import unquote
 
 
 class UMASamplingProfilerAnalysisTest(AppengineTestCase):
@@ -121,7 +121,7 @@ class UMASamplingProfilerAnalysisTest(AppengineTestCase):
     url_base = 'https://uma.googleplex.com/p/chrome/callstacks?q='
     self.assertTrue(url.startswith(url_base))
     params_string = url[len(url_base):]
-    params_dict = json.loads(urllib.unquote(params_string))
+    params_dict = json.loads(unquote(params_string))
     expected_params = {
         'editor': {
             'displayDiff': True,

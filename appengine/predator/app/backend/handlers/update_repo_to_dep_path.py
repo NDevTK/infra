@@ -21,7 +21,7 @@ def GetRepoToDepPath(dep_fetcher):
     return None
 
   repo_to_dep_path = {}
-  for dep in deps.itervalues():
+  for dep in deps.values():
     repo_to_dep_path[dep.repo_url] = dep.path
 
   return repo_to_dep_path

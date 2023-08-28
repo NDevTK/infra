@@ -44,7 +44,7 @@ def GetComponentClassifierConfig(config, http_client=HttpClientAppengine()):
     logging.error(traceback.format_exc())
     return None
 
-  for dir_name, component in owner_mappings['dir-to-component'].items():
+  for dir_name, component in list(owner_mappings['dir-to-component'].items()):
     if component_dict.get(component) == None:
       component_dict[component]['component'] = component
       component_dict[component]['dirs'] = []
@@ -54,7 +54,7 @@ def GetComponentClassifierConfig(config, http_client=HttpClientAppengine()):
 
     component_dict[component]['dirs'].append('src/' + dir_name)
 
-  components = component_dict.values()
+  components = list(component_dict.values())
 
   component_classifier_config = {
       'component_info': components,

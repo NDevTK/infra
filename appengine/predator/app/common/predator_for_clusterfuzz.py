@@ -120,8 +120,9 @@ class PredatorForClusterfuzz(PredatorApp):
   def MessageToTryBot(self, analysis):
     """Gets log to push to try bot topic."""
     regression_ranges = []
-    dep_rolls = (analysis.dependency_rolls.itervalues()
-                 if analysis.dependency_rolls else [])
+    dep_rolls = (
+        iter(analysis.dependency_rolls.values())
+        if analysis.dependency_rolls else [])
     for dep_roll in dep_rolls:
       repository = self._get_repository(dep_roll.repo_url)
       regression_range = dep_roll.ToDict()
@@ -211,4 +212,3 @@ class PredatorForClusterfuzz(PredatorApp):
         'platform': analysis.platform,
         'job_type': analysis.job_type,
     })
-

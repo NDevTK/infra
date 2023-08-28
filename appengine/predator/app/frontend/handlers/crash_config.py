@@ -83,7 +83,7 @@ def _ValidateChromeCrashConfig(chrome_crash_config):
   if not isinstance(supported_platform_list_by_channel, dict):
     return False
 
-  for channel, platform_list in supported_platform_list_by_channel.iteritems():
+  for channel, platform_list in supported_platform_list_by_channel.items():
     if not isinstance(channel, basestring):
       return False
     if not _IsListOfStrings(platform_list):
@@ -373,8 +373,8 @@ def _ConfigurationDictIsValid(configuration_dict):
   if not isinstance(configuration_dict, dict):
     return False
 
-  for configurable_property, validation_function in (
-      _CONFIG_VALIDATION_FUNCTIONS.iteritems()):
+  for configurable_property, validation_function in (iter(
+      _CONFIG_VALIDATION_FUNCTIONS.items())):
     if configurable_property not in configuration_dict:
       return False
 

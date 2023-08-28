@@ -62,8 +62,8 @@ class UpdateInvertedIndex(BaseHandler):
 
   def HandleGet(self):
     """Updates all inverted index for all crashes in last day."""
-    for crash_analysis_model, inverted_index_model in (
-        CRASH_ANALYSIS_TO_INVERTED_INDEX.iteritems()):
+    for crash_analysis_model, inverted_index_model in (iter(
+        CRASH_ANALYSIS_TO_INVERTED_INDEX.items())):
 
       today = time_util.GetUTCNow()
       yesterday = today - timedelta(days=1)

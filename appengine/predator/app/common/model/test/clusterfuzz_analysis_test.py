@@ -169,11 +169,12 @@ class ClusterfuzzAnalysisTest(AppengineTestCase):
         'src/v8': DependencyRoll('src/v8', 'https://repo/v8', 'rev3', 'rev4')
     }
 
-    dependency_rolls_json = [
-        {'dep_path': dep.path, 'repo_url': dep.repo_url,
-         'old_revision': dep.old_revision, 'new_revision': dep.new_revision}
-        for dep in analysis.dependency_rolls.itervalues()
-    ]
+    dependency_rolls_json = [{
+        'dep_path': dep.path,
+        'repo_url': dep.repo_url,
+        'old_revision': dep.old_revision,
+        'new_revision': dep.new_revision
+    } for dep in analysis.dependency_rolls.values()]
     expected_json = {
         'regression_range': None,
         'dependencies': None,

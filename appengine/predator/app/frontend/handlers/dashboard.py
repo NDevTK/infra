@@ -46,7 +46,7 @@ class DashBoard(BaseHandler):
         self.crash_analysis_cls.requested_time >= start_date,
         self.crash_analysis_cls.requested_time < end_date)
 
-    for equal_filter, converter in self.property_to_value_converter.iteritems():
+    for equal_filter, converter in self.property_to_value_converter.items():
       if not self.request.values.get(equal_filter):
         continue
 

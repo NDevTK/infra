@@ -58,8 +58,8 @@ class CrashAnalysisTest(AppengineTestCase):
   def testCrashAnalysisDurationWhenStartTimeNotSet(self):
     analysis = CrashAnalysis()
     analysis.status = analysis_status.COMPLETED
-    analysis.started_time = datetime(2015, 07, 30, 21, 15, 30, 40)
-    analysis.completed_time = datetime(2015, 07, 30, 21, 16, 15, 50)
+    analysis.started_time = datetime(2015, 7, 30, 21, 15, 30, 40)
+    analysis.completed_time = datetime(2015, 7, 30, 21, 16, 15, 50)
     self.assertEqual(45, analysis.duration)
 
   def testCrashAnalysisStatusIsFailed(self):

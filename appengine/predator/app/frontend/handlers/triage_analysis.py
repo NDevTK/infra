@@ -21,7 +21,7 @@ def _UpdateAnalysis(key, user_name, update_data):
 
   result_property = None
   status = None
-  for key, value in update_data.iteritems():
+  for key, value in update_data.items():
     if 'triage_status' in key:
       result_property = key.replace('_triage_status', '')
       status = value

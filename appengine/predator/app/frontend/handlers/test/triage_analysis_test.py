@@ -10,7 +10,7 @@ from datetime import time
 from datetime import timedelta
 from flask import Flask
 import json
-from urllib import quote
+from six.moves.urllib.parse import quote
 
 from google.appengine.api import users
 
@@ -95,7 +95,7 @@ class TriageAnalysisTest(AppengineTestCase):
       self.test_app.post('/triage-analysis?key=%s' % self.key.urlsafe(),
                          {'update-data': json.dumps(update)})
       analysis = self.key.get()
-      for key, value in update.iteritems():
+      for key, value in update.items():
         self.assertEqual(getattr(analysis, key), value)
 
   def testUpdateNote(self):

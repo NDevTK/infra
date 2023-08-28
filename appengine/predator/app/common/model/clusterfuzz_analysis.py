@@ -90,21 +90,19 @@ class ClusterfuzzAnalysis(CrashAnalysis):
 
     customized_data = copy.deepcopy(self.customized_data)
     if self.dependencies:
-      customized_data['dependencies'] = [
-          {'dep_path': dep.path,
-           'repo_url': dep.repo_url,
-           'revision': dep.revision}
-          for dep in self.dependencies.itervalues()
-      ]
+      customized_data['dependencies'] = [{
+          'dep_path': dep.path,
+          'repo_url': dep.repo_url,
+          'revision': dep.revision
+      } for dep in self.dependencies.values()]
 
     if self.dependency_rolls:
-      customized_data['dependency_rolls'] = [
-          {'dep_path': dep.path,
-           'repo_url': dep.repo_url,
-           'old_revision': dep.old_revision,
-           'new_revision': dep.new_revision}
-          for dep in self.dependency_rolls.itervalues()
-      ]
+      customized_data['dependency_rolls'] = [{
+          'dep_path': dep.path,
+          'repo_url': dep.repo_url,
+          'old_revision': dep.old_revision,
+          'new_revision': dep.new_revision
+      } for dep in self.dependency_rolls.values()]
 
     crash_json['customized_data'] = customized_data
     return crash_json

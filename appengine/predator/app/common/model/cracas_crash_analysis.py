@@ -4,8 +4,8 @@
 
 import json
 import logging
-import urllib
 
+from six.moves.urllib import parse
 from google.appengine.ext import ndb
 
 from analysis.type_enums import CrashClient
@@ -36,8 +36,9 @@ class CracasCrashAnalysis(ChromeCrashAnalysis):
              'magic_signature_1.name=\'%s\' AND '
              'custom_data.ChromeCrashProto.channel=\'%s\'') % (
                  product_name, self.signature, self.channel)
-    return _CRACAS_BASE_URL + '?' + urllib.urlencode(
-        {'q': query}).replace('+', '%20')
+    return _CRACAS_BASE_URL + '?' + parse.urlencode({
+        'q': query
+    }).replace('+', '%20')
 
   def ToJson(self):
     """Converts the crash analysis to a json message for rerun."""

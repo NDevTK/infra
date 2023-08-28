@@ -4,6 +4,7 @@
 
 import json
 import logging
+import six
 import traceback
 
 from google.appengine.ext import ndb
@@ -53,9 +54,9 @@ def PredatorForClientID(client_id, get_repository, config): # pragma: no cover
   previous PredatorApp object was constructed. In the future we should fix all
   this to serialize PredatorApp objects in a more robust way.
   """
-  assert isinstance(client_id, (str, unicode)), (
-      'PredatorForClientID: expected string or unicode, but got %s'
-      % client_id.__class__.__name__)
+  assert isinstance(client_id, six.string_types), (
+      'PredatorForClientID: expected string or unicode, but got %s' %
+      client_id.__class__.__name__)
   # TODO(wrengr): it'd be nice to replace this with a single lookup in
   # a dict; but that's buggy for some unknown reason.
   if client_id == CrashClient.FRACAS:
@@ -178,7 +179,7 @@ class CrashAnalysisPipeline(CrashBasePipeline):
     analysis.completed_time = time_util.GetUTCNow()
     # Update model's status to say we're done, and save the results.
     analysis.result = result
-    for tag_name, tag_value in tags.iteritems():
+    for tag_name, tag_value in tags.items():
       # TODO(http://crbug.com/602702): make it possible to add arbitrary tags.
       # TODO(http://crbug.com/659346): we misplaced the coverage test;
       # find it!
