@@ -3122,6 +3122,20 @@ wheel: <
 
 * *universal*
 
+## **google-cloud-monitoring-py3**
+
+### 1.1.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-cloud-monitoring-py3"
+  version: "version:1.1.2"
+>
+```
+
+
+* *universal*
+
 ## **google-cloud-ndb-py3**
 
 ### 2.1.1
@@ -3308,6 +3322,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/google-cloud-trace-py2_py3"
   version: "version:0.16.0"
+>
+```
+
+
+* *universal*
+
+## **google-cloud-trace-py3**
+
+### 0.24.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-cloud-trace-py3"
+  version: "version:0.24.2"
 >
 ```
 

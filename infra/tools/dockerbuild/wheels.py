@@ -1258,6 +1258,7 @@ SPECS.update({
         UniversalSource('glob2', '0.7'),
         UniversalSource('google-cloud-monitoring', '2.9.1'),
         UniversalSource('google-cloud-trace', '0.16.0'),
+        UniversalSource('google-cloud-trace', '0.24.2', pyversions=['py3']),
         UniversalSource(
             'google_compute_engine', '2.6.2',
             pypi_name='google-compute-engine'),
@@ -1503,6 +1504,7 @@ SPECS.update({
         Universal('google-cloud-logging', '1.4.0'),
         Universal('google-cloud-logging', '3.0.0', pyversions=['py3']),
         Universal('google-cloud-monitoring', '0.28.0'),
+        Universal('google-cloud-monitoring', '1.1.2', pyversions=['py3']),
         Universal('google-cloud-ndb', '2.1.1', pyversions=['py3']),
         Universal('google-cloud-pubsub', '0.29.0'),
         Universal('google-cloud-pubsub', '2.9.0', pyversions=['py3']),
