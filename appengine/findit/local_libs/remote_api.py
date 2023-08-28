@@ -10,6 +10,7 @@ And you could use Remote API only when you are one of the project members.
 For detail on usage of Remote API, please refer to:
   https://cloud.google.com/appengine/docs/python/tools/remoteapi
 """
+from __future__ import absolute_import
 import os
 import socket
 import subprocess
@@ -18,7 +19,8 @@ import sys
 # This relative import is because We don't want ``remote_api`` to insert any
 # root directory paths in sys paths, so that it can mess up other project who
 # using this ``remote_api``, for example, Predator.
-import script_util  # pylint: disable=W0403
+from . import script_util  # pylint: disable=W0403
+
 script_util.SetAppEnginePaths()
 
 from google.appengine.api import urlfetch

@@ -198,7 +198,7 @@ class LocalGitRepositoryTest(testing.AppengineTestCase):
     expected_blame = blame.Blame('src/core/SkFont.h', 'rev')
     expected_blame.AddRegions([
         blame.Region(18, 3, 'revision_hash', 'test@google.com',
-                     'test@google.com', datetime(2013, 03, 11, 17, 13, 36))
+                     'test@google.com', datetime(2013, 3, 11, 17, 13, 36))
     ])
 
     blame_result = self.local_repo.GetBlame('src/core/SkFont.h', 'rev')

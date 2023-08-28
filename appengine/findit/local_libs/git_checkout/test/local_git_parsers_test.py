@@ -53,7 +53,7 @@ class LocalGitParsersTest(unittest.TestCase):
 
     expected_blame = Blame('src/core/SkFont.h', 'rev')
     mock_email = 'test@google.com'
-    author_time = datetime(2013, 03, 11, 17, 13, 36)
+    author_time = datetime(2013, 3, 11, 17, 13, 36)
     expected_blame.AddRegions([
         Region(18, 3, 'revision_hash', mock_email, mock_email, author_time),
         Region(29, 2, 'revision_hash', mock_email, mock_email, author_time)

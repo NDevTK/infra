@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import os
-from urlparse import urlparse
+from six.moves.urllib.parse import urlparse
 import subprocess
 import threading
 

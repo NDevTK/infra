@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """This module contains util functions that local scripts can use."""
+from __future__ import print_function
+from __future__ import absolute_import
 
 import atexit
 from datetime import datetime
@@ -9,7 +11,6 @@ import functools
 import logging
 import os
 import pickle
-import Queue
 import re
 import subprocess
 import sys
@@ -99,8 +100,8 @@ def Worker():  # pragma: no cover
     try:
       function(*args, **kwargs)
     except Exception:
-      print 'Caught exception in thread.'
-      print traceback.format_exc()
+      print('Caught exception in thread.')
+      print(traceback.format_exc())
       # Continue to process tasks in queue, in case every thread fails, the
       # main thread will be waiting forever.
       continue
@@ -124,7 +125,7 @@ def RunTasks(tasks):  # pragma: no cover
 
   global TASK_QUEUE
   if not TASK_QUEUE:
-    TASK_QUEUE = Queue.Queue()
+    TASK_QUEUE = queue.Queue()
     for index in range(MAX_THREAD_NUMBER):
       thread = threading.Thread(target=Worker, name='worker_%s' % index)
       # Set as daemon, so no join is needed.
@@ -148,7 +149,7 @@ def GetCommandOutput(command):
   # The lib is in predator/ root dir, and can be imported only when sys.path
   # gets set up.
   from libs.cache_decorator import Cached
-  from local_cache import LocalCache  # pylint: disable=W
+  from .local_cache import LocalCache  # pylint: disable=W
 
   @Cached(LocalCache(), namespace='Command-output')
   def CachedGetCommandOutput(command):
@@ -195,7 +196,7 @@ def GetFilterQuery(query,
   end_date = datetime.strptime(end_date, datetime_pattern)
 
   if property_values:
-    for cls_property, value in property_values.iteritems():
+    for cls_property, value in property_values.items():
       if isinstance(value, list):
         query = query.filter(cls_property.IN(value))
       else:
@@ -220,7 +221,7 @@ def EnsureDirExists(path):  # pragma: no cover
 def FlushResult(result, result_path, serializer=pickle,
                 print_path=False):  # pragma: no cover
   if print_path:
-    print '\nFlushing results to', result_path
+    print('\nFlushing results to', result_path)
 
   EnsureDirExists(result_path)
   with open(result_path, 'wb') as f:
