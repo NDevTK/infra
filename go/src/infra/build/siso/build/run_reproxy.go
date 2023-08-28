@@ -8,6 +8,7 @@ import (
 	"context"
 	"time"
 
+	"infra/build/siso/experiments"
 	"infra/build/siso/o11y/clog"
 	"infra/build/siso/o11y/trace"
 )
