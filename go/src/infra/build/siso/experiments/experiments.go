@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package build
+// Package experiments handles the experimental feature flags.
+package experiments
 
 import (
 	"fmt"
@@ -15,6 +16,8 @@ import (
 
 	"infra/build/siso/ui"
 )
+
+var e Experiments
 
 // experiment id -> hint for the experiment (to check more details).
 var knownExperiments = map[string]string{
@@ -44,10 +47,7 @@ type Experiments struct {
 
 const experimentEnv = "SISO_EXPERIMENTS"
 
-func (e *Experiments) init() {
-	if e.m != nil {
-		return
-	}
+func init() {
 	env := os.Getenv(experimentEnv)
 	if env == "" {
 		return
@@ -63,17 +63,16 @@ func (e *Experiments) init() {
 }
 
 // ShowOnce shows once about enabled experimental features.
-func (e *Experiments) ShowOnce() {
-	e.init()
+func ShowOnce() {
 	e.once.Do(func() {
-		s := e.String()
+		s := String()
 		if s != "" {
 			ui.Default.PrintLines(s)
 		}
 	})
 }
 
-func (e *Experiments) String() string {
+func String() string {
 	var sb strings.Builder
 	keys := make([]string, 0, len(e.m))
 	for key := range e.m {
@@ -88,24 +87,24 @@ func (e *Experiments) String() string {
 
 // Enabled returns true if experimental feature k is enabled, and
 // log error once with its hint if so.
-func (e *Experiments) Enabled(k, format string, args ...any) bool {
+func Enabled(k, format string, args ...any) bool {
 	ex, ok := e.m[k]
 	if !ok {
 		return false
 	}
 	ex.once.Do(func() {
-		ui.Default.PrintLines(fmt.Sprintf(format+" %s\n", append(args, e.Hint(k))...))
+		ui.Default.PrintLines(fmt.Sprintf(format+" %s\n", append(args, Hint(k))...))
 	})
 	return true
 }
 
 // Hint shows hint message for experimental feature k.
-func (e *Experiments) Hint(k string) string {
+func Hint(k string) string {
 	return knownExperiments[k]
 }
 
 // Suggest returns suggest message to enable experimental feature k.
-func (e *Experiments) Suggest(k string) string {
+func Suggest(k string) string {
 	hint := knownExperiments[k]
 	if hint != "" {
 		return fmt.Sprintf("need %s=%s or %s", experimentEnv, k, hint)
