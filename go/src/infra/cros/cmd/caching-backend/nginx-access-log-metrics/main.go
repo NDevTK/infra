@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -44,7 +45,7 @@ var (
 	projectID           = flag.String("project-id", "cros-lab-servers", "ID of the cloud project to upload metrics data to")
 	dataset             = flag.String("dataset", "caching_backend", "Dataset name of the BigQuery tables")
 	tableName           = flag.String("table", "access_log", "BigQuery table name")
-	inputLogFile        = flag.String("input-log-file", "/var/log/nginx/gs-cache.access.log", "Nginx access log for gs_cache")
+	inputLogFilePattern = flag.String("input-log-file-pattern", "/var/log/containers/nginx*.log", "Pattern of Nginx access log on host for gs_cache")
 	tsmonCredentialPath = flag.String("ts-mon-credentials", "", "Path to a pkcs8 json credential file")
 	tsmonEndpoint       = flag.String("ts-mon-endpoint", "", "URL (including file://, https://, pubsub://project/topic) to post monitoring metrics to")
 )
@@ -82,21 +83,30 @@ func innerMain() error {
 	// to finish flushing.
 	ctx = cancelOnSignals(ctx)
 
-	tailer, err := filetailer.New(*inputLogFile)
+	logs, err := filepath.Glob(*inputLogFilePattern)
 	if err != nil {
 		return err
 	}
-	defer tailer.Close()
-
-	go func() {
-		for tailer.Scan() {
-			if r := parseLine(tailer.Text()); r != nil {
-				r.hostname = hostname
-				uploader.QueueRecord(r)
-				reportToTsMon(r)
-			}
+	if logs == nil {
+		return fmt.Errorf("No log files matche the pattern %q", *inputLogFilePattern)
+	}
+	for _, log := range logs {
+		tailer, err := filetailer.New(log)
+		if err != nil {
+			return err
 		}
-	}()
+		defer tailer.Close()
+
+		go func() {
+			for tailer.Scan() {
+				if r := parseLine(tailer.Text()); r != nil {
+					r.hostname = hostname
+					uploader.QueueRecord(r)
+					reportToTsMon(r)
+				}
+			}
+		}()
+	}
 	<-ctx.Done()
 	return nil
 }
