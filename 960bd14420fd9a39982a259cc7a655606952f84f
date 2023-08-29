@@ -140,6 +140,24 @@
       "parentUuid": "0fd5b8be_06a8605f",
       "revId": "960bd14420fd9a39982a259cc7a655606952f84f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "08907bbb_5f29eb59",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1551857
+      },
+      "writtenOn": "2023-08-29T09:10:14Z",
+      "side": 1,
+      "message": "Hi team, updated as discussed: \n0. the test_audiojack label is already mapped from UFS `CableType`.\n1. Add a new enum in PARIS `TestbedType`\n2. Add a new mapping from UFS `CableType` to PARIS `TestbedType`.\n3. Check `TestbedType` in the chameleon repair plan, and skip if possible",
+      "parentUuid": "57561973_aa2cb393",
+      "revId": "960bd14420fd9a39982a259cc7a655606952f84f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
