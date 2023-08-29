@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7d339404_6dfa8d83",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2023-08-29T22:07:56Z",
+      "side": 1,
+      "message": "lgtm",
+      "revId": "2e255d023ba2bb864a1ad479dc3051337dd23efd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "904e9279_9e3b91a3",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/utils/formatUtils.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2023-08-29T22:07:56Z",
+      "side": 1,
+      "message": "Can you define a return type for this function? So `: string` so that it always returns a string?",
+      "revId": "2e255d023ba2bb864a1ad479dc3051337dd23efd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7fa4ef5e_8f650cca",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/utils/formatUtils.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2023-08-29T22:07:56Z",
+      "side": 1,
+      "message": "`!\u003d\u003d` ?",
+      "revId": "2e255d023ba2bb864a1ad479dc3051337dd23efd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
