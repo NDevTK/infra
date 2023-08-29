@@ -19,6 +19,8 @@ import (
 	. "go.chromium.org/luci/common/testing/assertions"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
+
+	"infra/vm_leaser/internal/constants"
 )
 
 // mockComputeInstancesClient mocks compute.NewInstancesRESTClient for testing.
@@ -460,6 +462,41 @@ func TestCheckIdempotencyKey(t *testing.T) {
 			}
 			in := checkIdempotencyKey(ctx, client, "test-project", "test-key")
 			So(in, ShouldBeNil)
+		})
+	})
+}
+
+func TestHandleLeaseVMError(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	var allZones []string
+	for _, a := range constants.AllQuotaZones {
+		allZones = append(allZones, a...)
+	}
+	Convey("Test handleLeaseVMError", t, func() {
+		Convey("handleLeaseVMError - no error; return original request", func() {
+			req := &api.LeaseVMRequest{
+				HostReqs: &api.VMRequirements{
+					GceRegion:  "test-region",
+					GceProject: "test-project",
+				},
+			}
+			newReq := handleLeaseVMError(ctx, req, nil, nil)
+			So(req, ShouldResembleProto, newReq)
+		})
+		Convey("handleLeaseVMError - QUOTA_EXCEEDED error; return request with new zone", func() {
+			req := &api.LeaseVMRequest{
+				HostReqs: &api.VMRequirements{
+					GceRegion:  "test-region",
+					GceProject: "test-project",
+				},
+			}
+			err := errors.New("QUOTA_EXCEEDED error test")
+			quotaExceededZones := map[string]bool{}
+			newReq := handleLeaseVMError(ctx, req, err, quotaExceededZones)
+			So(newReq.GetHostReqs().GetGceRegion(), ShouldNotEqual, "test-region")
+			So(newReq.GetHostReqs().GetGceRegion(), ShouldBeIn, allZones)
 		})
 	})
 }

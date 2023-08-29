@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	compute "cloud.google.com/go/compute/apiv1"
@@ -100,14 +101,17 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 
 	// Appending "vm-" to satisfy GCE regex
 	leaseID := fmt.Sprintf("vm-%s", uuid.New().String())
+	quotaExceededZones := map[string]bool{}
 	retry := 0
 	for {
 		err = createInstance(ctx, instancesClient, s.Env, leaseID, r)
 		if err == nil {
 			break
 		}
-
 		logging.Errorf(ctx, "retry #%d - error when creating instance: %s", retry, err)
+
+		r = handleLeaseVMError(ctx, r, err, quotaExceededZones)
+
 		if retry >= s.maxRetries {
 			return nil, status.Errorf(codes.Internal, "failed to create instance after %d retries: %s", s.maxRetries, err)
 		}
@@ -294,6 +298,28 @@ func createInstance(parentCtx context.Context, client computeInstancesClient, en
 
 	logging.Infof(ctx, "createInstance: instance scheduled for creation: %s", leaseID)
 	return nil
+}
+
+// handleLeaseVMError updates the LeaseVMRequest to resolve the error.
+func handleLeaseVMError(ctx context.Context, r *api.LeaseVMRequest, err error, quotaExceededZones map[string]bool) *api.LeaseVMRequest {
+	if err == nil {
+		return r
+	}
+	if strings.Contains(err.Error(), "QUOTA_EXCEEDED") {
+		logging.Debugf(ctx, "handleLeaseVMError: quota exceeded for zone %s; reselecting zone", r.HostReqs.GceRegion)
+		quotaExceededZones[r.HostReqs.GceRegion] = true
+		r.HostReqs.GceRegion = ""
+		for {
+			retryZone := zone_selector.SelectZone(ctx, r, time.Now().UnixNano())
+			logging.Debugf(ctx, "handleLeaseVMError: selected new zone %s", retryZone)
+			logging.Debugf(ctx, "handleLeaseVMError: quota exceeded in %v", quotaExceededZones)
+			if !quotaExceededZones[retryZone] {
+				r.HostReqs.GceRegion = retryZone
+				return r
+			}
+		}
+	}
+	return r
 }
 
 // deleteInstance sends an instance deletion request to the Compute Engine API.
