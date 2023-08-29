@@ -16,6 +16,108 @@
       "message": "Copied over the definitions from SQL descriptions of the metrics.",
       "revId": "070bfa19990f22aec5818a2ad8a79620096ddf76",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "710527c8_c0ce55bd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2023-08-29T19:59:34Z",
+      "side": 1,
+      "message": "lgtm, some comments. Also moving Struan to Reviewer and adding Henrique as this was his feature request.",
+      "revId": "070bfa19990f22aec5818a2ad8a79620096ddf76",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "79aa4f9a_a8e1f738",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/components/table/DataTable.tsx",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2023-08-29T19:59:34Z",
+      "side": 1,
+      "message": "What happens if there\u0027s no description?",
+      "revId": "070bfa19990f22aec5818a2ad8a79620096ddf76",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9301862b_6c03d787",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/features/resources/tests/TestMetricsTable.tsx",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2023-08-29T19:59:34Z",
+      "side": 1,
+      "message": "Maybe \"How many times a test was run, including all in-process, build-level, and attempt-level retries.\"",
+      "revId": "070bfa19990f22aec5818a2ad8a79620096ddf76",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7f1a7865_dbd09746",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/features/resources/tests/TestMetricsTable.tsx",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2023-08-29T19:59:34Z",
+      "side": 1,
+      "message": "Maybe \"How many times the test failed, counting failures that succeeded on retry\"",
+      "revId": "070bfa19990f22aec5818a2ad8a79620096ddf76",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e51cb4f7_f2f93b3d",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/features/resources/tests/TestMetricsTable.tsx",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2023-08-29T19:59:34Z",
+      "side": 1,
+      "message": "Maybe \"Average runtime for a single run of a test. Sum of average runtimes when aggregated\"",
+      "revId": "070bfa19990f22aec5818a2ad8a79620096ddf76",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5870f69f_74c148e8",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/features/resources/tests/TestMetricsTable.tsx",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2023-08-29T19:59:34Z",
+      "side": 1,
+      "message": "Maybe \"Average number of cores spent running this test\"",
+      "revId": "070bfa19990f22aec5818a2ad8a79620096ddf76",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
