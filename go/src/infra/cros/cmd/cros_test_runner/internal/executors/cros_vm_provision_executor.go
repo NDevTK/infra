@@ -135,6 +135,7 @@ func (ex *CrosVMProvisionExecutor) vmProvisionLeaseCommandExecution(
 			GceProject:               common.GceProject,
 			GceNetwork:               common.GceNetwork,
 			GceMachineType:           common.GceMachineType,
+			GceMinCpuPlatform:        common.GceMinCpuPlatform,
 			SubnetModeNetworkEnabled: true,
 			GceDiskSize:              13,
 		},
