@@ -50,6 +50,10 @@ func chameleonCheckAudioboxJackpluggerExec(ctx context.Context, info *execs.Exec
 		log.Debugf(ctx, "chameleon is not found.")
 		return errors.Reason("chameleon is not found.").Err()
 	}
+	if info.GetChromeos().GetTestbedType() != tlw.ChromeOS_TESTBED_TYPE_AUDIOJACK {
+		log.Debugf(ctx, "Not applicable to audiobox jackplugger - Skip and do nothing.")
+		return nil
+	}
 	if !info.GetChromeos().GetAudio().GetInBox() {
 		log.Debugf(ctx, "chameleon is not in AudioBox - Not Applicable to jack plugger.")
 		info.GetChromeos().GetChameleon().Audioboxjackpluggerstate = tlw.Chameleon_AUDIOBOX_JACKPLUGGER_NOT_APPLICABLE

@@ -120,6 +120,21 @@ func convertChameleonState(s ufslab.PeripheralState) tlw.Chameleon_State {
 	return tlw.Chameleon_STATE_UNSPECIFIED
 }
 
+var testBedTypes = map[ufslab.CableType]tlw.ChromeOS_TestbedType{
+	ufslab.CableType_CABLE_INVALID:     tlw.ChromeOS_TESTBED_TYPE_UNSPECIFIED,
+	ufslab.CableType_CABLE_AUDIOJACK:   tlw.ChromeOS_TESTBED_TYPE_AUDIOJACK,
+	ufslab.CableType_CABLE_USBAUDIO:    tlw.ChromeOS_TESTBED_TYPE_USBAUDIO,
+	ufslab.CableType_CABLE_USBPRINTING: tlw.ChromeOS_TESTBED_TYPE_USBPRINTING,
+	ufslab.CableType_CABLE_HDMIAUDIO:   tlw.ChromeOS_TESTBED_TYPE_HDMIAUDIO,
+}
+
+func convertTestbedTypes(s ufslab.CableType) tlw.ChromeOS_TestbedType {
+	if ns, ok := testBedTypes[s]; ok {
+		return ns
+	}
+	return tlw.ChromeOS_TESTBED_TYPE_UNSPECIFIED
+}
+
 var audioBoxJackPluggerStates = map[ufslab.Chameleon_AudioBoxJackPlugger]tlw.Chameleon_AudioBoxJackPluggerState{
 	ufslab.Chameleon_AUDIOBOX_JACKPLUGGER_WORKING:        tlw.Chameleon_AUDIOBOX_JACKPLUGGER_WORKING,
 	ufslab.Chameleon_AUDIOBOX_JACKPLUGGER_BROKEN:         tlw.Chameleon_AUDIOBOX_JACKPLUGGER_BROKEN,
