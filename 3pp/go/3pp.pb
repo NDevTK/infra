@@ -1,5 +1,11 @@
 create {
   source {
+    patch_version: "chromium1"
+  }
+}
+
+create {
+  source {
     script {
       name: "fetch.py"
       name: "prebuilt"
