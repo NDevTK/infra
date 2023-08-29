@@ -198,6 +198,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			Cbi:                 dut.GetCbi(),
 			Cbx:                 dut.GetCbx(),
 			HumanMotionRobot:    createDUTHumanMotionRobot(p, ds),
+			TestbedType:         convertTestbedTypes(p.GetCableType()),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),

@@ -629,6 +629,20 @@ message ChromeOS {
 
   // Human Motion Robot info.
   HumanMotionRobot human_motion_robot = 26;
+
+  // TestbedType is used as test dependency - as the specific testbed required for certain e2e tests.
+  enum TestbedType {
+    TESTBED_TYPE_UNSPECIFIED = 0;
+    // Testbed with specific setup to test 3.5mm Audio jack on DUT, including plug/unplug detection.
+    TESTBED_TYPE_AUDIOJACK = 1;
+    // Testbed with specific setup to test USB audio peripherals on DUT.
+    TESTBED_TYPE_USBAUDIO = 2;
+    // Testbed with specific setup to test USB printer on DUT.
+    TESTBED_TYPE_USBPRINTING = 3;
+    // Testbed with specific setup to test HDMI peripherals on DUT.
+    TESTBED_TYPE_HDMIAUDIO = 4;
+  }
+  TestbedType testbed_type = 28;
 }
 
 // Android specific DUT details
