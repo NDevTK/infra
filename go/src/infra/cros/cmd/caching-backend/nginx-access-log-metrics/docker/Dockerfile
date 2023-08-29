@@ -13,6 +13,5 @@ WORKDIR /
 # The binary is built on the host. Copy it into the image.
 COPY nginx-access-log-metrics .
 
-# The binary need to read logs mounted from host which is owned by root.
-USER root
+USER nobody
 ENTRYPOINT ["./nginx-access-log-metrics"]
