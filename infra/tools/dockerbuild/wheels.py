@@ -576,6 +576,8 @@ SPECS.update({
         SourceOrPrebuilt(
             'grpcio', '1.54.2', pyversions=['py3'], env_cb=_GrpcEnv),
         SourceOrPrebuilt(
+            'grpcio', '1.57.0', pyversions=['py3'], env_cb=_GrpcEnv),
+        SourceOrPrebuilt(
             'grpcio-tools',
             '1.32.0',
             skip_plat=[
@@ -1259,6 +1261,7 @@ SPECS.update({
         UniversalSource('google-cloud-monitoring', '2.9.1'),
         UniversalSource('google-cloud-trace', '0.16.0'),
         UniversalSource('google-cloud-trace', '0.24.2', pyversions=['py3']),
+        UniversalSource('google-cloud-trace', '1.11.2', pyversions=['py3']),
         UniversalSource(
             'google_compute_engine', '2.6.2',
             pypi_name='google-compute-engine'),
@@ -1527,6 +1530,7 @@ SPECS.update({
         Universal('google-resumable-media', '2.3.0', pyversions=['py3']),
         Universal('googleapis-common-protos', '1.52.0'),
         Universal('grpcio-status', '1.44.0', pyversions=['py3']),
+        Universal('grpcio-status', '1.57.0', pyversions=['py3']),
         Universal('gunicorn', '20.1.0', pyversions=['py3']),
         Universal('h11', '0.13.0', pyversions=['py3']),
         Universal('h11', '0.14.0', pyversions=['py3']),
@@ -1598,7 +1602,7 @@ SPECS.update({
         Universal('opentelemetry-api', '1.18.0', pyversions=['py3']),
         Universal('opentelemetry-exporter-gcp-monitoring', '1.5.0a0',
                   pyversions=['py3']),
-        Universal('opentelemetry-exporter-google-cloud', '0.18b1',
+        Universal('opentelemetry-exporter-gcp-trace', '1.5.0',
                   pyversions=['py3']),
         Universal('opentelemetry-resourcedetector-gcp', '1.5.0a0',
                   pyversions=['py3']),
@@ -1654,6 +1658,7 @@ SPECS.update({
         Universal('protobuf', '3.20.1', pyversions=['py3']),
         Universal('protobuf', '4.21.1', pyversions=['py3']),
         Universal('protobuf', '4.21.9', pyversions=['py3']),
+        Universal('protobuf', '4.24.2', pyversions=['py3']),
         Universal('py', '1.5.3'),
         Universal('py', '1.10.0'),
         Universal('pyasn1', '0.2.3'),

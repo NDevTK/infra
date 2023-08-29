@@ -3342,6 +3342,18 @@ wheel: <
 
 * *universal*
 
+### 1.11.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-cloud-trace-py3"
+  version: "version:1.11.2"
+>
+```
+
+
+* *universal*
+
 ## **google-cloud-translate**
 
 ### 1.3.0
@@ -3721,6 +3733,31 @@ wheel: <
 * *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
+### 1.57.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/grpcio/${vpython_platform}"
+  version: "version:1.57.0"
+>
+```
+
+
+* *linux-arm64-py3.11*
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.11*
+* *linux-armv6-py3.8*
+* *mac-arm64-py3.11*
+* *mac-arm64-py3.8*
+* *mac-x64-py3.11*
+* *mac-x64-py3.8*
+* *manylinux-x64-py3.11*
+* *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
+* *windows-x64-py3.8*
+* *windows-x86-py3.11*
+* *windows-x86-py3.8*
+
 ## **grpcio-status-py3**
 
 ### 1.44.0
@@ -3729,6 +3766,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/grpcio-status-py3"
   version: "version:1.44.0"
+>
+```
+
+
+* *universal*
+
+### 1.57.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/grpcio-status-py3"
+  version: "version:1.57.0"
 >
 ```
 
@@ -5437,14 +5486,14 @@ wheel: <
 
 * *universal*
 
-## **opentelemetry-exporter-google-cloud-py3**
+## **opentelemetry-exporter-gcp-trace-py3**
 
-### 0.18b1
+### 1.5.0
 
 ```protobuf
 wheel: <
-  name: "infra/python/wheels/opentelemetry-exporter-google-cloud-py3"
-  version: "version:0.18b1"
+  name: "infra/python/wheels/opentelemetry-exporter-gcp-trace-py3"
+  version: "version:1.5.0"
 >
 ```
 
@@ -6325,6 +6374,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/protobuf-py3"
   version: "version:4.21.9"
+>
+```
+
+
+* *universal*
+
+### 4.24.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/protobuf-py3"
+  version: "version:4.24.2"
 >
 ```
 
