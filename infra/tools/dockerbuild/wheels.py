@@ -603,6 +603,7 @@ SPECS.update({
             ],
             tpp_libs=[('infra/3pp/static_libs/yajl', 'version:2@2.1.0')],
         ),
+        SourceOrPrebuilt('ijson', '3.2.3', pyversions=['py3']),
         SourceOrPrebuilt(
             'lazy-object-proxy',
             '1.3.1',
