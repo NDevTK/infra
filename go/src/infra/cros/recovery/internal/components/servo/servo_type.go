@@ -122,6 +122,38 @@ func (s *ServoType) MainDevice() string {
 	return s2
 }
 
+// ExtractComponents extracts components from the name.
+func (s *ServoType) ExtractComponents(onlyChild bool) []string {
+	s1 := strings.Split(s.str, "_with_")
+	switch len(s1) {
+	case 0:
+		return nil
+	case 1:
+		if strings.Contains(s.str, "_and_") {
+			// that is incorrect servo_type
+			return nil
+		}
+		if onlyChild {
+			return nil
+		}
+		return s1
+	}
+	s2 := strings.Split(s1[1], "_and_")
+	switch len(s2) {
+	case 1:
+		if onlyChild {
+			return []string{s1[1]}
+		}
+		return s1
+	case 2:
+		if onlyChild {
+			return s2
+		}
+		return []string{s1[0], s2[0], s2[1]}
+	}
+	return nil
+}
+
 // GetServoType finds and returns the servo type of the DUT's servo.
 func GetServoType(ctx context.Context, servod components.Servod) (*ServoType, error) {
 	res, err := servod.Get(ctx, "servo_type")

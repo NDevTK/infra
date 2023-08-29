@@ -245,6 +245,41 @@ func servoTypeRegexMatchExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// servoHasDebugHeaderExec checks if any of servo component is not ccd.
+func servoHasDebugHeaderExec(ctx context.Context, info *execs.ExecInfo) error {
+	actionMap := info.GetActionArgs(ctx)
+	hasTargetComponent := func(components []string) bool {
+		for _, c := range components {
+			if strings.HasPrefix(c, "ccd_") {
+				continue
+			}
+			return true
+		}
+		return false
+	}
+	if actionMap.AsBool(ctx, "check_info", true) {
+		if st := info.GetChromeos().GetServo().GetServodType(); st != "" {
+			components := servo.NewServoType(st).ExtractComponents(true)
+			if len(components) > 0 && hasTargetComponent(components) {
+				log.Debugf(ctx, "Servo has debug header component: found header child: %q", st)
+				return nil
+			}
+		}
+	}
+	if actionMap.AsBool(ctx, "read_servod", true) {
+		if sType, err := WrappedServoType(ctx, info); err != nil {
+			return errors.Annotate(err, "servo verify servo ccd").Err()
+		} else {
+			components := sType.ExtractComponents(true)
+			if len(components) > 0 && hasTargetComponent(components) {
+				log.Debugf(ctx, "Servo has debug header component: found header child: %q", sType.String())
+				return nil
+			}
+		}
+	}
+	return errors.Reason("servo has debug header servo: child not found").Err()
+}
+
 func init() {
 	execs.Register("is_servo_v3", servoVerifyV3Exec)
 	execs.Register("is_servo_v4", servoVerifyV4Exec)
@@ -258,4 +293,5 @@ func init() {
 	execs.Register("servo_main_device_is_gsc", mainDeviceIsGSCExec)
 	execs.Register("servo_main_device_is_ccd", mainDeviceIsCCDExec)
 	execs.Register("servo_type_regex_match", servoTypeRegexMatchExec)
+	execs.Register("servo_has_debug_header", servoHasDebugHeaderExec)
 }

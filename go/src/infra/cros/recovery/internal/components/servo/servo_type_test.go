@@ -4,6 +4,7 @@
 package servo
 
 import (
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -143,6 +144,53 @@ func TestMainDevice(t *testing.T) {
 			main := servo.MainDevice()
 			if main != tt.expected {
 				t.Errorf("%q -> expected %q, but got %q", tt.servoType, tt.expected, main)
+			}
+		})
+	}
+}
+
+var extractComponentsTestCases = []struct {
+	servoType string
+	onlyChild bool
+	expected  []string
+}{
+	{"empty", true, nil},
+	{"servo_v4_with_ccd_cr50", true, []string{"ccd_cr50"}},
+	{"servo_v4_with_c2d2_and_ccd_cr50", true, []string{"c2d2", "ccd_cr50"}},
+	{"servo_v4_with_ccd_gsc_and_c2d2", true, []string{"ccd_gsc", "c2d2"}},
+	{"servo_v4_with_servo_micro", true, []string{"servo_micro"}},
+	{"servo_v4_with_ccd_cr50_and_servo_micro", true, []string{"ccd_cr50", "servo_micro"}},
+	{"servo_v4_with_servo_micro_and_ccd_cr50", true, []string{"servo_micro", "ccd_cr50"}},
+	{"servo_v4_and_servo_micro", true, nil},
+	{"servo_v4", true, nil},
+	{"servo_v3", true, nil},
+	{"c2d2", true, nil},
+	{"servo_micro", true, nil},
+
+	{"empty", false, []string{"empty"}},
+	{"servo_v4_with_ccd_cr50", false, []string{"servo_v4", "ccd_cr50"}},
+	{"servo_v4_with_c2d2_and_ccd_cr50", false, []string{"servo_v4", "c2d2", "ccd_cr50"}},
+	{"servo_v4_with_ccd_gsc_and_c2d2", false, []string{"servo_v4", "ccd_gsc", "c2d2"}},
+	{"servo_v4_with_servo_micro", false, []string{"servo_v4", "servo_micro"}},
+	{"servo_v4_with_ccd_cr50_and_servo_micro", false, []string{"servo_v4", "ccd_cr50", "servo_micro"}},
+	{"servo_v4_with_servo_micro_and_ccd_cr50", false, []string{"servo_v4", "servo_micro", "ccd_cr50"}},
+	{"servo_v4_and_servo_micro", false, nil},
+	{"servo_v4", false, []string{"servo_v4"}},
+	{"servo_v3", false, []string{"servo_v3"}},
+	{"c2d2", false, []string{"c2d2"}},
+	{"servo_micro", false, []string{"servo_micro"}},
+}
+
+func TestExtractComponents(t *testing.T) {
+	t.Parallel()
+	for _, tt := range extractComponentsTestCases {
+		tt := tt
+		t.Run(tt.servoType, func(t *testing.T) {
+			t.Parallel()
+			servo := NewServoType(tt.servoType)
+			components := servo.ExtractComponents(tt.onlyChild)
+			if !reflect.DeepEqual(components, tt.expected) {
+				t.Errorf("%q -> expected %v, but got %v", tt.servoType, tt.expected, components)
 			}
 		})
 	}
