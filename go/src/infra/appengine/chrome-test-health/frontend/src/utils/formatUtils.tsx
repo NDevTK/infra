@@ -30,8 +30,17 @@ export function formatTime(seconds: number) {
   return result.trimStart();
 }
 
-export function formatNumber(num: number) {
-  return Number.isNaN(num) ? '-' : new Intl.NumberFormat().format(num);
+// Return '-' if not a number
+// If decimal places return a precision of exactly 2
+// All other whole numbers should be returned as is
+export function formatNumber(num: number): string {
+  if (Number.isNaN(num)) {
+    return '-';
+  }
+  if (num % 1 !== 0) {
+    return new Intl.NumberFormat('en', { maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(num);
+  }
+  return new Intl.NumberFormat().format(num);
 }
 
 export function formatDate(date : Date) {
