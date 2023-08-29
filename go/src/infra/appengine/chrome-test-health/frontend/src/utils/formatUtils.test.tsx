@@ -22,6 +22,8 @@ test.each([
   ['500', '500'],
   ['0', '0'],
   ['1', '1'],
+  ['2.2222', '2.22'],
+  ['2.2', '2.20'],
 ])('.formatNumber(%p, %p)', (num, expected) => {
   expect(formatNumber(Number(num))).toBe(expected);
 });
