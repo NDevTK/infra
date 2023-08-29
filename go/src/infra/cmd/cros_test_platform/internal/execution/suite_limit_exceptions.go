@@ -141,14 +141,14 @@ var exceptions = []suiteFilter{
 	},
 	{
 		suiteName:  "graphics_per-build",
-		expiration: time.Date(2023, time.September, 18, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "graphics_per-day",
-		expiration: time.Date(2023, time.September, 18, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
 	},
 	{
 		suiteName:  "graphics_per-week",
-		expiration: time.Date(2023, time.September, 18, 0, 0, 0, 0, time.UTC),
+		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
 	},
 }
