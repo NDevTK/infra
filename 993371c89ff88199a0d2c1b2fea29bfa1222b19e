@@ -16,6 +16,23 @@
       "message": "Hi team, this CL is updated based on our offline discussion. PTAL when you\u0027re available 😊",
       "revId": "993371c89ff88199a0d2c1b2fea29bfa1222b19e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8566d65c_93b3a377",
+        "filename": "go/src/infra/cros/recovery/internal/execs/chameleon/chameleon_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-08-29T18:59:27Z",
+      "side": 1,
+      "message": "do we want to set NO_Applicable in this case?",
+      "revId": "993371c89ff88199a0d2c1b2fea29bfa1222b19e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
