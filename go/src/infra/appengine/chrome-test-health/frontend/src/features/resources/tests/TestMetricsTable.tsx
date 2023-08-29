@@ -65,14 +65,14 @@ function TestMetricsTable() {
         });
       });
     } else {
-      const columns: [SortType, MetricType, string, (val:any) => string][] = [
-        [SortType.SORT_NUM_RUNS, MetricType.NUM_RUNS, '# Runs', formatNumber],
-        [SortType.SORT_NUM_FAILURES, MetricType.NUM_FAILURES, '# Failures', formatNumber],
-        [SortType.SORT_AVG_RUNTIME, MetricType.AVG_RUNTIME, 'Avg Runtime', formatTime],
-        [SortType.SORT_TOTAL_RUNTIME, MetricType.TOTAL_RUNTIME, 'Total Runtime', formatTime],
-        [SortType.SORT_AVG_CORES, MetricType.AVG_CORES, 'Avg Cores', formatNumber],
+      const columns: [SortType, MetricType, string, (val:any) => string, string][] = [
+        [SortType.SORT_NUM_RUNS, MetricType.NUM_RUNS, '# Runs', formatNumber, 'How many times a test was run, including all in-process, build-level, and attempt-level retries.'],
+        [SortType.SORT_NUM_FAILURES, MetricType.NUM_FAILURES, '# Failures', formatNumber, 'How many times the test failed, counting failures that succeeded on retry.'],
+        [SortType.SORT_AVG_RUNTIME, MetricType.AVG_RUNTIME, 'Avg Runtime', formatTime, 'Average runtime for a single run of a test or sum of average runtimes of tests in the file/directory.'],
+        [SortType.SORT_TOTAL_RUNTIME, MetricType.TOTAL_RUNTIME, 'Total Runtime', formatTime, 'Total time spent running this test in given period.'],
+        [SortType.SORT_AVG_CORES, MetricType.AVG_CORES, 'Avg Cores', formatNumber, 'Average number of cores spent running this test.'],
       ];
-      columns.map(([sortType, metricType, name, format]) => {
+      columns.map(([sortType, metricType, name, format, description]) => {
         cols.push({
           name: name,
           renderer: (_: Column, row: Row<Node>) => {
@@ -90,6 +90,7 @@ function TestMetricsTable() {
               api.updateSort(sortType);
             }
           },
+          description: description,
         });
       });
     }
