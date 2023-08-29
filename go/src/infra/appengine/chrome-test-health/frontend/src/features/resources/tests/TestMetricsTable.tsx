@@ -9,6 +9,10 @@ import { formatNumber, formatTime } from '../../../utils/formatUtils';
 import DataTable, { Column, PaginatorProps, Row } from '../../../components/table/DataTable';
 import { Node, TestMetricsContext } from './TestMetricsContext';
 
+export function getFormatter(metricType: MetricType) {
+  return metricType === MetricType.TOTAL_RUNTIME || metricType === MetricType.AVG_RUNTIME ? formatTime : formatNumber;
+}
+
 function TestMetricsTable() {
   const { data, lastPage, isLoading, api, params, datesToShow } = useContext(TestMetricsContext);
 
@@ -49,7 +53,8 @@ function TestMetricsTable() {
           name: date,
           renderer: (col: Column, row: Row<Node>) => {
             const node = row as Node;
-            return formatNumber(Number(node.metrics.get(col.name)?.get(params.timelineMetric)));
+            const value = Number(node.metrics.get(col.name)?.get(params.timelineMetric));
+            return getFormatter(params.timelineMetric)(value);
           },
           isSortedBy: params.sortIndex === index,
           isSortAscending: params.sortIndex === index ? params.ascending : undefined,
@@ -65,19 +70,20 @@ function TestMetricsTable() {
         });
       });
     } else {
-      const columns: [SortType, MetricType, string, (val:any) => string][] = [
-        [SortType.SORT_NUM_RUNS, MetricType.NUM_RUNS, '# Runs', formatNumber],
-        [SortType.SORT_NUM_FAILURES, MetricType.NUM_FAILURES, '# Failures', formatNumber],
-        [SortType.SORT_AVG_RUNTIME, MetricType.AVG_RUNTIME, 'Avg Runtime', formatTime],
-        [SortType.SORT_TOTAL_RUNTIME, MetricType.TOTAL_RUNTIME, 'Total Runtime', formatTime],
-        [SortType.SORT_AVG_CORES, MetricType.AVG_CORES, 'Avg Cores', formatNumber],
+      const columns: [SortType, MetricType, string][] = [
+        [SortType.SORT_NUM_RUNS, MetricType.NUM_RUNS, '# Runs'],
+        [SortType.SORT_NUM_FAILURES, MetricType.NUM_FAILURES, '# Failures'],
+        [SortType.SORT_AVG_RUNTIME, MetricType.AVG_RUNTIME, 'Avg Runtime'],
+        [SortType.SORT_TOTAL_RUNTIME, MetricType.TOTAL_RUNTIME, 'Total Runtime'],
+        [SortType.SORT_AVG_CORES, MetricType.AVG_CORES, 'Avg Cores'],
       ];
-      columns.map(([sortType, metricType, name, format]) => {
+      columns.map(([sortType, metricType, name]) => {
         cols.push({
           name: name,
           renderer: (_: Column, row: Row<Node>) => {
             const node = row as Node;
-            return format(node.metrics.get(datesToShow[0])?.get(metricType));
+            const value = Number(node.metrics.get(datesToShow[0])?.get(metricType));
+            return getFormatter(metricType)(value);
           },
           align: 'right',
           isSortedBy: params.sort == sortType,

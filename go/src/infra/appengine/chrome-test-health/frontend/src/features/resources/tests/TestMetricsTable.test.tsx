@@ -6,7 +6,7 @@ import { screen } from '@testing-library/react';
 import { MetricType } from '../../../api/resources';
 import { Node, Test } from './TestMetricsContext';
 import { renderWithContext } from './testUtils';
-import TestMetricsTable from './TestMetricsTable';
+import TestMetricsTable, { getFormatter } from './TestMetricsTable';
 
 const mockMetricTypeToNum: Map<MetricType, number> = new Map<MetricType, number>(
     [
@@ -91,4 +91,14 @@ describe('when rendering the ResourcesTable', () => {
         'hidden',
     );
   });
+});
+
+// Test getFormatter
+test.each([
+  [MetricType.TOTAL_RUNTIME, 10000, '2h 46m'],
+  [MetricType.AVG_RUNTIME, 500, '8m 20s'],
+  [MetricType.AVG_CORES, 1000, '1,000'],
+  [MetricType.NUM_FAILURES, 1, '1'],
+])('.getFormatter(%p)(%p)', (metricType, metricValue, expected) => {
+  expect(getFormatter(metricType)(metricValue)).toBe(expected);
 });
