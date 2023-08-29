@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "be861e90_14e6b0a9",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/features/resources/tests/TestMetricsTable.tsx",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2023-08-29T22:19:38Z",
+      "side": 1,
+      "message": "or",
+      "range": {
+        "startLine": 78,
+        "startChar": 118,
+        "endLine": 78,
+        "endChar": 120
+      },
+      "revId": "a11a29f566568adc1c69aedc140311cf2031566a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
