@@ -9,7 +9,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { LinearProgress, SxProps, TablePagination, TableSortLabel, Theme } from '@mui/material';
+import { LinearProgress, SxProps, TablePagination, TableSortLabel, Theme, Tooltip } from '@mui/material';
 import styles from './DataTable.module.css';
 import DataTableRow from './DataTableRow';
 
@@ -46,6 +46,7 @@ export interface Column {
   isSortAscending?: boolean,
   onClick?: () => void,
   sx?: SxProps<Theme>,
+  description?: string,
 }
 
 function columnHeader(column: Column): JSX.Element {
@@ -57,15 +58,17 @@ function columnHeader(column: Column): JSX.Element {
       align={column.align}
       sx={column.sx}
     >
-      {column.onClick ? (
-        <TableSortLabel
-          active={column.isSortedBy}
-          direction={column.isSortAscending ? 'asc' : 'desc'}
-          onClick={column.onClick}
-        >{column.name}</TableSortLabel>
-      ) : (
-        <span>{column.name}</span>
-      )}
+      <Tooltip title={column.description}>
+        {column.onClick ? (
+          <TableSortLabel
+            active={column.isSortedBy}
+            direction={column.isSortAscending ? 'asc' : 'desc'}
+            onClick={column.onClick}
+          >{column.name}</TableSortLabel>
+        ) : (
+          <span>{column.name}</span>
+        )}
+      </Tooltip>
     </TableCell>
   );
 }
