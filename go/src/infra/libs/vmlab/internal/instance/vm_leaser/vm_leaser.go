@@ -69,6 +69,7 @@ func (g *vmLeaserInstanceApi) Create(ctx context.Context, req *vmlabpb.CreateVmI
 	return g.leaseVM(ctx, vmLeaser.VMLeaserClient, req)
 }
 
+// Delete takes a VmInstance and releases the associated lease using VM Leaser.
 func (g *vmLeaserInstanceApi) Delete(ctx context.Context, ins *vmlabpb.VmInstance) error {
 	vmLeaserBackend := ins.GetConfig().GetVmLeaserBackend()
 	if vmLeaserBackend == nil {

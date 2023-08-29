@@ -150,15 +150,62 @@ func TestLeaseVM(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	vmLeaser, err := New()
-	if err != nil {
-		t.Errorf("Error: %v", err)
-	}
+	t.Parallel()
+	ctx := context.Background()
 
-	err = vmLeaser.Delete(context.Background(), &vmlabpb.VmInstance{})
-	if err == nil {
-		t.Errorf("error should not be nil")
-	}
+	Convey("Test Delete", t, func() {
+		Convey("Delete - error when deleting; no backend", func() {
+			vmLeaser, err := New()
+			So(err, ShouldBeNil)
+
+			err = vmLeaser.Delete(ctx, &vmlabpb.VmInstance{})
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "invalid argument: bad backend: want vm leaser")
+		})
+		Convey("Delete - error when deleting; no instance name", func() {
+			vmLeaser, err := New()
+			So(err, ShouldBeNil)
+
+			cfg := vmlabpb.Config{
+				Backend: &vmlabpb.Config_VmLeaserBackend_{
+					VmLeaserBackend: &vmlabpb.Config_VmLeaserBackend{
+						Env: vmlabpb.Config_VmLeaserBackend_ENV_LOCAL,
+						VmRequirements: &api.VMRequirements{
+							GceRegion: "test-region",
+						},
+					},
+				},
+			}
+
+			err = vmLeaser.Delete(ctx, &vmlabpb.VmInstance{
+				Config: &cfg,
+			})
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "instance name must be set")
+		})
+		Convey("Delete - error when deleting; no gce project", func() {
+			vmLeaser, err := New()
+			So(err, ShouldBeNil)
+
+			cfg := vmlabpb.Config{
+				Backend: &vmlabpb.Config_VmLeaserBackend_{
+					VmLeaserBackend: &vmlabpb.Config_VmLeaserBackend{
+						Env: vmlabpb.Config_VmLeaserBackend_ENV_LOCAL,
+						VmRequirements: &api.VMRequirements{
+							GceRegion: "test-region",
+						},
+					},
+				},
+			}
+
+			err = vmLeaser.Delete(ctx, &vmlabpb.VmInstance{
+				Name:   "test-name",
+				Config: &cfg,
+			})
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "project must be set")
+		})
+	})
 }
 
 func TestList(t *testing.T) {
