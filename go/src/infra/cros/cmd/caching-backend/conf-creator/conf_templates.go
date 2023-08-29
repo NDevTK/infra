@@ -56,10 +56,6 @@ events {
 http {
   include       /etc/nginx/mime.types;
   default_type  application/octet-stream;
-  log_format main '$remote_addr - $remote_user [$time_iso8601] "$request" '
-                  '$status $body_bytes_sent "$sent_http_content_length" '
-                  '$request_time "$http_referer" '
-                  '"$http_user_agent" "$http_x_forwarded_for" $upstream_cache_status';
 
   log_format main_json escape=json
   '{'
@@ -107,7 +103,7 @@ http {
     listen *:8888;
     server_name           gs-cache;
     index  index.html index.htm index.php;
-    access_log            /var/log/nginx/gs-cache.access.log main;
+    access_log            /var/log/nginx/gs-cache.access.log main_json;
     access_log            /dev/stdout main_json;
     error_log             /var/log/nginx/gs-cache.error.log;
     error_log             /dev/stdout;
