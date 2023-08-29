@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ccbc6e39_a2fa1301",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1545642
+      },
+      "writtenOn": "2023-08-29T04:02:16Z",
+      "side": 1,
+      "message": "Copied over the definitions from SQL descriptions of the metrics.",
+      "revId": "070bfa19990f22aec5818a2ad8a79620096ddf76",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
