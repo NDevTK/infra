@@ -48,7 +48,6 @@ var (
 	inputLogFilePattern = flag.String("input-log-file-pattern", "/var/log/containers/nginx*.log", "Pattern of Nginx access log on host for gs_cache")
 	tsmonCredentialPath = flag.String("ts-mon-credentials", "", "Path to a pkcs8 json credential file")
 	tsmonEndpoint       = flag.String("ts-mon-endpoint", "", "URL (including file://, https://, pubsub://project/topic) to post monitoring metrics to")
-	tsmonTaskHostname   = flag.String("ts-mon-task-hostname", "", "Name of the host on which this checker is running. (default is the hostname)")
 )
 
 func main() {
@@ -61,15 +60,9 @@ func main() {
 func innerMain() error {
 	flag.Parse()
 
-	var hostname string
-	if *tsmonTaskHostname != "" {
-		hostname = *tsmonTaskHostname
-	} else {
-		var err error
-		hostname, err = os.Hostname()
-		if err != nil {
-			return err
-		}
+	hostname, err := os.Hostname()
+	if err != nil {
+		return err
 	}
 
 	t := bquploader.TargetTable{
@@ -84,7 +77,7 @@ func innerMain() error {
 	defer uploader.Close()
 
 	ctx := context.Background()
-	setupTsMon(ctx, hostname)
+	setupTsMon(ctx)
 	defer shutdownTsMon(ctx)
 	// We set up context cancellation after tsmon setup because we want tsmon
 	// to finish flushing.
@@ -184,7 +177,7 @@ func (i *record) Save() (row map[string]bigquery.Value, insertID string, err err
 }
 
 // setupTsMon set up tsmon.
-func setupTsMon(ctx context.Context, hostname string) {
+func setupTsMon(ctx context.Context) {
 	fl := tsmon.NewFlags()
 	fl.Endpoint = *tsmonEndpoint
 	fl.Credentials = *tsmonCredentialPath
@@ -193,7 +186,6 @@ func setupTsMon(ctx context.Context, hostname string) {
 	fl.Target.TargetType = target.TaskType
 	fl.Target.TaskServiceName = "caching_backend"
 	fl.Target.TaskJobName = "nginx"
-	fl.Target.TaskHostname = hostname
 
 	if err := tsmon.InitializeFromFlags(ctx, &fl); err != nil {
 		log.Printf("Skipping tsmon setup: %s", err)
