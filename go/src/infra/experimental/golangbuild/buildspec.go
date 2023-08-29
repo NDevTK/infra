@@ -27,7 +27,6 @@ import (
 	"go.chromium.org/luci/gae/impl/cloud"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"go.chromium.org/luci/luciexe/build"
-	"go.chromium.org/luci/luciexe/build/cv"
 	sauth "go.chromium.org/luci/server/auth"
 )
 
@@ -65,12 +64,6 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 	authenticator := auth.NewAuthenticator(ctx, auth.SilentLogin, authOpts)
 
 	// Build the sourceSpec we were invoked with.
-	isDryRun := false
-	if mode, err := cv.RunMode(ctx); err == nil {
-		isDryRun = strings.HasSuffix(mode, "DRY_RUN")
-	} else if err != cv.ErrNotActive {
-		return nil, fmt.Errorf("cv.RunMode: %w", err)
-	}
 	gitilesCommit := st.Build().GetInput().GetGitilesCommit()
 	var gerritChange *bbpb.GerritChange
 	if changes := st.Build().GetInput().GetGerritChanges(); len(changes) > 1 {
@@ -115,11 +108,18 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 	// Figure out what our Go and subrepo commits are, but retain
 	// which one we were invoked with.
 	invokedSrc := &sourceSpec{
-		project:    changedProject,
-		branch:     changedBranch,
-		commit:     gitilesCommit,
-		change:     gerritChange,
-		cherryPick: !isDryRun && gerritChange != nil, // Cherry-pick change onto branch if it's not a dry run.
+		project: changedProject,
+		branch:  changedBranch,
+		commit:  gitilesCommit,
+		change:  gerritChange,
+		// TODO(mknyszek): Cherry-pick and/or rebase change(s) onto branch if it's
+		// not a dry-run. Currently all we have are dry-runs, and we need to be
+		// careful that child builds (build mode and test mode) also understand that
+		// it's a dry run. Passing that information would be complicated and hacky
+		// at present, but in the future go.chromium.org/luci/luciexe/build/cv could
+		// be extended to expose the full CV proto, which we should then pass onto
+		// child builds before changing this.
+		cherryPick: false,
 	}
 	var goSrc, subrepoSrc *sourceSpec
 	var err error
