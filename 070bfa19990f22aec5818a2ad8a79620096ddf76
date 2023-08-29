@@ -105,6 +105,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1f5ec459_3f80e465",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/features/resources/tests/TestMetricsTable.tsx",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2023-08-29T20:09:10Z",
+      "side": 1,
+      "message": "I would say \"Average runtime for a single run of a test or sum of average runtimes of tests in the file/directory\"",
+      "parentUuid": "e51cb4f7_f2f93b3d",
+      "revId": "070bfa19990f22aec5818a2ad8a79620096ddf76",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "5870f69f_74c148e8",
         "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/features/resources/tests/TestMetricsTable.tsx",
         "patchSetId": 1
@@ -116,6 +134,24 @@
       "writtenOn": "2023-08-29T19:59:34Z",
       "side": 1,
       "message": "Maybe \"Average number of cores spent running this test\"",
+      "revId": "070bfa19990f22aec5818a2ad8a79620096ddf76",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f15ed099_bf24b630",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/features/resources/tests/TestMetricsTable.tsx",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1513262
+      },
+      "writtenOn": "2023-08-29T20:09:10Z",
+      "side": 1,
+      "message": "I would just add \" or file/directory\" since this tooltip will appear on both views right?",
+      "parentUuid": "5870f69f_74c148e8",
       "revId": "070bfa19990f22aec5818a2ad8a79620096ddf76",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
