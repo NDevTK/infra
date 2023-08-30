@@ -8,13 +8,14 @@ import (
 	"fmt"
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
+	"infra/cros/satlab/common/utils/executor"
 	"infra/libs/skylab/common/heuristics"
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
 )
 
-type getDHBID = func() (string, error)
+type getDHBID = func(executor.IExecCommander) (string, error)
 
 type isRemoteAccess = func() (bool, error)
 
@@ -72,7 +73,7 @@ func preprocessHostname(common site.CommonFlags, hostname string, getDHBID getDH
 	}
 
 	// We're probably in the satlab remote access container. Get the satlab ID.
-	satlabID, err := getDHBID()
+	satlabID, err := getDHBID(&executor.ExecCommander{})
 	if err != nil {
 		// This really shouldn't happen, but is technically possible if, for example, get_host_identifier is not
 		// executable for some reason.
