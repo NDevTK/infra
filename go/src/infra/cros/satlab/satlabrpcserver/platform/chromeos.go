@@ -8,19 +8,20 @@ import (
 	"log"
 	"os/exec"
 
+	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/satlabrpcserver/utils"
 	"infra/cros/satlab/satlabrpcserver/utils/constants"
 )
 
 type Chromeos struct {
 	hostIdentifier *HostIdentifier
-	execCommander  utils.IExecCommander
+	execCommander  executor.IExecCommander
 }
 
 func NewChromeosPlatform() IPlatform {
 	return &Chromeos{
 		hostIdentifier: nil,
-		execCommander:  &utils.ExecCommander{},
+		execCommander:  &executor.ExecCommander{},
 	}
 }
 

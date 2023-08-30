@@ -9,7 +9,7 @@ import (
 	"log"
 	"os/exec"
 
-	"infra/cros/satlab/satlabrpcserver/utils"
+	"infra/cros/satlab/common/utils/executor"
 )
 
 // MultipleCommandsExecutor a executor for executing multiple commands.
@@ -27,7 +27,7 @@ type MultipleCommandsExecutor struct {
 	// res final result buffer
 	res *bytes.Buffer
 	// executor that used for executing the command
-	executor utils.IExecCommander
+	executor executor.IExecCommander
 }
 
 // New the function used for creating an `MultipleCommandsExecutor`
@@ -61,7 +61,7 @@ func New(cmds ...*exec.Cmd) *MultipleCommandsExecutor {
 		cmds:     cmds,
 		outs:     outs,
 		res:      &outBuffer,
-		executor: &utils.ExecCommander{},
+		executor: &executor.ExecCommander{},
 	}
 }
 
