@@ -32,4 +32,6 @@ type FilterStateKeeper struct {
 	// Tools and their related dependencies
 	Ctr                   *crostoolrunner.CrosToolRunner
 	DockerKeyFileLocation string
+
+	MiddleOut []*TrRequest
 }
