@@ -550,6 +550,10 @@ func compileOptOut(project string, p Port, modulePath string) bool {
 			// Dependency "github.com/lib/pq" fails to build on wasip1/wasm.
 			return optOut
 		}
+		if p == (Port{"aix", "ppc64"}) || p.GOOS == "plan9" {
+			// Dependency "github.com/apache/thrift/lib/go/thrift" fails to build on aix/ppc64 and Plan 9.
+			return optOut
+		}
 	case "vuln":
 		if p.GOOS == "plan9" {
 			// Dependency "github.com/google/go-cmdtest" fails to build on Plan 9.
