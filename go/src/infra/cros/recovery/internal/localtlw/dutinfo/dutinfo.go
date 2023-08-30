@@ -21,6 +21,11 @@ import (
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
+var (
+	trueValue  bool = true
+	falseValue bool = false
+)
+
 // ConvertDut converts USF data to local representation of Dut instance.
 func ConvertDut(data *ufspb.ChromeOSDeviceData) (dut *tlw.Dut, err error) {
 	defer func() {
@@ -198,6 +203,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			Cbi:                 dut.GetCbi(),
 			Cbx:                 dut.GetCbx(),
 			HumanMotionRobot:    createDUTHumanMotionRobot(p, ds),
+			TestbedCapability:   createTestbedCapability(p.GetCable()),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
@@ -213,6 +219,23 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		d.DutStateReason = tlw.DutStateReason(ds.GetDutStateReason())
 	}
 	return d, nil
+}
+
+func createTestbedCapability(cables []*ufslab.Cable) *tlw.TestbedCapability {
+	var testbedCapability *tlw.TestbedCapability
+	for _, c := range cables {
+		switch c.GetType() {
+		case ufslab.CableType_CABLE_AUDIOJACK:
+			testbedCapability.Audiojack = &trueValue
+		case ufslab.CableType_CABLE_USBAUDIO:
+			testbedCapability.Usbaudio = &trueValue
+		case ufslab.CableType_CABLE_USBPRINTING:
+			testbedCapability.Usbprinting = &trueValue
+		case ufslab.CableType_CABLE_HDMIAUDIO:
+			testbedCapability.Hdmiaudio = &trueValue
+		}
+	}
+	return testbedCapability
 }
 
 // createBluetoothPeerHosts use the UFS states for Bluetooth peer devices to create
