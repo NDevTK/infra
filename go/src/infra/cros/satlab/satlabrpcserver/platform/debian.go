@@ -7,18 +7,18 @@ import (
 	"context"
 	"os/exec"
 
-	"infra/cros/satlab/satlabrpcserver/utils"
+	"infra/cros/satlab/common/utils/executor"
 )
 
 type Debian struct {
 	hostIdentifier *HostIdentifier
-	execCommander  utils.IExecCommander
+	execCommander  executor.IExecCommander
 }
 
 func NewDebianPlatform() IPlatform {
 	return &Debian{
 		hostIdentifier: nil,
-		execCommander:  &utils.ExecCommander{},
+		execCommander:  &executor.ExecCommander{},
 	}
 }
 
