@@ -15,6 +15,7 @@
 # limitations under the License.
 
 """Datastore models used by the Google App Engine Pipeline API."""
+from __future__ import absolute_import
 
 from google.appengine.ext import db
 from google.appengine.ext import blobstore
@@ -25,7 +26,7 @@ except ImportError:
   import simplejson as json
 
 # Relative imports
-import util
+from . import util
 
 
 class _PipelineRecord(db.Model):
@@ -108,7 +109,7 @@ class _PipelineRecord(db.Model):
       kwargs = value.get('kwargs')
       if kwargs:
         adjusted_kwargs = {}
-        for arg_key, arg_value in kwargs.iteritems():
+        for arg_key, arg_value in kwargs.items():
           # Python only allows non-unicode strings as keyword arguments.
           adjusted_kwargs[str(arg_key)] = arg_value
         value['kwargs'] = adjusted_kwargs

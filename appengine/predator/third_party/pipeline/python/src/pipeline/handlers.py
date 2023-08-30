@@ -18,10 +18,11 @@
 
 In a separate file from the core pipeline module to break circular dependencies.
 """
+from __future__ import absolute_import
 
 
 from flask import Flask
-import pipeline
+from . import pipeline
 
 _APP = Flask(__name__)
 pipeline.create_handlers_map(_APP)

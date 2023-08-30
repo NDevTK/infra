@@ -15,6 +15,7 @@
 # limitations under the License.
 
 """Status UI for Google App Engine Pipeline API."""
+from __future__ import absolute_import
 
 import logging
 import os
@@ -29,10 +30,10 @@ except ImportError:
   import simplejson as json
 
 # Relative imports
-import util
+from . import util
 
 
-class _StatusUiHandler():
+class _StatusUiHandler(object):
   """Render the status UI."""
 
   _RESOURCE_MAP = {
@@ -69,7 +70,7 @@ class _StatusUiHandler():
   }
 
   def get(self, resource=''):
-    import pipeline  # Break circular dependency
+    from . import pipeline  # Break circular dependency
     if pipeline._ENFORCE_AUTH:
       if users.get_current_user() is None:
         logging.debug('User is not logged in')
@@ -101,7 +102,7 @@ class _StatusUiHandler():
     self.response.out.write(data or open(path, 'rb').read())
 
 
-class _BaseRpcHandler():
+class _BaseRpcHandler(object):
   """Base handler for JSON-RPC responses.
 
   Sub-classes should fill in the 'json_response' property. All exceptions will
@@ -109,7 +110,7 @@ class _BaseRpcHandler():
   """
 
   def get(self):
-    import pipeline  # Break circular dependency
+    from . import pipeline  # Break circular dependency
     if pipeline._ENFORCE_AUTH:
       if not users.is_current_user_admin():
         logging.debug('User is not admin: %r', users.get_current_user())
@@ -129,7 +130,7 @@ class _BaseRpcHandler():
     try:
       self.handle()
       output = json.dumps(self.json_response, cls=util.JsonEncoder)
-    except Exception, e:
+    except Exception as e:
       self.json_response.clear()
       self.json_response['error_class'] = e.__class__.__name__
       self.json_response['error_message'] = str(e)
@@ -149,7 +150,7 @@ class _TreeStatusHandler(_BaseRpcHandler):
   """RPC handler for getting the status of all children of root pipeline."""
 
   def handle(self):
-    import pipeline  # Break circular dependency
+    from . import pipeline  # Break circular dependency
     self.json_response.update(
         pipeline.get_status_tree(self.request.get('root_pipeline_id')))
 
@@ -158,7 +159,7 @@ class _ClassPathListHandler(_BaseRpcHandler):
   """RPC handler for getting the list of all Pipeline classes defined."""
 
   def handle(self):
-    import pipeline  # Break circular dependency
+    from . import pipeline  # Break circular dependency
     self.json_response['classPaths'] = pipeline.get_pipeline_names()
 
 
@@ -166,7 +167,7 @@ class _RootListHandler(_BaseRpcHandler):
   """RPC handler for getting the status of all root pipelines."""
 
   def handle(self):
-    import pipeline  # Break circular dependency
+    from . import pipeline  # Break circular dependency
     self.json_response.update(
         pipeline.get_root_list(
             class_path=self.request.get('class_path'),

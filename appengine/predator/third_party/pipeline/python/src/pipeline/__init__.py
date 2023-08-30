@@ -19,6 +19,9 @@
 # pylint: disable=g-bad-name
 
 
+from __future__ import absolute_import
+
+
 def _fix_path():
   """Finds the google_appengine directory and fixes Python imports to use it."""
   import os
@@ -38,12 +41,12 @@ def _fix_path():
 
 
 try:
-  from pipeline import *
-except ImportError, e:
+  from .pipeline import *
+except ImportError as e:
   import logging
   logging.warning(
       'Could not load Pipeline API. Will fix path for testing. %s: %s',
       e.__class__.__name__, str(e))
   _fix_path()
   del logging
-  from pipeline import *
+  from .pipeline import *
