@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d30c375f_a9584ab3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1551857
+      },
+      "writtenOn": "2023-08-30T08:16:12Z",
+      "side": 1,
+      "message": "Hi team, in this patch we leave UFS part untouched. PTAL when you\u0027re available 😎",
+      "revId": "6828928d303ea8f5c0d707daaf7b2de571f877bb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
