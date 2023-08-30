@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/satlab/common/paths"
+	"infra/cros/satlab/common/utils/executor"
 )
 
 // Decision is a classification of a line in a file.
@@ -33,24 +34,10 @@ const (
 // GetHostIdentifier gets the host identifier value.
 //
 // Note that this command always returns the identifier in lowercase.
-func GetDockerHostBoxIdentifier() (string, error) {
+func GetDockerHostBoxIdentifier(executor executor.IExecCommander) (string, error) {
 	fmt.Fprintf(os.Stderr, "Get host identifier: run %s\n", paths.GetHostIdentifierScript)
-	out, err := exec.Command(paths.GetHostIdentifierScript).Output()
+	out, err := executor.Exec(exec.Command(paths.GetHostIdentifierScript))
 	// Immediately normalize the satlab prefix to lowercase. It will save a lot of
 	// trouble later.
 	return strings.ToLower(TrimOutput(out)), errors.Annotate(err, "get host identifier").Err()
-}
-
-// GetServiceAccountContent gets the content of the service account.
-func GetServiceAccountContent() (string, error) {
-	args := []string{
-		paths.DockerPath,
-		"exec",
-		"drone",
-		"/bin/cat",
-		"/creds/service_accounts/skylab-drone.json",
-	}
-	fmt.Fprintf(os.Stderr, "Get drone credential: run %s\n", args)
-	out, err := exec.Command(args[0], args...).Output()
-	return TrimOutput(out), errors.Annotate(err, "get service account content").Err()
 }
