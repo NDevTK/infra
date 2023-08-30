@@ -75,6 +75,8 @@ message Swarming {
     // from the pool, and BotPrefix is the prefix used by each bot set in
     // the bot config.
     string bot_prefix = 3;
+    //UfsNamespace specifies the namespace to be used to fetch DUT information.
+    string ufs_namespace = 4;
   }
 }
 
