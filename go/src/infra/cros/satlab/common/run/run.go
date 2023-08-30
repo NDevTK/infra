@@ -221,7 +221,7 @@ func (c *Run) getDroneTarget() (string, error) {
 	if c.SatlabId != "" {
 		satlabTarget = fmt.Sprintf(c.SatlabId)
 	} else { // get id of local satlab if one is not provided
-		localSatlab, err := satlabcommands.GetDockerHostBoxIdentifier()
+		localSatlab, err := satlabcommands.NewSubCommand().GetDockerHostBoxIdentifier()
 		if err != nil {
 			return "", errors.Annotate(err, "satlab get docker host box identifier").Err()
 		}

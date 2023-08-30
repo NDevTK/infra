@@ -69,7 +69,7 @@ func (c *deleteDUT) innerRun(a subcommands.Application, positionalArgs []string,
 
 	if c.commonFlags.SatlabID == "" {
 		var err error
-		c.commonFlags.SatlabID, err = satlabcommands.GetDockerHostBoxIdentifier()
+		c.commonFlags.SatlabID, err = satlabcommands.NewSubCommand().GetDockerHostBoxIdentifier()
 		if err != nil {
 			return errors.Annotate(err, "get dut").Err()
 		}

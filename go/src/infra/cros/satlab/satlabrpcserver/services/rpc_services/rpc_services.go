@@ -36,6 +36,8 @@ type SatlabRpcServiceServer struct {
 	labelParser *utils.LabelParser
 	// cpuTemperatureOrchestrator the CPU temperature orchestrator
 	cpuTemperatureOrchestrator *cpu_temperature.CPUTemperatureOrchestrator
+	// subCommand provides system information from execute some commands
+	subCommand satlabcommands.SubCommand
 }
 
 func New(

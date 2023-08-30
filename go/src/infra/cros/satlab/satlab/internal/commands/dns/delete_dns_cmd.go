@@ -43,7 +43,7 @@ func (c *deleteDNSRun) Run(a subcommands.Application, args []string, env subcomm
 // innerRun calls underlying business logic with appropriate functions and interfaces injected
 // extra abstraction layer allows us to test `runCmdInjected` with fake implementations
 func (c *deleteDNSRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-	return c.runCmdInjected(args, satlabcommands.GetDockerHostBoxIdentifier)
+	return c.runCmdInjected(args, satlabcommands.NewSubCommand().GetDockerHostBoxIdentifier)
 }
 
 // runCmdInjected executes business logic

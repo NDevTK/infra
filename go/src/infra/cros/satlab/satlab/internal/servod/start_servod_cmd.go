@@ -85,7 +85,7 @@ func (c *startServodRun) innerRun(a subcommands.Application, args []string, env 
 	dhbSatlabID := c.commonFlags.SatlabID
 	if dhbSatlabID == "" {
 		var err error
-		dhbSatlabID, err = satlabcommands.GetDockerHostBoxIdentifier()
+		dhbSatlabID, err = satlabcommands.NewSubCommand().GetDockerHostBoxIdentifier()
 		if err != nil {
 			return err
 		}
