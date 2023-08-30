@@ -53,7 +53,7 @@ func (c *updateDNSRun) Run(a subcommands.Application, args []string, env subcomm
 
 // innerRun gathers all needed function and interface implementations and calls the business logic
 func (c *updateDNSRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-	return c.runCmdInjected(args, satlabcommands.GetDockerHostBoxIdentifier, UpdateRecord)
+	return c.runCmdInjected(args, satlabcommands.NewSubCommand().GetDockerHostBoxIdentifier, UpdateRecord)
 }
 
 // runCmdInjected executes actual logic of command

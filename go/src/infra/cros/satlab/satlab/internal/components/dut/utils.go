@@ -31,7 +31,7 @@ func getDockerHostBoxIdentifier(common site.CommonFlags) (string, error) {
 		return strings.ToLower(common.SatlabID), nil
 	}
 
-	dockerHostBoxIdentifier, err := satlabcommands.GetDockerHostBoxIdentifier()
+	dockerHostBoxIdentifier, err := satlabcommands.NewSubCommand().GetDockerHostBoxIdentifier()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to determine -satlab prefix, use %s to pass explicitly\n", common.SatlabID)
 		return "", errors.Annotate(err, "get docker host box").Err()
