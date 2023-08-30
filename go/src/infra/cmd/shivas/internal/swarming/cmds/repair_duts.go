@@ -28,6 +28,8 @@ type repairDuts struct {
 	onlyVerify    bool
 	latestVersion bool
 	deepRepair    bool
+	bbBucket      string
+	bbBuilder     string
 }
 
 // RepairDutsCmd contains repair-duts command specification
@@ -44,6 +46,9 @@ var RepairDutsCmd = &subcommands.Command{
 		c.Flags.BoolVar(&c.onlyVerify, "verify", false, "Run only verify actions.")
 		c.Flags.BoolVar(&c.latestVersion, "latest", false, "Use latest version of CIPD when scheduling. By default use prod.")
 		c.Flags.BoolVar(&c.deepRepair, "deep", false, "Use deep-repair task when scheduling a task.")
+		//TODO(macdisi): add validation for bucket and builder parameters, allowlist or otherwise
+		c.Flags.StringVar(&c.bbBucket, "bucket", "labpack_runner", "Buildbucket bucket to use.")
+		c.Flags.StringVar(&c.bbBuilder, "builder", "repair", "Buildbucket builder to use.")
 		return c
 	},
 }
@@ -73,10 +78,14 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 	if err != nil {
 		return err
 	}
+	ns, err := c.envFlags.Namespace(nil, "")
+	if err != nil {
+		return err
+	}
 	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
 	for _, host := range args {
 		host = heuristics.NormalizeBotNameToDeviceName(host)
-		taskURL, err := scheduleRepairBuilder(ctx, bc, e, host, !c.onlyVerify, c.latestVersion, c.deepRepair, sessionTag)
+		taskURL, err := scheduleRepairBuilder(ctx, bc, e, host, !c.onlyVerify, c.latestVersion, c.deepRepair, c.bbBuilder, c.bbBucket, ns, sessionTag)
 		if err != nil {
 			fmt.Fprintf(a.GetOut(), "%s: %s\n", host, err.Error())
 		} else {
@@ -88,14 +97,13 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 }
 
 // ScheduleRepairBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run repair.
-func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, host string, runRepair, latestVersion, deepRepair bool, adminSession string) (string, error) {
+func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.Environment, host string, runRepair, latestVersion, deepRepair bool, builder string, bucket string, namespace string, adminSession string) (string, error) {
 	v := buildbucket.CIPDProd
 	if latestVersion {
 		v = buildbucket.CIPDLatest
 	}
-	builderName := "repair"
 	if !runRepair {
-		builderName = "verify"
+		builder = "verify"
 	}
 	task := buildbucket.Recovery
 	if deepRepair {
@@ -104,12 +112,14 @@ func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, e site.En
 	p := &buildbucket.Params{
 		UnitName:       host,
 		TaskName:       string(task),
-		BuilderName:    builderName,
+		BuilderBucket:  bucket,
+		BuilderName:    builder,
 		EnableRecovery: runRepair,
 		AdminService:   e.AdminService,
 		// Note: UFS service is inventory service for fleet.
-		InventoryService: e.UnifiedFleetService,
-		UpdateInventory:  true,
+		InventoryService:   e.UnifiedFleetService,
+		InventoryNamespace: namespace,
+		UpdateInventory:    true,
 		// Note: Scheduled tasks are not expected custom configuration.
 		Configuration: "",
 		ExtraTags: []string{

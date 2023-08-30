@@ -21,7 +21,7 @@ func TestScheduleRepairBuilder(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	client := &fakeClient{}
-	taskURL, err := scheduleRepairBuilder(ctx, client, site.Environment{}, "fake-labstation1", true, true, true, "admin-session:bla bla")
+	taskURL, err := scheduleRepairBuilder(ctx, client, site.Environment{}, "fake-labstation1", true, true, true, "labpack", "labpack", "os", "admin-session:bla bla")
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}

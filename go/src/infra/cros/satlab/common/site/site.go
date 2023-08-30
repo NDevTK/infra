@@ -38,6 +38,10 @@ const Satlab = "satlab"
 
 const RecoveryVersionDirectory = "/home/satlab/keys/recovery_versions/"
 
+// RepairBuilderName is the var used to determine what Repair builder
+// name will be used to schedule Repair builds.
+const RepairBuilderName = "repair"
+
 const (
 	// CTPBuilderBucketEnv is the env var used to determine what bucket the
 	// ctp task should run in.
@@ -70,7 +74,7 @@ const (
 	// DefaultDeployBuilderBucket is the bb bucket to specify if
 	// `DeployBuilderBucketEnv` is not specified.
 	DefaultDeployBuilderBucket = "labpack_runner"
-	// DefaultDeployBuilderBucket is the bb bucket to specify if
+	// DefaultCTPBuilderBucket is the bb bucket to specify if
 	// `CTPBuilderBucketEnv` is not specified.
 	DefaultCTPBuilderBucket = "cros_test_platform"
 	// DefaultCTPBuilderName is the bb bucket to specify if

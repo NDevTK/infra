@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/satlab/common/paths"
+	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlab/internal/commands"
 )
 
@@ -25,7 +26,7 @@ type DUTRepairer struct {
 // repair invokes shivas with the required arguments to repair a DUT.
 func (u *DUTRepairer) Repair() error {
 	args := (&commands.CommandWithFlags{
-		Commands: []string{paths.ShivasCLI, "repair-duts", "-verify", u.Name},
+		Commands: []string{paths.ShivasCLI, "repair-duts", "-bucket", site.GetDeployBucket(), "-builder", site.RepairBuilderName, u.Name},
 	}).ToCommand()
 	fmt.Fprintf(os.Stderr, "repair dut: run %s\n", args)
 	command := exec.Command(args[0], args[1:]...)
