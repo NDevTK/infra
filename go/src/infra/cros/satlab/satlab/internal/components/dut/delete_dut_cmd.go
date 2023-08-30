@@ -21,6 +21,7 @@ import (
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
+	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/satlab/internal/components/ufs"
 	ufsModels "infra/unifiedfleet/api/v1/models"
 	ufsApi "infra/unifiedfleet/api/v1/rpc"
@@ -69,7 +70,7 @@ func (c *deleteDUT) innerRun(a subcommands.Application, positionalArgs []string,
 
 	if c.commonFlags.SatlabID == "" {
 		var err error
-		c.commonFlags.SatlabID, err = satlabcommands.GetDockerHostBoxIdentifier()
+		c.commonFlags.SatlabID, err = satlabcommands.GetDockerHostBoxIdentifier(&executor.ExecCommander{})
 		if err != nil {
 			return errors.Annotate(err, "get dut").Err()
 		}
