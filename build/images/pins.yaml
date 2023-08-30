@@ -44,7 +44,7 @@ pins:
   digest: sha256:1f1a2d56de1d604801a9671f301190704c25d604a416f59e03c04f5c6ffee0d6
 - image: gcr.io/distroless/static
   tag: latest
-  digest: sha256:7198a357ff3a8ef750b041324873960cf2153c11cc50abb9d8d5f8bb089f6b4e
+  digest: sha256:e7e79fb2947f38ce0fab6061733f7e1959c12b843079042fe13f56ca7b9d178c
 - image: mcr.microsoft.com/windows/nanoserver
   tag: "1809"
   digest: sha256:8f37d0675b1526a2c1a62032ec27cc5a1c3005505c7cc1a02fbd6b17c49128e3
