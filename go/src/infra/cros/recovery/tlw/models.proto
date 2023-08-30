@@ -629,6 +629,24 @@ message ChromeOS {
 
   // Human Motion Robot info.
   HumanMotionRobot human_motion_robot = 26;
+
+  // Testbed Capability info
+  TestbedCapability testbed_capability = 28;
+}
+
+// TestbedCapability specifies whether the testbed can execute certain tests.
+// It is used as test dependency - as the specific testbed required to run certain e2e tests.
+message TestbedCapability {
+  // Testbed that is unspecified
+  optional bool unspecified = 1;
+  // Testbed with specific setup and capable to run 3.5mm Audio jack detection tests on DUT.
+  optional bool audiojack = 2;
+  // Testbed with specific setup and capable to run USB audio peripherals tests on DUT.
+  optional bool usbaudio = 3;
+  // Testbed with specific setup and capable to run USB printer tests on DUT.
+  optional bool usbprinting = 4;
+  // Testbed with specific setup and capable to run HDMI peripherals tests on DUT.
+  optional bool hdmiaudio = 5;
 }
 
 // Android specific DUT details
