@@ -33,6 +33,24 @@
       "message": "do we want to set NO_Applicable in this case?",
       "revId": "993371c89ff88199a0d2c1b2fea29bfa1222b19e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "da91d4d5_bbd0936a",
+        "filename": "go/src/infra/cros/recovery/internal/execs/chameleon/chameleon_execs.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1551857
+      },
+      "writtenOn": "2023-08-30T00:38:54Z",
+      "side": 1,
+      "message": "Thanks for the suggestion! I think setting it to NOT_APPLICABLE makes it more consistent. Will update.",
+      "parentUuid": "8566d65c_93b3a377",
+      "revId": "993371c89ff88199a0d2c1b2fea29bfa1222b19e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
