@@ -13,6 +13,7 @@ import (
 	"github.com/hashicorp/go-version"
 
 	run_pkg "infra/cros/satlab/common/run"
+	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
 	pb "infra/cros/satlab/satlabrpcserver/proto"
@@ -53,6 +54,7 @@ func New(
 		dutService:                 dutService,
 		labelParser:                labelParser,
 		cpuTemperatureOrchestrator: cpuTemperatureOrchestrator,
+		subCommand:                 *satlabcommands.NewSubCommand(),
 	}
 }
 
@@ -372,4 +374,34 @@ func (s *SatlabRpcServiceServer) RunSuite(ctx context.Context, in *pb.RunSuiteRe
 		return nil, err
 	}
 	return &pb.RunSuiteResponse{}, nil
+}
+
+func (s *SatlabRpcServiceServer) GetVersionInfo(ctx context.Context, _ *pb.GetVersionInfoRequest) (*pb.GetVersionInfoResponse, error) {
+	resp := pb.GetVersionInfoResponse{}
+
+	hostId, err := s.subCommand.GetDockerHostBoxIdentifier()
+	if err != nil {
+		return nil, err
+	}
+	resp.HostId = hostId
+
+	//TODO get the install id
+	resp.InstallId = ""
+	osVersion, err := s.subCommand.GetOsVersion()
+	if err != nil {
+		return nil, err
+	}
+
+	resp.Description = osVersion.Description
+	resp.ChromeosVersion = osVersion.Version
+	resp.Track = osVersion.Track
+
+	version, err := s.subCommand.GetSatlabVersion()
+	if err != nil {
+		return nil, err
+	}
+
+	resp.Version = version
+
+	return &resp, nil
 }

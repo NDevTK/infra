@@ -31,6 +31,15 @@ const (
 	Modify
 )
 
+// OSVersion contains the OS version information
+// from the command `get_host_os_version`
+type OSVersion struct {
+	// Version the ChromeOS verison
+	Version     string
+	Track       string
+	Description string
+}
+
 // SubCommand provides the methods that will execute a command
 type SubCommand struct {
 	// the command executor that we can provide the different
@@ -56,3 +65,67 @@ func (s *SubCommand) GetDockerHostBoxIdentifier() (string, error) {
 	return strings.ToLower(TrimOutput(out)), errors.Annotate(err, "get host identifier").Err()
 }
 
+// parseOutput parse the raw data "<value>\\n"
+// removing the `\"` and `\\n`
+func parseOutput(s string) string {
+	s = strings.TrimSpace(s)
+	res := s
+	if strings.HasPrefix(res, "\"") {
+		res = res[1:]
+	}
+	if strings.HasSuffix(res, "\"") {
+		res = res[:len(res)-1]
+	}
+	if strings.HasSuffix(res, "\\n") {
+		res = res[:len(res)-3]
+	}
+	return res
+}
+
+// GetOsVersion gets the OS GetOsVersion
+func (s *SubCommand) GetOsVersion() (*OSVersion, error) {
+	fmt.Fprintf(os.Stderr, "Get host identifier: run %s\n", paths.GetHostIdentifierScript)
+	out, err := s.ExecCommander.Exec(exec.Command(paths.GetOSVersionScript))
+	if err != nil {
+		return nil, err
+	}
+	rawData := strings.Split(string(out), "\n")
+	resp := OSVersion{}
+	for _, r := range rawData {
+		row := strings.Split(r, ":")
+		if len(row) == 2 {
+			if strings.ToLower(row[0]) == "version" {
+				resp.Version = parseOutput(row[1])
+			}
+			if strings.ToLower(row[0]) == "track" {
+				resp.Track = parseOutput(row[1])
+			}
+			if strings.ToLower(row[0]) == "description" {
+				resp.Description = parseOutput(row[1])
+			}
+		}
+	}
+	return &resp, nil
+}
+// GetSatlabVersion gets the Satlab version from docker container `compose` label.
+func (s *SubCommand) GetSatlabVersion() (string, error) {
+	out, err := s.ExecCommander.Exec(
+		exec.Command(
+			paths.DockerPath,
+			"inspect",
+			"--format='{{range .Config.Env}}{{println .}}{{end}}'",
+			"compose",
+		),
+	)
+	if err != nil {
+		return "", nil
+	}
+	rawData := strings.Split(string(out), "\n")
+	for _, row := range rawData {
+		if strings.HasPrefix(row, "LABEL=") {
+			r := strings.Split(row, "=")
+			return r[1], nil
+		}
+	}
+	return "", errors.New("can't find the version")
+}
