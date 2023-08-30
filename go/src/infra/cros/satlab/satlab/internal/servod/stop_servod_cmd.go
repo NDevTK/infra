@@ -17,6 +17,7 @@ import (
 	"infra/cros/recovery/docker"
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
+	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/satlab/internal/components/ufs"
 )
 
@@ -60,7 +61,7 @@ func (c *stopServodRun) innerRun(a subcommands.Application, args []string, env s
 	dhbSatlabID := c.commonFlags.SatlabID
 	if dhbSatlabID == "" {
 		var err error
-		dhbSatlabID, err = satlabcommands.GetDockerHostBoxIdentifier()
+		dhbSatlabID, err = satlabcommands.GetDockerHostBoxIdentifier(&executor.ExecCommander{})
 		if err != nil {
 			return err
 		}

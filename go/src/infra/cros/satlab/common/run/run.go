@@ -28,6 +28,7 @@ import (
 	"infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
+	"infra/cros/satlab/common/utils/executor"
 )
 
 // Run holds the arguments that are needed for the run command.
@@ -223,7 +224,7 @@ func (c *Run) getDroneTarget() (string, error) {
 	if c.SatlabId != "" {
 		satlabTarget = fmt.Sprintf(c.SatlabId)
 	} else { // get id of local satlab if one is not provided
-		localSatlab, err := satlabcommands.GetDockerHostBoxIdentifier()
+		localSatlab, err := satlabcommands.GetDockerHostBoxIdentifier(&executor.ExecCommander{})
 		if err != nil {
 			return "", errors.Annotate(err, "satlab get docker host box identifier").Err()
 		}
