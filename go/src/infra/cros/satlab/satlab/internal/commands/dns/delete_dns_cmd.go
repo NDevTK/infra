@@ -11,6 +11,7 @@ import (
 
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
+	"infra/cros/satlab/common/utils/executor"
 )
 
 // DeleteDNSCmd is the command to delete a hostname from the hostsfile of the DNS container
@@ -48,7 +49,7 @@ func (c *deleteDNSRun) innerRun(a subcommands.Application, args []string, env su
 
 // runCmdInjected executes business logic
 func (c *deleteDNSRun) runCmdInjected(args []string, dhbIDFunc DockerHostBoxIdentifierGetter) error {
-	satlabID, err := dhbIDFunc()
+	satlabID, err := dhbIDFunc(&executor.ExecCommander{})
 	if err != nil {
 		return err
 	}

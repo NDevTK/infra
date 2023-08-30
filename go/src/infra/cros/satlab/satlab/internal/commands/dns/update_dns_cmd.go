@@ -11,11 +11,12 @@ import (
 
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
+	"infra/cros/satlab/common/utils/executor"
 )
 
 // DockerHostBoxIdentifierGetter is a function type fulfilled by satlabcommands.GetDockerHostBoxIdentifier
 // we do this because the function assumes we are in a real Satlab env and we can't unit test using this func
-type DockerHostBoxIdentifierGetter func() (string, error)
+type DockerHostBoxIdentifierGetter func(executor.IExecCommander) (string, error)
 
 // HostfileUpdater is a function type fulfilled by UpdateRecord
 // it should take care of the e2e flow of updating a record and applying those changes
@@ -59,7 +60,7 @@ func (c *updateDNSRun) innerRun(a subcommands.Application, args []string, env su
 // runCmdInjected executes actual logic of command
 // it takes in mockable functions and interfaces to make it easier to unit test the logic of the update dns cmd
 func (c *updateDNSRun) runCmdInjected(args []string, dhbIDFunc DockerHostBoxIdentifierGetter, updateRecordFunc HostfileUpdater) error {
-	satlabID, err := dhbIDFunc()
+	satlabID, err := dhbIDFunc(&executor.ExecCommander{})
 	if err != nil {
 		return err
 	}
