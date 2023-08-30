@@ -15,6 +15,7 @@ func NewSchedulableLabels() *SchedulableLabels {
 			Atrus:               new(bool),
 			Bluetooth:           new(bool),
 			Cbx:                 new(HardwareCapabilities_CbxState),
+			CbxBranding:         new(HardwareCapabilities_CbxBranding),
 			Detachablebase:      new(bool),
 			Carrier:             new(HardwareCapabilities_Carrier),
 			StarfishSlotMapping: new(string),

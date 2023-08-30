@@ -441,6 +441,7 @@ common {
 			bluetooth: true
 			carrier: CARRIER_ATT
 			cbx: CBX_STATE_FALSE
+			cbx_branding: CBX_BRANDING_UNSPECIFIED
 			detachablebase: true
 			fingerprint: true
 			gpu_family: "test_gpu"

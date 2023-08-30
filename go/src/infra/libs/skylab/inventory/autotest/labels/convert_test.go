@@ -134,6 +134,7 @@ capabilities {
   bluetooth: true
   atrus: true
   cbx: 1
+  cbx_branding: 2
 }
 board: "boardval"
 arc: true
@@ -206,6 +207,7 @@ var fullLabels = []string{
 	"camerabox_light:led",
 	"carrier:tmobile",
 	"cbx:True",
+	"cbx_branding:hard",
 	"cellular_modem_state:NEED_REPLACEMENT",
 	"chameleon",
 	"chameleon:dp",
@@ -740,6 +742,7 @@ capabilities {
   bluetooth: true
   atrus: true
   cbx: 0
+  cbx_branding: 0
 }
 board: "boardval"
 arc: true

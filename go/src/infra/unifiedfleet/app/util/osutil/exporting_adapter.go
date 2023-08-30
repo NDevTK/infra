@@ -494,15 +494,29 @@ func setDutState(l *inventory.SchedulableLabels, s *chromeosLab.DutState) {
 	setCr50Configs(l, s)
 }
 
+// TODO(echoyang@): Add CBX branding
 func setCbx(l *inventory.SchedulableLabels, machine *ufspb.Machine) {
 	c := l.Capabilities
+
+	// Cbx State
 	var cbx inventory.HardwareCapabilities_CbxState
-	if machine.GetChromeosMachine().GetHwXComplianceVersion() > 0 {
+	if machine.GetChromeosMachine().GetIsCbx() {
 		cbx = inventory.HardwareCapabilities_CBX_STATE_TRUE
 	} else {
 		cbx = inventory.HardwareCapabilities_CBX_STATE_FALSE
 	}
 	c.Cbx = &cbx
+
+	// Cbx Branding
+	var cbxBranding inventory.HardwareCapabilities_CbxBranding
+	if machine.GetChromeosMachine().GetCbxFeatureType() == ufspb.ChassisXBrandType_HARD_BRANDED {
+		cbxBranding = inventory.HardwareCapabilities_CBX_BRANDING_HARD_BRANDING
+	} else if machine.GetChromeosMachine().GetCbxFeatureType() == ufspb.ChassisXBrandType_SOFT_BRANDED_LEGACY || machine.GetChromeosMachine().GetCbxFeatureType() == ufspb.ChassisXBrandType_SOFT_BRANDED_WAIVER {
+		cbxBranding = inventory.HardwareCapabilities_CBX_BRANDING_SOFT_BRANDING
+	} else {
+		cbxBranding = inventory.HardwareCapabilities_CBX_BRANDING_UNSPECIFIED
+	}
+	c.CbxBranding = &cbxBranding
 }
 
 func setAudioboxJackpluggerState(s chromeosLab.Chameleon_AudioBoxJackPlugger) *inventory.Peripherals_AudioBoxJackPlugger {

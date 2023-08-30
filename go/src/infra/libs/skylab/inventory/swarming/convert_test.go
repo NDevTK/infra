@@ -118,6 +118,7 @@ capabilities {
   bluetooth: true
   atrus: true
   cbx: 0
+  cbx_branding: 0
 }
 board: "boardval"
 arc: true
@@ -274,6 +275,7 @@ capabilities {
   bluetooth: true
   atrus: true
   cbx: 0
+  cbx_branding: 0
 }
 board: "boardval"
 arc: true

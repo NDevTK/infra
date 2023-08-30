@@ -113,6 +113,13 @@ func otherCapabilitiesConverter(ls *inventory.SchedulableLabels) []string {
 			labels = append(labels, "cbx:False")
 		}
 	}
+	if v := c.GetCbxBranding(); v != inventory.HardwareCapabilities_CBX_BRANDING_UNSPECIFIED {
+		if v == inventory.HardwareCapabilities_CBX_BRANDING_SOFT_BRANDING {
+			labels = append(labels, "cbx_branding:soft")
+		} else if v == inventory.HardwareCapabilities_CBX_BRANDING_HARD_BRANDING {
+			labels = append(labels, "cbx_branding:hard")
+		}
+	}
 	return labels
 }
 
@@ -195,6 +202,12 @@ func otherCapabilitiesReverter(ls *inventory.SchedulableLabels, labels []string)
 				*c.Cbx = inventory.HardwareCapabilities_CBX_STATE_TRUE
 			} else {
 				*c.Cbx = inventory.HardwareCapabilities_CBX_STATE_FALSE
+			}
+		case "cbx_branding":
+			if v == "soft" {
+				*c.CbxBranding = inventory.HardwareCapabilities_CBX_BRANDING_SOFT_BRANDING
+			} else if v == "hard" {
+				*c.CbxBranding = inventory.HardwareCapabilities_CBX_BRANDING_HARD_BRANDING
 			}
 		default:
 			switch {

@@ -120,6 +120,13 @@ func otherCapabilitiesConverter(dims Dimensions, ls *inventory.SchedulableLabels
 			dims["label-cbx"] = []string{"False"}
 		}
 	}
+	if v := c.GetCbxBranding(); v != inventory.HardwareCapabilities_CBX_BRANDING_UNSPECIFIED {
+		if v == inventory.HardwareCapabilities_CBX_BRANDING_SOFT_BRANDING {
+			dims["label-cbx_branding"] = []string{"soft"}
+		} else if v == inventory.HardwareCapabilities_CBX_BRANDING_HARD_BRANDING {
+			dims["label-cbx_branding"] = []string{"hard"}
+		}
+	}
 	for _, v := range c.GetVideoAcceleration() {
 		appendDim(dims, "label-video_acceleration", v.String())
 	}
@@ -138,6 +145,16 @@ func otherCapabilitiesReverter(ls *inventory.SchedulableLabels, d Dimensions) Di
 			*c.Cbx = inventory.HardwareCapabilities_CBX_STATE_TRUE
 		} else {
 			*c.Cbx = inventory.HardwareCapabilities_CBX_STATE_FALSE
+		}
+		delete(d, "label-cbx")
+	}
+	if v, ok := getLastStringValue(d, "label-cbx_branding"); ok {
+		if v == "soft" {
+			*c.CbxBranding = inventory.HardwareCapabilities_CBX_BRANDING_SOFT_BRANDING
+		} else if v == "hard" {
+			*c.CbxBranding = inventory.HardwareCapabilities_CBX_BRANDING_HARD_BRANDING
+		} else {
+			*c.CbxBranding = inventory.HardwareCapabilities_CBX_BRANDING_UNSPECIFIED
 		}
 		delete(d, "label-cbx")
 	}
