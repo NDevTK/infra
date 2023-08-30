@@ -313,7 +313,7 @@ message SchedulableLabels {
 
 // Keep sorted by field name.
 //
-// NEXT TAG: 22
+// NEXT TAG: 23
 message HardwareCapabilities {
   optional bool atrus = 17;
   optional bool bluetooth = 7;
@@ -358,6 +358,15 @@ message HardwareCapabilities {
   }
   // Whether this device has Chromebook X capabilities
   optional CbxState cbx = 21;
+
+  // Next tag: 3
+  enum CbxBranding {
+    CBX_BRANDING_UNSPECIFIED = 0;
+    CBX_BRANDING_SOFT_BRANDING = 1;
+    CBX_BRANDING_HARD_BRANDING = 2;
+  }
+  // The type of CBX branding available
+  optional CbxBranding cbx_branding = 22;
 
   // Mapping between starfish slot_id and carrier name.
   optional string starfish_slot_mapping = 20;
