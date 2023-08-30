@@ -16,6 +16,29 @@
       "message": "Hi team, in this patch we leave UFS part untouched. PTAL when you\u0027re available 😎",
       "revId": "6828928d303ea8f5c0d707daaf7b2de571f877bb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1f1c5f78_9f0e2ced",
+        "filename": "go/src/infra/cros/recovery/tlw/models.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 641,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-08-30T18:24:21Z",
+      "side": 1,
+      "message": "is there reason for optional? \nif yes, so please describe difference between false and nil.\nif no, please use just boolean for simplicity or reading and usage.\n\n\nAlso why do we need unspecified?",
+      "range": {
+        "startLine": 641,
+        "startChar": 2,
+        "endLine": 641,
+        "endChar": 10
+      },
+      "revId": "6828928d303ea8f5c0d707daaf7b2de571f877bb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
