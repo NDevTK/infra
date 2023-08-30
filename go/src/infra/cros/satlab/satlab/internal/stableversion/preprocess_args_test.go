@@ -11,6 +11,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"infra/cros/satlab/common/site"
+	"infra/cros/satlab/common/utils/executor"
 )
 
 // TestPreprocessHostname checks that preprocessHostname correctly determines the hostname and doesn't call
@@ -36,7 +37,7 @@ func TestPreprocessHostname(t *testing.T) {
 		{
 			name: "empty",
 			in: inParams{
-				getDHBID: func() (string, error) {
+				getDHBID: func(_ executor.IExecCommander) (string, error) {
 					panic("don't call me")
 				},
 				isRemoteAccess: func() (bool, error) {
@@ -53,7 +54,7 @@ func TestPreprocessHostname(t *testing.T) {
 					SatlabID: "a",
 				},
 				hostname: "b",
-				getDHBID: func() (string, error) {
+				getDHBID: func(_ executor.IExecCommander) (string, error) {
 					panic("don't call me")
 				},
 				isRemoteAccess: func() (bool, error) {
@@ -70,7 +71,7 @@ func TestPreprocessHostname(t *testing.T) {
 					SatlabID: "a",
 				},
 				hostname: "satlab-b",
-				getDHBID: func() (string, error) {
+				getDHBID: func(_ executor.IExecCommander) (string, error) {
 					panic("don't call me")
 				},
 				isRemoteAccess: func() (bool, error) {
@@ -84,7 +85,7 @@ func TestPreprocessHostname(t *testing.T) {
 			name: "remote access good",
 			in: inParams{
 				hostname: "host1",
-				getDHBID: func() (string, error) {
+				getDHBID: func(_ executor.IExecCommander) (string, error) {
 					return "75fc6517-3539-458f-9718-7bbc759eb73a", nil
 				},
 				isRemoteAccess: func() (bool, error) {

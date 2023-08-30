@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+
+	"infra/cros/satlab/common/utils/executor"
 )
 
 // noopUpdateRecord is UpdateRecord with no side effects for testing other functionality
@@ -15,7 +17,7 @@ func noopUpdateRecord(host string, address string) (string, error) {
 }
 
 // fakeDHBGetter emulates fetching SatlabID with a constant value
-func fakeDHBGetter() (string, error) {
+func fakeDHBGetter(_ executor.IExecCommander) (string, error) {
 	return "123", nil
 }
 
