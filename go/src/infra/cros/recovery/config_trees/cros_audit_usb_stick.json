@@ -3707,7 +3707,7 @@
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
-          "name": "Verify Cr50 detected",
+          "name": "Verify CCD GSC connection detected",
           "docs": [
             "Run basic cr50/ti50 detections checks."
           ],
@@ -7674,11 +7674,37 @@
               ],
               "conditions": [
                 {
-                  "name": "Servo main device is GSC chip",
+                  "name": "Is not Flex device",
                   "docs": [
-                    "Verify that main device is c2d2/cr50/GSC"
+                    "Verify that device is belong Reven models"
                   ],
-                  "exec_name": "servo_main_device_is_gsc",
+                  "exec_name": "dut_check_board",
+                  "exec_args": [
+                    "string_values:aurora,reven",
+                    "invert_result:true"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Expected CCD factory settings",
+                  "docs": [
+                    "This devices should use testlab to open CCD and reset capabilities to factory settings."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Is not Flex device",
+                      "docs": [
+                        "Verify that device is belong Reven models"
+                      ],
+                      "exec_name": "dut_check_board",
+                      "exec_args": [
+                        "string_values:aurora,reven",
+                        "invert_result:true"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_ccd_expect_have_factory_reset",
                   "run_control": "RERUN_AFTER_RECOVERY"
                 }
               ],
@@ -7697,11 +7723,37 @@
               ],
               "conditions": [
                 {
-                  "name": "Servo main device is GSC chip",
+                  "name": "Is not Flex device",
                   "docs": [
-                    "Verify that main device is c2d2/cr50/GSC"
+                    "Verify that device is belong Reven models"
                   ],
-                  "exec_name": "servo_main_device_is_gsc",
+                  "exec_name": "dut_check_board",
+                  "exec_args": [
+                    "string_values:aurora,reven",
+                    "invert_result:true"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                },
+                {
+                  "name": "Expected CCD factory settings",
+                  "docs": [
+                    "This devices should use testlab to open CCD and reset capabilities to factory settings."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Is not Flex device",
+                      "docs": [
+                        "Verify that device is belong Reven models"
+                      ],
+                      "exec_name": "dut_check_board",
+                      "exec_args": [
+                        "string_values:aurora,reven",
+                        "invert_result:true"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_ccd_expect_have_factory_reset",
                   "run_control": "RERUN_AFTER_RECOVERY"
                 }
               ],
@@ -8376,11 +8428,25 @@
               "run_control": "RERUN_AFTER_RECOVERY"
             },
             {
-              "name": "Servo main device is GSC chip",
+              "name": "Expected CCD factory settings",
               "docs": [
-                "Verify that main device is c2d2/cr50/GSC"
+                "This devices should use testlab to open CCD and reset capabilities to factory settings."
               ],
-              "exec_name": "servo_main_device_is_gsc",
+              "dependencies": [
+                {
+                  "name": "Is not Flex device",
+                  "docs": [
+                    "Verify that device is belong Reven models"
+                  ],
+                  "exec_name": "dut_check_board",
+                  "exec_args": [
+                    "string_values:aurora,reven",
+                    "invert_result:true"
+                  ],
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_name": "servo_ccd_expect_have_factory_reset",
               "run_control": "RERUN_AFTER_RECOVERY"
             }
           ],
@@ -8701,11 +8767,37 @@
                   ],
                   "conditions": [
                     {
-                      "name": "Servo main device is GSC chip",
+                      "name": "Is not Flex device",
                       "docs": [
-                        "Verify that main device is c2d2/cr50/GSC"
+                        "Verify that device is belong Reven models"
                       ],
-                      "exec_name": "servo_main_device_is_gsc",
+                      "exec_name": "dut_check_board",
+                      "exec_args": [
+                        "string_values:aurora,reven",
+                        "invert_result:true"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Expected CCD factory settings",
+                      "docs": [
+                        "This devices should use testlab to open CCD and reset capabilities to factory settings."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Is not Flex device",
+                          "docs": [
+                            "Verify that device is belong Reven models"
+                          ],
+                          "exec_name": "dut_check_board",
+                          "exec_args": [
+                            "string_values:aurora,reven",
+                            "invert_result:true"
+                          ],
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "servo_ccd_expect_have_factory_reset",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
@@ -8724,11 +8816,37 @@
                   ],
                   "conditions": [
                     {
-                      "name": "Servo main device is GSC chip",
+                      "name": "Is not Flex device",
                       "docs": [
-                        "Verify that main device is c2d2/cr50/GSC"
+                        "Verify that device is belong Reven models"
                       ],
-                      "exec_name": "servo_main_device_is_gsc",
+                      "exec_name": "dut_check_board",
+                      "exec_args": [
+                        "string_values:aurora,reven",
+                        "invert_result:true"
+                      ],
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    },
+                    {
+                      "name": "Expected CCD factory settings",
+                      "docs": [
+                        "This devices should use testlab to open CCD and reset capabilities to factory settings."
+                      ],
+                      "dependencies": [
+                        {
+                          "name": "Is not Flex device",
+                          "docs": [
+                            "Verify that device is belong Reven models"
+                          ],
+                          "exec_name": "dut_check_board",
+                          "exec_args": [
+                            "string_values:aurora,reven",
+                            "invert_result:true"
+                          ],
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "servo_ccd_expect_have_factory_reset",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
                   ],
@@ -10059,25 +10177,25 @@
               "run_control": "RERUN_AFTER_RECOVERY"
             },
             {
-              "name": "Servo main device is CCD",
+              "name": "Expected CCD factory settings",
               "docs": [
-                "Verify that main device is CCD"
+                "This devices should use testlab to open CCD and reset capabilities to factory settings."
               ],
               "dependencies": [
                 {
-                  "name": "Is servo_v4(p1) used with type-c connector",
+                  "name": "Is not Flex device",
                   "docs": [
-                    "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
+                    "Verify that device is belong Reven models"
                   ],
-                  "exec_name": "servo_check_servod_control",
+                  "exec_name": "dut_check_board",
                   "exec_args": [
-                    "command:root.dut_connection_type",
-                    "expected_string_value:type-c"
+                    "string_values:aurora,reven",
+                    "invert_result:true"
                   ],
                   "run_control": "RERUN_AFTER_RECOVERY"
                 }
               ],
-              "exec_name": "servo_main_device_is_ccd",
+              "exec_name": "servo_ccd_expect_have_factory_reset",
               "run_control": "RERUN_AFTER_RECOVERY"
             }
           ],
