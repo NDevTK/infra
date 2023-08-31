@@ -12,6 +12,8 @@ import (
 
 	"github.com/hashicorp/go-version"
 
+	"infra/cros/satlab/common/dns"
+	dut_pkg "infra/cros/satlab/common/dut"
 	run_pkg "infra/cros/satlab/common/run"
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
@@ -37,8 +39,10 @@ type SatlabRpcServiceServer struct {
 	labelParser *utils.LabelParser
 	// cpuTemperatureOrchestrator the CPU temperature orchestrator
 	cpuTemperatureOrchestrator *cpu_temperature.CPUTemperatureOrchestrator
-	// subCommand provides system information from execute some commands
+	// subCommand provides system information from executing some commands
 	subCommand satlabcommands.SubCommand
+	// dnsCommand provides dns information from executing some commands
+	dnsCommand dns.DNSCommand
 }
 
 func New(
@@ -55,6 +59,7 @@ func New(
 		labelParser:                labelParser,
 		cpuTemperatureOrchestrator: cpuTemperatureOrchestrator,
 		subCommand:                 *satlabcommands.NewSubCommand(),
+		dnsCommand:                 *dns.NewDNSCommand(),
 	}
 }
 
@@ -404,4 +409,29 @@ func (s *SatlabRpcServiceServer) GetVersionInfo(ctx context.Context, _ *pb.GetVe
 	resp.Version = version
 
 	return &resp, nil
+}
+
+func (s *SatlabRpcServiceServer) AddPool(ctx context.Context, in *pb.AddPoolRequest) (*pb.AddPoolResponse, error) {
+	IPHostMap, err := s.dnsCommand.ReadHostsIP(true)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, address := range in.GetAddresses() {
+		hostname, ok := IPHostMap[address]
+		if ok {
+			req := dut_pkg.UpdateDUT{
+				Pools:    []string{in.GetPool()},
+				Hostname: hostname,
+			}
+
+			err = req.TriggerRun(ctx)
+			if err != nil {
+				return nil, err
+			}
+
+		}
+	}
+
+	return &pb.AddPoolResponse{Message: "add pool successfully"}, nil
 }
