@@ -97,3 +97,9 @@ indexes:
   - name: project
   - name: next_backend_sync_time
 
+# Used to query distinct (project, backend_target) pairs for running builds.
+- kind: Build
+  properties:
+  - name: incomplete
+  - name: backend_target
+  - name: project
