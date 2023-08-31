@@ -179,7 +179,7 @@ class MetaFeatureValue(MetaDict):
       return self._reason
 
     reasons = {}
-    for feature in self.itervalues():
+    for feature in self.values():
       if not feature.reason:
         continue
 
@@ -207,7 +207,7 @@ class MetaFeatureValue(MetaDict):
       return self._changed_files
 
     all_changed_files = {}
-    for feature in self.itervalues():
+    for feature in self.values():
       if not feature.changed_files:
         continue
 
@@ -223,7 +223,7 @@ class MetaFeatureValue(MetaDict):
               % (accumulated_changed_file.blame_url, changed_file.blame_url))
         accumulated_changed_file.reasons.extend(changed_file.reasons or [])
 
-    self._changed_files = all_changed_files.values()
+    self._changed_files = list(all_changed_files.values())
     self._changed_files.sort(key=lambda changed_file: changed_file.name)
     return self._changed_files
 
@@ -342,6 +342,6 @@ class WrapperMetaFeature(MetaFeature):
       all ``x``, ``y``, and for a feature f in fs, we have
       ``FeatureFunction(fs)(x)(y)[f.name] == f(x)(y)``.
     """
-    fxs = {name: f(x) for name, f in self.iteritems()}
-    return lambda y: MetaFeatureValue(
-        self.name, {name: fx(y) for name, fx in fxs.iteritems()})
+    fxs = {name: f(x) for name, f in self.items()}
+    return lambda y: MetaFeatureValue(self.name,
+                                      {name: fx(y) for name, fx in fxs.items()})

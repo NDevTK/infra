@@ -74,10 +74,10 @@ class ParsingFlag(object):
   def TurnOff(self):
     self._value = False
 
-  def __nonzero__(self):
+  def __bool__(self):
     return self._value
 
-  __bool__ = __nonzero__
+  __nonzero__ = __bool__
 
   def ConditionallyTurnOn(self, line):
     """When the flag is off, turns on it if turn_on_conditions met."""
@@ -120,7 +120,7 @@ class FlagManager(object):
 
   def GetAllFlags(self):
     """Returns all registered flags."""
-    return self.flags.values()
+    return list(self.flags.values())
 
   def GetGroupFlags(self, group_name):
     """Returns a certain group of flags."""

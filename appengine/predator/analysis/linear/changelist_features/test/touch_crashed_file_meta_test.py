@@ -60,10 +60,11 @@ class TouchCrashedFileMetaFeatureTest(AnalysisTestCase):
     """Test that feature values are log(0)s when there is no matched file."""
     report = self._GetDummyReport(
         deps={'src': Dependency('src/dep', 'https://repo', '6')})
-    feature_values = self._feature(report)(self._GetMockSuspect()).values()
+    feature_values = list(
+        self._feature(report)(self._GetMockSuspect()).values())
 
     for feature_value in feature_values:
-        self.assertEqual(0.0, feature_value.value)
+      self.assertEqual(0.0, feature_value.value)
 
   def testMinDistanceFeatureIsLogOne(self):
     """Test that the feature returns log(1) when the min_distance is 0."""

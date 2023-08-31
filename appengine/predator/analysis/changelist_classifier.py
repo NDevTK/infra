@@ -111,7 +111,7 @@ class ChangelistClassifier(object):
     """
     reverted_revisions = []
     revision_to_suspects = {}
-    for dep_roll in report.dependency_rolls.itervalues():
+    for dep_roll in report.dependency_rolls.values():
       repository = self._get_repository(dep_roll.repo_url)
       changelogs = repository.GetChangeLogs(dep_roll.old_revision,
                                             dep_roll.new_revision)
@@ -133,7 +133,7 @@ class ChangelistClassifier(object):
       if reverted_revision in revision_to_suspects:
         del revision_to_suspects[reverted_revision]
 
-    return revision_to_suspects.values()
+    return list(revision_to_suspects.values())
 
   def RankSuspects(self, report, suspects):
     """Returns a lineup of the suspects in order of likelihood.

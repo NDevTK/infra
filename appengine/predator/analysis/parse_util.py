@@ -50,9 +50,9 @@ def GetCrashedLineRange(line_range_str):
   if ':' not in line_range_str:
     return [int(line_range_str)]
 
-  line_number, range_length = map(int, line_range_str.split(':'))
+  line_number, range_length = list(map(int, line_range_str.split(':')))
 
-  return range(line_number, line_number + range_length + 1)
+  return list(range(line_number, line_number + range_length + 1))
 
 
 def RemovePrefix(string, prefix):
@@ -94,7 +94,7 @@ def GetDepPathAndNormalizedFilePath(path, deps, is_java=False,
     return '', normalized_path, None
 
   # Iterate through all dep paths in the parsed DEPS in an order.
-  for dep_path in sorted(deps.keys(), key=lambda path: -path.count('/')):
+  for dep_path in sorted(list(deps.keys()), key=lambda path: -path.count('/')):
     # trim the 'src' in the beginning of the dep_path to match, because there
     # are many cases, especially in linux platform, the file paths are like,
     # 'third_party/WebKit/Source/...', or 'v8/...'.

@@ -105,5 +105,5 @@ class LinearTestCase(unittest.TestCase):  # pragma: no cover
                 })
          })
 
-    self._X = range(10)
+    self._X = list(range(10))
     self._Y = lambda _x: [False, True]

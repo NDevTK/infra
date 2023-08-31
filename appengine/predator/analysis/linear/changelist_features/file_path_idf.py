@@ -105,7 +105,7 @@ class FilePathIdfFeature(Feature):
         """Gets the maximum idf and the file path with the maximum idf."""
         file_paths = [
             os.path.join(frame_info.frame.dep_path, frame_info.frame.file_path)
-            for match in matches.itervalues()
+            for match in matches.values()
             for frame_info in match.frame_infos
         ]
         max_idf, max_idf_file_path = max(

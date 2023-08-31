@@ -109,6 +109,6 @@ class ComponentClassifier(object):
     Returns:
       List of top n components.
     """
-    components = map(self.ClassifyStackFrame,
-                     stack.frames[:self.top_n_frames])
+    components = list(
+        map(self.ClassifyStackFrame, stack.frames[:self.top_n_frames]))
     return MergeComponents(RankByOccurrence(components, top_n_components))

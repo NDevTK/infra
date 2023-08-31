@@ -31,7 +31,7 @@ class ReplacePath(PathMapping):
     self.old_to_new_path_mappings = old_to_new_path_mappings
 
   def __call__(self, path):
-    for old_path, new_path in self.old_to_new_path_mappings.iteritems():
+    for old_path, new_path in self.old_to_new_path_mappings.items():
       path = path.replace(old_path, new_path)
 
     return path
@@ -52,11 +52,11 @@ class ChangeNamingConvention(PathMapping):
     """
     self.path_regex_to_rename_type = {
         re.compile(path_pattern): rename_type
-        for path_pattern, rename_type in path_pattern_to_rename_type.iteritems()
+        for path_pattern, rename_type in path_pattern_to_rename_type.items()
     }
 
   def __call__(self, path):
-    for path_regex, rename_type in self.path_regex_to_rename_type.iteritems():
+    for path_regex, rename_type in self.path_regex_to_rename_type.items():
       match = path_regex.match(path)
       if match:
         path_parts = path.split('/')
@@ -75,14 +75,13 @@ class ChangeFileExtension(PathMapping):
     file type mappings.
     """
     self.path_regex_to_extension_mapping = {
-        re.compile(path_pattern): extension_mapping
-        for path_pattern, extension_mapping
-        in path_pattern_to_extension_mapping.iteritems()
+        re.compile(path_pattern): extension_mapping for path_pattern,
+        extension_mapping in path_pattern_to_extension_mapping.items()
     }
 
   def __call__(self, path):
-    for path_regex, extension_mapping in (
-        self.path_regex_to_extension_mapping.iteritems()):
+    for path_regex, extension_mapping in (iter(
+        self.path_regex_to_extension_mapping.items())):
       match = path_regex.match(path)
       if match:
         path_parts = path.split('/')

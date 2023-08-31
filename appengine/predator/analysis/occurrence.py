@@ -104,6 +104,6 @@ def RankByOccurrence(names, top_n, rank_function=None):
     rank_function = DefaultOccurrenceRanking
 
   # TODO(wrengr): generalize the filter function into another parameter.
-  occurrences = sorted(GetOccurrences(names).values(), key=rank_function)
+  occurrences = sorted(list(GetOccurrences(names).values()), key=rank_function)
 
   return [occurrence.name for occurrence in occurrences[:top_n]]

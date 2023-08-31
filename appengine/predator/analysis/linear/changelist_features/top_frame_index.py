@@ -65,8 +65,11 @@ class TopFrameIndexFeature(Feature):
                             changed_files=None)
 
       def TopFrameInMatches(matches):
-        frames = [frame_info.frame for match in matches.itervalues()
-                  for frame_info in match.frame_infos]
+        frames = [
+            frame_info.frame
+            for match in matches.values()
+            for frame_info in match.frame_infos
+        ]
         frames.sort(key=lambda frame: frame.index)
         return frames[0]
 

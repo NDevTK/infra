@@ -44,8 +44,8 @@ class Project(namedtuple('Project',
 
   def __new__(cls, name, path_regexes=None,
               function_regexes=None, host_directories=None):
-    path_regexes = map(re.compile, path_regexes or [])
-    function_regexes = map(re.compile, function_regexes or [])
+    path_regexes = list(map(re.compile, path_regexes or []))
+    function_regexes = list(map(re.compile, function_regexes or []))
     host_directories = host_directories or []
 
     return super(cls, Project).__new__(

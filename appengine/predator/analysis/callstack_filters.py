@@ -61,7 +61,8 @@ class FilterInlineFunction(CallStackFilter):
 
       return True
 
-    stack_buffer.frames = filter(_IsNonInlineFunctionFrame, stack_buffer.frames)
+    stack_buffer.frames = list(
+        filter(_IsNonInlineFunctionFrame, stack_buffer.frames))
     return stack_buffer
 
 
@@ -119,9 +120,10 @@ class FilterJavaJreSdkFrames(CallStackFilter):
     if stack_buffer.language_type != LanguageType.JAVA:
       return stack_buffer
 
-    stack_buffer.frames = filter(
-        lambda frame: not JAVA_JRE_SDK_REGEX.match(frame.function),
-        stack_buffer.frames)
+    stack_buffer.frames = [
+        frame for frame in stack_buffer.frames
+        if not JAVA_JRE_SDK_REGEX.match(frame.function)
+    ]
     return stack_buffer
 
 
@@ -135,8 +137,9 @@ class KeepV8FramesIfV8GeneratedJITCrash(CallStackFilter):
   def __call__(self, stack_buffer):
     if (stack_buffer and V8_JIT_CODE_MARKER in stack_buffer.frames[0].function
         and stack_buffer.metadata.get('top_frame_has_no_symbols')):
-      stack_buffer.frames = filter(lambda f: V8_DEP_PATH_MARKER in f.dep_path,
-                                   stack_buffer.frames)
+      stack_buffer.frames = [
+          f for f in stack_buffer.frames if V8_DEP_PATH_MARKER in f.dep_path
+      ]
     return stack_buffer
 
 
@@ -185,9 +188,9 @@ class FilterV8FramesForV8APIBindingCode(CallStackFilter):
 
     if (first_frame_is_api_file and (second_frame_not_from_v8_src or
                                      null_pointer_dereference)):
-      stack_buffer.frames = filter(
-          lambda f: V8_DEP_PATH_MARKER not in f.dep_path,
-          stack_buffer.frames)
+      stack_buffer.frames = [
+          f for f in stack_buffer.frames if V8_DEP_PATH_MARKER not in f.dep_path
+      ]
       # After deleting all v8 frames, if the top n frames are generated code,
       # need to filter them out.
       top_n_generated_code_frames = 0
@@ -229,8 +232,9 @@ class FilterV8FramesIfV8NotInTopFrames(CallStackFilter):
     if not need_filter_v8:
       return stack_buffer
 
-    stack_buffer.frames = filter(
-        lambda f: V8_DEP_PATH_MARKER not in f.dep_path, stack_buffer.frames)
+    stack_buffer.frames = [
+        f for f in stack_buffer.frames if V8_DEP_PATH_MARKER not in f.dep_path
+    ]
     return stack_buffer
 
 

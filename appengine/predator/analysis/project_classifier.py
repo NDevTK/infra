@@ -61,8 +61,8 @@ class ProjectClassifier(object):
 
       return None
 
-    projects = map(GetProjectFromStackFrame,
-                   crash_stack.frames[:self.top_n_frames])
+    projects = list(
+        map(GetProjectFromStackFrame, crash_stack.frames[:self.top_n_frames]))
 
     return ProjectClassifier._GetTopProject(projects,
                                             rank_function=rank_function)
@@ -88,7 +88,8 @@ class ProjectClassifier(object):
 
       return None
 
-    projects = map(GetProjectFromTouchedFile, suspect.changelog.touched_files)
+    projects = list(
+        map(GetProjectFromTouchedFile, suspect.changelog.touched_files))
     return ProjectClassifier._GetTopProject(projects,
                                             rank_function=lambda x:-len(x))
 
@@ -101,6 +102,6 @@ class ProjectClassifier(object):
     Returns:
       The name of the most-suspected project; or the empty string on failure.
     """
-    projects = map(self.ClassifySuspect, suspects)
+    projects = list(map(self.ClassifySuspect, suspects))
     return ProjectClassifier._GetTopProject(projects,
                                             rank_function=lambda x:-len(x))

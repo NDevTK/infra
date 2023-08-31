@@ -72,7 +72,7 @@ class MetaWeightTest(unittest.TestCase):
     weights = {'a': Weight(0.2), 'b': Weight(0.4), 'c': Weight(3.2)}
     meta_weight = MetaWeight(weights)
     self.assertSetEqual(set(iter(meta_weight)), set(iter(weights)))
-    for key, value in meta_weight.iteritems():
+    for key, value in meta_weight.items():
       self.assertEqual(value, weights[key])
 
   def testLen(self):

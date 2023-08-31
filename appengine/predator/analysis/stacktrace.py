@@ -375,11 +375,11 @@ class CallStack(namedtuple('CallStack',
     """Returns the number of frames in this stack."""
     return len(self.frames)
 
-  def __nonzero__(self):
+  def __bool__(self):
     """Returns whether this stack is empty."""
     return bool(self.frames)
 
-  __bool__ = __nonzero__
+  __nonzero__ = __bool__
 
   def ToString(self):  # pragma: no cover
     return ('CRASHED [ERROR @ 0xXXX]\n' +
@@ -408,11 +408,11 @@ class CallStackBuffer(object):
     """Returns the number of frames in this stack."""
     return len(self.frames)
 
-  def __nonzero__(self):
+  def __bool__(self):
     """Returns whether this stack is empty."""
     return bool(self.frames)
 
-  __bool__ = __nonzero__
+  __nonzero__ = __bool__
 
   def ToCallStack(self):
     """Converts ``CallStackBuffer`` object to ``CallStack`` object.
@@ -458,11 +458,11 @@ class Stacktrace(namedtuple('Stacktrace', ['stacks', 'crash_stack'])):
     """Returns the number of stacks in this trace."""
     return len(self.stacks)
 
-  def __nonzero__(self):
+  def __bool__(self):
     """Returns whether this trace is empty."""
     return bool(self.stacks)
 
-  __bool__ = __nonzero__
+  __nonzero__ = __bool__
 
   def ToString(self):  # pragma: no cover
     return '\n\n'.join([stack.ToString() for stack in self.stacks])
@@ -487,10 +487,11 @@ class StacktraceBuffer(object):
     self.stacks = stacks or []
     self.filters = filters
 
-  def __nonzero__(self):
+  def __bool__(self):
     """Returns whether this trace buffer is empty."""
     return bool(self.stacks)
-  __bool__ = __nonzero__
+
+  __nonzero__ = __bool__
 
   def AddFilteredStack(self, stack_buffer):
     """Filters stack_buffer and add it to stacks if it's not empty."""

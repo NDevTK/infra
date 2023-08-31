@@ -56,7 +56,7 @@ class Distance(object):
     return self.distance == other.distance and self.frame == other.frame
 
 
-def DistanceBetweenLineRanges((start1, end1), (start2, end2)):
+def DistanceBetweenLineRanges(xxx_todo_changeme, xxx_todo_changeme1):
   """Given two ranges, compute the (unsigned) distance between them.
 
   Args:
@@ -72,6 +72,8 @@ def DistanceBetweenLineRanges((start1, end1), (start2, end2)):
     range, then the difference between those points. Otherwise, returns
     zero (because the ranges overlap).
   """
+  (start1, end1) = xxx_todo_changeme
+  (start2, end2) = xxx_todo_changeme1
   if end1 < start1:
     raise ValueError('the first range is empty: %d < %d' % (end1, start1))
   if end2 < start2:
@@ -188,7 +190,7 @@ class MinDistanceFeature(Feature):
 
       distance = Distance(float('inf'), None)
       touched_file_to_distance = {}
-      for match in matches.itervalues():
+      for match in matches.values():
         if len(match.touched_files) != 1:
           logging.warning('There should be only one touched file per crashed '
                           'file group.')
@@ -267,8 +269,7 @@ class MinDistanceFeature(Feature):
     """
     frame_index_to_changed_files = {}
 
-    for touched_file, distance in (
-        touched_file_to_distance.iteritems()):
+    for touched_file, distance in (iter(touched_file_to_distance.items())):
       file_name = touched_file.new_path.split('/')[-1]
       if distance.frame is None: # pragma: no cover
         logging.warning('Missing the min_distance_frame for file %s' %
@@ -287,7 +288,8 @@ class MinDistanceFeature(Feature):
       return []
 
     # Sort changed file by frame index.
-    _, changed_files = zip(*sorted(frame_index_to_changed_files.iteritems(),
-                                   key=lambda x: x[0]))
+    _, changed_files = list(
+        zip(*sorted(
+            iter(frame_index_to_changed_files.items()), key=lambda x: x[0])))
 
     return list(changed_files)

@@ -50,9 +50,11 @@ class TouchCrashedFileFeature(Feature):
                             reason=None,
                             changed_files=None)
 
-      touched_files = [os.path.basename(touched_file.new_path)
-                       for match in matches.itervalues()
-                       for touched_file in match.touched_files]
+      touched_files = [
+          os.path.basename(touched_file.new_path)
+          for match in matches.values()
+          for touched_file in match.touched_files
+      ]
       plural = len(touched_files) > 1
 
       reason = ['Suspected changelist touched file%s %s, which appear%s in the '

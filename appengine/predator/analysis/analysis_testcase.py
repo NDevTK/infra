@@ -66,13 +66,13 @@ class AnalysisTestCase(BaseTestCase):  # pragma: no cover.
     self.assertEqual(stack1.priority, stack2.priority)
     self.assertEqual(stack1.format_type, stack2.format_type)
     self.assertEqual(stack1.language_type, stack2.language_type)
-    map(self._VerifyTwoStackFramesEqual, stack1.frames, stack2.frames)
+    list(map(self._VerifyTwoStackFramesEqual, stack1.frames, stack2.frames))
 
   def _VerifyTwoStacktracesEqual(self, trace1, trace2):
     self.assertIsNotNone(trace1, "the first trace is unexpectedly missing")
     self.assertIsNotNone(trace2, "the second trace is unexpectedly missing")
     self.assertEqual(len(trace1.stacks), len(trace2.stacks))
-    map(self._VerifyTwoCallStacksEqual, trace1.stacks, trace2.stacks)
+    list(map(self._VerifyTwoCallStacksEqual, trace1.stacks, trace2.stacks))
 
   def GetDummyChangeLog(self):
     return copy.deepcopy(DUMMY_CHANGELOG)

@@ -28,10 +28,10 @@ class DummyClassifier(object):
   def Classify(self, results, crash_stack):
     top_n_frames = 4
     if results:
-      classes = map(self.GetClassFromSuspect, results[:top_n_frames])
+      classes = list(map(self.GetClassFromSuspect, results[:top_n_frames]))
     else:
-      classes = map(self.GetClassFromStackFrame,
-          crash_stack.frames[:top_n_frames])
+      classes = list(
+          map(self.GetClassFromStackFrame, crash_stack.frames[:top_n_frames]))
 
     class_list = RankByOccurrence(classes, 1)
     if class_list:
@@ -80,4 +80,3 @@ class ClassifierTest(AnalysisTestCase):
 
     self.assertEqual(dummy_classifier.Classify([suspect], CallStack(0)),
                      'class_3')
-

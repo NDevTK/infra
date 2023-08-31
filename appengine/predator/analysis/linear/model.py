@@ -221,7 +221,7 @@ class UnnormalizedLogLinearModel(object):
         filtered_reasons[non_zero_feature] = reason[non_zero_feature]
 
     sorted_reasons = sorted(
-        filtered_reasons.items(),
+        list(filtered_reasons.items()),
         key=lambda item: -_FEATURE_TO_REASON_PRIORITY.get(
             item[0], -float('inf')))
 

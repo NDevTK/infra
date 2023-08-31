@@ -49,13 +49,13 @@ class MetaWeight(MetaDict):
     if not self:
       return True
 
-    return all(weight.IsZero(epsilon) for weight in self.itervalues())
+    return all(weight.IsZero(epsilon) for weight in self.values())
 
   def DropZeroWeights(self, epsilon=0.):
     """Drops all zero weights."""
     # Make all sub meta weights drop their zero weights.
     zero_keys = set()
-    for key, weight in self.iteritems():
+    for key, weight in self.items():
       if hasattr(weight, 'is_meta'):
         weight.DropZeroWeights(epsilon=epsilon)
 
@@ -69,8 +69,8 @@ class MetaWeight(MetaDict):
     """``MetaWeight`` can multiply with ``MetaFeatureValue``."""
     # MetaWeight is a dense representation of a sparse array. So MetaWeight and
     # MetaFeature don't necessarily have the same length.
-    return math.fsum(meta_feature[name] * weight
-                     for name, weight in self.iteritems())
+    return math.fsum(
+        meta_feature[name] * weight for name, weight in self.items())
 
   __rmul__ = __mul__
 
@@ -80,12 +80,12 @@ class MetaWeight(MetaDict):
 
     N.B., despite being popularly called the "l0-norm", this isn't
     actually a norm in the mathematical sense."""
-    return math.fsum(weight.l0 for weight in self.itervalues())
+    return math.fsum(weight.l0 for weight in self.values())
 
   @property
   def l1(self):
     """The l1 (aka: Manhattan) norm of the meta weight."""
-    return math.fsum(weight.l1 for weight in self.itervalues())
+    return math.fsum(weight.l1 for weight in self.values())
 
   @property
   def quadrance(self):
@@ -96,4 +96,4 @@ class MetaWeight(MetaDict):
     as its own quantity in many places. Also, computing it directly avoids
     the error introduced by squaring the square-root of an IEEE-754 float.
     """
-    return math.fsum(weight.quadrance for weight in self.itervalues())
+    return math.fsum(weight.quadrance for weight in self.values())

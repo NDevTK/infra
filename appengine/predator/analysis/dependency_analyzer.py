@@ -79,9 +79,9 @@ class DependencyAnalyzer(object):
     # which occur in ``GetDependencies``.
     return {
         dep_path: dep_roll
-        for dep_path, dep_roll in regression_range_dep_rolls.iteritems()
-        if HasBothRevisions(dep_path, dep_roll) and dep_path
-        in self.GetDependencies(stacks_list)
+        for dep_path, dep_roll in regression_range_dep_rolls.items()
+        if HasBothRevisions(dep_path, dep_roll) and
+        dep_path in self.GetDependencies(stacks_list)
     }
 
   @cached_property
@@ -93,4 +93,3 @@ class DependencyAnalyzer(object):
     """
     return self._dep_fetcher.GetDependency(
         self._regression_version, self._platform) if self._dep_fetcher else {}
-

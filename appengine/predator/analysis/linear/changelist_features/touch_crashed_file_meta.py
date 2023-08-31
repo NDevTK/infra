@@ -109,8 +109,9 @@ class TouchCrashedFileMetaFeature(MetaFeature):
     # stacktrace.
     dep_to_grouped_frame_infos = crash_util.IndexFramesWithCrashedGroup(
         report.stacktrace, self.CrashedGroupFactory, report.dependencies)
-    features_given_report = {name: feature(report)
-                             for name, feature in self.iteritems()}
+    features_given_report = {
+        name: feature(report) for name, feature in self.items()
+    }
 
     def FeatureValueGivenReport(suspect):
       """Function mapping suspect related data to its FeatureValue.
@@ -130,8 +131,9 @@ class TouchCrashedFileMetaFeature(MetaFeature):
                                                       grouped_frame_infos,
                                                       self.Match)
 
-      return MetaFeatureValue(
-          self.name, {name: fx(suspect, matches)
-                      for name, fx in features_given_report.iteritems()})
+      return MetaFeatureValue(self.name, {
+          name: fx(suspect, matches)
+          for name, fx in features_given_report.items()
+      })
 
     return FeatureValueGivenReport
