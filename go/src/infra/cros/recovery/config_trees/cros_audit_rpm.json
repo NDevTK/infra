@@ -2738,6 +2738,239 @@
           "run_control": "RERUN_AFTER_RECOVERY"
         },
         {
+          "name": "Debug header servo present",
+          "docs": [
+            "Check if servod detected debug header components as expected."
+          ],
+          "conditions": [
+            {
+              "name": "Is not Flex device",
+              "docs": [
+                "Verify that device is belong Reven models"
+              ],
+              "exec_name": "dut_check_board",
+              "exec_args": [
+                "string_values:aurora,reven",
+                "invert_result:true"
+              ],
+              "run_control": "RERUN_AFTER_RECOVERY"
+            },
+            {
+              "name": "Servo uses debug header components",
+              "docs": [
+                "Verify that servo has components which are not started from ccd_."
+              ],
+              "exec_name": "servo_has_debug_header",
+              "run_control": "RERUN_AFTER_RECOVERY"
+            }
+          ],
+          "dependencies": [
+            {
+              "name": "Set state:DEBUG_HEADER_SERVO_MISSING",
+              "exec_name": "servo_set_servo_state",
+              "exec_args": [
+                "state:DEBUG_HEADER_SERVO_MISSING"
+              ],
+              "run_control": "ALWAYS_RUN"
+            }
+          ],
+          "exec_name": "servo_check_servod_control",
+          "exec_args": [
+            "command:dut_controller_missing_fault",
+            "expected_string_value:off"
+          ],
+          "recoveries": [
+            {
+              "name": "Stop servod",
+              "docs": [
+                "Stop the servod daemon.",
+                "Allowed to fail as can be run when servod is not running."
+              ],
+              "dependencies": [
+                {
+                  "name": "Save UART capture",
+                  "dependencies": [
+                    {
+                      "name": "Stop UART capture",
+                      "exec_name": "servod_stop_uart_capture",
+                      "allow_fail_after_recovery": true,
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servod_save_uart_capture",
+                  "allow_fail_after_recovery": true,
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_name": "servo_host_servod_stop",
+              "allow_fail_after_recovery": true,
+              "run_control": "ALWAYS_RUN"
+            },
+            {
+              "name": "Reboot servo device",
+              "docs": [
+                "Reboot servo device via servodtool"
+              ],
+              "dependencies": [
+                {
+                  "name": "Device is SSHable",
+                  "docs": [
+                    "Verify that device is reachable by SSH.",
+                    "Limited to 15 seconds."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Set state:NO_SSH",
+                      "exec_name": "servo_set_servo_state",
+                      "exec_args": [
+                        "state:NO_SSH"
+                      ],
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "cros_ssh",
+                  "timeout": "15s",
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Stop servod",
+                  "docs": [
+                    "Stop the servod daemon.",
+                    "Allowed to fail as can be run when servod is not running."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Save UART capture",
+                      "dependencies": [
+                        {
+                          "name": "Stop UART capture",
+                          "exec_name": "servod_stop_uart_capture",
+                          "allow_fail_after_recovery": true,
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "servod_save_uart_capture",
+                      "allow_fail_after_recovery": true,
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_host_servod_stop",
+                  "allow_fail_after_recovery": true,
+                  "run_control": "ALWAYS_RUN"
+                }
+              ],
+              "exec_name": "servo_reboot",
+              "exec_args": [
+                "reboot_timeout:30",
+                "wait_timeout:30"
+              ],
+              "timeout": "1m10s",
+              "run_control": "RUN_ONCE"
+            },
+            {
+              "name": "Reset EC from DUT and stop",
+              "docs": [
+                "Try to reset EC from DUT side to wake CR50 up and then stop the servod."
+              ],
+              "conditions": [
+                {
+                  "name": "DUT is SSHable",
+                  "docs": [
+                    "verify if DUT is SSH-able"
+                  ],
+                  "exec_name": "cros_ssh_dut",
+                  "timeout": "15s",
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "is_servo_type_ccd",
+                  "exec_name": "is_servo_type_ccd",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "dependencies": [
+                {
+                  "name": "cros_reset_ec",
+                  "docs": [
+                    "Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "DUT is SSHable",
+                      "docs": [
+                        "verify if DUT is SSH-able"
+                      ],
+                      "exec_name": "cros_ssh_dut",
+                      "timeout": "15s",
+                      "run_control": "ALWAYS_RUN"
+                    }
+                  ],
+                  "exec_name": "cros_reset_ec",
+                  "exec_args": [
+                    "wait_timeout:30"
+                  ],
+                  "run_control": "ALWAYS_RUN"
+                },
+                {
+                  "name": "Stop servod",
+                  "docs": [
+                    "Stop the servod daemon.",
+                    "Allowed to fail as can be run when servod is not running."
+                  ],
+                  "dependencies": [
+                    {
+                      "name": "Save UART capture",
+                      "dependencies": [
+                        {
+                          "name": "Stop UART capture",
+                          "exec_name": "servod_stop_uart_capture",
+                          "allow_fail_after_recovery": true,
+                          "run_control": "RERUN_AFTER_RECOVERY"
+                        }
+                      ],
+                      "exec_name": "servod_save_uart_capture",
+                      "allow_fail_after_recovery": true,
+                      "run_control": "RERUN_AFTER_RECOVERY"
+                    }
+                  ],
+                  "exec_name": "servo_host_servod_stop",
+                  "allow_fail_after_recovery": true,
+                  "run_control": "ALWAYS_RUN"
+                }
+              ],
+              "exec_name": "sample_pass",
+              "run_control": "ALWAYS_RUN"
+            },
+            {
+              "name": "Create request to reboot labstation",
+              "docs": [
+                "Try to create reboot flag file request.",
+                "The action always fails as Servo will be fixed after reboot."
+              ],
+              "conditions": [
+                {
+                  "name": "Is labstation",
+                  "docs": [
+                    "Condition to check if the servohost is a labstation."
+                  ],
+                  "exec_name": "servo_host_is_labstation",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "dependencies": [
+                {
+                  "name": "cros_create_reboot_request",
+                  "exec_name": "cros_create_reboot_request",
+                  "run_control": "RERUN_AFTER_RECOVERY"
+                }
+              ],
+              "exec_name": "sample_fail",
+              "run_control": "ALWAYS_RUN"
+            }
+          ],
+          "run_control": "RERUN_AFTER_RECOVERY"
+        },
+        {
           "name": "Cold reset pin is detected",
           "conditions": [
             {

@@ -30,6 +30,7 @@ func servoRepairPlan() *Plan {
 			"Servod is responsive to dut-control",
 			"Read servo serial by servod harness",
 			"Verify servo connected to the DUT",
+			"Debug header servo present",
 			"Cold reset pin is detected",
 			"Warm reset pin is detected (servo_micro)",
 			"Charger connected",
@@ -1178,6 +1179,35 @@ func servoRepairPlan() *Plan {
 					"Set state:BROKEN",
 				},
 				ExecName: "servo_update_servo_type_label",
+			},
+			"Servo uses debug header components": {
+				Docs: []string{
+					"Verify that servo has components which are not started from ccd_.",
+				},
+				ExecName: "servo_has_debug_header",
+			},
+			"Debug header servo present": {
+				Docs: []string{
+					"Check if servod detected debug header components as expected.",
+				},
+				Conditions: []string{
+					"Is not Flex device",
+					"Servo uses debug header components",
+				},
+				Dependencies: []string{
+					"Set state:DEBUG_HEADER_SERVO_MISSING",
+				},
+				ExecName: "servo_check_servod_control",
+				ExecExtraArgs: []string{
+					"command:dut_controller_missing_fault",
+					"expected_string_value:off",
+				},
+				RecoveryActions: []string{
+					"Stop servod",
+					"Reboot servo device",
+					"Reset EC from DUT and stop",
+					"Create request to reboot labstation",
+				},
 			},
 			"Servod detect all children components": {
 				Docs: []string{
