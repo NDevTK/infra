@@ -10,6 +10,8 @@ import (
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/satlab/common/dns"
 )
 
 type readContentsFunc func() (string, error)
@@ -41,7 +43,7 @@ func (c *getDNSRun) Run(a subcommands.Application, args []string, env subcommand
 
 // innerRun contains business logic
 func (c *getDNSRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-	return c.runCmdInjected(os.Stdout, readContents)
+	return c.runCmdInjected(os.Stdout, dns.NewDNSCommand().ReadContents)
 }
 
 func (c *getDNSRun) runCmdInjected(w io.Writer, readContents readContentsFunc) error {
