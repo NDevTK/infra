@@ -5,12 +5,14 @@
 package dut
 
 import (
-	"infra/cmdsupport/cmdlib"
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/satlab/internal/components/dut/shivas"
+	"context"
 
 	"github.com/maruel/subcommands"
-	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/auth/client/authcli"
+
+	"infra/cmdsupport/cmdlib"
+	"infra/cros/satlab/common/dut"
+	"infra/cros/satlab/common/utils/executor"
 )
 
 // UpdateDUTCmd is the command that updates fields for a satlab DUT.
@@ -18,19 +20,23 @@ var UpdateDUTCmd = &subcommands.Command{
 	UsageLine: "dut [options ...]",
 	ShortDesc: "Update a Satlab DUT",
 	CommandRun: func() subcommands.CommandRun {
-		c := &updateDUT{}
+		c := &updateDUTCmd{}
 		registerUpdateShivasFlags(c)
 		return c
 	},
 }
 
 // UpdateDUT is the 'satlab update dut' command. Its fields are the command line arguments.
-type updateDUT struct {
-	shivasUpdateDUT
+type updateDUTCmd struct {
+	subcommands.CommandRunBase
+
+	authFlags authcli.Flags
+
+	dut.UpdateDUT
 }
 
 // Run is the main entrypoint to 'satlab update dut'.
-func (c *updateDUT) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+func (c *updateDUTCmd) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	if err := c.innerRun(a, args, env); err != nil {
 		cmdlib.PrintError(a, err)
 		return 1
@@ -39,17 +45,7 @@ func (c *updateDUT) Run(a subcommands.Application, args []string, env subcommand
 }
 
 // InnerRun is the implementation of 'satlab update dut'.
-func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-
-	dockerHostBoxIdentifier, err := getDockerHostBoxIdentifier(c.commonFlags)
-	if err != nil {
-		return errors.Annotate(err, "update dut").Err()
-	}
-
-	qualifiedHostname := site.MaybePrepend(site.Satlab, dockerHostBoxIdentifier, c.hostname)
-
-	return (&shivas.DUTUpdater{
-		Name:       qualifiedHostname,
-		ShivasArgs: makeUpdateShivasFlags(c),
-	}).Update()
+func (c *updateDUTCmd) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
+	ctx := context.Background()
+	return c.TriggerRun(ctx, &executor.ExecCommander{})
 }
