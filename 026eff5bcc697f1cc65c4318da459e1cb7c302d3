@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1c3c3e2b_3e5a7c05",
+        "filename": "go/src/infra/cros/satlab/satlabrpcserver/proto/satlabrpc.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-08-31T22:08:08Z",
+      "side": 1,
+      "message": "does this need to be in the proto?",
+      "revId": "026eff5bcc697f1cc65c4318da459e1cb7c302d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9e6becec_73f3f855",
+        "filename": "go/src/infra/cros/satlab/satlabrpcserver/services/rpc_services/rpc_services.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 424,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-08-31T22:08:08Z",
+      "side": 1,
+      "message": "based on the name of the RPC, I would expect the DUTs existing pools to be preserved, not replaced with the new pool",
+      "revId": "026eff5bcc697f1cc65c4318da459e1cb7c302d3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
