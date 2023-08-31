@@ -11,8 +11,10 @@ import (
 	"sort"
 	"strings"
 
+	"infra/cros/satlab/common/dns"
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/satlabcommands"
+	"infra/cros/satlab/common/utils/executor"
 
 	"go.chromium.org/luci/common/errors"
 )
@@ -22,32 +24,6 @@ type classifier func(map[string]bool, string) satlabcommands.Decision
 
 // A replacer takes a line that is selected to be modified and modifies it.
 type replacer func(string) string
-
-// readContents gets the content of a DNS file.
-// If the DNS file does not exist, replace it with an empty container.
-func readContents() (string, error) {
-	// Defensively touch the file if it does not already exist.
-	// See b/199796469 for details.
-	args := []string{
-		paths.DockerPath,
-		"exec",
-		"dns",
-		"touch",
-		"/etc/dut_hosts/hosts",
-	}
-	if err := exec.Command(args[0], args[1:]...).Run(); err != nil {
-		return "", errors.Annotate(err, "defensively touch dns file").Err()
-	}
-	args = []string{
-		paths.DockerPath,
-		"exec",
-		"dns",
-		"/bin/cat",
-		"/etc/dut_hosts/hosts",
-	}
-	out, err := exec.Command(args[0], args[1:]...).Output()
-	return strings.TrimRight(string(out), "\n\t"), errors.Annotate(err, "get dns file content").Err()
-}
 
 // WriteBackup set the content of the backup DNS file.
 func writeBackup(content string) error {
@@ -244,7 +220,7 @@ func UpdateRecord(host string, addr string) (string, error) {
 	if addr == "" {
 		return "", errors.New("update record: no address")
 	}
-	content, err := readContents()
+	content, err := dns.ReadContents(&executor.ExecCommander{})
 	if err != nil {
 		return "", errors.Annotate(err, "update record").Err()
 	}
