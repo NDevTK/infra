@@ -1128,6 +1128,20 @@ wheel: <
 
 * *universal*
 
+## **backoff-py3**
+
+### 2.2.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/backoff-py3"
+  version: "version:2.2.1"
+>
+```
+
+
+* *universal*
+
 ## **backports.functools_lru_cache**
 
 ### 1.5
@@ -5511,14 +5525,42 @@ wheel: <
 
 * *universal*
 
-## **opentelemetry-exporter-gcp-trace-py3**
+## **opentelemetry-exporter-otlp-proto-common-py3**
 
-### 1.5.0
+### 1.18.0
 
 ```protobuf
 wheel: <
-  name: "infra/python/wheels/opentelemetry-exporter-gcp-trace-py3"
-  version: "version:1.5.0"
+  name: "infra/python/wheels/opentelemetry-exporter-otlp-proto-common-py3"
+  version: "version:1.18.0"
+>
+```
+
+
+* *universal*
+
+## **opentelemetry-exporter-otlp-proto-grpc-py3**
+
+### 1.18.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/opentelemetry-exporter-otlp-proto-grpc-py3"
+  version: "version:1.18.0"
+>
+```
+
+
+* *universal*
+
+## **opentelemetry-proto-py3**
+
+### 1.18.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/opentelemetry-proto-py3"
+  version: "version:1.18.0"
 >
 ```
 
