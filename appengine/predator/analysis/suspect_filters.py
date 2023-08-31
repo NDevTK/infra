@@ -101,8 +101,8 @@ class FilterIgnoredRevisions(SuspectFilter):
   @cached_property
   def ignore_revisions(self):
     """Gets a set of ignored revisions."""
-    # Get the latest ignore list in master branch.
-    content = self._repository.GetSource(self._ignore_list_path, 'master')
+    # Get the latest ignore list in main branch.
+    content = self._repository.GetSource(self._ignore_list_path, 'main')
     if not content:
       logging.warning('Failed to download ignore list %s from %s',
                       self._ignore_list_path, self._repository.repo_url)

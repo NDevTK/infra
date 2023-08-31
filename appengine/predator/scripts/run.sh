@@ -141,7 +141,7 @@ deploy_for_prod() {
   local new_version="$(git rev-parse --short HEAD)"
 
   # Check committed local changes.
-  local tot_version="$(git rev-parse --short origin/master)"
+  local tot_version="$(git rev-parse --short origin/main)"
   if [[ "${new_version}" != "${tot_version}" ]]; then
     echo "You have local commits!"
     echo "Please run 'git reset ${tot_version}' to reset the local changes."

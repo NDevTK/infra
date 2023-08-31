@@ -27,8 +27,8 @@ class MockChromeDependencyFetcher(object):
   def GetDependency(self, *_):
     if not self.none_deps:
       return {
-          'src': Dependency('src', 'https://chromium.git', 'master'),
-          'src/v8': Dependency('src/v8', 'https://chromium.v8.git', 'master'),
+          'src': Dependency('src', 'https://chromium.git', 'main'),
+          'src/v8': Dependency('src/v8', 'https://chromium.v8.git', 'main'),
       }
 
     return None

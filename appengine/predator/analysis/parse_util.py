@@ -120,7 +120,7 @@ def GetDepPathAndNormalizedFilePath(path, deps, is_java=False,
         current_dep_path = trimmed_dep_path_lower
 
     # For some special cases, for example, a file like
-    # 'https://chromium.googlesource.com/chromium/src/+/master/'
+    # 'https://chromium.googlesource.com/chromium/src/+/main/'
     # 'third_party/tcmalloc/chromium/src/common.cc', this path shouldn't be
     # matched with 'src' in between, it should be matched to the trimmed 'src'
     # in the beginning.

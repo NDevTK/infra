@@ -15,8 +15,8 @@ from libs.deps.chrome_dependency_fetcher import ChromeDependencyFetcher
 
 
 def GetRepoToDepPath(dep_fetcher):
-  """Gets mapping from repo_url to dep_path from master branch in chromium."""
-  deps = dep_fetcher.GetDependency('master', 'all')
+  """Gets mapping from repo_url to dep_path from main branch in chromium."""
+  deps = dep_fetcher.GetDependency('main', 'all')
   if not deps:
     return None
 

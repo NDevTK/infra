@@ -36,7 +36,7 @@ def GenerateFileName(*args):  # pragma: no cover
 
 
 def IsGitHash(revision):  # pragma: no cover
-  return GIT_HASH_PATTERN.match(str(revision)) or revision.lower() == 'master'
+  return GIT_HASH_PATTERN.match(str(revision)) or revision.lower() == 'main'
 
 
 def ParseGitHash(revision):  # pragma: no cover
