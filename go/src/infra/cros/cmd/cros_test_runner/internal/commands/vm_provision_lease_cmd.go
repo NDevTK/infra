@@ -16,6 +16,7 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/luciexe/build"
 )
 
 // VMProvisionLeaseCmd represents vm-provision service lease cmd.
@@ -25,6 +26,7 @@ type VMProvisionLeaseCmd struct {
 	// Deps
 	DutVmGceImage  *vmlabapi.GceImage
 	CftTestRequest *skylab_test_runner.CFTTestRequest
+	BuildState     *build.State
 	// Updates
 	LeaseVMResponse *testapi.LeaseVMResponse
 }
@@ -36,6 +38,8 @@ func (cmd *VMProvisionLeaseCmd) ExtractDependencies(
 
 	switch sk := ski.(type) {
 	case *data.HwTestStateKeeper:
+		// BuildState is used for accessing experiment flags. If missing, will use defaults.
+		cmd.BuildState = sk.BuildState
 		if sk.DutVmGceImage == nil {
 			return fmt.Errorf("cmd %q missing dependency: DutVmGceImage", cmd.GetCommandType())
 		}

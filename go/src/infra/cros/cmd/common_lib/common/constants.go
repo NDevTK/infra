@@ -16,7 +16,8 @@ const (
 	VmLabDutHostName                       = "vm"
 	GceProject                             = "chromeos-gce-tests"
 	GceNetwork                             = "global/networks/chromeos-gce-tests"
-	GceMachineType                         = "n1-standard-8"
+	GceMachineTypeN14                      = "n1-standard-4"
+	GceMachineTypeN18                      = "n1-standard-8"
 	GceMinCpuPlatform                      = "Intel Haswell"
 	DockerImageCacheServer                 = "us-docker.pkg.dev/cros-registry/test-services/cacheserver:prod"
 	LroSleepTime                           = 5 * time.Second
@@ -36,6 +37,7 @@ const (
 	TkoParseScriptPath                     = "/usr/local/autotest/tko/parse"
 	DutConnectionPort                      = 22
 	VmLeaserExperimentStr                  = "chromeos.cros_infra_config.vmleaser.launch"
+	VmLabMachineTypeExperiment             = "chromeos.cros_infra_config.vmlab.machine_type_n1"
 	SwarmingBasePath                       = "https://chromeos-swarming.appspot.com/_ah/api/swarming/v1/"
 	SwarmingMaxLimitForEachQuery           = 1000
 	// SourceMetadataPath is the path in the build output directory that
