@@ -12,6 +12,8 @@ import (
 
 	"github.com/hashicorp/go-version"
 
+	"infra/cros/satlab/common/dns"
+	dut_pkg "infra/cros/satlab/common/dut"
 	run_pkg "infra/cros/satlab/common/run"
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
@@ -399,4 +401,29 @@ func (s *SatlabRpcServiceServer) GetVersionInfo(ctx context.Context, _ *pb.GetVe
 	}
 	resp.Version = version
 	return &resp, nil
+}
+
+func (s *SatlabRpcServiceServer) AddPool(ctx context.Context, in *pb.AddPoolRequest) (*pb.AddPoolResponse, error) {
+	IPHostMap, err := dns.ReadHostsIP(s.commandExecutor, true)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, address := range in.GetAddresses() {
+		hostname, ok := IPHostMap[address]
+		if ok {
+			req := dut_pkg.UpdateDUT{
+				Pools:    []string{in.GetPool()},
+				Hostname: hostname,
+			}
+
+			err = req.TriggerRun(ctx, s.commandExecutor)
+			if err != nil {
+				return nil, err
+			}
+
+		}
+	}
+
+	return &pb.AddPoolResponse{}, nil
 }
