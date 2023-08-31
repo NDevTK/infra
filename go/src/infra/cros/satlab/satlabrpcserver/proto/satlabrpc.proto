@@ -24,6 +24,7 @@ service SatlabRpcService {
 
   // manage DUTs
   rpc add_pool (AddPoolRequest) returns (AddPoolResponse);
+  rpc update_pool (UpdatePoolRequest) returns (UpdatePoolResponse);
 }
 
 message ListBuildTargetsRequest {
@@ -187,3 +188,17 @@ message AddPoolRequest {
 
 // NEXT_TAG = 1
 message AddPoolResponse {}
+
+// NEXT_TAG = 2
+message UpdatePoolRequest {
+  // NEXT_TAG = 3
+  message Item {
+    string address = 1;
+    repeated string pools = 2;
+  }
+
+  repeated Item items = 1;
+}
+
+// NEXT_TAG = 1
+message UpdatePoolResponse {}
