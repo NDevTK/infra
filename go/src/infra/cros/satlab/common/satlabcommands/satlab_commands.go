@@ -107,6 +107,7 @@ func (s *SubCommand) GetOsVersion() (*OSVersion, error) {
 	}
 	return &resp, nil
 }
+
 // GetSatlabVersion gets the Satlab version from docker container `compose` label.
 func (s *SubCommand) GetSatlabVersion() (string, error) {
 	out, err := s.ExecCommander.Exec(
