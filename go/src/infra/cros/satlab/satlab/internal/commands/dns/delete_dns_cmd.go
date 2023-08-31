@@ -9,6 +9,7 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/satlab/common/dns"
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/executor"
@@ -61,7 +62,9 @@ func (c *deleteDNSRun) runCmdInjected(args []string, dhbIDFunc DockerHostBoxIden
 		return err
 	}
 
-	_, err = DeleteRecord(ensureRecords, readContents, c.host)
+	_, err = DeleteRecord(ensureRecords, func() (string, error) {
+		return dns.ReadContents(&executor.ExecCommander{})
+	}, c.host)
 	return err
 }
 
