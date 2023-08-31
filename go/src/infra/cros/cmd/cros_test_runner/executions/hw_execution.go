@@ -7,14 +7,12 @@ package executions
 import (
 	"bytes"
 	"compress/zlib"
-	"container/list"
 	"context"
 	"encoding/base64"
 	"fmt"
 	"log"
 	"os"
 
-	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner/steps"
 	"go.chromium.org/luci/common/errors"
@@ -23,7 +21,6 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/configs"
@@ -116,43 +113,24 @@ func executeHwTests(
 	executorCfg := configs.NewExecutorConfig(ctr, containerCfg)
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 
-	containerQueue := list.New()
-	provisionQueue := list.New()
-	preTestQueue := list.New()
-	testQueue := list.New()
-	postTestQueue := list.New()
-	publishQueue := list.New()
-
-	injectables := common.NewInjectableStorage()
-	_ = injectables.Set("req", req)
-	_ = injectables.Set("botDims", buildState.Build().GetInfra().GetSwarming().GetBotDimensions())
-
 	// Create state keeper
 	gcsurl := common.GetGcsUrl(gsRoot)
-	_ = injectables.Set("gcs-url", gcsurl)
-	_ = injectables.Set("stainless-url", common.GetStainlessUrl(gcsurl))
-	sk := &data.HwTestStateKeeper{
-		BuildState:            buildState,
-		CftTestRequest:        req,
-		Ctr:                   ctr,
-		DockerKeyFileLocation: dockerKeyFile,
-		GcsPublishSrcDir:      os.Getenv("TEMPDIR"),
-		GcsUrl:                gcsurl,
-		StainlessUrl:          common.GetStainlessUrl(gcsurl),
-		TesthausUrl:           common.GetTesthausUrl(gcsurl),
-		ContainerQueue:        containerQueue,
-		ProvisionQueue:        provisionQueue,
-		PreTestQueue:          preTestQueue,
-		TestQueue:             testQueue,
-		PostTestQueue:         postTestQueue,
-		PublishQueue:          publishQueue,
-		Injectables:           injectables,
-		ContainerInstances:    make(map[string]interfaces.ContainerInterface),
-		ContainerImages:       containerImagesMap,
-		ProvisionResponses:    map[string][]*testapi.InstallResponse{},
-		DeviceIdentifiers:     []string{},
-		Devices:               map[string]*testapi.CrosTestRequest_Device{},
-	}
+	sk := data.NewHwTestStateKeeper()
+	sk.BuildState = buildState
+	sk.CftTestRequest = req
+	sk.Ctr = ctr
+	sk.DockerKeyFileLocation = dockerKeyFile
+	sk.GcsPublishSrcDir = os.Getenv("TEMPDIR")
+	sk.GcsUrl = gcsurl
+	sk.StainlessUrl = common.GetStainlessUrl(gcsurl)
+	sk.TesthausUrl = common.GetTesthausUrl(gcsurl)
+	sk.ContainerImages = containerImagesMap
+
+	// For demonstration/logging purposes.
+	_ = sk.Injectables.Set("req", req)
+	_ = sk.Injectables.Set("botDims", buildState.Build().GetInfra().GetSwarming().GetBotDimensions())
+	_ = sk.Injectables.Set("gcs-url", gcsurl)
+	_ = sk.Injectables.Set("stainless-url", common.GetStainlessUrl(gcsurl))
 
 	// Generate config
 	hwTestConfig := configs.NewTrv2ExecutionConfig(configs.HwTestExecutionConfigType, cmdCfg, sk, req.GetStepsConfig())

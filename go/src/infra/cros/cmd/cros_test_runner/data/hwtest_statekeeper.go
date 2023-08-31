@@ -87,3 +87,22 @@ type HwTestStateKeeper struct {
 	Ctr                   *crostoolrunner.CrosToolRunner
 	DockerKeyFileLocation string
 }
+
+func NewHwTestStateKeeper() *HwTestStateKeeper {
+	return &HwTestStateKeeper{
+		ContainerQueue:           list.New(),
+		ProvisionQueue:           list.New(),
+		PreTestQueue:             list.New(),
+		TestQueue:                list.New(),
+		PostTestQueue:            list.New(),
+		PublishQueue:             list.New(),
+		Injectables:              common.NewInjectableStorage(),
+		ContainerInstances:       make(map[string]interfaces.ContainerInterface),
+		ContainerImages:          make(map[string]*api.ContainerImageInfo),
+		DeviceIdentifiers:        []string{},
+		Devices:                  make(map[string]*testapi.CrosTestRequest_Device),
+		CompanionDevices:         []*testapi.CrosTestRequest_Device{},
+		CompanionDevicesMetadata: []*skylab_test_runner.CFTTestRequest_Device{},
+		ProvisionResponses:       make(map[string][]*testapi.InstallResponse),
+	}
+}

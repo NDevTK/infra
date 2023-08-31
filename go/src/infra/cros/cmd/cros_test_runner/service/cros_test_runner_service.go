@@ -6,7 +6,6 @@ package service
 
 import (
 	"context"
-	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/executions"
 
@@ -20,10 +19,13 @@ type CrosTestRunnerService struct {
 }
 
 func NewCrosTestRunnerService(execReq *skylab_test_runner.ExecuteRequest, serverSK *data.LocalTestStateKeeper) (*CrosTestRunnerService, error) {
-	executeSK := &data.LocalTestStateKeeper{Args: &data.LocalArgs{
-		HostName:             serverSK.HostName,
-		SkipBuildDutTopology: serverSK.DutTopology != nil,
-	}}
+	executeSK := &data.LocalTestStateKeeper{
+		Args: &data.LocalArgs{
+			HostName:             serverSK.HostName,
+			SkipBuildDutTopology: serverSK.DutTopology != nil,
+		},
+		HwTestStateKeeper: *data.NewHwTestStateKeeper(),
+	}
 	executeSK.DutTopology = serverSK.DutTopology
 	executeSK.DockerKeyFileLocation = serverSK.DockerKeyFileLocation
 	executeSK.UseDockerKeyDirectly = serverSK.UseDockerKeyDirectly
@@ -31,7 +33,6 @@ func NewCrosTestRunnerService(execReq *skylab_test_runner.ExecuteRequest, server
 	executeSK.StainlessUrl = serverSK.StainlessUrl
 	executeSK.TesthausUrl = serverSK.TesthausUrl
 	executeSK.GcsPublishSrcDir = serverSK.GcsPublishSrcDir
-	executeSK.Injectables = common.NewInjectableStorage()
 
 	executeSK.Args.HostName = serverSK.HostName
 	duts := serverSK.DutTopology.GetDuts()
@@ -51,7 +52,6 @@ func NewCrosTestRunnerService(execReq *skylab_test_runner.ExecuteRequest, server
 			// Skipped for initial implementation.
 			executeSK.Args.SkipTestFinder = true
 			executeSK.Args.RunCpconPublish = stepConfig.GetRunCpconPublish()
-
 		}
 	}
 
