@@ -1,5 +1,5 @@
 create {
-  platform_re: "linux-amd64"
+  platform_re: "linux-.*|mac-.*"
   source {
     git {
       repo: "https://github.com/lloyd/yajl.git"
