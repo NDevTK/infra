@@ -14,6 +14,7 @@ import (
 	"infra/cros/satlab/common/dns"
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/satlabcommands"
+	"infra/cros/satlab/common/utils/executor"
 
 	"go.chromium.org/luci/common/errors"
 )
@@ -219,7 +220,7 @@ func UpdateRecord(host string, addr string) (string, error) {
 	if addr == "" {
 		return "", errors.New("update record: no address")
 	}
-	content, err := dns.NewDNSCommand().ReadContents()
+	content, err := dns.ReadContents(&executor.ExecCommander{})
 	if err != nil {
 		return "", errors.Annotate(err, "update record").Err()
 	}
