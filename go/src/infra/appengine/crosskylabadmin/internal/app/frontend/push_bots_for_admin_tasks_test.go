@@ -285,7 +285,7 @@ func TestPushBotsForAdminTasksWithPoolCfg(t *testing.T) {
 		sort.Strings(taskPaths)
 		sort.Strings(taskParams)
 		expectedPaths := []string{"/internal/task/cros_repair/fake-bot-a", "/internal/task/cros_repair/fake-bot-b", "/internal/task/cros_repair/pool-cfg-bot-a", "/internal/task/cros_repair/pool-cfg-bot-b"}
-		expectedParams := []string{"botID=fake-bot-a&builderBucket=&expectedState=needs_repair", "botID=fake-bot-b&builderBucket=&expectedState=needs_repair", "botID=pool-cfg-bot-a&builderBucket=&expectedState=needs_repair", "botID=pool-cfg-bot-b&builderBucket=some_bucket&expectedState=needs_repair"}
+		expectedParams := []string{"botID=fake-bot-a&expectedState=needs_repair&swarmingPool=fake-bot-pool", "botID=fake-bot-b&expectedState=needs_repair&swarmingPool=fake-bot-pool", "botID=pool-cfg-bot-a&expectedState=needs_repair&swarmingPool=pool-cfg-a", "botID=pool-cfg-bot-b&expectedState=needs_repair&swarmingPool=pool-cfg-b"}
 		So(taskPaths, ShouldResemble, expectedPaths)
 		So(taskParams, ShouldResemble, expectedParams)
 	})
@@ -395,7 +395,7 @@ func TestPushBotsForAdminTasksWithPoolCfgSkipError(t *testing.T) {
 		sort.Strings(taskPaths)
 		sort.Strings(taskParams)
 		expectedPaths := []string{"/internal/task/cros_repair/fake-bot-a", "/internal/task/cros_repair/fake-bot-b", "/internal/task/cros_repair/pool-cfg-bot-b"}
-		expectedParams := []string{"botID=fake-bot-a&builderBucket=&expectedState=needs_repair", "botID=fake-bot-b&builderBucket=&expectedState=needs_repair", "botID=pool-cfg-bot-b&builderBucket=some_bucket&expectedState=needs_repair"}
+		expectedParams := []string{"botID=fake-bot-a&expectedState=needs_repair&swarmingPool=fake-bot-pool", "botID=fake-bot-b&expectedState=needs_repair&swarmingPool=fake-bot-pool", "botID=pool-cfg-bot-b&expectedState=needs_repair&swarmingPool=pool-cfg-b"}
 		So(taskPaths, ShouldResemble, expectedPaths)
 		So(taskParams, ShouldResemble, expectedParams)
 	})

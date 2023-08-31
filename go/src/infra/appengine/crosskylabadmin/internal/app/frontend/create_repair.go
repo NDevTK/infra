@@ -111,11 +111,23 @@ func findProperRecoveryTask(ctx context.Context, expectedState, dutName string, 
 	return buildbucket.Recovery
 }
 
+// Gets the PoolCfg for a given swarming pool if available, otherwise returns nil
+func getPoolCfg(ctx context.Context, poolName string) *config.Swarming_PoolCfg {
+	cfg := config.Get(ctx)
+	for _, c := range cfg.Swarming.PoolCfgs {
+		if c.PoolName == poolName {
+			logging.Infof(ctx, "Found Pool config for %q pool", poolName)
+			return c
+		}
+	}
+	return nil
+}
+
 // CreateRepairTask kicks off a repair job.
 //
 // This function will either schedule a legacy repair task or a PARIS repair task.
 // Note that the ufs client can be nil.
-func CreateRepairTask(ctx context.Context, botID string, expectedState string, pools []string, randFloat float64, builderBucket string) (string, error) {
+func CreateRepairTask(ctx context.Context, botID string, expectedState string, pools []string, randFloat float64, swarmingPool string) (string, error) {
 	logging.Infof(ctx, "Creating repair task for %q expected state %q with random input %f", botID, expectedState, randFloat)
 	// If we encounter an error picking paris or legacy, do the safe thing and use legacy.
 	taskType, err := RouteTask(
@@ -142,13 +154,31 @@ func CreateRepairTask(ctx context.Context, botID string, expectedState string, p
 		taskType:      cipdVersion,
 		botID:         botID,
 		expectedState: expectedState,
-		builderBucket: builderBucket,
+		builderBucket: "",
+		botPrefix:     "",
+		ufsNamespace:  "",
 	}
+
+	// Read the builder bucket, bot prefix and UFS namespace info from the PoolCfg.
+	// Builder bucket, Bot prefix varies for each Partner and stored in a different UFS namespace.
+	if p := getPoolCfg(ctx, swarmingPool); p != nil {
+		r.builderBucket = p.BuilderBucket
+		r.botPrefix = p.BotPrefix
+		r.ufsNamespace = p.UfsNamespace
+		// Trim the bot prefix when it is set in the PoolCfg for a given swarming pool.
+		if r.botPrefix != "" {
+			if strings.HasPrefix(botID, r.botPrefix) {
+				r.botID = strings.TrimPrefix(botID, r.botPrefix)
+
+			}
+		}
+	}
+
 	karteC, err := createKarteClient(ctx)
 	if err != nil {
 		logging.Infof(ctx, "Fail to create karte client, skip stats checking")
 	} else {
-		r.taskName = findProperRecoveryTask(ctx, expectedState, heuristics.NormalizeBotNameToDeviceName(botID), karteC)
+		r.taskName = findProperRecoveryTask(ctx, expectedState, heuristics.NormalizeBotNameToDeviceName(r.botID), karteC)
 	}
 	url, err := createBuildbucketTask(ctx, r)
 	if err != nil {
@@ -226,6 +256,10 @@ type createBuildbucketTaskRequest struct {
 	expectedState string
 	// Build bucket to be used to schedule swarming task
 	builderBucket string
+	// Bot prefix of a swarming bot.
+	botPrefix string
+	// UFS namespace to be used for the given bot
+	ufsNamespace string
 }
 
 // CreateBuildbucketTask creates a new task (repair by default) for the provided DUT.
@@ -265,10 +299,12 @@ func createBuildbucketTask(ctx context.Context, params createBuildbucketTaskRequ
 		AdminService: "chromeos-skylab-bot-fleet.appspot.com",
 		// NOTE: We use the UFS service, not the Inventory service here.
 		InventoryService: config.Get(ctx).GetUFS().GetHost(),
-		NoStepper:        false,
-		NoMetrics:        false,
-		UpdateInventory:  true,
-		ExpectedState:    params.expectedState,
+		// Default is 'OS', set this value when configured in PoolCfg.
+		InventoryNamespace: params.ufsNamespace,
+		NoStepper:          false,
+		NoMetrics:          false,
+		UpdateInventory:    true,
+		ExpectedState:      params.expectedState,
 		// TODO(gregorynisbet): Pass config file to labpack task.
 		Configuration: "",
 	}

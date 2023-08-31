@@ -31,8 +31,8 @@ func TestSuccessfulPushDuts(t *testing.T) {
 		qn := "repair-bots"
 		tqt.CreateQueue(qn)
 		hosts := []string{"host1", "host2"}
-		bucket := "some_bucket"
-		err := PushRepairDUTs(ctx, hosts, "needs_repair", bucket)
+		swarmingPool := "pool-a"
+		err := PushRepairDUTs(ctx, hosts, "needs_repair", swarmingPool)
 		So(err, ShouldBeNil)
 		tasks := tqt.GetScheduledTasks()
 		t, ok := tasks[qn]
@@ -45,7 +45,7 @@ func TestSuccessfulPushDuts(t *testing.T) {
 		sort.Strings(taskPaths)
 		sort.Strings(taskParams)
 		expectedPaths := []string{"/internal/task/cros_repair/host1", "/internal/task/cros_repair/host2"}
-		expectedParams := []string{"botID=host1&builderBucket=some_bucket&expectedState=needs_repair", "botID=host2&builderBucket=some_bucket&expectedState=needs_repair"}
+		expectedParams := []string{"botID=host1&expectedState=needs_repair&swarmingPool=pool-a", "botID=host2&expectedState=needs_repair&swarmingPool=pool-a"}
 		So(taskPaths, ShouldResemble, expectedPaths)
 		So(taskParams, ShouldResemble, expectedParams)
 	})
