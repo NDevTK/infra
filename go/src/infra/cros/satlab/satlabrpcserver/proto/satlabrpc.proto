@@ -21,6 +21,9 @@ service SatlabRpcService {
 
   // services to run different types of test suites
   rpc run_suite (RunSuiteRequest) returns (RunSuiteResponse) {}
+
+  // manage DUTs
+  rpc add_pool (AddPoolRequest) returns (AddPoolResponse);
 }
 
 message ListBuildTargetsRequest {
@@ -173,4 +176,15 @@ message GetVersionInfoResponse {
   string description = 4;
   string install_id = 5;
   string host_id = 6;
+}
+
+// NEXT_TAG = 3
+message AddPoolRequest {
+  repeated string addresses = 1;
+  string pool = 2;
+}
+
+// NEXT_TAG = 1
+message AddPoolResponse {
+  string message = 1;
 }
