@@ -16,4 +16,7 @@ const (
 
 	// DockerPath is the path to the wrapper around docker.
 	DockerPath = "/usr/local/bin/docker"
+
+  // HostsFilePath
+  HostsFilePath = "/etc/dut_hosts/hosts"
 )
