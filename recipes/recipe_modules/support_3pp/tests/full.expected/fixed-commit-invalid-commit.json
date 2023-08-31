@@ -121,7 +121,7 @@
       "Traceback (most recent call last):",
       "  File \"RECIPE_REPO[infra]/recipes/recipe_modules/support_3pp/tests/full.py\", line 74, in RunSteps",
       "    _, unsupported = api.support_3pp.ensure_uploaded(",
-      "  File \"RECIPE_REPO[infra]/recipes/recipe_modules/support_3pp/api.py\", line 870, in ensure_uploaded",
+      "  File \"RECIPE_REPO[infra]/recipes/recipe_modules/support_3pp/api.py\", line 864, in ensure_uploaded",
       "    self._build_resolved_spec(spec, version, force_build_packages,",
       "  File \"RECIPE_REPO[infra]/recipes/recipe_modules/support_3pp/api.py\", line 584, in _build_resolved_spec",
       "    return create.build_resolved_spec(self.m, self._resolve_for,",

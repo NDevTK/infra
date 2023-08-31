@@ -672,17 +672,11 @@ class Support3ppApi(recipe_api.RecipeApi):
         #   * the pkg_name is "bar"
         #   * the pkg_dir is "foo/bar/3pp"
 
-        # Relative path to the base_path (splitted in list)
+        pkg_dir = self.m.path.dirname(spec_path)
         spec_path_rel = self.m.path.relpath(spec_path, base_path)
-        spec_path_rel_pieces = spec_path_rel.split(self.m.path.sep)
-        pkg_dir = base_path.join(*spec_path_rel_pieces[:-1])
-        try:
-          pkg_name = spec_path_rel_pieces[-2]
-          if pkg_name == '3pp':
-            pkg_name = spec_path_rel_pieces[-3]
-        except IndexError:
-          raise Exception('Fail to get package name from %r. Expecting '
-                          'the spec PB in a deeper folder' % spec_path)
+        pkg_dir_parent, pkg_name = self.m.path.split(pkg_dir)
+        if pkg_name == '3pp':
+          pkg_name = self.m.path.basename(pkg_dir_parent)
 
         data = self.m.file.read_text('read %r' % spec_path_rel, spec_path)
         if not data:

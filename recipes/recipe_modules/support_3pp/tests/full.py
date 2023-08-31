@@ -498,25 +498,32 @@ def GenTests(api):
           api.file.read_text(spec))
     yield test
 
+  load_spec = '''
+    create {
+      source {
+        script { name: "fetch.py" }
+      }
+    }
+    upload {pkg_prefix: "p_something"}
+  '''
   # Test pkg_name when specs are not under "3pp" directory
   yield (api.test('load-spec')
       + api.properties(GOOS='linux', GOARCH='amd64')
       + api.step_data(
           'find package specs',
-          # Since glob_paths test api sorts the file names, names the test data
-          # so that 0bar comes before 3pp.pb
-          api.file.glob_paths(['0bar/3pp.pb', '3pp.pb']))
+          api.file.glob_paths(['something/3pp.pb', '3pp.pb']))
       + api.step_data(
-          mk_name("load package specs", "read '0bar/3pp.pb'"),
-          api.file.read_text('create {} upload {pkg_prefix: "p_0bar"}'))
+          mk_name("load package specs", "read 'something/3pp.pb'"),
+          api.file.read_text(load_spec))
+      + api.step_data(
+          mk_name("load package specs", "read '3pp.pb'"),
+          api.file.read_text(load_spec))
       + api.post_process(
           post_process.MustRun,
-          mk_name("load package specs", "Compute hash for 'p_0bar/0bar'"))
-      + api.expect_exception('Exception')
-      + api.post_process(post_process.ResultReasonRE,
-                         'Expecting the spec PB in a deeper folder')
-      + api.post_process(post_process.StatusException)
-      + api.post_process(post_process.DropExpectation)
+          mk_name("building p_something/something.do upload.Compute file hash"))
+      + api.post_process(
+          post_process.MustRun,
+          mk_name("building p_something/package_repo.do upload.Compute file hash"))
   )
 
   # Test pkg_name when specs are under "3pp" directory
@@ -524,20 +531,19 @@ def GenTests(api):
       + api.properties(GOOS='linux', GOARCH='amd64')
       + api.step_data(
           'find package specs',
-          # Since glob_paths test api sorts the file names, names the test data
-          # so that 0bar comes before 3pp.pb
-          api.file.glob_paths(['0bar/3pp/3pp.pb', '3pp/3pp.pb']))
+          api.file.glob_paths(['something/3pp/3pp.pb', '3pp/3pp.pb']))
       + api.step_data(
-          mk_name("load package specs", "read '0bar/3pp/3pp.pb'"),
-          api.file.read_text('create {} upload {pkg_prefix: "p_0bar"}'))
+          mk_name("load package specs", "read 'something/3pp/3pp.pb'"),
+          api.file.read_text(load_spec))
+      + api.step_data(
+          mk_name("load package specs", "read '3pp/3pp.pb'"),
+          api.file.read_text(load_spec))
       + api.post_process(
           post_process.MustRun,
-          mk_name("load package specs", "Compute hash for 'p_0bar/0bar'"))
-      + api.expect_exception('Exception')
-      + api.post_process(post_process.ResultReasonRE,
-                         'Expecting the spec PB in a deeper folder')
-      + api.post_process(post_process.StatusException)
-      + api.post_process(post_process.DropExpectation)
+          mk_name("building p_something/something.do upload.Compute file hash"))
+      + api.post_process(
+          post_process.MustRun,
+          mk_name("building p_something/package_repo.do upload.Compute file hash"))
   )
 
   yield (api.test('empty-spec', status='FAILURE') +
