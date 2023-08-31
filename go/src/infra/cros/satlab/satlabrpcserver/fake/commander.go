@@ -19,7 +19,7 @@ func (f *FakeCommander) Exec(_ *exec.Cmd) ([]byte, error) {
 }
 
 func (f *FakeCommander) Start(c *exec.Cmd) error {
-	return nil
+	return f.Err
 }
 
 func (f *FakeCommander) Wait(c *exec.Cmd) error {
@@ -44,4 +44,8 @@ func (f *FakeCommander) Wait(c *exec.Cmd) error {
 		time.Sleep(time.Millisecond * 200)
 	}
 	return nil
+}
+
+func (f *FakeCommander) Run(c *exec.Cmd) error {
+	return f.Err
 }
