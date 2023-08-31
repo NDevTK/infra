@@ -13,6 +13,8 @@ type IExecCommander interface {
 	Start(*exec.Cmd) error
 
 	Wait(*exec.Cmd) error
+
+	Run(*exec.Cmd) error
 }
 
 type ExecCommander struct{}
@@ -27,4 +29,8 @@ func (e *ExecCommander) Start(cmd *exec.Cmd) error {
 
 func (e *ExecCommander) Wait(cmd *exec.Cmd) error {
 	return cmd.Wait()
+}
+
+func (e *ExecCommander) Run(cmd *exec.Cmd) error {
+	return cmd.Run()
 }
