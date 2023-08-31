@@ -39,6 +39,30 @@
       },
       "revId": "6828928d303ea8f5c0d707daaf7b2de571f877bb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0f14cc1e_adbe6c34",
+        "filename": "go/src/infra/cros/recovery/tlw/models.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 641,
+      "author": {
+        "id": 1551857
+      },
+      "writtenOn": "2023-08-31T04:56:34Z",
+      "side": 1,
+      "message": "Yes, we have a reason for optional. We\u0027re converting from UFS/shivas [peripherals.proto L39](https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/unifiedfleet/api/v1/models/chromeos/lab/peripherals.proto;drc\u003defb29f5edf32e6464a4cff39008c3b80ef9f7259;l\u003d39), which is a repeated field and could be non-exist (or simply not given by user).\n\nThe model.pb.go (L3457-3490) is generated in a lovely way so I think we don\u0027t need to worry about nil too much.\n\nThe `unspecified` should be `invalid` - see [peripherals.proto L71](https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/unifiedfleet/api/v1/models/chromeos/lab/peripherals.proto;drc\u003defb29f5edf32e6464a4cff39008c3b80ef9f7259;l\u003d71). I think this is probably no longer needed, considering that the lab testbed setup is changed a lot since then. Will confirm with Kalin.\n\nFor L641, I\u0027m not sure which one will be better: change L641 to `reserve 1` or simply -1 for all other numbers. What do you think?",
+      "parentUuid": "1f1c5f78_9f0e2ced",
+      "range": {
+        "startLine": 641,
+        "startChar": 2,
+        "endLine": 641,
+        "endChar": 10
+      },
+      "revId": "6828928d303ea8f5c0d707daaf7b2de571f877bb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
