@@ -253,6 +253,7 @@ func servoHasDebugHeaderExec(ctx context.Context, info *execs.ExecInfo) error {
 			if strings.HasPrefix(c, "ccd_") {
 				continue
 			}
+			log.Debugf(ctx, "Found debug header servo: %q", c)
 			return true
 		}
 		return false
