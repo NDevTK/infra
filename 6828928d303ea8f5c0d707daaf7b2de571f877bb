@@ -63,6 +63,30 @@
       },
       "revId": "6828928d303ea8f5c0d707daaf7b2de571f877bb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f86047a1_53e28dfd",
+        "filename": "go/src/infra/cros/recovery/tlw/models.proto",
+        "patchSetId": 6
+      },
+      "lineNbr": 641,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-08-31T17:04:58Z",
+      "side": 1,
+      "message": "I do not see any logic which will set false or nil so i think just true/false values is good anough for the fields. Please make it not optional",
+      "parentUuid": "0f14cc1e_adbe6c34",
+      "range": {
+        "startLine": 641,
+        "startChar": 2,
+        "endLine": 641,
+        "endChar": 10
+      },
+      "revId": "6828928d303ea8f5c0d707daaf7b2de571f877bb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
