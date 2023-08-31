@@ -403,6 +403,15 @@ func (s *SatlabRpcServiceServer) GetVersionInfo(ctx context.Context, _ *pb.GetVe
 	return &resp, nil
 }
 
+func addPoolsToDUT(ctx context.Context, executor executor.IExecCommander, hostname string, pools []string) error {
+	req := dut_pkg.UpdateDUT{
+		Pools:    pools,
+		Hostname: hostname,
+	}
+
+	return req.TriggerRun(ctx, executor)
+}
+
 func (s *SatlabRpcServiceServer) AddPool(ctx context.Context, in *pb.AddPoolRequest) (*pb.AddPoolResponse, error) {
 	IPHostMap, err := dns.ReadHostsToIPMap(s.commandExecutor)
 	if err != nil {
@@ -412,18 +421,40 @@ func (s *SatlabRpcServiceServer) AddPool(ctx context.Context, in *pb.AddPoolRequ
 	for _, address := range in.GetAddresses() {
 		hostname, ok := IPHostMap[address]
 		if ok {
-			req := dut_pkg.UpdateDUT{
-				Pools:    []string{in.GetPool()},
-				Hostname: hostname,
-			}
-
-			err = req.TriggerRun(ctx, s.commandExecutor)
-			if err != nil {
+			if err = addPoolsToDUT(ctx, s.commandExecutor, hostname, []string{in.GetPool()}); err != nil {
 				return nil, err
 			}
-
 		}
 	}
 
 	return &pb.AddPoolResponse{}, nil
+}
+
+func removeAllPoolsFromDUT(ctx context.Context, executor executor.IExecCommander, hostname string) error {
+	return addPoolsToDUT(ctx, executor, hostname, []string{"-"})
+}
+
+func (s *SatlabRpcServiceServer) UpdatePool(ctx context.Context, in *pb.UpdatePoolRequest) (*pb.UpdatePoolResponse, error) {
+	IPHostMap, err := dns.ReadHostsToIPMap(s.commandExecutor)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range in.GetItems() {
+		hostname, ok := IPHostMap[item.GetAddress()]
+		if ok {
+			// According to `shivas` CLI. If we add a pool ("-"). It will remove all pools from the
+			// host.
+			if err = removeAllPoolsFromDUT(ctx, s.commandExecutor, hostname); err != nil {
+				return nil, err
+			}
+
+			// After removing the pools, we can add it the pools that we want to keep
+			if err = addPoolsToDUT(ctx, s.commandExecutor, hostname, item.GetPools()); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return &pb.UpdatePoolResponse{}, nil
 }
