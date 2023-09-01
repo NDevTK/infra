@@ -11,6 +11,9 @@ const (
 	// GetHostIdentifierScript is the path to the get_host_identifier script.
 	GetHostIdentifierScript = "/usr/local/bin/get_host_identifier"
 
+	// GetOSVersionScript is the path to get the os version infromation script.
+	GetOSVersionScript = "/usr/local/bin/get_host_os_version"
+
 	// DockerPath is the path to the wrapper around docker.
 	DockerPath = "/usr/local/bin/docker"
 )
