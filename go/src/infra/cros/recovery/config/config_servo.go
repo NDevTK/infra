@@ -622,9 +622,6 @@ func servoRepairPlan() *Plan {
 				Docs: []string{
 					"Verify that main device is c2d2/cr50/GSC",
 				},
-				Dependencies: []string{
-					"is_servo_v4",
-				},
 				ExecName: "servo_main_device_is_gsc",
 			},
 			"Servo main device is CCD": {
@@ -632,7 +629,6 @@ func servoRepairPlan() *Plan {
 					"Verify that main device is CCD",
 				},
 				Dependencies: []string{
-					"is_servo_v4",
 					"Is servo_v4(p1) used with type-c connector",
 				},
 				ExecName: "servo_main_device_is_ccd",
@@ -945,18 +941,9 @@ func servoRepairPlan() *Plan {
 				ExecTimeout:            &durationpb.Duration{Seconds: 7300},
 				AllowFailAfterRecovery: true,
 			},
-			"is_servo_v4": {
-				Docs: []string{
-					"This action will detect whether or not the attached servo device is of type V4.",
-				},
-				ExecName: "is_servo_v4",
-			},
 			"Is servo_v4(p1) used with type-c connector": {
 				Docs: []string{
 					"Verify whether servo_V4(p1) device is connect to DUT using Type-C connection.",
-				},
-				Conditions: []string{
-					"is_servo_v4",
 				},
 				ExecExtraArgs: []string{
 					"command:root.dut_connection_type",
@@ -992,9 +979,6 @@ func servoRepairPlan() *Plan {
 			"Is servo_v4(p1) with type-a connector": {
 				Docs: []string{
 					"Verify whether servo V4(p1) device is connect to DUT using Type-A connection.",
-				},
-				Conditions: []string{
-					"is_servo_v4",
 				},
 				ExecExtraArgs: []string{
 					"command:root.dut_connection_type",
@@ -1546,12 +1530,7 @@ func servoRepairPlan() *Plan {
 				Conditions: []string{
 					"is_servo_type_ccd",
 				},
-				ExecName: "servo_servod_dts_and_servo_role_toggle_exec",
-				ExecExtraArgs: []string{
-					"dts_off_timeout:1",
-					"pd_role_snk_timeout:1",
-					"pd_role_src_timeout:1",
-				},
+				ExecName:   "servo_servod_dts_and_servo_role_toggle_exec",
 				RunControl: RunControl_ALWAYS_RUN,
 			},
 			"Reboot by EC console and stop": {

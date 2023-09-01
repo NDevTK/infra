@@ -1111,16 +1111,6 @@
                   "docs": [
                     "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
                   ],
-                  "conditions": [
-                    {
-                      "name": "is_servo_v4",
-                      "docs": [
-                        "This action will detect whether or not the attached servo device is of type V4."
-                      ],
-                      "exec_name": "is_servo_v4",
-                      "run_control": "RERUN_AFTER_RECOVERY"
-                    }
-                  ],
                   "exec_name": "servo_check_servod_control",
                   "exec_args": [
                     "command:root.dut_connection_type",
@@ -1719,11 +1709,6 @@
                 }
               ],
               "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
-              "exec_args": [
-                "dts_off_timeout:1",
-                "pd_role_snk_timeout:1",
-                "pd_role_src_timeout:1"
-              ],
               "run_control": "ALWAYS_RUN"
             },
             {
@@ -2178,16 +2163,6 @@
               "name": "Is servo_v4(p1) with type-a connector",
               "docs": [
                 "Verify whether servo V4(p1) device is connect to DUT using Type-A connection."
-              ],
-              "conditions": [
-                {
-                  "name": "is_servo_v4",
-                  "docs": [
-                    "This action will detect whether or not the attached servo device is of type V4."
-                  ],
-                  "exec_name": "is_servo_v4",
-                  "run_control": "RERUN_AFTER_RECOVERY"
-                }
               ],
               "exec_name": "servo_check_servod_control",
               "exec_args": [
@@ -2990,16 +2965,6 @@
               "docs": [
                 "Verify whether servo V4(p1) device is connect to DUT using Type-A connection."
               ],
-              "conditions": [
-                {
-                  "name": "is_servo_v4",
-                  "docs": [
-                    "This action will detect whether or not the attached servo device is of type V4."
-                  ],
-                  "exec_name": "is_servo_v4",
-                  "run_control": "RERUN_AFTER_RECOVERY"
-                }
-              ],
               "exec_name": "servo_check_servod_control",
               "exec_args": [
                 "command:root.dut_connection_type",
@@ -3306,16 +3271,6 @@
               "docs": [
                 "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
               ],
-              "conditions": [
-                {
-                  "name": "is_servo_v4",
-                  "docs": [
-                    "This action will detect whether or not the attached servo device is of type V4."
-                  ],
-                  "exec_name": "is_servo_v4",
-                  "run_control": "RERUN_AFTER_RECOVERY"
-                }
-              ],
               "exec_name": "servo_check_servod_control",
               "exec_args": [
                 "command:root.dut_connection_type",
@@ -3405,16 +3360,6 @@
               "docs": [
                 "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
               ],
-              "conditions": [
-                {
-                  "name": "is_servo_v4",
-                  "docs": [
-                    "This action will detect whether or not the attached servo device is of type V4."
-                  ],
-                  "exec_name": "is_servo_v4",
-                  "run_control": "RERUN_AFTER_RECOVERY"
-                }
-              ],
               "exec_name": "servo_check_servod_control",
               "exec_args": [
                 "command:root.dut_connection_type",
@@ -3477,16 +3422,6 @@
                   "name": "Is servo_v4(p1) used with type-c connector",
                   "docs": [
                     "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
-                  ],
-                  "conditions": [
-                    {
-                      "name": "is_servo_v4",
-                      "docs": [
-                        "This action will detect whether or not the attached servo device is of type V4."
-                      ],
-                      "exec_name": "is_servo_v4",
-                      "run_control": "RERUN_AFTER_RECOVERY"
-                    }
                   ],
                   "exec_name": "servo_check_servod_control",
                   "exec_args": [
@@ -3765,11 +3700,6 @@
                 }
               ],
               "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
-              "exec_args": [
-                "dts_off_timeout:1",
-                "pd_role_snk_timeout:1",
-                "pd_role_src_timeout:1"
-              ],
               "run_control": "ALWAYS_RUN"
             }
           ],
@@ -3801,27 +3731,9 @@
               ],
               "dependencies": [
                 {
-                  "name": "is_servo_v4",
-                  "docs": [
-                    "This action will detect whether or not the attached servo device is of type V4."
-                  ],
-                  "exec_name": "is_servo_v4",
-                  "run_control": "RERUN_AFTER_RECOVERY"
-                },
-                {
                   "name": "Is servo_v4(p1) used with type-c connector",
                   "docs": [
                     "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
-                  ],
-                  "conditions": [
-                    {
-                      "name": "is_servo_v4",
-                      "docs": [
-                        "This action will detect whether or not the attached servo device is of type V4."
-                      ],
-                      "exec_name": "is_servo_v4",
-                      "run_control": "RERUN_AFTER_RECOVERY"
-                    }
                   ],
                   "exec_name": "servo_check_servod_control",
                   "exec_args": [
@@ -3854,16 +3766,6 @@
                   "name": "Is servo_v4(p1) used with type-c connector",
                   "docs": [
                     "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
-                  ],
-                  "conditions": [
-                    {
-                      "name": "is_servo_v4",
-                      "docs": [
-                        "This action will detect whether or not the attached servo device is of type V4."
-                      ],
-                      "exec_name": "is_servo_v4",
-                      "run_control": "RERUN_AFTER_RECOVERY"
-                    }
                   ],
                   "exec_name": "servo_check_servod_control",
                   "exec_args": [
@@ -3987,11 +3889,6 @@
                     }
                   ],
                   "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
-                  "exec_args": [
-                    "dts_off_timeout:1",
-                    "pd_role_snk_timeout:1",
-                    "pd_role_src_timeout:1"
-                  ],
                   "run_control": "ALWAYS_RUN"
                 },
                 {
@@ -4464,16 +4361,6 @@
                       "docs": [
                         "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
                       ],
-                      "conditions": [
-                        {
-                          "name": "is_servo_v4",
-                          "docs": [
-                            "This action will detect whether or not the attached servo device is of type V4."
-                          ],
-                          "exec_name": "is_servo_v4",
-                          "run_control": "RERUN_AFTER_RECOVERY"
-                        }
-                      ],
                       "exec_name": "servo_check_servod_control",
                       "exec_args": [
                         "command:root.dut_connection_type",
@@ -4586,16 +4473,6 @@
                   "name": "Is servo_v4(p1) used with type-c connector",
                   "docs": [
                     "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
-                  ],
-                  "conditions": [
-                    {
-                      "name": "is_servo_v4",
-                      "docs": [
-                        "This action will detect whether or not the attached servo device is of type V4."
-                      ],
-                      "exec_name": "is_servo_v4",
-                      "run_control": "RERUN_AFTER_RECOVERY"
-                    }
                   ],
                   "exec_name": "servo_check_servod_control",
                   "exec_args": [
@@ -4719,11 +4596,6 @@
                     }
                   ],
                   "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
-                  "exec_args": [
-                    "dts_off_timeout:1",
-                    "pd_role_snk_timeout:1",
-                    "pd_role_src_timeout:1"
-                  ],
                   "run_control": "ALWAYS_RUN"
                 },
                 {
@@ -5195,16 +5067,6 @@
                       "name": "Is servo_v4(p1) used with type-c connector",
                       "docs": [
                         "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
-                      ],
-                      "conditions": [
-                        {
-                          "name": "is_servo_v4",
-                          "docs": [
-                            "This action will detect whether or not the attached servo device is of type V4."
-                          ],
-                          "exec_name": "is_servo_v4",
-                          "run_control": "RERUN_AFTER_RECOVERY"
-                        }
                       ],
                       "exec_name": "servo_check_servod_control",
                       "exec_args": [
@@ -5413,11 +5275,6 @@
                 }
               ],
               "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
-              "exec_args": [
-                "dts_off_timeout:1",
-                "pd_role_snk_timeout:1",
-                "pd_role_src_timeout:1"
-              ],
               "run_control": "ALWAYS_RUN"
             },
             {
@@ -5890,16 +5747,6 @@
                   "docs": [
                     "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
                   ],
-                  "conditions": [
-                    {
-                      "name": "is_servo_v4",
-                      "docs": [
-                        "This action will detect whether or not the attached servo device is of type V4."
-                      ],
-                      "exec_name": "is_servo_v4",
-                      "run_control": "RERUN_AFTER_RECOVERY"
-                    }
-                  ],
                   "exec_name": "servo_check_servod_control",
                   "exec_args": [
                     "command:root.dut_connection_type",
@@ -6168,11 +6015,6 @@
                     }
                   ],
                   "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
-                  "exec_args": [
-                    "dts_off_timeout:1",
-                    "pd_role_snk_timeout:1",
-                    "pd_role_src_timeout:1"
-                  ],
                   "run_control": "ALWAYS_RUN"
                 },
                 {
@@ -6471,16 +6313,6 @@
                       "docs": [
                         "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
                       ],
-                      "conditions": [
-                        {
-                          "name": "is_servo_v4",
-                          "docs": [
-                            "This action will detect whether or not the attached servo device is of type V4."
-                          ],
-                          "exec_name": "is_servo_v4",
-                          "run_control": "RERUN_AFTER_RECOVERY"
-                        }
-                      ],
                       "exec_name": "servo_check_servod_control",
                       "exec_args": [
                         "command:root.dut_connection_type",
@@ -6639,16 +6471,6 @@
                       "name": "Is servo_v4(p1) used with type-c connector",
                       "docs": [
                         "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
-                      ],
-                      "conditions": [
-                        {
-                          "name": "is_servo_v4",
-                          "docs": [
-                            "This action will detect whether or not the attached servo device is of type V4."
-                          ],
-                          "exec_name": "is_servo_v4",
-                          "run_control": "RERUN_AFTER_RECOVERY"
-                        }
                       ],
                       "exec_name": "servo_check_servod_control",
                       "exec_args": [
@@ -6908,11 +6730,6 @@
                     }
                   ],
                   "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
-                  "exec_args": [
-                    "dts_off_timeout:1",
-                    "pd_role_snk_timeout:1",
-                    "pd_role_src_timeout:1"
-                  ],
                   "run_control": "ALWAYS_RUN"
                 },
                 {
@@ -7384,16 +7201,6 @@
                       "name": "Is servo_v4(p1) used with type-c connector",
                       "docs": [
                         "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
-                      ],
-                      "conditions": [
-                        {
-                          "name": "is_servo_v4",
-                          "docs": [
-                            "This action will detect whether or not the attached servo device is of type V4."
-                          ],
-                          "exec_name": "is_servo_v4",
-                          "run_control": "RERUN_AFTER_RECOVERY"
-                        }
                       ],
                       "exec_name": "servo_check_servod_control",
                       "exec_args": [
@@ -7871,16 +7678,6 @@
                   "docs": [
                     "Verify that main device is c2d2/cr50/GSC"
                   ],
-                  "dependencies": [
-                    {
-                      "name": "is_servo_v4",
-                      "docs": [
-                        "This action will detect whether or not the attached servo device is of type V4."
-                      ],
-                      "exec_name": "is_servo_v4",
-                      "run_control": "RERUN_AFTER_RECOVERY"
-                    }
-                  ],
                   "exec_name": "servo_main_device_is_gsc",
                   "run_control": "RERUN_AFTER_RECOVERY"
                 }
@@ -7903,16 +7700,6 @@
                   "name": "Servo main device is GSC chip",
                   "docs": [
                     "Verify that main device is c2d2/cr50/GSC"
-                  ],
-                  "dependencies": [
-                    {
-                      "name": "is_servo_v4",
-                      "docs": [
-                        "This action will detect whether or not the attached servo device is of type V4."
-                      ],
-                      "exec_name": "is_servo_v4",
-                      "run_control": "RERUN_AFTER_RECOVERY"
-                    }
                   ],
                   "exec_name": "servo_main_device_is_gsc",
                   "run_control": "RERUN_AFTER_RECOVERY"
@@ -8030,11 +7817,6 @@
                 }
               ],
               "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
-              "exec_args": [
-                "dts_off_timeout:1",
-                "pd_role_snk_timeout:1",
-                "pd_role_src_timeout:1"
-              ],
               "run_control": "ALWAYS_RUN"
             },
             {
@@ -8507,16 +8289,6 @@
                   "docs": [
                     "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
                   ],
-                  "conditions": [
-                    {
-                      "name": "is_servo_v4",
-                      "docs": [
-                        "This action will detect whether or not the attached servo device is of type V4."
-                      ],
-                      "exec_name": "is_servo_v4",
-                      "run_control": "RERUN_AFTER_RECOVERY"
-                    }
-                  ],
                   "exec_name": "servo_check_servod_control",
                   "exec_args": [
                     "command:root.dut_connection_type",
@@ -8607,16 +8379,6 @@
               "name": "Servo main device is GSC chip",
               "docs": [
                 "Verify that main device is c2d2/cr50/GSC"
-              ],
-              "dependencies": [
-                {
-                  "name": "is_servo_v4",
-                  "docs": [
-                    "This action will detect whether or not the attached servo device is of type V4."
-                  ],
-                  "exec_name": "is_servo_v4",
-                  "run_control": "RERUN_AFTER_RECOVERY"
-                }
               ],
               "exec_name": "servo_main_device_is_gsc",
               "run_control": "RERUN_AFTER_RECOVERY"
@@ -8943,16 +8705,6 @@
                       "docs": [
                         "Verify that main device is c2d2/cr50/GSC"
                       ],
-                      "dependencies": [
-                        {
-                          "name": "is_servo_v4",
-                          "docs": [
-                            "This action will detect whether or not the attached servo device is of type V4."
-                          ],
-                          "exec_name": "is_servo_v4",
-                          "run_control": "RERUN_AFTER_RECOVERY"
-                        }
-                      ],
                       "exec_name": "servo_main_device_is_gsc",
                       "run_control": "RERUN_AFTER_RECOVERY"
                     }
@@ -8975,16 +8727,6 @@
                       "name": "Servo main device is GSC chip",
                       "docs": [
                         "Verify that main device is c2d2/cr50/GSC"
-                      ],
-                      "dependencies": [
-                        {
-                          "name": "is_servo_v4",
-                          "docs": [
-                            "This action will detect whether or not the attached servo device is of type V4."
-                          ],
-                          "exec_name": "is_servo_v4",
-                          "run_control": "RERUN_AFTER_RECOVERY"
-                        }
                       ],
                       "exec_name": "servo_main_device_is_gsc",
                       "run_control": "RERUN_AFTER_RECOVERY"
@@ -9102,11 +8844,6 @@
                     }
                   ],
                   "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
-                  "exec_args": [
-                    "dts_off_timeout:1",
-                    "pd_role_snk_timeout:1",
-                    "pd_role_src_timeout:1"
-                  ],
                   "run_control": "ALWAYS_RUN"
                 },
                 {
@@ -9579,16 +9316,6 @@
                       "docs": [
                         "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
                       ],
-                      "conditions": [
-                        {
-                          "name": "is_servo_v4",
-                          "docs": [
-                            "This action will detect whether or not the attached servo device is of type V4."
-                          ],
-                          "exec_name": "is_servo_v4",
-                          "run_control": "RERUN_AFTER_RECOVERY"
-                        }
-                      ],
                       "exec_name": "servo_check_servod_control",
                       "exec_args": [
                         "command:root.dut_connection_type",
@@ -9772,11 +9499,6 @@
                 }
               ],
               "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
-              "exec_args": [
-                "dts_off_timeout:1",
-                "pd_role_snk_timeout:1",
-                "pd_role_src_timeout:1"
-              ],
               "run_control": "ALWAYS_RUN"
             },
             {
@@ -10249,16 +9971,6 @@
                   "docs": [
                     "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
                   ],
-                  "conditions": [
-                    {
-                      "name": "is_servo_v4",
-                      "docs": [
-                        "This action will detect whether or not the attached servo device is of type V4."
-                      ],
-                      "exec_name": "is_servo_v4",
-                      "run_control": "RERUN_AFTER_RECOVERY"
-                    }
-                  ],
                   "exec_name": "servo_check_servod_control",
                   "exec_args": [
                     "command:root.dut_connection_type",
@@ -10353,27 +10065,9 @@
               ],
               "dependencies": [
                 {
-                  "name": "is_servo_v4",
-                  "docs": [
-                    "This action will detect whether or not the attached servo device is of type V4."
-                  ],
-                  "exec_name": "is_servo_v4",
-                  "run_control": "RERUN_AFTER_RECOVERY"
-                },
-                {
                   "name": "Is servo_v4(p1) used with type-c connector",
                   "docs": [
                     "Verify whether servo_V4(p1) device is connect to DUT using Type-C connection."
-                  ],
-                  "conditions": [
-                    {
-                      "name": "is_servo_v4",
-                      "docs": [
-                        "This action will detect whether or not the attached servo device is of type V4."
-                      ],
-                      "exec_name": "is_servo_v4",
-                      "run_control": "RERUN_AFTER_RECOVERY"
-                    }
                   ],
                   "exec_name": "servo_check_servod_control",
                   "exec_args": [
@@ -11149,11 +10843,6 @@
                     }
                   ],
                   "exec_name": "servo_servod_dts_and_servo_role_toggle_exec",
-                  "exec_args": [
-                    "dts_off_timeout:1",
-                    "pd_role_snk_timeout:1",
-                    "pd_role_src_timeout:1"
-                  ],
                   "run_control": "ALWAYS_RUN"
                 },
                 {
