@@ -85,6 +85,16 @@ func deployActions() map[string]*Action {
 				"Install OS in DEV mode, with force to DEV-mode with test firmware",
 			},
 		},
+		"Device not in MP Signed AP FW pool": {
+			Docs: []string{
+				"Verify that DUT is not in the pool that requires MP signed AP firmware",
+			},
+			ExecName: "dut_not_in_pool",
+			ExecExtraArgs: []string{
+				"mp-ap-fw",
+			},
+			RunControl: RunControl_RUN_ONCE,
+		},
 		"DUT has expected dev firmware": {
 			Docs: []string{
 				"Verify that FW on the DUT has dev keys.",
@@ -92,6 +102,7 @@ func deployActions() map[string]*Action {
 			Conditions: []string{
 				//TODO(b:231627918): Flex does not have own firmware for EC/AP
 				"Is not Flex device",
+				"Device not in MP Signed AP FW pool",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
@@ -111,6 +122,7 @@ func deployActions() map[string]*Action {
 				"Is it first deployment task",
 				//TODO(b:231627918): Flex does not have own firmware for EC/AP
 				"Is not Flex device",
+				"Device not in MP Signed AP FW pool",
 				"Has a stable-version service",
 				"Check stable firmware version exists",
 				"Recovery version has firmware image path",
