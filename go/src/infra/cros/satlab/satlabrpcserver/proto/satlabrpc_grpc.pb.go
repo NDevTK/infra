@@ -30,6 +30,7 @@ const (
 	SatlabRpcService_StageBuild_FullMethodName                = "/satlabrpcserver.SatlabRpcService/stage_build"
 	SatlabRpcService_ListConnectedDutsFirmware_FullMethodName = "/satlabrpcserver.SatlabRpcService/list_connected_duts_firmware"
 	SatlabRpcService_GetSystemInfo_FullMethodName             = "/satlabrpcserver.SatlabRpcService/get_system_info"
+	SatlabRpcService_GetVersionInfo_FullMethodName            = "/satlabrpcserver.SatlabRpcService/get_version_info"
 	SatlabRpcService_GetPeripheralInformation_FullMethodName  = "/satlabrpcserver.SatlabRpcService/get_peripheral_information"
 	SatlabRpcService_UpdateDutsFirmware_FullMethodName        = "/satlabrpcserver.SatlabRpcService/update_duts_firmware"
 	SatlabRpcService_RunSuite_FullMethodName                  = "/satlabrpcserver.SatlabRpcService/run_suite"
@@ -46,6 +47,7 @@ type SatlabRpcServiceClient interface {
 	StageBuild(ctx context.Context, in *StageBuildRequest, opts ...grpc.CallOption) (*StageBuildResponse, error)
 	ListConnectedDutsFirmware(ctx context.Context, in *ListConnectedDutsFirmwareRequest, opts ...grpc.CallOption) (*ListConnectedDutsFirmwareResponse, error)
 	GetSystemInfo(ctx context.Context, in *GetSystemInfoRequest, opts ...grpc.CallOption) (*GetSystemInfoResponse, error)
+	GetVersionInfo(ctx context.Context, in *GetVersionInfoRequest, opts ...grpc.CallOption) (*GetVersionInfoResponse, error)
 	GetPeripheralInformation(ctx context.Context, in *GetPeripheralInformationRequest, opts ...grpc.CallOption) (*GetPeripheralInformationResponse, error)
 	UpdateDutsFirmware(ctx context.Context, in *UpdateDutsFirmwareRequest, opts ...grpc.CallOption) (*UpdateDutsFirmwareResponse, error)
 	// services to run different types of test suites
@@ -123,6 +125,15 @@ func (c *satlabRpcServiceClient) GetSystemInfo(ctx context.Context, in *GetSyste
 	return out, nil
 }
 
+func (c *satlabRpcServiceClient) GetVersionInfo(ctx context.Context, in *GetVersionInfoRequest, opts ...grpc.CallOption) (*GetVersionInfoResponse, error) {
+	out := new(GetVersionInfoResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_GetVersionInfo_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *satlabRpcServiceClient) GetPeripheralInformation(ctx context.Context, in *GetPeripheralInformationRequest, opts ...grpc.CallOption) (*GetPeripheralInformationResponse, error) {
 	out := new(GetPeripheralInformationResponse)
 	err := c.cc.Invoke(ctx, SatlabRpcService_GetPeripheralInformation_FullMethodName, in, out, opts...)
@@ -161,6 +172,7 @@ type SatlabRpcServiceServer interface {
 	StageBuild(context.Context, *StageBuildRequest) (*StageBuildResponse, error)
 	ListConnectedDutsFirmware(context.Context, *ListConnectedDutsFirmwareRequest) (*ListConnectedDutsFirmwareResponse, error)
 	GetSystemInfo(context.Context, *GetSystemInfoRequest) (*GetSystemInfoResponse, error)
+	GetVersionInfo(context.Context, *GetVersionInfoRequest) (*GetVersionInfoResponse, error)
 	GetPeripheralInformation(context.Context, *GetPeripheralInformationRequest) (*GetPeripheralInformationResponse, error)
 	UpdateDutsFirmware(context.Context, *UpdateDutsFirmwareRequest) (*UpdateDutsFirmwareResponse, error)
 	// services to run different types of test suites
@@ -192,6 +204,9 @@ func (UnimplementedSatlabRpcServiceServer) ListConnectedDutsFirmware(context.Con
 }
 func (UnimplementedSatlabRpcServiceServer) GetSystemInfo(context.Context, *GetSystemInfoRequest) (*GetSystemInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSystemInfo not implemented")
+}
+func (UnimplementedSatlabRpcServiceServer) GetVersionInfo(context.Context, *GetVersionInfoRequest) (*GetVersionInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetVersionInfo not implemented")
 }
 func (UnimplementedSatlabRpcServiceServer) GetPeripheralInformation(context.Context, *GetPeripheralInformationRequest) (*GetPeripheralInformationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPeripheralInformation not implemented")
@@ -341,6 +356,24 @@ func _SatlabRpcService_GetSystemInfo_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SatlabRpcService_GetVersionInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetVersionInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SatlabRpcServiceServer).GetVersionInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SatlabRpcService_GetVersionInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SatlabRpcServiceServer).GetVersionInfo(ctx, req.(*GetVersionInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _SatlabRpcService_GetPeripheralInformation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetPeripheralInformationRequest)
 	if err := dec(in); err != nil {
@@ -429,6 +462,10 @@ var SatlabRpcService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "get_system_info",
 			Handler:    _SatlabRpcService_GetSystemInfo_Handler,
+		},
+		{
+			MethodName: "get_version_info",
+			Handler:    _SatlabRpcService_GetVersionInfo_Handler,
 		},
 		{
 			MethodName: "get_peripheral_information",
