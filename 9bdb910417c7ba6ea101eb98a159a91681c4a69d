@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "852143e6_ac4cafec",
+        "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-01T22:13:26Z",
+      "side": 1,
+      "message": "nit: `ReadContents` to match the actual function",
+      "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f757cc4c_d1af6d59",
+        "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-01T22:13:26Z",
+      "side": 1,
+      "message": "can we make this private and just use the `ReadHostsIP` methods as public? that will simplify the API of this package",
+      "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9521dcd0_920b31a9",
+        "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-01T22:13:26Z",
+      "side": 1,
+      "message": "avoid hardcoding this string",
+      "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "37efbe48_88441043",
+        "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-01T22:13:26Z",
+      "side": 1,
+      "message": "nit- this formatting is a bit messy, and i think a sign that the code should be refactored a bit. in general unless its a simple operation i try to just return a variable in a function. i suggest\n\n```\nout, err :\u003d executor.Exec(exec.Command(args[0], args[1:]...))\nif err !\u003d nil {\n  return nil, err\n}\n\nformattedOutput \u003d strings.TrimRight(string(out), \"\\n\\t\")\nreturn formattedOutput, nil\n```",
+      "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "148c0bab_c5e5f766",
+        "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-01T22:13:26Z",
+      "side": 1,
+      "message": "the boolean is a bit awkward here. consider refactoring to two public methods (`ReadHostsToIPMap`, `ReadIPToHostsMap`) which just take an executor. this function could then be a private function that you use for both methods.",
+      "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d0b00b2f_129f95d2",
+        "filename": "go/src/infra/cros/satlab/satlab/internal/commands/dns/get_dns_cmd.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-01T22:13:26Z",
+      "side": 1,
+      "message": "can simplify here to `c.runCmdInjected(os.Stdout, dns.ReadContents(\u0026executor.ExecCommander{}))`",
+      "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
