@@ -159,4 +159,5 @@ message RunSuiteRequest {
 
 // NEXT_TAG = 2
 message RunSuiteResponse {
+  string build_link= 1;
 }

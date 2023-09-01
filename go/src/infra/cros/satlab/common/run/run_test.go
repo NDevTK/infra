@@ -104,13 +104,18 @@ func TestRun(t *testing.T) {
 		},
 	}
 
+	expectedLink := "https://ci.chromium.org/ui/b/0"
+
 	for _, tc := range tests {
 		fakeMoblabClient := FakeMoblabClient{}
 		fakeBuildbucketClient := FakeBuildbucketClient{badData: false}
 		bucket := "chromeos-distributed-fleet-s4p"
-		err := tc.inputCommand.triggerRunWithClients(context.Background(), &fakeMoblabClient, &fakeBuildbucketClient, bucket)
+		buildLink, err := tc.inputCommand.triggerRunWithClients(context.Background(), &fakeMoblabClient, &fakeBuildbucketClient, bucket)
 		if err != nil {
 			t.Errorf("Unexpected err: %v", err)
+		}
+		if buildLink != expectedLink {
+			t.Errorf("Unexpected build link, expected: %v, got: %v", expectedLink, buildLink)
 		}
 	}
 }

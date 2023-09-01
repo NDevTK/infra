@@ -51,11 +51,11 @@ type Run struct {
 
 // TriggerRun triggers the Run with the given information
 // (it could be either single test or a suite or a test_plan in the GCS bucket or test_plan saved locally)
-func (c *Run) TriggerRun(ctx context.Context) error {
+func (c *Run) TriggerRun(ctx context.Context) (string, error) {
 	// Create TestPlan for suite or test
 	tp, err := c.createTestPlan()
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	dims := c.AddedDims
@@ -67,7 +67,7 @@ func (c *Run) TriggerRun(ctx context.Context) error {
 	// Get drone target based on user input, defaulting to the current box.
 	droneDim, err := c.getDroneTarget()
 	if err != nil {
-		return err
+		return "", err
 	}
 	dims["drone"] = droneDim
 
@@ -96,39 +96,39 @@ func (c *Run) TriggerRun(ctx context.Context) error {
 	// Create default client
 	err = bbClient.AddDefaultBBClient(ctx)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	moblabClient, err := moblab.NewBuildClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
 	if err != nil {
-		return errors.Annotate(err, "satlab new moblab api build client").Err()
+		return "", errors.Annotate(err, "satlab new moblab api build client").Err()
 	}
 
-	err = c.triggerRunWithClients(ctx, moblabClient, bbClient, site.GetGCSImageBucket())
+	link, err := c.triggerRunWithClients(ctx, moblabClient, bbClient, site.GetGCSImageBucket())
 	if err != nil {
-		return errors.Annotate(err, "triggerRunWithClients").Err()
+		return "", errors.Annotate(err, "triggerRunWithClients").Err()
 	}
-	return nil
+	return link, nil
 }
 
-func (c *Run) triggerRunWithClients(ctx context.Context, moblabClient MoblabClient, bbClient BuildbucketClient, gcsBucket string) error {
+func (c *Run) triggerRunWithClients(ctx context.Context, moblabClient MoblabClient, bbClient BuildbucketClient, gcsBucket string) (string, error) {
 
 	// There is no explicit check on whether staging of the image is successful or not
 	// There are 2 reasons for this:
 	// 1. "Custom chromeOS builds" are expected to be already in the partner bucket. There is no
 	// check on whether that already exists in the bucket. (In an ideal world, there would be
-	// one, but rght now there is none. This is much harder because there is no list of
+	// one, but right now there is none. This is much harder because there is no list of
 	// compulsory artifacts that should exist in the folder)
 	// 2. Latency: Waiting for the copying to take place is not a good user experience and
 	// is not necessary anyway in this case. Although copying is fairly quick, it is left to
 	// be handled by server in the background
 	_, _ = c.StageImageToBucket(ctx, moblabClient, gcsBucket)
 
-	_, err := ScheduleBuild(ctx, bbClient)
+	link, err := ScheduleBuild(ctx, bbClient)
 	if err != nil {
-		return errors.Annotate(err, "satlab schedule build").Err()
+		return "", errors.Annotate(err, "satlab schedule build").Err()
 	}
-	return nil
+	return link, nil
 }
 
 func (c *Run) createTestPlan() (*test_platform.Request_TestPlan, error) {
@@ -206,13 +206,15 @@ func (c *Run) StageImageToBucket(ctx context.Context, moblabClient MoblabClient,
 	return destPath, nil
 }
 
+// / ScheduleBuild register a build. If it successes, it returns a link of build. Otherwise,
+// / return an error.
 func ScheduleBuild(ctx context.Context, bbClient BuildbucketClient) (string, error) {
 	ctpBuild, err := bbClient.ScheduleCTPBuild(ctx)
 	if err != nil {
 		return "", err
 	}
-	fmt.Printf("\n\n-- BUILD LINK --\nhttps://ci.chromium.org/ui/b/%s\n\n", strconv.Itoa(int(ctpBuild.Id)))
-	return "", nil
+	link := fmt.Sprintf("https://ci.chromium.org/ui/b/%s", strconv.Itoa(int(ctpBuild.Id)))
+	return link, nil
 }
 
 // Set drone target to user-provided satlab or local satlab if one isn't provided

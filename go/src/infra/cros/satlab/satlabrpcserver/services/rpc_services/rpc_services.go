@@ -365,9 +365,9 @@ func (s *SatlabRpcServiceServer) RunSuite(ctx context.Context, in *pb.RunSuiteRe
 		Build:     in.BuildVersion,
 		Pool:      in.Pool,
 	}
-	err := r.TriggerRun(ctx)
+	buildLink, err := r.TriggerRun(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return &pb.RunSuiteResponse{}, nil
+	return &pb.RunSuiteResponse{BuildLink: buildLink}, nil
 }

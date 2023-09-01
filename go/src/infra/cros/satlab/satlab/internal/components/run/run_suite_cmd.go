@@ -68,7 +68,9 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 		CFT:           c.cft,
 		AddedDims:     c.addedDims,
 	}
-	return r.TriggerRun(ctx)
+	buildLink, err := r.TriggerRun(ctx)
+	fmt.Printf("\n\n-- BUILD LINK --\n%s\n\n", buildLink)
+	return err
 
 }
 
