@@ -13,7 +13,9 @@ import (
 	"github.com/hashicorp/go-version"
 
 	run_pkg "infra/cros/satlab/common/run"
+	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
+	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
 	pb "infra/cros/satlab/satlabrpcserver/proto"
 	"infra/cros/satlab/satlabrpcserver/services/bucket_services"
@@ -36,6 +38,8 @@ type SatlabRpcServiceServer struct {
 	labelParser *utils.LabelParser
 	// cpuTemperatureOrchestrator the CPU temperature orchestrator
 	cpuTemperatureOrchestrator *cpu_temperature.CPUTemperatureOrchestrator
+	// commandExecutor provides an interface to run a command. It is good for testing
+	commandExecutor executor.IExecCommander
 }
 
 func New(
@@ -51,6 +55,7 @@ func New(
 		dutService:                 dutService,
 		labelParser:                labelParser,
 		cpuTemperatureOrchestrator: cpuTemperatureOrchestrator,
+		commandExecutor:            &executor.ExecCommander{},
 	}
 }
 
@@ -370,4 +375,28 @@ func (s *SatlabRpcServiceServer) RunSuite(ctx context.Context, in *pb.RunSuiteRe
 		return nil, err
 	}
 	return &pb.RunSuiteResponse{BuildLink: buildLink}, nil
+}
+
+func (s *SatlabRpcServiceServer) GetVersionInfo(ctx context.Context, _ *pb.GetVersionInfoRequest) (*pb.GetVersionInfoResponse, error) {
+	resp := pb.GetVersionInfoResponse{}
+	hostId, err := satlabcommands.GetDockerHostBoxIdentifier(s.commandExecutor)
+	if err != nil {
+		return nil, err
+	}
+	resp.HostId = hostId
+	//TODO get the install id
+	resp.InstallId = ""
+	osVersion, err := satlabcommands.GetOsVersion(s.commandExecutor)
+	if err != nil {
+		return nil, err
+	}
+	resp.Description = osVersion.Description
+	resp.ChromeosVersion = osVersion.Version
+	resp.Track = osVersion.Track
+	version, err := satlabcommands.GetSatlabVersion(s.commandExecutor)
+	if err != nil {
+		return nil, err
+	}
+	resp.Version = version
+	return &resp, nil
 }
