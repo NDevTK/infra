@@ -198,6 +198,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			Cbi:                 dut.GetCbi(),
 			Cbx:                 dut.GetCbx(),
 			HumanMotionRobot:    createDUTHumanMotionRobot(p, ds),
+			TestbedCapability:   createTestbedCapability(p.GetCable()),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),
@@ -213,6 +214,23 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		d.DutStateReason = tlw.DutStateReason(ds.GetDutStateReason())
 	}
 	return d, nil
+}
+
+func createTestbedCapability(cables []*ufslab.Cable) *tlw.TestbedCapability {
+	var testbedCapability *tlw.TestbedCapability
+	for _, c := range cables {
+		switch c.GetType() {
+		case ufslab.CableType_CABLE_AUDIOJACK:
+			testbedCapability.Audiojack = true
+		case ufslab.CableType_CABLE_USBAUDIO:
+			testbedCapability.Usbaudio = true
+		case ufslab.CableType_CABLE_USBPRINTING:
+			testbedCapability.Usbprinting = true
+		case ufslab.CableType_CABLE_HDMIAUDIO:
+			testbedCapability.Hdmiaudio = true
+		}
+	}
+	return testbedCapability
 }
 
 // createBluetoothPeerHosts use the UFS states for Bluetooth peer devices to create
