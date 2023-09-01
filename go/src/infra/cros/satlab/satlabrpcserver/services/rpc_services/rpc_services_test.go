@@ -16,6 +16,7 @@ import (
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
 	"infra/cros/satlab/common/site"
+	"infra/cros/satlab/satlabrpcserver/fake"
 	mk "infra/cros/satlab/satlabrpcserver/mocks"
 	"infra/cros/satlab/satlabrpcserver/models"
 	cpu "infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
@@ -719,7 +720,6 @@ func TestUpdateDUTsFirmwareShouldSuccess(t *testing.T) {
 	// Create a context with timeout
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-
 	// Create a mockData data
 	mockData := []*models.SSHResult{
 		{IP: "192.168.231.1", Value: "execute command success"},
@@ -754,5 +754,52 @@ func TestUpdateDUTsFirmwareShouldSuccess(t *testing.T) {
 
 	if diff := cmp.Diff(expected, resp.Outputs, ignorePBFieldOpts, sortOpts); diff != "" {
 		t.Errorf("Expected: {%v}, got: {%v}", expected, resp.Outputs)
+	}
+}
+
+func TestGetVersionInfoShouldSuccess(t *testing.T) {
+	// Run this testcase parallel
+	t.Parallel()
+	// Create a mock server
+	s := createMockServer(t)
+	s.commandExecutor = &fake.FakeCommander{
+		CmdOutput: "LABEL=output\ndescription:description\nversion:v\ntrack:track",
+	}
+
+	ctx := context.Background()
+	req := &pb.GetVersionInfoRequest{}
+	resp, _ := s.GetVersionInfo(ctx, req)
+
+	expected := &pb.GetVersionInfoResponse{
+		HostId:          "label=output\ndescription:description\nversion:v\ntrack:track",
+		Description:     "description",
+		Track:           "track",
+		ChromeosVersion: "v",
+		Version:         "output",
+	}
+
+	// ignore pb fields in `FirmwareUpdateCommandOutput`
+	ignorePBFieldOpts := cmpopts.IgnoreUnexported(pb.GetVersionInfoResponse{})
+
+	if diff := cmp.Diff(expected, resp, ignorePBFieldOpts); diff != "" {
+		t.Errorf("Expected: {%v}, got: {%v}, {%v}", expected, resp, diff)
+	}
+}
+
+func TestGetVersionInfoShouldFail(t *testing.T) {
+	// Run this testcase parallel
+	t.Parallel()
+	// Create a mock server
+	s := createMockServer(t)
+	s.commandExecutor = &fake.FakeCommander{
+		Err: errors.New("exec command failed"),
+	}
+
+	ctx := context.Background()
+	req := &pb.GetVersionInfoRequest{}
+	_, err := s.GetVersionInfo(ctx, req)
+
+	if err == nil {
+		t.Errorf("Expected error")
 	}
 }
