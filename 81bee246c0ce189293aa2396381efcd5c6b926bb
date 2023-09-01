@@ -16,6 +16,24 @@
       "message": "why do we need `Run` when `Exec` already exists? looking at the docs the main difference seems to be that `Exec` (which is `cmd.Output()`) does the same thing but returns stdout, so it seems possible to just use that\n\nif there is still a reason to have a separate `Run` function, we should document the difference clearly. as a dev i would not be sure which I should be using",
       "revId": "81bee246c0ce189293aa2396381efcd5c6b926bb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fe78de3a_00d447d2",
+        "filename": "go/src/infra/cros/satlab/common/utils/executor/single_commander.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-01T01:12:28Z",
+      "side": 1,
+      "message": "You are right. I can use Exec to instead Run function",
+      "parentUuid": "c0c3e145_de9f1a22",
+      "revId": "81bee246c0ce189293aa2396381efcd5c6b926bb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ],
   "submitRequirementResults": [
