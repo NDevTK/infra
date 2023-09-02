@@ -66,6 +66,7 @@ func wifiRouterRepairPlan() *Plan {
 				},
 				ExecName:    "wifi_router_reboot",
 				ExecTimeout: &durationpb.Duration{Seconds: 200},
+				RunControl:  RunControl_ALWAYS_RUN,
 			},
 
 			// Device type conditions.
@@ -257,6 +258,7 @@ func wifiRouterRepairPlan() *Plan {
 				ExecName: "wifi_router_openwrt_has_expected_image",
 				RecoveryActions: []string{
 					"Update OpenWrt OS image with expected image",
+					"Reboot then update OpenWrt OS image with expected image",
 				},
 			},
 			"Update OpenWrt OS image with expected image": {
@@ -267,6 +269,18 @@ func wifiRouterRepairPlan() *Plan {
 				},
 				ExecName:    "wifi_router_openwrt_update_to_expected_image",
 				ExecTimeout: &durationpb.Duration{Seconds: 600},
+				RunControl:  RunControl_ALWAYS_RUN,
+			},
+			"Reboot then update OpenWrt OS image with expected image": {
+				Docs: []string{
+					"Reboots the device before trying to update it.",
+					"This allows the update to succeed even if the /tmp dir started off corrupted, since rebooting refreshes it.",
+				},
+				Dependencies: []string{
+					"Reboot device",
+					"Update OpenWrt OS image with expected image",
+				},
+				ExecName: "sample_pass",
 			},
 			"Set WifiRouter model and features based on this OpenWrt device": {
 				Docs: []string{
