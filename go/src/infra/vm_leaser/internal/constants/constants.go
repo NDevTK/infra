@@ -54,6 +54,18 @@ var (
 	}
 )
 
+// GetDefaultParams returns the default params of a prod/dev environment
+func GetDefaultParams(env string) DefaultLeaseParams {
+	switch env {
+	case "dev":
+		return DevDefaultParams
+	case "prod":
+		return ProdDefaultParams
+	default:
+		return DevDefaultParams
+	}
+}
+
 // A list of GCP zones for VM Leaser service to manage VMs in
 var (
 	UsCentral1 = []string{

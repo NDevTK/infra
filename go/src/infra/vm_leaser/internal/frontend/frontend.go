@@ -6,9 +6,7 @@ package frontend
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 
@@ -18,13 +16,11 @@ import (
 	"github.com/googleapis/gax-go/v2"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/durationpb"
 
 	"infra/vm_leaser/internal/constants"
+	"infra/vm_leaser/internal/controller"
 	"infra/vm_leaser/internal/validation"
 	"infra/vm_leaser/internal/zone_selector"
 )
@@ -80,7 +76,7 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 	}
 	defer instancesClient.Close()
 
-	in := checkIdempotencyKey(ctx, instancesClient, r.GetHostReqs().GetGceProject(), r.GetIdempotencyKey())
+	in := controller.CheckIdempotencyKey(ctx, instancesClient, r.GetHostReqs().GetGceProject(), r.GetIdempotencyKey())
 	if in != nil {
 		zone, err := zone_selector.ExtractGoogleApiZone(in.GetZone())
 		if err != nil {
@@ -104,7 +100,7 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 	quotaExceededZones := map[string]bool{}
 	retry := 0
 	for {
-		err = createInstance(ctx, instancesClient, s.Env, leaseID, r)
+		err = controller.CreateInstance(ctx, instancesClient, s.Env, leaseID, r)
 		if err == nil {
 			break
 		}
@@ -125,7 +121,7 @@ func (s *Server) LeaseVM(ctx context.Context, r *api.LeaseVMRequest) (*api.Lease
 		logging.Debugf(ctx, "LeaseVM: retrying %d time createInstance", retry)
 	}
 
-	in, err = getInstance(ctx, instancesClient, leaseID, r.GetHostReqs(), true)
+	in, err = controller.GetInstance(ctx, instancesClient, leaseID, r.GetHostReqs(), true)
 	if err != nil {
 		if ctx.Err() != nil {
 			return nil, status.Errorf(codes.DeadlineExceeded, "when getting instance: %s", ctx.Err())
@@ -178,7 +174,7 @@ func (s *Server) ReleaseVM(ctx context.Context, r *api.ReleaseVMRequest) (*api.R
 
 	retry := 0
 	for {
-		err := deleteInstance(ctx, instancesClient, r)
+		err := controller.DeleteInstance(ctx, instancesClient, r)
 		if err == nil {
 			break
 		}
@@ -210,7 +206,7 @@ func (s *Server) ListLeases(ctx context.Context, r *api.ListLeasesRequest) (*api
 	}
 	defer instancesClient.Close()
 
-	instances, err := listInstances(ctx, instancesClient, r)
+	instances, err := controller.ListInstances(ctx, instancesClient, r)
 	if err != nil {
 		return nil, err
 	}
@@ -239,67 +235,6 @@ func (s *Server) ListLeases(ctx context.Context, r *api.ListLeasesRequest) (*api
 	}, nil
 }
 
-// createInstance sends an instance creation request to the Compute Engine API and waits for it to complete.
-func createInstance(parentCtx context.Context, client computeInstancesClient, env, leaseID string, r *api.LeaseVMRequest) error {
-	// Implement a 180 second deadline for creating the instance
-	ctx, cancel := context.WithTimeout(parentCtx, 180*time.Second)
-	defer cancel()
-
-	hostReqs := r.GetHostReqs()
-	zone := hostReqs.GetGceRegion()
-	networkInterfaces, err := getInstanceNetworkInterfaces(ctx, hostReqs)
-	if err != nil {
-		return fmt.Errorf("failed to get network interfaces: %v", err)
-	}
-	metadata, err := getMetadata(ctx, env, r)
-	if err != nil {
-		return fmt.Errorf("failed to get metadata: %v", err)
-	}
-
-	req := &computepb.InsertInstanceRequest{
-		Project: hostReqs.GetGceProject(),
-		Zone:    zone,
-		InstanceResource: &computepb.Instance{
-			Name: proto.String(leaseID),
-			Disks: []*computepb.AttachedDisk{
-				{
-					InitializeParams: &computepb.AttachedDiskInitializeParams{
-						DiskSizeGb:  proto.Int64(hostReqs.GetGceDiskSize()),
-						SourceImage: proto.String(hostReqs.GetGceImage()),
-					},
-					AutoDelete: proto.Bool(true),
-					Boot:       proto.Bool(true),
-					Type:       proto.String(computepb.AttachedDisk_PERSISTENT.String()),
-				},
-			},
-			MachineType:       proto.String(fmt.Sprintf("zones/%s/machineTypes/%s", zone, hostReqs.GetGceMachineType())),
-			Metadata:          metadata,
-			NetworkInterfaces: networkInterfaces,
-		},
-	}
-
-	if hostReqs.GetGceMinCpuPlatform() != "" {
-		req.InstanceResource.MinCpuPlatform = proto.String(hostReqs.GetGceMinCpuPlatform())
-	}
-
-	logging.Debugf(ctx, "createInstance: InsertInstanceRequest payload: %v", req)
-	op, err := client.Insert(ctx, req)
-	if err != nil {
-		return fmt.Errorf("unable to create instance: %v", err)
-	}
-	if op == nil {
-		return errors.New("no operation returned for waiting")
-	}
-
-	logging.Debugf(ctx, "createInstance: waiting for operation completion")
-	if err = op.Wait(ctx); err != nil {
-		return fmt.Errorf("unable to wait for the operation: %v", err)
-	}
-
-	logging.Infof(ctx, "createInstance: instance scheduled for creation: %s", leaseID)
-	return nil
-}
-
 // handleLeaseVMError updates the LeaseVMRequest to resolve the error.
 func handleLeaseVMError(ctx context.Context, r *api.LeaseVMRequest, err error, quotaExceededZones map[string]bool) *api.LeaseVMRequest {
 	if err == nil {
@@ -322,176 +257,9 @@ func handleLeaseVMError(ctx context.Context, r *api.LeaseVMRequest, err error, q
 	return r
 }
 
-// deleteInstance sends an instance deletion request to the Compute Engine API.
-func deleteInstance(ctx context.Context, c computeInstancesClient, r *api.ReleaseVMRequest) error {
-	req := &computepb.DeleteInstanceRequest{
-		Instance: r.GetLeaseId(),
-		Project:  r.GetGceProject(),
-		Zone:     r.GetGceRegion(),
-	}
-	logging.Debugf(ctx, "deleteInstance: DeleteInstanceRequest payload: %v", req)
-
-	// We omit checking the returned operation or calling Wait so that this call
-	// becomes non-blocking. This saves callers time and lets the clean up cron
-	// job take care of any stale instances instead. See b/287524018.
-	_, err := c.Delete(ctx, req)
-	if err != nil {
-		return fmt.Errorf("unable to delete instance: %v", err)
-	}
-
-	logging.Infof(ctx, "deleteInstance: instance delete request received by GCP")
-	return nil
-}
-
-// getInstance gets a GCE instance based on lease id and GCE configs.
-//
-// getInstance returns a GCE instance with valid network interface and network
-// IP. If no network is available, it does not return the instance.
-func getInstance(parentCtx context.Context, client computeInstancesClient, leaseID string, hostReqs *api.VMRequirements, shouldPoll bool) (*computepb.Instance, error) {
-	// Implement a 30 second deadline for polling for the instance
-	ctx, cancel := context.WithTimeout(parentCtx, 30*time.Second)
-	defer cancel()
-
-	getReq := &computepb.GetInstanceRequest{
-		Instance: leaseID,
-		Project:  hostReqs.GetGceProject(),
-		Zone:     hostReqs.GetGceRegion(),
-	}
-
-	var in *computepb.Instance
-	var err error
-	if shouldPoll {
-		logging.Debugf(ctx, "getInstance: polling for instance")
-		err = poll(ctx, func(ctx context.Context) (bool, error) {
-			in, err = client.Get(ctx, getReq)
-			if err != nil {
-				return false, err
-			}
-			return true, nil
-		}, 2*time.Second)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		logging.Debugf(ctx, "getInstance: getting instance without polling")
-		in, err = client.Get(ctx, getReq)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if in.GetNetworkInterfaces() == nil || in.GetNetworkInterfaces()[0] == nil {
-		return nil, errors.New("instance does not have a network interface")
-	}
-	if in.GetNetworkInterfaces()[0].GetAccessConfigs() == nil || in.GetNetworkInterfaces()[0].GetAccessConfigs()[0] == nil {
-		return nil, errors.New("instance does not have an access config")
-	}
-	if in.GetNetworkInterfaces()[0].GetAccessConfigs()[0].GetNatIP() == "" {
-		return nil, errors.New("instance does not have a nat ip")
-	}
-	return in, nil
-}
-
-// listInstances lists VMs in a GCP project based on request filters.
-func listInstances(ctx context.Context, client computeInstancesClient, r *api.ListLeasesRequest) ([]*computepb.Instance, error) {
-	logging.Debugf(ctx, "listInstances: %v", r)
-	parent := r.GetParent()
-	if err := validation.ValidateLeaseParent(parent); err != nil {
-		return nil, err
-	}
-	matches := validation.ValidLeaseParent.FindStringSubmatch(parent)
-	project := matches[validation.ValidLeaseParent.SubexpIndex("project")]
-	zone := matches[validation.ValidLeaseParent.SubexpIndex("zone")]
-
-	// TODO (b/295547037): Implement filtering for list method.
-	if r.GetFilter() != "" {
-		logging.Warningf(ctx, "listInstances: filtering is not yet implemented; filter string will be ignored")
-	}
-
-	if zone == "" {
-		return listAllInstances(ctx, client, project, r)
-	}
-	return listZoneInstances(ctx, client, project, zone, r)
-}
-
-// listAllInstances lists all VMs in a GCP project.
-func listAllInstances(ctx context.Context, client computeInstancesClient, project string, r *api.ListLeasesRequest) ([]*computepb.Instance, error) {
-	maxResults := uint32(r.GetPageSize())
-	req := &computepb.AggregatedListInstancesRequest{
-		Project:    project,
-		PageToken:  proto.String(r.GetPageToken()),
-		MaxResults: &maxResults,
-		Filter:     proto.String("name eq ^vm-.*"),
-	}
-
-	var instances []*computepb.Instance
-	it := client.AggregatedList(ctx, req)
-	if it == nil {
-		return nil, errors.New("listAllInstances: cannot get instances")
-	}
-	for {
-		pair, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			return nil, err
-		}
-
-		zoneIns := pair.Value.Instances
-		if len(zoneIns) > 0 {
-			instances = append(instances, zoneIns...)
-		}
-	}
-	logging.Infof(ctx, "listAllInstances: found %v instances in project %s", len(instances), project)
-	return instances, nil
-}
-
-// listZoneInstances lists all VMs in a GCP project specified by zone.
-func listZoneInstances(ctx context.Context, client computeInstancesClient, project, zone string, r *api.ListLeasesRequest) ([]*computepb.Instance, error) {
-	maxResults := uint32(r.GetPageSize())
-	req := &computepb.ListInstancesRequest{
-		PageToken:  proto.String(r.GetPageToken()),
-		Project:    project,
-		MaxResults: &maxResults,
-		Zone:       zone,
-		Filter:     proto.String("name eq ^vm-.*"),
-	}
-
-	var instances []*computepb.Instance
-	it := client.List(ctx, req)
-	if it == nil {
-		return nil, errors.New("listZoneInstances: cannot get instances")
-	}
-	for {
-		in, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			return nil, err
-		}
-		instances = append(instances, in)
-	}
-	logging.Infof(ctx, "listZoneInstances: found %v instances in project %s zone %s", len(instances), project, zone)
-	return instances, nil
-}
-
-// getDefaultParams returns the default params of a prod/dev environment
-func getDefaultParams(env string) constants.DefaultLeaseParams {
-	switch env {
-	case "dev":
-		return constants.DevDefaultParams
-	case "prod":
-		return constants.ProdDefaultParams
-	default:
-		return constants.DevDefaultParams
-	}
-}
-
 // setDefaultLeaseVMRequest sets default values for VMRequirements.
 func setDefaultLeaseVMRequest(ctx context.Context, r *api.LeaseVMRequest, env string) (*api.LeaseVMRequest, error) {
-	defaultParams := getDefaultParams(env)
+	defaultParams := constants.GetDefaultParams(env)
 	hostReqs := r.GetHostReqs()
 	if hostReqs.GetGceDiskSize() == 0 {
 		hostReqs.GceDiskSize = defaultParams.DefaultDiskSize
@@ -520,124 +288,9 @@ func setDefaultLeaseVMRequest(ctx context.Context, r *api.LeaseVMRequest, env st
 
 // setDefaultReleaseVMRequest sets default values for ReleaseVMRequest.
 func setDefaultReleaseVMRequest(ctx context.Context, r *api.ReleaseVMRequest, env string) *api.ReleaseVMRequest {
-	defaultParams := getDefaultParams(env)
+	defaultParams := constants.GetDefaultParams(env)
 	if r.GetGceProject() == "" {
 		r.GceProject = defaultParams.DefaultProject
 	}
 	return r
-}
-
-// getInstanceNetworkInterfaces gets the NetworkInterfaces based on VM reqs.
-func getInstanceNetworkInterfaces(ctx context.Context, hostReqs *api.VMRequirements) ([]*computepb.NetworkInterface, error) {
-	if hostReqs.GetGceNetwork() == "" {
-		return nil, errors.New("gce network cannot be empty")
-	}
-
-	netInts := []*computepb.NetworkInterface{
-		{
-			AccessConfigs: []*computepb.AccessConfig{
-				{
-					Name: proto.String("External NAT"),
-				},
-			},
-			Network: proto.String(hostReqs.GetGceNetwork()),
-		},
-	}
-	if hostReqs.GetGceSubnet() != "" {
-		netInts[0].Subnetwork = proto.String(hostReqs.GetGceSubnet())
-	}
-
-	return netInts, nil
-}
-
-// getMetadata gets the Metadata based on VM reqs.
-func getMetadata(ctx context.Context, env string, r *api.LeaseVMRequest) (*computepb.Metadata, error) {
-	expirationTime, err := computeExpirationTime(ctx, r.GetLeaseDuration(), env)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "failed to compute expiration time: %s", err)
-	}
-
-	metadataItems := []*computepb.Items{
-		{
-			Key:   proto.String("expiration_time"),
-			Value: proto.String(strconv.FormatInt(expirationTime, 10)),
-		},
-	}
-
-	if r.GetIdempotencyKey() != "" {
-		metadataItems = append(metadataItems, &computepb.Items{
-			Key:   proto.String("idempotency_key"),
-			Value: proto.String(r.GetIdempotencyKey()),
-		})
-	}
-
-	return &computepb.Metadata{
-		Items: metadataItems,
-	}, nil
-}
-
-// checkIdempotencyKey checks the request idempotency with the existing leases
-//
-// checkIdempotencyKey takes a key and searches all instances within a project
-// to check if any current lease matches the request being made. If a request is
-// a duplicate request based on the key, then the instance already created will
-// be returned to the caller and no additional request will be made to GCE.
-func checkIdempotencyKey(ctx context.Context, client computeInstancesClient, project, idemKey string) *computepb.Instance {
-	t1 := time.Now()
-	allInstances, err := listAllInstances(ctx, client, project, nil)
-	if err != nil {
-		logging.Warningf(ctx, "checkIdempotencyKey: could not check idempotency; continuing lease operation")
-	}
-	for _, in := range allInstances {
-		for _, m := range in.GetMetadata().GetItems() {
-			if m.GetKey() == "idempotency_key" && m.GetValue() == idemKey {
-				logging.Debugf(ctx, "checkIdempotencyKey: found matching idempotency key; returning VM")
-				logging.Debugf(ctx, "checkIdempotencyKey: check completed in %v", time.Since(t1))
-				return in
-			}
-		}
-	}
-	logging.Debugf(ctx, "checkIdempotencyKey: check completed in %v", time.Since(t1))
-	return nil
-}
-
-// computeExpirationTime calculates the expiration time of a VM
-//
-// computeExpirationTime return a future Unix time as an int64. The calculation
-// is based on the specified lease duration.
-func computeExpirationTime(ctx context.Context, leaseDuration *durationpb.Duration, env string) (int64, error) {
-	defaultParams := getDefaultParams(env)
-	expirationTime := time.Now().Unix()
-	if leaseDuration == nil {
-		return expirationTime + (defaultParams.DefaultLeaseDuration * 60), nil
-	}
-	return expirationTime + leaseDuration.GetSeconds(), nil
-}
-
-// poll is a generic polling function that polls by interval
-//
-// poll provides a generic implementation of calling f at interval, exits on
-// error or ctx timeout. f return true to end poll early.
-func poll(ctx context.Context, f func(context.Context) (bool, error), interval time.Duration) error {
-	if _, ok := ctx.Deadline(); !ok {
-		return errors.New("context must have a deadline to avoid infinite polling")
-	}
-	ticker := time.NewTicker(interval)
-	for {
-		select {
-		case <-ticker.C:
-			success, err := f(ctx)
-			if err != nil {
-				logging.Debugf(ctx, "poll: error")
-				return err
-			}
-			if success {
-				logging.Debugf(ctx, "poll: success")
-				return nil
-			}
-		case <-ctx.Done():
-			logging.Debugf(ctx, "poll: context done")
-			return ctx.Err()
-		}
-	}
 }
