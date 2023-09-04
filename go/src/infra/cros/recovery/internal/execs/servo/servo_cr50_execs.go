@@ -54,7 +54,29 @@ func servoCR50EnumeratedExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// servoCCDExpectedHaveFactoryResetExec verifies is this devices should have CCD open
+// and reset to factory settings.
+func servoCCDExpectedHaveFactoryResetExec(ctx context.Context, info *execs.ExecInfo) error {
+	// If device is Ti50 (not cr50). We always want CCD to be open and reset
+	err := info.NewServod().Has(ctx, "ti50_version")
+	if err == nil {
+		log.Debugf(ctx, "Found ti50 device")
+		return nil
+	}
+	// For Cr50 device, we want CCD to be the main servo device for CCD to be open
+	sType, err := WrappedServoType(ctx, info)
+	if err != nil {
+		return errors.Annotate(err, "servo ccd expect have factory reset").Err()
+	}
+	if sType.IsMainDeviceGSC() {
+		log.Debugf(ctx, "Found main device is cr50")
+		return nil
+	}
+	return errors.Reason("servo ccd expect have factory reset: Not Ti50 and not Cr50 with CCD as main device").Err()
+}
+
 func init() {
 	execs.Register("servo_cr50_low_sbu", servoCR50LowSBUExec)
 	execs.Register("servo_cr50_enumerated", servoCR50EnumeratedExec)
+	execs.Register("servo_ccd_expect_have_factory_reset", servoCCDExpectedHaveFactoryResetExec)
 }

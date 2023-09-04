@@ -82,6 +82,11 @@ func (s *ServoType) IsMainDeviceCCD() bool {
 	return strings.HasPrefix(s.MainDevice(), CCD_PREFIX)
 }
 
+// IsMainDeviceGSC checks whether the main device of servo is a GSC.
+func (s *ServoType) IsMainDeviceGSC() bool {
+	return s.IsMainDeviceCCD() || s.MainDevice() == C2D2
+}
+
 // IsCr50 checks whether the servo has a CCD by CR50 component.
 func (s *ServoType) IsCr50() bool {
 	return strings.Contains(s.str, CCD_CR50)

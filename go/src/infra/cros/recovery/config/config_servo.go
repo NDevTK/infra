@@ -35,7 +35,7 @@ func servoRepairPlan() *Plan {
 			"Warm reset pin is detected (servo_micro)",
 			"Charger connected",
 			"Check if PD is src state",
-			"Verify Cr50 detected",
+			"Verify CCD GSC connection detected",
 			"Servod detect all children components",
 			"Servo topology",
 			"Update USB drive info",
@@ -525,7 +525,7 @@ func servoRepairPlan() *Plan {
 				},
 				AllowFailAfterRecovery: true,
 			},
-			"Verify Cr50 detected": {
+			"Verify CCD GSC connection detected": {
 				Docs: []string{
 					"Run basic cr50/ti50 detections checks.",
 				},
@@ -633,13 +633,22 @@ func servoRepairPlan() *Plan {
 				},
 				ExecName: "servo_main_device_is_ccd",
 			},
+			"Expected CCD factory settings": {
+				Docs: []string{
+					"This devices should use testlab to open CCD and reset capabilities to factory settings.",
+				},
+				Dependencies: []string{
+					"Is not Flex device",
+				},
+				ExecName: "servo_ccd_expect_have_factory_reset",
+			},
 			"Verify cr50 console": {
 				Docs: []string{
 					"Verify that Cr50 console is responsive.",
 				},
 				Conditions: []string{
 					"Is not Flex device",
-					"Servo main device is GSC chip",
+					"Expected CCD factory settings",
 				},
 				Dependencies: []string{
 					"Initialize DUT part for servo",
@@ -672,7 +681,7 @@ func servoRepairPlan() *Plan {
 				},
 				Conditions: []string{
 					"Is not Flex device",
-					"Servo main device is CCD",
+					"Expected CCD factory settings",
 				},
 				Dependencies: []string{
 					"Set state:CCD_TESTLAB_ISSUE",
@@ -694,7 +703,8 @@ func servoRepairPlan() *Plan {
 					"If servo uses c2d2/cr50/gsc to control the DUT, open testlab will allowed to work (cr50_reboot, cold_reset, warm_reset)",
 				},
 				Conditions: []string{
-					"Servo main device is GSC chip",
+					"Is not Flex device",
+					"Expected CCD factory settings",
 				},
 				ExecExtraArgs: []string{
 					"command:cr50_testlab",
@@ -709,7 +719,8 @@ func servoRepairPlan() *Plan {
 					"Reset CCD to the factory settings.",
 				},
 				Conditions: []string{
-					"Servo main device is GSC chip",
+					"Is not Flex device",
+					"Expected CCD factory settings",
 				},
 				ExecExtraArgs: []string{
 					"command:cr50_uart_cmd",

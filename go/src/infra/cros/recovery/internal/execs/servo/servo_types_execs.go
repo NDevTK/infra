@@ -189,17 +189,11 @@ func mainDeviceIsGSCExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "main devices is gsc").Err()
 	}
 	md := sType.MainDevice()
-	switch md {
-	case servo.C2D2:
-		fallthrough
-	case servo.CCD_CR50:
-		fallthrough
-	case servo.CCD_GSC:
+	if sType.IsMainDeviceGSC() {
 		log.Debugf(ctx, "Found main device: %q", md)
 		return nil
-	default:
-		return errors.Reason("main devices is gsc: found %q does not match expectations", md).Err()
 	}
+	return errors.Reason("main devices is gsc: found %q does not match expectations", md).Err()
 }
 
 // mainDeviceIsCCDExec checks whether or not the servo device is CCD.
