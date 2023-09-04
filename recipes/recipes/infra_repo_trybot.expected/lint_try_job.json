@@ -345,7 +345,7 @@
       "ensure-directory",
       "--mode",
       "0777",
-      "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/version%3A2%401.51.2"
+      "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/version%3A2%401.54.2"
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
@@ -386,9 +386,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/version%3A2%401.51.2",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/version%3A2%401.54.2",
       "-ensure-file",
-      "infra/3pp/tools/golangci-lint/${platform} version:2@1.51.2",
+      "infra/3pp/tools/golangci-lint/${platform} version:2@1.54.2",
       "-max-threads",
       "0",
       "-json-output",
@@ -430,7 +430,7 @@
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@1.51.2\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:2@1.54.2\",@@@",
       "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/golangci-lint/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
@@ -441,7 +441,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/version%3A2%401.51.2/golangci-lint",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/version%3A2%401.54.2/golangci-lint",
       "run",
       "--out-format=json",
       "--issues-exit-code=0",
