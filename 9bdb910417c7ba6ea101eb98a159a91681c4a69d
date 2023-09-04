@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "29cb1adb_5c7616cc",
+        "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-04T01:53:00Z",
+      "side": 1,
+      "message": "Okay. Thank you.",
+      "parentUuid": "852143e6_ac4cafec",
+      "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f757cc4c_d1af6d59",
         "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
         "patchSetId": 5
@@ -31,6 +49,24 @@
       "writtenOn": "2023-09-01T22:13:26Z",
       "side": 1,
       "message": "can we make this private and just use the `ReadHostsIP` methods as public? that will simplify the API of this package",
+      "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "35cb4db2_471e946c",
+        "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-04T01:53:00Z",
+      "side": 1,
+      "message": "I will make another CL change `ReadContents` to a private function because `update_dns_cmd` and `delete_dns_cmd` use this function to update the DNS records",
+      "parentUuid": "f757cc4c_d1af6d59",
       "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -54,6 +90,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c7590354_f65ebf9b",
+        "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-04T01:53:00Z",
+      "side": 1,
+      "message": "Thank you. I move it the paths.",
+      "parentUuid": "9521dcd0_920b31a9",
+      "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "37efbe48_88441043",
         "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
         "patchSetId": 5
@@ -71,6 +125,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "18384db7_63b7218b",
+        "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-04T01:53:00Z",
+      "side": 1,
+      "message": "Okay. I will change it",
+      "parentUuid": "37efbe48_88441043",
+      "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "148c0bab_c5e5f766",
         "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
         "patchSetId": 5
@@ -82,6 +154,24 @@
       "writtenOn": "2023-09-01T22:13:26Z",
       "side": 1,
       "message": "the boolean is a bit awkward here. consider refactoring to two public methods (`ReadHostsToIPMap`, `ReadIPToHostsMap`) which just take an executor. this function could then be a private function that you use for both methods.",
+      "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9672d87c_60a2e1d9",
+        "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-04T01:53:00Z",
+      "side": 1,
+      "message": "Thank you. It is a good idea.",
+      "parentUuid": "148c0bab_c5e5f766",
       "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
