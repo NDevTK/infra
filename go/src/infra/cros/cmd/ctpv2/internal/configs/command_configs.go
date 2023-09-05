@@ -46,6 +46,9 @@ func (cfg *CommandConfig) GetCommand(
 	case commands.PrepareFilterContainersCmdType:
 		cmd = commands.NewPrepareFilterContainersInfoCmd()
 
+	case commands.MiddleoutExecutionType:
+		cmd = commands.NewMiddleOutRequestCmd()
+
 	case commands.FilterExecutionCmdType:
 		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
 		if err != nil {

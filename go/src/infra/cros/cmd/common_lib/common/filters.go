@@ -111,6 +111,36 @@ func CreateContainerRequest(requestedFilter *api.CTPFilter) *skylab_test_runner.
 	}
 }
 
+// CreateTTCPContainerRequest creates container request from provided ctp filter.
+// TODO (azrahman): Merge this into a generic container request creator that will
+// work for all containers.
+func CreateTTCPContainerRequest(requestedFilter *api.CTPFilter) *skylab_test_runner.ContainerRequest {
+	return &skylab_test_runner.ContainerRequest{
+		DynamicIdentifier: requestedFilter.GetContainer().GetName(),
+		Container: &api.Template{
+			Container: &api.Template_Generic{
+				Generic: &api.GenericTemplate{
+					// TODO (azrahman): Finalize the format of the this dir. Ideally, it should be /tmp/<container_name>.
+					// So keeping it as comment for now.
+					//DockerArtifactDir: fmt.Sprintf("/tmp/%s", filter.GetContainer().GetName()),
+					DockerArtifactDir: "/tmp/filters",
+					BinaryArgs: []string{
+						"-port", "0",
+						"-log", "/tmp/filters",
+						"-creds", "/creds/service_accounts/service-account-chromeos.json",
+					},
+					// TODO (azrahman): Get binary name from new field of CTPFilter proto.
+					BinaryName:        "/solver_service",
+					AdditionalVolumes: []string{"/creds/service_accounts/:/creds/service_accounts/"},
+				},
+			},
+		},
+		// TODO (azrahman): figure this out (not being used right now).
+		ContainerImageKey: requestedFilter.GetContainer().GetName(),
+		Network:           "host",
+	}
+}
+
 // ListToJson creates json bytes from provided list.
 func ListToJson(list *list.List) []byte {
 	retBytes := make([]byte, 0)

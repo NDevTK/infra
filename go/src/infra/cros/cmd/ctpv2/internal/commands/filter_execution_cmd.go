@@ -95,13 +95,20 @@ func (cmd *FilterExecutionCmd) extractDepsFromFilterStateKeeper(
 		cmd.InputTestPlan = proto.Clone(sk.TestPlanStates[len(sk.TestPlanStates)-1]).(*testapi.InternalTestplan)
 	}
 
+	// TODO (azrahman): remove these custom test plans call once ttcp filter stablized.
+	// Only to be used to test ttcp filter through led.
+	// if cmd.ContainerInfo.GetKey() == "ttcp-demo" {
+	// 	cmd.InputTestPlan = addNTests(100)
+	// }
+
+	// if cmd.ContainerInfo.GetKey() == "ttcp-demo" {
+	// 	cmd.InputTestPlan = addCustomTests()
+	// }
+
 	return nil
 }
 
-func (cmd *FilterExecutionCmd) updateFilterStateKeeper(
-	ctx context.Context,
-	sk *data.FilterStateKeeper) error {
-
+func (cmd *FilterExecutionCmd) updateFilterStateKeeper(ctx context.Context, sk *data.FilterStateKeeper) error {
 	if err := common.ValidateTestPlans(cmd.InputTestPlan, cmd.OutputTestPlan); err != nil {
 		return fmt.Errorf("Cmd %q failed with test plan validation: %s", cmd.GetCommandType(), err)
 	}

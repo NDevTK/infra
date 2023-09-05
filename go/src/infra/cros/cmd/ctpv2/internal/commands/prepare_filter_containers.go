@@ -235,9 +235,19 @@ func createContainerImagesInfoMap(ctx context.Context, req *testapi.CTPv2Request
 
 // CtpFilterToContainerInfo creates container info from provided ctp filter.
 func CtpFilterToContainerInfo(ctpFilter *api.CTPFilter) *data.ContainerInfo {
-	return &data.ContainerInfo{
-		ImageKey:  ctpFilter.GetContainer().GetName(),
-		Request:   common.CreateContainerRequest(ctpFilter),
-		ImageInfo: ctpFilter.GetContainer(),
+	// TODO (azrahman): remove this once container creation is more generic.
+	if ctpFilter.GetContainer().GetName() == "ttcp-demo" {
+		return &data.ContainerInfo{
+			ImageKey:  ctpFilter.GetContainer().GetName(),
+			Request:   common.CreateTTCPContainerRequest(ctpFilter),
+			ImageInfo: ctpFilter.GetContainer(),
+		}
+	} else {
+		return &data.ContainerInfo{
+			ImageKey:  ctpFilter.GetContainer().GetName(),
+			Request:   common.CreateContainerRequest(ctpFilter),
+			ImageInfo: ctpFilter.GetContainer(),
+		}
 	}
+
 }
