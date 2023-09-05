@@ -6,21 +6,20 @@ package servo
 
 import (
 	"context"
+	"regexp"
 	"strings"
 	"time"
 
 	labApi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/execs/servo/topology"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/retry"
 	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/tlw"
-
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func servoUSBHasCROSStableImageExec(ctx context.Context, info *execs.ExecInfo) error {
@@ -148,23 +147,45 @@ func servoUpdateUSBKeyHistoryExec(ctx context.Context, info *execs.ExecInfo) err
 	if sh.GetName() == "" {
 		return errors.Reason("servo update usbkey history: servo is not present as part of dut info").Err()
 	}
-	servoSerial := sh.GetSerialNumber()
-	usbDrives, err := topology.USBDrives(ctx, info.NewRunner(sh.GetName()), servoSerial)
+	sha := info.NewHostAccess(sh.GetName())
+	usbdev, err := servodGetString(ctx, info.NewServod(), "image_usbkey_dev")
 	if err != nil {
 		return errors.Annotate(err, "servo update usbkey history").Err()
-	} else if len(usbDrives) > 1 {
-		return errors.Reason("servo update usbkey history: too many usb-drive detected").Err()
 	}
-	var newDevice *labApi.UsbDrive
-	if len(usbDrives) == 1 {
-		newDevice = usbDrives[0]
-		// If we have device then we set time of detection of it.
-		newDevice.FirstSeenTime = timestamppb.New(time.Now())
+	sysfsPathRes, err := sha.Run(ctx, 30*time.Second, "udevadm", "info", "-q", "path", "-n", usbdev)
+	if err != nil {
+		return errors.Annotate(err, "servo update usbkey history: read full system path").Err()
 	}
+	sysfsPath := strings.TrimSpace(sysfsPathRes.GetStdout())
+	if sysfsPath == "" {
+		return errors.Reason("servo update usbkey history: fail to read full system path").Err()
+	}
+	// Running udevadm test on a device path would cite all the rules involved,
+	// for example, '60-persistent-storage.rules'. It would also print debug
+	// information, including model name, serial numbers, vendor ID, etc.
+	testRes, err := sha.Run(ctx, 30*time.Second, "udevadm", "test", "--action=add", sysfsPath)
+	if err != nil {
+		return errors.Annotate(err, "servo update usbkey history: read usb device info").Err()
+	}
+	testOut := testRes.GetStdout()
+	var (
+		reModel  = regexp.MustCompile(`(?i)ID_MODEL=(.+)`)
+		reSerial = regexp.MustCompile(`(?i)ID_SERIAL_SHORT=(.+)`)
+	)
+	newDevice := &labApi.UsbDrive{
+		FirstSeenTime: timestamppb.New(time.Now()),
+	}
+	if foundModel := reModel.FindStringSubmatch(testOut); foundModel != nil {
+		newDevice.Manufacturer = foundModel[1]
+	}
+	if foundSerial := reSerial.FindStringSubmatch(testOut); foundSerial != nil {
+		newDevice.Serial = foundSerial[1]
+	}
+	log.Infof(ctx, "Found USB drive info: %q, %q", newDevice.GetManufacturer(), newDevice.GetSerial())
 	oldDevice := sh.GetUsbDrive()
 	// Two cases where we need to update the record for usbkey.
 	if oldDevice.GetSerial() == "" && newDevice.GetSerial() == "" {
-		log.Debugf(ctx, "USB drive not  found and was not in the setup.")
+		log.Debugf(ctx, "USB drive not found and was not in the setup.")
 	} else if oldDevice.GetSerial() == "" {
 		log.Debugf(ctx, "New USB drive detected.")
 		createMetricsRecordWhenNewUSBDriveFound(ctx, info, newDevice)
@@ -179,6 +200,8 @@ func servoUpdateUSBKeyHistoryExec(ctx context.Context, info *execs.ExecInfo) err
 		createMetricsRecordWhenUSBDriveReplaced(ctx, info, oldDevice, newDevice)
 		// Updating inventory record.
 		sh.UsbDrive = newDevice
+	} else if oldDevice.GetSerial() == newDevice.GetSerial() && newDevice.GetManufacturer() != "" {
+		oldDevice.Manufacturer = newDevice.GetManufacturer()
 	}
 	return nil
 }
