@@ -13,14 +13,14 @@ import (
 	compute "cloud.google.com/go/compute/apiv1"
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	multierror "github.com/hashicorp/go-multierror"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/runtime/paniccatcher"
 	"go.chromium.org/luci/server"
-	"google.golang.org/api/iterator"
-	"google.golang.org/protobuf/proto"
 
 	"infra/vm_leaser/internal/constants"
+	"infra/vm_leaser/internal/controller"
 )
 
 // Options are server options for the cron server
@@ -28,14 +28,6 @@ type Options struct {
 	GcpProjects []string
 	ServiceEnv  *string
 }
-
-// Default VM Leaser cron parameters
-const (
-	// TODO(justinsuen): See isInstanceExpired comment.
-	//
-	// Filter for listing expired instances
-	expiredVMFilter string = "(name eq ^vm-.*) (status eq RUNNING)"
-)
 
 // RegisterCronServer initializes the VM Leaser cron server.
 func RegisterCronServer(srv *server.Server, opts Options) {
@@ -86,7 +78,7 @@ func Run(ctx context.Context, minInterval time.Duration, gcpProject string, f fu
 
 // releaseExpiredVMs releases VMs based on their expiration times.
 func releaseExpiredVMs(ctx context.Context, gcpProject string) error {
-	logging.Debugf(ctx, "releasing expired VMs for GCP project: %v", gcpProject)
+	logging.Debugf(ctx, "releaseExpiredVMs: releasing expired VMs for GCP project: %v", gcpProject)
 	instancesClient, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		return fmt.Errorf("NewInstancesRESTClient: %v", err)
@@ -104,31 +96,29 @@ func releaseExpiredVMs(ctx context.Context, gcpProject string) error {
 
 	// Loop through all quota zones for expired instances.
 	for _, zone := range allZones {
-		logging.Debugf(ctx, "processing zone %v", zone)
-		it, err := listInstances(ctx, instancesClient, gcpProject, zone)
+		logging.Debugf(ctx, "releaseExpiredVMs: processing zone %v", zone)
+		instances, err := controller.ListInstances(ctx, instancesClient, &api.ListLeasesRequest{
+			Parent: fmt.Sprintf("projects/%s/zones/%s", gcpProject, zone),
+		})
 		if err != nil {
 			return err
 		}
 
 		// Iterate through each instance and check the expiry for deletion.
-		for {
-			instance, err := it.Next()
-			if err == iterator.Done {
-				break
-			}
-			if err != nil {
-				return err
-			}
-
-			expired, err := isInstanceExpired(ctx, instance, time.Now().Unix())
+		for _, in := range instances {
+			expired, err := isInstanceExpired(ctx, in, time.Now().Unix())
 			if err != nil {
 				break
 			}
 			if expired {
-				logging.Infof(ctx, "scheduling %s in zone %s for deletion", instance.GetName(), zone, instance.GetMetadata().GetItems())
-				err := deleteInstance(ctx, instancesClient, instance.GetName(), gcpProject, zone)
+				logging.Infof(ctx, "releaseExpiredVMs: scheduling %s in zone %s for deletion", in.GetName(), zone, in.GetMetadata().GetItems())
+				err := controller.DeleteInstance(ctx, instancesClient, &api.ReleaseVMRequest{
+					LeaseId:    in.GetName(),
+					GceProject: gcpProject,
+					GceRegion:  zone,
+				})
 				if err != nil {
-					errors = multierror.Append(errors, fmt.Errorf("failed to schedule VM instance for deletion %s: %v", instance.GetName(), err))
+					errors = multierror.Append(errors, fmt.Errorf("failed to schedule VM instance for deletion %s: %v", in.GetName(), err))
 					continue
 				}
 			}
@@ -137,30 +127,6 @@ func releaseExpiredVMs(ctx context.Context, gcpProject string) error {
 
 	logging.Infof(ctx, "done")
 	return errors.ErrorOrNil()
-}
-
-// listInstances lists filtered instances created in a project and zone.
-func listInstances(ctx context.Context, c *compute.InstancesClient, project, zone string) (*compute.InstanceIterator, error) {
-	req := &computepb.ListInstancesRequest{
-		Project: project,
-		Zone:    zone,
-		Filter:  proto.String(expiredVMFilter),
-	}
-	return c.List(ctx, req), nil
-}
-
-// deleteInstance creates a delete operation for a given instance name.
-func deleteInstance(ctx context.Context, c *compute.InstancesClient, instanceName, project, zone string) error {
-	req := &computepb.DeleteInstanceRequest{
-		Project:  project,
-		Zone:     zone,
-		Instance: instanceName,
-	}
-	_, err := c.Delete(ctx, req)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 // TODO(justinsuen): This implementation is a workaround since b/35164571 and
