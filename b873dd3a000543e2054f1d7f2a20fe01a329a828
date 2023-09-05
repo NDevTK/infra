@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6988394a_28eaa2ec",
+        "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-05T14:52:20Z",
+      "side": 1,
+      "message": "would be good to test these functions. could either use a temporarily file and a real executor, or a fake executor",
+      "revId": "b873dd3a000543e2054f1d7f2a20fe01a329a828",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c66af6fa_bcc4e997",
+        "filename": "go/src/infra/cros/satlab/common/paths/paths.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-05T14:52:20Z",
+      "side": 1,
+      "message": "nit: please fix inconsistent formatting",
+      "revId": "b873dd3a000543e2054f1d7f2a20fe01a329a828",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f437950d_8d4fcb2e",
+        "filename": "go/src/infra/cros/satlab/satlab/internal/commands/dns/dns.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-05T14:52:20Z",
+      "side": 1,
+      "message": "i think can just be dns.ReadContents() now",
+      "revId": "b873dd3a000543e2054f1d7f2a20fe01a329a828",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

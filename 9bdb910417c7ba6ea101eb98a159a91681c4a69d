@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "be957bfe_26c2cecb",
+        "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-05T14:52:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "29cb1adb_5c7616cc",
+      "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f757cc4c_d1af6d59",
@@ -67,6 +85,24 @@
       "side": 1,
       "message": "I will make another CL change `ReadContents` to a private function because `update_dns_cmd` and `delete_dns_cmd` use this function to update the DNS records",
       "parentUuid": "f757cc4c_d1af6d59",
+      "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eb60cd20_bda58f1a",
+        "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-05T14:52:20Z",
+      "side": 1,
+      "message": "Ah right, these are in a separate package. That sgtm!",
+      "parentUuid": "35cb4db2_471e946c",
       "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -106,6 +142,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "715fc2a9_99927880",
+        "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-05T14:52:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c7590354_f65ebf9b",
+      "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "37efbe48_88441043",
@@ -137,6 +191,24 @@
       "side": 1,
       "message": "Okay. I will change it",
       "parentUuid": "37efbe48_88441043",
+      "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4475c9b6_50ec1f4d",
+        "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-05T14:52:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "18384db7_63b7218b",
       "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -176,6 +248,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a2fd3570_8f816bc7",
+        "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-05T14:52:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9672d87c_60a2e1d9",
+      "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d0b00b2f_129f95d2",
@@ -189,6 +279,24 @@
       "writtenOn": "2023-09-01T22:13:26Z",
       "side": 1,
       "message": "can simplify here to `c.runCmdInjected(os.Stdout, dns.ReadContents(\u0026executor.ExecCommander{}))`",
+      "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b5c0cc84_479de19f",
+        "filename": "go/src/infra/cros/satlab/satlab/internal/commands/dns/get_dns_cmd.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-05T14:52:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d0b00b2f_129f95d2",
       "revId": "9bdb910417c7ba6ea101eb98a159a91681c4a69d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
