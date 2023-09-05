@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9d9ed490_42990648",
+        "filename": "go/src/infra/cros/satlab/satlab/internal/components/dut/update_dut_cmd.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-05T15:11:44Z",
+      "side": 1,
+      "message": "imports need to be regrouped, should have sections separated by a blank line for\n\nbuilt in\n\nthird party\n\nfirst party",
+      "revId": "236576fb993f894461ebc16e17a89e299bf71bbd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

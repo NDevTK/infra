@@ -1,0 +1,106 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fa26f210_6e454420",
+        "filename": "go/src/infra/cros/satlab/common/dut/shivas/dut_updater.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-05T15:11:44Z",
+      "side": 1,
+      "message": "`DUTUpdater` seems to just contain a bunch of data. I think it makes more sense for it to be a parameter of this function then have the function be a method of the struct.\n\nSo\n```\nfunc Update(name string, args map[string][]string) error {}\n```",
+      "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fb6e6343_370149db",
+        "filename": "go/src/infra/cros/satlab/common/dut/shivas/dut_updater.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-05T15:11:44Z",
+      "side": 1,
+      "message": "please avoid printing in common library (since not always applicable)",
+      "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "849fb953_d581d97b",
+        "filename": "go/src/infra/cros/satlab/common/dut/update.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-05T15:11:44Z",
+      "side": 1,
+      "message": "nit: this comment doesnt help understand code, please either remove or add more detail",
+      "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2c3fa914_fb3cce31",
+        "filename": "go/src/infra/cros/satlab/satlab/internal/commands/dns/dns.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-05T15:11:44Z",
+      "side": 1,
+      "message": "this change seems unrelated",
+      "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fe4dfdd1_4ae6f4b3",
+        "filename": "go/src/infra/cros/satlab/satlab/internal/components/dut/update_dut_cmd.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-05T15:11:44Z",
+      "side": 1,
+      "message": "nit: since we define an `UpdateDUT` struct in the common lib, maybe rename to `updateDUTCmd` for clarity",
+      "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8d7466f2_cefec917",
+        "filename": "go/src/infra/cros/satlab/satlab/internal/components/dut/update_dut_cmd.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-05T15:11:44Z",
+      "side": 1,
+      "message": "`c` seems to be type `updateDUT` which `TriggerRun` seems to use `UpdateDUT`. should we be setting `SatlabID`, `Namespace` in `c.UpdateDUT` and calling `c.UpdateDUT.TriggerRun`?",
+      "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
