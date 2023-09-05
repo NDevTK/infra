@@ -56,11 +56,11 @@ func cancelExceededTests(ctx context.Context, client trservice.Client, taskSetNa
 
 // checkForException iterates through the exceptions list to see if we should
 // allow the suite to continue running.
-func checkForException(ctx context.Context, taskSetName string, request *RequestTaskSet) bool {
+func checkForException(ctx context.Context, suiteName string, request *RequestTaskSet) bool {
 	// Iterate through the exceptions list.
 	for _, exception := range exceptions {
 		// Continue early if current exception doesn't apply.
-		if !strings.HasSuffix(taskSetName, exception.suiteName) {
+		if !strings.HasSuffix(suiteName, exception.suiteName) {
 			continue
 		}
 
@@ -70,8 +70,6 @@ func checkForException(ctx context.Context, taskSetName string, request *Request
 			request.step.DisplayExceptionExpiredSummary(exception.expiration)
 			return false
 		}
-
-		logging.Infof(ctx, "SuiteLimits: Exception found for taskSetName: %s\n", exception.suiteName)
 
 		// Show exception information in the summary markdown.
 		request.step.DisplayExceptionSummary(exception.expiration)
@@ -85,7 +83,7 @@ func checkForException(ctx context.Context, taskSetName string, request *Request
 }
 
 // isQuotaPool checks to see if the given pool is within one of the shared HW pools.
-func isQuotaPool(pool, suiteName string) bool {
+func isQuotaPool(pool string) bool {
 	return (strings.Contains(pool, dutPoolQuota) || strings.Contains(pool, managedPoolQuota) || strings.Contains(pool, quota))
 }
 
@@ -104,6 +102,7 @@ func isEligibleForSuiteLimits(ctx context.Context, iid types.InvocationID, taskS
 	// TODO(b/293153310): Single tests will temporarily exempt from SuiteLimits because CTS needs to run individual tests manually to avoid re-running a full suite.
 	// Some runs do not launch suites and run individual tests. In that case we will default to the task set name chosen by CTP.
 	if err != nil {
+		logging.Infof(ctx, "No Suite found for %s\n", taskSetName)
 		request.SuiteLimitExceptionGranted = true
 		return false
 	}
@@ -114,7 +113,7 @@ func isEligibleForSuiteLimits(ctx context.Context, iid types.InvocationID, taskS
 	if err != nil {
 		logging.Infof(ctx, "%s\n", err.Error())
 	} else {
-		inSharedPool = isQuotaPool(pool, suiteName)
+		inSharedPool = isQuotaPool(pool)
 	}
 
 	// If its in a private pool then SuiteLimits do no apply to the run.
@@ -137,11 +136,12 @@ func isEligibleForSuiteLimits(ctx context.Context, iid types.InvocationID, taskS
 
 	// If an exception was found for the suite then do not check if the execution limit was exceeded.
 	if checkForException(ctx, suiteName, request) {
-		logging.Infof(ctx, "Suite Limits: SuiteLimits exemption found\n")
+		logging.Infof(ctx, "Suite Limits: SuiteLimits exemption found for suite %s in task set %s\n", suiteName, taskSetName)
 		request.SuiteLimitExceptionGranted = true
 		return false
 	}
 
+	logging.Infof(ctx, "Suite Limits: No SuiteLimits exemption found for suite %s\n", suiteName)
 	return true
 }
 
@@ -178,7 +178,11 @@ func updateTestExecutionTracking(ctx context.Context, iid types.InvocationID, la
 
 	// Finally, check if we've exceeded the maximum time allowed for test execution.
 	if lastSeenRuntimePerTask[taskSetName].totalSuiteTrackingTime.Seconds() > suiteTestExecutionMaximumSeconds {
-		logging.Infof(ctx, "Suite %s exceeded execution runtime limit. %d seconds allowed, %d seconds used.", taskSetName, suiteTestExecutionMaximumSeconds, int(lastSeenRuntimePerTask[taskSetName].totalSuiteTrackingTime.Seconds()))
+		suiteName, err := request.GetSuiteName(iid)
+		if err != nil {
+			suiteName = taskSetName
+		}
+		logging.Infof(ctx, "No exemption for suite %s found. TaskSet %s exceeded execution runtime limit. %d seconds allowed, %d seconds used.", suiteName, taskSetName, suiteTestExecutionMaximumSeconds, int(lastSeenRuntimePerTask[taskSetName].totalSuiteTrackingTime.Seconds()))
 		return errSuiteLimit
 	}
 

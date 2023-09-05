@@ -328,7 +328,7 @@ func (r *RequestTaskSet) CheckTasksAndRetry(ctx context.Context, c trservice.Cli
 					return false, rerr
 				}
 			} else {
-				logging.Infof(ctx, "Suite tracking: task %s started, adding to suite %s\n", iid, taskSetName)
+				logging.Infof(ctx, "Suite tracking: task %s started, adding to task set %s\n", iid, taskSetName)
 				entry.lastSeenMap[iid] = time.Now()
 			}
 		}
@@ -351,7 +351,7 @@ func (r *RequestTaskSet) CheckTasksAndRetry(ctx context.Context, c trservice.Cli
 					return false, rerr
 				}
 
-				logging.Infof(ctx, "Suite tracking: task completed removing task %s from suite %s entry\n", taskSetName, iid)
+				logging.Infof(ctx, "Suite tracking: task completed removing task %s from suite %s entry\n", iid, taskSetName)
 				delete(lastSeenRuntimePerTask[taskSetName].lastSeenMap, iid)
 			}
 		}
