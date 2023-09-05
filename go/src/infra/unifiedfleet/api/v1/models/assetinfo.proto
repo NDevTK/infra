@@ -35,9 +35,9 @@ message AssetInfo {
   bool fingerprint_sensor = 15;
   double hw_x_compliance_version = 16;
   bool touch_screen = 17;
-  optional bool is_cbx = 18;
-  optional ChassisXBrandType cbx_feature_type = 19;
-  optional bool is_mixed_x = 20;
+  bool is_cbx = 18;
+  ChassisXBrandType cbx_feature_type = 19;
+  bool is_mixed_x = 20;
 }
 
 message AssetInfoRequest {

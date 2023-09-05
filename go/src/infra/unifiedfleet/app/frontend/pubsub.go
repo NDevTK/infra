@@ -248,18 +248,17 @@ func updateAssetInfoFromHart(ufsAssetInfo, hartAssetInfo *ufspb.AssetInfo) *ufsp
 	if ufsAssetInfo.GetIsCbx() != hartAssetInfo.GetIsCbx() {
 		updated = true
 		// Update isCbx if it's changed
-		ufsAssetInfo.IsCbx = proto.Bool(hartAssetInfo.GetIsCbx())
+		ufsAssetInfo.IsCbx = hartAssetInfo.GetIsCbx()
 	}
 	if ufsAssetInfo.GetCbxFeatureType() != hartAssetInfo.GetCbxFeatureType() {
 		updated = true
 		// Update cbxFeatureType if it's changed
-		hartCbxFeatureType := hartAssetInfo.GetCbxFeatureType()
-		ufsAssetInfo.CbxFeatureType = &hartCbxFeatureType
+		ufsAssetInfo.CbxFeatureType = hartAssetInfo.GetCbxFeatureType()
 	}
 	if ufsAssetInfo.GetIsMixedX() != hartAssetInfo.GetIsMixedX() {
 		updated = true
 		// Update isMixedX status if it's changed
-		ufsAssetInfo.IsMixedX = proto.Bool(hartAssetInfo.GetIsMixedX())
+		ufsAssetInfo.IsMixedX = hartAssetInfo.GetIsMixedX()
 	}
 	// Avoid write to DB if nothing was updated
 	if updated {
