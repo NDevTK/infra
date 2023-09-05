@@ -699,36 +699,73 @@ func servoServodDTSAndServoRoleToggleExec(ctx context.Context, info *execs.ExecI
 	dtsOnTimeout := argsMap.AsDuration(ctx, "dts_to_on_timeout", 5, time.Second)
 	pdSnkTimeout := argsMap.AsDuration(ctx, "pd_role_to_snk_timeout", 1, time.Second)
 	pdSrcTimeout := argsMap.AsDuration(ctx, "pd_role_to_src_timeout", 1, time.Second)
+	verifyGscPresent := argsMap.AsBool(ctx, "verify_gsc_present", true)
+	verifyRetryCount := argsMap.AsInt(ctx, "verify_retry_count", 5)
 	servod := info.NewServod()
+	hostAccess := info.NewHostAccess(info.GetChromeos().GetServo().GetName())
 
 	// "servo_dts_mode" is the servod command to enable/disable DTS mode on servo.
 	// turn off dts mode
-	log.Infof(ctx, "Turn off dts and wait %d seconds.", dtsOffTimeout)
+	log.Infof(ctx, "Turn off dts and wait %s.", dtsOffTimeout)
 	if err := servod.Set(ctx, "servo_dts_mode", "off"); err != nil {
 		return errors.Annotate(err, "servod dts and servo role toggle").Err()
 	}
 	time.Sleep(dtsOffTimeout)
 
 	// "servo_pd_role" is the servod command to toggle servo role.
-	log.Infof(ctx, "Set servo pd role to snk and wait %d seconds.", pdSnkTimeout)
+	log.Infof(ctx, "Set servo pd role to snk and wait %s.", pdSnkTimeout)
 	if err := servod.Set(ctx, "servo_pd_role", "snk"); err != nil {
 		return errors.Annotate(err, "servod dts and servo role toggle").Err()
 	}
 	time.Sleep(pdSnkTimeout)
 
-	log.Infof(ctx, "Set servo pd role to src and wait %d seconds.", pdSrcTimeout)
+	log.Infof(ctx, "Set servo pd role to src and wait %s.", pdSrcTimeout)
 	if err := servod.Set(ctx, "servo_pd_role", "src"); err != nil {
 		return errors.Annotate(err, "servod dts and servo role toggle").Err()
 	}
 	time.Sleep(pdSrcTimeout)
 
 	// turn on dts mode.
-	log.Infof(ctx, "Turn on dts and wait %d seconds.", dtsOnTimeout)
+	log.Infof(ctx, "Turn on dts and wait %s.", dtsOnTimeout)
 	if err := servod.Set(ctx, "servo_dts_mode", "on"); err != nil {
 		return errors.Annotate(err, "servod dts and servo role toggle").Err()
 	}
 	time.Sleep(dtsOnTimeout)
 	log.Debugf(ctx, "Fix performed without error.")
+
+	if verifyGscPresent {
+		var gscSerial string
+		for _, child := range info.GetChromeos().GetServo().GetServoTopology().GetChildren() {
+			if servo.GSC_SERVOS[child.GetType()] {
+				gscSerial = child.GetSerial()
+				log.Debugf(ctx, "Found GSC serial: %q", gscSerial)
+				break
+			}
+		}
+		if gscSerial == "" {
+			log.Debugf(ctx, "Skip verification due missed GSC serial.")
+		} else {
+			cmd := fmt.Sprintf("lsusb -v -d 18d1: | grep %q", gscSerial)
+			var lastErr error
+			for i := 0; i < verifyRetryCount; i++ {
+				log.Debugf(ctx, "Attempt %d to find servo with serial: %q.", gscSerial)
+				if _, err := hostAccess.Run(ctx, 30*time.Second, cmd); err != nil {
+					lastErr = errors.Annotate(err, "verify recovery gsc").Err()
+					log.Debugf(ctx, "Fail to find servo with serial: %q", gscSerial)
+					time.Sleep(time.Second)
+				} else {
+					lastErr = nil
+					log.Debugf(ctx, "Found servo with serial: %q", gscSerial)
+					log.Debugf(ctx, "Verification passed!")
+					break
+				}
+			}
+			// If verification fail then fix didn't work.
+			if lastErr != nil {
+				return errors.Annotate(lastErr, "servod dts and servo role toggle").Err()
+			}
+		}
+	}
 	return nil
 }
 

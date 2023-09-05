@@ -30,10 +30,18 @@ const (
 )
 
 var (
-	// List of servos that connect to a debug header on the board.
-	FLEX_SERVOS = []string{C2D2, SERVO_MICRO, SERVO_V3}
-	// List of servos that rely on gsc commands for some part of dut control.
-	GSC_DRV_SERVOS = []string{C2D2, CCD_GSC, CCD_CR50}
+	// MAP of servos that connect to a debug header on the board.
+	FLEX_SERVOS = map[string]bool{
+		C2D2:        true,
+		SERVO_MICRO: true,
+		SERVO_V3:    true,
+	}
+	// Map of servos that rely on gsc commands for some part of dut control.
+	GSC_SERVOS = map[string]bool{
+		C2D2:     true,
+		CCD_GSC:  true,
+		CCD_CR50: true,
+	}
 )
 
 // ServoType represent structure to allow distinguishe servo components described in servo-type string.
