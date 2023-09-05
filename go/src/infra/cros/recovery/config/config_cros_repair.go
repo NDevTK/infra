@@ -542,6 +542,10 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is not Flex device",
+				// The firmware validation only applies to dev signed AP firmware
+				// currently. Depending on how widespread MP signed AP firmware
+				// testing is, we could add a parallel validation for MP AP firmware.
+				"Device not in MP Signed AP FW pool",
 			},
 			Dependencies: []string{
 				"Ensure firmware is in good state",
@@ -2650,6 +2654,8 @@ func crosRepairActions() map[string]*Action {
 				"faft-test-tot",
 				"nyc-meet-lab",
 				"satlab_faft",
+				// Device with MP AP firmware must be in dev mode to boot test OS image
+				"mp_firmware_testing",
 			},
 		},
 		"Pools required to be in Secure mode": {
@@ -2660,6 +2666,15 @@ func crosRepairActions() map[string]*Action {
 				"Pools allowed to stay in DEV mode",
 			},
 			ExecName: "sample_fail",
+		},
+		"Device not in MP Signed AP FW pool": {
+			Docs: []string{
+				"Verify that DUT is not in the pool that requires MP signed AP firmware",
+			},
+			ExecName: "dut_not_in_pool",
+			ExecExtraArgs: []string{
+				"mp_firmware_testing",
+			},
 		},
 		"Set default boot as disk and reboot": {
 			Docs: []string{

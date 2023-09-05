@@ -92,6 +92,7 @@ func deployActions() map[string]*Action {
 			Conditions: []string{
 				//TODO(b:231627918): Flex does not have own firmware for EC/AP
 				"Is not Flex device",
+				"Device not in MP Signed AP FW pool",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
@@ -111,6 +112,7 @@ func deployActions() map[string]*Action {
 				"Is it first deployment task",
 				//TODO(b:231627918): Flex does not have own firmware for EC/AP
 				"Is not Flex device",
+				"Device not in MP Signed AP FW pool",
 				"Has a stable-version service",
 				"Check stable firmware version exists",
 				"Recovery version has firmware image path",

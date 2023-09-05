@@ -12713,7 +12713,8 @@
                     "faft-test-au",
                     "faft-test-tot",
                     "nyc-meet-lab",
-                    "satlab_faft"
+                    "satlab_faft",
+                    "mp_firmware_testing"
                   ],
                   "run_control": "RERUN_AFTER_RECOVERY"
                 },
