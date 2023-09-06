@@ -39,6 +39,10 @@ func RegisterCronServer(srv *server.Server, opts Options) {
 			// instances.
 			Run(ctx, 5*time.Minute, projName, releaseExpiredVMs)
 		})
+		srv.RunInBackground(cronName, func(ctx context.Context) {
+			// pushLeaseMetrics every five minutes for a count of leases in a project.
+			Run(ctx, 5*time.Minute, projName, pushLeaseMetrics)
+		})
 	}
 }
 
@@ -127,6 +131,41 @@ func releaseExpiredVMs(ctx context.Context, gcpProject string) error {
 
 	logging.Infof(ctx, "done")
 	return errors.ErrorOrNil()
+}
+
+// pushLeaseMetrics pushes lease metrics to monitoring stack.
+func pushLeaseMetrics(ctx context.Context, gcpProject string) error {
+	logging.Debugf(ctx, "pushLeaseMetrics: gathering lease metrics for GCP project: %v", gcpProject)
+	instancesClient, err := compute.NewInstancesRESTClient(ctx)
+	if err != nil {
+		return fmt.Errorf("NewInstancesRESTClient: %v", err)
+	}
+	defer instancesClient.Close()
+
+	logging.Debugf(ctx, "pushLeaseMetrics: processing project %v", gcpProject)
+	instances, err := controller.ListInstances(ctx, instancesClient, &api.ListLeasesRequest{
+		Parent: fmt.Sprintf("projects/%s", gcpProject),
+	})
+	if err != nil {
+		return err
+	}
+
+	expiredCnt := 0
+	totalCnt := len(instances)
+	currTime := time.Now().Unix()
+	for _, in := range instances {
+		exp, _ := isInstanceExpired(ctx, in, currTime)
+		if exp {
+			expiredCnt += 1
+		}
+	}
+
+	logging.Debugf(ctx, "pushLeaseMetrics: total expired leases found: %d", int64(expiredCnt))
+	expiredLeaseCount.Set(ctx, int64(expiredCnt), gcpProject)
+	logging.Debugf(ctx, "pushLeaseMetrics: total leases found: %d", int64(totalCnt))
+	totalLeaseCount.Set(ctx, int64(totalCnt), gcpProject)
+
+	return nil
 }
 
 // TODO(justinsuen): This implementation is a workaround since b/35164571 and
