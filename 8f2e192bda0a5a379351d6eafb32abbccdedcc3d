@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6efc9e76_da1f3eec",
+        "filename": "go/src/infra/cros/satlab/common/dut/shivas/dut_updater.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-06T03:00:54Z",
+      "side": 1,
+      "message": "Can we like `DUTRepair` (https://chromium-review.googlesource.com/c/infra/infra/+/4841015) to construct the structure?\n\n```\ntype DUTRepairer struct {\n  Name string\n  executor executor.IExecCommander\n}\n\nfunc (r *DUTRepairer) Update(\n  ctx context.Context\n  args map[string][]string\n)\n```\n\nThe reason is we can organize the same interface for different DUT actions (repair, update, etc.)",
+      "parentUuid": "fa26f210_6e454420",
+      "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "fb6e6343_370149db",
         "filename": "go/src/infra/cros/satlab/common/dut/shivas/dut_updater.go",
         "patchSetId": 8
@@ -31,6 +49,24 @@
       "writtenOn": "2023-09-05T15:11:44Z",
       "side": 1,
       "message": "please avoid printing in common library (since not always applicable)",
+      "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "da52b8b2_b604ab20",
+        "filename": "go/src/infra/cros/satlab/common/dut/shivas/dut_updater.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-06T03:00:54Z",
+      "side": 1,
+      "message": "Okay, I will remove it",
+      "parentUuid": "fb6e6343_370149db",
       "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -54,6 +90,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "89b064c1_a712402e",
+        "filename": "go/src/infra/cros/satlab/common/dut/update.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-06T03:00:54Z",
+      "side": 1,
+      "message": "I add more description on this.",
+      "parentUuid": "849fb953_d581d97b",
+      "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "2c3fa914_fb3cce31",
         "filename": "go/src/infra/cros/satlab/satlab/internal/commands/dns/dns.go",
         "patchSetId": 8
@@ -65,6 +119,24 @@
       "writtenOn": "2023-09-05T15:11:44Z",
       "side": 1,
       "message": "this change seems unrelated",
+      "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "94c887b0_3dbdf23e",
+        "filename": "go/src/infra/cros/satlab/satlab/internal/commands/dns/dns.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-06T03:00:54Z",
+      "side": 1,
+      "message": "Sorry to mix two CLs into one. Thank you.",
+      "parentUuid": "2c3fa914_fb3cce31",
       "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -88,6 +160,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "a594bfa6_0aa7739d",
+        "filename": "go/src/infra/cros/satlab/satlab/internal/components/dut/update_dut_cmd.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-06T03:00:54Z",
+      "side": 1,
+      "message": "Ok, I will change it",
+      "parentUuid": "fe4dfdd1_4ae6f4b3",
+      "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "8d7466f2_cefec917",
         "filename": "go/src/infra/cros/satlab/satlab/internal/components/dut/update_dut_cmd.go",
         "patchSetId": 8
@@ -99,6 +189,24 @@
       "writtenOn": "2023-09-05T15:11:44Z",
       "side": 1,
       "message": "`c` seems to be type `updateDUT` which `TriggerRun` seems to use `UpdateDUT`. should we be setting `SatlabID`, `Namespace` in `c.UpdateDUT` and calling `c.UpdateDUT.TriggerRun`?",
+      "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "65502754_894c73bc",
+        "filename": "go/src/infra/cros/satlab/satlab/internal/components/dut/update_dut_cmd.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-06T03:00:54Z",
+      "side": 1,
+      "message": "Okay, I remove the envFlags and commonFlags from the `updateDUTCmd` and then use the `UpdateDUT` SatlabID and Namespace as the parameter for user input.",
+      "parentUuid": "8d7466f2_cefec917",
       "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
