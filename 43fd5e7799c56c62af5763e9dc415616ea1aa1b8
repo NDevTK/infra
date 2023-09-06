@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cce30f55_ee2ca2b9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2023-09-06T20:18:41Z",
+      "side": 1,
+      "message": "Any idea how this would take effect? This looks like it gets embedded into something...",
+      "revId": "43fd5e7799c56c62af5763e9dc415616ea1aa1b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
