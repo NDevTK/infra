@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c7ec3ae2_61520707",
+        "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-06T13:49:59Z",
+      "side": 1,
+      "message": "Done- tests look great",
+      "parentUuid": "59b5b434_f2db7505",
+      "revId": "b873dd3a000543e2054f1d7f2a20fe01a329a828",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c66af6fa_bcc4e997",
@@ -71,6 +89,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fc625ad4_cedf39d2",
+        "filename": "go/src/infra/cros/satlab/common/paths/paths.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-06T13:49:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "32a22aaa_15cff760",
+      "revId": "b873dd3a000543e2054f1d7f2a20fe01a329a828",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f437950d_8d4fcb2e",
@@ -102,6 +138,24 @@
       "side": 1,
       "message": "Thank you",
       "parentUuid": "f437950d_8d4fcb2e",
+      "revId": "b873dd3a000543e2054f1d7f2a20fe01a329a828",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "35567ad5_6c7e1ead",
+        "filename": "go/src/infra/cros/satlab/satlab/internal/commands/dns/dns.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-06T13:49:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f92eae4d_9c469008",
       "revId": "b873dd3a000543e2054f1d7f2a20fe01a329a828",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
