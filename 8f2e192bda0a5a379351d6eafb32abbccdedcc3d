@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e8f0db1b_4c6307e6",
+        "filename": "go/src/infra/cros/satlab/common/dut/shivas/dut_updater.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-06T14:07:35Z",
+      "side": 1,
+      "message": "I think reusing the structure is good, but I wouldn\u0027t combine the two (for now). Right now the implementation for repair and update are the same because we use `shivas` but in the future we will migrate away from that and the implementations might differ.",
+      "parentUuid": "6efc9e76_da1f3eec",
+      "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "fb6e6343_370149db",
         "filename": "go/src/infra/cros/satlab/common/dut/shivas/dut_updater.go",
         "patchSetId": 8
@@ -67,6 +85,24 @@
       "side": 1,
       "message": "Okay, I will remove it",
       "parentUuid": "fb6e6343_370149db",
+      "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1b7e8c0a_86699b4f",
+        "filename": "go/src/infra/cros/satlab/common/dut/shivas/dut_updater.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-06T14:07:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da52b8b2_b604ab20",
       "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -102,6 +138,24 @@
       "side": 1,
       "message": "I add more description on this.",
       "parentUuid": "849fb953_d581d97b",
+      "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8a797c96_9ab8b956",
+        "filename": "go/src/infra/cros/satlab/common/dut/update.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-06T14:07:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "89b064c1_a712402e",
       "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -176,6 +230,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7932b3a3_643f2fec",
+        "filename": "go/src/infra/cros/satlab/satlab/internal/components/dut/update_dut_cmd.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-06T14:07:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a594bfa6_0aa7739d",
+      "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8d7466f2_cefec917",
@@ -207,6 +279,24 @@
       "side": 1,
       "message": "Okay, I remove the envFlags and commonFlags from the `updateDUTCmd` and then use the `UpdateDUT` SatlabID and Namespace as the parameter for user input.",
       "parentUuid": "8d7466f2_cefec917",
+      "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "00ddc85d_af9f3ac1",
+        "filename": "go/src/infra/cros/satlab/satlab/internal/components/dut/update_dut_cmd.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-06T14:07:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "65502754_894c73bc",
       "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
