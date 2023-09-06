@@ -12,6 +12,7 @@ import (
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/ctpv2/data"
 	"reflect"
+	"strings"
 	"sync"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -23,7 +24,7 @@ import (
 	"math"
 	"sort"
 
-	"github.com/mitchellh/hashstructure"
+	hashstructure "github.com/mitchellh/hashstructure/v2"
 )
 
 // FilterExecutionCmd represents test execution cmd.
@@ -337,8 +338,8 @@ func findMatches(hwOption *api.HWRequirements, flatHWUUIDMap map[uint64]*hwInfo)
 
 	helperList := []*helper{}
 	for _, child := range hwOption.HwDefinition {
-		childHash, _ := hashstructure.Hash(child.DutInfo, nil)
-		childHashProv, _ := hashstructure.Hash(child.ProvisionInfo, nil)
+		childHash, _ := hashstructure.Hash(child.DutInfo, hashstructure.FormatV2, nil)
+		childHashProv, _ := hashstructure.Hash(child.ProvisionInfo, hashstructure.FormatV2, nil)
 		h := &helper{
 			hashV:          childHash,
 			hashProvV:      childHashProv,
@@ -432,7 +433,7 @@ func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 	}
 	hwFound := make(map[uint64]*loading)
 	for _, value := range solverData.flatHWUUIDMap {
-		hash, _ := hashstructure.Hash(value.req.HwDefinition[0].DutInfo, nil)
+		hash, _ := hashstructure.Hash(value.req.HwDefinition[0].DutInfo, hashstructure.FormatV2, nil)
 		_, exists := hwFound[hash]
 		if exists {
 			value.labLoading = hwFound[hash]
@@ -454,17 +455,62 @@ func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 		wg.Add(1)
 		go func(hwInfoInput *hwInfo) {
 			defer wg.Done()
-			// TODO (dbeckett/azrahman): pass real dims instead of mocked dims.
-			dims := []string{"label-board:zork", "label-model:morphius", "dut_state:ready"}
+			// ex: dims := []string{"label-board:zork", "label-model:morphius", "dut_state:ready"}
+			dims := CreateDims(hwInfoInput)
 			botCount, err := common.GetBotCount(ctx, dims, swarmingServ)
 			if err != nil {
 				logging.Infof(ctx, fmt.Sprintf("error found in GetBOTcount: %s", err))
 			}
-			logging.Infof(ctx, fmt.Sprintf("botcount found for dims %v: %d", dims, botCount))
 			hwInfoInput.labLoading = &loading{value: int(botCount)}
 		}(hwInfoObj)
 	}
 	wg.Wait()
+}
+
+// CreateDims creates dims list from hwInfo object.
+func CreateDims(hwInfo *hwInfo) []string {
+	if hwInfo == nil || hwInfo.req == nil || len(hwInfo.req.HwDefinition) < 1 {
+		return []string{}
+	}
+
+	deafultDims := []string{"dut_state:ready"}
+	dims := ConvertSwarmingLabelsToDims(deafultDims, hwInfo.req.HwDefinition[0].GetSwarmingLabels())
+
+	// Add labels from dut info
+	if hwInfo.req.HwDefinition[0].GetDutInfo() != nil {
+		dutInfo := hwInfo.req.HwDefinition[0].GetDutInfo()
+
+		// TODO (azrahman/dbeckett): Handle android and devboard cases
+		if dutInfo.GetChromeos().GetDutModel() != nil {
+			dutModel := dutInfo.GetChromeos().GetDutModel()
+			if dutModel.GetBuildTarget() != "" {
+				dims = append(dims, fmt.Sprintf("label-board:%s", strings.ToLower(dutModel.GetBuildTarget())))
+			}
+			if dutModel.GetModelName() != "" {
+				dims = append(dims, fmt.Sprintf("label-model:%s", strings.ToLower(dutModel.GetModelName())))
+			}
+		}
+
+		if dutInfo.GetChromeos().GetHwid() != "" {
+			dims = append(dims, fmt.Sprintf("hwid:%s", dutInfo.GetChromeos().GetHwid()))
+		}
+	}
+
+	return dims
+}
+
+// ConvertSwarmingLabelsToDims converts provided swarming labels to swarming dims.
+func ConvertSwarmingLabelsToDims(defaultDims []string, swarmingLabels []string) []string {
+	dims := defaultDims
+	for _, label := range swarmingLabels {
+		if strings.Contains(label, ":") {
+			dims = append(dims, fmt.Sprintf("label-%s", label))
+		} else {
+			dims = append(dims, fmt.Sprintf("label-%s:True", label))
+		}
+	}
+
+	return dims
 }
 
 // TODO (dbeckett): figure this out
@@ -508,16 +554,16 @@ func flattenList(ctx context.Context, allHw []*api.HWRequirements) map[uint64]*h
 			flattened := &api.HWRequirements{
 				HwDefinition: []*api.SwarmingDefinition{innerHW},
 			}
-			dutInfoHash, err := hashstructure.Hash(innerHW.DutInfo, nil)
+			dutInfoHash, err := hashstructure.Hash(innerHW.DutInfo, hashstructure.FormatV2, nil)
 			if err != nil {
 				logging.Infof(ctx, fmt.Sprintf("error while creating hash for dutInfo: %s", err))
 			}
-			provInfoHash, err := hashstructure.Hash(innerHW.ProvisionInfo, nil)
+			provInfoHash, err := hashstructure.Hash(innerHW.ProvisionInfo, hashstructure.FormatV2, nil)
 			if err != nil {
 				logging.Infof(ctx, fmt.Sprintf("error while creating hash for provisionInfo: %s", err))
 			}
 
-			flattenedHash, err := hashstructure.Hash(flattened, nil)
+			flattenedHash, err := hashstructure.Hash(flattened, hashstructure.FormatV2, nil)
 			if err != nil {
 				logging.Infof(ctx, fmt.Sprintf("error while creating hash for flattened: %s", err))
 			}
@@ -605,7 +651,7 @@ func hwSearchOrdering(flatEqMap map[uint64][]uint64) []kv {
 
 // addHWtohwUUIDMap is a helper method to inject into the map without overwriting the keys existing values.
 func addHWtohwUUIDMap(hwUUIDMap map[uint64]*api.HWRequirements, hw *api.HWRequirements) uint64 {
-	hash, _ := hashstructure.Hash(hw, nil)
+	hash, _ := hashstructure.Hash(hw, hashstructure.FormatV2, nil)
 	_, hwExists := hwUUIDMap[hash]
 	// Add the HW to the lookup map if not seen before.
 	if !hwExists {

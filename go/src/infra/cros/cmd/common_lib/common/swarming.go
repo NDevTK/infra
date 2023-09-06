@@ -7,7 +7,6 @@ package common
 import (
 	"context"
 	"infra/cmdsupport/cmdlib"
-	"strings"
 
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/logging"
@@ -68,8 +67,8 @@ func GetBotCount(ctx context.Context, dims []string, swarmingService *swarm_v1.S
 
 	logging.Infof(
 		ctx,
-		"got bot count: %d for dims: %s",
-		botReply.Count, strings.Join(dims, ", "))
+		"bot count: %d for dims: %v",
+		botReply.Count, dims)
 
 	return botReply.Count, nil
 }

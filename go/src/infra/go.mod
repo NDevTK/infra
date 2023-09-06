@@ -58,7 +58,7 @@ require (
 	github.com/linkedin/goavro/v2 v2.11.0
 	github.com/maruel/subcommands v1.1.1
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/mitchellh/hashstructure v1.1.0
+	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/opencontainers/image-spec v1.0.1
 	github.com/opencontainers/runtime-spec v1.0.3-0.20210326190908-1c3f411f0417
