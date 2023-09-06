@@ -16,6 +16,23 @@
       "message": "Any idea how this would take effect? This looks like it gets embedded into something...",
       "revId": "43fd5e7799c56c62af5763e9dc415616ea1aa1b8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c45085dc_2a4ac723",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2023-09-06T20:20:39Z",
+      "side": 1,
+      "message": "Hm... it looks like this tool is just for generating monorail links? I\u0027m guessing the actual link is somewhere else. ajp@ do you know about this tool? Is it still in use, or should it be deleted, or what?",
+      "revId": "43fd5e7799c56c62af5763e9dc415616ea1aa1b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
