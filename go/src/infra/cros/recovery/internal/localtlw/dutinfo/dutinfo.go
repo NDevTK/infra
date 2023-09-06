@@ -217,7 +217,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 }
 
 func createTestbedCapability(cables []*ufslab.Cable) *tlw.TestbedCapability {
-	var testbedCapability *tlw.TestbedCapability
+	testbedCapability := &tlw.TestbedCapability{}
 	for _, c := range cables {
 		switch c.GetType() {
 		case ufslab.CableType_CABLE_AUDIOJACK:
