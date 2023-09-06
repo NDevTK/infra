@@ -15,7 +15,11 @@ from waterfall import waterfall_config
 _SOURCE_FILE_GS_BUCKET = 'source-files-for-coverage'
 
 # Regex to identify all test related files
-TEST_FILE_REGEX = r'(^|.+\/)test(s|ing)?\/.+|.+(T|t)ests?\..*'
+# It includes all those files
+# - with 'tests/' or 'testing/' in their path
+# - with _test_ or /test_ in their name
+# - with filename ending with 'Test', 'Tests', 'test' or 'tests'
+TEST_FILE_REGEX = r'(^|.+\/)test(s|ing)?\/.+|.+(_|\/)test_.+|.+(T|t)ests?\..*'
 
 # Regex to identify main files
 MAIN_FILE_REGEX = r'.*(m|M)ain\..*'
