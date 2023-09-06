@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "59b5b434_f2db7505",
+        "filename": "go/src/infra/cros/satlab/common/dns/dns.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-06T02:11:54Z",
+      "side": 1,
+      "message": "Yes, I will add the test cases here",
+      "parentUuid": "6988394a_28eaa2ec",
+      "revId": "b873dd3a000543e2054f1d7f2a20fe01a329a828",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c66af6fa_bcc4e997",
         "filename": "go/src/infra/cros/satlab/common/paths/paths.go",
         "patchSetId": 6
@@ -37,6 +55,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "32a22aaa_15cff760",
+        "filename": "go/src/infra/cros/satlab/common/paths/paths.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-06T02:11:54Z",
+      "side": 1,
+      "message": "Sorry, forgot to `gofmt` before submitted.",
+      "parentUuid": "c66af6fa_bcc4e997",
+      "revId": "b873dd3a000543e2054f1d7f2a20fe01a329a828",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f437950d_8d4fcb2e",
         "filename": "go/src/infra/cros/satlab/satlab/internal/commands/dns/dns.go",
         "patchSetId": 6
@@ -48,6 +84,24 @@
       "writtenOn": "2023-09-05T14:52:20Z",
       "side": 1,
       "message": "i think can just be dns.ReadContents() now",
+      "revId": "b873dd3a000543e2054f1d7f2a20fe01a329a828",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f92eae4d_9c469008",
+        "filename": "go/src/infra/cros/satlab/satlab/internal/commands/dns/dns.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-06T02:11:54Z",
+      "side": 1,
+      "message": "Thank you",
+      "parentUuid": "f437950d_8d4fcb2e",
       "revId": "b873dd3a000543e2054f1d7f2a20fe01a329a828",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
