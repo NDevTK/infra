@@ -128,9 +128,7 @@ func (c *saveRun) innerRun(a subcommands.Application, env subcommands.Env) error
 	}
 
 	if request.GetSealResultsDir() {
-		if err := sealResultsDir(request.ResultsDir); err != nil {
-			return err
-		}
+		logging.Infof(ctx, "Sealing results dir is ignored since gsoffloader is not used anymore")
 	}
 
 	return nil
@@ -223,6 +221,7 @@ const gsOffloaderMarker = ".ready_for_offload"
 // notifying gs_offloader to offload the directory. The results directory
 // should not be touched once sealed. This should not be called on an
 // already sealed results directory.
+// NOTE: NOT BEING USED CURRENTLY SINCE GSOFFLOADER IS NOT USED ANYMORE.
 func sealResultsDir(dir string) error {
 	ts := []byte(fmt.Sprintf("%d", time.Now().Unix()))
 	tsFile := filepath.Join(dir, gsOffloaderMarker)
