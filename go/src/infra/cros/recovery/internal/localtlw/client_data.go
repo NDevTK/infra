@@ -250,10 +250,11 @@ func (c *tlwClient) getLocalStableVersion(ctx context.Context, dut *tlw.Dut) (*t
 	if dut.GetChromeos().GetModel() == "" {
 		return nil, fmt.Errorf("get local stable-version %q: model missing", dut.Name)
 	}
-	if os.Getenv("DOCKER_DRONE_RECOVERY_VERSIONS_DIR") == "" {
+	stableVersionDirectory := os.Getenv("DRONE_RECOVERY_VERSIONS_DIR")
+	if stableVersionDirectory == "" {
 		return nil, fmt.Errorf("get local stable-version %q: recovery versions directory not set", dut.Name)
 	}
-	stableVersionPath := fmt.Sprintf("%s%s-%s.json", os.Getenv("DOCKER_DRONE_RECOVERY_VERSIONS_DIR"), dut.GetChromeos().GetBoard(), dut.GetChromeos().GetModel())
+	stableVersionPath := fmt.Sprintf("%s%s-%s.json", stableVersionDirectory, dut.GetChromeos().GetBoard(), dut.GetChromeos().GetModel())
 
 	svFile, err := os.Open(stableVersionPath)
 	if err != nil {
