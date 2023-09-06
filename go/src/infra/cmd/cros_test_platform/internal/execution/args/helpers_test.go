@@ -70,6 +70,22 @@ func setBuild(p *test_platform.Request_Params, build string) {
 		})
 }
 
+func setAndroidProvisionSoftwareDeps(p *test_platform.Request_Params, androidOsImage, gmsCorePackageInstanceId string) {
+	dep1 := &test_platform.Request_Params_SoftwareDependency{
+		Dep: &test_platform.Request_Params_SoftwareDependency_AndroidImageVersion{
+			AndroidImageVersion: androidOsImage,
+		},
+	}
+
+	dep2 := &test_platform.Request_Params_SoftwareDependency{
+		Dep: &test_platform.Request_Params_SoftwareDependency_GmsCorePackage{
+			GmsCorePackage: gmsCorePackageInstanceId,
+		},
+	}
+
+	p.SoftwareDependencies = append(p.SoftwareDependencies, dep1, dep2)
+}
+
 func setRequestKeyval(p *test_platform.Request_Params, key string, value string) {
 	if p.Decorations == nil {
 		p.Decorations = &test_platform.Request_Params_Decorations{}

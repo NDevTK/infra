@@ -22,6 +22,7 @@ import (
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/golang/protobuf/ptypes"
@@ -62,6 +63,10 @@ type Generator struct {
 	// assumed to be `ChromeOSSkylab`
 	SwarmingPool string
 }
+
+const (
+	gms_core_package_name = "gmscore_prodrvc_arm64_alldpi_release_apk"
+)
 
 // CheckConsistency checks the internal consistency of the various inputs to the
 // argument generation logic.
@@ -507,11 +512,13 @@ func removeReservedTags(tags []string) []string {
 // builds describes the build names that were requested by a test_platform
 // invocation.
 type builds struct {
-	ChromeOS       string
-	ChromeOSBucket string
-	FirmwareRW     string
-	FirmwareRO     string
-	LacrosGCSPath  string
+	ChromeOS            string
+	ChromeOSBucket      string
+	FirmwareRW          string
+	FirmwareRO          string
+	LacrosGCSPath       string
+	AndroidImageVersion string
+	GmsCorePackage      string
 }
 
 // extractBuilds extracts builds that were requested by the test_platform invocation.
@@ -544,6 +551,16 @@ func extractBuilds(deps []*test_platform.Request_Params_SoftwareDependency) (*bu
 				return nil, errors.Reason("duplicate Lacros paths (%s, %s)", already, d.LacrosGcsPath).Err()
 			}
 			b.LacrosGCSPath = d.LacrosGcsPath
+		case *test_platform.Request_Params_SoftwareDependency_AndroidImageVersion:
+			if already := b.AndroidImageVersion; already != "" {
+				return nil, errors.Reason("duplicate Android image version (%s, %s)", already, d.AndroidImageVersion).Err()
+			}
+			b.AndroidImageVersion = d.AndroidImageVersion
+		case *test_platform.Request_Params_SoftwareDependency_GmsCorePackage:
+			if already := b.GmsCorePackage; already != "" {
+				return nil, errors.Reason("duplicate GmsCore package version (%s, %s)", already, d.GmsCorePackage).Err()
+			}
+			b.GmsCorePackage = d.GmsCorePackage
 		default:
 			return nil, errors.Reason("unknown dep %+v", dep).Err()
 		}
@@ -615,6 +632,10 @@ func buildProvisionState(softwareDeps []*test_platform.Request_Params_SoftwareDe
 		return nil, errors.NewMultiError(errors.Reason("create cft test runner request: empty imagePath").Err())
 	}
 
+	provisionMetadata, err := buildAndroidProvisionMetadata(builds)
+	if err != nil {
+		return nil, errors.Annotate(err, "create cft test runner request: buildProvisionMetadata").Err()
+	}
 	provisionState := &testapi.ProvisionState{
 		SystemImage: &testapi.ProvisionState_SystemImage{
 			SystemImagePath: &goconfig.StoragePath{
@@ -622,9 +643,45 @@ func buildProvisionState(softwareDeps []*test_platform.Request_Params_SoftwareDe
 				Path:     imagePath,
 			},
 		},
+		ProvisionMetadata: provisionMetadata,
 	}
 
 	return provisionState, nil
+}
+
+// buildAndroidProvisionMetadata constructs the provision metadata for Android Provisioning
+func buildAndroidProvisionMetadata(builds *builds) (*anypb.Any, error) {
+	if builds.GmsCorePackage == "" && builds.AndroidImageVersion == "" {
+		return nil, nil
+	}
+
+	androidProvisionRequestMetadata := &testapi.AndroidProvisionRequestMetadata{}
+
+	if builds.GmsCorePackage != "" {
+		androidProvisionRequestMetadata.CipdPackages = []*testapi.CIPDPackage{
+			{
+				Name: gms_core_package_name,
+				VersionOneof: &testapi.CIPDPackage_InstanceId{
+					InstanceId: builds.GmsCorePackage,
+				},
+			},
+		}
+	}
+
+	if builds.AndroidImageVersion != "" {
+		androidProvisionRequestMetadata.AndroidOsImage = &testapi.AndroidOsImage{
+			LocationOneof: &testapi.AndroidOsImage_OsVersion{
+				OsVersion: builds.AndroidImageVersion,
+			},
+		}
+	}
+
+	provisionMetadata, err := anypb.New(androidProvisionRequestMetadata)
+	if err != nil {
+		return nil, err
+	}
+
+	return provisionMetadata, nil
 }
 
 // cftTestRunnerRequest creates test runner request for cft workflow

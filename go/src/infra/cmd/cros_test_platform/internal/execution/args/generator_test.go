@@ -12,6 +12,7 @@ import (
 
 	. "github.com/smartystreets/goconvey/convey"
 
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
@@ -206,6 +207,58 @@ func TestSwarmingPool(t *testing.T) {
 			So(err, ShouldBeNil)
 			Convey("the SwarmingPool should be added correctly", func() {
 				So(got.SwarmingPool, ShouldEqual, "OtherPool")
+			})
+		})
+	})
+}
+
+// TestAndroidProvisionState ensures we correctly pass android provisioning metadata through provision state
+func TestAndroidProvisionState(t *testing.T) {
+	Convey("Given a request with Android provision metadata in software deps", t, func() {
+		ctx := context.Background()
+		inv := basicInvocation()
+		setTestName(inv, "foo-name")
+		var params test_platform.Request_Params
+		var dummyWorkerConfig = &config.Config_SkylabWorker{}
+		setBuild(&params, "foo-build")
+		setRequestKeyval(&params, "suite", "foo-suite")
+		setRequestMaximumDuration(&params, 1000)
+		setRunViaCft(&params, true)
+		Convey("when generating a cft test runner request's args with nil android provision metadata", func() {
+			g := Generator{
+				Invocation:       inv,
+				Params:           &params,
+				WorkerConfig:     dummyWorkerConfig,
+				ParentRequestUID: "TestPlanRuns/12345678/foo",
+			}
+			got, err := g.GenerateArgs(ctx)
+			So(err, ShouldBeNil)
+			Convey("provision state should be nil when no android metadata is passed", func() {
+				So(got.CFTTestRunnerRequest.GetPrimaryDut().ProvisionState.ProvisionMetadata, ShouldBeNil)
+			})
+		})
+		setAndroidProvisionSoftwareDeps(&params, "R97-4345-0.1", "pLDpI-z2HEUmNChkoCoc1SS7jj4MzaNFijz7_CawdykC")
+		Convey("when generating a cft test runner request's args with not nil android provision metadata", func() {
+			g := Generator{
+				Invocation:       inv,
+				Params:           &params,
+				WorkerConfig:     dummyWorkerConfig,
+				ParentRequestUID: "TestPlanRuns/12345678/foo",
+			}
+			got, err := g.GenerateArgs(ctx)
+			So(err, ShouldBeNil)
+			var androidProvisionRequestMetadata testapi.AndroidProvisionRequestMetadata
+			err = got.CFTTestRunnerRequest.GetPrimaryDut().ProvisionState.ProvisionMetadata.UnmarshalTo(&androidProvisionRequestMetadata)
+			So(err, ShouldBeNil)
+			cipd_package := &testapi.CIPDPackage{
+				Name: "gmscore_prodrvc_arm64_alldpi_release_apk",
+				VersionOneof: &testapi.CIPDPackage_InstanceId{
+					InstanceId: "pLDpI-z2HEUmNChkoCoc1SS7jj4MzaNFijz7_CawdykC",
+				},
+			}
+			Convey("provision state correctly passes andoroid provision metadata", func() {
+				So(androidProvisionRequestMetadata.GetAndroidOsImage().GetOsVersion(), ShouldEqual, "R97-4345-0.1")
+				So(androidProvisionRequestMetadata.GetCipdPackages(), ShouldContain, cipd_package)
 			})
 		})
 	})
