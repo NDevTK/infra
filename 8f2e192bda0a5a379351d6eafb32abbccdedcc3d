@@ -54,6 +54,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f30d8db5_fdd7f567",
+        "filename": "go/src/infra/cros/satlab/common/dut/shivas/dut_updater.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-06T14:07:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e8f0db1b_4c6307e6",
+      "revId": "8f2e192bda0a5a379351d6eafb32abbccdedcc3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fb6e6343_370149db",
