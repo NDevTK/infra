@@ -415,7 +415,7 @@ message HardwareCapabilities {
 //
 // Keep sorted by field names.
 //
-// NEXT TAG: 43
+// NEXT TAG: 44
 message Peripherals {
   optional bool audio_board = 6;
   // The DUT is housed in an audio box to record / replay audio for audio
@@ -591,6 +591,10 @@ message Peripherals {
   // The state of Human Motion Robot system.
   // See UFS peripherals.proto or go/fleet-infra-hmr-support for more context.
   optional PeripheralState hmr_state = 36;
+
+  // The state of Audio Latency Toolkit
+  // See UFS peripherals.proto or go/teensy-in-audiobox-proposal for more context.
+  optional PeripheralState audio_latency_toolkit_state = 43;
 }
 
 // Servo Firmware Channel describes the firmware expected to have on servos.

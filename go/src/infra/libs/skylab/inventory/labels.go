@@ -49,6 +49,7 @@ func NewSchedulableLabels() *SchedulableLabels {
 			AudioBoard:               new(bool),
 			AudioBox:                 new(bool),
 			AudioCable:               new(bool),
+			AudioLatencyToolkitState: new(PeripheralState),
 			AudioLoopbackDongle:      new(bool),
 			AudioboxJackpluggerState: new(Peripherals_AudioBoxJackPlugger),
 			Camerabox:                new(bool),

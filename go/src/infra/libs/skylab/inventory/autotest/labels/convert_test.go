@@ -90,6 +90,7 @@ peripherals: {
   audio_box: true
   audio_board: true
   audio_cable: true
+  audio_latency_toolkit_state: 1
   router_802_11ax: true
   working_bluetooth_btpeer: 3
   hmr_state: 1
@@ -194,6 +195,7 @@ var fullLabels = []string{
 	"audio_board",
 	"audio_box",
 	"audio_cable",
+	"audio_latency_toolkit_state:WORKING",
 	"audio_loopback_dongle",
 	"audiobox_jackplugger_state:WORKING",
 	"battery_state:NEED_REPLACEMENT",
@@ -698,6 +700,7 @@ peripherals: {
   audio_box: true
   audio_board: true
   audio_cable: true
+  audio_latency_toolkit_state: 1
   router_802_11ax: true
   working_bluetooth_btpeer: 3
   hmr_state: 1
@@ -802,6 +805,7 @@ var fullLabelsSpecial = []string{
 	"audio_board",
 	"audio_box",
 	"audio_cable",
+	"audio_latency_toolkit_state:WORKING",
 	"audio_loopback_dongle",
 	"battery_state:NEED_REPLACEMENT",
 	"wifi_state:NEED_REPLACEMENT",

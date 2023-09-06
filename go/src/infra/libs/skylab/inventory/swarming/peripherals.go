@@ -112,6 +112,12 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 		dims["label-trrs_type"] = []string{labTRRSType[plen:]}
 	}
 
+	if invAudioLatencyToolkitState := p.GetAudioLatencyToolkitState(); invAudioLatencyToolkitState != inventory.PeripheralState_UNKNOWN {
+		if labAudioLatencyToolkitState, ok := lab.PeripheralState_name[int32(invAudioLatencyToolkitState)]; ok {
+			dims["label-audio_latency_toolkit_state"] = []string{labAudioLatencyToolkitState}
+		}
+	}
+
 	if hmrState := p.GetHmrState(); hmrState != inventory.PeripheralState_UNKNOWN {
 		if labSState, ok := lab.PeripheralState_name[int32(hmrState)]; ok {
 			dims["label-hmr_state"] = []string{labSState}
@@ -212,6 +218,15 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 			p.TrrsType = &invTRRSType
 		}
 		delete(d, "label-trrs_type")
+	}
+
+	if labAudioLatencyToolkitStateName, ok := getLastStringValue(d, "label-audio_latency_toolkit_state"); ok {
+		audioLatencyToolkitState := inventory.PeripheralState_UNKNOWN
+		if audioLatencyToolkitStateIndex, ok := lab.PeripheralState_value[strings.ToUpper(labAudioLatencyToolkitStateName)]; ok {
+			audioLatencyToolkitState = inventory.PeripheralState(audioLatencyToolkitStateIndex)
+		}
+		p.AudioLatencyToolkitState = &audioLatencyToolkitState
+		delete(d, "label-audio_latency_toolkit_state")
 	}
 
 	if hmrStateName, ok := getLastStringValue(d, "label-hmr_state"); ok {

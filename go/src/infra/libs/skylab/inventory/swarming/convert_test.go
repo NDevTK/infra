@@ -71,6 +71,7 @@ peripherals: {
   audio_box: true
   audio_board: true
   trrs_type: 1
+  audio_latency_toolkit_state: 1
   router_802_11ax: true
   working_bluetooth_btpeer: 3
   peripheral_wifi_state: 1
@@ -228,6 +229,7 @@ peripherals: {
   audio_box: true
   audio_board: true
   trrs_type: 1
+  audio_latency_toolkit_state: 1
   router_802_11ax: true
   working_bluetooth_btpeer: 3
   peripheral_wifi_state: 1
@@ -330,22 +332,23 @@ siminfo: [{
 `
 
 var fullDimensions = Dimensions{
-	"label-arc":                        {"True"},
-	"label-atrus":                      {"True"},
-	"label-audio_board":                {"True"},
-	"label-audio_box":                  {"True"},
-	"label-audio_cable":                {"True"},
-	"label-audio_loopback_dongle":      {"True"},
-	"label-audiobox_jackplugger_state": {"WORKING"},
-	"label-bluetooth":                  {"True"},
-	"label-board":                      {"boardval"},
-	"label-callbox":                    {"True"},
-	"label-camerabox":                  {"True"},
-	"label-camerabox_facing":           {"CAMERABOX_FACING_BACK"},
-	"label-camerabox_light":            {"CAMERABOX_LIGHT_LED"},
-	"label-carrier":                    {"CARRIER_TMOBILE"},
-	"label-cellular_modem":             {"fake_cellular"},
-	"label-chameleon":                  {"True"},
+	"label-arc":                         {"True"},
+	"label-atrus":                       {"True"},
+	"label-audio_board":                 {"True"},
+	"label-audio_box":                   {"True"},
+	"label-audio_cable":                 {"True"},
+	"label-audio_latency_toolkit_state": {"WORKING"},
+	"label-audio_loopback_dongle":       {"True"},
+	"label-audiobox_jackplugger_state":  {"WORKING"},
+	"label-bluetooth":                   {"True"},
+	"label-board":                       {"boardval"},
+	"label-callbox":                     {"True"},
+	"label-camerabox":                   {"True"},
+	"label-camerabox_facing":            {"CAMERABOX_FACING_BACK"},
+	"label-camerabox_light":             {"CAMERABOX_LIGHT_LED"},
+	"label-carrier":                     {"CARRIER_TMOBILE"},
+	"label-cellular_modem":              {"fake_cellular"},
+	"label-chameleon":                   {"True"},
 	"label-chameleon_type": {
 		"CHAMELEON_TYPE_DP",
 		"CHAMELEON_TYPE_HDMI",

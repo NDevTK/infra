@@ -110,6 +110,13 @@ func otherPeripheralsConverter(ls *inventory.SchedulableLabels) []string {
 		labels = append(labels, fmt.Sprintf("trrs_type:%s", labTRRSType[plen:]))
 	}
 
+	if invAudioLatencyToolkitState := p.GetAudioLatencyToolkitState(); invAudioLatencyToolkitState != inventory.PeripheralState_UNKNOWN {
+		if labAudioLatencyToolkitState, ok := lab.PeripheralState_name[int32(invAudioLatencyToolkitState)]; ok {
+			lv := "audio_latency_toolkit_state:" + labAudioLatencyToolkitState
+			labels = append(labels, lv)
+		}
+	}
+
 	if invHmrState := p.GetHmrState(); invHmrState != inventory.PeripheralState_UNKNOWN {
 		if labHmrState, ok := lab.PeripheralState_name[int32(invHmrState)]; ok {
 			lv := "hmr_state:" + labHmrState
@@ -297,6 +304,14 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, labels []string) 
 			if invTRRSVal, ok := inventory.Peripherals_TRRSType_value[labTRRSType]; ok {
 				invTRRSType := inventory.Peripherals_TRRSType(invTRRSVal)
 				p.TrrsType = &invTRRSType
+			}
+		case "audio_latency_toolkit_state":
+			if v == "" {
+				continue
+			}
+			if labAudioLatencyToolkitState, ok := lab.PeripheralState_value[strings.ToUpper(v)]; ok {
+				audioLatencyToolkitState := inventory.PeripheralState(labAudioLatencyToolkitState)
+				p.AudioLatencyToolkitState = &audioLatencyToolkitState
 			}
 		case "hmr_state":
 			if v == "" {
