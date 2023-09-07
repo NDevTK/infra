@@ -88,49 +88,6 @@ func RecoverCBIFromInventoryConfig() *Configuration {
 	}
 }
 
-// FixTPM54Config creates a custom configuration to address issue reported by b/271040435
-//
-// Implementatio based on b/272310645#comment33 and b/272310645#comment39.
-func FixTPM54Config() *Configuration {
-	customFixPlan := "cros_tpm54_fix"
-	return &Configuration{
-		PlanNames: []string{
-			PlanServo,
-			customFixPlan,
-			PlanCrOS,
-			PlanChameleon,
-			PlanBluetoothPeer,
-			PlanWifiRouter,
-			PlanHMR,
-			PlanClosing,
-		},
-		Plans: map[string]*Plan{
-			// Not allowed to fail as servo is critical for the fix plan.
-			PlanServo: servoRepairPlan(),
-			// If fix didn't work then no need to run repair plans.
-			customFixPlan: {
-				CriticalActions: []string{
-					"Is servod running",
-					"Download stable version OS image to servo usbkey if necessary (allow fail)",
-					"Restore FW and reset GBB flags from USB drive",
-					"Cold reset DUT by servo",
-					"Sleep 60 seconds",
-					"Restore from TPM 0x54 error",
-					"Sleep 60 seconds",
-					"Install OS in recovery mode by booting from servo USB-drive",
-				},
-				Actions: crosRepairActions(),
-			},
-			PlanCrOS:          setAllowFail(crosRepairPlan(), false),
-			PlanChameleon:     setAllowFail(chameleonPlan(), true),
-			PlanBluetoothPeer: setAllowFail(btpeerRepairPlan(), true),
-			PlanWifiRouter:    setAllowFail(wifiRouterRepairPlan(), true),
-			PlanHMR:           setAllowFail(hmrRepairPlan(), true),
-			PlanClosing:       setAllowFail(crosClosePlan(), true),
-		},
-	}
-}
-
 // FixBatteryCutOffConfig creates a custom configuration to recover by battery cut-off
 func FixBatteryCutOffConfig() *Configuration {
 	customFixPlan := "cros_battery_cut"

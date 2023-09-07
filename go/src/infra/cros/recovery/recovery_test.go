@@ -597,12 +597,6 @@ var customConfigurationTestCases = []struct {
 		},
 	},
 	{
-		"TPM 0x54 recovery error",
-		func() *config.Configuration {
-			return config.FixTPM54Config()
-		},
-	},
-	{
 		"Battery cut-off",
 		func() *config.Configuration {
 			return config.FixBatteryCutOffConfig()
