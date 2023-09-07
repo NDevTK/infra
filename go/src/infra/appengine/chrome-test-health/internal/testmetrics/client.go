@@ -27,7 +27,7 @@ WITH base AS (
 	SELECT
 		m.date,
 		m.test_id,
-		ANY_VALUE(m.test_name) AS test_name,
+		ANY_VALUE(IFNULL(m.test_name, m.test_id)) AS test_name,
 		ANY_VALUE(m.file_name) AS file_name,
 		{metricAggregations},
 		ARRAY_AGG(STRUCT(
@@ -55,7 +55,7 @@ WITH tests AS (
 	SELECT
 		m.date,
 		m.test_id,
-		ANY_VALUE(m.test_name) AS test_name,
+		ANY_VALUE(IFNULL(m.test_name, m.test_id)) AS test_name,
 		ANY_VALUE(m.file_name) AS file_name,
 		{metricAggregations},
 		ARRAY_AGG(STRUCT(
@@ -423,7 +423,7 @@ func (c *Client) createFetchMetricsQuery(req *api.FetchTestMetricsRequest) (*big
 	if req.Filter != "" {
 		for i, filter := range strings.Split(req.Filter, " ") {
 			filterClause += `
-		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter` + strconv.Itoa(i) + `)`
+		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter` + strconv.Itoa(i) + `)`
 			filterParameters = append(filterParameters, bigquery.QueryParameter{
 				Name:  "filter" + strconv.Itoa(i),
 				Value: filter,
@@ -636,7 +636,7 @@ func (c *Client) createDirectoryQuery(req *api.FetchDirectoryMetricsRequest) (*b
 	if req.Filter != "" {
 		for i, filter := range strings.Split(req.Filter, " ") {
 			filterClause += `
-		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter` + strconv.Itoa(i) + `)`
+		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter` + strconv.Itoa(i) + `)`
 			filterParameters = append(filterParameters, bigquery.QueryParameter{
 				Name:  "filter" + strconv.Itoa(i),
 				Value: filter,

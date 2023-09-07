@@ -60,7 +60,7 @@ WITH base AS (
 	SELECT
 		m.date,
 		m.test_id,
-		ANY_VALUE(m.test_name) AS test_name,
+		ANY_VALUE(IFNULL(m.test_name, m.test_id)) AS test_name,
 		ANY_VALUE(m.file_name) AS file_name,
 		SUM(num_runs) AS num_runs,
 		ARRAY_AGG(STRUCT(
@@ -96,7 +96,7 @@ WITH base AS (
 	SELECT
 		m.date,
 		m.test_id,
-		ANY_VALUE(m.test_name) AS test_name,
+		ANY_VALUE(IFNULL(m.test_name, m.test_id)) AS test_name,
 		ANY_VALUE(m.file_name) AS file_name,
 		SUM(num_runs) AS num_runs,
 		ARRAY_AGG(STRUCT(
@@ -111,8 +111,8 @@ WITH base AS (
 	WHERE
 		DATE(date) IN UNNEST(@dates)
 		AND component IN UNNEST(@components)
-		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
-		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter1)
+		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter0)
+		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter1)
 	GROUP BY date, test_id
 	ORDER BY test_id ASC
 	LIMIT @page_size OFFSET @page_offset
@@ -134,7 +134,7 @@ WITH base AS (
 	SELECT
 		m.date,
 		m.test_id,
-		ANY_VALUE(m.test_name) AS test_name,
+		ANY_VALUE(IFNULL(m.test_name, m.test_id)) AS test_name,
 		ANY_VALUE(m.file_name) AS file_name,
 		SUM(num_runs) AS num_runs,
 		ARRAY_AGG(STRUCT(
@@ -170,7 +170,7 @@ WITH base AS (
 	SELECT
 		m.date,
 		m.test_id,
-		ANY_VALUE(m.test_name) AS test_name,
+		ANY_VALUE(IFNULL(m.test_name, m.test_id)) AS test_name,
 		ANY_VALUE(m.file_name) AS file_name,
 		SUM(num_runs) AS num_runs,
 		ARRAY_AGG(STRUCT(
@@ -186,8 +186,8 @@ WITH base AS (
 		DATE(date) IN UNNEST(@dates)
 		AND component IN UNNEST(@components)
 		AND file_name IN UNNEST(@file_names)
-		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
-		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter1)
+		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter0)
+		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter1)
 	GROUP BY date, test_id
 	ORDER BY test_id ASC
 	LIMIT @page_size OFFSET @page_offset
@@ -214,7 +214,7 @@ WITH tests AS (
 	SELECT
 		m.date,
 		m.test_id,
-		ANY_VALUE(m.test_name) AS test_name,
+		ANY_VALUE(IFNULL(m.test_name, m.test_id)) AS test_name,
 		ANY_VALUE(m.file_name) AS file_name,
 		SUM(num_runs) AS num_runs,
 		ARRAY_AGG(STRUCT(
@@ -229,8 +229,8 @@ WITH tests AS (
 	WHERE
 		DATE(date) IN UNNEST(@dates)
 		AND component IN UNNEST(@components)
-		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
-		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter1)
+		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter0)
+		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter1)
 	GROUP BY m.date, m.test_id
 ), sorted_day AS (
 	SELECT
@@ -263,7 +263,7 @@ WITH tests AS (
 	SELECT
 		m.date,
 		m.test_id,
-		ANY_VALUE(m.test_name) AS test_name,
+		ANY_VALUE(IFNULL(m.test_name, m.test_id)) AS test_name,
 		ANY_VALUE(m.file_name) AS file_name,
 		SUM(num_runs) AS num_runs,
 		ARRAY_AGG(STRUCT(
@@ -277,8 +277,8 @@ WITH tests AS (
 		chrome-test-health-project.normal-dataset.daily_test_metrics AS m
 	WHERE
 		DATE(date) IN UNNEST(@dates)
-		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
-		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter1)
+		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter0)
+		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter1)
 	GROUP BY m.date, m.test_id
 ), sorted_day AS (
 	SELECT
@@ -307,7 +307,7 @@ WITH tests AS (
 	SELECT
 		m.date,
 		m.test_id,
-		ANY_VALUE(m.test_name) AS test_name,
+		ANY_VALUE(IFNULL(m.test_name, m.test_id)) AS test_name,
 		ANY_VALUE(m.file_name) AS file_name,
 		SUM(num_runs) AS num_runs,
 		ARRAY_AGG(STRUCT(
@@ -616,7 +616,7 @@ test_summaries AS (
 		AND file_name IS NOT NULL
 		AND component IN UNNEST(@components)
 		-- Apply the requested filter
-		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
+		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter0)
 	GROUP BY file_name, date, test_id, component
 )
 SELECT
@@ -661,7 +661,7 @@ test_summaries AS (
 		date IN UNNEST(@dates)
 		AND file_name IS NOT NULL
 		-- Apply the requested filter
-		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
+		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter0)
 	GROUP BY file_name, date, test_id, component
 )
 SELECT
@@ -716,7 +716,7 @@ test_summaries AS (
 		AND file_name IS NOT NULL
 		AND component IN UNNEST(@components)
 		-- Apply the requested filter
-		AND REGEXP_CONTAINS(CONCAT(test_name, ' ', file_name, ' ', bucket, '/', builder, ' ', test_suite), @filter0)
+		AND REGEXP_CONTAINS(CONCAT(test_id, ' ', IFNULL(test_name, ''), ' ', IFNULL(file_name, ''), ' ', IFNULL(bucket, ''), '/', IFNULL(builder, ''), ' ', IFNULL(test_suite, '')), @filter0)
 	GROUP BY file_name, date, test_id, test_component
 ), node_summaries AS (
 	SELECT
