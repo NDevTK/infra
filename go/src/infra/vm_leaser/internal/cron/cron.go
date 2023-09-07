@@ -162,6 +162,8 @@ func pushLeaseMetrics(ctx context.Context, gcpProject string) error {
 
 	logging.Debugf(ctx, "pushLeaseMetrics: total expired leases found: %d", int64(expiredCnt))
 	expiredLeaseCount.Set(ctx, int64(expiredCnt), gcpProject)
+	logging.Debugf(ctx, "pushLeaseMetrics: total active leases found: %d", int64(totalCnt-expiredCnt))
+	activeLeaseCount.Set(ctx, int64(totalCnt-expiredCnt), gcpProject)
 	logging.Debugf(ctx, "pushLeaseMetrics: total leases found: %d", int64(totalCnt))
 	totalLeaseCount.Set(ctx, int64(totalCnt), gcpProject)
 

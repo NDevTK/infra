@@ -20,6 +20,15 @@ var (
 		field.String("project"),
 	)
 
+	// Measures how many instance leases are active in a GCP project.
+	activeLeaseCount = metric.NewInt(
+		"vmlab/vm_leaser/leases/active_count",
+		"The total number of active leases, by GCP project.",
+		&types.MetricMetadata{Units: "leases"},
+		// The GCP Project where the leases are created.
+		field.String("project"),
+	)
+
 	// Measures how many instance leases are currently managed in a GCP project.
 	totalLeaseCount = metric.NewInt(
 		"vmlab/vm_leaser/leases/total_count",
