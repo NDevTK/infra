@@ -47,7 +47,7 @@ To edit permissions for Buildbucket data, follow http://shortn/_DaRGa84jDf.
 
 END
 
-components: "Infra>LUCI>Admin"
+components: "Infra>Security"
 type: Task
 pri: P1
 labels: "Restrict-View-Google"
