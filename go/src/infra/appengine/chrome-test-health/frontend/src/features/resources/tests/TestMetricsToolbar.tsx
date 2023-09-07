@@ -86,6 +86,7 @@ function TestMetricsToolbar() {
           variant="standard"
           onChange={handleFilterChange}
           value={filter}
+          autoComplete='off'
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
