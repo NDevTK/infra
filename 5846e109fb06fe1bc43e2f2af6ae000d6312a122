@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c042a81a_707240f5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1157909
+      },
+      "writtenOn": "2023-09-08T00:52:19Z",
+      "side": 1,
+      "message": "This will redirect all luci admin bugs to security, which seems wrong?",
+      "revId": "5846e109fb06fe1bc43e2f2af6ae000d6312a122",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
