@@ -34,6 +34,24 @@
       "parentUuid": "c042a81a_707240f5",
       "revId": "5846e109fb06fe1bc43e2f2af6ae000d6312a122",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "40254c05_e9e72d14",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1551397
+      },
+      "writtenOn": "2023-09-08T03:52:36Z",
+      "side": 1,
+      "message": "reverted. Robbie had suggested to re-route the CIPD prefix template to security, and I did not realize that this was for all of these bug templates. I think I will make a new CL splitting of the cipd template and changing go/luci-bug-admin to point to the new template. Thoughts?",
+      "parentUuid": "0cfdfdd1_48b8c6db",
+      "revId": "5846e109fb06fe1bc43e2f2af6ae000d6312a122",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
