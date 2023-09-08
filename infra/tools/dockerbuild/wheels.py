@@ -500,6 +500,29 @@ SPECS.update({
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
+            'gevent',
+            '23.9.0.post1',
+            build_deps=BuildDependencies(
+                remote=[
+                    'setuptools',
+                    'wheel',
+                    'Cython',
+                ],
+                local=[
+                    _CFFI_DEPENDENCY,
+                    SourceOrPrebuilt(
+                        'greenlet',
+                        '2.0.2',
+                        packaged=[
+                            'windows-x64-py3.11',
+                        ],
+                    ),
+                ],
+            ),
+            packaged=[],
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
             'google-crc32c',
             '1.1.2',
             packaged=[],
@@ -542,6 +565,14 @@ SPECS.update({
             ],
             skip_plat=build_platform.ALL_PY311,
             patch_version='chromium.1',
+        ),
+        SourceOrPrebuilt(
+            'greenlet',
+            '2.0.2',
+            packaged=[
+                'windows-x64-py3.11',
+            ],
+            pyversions=['py3'],
         ),
         SourceOrPrebuilt(
             'grpcio',
@@ -1847,6 +1878,7 @@ SPECS.update({
         Universal('zipp', '1.2.0'),
         Universal('zipp', '3.1.0', pyversions=['py3']),
         Universal('zipp', '3.7.0', pyversions=['py3']),
+        Universal('zope.event', '5.0', pyversions=['py3']),
     ])
 })
 # yapf: enable
