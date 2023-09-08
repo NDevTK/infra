@@ -276,7 +276,7 @@ func (c *tlwClient) getLocalStableVersion(ctx context.Context, dut *tlw.Dut) (*t
 		Value: map[string]string{
 			"board":      recovery_version.GetBoard(),
 			"model":      recovery_version.GetModel(),
-			"os_image":   recovery_version.GetOsImage(),
+			"os_image":   fmt.Sprintf("%s-release/%s", dut.GetChromeos().GetBoard(), recovery_version.GetOsImage()),
 			"fw_image":   recovery_version.GetFwImage(),
 			"fw_version": recovery_version.GetFwVersion(),
 		},
