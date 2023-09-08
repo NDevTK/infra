@@ -333,6 +333,12 @@ SPECS.update({
             skip_plat=build_platform.ALL_PY311  # doesn't build
         ),
         SourceOrPrebuilt(
+            'coverage',
+            '7.3.1',
+            packaged=(),
+            pyversions=['py3'],
+        ),
+        SourceOrPrebuilt(
             'crcmod',
             '1.7',
             pyversions=['py2', 'py3'],
