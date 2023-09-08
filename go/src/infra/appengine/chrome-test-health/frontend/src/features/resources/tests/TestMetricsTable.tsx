@@ -73,7 +73,7 @@ function TestMetricsTable() {
       const columns: [SortType, MetricType, string, string][] = [
         [SortType.SORT_NUM_RUNS, MetricType.NUM_RUNS, '# Runs', 'How many times a test was run, including all in-process, build-level, and attempt-level retries.'],
         [SortType.SORT_NUM_FAILURES, MetricType.NUM_FAILURES, '# Failures', 'How many times the test failed, counting failures that succeeded on retry.'],
-        [SortType.SORT_AVG_RUNTIME, MetricType.AVG_RUNTIME, 'Avg Runtime', 'Average runtime for a single run of a test or sum of average runtimes of tests in the file/directory.'],
+        [SortType.SORT_AVG_RUNTIME, MetricType.AVG_RUNTIME, 'Avg Runtime', 'Average runtime for a single run of a test or weighted (by number of runs) sum of average runtimes of tests in the file/directory.'],
         [SortType.SORT_TOTAL_RUNTIME, MetricType.TOTAL_RUNTIME, 'Total Runtime', 'Total time spent running this test in given period.'],
         [SortType.SORT_AVG_CORES, MetricType.AVG_CORES, 'Avg Cores', 'Average number of cores spent running this test or the file/directory.'],
       ];
