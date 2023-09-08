@@ -628,14 +628,19 @@ func buildProvisionState(softwareDeps []*test_platform.Request_Params_SoftwareDe
 	} else if builds.ChromeOS != "" {
 		imagePath = fmt.Sprintf("gs://%s/%s", imageBucket, builds.ChromeOS)
 	}
+	if builds.AndroidImageVersion != "" || builds.GmsCorePackage != "" {
+		provisionState := &testapi.ProvisionState{}
+		provisionMetadata, err := buildAndroidProvisionMetadata(builds)
+		if err != nil {
+			return nil, errors.Annotate(err, "create cft test runner request: buildProvisionMetadata").Err()
+		}
+		provisionState.ProvisionMetadata = provisionMetadata
+		return provisionState, nil
+	}
 	if imagePath == "" {
 		return nil, errors.NewMultiError(errors.Reason("create cft test runner request: empty imagePath").Err())
 	}
 
-	provisionMetadata, err := buildAndroidProvisionMetadata(builds)
-	if err != nil {
-		return nil, errors.Annotate(err, "create cft test runner request: buildProvisionMetadata").Err()
-	}
 	provisionState := &testapi.ProvisionState{
 		SystemImage: &testapi.ProvisionState_SystemImage{
 			SystemImagePath: &goconfig.StoragePath{
@@ -643,7 +648,6 @@ func buildProvisionState(softwareDeps []*test_platform.Request_Params_SoftwareDe
 				Path:     imagePath,
 			},
 		},
-		ProvisionMetadata: provisionMetadata,
 	}
 
 	return provisionState, nil

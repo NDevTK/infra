@@ -70,22 +70,6 @@ func setBuild(p *test_platform.Request_Params, build string) {
 		})
 }
 
-func setAndroidProvisionSoftwareDeps(p *test_platform.Request_Params, androidOsImage, gmsCorePackageInstanceId string) {
-	dep1 := &test_platform.Request_Params_SoftwareDependency{
-		Dep: &test_platform.Request_Params_SoftwareDependency_AndroidImageVersion{
-			AndroidImageVersion: androidOsImage,
-		},
-	}
-
-	dep2 := &test_platform.Request_Params_SoftwareDependency{
-		Dep: &test_platform.Request_Params_SoftwareDependency_GmsCorePackage{
-			GmsCorePackage: gmsCorePackageInstanceId,
-		},
-	}
-
-	p.SoftwareDependencies = append(p.SoftwareDependencies, dep1, dep2)
-}
-
 func setRequestKeyval(p *test_platform.Request_Params, key string, value string) {
 	if p.Decorations == nil {
 		p.Decorations = &test_platform.Request_Params_Decorations{}
@@ -133,6 +117,27 @@ func setSecondaryDevice(p *test_platform.Request_Params, board, model, cros_buil
 		device.SoftwareDependencies = append(
 			device.SoftwareDependencies, &test_platform.Request_Params_SoftwareDependency{
 				Dep: &test_platform.Request_Params_SoftwareDependency_ChromeosBuild{ChromeosBuild: cros_build},
+			},
+		)
+	}
+	p.SecondaryDevices = append(p.SecondaryDevices, device)
+}
+
+func setAndroidSecondaryDeviceWithAndroidProvisionMetadata(p *test_platform.Request_Params, board, model, androidImageVersion string, gmsCorePackage string) {
+	device := &test_platform.Request_Params_SecondaryDevice{}
+	device.SoftwareAttributes = &test_platform.Request_Params_SoftwareAttributes{BuildTarget: &chromiumos.BuildTarget{Name: board}}
+	if model != "" {
+		device.HardwareAttributes = &test_platform.Request_Params_HardwareAttributes{Model: model}
+	}
+	if androidImageVersion != "" {
+		device.SoftwareDependencies = append(
+			device.SoftwareDependencies, &test_platform.Request_Params_SoftwareDependency{
+				Dep: &test_platform.Request_Params_SoftwareDependency_AndroidImageVersion{AndroidImageVersion: androidImageVersion},
+			},
+		)
+		device.SoftwareDependencies = append(
+			device.SoftwareDependencies, &test_platform.Request_Params_SoftwareDependency{
+				Dep: &test_platform.Request_Params_SoftwareDependency_GmsCorePackage{GmsCorePackage: gmsCorePackage},
 			},
 		)
 	}
