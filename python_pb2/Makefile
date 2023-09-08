@@ -28,7 +28,6 @@ regenerate: $(PROTOC) $(TOOLS)/protoc-gen-prpc-python
 		--proto_path ${THIS_DIR}/third_party \
 		--proto_path $(LUCI_GO)/common/proto/googleapis \
 		$(LUCI_GO)/buildbucket/proto/*.proto \
-		$(LUCI_GO)/bisection/proto/*.proto \
 		$(LUCI_GO)/common/bq/pb/*.proto \
 		$(LUCI_GO)/common/proto/gerrit/gerrit.proto \
 		$(LUCI_GO)/common/proto/options.proto \
