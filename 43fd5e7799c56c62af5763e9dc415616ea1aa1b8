@@ -33,6 +33,24 @@
       "message": "Hm... it looks like this tool is just for generating monorail links? I\u0027m guessing the actual link is somewhere else. ajp@ do you know about this tool? Is it still in use, or should it be deleted, or what?",
       "revId": "43fd5e7799c56c62af5763e9dc415616ea1aa1b8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2a1f5166_38a62275",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1303432
+      },
+      "writtenOn": "2023-09-08T00:12:49Z",
+      "side": 1,
+      "message": "Whoops, I didn\u0027t mean to auto-submit and I did miss this question, sorry. \n\nI have no idea what this tool is or how it\u0027s used. Looking at CS blame (https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/tools/bugtemplate/;bpv\u003d1) maybe @chanli@chromium.org or @randymaldonado@google.com can say more?",
+      "parentUuid": "c45085dc_2a4ac723",
+      "revId": "43fd5e7799c56c62af5763e9dc415616ea1aa1b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ],
   "submitRequirementResults": [
