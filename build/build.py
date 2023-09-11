@@ -55,6 +55,7 @@ KNOWN_GOARCHS = frozenset([
     'amd64',
     'arm',
     'arm64',
+    'loong64',
     'mips',
     'mips64',
     'mips64le',
