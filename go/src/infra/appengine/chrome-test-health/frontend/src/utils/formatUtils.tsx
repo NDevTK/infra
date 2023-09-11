@@ -38,6 +38,9 @@ export function formatNumber(num: number): string {
     return '-';
   }
   if (num % 1 !== 0) {
+    if (num < 0.01) {
+      return '<0.01';
+    }
     return new Intl.NumberFormat('en', { maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(num);
   }
   return new Intl.NumberFormat().format(num);
