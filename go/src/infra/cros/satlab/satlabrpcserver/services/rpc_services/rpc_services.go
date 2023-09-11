@@ -386,8 +386,6 @@ func (s *SatlabRpcServiceServer) GetVersionInfo(ctx context.Context, _ *pb.GetVe
 		return nil, err
 	}
 	resp.HostId = hostId
-	//TODO get the install id
-	resp.InstallId = ""
 	osVersion, err := satlabcommands.GetOsVersion(s.commandExecutor)
 	if err != nil {
 		return nil, err
