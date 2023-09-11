@@ -1068,6 +1068,8 @@ SPECS.update({
             packaged=(),
         ),
         SourceOrPrebuilt(
+            'zope.interface', '6.0', packaged=(), pyversions=['py3']),
+        SourceOrPrebuilt(
             'zstandard', '0.16.0', packaged=(), pyversions=['py3']),
     )
 })
