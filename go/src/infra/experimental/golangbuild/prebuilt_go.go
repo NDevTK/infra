@@ -15,9 +15,9 @@ import (
 	"sort"
 	"strings"
 
-	"go.chromium.org/luci/client/cmd/swarming/swarmingimpl"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/luciexe/build"
+	"go.chromium.org/luci/swarming/client/swarming"
 	"golang.org/x/exp/maps"
 )
 
@@ -49,17 +49,17 @@ func casInstanceFromEnv() (string, error) {
 	// implementation, but other CLI executables in LUCI do it too.
 	// Also it means if this changes, it's likely it'll get noticed
 	// by whoever changes it.
-	server := os.Getenv(swarmingimpl.ServerEnvVar)
+	server := os.Getenv(swarming.ServerEnvVar)
 	if server == "" {
 		return "", fmt.Errorf("no CAS instance found")
 	}
 	u, err := url.Parse(server)
 	if err != nil {
-		return "", fmt.Errorf("%q is not a URL: %v", swarmingimpl.ServerEnvVar, err)
+		return "", fmt.Errorf("%q is not a URL: %v", swarming.ServerEnvVar, err)
 	}
 	inst, found := strings.CutSuffix(u.Host, ".appspot.com")
 	if !found {
-		return "", fmt.Errorf("%q is not an appspot.com URL", swarmingimpl.ServerEnvVar)
+		return "", fmt.Errorf("%q is not an appspot.com URL", swarming.ServerEnvVar)
 	}
 	return inst, nil
 }

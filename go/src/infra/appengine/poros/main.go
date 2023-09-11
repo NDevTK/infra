@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"net/http"
+	"os"
 
 	"go.chromium.org/luci/auth/identity"
 	"go.chromium.org/luci/common/logging"
@@ -38,7 +39,7 @@ const authGroup = "project-poros-access"
 // prepareTemplates configures templates.Bundle used by all UI handlers.
 func prepareTemplates(opts *server.Options) *templates.Bundle {
 	return &templates.Bundle{
-		Loader: templates.FileSystemLoader("templates"),
+		Loader: templates.FileSystemLoader(os.DirFS("templates")),
 		// Controls whether templates are cached.
 		DebugMode: func(context.Context) bool { return !opts.Prod },
 		DefaultArgs: func(ctx context.Context, e *templates.Extra) (templates.Args, error) {

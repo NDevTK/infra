@@ -8,6 +8,7 @@ import (
 	"context"
 	"html/template"
 	"net/http"
+	"os"
 	"time"
 
 	"go.chromium.org/luci/auth/identity"
@@ -32,7 +33,7 @@ const authGroup = "chopsdash-access"
 // prepareTemplates configures templates.Bundle used by all UI handlers.
 func prepareTemplates(opts *server.Options) *templates.Bundle {
 	return &templates.Bundle{
-		Loader:    templates.FileSystemLoader("templates"),
+		Loader:    templates.FileSystemLoader(os.DirFS("templates")),
 		DebugMode: func(context.Context) bool { return !opts.Prod },
 		FuncMap: template.FuncMap{
 			"fmtDate": func(date time.Time) string {

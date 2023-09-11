@@ -10,6 +10,7 @@ import (
 	"context"
 	"html/template"
 	"net/http"
+	"os"
 	"time"
 
 	"go.chromium.org/luci/appengine/gaemiddleware/standard"
@@ -57,7 +58,7 @@ const paramsTimeFormat = "2006-01-02T15:04:05Z" // RFC3339, but enforce Z for ti
 // templatesMiddleware returns the templates middleware.
 func templatesMiddleware() router.Middleware {
 	return templates.WithTemplates(&templates.Bundle{
-		Loader:    templates.FileSystemLoader("templates"),
+		Loader:    templates.FileSystemLoader(os.DirFS("templates")),
 		DebugMode: info.IsDevAppServer,
 		FuncMap: template.FuncMap{
 			"timeParams": func(t time.Time) string {

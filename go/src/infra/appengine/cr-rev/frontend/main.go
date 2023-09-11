@@ -10,6 +10,7 @@ import (
 	"infra/appengine/cr-rev/frontend/api/v1"
 	"infra/appengine/cr-rev/frontend/redirect"
 	"net/http"
+	"os"
 
 	"go.chromium.org/luci/config/server/cfgmodule"
 	"go.chromium.org/luci/server"
@@ -64,7 +65,7 @@ func handleRedirect(redirectRules *redirect.Rules, c *router.Context) {
 func main() {
 	mw := router.MiddlewareChain{}
 	mw = mw.Extend(templates.WithTemplates(&templates.Bundle{
-		Loader:          templates.FileSystemLoader(templatePath),
+		Loader:          templates.FileSystemLoader(os.DirFS(templatePath)),
 		DefaultTemplate: "base",
 	}))
 

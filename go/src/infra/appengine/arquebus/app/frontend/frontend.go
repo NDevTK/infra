@@ -18,6 +18,7 @@ package frontend
 import (
 	"context"
 	"net/http"
+	"os"
 	"strings"
 
 	"go.chromium.org/luci/appengine/gaeauth/server"
@@ -75,7 +76,7 @@ func prepareTemplates(templatesPath string) *templates.Bundle {
 		}, nil
 	}
 	return &templates.Bundle{
-		Loader:          templates.FileSystemLoader(templatesPath),
+		Loader:          templates.FileSystemLoader(os.DirFS(templatesPath)),
 		DebugMode:       info.IsDevAppServer,
 		DefaultTemplate: "base",
 		DefaultArgs:     args,
