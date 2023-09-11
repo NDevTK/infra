@@ -101,33 +101,14 @@ func runGoTests(ctx context.Context, spec *buildSpec, shard testShard, ports []P
 	gorootSrc := filepath.Join(spec.goroot, "src")
 
 	hasImprovedDistTestCompileOnly := spec.inputs.GoBranch != "release-branch.go1.20" && spec.inputs.GoBranch != "release-branch.go1.19"
-	if !spec.experiment("golang.parallel_compile_only_ports") && spec.inputs.CompileOnly {
-		// If compiling any one port fails, keep going and report all at the end.
-		var testErrors []error
-		for _, p := range ports {
-			portContext := addPortEnv(ctx, p)
-			testCmd := spec.wrapTestCmd(spec.distTestCmd(portContext, gorootSrc, "", nil, true))
-			if !hasImprovedDistTestCompileOnly {
-				// TODO(when Go 1.20 stops being supported): Delete this non-'dist test' path.
-				testCmd = spec.wrapTestCmd(spec.goCmd(portContext, gorootSrc, spec.goTestArgs("std", "cmd")...))
-			}
-			if err := cmdStepRun(portContext, fmt.Sprintf("compile %s port", p), testCmd, false); err != nil {
-				testErrors = append(testErrors, err)
-			}
-		}
-		return errors.Join(testErrors...)
-	} else if spec.inputs.CompileOnly {
+	if spec.inputs.CompileOnly {
 		// If compiling any one port fails, keep going and report all at the end.
 		g := new(errgroup.Group)
 		g.SetLimit(runtime.NumCPU())
 		var testErrors = make([]error, len(ports))
 		for i, p := range ports {
 			i, p := i, p
-			var extraEnv []string
-			if spec.experiment("golang.parallel_compile_only_ports_maxprocs") {
-				extraEnv = append(extraEnv, "GOMAXPROCS="+fmt.Sprint(max(1, runtime.NumCPU()/len(ports))))
-			}
-			portContext := addPortEnv(ctx, p, extraEnv...)
+			portContext := addPortEnv(ctx, p, "GOMAXPROCS="+fmt.Sprint(max(1, runtime.NumCPU()/len(ports))))
 			testCmd := spec.wrapTestCmd(spec.distTestCmd(portContext, gorootSrc, "", nil, true))
 			if !hasImprovedDistTestCompileOnly {
 				// TODO(when Go 1.20 stops being supported): Delete this non-'dist test' path.
@@ -253,25 +234,17 @@ func fetchSubrepoAndRunTests(ctx context.Context, spec *buildSpec, ports []Port)
 	if err := fetchDependencies(ctx, spec, modules); err != nil {
 		return err
 	}
-	if spec.experiment("golang.parallel_compile_only_ports") && spec.inputs.CompileOnly {
+	if spec.inputs.CompileOnly {
 		return compileTestsInParallel(ctx, spec, modules, ports)
+	} else if len(ports) != 1 || ports[0] != currentPort {
+		return infraErrorf("testing multiple ports is only supported in CompileOnly mode")
 	}
 	var testErrors []error
-	for _, p := range ports {
-		portContext := addPortEnv(ctx, p)
-		for _, m := range modules {
-			stepName := fmt.Sprintf("test %s module", m.Path)
-			if len(ports) > 1 || p != currentPort {
-				stepName += fmt.Sprintf(" for %s", p)
-			}
-			testCmd := spec.wrapTestCmd(spec.goCmd(portContext, m.RootDir, spec.goTestArgs("./...")...))
-			if spec.inputs.CompileOnly && compileOptOut(spec.inputs.Project, p, m.Path) {
-				stepName += " (skipped)"
-				testCmd = command(portContext, "echo", "(skipped)")
-			}
-			if err := cmdStepRun(portContext, stepName, testCmd, false); err != nil {
-				testErrors = append(testErrors, err)
-			}
+	for _, m := range modules {
+		stepName := fmt.Sprintf("test %s module", m.Path)
+		testCmd := spec.wrapTestCmd(spec.goCmd(ctx, m.RootDir, spec.goTestArgs("./...")...))
+		if err := cmdStepRun(ctx, stepName, testCmd, false); err != nil {
+			testErrors = append(testErrors, err)
 		}
 	}
 	return errors.Join(testErrors...)
@@ -283,11 +256,7 @@ func compileTestsInParallel(ctx context.Context, spec *buildSpec, modules []modu
 	var testErrors = make([]error, len(ports)*len(modules))
 	for i, p := range ports {
 		i := i
-		var extraEnv []string
-		if spec.experiment("golang.parallel_compile_only_ports_maxprocs") {
-			extraEnv = append(extraEnv, "GOMAXPROCS="+fmt.Sprint(max(1, runtime.NumCPU()/(len(ports)*len(modules)))))
-		}
-		portContext := addPortEnv(ctx, p, extraEnv...)
+		portContext := addPortEnv(ctx, p, "GOMAXPROCS="+fmt.Sprint(max(1, runtime.NumCPU()/(len(ports)*len(modules)))))
 		for _, m := range modules {
 			stepName := fmt.Sprintf("test %s module", m.Path)
 			if len(ports) > 1 || p != currentPort {

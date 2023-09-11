@@ -111,10 +111,6 @@
 //     from outside the repository to catch accidental reads outside of module
 //     boundaries despite the repository not having opted-in to this test
 //     behavior.
-//   - golang.parallel_compile_only_ports: Compiles multiple ports in parallel
-//     instead of sequentially.
-//   - golang.parallel_compile_only_ports_maxprocs: Causes the experiment above
-//     to also control GOMAXPROCS.
 //   - luci.best_effort_platform: set by LUCI on less-supported platforms.
 //     Affects which tools are downloaded from CIPD.
 package main
