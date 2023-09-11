@@ -169,6 +169,7 @@ CREATE TABLE Issue (
   owner_modified INT,
   status_modified INT,
   component_modified INT,
+  migration_modified INT,
 
   derived_owner_id INT UNSIGNED,
   derived_status_id INT,

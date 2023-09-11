@@ -1746,3 +1746,8 @@ ALTER TABLE Project ADD COLUMN issue_notify_always_detailed BOOLEAN DEFAULT FALS
 
 ALTER TABLE IssueUpdate ADD COLUMN added_component_id VARCHAR(80);
 ALTER TABLE IssueUpdate ADD COLUMN removed_component_id VARCHAR(80);
+
+================================================================
+2023-09-11: Add new modified timestamp. See: go/monorail-enhanced-modified-time
+
+ALTER TABLE Issue ADD COLUMN migration_modified INT;
