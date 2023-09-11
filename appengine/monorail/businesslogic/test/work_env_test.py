@@ -16,6 +16,7 @@ import sys
 
 from google.appengine.api import memcache
 from google.appengine.ext import testbed
+import pytest
 
 import settings
 from businesslogic import work_env
@@ -878,6 +879,7 @@ class WorkEnvTest(unittest.TestCase):
     self.services.template.GetProjectTemplates.assert_called_once_with(
         self.mr.cnxn, self.project.project_id)
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testListComponentDefs(self):
     project = self.services.project.TestAddProject(
         'Greece', owner_ids=[self.user_1.user_id])
