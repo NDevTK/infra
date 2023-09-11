@@ -7,8 +7,6 @@ package cros
 import (
 	"context"
 	"fmt"
-	"os"
-	"strings"
 
 	"go.chromium.org/luci/common/errors"
 
@@ -16,6 +14,12 @@ import (
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
+)
+
+const (
+	// gsCrOSImageBucket is the base URL for the Google Storage bucket for
+	// ChromeOS image archives.
+	gsCrOSImageBucket = "gs://chromeos-image-archive"
 )
 
 // updateProvisionedInfoExec updated provision info.
@@ -48,19 +52,6 @@ func updateProvisionedInfoExec(ctx context.Context, info *execs.ExecInfo) error 
 	return nil
 }
 
-// gsCrOSImageBucket is the base URL for the Google Storage bucket for
-// ChromeOS image archives.
-var gsCrOSImageBucket string
-
 func init() {
-	gcsBucket := os.Getenv("DRONE_AGENT_GCS_IMAGE_STORAGE_SERVER")
-	if gcsBucket == "" {
-		gsCrOSImageBucket = "gs://chromeos-image-archive"
-	}
-	if strings.HasPrefix(gcsBucket, "gs://") {
-		gsCrOSImageBucket = gcsBucket
-	} else {
-		gsCrOSImageBucket = fmt.Sprintf("gs://%s", gcsBucket)
-	}
 	execs.Register("cros_update_provision_info", updateProvisionedInfoExec)
 }
