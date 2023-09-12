@@ -9,7 +9,7 @@ SET script_path=%~dp0
 SET temp_script=%script_path%\_setup_env.cmd
 
 :: This spits out a bunch of 'set VAR=VALUE' commands.
-call vpython %script_path%\env.py > %temp_script%
+call vpython3 %script_path%\env.py > %temp_script%
 :: This injects them into shell environment.
 call %temp_script%
 
