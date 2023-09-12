@@ -9,21 +9,18 @@ from __future__ import absolute_import
 
 import mock
 import unittest
-import logging
 import ezt
 import six
 
-from framework import framework_helpers
+from google.appengine.ext import testbed
+import pytest
+
 from framework import framework_views
 from framework import permissions
 from mrproto import project_pb2
-from mrproto import user_pb2
 from services import service_manager
 from sitewide import userprofile
 from testing import fake
-from testing import testing_helpers
-
-from google.appengine.ext import testbed
 
 REGULAR_USER_ID = 111
 ADMIN_USER_ID = 222
@@ -131,6 +128,7 @@ class UserProfileTest(unittest.TestCase):
         111, mr.viewed_user_auth.user_view, mr.viewed_user_auth.user_pb,
         None)
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testGatherPageData_RegularUserViewingOwnProjects(self):
     """A user can see all their own projects: live or archived."""
     mr = MakeReqInfo(

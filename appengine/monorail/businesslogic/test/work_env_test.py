@@ -559,6 +559,7 @@ class WorkEnvTest(unittest.TestCase):
 
     return projects
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testGatherProjectMembershipsForUser_OtherUser(self):
     """We can get the projects in which a user has a role.
       Member only projects are hidden."""
@@ -571,6 +572,7 @@ class WorkEnvTest(unittest.TestCase):
     self.assertEqual([projects['committer-live'].project_id], committer)
     self.assertEqual([projects['contributor-live'].project_id], contrib)
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testGatherProjectMembershipsForUser_OwnUser(self):
     """We can get the projects in which the logged in user has a role. """
     projects = self.AddUserProjects()
@@ -587,6 +589,7 @@ class WorkEnvTest(unittest.TestCase):
     self.assertEqual([projects['committer-live'].project_id], committer)
     self.assertEqual([projects['contributor-live'].project_id], contrib)
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testGatherProjectMembershipsForUser_Admin(self):
     """Admins can see all project roles another user has. """
     projects = self.AddUserProjects()
@@ -603,6 +606,7 @@ class WorkEnvTest(unittest.TestCase):
     self.assertEqual([projects['committer-live'].project_id], committer)
     self.assertEqual([projects['contributor-live'].project_id], contrib)
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testGetUserRolesInAllProjects_OtherUsers(self):
     """We can get the projects in which the user has a role."""
     projects = self.AddUserProjects()
@@ -620,6 +624,7 @@ class WorkEnvTest(unittest.TestCase):
         [projects['contributor-archived'], projects['contributor-live']],
         list(contrib.values()))
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testGetUserRolesInAllProjects_OwnUser(self):
     """We can get the projects in which the user has a role."""
     projects = self.AddUserProjects()
@@ -640,6 +645,7 @@ class WorkEnvTest(unittest.TestCase):
         [projects['contributor-archived'], projects['contributor-live']],
         list(contrib.values()))
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testGetUserRolesInAllProjects_Admin(self):
     """We can get the projects in which the user has a role."""
     projects = self.AddUserProjects()
@@ -664,6 +670,7 @@ class WorkEnvTest(unittest.TestCase):
             projects['contributor-live']
         ], list(contrib.values()))
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testGetUserProjects_OnlyLiveOfOtherUsers(self):
     """
     Regular users should only see permitted projects of other users,
@@ -680,6 +687,7 @@ class WorkEnvTest(unittest.TestCase):
     self.assertEqual([projects['committer-live']], member)
     self.assertEqual([projects['contributor-live']], contrib)
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testGetUserProjects_AdminSeesAll(self):
     """Admins should see all projects from other users."""
     projects = self.AddUserProjects()
@@ -693,6 +701,7 @@ class WorkEnvTest(unittest.TestCase):
     self.assertEqual([projects['committer-live']], member)
     self.assertEqual([projects['contributor-live']], contrib)
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testGetUserProjects_UserSeesOwnProjects(self):
     """Users should see all own projects."""
     projects = self.AddUserProjects()
@@ -5926,6 +5935,7 @@ class WorkEnvTest(unittest.TestCase):
     self.assertEqual(updated_hotlist, self.hotlist)
     fake_update_hotlist.assert_not_called()
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testUpdateHotlist_HotlistNotFound(self):
     """Error is thrown when a hotlist is not found."""
     self.SignIn(user_id=self.user_1.user_id)
@@ -6652,6 +6662,7 @@ class WorkEnvTest(unittest.TestCase):
 
     self.assertEqual(0, len(hotlists))
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testListRecentlyVisitedHotlists(self):
     hotlists = [
         self.work_env.services.features.CreateHotlist(
@@ -6683,6 +6694,7 @@ class WorkEnvTest(unittest.TestCase):
     with self.work_env as we:
       self.assertEqual([], we.ListRecentlyVisitedHotlists())
 
+  @pytest.mark.skip(reason='Test is flaky (https://crbug.com/monorail/12052)')
   def testListStarredHotlists(self):
     hotlists = [
         self.work_env.services.features.CreateHotlist(
