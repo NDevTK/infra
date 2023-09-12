@@ -494,6 +494,8 @@ message Cellular {
   HardwareState modem_state = 1;
   // Device carrier.
   string carrier = 2;
+  // Model variant.
+  string model_variant = 3;
 }
 
 // Battery holds info about battery of the DUT.
