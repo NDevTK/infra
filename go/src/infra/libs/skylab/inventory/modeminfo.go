@@ -11,5 +11,6 @@ func NewModeminfo() *ModemInfo {
 		Imei:           new(string),
 		SupportedBands: new(string),
 		SimCount:       new(int32),
+		ModelVariant:   new(string),
 	}
 }

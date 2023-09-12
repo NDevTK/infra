@@ -799,7 +799,7 @@ enum LicenseType {
 }
 
 // ModemInfo
-// Next Tag: 5
+// Next Tag: 6
 message ModemInfo {
   optional ModemType type = 1;
   // Equipment Identifier
@@ -808,6 +808,8 @@ message ModemInfo {
   optional string supported_bands = 3;
   // Number of SIM's present
   optional int32 sim_count = 4;
+  // The device model cellular sub-variant.
+  optional string model_variant = 5;
 }
 
 // Next Tag: 7

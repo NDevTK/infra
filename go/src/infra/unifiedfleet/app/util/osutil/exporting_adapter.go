@@ -354,6 +354,8 @@ func setModemInfo(l *inventory.SchedulableLabels, m *chromeosLab.ModemInfo) {
 	p.SupportedBands = &supported_bands
 	sim_count := m.GetSimCount()
 	p.SimCount = &sim_count
+	modelVariant := m.GetModelVariant()
+	p.ModelVariant = &modelVariant
 	var t inventory.ModemType
 	mtype := m.GetType()
 	switch mtype {

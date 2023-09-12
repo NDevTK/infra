@@ -30,6 +30,8 @@ func modemInfoConverter(ls *inventory.SchedulableLabels) []string {
 		labels = append(labels, lv)
 		lv = "modem_sim_count:" + fmt.Sprintf("%d", int(v.GetSimCount()))
 		labels = append(labels, lv)
+		lv = "cellular_variant:" + strings.ToLower(v.GetModelVariant())
+		labels = append(labels, lv)
 	}
 	return labels
 }
@@ -49,6 +51,8 @@ func modemInfoReverter(ls *inventory.SchedulableLabels, labels []string) []strin
 			m.Imei = &v
 		case "modem_supported_bands":
 			m.SupportedBands = &v
+		case "cellular_variant":
+			m.ModelVariant = &v
 		case "modem_sim_count":
 			if j, err := strconv.ParseInt(v, 10, 32); err == nil {
 				count := int32(j)

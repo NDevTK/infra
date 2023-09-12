@@ -33,6 +33,10 @@ func modeminfoConverter(dims Dimensions, ls *inventory.SchedulableLabels) {
 	if v := m.GetSimCount(); v != 0 {
 		dims["label-modem_sim_count"] = []string{strconv.Itoa(int(v))}
 	}
+
+	if v := m.GetModelVariant(); v != "" {
+		dims["label-cellular_variant"] = []string{v}
+	}
 }
 
 func modeminfoReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions {
@@ -40,6 +44,7 @@ func modeminfoReverter(ls *inventory.SchedulableLabels, d Dimensions) Dimensions
 	m := inventory.NewModeminfo()
 
 	d = assignLastStringValueAndDropKey(d, m.Imei, "label-modem_imei")
+	d = assignLastStringValueAndDropKey(d, m.ModelVariant, "label-cellular_variant")
 	d = assignLastStringValueAndDropKey(d, m.SupportedBands, "label-modem_supported_bands")
 	d = assignLastInt32ValueAndDropKey(d, m.SimCount, "label-modem_sim_count")
 	if v, ok := getLastStringValue(d, "label-modem_type"); ok {

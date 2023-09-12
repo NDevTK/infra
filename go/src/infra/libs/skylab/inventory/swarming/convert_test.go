@@ -137,6 +137,7 @@ modeminfo: {
   imei: "imei"
   supported_bands: "bands"
 	sim_count: 1
+  model_variant: "somecellularvariant"
 }
 siminfo: [{
 	slot_id: 1
@@ -295,6 +296,7 @@ modeminfo: {
   imei: "imei"
   supported_bands: "bands"
 	sim_count: 1
+  model_variant: "somecellularvariant"
 }
 siminfo: [{
 	slot_id: 1
@@ -439,6 +441,7 @@ var fullDimensions = Dimensions{
 	"label-usb_detect":            {"True"},
 	"label-use_lid":               {"True"},
 	"label-variant":               {"somevariant"},
+	"label-cellular_variant":      {"somecellularvariant"},
 	"label-video_acceleration": {
 		"VIDEO_ACCELERATION_ENC_VP9",
 		"VIDEO_ACCELERATION_ENC_VP9_2",

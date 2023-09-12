@@ -174,6 +174,7 @@ var lse = ufspb.MachineLSE{
 								Imei:           "imei",
 								SupportedBands: "bands",
 								SimCount:       1,
+								ModelVariant:   "test_variant",
 							},
 							Siminfo: []*chromeosLab.SIMInfo{
 								{
@@ -473,6 +474,7 @@ common {
 			imei: "imei"
 			supported_bands: "bands"
 			sim_count: 1
+			model_variant: "test_variant"
 		}
 		siminfo {
 			slot_id: 1

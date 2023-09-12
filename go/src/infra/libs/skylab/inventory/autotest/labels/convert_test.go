@@ -153,6 +153,7 @@ modeminfo: {
   imei: "imei"
   supported_bands: "bands"
 	sim_count: 1
+  model_variant: "somecellularvariant"
 }
 siminfo: [{
 	slot_id: 1
@@ -211,6 +212,7 @@ var fullLabels = []string{
 	"cbx:True",
 	"cbx_branding:hard",
 	"cellular_modem_state:NEED_REPLACEMENT",
+	"cellular_variant:somecellularvariant",
 	"chameleon",
 	"chameleon:dp",
 	"chameleon:hdmi",
@@ -481,10 +483,10 @@ func TestConvertModemInfo(t *testing.T) {
 		expectLabels []string
 	}{
 		{"NO Modem", "", []string{}},
-		{"SC7180", "type: 1", []string{"modem_type:qualcomm_sc7180", "modem_imei:", "modem_supported_bands:", "modem_sim_count:0"}},
-		{"L850GL", "type: 2 imei:\"imei\"", []string{"modem_type:fibocomm_l850gl", "modem_imei:imei", "modem_supported_bands:", "modem_sim_count:0"}},
-		{"NL668", "type: 3 imei:\"imei\", sim_count:1", []string{"modem_type:nl668", "modem_imei:imei", "modem_supported_bands:", "modem_sim_count:1"}},
-		{"FM350", "type: 4 imei:\"imei\", supported_bands:\"bands\" sim_count:1", []string{"modem_type:fm350", "modem_imei:imei", "modem_supported_bands:bands", "modem_sim_count:1"}},
+		{"SC7180", "type: 1", []string{"modem_type:qualcomm_sc7180", "modem_imei:", "modem_supported_bands:", "modem_sim_count:0", "cellular_variant:"}},
+		{"L850GL", "type: 2 imei:\"imei\"", []string{"modem_type:fibocomm_l850gl", "modem_imei:imei", "modem_supported_bands:", "modem_sim_count:0", "cellular_variant:"}},
+		{"NL668", "type: 3 imei:\"imei\", sim_count:1, model_variant:\"somecellularvariant\"", []string{"modem_type:nl668", "modem_imei:imei", "modem_supported_bands:", "modem_sim_count:1", "cellular_variant:somecellularvariant"}},
+		{"FM350", "type: 4 imei:\"imei\", supported_bands:\"bands\" sim_count:1", []string{"modem_type:fm350", "modem_imei:imei", "modem_supported_bands:bands", "modem_sim_count:1", "cellular_variant:"}},
 	}
 	t.Parallel()
 	for _, testCase := range modemInfoConvertCases {
@@ -519,12 +521,13 @@ func TestRevertModemInfoLabels(t *testing.T) {
 		expectImei           string
 		expectSupportedBands string
 		expectSIMCount       int
+		expectVariant        string
 	}{
-		{[]string{}, 0, "", "", 0},
-		{[]string{"modem_imei:imei"}, 0, "imei", "", 0},
-		{[]string{"modem_imei:imei", "modem_type:qualcomm_sc7180"}, 1, "imei", "", 0},
-		{[]string{"modem_imei:imei", "modem_type:qualcomm_sc7180", "modem_supported_bands:bands"}, 1, "imei", "bands", 0},
-		{[]string{"modem_imei:imei", "modem_type:qualcomm_sc7180", "modem_sim_count:1"}, 1, "imei", "", 1},
+		{[]string{}, 0, "", "", 0, ""},
+		{[]string{"modem_imei:imei"}, 0, "imei", "", 0, ""},
+		{[]string{"modem_imei:imei", "modem_type:qualcomm_sc7180"}, 1, "imei", "", 0, ""},
+		{[]string{"modem_imei:imei", "modem_type:qualcomm_sc7180", "modem_supported_bands:bands", "cellular_variant:somecellularvariant"}, 1, "imei", "bands", 0, "somecellularvariant"},
+		{[]string{"modem_imei:imei", "modem_type:qualcomm_sc7180", "modem_sim_count:1"}, 1, "imei", "", 1, ""},
 	}
 	t.Parallel()
 	for _, testCase := range modemInfoRevertTestCases {
@@ -536,6 +539,7 @@ func TestRevertModemInfoLabels(t *testing.T) {
 				*want.Modeminfo.Imei = testCase.expectImei
 				*want.Modeminfo.SupportedBands = testCase.expectSupportedBands
 				*want.Modeminfo.SimCount = int32(testCase.expectSIMCount)
+				*want.Modeminfo.ModelVariant = testCase.expectVariant
 			}
 			got := Revert(testCase.labelValue)
 			t.Log(got)
@@ -763,6 +767,7 @@ modeminfo: {
   imei: "imei"
   supported_bands: "bands"
 	sim_count: 1
+  model_variant: "somecellularvariant"
 }
 siminfo: [{
 	slot_id: 1
@@ -819,6 +824,7 @@ var fullLabelsSpecial = []string{
 	"camerabox_light:led",
 	"carrier:tmobile",
 	"cellular_modem_state:NEED_REPLACEMENT",
+	"cellular_variant:somecellularvariant",
 	"chameleon",
 	"chameleon:dp",
 	"chameleon:hdmi",
