@@ -68,6 +68,7 @@ func crosRepairCriticalActions(skipRepairFailState bool) []string {
 		"Record type C status",
 		"All repair-requests resolved",
 		"Reset DUT-state reason",
+		"Servo is in WORKING state",
 		"Set state: ready",
 	}
 	if skipRepairFailState {
@@ -999,6 +1000,19 @@ func crosRepairActions() map[string]*Action {
 		"Servo state is working": {
 			Docs: []string{
 				"check the servo's state is WORKING.",
+			},
+			ExecName: "servo_match_state",
+			ExecExtraArgs: []string{
+				"state:WORKING",
+			},
+		},
+		"Servo is in WORKING state": {
+			Docs: []string{
+				"Some pool requires servo on WORKING state.",
+				"This action does not have any recovery actions.",
+			},
+			Conditions: []string{
+				"Pools require Servo in WORKING state",
 			},
 			ExecName: "servo_match_state",
 			ExecExtraArgs: []string{
@@ -2672,6 +2686,20 @@ func crosRepairActions() map[string]*Action {
 				"satlab_faft",
 				// Device with MP AP firmware must be in dev mode to boot test OS image
 				"mp_firmware_testing",
+			},
+		},
+		"Pools require Servo in WORKING state": {
+			Docs: []string{
+				"List of pools that require a good servo.",
+			},
+			ExecName: "dut_is_in_pool",
+			ExecExtraArgs: []string{
+				"faft-cr50",
+				"faft-cr50-debug",
+				"faft-cr50-tot",
+				"faft-experimental",
+				"faft-test",
+				"satlab_faft",
 			},
 		},
 		"Pools required to be in Secure mode": {
