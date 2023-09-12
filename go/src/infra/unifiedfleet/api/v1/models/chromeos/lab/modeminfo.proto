@@ -10,7 +10,7 @@ option go_package = "infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
 
 // This proto defines modem labels in lab config of a DUT.
 
-// Next Tag: 5
+// Next Tag: 6
 message ModemInfo {
   ModemType type = 1;
   // Equipment Identifier
@@ -19,6 +19,8 @@ message ModemInfo {
   string supported_bands = 3;
   // Number of SIM's present
   int32 sim_count = 4;
+  // The device model cellular sub-variant.
+  string model_variant = 5;
 }
 
 // Next Tag: 7
