@@ -27,7 +27,7 @@ WITH base AS (
 	SELECT
 		m.date,
 		m.test_id,
-		ANY_VALUE(IFNULL(m.test_name, m.test_id)) AS test_name,
+		ANY_VALUE(m.test_name) AS test_name,
 		ANY_VALUE(m.file_name) AS file_name,
 		{metricAggregations},
 		ARRAY_AGG(STRUCT(
@@ -55,7 +55,7 @@ WITH tests AS (
 	SELECT
 		m.date,
 		m.test_id,
-		ANY_VALUE(IFNULL(m.test_name, m.test_id)) AS test_name,
+		ANY_VALUE(m.test_name) AS test_name,
 		ANY_VALUE(m.file_name) AS file_name,
 		{metricAggregations},
 		ARRAY_AGG(STRUCT(

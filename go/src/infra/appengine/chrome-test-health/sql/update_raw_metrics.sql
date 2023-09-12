@@ -60,7 +60,7 @@ USING (
         test_suite,
         target_platform,
         variant_hash,
-        ANY_VALUE(test_name) AS test_name,
+        ANY_VALUE(IFNULL(test_name, test_id)) AS test_name,
         ANY_VALUE(file_name) AS file_name,
         IFNULL(ANY_VALUE(component), "Unknown") AS component,
         COUNT(*) AS num_runs,
