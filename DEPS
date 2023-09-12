@@ -136,7 +136,7 @@ deps = {
       },
 
       {
-        'package': 'infra/3pp/tools/cloud-tasks-emulator/${{platform=linux-amd64}}',
+        'package': 'infra/3pp/tools/cloud-tasks-emulator/${{os=linux,mac}}-${{arch}}',
         'version': 'version:2@1.1.1',
       },
 
