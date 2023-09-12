@@ -1148,6 +1148,7 @@ class WorkEnv(object):
       issue.owner_modified_timestamp = timestamp
       issue.status_modified_timestamp = timestamp
       issue.component_modified_timestamp = timestamp
+      issue.migration_modified_timestamp = timestamp
 
       # Validate the issue
       tracker_helpers.AssertValidIssueForCreate(
@@ -2103,6 +2104,7 @@ class WorkEnv(object):
       changes.issues_to_update_dict[issue.issue_id] = issue
 
       issue.modified_timestamp = now_timestamp
+      issue.migration_modified_timestamp = now_timestamp
 
       if (iid in changes.old_owners_by_iid and
           old_owner != tracker_bizobj.GetOwnerId(issue)):

@@ -77,10 +77,10 @@ ISSUEAPPROVAL2COMMENT_TABLE_NAME = 'IssueApproval2Comment'
 
 ISSUE_COLS = [
     'id', 'project_id', 'local_id', 'status_id', 'owner_id', 'reporter_id',
-    'opened', 'closed', 'modified',
-    'owner_modified', 'status_modified', 'component_modified',
-    'derived_owner_id', 'derived_status_id',
-    'deleted', 'star_count', 'attachment_count', 'is_spam']
+    'opened', 'closed', 'modified', 'owner_modified', 'status_modified',
+    'component_modified', 'migration_modified', 'derived_owner_id',
+    'derived_status_id', 'deleted', 'star_count', 'attachment_count', 'is_spam'
+]
 ISSUESUMMARY_COLS = ['issue_id', 'summary']
 ISSUE2LABEL_COLS = ['issue_id', 'label_id', 'derived']
 ISSUE2COMPONENT_COLS = ['issue_id', 'component_id', 'derived']
@@ -189,10 +189,12 @@ class IssueTwoLevelCache(caches.AbstractTwoLevelCache):
 
   def _UnpackIssue(self, cnxn, issue_row):
     """Partially construct an issue object using info from a DB row."""
-    (issue_id, project_id, local_id, status_id, owner_id, reporter_id,
-     opened, closed, modified, owner_modified, status_modified,
-     component_modified, derived_owner_id, derived_status_id,
-     deleted, star_count, attachment_count, is_spam) = issue_row
+    (
+        issue_id, project_id, local_id, status_id, owner_id, reporter_id,
+        opened, closed, modified, owner_modified, status_modified,
+        component_modified, migration_modified, derived_owner_id,
+        derived_status_id, deleted, star_count, attachment_count,
+        is_spam) = issue_row
 
     issue = tracker_pb2.Issue()
     project = self.project_service.GetProject(cnxn, project_id)
@@ -223,6 +225,8 @@ class IssueTwoLevelCache(caches.AbstractTwoLevelCache):
       issue.status_modified_timestamp = status_modified
     if component_modified:
       issue.component_modified_timestamp = component_modified
+    if migration_modified:
+      issue.migration_modified_timestamp = migration_modified
     issue.star_count = star_count
     issue.attachment_count = attachment_count
     issue.is_spam = bool(is_spam)
@@ -1036,21 +1040,15 @@ class IssueService(object):
     """
     status_id = self._config_service.LookupStatusID(
         cnxn, issue.project_id, issue.status)
-    row = (issue.project_id, issue.local_id, status_id,
-           issue.owner_id or None,
-           issue.reporter_id,
-           issue.opened_timestamp,
-           issue.closed_timestamp,
-           issue.modified_timestamp,
-           issue.owner_modified_timestamp,
-           issue.status_modified_timestamp,
-           issue.component_modified_timestamp,
-           issue.derived_owner_id or None,
-           self._config_service.LookupStatusID(
-               cnxn, issue.project_id, issue.derived_status),
-           bool(issue.deleted),
-           issue.star_count, issue.attachment_count,
-           issue.is_spam)
+    row = (
+        issue.project_id, issue.local_id, status_id, issue.owner_id or
+        None, issue.reporter_id, issue.opened_timestamp, issue.closed_timestamp,
+        issue.modified_timestamp, issue.owner_modified_timestamp,
+        issue.status_modified_timestamp, issue.component_modified_timestamp,
+        issue.migration_modified_timestamp, issue.derived_owner_id or None,
+        self._config_service.LookupStatusID(
+            cnxn, issue.project_id, issue.derived_status), bool(issue.deleted),
+        issue.star_count, issue.attachment_count, issue.is_spam)
     # ISSUE_COLs[1:] to skip setting the ID
     # Insert into the Primary DB.
     generated_ids = self.issue_tbl.InsertRows(
@@ -1096,25 +1094,43 @@ class IssueService(object):
       assert not issue.assume_stale, (
           'issue2514: Storing issue that might be stale: %r' % issue)
       delta = {
-          'project_id': issue.project_id,
-          'local_id': issue.local_id,
-          'owner_id': issue.owner_id or None,
-          'status_id': self._config_service.LookupStatusID(
-              cnxn, issue.project_id, issue.status) or None,
-          'opened': issue.opened_timestamp,
-          'closed': issue.closed_timestamp,
-          'modified': issue.modified_timestamp,
-          'owner_modified': issue.owner_modified_timestamp,
-          'status_modified': issue.status_modified_timestamp,
-          'component_modified': issue.component_modified_timestamp,
-          'derived_owner_id': issue.derived_owner_id or None,
-          'derived_status_id': self._config_service.LookupStatusID(
-              cnxn, issue.project_id, issue.derived_status) or None,
-          'deleted': bool(issue.deleted),
-          'star_count': issue.star_count,
-          'attachment_count': issue.attachment_count,
-          'is_spam': issue.is_spam,
-          }
+          'project_id':
+              issue.project_id,
+          'local_id':
+              issue.local_id,
+          'owner_id':
+              issue.owner_id or None,
+          'status_id':
+              self._config_service.LookupStatusID(
+                  cnxn, issue.project_id, issue.status) or None,
+          'opened':
+              issue.opened_timestamp,
+          'closed':
+              issue.closed_timestamp,
+          'modified':
+              issue.modified_timestamp,
+          'owner_modified':
+              issue.owner_modified_timestamp,
+          'status_modified':
+              issue.status_modified_timestamp,
+          'component_modified':
+              issue.component_modified_timestamp,
+          'migration_modified':
+              issue.migration_modified_timestamp,
+          'derived_owner_id':
+              issue.derived_owner_id or None,
+          'derived_status_id':
+              self._config_service.LookupStatusID(
+                  cnxn, issue.project_id, issue.derived_status) or None,
+          'deleted':
+              bool(issue.deleted),
+          'star_count':
+              issue.star_count,
+          'attachment_count':
+              issue.attachment_count,
+          'is_spam':
+              issue.is_spam,
+      }
       if update_cols is not None:
         delta = {key: val for key, val in delta.items()
                  if key in update_cols}
@@ -1515,6 +1531,7 @@ class IssueService(object):
     # update the modified_timestamp for any comment added, even if it was
     # just a text comment with no issue fields changed.
     issue.modified_timestamp = timestamp
+    issue.migration_modified_timestamp = timestamp
 
     # Update the closed timestamp before filter rules so that rules
     # can test for closed_timestamp, and also after filter rules

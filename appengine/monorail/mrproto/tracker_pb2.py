@@ -97,7 +97,7 @@ class Issue(messages.Message):
   Summary, Status, Owner, CC, reporter, and opened_timestamp are hard
   fields that are always there.  All other metadata is stored as
   labels or custom fields.
-  Next available tag: 62.
+  Next available tag: 63.
   """
   # Globally unique issue ID.
   issue_id = messages.IntegerField(42)
@@ -132,6 +132,11 @@ class Issue(messages.Message):
   owner_modified_timestamp = messages.IntegerField(19, default=0)
   status_modified_timestamp = messages.IntegerField(20, default=0)
   component_modified_timestamp = messages.IntegerField(21, default=0)
+
+  # Enhanced version of modified_timestamp that also captures changes to
+  # subresources of issues like stars, comments, and attachments.
+  # See: go/monorail-enhanced-modified-time
+  migration_modified_timestamp = messages.IntegerField(62, default=0)
 
   # Issue IDs of issues that this issue is blocked on.
   blocked_on_iids = messages.IntegerField(16, repeated=True)

@@ -3418,6 +3418,7 @@ class WorkEnvTest(unittest.TestCase):
       exp_issue.derived_owner_id = 0
 
       exp_issue.modified_timestamp = self.PAST_TIME
+      exp_issue.migration_modified_timestamp = self.PAST_TIME
 
       # Check we successfully updated the issue in our services layer.
       self.assertEqual(exp_issue, self.services.issue.GetIssue(
@@ -3723,6 +3724,7 @@ class WorkEnvTest(unittest.TestCase):
         exp_issue.derived_owner_id = 0
 
       exp_issue.modified_timestamp = self.PAST_TIME
+      exp_issue.migration_modified_timestamp = self.PAST_TIME
 
       self.assertEqual(
         exp_issue, self.services.issue.GetIssue(self.cnxn, exp_issue.issue_id))
@@ -3841,6 +3843,7 @@ class WorkEnvTest(unittest.TestCase):
           send_email=send_email)
 
     exp_issue.modified_timestamp = self.PAST_TIME
+    exp_issue.migration_modified_timestamp = self.PAST_TIME
     exp_issue.component_modified_timestamp = self.PAST_TIME
     exp_issue.component_ids = [self.component_id_2]
 
@@ -3886,6 +3889,7 @@ class WorkEnvTest(unittest.TestCase):
           send_email=send_email)
 
     exp_issue.modified_timestamp = self.PAST_TIME
+    exp_issue.migration_modified_timestamp = self.PAST_TIME
     exp_issue.status_modified_timestamp = self.PAST_TIME
     exp_issue.closed_timestamp = self.PAST_TIME
     exp_issue.status = 'Fixed'
@@ -3929,6 +3933,7 @@ class WorkEnvTest(unittest.TestCase):
       exp_issue = copy.deepcopy(issue)
       exp_issue.cc_ids.extend(delta.cc_ids_add)
       exp_issue.modified_timestamp = self.PAST_TIME
+      exp_issue.migration_modified_timestamp = self.PAST_TIME
       return issue, exp_amendments, exp_issue
 
     # We expect fake_bulk_notify to send these issues' notifications.
@@ -4127,6 +4132,7 @@ class WorkEnvTest(unittest.TestCase):
 
     exp_issue = copy.deepcopy(issue)
     exp_issue.modified_timestamp = self.PAST_TIME
+    exp_issue.migration_modified_timestamp = self.PAST_TIME
     exp_issue.assume_stale = False
 
     self.services.issue.TestAddIssue(issue)
@@ -4180,6 +4186,7 @@ class WorkEnvTest(unittest.TestCase):
 
     exp_issue = copy.deepcopy(issue)
     exp_issue.modified_timestamp = self.PAST_TIME
+    exp_issue.migration_modified_timestamp = self.PAST_TIME
     exp_issue.assume_stale = False
 
     self.services.issue.TestAddIssue(issue)

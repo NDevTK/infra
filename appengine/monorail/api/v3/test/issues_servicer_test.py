@@ -559,6 +559,7 @@ class IssuesServicerTest(unittest.TestCase):
         self.issues_svcr.ModifyIssues, mc, request)
     exp_issue.labels = ['keep-me', 'add-me']
     exp_issue.modified_timestamp = 12345
+    exp_issue.migration_modified_timestamp = 12345
     exp_api_issue = self.issues_svcr.converter.ConvertIssue(exp_issue)
     self.assertEqual([iss for iss in response.issues], [exp_api_issue])
 

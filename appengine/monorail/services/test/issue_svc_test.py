@@ -161,9 +161,10 @@ class IssueTwoLevelCacheTest(unittest.TestCase):
     now = int(time.time())
     self.project_service.TestAddProject('proj', project_id=789)
     self.issue_rows = [
-        (78901, 789, 1, 1, 111, 222,
-         now, now, now, now, now, now,
-         0, 0, 0, 1, 0, False)]
+        (
+            78901, 789, 1, 1, 111, 222, now, now, now, now, now, now, now, 0, 0,
+            0, 1, 0, False)
+    ]
     self.summary_rows = [(78901, 'sum')]
     self.label_rows = [(78901, 1, 0)]
     self.component_rows = []
@@ -827,10 +828,9 @@ class IssueServiceTest(unittest.TestCase):
   def SetUpInsertIssue(
       self, label_rows=None, av_rows=None, approver_rows=None,
       dangling_relation_rows=None):
-    row = (789, 1, 1, 111, 111,
-           self.now, 0, self.now, self.now, self.now, self.now,
-           None, 0,
-           False, 0, 0, False)
+    row = (
+        789, 1, 1, 111, 111, self.now, 0, self.now, self.now, self.now,
+        self.now, self.now, None, 0, False, 0, 0, False)
     self.services.issue.issue_tbl.InsertRows(
         self.cnxn, issue_svc.ISSUE_COLS[1:], [row],
         commit=False, return_generated_ids=True).AndReturn([78901])
@@ -852,9 +852,9 @@ class IssueServiceTest(unittest.TestCase):
         commit=False)
 
   def SetUpInsertSpamIssue(self):
-    row = (789, 1, 1, 111, 111,
-           self.now, 0, self.now, self.now, self.now, self.now,
-           None, 0, False, 0, 0, True)
+    row = (
+        789, 1, 1, 111, 111, self.now, 0, self.now, self.now, self.now,
+        self.now, self.now, None, 0, False, 0, 0, True)
     self.services.issue.issue_tbl.InsertRows(
         self.cnxn, issue_svc.ISSUE_COLS[1:], [row],
         commit=False, return_generated_ids=True).AndReturn([78901])
@@ -972,13 +972,14 @@ class IssueServiceTest(unittest.TestCase):
         'owner_modified': 123456789,
         'status_modified': 123456789,
         'component_modified': 123456789,
+        'migration_modified': 123456789,
         'derived_owner_id': None,
         'derived_status_id': None,
         'deleted': False,
         'star_count': 12,
         'attachment_count': 0,
         'is_spam': False,
-        }
+    }
     self.services.issue.issue_tbl.Update(
         self.cnxn, delta, id=78901, commit=False)
     if not given_delta:
@@ -1006,9 +1007,15 @@ class IssueServiceTest(unittest.TestCase):
 
   def testUpdateIssues_Normal(self):
     issue = fake.MakeTestIssue(
-        project_id=789, local_id=1, owner_id=111, summary='sum',
-        status='Live', labels=['Type-Defect'], issue_id=78901,
-        opened_timestamp=123456789, modified_timestamp=123456789,
+        project_id=789,
+        local_id=1,
+        owner_id=111,
+        summary='sum',
+        status='Live',
+        labels=['Type-Defect'],
+        issue_id=78901,
+        opened_timestamp=123456789,
+        modified_timestamp=123456789,
         star_count=12)
     issue.assume_stale = False
     self.SetUpUpdateIssues()
@@ -1018,9 +1025,15 @@ class IssueServiceTest(unittest.TestCase):
 
   def testUpdateIssue_Normal(self):
     issue = fake.MakeTestIssue(
-        project_id=789, local_id=1, owner_id=111, summary='sum',
-        status='Live', labels=['Type-Defect'], issue_id=78901,
-        opened_timestamp=123456789, modified_timestamp=123456789,
+        project_id=789,
+        local_id=1,
+        owner_id=111,
+        summary='sum',
+        status='Live',
+        labels=['Type-Defect'],
+        issue_id=78901,
+        opened_timestamp=123456789,
+        modified_timestamp=123456789,
         star_count=12)
     issue.assume_stale = False
     self.SetUpUpdateIssues()
@@ -1030,9 +1043,15 @@ class IssueServiceTest(unittest.TestCase):
 
   def testUpdateIssue_Stale(self):
     issue = fake.MakeTestIssue(
-        project_id=789, local_id=1, owner_id=111, summary='sum',
-        status='Live', labels=['Type-Defect'], issue_id=78901,
-        opened_timestamp=123456789, modified_timestamp=123456789,
+        project_id=789,
+        local_id=1,
+        owner_id=111,
+        summary='sum',
+        status='Live',
+        labels=['Type-Defect'],
+        issue_id=78901,
+        opened_timestamp=123456789,
+        modified_timestamp=123456789,
         star_count=12)
     # Do not set issue.assume_stale = False
     # Do not call self.SetUpUpdateIssues() because nothing should be updated.

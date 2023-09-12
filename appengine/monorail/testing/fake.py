@@ -144,13 +144,35 @@ def MakeFieldValue(
 
 
 def MakeTestIssue(
-    project_id, local_id, summary, status, owner_id, labels=None,
-    derived_labels=None, derived_status=None, merged_into=0, star_count=0,
-    derived_owner_id=0, issue_id=None, reporter_id=None, opened_timestamp=None,
-    closed_timestamp=None, modified_timestamp=None, is_spam=False,
-    component_ids=None, project_name=None, field_values=None, cc_ids=None,
-    derived_cc_ids=None, assume_stale=True, phases=None, approval_values=None,
-    merged_into_external=None, attachment_count=0, derived_component_ids=None):
+    project_id,
+    local_id,
+    summary,
+    status,
+    owner_id,
+    labels=None,
+    derived_labels=None,
+    derived_status=None,
+    merged_into=0,
+    star_count=0,
+    derived_owner_id=0,
+    issue_id=None,
+    reporter_id=None,
+    opened_timestamp=None,
+    closed_timestamp=None,
+    modified_timestamp=None,
+    migration_modified_timestamp=None,
+    is_spam=False,
+    component_ids=None,
+    project_name=None,
+    field_values=None,
+    cc_ids=None,
+    derived_cc_ids=None,
+    assume_stale=True,
+    phases=None,
+    approval_values=None,
+    merged_into_external=None,
+    attachment_count=0,
+    derived_component_ids=None):
   """Easily make an Issue for testing."""
   issue = tracker_pb2.Issue()
   issue.project_id = project_id
@@ -179,6 +201,11 @@ def MakeTestIssue(
     issue.component_modified_timestamp = opened_timestamp
   if modified_timestamp:
     issue.modified_timestamp = modified_timestamp
+    # By default, make migration_modified_timestamp the same as
+    # modified_timestamp
+    issue.migration_modified_timestamp = modified_timestamp
+  if migration_modified_timestamp:
+    issue.migration_modified_timestamp = migration_modified_timestamp
   if closed_timestamp:
     issue.closed_timestamp = closed_timestamp
   if labels is not None:
@@ -1969,6 +1996,7 @@ class IssueService(object):
       timestamp = int(time.time())
       new_issue.opened_timestamp = timestamp
       new_issue.modified_timestamp = timestamp
+      new_issue.migration_modified_timestamp = timestamp
 
       target_comments = self.GetCommentsForIssue(cnxn, target_issue.issue_id)
       initial_summary_comment = target_comments[0]
