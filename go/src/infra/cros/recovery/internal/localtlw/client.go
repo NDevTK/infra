@@ -53,6 +53,8 @@ const (
 	hostTypeBtPeer
 	hostTypeRouter
 	hostTypeChameleon
+	hostTypeHmrPi
+	hostTypeHmrGateway // AKA HMR touchhost
 )
 
 // tlwClient holds data and represents the local implementation of TLW Access interface.

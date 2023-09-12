@@ -506,6 +506,7 @@ message Battery {
 
 // HumanMotionRobot holds info about human motion robot of the DUT
 message HumanMotionRobot {
+  // Hostname of HMR-Pi
   string name = 1;
 
   // State describes the state of device.
@@ -521,6 +522,9 @@ message HumanMotionRobot {
 
   // State of the device.
   State state = 2;
+
+  // Hostname of Gateway host (touchhost) Pi
+  string touchhost = 3;
 }
 
 // Chrome OS specific DUT details

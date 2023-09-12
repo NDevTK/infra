@@ -384,12 +384,13 @@ func createChameleon(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.Chameleon 
 }
 
 // createDUTHumanMotionRobot convert ufslab.Peripherals.HumanMotionRobot to tlw.HumanMotionRobot
-// It includes hostname and state, and will be used for recovery
+// It includes hostnames (of HMR-Pi and touchhost) and the overall state, and will be used for recovery
 func createDUTHumanMotionRobot(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.HumanMotionRobot {
 	pHmr := p.GetHumanMotionRobot()
 	tlwHmr := &tlw.HumanMotionRobot{
-		Name:  pHmr.GetHostname(),
-		State: convertHumanMotionRobotStateToTLW(ds.GetHmrState()),
+		Name:      pHmr.GetHostname(),
+		State:     convertHumanMotionRobotStateToTLW(ds.GetHmrState()),
+		Touchhost: pHmr.GetGatewayHostname(),
 	}
 	return tlwHmr
 }

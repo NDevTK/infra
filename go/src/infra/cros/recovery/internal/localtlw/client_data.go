@@ -15,9 +15,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"infra/cros/recovery/internal/execs/wifirouter/controller"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
+	"infra/cros/recovery/internal/execs/wifirouter/controller"
 	"infra/cros/recovery/internal/localtlw/dutinfo"
 	"infra/cros/recovery/internal/localtlw/localinfo"
 	"infra/cros/recovery/internal/log"
@@ -188,6 +188,15 @@ func (c *tlwClient) cacheDevice(dut *tlw.Dut) {
 		c.hostTypes[chameleon.GetName()] = hostTypeChameleon
 		c.hostToParents[chameleon.GetName()] = dut.Name
 	}
+	hmr := chromeos.GetHumanMotionRobot()
+	if hmr.GetName() != "" {
+		c.hostTypes[hmr.GetName()] = hostTypeHmrPi
+		c.hostToParents[hmr.GetName()] = dut.Name
+	}
+	if hmr.GetTouchhost() != "" {
+		c.hostTypes[hmr.GetTouchhost()] = hostTypeHmrGateway
+		c.hostToParents[hmr.GetTouchhost()] = dut.Name
+	}
 }
 
 // unCacheDevice removes device from the local cache.
@@ -211,6 +220,15 @@ func (c *tlwClient) unCacheDevice(dut *tlw.Dut) {
 		if chameleon := chromeos.GetChameleon(); chameleon.GetName() != "" {
 			delete(c.hostTypes, chameleon.GetName())
 			delete(c.hostToParents, chameleon.GetName())
+		}
+		hmr := chromeos.GetHumanMotionRobot()
+		if hmr.GetName() != "" {
+			delete(c.hostTypes, hmr.GetName())
+			delete(c.hostToParents, hmr.GetName())
+		}
+		if hmr.GetTouchhost() != "" {
+			delete(c.hostTypes, hmr.GetTouchhost())
+			delete(c.hostToParents, hmr.GetTouchhost())
 		}
 	}
 	delete(c.devices, name)
