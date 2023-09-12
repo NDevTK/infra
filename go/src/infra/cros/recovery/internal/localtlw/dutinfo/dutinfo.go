@@ -496,6 +496,11 @@ func getUFSLabDataFromSpecs(dut *tlw.Dut) *ufsAPI.ChromeOsRecoveryData_LabData {
 				State:    convertBluetoothPeerStateToUFS(btp.GetState()),
 			})
 		}
+		if c := ch.GetCellular(); c != nil {
+			labData.ModemInfo = &ufsAPI.ChromeOsRecoveryData_ModemInfo{
+				ModelVariant: c.GetModelVariant(),
+			}
+		}
 		labData.RoVpdMap = ch.GetRoVpdMap()
 		labData.Cbi = ch.GetCbi()
 		labData.AudioboxJackpluggerState = convertAudioBoxJackPluggerStateToUFS(ch.GetChameleon().GetAudioboxjackpluggerstate())
