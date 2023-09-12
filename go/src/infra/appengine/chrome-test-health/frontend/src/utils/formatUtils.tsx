@@ -4,6 +4,10 @@
 
 import dayjs from 'dayjs';
 
+// If days >= 1 don't show minutes and seconds
+// If minutes >= 1 don't show decimal in seconds
+// If decimal show up to 2 points of precision.
+// If <0.01 show '<0.01s'
 export function formatTime(seconds: number) {
   let result = '';
 
@@ -22,9 +26,18 @@ export function formatTime(seconds: number) {
     result += ` ${min.toFixed(0)}m`;
   }
 
-  const sec = Math.floor(seconds % 60);
-  if (hour < 1) {
-    result += ` ${sec.toPrecision(2)}s`;
+  const sec = seconds % 60;
+  if (hour < 1 && day < 1) {
+    if (sec === 0) {
+      result += '0';
+    } else if (sec < 0.01) {
+      result += ' <0.01';
+    } else if (sec % 1 != 0 && min < 1) {
+      result += ` ${sec.toFixed(2)}`;
+    } else {
+      result += ` ${sec.toFixed(0)}`
+    }
+    result += 's';
   }
 
   return result.trimStart();

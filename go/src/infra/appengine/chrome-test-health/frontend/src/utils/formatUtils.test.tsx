@@ -4,13 +4,23 @@
 
 import { formatDate, formatNumber, formatTime } from './formatUtils';
 
+const M = 60;
+const H = 60 * M;
+const D = 24 * H;
+
 // Test formatTime
 test.each([
-  ['987654', '11d 10h'],
-  ['10000', '2h 46m'],
-  ['500', '8m 20s'],
-  ['0', '0.0s'],
-  ['1', '1.0s'],
+  [(11 * D + 10 * H + 5 * M + 1.2).toString(), '11d 10h'],
+  [(1 * D + 2 * H + 3 * M + 4), '1d 2h'],
+  [(1 * D + 3 * M + 4), '1d'],
+  [(2 * H + 46 * M + 5).toString(), '2h 46m'],
+  [(8 * M + 20).toString(), '8m 20s'],
+  [(M + 2.2).toString(), '1m 2s'],
+  ['0', '0s'],
+  ['1', '1s'],
+  ['6.5555', '6.56s'],
+  ['.056', '0.06s'],
+  ['.0000566', '<0.01s'],
 ])('.formatTime(%p, %p)', (seconds, expected) => {
   expect(formatTime(Number(seconds))).toBe(expected);
 });
