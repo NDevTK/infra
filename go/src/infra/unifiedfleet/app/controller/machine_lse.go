@@ -1909,6 +1909,8 @@ func updateRecoveryLabData(ctx context.Context, hostname string, resourceState u
 				updateRecoveryPeripheralServo(peri, labData)
 				// Update WiFi routers
 				updateRecoveryPeripheralWifi(ctx, peri, labData)
+				// Update Cellular Modem Info
+				updateCellularModemInfo(ctx, dut.GetModeminfo(), labData)
 				// Update Bluetooth peers
 				if err = updateBluetoothPeerStates(peri, labData.GetBluetoothPeers()); err != nil {
 					return err
@@ -1966,6 +1968,18 @@ func updateRecoveryPeripheralServo(p *chromeosLab.Peripherals, labData *ufsAPI.C
 	servo.ServoTopology = labData.GetServoTopology()
 	servo.ServoComponent = extractServoComponents(labData.GetServoTopology())
 	servo.UsbDrive = labData.GetServoUsbDrive()
+}
+
+// updateCellularModemInfo updates the cellular modem info.
+func updateCellularModemInfo(ctx context.Context, m *chromeosLab.ModemInfo, labData *ufsAPI.ChromeOsRecoveryData_LabData) {
+	// Cellular cannot be nil, if it is then return to make sure we don't somehow clear anything.
+	if m == nil {
+		return
+	}
+
+	if mv := labData.GetModemInfo().GetModelVariant(); mv != "" {
+		m.ModelVariant = mv
+	}
 }
 
 // updateRecoveryPeripheralWifi edits peripherals Wifi

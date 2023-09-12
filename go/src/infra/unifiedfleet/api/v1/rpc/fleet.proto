@@ -1807,6 +1807,11 @@ message ChromeOsRecoveryData {
     models.chromeos.lab.PeripheralState state = 2;
   }
 
+message ModemInfo {
+  // The device model cellular sub-variant.
+  string model_variant = 1;
+}
+
   message LabData {
     string servo_type = 1;
     bool smart_usbhub = 2;
@@ -1823,6 +1828,8 @@ message ChromeOsRecoveryData {
     models.chromeos.lab.Chameleon.AudioBoxJackPlugger audiobox_jackplugger_state = 10;
     // WifiRouterFeatures that are supported by all wifi routers in the testbed.
     repeated chromiumos.test.lab.api.WifiRouterFeature wifi_router_features = 11;
+    // Info on the available cellular modem
+    ModemInfo modem_info = 12;
   }
 
   // Used for updating back essential configs from repair/deploy task.

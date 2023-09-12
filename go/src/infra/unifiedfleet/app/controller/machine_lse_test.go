@@ -1869,6 +1869,9 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 						State:    chromeosLab.PeripheralState_WORKING,
 					},
 				},
+				ModemInfo: &ufsAPI.ChromeOsRecoveryData_ModemInfo{
+					ModelVariant: "some_cellular_variant",
+				},
 				ServoUsbDrive: &labApi.UsbDrive{
 					Serial:        "usb-drive serial",
 					Manufacturer:  "usb-drive-make",
@@ -1896,6 +1899,14 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 					AudioboxJackplugger: chromeosLab.Chameleon_AUDIOBOX_JACKPLUGGER_BROKEN,
 				},
 			}
+			machineLSE1.GetChromeosMachineLse().GetDeviceLse().GetDut().Modeminfo = &chromeosLab.ModemInfo{
+				Type:           chromeosLab.ModemType_MODEM_TYPE_QUALCOMM_SC7180,
+				Imei:           "123456",
+				SupportedBands: "1,2,3,4",
+				SimCount:       3,
+				ModelVariant:   "some_other_cellular_variant",
+			}
+
 			req, err := inventory.CreateMachineLSE(ctx, machineLSE1)
 			So(err, ShouldBeNil)
 			So(req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), ShouldBeFalse)
@@ -1920,7 +1931,15 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			So(peri.Servo.GetUsbDrive().GetManufacturer(), ShouldEqual, "usb-drive-make")
 			So(peri.Chameleon.GetHostname(), ShouldEqual, machineName+"-chameleon")
 			So(peri.Chameleon.GetAudioboxJackplugger(), ShouldEqual, chromeosLab.Chameleon_AUDIOBOX_JACKPLUGGER_WORKING)
+
+			modem := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetModeminfo()
+			So(modem.GetType(), ShouldEqual, chromeosLab.ModemType_MODEM_TYPE_QUALCOMM_SC7180)
+			So(modem.GetImei(), ShouldEqual, "123456")
+			So(modem.GetSupportedBands(), ShouldEqual, "1,2,3,4")
+			So(modem.GetSimCount(), ShouldEqual, 3)
+			So(modem.GetModelVariant(), ShouldEqual, "some_cellular_variant")
 		})
+
 		Convey("Update a OS machine LSE - empty servo topology and multiple wifi routers", func() {
 			const machineName = "machine-labdata-3"
 			topology := &chromeosLab.ServoTopology{
@@ -2192,6 +2211,69 @@ func TestUpdateRecoveryLabData(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(req.GetResourceState(), ShouldEqual, ufspb.State_STATE_SERVING)
 		})
+		Convey("Update a OS machine LSE - empty modem recovery data", func() {
+			const machineName = "machine-labdata-10"
+			labData := &ufsAPI.ChromeOsRecoveryData_LabData{
+				ModemInfo: &ufsAPI.ChromeOsRecoveryData_ModemInfo{
+					ModelVariant: "",
+				},
+			}
+			machineLSE := mockDutMachineLSE(machineName)
+			machineLSE.GetChromeosMachineLse().GetDeviceLse().GetDut().Modeminfo = &chromeosLab.ModemInfo{
+				Type:           chromeosLab.ModemType_MODEM_TYPE_QUALCOMM_SC7180,
+				Imei:           "123456",
+				SupportedBands: "1,2,3,4",
+				SimCount:       3,
+				ModelVariant:   "some_cellular_variant",
+			}
+			req, err := inventory.CreateMachineLSE(ctx, machineLSE)
+			So(err, ShouldBeNil)
+			So(req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), ShouldBeFalse)
+			So(req.GetResourceState(), ShouldEqual, ufspb.State_STATE_UNSPECIFIED)
+			err = updateRecoveryLabData(ctx, machineName, ufspb.State_STATE_READY, labData)
+			So(err, ShouldBeNil)
+			req, err = inventory.GetMachineLSE(ctx, machineName)
+			So(err, ShouldBeNil)
+			So(req.GetResourceState(), ShouldEqual, ufspb.State_STATE_READY)
+
+			modem := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetModeminfo()
+			So(modem.GetType(), ShouldEqual, chromeosLab.ModemType_MODEM_TYPE_QUALCOMM_SC7180)
+			So(modem.GetImei(), ShouldEqual, "123456")
+			So(modem.GetSupportedBands(), ShouldEqual, "1,2,3,4")
+			So(modem.GetSimCount(), ShouldEqual, 3)
+			So(modem.GetModelVariant(), ShouldEqual, "some_cellular_variant")
+		})
+		Convey("Update a OS machine LSE - missing modem recovery data", func() {
+			const machineName = "machine-labdata-11"
+			labData := &ufsAPI.ChromeOsRecoveryData_LabData{
+				ModemInfo: nil,
+			}
+			machineLSE := mockDutMachineLSE(machineName)
+			machineLSE.GetChromeosMachineLse().GetDeviceLse().GetDut().Modeminfo = &chromeosLab.ModemInfo{
+				Type:           chromeosLab.ModemType_MODEM_TYPE_QUALCOMM_SC7180,
+				Imei:           "123456",
+				SupportedBands: "1,2,3,4",
+				SimCount:       3,
+				ModelVariant:   "some_cellular_variant",
+			}
+			req, err := inventory.CreateMachineLSE(ctx, machineLSE)
+			So(err, ShouldBeNil)
+			So(req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetSmartUsbhub(), ShouldBeFalse)
+			So(req.GetResourceState(), ShouldEqual, ufspb.State_STATE_UNSPECIFIED)
+			err = updateRecoveryLabData(ctx, machineName, ufspb.State_STATE_READY, labData)
+			So(err, ShouldBeNil)
+			req, err = inventory.GetMachineLSE(ctx, machineName)
+			So(err, ShouldBeNil)
+			So(req.GetResourceState(), ShouldEqual, ufspb.State_STATE_READY)
+
+			modem := req.GetChromeosMachineLse().GetDeviceLse().GetDut().GetModeminfo()
+			So(modem.GetType(), ShouldEqual, chromeosLab.ModemType_MODEM_TYPE_QUALCOMM_SC7180)
+			So(modem.GetImei(), ShouldEqual, "123456")
+			So(modem.GetSupportedBands(), ShouldEqual, "1,2,3,4")
+			So(modem.GetSimCount(), ShouldEqual, 3)
+			So(modem.GetModelVariant(), ShouldEqual, "some_cellular_variant")
+		})
+
 	})
 }
 
