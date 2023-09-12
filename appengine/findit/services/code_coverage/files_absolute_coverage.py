@@ -43,7 +43,7 @@ def ExportFilesAbsoluteCoverage():
         server_host='chromium.googlesource.com')
 
   _ExportAbsoluteCoverageForBuilder(
-      builder='coverage-runner',
+      builder='android-code-coverage-native',
       project='chromium/src',
       server_host='chromium.googlesource.com',
       bucket='reviver')
