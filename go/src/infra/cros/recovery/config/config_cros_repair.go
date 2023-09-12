@@ -1331,6 +1331,18 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "sample_pass",
 			AllowFailAfterRecovery: true,
 		},
+		"Update cellular modem labels": {
+			Docs: []string{
+				"Detects the modem labels in swarming.",
+			},
+			Conditions: []string{
+				"Is in cellular pool",
+				"has_cellular_info",
+			},
+			ExecName:               "cros_update_cellular_modem_labels",
+			RunControl:             RunControl_RUN_ONCE,
+			AllowFailAfterRecovery: true,
+		},
 		"Verify tmp_fwver is updated correctly": {
 			Docs: []string{
 				"For dev-signed firmware, tpm_fwver reported from crossystem should always be 0x10001.",

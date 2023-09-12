@@ -22,7 +22,7 @@ import (
 const (
 	modemManagerJob           = "modemmanager"
 	detectCmd                 = "mmcli -m a -J"
-	expectedCmd               = "cros_config /modem firmware-variant"
+	getVariantCmd             = "cros_config /modem firmware-variant"
 	mmcliCliPresentCmd        = "which mmcli"
 	modemManagerJobPresentCmd = "initctl status modemmanager"
 	restartModemManagerCmd    = "restart modemmanager"
@@ -34,9 +34,20 @@ const (
 		" \"{'Type': 'cellular'}\" | cut -d\"'\" -f2"
 )
 
+// GetModelVariant returns the model sub-variant for models that support multiple types of modems.
+func GetModelVariant(ctx context.Context, runner components.Runner) string {
+	out, err := runner(ctx, 5*time.Second, getVariantCmd)
+	if err != nil {
+		// If no variant is present on the DUT then return empty string.
+		log.Errorf(ctx, "get model variant: failed to get variant from cros_config: %s", err.Error())
+		return ""
+	}
+	return out
+}
+
 // IsExpected returns true if cellular modem is expected to exist on the DUT.
 func IsExpected(ctx context.Context, runner components.Runner) bool {
-	if _, err := runner(ctx, 5*time.Second, expectedCmd); err != nil {
+	if _, err := runner(ctx, 5*time.Second, getVariantCmd); err != nil {
 		return false
 	}
 	return true

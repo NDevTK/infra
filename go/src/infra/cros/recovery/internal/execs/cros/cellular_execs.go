@@ -22,6 +22,7 @@ import (
 func init() {
 	execs.Register("carrier_not_in", carrierNotInExec)
 	execs.Register("cros_audit_cellular_modem", auditCellularModemExec)
+	execs.Register("cros_update_cellular_modem_labels", updateCellularModemLabelsExec)
 	execs.Register("cros_audit_cellular_connection", auditCellularConnectionExec)
 	execs.Register("cros_has_mmcli", hasModemManagerCLIExec)
 	execs.Register("cros_has_modemmanager_job", hasModemManagerJobExec)
@@ -219,6 +220,21 @@ func auditCellularConnectionExec(ctx context.Context, info *execs.ExecInfo) erro
 	if err := cellular.ConnectToDefaultService(ctx, runner, waitTimeout); err != nil {
 		return errors.Annotate(err, "audit cellular connection").Err()
 	}
+	return nil
+}
+
+// updateCellularModemLabelsExec sets the cellular modem labels in swarming to match those available on the DUT.
+func updateCellularModemLabelsExec(ctx context.Context, info *execs.ExecInfo) error {
+	c := info.GetChromeos().GetCellular()
+	if c == nil {
+		return errors.Reason("audit cellular modem labels: cellular data is not present in dut info").Err()
+	}
+
+	variant := cellular.GetModelVariant(ctx, info.DefaultRunner())
+	if variant == "" {
+		return errors.Reason("audit cellular modem labels: cellular variant not present on device").Err()
+	}
+	c.ModelVariant = variant
 	return nil
 }
 
