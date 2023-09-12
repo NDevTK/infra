@@ -60,7 +60,6 @@ func crosRepairCriticalActions(skipRepairFailState bool) []string {
 		"Check CBI",
 		"Update provisioned info",
 		"Is crosid readbable",
-		"Set state: ready",
 		"Update special device labels",
 		"Collect dmesg logs from DUT",
 		"Disable verbose network logging for cellular DUTs",
@@ -69,6 +68,7 @@ func crosRepairCriticalActions(skipRepairFailState bool) []string {
 		"Record type C status",
 		"All repair-requests resolved",
 		"Reset DUT-state reason",
+		"Set state: ready",
 	}
 	if skipRepairFailState {
 		return actions[1:]
@@ -81,6 +81,10 @@ func crosRepairActions() map[string]*Action {
 		"Set state: ready": {
 			Docs: []string{
 				"The action set devices with state ready for the testing.",
+			},
+			Dependencies: []string{
+				"All repair-requests resolved",
+				"Reset DUT-state reason",
 			},
 			ExecName: "dut_set_state",
 			ExecExtraArgs: []string{
@@ -3753,7 +3757,8 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Reset DUT-state-reason for good DUT as it becomes stale.",
 			},
-			ExecName: "dut_reset_state_reason",
+			ExecName:      "dut_reset_state_reason",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Is crosid present": {
 			Docs: []string{
