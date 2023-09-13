@@ -36,6 +36,7 @@ const (
 	SatlabRpcService_RunSuite_FullMethodName                  = "/satlabrpcserver.SatlabRpcService/run_suite"
 	SatlabRpcService_AddPool_FullMethodName                   = "/satlabrpcserver.SatlabRpcService/add_pool"
 	SatlabRpcService_UpdatePool_FullMethodName                = "/satlabrpcserver.SatlabRpcService/update_pool"
+	SatlabRpcService_GetDutDetail_FullMethodName              = "/satlabrpcserver.SatlabRpcService/get_dut_detail"
 )
 
 // SatlabRpcServiceClient is the client API for SatlabRpcService service.
@@ -57,6 +58,8 @@ type SatlabRpcServiceClient interface {
 	// manage DUTs
 	AddPool(ctx context.Context, in *AddPoolRequest, opts ...grpc.CallOption) (*AddPoolResponse, error)
 	UpdatePool(ctx context.Context, in *UpdatePoolRequest, opts ...grpc.CallOption) (*UpdatePoolResponse, error)
+	// get DUTs information
+	GetDutDetail(ctx context.Context, in *GetDutDetailRequest, opts ...grpc.CallOption) (*GetDutDetailResponse, error)
 }
 
 type satlabRpcServiceClient struct {
@@ -184,6 +187,15 @@ func (c *satlabRpcServiceClient) UpdatePool(ctx context.Context, in *UpdatePoolR
 	return out, nil
 }
 
+func (c *satlabRpcServiceClient) GetDutDetail(ctx context.Context, in *GetDutDetailRequest, opts ...grpc.CallOption) (*GetDutDetailResponse, error) {
+	out := new(GetDutDetailResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_GetDutDetail_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SatlabRpcServiceServer is the server API for SatlabRpcService service.
 // All implementations must embed UnimplementedSatlabRpcServiceServer
 // for forward compatibility
@@ -203,6 +215,8 @@ type SatlabRpcServiceServer interface {
 	// manage DUTs
 	AddPool(context.Context, *AddPoolRequest) (*AddPoolResponse, error)
 	UpdatePool(context.Context, *UpdatePoolRequest) (*UpdatePoolResponse, error)
+	// get DUTs information
+	GetDutDetail(context.Context, *GetDutDetailRequest) (*GetDutDetailResponse, error)
 	mustEmbedUnimplementedSatlabRpcServiceServer()
 }
 
@@ -248,6 +262,9 @@ func (UnimplementedSatlabRpcServiceServer) AddPool(context.Context, *AddPoolRequ
 }
 func (UnimplementedSatlabRpcServiceServer) UpdatePool(context.Context, *UpdatePoolRequest) (*UpdatePoolResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePool not implemented")
+}
+func (UnimplementedSatlabRpcServiceServer) GetDutDetail(context.Context, *GetDutDetailRequest) (*GetDutDetailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDutDetail not implemented")
 }
 func (UnimplementedSatlabRpcServiceServer) mustEmbedUnimplementedSatlabRpcServiceServer() {}
 
@@ -496,6 +513,24 @@ func _SatlabRpcService_UpdatePool_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SatlabRpcService_GetDutDetail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetDutDetailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SatlabRpcServiceServer).GetDutDetail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SatlabRpcService_GetDutDetail_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SatlabRpcServiceServer).GetDutDetail(ctx, req.(*GetDutDetailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SatlabRpcService_ServiceDesc is the grpc.ServiceDesc for SatlabRpcService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -554,6 +589,10 @@ var SatlabRpcService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "update_pool",
 			Handler:    _SatlabRpcService_UpdatePool_Handler,
+		},
+		{
+			MethodName: "get_dut_detail",
+			Handler:    _SatlabRpcService_GetDutDetail_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
