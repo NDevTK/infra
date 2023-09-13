@@ -7,15 +7,17 @@ package satlabrpcserver;
 
 option go_package = "infra/cros/satlab/satlabrpcserver"; // figure out what this should be
 
+import "google/protobuf/timestamp.proto";
+
 service SatlabRpcService {
   rpc list_build_targets (ListBuildTargetsRequest) returns (ListBuildTargetsResponse);
   rpc list_milestones (ListMilestonesRequest) returns (ListMilestonesResponse);
   rpc list_accessible_models (ListAccessibleModelsRequest) returns (ListAccessibleModelsResponse);
   rpc list_build_versions (ListBuildVersionsRequest) returns (ListBuildVersionsResponse);
   rpc stage_build (StageBuildRequest) returns (StageBuildResponse);
-  rpc list_connected_duts_firmware(ListConnectedDutsFirmwareRequest) returns (ListConnectedDutsFirmwareResponse);
-  rpc get_system_info(GetSystemInfoRequest) returns (GetSystemInfoResponse);
-  rpc get_version_info(GetVersionInfoRequest) returns (GetVersionInfoResponse);
+  rpc list_connected_duts_firmware (ListConnectedDutsFirmwareRequest) returns (ListConnectedDutsFirmwareResponse);
+  rpc get_system_info (GetSystemInfoRequest) returns (GetSystemInfoResponse);
+  rpc get_version_info (GetVersionInfoRequest) returns (GetVersionInfoResponse);
   rpc get_peripheral_information (GetPeripheralInformationRequest) returns (GetPeripheralInformationResponse);
   rpc update_duts_firmware (UpdateDutsFirmwareRequest)  returns (UpdateDutsFirmwareResponse);
 
@@ -25,6 +27,9 @@ service SatlabRpcService {
   // manage DUTs
   rpc add_pool (AddPoolRequest) returns (AddPoolResponse);
   rpc update_pool (UpdatePoolRequest) returns (UpdatePoolResponse);
+
+  // get DUTs information
+  rpc get_dut_detail (GetDutDetailRequest) returns (GetDutDetailResponse);
 }
 
 message ListBuildTargetsRequest {
@@ -202,3 +207,30 @@ message UpdatePoolRequest {
 
 // NEXT_TAG = 1
 message UpdatePoolResponse {}
+
+// NEXT_TAG = 2
+message GetDutDetailRequest {
+  string address = 1;
+}
+
+// NEXT_TAG = 3
+message StringListPair {
+  string key = 1;
+  repeated string values = 2;
+}
+
+// NEXT_TAG = 13
+message GetDutDetailResponse {
+  string bot_id = 1;
+  string task_id = 2;
+  string external_ip = 3;
+  string authenticated_as = 4;
+  google.protobuf.Timestamp first_seen_ts = 5;
+  bool is_dead = 6;
+  google.protobuf.Timestamp last_seen_ts = 7;
+  bool quarantined = 8;
+  string maintenance_msg = 9;
+  repeated StringListPair dimensions = 10;
+  string task_name = 11;
+  string version = 12;
+}
