@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
+	"infra/cros/satlab/common/services"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
 	pb "infra/cros/satlab/satlabrpcserver/proto"
@@ -60,6 +61,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to create a DUT service")
 	}
+	swarmingService, err := services.NewSwarmingService(ctx)
+	if err != nil {
+		// We don't want to fatal if user doesn't login
+		log.Printf("Failed to create a swarming service")
+	}
 
 	// Register a CPU temperature orchestrator if we can find the temperature
 	// on a platform
@@ -78,7 +84,9 @@ func main() {
 		dutService,
 		labelParser,
 		cpuTemperatureOrchestrator,
+		swarmingService,
 	)
+
 	defer server.Close()
 	pb.RegisterSatlabRpcServiceServer(s, server)
 
