@@ -32,7 +32,7 @@ cipd_export: |
   @Subdir 3.8
   infra/3pp/tools/cpython3/${target_platform} version:2@3.8.10.chromium.25
   @Subdir 3.11
-  infra/3pp/tools/cpython3/${target_platform} version:2@3.11.1.chromium.23
+  infra/3pp/tools/cpython3/${target_platform} version:2@3.11.5.chromium.30
 data:
   - file: vpython${exe_suffix}
     generate_bat_shim: true

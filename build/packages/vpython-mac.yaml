@@ -38,7 +38,7 @@ mac_bundle:
         @Subdir Contents/Resources/3.8
         infra/3pp/tools/cpython3/${target_platform} version:2@3.8.10.chromium.25
         @Subdir Contents/Resources/3.11
-        infra/3pp/tools/cpython3/${target_platform} version:2@3.11.1.chromium.23
+        infra/3pp/tools/cpython3/${target_platform} version:2@3.11.5.chromium.30
   codesign:
     requirements: =designated => identifier "org.chromium.infra.vpython" and anchor trusted
 posix_symlinks:
