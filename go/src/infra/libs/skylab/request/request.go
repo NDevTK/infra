@@ -11,14 +11,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/ptypes"
 	structpb "github.com/golang/protobuf/ptypes/struct"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/data/strpair"
 	"go.chromium.org/luci/common/errors"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 
 	"infra/libs/skylab/inventory"
 	swarming_inventory "infra/libs/skylab/inventory/swarming"
@@ -72,6 +74,8 @@ type Args struct {
 	Experiments []string
 	// The Gerrit Changes associated with the test_runner invocation.
 	GerritChanges []*buildbucket_pb.GerritChange
+	// The test results mode associated with the test_runner invocation.
+	ResultsConfig *test_platform.Request_Params_ResultsUploadConfig
 }
 
 // MessagePayload contains the information for Pubsub subscribers.
@@ -95,15 +99,25 @@ func (a *Args) NewBBRequest(b *buildbucket_pb.BuilderID) (*buildbucket_pb.Schedu
 		},
 	}
 
+	// builder may not have ResultsConfig set
+	if a.ResultsConfig != nil {
+		resultsCfg, err := protoToStructPB(a.ResultsConfig)
+		if err != nil {
+			return nil, errors.Annotate(err, "create bb request: resultsConfigToStructPB").Err()
+		}
+
+		props.Fields["results_upload_config"] = resultsCfg
+	}
+
 	if a.CFTIsEnabled {
-		cftReq, err := cftRequestToStructPB(a.CFTTestRunnerRequest)
+		cftReq, err := protoToStructPB(a.CFTTestRunnerRequest)
 		if err != nil {
 			return nil, errors.Annotate(err, "create bb request: cftRequestToStructPB").Err()
 		}
 		props.Fields["cft_test_request"] = cftReq
 	} else {
 		// TODO(crbug.com/1036559#c1): Add timeouts.
-		req, err := requestToStructPB(a.TestRunnerRequest)
+		req, err := protoToStructPB(a.TestRunnerRequest)
 		if err != nil {
 			return nil, errors.Annotate(err, "create bb request: requestToStructPB").Err()
 		}
@@ -287,33 +301,14 @@ func parseBBStringPairs(tags []string) ([]*buildbucket_pb.StringPair, error) {
 	return ret, nil
 }
 
-// requestToStructPB converts a skylab_test_runner.Request into a Struct
-// with the same JSON presentation.
-func requestToStructPB(from *skylab_test_runner.Request) (*structpb.Value, error) {
-	m := jsonpb.Marshaler{}
-	jsonStr, err := m.MarshalToString(from)
+// protoToStructPB converts a proto message to the equivalent structpb Value
+func protoToStructPB(from proto.Message) (*structpb.Value, error) {
+	byteStr, err := protojson.Marshal(from)
 	if err != nil {
 		return nil, err
 	}
 	reqStruct := &structpb.Struct{}
-	if err := jsonpb.UnmarshalString(jsonStr, reqStruct); err != nil {
-		return nil, err
-	}
-	return &structpb.Value{
-		Kind: &structpb.Value_StructValue{StructValue: reqStruct},
-	}, nil
-}
-
-// cftRequestToStructPB converts a skylab_test_runner.CFTTestRequest into a Struct
-// with the same JSON presentation.
-func cftRequestToStructPB(from *skylab_test_runner.CFTTestRequest) (*structpb.Value, error) {
-	m := jsonpb.Marshaler{}
-	jsonStr, err := m.MarshalToString(from)
-	if err != nil {
-		return nil, err
-	}
-	reqStruct := &structpb.Struct{}
-	if err := jsonpb.UnmarshalString(jsonStr, reqStruct); err != nil {
+	if err := protojson.Unmarshal(byteStr, reqStruct); err != nil {
 		return nil, err
 	}
 	return &structpb.Value{

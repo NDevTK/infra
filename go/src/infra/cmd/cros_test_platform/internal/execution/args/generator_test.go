@@ -271,3 +271,27 @@ func TestAndroidProvisionState(t *testing.T) {
 		})
 	})
 }
+
+func TestResultConfig(t *testing.T) {
+	Convey("Given ResultConfigs Changes", t, func() {
+		ctx := context.Background()
+		inv := basicInvocation()
+		setTestName(inv, "foo-name")
+		var params test_platform.Request_Params
+		setTestUploadVisibility(&params, test_platform.Request_Params_ResultsUploadConfig_TEST_RESULTS_VISIBILITY_CUSTOM_REALM)
+		var dummyWorkerConfig = &config.Config_SkylabWorker{}
+		setRequestMaximumDuration(&params, 1000)
+		Convey("when generating a test runner request's args", func() {
+			g := Generator{
+				Invocation:   inv,
+				Params:       &params,
+				WorkerConfig: dummyWorkerConfig,
+			}
+			got, err := g.GenerateArgs(ctx)
+			So(err, ShouldBeNil)
+			Convey("the ResultsConfig is added correctly", func() {
+				So(got.ResultsConfig.Mode, ShouldEqual, test_platform.Request_Params_ResultsUploadConfig_TEST_RESULTS_VISIBILITY_CUSTOM_REALM)
+			})
+		})
+	})
+}

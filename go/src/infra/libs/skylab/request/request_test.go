@@ -398,6 +398,56 @@ func TestNoStatusTopicBB(t *testing.T) {
 	})
 }
 
+func TestResultsConfigBB(t *testing.T) {
+	Convey("Given request arguments that specify ResultsConfig", t, func() {
+		want := test_platform.Request_Params_ResultsUploadConfig{
+			Mode: test_platform.Request_Params_ResultsUploadConfig_TEST_RESULTS_VISIBILITY_CUSTOM_REALM,
+		}
+		args := request.Args{
+			ResultsConfig:     &want,
+			TestRunnerRequest: &skylab_test_runner.Request{},
+		}
+		Convey("when a request is formed", func() {
+			req, err := args.NewBBRequest(nil)
+			So(err, ShouldBeNil)
+			So(req, ShouldNotBeNil)
+			Convey("then request should have correct results_upload_config.", func() {
+				So(req.Properties, ShouldNotBeNil)
+
+				resultsCfg, ok := req.Properties.Fields["results_upload_config"]
+				So(ok, ShouldBeTrue)
+
+				m := jsonpb.Marshaler{}
+				s, err := m.MarshalToString(resultsCfg)
+				So(err, ShouldBeNil)
+
+				var got test_platform.Request_Params_ResultsUploadConfig
+				err = jsonpb.UnmarshalString(s, &got)
+				So(err, ShouldBeNil)
+
+				So(&got, ShouldResembleProto, &want)
+			})
+		})
+	})
+
+	Convey("Given request arguments that do NOT specify ResultsConfig", t, func() {
+		args := request.Args{
+			TestRunnerRequest: &skylab_test_runner.Request{},
+		}
+		Convey("when a request is formed", func() {
+			req, err := args.NewBBRequest(nil)
+			So(err, ShouldBeNil)
+			So(req, ShouldNotBeNil)
+			Convey("then request should not have a results_upload_config", func() {
+				So(req.Properties, ShouldNotBeNil)
+
+				_, ok := req.Properties.Fields["results_upload_config"]
+				So(ok, ShouldBeFalse)
+			})
+		})
+	})
+}
+
 func TestProvisionableDimensions(t *testing.T) {
 	Convey("Given request arguments that specify provisionable and regular dimenisons and inventory labels", t, func() {
 		model := "foo-model"

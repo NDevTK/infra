@@ -199,6 +199,7 @@ func (g *Generator) GenerateArgs(ctx context.Context) (request.Args, error) {
 		Timeout:                          timeout,
 		Experiments:                      g.Experiments,
 		GerritChanges:                    g.GerritChanges,
+		ResultsConfig:                    g.Params.Results,
 	}, nil
 }
 

@@ -147,3 +147,10 @@ func setAndroidSecondaryDeviceWithAndroidProvisionMetadata(p *test_platform.Requ
 func setRunViaCft(p *test_platform.Request_Params, run_via_cft bool) {
 	p.RunViaCft = run_via_cft
 }
+
+func setTestUploadVisibility(p *test_platform.Request_Params, mode test_platform.Request_Params_ResultsUploadConfig_TestResultsUploadVisibility) {
+	if p.Results == nil {
+		p.Results = &test_platform.Request_Params_ResultsUploadConfig{}
+	}
+	p.Results.Mode = mode
+}
