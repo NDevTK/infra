@@ -42,6 +42,8 @@ const RecoveryVersionDirectory = "/home/satlab/keys/recovery_versions/"
 // name will be used to schedule Repair builds.
 const RepairBuilderName = "repair"
 
+const TaskLinkTemplate = "https://chromeos-swarming.appspot.com/task?id="
+
 const (
 	// CTPBuilderBucketEnv is the env var used to determine what bucket the
 	// ctp task should run in.
@@ -63,6 +65,8 @@ const (
 	// UFSZoneEnv is the env var used to determine what zone should
 	// be used to interface with UFS.
 	UFSZoneEnv = "UFS_ZONE"
+	// BotPrefix is the env var used to get bot information
+	BotPrefix = "BOT_PREFIX"
 
 	// ServiceAccountKeyPathEnv defines the Service account key path to be used by
 	// moblab api.
@@ -89,6 +93,8 @@ const (
 	DefaultZone = "satlab"
 	// DefaultServiceAccountKeyPathEnv is the default path for for service account.
 	DefaultServiceAccountKeyPathEnv = "/home/satlab/keys/pubsub-key-do-not-delete.json"
+	// SwarmingServiceHost is the host of swarming service address
+	SwarmingServiceHost = "chromeos-swarming.appspot.com"
 )
 
 // CommonFlags controls some commonly-used CLI flags.
@@ -329,4 +335,8 @@ func prpcOptionWithUserAgent(userAgent string) *prpc.Options {
 	options := *prpc.DefaultOptions()
 	options.UserAgent = userAgent
 	return &options
+}
+
+func GetBotPrefix() string {
+	return os.Getenv(BotPrefix)
 }
