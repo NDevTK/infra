@@ -1661,7 +1661,7 @@ class IssueServiceTest(unittest.TestCase):
     self.services.issue.issue_2lc = _TestableIssueTwoLevelCache(
         [issue_1, issue_2])
     self.services.issue.issue_id_2lc.CacheItem((789, 1), 78901)
-    delta = {'deleted': True}
+    delta = {'deleted': True, 'migration_modified': self.now}
     self.services.issue.issue_tbl.Update(
         self.cnxn, delta, id=78901, commit=False)
 

@@ -1809,7 +1809,8 @@ class IssueService(object):
     """
     issue = self.GetIssueByLocalID(cnxn, project_id, local_id, use_cache=False)
     issue.deleted = deleted
-    self.UpdateIssue(cnxn, issue, update_cols=['deleted'])
+    issue.migration_modified_timestamp = int(time.time())
+    self.UpdateIssue(cnxn, issue, update_cols=['deleted', 'migration_modified'])
     tracker_fulltext.IndexIssues(
         cnxn, [issue], user_service, self, self._config_service)
 
