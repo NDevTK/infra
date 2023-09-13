@@ -6,6 +6,8 @@ package rpc_services
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"log"
 	"sort"
 	"strconv"
@@ -16,6 +18,7 @@ import (
 	dut_pkg "infra/cros/satlab/common/dut"
 	run_pkg "infra/cros/satlab/common/run"
 	"infra/cros/satlab/common/satlabcommands"
+	"infra/cros/satlab/common/services"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
@@ -42,6 +45,8 @@ type SatlabRpcServiceServer struct {
 	cpuTemperatureOrchestrator *cpu_temperature.CPUTemperatureOrchestrator
 	// commandExecutor provides an interface to run a command. It is good for testing
 	commandExecutor executor.IExecCommander
+	// swarmingService provides the swarming API services
+	swarmingService services.ISwarmingService
 }
 
 func New(
@@ -50,6 +55,7 @@ func New(
 	dutService dut_services.IDUTServices,
 	labelParser *utils.LabelParser,
 	cpuTemperatureOrchestrator *cpu_temperature.CPUTemperatureOrchestrator,
+	swarmingService services.ISwarmingService,
 ) *SatlabRpcServiceServer {
 	return &SatlabRpcServiceServer{
 		bucketService:              bucketService,
@@ -58,6 +64,7 @@ func New(
 		labelParser:                labelParser,
 		cpuTemperatureOrchestrator: cpuTemperatureOrchestrator,
 		commandExecutor:            &executor.ExecCommander{},
+		swarmingService:            swarmingService,
 	}
 }
 
@@ -455,4 +462,51 @@ func (s *SatlabRpcServiceServer) UpdatePool(ctx context.Context, in *pb.UpdatePo
 	}
 
 	return &pb.UpdatePoolResponse{}, nil
+}
+
+func (s *SatlabRpcServiceServer) GetDutDetail(ctx context.Context, in *pb.GetDutDetailRequest) (*pb.GetDutDetailResponse, error) {
+	if s.swarmingService == nil {
+		return nil, errors.New("need to login before using this")
+	}
+
+	IPHostMap, err := dns.ReadHostsToIPMap(s.commandExecutor)
+	if err != nil {
+		return nil, err
+	}
+
+	hostname, ok := IPHostMap[in.GetAddress()]
+	if !ok {
+		return nil, errors.New(fmt.Sprintf("can't find the host by ip address {%s}", in.GetAddress()))
+	}
+
+	r, err := s.swarmingService.GetBot(ctx, hostname)
+	if err != nil {
+		return nil, err
+	}
+
+	dimensions := []*pb.StringListPair{}
+
+	for _, d := range r.GetDimensions() {
+		dimensions = append(dimensions, &pb.StringListPair{
+			Key:    d.GetKey(),
+			Values: d.GetValue(),
+		})
+	}
+
+	resp := pb.GetDutDetailResponse{
+		BotId:           r.GetBotId(),
+		TaskId:          r.GetTaskId(),
+		ExternalIp:      r.GetExternalIp(),
+		AuthenticatedAs: r.GetAuthenticatedAs(),
+		FirstSeenTs:     r.GetFirstSeenTs(),
+		IsDead:          r.GetIsDead(),
+		LastSeenTs:      r.GetLastSeenTs(),
+		Quarantined:     r.GetQuarantined(),
+		MaintenanceMsg:  r.GetMaintenanceMsg(),
+		TaskName:        r.GetTaskName(),
+		Version:         r.GetVersion(),
+		Dimensions:      dimensions,
+	}
+
+	return &resp, nil
 }
