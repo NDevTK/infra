@@ -70,6 +70,30 @@
       },
       "revId": "035f4b870a44af7f2e02310af2e75cc8ea8bb264",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ad8649a5_b956d8d1",
+        "filename": "go/src/infra/experimental/golangbuild/testmode.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 449,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2023-09-14T21:26:16Z",
+      "side": 1,
+      "message": "Thanks for clarifying—I see what you meant earlier now (it\u0027s so obvious in hindsight 😅; so it goes).\n\nThat\u0027s definitely much simpler for splitting up dist list output across N shards. I\u0027ve switched to that. If the programmatic \"find a salt\" approach happens to be worth digging up in the future for something else, I can get it out of the earlier patch set of this CL.\n\nPTAL.",
+      "parentUuid": "afc8c965_0ea95753",
+      "range": {
+        "startLine": 448,
+        "startChar": 0,
+        "endLine": 449,
+        "endChar": 195
+      },
+      "revId": "035f4b870a44af7f2e02310af2e75cc8ea8bb264",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
