@@ -51,7 +51,7 @@ type DUTServicesImpl struct {
 	clientConnector connector.ISSHClientConnector
 }
 
-func New() (*DUTServicesImpl, error) {
+func New() (IDUTServices, error) {
 	// TODO we should read from file, but we don't know the path now.
 	signer, err := utils.ReadSSHKey(constants.SSHKeyPath)
 	if err != nil {
