@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0a15a732_405713ba",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-14T13:53:10Z",
+      "side": 1,
+      "message": "couple of nits",
+      "revId": "eea2ff95f2e682bef9864e4d00434648666de46d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a9555aa4_3276b809",
+        "filename": "go/src/infra/cros/satlab/satlabrpcserver/proto/satlabrpc.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-14T13:53:10Z",
+      "side": 1,
+      "message": "consider a different name here since `message` is a keyword in proto",
+      "revId": "eea2ff95f2e682bef9864e4d00434648666de46d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e3e654a6_e32a09bf",
+        "filename": "go/src/infra/cros/satlab/satlabrpcserver/proto/satlabrpc.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-14T13:53:10Z",
+      "side": 1,
+      "message": "nit: consider expanding to timestamp, when i saw the line `Ts: e.Ts,` it was confusing to me at first",
+      "revId": "eea2ff95f2e682bef9864e4d00434648666de46d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
