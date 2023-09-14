@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "975cc750_bf9f9426",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-14T08:01:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1577552a_31f4cdba",
+      "revId": "04af92824fab861474ca415a4cd37b3e6b6ffd09",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2e59e400_ed486f4a",
@@ -31,6 +49,24 @@
       "writtenOn": "2023-09-14T06:48:55Z",
       "side": 1,
       "message": "Could you write summary of what this test checks?",
+      "revId": "04af92824fab861474ca415a4cd37b3e6b6ffd09",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2d309d44_56998560",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_gn_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-14T08:01:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2e59e400_ed486f4a",
       "revId": "04af92824fab861474ca415a4cd37b3e6b6ffd09",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
