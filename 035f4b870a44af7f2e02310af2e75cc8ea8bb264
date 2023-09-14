@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "db064483_f4ffd77b",
+        "filename": "go/src/infra/experimental/golangbuild/testmode.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 449,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2023-09-14T18:40:44Z",
+      "side": 1,
+      "message": "this is clever. :) but I think in the particular case of misccompile it would be reasonable to do some kind of simpler manual sharding. (e.g. divide the list into N groups of ports all of approximately the same size)\n\neach port compilation is approximately the same (so we\u0027re sharding homogeneous bits of work) and we add ports pretty rarely compared to tests or even packages.",
+      "range": {
+        "startLine": 448,
+        "startChar": 0,
+        "endLine": 449,
+        "endChar": 195
+      },
+      "revId": "035f4b870a44af7f2e02310af2e75cc8ea8bb264",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
