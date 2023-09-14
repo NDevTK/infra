@@ -28,11 +28,13 @@ def RunSteps(api, properties):
 
 
 def GenTests(api):
-  def test(name, *args):
+  def test(name, *args, **kwargs):
     return api.test(
         name,
         api.cq(run_mode=api.cq.DRY_RUN),
-        *args)
+        *args,
+        **kwargs,
+    )
 
   yield test(
       'any-reuse',
@@ -44,8 +46,10 @@ def GenTests(api):
   yield test(
       'fail',
       api.properties(fail=True),
+      status='FAILURE',
   )
   yield test(
       'infra_fail',
       api.properties(infra_fail=True),
+      status='INFRA_FAILURE',
   )
