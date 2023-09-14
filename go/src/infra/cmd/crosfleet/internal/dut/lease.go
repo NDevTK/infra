@@ -8,6 +8,14 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"strings"
+	"time"
+
+	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/auth/client/authcli"
+	"go.chromium.org/luci/common/cli"
+	swarmingapi "go.chromium.org/luci/swarming/proto/api_v2"
+
 	"infra/cmd/crosfleet/internal/buildbucket"
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/flagx"
@@ -16,13 +24,6 @@ import (
 	"infra/cmd/crosfleet/internal/ufs"
 	"infra/cmdsupport/cmdlib"
 	"infra/libs/skylab/common/heuristics"
-	"strings"
-	"time"
-
-	"github.com/maruel/subcommands"
-	"go.chromium.org/luci/auth/client/authcli"
-	"go.chromium.org/luci/common/cli"
-	swarmingapi "go.chromium.org/luci/swarming/proto/api_v2"
 )
 
 const (

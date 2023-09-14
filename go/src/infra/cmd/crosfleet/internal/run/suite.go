@@ -12,19 +12,19 @@ import (
 	"strconv"
 	"strings"
 
-	"infra/cmd/crosfleet/internal/buildbucket"
-	"infra/cmd/crosfleet/internal/common"
-	"infra/cmd/crosfleet/internal/site"
-	"infra/cmd/crosfleet/internal/ufs"
-	"infra/cmdsupport/cmdlib"
-	crosbb "infra/cros/lib/buildbucket"
-
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/maruel/subcommands"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/luci/auth/client/authcli"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/cli"
+
+	"infra/cmd/crosfleet/internal/buildbucket"
+	"infra/cmd/crosfleet/internal/common"
+	"infra/cmd/crosfleet/internal/site"
+	"infra/cmd/crosfleet/internal/ufs"
+	"infra/cmdsupport/cmdlib"
+	crosbb "infra/cros/lib/buildbucket"
 )
 
 // suiteCmdName is the name of the `crosfleet run suite` command.

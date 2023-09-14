@@ -8,11 +8,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"infra/libs/cipkg"
-	"infra/libs/cipkg/builtins"
-
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/filesystem"
+
+	"infra/libs/cipkg"
+	"infra/libs/cipkg/builtins"
 )
 
 type CIPDPackageManager struct {

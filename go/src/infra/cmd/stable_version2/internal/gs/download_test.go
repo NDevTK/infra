@@ -10,10 +10,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
-
 	"cloud.google.com/go/storage"
-
+	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/luci/common/gcloud/gs"
 )
 

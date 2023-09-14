@@ -6,14 +6,15 @@ package cipd
 
 import (
 	"context"
-	real "infra/chromium/bootstrapper/clients/cipd"
-	"infra/chromium/util"
 	"path/filepath"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/common/testing/testfs"
+
+	real "infra/chromium/bootstrapper/clients/cipd"
+	"infra/chromium/util"
 )
 
 func collect(cipdRoot, subdir string) map[string]string {

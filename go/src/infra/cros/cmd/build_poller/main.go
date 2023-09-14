@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"infra/cros/lib/buildbucket"
 	"os"
 	"strconv"
 	"strings"
@@ -21,6 +20,8 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	"infra/cros/lib/buildbucket"
 )
 
 var logCfg = gologger.LoggerConfig{

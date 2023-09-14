@@ -23,12 +23,12 @@ import (
 	"runtime"
 	"strings"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
-
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	cproto "go.chromium.org/luci/common/proto"
 	"go.chromium.org/luci/common/system/filesystem"
+
+	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
 )
 
 // DefaultPartnerSuffix is the default filesystem suffix for a script's partner

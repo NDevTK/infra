@@ -18,9 +18,9 @@ import (
 	"fmt"
 	"testing"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
-
 	. "github.com/smartystreets/goconvey/convey"
+
+	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
 )
 
 func mkTag(plat string) *vpython.PEP425Tag {

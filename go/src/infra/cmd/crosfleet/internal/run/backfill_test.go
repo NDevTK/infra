@@ -9,13 +9,13 @@ import (
 	"fmt"
 	"testing"
 
-	"infra/cmd/crosfleet/internal/buildbucket"
-	"infra/cmd/crosfleet/internal/common"
-	crosbb "infra/cros/lib/buildbucket"
-
 	"github.com/google/go-cmp/cmp"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/protobuf/types/known/structpb"
+
+	"infra/cmd/crosfleet/internal/buildbucket"
+	"infra/cmd/crosfleet/internal/common"
+	crosbb "infra/cros/lib/buildbucket"
 )
 
 func TestRemoveBackfills(t *testing.T) {

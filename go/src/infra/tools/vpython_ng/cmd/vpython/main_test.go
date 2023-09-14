@@ -11,16 +11,15 @@ import (
 	"strings"
 	"testing"
 
-	"infra/libs/cipkg/builtins"
-	"infra/tools/vpython_ng/pkg/application"
-	"infra/tools/vpython_ng/pkg/python"
-	"infra/tools/vpython_ng/pkg/wheels"
-
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/system/filesystem"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"infra/libs/cipkg/builtins"
+	"infra/tools/vpython_ng/pkg/application"
+	"infra/tools/vpython_ng/pkg/python"
+	"infra/tools/vpython_ng/pkg/wheels"
 )
 
 func testData(filename string) string {

@@ -6,14 +6,15 @@ package utils
 
 import (
 	"context"
-	"infra/cmd/shivas/site"
-	"infra/libs/skylab/buildbucket"
-	ufsUtil "infra/unifiedfleet/app/util"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/protobuf/types/known/structpb"
+
+	"infra/cmd/shivas/site"
+	"infra/libs/skylab/buildbucket"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 // stubClient returns "safe" values and stores the params of the last labpack

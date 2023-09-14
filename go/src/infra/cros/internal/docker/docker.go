@@ -9,7 +9,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"infra/cros/internal/cmd"
 	"io"
 	"os"
 	"strings"
@@ -19,6 +18,8 @@ import (
 	"github.com/pkg/errors"
 	"go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/luci/common/logging"
+
+	"infra/cros/internal/cmd"
 )
 
 func generateMountArgs(mounts []mount.Mount) ([]string, error) {

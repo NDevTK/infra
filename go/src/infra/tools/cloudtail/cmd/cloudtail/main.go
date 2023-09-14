@@ -18,7 +18,6 @@ import (
 
 	"cloud.google.com/go/compute/metadata"
 	"github.com/maruel/subcommands"
-
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/client/versioncli"

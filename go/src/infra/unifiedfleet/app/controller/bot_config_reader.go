@@ -23,13 +23,12 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"infra/libs/git"
+	ufspb "infra/unifiedfleet/api/v1/models"
+	api "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/config"
 	"infra/unifiedfleet/app/external"
 	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/registration"
-
-	ufspb "infra/unifiedfleet/api/v1/models"
-	api "infra/unifiedfleet/api/v1/rpc"
 )
 
 const (

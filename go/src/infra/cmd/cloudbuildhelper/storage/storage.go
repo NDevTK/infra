@@ -18,12 +18,11 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/dustin/go-humanize"
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
-
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/logging"
 )
 
 // Storage knows how to upload tarballs to a predefined Google Storage prefix.

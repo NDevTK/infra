@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/danjacques/gofslock/fslock"
-
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
 )

@@ -13,13 +13,13 @@ import (
 	"strconv"
 	"strings"
 
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/gerrit"
-	bb "infra/cros/lib/buildbucket"
-
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/internal/cmd"
+	"infra/cros/internal/gerrit"
+	bb "infra/cros/lib/buildbucket"
 )
 
 func GetCmdRelease(authOpts auth.Options) *subcommands.Command {

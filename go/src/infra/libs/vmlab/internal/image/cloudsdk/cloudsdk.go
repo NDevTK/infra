@@ -15,13 +15,13 @@ import (
 	"strings"
 	"time"
 
-	"infra/libs/vmlab/api"
-
 	compute "cloud.google.com/go/compute/apiv1"
 	"cloud.google.com/go/compute/apiv1/computepb"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"infra/libs/vmlab/api"
 )
 
 const (

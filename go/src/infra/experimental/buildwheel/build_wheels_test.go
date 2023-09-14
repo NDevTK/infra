@@ -8,17 +8,15 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-	"golang.org/x/time/rate"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
-	"google.golang.org/protobuf/encoding/prototext"
-
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/clock/testclock"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/logdog/client/butlerlib/streamclient"
 	"go.chromium.org/luci/logdog/common/types"
 	"go.chromium.org/luci/luciexe/build"
+	"golang.org/x/time/rate"
+	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Prepare OptSend func to append each new build proto update from LuciExe to a provided array.

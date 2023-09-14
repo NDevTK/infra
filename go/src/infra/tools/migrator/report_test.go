@@ -8,11 +8,10 @@ import (
 	"reflect"
 	"testing"
 
-	"go.chromium.org/luci/common/data/stringset"
-	"go.chromium.org/luci/config"
-
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/data/stringset"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/config"
 )
 
 func TestReportID(t *testing.T) {

@@ -8,13 +8,12 @@ import (
 	"context"
 	"strings"
 
-	"infra/cros/dutstate"
-
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"google.golang.org/genproto/protobuf/field_mask"
 
+	"infra/cros/dutstate"
 	ufslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )

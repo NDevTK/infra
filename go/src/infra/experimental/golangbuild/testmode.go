@@ -11,7 +11,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"hash/crc32"
-	"infra/experimental/golangbuild/golangbuildpb"
 	"io"
 	"io/fs"
 	"os"
@@ -24,6 +23,8 @@ import (
 	"golang.org/x/exp/slices"
 	"golang.org/x/mod/modfile"
 	"golang.org/x/sync/errgroup"
+
+	"infra/experimental/golangbuild/golangbuildpb"
 )
 
 // testRunner runs a non-strict subset of available tests. It requires a prebuilt

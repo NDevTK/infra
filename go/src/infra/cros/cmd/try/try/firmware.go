@@ -10,11 +10,11 @@ import (
 	"os"
 	"strings"
 
-	"infra/cros/internal/cmd"
-	bb "infra/cros/lib/buildbucket"
-
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/internal/cmd"
+	bb "infra/cros/lib/buildbucket"
 )
 
 func GetCmdFirmware() *subcommands.Command {

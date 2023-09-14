@@ -9,14 +9,13 @@ import (
 	"net/http"
 	"net/url"
 
-	"google.golang.org/grpc"
-	"google.golang.org/protobuf/proto"
-
 	"go.chromium.org/luci/appengine/gaesecrets"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/config/server/cfgcache"
 	"go.chromium.org/luci/server/router"
 	"go.chromium.org/luci/server/secrets"
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 
 	"infra/appengine/cros/lab_inventory/app/external"
 )

@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"sync"
 
-	"infra/libs/cipkg_new/core"
-
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
+
+	"infra/libs/cipkg_new/core"
 )
 
 // PackageDependency is the dependency of a package.

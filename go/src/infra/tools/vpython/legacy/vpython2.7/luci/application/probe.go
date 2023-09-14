@@ -21,13 +21,13 @@ import (
 	"os/exec"
 	"strings"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/python"
-
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/common/system/exitcode"
 	"go.chromium.org/luci/common/system/prober"
+
+	"infra/tools/vpython/legacy/vpython2.7/luci/python"
 )
 
 const (

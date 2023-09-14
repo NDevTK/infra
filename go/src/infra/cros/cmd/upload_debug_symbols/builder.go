@@ -29,13 +29,13 @@ import (
 	"sync/atomic"
 	"time"
 
-	"infra/cros/internal/gs"
-	"infra/cros/internal/shared"
-
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	lgs "go.chromium.org/luci/common/gcloud/gs"
+
+	"infra/cros/internal/gs"
+	"infra/cros/internal/shared"
 )
 
 const (

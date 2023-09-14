@@ -11,12 +11,12 @@ import (
 	"sort"
 	"strings"
 
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/match"
-
 	"github.com/golang/protobuf/ptypes/wrappers"
 	testplans_pb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 	bbproto "go.chromium.org/luci/buildbucket/proto"
+
+	"infra/cros/internal/gerrit"
+	"infra/cros/internal/match"
 )
 
 // CheckBuilder assesses whether a child builder is pointless for a given CQ run. This may be the

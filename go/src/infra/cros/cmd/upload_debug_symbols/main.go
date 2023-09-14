@@ -4,13 +4,14 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/api/gerrit"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
-	"log"
-	"os"
 )
 
 var (

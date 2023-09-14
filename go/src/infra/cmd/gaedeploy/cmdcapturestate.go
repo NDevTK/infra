@@ -12,6 +12,12 @@ import (
 
 	appengine "cloud.google.com/go/appengine/apiv1"
 	"github.com/googleapis/gax-go/v2"
+	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/deploy/api/modelpb"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
@@ -19,14 +25,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
-
-	"github.com/maruel/subcommands"
-
-	"go.chromium.org/luci/auth"
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/deploy/api/modelpb"
-	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
 
 var cmdCaptureState = &subcommands.Command{

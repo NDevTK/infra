@@ -10,10 +10,10 @@ import (
 	"log"
 	"os"
 
-	"infra/cros/internal/chromeosversion"
-
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
+
+	"infra/cros/internal/chromeosversion"
 )
 
 func cmdBumpVersion() *subcommands.Command {

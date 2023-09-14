@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"strings"
 
-	"infra/appengine/sheriff-o-matic/som/model"
-
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/portal"
+
+	"infra/appengine/sheriff-o-matic/som/model"
 )
 
 // SettingsPage is the SoM admin settings page.

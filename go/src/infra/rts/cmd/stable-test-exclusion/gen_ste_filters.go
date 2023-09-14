@@ -13,14 +13,12 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"github.com/maruel/subcommands"
-	"google.golang.org/api/iterator"
-
 	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 	luciflag "go.chromium.org/luci/common/flag"
-
-	"go.chromium.org/luci/common/cli"
+	"google.golang.org/api/iterator"
 )
 
 func cmdGenSteFilters(authOpt *auth.Options) *subcommands.Command {

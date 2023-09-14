@@ -7,7 +7,6 @@ package tasks
 import (
 	"context"
 	"fmt"
-	"infra/cmd/skylab/internal/bb"
 	"time"
 
 	"github.com/maruel/subcommands"
@@ -16,6 +15,7 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cmd/skylab/internal/bb"
 	skycmdlib "infra/cmd/skylab/internal/cmd/cmdlib"
 	"infra/cmd/skylab/internal/flagx"
 	"infra/cmd/skylab/internal/site"

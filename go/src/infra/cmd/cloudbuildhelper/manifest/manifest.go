@@ -16,10 +16,9 @@ import (
 	"sort"
 	"strings"
 
-	"gopkg.in/yaml.v2"
-
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
+	"gopkg.in/yaml.v2"
 )
 
 // Manifest is a definition of what to build, how and where.

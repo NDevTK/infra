@@ -7,14 +7,13 @@ import (
 	"path"
 	"strings"
 
-	"infra/cros/cmd/prototype-rts/internal/docker"
-
-	"go.chromium.org/luci/common/errors"
-
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+
+	"infra/cros/cmd/prototype-rts/internal/docker"
 )
 
 // Orchestrator manages the lifecycle of an RTD container and its invocations.

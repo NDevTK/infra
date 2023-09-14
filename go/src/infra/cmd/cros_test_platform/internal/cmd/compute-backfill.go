@@ -7,13 +7,13 @@ package cmd
 import (
 	"context"
 
-	"infra/cmd/cros_test_platform/internal/backfill"
-
 	"github.com/maruel/subcommands"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cmd/cros_test_platform/internal/backfill"
 )
 
 // ComputeBackfill subcommand: Create the backfill request for the current run.

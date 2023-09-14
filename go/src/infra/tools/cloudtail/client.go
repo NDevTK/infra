@@ -14,15 +14,14 @@ import (
 	"sync"
 	"time"
 
-	"google.golang.org/api/googleapi"
-	cloudlog "google.golang.org/api/logging/v2"
-
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/retry/transient"
 	"go.chromium.org/luci/common/tsmon/field"
 	"go.chromium.org/luci/common/tsmon/metric"
+	"google.golang.org/api/googleapi"
+	cloudlog "google.golang.org/api/logging/v2"
 )
 
 // DefaultResourceType is used by NewClient if ClientOptions doesn't specify

@@ -6,14 +6,13 @@ import (
 	"testing"
 	"time"
 
-	testhelper "infra/appengine/sheriff-o-matic/som/client/test"
-
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/gae/impl/dummy"
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/gae/service/urlfetch"
 
-	. "github.com/smartystreets/goconvey/convey"
+	testhelper "infra/appengine/sheriff-o-matic/som/client/test"
 )
 
 func TestUpdateExpectations(t *testing.T) {

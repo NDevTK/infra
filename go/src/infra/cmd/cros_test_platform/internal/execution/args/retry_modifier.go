@@ -8,13 +8,14 @@ package args
 
 import (
 	"context"
-	"infra/libs/skylab/request"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"google.golang.org/protobuf/proto"
+
+	"infra/libs/skylab/request"
 )
 
 // RetryModifier defines the inputs for modifying a retry attempt's arguments.

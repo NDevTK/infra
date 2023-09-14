@@ -8,10 +8,10 @@ import (
 	"strings"
 	"testing"
 
-	dirmdpb "infra/tools/dirmd/proto"
-
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
+
+	dirmdpb "infra/tools/dirmd/proto"
 )
 
 func TestParseOwners(t *testing.T) {

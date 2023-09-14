@@ -12,10 +12,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+
 	"infra/libs/cipkg_new/core"
 	"infra/libs/cipkg_new/testutils"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestProcessURL(t *testing.T) {

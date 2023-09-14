@@ -6,11 +6,12 @@ package coverage
 
 import (
 	"context"
-	"infra/appengine/chrome-test-health/api"
-	"infra/appengine/chrome-test-health/internal/coverage/entities"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
+	"infra/appengine/chrome-test-health/api"
+	"infra/appengine/chrome-test-health/internal/coverage/entities"
 )
 
 func getFakeFinditConfig() *entities.FinditConfig {

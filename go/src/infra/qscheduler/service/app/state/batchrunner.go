@@ -20,11 +20,10 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
-	"go.opentelemetry.io/otel/attribute"
-
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
 	swarming "go.chromium.org/luci/swarming/proto/api"
+	"go.opentelemetry.io/otel/attribute"
 
 	"infra/qscheduler/qslib/scheduler"
 	"infra/qscheduler/service/app/config"

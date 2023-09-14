@@ -18,14 +18,12 @@ package frontend
 import (
 	"context"
 
+	"github.com/golang/protobuf/proto"
+	"go.chromium.org/luci/server/auth"
+	swarming "go.chromium.org/luci/swarming/proto/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	"github.com/golang/protobuf/proto"
-
-	"go.chromium.org/luci/server/auth"
-	swarming "go.chromium.org/luci/swarming/proto/api"
 
 	qscheduler "infra/qscheduler/service/api/qscheduler/v1"
 	"infra/qscheduler/service/app/config"

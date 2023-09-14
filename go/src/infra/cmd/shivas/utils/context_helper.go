@@ -7,9 +7,9 @@ package utils
 import (
 	"context"
 
-	ufsUtil "infra/unifiedfleet/app/util"
-
 	"google.golang.org/grpc/metadata"
+
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 // SetupContext sets up context with namespace

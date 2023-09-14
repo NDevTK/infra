@@ -8,11 +8,12 @@ import (
 	"crypto"
 	"fmt"
 	"hash"
-	"infra/libs/cipkg_new/core"
 	"io"
 	"net/http"
 
 	"github.com/spf13/afero"
+
+	"infra/libs/cipkg_new/core"
 )
 
 // ActionURLFetchTransformer is the default transformer for url action.

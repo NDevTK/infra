@@ -16,7 +16,6 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/maruel/subcommands"
-
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging"

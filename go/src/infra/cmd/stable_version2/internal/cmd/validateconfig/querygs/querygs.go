@@ -14,12 +14,11 @@ import (
 	"unicode"
 
 	"github.com/golang/protobuf/jsonpb"
+	labPlatform "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	"go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/common/logging"
 
 	gslib "infra/cmd/stable_version2/internal/gs"
-
-	labPlatform "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 )
 
 // BoardModel is a combined build target and model. It is used for models that aren't present

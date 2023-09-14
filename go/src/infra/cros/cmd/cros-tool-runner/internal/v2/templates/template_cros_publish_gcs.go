@@ -8,11 +8,11 @@ import (
 	"fmt"
 	"os"
 
-	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
 const DockerGcsPublishLogsDir = "/tmp/gcs-publish/"

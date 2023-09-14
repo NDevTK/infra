@@ -7,13 +7,14 @@ package commands
 import (
 	"context"
 	"fmt"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/cros_test_runner/data"
 
 	_go "go.chromium.org/chromiumos/config/go"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/types/known/anypb"
+
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/cros_test_runner/data"
 )
 
 // ProvisionInstallCmd represents provision install cmd.

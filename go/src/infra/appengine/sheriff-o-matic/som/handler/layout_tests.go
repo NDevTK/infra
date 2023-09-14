@@ -8,10 +8,10 @@ import (
 	"sort"
 	"time"
 
-	te "infra/appengine/sheriff-o-matic/som/testexpectations"
-
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/router"
+
+	te "infra/appengine/sheriff-o-matic/som/testexpectations"
 )
 
 type shortExp struct {

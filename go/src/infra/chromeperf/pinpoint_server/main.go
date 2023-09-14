@@ -15,10 +15,11 @@
 package main
 
 import (
-	"infra/chromeperf/pinpoint/server"
 	"log"
 	"os"
 	"os/signal"
+
+	"infra/chromeperf/pinpoint/server"
 )
 
 func main() {

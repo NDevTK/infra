@@ -10,13 +10,12 @@ import (
 	"strings"
 
 	"github.com/maruel/subcommands"
-	"google.golang.org/protobuf/encoding/protojson"
-
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/system/signals"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"infra/tools/dirmd"
 	dirmdpb "infra/tools/dirmd/proto"

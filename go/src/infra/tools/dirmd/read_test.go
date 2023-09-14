@@ -10,10 +10,10 @@ import (
 	"runtime"
 	"testing"
 
-	dirmdpb "infra/tools/dirmd/proto"
-
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
+
+	dirmdpb "infra/tools/dirmd/proto"
 )
 
 func TestRead(t *testing.T) {

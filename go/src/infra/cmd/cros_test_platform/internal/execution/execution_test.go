@@ -20,8 +20,6 @@ import (
 
 	"github.com/golang/protobuf/ptypes/duration"
 	. "github.com/smartystreets/goconvey/convey"
-	"google.golang.org/grpc"
-
 	buildapi "go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
@@ -37,6 +35,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/memlogger"
 	"go.chromium.org/luci/luciexe/exe"
+	"google.golang.org/grpc"
 
 	"infra/cmd/cros_test_platform/internal/execution"
 	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"

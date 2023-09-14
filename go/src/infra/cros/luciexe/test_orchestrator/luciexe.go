@@ -12,12 +12,12 @@ import (
 	"context"
 	"fmt"
 
-	"infra/cros/internal/testorchestrator"
-
 	"cloud.google.com/go/storage"
 	tpv2 "go.chromium.org/chromiumos/infra/proto/go/test_platform/v2"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
+
+	"infra/cros/internal/testorchestrator"
 )
 
 func main() {

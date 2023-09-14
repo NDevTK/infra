@@ -17,13 +17,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/otiai10/copy"
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/internal/cmd"
 	"infra/cros/internal/git"
 	"infra/cros/internal/repo"
 	test_util "infra/cros/internal/testutil"
-
-	"github.com/otiai10/copy"
-	"go.chromium.org/luci/common/errors"
 )
 
 var (

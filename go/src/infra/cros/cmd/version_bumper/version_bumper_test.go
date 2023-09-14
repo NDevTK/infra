@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"infra/cros/internal/chromeosversion"
-
 	"github.com/maruel/subcommands"
+
+	"infra/cros/internal/chromeosversion"
 )
 
 func TestBumpVersionBadArgs(t *testing.T) {

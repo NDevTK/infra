@@ -6,7 +6,6 @@ package gerrit
 
 import (
 	"context"
-	"infra/chromium/bootstrapper/clients/gerrit"
 	"sort"
 	"strconv"
 	"testing"
@@ -14,6 +13,8 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
 	. "go.chromium.org/luci/common/testing/assertions"
+
+	"infra/chromium/bootstrapper/clients/gerrit"
 )
 
 func TestFactory(t *testing.T) {

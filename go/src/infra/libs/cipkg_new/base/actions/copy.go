@@ -17,10 +17,10 @@ import (
 	"path/filepath"
 	"sync"
 
-	"infra/libs/cipkg_new/core"
-
 	"github.com/spf13/afero"
 	"go.chromium.org/luci/common/system/environ"
+
+	"infra/libs/cipkg_new/core"
 )
 
 // ActionFilesCopyTransformer is the default transformer for copy action.

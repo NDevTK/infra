@@ -13,6 +13,9 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/maruel/subcommands"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
@@ -26,11 +29,6 @@ import (
 	chromeoslbls "infra/libs/skylab/inventory/autotest/labels"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
 	ufsutil "infra/unifiedfleet/app/util"
-
-	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-
-	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state"
 )
 
 // Load subcommand: Gather DUT labels and attributes into a host info file.

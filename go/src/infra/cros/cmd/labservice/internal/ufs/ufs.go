@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"strings"
 
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -18,8 +19,6 @@ import (
 	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	manufacturing "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
-
-	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
 type DeviceType int64

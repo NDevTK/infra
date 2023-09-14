@@ -7,16 +7,17 @@ package commands
 import (
 	"context"
 	"fmt"
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/cros_test_runner/data"
-	vmlabapi "infra/libs/vmlab/api"
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/luciexe/build"
+
+	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/cros_test_runner/data"
+	vmlabapi "infra/libs/vmlab/api"
 )
 
 // VMProvisionLeaseCmd represents vm-provision service lease cmd.

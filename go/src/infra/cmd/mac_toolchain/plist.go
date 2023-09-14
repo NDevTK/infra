@@ -8,9 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"howett.net/plist"
-
 	"go.chromium.org/luci/common/errors"
+	"howett.net/plist"
 )
 
 type versionPlist struct {

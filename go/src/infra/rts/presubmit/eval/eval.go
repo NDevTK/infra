@@ -15,12 +15,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"golang.org/x/sync/errgroup"
-	"google.golang.org/protobuf/types/known/durationpb"
-
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"golang.org/x/sync/errgroup"
+	"google.golang.org/protobuf/types/known/durationpb"
 
 	"infra/rts"
 	evalpb "infra/rts/presubmit/eval/proto"

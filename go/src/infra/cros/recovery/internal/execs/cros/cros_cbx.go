@@ -7,13 +7,14 @@ package cros
 
 import (
 	"context"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/logger/metrics"
 	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/logger/metrics"
 )
 
 const (

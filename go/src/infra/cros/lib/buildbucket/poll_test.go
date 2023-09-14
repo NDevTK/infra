@@ -2,7 +2,6 @@ package buildbucket_test
 
 import (
 	"context"
-	"infra/cros/lib/buildbucket"
 	"testing"
 	"time"
 
@@ -15,6 +14,8 @@ import (
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/structpb"
 	"gotest.tools/assert"
+
+	"infra/cros/lib/buildbucket"
 )
 
 var (

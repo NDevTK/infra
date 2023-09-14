@@ -10,14 +10,14 @@ import (
 	"reflect"
 	"time"
 
-	. "infra/appengine/poros/api/entities"
-	proto "infra/appengine/poros/api/proto"
-
 	"github.com/google/uuid"
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+
+	. "infra/appengine/poros/api/entities"
+	proto "infra/appengine/poros/api/proto"
 )
 
 type AssetResourceHandler struct {

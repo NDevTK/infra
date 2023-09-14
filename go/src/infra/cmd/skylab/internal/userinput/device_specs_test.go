@@ -5,7 +5,6 @@
 package userinput
 
 import (
-	"infra/libs/skylab/inventory"
 	"reflect"
 	"regexp"
 	"strings"
@@ -15,6 +14,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/kylelemons/godebug/pretty"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/libs/skylab/inventory"
 )
 
 var prettyConfig = &pretty.Config{

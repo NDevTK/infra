@@ -6,10 +6,11 @@ package run
 
 import (
 	"fmt"
-	"infra/cmd/crosfleet/internal/common"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
+
+	"infra/cmd/crosfleet/internal/common"
 )
 
 const runCmdName = "run"

@@ -9,9 +9,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"google.golang.org/protobuf/encoding/prototext"
-
 	"go.chromium.org/luci/common/errors"
+	"google.golang.org/protobuf/encoding/prototext"
 
 	dirmdpb "infra/tools/dirmd/proto"
 )

@@ -5,10 +5,11 @@
 package redirect
 
 import (
-	"infra/appengine/cr-rev/models"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
+	"infra/appengine/cr-rev/models"
 )
 
 func TestGitilesRedirect(t *testing.T) {

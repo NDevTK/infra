@@ -13,7 +13,7 @@ import (
 	"testing"
 
 	"github.com/julienschmidt/httprouter"
-
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/server"
@@ -21,8 +21,6 @@ import (
 	"go.chromium.org/luci/server/auth/authtest"
 	"go.chromium.org/luci/server/router"
 	"go.chromium.org/luci/server/templates"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestDashboard(t *testing.T) {

@@ -17,11 +17,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"infra/chromeperf/pinpoint/proto"
 	"path/filepath"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
+	"infra/chromeperf/pinpoint/proto"
 )
 
 func TestAnalyzeTelemetryExperiment(t *testing.T) {

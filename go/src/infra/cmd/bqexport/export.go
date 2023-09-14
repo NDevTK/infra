@@ -16,7 +16,6 @@ import (
 	"unicode"
 
 	"github.com/golang/protobuf/proto"
-
 	"go.chromium.org/luci/common/errors"
 	luciproto "go.chromium.org/luci/common/proto"
 

@@ -12,10 +12,10 @@ import (
 	"net"
 	"sync"
 
-	"infra/cros/tlslib"
-
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/grpc"
+
+	"infra/cros/tlslib"
 )
 
 // Server holds local state for a TLS server running in the background.

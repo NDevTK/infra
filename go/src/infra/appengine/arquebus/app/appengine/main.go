@@ -18,11 +18,10 @@ package main
 import (
 	"net/http"
 
-	"google.golang.org/appengine"
-
 	"go.chromium.org/luci/appengine/gaemiddleware/standard"
 	"go.chromium.org/luci/appengine/tq"
 	"go.chromium.org/luci/server/router"
+	"google.golang.org/appengine"
 
 	"infra/appengine/arquebus/app/backend"
 	"infra/appengine/arquebus/app/config"

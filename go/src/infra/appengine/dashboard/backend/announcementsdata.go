@@ -9,12 +9,12 @@ import (
 	"fmt"
 	"time"
 
-	dashpb "infra/appengine/dashboard/api/dashboard"
-
 	"github.com/golang/protobuf/ptypes"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/sync/parallel"
 	"go.chromium.org/luci/gae/service/datastore"
+
+	dashpb "infra/appengine/dashboard/api/dashboard"
 )
 
 // Announcement contains details of an announcement

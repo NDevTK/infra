@@ -14,11 +14,10 @@ import (
 	"strconv"
 	"strings"
 
-	"golang.org/x/tools/go/packages"
-	"gopkg.in/yaml.v2"
-
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"golang.org/x/tools/go/packages"
+	"gopkg.in/yaml.v2"
 
 	"infra/cmd/cloudbuildhelper/fileset"
 	"infra/cmd/cloudbuildhelper/gitignore"

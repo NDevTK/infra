@@ -18,12 +18,11 @@ import (
 	"context"
 
 	"github.com/maruel/subcommands"
-
-	"infra/tools/vpython/legacy/vpython2.7/luci/venv"
-
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+
+	"infra/tools/vpython/legacy/vpython2.7/luci/venv"
 )
 
 var subcommandDelete = &subcommands.Command{

@@ -9,13 +9,12 @@ import (
 	"sort"
 	"testing"
 
-	proto "infra/appengine/poros/api/proto"
-
 	. "github.com/smartystreets/goconvey/convey"
-	"google.golang.org/protobuf/types/known/fieldmaskpb"
-
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
+
+	proto "infra/appengine/poros/api/proto"
 )
 
 func mockCreateAssetResourceRequest(assetId string, resourceId string, aliasName string) *proto.CreateAssetResourceRequest {

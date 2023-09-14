@@ -7,9 +7,9 @@ package controller
 import (
 	"context"
 
-	"infra/unifiedfleet/app/model/configuration"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
+
+	"infra/unifiedfleet/app/model/configuration"
 )
 
 // GetDutAttribute returns DutAttribute for the given DutAttribute ID from datastore.

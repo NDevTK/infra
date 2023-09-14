@@ -17,15 +17,14 @@ import (
 	"testing"
 	"time"
 
-	"infra/tools/git/state"
-
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/common/system/filesystem"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"infra/tools/git/state"
 )
 
 const testAgentFailedReturnCode = 128

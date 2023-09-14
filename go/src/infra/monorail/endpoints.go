@@ -15,12 +15,11 @@ import (
 	"net/url"
 	"strings"
 
-	"golang.org/x/net/context/ctxhttp"
-	"google.golang.org/grpc"
-
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/retry/transient"
+	"golang.org/x/net/context/ctxhttp"
+	"google.golang.org/grpc"
 )
 
 // epClient implements MonorailClient by sending requests to Monorail's

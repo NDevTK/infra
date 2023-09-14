@@ -5,13 +5,14 @@
 package inventory
 
 import (
-	ufspb "infra/unifiedfleet/api/v1/models"
 	"testing"
 
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	ufspb "infra/unifiedfleet/api/v1/models"
 )
 
 // Tests the functionality for Creating/Updating Ownership data per bot in the datastore

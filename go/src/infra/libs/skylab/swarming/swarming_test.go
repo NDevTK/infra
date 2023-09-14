@@ -13,7 +13,6 @@ import (
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/common/errors"
-
 	"google.golang.org/api/googleapi"
 )
 

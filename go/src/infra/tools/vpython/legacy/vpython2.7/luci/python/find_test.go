@@ -22,9 +22,8 @@ import (
 	"testing"
 	"time"
 
-	"go.chromium.org/luci/common/system/filesystem"
-
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/system/filesystem"
 	. "go.chromium.org/luci/common/testing/assertions"
 )
 

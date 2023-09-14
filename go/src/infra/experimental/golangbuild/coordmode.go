@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"infra/experimental/golangbuild/golangbuildpb"
 	"io"
 	"strconv"
 	"strings"
@@ -17,6 +16,8 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 	resultdbpb "go.chromium.org/luci/resultdb/proto/v1"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	"infra/experimental/golangbuild/golangbuildpb"
 )
 
 // coordRunner ensures a prebuilt Go toolchain exists (launching a build to build one if

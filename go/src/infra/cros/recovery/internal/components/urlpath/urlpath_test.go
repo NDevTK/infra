@@ -6,8 +6,9 @@ package urlpath
 
 import (
 	"context"
-	"infra/cros/recovery/scopes"
 	"testing"
+
+	"infra/cros/recovery/scopes"
 )
 
 var enrichWithTrackingIdsCases = []struct {

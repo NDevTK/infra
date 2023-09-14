@@ -30,18 +30,16 @@ import (
 	"sync"
 
 	"cloud.google.com/go/bigquery"
-	"golang.org/x/oauth2"
-	"golang.org/x/sync/errgroup"
-	"google.golang.org/api/option"
-
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/flag/stringmapflag"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
-
 	"go.chromium.org/luci/hardcoded/chromeinfra"
+	"golang.org/x/oauth2"
+	"golang.org/x/sync/errgroup"
+	"google.golang.org/api/option"
 )
 
 const (

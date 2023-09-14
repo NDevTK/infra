@@ -10,16 +10,12 @@ package execution_test
 import (
 	"context"
 	"fmt"
-	"infra/cmd/cros_test_platform/internal/execution/testrunner"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
 	"time"
-
-	"infra/cmd/cros_test_platform/internal/execution"
-	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
 
 	"github.com/golang/protobuf/proto"
 	. "github.com/smartystreets/goconvey/convey"
@@ -29,6 +25,10 @@ import (
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/luciexe/exe"
+
+	"infra/cmd/cros_test_platform/internal/execution"
+	"infra/cmd/cros_test_platform/internal/execution/testrunner"
+	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
 )
 
 func TestFinalBuildForSingleInvocation(t *testing.T) {

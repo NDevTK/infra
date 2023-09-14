@@ -10,7 +10,6 @@ import (
 	"regexp"
 
 	"go.chromium.org/luci/common/errors"
-
 	"go.chromium.org/luci/server/auth"
 )
 

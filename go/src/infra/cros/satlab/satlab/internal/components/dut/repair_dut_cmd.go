@@ -5,12 +5,12 @@
 package dut
 
 import (
+	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlab/internal/components/dut/shivas"
-
-	"github.com/maruel/subcommands"
-	"go.chromium.org/luci/common/errors"
 )
 
 // RepairDUTCmd is the command that repairs a satlab DUT.

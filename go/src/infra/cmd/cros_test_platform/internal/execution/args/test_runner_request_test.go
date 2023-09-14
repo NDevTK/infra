@@ -13,9 +13,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/kylelemons/godebug/pretty"
-
 	. "github.com/smartystreets/goconvey/convey"
-
 	buildapi "go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"

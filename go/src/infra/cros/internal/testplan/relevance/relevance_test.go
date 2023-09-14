@@ -5,14 +5,13 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"go.chromium.org/chromiumos/config/go/test/plan"
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"infra/cros/internal/testplan/relevance"
 	"infra/tools/dirmd"
 	dirmdpb "infra/tools/dirmd/proto"
 	"infra/tools/dirmd/proto/chromeos"
-
-	"go.chromium.org/chromiumos/config/go/test/plan"
 )
 
 // buildMapping is a convenience to reduce boilerplate building Mappings.

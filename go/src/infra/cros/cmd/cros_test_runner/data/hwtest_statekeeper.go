@@ -6,7 +6,6 @@ package data
 
 import (
 	"container/list"
-	vmlabapi "infra/libs/vmlab/api"
 
 	"go.chromium.org/chromiumos/config/go/build/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
@@ -20,6 +19,7 @@ import (
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/dutstate"
+	vmlabapi "infra/libs/vmlab/api"
 )
 
 // HwTestStateKeeper represents all the data hw test execution flow requires.

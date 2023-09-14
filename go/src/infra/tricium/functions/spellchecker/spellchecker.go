@@ -7,6 +7,7 @@ package main
 import (
 	"bufio"
 	"embed"
+	_ "embed"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -18,8 +19,6 @@ import (
 	"unicode"
 
 	tricium "infra/tricium/api/v1"
-
-	_ "embed"
 )
 
 // commentFormat is the expected format for the commentsJSONPath file.

@@ -8,11 +8,11 @@ import (
 	"context"
 	"testing"
 
-	"infra/cros/cmd/common_lib/tools/crostoolrunner"
-
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+
+	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 )
 
 func TestCrosDutTemplate(t *testing.T) {

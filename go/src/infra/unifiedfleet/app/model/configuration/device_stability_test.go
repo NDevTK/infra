@@ -11,9 +11,8 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	. "github.com/smartystreets/goconvey/convey"
-	"go.chromium.org/luci/appengine/gaetesting"
-
 	"go.chromium.org/chromiumos/config/go/test/dut"
+	"go.chromium.org/luci/appengine/gaetesting"
 )
 
 func TestDeviceStability(t *testing.T) {

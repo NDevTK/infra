@@ -11,7 +11,6 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 )
 

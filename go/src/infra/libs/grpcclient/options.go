@@ -12,10 +12,9 @@ import (
 	"context"
 	"time"
 
+	"go.chromium.org/luci/server/auth"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
-
-	"go.chromium.org/luci/server/auth"
 )
 
 // Options defines how to connect to a service.

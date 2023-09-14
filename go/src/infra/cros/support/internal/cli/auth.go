@@ -6,11 +6,10 @@ package cli
 import (
 	"net/http"
 
-	"golang.org/x/oauth2"
-
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
+	"golang.org/x/oauth2"
 )
 
 var (

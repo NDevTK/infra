@@ -10,10 +10,10 @@ import (
 	"strings"
 	"testing"
 
-	pinpoint_proto "infra/chromeperf/pinpoint/proto"
-
 	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/proto"
+
+	pinpoint_proto "infra/chromeperf/pinpoint/proto"
 )
 
 const testPriority = 42

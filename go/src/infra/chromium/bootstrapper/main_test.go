@@ -17,18 +17,18 @@ import (
 	"testing"
 	"time"
 
+	. "github.com/smartystreets/goconvey/convey"
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	. "go.chromium.org/luci/common/testing/assertions"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
+
 	"infra/chromium/bootstrapper/bootstrap"
 	"infra/chromium/bootstrapper/clients/cipd"
 	fakecipd "infra/chromium/bootstrapper/clients/fakes/cipd"
 	fakegitiles "infra/chromium/bootstrapper/clients/fakes/gitiles"
 	"infra/chromium/bootstrapper/clients/gitiles"
 	. "infra/chromium/util"
-
-	. "github.com/smartystreets/goconvey/convey"
-	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
-	. "go.chromium.org/luci/common/testing/assertions"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
 )
 
 func strPtr(s string) *string {

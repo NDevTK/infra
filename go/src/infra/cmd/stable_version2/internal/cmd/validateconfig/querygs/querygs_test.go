@@ -14,12 +14,11 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	labPlatform "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
+	sv "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	"go.chromium.org/luci/common/gcloud/gs"
 
-	"infra/cros/stableversion/validateconfig"
-
-	sv "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	"infra/cmd/stable_version2/internal/utils"
+	"infra/cros/stableversion/validateconfig"
 )
 
 const DONTCARE = "f7e8bdf6-f67c-4d63-aea3-46fa5e980403"

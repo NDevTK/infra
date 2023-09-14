@@ -9,10 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"go.chromium.org/luci/vpython/api/vpython"
-
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/vpython/api/vpython"
 )
 
 func TestPEP425TagSelector(t *testing.T) {

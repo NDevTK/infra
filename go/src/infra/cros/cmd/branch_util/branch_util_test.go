@@ -19,6 +19,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
+
+	"infra/cros/cmd/branch_util/test"
 	"infra/cros/internal/assert"
 	"infra/cros/internal/branch"
 	mv "infra/cros/internal/chromeosversion"
@@ -28,11 +32,6 @@ import (
 	"infra/cros/internal/repo"
 	rh "infra/cros/internal/repoharness"
 	"infra/cros/internal/testutil"
-
-	"infra/cros/cmd/branch_util/test"
-
-	"github.com/golang/mock/gomock"
-	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
 
 const (

@@ -12,10 +12,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/log"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 // List of UART streams consoles of CPU, EC, Cr50, etc.

@@ -14,13 +14,13 @@ import (
 	"strings"
 	"testing"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/shared"
-
 	"github.com/golang/mock/gomock"
 	gitpb "go.chromium.org/luci/common/proto/git"
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 	"go.chromium.org/luci/common/proto/gitiles/mock_gitiles"
+
+	"infra/cros/internal/assert"
+	"infra/cros/internal/shared"
 )
 
 func testDownloadFileFromGitilesSetUp(t *testing.T) Client {

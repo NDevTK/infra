@@ -9,14 +9,14 @@ package main
 import (
 	"os"
 
-	"infra/cros/cmd/try/try"
-
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/api/gerrit"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
+
+	"infra/cros/cmd/try/try"
 )
 
 func newApplication(authOpts auth.Options) *cli.Application {

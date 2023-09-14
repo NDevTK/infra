@@ -7,10 +7,10 @@ import (
 	_ "embed"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+
 	"infra/libs/cipkg_new/core"
 	"infra/libs/cipkg_new/testutils"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestProcessCIPD(t *testing.T) {

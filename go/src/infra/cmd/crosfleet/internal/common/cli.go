@@ -8,7 +8,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"infra/cmd/crosfleet/internal/site"
 	"io"
 	"os"
 	"time"
@@ -18,6 +17,8 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/gcloud/googleoauth"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	"infra/cmd/crosfleet/internal/site"
 )
 
 // Tag to add to Buildbucket builds to indicate which crosfleet subcommand was

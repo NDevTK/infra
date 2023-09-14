@@ -8,11 +8,11 @@ import (
 	"context"
 	"time"
 
-	dashpb "infra/appengine/dashboard/api/dashboard"
-	"infra/appengine/dashboard/backend"
-
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	dashpb "infra/appengine/dashboard/api/dashboard"
+	"infra/appengine/dashboard/backend"
 )
 
 type dashboardService struct{}

@@ -28,10 +28,6 @@ import (
 	"path/filepath"
 	"sync"
 
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/encoding/prototext"
-	"google.golang.org/protobuf/reflect/protoreflect"
-
 	"go.chromium.org/luci/auth"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
@@ -50,6 +46,9 @@ import (
 	notifypb "go.chromium.org/luci/luci_notify/api/config"
 	milopb "go.chromium.org/luci/milo/proto/projectconfig"
 	schedulerpb "go.chromium.org/luci/scheduler/appengine/messages"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 var outputDir = flag.String("output-dir", "-", "Where to store fetched files or - to print them to stdout for grepping")

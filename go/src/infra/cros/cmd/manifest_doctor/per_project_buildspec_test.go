@@ -11,12 +11,12 @@ import (
 	"testing"
 	"time"
 
+	lgs "go.chromium.org/luci/common/gcloud/gs"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
+
 	"infra/cros/internal/assert"
 	gerrit "infra/cros/internal/gerrit"
 	"infra/cros/internal/gs"
-
-	lgs "go.chromium.org/luci/common/gcloud/gs"
-	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
 
 const (

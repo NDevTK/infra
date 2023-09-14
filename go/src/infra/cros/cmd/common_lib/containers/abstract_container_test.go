@@ -7,12 +7,13 @@ package containers
 import (
 	"context"
 	"fmt"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/chromiumos/config/go/test/api"
+
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 )
 
 func TestGetContainerType(t *testing.T) {

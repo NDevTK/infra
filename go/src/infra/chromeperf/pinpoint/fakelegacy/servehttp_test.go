@@ -22,17 +22,15 @@ import (
 	"sort"
 	"testing"
 
-	"infra/chromeperf/pinpoint"
-	"infra/chromeperf/pinpoint/fakelegacy"
-	"infra/chromeperf/pinpoint/proto"
-	"infra/chromeperf/pinpoint/server"
-
+	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 
+	"infra/chromeperf/pinpoint"
 	. "infra/chromeperf/pinpoint/assertions"
-
-	. "github.com/smartystreets/goconvey/convey"
+	"infra/chromeperf/pinpoint/fakelegacy"
+	"infra/chromeperf/pinpoint/proto"
+	"infra/chromeperf/pinpoint/server"
 )
 
 // Path to the directory which contains templates for API responses.

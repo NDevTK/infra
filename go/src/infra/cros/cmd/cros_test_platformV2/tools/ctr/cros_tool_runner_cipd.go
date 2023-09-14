@@ -10,11 +10,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"infra/cros/cmd/common_lib/common"
-
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
+
+	"infra/cros/cmd/common_lib/common"
 )
 
 // CtrCipdInfo represents Ctr cipd related info.

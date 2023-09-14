@@ -21,17 +21,17 @@ import (
 	"flag"
 	"time"
 
-	"infra/qscheduler/service/app/config"
-	"infra/qscheduler/service/app/eventlog"
-	"infra/qscheduler/service/app/frontend"
-	"infra/qscheduler/service/app/state/nodestore"
-
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/limiter"
 	"go.chromium.org/luci/server/module"
+
+	"infra/qscheduler/service/app/config"
+	"infra/qscheduler/service/app/eventlog"
+	"infra/qscheduler/service/app/frontend"
+	"infra/qscheduler/service/app/state/nodestore"
 )
 
 func main() {

@@ -8,13 +8,13 @@ import (
 	"context"
 	"testing"
 
-	bscas "infra/chromium/bootstrapper/clients/cas"
-	"infra/chromium/util"
-
 	"github.com/bazelbuild/remote-apis-sdks/go/pkg/digest"
 	"github.com/bazelbuild/remote-apis-sdks/go/pkg/filemetadata"
 	. "github.com/smartystreets/goconvey/convey"
 	apipb "go.chromium.org/luci/swarming/proto/api"
+
+	bscas "infra/chromium/bootstrapper/clients/cas"
+	"infra/chromium/util"
 )
 
 func TestFactory(t *testing.T) {

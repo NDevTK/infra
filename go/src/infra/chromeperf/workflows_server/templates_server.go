@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"infra/chromeperf/workflows"
-	"infra/chromeperf/workflows_server/proto"
 	"strings"
 
 	configProto "go.chromium.org/luci/common/proto/config"
@@ -12,6 +10,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/prototext"
+
+	"infra/chromeperf/workflows"
+	"infra/chromeperf/workflows_server/proto"
 )
 
 // Scopes to use for OAuth2.0 credentials.

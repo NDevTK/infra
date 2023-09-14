@@ -14,18 +14,18 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/config/go/test/plan"
+	bbpb "go.chromium.org/luci/buildbucket/proto"
+	"google.golang.org/protobuf/encoding/protojson"
+
 	"infra/cros/internal/assert"
 	"infra/cros/internal/cmd"
 	"infra/cros/internal/gerrit"
 	"infra/tools/dirmd"
 	dirmdpb "infra/tools/dirmd/proto"
 	"infra/tools/dirmd/proto/chromeos"
-
-	"github.com/golang/mock/gomock"
-	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/config/go/test/plan"
-	bbpb "go.chromium.org/luci/buildbucket/proto"
-	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func TestValidateMapping(t *testing.T) {

@@ -13,9 +13,9 @@ import (
 	"cloud.google.com/go/pubsub"
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/logging"
-	fleet "infra/libs/fleet/protos/go"
 
 	"infra/cros/lab_inventory/datastore"
+	fleet "infra/libs/fleet/protos/go"
 )
 
 // PSRequest helps to unmarshall json data sent from pubsub

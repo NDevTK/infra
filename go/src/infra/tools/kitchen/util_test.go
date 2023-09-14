@@ -8,12 +8,10 @@ import (
 	"context"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/memlogger"
-
 	"google.golang.org/grpc/grpclog"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestDisableGRPCLogging(t *testing.T) {

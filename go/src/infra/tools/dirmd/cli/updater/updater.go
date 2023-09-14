@@ -11,11 +11,10 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/storage"
-	"google.golang.org/protobuf/encoding/protojson"
-
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/sync/parallel"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"infra/tools/dirmd"
 	dirmdpb "infra/tools/dirmd/proto"

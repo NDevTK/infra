@@ -25,15 +25,6 @@ import (
 
 	"github.com/maruel/subcommands"
 	"github.com/mitchellh/go-homedir"
-
-	vpythonAPI "infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
-
-	vpython "infra/tools/vpython/legacy/vpython2.7/luci"
-
-	"infra/tools/vpython/legacy/vpython2.7/luci/python"
-	"infra/tools/vpython/legacy/vpython2.7/luci/spec"
-	"infra/tools/vpython/legacy/vpython2.7/luci/venv"
-
 	cipdVersion "go.chromium.org/luci/cipd/version"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
@@ -42,6 +33,12 @@ import (
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/common/system/filesystem"
 	"go.chromium.org/luci/common/system/prober"
+
+	vpython "infra/tools/vpython/legacy/vpython2.7/luci"
+	vpythonAPI "infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
+	"infra/tools/vpython/legacy/vpython2.7/luci/python"
+	"infra/tools/vpython/legacy/vpython2.7/luci/spec"
+	"infra/tools/vpython/legacy/vpython2.7/luci/venv"
 )
 
 const (

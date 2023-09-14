@@ -9,12 +9,12 @@ import (
 	"fmt"
 	"log"
 
-	"infra/cros/internal/gerrit"
-
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/testplans"
 	bbproto "go.chromium.org/luci/buildbucket/proto"
+
+	"infra/cros/internal/gerrit"
 )
 
 type buildID struct {

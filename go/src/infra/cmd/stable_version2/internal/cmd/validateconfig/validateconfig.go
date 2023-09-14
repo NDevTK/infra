@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 
@@ -20,8 +21,6 @@ import (
 	"infra/cmd/stable_version2/internal/utils"
 	vc "infra/cros/stableversion/validateconfig"
 	gitlib "infra/libs/git"
-
-	"github.com/maruel/subcommands"
 )
 
 // Cmd is the top-level runnable for the validate-config subcommand of stable_version2

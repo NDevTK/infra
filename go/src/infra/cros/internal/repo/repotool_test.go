@@ -10,10 +10,10 @@ import (
 	"io/ioutil"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	"infra/cros/internal/assert"
 	"infra/cros/internal/cmd"
-
-	"github.com/google/go-cmp/cmp"
 )
 
 func TestInit(t *testing.T) {

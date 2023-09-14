@@ -13,7 +13,6 @@ import (
 	"path/filepath"
 
 	"github.com/golang/protobuf/jsonpb"
-
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"

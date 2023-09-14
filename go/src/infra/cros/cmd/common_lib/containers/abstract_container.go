@@ -7,15 +7,16 @@ package containers
 import (
 	"context"
 	"fmt"
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"strings"
 
 	"github.com/google/uuid"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+
+	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 )
 
 // Container state types

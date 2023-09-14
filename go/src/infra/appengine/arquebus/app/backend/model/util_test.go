@@ -20,7 +20,6 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/gae/service/datastore"
 
 	"infra/appengine/arquebus/app/config"

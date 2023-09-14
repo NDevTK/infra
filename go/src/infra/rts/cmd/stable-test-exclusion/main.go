@@ -12,8 +12,6 @@ import (
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/storage"
 	"github.com/maruel/subcommands"
-	"google.golang.org/api/option"
-
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/api/gerrit"
@@ -21,6 +19,7 @@ import (
 	"go.chromium.org/luci/common/flag/fixflagpos"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
+	"google.golang.org/api/option"
 )
 
 var logCfg = gologger.LoggerConfig{

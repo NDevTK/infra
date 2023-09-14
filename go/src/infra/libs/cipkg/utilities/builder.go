@@ -6,10 +6,11 @@ package utilities
 
 import (
 	"fmt"
-	"infra/libs/cipkg"
 	"os/exec"
 
 	"go.chromium.org/luci/common/errors"
+
+	"infra/libs/cipkg"
 )
 
 type Builder struct {

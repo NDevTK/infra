@@ -9,16 +9,16 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+	lgs "go.chromium.org/luci/common/gcloud/gs"
+	gitilespb "go.chromium.org/luci/common/proto/gitiles"
+	"go.chromium.org/luci/common/proto/gitiles/mock_gitiles"
+
 	"infra/cros/internal/assert"
 	"infra/cros/internal/gerrit"
 	"infra/cros/internal/gs"
 	"infra/cros/internal/repo"
 	"infra/cros/internal/util"
-
-	"github.com/golang/mock/gomock"
-	lgs "go.chromium.org/luci/common/gcloud/gs"
-	gitilespb "go.chromium.org/luci/common/proto/gitiles"
-	"go.chromium.org/luci/common/proto/gitiles/mock_gitiles"
 )
 
 var (

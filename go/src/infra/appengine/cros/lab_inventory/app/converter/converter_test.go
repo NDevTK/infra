@@ -13,10 +13,9 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
-	"google.golang.org/protobuf/testing/protocmp"
-
 	"go.chromium.org/chromiumos/infra/proto/go/lab"
 	"go.chromium.org/luci/common/errors"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	apibq "infra/appengine/cros/lab_inventory/api/bigquery"
 	"infra/cros/lab_inventory/datastore"

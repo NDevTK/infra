@@ -15,13 +15,13 @@ import (
 	"regexp"
 	"strings"
 
+	"go.chromium.org/luci/common/errors"
+
 	mv "infra/cros/internal/chromeosversion"
 	"infra/cros/internal/git"
 	"infra/cros/internal/manifestutil"
 	"infra/cros/internal/repo"
 	rh "infra/cros/internal/repoharness"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 // This is intended to be a more specific version of RepoHarness

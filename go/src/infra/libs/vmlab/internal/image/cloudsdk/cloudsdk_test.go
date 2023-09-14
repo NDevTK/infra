@@ -10,12 +10,12 @@ import (
 	"testing"
 	"time"
 
-	"infra/libs/vmlab/api"
-
 	compute "cloud.google.com/go/compute/apiv1"
 	"cloud.google.com/go/compute/apiv1/computepb"
 	"github.com/googleapis/gax-go/v2"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/libs/vmlab/api"
 )
 
 type mockImageClient struct {

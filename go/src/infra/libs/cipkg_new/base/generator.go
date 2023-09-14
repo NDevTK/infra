@@ -9,10 +9,10 @@ import (
 	"os"
 	"strings"
 
+	"go.chromium.org/luci/common/system/environ"
+
 	"infra/libs/cipkg_new/base/generators"
 	"infra/libs/cipkg_new/core"
-
-	"go.chromium.org/luci/common/system/environ"
 )
 
 // General purpose generator which generates dependencies and computes

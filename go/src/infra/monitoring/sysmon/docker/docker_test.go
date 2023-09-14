@@ -13,11 +13,9 @@ import (
 
 	dockerTypes "github.com/docker/docker/api/types"
 	dockerContainerTypes "github.com/docker/docker/api/types/container"
-
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/common/tsmon"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 type noOpCloser struct {

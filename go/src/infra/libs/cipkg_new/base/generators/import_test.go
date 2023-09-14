@@ -9,10 +9,10 @@ import (
 	"path/filepath"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+
 	"infra/libs/cipkg_new/core"
 	"infra/libs/cipkg_new/testutils"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestImport(t *testing.T) {

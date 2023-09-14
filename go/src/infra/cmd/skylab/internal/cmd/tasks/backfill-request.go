@@ -11,9 +11,8 @@ import (
 	"sort"
 	"strings"
 
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
-
 	"github.com/maruel/subcommands"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/luci/auth/client/authcli"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/cli"

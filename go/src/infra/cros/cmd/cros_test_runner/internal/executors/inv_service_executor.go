@@ -8,12 +8,11 @@ import (
 	"context"
 	"fmt"
 
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/grpc"
-
-	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"

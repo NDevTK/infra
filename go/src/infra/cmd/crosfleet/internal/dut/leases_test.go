@@ -6,9 +6,6 @@ package dut
 
 import (
 	"fmt"
-	"infra/cmd/crosfleet/internal/buildbucket"
-	dutinfopb "infra/cmd/crosfleet/internal/proto"
-	"infra/cmd/crosfleet/internal/site"
 	"testing"
 	"time"
 
@@ -16,6 +13,10 @@ import (
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"infra/cmd/crosfleet/internal/buildbucket"
+	dutinfopb "infra/cmd/crosfleet/internal/proto"
+	"infra/cmd/crosfleet/internal/site"
 )
 
 var testLeaseInfoAsBashVariablesData = []struct {

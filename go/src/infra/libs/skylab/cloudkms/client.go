@@ -10,14 +10,13 @@ import (
 	"encoding/base64"
 	"time"
 
-	cloudkms "google.golang.org/api/cloudkms/v1"
-	"google.golang.org/api/option"
-
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/common/retry/transient"
+	cloudkms "google.golang.org/api/cloudkms/v1"
+	"google.golang.org/api/option"
 )
 
 // Client provides a high level Cloud KMS interface.

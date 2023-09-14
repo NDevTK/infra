@@ -19,14 +19,13 @@ import (
 	"testing"
 	"time"
 
-	"infra/qscheduler/qslib/protos/metrics"
-	"infra/qscheduler/qslib/tutils"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/data/stringset"
+
+	"infra/qscheduler/qslib/protos/metrics"
+	"infra/qscheduler/qslib/tutils"
 )
 
 // Use proto.Equal to compare protobufs message

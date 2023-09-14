@@ -11,7 +11,6 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"

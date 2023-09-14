@@ -32,12 +32,12 @@ import (
 	"fmt"
 	"time"
 
+	"go.chromium.org/luci/common/data/stringset"
+	"go.chromium.org/luci/common/logging"
+
 	"infra/qscheduler/qslib/protos"
 	"infra/qscheduler/qslib/scheduler"
 	"infra/qscheduler/qslib/tutils"
-
-	"go.chromium.org/luci/common/data/stringset"
-	"go.chromium.org/luci/common/logging"
 )
 
 // WorkerQueueTimeout is the time after which a task will return to the queue

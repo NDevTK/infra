@@ -11,10 +11,10 @@ import (
 	"sort"
 	"strings"
 
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/satlabcommands"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 // A classifier takes a line and determines whether to keep, remove, or modify it.

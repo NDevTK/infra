@@ -11,6 +11,7 @@ import (
 	"github.com/golang/protobuf/jsonpb"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/data/stringset"
+	. "go.chromium.org/luci/common/testing/assertions"
 	ds "go.chromium.org/luci/gae/service/datastore"
 
 	"infra/qscheduler/qslib/tutils"
@@ -19,8 +20,6 @@ import (
 	"infra/tricium/appengine/common/gerrit"
 	"infra/tricium/appengine/common/track"
 	"infra/tricium/appengine/common/triciumtest"
-
-	. "go.chromium.org/luci/common/testing/assertions"
 )
 
 func TestWorkerDoneRequest(t *testing.T) {

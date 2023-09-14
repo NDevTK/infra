@@ -10,10 +10,9 @@ import (
 	"io/ioutil"
 
 	"cloud.google.com/go/pubsub"
-	"go.chromium.org/luci/common/flag"
-
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/common/flag"
 )
 
 type publishRun struct {

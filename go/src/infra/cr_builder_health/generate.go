@@ -9,20 +9,18 @@ import (
 	"fmt"
 	"net/url"
 
-	"infra/cr_builder_health/healthpb"
-
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/civil"
-
 	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/luciexe/build"
-
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc"
+
+	"infra/cr_builder_health/healthpb"
 )
 
 type Row struct {

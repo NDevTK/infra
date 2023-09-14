@@ -27,17 +27,16 @@ import (
 	"strings"
 	"sync"
 
-	"infra/chromeperf/pinpoint"
-	"infra/chromeperf/pinpoint/proto"
-
 	"github.com/bazelbuild/remote-apis-sdks/go/pkg/digest"
 	"github.com/bazelbuild/remote-apis-sdks/go/pkg/filemetadata"
-
 	"go.chromium.org/luci/client/casclient"
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"gopkg.in/yaml.v2"
+
+	"infra/chromeperf/pinpoint"
+	"infra/chromeperf/pinpoint/proto"
 )
 
 type downloadArtifactsMixin struct {

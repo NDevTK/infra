@@ -9,7 +9,6 @@ import (
 	"fmt"
 
 	"github.com/maruel/subcommands"
-
 	"go.chromium.org/luci/common/cli"
 
 	"infra/cmd/cros_test_platform/luciexe/execute"

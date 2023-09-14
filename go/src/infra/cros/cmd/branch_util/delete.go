@@ -7,11 +7,11 @@ import (
 	"fmt"
 	"os"
 
-	"infra/cros/internal/branch"
-	"infra/cros/internal/git"
-
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth"
+
+	"infra/cros/internal/branch"
+	"infra/cros/internal/git"
 )
 
 func getCmdDeleteBranch(opts auth.Options) *subcommands.Command {

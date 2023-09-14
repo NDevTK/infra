@@ -6,13 +6,13 @@ package servod
 
 import (
 	"context"
-	"infra/cros/recovery/docker"
 	"testing"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/docker"
 	ufspb "infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 

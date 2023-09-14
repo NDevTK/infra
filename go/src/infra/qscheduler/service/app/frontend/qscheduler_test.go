@@ -19,7 +19,6 @@ import (
 	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/appengine/gaetesting"
 	swarming "go.chromium.org/luci/swarming/proto/api"
 

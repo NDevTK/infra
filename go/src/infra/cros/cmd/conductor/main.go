@@ -14,16 +14,15 @@ import (
 	"sort"
 	"strings"
 
-	"infra/cros/cmd/try/try"
-	"infra/cros/internal/cmd"
-	bb "infra/cros/lib/buildbucket"
-
-	"go.chromium.org/luci/common/errors"
-
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/maruel/subcommands"
 	pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/luci/common/cli"
+	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/cmd/try/try"
+	"infra/cros/internal/cmd"
+	bb "infra/cros/lib/buildbucket"
 )
 
 var (

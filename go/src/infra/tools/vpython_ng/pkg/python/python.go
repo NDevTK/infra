@@ -12,13 +12,13 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"go.chromium.org/luci/cipd/client/cipd/ensure"
+	"go.chromium.org/luci/common/errors"
+
 	"infra/libs/cipkg"
 	"infra/libs/cipkg/builtins"
 	"infra/libs/cipkg/utilities"
 	"infra/tools/vpython_ng/pkg/common"
-
-	"go.chromium.org/luci/cipd/client/cipd/ensure"
-	"go.chromium.org/luci/common/errors"
 )
 
 type Environment struct {

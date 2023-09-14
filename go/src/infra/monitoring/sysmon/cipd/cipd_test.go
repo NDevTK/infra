@@ -10,9 +10,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	cipdpkg "go.chromium.org/luci/cipd/client/cipd/pkg"
-
 	. "github.com/smartystreets/goconvey/convey"
+	cipdpkg "go.chromium.org/luci/cipd/client/cipd/pkg"
 )
 
 func TestListFiles(t *testing.T) {

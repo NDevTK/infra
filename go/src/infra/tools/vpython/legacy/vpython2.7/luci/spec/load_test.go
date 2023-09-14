@@ -21,14 +21,12 @@ import (
 	"strings"
 	"testing"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
-
-	"go.chromium.org/luci/common/testing/testfs"
-
 	"github.com/golang/protobuf/proto"
-
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/testfs"
+
+	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
 )
 
 func TestLoadForScript(t *testing.T) {

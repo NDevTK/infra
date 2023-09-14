@@ -19,9 +19,9 @@ import (
 	"strings"
 	"testing"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
-
 	. "github.com/smartystreets/goconvey/convey"
+
+	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
 )
 
 func mkTag(python, abi, platform string) *vpython.PEP425Tag {

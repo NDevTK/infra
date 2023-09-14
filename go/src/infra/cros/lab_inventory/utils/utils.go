@@ -13,10 +13,6 @@ import (
 	"regexp"
 	"strings"
 
-	ca "infra/libs/fleet/protos"
-	fleet "infra/libs/fleet/protos/go"
-	"infra/libs/git"
-
 	"go.chromium.org/chromiumos/infra/proto/go/lab"
 	authclient "go.chromium.org/luci/auth"
 	gitilesapi "go.chromium.org/luci/common/api/gitiles"
@@ -25,6 +21,10 @@ import (
 	"golang.org/x/net/context/ctxhttp"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
+
+	ca "infra/libs/fleet/protos"
+	fleet "infra/libs/fleet/protos/go"
+	"infra/libs/git"
 )
 
 // Host, project and branch to get dhcpd.conf file

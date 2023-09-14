@@ -10,14 +10,13 @@ import (
 	"testing"
 	"time"
 
-	dashpb "infra/appengine/dashboard/api/dashboard"
-
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	. "github.com/smartystreets/goconvey/convey"
+	dashpb "infra/appengine/dashboard/api/dashboard"
 )
 
 var chickenAnn = &Announcement{Message: "chicken is missing", Creator: "farmer1"}

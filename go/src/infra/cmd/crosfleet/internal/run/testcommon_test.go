@@ -8,11 +8,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"infra/cmd/crosfleet/internal/buildbucket"
-	"infra/cmd/crosfleet/internal/common"
-	"infra/cmd/crosfleet/internal/site"
-	models "infra/unifiedfleet/api/v1/models"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
 	"strings"
 	"testing"
 
@@ -21,6 +16,12 @@ import (
 	"go.chromium.org/chromiumos/platform/dev-util/src/chromiumos/ctp/builder"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/grpc"
+
+	"infra/cmd/crosfleet/internal/buildbucket"
+	"infra/cmd/crosfleet/internal/common"
+	"infra/cmd/crosfleet/internal/site"
+	models "infra/unifiedfleet/api/v1/models"
+	ufsapi "infra/unifiedfleet/api/v1/rpc"
 )
 
 var testValidateArgsData = []struct {

@@ -6,7 +6,6 @@ package args
 
 import (
 	"github.com/google/uuid"
-
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 
 	"infra/libs/skylab/worker"

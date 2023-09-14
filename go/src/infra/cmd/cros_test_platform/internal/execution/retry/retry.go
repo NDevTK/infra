@@ -10,11 +10,11 @@ import (
 	"fmt"
 	"math"
 
-	"infra/cmd/cros_test_platform/internal/execution/types"
-
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/common/logging"
+
+	"infra/cmd/cros_test_platform/internal/execution/types"
 )
 
 // IsNeeded determines if a task result indicates that the invocation needs to

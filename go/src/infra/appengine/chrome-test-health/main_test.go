@@ -6,13 +6,14 @@ package main
 
 import (
 	"context"
-	"infra/appengine/chrome-test-health/api"
 	"testing"
 
 	"cloud.google.com/go/civil"
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"google.golang.org/grpc/codes"
+
+	"infra/appengine/chrome-test-health/api"
 )
 
 type clientMock struct {

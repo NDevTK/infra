@@ -14,13 +14,13 @@ import (
 	"reflect"
 	"strings"
 
-	"infra/libs/cipkg"
-
 	"go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
 	"go.chromium.org/luci/cipd/client/cipd/template"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/system/environ"
+
+	"infra/libs/cipkg"
 )
 
 // CIPDExport is used for downloading CIPD packages. It behaves similar to

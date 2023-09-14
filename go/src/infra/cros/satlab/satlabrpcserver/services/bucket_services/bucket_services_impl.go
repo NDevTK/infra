@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"strings"
 
-	"infra/cros/satlab/satlabrpcserver/utils"
-
 	"cloud.google.com/go/storage"
+
+	"infra/cros/satlab/satlabrpcserver/utils"
 )
 
 // BucketConnector is an object for connecting the GCS bucket storage.

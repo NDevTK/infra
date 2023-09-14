@@ -7,9 +7,6 @@ package cmds
 import (
 	"context"
 	"fmt"
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/appengine/crosskylabadmin/site"
-	"infra/cmdsupport/cmdlib"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
@@ -17,6 +14,10 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
+	"infra/appengine/crosskylabadmin/site"
+	"infra/cmdsupport/cmdlib"
 )
 
 // SetStableVersion is a command for the GetStableVersion RPC.

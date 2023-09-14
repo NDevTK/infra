@@ -10,9 +10,8 @@ import (
 	"log"
 	"strings"
 
-	structbuilder "google.golang.org/protobuf/types/known/structpb"
-
 	"go.chromium.org/luci/common/errors"
+	structbuilder "google.golang.org/protobuf/types/known/structpb"
 )
 
 // Params are the parameters to the labpack job.

@@ -8,12 +8,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
-	"infra/cros/cmd/cros_test_platformV2/executor"
-	"infra/cros/cmd/cros_test_platformV2/tools/gcs"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	dut_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+
+	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
+	"infra/cros/cmd/cros_test_platformV2/executor"
+	"infra/cros/cmd/cros_test_platformV2/tools/gcs"
 )
 
 func translateRequest(req *api.CTPv2Request) *api.InternalTestplan {

@@ -1,8 +1,6 @@
 package api
 
 import (
-	"infra/appengine/cr-rev/frontend/redirect"
-	"infra/appengine/cr-rev/models"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -10,6 +8,9 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+
+	"infra/appengine/cr-rev/frontend/redirect"
+	"infra/appengine/cr-rev/models"
 )
 
 func TestServer(t *testing.T) {

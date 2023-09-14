@@ -9,11 +9,10 @@ import (
 	"testing"
 	"time"
 
+	. "github.com/smartystreets/goconvey/convey"
 	"google.golang.org/protobuf/types/known/durationpb"
 
 	evalpb "infra/rts/presubmit/eval/proto"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestPSURL(t *testing.T) {

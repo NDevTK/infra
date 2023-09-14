@@ -13,14 +13,13 @@ import (
 	"time"
 
 	"github.com/maruel/subcommands"
+	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-
-	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state"
 
 	"infra/cros/cmd/phosphorus/internal/botcache"
 	"infra/cros/cmd/phosphorus/internal/skylab_local_state/location"

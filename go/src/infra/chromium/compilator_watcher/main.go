@@ -14,8 +14,6 @@ import (
 	"strconv"
 	"time"
 
-	"google.golang.org/grpc/codes"
-
 	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/buildbucket/protoutil"
 	"go.chromium.org/luci/common/clock"
@@ -23,7 +21,9 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/luciexe/exe"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"infra/chromium/compilator_watcher/internal/bb"
 )
 

@@ -13,17 +13,16 @@ import (
 	"strings"
 	"time"
 
-	"go.chromium.org/luci/hardcoded/chromeinfra"
-	"go.chromium.org/luci/vpython/api/vpython"
-	"go.chromium.org/luci/vpython/application"
-	"go.chromium.org/luci/vpython/cipd"
-	"go.chromium.org/luci/vpython/spec"
-
 	"github.com/mitchellh/go-homedir"
 	cipdClient "go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/common/system/environ"
+	"go.chromium.org/luci/hardcoded/chromeinfra"
+	"go.chromium.org/luci/vpython/api/vpython"
+	"go.chromium.org/luci/vpython/application"
+	"go.chromium.org/luci/vpython/cipd"
+	"go.chromium.org/luci/vpython/spec"
 )
 
 const (

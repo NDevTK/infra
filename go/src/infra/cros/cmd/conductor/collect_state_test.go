@@ -7,13 +7,13 @@ import (
 	"testing"
 	"time"
 
-	"infra/cros/internal/assert"
-	bb "infra/cros/lib/buildbucket"
-
 	pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"infra/cros/internal/assert"
+	bb "infra/cros/lib/buildbucket"
 )
 
 func TestCollectState_MaxRetries(t *testing.T) {

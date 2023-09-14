@@ -11,10 +11,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"google.golang.org/protobuf/encoding/protojson"
-
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/sync/parallel"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	evalpb "infra/rts/presubmit/eval/proto"
 )

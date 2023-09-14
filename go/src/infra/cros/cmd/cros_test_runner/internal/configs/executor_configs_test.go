@@ -7,12 +7,12 @@ package configs
 import (
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+
 	"infra/cros/cmd/common_lib/common_configs"
 	"infra/cros/cmd/common_lib/common_executors"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestGetExecutor_UnsupportedExecutorType(t *testing.T) {

@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
-
 	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"

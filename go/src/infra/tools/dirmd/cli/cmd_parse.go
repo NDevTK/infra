@@ -11,11 +11,10 @@ import (
 	"os"
 
 	"github.com/maruel/subcommands"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/encoding/prototext"
-
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/encoding/prototext"
 
 	"infra/tools/dirmd"
 	dirmdpb "infra/tools/dirmd/proto"

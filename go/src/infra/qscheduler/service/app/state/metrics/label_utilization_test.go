@@ -16,9 +16,8 @@ package metrics
 import (
 	"testing"
 
-	"go.chromium.org/luci/common/data/stringset"
-
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/data/stringset"
 )
 
 func TestCompute(t *testing.T) {

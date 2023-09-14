@@ -12,6 +12,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
@@ -20,8 +21,6 @@ import (
 	"infra/cros/cmd/cros_test_runner/protos"
 	"infra/cros/cmd/ctpv2/data"
 	"infra/cros/cmd/ctpv2/internal/configs"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 // TODO : Re-structure different execution flow properly later.

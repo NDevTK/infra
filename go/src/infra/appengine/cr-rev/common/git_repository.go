@@ -1,8 +1,9 @@
 package common
 
 import (
-	"infra/appengine/cr-rev/config"
 	"strings"
+
+	"infra/appengine/cr-rev/config"
 )
 
 // DefaultIncludeRefs is reference path that is indexed by default.

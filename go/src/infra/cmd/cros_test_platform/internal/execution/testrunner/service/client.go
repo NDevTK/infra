@@ -15,13 +15,6 @@ import (
 	"net/http"
 	"sort"
 
-	"infra/cmd/cros_test_platform/internal/execution/types"
-	"infra/cmd/cros_test_platform/internal/execution/vmlab"
-	"infra/libs/skylab/request"
-	"infra/libs/skylab/swarming"
-
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/google/uuid"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
@@ -35,12 +28,16 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/lucictx"
-
 	resultpb "go.chromium.org/luci/resultdb/proto/v1"
 	"google.golang.org/genproto/protobuf/field_mask"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
-	"google.golang.org/grpc"
+	"infra/cmd/cros_test_platform/internal/execution/types"
+	"infra/cmd/cros_test_platform/internal/execution/vmlab"
+	"infra/libs/skylab/request"
+	"infra/libs/skylab/swarming"
+	ufsapi "infra/unifiedfleet/api/v1/rpc"
 )
 
 // TaskReference is an implementation-independent way to identify test_runner tasks.

@@ -10,8 +10,6 @@ import (
 	"regexp"
 	"strings"
 
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/datastore"
 	"github.com/golang/protobuf/proto"
@@ -22,6 +20,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	invapibq "infra/appengine/cros/lab_inventory/api/bigquery"
 	iv2ds "infra/cros/lab_inventory/datastore"

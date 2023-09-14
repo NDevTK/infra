@@ -17,11 +17,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"infra/chromium/bootstrapper/bootstrap"
-	"infra/chromium/bootstrapper/clients/gclient"
-	"infra/chromium/bootstrapper/clients/gerrit"
-	"infra/chromium/bootstrapper/clients/gitiles"
-
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -33,6 +28,11 @@ import (
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
+
+	"infra/chromium/bootstrapper/bootstrap"
+	"infra/chromium/bootstrapper/clients/gclient"
+	"infra/chromium/bootstrapper/clients/gerrit"
+	"infra/chromium/bootstrapper/clients/gitiles"
 )
 
 type getOptionsFn func() options

@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/maruel/subcommands"
-
 	"go.chromium.org/luci/auth/client/authcli"
 	swarmingAPI "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/cli"
@@ -17,13 +16,12 @@ import (
 	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/grpc/prpc"
 
+	"infra/cmd/shivas/internal/ufs/subcmds/host"
+	"infra/cmd/shivas/internal/ufs/subcmds/vm"
 	"infra/cmd/shivas/site"
 	"infra/cmd/shivas/utils"
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/dutstate"
-
-	"infra/cmd/shivas/internal/ufs/subcmds/host"
-	"infra/cmd/shivas/internal/ufs/subcmds/vm"
 	sw "infra/libs/skylab/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"

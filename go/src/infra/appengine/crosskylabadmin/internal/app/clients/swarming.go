@@ -28,17 +28,16 @@ import (
 	"strings"
 	"time"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-
 	"github.com/golang/protobuf/ptypes/duration"
-	"google.golang.org/protobuf/types/known/durationpb"
-
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/data/strpair"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/common/retry/transient"
 	"go.chromium.org/luci/server/auth"
+	"google.golang.org/protobuf/types/known/durationpb"
+
+	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 )
 
 const (

@@ -6,6 +6,7 @@ package scopes
 
 import (
 	"context"
+
 	"infra/cros/recovery/internal/log"
 )
 

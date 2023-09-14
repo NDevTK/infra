@@ -8,14 +8,13 @@ import (
 	"strings"
 	"testing"
 
+	gerrit "github.com/andygrunwald/go-gerrit"
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
-
-	gerrit "github.com/andygrunwald/go-gerrit"
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestGerritClient(t *testing.T) {

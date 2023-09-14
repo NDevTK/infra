@@ -25,18 +25,17 @@ import (
 	"strings"
 	"testing"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
-	"infra/tools/vpython/legacy/vpython2.7/luci/python"
-
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/common/sync/parallel"
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/common/system/filesystem"
-
-	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
+
+	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
+	"infra/tools/vpython/legacy/vpython2.7/luci/python"
 )
 
 var verbose = flag.Bool("test.gologger", false, "Enable Go logging.")

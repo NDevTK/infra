@@ -8,11 +8,10 @@ import (
 	"strings"
 
 	"cloud.google.com/go/storage"
-	"google.golang.org/appengine"
-
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/server/router"
+	"google.golang.org/appengine"
 )
 
 const (

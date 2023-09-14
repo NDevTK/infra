@@ -12,18 +12,16 @@ import (
 	"log"
 	"os"
 
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/gerrit"
-
+	"github.com/golang/protobuf/jsonpb"
+	"github.com/maruel/subcommands"
 	pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
-
 	"go.chromium.org/luci/auth"
 	lucigerrit "go.chromium.org/luci/common/api/gerrit"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	"github.com/golang/protobuf/jsonpb"
-	"github.com/maruel/subcommands"
+	"infra/cros/internal/cmd"
+	"infra/cros/internal/gerrit"
 )
 
 var (

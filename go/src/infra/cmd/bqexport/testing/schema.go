@@ -7,9 +7,9 @@ package testing
 import (
 	"fmt"
 
-	"infra/libs/bqschema/tabledef"
-
 	"cloud.google.com/go/bigquery"
+
+	"infra/libs/bqschema/tabledef"
 )
 
 // TestSchemaTable is a schema table used for testing.

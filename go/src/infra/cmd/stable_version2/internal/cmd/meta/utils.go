@@ -10,10 +10,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	cipd "infra/libs/cipd"
-
 	luciCipd "go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/common/errors"
+
+	cipd "infra/libs/cipd"
 )
 
 // findStableVersion2Package locates the CIPD package containing the current executable

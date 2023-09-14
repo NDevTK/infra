@@ -19,8 +19,6 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/cmd/phosphorus/internal/tls"
-
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/maruel/subcommands"
 	tlsapi "go.chromium.org/chromiumos/config/go/api/test/tls"
@@ -30,6 +28,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"infra/cros/cmd/phosphorus/internal/tls"
 )
 
 // FetchCrashes subcommand: fetches crashes from a DUT, optionally uploading them.

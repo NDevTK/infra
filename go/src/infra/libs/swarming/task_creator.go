@@ -10,14 +10,14 @@ import (
 	"io"
 	"time"
 
-	"infra/cmdsupport/cmdlib"
-	sw "infra/libs/skylab/swarming"
-
 	"github.com/google/uuid"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cmdsupport/cmdlib"
+	sw "infra/libs/skylab/swarming"
 )
 
 const (

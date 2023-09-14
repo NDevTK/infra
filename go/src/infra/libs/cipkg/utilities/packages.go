@@ -13,12 +13,12 @@ import (
 	"path/filepath"
 	"time"
 
-	"infra/libs/cipkg"
-
 	"github.com/danjacques/gofslock/fslock"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/filesystem"
+
+	"infra/libs/cipkg"
 )
 
 func blocker() error { return clock.Sleep(context.Background(), time.Millisecond*10).Err }

@@ -18,15 +18,14 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/storage"
-	"google.golang.org/api/iterator"
-	"google.golang.org/api/option"
-
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 	luciflag "go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/sync/parallel"
+	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 )
 
 // The range of the number of changed files to enable RTS.

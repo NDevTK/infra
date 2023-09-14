@@ -13,13 +13,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	"infra/libs/cipkg_new/base/actions"
-	"infra/libs/cipkg_new/base/generators"
-	"infra/libs/cipkg_new/core"
-
 	"go.chromium.org/luci/common/logging"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/reflect/protoreflect"
+
+	"infra/libs/cipkg_new/base/actions"
+	"infra/libs/cipkg_new/base/generators"
+	"infra/libs/cipkg_new/core"
 )
 
 type PreExecuteHook func(ctx context.Context, pkg actions.Package) error

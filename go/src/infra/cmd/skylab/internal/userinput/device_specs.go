@@ -7,8 +7,6 @@ package userinput
 import (
 	"encoding/csv"
 	"fmt"
-	"infra/libs/skylab/common/heuristics"
-	"infra/libs/skylab/inventory"
 	"io"
 	"io/ioutil"
 	"regexp"
@@ -16,6 +14,9 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/libs/skylab/common/heuristics"
+	"infra/libs/skylab/inventory"
 )
 
 const defaultCriticalPool = "DUT_POOL_QUOTA"

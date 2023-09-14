@@ -9,14 +9,14 @@ import (
 	"fmt"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/chromiumos/config/go/test/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
-
-	. "github.com/smartystreets/goconvey/convey"
-	"go.chromium.org/chromiumos/config/go/test/api"
-	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
 func TestCacheServerExecutor_StartCacheServer(t *testing.T) {

@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
-
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/common/retry/transient"

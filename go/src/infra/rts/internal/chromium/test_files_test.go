@@ -10,10 +10,9 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/proto"
-	"google.golang.org/api/iterator"
-
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"google.golang.org/api/iterator"
 )
 
 func TestTestFileSet(t *testing.T) {

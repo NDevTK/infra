@@ -5,15 +5,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"infra/appengine/sheriff-o-matic/som/client"
-	"infra/appengine/sheriff-o-matic/som/client/test"
-
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/server/auth/authtest"
 	"go.chromium.org/luci/server/router"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"infra/appengine/sheriff-o-matic/som/client"
+	"infra/appengine/sheriff-o-matic/som/client/test"
 )
 
 func TestRevRangeHandler(t *testing.T) {

@@ -16,14 +16,13 @@ import (
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/encryptedcookies"
+	// Using datastore for user sessions.
+	_ "go.chromium.org/luci/server/encryptedcookies/session/datastore"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/router"
 	"go.chromium.org/luci/server/secrets"
 	"go.chromium.org/luci/server/templates"
-
-	// Using datastore for user sessions.
-	_ "go.chromium.org/luci/server/encryptedcookies/session/datastore"
 
 	dashpb "infra/appengine/dashboard/api/dashboard"
 )

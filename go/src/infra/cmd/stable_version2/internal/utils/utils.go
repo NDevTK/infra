@@ -6,7 +6,6 @@ package utils
 
 import (
 	"github.com/golang/protobuf/jsonpb"
-
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 	sv "go.chromium.org/chromiumos/infra/proto/go/lab_platform"

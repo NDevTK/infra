@@ -11,10 +11,9 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/civil"
+	"go.chromium.org/luci/grpc/appstatus"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
-
-	"go.chromium.org/luci/grpc/appstatus"
 
 	"infra/appengine/statsui/api"
 )

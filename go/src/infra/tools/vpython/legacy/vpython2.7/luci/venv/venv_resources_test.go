@@ -29,17 +29,16 @@ import (
 	"time"
 
 	"github.com/danjacques/gofslock/fslock"
-
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
-	"infra/tools/vpython/legacy/vpython2.7/luci/python"
-	"infra/tools/vpython/legacy/vpython2.7/luci/wheel"
-
 	"go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/cipd/common"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/common/system/filesystem"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
+
+	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
+	"infra/tools/vpython/legacy/vpython2.7/luci/python"
+	"infra/tools/vpython/legacy/vpython2.7/luci/wheel"
 )
 
 const testDataDir = "test_data"

@@ -3,12 +3,13 @@ package repoimport
 import (
 	"context"
 	"errors"
-	"infra/appengine/cr-rev/common"
 	"testing"
 	"time"
 
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
+
+	"infra/appengine/cr-rev/common"
 )
 
 func factoryFunc(m map[common.GitRepository]Importer) ImporterFactory {

@@ -19,11 +19,10 @@ import (
 	"math/rand"
 	"sync"
 
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-
 	"go.chromium.org/luci/grpc/grpcutil"
 	swarming "go.chromium.org/luci/swarming/proto/api"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"infra/qscheduler/service/app/state"
 	"infra/qscheduler/service/app/state/nodestore"

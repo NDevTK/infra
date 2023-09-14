@@ -9,12 +9,11 @@ import (
 	"path/filepath"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+	. "go.chromium.org/luci/common/testing/assertions"
 	"golang.org/x/sync/errgroup"
 
 	evalpb "infra/rts/presubmit/eval/proto"
-
-	. "github.com/smartystreets/goconvey/convey"
-	. "go.chromium.org/luci/common/testing/assertions"
 )
 
 func TestReadDurationData(t *testing.T) {

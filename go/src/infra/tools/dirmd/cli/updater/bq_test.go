@@ -10,16 +10,14 @@ import (
 	"sync"
 	"testing"
 
-	"google.golang.org/protobuf/types/known/timestamppb"
-
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/bq"
 	"go.chromium.org/luci/common/clock/testclock"
+	. "go.chromium.org/luci/common/testing/assertions"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/tools/dirmd"
 	dirmdpb "infra/tools/dirmd/proto"
-
-	. "github.com/smartystreets/goconvey/convey"
-	. "go.chromium.org/luci/common/testing/assertions"
 )
 
 type mockInserter struct {

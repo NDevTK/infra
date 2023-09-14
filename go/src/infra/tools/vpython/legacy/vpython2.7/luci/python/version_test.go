@@ -20,9 +20,8 @@ import (
 	"sort"
 	"testing"
 
-	"go.chromium.org/luci/common/data/rand/mathrand"
-
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/data/rand/mathrand"
 	. "go.chromium.org/luci/common/testing/assertions"
 )
 

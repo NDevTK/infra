@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/vpython/api/vpython"
 	"go.chromium.org/luci/vpython/cipd"

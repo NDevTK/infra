@@ -11,11 +11,9 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
-
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
-
-	. "github.com/smartystreets/goconvey/convey"
 
 	"infra/appengine/arquebus/app/config"
 	rotationproxy "infra/appengine/rotation-proxy/proto"

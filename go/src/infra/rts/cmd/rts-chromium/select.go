@@ -10,12 +10,11 @@ import (
 	"path/filepath"
 
 	"github.com/maruel/subcommands"
-	"golang.org/x/sync/errgroup"
-
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"golang.org/x/sync/errgroup"
 
 	"infra/rts/internal/chromium"
 )

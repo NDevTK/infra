@@ -6,12 +6,12 @@ package data
 
 import (
 	"container/list"
-	"infra/cros/cmd/common_lib/interfaces"
-
-	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
+
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 )
 
 // PreLocalTestStateKeeper represents all the data pre local test execution flow requires.

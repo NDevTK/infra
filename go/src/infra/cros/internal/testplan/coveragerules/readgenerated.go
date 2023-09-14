@@ -7,7 +7,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"infra/cros/internal/git"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -21,6 +20,8 @@ import (
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
+
+	"infra/cros/internal/git"
 )
 
 // getAllFileDescriptorProtos finds the FileDescriptorProto for descriptor and

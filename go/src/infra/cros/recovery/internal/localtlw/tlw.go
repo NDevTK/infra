@@ -6,13 +6,14 @@ package localtlw
 
 import (
 	"context"
-	"infra/libs/lro"
 
 	"github.com/golang/protobuf/ptypes"
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/grpc"
+
+	"infra/libs/lro"
 )
 
 // CacheForDut queries the underlying TLW server to find assigned cache service

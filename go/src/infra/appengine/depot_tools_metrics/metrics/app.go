@@ -12,8 +12,6 @@ import (
 	"net/http"
 	"strings"
 
-	"infra/appengine/depot_tools_metrics/schema"
-
 	"cloud.google.com/go/bigquery"
 	"github.com/golang/protobuf/jsonpb"
 	"go.chromium.org/luci/auth/identity"
@@ -24,6 +22,8 @@ import (
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/router"
+
+	"infra/appengine/depot_tools_metrics/schema"
 )
 
 const (

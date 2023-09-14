@@ -8,7 +8,6 @@ import (
 	"encoding/xml"
 	"flag"
 	"fmt"
-	tricium "infra/tricium/api/v1"
 	"io/ioutil"
 	"log"
 	"os"
@@ -18,6 +17,8 @@ import (
 
 	"github.com/waigani/diffparser"
 	"go.chromium.org/luci/common/data/stringset"
+
+	tricium "infra/tricium/api/v1"
 )
 
 // enum contains all the data about a particular enum.

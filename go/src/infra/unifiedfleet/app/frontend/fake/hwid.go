@@ -7,9 +7,9 @@ package fake
 import (
 	"context"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-
 	"go.chromium.org/luci/common/errors"
+
+	ufspb "infra/unifiedfleet/api/v1/models"
 )
 
 // HwidClient mocks the hwid.ClientInterface

@@ -15,21 +15,19 @@ import (
 	"strings"
 
 	"github.com/maruel/subcommands"
+	sv "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
 	"infra/cmd/stable_version2/internal/cmd"
+	"infra/cmd/stable_version2/internal/cmd/validateconfig/querygs"
 	gslib "infra/cmd/stable_version2/internal/gs"
 	"infra/cmd/stable_version2/internal/site"
 	"infra/cmd/stable_version2/internal/utils"
 	svlib "infra/cros/stableversion"
 	gitlib "infra/libs/git"
-
-	sv "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
-
-	"infra/cmd/stable_version2/internal/cmd/validateconfig/querygs"
 )
 
 // UpdateWithOmaha subcommand: read stable version in omaha json file in GS.

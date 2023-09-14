@@ -9,12 +9,12 @@ import (
 	"fmt"
 	"testing"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
-
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
+
+	ufspb "infra/unifiedfleet/api/v1/models"
+	ufsapi "infra/unifiedfleet/api/v1/rpc"
 )
 
 func TestFindCacheServer_single(t *testing.T) {
