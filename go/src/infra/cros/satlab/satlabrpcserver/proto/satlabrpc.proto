@@ -30,6 +30,7 @@ service SatlabRpcService {
 
   // get DUTs information
   rpc get_dut_detail (GetDutDetailRequest) returns (GetDutDetailResponse);
+  rpc list_dut_tasks (ListDutTasksRequest) returns (ListDutTasksResponse);
 }
 
 message ListBuildTargetsRequest {
@@ -233,4 +234,26 @@ message GetDutDetailResponse {
   repeated StringListPair dimensions = 10;
   string task_name = 11;
   string version = 12;
+}
+
+// NEXT_TAG = 4
+message ListDutTasksRequest {
+  string address = 1;
+  string cursor = 2;
+  int32 page_size = 3;
+}
+
+// NEXT_TAG = 6
+message Task {
+  string id = 1;
+  google.protobuf.Timestamp start_at = 2;
+  float duration = 3;
+  string url = 4;
+  bool is_success = 5;
+}
+
+// NEXT_TAG = 4
+message ListDutTasksResponse {
+  string cursor = 1;
+  repeated Task tasks = 2;
 }
