@@ -628,7 +628,10 @@ def GenTests(api):
           'cloudbuildhelper build target',
           build_success_with_notify(),
       ) +
-      api.step_data('upload roll CL.scripts/roll.py', retcode=1)
+      api.step_data(
+          'upload roll CL.scripts/roll.py', retcode=1
+      ) +
+      api.expect_status('FAILURE')
   )
 
   yield (
@@ -642,10 +645,13 @@ def GenTests(api):
       api.step_data(
           'cloudbuildhelper build target',
           api.cloudbuildhelper.build_error_output('Boom'),
-          retcode=1)
+          retcode=1
+      ) +
+      api.expect_status('FAILURE')
   )
 
   yield (
       api.test('bad-props') +
-      api.properties(mode=0)
+      api.properties(mode=0) +
+      api.expect_status('INFRA_FAILURE')
   )
