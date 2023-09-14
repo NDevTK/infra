@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cf70e338_2bac85f7",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-14T09:19:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a9058f61_68fd6ca4",
+      "revId": "6f617426ec2f9e12869aedc4cf2181624e4968c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3edbe9c3_c02faf9c",
@@ -41,6 +59,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5cc8ffba_69e22cc2",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-14T09:19:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3edbe9c3_c02faf9c",
+      "range": {
+        "startLine": 11,
+        "startChar": 25,
+        "endLine": 11,
+        "endChar": 30
+      },
+      "revId": "6f617426ec2f9e12869aedc4cf2181624e4968c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4038ccce_21af1473",
@@ -54,6 +96,30 @@
       "writtenOn": "2023-09-14T08:50:00Z",
       "side": 1,
       "message": "better to use\nhttps://ninja-build.org/manual.html#:~:text\u003dappears%20in%20commands.-,restat,-if%20present%2C%20causes\n?",
+      "range": {
+        "startLine": 22,
+        "startChar": 3,
+        "endLine": 22,
+        "endChar": 47
+      },
+      "revId": "6f617426ec2f9e12869aedc4cf2181624e4968c4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7c5bc080_3f2f6a03",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_restat_test.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-14T09:19:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4038ccce_21af1473",
       "range": {
         "startLine": 22,
         "startChar": 3,
