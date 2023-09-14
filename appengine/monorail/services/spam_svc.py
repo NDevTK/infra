@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import collections
 import logging
 import settings
+import time
 
 from collections import defaultdict
 from framework import sql
@@ -172,7 +173,10 @@ class SpamService(object):
 
   def FlagIssues(self, cnxn, issue_service, issues, reporting_user_id,
                  flagged_spam):
-    """Creates or deletes a spam report on an issue."""
+    """Creates or deletes a spam report on an issue.
+
+    This function is run when a user flags an issue as spam but does not
+    have 'VerdictSpam' permission."""
     verdict_updates = []
     if flagged_spam:
       rows = [(issue.issue_id, issue.reporter_id, reporting_user_id)
@@ -214,9 +218,11 @@ class SpamService(object):
     self.verdict_tbl.InsertRows(cnxn, THRESHVERDICT_ISSUE_COLS, rows,
         ignore=True)
     update_issues = []
+    current_time = int(time.time())
     for issue in issues:
       if issue.issue_id in verdict_updates:
         issue.is_spam = flagged_spam
+        issue.migration_modified_timestamp = current_time
         update_issues.append(issue)
 
     if flagged_spam:
@@ -229,7 +235,8 @@ class SpamService(object):
                 'issue': issue_ref
             })
 
-    issue_service.UpdateIssues(cnxn, update_issues, update_cols=['is_spam'])
+    issue_service.UpdateIssues(
+        cnxn, update_issues, update_cols=['is_spam', 'migration_modified'])
 
   def FlagComment(
       self, cnxn, issue, comment_id, reported_user_id, reporting_user_id,
@@ -261,6 +268,10 @@ class SpamService(object):
 
   def RecordClassifierIssueVerdict(self, cnxn, issue, is_spam, confidence,
         fail_open):
+    """Records a judgment call on whether a new issue is spam.
+
+    Only run when an issue is newly filed. If the issue is determined to be
+    likely spam, the code increments a counter."""
     reason = REASON_FAIL_OPEN if fail_open else REASON_CLASSIFIER
     self.verdict_tbl.InsertRow(
         cnxn,
@@ -282,6 +293,9 @@ class SpamService(object):
 
   def RecordManualIssueVerdicts(self, cnxn, issue_service, issues, user_id,
                                 is_spam):
+    """Bypasses the classifier to manually classify an issue as spam.
+
+    This code can only be run by users with the 'VerdictSpam' permission."""
     rows = [(user_id, issue.issue_id, is_spam, REASON_MANUAL, issue.project_id)
         for issue in issues]
     issue_ids = [issue.issue_id for issue in issues]
@@ -294,8 +308,10 @@ class SpamService(object):
     self.verdict_tbl.InsertRows(cnxn, MANUALVERDICT_ISSUE_COLS, rows,
         ignore=True)
 
+    current_time = int(time.time())
     for issue in issues:
       issue.is_spam = is_spam
+      issue.migration_modified_timestamp = current_time
 
     if is_spam:
       for issue in issues:
@@ -310,10 +326,14 @@ class SpamService(object):
       issue_service.AllocateNewLocalIDs(cnxn, issues)
 
     # This will commit the transaction.
-    issue_service.UpdateIssues(cnxn, issues, update_cols=['is_spam'])
+    issue_service.UpdateIssues(
+        cnxn, issues, update_cols=['is_spam', 'migration_modified'])
 
   def RecordManualCommentVerdict(self, cnxn, issue_service, user_service,
         comment_id, user_id, is_spam):
+    """Bypasses the classifier to manually classify a comment as spam.
+
+    This code can only be run by users with the 'VerdictSpam' permission."""
     # TODO(seanmccullough): Bulk comment verdicts? There's no UI for that.
     self.verdict_tbl.InsertRow(cnxn, ignore=True,
       user_id=user_id, comment_id=comment_id, is_spam=is_spam,

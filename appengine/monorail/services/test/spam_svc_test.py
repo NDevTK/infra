@@ -9,6 +9,7 @@ from __future__ import absolute_import
 
 import mock
 import six
+import time
 import unittest
 
 try:
@@ -52,6 +53,7 @@ class SpamServiceTest(unittest.TestCase):
 
     self.spam_service.report_tbl.Delete = Mock()
     self.spam_service.verdict_tbl.Delete = Mock()
+    self.now = int(time.time())
 
     ts_mon.reset_for_unittest()
 
@@ -99,7 +101,9 @@ class SpamServiceTest(unittest.TestCase):
         summary='sum',
         status='Live',
         issue_id=78901,
-        project_name='proj')
+        project_name='proj',
+        migration_modified_timestamp=1234567,
+        is_spam=False)
     issue.assume_stale = False  # We will store this issue.
 
     self.mock_report_tbl.InsertRows(self.cnxn,
@@ -121,6 +125,8 @@ class SpamServiceTest(unittest.TestCase):
         self.cnxn, self.issue_service, [issue], 111, True)
     self.mox.VerifyAll()
     self.assertIn(issue, self.issue_service.updated_issues)
+    self.assertEqual(issue.migration_modified_timestamp, self.now)
+    self.assertEqual(issue.is_spam, True)
 
     self.assertEqual(
         1,
@@ -140,7 +146,9 @@ class SpamServiceTest(unittest.TestCase):
         summary='sum',
         status='Live',
         issue_id=78901,
-        project_name='proj')
+        project_name='proj',
+        migration_modified_timestamp=1234567,
+        is_spam=False)
 
     self.mock_report_tbl.InsertRows(self.cnxn,
         ['issue_id', 'reported_user_id', 'user_id'],
@@ -160,6 +168,8 @@ class SpamServiceTest(unittest.TestCase):
     self.mox.VerifyAll()
 
     self.assertNotIn(issue, self.issue_service.updated_issues)
+    self.assertEqual(issue.migration_modified_timestamp, 1234567)
+    self.assertEqual(issue.is_spam, False)
     self.assertIsNone(
         self.spam_service.issue_actions.get(
             fields={
@@ -170,8 +180,15 @@ class SpamServiceTest(unittest.TestCase):
 
   def testUnflagIssue_overThresh(self):
     issue = fake.MakeTestIssue(
-        project_id=789, local_id=1, reporter_id=111, owner_id=456,
-        summary='sum', status='Live', issue_id=78901, is_spam=True)
+        project_id=789,
+        local_id=1,
+        reporter_id=111,
+        owner_id=456,
+        summary='sum',
+        status='Live',
+        issue_id=78901,
+        migration_modified_timestamp=1234567,
+        is_spam=True)
     self.mock_report_tbl.Delete(self.cnxn, issue_id=[issue.issue_id],
         comment_id=None, user_id=111)
     self.mock_report_tbl.Select(self.cnxn,
@@ -188,15 +205,23 @@ class SpamServiceTest(unittest.TestCase):
     self.mox.VerifyAll()
 
     self.assertNotIn(issue, self.issue_service.updated_issues)
-    self.assertEqual(True, issue.is_spam)
+    self.assertEqual(issue.migration_modified_timestamp, 1234567)
+    self.assertEqual(issue.is_spam, True)
 
   def testUnflagIssue_underThresh(self):
     """A non-member un-flagging an issue as spam should not be able
     to overturn the verdict to ham. This is different from previous
     behavior. See https://crbug.com/monorail/2232 for details."""
     issue = fake.MakeTestIssue(
-        project_id=789, local_id=1, reporter_id=111, owner_id=456,
-        summary='sum', status='Live', issue_id=78901, is_spam=True)
+        project_id=789,
+        local_id=1,
+        reporter_id=111,
+        owner_id=456,
+        summary='sum',
+        status='Live',
+        issue_id=78901,
+        migration_modified_timestamp=1234567,
+        is_spam=True)
     issue.assume_stale = False  # We will store this issue.
     self.mock_report_tbl.Delete(self.cnxn, issue_id=[issue.issue_id],
         comment_id=None, user_id=111)
@@ -214,12 +239,20 @@ class SpamServiceTest(unittest.TestCase):
     self.mox.VerifyAll()
 
     self.assertNotIn(issue, self.issue_service.updated_issues)
-    self.assertEqual(True, issue.is_spam)
+    self.assertEqual(issue.migration_modified_timestamp, 1234567)
+    self.assertEqual(issue.is_spam, True)
 
   def testUnflagIssue_underThreshNoManualOverride(self):
     issue = fake.MakeTestIssue(
-        project_id=789, local_id=1, reporter_id=111, owner_id=456,
-        summary='sum', status='Live', issue_id=78901, is_spam=True)
+        project_id=789,
+        local_id=1,
+        reporter_id=111,
+        owner_id=456,
+        summary='sum',
+        status='Live',
+        issue_id=78901,
+        migration_modified_timestamp=1234567,
+        is_spam=True)
     self.mock_report_tbl.Delete(self.cnxn, issue_id=[issue.issue_id],
         comment_id=None, user_id=111)
     self.mock_report_tbl.Select(self.cnxn,
@@ -237,7 +270,8 @@ class SpamServiceTest(unittest.TestCase):
     self.mox.VerifyAll()
 
     self.assertNotIn(issue, self.issue_service.updated_issues)
-    self.assertEqual(True, issue.is_spam)
+    self.assertEqual(issue.migration_modified_timestamp, 1234567)
+    self.assertEqual(issue.is_spam, True)
 
   def testIsExempt_RegularUser(self):
     author = user_pb2.MakeUser(111, email='test@example.com')
