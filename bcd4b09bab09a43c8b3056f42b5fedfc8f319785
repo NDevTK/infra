@@ -43,6 +43,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "562762b7_4fbcc811",
+        "filename": "go/src/infra/experimental/golangbuild/testmode.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 436,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2023-09-14T21:58:09Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "964101c9_8c43dd35",
+      "range": {
+        "startLine": 436,
+        "startChar": 1,
+        "endLine": 436,
+        "endChar": 11
+      },
+      "revId": "bcd4b09bab09a43c8b3056f42b5fedfc8f319785",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "c14a5426_214467aa",
         "filename": "go/src/infra/experimental/golangbuild/testmode.go",
         "patchSetId": 3
