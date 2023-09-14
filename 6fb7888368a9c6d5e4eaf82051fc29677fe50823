@@ -16,6 +16,24 @@
       "message": "Follow\nhttps://www.grammarly.com/blog/capitalization-rules/#:~:text\u003dEnglish%20capitalization%20rules%20require%20that%20certain%20words%2C%20like%20proper%20nouns%20and%20the%20first%20word%20in%20a%20sentence%2C%20start%20with%20a%20capital%20letter.\n?",
       "revId": "6fb7888368a9c6d5e4eaf82051fc29677fe50823",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "25a0568f_b91c7c9b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-14T09:16:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "03c746a5_29aca5eb",
+      "revId": "6fb7888368a9c6d5e4eaf82051fc29677fe50823",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
