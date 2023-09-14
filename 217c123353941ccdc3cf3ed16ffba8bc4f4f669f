@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "766217be_891bab0c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-09-14T06:57:48Z",
+      "side": 1,
+      "message": "This doesn\u0027t have any relevant context?",
+      "revId": "217c123353941ccdc3cf3ed16ffba8bc4f4f669f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "728b1d96_8c4698ba",
         "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_restat_test.go",
         "patchSetId": 4
