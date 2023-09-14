@@ -46,6 +46,30 @@
       },
       "revId": "035f4b870a44af7f2e02310af2e75cc8ea8bb264",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "afc8c965_0ea95753",
+        "filename": "go/src/infra/experimental/golangbuild/testmode.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 449,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2023-09-14T19:11:09Z",
+      "side": 1,
+      "message": "\u003e I don\u0027t immediately see how manual sharding would be simpler while maintaining the property that cmd/dist execution doesn\u0027t happen in the trusted coordinator mode,\n\nthe diff I have in mind is roughly:\n- add the following after L438\n```\nbucketSize :\u003d len(ports) / shard.nShards\nbucketIdx :\u003d bucketSize * shard.shardID\nports \u003d ports[bucketIdx:min(bucketIdx+bucketSize, len(ports))]\n```\n- delete L434-L436\n\nthat\u0027s a policy that\u0027s portable across test mode shards without requiring any additional coordination. it does mean that if we add new ports that the bucket assignments will shift, but my point is that I\u0027m not really worried about that since building any particular port is very similar to building any other port. the upside is that you always get a good distribution across shards.\n\nunless I\u0027m missing something, I think that would work and I think it\u0027s maybe a little simpler to understand?",
+      "parentUuid": "e66109c9_12f9ee4e",
+      "range": {
+        "startLine": 448,
+        "startChar": 0,
+        "endLine": 449,
+        "endChar": 195
+      },
+      "revId": "035f4b870a44af7f2e02310af2e75cc8ea8bb264",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
