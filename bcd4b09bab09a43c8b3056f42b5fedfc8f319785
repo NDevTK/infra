@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fd725d41_c7252059",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2023-09-14T21:31:42Z",
+      "side": 1,
+      "message": "LGTM, thanks!",
+      "revId": "bcd4b09bab09a43c8b3056f42b5fedfc8f319785",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "964101c9_8c43dd35",
+        "filename": "go/src/infra/experimental/golangbuild/testmode.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 436,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2023-09-14T21:31:42Z",
+      "side": 1,
+      "message": "a short comment to just indicate that we\u0027re splitting up the ports into buckets and picking one for ourselves would be helpful",
+      "range": {
+        "startLine": 436,
+        "startChar": 1,
+        "endLine": 436,
+        "endChar": 11
+      },
+      "revId": "bcd4b09bab09a43c8b3056f42b5fedfc8f319785",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c14a5426_214467aa",
+        "filename": "go/src/infra/experimental/golangbuild/testmode.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 439,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2023-09-14T21:31:42Z",
+      "side": 1,
+      "message": "good catch",
+      "range": {
+        "startLine": 439,
+        "startChar": 2,
+        "endLine": 439,
+        "endChar": 12
+      },
+      "revId": "bcd4b09bab09a43c8b3056f42b5fedfc8f319785",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
