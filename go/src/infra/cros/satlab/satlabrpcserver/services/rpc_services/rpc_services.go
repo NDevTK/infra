@@ -547,3 +547,40 @@ func (s *SatlabRpcServiceServer) ListDutTasks(ctx context.Context, in *pb.ListDu
 		Tasks:  tasks,
 	}, nil
 }
+
+func (s *SatlabRpcServiceServer) ListDutEvents(ctx context.Context, in *pb.ListDutEventsRequest) (*pb.ListDutEventsResponse, error) {
+	if s.swarmingService == nil {
+		return nil, errors.New("need to login before using this")
+	}
+
+	IPHostMap, err := dns.ReadHostsToIPMap(s.commandExecutor)
+	if err != nil {
+		return nil, err
+	}
+	hostname, ok := IPHostMap[in.GetAddress()]
+	if !ok {
+		return nil, errors.New("can't find the hostname")
+	}
+
+	r, err := s.swarmingService.ListBotEvents(ctx, hostname, in.GetCursor(), int(in.GetPageSize()))
+	if err != nil {
+		return nil, err
+	}
+
+	events := []*pb.BotEvent{}
+	for _, e := range r.Events {
+		events = append(events, &pb.BotEvent{
+			Msg:       e.Message,
+			EventType: e.Type,
+			CreatedAt: e.Ts,
+			TaskId:    e.TaskID,
+			TaskLink:  e.TaskLink,
+			Version:   e.Version,
+		})
+	}
+
+	return &pb.ListDutEventsResponse{
+		Cursor: r.Cursor,
+		Events: events,
+	}, nil
+}
