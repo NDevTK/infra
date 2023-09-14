@@ -431,7 +431,7 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 			// TODO(go.dev/issue/61546, go.dev/issue/58110): If the port gets fixed, drop this case.
 			continue
 		}
-		if shard != noSharding && !shard.shouldRunTest(p.GOOS+"/"+p.GOARCH) {
+		if shard != noSharding && !shard.shouldRunTest(string(goDistListRebalance[shard.nShards])+p.GOOS+"/"+p.GOARCH) {
 			continue
 		}
 		ports = append(ports, p.Port)
@@ -442,6 +442,11 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 	}
 	io.WriteString(step.Log("ports"), portList)
 	return ports, nil
+}
+
+// goDistListRebalance holds hash salts used to rebalance sharding for go dist list. Map key is shard count.
+var goDistListRebalance = map[uint32][]byte{
+	12: {0xfd, 0xb6, 0x39, 0x13, 0x7c, 0x2a, 0x2e, 0x19, 0x18, 0x20, 0xa, 0x8, 0x9b, 0xdc, 0x8f, 0xb6, 0xd0, 0x7f, 0xd1, 0xaf, 0xa3, 0x1d, 0xc, 0xcb, 0x57, 0x8b, 0xfd, 0x96, 0xc5, 0xb3, 0x17, 0x6f},
 }
 
 // compileOptOut is a policy function that reports whether the provided
