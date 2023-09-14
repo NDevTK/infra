@@ -87,5 +87,36 @@ func CurlFile(ctx context.Context, run components.Runner, sourcePath, destinatio
 			)
 		}
 	}
-	return httpResponseCode, errors.Annotate(err, "install firmware image").Err()
+	return httpResponseCode, errors.Annotate(err, "failed to curl file").Err()
+}
+
+// CurlFileContents reads a file by using curl util.
+func CurlFileContents(ctx context.Context, run components.Runner, sourcePath string, timeout time.Duration) (string, int, error) {
+	curlParams := []string{sourcePath, "--fail"}
+	if v, ok := scopes.GetParam(ctx, scopes.ParamKeySwarmingTaskID); ok {
+		curlParams = append(curlParams, "-H", fmt.Sprintf("X-SWARMING-TASK-ID:%s", v))
+	}
+	if v, ok := scopes.GetParam(ctx, scopes.ParamKeyBuildbucketID); ok {
+		curlParams = append(curlParams, "-H", fmt.Sprintf("X-BBID:%s", v))
+	}
+	out, err := run(ctx, timeout, "curl", curlParams...)
+	if err == nil {
+		log.Debugf(ctx, "Successfully read %q", sourcePath)
+		return out, 0, nil
+	}
+	httpResponseCode := ExtractHttpResponseCode(err)
+	log.Debugf(ctx, "Fail to read %q", sourcePath)
+	log.Debugf(ctx, "Fail to read %q: output %s", sourcePath, out)
+	log.Debugf(ctx, "Fail to read %q: httpResponseCode %d", sourcePath, httpResponseCode)
+	if httpResponseCode >= 500 {
+		// non-500 errors are recorded by caching service.
+		// We are only interested in 500 errors coming from the caching service at the moment..
+		if execMetric := metrics.GetDefaultAction(ctx); execMetric != nil {
+			execMetric.Observations = append(execMetric.Observations,
+				metrics.NewInt64Observation("cache_failed_response_code", int64(httpResponseCode)),
+				metrics.NewStringObservation("cache_failed_source_path", sourcePath),
+			)
+		}
+	}
+	return "", httpResponseCode, errors.Annotate(err, "failed to curl file contents").Err()
 }
