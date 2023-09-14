@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e3eb5a2c_c1e7a273",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-14T07:53:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "766217be_891bab0c",
+      "revId": "217c123353941ccdc3cf3ed16ffba8bc4f4f669f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "728b1d96_8c4698ba",
@@ -31,6 +49,30 @@
       "writtenOn": "2023-09-14T06:54:49Z",
       "side": 1,
       "message": "Could you leave link to reference for restat?",
+      "range": {
+        "startLine": 20,
+        "startChar": 8,
+        "endLine": 20,
+        "endChar": 14
+      },
+      "revId": "217c123353941ccdc3cf3ed16ffba8bc4f4f669f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f21f39c9_b3968b2b",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_restat_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-14T07:53:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "728b1d96_8c4698ba",
       "range": {
         "startLine": 20,
         "startChar": 8,
