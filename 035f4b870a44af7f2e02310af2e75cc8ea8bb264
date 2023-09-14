@@ -22,6 +22,30 @@
       },
       "revId": "035f4b870a44af7f2e02310af2e75cc8ea8bb264",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e66109c9_12f9ee4e",
+        "filename": "go/src/infra/experimental/golangbuild/testmode.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 449,
+      "author": {
+        "id": 1568167
+      },
+      "writtenOn": "2023-09-14T18:53:26Z",
+      "side": 1,
+      "message": "I wanted to try a programmatic \"find a salt\" approach with the intention of possibly extending it to real tests that are poorly sharded. Misc-compile was a very simple place to start, since the evaluation function is very fast (just count number of shards selected and make sure it\u0027s not higher than the goal). But also it seems short code-wise: only +6 -1 diff in non-test code.\n\nI\u0027ll likely need to do this again for nShards \u003d 4 or some TBD value for sharding misc-compile in x/ repos. With this approach, it\u0027d take me a minute to run the test to find another salt for whatever that N is, and add one line to the map.\n\nI don\u0027t immediately see how manual sharding would be simpler while maintaining the property that cmd/dist execution doesn\u0027t happen in the trusted coordinator mode, only in the test modes, but maybe I\u0027m overlooking something. Do you mean adding a hard-coded list of known ports, and bucket assignments, or something else? (That seems quite verbose and not simpler, but again, maybe I\u0027m misunderstanding the suggestion.)",
+      "parentUuid": "db064483_f4ffd77b",
+      "range": {
+        "startLine": 448,
+        "startChar": 0,
+        "endLine": 449,
+        "endChar": 195
+      },
+      "revId": "035f4b870a44af7f2e02310af2e75cc8ea8bb264",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
