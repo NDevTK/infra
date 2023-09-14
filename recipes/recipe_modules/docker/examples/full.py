@@ -42,7 +42,7 @@ def GenTests(api):
   yield api.test(
       'fail_installed',
       api.step_data('ensure docker installed', retcode=1),
-      api.post_process(StatusFailure),
+      api.expect_status('FAILURE'),
   )
 
   yield api.test(

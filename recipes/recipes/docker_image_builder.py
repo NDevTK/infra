@@ -112,7 +112,8 @@ def GenTests(api):
   )
   yield (
       api.test('no_docker') +
-      api.step_data('ensure docker installed', retcode=1)
+      api.step_data('ensure docker installed', retcode=1) +
+      api.expect_status('FAILURE')
   )
   yield (
       api.test('unknown_version') +
