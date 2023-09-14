@@ -2267,7 +2267,11 @@ class IssueServiceTest(unittest.TestCase):
     self.services.issue.issue_id_2lc.CacheItem((789, 1), 78901)
     self.SetUpUpdateComment(
         comment.id, delta={'deleted_by': 222, 'is_spam': False})
-    self.SetUpUpdateIssues(given_delta={'attachment_count': 0})
+    self.SetUpUpdateIssues(
+        given_delta={
+            'attachment_count': 0,
+            'migration_modified': self.now
+        })
     self.SetUpEnqueueIssuesForIndexing([78901])
     self.mox.ReplayAll()
     self.services.issue.SoftDeleteComment(
@@ -2487,7 +2491,11 @@ class IssueServiceTest(unittest.TestCase):
     comment.attachments.append(attachment)
 
     self.SetUpUpdateAttachment(179901, 1234, {'deleted': True})
-    self.SetUpUpdateIssues(given_delta={'attachment_count': 0})
+    self.SetUpUpdateIssues(
+        given_delta={
+            'attachment_count': 0,
+            'migration_modified': self.now
+        })
     self.SetUpEnqueueIssuesForIndexing([78901])
 
     self.mox.ReplayAll()

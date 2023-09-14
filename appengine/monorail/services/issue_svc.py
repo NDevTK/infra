@@ -2414,16 +2414,19 @@ class IssueService(object):
       if not issue_comment.deleted_by:
         issue_comment.deleted_by = deleted_by_user_id
         issue.attachment_count = issue.attachment_count - attachments
+        issue.migration_modified_timestamp = int(time.time())
 
     # Undelete only if it's in deleted state
     elif issue_comment.deleted_by:
       issue_comment.deleted_by = 0
       issue.attachment_count = issue.attachment_count + attachments
+      issue.migration_modified_timestamp = int(time.time())
 
     issue_comment.is_spam = is_spam
     self._UpdateComment(
         cnxn, issue_comment, update_cols=['deleted_by', 'is_spam'])
-    self.UpdateIssue(cnxn, issue, update_cols=['attachment_count'])
+    self.UpdateIssue(
+        cnxn, issue, update_cols=['attachment_count', 'migration_modified'])
 
     # Reindex the issue to take the comment deletion/undeletion into account.
     if reindex:
@@ -2621,10 +2624,12 @@ class IssueService(object):
       if delete:
         if not attachment.deleted:
           issue.attachment_count = issue.attachment_count - 1
+          issue.migration_modified_timestamp = int(time.time())
 
       # Increment attachment count only if it's in deleted state
       elif attachment.deleted:
         issue.attachment_count = issue.attachment_count + 1
+        issue.migration_modified_timestamp = int(time.time())
 
     logging.info('attachment.deleted was %s', attachment.deleted)
 
@@ -2634,7 +2639,8 @@ class IssueService(object):
 
     self._UpdateAttachment(
         cnxn, issue_comment, attachment, update_cols=['deleted'])
-    self.UpdateIssue(cnxn, issue, update_cols=['attachment_count'])
+    self.UpdateIssue(
+        cnxn, issue, update_cols=['attachment_count', 'migration_modified'])
 
     if index_now:
       tracker_fulltext.IndexIssues(
