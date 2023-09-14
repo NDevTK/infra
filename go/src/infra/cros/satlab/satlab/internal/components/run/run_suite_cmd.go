@@ -40,7 +40,6 @@ func (c *run) Run(a subcommands.Application, args []string, env subcommands.Env)
 		cmdlib.PrintError(a, err)
 		return 1
 	}
-
 	if err := c.innerRun(a, args, env); err != nil {
 		cmdlib.PrintError(a, err)
 		return 1
@@ -71,7 +70,6 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 	buildLink, err := r.TriggerRun(ctx)
 	fmt.Printf("\n\n-- BUILD LINK --\n%s\n\n", buildLink)
 	return err
-
 }
 
 func (c *run) validateArgs() error {

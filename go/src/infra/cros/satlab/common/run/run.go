@@ -12,7 +12,6 @@ import (
 	"os"
 	"path"
 	"strconv"
-	"strings"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -122,7 +121,10 @@ func (c *Run) triggerRunWithClients(ctx context.Context, moblabClient MoblabClie
 	// 2. Latency: Waiting for the copying to take place is not a good user experience and
 	// is not necessary anyway in this case. Although copying is fairly quick, it is left to
 	// be handled by server in the background
-	_, _ = c.StageImageToBucket(ctx, moblabClient, gcsBucket)
+	err := StageImageToBucket(ctx, moblabClient, c.Board, c.Model, c.Build)
+	if err != nil {
+		return "", errors.Annotate(err, "satlab stage image to bucket").Err()
+	}
 
 	link, err := ScheduleBuild(ctx, bbClient)
 	if err != nil {
@@ -160,27 +162,22 @@ func (c *Run) createTestPlan() (*test_platform.Request_TestPlan, error) {
 	return tp, nil
 }
 
-func (c *Run) StageImageToBucket(ctx context.Context, moblabClient MoblabClient, bucket string) (string, error) {
+// StageImageToBucket stages the specified Chrome OS image to the user GCS bucket
+func StageImageToBucket(ctx context.Context, moblabClient MoblabClient, board string, model string, buildVersion string) error {
+	bucket := site.GetGCSImageBucket()
 	if bucket == "" {
-		fmt.Println("GCS_BUCKET not found")
-		return "", errors.New("GCS_BUCKET not found")
+		return errors.New("GCS_BUCKET not found")
 	}
-	if c.Model == "" {
-		c.Model = "~"
-	}
-	if c.Image != "" && c.Build == "" {
-		c.Build = strings.Split(c.Image, "/")[1]
-		c.Build = strings.Split(c.Build, "-")[1]
-	}
-	buildTarget := buildTargetParent(c.Board, c.Model)
-	artifactName := fmt.Sprintf("%s/builds/%s/artifacts/%s", buildTarget, c.Build, bucket)
+
+	buildTarget := fmt.Sprintf("buildTargets/%s/models/%s", board, model)
+	artifactName := fmt.Sprintf("%s/builds/%s/artifacts/%s", buildTarget, buildVersion, bucket)
 	stageReq := &moblabpb.StageBuildRequest{
 		Name: artifactName,
 	}
 
 	_, err := moblabClient.StageBuild(ctx, stageReq)
 	if err != nil {
-		return "", err
+		return err
 	}
 	var stageStatus *moblabpb.CheckBuildStageStatusResponse
 	count := 10
@@ -191,19 +188,19 @@ func (c *Run) StageImageToBucket(ctx context.Context, moblabClient MoblabClient,
 		}
 		stageStatus, err = moblabClient.CheckBuildStageStatus(ctx, req)
 		if err != nil {
-			return "", err
+			return err
 		}
 		if stageStatus.IsBuildStaged {
 			break
 		}
 		if count == 0 {
-			return "", fmt.Errorf("stage not completed within 10 retries")
+			return fmt.Errorf("stage not completed within 10 retries")
 		}
 	}
 	destPath := stageStatus.StagedBuildArtifact.Path
 
-	fmt.Printf("Artifacts staged to %s", path.Join(bucket, destPath))
-	return destPath, nil
+	fmt.Printf("Artifacts staged to %s\n", path.Join(bucket, destPath))
+	return nil
 }
 
 // / ScheduleBuild register a build. If it successes, it returns a link of build. Otherwise,
@@ -230,11 +227,6 @@ func (c *Run) getDroneTarget() (string, error) {
 		satlabTarget = fmt.Sprintf("satlab-%s", localSatlab)
 	}
 	return satlabTarget, nil
-}
-
-func buildTargetParent(board string, model string) string {
-	artifactName := fmt.Sprintf("buildTargets/%s/models/%s", board, model)
-	return artifactName
 }
 
 // BuildbucketClient interface provides subset of Buildbucket methods relevant to Satlab CLI

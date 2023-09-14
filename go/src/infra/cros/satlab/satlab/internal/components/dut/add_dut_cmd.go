@@ -115,9 +115,9 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 		if err != nil {
 			return errors.Annotate(err, "add dut - find most stable build").Err()
 		}
-		err = stableversion.WriteLocalStableVersion(recovery_version, site.RecoveryVersionDirectory)
+		err = stableversion.StageAndWriteLocalStableVersion(ctx, moblabClient, recovery_version)
 		if err != nil {
-			return errors.Annotate(err, "add dut - write local stable version").Err()
+			return errors.Annotate(err, "stage and write local stable version").Err()
 		}
 	}
 

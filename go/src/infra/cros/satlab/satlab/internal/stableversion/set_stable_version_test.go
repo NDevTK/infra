@@ -34,7 +34,7 @@ func TestWriteLocalStableVersion(t *testing.T) {
 		t.Errorf("Unexpected err: %v", err)
 	}
 
-	err = WriteLocalStableVersion(rv, path)
+	err = writeLocalStableVersion(rv, path)
 	if err != nil {
 		t.Errorf("Unexpected err: %v", err)
 	}

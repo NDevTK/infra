@@ -26,6 +26,7 @@ import (
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/recovery/models"
 	"infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
+	"infra/cros/satlab/common/run"
 	"infra/cros/satlab/common/site"
 )
 
@@ -123,9 +124,8 @@ func innerRunBoardModel(ctx context.Context, a subcommands.Application, args []s
 
 	// Count how many of OS, FW or FW Image are provided
 	numArgs := validateStableVersionArgs(rv.OsImage, rv.FwVersion, rv.FwImage)
-
+	moblabClient, err := moblab.NewBuildClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
 	if numArgs == 0 { // If none provided, use board/model to fetch arbitrary version
-		moblabClient, err := moblab.NewBuildClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
 		if err != nil {
 			return errors.Annotate(err, "satlab new moblab api build client").Err()
 		}
@@ -136,13 +136,10 @@ func innerRunBoardModel(ctx context.Context, a subcommands.Application, args []s
 	} else if numArgs < 3 { // If partial args provided, throw an error
 		return fmt.Errorf("Please provide all or none of the following: -os, -fw, -fwImage")
 	}
-
-	// Save recovery version in local directory
-	err := WriteLocalStableVersion(rv, site.RecoveryVersionDirectory)
+	err = StageAndWriteLocalStableVersion(ctx, moblabClient, rv)
 	if err != nil {
-		return errors.Annotate(err, "write local stable version").Err()
+		return errors.Annotate(err, "stage and write local stable version").Err()
 	}
-
 	return nil
 }
 
@@ -189,8 +186,22 @@ func (c *setStableVersionRun) innerRunHostname(ctx context.Context, a subcommand
 	return nil
 }
 
+// StageAndWriteLocalStableVersion stages a recovery image to partner bucket and writes the associated rv metadata locally
+func StageAndWriteLocalStableVersion(ctx context.Context, moblabClient MoblabClient, rv *models.RecoveryVersion) error {
+	buildVersion := strings.Split(rv.OsImage, "-")[1]
+	err := run.StageImageToBucket(ctx, moblabClient, rv.Board, rv.Model, buildVersion)
+	if err != nil {
+		return errors.Annotate(err, "stage stable version image to bucket").Err()
+	}
+	err = writeLocalStableVersion(rv, site.RecoveryVersionDirectory)
+	if err != nil {
+		return errors.Annotate(err, "write local stable version").Err()
+	}
+	return nil
+}
+
 // WriteLocalStableVersion saves a recovery version to the specified directory and creates the directory if necessary.
-func WriteLocalStableVersion(recovery_version *models.RecoveryVersion, path string) error {
+func writeLocalStableVersion(recovery_version *models.RecoveryVersion, path string) error {
 
 	// Check if recovery_versions directory created
 	_, err := os.Stat(path)
@@ -342,4 +353,6 @@ func (c *setStableVersionRun) produceRequest(ctx context.Context, a subcommands.
 type MoblabClient interface {
 	FindMostStableBuild(ctx context.Context, req *moblabpb.FindMostStableBuildRequest, opts ...gax.CallOption) (*moblabpb.FindMostStableBuildResponse, error)
 	ListBuilds(ctx context.Context, req *moblabpb.ListBuildsRequest, opts ...gax.CallOption) *moblab.BuildIterator
+	StageBuild(ctx context.Context, req *moblabpb.StageBuildRequest, opts ...gax.CallOption) (*moblab.StageBuildOperation, error)
+	CheckBuildStageStatus(ctx context.Context, req *moblabpb.CheckBuildStageStatusRequest, opts ...gax.CallOption) (*moblabpb.CheckBuildStageStatusResponse, error)
 }
