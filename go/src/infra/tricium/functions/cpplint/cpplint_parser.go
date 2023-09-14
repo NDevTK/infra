@@ -8,7 +8,6 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	tricium "infra/tricium/api/v1"
 	"log"
 	"os"
 	"os/exec"
@@ -16,6 +15,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	tricium "infra/tricium/api/v1"
 )
 
 // Paths to the required resources relative to the executable directory.

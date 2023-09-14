@@ -5,12 +5,12 @@ import (
 	"strings"
 	"testing"
 
-	"infra/cros/internal/repo"
-	"infra/cros/internal/testplan/migrationstatus"
-
 	"github.com/google/go-cmp/cmp"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	cvpb "go.chromium.org/luci/cv/api/config/v2"
+
+	"infra/cros/internal/repo"
+	"infra/cros/internal/testplan/migrationstatus"
 )
 
 var bbCfg *bbpb.BuildbucketCfg = &bbpb.BuildbucketCfg{

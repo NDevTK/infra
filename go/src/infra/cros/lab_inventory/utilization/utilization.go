@@ -8,12 +8,13 @@ package utilization
 import (
 	"context"
 	"fmt"
-	"infra/cros/dutstate"
-	invV1 "infra/libs/skylab/inventory"
 
 	"go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/tsmon/field"
 	"go.chromium.org/luci/common/tsmon/metric"
+
+	"infra/cros/dutstate"
+	invV1 "infra/libs/skylab/inventory"
 )
 
 var dutmonMetric = metric.NewInt(

@@ -11,11 +11,10 @@ import (
 	"os"
 	"testing"
 
-	"infra/tools/git/state"
-
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/system/environ"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"infra/tools/git/state"
 )
 
 func TestMain(t *testing.T) {

@@ -22,7 +22,6 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/jsonpb"
-
 	"go.chromium.org/luci/common/errors"
 )
 

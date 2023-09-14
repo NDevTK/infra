@@ -8,12 +8,12 @@ import (
 	"context"
 	"time"
 
+	"go.chromium.org/luci/common/errors"
+
 	bt "infra/cros/recovery/internal/components/cros/bluetooth"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 // auditBluetoothExec will verify bluetooth on the host is detected correctly.

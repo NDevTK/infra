@@ -5,12 +5,13 @@
 package testmetrics
 
 import (
-	"infra/appengine/chrome-test-health/api"
 	"strings"
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/civil"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/appengine/chrome-test-health/api"
 )
 
 // rowLoader provides a way of marshalling a BigQuery row.

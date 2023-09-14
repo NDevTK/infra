@@ -7,9 +7,8 @@ package registry
 import (
 	"testing"
 
-	"go.chromium.org/luci/common/errors"
-
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/errors"
 )
 
 func TestErrors(t *testing.T) {

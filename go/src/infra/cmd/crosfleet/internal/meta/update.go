@@ -6,7 +6,6 @@ package meta
 
 import (
 	"fmt"
-	"infra/libs/cipd"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -18,6 +17,7 @@ import (
 
 	"infra/cmd/crosfleet/internal/common"
 	"infra/cmd/crosfleet/internal/site"
+	"infra/libs/cipd"
 )
 
 // crosfleetDir is the CIPD parent directory for crosfleet packages.

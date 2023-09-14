@@ -6,13 +6,13 @@ package common
 
 import (
 	"context"
-	"infra/cmdsupport/cmdlib"
 
 	"go.chromium.org/luci/auth/client/authcli"
+	swarm_v1 "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/logging"
 	"google.golang.org/api/option"
 
-	swarm_v1 "go.chromium.org/luci/common/api/swarming/swarming/v1"
+	"infra/cmdsupport/cmdlib"
 )
 
 // CreateNewSwarmingService creates new swarming service.

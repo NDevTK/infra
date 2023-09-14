@@ -11,7 +11,6 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	proto "github.com/golang/protobuf/proto"
-
 	sv "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 )
 

@@ -7,15 +7,16 @@ package common_commands
 import (
 	"context"
 	"fmt"
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/cros_test_runner/data"
-	ctpv2_data "infra/cros/cmd/ctpv2/data"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+
+	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/cros_test_runner/data"
+	ctpv2_data "infra/cros/cmd/ctpv2/data"
 )
 
 // ContainerStartCmd represents gcloud auth cmd.

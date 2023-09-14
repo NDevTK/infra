@@ -10,19 +10,18 @@ import (
 	"strings"
 	"testing"
 
-	"infra/libs/skylab/inventory"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
-
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	. "github.com/smartystreets/goconvey/convey"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state"
+	"infra/libs/skylab/inventory"
+	ufspb "infra/unifiedfleet/api/v1/models"
+	ufsapi "infra/unifiedfleet/api/v1/rpc"
 )
 
 func TestConvertAttachedDeviceDutTopologyToHostInfoForAndroid(t *testing.T) {

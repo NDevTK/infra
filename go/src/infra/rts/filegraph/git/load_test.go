@@ -11,10 +11,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/memlogger"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestGraphCache(t *testing.T) {

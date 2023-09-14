@@ -9,9 +9,9 @@ import (
 	"strconv"
 	"strings"
 
-	"infra/libs/skylab/inventory"
-
 	"go.chromium.org/chromiumos/infra/proto/go/lab"
+
+	"infra/libs/skylab/inventory"
 )
 
 func init() {

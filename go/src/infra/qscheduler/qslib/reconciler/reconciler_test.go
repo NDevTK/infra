@@ -21,13 +21,11 @@ import (
 	"testing"
 	"time"
 
-	"infra/qscheduler/qslib/scheduler"
-
 	"github.com/kylelemons/godebug/pretty"
-
 	. "github.com/smartystreets/goconvey/convey"
-
 	"go.chromium.org/luci/common/data/stringset"
+
+	"infra/qscheduler/qslib/scheduler"
 )
 
 func assertAssignments(t *testing.T, description string,

@@ -5,10 +5,10 @@
 package operations
 
 import (
-	"infra/cmd/shivas/internal/ufs/subcmds/peripherals"
-
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
+
+	"infra/cmd/shivas/internal/ufs/subcmds/peripherals"
 )
 
 // ReplaceCmd contains rename command specification

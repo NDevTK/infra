@@ -11,13 +11,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/golang/protobuf/ptypes/duration"
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
-
-	"github.com/golang/protobuf/ptypes/duration"
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestSkylabTestRunnerConversions(t *testing.T) {

@@ -17,10 +17,10 @@ package spec
 import (
 	"testing"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
-
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
+
+	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
 )
 
 func TestNormalizeAndHash(t *testing.T) {

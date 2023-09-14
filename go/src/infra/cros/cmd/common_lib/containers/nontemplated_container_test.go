@@ -6,11 +6,12 @@ package containers
 
 import (
 	"context"
-	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/chromiumos/config/go/test/api"
+
+	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 )
 
 func TestNonTemplatedInitialize(t *testing.T) {

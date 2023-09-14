@@ -13,12 +13,11 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/cloudbuild/v1"
 	"google.golang.org/api/option"
-
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/logging"
 
 	"infra/cmd/cloudbuildhelper/docker"
 	"infra/cmd/cloudbuildhelper/manifest"

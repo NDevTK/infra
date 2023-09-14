@@ -18,11 +18,10 @@ import (
 	"io/ioutil"
 	"sort"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
-
+	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/errors"
 
-	"github.com/golang/protobuf/proto"
+	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
 )
 
 // LoadEnvironment loads an environment file text protobuf from the supplied

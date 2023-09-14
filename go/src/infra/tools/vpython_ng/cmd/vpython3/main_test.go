@@ -14,10 +14,7 @@ import (
 	"testing"
 	"time"
 
-	"infra/tools/vpython_ng/pkg/application"
-	"infra/tools/vpython_ng/pkg/python"
-	"infra/tools/vpython_ng/pkg/wheels"
-
+	. "github.com/smartystreets/goconvey/convey"
 	cipdClient "go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/system/exitcode"
@@ -27,7 +24,9 @@ import (
 	"go.chromium.org/luci/vpython/cipd"
 	"go.chromium.org/luci/vpython/venv"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"infra/tools/vpython_ng/pkg/application"
+	"infra/tools/vpython_ng/pkg/python"
+	"infra/tools/vpython_ng/pkg/wheels"
 )
 
 func testData(filename string) string {

@@ -5,7 +5,6 @@ package actions
 
 import (
 	"context"
-	"infra/libs/cipkg_new/core"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -13,6 +12,8 @@ import (
 
 	"github.com/spf13/afero"
 	"go.chromium.org/luci/common/system/environ"
+
+	"infra/libs/cipkg_new/core"
 )
 
 // ActionCIPDExportTransformer is the default transformer for cipd action.

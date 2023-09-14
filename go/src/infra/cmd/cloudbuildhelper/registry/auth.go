@@ -12,10 +12,9 @@ import (
 	"sync"
 	"time"
 
-	"golang.org/x/oauth2"
-
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"golang.org/x/oauth2"
 )
 
 // authService encapsulates communication with Docker authorization service as

@@ -10,11 +10,10 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
+	"go.chromium.org/luci/common/errors"
 
 	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
 	"infra/tools/vpython/legacy/vpython2.7/luci/cipd"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 // pep425MacPlatform is a parsed PEP425 Mac platform string.

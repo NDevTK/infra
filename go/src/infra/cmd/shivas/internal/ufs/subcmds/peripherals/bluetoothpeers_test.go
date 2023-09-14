@@ -5,9 +5,10 @@
 package peripherals
 
 import (
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	"strings"
 	"testing"
+
+	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 func TestCleanAndValidateFlags(t *testing.T) {

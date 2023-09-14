@@ -11,7 +11,6 @@ import (
 	"os"
 
 	"github.com/maruel/subcommands"
-
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 

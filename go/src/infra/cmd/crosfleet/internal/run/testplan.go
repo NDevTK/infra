@@ -8,6 +8,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/maruel/subcommands"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 
 	"infra/cmd/crosfleet/internal/buildbucket"
@@ -15,10 +18,6 @@ import (
 	"infra/cmd/crosfleet/internal/site"
 	"infra/cmd/crosfleet/internal/ufs"
 	"infra/cmdsupport/cmdlib"
-
-	"github.com/maruel/subcommands"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
-	"go.chromium.org/luci/auth/client/authcli"
 )
 
 // testPlanCmdName is the name of the `crosfleet run testplan` command.

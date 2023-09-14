@@ -10,15 +10,15 @@ import (
 	"testing"
 	"time"
 
-	"infra/appengine/drone-queen/api"
-	"infra/appengine/drone-queen/internal/entities"
-
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/metadata"
+
+	"infra/appengine/drone-queen/api"
+	"infra/appengine/drone-queen/internal/entities"
 )
 
 func TestDroneQueenImpl_DeclareDuts(t *testing.T) {

@@ -10,9 +10,8 @@ import (
 	"net/http"
 
 	"github.com/golang/protobuf/jsonpb"
-	"go.chromium.org/luci/common/gcloud/gs"
-
 	sv "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
+	"go.chromium.org/luci/common/gcloud/gs"
 )
 
 // Client refers to a google storage client.

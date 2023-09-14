@@ -5,12 +5,12 @@
 package bootstrap
 
 import (
-	"infra/chromium/util"
-
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/luciexe/exe"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
+
+	"infra/chromium/util"
 )
 
 func jsonToStruct(json string) *structpb.Struct {

@@ -8,12 +8,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"infra/appengine/chrome-test-health/internal/coverage/entities"
 
 	"cloud.google.com/go/datastore"
 	"go.chromium.org/luci/common/logging"
 	"google.golang.org/api/iterator"
+
 	"infra/appengine/chrome-test-health/api"
+	"infra/appengine/chrome-test-health/internal/coverage/entities"
 )
 
 var (

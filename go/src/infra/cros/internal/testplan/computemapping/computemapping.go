@@ -8,13 +8,13 @@ import (
 	"strings"
 	"time"
 
+	"go.chromium.org/luci/common/data/stringset"
+	"go.chromium.org/luci/common/logging"
+
 	"infra/cros/internal/gerrit"
 	"infra/cros/internal/git"
 	"infra/tools/dirmd"
 	dirmdpb "infra/tools/dirmd/proto"
-
-	"go.chromium.org/luci/common/data/stringset"
-	"go.chromium.org/luci/common/logging"
 )
 
 const (

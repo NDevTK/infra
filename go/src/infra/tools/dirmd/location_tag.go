@@ -7,12 +7,12 @@ package dirmd
 import (
 	"fmt"
 
-	dirmdpb "infra/tools/dirmd/proto"
-
 	"go.chromium.org/luci/common/data/strpair"
 	"go.chromium.org/luci/resultdb/pbutil"
 	resultpb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
+
+	dirmdpb "infra/tools/dirmd/proto"
 )
 
 func createTag(md *dirmdpb.Metadata) []*resultpb.StringPair {

@@ -9,11 +9,10 @@ import (
 	"fmt"
 	"strconv"
 
+	pubsub "cloud.google.com/go/pubsub/apiv1"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-
-	pubsub "cloud.google.com/go/pubsub/apiv1"
 	"google.golang.org/api/option"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 )

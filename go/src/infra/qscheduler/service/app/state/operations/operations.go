@@ -19,7 +19,6 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/data/strpair"
 	"go.chromium.org/luci/common/logging"

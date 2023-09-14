@@ -20,15 +20,15 @@ import (
 	"os"
 	"path/filepath"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
-	"infra/tools/vpython/legacy/vpython2.7/luci/python"
-	"infra/tools/vpython/legacy/vpython2.7/luci/spec"
-	"infra/tools/vpython/legacy/vpython2.7/luci/venv"
-
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/common/system/filesystem"
+
+	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
+	"infra/tools/vpython/legacy/vpython2.7/luci/python"
+	"infra/tools/vpython/legacy/vpython2.7/luci/spec"
+	"infra/tools/vpython/legacy/vpython2.7/luci/venv"
 )
 
 // IsUserError is tagged into errors caused by bad user inputs (e.g. modules or

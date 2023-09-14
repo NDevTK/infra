@@ -8,10 +8,9 @@ import (
 	"context"
 	"os"
 
-	"google.golang.org/protobuf/encoding/protojson"
-
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/logging"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"infra/tools/dirmd"
 )

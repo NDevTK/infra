@@ -7,10 +7,10 @@ package dirmd
 import (
 	"testing"
 
-	dirmdpb "infra/tools/dirmd/proto"
-
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
+
+	dirmdpb "infra/tools/dirmd/proto"
 )
 
 func TestReduce(t *testing.T) {

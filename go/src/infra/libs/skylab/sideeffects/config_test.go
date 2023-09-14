@@ -17,9 +17,8 @@ import (
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/google/uuid"
 	. "github.com/smartystreets/goconvey/convey"
-	. "go.chromium.org/luci/common/testing/assertions"
-
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/side_effects"
+	. "go.chromium.org/luci/common/testing/assertions"
 )
 
 func basicConfig() *side_effects.Config {

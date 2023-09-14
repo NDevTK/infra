@@ -19,16 +19,14 @@ import (
 	"time"
 
 	"go.chromium.org/luci/grpc/grpcutil"
-
-	qscheduler "infra/qscheduler/service/api/qscheduler/v1"
-	"infra/qscheduler/service/app/state/nodestore"
-	"infra/qscheduler/service/app/state/types"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"infra/qscheduler/qslib/reconciler"
 	"infra/qscheduler/qslib/scheduler"
-
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	qscheduler "infra/qscheduler/service/api/qscheduler/v1"
+	"infra/qscheduler/service/app/state/nodestore"
+	"infra/qscheduler/service/app/state/types"
 )
 
 // QSchedulerAdminServerImpl implements QSchedulerAdminServer.

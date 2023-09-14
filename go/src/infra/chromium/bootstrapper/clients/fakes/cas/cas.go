@@ -6,12 +6,13 @@ package cas
 
 import (
 	"context"
-	bscas "infra/chromium/bootstrapper/clients/cas"
 
 	"github.com/bazelbuild/remote-apis-sdks/go/pkg/client"
 	"github.com/bazelbuild/remote-apis-sdks/go/pkg/digest"
 	"github.com/bazelbuild/remote-apis-sdks/go/pkg/filemetadata"
 	"go.chromium.org/luci/common/errors"
+
+	bscas "infra/chromium/bootstrapper/clients/cas"
 )
 
 // Instance provides the fake data for a RBE-CAS instance.

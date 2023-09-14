@@ -11,11 +11,11 @@ import (
 	"strings"
 	"testing"
 
-	"infra/rts"
-	evalpb "infra/rts/presubmit/eval/proto"
-
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
+
+	"infra/rts"
+	evalpb "infra/rts/presubmit/eval/proto"
 )
 
 func TestBucketSlice(t *testing.T) {

@@ -7,11 +7,12 @@ package commands
 import (
 	"context"
 	"fmt"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/cros_test_runner/data"
 	"os"
 
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/cros_test_runner/data"
 )
 
 // TkoPublishUploadCmd represents tko publish upload cmd.

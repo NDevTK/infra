@@ -9,12 +9,6 @@ import (
 	"embed"
 	"errors"
 	"fmt"
-	"infra/libs/cipkg"
-	"infra/libs/cipkg/builtins"
-	"infra/libs/cipkg/utilities"
-	. "infra/libs/cipkg/utilities/testing"
-	"infra/tools/pkgbuild/pkg/spec"
-	"infra/tools/pkgbuild/pkg/stdenv"
 	"io/fs"
 	"net/url"
 	"testing"
@@ -23,6 +17,13 @@ import (
 	"go.chromium.org/luci/cipd/client/cipd/platform"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
+
+	"infra/libs/cipkg"
+	"infra/libs/cipkg/builtins"
+	"infra/libs/cipkg/utilities"
+	. "infra/libs/cipkg/utilities/testing"
+	"infra/tools/pkgbuild/pkg/spec"
+	"infra/tools/pkgbuild/pkg/stdenv"
 )
 
 //go:embed tests

@@ -32,9 +32,8 @@ import (
 
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/process"
-	"golang.org/x/sync/errgroup"
-
 	"go.chromium.org/luci/common/errors"
+	"golang.org/x/sync/errgroup"
 )
 
 type processKey struct {

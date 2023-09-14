@@ -5,11 +5,11 @@
 package response
 
 import (
-	"infra/cmd/cros_test_platform/internal/execution/testrunner"
-	"infra/cmd/cros_test_platform/internal/execution/types"
-
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
+
+	"infra/cmd/cros_test_platform/internal/execution/testrunner"
+	"infra/cmd/cros_test_platform/internal/execution/types"
 )
 
 // Invocation accumulates the response for a single invocation

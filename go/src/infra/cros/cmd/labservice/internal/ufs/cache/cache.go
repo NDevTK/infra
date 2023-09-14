@@ -13,11 +13,11 @@ import (
 	"strconv"
 	"strings"
 
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
-
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	ufsapi "infra/unifiedfleet/api/v1/rpc"
 )
 
 func NewLocator() *Locator {

@@ -6,16 +6,17 @@ package coveragerules_test
 import (
 	"context"
 	"fmt"
-	"infra/cros/internal/assert"
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/git"
-	"infra/cros/internal/testplan/coveragerules"
 	"path/filepath"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	testpb "go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/protobuf/testing/protocmp"
+
+	"infra/cros/internal/assert"
+	"infra/cros/internal/cmd"
+	"infra/cros/internal/git"
+	"infra/cros/internal/testplan/coveragerules"
 )
 
 func TestReadGenerated(t *testing.T) {

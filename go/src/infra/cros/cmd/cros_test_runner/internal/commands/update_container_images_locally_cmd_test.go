@@ -6,12 +6,13 @@ package commands_test
 
 import (
 	"context"
-	"infra/cros/cmd/cros_test_runner/data"
-	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/chromiumos/config/go/build/api"
+
+	"infra/cros/cmd/cros_test_runner/data"
+	"infra/cros/cmd/cros_test_runner/internal/commands"
 )
 
 func TestUpdateContainerImagesLocallyCmd_UnsupportedSK(t *testing.T) {

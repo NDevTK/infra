@@ -1,17 +1,17 @@
 package main
 
 import (
-	"infra/appengine/cr-rev/backend/gitiles"
-	"infra/appengine/cr-rev/backend/repoimport"
-	"infra/appengine/cr-rev/common"
 	"testing"
-
-	"infra/appengine/cr-rev/config"
 
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
 	gitilesProto "go.chromium.org/luci/common/proto/gitiles"
+
+	"infra/appengine/cr-rev/backend/gitiles"
+	"infra/appengine/cr-rev/backend/repoimport"
+	"infra/appengine/cr-rev/common"
+	"infra/appengine/cr-rev/config"
 )
 
 func TestInitialImport(t *testing.T) {

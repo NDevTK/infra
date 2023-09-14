@@ -13,11 +13,11 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/recovery/internal/components"
-	"infra/cros/recovery/internal/execs"
-
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/recovery/internal/components"
+	"infra/cros/recovery/internal/execs"
 )
 
 // CBILocation stores the port and address needed to reference CBI contents in

@@ -11,9 +11,8 @@ import (
 	"os"
 	"testing"
 
-	"go.chromium.org/luci/common/errors"
-
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/errors"
 )
 
 // MockSession mocks a series of command invocations.

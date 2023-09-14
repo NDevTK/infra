@@ -12,10 +12,9 @@ import (
 	"strconv"
 	"strings"
 
-	"gopkg.in/yaml.v2"
-
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
+	"gopkg.in/yaml.v2"
 )
 
 // Module is a loaded mutable module's YAML.

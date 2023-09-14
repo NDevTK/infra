@@ -14,12 +14,6 @@ import (
 	"regexp"
 	"strings"
 
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/docker"
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/shared"
-	"infra/tools/dirmd"
-
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/docker/api/types/strslice"
@@ -32,6 +26,12 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/sync/parallel"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	"infra/cros/internal/cmd"
+	"infra/cros/internal/docker"
+	"infra/cros/internal/gerrit"
+	"infra/cros/internal/shared"
+	"infra/tools/dirmd"
 )
 
 type validator struct {

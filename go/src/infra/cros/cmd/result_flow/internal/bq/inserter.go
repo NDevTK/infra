@@ -11,10 +11,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
-	"golang.org/x/time/rate"
-	bqapi "google.golang.org/api/bigquery/v2"
-	"google.golang.org/api/googleapi"
-
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -22,6 +18,9 @@ import (
 	"go.chromium.org/luci/common/retry/transient"
 	"go.chromium.org/luci/common/sync/dispatcher"
 	"go.chromium.org/luci/common/sync/dispatcher/buffer"
+	"golang.org/x/time/rate"
+	bqapi "google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/googleapi"
 )
 
 // Original RAMBufferedBQInserter is at "infra/qscheduler/service/app/eventlog/ram.go".

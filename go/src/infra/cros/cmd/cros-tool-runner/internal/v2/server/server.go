@@ -11,13 +11,13 @@ import (
 	"os"
 	"strings"
 
-	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
-	"infra/cros/cmd/cros-tool-runner/internal/v2/state"
-	"infra/cros/cmd/cros-tool-runner/internal/v2/templates"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/grpc/codes"
+
+	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
+	"infra/cros/cmd/cros-tool-runner/internal/v2/state"
+	"infra/cros/cmd/cros-tool-runner/internal/v2/templates"
 )
 
 // ContainerServerImpl implements the gRPC services by running commands and

@@ -19,9 +19,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"infra/chromeperf/pinpoint"
-	"infra/chromeperf/pinpoint/cli/render"
-	"infra/chromeperf/pinpoint/proto"
 	"io"
 	"os"
 	"strings"
@@ -35,6 +32,10 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"google.golang.org/protobuf/encoding/prototext"
 	"gopkg.in/yaml.v2"
+
+	"infra/chromeperf/pinpoint"
+	"infra/chromeperf/pinpoint/cli/render"
+	"infra/chromeperf/pinpoint/proto"
 )
 
 const MaxConcurrency = 5

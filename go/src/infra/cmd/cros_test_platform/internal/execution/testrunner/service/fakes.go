@@ -8,17 +8,16 @@ import (
 	"context"
 	"fmt"
 
-	"infra/cmd/cros_test_platform/internal/execution/types"
-	"infra/libs/skylab/request"
-
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
-
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/google/uuid"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/data/stringset"
 	"google.golang.org/grpc"
+
+	"infra/cmd/cros_test_platform/internal/execution/types"
+	"infra/libs/skylab/request"
+	ufsapi "infra/unifiedfleet/api/v1/rpc"
 )
 
 // StubClient implements a noop Client with "reasonable" default behavior for

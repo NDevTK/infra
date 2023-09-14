@@ -13,10 +13,6 @@ import (
 	"cloud.google.com/go/bigquery"
 	"github.com/golang/protobuf/descriptor"
 	desc "github.com/golang/protobuf/protoc-gen-go/descriptor"
-	"golang.org/x/sync/errgroup"
-	"google.golang.org/api/googleapi"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	testapipb "go.chromium.org/chromiumos/config/go/test/api"
 	planpb "go.chromium.org/chromiumos/config/go/test/plan"
 	"go.chromium.org/luci/common/bq"
@@ -25,6 +21,9 @@ import (
 	"go.chromium.org/luci/common/proto/google/descutil"
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/common/retry/transient"
+	"golang.org/x/sync/errgroup"
+	"google.golang.org/api/googleapi"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/tools/dirmd"
 	dirmdpb "infra/tools/dirmd/proto"

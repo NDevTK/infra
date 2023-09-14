@@ -16,14 +16,14 @@ import (
 	"sync"
 	"time"
 
-	"infra/libs/cipkg_new/core"
-
 	"github.com/spf13/afero"
 	"go.chromium.org/luci/common/system/environ"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/anypb"
+
+	"infra/libs/cipkg_new/core"
 )
 
 type Executor[M proto.Message] func(ctx context.Context, msg M, dstFS afero.Fs) error

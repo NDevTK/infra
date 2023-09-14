@@ -25,12 +25,9 @@ import (
 	"path"
 	"strings"
 
-	"infra/tools/kitchen/cookflags"
-
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 	structpb "github.com/golang/protobuf/ptypes/struct"
-
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/errors"
@@ -38,6 +35,8 @@ import (
 	"go.chromium.org/luci/led/ledcli"
 	logdog_types "go.chromium.org/luci/logdog/common/types"
 	swarmingpb "go.chromium.org/luci/swarming/proto/api_v2"
+
+	"infra/tools/kitchen/cookflags"
 )
 
 const bbModPropKey = "$recipe_engine/buildbucket"

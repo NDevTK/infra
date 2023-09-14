@@ -9,12 +9,11 @@ import (
 	"strconv"
 	"strings"
 
-	"google.golang.org/protobuf/proto"
-
 	"go.chromium.org/luci/cipd/client/cipd/template"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/vpython/api/vpython"
 	"go.chromium.org/luci/vpython/cipd"
+	"google.golang.org/protobuf/proto"
 )
 
 // pep425MacPlatform is a parsed PEP425 Mac platform string.

@@ -14,11 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"infra/libs/cipkg"
-	"infra/libs/cipkg/builtins"
-	"infra/libs/cipkg/utilities"
-	"infra/tools/vpython_ng/pkg/common"
-
+	"github.com/mitchellh/go-homedir"
 	"go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -30,7 +26,10 @@ import (
 	"go.chromium.org/luci/vpython/python"
 	"go.chromium.org/luci/vpython/spec"
 
-	"github.com/mitchellh/go-homedir"
+	"infra/libs/cipkg"
+	"infra/libs/cipkg/builtins"
+	"infra/libs/cipkg/utilities"
+	"infra/tools/vpython_ng/pkg/common"
 )
 
 const (

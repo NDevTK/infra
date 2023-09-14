@@ -7,8 +7,6 @@
 package main
 
 import (
-	"infra/appengine/cr-rev/frontend/api/v1"
-	"infra/appengine/cr-rev/frontend/redirect"
 	"net/http"
 	"os"
 
@@ -18,6 +16,9 @@ import (
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/router"
 	"go.chromium.org/luci/server/templates"
+
+	"infra/appengine/cr-rev/frontend/api/v1"
+	"infra/appengine/cr-rev/frontend/redirect"
 )
 
 const templatePath = "templates"

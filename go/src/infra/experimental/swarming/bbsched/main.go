@@ -14,9 +14,6 @@ import (
 	"sync"
 	"time"
 
-	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/encoding/protojson"
-
 	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
@@ -25,6 +22,8 @@ import (
 	"go.chromium.org/luci/common/system/signals"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 var (

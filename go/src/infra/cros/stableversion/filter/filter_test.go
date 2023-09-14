@@ -9,11 +9,10 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	labPlatform "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"infra/cros/stableversion/validateconfig"
-
-	labPlatform "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 )
 
 var testWithModelData = []struct {

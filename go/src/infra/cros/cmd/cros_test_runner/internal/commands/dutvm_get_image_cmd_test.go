@@ -8,15 +8,14 @@ import (
 	"context"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+
 	"infra/cros/cmd/common_lib/common_executors"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	vmlabapi "infra/libs/vmlab/api"
-
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func buildDutVmGetImageCmdForTest() *commands.DutVmGetImageCmd {

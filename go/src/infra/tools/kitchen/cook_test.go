@@ -17,7 +17,7 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
-
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/auth/integration/authtest"
 	"go.chromium.org/luci/auth/integration/localauth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
@@ -27,8 +27,6 @@ import (
 	"go.chromium.org/luci/lucictx"
 
 	"infra/tools/kitchen/third_party/recipe_engine"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestCook(t *testing.T) {

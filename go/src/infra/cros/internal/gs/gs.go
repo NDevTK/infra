@@ -15,16 +15,15 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/shared"
-
+	"cloud.google.com/go/storage"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/gcloud/gs"
-
-	"cloud.google.com/go/storage"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+
+	"infra/cros/internal/cmd"
+	"infra/cros/internal/shared"
 )
 
 type Client interface {

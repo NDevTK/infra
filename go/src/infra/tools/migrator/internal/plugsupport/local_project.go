@@ -14,7 +14,6 @@ import (
 	"sync"
 
 	"github.com/golang/protobuf/proto"
-
 	"go.chromium.org/luci/common/errors"
 	lucipb "go.chromium.org/luci/common/proto"
 	configpb "go.chromium.org/luci/common/proto/config"

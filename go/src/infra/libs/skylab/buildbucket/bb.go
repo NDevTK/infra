@@ -16,7 +16,6 @@ import (
 	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
-
 	structbuilder "google.golang.org/protobuf/types/known/structpb"
 )
 

@@ -9,6 +9,7 @@ import (
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
 	"go.chromium.org/luci/gae/service/datastore"
+
 	"infra/appengine/sheriff-o-matic/som/model"
 )
 

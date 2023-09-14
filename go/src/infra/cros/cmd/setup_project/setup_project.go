@@ -12,16 +12,16 @@ import (
 	"path/filepath"
 	"strings"
 
-	gitiles "infra/cros/internal/gerrit"
-	"infra/cros/internal/gs"
-	"infra/cros/internal/osutils"
-	"infra/cros/internal/shared"
-
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 	luciflag "go.chromium.org/luci/common/flag"
 	lgs "go.chromium.org/luci/common/gcloud/gs"
+
+	gitiles "infra/cros/internal/gerrit"
+	"infra/cros/internal/gs"
+	"infra/cros/internal/osutils"
+	"infra/cros/internal/shared"
 )
 
 const (

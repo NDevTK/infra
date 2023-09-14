@@ -18,13 +18,12 @@ import (
 	"strings"
 	"sync"
 
+	"go.chromium.org/luci/common/data/stringset"
+	"go.chromium.org/luci/common/errors"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/sync/semaphore"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
-
-	"go.chromium.org/luci/common/data/stringset"
-	"go.chromium.org/luci/common/errors"
 
 	dirmdpb "infra/tools/dirmd/proto"
 )

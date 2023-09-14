@@ -10,13 +10,13 @@ import (
 	"path/filepath"
 	"time"
 
-	"infra/tools/backuptogs/filetree"
-
 	"cloud.google.com/go/storage"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/tsmon"
 	"go.chromium.org/luci/common/tsmon/target"
 	"google.golang.org/api/option"
+
+	"infra/tools/backuptogs/filetree"
 )
 
 // options holds various options for both the main app, as well as modules like tsmon and logging

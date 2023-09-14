@@ -7,8 +7,9 @@ package cli
 
 import (
 	"flag"
-	"infra/cros/cmd/ctpv2/executions"
 	"log"
+
+	"infra/cros/cmd/ctpv2/executions"
 )
 
 // Run as build. This is in place to support backward-compatibility with

@@ -6,13 +6,13 @@ package cmds
 
 import (
 	"flag"
-	"infra/appengine/crosskylabadmin/site"
-
-	"github.com/maruel/subcommands"
 
 	"github.com/golang/protobuf/jsonpb"
+	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
+
+	"infra/appengine/crosskylabadmin/site"
 )
 
 // Constants for possible locations of the CrOSSkylabAdmin service.

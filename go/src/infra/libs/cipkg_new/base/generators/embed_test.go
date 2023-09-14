@@ -10,10 +10,10 @@ import (
 	"path/filepath"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+
 	"infra/libs/cipkg_new/core"
 	"infra/libs/cipkg_new/testutils"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 //go:embed embed.go embed_test.go testdata

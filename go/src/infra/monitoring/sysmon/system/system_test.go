@@ -9,9 +9,8 @@ import (
 	"runtime"
 	"testing"
 
-	"go.chromium.org/luci/common/tsmon"
-
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/tsmon"
 )
 
 func TestMetrics(t *testing.T) {

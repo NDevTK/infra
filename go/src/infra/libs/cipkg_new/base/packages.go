@@ -13,12 +13,12 @@ import (
 	"strings"
 	"time"
 
-	"infra/libs/cipkg_new/base/actions"
-	"infra/libs/cipkg_new/core"
-
 	"github.com/danjacques/gofslock/fslock"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/filesystem"
+
+	"infra/libs/cipkg_new/base/actions"
+	"infra/libs/cipkg_new/core"
 )
 
 // TODO(fancl): allow cancel using context.

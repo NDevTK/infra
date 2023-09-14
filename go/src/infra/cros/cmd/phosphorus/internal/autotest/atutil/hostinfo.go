@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"infra/cros/cmd/phosphorus/internal/tls"
 	"io/ioutil"
 	"net/url"
 	"os"
@@ -17,6 +16,8 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+
+	"infra/cros/cmd/phosphorus/internal/tls"
 )
 
 const (

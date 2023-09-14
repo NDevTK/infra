@@ -9,13 +9,12 @@ import (
 	"io/ioutil"
 
 	"cloud.google.com/go/bigquery"
-	"google.golang.org/grpc/codes"
-
 	"go.chromium.org/luci/config/server/cfgmodule"
 	"go.chromium.org/luci/grpc/appstatus"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
+	"google.golang.org/grpc/codes"
 
 	"infra/appengine/statsui/api"
 	"infra/appengine/statsui/internal/datasources"

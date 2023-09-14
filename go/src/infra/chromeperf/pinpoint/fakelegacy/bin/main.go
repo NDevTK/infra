@@ -3,11 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"infra/chromeperf/pinpoint/fakelegacy"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+
+	"infra/chromeperf/pinpoint/fakelegacy"
 )
 
 var (

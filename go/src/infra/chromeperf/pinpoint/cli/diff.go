@@ -8,9 +8,6 @@ import (
 	"strconv"
 	"strings"
 
-	"infra/chromeperf/pinpoint"
-	pppb "infra/chromeperf/pinpoint/proto"
-
 	"github.com/google/go-cmp/cmp"
 	"github.com/maruel/subcommands"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
@@ -19,6 +16,9 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/protobuf/testing/protocmp"
+
+	"infra/chromeperf/pinpoint"
+	pppb "infra/chromeperf/pinpoint/proto"
 )
 
 const (

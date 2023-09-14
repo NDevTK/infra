@@ -5,7 +5,6 @@
 package common_test
 
 import (
-	"infra/cros/cmd/common_lib/common"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -14,6 +13,8 @@ import (
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+
+	"infra/cros/cmd/common_lib/common"
 )
 
 func TestDependencyInjectionBasic(t *testing.T) {

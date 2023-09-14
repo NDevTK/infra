@@ -6,12 +6,13 @@ package stableversion
 
 import (
 	"fmt"
-	"infra/cros/satlab/common/satlabcommands"
-	"infra/cros/satlab/common/site"
-	"infra/libs/skylab/common/heuristics"
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cros/satlab/common/satlabcommands"
+	"infra/cros/satlab/common/site"
+	"infra/libs/skylab/common/heuristics"
 )
 
 type getDHBID = func() (string, error)

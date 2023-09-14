@@ -17,8 +17,6 @@ import (
 	"text/template"
 
 	"github.com/maruel/subcommands"
-	"golang.org/x/oauth2"
-
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
@@ -26,6 +24,7 @@ import (
 	"go.chromium.org/luci/common/flag/stringmapflag"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/signals"
+	"golang.org/x/oauth2"
 
 	"infra/cmd/cloudbuildhelper/manifest"
 )

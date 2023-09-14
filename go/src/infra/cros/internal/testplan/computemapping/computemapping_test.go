@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"go.chromium.org/chromiumos/config/go/test/plan"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -20,8 +21,6 @@ import (
 	"infra/tools/dirmd"
 	dirmdpb "infra/tools/dirmd/proto"
 	"infra/tools/dirmd/proto/chromeos"
-
-	"go.chromium.org/chromiumos/config/go/test/plan"
 )
 
 func TestComputeProjectMappingInfos(t *testing.T) {

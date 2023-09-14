@@ -18,14 +18,13 @@ import (
 	"strings"
 	"sync"
 
-	"google.golang.org/protobuf/encoding/prototext"
-
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	lucipb "go.chromium.org/luci/common/proto"
 	configpb "go.chromium.org/luci/common/proto/config"
 	"go.chromium.org/luci/common/sync/parallel"
+	"google.golang.org/protobuf/encoding/prototext"
 
 	"infra/tools/migrator"
 )

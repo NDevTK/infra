@@ -7,13 +7,13 @@ package configs
 import (
 	"fmt"
 
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/cmd/common_lib/common_executors"
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 // ExecutorConfig represents executor configs.

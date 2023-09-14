@@ -7,6 +7,12 @@ package dut
 import (
 	"context"
 	"fmt"
+	"strings"
+
+	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/auth/client/authcli"
+	"go.chromium.org/luci/common/cli"
+
 	"infra/cmd/crosfleet/internal/common"
 	dutinfopb "infra/cmd/crosfleet/internal/proto"
 	"infra/cmd/crosfleet/internal/site"
@@ -15,11 +21,6 @@ import (
 	"infra/libs/skylab/common/heuristics"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
 	ufsutil "infra/unifiedfleet/app/util"
-	"strings"
-
-	"github.com/maruel/subcommands"
-	"go.chromium.org/luci/auth/client/authcli"
-	"go.chromium.org/luci/common/cli"
 )
 
 const (

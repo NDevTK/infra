@@ -20,12 +20,11 @@ import (
 	"fmt"
 	"sort"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
-
+	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/data/sortby"
 	"go.chromium.org/luci/common/errors"
 
-	"github.com/golang/protobuf/proto"
+	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
 )
 
 // Render creates a human-readable string from spec.

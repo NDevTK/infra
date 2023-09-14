@@ -7,13 +7,13 @@ package main
 import (
 	"context"
 	"errors"
-	"infra/unifiedfleet/app/util"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
-	"github.com/google/go-cmp/cmp"
+	"infra/unifiedfleet/app/util"
 )
 
 // testServerStream stores all messages sent in a slice.

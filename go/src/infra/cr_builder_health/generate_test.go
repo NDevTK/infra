@@ -8,12 +8,10 @@ import (
 	"context"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
-
 	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 type bbClientMock struct {

@@ -10,10 +10,9 @@ import (
 	"net/url"
 	"testing"
 
-	"go.chromium.org/luci/server/router"
-
 	gomock "github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/server/router"
 )
 
 func TestRest(t *testing.T) {

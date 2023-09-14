@@ -7,11 +7,11 @@ package cache
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	ufsmodels "infra/unifiedfleet/api/v1/models"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsapi "infra/unifiedfleet/api/v1/rpc"
-
-	"github.com/google/go-cmp/cmp"
 )
 
 func TestGetZones(t *testing.T) {

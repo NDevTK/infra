@@ -4,10 +4,9 @@ import (
 	"context"
 	"net/http"
 
+	gerrit "github.com/andygrunwald/go-gerrit"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/auth"
-
-	gerrit "github.com/andygrunwald/go-gerrit"
 )
 
 type gerritContextKeyType string

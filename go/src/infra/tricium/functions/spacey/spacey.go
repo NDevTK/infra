@@ -11,10 +11,10 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"unicode"
 
 	"infra/tricium/api/v1"
-	"strings"
 )
 
 const (

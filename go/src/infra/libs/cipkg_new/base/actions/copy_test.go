@@ -12,13 +12,12 @@ import (
 	"path/filepath"
 	"testing"
 
-	"infra/libs/cipkg_new/core"
-	"infra/libs/cipkg_new/testutils"
-
-	"go.chromium.org/luci/common/system/environ"
-
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/spf13/afero"
+	"go.chromium.org/luci/common/system/environ"
+
+	"infra/libs/cipkg_new/core"
+	"infra/libs/cipkg_new/testutils"
 )
 
 func TestProcessCopy(t *testing.T) {

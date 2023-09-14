@@ -2,8 +2,9 @@ package testing
 
 import (
 	"fmt"
-	"infra/libs/cipkg"
 	"time"
+
+	"infra/libs/cipkg"
 )
 
 // Testing utilities for mocking common cipkg interfaces.

@@ -7,13 +7,14 @@ package gitiles
 import (
 	"context"
 	"fmt"
-	"infra/chromium/bootstrapper/clients/gob"
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/common/errors"
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 	"google.golang.org/grpc"
+
+	"infra/chromium/bootstrapper/clients/gob"
 )
 
 // Client provides the gitiles-oriented operations required for bootstrapping.

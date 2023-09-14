@@ -14,10 +14,9 @@ import (
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/civil"
 	"github.com/maruel/subcommands"
-	"google.golang.org/api/iterator"
-
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
+	"google.golang.org/api/iterator"
 
 	"infra/cmd/shivas/site"
 )

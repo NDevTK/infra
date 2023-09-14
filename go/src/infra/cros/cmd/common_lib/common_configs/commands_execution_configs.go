@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"strings"
 
-	"infra/cros/cmd/common_lib/interfaces"
-
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+
+	"infra/cros/cmd/common_lib/interfaces"
 )
 
 // CommandExecutorPairedConfig represents command and executor pair

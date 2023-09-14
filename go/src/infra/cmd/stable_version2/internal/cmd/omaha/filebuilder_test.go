@@ -11,9 +11,8 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"google.golang.org/protobuf/testing/protocmp"
-
 	sv "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"infra/cmd/stable_version2/internal/utils"
 )

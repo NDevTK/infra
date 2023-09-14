@@ -11,14 +11,14 @@ import (
 	"strings"
 	"testing"
 
-	"infra/cros/cmd/result_flow/internal/transform"
-
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/analytics"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow"
 	runner "go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
+
+	"infra/cros/cmd/result_flow/internal/transform"
 )
 
 var (

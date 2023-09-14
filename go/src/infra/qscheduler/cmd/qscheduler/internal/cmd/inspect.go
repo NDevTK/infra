@@ -6,8 +6,6 @@ package cmd
 
 import (
 	"fmt"
-	"infra/qscheduler/cmd/qscheduler/internal/site"
-	qscheduler "infra/qscheduler/service/api/qscheduler/v1"
 	"io"
 	"sort"
 	"text/tabwriter"
@@ -16,6 +14,9 @@ import (
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
+
+	"infra/qscheduler/cmd/qscheduler/internal/site"
+	qscheduler "infra/qscheduler/service/api/qscheduler/v1"
 )
 
 // Inspect subcommand: Inspect a qscheduler pool.

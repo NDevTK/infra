@@ -7,7 +7,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"infra/experimental/golangbuild/golangbuildpb"
 	"io"
 	"os"
 	"os/exec"
@@ -16,6 +15,8 @@ import (
 
 	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe/build"
+
+	"infra/experimental/golangbuild/golangbuildpb"
 )
 
 // CIPD dependencies for non-coordinator mode builds.

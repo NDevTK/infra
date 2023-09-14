@@ -9,8 +9,6 @@ import (
 	"regexp"
 	"time"
 
-	ufsds "infra/unifiedfleet/app/model/datastore"
-
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
@@ -18,6 +16,8 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	ufsds "infra/unifiedfleet/app/model/datastore"
 )
 
 // DutAttributeKind is the datastore entity kind DutAttribute.

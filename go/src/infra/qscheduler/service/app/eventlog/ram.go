@@ -23,10 +23,6 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"github.com/google/uuid"
-	"golang.org/x/time/rate"
-	bqapi "google.golang.org/api/bigquery/v2"
-	"google.golang.org/api/googleapi"
-
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -35,6 +31,9 @@ import (
 	"go.chromium.org/luci/common/sync/dispatcher"
 	"go.chromium.org/luci/common/sync/dispatcher/buffer"
 	"go.chromium.org/luci/server/auth"
+	"golang.org/x/time/rate"
+	bqapi "google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/googleapi"
 )
 
 // RAMBufferedBQInserter implements AsyncBqInserter via in-RAM buffering of events

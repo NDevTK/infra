@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
-
 	timestamp "github.com/golang/protobuf/ptypes/timestamp"
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"

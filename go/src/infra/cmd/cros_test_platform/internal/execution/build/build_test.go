@@ -6,12 +6,12 @@ package build
 
 import (
 	"fmt"
-	"infra/cmd/cros_test_platform/internal/execution/testrunner"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
-	"github.com/google/go-cmp/cmp"
+	"infra/cmd/cros_test_platform/internal/execution/testrunner"
 )
 
 var testSummaryData = []struct {

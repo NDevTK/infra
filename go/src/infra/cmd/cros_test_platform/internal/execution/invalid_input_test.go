@@ -12,14 +12,14 @@ import (
 	"fmt"
 	"testing"
 
-	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
-
 	"github.com/golang/protobuf/ptypes/duration"
 	. "github.com/smartystreets/goconvey/convey"
 	buildapi "go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
+
+	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
 )
 
 func TestLaunchForNonExistentBot(t *testing.T) {

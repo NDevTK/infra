@@ -6,16 +6,17 @@ package commands_test
 
 import (
 	"context"
+	"testing"
+
+	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/chromiumos/config/go/test/api"
+
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
 	vmlabapi "infra/libs/vmlab/api"
-	"testing"
-
-	. "github.com/smartystreets/goconvey/convey"
-	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
 func TestVMProvisionLeaseCmd_NoDeps(t *testing.T) {

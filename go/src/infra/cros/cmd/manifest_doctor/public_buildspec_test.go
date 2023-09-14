@@ -8,14 +8,15 @@ package main
 
 import (
 	"context"
-	"infra/cros/internal/assert"
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/gs"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 	"go.chromium.org/luci/common/proto/gitiles/mock_gitiles"
+
+	"infra/cros/internal/assert"
+	"infra/cros/internal/gerrit"
+	"infra/cros/internal/gs"
 )
 
 const (

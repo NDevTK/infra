@@ -15,9 +15,6 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/jsonpb"
-	"google.golang.org/grpc/metadata"
-	"google.golang.org/protobuf/types/known/fieldmaskpb"
-
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/buildbucket"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
@@ -29,6 +26,8 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe/build"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	"infra/experimental/swarming/fakebuild/fakebuildpb"
 )

@@ -13,10 +13,9 @@ import (
 
 	"github.com/maruel/subcommands"
 
+	"infra/cmd/vmlab/internal/config"
 	"infra/libs/vmlab"
 	"infra/libs/vmlab/api"
-
-	"infra/cmd/vmlab/internal/config"
 )
 
 var ReleaseCmd = &subcommands.Command{

@@ -7,15 +7,16 @@ package commands
 import (
 	"context"
 	"fmt"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/cros_test_runner/data"
-	"infra/libs/skylab/common/heuristics"
 	"os"
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe/build"
+
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/cros_test_runner/data"
+	"infra/libs/skylab/common/heuristics"
 )
 
 // ParseEnvInfoCmd represents parse env info cmd.

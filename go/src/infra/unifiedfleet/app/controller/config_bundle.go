@@ -7,13 +7,13 @@ package controller
 import (
 	"context"
 
-	"infra/unifiedfleet/app/model/configuration"
-
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/config/go/payload"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"google.golang.org/genproto/protobuf/field_mask"
+
+	"infra/unifiedfleet/app/model/configuration"
 )
 
 // UpdateConfigBundle updates ConfigBundle in datastore.

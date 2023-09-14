@@ -7,14 +7,15 @@ package containers
 import (
 	"context"
 	"fmt"
-	"infra/cros/cmd/common_lib/common"
-	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
 	"strings"
 
 	"github.com/google/uuid"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+
+	"infra/cros/cmd/common_lib/common"
+	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
 )
 
 // Container state types

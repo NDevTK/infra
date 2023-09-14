@@ -8,23 +8,22 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/ctpv2/data"
+	"math"
 	"reflect"
+	"sort"
 	"strings"
 	"sync"
 
+	hashstructure "github.com/mitchellh/hashstructure/v2"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/protobuf/proto"
 
-	"math"
-	"sort"
-
-	hashstructure "github.com/mitchellh/hashstructure/v2"
+	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/ctpv2/data"
 )
 
 // FilterExecutionCmd represents test execution cmd.

@@ -7,13 +7,14 @@ package commands
 import (
 	"context"
 	"fmt"
+
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/common_commands"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
-
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
-	"go.chromium.org/luci/common/errors"
 )
 
 // GenericPublishCmd represents gcloud auth cmd.

@@ -10,11 +10,12 @@ package dynamicsuite
 
 import (
 	"encoding/json"
-	"infra/libs/skylab/autotest/proxy"
 	"time"
 
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/libs/skylab/autotest/proxy"
 )
 
 const suiteName = "cros_test_platform"

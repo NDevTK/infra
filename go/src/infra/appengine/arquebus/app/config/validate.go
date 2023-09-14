@@ -21,7 +21,6 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
-
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/config/validation"
 )

@@ -15,9 +15,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/jsonpb"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/side_effects"
 	"go.chromium.org/luci/common/errors"
 
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/side_effects"
 	"infra/libs/skylab/cloudkms"
 )
 

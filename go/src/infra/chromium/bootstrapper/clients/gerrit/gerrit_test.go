@@ -7,7 +7,6 @@ package gerrit
 import (
 	"context"
 	"errors"
-	"infra/chromium/bootstrapper/clients/gob"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -19,6 +18,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"infra/chromium/bootstrapper/clients/gob"
 )
 
 func TestGerritClientForHost(t *testing.T) {

@@ -14,12 +14,12 @@ import (
 	"os/exec"
 	"strings"
 
+	gerritapi "github.com/andygrunwald/go-gerrit"
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/internal/cmd"
 	"infra/cros/internal/git"
 	"infra/cros/internal/shared"
-
-	gerritapi "github.com/andygrunwald/go-gerrit"
-	"go.chromium.org/luci/common/errors"
 )
 
 // This file contains support for interacting with the Gerrit REST API client.

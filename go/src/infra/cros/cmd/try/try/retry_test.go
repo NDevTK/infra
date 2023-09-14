@@ -9,12 +9,12 @@ import (
 	"strings"
 	"testing"
 
+	pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
+	bbpb "go.chromium.org/luci/buildbucket/proto"
+
 	"infra/cros/internal/assert"
 	"infra/cros/internal/cmd"
 	bb "infra/cros/lib/buildbucket"
-
-	pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
-	bbpb "go.chromium.org/luci/buildbucket/proto"
 )
 
 func TestValidate_retryRim(t *testing.T) {

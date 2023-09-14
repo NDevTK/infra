@@ -7,11 +7,11 @@ import (
 	"context"
 	"testing"
 
-	"infra/libs/cipkg_new/core"
-	"infra/libs/cipkg_new/testutils"
-
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
+
+	"infra/libs/cipkg_new/core"
+	"infra/libs/cipkg_new/testutils"
 )
 
 func TestCIPDExport(t *testing.T) {

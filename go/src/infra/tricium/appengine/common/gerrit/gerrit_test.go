@@ -6,11 +6,11 @@ package gerrit
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 
-	"encoding/json"
 	tricium "infra/tricium/api/v1"
 	"infra/tricium/appengine/common/triciumtest"
 )

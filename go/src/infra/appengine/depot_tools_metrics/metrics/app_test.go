@@ -8,9 +8,9 @@ import (
 	"testing"
 
 	"github.com/golang/protobuf/jsonpb"
-	"infra/appengine/depot_tools_metrics/schema"
-
 	"go.chromium.org/luci/auth/identity"
+
+	"infra/appengine/depot_tools_metrics/schema"
 )
 
 func TestExtractsMetrics(t *testing.T) {

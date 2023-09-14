@@ -9,12 +9,6 @@ import (
 	"fmt"
 	"time"
 
-	"infra/cros/cmd/result_flow/internal/bb"
-	"infra/cros/cmd/result_flow/internal/bq"
-	"infra/cros/cmd/result_flow/internal/message"
-	"infra/cros/cmd/result_flow/internal/site"
-	"infra/cros/cmd/result_flow/internal/transform"
-
 	"cloud.google.com/go/bigquery"
 	"github.com/maruel/subcommands"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/result_flow"
@@ -23,6 +17,12 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
+
+	"infra/cros/cmd/result_flow/internal/bb"
+	"infra/cros/cmd/result_flow/internal/bq"
+	"infra/cros/cmd/result_flow/internal/message"
+	"infra/cros/cmd/result_flow/internal/site"
+	"infra/cros/cmd/result_flow/internal/transform"
 )
 
 // PipeTestRunnerData subcommand pipes test runner build to test_platform/analytics/TestRun

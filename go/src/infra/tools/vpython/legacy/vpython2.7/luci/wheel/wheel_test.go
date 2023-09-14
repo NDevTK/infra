@@ -20,10 +20,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"go.chromium.org/luci/common/testing/testfs"
-
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"go.chromium.org/luci/common/testing/testfs"
 )
 
 var (

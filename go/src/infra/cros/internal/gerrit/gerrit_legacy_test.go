@@ -6,7 +6,6 @@ package gerrit
 import (
 	"context"
 	"fmt"
-	"infra/cros/internal/shared"
 	"net/http"
 	"strings"
 	"testing"
@@ -14,6 +13,8 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
+
+	"infra/cros/internal/shared"
 )
 
 func TestGetChangeRev_success(t *testing.T) {

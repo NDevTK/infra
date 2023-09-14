@@ -8,6 +8,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/maruel/subcommands"
+	labPlatform "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 
@@ -17,9 +19,6 @@ import (
 	filter "infra/cros/stableversion/filter"
 	vc "infra/cros/stableversion/validateconfig"
 	"infra/libs/git"
-
-	"github.com/maruel/subcommands"
-	labPlatform "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 )
 
 // Cmd is the top-level runnable for the dump subcommand of stable_version2

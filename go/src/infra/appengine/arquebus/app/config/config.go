@@ -19,13 +19,12 @@ import (
 	"context"
 	"net/http"
 
-	"google.golang.org/protobuf/proto"
-
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/config"
 	"go.chromium.org/luci/config/server/cfgcache"
 	"go.chromium.org/luci/config/validation"
 	"go.chromium.org/luci/server/router"
+	"google.golang.org/protobuf/proto"
 
 	"infra/appengine/arquebus/app/util"
 )

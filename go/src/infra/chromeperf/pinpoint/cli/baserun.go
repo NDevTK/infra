@@ -25,8 +25,6 @@ import (
 	"strings"
 	"sync"
 
-	"infra/chromeperf/pinpoint/proto"
-
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
@@ -36,6 +34,8 @@ import (
 	"golang.org/x/sync/singleflight"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+
+	"infra/chromeperf/pinpoint/proto"
 )
 
 type baseCommandRun struct {

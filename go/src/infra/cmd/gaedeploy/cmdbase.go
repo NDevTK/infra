@@ -11,13 +11,12 @@ import (
 	"path/filepath"
 
 	"github.com/maruel/subcommands"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
-
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/signals"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 
 	"infra/cmd/gaedeploy/cache"
 	"infra/cmd/gaedeploy/source"

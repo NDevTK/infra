@@ -8,6 +8,11 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/auth"
+	"go.chromium.org/luci/common/errors"
+	lgs "go.chromium.org/luci/common/gcloud/gs"
+
 	"infra/cros/internal/branch"
 	mv "infra/cros/internal/chromeosversion"
 	"infra/cros/internal/gerrit"
@@ -15,11 +20,6 @@ import (
 	"infra/cros/internal/gs"
 	"infra/cros/internal/manifestutil"
 	"infra/cros/internal/shared"
-
-	"github.com/maruel/subcommands"
-	"go.chromium.org/luci/auth"
-	"go.chromium.org/luci/common/errors"
-	lgs "go.chromium.org/luci/common/gcloud/gs"
 )
 
 const (

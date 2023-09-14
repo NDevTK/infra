@@ -11,11 +11,9 @@ import (
 	"strings"
 	"testing"
 
-	"gopkg.in/yaml.v2"
-
-	cipd "go.chromium.org/luci/cipd/client/cipd/builder"
-
 	. "github.com/smartystreets/goconvey/convey"
+	cipd "go.chromium.org/luci/cipd/client/cipd/builder"
+	"gopkg.in/yaml.v2"
 )
 
 func TestMakePackages(t *testing.T) {

@@ -24,12 +24,10 @@ import (
 	"text/template"
 	"time"
 
-	"golang.org/x/oauth2/google"
-	"gopkg.in/yaml.v2"
-
-	appengine "google.golang.org/api/appengine/v1"
-
 	"go.chromium.org/luci/common/data/stringset"
+	"golang.org/x/oauth2/google"
+	appengine "google.golang.org/api/appengine/v1"
+	"gopkg.in/yaml.v2"
 )
 
 const monorailURL = "https://bugs.chromium.org/p/%s/issues/detail?id=%s"

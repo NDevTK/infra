@@ -13,8 +13,8 @@ import (
 
 	"github.com/gliderlabs/ssh"
 	"github.com/google/go-cmp/cmp"
-
 	cssh "golang.org/x/crypto/ssh"
+
 	"infra/cros/satlab/satlabrpcserver/fake"
 	"infra/cros/satlab/satlabrpcserver/models"
 	"infra/cros/satlab/satlabrpcserver/utils/connector"

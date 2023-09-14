@@ -9,11 +9,10 @@ import (
 	"fmt"
 
 	"github.com/golang/protobuf/proto"
-
-	"infra/cmd/stable_version2/internal/utils"
-
 	sv "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	"go.chromium.org/luci/common/logging"
+
+	"infra/cmd/stable_version2/internal/utils"
 	svlib "infra/cros/stableversion"
 )
 

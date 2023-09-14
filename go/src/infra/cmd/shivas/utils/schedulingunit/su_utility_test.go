@@ -8,12 +8,11 @@ import (
 	"testing"
 	"time"
 
+	. "github.com/smartystreets/goconvey/convey"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/libs/skylab/inventory/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestSchedulingUnitDutState(t *testing.T) {

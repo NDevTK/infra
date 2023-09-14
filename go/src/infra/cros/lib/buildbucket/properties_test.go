@@ -8,12 +8,12 @@ import (
 	"strings"
 	"testing"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/cmd"
-
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"infra/cros/internal/assert"
+	"infra/cros/internal/cmd"
 )
 
 const (

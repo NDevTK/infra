@@ -22,9 +22,9 @@ import (
 	"math/rand"
 	"time"
 
-	"infra/qscheduler/qslib/scheduler"
-
 	"go.chromium.org/luci/common/data/stringset"
+
+	"infra/qscheduler/qslib/scheduler"
 )
 
 // StateParams defines size parameters used to construct a qscheduler state.

@@ -2,14 +2,15 @@ package api
 
 import (
 	"context"
-	"infra/appengine/cr-rev/frontend/redirect"
-	"infra/appengine/cr-rev/models"
-	"infra/appengine/cr-rev/utils"
 
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"infra/appengine/cr-rev/frontend/redirect"
+	"infra/appengine/cr-rev/models"
+	"infra/appengine/cr-rev/utils"
 )
 
 type server struct {

@@ -8,13 +8,13 @@ import (
 	"sort"
 	"testing"
 
-	"infra/cmd/cros_test_platform/internal/enumeration"
-
 	"github.com/kylelemons/godebug/pretty"
 	"go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/common/data/stringset"
+
+	"infra/cmd/cros_test_platform/internal/enumeration"
 )
 
 func TestGetForTests(t *testing.T) {

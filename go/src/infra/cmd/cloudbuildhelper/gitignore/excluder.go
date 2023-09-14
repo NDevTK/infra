@@ -13,9 +13,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"gopkg.in/src-d/go-git.v4/plumbing/format/gitignore"
-
 	"go.chromium.org/luci/common/errors"
+	"gopkg.in/src-d/go-git.v4/plumbing/format/gitignore"
 
 	"infra/cmd/cloudbuildhelper/fileset"
 )

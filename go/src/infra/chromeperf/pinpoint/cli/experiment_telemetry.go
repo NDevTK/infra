@@ -17,13 +17,10 @@ package cli
 import (
 	"context"
 	"fmt"
-	"infra/chromeperf/pinpoint/cli/render"
 	"io"
 	"os"
 	"path"
 	"sync"
-
-	"infra/chromeperf/pinpoint/proto"
 
 	"github.com/google/uuid"
 	"github.com/maruel/subcommands"
@@ -31,6 +28,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/common/sync/parallel"
+
+	"infra/chromeperf/pinpoint/cli/render"
+	"infra/chromeperf/pinpoint/proto"
 )
 
 // TODO(crbug/1230880): Increase concurrency after we solve the underlying Datastore issue.

@@ -12,14 +12,6 @@ import (
 	"strings"
 	"sync"
 
-	"infra/cros/internal/branch"
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/git"
-	"infra/cros/internal/manifestutil"
-	"infra/cros/internal/osutils"
-	"infra/cros/internal/repo"
-	"infra/cros/internal/shared"
-
 	"cloud.google.com/go/firestore"
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth"
@@ -30,6 +22,14 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"infra/cros/internal/branch"
+	"infra/cros/internal/gerrit"
+	"infra/cros/internal/git"
+	"infra/cros/internal/manifestutil"
+	"infra/cros/internal/osutils"
+	"infra/cros/internal/repo"
+	"infra/cros/internal/shared"
 )
 
 const (

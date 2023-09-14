@@ -13,11 +13,10 @@ import (
 	"sort"
 	"strings"
 
-	"gopkg.in/yaml.v2"
-
 	cipd "go.chromium.org/luci/cipd/client/cipd/builder"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"gopkg.in/yaml.v2"
 )
 
 // defaultExcludePrefixes excludes everything not packaged in "ios" or "mac"

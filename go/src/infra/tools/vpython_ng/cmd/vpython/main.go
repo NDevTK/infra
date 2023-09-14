@@ -11,12 +11,12 @@ import (
 	"strings"
 	"time"
 
+	"go.chromium.org/luci/common/errors"
+
 	"infra/tools/vpython_ng/pkg/application"
 	"infra/tools/vpython_ng/pkg/common"
 	"infra/tools/vpython_ng/pkg/python"
 	"infra/tools/vpython_ng/pkg/wheels"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 type PythonRuntime struct {

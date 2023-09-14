@@ -7,13 +7,12 @@ package dirmd
 import (
 	"testing"
 
-	dirmdpb "infra/tools/dirmd/proto"
-
+	. "github.com/smartystreets/goconvey/convey"
+	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/resultdb/pbutil"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
 
-	. "github.com/smartystreets/goconvey/convey"
-	. "go.chromium.org/luci/common/testing/assertions"
+	dirmdpb "infra/tools/dirmd/proto"
 )
 
 func TestLocationTag(t *testing.T) {

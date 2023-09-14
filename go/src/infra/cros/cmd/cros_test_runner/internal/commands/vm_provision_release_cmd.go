@@ -7,10 +7,11 @@ package commands
 import (
 	"context"
 	"fmt"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/cros_test_runner/data"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/cros_test_runner/data"
 )
 
 // VMProvisionReleaseCmd represents vm-provision service release cmd.

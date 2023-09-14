@@ -9,14 +9,12 @@ import (
 	"sort"
 	"testing"
 
-	proto "infra/appengine/poros/api/proto"
-
-	"go.chromium.org/luci/gae/service/datastore"
-
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/gae/impl/memory"
+	"go.chromium.org/luci/gae/service/datastore"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
-	"go.chromium.org/luci/gae/impl/memory"
+	proto "infra/appengine/poros/api/proto"
 )
 
 func mockCreateResourceRequest(name string, description string, Type string, operatingSystem string, imageProject string, imageFamily string) *proto.CreateResourceRequest {

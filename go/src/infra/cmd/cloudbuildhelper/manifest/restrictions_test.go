@@ -7,10 +7,9 @@ package manifest
 import (
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/flag/stringsetflag"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestCheckTargetName(t *testing.T) {

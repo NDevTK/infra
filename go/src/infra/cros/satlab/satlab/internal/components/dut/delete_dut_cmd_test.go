@@ -7,16 +7,17 @@ package dut
 import (
 	"context"
 	"fmt"
-	ufsModels "infra/unifiedfleet/api/v1/models"
-	ufsApi "infra/unifiedfleet/api/v1/rpc"
-	ufspb "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/grpc"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+
+	ufsModels "infra/unifiedfleet/api/v1/models"
+	ufsApi "infra/unifiedfleet/api/v1/rpc"
+	ufspb "infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 type mockDeleteClient struct {

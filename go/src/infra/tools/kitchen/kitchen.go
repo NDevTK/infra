@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	"github.com/maruel/subcommands"
-
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	log "go.chromium.org/luci/common/logging"

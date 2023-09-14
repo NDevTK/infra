@@ -7,19 +7,19 @@ package main
 import (
 	"context"
 	"fmt"
-	"infra/rts/internal/chromium"
 	"os"
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/storage"
 	"github.com/maruel/subcommands"
-
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/api/gerrit"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/flag/fixflagpos"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
+
+	"infra/rts/internal/chromium"
 )
 
 var logCfg = gologger.LoggerConfig{

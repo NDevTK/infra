@@ -13,9 +13,6 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"infra/chromium/bootstrapper/clients/gitiles"
-	"infra/chromium/util"
-
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/proto/git"
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
@@ -23,6 +20,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"infra/chromium/bootstrapper/clients/gitiles"
+	"infra/chromium/util"
 )
 
 type Revision struct {

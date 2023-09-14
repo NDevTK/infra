@@ -18,7 +18,6 @@ import (
 	"os"
 
 	"github.com/golang/protobuf/proto"
-
 	"go.chromium.org/luci/common/errors"
 )
 

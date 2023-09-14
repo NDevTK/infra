@@ -13,10 +13,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"infra/libs/cipkg"
-	"infra/libs/cipkg/builtins"
-	"infra/libs/cipkg/utilities"
-
 	"go.chromium.org/luci/cipd/client/cipd/ensure"
 	"go.chromium.org/luci/cipd/client/cipd/template"
 	"go.chromium.org/luci/common/errors"
@@ -24,6 +20,10 @@ import (
 	"go.chromium.org/luci/vpython/spec"
 	"go.chromium.org/luci/vpython/wheel"
 	"google.golang.org/protobuf/proto"
+
+	"infra/libs/cipkg"
+	"infra/libs/cipkg/builtins"
+	"infra/libs/cipkg/utilities"
 )
 
 func FromSpec(spec *vpython.Spec, tags cipkg.Generator) (cipkg.Generator, error) {

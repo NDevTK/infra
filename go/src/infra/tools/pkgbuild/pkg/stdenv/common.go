@@ -10,11 +10,11 @@ import (
 	"os/exec"
 	"path"
 
+	"go.chromium.org/luci/cipd/client/cipd/ensure"
+
 	"infra/libs/cipkg"
 	"infra/libs/cipkg/builtins"
 	"infra/libs/cipkg/utilities"
-
-	"go.chromium.org/luci/cipd/client/cipd/ensure"
 )
 
 var (

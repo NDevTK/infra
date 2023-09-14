@@ -6,7 +6,6 @@ package deviceconfig
 
 import (
 	"github.com/golang/protobuf/proto"
-
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 )
 

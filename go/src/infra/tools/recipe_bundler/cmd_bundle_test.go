@@ -8,9 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"go.chromium.org/luci/common/flag/stringmapflag"
-
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/luci/common/flag/stringmapflag"
 	. "go.chromium.org/luci/common/testing/assertions"
 )
 

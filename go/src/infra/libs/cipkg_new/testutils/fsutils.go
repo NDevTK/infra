@@ -10,11 +10,10 @@ import (
 	"log"
 	"os"
 
-	"go.chromium.org/luci/common/errors"
-
 	"github.com/smartystreets/goconvey/convey"
 	"github.com/spf13/afero"
 	"github.com/spf13/afero/mem"
+	"go.chromium.org/luci/common/errors"
 )
 
 var _ afero.Symlinker = AferoMemMapFs{}

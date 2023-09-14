@@ -7,7 +7,6 @@
 package atutil
 
 import (
-	"infra/cros/internal/assert"
 	"io/ioutil"
 	"net/url"
 	"os"
@@ -15,6 +14,8 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+
+	"infra/cros/internal/assert"
 )
 
 // Matches the sample host info file at test_data/host_info.json.

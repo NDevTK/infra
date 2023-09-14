@@ -19,13 +19,12 @@ import (
 	"fmt"
 	"os"
 
-	"infra/cmd/cros_test_platform/luciexe/execute"
-
+	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/exe"
 
-	bbpb "go.chromium.org/luci/buildbucket/proto"
+	"infra/cmd/cros_test_platform/luciexe/execute"
 )
 
 func main() {

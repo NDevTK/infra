@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 
 	"github.com/maruel/subcommands"
-
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/sync/parallel"

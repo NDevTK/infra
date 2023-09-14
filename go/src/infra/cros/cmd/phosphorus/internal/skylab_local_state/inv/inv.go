@@ -6,10 +6,9 @@
 package inv
 
 import (
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/grpc"
-
-	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
 const (

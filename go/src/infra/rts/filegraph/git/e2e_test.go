@@ -13,10 +13,10 @@ import (
 	"strings"
 	"testing"
 
+	. "github.com/smartystreets/goconvey/convey"
+
 	"infra/rts/filegraph"
 	"infra/rts/internal/gitutil"
-
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 // BenchmarkE2E measures performance of this package end to end:

@@ -7,7 +7,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"infra/experimental/golangbuild/golangbuildpb"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -16,8 +15,6 @@ import (
 	"time"
 
 	clouddatastore "cloud.google.com/go/datastore"
-	"google.golang.org/api/option"
-
 	"go.chromium.org/luci/auth"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/api/gerrit"
@@ -28,6 +25,9 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"go.chromium.org/luci/luciexe/build"
 	sauth "go.chromium.org/luci/server/auth"
+	"google.golang.org/api/option"
+
+	"infra/experimental/golangbuild/golangbuildpb"
 )
 
 // buildSpec specifies what a single build will begin doing.

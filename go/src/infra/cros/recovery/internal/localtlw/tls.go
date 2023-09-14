@@ -6,7 +6,6 @@ package localtlw
 
 import (
 	"context"
-	"infra/libs/lro"
 
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
@@ -14,6 +13,7 @@ import (
 	"google.golang.org/grpc"
 
 	"infra/cros/recovery/tlw"
+	"infra/libs/lro"
 )
 
 // TLSProvision calls TLS service and request provisioning with force.

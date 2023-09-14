@@ -9,7 +9,6 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"github.com/maruel/subcommands"
-
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/data/text"

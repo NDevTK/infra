@@ -9,9 +9,6 @@ import (
 	"context"
 	"encoding/csv"
 	"fmt"
-	"infra/rts"
-	"infra/rts/filegraph/git"
-	"infra/rts/internal/chromium"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -20,13 +17,16 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"github.com/maruel/subcommands"
-	"go.chromium.org/luci/common/flag"
-	"google.golang.org/api/iterator"
-
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/flag"
+	"google.golang.org/api/iterator"
+
+	"infra/rts"
+	"infra/rts/filegraph/git"
+	"infra/rts/internal/chromium"
 )
 
 func cmdGenTrainingData(authOpt *auth.Options) *subcommands.Command {

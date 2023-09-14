@@ -7,12 +7,11 @@ package main
 import (
 	"log"
 
-	"infra/cmd/bqexport/testing"
-	"infra/libs/bqschema/tabledef"
-
+	"cloud.google.com/go/bigquery"
 	"github.com/golang/protobuf/proto"
 
-	"cloud.google.com/go/bigquery"
+	"infra/cmd/bqexport/testing"
+	"infra/libs/bqschema/tabledef"
 )
 
 func main() {

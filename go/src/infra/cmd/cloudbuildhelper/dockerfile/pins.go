@@ -11,11 +11,10 @@ import (
 	"sort"
 	"strings"
 
-	"gopkg.in/yaml.v2"
-
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/sync/parallel"
+	"gopkg.in/yaml.v2"
 )
 
 // Pins is a mapping (image name, tag) => digest.

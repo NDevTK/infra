@@ -13,9 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/cmd/result_flow/internal/bb"
-	"infra/cros/cmd/result_flow/internal/message"
-
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/timestamp"
@@ -27,6 +24,9 @@ import (
 	"google.golang.org/api/option"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
+
+	"infra/cros/cmd/result_flow/internal/bb"
+	"infra/cros/cmd/result_flow/internal/message"
 )
 
 type state struct {

@@ -8,10 +8,9 @@ import (
 	"path"
 	"sort"
 
+	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
-
-	"go.chromium.org/luci/common/errors"
 
 	dirmdpb "infra/tools/dirmd/proto"
 )

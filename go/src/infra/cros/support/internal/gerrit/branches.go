@@ -11,10 +11,10 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/support/internal/shared"
-
 	"go.chromium.org/luci/common/api/gitiles"
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
+
+	"infra/cros/support/internal/shared"
 )
 
 const (

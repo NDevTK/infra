@@ -17,10 +17,10 @@ package reconciler
 import (
 	"time"
 
+	"go.chromium.org/luci/common/data/stringset"
+
 	"infra/qscheduler/qslib/protos"
 	"infra/qscheduler/qslib/scheduler"
-
-	"go.chromium.org/luci/common/data/stringset"
 )
 
 // State is the state of a reconciler.

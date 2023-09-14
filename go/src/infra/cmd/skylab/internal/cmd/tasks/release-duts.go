@@ -7,11 +7,11 @@ package tasks
 import (
 	"context"
 	"fmt"
-	swarming_api "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"io"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/auth/client/authcli"
+	swarming_api "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 

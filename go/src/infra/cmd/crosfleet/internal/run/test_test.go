@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"testing"
 
-	"infra/cmd/crosfleet/internal/common"
-
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
+
+	"infra/cmd/crosfleet/internal/common"
 )
 
 var testTestPlanForTestsData = []struct {

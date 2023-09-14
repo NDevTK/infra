@@ -13,9 +13,6 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/civil"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/protobuf/proto"
-
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/proto/protowalk"
 	"go.chromium.org/luci/grpc/appstatus"
@@ -25,12 +22,13 @@ import (
 	"go.chromium.org/luci/server/auth/rpcacl"
 	"go.chromium.org/luci/server/cron"
 	"go.chromium.org/luci/server/encryptedcookies"
+	// Store auth sessions in the datastore.
+	_ "go.chromium.org/luci/server/encryptedcookies/session/datastore"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/secrets"
-
-	// Store auth sessions in the datastore.
-	_ "go.chromium.org/luci/server/encryptedcookies/session/datastore"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/protobuf/proto"
 
 	"infra/appengine/chrome-test-health/api"
 	"infra/appengine/chrome-test-health/internal/coverage"

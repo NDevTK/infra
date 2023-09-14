@@ -6,8 +6,6 @@ package bootstrap
 
 import (
 	"context"
-	"infra/chromium/bootstrapper/clients/cas"
-	"infra/chromium/bootstrapper/clients/cipd"
 	"path/filepath"
 
 	"go.chromium.org/luci/common/errors"
@@ -15,6 +13,9 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	apipb "go.chromium.org/luci/swarming/proto/api"
 	"golang.org/x/sync/errgroup"
+
+	"infra/chromium/bootstrapper/clients/cas"
+	"infra/chromium/bootstrapper/clients/cipd"
 )
 
 // ID values for referring to the packages to be downloaded during bootstrapping

@@ -8,13 +8,13 @@ import (
 	"context"
 	"math"
 
+	"go.chromium.org/luci/common/data/stringset"
+	"go.chromium.org/luci/common/logging"
+
 	"infra/rts"
 	"infra/rts/filegraph"
 	"infra/rts/presubmit/eval"
 	evalpb "infra/rts/presubmit/eval/proto"
-
-	"go.chromium.org/luci/common/data/stringset"
-	"go.chromium.org/luci/common/logging"
 )
 
 // SelectionStrategy implements a selection strategy based on a git graph.

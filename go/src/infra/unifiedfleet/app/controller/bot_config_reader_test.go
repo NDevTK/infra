@@ -16,10 +16,9 @@ import (
 	"go.chromium.org/luci/common/logging/gologger"
 	. "go.chromium.org/luci/common/testing/assertions"
 	"go.chromium.org/luci/gae/service/datastore"
+	configpb "go.chromium.org/luci/swarming/proto/config"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	configpb "go.chromium.org/luci/swarming/proto/config"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/config"

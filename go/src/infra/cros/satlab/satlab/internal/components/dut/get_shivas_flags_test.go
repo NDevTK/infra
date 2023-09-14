@@ -5,9 +5,10 @@
 package dut
 
 import (
-	"infra/cros/satlab/common/site"
 	"reflect"
 	"testing"
+
+	"infra/cros/satlab/common/site"
 )
 
 func TestMakeGetShivasFlags(t *testing.T) {

@@ -2,10 +2,6 @@ package testplan_test
 
 import (
 	"context"
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/git"
-	"infra/cros/internal/testplan"
 	"testing"
 	"time"
 
@@ -13,6 +9,11 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/plan"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"infra/cros/internal/cmd"
+	"infra/cros/internal/gerrit"
+	"infra/cros/internal/git"
+	"infra/cros/internal/testplan"
 )
 
 func TestFindRelevantPlans(t *testing.T) {

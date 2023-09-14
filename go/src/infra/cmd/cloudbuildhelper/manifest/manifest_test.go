@@ -12,10 +12,9 @@ import (
 	"strings"
 	"testing"
 
-	"gopkg.in/yaml.v2"
-
 	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
+	"gopkg.in/yaml.v2"
 )
 
 func TestManifest(t *testing.T) {

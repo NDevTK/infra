@@ -6,9 +6,9 @@ package generators
 import (
 	"context"
 
-	"infra/libs/cipkg_new/core"
-
 	"go.chromium.org/luci/common/errors"
+
+	"infra/libs/cipkg_new/core"
 )
 
 // Generator is the interface for generating actions.

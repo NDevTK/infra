@@ -13,27 +13,26 @@ import (
 	"strings"
 	"time"
 
-	"infra/libs/skylab/inventory"
-	"infra/libs/skylab/inventory/autotest/labels"
-	"infra/libs/skylab/request"
-	"infra/libs/skylab/worker"
-
+	"github.com/golang/protobuf/ptypes"
 	goconfig "go.chromium.org/chromiumos/config/go"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
-	"google.golang.org/protobuf/types/known/anypb"
-	"google.golang.org/protobuf/types/known/timestamppb"
-
-	"github.com/golang/protobuf/ptypes"
 	buildapi "go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"infra/libs/skylab/inventory"
+	"infra/libs/skylab/inventory/autotest/labels"
+	"infra/libs/skylab/request"
+	"infra/libs/skylab/worker"
 )
 
 // Generator defines the set of inputs for creating a request.Args object.

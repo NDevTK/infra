@@ -16,9 +16,8 @@ import (
 	"net"
 	"sync"
 
-	"google.golang.org/grpc"
-
 	pb "go.chromium.org/chromiumos/config/go/test/api"
+	"google.golang.org/grpc"
 )
 
 const (

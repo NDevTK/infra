@@ -5,11 +5,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	tricium "infra/tricium/api/v1"
-
+	. "github.com/smartystreets/goconvey/convey"
 	. "go.chromium.org/luci/common/testing/assertions"
 
-	. "github.com/smartystreets/goconvey/convey"
+	tricium "infra/tricium/api/v1"
 )
 
 const (

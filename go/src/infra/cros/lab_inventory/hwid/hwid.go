@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"infra/cros/lab_inventory/utils"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -21,6 +20,7 @@ import (
 	"go.chromium.org/luci/server/auth"
 
 	invlibs "infra/cros/lab_inventory/protos"
+	"infra/cros/lab_inventory/utils"
 )
 
 var (

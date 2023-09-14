@@ -15,14 +15,14 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/internal/cmd"
-	bb "infra/cros/lib/buildbucket"
-
 	"github.com/maruel/subcommands"
 	pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/types/known/structpb"
+
+	"infra/cros/internal/cmd"
+	bb "infra/cros/lib/buildbucket"
 )
 
 var (

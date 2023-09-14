@@ -9,9 +9,9 @@ package repoimport
 import (
 	"context"
 
-	"infra/appengine/cr-rev/common"
-
 	"go.chromium.org/luci/common/logging"
+
+	"infra/appengine/cr-rev/common"
 )
 
 // Controller is the main interface for importing entire Git repositories.

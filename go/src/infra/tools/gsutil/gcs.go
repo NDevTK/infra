@@ -12,9 +12,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/storage"
-
 	"go.chromium.org/luci/auth"
-
 	"google.golang.org/api/option"
 )
 

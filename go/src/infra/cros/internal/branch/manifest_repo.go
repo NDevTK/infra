@@ -12,11 +12,11 @@ import (
 	"regexp"
 	"strings"
 
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/internal/git"
 	"infra/cros/internal/manifestutil"
 	"infra/cros/internal/repo"
-
-	"go.chromium.org/luci/common/errors"
 )
 
 type ManifestRepo struct {

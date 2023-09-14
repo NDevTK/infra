@@ -9,13 +9,13 @@ import (
 	"fmt"
 	"time"
 
-	"infra/cros/cmd/ipcpubsub/pubsublib"
-
 	"cloud.google.com/go/pubsub"
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/flag"
+
+	"infra/cros/cmd/ipcpubsub/pubsublib"
 )
 
 type subscribeRun struct {

@@ -8,11 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"google.golang.org/api/option"
-
 	"cloud.google.com/go/storage"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/google-cloud-go-testing/storage/stiface"
+	"google.golang.org/api/option"
 
 	"infra/appengine/chromium_build_stats/ninjalog"
 )

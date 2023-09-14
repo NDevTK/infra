@@ -10,13 +10,12 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/config/server/cfgcache"
 	"go.chromium.org/luci/server/cron"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 //go:generate cproto

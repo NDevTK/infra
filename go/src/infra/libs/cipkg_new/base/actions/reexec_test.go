@@ -10,15 +10,15 @@ import (
 	"runtime"
 	"testing"
 
-	"infra/libs/cipkg_new/core"
-	"infra/libs/cipkg_new/testutils"
-
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/spf13/afero"
 	"go.chromium.org/luci/common/system/environ"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
+
+	"infra/libs/cipkg_new/core"
+	"infra/libs/cipkg_new/testutils"
 )
 
 func TestProcessReexec(t *testing.T) {

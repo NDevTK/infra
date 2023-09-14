@@ -7,7 +7,6 @@ package gerrit
 import (
 	"context"
 	"fmt"
-	"infra/chromium/bootstrapper/clients/gob"
 
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/api/gerrit"
@@ -16,6 +15,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"infra/chromium/bootstrapper/clients/gob"
 )
 
 type Client struct {

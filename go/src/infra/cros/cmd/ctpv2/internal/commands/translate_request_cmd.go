@@ -7,14 +7,15 @@ package commands
 import (
 	"context"
 	"fmt"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/ctpv2/data"
 
 	"github.com/gogo/protobuf/jsonpb"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/luciexe/build"
+
+	"infra/cros/cmd/common_lib/interfaces"
+	"infra/cros/cmd/ctpv2/data"
 )
 
 // FilterExecutionCmd represents test execution cmd.

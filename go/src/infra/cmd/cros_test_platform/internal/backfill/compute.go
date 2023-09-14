@@ -6,7 +6,6 @@ package backfill
 
 import (
 	"github.com/golang/protobuf/proto"
-
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/common/errors"

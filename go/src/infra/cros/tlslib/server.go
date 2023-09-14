@@ -22,8 +22,6 @@ import (
 	"sync"
 	"time"
 
-	"infra/libs/lro"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
@@ -36,6 +34,7 @@ import (
 
 	"infra/cros/internal/env"
 	"infra/cros/tlslib/internal/resource"
+	"infra/libs/lro"
 	"infra/libs/sshpool"
 )
 

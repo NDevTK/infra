@@ -9,11 +9,11 @@ import (
 	"flag"
 	"log"
 
+	"github.com/google/subcommands"
+
 	"infra/cros/cmd/lucifer/internal/api"
 	"infra/cros/cmd/lucifer/internal/autotest/atutil"
 	"infra/cros/cmd/lucifer/internal/event"
-
-	"github.com/google/subcommands"
 )
 
 type prejobCmd struct {

@@ -9,15 +9,15 @@ import (
 	"path/filepath"
 	"testing"
 
-	"infra/chromium/bootstrapper/clients/cas"
-	"infra/chromium/bootstrapper/clients/cipd"
-	fakecas "infra/chromium/bootstrapper/clients/fakes/cas"
-	fakecipd "infra/chromium/bootstrapper/clients/fakes/cipd"
-
 	. "github.com/smartystreets/goconvey/convey"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	. "go.chromium.org/luci/common/testing/assertions"
 	apipb "go.chromium.org/luci/swarming/proto/api"
+
+	"infra/chromium/bootstrapper/clients/cas"
+	"infra/chromium/bootstrapper/clients/cipd"
+	fakecas "infra/chromium/bootstrapper/clients/fakes/cas"
+	fakecipd "infra/chromium/bootstrapper/clients/fakes/cipd"
 )
 
 func TestDownloadPackages(t *testing.T) {

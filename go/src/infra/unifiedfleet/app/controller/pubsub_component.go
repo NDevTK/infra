@@ -7,10 +7,11 @@ package controller
 import (
 	"context"
 	"fmt"
-	"infra/unifiedfleet/app/external"
 
 	"cloud.google.com/go/pubsub"
 	"go.chromium.org/luci/common/logging"
+
+	"infra/unifiedfleet/app/external"
 )
 
 // CreatePubSubTopicClient returns back an instance of a Pub/Sub client for the

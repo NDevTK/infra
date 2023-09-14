@@ -13,16 +13,16 @@ import (
 	"strings"
 	"time"
 
+	"go.chromium.org/luci/cipd/client/cipd/platform"
+	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/system/filesystem"
+
 	"infra/libs/cipkg"
 	"infra/libs/cipkg/builtins"
 	"infra/libs/cipkg/utilities"
 	"infra/tools/pkgbuild/pkg/packages"
 	"infra/tools/pkgbuild/pkg/spec"
-
-	"go.chromium.org/luci/cipd/client/cipd/platform"
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/common/system/filesystem"
 )
 
 type Application struct {

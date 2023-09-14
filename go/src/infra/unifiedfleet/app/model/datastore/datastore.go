@@ -8,14 +8,13 @@ import (
 	"context"
 	"fmt"
 
-	"go.chromium.org/luci/grpc/grpcutil"
-	"go.chromium.org/luci/server/auth"
-	"go.chromium.org/luci/server/auth/realms"
-
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
+	"go.chromium.org/luci/grpc/grpcutil"
+	"go.chromium.org/luci/server/auth"
+	"go.chromium.org/luci/server/auth/realms"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

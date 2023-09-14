@@ -7,10 +7,10 @@ package frontend
 import (
 	"context"
 
+	"go.chromium.org/luci/common/logging"
+
 	api "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/controller"
-
-	"go.chromium.org/luci/common/logging"
 )
 
 // CheckFleetTestsPolicy returns whether the given the test parameters are for a valid test.

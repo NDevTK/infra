@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-
 	"go.chromium.org/luci/common/gcloud/gs"
 )
 

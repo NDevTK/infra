@@ -4,13 +4,13 @@ import (
 	"context"
 	"testing"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/testorchestrator"
-
 	"github.com/google/go-cmp/cmp"
 	testpb "go.chromium.org/chromiumos/config/go/test/api"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"google.golang.org/protobuf/testing/protocmp"
+
+	"infra/cros/internal/assert"
+	"infra/cros/internal/testorchestrator"
 )
 
 func TestGetRequestedDimensions(t *testing.T) {

@@ -11,14 +11,14 @@ import (
 	"sort"
 	"strings"
 
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/match"
-
 	"github.com/bmatcuk/doublestar"
 	cros_pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/testplans"
 	testplans_pb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 	bbproto "go.chromium.org/luci/buildbucket/proto"
+
+	"infra/cros/internal/gerrit"
+	"infra/cros/internal/match"
 )
 
 var manifestFilePattern = testplans.FilePattern{Pattern: "{manifest,manifest-internal}/*.xml"}

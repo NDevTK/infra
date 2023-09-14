@@ -7,12 +7,11 @@ package handler
 import (
 	"testing"
 
-	"infra/appengine/sheriff-o-matic/som/model"
-
+	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"infra/appengine/sheriff-o-matic/som/model"
 )
 
 func TestRenderSettingsPage(t *testing.T) {

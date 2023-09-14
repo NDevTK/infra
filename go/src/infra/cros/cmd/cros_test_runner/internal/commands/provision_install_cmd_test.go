@@ -6,17 +6,18 @@ package commands_test
 
 import (
 	"context"
-	"infra/cros/cmd/common_lib/containers"
-	"infra/cros/cmd/common_lib/tools/crostoolrunner"
-	"infra/cros/cmd/cros_test_runner/data"
-	"infra/cros/cmd/cros_test_runner/internal/commands"
-	"infra/cros/cmd/cros_test_runner/internal/executors"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
 	_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+
+	"infra/cros/cmd/common_lib/containers"
+	"infra/cros/cmd/common_lib/tools/crostoolrunner"
+	"infra/cros/cmd/cros_test_runner/data"
+	"infra/cros/cmd/cros_test_runner/internal/commands"
+	"infra/cros/cmd/cros_test_runner/internal/executors"
 )
 
 func TestProvisionInstallCmd_UnsupportedSK(t *testing.T) {

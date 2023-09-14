@@ -18,10 +18,6 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
-	"infra/chromeperf/histograms"
-	"infra/chromeperf/pinpoint"
-	"infra/chromeperf/pinpoint/cli/render"
-	"infra/chromeperf/pinpoint/proto"
 	"math"
 	"os"
 	"path"
@@ -34,6 +30,11 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"gonum.org/v1/gonum/stat"
 	"gopkg.in/yaml.v2"
+
+	"infra/chromeperf/histograms"
+	"infra/chromeperf/pinpoint"
+	"infra/chromeperf/pinpoint/cli/render"
+	"infra/chromeperf/pinpoint/proto"
 )
 
 type metricNameKey string
