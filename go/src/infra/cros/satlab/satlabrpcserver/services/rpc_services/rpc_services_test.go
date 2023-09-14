@@ -859,3 +859,55 @@ func TestGetDUTDetailShouldSuccess(t *testing.T) {
 		t.Errorf("Expected: {%v}, got: {%v}, %v", expected, resp, diff)
 	}
 }
+
+func TestListDutTasksShouldSuccess(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	// Create a mock data
+	s := createMockServer(t)
+	s.commandExecutor = &fake.FakeCommander{
+		CmdOutput: `
+192.168.231.222	satlab-0wgtfqin1846803b-host12
+  `,
+	}
+	mockData := &services.TasksIterator{
+		Cursor: "next_cursor",
+		Tasks: []services.Task{
+			{
+				Id: "task id",
+			},
+		},
+	}
+	s.swarmingService.(*services.MockSwarmingService).
+		On("ListBotTasks", ctx, mock.Anything, mock.Anything, mock.Anything).
+		Return(mockData, nil)
+
+	req := &pb.ListDutTasksRequest{
+		Cursor:   "",
+		PageSize: 1,
+		Address:  "192.168.231.222",
+	}
+	resp, err := s.ListDutTasks(ctx, req)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Should not return error, but got an error: {%v}", err)
+	}
+
+	// Create a expected result
+	expected := &pb.ListDutTasksResponse{
+		Cursor: "next_cursor",
+		Tasks: []*pb.Task{
+			{
+				Id: "task id",
+			},
+		},
+	}
+	// ignore pb fields in `FirmwareUpdateCommandOutput`
+	ignorePBFieldOpts := cmpopts.IgnoreUnexported(pb.ListDutTasksResponse{}, pb.Task{})
+
+	if diff := cmp.Diff(expected, resp, ignorePBFieldOpts); diff != "" {
+		t.Errorf("Expected: {%v}, got: {%v}, %v", expected, resp, diff)
+	}
+}
