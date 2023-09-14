@@ -38,6 +38,7 @@ const (
 	SatlabRpcService_UpdatePool_FullMethodName                = "/satlabrpcserver.SatlabRpcService/update_pool"
 	SatlabRpcService_GetDutDetail_FullMethodName              = "/satlabrpcserver.SatlabRpcService/get_dut_detail"
 	SatlabRpcService_ListDutTasks_FullMethodName              = "/satlabrpcserver.SatlabRpcService/list_dut_tasks"
+	SatlabRpcService_ListDutEvents_FullMethodName             = "/satlabrpcserver.SatlabRpcService/list_dut_events"
 )
 
 // SatlabRpcServiceClient is the client API for SatlabRpcService service.
@@ -62,6 +63,7 @@ type SatlabRpcServiceClient interface {
 	// get DUTs information
 	GetDutDetail(ctx context.Context, in *GetDutDetailRequest, opts ...grpc.CallOption) (*GetDutDetailResponse, error)
 	ListDutTasks(ctx context.Context, in *ListDutTasksRequest, opts ...grpc.CallOption) (*ListDutTasksResponse, error)
+	ListDutEvents(ctx context.Context, in *ListDutEventsRequest, opts ...grpc.CallOption) (*ListDutEventsResponse, error)
 }
 
 type satlabRpcServiceClient struct {
@@ -207,6 +209,15 @@ func (c *satlabRpcServiceClient) ListDutTasks(ctx context.Context, in *ListDutTa
 	return out, nil
 }
 
+func (c *satlabRpcServiceClient) ListDutEvents(ctx context.Context, in *ListDutEventsRequest, opts ...grpc.CallOption) (*ListDutEventsResponse, error) {
+	out := new(ListDutEventsResponse)
+	err := c.cc.Invoke(ctx, SatlabRpcService_ListDutEvents_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SatlabRpcServiceServer is the server API for SatlabRpcService service.
 // All implementations must embed UnimplementedSatlabRpcServiceServer
 // for forward compatibility
@@ -229,6 +240,7 @@ type SatlabRpcServiceServer interface {
 	// get DUTs information
 	GetDutDetail(context.Context, *GetDutDetailRequest) (*GetDutDetailResponse, error)
 	ListDutTasks(context.Context, *ListDutTasksRequest) (*ListDutTasksResponse, error)
+	ListDutEvents(context.Context, *ListDutEventsRequest) (*ListDutEventsResponse, error)
 	mustEmbedUnimplementedSatlabRpcServiceServer()
 }
 
@@ -280,6 +292,9 @@ func (UnimplementedSatlabRpcServiceServer) GetDutDetail(context.Context, *GetDut
 }
 func (UnimplementedSatlabRpcServiceServer) ListDutTasks(context.Context, *ListDutTasksRequest) (*ListDutTasksResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListDutTasks not implemented")
+}
+func (UnimplementedSatlabRpcServiceServer) ListDutEvents(context.Context, *ListDutEventsRequest) (*ListDutEventsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListDutEvents not implemented")
 }
 func (UnimplementedSatlabRpcServiceServer) mustEmbedUnimplementedSatlabRpcServiceServer() {}
 
@@ -564,6 +579,24 @@ func _SatlabRpcService_ListDutTasks_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SatlabRpcService_ListDutEvents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListDutEventsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SatlabRpcServiceServer).ListDutEvents(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SatlabRpcService_ListDutEvents_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SatlabRpcServiceServer).ListDutEvents(ctx, req.(*ListDutEventsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SatlabRpcService_ServiceDesc is the grpc.ServiceDesc for SatlabRpcService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -630,6 +663,10 @@ var SatlabRpcService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "list_dut_tasks",
 			Handler:    _SatlabRpcService_ListDutTasks_Handler,
+		},
+		{
+			MethodName: "list_dut_events",
+			Handler:    _SatlabRpcService_ListDutEvents_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
