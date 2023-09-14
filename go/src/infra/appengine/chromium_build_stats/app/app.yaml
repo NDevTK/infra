@@ -9,7 +9,7 @@
 # To deploy
 #  $ gcloud --project=$project app deploy app.yaml
 #
-runtime: go120
+runtime: go121
 app_engine_apis: true
 
 instance_class: F4_1G
