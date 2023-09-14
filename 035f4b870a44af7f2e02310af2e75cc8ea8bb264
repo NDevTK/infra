@@ -94,6 +94,30 @@
       },
       "revId": "035f4b870a44af7f2e02310af2e75cc8ea8bb264",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "262a6d32_e7343516",
+        "filename": "go/src/infra/experimental/golangbuild/testmode.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 449,
+      "author": {
+        "id": 1154295
+      },
+      "writtenOn": "2023-09-14T21:29:40Z",
+      "side": 1,
+      "message": "I do think the \"find a salt\" approach is neat and may make a lot of sense for `go tool dist test`. it\u0027s certainly a more principled than \"pick a different hash function\".",
+      "parentUuid": "ad8649a5_b956d8d1",
+      "range": {
+        "startLine": 448,
+        "startChar": 0,
+        "endLine": 449,
+        "endChar": 195
+      },
+      "revId": "035f4b870a44af7f2e02310af2e75cc8ea8bb264",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
