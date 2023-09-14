@@ -36,7 +36,7 @@ message ChromeOSDevice {
   };
 }
 
-// Next Tag: 11
+// Next Tag: 12
 message DeviceUnderTest{
   string hostname = 1;
   Peripherals peripherals = 2;
@@ -73,6 +73,10 @@ message DeviceUnderTest{
 
   // Capability to support Chromebook X features
   bool cbx = 10;
+
+  // Provide DUT/drone affinity
+  // Example: satlab-abc123
+  string hive = 11;
 }
 
 // Next Tag: 5
