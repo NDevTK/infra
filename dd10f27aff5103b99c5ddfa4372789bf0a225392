@@ -16,6 +16,24 @@
       "message": "typical go doesn\u0027t use non-domain prefixed package and see such package as categorized as standard (as goimport does).\n\nI\u0027m wondering if the linter can understand infra/* as non-standard or not.",
       "revId": "dd10f27aff5103b99c5ddfa4372789bf0a225392",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8fdee9b2_74e8916d",
+        "filename": "go/src/infra/.golangci.yml",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-09-14T06:39:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f55ed149_bf23a4f4",
+      "revId": "dd10f27aff5103b99c5ddfa4372789bf0a225392",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
