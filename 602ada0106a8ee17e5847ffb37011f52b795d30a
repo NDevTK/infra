@@ -16,6 +16,24 @@
       "message": "Could you comment summary of what does this test check?",
       "revId": "602ada0106a8ee17e5847ffb37011f52b795d30a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "57e73e3f_2b5ec884",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_restat_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-14T06:20:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f798b7fb_ff36ccb2",
+      "revId": "602ada0106a8ee17e5847ffb37011f52b795d30a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
