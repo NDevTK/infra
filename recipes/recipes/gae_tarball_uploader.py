@@ -414,7 +414,8 @@ def GenTests(api):
           infra='prod',
           manifests=['infra/build/gae'],
       ) +
-      api.buildbucket.ci_build(git_repo='https://example.com/wat')
+      api.buildbucket.ci_build(git_repo='https://example.com/wat') +
+      api.expect_status('INFRA_FAILURE')
   )
 
   yield (
@@ -437,7 +438,8 @@ def GenTests(api):
           infra='prod',
           manifests=['infra_internal/build/gae'],
       ) +
-      api.buildbucket.ci_build(git_repo='https://example.com/wat')
+      api.buildbucket.ci_build(git_repo='https://example.com/wat') +
+      api.expect_status('INFRA_FAILURE')
   )
 
   yield (
@@ -483,7 +485,8 @@ def GenTests(api):
               url='https://git.example.com/repo',
           ),
       ) +
-      api.buildbucket.ci_build(git_repo='https://git.example.com/wat')
+      api.buildbucket.ci_build(git_repo='https://git.example.com/wat') +
+      api.expect_status('INFRA_FAILURE')
   )
 
   yield (
@@ -510,7 +513,8 @@ def GenTests(api):
       api.step_data(
           'cloudbuildhelper upload target',
           api.cloudbuildhelper.upload_error_output('Boom'),
-          retcode=1)
+          retcode=1) +
+      api.expect_status('FAILURE')
   )
 
   yield (
@@ -524,10 +528,12 @@ def GenTests(api):
               url='https://git.example.com/repo',
           ),
       ) +
-      api.buildbucket.ci_build(git_repo='https://git.example.com/repo')
+      api.buildbucket.ci_build(git_repo='https://git.example.com/repo') +
+      api.expect_status('INFRA_FAILURE')
   )
 
   yield (
       api.test('bad-props') +
-      api.properties(project=0)
+      api.properties(project=0) +
+      api.expect_status('INFRA_FAILURE')
   )
