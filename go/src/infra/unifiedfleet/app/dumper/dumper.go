@@ -95,7 +95,7 @@ var Jobs = []*cron.CronTab{
 	{
 		// Sync ENC bot and security configs
 		Name:     util.CronJobNames["botConfigSyncCron"],
-		Time:     1 * time.Hour, //TODO(gowriden) - Reduce time to every 5 minutes once completely implemented
+		Time:     10 * time.Minute,
 		TrigType: cron.EVERY,
 		Job:      getBotConfigs,
 	},
