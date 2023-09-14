@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8f458d74_9557f562",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-14T13:49:14Z",
+      "side": 1,
+      "message": "nice, the earlier CLs made this one very easy to read and write!",
+      "revId": "7b0b7f136a26731e357f0f4a11db206ce92e9ba5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
