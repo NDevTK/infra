@@ -60,32 +60,79 @@ func Extract(ctx context.Context, req *ExtractRequest, run components.Runner) er
 }
 
 // CurlFile downloads file by using curl util.
-func CurlFile(ctx context.Context, run components.Runner, sourcePath, destinationPath string, timeout time.Duration) (int, error) {
-	curlParams := []string{sourcePath, "--output", destinationPath, "--fail"}
+func CurlFile(ctx context.Context, run components.Runner, cacheURL, destinationPath string, timeout time.Duration) (int, error) {
+	_, httpErrorCode, err := curlCacheURL(ctx, run, timeout, cacheURL, "--output", destinationPath)
+	if err != nil {
+		return httpErrorCode, errors.Annotate(err, "failed to curl file %q to %q", cacheURL, destinationPath).Err()
+	}
+	return 0, nil
+}
+
+// CurlFileContents reads a file by using curl util.
+func CurlFileContents(ctx context.Context, run components.Runner, cacheURL string, timeout time.Duration) (string, int, error) {
+	fileContents, httpErrorCode, err := curlCacheURL(ctx, run, timeout, cacheURL)
+	if err != nil {
+		return "", httpErrorCode, errors.Annotate(err, "failed to curl contents of file %q", cacheURL).Err()
+	}
+	return fileContents, 0, nil
+}
+
+// curlCacheURL runs the curl command with the provided cacheURL and
+// extraCurlArgs. Additional curl arguments are added to include HTTP request
+// headers that need to be added to cache HTTP requests. Returns the output
+// of the curl command.
+//
+// If the curl command returns a non-nil error, the HTTP response code (parsed
+// from the error) and the command error is returned along with the output of
+// curl.
+func curlCacheURL(ctx context.Context, run components.Runner, timeout time.Duration, cacheURL string, extraCurlArgs ...string) (curlOutput string, httpErrorResponseCode int, err error) {
+	curlArgs := []string{cacheURL, "--fail"}
+	for key, value := range HttpRequestHeaders(ctx) {
+		curlArgs = append(curlArgs, "-H", fmt.Sprintf("%s:%s", key, value))
+	}
+	if len(extraCurlArgs) != 0 {
+		curlArgs = append(curlArgs, extraCurlArgs...)
+	}
+	combinedArgs := strings.Join(curlArgs, " ")
+	log.Debugf(ctx, "Running 'curl %s'", combinedArgs)
+	curlOutput, err = run(ctx, timeout, "curl", curlArgs...)
+	if err != nil {
+		httpErrorResponseCode = ExtractHttpResponseCode(err)
+		log.Debugf(ctx, "Failed run 'curl %q' with httpErrorResponseCode %d: %s", combinedArgs, httpErrorResponseCode, curlOutput)
+		RecordCacheAccessFailure(ctx, cacheURL, httpErrorResponseCode)
+		return curlOutput, httpErrorResponseCode, errors.Annotate(err, "failed to run 'curl %s' with httpErrorResponseCode %d: %s", combinedArgs, httpErrorResponseCode, curlOutput).Err()
+	}
+	log.Debugf(ctx, "Successful run of 'curl %s'", combinedArgs)
+	return curlOutput, 0, nil
+}
+
+// HttpRequestHeaders returns a map of header keys to values of HTTP headers
+// that should be included in HTTP requests to the cache service. The values
+// are retrieved from scopes specific to the provided context.
+func HttpRequestHeaders(ctx context.Context) map[string]string {
+	headers := make(map[string]string)
 	if v, ok := scopes.GetParam(ctx, scopes.ParamKeySwarmingTaskID); ok {
-		curlParams = append(curlParams, "-H", fmt.Sprintf("X-SWARMING-TASK-ID:%s", v))
+		headers["X-SWARMING-TASK-ID"] = v.(string)
 	}
 	if v, ok := scopes.GetParam(ctx, scopes.ParamKeyBuildbucketID); ok {
-		curlParams = append(curlParams, "-H", fmt.Sprintf("X-BBID:%s", v))
+		headers["X-BBID"] = v.(string)
 	}
-	out, err := run(ctx, timeout, "curl", curlParams...)
-	if err == nil {
-		log.Debugf(ctx, "Successfully download %q from %q", destinationPath, sourcePath)
-		return 0, nil
-	}
-	httpResponseCode := ExtractHttpResponseCode(err)
-	log.Debugf(ctx, "Fail to download %q from %q", destinationPath, sourcePath)
-	log.Debugf(ctx, "Fail to download %q: output %s", destinationPath, out)
-	log.Debugf(ctx, "Fail to download %q: httpResponseCode %d", destinationPath, httpResponseCode)
-	if httpResponseCode >= 500 {
-		// non-500 errors are recorded by caching service.
-		// We are only interested in 500 errors coming from the caching service at the moment..
+	return headers
+}
+
+// RecordCacheAccessFailure records non-500 HTTP response errors of an access
+// attempt of a path as an observation metric.
+//
+// We are only interested in 500 errors coming from the caching service at the
+// moment, so the observation is only recorded if the code is >= 500. Non-500
+// errors are recorded by the caching service.
+func RecordCacheAccessFailure(ctx context.Context, sourcePath string, failedHttpResponseCode int) {
+	if failedHttpResponseCode >= 500 {
 		if execMetric := metrics.GetDefaultAction(ctx); execMetric != nil {
 			execMetric.Observations = append(execMetric.Observations,
-				metrics.NewInt64Observation("cache_failed_response_code", int64(httpResponseCode)),
+				metrics.NewInt64Observation("cache_failed_response_code", int64(failedHttpResponseCode)),
 				metrics.NewStringObservation("cache_failed_source_path", sourcePath),
 			)
 		}
 	}
-	return httpResponseCode, errors.Annotate(err, "install firmware image").Err()
 }
