@@ -24,10 +24,6 @@ type MultipleCommandsExecutor struct {
 	cmds []*exec.Cmd
 	// outs the writers that used for command's communication
 	outs []*io.PipeWriter
-	// res final result buffer
-	res *bytes.Buffer
-	// executor that used for executing the command
-	executor executor.IExecCommander
 }
 
 // New the function used for creating an `MultipleCommandsExecutor`
@@ -42,7 +38,6 @@ type MultipleCommandsExecutor struct {
 //
 // )
 func New(cmds ...*exec.Cmd) *MultipleCommandsExecutor {
-	var outBuffer bytes.Buffer
 	lastIdx := len(cmds) - 1
 	outs := make([]*io.PipeWriter, lastIdx)
 
@@ -55,35 +50,34 @@ func New(cmds ...*exec.Cmd) *MultipleCommandsExecutor {
 		cmds[idx+1].Stdin = inPipe
 		outs[idx] = outPipe
 	}
-	cmds[lastIdx].Stdout = &outBuffer
 
 	return &MultipleCommandsExecutor{
-		cmds:     cmds,
-		outs:     outs,
-		res:      &outBuffer,
-		executor: &executor.ExecCommander{},
+		cmds: cmds,
+		outs: outs,
 	}
 }
 
 // Exec start executing the commands and waiting for the result.
 // We will close all the `io.PipeWriter` after finished.
-func (c *MultipleCommandsExecutor) Exec() (*bytes.Buffer, error) {
+func (c *MultipleCommandsExecutor) Exec(executor executor.IExecCommander) ([]byte, error) {
+	lastIdx := len(c.cmds) - 1
+
+	var outBuffer bytes.Buffer
+	c.cmds[lastIdx].Stdout = &outBuffer
+
 	// Start all commands
 	for _, cmd := range c.cmds {
-		if err := c.executor.Start(cmd); err != nil {
+		if err := executor.Start(cmd); err != nil {
 			return nil, err
 		}
 	}
 
 	// Wait for the commands' result
-	for _, cmd := range c.cmds {
-		if err := c.executor.Wait(cmd); err != nil {
+	for idx := 0; idx < lastIdx; idx++ {
+		if err := executor.Wait(c.cmds[idx]); err != nil {
 			return nil, err
 		}
-	}
 
-	// Close all `io.PipeWriter`
-	for idx := 0; idx < len(c.cmds)-1; idx++ {
 		if err := c.outs[idx].Close(); err != nil {
 			// if we face closing pipe problem.
 			// As closing pipe doesn't affect the result.
@@ -92,6 +86,10 @@ func (c *MultipleCommandsExecutor) Exec() (*bytes.Buffer, error) {
 			break
 		}
 	}
+	err := executor.Wait(c.cmds[lastIdx])
+	if err != nil {
+		return nil, err
+	}
 
-	return c.res, nil
+	return outBuffer.Bytes(), nil
 }
