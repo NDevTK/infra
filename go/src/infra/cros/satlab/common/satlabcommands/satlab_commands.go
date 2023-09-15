@@ -5,8 +5,7 @@
 package satlabcommands
 
 import (
-	"fmt"
-	"os"
+	"context"
 	"os/exec"
 	"strings"
 
@@ -43,9 +42,8 @@ type OSVersion struct {
 // GetHostIdentifier gets the host identifier value.
 //
 // Note that this command always returns the identifier in lowercase.
-func GetDockerHostBoxIdentifier(executor executor.IExecCommander) (string, error) {
-	fmt.Fprintf(os.Stderr, "Get host identifier: run %s\n", paths.GetHostIdentifierScript)
-	out, err := executor.Exec(exec.Command(paths.GetHostIdentifierScript))
+func GetDockerHostBoxIdentifier(ctx context.Context, executor executor.IExecCommander) (string, error) {
+	out, err := executor.Exec(exec.CommandContext(ctx, paths.GetHostIdentifierScript))
 	// Immediately normalize the satlab prefix to lowercase. It will save a lot of
 	// trouble later.
 	return strings.ToLower(TrimOutput(out)), errors.Annotate(err, "get host identifier").Err()
@@ -58,7 +56,7 @@ func parseOutput(s string) string {
 }
 
 // GetSatlabVersion gets the Satlab version from docker container `compose` label.
-func GetSatlabVersion(executor executor.IExecCommander) (string, error) {
+func GetSatlabVersion(ctx context.Context, executor executor.IExecCommander) (string, error) {
 	// We want to get the env variables from `docker inspect`
 	// The output is like this
 	// ```
@@ -67,7 +65,8 @@ func GetSatlabVersion(executor executor.IExecCommander) (string, error) {
 	// ...
 	// ```
 	out, err := executor.Exec(
-		exec.Command(
+		exec.CommandContext(
+			ctx,
 			paths.DockerPath,
 			"inspect",
 			"--format='{{range .Config.Env}}{{println .}}{{end}}'",
@@ -88,8 +87,8 @@ func GetSatlabVersion(executor executor.IExecCommander) (string, error) {
 }
 
 // GetOsVersion gets the OS GetOsVersion
-func GetOsVersion(executor executor.IExecCommander) (*OSVersion, error) {
-	out, err := executor.Exec(exec.Command(paths.GetOSVersionScript))
+func GetOsVersion(ctx context.Context, executor executor.IExecCommander) (*OSVersion, error) {
+	out, err := executor.Exec(exec.CommandContext(ctx, paths.GetOSVersionScript))
 	if err != nil {
 		return nil, err
 	}

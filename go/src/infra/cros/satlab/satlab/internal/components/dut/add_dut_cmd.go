@@ -5,12 +5,12 @@
 package dut
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"regexp"
 
 	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	"google.golang.org/api/option"
 
@@ -76,8 +76,7 @@ func (c *addDUT) Run(a subcommands.Application, args []string, env subcommands.E
 
 // InnerRun is the implementation of run.
 func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcommands.Env) (err error) {
-	ctx := context.Background()
-
+	ctx := cli.GetContext(a, c, env)
 	if err := validateHostname(c.hostname); err != nil {
 		return errors.Annotate(err, "bad hostname").Err()
 	}
@@ -88,7 +87,7 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 	//
 	// If we're going to add multiple defer blocks, a different strategy is needed to make sure that
 	// they compose in the correct way.
-	dockerHostBoxIdentifier, err := getDockerHostBoxIdentifier(c.commonFlags)
+	dockerHostBoxIdentifier, err := getDockerHostBoxIdentifier(ctx, c.commonFlags)
 	if err != nil {
 		return errors.Annotate(err, "add dut").Err()
 	}
@@ -134,6 +133,7 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 	// the asset.
 	if !c.skipDNS {
 		content, updateErr := dns.UpdateRecord(
+			ctx,
 			c.qualifiedHostname,
 			c.address,
 		)
