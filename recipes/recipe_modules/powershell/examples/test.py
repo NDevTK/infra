@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from recipe_engine.post_process import StepCommandRE, DropExpectation
-from recipe_engine.post_process import StatusFailure, StatusSuccess
+from recipe_engine.post_process import DropExpectation, StatusSuccess
 
 DEPS = [
     'powershell',
@@ -30,7 +29,7 @@ def GenTests(api):
                   'Message': 'Failed step',
               },
           }
-      })) + api.post_process(StatusFailure) +  # Failed due to StepFailure
+      })) + api.expect_status('FAILURE') +  # Failed due to StepFailure
          api.post_process(DropExpectation))
 
   yield (api.test('pass') + api.step_data(
