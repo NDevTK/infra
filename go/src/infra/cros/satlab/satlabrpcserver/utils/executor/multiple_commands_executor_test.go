@@ -6,43 +6,24 @@ package executor
 import (
 	"os/exec"
 	"testing"
-	"time"
 
 	"github.com/google/go-cmp/cmp"
 
-	"infra/cros/satlab/satlabrpcserver/fake"
+	"infra/cros/satlab/common/utils/executor"
 )
 
 func TestExecuteMultipleCommandShouldSuccess(t *testing.T) {
-	commandsExecutor := New(
-		exec.Command("cmd1"),
-		exec.Command("cmd2"),
-		exec.Command("cmd3"),
-		exec.Command("cmd4"),
-	)
-	commandsExecutor.executor = &fake.FakeCommander{}
-
-	// As `io.Pipe`.Write() is a blocking api
-	// we put it to the background to execute.
-	go func() {
-		// Sent the first command output to simulate the final result
-		// the result should pass through.
-		if _, err := commandsExecutor.outs[0].Write([]byte("cmd1 out")); err != nil {
-			t.Errorf("write some data to pipe writer failed, got an {%v}", err)
-		}
-	}()
-
-	time.Sleep(time.Millisecond * 200)
-
-	result, err := commandsExecutor.Exec()
+	cmd1 := exec.Command("cmd1")
+	cmd2 := exec.Command("cmd2")
+	commandsExecutor := New(cmd1, cmd2)
+	res, err := commandsExecutor.Exec(&executor.FakeCommander{CmdOutput: "cmd1 out"})
 
 	if err != nil {
 		t.Errorf("execute multiple commands should success, got an {%v}", err)
 		return
 	}
 
-	res := string(result.Bytes())
-	if diff := cmp.Diff(res, "cmd1 out"); diff != "" {
+	if diff := cmp.Diff(string(res), "cmd1 out"); diff != "" {
 		t.Errorf("Expect cmd1 out, got {%v}", res)
 	}
 }

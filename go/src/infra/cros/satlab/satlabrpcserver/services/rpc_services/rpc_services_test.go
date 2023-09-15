@@ -18,7 +18,7 @@ import (
 
 	"infra/cros/satlab/common/services"
 	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/satlabrpcserver/fake"
+	"infra/cros/satlab/common/utils/executor"
 	mk "infra/cros/satlab/satlabrpcserver/mocks"
 	"infra/cros/satlab/satlabrpcserver/models"
 	cpu "infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
@@ -768,7 +768,7 @@ func TestGetVersionInfoShouldSuccess(t *testing.T) {
 	t.Parallel()
 	// Create a mock server
 	s := createMockServer(t)
-	s.commandExecutor = &fake.FakeCommander{
+	s.commandExecutor = &executor.FakeCommander{
 		CmdOutput: "LABEL=output\ndescription:description\nversion:v\ntrack:track",
 	}
 
@@ -801,7 +801,7 @@ func TestGetVersionInfoShouldFail(t *testing.T) {
 	t.Parallel()
 	// Create a mock server
 	s := createMockServer(t)
-	s.commandExecutor = &fake.FakeCommander{
+	s.commandExecutor = &executor.FakeCommander{
 		Err: errors.New("exec command failed"),
 	}
 
@@ -824,7 +824,7 @@ func TestGetDUTDetailShouldSuccess(t *testing.T) {
 	ctx := context.Background()
 	// Create a mock data
 	s := createMockServer(t)
-	s.commandExecutor = &fake.FakeCommander{
+	s.commandExecutor = &executor.FakeCommander{
 		CmdOutput: `
 192.168.231.137	satlab-0wgtfqin1846803b-one
 192.168.231.137	satlab-0wgtfqin1846803b-host5
@@ -866,7 +866,7 @@ func TestListDutTasksShouldSuccess(t *testing.T) {
 	ctx := context.Background()
 	// Create a mock data
 	s := createMockServer(t)
-	s.commandExecutor = &fake.FakeCommander{
+	s.commandExecutor = &executor.FakeCommander{
 		CmdOutput: `
 192.168.231.222	satlab-0wgtfqin1846803b-host12
   `,
@@ -918,7 +918,7 @@ func TestListDutEventsShouldSuccess(t *testing.T) {
 	ctx := context.Background()
 	// Create a mock data
 	s := createMockServer(t)
-	s.commandExecutor = &fake.FakeCommander{
+	s.commandExecutor = &executor.FakeCommander{
 		CmdOutput: `
 192.168.231.222	satlab-0wgtfqin1846803b-host12
   `,
