@@ -4,18 +4,20 @@
 package dns
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
 
 	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/satlab/common/dns"
 	"infra/cros/satlab/common/utils/executor"
 )
 
-type readContentsFunc func(executor.IExecCommander) (string, error)
+type readContentsFunc func(context.Context, executor.IExecCommander) (string, error)
 
 // GetDNSCmd is the command to print the current DNS entries for local satlab network
 var GetDNSCmd = &subcommands.Command{
@@ -44,11 +46,12 @@ func (c *getDNSRun) Run(a subcommands.Application, args []string, env subcommand
 
 // innerRun contains business logic
 func (c *getDNSRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-	return c.runCmdInjected(os.Stdout, dns.ReadContents)
+	ctx := cli.GetContext(a, c, env)
+	return c.runCmdInjected(ctx, os.Stdout, dns.ReadContents)
 }
 
-func (c *getDNSRun) runCmdInjected(w io.Writer, readContents readContentsFunc) error {
-	contents, err := readContents(&executor.ExecCommander{})
+func (c *getDNSRun) runCmdInjected(ctx context.Context, w io.Writer, readContents readContentsFunc) error {
+	contents, err := readContents(ctx, &executor.ExecCommander{})
 	if err != nil {
 		return errors.Annotate(err, "read contents").Err()
 	}

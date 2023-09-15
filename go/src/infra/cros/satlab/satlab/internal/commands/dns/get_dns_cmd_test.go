@@ -5,6 +5,7 @@ package dns
 
 import (
 	"bytes"
+	"context"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -15,14 +16,16 @@ import (
 func TestRunGetCmdInjected(t *testing.T) {
 	t.Parallel()
 
-	fakeContents := func(_ executor.IExecCommander) (string, error) {
+	ctx := context.Background()
+
+	fakeContents := func(_ context.Context, _ executor.IExecCommander) (string, error) {
 		return "content", nil
 	}
 	out := new(bytes.Buffer)
 	expectedOut := "Satlab internal DNS:\ncontent\n"
 	cmd := getDNSRun{}
 
-	cmd.runCmdInjected(out, fakeContents)
+	cmd.runCmdInjected(ctx, out, fakeContents)
 
 	if diff := cmp.Diff(out.String(), expectedOut); diff != "" {
 		t.Errorf("unexpected diff in output: %s", diff)
