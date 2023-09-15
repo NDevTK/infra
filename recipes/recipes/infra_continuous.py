@@ -317,8 +317,9 @@ def GenTests(api):
            bucket,
            plat,
            is_experimental=False,
-           arch='intel'):
-    return (api.test(name) + api.platform(plat, 64, arch) +
+           arch='intel',
+           status='SUCCESS'):
+    return (api.test(name, status=status) + api.platform(plat, 64, arch) +
             api.runtime(is_experimental=is_experimental) +
             api.buildbucket.ci_build(
                 project, bucket, builder, git_repo=repo, build_number=123))
@@ -369,8 +370,8 @@ def GenTests(api):
 
   yield (
       test('packager-cipd-fail', 'infra-packager-linux-xc1', INFRA_REPO,
-           'infra', 'prod', 'linux') +
+           'infra', 'prod', 'linux', status='FAILURE') +
       api.step_data('[GOOS:linux GOARCH:arm]cipd - build packages', retcode=1))
 
   yield test('cross-packager-mac-fail', 'infra-packager-TEST-linux-xcMac',
-             INFRA_REPO, 'infra', 'prod', 'linux')
+             INFRA_REPO, 'infra', 'prod', 'linux', status='INFRA_FAILURE')
