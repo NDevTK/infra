@@ -297,7 +297,8 @@ def GenTests(api):
     _step_data_changed_files(
         'appengine/swarming/ui2',
         ['appengine/swarming/ui2/bar.js']) +
-    api.step_data('swarming-ui.git diff', retcode=1))
+    api.step_data('swarming-ui.git diff', retcode=1) +
+    api.expect_status('FAILURE'))
 
   # test case for skipping test steps.
   yield api.test('try-skip') + _try_build()
