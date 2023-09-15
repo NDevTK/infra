@@ -5,6 +5,7 @@
 package stableversion
 
 import (
+	"context"
 	"strings"
 	"testing"
 
@@ -37,7 +38,7 @@ func TestPreprocessHostname(t *testing.T) {
 		{
 			name: "empty",
 			in: inParams{
-				getDHBID: func(_ executor.IExecCommander) (string, error) {
+				getDHBID: func(_ context.Context, _ executor.IExecCommander) (string, error) {
 					panic("don't call me")
 				},
 				isRemoteAccess: func() (bool, error) {
@@ -54,7 +55,7 @@ func TestPreprocessHostname(t *testing.T) {
 					SatlabID: "a",
 				},
 				hostname: "b",
-				getDHBID: func(_ executor.IExecCommander) (string, error) {
+				getDHBID: func(_ context.Context, _ executor.IExecCommander) (string, error) {
 					panic("don't call me")
 				},
 				isRemoteAccess: func() (bool, error) {
@@ -71,7 +72,7 @@ func TestPreprocessHostname(t *testing.T) {
 					SatlabID: "a",
 				},
 				hostname: "satlab-b",
-				getDHBID: func(_ executor.IExecCommander) (string, error) {
+				getDHBID: func(_ context.Context, _ executor.IExecCommander) (string, error) {
 					panic("don't call me")
 				},
 				isRemoteAccess: func() (bool, error) {
@@ -85,7 +86,7 @@ func TestPreprocessHostname(t *testing.T) {
 			name: "remote access good",
 			in: inParams{
 				hostname: "host1",
-				getDHBID: func(_ executor.IExecCommander) (string, error) {
+				getDHBID: func(_ context.Context, _ executor.IExecCommander) (string, error) {
 					return "75fc6517-3539-458f-9718-7bbc759eb73a", nil
 				},
 				isRemoteAccess: func() (bool, error) {
@@ -97,12 +98,15 @@ func TestPreprocessHostname(t *testing.T) {
 		},
 	}
 
+	ctx := context.Background()
+
 	for _, tt := range cases {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			expected := tt.out
 			actual, err := preprocessHostname(
+				ctx,
 				tt.in.common,
 				tt.in.hostname,
 				tt.in.getDHBID,
