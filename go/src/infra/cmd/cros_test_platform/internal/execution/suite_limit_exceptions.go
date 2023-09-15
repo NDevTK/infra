@@ -151,4 +151,18 @@ var exceptions = []suiteFilter{
 		suiteName:  "graphics_per-week",
 		expiration: time.Date(2024, time.January, 30, 0, 0, 0, 0, time.UTC),
 	},
+	// Release specific exemptions, giving an extra year of time so the
+	// exemption doesn't unexpectedly expire.
+	{
+		suiteName:  "paygen_au_stable",
+		expiration: time.Date(2025, time.January, 30, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		suiteName:  "paygen_au_dev",
+		expiration: time.Date(2025, time.January, 30, 0, 0, 0, 0, time.UTC),
+	},
+	{
+		suiteName:  "paygen_au_beta",
+		expiration: time.Date(2025, time.January, 30, 0, 0, 0, 0, time.UTC),
+	},
 }
