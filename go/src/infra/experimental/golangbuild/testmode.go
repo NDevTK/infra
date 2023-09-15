@@ -76,8 +76,8 @@ func (r *testRunner) Run(ctx context.Context, spec *buildSpec) error {
 
 // testShard is a test shard identity that can be used to deterministically filter tests.
 type testShard struct {
-	shardID uint32
-	nShards uint32
+	shardID uint32 // The ID, in the range [0, nShards-1].
+	nShards uint32 // Total number of shards (at least 1).
 }
 
 // shouldRunTest deterministically returns true for whether the shard identity should run
@@ -391,8 +391,7 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 		return nil, err
 	}
 
-	// Parse the JSON output and
-	// select ports matching this shard.
+	// Parse the JSON output and collect available ports.
 	var allPorts []struct {
 		Port
 		FirstClass bool
@@ -430,11 +429,18 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 			// TODO(go.dev/issue/61546, go.dev/issue/58110): If the port gets fixed, drop this case.
 			continue
 		}
-		if shard != noSharding && !shard.shouldRunTest(p.GOOS+"/"+p.GOARCH) {
-			continue
-		}
 		ports = append(ports, p.Port)
 	}
+	// Split up the ports into buckets, and pick one for this shard.
+	bucketSize := len(ports) / int(shard.nShards)
+	if bucketSize*int(shard.nShards) < len(ports) {
+		// Round up when the number of ports doesn't divide evenly by shard count.
+		bucketSize++
+	}
+	i := min(bucketSize*int(shard.shardID), len(ports))
+	j := min(bucketSize*int(shard.shardID+1), len(ports))
+	ports = ports[i:j]
+
 	portList := fmt.Sprint(ports)
 	if len(ports) == 0 {
 		portList = "(no ports selected)"
@@ -542,6 +548,12 @@ func compileOptOut(project string, p Port, modulePath string) bool {
 	return performCompileOnlyTestingAsUsual
 }
 
+func min(x, y int) int { // TODO: Drop once go.mod's version is 1.21 or newer.
+	if x < y {
+		return x
+	}
+	return y
+}
 func max(x, y int) int { // TODO: Drop once go.mod's version is 1.21 or newer.
 	if x > y {
 		return x
