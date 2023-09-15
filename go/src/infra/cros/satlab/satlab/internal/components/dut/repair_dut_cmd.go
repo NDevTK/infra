@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cmdsupport/cmdlib"
@@ -47,7 +48,8 @@ func (c *repairDUTCmd) Run(a subcommands.Application, args []string, env subcomm
 
 // InnerRun is the implementation of 'satlab repair {dut}'.
 func (c *repairDUTCmd) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-	dockerHostBoxIdentifier, err := getDockerHostBoxIdentifier(c.commonFlags)
+	ctx := cli.GetContext(a, c, env)
+	dockerHostBoxIdentifier, err := getDockerHostBoxIdentifier(ctx, c.commonFlags)
 	if err != nil {
 		return errors.Annotate(err, "repair dut").Err()
 	}

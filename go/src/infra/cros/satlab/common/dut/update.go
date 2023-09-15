@@ -180,13 +180,13 @@ func makeUpdateShivasFlags(c *UpdateDUT) flagmap {
 func (c *UpdateDUT) TriggerRun(ctx context.Context, executor executor.IExecCommander) error {
 	var err error
 	if c.SatlabID == "" {
-		c.SatlabID, err = satlabcommands.GetDockerHostBoxIdentifier(executor)
+		c.SatlabID, err = satlabcommands.GetDockerHostBoxIdentifier(ctx, executor)
 		if err != nil {
 			return err
 		}
 	}
 
-	hostId, err := getDockerHostBoxIdentifier(executor, c.SatlabID)
+	hostId, err := getDockerHostBoxIdentifier(ctx, executor, c.SatlabID)
 	if err != nil {
 		return err
 	}
@@ -197,5 +197,5 @@ func (c *UpdateDUT) TriggerRun(ctx context.Context, executor executor.IExecComma
 	return (&shivas.DUTUpdater{
 		Name:     qualifiedHostname,
 		Executor: executor,
-	}).Update(args)
+	}).Update(ctx, args)
 }

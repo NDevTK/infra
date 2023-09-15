@@ -57,7 +57,7 @@ func (c *updateDUTState) Run(a subcommands.Application, args []string, env subco
 func (c *updateDUTState) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
 	ctx := cli.GetContext(a, c, env)
 	ctx = utils.SetupContext(ctx, c.envFlags.GetNamespace())
-	dockerHostBoxIdentifier, err := getDockerHostBoxIdentifier(c.commonFlags)
+	dockerHostBoxIdentifier, err := getDockerHostBoxIdentifier(ctx, c.commonFlags)
 	if err != nil {
 		return errors.Annotate(err, "update dut state").Err()
 	}
