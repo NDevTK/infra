@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "de877a2c_2c56754f",
+        "filename": "go/src/infra/cros/satlab/satlabrpcserver/proto/satlabrpc.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-15T00:25:17Z",
+      "side": 1,
+      "message": "Okay, I changed it to `Msg`. Thank you.",
+      "parentUuid": "a9555aa4_3276b809",
+      "revId": "eea2ff95f2e682bef9864e4d00434648666de46d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e3e654a6_e32a09bf",
         "filename": "go/src/infra/cros/satlab/satlabrpcserver/proto/satlabrpc.proto",
         "patchSetId": 2
@@ -48,6 +66,24 @@
       "writtenOn": "2023-09-14T13:53:10Z",
       "side": 1,
       "message": "nit: consider expanding to timestamp, when i saw the line `Ts: e.Ts,` it was confusing to me at first",
+      "revId": "eea2ff95f2e682bef9864e4d00434648666de46d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a14c631a_769a31fa",
+        "filename": "go/src/infra/cros/satlab/satlabrpcserver/proto/satlabrpc.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 273,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-15T00:25:17Z",
+      "side": 1,
+      "message": "Thank you, I will name it `CreatedAt`",
+      "parentUuid": "e3e654a6_e32a09bf",
       "revId": "eea2ff95f2e682bef9864e4d00434648666de46d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
