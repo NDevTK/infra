@@ -250,6 +250,7 @@ def GenTests(api):
           'get ufs vm data', stdout=test_ufs_output(_IMAGE_VERSIONS[0])),
       api.override_step_data(
           'docker pull %s' % _IMAGE_TEMPLATE % _IMAGE_VERSIONS[0], retcode=1),
+      api.expect_status('INFRA_FAILURE'),
       api.post_process(post_process.StatusException),
       api.post_process(post_process.DropExpectation),
   )
