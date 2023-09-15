@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b5a43c8e_afdc7e4f",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_restat_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-09-15T08:13:59Z",
+      "side": 1,
+      "message": "Better to differentiate fs.ErrNotExist and other error?",
+      "range": {
+        "startLine": 72,
+        "startChar": 5,
+        "endLine": 72,
+        "endChar": 15
+      },
+      "revId": "95e995fff1e8289fe6743ea15477b1fa0f3df442",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "80c84168_8aac4210",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_restat_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-09-15T08:13:59Z",
+      "side": 1,
+      "message": "Better to explain which action are expected to run and which actions are not?",
+      "revId": "95e995fff1e8289fe6743ea15477b1fa0f3df442",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "49abcdab_fae17a55",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_restat_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-09-15T08:13:59Z",
+      "side": 1,
+      "message": "Which action is skipped in this case?",
+      "range": {
+        "startLine": 186,
+        "startChar": 10,
+        "endLine": 186,
+        "endChar": 17
+      },
+      "revId": "95e995fff1e8289fe6743ea15477b1fa0f3df442",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
