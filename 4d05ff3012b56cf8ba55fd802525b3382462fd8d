@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6ef5a20b_79cb14dd",
+        "filename": "go/src/infra/.golangci.yml",
+        "patchSetId": 6
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1001907
+      },
+      "writtenOn": "2023-09-15T17:49:10Z",
+      "side": 1,
+      "message": "can we add another section before infra to group all go.chromium.org packages in their own section?\n\ni.e.\n\n```\nstandard\n\ndefault\n\ngo.chromium.org/...\n\ninfra/...\n```\n\nI don\u0027t think we want go.chromium.org packages mixed with e.g. github packages.",
+      "revId": "4d05ff3012b56cf8ba55fd802525b3382462fd8d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
