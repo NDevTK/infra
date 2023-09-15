@@ -4,6 +4,7 @@
 package executor
 
 import (
+	"log"
 	"os/exec"
 	"time"
 )
@@ -49,24 +50,13 @@ func (f *FakeCommander) Start(c *exec.Cmd) error {
 }
 
 func (f *FakeCommander) Wait(c *exec.Cmd) error {
-	if c.Stdin != nil {
-		l := 1024
-		data := make([]byte, l)
-		if _, err := c.Stdin.Read(data); err != nil {
-			return err
+	go func() {
+		if _, err := c.Stdout.Write([]byte(f.CmdOutput)); err != nil {
+			log.Printf("can't write data to the pipe, got an error: %v", err)
 		}
+	}()
 
-		go func() {
-			// take the byte until meet the first \x0
-			idx := 0
-			for ; idx < l && data[idx] != 0; idx++ {
-			}
+	time.Sleep(time.Millisecond)
 
-			if _, err := c.Stdout.Write(data[:idx]); err != nil {
-			}
-		}()
-
-		time.Sleep(time.Millisecond * 200)
-	}
 	return nil
 }
