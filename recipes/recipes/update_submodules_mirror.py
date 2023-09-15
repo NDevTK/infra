@@ -405,7 +405,8 @@ def GenTests(api):
              'git ls-remote',
              api.raw_io.stream_output_text(
                  'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\trefs/heads/main',
-                 stream='stdout')) + api.step_data('git fetch', retcode=128))
+                 stream='stdout')) + api.step_data('git fetch', retcode=128) +
+         api.expect_status('INFRA_FAILURE'))
 
   yield (
       api.test('existing_checkout_new_commits') + api.properties(
