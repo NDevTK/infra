@@ -5,6 +5,7 @@
 package dns
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
@@ -213,14 +214,14 @@ func replaceLineContents(seen map[string]bool, lines []string, classifier classi
 // UpdateRecord ensures that the contents of the /etc/hosts file in the dns container are up to date
 // with a given host and address.
 // UpdateRecord returns the original contents before modification, to allow its caller to undo the modification.
-func UpdateRecord(host string, addr string) (string, error) {
+func UpdateRecord(ctx context.Context, host string, addr string) (string, error) {
 	if host == "" {
 		return "", errors.New("update record: no hostname")
 	}
 	if addr == "" {
 		return "", errors.New("update record: no address")
 	}
-	content, err := dns.ReadContents(&executor.ExecCommander{})
+	content, err := dns.ReadContents(ctx, &executor.ExecCommander{})
 	if err != nil {
 		return "", errors.Annotate(err, "update record").Err()
 	}
