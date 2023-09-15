@@ -4,6 +4,7 @@
 package dns
 
 import (
+	"context"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -12,12 +13,12 @@ import (
 )
 
 // noopUpdateRecord is UpdateRecord with no side effects for testing other functionality
-func noopUpdateRecord(host string, address string) (string, error) {
+func noopUpdateRecord(_ context.Context, host string, address string) (string, error) {
 	return "", nil
 }
 
 // fakeDHBGetter emulates fetching SatlabID with a constant value
-func fakeDHBGetter(_ executor.IExecCommander) (string, error) {
+func fakeDHBGetter(_ context.Context, _ executor.IExecCommander) (string, error) {
 	return "123", nil
 }
 
@@ -62,13 +63,15 @@ func TestRunCommandValidates(t *testing.T) {
 		output{false, &updateDNSRun{host: "satlab-123-eli", address: "127.0.0.1"}},
 	}}
 
+	ctx := context.Background()
+
 	for _, tc := range tests {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
 			i, o := tc.input, tc.output
-			err := i.command.runCmdInjected(i.args, i.satlabIDFetcher, noopUpdateRecord)
+			err := i.command.runCmdInjected(ctx, i.args, i.satlabIDFetcher, noopUpdateRecord)
 
 			if o.errored != (err != nil) {
 				t.Errorf("Testing(%+v) failed. Got error: %t, expected error: %t", tc, err, o.errored)
@@ -82,7 +85,7 @@ func TestRunCommandValidates(t *testing.T) {
 
 // fakeUpdateRecord produces a function that emulates UpdateRecord but stores the latest results in a records map passed in
 func fakeUpdateRecord(records map[string]string) HostfileUpdater {
-	return func(host, address string) (string, error) {
+	return func(_ context.Context, host, address string) (string, error) {
 		records[host] = address
 		return "", nil
 	}
@@ -92,12 +95,14 @@ func fakeUpdateRecord(records map[string]string) HostfileUpdater {
 func TestRunCmdUpdatesRecords(t *testing.T) {
 	t.Parallel()
 
+	ctx := context.Background()
+
 	callMap := make(map[string]string)
 	updateRecord := fakeUpdateRecord(callMap)
 	cmd := &updateDNSRun{host: "satlab-123-eli", address: "127.0.0.1"}
 	expectedCallMap := map[string]string{"satlab-123-eli": "127.0.0.1"}
 
-	cmd.runCmdInjected([]string{}, fakeDHBGetter, updateRecord)
+	cmd.runCmdInjected(ctx, []string{}, fakeDHBGetter, updateRecord)
 
 	if diff := cmp.Diff(callMap, expectedCallMap); diff != "" {
 		t.Errorf("got diff %s for final state of records with input %+v", diff, cmd)

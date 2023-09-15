@@ -5,6 +5,7 @@
 package stableversion
 
 import (
+	"context"
 	"fmt"
 	"infra/cros/satlab/common/satlabcommands"
 	"infra/cros/satlab/common/site"
@@ -15,7 +16,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 )
 
-type getDHBID = func(executor.IExecCommander) (string, error)
+type getDHBID = func(context.Context, executor.IExecCommander) (string, error)
 
 type isRemoteAccess = func() (bool, error)
 
@@ -27,7 +28,7 @@ type isRemoteAccess = func() (bool, error)
 //
 // If the argument that we're given already looks like a hostname, then the user
 // probably intended to modify a specific device, so we do not preprocess the input.
-func preprocessHostname(common site.CommonFlags, hostname string, getDHBID getDHBID, isRemoteAccess isRemoteAccess) (string, error) {
+func preprocessHostname(ctx context.Context, common site.CommonFlags, hostname string, getDHBID getDHBID, isRemoteAccess isRemoteAccess) (string, error) {
 	// By default, these values really should be the real versions "GetDockerHostBoxIdentifier" and "LooksLikeSatlabRemoteAccessContainer".
 	// Set them here so that we never accidentally call a nil function by mistake on the production path.
 	if getDHBID == nil {
@@ -73,7 +74,7 @@ func preprocessHostname(common site.CommonFlags, hostname string, getDHBID getDH
 	}
 
 	// We're probably in the satlab remote access container. Get the satlab ID.
-	satlabID, err := getDHBID(&executor.ExecCommander{})
+	satlabID, err := getDHBID(ctx, &executor.ExecCommander{})
 	if err != nil {
 		// This really shouldn't happen, but is technically possible if, for example, get_host_identifier is not
 		// executable for some reason.

@@ -5,6 +5,7 @@
 package dns
 
 import (
+	"context"
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/utils/executor"
 	"os/exec"
@@ -15,7 +16,7 @@ import (
 
 // ReadContents gets the content of a DNS file.
 // If the DNS file does not exist, replace it with an empty container.
-func ReadContents(executor executor.IExecCommander) (string, error) {
+func ReadContents(ctx context.Context, executor executor.IExecCommander) (string, error) {
 	// Defensively touch the file if it does not already exist.
 	// See b/199796469 for details.
 	args := []string{
@@ -25,7 +26,7 @@ func ReadContents(executor executor.IExecCommander) (string, error) {
 		"touch",
 		paths.HostsFilePath,
 	}
-	if _, err := executor.Exec(exec.Command(args[0], args[1:]...)); err != nil {
+	if _, err := executor.Exec(exec.CommandContext(ctx, args[0], args[1:]...)); err != nil {
 		return "", errors.Annotate(err, "defensively touch dns file").Err()
 	}
 
@@ -37,7 +38,7 @@ func ReadContents(executor executor.IExecCommander) (string, error) {
 		paths.HostsFilePath,
 	}
 
-	out, err := executor.Exec(exec.Command(args[0], args[1:]...))
+	out, err := executor.Exec(exec.CommandContext(ctx, args[0], args[1:]...))
 	if err != nil {
 		return "", errors.Annotate(err, "get dns file content").Err()
 
@@ -49,11 +50,12 @@ func ReadContents(executor executor.IExecCommander) (string, error) {
 // innerReadHostsToMap is a inner function read a dns file
 // and parse the raw data to a map
 func innerReadHostsToMap(
+	ctx context.Context,
 	executor executor.IExecCommander,
 	useIPAsKey bool,
 ) (map[string]string, error) {
 	res := map[string]string{}
-	rawData, err := ReadContents(executor)
+	rawData, err := ReadContents(ctx, executor)
 
 	if err != nil {
 		return res, nil
@@ -79,11 +81,11 @@ func innerReadHostsToMap(
 }
 
 // ReadHostsToIPMap read the hosts file to get the IP host mapping
-func ReadHostsToIPMap(executor executor.IExecCommander) (map[string]string, error) {
-	return innerReadHostsToMap(executor, true)
+func ReadHostsToIPMap(ctx context.Context, executor executor.IExecCommander) (map[string]string, error) {
+	return innerReadHostsToMap(ctx, executor, true)
 }
 
 // ReadHostsToHostMap read the hosts file to get the host IP mapping
-func ReadHostsToHostMap(executor executor.IExecCommander) (map[string]string, error) {
-	return innerReadHostsToMap(executor, false)
+func ReadHostsToHostMap(ctx context.Context, executor executor.IExecCommander) (map[string]string, error) {
+	return innerReadHostsToMap(ctx, executor, false)
 }
