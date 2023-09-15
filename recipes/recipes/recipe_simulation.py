@@ -109,6 +109,7 @@ def GenTests(api):
         }
       '''))
   )
+
   yield (
       api.test('tip_of_tree') +
       api.properties(
@@ -123,6 +124,7 @@ def GenTests(api):
         }
       '''))
   )
+
   yield (
       api.test('recipes_path defaults to repo root') +
       api.properties(
@@ -140,15 +142,14 @@ def GenTests(api):
           steps['recipe simulation test'].cmd)) +
       api.post_process(post_process.DropExpectation)
   )
+
   yield (
-      api.test('conflicting_repo_urls') +
+      api.test('conflicting_repo_urls', status='INFRA_FAILURE') +
       api.buildbucket.ci_build(
-          git_repo='https://chromium.googlesource.com/chromium/tools/build',
-      ) +
+          git_repo='https://chromium.googlesource.com/chromium/tools/build',) +
       api.properties(
-          git_repo='https://chromium.googlesource.com/infra/infra.GIT',
-      )
-  )
+          git_repo='https://chromium.googlesource.com/infra/infra.GIT',))
+
   yield (
       api.test('py2_py3_coverage_flakiness') + api.properties(
           git_repo='https://chromium.googlesource.com/infra/infra',) +
@@ -167,7 +168,8 @@ def GenTests(api):
                   'FATAL: Insufficient total coverage for py2+py3 (99.99%)'),
               retcode=1) +
       api.step_data('recipe simulation test (eliminate flakiness)', retcode=0))
-  yield (api.test('simulation_test_error') + api.properties(
+
+  yield (api.test('simulation_test_error', status='FAILURE') + api.properties(
       git_repo='https://chromium.googlesource.com/infra/infra',) +
          api.step_data(
              'read %s' % CFG_PATH,

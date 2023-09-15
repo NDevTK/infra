@@ -505,7 +505,12 @@ def GenTests(api):
       patchset=0,
   )
 
-  def test_with_changes(name, upstream_id, downstream_id, changes, *footers):
+  def test_with_changes(name,
+                        upstream_id,
+                        downstream_id,
+                        changes,
+                        *footers,
+                        status='SUCCESS'):
     # Depending on the size of api.buildbucket.build.input.gerrit_changes,
     # the source for initialize step may differ.
     initialize = api.buildbucket.build(
@@ -515,7 +520,7 @@ def GenTests(api):
           git_repo=REPO_URLS[upstream_id],
           change_number=changes[0].change,
           patch_set=changes[0].patchset)
-    return (api.test(name) + api.properties(
+    return (api.test(name, status=status) + api.properties(
         upstream_id=upstream_id,
         upstream_url=REPO_URLS[upstream_id],
         downstream_id=downstream_id,
@@ -538,9 +543,13 @@ def GenTests(api):
                         for k in footers
                     })))
 
-  def test(name, *footers):
-    return test_with_changes(name, 'recipe_engine', 'depot_tools',
-                             [CL_CHANGE_ACTUAL], *footers)
+  def test(name, *footers, status='SUCCESS'):
+    return test_with_changes(
+        name,
+        'recipe_engine',
+        'depot_tools', [CL_CHANGE_ACTUAL],
+        *footers,
+        status=status)
 
   yield (
     test('find_trivial_roll')
@@ -551,46 +560,40 @@ def GenTests(api):
     + api.post_check(lambda check, steps: check('BYPASS ENABLED' in steps))
   )
 
-  yield (
-    test('too_many_footers', MANUAL_CHANGE_FOOTER, NONTRIVIAL_ROLL_FOOTER)
-    + api.post_check(lambda check, steps: check(
-        "Too many footers for 'depot_tools'" in steps
-    ))
-  )
+  yield (test(
+      'too_many_footers',
+      MANUAL_CHANGE_FOOTER,
+      NONTRIVIAL_ROLL_FOOTER,
+      status='FAILURE') + api.post_check(lambda check, steps: check(
+          "Too many footers for 'depot_tools'" in steps)))
+
+  yield (test(
+      'find_trivial_roll_unexpected', MANUAL_CHANGE_FOOTER, status='FAILURE') +
+         api.post_check(lambda check, steps: check(
+             'UNEXPECTED FOOTER IN CL MESSAGE' in steps)))
 
   yield (
-    test('find_trivial_roll_unexpected', MANUAL_CHANGE_FOOTER)
-    + api.post_check(lambda check, steps: check(
-        'UNEXPECTED FOOTER IN CL MESSAGE' in steps
-    ))
-  )
-
-  yield (
-      test('find_manual_roll_missing') +
+      test('find_manual_roll_missing', status='FAILURE') +
       api.step_data('train recipes at upstream CL', retcode=1) +
       api.step_data('train recipes at upstream CL (py3 retrain)', retcode=1) +
       api.post_check(lambda check, steps: check(MANUAL_CHANGE_FOOTER in steps[
           'MISSING FOOTER IN CL MESSAGE'].step_text)))
 
   yield (
-      test('find_manual_roll_wrong', NONTRIVIAL_ROLL_FOOTER) +
+      test('find_manual_roll_wrong', NONTRIVIAL_ROLL_FOOTER, status='FAILURE') +
       api.step_data('train recipes at upstream CL', retcode=1) +
       api.step_data('train recipes at upstream CL (py3 retrain)', retcode=1) +
       api.post_check(lambda check, steps: check(MANUAL_CHANGE_FOOTER in steps[
           'WRONG FOOTER IN CL MESSAGE'].step_text)))
 
   yield (
-    test('find_non_trivial_roll')
-    + api.step_data('post-train diff at upstream CL', retcode=1)
-    + api.post_check(lambda check, steps: check(
-      NONTRIVIAL_ROLL_FOOTER in steps['MISSING FOOTER IN CL MESSAGE'].step_text
-    ))
-  )
+      test('find_non_trivial_roll', status='FAILURE') +
+      api.step_data('post-train diff at upstream CL', retcode=1) +
+      api.post_check(lambda check, steps: check(NONTRIVIAL_ROLL_FOOTER in steps[
+          'MISSING FOOTER IN CL MESSAGE'].step_text)))
 
-  yield (
-    test('trivial_roll_unrolled_changes')
-    + api.step_data('post-train diff at upstream CL', retcode=1)
-  )
+  yield (test('trivial_roll_unrolled_changes', status='FAILURE') +
+         api.step_data('post-train diff at upstream CL', retcode=1))
 
   yield (
     test('nontrivial_roll_match', NONTRIVIAL_ROLL_FOOTER)
@@ -624,7 +627,8 @@ def GenTests(api):
   # None of the ancestor commits of the upstream repo's main branch are
   # compatible with the downstream repo (they all cause crashes).
   yield (
-      test('no_good_upstream_main_commits') + api.step_data(
+      test('no_good_upstream_main_commits', status='INFRA_FAILURE') +
+      api.step_data(
           'find last non-crashing upstream revision'
           '.train recipes at upstream main',
           retcode=1) + api.step_data(

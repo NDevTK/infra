@@ -38,14 +38,16 @@ def GenTests(api):
   # For conciseness.
   repo_spec = api.recipe_autoroller.repo_spec
 
-  def test(name, *test_data):
+  def test(name, *test_data, status='SUCCESS'):
     return api.test(
         name,
         api.buildbucket.generic_build(
             project='infra', bucket='cron', builder='recipe-autoroller'),
         api.properties(projects=[
             ('build', 'https://example.com/build.git'),
-        ]), *test_data)
+        ]),
+        *test_data,
+        status=status)
 
   yield test(
       'basic',
@@ -72,6 +74,7 @@ def GenTests(api):
   yield test(
       'failure',
       api.recipe_autoroller.roll_data('build', success=False),
+      status='FAILURE',
   )
 
   yield test(
@@ -83,6 +86,7 @@ def GenTests(api):
               'issue': None,
               'issue_url': None
           })),
+      status='FAILURE',
   )
 
   yield test(
@@ -105,6 +109,7 @@ def GenTests(api):
               'issue': None,
               'issue_url': None
           })),
+      status='FAILURE',
   )
 
   yield test(
@@ -127,6 +132,7 @@ def GenTests(api):
           status='commit',
           timestamp='2016-02-01T01:23:45'),
       api.time.seed(1454371200),
+      status='FAILURE',
   )
 
   yield test(
@@ -170,6 +176,7 @@ def GenTests(api):
           status='waiting',
           timestamp='2016-02-01T01:23:45'),
       api.time.seed(1454371200),
+      status='FAILURE',
   )
 
   yield test(

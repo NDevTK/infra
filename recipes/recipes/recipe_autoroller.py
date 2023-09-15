@@ -34,7 +34,12 @@ def RunSteps(api, projects, db_gcs_bucket):
 
 
 def GenTests(api):
-  yield api.test('basic',
-        api.properties(projects=[
-            ('build', 'https://example.com/build.git'),
-        ]))
+  yield api.test(
+      'basic',
+      api.buildbucket.generic_build(
+          project='infra', bucket='cron', builder='recipe-autoroller'),
+      api.properties(projects=[
+          ('build', 'https://example.com/build.git'),
+      ]),
+      api.recipe_autoroller.roll_data('build'),
+  )

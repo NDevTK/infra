@@ -10,6 +10,18 @@
       "[CACHE]/builder/recipe_engine"
     ],
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "ensure recipe_dir gone"
   },
   {
@@ -25,6 +37,18 @@
       "[CACHE]/builder"
     ],
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "ensure builder cache dir exists"
   },
   {
@@ -38,14 +62,23 @@
     ],
     "cwd": "[CACHE]/builder",
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "clone recipe engine"
   },
   {
     "cmd": [],
-    "name": "build",
-    "~followup_annotations": [
-      "@@@STEP_EXCEPTION@@@"
-    ]
+    "name": "build"
   },
   {
     "cmd": [
@@ -57,6 +90,18 @@
       "--url",
       "https://example.com/build.git"
     ],
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "build.git setup",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -75,6 +120,18 @@
       "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
     },
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "build.git fetch",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -89,6 +146,18 @@
     ],
     "cwd": "[CACHE]/builder/recipe_autoroller/build",
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "build.git checkout",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -102,6 +171,18 @@
     ],
     "cwd": "[CACHE]/builder/recipe_autoroller/build",
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "build.read revision",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -118,6 +199,18 @@
     ],
     "cwd": "[CACHE]/builder/recipe_autoroller/build",
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "build.git clean",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -132,6 +225,18 @@
     ],
     "cwd": "[CACHE]/builder/recipe_autoroller/build",
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "build.git config",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -146,6 +251,18 @@
     ],
     "cwd": "[CACHE]/builder/recipe_autoroller/build",
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "build.git branch",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -169,6 +286,18 @@
       ]
     },
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "build.git new-branch",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
@@ -182,10 +311,51 @@
       "[CACHE]/builder/recipe_autoroller/build/infra/config/recipes.cfg",
       "/path/to/tmp/json"
     ],
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "build.read recipes.cfg",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{}@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"api_version\": 2,@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"autoroll_recipe_options\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"disable_reason\": \"\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"no_cc_authors\": false,@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"nontrivial\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"automatic_commit_dry_run\": true,@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"extra_reviewer_emails\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"foo@chromium.org\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"foo@bar.example.com\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"meep@example.com\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      ],@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"set_autosubmit\": true@@@",
+      "@@@STEP_LOG_LINE@json.output@    },@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"trivial\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"automatic_commit\": true,@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"dry_run\": false,@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"self_approve_method\": \"BOT_COMMIT_APPROVE\",@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"tbr_emails\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"foo@bar.example.com\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"meep@example.com\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      ]@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  },@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"deps\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"recipe_engine\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"url\": \"https://chromium.googlesource.com/infra/luci/recipes-py\"@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
     ]
   },
@@ -201,6 +371,18 @@
       "gs://recipe-mega-roller-crappy-db/repo_metadata/aHR0cHM6Ly9leGFtcGxlLmNvbS9idWlsZC5naXQ="
     ],
     "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "build.gsutil repo_state",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
@@ -219,19 +401,303 @@
       "--output-json",
       "/path/to/tmp/json"
     ],
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
     "name": "build.roll",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@json.output (invalid)@@@",
-      "@@@STEP_LOG_LINE@json.output (exception)@No JSON object could be decoded@@@",
-      "@@@STEP_LOG_END@json.output (exception)@@@"
+      "@@@STEP_TEXT@ (trivial)@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"picked_roll_details\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"commit_infos\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"recipe_engine\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@        {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"author_email\": \"foo@chromium.org\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"message_lines\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"some commit summary that is too long to fit in a single line in Gerrit\",@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"R=bar@chromium.org,baz@chromium.org,invalid1,invalid2@chromium\",@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"BUG=123,456\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          ],@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"revision\": \"123abc\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      ]@@@",
+      "@@@STEP_LOG_LINE@json.output@    },@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"spec\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"api_version\": 2,@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"autoroll_recipe_options\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"disable_reason\": \"\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"no_cc_authors\": false,@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"nontrivial\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"automatic_commit_dry_run\": true,@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"extra_reviewer_emails\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"foo@chromium.org\",@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"foo@bar.example.com\",@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"meep@example.com\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          ],@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"set_autosubmit\": true@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"trivial\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"automatic_commit\": true,@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"dry_run\": false,@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"self_approve_method\": \"BOT_COMMIT_APPROVE\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"tbr_emails\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"foo@bar.example.com\",@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"meep@example.com\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          ]@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      },@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"deps\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"recipe_engine\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"url\": \"https://chromium.googlesource.com/infra/luci/recipes-py\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  },@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"rejected_candidates_count\": 0,@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"roll_details\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"commit_infos\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"recipe_engine\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@          {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"author_email\": \"foo@chromium.org\",@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"message_lines\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"some commit summary that is too long to fit in a single line in Gerrit\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"R=bar@chromium.org,baz@chromium.org,invalid1,invalid2@chromium\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"BUG=123,456\"@@@",
+      "@@@STEP_LOG_LINE@json.output@            ],@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"revision\": \"123abc\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        ]@@@",
+      "@@@STEP_LOG_LINE@json.output@      },@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"spec\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"api_version\": 2,@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"autoroll_recipe_options\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"disable_reason\": \"\",@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"no_cc_authors\": false,@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"nontrivial\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"automatic_commit_dry_run\": true,@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"extra_reviewer_emails\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"foo@chromium.org\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"foo@bar.example.com\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"meep@example.com\"@@@",
+      "@@@STEP_LOG_LINE@json.output@            ],@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"set_autosubmit\": true@@@",
+      "@@@STEP_LOG_LINE@json.output@          },@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"trivial\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"automatic_commit\": true,@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"dry_run\": false,@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"self_approve_method\": \"BOT_COMMIT_APPROVE\",@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"tbr_emails\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"foo@bar.example.com\",@@@",
+      "@@@STEP_LOG_LINE@json.output@              \"meep@example.com\"@@@",
+      "@@@STEP_LOG_LINE@json.output@            ]@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        },@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"deps\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"recipe_engine\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@            \"url\": \"https://chromium.googlesource.com/infra/luci/recipes-py\"@@@",
+      "@@@STEP_LOG_LINE@json.output@          }@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    }@@@",
+      "@@@STEP_LOG_LINE@json.output@  ],@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"success\": true,@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"trivial\": true@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LOG_LINE@commit_message@Roll recipe dependencies (trivial).@@@",
+      "@@@STEP_LOG_LINE@commit_message@@@@",
+      "@@@STEP_LOG_LINE@commit_message@This is an automated CL created by the recipe roller. This CL rolls@@@",
+      "@@@STEP_LOG_LINE@commit_message@recipe changes from upstream projects (recipe_engine) into this repository.@@@",
+      "@@@STEP_LOG_LINE@commit_message@@@@",
+      "@@@STEP_LOG_LINE@commit_message@The build that created this CL was@@@",
+      "@@@STEP_LOG_LINE@commit_message@https://ci.chromium.org/b/8945511751514863184@@@",
+      "@@@STEP_LOG_LINE@commit_message@@@@",
+      "@@@STEP_LOG_LINE@commit_message@recipe_engine:@@@",
+      "@@@STEP_LOG_LINE@commit_message@https://chromium.googlesource.com/infra/luci/recipes-py/+/123abc@@@",
+      "@@@STEP_LOG_LINE@commit_message@  123abc (foo@chromium.org)@@@",
+      "@@@STEP_LOG_LINE@commit_message@      some commit summary that is too long to fit in a single line in...@@@",
+      "@@@STEP_LOG_LINE@commit_message@@@@",
+      "@@@STEP_LOG_LINE@commit_message@Please check the following references for more information:@@@",
+      "@@@STEP_LOG_LINE@commit_message@- autoroller, https://chromium.googlesource.com/infra/luci/recipes-py/+/main/doc/workflow.md#autoroller@@@",
+      "@@@STEP_LOG_LINE@commit_message@- rollback, https://chromium.googlesource.com/infra/luci/recipes-py/+/main/doc/workflow.md#rollback@@@",
+      "@@@STEP_LOG_LINE@commit_message@- cross-repo dependencies, https://chromium.googlesource.com/infra/luci/recipes-py/+/main/doc/cross_repo.md@@@",
+      "@@@STEP_LOG_LINE@commit_message@@@@",
+      "@@@STEP_LOG_LINE@commit_message@Use https://goo.gl/noib3a to file a bug.@@@",
+      "@@@STEP_LOG_LINE@commit_message@@@@",
+      "@@@STEP_LOG_LINE@commit_message@Recipe-Tryjob-Bypass-Reason: Autoroller@@@",
+      "@@@STEP_LOG_LINE@commit_message@Ignore-Freeze: Autoroller@@@",
+      "@@@STEP_LOG_LINE@commit_message@Bugdroid-Send-Email: False@@@",
+      "@@@STEP_LOG_END@commit_message@@@"
     ]
   },
   {
-    "failure": {
-      "failure": {},
-      "humanReason": "Rolls failed for the following projects: build"
+    "cmd": [
+      "vpython3",
+      "[CACHE]/builder/recipe_engine/recipes.py",
+      "--package",
+      "[CACHE]/builder/recipe_autoroller/build/infra/config/recipes.cfg",
+      "dump_specs"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
     },
-    "name": "$result"
+    "name": "build.get deps",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@proto.output@{@@@",
+      "@@@STEP_LOG_LINE@proto.output@  \"repo_specs\": {@@@",
+      "@@@STEP_LOG_LINE@proto.output@    \"recipe_engine\": {}@@@",
+      "@@@STEP_LOG_LINE@proto.output@  }@@@",
+      "@@@STEP_LOG_LINE@proto.output@}@@@",
+      "@@@STEP_LOG_END@proto.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "commit",
+      "-a",
+      "-m",
+      "roll recipes.cfg"
+    ],
+    "cwd": "[CACHE]/builder/recipe_autoroller/build",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "build.git commit",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "RECIPE_REPO[depot_tools]/git_cl.py",
+      "upload",
+      "--send-mail",
+      "--set-bot-commit",
+      "-r",
+      "meep@example.com",
+      "--use-commit-queue",
+      "--bypass-hooks",
+      "-f",
+      "--cc=foo@chromium.org",
+      "--message-file",
+      "Roll recipe dependencies (trivial).\n\nThis is an automated CL created by the recipe roller. This CL rolls\nrecipe changes from upstream projects (recipe_engine) into this repository.\n\nThe build that created this CL was\nhttps://ci.chromium.org/b/8945511751514863184\n\nrecipe_engine:\nhttps://chromium.googlesource.com/infra/luci/recipes-py/+/123abc\n  123abc (foo@chromium.org)\n      some commit summary that is too long to fit in a single line in...\n\nPlease check the following references for more information:\n- autoroller, https://chromium.googlesource.com/infra/luci/recipes-py/+/main/doc/workflow.md#autoroller\n- rollback, https://chromium.googlesource.com/infra/luci/recipes-py/+/main/doc/workflow.md#rollback\n- cross-repo dependencies, https://chromium.googlesource.com/infra/luci/recipes-py/+/main/doc/cross_repo.md\n\nUse https://goo.gl/noib3a to file a bug.\n\nRecipe-Tryjob-Bypass-Reason: Autoroller\nIgnore-Freeze: Autoroller\nBugdroid-Send-Email: False\n"
+    ],
+    "cwd": "[CACHE]/builder/recipe_autoroller/build",
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "build.git cl upload",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "RECIPE_REPO[depot_tools]/git_cl.py",
+      "issue",
+      "--json",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[CACHE]/builder/recipe_autoroller/build",
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "build.git cl issue",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"issue\": 123456789,@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"issue_url\": \"https://code-review.googlesource.com/123456789\"@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@Issue 123456789@https://code-review.googlesource.com/123456789@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::gsutil]/resources/gsutil_smart_retry.py",
+      "--",
+      "RECIPE_REPO[depot_tools]/gsutil.py",
+      "----",
+      "cp",
+      "{\"issue\": \"123456789\", \"issue_url\": \"https://code-review.googlesource.com/123456789\", \"last_roll_ts_utc\": \"2012-05-14T12:53:21\", \"trivial\": true}",
+      "gs://recipe-mega-roller-crappy-db/repo_metadata/aHR0cHM6Ly9leGFtcGxlLmNvbS9idWlsZC5naXQ="
+    ],
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:cron"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "build.gsutil upload",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LINK@gsutil.upload@https://storage.cloud.google.com/recipe-mega-roller-crappy-db/repo_metadata/aHR0cHM6Ly9leGFtcGxlLmNvbS9idWlsZC5naXQ=@@@"
+    ]
+  },
+  {
+    "name": "$result",
+    "summaryMarkdown": "* [code:123456789](https://code-review.googlesource.com/123456789)"
   }
 ]
