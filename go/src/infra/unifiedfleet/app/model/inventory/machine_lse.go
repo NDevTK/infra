@@ -58,6 +58,7 @@ type MachineLSEEntity struct {
 	MibaRealm             string   `gae:"miba_realm,noindex"` // deprecated
 	LogicalZone           string   `gae:"logical_zone"`
 	Realm                 string   `gae:"realm"`
+	Hive                  string   `gae:"hive"`
 	// ufspb.MachineLSE cannot be directly used as it contains pointer.
 	MachineLSE []byte `gae:",noindex"`
 }
@@ -98,10 +99,12 @@ func newMachineLSEEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEnti
 	var rpmID string
 	var rpmPort string
 	var pools []string
+	var hive string
 	if p.GetChromeosMachineLse().GetDeviceLse().GetDut() != nil {
 		rpmID = p.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetRpm().GetPowerunitName()
 		rpmPort = p.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetRpm().GetPowerunitOutlet()
 		pools = p.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools()
+		hive = p.GetChromeosMachineLse().GetDeviceLse().GetDut().GetHive()
 	} else if p.GetChromeosMachineLse().GetDeviceLse().GetLabstation() != nil {
 		rpmID = p.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm().GetPowerunitOutlet()
 		rpmPort = p.GetChromeosMachineLse().GetDeviceLse().GetLabstation().GetRpm().GetPowerunitOutlet()
@@ -155,6 +158,7 @@ func newMachineLSEEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEnti
 		MachineLSE:            machineLSE,
 		LogicalZone:           p.GetLogicalZone().String(),
 		Realm:                 p.GetRealm(),
+		Hive:                  hive,
 	}, nil
 }
 
