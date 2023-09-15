@@ -90,7 +90,7 @@ def GenTests(api):
     return test
 
   yield (api.test('needs_input') +
-         api.post_process(post_process.StatusFailure) +
+         api.expect_status('FAILURE') +
          api.post_process(post_process.DropExpectation))
 
   yield (test_with_patch('infra_repo', ['README.md']) + api.properties(
