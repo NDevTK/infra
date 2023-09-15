@@ -4,9 +4,11 @@
 package dns
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/satlab/common/dns"
@@ -45,12 +47,13 @@ func (c *deleteDNSRun) Run(a subcommands.Application, args []string, env subcomm
 // innerRun calls underlying business logic with appropriate functions and interfaces injected
 // extra abstraction layer allows us to test `runCmdInjected` with fake implementations
 func (c *deleteDNSRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-	return c.runCmdInjected(args, satlabcommands.GetDockerHostBoxIdentifier)
+	ctx := cli.GetContext(a, c, env)
+	return c.runCmdInjected(ctx, args, satlabcommands.GetDockerHostBoxIdentifier)
 }
 
 // runCmdInjected executes business logic
-func (c *deleteDNSRun) runCmdInjected(args []string, dhbIDFunc DockerHostBoxIdentifierGetter) error {
-	satlabID, err := dhbIDFunc(&executor.ExecCommander{})
+func (c *deleteDNSRun) runCmdInjected(ctx context.Context, args []string, dhbIDFunc DockerHostBoxIdentifierGetter) error {
+	satlabID, err := dhbIDFunc(ctx, &executor.ExecCommander{})
 	if err != nil {
 		return err
 	}
@@ -61,7 +64,7 @@ func (c *deleteDNSRun) runCmdInjected(args []string, dhbIDFunc DockerHostBoxIden
 	}
 
 	_, err = DeleteRecord(ensureRecords, func() (string, error) {
-		return dns.ReadContents(&executor.ExecCommander{})
+		return dns.ReadContents(ctx, &executor.ExecCommander{})
 	}, c.host)
 	return err
 }
