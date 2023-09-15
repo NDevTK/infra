@@ -65,7 +65,7 @@ func (c *getStableVersionRun) Run(a subcommands.Application, args []string, env 
 
 // InnerRun creates a client, sends a GetStableVersion request, and prints the response.
 func (c *getStableVersionRun) innerRun(ctx context.Context, a subcommands.Application, args []string, env subcommands.Env) error {
-	newHostname, err := preprocessHostname(c.commonFlags, c.hostname, nil, nil)
+	newHostname, err := preprocessHostname(ctx, c.commonFlags, c.hostname, nil, nil)
 	if err != nil {
 		return errors.Annotate(err, "get stable version").Err()
 	}

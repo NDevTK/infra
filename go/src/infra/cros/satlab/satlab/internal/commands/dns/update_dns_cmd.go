@@ -4,9 +4,11 @@
 package dns
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/satlab/common/satlabcommands"
@@ -16,12 +18,12 @@ import (
 
 // DockerHostBoxIdentifierGetter is a function type fulfilled by satlabcommands.GetDockerHostBoxIdentifier
 // we do this because the function assumes we are in a real Satlab env and we can't unit test using this func
-type DockerHostBoxIdentifierGetter func(executor.IExecCommander) (string, error)
+type DockerHostBoxIdentifierGetter func(context.Context, executor.IExecCommander) (string, error)
 
 // HostfileUpdater is a function type fulfilled by UpdateRecord
 // it should take care of the e2e flow of updating a record and applying those changes
 // any implementation should be atomic
-type HostfileUpdater func(host string, addr string) (string, error)
+type HostfileUpdater func(ctx context.Context, host string, addr string) (string, error)
 
 // UpdateDNSCmd is the command to upsert a hostname-ip pairing in /etc/dut_hosts/hosts used in DNS container
 var UpdateDNSCmd = &subcommands.Command{
@@ -54,13 +56,14 @@ func (c *updateDNSRun) Run(a subcommands.Application, args []string, env subcomm
 
 // innerRun gathers all needed function and interface implementations and calls the business logic
 func (c *updateDNSRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-	return c.runCmdInjected(args, satlabcommands.GetDockerHostBoxIdentifier, UpdateRecord)
+	ctx := cli.GetContext(a, c, env)
+	return c.runCmdInjected(ctx, args, satlabcommands.GetDockerHostBoxIdentifier, UpdateRecord)
 }
 
 // runCmdInjected executes actual logic of command
 // it takes in mockable functions and interfaces to make it easier to unit test the logic of the update dns cmd
-func (c *updateDNSRun) runCmdInjected(args []string, dhbIDFunc DockerHostBoxIdentifierGetter, updateRecordFunc HostfileUpdater) error {
-	satlabID, err := dhbIDFunc(&executor.ExecCommander{})
+func (c *updateDNSRun) runCmdInjected(ctx context.Context, args []string, dhbIDFunc DockerHostBoxIdentifierGetter, updateRecordFunc HostfileUpdater) error {
+	satlabID, err := dhbIDFunc(ctx, &executor.ExecCommander{})
 	if err != nil {
 		return err
 	}
@@ -70,7 +73,7 @@ func (c *updateDNSRun) runCmdInjected(args []string, dhbIDFunc DockerHostBoxIden
 		return err
 	}
 
-	_, err = updateRecordFunc(c.host, c.address)
+	_, err = updateRecordFunc(ctx, c.host, c.address)
 	if err != nil {
 		return err
 	}
