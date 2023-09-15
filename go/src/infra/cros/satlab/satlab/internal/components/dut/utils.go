@@ -6,6 +6,7 @@ package dut
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"os/exec"
@@ -26,13 +27,13 @@ type flagmap = map[string][]string
 // by running a command inside the current container if no flag was given on the command line.
 //
 // Note that this function always returns the satlab ID in lowercase.
-func getDockerHostBoxIdentifier(common site.CommonFlags) (string, error) {
+func getDockerHostBoxIdentifier(ctx context.Context, common site.CommonFlags) (string, error) {
 	// Use the string provided in the common flags by default.
 	if common.SatlabID != "" {
 		return strings.ToLower(common.SatlabID), nil
 	}
 
-	dockerHostBoxIdentifier, err := satlabcommands.GetDockerHostBoxIdentifier(&executor.ExecCommander{})
+	dockerHostBoxIdentifier, err := satlabcommands.GetDockerHostBoxIdentifier(ctx, &executor.ExecCommander{})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to determine -satlab prefix, use %s to pass explicitly\n", common.SatlabID)
 		return "", errors.Annotate(err, "get docker host box").Err()

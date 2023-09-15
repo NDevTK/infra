@@ -5,6 +5,7 @@
 package shivas
 
 import (
+	"context"
 	"os/exec"
 
 	"infra/cros/satlab/common/commands"
@@ -22,7 +23,7 @@ type DUTUpdater struct {
 
 // Update invokes shivas with the required arguments to update information
 // about a DUT.
-func (u *DUTUpdater) Update(args map[string][]string) error {
+func (u *DUTUpdater) Update(ctx context.Context, args map[string][]string) error {
 	flags := make(map[string][]string)
 
 	for k, v := range args {
@@ -37,6 +38,6 @@ func (u *DUTUpdater) Update(args map[string][]string) error {
 	}).ToCommand()
 	// We ignore the output here because we don't need any information from
 	// the output now.
-	_, err := u.Executor.Exec(exec.Command(command_args[0], command_args[1:]...))
+	_, err := u.Executor.Exec(exec.CommandContext(ctx, command_args[0], command_args[1:]...))
 	return err
 }
