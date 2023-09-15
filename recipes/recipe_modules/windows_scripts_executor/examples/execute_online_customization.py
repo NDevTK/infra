@@ -157,7 +157,7 @@ def GenTests(api):
          t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
          t.STATUS_VM(api, image, cust, vm_name) + t.MOCK_CUST_OUTPUT(
              api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-{}'.format(
-                 key_win, system), False) + api.post_process(StatusFailure) +
+                 key_win, system), False) + api.expect_status('FAILURE') +
          api.post_process(DropExpectation))
 
   yield (api.test('execute_customization_fail_add_file_debug') +
@@ -173,7 +173,7 @@ def GenTests(api):
          t.CHECK_DEBUG_SLEEP(api, image, cust, time=boot_time) +
          t.STATUS_VM(api, image, cust, vm_name) + t.MOCK_CUST_OUTPUT(
              api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-{}'.format(
-                 key_win, system), False) + api.post_process(StatusFailure) +
+                 key_win, system), False) + api.expect_status('FAILURE') +
          api.post_process(DropExpectation))
 
   yield (api.test('execute_customization_fail_safe_shutdown') +
@@ -188,5 +188,5 @@ def GenTests(api):
          t.QUIT_VM(api, image, cust, vm_name, success=True) +
          t.MOCK_CUST_OUTPUT(
              api, 'gs://chrome-gce-images/WIB-ONLINE-CACHE/{}-{}'.format(
-                 key_win, system), False) + api.post_process(StatusFailure) +
+                 key_win, system), False) + api.expect_status('FAILURE') +
          api.post_process(DropExpectation))

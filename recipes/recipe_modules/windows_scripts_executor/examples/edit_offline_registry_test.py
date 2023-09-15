@@ -63,7 +63,7 @@ def GenTests(api):
       t.EDIT_REGISTRY(api, 'TamperProtection', image, customization, False) +
 
       # test recipe exit status
-      api.post_process(StatusFailure) +
+      api.expect_status('FAILURE') +
 
       # additional optional params
       api.post_process(DropExpectation))

@@ -124,7 +124,7 @@ def GenTests(api):
              api, customization, 'gs://WinTools/net/ping.exe', success=False) +
          # failure adding the file to the image
          t.ADD_FILE(api, image, customization, PING_URL, success=False) +
-         api.post_process(StatusFailure) +  # recipe should fail
+         api.expect_status('FAILURE') +  # recipe should fail
          api.post_process(DropExpectation))
 
   # Test using GCSSrc as an input image to the customization and input artifact

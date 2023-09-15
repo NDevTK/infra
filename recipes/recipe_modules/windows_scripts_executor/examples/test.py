@@ -133,7 +133,7 @@ def GenTests(api):
                         'windows/artifacts/startnet.cmd', 'HEAD') +
          # mock failure in gen winpe media step
          t.GEN_WPE_MEDIA(api, arch, image, cust_name, False) +
-         api.post_process(StatusFailure) +  # recipe should fail
+         api.expect_status('FAILURE') +  # recipe should fail
          api.post_process(DropExpectation))
 
   # Missing arch in config. Execution should fail if arch is ARCH_UNSPECIFIED
@@ -146,8 +146,8 @@ def GenTests(api):
                          offline_winpe_customization=winpe
                          .OfflineWinPECustomization(name=cust_name,))
                  ])) +
-         # recipe execution should fail
-         api.post_process(StatusFailure) + api.post_process(DropExpectation))
+         api.expect_status('FAILURE') +  # recipe should fail
+         api.post_process(DropExpectation))
 
   # Failure in executing action add_step
   yield (api.test('Fail add file step', api.platform('win', 64)) +
@@ -163,7 +163,7 @@ def GenTests(api):
          # mock add file from git to image execution
          t.ADD_FILE(api, image, cust_name, STARTNET_URL, False)
          +  # Fail to add file
-         api.post_process(StatusFailure) +  # recipe fails
+         api.expect_status('FAILURE') +  # recipe should fail
          api.post_process(DropExpectation))
 
   # Add a file from cipd storage

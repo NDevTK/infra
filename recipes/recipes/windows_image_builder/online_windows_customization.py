@@ -245,5 +245,6 @@ def GenTests(api):
       # Mock shutdown vm. successfully shut down vm
       t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
       # Mock stats vm check. VM offline
-      t.STATUS_VM(api, image, cust, vm_name) + api.post_process(StatusFailure) +
+      t.STATUS_VM(api, image, cust, vm_name) +
+      api.expect_status('FAILURE') +
       api.post_process(DropExpectation))

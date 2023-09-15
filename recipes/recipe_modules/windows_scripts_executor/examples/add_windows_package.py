@@ -107,5 +107,5 @@ def GenTests(api):
          # assert that the install file step was executed with args
          t.CHECK_INSTALL_CAB(api, image, customization, 'add cipd',
                              ['-IgnoreCheck']) +
-         # assert that the execution was a failure
-         api.post_process(StatusFailure) + api.post_process(DropExpectation))
+         api.expect_status('FAILURE') +
+         api.post_process(DropExpectation))

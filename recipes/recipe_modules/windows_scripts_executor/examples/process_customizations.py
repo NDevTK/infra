@@ -80,7 +80,7 @@ def GenTests(api):
   yield (api.test('Test process_customizations Cyclical dependency',
                   api.platform('win', 64)) +
          # input image with install file action without any args
-         api.properties(REF_IMAGE) + api.post_process(StatusFailure) +
+         api.properties(REF_IMAGE) + api.expect_status('FAILURE') +
          api.post_process(DropExpectation))
 
 

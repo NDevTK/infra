@@ -127,7 +127,8 @@ def GenTests(api):
          t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
          # Mock stats vm check. VM offline
          t.STATUS_VM(api, image, cust, vm_name) +
-         api.post_process(StatusFailure) + api.post_process(DropExpectation))
+         api.expect_status('FAILURE') +
+         api.post_process(DropExpectation))
 
   yield (api.test('powershell_expr retcode fail') +
          api.platform('linux', 64, 'intel') +
@@ -145,7 +146,8 @@ def GenTests(api):
          t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
          # Mock stats vm check. VM offline
          t.STATUS_VM(api, image, cust, vm_name) +
-         api.post_process(StatusFailure) + api.post_process(DropExpectation))
+         api.expect_status('FAILURE') +
+         api.post_process(DropExpectation))
 
   yield (api.test('powershell_expr timeout fail') +
          api.platform('linux', 64, 'intel') +
@@ -162,7 +164,8 @@ def GenTests(api):
          t.SHUTDOWN_VM(api, image, cust, vm_name, 0) +
          # Mock stats vm check. VM offline
          t.STATUS_VM(api, image, cust, vm_name) +
-         api.post_process(StatusFailure) + api.post_process(DropExpectation))
+         api.expect_status('FAILURE') +
+         api.post_process(DropExpectation))
 
   # Test successful exec on timeout if ignore_timeout
   ACTION_ADD_FILE.powershell_expr.ignore_timeout = True

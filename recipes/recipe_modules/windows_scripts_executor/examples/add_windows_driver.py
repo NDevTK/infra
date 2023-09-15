@@ -111,5 +111,5 @@ def GenTests(api):
       # assert that the install driver step was executed
       t.CHECK_INSTALL_DRIVER(api, image, customization, 'add drivers from cipd',
                              ['-Recurse']) +
-      # assert  that the execution was a failure
-      api.post_process(StatusFailure) + api.post_process(DropExpectation))
+      api.expect_status('FAILURE') +
+      api.post_process(DropExpectation))

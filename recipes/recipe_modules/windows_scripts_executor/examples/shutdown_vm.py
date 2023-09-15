@@ -100,7 +100,8 @@ def GenTests(api):
          # Force quit vm
          t.QUIT_VM(api, image, cust, vm_name) +
          # Recipe exits with Failure
-         api.post_process(StatusFailure) + api.post_process(DropExpectation))
+         api.expect_status('FAILURE') +
+         api.post_process(DropExpectation))
 
   # The following events happen in this test
   # 1. Send shutdown vm to powershell [Pass]
@@ -120,7 +121,8 @@ def GenTests(api):
          # Force quit vm
          t.QUIT_VM(api, image, cust, vm_name) +
          # Recipe exits with Failure
-         api.post_process(StatusFailure) + api.post_process(DropExpectation))
+         api.expect_status('FAILURE') +
+         api.post_process(DropExpectation))
 
   # The following events happen in this test
   # 1. Send shutdown vm to powershell [Fail]
@@ -143,7 +145,8 @@ def GenTests(api):
          # Force quit vm
          t.QUIT_VM(api, image, cust, vm_name) +
          # Recipe exits with Failure
-         api.post_process(StatusFailure) + api.post_process(DropExpectation))
+         api.expect_status('FAILURE') +
+         api.post_process(DropExpectation))
 
   # The following events happen in this test
   # 1. Send shutdown vm to powershell [Fail]
@@ -166,4 +169,5 @@ def GenTests(api):
          # Force quit vm
          t.QUIT_VM(api, image, cust, vm_name, False) +
          # Recipe exits with Failure
-         api.post_process(StatusFailure) + api.post_process(DropExpectation))
+         api.expect_status('FAILURE') +
+         api.post_process(DropExpectation))
