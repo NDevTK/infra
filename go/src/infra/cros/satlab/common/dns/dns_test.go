@@ -5,6 +5,7 @@
 package dns
 
 import (
+	"context"
 	"testing"
 
 	"infra/cros/satlab/common/utils/executor"
@@ -14,6 +15,8 @@ import (
 
 func TestReadHostsToIPMapShouldSuccess(t *testing.T) {
 	t.Parallel()
+
+	ctx := context.Background()
 
 	// Create a mock data
 	executor := executor.FakeCommander{}
@@ -25,7 +28,7 @@ func TestReadHostsToIPMapShouldSuccess(t *testing.T) {
   `
 
 	// Act
-	res, err := ReadHostsToIPMap(&executor)
+	res, err := ReadHostsToIPMap(ctx, &executor)
 
 	if err != nil {
 		t.Errorf("got an error: %v\n", err)
@@ -44,6 +47,8 @@ func TestReadHostsToIPMapShouldSuccess(t *testing.T) {
 func TestReadHostsToHostMapShouldSuccess(t *testing.T) {
 	t.Parallel()
 
+	ctx := context.Background()
+
 	// Create a mock data
 	executor := executor.FakeCommander{}
 	executor.CmdOutput = `
@@ -54,7 +59,7 @@ func TestReadHostsToHostMapShouldSuccess(t *testing.T) {
   `
 
 	// Act
-	res, err := ReadHostsToHostMap(&executor)
+	res, err := ReadHostsToHostMap(ctx, &executor)
 
 	if err != nil {
 		t.Errorf("got an error: %v\n", err)
