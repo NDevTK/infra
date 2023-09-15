@@ -10,6 +10,7 @@ import (
 	"os/exec"
 
 	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cmdsupport/cmdlib"
@@ -48,6 +49,7 @@ func (c *getDUT) Run(a subcommands.Application, args []string, env subcommands.E
 
 // InnerRun runs the get command.
 func (c *getDUT) innerRun(a subcommands.Application, positionalArgs []string, env subcommands.Env) error {
+	ctx := cli.GetContext(a, c, env)
 	// 'shivas get dut' will list all DUTs everywhere.
 	// This command takes a while to execute and gives no immediate feedback, so provide an error message to the user.
 	if len(positionalArgs) == 0 {
@@ -57,7 +59,7 @@ func (c *getDUT) innerRun(a subcommands.Application, positionalArgs []string, en
 
 	if c.commonFlags.SatlabID == "" {
 		var err error
-		c.commonFlags.SatlabID, err = satlabcommands.GetDockerHostBoxIdentifier(&executor.ExecCommander{})
+		c.commonFlags.SatlabID, err = satlabcommands.GetDockerHostBoxIdentifier(ctx, &executor.ExecCommander{})
 		if err != nil {
 			return errors.Annotate(err, "get dut").Err()
 		}
