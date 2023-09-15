@@ -83,10 +83,12 @@ func (c *startServodRun) Run(a subcommands.Application, args []string, env subco
 // innerRun handles all orchestration needed to pass appropriate clients, contexts, and commands into the application
 // this pattern is done to facilitate easy testing of the `runOrchestratedCommand` function
 func (c *startServodRun) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
+	ctx := cli.GetContext(a, c, env)
+	ctx = utils.SetupContext(ctx, c.envFlags.GetNamespace())
 	dhbSatlabID := c.commonFlags.SatlabID
 	if dhbSatlabID == "" {
 		var err error
-		dhbSatlabID, err = satlabcommands.GetDockerHostBoxIdentifier(&executor.ExecCommander{})
+		dhbSatlabID, err = satlabcommands.GetDockerHostBoxIdentifier(ctx, &executor.ExecCommander{})
 		if err != nil {
 			return err
 		}
@@ -96,9 +98,6 @@ func (c *startServodRun) innerRun(a subcommands.Application, args []string, env 
 		cmdlib.PrintError(a, err)
 		return err
 	}
-
-	ctx := cli.GetContext(a, c, env)
-	ctx = utils.SetupContext(ctx, c.envFlags.GetNamespace())
 
 	ef := c.envFlags
 	ufs, err := ufs.NewUFSClient(ctx, ef.GetUFSService(), &c.authFlags)

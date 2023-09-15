@@ -148,7 +148,7 @@ func (c *setStableVersionRun) innerRunHostname(ctx context.Context, a subcommand
 
 	fmt.Println("WARNING: Satlab for Partners users must use board/model override instead of hostname")
 
-	newHostname, err := preprocessHostname(c.commonFlags, c.hostname, nil, nil)
+	newHostname, err := preprocessHostname(ctx, c.commonFlags, c.hostname, nil, nil)
 	if err != nil {
 		return errors.Annotate(err, "set stable version").Err()
 	}
