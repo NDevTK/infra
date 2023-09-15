@@ -6,7 +6,6 @@
 
 import re
 
-from recipe_engine import recipe_api
 from recipe_engine import post_process
 from PB.recipe_engine import result as result_pb
 from PB.go.chromium.org.luci.buildbucket.proto import common as bb_common_pb
@@ -234,6 +233,7 @@ foo/bar
 def GenTests(api):
   yield (
       api.test('needs input')
+      + api.expect_status('FAILURE')
       + api.post_process(post_process.StatusFailure)
       + api.post_process(post_process.DropExpectation)
   )
@@ -266,7 +266,7 @@ def GenTests(api):
              )) + api.override_step_data(
                  'https://chromium.googlesource.com/fail.populate',
                  retcode=1,
-             ))
+             )) + api.expect_status('FAILURE')
 
 
   yield (
@@ -293,6 +293,7 @@ def GenTests(api):
               ],
           ),
       ))
+      + api.expect_status('FAILURE')
       + api.post_process(post_process.StatusFailure)
       + api.post_process(post_process.DropExpectation)
   )
