@@ -101,4 +101,5 @@ def GenTests(api):
          api.properties(VM.qemu_vm) + api.step_data(
              'Start vm test_vm',
              api.raw_io.output('Failed to start vm'),
-             retcode=1) + api.post_process(DropExpectation))
+             retcode=1) + api.post_process(DropExpectation) +
+         api.expect_status('FAILURE'))
