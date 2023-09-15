@@ -60,8 +60,8 @@ def GenTests(api):
                         ''')),
                  retcode=0) + api.post_process(DropExpectation))
 
-  yield (api.test('Test create_disk fail (mount permission)') +
-         api.post_process(StatusFailure) + api.step_data(
+  yield (api.test('Test create_disk fail (mount permission)', status='FAILURE') +
+         api.step_data(
              'Copy files to ext4_disk.Mount loop',
              api.raw_io.stream_output('Permission denied: /dev/loop6'),
              retcode=1) +
@@ -98,8 +98,7 @@ def GenTests(api):
                      api.raw_io.stream_output('Permission denied: /dev/loop6'),
                      retcode=1) + api.post_process(DropExpectation))
 
-  yield (api.test('Test create_disk fail (out of disk)') +
-         api.post_process(StatusFailure) +
+  yield (api.test('Test create_disk fail (out of disk)', status='FAILURE') +
          # mock the free disk size to say there is enough
          api.step_data(
              'Check free space on disk for fat_disk',
