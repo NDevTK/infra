@@ -3,13 +3,6 @@
 // found in the LICENSE file.
 package platform
 
-import "context"
-
-type HostIdentifier struct {
-	ID string
-}
-
-type IPlatform interface {
-	// GetHostIdentifier get a machine identifier that should be unique and stable
-	GetHostIdentifier(context.Context) (string, error)
-}
+// IPlatform provides the different functions in different platforms.
+// e.g. reboot
+type IPlatform interface{}
