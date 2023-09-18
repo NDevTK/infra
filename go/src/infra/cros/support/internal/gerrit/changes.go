@@ -151,7 +151,9 @@ func fetchHostChanges(
 		queryParams := changesToQueryParams(batch, options)
 		ch := make(chan []*gerrit.Change, 1)
 		err = shared.DoWithRetry(ctx, shared.ExtremeOpts, func() error {
+			log.Printf("calling ChangeQuery with params: %v", queryParams)
 			results, more, err := client.ChangeQuery(ctx, queryParams)
+			log.Printf("got Changes: %v", results)
 			if err != nil {
 				return err
 			}
