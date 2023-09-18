@@ -15,6 +15,7 @@ service SatlabRpcService {
   rpc stage_build (StageBuildRequest) returns (StageBuildResponse);
   rpc list_connected_duts_firmware(ListConnectedDutsFirmwareRequest) returns (ListConnectedDutsFirmwareResponse);
   rpc get_system_info(GetSystemInfoRequest) returns (GetSystemInfoResponse);
+  rpc get_version_info(GetVersionInfoRequest) returns (GetVersionInfoResponse);
   rpc get_peripheral_information (GetPeripheralInformationRequest) returns (GetPeripheralInformationResponse);
   rpc update_duts_firmware (UpdateDutsFirmwareRequest)  returns (UpdateDutsFirmwareResponse);
 
@@ -160,4 +161,17 @@ message RunSuiteRequest {
 // NEXT_TAG = 2
 message RunSuiteResponse {
   string build_link= 1;
+}
+
+// NEXT_TAG = 2
+message GetVersionInfoRequest {}
+
+// NEXT_TAG = 7
+message GetVersionInfoResponse {
+  string version = 1;
+  string chromeos_version = 2;
+  string track = 3;
+  string description = 4;
+  string install_id = 5;
+  string host_id = 6;
 }
