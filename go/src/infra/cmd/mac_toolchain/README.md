@@ -69,10 +69,14 @@ or pass the appropriate `-service-account-json` argument to `cipd ensure`.
 Download the Xcode zip file from your Apple's Developer account, unpack it, and
 point the script at the resulting `Xcode.app`.
 
-    mac_toolchain upload -xcode-path /path/to/Xcode.app
+    mac_toolchain upload -xcode-path /path/to/Xcode.app -legacy-ios-package=True
 
 This will split up the `Xcode.app` container into several CIPD packages and will
 upload and tag them properly. Run `mac_toolchain help upload` for more options.
+
+**Update**: As of MacOS13+, the xcode package should be uploaded as a whole in
+infra_internal/ios/xcode/mac. Therefore, the `-legacy-ios-package=True` flag is
+required for all future uploads.
 
 The upload command is meant to be run manually, and it will upload many GB of
 data. Be patient.
@@ -111,11 +115,12 @@ a new iOS is not released. This is CRUCIAL to ensure that the iOS cipd package r
 Runtime is currently being uploaded to cipd using dmg format. See crbug/1440179.
 
 1. Launch Xcode. If you have not downloaded one, please download the latest from go/xcode.
-2. Navigate to Xcode -> Settings -> Platforms -> + sign on the bottom left corner. Choose iOS,
-and download the desired iOS version (e.g. iOS 16.2 Simulator)
-3. After download is complete, it should show up on the list of platforms. Then right click
-on the downloaded iOS simulator, and select "Export Disk Image". **Important:** make sure
-you export to an empty folder, where the iOS disk image will be the
+2. Download the latest iOS runtime corresponding to the xcode in #1. The file should look something like
+`[iOS simulator runtime name].dmg`
+3. After download is complete, add the runtime dmg to your Xcode by running
+`xcrun simctl runtime add [path/to/your/runtime/dmg].dmg` (Xcode might have already automatically downloaded
+the latest bundled runtime during first launch. If so, then you do not have to do this step).
+3. Move the runtime dmg file to an empty folder. It's very important to ensure that the dmg file is the
 only file in there.
 4. There are 3 main args in the upload-runtime-dmg command:<br>
 ***runtime-version***: this is usually in the format of "ios-xx-x", for example "ios-16-2"<br>
