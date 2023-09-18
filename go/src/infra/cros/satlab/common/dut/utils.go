@@ -12,6 +12,8 @@ import (
 	"infra/cros/satlab/common/utils/executor"
 )
 
+type Flagmap = map[string][]string
+
 // GetDockerHostBoxIdentifier gets the identifier for the satlab DHB, either from the command line, or
 // by running a command inside the current container if no flag was given on the command line.
 //
