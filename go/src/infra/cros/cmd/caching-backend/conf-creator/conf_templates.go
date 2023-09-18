@@ -105,8 +105,8 @@ http {
     index  index.html index.htm index.php;
     access_log            /var/log/nginx/gs-cache.access.log main_json;
     access_log            /dev/stdout main_json;
-    error_log             /var/log/nginx/gs-cache.error.log;
-    error_log             /dev/stdout;
+    error_log             /var/log/nginx/gs-cache.error.log info;
+    error_log             /dev/stdout info;
 
 
     # CQ build cache configuration.
