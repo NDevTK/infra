@@ -162,14 +162,23 @@ func (f *EnvFlags) Register(fl *flag.FlagSet) {
 //  2. Specified in environment
 //  3. Default to `os`
 func (f *EnvFlags) GetNamespace() string {
-	if f.namespace != "" {
-		return f.namespace
+	return GetNamespace(f.namespace)
+}
+
+// GetNamespace determines the namespace, in descending priority, by
+//  1. use parameter namespace.
+//  2. Specified in environment
+//  3. Default to `os`
+func GetNamespace(namespace string) string {
+	if namespace != "" {
+		return namespace
 	}
 	ns := os.Getenv(UFSNamespaceEnv)
 	if ns == "" {
 		return DefaultNamespace
 	}
 	return ns
+
 }
 
 // GetCrosAdmService returns the hostname of the CrOSSkylabAdmin service that is
