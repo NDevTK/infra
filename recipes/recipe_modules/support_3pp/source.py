@@ -120,6 +120,14 @@ def resolve_latest(api, spec):
           'Non git-rev commit specified: %s' % fixed_commit
         )
 
+      # Ensure clean remote
+      api.git(
+        'remote',
+        'rm',
+        'src-remote',
+        ok_ret=[0,2] # 2 represents the remote not existing
+      )
+
       # Add the remote repository.
       api.git(
         'remote',

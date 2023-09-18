@@ -112,6 +112,28 @@
     "cmd": [
       "git",
       "remote",
+      "rm",
+      "src-remote"
+    ],
+    "cwd": "None",
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "GOARCH": "amd64",
+      "GOOS": "linux",
+      "_3PP_CIPD_PACKAGE_NAME": "tools/tool",
+      "_3PP_PLATFORM": "linux-amd64",
+      "_3PP_TOOL_PLATFORM": "linux-amd64"
+    },
+    "infra_step": true,
+    "name": "building tools/tool.git remote",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "remote",
       "add",
       "src-remote",
       "https://chromium.googlesource.com/external/go.repo/dep"
@@ -126,7 +148,7 @@
       "_3PP_TOOL_PLATFORM": "linux-amd64"
     },
     "infra_step": true,
-    "name": "building tools/tool.git remote",
+    "name": "building tools/tool.git remote (2)",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]

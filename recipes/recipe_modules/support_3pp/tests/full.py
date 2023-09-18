@@ -1158,6 +1158,9 @@ def GenTests(api):
              mk_name("load package specs",
                      "read 'dir_tools/tool/3pp.pb'"),
              api.file.read_text(spec))
+         + api.step_data(
+             'building tools/tool.git remote',
+             retcode=2)
          + api.post_process(
              post_process.StepCommandContains,
              mk_name("building tools/tool",
