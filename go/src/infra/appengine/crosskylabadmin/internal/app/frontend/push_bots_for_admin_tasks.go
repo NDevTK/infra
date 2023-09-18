@@ -10,6 +10,7 @@ import (
 	"sort"
 	"time"
 
+	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/data/strpair"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -67,9 +68,20 @@ func getDUTsForLabstations(ctx context.Context, ufsClient ufs.Client, labstation
 	return duts, nil
 }
 
-// pushRepairDUTsForGivenPool pushes repair jobs for duts in a given pool
-func pushRepairDUTsForGivenPool(ctx context.Context, sc clients.SwarmingClient, swarmingPool string, dutState string, dims strpair.Map) error {
-	bots, err := sc.ListAliveIdleBotsInPool(ctx, swarmingPool, dims)
+// pushRepairDUTsForGivenPool pushes repair jobs for duts in a given pool.
+// sc           -- the swarming client
+// swarmingPool -- the swarming-level pool (NOT "label-pool") to push duts in
+// dutState     -- the DUT state (e.g. "ready", "needs-repair")
+// dims         -- a list of additional dimensions to map
+// holdouts     -- a list of bot names to exclude (NOT dut names). Holdouts is read-only, so this parameter may be nil.
+func pushRepairDUTsForGivenPool(ctx context.Context, sc clients.SwarmingClient, swarmingPool string, dutState string, dims strpair.Map, holdouts map[string]bool) error {
+	var bots []*swarming.SwarmingRpcsBotInfo
+	rawBots, err := sc.ListAliveIdleBotsInPool(ctx, swarmingPool, dims)
+	for _, bot := range rawBots {
+		if !holdouts[bot.BotId] {
+			bots = append(bots, bot)
+		}
+	}
 	if err != nil {
 		return errors.Annotate(err, "failed to list alive idle bots with dut_state %q", dutState).Err()
 	} else {
@@ -107,7 +119,7 @@ func pushBotsForAdminTasksImpl(ctx context.Context, sc clients.SwarmingClient, u
 	//TODO (prasadv): Create PoolCfg for ChromeOSSkylab and push admin tasks similar to other pool configs.
 	// Once the Config is updated, remove the below code to push repair DUTs for admin task for Swarming.BotPool
 	if cfg.Swarming.BotPool != "" {
-		if err := pushRepairDUTsForGivenPool(ctx, sc, cfg.Swarming.BotPool, dutState, dims); err != nil {
+		if err := pushRepairDUTsForGivenPool(ctx, sc, cfg.Swarming.BotPool, dutState, dims, nil); err != nil {
 			merr = append(merr, errors.Annotate(err, "Failed to push repair duts in pool %q", cfg.Swarming.BotPool).Err())
 		} else {
 			logging.Infof(ctx, "Successfully pushed repair duts with dut_state %q in pool %q.", dutState, cfg.Swarming.BotPool)
@@ -118,7 +130,7 @@ func pushBotsForAdminTasksImpl(ctx context.Context, sc clients.SwarmingClient, u
 	for _, c := range cfg.Swarming.PoolCfgs {
 		//TODO (prasadv): Remove this condition once BotPool is added to PoolCfg.
 		if cfg.Swarming.BotPool != c.PoolName {
-			if err := pushRepairDUTsForGivenPool(ctx, sc, c.PoolName, dutState, dims); err != nil {
+			if err := pushRepairDUTsForGivenPool(ctx, sc, c.PoolName, dutState, dims, nil); err != nil {
 				merr = append(merr, errors.Annotate(err, "Failed to push repair duts in pool %q", c.PoolName).Err())
 			} else {
 				logging.Infof(ctx, "Successfully pushed repair duts with dut_state %q in pool %q.", dutState, c.PoolName)
