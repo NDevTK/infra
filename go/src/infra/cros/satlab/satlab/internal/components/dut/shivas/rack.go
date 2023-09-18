@@ -11,9 +11,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/satlab/common/commands"
 	"infra/cros/satlab/common/paths"
 	"infra/cros/satlab/common/satlabcommands"
-	"infra/cros/satlab/satlab/internal/commands"
 )
 
 // Rack is a group of arguments for adding a rack.

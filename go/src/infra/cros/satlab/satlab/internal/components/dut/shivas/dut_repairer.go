@@ -14,30 +14,21 @@ import (
 
 	"infra/cros/satlab/common/commands"
 	"infra/cros/satlab/common/paths"
+	"infra/cros/satlab/common/site"
 )
 
-// DUTUpdater updates a DUT with the given name.
-type DUTUpdater struct {
-	Name       string
-	ShivasArgs map[string][]string
+// DUTRepairer repairs a DUT with the given name.
+type DUTRepairer struct {
+	Name string
+	// ShivasArgs map[string][]string
 }
 
-// Update invokes shivas with the required arguments to update information
-// about a DUT.
-func (u *DUTUpdater) Update() error {
-	flags := make(map[string][]string)
-
-	for k, v := range u.ShivasArgs {
-		flags[k] = v
-	}
-
-	flags["name"] = []string{u.Name}
-
+// repair invokes shivas with the required arguments to repair a DUT.
+func (u *DUTRepairer) Repair() error {
 	args := (&commands.CommandWithFlags{
-		Commands: []string{paths.ShivasCLI, "update", "dut"},
-		Flags:    flags,
+		Commands: []string{paths.ShivasCLI, "repair-duts", "-bucket", site.GetDeployBucket(), "-builder", site.RepairBuilderName, u.Name},
 	}).ToCommand()
-	fmt.Fprintf(os.Stderr, "Update dut: run %s\n", args)
+	fmt.Fprintf(os.Stderr, "repair dut: run %s\n", args)
 	command := exec.Command(args[0], args[1:]...)
 	command.Stdout = os.Stdout
 	command.Stderr = os.Stderr
@@ -45,7 +36,7 @@ func (u *DUTUpdater) Update() error {
 	return errors.Annotate(
 		err,
 		fmt.Sprintf(
-			"update dut: running %s",
+			"repair dut: running %s",
 			strings.Join(args, " "),
 		),
 	).Err()
