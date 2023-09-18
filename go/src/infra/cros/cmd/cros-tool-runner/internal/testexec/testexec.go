@@ -19,6 +19,7 @@ import (
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 
+	config "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 
@@ -172,17 +173,20 @@ func prepareTestResponse(resultRootDir string, testCaseResults []*api.TestCaseRe
 	var results []*api.TestCaseResult
 	for _, t := range testCaseResults {
 		//Skip if ResultsDirPath is nil
+		resultDir := ""
 		if t.ResultDirPath == nil {
 			log.Printf("Empty resultsDirPath in test case result: %s", t)
-			continue
+			// When there is no TC path, lets just use the root path to try to get any logs from the services.
+			resultDir = filepath.Join(resultRootDir, services.CrosTestResultsDirInsideDocker)
+			t.ResultDirPath = &config.StoragePath{}
+		} else {
+			// Create the full path to results in the test environment. For example:
+			// 		t.ResultDirPath.Path = "/tmp/test/results/tauto"
+			// 		services.CrosTestResultsDirInsideDocker = "/tmp/test/results"
+			// 		resultRootDir = "home/chromeos-test/skylab_bots/c6-r6-r4-h3.393573271/w/ir/x/w/output_dir/cros-test/artifact"
+			// Replace the `/tmp/test/results/` (from `t.ResultDirPath.Path`) with the `resultRootDir`, thus making the full resolved path to the logs for that test.
+			resultDir = strings.Replace(t.GetResultDirPath().GetPath(), services.CrosTestResultsDirInsideDocker, resultRootDir, 1)
 		}
-		// Create the full path to results in the test environment. For example:
-		// 		t.ResultDirPath.Path = "/tmp/test/results/tauto"
-		// 		services.CrosTestResultsDirInsideDocker = "/tmp/test/results"
-		// 		resultRootDir = "home/chromeos-test/skylab_bots/c6-r6-r4-h3.393573271/w/ir/x/w/output_dir/cros-test/artifact"
-		// Replace the `/tmp/test/results/` (from `t.ResultDirPath.Path`) with the `resultRootDir`, thus making the full resolved path to the logs for that test.
-		resultDir := strings.Replace(t.GetResultDirPath().GetPath(), services.CrosTestResultsDirInsideDocker, resultRootDir, 1)
-
 		t.ResultDirPath.Path = resultDir
 		results = append(results, t)
 	}

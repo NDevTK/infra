@@ -15,7 +15,9 @@ func TestPrepareTestResponse_NilTestCaseResults(t *testing.T) {
 	resultRootDir := "/path/to/results"
 
 	testCaseResult := &api.TestCaseResult{
+		TestCaseId:    &api.TestCase_Id{Value: "foo"},
 		ResultDirPath: nil,
+		Verdict:       &api.TestCaseResult_NotRun_{},
 	}
 	testCaseResults := []*api.TestCaseResult{testCaseResult}
 
@@ -26,9 +28,12 @@ func TestPrepareTestResponse_NilTestCaseResults(t *testing.T) {
 		t.Errorf("Expected non-nil response, got nil")
 	}
 
-	// Verify that the TestCaseResults field in the response is an empty slice.
-	if len(res.TestCaseResults) != 0 {
+	// Verify that the TestCaseResults has the testCase.
+	if len(res.TestCaseResults) != 1 {
 		t.Errorf("Expected empty TestCaseResults, got %d elements", len(res.TestCaseResults))
+	}
+	if res.TestCaseResults[0].TestCaseId.Value != "foo" {
+		t.Errorf("Expected TestCase 'foo' got: %s", res.TestCaseResults[0].TestCaseId.Value)
 	}
 
 	// Verify that the returned error is nil.
