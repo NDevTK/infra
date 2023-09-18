@@ -65,9 +65,11 @@ func (c *tlwClient) Version(ctx context.Context, req *tlw.VersionRequest) (*tlw.
 		sv, err := c.getCrosStableVersion(ctx, dut)
 		if err != nil {
 			log.Debugf(ctx, "version: %s", err)
+			log.Debugf(ctx, "Failed to fetch stable version from Cros Skylab Admin. Checking for local stable version...")
 			sv, err = c.getLocalStableVersion(ctx, dut)
 			if err != nil {
 				log.Debugf(ctx, "local version: %s", err)
+				log.Debugf(ctx, "Failed to fetch stable version from both Cros Skylab Admin and local directory.")
 				return nil, errors.Annotate(err, "local version").Err()
 			}
 		}
