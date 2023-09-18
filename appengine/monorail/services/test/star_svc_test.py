@@ -15,13 +15,13 @@ try:
 except ImportError:
   import mox
 import mock
+import time
 
 from google.appengine.ext import testbed
 
-import settings
 from mock import Mock
 from framework import sql
-from mrproto import user_pb2
+from services import service_manager
 from services import star_svc
 from testing import fake
 
@@ -189,9 +189,15 @@ class AbstractStarServiceTest(unittest.TestCase):
 class IssueStarServiceTest(unittest.TestCase):
 
   def setUp(self):
-    self.mock_tbl = mock.Mock()
+    self.mox = mox.Mox()
+    self.mock_tbl = self.mox.CreateMock(sql.SQLTableManager)
     self.mock_tbl.Delete = mock.Mock()
     self.mock_tbl.InsertRows = mock.Mock()
+
+    self.services = service_manager.Services()
+    self.services.issue = fake.IssueService()
+    self.services.config = fake.ConfigService()
+    self.services.features = fake.FeaturesService()
 
     self.cache_manager = fake.CacheManager()
     with mock.patch(
@@ -200,6 +206,42 @@ class IssueStarServiceTest(unittest.TestCase):
           self.cache_manager)
 
     self.cnxn = 'fake connection'
+    self.now = int(time.time())
+
+  def testSetStarsBatch_Add(self):
+    issue = fake.MakeTestIssue(
+        project_id=789,
+        local_id=1,
+        reporter_id=111,
+        owner_id=456,
+        summary='sum',
+        status='Live',
+        issue_id=78901,
+        project_name='proj',
+        migration_modified_timestamp=1234567)
+    self.services.issue.TestAddIssue(issue)
+    config = self.services.config.GetProjectConfig(self.cnxn, 789)
+
+    # Set up mock for getting counts.
+    self.mock_tbl.Select(
+        self.cnxn,
+        cols=['issue_id', 'COUNT(user_id)'],
+        group_by=['issue_id'],
+        issue_id=[78901]).AndReturn([(78901, 2)])
+    self.mox.ReplayAll()
+
+    self.issue_star.SetStarsBatch(
+        self.cnxn, self.services, config, 78901, [111, 222], True)
+
+    self.mox.VerifyAll()
+    self.mock_tbl.InsertRows.assert_called_once_with(
+        self.cnxn, ['issue_id', 'user_id'], [(78901, 111), (78901, 222)],
+        ignore=True,
+        commit=True)
+
+    self.assertIn(issue, self.services.issue.updated_issues)
+    self.assertEqual(issue.migration_modified_timestamp, self.now)
+    self.assertEqual(issue.star_count, 2)
 
   def testSetStarsBatch_SkipIssueUpdate_Remove(self):
     self.issue_star.SetStarsBatch_SkipIssueUpdate(

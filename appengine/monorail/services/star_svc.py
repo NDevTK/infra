@@ -12,7 +12,7 @@ from __future__ import absolute_import
 
 import logging
 
-import settings
+import time
 from features import filterrules_helpers
 from framework import sql
 from services import caches
@@ -158,7 +158,6 @@ class AbstractStarService(object):
     self._SetStarsBatch(cnxn, item_id, [starrer_user_id], starred)
 
 
-
 class UserStarService(AbstractStarService):
   """Star service for stars on users."""
 
@@ -231,6 +230,7 @@ class IssueStarService(AbstractStarService):
     # Because we will modify issues, load from DB rather than cache.
     issue = services.issue.GetIssue(cnxn, issue_id, use_cache=False)
     issue.star_count = self.CountItemStars(cnxn, issue_id)
+    issue.migration_modified_timestamp = int(time.time())
     filterrules_helpers.ApplyFilterRules(cnxn, services, issue, config)
     # Note: only star_count could change due to the starring, but any
     # field could have changed as a result of filter rules.

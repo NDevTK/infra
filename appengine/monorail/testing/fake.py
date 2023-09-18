@@ -1575,6 +1575,17 @@ class IssueService(object):
     # The next id to return if it is > 0.
     self.next_id = -1
 
+  def UpdateIssue(
+      self,
+      cnxn,
+      issue,
+      update_cols=None,
+      just_derived=False,
+      commit=True,
+      invalidate=True):
+    self.UpdateIssues(
+        cnxn, [issue], update_cols, just_derived, commit, invalidate)
+
   def UpdateIssues(
       self, cnxn, issues, update_cols=None, just_derived=False,
       commit=True, invalidate=True):
