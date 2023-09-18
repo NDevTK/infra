@@ -58,20 +58,21 @@ func isFirmwareInGoodState(ctx context.Context, info *execs.ExecInfo) error {
 
 // isOnRWFirmwareStableVersionExec confirms that the current RW firmware on DUT is match with model specific stable version.
 func isOnRWFirmwareStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
-	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
-	if err != nil {
-		return errors.Annotate(err, "on rw firmware stable version").Err()
-	}
-	err = cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), "fwid", sv.FwVersion)
+	err := isOnStableFirmwareVersion(ctx, info, "fwid")
 	return errors.Annotate(err, "on rw firmware stable version").Err()
 }
 
 // isOnROFirmwareStableVersionExec confirms that the current RO firmware on DUT is match with model specific stable version.
 func isOnROFirmwareStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
+	err := isOnStableFirmwareVersion(ctx, info, "ro_fwid")
+	return errors.Annotate(err, "on ro firmware stable version").Err()
+}
+
+func isOnStableFirmwareVersion(ctx context.Context, info *execs.ExecInfo, crossystemControl string) error {
 	logger := info.NewLogger()
 	sv, err := info.Versioner().Cros(ctx, info.GetDut().Name)
 	if err != nil {
-		return errors.Annotate(err, "on ro firmware stable version").Err()
+		return errors.Annotate(err, "is on stable firmware version").Err()
 	}
 	// For multiple firmware model, firmware name may change based on hwid batch, e.g. "Google_Nivviks.15217.58.0" and "Google_Nivviks_Ufs.15217.58.0".
 	// So we only compare the version number in this case given stable_version can only store one value.
@@ -79,11 +80,11 @@ func isOnROFirmwareStableVersionExec(ctx context.Context, info *execs.ExecInfo) 
 	if versionNumberOnly {
 		delimiter := "."
 		logger.Debugf("Multi-firmware hwid detected, will only compare version number for firmware match validation.")
-		err = cros.MatchSuffixValueToExpectation(ctx, info.DefaultRunner(), "ro_fwid", sv.FwVersion, delimiter, logger)
+		err = cros.MatchSuffixValueToExpectation(ctx, info.DefaultRunner(), crossystemControl, sv.FwVersion, delimiter, logger)
 	} else {
-		err = cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), "ro_fwid", sv.FwVersion)
+		err = cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), crossystemControl, sv.FwVersion)
 	}
-	return errors.Annotate(err, "on ro firmware stable version").Err()
+	return errors.Annotate(err, "is on stable firmware version").Err()
 }
 
 // isRWFirmwareStableVersionAvailableExec confirms the stable firmware is up to date with the available firmware.
