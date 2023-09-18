@@ -5,7 +5,6 @@
 package dut
 
 import (
-	"infra/cros/satlab/common/site"
 	"reflect"
 	"testing"
 )
@@ -15,32 +14,31 @@ func TestMakeGetShivasFlags(t *testing.T) {
 
 	tests := []struct {
 		name   string
-		getCmd *getDUT
+		getCmd *GetDUT
 		want   flagmap
 	}{
 		{
 			name:   "default",
-			getCmd: &getDUT{},
+			getCmd: &GetDUT{},
 			want: flagmap{
 				"namespace": []string{"os"},
+				"json":      []string{},
 			},
 		},
 		{
 			name: "all fields",
-			getCmd: &getDUT{
-				shivasGetDUT{
-					zones:             []string{"input_zone"},
-					racks:             []string{"input_racks"},
-					machines:          []string{"input_machines"},
-					prototypes:        []string{"input_prototypes"},
-					servos:            []string{"input_servos"},
-					servotypes:        []string{"input_servotypes"},
-					switches:          []string{"input_switches"},
-					rpms:              []string{"input_rpms"},
-					pools:             []string{"input_pools"},
-					wantHostInfoStore: true,
-					envFlags:          site.MakeEnvFlagsForTesting("os-partner"),
-				},
+			getCmd: &GetDUT{
+				Zones:         []string{"input_zone"},
+				Racks:         []string{"input_racks"},
+				Machines:      []string{"input_machines"},
+				Prototypes:    []string{"input_prototypes"},
+				Servos:        []string{"input_servos"},
+				Servotypes:    []string{"input_servotypes"},
+				Switches:      []string{"input_switches"},
+				Rpms:          []string{"input_rpms"},
+				Pools:         []string{"input_pools"},
+				HostInfoStore: true,
+				Namespace:     "os-partner",
 			},
 			want: flagmap{
 				"zone":            []string{"input_zone"},
@@ -54,12 +52,13 @@ func TestMakeGetShivasFlags(t *testing.T) {
 				"pools":           []string{"input_pools"},
 				"host-info-store": []string{},
 				"namespace":       []string{"os-partner"},
+				"json":            []string{},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := makeGetShivasFlags(tt.getCmd); !reflect.DeepEqual(got, tt.want) {
+			if got := makeGetDUTShivasFlags(tt.getCmd); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("makeGetShivasFlags() = %v, want %v", got, tt.want)
 			}
 		})
