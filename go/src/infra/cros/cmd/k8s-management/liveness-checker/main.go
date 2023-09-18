@@ -104,11 +104,17 @@ func createRequests(ctx context.Context, endpoints []string, uri, extraHeaders s
 		if e == "" {
 			return nil, fmt.Errorf("create requests: got an empty endpoint: %v", endpoints)
 		}
-		u, err := url.JoinPath(e, uri)
+		base, err := url.Parse(e)
 		if err != nil {
 			return nil, fmt.Errorf("create requests for (%q, %q): %s", e, uri, err)
 		}
-		r, err := http.NewRequestWithContext(ctx, "GET", u, nil)
+
+		u, err := url.Parse(uri)
+		if err != nil {
+			return nil, fmt.Errorf("create requests for (%q, %q): %s", e, uri, err)
+		}
+
+		r, err := http.NewRequestWithContext(ctx, "GET", base.ResolveReference(u).String(), nil)
 		if err != nil {
 			return nil, fmt.Errorf("create requests for (%q, %q): %s", e, uri, err)
 		}
