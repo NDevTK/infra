@@ -171,6 +171,9 @@ http {
       proxy_cache_key       $request_method$uri$is_args$args;
     }
 
+	# The difference of location '/' and '/download' is that we use slice
+	# downloading in '/download', which doesn't work for other RPCs like
+	# '/extract' etc.
     location / {
       add_header            'Cache-Control' 'public, max-age=3153600';
       add_header            '{{ if .UpstreamHost }}X-Cache-Primary{{ else }}X-Cache-Secondary{{ end }}' '$upstream_cache_status';
