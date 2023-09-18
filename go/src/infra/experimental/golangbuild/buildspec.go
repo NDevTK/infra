@@ -45,8 +45,8 @@ type buildSpec struct {
 
 	inputs *golangbuildpb.Inputs
 
-	goSrc      *sourceSpec
-	subrepoSrc *sourceSpec // nil if inputs.Project == "go"
+	goSrc      *sourceSpec // the Go repo spec
+	subrepoSrc *sourceSpec // the x/ repo spec, or nil if inputs.Project == "go"
 	invokedSrc *sourceSpec // the commit/change we were invoked with
 
 	invocation string // current ResultDB invocation
@@ -132,12 +132,23 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 				return nil, fmt.Errorf("sourceForBranch: %w", err)
 			}
 		}
+		if inputs.GoCommit != "" {
+			return nil, fmt.Errorf("GoCommit can be set only when invoked in a project other than 'go'")
+		}
 	} else {
-		// We're testing the tip of inputs.GoBranch against a commit to inputs.Project.
 		subrepoSrc = invokedSrc
-		goSrc, err = sourceForBranch(ctx, authenticator, "go", inputs.GoBranch)
-		if err != nil {
-			return nil, fmt.Errorf("sourceForBranch: %w", err)
+		if inputs.GoCommit == "" {
+			// We're testing the tip of inputs.GoBranch against a commit to inputs.Project.
+			goSrc, err = sourceForBranch(ctx, authenticator, "go", inputs.GoBranch)
+			if err != nil {
+				return nil, fmt.Errorf("sourceForBranch: %w", err)
+			}
+		} else {
+			// We're testing a commit on inputs.GoBranch that was already selected for us.
+			goSrc, err = sourceForGoBranchAndCommit(inputs.GoBranch, inputs.GoCommit)
+			if err != nil {
+				return nil, fmt.Errorf("sourceForGoBranchAndCommit: %w", err)
+			}
 		}
 	}
 

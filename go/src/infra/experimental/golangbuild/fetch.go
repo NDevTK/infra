@@ -417,3 +417,29 @@ func sourceForBranch(ctx context.Context, auth *auth.Authenticator, project, bra
 		},
 	}, nil
 }
+
+// sourceForGoBranchAndCommit produces a sourceSpec representing
+// the specified branch and commit in the main Go repo.
+func sourceForGoBranchAndCommit(branch, commit string) (*sourceSpec, error) {
+	if branch == "" {
+		return nil, fmt.Errorf("empty branch")
+	}
+	if len(commit) != len("4368e1cdfd37cbcdbc7a4fbcc78ad61139f7ba90") {
+		return nil, fmt.Errorf("unsupported commit ID %q: length is %d, want 40", commit, len(commit))
+	}
+	for _, c := range commit {
+		if ok := '0' <= c && c <= '9' || 'a' <= c && c <= 'f'; !ok {
+			return nil, fmt.Errorf("unsupported commit ID %q: contains %q, want 0-9a-f only", commit, c)
+		}
+	}
+	return &sourceSpec{
+		project: "go",
+		branch:  branch,
+		commit: &bbpb.GitilesCommit{
+			Host:    goHost,
+			Project: "go",
+			Id:      commit,
+			Ref:     "refs/heads/" + branch,
+		},
+	}, nil
+}

@@ -13,10 +13,17 @@ message Inputs {
   string project = 1;
 
   // GoBranch specifies what Go toolchain branch to use.
-  // It is set and applies only when project != "go".
   // Its value is a branch name like "master" or "release-branch.go1.20"
   // (the "refs/heads/" prefix is omitted).
   string go_branch = 2;
+
+  // GoCommit optionally specifies a commit on GoBranch branch to use.
+  // If it isn't provided, it means to use the tip of the GoBranch branch (a moving target).
+  // It can be set only when invoked in a project other than "go".
+  // Its value is a commit ID like "4368e1cdfd37cbcdbc7a4fbcc78ad61139f7ba90".
+  //
+  // Note: this property is mutable in the builder configuration.
+  string go_commit = 19;
 
   // BootstrapVersion specifies the version of Go to use as the bootstrap
   // toolchain when needed.
@@ -90,11 +97,11 @@ message Inputs {
 
   // Test shard identity. This property is specific to MODE_TEST.
   //
-  // Note: this property is mutable.
+  // Note: this property is mutable in the builder configuration.
   //
   // N.B. This cannot be part of "TestMode" without making "test_mode"
-  // mutable in the builder configuration, because property mutability
-  // is only controllable at the top level.
+  // mutable too, because property mutability is only controllable at the top level.
+  // See allowed_property_overrides in https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/lucicfg/doc/README.md#luci.builder-args.
   TestShard test_shard = 15;
 }
 

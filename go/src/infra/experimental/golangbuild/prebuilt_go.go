@@ -94,9 +94,6 @@ var harmlessBuildIDEnvVars = map[string]bool{
 
 func prebuiltID(spec *buildSpec) (string, error) {
 	goSrc := spec.goSrc
-	if goSrc.project != "go" {
-		return "", fmt.Errorf("prebuilt Go ID only applies if project is 'go'; project is %q", goSrc.project)
-	}
 	var rev string
 	if goSrc.commit != nil {
 		rev = goSrc.commit.Id
