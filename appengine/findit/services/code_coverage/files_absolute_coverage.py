@@ -28,6 +28,10 @@ _CHROMIUM_SOURCE_BUILDERS = [
     'android-code-coverage-native_unit'
 ]
 
+_CHROMIUM_SOURCE_REVIVER_BUILDERS = [
+    'android-code-coverage', 'android-code-coverage-native'
+]
+
 
 def ExportFilesAbsoluteCoverage():
   """Exports metrics for files to Bigquery.
@@ -42,11 +46,12 @@ def ExportFilesAbsoluteCoverage():
         project='chromium/src',
         server_host='chromium.googlesource.com')
 
-  _ExportAbsoluteCoverageForBuilder(
-      builder='android-code-coverage-native',
-      project='chromium/src',
-      server_host='chromium.googlesource.com',
-      bucket='reviver')
+  for reviver_builder in _CHROMIUM_SOURCE_REVIVER_BUILDERS:
+    _ExportAbsoluteCoverageForBuilder(
+        builder=reviver_builder,
+        project='chromium/src',
+        server_host='chromium.googlesource.com',
+        bucket='reviver')
 
   _ExportAbsoluteCoverageForBuilder(
       builder='fuchsia-coverage',
