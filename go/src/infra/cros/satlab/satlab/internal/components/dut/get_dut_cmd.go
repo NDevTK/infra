@@ -5,18 +5,17 @@
 package dut
 
 import (
+	"encoding/json"
 	"fmt"
-	"os"
-	"os/exec"
 
 	"github.com/maruel/subcommands"
+	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
-	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/flag"
 
+	"infra/cmd/shivas/cmdhelp"
 	"infra/cmdsupport/cmdlib"
-	"infra/cros/satlab/common/commands"
-	"infra/cros/satlab/common/paths"
-	"infra/cros/satlab/common/satlabcommands"
+	"infra/cros/satlab/common/dut"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/executor"
 )
@@ -26,20 +25,23 @@ var GetDUTCmd = &subcommands.Command{
 	UsageLine: "dut [options ...]",
 	ShortDesc: "Get a Satlab DUT",
 	CommandRun: func() subcommands.CommandRun {
-		c := &getDUT{}
+		c := &getDUTCmd{}
 		registerGetShivasFlags(c)
 		return c
 	},
 }
 
 // GetDUT holds the arguments for "satlab get dut ...".
-type getDUT struct {
-	shivasGetDUT
-	// Satlab-specific fields, if any exist, go here.
+type getDUTCmd struct {
+	subcommands.CommandRunBase
+
+	authFlags authcli.Flags
+
+	dut.GetDUT
 }
 
 // Run runs the get DUT subcommand.
-func (c *getDUT) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+func (c *getDUTCmd) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	if err := c.innerRun(a, args, env); err != nil {
 		cmdlib.PrintError(a, err)
 		return 1
@@ -48,39 +50,86 @@ func (c *getDUT) Run(a subcommands.Application, args []string, env subcommands.E
 }
 
 // InnerRun runs the get command.
-func (c *getDUT) innerRun(a subcommands.Application, positionalArgs []string, env subcommands.Env) error {
+func (c *getDUTCmd) innerRun(
+	a subcommands.Application,
+	args []string,
+	env subcommands.Env,
+) error {
 	ctx := cli.GetContext(a, c, env)
-	// 'shivas get dut' will list all DUTs everywhere.
-	// This command takes a while to execute and gives no immediate feedback, so provide an error message to the user.
-	if len(positionalArgs) == 0 {
-		// TODO(gregorynisbet): pick a default behavior for get DUT.
-		return errors.New(`default "get dut" functionality not implemented`)
+
+	resp, err := c.GetDUT.TriggerRun(ctx, &executor.ExecCommander{})
+	if err != nil {
+		return err
 	}
 
-	if c.commonFlags.SatlabID == "" {
-		var err error
-		c.commonFlags.SatlabID, err = satlabcommands.GetDockerHostBoxIdentifier(ctx, &executor.ExecCommander{})
-		if err != nil {
-			return errors.Annotate(err, "get dut").Err()
-		}
+	b, err := json.MarshalIndent(resp, "", "    ")
+	if err != nil {
+		fmt.Printf("%v", resp)
 	}
 
-	// No flags need to be annotated with the satlab prefix for get dut.
-	// However, the positional arguments need to have the satlab prefix
-	// prepended.
-	for i, item := range positionalArgs {
-		positionalArgs[i] = site.MaybePrepend(site.Satlab, c.commonFlags.SatlabID, item)
-	}
-	flags := makeGetShivasFlags(c)
-	args := (&commands.CommandWithFlags{
-		Commands:       []string{paths.ShivasCLI, "get", "dut"},
-		Flags:          flags,
-		PositionalArgs: positionalArgs,
-	}).ToCommand()
-	command := exec.Command(args[0], args[1:]...)
-	command.Stderr = os.Stderr
-	out, err := command.Output()
-	// TODO(gregorynisbet): switch to file descriptor in c or consider logging strategy.
-	fmt.Printf("%s\n", string(out))
-	return errors.Annotate(err, "get dut").Err()
+	fmt.Println(string(b))
+
+	return nil
+}
+
+// RegisterGetShivasFlags registers the flags inherited from shivas.
+func registerGetShivasFlags(c *getDUTCmd) {
+	c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
+
+	c.Flags.Var(
+		flag.StringSlice(&c.Zones),
+		"zone",
+		"Name(s) of a zone to filter by. Can be specified multiple times."+cmdhelp.ZoneFilterHelpText,
+	)
+	c.Flags.Var(
+		flag.StringSlice(&c.Racks),
+		"rack",
+		"Name(s) of a rack to filter by. Can be specified multiple times.",
+	)
+	c.Flags.Var(
+		flag.StringSlice(&c.Machines),
+		"machine",
+		"Name(s) of a machine/asset to filter by. Can be specified multiple times.",
+	)
+	c.Flags.Var(
+		flag.StringSlice(&c.Prototypes),
+		"prototype",
+		"Name(s) of a host prototype to filter by. Can be specified multiple times.",
+	)
+	c.Flags.Var(
+		flag.StringSlice(&c.Tags),
+		"tag",
+		"Name(s) of a tag to filter by. Can be specified multiple times.",
+	)
+	c.Flags.Var(
+		flag.StringSlice(&c.States),
+		"state",
+		"Name(s) of a state to filter by. Can be specified multiple times."+cmdhelp.StateFilterHelpText,
+	)
+	c.Flags.Var(
+		flag.StringSlice(&c.Servos),
+		"servo",
+		"Name(s) of a servo:port to filter by. Can be specified multiple times.",
+	)
+	c.Flags.Var(
+		flag.StringSlice(&c.Servotypes),
+		"servotype",
+		"Name(s) of a servo type to filter by. Can be specified multiple times.",
+	)
+	c.Flags.Var(
+		flag.StringSlice(&c.Switches),
+		"switch",
+		"Name(s) of a switch to filter by. Can be specified multiple times.",
+	)
+	c.Flags.Var(
+		flag.StringSlice(&c.Rpms),
+		"rpm",
+		"Name(s) of a rpm to filter by. Can be specified multiple times.",
+	)
+	c.Flags.Var(
+		flag.StringSlice(&c.Pools),
+		"pools",
+		"Name(s) of a tag to filter by. Can be specified multiple times.",
+	)
+	c.Flags.BoolVar(&c.HostInfoStore, "host-info-store", false, "write host info store to stdout")
 }
