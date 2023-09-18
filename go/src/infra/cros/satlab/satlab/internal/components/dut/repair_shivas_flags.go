@@ -21,8 +21,10 @@ type shivasRepairDUT struct {
 }
 
 // registerRepairShivasFlags registers the shivas flags.
-func registerRepairShivasFlags(c *repairDUT) {
+func registerRepairShivasFlags(c *repairDUTCmd) {
 	c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 	c.envFlags.Register(&c.Flags)
 	c.commonFlags.Register(&c.Flags)
+
+	c.Flags.BoolVar(&c.Deep, "deep", false, "Use deep-repair task when scheduling a task.")
 }

@@ -5,12 +5,16 @@
 package dut
 
 import (
-	"infra/cmdsupport/cmdlib"
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/satlab/internal/components/dut/shivas"
+	"context"
+	"fmt"
 
 	"github.com/maruel/subcommands"
 	"go.chromium.org/luci/common/errors"
+
+	"infra/cmdsupport/cmdlib"
+	"infra/cros/satlab/common/dut/shivas"
+	"infra/cros/satlab/common/site"
+	"infra/cros/satlab/common/utils/executor"
 )
 
 // RepairDUTCmd is the command that repairs a satlab DUT.
@@ -18,19 +22,22 @@ var RepairDUTCmd = &subcommands.Command{
 	UsageLine: "dut [options ...]",
 	ShortDesc: "Repair a Satlab DUT",
 	CommandRun: func() subcommands.CommandRun {
-		c := &repairDUT{}
+		c := &repairDUTCmd{}
 		registerRepairShivasFlags(c)
 		return c
 	},
 }
 
 // RepairDUT is the 'satlab repair dut' command. Its fields are the command line arguments.
-type repairDUT struct {
+type repairDUTCmd struct {
 	shivasRepairDUT
+
+	// Deep repair
+	Deep bool
 }
 
 // Run is the main entrypoint to 'satlab repair dut'.
-func (c *repairDUT) Run(a subcommands.Application, args []string, env subcommands.Env) int {
+func (c *repairDUTCmd) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	if err := c.innerRun(a, args, env); err != nil {
 		cmdlib.PrintError(a, err)
 		return 1
@@ -39,17 +46,24 @@ func (c *repairDUT) Run(a subcommands.Application, args []string, env subcommand
 }
 
 // InnerRun is the implementation of 'satlab repair {dut}'.
-func (c *repairDUT) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
-
+func (c *repairDUTCmd) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
 	dockerHostBoxIdentifier, err := getDockerHostBoxIdentifier(c.commonFlags)
 	if err != nil {
 		return errors.Annotate(err, "repair dut").Err()
 	}
 
 	qualifiedHostname := site.MaybePrepend(site.Satlab, dockerHostBoxIdentifier, args[0])
+	action := shivas.Verify
+	if c.Deep {
+		action = shivas.DeepRepair
+	}
 
-	return (&shivas.DUTRepairer{
-		Name: qualifiedHostname,
-		// ShivasArgs: makeRepairShivasFlags(c), # no additional flags to shivas for now #
-	}).Repair()
+	res, err := (&shivas.DUTRepairer{
+		Name:     qualifiedHostname,
+		Executor: &executor.ExecCommander{},
+	}).Repair(context.Background(), action)
+
+	fmt.Printf("Build Link: %v\n### Batch tasks URL ###\nTask Link: %v\n", res.BuildLink, res.TaskLink)
+
+	return err
 }
