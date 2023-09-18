@@ -129,7 +129,7 @@ http {
       proxy_cache_lock_timeout 900s;
       proxy_cache_bypass $http_x_no_cache;
       expires max;
-      proxy_pass            http://gs_archive_servers$uri$is_args$args;
+      proxy_pass            http://gs_archive_servers;
       proxy_read_timeout    900;
       proxy_connect_timeout 90;
       proxy_redirect        off;
@@ -156,7 +156,7 @@ http {
       proxy_cache_lock_timeout 3600s;
       proxy_cache_bypass $http_x_no_cache;
       expires max;
-      proxy_pass            http://gs_archive_servers$uri$is_args$args;
+      proxy_pass            http://gs_archive_servers;
       proxy_read_timeout    3600;
       proxy_connect_timeout 90;
       proxy_redirect        off;
@@ -182,7 +182,7 @@ http {
       proxy_cache_lock_timeout 3600s;
       proxy_cache_bypass $http_x_no_cache;
       expires max;
-      proxy_pass            http://gs_archive_servers$uri$is_args$args;
+      proxy_pass            http://gs_archive_servers;
       proxy_read_timeout    3600;
       proxy_connect_timeout 90;
       proxy_redirect        off;
@@ -208,7 +208,7 @@ http {
         proxy_cache_lock_timeout 900s;
         proxy_cache_bypass $http_x_no_cache;
         expires max;
-        proxy_pass            http://gs_archive_servers$uri$is_args$args;
+        proxy_pass            http://gs_archive_servers;
         proxy_read_timeout    900;
         proxy_connect_timeout 90;
         proxy_redirect        off;
