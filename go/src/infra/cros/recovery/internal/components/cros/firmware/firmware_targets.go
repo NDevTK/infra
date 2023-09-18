@@ -44,6 +44,7 @@ var targetOverrideModels = map[string]string{
 	"crota360": "crota",
 	// Trogdor board.
 	"pazquel360": "pazquel",
+	"limozeen":   "lazor",
 	// Volteer board.
 	"lillipup": "lindar",
 }
