@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "99d227aa_21d23a51",
+        "filename": "go/src/infra/cros/satlab/common/dut/get.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-18T14:02:02Z",
+      "side": 1,
+      "message": "nit- this information is also relevant for RPC use case, I would suggest \n\n```\n// GetDUT contains fields used to control behavior when fetching DUTs\n```",
+      "revId": "6afbff599f537e1f1110650452becf736aca6405",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c1d2b0ac_552a5317",
+        "filename": "go/src/infra/cros/satlab/common/dut/get.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-18T14:02:02Z",
+      "side": 1,
+      "message": "nit: lets document these fields. You can probably get most of the information via `get_dut_cmd.go` in this CL or the shivas CLI command: https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/cmd/shivas/internal/ufs/subcmds/dut/get_dut.go;l\u003d44?q\u003dget_dut.go\u0026ss\u003dchromium%2Finfra%2Finfra",
+      "revId": "6afbff599f537e1f1110650452becf736aca6405",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "18242a57_9fb6a574",
+        "filename": "go/src/infra/cros/satlab/common/dut/get.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-18T14:02:02Z",
+      "side": 1,
+      "message": "this is an excellent solution to use `shivas get dut` to fetch actual structs (vs before, which really just printed to the command line).\n\nhowever, I am worried this is the wrong approach - (1) it\u0027s adding a lot of text parsing of a command line tool we dont control, and (2) forcing us to maintain a shadow schema  of that output. \n\nFor (2), `shivas get dut` is returning a list of `MachineLSE`s (https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/libs/fleet/protos/src/machine_lse.proto;l\u003d24?q\u003dMachineLSE\u0026ss\u003dchromium%2Finfra%2Finfra). If we add `-json` to the command, we can then unmarshal the JSON into a proto with a high degree of confidence. I would recommend `TriggerRun` to return a `[]*MachineLSE` and then let downstream use cases transform it (print it, pull out fields, etc) however is desired. This is a good, low-ish effort solution\n\nFor (1), I think we should consider making a UFS RPC request (which `shivas get dut` is doing) directly, to ensure we get a specific proto as a return value. That is a bigger migration though, so I would want to get on the same page as Varun before committing to that\n\n@varunth@google.com for opinions",
+      "revId": "6afbff599f537e1f1110650452becf736aca6405",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
