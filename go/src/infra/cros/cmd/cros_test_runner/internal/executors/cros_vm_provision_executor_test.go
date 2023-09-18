@@ -13,8 +13,6 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
-	bbpb "go.chromium.org/luci/buildbucket/proto"
-	"go.chromium.org/luci/luciexe/build"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -165,23 +163,6 @@ func TestVMProvisionServiceExecuteCommand(t *testing.T) {
 		err := exec.ExecuteCommand(ctx, commands.NewVMProvisionLeaseCmd(exec))
 		So(err, ShouldNotBeNil)
 	})
-}
-
-func TestMachineTypeForExperiment(t *testing.T) {
-	ctx := context.Background()
-	initialBuild := &bbpb.Build{
-		Input: &bbpb.Build_Input{
-			Experiments: []string{
-				"chromeos.cros_infra_config.vmlab.machine_type_n1",
-			},
-		},
-	}
-	state, ctx, err := build.Start(ctx, initialBuild)
-	defer func() { state.End(err) }()
-	isMachineTypeExperimentEnabled := isMachineTypeExperimentEnabled(ctx, state)
-	if isMachineTypeExperimentEnabled != true {
-		t.Errorf("Expected %v but got %v", true, isMachineTypeExperimentEnabled)
-	}
 }
 
 func getMockedVMProvisionInstall(mockClient *mocked_services.MockGenericProvisionServiceClient) *gomock.Call {

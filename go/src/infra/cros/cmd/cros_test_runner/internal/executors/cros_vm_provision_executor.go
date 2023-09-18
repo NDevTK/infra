@@ -141,10 +141,7 @@ func (ex *CrosVMProvisionExecutor) vmProvisionLeaseCommandExecution(
 		},
 		LeaseDuration: durationpb.New(d),
 	}
-	// If experiment is enabled then lease a VM of machineType n1-standard-8
-	if isMachineTypeExperimentEnabled(ctx, cmd.BuildState) {
-		leaseVMRequest.HostReqs.GceMachineType = common.GceMachineTypeN18
-	}
+
 	metadata := &anypb.Any{}
 	if err := metadata.MarshalFrom(leaseVMRequest); err != nil {
 		logging.Infof(ctx, "Failed to marshal request, %s", err)
@@ -313,20 +310,6 @@ func (ex *CrosVMProvisionExecutor) ReleaseDutVM(
 	return vmProvisionResp, nil
 }
 
-// isMachineTypeExperimentEnabled returns true if experiment is enabled which determines
-// gce machine type to be leased for DUT VM
-func isMachineTypeExperimentEnabled(ctx context.Context, buildState *build.State) bool {
-	if buildState == nil {
-		return false
-	}
-	experiments := buildState.Build().GetInput().GetExperiments()
-	for _, v := range experiments {
-		if v == common.VmLabMachineTypeExperiment {
-			return true
-		}
-	}
-	return false
-}
 func (ex *CrosVMProvisionExecutor) validateLeaseVMResponse(leaseVMResponse *api.LeaseVMResponse) error {
 
 	if leaseVMResponse.GetVm() == nil {
