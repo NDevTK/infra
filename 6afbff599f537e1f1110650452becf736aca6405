@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6e6fab15_76bef845",
+        "filename": "go/src/infra/cros/satlab/common/dut/get.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-19T13:23:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "49016d07_336532ab",
+      "revId": "6afbff599f537e1f1110650452becf736aca6405",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c1d2b0ac_552a5317",
@@ -71,6 +89,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1c3d1dad_4cdf7eff",
+        "filename": "go/src/infra/cros/satlab/common/dut/get.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-19T13:23:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a9641180_1d118015",
+      "revId": "6afbff599f537e1f1110650452becf736aca6405",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "18242a57_9fb6a574",
@@ -102,6 +138,24 @@
       "side": 1,
       "message": "I keep the original data from the command and let RPC parse the output to what fields that we want to pull out.",
       "parentUuid": "18242a57_9fb6a574",
+      "revId": "6afbff599f537e1f1110650452becf736aca6405",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4249072b_d68668a2",
+        "filename": "go/src/infra/cros/satlab/common/dut/get.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-19T13:23:19Z",
+      "side": 1,
+      "message": "Can we call `shivas get dut -json`, parse that output, and return `[]*MachineLSE` instead?\n\nI think that\u0027s preferable to a raw string as it is safer to use, and in the future we may replace the underlying implementation of this to make an RPC call which returns `[]*MachineLSE` anyways",
+      "parentUuid": "52bfdd5d_e2051ff7",
       "revId": "6afbff599f537e1f1110650452becf736aca6405",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
