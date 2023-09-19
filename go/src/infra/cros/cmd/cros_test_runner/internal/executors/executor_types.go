@@ -10,6 +10,8 @@ import (
 
 // All supported executor types.
 const (
+	AndroidDutExecutorType       interfaces.ExecutorType = "AndroidDutExecutor"
+	AndroidProvisionExecutorType interfaces.ExecutorType = "AndroidProvisionExecutor"
 	InvServiceExecutorType       interfaces.ExecutorType = "InvServiceExecutor"
 	CacheServerExecutorType      interfaces.ExecutorType = "CacheServerExecutor"
 	CrosDutExecutorType          interfaces.ExecutorType = "CrosDutExecutor"

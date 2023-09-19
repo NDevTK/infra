@@ -41,7 +41,7 @@ func TestTestFinderServiceStartCmd_NoUpdates(t *testing.T) {
 		exec := executors.NewCrosTestFinderExecutor(cont)
 		cmd := commands.NewTestFinderServiceStartCmd(exec)
 		sk := &data.LocalTestStateKeeper{}
-		err := cmd.ExtractDependencies(ctx, sk)
+		err := cmd.UpdateStateKeeper(ctx, sk)
 		So(err, ShouldBeNil)
 	})
 }

@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner/steps"
@@ -125,6 +126,12 @@ func executeHwTests(
 	sk.StainlessUrl = common.GetStainlessUrl(gcsurl)
 	sk.TesthausUrl = common.GetTesthausUrl(gcsurl)
 	sk.ContainerImages = containerImagesMap
+
+	companionBoards := []string{}
+	for _, companion := range sk.CftTestRequest.CompanionDuts {
+		companionBoards = append(companionBoards, companion.GetDutModel().GetBuildTarget())
+	}
+	sk.CftTestRequest.AutotestKeyvals["companion-boards"] = strings.Join(companionBoards, ",")
 
 	// For demonstration/logging purposes.
 	_ = sk.Injectables.Set("req", req)

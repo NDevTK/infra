@@ -69,6 +69,18 @@ func (cfg *CftContainerConfig) GetContainer(contType interfaces.ContainerType) (
 			return nil, errors.Annotate(err, "error during getting container image from map for %s container type", contType).Err()
 		}
 		cont = containers.NewCrosProvisionTemplatedContainer(containerImage, cfg.Ctr)
+	case containers.AndroidDutTemplatedContainerType:
+		containerImage, err := common.GetContainerImageFromMap(key, cfg.ContainerImagesMap)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting container image from map for %s container type", contType).Err()
+		}
+		cont = containers.NewAndroidDutTemplatedContainer(containerImage, cfg.Ctr)
+	case containers.AndroidProvisionTemplatedContainerType:
+		containerImage, err := common.GetContainerImageFromMap(key, cfg.ContainerImagesMap)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting container image from map for %s container type", contType).Err()
+		}
+		cont = containers.NewGenericProvisionTemplatedContainer(key, containerImage, cfg.Ctr)
 
 	case containers.CrosTestTemplatedContainerType:
 		platform := common.GetBotProvider()

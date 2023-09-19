@@ -56,6 +56,7 @@ type HwTestStateKeeper struct {
 	CompanionDevicesMetadata []*skylab_test_runner.CFTTestRequest_Device
 	DutTopology              *labapi.DutTopology
 	DutServerAddress         *labapi.IpEndpoint
+	AndroidDutServerAddress  *labapi.IpEndpoint
 	CurrentDutState          dutstate.State
 	// Only when DUT is a VM
 	DutVmGceImage   *vmlabapi.GceImage

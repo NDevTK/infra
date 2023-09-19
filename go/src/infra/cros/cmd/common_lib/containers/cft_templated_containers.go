@@ -16,6 +16,13 @@ func NewCrosDutTemplatedContainer(
 	return NewContainer(CrosDutTemplatedContainerType, "cros-dut", containerImage, ctr, true)
 }
 
+func NewAndroidDutTemplatedContainer(
+	containerImage string,
+	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
+
+	return NewContainer(AndroidDutTemplatedContainerType, "android-dut", containerImage, ctr, true)
+}
+
 func NewCrosProvisionTemplatedContainer(
 	containerImage string,
 	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
@@ -62,10 +69,10 @@ func NewCrosPublishTemplatedContainer(
 	return NewContainer(contType, "cros-publish", containerImage, ctr, true)
 }
 
-func NewGenericTemplatedContainer(
+func NewGenericProvisionTemplatedContainer(
 	namePrefix string,
 	containerImage string,
 	ctr *crostoolrunner.CrosToolRunner) interfaces.ContainerInterface {
 
-	return NewContainer(CacheServerTemplatedContainerType, namePrefix, containerImage, ctr, true)
+	return NewContainer(GenericProvisionTemplatedContainerType, namePrefix, containerImage, ctr, true)
 }

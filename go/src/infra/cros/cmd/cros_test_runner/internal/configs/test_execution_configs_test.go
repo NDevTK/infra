@@ -13,7 +13,9 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 func TestGenerateConfig_UnSupportedConfig(t *testing.T) {
@@ -110,6 +112,62 @@ func TestExecute_SuccesfulHwTestsExecution(t *testing.T) {
 		err := testExecConfig.Execute(ctx)
 		So(err, ShouldBeNil)
 	})
+}
+
+func TestIsAndroidProvisionRequired(t *testing.T) {
+	t.Parallel()
+	Convey("Execute hw tests successfully", t, func() {
+		ctx := context.Background()
+		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
+		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
+		contConfig := common_configs.NewContainerConfig(ctr, getMockContainerImagesInfo(), false)
+		execConfig := NewExecutorConfig(ctr, contConfig)
+		cmdConfig := NewCommandConfig(execConfig)
+
+		sk := &data.HwTestStateKeeper{
+			CftTestRequest: &skylab_test_runner.CFTTestRequest{
+				ParentBuildId: 12345678,
+			},
+			Injectables: common.NewInjectableStorage(),
+		}
+		testExecConfig := NewTrv2ExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk, nil)
+
+		So(testExecConfig.isAndroidProvisioningRequired(ctx), ShouldEqual, false)
+		sk.CftTestRequest.CompanionDuts = getAndroidCompanionDuts()
+		testExecConfig = NewTrv2ExecutionConfig(HwTestExecutionConfigType, cmdConfig, sk, nil)
+		So(testExecConfig.isAndroidProvisioningRequired(ctx), ShouldEqual, true)
+	})
+}
+
+func getAndroidCompanionDuts() []*skylab_test_runner.CFTTestRequest_Device {
+	cipdPackage := &api.CIPDPackage{
+		Name: "gmscore_prodrvc_arm64_alldpi_release_apk",
+		VersionOneof: &api.CIPDPackage_InstanceId{
+			InstanceId: "pLDpI-z2HEUmNChkoCoc1SS7jj4MzaNFijz7_CawdykC",
+		},
+	}
+
+	androidOsImage := &api.AndroidOsImage{
+		LocationOneof: &api.AndroidOsImage_OsVersion{
+			OsVersion: "R97.4356.0.1",
+		},
+	}
+
+	cipdPackages := []*api.CIPDPackage{cipdPackage}
+
+	provisionMetadata, _ := anypb.New(&api.AndroidProvisionRequestMetadata{
+		CipdPackages:   cipdPackages,
+		AndroidOsImage: androidOsImage,
+	})
+
+	companionDuts := []*skylab_test_runner.CFTTestRequest_Device{
+		{
+			ProvisionState: &api.ProvisionState{
+				ProvisionMetadata: provisionMetadata,
+			},
+		},
+	}
+	return companionDuts
 }
 
 func getMockedHwTestConfig() *common_configs.Configs {

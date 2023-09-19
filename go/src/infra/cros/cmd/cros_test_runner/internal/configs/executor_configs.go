@@ -99,6 +99,19 @@ func (cfg *ExecutorConfig) GetExecutor(execType interfaces.ExecutorType) (interf
 		}
 		exec = executors.NewCrosVMProvisionExecutor(container)
 
+	case executors.AndroidDutExecutorType:
+		container, err := cfg.ContainerConfig.GetContainer(containers.AndroidDutTemplatedContainerType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting container for executor type %s", execType).Err()
+		}
+		exec = executors.NewAndroidDutExecutor(container)
+	case executors.AndroidProvisionExecutorType:
+		container, err := cfg.ContainerConfig.GetContainer(containers.AndroidProvisionTemplatedContainerType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting container for executor type %s", execType).Err()
+		}
+		exec = executors.NewAndroidProvisionExecutor(container)
+
 	case executors.CrosTestExecutorType:
 		container, err := cfg.ContainerConfig.GetContainer(containers.CrosTestTemplatedContainerType)
 		if err != nil {

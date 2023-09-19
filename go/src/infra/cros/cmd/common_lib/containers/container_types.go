@@ -10,6 +10,8 @@ import "infra/cros/cmd/common_lib/interfaces"
 const (
 	// For testing purposes only
 	UnsupportedContainerType               interfaces.ContainerType = "UnsupportedContainer"
+	AndroidDutTemplatedContainerType       interfaces.ContainerType = "AndroidDutTemplatedContainer"
+	AndroidProvisionTemplatedContainerType interfaces.ContainerType = "AndroidProvisionTemplatedContainer"
 	CacheServerTemplatedContainerType      interfaces.ContainerType = "CacheServerTemplatedContainer"
 	CrosProvisionTemplatedContainerType    interfaces.ContainerType = "CrosProvisionTemplatedContainer"
 	CrosVMProvisionTemplatedContainerType  interfaces.ContainerType = "CrosVMProvisionTemplatedContainer"
@@ -20,6 +22,7 @@ const (
 	CrosTkoPublishTemplatedContainerType   interfaces.ContainerType = "CrosTkoPublishTemplatedContainer"
 	CrosRdbPublishTemplatedContainerType   interfaces.ContainerType = "CrosRdbPublishTemplatedContainer"
 	CrosCpconPublishTemplatedContainerType interfaces.ContainerType = "CrosCpconPublishTemplatedContainer"
+	GenericProvisionTemplatedContainerType interfaces.ContainerType = "GenericProvisionTemplatedContainer"
 )
 
 // GetContainerImageKeyFromContainerType converts a ContainerType to its commonly known string representation.
@@ -27,6 +30,10 @@ func GetContainerImageKeyFromContainerType(containerType interfaces.ContainerTyp
 	switch containerType {
 	case UnsupportedContainerType:
 		return ""
+	case AndroidProvisionTemplatedContainerType:
+		return "android-provision"
+	case AndroidDutTemplatedContainerType:
+		return "cros-dut"
 	case CacheServerTemplatedContainerType:
 		return "cache-server"
 	case CrosProvisionTemplatedContainerType:

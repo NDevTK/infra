@@ -94,14 +94,7 @@ func (cmd *TestsExecutionCmd) extractDepsFromHwTestStateKeeper(
 	}
 
 	cmd.PrimaryDevice = &testapi.CrosTestRequest_Device{Dut: sk.DutTopology.GetDuts()[0], DutServer: sk.DutServerAddress}
-
-	cmd.CompanionDevices = []*testapi.CrosTestRequest_Device{}
-	if sk.DutTopology != nil && sk.DutTopology.GetDuts() != nil && len(sk.DutTopology.GetDuts()) > 1 {
-		for _, eachDut := range sk.DutTopology.GetDuts() {
-			// TODO (azrahman): For multi-dut case, do we need dut server address for each companions?
-			cmd.CompanionDevices = append(cmd.CompanionDevices, &testapi.CrosTestRequest_Device{Dut: eachDut})
-		}
-	}
+	cmd.CompanionDevices = sk.CompanionDevices
 
 	return nil
 }

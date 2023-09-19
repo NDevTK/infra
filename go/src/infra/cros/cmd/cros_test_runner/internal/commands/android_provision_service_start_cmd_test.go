@@ -16,30 +16,30 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestTestServiceStartCmd_NoDeps(t *testing.T) {
+func TestAndroidProvisionServiceStartCmd_NoDeps(t *testing.T) {
 	t.Parallel()
 	Convey("No deps", t, func() {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := containers.NewCrosTestTemplatedContainer("container/image/path", ctr)
-		exec := executors.NewCrosTestExecutor(cont)
-		cmd := commands.NewTestServiceStartCmd(exec)
+		cont := containers.NewGenericProvisionTemplatedContainer("android-provision", "container/image/path", ctr)
+		exec := executors.NewAndroidProvisionExecutor(cont)
+		cmd := commands.NewAndroidProvisionServiceStartCmd(exec)
 		sk := &data.HwTestStateKeeper{}
 		err := cmd.ExtractDependencies(ctx, sk)
 		So(err, ShouldBeNil)
 	})
 }
 
-func TestTestServiceStartCmd_NoUpdates(t *testing.T) {
+func TestAndroidProvisionServiceStartCmd_NoUpdates(t *testing.T) {
 	t.Parallel()
 	Convey("No updates", t, func() {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		cont := containers.NewCrosTestTemplatedContainer("container/image/path", ctr)
-		exec := executors.NewCrosTestExecutor(cont)
-		cmd := commands.NewTestServiceStartCmd(exec)
+		cont := containers.NewGenericProvisionTemplatedContainer("android-provision", "container/image/path", ctr)
+		exec := executors.NewAndroidProvisionExecutor(cont)
+		cmd := commands.NewAndroidProvisionServiceStartCmd(exec)
 		sk := &data.HwTestStateKeeper{}
 		err := cmd.UpdateStateKeeper(ctx, sk)
 		So(err, ShouldBeNil)

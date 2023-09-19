@@ -18,7 +18,7 @@ func TestGenerateHwConfigs(t *testing.T) {
 	t.Parallel()
 	Convey("GenerateHwConfigs", t, func() {
 		ctx := context.Background()
-		hwConfigs := GenerateHwConfigs(ctx, nil)
+		hwConfigs := GenerateHwConfigs(ctx, nil, false)
 
 		So(hwConfigs, ShouldNotBeNil)
 		So(hwConfigs.MainConfigs, ShouldNotBeNil)
@@ -28,7 +28,7 @@ func TestGenerateHwConfigs(t *testing.T) {
 	})
 
 	Convey("hwConfigsForPlatform for VM", t, func() {
-		hwConfigs := hwConfigsForPlatform(nil, common.BotProviderGce)
+		hwConfigs := hwConfigsForPlatform(nil, common.BotProviderGce, false)
 
 		So(hwConfigs.MainConfigs, ShouldContain, VMProvisionRelease_CrosVMProvisionExecutor)
 		So(hwConfigs.CleanupConfigs, ShouldContain, VMProvisionRelease_CrosVMProvisionExecutor)
@@ -38,7 +38,7 @@ func TestGenerateHwConfigs(t *testing.T) {
 	})
 
 	Convey("hwConfigsForPlatform for HW", t, func() {
-		hwConfigs := hwConfigsForPlatform(nil, common.BotProviderDrone)
+		hwConfigs := hwConfigsForPlatform(nil, common.BotProviderDrone, false)
 
 		So(hwConfigs.MainConfigs, ShouldContain, DutServerStart_CrosDutExecutor)
 		So(hwConfigs.MainConfigs, ShouldContain, UpdateDutState_NoExecutor)

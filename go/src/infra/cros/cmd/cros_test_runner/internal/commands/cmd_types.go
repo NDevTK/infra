@@ -39,7 +39,8 @@ const (
 	CacheServerStartCmdType interfaces.CommandType = "CacheServerStart"
 
 	// Dut service related commands
-	DutServiceStartCmdType interfaces.CommandType = "DutServiceStart"
+	DutServiceStartCmdType                 interfaces.CommandType = "DutServiceStart"
+	AndroidCompanionDutServiceStartCmdType interfaces.CommandType = "AndroidCompanionDutServiceStart"
 
 	// Dut VM test related commands
 	DutVmGetImageCmdType         interfaces.CommandType = "DutVmGetImage"
@@ -48,12 +49,15 @@ const (
 	DutVmCacheServerStartCmdType interfaces.CommandType = "DutVmCacheServerStart"
 
 	// Provision service related commands
-	ProvisionServiceStartCmdType   interfaces.CommandType = "ProvisionServiceStart"
-	ProvisonInstallCmdType         interfaces.CommandType = "ProvisonInstall"
-	VMProvisionServiceStartCmdType interfaces.CommandType = "VMProvisionServiceStart"
-	VMProvisionLeaseCmdType        interfaces.CommandType = "VMProvisionLease"
-	VMProvisionReleaseCmdType      interfaces.CommandType = "VMProvisionRelease"
-	GenericProvisionCmdType        interfaces.CommandType = "GenericProvision"
+
+	AndroidProvisionServiceStartCmdType interfaces.CommandType = "AndroidProvisionServiceStart"
+	AndroidProvisionInstallCmdType      interfaces.CommandType = "AndroidProvisionInstall"
+	ProvisionServiceStartCmdType        interfaces.CommandType = "ProvisionServiceStart"
+	ProvisonInstallCmdType              interfaces.CommandType = "ProvisonInstall"
+	VMProvisionServiceStartCmdType      interfaces.CommandType = "VMProvisionServiceStart"
+	VMProvisionLeaseCmdType             interfaces.CommandType = "VMProvisionLease"
+	VMProvisionReleaseCmdType           interfaces.CommandType = "VMProvisionRelease"
+	GenericProvisionCmdType             interfaces.CommandType = "GenericProvision"
 
 	// Test Finder service related commands
 	TestFinderServiceStartCmdType interfaces.CommandType = "TestFinderServiceStart"

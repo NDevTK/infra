@@ -100,6 +100,25 @@ func (cfg *CommandConfig) GetCommand(
 			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
 		}
 		cmd = commands.NewDutVmReleaseCmd(exec)
+	case commands.AndroidCompanionDutServiceStartCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewAndroidCompanionDutServiceStartCmd(exec)
+	case commands.AndroidProvisionServiceStartCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewAndroidProvisionServiceStartCmd(exec)
+
+	case commands.AndroidProvisionInstallCmdType:
+		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
+		if err != nil {
+			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
+		}
+		cmd = commands.NewAndroidProvisionInstallCmd(exec)
 
 	case commands.DutVmGetImageCmdType:
 		exec, err := cfg.ExecutorConfig.GetExecutor(execType)

@@ -104,6 +104,8 @@ func (cmd *ParseDutTopologyCmd) Execute(ctx context.Context) error {
 		} else {
 			if left, ok := companionsToLoad[deviceMetadata.GetDutModel().GetBuildTarget()]; !ok || left < 1 {
 				continue
+			} else {
+				companionsToLoad[deviceMetadata.GetDutModel().GetBuildTarget()] -= 1
 			}
 			deviceId = "companionDevice_" + deviceMetadata.GetDutModel().GetBuildTarget()
 			if _, ok := cmd.Devices[deviceId]; ok {
@@ -134,7 +136,7 @@ func (cmd *ParseDutTopologyCmd) extractDepsFromHwTestStateKeeper(ctx context.Con
 	}
 	cmd.DutTopology = sk.DutTopology
 
-	companionBoards := common.GetValueFromRequestKeyvals(ctx, nil, sk.CrosTestRunnerRequest, "companion-boards")
+	companionBoards := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "companion-boards")
 	if companionBoards == "" {
 		logging.Infof(ctx, "Cmd %s missing non-required dependency: companion-boards", cmd.GetCommandType())
 	}

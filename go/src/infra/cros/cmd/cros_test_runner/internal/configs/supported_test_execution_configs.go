@@ -30,6 +30,9 @@ var CtrStartAsync_CtrExecutor = &common_configs.CommandExecutorPairedConfig{Comm
 var CtrStop_CtrExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.CtrServiceStopCmdType, ExecutorType: common_executors.CtrExecutorType}
 var GcloudAuth_CtrExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.GcloudAuthCmdType, ExecutorType: common_executors.CtrExecutorType}
 var DutServerStart_CrosDutExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.DutServiceStartCmdType, ExecutorType: executors.CrosDutExecutorType}
+var AndroidCompanionDutServerStart_AndroidDutExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.AndroidCompanionDutServiceStartCmdType, ExecutorType: executors.AndroidDutExecutorType}
+var AndroidProvisionServerStart_AndroidProvisionExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.AndroidProvisionServiceStartCmdType, ExecutorType: executors.AndroidProvisionExecutorType}
+var AndroidProvisionInstall_AndroidProvisionExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.AndroidProvisionInstallCmdType, ExecutorType: executors.AndroidProvisionExecutorType}
 var ProvisionServerStart_CrosProvisionExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.ProvisionServiceStartCmdType, ExecutorType: executors.CrosProvisionExecutorType}
 var ProvisionInstall_CrosProvisionExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.ProvisonInstallCmdType, ExecutorType: executors.CrosProvisionExecutorType}
 var TestServerStart_CrosTestExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.TestServiceStartCmdType, ExecutorType: executors.CrosTestExecutorType}
@@ -92,15 +95,15 @@ func GetCmdExecPair(pair_base *common_configs.CommandExecutorPairedConfig, requi
 }
 
 // GenerateHwConfigs generates hw tests execution for lab environment.
-func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig) *common_configs.Configs {
+func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig, isAndroidProvisionRequired bool) *common_configs.Configs {
 	platform := common.GetBotProvider()
-	return hwConfigsForPlatform(cftHwStepsConfig, platform)
+	return hwConfigsForPlatform(cftHwStepsConfig, platform, isAndroidProvisionRequired)
 }
 
 // hwConfigsForPlatform generates platform-specific configs.
 // GCE platform will get configs for VM test on GCE.
 // Non-GCE platforms (Drone and Unknown) will get configs for HW test on Drone.
-func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform common.SwarmingBotProvider) *common_configs.Configs {
+func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform common.SwarmingBotProvider, isAndroidProvisionRequired bool) *common_configs.Configs {
 	// Overwrite configs that don't apply to VM test
 	if platform == common.BotProviderGce {
 		if cftHwStepsConfig == nil {
@@ -147,6 +150,10 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform comm
 		} else {
 			mainConfigs = append(mainConfigs,
 				DutServerStart_CrosDutExecutor)
+			if isAndroidProvisionRequired {
+				mainConfigs = append(mainConfigs,
+					AndroidCompanionDutServerStart_AndroidDutExecutor)
+			}
 		}
 	}
 
@@ -155,6 +162,11 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, platform comm
 		mainConfigs = append(mainConfigs,
 			ProvisionServerStart_CrosProvisionExecutor,
 			ProvisionInstall_CrosProvisionExecutor)
+		if isAndroidProvisionRequired {
+			mainConfigs = append(mainConfigs,
+				AndroidProvisionServerStart_AndroidProvisionExecutor,
+				AndroidProvisionInstall_AndroidProvisionExecutor)
+		}
 	}
 
 	// Test execution commands

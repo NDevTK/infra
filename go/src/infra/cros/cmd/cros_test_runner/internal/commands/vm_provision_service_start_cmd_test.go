@@ -41,7 +41,7 @@ func TestVMProvisionServiceStartCmd_NoUpdates(t *testing.T) {
 		exec := executors.NewCrosVMProvisionExecutor(cont)
 		cmd := commands.NewVMProvisionServiceStartCmd(exec)
 		sk := &data.HwTestStateKeeper{}
-		err := cmd.ExtractDependencies(ctx, sk)
+		err := cmd.UpdateStateKeeper(ctx, sk)
 		So(err, ShouldBeNil)
 	})
 }
