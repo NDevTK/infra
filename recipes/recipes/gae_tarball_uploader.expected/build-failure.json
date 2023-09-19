@@ -187,10 +187,13 @@
       "GOFLAGS": "-mod=readonly",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
-      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
+      "INFRA_GO_VERSION_VARIANT": "bleeding_edge",
+      "npm_config_cache": "[CACHE]/npmcache/npm",
+      "npm_config_prefix": "[CACHE]/npmcache/pfx"
     },
     "env_prefixes": {
       "PATH": [
+        "[CACHE]/npmcache/pfx/bin",
         "[CACHE]/builder/golang/go"
       ]
     },
@@ -229,10 +232,13 @@
       "GOFLAGS": "-mod=readonly",
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
-      "INFRA_GO_VERSION_VARIANT": "bleeding_edge"
+      "INFRA_GO_VERSION_VARIANT": "bleeding_edge",
+      "npm_config_cache": "[CACHE]/npmcache/npm",
+      "npm_config_prefix": "[CACHE]/npmcache/pfx"
     },
     "env_prefixes": {
       "PATH": [
+        "[CACHE]/npmcache/pfx/bin",
         "[CACHE]/builder/golang/go"
       ]
     },

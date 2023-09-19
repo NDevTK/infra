@@ -15,6 +15,7 @@ from PB.recipes.infra import gae_tarball_uploader as pb
 
 DEPS = [
     'recipe_engine/buildbucket',
+    'recipe_engine/context',
     'recipe_engine/file',
     'recipe_engine/futures',
     'recipe_engine/json',
@@ -210,7 +211,23 @@ def _checkout_gclient(api, project, version_label_template):
       # Use 'cloudbuildhelper' that comes with the infra checkout (it's in
       # PATH), to make sure builders use the same version as developers.
       api.cloudbuildhelper.command = 'cloudbuildhelper'
-      yield
+      # Don't pollute ~/.npm/
+      env = {
+          # npm's content-addressed cache.
+          'npm_config_cache': api.path['cache'].join('npmcache', 'npm'),
+          # Where packages are installed when using 'npm -g ...'.
+          'npm_config_prefix': api.path['cache'].join('npmcache', 'pfx'),
+      }
+      env_prefixes = {
+          'PATH': [
+              # Putting this in front of PATH allows doing stuff like
+              # `npm install -g npm@8.1.4` and picking up the updated `npm`
+              # binary from `<npm_config_prefix>/bin`.
+              env['npm_config_prefix'].join('bin'),
+          ],
+      }
+      with api.context(env=env, env_prefixes=env_prefixes):
+        yield
 
   return Metadata(
       repo_url=repo_url,
