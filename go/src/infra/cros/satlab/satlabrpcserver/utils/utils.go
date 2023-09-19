@@ -74,12 +74,6 @@ func ReadSSHKey(path string) (ssh.Signer, error) {
 	return signer, nil
 }
 
-// GetConnectedDUTIPs get all active DUTs IP
-// TODO we are waiting for the /leases/dnsmasq.leases to find all the connected DUTs
-func GetConnectedDUTIPs() ([]string, error) {
-	return []string{}, nil
-}
-
 // NearlyEqual check two float points are nearly equal.
 func NearlyEqual(a, b float64) bool {
 	return math.Abs(a-b) <= constants.F64Epsilon*(math.Abs(a)+math.Abs(b))

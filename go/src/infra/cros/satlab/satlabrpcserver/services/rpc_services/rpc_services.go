@@ -263,10 +263,18 @@ func (s *SatlabRpcServiceServer) StageBuild(ctx context.Context, in *pb.StageBui
 
 // ListConnectedDutsFirmware get current and firmware update on each DUT
 func (s *SatlabRpcServiceServer) ListConnectedDutsFirmware(ctx context.Context, _ *pb.ListConnectedDutsFirmwareRequest) (*pb.ListConnectedDutsFirmwareResponse, error) {
-	IPs, err := utils.GetConnectedDUTIPs()
+	devices, err := s.dutService.GetConnectedIPs(ctx)
 	if err != nil {
 		return nil, err
 	}
+
+	IPs := []string{}
+	for _, d := range devices {
+		if d.IsConnected {
+			IPs = append(IPs, d.IP)
+		}
+	}
+
 	res := s.dutService.RunCommandOnIPs(ctx, IPs, constants.ListFirmwareCommand)
 
 	var DUTsResponse []*pb.ConnectedDutFirmwareInfo

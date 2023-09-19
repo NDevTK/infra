@@ -24,6 +24,7 @@ import (
 	cpu "infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
 	pb "infra/cros/satlab/satlabrpcserver/proto"
 	"infra/cros/satlab/satlabrpcserver/services/build_services"
+	"infra/cros/satlab/satlabrpcserver/services/dut_services"
 	"infra/cros/satlab/satlabrpcserver/utils"
 	"infra/cros/satlab/satlabrpcserver/utils/constants"
 	mon "infra/cros/satlab/satlabrpcserver/utils/monitor"
@@ -547,6 +548,9 @@ func TestListConnectedDUTsFirmwareShouldSuccess(t *testing.T) {
 
 	// Mock some data
 	IP := "192.168.100.1"
+	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
+		{IP: IP, IsConnected: true},
+	}, nil)
 	s.dutService.(*mk.MockDUTServices).
 		On("RunCommandOnIPs", ctx, mock.Anything, constants.ListFirmwareCommand).
 		Return([]*models.SSHResult{
@@ -584,10 +588,14 @@ func TestListConnectedDUTsFirmwareShouldGetEmptyListWhenCommandExecuteFailed(t *
 	expectedError := errors.New("command execute failed")
 
 	// Mock some data
+	IP := "192.168.100.1"
+	s.dutService.(*mk.MockDUTServices).On("GetConnectedIPs", ctx).Return([]dut_services.Device{
+		{IP: IP, IsConnected: true},
+	}, nil)
 	s.dutService.(*mk.MockDUTServices).
 		On("RunCommandOnIPs", ctx, mock.Anything, constants.ListFirmwareCommand).
 		Return([]*models.SSHResult{
-			{IP: "192.168.100.1", Error: expectedError},
+			{IP: IP, Error: expectedError},
 		})
 
 	req := &pb.ListConnectedDutsFirmwareRequest{}

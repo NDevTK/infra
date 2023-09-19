@@ -19,4 +19,10 @@ const (
 
 	// HostsFilePath
 	HostsFilePath = "/etc/dut_hosts/hosts"
+
+	// LeasesPath is the path to IPs
+	LeasesPath = "/var/lib/misc/dnsmasq.leases"
+
+	// Fping is the path to the wrapper around fping
+	Fping = "/usr/sbin/fping"
 )

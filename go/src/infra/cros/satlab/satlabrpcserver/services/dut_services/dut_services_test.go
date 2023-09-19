@@ -15,6 +15,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	cssh "golang.org/x/crypto/ssh"
+	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/satlabrpcserver/fake"
 	"infra/cros/satlab/satlabrpcserver/models"
 	"infra/cros/satlab/satlabrpcserver/utils/connector"
@@ -164,4 +165,59 @@ func TestRunCommandOnIpsShouldWork(t *testing.T) {
 	if diff := cmp.Diff(expected, res); diff != "" {
 		t.Errorf("Got diff response, Expected %v, Got %v", expected, res)
 	}
+}
+
+func TestPingDUTsShouldSuccess(t *testing.T) {
+	// We Set this test run in parallel
+	t.Parallel()
+
+	ctx := context.Background()
+
+	// We fake the command executor
+	dutServices := DUTServicesImpl{
+		commandExecutor: &executor.FakeCommander{
+			CmdOutput: "192.168.231.2",
+		},
+	}
+
+	input := []string{"192.168.231.2", "192.168.231.3"}
+	res, err := dutServices.pingDUTs(ctx, input)
+	if err != nil {
+		t.Errorf("Expected should succes, but got an error: %v\n", err)
+	}
+
+	expectedActiveIPs := []string{"192.168.231.2"}
+
+	if diff := cmp.Diff(expectedActiveIPs, res); diff != "" {
+		t.Errorf("Expected %v, got %v\n", expectedActiveIPs, res)
+	}
+}
+
+func TestFetchLeasesShouldWork(t *testing.T) {
+	// We Set this test run in parallel
+	t.Parallel()
+
+	// We fake the command executor
+	dutServices := DUTServicesImpl{
+		commandExecutor: &executor.FakeCommander{
+			CmdOutput: `
+1694651422 00:14:3d:14:c4:02 192.168.231.221 * 01:00:14:3d:14:c4:02
+1694634664 e8:9f:80:83:3d:c8 192.168.231.213 * 01:e8:9f:80:83:3d:c8
+1694301051 88:54:1f:0f:5f:dd 192.168.231.163 * 01:88:54:1f:0f:5f:dd
+1694283411 e8:9f:80:83:74:fe 192.168.231.201 * 01:e8:9f:80:83:74:fe
+      `,
+		},
+	}
+
+	res, err := dutServices.fetchLeasesFile()
+	if err != nil {
+		t.Errorf("Expected should succes, but got an error: %v\n", err)
+	}
+
+	expectedActiveIPs := []string{"192.168.231.221", "192.168.231.213", "192.168.231.163", "192.168.231.201"}
+
+	if diff := cmp.Diff(expectedActiveIPs, res); diff != "" {
+		t.Errorf("Expected %v, got %v\n", expectedActiveIPs, res)
+	}
+
 }

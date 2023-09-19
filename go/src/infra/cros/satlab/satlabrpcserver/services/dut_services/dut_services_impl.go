@@ -9,10 +9,15 @@ import (
 	"errors"
 	"io"
 	"log"
+	"os/exec"
+	"regexp"
+	"strings"
 	"sync"
 
 	"golang.org/x/crypto/ssh"
 
+	"infra/cros/satlab/common/paths"
+	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/satlabrpcserver/models"
 	"infra/cros/satlab/satlabrpcserver/utils"
 	"infra/cros/satlab/satlabrpcserver/utils/connector"
@@ -49,6 +54,8 @@ type DUTServicesImpl struct {
 	port string
 	// define a interface for how to connect to the host via ssh
 	clientConnector connector.ISSHClientConnector
+	// commandExecutor define a interface for executing a command
+	commandExecutor executor.IExecCommander
 }
 
 func New() (IDUTServices, error) {
@@ -65,12 +72,13 @@ func New() (IDUTServices, error) {
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		Timeout:         constants.SSHConnectionTimeout,
 	}
-	sshConnector := connector.New(constants.SSHMaxRetry, constants.SSHConnectionTimeout)
+	sshConnector := connector.New(constants.SSHMaxRetry, constants.SSHRetryDelay)
 
 	return &DUTServicesImpl{
 		config:          config,
 		port:            constants.SSHPort,
 		clientConnector: sshConnector,
+		commandExecutor: &executor.ExecCommander{},
 	}, nil
 }
 
@@ -144,6 +152,7 @@ func (d *DUTServicesImpl) RunCommandOnIPs(ctx context.Context, IPs []string, cmd
 			// log the error message.
 			if err != nil {
 				log.Printf("Run command on IP: %s failed because the connection problem: %v", IP, err)
+				ch <- &models.SSHResult{IP: IP, Error: err}
 				return
 			}
 			ch <- out
@@ -161,4 +170,101 @@ func (d *DUTServicesImpl) RunCommandOnIPs(ctx context.Context, IPs []string, cmd
 	}
 
 	return res
+}
+
+var subnetSearchRe = regexp.MustCompile(`(?P<IP>192\.168\.231\.[0-9][0-9]*[0-9]*).*`)
+
+func (d *DUTServicesImpl) fetchLeasesFile() ([]string, error) {
+	// List all IPs that we applied.
+	out, err := d.commandExecutor.Exec(exec.Command(
+		paths.DockerPath,
+		"exec",
+		"dhcp",
+		"/bin/cat",
+		paths.LeasesPath,
+	))
+
+	if err != nil {
+		return []string{}, err
+	}
+
+	rawData := strings.Split(string(out), "\n")
+	potentialIPs := []string{}
+
+	dnsmasqIPIndex := 2
+	for _, row := range rawData {
+		fields := strings.Fields(row)
+		// Handle valid data
+		if len(fields) == 5 {
+			IP := fields[dnsmasqIPIndex]
+			potentialIPs = append(potentialIPs, IP)
+		}
+	}
+
+	return potentialIPs, nil
+}
+
+func (d *DUTServicesImpl) pingDUTs(ctx context.Context, potentialIPs []string) ([]string, error) {
+	// Use fping to figure out which IPs are active
+	args := []string{"-a", "-t200", "-B1.0", "-r2"}
+	args = append(args, potentialIPs...)
+
+	out, err := d.commandExecutor.Exec(exec.Command(paths.Fping, args...))
+
+	if err != nil {
+		xerr, ok := err.(*exec.ExitError)
+		// For reference:
+		// fping will return exit status 1 if some hosts were unreachable.
+		// https://fping.org/fping.1.html
+		if !ok || xerr.ExitCode() != 1 {
+			return []string{}, err
+		}
+	}
+
+	rawData := strings.Split(string(out), "\n")
+	activeIPs := []string{}
+
+	for _, row := range rawData {
+		if subnetSearchRe.MatchString(row) {
+			matches := subnetSearchRe.FindStringSubmatch(row)
+			IPIndex := subnetSearchRe.SubexpIndex("IP")
+			activeIPs = append(activeIPs, matches[IPIndex])
+		}
+	}
+
+	return activeIPs, nil
+}
+
+// GetConnectedIPs get the connected IPs from `dnsmasq.lease`
+// and then check the IPs are alive.
+func (d *DUTServicesImpl) GetConnectedIPs(ctx context.Context) ([]Device, error) {
+	// This will list all IPs from a leases file
+	potentialIPs, err := d.fetchLeasesFile()
+	if err != nil {
+		return []Device{}, err
+	}
+
+	// Try to ping the IPs and get the active IPs
+	activeIPs, err := d.pingDUTs(ctx, potentialIPs)
+	if err != nil {
+		return []Device{}, err
+	}
+
+	// We need to send a command to make sure ssh connection is avaliable.
+	// Some DUTs can be pingable, but they can't establish the ssh connection.
+	res := d.RunCommandOnIPs(ctx, activeIPs, constants.CheckDUTIsConnectedCommand)
+
+	result := []Device{}
+	for _, r := range res {
+		if r.Error != nil {
+			result = append(result, Device{IP: r.IP, IsConnected: false})
+		} else {
+			// we check the some DUTs which install the stable image but they can
+			// open the ssh connection.
+			hasTestImage := strings.Contains(strings.ToLower(r.Value), constants.ChromeosTestImageReleaseTrack)
+			result = append(result, Device{IP: r.IP, IsConnected: hasTestImage})
+		}
+	}
+
+	return result, nil
 }

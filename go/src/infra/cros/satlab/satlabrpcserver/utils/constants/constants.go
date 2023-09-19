@@ -20,6 +20,9 @@ const SSHPort = "22"
 // SSHConnectionTimeout timeout of ssh connection
 const SSHConnectionTimeout = time.Second * 20
 
+// SSHRetryDelay retry delay of ssh
+const SSHRetryDelay = time.Millisecond * 300
+
 // SSHMaxRetry the retry time
 const SSHMaxRetry = 2
 
@@ -38,3 +41,7 @@ const ListFirmwareCommand = "fwid=`timeout 5 crossystem fwid`;" +
 	"printf \"{\\\"fwid\\\": \\\"%s\\\",\\\"model\\\": \\\"%s\\\", \\\"fw_update\\\":%s}\" $fwid $model \"$fw_update\""
 
 const UpdateFirmwareCommand = "/usr/sbin/chromeos-firmwareupdate --mode autoupdate --force"
+
+const CheckDUTIsConnectedCommand = "timeout 2 cat /etc/lsb-release"
+
+const ChromeosTestImageReleaseTrack = "chromeos_release_track=testimage-channel"
