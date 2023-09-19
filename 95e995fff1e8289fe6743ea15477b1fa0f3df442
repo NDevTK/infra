@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b3d9bef7_9a8e8f67",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_restat_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-19T04:43:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b5a43c8e_afdc7e4f",
+      "range": {
+        "startLine": 72,
+        "startChar": 5,
+        "endLine": 72,
+        "endChar": 15
+      },
+      "revId": "95e995fff1e8289fe6743ea15477b1fa0f3df442",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "80c84168_8aac4210",
@@ -41,6 +65,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "49e68048_7ecbc339",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_restat_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-19T04:43:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "80c84168_8aac4210",
+      "revId": "95e995fff1e8289fe6743ea15477b1fa0f3df442",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "49abcdab_fae17a55",
@@ -54,6 +96,30 @@
       "writtenOn": "2023-09-15T08:13:59Z",
       "side": 1,
       "message": "Which action is skipped in this case?",
+      "range": {
+        "startLine": 186,
+        "startChar": 10,
+        "endLine": 186,
+        "endChar": 17
+      },
+      "revId": "95e995fff1e8289fe6743ea15477b1fa0f3df442",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c47268cd_fc27aadb",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_restat_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-19T04:43:08Z",
+      "side": 1,
+      "message": "all (phony) target",
+      "parentUuid": "49abcdab_fae17a55",
       "range": {
         "startLine": 186,
         "startChar": 10,
