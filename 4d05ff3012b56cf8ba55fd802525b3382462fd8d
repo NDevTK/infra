@@ -39,6 +39,30 @@
       },
       "revId": "4d05ff3012b56cf8ba55fd802525b3382462fd8d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "138867cb_d4ca4525",
+        "filename": "go/src/infra/.golangci.yml",
+        "patchSetId": 6
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-09-19T00:42:24Z",
+      "side": 1,
+      "message": "Fix applied. That sounds good to me.",
+      "parentUuid": "4388cd1d_b6e6dab2",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 85
+      },
+      "revId": "4d05ff3012b56cf8ba55fd802525b3382462fd8d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
