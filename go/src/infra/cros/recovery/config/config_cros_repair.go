@@ -772,7 +772,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_run_shell_command",
 			ExecExtraArgs: []string{
-				"flashrom -p host -i RW_VPD -E",
+				"flashrom -p internal -i RW_VPD -E",
 			},
 		},
 		"Restore RW VPD Keys": {

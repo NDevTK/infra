@@ -22,7 +22,7 @@ const (
 	readAndDumpAPFirmwareCmd = `mkdir /tmp/verify_firmware;` +
 		`cd /tmp/verify_firmware; ` +
 		`for section in VBLOCK_A VBLOCK_B FW_MAIN_A FW_MAIN_B; ` +
-		`do flashrom -p host -r -i $section:$section; ` +
+		`do flashrom -p internal -r -i $section:$section; ` +
 		`done`
 	// Verify the firmware blocks A and B.
 	verifyFirmwareCmd = `vbutil_firmware --verify /tmp/verify_firmware/VBLOCK_%s` +

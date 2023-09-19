@@ -99,7 +99,7 @@ func DisableWriteProtect(ctx context.Context, run components.Runner, log logger.
 // ReadFirmwareKeysFromHost read AP keys from the host.
 func ReadFirmwareKeysFromHost(ctx context.Context, run components.Runner, log logger.Logger) ([]string, error) {
 	const extractImagePath = "/tmp/bios.bin"
-	if out, err := run(ctx, 5*time.Minute, "flashrom", "-p", "host", "-r", extractImagePath); err != nil {
+	if out, err := run(ctx, 5*time.Minute, "flashrom", "-p", "internal", "-r", extractImagePath); err != nil {
 		return nil, errors.Annotate(err, "has dev signed firmware").Err()
 	} else {
 		log.Debugf("Extract bios to the host: %s", out)

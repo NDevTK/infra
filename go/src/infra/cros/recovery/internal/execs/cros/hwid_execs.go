@@ -77,7 +77,7 @@ func updateHWIDFromInvExec(ctx context.Context, info *execs.ExecInfo) error {
 		// TODO(b/280635852): Remove when stable versions upgraded.
 		tempFileName := fmt.Sprintf("/tmp/bios_%s.bin", info.GetActiveResource())
 		log.Debugf(ctx, "Update HWID from host: Try to read AP to file: %q", tempFileName)
-		if out, err := run(ctx, time.Minute, "flashrom", "-p", "host", "-r", "-i", fmt.Sprintf("GBB:%s", tempFileName)); err != nil {
+		if out, err := run(ctx, time.Minute, "flashrom", "-p", "internal", "-r", "-i", fmt.Sprintf("GBB:%s", tempFileName)); err != nil {
 			return errors.Annotate(err, "update HWID from host").Err()
 		} else {
 			log.Debugf(ctx, "Update HWID from host: read AP (output): %s", out)
@@ -91,7 +91,7 @@ func updateHWIDFromInvExec(ctx context.Context, info *execs.ExecInfo) error {
 		}
 		// Write updated AP file back to host.
 		log.Debugf(ctx, "Update HWID from host: flash AP file %q back", tempFileName)
-		if out, err := run(ctx, time.Minute, "flashrom", "-p", "host", "-w", "-i", fmt.Sprintf("GBB:%s", tempFileName)); err != nil {
+		if out, err := run(ctx, time.Minute, "flashrom", "-p", "internal", "-w", "-i", fmt.Sprintf("GBB:%s", tempFileName)); err != nil {
 			return errors.Annotate(err, "update HWID from host").Err()
 		} else {
 			log.Debugf(ctx, "Update HWID from host: AP file flashed to the host (output): %s", out)
