@@ -264,6 +264,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d9b6db13_9df8ae45",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/testdata/TestBuild_GN/.gn",
+        "patchSetId": 5
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-19T09:37:24Z",
+      "side": 1,
+      "message": "yes\n\notherwise, this dir becomes far away of real use case.",
+      "parentUuid": "166c0ba8_79d7cc9d",
+      "revId": "f6c7c6086194b3d45d4a8e55227f29be443923e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "eb102cdc_ccabe386",
@@ -287,6 +305,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0759e074_212bc80a",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/testdata/TestBuild_GN/buildtools/platform/gn_data/build.ninja",
+        "patchSetId": 5
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-19T09:37:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "eb102cdc_ccabe386",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 12
+      },
+      "revId": "f6c7c6086194b3d45d4a8e55227f29be443923e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e2d0ec02_7bd39ab8",
@@ -300,6 +342,24 @@
       "writtenOn": "2023-09-15T09:20:07Z",
       "side": 1,
       "message": "If this is to test GN\u0027s regenerate behavior, no need to make these rules have unnecessary complexity?",
+      "revId": "f6c7c6086194b3d45d4a8e55227f29be443923e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3ff9d8c6_b2eaee07",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/testdata/TestBuild_GN/buildtools/platform/gn_data/toolchain.ninja",
+        "patchSetId": 5
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-19T09:37:24Z",
+      "side": 1,
+      "message": "I think it\u0027s important to have some additional step after build.ninja generations.",
+      "parentUuid": "e2d0ec02_7bd39ab8",
       "revId": "f6c7c6086194b3d45d4a8e55227f29be443923e8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
