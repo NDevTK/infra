@@ -37,6 +37,7 @@ USING
       AND b.builder.bucket = 'try'
       AND b.builder.project = 'chromium'
       AND b.builder.builder = cq.builder
+      AND b.start_time IS NOT NULL
     ),
     -- This table is needed to dedupe swarming task IDs, as sometimes there are
     -- duplicate rows in task_results_summary
