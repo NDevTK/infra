@@ -1,0 +1,118 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "71ad6fa4_3e2f5d67",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1545642
+      },
+      "writtenOn": "2023-09-19T21:07:43Z",
+      "side": 1,
+      "message": "We should added a test file for this.",
+      "revId": "3b47262e97ec9834832952773b31a10fea155a63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9dfc7893_c5752fb5",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/features/coverage/summary/SummaryContext.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1545642
+      },
+      "writtenOn": "2023-09-19T21:07:43Z",
+      "side": 1,
+      "message": "Are we expecting to have more MetricType enums? Just wondering because if we only have LINE we don\u0027t need this.",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 0
+      },
+      "revId": "3b47262e97ec9834832952773b31a10fea155a63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "32918886_21d7c205",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/features/coverage/summary/SummaryContext.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1545642
+      },
+      "writtenOn": "2023-09-19T21:07:43Z",
+      "side": 1,
+      "message": "`isConfigLoaded`",
+      "revId": "3b47262e97ec9834832952773b31a10fea155a63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e262791d_dbb10587",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/features/coverage/summary/SummaryContext.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1545642
+      },
+      "writtenOn": "2023-09-19T21:07:43Z",
+      "side": 1,
+      "message": "Not used",
+      "revId": "3b47262e97ec9834832952773b31a10fea155a63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "642c1a1d_24f43fb6",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/features/coverage/summary/SummaryContext.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1545642
+      },
+      "writtenOn": "2023-09-19T21:07:43Z",
+      "side": 1,
+      "message": "This is not used",
+      "range": {
+        "startLine": 124,
+        "startChar": 0,
+        "endLine": 131,
+        "endChar": 1
+      },
+      "revId": "3b47262e97ec9834832952773b31a10fea155a63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f0b0a469_41fdf2ff",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/features/coverage/summary/SummaryContext.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1545642
+      },
+      "writtenOn": "2023-09-19T21:07:43Z",
+      "side": 1,
+      "message": "You might have to end up using `useReducer` for these calls. Also where is the call to the API/update of the `data` object? See below for example. https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/appengine/chrome-test-health/frontend/src/features/resources/tests/TestMetricsContext.tsx",
+      "revId": "3b47262e97ec9834832952773b31a10fea155a63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
