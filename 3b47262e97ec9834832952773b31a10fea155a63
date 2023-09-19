@@ -20,6 +20,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "fad09a10_f8387fcd",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/features/coverage/summary/SummaryContext.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2023-09-19T22:29:30Z",
+      "side": 1,
+      "message": "Maybe call this PathType",
+      "revId": "3b47262e97ec9834832952773b31a10fea155a63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9dfc7893_c5752fb5",
         "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/features/coverage/summary/SummaryContext.tsx",
         "patchSetId": 2
@@ -37,6 +54,57 @@
         "endLine": 12,
         "endChar": 0
       },
+      "revId": "3b47262e97ec9834832952773b31a10fea155a63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ef3e65cd_d82d4cd4",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/features/coverage/summary/SummaryContext.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2023-09-19T22:29:30Z",
+      "side": 1,
+      "message": "Maybe call this CoverageData. Or CoverageMetric.",
+      "revId": "3b47262e97ec9834832952773b31a10fea155a63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e806bbfc_f1edede7",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/features/coverage/summary/SummaryContext.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2023-09-19T22:29:30Z",
+      "side": 1,
+      "message": "Do you actually need Node here? Can everything just be collapsed into Path?",
+      "revId": "3b47262e97ec9834832952773b31a10fea155a63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "72771677_6836d32d",
+        "filename": "go/src/infra/appengine/chrome-test-health/frontend/src/features/coverage/summary/SummaryContext.tsx",
+        "patchSetId": 2
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1419102
+      },
+      "writtenOn": "2023-09-19T22:29:30Z",
+      "side": 1,
+      "message": "This can probably just be:\n```\n  coverage: CoverageData\n```",
       "revId": "3b47262e97ec9834832952773b31a10fea155a63",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
