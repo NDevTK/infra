@@ -130,7 +130,7 @@ func isLastProvisionSuccessfulExec(ctx context.Context, info *execs.ExecInfo) er
 // It is used until new stable version tool is ready.
 var chartOSMap = map[string]string{
 	"scarlet,dru":   "scarlet-release/R107-15110.0.0",
-	"kukui,krane":   "kukui-release/R106-15054.14.0",
+	"kukui,krane":   "kukui-release/R107-15117.112.0",
 	"nami,pantheon": "nami-release/R106-15054.42.0",
 }
 
