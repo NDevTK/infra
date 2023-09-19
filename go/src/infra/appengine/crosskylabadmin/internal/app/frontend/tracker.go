@@ -87,7 +87,12 @@ func (tsi *TrackerServerImpl) PushBotsForAdminTasks(ctx context.Context, req *fl
 		logging.Errorf(ctx, "error setting up Karte client: %s", err)
 	}
 
-	return pushBotsForAdminTasksImpl(ctx, sc, ufsClient, metricsClient, req)
+	p := adminTaskBotPusher{
+		ufsClient:      ufsClient,
+		swarmingClient: sc,
+		metricsClient:  metricsClient,
+	}
+	return p.pushBotsForAdminTasksImpl(ctx, req)
 }
 
 // PushBotsForAdminAuditTasks implements the fleet.Tracker.pushBotsForAdminTasks() method.

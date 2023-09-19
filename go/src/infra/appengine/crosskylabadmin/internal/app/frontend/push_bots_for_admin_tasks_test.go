@@ -39,7 +39,9 @@ func TestPushBotsForAdminTasksImplSmokeTest(t *testing.T) {
 	req := &fleet.PushBotsForAdminTasksRequest{
 		TargetDutState: fleet.DutState_NeedsRepair,
 	}
-	_, err := pushBotsForAdminTasksImpl(ctx, tf.MockSwarming, nil, nil, req)
+	_, err := (&adminTaskBotPusher{
+		swarmingClient: tf.MockSwarming,
+	}).pushBotsForAdminTasksImpl(ctx, req)
 
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
@@ -96,7 +98,11 @@ func TestPushBotsForAdminTasksWithUFSClient(t *testing.T) {
 	req := &fleet.PushBotsForAdminTasksRequest{
 		TargetDutState: fleet.DutState_NeedsRepair,
 	}
-	_, err := pushBotsForAdminTasksImpl(ctx, tf.MockSwarming, tf.MockUFS, tf.MockKarte, req)
+	_, err := (&adminTaskBotPusher{
+		swarmingClient: tf.MockSwarming,
+		ufsClient:      tf.MockUFS,
+		metricsClient:  tf.MockKarte,
+	}).pushBotsForAdminTasksImpl(ctx, req)
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
@@ -123,7 +129,7 @@ func TestGetDUTsForLabstations(t *testing.T) {
 		},
 		nil,
 	)
-	duts, err := getDUTsForLabstations(ctx, tf.MockUFS, nil)
+	duts, err := (&adminTaskBotPusher{ufsClient: tf.MockUFS}).getDUTsForLabstations(ctx, nil)
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
@@ -157,7 +163,7 @@ func TestGetLabstations(t *testing.T) {
 		},
 		nil,
 	)
-	labstations, err := getLabstations(ctx, tf.MockKarte, zero, zero)
+	labstations, err := (&adminTaskBotPusher{metricsClient: tf.MockKarte}).getLabstations(ctx, zero, zero)
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
@@ -269,7 +275,7 @@ func TestPushBotsForAdminTasksWithPoolCfg(t *testing.T) {
 		req := &fleet.PushBotsForAdminTasksRequest{
 			TargetDutState: fleet.DutState_NeedsRepair,
 		}
-		_, err := pushBotsForAdminTasksImpl(ctx, tf.MockSwarming, tf.MockUFS, tf.MockKarte, req)
+		_, err := (&adminTaskBotPusher{swarmingClient: tf.MockSwarming, ufsClient: tf.MockUFS, metricsClient: tf.MockKarte}).pushBotsForAdminTasksImpl(ctx, req)
 		if err != nil {
 			t.Errorf("unexpected error: %s", err)
 		}
@@ -377,7 +383,11 @@ func TestPushBotsForAdminTasksWithPoolCfgSkipError(t *testing.T) {
 		req := &fleet.PushBotsForAdminTasksRequest{
 			TargetDutState: fleet.DutState_NeedsRepair,
 		}
-		_, err := pushBotsForAdminTasksImpl(ctx, tf.MockSwarming, tf.MockUFS, tf.MockKarte, req)
+		_, err := (&adminTaskBotPusher{
+			swarmingClient: tf.MockSwarming,
+			ufsClient:      tf.MockUFS,
+			metricsClient:  tf.MockKarte,
+		}).pushBotsForAdminTasksImpl(ctx, req)
 		if err != nil {
 			if !strings.Contains(err.Error(), "Fake Error") {
 				t.Errorf("unexpected error: %s", err)

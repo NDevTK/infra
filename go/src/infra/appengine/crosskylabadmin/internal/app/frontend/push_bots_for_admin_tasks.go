@@ -25,10 +25,16 @@ import (
 
 const labstationRebootKind = `action:Labstation reboot`
 
-// getLabstations takes a metricsClient a start time and a stop time and returns the labstations with reboot events in that time range.
-func getLabstations(ctx context.Context, metricsClient metrics.Metrics, startTime time.Time, stopTime time.Time) ([]string, error) {
+type adminTaskBotPusher struct {
+	metricsClient  metrics.Metrics
+	ufsClient      ufs.Client
+	swarmingClient clients.SwarmingClient
+}
+
+// getLabstations takes a start time and a stop time and returns the labstations with reboot events in that time range.
+func (p *adminTaskBotPusher) getLabstations(ctx context.Context, startTime time.Time, stopTime time.Time) ([]string, error) {
 	// TODO(gregorynisbet): look at "action:Power cycle by RPM" as well.
-	results, err := metricsClient.Search(ctx, &metrics.Query{
+	results, err := p.metricsClient.Search(ctx, &metrics.Query{
 		StartTime:  startTime,
 		StopTime:   stopTime,
 		ActionKind: labstationRebootKind,
@@ -52,9 +58,9 @@ func getLabstations(ctx context.Context, metricsClient metrics.Metrics, startTim
 }
 
 // getDUTsForLabstations gets all the DUTs associated with a labstation.
-func getDUTsForLabstations(ctx context.Context, ufsClient ufs.Client, labstations []string) ([]string, error) {
+func (p *adminTaskBotPusher) getDUTsForLabstations(ctx context.Context, labstations []string) ([]string, error) {
 	var duts []string
-	resp, err := ufsClient.GetDUTsForLabstation(ctx, &ufsAPI.GetDUTsForLabstationRequest{
+	resp, err := p.ufsClient.GetDUTsForLabstation(ctx, &ufsAPI.GetDUTsForLabstationRequest{
 		Hostname: labstations,
 	})
 	if err != nil {
@@ -74,9 +80,9 @@ func getDUTsForLabstations(ctx context.Context, ufsClient ufs.Client, labstation
 // dutState     -- the DUT state (e.g. "ready", "needs-repair")
 // dims         -- a list of additional dimensions to map
 // holdouts     -- a list of bot names to exclude (NOT dut names). Holdouts is read-only, so this parameter may be nil.
-func pushRepairDUTsForGivenPool(ctx context.Context, sc clients.SwarmingClient, swarmingPool string, dutState string, dims strpair.Map, holdouts map[string]bool) error {
+func (p *adminTaskBotPusher) pushRepairDUTsForGivenPool(ctx context.Context, swarmingPool string, dutState string, dims strpair.Map, holdouts map[string]bool) error {
 	var bots []*swarming.SwarmingRpcsBotInfo
-	rawBots, err := sc.ListAliveIdleBotsInPool(ctx, swarmingPool, dims)
+	rawBots, err := p.swarmingClient.ListAliveIdleBotsInPool(ctx, swarmingPool, dims)
 	for _, bot := range rawBots {
 		if !holdouts[bot.BotId] {
 			bots = append(bots, bot)
@@ -97,12 +103,8 @@ func pushRepairDUTsForGivenPool(ctx context.Context, sc clients.SwarmingClient, 
 	return nil
 }
 
-// pushBotsForAdminTasksImpl
-//
-// sc        -- the Swarming client cannot be nil, in order to push we always need a swarming client
-// ufsClient -- can be nil
-func pushBotsForAdminTasksImpl(ctx context.Context, sc clients.SwarmingClient, ufsClient ufs.Client, metricsClient metrics.Metrics, req *fleet.PushBotsForAdminTasksRequest) (*fleet.PushBotsForAdminTasksResponse, error) {
-	if sc == nil {
+func (p *adminTaskBotPusher) pushBotsForAdminTasksImpl(ctx context.Context, req *fleet.PushBotsForAdminTasksRequest) (*fleet.PushBotsForAdminTasksResponse, error) {
+	if p.swarmingClient == nil {
 		return nil, errors.Reason("swarming client cannot be nil").Err()
 	}
 	cfg := config.Get(ctx)
@@ -119,7 +121,7 @@ func pushBotsForAdminTasksImpl(ctx context.Context, sc clients.SwarmingClient, u
 	//TODO (prasadv): Create PoolCfg for ChromeOSSkylab and push admin tasks similar to other pool configs.
 	// Once the Config is updated, remove the below code to push repair DUTs for admin task for Swarming.BotPool
 	if cfg.Swarming.BotPool != "" {
-		if err := pushRepairDUTsForGivenPool(ctx, sc, cfg.Swarming.BotPool, dutState, dims, nil); err != nil {
+		if err := p.pushRepairDUTsForGivenPool(ctx, cfg.Swarming.BotPool, dutState, dims, nil); err != nil {
 			merr = append(merr, errors.Annotate(err, "Failed to push repair duts in pool %q", cfg.Swarming.BotPool).Err())
 		} else {
 			logging.Infof(ctx, "Successfully pushed repair duts with dut_state %q in pool %q.", dutState, cfg.Swarming.BotPool)
@@ -130,7 +132,7 @@ func pushBotsForAdminTasksImpl(ctx context.Context, sc clients.SwarmingClient, u
 	for _, c := range cfg.Swarming.PoolCfgs {
 		//TODO (prasadv): Remove this condition once BotPool is added to PoolCfg.
 		if cfg.Swarming.BotPool != c.PoolName {
-			if err := pushRepairDUTsForGivenPool(ctx, sc, c.PoolName, dutState, dims, nil); err != nil {
+			if err := p.pushRepairDUTsForGivenPool(ctx, c.PoolName, dutState, dims, nil); err != nil {
 				merr = append(merr, errors.Annotate(err, "Failed to push repair duts in pool %q", c.PoolName).Err())
 			} else {
 				logging.Infof(ctx, "Successfully pushed repair duts with dut_state %q in pool %q.", dutState, c.PoolName)
