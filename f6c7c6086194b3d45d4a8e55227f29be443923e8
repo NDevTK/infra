@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5711bd1b_0edeb342",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-19T04:53:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3d781b6c_ee7202a9",
+      "revId": "f6c7c6086194b3d45d4a8e55227f29be443923e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "edf686df_032687b8",
@@ -31,6 +49,30 @@
       "writtenOn": "2023-09-15T09:20:07Z",
       "side": 1,
       "message": "If this focuses on rebuild and behavior around gn gen, it is better to follow http://go/tott/660?",
+      "range": {
+        "startLine": 23,
+        "startChar": 5,
+        "endLine": 23,
+        "endChar": 17
+      },
+      "revId": "f6c7c6086194b3d45d4a8e55227f29be443923e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "698a1dfb_145873e6",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_gn_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-19T04:53:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "edf686df_032687b8",
       "range": {
         "startLine": 23,
         "startChar": 5,
@@ -64,6 +106,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f9745c04_ebf0047a",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_gn_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-19T04:53:31Z",
+      "side": 1,
+      "message": "ok, but no difference as we don\u0027t use cancel/timeout?",
+      "parentUuid": "e295e76e_edc03db4",
+      "range": {
+        "startLine": 28,
+        "startChar": 14,
+        "endLine": 28,
+        "endChar": 21
+      },
+      "revId": "f6c7c6086194b3d45d4a8e55227f29be443923e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "12f15791_5c910b81",
@@ -77,6 +143,24 @@
       "writtenOn": "2023-09-15T09:20:07Z",
       "side": 1,
       "message": "Better to move this to the first line of the function?",
+      "revId": "f6c7c6086194b3d45d4a8e55227f29be443923e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "99dc4036_4c06180b",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_gn_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-19T04:53:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "12f15791_5c910b81",
       "revId": "f6c7c6086194b3d45d4a8e55227f29be443923e8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -104,6 +188,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0472c3d1_2fa7f4ee",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_gn_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-19T04:53:31Z",
+      "side": 1,
+      "message": "manifest file?",
+      "parentUuid": "a1f5fd71_4ab903f6",
+      "range": {
+        "startLine": 43,
+        "startChar": 2,
+        "endLine": 43,
+        "endChar": 7
+      },
+      "revId": "f6c7c6086194b3d45d4a8e55227f29be443923e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d2c75dc3_3e897c97",
@@ -117,6 +225,24 @@
       "writtenOn": "2023-09-15T09:20:07Z",
       "side": 1,
       "message": "This can be separate test?\nhttp://go/tott/649",
+      "revId": "f6c7c6086194b3d45d4a8e55227f29be443923e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f1b3cb2b_41f02b45",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_gn_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-19T04:53:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d2c75dc3_3e897c97",
       "revId": "f6c7c6086194b3d45d4a8e55227f29be443923e8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
