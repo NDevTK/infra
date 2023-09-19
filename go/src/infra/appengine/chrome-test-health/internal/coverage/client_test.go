@@ -6,11 +6,12 @@ package coverage
 
 import (
 	"context"
-	"infra/appengine/chrome-test-health/api"
-	"infra/appengine/chrome-test-health/internal/coverage/entities"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+
+	"infra/appengine/chrome-test-health/api"
+	"infra/appengine/chrome-test-health/internal/coverage/entities"
 )
 
 func getFakeFinditConfig() *entities.FinditConfig {
@@ -95,6 +96,27 @@ func TestGetProjectConfig(t *testing.T) {
 				Ref:      "refs/heads/main",
 			})
 			So(err, ShouldBeNil)
+		})
+	})
+}
+
+func TestGetModifiedBuilder(t *testing.T) {
+	t.Parallel()
+	Convey(`Should be able to modify builder based on field unitTestsOnly`, t, func() {
+		client := Client{}
+		Convey(`Field unitTestsOnly is set to true`, func() {
+			unitTestsOnly := true
+			modifiedBuilder := client.getModifedBuilder("builder", &unitTestsOnly)
+			So(modifiedBuilder, ShouldEqual, "builder_unit")
+		})
+		Convey(`Field unitTestsOnly is set to false`, func() {
+			unitTestsOnly := false
+			modifiedBuilder := client.getModifedBuilder("builder", &unitTestsOnly)
+			So(modifiedBuilder, ShouldEqual, "builder")
+		})
+		Convey(`Field unitTestsOnly is not provided`, func() {
+			modifiedBuilder := client.getModifedBuilder("builder", nil)
+			So(modifiedBuilder, ShouldEqual, "builder")
 		})
 	})
 }

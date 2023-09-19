@@ -23,6 +23,7 @@ type clientMock struct {
 
 type coverageClientMock struct {
 	lastGetProjectDefaultConfigReq *api.GetProjectDefaultConfigRequest
+	lastGetCoverageSummaryReq      *api.GetCoverageSummaryRequest
 }
 
 func (cm *clientMock) UpdateSummary(_ context.Context, fromDate civil.Date, toDate civil.Date) error {
@@ -44,9 +45,48 @@ func (cm *clientMock) FetchDirectoryMetrics(ctx context.Context, req *api.FetchD
 	return &api.FetchDirectoryMetricsResponse{}, nil
 }
 
-func (cm *coverageClientMock) GetProjectDefaultConfig(ctx context.Context, req *api.GetProjectDefaultConfigRequest) (*api.GetProjectDefaultConfigResponse, error) {
-	cm.lastGetProjectDefaultConfigReq = req
+func (ccm *coverageClientMock) GetProjectDefaultConfig(ctx context.Context, req *api.GetProjectDefaultConfigRequest) (*api.GetProjectDefaultConfigResponse, error) {
+	ccm.lastGetProjectDefaultConfigReq = req
 	return &api.GetProjectDefaultConfigResponse{}, nil
+}
+
+func (ccm *coverageClientMock) GetCoverageSummary(ctx context.Context, req *api.GetCoverageSummaryRequest) (*api.GetCoverageSummaryResponse, error) {
+	ccm.lastGetCoverageSummaryReq = req
+	return &api.GetCoverageSummaryResponse{}, nil
+}
+
+func TestValidatePresence(t *testing.T) {
+	t.Parallel()
+
+	Convey("Validate Presence", t, func() {
+		Convey("Should be false for empty string", func() {
+			isPresent := validatePresence("   ")
+			So(isPresent, ShouldBeFalse)
+		})
+		Convey("Should be false for nil", func() {
+			isPresent := validatePresence(nil)
+			So(isPresent, ShouldBeFalse)
+		})
+		Convey("Should be true", func() {
+			isPresent := validatePresence("test")
+			So(isPresent, ShouldBeTrue)
+		})
+	})
+}
+
+func TestValidateFormat(t *testing.T) {
+	t.Parallel()
+
+	Convey("Validate Format", t, func() {
+		Convey("Should be false", func() {
+			isValidFormat := validateFormat("test4", "^(test1|test2|test3)$")
+			So(isValidFormat, ShouldBeFalse)
+		})
+		Convey("Should be true", func() {
+			isValidFormat := validateFormat("test1", "^(test1|test2|test3)$")
+			So(isValidFormat, ShouldBeTrue)
+		})
+	})
 }
 
 func TestUpdateDailySummary(t *testing.T) {
@@ -277,6 +317,118 @@ func TestFetchFileMetrics(t *testing.T) {
 			resp, err := srv.FetchDirectoryMetrics(ctx, request)
 
 			So(err, ShouldErrLike, "metrics")
+			So(resp, ShouldBeNil)
+		})
+	})
+}
+
+func TestGetCoverageSummary(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+
+	Convey("GetCoverageSummary", t, func() {
+		mock := &coverageClientMock{}
+		srv := &coverageServer{
+			Client: mock,
+		}
+		request := &api.GetCoverageSummaryRequest{
+			GitilesHost:     "chromium.googlesource.com",
+			GitilesProject:  "chromium/src",
+			GitilesRef:      "refs/heads/main",
+			GitilesRevision: "03d4e64771cbc97f3ca5e4bbe85490d7cf909a0a",
+			UnitTestsOnly:   false,
+			Path:            "//chrome/browser/display_capture/",
+			DataType:        "dirs",
+			Bucket:          "ci",
+			Builder:         "linux-code-coverage",
+		}
+		Convey("Valid request", func() {
+			resp, err := srv.GetCoverageSummary(ctx, request)
+			So(err, ShouldBeNil)
+			So(resp, ShouldNotBeNil)
+			So(mock.lastGetCoverageSummaryReq, ShouldResemble, request)
+		})
+		Convey("Missing gitiles host", func() {
+			req := request
+			req.GitilesHost = ""
+			resp, err := srv.GetCoverageSummary(ctx, request)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Gitiles Host is a required argument")
+			So(resp, ShouldBeNil)
+		})
+		Convey("Missing gitiles project", func() {
+			req := request
+			req.GitilesProject = ""
+			resp, err := srv.GetCoverageSummary(ctx, request)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Gitiles Project is a required argument")
+			So(resp, ShouldBeNil)
+		})
+		Convey("Missing gitiles ref", func() {
+			req := request
+			req.GitilesRef = ""
+			resp, err := srv.GetCoverageSummary(ctx, request)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Gitiles Ref is a required argument")
+			So(resp, ShouldBeNil)
+		})
+		Convey("Missing gitiles revision", func() {
+			req := request
+			req.GitilesRevision = ""
+			resp, err := srv.GetCoverageSummary(ctx, request)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Gitiles Revision is a required argument")
+			So(resp, ShouldBeNil)
+		})
+		Convey("Missing gitiles path", func() {
+			req := request
+			req.Path = ""
+			resp, err := srv.GetCoverageSummary(ctx, request)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Path is a required argument")
+			So(resp, ShouldBeNil)
+		})
+		Convey("Invalid Datatype", func() {
+			req := request
+			req.DataType = ""
+			resp, err := srv.GetCoverageSummary(ctx, request)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Data Type is a required argument")
+			So(resp, ShouldBeNil)
+
+			req.DataType = "dir"
+			resp, err = srv.GetCoverageSummary(ctx, request)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Data Type is not provided in required format")
+			So(resp, ShouldBeNil)
+		})
+		Convey("Invalid Builder", func() {
+			req := request
+			req.Builder = ""
+			resp, err := srv.GetCoverageSummary(ctx, request)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Builder is a required argument")
+			So(resp, ShouldBeNil)
+
+			req.Builder = "linux-code-coverage&123"
+			resp, err = srv.GetCoverageSummary(ctx, request)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Builder is not provided in required format")
+			So(resp, ShouldBeNil)
+		})
+		Convey("Invalid Bucket", func() {
+			req := request
+			req.Bucket = ""
+			resp, err := srv.GetCoverageSummary(ctx, request)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Bucket is a required argument")
+			So(resp, ShouldBeNil)
+
+			req.Bucket = "ci#121"
+			resp, err = srv.GetCoverageSummary(ctx, request)
+			So(err, ShouldNotBeNil)
+			So(err, ShouldErrLike, "Bucket is not provided in required format")
 			So(resp, ShouldBeNil)
 		})
 	})

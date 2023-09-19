@@ -8,12 +8,15 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"infra/appengine/chrome-test-health/internal/coverage/entities"
+	"fmt"
 
 	"cloud.google.com/go/datastore"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"go.chromium.org/luci/common/logging"
 	"google.golang.org/api/iterator"
+
 	"infra/appengine/chrome-test-health/api"
+	"infra/appengine/chrome-test-health/internal/coverage/entities"
 )
 
 var (
@@ -79,6 +82,13 @@ func (c *Client) getProjectConfig(ctx context.Context, finditConfig *entities.Fi
 	}, nil
 }
 
+func (c *Client) getModifedBuilder(builder string, unitTestsOnly *bool) string {
+	if unitTestsOnly == nil || !(*unitTestsOnly) {
+		return builder
+	}
+	return fmt.Sprintf("%s_unit", builder)
+}
+
 // GetProjectDefaultConfig fetches the latest version of FinditConfig from the datastore and returns
 // the desired configuration extacted from the entity.
 func (c *Client) GetProjectDefaultConfig(ctx context.Context, req *api.GetProjectDefaultConfigRequest) (*api.GetProjectDefaultConfigResponse, error) {
@@ -109,4 +119,40 @@ func (c *Client) GetProjectDefaultConfig(ctx context.Context, req *api.GetProjec
 	}
 
 	return c.getProjectConfig(ctx, &finditConfig, project)
+}
+
+// GetCoverageSummary fetches the code coverage metrics/percentages for the specified
+// configuration including the path. The path here can be a dir/file path like
+// //foo/foo1/foo2/ or a component like C1>C2>C3.
+func (c *Client) GetCoverageSummary(ctx context.Context, req *api.GetCoverageSummaryRequest) (*api.GetCoverageSummaryResponse, error) {
+	host := req.GitilesHost
+	project := req.GitilesProject
+	ref := req.GitilesRef
+	revision := req.GitilesRevision
+	path := req.Path
+	unitTestsOnly := req.UnitTestsOnly
+	dataType := req.DataType
+	bucket := req.Bucket
+	builder := c.getModifedBuilder(req.Builder, &unitTestsOnly)
+
+	// Fetch the SummaryCoverageReport entity for the given configuration.
+	summary := entities.SummaryCoverageData{}
+	err := summary.Get(ctx, c.coverageV1DsClient, host, project, ref, revision, dataType, path, bucket, builder)
+	if err != nil {
+		logging.Errorf(ctx, "Error fetching SummaryCoverageData: %s", err)
+		return nil, ErrInternalServerError
+	}
+
+	// Take the Data field out of the summary. The data field is compressed using
+	// zlib, the following code decompresses that data and puts it into a struct.
+	coverageDetailsStruct := structpb.Struct{}
+	err = getStructFromCompressedData(summary.Data, &coverageDetailsStruct)
+	if err != nil {
+		logging.Errorf(ctx, "Unable to decompress the data: %s", err)
+		return nil, ErrInternalServerError
+	}
+
+	return &api.GetCoverageSummaryResponse{
+		Summary: &coverageDetailsStruct,
+	}, nil
 }

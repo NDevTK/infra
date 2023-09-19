@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"regexp"
 	"strings"
 	"time"
@@ -53,6 +54,7 @@ var (
 		"/test_resources.Stats/FetchTestMetrics":           serviceAccessGroup,
 		"/test_resources.Stats/FetchDirectoryMetrics":      serviceAccessGroup,
 		"/test_resources.Coverage/GetProjectDefaultConfig": serviceAccessGroup,
+		"/test_resources.Coverage/GetCoverageSummary":      rpcacl.All,
 	}
 	// Data set to work with
 	dataSet = flag.String(
@@ -77,6 +79,7 @@ type Client interface {
 
 type CoverageClient interface {
 	GetProjectDefaultConfig(ctx context.Context, req *api.GetProjectDefaultConfigRequest) (*api.GetProjectDefaultConfigResponse, error)
+	GetCoverageSummary(ctx context.Context, req *api.GetCoverageSummaryRequest) (*api.GetCoverageSummaryResponse, error)
 }
 
 func main() {
@@ -196,7 +199,7 @@ func (covServer *coverageServer) GetProjectDefaultConfig(ctx context.Context, re
 		return nil, appstatus.Errorf(codes.InvalidArgument, "%s", err.Error())
 	}
 
-	if isValidProject := validProject(req.Project); !isValidProject {
+	if isValidProject := validateFormat(req.Project, `^[a-z0-9-_]+$`); !isValidProject {
 		logging.Errorf(ctx, "Argument project did not match required format")
 		return nil, appstatus.Errorf(codes.InvalidArgument, "Argument Project is invalid")
 	}
@@ -204,6 +207,38 @@ func (covServer *coverageServer) GetProjectDefaultConfig(ctx context.Context, re
 	resp, err := covServer.Client.GetProjectDefaultConfig(ctx, req)
 	if err != nil {
 		logging.Errorf(ctx, "Error fetching the default Config: %s", err)
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (covServer *coverageServer) GetCoverageSummary(ctx context.Context, req *api.GetCoverageSummaryRequest) (*api.GetCoverageSummaryResponse, error) {
+	requiredFields := []interface{}{
+		[]string{"Gitiles Host", req.GitilesHost, ""},
+		[]string{"Gitiles Project", req.GitilesProject, ""},
+		[]string{"Gitiles Ref", req.GitilesRef, ""},
+		[]string{"Gitiles Revision", req.GitilesRevision, ""},
+		[]string{"Path", req.Path, ""},
+		[]string{"Data Type", req.DataType, `^(dirs|files|components)$`},
+		[]string{"Builder", req.Builder, `^[a-zA-Z0-9\-_.\(\) ]{1,128}$`},
+		[]string{"Bucket", req.Bucket, `^[a-z0-9\-_.]{1,100}$`},
+	}
+
+	for _, field := range requiredFields {
+		fieldName := field.([]string)[0]
+		fieldValue := field.([]string)[1]
+		fieldRegex := field.([]string)[2]
+		if isPresent := validatePresence(fieldValue); !isPresent {
+			return nil, appstatus.Errorf((codes.InvalidArgument), "%s is a required argument", fieldName)
+		}
+		if isValidFormat := validateFormat(fieldValue, fieldRegex); !isValidFormat {
+			return nil, appstatus.Errorf((codes.InvalidArgument), "%s is not provided in required format", fieldName)
+		}
+	}
+
+	resp, err := covServer.Client.GetCoverageSummary(ctx, req)
+	if err != nil {
+		logging.Errorf(ctx, "Error fetching the coverage summary: %s", err)
 		return nil, err
 	}
 	return resp, nil
@@ -277,10 +312,23 @@ func validateRequest(ctx context.Context, req proto.Message) error {
 	return nil
 }
 
-// validProject checks if the project is a valid LUCI project or not.
-// See go.chromium.org/luci/buildbucket/proto/builder_common.proto for additional details.
-func validProject(project string) bool {
-	if match, _ := regexp.MatchString(`^[a-z0-9-_]+$`, project); !match {
+// validatePresence takes in an interface{} and checks if
+// the it's present (not nil). In case of string it also
+// checks if the string is empty.
+func validatePresence(value interface{}) bool {
+	if value == nil {
+		return false
+	}
+	if fmt.Sprintf("%T", value) == "string" && len(strings.TrimSpace(value.(string))) == 0 {
+		return false
+	}
+	return true
+}
+
+// validateFormat takes in a value, pattern as arguments and
+// checks if the value matches the regex pattern provided.
+func validateFormat(value string, pattern string) bool {
+	if match, _ := regexp.MatchString(pattern, value); !match {
 		return false
 	}
 	return true

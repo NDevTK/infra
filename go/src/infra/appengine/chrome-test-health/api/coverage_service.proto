@@ -10,11 +10,17 @@ option go_package = "infra/appengine/chrome-test-health/api";
 
 import "google/protobuf/descriptor.proto";
 import "google/api/field_behavior.proto";
+import "google/protobuf/struct.proto";
 
 service Coverage {
-  // Gets the default configuration stored in the datastore
-  // required to fetch Code Coverage statistics
+  // GetProjectDefaultConfig gets the default configuration stored in the datastore
+  // required to fetch Code Coverage statistics.
   rpc GetProjectDefaultConfig(GetProjectDefaultConfigRequest) returns (GetProjectDefaultConfigResponse);
+
+  // GetCoverageSummary takes in the config fetched using the
+  // GetProjectDefaultConfig rpc call to get the code coverage
+  // lines/percentages along with the directory structure of the project.
+  rpc GetCoverageSummary(GetCoverageSummaryRequest) returns (GetCoverageSummaryResponse);
 }
 
 message GetProjectDefaultConfigRequest {
@@ -22,15 +28,13 @@ message GetProjectDefaultConfigRequest {
   // For example: chromium. Each Project is unique within a LUCI deployment.
   // Project is equivalent to Buildbucket's concept of a project
   // and requires regex match ^[a-z0-9-_]+$
-  // See go.chromium.org/luci/buildbucket/proto/builder_common.proto for additional details.
+  // See https://chromium.googlesource.com/infra/luci/luci-go/+/main/buildbucket/proto/builder_common.proto for additional details.
   string project = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
+// Default Configuration values for the specified project
+// as stored in FinditConfig entity.
 message GetProjectDefaultConfigResponse {
-  // Default Configuration values for the specified project
-  // as stored in FinditConfig entity. Based on these configuration
-  // values we fetch the code coverage data.
-
   // The website host where the repo resides.
   // E.g: chromium.googlesource.com
   string host = 1;
@@ -41,4 +45,39 @@ message GetProjectDefaultConfigResponse {
   string project = 3;
   // Ref is the git branch within the project. E.g: refs/heads/main:
   string ref = 4;
+}
+
+message GetCoverageSummaryRequest {
+  // The Gitiles hostname, e.g. "chromium.googlesource.com"
+  string gitiles_host = 1;
+  // The Gitiles project name, e.g. "chromium/src"
+  string gitiles_project = 2;
+  // The Gitiles ref, e.g. "refs/heads/main"
+  string gitiles_ref = 3;
+  // The commit hash of the revision
+  string gitiles_revision = 4;
+  // Source path relative to the project root or path to the components.
+  // E.g: // or /media/cast/net/rtp/frame_buffer.cc for directories.
+  // >> or Blink>Fonts for components.
+  string path = 5;
+  // Flag to fetch coverage results for unit tests only.
+  // Defaults to False, which returns all coverage results.
+  bool unit_tests_only = 6;
+  // DataType of the path. Valid options are: dirs, files or components
+  string data_type = 7;
+  // Bucket name, e.g. "try". Unique within the project.
+  // Regex: ^[a-z0-9\-_.]{1,100}$
+  // Together with project, defines an ACL.
+  // See https://chromium.googlesource.com/infra/luci/luci-go/+/main/buildbucket/proto/builder_common.proto for additional details.
+  string bucket = 8;
+  // Builder name, e.g. "linux-rel". Unique within the bucket.
+  // Regex: ^[a-zA-Z0-9\-_.\(\) ]{1,128}$
+  // See https://chromium.googlesource.com/infra/luci/luci-go/+/main/buildbucket/proto/builder_common.proto for additional details.
+  string builder = 9;
+}
+
+// GetCoverageSummaryResponse returns the code coverage summary.
+message GetCoverageSummaryResponse {
+  // Code Coverage summary containing lines/percentage of code covered.
+  google.protobuf.Struct summary = 1;
 }
