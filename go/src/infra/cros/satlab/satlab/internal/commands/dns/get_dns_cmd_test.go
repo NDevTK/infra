@@ -8,12 +8,14 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+
+	"infra/cros/satlab/common/utils/executor"
 )
 
 func TestRunGetCmdInjected(t *testing.T) {
 	t.Parallel()
 
-	fakeContents := func() (string, error) {
+	fakeContents := func(_ executor.IExecCommander) (string, error) {
 		return "content", nil
 	}
 	out := new(bytes.Buffer)
