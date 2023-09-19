@@ -299,7 +299,7 @@ func TestValidateMapping(t *testing.T) {
 			},
 		},
 		{
-			"template parameters",
+			"TagCriteria template parameters",
 			&dirmd.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
 					"a/b": {
@@ -334,6 +334,53 @@ func TestValidateMapping(t *testing.T) {
 														Tags:        []string{"group:mygroupA"},
 														TagExcludes: []string{"informational"},
 													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			"program TemplateParameters",
+			&dirmd.Mapping{
+				Dirs: map[string]*dirmdpb.Metadata{
+					"overlay-boardA": {
+						Chromeos: &chromeos.ChromeOS{
+							Cq: &chromeos.ChromeOS_CQ{
+								SourceTestPlans: []*plan.SourceTestPlan{
+									{
+										TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
+											{
+												Host:    "chromium.googlesource.com",
+												Project: "test/repo",
+												Path:    "templated.star",
+												TemplateParameters: &plan.SourceTestPlan_TestPlanStarlarkFile_TemplateParameters{
+													Program: "boardA",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					"overlay-boardA-private": {
+						Chromeos: &chromeos.ChromeOS{
+							Cq: &chromeos.ChromeOS_CQ{
+								SourceTestPlans: []*plan.SourceTestPlan{
+									{
+										TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
+											{
+												Host:    "chromium.googlesource.com",
+												Project: "test/repo",
+												Path:    "templated.star",
+												TemplateParameters: &plan.SourceTestPlan_TestPlanStarlarkFile_TemplateParameters{
+													Program: "boardA",
 												},
 											},
 										},
@@ -630,6 +677,33 @@ func TestValidateMappingErrors(t *testing.T) {
 			"lstat badreporoot: no such file or directory",
 		},
 		{
+			"TemplateParameters empty",
+			&dirmd.Mapping{
+				Dirs: map[string]*dirmdpb.Metadata{
+					"a/b": {
+						Chromeos: &chromeos.ChromeOS{
+							Cq: &chromeos.ChromeOS_CQ{
+								SourceTestPlans: []*plan.SourceTestPlan{
+									{
+										TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
+											{
+												Host:               "chromium.googlesource.com",
+												Project:            "testrepo",
+												Path:               "templated.star",
+												TemplateParameters: &plan.SourceTestPlan_TestPlanStarlarkFile_TemplateParameters{},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			"./testdata/good_dirmd",
+			"either tag_criteria or program must be set on TemplateParameters",
+		},
+		{
 			"suite name missing",
 			&dirmd.Mapping{
 				Dirs: map[string]*dirmdpb.Metadata{
@@ -758,6 +832,64 @@ func TestValidateMappingErrors(t *testing.T) {
 			},
 			"./testdata/good_dirmd",
 			"no test cases found for test suite",
+		},
+		{
+			"program TemplateParameter outside of overlay",
+			&dirmd.Mapping{
+				Dirs: map[string]*dirmdpb.Metadata{
+					"a/b": {
+						Chromeos: &chromeos.ChromeOS{
+							Cq: &chromeos.ChromeOS_CQ{
+								SourceTestPlans: []*plan.SourceTestPlan{
+									{
+										TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
+											{
+												Host:    "chromium.googlesource.com",
+												Project: "testrepo",
+												Path:    "templated.star",
+												TemplateParameters: &plan.SourceTestPlan_TestPlanStarlarkFile_TemplateParameters{
+													Program: "boardA",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			"./testdata/good_dirmd",
+			`program TemplateParameter is only allowed in overlay directories. Got: "a/b"`,
+		},
+		{
+			"program TemplateParameter wrong overlay",
+			&dirmd.Mapping{
+				Dirs: map[string]*dirmdpb.Metadata{
+					"overlay-boardA": {
+						Chromeos: &chromeos.ChromeOS{
+							Cq: &chromeos.ChromeOS_CQ{
+								SourceTestPlans: []*plan.SourceTestPlan{
+									{
+										TestPlanStarlarkFiles: []*plan.SourceTestPlan_TestPlanStarlarkFile{
+											{
+												Host:    "chromium.googlesource.com",
+												Project: "testrepo",
+												Path:    "templated.star",
+												TemplateParameters: &plan.SourceTestPlan_TestPlanStarlarkFile_TemplateParameters{
+													Program: "boardB",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			"./testdata/good_dirmd",
+			`program TemplateParameter must match the overlay it is in. Got parameter "boardB", expected "boardA"`,
 		},
 	}
 

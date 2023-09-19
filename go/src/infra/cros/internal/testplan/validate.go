@@ -38,6 +38,7 @@ type validator struct {
 	gerritClient gerrit.Client
 	bbClient     bbpb.BuildsClient
 	cmdRunner    cmd.CommandRunner
+	ctfImage     string
 	tmpdirFn     func(string, string) (string, error)
 }
 
@@ -191,13 +192,22 @@ func (v *validator) getMostRecentCTFImage(ctx context.Context) (string, error) {
 	return fmt.Sprintf("us-docker.pkg.dev/cros-registry/test-services/cros-test-finder:%d", bbResp.Builds[0].Id), nil
 }
 
-// callCrosTestFinder runs Docker on ctfImage with req as input and returns the
-// response.
+// callCrosTestFinder runs cros-test-finder with req as input and returns the
+// response. If v.ctfImage is not set, this function calls getMostRecentCTFImage
+// and sets v.ctfImage (so future calls won't need to call
+// getMostRecentCTFImage).
 func (v *validator) callCrosTestFinder(
 	ctx context.Context,
-	ctfImage string,
 	req *testpb.CrosTestFinderRequest,
 ) (*testpb.CrosTestFinderResponse, error) {
+	if v.ctfImage == "" {
+		var err error
+		v.ctfImage, err = v.getMostRecentCTFImage(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("failed to find recent cros-test-finder image: %w", err)
+		}
+	}
+
 	tmpDir, err := v.tmpdirFn("", "ctf*")
 	if err != nil {
 		return nil, err
@@ -218,11 +228,11 @@ func (v *validator) callCrosTestFinder(
 	respFilePath := filepath.Join(tmpDir, "result.json")
 
 	var stderrBuf bytes.Buffer
-	logging.Debugf(ctx, "running image %q", ctfImage)
+	logging.Debugf(ctx, "running image %q", v.ctfImage)
 	if err := docker.RunContainer(
 		ctx, v.cmdRunner,
 		&container.Config{
-			Image: ctfImage,
+			Image: v.ctfImage,
 			Cmd:   strslice.StrSlice{"cros-test-finder"},
 		},
 		&container.HostConfig{
@@ -264,11 +274,10 @@ func (v *validator) callCrosTestFinder(
 	return resp, nil
 }
 
-// checkTagCriteriaNonEmpty uses ctfImage to check that the TestCaseTagCriteria
-// in templateParameters match at least one test.
+// checkTagCriteriaNonEmpty uses cros-test-finder to check that the
+// TestCaseTagCriteria in templateParameters match at least one test.
 func (v *validator) checkTagCriteriaNonEmpty(
 	ctx context.Context,
-	ctfImage string,
 	templateParameters *planpb.SourceTestPlan_TestPlanStarlarkFile_TemplateParameters,
 ) error {
 	suiteName := templateParameters.GetSuiteName()
@@ -290,7 +299,7 @@ func (v *validator) checkTagCriteriaNonEmpty(
 	}
 
 	ctfResp, err := v.callCrosTestFinder(
-		ctx, ctfImage, ctfReq,
+		ctx, ctfReq,
 	)
 	if err != nil {
 		return fmt.Errorf("error calling cros-test-finder: %w", err)
@@ -307,7 +316,7 @@ func (v *validator) checkTagCriteriaNonEmpty(
 	return nil
 }
 
-func (v *validator) validateTemplateParameters(ctx context.Context, _, _ string, plan *planpb.SourceTestPlan) error {
+func (v *validator) validateTemplateParameters(ctx context.Context, dir, _ string, plan *planpb.SourceTestPlan) error {
 	// Get the FieldDescriptor for template_parameters to check whether
 	// TemplateParameters has been set for a given TestPlanStarlarkFile.
 	templateParametersDesc := (&planpb.SourceTestPlan_TestPlanStarlarkFile{}).
@@ -316,46 +325,78 @@ func (v *validator) validateTemplateParameters(ctx context.Context, _, _ string,
 		panic("failed to find template_parameters descriptor")
 	}
 
-	// Only get the cros-test-finder image if it is actually needed (i.e. if a
-	// file uses TemplateParameters). This prevents unnecessary calls to
-	// Buildbucket.
-	var ctfImage string
-
 	for _, file := range plan.GetTestPlanStarlarkFiles() {
 		if !file.ProtoReflect().Has(templateParametersDesc) {
 			continue
 		}
 
 		templateParameters := file.GetTemplateParameters()
-		if templateParameters.GetSuiteName() == "" {
-			return errors.New("suite_name must not be empty")
+		if templateParameters.GetTagCriteria() == nil && templateParameters.GetProgram() == "" {
+			return fmt.Errorf("%s: either tag_criteria or program must be set on TemplateParameters", file.Path)
 		}
 
-		tagExcludes := templateParameters.GetTagCriteria().GetTagExcludes()
-		if !stringset.NewFromSlice(tagExcludes...).Has("informational") {
-			return fmt.Errorf(`tag_excludes must exclude "informational", got %q`, tagExcludes)
-		}
-
-		starlarkContent, err := v.gerritClient.DownloadFileFromGitiles(ctx, file.GetHost(), file.GetProject(), "HEAD", file.GetPath(), shared.LongerOpts)
-		if err != nil {
-			return fmt.Errorf("failed downloading file %q", file)
-		}
-
-		if !(strings.Contains(starlarkContent, "testplan.get_suite_name()") ||
-			strings.Contains(starlarkContent, "testplan.get_tag_criteria()")) {
-			return fmt.Errorf("file %q is not templated, setting TemplateParameters has no effect", file)
-		}
-
-		if ctfImage == "" {
-			ctfImage, err = v.getMostRecentCTFImage(ctx)
-			if err != nil {
-				return fmt.Errorf("failed to find recent cros-test-finder image: %w", err)
+		if templateParameters.GetTagCriteria() != nil {
+			if err := v.validateTagCriteriaTemplateParameters(ctx, file); err != nil {
+				return fmt.Errorf("error validating TagCriteria in TemplateParameters: %w", err)
 			}
 		}
 
-		if err = v.checkTagCriteriaNonEmpty(ctx, ctfImage, templateParameters); err != nil {
-			return err
+		if templateParameters.GetProgram() != "" {
+			if err := v.validateProgramTemplateParameters(templateParameters.GetProgram(), dir); err != nil {
+				return fmt.Errorf("error validating program in TemplateParameters: %w", err)
+			}
 		}
+	}
+
+	return nil
+}
+
+// validateTagCriteriaTemplateParameters validates that the TagCriteria on
+// file's TemplateParameters are set correctly. This method should only be
+// called when the TagCriteria are non-nil and non-empty.
+func (v *validator) validateTagCriteriaTemplateParameters(
+	ctx context.Context,
+	file *planpb.SourceTestPlan_TestPlanStarlarkFile,
+) error {
+	templateParameters := file.GetTemplateParameters()
+	if templateParameters.GetSuiteName() == "" {
+		return errors.New("suite_name must not be empty")
+	}
+
+	tagExcludes := templateParameters.GetTagCriteria().GetTagExcludes()
+	if !stringset.NewFromSlice(tagExcludes...).Has("informational") {
+		return fmt.Errorf(`tag_excludes must exclude "informational", got %q`, tagExcludes)
+	}
+
+	starlarkContent, err := v.gerritClient.DownloadFileFromGitiles(ctx, file.GetHost(), file.GetProject(), "HEAD", file.GetPath(), shared.LongerOpts)
+	if err != nil {
+		return fmt.Errorf("failed downloading file %q", file)
+	}
+
+	if !(strings.Contains(starlarkContent, "testplan.get_suite_name()") ||
+		strings.Contains(starlarkContent, "testplan.get_tag_criteria()")) {
+		return fmt.Errorf("file %q is not templated, setting TemplateParameters has no effect", file)
+	}
+
+	return v.checkTagCriteriaNonEmpty(ctx, templateParameters)
+}
+
+var overlayRegex = regexp.MustCompile(`overlay-(\w+)(-private)?`)
+
+// validateProgramTemplateParameters validates that the program
+// TemplateParameter is set correctly. This method should only be called when
+// program is not the empty string.
+func (v *validator) validateProgramTemplateParameters(
+	program string,
+	dir string,
+) error {
+	matches := overlayRegex.FindStringSubmatch(dir)
+	if matches == nil {
+		return fmt.Errorf("program TemplateParameter is only allowed in overlay directories. Got: %q", dir)
+	}
+
+	if matches[1] != program {
+		return fmt.Errorf("program TemplateParameter must match the overlay it is in. Got parameter %q, expected %q", program, matches[1])
 	}
 
 	return nil
