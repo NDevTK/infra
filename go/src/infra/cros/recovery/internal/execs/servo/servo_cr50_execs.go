@@ -8,9 +8,11 @@ import (
 	"context"
 
 	"go.chromium.org/luci/common/errors"
+	"golang.org/x/exp/slices"
 
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/tlw"
 )
 
 const (
@@ -57,6 +59,12 @@ func servoCR50EnumeratedExec(ctx context.Context, info *execs.ExecInfo) error {
 // servoCCDExpectedHaveFactoryResetExec verifies is this devices should have CCD open
 // and reset to factory settings.
 func servoCCDExpectedHaveFactoryResetExec(ctx context.Context, info *execs.ExecInfo) error {
+	// TODO(b/300287654): Remove this work around once we have implemented a testlab open procedure
+	// that works reliably for devices in faft-cr50 pool
+	pools := info.GetDut().ExtraAttributes[tlw.ExtraAttributePools]
+	if slices.Contains(pools, "faft-cr50") {
+		return errors.Reason("device in faft-cr50 pool not expected to have ccd open (b/300287654)").Err()
+	}
 	// If device is Ti50 (not cr50). We always want CCD to be open and reset
 	err := info.NewServod().Has(ctx, "ti50_version")
 	if err == nil {
