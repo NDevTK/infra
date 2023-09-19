@@ -13,8 +13,10 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stretchr/testify/mock"
+	swarmingapi "go.chromium.org/luci/swarming/proto/api_v2"
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
+	"infra/cros/satlab/common/services"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/satlabrpcserver/fake"
 	mk "infra/cros/satlab/satlabrpcserver/mocks"
@@ -53,8 +55,12 @@ func createMockServer(t *testing.T) *SatlabRpcServiceServer {
 	if err != nil {
 		t.Fatalf("Failed to create a label parser %v", err)
 	}
+
+	// Create a Mock `ISwarmingService`
+	var swarmingService = new(services.MockSwarmingService)
+
 	// Create a SATLab Server
-	return New(mockBuildService, mockBucketService, mockDUTService, labelParser, nil)
+	return New(mockBuildService, mockBucketService, mockDUTService, labelParser, nil, swarmingService)
 }
 
 // TestListBuildTargetsShouldSuccess test `ListBuildTargets` function.
@@ -809,5 +815,47 @@ func TestGetVersionInfoShouldFail(t *testing.T) {
 
 	if res != nil {
 		t.Errorf("Expected the reuslt should be nil")
+	}
+}
+
+func TestGetDUTDetailShouldSuccess(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	// Create a mock data
+	s := createMockServer(t)
+	s.commandExecutor = &fake.FakeCommander{
+		CmdOutput: `
+192.168.231.137	satlab-0wgtfqin1846803b-one
+192.168.231.137	satlab-0wgtfqin1846803b-host5
+192.168.231.222	satlab-0wgtfqin1846803b-host11
+192.168.231.222	satlab-0wgtfqin1846803b-host12
+  `,
+	}
+	mockData := &swarmingapi.BotInfo{BotId: "test bot"}
+	s.swarmingService.(*services.MockSwarmingService).
+		On("GetBot", ctx, mock.Anything).
+		Return(mockData, nil)
+
+	req := &pb.GetDutDetailRequest{
+		Address: "192.168.231.222",
+	}
+	resp, err := s.GetDutDetail(ctx, req)
+
+	// Assert
+	if err != nil {
+		t.Errorf("Should not return error, but got an error: {%v}", err)
+	}
+
+	// Create a expected result
+	expected := &pb.GetDutDetailResponse{
+		BotId:      "test bot",
+		Dimensions: []*pb.StringListPair{},
+	}
+	// ignore pb fields in `FirmwareUpdateCommandOutput`
+	ignorePBFieldOpts := cmpopts.IgnoreUnexported(pb.GetDutDetailResponse{})
+
+	if diff := cmp.Diff(expected, resp, ignorePBFieldOpts); diff != "" {
+		t.Errorf("Expected: {%v}, got: {%v}, %v", expected, resp, diff)
 	}
 }
