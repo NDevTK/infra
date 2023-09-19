@@ -53,6 +53,7 @@ recipes.simulation_tester(
         refs = ["refs/heads/main"],
     ),
     console_view = "recipes-py",
+    os = "Ubuntu-18.04",
 )
 
 # Recipe rolls from Recipe Engine.

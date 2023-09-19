@@ -71,7 +71,7 @@ def presubmit(
         properties = props,
         service_account = infra.SERVICE_ACCOUNT_TRY,
         dimensions = {
-            "os": os or "Ubuntu-18.04",
+            "os": os or "Ubuntu-22.04",
             "cpu": "x86-64",
             "pool": pool,
         },

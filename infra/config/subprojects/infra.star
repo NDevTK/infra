@@ -197,7 +197,12 @@ try_builder(
 )
 
 # Presubmit trybot.
-build.presubmit(name = "infra-try-presubmit", cq_group = "infra", repo_name = "infra")
+build.presubmit(
+    name = "infra-try-presubmit",
+    cq_group = "infra",
+    repo_name = "infra",
+    os = "Ubuntu-18.04",
+)
 
 # Recipes ecosystem.
 recipes.simulation_tester(
@@ -206,6 +211,7 @@ recipes.simulation_tester(
     triggered_by = infra.poller(),
     console_view = "infra",
     console_category = "misc",
+    os = "Ubuntu-18.04",
 )
 
 # Recipe rolls from Infra.

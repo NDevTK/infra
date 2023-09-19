@@ -18,7 +18,7 @@ def builder(name, builderless = True, cores = 8, **kwargs):
     """
     dimensions = {
         "pool": "luci.infra.cron",
-        "os": "Ubuntu-18.04",
+        "os": "Ubuntu-22.04",
         "cpu": "x86-64",
     }
     if builderless:

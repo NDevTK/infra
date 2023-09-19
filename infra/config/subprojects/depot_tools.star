@@ -38,6 +38,7 @@ build.presubmit(
     cq_group = "depot_tools",
     repo_name = "depot_tools",
     run_hooks = False,
+    os = "Ubuntu-18.04",
 )
 
 build.presubmit(
@@ -54,6 +55,7 @@ recipes.simulation_tester(
     project_under_test = "depot_tools",
     triggered_by = "depot_tools-gitiles-trigger",
     console_view = "depot_tools",
+    os = "Ubuntu-18.04",
 )
 
 # Recipe rolls from Depot Tools.

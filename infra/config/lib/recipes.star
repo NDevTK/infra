@@ -30,7 +30,8 @@ def simulation_tester(
         project_under_test,
         triggered_by,
         console_view = None,
-        console_category = None):
+        console_category = None,
+        os = "Ubuntu-22.04"):
     """Defines a CI builder that runs recipe simulation tests.
 
     Args:
@@ -39,6 +40,7 @@ def simulation_tester(
       triggered_by: what builders trigger this one.
       console_view: a console to add it to.
       console_category: a category to use in the console.
+      os: the target OS dimension.
     """
 
     # Normally, this builder will be triggered on specific commit in this
@@ -52,7 +54,7 @@ def simulation_tester(
         executable = infra.recipe("recipe_simulation", use_python3 = True),
         properties = properties,
         dimensions = {
-            "os": "Ubuntu-18.04",
+            "os": os,
             "cpu": "x86-64",
             "pool": "luci.infra.ci",
         },
@@ -104,7 +106,7 @@ def roll_trybots(upstream, downstream, cq_group, os = "Ubuntu"):
             cq_group = cq_group,
         )
 
-def led_recipes_tester(name, cq_group, repo_name):
+def led_recipes_tester(name, cq_group, repo_name, os = "Ubuntu-22.04"):
     """Defines a builder that uses LED to test recipe changes."""
     luci.builder(
         name = name,
@@ -112,7 +114,7 @@ def led_recipes_tester(name, cq_group, repo_name):
         executable = build.recipe("led_recipes_tester", use_python3 = True),
         properties = {"repo_name": repo_name},
         dimensions = {
-            "os": "Ubuntu-18.04",
+            "os": os,
             "cpu": "x86-64",
             "pool": "luci.infra.try",
         },
