@@ -73,7 +73,7 @@ func TestRun(t *testing.T) {
 		},
 		{
 			&Run{ // test run (local satlab)
-				Test:      "rlz_CheckPing.should_send_rlz_ping_missing",
+				Tests:     []string{"rlz_CheckPing.should_send_rlz_ping_missing"},
 				Harness:   "tauto",
 				Board:     "zork",
 				Model:     "gumboz",
@@ -83,7 +83,7 @@ func TestRun(t *testing.T) {
 		},
 		{
 			&Run{ // test run (remote satlab)
-				Test:      "rlz_CheckPing.should_send_rlz_ping_missing",
+				Tests:     []string{"rlz_CheckPing.should_send_rlz_ping_missing"},
 				Harness:   "tauto",
 				Board:     "zork",
 				Model:     "gumboz",

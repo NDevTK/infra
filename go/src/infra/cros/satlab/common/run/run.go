@@ -39,7 +39,7 @@ type Run struct {
 	Build         string
 	Pool          string
 	Suite         string
-	Test          string
+	Tests         []string
 	Testplan      string
 	TestplanLocal string
 	Harness       string
@@ -140,8 +140,8 @@ func (c *Run) createTestPlan() (*test_platform.Request_TestPlan, error) {
 	var err error
 	if c.Suite != "" {
 		tp = builder.TestPlanForSuites([]string{c.Suite})
-	} else if c.Test != "" {
-		tp = builder.TestPlanForTests(c.TestArgs, c.Harness, []string{c.Test})
+	} else if len(c.Tests) != 0 {
+		tp = builder.TestPlanForTests(c.TestArgs, c.Harness, c.Tests)
 	} else if c.Testplan != "" {
 		fmt.Printf("Fetching testplan...\n")
 		var w bytes.Buffer

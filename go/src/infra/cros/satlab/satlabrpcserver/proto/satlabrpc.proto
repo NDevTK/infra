@@ -23,6 +23,7 @@ service SatlabRpcService {
 
   // services to run different types of test suites
   rpc run_suite (RunSuiteRequest) returns (RunSuiteResponse) {}
+  rpc run_test (RunTestRequest) returns (RunTestResponse);
 
   // manage DUTs
   rpc add_pool (AddPoolRequest) returns (AddPoolResponse);
@@ -280,4 +281,19 @@ message BotEvent {
 message ListDutEventsResponse {
   string cursor = 1;
   repeated BotEvent events = 2;
+}
+
+// NEXT_TAG = 8
+message RunTestRequest {
+  repeated string tests = 1;
+  string test_args = 2;
+  string board = 3;
+  string model = 4;
+  string milestone = 5;
+  string build = 6;
+  string pool = 7;
+}
+// NEXT_TAG = 2
+message RunTestResponse {
+  string build_link = 1;
 }

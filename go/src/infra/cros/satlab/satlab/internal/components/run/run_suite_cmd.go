@@ -58,7 +58,7 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 		Build:         c.build,
 		Pool:          c.pool,
 		Suite:         c.suite,
-		Test:          c.test,
+		Tests:         []string{c.test},
 		Testplan:      c.testplan,
 		TestplanLocal: c.testplanLocal,
 		Harness:       c.harness,

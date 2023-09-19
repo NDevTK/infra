@@ -394,6 +394,23 @@ func (s *SatlabRpcServiceServer) RunSuite(ctx context.Context, in *pb.RunSuiteRe
 	return &pb.RunSuiteResponse{BuildLink: buildLink}, nil
 }
 
+func (s *SatlabRpcServiceServer) RunTest(ctx context.Context, in *pb.RunTestRequest) (*pb.RunTestResponse, error) {
+	r := &run_pkg.Run{
+		Tests:     in.GetTests(),
+		TestArgs:  in.GetTestArgs(),
+		Board:     in.GetBoard(),
+		Model:     in.GetModel(),
+		Milestone: in.GetMilestone(),
+		Build:     in.GetBuild(),
+		Pool:      in.GetPool(),
+	}
+	buildLink, err := r.TriggerRun(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.RunTestResponse{BuildLink: buildLink}, nil
+}
+
 func (s *SatlabRpcServiceServer) GetVersionInfo(ctx context.Context, _ *pb.GetVersionInfoRequest) (*pb.GetVersionInfoResponse, error) {
 	resp := pb.GetVersionInfoResponse{}
 	hostId, err := satlabcommands.GetDockerHostBoxIdentifier(s.commandExecutor)
