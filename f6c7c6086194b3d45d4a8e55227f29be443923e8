@@ -300,6 +300,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d46f57a1_12738e0c",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/testdata/TestBuild_GN/.gn",
+        "patchSetId": 5
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-20T05:02:22Z",
+      "side": 1,
+      "message": "it is listed in build.ninja.d",
+      "parentUuid": "91da67cd_a182d847",
+      "revId": "f6c7c6086194b3d45d4a8e55227f29be443923e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "eb102cdc_ccabe386",
@@ -396,6 +414,24 @@
       "side": 1,
       "message": "I see, but that doesn\u0027t need to be complicated like this?\nWhy not use something like stamp action for that?",
       "parentUuid": "3ff9d8c6_b2eaee07",
+      "revId": "f6c7c6086194b3d45d4a8e55227f29be443923e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6c648904_fc9dbb74",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/testdata/TestBuild_GN/buildtools/platform/gn_data/toolchain.ninja",
+        "patchSetId": 5
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-20T05:02:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "099247e4_e0e2b865",
       "revId": "f6c7c6086194b3d45d4a8e55227f29be443923e8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

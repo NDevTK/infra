@@ -22,6 +22,30 @@
       },
       "revId": "7d85c5e1383aa52a69c0ab61592edf31c6e24e62",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3dfe6bcb_667ec76c",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/e2e_gn_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-20T05:02:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "747cad9a_50fccca9",
+      "range": {
+        "startLine": 87,
+        "startChar": 14,
+        "endLine": 87,
+        "endChar": 33
+      },
+      "revId": "7d85c5e1383aa52a69c0ab61592edf31c6e24e62",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
