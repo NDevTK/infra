@@ -64,10 +64,6 @@ type Generator struct {
 	SwarmingPool string
 }
 
-const (
-	gms_core_package_name = "gmscore_prodrvc_arm64_alldpi_release_apk"
-)
-
 // CheckConsistency checks the internal consistency of the various inputs to the
 // argument generation logic.
 func (g *Generator) CheckConsistency() error {
@@ -665,9 +661,9 @@ func buildAndroidProvisionMetadata(builds *builds) (*anypb.Any, error) {
 	if builds.GmsCorePackage != "" {
 		androidProvisionRequestMetadata.CipdPackages = []*testapi.CIPDPackage{
 			{
-				Name: gms_core_package_name,
-				VersionOneof: &testapi.CIPDPackage_InstanceId{
-					InstanceId: builds.GmsCorePackage,
+				AndroidPackage: 1,
+				VersionOneof: &testapi.CIPDPackage_Ref{
+					Ref: builds.GmsCorePackage,
 				},
 			},
 		}

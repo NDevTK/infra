@@ -241,7 +241,7 @@ func TestAndroidProvisionState(t *testing.T) {
 				}
 			})
 		})
-		setAndroidSecondaryDeviceWithAndroidProvisionMetadata(&params, "androidBoard", "Pixel6", "R97-4345-0.1", "pLDpI-z2HEUmNChkoCoc1SS7jj4MzaNFijz7_CawdykC")
+		setAndroidSecondaryDeviceWithAndroidProvisionMetadata(&params, "androidBoard", "Pixel6", "11", "latest_stable")
 		Convey("when generating a cft test runner request's args with not nil android provision metadata", func() {
 			g := Generator{
 				Invocation:       inv,
@@ -259,12 +259,12 @@ func TestAndroidProvisionState(t *testing.T) {
 					err = companionDut.ProvisionState.ProvisionMetadata.UnmarshalTo(&androidProvisionRequestMetadata)
 					So(err, ShouldBeNil)
 					cipdPackage := &testapi.CIPDPackage{
-						Name: "gmscore_prodrvc_arm64_alldpi_release_apk",
-						VersionOneof: &testapi.CIPDPackage_InstanceId{
-							InstanceId: "pLDpI-z2HEUmNChkoCoc1SS7jj4MzaNFijz7_CawdykC",
+						AndroidPackage: 1,
+						VersionOneof: &testapi.CIPDPackage_Ref{
+							Ref: "latest_stable",
 						},
 					}
-					So(androidProvisionRequestMetadata.GetAndroidOsImage().GetOsVersion(), ShouldEqual, "R97-4345-0.1")
+					So(androidProvisionRequestMetadata.GetAndroidOsImage().GetOsVersion(), ShouldEqual, "11")
 					So(androidProvisionRequestMetadata.GetCipdPackages(), ShouldContain, cipdPackage)
 				}
 			})
