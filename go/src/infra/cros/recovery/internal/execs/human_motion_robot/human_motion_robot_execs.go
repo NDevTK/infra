@@ -45,7 +45,7 @@ func setHMRStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	return errors.Reason("set hmr state: state is %q not found", newState).Err()
 }
 
-// checkHMRStateExec call XMLRPC api to check the hmr state.
+// checkHMRStateExec calls XMLRPC api on Touchhost to check the hmr state.
 func checkHMRStateExec(ctx context.Context, info *execs.ExecInfo) error {
 	if info.GetChromeos().GetHumanMotionRobot() == nil {
 		return errors.Reason("check hmr state: %q", errHMRNotSupported).Err()
