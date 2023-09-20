@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c1579271_c7aba4f6",
+        "filename": "go/src/infra/cros/satlab/common/dut/get.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-20T14:21:18Z",
+      "side": 1,
+      "message": "Okay, I will remove it.",
+      "parentUuid": "4a7cbe47_047f6bfd",
+      "revId": "180929e534f8cd6e1055ccac9d407fed491a251d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "e0ce9822_a47eb833",
         "filename": "go/src/infra/cros/satlab/common/dut/get.go",
         "patchSetId": 15
@@ -48,6 +66,24 @@
       "writtenOn": "2023-09-20T14:05:20Z",
       "side": 1,
       "message": "lets add a test for a sanity check",
+      "revId": "180929e534f8cd6e1055ccac9d407fed491a251d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0be7dd3f_28583932",
+        "filename": "go/src/infra/cros/satlab/common/dut/get.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-20T14:21:18Z",
+      "side": 1,
+      "message": "Thank you. I will add a test case here",
+      "parentUuid": "e0ce9822_a47eb833",
       "revId": "180929e534f8cd6e1055ccac9d407fed491a251d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -71,6 +107,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d706dfad_9aa90d87",
+        "filename": "go/src/infra/cros/satlab/common/dut/get.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-20T14:21:18Z",
+      "side": 1,
+      "message": "Thank you. I will use it",
+      "parentUuid": "60bb859c_51fd4bcf",
+      "revId": "180929e534f8cd6e1055ccac9d407fed491a251d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d27ee038_46b2786f",
         "filename": "go/src/infra/cros/satlab/common/dut/get_shivas_flags_test.go",
         "patchSetId": 15
@@ -82,6 +136,24 @@
       "writtenOn": "2023-09-20T14:05:20Z",
       "side": 1,
       "message": "lets rename to `test_get.go` to follow Go testing conventions: https://ieftimov.com/posts/testing-in-go-naming-conventions/",
+      "revId": "180929e534f8cd6e1055ccac9d407fed491a251d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8ccfee76_af81f602",
+        "filename": "go/src/infra/cros/satlab/common/dut/get_shivas_flags_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1545929
+      },
+      "writtenOn": "2023-09-20T14:21:18Z",
+      "side": 1,
+      "message": "Okay, I will rename it. I think it should be `get_test.go`",
+      "parentUuid": "d27ee038_46b2786f",
       "revId": "180929e534f8cd6e1055ccac9d407fed491a251d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
