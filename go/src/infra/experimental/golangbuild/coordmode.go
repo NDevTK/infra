@@ -7,6 +7,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"infra/experimental/golangbuild/golangbuildpb"
 	"io"
@@ -175,7 +176,7 @@ func triggerBuild(ctx context.Context, spec *buildSpec, shard testShard, builder
 		NumShards: shard.nShards,
 	})
 	if err != nil {
-		return nil, infraErrorf("marshalling shard identity: %v", err)
+		return nil, infraErrorf("marshalling shard identity: %w", err)
 	}
 	bbArgs := []string{"add", "-json"}
 	if shard != noSharding {
@@ -260,6 +261,7 @@ func waitOnBuilds(ctx context.Context, spec *buildSpec, stepName string, buildID
 	// Run `bb collect`.
 	collectArgs := []string{
 		"collect",
+		"-A", // Get all Build fields.
 		"-json",
 		"-interval", "20s",
 	}
@@ -272,10 +274,15 @@ func waitOnBuilds(ctx context.Context, spec *buildSpec, stepName string, buildID
 		return err
 	}
 
+	// Helper to produce a build page URL.
+	buildURL := func(buildID int64) string {
+		return fmt.Sprintf("https://ci.chromium.org/b/%d", buildID)
+	}
+
 	// Presentation state.
 	var summary strings.Builder
 	writeSummaryLine := func(shardID int, buildID int64, result string) {
-		summary.WriteString(fmt.Sprintf("[shard %d %s](https://ci.chromium.org/b/%d)\n", shardID, result, buildID))
+		summary.WriteString(fmt.Sprintf("[shard %d %s](%s)\n", shardID, result, buildURL(buildID)))
 	}
 
 	// Parse the protojson output: one per line.
@@ -283,37 +290,89 @@ func waitOnBuilds(ctx context.Context, spec *buildSpec, stepName string, buildID
 	// Trim trailing newline, it'll mess with the proto parser.
 	buildsBytes := bytes.Split(bytes.TrimSuffix(out, []byte{'\n'}), []byte{'\n'})
 	var foundFailure, foundInfraFailure bool
+	var failures []error
 	for i, buildBytes := range buildsBytes {
 		build := new(bbpb.Build)
 		if err := protojson.Unmarshal(buildBytes, build); err != nil {
 			return infraWrap(err)
 		}
+		failed := false
 		switch build.Status {
 		case bbpb.Status_SUCCESS:
 			// Tests passed. Nothing to do.
 		case bbpb.Status_FAILURE:
 			// Something was wrong with the change being tested.
 			writeSummaryLine(i+1, build.Id, "failed")
+			failed = true
 			foundFailure = true
 		case bbpb.Status_INFRA_FAILURE:
 			// Something was wrong with the infrastructure.
 			writeSummaryLine(i+1, build.Id, "infra-failed")
+			failed = true
 			foundInfraFailure = true
 		case bbpb.Status_CANCELED:
 			// Build got cancelled, which is very unexpected. Call it out.
 			writeSummaryLine(i+1, build.Id, "cancelled")
+			failed = true
 			foundInfraFailure = true
 		default:
 			return infraErrorf("unexpected build status from `bb collect` for build %d: %s", build.Id, build.Status)
+		}
+		if failed {
+			// Get output properties and derive an error from them.
+			props, err := parseOutputProperties(build)
+			if err != nil {
+				return infraWrap(err)
+			}
+			e := errorFromOutputProperties(props, fmt.Sprintf("shard %d", i+1))
+			if e != nil {
+				e = attachLinks(e, fmt.Sprintf("shard %d build page", i+1), buildURL(build.Id))
+				failures = append(failures, e)
+			}
 		}
 	}
 	step.SetSummaryMarkdown(summary.String())
 
 	// Report an error for regular test failure or infra failure.
-	if foundInfraFailure {
-		return infraErrorf("one or more test shards experienced an infra failure")
-	} else if foundFailure {
-		return fmt.Errorf("one or more tests failed")
+	if len(failures) == 0 {
+		if foundInfraFailure {
+			return infraErrorf("one or more test shards experienced an unknown infra failure")
+		} else if foundFailure {
+			return fmt.Errorf("one or more test shards experienced an unknown failure")
+		}
+	} else {
+		err := errors.Join(failures...)
+		if foundInfraFailure {
+			err = infraWrap(err)
+		}
+		return err
 	}
 	return nil
+}
+
+// parseOutputProperties parses the output properties of a build into golangbuildpb.Outputs.
+func parseOutputProperties(build *bbpb.Build) (*golangbuildpb.Outputs, error) {
+	props := build.GetOutput().GetProperties()
+	if props == nil {
+		return nil, nil
+	}
+	json, err := protojson.Marshal(props)
+	if err != nil {
+		return nil, infraErrorf("failed to marshal output properties: %w", err)
+	}
+	dst := new(golangbuildpb.Outputs)
+	return dst, protojson.UnmarshalOptions{DiscardUnknown: true}.Unmarshal(json, dst)
+}
+
+// errorFromOutputProperties synthesizes any failures described by the output properties
+// into an error.
+func errorFromOutputProperties(props *golangbuildpb.Outputs, title string) error {
+	if props == nil || props.GetFailure() == nil {
+		return nil
+	}
+	err := fmt.Errorf("%s: %s", title, props.GetFailure().GetDescription())
+	for _, link := range props.GetFailure().GetLinks() {
+		err = attachLinks(err, fmt.Sprintf("%s %s", title, link.Name), link.Url)
+	}
+	return err
 }

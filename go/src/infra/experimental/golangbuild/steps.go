@@ -7,13 +7,13 @@ package main
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
-	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/luciexe/build"
 )
 
@@ -42,7 +42,9 @@ func cmdStepRun(ctx context.Context, stepName string, cmd *exec.Cmd, infra bool)
 
 	// Run the command.
 	if err := cmd.Run(); err != nil {
-		return errors.Annotate(err, "Failed to run %q", stepName).Err()
+		err = fmt.Errorf("failed to run %q: %w", stepName, err)
+		err = attachLinks(err, fmt.Sprintf("%q (combined output)", stepName), output.UILink())
+		return err
 	}
 	return nil
 }
@@ -65,17 +67,24 @@ func cmdStepOutput(ctx context.Context, stepName string, cmd *exec.Cmd, infra bo
 	}
 
 	// Make sure we log stderr.
-	cmd.Stderr = step.Log("stderr")
+	stderr := step.Log("stderr")
+	cmd.Stderr = stderr
 
 	// Run the command and capture stdout.
 	output, err = cmd.Output()
 
 	// Log stdout before we do anything else.
-	step.Log("stdout").Write(output)
+	stdout := step.Log("stdout")
+	stdout.Write(output)
 
 	// Check for errors.
 	if err != nil {
-		return output, errors.Annotate(err, "Failed to run %q", stepName).Err()
+		err = fmt.Errorf("failed to run %q: %w", stepName, err)
+		err = attachLinks(err,
+			fmt.Sprintf("%q (stdout)", stepName), stdout.UILink(),
+			fmt.Sprintf("%q (stderr)", stepName), stderr.UILink(),
+		)
+		return output, err
 	}
 	return output, nil
 }
@@ -107,7 +116,7 @@ func cmdStartStep(ctx context.Context, stepName string, cmd *exec.Cmd) (*build.S
 	}
 	fullCmd.WriteString(cmd.String())
 	if _, err := io.Copy(step.Log("command"), &fullCmd); err != nil {
-		return step, ctx, err
+		return step, ctx, infraWrap(err)
 	}
 	return step, ctx, nil
 }
@@ -126,4 +135,85 @@ func endStep(step *build.Step, errp *error) {
 
 func endInfraStep(step *build.Step, errp *error) {
 	step.End(infraWrap(*errp))
+}
+
+// attachLinks attaches name/url pairs as links to the error.
+//
+// These can later be retrieved via extractLinks.
+//
+// Passing a nil error will result in no links attached, and
+// will return another nil error.
+//
+// TODO(mknyszek): Consider producing a non-nil error anyway
+// to avoid losing information and also to catch bugs where
+// we attach information to a nil error. The downside of doing
+// so is that we might end up accidentally producing a non-nil
+// error for a nil error, causing a spurious failure.
+func attachLinks(err error, links ...string) error {
+	if len(links)%2 != 0 {
+		panic("attachLinks requires name/URL pairs")
+	}
+	if err == nil {
+		return err
+	}
+	el, ok := err.(*errLinks)
+	if !ok {
+		el = &errLinks{err: err}
+	}
+	for i := 0; i < len(links); i += 2 {
+		el.links = append(el.links, link{
+			name: links[i+0],
+			url:  links[i+1],
+		})
+	}
+	return el
+}
+
+// extractLinks aggregates the links of all errLinks in the
+// error chain.
+//
+// Accepts a nil error, but returns no links.
+func extractLinks(err error) []link {
+	// Walk the error chain and extract links.
+	e := err
+	var links []link
+	for e != nil {
+		// Check if there are any links to unwrap.
+		if el, ok := e.(*errLinks); ok {
+			links = append(links, el.links...)
+		}
+
+		// Walk errors.Join errors.
+		w, ok := e.(interface{ Unwrap() []error })
+		if ok {
+			for _, err := range w.Unwrap() {
+				links = append(links, extractLinks(err)...)
+			}
+			break
+		}
+
+		// Otherwise, just try to unwrap.
+		e = errors.Unwrap(e)
+	}
+	return links
+}
+
+// errLinks is an error with arbitrary links (name/URL pairs) attached.
+// *errLinks implements error. *errLinks is unwrappable.
+type errLinks struct {
+	err   error // Must be non-nil.
+	links []link
+}
+
+func (e *errLinks) Error() string {
+	return e.err.Error()
+}
+
+func (e *errLinks) Unwrap() error {
+	return e.err
+}
+
+// link is a hyperlink: a URL wth a name.
+type link struct {
+	name, url string
 }

@@ -325,7 +325,7 @@ func goModDownload(ctx context.Context, spec *buildSpec, stepName, dir string) (
 			if err == io.EOF {
 				break
 			} else if err != nil {
-				return fmt.Errorf("error decoding JSON object from go mod download -json: %v\n", err)
+				return fmt.Errorf("error decoding JSON object from go mod download -json: %w\n", err)
 			}
 			if strings.Contains(m.Error, "dial tcp") && strings.HasSuffix(m.Error, ": i/o timeout") {
 				// An I/O timeout error to the Go module proxy is deemed to be an infrastructure failure.

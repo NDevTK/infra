@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"hash/crc32"
 	"infra/experimental/golangbuild/golangbuildpb"
@@ -19,7 +20,6 @@ import (
 	"runtime"
 	"strings"
 
-	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/luciexe/build"
 	"golang.org/x/exp/slices"
 	"golang.org/x/mod/modfile"
@@ -196,7 +196,7 @@ func goDistTestList(ctx context.Context, spec *buildSpec, shard testShard) (test
 		}
 	}
 	if err := scanner.Err(); err != nil {
-		return nil, fmt.Errorf("parsing test list from dist: %v", err)
+		return nil, fmt.Errorf("parsing test list from dist: %w", err)
 	}
 	testList := strings.Join(tests, "\n")
 	if len(tests) == 0 {
@@ -398,7 +398,7 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 	}
 	err = json.Unmarshal(listOutput, &allPorts)
 	if err != nil {
-		return nil, fmt.Errorf("parsing port list from dist: %v", err)
+		return nil, fmt.Errorf("parsing port list from dist: %w", err)
 	}
 	for _, p := range allPorts {
 		if p.GOOS == "" || p.GOARCH == "" {

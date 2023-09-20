@@ -21,7 +21,7 @@ import (
 	"go.chromium.org/luci/auth"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/api/gerrit"
-	"go.chromium.org/luci/common/errors"
+	lucierrors "go.chromium.org/luci/common/errors"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/gae/impl/cloud"
@@ -171,7 +171,7 @@ func deriveBuildSpec(ctx context.Context, cwd, toolsRoot string, experiments map
 		}
 		for _, cmd := range [...]string{"unshare", "ip", "sh"} {
 			if _, err := exec.LookPath(cmd); err != nil {
-				return nil, fmt.Errorf("NoNetwork needs %s in $PATH: %v", cmd, err)
+				return nil, fmt.Errorf("NoNetwork needs %s in $PATH: %w", cmd, err)
 			}
 		}
 	}
@@ -346,11 +346,11 @@ func (b *buildSpec) installDatastoreClient(ctx context.Context) (context.Context
 	// TODO(mknyszek): Enable auth only when not in a fake build.
 	ts, err := b.auth.TokenSource()
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to initialize the token source").Err()
+		return nil, lucierrors.Annotate(err, "failed to initialize the token source").Err()
 	}
 	client, err := clouddatastore.NewClient(ctx, cloudProject, option.WithTokenSource(ts))
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to instantiate the datastore client").Err()
+		return nil, lucierrors.Annotate(err, "failed to instantiate the datastore client").Err()
 	}
 	cfg := &cloud.ConfigLite{
 		ProjectID: cloudProject,

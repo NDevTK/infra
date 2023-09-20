@@ -55,7 +55,7 @@ func casInstanceFromEnv() (string, error) {
 	}
 	u, err := url.Parse(server)
 	if err != nil {
-		return "", fmt.Errorf("%q is not a URL: %v", swarming.ServerEnvVar, err)
+		return "", fmt.Errorf("%q is not a URL: %w", swarming.ServerEnvVar, err)
 	}
 	inst, found := strings.CutSuffix(u.Host, ".appspot.com")
 	if !found {

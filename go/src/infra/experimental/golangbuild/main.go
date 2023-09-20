@@ -82,6 +82,8 @@
 //     (which will make it easier to write unit tests).
 //   - Steps should be function-scoped. Steps should be created at the start of a function
 //     with the step end immediately deferred to function exit.
+//   - Prefer wrapping errors (%w) instead of rendering them (%v). Errors contain rich
+//     information like log links that may get lost when rendering them.
 //
 // ## Experiments
 //
@@ -117,8 +119,10 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"go.chromium.org/luci/luciexe/build"
 
@@ -127,8 +131,37 @@ import (
 
 func main() {
 	inputs := new(golangbuildpb.Inputs)
-	build.Main(inputs, nil, nil, func(ctx context.Context, args []string, st *build.State) error {
-		return run(ctx, args, st, inputs)
+	var writeOutputProps func(*golangbuildpb.Outputs)
+	build.Main(inputs, &writeOutputProps, nil, func(ctx context.Context, args []string, st *build.State) error {
+		err := run(ctx, args, st, inputs)
+		if err == nil {
+			return nil
+		}
+
+		// Extract any links from the error.
+		links := extractLinks(err)
+
+		// Populate output properties.
+		var outpb golangbuildpb.Outputs
+		outpb.Failure = new(golangbuildpb.FailureSummary)
+		outpb.Failure.Description = err.Error()
+		for _, link := range links {
+			outpb.Failure.Links = append(outpb.Failure.Links, &golangbuildpb.Link{
+				Name: link.name,
+				Url:  link.url,
+			})
+		}
+		writeOutputProps(&outpb)
+
+		// Set summary markdown.
+		var sb strings.Builder
+		fmt.Fprintf(&sb, "%v\n", err)
+		for _, link := range links {
+			fmt.Fprintf(&sb, "* [%s](%s)\n", link.name, link.url)
+		}
+		st.SetSummaryMarkdown(sb.String())
+
+		return err
 	})
 }
 
@@ -179,7 +212,7 @@ func run(ctx context.Context, args []string, st *build.State, inputs *golangbuil
 		rn, err = newTestRunner(inputs.GetTestMode(), inputs.GetTestShard())
 	}
 	if err != nil {
-		return infraErrorf("initializing runner: %v", err)
+		return infraErrorf("initializing runner: %w", err)
 	}
 	return rn.Run(ctx, spec)
 }

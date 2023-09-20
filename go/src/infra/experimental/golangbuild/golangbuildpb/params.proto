@@ -8,6 +8,7 @@ package golangbuildpb;
 
 option go_package = "infra/experimental/golangbuild/golangbuildpb";
 
+// Input properties.
 message Inputs {
   // Name of the Gerrit project to be tested.
   string project = 1;
@@ -169,4 +170,30 @@ message TestShard {
 
   // Number of test shards.
   uint32 num_shards = 2;
+}
+
+// Output properties.
+message Outputs {
+  // Human-friendly failure description.
+  FailureSummary failure = 1;
+}
+
+// FailureSummary summarizes a failure without all the build step structure.
+//
+// It's intended to be easily rendered as something meant for humans.
+message FailureSummary {
+  // Human-friendly one-line plain text description of the failure.
+  string description = 1;
+
+  // Links (typically to logs) that would be helpful in diagnosing the failure.
+  repeated Link links = 2;
+}
+
+// Link is a URL with a human-friendly name.
+message Link {
+  // Name of the link.
+  string name = 1;
+
+  // The link's URL.
+  string url = 2;
 }
