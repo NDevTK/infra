@@ -25,4 +25,5 @@ if __name__ == '__main__':
   args += ['--ignore', 'components']
   args += ['--ignore', 'gae_ts_mon']
   args += ['--reruns', '2']
+  args += ['--log-cli-level', 'WARNING']
   sys.exit(pytest.main(args + sys.argv[1:]))
