@@ -16,6 +16,29 @@
       "message": "Hi team, this CL is to update the hostname for touchhost Pi, which is the correct endpoint that serves the XMLRPC api instead of HMR Pi.\n\nPTAL when you\u0027re available 😎",
       "revId": "d8cd1e666ea216fb98de16e0089cd071434d2226",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7afb0d66_23b25301",
+        "filename": "go/src/infra/cros/recovery/internal/execs/human_motion_robot/human_motion_robot_call.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1393275
+      },
+      "writtenOn": "2023-09-20T20:41:45Z",
+      "side": 1,
+      "message": "please read string value from the value as it is contains original error message of issue.",
+      "range": {
+        "startLine": 28,
+        "startChar": 119,
+        "endLine": 28,
+        "endChar": 133
+      },
+      "revId": "d8cd1e666ea216fb98de16e0089cd071434d2226",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
