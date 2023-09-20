@@ -35,7 +35,7 @@ export function formatTime(seconds: number) {
     } else if (sec % 1 != 0 && min < 1) {
       result += ` ${sec.toFixed(2)}`;
     } else {
-      result += ` ${sec.toFixed(0)}`
+      result += ` ${sec.toFixed(0)}`;
     }
     result += 's';
   }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import { Auth } from './auth';
+import { prpcClient } from './client';
 import {
   FetchTestMetricsResponse,
   MetricType,
@@ -10,7 +11,6 @@ import {
   SortType,
   MetricsDateMap,
   fetchTestMetrics,
-  prpcClient,
   DirectoryNodeType,
   fetchDirectoryMetrics,
   FetchDirectoryMetricsResponse,
