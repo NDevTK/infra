@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e62864f0_1b6115c6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1530777
+      },
+      "writtenOn": "2023-09-20T23:22:02Z",
+      "side": 1,
+      "message": "Extracted more of the common code from each of the curl functions into another function, so there isn\u0027t any duplicate code here anymore.",
+      "revId": "0bdaa62c9cc61fec9374b5fe220f9a8458c1ea37",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}
