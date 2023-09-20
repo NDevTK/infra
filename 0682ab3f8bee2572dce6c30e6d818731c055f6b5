@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dfaf977b_757aea0d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1158025
+      },
+      "writtenOn": "2023-09-20T06:24:01Z",
+      "side": 1,
+      "message": "Cache hit counter works now, but \"remote\" counter still always shows 0.\n\nCan you try to repro with this?\n\n```\ngn gen out/siso --args\u003d\"is_debug\u003dfalse enable_nacl\u003dfalse symbol_level\u003d0 is_component_build\u003dtrue enable_precompiled_headers\u003dfalse use_remoteexec\u003dtrue use_siso\u003dtrue\"\nautoninja -C out/siso all\n```",
+      "revId": "0682ab3f8bee2572dce6c30e6d818731c055f6b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2a50cc18_a1eed980",
