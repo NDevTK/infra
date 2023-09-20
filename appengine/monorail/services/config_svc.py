@@ -44,26 +44,66 @@ APPROVALDEF2APPROVER_TABLE_NAME = 'ApprovalDef2Approver'
 APPROVALDEF2SURVEY_TABLE_NAME = 'ApprovalDef2Survey'
 
 PROJECTISSUECONFIG_COLS = [
-    'project_id', 'statuses_offer_merge', 'exclusive_label_prefixes',
-    'default_template_for_developers', 'default_template_for_users',
-    'default_col_spec', 'default_sort_spec', 'default_x_attr',
-    'default_y_attr', 'member_default_query', 'custom_issue_entry_url']
+    'project_id',
+    'statuses_offer_merge',
+    'exclusive_label_prefixes',
+    'default_template_for_developers',
+    'default_template_for_users',
+    'default_col_spec',
+    'default_sort_spec',
+    'default_x_attr',
+    'default_y_attr',
+    'member_default_query',
+    'custom_issue_entry_url',
+]
 STATUSDEF_COLS = [
-    'id', 'project_id', 'rank', 'status', 'means_open', 'docstring',
-    'deprecated']
-LABELDEF_COLS = [
-    'id', 'project_id', 'rank', 'label', 'docstring', 'deprecated']
+    'id',
+    'project_id',
+    'rank',
+    'status',
+    'means_open',
+    'docstring',
+    'deprecated',
+]
+LABELDEF_COLS = ['id', 'project_id', 'rank', 'label', 'docstring', 'deprecated']
 FIELDDEF_COLS = [
-    'id', 'project_id', 'rank', 'field_name', 'field_type', 'applicable_type',
-    'applicable_predicate', 'is_required', 'is_niche', 'is_multivalued',
-    'min_value', 'max_value', 'regex', 'needs_member', 'needs_perm',
-    'grants_perm', 'notify_on', 'date_action', 'docstring', 'is_deleted',
-    'approval_id', 'is_phase_field', 'is_restricted_field'
+    'id',
+    'project_id',
+    'rank',
+    'field_name',
+    'field_type',
+    'applicable_type',
+    'applicable_predicate',
+    'is_required',
+    'is_niche',
+    'is_multivalued',
+    'min_value',
+    'max_value',
+    'regex',
+    'needs_member',
+    'needs_perm',
+    'grants_perm',
+    'notify_on',
+    'date_action',
+    'docstring',
+    'is_deleted',
+    'approval_id',
+    'is_phase_field',
+    'is_restricted_field',
 ]
 FIELDDEF2ADMIN_COLS = ['field_id', 'admin_id']
 FIELDDEF2EDITOR_COLS = ['field_id', 'editor_id']
-COMPONENTDEF_COLS = ['id', 'project_id', 'path', 'docstring', 'deprecated',
-                     'created', 'creator_id', 'modified', 'modifier_id']
+COMPONENTDEF_COLS = [
+    'id',
+    'project_id',
+    'path',
+    'docstring',
+    'deprecated',
+    'created',
+    'creator_id',
+    'modified',
+    'modifier_id',
+]
 COMPONENT2ADMIN_COLS = ['component_id', 'admin_id']
 COMPONENT2CC_COLS = ['component_id', 'cc_id']
 COMPONENT2LABEL_COLS = ['component_id', 'label_id']
@@ -81,28 +121,35 @@ LABEL_ROW_SHARDS = 10
 class LabelRowTwoLevelCache(caches.AbstractTwoLevelCache):
   """Class to manage RAM and memcache for label rows.
 
-  Label rows exist for every label used in a project, even those labels
-  that were added to issues in an ad hoc way without being defined in the
-  config ahead of time.
+    Label rows exist for every label used in a project, even those labels
+    that were added to issues in an ad hoc way without being defined in the
+    config ahead of time.
 
-  The set of all labels in a project can be very large, so we shard them
-  into 10 parts so that each part can be cached in memcache with < 1MB.
-  """
+    The set of all labels in a project can be very large, so we shard them
+    into 10 parts so that each part can be cached in memcache with < 1MB.
+    """
 
   def __init__(self, cache_manager, config_service):
-    super(LabelRowTwoLevelCache, self).__init__(
-        cache_manager, 'project', 'label_rows:', None)
+    super(LabelRowTwoLevelCache,
+          self).__init__(cache_manager, 'project', 'label_rows:', None)
     self.config_service = config_service
 
   def _MakeCache(self, cache_manager, kind, max_size=None):
     """Make the RAM cache and registier it with the cache_manager."""
     return caches.ShardedRamCache(
-      cache_manager, kind, max_size=max_size, num_shards=LABEL_ROW_SHARDS)
+        cache_manager, kind, max_size=max_size, num_shards=LABEL_ROW_SHARDS)
 
   def _DeserializeLabelRows(self, label_def_rows):
     """Convert DB result rows into a dict {project_id: [row, ...]}."""
     result_dict = collections.defaultdict(list)
-    for label_id, project_id, rank, label, docstr, deprecated in label_def_rows:
+    for (
+        label_id,
+        project_id,
+        rank,
+        label,
+        docstr,
+        deprecated,
+    ) in label_def_rows:
       shard_id = label_id % LABEL_ROW_SHARDS
       result_dict[(project_id, shard_id)].append(
           (label_id, project_id, rank, label, docstr, deprecated))
@@ -120,8 +167,11 @@ class LabelRowTwoLevelCache(caches.AbstractTwoLevelCache):
       shard_clause = [('id %% %s = %s', [LABEL_ROW_SHARDS, shard_id])]
 
       label_def_rows = self.config_service.labeldef_tbl.Select(
-          cnxn, cols=LABELDEF_COLS, project_id=project_id,
-          where=shard_clause)
+          cnxn,
+          cols=LABELDEF_COLS,
+          project_id=project_id,
+          where=shard_clause,
+      )
       label_rows_dict.update(self._DeserializeLabelRows(label_def_rows))
 
     for rows_in_shard in label_rows_dict.values():
@@ -140,14 +190,15 @@ class LabelRowTwoLevelCache(caches.AbstractTwoLevelCache):
         ],
         seconds=5,
         key_prefix=self.prefix,
-        namespace=settings.memcache_namespace)
+        namespace=settings.memcache_namespace,
+    )
 
   def InvalidateAllKeys(self, cnxn, project_ids):
     """Drop the given keys from memcache and invalidate all keys in RAM.
 
-    Useful for avoiding inserting many rows into the Invalidate table when
-    invalidating a large group of keys all at once. Only use when necessary.
-    """
+        Useful for avoiding inserting many rows into the Invalidate table when
+        invalidating a large group of keys all at once. Only use when necessary.
+        """
     self.cache.InvalidateAll(cnxn)
     memcache.delete_multi(
         [
@@ -157,7 +208,8 @@ class LabelRowTwoLevelCache(caches.AbstractTwoLevelCache):
         ],
         seconds=5,
         key_prefix=self.prefix,
-        namespace=settings.memcache_namespace)
+        namespace=settings.memcache_namespace,
+    )
 
   def _KeyToStr(self, key):
     """Convert our tuple IDs to strings for use as memcache keys."""
@@ -174,25 +226,43 @@ class StatusRowTwoLevelCache(caches.AbstractTwoLevelCache):
   """Class to manage RAM and memcache for status rows."""
 
   def __init__(self, cache_manager, config_service):
-    super(StatusRowTwoLevelCache, self).__init__(
-        cache_manager, 'project', 'status_rows:', None)
+    super(StatusRowTwoLevelCache,
+          self).__init__(cache_manager, 'project', 'status_rows:', None)
     self.config_service = config_service
 
   def _DeserializeStatusRows(self, def_rows):
     """Convert status definition rows into {project_id: [row, ...]}."""
     result_dict = collections.defaultdict(list)
-    for (status_id, project_id, rank, status,
-         means_open, docstr, deprecated) in def_rows:
+    for (
+        status_id,
+        project_id,
+        rank,
+        status,
+        means_open,
+        docstr,
+        deprecated,
+    ) in def_rows:
       result_dict[project_id].append(
-          (status_id, project_id, rank, status, means_open, docstr, deprecated))
+          (
+              status_id,
+              project_id,
+              rank,
+              status,
+              means_open,
+              docstr,
+              deprecated,
+          ))
 
     return result_dict
 
   def FetchItems(self, cnxn, keys):
     """On cache miss, get status definition rows from the DB."""
     status_def_rows = self.config_service.statusdef_tbl.Select(
-        cnxn, cols=STATUSDEF_COLS, project_id=keys,
-        order_by=[('rank DESC', []), ('status DESC', [])])
+        cnxn,
+        cols=STATUSDEF_COLS,
+        project_id=keys,
+        order_by=[('rank DESC', []), ('status DESC', [])],
+    )
     status_rows_dict = self._DeserializeStatusRows(status_def_rows)
 
     # Make sure that every requested project is represented in the result
@@ -205,24 +275,44 @@ class StatusRowTwoLevelCache(caches.AbstractTwoLevelCache):
 class FieldRowTwoLevelCache(caches.AbstractTwoLevelCache):
   """Class to manage RAM and memcache for field rows.
 
-  Field rows exist for every field used in a project, since they cannot be
-  created through ad-hoc means.
-  """
+    Field rows exist for every field used in a project, since they cannot be
+    created through ad-hoc means.
+    """
 
   def __init__(self, cache_manager, config_service):
-    super(FieldRowTwoLevelCache, self).__init__(
-        cache_manager, 'project', 'field_rows:', None)
+    super(FieldRowTwoLevelCache,
+          self).__init__(cache_manager, 'project', 'field_rows:', None)
     self.config_service = config_service
 
   def _DeserializeFieldRows(self, field_def_rows):
     """Convert DB result rows into a dict {project_id: [row, ...]}."""
     result_dict = collections.defaultdict(list)
     # TODO: Actually process the rest of the items.
-    for (field_id, project_id, rank, field_name, _field_type, _applicable_type,
-         _applicable_predicate, _is_required, _is_niche, _is_multivalued,
-         _min_value, _max_value, _regex, _needs_member, _needs_perm,
-         _grants_perm, _notify_on, _date_action, docstring, _is_deleted,
-         _approval_id, _is_phase_field, _is_restricted_field) in field_def_rows:
+    for (
+        field_id,
+        project_id,
+        rank,
+        field_name,
+        _field_type,
+        _applicable_type,
+        _applicable_predicate,
+        _is_required,
+        _is_niche,
+        _is_multivalued,
+        _min_value,
+        _max_value,
+        _regex,
+        _needs_member,
+        _needs_perm,
+        _grants_perm,
+        _notify_on,
+        _date_action,
+        docstring,
+        _is_deleted,
+        _approval_id,
+        _is_phase_field,
+        _is_restricted_field,
+    ) in field_def_rows:
       result_dict[project_id].append(
           (field_id, project_id, rank, field_name, docstring))
 
@@ -231,8 +321,11 @@ class FieldRowTwoLevelCache(caches.AbstractTwoLevelCache):
   def FetchItems(self, cnxn, keys):
     """On RAM and memcache miss, hit the database."""
     field_def_rows = self.config_service.fielddef_tbl.Select(
-        cnxn, cols=FIELDDEF_COLS, project_id=keys,
-        order_by=[('rank DESC', []), ('field_name DESC', [])])
+        cnxn,
+        cols=FIELDDEF_COLS,
+        project_id=keys,
+        order_by=[('rank DESC', []), ('field_name DESC', [])],
+    )
     field_rows_dict = self._DeserializeFieldRows(field_def_rows)
 
     # Make sure that every requested project is represented in the result
@@ -252,10 +345,19 @@ class ConfigTwoLevelCache(caches.AbstractTwoLevelCache):
 
   def _UnpackProjectIssueConfig(self, config_row):
     """Partially construct a config object using info from a DB row."""
-    (project_id, statuses_offer_merge, exclusive_label_prefixes,
-     default_template_for_developers, default_template_for_users,
-     default_col_spec, default_sort_spec, default_x_attr, default_y_attr,
-     member_default_query, custom_issue_entry_url) = config_row
+    (
+        project_id,
+        statuses_offer_merge,
+        exclusive_label_prefixes,
+        default_template_for_developers,
+        default_template_for_users,
+        default_col_spec,
+        default_sort_spec,
+        default_x_attr,
+        default_y_attr,
+        member_default_query,
+        custom_issue_entry_url,
+    ) = config_row
     config = tracker_pb2.ProjectIssueConfig()
     config.project_id = project_id
     config.statuses_offer_merge.extend(statuses_offer_merge.split())
@@ -275,11 +377,30 @@ class ConfigTwoLevelCache(caches.AbstractTwoLevelCache):
   def _UnpackFieldDef(self, fielddef_row):
     """Partially construct a FieldDef object using info from a DB row."""
     (
-        field_id, project_id, _rank, field_name, field_type, applic_type,
-        applic_pred, is_required, is_niche, is_multivalued, min_value,
-        max_value, regex, needs_member, needs_perm, grants_perm, notify_on_str,
-        date_action_str, docstring, is_deleted, approval_id, is_phase_field,
-        is_restricted_field) = fielddef_row
+        field_id,
+        project_id,
+        _rank,
+        field_name,
+        field_type,
+        applic_type,
+        applic_pred,
+        is_required,
+        is_niche,
+        is_multivalued,
+        min_value,
+        max_value,
+        regex,
+        needs_member,
+        needs_perm,
+        grants_perm,
+        notify_on_str,
+        date_action_str,
+        docstring,
+        is_deleted,
+        approval_id,
+        is_phase_field,
+        is_restricted_field,
+    ) = fielddef_row
     if notify_on_str == 'any_comment':
       notify_on = tracker_pb2.NotifyTriggers.ANY_COMMENT
     else:
@@ -290,36 +411,90 @@ class ConfigTwoLevelCache(caches.AbstractTwoLevelCache):
       date_action = DATE_ACTION_ENUM.index('no_action')
 
     return tracker_bizobj.MakeFieldDef(
-        field_id, project_id, field_name,
-        tracker_pb2.FieldTypes(field_type.upper()), applic_type, applic_pred,
-        is_required, is_niche, is_multivalued, min_value, max_value, regex,
-        needs_member, needs_perm, grants_perm, notify_on, date_action,
-        docstring, is_deleted, approval_id, is_phase_field, is_restricted_field)
+        field_id,
+        project_id,
+        field_name,
+        tracker_pb2.FieldTypes(field_type.upper()),
+        applic_type,
+        applic_pred,
+        is_required,
+        is_niche,
+        is_multivalued,
+        min_value,
+        max_value,
+        regex,
+        needs_member,
+        needs_perm,
+        grants_perm,
+        notify_on,
+        date_action,
+        docstring,
+        is_deleted,
+        approval_id,
+        is_phase_field,
+        is_restricted_field,
+    )
 
   def _UnpackComponentDef(
-      self, cd_row, component2admin_rows, component2cc_rows,
-      component2label_rows):
+      self,
+      cd_row,
+      component2admin_rows,
+      component2cc_rows,
+      component2label_rows,
+  ):
     """Partially construct a FieldDef object using info from a DB row."""
-    (component_id, project_id, path, docstring, deprecated, created,
-     creator_id, modified, modifier_id) = cd_row
+    (
+        component_id,
+        project_id,
+        path,
+        docstring,
+        deprecated,
+        created,
+        creator_id,
+        modified,
+        modifier_id,
+    ) = cd_row
     cd = tracker_bizobj.MakeComponentDef(
-        component_id, project_id, path, docstring, deprecated,
-        [admin_id for comp_id, admin_id in component2admin_rows
-         if comp_id == component_id],
-        [cc_id for comp_id, cc_id in component2cc_rows
-         if comp_id == component_id],
-        created, creator_id,
-        modified=modified, modifier_id=modifier_id,
-        label_ids=[label_id for comp_id, label_id in component2label_rows
-                   if comp_id == component_id])
+        component_id,
+        project_id,
+        path,
+        docstring,
+        deprecated,
+        [
+            admin_id for comp_id, admin_id in component2admin_rows
+            if comp_id == component_id
+        ],
+        [
+            cc_id for comp_id, cc_id in component2cc_rows
+            if comp_id == component_id
+        ],
+        created,
+        creator_id,
+        modified=modified,
+        modifier_id=modifier_id,
+        label_ids=[
+            label_id for comp_id, label_id in component2label_rows
+            if comp_id == component_id
+        ],
+    )
 
     return cd
 
   def _DeserializeIssueConfigs(
-      self, config_rows, statusdef_rows, labeldef_rows, fielddef_rows,
-      fielddef2admin_rows, fielddef2editor_rows, componentdef_rows,
-      component2admin_rows, component2cc_rows, component2label_rows,
-      approvaldef2approver_rows, approvaldef2survey_rows):
+      self,
+      config_rows,
+      statusdef_rows,
+      labeldef_rows,
+      fielddef_rows,
+      fielddef2admin_rows,
+      fielddef2editor_rows,
+      componentdef_rows,
+      component2admin_rows,
+      component2cc_rows,
+      component2label_rows,
+      approvaldef2approver_rows,
+      approvaldef2survey_rows,
+  ):
     """Convert the given row tuples into a dict of ProjectIssueConfig PBs."""
     result_dict = {}
     fielddef_dict = {}
@@ -330,20 +505,32 @@ class ConfigTwoLevelCache(caches.AbstractTwoLevelCache):
       result_dict[config.project_id] = config
 
     for statusdef_row in statusdef_rows:
-      (_, project_id, _rank, status,
-       means_open, docstring, deprecated) = statusdef_row
+      (
+          _,
+          project_id,
+          _rank,
+          status,
+          means_open,
+          docstring,
+          deprecated,
+      ) = statusdef_row
       if project_id in result_dict:
         wks = tracker_pb2.StatusDef(
-            status=status, means_open=bool(means_open),
-            status_docstring=docstring or '', deprecated=bool(deprecated))
+            status=status,
+            means_open=bool(means_open),
+            status_docstring=docstring or '',
+            deprecated=bool(deprecated),
+        )
         result_dict[project_id].well_known_statuses.append(wks)
 
     for labeldef_row in labeldef_rows:
       _, project_id, _rank, label, docstring, deprecated = labeldef_row
       if project_id in result_dict:
         wkl = tracker_pb2.LabelDef(
-            label=label, label_docstring=docstring or '',
-            deprecated=bool(deprecated))
+            label=label,
+            label_docstring=docstring or '',
+            deprecated=bool(deprecated),
+        )
         result_dict[project_id].well_known_labels.append(wkl)
 
     for approver_row in approvaldef2approver_rows:
@@ -351,8 +538,7 @@ class ConfigTwoLevelCache(caches.AbstractTwoLevelCache):
       if project_id in result_dict:
         approval_def = approvaldef_dict.get(approval_id)
         if approval_def is None:
-          approval_def = tracker_pb2.ApprovalDef(
-              approval_id=approval_id)
+          approval_def = tracker_pb2.ApprovalDef(approval_id=approval_id)
           result_dict[project_id].approval_defs.append(approval_def)
           approvaldef_dict[approval_id] = approval_def
         approval_def.approver_ids.append(approver_id)
@@ -362,8 +548,7 @@ class ConfigTwoLevelCache(caches.AbstractTwoLevelCache):
       if project_id in result_dict:
         approval_def = approvaldef_dict.get(approval_id)
         if approval_def is None:
-          approval_def = tracker_pb2.ApprovalDef(
-              approval_id=approval_id)
+          approval_def = tracker_pb2.ApprovalDef(approval_id=approval_id)
           result_dict[project_id].approval_defs.append(approval_def)
           approvaldef_dict[approval_id] = approval_def
         approval_def.survey = survey
@@ -387,7 +572,11 @@ class ConfigTwoLevelCache(caches.AbstractTwoLevelCache):
 
     for cd_row in componentdef_rows:
       cd = self._UnpackComponentDef(
-          cd_row, component2admin_rows, component2cc_rows, component2label_rows)
+          cd_row,
+          component2admin_rows,
+          component2cc_rows,
+          component2label_rows,
+      )
       result_dict[cd.project_id].component_defs.append(cd)
 
     return result_dict
@@ -397,12 +586,20 @@ class ConfigTwoLevelCache(caches.AbstractTwoLevelCache):
     config_rows = self.config_service.projectissueconfig_tbl.Select(
         cnxn, cols=PROJECTISSUECONFIG_COLS, project_id=project_ids)
     statusdef_rows = self.config_service.statusdef_tbl.Select(
-        cnxn, cols=STATUSDEF_COLS, project_id=project_ids,
-        where=[('rank IS NOT NULL', [])], order_by=[('rank', [])])
+        cnxn,
+        cols=STATUSDEF_COLS,
+        project_id=project_ids,
+        where=[('rank IS NOT NULL', [])],
+        order_by=[('rank', [])],
+    )
 
     labeldef_rows = self.config_service.labeldef_tbl.Select(
-        cnxn, cols=LABELDEF_COLS, project_id=project_ids,
-        where=[('rank IS NOT NULL', [])], order_by=[('rank', [])])
+        cnxn,
+        cols=LABELDEF_COLS,
+        project_id=project_ids,
+        where=[('rank IS NOT NULL', [])],
+        order_by=[('rank', [])],
+    )
 
     approver_rows = self.config_service.approvaldef2approver_tbl.Select(
         cnxn, cols=APPROVALDEF2APPROVER_COLS, project_id=project_ids)
@@ -412,37 +609,56 @@ class ConfigTwoLevelCache(caches.AbstractTwoLevelCache):
     # TODO(jrobbins): For now, sort by field name, but someday allow admins
     # to adjust the rank to group and order field definitions logically.
     fielddef_rows = self.config_service.fielddef_tbl.Select(
-        cnxn, cols=FIELDDEF_COLS, project_id=project_ids,
-        order_by=[('field_name', [])])
+        cnxn,
+        cols=FIELDDEF_COLS,
+        project_id=project_ids,
+        order_by=[('field_name', [])],
+    )
     field_ids = [row[0] for row in fielddef_rows]
     fielddef2admin_rows = []
     fielddef2editor_rows = []
     if field_ids:
       fielddef2admin_rows = self.config_service.fielddef2admin_tbl.Select(
           cnxn, cols=FIELDDEF2ADMIN_COLS, field_id=field_ids)
-      fielddef2editor_rows = self.config_service.fielddef2editor_tbl.Select(
-          cnxn, cols=FIELDDEF2EDITOR_COLS, field_id=field_ids)
+      fielddef2editor_rows = (
+          self.config_service.fielddef2editor_tbl.Select(
+              cnxn, cols=FIELDDEF2EDITOR_COLS, field_id=field_ids))
 
     componentdef_rows = self.config_service.componentdef_tbl.Select(
-        cnxn, cols=COMPONENTDEF_COLS, project_id=project_ids,
-        is_deleted=False, order_by=[('path', [])])
+        cnxn,
+        cols=COMPONENTDEF_COLS,
+        project_id=project_ids,
+        is_deleted=False,
+        order_by=[('path', [])],
+    )
     component_ids = [cd_row[0] for cd_row in componentdef_rows]
     component2admin_rows = []
     component2cc_rows = []
     component2label_rows = []
     if component_ids:
-      component2admin_rows = self.config_service.component2admin_tbl.Select(
-          cnxn, cols=COMPONENT2ADMIN_COLS, component_id=component_ids)
+      component2admin_rows = (
+          self.config_service.component2admin_tbl.Select(
+              cnxn, cols=COMPONENT2ADMIN_COLS, component_id=component_ids))
       component2cc_rows = self.config_service.component2cc_tbl.Select(
           cnxn, cols=COMPONENT2CC_COLS, component_id=component_ids)
-      component2label_rows = self.config_service.component2label_tbl.Select(
-          cnxn, cols=COMPONENT2LABEL_COLS, component_id=component_ids)
+      component2label_rows = (
+          self.config_service.component2label_tbl.Select(
+              cnxn, cols=COMPONENT2LABEL_COLS, component_id=component_ids))
 
     retrieved_dict = self._DeserializeIssueConfigs(
-        config_rows, statusdef_rows, labeldef_rows, fielddef_rows,
-        fielddef2admin_rows, fielddef2editor_rows, componentdef_rows,
-        component2admin_rows, component2cc_rows, component2label_rows,
-        approver_rows, survey_rows)
+        config_rows,
+        statusdef_rows,
+        labeldef_rows,
+        fielddef_rows,
+        fielddef2admin_rows,
+        fielddef2editor_rows,
+        componentdef_rows,
+        component2admin_rows,
+        component2cc_rows,
+        component2label_rows,
+        approver_rows,
+        survey_rows,
+    )
     return retrieved_dict
 
   def FetchItems(self, cnxn, keys):
@@ -465,9 +681,9 @@ class ConfigService(object):
   def __init__(self, cache_manager):
     """Initialize this object so that it is ready to use.
 
-    Args:
-      cache_manager: manages local caches with distributed invalidation.
-    """
+        Args:
+          cache_manager: manages local caches with distributed invalidation.
+        """
     self.projectissueconfig_tbl = sql.SQLTableManager(
         PROJECTISSUECONFIG_TABLE_NAME)
     self.statusdef_tbl = sql.SQLTableManager(STATUSDEF_TABLE_NAME)
@@ -500,7 +716,7 @@ class ConfigService(object):
     for shard_id in range(0, LABEL_ROW_SHARDS):
       key = (project_id, shard_id)
       pids_to_label_rows_shard, _misses = self.label_row_2lc.GetAll(
-        cnxn, [key], use_cache=use_cache)
+          cnxn, [key], use_cache=use_cache)
       result.extend(pids_to_label_rows_shard[key])
     # Sort in python to reduce DB load and integrate results from shards.
     # row[2] is rank, row[3] is label name.
@@ -511,19 +727,22 @@ class ConfigService(object):
     """Get all LabelDef rows for the whole site. Used in whole-site search."""
     # TODO(jrobbins): maybe add caching for these too.
     label_def_rows = self.labeldef_tbl.Select(
-        cnxn, cols=LABELDEF_COLS, where=where,
-        order_by=[('rank DESC', []), ('label DESC', [])])
+        cnxn,
+        cols=LABELDEF_COLS,
+        where=where,
+        order_by=[('rank DESC', []), ('label DESC', [])],
+    )
     return label_def_rows
 
   def _DeserializeLabels(self, def_rows):
     """Convert label defs into bi-directional mappings of names and IDs."""
     label_id_to_name = {
-        label_id: label for
-        label_id, _pid, _rank, label, _doc, _deprecated
-        in def_rows}
+        label_id: label
+        for label_id, _pid, _rank, label, _doc, _deprecated in def_rows
+    }
     label_name_to_id = {
-        label.lower(): label_id
-        for label_id, label in label_id_to_name.items()}
+        label.lower(): label_id for label_id, label in label_id_to_name.items()
+    }
 
     return label_id_to_name, label_name_to_id
 
@@ -536,49 +755,52 @@ class ConfigService(object):
   def LookupLabel(self, cnxn, project_id, label_id):
     """Lookup a label string given the label_id.
 
-    Args:
-      cnxn: connection to SQL database.
-      project_id: int ID of the project where the label is defined or used.
-      label_id: int label ID.
+        Args:
+          cnxn: connection to SQL database.
+          project_id: int ID of the project where the label is defined or used.
+          label_id: int label ID.
 
-    Returns:
-      Label name string for the given label_id, or None.
-    """
+        Returns:
+          Label name string for the given label_id, or None.
+        """
     self._EnsureLabelCacheEntry(cnxn, project_id)
-    label_id_to_name, _label_name_to_id = self.label_cache.GetItem(
-        project_id)
+    label_id_to_name, _label_name_to_id = self.label_cache.GetItem(project_id)
     if label_id in label_id_to_name:
       return label_id_to_name[label_id]
 
     logging.info('Label %r not found. Getting fresh from DB.', label_id)
     self._EnsureLabelCacheEntry(cnxn, project_id, use_cache=False)
-    label_id_to_name, _label_name_to_id = self.label_cache.GetItem(
-        project_id)
+    label_id_to_name, _label_name_to_id = self.label_cache.GetItem(project_id)
     return label_id_to_name.get(label_id)
 
-  def LookupLabelID(self, cnxn, project_id, label, autocreate=True):
+  def LookupLabelID(
+      self, cnxn, project_id, label, autocreate=True, case_sensitive=False):
     """Look up a label ID, optionally interning it.
 
-    Args:
-      cnxn: connection to SQL database.
-      project_id: int ID of the project where the statuses are defined.
-      label: label string.
-      autocreate: if not already in the DB, store it and generate a new ID.
+        Args:
+          cnxn: connection to SQL database.
+          project_id: int ID of the project where the statuses are defined.
+          label: label string.
+          autocreate: if not already in the DB, store it and generate a new ID.
+          case_sensitive: if lookup is case sensitive.
 
-    Returns:
-      The label ID for the given label string.
-    """
+        Returns:
+          The label ID for the given label string.
+        """
     self._EnsureLabelCacheEntry(cnxn, project_id)
-    _label_id_to_name, label_name_to_id = self.label_cache.GetItem(
-        project_id)
-    if label.lower() in label_name_to_id:
-      return label_name_to_id[label.lower()]
+    _label_id_to_name, label_name_to_id = self.label_cache.GetItem(project_id)
 
+    label_lower = label.lower() if not case_sensitive else label
+
+    if label_lower in label_name_to_id:
+      return label_name_to_id[label_lower]
+
+    where = (
+        [('LOWER(label) = %s',
+          [label_lower])] if not case_sensitive else [('label = %s', [label])])
     # Double check that the label does not already exist in the DB.
     rows = self.labeldef_tbl.Select(
-        cnxn, cols=['id'], project_id=project_id,
-        where=[('LOWER(label) = %s', [label.lower()])],
-        limit=1)
+        cnxn, cols=['id'], project_id=project_id, where=where, limit=1)
     logging.info('Double checking for %r gave %r', label, rows)
     if rows:
       self.label_row_2lc.cache.LocalInvalidate(project_id)
@@ -586,8 +808,11 @@ class ConfigService(object):
       return rows[0][0]
 
     if autocreate:
-      logging.info('No label %r is known in project %d, so intern it.',
-                   label, project_id)
+      logging.info(
+          'No label %r is known in project %d, so intern it.',
+          label,
+          project_id,
+      )
       label_id = self.labeldef_tbl.InsertRow(
           cnxn, project_id=project_id, label=label)
       self.label_row_2lc.InvalidateKeys(cnxn, [project_id])
@@ -599,15 +824,15 @@ class ConfigService(object):
   def LookupLabelIDs(self, cnxn, project_id, labels, autocreate=False):
     """Look up several label IDs.
 
-    Args:
-      cnxn: connection to SQL database.
-      project_id: int ID of the project where the statuses are defined.
-      labels: list of label strings.
-      autocreate: if not already in the DB, store it and generate a new ID.
+        Args:
+          cnxn: connection to SQL database.
+          project_id: int ID of the project where the statuses are defined.
+          labels: list of label strings.
+          autocreate: if not already in the DB, store it and generate a new ID.
 
-    Returns:
-      Returns a list of int label IDs for the given label strings.
-    """
+        Returns:
+          Returns a list of int label IDs for the given label strings.
+        """
     result = []
     for lab in labels:
       label_id = self.LookupLabelID(
@@ -620,52 +845,51 @@ class ConfigService(object):
   def LookupIDsOfLabelsMatching(self, cnxn, project_id, regex):
     """Look up the IDs of all labels in a project that match the regex.
 
-    Args:
-      cnxn: connection to SQL database.
-      project_id: int ID of the project where the statuses are defined.
-      regex: regular expression object to match against the label strings.
+        Args:
+          cnxn: connection to SQL database.
+          project_id: int ID of the project where the statuses are defined.
+          regex: regular expression object to match against the label strings.
 
-    Returns:
-      List of label IDs for labels that match the regex.
-    """
+        Returns:
+          List of label IDs for labels that match the regex.
+        """
     self._EnsureLabelCacheEntry(cnxn, project_id)
-    label_id_to_name, _label_name_to_id = self.label_cache.GetItem(
-        project_id)
-    result = [label_id for label_id, label in label_id_to_name.items()
-              if regex.match(label)]
+    label_id_to_name, _label_name_to_id = self.label_cache.GetItem(project_id)
+    result = [
+        label_id for label_id, label in label_id_to_name.items()
+        if regex.match(label)
+    ]
 
     return result
 
   def LookupLabelIDsAnyProject(self, cnxn, label):
     """Return the IDs of labels with the given name in any project.
 
-    Args:
-      cnxn: connection to SQL database.
-      label: string label to look up.  Case sensitive.
+        Args:
+          cnxn: connection to SQL database.
+          label: string label to look up.  Case sensitive.
 
-    Returns:
-      A list of int label IDs of all labels matching the given string.
-    """
+        Returns:
+          A list of int label IDs of all labels matching the given string.
+        """
     # TODO(jrobbins): maybe add caching for these too.
-    label_id_rows = self.labeldef_tbl.Select(
-        cnxn, cols=['id'], label=label)
+    label_id_rows = self.labeldef_tbl.Select(cnxn, cols=['id'], label=label)
     label_ids = [row[0] for row in label_id_rows]
     return label_ids
 
   def LookupIDsOfLabelsMatchingAnyProject(self, cnxn, regex):
     """Return the IDs of matching labels in any project."""
-    label_rows = self.labeldef_tbl.Select(
-        cnxn, cols=['id', 'label'])
+    label_rows = self.labeldef_tbl.Select(cnxn, cols=['id', 'label'])
     matching_ids = [
-        label_id for label_id, label in label_rows if regex.match(label)]
+        label_id for label_id, label in label_rows if regex.match(label)
+    ]
     return matching_ids
 
   ### Status lookups
 
   def GetStatusDefRows(self, cnxn, project_id):
     """Return a list of status definition rows for the specified project."""
-    pids_to_status_rows, misses = self.status_row_2lc.GetAll(
-        cnxn, [project_id])
+    pids_to_status_rows, misses = self.status_row_2lc.GetAll(cnxn, [project_id])
     assert not misses
     return pids_to_status_rows[project_id]
 
@@ -673,24 +897,40 @@ class ConfigService(object):
     """Return all status definition rows on the whole site."""
     # TODO(jrobbins): maybe add caching for these too.
     status_def_rows = self.statusdef_tbl.Select(
-        cnxn, cols=STATUSDEF_COLS,
-        order_by=[('rank DESC', []), ('status DESC', [])])
+        cnxn,
+        cols=STATUSDEF_COLS,
+        order_by=[('rank DESC', []), ('status DESC', [])],
+    )
     return status_def_rows
 
   def _DeserializeStatuses(self, def_rows):
     """Convert status defs into bi-directional mappings of names and IDs."""
     status_id_to_name = {
-        status_id: status
-        for (status_id, _pid, _rank, status, _means_open,
-             _doc, _deprecated) in def_rows}
+        status_id: status for (
+            status_id,
+            _pid,
+            _rank,
+            status,
+            _means_open,
+            _doc,
+            _deprecated,
+        ) in def_rows
+    }
     status_name_to_id = {
         status.lower(): status_id
-        for status_id, status in status_id_to_name.items()}
+        for status_id, status in status_id_to_name.items()
+    }
     closed_status_ids = [
-        status_id
-        for (status_id, _pid, _rank, _status, means_open,
-             _doc, _deprecated) in def_rows
-        if means_open == 0]  # Only 0 means closed. NULL/None means open.
+        status_id for (
+            status_id,
+            _pid,
+            _rank,
+            _status,
+            means_open,
+            _doc,
+            _deprecated,
+        ) in def_rows if means_open == 0
+    ]  # Only 0 means closed. NULL/None means open.
 
     return status_id_to_name, status_name_to_id, closed_status_ids
 
@@ -704,47 +944,56 @@ class ConfigService(object):
   def LookupStatus(self, cnxn, project_id, status_id):
     """Look up a status string for the given status ID.
 
-    Args:
-      cnxn: connection to SQL database.
-      project_id: int ID of the project where the statuses are defined.
-      status_id: int ID of the status value.
+        Args:
+          cnxn: connection to SQL database.
+          project_id: int ID of the project where the statuses are defined.
+          status_id: int ID of the status value.
 
-    Returns:
-      A status string, or None.
-    """
+        Returns:
+          A status string, or None.
+        """
     if status_id == 0:
       return ''
 
     self._EnsureStatusCacheEntry(cnxn, project_id)
-    (status_id_to_name, _status_name_to_id,
-     _closed_status_ids) = self.status_cache.GetItem(project_id)
+    (
+        status_id_to_name,
+        _status_name_to_id,
+        _closed_status_ids,
+    ) = self.status_cache.GetItem(project_id)
 
     return status_id_to_name.get(status_id)
 
   def LookupStatusID(self, cnxn, project_id, status, autocreate=True):
     """Look up a status ID for the given status string.
 
-    Args:
-      cnxn: connection to SQL database.
-      project_id: int ID of the project where the statuses are defined.
-      status: status string.
-      autocreate: if not already in the DB, store it and generate a new ID.
+        Args:
+          cnxn: connection to SQL database.
+          project_id: int ID of the project where the statuses are defined.
+          status: status string.
+          autocreate: if not already in the DB, store it and generate a new ID.
 
-    Returns:
-      The status ID for the given status string, or None.
-    """
+        Returns:
+          The status ID for the given status string, or None.
+        """
     if not status:
       return None
 
     self._EnsureStatusCacheEntry(cnxn, project_id)
-    (_status_id_to_name, status_name_to_id,
-     _closed_status_ids) = self.status_cache.GetItem(project_id)
+    (
+        _status_id_to_name,
+        status_name_to_id,
+        _closed_status_ids,
+    ) = self.status_cache.GetItem(project_id)
     if status.lower() in status_name_to_id:
       return status_name_to_id[status.lower()]
 
     if autocreate:
-      logging.info('No status %r is known in project %d, so intern it.',
-                   status, project_id)
+      logging.info(
+          'No status %r is known in project %d, so intern it.',
+          status,
+          project_id,
+      )
       status_id = self.statusdef_tbl.InsertRow(
           cnxn, project_id=project_id, status=status)
       self.status_row_2lc.InvalidateKeys(cnxn, [project_id])
@@ -756,14 +1005,14 @@ class ConfigService(object):
   def LookupStatusIDs(self, cnxn, project_id, statuses):
     """Look up several status IDs for the given status strings.
 
-    Args:
-      cnxn: connection to SQL database.
-      project_id: int ID of the project where the statuses are defined.
-      statuses: list of status strings.
+        Args:
+          cnxn: connection to SQL database.
+          project_id: int ID of the project where the statuses are defined.
+          statuses: list of status strings.
 
-    Returns:
-      A list of int status IDs.
-    """
+        Returns:
+          A list of int status IDs.
+        """
     result = []
     for stat in statuses:
       status_id = self.LookupStatusID(cnxn, project_id, stat, autocreate=False)
@@ -775,8 +1024,11 @@ class ConfigService(object):
   def LookupClosedStatusIDs(self, cnxn, project_id):
     """Return the IDs of closed statuses defined in the given project."""
     self._EnsureStatusCacheEntry(cnxn, project_id)
-    (_status_id_to_name, _status_name_to_id,
-     closed_status_ids) = self.status_cache.GetItem(project_id)
+    (
+        _status_id_to_name,
+        _status_name_to_id,
+        closed_status_ids,
+    ) = self.status_cache.GetItem(project_id)
 
     return closed_status_ids
 
@@ -789,8 +1041,7 @@ class ConfigService(object):
 
   def LookupStatusIDsAnyProject(self, cnxn, status):
     """Return the IDs of statues with the given name in any project."""
-    status_id_rows = self.statusdef_tbl.Select(
-        cnxn, cols=['id'], status=status)
+    status_id_rows = self.statusdef_tbl.Select(cnxn, cols=['id'], status=status)
     status_ids = [row[0] for row in status_id_rows]
     return status_ids
 
@@ -811,17 +1062,17 @@ class ConfigService(object):
   def GetProjectConfig(self, cnxn, project_id, use_cache=True):
     """Load a ProjectIssueConfig for the specified project from the database.
 
-    Args:
-      cnxn: connection to SQL database.
-      project_id: int ID of the current project.
-      use_cache: if False, always hit the database.
+        Args:
+          cnxn: connection to SQL database.
+          project_id: int ID of the current project.
+          use_cache: if False, always hit the database.
 
-    Returns:
-      A ProjectIssueConfig describing how the issue tracker in the specified
-      project is configured.  Projects only have a stored ProjectIssueConfig if
-      a project owner has edited the configuration.  Other projects use a
-      default configuration.
-    """
+        Returns:
+          A ProjectIssueConfig describing how the issue tracker in the specified
+          project is configured.  Projects only have a stored ProjectIssueConfig if
+          a project owner has edited the configuration.  Other projects use a
+          default configuration.
+        """
     config_dict = self.GetProjectConfigs(
         cnxn, [project_id], use_cache=use_cache)
     return config_dict[project_id]
@@ -829,17 +1080,18 @@ class ConfigService(object):
   def StoreConfig(self, cnxn, config):
     """Update an issue config in the database.
 
-    Args:
-      cnxn: connection to SQL database.
-      config: ProjectIssueConfig PB to update.
-    """
+        Args:
+          cnxn: connection to SQL database.
+          config: ProjectIssueConfig PB to update.
+        """
     # TODO(jrobbins): Convert default template index values into foreign
     # key references.  Updating an entire config might require (1) adding
     # new templates, (2) updating the config with new foreign key values,
     # and finally (3) deleting only the specific templates that should be
     # deleted.
     self.projectissueconfig_tbl.InsertRow(
-        cnxn, replace=True,
+        cnxn,
+        replace=True,
         project_id=config.project_id,
         statuses_offer_merge=' '.join(config.statuses_offer_merge),
         exclusive_label_prefixes=' '.join(config.exclusive_label_prefixes),
@@ -851,7 +1103,8 @@ class ConfigService(object):
         default_y_attr=config.default_y_attr,
         member_default_query=config.member_default_query,
         custom_issue_entry_url=config.custom_issue_entry_url,
-        commit=False)
+        commit=False,
+    )
 
     self._UpdateWellKnownLabels(cnxn, config)
     self._UpdateWellKnownStatuses(cnxn, config)
@@ -861,10 +1114,10 @@ class ConfigService(object):
   def _UpdateWellKnownLabels(self, cnxn, config):
     """Update the labels part of a project's issue configuration.
 
-    Args:
-      cnxn: connection to SQL database.
-      config: ProjectIssueConfig PB to update in the DB.
-    """
+        Args:
+          cnxn: connection to SQL database.
+          config: ProjectIssueConfig PB to update in the DB.
+        """
     update_labeldef_rows = []
     new_labeldef_rows = []
     labels_seen = set()
@@ -877,19 +1130,34 @@ class ConfigService(object):
       label_id = self.LookupLabelID(
           cnxn, config.project_id, wkl.label, autocreate=False)
       if label_id:
-        row = (label_id, config.project_id, rank, wkl.label,
-               wkl.label_docstring, wkl.deprecated)
+        row = (
+            label_id,
+            config.project_id,
+            rank,
+            wkl.label,
+            wkl.label_docstring,
+            wkl.deprecated,
+        )
         update_labeldef_rows.append(row)
       else:
         row = (
-            config.project_id, rank, wkl.label, wkl.label_docstring,
-            wkl.deprecated)
+            config.project_id,
+            rank,
+            wkl.label,
+            wkl.label_docstring,
+            wkl.deprecated,
+        )
         new_labeldef_rows.append(row)
 
     self.labeldef_tbl.Update(
         cnxn, {'rank': None}, project_id=config.project_id, commit=False)
     self.labeldef_tbl.InsertRows(
-        cnxn, LABELDEF_COLS, update_labeldef_rows, replace=True, commit=False)
+        cnxn,
+        LABELDEF_COLS,
+        update_labeldef_rows,
+        replace=True,
+        commit=False,
+    )
     self.labeldef_tbl.InsertRows(
         cnxn, LABELDEF_COLS[1:], new_labeldef_rows, commit=False)
     self.label_row_2lc.InvalidateKeys(cnxn, [config.project_id])
@@ -898,30 +1166,47 @@ class ConfigService(object):
   def _UpdateWellKnownStatuses(self, cnxn, config):
     """Update the status part of a project's issue configuration.
 
-    Args:
-      cnxn: connection to SQL database.
-      config: ProjectIssueConfig PB to update in the DB.
-    """
+        Args:
+          cnxn: connection to SQL database.
+          config: ProjectIssueConfig PB to update in the DB.
+        """
     update_statusdef_rows = []
     new_statusdef_rows = []
     for rank, wks in enumerate(config.well_known_statuses):
       # We must specify label ID when replacing, otherwise a new ID is made.
-      status_id = self.LookupStatusID(cnxn, config.project_id, wks.status,
-                                      autocreate=False)
+      status_id = self.LookupStatusID(
+          cnxn, config.project_id, wks.status, autocreate=False)
       if status_id is not None:
-        row = (status_id, config.project_id, rank, wks.status,
-               bool(wks.means_open), wks.status_docstring, wks.deprecated)
+        row = (
+            status_id,
+            config.project_id,
+            rank,
+            wks.status,
+            bool(wks.means_open),
+            wks.status_docstring,
+            wks.deprecated,
+        )
         update_statusdef_rows.append(row)
       else:
-        row = (config.project_id, rank, wks.status,
-               bool(wks.means_open), wks.status_docstring, wks.deprecated)
+        row = (
+            config.project_id,
+            rank,
+            wks.status,
+            bool(wks.means_open),
+            wks.status_docstring,
+            wks.deprecated,
+        )
         new_statusdef_rows.append(row)
 
     self.statusdef_tbl.Update(
         cnxn, {'rank': None}, project_id=config.project_id, commit=False)
     self.statusdef_tbl.InsertRows(
-        cnxn, STATUSDEF_COLS, update_statusdef_rows, replace=True,
-        commit=False)
+        cnxn,
+        STATUSDEF_COLS,
+        update_statusdef_rows,
+        replace=True,
+        commit=False,
+    )
     self.statusdef_tbl.InsertRows(
         cnxn, STATUSDEF_COLS[1:], new_statusdef_rows, commit=False)
     self.status_row_2lc.InvalidateKeys(cnxn, [config.project_id])
@@ -930,15 +1215,15 @@ class ConfigService(object):
   def _UpdateApprovals(self, cnxn, config):
     """Update the approvals part of a project's issue configuration.
 
-    Args:
-      cnxn: connection to SQL database.
-      config: ProjectIssueConfig PB to update in the DB.
-    """
+        Args:
+          cnxn: connection to SQL database.
+          config: ProjectIssueConfig PB to update in the DB.
+        """
     ids_to_field_def = {fd.field_id: fd for fd in config.field_defs}
     for approval_def in config.approval_defs:
       try:
         approval_fd = ids_to_field_def[approval_def.approval_id]
-        if approval_fd.field_type != tracker_pb2.FieldTypes.APPROVAL_TYPE:
+        if (approval_fd.field_type != tracker_pb2.FieldTypes.APPROVAL_TYPE):
           raise exceptions.InvalidFieldTypeException()
       except KeyError:
         raise exceptions.NoSuchFieldDefException()
@@ -947,44 +1232,59 @@ class ConfigService(object):
           cnxn, approval_id=approval_def.approval_id, commit=False)
 
       self.approvaldef2approver_tbl.InsertRows(
-          cnxn, APPROVALDEF2APPROVER_COLS,
-          [(approval_def.approval_id, approver_id, config.project_id) for
-           approver_id in approval_def.approver_ids],
-          commit=False)
+          cnxn,
+          APPROVALDEF2APPROVER_COLS,
+          [
+              (approval_def.approval_id, approver_id, config.project_id)
+              for approver_id in approval_def.approver_ids
+          ],
+          commit=False,
+      )
 
       self.approvaldef2survey_tbl.Delete(
           cnxn, approval_id=approval_def.approval_id, commit=False)
       self.approvaldef2survey_tbl.InsertRow(
-          cnxn, approval_id=approval_def.approval_id,
-          survey=approval_def.survey, project_id=config.project_id,
-          commit=False)
+          cnxn,
+          approval_id=approval_def.approval_id,
+          survey=approval_def.survey,
+          project_id=config.project_id,
+          commit=False,
+      )
 
   def UpdateConfig(
-      self, cnxn, project, well_known_statuses=None,
-      statuses_offer_merge=None, well_known_labels=None,
-      excl_label_prefixes=None, default_template_for_developers=None,
-      default_template_for_users=None, list_prefs=None, restrict_to_known=None,
-      approval_defs=None):
+      self,
+      cnxn,
+      project,
+      well_known_statuses=None,
+      statuses_offer_merge=None,
+      well_known_labels=None,
+      excl_label_prefixes=None,
+      default_template_for_developers=None,
+      default_template_for_users=None,
+      list_prefs=None,
+      restrict_to_known=None,
+      approval_defs=None,
+  ):
     """Update project's issue tracker configuration with the given info.
 
-    Args:
-      cnxn: connection to SQL database.
-      project: the project in which to update the issue tracker config.
-      well_known_statuses: [(status_name, docstring, means_open, deprecated),..]
-      statuses_offer_merge: list of status values that trigger UI to merge.
-      well_known_labels: [(label_name, docstring, deprecated),...]
-      excl_label_prefixes: list of prefix strings.  Each issue should
-          have only one label with each of these prefixed.
-      default_template_for_developers: int ID of template to use for devs.
-      default_template_for_users: int ID of template to use for non-members.
-      list_prefs: defaults for columns and sorting.
-      restrict_to_known: optional bool to allow project owners
-          to limit issue status and label values to only the well-known ones.
-      approval_defs: [(approval_id, approver_ids, survey), ..]
+        Args:
+          cnxn: connection to SQL database.
+          project: the project in which to update the issue tracker config.
+          well_known_statuses: [(status_name, docstring, means_open, deprecated),..]
+          statuses_offer_merge: list of status values that trigger UI to merge.
+          well_known_labels: [(label_name, docstring, deprecated),...]
+          excl_label_prefixes: list of prefix strings.  Each issue should
+              have only one label with each of these prefixed.
+          default_template_for_developers: int ID of template to use for devs.
+          default_template_for_users: int ID of template to use for non-members.
+          list_prefs: defaults for columns and sorting.
+          restrict_to_known: optional bool to allow project owners
+              to limit issue status and label values to only the well-known ones.
+          approval_defs: [(approval_id, approver_ids, survey), ..]
 
-    Returns:
-      The updated ProjectIssueConfig PB.
-    """
+        Returns:
+          The updated ProjectIssueConfig PB.
+        """
     project_id = project.project_id
     project_config = self.GetProjectConfig(cnxn, project_id, use_cache=False)
 
@@ -1007,11 +1307,16 @@ class ConfigService(object):
       project_config.default_template_for_developers = (
           default_template_for_developers)
     if default_template_for_users is not None:
-      project_config.default_template_for_users = default_template_for_users
+      project_config.default_template_for_users = (default_template_for_users)
 
     if list_prefs:
-      (default_col_spec, default_sort_spec, default_x_attr, default_y_attr,
-       member_default_query) = list_prefs
+      (
+          default_col_spec,
+          default_sort_spec,
+          default_x_attr,
+          default_y_attr,
+          member_default_query,
+      ) = list_prefs
       project_config.default_col_spec = default_col_spec
       project_config.default_col_spec = default_col_spec
       project_config.default_sort_spec = default_sort_spec
@@ -1044,19 +1349,27 @@ class ConfigService(object):
   def ExpungeUsersInConfigs(self, cnxn, user_ids, limit=None):
     """Wipes specified users from the configs system.
 
-      This method will not commit the operation. This method will
-      not make changes to in-memory data.
-    """
+        This method will not commit the operation. This method will
+        not make changes to in-memory data.
+        """
     self.component2admin_tbl.Delete(
         cnxn, admin_id=user_ids, commit=False, limit=limit)
     self.component2cc_tbl.Delete(
         cnxn, cc_id=user_ids, commit=False, limit=limit)
     self.componentdef_tbl.Update(
-        cnxn, {'creator_id': framework_constants.DELETED_USER_ID},
-        creator_id=user_ids, commit=False, limit=limit)
+        cnxn,
+        {'creator_id': framework_constants.DELETED_USER_ID},
+        creator_id=user_ids,
+        commit=False,
+        limit=limit,
+    )
     self.componentdef_tbl.Update(
-        cnxn, {'modifier_id': framework_constants.DELETED_USER_ID},
-        modifier_id=user_ids, commit=False, limit=limit)
+        cnxn,
+        {'modifier_id': framework_constants.DELETED_USER_ID},
+        modifier_id=user_ids,
+        commit=False,
+        limit=limit,
+    )
     self.fielddef2admin_tbl.Delete(
         cnxn, admin_id=user_ids, commit=False, limit=limit)
     self.fielddef2editor_tbl.Delete(
@@ -1090,39 +1403,40 @@ class ConfigService(object):
       editor_ids,
       approval_id=None,
       is_phase_field=False,
-      is_restricted_field=False):
+      is_restricted_field=False,
+  ):
     """Create a new field definition with the given info.
 
-    Args:
-      cnxn: connection to SQL database.
-      project_id: int ID of the current project.
-      field_name: name of the new custom field.
-      field_type_str: string identifying the type of the custom field.
-      applic_type: string specifying issue type the field is applicable to.
-      applic_pred: string condition to test if the field is applicable.
-      is_required: True if the field should be required on issues.
-      is_niche: True if the field is not initially offered for editing, so users
-          must click to reveal such special-purpose or experimental fields.
-      is_multivalued: True if the field can occur multiple times on one issue.
-      min_value: optional validation for int_type fields.
-      max_value: optional validation for int_type fields.
-      regex: optional validation for str_type fields.
-      needs_member: optional validation for user_type fields.
-      needs_perm: optional validation for user_type fields.
-      grants_perm: optional string for perm to grant any user named in field.
-      notify_on: int enum of when to notify users named in field.
-      date_action_str: string saying who to notify when a date arrives.
-      docstring: string describing this field.
-      admin_ids: list of additional user IDs who can edit this field def.
-      editor_ids: list of additional user IDs
-          who can edit a restricted field value.
-      approval_id: field_id of approval field this field belongs to.
-      is_phase_field: True if field should only be associated with issue phases.
-      is_restricted_field: True if field has its edition restricted.
+        Args:
+          cnxn: connection to SQL database.
+          project_id: int ID of the current project.
+          field_name: name of the new custom field.
+          field_type_str: string identifying the type of the custom field.
+          applic_type: string specifying issue type the field is applicable to.
+          applic_pred: string condition to test if the field is applicable.
+          is_required: True if the field should be required on issues.
+          is_niche: True if the field is not initially offered for editing, so users
+              must click to reveal such special-purpose or experimental fields.
+          is_multivalued: True if the field can occur multiple times on one issue.
+          min_value: optional validation for int_type fields.
+          max_value: optional validation for int_type fields.
+          regex: optional validation for str_type fields.
+          needs_member: optional validation for user_type fields.
+          needs_perm: optional validation for user_type fields.
+          grants_perm: optional string for perm to grant any user named in field.
+          notify_on: int enum of when to notify users named in field.
+          date_action_str: string saying who to notify when a date arrives.
+          docstring: string describing this field.
+          admin_ids: list of additional user IDs who can edit this field def.
+          editor_ids: list of additional user IDs
+              who can edit a restricted field value.
+          approval_id: field_id of approval field this field belongs to.
+          is_phase_field: True if field should only be associated with issue phases.
+          is_restricted_field: True if field has its edition restricted.
 
-    Returns:
-      Integer field_id of the new field definition.
-    """
+        Returns:
+          Integer field_id of the new field definition.
+        """
     field_id = self.fielddef_tbl.InsertRow(
         cnxn,
         project_id=project_id,
@@ -1145,16 +1459,20 @@ class ConfigService(object):
         approval_id=approval_id,
         is_phase_field=is_phase_field,
         is_restricted_field=is_restricted_field,
-        commit=False)
+        commit=False,
+    )
     self.fielddef2admin_tbl.InsertRows(
-        cnxn, FIELDDEF2ADMIN_COLS,
+        cnxn,
+        FIELDDEF2ADMIN_COLS,
         [(field_id, admin_id) for admin_id in admin_ids],
-        commit=False)
+        commit=False,
+    )
     self.fielddef2editor_tbl.InsertRows(
         cnxn,
         FIELDDEF2EDITOR_COLS,
         [(field_id, editor_id) for editor_id in editor_ids],
-        commit=False)
+        commit=False,
+    )
     cnxn.Commit()
     self.config_2lc.InvalidateKeys(cnxn, [project_id])
     self.field_row_2lc.InvalidateKeys(cnxn, [project_id])
@@ -1164,11 +1482,11 @@ class ConfigService(object):
   def _DeserializeFields(self, def_rows):
     """Convert field defs into bi-directional mappings of names and IDs."""
     field_id_to_name = {
-        field_id: field
-        for field_id, _pid, _rank, field, _doc in def_rows}
+        field_id: field for field_id, _pid, _rank, field, _doc in def_rows
+    }
     field_name_to_id = {
-        field.lower(): field_id
-        for field_id, field in field_id_to_name.items()}
+        field.lower(): field_id for field_id, field in field_id_to_name.items()
+    }
 
     return field_id_to_name, field_name_to_id
 
@@ -1182,39 +1500,36 @@ class ConfigService(object):
     """Make sure that self.field_cache has an entry for project_id."""
     if not self.field_cache.HasItem(project_id):
       def_rows = self.GetFieldDefRows(cnxn, project_id)
-      self.field_cache.CacheItem(
-          project_id, self._DeserializeFields(def_rows))
+      self.field_cache.CacheItem(project_id, self._DeserializeFields(def_rows))
 
   def LookupField(self, cnxn, project_id, field_id):
     """Lookup a field string given the field_id.
 
-    Args:
-      cnxn: connection to SQL database.
-      project_id: int ID of the project where the label is defined or used.
-      field_id: int field ID.
+        Args:
+          cnxn: connection to SQL database.
+          project_id: int ID of the project where the label is defined or used.
+          field_id: int field ID.
 
-    Returns:
-      Field name string for the given field_id, or None.
-    """
+        Returns:
+          Field name string for the given field_id, or None.
+        """
     self._EnsureFieldCacheEntry(cnxn, project_id)
-    field_id_to_name, _field_name_to_id = self.field_cache.GetItem(
-        project_id)
+    field_id_to_name, _field_name_to_id = self.field_cache.GetItem(project_id)
     return field_id_to_name.get(field_id)
 
   def LookupFieldID(self, cnxn, project_id, field):
     """Look up a field ID.
 
-    Args:
-      cnxn: connection to SQL database.
-      project_id: int ID of the project where the fields are defined.
-      field: field string.
+        Args:
+          cnxn: connection to SQL database.
+          project_id: int ID of the project where the fields are defined.
+          field: field string.
 
-    Returns:
-      The field ID for the given field string.
-    """
+        Returns:
+          The field ID for the given field string.
+        """
     self._EnsureFieldCacheEntry(cnxn, project_id)
-    _field_id_to_name, field_name_to_id = self.field_cache.GetItem(
-        project_id)
+    _field_id_to_name, field_name_to_id = self.field_cache.GetItem(project_id)
     return field_name_to_id.get(field.lower())
 
   def SoftDeleteFieldDefs(self, cnxn, project_id, field_ids):
@@ -1247,7 +1562,8 @@ class ConfigService(object):
       docstring=None,
       admin_ids=None,
       editor_ids=None,
-      is_restricted_field=None):
+      is_restricted_field=None,
+  ):
     """Update the specified field definition."""
     new_values = {}
     if field_name is not None:
@@ -1288,15 +1604,18 @@ class ConfigService(object):
       self.fielddef2admin_tbl.Delete(cnxn, field_id=field_id, commit=False)
       self.fielddef2admin_tbl.InsertRows(
           cnxn,
-          FIELDDEF2ADMIN_COLS, [(field_id, admin_id) for admin_id in admin_ids],
-          commit=False)
+          FIELDDEF2ADMIN_COLS,
+          [(field_id, admin_id) for admin_id in admin_ids],
+          commit=False,
+      )
     if editor_ids is not None:
       self.fielddef2editor_tbl.Delete(cnxn, field_id=field_id, commit=False)
       self.fielddef2editor_tbl.InsertRows(
           cnxn,
           FIELDDEF2EDITOR_COLS,
           [(field_id, editor_id) for editor_id in editor_ids],
-          commit=False)
+          commit=False,
+      )
     cnxn.Commit()
     self.config_2lc.InvalidateKeys(cnxn, [project_id])
     self.InvalidateMemcacheForEntireProject(project_id)
@@ -1306,15 +1625,15 @@ class ConfigService(object):
   def FindMatchingComponentIDsAnyProject(self, cnxn, path_list, exact=True):
     """Look up component IDs across projects.
 
-    Args:
-      cnxn: connection to SQL database.
-      path_list: list of component path prefixes.
-      exact: set to False to include all components which have one of the
-          given paths as their ancestor, instead of exact matches.
+        Args:
+          cnxn: connection to SQL database.
+          path_list: list of component path prefixes.
+          exact: set to False to include all components which have one of the
+              given paths as their ancestor, instead of exact matches.
 
-    Returns:
-      A list of component IDs of component's whose paths match path_list.
-    """
+        Returns:
+          A list of component IDs of component's whose paths match path_list.
+        """
     or_terms = []
     args = []
     for path in path_list:
@@ -1332,53 +1651,86 @@ class ConfigService(object):
     return [row[0] for row in rows]
 
   def CreateComponentDef(
-      self, cnxn, project_id, path, docstring, deprecated, admin_ids, cc_ids,
-      created, creator_id, label_ids):
+      self,
+      cnxn,
+      project_id,
+      path,
+      docstring,
+      deprecated,
+      admin_ids,
+      cc_ids,
+      created,
+      creator_id,
+      label_ids,
+  ):
     """Create a new component definition with the given info.
 
-    Args:
-      cnxn: connection to SQL database.
-      project_id: int ID of the current project.
-      path: string pathname of the new component.
-      docstring: string describing this field.
-      deprecated: whether or not this should be autocompleted
-      admin_ids: list of int IDs of users who can administer.
-      cc_ids: list of int IDs of users to notify when an issue in
-          this component is updated.
-      created: timestamp this component was created at.
-      creator_id: int ID of user who created this component.
-      label_ids: list of int IDs of labels to add when an issue is
-          in this component.
+        Args:
+          cnxn: connection to SQL database.
+          project_id: int ID of the current project.
+          path: string pathname of the new component.
+          docstring: string describing this field.
+          deprecated: whether or not this should be autocompleted
+          admin_ids: list of int IDs of users who can administer.
+          cc_ids: list of int IDs of users to notify when an issue in
+              this component is updated.
+          created: timestamp this component was created at.
+          creator_id: int ID of user who created this component.
+          label_ids: list of int IDs of labels to add when an issue is
+              in this component.
 
-    Returns:
-      Integer component_id of the new component definition.
-    """
+        Returns:
+          Integer component_id of the new component definition.
+        """
     component_id = self.componentdef_tbl.InsertRow(
-        cnxn, project_id=project_id, path=path, docstring=docstring,
-        deprecated=deprecated, created=created, creator_id=creator_id,
-        commit=False)
+        cnxn,
+        project_id=project_id,
+        path=path,
+        docstring=docstring,
+        deprecated=deprecated,
+        created=created,
+        creator_id=creator_id,
+        commit=False,
+    )
     self.component2admin_tbl.InsertRows(
-        cnxn, COMPONENT2ADMIN_COLS,
+        cnxn,
+        COMPONENT2ADMIN_COLS,
         [(component_id, admin_id) for admin_id in admin_ids],
-        commit=False)
+        commit=False,
+    )
     self.component2cc_tbl.InsertRows(
-        cnxn, COMPONENT2CC_COLS,
+        cnxn,
+        COMPONENT2CC_COLS,
         [(component_id, cc_id) for cc_id in cc_ids],
-        commit=False)
+        commit=False,
+    )
     self.component2label_tbl.InsertRows(
-        cnxn, COMPONENT2LABEL_COLS,
+        cnxn,
+        COMPONENT2LABEL_COLS,
         [(component_id, label_id) for label_id in label_ids],
-        commit=False)
+        commit=False,
+    )
     cnxn.Commit()
     self.config_2lc.InvalidateKeys(cnxn, [project_id])
     self.InvalidateMemcacheForEntireProject(project_id)
     return component_id
 
   def UpdateComponentDef(
-      self, cnxn, project_id, component_id, path=None, docstring=None,
-      deprecated=None, admin_ids=None, cc_ids=None, created=None,
-      creator_id=None, modified=None, modifier_id=None,
-      label_ids=None):
+      self,
+      cnxn,
+      project_id,
+      component_id,
+      path=None,
+      docstring=None,
+      deprecated=None,
+      admin_ids=None,
+      cc_ids=None,
+      created=None,
+      creator_id=None,
+      modified=None,
+      modifier_id=None,
+      label_ids=None,
+  ):
     """Update the specified component definition."""
     new_values = {}
     if path is not None:
@@ -1401,25 +1753,31 @@ class ConfigService(object):
       self.component2admin_tbl.Delete(
           cnxn, component_id=component_id, commit=False)
       self.component2admin_tbl.InsertRows(
-          cnxn, COMPONENT2ADMIN_COLS,
+          cnxn,
+          COMPONENT2ADMIN_COLS,
           [(component_id, admin_id) for admin_id in admin_ids],
-          commit=False)
+          commit=False,
+      )
 
     if cc_ids is not None:
       self.component2cc_tbl.Delete(
           cnxn, component_id=component_id, commit=False)
       self.component2cc_tbl.InsertRows(
-          cnxn, COMPONENT2CC_COLS,
+          cnxn,
+          COMPONENT2CC_COLS,
           [(component_id, cc_id) for cc_id in cc_ids],
-          commit=False)
+          commit=False,
+      )
 
     if label_ids is not None:
       self.component2label_tbl.Delete(
           cnxn, component_id=component_id, commit=False)
       self.component2label_tbl.InsertRows(
-          cnxn, COMPONENT2LABEL_COLS,
+          cnxn,
+          COMPONENT2LABEL_COLS,
           [(component_id, label_id) for label_id in label_ids],
-          commit=False)
+          commit=False,
+      )
 
     self.componentdef_tbl.Update(
         cnxn, new_values, id=component_id, commit=False)
@@ -1441,8 +1799,11 @@ class ConfigService(object):
   def InvalidateMemcache(self, issues, key_prefix=''):
     """Delete the memcache entries for issues and their project-shard pairs."""
     memcache.delete_multi(
-        [str(issue.issue_id) for issue in issues], key_prefix='issue:',
-        seconds=5, namespace=settings.memcache_namespace)
+        [str(issue.issue_id) for issue in issues],
+        key_prefix='issue:',
+        seconds=5,
+        namespace=settings.memcache_namespace,
+    )
     project_shards = set(
         (issue.project_id, issue.issue_id % settings.num_logical_shards)
         for issue in issues)
@@ -1451,13 +1812,13 @@ class ConfigService(object):
   def _InvalidateMemcacheShards(self, project_shards, key_prefix=''):
     """Delete the memcache entries for the given project-shard pairs.
 
-    Deleting these rows does not delete the actual cached search results
-    but it does mean that they will be considered stale and thus not used.
+        Deleting these rows does not delete the actual cached search results
+        but it does mean that they will be considered stale and thus not used.
 
-    Args:
-      project_shards: list of (pid, sid) pairs.
-      key_prefix: string to pass as memcache key prefix.
-    """
+        Args:
+          project_shards: list of (pid, sid) pairs.
+          key_prefix: string to pass as memcache key prefix.
+        """
     cache_entries = ['%d;%d' % ps for ps in project_shards]
     # Whenever any project is invalidated, also invalidate the 'all'
     # entry that is used in site-wide searches.
@@ -1465,26 +1826,37 @@ class ConfigService(object):
     cache_entries.extend(('all;%d' % sid) for sid in shard_id_set)
 
     memcache.delete_multi(
-        cache_entries, key_prefix=key_prefix,
-        namespace=settings.memcache_namespace)
+        cache_entries,
+        key_prefix=key_prefix,
+        namespace=settings.memcache_namespace,
+    )
 
   def InvalidateMemcacheForEntireProject(self, project_id):
     """Delete the memcache entries for all searches in a project."""
-    project_shards = set((project_id, shard_id)
-                         for shard_id in range(settings.num_logical_shards))
+    project_shards = set(
+        (project_id, shard_id)
+        for shard_id in range(settings.num_logical_shards))
     self._InvalidateMemcacheShards(project_shards)
     memcache.delete_multi(
-        [str(project_id)], key_prefix='config:',
-        namespace=settings.memcache_namespace)
+        [str(project_id)],
+        key_prefix='config:',
+        namespace=settings.memcache_namespace,
+    )
     memcache.delete_multi(
-        [str(project_id)], key_prefix='label_rows:',
-        namespace=settings.memcache_namespace)
+        [str(project_id)],
+        key_prefix='label_rows:',
+        namespace=settings.memcache_namespace,
+    )
     memcache.delete_multi(
-        [str(project_id)], key_prefix='status_rows:',
-        namespace=settings.memcache_namespace)
+        [str(project_id)],
+        key_prefix='status_rows:',
+        namespace=settings.memcache_namespace,
+    )
     memcache.delete_multi(
-        [str(project_id)], key_prefix='field_rows:',
-        namespace=settings.memcache_namespace)
+        [str(project_id)],
+        key_prefix='field_rows:',
+        namespace=settings.memcache_namespace,
+    )
 
   def UsersInvolvedInConfig(self, config, project_templates):
     """Return a set of all user IDs referenced in the ProjectIssueConfig."""
