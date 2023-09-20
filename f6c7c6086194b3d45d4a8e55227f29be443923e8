@@ -284,6 +284,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "91da67cd_a182d847",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/testdata/TestBuild_GN/.gn",
+        "patchSetId": 5
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-09-20T04:50:57Z",
+      "side": 1,
+      "message": "But who read this file?",
+      "parentUuid": "d9b6db13_9df8ae45",
+      "revId": "f6c7c6086194b3d45d4a8e55227f29be443923e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "eb102cdc_ccabe386",
         "filename": "go/src/infra/build/siso/subcmd/ninja/testdata/TestBuild_GN/buildtools/platform/gn_data/build.ninja",
         "patchSetId": 5
@@ -360,6 +378,24 @@
       "side": 1,
       "message": "I think it\u0027s important to have some additional step after build.ninja generations.",
       "parentUuid": "e2d0ec02_7bd39ab8",
+      "revId": "f6c7c6086194b3d45d4a8e55227f29be443923e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "099247e4_e0e2b865",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/testdata/TestBuild_GN/buildtools/platform/gn_data/toolchain.ninja",
+        "patchSetId": 5
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1161379
+      },
+      "writtenOn": "2023-09-20T04:50:57Z",
+      "side": 1,
+      "message": "I see, but that doesn\u0027t need to be complicated like this?\nWhy not use something like stamp action for that?",
+      "parentUuid": "3ff9d8c6_b2eaee07",
       "revId": "f6c7c6086194b3d45d4a8e55227f29be443923e8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
