@@ -483,6 +483,17 @@ class MonorailApi(remote.Service):
           mar.cnxn, updates_dict['cc_remove']).values())
       updates_dict['labels_add'], updates_dict['labels_remove'] = (
           api_pb2_v1_helpers.split_remove_add(request.updates.labels))
+
+      field_helpers.ValidateLabels(
+          mar.cnxn,
+          self._services,
+          mar.project_id,
+          updates_dict.get('labels_add', []),
+          ezt_errors=mar.errors)
+      if mar.errors.AnyErrors():
+        raise endpoints.BadRequestException(
+            'Invalid field values: %s' % mar.errors.labels)
+
       blocked_on_add_strs, blocked_on_remove_strs = (
           api_pb2_v1_helpers.split_remove_add(request.updates.blockedOn))
       blocking_add_strs, blocking_remove_strs = (
@@ -950,6 +961,17 @@ class MonorailApi(remote.Service):
       fields_add, _, _, fields_labels, _ = (
           api_pb2_v1_helpers.convert_field_values(
               request.fieldValues, mar, self._services))
+
+      field_helpers.ValidateLabels(
+          mar.cnxn,
+          self._services,
+          mar.project_id,
+          fields_labels,
+          ezt_errors=mar.errors)
+      if mar.errors.AnyErrors():
+        raise endpoints.BadRequestException(
+            'Invalid field values: %s' % mar.errors.labels)
+
       field_helpers.ValidateCustomFields(
           mar.cnxn, self._services, fields_add, mar.config, mar.project,
           ezt_errors=mar.errors)

@@ -1271,9 +1271,12 @@ class ConfigService(object):
       return None
     return 'label_%d_%d' % (project_id, label_id)
 
-  def LookupLabelID(self, cnxn, project_id, label, autocreate=True):
+  def LookupLabelID(
+      self, cnxn, project_id, label, autocreate=True, case_sensitive=False):
     if label in self.label_to_id:
       return self.label_to_id[label]
+    if label == 'freeze_new_label':
+      return None
     return 1
 
   def LookupLabelIDs(self, cnxn, project_id, labels, autocreate=False):

@@ -304,6 +304,37 @@ class MonorailApiTest(testing.EndpointsTestCase):
     self.assertEqual('Field1', resp['fieldValues'][0]['fieldName'])
     self.assertEqual('11', resp['fieldValues'][0]['fieldValue'])
 
+  @patch('framework.cloud_tasks_helpers.create_task')
+  def testIssuesInsert_FreezeLabels(self, _create_task_mock):
+    """Attempts to add new labels are blocked"""
+    self.services.project.TestAddProject(
+        'test-project', owner_ids=[222], committer_ids=[111], project_id=999)
+    self.SetUpFieldDefs(1, 999, 'Field1', tracker_pb2.FieldTypes.INT_TYPE)
+
+    issue1 = fake.MakeTestIssue(
+        project_id=999,
+        local_id=1,
+        owner_id=222,
+        reporter_id=111,
+        status='New',
+        summary='Test issue')
+    self.services.issue.TestAddIssue(issue1)
+
+    issue_dict = {
+        'blockedOn': [{'issueId': 1}],
+        'cc': [{'name': 'user@example.com'}, {'name': ''}, {'name': ' '}],
+        'description': 'description',
+        'labels': ['freeze_new_label', 'label1'],
+        'owner': {'name': 'requester@example.com'},
+        'status': 'New',
+        'summary': 'Test issue',
+        'fieldValues': [{'fieldName': 'Field1','fieldValue': '11'}]
+    }
+    self.request.update(issue_dict)
+
+    with self.call_should_fail(400):
+      self.call_api('issues_insert', self.request)
+
   def testIssuesInsert_BadRequest(self):
     """The request does not specify summary or status."""
 
@@ -628,6 +659,28 @@ class MonorailApiTest(testing.EndpointsTestCase):
 
     long_comment = '   ' + 'c' * tracker_constants.MAX_COMMENT_CHARS + '  '
     self.request['content'] = long_comment
+    with self.call_should_fail(400):
+      self.call_api('issues_comments_insert', self.request)
+
+  def testIssuesCommentsInsert_FreezeLabels(self):
+    """Attempts to add new labels are blocked"""
+    self.services.project.TestAddProject(
+        'test-project', owner_ids=[111], project_id=999)
+
+    issue1 = fake.MakeTestIssue(
+        999, 1, 'Issue 1', 'New', 222, project_name='test-project')
+    self.services.issue.TestAddIssue(issue1)
+
+    self.request['updates'] = {
+        'summary': 'new summary',
+        'status': 'Started',
+        'owner': 'requester@example.com',
+        'cc': ['user@example.com'],
+        'labels': ['freeze_new_label', '-remove_label'],
+        'blockedOn': ['2'],
+        'blocking': ['3'],
+    }
+
     with self.call_should_fail(400):
       self.call_api('issues_comments_insert', self.request)
 
