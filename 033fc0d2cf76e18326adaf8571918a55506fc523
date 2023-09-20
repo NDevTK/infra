@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "52e6664e_6e54d13b",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/testdata/TestBuild_GNGen/buildtools/gn.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-20T05:26:08Z",
+      "side": 1,
+      "message": "I\u0027d like to make diff small for actual gn",
+      "parentUuid": "80601ed9_4955f0f2",
+      "revId": "033fc0d2cf76e18326adaf8571918a55506fc523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "da86779d_6643c024",
@@ -31,6 +49,30 @@
       "writtenOn": "2023-09-20T05:16:34Z",
       "side": 1,
       "message": "I think it is fine to have one of them.\nOr just specify gn.py itself for this test?",
+      "range": {
+        "startLine": 37,
+        "startChar": 34,
+        "endLine": 37,
+        "endChar": 58
+      },
+      "revId": "033fc0d2cf76e18326adaf8571918a55506fc523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8e909f5c_b54d29da",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/testdata/TestBuild_GNGen/buildtools/gn.py",
+        "patchSetId": 9
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-20T05:26:08Z",
+      "side": 1,
+      "message": "ditto",
+      "parentUuid": "da86779d_6643c024",
       "range": {
         "startLine": 37,
         "startChar": 34,
@@ -64,6 +106,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "25a1b118_f80afd88",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/testdata/TestBuild_GNGen/buildtools/gn_data/build.ninja",
+        "patchSetId": 9
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-20T05:26:08Z",
+      "side": 1,
+      "message": "ditto.",
+      "parentUuid": "08fb54c5_1bcba2fe",
+      "range": {
+        "startLine": 4,
+        "startChar": 26,
+        "endLine": 4,
+        "endChar": 36
+      },
+      "revId": "033fc0d2cf76e18326adaf8571918a55506fc523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e9f16ef3_3a5a4b12",
@@ -87,6 +153,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1f720052_5008b3bb",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/testdata/TestBuild_GNGen/buildtools/gn_data/toolchain.ninja",
+        "patchSetId": 9
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-20T05:26:08Z",
+      "side": 1,
+      "message": "ditto",
+      "parentUuid": "e9f16ef3_3a5a4b12",
+      "range": {
+        "startLine": 2,
+        "startChar": 29,
+        "endLine": 2,
+        "endChar": 39
+      },
+      "revId": "033fc0d2cf76e18326adaf8571918a55506fc523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0e84db8a_d5e7054c",
@@ -100,6 +190,30 @@
       "writtenOn": "2023-09-20T05:16:34Z",
       "side": 1,
       "message": "No need to have multiple steps now?",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 47
+      },
+      "revId": "033fc0d2cf76e18326adaf8571918a55506fc523",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "23e38074_40a547ec",
+        "filename": "go/src/infra/build/siso/subcmd/ninja/testdata/TestBuild_GNGen/buildtools/gn_data/toolchain.ninja",
+        "patchSetId": 9
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1001939
+      },
+      "writtenOn": "2023-09-20T05:26:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0e84db8a_d5e7054c",
       "range": {
         "startLine": 5,
         "startChar": 0,
