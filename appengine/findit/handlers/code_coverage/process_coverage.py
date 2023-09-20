@@ -814,8 +814,7 @@ class ProcessCodeCoverageData(BaseHandler):
         msg_footer = ('Please add tests for uncovered lines, '
                       'or add Low-Coverage-Reason:<reason> in '
                       'the change description to bypass. '
-                      # TODO(crbug/1429772):Link to a external accessible doc.
-                      'See http://bit.ly/3G7GCfA to understand'
+                      'See https://bit.ly/46jhjS9 to understand'
                       ' when it is okay to bypass. If you think coverage is '
                       'underreported, file a bug to Infra>Test>CodeCoverage')
         data = {
