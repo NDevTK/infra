@@ -97,6 +97,10 @@ func (f *FakeClient) Objects(p gs.Path) ([]*storage.ObjectAttrs, error) {
 	panic("Objects")
 }
 
+func (f *FakeClient) SignedURL(p gs.Path, opts *storage.SignedURLOptions) (string, error) {
+	panic("SignedURL")
+}
+
 func (f *FakeClient) NewReader(p gs.Path, offset int64, length int64) (io.ReadCloser, error) {
 	if offset != 0 {
 		panic("nonzero offsets unsupported")
