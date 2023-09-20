@@ -272,6 +272,10 @@ http {
     location /list_image_dir {
       return 200 'The /list_image_dir RPC is not supported by GS Cache. Usage is discouraged.';
     }
+
+    location /gscache {
+      return 200 'I am gscache.';
+    }
   }
 {{ if .OtelTraceEndpoint }}
     NginxModuleEnabled ON;
