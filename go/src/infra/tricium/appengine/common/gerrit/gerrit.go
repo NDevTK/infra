@@ -36,7 +36,7 @@ const (
 	//
 	// This should be a number small enough so that it can be handled in one
 	// request, but also large enough to avoid skipping over changes.
-	MaxChanges = 60
+	MaxChanges = 120
 	// The timestamp format used by Gerrit (using the reference date).
 	// All timestamps are in UTC.
 	timeStampLayout = "2006-01-02 15:04:05.000000000"
