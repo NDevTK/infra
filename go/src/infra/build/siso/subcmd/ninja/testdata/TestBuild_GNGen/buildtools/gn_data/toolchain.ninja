@@ -1,0 +1,7 @@
+rule stamp
+  command = "python3" "../../buildtools/stamp.py" --output=${out} --input=${in}
+  description = STAMP ${out}
+
+build ./base_unittests: stamp obj/base/libbase.a
+build obj/base/libbase.a: stamp obj/base/base.o
+build obj/base/base.o: stamp ../../base/base.cc
