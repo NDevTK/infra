@@ -38,10 +38,11 @@ TEST_ID_MAP = {
     'b@example.com': 2,
     'c@example.com': 3,
     'd@example.com': 4,
-    }
+}
 
 
-def _Issue(project_name, local_id, summary='', status='', project_id=789):
+def _Issue(
+    project_name, local_id, summary='', status='', project_id=789):
   issue = tracker_pb2.Issue()
   issue.project_name = project_name
   issue.project_id = project_id
@@ -54,12 +55,16 @@ def _Issue(project_name, local_id, summary='', status='', project_id=789):
 
 def _MakeConfig():
   config = tracker_pb2.ProjectIssueConfig()
-  config.well_known_statuses.append(tracker_pb2.StatusDef(
-      means_open=True, status='New', deprecated=False))
-  config.well_known_statuses.append(tracker_pb2.StatusDef(
-      status='Old', means_open=False, deprecated=False))
-  config.well_known_statuses.append(tracker_pb2.StatusDef(
-      status='StatusThatWeDontUseAnymore', means_open=False, deprecated=True))
+  config.well_known_statuses.append(
+      tracker_pb2.StatusDef(means_open=True, status='New', deprecated=False))
+  config.well_known_statuses.append(
+      tracker_pb2.StatusDef(status='Old', means_open=False, deprecated=False))
+  config.well_known_statuses.append(
+      tracker_pb2.StatusDef(
+          status='StatusThatWeDontUseAnymore',
+          means_open=False,
+          deprecated=True,
+      ))
 
   return config
 
@@ -72,7 +77,8 @@ class HelpersTest(unittest.TestCase):
         config=fake.ConfigService(),
         issue=fake.IssueService(),
         user=fake.UserService(),
-        usergroup=fake.UserGroupService())
+        usergroup=fake.UserGroupService(),
+    )
 
     for email, user_id in TEST_ID_MAP.items():
       self.services.user.TestAddUser(email, user_id)
@@ -117,13 +123,14 @@ class HelpersTest(unittest.TestCase):
     self.assertEqual([], parsed.blocked_on.iids)
 
   def testParseIssueRequest_Normal(self):
-    post_data = fake.PostData({
-        'summary': ['some summary'],
-        'comment': ['some comment'],
-        'status': ['SomeStatus'],
-        'template_name': ['some template'],
-        'label': ['lab1', '-lab2'],
-        'custom_123': ['field1123a', 'field1123b'],
+    post_data = fake.PostData(
+        {
+            'summary': ['some summary'],
+            'comment': ['some comment'],
+            'status': ['SomeStatus'],
+            'template_name': ['some template'],
+            'label': ['lab1', '-lab2'],
+            'custom_123': ['field1123a', 'field1123b'],
         })
     errors = template_helpers.EZTError()
     parsed = tracker_helpers.ParseIssueRequest(
@@ -148,18 +155,22 @@ class HelpersTest(unittest.TestCase):
     content = 'What?\nthat\nWhy?\nidk\nWhere?\n'
     tmpl_txt = 'What?\nWhy?\nWhere?\nWhen?'
     desc = '<b>What?</b>\nthat\n<b>Why?</b>\nidk\n<b>Where?</b>\n'
-    self.assertEqual(tracker_helpers.MarkupDescriptionOnInput(
-        content, tmpl_txt), desc)
+    self.assertEqual(
+        tracker_helpers.MarkupDescriptionOnInput(content, tmpl_txt), desc)
 
   def testMarkupDescriptionLineOnInput(self):
     line = 'What happened??'
-    tmpl_lines = ['What happened??','Why?']
-    self.assertEqual(tracker_helpers._MarkupDescriptionLineOnInput(
-        line, tmpl_lines), '<b>What happened??</b>')
+    tmpl_lines = ['What happened??', 'Why?']
+    self.assertEqual(
+        tracker_helpers._MarkupDescriptionLineOnInput(line, tmpl_lines),
+        '<b>What happened??</b>',
+    )
 
     line = 'Something terrible!!!'
-    self.assertEqual(tracker_helpers._MarkupDescriptionLineOnInput(
-        line, tmpl_lines), 'Something terrible!!!')
+    self.assertEqual(
+        tracker_helpers._MarkupDescriptionLineOnInput(line, tmpl_lines),
+        'Something terrible!!!',
+    )
 
   def testClassifyPlusMinusItems(self):
     add, remove = tracker_helpers._ClassifyPlusMinusItems([])
@@ -171,8 +182,7 @@ class HelpersTest(unittest.TestCase):
     six.assertCountEqual(self, [], add)
     six.assertCountEqual(self, [], remove)
 
-    add, remove = tracker_helpers._ClassifyPlusMinusItems(
-        ['a', 'b', 'c'])
+    add, remove = tracker_helpers._ClassifyPlusMinusItems(['a', 'b', 'c'])
     six.assertCountEqual(self, ['a', 'b', 'c'], add)
     six.assertCountEqual(self, [], remove)
 
@@ -181,62 +191,61 @@ class HelpersTest(unittest.TestCase):
     six.assertCountEqual(self, ['a-a-a', 'b-b', 'c-'], add)
     six.assertCountEqual(self, [], remove)
 
-    add, remove = tracker_helpers._ClassifyPlusMinusItems(
-        ['-a'])
+    add, remove = tracker_helpers._ClassifyPlusMinusItems(['-a'])
     six.assertCountEqual(self, [], add)
     six.assertCountEqual(self, ['a'], remove)
 
-    add, remove = tracker_helpers._ClassifyPlusMinusItems(
-        ['-a', 'b', 'c-c'])
+    add, remove = tracker_helpers._ClassifyPlusMinusItems(['-a', 'b', 'c-c'])
     six.assertCountEqual(self, ['b', 'c-c'], add)
     six.assertCountEqual(self, ['a'], remove)
 
-    add, remove = tracker_helpers._ClassifyPlusMinusItems(
-        ['-a', '-b-b', '-c-'])
+    add, remove = tracker_helpers._ClassifyPlusMinusItems(['-a', '-b-b', '-c-'])
     six.assertCountEqual(self, [], add)
     six.assertCountEqual(self, ['a', 'b-b', 'c-'], remove)
 
     # We dedup, but we don't cancel out items that are both added and removed.
-    add, remove = tracker_helpers._ClassifyPlusMinusItems(
-        ['a', 'a', '-a'])
+    add, remove = tracker_helpers._ClassifyPlusMinusItems(['a', 'a', '-a'])
     six.assertCountEqual(self, ['a'], add)
     six.assertCountEqual(self, ['a'], remove)
 
   def testParseIssueRequestFields(self):
-    parsed_fields = tracker_helpers._ParseIssueRequestFields(fake.PostData({
-        'custom_1': ['https://hello.com'],
-        'custom_12': ['https://blah.com'],
-        'custom_14': ['https://remove.com'],
-        'custom_15_goats': ['2', '3'],
-        'custom_15_sheep': ['3', '5'],
-        'custom_16_sheep': ['yarn'],
-        'op_custom_14': ['remove'],
-        'op_custom_12': ['clear'],
-        'op_custom_16_sheep': ['remove'],
-        'ignore': 'no matter',}))
+    parsed_fields = tracker_helpers._ParseIssueRequestFields(
+        fake.PostData(
+            {
+                'custom_1': ['https://hello.com'],
+                'custom_12': ['https://blah.com'],
+                'custom_14': ['https://remove.com'],
+                'custom_15_goats': ['2', '3'],
+                'custom_15_sheep': ['3', '5'],
+                'custom_16_sheep': ['yarn'],
+                'op_custom_14': ['remove'],
+                'op_custom_12': ['clear'],
+                'op_custom_16_sheep': ['remove'],
+                'ignore': 'no matter',
+            }))
     self.assertEqual(
         parsed_fields,
         tracker_helpers.ParsedFields(
             {
                 1: ['https://hello.com'],
                 12: ['https://blah.com']
-            }, {14: ['https://remove.com']}, [12],
+            },
+            {14: ['https://remove.com']},
+            [12],
             {15: {
                 'goats': ['2', '3'],
                 'sheep': ['3', '5']
-            }}, {16: {
+            }},
+            {16: {
                 'sheep': ['yarn']
-            }}))
+            }},
+        ),
+    )
 
   def testParseIssueRequestAttachments(self):
-    file1 = FileStorage(
-        stream=io.BytesIO(b'hello world'),
-        filename='hello.c',
-    )
+    file1 = FileStorage(stream=io.BytesIO(b'hello world'), filename='hello.c')
     file2 = FileStorage(
-        stream=io.BytesIO(b'Welcome to our project'),
-        filename='README',
-    )
+        stream=io.BytesIO(b'Welcome to our project'), filename='README')
 
     file3 = FileStorage(
         stream=io.BytesIO(b'Abort, Retry, or Fail?'),
@@ -244,54 +253,62 @@ class HelpersTest(unittest.TestCase):
     )
 
     # Browsers send this if FILE field was not filled in.
-    file4 = FileStorage(
-        stream=io.BytesIO(b''),
-        filename='',
-    )
+    file4 = FileStorage(stream=io.BytesIO(b''), filename='')
 
     attachments = tracker_helpers._ParseIssueRequestAttachments({})
     self.assertEqual([], attachments)
 
-    attachments = tracker_helpers._ParseIssueRequestAttachments(fake.PostData({
-        'file1': [file1],
-        }))
+    attachments = tracker_helpers._ParseIssueRequestAttachments(
+        fake.PostData({'file1': [file1]}))
     self.assertEqual([('hello.c', b'hello world', 'text/plain')], attachments)
     file1.seek(0)
 
-    attachments = tracker_helpers._ParseIssueRequestAttachments(fake.PostData({
-        'file1': [file1],
-        'file2': [file2],
+    attachments = tracker_helpers._ParseIssueRequestAttachments(
+        fake.PostData({
+            'file1': [file1],
+            'file2': [file2]
         }))
     self.assertEqual(
         [
             ('hello.c', b'hello world', 'text/plain'),
-            ('README', b'Welcome to our project', 'text/plain')
-        ], attachments)
+            ('README', b'Welcome to our project', 'text/plain'),
+        ],
+        attachments,
+    )
     file1.seek(0)
     file2.seek(0)
 
-    attachments = tracker_helpers._ParseIssueRequestAttachments(fake.PostData({
-        'file3': [file3],
-        }))
+    attachments = tracker_helpers._ParseIssueRequestAttachments(
+        fake.PostData({'file3': [file3]}))
     self.assertEqual(
         [
             (
-                'FILENAME.EXT', b'Abort, Retry, or Fail?',
-                'application/octet-stream')
-        ], attachments)
+                'FILENAME.EXT',
+                b'Abort, Retry, or Fail?',
+                'application/octet-stream',
+            )
+        ],
+        attachments,
+    )
     file3.seek(0)
 
-    attachments = tracker_helpers._ParseIssueRequestAttachments(fake.PostData({
-        'file1': [file4],  # Does not appear in result
-        'file3': [file3],
-        'file4': [file4],  # Does not appear in result
-        }))
+    attachments = tracker_helpers._ParseIssueRequestAttachments(
+        fake.PostData(
+            {
+                'file1': [file4],  # Does not appear in result
+                'file3': [file3],
+                'file4': [file4],  # Does not appear in result
+            }))
     self.assertEqual(
         [
             (
-                'FILENAME.EXT', b'Abort, Retry, or Fail?',
-                'application/octet-stream')
-        ], attachments)
+                'FILENAME.EXT',
+                b'Abort, Retry, or Fail?',
+                'application/octet-stream',
+            )
+        ],
+        attachments,
+    )
     file3.seek(0)
 
   def testParseIssueRequestKeptAttachments(self):
@@ -309,9 +326,7 @@ class HelpersTest(unittest.TestCase):
     self.assertEqual([], parsed_users.cc_ids)
     self.assertEqual([], parsed_users.cc_ids_remove)
 
-    post_data = fake.PostData({
-        'owner': [''],
-        })
+    post_data = fake.PostData({'owner': ['']})
     parsed_users = tracker_helpers._ParseIssueRequestUsers(
         'fake connection', post_data, self.services)
     self.assertEqual('', parsed_users.owner_username)
@@ -322,9 +337,7 @@ class HelpersTest(unittest.TestCase):
     self.assertEqual([], parsed_users.cc_ids)
     self.assertEqual([], parsed_users.cc_ids_remove)
 
-    post_data = fake.PostData({
-        'owner': [' \t'],
-        })
+    post_data = fake.PostData({'owner': [' \t']})
     parsed_users = tracker_helpers._ParseIssueRequestUsers(
         'fake connection', post_data, self.services)
     self.assertEqual('', parsed_users.owner_username)
@@ -335,9 +348,7 @@ class HelpersTest(unittest.TestCase):
     self.assertEqual([], parsed_users.cc_ids)
     self.assertEqual([], parsed_users.cc_ids_remove)
 
-    post_data = fake.PostData({
-        'owner': ['b@example.com'],
-        })
+    post_data = fake.PostData({'owner': ['b@example.com']})
     parsed_users = tracker_helpers._ParseIssueRequestUsers(
         'fake connection', post_data, self.services)
     self.assertEqual('b@example.com', parsed_users.owner_username)
@@ -347,9 +358,7 @@ class HelpersTest(unittest.TestCase):
     self.assertEqual([], parsed_users.cc_ids)
     self.assertEqual([], parsed_users.cc_ids_remove)
 
-    post_data = fake.PostData({
-        'owner': ['b@example.com'],
-        })
+    post_data = fake.PostData({'owner': ['b@example.com']})
     parsed_users = tracker_helpers._ParseIssueRequestUsers(
         'fake connection', post_data, self.services)
     self.assertEqual('b@example.com', parsed_users.owner_username)
@@ -359,9 +368,7 @@ class HelpersTest(unittest.TestCase):
     self.assertEqual([], parsed_users.cc_ids)
     self.assertEqual([], parsed_users.cc_ids_remove)
 
-    post_data = fake.PostData({
-        'cc': ['b@example.com'],
-        })
+    post_data = fake.PostData({'cc': ['b@example.com']})
     parsed_users = tracker_helpers._ParseIssueRequestUsers(
         'fake connection', post_data, self.services)
     self.assertEqual('', parsed_users.owner_username)
@@ -372,10 +379,8 @@ class HelpersTest(unittest.TestCase):
     self.assertEqual([TEST_ID_MAP['b@example.com']], parsed_users.cc_ids)
     self.assertEqual([], parsed_users.cc_ids_remove)
 
-    post_data = fake.PostData({
-        'cc': ['-b@example.com, c@example.com,,'
-               'a@example.com,'],
-        })
+    post_data = fake.PostData(
+        {'cc': ['-b@example.com, c@example.com,,a@example.com,']})
     parsed_users = tracker_helpers._ParseIssueRequestUsers(
         'fake connection', post_data, self.services)
     self.assertEqual('', parsed_users.owner_username)
@@ -385,14 +390,16 @@ class HelpersTest(unittest.TestCase):
         self, ['c@example.com', 'a@example.com'], parsed_users.cc_usernames)
     self.assertEqual(['b@example.com'], parsed_users.cc_usernames_remove)
     six.assertCountEqual(
-        self, [TEST_ID_MAP['c@example.com'], TEST_ID_MAP['a@example.com']],
-        parsed_users.cc_ids)
-    self.assertEqual([TEST_ID_MAP['b@example.com']],
-                      parsed_users.cc_ids_remove)
+        self,
+        [TEST_ID_MAP['c@example.com'], TEST_ID_MAP['a@example.com']],
+        parsed_users.cc_ids,
+    )
+    self.assertEqual([TEST_ID_MAP['b@example.com']], parsed_users.cc_ids_remove)
 
-    post_data = fake.PostData({
-        'owner': ['fuhqwhgads@example.com'],
-        'cc': ['c@example.com, fuhqwhgads@example.com'],
+    post_data = fake.PostData(
+        {
+            'owner': ['fuhqwhgads@example.com'],
+            'cc': ['c@example.com, fuhqwhgads@example.com'],
         })
     parsed_users = tracker_helpers._ParseIssueRequestUsers(
         'fake connection', post_data, self.services)
@@ -400,32 +407,39 @@ class HelpersTest(unittest.TestCase):
     gen_uid = framework_helpers.MurmurHash3_x86_32(parsed_users.owner_username)
     self.assertEqual(gen_uid, parsed_users.owner_id)  # autocreated user
     six.assertCountEqual(
-        self, ['c@example.com', 'fuhqwhgads@example.com'],
-        parsed_users.cc_usernames)
+        self,
+        ['c@example.com', 'fuhqwhgads@example.com'],
+        parsed_users.cc_usernames,
+    )
     self.assertEqual([], parsed_users.cc_usernames_remove)
     six.assertCountEqual(
         self, [TEST_ID_MAP['c@example.com'], gen_uid], parsed_users.cc_ids)
     self.assertEqual([], parsed_users.cc_ids_remove)
 
-    post_data = fake.PostData({
-        'cc': ['C@example.com, b@exAmple.cOm'],
-        })
+    post_data = fake.PostData({'cc': ['C@example.com, b@exAmple.cOm']})
     parsed_users = tracker_helpers._ParseIssueRequestUsers(
         'fake connection', post_data, self.services)
     six.assertCountEqual(
         self, ['c@example.com', 'b@example.com'], parsed_users.cc_usernames)
     self.assertEqual([], parsed_users.cc_usernames_remove)
     six.assertCountEqual(
-        self, [TEST_ID_MAP['c@example.com'], TEST_ID_MAP['b@example.com']],
-        parsed_users.cc_ids)
+        self,
+        [TEST_ID_MAP['c@example.com'], TEST_ID_MAP['b@example.com']],
+        parsed_users.cc_ids,
+    )
     self.assertEqual([], parsed_users.cc_ids_remove)
 
   def testParseBlockers_BlockedOnNothing(self):
     """Was blocked on nothing, still nothing."""
     post_data = {tracker_helpers.BLOCKED_ON: ''}
     parsed_blockers = tracker_helpers._ParseBlockers(
-        self.cnxn, post_data, self.services, self.errors, 'testproj',
-        tracker_helpers.BLOCKED_ON)
+        self.cnxn,
+        post_data,
+        self.services,
+        self.errors,
+        'testproj',
+        tracker_helpers.BLOCKED_ON,
+    )
 
     self.assertEqual('', parsed_blockers.entered_str)
     self.assertEqual([], parsed_blockers.iids)
@@ -436,8 +450,13 @@ class HelpersTest(unittest.TestCase):
     """Was blocked on nothing; now 1, 2, 3."""
     post_data = {tracker_helpers.BLOCKED_ON: '1, 2, 3'}
     parsed_blockers = tracker_helpers._ParseBlockers(
-        self.cnxn, post_data, self.services, self.errors, 'testproj',
-        tracker_helpers.BLOCKED_ON)
+        self.cnxn,
+        post_data,
+        self.services,
+        self.errors,
+        'testproj',
+        tracker_helpers.BLOCKED_ON,
+    )
 
     self.assertEqual('1, 2, 3', parsed_blockers.entered_str)
     self.assertEqual([100001, 100002, 100003], parsed_blockers.iids)
@@ -448,8 +467,13 @@ class HelpersTest(unittest.TestCase):
     """Was blocked on nothing; now just 2, but repeated in input."""
     post_data = {tracker_helpers.BLOCKED_ON: '2, 2, 2'}
     parsed_blockers = tracker_helpers._ParseBlockers(
-        self.cnxn, post_data, self.services, self.errors, 'testproj',
-        tracker_helpers.BLOCKED_ON)
+        self.cnxn,
+        post_data,
+        self.services,
+        self.errors,
+        'testproj',
+        tracker_helpers.BLOCKED_ON,
+    )
 
     self.assertEqual('2, 2, 2', parsed_blockers.entered_str)
     self.assertEqual([100002], parsed_blockers.iids)
@@ -460,8 +484,13 @@ class HelpersTest(unittest.TestCase):
     """Parsing an input field that was not in the POST."""
     post_data = {}
     parsed_blockers = tracker_helpers._ParseBlockers(
-        self.cnxn, post_data, self.services, self.errors, 'testproj',
-        tracker_helpers.BLOCKED_ON)
+        self.cnxn,
+        post_data,
+        self.services,
+        self.errors,
+        'testproj',
+        tracker_helpers.BLOCKED_ON,
+    )
 
     self.assertEqual('', parsed_blockers.entered_str)
     self.assertEqual([], parsed_blockers.iids)
@@ -473,13 +502,19 @@ class HelpersTest(unittest.TestCase):
     post_data = {'id': '2', tracker_helpers.BLOCKING: '2, 3'}
 
     parsed_blockers = tracker_helpers._ParseBlockers(
-        self.cnxn, post_data, self.services, self.errors, 'testproj',
-        tracker_helpers.BLOCKING)
+        self.cnxn,
+        post_data,
+        self.services,
+        self.errors,
+        'testproj',
+        tracker_helpers.BLOCKING,
+    )
     self.assertEqual('2, 3', parsed_blockers.entered_str)
     self.assertEqual([], parsed_blockers.iids)
     self.assertEqual(
         getattr(self.errors, tracker_helpers.BLOCKING),
-        'Cannot be blocking the same issue')
+        'Cannot be blocking the same issue',
+    )
     self.assertIsNone(getattr(self.errors, tracker_helpers.BLOCKED_ON))
 
   def testParseBlockers_SameIssueSameProject(self):
@@ -487,13 +522,19 @@ class HelpersTest(unittest.TestCase):
     post_data = {'id': '2', tracker_helpers.BLOCKING: 'testproj:2, 3'}
 
     parsed_blockers = tracker_helpers._ParseBlockers(
-        self.cnxn, post_data, self.services, self.errors, 'testproj',
-        tracker_helpers.BLOCKING)
+        self.cnxn,
+        post_data,
+        self.services,
+        self.errors,
+        'testproj',
+        tracker_helpers.BLOCKING,
+    )
     self.assertEqual('testproj:2, 3', parsed_blockers.entered_str)
     self.assertEqual([], parsed_blockers.iids)
     self.assertEqual(
         getattr(self.errors, tracker_helpers.BLOCKING),
-        'Cannot be blocking the same issue')
+        'Cannot be blocking the same issue',
+    )
     self.assertIsNone(getattr(self.errors, tracker_helpers.BLOCKED_ON))
 
   def testParseBlockers_SameIssueDifferentProject(self):
@@ -501,8 +542,13 @@ class HelpersTest(unittest.TestCase):
     post_data = {'id': '2', tracker_helpers.BLOCKING: 'testproj:2'}
 
     parsed_blockers = tracker_helpers._ParseBlockers(
-        self.cnxn, post_data, self.services, self.errors, 'testprojB',
-        tracker_helpers.BLOCKING)
+        self.cnxn,
+        post_data,
+        self.services,
+        self.errors,
+        'testprojB',
+        tracker_helpers.BLOCKING,
+    )
     self.assertEqual('testproj:2', parsed_blockers.entered_str)
     self.assertEqual([100002], parsed_blockers.iids)
     self.assertIsNone(getattr(self.errors, tracker_helpers.BLOCKING))
@@ -510,26 +556,41 @@ class HelpersTest(unittest.TestCase):
 
   def testParseBlockers_Invalid(self):
     """Input fields with invalid values should modify the errors object."""
-    post_data = {tracker_helpers.BLOCKING: '2, foo',
-                 tracker_helpers.BLOCKED_ON: '3, bar'}
+    post_data = {
+        tracker_helpers.BLOCKING: '2, foo',
+        tracker_helpers.BLOCKED_ON: '3, bar',
+    }
 
     parsed_blockers = tracker_helpers._ParseBlockers(
-        self.cnxn, post_data, self.services, self.errors, 'testproj',
-        tracker_helpers.BLOCKING)
+        self.cnxn,
+        post_data,
+        self.services,
+        self.errors,
+        'testproj',
+        tracker_helpers.BLOCKING,
+    )
     self.assertEqual('2, foo', parsed_blockers.entered_str)
     self.assertEqual([100002], parsed_blockers.iids)
     self.assertEqual(
-        getattr(self.errors, tracker_helpers.BLOCKING), 'Invalid issue ID foo')
+        getattr(self.errors, tracker_helpers.BLOCKING),
+        'Invalid issue ID foo',
+    )
     self.assertIsNone(getattr(self.errors, tracker_helpers.BLOCKED_ON))
 
     parsed_blockers = tracker_helpers._ParseBlockers(
-        self.cnxn, post_data, self.services, self.errors, 'testproj',
-        tracker_helpers.BLOCKED_ON)
+        self.cnxn,
+        post_data,
+        self.services,
+        self.errors,
+        'testproj',
+        tracker_helpers.BLOCKED_ON,
+    )
     self.assertEqual('3, bar', parsed_blockers.entered_str)
     self.assertEqual([100003], parsed_blockers.iids)
     self.assertEqual(
         getattr(self.errors, tracker_helpers.BLOCKED_ON),
-        'Invalid issue ID bar')
+        'Invalid issue ID bar',
+    )
 
   def testParseBlockers_Dangling(self):
     """A ref to a sanctioned projected should be allowed."""
@@ -537,8 +598,13 @@ class HelpersTest(unittest.TestCase):
     real_codesite_projects = settings.recognized_codesite_projects
     settings.recognized_codesite_projects = ['otherproj']
     parsed_blockers = tracker_helpers._ParseBlockers(
-        self.cnxn, post_data, self.services, self.errors, 'testproj',
-        tracker_helpers.BLOCKING)
+        self.cnxn,
+        post_data,
+        self.services,
+        self.errors,
+        'testproj',
+        tracker_helpers.BLOCKING,
+    )
     self.assertEqual('otherproj:2', parsed_blockers.entered_str)
     self.assertEqual([('otherproj', 2)], parsed_blockers.dangling_refs)
     settings.recognized_codesite_projects = real_codesite_projects
@@ -547,8 +613,13 @@ class HelpersTest(unittest.TestCase):
     """Should parse and return FedRefs."""
     post_data = {'id': '9', tracker_helpers.BLOCKING: '2, b/123, 3, b/789'}
     parsed_blockers = tracker_helpers._ParseBlockers(
-        self.cnxn, post_data, self.services, self.errors, 'testproj',
-        tracker_helpers.BLOCKING)
+        self.cnxn,
+        post_data,
+        self.services,
+        self.errors,
+        'testproj',
+        tracker_helpers.BLOCKING,
+    )
     self.assertEqual('2, b/123, 3, b/789', parsed_blockers.entered_str)
     self.assertEqual([100002, 100003], parsed_blockers.iids)
     self.assertEqual(['b/123', 'b/789'], parsed_blockers.federated_ref_strings)
@@ -560,35 +631,32 @@ class HelpersTest(unittest.TestCase):
     project.contributor_ids.extend([4, 999])
 
     valid, _ = tracker_helpers.IsValidIssueOwner(
-        'fake cnxn', project, framework_constants.NO_USER_SPECIFIED,
-        self.services)
+        'fake cnxn',
+        project,
+        framework_constants.NO_USER_SPECIFIED,
+        self.services,
+    )
     self.assertTrue(valid)
 
     valid, _ = tracker_helpers.IsValidIssueOwner(
-        'fake cnxn', project, 1,
-        self.services)
+        'fake cnxn', project, 1, self.services)
     self.assertTrue(valid)
     valid, _ = tracker_helpers.IsValidIssueOwner(
-        'fake cnxn', project, 2,
-        self.services)
+        'fake cnxn', project, 2, self.services)
     self.assertTrue(valid)
     valid, _ = tracker_helpers.IsValidIssueOwner(
-        'fake cnxn', project, 3,
-        self.services)
+        'fake cnxn', project, 3, self.services)
     self.assertTrue(valid)
     valid, _ = tracker_helpers.IsValidIssueOwner(
-        'fake cnxn', project, 4,
-        self.services)
+        'fake cnxn', project, 4, self.services)
     self.assertTrue(valid)
 
     valid, _ = tracker_helpers.IsValidIssueOwner(
-        'fake cnxn', project, 7,
-        self.services)
+        'fake cnxn', project, 7, self.services)
     self.assertFalse(valid)
 
     valid, _ = tracker_helpers.IsValidIssueOwner(
-        'fake cnxn', project, 999,
-        self.services)
+        'fake cnxn', project, 999, self.services)
     self.assertFalse(valid)
 
   # MakeViewsForUsersInIssuesTest is tested in MakeViewsForUsersInIssuesTest.
@@ -608,9 +676,10 @@ class HelpersTest(unittest.TestCase):
 
     url_1 = tracker_helpers.FormatIssueListURL(mr, config)
     self.assertEqual(
-        '%s/p/proj/issues/list?can=1&%s&q=id%%3D123' % (
-            absolute_base_url, self.default_colspec_param),
-        url_1)
+        '%s/p/proj/issues/list?can=1&%s&q=id%%3D123' %
+        (absolute_base_url, self.default_colspec_param),
+        url_1,
+    )
 
   def testFormatIssueListURL_NoCurrentState(self):
     config = tracker_pb2.ProjectIssueConfig()
@@ -623,31 +692,33 @@ class HelpersTest(unittest.TestCase):
 
     url_1 = tracker_helpers.FormatIssueListURL(mr, config)
     self.assertEqual(
-        '%s/p/proj/issues/list?%s&q=' % (
-            absolute_base_url, self.default_colspec_param),
-        url_1)
+        '%s/p/proj/issues/list?%s&q=' %
+        (absolute_base_url, self.default_colspec_param),
+        url_1,
+    )
 
-    url_2 = tracker_helpers.FormatIssueListURL(
-        mr, config, foo=123)
+    url_2 = tracker_helpers.FormatIssueListURL(mr, config, foo=123)
     self.assertEqual(
-        '%s/p/proj/issues/list?%s&foo=123&q=' % (
-            absolute_base_url, self.default_colspec_param),
-        url_2)
+        '%s/p/proj/issues/list?%s&foo=123&q=' %
+        (absolute_base_url, self.default_colspec_param),
+        url_2,
+    )
 
-    url_3 = tracker_helpers.FormatIssueListURL(
-        mr, config, foo=123, bar='abc')
+    url_3 = tracker_helpers.FormatIssueListURL(mr, config, foo=123, bar='abc')
     self.assertEqual(
-        '%s/p/proj/issues/list?bar=abc&%s&foo=123&q=' % (
-            absolute_base_url, self.default_colspec_param),
-        url_3)
+        '%s/p/proj/issues/list?bar=abc&%s&foo=123&q=' %
+        (absolute_base_url, self.default_colspec_param),
+        url_3,
+    )
 
     url_4 = tracker_helpers.FormatIssueListURL(
         mr, config, baz='escaped+encoded&and100% "safe"')
     self.assertEqual(
         '%s/p/proj/issues/list?'
-        'baz=escaped%%2Bencoded%%26and100%%25%%20%%22safe%%22&%s&q=' % (
-            absolute_base_url, self.default_colspec_param),
-        url_4)
+        'baz=escaped%%2Bencoded%%26and100%%25%%20%%22safe%%22&%s&q=' %
+        (absolute_base_url, self.default_colspec_param),
+        url_4,
+    )
 
   def testFormatIssueListURL_KeepCurrentState(self):
     config = tracker_pb2.ProjectIssueConfig()
@@ -660,54 +731,60 @@ class HelpersTest(unittest.TestCase):
 
     url_1 = tracker_helpers.FormatIssueListURL(mr, config)
     self.assertEqual(
-        '%s/p/proj/issues/list?colspec=a%%20b%%20c'
-        '&groupby=d&q=&sort=aa' % absolute_base_url,
-        url_1)
+        '%s/p/proj/issues/list?colspec=a%%20b%%20c&groupby=d&q=&sort=aa' %
+        absolute_base_url,
+        url_1,
+    )
 
-    url_2 = tracker_helpers.FormatIssueListURL(
-        mr, config, foo=123)
+    url_2 = tracker_helpers.FormatIssueListURL(mr, config, foo=123)
     self.assertEqual(
         '%s/p/proj/issues/list?'
         'colspec=a%%20b%%20c&foo=123&groupby=d&q=&sort=aa' % absolute_base_url,
-        url_2)
+        url_2,
+    )
 
-    url_3 = tracker_helpers.FormatIssueListURL(
-        mr, config, colspec='X Y Z')
+    url_3 = tracker_helpers.FormatIssueListURL(mr, config, colspec='X Y Z')
     self.assertEqual(
-        '%s/p/proj/issues/list?colspec=a%%20b%%20c'
-        '&groupby=d&q=&sort=aa' % absolute_base_url,
-        url_3)
+        '%s/p/proj/issues/list?colspec=a%%20b%%20c&groupby=d&q=&sort=aa' %
+        absolute_base_url,
+        url_3,
+    )
 
   def testFormatRelativeIssueURL(self):
     self.assertEqual(
         '/p/proj/issues/attachment',
-        tracker_helpers.FormatRelativeIssueURL(
-            'proj', urls.ISSUE_ATTACHMENT))
+        tracker_helpers.FormatRelativeIssueURL('proj', urls.ISSUE_ATTACHMENT),
+    )
 
     self.assertEqual(
         '/p/proj/issues/detail?id=123',
         tracker_helpers.FormatRelativeIssueURL(
-            'proj', urls.ISSUE_DETAIL, id=123))
+            'proj', urls.ISSUE_DETAIL, id=123),
+    )
 
   @mock.patch('google.appengine.api.app_identity.get_application_id')
   def testFormatCrBugURL_Prod(self, mock_get_app_id):
     mock_get_app_id.return_value = 'monorail-prod'
     self.assertEqual(
         'https://crbug.com/proj/123',
-        tracker_helpers.FormatCrBugURL('proj', 123))
+        tracker_helpers.FormatCrBugURL('proj', 123),
+    )
     self.assertEqual(
         'https://crbug.com/123456',
-        tracker_helpers.FormatCrBugURL('chromium', 123456))
+        tracker_helpers.FormatCrBugURL('chromium', 123456),
+    )
 
   @mock.patch('google.appengine.api.app_identity.get_application_id')
   def testFormatCrBugURL_NonProd(self, mock_get_app_id):
     mock_get_app_id.return_value = 'monorail-staging'
     self.assertEqual(
         '/p/proj/issues/detail?id=123',
-        tracker_helpers.FormatCrBugURL('proj', 123))
+        tracker_helpers.FormatCrBugURL('proj', 123),
+    )
     self.assertEqual(
         '/p/chromium/issues/detail?id=123456',
-        tracker_helpers.FormatCrBugURL('chromium', 123456))
+        tracker_helpers.FormatCrBugURL('chromium', 123456),
+    )
 
   @mock.patch('tracker.tracker_constants.ISSUE_ATTACHMENTS_QUOTA_HARD', 1)
   def testComputeNewQuotaBytesUsed_ProjectQuota(self):
@@ -719,8 +796,9 @@ class HelpersTest(unittest.TestCase):
 
     project = fake.Project()
     project.attachment_bytes_used = 10
-    project.attachment_quota = project.attachment_bytes_used + len(
-        upload_1.contents + upload_2.contents) + 1
+    project.attachment_quota = (
+        project.attachment_bytes_used +
+        len(upload_1.contents + upload_2.contents) + 1)
 
     actual_new = tracker_helpers.ComputeNewQuotaBytesUsed(project, attachments)
     expected_new = project.attachment_quota - 1
@@ -775,14 +853,15 @@ class HelpersTest(unittest.TestCase):
     self.assertTrue(tracker_helpers.MeansOpenInProject('new', config))
 
     # ensure an unrecognized status means open
-    self.assertTrue(tracker_helpers.MeansOpenInProject(
-        '_undefined_status_', config))
+    self.assertTrue(
+        tracker_helpers.MeansOpenInProject('_undefined_status_', config))
 
     # ensure closed means closed
     self.assertFalse(tracker_helpers.MeansOpenInProject('Old', config))
     self.assertFalse(tracker_helpers.MeansOpenInProject('old', config))
-    self.assertFalse(tracker_helpers.MeansOpenInProject(
-        'StatusThatWeDontUseAnymore', config))
+    self.assertFalse(
+        tracker_helpers.MeansOpenInProject(
+            'StatusThatWeDontUseAnymore', config))
 
   def testIsNoisy(self):
     self.assertTrue(tracker_helpers.IsNoisy(778, 320))
@@ -791,23 +870,19 @@ class HelpersTest(unittest.TestCase):
     self.assertFalse(tracker_helpers.IsNoisy(1, 1))
 
   def testMergeCCsAndAddComment(self):
-    target_issue = fake.MakeTestIssue(
-        789, 10, 'Target issue', 'New', 111)
-    source_issue = fake.MakeTestIssue(
-        789, 100, 'Source issue', 'New', 222)
+    target_issue = fake.MakeTestIssue(789, 10, 'Target issue', 'New', 111)
+    source_issue = fake.MakeTestIssue(789, 100, 'Source issue', 'New', 222)
     source_issue.cc_ids.append(111)
     # Issue without owner
-    source_issue_2 = fake.MakeTestIssue(
-        789, 101, 'Source issue 2', 'New', 0)
+    source_issue_2 = fake.MakeTestIssue(789, 101, 'Source issue 2', 'New', 0)
 
     self.services.issue.TestAddIssue(target_issue)
     self.services.issue.TestAddIssue(source_issue)
     self.services.issue.TestAddIssue(source_issue_2)
 
     # We copy this list so that it isn't updated by the test framework
-    initial_issue_comments = (
-        self.services.issue.GetCommentsForIssue(
-            'fake cnxn', target_issue.issue_id)[:])
+    initial_issue_comments = self.services.issue.GetCommentsForIssue(
+        'fake cnxn', target_issue.issue_id)[:]
     mr = testing_helpers.MakeMonorailRequest(user_info={'user_id': 111})
 
     # Merging source into target should create a comment.
@@ -836,12 +911,9 @@ class HelpersTest(unittest.TestCase):
     self.assertNotIn(0, updated_target_issue.cc_ids)
 
   def testMergeCCsAndAddComment_RestrictedSourceIssue(self):
-    target_issue = fake.MakeTestIssue(
-        789, 10, 'Target issue', 'New', 222)
-    target_issue_2 = fake.MakeTestIssue(
-        789, 11, 'Target issue 2', 'New', 222)
-    source_issue = fake.MakeTestIssue(
-        789, 100, 'Source issue', 'New', 111)
+    target_issue = fake.MakeTestIssue(789, 10, 'Target issue', 'New', 222)
+    target_issue_2 = fake.MakeTestIssue(789, 11, 'Target issue 2', 'New', 222)
+    source_issue = fake.MakeTestIssue(789, 100, 'Source issue', 'New', 111)
     source_issue.cc_ids.append(111)
     source_issue.labels.append('Restrict-View-Commit')
     target_issue_2.labels.append('Restrict-View-Commit')
@@ -924,8 +996,13 @@ class HelpersTest(unittest.TestCase):
     derived_users_by_id = {}
     actual = tracker_helpers.PairDerivedValuesWithRuleExplanations(
         proposed_issue, traces, derived_users_by_id)
-    (derived_labels_and_why, derived_owner_and_why,
-     derived_cc_and_why, warnings_and_why, errors_and_why) = actual
+    (
+        derived_labels_and_why,
+        derived_owner_and_why,
+        derived_cc_and_why,
+        warnings_and_why,
+        errors_and_why,
+    ) = actual
     self.assertEqual([], derived_labels_and_why)
     self.assertEqual([], derived_owner_and_why)
     self.assertEqual([], derived_cc_and_why)
@@ -935,48 +1012,92 @@ class HelpersTest(unittest.TestCase):
   def testPairDerivedValuesWithRuleExplanations_SomeValues(self):
     """Test we return derived values and explanations for an issue."""
     proposed_issue = tracker_pb2.Issue(
-        derived_owner_id=111, derived_cc_ids=[222, 333],
+        derived_owner_id=111,
+        derived_cc_ids=[222, 333],
         derived_labels=['aaa', 'zzz'],
         derived_warnings=['Watch out'],
-        derived_errors=['Status Assigned requires an owner'])
+        derived_errors=['Status Assigned requires an owner'],
+    )
     traces = {
-        (tracker_pb2.FieldID.OWNER, 111): 'explain 1',
-        (tracker_pb2.FieldID.CC, 222): 'explain 2',
-        (tracker_pb2.FieldID.CC, 333): 'explain 3',
-        (tracker_pb2.FieldID.LABELS, 'aaa'): 'explain 4',
-        (tracker_pb2.FieldID.WARNING, 'Watch out'): 'explain 6',
-        (tracker_pb2.FieldID.ERROR,
-         'Status Assigned requires an owner'): 'explain 7',
+        (tracker_pb2.FieldID.OWNER, 111):
+            'explain 1',
+        (tracker_pb2.FieldID.CC, 222):
+            'explain 2',
+        (tracker_pb2.FieldID.CC, 333):
+            'explain 3',
+        (tracker_pb2.FieldID.LABELS, 'aaa'):
+            'explain 4',
+        (tracker_pb2.FieldID.WARNING, 'Watch out'):
+            'explain 6',
+        (
+            tracker_pb2.FieldID.ERROR,
+            'Status Assigned requires an owner',
+        ):
+            'explain 7',
         # There can be extra traces that are not used.
-        (tracker_pb2.FieldID.LABELS, 'bbb'): 'explain 5',
+        (tracker_pb2.FieldID.LABELS, 'bbb'):
+            'explain 5',
         # If there is no trace for some derived value, why is None.
-        }
+    }
     derived_users_by_id = {
-      111: testing_helpers.Blank(display_name='one@example.com'),
-      222: testing_helpers.Blank(display_name='two@example.com'),
-      333: testing_helpers.Blank(display_name='three@example.com'),
-      }
+        111: testing_helpers.Blank(display_name='one@example.com'),
+        222: testing_helpers.Blank(display_name='two@example.com'),
+        333: testing_helpers.Blank(display_name='three@example.com'),
+    }
     actual = tracker_helpers.PairDerivedValuesWithRuleExplanations(
         proposed_issue, traces, derived_users_by_id)
-    (derived_labels_and_why, derived_owner_and_why,
-     derived_cc_and_why, warnings_and_why, errors_and_why) = actual
-    self.assertEqual([
-        {'value': 'aaa', 'why': 'explain 4'},
-        {'value': 'zzz', 'why': None},
-        ], derived_labels_and_why)
-    self.assertEqual([
-        {'value': 'one@example.com', 'why': 'explain 1'},
-        ], derived_owner_and_why)
-    self.assertEqual([
-        {'value': 'two@example.com', 'why': 'explain 2'},
-        {'value': 'three@example.com', 'why': 'explain 3'},
-        ], derived_cc_and_why)
-    self.assertEqual([
-        {'value': 'Watch out', 'why': 'explain 6'},
-        ], warnings_and_why)
-    self.assertEqual([
-        {'value': 'Status Assigned requires an owner', 'why': 'explain 7'},
-        ], errors_and_why)
+    (
+        derived_labels_and_why,
+        derived_owner_and_why,
+        derived_cc_and_why,
+        warnings_and_why,
+        errors_and_why,
+    ) = actual
+    self.assertEqual(
+        [
+            {
+                'value': 'aaa',
+                'why': 'explain 4'
+            },
+            {
+                'value': 'zzz',
+                'why': None
+            },
+        ],
+        derived_labels_and_why,
+    )
+    self.assertEqual(
+        [{
+            'value': 'one@example.com',
+            'why': 'explain 1'
+        }],
+        derived_owner_and_why,
+    )
+    self.assertEqual(
+        [
+            {
+                'value': 'two@example.com',
+                'why': 'explain 2'
+            },
+            {
+                'value': 'three@example.com',
+                'why': 'explain 3'
+            },
+        ],
+        derived_cc_and_why,
+    )
+    self.assertEqual(
+        [{
+            'value': 'Watch out',
+            'why': 'explain 6'
+        }], warnings_and_why)
+    self.assertEqual(
+        [{
+            'value': 'Status Assigned requires an owner',
+            'why': 'explain 7',
+        }],
+        errors_and_why,
+    )
 
 
 class MakeViewsForUsersInIssuesTest(unittest.TestCase):
@@ -997,16 +1118,17 @@ class MakeViewsForUsersInIssuesTest(unittest.TestCase):
 
     self.user = fake.UserService()
     for user_id in [1, 1001, 1002, 1003, 2001, 2002, 3002]:
-      self.user.TestAddUser(
-          'test%d' % user_id, user_id, add_user=True)
+      self.user.TestAddUser('test%d' % user_id, user_id, add_user=True)
 
   def testMakeViewsForUsersInIssues(self):
     issue_list = [self.issue1, self.issue2, self.issue3]
     users_by_id = tracker_helpers.MakeViewsForUsersInIssues(
         'fake cnxn', issue_list, self.user)
     six.assertCountEqual(
-        self, [0, 1, 1001, 1002, 1003, 2001, 2002, 3002],
-        list(users_by_id.keys()))
+        self,
+        [0, 1, 1001, 1002, 1003, 2001, 2002, 3002],
+        list(users_by_id.keys()),
+    )
     for user_id in [1001, 1002, 1003, 2001]:
       self.assertEqual(users_by_id[user_id].user_id, user_id)
 
@@ -1050,20 +1172,31 @@ class GetAllIssueProjectsTest(unittest.TestCase):
 
   def testGetAllIssueProjects_Empty(self):
     self.assertEqual(
-        {}, tracker_helpers.GetAllIssueProjects(
-            self.cnxn, [], self.project_service))
+        {},
+        tracker_helpers.GetAllIssueProjects(
+            self.cnxn, [], self.project_service),
+    )
 
   def testGetAllIssueProjects_Normal(self):
     self.assertEqual(
         {789: self.project_service.GetProjectByName(self.cnxn, 'proj-x')},
         tracker_helpers.GetAllIssueProjects(
-            self.cnxn, [self.issue_x_1, self.issue_x_2], self.project_service))
+            self.cnxn,
+            [self.issue_x_1, self.issue_x_2],
+            self.project_service,
+        ),
+    )
     self.assertEqual(
-        {789: self.project_service.GetProjectByName(self.cnxn, 'proj-x'),
-         678: self.project_service.GetProjectByName(self.cnxn, 'proj-y')},
+        {
+            789: self.project_service.GetProjectByName(self.cnxn, 'proj-x'),
+            678: self.project_service.GetProjectByName(self.cnxn, 'proj-y'),
+        },
         tracker_helpers.GetAllIssueProjects(
-            self.cnxn, [self.issue_x_1, self.issue_x_2, self.issue_y_1],
-            self.project_service))
+            self.cnxn,
+            [self.issue_x_1, self.issue_x_2, self.issue_y_1],
+            self.project_service,
+        ),
+    )
 
 
 class FilterOutNonViewableIssuesTest(unittest.TestCase):
@@ -1110,49 +1243,71 @@ class FilterOutNonViewableIssuesTest(unittest.TestCase):
 
   def MakeProject(self, state):
     p = project_pb2.Project(
-        project_id=789, project_name='proj', state=state,
-        owner_ids=[self.owner_id], committer_ids=[self.committer_id])
+        project_id=789,
+        project_name='proj',
+        state=state,
+        owner_ids=[self.owner_id],
+        committer_ids=[self.committer_id],
+    )
     return p
 
   def testFilterOutNonViewableIssues_Member(self):
     # perms will be permissions.COMMITTER_ACTIVE_PERMISSIONSET
     filtered_issues = tracker_helpers.FilterOutNonViewableIssues(
-        {self.committer_id}, self.user, self.project_dict,
+        {self.committer_id},
+        self.user,
+        self.project_dict,
         self.config_dict,
-        [self.issue1, self.issue2, self.issue3, self.issue4])
-    self.assertListEqual([1, 2, 3, 4],
-                         [issue.local_id for issue in filtered_issues])
+        [self.issue1, self.issue2, self.issue3, self.issue4],
+    )
+    self.assertListEqual(
+        [1, 2, 3, 4], [issue.local_id for issue in filtered_issues])
 
   def testFilterOutNonViewableIssues_Owner(self):
     # perms will be permissions.OWNER_ACTIVE_PERMISSIONSET
     filtered_issues = tracker_helpers.FilterOutNonViewableIssues(
-        {self.owner_id}, self.user, self.project_dict, self.config_dict,
-        [self.issue1, self.issue2, self.issue3, self.issue4])
-    self.assertListEqual([1, 2, 3, 4],
-                         [issue.local_id for issue in filtered_issues])
+        {self.owner_id},
+        self.user,
+        self.project_dict,
+        self.config_dict,
+        [self.issue1, self.issue2, self.issue3, self.issue4],
+    )
+    self.assertListEqual(
+        [1, 2, 3, 4], [issue.local_id for issue in filtered_issues])
 
   def testFilterOutNonViewableIssues_Empty(self):
     # perms will be permissions.COMMITTER_ACTIVE_PERMISSIONSET
     filtered_issues = tracker_helpers.FilterOutNonViewableIssues(
-        {self.committer_id}, self.user, self.project_dict,
-        self.config_dict, [])
+        {self.committer_id},
+        self.user,
+        self.project_dict,
+        self.config_dict,
+        [],
+    )
     self.assertListEqual([], filtered_issues)
 
   def testFilterOutNonViewableIssues_NonMember(self):
     # perms will be permissions.READ_ONLY_PERMISSIONSET
     filtered_issues = tracker_helpers.FilterOutNonViewableIssues(
-        {self.nonmember_1_id}, self.user, self.project_dict,
-        self.config_dict, [self.issue1, self.issue2, self.issue3, self.issue4])
-    self.assertListEqual([1, 2],
-                         [issue.local_id for issue in filtered_issues])
+        {self.nonmember_1_id},
+        self.user,
+        self.project_dict,
+        self.config_dict,
+        [self.issue1, self.issue2, self.issue3, self.issue4],
+    )
+    self.assertListEqual([1, 2], [issue.local_id for issue in filtered_issues])
 
   def testFilterOutNonViewableIssues_Reporter(self):
     # perms will be permissions.READ_ONLY_PERMISSIONSET
     filtered_issues = tracker_helpers.FilterOutNonViewableIssues(
-        {self.nonmember_3_id}, self.user, self.project_dict,
-        self.config_dict, [self.issue1, self.issue2, self.issue3, self.issue4])
-    self.assertListEqual([1, 2, 3, 4],
-                         [issue.local_id for issue in filtered_issues])
+        {self.nonmember_3_id},
+        self.user,
+        self.project_dict,
+        self.config_dict,
+        [self.issue1, self.issue2, self.issue3, self.issue4],
+    )
+    self.assertListEqual(
+        [1, 2, 3, 4], [issue.local_id for issue in filtered_issues])
 
 
 class IssueMergeTest(unittest.TestCase):
@@ -1165,7 +1320,7 @@ class IssueMergeTest(unittest.TestCase):
         user=fake.UserService(),
         project=fake.ProjectService(),
         issue_star=fake.IssueStarService(),
-        spam=fake.SpamService()
+        spam=fake.SpamService(),
     )
     self.project = self.services.project.TestAddProject('proj', project_id=987)
     self.config = tracker_bizobj.MakeDefaultProjectIssueConfig(
@@ -1179,13 +1334,28 @@ class IssueMergeTest(unittest.TestCase):
     post_data = {}
 
     text, merge_into_issue = tracker_helpers.ParseMergeFields(
-        self.cnxn, None, 'proj', post_data, 'New', self.config, issue, errors)
+        self.cnxn,
+        None,
+        'proj',
+        post_data,
+        'New',
+        self.config,
+        issue,
+        errors,
+    )
     self.assertEqual('', text)
     self.assertEqual(None, merge_into_issue)
 
     text, merge_into_issue = tracker_helpers.ParseMergeFields(
-        self.cnxn, None, 'proj', post_data, 'Duplicate', self.config, issue,
-        errors)
+        self.cnxn,
+        None,
+        'proj',
+        post_data,
+        'Duplicate',
+        self.config,
+        issue,
+        errors,
+    )
     self.assertEqual('', text)
     self.assertTrue(errors.merge_into_id)
     self.assertEqual(None, merge_into_issue)
@@ -1196,7 +1366,15 @@ class IssueMergeTest(unittest.TestCase):
     post_data = {'merge_into': '12'}
 
     text, merge_into_issue = tracker_helpers.ParseMergeFields(
-        self.cnxn, None, 'proj', post_data, 'New', self.config, issue, errors)
+        self.cnxn,
+        None,
+        'proj',
+        post_data,
+        'New',
+        self.config,
+        issue,
+        errors,
+    )
     self.assertEqual('', text)
     self.assertEqual(None, merge_into_issue)
 
@@ -1207,8 +1385,15 @@ class IssueMergeTest(unittest.TestCase):
     post_data = {'merge_into': '12'}
 
     text, merge_into_issue = tracker_helpers.ParseMergeFields(
-        self.cnxn, self.services, 'proj', post_data, 'Duplicate',
-        self.config, issue, errors)
+        self.cnxn,
+        self.services,
+        'proj',
+        post_data,
+        'Duplicate',
+        self.config,
+        issue,
+        errors,
+    )
     self.assertEqual('12', text)
     self.assertEqual(None, merge_into_issue)
 
@@ -1218,8 +1403,15 @@ class IssueMergeTest(unittest.TestCase):
     post_data = {'merge_into': '1'}
 
     text, merge_into_issue = tracker_helpers.ParseMergeFields(
-        self.cnxn, self.services, 'proj', post_data, 'Duplicate', self.config,
-        issue, errors)
+        self.cnxn,
+        self.services,
+        'proj',
+        post_data,
+        'Duplicate',
+        self.config,
+        issue,
+        errors,
+    )
     self.assertEqual('1', text)
     self.assertEqual(None, merge_into_issue)
     self.assertEqual('Cannot merge issue into itself', errors.merge_into_id)
@@ -1231,7 +1423,8 @@ class IssueMergeTest(unittest.TestCase):
         'unused_summary',
         'unused_status',
         111,
-        reporter_id=111)
+        reporter_id=111,
+    )
     self.services.issue.TestAddIssue(merged_issue)
     mergee_issue = fake.MakeTestIssue(
         self.project.project_id,
@@ -1239,15 +1432,23 @@ class IssueMergeTest(unittest.TestCase):
         'unused_summary',
         'unused_status',
         111,
-        reporter_id=111)
+        reporter_id=111,
+    )
     self.services.issue.TestAddIssue(mergee_issue)
 
     errors = template_helpers.EZTError()
     post_data = {'merge_into': str(mergee_issue.local_id)}
 
     text, merge_into_issue = tracker_helpers.ParseMergeFields(
-        self.cnxn, self.services, 'proj', post_data, 'Duplicate', self.config,
-        merged_issue, errors)
+        self.cnxn,
+        self.services,
+        'proj',
+        post_data,
+        'Duplicate',
+        self.config,
+        merged_issue,
+        errors,
+    )
     self.assertEqual(str(mergee_issue.local_id), text)
     self.assertEqual(mergee_issue, merge_into_issue)
 
@@ -1309,8 +1510,7 @@ class IssueMergeTest(unittest.TestCase):
     six.assertCountEqual(self, new_starrers, [1, 2, 6])
     tracker_helpers.AddIssueStarrers(
         self.cnxn, self.services, mr, 2, self.project, new_starrers)
-    issue_2_starrers = self.services.issue_star.LookupItemStarrers(
-        self.cnxn, 2)
+    issue_2_starrers = self.services.issue_star.LookupItemStarrers(self.cnxn, 2)
     # XXX(jrobbins): these tests incorrectly mix local IDs with IIDs.
     six.assertCountEqual(self, [1, 2, 3, 4, 5, 6], issue_2_starrers)
 
@@ -1319,8 +1519,7 @@ class MergeLinkedMembersTest(unittest.TestCase):
 
   def setUp(self):
     self.cnxn = 'fake cnxn'
-    self.services = service_manager.Services(
-        user=fake.UserService())
+    self.services = service_manager.Services(user=fake.UserService())
     self.user1 = self.services.user.TestAddUser('one@example.com', 111)
     self.user2 = self.services.user.TestAddUser('two@example.com', 222)
 
@@ -1353,33 +1552,47 @@ class FilterMemberDataTest(unittest.TestCase):
         project=fake.ProjectService(),
         config=fake.ConfigService(),
         issue=fake.IssueService(),
-        user=fake.UserService())
+        user=fake.UserService(),
+    )
     self.owner_email = 'owner@dom.com'
     self.committer_email = 'commit@dom.com'
     self.contributor_email = 'contrib@dom.com'
     self.indirect_member_email = 'ind@dom.com'
-    self.all_emails = [self.owner_email, self.committer_email,
-                       self.contributor_email, self.indirect_member_email]
+    self.all_emails = [
+        self.owner_email,
+        self.committer_email,
+        self.contributor_email,
+        self.indirect_member_email,
+    ]
     self.project = services.project.TestAddProject('proj')
 
   def DoFiltering(self, perms, unsigned_user=False):
-    mr = testing_helpers.MakeMonorailRequest(
-        project=self.project, perms=perms)
+    mr = testing_helpers.MakeMonorailRequest(project=self.project, perms=perms)
     if not unsigned_user:
       mr.auth.user_id = 111
       mr.auth.user_view = testing_helpers.Blank(domain='jrobbins.org')
     return tracker_helpers._FilterMemberData(
-        mr, [self.owner_email], [self.committer_email],
-        [self.contributor_email], [self.indirect_member_email], mr.project)
+        mr,
+        [self.owner_email],
+        [self.committer_email],
+        [self.contributor_email],
+        [self.indirect_member_email],
+        mr.project,
+    )
 
   def testUnsignedUser_NormalProject(self):
     visible_members = self.DoFiltering(
         permissions.READ_ONLY_PERMISSIONSET, unsigned_user=True)
     six.assertCountEqual(
-        self, [
-            self.owner_email, self.committer_email, self.contributor_email,
-            self.indirect_member_email
-        ], visible_members)
+        self,
+        [
+            self.owner_email,
+            self.committer_email,
+            self.contributor_email,
+            self.indirect_member_email,
+        ],
+        visible_members,
+    )
 
   def testUnsignedUser_RestrictedProject(self):
     self.project.only_owners_see_contributors = True
@@ -1387,27 +1600,28 @@ class FilterMemberDataTest(unittest.TestCase):
         permissions.READ_ONLY_PERMISSIONSET, unsigned_user=True)
     six.assertCountEqual(
         self,
-        [self.owner_email, self.committer_email, self.indirect_member_email],
-        visible_members)
+        [
+            self.owner_email,
+            self.committer_email,
+            self.indirect_member_email,
+        ],
+        visible_members,
+    )
 
   def testOwnersAndAdminsCanSeeAll_NormalProject(self):
-    visible_members = self.DoFiltering(
-        permissions.OWNER_ACTIVE_PERMISSIONSET)
+    visible_members = self.DoFiltering(permissions.OWNER_ACTIVE_PERMISSIONSET)
     six.assertCountEqual(self, self.all_emails, visible_members)
 
-    visible_members = self.DoFiltering(
-        permissions.ADMIN_PERMISSIONSET)
+    visible_members = self.DoFiltering(permissions.ADMIN_PERMISSIONSET)
     six.assertCountEqual(self, self.all_emails, visible_members)
 
   def testOwnersAndAdminsCanSeeAll_HubAndSpoke(self):
     self.project.only_owners_see_contributors = True
 
-    visible_members = self.DoFiltering(
-        permissions.OWNER_ACTIVE_PERMISSIONSET)
+    visible_members = self.DoFiltering(permissions.OWNER_ACTIVE_PERMISSIONSET)
     six.assertCountEqual(self, self.all_emails, visible_members)
 
-    visible_members = self.DoFiltering(
-        permissions.ADMIN_PERMISSIONSET)
+    visible_members = self.DoFiltering(permissions.ADMIN_PERMISSIONSET)
     six.assertCountEqual(self, self.all_emails, visible_members)
 
     visible_members = self.DoFiltering(
@@ -1430,8 +1644,13 @@ class FilterMemberDataTest(unittest.TestCase):
         permissions.CONTRIBUTOR_ACTIVE_PERMISSIONSET)
     six.assertCountEqual(
         self,
-        [self.owner_email, self.committer_email, self.indirect_member_email],
-        visible_members)
+        [
+            self.owner_email,
+            self.committer_email,
+            self.indirect_member_email,
+        ],
+        visible_members,
+    )
 
 
 class GetLabelOptionsTest(unittest.TestCase):
@@ -1443,12 +1662,18 @@ class GetLabelOptionsTest(unittest.TestCase):
     custom_perms = []
     actual = tracker_helpers.GetLabelOptions(config, custom_perms)
     expected = [
-      {'doc': 'Only users who can edit the issue may access it',
-       'name': 'Restrict-View-EditIssue'},
-      {'doc': 'Only users who can edit the issue may add comments',
-       'name': 'Restrict-AddIssueComment-EditIssue'},
-      {'doc': 'Custom permission CoreTeam is needed to access',
-       'name': 'Restrict-View-CoreTeam'}
+        {
+            'doc': 'Only users who can edit the issue may access it',
+            'name': 'Restrict-View-EditIssue',
+        },
+        {
+            'doc': 'Only users who can edit the issue may add comments',
+            'name': 'Restrict-AddIssueComment-EditIssue',
+        },
+        {
+            'doc': 'Custom permission CoreTeam is needed to access',
+            'name': 'Restrict-View-CoreTeam',
+        },
     ]
     self.assertEqual(expected, actual)
 
@@ -1456,50 +1681,70 @@ class GetLabelOptionsTest(unittest.TestCase):
     choices = tracker_helpers._BuildRestrictionChoices([], [], [])
     self.assertEqual([], choices)
 
-    choices = tracker_helpers._BuildRestrictionChoices(
-        [], ['Hop', 'Jump'], [])
+    choices = tracker_helpers._BuildRestrictionChoices([], ['Hop', 'Jump'], [])
     self.assertEqual([], choices)
 
-    freq = [('View', 'B', 'You need permission B to do anything'),
-            ('A', 'B', 'You need B to use A')]
+    freq = [
+        ('View', 'B', 'You need permission B to do anything'),
+        ('A', 'B', 'You need B to use A'),
+    ]
     choices = tracker_helpers._BuildRestrictionChoices(freq, [], [])
-    expected = [dict(name='Restrict-View-B',
-                     doc='You need permission B to do anything'),
-                dict(name='Restrict-A-B',
-                     doc='You need B to use A')]
+    expected = [
+        dict(
+            name='Restrict-View-B',
+            doc='You need permission B to do anything',
+        ),
+        dict(name='Restrict-A-B', doc='You need B to use A'),
+    ]
     self.assertListEqual(expected, choices)
 
     extra_perms = ['Over18', 'Over21']
     choices = tracker_helpers._BuildRestrictionChoices(
         [], ['Drink', 'Smoke'], extra_perms)
-    expected = [dict(name='Restrict-Drink-Over18',
-                     doc='Permission Over18 needed to use Drink'),
-                dict(name='Restrict-Drink-Over21',
-                     doc='Permission Over21 needed to use Drink'),
-                dict(name='Restrict-Smoke-Over18',
-                     doc='Permission Over18 needed to use Smoke'),
-                dict(name='Restrict-Smoke-Over21',
-                     doc='Permission Over21 needed to use Smoke')]
+    expected = [
+        dict(
+            name='Restrict-Drink-Over18',
+            doc='Permission Over18 needed to use Drink',
+        ),
+        dict(
+            name='Restrict-Drink-Over21',
+            doc='Permission Over21 needed to use Drink',
+        ),
+        dict(
+            name='Restrict-Smoke-Over18',
+            doc='Permission Over18 needed to use Smoke',
+        ),
+        dict(
+            name='Restrict-Smoke-Over21',
+            doc='Permission Over21 needed to use Smoke',
+        ),
+    ]
     self.assertListEqual(expected, choices)
 
 
 class FilterKeptAttachmentsTest(unittest.TestCase):
+
   def testFilterKeptAttachments(self):
     comments = [
         tracker_pb2.IssueComment(
             is_description=True,
-            attachments=[tracker_pb2.Attachment(attachment_id=1)]),
+            attachments=[tracker_pb2.Attachment(attachment_id=1)],
+        ),
         tracker_pb2.IssueComment(),
         tracker_pb2.IssueComment(
             is_description=True,
             attachments=[
                 tracker_pb2.Attachment(attachment_id=2),
-                tracker_pb2.Attachment(attachment_id=3)]),
+                tracker_pb2.Attachment(attachment_id=3),
+            ],
+        ),
         tracker_pb2.IssueComment(),
         tracker_pb2.IssueComment(
             approval_id=24,
             is_description=True,
-            attachments=[tracker_pb2.Attachment(attachment_id=4)])]
+            attachments=[tracker_pb2.Attachment(attachment_id=4)],
+        ),
+    ]
 
     filtered = tracker_helpers.FilterKeptAttachments(
         True, [1, 2, 3, 4], comments, None)
@@ -1509,18 +1754,23 @@ class FilterKeptAttachmentsTest(unittest.TestCase):
     comments = [
         tracker_pb2.IssueComment(
             is_description=True,
-            attachments=[tracker_pb2.Attachment(attachment_id=1)]),
+            attachments=[tracker_pb2.Attachment(attachment_id=1)],
+        ),
         tracker_pb2.IssueComment(),
         tracker_pb2.IssueComment(
             is_description=True,
             attachments=[
                 tracker_pb2.Attachment(attachment_id=2),
-                tracker_pb2.Attachment(attachment_id=3)]),
+                tracker_pb2.Attachment(attachment_id=3),
+            ],
+        ),
         tracker_pb2.IssueComment(),
         tracker_pb2.IssueComment(
             approval_id=24,
             is_description=True,
-            attachments=[tracker_pb2.Attachment(attachment_id=4)])]
+            attachments=[tracker_pb2.Attachment(attachment_id=4)],
+        ),
+    ]
 
     filtered = tracker_helpers.FilterKeptAttachments(
         True, [1, 2, 3, 4], comments, 24)
@@ -1530,27 +1780,30 @@ class FilterKeptAttachmentsTest(unittest.TestCase):
     comments = [
         tracker_pb2.IssueComment(
             is_description=True,
-            attachments=[tracker_pb2.Attachment(attachment_id=1)]),
+            attachments=[tracker_pb2.Attachment(attachment_id=1)],
+        ),
         tracker_pb2.IssueComment(),
         tracker_pb2.IssueComment(
             is_description=True,
             attachments=[
                 tracker_pb2.Attachment(attachment_id=2),
-                tracker_pb2.Attachment(attachment_id=3)]),
+                tracker_pb2.Attachment(attachment_id=3),
+            ],
+        ),
         tracker_pb2.IssueComment(),
         tracker_pb2.IssueComment(
             approval_id=24,
             is_description=True,
-            attachments=[tracker_pb2.Attachment(attachment_id=4)])]
+            attachments=[tracker_pb2.Attachment(attachment_id=4)],
+        ),
+    ]
 
     filtered = tracker_helpers.FilterKeptAttachments(
         False, [1, 2, 3, 4], comments, None)
     self.assertIsNone(filtered)
 
   def testNoDescriptionsInComments(self):
-    comments = [
-        tracker_pb2.IssueComment(),
-        tracker_pb2.IssueComment()]
+    comments = [tracker_pb2.IssueComment(), tracker_pb2.IssueComment()]
 
     filtered = tracker_helpers.FilterKeptAttachments(
         True, [1, 2, 3, 4], comments, None)
@@ -1570,7 +1823,8 @@ class EnumFieldHelpersTest(unittest.TestCase):
         field_id=123,
         project_id=1,
         field_name='yellow',
-        field_type=tracker_pb2.FieldTypes.ENUM_TYPE)
+        field_type=tracker_pb2.FieldTypes.ENUM_TYPE,
+    )
     ld_1 = tracker_pb2.LabelDef(
         label='yellow-submarine', label_docstring='ld_1_docstring')
     ld_2 = tracker_pb2.LabelDef(
@@ -1584,17 +1838,20 @@ class EnumFieldHelpersTest(unittest.TestCase):
     ld_6 = tracker_pb2.LabelDef(
         label='yellow-tasket',
         label_docstring='ld_6_docstring',
-        deprecated=True)
+        deprecated=True,
+    )
     config = tracker_pb2.ProjectIssueConfig(
         default_template_for_developers=1,
         default_template_for_users=2,
-        well_known_labels=[ld_1, ld_2, ld_3, ld_4, ld_5, ld_6])
+        well_known_labels=[ld_1, ld_2, ld_3, ld_4, ld_5, ld_6],
+    )
     actual = tracker_helpers._GetEnumFieldValuesAndDocstrings(fd, config)
     # Expect to omit labels `yellow` and `not-yellow` due to prefix mismatch
     # Also expect to omit label `yellow-tasket` because it's deprecated
     expected = [
-        ('submarine', 'ld_1_docstring'), ('tisket', 'ld_2_docstring'),
-        ('basket', 'ld_3_docstring')
+        ('submarine', 'ld_1_docstring'),
+        ('tisket', 'ld_2_docstring'),
+        ('basket', 'ld_3_docstring'),
     ]
     self.assertEqual(expected, actual)
 
@@ -1607,7 +1864,8 @@ class CreateIssueHelpersTest(unittest.TestCase):
         config=fake.ConfigService(),
         issue=fake.IssueService(),
         user=fake.UserService(),
-        usergroup=fake.UserGroupService())
+        usergroup=fake.UserGroupService(),
+    )
     self.cnxn = 'fake cnxn'
 
     self.project_member = self.services.user.TestAddUser(
@@ -1618,15 +1876,34 @@ class CreateIssueHelpersTest(unittest.TestCase):
         'proj',
         project_id=789,
         committer_ids=[
-            self.project_member.user_id, self.project_group_member.user_id
-        ])
+            self.project_member.user_id,
+            self.project_group_member.user_id,
+        ],
+    )
     self.no_project_user = self.services.user.TestAddUser(
         'user_2@example.com', 222)
     self.config = fake.MakeTestConfig(self.project.project_id, [], [])
     self.int_fd = tracker_bizobj.MakeFieldDef(
-        123, 789, 'CPU', tracker_pb2.FieldTypes.INT_TYPE, None, '', False,
-        False, False, None, None, '', False, '', '',
-        tracker_pb2.NotifyTriggers.NEVER, 'no_action', 'doc', False)
+        123,
+        789,
+        'CPU',
+        tracker_pb2.FieldTypes.INT_TYPE,
+        None,
+        '',
+        False,
+        False,
+        False,
+        None,
+        None,
+        '',
+        False,
+        '',
+        '',
+        tracker_pb2.NotifyTriggers.NEVER,
+        'no_action',
+        'doc',
+        False,
+    )
     self.int_fd.max_value = 999
     self.config.field_defs = [self.int_fd]
     self.status_1 = tracker_pb2.StatusDef(
@@ -1636,7 +1913,10 @@ class CreateIssueHelpersTest(unittest.TestCase):
         component_id=1, path='compFOO')
     self.component_def_2 = tracker_pb2.ComponentDef(
         component_id=2, path='deprecated', deprecated=True)
-    self.config.component_defs = [self.component_def_1, self.component_def_2]
+    self.config.component_defs = [
+        self.component_def_1,
+        self.component_def_2,
+    ]
     self.services.config.StoreConfig('cnxn', self.config)
     self.services.usergroup.TestAddGroupSettings(999, 'group@example.com')
 
@@ -1647,9 +1927,27 @@ class CreateIssueHelpersTest(unittest.TestCase):
         owner_id=111,
         project_id=789,
         component_ids=[1],
-        cc_ids=[999])
+        cc_ids=[999],
+    )
     tracker_helpers.AssertValidIssueForCreate(
         self.cnxn, self.services, input_issue, 'nonempty description')
+
+  def testAssertValidIssueForCreate_ValidatesLabels(self):
+    input_issue = tracker_pb2.Issue(
+        summary='sum',
+        labels=['freeze_new_label'],
+        status='New',
+        owner_id=111,
+        project_id=789,
+    )
+    with self.assertRaisesRegex(
+        exceptions.InputException,
+        ('The creation of new labels is blocked for the Chromium project'
+         ' in Monorail. To continue with editing your issue, please'
+         ' remove: freeze_new_label label\\(s\\)'),
+    ):
+      tracker_helpers.AssertValidIssueForCreate(
+          self.cnxn, self.services, input_issue, 'nonempty description')
 
   def testAssertValidIssueForCreate_ValidatesOwner(self):
     input_issue = tracker_pb2.Issue(
@@ -1698,7 +1996,8 @@ class CreateIssueHelpersTest(unittest.TestCase):
         status='New',
         owner_id=111,
         project_id=789,
-        field_values=[fv])
+        field_values=[fv],
+    )
     with self.assertRaises(exceptions.InputException):
       tracker_helpers.AssertValidIssueForCreate(
           self.cnxn, self.services, input_issue, 'nonempty description')
@@ -1723,9 +2022,12 @@ class CreateIssueHelpersTest(unittest.TestCase):
         status='New',
         owner_id=111,
         project_id=789,
-        component_ids=[3])
-    with self.assertRaisesRegex(exceptions.InputException,
-                                'Undefined or deprecated component with id: 3'):
+        component_ids=[3],
+    )
+    with self.assertRaisesRegex(
+        exceptions.InputException,
+        'Undefined or deprecated component with id: 3',
+    ):
       tracker_helpers.AssertValidIssueForCreate(
           self.cnxn, self.services, input_issue, 'nonempty description')
 
@@ -1735,17 +2037,37 @@ class CreateIssueHelpersTest(unittest.TestCase):
         status='New',
         owner_id=111,
         project_id=789,
-        component_ids=[self.component_def_2.component_id])
-    with self.assertRaisesRegex(exceptions.InputException,
-                                'Undefined or deprecated component with id: 2'):
+        component_ids=[self.component_def_2.component_id],
+    )
+    with self.assertRaisesRegex(
+        exceptions.InputException,
+        'Undefined or deprecated component with id: 2',
+    ):
       tracker_helpers.AssertValidIssueForCreate(
           self.cnxn, self.services, input_issue, 'nonempty description')
 
   def testAssertValidIssueForCreate_ValidatesUsers(self):
     user_fd = tracker_bizobj.MakeFieldDef(
-        123, 789, 'CPU', tracker_pb2.FieldTypes.INT_TYPE, None, '', False,
-        False, False, None, None, '', False, '', '',
-        tracker_pb2.NotifyTriggers.NEVER, 'no_action', 'doc', False)
+        123,
+        789,
+        'CPU',
+        tracker_pb2.FieldTypes.INT_TYPE,
+        None,
+        '',
+        False,
+        False,
+        False,
+        None,
+        None,
+        '',
+        False,
+        '',
+        '',
+        tracker_pb2.NotifyTriggers.NEVER,
+        'no_action',
+        'doc',
+        False,
+    )
     self.services.config.TestAddFieldDef(user_fd)
 
     input_issue = tracker_pb2.Issue(
@@ -1757,7 +2079,8 @@ class CreateIssueHelpersTest(unittest.TestCase):
         field_values=[
             tracker_bizobj.MakeFieldValue(
                 user_fd.field_id, None, None, 124, None, None, False)
-        ])
+        ],
+    )
     copied_issue = copy.deepcopy(input_issue)
     with self.assertRaisesRegex(exceptions.InputException,
                                 r'users/123: .+\nusers/124: .+'):
@@ -1781,7 +2104,8 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
         issue=fake.IssueService(),
         issue_star=fake.IssueStarService(),
         user=fake.UserService(),
-        usergroup=fake.UserGroupService())
+        usergroup=fake.UserGroupService(),
+    )
     self.cnxn = 'fake cnxn'
 
     self.project_member = self.services.user.TestAddUser(
@@ -1793,9 +2117,26 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
 
     self.config = fake.MakeTestConfig(self.project.project_id, [], [])
     self.int_fd = tracker_bizobj.MakeFieldDef(
-        123, 789, 'CPU', tracker_pb2.FieldTypes.INT_TYPE, None, '', False,
-        False, False, None, None, '', False, '', '',
-        tracker_pb2.NotifyTriggers.NEVER, 'no_action', 'doc', False)
+        123,
+        789,
+        'CPU',
+        tracker_pb2.FieldTypes.INT_TYPE,
+        None,
+        '',
+        False,
+        False,
+        False,
+        None,
+        None,
+        '',
+        False,
+        '',
+        '',
+        tracker_pb2.NotifyTriggers.NEVER,
+        'no_action',
+        'doc',
+        False,
+    )
     self.int_fd.max_value = 999
     self.config.field_defs = [self.int_fd]
     self.services.config.StoreConfig('cnxn', self.config)
@@ -1826,7 +2167,7 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
     expected_amendments[issue_main.issue_id] = [
         tracker_bizobj.MakeOwnerAmendment(888, 999),
         tracker_bizobj.MakeCcAmendment([333], [222]),
-        tracker_bizobj.MakeLabelsAmendment(['add_me'], ['remove_me'])
+        tracker_bizobj.MakeLabelsAmendment(['add_me'], ['remove_me']),
     ]
     expected_old_owners[issue_main.issue_id] = 999
 
@@ -1866,8 +2207,10 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
     expected_main.blocked_on_ranks = [0, 0]
     expected_amendments[issue_main.issue_id].append(
         tracker_bizobj.MakeBlockedOnAmendment(
-            [('proj', bo_add.local_id)], [('proj', bo_remove.local_id)],
-            default_project_name='proj'))
+            [('proj', bo_add.local_id)],
+            [('proj', bo_remove.local_id)],
+            default_project_name='proj',
+        ))
 
     # blocking_issues changes setup.
     b_add = _Issue('proj', 3)
@@ -1905,8 +2248,10 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
     expected_main.blocking_iids = [no_change_iid, b_add.issue_id]
     expected_amendments[issue_main.issue_id].append(
         tracker_bizobj.MakeBlockingAmendment(
-            [('proj', b_add.local_id)], [('proj', b_remove.local_id)],
-            default_project_name='proj'))
+            [('proj', b_add.local_id)],
+            [('proj', b_remove.local_id)],
+            default_project_name='proj',
+        ))
 
     # Merged issues changes setup.
     merge_remove = _Issue('proj', 5)
@@ -1933,7 +2278,7 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
     expected_imp_amendments[merge_add.issue_id] = [
         tracker_bizobj.MakeCcAmendment(expected_merge_add.cc_ids, []),
         tracker_bizobj.MakeMergedIntoAmendment(
-            [issue_main_ref], [], default_project_name='proj')
+            [issue_main_ref], [], default_project_name='proj'),
     ]
     # We are merging issue_main into merge_add, so issue_main's starrers
     # should be merged into merge_add's starrers.
@@ -1946,17 +2291,17 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
 
     expected_issues_to_update[expected_merge_add.issue_id] = expected_merge_add
 
-
     issue_main.merged_into = merge_remove.issue_id
     expected_main.merged_into = merge_add.issue_id
     expected_amendments[issue_main.issue_id].append(
         tracker_bizobj.MakeMergedIntoAmendment(
-            [('proj', merge_add.local_id)], [('proj', merge_remove.local_id)],
-            default_project_name='proj'))
+            [('proj', merge_add.local_id)],
+            [('proj', merge_remove.local_id)],
+            default_project_name='proj',
+        ))
 
     self.services.issue.TestAddIssue(issue_main)
     expected_issues_to_update[expected_main.issue_id] = expected_main
-
 
     # Issues we'll put in delta_main.*_remove fields that aren't in issue_main.
     # These issues should not show up in issues_to_update.
@@ -1971,22 +2316,31 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
 
     delta_main = tracker_pb2.IssueDelta(
         owner_id=888,
-        cc_ids_remove=[222, 404], cc_ids_add=[333],
-        labels_remove=['remove_me', 'remove_404'], labels_add=['add_me'],
+        cc_ids_remove=[222, 404],
+        cc_ids_add=[333],
+        labels_remove=['remove_me', 'remove_404'],
+        labels_add=['add_me'],
         merged_into=merge_add.issue_id,
         blocked_on_add=[bo_add.issue_id],
         blocked_on_remove=[bo_remove.issue_id, missing_1.issue_id],
         blocking_add=[b_add.issue_id],
-        blocking_remove=[b_remove.issue_id, missing_2.issue_id])
+        blocking_remove=[b_remove.issue_id, missing_2.issue_id],
+    )
     issue_delta_pairs.append((issue_main, delta_main))
 
     actual_tuple = tracker_helpers.ApplyAllIssueChanges(
         self.cnxn, issue_delta_pairs, self.services)
 
     expected_tuple = tracker_helpers._IssueChangesTuple(
-        expected_issues_to_update, expected_merged_from_add,
-        expected_amendments, expected_imp_amendments, expected_old_owners,
-        expected_old_statuses, expected_old_components, expected_new_starrers)
+        expected_issues_to_update,
+        expected_merged_from_add,
+        expected_amendments,
+        expected_imp_amendments,
+        expected_old_owners,
+        expected_old_statuses,
+        expected_old_components,
+        expected_new_starrers,
+    )
     self.assertEqual(actual_tuple, expected_tuple)
 
     self.assertEqual(missing_1, expected_missing_1)
@@ -2009,9 +2363,11 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
     expected_noop_issue = copy.deepcopy(noop_issue)
     noop_delta = tracker_pb2.IssueDelta(
         owner_id=noop_issue.owner_id,
-        cc_ids_add=noop_issue.cc_ids, cc_ids_remove=[333],
+        cc_ids_add=noop_issue.cc_ids,
+        cc_ids_remove=[333],
         blocked_on_add=noop_issue.blocked_on_iids,
-        blocked_on_remove=[bo_remove_noop.issue_id])
+        blocked_on_remove=[bo_remove_noop.issue_id],
+    )
     issue_delta_pairs = [(noop_issue, noop_delta)]
 
     actual_tuple = tracker_helpers.ApplyAllIssueChanges(
@@ -2087,16 +2443,23 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
     delta_5 = tracker_pb2.IssueDelta()
 
     issue_delta_pairs = [
-        (issue_1, delta_1), (issue_2, delta_2), (issue_3, delta_3),
-        (issue_4, delta_4), (issue_5, delta_5)
+        (issue_1, delta_1),
+        (issue_2, delta_2),
+        (issue_3, delta_3),
+        (issue_4, delta_4),
+        (issue_5, delta_5),
     ]
-    unique_deltas, issues_for_deltas = tracker_helpers.GroupUniqueDeltaIssues(
-        issue_delta_pairs)
+    (
+        unique_deltas,
+        issues_for_deltas,
+    ) = tracker_helpers.GroupUniqueDeltaIssues(issue_delta_pairs)
 
     expected_unique_deltas = [delta_1, delta_2, delta_4]
     self.assertEqual(unique_deltas, expected_unique_deltas)
     expected_issues_for_deltas = [
-        [issue_1, issue_3], [issue_2], [issue_4, issue_5]
+        [issue_1, issue_3],
+        [issue_2],
+        [issue_4, issue_5],
     ]
     self.assertEqual(issues_for_deltas, expected_issues_for_deltas)
 
@@ -2113,7 +2476,9 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
     delta_b1 = tracker_pb2.IssueDelta()
 
     issue_delta_pairs = [
-        (issue_a1, delta_a1), (issue_a2, delta_a2), (issue_b1, delta_b1)
+        (issue_a1, delta_a1),
+        (issue_a2, delta_a2),
+        (issue_b1, delta_b1),
     ]
 
     upload_1 = framework_helpers.AttachmentUpload(
@@ -2127,7 +2492,7 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
 
     expected = {
         798: len(upload_1.contents + upload_2.contents) * 2,
-        788: len(upload_1.contents + upload_2.contents)
+        788: len(upload_1.contents + upload_2.contents),
     }
     self.assertEqual(actual, expected)
 
@@ -2145,7 +2510,9 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
     delta_b1 = tracker_pb2.IssueDelta()
 
     issue_delta_pairs = [
-        (issue_a1, delta_a1), (issue_a2, delta_a2), (issue_b1, delta_b1)
+        (issue_a1, delta_a1),
+        (issue_a2, delta_a2),
+        (issue_b1, delta_b1),
     ]
 
     upload_1 = framework_helpers.AttachmentUpload(
@@ -2154,8 +2521,10 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
         'snake', b'ooooo\n', 'text/plain')
     attachment_uploads = [upload_1, upload_2]
 
-    with self.assertRaisesRegex(exceptions.OverAttachmentQuota,
-                                r'.+ project Patroclus\n.+ project Circe'):
+    with self.assertRaisesRegex(
+        exceptions.OverAttachmentQuota,
+        r'.+ project Patroclus\n.+ project Circe',
+    ):
       tracker_helpers._EnforceAttachmentQuotaLimits(
           self.cnxn, issue_delta_pairs, self.services, attachment_uploads)
 
@@ -2221,24 +2590,56 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
 
     issue_11 = _Issue('chicken', 11)
     user_fd = tracker_bizobj.MakeFieldDef(
-        123, 789, 'CPU', tracker_pb2.FieldTypes.USER_TYPE, None, '', False,
-        False, False, None, None, '', False, '', '',
-        tracker_pb2.NotifyTriggers.NEVER, 'no_action', 'doc', False)
+        123,
+        789,
+        'CPU',
+        tracker_pb2.FieldTypes.USER_TYPE,
+        None,
+        '',
+        False,
+        False,
+        False,
+        None,
+        None,
+        '',
+        False,
+        '',
+        '',
+        tracker_pb2.NotifyTriggers.NEVER,
+        'no_action',
+        'doc',
+        False,
+    )
     self.services.config.TestAddFieldDef(user_fd)
     a_user = self.services.user.TestAddUser('a_user@test.com', 123)
     delta_11 = tracker_pb2.IssueDelta(
         cc_ids_add=[222],
         field_vals_add=[
             tracker_bizobj.MakeFieldValue(
-                user_fd.field_id, None, None, a_user.user_id, None, None, False)
-        ])
+                user_fd.field_id,
+                None,
+                None,
+                a_user.user_id,
+                None,
+                None,
+                False,
+            )
+        ],
+    )
     exp_d11 = copy.deepcopy(delta_11)
 
     issue_delta_pairs = [
-        (issue_1, delta_1), (issue_2, delta_2), (issue_3, delta_3),
-        (issue_4, delta_4), (issue_5, delta_5), (issue_6, delta_6),
-        (issue_7, delta_7), (issue_8, delta_8), (issue_9, delta_9),
-        (issue_10, delta_10), (issue_11, delta_11)
+        (issue_1, delta_1),
+        (issue_2, delta_2),
+        (issue_3, delta_3),
+        (issue_4, delta_4),
+        (issue_5, delta_5),
+        (issue_6, delta_6),
+        (issue_7, delta_7),
+        (issue_8, delta_8),
+        (issue_9, delta_9),
+        (issue_10, delta_10),
+        (issue_11, delta_11),
     ]
     comment = '   ' + 'c' * tracker_constants.MAX_COMMENT_CHARS + '  '
     tracker_helpers._AssertIssueChangesValid(
@@ -2249,12 +2650,52 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
         self.cnxn, issue_delta_pairs, self.services)
     self.assertEqual(
         [
-            exp_d1, exp_d2, exp_d3, exp_d4, exp_d5, exp_d6, exp_d7, exp_d8,
-            exp_d9, exp_d10, exp_d11
-        ], [
-            delta_1, delta_2, delta_3, delta_4, delta_5, delta_6, delta_7,
-            delta_8, delta_9, delta_10, delta_11
-        ])
+            exp_d1,
+            exp_d2,
+            exp_d3,
+            exp_d4,
+            exp_d5,
+            exp_d6,
+            exp_d7,
+            exp_d8,
+            exp_d9,
+            exp_d10,
+            exp_d11,
+        ],
+        [
+            delta_1,
+            delta_2,
+            delta_3,
+            delta_4,
+            delta_5,
+            delta_6,
+            delta_7,
+            delta_8,
+            delta_9,
+            delta_10,
+            delta_11,
+        ],
+    )
+
+  def testAssertIssueChangesValid_ValidatesLabels(self):
+    """Asserts fields and requried fields.."""
+    issue_1 = _Issue('chicken', 1)
+    self.services.issue.TestAddIssue(issue_1)
+    delta_1 = tracker_pb2.IssueDelta(labels_add=['freeze_new_label'])
+    issue_delta_pairs = [(issue_1, delta_1)]
+    comment = 'just a plain comment'
+    with self.assertRaisesRegex(
+        exceptions.InputException,
+        ('The creation of new labels is blocked for the Chromium project'
+         ' in Monorail. To continue with editing your issue, please'
+         ' remove: freeze_new_label label\\(s\\).'),
+    ):
+      tracker_helpers._AssertIssueChangesValid(
+          self.cnxn,
+          issue_delta_pairs,
+          self.services,
+          comment_content=comment,
+      )
 
   def testAssertIssueChangesValid_RequiredField(self):
     """Asserts fields and requried fields.."""
@@ -2264,9 +2705,26 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
     exp_d1 = copy.deepcopy(delta_1)
 
     required_fd = tracker_bizobj.MakeFieldDef(
-        124, 789, 'StrField', tracker_pb2.FieldTypes.STR_TYPE, None, '', True,
-        False, False, None, None, '', False, '', '',
-        tracker_pb2.NotifyTriggers.NEVER, 'no_action', 'doc', False)
+        124,
+        789,
+        'StrField',
+        tracker_pb2.FieldTypes.STR_TYPE,
+        None,
+        '',
+        True,
+        False,
+        False,
+        None,
+        None,
+        '',
+        False,
+        '',
+        '',
+        tracker_pb2.NotifyTriggers.NEVER,
+        'no_action',
+        'doc',
+        False,
+    )
     self.services.config.TestAddFieldDef(required_fd)
 
     issue_delta_pairs = [(issue_1, delta_1)]
@@ -2284,7 +2742,7 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
     self.assertEqual([exp_d1, exp_d2], [delta_1, delta_2])
 
   def testAssertIssueChangesValid_Invalid(self):
-    """We can raise exceptions when deltas are not valid for issues. """
+    """We can raise exceptions when deltas are not valid for issues."""
 
     def getRef(issue):
       return '%s:%d' % (issue.project_name, issue.local_id)
@@ -2304,18 +2762,19 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
         blocked_on_add=[issue_1.issue_id],
         summary='',
         status='',
-        cc_ids_add=[9876])
+        cc_ids_add=[9876],
+    )
 
     issue_delta_pairs.append((issue_1, delta_1))
     expected_err_msgs.extend(
         [
-            ('%s: MERGED type statuses must accompany mergedInto values.') %
+            '%s: MERGED type statuses must accompany mergedInto values.' %
             issue_1_ref,
             '%s: Cannot merge an issue into itself.' % issue_1_ref,
             '%s: Cannot block an issue on itself.' % issue_1_ref,
             'users/9876: User does not exist.',
             '%s: Summary required.' % issue_1_ref,
-            '%s: Status is required.' % issue_1_ref
+            '%s: Status is required.' % issue_1_ref,
         ])
 
     issue_2 = _Issue('chicken', 2)
@@ -2329,17 +2788,18 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
         blocking_add=[issue_2.issue_id],
         summary='s' * (tracker_constants.MAX_SUMMARY_CHARS + 1),
         owner_id=self.no_project_user.user_id,
-        field_vals_add=[fv])
+        field_vals_add=[fv],
+    )
     issue_delta_pairs.append((issue_2, delta_2))
 
     expected_err_msgs.extend(
         [
-            ('%s: MERGED type statuses must accompany mergedInto values.') %
+            '%s: MERGED type statuses must accompany mergedInto values.' %
             issue_2_ref,
             '%s: Cannot block an issue on itself.' % issue_2_ref,
             '%s: Issue owner must be a project member.' % issue_2_ref,
             '%s: Summary is too long.' % issue_2_ref,
-            '%s: Error for %r: Value must be <= 999.' % (issue_2_ref, fv)
+            '%s: Error for %r: Value must be <= 999.' % (issue_2_ref, fv),
         ])
 
     issue_3 = _Issue('chicken', 3)
@@ -2357,7 +2817,11 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
     with self.assertRaisesRegex(exceptions.InputException,
                                 '\n'.join(expected_err_msgs)):
       tracker_helpers._AssertIssueChangesValid(
-          self.cnxn, issue_delta_pairs, self.services, comment_content=comment)
+          self.cnxn,
+          issue_delta_pairs,
+          self.services,
+          comment_content=comment,
+      )
 
   def testAssertIssueChangesValid_ConflictingDeltas(self):
 
@@ -2383,16 +2847,20 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
 
     delta_3 = tracker_pb2.IssueDelta(
         blocking_add=[issue_4.issue_id],
-        blocked_on_add=[issue_5.issue_id, issue_6.issue_id])
+        blocked_on_add=[issue_5.issue_id, issue_6.issue_id],
+    )
 
     delta_4 = tracker_pb2.IssueDelta(
-        blocked_on_remove=[issue_3.issue_id], blocking_add=[issue_5.issue_id])
+        blocked_on_remove=[issue_3.issue_id],
+        blocking_add=[issue_5.issue_id],
+    )
     expected_err_msgs.append(
         'Changes for %s conflict for %s' % (issue_4_ref, issue_3_ref))
 
     delta_5 = tracker_pb2.IssueDelta(
         blocking_remove=[issue_3.issue_id],
-        blocked_on_remove=[issue_4.issue_id])
+        blocked_on_remove=[issue_4.issue_id],
+    )
     expected_err_msgs.append(
         'Changes for %s conflict for %s, %s' %
         (issue_5_ref, issue_3_ref, issue_4_ref))
@@ -2408,7 +2876,8 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
         blocking_remove=[issue_3.issue_id],
         blocking_add=[issue_3.issue_id],
         blocked_on_remove=[impacted_issue.issue_id],
-        blocked_on_add=[impacted_issue.issue_id])
+        blocked_on_add=[impacted_issue.issue_id],
+    )
     expected_err_msgs.append(
         'Changes for %s conflict for %s, %s' %
         (issue_7_ref, issue_3_ref, impacted_issue_ref))
@@ -2534,21 +3003,40 @@ class ModifyIssuesHelpersTest(unittest.TestCase):
     exp_delta_8 = copy.deepcopy(delta_8)
 
     pairs = [
-        (issue_1, delta_1), (issue_2, delta_2), (issue_3, delta_3),
-        (issue_4, delta_4), (issue_5, delta_5), (issue_6, delta_6),
-        (issue_7, delta_7), (issue_8, delta_8)
+        (issue_1, delta_1),
+        (issue_2, delta_2),
+        (issue_3, delta_3),
+        (issue_4, delta_4),
+        (issue_5, delta_5),
+        (issue_6, delta_6),
+        (issue_7, delta_7),
+        (issue_8, delta_8),
     ]
 
     tracker_helpers._EnforceNonMergeStatusDeltas(
         self.cnxn, pairs, self.services)
     self.assertEqual(
         [
-            delta_1, delta_2, delta_3, delta_4, delta_5, delta_6, delta_7,
-            delta_8
-        ], [
-            exp_delta_1, exp_delta_2, exp_delta_3, exp_delta_4, exp_delta_5,
-            exp_delta_6, exp_delta_7, exp_delta_8
-        ])
+            delta_1,
+            delta_2,
+            delta_3,
+            delta_4,
+            delta_5,
+            delta_6,
+            delta_7,
+            delta_8,
+        ],
+        [
+            exp_delta_1,
+            exp_delta_2,
+            exp_delta_3,
+            exp_delta_4,
+            exp_delta_5,
+            exp_delta_6,
+            exp_delta_7,
+            exp_delta_8,
+        ],
+    )
 
 
 class IssueChangeImpactedIssuesTest(unittest.TestCase):
@@ -2618,36 +3106,48 @@ class IssueChangeImpactedIssuesTest(unittest.TestCase):
       impacted_issues.TrackImpactedIssues(issue, delta)
 
     self.assertEqual(
-        impacted_issues.blocking_add, {
+        impacted_issues.blocking_add,
+        {
             78901: [issue_1.issue_id],
             78902: [issue_1.issue_id]
-        })
+        },
+    )
     self.assertEqual(
-        impacted_issues.blocking_remove, {
+        impacted_issues.blocking_remove,
+        {
             78903: [issue_1.issue_id],
             78904: [issue_1.issue_id]
-        })
+        },
+    )
     self.assertEqual(
-        impacted_issues.blocked_on_add, {
+        impacted_issues.blocked_on_add,
+        {
             78901: [issue_2.issue_id],
             78902: [issue_2.issue_id]
-        })
+        },
+    )
     self.assertEqual(
-        impacted_issues.blocked_on_remove, {
+        impacted_issues.blocked_on_remove,
+        {
             78903: [issue_2.issue_id],
             78904: [issue_2.issue_id]
-        })
+        },
+    )
     self.assertEqual(
-        impacted_issues.merged_from_add, {
+        impacted_issues.merged_from_add,
+        {
             78901: [issue_3.issue_id],
-            78905: [issue_1.issue_id],
-        })
+            78905: [issue_1.issue_id]
+        },
+    )
     self.assertEqual(
-        impacted_issues.merged_from_remove, {
+        impacted_issues.merged_from_remove,
+        {
             78901: [issue_4.issue_id],
             78902: [issue_3.issue_id],
             78906: [issue_1.issue_id],
-        })
+        },
+    )
 
   def testApplyImpactedIssueChanges(self):
     impacted_tracker = tracker_helpers._IssueChangeImpactedIssues()
@@ -2662,18 +3162,15 @@ class IssueChangeImpactedIssuesTest(unittest.TestCase):
 
     bo_remove = _Issue('proj', 3)
     self.services.issue.TestAddIssue(bo_remove)
-    impacted_tracker.blocked_on_remove[impacted_iid].append(
-        bo_remove.issue_id)
+    impacted_tracker.blocked_on_remove[impacted_iid].append(bo_remove.issue_id)
 
     b_add = _Issue('proj', 4)
     self.services.issue.TestAddIssue(b_add)
-    impacted_tracker.blocking_add[impacted_iid].append(
-        b_add.issue_id)
+    impacted_tracker.blocking_add[impacted_iid].append(b_add.issue_id)
 
     b_remove = _Issue('proj', 5)
     self.services.issue.TestAddIssue(b_remove)
-    impacted_tracker.blocking_remove[impacted_iid].append(
-        b_remove.issue_id)
+    impacted_tracker.blocking_remove[impacted_iid].append(b_remove.issue_id)
 
     m_add = _Issue('proj', 6)
     m_add.cc_ids = [666, 777]
@@ -2697,9 +3194,7 @@ class IssueChangeImpactedIssuesTest(unittest.TestCase):
     m_remove = _Issue('proj', 8)
     m_remove.cc_ids = [888]
     self.services.issue.TestAddIssue(m_remove)
-    impacted_tracker.merged_from_remove[impacted_iid].append(
-        m_remove.issue_id)
-
+    impacted_tracker.merged_from_remove[impacted_iid].append(m_remove.issue_id)
 
     impacted_issue.cc_ids = [666]
     impacted_issue.blocked_on_iids = [78404, bo_remove.issue_id]
@@ -2707,21 +3202,29 @@ class IssueChangeImpactedIssuesTest(unittest.TestCase):
     expected_issue = copy.deepcopy(impacted_issue)
 
     # Verify.
-    (actual_amendments,
-     actual_new_starrers) = impacted_tracker.ApplyImpactedIssueChanges(
-         self.cnxn, impacted_issue, self.services)
+    (
+        actual_amendments,
+        actual_new_starrers,
+    ) = impacted_tracker.ApplyImpactedIssueChanges(
+        self.cnxn, impacted_issue, self.services)
     expected_amendments = [
         tracker_bizobj.MakeBlockedOnAmendment(
             [('proj', bo_add.local_id)],
-            [('proj', bo_remove.local_id)], default_project_name='proj'),
+            [('proj', bo_remove.local_id)],
+            default_project_name='proj',
+        ),
         tracker_bizobj.MakeBlockingAmendment(
             [('proj', b_add.local_id)],
-            [('proj', b_remove.local_id)], default_project_name='proj'),
+            [('proj', b_remove.local_id)],
+            default_project_name='proj',
+        ),
         tracker_bizobj.MakeCcAmendment([777], []),
         tracker_bizobj.MakeMergedIntoAmendment(
             [('proj', m_add.local_id), ('proj', m_add_no_ccs.local_id)],
-            [('proj', m_remove.local_id)], default_project_name='proj')
-        ]
+            [('proj', m_remove.local_id)],
+            default_project_name='proj',
+        ),
+    ]
     self.assertEqual(actual_amendments, expected_amendments)
     six.assertCountEqual(self, actual_new_starrers, [333, 444])
 
@@ -2740,9 +3243,11 @@ class IssueChangeImpactedIssuesTest(unittest.TestCase):
     impacted_issue = _Issue('proj', 1)
     expected_issue = copy.deepcopy(impacted_issue)
 
-    (actual_amendments,
-     actual_new_starrers) = impacted_tracker.ApplyImpactedIssueChanges(
-         self.cnxn, impacted_issue, self.services)
+    (
+        actual_amendments,
+        actual_new_starrers,
+    ) = impacted_tracker.ApplyImpactedIssueChanges(
+        self.cnxn, impacted_issue, self.services)
 
     expected_amendments = []
     self.assertEqual(actual_amendments, expected_amendments)
@@ -2759,16 +3264,19 @@ class IssueChangeImpactedIssuesTest(unittest.TestCase):
 
     m_add = _Issue('proj', 2)
     self.services.issue.TestAddIssue(m_add)
-    impacted_tracker.merged_from_add[impacted_iid].append(
-        m_add.issue_id)
+    impacted_tracker.merged_from_add[impacted_iid].append(m_add.issue_id)
     # We're leaving impacted_tracker.merged_from_remove empty.
 
-    (actual_amendments,
-     actual_new_starrers) = impacted_tracker.ApplyImpactedIssueChanges(
-         self.cnxn, impacted_issue, self.services)
+    (
+        actual_amendments,
+        actual_new_starrers,
+    ) = impacted_tracker.ApplyImpactedIssueChanges(
+        self.cnxn, impacted_issue, self.services)
 
-    expected_amendments = [tracker_bizobj.MakeMergedIntoAmendment(
-            [('proj', m_add.local_id)], [], default_project_name='proj')]
+    expected_amendments = [
+        tracker_bizobj.MakeMergedIntoAmendment(
+            [('proj', m_add.local_id)], [], default_project_name='proj')
+    ]
     self.assertEqual(actual_amendments, expected_amendments)
     expected_new_starrers = []
     self.assertEqual(actual_new_starrers, expected_new_starrers)
@@ -2791,8 +3299,7 @@ class AssertUsersExistTest(unittest.TestCase):
 
   def test_AssertUsersExist_Empty(self):
     with exceptions.ErrorAggregator(exceptions.InputException) as err_agg:
-      tracker_helpers.AssertUsersExist(
-          self.cnxn, self.services, [], err_agg)
+      tracker_helpers.AssertUsersExist(self.cnxn, self.services, [], err_agg)
 
   def test_AssertUsersExist(self):
     dne_users = [2, 3]
@@ -2800,7 +3307,8 @@ class AssertUsersExistTest(unittest.TestCase):
     all_users = existing + dne_users
     with self.assertRaisesRegex(
         exceptions.InputException,
-        'users/2: User does not exist.\nusers/3: User does not exist.'):
+        'users/2: User does not exist.\nusers/3: User does not exist.',
+    ):
       with exceptions.ErrorAggregator(exceptions.InputException) as err_agg:
         tracker_helpers.AssertUsersExist(
             self.cnxn, self.services, all_users, err_agg)
