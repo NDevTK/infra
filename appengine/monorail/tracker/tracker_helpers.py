@@ -1585,6 +1585,12 @@ def _AssertIssueChangesValid(
         err_agg.AddErrorMessage('{}: Summary required.', issue_ref)
       if delta.status == '':
         err_agg.AddErrorMessage('{}: Status is required.', issue_ref)
+
+      label_validity_error = field_helpers.ValidateLabels(
+          cnxn, services, issue.project_id, delta.labels_add)
+      if label_validity_error:
+        err_agg.AddErrorMessage('{}: {}', issue_ref, label_validity_error)
+
       # Do not pass in issue for validation, as issue is pre-update, and would
       # result in being unable to edit issues in invalid states.
       fvs_err_msgs = field_helpers.ValidateCustomFields(
@@ -1646,6 +1652,11 @@ def AssertValidIssueForCreate(cnxn, services, issue, description):
     field_users = [fv.user_id for fv in issue.field_values if fv.user_id]
     all_users.extend(field_users)
     AssertUsersExist(cnxn, services, all_users, err_agg)
+
+    label_validity_error = field_helpers.ValidateLabels(
+        cnxn, services, issue.project_id, issue.labels)
+    if label_validity_error:
+      err_agg.AddErrorMessage(label_validity_error)
 
     field_validity_errors = field_helpers.ValidateCustomFields(
         cnxn, services, issue.field_values, config, project, issue=issue)
