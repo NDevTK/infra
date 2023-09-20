@@ -176,6 +176,24 @@
       "parentUuid": "4249072b_d68668a2",
       "revId": "6afbff599f537e1f1110650452becf736aca6405",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bb013e3a_1b02e4b5",
+        "filename": "go/src/infra/cros/satlab/common/dut/get.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-20T14:05:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c3d0ef1a_d3ef1108",
+      "revId": "6afbff599f537e1f1110650452becf736aca6405",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }
