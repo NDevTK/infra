@@ -54,6 +54,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "60bb859c_51fd4bcf",
+        "filename": "go/src/infra/cros/satlab/common/dut/get.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1545743
+      },
+      "writtenOn": "2023-09-20T14:07:58Z",
+      "side": 1,
+      "message": "oh sorry for the confusion- there should already be a `MachineLSE` type defined: https://chromium.googlesource.com/infra/infra.git/+/main/go/src/infra/cros/satlab/satlab/internal/components/dut/delete_dut_cmd.go#150\n\nwe should import and use that proto (that is what is used in the inventory GRPC service we are pulling this info from)",
+      "revId": "180929e534f8cd6e1055ccac9d407fed491a251d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d27ee038_46b2786f",
         "filename": "go/src/infra/cros/satlab/common/dut/get_shivas_flags_test.go",
         "patchSetId": 15
